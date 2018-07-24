@@ -1,4 +1,3 @@
-use std::cell::Ref;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -86,24 +85,9 @@ impl Arena {
 }
 
 pub trait Geometry {
-    fn adata(&self) -> Ref<ArenaData>;
-    fn program<'a>(&'a self) -> &'a glprog;
-
     fn populate(&mut self);
     fn draw(&self);
-
-    fn perspective(&self,stage:&Stage) {
-        let data = &self.adata();
-        let ctx = &data.ctx;
-        let aspect = data.aspect;
-        let prog = self.program();
-        ctx.use_program(Some(&prog));
-        wglraw::set_uniform_1(&ctx,&prog,"uStageHpos",stage.hpos);
-        wglraw::set_uniform_1(&ctx,&prog,"uStageVpos",stage.vpos);
-        wglraw::set_uniform_1(&ctx,&prog,"uStageZoom",stage.zoom);
-        wglraw::set_uniform_2(&ctx,&prog,"uCursor",stage.cursor);
-        wglraw::set_uniform_1(&ctx,&prog,"uAspect",aspect);
-    }
+    fn perspective(&self,stage:&Stage);
 }
 
 pub struct StdGeometry {
@@ -195,4 +179,3 @@ impl Stage {
         Stage { hpos: 0.0, vpos: 0.0, zoom: 1.0, cursor: [0.0,0.0] }
     }
 }
-

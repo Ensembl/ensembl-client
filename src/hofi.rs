@@ -6,11 +6,6 @@ use arena::{
     Stage
 };
 
-use webgl_rendering_context::{
-    WebGLProgram as glprog,
-};
-
-use std::cell::Ref;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -72,9 +67,6 @@ impl HofiGeometry {
 }
 
 impl Geometry for HofiGeometry {
-    fn adata(&self) -> Ref<ArenaData> { self.std.adata.borrow() }
-    fn program<'a>(&'a self) -> &'a glprog { &self.std.prog }
-
     fn populate(&mut self) {
         self.std.select();
         self.points.populate(&self.std);
