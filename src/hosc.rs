@@ -1,22 +1,22 @@
 use webgl_rendering_context::{
-    WebGLRenderingContext as glctx,
     WebGLProgram as glprog,
-    WebGLBuffer as glbuf,
 };
 
-use wglraw;
 use arena::{
     Geometry,
     ArenaData,
+    StdGeometry,
+    GeomBuf,
+    Stage,
 };
 
 use std::cell::Ref;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-const HOSC_V_SRC : &str = "
-attribute vec2 aVertexPositionHosc;
-attribute vec3 aVertexColourHosc;
+const V_SRC : &str = "
+attribute vec2 aVertexPosition;
+attribute vec3 aVertexColour;
 
 uniform float uAspect;
 uniform float uStageHpos;
@@ -27,15 +27,15 @@ varying lowp vec3 vColour;
 
 void main() {
      gl_Position = vec4(
-          (aVertexPositionHosc.x - uStageHpos) * uStageZoom,
-          (aVertexPositionHosc.y - uStageVpos),
+          (aVertexPosition.x - uStageHpos) * uStageZoom,
+          (aVertexPosition.y - uStageVpos),
           0.0, 1.0
     );
-    vColour = aVertexColourHosc;
+    vColour = aVertexColour;
 }
 ";
 
-const HOSC_F_SRC : &str = "
+const F_SRC : &str = "
 varying lowp vec3 vColour;
 
 void main() {
@@ -44,61 +44,47 @@ void main() {
 ";
 
 pub struct HoscGeometry {
-    adata: Rc<RefCell<ArenaData>>,
-    points : Vec<f32>,
-    colours: Vec<f32>,
-    buffer: glbuf,
-    colour_buffer: glbuf,
-    indices: i32,
-    prog: glprog,
+    std : StdGeometry,
+    points : GeomBuf,
+    colours : GeomBuf,
 }
 
 impl HoscGeometry {
     pub fn new(adata: Rc<RefCell<ArenaData>>) -> HoscGeometry {
-        let adata2 = adata.clone();
-        let ctx = &adata2.borrow().ctx;
+        let ctx = &adata.borrow().ctx;
+        let std = StdGeometry::new(adata.clone(),&V_SRC,&F_SRC);
         HoscGeometry {
-            indices: 0,
-            adata,
-            points: Vec::<f32>::new(),
-            colours: Vec::<f32>::new(),
-            prog: wglraw::prepare_shaders(&ctx,&HOSC_V_SRC,&HOSC_F_SRC),
-            buffer: wglraw::init_buffer(&ctx),
-            colour_buffer: wglraw::init_buffer(&ctx)
+            std,
+            points: GeomBuf::new(&ctx,"aVertexPosition",2),
+            colours: GeomBuf::new(&ctx,"aVertexColour",3),
         }
     }
 
     pub fn triangle(&mut self,points:[f32;6],colour:[f32;3]) {
-        self.points.extend_from_slice(&points);
-        self.colours.extend_from_slice(&colour);
-        self.colours.extend_from_slice(&colour);
-        self.colours.extend_from_slice(&colour);
-        self.indices = self.indices + 3
+        self.points.add(&points,1);
+        self.colours.add(&colour,3);
+        self.std.indices = self.std.indices + 3
     }
 }
 
 impl Geometry for HoscGeometry {
-    fn adata(&self) -> Ref<ArenaData> { self.adata.borrow() }
-    fn program<'a>(&'a self) -> &'a glprog { &self.prog }
+    fn adata(&self) -> Ref<ArenaData> { self.std.adata.borrow() }
+    fn program<'a>(&'a self) -> &'a glprog { &self.std.prog }
 
     fn populate(&mut self) {
-        {
-            let ctx = &self.adata().ctx;
-            ctx.use_program(Some(&self.prog));
-            wglraw::populate_buffer(&ctx,glctx::ARRAY_BUFFER,&self.buffer,&self.points);
-            wglraw::populate_buffer(&ctx,glctx::ARRAY_BUFFER,&self.colour_buffer,&self.colours);
-        }
-        self.points.clear();
-        self.colours.clear();
+        self.std.select();
+        self.points.populate(&self.std);
+        self.colours.populate(&self.std);
     }
 
     fn draw(&self) {
-        let ctx = &self.adata().ctx;
-        ctx.use_program(Some(&self.prog));
-        wglraw::link_buffer(&ctx,&self.prog,"aVertexPositionHosc",2,&self.buffer);
-        wglraw::link_buffer(&ctx,&self.prog,"aVertexColourHosc",3,&self.colour_buffer);
-        ctx.draw_arrays(glctx::TRIANGLES,0,self.indices);
+        self.std.select();
+        self.points.link(&self.std);
+        self.colours.link(&self.std);
+        self.std.draw_triangles();
     }
-        
+    
+    fn perspective(&self,stage:&Stage) {
+        self.std.perspective(stage);
+    }
 }
-
