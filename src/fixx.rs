@@ -1,7 +1,3 @@
-use webgl_rendering_context::{
-    WebGLProgram as glprog,
-};
-
 use arena::{
     Geometry,
     ArenaData,
@@ -10,7 +6,6 @@ use arena::{
     Stage,
 };
 
-use std::cell::Ref;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -64,10 +59,7 @@ impl FixxGeometry {
         self.std.indices = self.std.indices + 3
     }
 }
-impl Geometry for FixxGeometry {
-    fn adata(&self) -> Ref<ArenaData> { self.std.adata.borrow() }
-    fn program<'a>(&'a self) -> &'a glprog { &self.std.prog }
-    
+impl Geometry for FixxGeometry {    
     fn populate(&mut self) {
         self.std.select();
         self.points.populate(&self.std);
