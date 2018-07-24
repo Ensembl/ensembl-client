@@ -10,6 +10,7 @@ use fixx::FixxGeometry;
 
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
+    WebGLBuffer as glbuf,
     WebGLProgram as glprog,
 };
 
@@ -102,6 +103,83 @@ pub trait Geometry {
         wglraw::set_uniform_1(&ctx,&prog,"uStageZoom",stage.zoom);
         wglraw::set_uniform_2(&ctx,&prog,"uCursor",stage.cursor);
         wglraw::set_uniform_1(&ctx,&prog,"uAspect",aspect);
+    }
+}
+
+pub struct StdGeometry {
+    pub adata: Rc<RefCell<ArenaData>>,
+    pub indices: i32,
+    pub prog: glprog,
+}
+
+impl StdGeometry {
+    pub fn new(adata: Rc<RefCell<ArenaData>>,
+           v_src : &str,f_src : &str) -> StdGeometry {
+        let prog;
+        {
+            let ctx = &adata.borrow().ctx;
+            prog = wglraw::prepare_shaders(&ctx,v_src,f_src);
+        }
+        StdGeometry { adata, indices: 0, prog }
+    }
+    
+    pub fn select(&self) {
+        let ctx = &self.adata.borrow().ctx;
+        ctx.use_program(Some(&self.prog));
+    }
+
+    pub fn draw_triangles(&self) {
+        let ctx = &self.adata.borrow().ctx;
+        ctx.draw_arrays(glctx::TRIANGLES,0,self.indices);
+    }
+    
+    pub fn perspective(&self,stage:&Stage) {
+        let data = &self.adata.borrow();
+        let ctx = &data.ctx;
+        let aspect = data.aspect;
+        ctx.use_program(Some(&self.prog));
+        wglraw::set_uniform_1(&ctx,&self.prog,"uStageHpos",stage.hpos);
+        wglraw::set_uniform_1(&ctx,&self.prog,"uStageVpos",stage.vpos);
+        wglraw::set_uniform_1(&ctx,&self.prog,"uStageZoom",stage.zoom);
+        wglraw::set_uniform_2(&ctx,&self.prog,"uCursor",stage.cursor);
+        wglraw::set_uniform_1(&ctx,&self.prog,"uAspect",aspect);
+    }
+}
+
+pub struct GeomBuf {
+    vec : Vec<f32>,
+    buf: glbuf,
+    name: String,
+    size: i32
+}
+
+impl GeomBuf {
+    pub fn new(ctx: &glctx,name: &str, size: i32) -> GeomBuf {
+        GeomBuf {
+            vec: Vec::<f32>::new(),
+            buf: wglraw::init_buffer(&ctx),
+            name: String::from(name),
+            size
+        }
+    }
+    
+    pub fn add(&mut self,values : &[f32],mult : i32) {
+        for _i in 0..mult {
+            self.vec.extend_from_slice(values);
+        }
+    }
+
+    pub fn populate(&mut self, std : &StdGeometry) {
+        {
+            let ctx = &std.adata.borrow().ctx;
+            wglraw::populate_buffer(&ctx,glctx::ARRAY_BUFFER,
+                                    &self.buf,&self.vec);
+        }
+        self.vec.clear();
+    }
+
+    pub fn link(&self, std: &StdGeometry) {
+        wglraw::link_buffer(&std.adata.borrow().ctx,&std.prog,&self.name,self.size,&self.buf);
     }
 }
 
