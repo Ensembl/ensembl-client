@@ -94,17 +94,57 @@ pub struct StdGeometry {
     pub adata: Rc<RefCell<ArenaData>>,
     pub indices: i32,
     pub prog: glprog,
+    pub buffers : Vec<GeomBuf>,
+    pub num_idx : i8,
 }
 
 impl StdGeometry {
     pub fn new(adata: Rc<RefCell<ArenaData>>,
-           v_src : &str,f_src : &str) -> StdGeometry {
+           v_src : &str,f_src : &str,
+           specs : &[(&str,i8,i8)],num_idx : i8) -> StdGeometry {
+        let adata2 = adata.clone();
         let prog;
         {
             let ctx = &adata.borrow().ctx;
             prog = wglraw::prepare_shaders(&ctx,v_src,f_src);
         }
-        StdGeometry { adata, indices: 0, prog }
+        let mut geom = StdGeometry {
+            adata, prog,
+            buffers :  Vec::<GeomBuf>::new(),
+            indices : 0,
+            num_idx
+        };
+        for spec in specs {
+            let ctx = &adata2.borrow().ctx;
+            geom.buffers.push(GeomBuf::new(ctx,spec.0,spec.1,spec.2));
+        }
+        geom
+    }
+    
+    pub fn draw(&self) {
+        {
+            let ctx = &self.adata.borrow().ctx;
+            self.select();
+            for g in &self.buffers {
+                g.link(&ctx,&self.prog);
+            }
+        }
+        self.draw_triangles();
+    }
+    
+    pub fn populate(&mut self) {
+        let ctx = &self.adata.borrow().ctx;
+        for g in &mut self.buffers {
+            g.populate(&ctx);
+        }
+    }
+    
+    pub fn add(&mut self, i : usize, data : &[f32]) {
+        self.buffers[i].add(data);
+    }
+    
+    pub fn advance(&mut self) {
+        self.indices = self.indices + (self.num_idx as i32);
     }
     
     pub fn select(&self) {
@@ -134,36 +174,37 @@ pub struct GeomBuf {
     vec : Vec<f32>,
     buf: glbuf,
     name: String,
-    size: i32
+    size: i8,
+    rep: i8
 }
 
 impl GeomBuf {
-    pub fn new(ctx: &glctx,name: &str, size: i32) -> GeomBuf {
+    pub fn new(ctx: &glctx,name: &str, size: i8, rep: i8) -> GeomBuf {
         GeomBuf {
             vec: Vec::<f32>::new(),
             buf: wglraw::init_buffer(&ctx),
             name: String::from(name),
-            size
+            size, rep
         }
     }
     
-    pub fn add(&mut self,values : &[f32],mult : i32) {
-        for _i in 0..mult {
+    pub fn add(&mut self,values : &[f32]) {
+        for _i in 0..self.rep {
             self.vec.extend_from_slice(values);
         }
     }
 
-    pub fn populate(&mut self, std : &StdGeometry) {
+    pub fn populate(&mut self, ctx: &glctx) {
         {
-            let ctx = &std.adata.borrow().ctx;
             wglraw::populate_buffer(&ctx,glctx::ARRAY_BUFFER,
                                     &self.buf,&self.vec);
         }
         self.vec.clear();
     }
 
-    pub fn link(&self, std: &StdGeometry) {
-        wglraw::link_buffer(&std.adata.borrow().ctx,&std.prog,&self.name,self.size,&self.buf);
+    pub fn link(&self, ctx : &glctx, prog : &glprog) {
+        wglraw::link_buffer(ctx,prog,
+                            &self.name,self.size,&self.buf);
     }
 }
 

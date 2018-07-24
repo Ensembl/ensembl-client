@@ -2,7 +2,6 @@ use arena::{
     Geometry,
     ArenaData,
     StdGeometry,
-    GeomBuf,
     Stage,
 };
 
@@ -38,43 +37,34 @@ void main() {
 
 pub struct FixxGeometry {
     std : StdGeometry,
-    points : GeomBuf,
-    colours : GeomBuf,
 }
 
 impl FixxGeometry {
     pub fn new(adata: Rc<RefCell<ArenaData>>) -> FixxGeometry {
-        let ctx = &adata.borrow().ctx;
-        let std = StdGeometry::new(adata.clone(),&V_SRC,&F_SRC);
+        let std = StdGeometry::new(
+            adata.clone(),&V_SRC,&F_SRC,
+            &[("aVertexPosition",3,1),("aVertexColour",3,3)],3);        
         FixxGeometry {
             std,
-            points: GeomBuf::new(&ctx,"aVertexPosition",3),
-            colours: GeomBuf::new(&ctx,"aVertexColour",3),
         }
     }
 
     pub fn triangle(&mut self,points:[f32;9],colour:[f32;3]) {
-        self.points.add(&points,1);
-        self.colours.add(&colour,3);
-        self.std.indices = self.std.indices + 3
+        self.std.add(0,&points);
+        self.std.add(1,&colour);
+        self.std.advance();
     }
 }
 impl Geometry for FixxGeometry {    
     fn populate(&mut self) {
-        self.std.select();
-        self.points.populate(&self.std);
-        self.colours.populate(&self.std);
+        self.std.populate();
     }
 
     fn draw(&self) {
-        self.std.select();
-        self.points.link(&self.std);
-        self.colours.link(&self.std);
-        self.std.draw_triangles();
-    }    
+        self.std.draw();
+    }
     
     fn perspective(&self,stage:&Stage) {
         self.std.perspective(stage);
-    }
-    
+    }    
 }
