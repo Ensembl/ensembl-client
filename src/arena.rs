@@ -73,8 +73,6 @@ impl Arena {
             let ctx = &self.data.borrow().ctx;
             ctx.enable(glctx::DEPTH_TEST);
             ctx.depth_func(glctx::LEQUAL);
-        //    ctx.clear_color(1.0,1.0,1.0,1.0);
-        //    ctx.clear_depth(1.0);
         }
         // draw each geometry
         self.geom_hosc(&mut |g:&mut HoscGeometry| g.perspective(&stage));

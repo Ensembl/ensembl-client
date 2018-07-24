@@ -26,7 +26,7 @@ varying lowp vec3 vColour;
 void main() {
     gl_Position = vec4(
         aVertexPositionFixx.x - uCursor.x,
-        ( aVertexPositionFixx.y ) - uCursor.y,
+        ( aVertexPositionFixx.y + aVertexPositionFixx.z * uAspect ) - uCursor.y,
         0.0, 1.0
     );
     vColour = aVertexColourFixx;
