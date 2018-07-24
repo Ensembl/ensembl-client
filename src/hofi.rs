@@ -2,7 +2,6 @@ use arena::{
     Geometry,
     StdGeometry,
     ArenaData,
-    GeomBuf,
     Stage
 };
 
@@ -41,45 +40,35 @@ void main() {
 
 pub struct HofiGeometry {
     std: StdGeometry,
-    points: GeomBuf,
-    origins: GeomBuf,
-    colours: GeomBuf,
 }
 
 impl HofiGeometry {
     pub fn new(adata: Rc<RefCell<ArenaData>>) -> HofiGeometry {
-        let ctx = &adata.borrow().ctx;
-        let std = StdGeometry::new(adata.clone(),&V_SRC,&F_SRC);
+        let std = StdGeometry::new(
+            adata.clone(),&V_SRC,&F_SRC,
+            &[("aVertexPosition",2,1),("aOrigin",2,3),("aVertexColour",3,3)],
+            3
+        );
         HofiGeometry {
             std,
-            points: GeomBuf::new(&ctx,"aVertexPosition",2),
-            origins: GeomBuf::new(&ctx,"aOrigin",2),
-            colours: GeomBuf::new(&ctx,"aVertexColour",3),
         }
     }
 
     pub fn triangle(&mut self,origin:[f32;2],points:[f32;6],colour:[f32;3]) {
-        self.points.add(&points,1);
-        self.colours.add(&colour,3);
-        self.origins.add(&origin,3);
-        self.std.indices = self.std.indices + 3
+        self.std.add(0,&points);
+        self.std.add(1,&origin);
+        self.std.add(2,&colour);
+        self.std.advance();
     }
 }
 
 impl Geometry for HofiGeometry {
     fn populate(&mut self) {
-        self.std.select();
-        self.points.populate(&self.std);
-        self.origins.populate(&self.std);
-        self.colours.populate(&self.std);
+        self.std.populate();
     }
 
     fn draw(&self) {
-        self.std.select();
-        self.points.link(&self.std);
-        self.origins.link(&self.std);
-        self.colours.link(&self.std);
-        self.std.draw_triangles();
+        self.std.draw();
     }
     
     fn perspective(&self,stage:&Stage) {
