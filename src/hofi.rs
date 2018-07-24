@@ -1,6 +1,9 @@
-use arena::{
+use geometry::{
     Geometry,
     StdGeometry,
+};
+
+use arena::{
     ArenaData,
     Stage
 };
@@ -63,15 +66,6 @@ impl HofiGeometry {
 }
 
 impl Geometry for HofiGeometry {
-    fn populate(&mut self) {
-        self.std.populate();
-    }
-
-    fn draw(&self) {
-        self.std.draw();
-    }
-    
-    fn perspective(&self,stage:&Stage) {
-        self.std.perspective(stage);
-    }
+    fn populate(&mut self) { self.std.populate(); }
+    fn draw(&self,stage:&Stage) { self.std.draw(stage); }
 }

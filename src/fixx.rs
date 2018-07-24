@@ -1,8 +1,11 @@
-use arena::{
+use geometry::{
     Geometry,
-    ArenaData,
     StdGeometry,
-    Stage,
+};
+
+use arena::{
+    ArenaData,
+    Stage
 };
 
 use std::cell::RefCell;
@@ -49,22 +52,22 @@ impl FixxGeometry {
         }
     }
 
-    pub fn triangle(&mut self,points:[f32;9],colour:[f32;3]) {
-        self.std.add(0,&points);
-        self.std.add(1,&colour);
+    pub fn triangle(&mut self,points:&[f32;9],colour:&[f32;3]) {
+        self.std.add(0,points);
+        self.std.add(1,colour);
         self.std.advance();
     }
-}
-impl Geometry for FixxGeometry {    
-    fn populate(&mut self) {
-        self.std.populate();
-    }
-
-    fn draw(&self) {
-        self.std.draw();
-    }
     
-    fn perspective(&self,stage:&Stage) {
-        self.std.perspective(stage);
-    }    
+    pub fn rectangle(&mut self,p:&[f32;6],colour:&[f32;3]) {
+        self.triangle(&[p[0],p[1],p[2],
+                        p[3],p[1],p[2],
+                        p[0],p[4],p[5]],&colour);
+        self.triangle(&[p[3],p[4],p[5],
+                        p[0],p[4],p[5],
+                        p[3],p[1],p[2]],&colour);
+    }
+}
+impl Geometry for FixxGeometry {  
+    fn populate(&mut self) { self.std.populate(); }
+    fn draw(&self,stage:&Stage) { self.std.draw(stage); }  
 }

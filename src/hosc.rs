@@ -1,8 +1,11 @@
-use arena::{
+use geometry::{
     Geometry,
-    ArenaData,
     StdGeometry,
-    Stage,
+};
+
+use arena::{
+    ArenaData,
+    Stage
 };
 
 use std::cell::RefCell;
@@ -47,28 +50,22 @@ impl HoscGeometry {
             adata.clone(),&V_SRC,&F_SRC,
             &[("aVertexPosition",2,1),("aVertexColour",3,3)],3
         );
-        HoscGeometry {
-            std,
-        }
+        HoscGeometry { std }
     }
 
-    pub fn triangle(&mut self,points:[f32;6],colour:[f32;3]) {
-        self.std.add(0,&points);
-        self.std.add(1,&colour);
+    pub fn triangle(&mut self,points:&[f32;6],colour:&[f32;3]) {
+        self.std.add(0,points);
+        self.std.add(1,colour);
         self.std.advance();
+    }
+    
+    pub fn rectangle(&mut self,p:&[f32;4],colour:&[f32;3]) {
+        self.triangle(&[p[0],p[1], p[2],p[1], p[0],p[3]],colour);
+        self.triangle(&[p[2],p[3], p[0],p[3], p[2],p[1]],colour);
     }
 }
 
 impl Geometry for HoscGeometry {
-    fn populate(&mut self) {
-        self.std.populate();
-    }
-
-    fn draw(&self) {
-        self.std.draw();
-    }
-    
-    fn perspective(&self,stage:&Stage) {
-        self.std.perspective(stage);
-    }
+    fn populate(&mut self) { self.std.populate(); }
+    fn draw(&self,stage:&Stage) { self.std.draw(stage); }
 }

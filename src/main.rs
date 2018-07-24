@@ -6,6 +6,7 @@ extern crate serde_derive;
 extern crate stdweb_derive;
 
 mod arena;
+mod geometry;
 #[macro_use]
 mod util;
 mod domutil;
@@ -75,33 +76,26 @@ fn main() {
             let dx = ((v2*5.0).cos()+1.0)/4.0;
             let x = v1 * 3.0 + (yidx as f32).cos();
             let y = (yidx as f32) / 20.0;
-            let data = [[x,y, x+dx,y+0.01, x,   y+0.01],
-                        [x,y, x+dx,y+0.01, x+dx,y]];
             let colour = [
                 0.5*v2.cos()+0.5,
                 0.5*v2.sin()+0.5,
                 0.5*(v2+1.0).sin()+0.5,
             ];
-        arena.geom_hosc(&mut |g:&mut HoscGeometry| {
-                g.triangle(data[1],colour);
-                g.triangle(data[0],colour);
-        });
+            arena.geom_hosc(&mut |g:&mut HoscGeometry| {
+                g.rectangle(&[x,y,x+dx,y+0.01],&colour);
+            });
             if idx %5 == 0 {
                 arena.geom_hofi(&mut |g:&mut HofiGeometry| {
                     g.triangle([x,y],[0.0,0.0, -0.004,-0.008, 0.004,-0.008],
                                [colour[0],colour[1],1.0-colour[2]])
-        });
+                });
             }
         }
     }
     // XXX pixels
     arena.geom_fixx(&mut |g:&mut FixxGeometry| {
         let dx = 0.001;
-            let y = 0.0;
-            let h = 1.0;
-            g.triangle([-dx,y-h,0.0, dx,y+h,0.0, -dx,y+h,0.0],[0.0,0.0,0.0]);
-            g.triangle([-dx,y-h,0.0, dx,y-h,0.0,  dx,y+h,0.0],[0.0,0.0,0.0]);
-        
+        g.rectangle(&[-dx,-1.0,0.0, dx,1.0,0.0], &[0.0,0.0,0.0]);
     });
     arena.populate();
 
