@@ -1,17 +1,16 @@
+use webgl_rendering_context::{
+    WebGLRenderingContext as glctx,
+};
+
 use std::cell::RefCell;
 use std::rc::Rc;
 
 use canvasutil;
 use wglraw;
+use geometry::Geometry;
 use hosc::HoscGeometry;
 use hofi::HofiGeometry;
 use fixx::FixxGeometry;
-
-use webgl_rendering_context::{
-    WebGLRenderingContext as glctx,
-    WebGLBuffer as glbuf,
-    WebGLProgram as glprog,
-};
 
 struct ArenaGeometries {
     hosc: HoscGeometry,
@@ -75,138 +74,13 @@ impl Arena {
             ctx.depth_func(glctx::LEQUAL);
         }
         // draw each geometry
-        self.geom_hosc(&mut |g:&mut HoscGeometry| g.perspective(&stage));
-        self.geom_hosc(&mut |g:&mut HoscGeometry| g.draw());
-        self.geom_hofi(&mut |g:&mut HofiGeometry| g.perspective(&stage));
-        self.geom_hofi(&mut |g:&mut HofiGeometry| g.draw());
-        self.geom_fixx(&mut |g:&mut FixxGeometry| g.perspective(&stage));
-        self.geom_fixx(&mut |g:&mut FixxGeometry| g.draw());
+        self.geom_hosc(&mut |g:&mut HoscGeometry| g.draw(&stage));
+        self.geom_hofi(&mut |g:&mut HofiGeometry| g.draw(&stage));
+        self.geom_fixx(&mut |g:&mut FixxGeometry| g.draw(&stage));
     }
 }
 
-pub trait Geometry {
-    fn populate(&mut self);
-    fn draw(&self);
-    fn perspective(&self,stage:&Stage);
-}
 
-pub struct StdGeometry {
-    pub adata: Rc<RefCell<ArenaData>>,
-    pub indices: i32,
-    pub prog: glprog,
-    pub buffers : Vec<GeomBuf>,
-    pub num_idx : i8,
-}
-
-impl StdGeometry {
-    pub fn new(adata: Rc<RefCell<ArenaData>>,
-           v_src : &str,f_src : &str,
-           specs : &[(&str,i8,i8)],num_idx : i8) -> StdGeometry {
-        let adata2 = adata.clone();
-        let prog;
-        {
-            let ctx = &adata.borrow().ctx;
-            prog = wglraw::prepare_shaders(&ctx,v_src,f_src);
-        }
-        let mut geom = StdGeometry {
-            adata, prog,
-            buffers :  Vec::<GeomBuf>::new(),
-            indices : 0,
-            num_idx
-        };
-        for spec in specs {
-            let ctx = &adata2.borrow().ctx;
-            geom.buffers.push(GeomBuf::new(ctx,spec.0,spec.1,spec.2));
-        }
-        geom
-    }
-    
-    pub fn draw(&self) {
-        {
-            let ctx = &self.adata.borrow().ctx;
-            self.select();
-            for g in &self.buffers {
-                g.link(&ctx,&self.prog);
-            }
-        }
-        self.draw_triangles();
-    }
-    
-    pub fn populate(&mut self) {
-        let ctx = &self.adata.borrow().ctx;
-        for g in &mut self.buffers {
-            g.populate(&ctx);
-        }
-    }
-    
-    pub fn add(&mut self, i : usize, data : &[f32]) {
-        self.buffers[i].add(data);
-    }
-    
-    pub fn advance(&mut self) {
-        self.indices = self.indices + (self.num_idx as i32);
-    }
-    
-    pub fn select(&self) {
-        let ctx = &self.adata.borrow().ctx;
-        ctx.use_program(Some(&self.prog));
-    }
-
-    pub fn draw_triangles(&self) {
-        let ctx = &self.adata.borrow().ctx;
-        ctx.draw_arrays(glctx::TRIANGLES,0,self.indices);
-    }
-    
-    pub fn perspective(&self,stage:&Stage) {
-        let data = &self.adata.borrow();
-        let ctx = &data.ctx;
-        let aspect = data.aspect;
-        ctx.use_program(Some(&self.prog));
-        wglraw::set_uniform_1(&ctx,&self.prog,"uStageHpos",stage.hpos);
-        wglraw::set_uniform_1(&ctx,&self.prog,"uStageVpos",stage.vpos);
-        wglraw::set_uniform_1(&ctx,&self.prog,"uStageZoom",stage.zoom);
-        wglraw::set_uniform_2(&ctx,&self.prog,"uCursor",stage.cursor);
-        wglraw::set_uniform_1(&ctx,&self.prog,"uAspect",aspect);
-    }
-}
-
-pub struct GeomBuf {
-    vec : Vec<f32>,
-    buf: glbuf,
-    name: String,
-    size: i8,
-    rep: i8
-}
-
-impl GeomBuf {
-    pub fn new(ctx: &glctx,name: &str, size: i8, rep: i8) -> GeomBuf {
-        GeomBuf {
-            vec: Vec::<f32>::new(),
-            buf: wglraw::init_buffer(&ctx),
-            name: String::from(name),
-            size, rep
-        }
-    }
-    
-    pub fn add(&mut self,values : &[f32]) {
-        for _i in 0..self.rep {
-            self.vec.extend_from_slice(values);
-        }
-    }
-
-    pub fn populate(&mut self, ctx: &glctx) {
-        {
-            wglraw::populate_buffer(&ctx,glctx::ARRAY_BUFFER,
-                                    &self.buf,&self.vec);
-        }
-        self.vec.clear();
-    }
-
-    pub fn link(&self, ctx : &glctx, prog : &glprog) {
-        wglraw::link_buffer(ctx,prog,
-                            &self.name,self.size,&self.buf);
-    }
-}
 
 pub struct Stage {
     pub hpos: f32,
