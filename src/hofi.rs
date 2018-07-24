@@ -45,7 +45,7 @@ void main() {
 ";
 
 pub struct HofiGeometry {
-	adata: Rc<RefCell<ArenaData>>,
+    adata: Rc<RefCell<ArenaData>>,
     points : Vec<f32>,
     origins : Vec<f32>,
     colours: Vec<f32>,
@@ -57,12 +57,12 @@ pub struct HofiGeometry {
 }
 
 impl HofiGeometry {
-	pub fn new(adata: Rc<RefCell<ArenaData>>) -> HofiGeometry {
+    pub fn new(adata: Rc<RefCell<ArenaData>>) -> HofiGeometry {
         let adata2 = adata.clone();
-		let ctx = &adata2.borrow().ctx;
-		HofiGeometry {
+        let ctx = &adata2.borrow().ctx;
+        HofiGeometry {
             indices: 0,
-			adata,
+            adata,
             points: Vec::<f32>::new(),
             origins: Vec::<f32>::new(),
             colours: Vec::<f32>::new(),
@@ -70,8 +70,8 @@ impl HofiGeometry {
             buffer: wglraw::init_buffer(&ctx),
             origins_buffer: wglraw::init_buffer(&ctx),
             colour_buffer: wglraw::init_buffer(&ctx)
-		}
-	}
+        }
+    }
 
     pub fn triangle(&mut self,origin:[f32;2],points:[f32;6],colour:[f32;3]) {
         self.points.extend_from_slice(&points);
@@ -83,8 +83,8 @@ impl HofiGeometry {
     }
 }
 impl Geometry for HofiGeometry {
-	fn adata(&self) -> Ref<ArenaData> { self.adata.borrow() }
-	fn program<'a>(&'a self) -> &'a glprog { &self.prog }
+    fn adata(&self) -> Ref<ArenaData> { self.adata.borrow() }
+    fn program<'a>(&'a self) -> &'a glprog { &self.prog }
 
     fn populate(&mut self) {
         {
@@ -99,20 +99,12 @@ impl Geometry for HofiGeometry {
         self.colours.clear();
     }
 
-    fn link(&self) {
-		let ctx = &self.adata().ctx;
+    fn draw(&self) {
+        let ctx = &self.adata().ctx;
         ctx.use_program(Some(&self.prog));
         wglraw::link_buffer(&ctx,&self.prog,"aVertexPositionHofi",2,&self.buffer);
         wglraw::link_buffer(&ctx,&self.prog,"aOrigin",2,&self.origins_buffer);
         wglraw::link_buffer(&ctx,&self.prog,"aVertexColourHofi",3,&self.colour_buffer);
-    }
-
-    fn draw(&self) {
-		let ctx = &self.adata().ctx;
-        js! { console.log("draw"); }
-        ctx.use_program(Some(&self.prog));
         ctx.draw_arrays(glctx::TRIANGLES,0,self.indices);
-    }
-		
+    }        
 }
-

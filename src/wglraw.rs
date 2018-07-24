@@ -27,8 +27,8 @@ pub fn prepare_shaders(context:&glctx, vert_src:&str, frag_src:&str) -> glprog {
     context.attach_shader(&shader_program, &vert_shader);
     context.attach_shader(&shader_program, &frag_shader);
     context.link_program(&shader_program);
-	
-	shader_program
+    
+    shader_program
 }
 
 pub fn init_buffer(ctx:&glctx) -> glbuf {
@@ -49,9 +49,15 @@ pub fn link_buffer(ctx:&glctx, prog:&glprog, name:&str, step:i32, buf:&glbuf) {
 }
 
 pub fn set_uniform_1(ctx:&glctx, prog:&glprog, name:&str, value: f32) {
-	let loc = ctx.get_uniform_location(&prog,&name);
+    let loc = ctx.get_uniform_location(&prog,&name);
     if loc.is_some() {
         ctx.uniform1f(Some(&loc.unwrap()),value);
     }
 }
 
+pub fn set_uniform_2(ctx:&glctx, prog:&glprog, name:&str, value: [f32;2]) {
+    let loc = ctx.get_uniform_location(&prog,&name);
+    if loc.is_some() {
+        ctx.uniform2f(Some(&loc.unwrap()),value[0],value[1]);
+    }
+}
