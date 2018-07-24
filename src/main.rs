@@ -48,13 +48,12 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
         if state.old_time > 0.0 {
             let delta = (time - state.old_time) / 5000.0;
             state.call += 1;
-                state.zoomscale += delta* 5.0;
-                state.hpos += delta *3.763;
-                state.fpos += delta *7.21;
-                state.stage.zoom = ((state.zoomscale.cos() + 1.5)/3.0) as f32;
-                state.stage.hpos = ((state.hpos.cos())*1.5) as f32;
-                state.stage.cursor[0] = (state.fpos.cos()*0.3) as f32;
-
+            state.zoomscale += delta* 5.0;
+            state.hpos += delta *3.763;
+            state.fpos += delta *7.21;
+            state.stage.zoom = ((state.zoomscale.cos() + 1.5)/3.0) as f32;
+            state.stage.hpos = ((state.hpos.cos())*1.5) as f32;
+            state.stage.cursor[0] = (state.fpos.cos()*0.3) as f32;
         }
         state.old_time = time;
         state.arena.borrow_mut().animate(&state.stage);
@@ -98,12 +97,11 @@ fn main() {
     // XXX pixels
     arena.geom_fixx(&mut |g:&mut FixxGeometry| {
         let dx = 0.001;
-        for yi in 0..10 {
-            let y = (yi as f32)/5.0-1.0;
-            let h = 0.25;
+            let y = 0.0;
+            let h = 1.0;
             g.triangle([-dx,y-h,0.0, dx,y+h,0.0, -dx,y+h,0.0],[0.0,0.0,0.0]);
             g.triangle([-dx,y-h,0.0, dx,y-h,0.0,  dx,y+h,0.0],[0.0,0.0,0.0]);
-        }
+        
     });
     arena.populate();
 

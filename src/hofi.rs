@@ -44,67 +44,114 @@ void main() {
 }
 ";
 
-pub struct HofiGeometry {
+pub struct StdGeometry {
     adata: Rc<RefCell<ArenaData>>,
-    points : Vec<f32>,
-    origins : Vec<f32>,
-    colours: Vec<f32>,
-    buffer: glbuf,
-    origins_buffer: glbuf,
-    colour_buffer: glbuf,
     indices: i32,
     prog: glprog,
 }
 
+impl StdGeometry {
+    fn new(adata: Rc<RefCell<ArenaData>>,
+           v_src : &str,f_src : &str) -> StdGeometry {
+        let prog;
+        {
+            let ctx = &adata.borrow().ctx;
+            prog = wglraw::prepare_shaders(&ctx,v_src,f_src);
+        }
+        StdGeometry { adata, indices: 0, prog }
+    }
+    
+    fn select(&self) {
+        let ctx = &self.adata.borrow().ctx;
+        ctx.use_program(Some(&self.prog));
+    }
+
+    fn draw_triangles(&self) {
+        let ctx = &self.adata.borrow().ctx;
+        ctx.draw_arrays(glctx::TRIANGLES,0,self.indices);
+    }
+}
+
+pub struct GeomBuf {
+    vec : Vec<f32>,
+    buf: glbuf,
+    name: String,
+    size: i32
+}
+
+impl GeomBuf {
+    fn new(ctx: &glctx,name: &str, size: i32) -> GeomBuf {
+        GeomBuf {
+            vec: Vec::<f32>::new(),
+            buf: wglraw::init_buffer(&ctx),
+            name: String::from(name),
+            size
+        }
+    }
+    
+    fn add(&mut self,values : &[f32],mult : i32) {
+        for _i in 0..mult {
+            self.vec.extend_from_slice(values);
+        }
+    }
+
+    fn populate(&mut self, std : &StdGeometry) {
+        {
+            let ctx = &std.adata.borrow().ctx;
+            wglraw::populate_buffer(&ctx,glctx::ARRAY_BUFFER,
+                                    &self.buf,&self.vec);
+        }
+        self.vec.clear();
+    }
+
+    fn link(&self, std: &StdGeometry) {
+        wglraw::link_buffer(&std.adata.borrow().ctx,&std.prog,&self.name,self.size,&self.buf);
+    }
+}
+
+pub struct HofiGeometry {
+    std: StdGeometry,
+    points: GeomBuf,
+    origins: GeomBuf,
+    colours: GeomBuf,
+}
+
 impl HofiGeometry {
     pub fn new(adata: Rc<RefCell<ArenaData>>) -> HofiGeometry {
-        let adata2 = adata.clone();
-        let ctx = &adata2.borrow().ctx;
+        let ctx = &adata.borrow().ctx;
+        let std = StdGeometry::new(adata.clone(),&HOFI_V_SRC,HOFI_F_SRC);
         HofiGeometry {
-            indices: 0,
-            adata,
-            points: Vec::<f32>::new(),
-            origins: Vec::<f32>::new(),
-            colours: Vec::<f32>::new(),
-            prog: wglraw::prepare_shaders(&ctx,&HOFI_V_SRC,&HOFI_F_SRC),
-            buffer: wglraw::init_buffer(&ctx),
-            origins_buffer: wglraw::init_buffer(&ctx),
-            colour_buffer: wglraw::init_buffer(&ctx)
+            std,
+            points: GeomBuf::new(&ctx,"aVertexPositionHofi",2),
+            origins: GeomBuf::new(&ctx,"aOrigin",2),
+            colours: GeomBuf::new(&ctx,"aVertexColourHofi",3),
         }
     }
 
     pub fn triangle(&mut self,origin:[f32;2],points:[f32;6],colour:[f32;3]) {
-        self.points.extend_from_slice(&points);
-        for i in 0..3 {
-            self.colours.extend_from_slice(&colour);
-            self.origins.extend_from_slice(&origin);
-        }
-        self.indices = self.indices + 3
+        self.points.add(&points,1);
+        self.colours.add(&colour,3);
+        self.origins.add(&origin,3);
+        self.std.indices = self.std.indices + 3
     }
 }
+
 impl Geometry for HofiGeometry {
-    fn adata(&self) -> Ref<ArenaData> { self.adata.borrow() }
-    fn program<'a>(&'a self) -> &'a glprog { &self.prog }
+    fn adata(&self) -> Ref<ArenaData> { self.std.adata.borrow() }
+    fn program<'a>(&'a self) -> &'a glprog { &self.std.prog }
 
     fn populate(&mut self) {
-        {
-            let ctx = &self.adata().ctx;
-            ctx.use_program(Some(&self.prog));
-            wglraw::populate_buffer(&ctx,glctx::ARRAY_BUFFER,&self.buffer,&self.points);
-            wglraw::populate_buffer(&ctx,glctx::ARRAY_BUFFER,&self.origins_buffer,&self.origins);
-            wglraw::populate_buffer(&ctx,glctx::ARRAY_BUFFER,&self.colour_buffer,&self.colours);
-        }
-        self.points.clear();
-        self.origins.clear();
-        self.colours.clear();
+        self.std.select();
+        self.points.populate(&self.std);
+        self.origins.populate(&self.std);
+        self.colours.populate(&self.std);
     }
 
     fn draw(&self) {
-        let ctx = &self.adata().ctx;
-        ctx.use_program(Some(&self.prog));
-        wglraw::link_buffer(&ctx,&self.prog,"aVertexPositionHofi",2,&self.buffer);
-        wglraw::link_buffer(&ctx,&self.prog,"aOrigin",2,&self.origins_buffer);
-        wglraw::link_buffer(&ctx,&self.prog,"aVertexColourHofi",3,&self.colour_buffer);
-        ctx.draw_arrays(glctx::TRIANGLES,0,self.indices);
+        self.std.select();
+        self.points.link(&self.std);
+        self.origins.link(&self.std);
+        self.colours.link(&self.std);
+        self.std.draw_triangles();
     }        
 }
