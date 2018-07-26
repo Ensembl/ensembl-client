@@ -10,8 +10,6 @@ use arena::{
     Stage
 };
 
-use wglraw;
-
 use std::cell::RefCell;
 use std::rc::Rc;
 
