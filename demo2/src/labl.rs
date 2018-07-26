@@ -1,8 +1,8 @@
 use geometry::{
     Geometry,
     StdGeometry,
-    GeomBufSpec,
-    TexGeomBufSpec,
+    GTypeAttrib,
+    GTypeTexture,
 };
 
 use arena::{
@@ -59,9 +59,9 @@ impl LablGeometry {
                                  255,255,0,255];
 
         let mut std = StdGeometry::new(adata.clone(),&V_SRC,&F_SRC,3);
-        std.add_spec(&GeomBufSpec { name: "aVertexPosition", size: 2, rep: 1 });
-        std.add_spec(&GeomBufSpec { name: "aTextureCoord",   size: 2, rep: 1 });
-        std.add_spec(&TexGeomBufSpec { uname: "uSampler", slot: 0, texture: &data[..] });
+        std.add_spec(&GTypeAttrib  { name: "aVertexPosition", size: 2, rep: 1 });
+        std.add_spec(&GTypeAttrib  { name: "aTextureCoord",   size: 2, rep: 1 });
+        std.add_spec(&GTypeTexture { uname: "uSampler", slot: 0, texture: &data[..] });
         LablGeometry { std }
     }
     
