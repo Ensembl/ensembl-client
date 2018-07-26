@@ -14,16 +14,18 @@ use wglraw;
 use std::cell::RefCell;
 use std::rc::Rc;
 
+/* Geometries must implement Geometry for the arena to use them */
 pub trait Geometry {
     fn populate(&mut self);
     fn draw(&self,stage:&Stage);
 }
 
+/* Usually StdGeometry provides all a Geometry needs, so compose it */
 pub struct StdGeometry {
     adata: Rc<RefCell<ArenaData>>,
     indices: i32,
     prog: glprog,
-    buffers : Vec<Box<GeomBufGeneric>>,
+    buffers : Vec<Box<GTypeImpl>>,
     num_idx : i8,
 }
 
@@ -37,13 +39,13 @@ impl StdGeometry {
         }
         let geom = StdGeometry {
             adata, prog, num_idx,
-            buffers :  Vec::<Box<GeomBufGeneric>>::new(),
+            buffers :  Vec::<Box<GTypeImpl>>::new(),
             indices : 0,
         };
         geom
     }
     
-    pub fn add_spec(&mut self,spec: &GeomBufGenerator) {
+    pub fn add_spec(&mut self,spec: &GType) {
         
         let ctx = &self.adata.borrow().ctx;
         self.buffers.push(spec.new(ctx));
@@ -99,19 +101,29 @@ impl StdGeometry {
     }
 }
 
-pub trait GeomBufGenerator {
-    fn new(&self, ctx: &glctx) -> Box<GeomBufGeneric>;
+/* To create a StdGeometry you will need to add some GTypes */
+pub trait GType {
+    fn new(&self, ctx: &glctx) -> Box<GTypeImpl>;
 }
 
-pub struct GeomBufSpec<'a> {
+/* This is the meat of each GType implementation */
+pub trait GTypeImpl {
+    fn add(&mut self,_values : &[f32]) {}
+    fn populate(&mut self, _ctx: &glctx) {}
+    fn link(&self, _ctx : &glctx, _prog : &glprog) {}
+    fn unlink(&self, _ctx : &glctx, _prog : &glprog) {}
+}
+
+/* GTypeAttrib = GType for regular WebGL attribs */
+pub struct GTypeAttrib<'a> {
     pub name: &'a str,
     pub size: i8,
     pub rep: i8,
 }
 
-impl<'a> GeomBufGenerator for GeomBufSpec<'a> {
-    fn new(&self, ctx: &glctx) -> Box<GeomBufGeneric> {
-        Box::new(GeomBuf {
+impl<'a> GType for GTypeAttrib<'a> {
+    fn new(&self, ctx: &glctx) -> Box<GTypeImpl> {
+        Box::new(GTypeAttribImpl {
             vec: Vec::<f32>::new(),
             buf: wglraw::init_buffer(&ctx),
             name: self.name.to_string(),
@@ -121,14 +133,7 @@ impl<'a> GeomBufGenerator for GeomBufSpec<'a> {
     }
 }
 
-pub trait GeomBufGeneric {
-    fn add(&mut self,_values : &[f32]) {}
-    fn populate(&mut self, _ctx: &glctx) {}
-    fn link(&self, _ctx : &glctx, _prog : &glprog) {}
-    fn unlink(&self, _ctx : &glctx, _prog : &glprog) {}
-}
-
-struct GeomBuf {
+struct GTypeAttribImpl {
     vec : Vec<f32>,
     buf: glbuf,
     name: String,
@@ -136,7 +141,7 @@ struct GeomBuf {
     rep: i8
 }
 
-impl GeomBufGeneric for GeomBuf {
+impl GTypeImpl for GTypeAttribImpl {
     fn add(&mut self,values : &[f32]) {
         for _i in 0..self.rep {
             self.vec.extend_from_slice(values);
@@ -154,13 +159,14 @@ impl GeomBufGeneric for GeomBuf {
     }
 }
 
-pub struct TexGeomBufSpec<'a> {
+/* GTypeTexture = GType for textures */
+pub struct GTypeTexture<'a> {
     pub uname: &'a str,
     pub slot: i8,
     pub texture : &'a [u8],
 }
 
-struct TexGeomBuf {
+struct GTypeTextureImpl {
     uname: String,
     slot: i8,
     texture : gltex,
@@ -172,7 +178,7 @@ const TEXIDS : [u32;8] = [
     glctx::TEXTURE6, glctx::TEXTURE7
 ];
 
-impl GeomBufGeneric for TexGeomBuf {
+impl GTypeImpl for GTypeTextureImpl {
     fn link(&self, ctx : &glctx, prog : &glprog) {
         ctx.active_texture(TEXIDS[self.slot as usize]);
         ctx.bind_texture(glctx::TEXTURE_2D,Some(&self.texture));        
@@ -180,9 +186,9 @@ impl GeomBufGeneric for TexGeomBuf {
     }
 }
 
-impl<'a> GeomBufGenerator for TexGeomBufSpec<'a> {
-    fn new(&self, ctx: &glctx) -> Box<GeomBufGeneric> {
-        Box::new(TexGeomBuf {
+impl<'a> GType for GTypeTexture<'a> {
+    fn new(&self, ctx: &glctx) -> Box<GTypeImpl> {
+        Box::new(GTypeTextureImpl {
             uname: self.uname.to_string(),
             slot: self.slot,
             texture: wglraw::make_texture(ctx,4,1,self.texture),

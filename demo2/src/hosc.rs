@@ -1,7 +1,7 @@
 use geometry::{
     Geometry,
     StdGeometry,
-    GeomBufSpec,
+    GTypeAttrib,
 };
 
 use arena::{
@@ -48,8 +48,8 @@ pub struct HoscGeometry {
 impl HoscGeometry {
     pub fn new(adata: Rc<RefCell<ArenaData>>) -> HoscGeometry {
         let mut std = StdGeometry::new(adata.clone(),&V_SRC,&F_SRC,3);
-        std.add_spec(&GeomBufSpec { name: "aVertexPosition", size: 2, rep: 1 });
-        std.add_spec(&GeomBufSpec { name: "aVertexColour",   size: 3, rep: 3 });
+        std.add_spec(&GTypeAttrib { name: "aVertexPosition", size: 2, rep: 1 });
+        std.add_spec(&GTypeAttrib { name: "aVertexColour",   size: 3, rep: 3 });
         HoscGeometry { std }
     }
 
