@@ -14,10 +14,6 @@ use wglraw;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use stdweb::web::{
-    TypedArray,
-};
-
 pub trait Geometry {
     fn populate(&mut self);
     fn draw(&self,stage:&Stage);
@@ -126,10 +122,10 @@ impl<'a> GeomBufGenerator for GeomBufSpec<'a> {
 }
 
 pub trait GeomBufGeneric {
-    fn add(&mut self,values : &[f32]) {}
-    fn populate(&mut self, ctx: &glctx) {}
-    fn link(&self, ctx : &glctx, prog : &glprog) {}
-    fn unlink(&self, ctx : &glctx, prog : &glprog) {}
+    fn add(&mut self,_values : &[f32]) {}
+    fn populate(&mut self, _ctx: &glctx) {}
+    fn link(&self, _ctx : &glctx, _prog : &glprog) {}
+    fn unlink(&self, _ctx : &glctx, _prog : &glprog) {}
 }
 
 struct GeomBuf {
