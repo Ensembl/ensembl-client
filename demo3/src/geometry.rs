@@ -10,9 +10,17 @@ use arena::{
     ArenaData
 };
 
+use canvasutil::{
+    FlatCanvas
+};
+
 use wglraw;
 use std::cell::RefCell;
 use std::rc::Rc;
+use domutil;
+
+use stdweb::unstable::TryInto;
+use stdweb::web::html_element::CanvasElement;
 
 /* Geometries must implement Geometry for the arena to use them */
 pub trait Geometry {
@@ -45,16 +53,20 @@ impl StdGeometry {
         geom
     }
     
+    pub fn get_adata(&self) -> Rc<RefCell<ArenaData>> {
+        self.adata.clone()
+    }
+    
     pub fn add_spec(&mut self,spec: &GType) {
-        
-        let ctx = &self.adata.borrow().ctx;
-        self.buffers.push(spec.new(ctx));
+        //let ctx = &self.adata.borrow().ctx;
+        //self.buffers.push(spec.new(ctx));
+        self.buffers.push(spec.new(&self.adata.borrow()));
     }
     
     pub fn populate(&mut self) {
-        let ctx = &self.adata.borrow().ctx;
+        let adata = &self.adata.borrow();
         for g in &mut self.buffers {
-            g.populate(&ctx);
+            g.populate(&adata);
         }
     }
     
@@ -90,7 +102,7 @@ impl StdGeometry {
         // link
         self.select();
         for g in &self.buffers {
-            g.link(&ctx,&self.prog);
+            g.link(&data,&self.prog);
         }      
         // draw
         self.draw_triangles();
@@ -103,14 +115,14 @@ impl StdGeometry {
 
 /* To create a StdGeometry you will need to add some GTypes */
 pub trait GType {
-    fn new(&self, ctx: &glctx) -> Box<GTypeImpl>;
+    fn new(&self, adata: &ArenaData) -> Box<GTypeImpl>;
 }
 
 /* This is the meat of each GType implementation */
 pub trait GTypeImpl {
     fn add(&mut self,_values : &[f32]) {}
-    fn populate(&mut self, _ctx: &glctx) {}
-    fn link(&self, _ctx : &glctx, _prog : &glprog) {}
+    fn populate(&mut self, _adata: &ArenaData) {}
+    fn link(&self, _adata : &ArenaData, _prog : &glprog) {}
     fn unlink(&self, _ctx : &glctx, _prog : &glprog) {}
 }
 
@@ -122,10 +134,10 @@ pub struct GTypeAttrib<'a> {
 }
 
 impl<'a> GType for GTypeAttrib<'a> {
-    fn new(&self, ctx: &glctx) -> Box<GTypeImpl> {
+    fn new(&self, adata: &ArenaData) -> Box<GTypeImpl> {
         Box::new(GTypeAttribImpl {
             vec: Vec::<f32>::new(),
-            buf: wglraw::init_buffer(&ctx),
+            buf: wglraw::init_buffer(&adata.ctx),
             name: self.name.to_string(),
             size: self.size,
             rep: self.rep,
@@ -148,14 +160,14 @@ impl GTypeImpl for GTypeAttribImpl {
         }
     }
 
-    fn populate(&mut self, ctx: &glctx) {
-        wglraw::populate_buffer(&ctx,glctx::ARRAY_BUFFER,
+    fn populate(&mut self, adata: &ArenaData) {
+        wglraw::populate_buffer(&adata.ctx,glctx::ARRAY_BUFFER,
                                 &self.buf,&self.vec);
         self.vec.clear();
     }
 
-    fn link(&self, ctx : &glctx, prog : &glprog) {
-        wglraw::link_buffer(ctx,prog,&self.name,self.size,&self.buf);
+    fn link(&self, adata : &ArenaData, prog : &glprog) {
+        wglraw::link_buffer(&adata.ctx,prog,&self.name,self.size,&self.buf);
     }
 }
 
@@ -181,19 +193,19 @@ const TEXIDS : [u32;8] = [
 ];
 
 impl GTypeImpl for GTypeTextureImpl {
-    fn link(&self, ctx : &glctx, prog : &glprog) {
-        ctx.active_texture(TEXIDS[self.slot as usize]);
-        ctx.bind_texture(glctx::TEXTURE_2D,Some(&self.texture));        
-        wglraw::set_uniform_1i(ctx,prog,&self.uname,self.slot as i32);
+    fn link(&self, adata : &ArenaData, prog : &glprog) {
+        adata.ctx.active_texture(TEXIDS[self.slot as usize]);
+        adata.ctx.bind_texture(glctx::TEXTURE_2D,Some(&self.texture));        
+        wglraw::set_uniform_1i(&adata.ctx,prog,&self.uname,self.slot as i32);
     }
 }
 
 impl<'a> GType for GTypeTexture<'a> {
-    fn new(&self, ctx: &glctx) -> Box<GTypeImpl> {
+    fn new(&self, adata: &ArenaData) -> Box<GTypeImpl> {
         Box::new(GTypeTextureImpl {
             uname: self.uname.to_string(),
             slot: self.slot,
-            texture: wglraw::make_texture(ctx,self.width,self.height,self.texture),
+            texture: wglraw::make_texture(&adata.ctx,self.width,self.height,self.texture),
         })
     }
 }
@@ -202,31 +214,35 @@ impl<'a> GType for GTypeTexture<'a> {
 pub struct GTypeCanvasTexture<'a> {
     pub uname: &'a str,
     pub slot: i8,
-    pub width: u32,
-    pub height: u32,
-    //pub texture : &'a [u8],
 }
 
 struct GTypeCanvasTextureImpl {
     uname: String,
     slot: i8,
-    texture : gltex,
+    texture: Option<gltex>,
 }
 
 impl GTypeImpl for GTypeCanvasTextureImpl {
-    fn link(&self, ctx : &glctx, prog : &glprog) {
-        ctx.active_texture(TEXIDS[self.slot as usize]);
-        ctx.bind_texture(glctx::TEXTURE_2D,Some(&self.texture));
-        wglraw::set_uniform_1i(ctx,prog,&self.uname,self.slot as i32);
+    fn populate(&mut self, adata: &ArenaData) {
+        self.texture = Some(wglraw::canvas_texture(&adata.ctx,adata.flat.element()));
+    }
+
+    fn link(&self, adata : &ArenaData, prog : &glprog) {
+        if let Some(ref texture) = self.texture {
+            adata.ctx.active_texture(TEXIDS[self.slot as usize]);
+            adata.ctx.bind_texture(glctx::TEXTURE_2D,Some(&texture));
+        }
+        wglraw::set_uniform_1i(&adata.ctx,prog,&self.uname,self.slot as i32);
     }
 }
 
 impl<'a> GType for GTypeCanvasTexture<'a> {
-    fn new(&self, ctx: &glctx) -> Box<GTypeImpl> {
+    fn new(&self, adata: &ArenaData) -> Box<GTypeImpl> {
+        let cnv : CanvasElement = domutil::query_select("#managedcanvasholder canvas").try_into().unwrap();
         Box::new(GTypeCanvasTextureImpl {
             uname: self.uname.to_string(),
             slot: self.slot,
-            texture: wglraw::canvas_texture(ctx,self.width,self.height),
+            texture: None,
         })
     }
 }

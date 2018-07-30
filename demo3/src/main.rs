@@ -22,6 +22,7 @@ mod webgl_rendering_context;
 
 use arena::{
     Arena,
+    ArenaSpec,
     Stage,
 };
 
@@ -48,19 +49,16 @@ use stdweb::web::{
 fn main() {
     stdweb::initialize();
 
-    let fc = canvasutil::FlatCanvas::create(200,200);
-    let fc_font = fc.new_font("12px serif");
-    fc.text("Hello, World!",0,0,&fc_font);
-    
-    let mut ar = Arena::new("#glcanvas");
+    let fc_font = canvasutil::FCFont::new(12,"serif");
+    let a_spec = ArenaSpec::new();
+    let mut ar = Arena::new("#glcanvas",a_spec);
     ar.geom_text(&mut |g:&mut TextGeometry| {
-        let d = 1.;
-        g.rectangle(&[0.,0.],&[0.,-d, d,0.],&[0.17,0.75, 0.92,0.]);
+        g.text(&[-1.,-1.],"Hello, World!",&fc_font);
     });
     ar.populate();
     
     let mut stage = Stage::new();
-    stage.zoom = 0.1;
+    //stage.zoom = 0.1;
     
     ar.animate(&stage);
     
