@@ -89,7 +89,7 @@ fn fix_tex_image2_d(ctx: &glctx, target: GLenum, level: GLint,
 
 fn fix_tex_image2_d_cnv(ctx: &glctx, 
                     target: GLenum, level: GLint, internalformat: GLint,
-                    format: GLenum, type_: GLenum, canvas: CanvasElement) {
+                    format: GLenum, type_: GLenum, canvas: &CanvasElement) {
     js! {
         @{ctx}.texImage2D(@{target}, @{level}, @{internalformat}, 
                            @{format}, @{type_}, @{canvas});
@@ -116,10 +116,9 @@ pub fn make_texture(ctx: &glctx,x: u32, y: u32,data: &[u8]) -> gltex {
     texture
 }
 
-pub fn canvas_texture(ctx: &glctx, x: u32, y: u32) -> gltex {
+pub fn canvas_texture(ctx: &glctx,cnv : &CanvasElement) -> gltex {
     let texture = ctx.create_texture().unwrap();
     ctx.bind_texture(glctx::TEXTURE_2D, Some(&texture));
-    let cnv : CanvasElement = domutil::query_select("#managedcanvasholder canvas").try_into().unwrap();
     fix_tex_image2_d_cnv(&ctx,
         glctx::TEXTURE_2D,0,glctx::RGBA as i32,
         glctx::RGBA,glctx::UNSIGNED_BYTE,cnv);

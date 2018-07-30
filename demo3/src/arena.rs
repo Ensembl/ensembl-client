@@ -9,6 +9,9 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use canvasutil;
+use canvasutil::{
+    FlatCanvas
+};
 use wglraw;
 use geometry::Geometry;
 use hosc::HoscGeometry;
@@ -26,8 +29,36 @@ struct ArenaGeometries {
 }
 
 pub struct ArenaData {
+    spec: ArenaSpec,
+    pub flat: Rc<canvasutil::FlatCanvas>,
     pub ctx: glctx,
     pub aspect: f32,
+    pub width_px: u32,
+    pub height_px: u32,
+}
+
+impl ArenaData {
+    pub fn prop_x(&self,x_px: u32) -> f32 {
+        (x_px as f64 * 2.0 / self.width_px as f64) as f32
+    }
+
+    pub fn prop_y(&self,y_px: u32) -> f32 {
+        (y_px as f64 * 2.0 / self.height_px as f64) as f32
+    }
+}
+
+pub struct ArenaSpec {
+    pub flat_width: u32,
+    pub flat_height: u32,
+}
+
+impl ArenaSpec {
+    pub fn new() -> ArenaSpec {
+        ArenaSpec {
+            flat_width: 256,
+            flat_height: 256
+        }
+    }
 }
 
 pub struct Arena {
@@ -36,12 +67,15 @@ pub struct Arena {
 }
 
 impl Arena {
-    pub fn new(selector: &str) -> Arena {
+    pub fn new(selector: &str, spec: ArenaSpec) -> Arena {
         let canvas = canvasutil::prepare_canvas(selector);
         let ctx = wglraw::prepare_context(&canvas);
+        let flat = Rc::new(canvasutil::FlatCanvas::create(spec.flat_width,spec.flat_height));
         let data = Rc::new(RefCell::new(ArenaData {
-            ctx,
+            ctx, spec, flat,
             aspect: canvasutil::aspect_ratio(&canvas),
+            width_px: canvas.width(),
+            height_px: canvas.height(),
         }));
         let data_g = data.clone();
         let arena = Arena { data, geom: ArenaGeometries {
