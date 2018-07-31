@@ -19,6 +19,23 @@ module.exports = {
             }
           }
         ]
+      },
+      {
+        test: /.scss$/,
+        use: [
+          'style-loader', 'css-loader', 'sass-loader'
+        ]
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf|svg)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: `[path][name].[ext]`
+            }
+          }
+        ]
       }
     ]
   },
@@ -28,17 +45,18 @@ module.exports = {
     splitChunks: false,
   },
   output: {
-    pathinfo: false
+    pathinfo: false,
+    publicPath: '/'
   },
   plugins: [
     new ForkTsCheckerWebpackPlugin(),
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: path.join(__dirname, '../assets/template.html')
+      template: path.join(__dirname, '../assets/html/template.html')
     })
   ],
   resolve: {
-    extensions: ['.tsx', '.ts', '.js']
+    extensions: ['.tsx', '.ts', '.js', '.scss']
   },
   watchOptions: {
     ignored: /node_modules/

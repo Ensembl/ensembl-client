@@ -1,4 +1,5 @@
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
@@ -17,6 +18,24 @@ module.exports = {
             loader: 'ts-loader',
             options: {
               transpileOnly: false
+            }
+          }
+        ]
+      },
+      {
+        test: /.scss$/,
+        use: [
+          MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'
+        ]
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf|svg)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              emitFile: true,
+              name: `[path][name].[ext]`
             }
           }
         ]
@@ -43,12 +62,16 @@ module.exports = {
   },
   plugins: [
     new ForkTsCheckerWebpackPlugin(),
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+      chunkFilename: '[id].css'
+    }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: path.join(__dirname, '../assets/template.html')
+      template: path.join(__dirname, '../assets/html/template.html')
     })
   ],
   resolve: {
-    extensions: ['.tsx', '.ts', '.js']
+    extensions: ['.tsx', '.ts', '.js', '.scss']
   }
 };
