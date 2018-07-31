@@ -1,0 +1,34 @@
+{
+  "name": "ensembl-new",
+  "version": "0.0.1",
+  "description": "New website of Ensembl",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "start": "webpack-serve --config ./webpack/webpack.config.dev.js",
+    "build": "rimraf ./dist && webpack --config ./webpack/webpack.config.prod.js"
+  },
+  "author": "EMBL-EBI",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-router-dom": "^4.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^16.4.7",
+    "@types/react-dom": "^16.0.6",
+    "@types/react-router-dom": "^4.3.0",
+    "fork-ts-checker-webpack-plugin": "^0.4.3",
+    "html-webpack-plugin": "^3.2.0",
+    "rimraf": "^2.6.2",
+    "ts-loader": "^4.4.2",
+    "tslint": "^5.11.0",
+    "typescript": "^3.0.1",
+    "webpack": "^4.16.3",
+    "webpack-cli": "^3.1.0",
+    "webpack-serve": "^2.0.2"
+  }
+}
