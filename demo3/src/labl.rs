@@ -1,9 +1,13 @@
 use geometry::{
     Geometry,
-    StdGeometry,
+    GType,
+    GTypeHolder,
+    GeomContext,
     GTypeAttrib,
     GTypeTexture,
 };
+
+use geometry;
 
 use arena::{
     ArenaData,
@@ -47,7 +51,17 @@ void main() {
 ";
 
 pub struct LablGeometry {
-    std: StdGeometry,
+    std: GeomContext,
+    pos: GTypeAttrib,
+    coord: GTypeAttrib,
+    sampler: GTypeTexture,
+}
+
+impl GTypeHolder for LablGeometry {
+    fn gtypes(&mut self) -> (&GeomContext,Vec<&mut GType>) {
+        (&self.std,
+        vec! { &mut self.sampler, &mut self.pos, &mut self.coord })
+    }
 }
 
 impl LablGeometry {
@@ -57,23 +71,23 @@ impl LablGeometry {
                                  255,0,0,255,
                                  0,255,0,255,
                                  255,255,0,255];
-
-        let mut std = StdGeometry::new(adata.clone(),&V_SRC,&F_SRC,3);
-        std.add_spec(&GTypeAttrib  { name: "aVertexPosition", size: 2, rep: 1 });
-        std.add_spec(&GTypeAttrib  { name: "aTextureCoord",   size: 2, rep: 1 });
-        std.add_spec(&GTypeTexture { uname: "uSampler", slot: 0, texture: &data[..], width: 2, height: 2 });
-        LablGeometry { std }
+        LablGeometry {
+            std: GeomContext::new(adata.clone(),&V_SRC,&F_SRC),
+            pos: GTypeAttrib::new(&adata.borrow(),"aVertexPosition",2,1),
+            coord: GTypeAttrib::new(&adata.borrow(),"aTextureCoord",2,1),
+            sampler: GTypeTexture::new(&adata.borrow(),"uSampler",0,&data[..],2,2)
+        }
     }
     
     pub fn triangle(&mut self,points:[f32;6],tex_points:[f32;6]) {
-        self.std.add(0,&points);
-        self.std.add(1,&tex_points);
-        self.std.advance();
+        self.pos.add(&points);
+        self.coord.add(&tex_points);
+        self.std.advance(3);
     }
 
 }
 
 impl Geometry for LablGeometry {
-    fn populate(&mut self) { self.std.populate(); }
-    fn draw(&self,stage:&Stage) { self.std.draw(stage); }
+    fn populate(&mut self) { geometry::populate(self); }
+    fn draw(&mut self,stage:&Stage) { geometry::draw(self,stage); }
 }

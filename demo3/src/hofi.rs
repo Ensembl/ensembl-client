@@ -1,8 +1,12 @@
 use geometry::{
     Geometry,
-    StdGeometry,
-    GTypeAttrib,
+    GeomContext,
+    GTypeAttrib,    
+    GTypeHolder,
+    GType,
 };
+
+use geometry;
 
 use arena::{
     ArenaData,
@@ -43,27 +47,37 @@ void main() {
 ";
 
 pub struct HofiGeometry {
-    std: StdGeometry,
+    std: GeomContext,
+    pos: GTypeAttrib,
+    origin: GTypeAttrib,
+    colour: GTypeAttrib,
+}
+
+impl GTypeHolder for HofiGeometry {
+    fn gtypes(&mut self) -> (&GeomContext,Vec<&mut GType>) {
+        (&self.std,vec! { &mut self.pos, &mut self.origin, &mut self.colour})
+    }
 }
 
 impl HofiGeometry {
     pub fn new(adata: Rc<RefCell<ArenaData>>) -> HofiGeometry {
-        let mut std = StdGeometry::new(adata.clone(),&V_SRC,&F_SRC,3);
-        std.add_spec(&GTypeAttrib { name: "aVertexPosition", size: 2, rep: 1 });
-        std.add_spec(&GTypeAttrib { name: "aOrigin",         size: 2, rep: 3 });
-        std.add_spec(&GTypeAttrib { name: "aVertexColour",   size: 3, rep: 3 });
-        HofiGeometry { std }
+        HofiGeometry {
+            std: GeomContext::new(adata.clone(),&V_SRC,&F_SRC),
+            pos: GTypeAttrib::new(&adata.borrow(),"aVertexPosition",2,1),
+            origin: GTypeAttrib::new(&adata.borrow(),"aOrigin",2,3),
+            colour: GTypeAttrib::new(&adata.borrow(),"aVertexColour",3,3),
+        }
     }
 
     pub fn triangle(&mut self,origin:[f32;2],points:[f32;6],colour:[f32;3]) {
-        self.std.add(0,&points);
-        self.std.add(1,&origin);
-        self.std.add(2,&colour);
-        self.std.advance();
+        self.pos.add(&points);
+        self.origin.add(&origin);
+        self.colour.add(&colour);
+        self.std.advance(3);
     }
 }
 
 impl Geometry for HofiGeometry {
-    fn populate(&mut self) { self.std.populate(); }
-    fn draw(&self,stage:&Stage) { self.std.draw(stage); }
+    fn populate(&mut self) { geometry::populate(self); }
+    fn draw(&mut self,stage:&Stage) { geometry::draw(self,stage); }
 }

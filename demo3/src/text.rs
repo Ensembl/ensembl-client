@@ -1,9 +1,19 @@
 use geometry::{
     Geometry,
-    StdGeometry,
+    GeomContext,
+    GTypeHolder,
     GTypeAttrib,
+    GType,
     GTypeCanvasTexture,
 };
+
+use webgl_rendering_context::{
+    WebGLRenderingContext as glctx,
+    WebGLBuffer as glbuf,
+    WebGLProgram as glprog
+};
+
+use geometry;
 
 use arena::{
     ArenaData,
@@ -48,7 +58,19 @@ void main() {
 ";
 
 pub struct TextGeometry {
-    std: StdGeometry,
+    std: GeomContext,
+    pos: GTypeAttrib,
+    origin: GTypeAttrib,
+    coord: GTypeAttrib,
+    sampler: GTypeCanvasTexture,
+}
+
+impl GTypeHolder for TextGeometry {
+    fn gtypes(&mut self) -> (&GeomContext,Vec<&mut GType>) {
+        (&self.std,
+        vec! { &mut self.sampler, &mut self.pos,
+               &mut self.origin, &mut self.coord })
+    }
 }
 
 impl TextGeometry {
@@ -58,20 +80,22 @@ impl TextGeometry {
                               0,255,0,255,
                               255,255,0,255];
 
-        let mut std = StdGeometry::new(adata.clone(),&V_SRC,&F_SRC,3);
-        std.add_spec(&GTypeAttrib  { name: "aVertexPosition", size: 2, rep: 1 });
-        std.add_spec(&GTypeAttrib  { name: "aOrigin",         size: 2, rep: 3 });
-        std.add_spec(&GTypeAttrib  { name: "aTextureCoord",   size: 2, rep: 1 });
-        std.add_spec(&GTypeCanvasTexture { uname: "uSampler", slot: 0 });
-        TextGeometry { std }
+        let pos = GTypeAttrib::new(&adata.borrow(),"aVertexPosition",2,1);
+        let origin = GTypeAttrib::new(&adata.borrow(),"aOrigin",2,3);
+        let coord = GTypeAttrib::new(&adata.borrow(),"aTextureCoord",2,1);
+        let sampler = GTypeCanvasTexture::new("uSampler",0);
 
+        TextGeometry {
+            pos, sampler, origin, coord,
+            std: GeomContext::new(adata,&V_SRC,&F_SRC),
+        }
     }
-        
+            
     pub fn triangle(&mut self,origin:&[f32;2],points:&[f32;6],tex_points:&[f32;6]) {
-        self.std.add(0,points);
-        self.std.add(1,origin);
-        self.std.add(2,tex_points);
-        self.std.advance();
+        self.pos.add(points);
+        self.origin.add(origin);
+        self.coord.add(tex_points);
+        self.std.advance(3);
     }
     
     pub fn rectangle(&mut self,origin:&[f32;2],p:&[f32;4],t:&[f32;4]) {
@@ -96,6 +120,6 @@ impl TextGeometry {
 }
 
 impl Geometry for TextGeometry {
-    fn populate(&mut self) { self.std.populate(); }
-    fn draw(&self,stage:&Stage) { self.std.draw(stage); }
+    fn populate(&mut self) { geometry::populate(self); }
+    fn draw(&mut self,stage:&Stage) { geometry::draw(self,stage); }
 }

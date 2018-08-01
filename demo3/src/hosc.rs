@@ -1,8 +1,12 @@
 use geometry::{
     Geometry,
-    StdGeometry,
+    GeomContext,
     GTypeAttrib,
+    GTypeHolder,
+    GType,
 };
+
+use geometry;
 
 use arena::{
     ArenaData,
@@ -42,21 +46,30 @@ void main() {
 ";
 
 pub struct HoscGeometry {
-    std : StdGeometry,
+    std : GeomContext,
+    pos: GTypeAttrib,
+    colour: GTypeAttrib,
+}
+
+impl GTypeHolder for HoscGeometry {
+    fn gtypes(&mut self) -> (&GeomContext,Vec<&mut GType>) {
+        (&self.std,vec! { &mut self.pos, &mut self.colour })
+    }
 }
 
 impl HoscGeometry {
     pub fn new(adata: Rc<RefCell<ArenaData>>) -> HoscGeometry {
-        let mut std = StdGeometry::new(adata.clone(),&V_SRC,&F_SRC,3);
-        std.add_spec(&GTypeAttrib { name: "aVertexPosition", size: 2, rep: 1 });
-        std.add_spec(&GTypeAttrib { name: "aVertexColour",   size: 3, rep: 3 });
-        HoscGeometry { std }
+        HoscGeometry {
+            std: GeomContext::new(adata.clone(),&V_SRC,&F_SRC),
+            pos: GTypeAttrib::new(&adata.borrow(),"aVertexPosition",2,1),
+            colour: GTypeAttrib::new(&adata.borrow(),"aVertexColour",3,3),
+        }
     }
 
     pub fn triangle(&mut self,points:&[f32;6],colour:&[f32;3]) {
-        self.std.add(0,points);
-        self.std.add(1,colour);
-        self.std.advance();
+        self.pos.add(points);
+        self.colour.add(colour);
+        self.std.advance(3);
     }
     
     pub fn rectangle(&mut self,p:&[f32;4],colour:&[f32;3]) {
@@ -66,6 +79,6 @@ impl HoscGeometry {
 }
 
 impl Geometry for HoscGeometry {
-    fn populate(&mut self) { self.std.populate(); }
-    fn draw(&self,stage:&Stage) { self.std.draw(stage); }
+    fn populate(&mut self) { geometry::populate(self); }
+    fn draw(&mut self,stage:&Stage) { geometry::draw(self,stage); }
 }
