@@ -28,8 +28,11 @@ struct ArenaGeometries {
     text: TextGeometry,
 }
 
+use alloc::Allocator;
+
 pub struct ArenaData {
     spec: ArenaSpec,
+    pub flat_alloc: Allocator,
     pub flat: Rc<canvasutil::FlatCanvas>,
     pub ctx: glctx,
     pub aspect: f32,
@@ -76,6 +79,7 @@ impl Arena {
             aspect: canvasutil::aspect_ratio(&canvas),
             width_px: canvas.width(),
             height_px: canvas.height(),
+            flat_alloc: Allocator::new(16),
         }));
         let data_g = data.clone();
         let arena = Arena { data, geom: ArenaGeometries {
@@ -114,6 +118,8 @@ impl Arena {
     }    
 
     pub fn populate(&mut self) {
+        let (x,y) = self.data.borrow_mut().flat_alloc.allocate();
+        js! { console.log("xy",@{x},@{y}); };
         self.geom_hosc(&mut |g:&mut HoscGeometry| g.populate());
         self.geom_hofi(&mut |g:&mut HofiGeometry| g.populate());
         self.geom_labl(&mut |g:&mut LablGeometry| g.populate());

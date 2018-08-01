@@ -5,6 +5,7 @@ use geometry::{
     GTypeAttrib,
     GType,
     GTypeCanvasTexture,
+    GTypeTicket,
 };
 
 use webgl_rendering_context::{
@@ -14,6 +15,11 @@ use webgl_rendering_context::{
 };
 
 use geometry;
+
+use alloc::{
+    Ticket,
+    Allocator
+};
 
 use arena::{
     ArenaData,
@@ -63,31 +69,52 @@ pub struct TextGeometry {
     origin: GTypeAttrib,
     coord: GTypeAttrib,
     sampler: GTypeCanvasTexture,
+    tickets: GTypeTicket,
+}
+
+pub struct TextReq {
+    width: u32,
+    height: u32,
+    chars: String,
+    font: FCFont
+}
+
+impl TextReq {
+    fn new(chars: &str, width: u32, height: u32, font: &FCFont) -> TextReq {
+        TextReq {
+            width, height,
+            font: font.clone(),
+            chars: chars.to_string()
+        }
+    }
+    
+    fn make_ticket(&self, flat_alloc: &mut Allocator) -> Ticket {
+        flat_alloc.request(self.width,self.height)
+    }
+    
+    fn insert(&self, adata: &ArenaData, x: u32, y: u32) {
+        adata.flat.text(&self.chars,x,y,&self.font);
+    }
 }
 
 impl GTypeHolder for TextGeometry {
     fn gtypes(&mut self) -> (&GeomContext,Vec<&mut GType>) {
         (&self.std,
         vec! { &mut self.sampler, &mut self.pos,
-               &mut self.origin, &mut self.coord })
+               &mut self.origin, &mut self.coord,
+               &mut self.tickets })
     }
 }
 
 impl TextGeometry {
     pub fn new(adata: Rc<RefCell<ArenaData>>) -> TextGeometry {                   
-        let data : [u8;16] = [0,0,255,255,
-                              255,0,0,255,
-                              0,255,0,255,
-                              255,255,0,255];
-
-        let pos = GTypeAttrib::new(&adata.borrow(),"aVertexPosition",2,1);
-        let origin = GTypeAttrib::new(&adata.borrow(),"aOrigin",2,3);
-        let coord = GTypeAttrib::new(&adata.borrow(),"aTextureCoord",2,1);
-        let sampler = GTypeCanvasTexture::new("uSampler",0);
-
         TextGeometry {
-            pos, sampler, origin, coord,
-            std: GeomContext::new(adata,&V_SRC,&F_SRC),
+            std: GeomContext::new(adata.clone(),&V_SRC,&F_SRC),
+            pos:    GTypeAttrib::new(&adata.borrow(),"aVertexPosition",2,1),
+            origin: GTypeAttrib::new(&adata.borrow(),"aOrigin",2,3),
+            coord:  GTypeAttrib::new(&adata.borrow(),"aTextureCoord",2,1),
+            sampler: GTypeCanvasTexture::new("uSampler",0),
+            tickets: GTypeTicket::new(),
         }
     }
             
@@ -107,6 +134,19 @@ impl TextGeometry {
     
     pub fn text(&mut self,origin:&[f32;2],text: &str,font: &FCFont) {
         let adatac = self.std.get_adata();
+        {
+            let mut adata = adatac.borrow_mut();
+            let flat_alloc = &mut adata.flat_alloc;
+            let req = TextReq::new("Hello, World!",80,16,font);
+            let t = req.make_ticket(flat_alloc);
+            let t = req.make_ticket(flat_alloc);
+            let f = Box::new(
+                move |adata: &ArenaData,x: u32,y: u32| {
+                    req.insert(adata,x,y);
+                }
+            );
+            self.tickets.add_ticket(t,f);
+        }
         let adata = adatac.borrow();
         let flat = &adata.flat;
         let (x_px,y_px) = (0,0);
