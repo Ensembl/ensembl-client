@@ -8,6 +8,7 @@ extern crate stdweb_derive;
 #[macro_use]
 mod util;
 
+mod alloc;
 mod arena;
 mod geometry;
 mod domutil;
