@@ -51,8 +51,9 @@ fn main() {
     stdweb::initialize();
 
     let fc_font = canvasutil::FCFont::new(12,"serif");
-    let a_spec = ArenaSpec::new();
-    let mut ar = Arena::new("#glcanvas",a_spec);
+    let mut a_spec = ArenaSpec::new();
+    a_spec.debug = true;
+    let mut ar = Arena::new("#glcanvas","#managedcanvasholder",a_spec);
     ar.geom_text(&mut |g:&mut TextGeometry| {
         g.text(&[-1.,-1.],"Hello, World!",&fc_font);
         g.text(&[0.,-1.],"Goodbye, World!",&fc_font);
@@ -69,7 +70,7 @@ fn main() {
     ar.populate();
     
     let mut stage = Stage::new();
-    stage.hpos = -0.01;
+    //stage.hpos = -0.01;
     ar.settle(&mut stage);
     
     ar.animate(&stage);

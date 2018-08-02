@@ -7,13 +7,27 @@
 			html, body, canvas {
 				margin: 0px;
 				padding: 0px;
+                /* height: 100%; */
 			}
             #managedcanvasholder {
+                display: none;
+            }
+            #managedcanvasholder.debug {
+                display: block;
+            }
+            #managedcanvasholder.debug canvas {
                 border: 2px solid red;
                 display: inline-block;
             }
-            #glcanvas {
+            #glcanvas.debug {
                 border: 2px solid green;
+                width: auto;
+                height: auto;
+            }
+            #glcanvas {
+                /* width: 100%; */
+                width: 1844px;
+                height: 1100px;
             }
 		</style>
 	</head>

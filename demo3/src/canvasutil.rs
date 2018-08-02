@@ -6,9 +6,12 @@ use stdweb::web::{
     TextBaseline,
     CanvasRenderingContext2d,
     document,
+    Element,
 };
 
-use stdweb::web::html_element::CanvasElement;
+use stdweb::web::html_element::{
+    CanvasElement
+};
 use stdweb::web::event::ResizeEvent;
 
 use stdweb::unstable::TryInto;
@@ -16,18 +19,30 @@ use stdweb::unstable::TryInto;
 use domutil;
 
 // Prepare a canvas ready for WebGL
-pub fn prepare_canvas(sel: &str) -> CanvasElement {
+pub fn prepare_canvas(sel: &str, mcsel: &str, debug: bool) -> CanvasElement {
     // get canvas
-    let canvas: CanvasElement = domutil::query_select(sel).try_into().unwrap();
-    // force CSS onto attributes of canvas tag
-    //canvas.set_width(canvas.offset_width() as u32);
-    //canvas.set_height(canvas.offset_height() as u32);
-    // if it resizes, do it again
-    // the enclose! clones canvas, that's then moved into the callback.
-    //window().add_event_listener(enclose!( (canvas) move |_:ResizeEvent| {
-    //    canvas.set_width(canvas.offset_width() as u32);
-    //    canvas.set_height(canvas.offset_height() as u32);
-    //}));
+    let canvasel: Element = domutil::query_select(sel);
+    let canvas: CanvasElement = canvasel.try_into().unwrap();
+    if debug {
+        let mc : Element = domutil::query_select(mcsel);
+        domutil::add_class(&mc,"debug");
+        let mc : Element = domutil::query_select(sel);
+        domutil::add_class(&mc,"debug");
+    } else {
+        // force CSS onto attributes of canvas tag
+        let width = canvas.offset_width() as u32;
+        let height = canvas.offset_height() as u32;
+        canvas.set_width(width);
+        canvas.set_height(height);
+        // update CSS in px, as %'s are dodgy on canvas tags
+        let mc : Element = domutil::query_select(sel);
+        domutil::add_style(&mc,"width",&format!("{}px",width));
+        domutil::add_style(&mc,"height",&format!("{}px",height));
+        //window().add_event_listener(enclose!( (canvas) move |_:ResizeEvent| {
+        //    canvas.set_width(canvas.offset_width() as u32);
+        //    canvas.set_height(canvas.offset_height() as u32);
+        //}));
+    }
     canvas
 }
 
@@ -69,8 +84,6 @@ impl FlatCanvas {
         canvas.set_width(width);
         canvas.set_height(height);
         let context : CanvasRenderingContext2d = canvas.get_context().unwrap();
-        //context.set_fill_style_color("green");
-        //context.fill_rect(0.,0.,width.into(),height.into());
         context.set_fill_style_color("black");
         FlatCanvas { canvas, context, height, width }
     }

@@ -157,16 +157,16 @@ impl TextGeometry {
         let flat = &adata.flat;
         let mut data = Vec::<([f32;2],[f32;4],[f32;4])>::new();
         for req in &self.requests {
-            let nudge = adata.nudge((req.origin[0],req.origin[1]));
+            let origin = adata.nudge(req.origin);
             let p = [
-                nudge.0, nudge.1, 
-                nudge.0 + adata.prop_x(req.tr.width),
-                nudge.1 + adata.prop_y(req.tr.height)
+                0., 0.,
+                adata.prop_x(req.tr.width),
+                adata.prop_y(req.tr.height)
             ];
             let (x,y) = adata.flat_alloc.position(&req.tr.ticket);
             let t = [flat.prop_x(x), flat.prop_y(y + req.tr.height),
                      flat.prop_x(x + req.tr.width), flat.prop_y(y)];
-            data.push((req.origin,p,t));
+            data.push((origin,p,t));
         }
         for (origin,p,t) in data {
             self.rectangle(&origin,&p,&t);
