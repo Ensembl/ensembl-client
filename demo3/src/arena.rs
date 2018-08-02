@@ -48,6 +48,25 @@ impl ArenaData {
     pub fn prop_y(&self,y_px: u32) -> f32 {
         (y_px as f64 * 2.0 / self.height_px as f64) as f32
     }
+    
+    pub fn nudge(&self,input: (f32,f32)) -> (f32,f32) {
+        js! { console.log("input",@{input.0},@{input.1}); };
+        let n = ((input.0 * self.width_px as f32 / 2.).round(),
+                 (input.1 * self.height_px as f32 / 2.).round());
+        js! { console.log("n",@{n.0},@{n.1}); };
+        let p = (n.0 * 2. / self.width_px as f32,
+                 n.1 * 2. / self.height_px as f32);
+        js! { console.log("p",@{p.0},@{p.1}); };
+        let q = (p.0-input.0, p.1-input.1);
+        js! { console.log("q",@{q.0},@{q.1}); };
+        q
+    }
+    
+    pub fn settle(&self, stage: &mut Stage) {
+        let (hpos,vpos) = self.nudge((stage.hpos,stage.vpos));
+        stage.hpos += hpos;
+        stage.vpos += vpos;
+    }
 }
 
 pub struct ArenaSpec {
@@ -90,6 +109,10 @@ impl Arena {
             text: enclose! { (data_g) TextGeometry::new(data_g) },
         }};
         arena
+    }
+
+    pub fn settle(&self, stage: &mut Stage) {
+        self.data.borrow().settle(stage);
     }
 
     pub fn geom_hosc(&mut self,f: &mut FnMut(&mut HoscGeometry)) {
