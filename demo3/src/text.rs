@@ -32,6 +32,8 @@ use canvasutil;
 
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::collections::HashMap;
+use std::collections::hash_map::Entry;
 
 const V_SRC : &str = "
 attribute vec2 aVertexPosition;
@@ -65,18 +67,7 @@ void main() {
 }
 ";
 
-pub struct TextGeometry {
-    std: GeomContext,
-    requests: Vec<TextReq>,
-    pos: GTypeAttrib,
-    origin: GTypeAttrib,
-    coord: GTypeAttrib,
-    sampler: GTypeCanvasTexture,
-    tickets: GTypeTicket,
-}
-
-pub struct TextReq {
-    origin: [f32;2],
+pub struct TextTicketReq {
     width: u32,
     height: u32,
     chars: String,
@@ -84,30 +75,48 @@ pub struct TextReq {
     ticket: Ticket
 }
 
-impl TextReq {
-    fn new(adata: &mut ArenaData, chars: &str, origin: &[f32;2], font: &FCFont) -> TextReq {
+impl TextTicketReq {
+    fn new(adata: &mut ArenaData, chars: &str, font: &FCFont) -> Rc<TextTicketReq> {
         let flat = &adata.flat;
         let (width, height) = flat.measure(chars,font);
         let flat_alloc = &mut adata.flat_alloc;
-        TextReq {
-            width, height, origin: *origin,
+        Rc::new(TextTicketReq {
+            width, height,
             ticket: flat_alloc.request(width,height),
             font: font.clone(),
             chars: chars.to_string()
+        })
+    }
+}
+
+pub struct TextReq {
+    origin: [f32;2],
+    tr: Rc<TextTicketReq>,
+}
+
+impl TextReq {
+    fn new(tr: Rc<TextTicketReq>, origin: &[f32;2]) -> TextReq {
+        TextReq {
+            tr, origin: *origin
         }
     }
-        
-    fn insert(&self, adata: &ArenaData, x: u32, y: u32) {
-        adata.flat.text(&self.chars,x,y,&self.font);
-    }
+}
+
+pub struct TextGeometry {
+    std: GeomContext,
+    requests: Vec<TextReq>,
+    tickets: HashMap<(String,FCFont),Rc<TextTicketReq>>,
+    pos: GTypeAttrib,
+    origin: GTypeAttrib,
+    coord: GTypeAttrib,
+    sampler: GTypeCanvasTexture,
 }
 
 impl GTypeHolder for TextGeometry {
     fn gtypes(&mut self) -> (&GeomContext,Vec<&mut GType>) {
         (&self.std,
         vec! { &mut self.sampler, &mut self.pos,
-               &mut self.origin, &mut self.coord,
-               &mut self.tickets })
+               &mut self.origin, &mut self.coord })
     }
 }
 
@@ -119,8 +128,8 @@ impl TextGeometry {
             origin: GTypeAttrib::new(&adata.borrow(),"aOrigin",2,3),
             coord:  GTypeAttrib::new(&adata.borrow(),"aTextureCoord",2,1),
             sampler: GTypeCanvasTexture::new("uSampler",0),
-            tickets: GTypeTicket::new(),
             requests: Vec::<TextReq>::new(),
+            tickets: HashMap::<(String,FCFont),Rc<TextTicketReq>>::new(),
         }
     }
             
@@ -141,9 +150,9 @@ impl TextGeometry {
     fn prepopulate(&mut self) {
         let adatac = self.std.get_adata();
         let mut adata = adatac.borrow_mut();
-        for req in &self.requests {
-            let (x,y) = adata.flat_alloc.position(&req.ticket);
-            adata.flat.text(&req.chars,x,y,&req.font);
+        for tr in self.tickets.values() {
+            let (x,y) = adata.flat_alloc.position(&tr.ticket);
+            adata.flat.text(&tr.chars,x,y,&tr.font);
         }
         let flat = &adata.flat;
         let mut data = Vec::<([f32;2],[f32;4],[f32;4])>::new();
@@ -151,12 +160,12 @@ impl TextGeometry {
             let nudge = adata.nudge((req.origin[0],req.origin[1]));
             let p = [
                 nudge.0, nudge.1, 
-                nudge.0 + adata.prop_x(req.width),
-                nudge.1 + adata.prop_y(req.height)
+                nudge.0 + adata.prop_x(req.tr.width),
+                nudge.1 + adata.prop_y(req.tr.height)
             ];
-            let (x,y) = adata.flat_alloc.position(&req.ticket);
-            let t = [flat.prop_x(x), flat.prop_y(y + req.height),
-                     flat.prop_x(x + req.width), flat.prop_y(y)];
+            let (x,y) = adata.flat_alloc.position(&req.tr.ticket);
+            let t = [flat.prop_x(x), flat.prop_y(y + req.tr.height),
+                     flat.prop_x(x + req.tr.width), flat.prop_y(y)];
             data.push((req.origin,p,t));
         }
         for (origin,p,t) in data {
@@ -168,7 +177,14 @@ impl TextGeometry {
     pub fn text(&mut self,origin:&[f32;2],text: &str,font: &FCFont) {
         let adatac = self.std.get_adata();
         let mut adata = adatac.borrow_mut();
-        let req = TextReq::new(&mut adata,text,origin,font);
+        let tickets = &mut self.tickets;
+        let tr = match tickets.entry((text.to_string(),font.clone())) {
+            Entry::Occupied(v) => 
+                v.into_mut(),
+            Entry::Vacant(v) => 
+                v.insert(TextTicketReq::new(&mut adata,text,font))
+        };
+        let req = TextReq::new(tr.clone(),origin);
         self.requests.push(req);
     }
 }
