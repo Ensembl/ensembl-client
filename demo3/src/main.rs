@@ -61,6 +61,8 @@ fn main() {
         g.text(&[-0.5,-0.5],"X",&fc_font);
         g.text(&[-0.27,-0.27],"Boo!",&fc_font);
         g.text(&[-0.27,-0.5],"BRCA2",&fc_font);
+        g.text(&[-0.27,0.5],"BRCA2",&fc_font);
+        g.text(&[-1.,0.5],"BRCA2",&fc_font);
         g.text(&[-1.,-0.5],"FOXP2",&fc_font);
         g.text(&[0.1,-0.3],"sausages",&fc_font);
     });

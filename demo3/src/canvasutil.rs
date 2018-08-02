@@ -35,7 +35,7 @@ pub fn aspect_ratio(canvas: &CanvasElement) -> f32 {
     canvas.offset_width() as f32 / canvas.offset_height() as f32
 }
 
-#[derive(Clone)]
+#[derive(Clone,Eq,PartialEq,Hash)]
 pub struct FCFont {
     spec: String,
     height: u32,
