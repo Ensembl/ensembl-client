@@ -1,0 +1,22 @@
+.top-bar {
+  @include top-bar-container;
+  @include top-bar-unstack;
+
+  color: $white;
+
+  & .logo {
+    font-size: 1.15rem;
+    font-weight: $global-weight-bold;
+  }
+  
+  & .strapline {
+    margin-left: 2.14rem;
+  }
+
+  & .top-bar-right {
+    & .icon {
+      font-size: 1.71rem;
+      margin-left: 2.14rem;
+    }
+  }
+}

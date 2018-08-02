@@ -4,7 +4,7 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 module.exports = {
   devtool: 'cheap-module-eval-source-map',
-  entry: path.join(__dirname, '../src/index.tsx'),
+  entry: path.join(__dirname, '../src/scripts/index.tsx'),
   mode: 'development',
   module: {
     rules: [
