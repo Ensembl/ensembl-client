@@ -1,3 +1,6 @@
+#[macro_use]
+use util;
+
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
 };
@@ -6,21 +9,78 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use canvasutil;
+use canvasutil::{
+    FlatCanvas
+};
 use wglraw;
 use geometry::Geometry;
 use hosc::HoscGeometry;
 use hofi::HofiGeometry;
 use fixx::FixxGeometry;
+use labl::LablGeometry;
+use text::TextGeometry;
 
 struct ArenaGeometries {
     hosc: HoscGeometry,
     hofi: HofiGeometry,
+    labl: LablGeometry,
     fixx: FixxGeometry,
+    text: TextGeometry,
 }
 
+use alloc::Allocator;
+
 pub struct ArenaData {
+    spec: ArenaSpec,
+    pub flat_alloc: Allocator,
+    pub flat: Rc<canvasutil::FlatCanvas>,
     pub ctx: glctx,
     pub aspect: f32,
+    pub width_px: u32,
+    pub height_px: u32,
+}
+
+impl ArenaData {
+    pub fn prop_x(&self,x_px: u32) -> f32 {
+        (x_px as f64 * 2.0 / self.width_px as f64) as f32
+    }
+
+    pub fn prop_y(&self,y_px: u32) -> f32 {
+        (y_px as f64 * 2.0 / self.height_px as f64) as f32
+    }
+    
+    fn nudge1(&self,val: f32, size: u32) -> f32 {
+        let n = (val * size as f32 / 2.).round();
+        n * 2. / size as f32
+    }
+    
+    pub fn nudge(&self,input: [f32;2]) -> [f32;2] {
+        [self.nudge1(input[0],self.width_px),
+         self.nudge1(input[1],self.height_px)]
+    }
+    
+    pub fn settle(&self, stage: &mut Stage) {
+        // XXX settle to account for zoom
+        let [hpos,vpos] = self.nudge([stage.hpos,stage.vpos]);
+        stage.hpos = hpos;
+        stage.vpos = vpos;
+    }
+}
+
+pub struct ArenaSpec {
+    pub flat_width: u32,
+    pub flat_height: u32,
+    pub debug: bool,
+}
+
+impl ArenaSpec {
+    pub fn new() -> ArenaSpec {
+        ArenaSpec {
+            flat_width: 256,
+            flat_height: 256,
+            debug: false
+        }
+    }
 }
 
 pub struct Arena {
@@ -29,20 +89,30 @@ pub struct Arena {
 }
 
 impl Arena {
-    pub fn new(selector: &str) -> Arena {
-        let canvas = canvasutil::prepare_canvas(selector);
+    pub fn new(selector: &str, mcsel: &str, spec: ArenaSpec) -> Arena {
+        let canvas = canvasutil::prepare_canvas(selector,mcsel,spec.debug);
         let ctx = wglraw::prepare_context(&canvas);
+        let flat = Rc::new(canvasutil::FlatCanvas::create(2,2));
         let data = Rc::new(RefCell::new(ArenaData {
-            ctx,
+            ctx, spec, flat,
             aspect: canvasutil::aspect_ratio(&canvas),
+            width_px: canvas.width(),
+            height_px: canvas.height(),
+            flat_alloc: Allocator::new(16),
         }));
         let data_g = data.clone();
         let arena = Arena { data, geom: ArenaGeometries {
             hosc: HoscGeometry::new(data_g.clone()),
             hofi: HofiGeometry::new(data_g.clone()),
+            labl: LablGeometry::new(data_g.clone()),
             fixx: FixxGeometry::new(data_g.clone()),
+            text: enclose! { (data_g) TextGeometry::new(data_g) },
         }};
         arena
+    }
+
+    pub fn settle(&self, stage: &mut Stage) {
+        self.data.borrow().settle(stage);
     }
 
     pub fn geom_hosc(&mut self,f: &mut FnMut(&mut HoscGeometry)) {
@@ -60,9 +130,26 @@ impl Arena {
         f(g);
     }    
 
+    pub fn geom_labl(&mut self,f: &mut FnMut(&mut LablGeometry)) {
+        let g = &mut self.geom.labl;
+        f(g);
+    }    
+
+    pub fn geom_text(&mut self,f: &mut FnMut(&mut TextGeometry)) {
+        let g = &mut self.geom.text;
+        f(g);
+    }    
+
     pub fn populate(&mut self) {
+        {
+            let datam = &mut self.data.borrow_mut();
+            let (x,y) = datam.flat_alloc.allocate();
+            datam.flat = Rc::new(canvasutil::FlatCanvas::create(x,y));
+        }
         self.geom_hosc(&mut |g:&mut HoscGeometry| g.populate());
         self.geom_hofi(&mut |g:&mut HofiGeometry| g.populate());
+        self.geom_text(&mut |g:&mut TextGeometry| g.populate());
+        self.geom_labl(&mut |g:&mut LablGeometry| g.populate());
         self.geom_fixx(&mut |g:&mut FixxGeometry| g.populate());
     }
 
@@ -76,6 +163,8 @@ impl Arena {
         // draw each geometry
         self.geom_hosc(&mut |g:&mut HoscGeometry| g.draw(&stage));
         self.geom_hofi(&mut |g:&mut HofiGeometry| g.draw(&stage));
+        self.geom_text(&mut |g:&mut TextGeometry| g.draw(&stage));
+        self.geom_labl(&mut |g:&mut LablGeometry| g.draw(&stage));
         self.geom_fixx(&mut |g:&mut FixxGeometry| g.draw(&stage));
     }
 }

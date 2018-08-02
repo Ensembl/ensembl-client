@@ -5,7 +5,14 @@ use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
     WebGLProgram as glprog,
     WebGLBuffer as glbuf,
+    WebGLTexture as gltex,
+    GLenum,
+    GLint,
 };
+
+use domutil;
+
+use stdweb::unstable::TryInto;
 
 pub fn prepare_context(canvas: &CanvasElement) -> glctx {
     let context: glctx = canvas.get_context().unwrap();
@@ -48,16 +55,82 @@ pub fn link_buffer(ctx:&glctx, prog:&glprog, name:&str, step:i8, buf:&glbuf) {
     ctx.vertex_attrib_pointer(loc, step as i32, glctx::FLOAT, false, 0, 0) ;
 }
 
-pub fn set_uniform_1(ctx:&glctx, prog:&glprog, name:&str, value: f32) {
+pub fn set_uniform_1f(ctx:&glctx, prog:&glprog, name:&str, value: f32) {
     let loc = ctx.get_uniform_location(&prog,&name);
     if loc.is_some() {
         ctx.uniform1f(Some(&loc.unwrap()),value);
     }
 }
 
-pub fn set_uniform_2(ctx:&glctx, prog:&glprog, name:&str, value: [f32;2]) {
+pub fn set_uniform_1i(ctx:&glctx, prog:&glprog, name:&str, value: i32) {
+    let loc = ctx.get_uniform_location(&prog,&name);
+    if loc.is_some() {
+        ctx.uniform1i(Some(&loc.unwrap()),value);
+    }
+}
+
+pub fn set_uniform_2f(ctx:&glctx, prog:&glprog, name:&str, value: [f32;2]) {
     let loc = ctx.get_uniform_location(&prog,&name);
     if loc.is_some() {
         ctx.uniform2f(Some(&loc.unwrap()),value[0],value[1]);
     }
+}
+
+fn fix_tex_image2_d(ctx: &glctx, target: GLenum, level: GLint, 
+                    internalformat: GLint,width : u32,height : u32,border : u32,format: 
+                    GLenum, type_: GLenum, 
+                    pixels: TypedArray<u8>) {
+    js! {
+        @{ctx}.texImage2D(@{target}, @{level}, @{internalformat}, 
+                           @{width},@{height},@{border}, @{format},
+                           @{type_}, @{pixels});
+    };
+}
+
+fn fix_tex_image2_d_cnv(ctx: &glctx, 
+                    target: GLenum, level: GLint, internalformat: GLint,
+                    format: GLenum, type_: GLenum, canvas: &CanvasElement) {
+    js! {
+        @{ctx}.texImage2D(@{target}, @{level}, @{internalformat}, 
+                           @{format}, @{type_}, @{canvas});
+    };
+}
+
+
+pub fn make_texture(ctx: &glctx,x: u32, y: u32,data: &[u8]) -> gltex {
+    let texture = ctx.create_texture().unwrap();
+    ctx.bind_texture(glctx::TEXTURE_2D, Some(&texture));
+    fix_tex_image2_d(&ctx,
+        glctx::TEXTURE_2D,0,glctx::RGBA as i32,
+        x,y,0,glctx::RGBA,glctx::UNSIGNED_BYTE,data[..].into());
+    
+    ctx.tex_parameteri(glctx::TEXTURE_2D,
+                       glctx::TEXTURE_MIN_FILTER,
+                       glctx::NEAREST as i32);
+    ctx.tex_parameteri(glctx::TEXTURE_2D,
+                       glctx::TEXTURE_WRAP_S,
+                       glctx::CLAMP_TO_EDGE as i32);
+    ctx.tex_parameteri(glctx::TEXTURE_2D,
+                       glctx::TEXTURE_WRAP_T,
+                       glctx::CLAMP_TO_EDGE as i32);
+    texture
+}
+
+pub fn canvas_texture(ctx: &glctx,cnv : &CanvasElement) -> gltex {
+    let texture = ctx.create_texture().unwrap();
+    ctx.bind_texture(glctx::TEXTURE_2D, Some(&texture));
+    fix_tex_image2_d_cnv(&ctx,
+        glctx::TEXTURE_2D,0,glctx::RGBA as i32,
+        glctx::RGBA,glctx::UNSIGNED_BYTE,cnv);
+    
+    ctx.tex_parameteri(glctx::TEXTURE_2D,
+                       glctx::TEXTURE_MIN_FILTER,
+                       glctx::NEAREST as i32);
+    ctx.tex_parameteri(glctx::TEXTURE_2D,
+                       glctx::TEXTURE_WRAP_S,
+                       glctx::CLAMP_TO_EDGE as i32);
+    ctx.tex_parameteri(glctx::TEXTURE_2D,
+                       glctx::TEXTURE_WRAP_T,
+                       glctx::CLAMP_TO_EDGE as i32);
+    texture    
 }
