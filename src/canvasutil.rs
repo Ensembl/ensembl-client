@@ -29,6 +29,8 @@ pub fn prepare_canvas(sel: &str, mcsel: &str, debug: bool) -> CanvasElement {
         // force CSS onto attributes of canvas tag
         let width = canvas.offset_width() as u32;
         let height = canvas.offset_height() as u32;
+        let width = width - width % 2;
+        let height = height - height % 2;
         canvas.set_width(width);
         canvas.set_height(height);
         // update CSS in px, as %'s are dodgy on canvas tags

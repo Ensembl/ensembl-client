@@ -14,9 +14,6 @@ mod geometry;
 mod domutil;
 mod canvasutil;
 mod wglraw;
-mod hosc;
-mod hofi;
-mod fixx;
 mod labl;
 mod text;
 mod alloc;
@@ -39,9 +36,6 @@ use arena::{
     Stage,
 };
 
-use hosc::HoscGeometry;
-use hofi::HofiGeometry;
-use fixx::FixxGeometry;
 use labl::LablGeometry;
 use text::TextGeometry;
 
@@ -124,28 +118,21 @@ fn main() {
                 0.5*(v2+1.0).sin()+0.5,
             ];
             let h = if idx % 13 == 0 { 0.001 } else { 0.005 };
-            arena.geom_hosc(&mut |g:&mut HoscGeometry| {
-                g.rectangle(&[x,y-h,x+dx,y+h],&colour);
-            });
+            arena.rectangle_stretch(&[x,y-h,x+dx,y+h],&colour);
             if idx %5 == 0 {
-                arena.geom_hofi(&mut |g:&mut HofiGeometry| {
-                    g.triangle([x,y],[0.0,0.0, -0.004,-0.008, 0.004,-0.008],
-                               [colour[0],colour[1],1.0-colour[2]])
-                });
+                arena.triangle_pin(&[x,y],
+                                   &[0.0,0.0, -0.004,-0.008, 0.004,-0.008],
+                                   &[colour[0],colour[1],1.0-colour[2]]);
             }
             if v2 - v2.round() < 0.2 {
                 let val = daft((v2*2000000.0) as i32);
-                arena.geom_text(&mut |g:&mut TextGeometry| {
-                    g.text(&[x,y+0.01],&val,&fc_font);
-                });
+                arena.text_pin(&[x,y+0.01],&val,&fc_font);
             }
         }
     }
     // XXX pixels
-    arena.geom_fixx(&mut |g:&mut FixxGeometry| {
-        let dx = 0.001;
-        g.rectangle(&[-dx,-1.0,0.0, dx,1.0,0.0], &[0.0,0.0,0.0]);
-    });
+    let dx = 0.001;
+    arena.rectangle_fix(&[-dx,-1.0,0.0, dx,1.0,0.0], &[0.0,0.0,0.0]);
     arena.populate();
 
     arena.settle(&mut stage);

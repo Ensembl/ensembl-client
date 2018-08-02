@@ -1,7 +1,6 @@
 use geometry::{
     Geometry,
     GType,
-    GTypeHolder,
     GeomContext,
     GTypeAttrib,
     GTypeTexture,
@@ -57,7 +56,11 @@ pub struct LablGeometry {
     sampler: GTypeTexture,
 }
 
-impl GTypeHolder for LablGeometry {
+impl Geometry for LablGeometry {
+    fn populate(&mut self, adata: &mut ArenaData) { geometry::populate(self, adata); }
+    
+    fn draw(&mut self, adata: &mut ArenaData, stage: &Stage) { geometry::draw(self,adata,stage); }
+
     fn gtypes(&mut self) -> (&GeomContext,Vec<&mut GType>) {
         (&self.std,
         vec! { &mut self.sampler, &mut self.pos, &mut self.coord })
@@ -72,7 +75,7 @@ impl LablGeometry {
                                  0,255,0,255,
                                  255,255,0,255];
         LablGeometry {
-            std: GeomContext::new(adata.clone(),&V_SRC,&F_SRC),
+            std: GeomContext::new(&adata.borrow(),&V_SRC,&F_SRC),
             pos: GTypeAttrib::new(&adata.borrow(),"aVertexPosition",2,1),
             coord: GTypeAttrib::new(&adata.borrow(),"aTextureCoord",2,1),
             sampler: GTypeTexture::new(&adata.borrow(),"uSampler",0,&data[..],2,2)
@@ -85,9 +88,4 @@ impl LablGeometry {
         self.std.advance(3);
     }
 
-}
-
-impl Geometry for LablGeometry {
-    fn populate(&mut self) { geometry::populate(self); }
-    fn draw(&mut self,stage:&Stage) { geometry::draw(self,stage); }
 }
