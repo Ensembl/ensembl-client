@@ -13,6 +13,8 @@
   "author": "EMBL-EBI",
   "license": "MIT",
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.2.0",
+    "foundation-sites": "^6.5.0-rc.2",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-router-dom": "^4.3.1"
