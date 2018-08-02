@@ -29,6 +29,7 @@ use stdweb::web::{
     window
 };
 
+use rand::seq;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -74,11 +75,11 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
 }
 
 fn daft(seed: i32) -> String {
-    let s = (seed as u8);
+    let s = seed as u8;
     let t = (seed/256) as u8;
     let mut rng = SmallRng::from_seed([s,s,s,s,s,s,s,s,t,t,t,t,t,t,t,t]);
     
-    let onset = vec! { "bl", "br", "ch", "ck", "cl", "cr", "dr", "fl",
+    let onset = vec! { "bl", "br", "ch", "cl", "cr", "dr", "fl",
                        "fr", "gh", "gl", "gr", "ph", "pl", "pr",
                        "qu", "sc", "sh", "sk", "sl", "sm", "sn", "sp",
                        "st", "sw", "th", "tr", "tw", "wh", "wr",
@@ -95,9 +96,9 @@ fn daft(seed: i32) -> String {
                        "k", "l", "m", "n", "p", "r", "s", "t", "u", "v",
                        "w", "x", "y", "z" };
     let out = String::new();
-    out + rand::sample(&mut rng,onset,1)[0] + 
-          rand::sample(&mut rng,nuc,1)[0] +
-          rand::sample(&mut rng,coda,1)[0]
+    out + seq::sample_iter(&mut rng,onset,1).unwrap()[0] +
+          seq::sample_iter(&mut rng,nuc,1).unwrap()[0] +
+          seq::sample_iter(&mut rng,coda,1).unwrap()[0]
 }
 
 fn main() {
@@ -107,7 +108,7 @@ fn main() {
     let mut stage = Stage::new();
     stage.zoom = 0.1;
 
-    let mut a_spec = ArenaSpec::new();
+    let a_spec = ArenaSpec::new();
     //a_spec.debug = true;
     let mut arena = Arena::new("#glcanvas","#managedcanvasholder",a_spec);
     for yidx in -20..20 {
@@ -147,6 +148,7 @@ fn main() {
     });
     arena.populate();
 
+    arena.settle(&mut stage);
     arena.animate(&stage);
 
 

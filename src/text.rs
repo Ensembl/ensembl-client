@@ -5,21 +5,11 @@ use geometry::{
     GTypeAttrib,
     GType,
     GTypeCanvasTexture,
-    GTypeTicket,
-};
-
-use webgl_rendering_context::{
-    WebGLRenderingContext as glctx,
-    WebGLBuffer as glbuf,
-    WebGLProgram as glprog
 };
 
 use geometry;
 
-use alloc::{
-    Ticket,
-    Allocator
-};
+use alloc::Ticket;
 
 use arena::{
     ArenaData,
@@ -27,8 +17,6 @@ use arena::{
 };
 
 use canvasutil::FCFont;
-use canvasutil::FlatCanvas;
-use canvasutil;
 
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -149,7 +137,7 @@ impl TextGeometry {
     
     fn prepopulate(&mut self) {
         let adatac = self.std.get_adata();
-        let mut adata = adatac.borrow_mut();
+        let adata = adatac.borrow_mut();
         for tr in self.tickets.values() {
             let (x,y) = adata.flat_alloc.position(&tr.ticket);
             adata.flat.text(&tr.chars,x,y,&tr.font);

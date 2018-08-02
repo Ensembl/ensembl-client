@@ -1,6 +1,3 @@
-#[macro_use]
-use util;
-
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
 };
@@ -9,9 +6,6 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use canvasutil;
-use canvasutil::{
-    FlatCanvas
-};
 use wglraw;
 use geometry::Geometry;
 use hosc::HoscGeometry;
