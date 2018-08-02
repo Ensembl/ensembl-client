@@ -8,17 +8,19 @@ use std::rc::Rc;
 use canvasutil;
 use wglraw;
 use geometry::Geometry;
-use hosc::HoscGeometry;
-use hofi::HofiGeometry;
-use fixx::FixxGeometry;
 use labl::LablGeometry;
 use text::TextGeometry;
+use geometry::stretch::StretchGeometry;
+use geometry::pin::PinGeometry;
+use geometry::fix::FixGeometry;
+
+use canvasutil::FCFont;
 
 struct ArenaGeometries {
-    hosc: HoscGeometry,
-    hofi: HofiGeometry,
+    stretch: StretchGeometry,
+    pin: PinGeometry,
+    fix: FixGeometry,
     labl: LablGeometry,
-    fixx: FixxGeometry,
     text: TextGeometry,
 }
 
@@ -95,11 +97,12 @@ impl Arena {
             flat_alloc: Allocator::new(16),
         }));
         let data_g = data.clone();
+        let data_b = data_g.borrow();
         let arena = Arena { data, geom: ArenaGeometries {
-            hosc: HoscGeometry::new(data_g.clone()),
-            hofi: HofiGeometry::new(data_g.clone()),
+            stretch: enclose! { (data_g) StretchGeometry::new(&data_b) },
+            pin:     enclose! { (data_g) PinGeometry::new(&data_b) },
+            fix:     enclose! { (data_g) FixGeometry::new(&data_b) },
             labl: LablGeometry::new(data_g.clone()),
-            fixx: FixxGeometry::new(data_g.clone()),
             text: enclose! { (data_g) TextGeometry::new(data_g) },
         }};
         arena
@@ -108,22 +111,7 @@ impl Arena {
     pub fn settle(&self, stage: &mut Stage) {
         self.data.borrow().settle(stage);
     }
-
-    pub fn geom_hosc(&mut self,f: &mut FnMut(&mut HoscGeometry)) {
-        let g = &mut self.geom.hosc;
-        f(g);
-    }
     
-    pub fn geom_hofi(&mut self,f: &mut FnMut(&mut HofiGeometry)) {
-        let g = &mut self.geom.hofi;
-        f(g);
-    }
-    
-    pub fn geom_fixx(&mut self,f: &mut FnMut(&mut FixxGeometry)) {
-        let g = &mut self.geom.fixx;
-        f(g);
-    }    
-
     pub fn geom_labl(&mut self,f: &mut FnMut(&mut LablGeometry)) {
         let g = &mut self.geom.labl;
         f(g);
@@ -134,17 +122,41 @@ impl Arena {
         f(g);
     }    
 
+    pub fn triangle_stretch(&mut self, p: &[f32;6], c: &[f32;3]) {
+        self.geom.stretch.triangle(p,c);
+    }
+
+    pub fn rectangle_stretch(&mut self, p: &[f32;4], c: &[f32;3]) {
+        self.geom.stretch.rectangle(p,c);
+    }
+
+    pub fn triangle_pin(&mut self, r: &[f32;2], p: &[f32;6], c :&[f32;3]) {
+        self.geom.pin.triangle(r,p,c);
+    }
+
+    pub fn text_pin(&mut self, origin:&[f32;2],chars: &str,font: &FCFont) {
+        let datam = &mut self.data.borrow_mut();
+        self.geom.text.text(datam,origin,chars,font);
+    }
+
+    pub fn triangle_fix(&mut self,points:&[f32;9],colour:&[f32;3]) {
+        self.geom.fix.triangle(points,colour);
+    }
+    
+    pub fn rectangle_fix(&mut self,p:&[f32;6],colour:&[f32;3]) {
+        self.geom.fix.rectangle(p,colour);
+    }
+
     pub fn populate(&mut self) {
-        {
-            let datam = &mut self.data.borrow_mut();
-            let (x,y) = datam.flat_alloc.allocate();
-            datam.flat = Rc::new(canvasutil::FlatCanvas::create(x,y));
-        }
-        self.geom_hosc(&mut |g:&mut HoscGeometry| g.populate());
-        self.geom_hofi(&mut |g:&mut HofiGeometry| g.populate());
-        self.geom_text(&mut |g:&mut TextGeometry| g.populate());
-        self.geom_labl(&mut |g:&mut LablGeometry| g.populate());
-        self.geom_fixx(&mut |g:&mut FixxGeometry| g.populate());
+        let datam = &mut self.data.borrow_mut();
+        let (x,y) = datam.flat_alloc.allocate();
+        datam.flat = Rc::new(canvasutil::FlatCanvas::create(x,y));
+
+        self.geom.stretch.populate(datam);
+        self.geom.pin.populate(datam);
+        self.geom.text.populate(datam);
+        self.geom.labl.populate(datam);
+        self.geom.fix.populate(datam);
     }
 
     pub fn animate(&mut self, stage: &Stage) {
@@ -155,11 +167,12 @@ impl Arena {
             ctx.depth_func(glctx::LEQUAL);
         }
         // draw each geometry
-        self.geom_hosc(&mut |g:&mut HoscGeometry| g.draw(&stage));
-        self.geom_hofi(&mut |g:&mut HofiGeometry| g.draw(&stage));
-        self.geom_text(&mut |g:&mut TextGeometry| g.draw(&stage));
-        self.geom_labl(&mut |g:&mut LablGeometry| g.draw(&stage));
-        self.geom_fixx(&mut |g:&mut FixxGeometry| g.draw(&stage));
+        let datam = &mut self.data.borrow_mut();
+        self.geom.stretch.draw(datam,&stage);
+        self.geom.pin.draw(datam,&stage);
+        self.geom.text.draw(datam,&stage);
+        self.geom.labl.draw(datam,&stage);
+        self.geom.fix.draw(datam,&stage);
     }
 }
 

@@ -1,3 +1,7 @@
+pub mod stretch;
+pub mod pin;
+pub mod fix;
+
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
     WebGLBuffer as glbuf,
@@ -16,21 +20,20 @@ use std::rc::Rc;
 
 /* Geometries must implement Geometry for the arena to use them */
 pub trait Geometry {
-    fn populate(&mut self);
-    fn draw(&mut self,stage:&Stage);
+    fn gtypes(&mut self) -> (&GeomContext,Vec<&mut GType>);
+    fn populate(&mut self, &mut ArenaData);
+    fn draw(&mut self, adata: &mut ArenaData, stage:&Stage);
 }
 
-pub fn draw(holder: &mut GTypeHolder,stage:&Stage) {
+pub fn draw(holder: &mut Geometry, adata: &ArenaData ,stage:&Stage) {
     let (std,types) = holder.gtypes();
     
-    let adatac = std.adata.clone();
-    let data = adatac.borrow();
     let indices = std.indices;
     let prog = std.prog.clone();
 
     // set uniforms
-    let ctx = &data.ctx;
-    let aspect = data.aspect;
+    let ctx = &adata.ctx;
+    let aspect = adata.aspect;
     ctx.use_program(Some(&prog));
     wglraw::set_uniform_1f(&ctx,&prog,"uStageHpos",stage.hpos);
     wglraw::set_uniform_1f(&ctx,&prog,"uStageVpos",stage.vpos);
@@ -40,7 +43,7 @@ pub fn draw(holder: &mut GTypeHolder,stage:&Stage) {
     // link
     ctx.use_program(Some(&prog));
     for g in &types {
-        g.link(&data,&prog);
+        g.link(adata,&prog);
     }      
     // draw
     ctx.draw_arrays(glctx::TRIANGLES,0,indices);
@@ -50,17 +53,15 @@ pub fn draw(holder: &mut GTypeHolder,stage:&Stage) {
     }
 }
 
-pub fn populate(holder: &mut GTypeHolder) {
+pub fn populate(holder: &mut Geometry, adata: &mut ArenaData) {
     let (std,mut types) = holder.gtypes();
-    let adatac = std.adata.clone();
-    let adata = adatac.borrow();
     for g in &mut types {
-        g.populate(&adata);
+        g.populate(adata);
     }
 }
 
-pub fn prog(adata: Rc<RefCell<ArenaData>>,v_src: &str, f_src: &str) -> glprog {
-    let ctx = &adata.borrow().ctx;
+pub fn prog(adata: &ArenaData,v_src: &str, f_src: &str) -> glprog {
+    let ctx = &adata.ctx;
     wglraw::prepare_shaders(&ctx,v_src,f_src)
 }
 
@@ -73,33 +74,19 @@ pub trait GType {
 }
 
 pub struct GeomContext {
-    adata: Rc<RefCell<ArenaData>>,
     indices: i32,
     prog: Rc<glprog>    
 }
 
 impl GeomContext {
-    pub fn new(adata: Rc<RefCell<ArenaData>>, vsrc: &str, fsrc: &str) -> GeomContext {
+    pub fn new(adata: &ArenaData,vsrc: &str, fsrc: &str) -> GeomContext {
         GeomContext {
-            adata: adata.clone(),
-            prog: Rc::new(prog(adata.clone(),vsrc,fsrc)),
+            prog: Rc::new(prog(adata,vsrc,fsrc)),
             indices: 0,
         }
     }
     
     pub fn advance(&mut self,amt: i32) { self.indices += amt; }
-    pub fn get_adata(&self) -> Rc<RefCell<ArenaData>> {
-        return self.adata.clone();
-    }
-}
-
-pub trait GTypeHolder {
-    fn gtypes(&mut self) -> (&GeomContext,Vec<&mut GType>);
-}
-
-impl Geometry for GTypeHolder {
-    fn populate(&mut self) { populate(self); }
-    fn draw(&mut self,stage:&Stage) { draw(self,stage); }
 }
 
 pub struct GTypeAttrib {
@@ -198,4 +185,55 @@ impl GType for GTypeCanvasTexture {
         }
         wglraw::set_uniform_1i(&adata.ctx,prog,&self.uname,self.slot as i32);
     }
+}
+
+pub fn shader_v_solid(x: &str, y: &str) -> String{
+    format!("
+        attribute vec2 aVertexPosition;
+        attribute vec3 aVertexColour;
+        attribute vec2 aOrigin;
+
+        uniform float uAspect;
+        uniform float uStageHpos;
+        uniform float uStageVpos;
+        uniform float uStageZoom;
+        uniform vec2 uCursor;
+
+        varying lowp vec3 vColour;
+
+        void main() {{
+             gl_Position = vec4({},{},0.0, 1.0);
+            vColour = aVertexColour;
+        }}
+    ",x,y).to_string()
+}
+
+pub fn shader_v_solid_3vec(x: &str, y: &str) -> String{
+    format!("
+        attribute vec3 aVertexPosition;
+        attribute vec3 aVertexColour;
+
+        uniform float uAspect;
+        uniform float uStageHpos;
+        uniform float uStageVpos;
+        uniform float uStageZoom;
+        uniform vec2 uCursor;
+
+        varying lowp vec3 vColour;
+
+        void main() {{
+             gl_Position = vec4({},{},0.0, 1.0);
+            vColour = aVertexColour;
+        }}
+    ",x,y).to_string()
+}
+
+pub fn shader_f_solid() -> String {
+    "
+    varying lowp vec3 vColour;
+
+    void main() {
+          gl_FragColor = vec4(vColour, 1.0);
+    }
+    ".to_string()
 }

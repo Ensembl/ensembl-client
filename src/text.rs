@@ -1,7 +1,6 @@
 use geometry::{
     Geometry,
     GeomContext,
-    GTypeHolder,
     GTypeAttrib,
     GType,
     GTypeCanvasTexture,
@@ -100,7 +99,14 @@ pub struct TextGeometry {
     sampler: GTypeCanvasTexture,
 }
 
-impl GTypeHolder for TextGeometry {
+impl Geometry for TextGeometry {
+    fn populate(&mut self, adata: &mut ArenaData) {
+        self.prepopulate(adata);
+        geometry::populate(self,adata);
+    }
+
+    fn draw(&mut self, adata: &mut ArenaData, stage:&Stage) { geometry::draw(self,adata,stage); }
+
     fn gtypes(&mut self) -> (&GeomContext,Vec<&mut GType>) {
         (&self.std,
         vec! { &mut self.sampler, &mut self.pos,
@@ -111,7 +117,7 @@ impl GTypeHolder for TextGeometry {
 impl TextGeometry {
     pub fn new(adata: Rc<RefCell<ArenaData>>) -> TextGeometry {                   
         TextGeometry {
-            std: GeomContext::new(adata.clone(),&V_SRC,&F_SRC),
+            std: GeomContext::new(&adata.borrow(),&V_SRC,&F_SRC),
             pos:    GTypeAttrib::new(&adata.borrow(),"aVertexPosition",2,1),
             origin: GTypeAttrib::new(&adata.borrow(),"aOrigin",2,3),
             coord:  GTypeAttrib::new(&adata.borrow(),"aTextureCoord",2,1),
@@ -135,9 +141,7 @@ impl TextGeometry {
                              &[t[2],t[3],t[0],t[3],t[2],t[1]]);
     }
     
-    fn prepopulate(&mut self) {
-        let adatac = self.std.get_adata();
-        let adata = adatac.borrow_mut();
+    fn prepopulate(&mut self, adata: &mut ArenaData) {
         for tr in self.tickets.values() {
             let (x,y) = adata.flat_alloc.position(&tr.ticket);
             adata.flat.text(&tr.chars,x,y,&tr.font);
@@ -162,25 +166,15 @@ impl TextGeometry {
         self.requests.clear();
     }
     
-    pub fn text(&mut self,origin:&[f32;2],text: &str,font: &FCFont) {
-        let adatac = self.std.get_adata();
-        let mut adata = adatac.borrow_mut();
+    pub fn text(&mut self, adata: &mut ArenaData, origin:&[f32;2],text: &str,font: &FCFont) {
         let tickets = &mut self.tickets;
         let tr = match tickets.entry((text.to_string(),font.clone())) {
             Entry::Occupied(v) => 
                 v.into_mut(),
             Entry::Vacant(v) => 
-                v.insert(TextTicketReq::new(&mut adata,text,font))
+                v.insert(TextTicketReq::new(adata,text,font))
         };
         let req = TextReq::new(tr.clone(),origin);
         self.requests.push(req);
     }
-}
-
-impl Geometry for TextGeometry {
-    fn populate(&mut self) {
-        self.prepopulate();
-        geometry::populate(self);
-    }
-    fn draw(&mut self,stage:&Stage) { geometry::draw(self,stage); }
 }
