@@ -49,36 +49,36 @@ impl ArenaData {
         (y_px as f64 * 2.0 / self.height_px as f64) as f32
     }
     
-    pub fn nudge(&self,input: (f32,f32)) -> (f32,f32) {
-        js! { console.log("input",@{input.0},@{input.1}); };
-        let n = ((input.0 * self.width_px as f32 / 2.).round(),
-                 (input.1 * self.height_px as f32 / 2.).round());
-        js! { console.log("n",@{n.0},@{n.1}); };
-        let p = (n.0 * 2. / self.width_px as f32,
-                 n.1 * 2. / self.height_px as f32);
-        js! { console.log("p",@{p.0},@{p.1}); };
-        let q = (p.0-input.0, p.1-input.1);
-        js! { console.log("q",@{q.0},@{q.1}); };
-        q
+    fn nudge1(&self,val: f32, size: u32) -> f32 {
+        let n = (val * size as f32 / 2.).round();
+        n * 2. / size as f32
+    }
+    
+    pub fn nudge(&self,input: [f32;2]) -> [f32;2] {
+        [self.nudge1(input[0],self.width_px),
+         self.nudge1(input[1],self.height_px)]
     }
     
     pub fn settle(&self, stage: &mut Stage) {
-        let (hpos,vpos) = self.nudge((stage.hpos,stage.vpos));
-        stage.hpos += hpos;
-        stage.vpos += vpos;
+        // XXX settle to account for zoom
+        let [hpos,vpos] = self.nudge([stage.hpos,stage.vpos]);
+        stage.hpos = hpos;
+        stage.vpos = vpos;
     }
 }
 
 pub struct ArenaSpec {
     pub flat_width: u32,
     pub flat_height: u32,
+    pub debug: bool,
 }
 
 impl ArenaSpec {
     pub fn new() -> ArenaSpec {
         ArenaSpec {
             flat_width: 256,
-            flat_height: 256
+            flat_height: 256,
+            debug: false
         }
     }
 }
@@ -89,10 +89,10 @@ pub struct Arena {
 }
 
 impl Arena {
-    pub fn new(selector: &str, spec: ArenaSpec) -> Arena {
-        let canvas = canvasutil::prepare_canvas(selector);
+    pub fn new(selector: &str, mcsel: &str, spec: ArenaSpec) -> Arena {
+        let canvas = canvasutil::prepare_canvas(selector,mcsel,spec.debug);
         let ctx = wglraw::prepare_context(&canvas);
-        let flat = Rc::new(canvasutil::FlatCanvas::create(spec.flat_width,spec.flat_height));
+        let flat = Rc::new(canvasutil::FlatCanvas::create(2,2));
         let data = Rc::new(RefCell::new(ArenaData {
             ctx, spec, flat,
             aspect: canvasutil::aspect_ratio(&canvas),
@@ -141,8 +141,11 @@ impl Arena {
     }    
 
     pub fn populate(&mut self) {
-        let (x,y) = self.data.borrow_mut().flat_alloc.allocate();
-        js! { console.log("xy",@{x},@{y}); };
+        {
+            let datam = &mut self.data.borrow_mut();
+            let (x,y) = datam.flat_alloc.allocate();
+            datam.flat = Rc::new(canvasutil::FlatCanvas::create(x,y));
+        }
         self.geom_hosc(&mut |g:&mut HoscGeometry| g.populate());
         self.geom_hofi(&mut |g:&mut HofiGeometry| g.populate());
         self.geom_labl(&mut |g:&mut LablGeometry| g.populate());
