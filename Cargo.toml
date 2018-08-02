@@ -9,6 +9,7 @@ stdweb-derive = "*"
 serde = "*"
 serde_derive = "*"
 lazy_static = "*"
+rand="0.5.4"
 
 [build-dependencies]
 webgl_generator = "0.1.0"
