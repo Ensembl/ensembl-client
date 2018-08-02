@@ -1,7 +1,5 @@
 use stdweb::web::{
     IHtmlElement,
-    IEventTarget,
-    window,
     INode,
     TextBaseline,
     CanvasRenderingContext2d,
@@ -12,7 +10,6 @@ use stdweb::web::{
 use stdweb::web::html_element::{
     CanvasElement
 };
-use stdweb::web::event::ResizeEvent;
 
 use stdweb::unstable::TryInto;
 

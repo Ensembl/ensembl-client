@@ -10,10 +10,6 @@ use webgl_rendering_context::{
     GLint,
 };
 
-use domutil;
-
-use stdweb::unstable::TryInto;
-
 pub fn prepare_context(canvas: &CanvasElement) -> glctx {
     let context: glctx = canvas.get_context().unwrap();
     context.clear_color(1.0,1.0,1.0,1.0);

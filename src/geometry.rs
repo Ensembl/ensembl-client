@@ -10,18 +10,9 @@ use arena::{
     ArenaData
 };
 
-use canvasutil::{
-    FlatCanvas
-};
-
 use wglraw;
 use std::cell::RefCell;
 use std::rc::Rc;
-use domutil;
-use alloc::Ticket;
-
-use stdweb::unstable::TryInto;
-use stdweb::web::html_element::CanvasElement;
 
 /* Geometries must implement Geometry for the arena to use them */
 pub trait Geometry {
@@ -30,7 +21,7 @@ pub trait Geometry {
 }
 
 pub fn draw(holder: &mut GTypeHolder,stage:&Stage) {
-    let (std,mut types) = holder.gtypes();
+    let (std,types) = holder.gtypes();
     
     let adatac = std.adata.clone();
     let data = adatac.borrow();
@@ -206,33 +197,5 @@ impl GType for GTypeCanvasTexture {
             adata.ctx.bind_texture(glctx::TEXTURE_2D,Some(&texture));
         }
         wglraw::set_uniform_1i(&adata.ctx,prog,&self.uname,self.slot as i32);
-    }
-}
-
-pub struct GTypeTicket {
-    ticket: Vec<(Ticket,Box<Fn(&ArenaData,u32,u32)>)>,
-}
-
-impl GTypeTicket {
-    pub fn new() -> GTypeTicket {
-        GTypeTicket {
-            ticket: Vec::<(Ticket,Box<Fn(&ArenaData,u32,u32)>)>::new()
-        }
-    }
-    
-    pub fn add_ticket(&mut self,t : Ticket, cb: Box<Fn(&ArenaData,u32,u32)>) {
-        self.ticket.push((t,cb));
-    }
-}
-
-impl GType for GTypeTicket {
-    fn populate(&mut self, adata: &ArenaData) {
-        for (t,cb) in self.ticket.iter() {
-            let (x,y) = adata.flat_alloc.position(t);
-            cb(adata,x,y);
-        }
-    }
-    
-    fn link(&self, adata : &ArenaData, prog : &glprog) {
     }
 }
