@@ -27,6 +27,8 @@ use arena::{
 };
 
 use canvasutil::FCFont;
+use canvasutil::FlatCanvas;
+use canvasutil;
 
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -65,6 +67,7 @@ void main() {
 
 pub struct TextGeometry {
     std: GeomContext,
+    requests: Vec<TextReq>,
     pos: GTypeAttrib,
     origin: GTypeAttrib,
     coord: GTypeAttrib,
@@ -73,25 +76,27 @@ pub struct TextGeometry {
 }
 
 pub struct TextReq {
+    origin: [f32;2],
     width: u32,
     height: u32,
     chars: String,
-    font: FCFont
+    font: FCFont,
+    ticket: Ticket
 }
 
 impl TextReq {
-    fn new(chars: &str, width: u32, height: u32, font: &FCFont) -> TextReq {
+    fn new(adata: &mut ArenaData, chars: &str, origin: &[f32;2], font: &FCFont) -> TextReq {
+        let flat = &adata.flat;
+        let (width, height) = flat.measure(chars,font);
+        let flat_alloc = &mut adata.flat_alloc;
         TextReq {
-            width, height,
+            width, height, origin: *origin,
+            ticket: flat_alloc.request(width,height),
             font: font.clone(),
             chars: chars.to_string()
         }
     }
-    
-    fn make_ticket(&self, flat_alloc: &mut Allocator) -> Ticket {
-        flat_alloc.request(self.width,self.height)
-    }
-    
+        
     fn insert(&self, adata: &ArenaData, x: u32, y: u32) {
         adata.flat.text(&self.chars,x,y,&self.font);
     }
@@ -115,51 +120,63 @@ impl TextGeometry {
             coord:  GTypeAttrib::new(&adata.borrow(),"aTextureCoord",2,1),
             sampler: GTypeCanvasTexture::new("uSampler",0),
             tickets: GTypeTicket::new(),
+            requests: Vec::<TextReq>::new(),
         }
     }
             
-    pub fn triangle(&mut self,origin:&[f32;2],points:&[f32;6],tex_points:&[f32;6]) {
+    fn triangle(&mut self,origin:&[f32;2],points:&[f32;6],tex_points:&[f32;6]) {
         self.pos.add(points);
         self.origin.add(origin);
         self.coord.add(tex_points);
         self.std.advance(3);
     }
     
-    pub fn rectangle(&mut self,origin:&[f32;2],p:&[f32;4],t:&[f32;4]) {
+    fn rectangle(&mut self,origin:&[f32;2],p:&[f32;4],t:&[f32;4]) {
         self.triangle(origin,&[p[0],p[1],p[2],p[1],p[0],p[3]],
                              &[t[0],t[1],t[2],t[1],t[0],t[3]]);
         self.triangle(origin,&[p[2],p[3],p[0],p[3],p[2],p[1]],
                              &[t[2],t[3],t[0],t[3],t[2],t[1]]);
     }
     
+    fn prepopulate(&mut self) {
+        let adatac = self.std.get_adata();
+        let mut adata = adatac.borrow_mut();
+        for req in &self.requests {
+            let (x,y) = adata.flat_alloc.position(&req.ticket);
+            adata.flat.text(&req.chars,x,y,&req.font);
+        }
+        let flat = &adata.flat;
+        let mut data = Vec::<([f32;2],[f32;4],[f32;4])>::new();
+        for req in &self.requests {
+            let nudge = adata.nudge((req.origin[0],req.origin[1]));
+            let p = [
+                nudge.0, nudge.1, 
+                nudge.0 + adata.prop_x(req.width),
+                nudge.1 + adata.prop_y(req.height)
+            ];
+            let (x,y) = adata.flat_alloc.position(&req.ticket);
+            let t = [flat.prop_x(x), flat.prop_y(y + req.height),
+                     flat.prop_x(x + req.width), flat.prop_y(y)];
+            data.push((req.origin,p,t));
+        }
+        for (origin,p,t) in data {
+            self.rectangle(&origin,&p,&t);
+        }
+        self.requests.clear();
+    }
+    
     pub fn text(&mut self,origin:&[f32;2],text: &str,font: &FCFont) {
         let adatac = self.std.get_adata();
-        {
-            let mut adata = adatac.borrow_mut();
-            let flat_alloc = &mut adata.flat_alloc;
-            let req = TextReq::new("Hello, World!",80,16,font);
-            let t = req.make_ticket(flat_alloc);
-            let t = req.make_ticket(flat_alloc);
-            let f = Box::new(
-                move |adata: &ArenaData,x: u32,y: u32| {
-                    req.insert(adata,x,y);
-                }
-            );
-            self.tickets.add_ticket(t,f);
-        }
-        let adata = adatac.borrow();
-        let flat = &adata.flat;
-        let (x_px,y_px) = (0,0);
-        let (w_px,h_px) = flat.text("Hello, World!",0,0,font);
-        let (x,y) = (flat.prop_x(x_px),flat.prop_y(y_px));
-        let (w,h) = (flat.prop_x(w_px),flat.prop_y(h_px));
-        let t2 = [x,y+h,x+w,y];
-        let p2 = [0.,0.,adata.prop_x(w_px),adata.prop_y(h_px)];
-        self.rectangle(origin,&p2,&t2);
+        let mut adata = adatac.borrow_mut();
+        let req = TextReq::new(&mut adata,text,origin,font);
+        self.requests.push(req);
     }
 }
 
 impl Geometry for TextGeometry {
-    fn populate(&mut self) { geometry::populate(self); }
+    fn populate(&mut self) {
+        self.prepopulate();
+        geometry::populate(self);
+    }
     fn draw(&mut self,stage:&Stage) { geometry::draw(self,stage); }
 }

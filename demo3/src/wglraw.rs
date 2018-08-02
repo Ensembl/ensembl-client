@@ -106,7 +106,7 @@ pub fn make_texture(ctx: &glctx,x: u32, y: u32,data: &[u8]) -> gltex {
     
     ctx.tex_parameteri(glctx::TEXTURE_2D,
                        glctx::TEXTURE_MIN_FILTER,
-                       glctx::LINEAR as i32);
+                       glctx::NEAREST as i32);
     ctx.tex_parameteri(glctx::TEXTURE_2D,
                        glctx::TEXTURE_WRAP_S,
                        glctx::CLAMP_TO_EDGE as i32);
@@ -125,7 +125,7 @@ pub fn canvas_texture(ctx: &glctx,cnv : &CanvasElement) -> gltex {
     
     ctx.tex_parameteri(glctx::TEXTURE_2D,
                        glctx::TEXTURE_MIN_FILTER,
-                       glctx::LINEAR as i32);
+                       glctx::NEAREST as i32);
     ctx.tex_parameteri(glctx::TEXTURE_2D,
                        glctx::TEXTURE_WRAP_S,
                        glctx::CLAMP_TO_EDGE as i32);

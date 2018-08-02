@@ -84,6 +84,14 @@ impl FlatCanvas {
         let height_px = font.height;
         (width_px+2*font.xpad,height_px+2*font.ypad)
     }
+
+    pub fn measure(&self,text : &str, font: &FCFont) -> (u32,u32) {
+        font.setup(&self.context);
+        let m = self.context.measure_text(text);
+        let width_px = m.unwrap().get_width().ceil() as u32;
+        let height_px = font.height;
+        (width_px+2*font.xpad,height_px+2*font.ypad)
+    }
     
     pub fn element(&self) -> &CanvasElement {
         &self.canvas
