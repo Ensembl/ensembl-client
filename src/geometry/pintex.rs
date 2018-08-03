@@ -8,23 +8,22 @@ use geometry::{
 
 use geometry;
 
-use texture::TexGeometry;
-
 use arena::{
     ArenaData,
+    ArenaCanvases,
+    ArenaDims,
     Stage
 };
 
 use texture::{
-    GTextureItemManager,
-    GTextureRequestManager,
-    TextureRequest,
+    TextureTargetManager,
+    TextureDrawRequest,
     TextureItem,
 };
 
 use std::rc::Rc;
 
-struct PinTexGeometryImpl {
+pub struct PinTexGeometryImpl {
     std: GeomContext,
     pos: GTypeAttrib,
     origin: GTypeAttrib,
@@ -34,7 +33,7 @@ struct PinTexGeometryImpl {
 
 pub struct PinTexGeometry {
     data: PinTexGeometryImpl,
-    pub gtexitman: GTextureItemManager,
+    pub gtexitman: TextureTargetManager<PinTexGeometryImpl,PinTexTextureItem>,
 }
 
 impl Geometry for PinTexGeometry {
@@ -54,13 +53,6 @@ impl Geometry for PinTexGeometry {
     }
 }
 
-impl TexGeometry for PinTexGeometryImpl {
-    fn render(&mut self,origin:&[f32;2],scale:&[f32;2],p:&[f32;4],t:&[f32;4]) {
-        let p = [p[0],p[1],p[2]*scale[0],p[3]*scale[1]];
-        self.rectangle(&origin,&p,&t);
-    }
-}
-
 impl PinTexGeometryImpl {
     fn triangle(&mut self,origin:&[f32;2],points:&[f32;6],tex_points:&[f32;6]) {
         self.pos.add(points);
@@ -74,6 +66,32 @@ impl PinTexGeometryImpl {
                              &[t[0],t[1],t[2],t[1],t[0],t[3]]);
         self.triangle(origin,&[p[2],p[3],p[0],p[3],p[2],p[1]],
                              &[t[2],t[3],t[0],t[3],t[2],t[1]]);
+    }
+}
+
+pub struct PinTexTextureItem {
+    origin: [f32;2],
+    scale: [f32;2],
+}
+
+impl PinTexTextureItem {
+    pub fn new(origin: &[f32;2], scale: &[f32;2]) -> PinTexTextureItem {
+        PinTexTextureItem {
+            origin: *origin, scale: *scale,
+        }
+    }
+}
+
+impl TextureItem<PinTexGeometryImpl> for PinTexTextureItem {
+    fn process(&self, geom: &mut PinTexGeometryImpl, x: u32, y: u32, width: u32, height: u32, canvs: &ArenaCanvases, dims: &ArenaDims) {
+        let flat = &canvs.flat;
+        let origin = dims.nudge(self.origin);
+        let p = [0., 0., dims.prop_x(width), dims.prop_y(height)];
+        
+        let t = [flat.prop_x(x), flat.prop_y(y + height),
+                 flat.prop_x(x + width), flat.prop_y(y)];
+        let p = [p[0],p[1],p[2]*self.scale[0],p[3]*self.scale[1]];
+        geom.rectangle(&origin,&p,&t);
     }
 }
 
@@ -92,8 +110,13 @@ impl PinTexGeometry {
                 coord:  GTypeAttrib::new(adata,"aTextureCoord",2,1),
                 sampler: GTypeCanvasTexture::new("uSampler",0),
             },
-            gtexitman: GTextureItemManager::new(),
+            gtexitman: TextureTargetManager::<PinTexGeometryImpl,PinTexTextureItem>::new(),
         }
+    }
+
+    pub fn add_texture(&mut self, req: Rc<TextureDrawRequest>, origin: &[f32;2], scale: &[f32;2]) {
+        let ri = PinTexTextureItem::new(origin,scale);
+        self.gtexitman.add_item(req,ri);
     }
 
     fn prepopulate(&mut self, adata: &mut ArenaData) {

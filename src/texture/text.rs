@@ -4,63 +4,64 @@ use std::collections::hash_map::Entry;
 use canvasutil::FCFont;
 use arena::ArenaCanvases;
 
-use texture::{
-    TextureRequest,
-    TextureGenerator,
-    TextureItem,
-    GTextureItemManager,
-    GTextureRequestManager,
+use texture::textureimpl::{
+    TextureArtist,
+    create_draw_request,
 };
 
-struct TextTextureGenerator {
+use texture::{
+    TextureDrawRequest,
+    TextureSourceManager,
+};
+
+/* TextTextureArtist - A TextureArtist which can draw text */
+
+struct TextTextureArtist {
     chars: String,
     font: FCFont,    
 }
 
-impl TextTextureGenerator {
-    fn new(chars: &str, font: &FCFont) -> TextTextureGenerator {
-        TextTextureGenerator {
+impl TextTextureArtist {
+    fn new(chars: &str, font: &FCFont) -> TextTextureArtist {
+        TextTextureArtist {
             chars: chars.to_string(),
             font: font.clone()
         }
     }
 }
 
-impl TextureGenerator for TextTextureGenerator {
+impl TextureArtist for TextTextureArtist {
     fn draw(&self, canvs: &mut ArenaCanvases, x: u32, y: u32) {
         canvs.flat.text(&self.chars,x,y,&self.font);
     }
 }
 
+/* TextTextureStore - A TextureStore which caches string/font combinations */
+
 pub struct TextTextureStore {
-    cache: HashMap<(String,FCFont),Rc<TextureRequest>>
+    cache: HashMap<(String,FCFont),Rc<TextureDrawRequest>>
 }
 
 impl TextTextureStore {
     pub fn new() -> TextTextureStore {
         TextTextureStore {
-            cache: HashMap::<(String,FCFont),Rc<TextureRequest>>::new(),
+            cache: HashMap::<(String,FCFont),Rc<TextureDrawRequest>>::new(),
         }
     }
 
-    pub fn add(&mut self,gtexitman: &mut GTextureItemManager, gtexreqman: &mut GTextureRequestManager, canvas: &mut ArenaCanvases, origin:&[f32;2],chars: &str,font: &FCFont) {
+    pub fn add(&mut self, gtexreqman: &mut TextureSourceManager, canvas: &mut ArenaCanvases, chars: &str,font: &FCFont) -> Rc<TextureDrawRequest> {
         let tickets = &mut self.cache;
         let tr = match tickets.entry((chars.to_string(),font.clone())) {
             Entry::Occupied(v) => 
                 v.into_mut(),
             Entry::Vacant(v) => {
-                let flat = &canvas.flat;
-                let (width, height) = flat.measure(chars,font);
-                let flat_alloc = &mut canvas.flat_alloc;
-                let val = Rc::new(TextureRequest::new(
-                                    Box::new(TextTextureGenerator::new(chars,font)),
-                                    flat_alloc.request(width,height)));
-                gtexreqman.add_request(val.clone());
+                let (width, height) = canvas.flat.measure(chars,font);
+                let val = create_draw_request(gtexreqman,canvas,
+                                    Box::new(TextTextureArtist::new(chars,font)),
+                                    width,height);
                 v.insert(val)
             }
         };
-        
-        let req = TextureItem::new(tr.clone(),origin,&[1.,1.]);
-        gtexitman.add_item(req);
+        tr.clone()
     }
 }

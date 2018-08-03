@@ -104,10 +104,8 @@ impl Height {
      */
     fn alloc(&mut self, width: u32, max_width: u32) -> Option<Tranche> {
         let mut target : Option<usize> = None;
-        let v = format!("{:?}",self.spaces);
         for (i,space) in self.spaces.iter().enumerate() {
             if space.x + width <= max_width {
-                let v: u32 = i as u32;
                 target = Some(i);
                 break;
             }
