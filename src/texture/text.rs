@@ -8,7 +8,8 @@ use texture::{
     TextureRequest,
     TextureGenerator,
     TextureItem,
-    GTextureReceiver,
+    GTextureItemManager,
+    GTextureRequestManager,
 };
 
 struct TextTextureGenerator {
@@ -42,7 +43,7 @@ impl TextTextureStore {
         }
     }
 
-    pub fn add(&mut self,gtexman: &mut GTextureReceiver, canvas: &mut ArenaCanvases, origin:&[f32;2],chars: &str,font: &FCFont) {
+    pub fn add(&mut self,gtexitman: &mut GTextureItemManager, gtexreqman: &mut GTextureRequestManager, canvas: &mut ArenaCanvases, origin:&[f32;2],chars: &str,font: &FCFont) {
         let tickets = &mut self.cache;
         let tr = match tickets.entry((chars.to_string(),font.clone())) {
             Entry::Occupied(v) => 
@@ -54,12 +55,12 @@ impl TextTextureStore {
                 let val = Rc::new(TextureRequest::new(
                                     Box::new(TextTextureGenerator::new(chars,font)),
                                     flat_alloc.request(width,height)));
-                gtexman.add_request(val.clone());
+                gtexreqman.add_request(val.clone());
                 v.insert(val)
             }
         };
         
         let req = TextureItem::new(tr.clone(),origin,&[1.,1.]);
-        gtexman.add_item(req);
+        gtexitman.add_item(req);
     }
 }

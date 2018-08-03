@@ -5,7 +5,8 @@ use texture::{
     TextureRequest,
     TextureGenerator,
     TextureItem,
-    GTextureReceiver,
+    GTextureRequestManager,
+    GTextureItemManager,
 };
 
 struct BitmapTextureGenerator {
@@ -34,13 +35,13 @@ impl BitmapTextureStore {
         BitmapTextureStore { }
     }
 
-    pub fn add(&mut self,gtexman: &mut GTextureReceiver, canvas: &mut ArenaCanvases, origin:&[f32;2], scale:&[f32;2], data: Vec<u8>, width: u32, height: u32) {
+    pub fn add(&mut self,gtexitman: &mut GTextureItemManager, gtexreqman: &mut GTextureRequestManager, canvas: &mut ArenaCanvases, origin:&[f32;2], scale:&[f32;2], data: Vec<u8>, width: u32, height: u32) {
         let flat_alloc = &mut canvas.flat_alloc;
         let req = Rc::new(TextureRequest::new(
                             Box::new(BitmapTextureGenerator::new(data,width,height)),
                             flat_alloc.request(width,height)));
-        gtexman.add_request(req.clone());
+        gtexreqman.add_request(req.clone());
         let item = TextureItem::new(req.clone(),origin,scale);
-        gtexman.add_item(item);
+        gtexitman.add_item(item);
     }
 }
