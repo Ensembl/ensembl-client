@@ -59,7 +59,7 @@ impl TextTextureStore {
             }
         };
         
-        let req = TextureItem::new(tr.clone(),origin);
+        let req = TextureItem::new(tr.clone(),origin,&[1.,1.]);
         gtexman.add_item(req);
     }
 }

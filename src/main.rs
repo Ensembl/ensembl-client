@@ -14,7 +14,6 @@ mod geometry;
 mod domutil;
 mod canvasutil;
 mod wglraw;
-mod labl;
 mod alloc;
 mod texture;
 mod webgl_rendering_context;
@@ -35,8 +34,6 @@ use arena::{
     ArenaSpec,
     Stage,
 };
-
-use labl::LablGeometry;
 
 struct State {
     arena: RefCell<Arena>,
@@ -102,11 +99,11 @@ fn main() {
     stage.zoom = 0.1;
 
     let mut a_spec = ArenaSpec::new();
-    //a_spec.debug = true;
+    a_spec.debug = false;
     let mut arena = Arena::new("#glcanvas","#managedcanvasholder",a_spec);
     for yidx in -20..20 {
         let y = (yidx as f32) / 20.0;
-        for idx in -50..50 {
+        for idx in -20..20 {
             let v1 = (idx as f32) * 0.1;
             let v2 = (idx as f32)+10.0*(yidx as f32) * 0.1;
             let dx = ((v2*5.0).cos()+1.0)/4.0;
@@ -132,6 +129,11 @@ fn main() {
     // XXX pixels
     let dx = 0.001;
     arena.rectangle_fix(&[-dx,-1.0,0.0, dx,1.0,0.0], &[0.0,0.0,0.0]);
+    arena.bitmap_pintex(&[-0.1,0.1],&[10.,10.],
+                        vec! { 0,0,255,255,
+                                 255,0,0,255,
+                                 0,255,0,255,
+                                 255,255,0,255 },2,2);
     arena.populate();
 
     arena.settle(&mut stage);

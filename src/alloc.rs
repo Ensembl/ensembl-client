@@ -6,6 +6,7 @@ use std::cmp::max;
  * context.
  */
 
+#[derive(Debug)]
 struct Origin {
     x: u32,
     y: u32,
@@ -71,6 +72,7 @@ impl Clone for Tranche {
 
 /* A Height contains all the Tranches of a particular height. */
 
+#[derive(Debug)]
 struct Height {
     height: u32,
     spaces: Vec<Origin>
@@ -102,8 +104,10 @@ impl Height {
      */
     fn alloc(&mut self, width: u32, max_width: u32) -> Option<Tranche> {
         let mut target : Option<usize> = None;
+        let v = format!("{:?}",self.spaces);
         for (i,space) in self.spaces.iter().enumerate() {
-            if space.x + width < max_width {
+            if space.x + width <= max_width {
+                let v: u32 = i as u32;
                 target = Some(i);
                 break;
             }
@@ -130,6 +134,8 @@ impl Clone for Height {
 /* Half is the main allocator struct for the top half and bottom half of
  * the allocation.
  */
+ 
+#[derive(Debug)]
 struct Half {
     width: u32,
     watermark: u32,
@@ -200,7 +206,10 @@ impl Half {
         let out = self.alloc_space(width,height);
         match out {
             Some(Origin { x, y }) => Some((x,y)),
-            None => None
+            None => {
+                js! { console.log("Watermark alloc failed. Should be impossible"); };
+                None
+            }
         }
     }
     
