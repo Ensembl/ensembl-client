@@ -11,9 +11,6 @@ use arena::{
     Stage
 };
 
-use std::cell::RefCell;
-use std::rc::Rc;
-
 pub struct FixGeometry {
     std : GeomContext,
     pos: GTypeAttrib,
