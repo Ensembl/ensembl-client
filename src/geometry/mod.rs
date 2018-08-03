@@ -34,7 +34,7 @@ pub fn draw(holder: &mut Geometry, adata: &ArenaData ,stage:&Stage) {
 
     // set uniforms
     let ctx = &adata.ctx;
-    let aspect = adata.aspect;
+    let aspect = adata.dims.aspect;
     ctx.use_program(Some(&prog));
     wglraw::set_uniform_1f(&ctx,&prog,"uStageHpos",stage.hpos);
     wglraw::set_uniform_1f(&ctx,&prog,"uStageVpos",stage.vpos);

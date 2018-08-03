@@ -18,6 +18,11 @@ use canvasutil::FCFont;
 use texture::text::TextTextureStore;
 use texture::bitmap::BitmapTextureStore;
 
+use texture::{
+    GTextureItemManager,
+    GTextureRequestManager,
+};
+
 struct ArenaGeometries {
     stretch: StretchGeometry,
     pin: PinGeometry,
@@ -46,17 +51,32 @@ pub struct ArenaCanvases {
     pub flat: Rc<canvasutil::FlatCanvas>,
 }
 
-pub struct ArenaData {
-    spec: ArenaSpec,
-    textures: ArenaTextures,
-    pub canvases: ArenaCanvases,
-    pub ctx: glctx,
+pub struct ArenaDims {
     pub aspect: f32,
     pub width_px: u32,
     pub height_px: u32,
 }
 
+pub struct ArenaData {
+    spec: ArenaSpec,
+    textures: ArenaTextures,
+    pub dims: ArenaDims,
+    pub canvases: ArenaCanvases,
+    pub gtexreqman: GTextureRequestManager,
+    pub ctx: glctx,
+}
+
 impl ArenaData {
+    /* help the borrow checker by splitting a mut in a way that it
+     * understands is disjoint.
+     */
+    fn burst_texture<'a>(&'a mut self) -> (&'a mut ArenaCanvases, &'a mut ArenaTextures, &'a mut GTextureRequestManager,&'a mut ArenaDims) {
+        (&mut self.canvases,&mut self.textures, &mut self.gtexreqman,
+         &mut self.dims)
+    }
+}
+
+impl ArenaDims {
     pub fn prop_x(&self,x_px: u32) -> f32 {
         (x_px as f64 * 2.0 / self.width_px as f64) as f32
     }
@@ -82,13 +102,6 @@ impl ArenaData {
         stage.vpos = vpos;
     }
     
-    /* help the borrow checker by splitting a mut in a way that it
-     * understands is disjoint.
-     */
-    fn burst_texture<'a>(&'a mut self) -> (&'a mut ArenaCanvases, &'a mut ArenaTextures) {
-        (&mut self.canvases,&mut self.textures)
-    }
-
 }
 
 pub struct ArenaSpec {
@@ -120,9 +133,12 @@ impl Arena {
         let data = Rc::new(RefCell::new(ArenaData {
             ctx, spec, 
             textures: ArenaTextures::new(),
-            aspect: canvasutil::aspect_ratio(&canvas),
-            width_px: canvas.width(),
-            height_px: canvas.height(),
+            gtexreqman: GTextureRequestManager::new(),
+            dims: ArenaDims {
+                aspect: canvasutil::aspect_ratio(&canvas),
+                width_px: canvas.width(),
+                height_px: canvas.height(),
+            },
             canvases: ArenaCanvases {
                 flat,
                 flat_alloc: Allocator::new(16),
@@ -140,7 +156,7 @@ impl Arena {
     }
 
     pub fn settle(&self, stage: &mut Stage) {
-        self.data.borrow().settle(stage);
+        self.data.borrow().dims.settle(stage);
     }  
 
     pub fn triangle_stretch(&mut self, p: &[f32;6], c: &[f32;3]) {
@@ -157,14 +173,14 @@ impl Arena {
 
     pub fn text_pintex(&mut self, origin:&[f32;2],chars: &str,font: &FCFont) {
         let datam = &mut self.data.borrow_mut();
-        let (canvases,textures) = datam.burst_texture();
-        textures.text.add(&mut self.geom.pintex,canvases,origin,chars,font);
+        let (canvases,textures,gtexreqman,_) = datam.burst_texture();
+        textures.text.add(&mut self.geom.pintex.gtexitman,gtexreqman,canvases,origin,chars,font);
     }
 
     pub fn bitmap_pintex(&mut self, origin:&[f32;2], scale: &[f32;2], data: Vec<u8>, width: u32, height: u32) {
         let datam = &mut self.data.borrow_mut();
-        let (canvases,textures) = datam.burst_texture();
-        textures.bitmap.add(&mut self.geom.pintex,canvases,origin,scale,data,width,height);
+        let (canvases,textures,gtexreqman,_) = datam.burst_texture();
+        textures.bitmap.add(&mut self.geom.pintex.gtexitman,gtexreqman,canvases,origin,scale,data,width,height);
     }
 
     pub fn triangle_fix(&mut self,points:&[f32;9],colour:&[f32;3]) {
@@ -183,10 +199,18 @@ impl Arena {
             canvases.flat = Rc::new(canvasutil::FlatCanvas::create(x,y));
         }
 
+        {
+            let (canvases,_,gtexreqman,dims) = datam.burst_texture();
+            gtexreqman.draw(canvases,dims);
+        }
+
         self.geom.stretch.populate(datam);
         self.geom.pin.populate(datam);
         self.geom.pintex.populate(datam);
         self.geom.fix.populate(datam);
+        
+        datam.gtexreqman.clear();
+
     }
 
     pub fn animate(&mut self, stage: &Stage) {
