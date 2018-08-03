@@ -72,17 +72,6 @@ pub fn set_uniform_2f(ctx:&glctx, prog:&glprog, name:&str, value: [f32;2]) {
     }
 }
 
-fn fix_tex_image2_d(ctx: &glctx, target: GLenum, level: GLint, 
-                    internalformat: GLint,width : u32,height : u32,border : u32,format: 
-                    GLenum, type_: GLenum, 
-                    pixels: TypedArray<u8>) {
-    js! {
-        @{ctx}.texImage2D(@{target}, @{level}, @{internalformat}, 
-                           @{width},@{height},@{border}, @{format},
-                           @{type_}, @{pixels});
-    };
-}
-
 fn fix_tex_image2_d_cnv(ctx: &glctx, 
                     target: GLenum, level: GLint, internalformat: GLint,
                     format: GLenum, type_: GLenum, canvas: &CanvasElement) {
@@ -90,26 +79,6 @@ fn fix_tex_image2_d_cnv(ctx: &glctx,
         @{ctx}.texImage2D(@{target}, @{level}, @{internalformat}, 
                            @{format}, @{type_}, @{canvas});
     };
-}
-
-
-pub fn make_texture(ctx: &glctx,x: u32, y: u32,data: &[u8]) -> gltex {
-    let texture = ctx.create_texture().unwrap();
-    ctx.bind_texture(glctx::TEXTURE_2D, Some(&texture));
-    fix_tex_image2_d(&ctx,
-        glctx::TEXTURE_2D,0,glctx::RGBA as i32,
-        x,y,0,glctx::RGBA,glctx::UNSIGNED_BYTE,data[..].into());
-    
-    ctx.tex_parameteri(glctx::TEXTURE_2D,
-                       glctx::TEXTURE_MIN_FILTER,
-                       glctx::NEAREST as i32);
-    ctx.tex_parameteri(glctx::TEXTURE_2D,
-                       glctx::TEXTURE_WRAP_S,
-                       glctx::CLAMP_TO_EDGE as i32);
-    ctx.tex_parameteri(glctx::TEXTURE_2D,
-                       glctx::TEXTURE_WRAP_T,
-                       glctx::CLAMP_TO_EDGE as i32);
-    texture
 }
 
 pub fn canvas_texture(ctx: &glctx,cnv : &CanvasElement) -> gltex {

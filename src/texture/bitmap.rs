@@ -2,30 +2,36 @@ use std::rc::Rc;
 use arena::ArenaCanvases;
 
 use texture::{
-    TextureRequest,
-    TextureGenerator,
-    TextureItem,
-    GTextureRequestManager,
-    GTextureItemManager,
+    TextureDrawRequest,
+    TextureSourceManager,
 };
 
-struct BitmapTextureGenerator {
+use texture::textureimpl::{
+    TextureArtist,
+    create_draw_request,
+};
+
+/* BitmapTextureArtist - a TextureArtist that can draw bitmaps */
+
+struct BitmapTextureArtist {
     data: Vec<u8>,
     width: u32,
     height: u32
 }
 
-impl BitmapTextureGenerator {
-    fn new(data: Vec<u8>, width: u32, height: u32) -> BitmapTextureGenerator {
-        BitmapTextureGenerator { data, width, height }
+impl BitmapTextureArtist {
+    fn new(data: Vec<u8>, width: u32, height: u32) -> BitmapTextureArtist {
+        BitmapTextureArtist { data, width, height }
     }
 }
 
-impl TextureGenerator for BitmapTextureGenerator {
+impl TextureArtist for BitmapTextureArtist {
     fn draw(&self, canvs: &mut ArenaCanvases, x: u32, y: u32) {
         canvs.flat.bitmap(&self.data,x,y,self.width,self.height);
     }
 }
+
+/* BitmapTextureStore - mainly a noop, we don't cache */
 
 pub struct BitmapTextureStore {
 }
@@ -35,13 +41,9 @@ impl BitmapTextureStore {
         BitmapTextureStore { }
     }
 
-    pub fn add(&mut self,gtexitman: &mut GTextureItemManager, gtexreqman: &mut GTextureRequestManager, canvas: &mut ArenaCanvases, origin:&[f32;2], scale:&[f32;2], data: Vec<u8>, width: u32, height: u32) {
-        let flat_alloc = &mut canvas.flat_alloc;
-        let req = Rc::new(TextureRequest::new(
-                            Box::new(BitmapTextureGenerator::new(data,width,height)),
-                            flat_alloc.request(width,height)));
-        gtexreqman.add_request(req.clone());
-        let item = TextureItem::new(req.clone(),origin,scale);
-        gtexitman.add_item(item);
+    pub fn add(&mut self, gtexreqman: &mut TextureSourceManager, canvas: &mut ArenaCanvases, data: Vec<u8>, width: u32, height: u32) -> Rc<TextureDrawRequest> {
+        create_draw_request(gtexreqman, canvas,
+                            Box::new(BitmapTextureArtist::new(data,width,height)),
+                            width,height)
     }
 }

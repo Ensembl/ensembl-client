@@ -127,35 +127,11 @@ impl GType for GTypeAttrib {
     }
 }
 
-pub struct GTypeTexture {
-    uname: String,
-    slot: i8,
-    texture : gltex,
-}
-
-impl GTypeTexture {
-    pub fn new(adata: &ArenaData,name: &str, slot: i8, texture: &[u8], width: u32, height: u32) -> GTypeTexture {
-        GTypeTexture {
-            uname: name.to_string(),
-            slot,
-            texture: wglraw::make_texture(&adata.ctx,width,height,texture)
-        }
-    }
-}
-
 const TEXIDS : [u32;8] = [
     glctx::TEXTURE0, glctx::TEXTURE1, glctx::TEXTURE2,
     glctx::TEXTURE3, glctx::TEXTURE4, glctx::TEXTURE5,
     glctx::TEXTURE6, glctx::TEXTURE7
 ];
-
-impl GType for GTypeTexture {
-    fn link(&self, adata : &ArenaData, prog : &glprog) {
-        adata.ctx.active_texture(TEXIDS[self.slot as usize]);
-        adata.ctx.bind_texture(glctx::TEXTURE_2D,Some(&self.texture));        
-        wglraw::set_uniform_1i(&adata.ctx,prog,&self.uname,self.slot as i32);
-    }
-}
 
 /* GTypeCanvasTexture = GType for canvas-origin textures */
 pub struct GTypeCanvasTexture {
