@@ -239,8 +239,11 @@ pub struct Allocator {
     threshold: u32,
 }
 
+#[derive(Clone)]
 pub struct Ticket {
-    index: usize
+    index: usize,
+    width: u32,
+    height: u32,
 }
 
 struct AllocatorImpl {
@@ -293,7 +296,7 @@ impl Allocator {
         self.area = self.area + width*height;
         let data = TicketReq { width, height };
         self.reqs.push(data);
-        Ticket { index: self.reqs.len()-1 }
+        Ticket { index: self.reqs.len()-1, width, height }
     }
 
     pub fn allocate(&mut self) -> (u32,u32) {
@@ -320,6 +323,10 @@ impl Allocator {
     pub fn position(&self,t : &Ticket) -> (u32, u32) {
         let res = self.res[t.index].clone();
         (res.x, res.y)
+    }
+    
+    pub fn size(&self,t : &Ticket) -> (u32, u32) {
+        (t.width, t.height)
     }
 }
 

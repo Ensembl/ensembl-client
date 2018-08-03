@@ -15,8 +15,8 @@ mod domutil;
 mod canvasutil;
 mod wglraw;
 mod labl;
-mod text;
 mod alloc;
+mod texture;
 mod webgl_rendering_context;
 
 use rand::rngs::SmallRng;
@@ -37,7 +37,6 @@ use arena::{
 };
 
 use labl::LablGeometry;
-use text::TextGeometry;
 
 struct State {
     arena: RefCell<Arena>,
@@ -102,7 +101,7 @@ fn main() {
     let mut stage = Stage::new();
     stage.zoom = 0.1;
 
-    let a_spec = ArenaSpec::new();
+    let mut a_spec = ArenaSpec::new();
     //a_spec.debug = true;
     let mut arena = Arena::new("#glcanvas","#managedcanvasholder",a_spec);
     for yidx in -20..20 {
@@ -126,7 +125,7 @@ fn main() {
             }
             if v2 - v2.round() < 0.2 {
                 let val = daft((v2*2000000.0) as i32);
-                arena.text_pin(&[x,y+0.01],&val,&fc_font);
+                arena.text_pintex(&[x,y+0.01],&val,&fc_font);
             }
         }
     }

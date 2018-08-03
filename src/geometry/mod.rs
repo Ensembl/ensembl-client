@@ -2,6 +2,8 @@ pub mod stretch;
 pub mod pin;
 pub mod fix;
 
+pub mod pintex;
+
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
     WebGLBuffer as glbuf,
@@ -15,7 +17,6 @@ use arena::{
 };
 
 use wglraw;
-use std::cell::RefCell;
 use std::rc::Rc;
 
 /* Geometries must implement Geometry for the arena to use them */
@@ -54,7 +55,7 @@ pub fn draw(holder: &mut Geometry, adata: &ArenaData ,stage:&Stage) {
 }
 
 pub fn populate(holder: &mut Geometry, adata: &mut ArenaData) {
-    let (std,mut types) = holder.gtypes();
+    let (_std,mut types) = holder.gtypes();
     for g in &mut types {
         g.populate(adata);
     }
@@ -175,7 +176,8 @@ impl GTypeCanvasTexture {
 
 impl GType for GTypeCanvasTexture {
     fn populate(&mut self, adata: &ArenaData) {
-        self.texture = Some(wglraw::canvas_texture(&adata.ctx,adata.flat.element()));
+        let canvases = adata.canvases.borrow_mut();
+        self.texture = Some(wglraw::canvas_texture(&adata.ctx,canvases.flat.element()));
     }
 
     fn link(&self, adata : &ArenaData, prog : &glprog) {

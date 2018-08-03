@@ -9,27 +9,46 @@ use canvasutil;
 use wglraw;
 use geometry::Geometry;
 use labl::LablGeometry;
-use text::TextGeometry;
 use geometry::stretch::StretchGeometry;
 use geometry::pin::PinGeometry;
+use geometry::pintex::PinTexGeometry;
 use geometry::fix::FixGeometry;
 
 use canvasutil::FCFont;
+
+use texture::text::TextTextureStore;
 
 struct ArenaGeometries {
     stretch: StretchGeometry,
     pin: PinGeometry,
     fix: FixGeometry,
+    pintex: PinTexGeometry,
     labl: LablGeometry,
-    text: TextGeometry,
+}
+
+struct ArenaTextures {
+    text: TextTextureStore,
+}
+
+impl ArenaTextures {
+    pub fn new() -> ArenaTextures {
+        ArenaTextures {
+            text: TextTextureStore::new(),
+        }
+    }
 }
 
 use alloc::Allocator;
 
-pub struct ArenaData {
-    spec: ArenaSpec,
+pub struct ArenaCanvases {
     pub flat_alloc: Allocator,
     pub flat: Rc<canvasutil::FlatCanvas>,
+}
+
+pub struct ArenaData {
+    spec: ArenaSpec,
+    textures: RefCell<ArenaTextures>,
+    pub canvases: RefCell<ArenaCanvases>,
     pub ctx: glctx,
     pub aspect: f32,
     pub width_px: u32,
@@ -81,7 +100,7 @@ impl ArenaSpec {
 
 pub struct Arena {
     data: Rc<RefCell<ArenaData>>,
-    geom: ArenaGeometries
+    geom: ArenaGeometries,
 }
 
 impl Arena {
@@ -90,20 +109,24 @@ impl Arena {
         let ctx = wglraw::prepare_context(&canvas);
         let flat = Rc::new(canvasutil::FlatCanvas::create(2,2));
         let data = Rc::new(RefCell::new(ArenaData {
-            ctx, spec, flat,
+            ctx, spec, 
+            textures: RefCell::new(ArenaTextures::new()),
             aspect: canvasutil::aspect_ratio(&canvas),
             width_px: canvas.width(),
             height_px: canvas.height(),
-            flat_alloc: Allocator::new(16),
+            canvases: RefCell::new(ArenaCanvases {
+                flat,
+                flat_alloc: Allocator::new(16),
+            })
         }));
         let data_g = data.clone();
         let data_b = data_g.borrow();
         let arena = Arena { data, geom: ArenaGeometries {
-            stretch: enclose! { (data_g) StretchGeometry::new(&data_b) },
-            pin:     enclose! { (data_g) PinGeometry::new(&data_b) },
-            fix:     enclose! { (data_g) FixGeometry::new(&data_b) },
+            stretch: StretchGeometry::new(&data_b),
+            pin:     PinGeometry::new(&data_b),
+            fix:     FixGeometry::new(&data_b),
+            pintex:  PinTexGeometry::new(&data_b),
             labl: LablGeometry::new(data_g.clone()),
-            text: enclose! { (data_g) TextGeometry::new(data_g) },
         }};
         arena
     }
@@ -114,11 +137,6 @@ impl Arena {
     
     pub fn geom_labl(&mut self,f: &mut FnMut(&mut LablGeometry)) {
         let g = &mut self.geom.labl;
-        f(g);
-    }    
-
-    pub fn geom_text(&mut self,f: &mut FnMut(&mut TextGeometry)) {
-        let g = &mut self.geom.text;
         f(g);
     }    
 
@@ -134,9 +152,11 @@ impl Arena {
         self.geom.pin.triangle(r,p,c);
     }
 
-    pub fn text_pin(&mut self, origin:&[f32;2],chars: &str,font: &FCFont) {
+    pub fn text_pintex(&mut self, origin:&[f32;2],chars: &str,font: &FCFont) {
         let datam = &mut self.data.borrow_mut();
-        self.geom.text.text(datam,origin,chars,font);
+        let mut canvases = datam.canvases.borrow_mut();
+        let mut textures = datam.textures.borrow_mut();
+        textures.text.add(&mut self.geom.pintex,&mut canvases,origin,chars,font);
     }
 
     pub fn triangle_fix(&mut self,points:&[f32;9],colour:&[f32;3]) {
@@ -149,12 +169,15 @@ impl Arena {
 
     pub fn populate(&mut self) {
         let datam = &mut self.data.borrow_mut();
-        let (x,y) = datam.flat_alloc.allocate();
-        datam.flat = Rc::new(canvasutil::FlatCanvas::create(x,y));
+        {
+            let mut canvases = datam.canvases.borrow_mut();
+            let (x,y) = canvases.flat_alloc.allocate();
+            canvases.flat = Rc::new(canvasutil::FlatCanvas::create(x,y));
+        }
 
         self.geom.stretch.populate(datam);
         self.geom.pin.populate(datam);
-        self.geom.text.populate(datam);
+        self.geom.pintex.populate(datam);
         self.geom.labl.populate(datam);
         self.geom.fix.populate(datam);
     }
@@ -170,7 +193,7 @@ impl Arena {
         let datam = &mut self.data.borrow_mut();
         self.geom.stretch.draw(datam,&stage);
         self.geom.pin.draw(datam,&stage);
-        self.geom.text.draw(datam,&stage);
+        self.geom.pintex.draw(datam,&stage);
         self.geom.labl.draw(datam,&stage);
         self.geom.fix.draw(datam,&stage);
     }
