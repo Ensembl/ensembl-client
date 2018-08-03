@@ -176,7 +176,7 @@ impl GTypeCanvasTexture {
 
 impl GType for GTypeCanvasTexture {
     fn populate(&mut self, adata: &ArenaData) {
-        let canvases = adata.canvases.borrow_mut();
+        let canvases = &adata.canvases;
         self.texture = Some(wglraw::canvas_texture(&adata.ctx,canvases.flat.element()));
     }
 
@@ -189,7 +189,7 @@ impl GType for GTypeCanvasTexture {
     }
 }
 
-pub fn shader_v_solid(x: &str, y: &str) -> String{
+pub fn shader_v_solid(x: &str, y: &str) -> String {
     format!("
         attribute vec2 aVertexPosition;
         attribute vec3 aVertexColour;
@@ -210,7 +210,27 @@ pub fn shader_v_solid(x: &str, y: &str) -> String{
     ",x,y).to_string()
 }
 
-pub fn shader_v_solid_3vec(x: &str, y: &str) -> String{
+pub fn shader_v_texture(x: &str, y: &str) -> String {
+    format!("
+attribute vec2 aVertexPosition;
+attribute vec2 aOrigin;
+attribute vec2 aTextureCoord;
+
+uniform float uAspect;
+uniform float uStageHpos;
+uniform float uStageVpos;
+uniform float uStageZoom;
+
+varying highp vec2 vTextureCoord;
+
+void main() {{
+    gl_Position = vec4({}, {}, 0.0, 1.0);
+    vTextureCoord = aTextureCoord;
+}}
+    ",x,y).to_string()
+}
+
+pub fn shader_v_solid_3vec(x: &str, y: &str) -> String {
     format!("
         attribute vec3 aVertexPosition;
         attribute vec3 aVertexColour;
@@ -237,5 +257,17 @@ pub fn shader_f_solid() -> String {
     void main() {
           gl_FragColor = vec4(vColour, 1.0);
     }
+    ".to_string()
+}
+
+pub fn shader_f_texture() -> String {
+    "
+        varying highp vec2 vTextureCoord;
+
+        uniform sampler2D uSampler;
+
+        void main() {{
+              gl_FragColor = texture2D(uSampler, vTextureCoord);
+        }}
     ".to_string()
 }

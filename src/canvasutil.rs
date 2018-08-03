@@ -11,6 +11,7 @@ use stdweb::web::html_element::{
     CanvasElement
 };
 
+use stdweb::web::TypedArray;
 use stdweb::unstable::TryInto;
 
 use domutil;
@@ -95,6 +96,15 @@ impl FlatCanvas {
         let width_px = m.unwrap().get_width().ceil() as u32;
         let height_px = font.height;
         (width_px+2*font.xpad,height_px+2*font.ypad)
+    }
+    
+    pub fn bitmap(&self, data: &Vec<u8>, x: u32, y: u32, width: u32, height: u32) {
+        let pixels: TypedArray<u8> = data[..].into();
+        js! {
+            var id = @{&self.context}.createImageData(@{width},@{height});
+            id.data.set(@{pixels});
+            @{&self.context}.putImageData(id,@{x},@{y});
+        };
     }
 
     pub fn measure(&self,text : &str, font: &FCFont) -> (u32,u32) {

@@ -22,38 +22,6 @@ use texture::{
 
 use std::rc::Rc;
 
-const V_SRC : &str = "
-attribute vec2 aVertexPosition;
-attribute vec2 aOrigin;
-attribute vec2 aTextureCoord;
-
-uniform float uAspect;
-uniform float uStageHpos;
-uniform float uStageVpos;
-uniform float uStageZoom;
-
-varying highp vec2 vTextureCoord;
-
-void main() {
-    gl_Position = vec4(
-        (aOrigin.x - uStageHpos) * uStageZoom + aVertexPosition.x,
-        (aOrigin.y - uStageVpos) + aVertexPosition.y,
-        0.0, 1.0
-    );
-    vTextureCoord = aTextureCoord;
-}
-";
-
-const F_SRC : &str = "
-varying highp vec2 vTextureCoord;
-
-uniform sampler2D uSampler;
-
-void main() {
-      gl_FragColor = texture2D(uSampler, vTextureCoord);
-}
-";
-
 pub struct PinTexGeometry {
     std: GeomContext,
     pos: GTypeAttrib,
@@ -93,7 +61,12 @@ impl GTextureReceiver for PinTexGeometry {
 impl PinTexGeometry {
     pub fn new(adata: &ArenaData) -> PinTexGeometry {
         PinTexGeometry {
-            std: GeomContext::new(adata,&V_SRC,&F_SRC),
+            std: GeomContext::new(adata,
+                &geometry::shader_v_texture(
+                    "(aOrigin.x - uStageHpos) * uStageZoom + aVertexPosition.x",
+                    "(aOrigin.y - uStageVpos) + aVertexPosition.y",
+                ),
+                &geometry::shader_f_texture()),
             pos:    GTypeAttrib::new(adata,"aVertexPosition",2,1),
             origin: GTypeAttrib::new(adata,"aOrigin",2,3),
             coord:  GTypeAttrib::new(adata,"aTextureCoord",2,1),
@@ -118,10 +91,10 @@ impl PinTexGeometry {
     
     fn prepopulate(&mut self, adata: &mut ArenaData) {
         let data = self.gtexman.draw(adata);
-        for (origin,p,t) in data {
+        for (origin,scale,p,t) in data {
+            let p = [p[0],p[1],p[2]*scale[0],p[3]*scale[1]];
             self.rectangle(&origin,&p,&t);
         }
         self.gtexman.clear();
     }
-
 }

@@ -1,4 +1,5 @@
 pub mod text;
+pub mod bitmap;
 
 use std::rc::Rc;
 
@@ -15,13 +16,14 @@ pub trait TextureGenerator {
 
 pub struct TextureItem {
     origin: [f32;2],
+    scale: [f32;2],
     tr: Rc<TextureRequest>,
 }
 
 impl TextureItem {
-    pub fn new(tr: Rc<TextureRequest>, origin: &[f32;2]) -> TextureItem {
+    pub fn new(tr: Rc<TextureRequest>, origin: &[f32;2], scale: &[f32;2]) -> TextureItem {
         TextureItem {
-            tr, origin: *origin
+            tr, origin: *origin, scale: *scale,
         }
     }
 }
@@ -70,21 +72,20 @@ impl GTextureManager {
         }
     }
 
-    pub fn draw(&self, adata: &mut ArenaData) -> Vec<([f32;2],[f32;4],[f32;4])> {
-        let mut canvases = adata.canvases.borrow_mut();
+    pub fn draw(&self, adata: &mut ArenaData) -> Vec<([f32;2],[f32;2],[f32;4],[f32;4])> {
         for tr in &self.tickets {
-            tr.draw(&mut canvases);
+            tr.draw(&mut adata.canvases);
         }
-        let flat = &canvases.flat;
-        let mut data = Vec::<([f32;2],[f32;4],[f32;4])>::new();
+        let flat = &adata.canvases.flat;
+        let mut data = Vec::<([f32;2],[f32;2],[f32;4],[f32;4])>::new();
         for req in &self.requests {
             let origin = adata.nudge(req.origin);
-            let (width,height) = canvases.flat_alloc.size(&req.tr.ticket);
+            let (width,height) = adata.canvases.flat_alloc.size(&req.tr.ticket);
             let p = [0., 0., adata.prop_x(width), adata.prop_y(height)];
-            let (x,y) = canvases.flat_alloc.position(&req.tr.ticket);
+            let (x,y) = adata.canvases.flat_alloc.position(&req.tr.ticket);
             let t = [flat.prop_x(x), flat.prop_y(y + height),
                      flat.prop_x(x + width), flat.prop_y(y)];
-            data.push((origin,p,t));
+            data.push((origin,req.scale,p,t));
         }
         data
     }
