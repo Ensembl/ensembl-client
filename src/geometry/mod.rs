@@ -1,8 +1,9 @@
 pub mod stretch;
 pub mod pin;
 pub mod fix;
-
+pub mod stretchtex;
 pub mod pintex;
+pub mod fixtex;
 
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
@@ -225,6 +226,28 @@ pub fn shader_v_solid_3vec(x: &str, y: &str) -> String {
         }}
     ",x,y).to_string()
 }
+
+pub fn shader_v_texture_3vec(x: &str, y: &str) -> String {
+    format!("
+        attribute vec3 aVertexPosition;
+        attribute vec2 aTextureCoord;
+        
+
+        uniform float uAspect;
+        uniform float uStageHpos;
+        uniform float uStageVpos;
+        uniform float uStageZoom;
+        uniform vec2 uCursor;
+
+        varying highp vec2 vTextureCoord;
+
+        void main() {{
+             gl_Position = vec4({},{},0.0, 1.0);
+             vTextureCoord = aTextureCoord;
+        }}
+    ",x,y).to_string()
+}
+
 
 pub fn shader_f_solid() -> String {
     "

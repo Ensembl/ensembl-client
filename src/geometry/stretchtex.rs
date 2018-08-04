@@ -33,31 +33,29 @@ use std::rc::Rc;
  */
 
 
-pub struct PinTexGeometryImpl {
+pub struct StretchTexGeometryImpl {
     std: GeomContext,
     pos: GTypeAttrib,
-    origin: GTypeAttrib,
     coord: GTypeAttrib,
     sampler: GTypeCanvasTexture,
 }
 
-impl PinTexGeometryImpl {
-    fn triangle(&mut self,origin:&[f32;2],points:&[f32;6],tex_points:&[f32;6]) {
+impl StretchTexGeometryImpl {
+    pub fn triangle(&mut self,points:&[f32;6],tex_points:&[f32;6]) {
         self.pos.add(points);
-        self.origin.add(origin);
         self.coord.add(tex_points);
         self.std.advance(3);
     }
     
-    fn rectangle(&mut self,origin:&[f32;2],p:&[f32;4],t:&[f32;4]) {
-        self.triangle(origin,&[p[0],p[1],p[2],p[1],p[0],p[3]],
-                             &[t[0],t[1],t[2],t[1],t[0],t[3]]);
-        self.triangle(origin,&[p[2],p[3],p[0],p[3],p[2],p[1]],
-                             &[t[2],t[3],t[0],t[3],t[2],t[1]]);
+    pub fn rectangle(&mut self,p: &[f32;4], t: &[f32;4]) {
+        self.triangle(&[p[0],p[1], p[2],p[1], p[0],p[3]],
+                      &[t[0],t[1], t[2],t[1], t[0],t[3]]);
+        self.triangle(&[p[2],p[3],p[0],p[3],p[2],p[1]],
+                      &[t[2],t[3],t[0],t[3],t[2],t[1]]);
     }
 }
 
-/* A PinTexTextureItem is the type which contains geometry-specific
+/* A StretchTexTextureItem is the type which contains geometry-specific
  * values for each texture designed to be placed in the target.
  * 
  * It implements TextureItem which, given various canvas co-ordinates
@@ -65,44 +63,39 @@ impl PinTexGeometryImpl {
  * into account geometry co-ordinates, etc.
  */
 
-pub struct PinTexTextureItem {
-    origin: [f32;2],
-    scale: [f32;2],
+pub struct StretchTexTextureItem {
+    pos: [f32;4],
 }
 
-impl PinTexTextureItem {
-    pub fn new(origin: &[f32;2], scale: &[f32;2]) -> PinTexTextureItem {
-        PinTexTextureItem {
-            origin: *origin, scale: *scale,
+impl StretchTexTextureItem {
+    pub fn new(pos: &[f32;4]) -> StretchTexTextureItem {
+        StretchTexTextureItem {
+            pos: *pos
         }
     }
 }
 
-impl TextureItem<PinTexGeometryImpl> for PinTexTextureItem {
-    fn process(&self, geom: &mut PinTexGeometryImpl, x: u32, y: u32, width: u32, height: u32, canvs: &ArenaCanvases, dims: &ArenaDims) {
+impl TextureItem<StretchTexGeometryImpl> for StretchTexTextureItem {
+    fn process(&self, geom: &mut StretchTexGeometryImpl, x: u32, y: u32, width: u32, height: u32, canvs: &ArenaCanvases, dims: &ArenaDims) {
         let flat = &canvs.flat;
-        let origin = dims.nudge(self.origin);
-        let p = [0., 0., dims.prop_x(width), dims.prop_y(height)];
-        
         let t = [flat.prop_x(x), flat.prop_y(y + height),
                  flat.prop_x(x + width), flat.prop_y(y)];
-        let p = [p[0],p[1],p[2]*self.scale[0],p[3]*self.scale[1]];
-        geom.rectangle(&origin,&p,&t);
+        geom.rectangle(&self.pos,&t);
     }
 }
 
 /* This is the externally visible Geometry. It contains the impl (which
  * is the geometry proper) and a TextureTagetManager, which is used to
- * store TextureItems (in our case PinTexTextureItems, above) between
+ * store TextureItems (in our case StretchTexTextureItems, above) between
  * the request for an item and knowin the co-ordinates on the canvas.
  */
 
-pub struct PinTexGeometry {
-    data: PinTexGeometryImpl,
-    pub gtexitman: TextureTargetManager<PinTexGeometryImpl,PinTexTextureItem>,
+pub struct StretchTexGeometry {
+    data: StretchTexGeometryImpl,
+    pub gtexitman: TextureTargetManager<StretchTexGeometryImpl,StretchTexTextureItem>,
 }
 
-impl Geometry for PinTexGeometry {
+impl Geometry for StretchTexGeometry {
     fn populate(&mut self, adata: &mut ArenaData) {
         self.prepopulate(adata);
         geometry::populate(self,adata);
@@ -114,32 +107,31 @@ impl Geometry for PinTexGeometry {
 
     fn gtypes(&mut self) -> (&GeomContext,Vec<&mut GType>) {
         (&self.data.std,
-        vec! { &mut self.data.sampler, &mut self.data.pos,
-               &mut self.data.origin, &mut self.data.coord })
+        vec! { &mut self.data.pos, &mut self.data.sampler,
+               &mut self.data.coord })
     }
 }
 
-impl PinTexGeometry {
-    pub fn new(adata: &ArenaData) -> PinTexGeometry {
-        PinTexGeometry {
-            data: PinTexGeometryImpl {
+impl StretchTexGeometry {
+    pub fn new(adata: &ArenaData) -> StretchTexGeometry {
+        StretchTexGeometry {
+            data: StretchTexGeometryImpl {
                 std: GeomContext::new(adata,
                     &geometry::shader_v_texture(
-                        "(aOrigin.x - uStageHpos) * uStageZoom + aVertexPosition.x",
-                        "(aOrigin.y - uStageVpos) + aVertexPosition.y",
+                        "(aVertexPosition.x - uStageHpos) * uStageZoom",
+                        "aVertexPosition.y - uStageVpos"
                     ),
                     &geometry::shader_f_texture()),
                 pos:    GTypeAttrib::new(adata,"aVertexPosition",2,1),
-                origin: GTypeAttrib::new(adata,"aOrigin",2,3),
                 coord:  GTypeAttrib::new(adata,"aTextureCoord",2,1),
                 sampler: GTypeCanvasTexture::new("uSampler",0),
             },
-            gtexitman: TextureTargetManager::<PinTexGeometryImpl,PinTexTextureItem>::new(),
+            gtexitman: TextureTargetManager::<StretchTexGeometryImpl,StretchTexTextureItem>::new(),
         }
     }
 
-    pub fn add_texture(&mut self, req: Rc<TextureDrawRequest>, origin: &[f32;2], scale: &[f32;2]) {
-        let ri = PinTexTextureItem::new(origin,scale);
+    pub fn add_texture(&mut self, req: Rc<TextureDrawRequest>, pos: &[f32;4]) {
+        let ri = StretchTexTextureItem::new(pos);
         self.gtexitman.add_item(req,ri);
     }
 

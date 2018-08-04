@@ -59,6 +59,9 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
             state.stage.cursor[0] = (state.fpos.cos()*0.3) as f32;
         }
         state.old_time = time;
+        let mut stage = state.stage;
+        state.arena.borrow_mut().settle(&mut stage);
+        state.stage = stage;
         state.arena.borrow_mut().animate(&state.stage);
     }
     window().request_animation_frame(move |x| animate(x,s.clone()));
@@ -122,18 +125,30 @@ fn main() {
             }
             if v2 - v2.round() < 0.2 {
                 let val = daft((v2*2000000.0) as i32);
-                arena.text_pintex(&[x,y+0.01],&val,&fc_font);
+                arena.text_pin(&[x,y+0.01],&val,&fc_font);
             }
         }
     }
-    // XXX pixels
+    // XXX in pixels
     let dx = 0.001;
     arena.rectangle_fix(&[-dx,-1.0,0.0, dx,1.0,0.0], &[0.0,0.0,0.0]);
-    arena.bitmap_pintex(&[-0.1,0.1],&[10.,10.],
+    arena.bitmap_pin(&[-0.1,0.1],&[10.,10.],
                         vec! { 0,0,255,255,
                                  255,0,0,255,
                                  0,255,0,255,
                                  255,255,0,255 },2,2);
+    arena.bitmap_stretch(&[-1.,-0.1,1.,-0.13],
+                        vec! { 0,0,255,255,
+                                 255,0,0,255,
+                                 0,255,0,255,
+                                 255,255,0,255 },4,1);
+                                 
+    arena.bitmap_fix(&[0.5-dx,-1.0,0.0, 0.5+dx,1.0,0.0],
+                        vec! { 0,0,255,255,
+                                 255,0,0,255,
+                                 0,255,0,255,
+                                 255,255,0,255 },1,4);
+
     arena.populate();
 
     arena.settle(&mut stage);
