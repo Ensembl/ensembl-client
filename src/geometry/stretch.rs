@@ -3,6 +3,8 @@ use geometry::{
     GeomContext,
     GTypeAttrib,
     GType,
+    GCoord,
+    Colour,
 };
 
 use geometry;
@@ -45,14 +47,15 @@ impl StretchGeometry {
         }
     }
 
-    pub fn triangle(&mut self,points:&[f32;6],colour:&[f32;3]) {
-        self.pos.add(points);
-        self.colour.add(colour);
+    pub fn triangle(&mut self,points:&[GCoord;3],colour:&Colour) {
+        self.pos.add_gc(points);
+        self.colour.add_col(colour);
         self.std.advance(3);
     }
     
-    pub fn rectangle(&mut self,p:&[f32;4],colour:&[f32;3]) {
-        self.triangle(&[p[0],p[1], p[2],p[1], p[0],p[3]],colour);
-        self.triangle(&[p[2],p[3], p[0],p[3], p[2],p[1]],colour);
+    pub fn rectangle(&mut self,p:&[GCoord;2],colour:&Colour) {
+        let mix = &p[0].mix(p[1]);
+        self.triangle(&[p[0], mix.1, mix.0],colour);
+        self.triangle(&[p[1], mix.0, mix.1],colour);
     }
 }

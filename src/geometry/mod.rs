@@ -20,6 +20,31 @@ use arena::{
 use wglraw;
 use std::rc::Rc;
 
+#[derive(Clone,Copy)]
+pub struct GCoord(pub f32,pub f32);
+
+impl GCoord {
+    fn mix(&self, other: GCoord) -> (GCoord,GCoord) {
+        (GCoord(self.0,other.1), GCoord(other.0,self.1))
+    }
+}
+
+#[derive(Clone,Copy)]
+pub struct PCoord(pub f32,pub f32);
+
+impl PCoord {
+    fn mix(&self, other: PCoord) -> (PCoord,PCoord) {
+        (PCoord(self.0,other.1), PCoord(other.0,self.1))
+    }
+    
+    fn scale(&self, scale: PCoord) -> PCoord {
+        PCoord(self.0 * scale.0, self.1 * scale.1)
+    }
+}
+
+#[derive(Clone,Copy)]
+pub struct Colour(pub f32,pub f32,pub f32);
+
 /* Geometries must implement Geometry for the arena to use them */
 pub trait Geometry {
     fn gtypes(&mut self) -> (&GeomContext,Vec<&mut GType>);
@@ -37,8 +62,8 @@ pub fn draw(holder: &mut Geometry, adata: &ArenaData ,stage:&Stage) {
     let ctx = &adata.ctx;
     let aspect = adata.dims.aspect;
     ctx.use_program(Some(&prog));
-    wglraw::set_uniform_1f(&ctx,&prog,"uStageHpos",stage.hpos);
-    wglraw::set_uniform_1f(&ctx,&prog,"uStageVpos",stage.vpos);
+    wglraw::set_uniform_1f(&ctx,&prog,"uStageHpos",stage.pos.0);
+    wglraw::set_uniform_1f(&ctx,&prog,"uStageVpos",stage.pos.1);
     wglraw::set_uniform_1f(&ctx,&prog,"uStageZoom",stage.zoom);
     wglraw::set_uniform_2f(&ctx,&prog,"uCursor",stage.cursor);
     wglraw::set_uniform_1f(&ctx,&prog,"uAspect",aspect);
@@ -69,7 +94,6 @@ pub fn prog(adata: &ArenaData,v_src: &str, f_src: &str) -> glprog {
 
 /* This is the meat of each GType implementation */
 pub trait GType {
-    fn add(&mut self,_values : &[f32]) {}
     fn populate(&mut self, _adata: &ArenaData) {}
     fn link(&self, _adata : &ArenaData, _prog : &glprog) {}
     fn unlink(&self, _ctx : &glctx, _prog : &glprog) {}
@@ -108,15 +132,37 @@ impl GTypeAttrib {
             size, rep
         }
     }
-}
-
-impl GType for GTypeAttrib {
+    
     fn add(&mut self,values : &[f32]) {
         for _i in 0..self.rep {
             self.vec.extend_from_slice(values);
         }
     }
 
+    fn add_gc(&mut self,values : &[GCoord]) {
+        for _i in 0..self.rep {
+            for c in values {
+                self.vec.extend_from_slice(&[c.0,c.1]);
+            }
+        }
+    }
+
+    fn add_px(&mut self,values : &[PCoord]) {
+        for _i in 0..self.rep {
+            for c in values {
+                self.vec.extend_from_slice(&[c.0,c.1]);
+            }
+        }
+    }
+    
+    fn add_col(&mut self, col: &Colour) {
+        for _i in 0..self.rep {
+            self.vec.extend_from_slice(&[col.0,col.1,col.2]);
+        }
+    }
+}
+
+impl GType for GTypeAttrib {
     fn populate(&mut self, adata: &ArenaData) {
         wglraw::populate_buffer(&adata.ctx,glctx::ARRAY_BUFFER,
                                 &self.buf,&self.vec);
