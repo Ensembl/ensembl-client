@@ -4,6 +4,7 @@ use geometry::{
     GTypeAttrib,
     GType,
     GTypeCanvasTexture,
+    PCoord,
 };
 
 use geometry;
@@ -41,16 +42,18 @@ pub struct StretchTexGeometryImpl {
 }
 
 impl StretchTexGeometryImpl {
-    pub fn triangle(&mut self,points:&[f32;6],tex_points:&[f32;6]) {
-        self.pos.add(points);
+    pub fn triangle(&mut self,points:&[PCoord;3],tex_points:&[f32;6]) {
+        self.pos.add_px(points);
         self.coord.add(tex_points);
         self.std.advance(3);
     }
     
-    pub fn rectangle(&mut self,p: &[f32;4], t: &[f32;4]) {
-        self.triangle(&[p[0],p[1], p[2],p[1], p[0],p[3]],
+    pub fn rectangle(&mut self,p: &[PCoord;2], t: &[f32;4]) {
+        let mix = p[0].mix(p[1]);
+        
+        self.triangle(&[p[0], mix.1, mix.0],
                       &[t[0],t[1], t[2],t[1], t[0],t[3]]);
-        self.triangle(&[p[2],p[3],p[0],p[3],p[2],p[1]],
+        self.triangle(&[p[1], mix.0, mix.1],
                       &[t[2],t[3],t[0],t[3],t[2],t[1]]);
     }
 }
@@ -64,11 +67,11 @@ impl StretchTexGeometryImpl {
  */
 
 pub struct StretchTexTextureItem {
-    pos: [f32;4],
+    pos: [PCoord;2],
 }
 
 impl StretchTexTextureItem {
-    pub fn new(pos: &[f32;4]) -> StretchTexTextureItem {
+    pub fn new(pos: &[PCoord;2]) -> StretchTexTextureItem {
         StretchTexTextureItem {
             pos: *pos
         }
@@ -130,7 +133,7 @@ impl StretchTexGeometry {
         }
     }
 
-    pub fn add_texture(&mut self, req: Rc<TextureDrawRequest>, pos: &[f32;4]) {
+    pub fn add_texture(&mut self, req: Rc<TextureDrawRequest>, pos: &[PCoord;2]) {
         let ri = StretchTexTextureItem::new(pos);
         self.gtexitman.add_item(req,ri);
     }

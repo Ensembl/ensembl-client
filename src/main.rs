@@ -35,6 +35,12 @@ use arena::{
     Stage,
 };
 
+use geometry::{
+    GCoord,
+    PCoord,
+    Colour,
+};
+
 struct State {
     arena: RefCell<Arena>,
     stage: Stage,
@@ -55,7 +61,7 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
             state.hpos += delta *3.763;
             state.fpos += delta *7.21;
             state.stage.zoom = ((state.zoomscale.cos() + 1.5)/3.0) as f32;
-            state.stage.hpos = ((state.hpos.cos())*1.5) as f32;
+            state.stage.pos.0 = ((state.hpos.cos())*1.5) as f32;
             state.stage.cursor[0] = (state.fpos.cos()*0.3) as f32;
         }
         state.old_time = time;
@@ -111,33 +117,37 @@ fn main() {
             let v2 = (idx as f32)+10.0*(yidx as f32) * 0.1;
             let dx = ((v2*5.0).cos()+1.0)/4.0;
             let x = v1 * 3.0 + (yidx as f32).cos();
-            let colour = [
+            let colour = Colour(
                 0.5*v2.cos()+0.5,
                 0.5*v2.sin()+0.5,
                 0.5*(v2+1.0).sin()+0.5,
-            ];
+            );
             let h = if idx % 13 == 0 { 0.001 } else { 0.005 };
-            arena.rectangle_stretch(&[x,y-h,x+dx,y+h],&colour);
+            arena.rectangle_stretch(&[GCoord(x,y-h),
+                                      GCoord(x+dx,y+h)],&colour);
             if idx %5 == 0 {
-                arena.triangle_pin(&[x,y],
-                                   &[0.0,0.0, -0.004,-0.008, 0.004,-0.008],
-                                   &[colour[0],colour[1],1.0-colour[2]]);
+                arena.triangle_pin(&GCoord(x,y),
+                                   &[PCoord(0.0,0.0),
+                                     PCoord(-0.004,-0.008),
+                                     PCoord(0.004,-0.008)],
+                                   &colour);
             }
             if v2 - v2.round() < 0.2 {
                 let val = daft((v2*2000000.0) as i32);
-                arena.text_pin(&[x,y+0.01],&val,&fc_font);
+                arena.text_pin(&GCoord(x,y+0.01),&val,&fc_font);
             }
         }
     }
+    
     // XXX in pixels
     let dx = 0.001;
     arena.rectangle_fix(&[-dx,-1.0,0.0, dx,1.0,0.0], &[0.0,0.0,0.0]);
-    arena.bitmap_pin(&[-0.1,0.1],&[10.,10.],
+    arena.bitmap_pin(&GCoord(-0.1,0.1),&PCoord(10.,10.),
                         vec! { 0,0,255,255,
                                  255,0,0,255,
                                  0,255,0,255,
                                  255,255,0,255 },2,2);
-    arena.bitmap_stretch(&[-1.,-0.1,1.,-0.13],
+    arena.bitmap_stretch(&[PCoord(-1.,-0.1),PCoord(1.,-0.13)],
                         vec! { 0,0,255,255,
                                  255,0,0,255,
                                  0,255,0,255,

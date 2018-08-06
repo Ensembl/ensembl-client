@@ -7,7 +7,12 @@ use std::rc::Rc;
 
 use canvasutil;
 use wglraw;
-use geometry::Geometry;
+use geometry::{
+    Geometry,
+    GCoord,
+    PCoord,
+    Colour
+};
 use geometry::stretch::StretchGeometry;
 use geometry::stretchtex::StretchTexGeometry;
 use geometry::pin::PinGeometry;
@@ -93,16 +98,14 @@ impl ArenaDims {
         n * 2. / size as f32
     }
     
-    pub fn nudge(&self,input: [f32;2]) -> [f32;2] {
-        [self.nudge1(input[0],self.width_px),
-         self.nudge1(input[1],self.height_px)]
+    pub fn nudge(&self,input: GCoord) -> GCoord {
+        GCoord(self.nudge1(input.0,self.width_px),
+               self.nudge1(input.1,self.height_px))
     }
     
     pub fn settle(&self, stage: &mut Stage) {
-        // XXX settle to account for zoom
-        let [hpos,vpos] = self.nudge([stage.hpos,stage.vpos]);
-        stage.hpos = hpos;
-        stage.vpos = vpos;
+        // XXX settle should account for zoom
+        stage.pos = self.nudge(stage.pos);
     }
     
 }
@@ -164,33 +167,33 @@ impl Arena {
         self.data.borrow().dims.settle(stage);
     }  
 
-    pub fn triangle_stretch(&mut self, p: &[f32;6], c: &[f32;3]) {
+    pub fn triangle_stretch(&mut self, p: &[GCoord;3], c: &Colour) {
         self.geom.stretch.triangle(p,c);
     }
 
-    pub fn rectangle_stretch(&mut self, p: &[f32;4], c: &[f32;3]) {
+    pub fn rectangle_stretch(&mut self, p: &[GCoord;2], c: &Colour) {
         self.geom.stretch.rectangle(p,c);
     }
 
-    pub fn triangle_pin(&mut self, r: &[f32;2], p: &[f32;6], c :&[f32;3]) {
+    pub fn triangle_pin(&mut self, r: &GCoord, p: &[PCoord;3], c :&Colour) {
         self.geom.pin.triangle(r,p,c);
     }
 
-    pub fn text_pin(&mut self, origin:&[f32;2],chars: &str,font: &FCFont) {
+    pub fn text_pin(&mut self, origin:&GCoord,chars: &str,font: &FCFont) {
         let datam = &mut self.data.borrow_mut();
         let (canvases,textures,gtexreqman,_) = datam.burst_texture();
         let tr = textures.text.add(gtexreqman,canvases,chars,font);
-        self.geom.pintex.add_texture(tr,origin,&[1.,1.]);
+        self.geom.pintex.add_texture(tr,origin,&PCoord(1.,1.));
     }
 
-    pub fn bitmap_stretch(&mut self, pos:&[f32;4], data: Vec<u8>, width: u32, height: u32) {
+    pub fn bitmap_stretch(&mut self, pos:&[PCoord;2], data: Vec<u8>, width: u32, height: u32) {
         let datam = &mut self.data.borrow_mut();
         let (canvases,textures,gtexreqman,_) = datam.burst_texture();
         let tr = textures.bitmap.add(gtexreqman,canvases,data,width,height);
         self.geom.stretchtex.add_texture(tr,pos);
     }
 
-    pub fn bitmap_pin(&mut self, origin:&[f32;2], scale: &[f32;2], data: Vec<u8>, width: u32, height: u32) {
+    pub fn bitmap_pin(&mut self, origin:&GCoord, scale: &PCoord, data: Vec<u8>, width: u32, height: u32) {
         let datam = &mut self.data.borrow_mut();
         let (canvases,textures,gtexreqman,_) = datam.burst_texture();
         let tr = textures.bitmap.add(gtexreqman,canvases,data,width,height);
@@ -257,14 +260,13 @@ impl Arena {
 
 #[derive(Clone,Copy)]
 pub struct Stage {
-    pub hpos: f32,
-    pub vpos: f32,
+    pub pos: GCoord,
     pub zoom: f32,
     pub cursor: [f32;2],
 }
 
 impl Stage {
     pub fn new() -> Stage {
-        Stage { hpos: 0.0, vpos: 0.0, zoom: 1.0, cursor: [0.0,0.0] }
+        Stage { pos: GCoord(0.0,0.0), zoom: 1.0, cursor: [0.0,0.0] }
     }
 }

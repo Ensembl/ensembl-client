@@ -1,5 +1,7 @@
 use geometry::{
     Geometry,
+    GCoord,
+    PCoord,
     GeomContext,
     GTypeAttrib,
     GType,
@@ -42,14 +44,14 @@ pub struct PinTexGeometryImpl {
 }
 
 impl PinTexGeometryImpl {
-    fn triangle(&mut self,origin:&[f32;2],points:&[f32;6],tex_points:&[f32;6]) {
+    fn triangle(&mut self,origin:&GCoord,points:&[f32;6],tex_points:&[f32;6]) {
         self.pos.add(points);
-        self.origin.add(origin);
+        self.origin.add_gc(&[*origin]);
         self.coord.add(tex_points);
         self.std.advance(3);
     }
     
-    fn rectangle(&mut self,origin:&[f32;2],p:&[f32;4],t:&[f32;4]) {
+    fn rectangle(&mut self,origin: &GCoord,p:&[f32;4],t:&[f32;4]) {
         self.triangle(origin,&[p[0],p[1],p[2],p[1],p[0],p[3]],
                              &[t[0],t[1],t[2],t[1],t[0],t[3]]);
         self.triangle(origin,&[p[2],p[3],p[0],p[3],p[2],p[1]],
@@ -66,12 +68,12 @@ impl PinTexGeometryImpl {
  */
 
 pub struct PinTexTextureItem {
-    origin: [f32;2],
-    scale: [f32;2],
+    origin: GCoord,
+    scale: PCoord,
 }
 
 impl PinTexTextureItem {
-    pub fn new(origin: &[f32;2], scale: &[f32;2]) -> PinTexTextureItem {
+    pub fn new(origin: &GCoord, scale: &PCoord) -> PinTexTextureItem {
         PinTexTextureItem {
             origin: *origin, scale: *scale,
         }
@@ -86,7 +88,8 @@ impl TextureItem<PinTexGeometryImpl> for PinTexTextureItem {
         
         let t = [flat.prop_x(x), flat.prop_y(y + height),
                  flat.prop_x(x + width), flat.prop_y(y)];
-        let p = [p[0],p[1],p[2]*self.scale[0],p[3]*self.scale[1]];
+        let s = PCoord(p[2],p[3]).scale(self.scale);
+        let p = [p[0],p[1],s.0,s.1];
         geom.rectangle(&origin,&p,&t);
     }
 }
@@ -138,7 +141,7 @@ impl PinTexGeometry {
         }
     }
 
-    pub fn add_texture(&mut self, req: Rc<TextureDrawRequest>, origin: &[f32;2], scale: &[f32;2]) {
+    pub fn add_texture(&mut self, req: Rc<TextureDrawRequest>, origin: &GCoord, scale: &PCoord) {
         let ri = PinTexTextureItem::new(origin,scale);
         self.gtexitman.add_item(req,ri);
     }

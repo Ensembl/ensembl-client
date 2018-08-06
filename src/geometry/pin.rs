@@ -6,6 +6,11 @@ use geometry::{
 };
 
 use geometry;
+use geometry::{
+    Colour,
+    GCoord,
+    PCoord
+};
 
 use arena::{
     ArenaData,
@@ -47,11 +52,11 @@ impl PinGeometry {
             colour: GTypeAttrib::new(&adata,"aVertexColour",3,3),
         }
     }
-
-    pub fn triangle(&mut self, origin: &[f32;2], points: &[f32;6], colour: &[f32;3]) {
-        self.pos.add(points);
-        self.origin.add(origin);
-        self.colour.add(colour);
+    
+    pub fn triangle(&mut self, origin: &GCoord, points: &[PCoord;3], colour: &Colour) {
+        self.pos.add_px(points);
+        self.origin.add_gc(&[*origin]);
+        self.colour.add_col(colour);
         self.std.advance(3);
     }
 }
