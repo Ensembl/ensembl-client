@@ -55,7 +55,6 @@ impl ArenaTextures {
 use alloc::Allocator;
 
 pub struct ArenaCanvases {
-    pub flat_alloc: Allocator,
     pub flat: Rc<canvasutil::FlatCanvas>,
 }
 
@@ -147,7 +146,6 @@ impl Arena {
             },
             canvases: ArenaCanvases {
                 flat,
-                flat_alloc: Allocator::new(16),
             }
         }));
         let data_g = data.clone();
@@ -218,8 +216,8 @@ impl Arena {
     pub fn populate(&mut self) {
         let datam = &mut self.data.borrow_mut();
         {
-            let canvases = &mut datam.canvases;
-            let (x,y) = canvases.flat_alloc.allocate();
+            let (canvases,textures,gtexreqman,_) = datam.burst_texture();
+            let (x,y) = gtexreqman.allocate();
             canvases.flat = Rc::new(canvasutil::FlatCanvas::create(x,y));
         }
 

@@ -135,7 +135,7 @@ impl FixTexGeometry {
     }
 
     fn prepopulate(&mut self, adata: &mut ArenaData) {
-        self.gtexitman.draw(&mut self.data,&mut adata.canvases,&adata.dims);
+        self.gtexitman.draw(&mut self.data,&mut adata.gtexreqman,&mut adata.canvases,&adata.dims);
         self.gtexitman.clear();
     }
 }

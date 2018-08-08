@@ -56,7 +56,7 @@ impl TextTextureStore {
                 v.into_mut(),
             Entry::Vacant(v) => {
                 let (width, height) = canvas.flat.measure(chars,font);
-                let val = create_draw_request(gtexreqman,canvas,
+                let val = create_draw_request(gtexreqman,
                                     Box::new(TextTextureArtist::new(chars,font)),
                                     width,height);
                 v.insert(val)

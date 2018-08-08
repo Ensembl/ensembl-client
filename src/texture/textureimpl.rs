@@ -1,6 +1,7 @@
 use std::rc::Rc;
 use alloc::Ticket;
 use std::marker::PhantomData;
+use alloc::Allocator;
 
 use arena::{
     ArenaCanvases,
@@ -28,38 +29,43 @@ impl TextureDrawRequest {
         TextureDrawRequest { gen,ticket }
     }
 
-    pub fn draw(&self, canvs: &mut ArenaCanvases) {
-        let (x,y) = canvs.flat_alloc.position(&self.ticket);
+    pub fn draw(&self, canvs: &mut ArenaCanvases, gtexreqman: &TextureSourceManager) {
+        let (x,y) = gtexreqman.allocator.position(&self.ticket);
         self.gen.draw(canvs,x,y);
     }
     
-    pub fn measure(&self, canvs: &ArenaCanvases) -> (u32,u32,u32,u32) {
-        let (width,height) = canvs.flat_alloc.size(&self.ticket);
-        let (x,y) = canvs.flat_alloc.position(&self.ticket);
+    pub fn measure(&self, src: &TextureSourceManager) -> (u32,u32,u32,u32) {
+        let (width,height) = src.allocator.size(&self.ticket);
+        let (x,y) = src.allocator.position(&self.ticket);
         (x,y,width,height)
     }
 
 }
 
 /* Utility method to make creating TextureDrawRequests simpler */
-pub fn create_draw_request(gtexreqman: &mut TextureSourceManager, cnv: &mut ArenaCanvases, ta: Box<TextureArtist>, width: u32, height: u32) -> Rc<TextureDrawRequest> {
-    let flat_alloc = &mut cnv.flat_alloc;
-    let req = Rc::new(TextureDrawRequest::new(ta,flat_alloc.request(width,height)));
+pub fn create_draw_request(gtexreqman: &mut TextureSourceManager, ta: Box<TextureArtist>, width: u32, height: u32) -> Rc<TextureDrawRequest> {
+    let req;
+    {
+        let flat_alloc = &mut gtexreqman.allocator;
+        req = Rc::new(TextureDrawRequest::new(ta,flat_alloc.request(width,height)));
+    }
     gtexreqman.add_request(req.clone());
     req
 }
 
 /* Manages TextureDrawRequests. Single instance in Arena. Just stores
- * them and calls draw when reaady really. Little more than a fancy Vec.
+ * them and calls draw when ready really. Little more than a fancy Vec.
  */
 pub struct TextureSourceManager {
     tickets: Vec<Rc<TextureDrawRequest>>,
+    allocator: Allocator,
 }
 
 impl TextureSourceManager {
     pub fn new() -> TextureSourceManager {
         TextureSourceManager {
             tickets: Vec::<Rc<TextureDrawRequest>>::new(),
+            allocator: Allocator::new(16),
         }
     }
 
@@ -69,12 +75,16 @@ impl TextureSourceManager {
 
     pub fn draw(&self, canvs: &mut ArenaCanvases) {
         for tr in &self.tickets {
-            tr.draw(canvs);
+            tr.draw(canvs,self);
         }
     }
     
     pub fn clear(&mut self) {
         self.tickets.clear();
+    }
+
+    pub fn allocate(&mut self) -> (u32,u32) {
+        self.allocator.allocate()
     }
 }
 
@@ -111,9 +121,9 @@ impl<T,U> TextureTargetManager<T,U> where U: TextureItem<T> {
         self.requests.push((req,item));
     }
 
-    pub fn draw(&self, tg: &mut T, canvs: &mut ArenaCanvases, dims: &ArenaDims) {
+    pub fn draw(&self, tg: &mut T, src: &mut TextureSourceManager, canvs: &ArenaCanvases, dims: &ArenaDims) {
         for (req,obj) in &self.requests {
-            let (x,y,width,height) = req.measure(canvs);
+            let (x,y,width,height) = req.measure(src);
             obj.process(tg,x,y,width,height,canvs,dims);
         }
     }
