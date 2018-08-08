@@ -42,7 +42,7 @@ impl BitmapTextureStore {
     }
 
     pub fn add(&mut self, gtexreqman: &mut TextureSourceManager, canvas: &mut ArenaCanvases, data: Vec<u8>, width: u32, height: u32) -> Rc<TextureDrawRequest> {
-        create_draw_request(gtexreqman, canvas,
+        create_draw_request(gtexreqman,
                             Box::new(BitmapTextureArtist::new(data,width,height)),
                             width,height)
     }
