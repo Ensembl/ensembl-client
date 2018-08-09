@@ -52,10 +52,9 @@ impl ArenaTextures {
     }
 }
 
-use alloc::Allocator;
-
 pub struct ArenaCanvases {
     pub flat: Rc<canvasutil::FlatCanvas>,
+    pub idx: i32,
 }
 
 pub struct ArenaDims {
@@ -110,16 +109,12 @@ impl ArenaDims {
 }
 
 pub struct ArenaSpec {
-    pub flat_width: u32,
-    pub flat_height: u32,
     pub debug: bool,
 }
 
 impl ArenaSpec {
     pub fn new() -> ArenaSpec {
         ArenaSpec {
-            flat_width: 256,
-            flat_height: 256,
             debug: false
         }
     }
@@ -146,6 +141,7 @@ impl Arena {
             },
             canvases: ArenaCanvases {
                 flat,
+                idx: 0,
             }
         }));
         let data_g = data.clone();

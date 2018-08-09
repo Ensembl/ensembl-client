@@ -1,12 +1,17 @@
 use geometry::{
     Geometry,
-    GeomContext,
+    GLProgram,
     GTypeAttrib,
     GType,
     GTypeCanvasTexture,
 };
 
 use geometry;
+
+use webgl_rendering_context::{
+    WebGLRenderingContext as glctx,
+    WebGLProgram as glprog,
+};
 
 use arena::{
     ArenaData,
@@ -34,7 +39,7 @@ use std::rc::Rc;
 
 
 pub struct FixTexGeometryImpl {
-    std: GeomContext,
+    std: GLProgram,
     pos: GTypeAttrib,
     coord: GTypeAttrib,
     sampler: GTypeCanvasTexture,
@@ -105,10 +110,19 @@ impl Geometry for FixTexGeometry {
         geometry::draw(self,adata,stage);
     }
 
-    fn gtypes(&mut self) -> (&GeomContext,Vec<&mut GType>) {
+    fn gtypes(&mut self) -> (&GLProgram,Vec<&mut GType>) {
         (&self.data.std,
         vec! { &mut self.data.pos, &mut self.data.sampler,
                &mut self.data.coord })
+    }
+    
+    fn restage(&mut self, ctx: &glctx, prog: &glprog, stage: &Stage, dims: &ArenaDims) {
+        self.data.std.set_uniform_1f(&ctx,"uStageHpos",stage.pos.0);
+        self.data.std.set_uniform_1f(&ctx,"uStageVpos",stage.pos.1);
+        self.data.std.set_uniform_1f(&ctx,"uStageZoom",stage.zoom);
+        self.data.std.set_uniform_2f(&ctx,"uCursor",stage.cursor);
+        self.data.std.set_uniform_1f(&ctx,"uAspect",dims.aspect);
+        self.data.sampler.set_uniform(&ctx,&self.data.std,"uSampler");
     }
 }
 
@@ -116,14 +130,15 @@ impl FixTexGeometry {
     pub fn new(adata: &ArenaData) -> FixTexGeometry {
         FixTexGeometry {
             data:  FixTexGeometryImpl {
-                std: GeomContext::new(adata, 
+                std: GLProgram::new(adata, 
                     &geometry::shader_v_texture_3vec(
                         "aVertexPosition.x - uCursor.x",
                         "( aVertexPosition.y + aVertexPosition.z * uAspect ) - uCursor.y"),
-                    &geometry::shader_f_texture()),
+                    &geometry::shader_f_texture(),
+                    &geometry::shader_u_texture_3vec()),
                 pos:    GTypeAttrib::new(adata,"aVertexPosition",3,1),
                 coord:  GTypeAttrib::new(adata,"aTextureCoord",2,1),
-                sampler: GTypeCanvasTexture::new("uSampler",0),
+                sampler: GTypeCanvasTexture::new(),
             },
             gtexitman: TextureTargetManager::<FixTexGeometryImpl,FixTexTextureItem>::new(),
         }

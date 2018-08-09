@@ -10,15 +10,18 @@ use webgl_rendering_context::{
     WebGLBuffer as glbuf,
     WebGLProgram as glprog,
     WebGLTexture as gltex,
+    WebGLUniformLocation as gluni,
 };
 
 use arena::{
     Stage,
-    ArenaData
+    ArenaData,
+    ArenaDims,
 };
 
 use wglraw;
 use std::rc::Rc;
+use std::collections::HashMap;
 
 #[derive(Clone,Copy)]
 pub struct GCoord(pub f32,pub f32);
@@ -47,36 +50,39 @@ pub struct Colour(pub f32,pub f32,pub f32);
 
 /* Geometries must implement Geometry for the arena to use them */
 pub trait Geometry {
-    fn gtypes(&mut self) -> (&GeomContext,Vec<&mut GType>);
+    fn gtypes(&mut self) -> (&GLProgram,Vec<&mut GType>);
     fn populate(&mut self, &mut ArenaData);
     fn draw(&mut self, adata: &mut ArenaData, stage:&Stage);
+    fn restage(&mut self, ctx: &glctx, prog: &glprog, stage: &Stage, dims: &ArenaDims);
 }
 
-pub fn draw(holder: &mut Geometry, adata: &ArenaData ,stage:&Stage) {
-    let (std,types) = holder.gtypes();
-    
-    let indices = std.indices;
-    let prog = std.prog.clone();
-
-    // set uniforms
+pub fn draw(holder: &mut Geometry, adata: &ArenaData, stage:&Stage) {
+    let prog;
+    let indices;
+    {
+        let (std,types) = holder.gtypes();
+        indices = std.indices;
+        prog = std.prog.clone();
+    }
+    // link
     let ctx = &adata.ctx;
     let aspect = adata.dims.aspect;
     ctx.use_program(Some(&prog));
-    wglraw::set_uniform_1f(&ctx,&prog,"uStageHpos",stage.pos.0);
-    wglraw::set_uniform_1f(&ctx,&prog,"uStageVpos",stage.pos.1);
-    wglraw::set_uniform_1f(&ctx,&prog,"uStageZoom",stage.zoom);
-    wglraw::set_uniform_2f(&ctx,&prog,"uCursor",stage.cursor);
-    wglraw::set_uniform_1f(&ctx,&prog,"uAspect",aspect);
-    // link
-    ctx.use_program(Some(&prog));
-    for g in &types {
-        g.link(adata,&prog);
-    }      
+    {
+        let (std,mut types) = holder.gtypes();
+        for g in &mut types {
+            g.link(adata,&prog);
+        }
+    }
+    holder.restage(&ctx,&prog,stage,&adata.dims);
     // draw
     ctx.draw_arrays(glctx::TRIANGLES,0,indices);
     // unlink
-    for g in &types {
-        g.unlink(&ctx,&prog);
+    {
+        let (std,types) = holder.gtypes();
+        for g in &types {
+            g.unlink(&ctx,&prog);
+        }
     }
 }
 
@@ -95,24 +101,101 @@ pub fn prog(adata: &ArenaData,v_src: &str, f_src: &str) -> glprog {
 /* This is the meat of each GType implementation */
 pub trait GType {
     fn populate(&mut self, _adata: &ArenaData) {}
-    fn link(&self, _adata : &ArenaData, _prog : &glprog) {}
+    fn link(&mut self, _adata : &ArenaData, _prog : &glprog) {}
     fn unlink(&self, _ctx : &glctx, _prog : &glprog) {}
 }
 
-pub struct GeomContext {
+pub struct GLProgram {
     indices: i32,
-    prog: Rc<glprog>    
+    prog: Rc<glprog>,
+    uniforms: HashMap<String,gluni>
 }
 
-impl GeomContext {
-    pub fn new(adata: &ArenaData,vsrc: &str, fsrc: &str) -> GeomContext {
-        GeomContext {
-            prog: Rc::new(prog(adata,vsrc,fsrc)),
+fn find_uniforms(ctx: &glctx, prog: &Rc<glprog>, uniforms: &Vec<String>) -> HashMap<String,gluni> {
+    let mut udata = HashMap::<String,gluni>::new();
+    for u in uniforms {
+        let loc = ctx.get_uniform_location(&prog,&u);
+        if loc.is_some() {
+            udata.insert(u.to_string(),loc.unwrap());
+        }
+    }
+    udata
+}
+
+impl GLProgram {
+    pub fn new(adata: &ArenaData,vsrc: &str, fsrc: &str, uniforms: &Vec<String>) -> GLProgram {
+        let ctx = &adata.ctx;
+        let prog = Rc::new(prog(adata,vsrc,fsrc));
+        ctx.use_program(Some(&prog));
+        let udata = find_uniforms(ctx,&prog,uniforms);
+        GLProgram {
+            prog,
+            uniforms: udata,
             indices: 0,
         }
     }
     
     pub fn advance(&mut self,amt: i32) { self.indices += amt; }
+    
+    pub fn uniform(&self, name: &str) -> Option<&gluni> {
+        self.uniforms.get(name)
+    }
+
+    pub fn set_uniform_1i(&self, ctx: &glctx, name:&str, value: i32) {
+        if let Some(loc) = self.uniforms.get(name) {
+            ctx.uniform1i(Some(&loc),value);
+        }
+    }
+    
+    pub fn set_uniform_1f(&self, ctx: &glctx, name:&str, value: f32) {
+        if let Some(loc) = self.uniforms.get(name) {
+            ctx.uniform1f(Some(&loc),value);
+        }
+    }
+    
+    pub fn set_uniform_2f(&self, ctx: &glctx, name:&str, value: [f32;2]) {
+        if let Some(loc) = self.uniforms.get(name) {
+            ctx.uniform2f(Some(&loc),value[0],value[1]);
+        }
+    }
+    
+}
+
+/* GTypeCanvasTexture = GType for canvas-origin textures */
+pub struct GTypeCanvasTexture {
+    idx: Option<i32>,
+    texture: Option<gltex>,
+}
+
+impl GTypeCanvasTexture {
+    pub fn new() -> GTypeCanvasTexture {
+        GTypeCanvasTexture {
+            idx: None,
+            texture: None
+        }
+    }
+
+    fn set_uniform(&self, ctx: &glctx, std: &GLProgram, name: &str) {
+        if let Some(idx) = self.idx {
+            std.set_uniform_1i(ctx,name,idx);
+        }
+    }
+}
+
+impl GType for GTypeCanvasTexture {
+    fn populate(&mut self, adata: &ArenaData) {
+        let canvases = &adata.canvases;
+        self.texture = Some(wglraw::canvas_texture(&adata.ctx,canvases.flat.element()));
+    }
+
+    fn link(&mut self, adata : &ArenaData, prog : &glprog) {
+        let canvases = &adata.canvases;
+        if let Some(ref texture) = self.texture {
+            adata.ctx.active_texture(TEXIDS[canvases.idx as usize]);
+            adata.ctx.bind_texture(glctx::TEXTURE_2D,Some(&texture));
+            self.idx = Some(canvases.idx);
+        }
+    }
 }
 
 pub struct GTypeAttrib {
@@ -169,7 +252,7 @@ impl GType for GTypeAttrib {
         self.vec.clear();
     }
 
-    fn link(&self, adata : &ArenaData, prog : &glprog) {
+    fn link(&mut self, adata : &ArenaData, prog : &glprog) {
         wglraw::link_buffer(&adata.ctx,prog,&self.name,self.size,&self.buf);
     }
 }
@@ -179,38 +262,6 @@ const TEXIDS : [u32;8] = [
     glctx::TEXTURE3, glctx::TEXTURE4, glctx::TEXTURE5,
     glctx::TEXTURE6, glctx::TEXTURE7
 ];
-
-/* GTypeCanvasTexture = GType for canvas-origin textures */
-pub struct GTypeCanvasTexture {
-    uname: String,
-    slot: i8,
-    texture: Option<gltex>,
-}
-
-impl GTypeCanvasTexture {
-    pub fn new(name: &str, slot: i8) -> GTypeCanvasTexture {
-        GTypeCanvasTexture {
-            uname: name.to_string(),
-            slot,
-            texture: None
-        }
-    }
-}
-
-impl GType for GTypeCanvasTexture {
-    fn populate(&mut self, adata: &ArenaData) {
-        let canvases = &adata.canvases;
-        self.texture = Some(wglraw::canvas_texture(&adata.ctx,canvases.flat.element()));
-    }
-
-    fn link(&self, adata : &ArenaData, prog : &glprog) {
-        if let Some(ref texture) = self.texture {
-            adata.ctx.active_texture(TEXIDS[self.slot as usize]);
-            adata.ctx.bind_texture(glctx::TEXTURE_2D,Some(&texture));
-        }
-        wglraw::set_uniform_1i(&adata.ctx,prog,&self.uname,self.slot as i32);
-    }
-}
 
 pub fn shader_v_solid(x: &str, y: &str) -> String {
     format!("
@@ -233,6 +284,16 @@ pub fn shader_v_solid(x: &str, y: &str) -> String {
     ",x,y).to_string()
 }
 
+pub fn shader_u_solid() -> Vec<String> {
+    vec! {
+        "uAspect".to_string(),
+        "uStageHpos".to_string(),
+        "uStageVpos".to_string(),
+        "uStageZoom".to_string(),
+        "uCursor".to_string(),        
+    }
+}
+
 pub fn shader_v_texture(x: &str, y: &str) -> String {
     format!("
 attribute vec2 aVertexPosition;
@@ -251,6 +312,16 @@ void main() {{
     vTextureCoord = aTextureCoord;
 }}
     ",x,y).to_string()
+}
+
+pub fn shader_u_texture() -> Vec<String> {
+    vec! {
+        "uAspect".to_string(),
+        "uStageHpos".to_string(),
+        "uStageVpos".to_string(),
+        "uStageZoom".to_string(),
+        "uSampler".to_string(),
+    }
 }
 
 pub fn shader_v_solid_3vec(x: &str, y: &str) -> String {
@@ -294,6 +365,16 @@ pub fn shader_v_texture_3vec(x: &str, y: &str) -> String {
     ",x,y).to_string()
 }
 
+pub fn shader_u_texture_3vec() -> Vec<String> {
+    vec! {
+        "uAspect".to_string(),
+        "uStageHpos".to_string(),
+        "uStageVpos".to_string(),
+        "uStageZoom".to_string(),
+        "uCursor".to_string(),
+        "uSampler".to_string(),
+    }
+}
 
 pub fn shader_f_solid() -> String {
     "
