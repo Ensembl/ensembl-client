@@ -1,8 +1,13 @@
 use geometry::{
     Geometry,
-    GeomContext,
+    GLProgram,
     GTypeAttrib,    
     GType,
+};
+
+use webgl_rendering_context::{
+    WebGLRenderingContext as glctx,
+    WebGLProgram as glprog,
 };
 
 use geometry;
@@ -14,11 +19,12 @@ use geometry::{
 
 use arena::{
     ArenaData,
+    ArenaDims,
     Stage
 };
 
 pub struct PinGeometry {
-    std: GeomContext,
+    std: GLProgram,
     pos: GTypeAttrib,
     origin: GTypeAttrib,
     colour: GTypeAttrib,
@@ -33,19 +39,28 @@ impl Geometry for PinGeometry {
         geometry::draw(self,adata,stage);
     }
 
-    fn gtypes(&mut self) -> (&GeomContext,Vec<&mut GType>) {
+    fn gtypes(&mut self) -> (&GLProgram,Vec<&mut GType>) {
         (&self.std,vec! { &mut self.pos, &mut self.origin, &mut self.colour})
+    }
+
+    fn restage(&mut self, ctx: &glctx, prog: &glprog, stage: &Stage, dims: &ArenaDims) {
+        self.std.set_uniform_1f(&ctx,"uStageHpos",stage.pos.0);
+        self.std.set_uniform_1f(&ctx,"uStageVpos",stage.pos.1);
+        self.std.set_uniform_1f(&ctx,"uStageZoom",stage.zoom);
+        self.std.set_uniform_2f(&ctx,"uCursor",stage.cursor);
+        self.std.set_uniform_1f(&ctx,"uAspect",dims.aspect);
     }
 }
 
 impl PinGeometry {
     pub fn new(adata: &ArenaData) -> PinGeometry {
         PinGeometry {
-            std: GeomContext::new(adata,
+            std: GLProgram::new(adata,
                 &geometry::shader_v_solid(
                     "(aOrigin.x - uStageHpos) * uStageZoom + aVertexPosition.x",
                     "(aOrigin.y - uStageVpos) + aVertexPosition.y * uAspect"),
-                &geometry::shader_f_solid()),
+                &geometry::shader_f_solid(),
+                &geometry::shader_u_solid()),
 
             pos: GTypeAttrib::new(&adata,"aVertexPosition",2,1),
             origin: GTypeAttrib::new(&adata,"aOrigin",2,3),

@@ -1,6 +1,6 @@
 use geometry::{
     Geometry,
-    GeomContext,
+    GLProgram,
     GTypeAttrib,
     GType,
     GCoord,
@@ -11,11 +11,17 @@ use geometry;
 
 use arena::{
     ArenaData,
+    ArenaDims,
     Stage
 };
 
+use webgl_rendering_context::{
+    WebGLRenderingContext as glctx,
+    WebGLProgram as glprog,
+};
+
 pub struct StretchGeometry {
-    std : GeomContext,
+    std : GLProgram,
     pos: GTypeAttrib,
     colour: GTypeAttrib,
 }
@@ -26,22 +32,31 @@ impl Geometry for StretchGeometry {
     }
     
     fn draw(&mut self, adata: &mut ArenaData, stage:&Stage) {
-        geometry::draw(self,adata,stage); 
+        geometry::draw(self,adata,stage);
     }
     
-    fn gtypes(&mut self) -> (&GeomContext,Vec<&mut GType>) {
+    fn gtypes(&mut self) -> (&GLProgram,Vec<&mut GType>) {
         (&self.std,vec! { &mut self.pos, &mut self.colour })
+    }
+    
+    fn restage(&mut self, ctx: &glctx, prog: &glprog, stage: &Stage, dims: &ArenaDims) {
+        self.std.set_uniform_1f(&ctx,"uStageHpos",stage.pos.0);
+        self.std.set_uniform_1f(&ctx,"uStageVpos",stage.pos.1);
+        self.std.set_uniform_1f(&ctx,"uStageZoom",stage.zoom);
+        self.std.set_uniform_2f(&ctx,"uCursor",stage.cursor);
+        self.std.set_uniform_1f(&ctx,"uAspect",dims.aspect);
     }
 }
 
 impl StretchGeometry {
     pub fn new(adata: &ArenaData) -> StretchGeometry {
         StretchGeometry {
-            std: GeomContext::new(adata,
+            std: GLProgram::new(adata,
                 &geometry::shader_v_solid(
                     "(aVertexPosition.x - uStageHpos) * uStageZoom",
                     "aVertexPosition.y - uStageVpos"),
-                &geometry::shader_f_solid()),
+                &geometry::shader_f_solid(),
+                &geometry::shader_u_solid()),
             pos: GTypeAttrib::new(adata,"aVertexPosition",2,1),
             colour: GTypeAttrib::new(adata,"aVertexColour",3,3),
         }

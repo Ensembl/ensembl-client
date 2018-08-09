@@ -2,13 +2,18 @@ use geometry::{
     Geometry,
     GCoord,
     PCoord,
-    GeomContext,
+    GLProgram,
     GTypeAttrib,
     GType,
     GTypeCanvasTexture,
 };
 
 use geometry;
+
+use webgl_rendering_context::{
+    WebGLRenderingContext as glctx,
+    WebGLProgram as glprog,
+};
 
 use arena::{
     ArenaData,
@@ -36,7 +41,7 @@ use std::rc::Rc;
 
 
 pub struct PinTexGeometryImpl {
-    std: GeomContext,
+    std: GLProgram,
     pos: GTypeAttrib,
     origin: GTypeAttrib,
     coord: GTypeAttrib,
@@ -115,10 +120,19 @@ impl Geometry for PinTexGeometry {
         geometry::draw(self,adata,stage);
     }
 
-    fn gtypes(&mut self) -> (&GeomContext,Vec<&mut GType>) {
+    fn gtypes(&mut self) -> (&GLProgram,Vec<&mut GType>) {
         (&self.data.std,
         vec! { &mut self.data.sampler, &mut self.data.pos,
                &mut self.data.origin, &mut self.data.coord })
+    }
+    
+    fn restage(&mut self, ctx: &glctx, prog: &glprog, stage: &Stage, dims: &ArenaDims) {
+        self.data.std.set_uniform_1f(&ctx,"uStageHpos",stage.pos.0);
+        self.data.std.set_uniform_1f(&ctx,"uStageVpos",stage.pos.1);
+        self.data.std.set_uniform_1f(&ctx,"uStageZoom",stage.zoom);
+        self.data.std.set_uniform_2f(&ctx,"uCursor",stage.cursor);
+        self.data.std.set_uniform_1f(&ctx,"uAspect",dims.aspect);
+        self.data.sampler.set_uniform(&ctx,&self.data.std,"uSampler");
     }
 }
 
@@ -126,16 +140,17 @@ impl PinTexGeometry {
     pub fn new(adata: &ArenaData) -> PinTexGeometry {
         PinTexGeometry {
             data: PinTexGeometryImpl {
-                std: GeomContext::new(adata,
+                std: GLProgram::new(adata,
                     &geometry::shader_v_texture(
                         "(aOrigin.x - uStageHpos) * uStageZoom + aVertexPosition.x",
                         "(aOrigin.y - uStageVpos) + aVertexPosition.y",
                     ),
-                    &geometry::shader_f_texture()),
+                    &geometry::shader_f_texture(),
+                    &geometry::shader_u_texture()),
                 pos:    GTypeAttrib::new(adata,"aVertexPosition",2,1),
                 origin: GTypeAttrib::new(adata,"aOrigin",2,3),
                 coord:  GTypeAttrib::new(adata,"aTextureCoord",2,1),
-                sampler: GTypeCanvasTexture::new("uSampler",0),
+                sampler: GTypeCanvasTexture::new(),
             },
             gtexitman: TextureTargetManager::<PinTexGeometryImpl,PinTexTextureItem>::new(),
         }

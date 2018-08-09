@@ -1,6 +1,6 @@
 use geometry::{
     Geometry,
-    GeomContext,
+    GLProgram,
     GTypeAttrib,
     GType,
     GTypeCanvasTexture,
@@ -14,6 +14,11 @@ use arena::{
     ArenaCanvases,
     ArenaDims,
     Stage
+};
+
+use webgl_rendering_context::{
+    WebGLRenderingContext as glctx,
+    WebGLProgram as glprog,
 };
 
 use texture::{
@@ -35,7 +40,7 @@ use std::rc::Rc;
 
 
 pub struct StretchTexGeometryImpl {
-    std: GeomContext,
+    std: GLProgram,
     pos: GTypeAttrib,
     coord: GTypeAttrib,
     sampler: GTypeCanvasTexture,
@@ -108,10 +113,19 @@ impl Geometry for StretchTexGeometry {
         geometry::draw(self,adata,stage);
     }
 
-    fn gtypes(&mut self) -> (&GeomContext,Vec<&mut GType>) {
+    fn gtypes(&mut self) -> (&GLProgram,Vec<&mut GType>) {
         (&self.data.std,
         vec! { &mut self.data.pos, &mut self.data.sampler,
                &mut self.data.coord })
+    }
+    
+    fn restage(&mut self, ctx: &glctx, prog: &glprog, stage: &Stage, dims: &ArenaDims) {
+        self.data.std.set_uniform_1f(&ctx,"uStageHpos",stage.pos.0);
+        self.data.std.set_uniform_1f(&ctx,"uStageVpos",stage.pos.1);
+        self.data.std.set_uniform_1f(&ctx,"uStageZoom",stage.zoom);
+        self.data.std.set_uniform_2f(&ctx,"uCursor",stage.cursor);
+        self.data.std.set_uniform_1f(&ctx,"uAspect",dims.aspect);
+        self.data.sampler.set_uniform(&ctx,&self.data.std,"uSampler");
     }
 }
 
@@ -119,15 +133,16 @@ impl StretchTexGeometry {
     pub fn new(adata: &ArenaData) -> StretchTexGeometry {
         StretchTexGeometry {
             data: StretchTexGeometryImpl {
-                std: GeomContext::new(adata,
+                std: GLProgram::new(adata,
                     &geometry::shader_v_texture(
                         "(aVertexPosition.x - uStageHpos) * uStageZoom",
                         "aVertexPosition.y - uStageVpos"
                     ),
-                    &geometry::shader_f_texture()),
+                    &geometry::shader_f_texture(),
+                    &geometry::shader_u_texture()),
                 pos:    GTypeAttrib::new(adata,"aVertexPosition",2,1),
                 coord:  GTypeAttrib::new(adata,"aTextureCoord",2,1),
-                sampler: GTypeCanvasTexture::new("uSampler",0),
+                sampler: GTypeCanvasTexture::new(),
             },
             gtexitman: TextureTargetManager::<StretchTexGeometryImpl,StretchTexTextureItem>::new(),
         }

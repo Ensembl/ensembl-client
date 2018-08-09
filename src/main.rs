@@ -8,7 +8,6 @@ extern crate rand;
 
 #[macro_use]
 mod util;
-
 mod arena;
 mod geometry;
 mod domutil;
@@ -17,6 +16,7 @@ mod wglraw;
 mod alloc;
 mod texture;
 mod webgl_rendering_context;
+
 
 use rand::rngs::SmallRng;
 use rand::SeedableRng;
@@ -49,6 +49,65 @@ struct State {
     old_time: f64,
     fpos: f64,
     call: i32,
+    phase: u32,
+    gear: u32,
+    
+    grace_next: (u32,u32),
+    grace_at: f32,
+    last_down: bool,
+}
+
+const max_gear : u32 = 6;
+const max_grace: u32 = 300;
+
+fn fib_inc(val: (u32,u32)) -> (u32,u32) {
+    (val.1,val.0+val.1)
+}
+
+fn fib_dec(val: (u32,u32)) -> (u32,u32) {
+    if val.1 > val.0 {
+        (val.1-val.0,val.0)
+    } else {
+        (1,1)
+    }
+}
+
+fn detect_jank(state : &mut State, delta: u32, time: f32) {
+    if delta > state.gear as u32 * 20 {
+        if state.gear < max_gear {
+            /* Go up a gear */
+            if state.last_down {
+                /* Hunting */
+                if time > state.grace_at {
+                    /* Successful, long hunt. Shorten */
+                    state.grace_next = fib_dec(state.grace_next);
+                } else {
+                    /* Failure, short hunt. Lengthen */
+                    if state.grace_next.1 < max_grace {
+                        state.grace_next = fib_inc(state.grace_next);
+                    }
+                }
+            } else {
+                /* Moving */
+                state.grace_next = (1,1);
+            }
+            state.grace_at = time + state.grace_next.1 as f32;
+            state.last_down = false;
+            state.gear += 1;
+            js! { console.log(">gear",@{state.gear},@{state.grace_next.1}); };
+        }
+    }
+    if state.grace_at <= time && state.gear > 1 {
+        /* Go down a gear */
+        if state.last_down {
+            /* Moving */
+            state.grace_next = (1,1);
+        }
+        state.grace_at = time + state.grace_next.1 as f32;
+        state.last_down = true;
+        state.gear -= 1;
+        js! { console.log("<gear",@{state.gear},@{state.grace_next.1}); };
+    }
 }
 
 fn animate(time : f64, s: Rc<RefCell<State>>) {
@@ -56,6 +115,7 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
         let mut state = s.borrow_mut();
         if state.old_time > 0.0 {
             let delta = (time - state.old_time) / 5000.0;
+            let d = (time - state.old_time) as u32;            
             state.call += 1;
             state.zoomscale += delta* 5.0;
             state.hpos += delta *3.763;
@@ -64,11 +124,19 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
             state.stage.pos.0 = ((state.hpos.cos())*1.5) as f32;
             state.stage.cursor[0] = (state.fpos.cos()*0.3) as f32;
         }
+        let d = time - state.old_time;
         state.old_time = time;
         let mut stage = state.stage;
         state.arena.borrow_mut().settle(&mut stage);
         state.stage = stage;
-        state.arena.borrow_mut().animate(&state.stage);
+        state.phase += 1;
+        if state.phase >= state.gear {
+            state.phase = 0;
+        }
+        if state.phase == 0 {
+            detect_jank(&mut state,d as u32,time as f32/1000.0);
+            state.arena.borrow_mut().animate(&state.stage);
+        }
     }
     window().request_animation_frame(move |x| animate(x,s.clone()));
 }
@@ -112,7 +180,7 @@ fn main() {
     let mut arena = Arena::new("#glcanvas","#managedcanvasholder",a_spec);
     for yidx in -20..20 {
         let y = (yidx as f32) / 20.0;
-        for idx in -20..20 {
+        for idx in -50..50 {
             let v1 = (idx as f32) * 0.1;
             let v2 = (idx as f32)+10.0*(yidx as f32) * 0.1;
             let dx = ((v2*5.0).cos()+1.0)/4.0;
@@ -152,13 +220,11 @@ fn main() {
                                  255,0,0,255,
                                  0,255,0,255,
                                  255,255,0,255 },4,1);
-                                 
     arena.bitmap_fix(&[0.5-dx,-1.0,0.0, 0.5+dx,1.0,0.0],
                         vec! { 0,0,255,255,
                                  255,0,0,255,
                                  0,255,0,255,
                                  255,255,0,255 },1,4);
-
     arena.populate();
 
     arena.settle(&mut stage);
@@ -173,6 +239,12 @@ fn main() {
         zoomscale: 0.0,
         old_time: -1.0,
         call: 0,
+        phase: 0,
+        gear: 1,
+
+        grace_next: (1,1),
+        grace_at: 0.,
+        last_down: true,
     }));
 
     animate(0.,state);
