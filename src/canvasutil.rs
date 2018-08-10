@@ -13,6 +13,7 @@ use stdweb::web::html_element::{
 
 use stdweb::web::TypedArray;
 use stdweb::unstable::TryInto;
+use geometry::Colour;
 
 use domutil;
 
@@ -55,13 +56,14 @@ pub struct FCFont {
     spec: String,
     height: u32,
     xpad: u32,
-    ypad: u32,
+    ypadtop: u32,
+    ypadbot: u32
 }
 
 impl FCFont {
     pub fn new(size : u32,family: &str) -> FCFont {
         FCFont { spec: format!("{}px {}",size,family),
-                 height: size, ypad: 2, xpad: 0 }
+                 height: size, ypadtop: 0, ypadbot: 4, xpad: 0 }
     }
     
     fn setup(&self, canvas : &CanvasRenderingContext2d) {
@@ -84,18 +86,22 @@ impl FlatCanvas {
         canvas.set_width(width);
         canvas.set_height(height);
         let context : CanvasRenderingContext2d = canvas.get_context().unwrap();
+        context.set_fill_style_color("white");
+        context.fill_rect(0.,0.,width as f64,height as f64);
         context.set_fill_style_color("black");
         FlatCanvas { canvas, context, height, width }
     }
     
-    pub fn text(&self,text : &str,x : u32, y: u32, font: &FCFont) -> (u32,u32) {
+    pub fn text(&self,text : &str,x : u32, y: u32, font: &FCFont, col: &Colour) -> (u32,u32) {
         font.setup(&self.context);
         self.context.set_text_baseline(TextBaseline::Top);
-        self.context.fill_text(text,(x+font.xpad).into(),(y+font.ypad).into(),None);
+        self.context.set_fill_style_color(&col.to_css()[..]);
+        self.context.set_stroke_style_color(&col.to_css()[..]);
+        self.context.fill_text(text,(x+font.xpad).into(),(y+font.ypadtop).into(),None);
         let m = self.context.measure_text(text);
         let width_px = m.unwrap().get_width().ceil() as u32;
         let height_px = font.height;
-        (width_px+2*font.xpad,height_px+2*font.ypad)
+        (width_px+2*font.xpad,height_px+font.ypadtop+font.ypadbot)
     }
     
     pub fn bitmap(&self, data: &Vec<u8>, x: u32, y: u32, width: u32, height: u32) {
@@ -112,7 +118,7 @@ impl FlatCanvas {
         let m = self.context.measure_text(text);
         let width_px = m.unwrap().get_width().ceil() as u32;
         let height_px = font.height;
-        (width_px+2*font.xpad,height_px+2*font.ypad)
+        (width_px+2*font.xpad,height_px+font.ypadtop+font.ypadbot)
     }
     
     pub fn element(&self) -> &CanvasElement {

@@ -45,8 +45,20 @@ impl PCoord {
     }
 }
 
-#[derive(Clone,Copy)]
-pub struct Colour(pub f32,pub f32,pub f32);
+#[derive(Clone,Copy,PartialEq,Hash,Eq)]
+pub struct Colour(pub u32,pub u32,pub u32);
+
+impl Colour {
+    pub fn to_css(&self) -> String {
+        format!("rgb({},{},{})",self.0,self.1,self.2)
+    }
+    
+    pub fn to_webgl(&self) -> [f32;3] {
+        [self.0 as f32 / 255.,
+         self.1 as f32 / 255.,
+         self.2 as f32 / 255.]
+    }
+}
 
 /* Geometries must implement Geometry for the arena to use them */
 pub trait Geometry {
@@ -240,7 +252,7 @@ impl GTypeAttrib {
     
     fn add_col(&mut self, col: &Colour) {
         for _i in 0..self.rep {
-            self.vec.extend_from_slice(&[col.0,col.1,col.2]);
+            self.vec.extend_from_slice(&col.to_webgl());
         }
     }
 }

@@ -89,10 +89,10 @@ impl TextureItem<FixTexGeometryImpl> for FixTexTextureItem {
         let flat = &canvs.flat;
         let t = [flat.prop_x(x), flat.prop_y(y + height),
                  flat.prop_x(x + width), flat.prop_y(y)];
-        
-        let p = [PCoord(self.pos.0,self.pos.1),
-                 PCoord(self.pos.0 + width as f32 * self.scale.0,
-                        self.pos.1 + height as f32 * self.scale.1)];        
+        let pos = dims.nudge_p(self.pos);
+        let p = [PCoord(pos.0,pos.1),
+                 PCoord(pos.0 + width as f32 * self.scale.0,
+                        pos.1 + height as f32 * self.scale.1 )];
         geom.rectangle(&p,&t);
     }
 }

@@ -90,7 +90,7 @@ impl PinTexTextureItem {
 impl TextureItem<PinTexGeometryImpl> for PinTexTextureItem {
     fn process(&self, geom: &mut PinTexGeometryImpl, x: u32, y: u32, width: u32, height: u32, canvs: &ArenaCanvases, dims: &ArenaDims) {
         let flat = &canvs.flat;
-        let origin = dims.nudge(self.origin);
+        let origin = dims.nudge_g(self.origin);
         let p = [PCoord(0.,0.), PCoord(width as f32 * self.scale.0,height as f32 * self.scale.1)];
         let t = [flat.prop_x(x), flat.prop_y(y + height),
                  flat.prop_x(x + width), flat.prop_y(y)];
