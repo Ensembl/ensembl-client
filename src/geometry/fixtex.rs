@@ -72,13 +72,14 @@ impl FixTexGeometryImpl {
  */
 
 pub struct FixTexTextureItem {
-    pos: [PCoord;2],
+    pos: PCoord,
+    scale: PCoord,
 }
 
 impl FixTexTextureItem {
-    pub fn new(pos: &[PCoord;2]) -> FixTexTextureItem {
+    pub fn new(pos: &PCoord, scale: &PCoord) -> FixTexTextureItem {
         FixTexTextureItem {
-            pos: *pos
+            pos: *pos, scale: *scale,
         }
     }
 }
@@ -88,7 +89,11 @@ impl TextureItem<FixTexGeometryImpl> for FixTexTextureItem {
         let flat = &canvs.flat;
         let t = [flat.prop_x(x), flat.prop_y(y + height),
                  flat.prop_x(x + width), flat.prop_y(y)];
-        geom.rectangle(&self.pos,&t);
+        
+        let p = [PCoord(self.pos.0,self.pos.1),
+                 PCoord(self.pos.0 + width as f32 * self.scale.0,
+                        self.pos.1 + height as f32 * self.scale.1)];        
+        geom.rectangle(&p,&t);
     }
 }
 
@@ -149,8 +154,8 @@ impl FixTexGeometry {
         }
     }
 
-    pub fn add_texture(&mut self, req: Rc<TextureDrawRequest>, pos: &[PCoord;2]) {
-        let ri = FixTexTextureItem::new(pos);
+    pub fn add_texture(&mut self, req: Rc<TextureDrawRequest>, origin: &PCoord, scale: &PCoord) {
+        let ri = FixTexTextureItem::new(origin,scale);
         self.gtexitman.add_item(req,ri);
     }
 
