@@ -273,7 +273,6 @@ pub fn shader_v_solid(x: &str, y: &str) -> String {
         uniform float uStageHpos;
         uniform float uStageVpos;
         uniform float uStageZoom;
-        uniform vec2 uCursor;
         uniform vec2 uSize;
 
         varying lowp vec3 vColour;
@@ -291,7 +290,6 @@ pub fn shader_u_solid() -> Vec<String> {
         "uStageHpos".to_string(),
         "uStageVpos".to_string(),
         "uStageZoom".to_string(),
-        "uCursor".to_string(),        
         "uSize".to_string(),
     }
 }
@@ -307,8 +305,6 @@ uniform float uStageHpos;
 uniform float uStageVpos;
 uniform float uStageZoom;
 uniform vec2 uSize;
-uniform vec2 uCursor;
-
 
 varying highp vec2 vTextureCoord;
 
@@ -325,62 +321,6 @@ pub fn shader_u_texture() -> Vec<String> {
         "uStageHpos".to_string(),
         "uStageVpos".to_string(),
         "uStageZoom".to_string(),
-        "uSampler".to_string(),
-        "uCursor".to_string(),
-        "uSize".to_string(),
-    }
-}
-
-pub fn shader_v_solid_3vec(x: &str, y: &str) -> String {
-    format!("
-        attribute vec3 aVertexPosition;
-        attribute vec3 aVertexColour;
-
-        uniform float uAspect;
-        uniform float uStageHpos;
-        uniform float uStageVpos;
-        uniform float uStageZoom;
-        uniform vec2 uCursor;
-        uniform vec2 uSize;
-
-        varying lowp vec3 vColour;
-
-        void main() {{
-             gl_Position = vec4({},{},0.0, 1.0);
-            vColour = aVertexColour;
-        }}
-    ",x,y).to_string()
-}
-
-pub fn shader_v_texture_3vec(x: &str, y: &str) -> String {
-    format!("
-        attribute vec3 aVertexPosition;
-        attribute vec2 aTextureCoord;
-        
-
-        uniform float uAspect;
-        uniform float uStageHpos;
-        uniform float uStageVpos;
-        uniform float uStageZoom;
-        uniform vec2 uCursor;
-        uniform vec2 uSize;
-
-        varying highp vec2 vTextureCoord;
-
-        void main() {{
-             gl_Position = vec4({},{},0.0, 1.0);
-             vTextureCoord = aTextureCoord;
-        }}
-    ",x,y).to_string()
-}
-
-pub fn shader_u_texture_3vec() -> Vec<String> {
-    vec! {
-        "uAspect".to_string(),
-        "uStageHpos".to_string(),
-        "uStageVpos".to_string(),
-        "uStageZoom".to_string(),
-        "uCursor".to_string(),
         "uSampler".to_string(),
         "uSize".to_string(),
     }
