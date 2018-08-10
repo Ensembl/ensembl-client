@@ -57,6 +57,7 @@ pub struct ArenaCanvases {
     pub idx: i32,
 }
 
+#[derive(Clone,Copy)]
 pub struct ArenaDims {
     pub aspect: f32,
     pub width_px: u32,
@@ -157,6 +158,10 @@ impl Arena {
         arena
     }
 
+    pub fn dims(&self) -> ArenaDims {
+        self.data.borrow().dims
+    }
+
     pub fn settle(&self, stage: &mut Stage) {
         self.data.borrow().dims.settle(stage);
     }  
@@ -180,7 +185,7 @@ impl Arena {
         self.geom.pintex.add_texture(tr,origin,&PCoord(1.,1.));
     }
 
-    pub fn bitmap_stretch(&mut self, pos:&[PCoord;2], data: Vec<u8>, width: u32, height: u32) {
+    pub fn bitmap_stretch(&mut self, pos:&[GCoord;2], data: Vec<u8>, width: u32, height: u32) {
         let datam = &mut self.data.borrow_mut();
         let (canvases,textures,gtexreqman,_) = datam.burst_texture();
         let tr = textures.bitmap.add(gtexreqman,canvases,data,width,height);
@@ -194,18 +199,18 @@ impl Arena {
         self.geom.pintex.add_texture(tr,origin,scale);
     }
 
-    pub fn bitmap_fix(&mut self, pos :&[f32;6], data: Vec<u8>, width: u32, height: u32) {
+    pub fn bitmap_fix(&mut self, pos :&[PCoord;2], data: Vec<u8>, width: u32, height: u32) {
         let datam = &mut self.data.borrow_mut();
         let (canvases,textures,gtexreqman,_) = datam.burst_texture();
         let tr = textures.bitmap.add(gtexreqman,canvases,data,width,height);
         self.geom.fixtex.add_texture(tr,pos);
     }
 
-    pub fn triangle_fix(&mut self,points:&[f32;9],colour:&[f32;3]) {
+    pub fn triangle_fix(&mut self,points:&[PCoord;3],colour:&[f32;3]) {
         self.geom.fix.triangle(points,colour);
     }
     
-    pub fn rectangle_fix(&mut self,p:&[f32;6],colour:&[f32;3]) {
+    pub fn rectangle_fix(&mut self,p:&[PCoord;2],colour:&[f32;3]) {
         self.geom.fix.rectangle(p,colour);
     }
 
@@ -250,7 +255,6 @@ impl Arena {
         self.geom.fixtex.draw(datam,&stage);
     }
 }
-
 
 #[derive(Clone,Copy)]
 pub struct Stage {

@@ -51,27 +51,6 @@ pub fn link_buffer(ctx:&glctx, prog:&glprog, name:&str, step:i8, buf:&glbuf) {
     ctx.vertex_attrib_pointer(loc, step as i32, glctx::FLOAT, false, 0, 0) ;
 }
 
-pub fn set_uniform_1f(ctx:&glctx, prog:&glprog, name:&str, value: f32) {
-    let loc = ctx.get_uniform_location(&prog,&name);
-    if loc.is_some() {
-        ctx.uniform1f(Some(&loc.unwrap()),value);
-    }
-}
-
-pub fn set_uniform_1i(ctx:&glctx, prog:&glprog, name:&str, value: i32) {
-    let loc = ctx.get_uniform_location(&prog,&name);
-    if loc.is_some() {
-        ctx.uniform1i(Some(&loc.unwrap()),value);
-    }
-}
-
-pub fn set_uniform_2f(ctx:&glctx, prog:&glprog, name:&str, value: [f32;2]) {
-    let loc = ctx.get_uniform_location(&prog,&name);
-    if loc.is_some() {
-        ctx.uniform2f(Some(&loc.unwrap()),value[0],value[1]);
-    }
-}
-
 fn fix_tex_image2_d_cnv(ctx: &glctx, 
                     target: GLenum, level: GLint, internalformat: GLint,
                     format: GLenum, type_: GLenum, canvas: &CanvasElement) {
