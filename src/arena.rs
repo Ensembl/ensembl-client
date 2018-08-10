@@ -97,14 +97,19 @@ impl ArenaDims {
         n * 2. / size as f32
     }
     
-    pub fn nudge(&self,input: GCoord) -> GCoord {
+    pub fn nudge_g(&self,input: GCoord) -> GCoord {
         GCoord(self.nudge1(input.0,self.width_px),
                self.nudge1(input.1,self.height_px))
     }
-    
+
+    pub fn nudge_p(&self,input: PCoord) -> PCoord {
+        PCoord(self.nudge1(input.0,self.width_px),
+               self.nudge1(input.1,self.height_px))
+    }
+
     pub fn settle(&self, stage: &mut Stage) {
         // XXX settle should account for zoom
-        stage.pos = self.nudge(stage.pos);
+        stage.pos = self.nudge_g(stage.pos);
     }
     
 }
@@ -178,10 +183,10 @@ impl Arena {
         self.geom.pin.triangle(r,p,c);
     }
 
-    pub fn text_pin(&mut self, origin:&GCoord,chars: &str,font: &FCFont) {
+    pub fn text_pin(&mut self, origin:&GCoord,chars: &str,font: &FCFont, col: &Colour) {
         let datam = &mut self.data.borrow_mut();
         let (canvases,textures,gtexreqman,_) = datam.burst_texture();
-        let tr = textures.text.add(gtexreqman,canvases,chars,font);
+        let tr = textures.text.add(gtexreqman,canvases,chars,font,col);
         self.geom.pintex.add_texture(tr,origin,&PCoord(1.,1.));
     }
 
@@ -214,10 +219,10 @@ impl Arena {
         self.geom.fix.rectangle(p,colour);
     }
 
-    pub fn text_fix(&mut self, origin:&PCoord,chars: &str,font: &FCFont) {
+    pub fn text_fix(&mut self, origin:&PCoord,chars: &str,font: &FCFont, col: &Colour) {
         let datam = &mut self.data.borrow_mut();
         let (canvases,textures,gtexreqman,_) = datam.burst_texture();
-        let tr = textures.text.add(gtexreqman,canvases,chars,font);
+        let tr = textures.text.add(gtexreqman,canvases,chars,font,col);
         self.geom.fixtex.add_texture(tr,origin,&PCoord(1.,1.));
     }
 

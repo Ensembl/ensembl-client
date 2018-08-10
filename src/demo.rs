@@ -165,7 +165,15 @@ fn daft<R>(rng: &mut R) -> String where R: Rng {
                        "b", "c", "d", "f", "g", "h", "j",
                        "k", "l", "m", "n", "p", "r", "s", "t", "u", "v",
                        "w", "x", "y", "z" ];
-    choose(rng,&[&onset[..],&nuc[..],&coda[..]])
+    let num_gen = Range::new(1,8);
+    let mut out = String::new();
+    let num = num_gen.sample(rng);
+    for _i in 0..num {
+        out += &choose(rng,&[&onset[..],&nuc[..],&coda[..]])[..];
+        let sp: bool = rng.gen();
+        if sp { out += " "; }
+    }
+    out
 }
 
 pub fn demo() {
@@ -175,8 +183,7 @@ pub fn demo() {
     let s = seed as u8;
     let t = (seed/256) as u8;
     let mut rng = SmallRng::from_seed([s,s,s,s,s,s,s,s,t,t,t,t,t,t,t,t]);
-
-    let fc_font = canvasutil::FCFont::new(12,"serif");
+    let fc_font = canvasutil::FCFont::new(12,"Roboto");
     let mut stage = Stage::new();
     stage.zoom = 0.1;
 
@@ -188,11 +195,12 @@ pub fn demo() {
     let len_gen = Range::new(0.,0.2);
     let thick_gen = Range::new(0,13);
     let showtext_gen = Range::new(0,10);
-    
+
+    let col = Colour(200,200,200);
     for yidx in 0..20 {
         let y = (yidx as f32) * 60.0;
         let val = daft(&mut rng);
-        arena.text_fix(&PCoord(0.,y+24.),&val,&fc_font);
+        arena.text_fix(&PCoord(0.,y+24.),&val,&fc_font,&col);
         if yidx == middle {
             arena.bitmap_stretch(&[GCoord(-10.,y-5.),GCoord(10.,y+5.)],
                                 vec! { 0,0,255,255,
@@ -211,9 +219,9 @@ pub fn demo() {
                 let dx = len_gen.sample(&mut rng);
                 let x = v1 * 1.0 + (yidx as f32).cos();
                 let colour = Colour(
-                    0.5*v2.cos()+0.5,
-                    0.5*v2.sin()+0.5,
-                    0.5*(v2+1.0).sin()+0.5,
+                    (128.*v2.cos()+128.) as u32,
+                    (128.*v2.sin()+128.) as u32,
+                    (128.*(v2+1.0).sin()+128.) as u32,
                 );
                 let h = if thick_gen.sample(&mut rng) == 0 { 1. } else { 5. };
                 arena.rectangle_stretch(&[GCoord(x,y-h),
@@ -228,7 +236,7 @@ pub fn demo() {
                 }
                 if showtext_gen.sample(&mut rng) == 0 {
                     let val = bio_daft(&mut rng);
-                    arena.text_pin(&GCoord(x,y+12.),&val,&fc_font);
+                    arena.text_pin(&GCoord(x,y+12.),&val,&fc_font,&col);
                 }
             }
         }

@@ -48,7 +48,7 @@ pub fn link_buffer(ctx:&glctx, prog:&glprog, name:&str, step:i8, buf:&glbuf) {
     let loc = ctx.get_attrib_location(&prog,&name) as u32;
     ctx.enable_vertex_attrib_array(loc);
     ctx.bind_buffer(glctx::ARRAY_BUFFER,Some(&buf));
-    ctx.vertex_attrib_pointer(loc, step as i32, glctx::FLOAT, false, 0, 0) ;
+    ctx.vertex_attrib_pointer(loc, step as i32, glctx::FLOAT, false, 0, 0);
 }
 
 fn fix_tex_image2_d_cnv(ctx: &glctx, 
@@ -69,7 +69,10 @@ pub fn canvas_texture(ctx: &glctx,cnv : &CanvasElement) -> gltex {
     
     ctx.tex_parameteri(glctx::TEXTURE_2D,
                        glctx::TEXTURE_MIN_FILTER,
-                       glctx::NEAREST as i32);
+                       glctx::LINEAR as i32);
+    ctx.tex_parameteri(glctx::TEXTURE_2D,
+                       glctx::TEXTURE_MAG_FILTER,
+                       glctx::LINEAR as i32);
     ctx.tex_parameteri(glctx::TEXTURE_2D,
                        glctx::TEXTURE_WRAP_S,
                        glctx::CLAMP_TO_EDGE as i32);
