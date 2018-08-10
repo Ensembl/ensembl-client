@@ -140,7 +140,7 @@ fn choose<R>(rng: &mut R, vals: &[&[&str]]) -> String
     out
 }
 
-fn bio_daft<R>(rng: &mut R, seed: i32) -> String where R: Rng {
+fn bio_daft<R>(rng: &mut R) -> String where R: Rng {
     let vals = [ "5'","3'","snp","ins","del",
                  "5'","3'","snp","ins","del",
                  "5'","3'","snp","ins","del",
@@ -148,7 +148,7 @@ fn bio_daft<R>(rng: &mut R, seed: i32) -> String where R: Rng {
     choose(rng,&[&vals[..]])
 }
 
-fn daft<R>(rng: &mut R, seed: i32) -> String where R: Rng {    
+fn daft<R>(rng: &mut R) -> String where R: Rng {    
     let onset = [ "bl", "br", "ch", "cl", "cr", "dr", "fl",
                        "fr", "gh", "gl", "gr", "ph", "pl", "pr",
                        "qu", "sc", "sh", "sk", "sl", "sm", "sn", "sp",
@@ -191,6 +191,8 @@ pub fn demo() {
     
     for yidx in 0..20 {
         let y = (yidx as f32) * 60.0;
+        let val = daft(&mut rng);
+        arena.text_fix(&PCoord(0.,y+24.),&val,&fc_font);
         if yidx == middle {
             arena.bitmap_stretch(&[GCoord(-10.,y-5.),GCoord(10.,y+5.)],
                                 vec! { 0,0,255,255,
@@ -225,7 +227,7 @@ pub fn demo() {
                                        &colour);
                 }
                 if showtext_gen.sample(&mut rng) == 0 {
-                    let val = bio_daft(&mut rng, (v2*2000000.0) as i32);
+                    let val = bio_daft(&mut rng);
                     arena.text_pin(&GCoord(x,y+12.),&val,&fc_font);
                 }
             }
@@ -238,7 +240,7 @@ pub fn demo() {
     let dx = 0.001;
     arena.rectangle_fix(&[PCoord(sw/2.,0.),PCoord(sw/2.+1.,sh)],
                         &[0.0,0.0,0.0]);
-    arena.bitmap_fix(&[PCoord(99.,0.),PCoord(100.,sh)],
+    arena.bitmap_fix(&PCoord(99.,0.),&PCoord(1.,sh),
                         vec! { 0,0,255,255,
                                  255,0,0,255,
                                  0,255,0,255,

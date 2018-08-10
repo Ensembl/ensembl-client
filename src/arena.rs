@@ -199,19 +199,26 @@ impl Arena {
         self.geom.pintex.add_texture(tr,origin,scale);
     }
 
-    pub fn bitmap_fix(&mut self, pos :&[PCoord;2], data: Vec<u8>, width: u32, height: u32) {
+    pub fn bitmap_fix(&mut self, pos: &PCoord, scale: &PCoord, data: Vec<u8>, width: u32, height: u32) {
         let datam = &mut self.data.borrow_mut();
         let (canvases,textures,gtexreqman,_) = datam.burst_texture();
         let tr = textures.bitmap.add(gtexreqman,canvases,data,width,height);
-        self.geom.fixtex.add_texture(tr,pos);
+        self.geom.fixtex.add_texture(tr,pos,scale);
     }
-
+    
     pub fn triangle_fix(&mut self,points:&[PCoord;3],colour:&[f32;3]) {
         self.geom.fix.triangle(points,colour);
     }
     
     pub fn rectangle_fix(&mut self,p:&[PCoord;2],colour:&[f32;3]) {
         self.geom.fix.rectangle(p,colour);
+    }
+
+    pub fn text_fix(&mut self, origin:&PCoord,chars: &str,font: &FCFont) {
+        let datam = &mut self.data.borrow_mut();
+        let (canvases,textures,gtexreqman,_) = datam.burst_texture();
+        let tr = textures.text.add(gtexreqman,canvases,chars,font);
+        self.geom.fixtex.add_texture(tr,origin,&PCoord(1.,1.));
     }
 
     pub fn populate(&mut self) {
