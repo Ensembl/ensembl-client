@@ -112,7 +112,6 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
             state.fpos += delta *7.21;
             state.stage.zoom = ((state.zoomscale.cos() + 1.5)/3.0) as f32;
             state.stage.pos.0 = ((state.hpos.cos())*1.5) as f32;
-            state.stage.cursor[0] = (sw/2.)+(state.fpos.cos()*sw/4.) as f32;
         }
         
         let d = time - state.old_time;
@@ -203,7 +202,6 @@ pub fn demo() {
                                          255,0,0,255,
                                          0,255,0,255,
                                          255,255,0,255 },2,2);
-
         } else {
             for idx in -100..100 {
                 let v1 = (idx as f32) * 0.1;
@@ -238,7 +236,8 @@ pub fn demo() {
     let dims = arena.dims();
     let (sw,sh) = (dims.width_px as f32,dims.height_px as f32);
     let dx = 0.001;
-    arena.rectangle_fix(&[PCoord(0.,0.),PCoord(1.,sh)], &[0.0,0.0,0.0]);
+    arena.rectangle_fix(&[PCoord(sw/2.,0.),PCoord(sw/2.+1.,sh)],
+                        &[0.0,0.0,0.0]);
     arena.bitmap_fix(&[PCoord(99.,0.),PCoord(100.,sh)],
                         vec! { 0,0,255,255,
                                  255,0,0,255,

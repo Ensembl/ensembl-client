@@ -123,7 +123,6 @@ impl Geometry for StretchTexGeometry {
         self.data.std.set_uniform_1f(&ctx,"uStageHpos",stage.pos.0);
         self.data.std.set_uniform_1f(&ctx,"uStageVpos",stage.pos.1 + (dims.height_px as f32/2.));
         self.data.std.set_uniform_1f(&ctx,"uStageZoom",stage.zoom);
-        self.data.std.set_uniform_2f(&ctx,"uCursor",stage.cursor);
         self.data.std.set_uniform_1f(&ctx,"uAspect",dims.aspect);
         self.data.sampler.set_uniform(&ctx,&self.data.std,"uSampler");
         self.data.std.set_uniform_2f(&ctx,"uSize",[

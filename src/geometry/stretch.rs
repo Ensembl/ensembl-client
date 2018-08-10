@@ -43,7 +43,6 @@ impl Geometry for StretchGeometry {
         self.std.set_uniform_1f(&ctx,"uStageHpos",stage.pos.0);
         self.std.set_uniform_1f(&ctx,"uStageVpos",stage.pos.1 + (dims.height_px as f32/2.));
         self.std.set_uniform_1f(&ctx,"uStageZoom",stage.zoom);
-        self.std.set_uniform_2f(&ctx,"uCursor",stage.cursor);
         self.std.set_uniform_1f(&ctx,"uAspect",dims.aspect);
         self.std.set_uniform_2f(&ctx,"uSize",[
             dims.width_px as f32 /2.,

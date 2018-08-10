@@ -260,11 +260,10 @@ impl Arena {
 pub struct Stage {
     pub pos: GCoord,
     pub zoom: f32,
-    pub cursor: [f32;2],
 }
 
 impl Stage {
     pub fn new() -> Stage {
-        Stage { pos: GCoord(0.0,0.0), zoom: 1.0, cursor: [0.0,0.0] }
+        Stage { pos: GCoord(0.0,0.0), zoom: 1.0 }
     }
 }

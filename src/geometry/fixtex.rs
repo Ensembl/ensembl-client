@@ -128,9 +128,6 @@ impl Geometry for FixTexGeometry {
         self.data.std.set_uniform_2f(&ctx,"uSize",[
             dims.width_px as f32/2.,
             dims.height_px as f32/2.]);
-        self.data.std.set_uniform_2f(&ctx,"uCursor",[
-            stage.cursor[0] - (dims.width_px as f32/2.),
-            stage.cursor[1] - (dims.height_px as f32/2.)]);
     }
 }
 
@@ -140,8 +137,8 @@ impl FixTexGeometry {
             data:  FixTexGeometryImpl {
                 std: GLProgram::new(adata, 
                     &geometry::shader_v_texture(
-                        "( aVertexPosition.x + uCursor.x ) / uSize.x",
-                        "( aVertexPosition.y + uCursor.y ) / uSize.y"),
+                        "aVertexPosition.x / uSize.x - 1.0",
+                        "aVertexPosition.y / uSize.y - 1.0"),
                     &geometry::shader_f_texture(),
                     &geometry::shader_u_texture()),
                 pos:    GTypeAttrib::new(adata,"aVertexPosition",2,1),
