@@ -44,10 +44,10 @@ use geometry::{
 struct State {
     arena: RefCell<Arena>,
     stage: Stage,
-    zoomscale: f64,
-    hpos: f64,
+    zoomscale: f32,
+    hpos: f32,
     old_time: f64,
-    fpos: f64,
+    fpos: f32,
     call: i32,
     phase: u32,
     gear: u32,
@@ -57,8 +57,8 @@ struct State {
     last_down: bool,
 }
 
-const max_gear : u32 = 6;
-const max_grace: u32 = 300;
+const MAX_GEAR : u32 = 6;
+const MAX_GRACE: u32 = 300;
 
 fn fib_inc(val: (u32,u32)) -> (u32,u32) {
     (val.1,val.0+val.1)
@@ -74,7 +74,7 @@ fn fib_dec(val: (u32,u32)) -> (u32,u32) {
 
 fn detect_jank(state : &mut State, delta: u32, time: f32) {
     if delta > state.gear as u32 * 20 {
-        if state.gear < max_gear {
+        if state.gear < MAX_GEAR {
             /* Go up a gear */
             if state.last_down {
                 /* Hunting */
@@ -83,7 +83,7 @@ fn detect_jank(state : &mut State, delta: u32, time: f32) {
                     state.grace_next = fib_dec(state.grace_next);
                 } else {
                     /* Failure, short hunt. Lengthen */
-                    if state.grace_next.1 < max_grace {
+                    if state.grace_next.1 < MAX_GRACE {
                         state.grace_next = fib_inc(state.grace_next);
                     }
                 }
@@ -113,8 +113,10 @@ fn detect_jank(state : &mut State, delta: u32, time: f32) {
 fn animate(time : f64, s: Rc<RefCell<State>>) {
     {
         let mut state = s.borrow_mut();
+        let dims = state.arena.borrow().dims();
+        let (sw,sh) = (dims.width_px as f32,dims.height_px as f32);
         if state.old_time > 0.0 {
-            let delta = (time - state.old_time) / 5000.0;
+            let delta = ((time - state.old_time) / 5000.0) as f32;
             let d = (time - state.old_time) as u32;            
             state.call += 1;
             state.zoomscale += delta* 5.0;
@@ -122,8 +124,9 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
             state.fpos += delta *7.21;
             state.stage.zoom = ((state.zoomscale.cos() + 1.5)/3.0) as f32;
             state.stage.pos.0 = ((state.hpos.cos())*1.5) as f32;
-            state.stage.cursor[0] = (state.fpos.cos()*0.3) as f32;
+            state.stage.cursor[0] = (sw/2.)+(state.fpos.cos()*sw/4.) as f32;
         }
+        
         let d = time - state.old_time;
         state.old_time = time;
         let mut stage = state.stage;
@@ -139,6 +142,15 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
         }
     }
     window().request_animation_frame(move |x| animate(x,s.clone()));
+}
+
+fn bio_daft(seed: i32) -> String {
+    let s = seed as u8;
+    let t = (seed/256) as u8;
+    let mut rng = SmallRng::from_seed([s,s,s,s,s,s,s,s,t,t,t,t,t,t,t,t]);
+
+    let vals = vec! { "5'","3'","snp","C","G","A","T" };
+    String::new() + seq::sample_iter(&mut rng,vals,1).unwrap()[0]
 }
 
 fn daft(seed: i32) -> String {
@@ -178,49 +190,57 @@ fn main() {
     let mut a_spec = ArenaSpec::new();
     a_spec.debug = false;
     let mut arena = Arena::new("#glcanvas","#managedcanvasholder",a_spec);
-    for yidx in -20..20 {
-        let y = (yidx as f32) / 20.0;
-        for idx in -50..50 {
-            let v1 = (idx as f32) * 0.1;
-            let v2 = (idx as f32)+10.0*(yidx as f32) * 0.1;
-            let dx = ((v2*5.0).cos()+1.0)/4.0;
-            let x = v1 * 3.0 + (yidx as f32).cos();
-            let colour = Colour(
-                0.5*v2.cos()+0.5,
-                0.5*v2.sin()+0.5,
-                0.5*(v2+1.0).sin()+0.5,
-            );
-            let h = if idx % 13 == 0 { 0.001 } else { 0.005 };
-            arena.rectangle_stretch(&[GCoord(x,y-h),
-                                      GCoord(x+dx,y+h)],&colour);
-            if idx %5 == 0 {
-                arena.triangle_pin(&GCoord(x,y),
-                                   &[PCoord(0.0,0.0),
-                                     PCoord(-0.004,-0.008),
-                                     PCoord(0.004,-0.008)],
-                                   &colour);
-            }
-            if v2 - v2.round() < 0.2 {
-                let val = daft((v2*2000000.0) as i32);
-                arena.text_pin(&GCoord(x,y+0.01),&val,&fc_font);
+    let middle = (arena.dims().height_px / 120);
+    for yidx in 0..20 {
+        let y = (yidx as f32) * 60.0;
+        if yidx == middle {
+            arena.bitmap_stretch(&[GCoord(-10.,y-5.),GCoord(10.,y+5.)],
+                                vec! { 0,0,255,255,
+                                         255,0,0,255,
+                                         0,255,0,255,
+                                         255,255,0,255 },4,1);
+            arena.bitmap_pin(&GCoord(0.,y+5.),&PCoord(10.,10.),
+                                vec! { 0,0,255,255,
+                                         255,0,0,255,
+                                         0,255,0,255,
+                                         255,255,0,255 },2,2);
+
+        } else {
+            for idx in -100..100 {
+                let v1 = (idx as f32) * 0.1;
+                let v2 = (idx as f32)+10.0*(yidx as f32) * 0.1;
+                let dx = ((v2*5.0).cos()+1.0)/10.0;
+                let x = v1 * 1.0 + (yidx as f32).cos();
+                let colour = Colour(
+                    0.5*v2.cos()+0.5,
+                    0.5*v2.sin()+0.5,
+                    0.5*(v2+1.0).sin()+0.5,
+                );
+                let h = if idx % 13 == 0 { 1. } else { 5. };
+                arena.rectangle_stretch(&[GCoord(x,y-h),
+                                          GCoord(x+dx,y+h)],&colour);
+                if idx %5 == 0 {
+                    let colour = Colour(colour.2,colour.0,colour.1);
+                    arena.triangle_pin(&GCoord(x,y),
+                                       &[PCoord(0.,0.),
+                                         PCoord(-5.,-10.),
+                                         PCoord(5.,-10.)],
+                                       &colour);
+                }
+                if (v1+dx) - (v1+dx).round() < 0.03 {
+                    let val = bio_daft((v2*2000000.0) as i32);
+                    arena.text_pin(&GCoord(x,y+12.),&val,&fc_font);
+                }
             }
         }
     }
     
     // XXX in pixels
+    let dims = arena.dims();
+    let (sw,sh) = (dims.width_px as f32,dims.height_px as f32);
     let dx = 0.001;
-    arena.rectangle_fix(&[-dx,-1.0,0.0, dx,1.0,0.0], &[0.0,0.0,0.0]);
-    arena.bitmap_pin(&GCoord(-0.1,0.1),&PCoord(10.,10.),
-                        vec! { 0,0,255,255,
-                                 255,0,0,255,
-                                 0,255,0,255,
-                                 255,255,0,255 },2,2);
-    arena.bitmap_stretch(&[PCoord(-1.,-0.1),PCoord(1.,-0.13)],
-                        vec! { 0,0,255,255,
-                                 255,0,0,255,
-                                 0,255,0,255,
-                                 255,255,0,255 },4,1);
-    arena.bitmap_fix(&[0.5-dx,-1.0,0.0, 0.5+dx,1.0,0.0],
+    arena.rectangle_fix(&[PCoord(0.,0.),PCoord(1.,sh)], &[0.0,0.0,0.0]);
+    arena.bitmap_fix(&[PCoord(99.,0.),PCoord(100.,sh)],
                         vec! { 0,0,255,255,
                                  255,0,0,255,
                                  0,255,0,255,

@@ -49,18 +49,20 @@ pub struct PinTexGeometryImpl {
 }
 
 impl PinTexGeometryImpl {
-    fn triangle(&mut self,origin:&GCoord,points:&[f32;6],tex_points:&[f32;6]) {
-        self.pos.add(points);
+    fn triangle(&mut self,origin:&GCoord,points:&[PCoord;3],tex_points:&[f32;6]) {
+        self.pos.add_px(points);
         self.origin.add_gc(&[*origin]);
         self.coord.add(tex_points);
         self.std.advance(3);
     }
     
-    fn rectangle(&mut self,origin: &GCoord,p:&[f32;4],t:&[f32;4]) {
-        self.triangle(origin,&[p[0],p[1],p[2],p[1],p[0],p[3]],
-                             &[t[0],t[1],t[2],t[1],t[0],t[3]]);
-        self.triangle(origin,&[p[2],p[3],p[0],p[3],p[2],p[1]],
-                             &[t[2],t[3],t[0],t[3],t[2],t[1]]);
+    fn rectangle(&mut self,origin: &GCoord,p:&[PCoord;2],t:&[f32;4]) {
+        let mix = p[0].mix(p[1]);
+        
+        self.triangle(origin,&[p[0], mix.1, mix.0],
+                      &[t[0],t[1], t[2],t[1], t[0],t[3]]);
+        self.triangle(origin,&[p[1], mix.0, mix.1],
+                      &[t[2],t[3],t[0],t[3],t[2],t[1]]);
     }
 }
 
@@ -89,12 +91,9 @@ impl TextureItem<PinTexGeometryImpl> for PinTexTextureItem {
     fn process(&self, geom: &mut PinTexGeometryImpl, x: u32, y: u32, width: u32, height: u32, canvs: &ArenaCanvases, dims: &ArenaDims) {
         let flat = &canvs.flat;
         let origin = dims.nudge(self.origin);
-        let p = [0., 0., dims.prop_x(width), dims.prop_y(height)];
-        
+        let p = [PCoord(0.,0.), PCoord(width as f32 * self.scale.0,height as f32 * self.scale.1)];
         let t = [flat.prop_x(x), flat.prop_y(y + height),
                  flat.prop_x(x + width), flat.prop_y(y)];
-        let s = PCoord(p[2],p[3]).scale(self.scale);
-        let p = [p[0],p[1],s.0,s.1];
         geom.rectangle(&origin,&p,&t);
     }
 }
@@ -128,11 +127,14 @@ impl Geometry for PinTexGeometry {
     
     fn restage(&mut self, ctx: &glctx, prog: &glprog, stage: &Stage, dims: &ArenaDims) {
         self.data.std.set_uniform_1f(&ctx,"uStageHpos",stage.pos.0);
-        self.data.std.set_uniform_1f(&ctx,"uStageVpos",stage.pos.1);
+        self.data.std.set_uniform_1f(&ctx,"uStageVpos",stage.pos.1 + (dims.height_px as f32/2.));
         self.data.std.set_uniform_1f(&ctx,"uStageZoom",stage.zoom);
         self.data.std.set_uniform_2f(&ctx,"uCursor",stage.cursor);
         self.data.std.set_uniform_1f(&ctx,"uAspect",dims.aspect);
         self.data.sampler.set_uniform(&ctx,&self.data.std,"uSampler");
+        self.data.std.set_uniform_2f(&ctx,"uSize",[
+            dims.width_px as f32/2.,
+            dims.height_px as f32/2.]);
     }
 }
 
@@ -142,8 +144,8 @@ impl PinTexGeometry {
             data: PinTexGeometryImpl {
                 std: GLProgram::new(adata,
                     &geometry::shader_v_texture(
-                        "(aOrigin.x - uStageHpos) * uStageZoom + aVertexPosition.x",
-                        "(aOrigin.y - uStageVpos) + aVertexPosition.y",
+                        "(aOrigin.x - uStageHpos) * uStageZoom + aVertexPosition.x / uSize.x",
+                        "(aOrigin.y - uStageVpos) / uSize.y + aVertexPosition.y / uSize.y"
                     ),
                     &geometry::shader_f_texture(),
                     &geometry::shader_u_texture()),

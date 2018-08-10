@@ -274,6 +274,7 @@ pub fn shader_v_solid(x: &str, y: &str) -> String {
         uniform float uStageVpos;
         uniform float uStageZoom;
         uniform vec2 uCursor;
+        uniform vec2 uSize;
 
         varying lowp vec3 vColour;
 
@@ -291,6 +292,7 @@ pub fn shader_u_solid() -> Vec<String> {
         "uStageVpos".to_string(),
         "uStageZoom".to_string(),
         "uCursor".to_string(),        
+        "uSize".to_string(),
     }
 }
 
@@ -304,6 +306,9 @@ uniform float uAspect;
 uniform float uStageHpos;
 uniform float uStageVpos;
 uniform float uStageZoom;
+uniform vec2 uSize;
+uniform vec2 uCursor;
+
 
 varying highp vec2 vTextureCoord;
 
@@ -321,6 +326,8 @@ pub fn shader_u_texture() -> Vec<String> {
         "uStageVpos".to_string(),
         "uStageZoom".to_string(),
         "uSampler".to_string(),
+        "uCursor".to_string(),
+        "uSize".to_string(),
     }
 }
 
@@ -334,6 +341,7 @@ pub fn shader_v_solid_3vec(x: &str, y: &str) -> String {
         uniform float uStageVpos;
         uniform float uStageZoom;
         uniform vec2 uCursor;
+        uniform vec2 uSize;
 
         varying lowp vec3 vColour;
 
@@ -355,6 +363,7 @@ pub fn shader_v_texture_3vec(x: &str, y: &str) -> String {
         uniform float uStageVpos;
         uniform float uStageZoom;
         uniform vec2 uCursor;
+        uniform vec2 uSize;
 
         varying highp vec2 vTextureCoord;
 
@@ -373,6 +382,7 @@ pub fn shader_u_texture_3vec() -> Vec<String> {
         "uStageZoom".to_string(),
         "uCursor".to_string(),
         "uSampler".to_string(),
+        "uSize".to_string(),
     }
 }
 

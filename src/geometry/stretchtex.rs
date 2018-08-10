@@ -4,7 +4,7 @@ use geometry::{
     GTypeAttrib,
     GType,
     GTypeCanvasTexture,
-    PCoord,
+    GCoord,
 };
 
 use geometry;
@@ -47,13 +47,13 @@ pub struct StretchTexGeometryImpl {
 }
 
 impl StretchTexGeometryImpl {
-    pub fn triangle(&mut self,points:&[PCoord;3],tex_points:&[f32;6]) {
-        self.pos.add_px(points);
+    pub fn triangle(&mut self,points:&[GCoord;3],tex_points:&[f32;6]) {
+        self.pos.add_gc(points);
         self.coord.add(tex_points);
         self.std.advance(3);
     }
     
-    pub fn rectangle(&mut self,p: &[PCoord;2], t: &[f32;4]) {
+    pub fn rectangle(&mut self,p: &[GCoord;2], t: &[f32;4]) {
         let mix = p[0].mix(p[1]);
         
         self.triangle(&[p[0], mix.1, mix.0],
@@ -72,11 +72,11 @@ impl StretchTexGeometryImpl {
  */
 
 pub struct StretchTexTextureItem {
-    pos: [PCoord;2],
+    pos: [GCoord;2],
 }
 
 impl StretchTexTextureItem {
-    pub fn new(pos: &[PCoord;2]) -> StretchTexTextureItem {
+    pub fn new(pos: &[GCoord;2]) -> StretchTexTextureItem {
         StretchTexTextureItem {
             pos: *pos
         }
@@ -121,11 +121,14 @@ impl Geometry for StretchTexGeometry {
     
     fn restage(&mut self, ctx: &glctx, prog: &glprog, stage: &Stage, dims: &ArenaDims) {
         self.data.std.set_uniform_1f(&ctx,"uStageHpos",stage.pos.0);
-        self.data.std.set_uniform_1f(&ctx,"uStageVpos",stage.pos.1);
+        self.data.std.set_uniform_1f(&ctx,"uStageVpos",stage.pos.1 + (dims.height_px as f32/2.));
         self.data.std.set_uniform_1f(&ctx,"uStageZoom",stage.zoom);
         self.data.std.set_uniform_2f(&ctx,"uCursor",stage.cursor);
         self.data.std.set_uniform_1f(&ctx,"uAspect",dims.aspect);
         self.data.sampler.set_uniform(&ctx,&self.data.std,"uSampler");
+        self.data.std.set_uniform_2f(&ctx,"uSize",[
+            dims.width_px as f32/2.,
+            dims.height_px as f32/2.]);
     }
 }
 
@@ -136,7 +139,7 @@ impl StretchTexGeometry {
                 std: GLProgram::new(adata,
                     &geometry::shader_v_texture(
                         "(aVertexPosition.x - uStageHpos) * uStageZoom",
-                        "aVertexPosition.y - uStageVpos"
+                        "(aVertexPosition.y - uStageVpos) / uSize.y"
                     ),
                     &geometry::shader_f_texture(),
                     &geometry::shader_u_texture()),
@@ -148,7 +151,7 @@ impl StretchTexGeometry {
         }
     }
 
-    pub fn add_texture(&mut self, req: Rc<TextureDrawRequest>, pos: &[PCoord;2]) {
+    pub fn add_texture(&mut self, req: Rc<TextureDrawRequest>, pos: &[GCoord;2]) {
         let ri = StretchTexTextureItem::new(pos);
         self.gtexitman.add_item(req,ri);
     }

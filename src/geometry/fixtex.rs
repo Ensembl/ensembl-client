@@ -4,6 +4,7 @@ use geometry::{
     GTypeAttrib,
     GType,
     GTypeCanvasTexture,
+    PCoord,
 };
 
 use geometry;
@@ -46,16 +47,18 @@ pub struct FixTexGeometryImpl {
 }
 
 impl FixTexGeometryImpl {
-    pub fn triangle(&mut self,points:&[f32;9],tex_points:&[f32;6]) {
-        self.pos.add(points);
+    pub fn triangle(&mut self,points:&[PCoord;3],tex_points:&[f32;6]) {
+        self.pos.add_px(points);
         self.coord.add(tex_points);
         self.std.advance(3);
     }
     
-    pub fn rectangle(&mut self,p:&[f32;6],t:&[f32;4]) {
-        self.triangle(&[p[0],p[1],p[2],p[3],p[1],p[2],p[0],p[4],p[5]],
+    pub fn rectangle(&mut self,p:&[PCoord;2],t:&[f32;4]) {
+        let mix = p[0].mix(p[1]);
+        
+        self.triangle(&[p[0], mix.1, mix.0],
                       &[t[0],t[1], t[2],t[1], t[0],t[3]]);
-        self.triangle(&[p[3],p[4],p[5],p[0],p[4],p[5],p[3],p[1],p[2]],
+        self.triangle(&[p[1], mix.0, mix.1],
                       &[t[2],t[3],t[0],t[3],t[2],t[1]]);
     }
 }
@@ -69,11 +72,11 @@ impl FixTexGeometryImpl {
  */
 
 pub struct FixTexTextureItem {
-    pos: [f32;6],
+    pos: [PCoord;2],
 }
 
 impl FixTexTextureItem {
-    pub fn new(pos: &[f32;6]) -> FixTexTextureItem {
+    pub fn new(pos: &[PCoord;2]) -> FixTexTextureItem {
         FixTexTextureItem {
             pos: *pos
         }
@@ -118,11 +121,16 @@ impl Geometry for FixTexGeometry {
     
     fn restage(&mut self, ctx: &glctx, prog: &glprog, stage: &Stage, dims: &ArenaDims) {
         self.data.std.set_uniform_1f(&ctx,"uStageHpos",stage.pos.0);
-        self.data.std.set_uniform_1f(&ctx,"uStageVpos",stage.pos.1);
+        self.data.std.set_uniform_1f(&ctx,"uStageVpos",stage.pos.1 + (dims.height_px as f32/2.));
         self.data.std.set_uniform_1f(&ctx,"uStageZoom",stage.zoom);
-        self.data.std.set_uniform_2f(&ctx,"uCursor",stage.cursor);
         self.data.std.set_uniform_1f(&ctx,"uAspect",dims.aspect);
         self.data.sampler.set_uniform(&ctx,&self.data.std,"uSampler");
+        self.data.std.set_uniform_2f(&ctx,"uSize",[
+            dims.width_px as f32/2.,
+            dims.height_px as f32/2.]);
+        self.data.std.set_uniform_2f(&ctx,"uCursor",[
+            stage.cursor[0] - (dims.width_px as f32/2.),
+            stage.cursor[1] - (dims.height_px as f32/2.)]);
     }
 }
 
@@ -131,12 +139,12 @@ impl FixTexGeometry {
         FixTexGeometry {
             data:  FixTexGeometryImpl {
                 std: GLProgram::new(adata, 
-                    &geometry::shader_v_texture_3vec(
-                        "aVertexPosition.x - uCursor.x",
-                        "( aVertexPosition.y + aVertexPosition.z * uAspect ) - uCursor.y"),
+                    &geometry::shader_v_texture(
+                        "( aVertexPosition.x + uCursor.x ) / uSize.x",
+                        "( aVertexPosition.y + uCursor.y ) / uSize.y"),
                     &geometry::shader_f_texture(),
-                    &geometry::shader_u_texture_3vec()),
-                pos:    GTypeAttrib::new(adata,"aVertexPosition",3,1),
+                    &geometry::shader_u_texture()),
+                pos:    GTypeAttrib::new(adata,"aVertexPosition",2,1),
                 coord:  GTypeAttrib::new(adata,"aTextureCoord",2,1),
                 sampler: GTypeCanvasTexture::new(),
             },
@@ -144,7 +152,7 @@ impl FixTexGeometry {
         }
     }
 
-    pub fn add_texture(&mut self, req: Rc<TextureDrawRequest>, pos: &[f32;6]) {
+    pub fn add_texture(&mut self, req: Rc<TextureDrawRequest>, pos: &[PCoord;2]) {
         let ri = FixTexTextureItem::new(pos);
         self.gtexitman.add_item(req,ri);
     }

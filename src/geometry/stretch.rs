@@ -41,10 +41,13 @@ impl Geometry for StretchGeometry {
     
     fn restage(&mut self, ctx: &glctx, prog: &glprog, stage: &Stage, dims: &ArenaDims) {
         self.std.set_uniform_1f(&ctx,"uStageHpos",stage.pos.0);
-        self.std.set_uniform_1f(&ctx,"uStageVpos",stage.pos.1);
+        self.std.set_uniform_1f(&ctx,"uStageVpos",stage.pos.1 + (dims.height_px as f32/2.));
         self.std.set_uniform_1f(&ctx,"uStageZoom",stage.zoom);
         self.std.set_uniform_2f(&ctx,"uCursor",stage.cursor);
         self.std.set_uniform_1f(&ctx,"uAspect",dims.aspect);
+        self.std.set_uniform_2f(&ctx,"uSize",[
+            dims.width_px as f32 /2.,
+            dims.height_px as f32 / 2.]);
     }
 }
 
@@ -54,7 +57,7 @@ impl StretchGeometry {
             std: GLProgram::new(adata,
                 &geometry::shader_v_solid(
                     "(aVertexPosition.x - uStageHpos) * uStageZoom",
-                    "aVertexPosition.y - uStageVpos"),
+                    "(aVertexPosition.y - uStageVpos) / uSize.y"),
                 &geometry::shader_f_solid(),
                 &geometry::shader_u_solid()),
             pos: GTypeAttrib::new(adata,"aVertexPosition",2,1),

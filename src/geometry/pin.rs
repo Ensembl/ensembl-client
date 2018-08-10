@@ -45,10 +45,13 @@ impl Geometry for PinGeometry {
 
     fn restage(&mut self, ctx: &glctx, prog: &glprog, stage: &Stage, dims: &ArenaDims) {
         self.std.set_uniform_1f(&ctx,"uStageHpos",stage.pos.0);
-        self.std.set_uniform_1f(&ctx,"uStageVpos",stage.pos.1);
+        self.std.set_uniform_1f(&ctx,"uStageVpos",stage.pos.1 + (dims.height_px as f32/2.));
         self.std.set_uniform_1f(&ctx,"uStageZoom",stage.zoom);
         self.std.set_uniform_2f(&ctx,"uCursor",stage.cursor);
         self.std.set_uniform_1f(&ctx,"uAspect",dims.aspect);
+        self.std.set_uniform_2f(&ctx,"uSize",[
+            dims.width_px as f32 /2.,
+            dims.height_px as f32 /2.]);
     }
 }
 
@@ -57,8 +60,8 @@ impl PinGeometry {
         PinGeometry {
             std: GLProgram::new(adata,
                 &geometry::shader_v_solid(
-                    "(aOrigin.x - uStageHpos) * uStageZoom + aVertexPosition.x",
-                    "(aOrigin.y - uStageVpos) + aVertexPosition.y * uAspect"),
+                    "(aOrigin.x - uStageHpos) * uStageZoom + aVertexPosition.x / uSize.x",
+                    "(aOrigin.y - uStageVpos) / uSize.y + aVertexPosition.y / uSize.y"),
                 &geometry::shader_f_solid(),
                 &geometry::shader_u_solid()),
 
