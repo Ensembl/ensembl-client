@@ -8,6 +8,13 @@ use geometry::{
 };
 
 use geometry;
+use geometry::wglprog;
+
+use geometry::wglprog::{
+    Statement,
+    GLSource,
+    shader_texture,
+};
 
 use arena::{
     ArenaData,
@@ -133,15 +140,16 @@ impl Geometry for StretchTexGeometry {
 
 impl StretchTexGeometry {
     pub fn new(adata: &ArenaData) -> StretchTexGeometry {
+        let source = shader_texture(&GLSource::new(vec! {
+            Statement::new_vertex("
+                gl_Position = vec4(
+                    (aVertexPosition.x - uStageHpos) * uStageZoom,
+                    (aVertexPosition.y - uStageVpos) / uSize.y,
+                    0.0, 1.0)")
+        }));
         StretchTexGeometry {
             data: StretchTexGeometryImpl {
-                std: GLProgram::new(adata,
-                    &geometry::shader_v_texture(
-                        "(aVertexPosition.x - uStageHpos) * uStageZoom",
-                        "(aVertexPosition.y - uStageVpos) / uSize.y"
-                    ),
-                    &geometry::shader_f_texture(),
-                    &geometry::shader_u_texture()),
+                std: GLProgram::new(adata,&source),
                 pos:    GTypeAttrib::new(adata,"aVertexPosition",2,1),
                 coord:  GTypeAttrib::new(adata,"aTextureCoord",2,1),
                 sampler: GTypeCanvasTexture::new(),

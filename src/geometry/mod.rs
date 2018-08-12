@@ -4,6 +4,7 @@ pub mod fix;
 pub mod stretchtex;
 pub mod pintex;
 pub mod fixtex;
+pub mod wglprog;
 
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
@@ -19,9 +20,18 @@ use arena::{
     ArenaDims,
 };
 
+use geometry::wglprog::{
+    Variable,
+    Uniform
+};
+
 use wglraw;
 use std::rc::Rc;
 use std::collections::HashMap;
+
+use geometry::wglprog::{
+    GLSource
+};
 
 #[derive(Clone,Copy)]
 pub struct GCoord(pub f32,pub f32);
@@ -105,11 +115,6 @@ pub fn populate(holder: &mut Geometry, adata: &mut ArenaData) {
     }
 }
 
-pub fn prog(adata: &ArenaData,v_src: &str, f_src: &str) -> glprog {
-    let ctx = &adata.ctx;
-    wglraw::prepare_shaders(&ctx,v_src,f_src)
-}
-
 /* This is the meat of each GType implementation */
 pub trait GType {
     fn populate(&mut self, _adata: &ArenaData) {}
@@ -123,23 +128,20 @@ pub struct GLProgram {
     uniforms: HashMap<String,gluni>
 }
 
-fn find_uniforms(ctx: &glctx, prog: &Rc<glprog>, uniforms: &Vec<String>) -> HashMap<String,gluni> {
+fn find_uniforms(ctx: &glctx, prog: &Rc<glprog>, vars: &Vec<Rc<Variable>>) -> HashMap<String,gluni> {
     let mut udata = HashMap::<String,gluni>::new();
-    for u in uniforms {
-        let loc = ctx.get_uniform_location(&prog,&u);
-        if loc.is_some() {
-            udata.insert(u.to_string(),loc.unwrap());
-        }
+    for v in vars {
+        v.preget(ctx,prog,&mut udata);
     }
     udata
 }
 
 impl GLProgram {
-    pub fn new(adata: &ArenaData,vsrc: &str, fsrc: &str, uniforms: &Vec<String>) -> GLProgram {
+    pub fn new(adata: &ArenaData, src: &GLSource) -> GLProgram {
         let ctx = &adata.ctx;
-        let prog = Rc::new(prog(adata,vsrc,fsrc));
+        let prog = Rc::new(src.prog(ctx));
         ctx.use_program(Some(&prog));
-        let udata = find_uniforms(ctx,&prog,uniforms);
+        let udata = find_uniforms(ctx,&prog,&src.uniforms);
         GLProgram {
             prog,
             uniforms: udata,
@@ -274,88 +276,3 @@ const TEXIDS : [u32;8] = [
     glctx::TEXTURE3, glctx::TEXTURE4, glctx::TEXTURE5,
     glctx::TEXTURE6, glctx::TEXTURE7
 ];
-
-pub fn shader_v_solid(x: &str, y: &str) -> String {
-    format!("
-        attribute vec2 aVertexPosition;
-        attribute vec3 aVertexColour;
-        attribute vec2 aOrigin;
-
-        uniform float uAspect;
-        uniform float uStageHpos;
-        uniform float uStageVpos;
-        uniform float uStageZoom;
-        uniform vec2 uSize;
-
-        varying lowp vec3 vColour;
-
-        void main() {{
-             gl_Position = vec4({},{},0.0, 1.0);
-            vColour = aVertexColour;
-        }}
-    ",x,y).to_string()
-}
-
-pub fn shader_u_solid() -> Vec<String> {
-    vec! {
-        "uAspect".to_string(),
-        "uStageHpos".to_string(),
-        "uStageVpos".to_string(),
-        "uStageZoom".to_string(),
-        "uSize".to_string(),
-    }
-}
-
-pub fn shader_v_texture(x: &str, y: &str) -> String {
-    format!("
-attribute vec2 aVertexPosition;
-attribute vec2 aOrigin;
-attribute vec2 aTextureCoord;
-
-uniform float uAspect;
-uniform float uStageHpos;
-uniform float uStageVpos;
-uniform float uStageZoom;
-uniform vec2 uSize;
-
-varying highp vec2 vTextureCoord;
-
-void main() {{
-    gl_Position = vec4({}, {}, 0.0, 1.0);
-    vTextureCoord = aTextureCoord;
-}}
-    ",x,y).to_string()
-}
-
-pub fn shader_u_texture() -> Vec<String> {
-    vec! {
-        "uAspect".to_string(),
-        "uStageHpos".to_string(),
-        "uStageVpos".to_string(),
-        "uStageZoom".to_string(),
-        "uSampler".to_string(),
-        "uSize".to_string(),
-    }
-}
-
-pub fn shader_f_solid() -> String {
-    "
-    varying lowp vec3 vColour;
-
-    void main() {
-          gl_FragColor = vec4(vColour, 1.0);
-    }
-    ".to_string()
-}
-
-pub fn shader_f_texture() -> String {
-    "
-        varying highp vec2 vTextureCoord;
-
-        uniform sampler2D uSampler;
-
-        void main() {{
-              gl_FragColor = texture2D(uSampler, vTextureCoord);
-        }}
-    ".to_string()
-}

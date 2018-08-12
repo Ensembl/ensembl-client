@@ -9,6 +9,13 @@ use geometry::{
 };
 
 use geometry;
+use geometry::wglprog;
+
+use geometry::wglprog::{
+    Statement,
+    GLSource,
+    shader_texture,
+};
 
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
@@ -139,15 +146,18 @@ impl Geometry for PinTexGeometry {
 
 impl PinTexGeometry {
     pub fn new(adata: &ArenaData) -> PinTexGeometry {
+        let source = shader_texture(&GLSource::new(vec! {
+            Statement::new_vertex("
+                 gl_Position = vec4(
+                    (aOrigin.x - uStageHpos) * uStageZoom + 
+                                aVertexPosition.x / uSize.x,
+                    (aOrigin.y - uStageVpos) / uSize.y + 
+                                aVertexPosition.y / uSize.y,
+                    0.0, 1.0)")
+        }));
         PinTexGeometry {
             data: PinTexGeometryImpl {
-                std: GLProgram::new(adata,
-                    &geometry::shader_v_texture(
-                        "(aOrigin.x - uStageHpos) * uStageZoom + aVertexPosition.x / uSize.x",
-                        "(aOrigin.y - uStageVpos) / uSize.y + aVertexPosition.y / uSize.y"
-                    ),
-                    &geometry::shader_f_texture(),
-                    &geometry::shader_u_texture()),
+                std: GLProgram::new(adata,&source),
                 pos:    GTypeAttrib::new(adata,"aVertexPosition",2,1),
                 origin: GTypeAttrib::new(adata,"aOrigin",2,3),
                 coord:  GTypeAttrib::new(adata,"aTextureCoord",2,1),

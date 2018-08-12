@@ -5,7 +5,15 @@ use geometry::{
     GType,
     PCoord,
 };
+
+use geometry::wglprog::{
+    GLSource,
+    Statement,
+    shader_solid,
+};
+
 use geometry;
+use geometry::wglprog;
 
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
@@ -45,13 +53,15 @@ impl Geometry for FixGeometry {
 
 impl FixGeometry {
     pub fn new(adata: &ArenaData) -> FixGeometry {
+        let source = shader_solid(&GLSource::new(vec! {
+            Statement::new_vertex("
+                gl_Position = vec4(aVertexPosition.x / uSize.x - 1.0,
+                                   aVertexPosition.y / uSize.y - 1.0,
+                                   0.0, 1.0)")
+
+        }));
         FixGeometry {
-            std: GLProgram::new(adata,
-                &geometry::shader_v_solid(
-                    "aVertexPosition.x / uSize.x - 1.0",
-                    "aVertexPosition.y / uSize.y - 1.0"),
-                &geometry::shader_f_solid(),
-                &geometry::shader_u_solid()),
+            std: GLProgram::new(adata,&source),
             pos: GTypeAttrib::new(adata,"aVertexPosition",2,1),
             colour: GTypeAttrib::new(adata,"aVertexColour",3,3),
         }
