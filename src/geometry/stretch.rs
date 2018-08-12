@@ -7,7 +7,14 @@ use geometry::{
     Colour,
 };
 
+use geometry::wglprog::{
+    GLSource,
+    Statement,
+    shader_solid,
+};
+
 use geometry;
+use geometry::wglprog;
 
 use arena::{
     ArenaData,
@@ -52,13 +59,15 @@ impl Geometry for StretchGeometry {
 
 impl StretchGeometry {
     pub fn new(adata: &ArenaData) -> StretchGeometry {
+        let source = shader_solid(&GLSource::new(vec! {
+            Statement::new_vertex("
+                gl_Position = vec4(
+                    (aVertexPosition.x - uStageHpos) * uStageZoom,
+                    (aVertexPosition.y - uStageVpos) / uSize.y,
+                    0.0, 1.0)")
+        }));
         StretchGeometry {
-            std: GLProgram::new(adata,
-                &geometry::shader_v_solid(
-                    "(aVertexPosition.x - uStageHpos) * uStageZoom",
-                    "(aVertexPosition.y - uStageVpos) / uSize.y"),
-                &geometry::shader_f_solid(),
-                &geometry::shader_u_solid()),
+            std: GLProgram::new(adata,&source),
             pos: GTypeAttrib::new(adata,"aVertexPosition",2,1),
             colour: GTypeAttrib::new(adata,"aVertexColour",3,3),
         }

@@ -8,6 +8,13 @@ use geometry::{
 };
 
 use geometry;
+use geometry::wglprog;
+
+use geometry::wglprog::{
+    Statement,
+    GLSource,
+    shader_texture,
+};
 
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
@@ -138,14 +145,15 @@ impl Geometry for FixTexGeometry {
 
 impl FixTexGeometry {
     pub fn new(adata: &ArenaData) -> FixTexGeometry {
+        let source = shader_texture(&GLSource::new(vec! {
+            Statement::new_vertex("
+                gl_Position = vec4(aVertexPosition.x / uSize.x - 1.0,
+                                   aVertexPosition.y / uSize.y - 1.0,
+                                   0.0, 1.0)")
+        }));
         FixTexGeometry {
             data:  FixTexGeometryImpl {
-                std: GLProgram::new(adata, 
-                    &geometry::shader_v_texture(
-                        "aVertexPosition.x / uSize.x - 1.0",
-                        "aVertexPosition.y / uSize.y - 1.0"),
-                    &geometry::shader_f_texture(),
-                    &geometry::shader_u_texture()),
+                std: GLProgram::new(adata,&source),
                 pos:    GTypeAttrib::new(adata,"aVertexPosition",2,1),
                 coord:  GTypeAttrib::new(adata,"aTextureCoord",2,1),
                 sampler: GTypeCanvasTexture::new(),

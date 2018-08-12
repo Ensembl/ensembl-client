@@ -5,12 +5,19 @@ use geometry::{
     GType,
 };
 
+use geometry::wglprog::{
+    GLSource,
+    Statement,
+    shader_solid,
+};
+
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
     WebGLProgram as glprog,
 };
 
 use geometry;
+use geometry::wglprog;
 use geometry::{
     Colour,
     GCoord,
@@ -56,14 +63,17 @@ impl Geometry for PinGeometry {
 
 impl PinGeometry {
     pub fn new(adata: &ArenaData) -> PinGeometry {
+        let source = shader_solid(&GLSource::new(vec! {
+            Statement::new_vertex("
+                gl_Position = vec4(
+                    (aOrigin.x - uStageHpos) * uStageZoom + 
+                                aVertexPosition.x / uSize.x,
+                    (aOrigin.y - uStageVpos) / uSize.y + 
+                                aVertexPosition.y / uSize.y,
+                    0.0, 1.0)")
+        }));
         PinGeometry {
-            std: GLProgram::new(adata,
-                &geometry::shader_v_solid(
-                    "(aOrigin.x - uStageHpos) * uStageZoom + aVertexPosition.x / uSize.x",
-                    "(aOrigin.y - uStageVpos) / uSize.y + aVertexPosition.y / uSize.y"),
-                &geometry::shader_f_solid(),
-                &geometry::shader_u_solid()),
-
+            std: GLProgram::new(adata,&source),
             pos: GTypeAttrib::new(&adata,"aVertexPosition",2,1),
             origin: GTypeAttrib::new(&adata,"aOrigin",2,3),
             colour: GTypeAttrib::new(&adata,"aVertexColour",3,3),
