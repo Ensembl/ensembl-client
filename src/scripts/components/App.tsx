@@ -1,11 +1,18 @@
-import React, { StrictMode } from 'react';
+import React, { SFC } from 'react';
+import { BrowserRouter } from 'react-router-dom';
 
-import Header from './layout/Header';
+import { hot } from 'react-hot-loader';
 
-const App = () => (
-  <StrictMode>
-    <Header/>
-  </StrictMode>
+import Header from './layout/header/Header';
+import Content from './layout/Content';
+
+const App: SFC = () => (
+  <BrowserRouter>
+    <React.StrictMode>
+      <Header />
+      <Content />
+    </React.StrictMode>
+  </BrowserRouter>
 );
 
-export default App;
+export default hot(module)(App);
