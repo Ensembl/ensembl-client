@@ -1,7 +1,13 @@
 const path = require('path');
+const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const postcssPresetEnv = require('postcss-preset-env');
+const HtmlPlugin = require('html-webpack-plugin');
+const ManifestPlugin = require('webpack-manifest-plugin');
+const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
+const BrotliPlugin = require('brotli-webpack-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 module.exports = {
   devtool: 'source-map',
@@ -10,39 +16,51 @@ module.exports = {
   },
   mode: 'production',
   module: {
-    rules: [
-      {
+    rules: [{
         test: /.tsx?$/,
-        use: [
-          {
-            loader: 'ts-loader',
-            options: {
-              transpileOnly: false
-            }
-          }
-        ]
+        loader: 'ts-loader',
+        options: {
+          transpileOnly: false
+        }
       },
       {
         test: /.scss$/,
         use: [
-          MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 2
+            }
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              ident: 'postcss',
+              plugins: () => [
+                postcssPresetEnv()
+              ]
+            }
+          },
+          'sass-loader'
         ]
       },
       {
-        test: /\.(woff|woff2|eot|ttf|otf|svg)$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              emitFile: true,
-              name: `[path][name].[ext]`
-            }
-          }
-        ]
+        test: /\.(svg|gif|png|jpe?g)$/i,
+        loader: 'image-webpack-loader',
+        enforce: 'pre'
+      },
+      {
+        test: /\.(woff2?|eot|ttf|otf|svg|gif|png|jpe?g)$/,
+        loader: 'file-loader',
+        options: {
+          emitFile: false,
+        }
       }
     ]
   },
   optimization: {
+    runtimeChunk: true,
     splitChunks: {
       cacheGroups: {
         commons: {
@@ -54,6 +72,7 @@ module.exports = {
     }
   },
   output: {
+    filename: '[name].[contenthash].js',
     pathinfo: false,
     publicPath: '/'
   },
@@ -61,15 +80,27 @@ module.exports = {
     hints: 'error'
   },
   plugins: [
-    new ForkTsCheckerWebpackPlugin(),
+    new ForkTsCheckerPlugin(),
     new MiniCssExtractPlugin({
-      filename: '[name].css',
-      chunkFilename: '[id].css'
+      filename: '[name].[contenthash].css',
+      chunkFilename: '[id].[contenthash].css'
     }),
-    new HtmlWebpackPlugin({
+    new HtmlPlugin({
       filename: 'index.html',
       template: path.join(__dirname, '../assets/html/template.html')
-    })
+    }),
+    new webpack.HashedModuleIdsPlugin(),
+    new BrotliPlugin({
+      test: /.(js|css|html)$/,
+      threshold: 10240, // 10kB
+      minRatio: 0.8
+    }),
+    new CopyPlugin([
+      { from: path.join(__dirname, '../assets/fonts/**/*'), dest: path.join(__dirname, '../dist/assets/fonts'), ignore: ['.DS_Store'] },
+      { from: path.join(__dirname, '../assets/img/**/*'), dest: path.join(__dirname, '../dist/assets/img'), ignore: ['.DS_Store'] }
+    ]),
+    new ManifestPlugin(),
+    new BundleAnalyzerPlugin()
   ],
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.scss']

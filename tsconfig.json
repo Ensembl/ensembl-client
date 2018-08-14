@@ -1,14 +1,23 @@
 {
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "declaration": false,
     "esModuleInterop": true,
     "jsx": "react",
-    "module": "commonjs",
+    "lib": [
+      "dom",
+      "es5",
+      "scripthost",
+      "es2015"
+    ],
+    "module": "esnext",
+    "moduleResolution": "node",
     "noImplicitAny": true,
     "outDir": "./dist/",
     "preserveConstEnums": true,
     "removeComments": true,
     "sourceMap": true,
-    "strictNullChecks": true,
+    "strict": true,
     "target": "es5"
   },
   "include": [
