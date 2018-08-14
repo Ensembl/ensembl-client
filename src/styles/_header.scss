@@ -5,18 +5,80 @@
   color: $white;
 
   & .logo {
-    font-size: 1.15rem;
+    font-size: 16px;
     font-weight: $global-weight-bold;
   }
-  
+
   & .strapline {
-    margin-left: 2.14rem;
+    display: none;
+    margin-left: 30px;
+
+    @include breakpoint(960px) {
+      display: inline-block;
+    }
   }
 
   & .top-bar-right {
-    & .icon {
-      font-size: 1.71rem;
-      margin-left: 2.14rem;
+    & button {
+      margin-left: 30px;
+      height: 24px;
+      width: 24px;
+      vertical-align: middle;
     }
+  }
+}
+
+.launchbar {
+  border-top: 1px solid $ens-black;
+  border-bottom: 1px solid $ens-black;
+  padding: 0 30px;
+  @include flex;
+
+  & .categories-wrapper {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    width: calc(100% - 86px);
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  & .categories {
+    flex: 0 0 auto;
+  }
+
+  & .about {
+    @include flex;
+    @include flex-align(right, top);
+    margin-left: 20px;
+  }
+
+  & dl {
+    display: inline-block;
+    margin: 5px 0;
+    padding: 0 5px;
+
+    &.border {
+      border-right: 1px solid $ens-black;
+    }
+  }
+
+  & dt {
+    display: inline-block;
+    padding: 5px 10px;
+  }
+}
+
+.account {
+  height: 300px;
+  border-bottom: 1px solid $ens-black;
+  @include flex;
+  @include flex-align(center, middle);
+
+  h2 {
+    color: $ens-grey;
+    text-align: center;
   }
 }

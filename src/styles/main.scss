@@ -1,10 +1,12 @@
 @import 'settings';
 @import '~foundation-sites/scss/foundation';
-@import '~@fortawesome/fontawesome-free/css/all.css';
 
 @import 'fonts';
 @import 'utils';
-@import 'header';
+@import 'animation';
 
+@import 'header';
+@import 'content';
 
 @include foundation-global-styles;
+@include foundation-prototype-classes;
