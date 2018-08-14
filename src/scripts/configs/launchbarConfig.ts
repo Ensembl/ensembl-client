@@ -15,7 +15,7 @@ export type LaunchbarDetails = {
   about: LaunchbarApp
 };
 
-const imgBaseUrl = '/assets/img';
+const launchbarIcon = require('../../../assets/img/launchbar/launchbar_icon_placeholder.png');
 
 export const launchbarConfig: LaunchbarDetails = {
   categories: [
@@ -25,12 +25,12 @@ export const launchbarConfig: LaunchbarDetails = {
       apps: [
         {
           name: 'GlobalSearch',
-          icon: `${imgBaseUrl}/launchbar/launchbar_icon_placeholder.png`,
+          icon: launchbarIcon,
           description: 'global search'
         },
         {
           name: 'SpeciesSelector',
-          icon: `${imgBaseUrl}/launchbar/launchbar_icon_placeholder.png`,
+          icon: launchbarIcon,
           description: 'species selector'
         }
       ]
@@ -41,17 +41,17 @@ export const launchbarConfig: LaunchbarDetails = {
       apps: [
         {
           name: 'SpeciesBrowser',
-          icon: `${imgBaseUrl}/launchbar/launchbar_icon_placeholder.png`,
+          icon: launchbarIcon,
           description: 'species browser'
         },
         {
           name: 'CompareBrowser',
-          icon: `${imgBaseUrl}/launchbar/launchbar_icon_placeholder.png`,
+          icon: launchbarIcon,
           description: 'compare browser'
         },
         {
           name: 'SequenceBrowser',
-          icon: `${imgBaseUrl}/launchbar/launchbar_icon_placeholder.png`,
+          icon: launchbarIcon,
           description: 'sequence browser'
         }
       ]
@@ -62,22 +62,22 @@ export const launchbarConfig: LaunchbarDetails = {
       apps: [
         {
           name: 'Blast',
-          icon: `${imgBaseUrl}/launchbar/launchbar_icon_placeholder.png`,
+          icon: launchbarIcon,
           description: 'BLAST/BLAT'
         },
         {
           name: 'VEP',
-          icon: `${imgBaseUrl}/launchbar/launchbar_icon_placeholder.png`,
+          icon: launchbarIcon,
           description: 'VEP'
         },
         {
           name: 'Conversions',
-          icon: `${imgBaseUrl}/launchbar/launchbar_icon_placeholder.png`,
+          icon: launchbarIcon,
           description: 'Conversions'
         },
         {
           name: 'LD',
-          icon: `${imgBaseUrl}/launchbar/launchbar_icon_placeholder.png`,
+          icon: launchbarIcon,
           description: 'LD calculator'
         }
       ]
@@ -88,12 +88,12 @@ export const launchbarConfig: LaunchbarDetails = {
       apps: [
         {
           name: 'BulkDownload',
-          icon: `${imgBaseUrl}/launchbar/launchbar_icon_placeholder.png`,
+          icon: launchbarIcon,
           description: 'bulk download'
         },
         {
           name: 'APIDownload',
-          icon: `${imgBaseUrl}/launchbar/launchbar_icon_placeholder.png`,
+          icon: launchbarIcon,
           description: 'APIs download'
         }
       ]
@@ -104,22 +104,22 @@ export const launchbarConfig: LaunchbarDetails = {
       apps: [
         {
           name: 'EnsemblHelp',
-          icon: `${imgBaseUrl}/launchbar/launchbar_icon_placeholder.png`,
+          icon: launchbarIcon,
           description: 'using ensembl'
         },
         {
           name: 'HelpDocs',
-          icon: `${imgBaseUrl}/launchbar/launchbar_icon_placeholder.png`,
+          icon: launchbarIcon,
           description: 'help and documentation'
         },
         {
           name: 'Glossary',
-          icon: `${imgBaseUrl}/launchbar/launchbar_icon_placeholder.png`,
+          icon: launchbarIcon,
           description: 'glossary'
         },
         {
           name: 'NewInfo',
-          icon: `${imgBaseUrl}/launchbar/launchbar_icon_placeholder.png`,
+          icon: launchbarIcon,
           description: 'what is new and what has changed'
         }
       ]
@@ -127,7 +127,7 @@ export const launchbarConfig: LaunchbarDetails = {
   ],
   about: {
     name: 'About',
-    icon: `${imgBaseUrl}/launchbar/launchbar_icon_placeholder.png`,
+    icon: launchbarIcon,
     description: 'about ensembl'
   }
 };

@@ -5,7 +5,6 @@ const postcssPresetEnv = require('postcss-preset-env');
 const HtmlPlugin = require('html-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
 const BrotliPlugin = require('brotli-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
@@ -48,14 +47,23 @@ module.exports = {
       },
       {
         test: /\.(svg|gif|png|jpe?g)$/i,
-        loader: 'image-webpack-loader',
-        enforce: 'pre'
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              emitFile: true,
+              name: '[path][name].[hash].[ext]'
+            }
+          },
+          'image-webpack-loader'
+        ]
       },
       {
-        test: /\.(woff2?|eot|ttf|otf|svg|gif|png|jpe?g)$/,
+        test: /\.(woff2?|eot|ttf|otf|svg)/,
         loader: 'file-loader',
         options: {
-          emitFile: false,
+          emitFile: true,
+          name: '[path][name].[hash].[ext]'
         }
       }
     ]
@@ -97,16 +105,12 @@ module.exports = {
       threshold: 10240, // 10kB
       minRatio: 0.8
     }),
-    new CopyPlugin([
-      { from: path.join(__dirname, '../assets/fonts/**/*'), dest: path.join(__dirname, '../dist/assets/fonts'), ignore: ['.DS_Store'] },
-      { from: path.join(__dirname, '../assets/img/**/*'), dest: path.join(__dirname, '../dist/assets/img'), ignore: ['.DS_Store'] }
-    ]),
     new ManifestPlugin(),
     new WorkboxPlugin.GenerateSW({
       clientsClaim: true,
       skipWaiting: true
     }),
-    new BundleAnalyzerPlugin()
+    // new BundleAnalyzerPlugin()
   ],
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.scss']
