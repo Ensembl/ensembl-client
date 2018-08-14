@@ -7,6 +7,7 @@ const ManifestPlugin = require('webpack-manifest-plugin');
 const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const BrotliPlugin = require('brotli-webpack-plugin');
+const WorkboxPlugin = require('workbox-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 module.exports = {
@@ -87,7 +88,8 @@ module.exports = {
     }),
     new HtmlPlugin({
       filename: 'index.html',
-      template: path.join(__dirname, '../assets/html/template.html')
+      template: path.join(__dirname, '../assets/html/template.html'),
+      publicPath: '/'
     }),
     new webpack.HashedModuleIdsPlugin(),
     new BrotliPlugin({
@@ -100,6 +102,10 @@ module.exports = {
       { from: path.join(__dirname, '../assets/img/**/*'), dest: path.join(__dirname, '../dist/assets/img'), ignore: ['.DS_Store'] }
     ]),
     new ManifestPlugin(),
+    new WorkboxPlugin.GenerateSW({
+      clientsClaim: true,
+      skipWaiting: true
+    }),
     new BundleAnalyzerPlugin()
   ],
   resolve: {
