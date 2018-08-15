@@ -1,7 +1,6 @@
 use geometry::{
     Geometry,
     GLProgram,
-    GTypeAttrib,    
     GType,
 };
 
@@ -9,6 +8,8 @@ use geometry::wglprog::{
     GLSource,
     Statement,
     shader_solid,
+    Uniform,
+    Attribute,
 };
 
 use webgl_rendering_context::{
@@ -32,38 +33,25 @@ use arena::{
 
 pub struct PinGeometry {
     std: GLProgram,
-    pos: GTypeAttrib,
-    origin: GTypeAttrib,
-    colour: GTypeAttrib,
 }
 
 impl Geometry for PinGeometry {
     fn populate(&mut self, adata: &mut ArenaData) {
-        geometry::populate(self, adata);
+        self.std.populate(adata);
     }
-
-    fn draw(&mut self, adata: &mut ArenaData,stage:&Stage) {
-        geometry::draw(self,adata,stage);
-    }
-
-    fn gtypes(&mut self) -> (&GLProgram,Vec<&mut GType>) {
-        (&self.std,vec! { &mut self.pos, &mut self.origin, &mut self.colour})
-    }
-
-    fn restage(&mut self, ctx: &glctx, prog: &glprog, stage: &Stage, dims: &ArenaDims) {
-        self.std.set_uniform_1f(&ctx,"uStageHpos",stage.pos.0);
-        self.std.set_uniform_1f(&ctx,"uStageVpos",stage.pos.1 + (dims.height_px as f32/2.));
-        self.std.set_uniform_1f(&ctx,"uStageZoom",stage.zoom);
-        self.std.set_uniform_1f(&ctx,"uAspect",dims.aspect);
-        self.std.set_uniform_2f(&ctx,"uSize",[
-            dims.width_px as f32 /2.,
-            dims.height_px as f32 /2.]);
-    }
+    
+    fn draw(&mut self, adata: &mut ArenaData, stage:&Stage) { self.std.draw(adata,stage); }
 }
 
 impl PinGeometry {
     pub fn new(adata: &ArenaData) -> PinGeometry {
         let source = shader_solid(&GLSource::new(vec! {
+            Uniform::new_vertex("float","uStageHpos"),
+            Uniform::new_vertex("float","uStageVpos"),
+            Uniform::new_vertex("float","uStageZoom"),
+            Uniform::new_vertex("vec2","uSize"),
+            Attribute::new(2,"aVertexPosition"),
+            Attribute::new(2,"aOrigin"),
             Statement::new_vertex("
                 gl_Position = vec4(
                     (aOrigin.x - uStageHpos) * uStageZoom + 
@@ -74,16 +62,14 @@ impl PinGeometry {
         }));
         PinGeometry {
             std: GLProgram::new(adata,&source),
-            pos: GTypeAttrib::new(&adata,"aVertexPosition",2,1),
-            origin: GTypeAttrib::new(&adata,"aOrigin",2,3),
-            colour: GTypeAttrib::new(&adata,"aVertexColour",3,3),
         }
     }
     
-    pub fn triangle(&mut self, origin: &GCoord, points: &[PCoord;3], colour: &Colour) {
-        self.pos.add_px(points);
-        self.origin.add_gc(&[*origin]);
-        self.colour.add_col(colour);
+    pub fn triangle(&mut self, origin: &GCoord, p: &[PCoord;3], colour: &Colour) {
+        self.std.add_attrib_data("aVertexPosition",&[&p[0], &p[1], &p[2]]);
+        self.std.add_attrib_data("aOrigin",&[origin,origin,origin]);
+        self.std.add_attrib_data("aVertexColour",&[colour,colour,colour]);
         self.std.advance(3);
     }
 }
+

@@ -1,10 +1,16 @@
 use geometry::{
     Geometry,
     GLProgram,
-    GTypeAttrib,
     GType,
+};
+
+use geometry::gtype::{
     GTypeCanvasTexture,
+};
+
+use geometry::coord::{
     PCoord,
+    TCoord
 };
 
 use geometry;
@@ -14,6 +20,8 @@ use geometry::wglprog::{
     Statement,
     GLSource,
     shader_texture,
+    Uniform,
+    Attribute,
 };
 
 use webgl_rendering_context::{
@@ -48,25 +56,37 @@ use std::rc::Rc;
 
 pub struct FixTexGeometryImpl {
     std: GLProgram,
-    pos: GTypeAttrib,
-    coord: GTypeAttrib,
-    sampler: GTypeCanvasTexture,
 }
 
 impl FixTexGeometryImpl {
-    pub fn triangle(&mut self,points:&[PCoord;3],tex_points:&[f32;6]) {
-        self.pos.add_px(points);
-        self.coord.add(tex_points);
+    pub fn new(adata: &ArenaData) -> FixTexGeometryImpl {
+        let source = shader_texture(&GLSource::new(vec! {
+            Uniform::new_vertex("vec2","uSize"),
+            Attribute::new(2,"aVertexPosition"),
+            Statement::new_vertex("
+                gl_Position = vec4(aVertexPosition.x / uSize.x - 1.0,
+                                   aVertexPosition.y / uSize.y - 1.0,
+                                   0.0, 1.0)")
+        }));
+        FixTexGeometryImpl {
+            std: GLProgram::new(adata,&source),
+        }
+    }
+
+    pub fn triangle(&mut self,p: &[PCoord;3],tp: &[TCoord;3]) {
+        self.std.add_attrib_data("aVertexPosition",&[&p[0], &p[1], &p[2]]);
+        self.std.add_attrib_data("aTextureCoord",&[&tp[0], &tp[1], &tp[2]]);
         self.std.advance(3);
     }
     
-    pub fn rectangle(&mut self,p:&[PCoord;2],t:&[f32;4]) {
-        let mix = p[0].mix(p[1]);
+    pub fn rectangle(&mut self,p:&[PCoord;2],t:&[TCoord;2]) {
+        let  mix = p[0].mix(p[1]);
+        let tmix = t[0].mix(t[1]);
         
-        self.triangle(&[p[0], mix.1, mix.0],
-                      &[t[0],t[1], t[2],t[1], t[0],t[3]]);
-        self.triangle(&[p[1], mix.0, mix.1],
-                      &[t[2],t[3],t[0],t[3],t[2],t[1]]);
+        self.triangle(&[p[0],  mix.1,  mix.0],
+                      &[t[0], tmix.1, tmix.0]);
+        self.triangle(&[p[1],  mix.0,  mix.1],
+                      &[t[1], tmix.0, tmix.1]);
     }
 }
 
@@ -94,8 +114,8 @@ impl FixTexTextureItem {
 impl TextureItem<FixTexGeometryImpl> for FixTexTextureItem {
     fn process(&self, geom: &mut FixTexGeometryImpl, x: u32, y: u32, width: u32, height: u32, canvs: &ArenaCanvases, dims: &ArenaDims) {
         let flat = &canvs.flat;
-        let t = [flat.prop_x(x), flat.prop_y(y + height),
-                 flat.prop_x(x + width), flat.prop_y(y)];
+        let t = [TCoord(flat.prop_x(x), flat.prop_y(y + height)),
+                 TCoord(flat.prop_x(x + width), flat.prop_y(y))];
         let pos = dims.nudge_p(self.pos);
         let p = [PCoord(pos.0,pos.1),
                  PCoord(pos.0 + width as f32 * self.scale.0,
@@ -118,46 +138,16 @@ pub struct FixTexGeometry {
 impl Geometry for FixTexGeometry {
     fn populate(&mut self, adata: &mut ArenaData) {
         self.prepopulate(adata);
-        geometry::populate(self,adata);
-    }
-
-    fn draw(&mut self, adata: &mut ArenaData, stage: &Stage) {
-        geometry::draw(self,adata,stage);
-    }
-
-    fn gtypes(&mut self) -> (&GLProgram,Vec<&mut GType>) {
-        (&self.data.std,
-        vec! { &mut self.data.pos, &mut self.data.sampler,
-               &mut self.data.coord })
+        self.data.std.populate(adata);
     }
     
-    fn restage(&mut self, ctx: &glctx, prog: &glprog, stage: &Stage, dims: &ArenaDims) {
-        self.data.std.set_uniform_1f(&ctx,"uStageHpos",stage.pos.0);
-        self.data.std.set_uniform_1f(&ctx,"uStageVpos",stage.pos.1 + (dims.height_px as f32/2.));
-        self.data.std.set_uniform_1f(&ctx,"uStageZoom",stage.zoom);
-        self.data.std.set_uniform_1f(&ctx,"uAspect",dims.aspect);
-        self.data.sampler.set_uniform(&ctx,&self.data.std,"uSampler");
-        self.data.std.set_uniform_2f(&ctx,"uSize",[
-            dims.width_px as f32/2.,
-            dims.height_px as f32/2.]);
-    }
+    fn draw(&mut self, adata: &mut ArenaData, stage:&Stage) { self.data.std.draw(adata,stage); }
 }
 
 impl FixTexGeometry {
     pub fn new(adata: &ArenaData) -> FixTexGeometry {
-        let source = shader_texture(&GLSource::new(vec! {
-            Statement::new_vertex("
-                gl_Position = vec4(aVertexPosition.x / uSize.x - 1.0,
-                                   aVertexPosition.y / uSize.y - 1.0,
-                                   0.0, 1.0)")
-        }));
         FixTexGeometry {
-            data:  FixTexGeometryImpl {
-                std: GLProgram::new(adata,&source),
-                pos:    GTypeAttrib::new(adata,"aVertexPosition",2,1),
-                coord:  GTypeAttrib::new(adata,"aTextureCoord",2,1),
-                sampler: GTypeCanvasTexture::new(),
-            },
+            data:  FixTexGeometryImpl::new(adata),
             gtexitman: TextureTargetManager::<FixTexGeometryImpl,FixTexTextureItem>::new(),
         }
     }
