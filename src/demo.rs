@@ -19,7 +19,7 @@ use arena::{
     Stage,
 };
 
-use geometry::{
+use geometry::coord::{
     GCoord,
     PCoord,
     Colour,
@@ -247,7 +247,7 @@ pub fn demo() {
     let (sw,sh) = (dims.width_px as f32,dims.height_px as f32);
     let dx = 0.001;
     arena.rectangle_fix(&[PCoord(sw/2.,0.),PCoord(sw/2.+1.,sh)],
-                        &[0.0,0.0,0.0]);
+                        &Colour(0,0,0));
     arena.bitmap_fix(&PCoord(99.,0.),&PCoord(1.,sh),
                         vec! { 0,0,255,255,
                                  255,0,0,255,

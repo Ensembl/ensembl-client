@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 
+use arena::ArenaData;
+
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
     WebGLProgram as glprog,
@@ -12,11 +14,22 @@ use webgl_rendering_context::{
     GLint,
 };
 
+use geometry::gtype::{
+    GType,
+    GTypeAttrib,
+    GTypeCanvasTexture,
+    GTypeStage,
+};
+
 pub trait Variable {
-    fn declare(&self, frag: bool) -> String;
+    fn declare(&self, frag: bool) -> String { String::new() }
     fn preget(&self, ctx: &glctx, prog: &glprog,
-              udata: &mut HashMap<String,gluni>);
-    fn statement(&self, frag: bool) -> String;
+              udata: &mut HashMap<String,gluni>) {}
+    fn make_attribs(&self, adata: &ArenaData) 
+                            -> Option<(Option<&str>,Box<GType>)> {
+        None
+    }
+    fn statement(&self, frag: bool) -> String { String::new() }
 }
 
 pub struct Uniform {
@@ -57,33 +70,36 @@ impl Variable for Uniform {
             udata.insert(self.name.to_string(),loc.unwrap());
         }
     }
-    
-    fn statement(&self, frag: bool) -> String { String::new() }
 }
 
 #[derive(Clone)]
 pub struct Attribute {
-    size: String,
+    size: u8,
     pub name: String,
 }
 
 impl Attribute {
-    pub fn new(size: &str, name: &str) -> Rc<Attribute> {
-        Rc::new(Attribute { size: size.to_string(), name: name.to_string() })
+    pub fn new(size: u8, name: &str) -> Rc<Attribute> {
+        Rc::new(Attribute {
+            size, name: name.to_string()
+        })
     }
 }
+
+const ATTRIB_NAME : [&str;4] = ["float","vec2","vec3","vec4"];
 
 impl Variable for Attribute {
     fn declare(&self,frag: bool) -> String {
         if frag {
             String::new()
         } else {
-            format!("attribute {} {};\n",self.size,self.name).to_string()
+            format!("attribute {} {};\n",ATTRIB_NAME[(self.size-1) as usize],self.name).to_string()
         }
     }
 
-    fn preget(&self, ctx: &glctx, prog: &glprog, udata: &mut HashMap<String,gluni>) {}
-    fn statement(&self, frag: bool) -> String { String::new() }
+    fn make_attribs(&self, adata: &ArenaData) -> Option<(Option<&str>,Box<GType>)> {
+        Some((Some(&self.name),Box::new(GTypeAttrib::new(adata,&self.name,self.size))))
+    }
 }
 
 #[derive(Clone)]
@@ -108,9 +124,6 @@ impl Variable for Varying {
         format!("varying {} {} {};\n",
             self.prec,self.size,self.name).to_string()
     }
-
-    fn preget(&self, ctx: &glctx, prog: &glprog, udata: &mut HashMap<String,gluni>) {}
-    fn statement(&self, frag: bool) -> String { String::new() }
 }
 
 #[derive(Clone)]
@@ -132,14 +145,43 @@ impl Statement {
 }
 
 impl Variable for Statement {
-    fn declare(&self,frag: bool) -> String { String::new() }
-    fn preget(&self, ctx: &glctx, prog: &glprog, udata: &mut HashMap<String,gluni>) {}
     fn statement(&self, frag: bool) -> String {
         if frag == self.frag {
             format!("{};\n",self.src)
         } else {
             String::new()
         }
+    }
+}
+
+pub struct Canvas {
+    name: String,
+}
+
+impl Canvas {
+    pub fn new(name: &str) -> Rc<Canvas> {
+        Rc::new(Canvas { name: name.to_string() })
+    }
+}
+
+impl Variable for Canvas {
+    fn make_attribs(&self, adata: &ArenaData) -> Option<(Option<&str>,Box<GType>)> {
+        Some((None,Box::new(GTypeCanvasTexture::new(&self.name))))
+    }
+}
+
+pub struct Stage {
+}
+
+impl Stage {
+    pub fn new() -> Rc<Stage> {
+        Rc::new(Stage {})
+    }
+}
+
+impl Variable for Stage {
+    fn make_attribs(&self, adata: &ArenaData) -> Option<(Option<&str>,Box<GType>)> {
+        Some((None,Box::new(GTypeStage::new())))
     }
 }
 
@@ -202,20 +244,14 @@ impl GLSource {
 
 fn shader_standard() -> GLSource {
     GLSource::new(vec! {
-        Uniform::new_vertex("float","uAspect"),
-        Uniform::new_vertex("float","uStageHpos"),
-        Uniform::new_vertex("float","uStageVpos"),
-        Uniform::new_vertex("float","uStageZoom"),
-        Uniform::new_vertex("vec2","uSize"),
-        Attribute::new("vec2","aVertexPosition"),
-        Attribute::new("vec2","aOrigin"),
+        Stage::new()
     })
 }
 
 pub fn shader_solid(pos: &GLSource) -> GLSource {
     shader_standard().merge(pos).merge(
         &GLSource::new(vec! {
-            Attribute::new("vec3","aVertexColour"),
+            Attribute::new(3,"aVertexColour"),
             Varying::new("lowp","vec3","vColour"),
             Statement::new_vertex("vColour = aVertexColour"),
             Statement::new_fragment("gl_FragColor = vec4(vColour, 1.0)"),
@@ -226,8 +262,9 @@ pub fn shader_solid(pos: &GLSource) -> GLSource {
 pub fn shader_texture(pos: &GLSource) -> GLSource {
     shader_standard().merge(pos).merge(
         &GLSource::new(vec! {
+            Canvas::new("uSampler"),
             Uniform::new_fragment("sampler2D","uSampler"),
-            Attribute::new("vec2","aTextureCoord"),
+            Attribute::new(2,"aTextureCoord"),
             Varying::new("highp","vec2","vTextureCoord"),
             Statement::new_vertex("vTextureCoord = aTextureCoord"),
             Statement::new_fragment("gl_FragColor = texture2D(uSampler, vTextureCoord)"),

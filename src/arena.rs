@@ -5,10 +5,12 @@ use webgl_rendering_context::{
 use std::cell::RefCell;
 use std::rc::Rc;
 
+use geometry;
 use canvasutil;
 use wglraw;
-use geometry::{
-    Geometry,
+
+use geometry::Geometry;
+use geometry::coord::{
     GCoord,
     PCoord,
     Colour
@@ -211,11 +213,11 @@ impl Arena {
         self.geom.fixtex.add_texture(tr,pos,scale);
     }
     
-    pub fn triangle_fix(&mut self,points:&[PCoord;3],colour:&[f32;3]) {
+    pub fn triangle_fix(&mut self,points:&[PCoord;3],colour: &Colour) {
         self.geom.fix.triangle(points,colour);
     }
     
-    pub fn rectangle_fix(&mut self,p:&[PCoord;2],colour:&[f32;3]) {
+    pub fn rectangle_fix(&mut self,p:&[PCoord;2],colour: &Colour) {
         self.geom.fix.rectangle(p,colour);
     }
 
@@ -259,6 +261,7 @@ impl Arena {
         }
         // draw each geometry
         let datam = &mut self.data.borrow_mut();
+        //geometry::draw(&mut self.geom.stretch,datam,&stage);
         self.geom.stretch.draw(datam,&stage);
         self.geom.stretchtex.draw(datam,&stage);
         self.geom.pin.draw(datam,&stage);

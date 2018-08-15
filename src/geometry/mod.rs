@@ -5,6 +5,10 @@ pub mod stretchtex;
 pub mod pintex;
 pub mod fixtex;
 pub mod wglprog;
+pub mod coord;
+pub mod gtype;
+
+use std::rc::Rc;
 
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
@@ -22,113 +26,41 @@ use arena::{
 
 use geometry::wglprog::{
     Variable,
-    Uniform
 };
 
-use wglraw;
-use std::rc::Rc;
+use geometry::gtype::{
+    GType,
+};
+
 use std::collections::HashMap;
 
 use geometry::wglprog::{
     GLSource
 };
 
-#[derive(Clone,Copy)]
-pub struct GCoord(pub f32,pub f32);
-
-impl GCoord {
-    fn mix(&self, other: GCoord) -> (GCoord,GCoord) {
-        (GCoord(self.0,other.1), GCoord(other.0,self.1))
-    }
-}
-
-#[derive(Clone,Copy)]
-pub struct PCoord(pub f32,pub f32);
-
-impl PCoord {
-    fn mix(&self, other: PCoord) -> (PCoord,PCoord) {
-        (PCoord(self.0,other.1), PCoord(other.0,self.1))
-    }
-    
-    fn scale(&self, scale: PCoord) -> PCoord {
-        PCoord(self.0 * scale.0, self.1 * scale.1)
-    }
-}
-
-#[derive(Clone,Copy,PartialEq,Hash,Eq)]
-pub struct Colour(pub u32,pub u32,pub u32);
-
-impl Colour {
-    pub fn to_css(&self) -> String {
-        format!("rgb({},{},{})",self.0,self.1,self.2)
-    }
-    
-    pub fn to_webgl(&self) -> [f32;3] {
-        [self.0 as f32 / 255.,
-         self.1 as f32 / 255.,
-         self.2 as f32 / 255.]
-    }
-}
+use geometry::coord::{
+    GLData,
+    GCoord,
+    PCoord,
+    Colour,
+};
 
 /* Geometries must implement Geometry for the arena to use them */
 pub trait Geometry {
-    fn gtypes(&mut self) -> (&GLProgram,Vec<&mut GType>);
     fn populate(&mut self, &mut ArenaData);
+
     fn draw(&mut self, adata: &mut ArenaData, stage:&Stage);
-    fn restage(&mut self, ctx: &glctx, prog: &glprog, stage: &Stage, dims: &ArenaDims);
-}
-
-pub fn draw(holder: &mut Geometry, adata: &ArenaData, stage:&Stage) {
-    let prog;
-    let indices;
-    {
-        let (std,types) = holder.gtypes();
-        indices = std.indices;
-        prog = std.prog.clone();
-    }
-    // link
-    let ctx = &adata.ctx;
-    let aspect = adata.dims.aspect;
-    ctx.use_program(Some(&prog));
-    {
-        let (std,mut types) = holder.gtypes();
-        for g in &mut types {
-            g.link(adata,&prog);
-        }
-    }
-    holder.restage(&ctx,&prog,stage,&adata.dims);
-    // draw
-    ctx.draw_arrays(glctx::TRIANGLES,0,indices);
-    // unlink
-    {
-        let (std,types) = holder.gtypes();
-        for g in &types {
-            g.unlink(&ctx,&prog);
-        }
-    }
-}
-
-pub fn populate(holder: &mut Geometry, adata: &mut ArenaData) {
-    let (_std,mut types) = holder.gtypes();
-    for g in &mut types {
-        g.populate(adata);
-    }
-}
-
-/* This is the meat of each GType implementation */
-pub trait GType {
-    fn populate(&mut self, _adata: &ArenaData) {}
-    fn link(&mut self, _adata : &ArenaData, _prog : &glprog) {}
-    fn unlink(&self, _ctx : &glctx, _prog : &glprog) {}
 }
 
 pub struct GLProgram {
     indices: i32,
-    prog: Rc<glprog>,
-    uniforms: HashMap<String,gluni>
+    prog: Box<glprog>,
+    uniforms: HashMap<String,gluni>,
+    attribs: Vec<Box<GType>>,
+    attrib_names: HashMap<String,usize>,
 }
 
-fn find_uniforms(ctx: &glctx, prog: &Rc<glprog>, vars: &Vec<Rc<Variable>>) -> HashMap<String,gluni> {
+fn find_uniforms(ctx: &glctx, prog: &Box<glprog>, vars: &Vec<Rc<Variable>>) -> HashMap<String,gluni> {
     let mut udata = HashMap::<String,gluni>::new();
     for v in vars {
         v.preget(ctx,prog,&mut udata);
@@ -136,19 +68,37 @@ fn find_uniforms(ctx: &glctx, prog: &Rc<glprog>, vars: &Vec<Rc<Variable>>) -> Ha
     udata
 }
 
+fn find_attribs(adata: &ArenaData, vars: &Vec<Rc<Variable>>) 
+                        -> (Vec<Box<GType>>,HashMap<String,usize>) {
+    let mut attribs = Vec::<Box<GType>>::new();
+    let mut attrib_names = HashMap::<String,usize>::new();
+    for v in vars {
+        if let Some((name,value)) = v.make_attribs(adata) {
+            let loc = attribs.len();
+            attribs.push(value);
+            if let Some(name) = name {
+                attrib_names.insert(name.to_string(),loc);
+            }
+        }
+    }
+    (attribs,attrib_names)
+}
+
 impl GLProgram {
     pub fn new(adata: &ArenaData, src: &GLSource) -> GLProgram {
         let ctx = &adata.ctx;
-        let prog = Rc::new(src.prog(ctx));
+        let prog = Box::new(src.prog(ctx));
         ctx.use_program(Some(&prog));
         let udata = find_uniforms(ctx,&prog,&src.uniforms);
+        let (attribs,attrib_names) = find_attribs(adata,&src.uniforms);
         GLProgram {
             prog,
             uniforms: udata,
+            attribs, attrib_names,
             indices: 0,
         }
     }
-    
+        
     pub fn advance(&mut self,amt: i32) { self.indices += amt; }
     
     pub fn uniform(&self, name: &str) -> Option<&gluni> {
@@ -172,107 +122,45 @@ impl GLProgram {
             ctx.uniform2f(Some(&loc),value[0],value[1]);
         }
     }
-    
-}
 
-/* GTypeCanvasTexture = GType for canvas-origin textures */
-pub struct GTypeCanvasTexture {
-    idx: Option<i32>,
-    texture: Option<gltex>,
-}
+    pub fn set_attribute(&self, ctx: &glctx, name: &str, buf: &glbuf, step: u8) {
+        let prog = &self.prog;
+        let loc = ctx.get_attrib_location(prog,name) as u32;
+        ctx.enable_vertex_attrib_array(loc);
+        ctx.bind_buffer(glctx::ARRAY_BUFFER,Some(buf));
+        ctx.vertex_attrib_pointer(loc, step as i32, glctx::FLOAT, false, 0, 0);
+    }
 
-impl GTypeCanvasTexture {
-    pub fn new() -> GTypeCanvasTexture {
-        GTypeCanvasTexture {
-            idx: None,
-            texture: None
+    pub fn add_attrib_data(&mut self, name: &str, values: &[&GLData]) {
+        let loc = self.attrib_names[name];
+        self.attribs[loc].add_data(values);
+    }
+
+    pub fn draw(&mut self, adata: &ArenaData, stage:&Stage) {
+        // link
+        {
+            self.link(adata,stage,&adata.dims);
         }
-    }
-
-    fn set_uniform(&self, ctx: &glctx, std: &GLProgram, name: &str) {
-        if let Some(idx) = self.idx {
-            std.set_uniform_1i(ctx,name,idx);
-        }
-    }
-}
-
-impl GType for GTypeCanvasTexture {
-    fn populate(&mut self, adata: &ArenaData) {
-        let canvases = &adata.canvases;
-        self.texture = Some(wglraw::canvas_texture(&adata.ctx,canvases.flat.element()));
-    }
-
-    fn link(&mut self, adata : &ArenaData, prog : &glprog) {
-        let canvases = &adata.canvases;
-        if let Some(ref texture) = self.texture {
-            adata.ctx.active_texture(TEXIDS[canvases.idx as usize]);
-            adata.ctx.bind_texture(glctx::TEXTURE_2D,Some(&texture));
-            self.idx = Some(canvases.idx);
-        }
-    }
-}
-
-pub struct GTypeAttrib {
-    vec : Vec<f32>,
-    buf: glbuf,
-    name: String,
-    size: i8,
-    rep: i8
-}
-
-impl GTypeAttrib {
-    pub fn new(adata: &ArenaData, name: &str,size: i8, rep: i8) -> GTypeAttrib {
-        GTypeAttrib {
-            vec: Vec::<f32>::new(),
-            buf: wglraw::init_buffer(&adata.ctx),
-            name: name.to_string(),
-            size, rep
+        // draw
+        {
+            let indices = self.indices;
+            let ctx = &adata.ctx;
+            ctx.draw_arrays(glctx::TRIANGLES,0,indices);
         }
     }
     
-    fn add(&mut self,values : &[f32]) {
-        for _i in 0..self.rep {
-            self.vec.extend_from_slice(values);
-        }
-    }
-
-    fn add_gc(&mut self,values : &[GCoord]) {
-        for _i in 0..self.rep {
-            for c in values {
-                self.vec.extend_from_slice(&[c.0,c.1]);
-            }
-        }
-    }
-
-    fn add_px(&mut self,values : &[PCoord]) {
-        for _i in 0..self.rep {
-            for c in values {
-                self.vec.extend_from_slice(&[c.0,c.1]);
-            }
+    pub fn link(&mut self, adata : &ArenaData,  stage: &Stage, dims: &ArenaDims) {
+        let ctx = &adata.ctx;
+        let prog = &self.prog;
+        ctx.use_program(Some(&prog));
+        for a in &self.attribs {
+            a.link(adata,self,stage,dims);
         }
     }
     
-    fn add_col(&mut self, col: &Colour) {
-        for _i in 0..self.rep {
-            self.vec.extend_from_slice(&col.to_webgl());
+    pub fn populate(&mut self, adata: &ArenaData) {
+        for a in &mut self.attribs {
+            a.populate(adata);
         }
     }
 }
-
-impl GType for GTypeAttrib {
-    fn populate(&mut self, adata: &ArenaData) {
-        wglraw::populate_buffer(&adata.ctx,glctx::ARRAY_BUFFER,
-                                &self.buf,&self.vec);
-        self.vec.clear();
-    }
-
-    fn link(&mut self, adata : &ArenaData, prog : &glprog) {
-        wglraw::link_buffer(&adata.ctx,prog,&self.name,self.size,&self.buf);
-    }
-}
-
-const TEXIDS : [u32;8] = [
-    glctx::TEXTURE0, glctx::TEXTURE1, glctx::TEXTURE2,
-    glctx::TEXTURE3, glctx::TEXTURE4, glctx::TEXTURE5,
-    glctx::TEXTURE6, glctx::TEXTURE7
-];

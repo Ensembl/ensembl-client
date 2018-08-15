@@ -44,7 +44,7 @@ pub fn populate_buffer(ctx:&glctx, buftype: u32, buf:&glbuf, values:&Vec<f32>) {
     ctx.buffer_data_1(buftype,Some(&data),glctx::STATIC_DRAW);
 }
 
-pub fn link_buffer(ctx:&glctx, prog:&glprog, name:&str, step:i8, buf:&glbuf) {
+pub fn link_buffer(ctx:&glctx, prog:&glprog, name:&str, step:u8, buf:&glbuf) {
     let loc = ctx.get_attrib_location(&prog,&name) as u32;
     ctx.enable_vertex_attrib_array(loc);
     ctx.bind_buffer(glctx::ARRAY_BUFFER,Some(&buf));

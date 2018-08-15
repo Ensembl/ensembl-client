@@ -1,10 +1,16 @@
 use geometry::{
     Geometry,
     GLProgram,
-    GTypeAttrib,
     GType,
+};
+
+use geometry::gtype::{
     GTypeCanvasTexture,
+};
+
+use geometry::coord::{
     GCoord,
+    TCoord,
 };
 
 use geometry;
@@ -13,6 +19,8 @@ use geometry::wglprog;
 use geometry::wglprog::{
     Statement,
     GLSource,
+    Uniform,
+    Attribute,
     shader_texture,
 };
 
@@ -48,25 +56,41 @@ use std::rc::Rc;
 
 pub struct StretchTexGeometryImpl {
     std: GLProgram,
-    pos: GTypeAttrib,
-    coord: GTypeAttrib,
-    sampler: GTypeCanvasTexture,
 }
 
 impl StretchTexGeometryImpl {
-    pub fn triangle(&mut self,points:&[GCoord;3],tex_points:&[f32;6]) {
-        self.pos.add_gc(points);
-        self.coord.add(tex_points);
+    pub fn new(adata: &ArenaData) -> StretchTexGeometryImpl {
+        let source = shader_texture(&GLSource::new(vec! {
+            Uniform::new_vertex("float","uStageHpos"),
+            Uniform::new_vertex("float","uStageVpos"),
+            Uniform::new_vertex("float","uStageZoom"),
+            Uniform::new_vertex("vec2","uSize"),
+            Attribute::new(2,"aVertexPosition"),
+            Statement::new_vertex("
+                gl_Position = vec4(
+                    (aVertexPosition.x - uStageHpos) * uStageZoom,
+                    (aVertexPosition.y - uStageVpos) / uSize.y,
+                    0.0, 1.0)")
+        }));
+        StretchTexGeometryImpl {
+            std: GLProgram::new(adata,&source),
+        }
+    }
+
+    pub fn triangle(&mut self,p:&[GCoord;3],tp:&[TCoord;3]) {
+        self.std.add_attrib_data("aVertexPosition",&[&p[0], &p[1], &p[2]]);
+        self.std.add_attrib_data("aTextureCoord",&[&tp[0], &tp[1], &tp[2]]);
         self.std.advance(3);
     }
     
-    pub fn rectangle(&mut self,p: &[GCoord;2], t: &[f32;4]) {
-        let mix = p[0].mix(p[1]);
+    pub fn rectangle(&mut self,p: &[GCoord;2], t: &[TCoord;2]) {
+        let  mix = p[0].mix(p[1]);
+        let tmix = t[0].mix(t[1]);
         
-        self.triangle(&[p[0], mix.1, mix.0],
-                      &[t[0],t[1], t[2],t[1], t[0],t[3]]);
-        self.triangle(&[p[1], mix.0, mix.1],
-                      &[t[2],t[3],t[0],t[3],t[2],t[1]]);
+        self.triangle(&[p[0],  mix.1,  mix.0],
+                      &[t[0], tmix.1, tmix.0]);
+        self.triangle(&[p[1],  mix.0, mix.1],
+                      &[t[1], tmix.0, tmix.1]);
     }
 }
 
@@ -93,8 +117,8 @@ impl StretchTexTextureItem {
 impl TextureItem<StretchTexGeometryImpl> for StretchTexTextureItem {
     fn process(&self, geom: &mut StretchTexGeometryImpl, x: u32, y: u32, width: u32, height: u32, canvs: &ArenaCanvases, dims: &ArenaDims) {
         let flat = &canvs.flat;
-        let t = [flat.prop_x(x), flat.prop_y(y + height),
-                 flat.prop_x(x + width), flat.prop_y(y)];
+        let t = [TCoord(flat.prop_x(x), flat.prop_y(y + height)),
+                 TCoord(flat.prop_x(x + width), flat.prop_y(y))];
         geom.rectangle(&self.pos,&t);
     }
 }
@@ -113,47 +137,16 @@ pub struct StretchTexGeometry {
 impl Geometry for StretchTexGeometry {
     fn populate(&mut self, adata: &mut ArenaData) {
         self.prepopulate(adata);
-        geometry::populate(self,adata);
-    }
-
-    fn draw(&mut self, adata: &mut ArenaData, stage: &Stage) {
-        geometry::draw(self,adata,stage);
-    }
-
-    fn gtypes(&mut self) -> (&GLProgram,Vec<&mut GType>) {
-        (&self.data.std,
-        vec! { &mut self.data.pos, &mut self.data.sampler,
-               &mut self.data.coord })
+        self.data.std.populate(adata);
     }
     
-    fn restage(&mut self, ctx: &glctx, prog: &glprog, stage: &Stage, dims: &ArenaDims) {
-        self.data.std.set_uniform_1f(&ctx,"uStageHpos",stage.pos.0);
-        self.data.std.set_uniform_1f(&ctx,"uStageVpos",stage.pos.1 + (dims.height_px as f32/2.));
-        self.data.std.set_uniform_1f(&ctx,"uStageZoom",stage.zoom);
-        self.data.std.set_uniform_1f(&ctx,"uAspect",dims.aspect);
-        self.data.sampler.set_uniform(&ctx,&self.data.std,"uSampler");
-        self.data.std.set_uniform_2f(&ctx,"uSize",[
-            dims.width_px as f32/2.,
-            dims.height_px as f32/2.]);
-    }
+    fn draw(&mut self, adata: &mut ArenaData, stage:&Stage) { self.data.std.draw(adata,stage); }
 }
 
 impl StretchTexGeometry {
     pub fn new(adata: &ArenaData) -> StretchTexGeometry {
-        let source = shader_texture(&GLSource::new(vec! {
-            Statement::new_vertex("
-                gl_Position = vec4(
-                    (aVertexPosition.x - uStageHpos) * uStageZoom,
-                    (aVertexPosition.y - uStageVpos) / uSize.y,
-                    0.0, 1.0)")
-        }));
         StretchTexGeometry {
-            data: StretchTexGeometryImpl {
-                std: GLProgram::new(adata,&source),
-                pos:    GTypeAttrib::new(adata,"aVertexPosition",2,1),
-                coord:  GTypeAttrib::new(adata,"aTextureCoord",2,1),
-                sampler: GTypeCanvasTexture::new(),
-            },
+            data: StretchTexGeometryImpl::new(adata),
             gtexitman: TextureTargetManager::<StretchTexGeometryImpl,StretchTexTextureItem>::new(),
         }
     }
