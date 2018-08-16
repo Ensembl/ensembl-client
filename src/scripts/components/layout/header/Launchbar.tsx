@@ -55,7 +55,7 @@ class Launchbar extends Component<LaunchbarProps> {
     );
 
     return (
-      <SlideDown>
+      <SlideDown transitionOnAppear={false}>
         {this.props.expanded ? LaunchbarChildren : null}
       </SlideDown>
     );

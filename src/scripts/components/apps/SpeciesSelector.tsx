@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { hot } from 'react-hot-loader';
 
 class SpeciesSelector extends Component {
   render() {
@@ -8,4 +9,4 @@ class SpeciesSelector extends Component {
   }
 }
 
-export default SpeciesSelector;
+export default hot(module)(SpeciesSelector);

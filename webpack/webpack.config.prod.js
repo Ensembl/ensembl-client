@@ -110,7 +110,7 @@ module.exports = {
       clientsClaim: true,
       skipWaiting: true
     }),
-    // new BundleAnalyzerPlugin()
+    new BundleAnalyzerPlugin()
   ],
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.scss']

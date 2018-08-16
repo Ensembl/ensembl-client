@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { hot } from 'react-hot-loader';
 
 class GlobalSearch extends Component {
   render() {
@@ -8,4 +9,4 @@ class GlobalSearch extends Component {
   }
 }
 
-export default GlobalSearch;
+export default hot(module)(GlobalSearch);
