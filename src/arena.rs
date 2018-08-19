@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
 };
@@ -5,22 +7,24 @@ use webgl_rendering_context::{
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use geometry;
 use canvasutil;
 use wglraw;
 
-use geometry::Geometry;
+use geometry::{
+    GLProgram
+};
 use geometry::coord::{
     GCoord,
     PCoord,
     Colour
 };
-use geometry::stretch::StretchGeometry;
-use geometry::stretchtex::StretchTexGeometry;
-use geometry::pin::PinGeometry;
-use geometry::pintex::PinTexGeometry;
-use geometry::fix::FixGeometry;
-use geometry::fixtex::FixTexGeometry;
+
+use geometry::stretch::stretch_geom;
+use geometry::stretchtex::stretchtex_geom;
+use geometry::fix::fix_geom;
+use geometry::fixtex::fixtex_geom;
+use geometry::pin::pin_geom;
+use geometry::pintex::pintex_geom;
 
 use canvasutil::FCFont;
 
@@ -31,14 +35,9 @@ use texture::{
     TextureSourceManager,
 };
 
-struct ArenaGeometries {
-    stretch: StretchGeometry,
-    stretchtex: StretchTexGeometry,
-    pin: PinGeometry,
-    pintex: PinTexGeometry,
-    fix: FixGeometry,
-    fixtex: FixTexGeometry,
-}
+use shape::fixtexture::fix_texture;
+use shape::pintexture::pin_texture;
+use shape::stretchtexture::stretch_texture;
 
 struct ArenaTextures {
     text: TextTextureStore,
@@ -66,6 +65,7 @@ pub struct ArenaDims {
     pub height_px: u32,
 }
 
+#[allow(dead_code)]
 pub struct ArenaData {
     spec: ArenaSpec,
     textures: ArenaTextures,
@@ -86,10 +86,12 @@ impl ArenaData {
 }
 
 impl ArenaDims {
+    #[allow(dead_code)]
     pub fn prop_x(&self,x_px: u32) -> f32 {
         (x_px as f64 * 2.0 / self.width_px as f64) as f32
     }
 
+    #[allow(dead_code)]
     pub fn prop_y(&self,y_px: u32) -> f32 {
         (y_px as f64 * 2.0 / self.height_px as f64) as f32
     }
@@ -130,7 +132,8 @@ impl ArenaSpec {
 
 pub struct Arena {
     data: Rc<RefCell<ArenaData>>,
-    geom: ArenaGeometries,
+    order: Vec<String>,
+    map: HashMap<String,GLProgram>
 }
 
 impl Arena {
@@ -150,19 +153,31 @@ impl Arena {
             canvases: ArenaCanvases {
                 flat,
                 idx: 0,
-            }
+            },
         }));
         let data_g = data.clone();
-        let data_b = data_g.borrow();
-        let arena = Arena { data, geom: ArenaGeometries {
-            stretch: StretchGeometry::new(&data_b),
-            stretchtex: StretchTexGeometry::new(&data_b),
-            pin:     PinGeometry::new(&data_b),
-            pintex:  PinTexGeometry::new(&data_b),
-            fix:     FixGeometry::new(&data_b),
-            fixtex:  FixTexGeometry::new(&data_b),
-        }};
+        let data_b = data_g.borrow();        
+        let arena = Arena {
+            data, 
+            order: vec_s! {
+                "stretch", "stretchtex", 
+                "pin", "pintex",
+                "fix", "fixtex"
+            },
+            map: hashmap_s! {
+                "stretch" => stretch_geom(&data_b),
+                "stretchtex" => stretchtex_geom(&data_b),
+                "pin" => pin_geom(&data_b),
+                "pintex" => pintex_geom(&data_b),
+                "fix" => fix_geom(&data_b),
+                "fixtex" => fixtex_geom(&data_b)
+            }
+        };
         arena
+    }
+
+    pub fn get_geom(&mut self, name: &str) -> &mut GLProgram {
+        self.map.get_mut(name).unwrap()
     }
 
     pub fn dims(&self) -> ArenaDims {
@@ -173,81 +188,70 @@ impl Arena {
         self.data.borrow().dims.settle(stage);
     }  
 
-    pub fn triangle_stretch(&mut self, p: &[GCoord;3], c: &Colour) {
-        self.geom.stretch.triangle(p,c);
-    }
-
-    pub fn rectangle_stretch(&mut self, p: &[GCoord;2], c: &Colour) {
-        self.geom.stretch.rectangle(p,c);
-    }
-
-    pub fn triangle_pin(&mut self, r: &GCoord, p: &[PCoord;3], c :&Colour) {
-        self.geom.pin.triangle(r,p,c);
-    }
-
     pub fn text_pin(&mut self, origin:&GCoord,chars: &str,font: &FCFont, col: &Colour) {
-        let datam = &mut self.data.borrow_mut();
-        let (canvases,textures,gtexreqman,_) = datam.burst_texture();
-        let tr = textures.text.add(gtexreqman,canvases,chars,font,col);
-        self.geom.pintex.add_texture(tr,origin,&PCoord(1.,1.));
+        let tr;
+        {
+            let datam = &mut self.data.borrow_mut();
+            let (canvases,textures,gtexreqman,_) = datam.burst_texture();
+            tr = textures.text.add(gtexreqman,canvases,chars,font,col);
+        }
+        pin_texture(self,tr,origin,&PCoord(1.,1.));
     }
 
     pub fn bitmap_stretch(&mut self, pos:&[GCoord;2], data: Vec<u8>, width: u32, height: u32) {
-        let datam = &mut self.data.borrow_mut();
-        let (canvases,textures,gtexreqman,_) = datam.burst_texture();
-        let tr = textures.bitmap.add(gtexreqman,canvases,data,width,height);
-        self.geom.stretchtex.add_texture(tr,pos);
+        let tr;
+        {
+            let datam = &mut self.data.borrow_mut();
+            let (canvases,textures,gtexreqman,_) = datam.burst_texture();
+            tr = textures.bitmap.add(gtexreqman,canvases,data,width,height);
+        }
+        stretch_texture(self,tr,pos);
     }
 
     pub fn bitmap_pin(&mut self, origin:&GCoord, scale: &PCoord, data: Vec<u8>, width: u32, height: u32) {
-        let datam = &mut self.data.borrow_mut();
-        let (canvases,textures,gtexreqman,_) = datam.burst_texture();
-        let tr = textures.bitmap.add(gtexreqman,canvases,data,width,height);
-        self.geom.pintex.add_texture(tr,origin,scale);
+        let tr;
+        {
+            let datam = &mut self.data.borrow_mut();
+            let (canvases,textures,gtexreqman,_) = datam.burst_texture();
+            tr = textures.bitmap.add(gtexreqman,canvases,data,width,height);
+        }
+        pin_texture(self,tr,origin,scale);
     }
 
     pub fn bitmap_fix(&mut self, pos: &PCoord, scale: &PCoord, data: Vec<u8>, width: u32, height: u32) {
-        let datam = &mut self.data.borrow_mut();
-        let (canvases,textures,gtexreqman,_) = datam.burst_texture();
-        let tr = textures.bitmap.add(gtexreqman,canvases,data,width,height);
-        self.geom.fixtex.add_texture(tr,pos,scale);
+        let tr;
+        {
+            let datam = &mut self.data.borrow_mut();
+            let (canvases,textures,gtexreqman,_) = datam.burst_texture();
+            tr = textures.bitmap.add(gtexreqman,canvases,data,width,height);
+        }
+        fix_texture(self,tr,pos,scale);
     }
-    
-    pub fn triangle_fix(&mut self,points:&[PCoord;3],colour: &Colour) {
-        self.geom.fix.triangle(points,colour);
-    }
-    
-    pub fn rectangle_fix(&mut self,p:&[PCoord;2],colour: &Colour) {
-        self.geom.fix.rectangle(p,colour);
-    }
-
+        
     pub fn text_fix(&mut self, origin:&PCoord,chars: &str,font: &FCFont, col: &Colour) {
-        let datam = &mut self.data.borrow_mut();
-        let (canvases,textures,gtexreqman,_) = datam.burst_texture();
-        let tr = textures.text.add(gtexreqman,canvases,chars,font,col);
-        self.geom.fixtex.add_texture(tr,origin,&PCoord(1.,1.));
+        let tr;
+        {
+            let datam = &mut self.data.borrow_mut();
+            let (canvases,textures,gtexreqman,_) = datam.burst_texture();
+            tr = textures.text.add(gtexreqman,canvases,chars,font,col);
+        }
+        fix_texture(self,tr,origin,&PCoord(1.,1.));
     }
 
     pub fn populate(&mut self) {
         let datam = &mut self.data.borrow_mut();
         {
-            let (canvases,textures,gtexreqman,_) = datam.burst_texture();
+            let (canvases,_textures,gtexreqman,_) = datam.burst_texture();
             let (x,y) = gtexreqman.allocate();
             canvases.flat = Rc::new(canvasutil::FlatCanvas::create(x,y));
         }
-
         {
             let (canvases,_,gtexreqman,_) = datam.burst_texture();
             gtexreqman.draw(canvases);
         }
-
-        self.geom.stretch.populate(datam);
-        self.geom.stretchtex.populate(datam);
-        self.geom.pin.populate(datam);
-        self.geom.pintex.populate(datam);
-        self.geom.fix.populate(datam);
-        self.geom.fixtex.populate(datam);
-        
+        for k in &self.order {
+            self.map.get_mut(k).unwrap().populate(datam);
+        }
         datam.gtexreqman.clear();
 
     }
@@ -261,13 +265,9 @@ impl Arena {
         }
         // draw each geometry
         let datam = &mut self.data.borrow_mut();
-        //geometry::draw(&mut self.geom.stretch,datam,&stage);
-        self.geom.stretch.draw(datam,&stage);
-        self.geom.stretchtex.draw(datam,&stage);
-        self.geom.pin.draw(datam,&stage);
-        self.geom.pintex.draw(datam,&stage);
-        self.geom.fix.draw(datam,&stage);
-        self.geom.fixtex.draw(datam,&stage);
+        for k in &self.order {
+            self.map.get_mut(k).unwrap().draw(datam,&stage);
+        }
     }
 }
 

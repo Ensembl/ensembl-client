@@ -1,6 +1,10 @@
 use stdweb;
 use canvasutil;
 
+use shape::fixrect::fix_rectangle;
+use shape::pintriangle::pin_triangle;
+use shape::stretchrect::stretch_rectangle;
+
 use rand::Rng;
 use rand::rngs::SmallRng;
 use rand::SeedableRng;
@@ -101,11 +105,8 @@ fn detect_jank(state : &mut State, delta: u32, time: f32) {
 fn animate(time : f64, s: Rc<RefCell<State>>) {
     {
         let mut state = s.borrow_mut();
-        let dims = state.arena.borrow().dims();
-        let (sw,sh) = (dims.width_px as f32,dims.height_px as f32);
         if state.old_time > 0.0 {
             let delta = ((time - state.old_time) / 5000.0) as f32;
-            let d = (time - state.old_time) as u32;            
             state.call += 1;
             state.zoomscale += delta* 5.0;
             state.hpos += delta *3.763;
@@ -224,11 +225,11 @@ pub fn demo() {
                     (128.*(v2+1.0).sin()+128.) as u32,
                 );
                 let h = if thick_gen.sample(&mut rng) == 0 { 1. } else { 5. };
-                arena.rectangle_stretch(&[GCoord(x,y-h),
+                stretch_rectangle(&mut arena,&[GCoord(x,y-h),
                                           GCoord(x+dx,y+h)],&colour);
                 if idx %5 == 0 {
                     let colour = Colour(colour.2,colour.0,colour.1);
-                    arena.triangle_pin(&GCoord(x,y),
+                    pin_triangle(&mut arena,&GCoord(x,y),
                                        &[PCoord(0.,0.),
                                          PCoord(-5.,-10.),
                                          PCoord(5.,-10.)],
@@ -245,8 +246,7 @@ pub fn demo() {
     // XXX in pixels
     let dims = arena.dims();
     let (sw,sh) = (dims.width_px as f32,dims.height_px as f32);
-    let dx = 0.001;
-    arena.rectangle_fix(&[PCoord(sw/2.,0.),PCoord(sw/2.+1.,sh)],
+    fix_rectangle(&mut arena,&[PCoord(sw/2.,0.),PCoord(sw/2.+1.,sh)],
                         &Colour(0,0,0));
     arena.bitmap_fix(&PCoord(99.,0.),&PCoord(1.,sh),
                         vec! { 0,0,255,255,
