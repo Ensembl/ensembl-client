@@ -6,12 +6,7 @@ use arena::ArenaData;
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
     WebGLProgram as glprog,
-    WebGLBuffer as glbuf,
-    WebGLTexture as gltex,
-    WebGLShader as glshader,
     WebGLUniformLocation as gluni,
-    GLenum,
-    GLint,
 };
 
 use geometry::gtype::{
@@ -19,45 +14,45 @@ use geometry::gtype::{
     GTypeAttrib,
     GTypeCanvasTexture,
     GTypeStage,
+    GLiveProgram,
 };
 
+#[derive(PartialEq,Clone,Eq)]
+pub enum Phase {
+    PrePopulate,
+    Vertex,
+    Fragment,
+}
+
 pub trait Variable {
-    fn declare(&self, frag: bool) -> String { String::new() }
-    fn preget(&self, ctx: &glctx, prog: &glprog,
-              udata: &mut HashMap<String,gluni>) {}
-    fn make_attribs(&self, adata: &ArenaData) 
-                            -> Option<(Option<&str>,Box<GType>)> {
+    fn declare(&self, _phase: &Phase) -> String { String::new() }
+    fn preget(&self, _ctx: &glctx, _prog: &glprog,
+              _udata: &mut HashMap<String,gluni>) {}
+    fn make_attribs(&self, _adata: &ArenaData) 
+                            -> Option<(Option<&str>,Phase,Box<GType>)> {
         None
     }
-    fn statement(&self, frag: bool) -> String { String::new() }
+    fn make_liveprog(&self) -> Option<Rc<Box<GLiveProgram>>> { None }
+    fn statement(&self, _phase: &Phase) -> String { String::new() }
 }
 
 pub struct Uniform {
     size: String,
     pub name: String,
-    frag: bool,
+    phase: Phase,
 }
 
 impl Uniform {
-    pub fn new_vertex(size: &str, name: &str) -> Rc<Uniform> {
-        Uniform::new(size,name,false)
-    }
-    
-    pub fn new_fragment(size: &str, name: &str) -> Rc<Uniform> {
-        Uniform::new(size,name,true)
-    }
-    
-    fn new(size: &str, name: &str, frag: bool) -> Rc<Uniform> {
+    pub fn new(size: &str, name: &str, phase: Phase) -> Rc<Uniform> {
         Rc::new(Uniform {
-            size: size.to_string(), name: name.to_string(),
-            frag
+            size: size.to_string(), name: name.to_string(), phase
         })
     }
 }
 
 impl Variable for Uniform {
-    fn declare(&self,frag: bool) -> String {
-        if frag == self.frag {
+    fn declare(&self, phase: &Phase) -> String {
+        if *phase == self.phase {
             format!("uniform {} {};\n",self.size,self.name).to_string()
         } else {
             String::new()
@@ -76,12 +71,13 @@ impl Variable for Uniform {
 pub struct Attribute {
     size: u8,
     pub name: String,
+    phase: Phase,
 }
 
 impl Attribute {
-    pub fn new(size: u8, name: &str) -> Rc<Attribute> {
+    pub fn new(size: u8, name: &str, phase: Phase) -> Rc<Attribute> {
         Rc::new(Attribute {
-            size, name: name.to_string()
+            phase, size, name: name.to_string()
         })
     }
 }
@@ -89,16 +85,23 @@ impl Attribute {
 const ATTRIB_NAME : [&str;4] = ["float","vec2","vec3","vec4"];
 
 impl Variable for Attribute {
-    fn declare(&self,frag: bool) -> String {
-        if frag {
-            String::new()
-        } else {
-            format!("attribute {} {};\n",ATTRIB_NAME[(self.size-1) as usize],self.name).to_string()
+    fn declare(&self, phase: &Phase) -> String {
+        match phase {
+            Phase::Vertex =>
+                format!("attribute {} {};\n",ATTRIB_NAME[(self.size-1) as usize],self.name).to_string(),
+            _ =>
+                String::new()
         }
     }
 
-    fn make_attribs(&self, adata: &ArenaData) -> Option<(Option<&str>,Box<GType>)> {
-        Some((Some(&self.name),Box::new(GTypeAttrib::new(adata,&self.name,self.size))))
+    fn make_attribs(&self, adata: &ArenaData)
+                            -> Option<(Option<&str>,Phase,Box<GType>)> {
+        let gt = if self.phase == Phase::PrePopulate {
+            GTypeAttrib::new_pre(adata,&self.name,self.size)
+        } else {
+            GTypeAttrib::new(adata,&self.name,self.size)
+        };
+        Some((Some(&self.name),self.phase.clone(),Box::new(gt)))
     }
 }
 
@@ -120,33 +123,35 @@ impl Varying {
 }
 
 impl Variable for Varying {
-    fn declare(&self,frag: bool) -> String {
-        format!("varying {} {} {};\n",
-            self.prec,self.size,self.name).to_string()
+    fn declare(&self, phase: &Phase) -> String {
+        match phase {
+            Phase::Fragment | Phase::Vertex =>
+                format!("varying {} {} {};\n",
+                    self.prec,self.size,self.name).to_string(),
+            _ =>
+                String::new()
+        }
     }
 }
 
 #[derive(Clone)]
 pub struct Statement {
     src: String,
-    frag: bool,
+    phase: Phase,
 }
 
 impl Statement {
-    fn new(src: &str, frag: bool) -> Rc<Statement> {
+    pub fn new(src: &str, phase: Phase) -> Rc<Statement> {
         Rc::new(Statement {
             src: src.to_string(),
-            frag
+            phase
         })
     }
-    
-    pub fn new_vertex(src: &str) -> Rc<Statement> { Statement::new(src,false) }
-    pub fn new_fragment(src: &str) -> Rc<Statement> { Statement::new(src,true) }
 }
 
 impl Variable for Statement {
-    fn statement(&self, frag: bool) -> String {
-        if frag == self.frag {
+    fn statement(&self, phase: &Phase) -> String {
+        if *phase == self.phase {
             format!("{};\n",self.src)
         } else {
             String::new()
@@ -165,13 +170,13 @@ impl Canvas {
 }
 
 impl Variable for Canvas {
-    fn make_attribs(&self, adata: &ArenaData) -> Option<(Option<&str>,Box<GType>)> {
-        Some((None,Box::new(GTypeCanvasTexture::new(&self.name))))
+    fn make_attribs(&self, _adata: &ArenaData)
+                        -> Option<(Option<&str>,Phase,Box<GType>)> {
+        Some((None,Phase::Vertex,Box::new(GTypeCanvasTexture::new(&self.name))))
     }
 }
 
-pub struct Stage {
-}
+pub struct Stage {}
 
 impl Stage {
     pub fn new() -> Rc<Stage> {
@@ -180,23 +185,24 @@ impl Stage {
 }
 
 impl Variable for Stage {
-    fn make_attribs(&self, adata: &ArenaData) -> Option<(Option<&str>,Box<GType>)> {
-        Some((None,Box::new(GTypeStage::new())))
+    fn make_attribs(&self, _adata: &ArenaData) 
+                            -> Option<(Option<&str>,Phase,Box<GType>)> {
+        Some((None,Phase::Vertex,Box::new(GTypeStage::new())))
     }
 }
 
-fn declare(variables: &Vec<Rc<Variable>>, fragment: bool) -> String {
+fn declare(variables: &Vec<Rc<Variable>>, phase: &Phase) -> String {
     let mut out = String::new();
     for v in variables {
-        out += &v.declare(fragment)[..];
+        out += &v.declare(phase)[..];
     }
     out
 }
 
-fn statements(variables: &Vec<Rc<Variable>>, fragment: bool) -> String {
+fn statements(variables: &Vec<Rc<Variable>>, phase: &Phase) -> String {
     let mut out = String::new();
     for v in variables {
-        out += &v.statement(fragment)[..];
+        out += &v.statement(phase)[..];
     }
     out
 }
@@ -213,10 +219,10 @@ fn make_shader(ctx: &glctx, program: &glprog, kind: u32, src: &str) {
 }
 
 
-fn make_source(uniforms: &Vec<Rc<Variable>>, frag: bool) -> String {
+fn make_source(uniforms: &Vec<Rc<Variable>>, frag: &Phase) -> String {
     format!("{}\n\nvoid main() {{\n{}\n}}",
-        declare(uniforms,frag),
-        statements(uniforms,frag))
+        declare(uniforms,&frag),
+        statements(uniforms,&frag))
 }
 
 impl GLSource {
@@ -226,8 +232,8 @@ impl GLSource {
 
     pub fn prog(&self, ctx: &glctx) -> glprog {
         let prog = ctx.create_program().unwrap();
-        let vertex = make_source(&self.uniforms,false);
-        let fragment = make_source(&self.uniforms,true);
+        let vertex = make_source(&self.uniforms,&Phase::Vertex);
+        let fragment = make_source(&self.uniforms,&Phase::Fragment);
         make_shader(ctx,&prog,glctx::VERTEX_SHADER,&vertex);
         make_shader(ctx,&prog,glctx::FRAGMENT_SHADER,&fragment);
         ctx.link_program(&prog);        
@@ -251,10 +257,10 @@ fn shader_standard() -> GLSource {
 pub fn shader_solid(pos: &GLSource) -> GLSource {
     shader_standard().merge(pos).merge(
         &GLSource::new(vec! {
-            Attribute::new(3,"aVertexColour"),
+            Attribute::new(3,"aVertexColour",Phase::Vertex),
             Varying::new("lowp","vec3","vColour"),
-            Statement::new_vertex("vColour = aVertexColour"),
-            Statement::new_fragment("gl_FragColor = vec4(vColour, 1.0)"),
+            Statement::new("vColour = aVertexColour",Phase::Vertex),
+            Statement::new("gl_FragColor = vec4(vColour, 1.0)",Phase::Fragment),
         })
     )
 }
@@ -263,11 +269,11 @@ pub fn shader_texture(pos: &GLSource) -> GLSource {
     shader_standard().merge(pos).merge(
         &GLSource::new(vec! {
             Canvas::new("uSampler"),
-            Uniform::new_fragment("sampler2D","uSampler"),
-            Attribute::new(2,"aTextureCoord"),
+            Uniform::new("sampler2D","uSampler",Phase::Fragment),
+            Attribute::new(2,"aTextureCoord",Phase::Vertex),
             Varying::new("highp","vec2","vTextureCoord"),
-            Statement::new_vertex("vTextureCoord = aTextureCoord"),
-            Statement::new_fragment("gl_FragColor = texture2D(uSampler, vTextureCoord)"),
+            Statement::new("vTextureCoord = aTextureCoord",Phase::Vertex),
+            Statement::new("gl_FragColor = texture2D(uSampler, vTextureCoord)",Phase::Fragment),
         })
     )
 }

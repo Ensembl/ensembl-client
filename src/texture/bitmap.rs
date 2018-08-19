@@ -1,8 +1,7 @@
-use std::rc::Rc;
 use arena::ArenaCanvases;
 
 use texture::{
-    TextureDrawRequest,
+    TextureDrawRequestHandle,
     TextureSourceManager,
 };
 
@@ -41,7 +40,7 @@ impl BitmapTextureStore {
         BitmapTextureStore { }
     }
 
-    pub fn add(&mut self, gtexreqman: &mut TextureSourceManager, canvas: &mut ArenaCanvases, data: Vec<u8>, width: u32, height: u32) -> Rc<TextureDrawRequest> {
+    pub fn add(&mut self, gtexreqman: &mut TextureSourceManager, _canvas: &mut ArenaCanvases, data: Vec<u8>, width: u32, height: u32) -> TextureDrawRequestHandle {
         create_draw_request(gtexreqman,
                             Box::new(BitmapTextureArtist::new(data,width,height)),
                             width,height)

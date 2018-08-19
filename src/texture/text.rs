@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::rc::Rc;
 use std::collections::hash_map::Entry;
 use canvasutil::FCFont;
 use arena::ArenaCanvases;
@@ -12,7 +11,7 @@ use texture::textureimpl::{
 };
 
 use texture::{
-    TextureDrawRequest,
+    TextureDrawRequestHandle,
     TextureSourceManager,
 };
 
@@ -43,17 +42,17 @@ impl TextureArtist for TextTextureArtist {
 /* TextTextureStore - A TextureStore which caches string/font combinations */
 
 pub struct TextTextureStore {
-    cache: HashMap<(String,FCFont,Colour),Rc<TextureDrawRequest>>
+    cache: HashMap<(String,FCFont,Colour),TextureDrawRequestHandle>
 }
 
 impl TextTextureStore {
     pub fn new() -> TextTextureStore {
         TextTextureStore {
-            cache: HashMap::<(String,FCFont,Colour),Rc<TextureDrawRequest>>::new(),
+            cache: HashMap::<(String,FCFont,Colour),TextureDrawRequestHandle>::new(),
         }
     }
 
-    pub fn add(&mut self, gtexreqman: &mut TextureSourceManager, canvas: &mut ArenaCanvases, chars: &str,font: &FCFont, colour: &Colour) -> Rc<TextureDrawRequest> {
+    pub fn add(&mut self, gtexreqman: &mut TextureSourceManager, canvas: &mut ArenaCanvases, chars: &str,font: &FCFont, colour: &Colour) -> TextureDrawRequestHandle {
         let tickets = &mut self.cache;
         let tr = match tickets.entry((chars.to_string(),font.clone(),colour.clone())) {
             Entry::Occupied(v) => 
