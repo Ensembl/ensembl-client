@@ -5,7 +5,7 @@ use canvasutil::FlatCanvas;
 
 use shape::Shape;
 
-use geometry::{
+use compiler::{
     GLProgramData
 };
     
@@ -14,7 +14,7 @@ use arena::{
     ArenaData,
 };
 
-use geometry::coord::{
+use coord::{
     PCoord,
     TCoord,
 };

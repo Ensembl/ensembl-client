@@ -1,9 +1,11 @@
 use stdweb;
 use canvasutil;
 
-use shape::fixrect::fix_rectangle;
-use shape::pintriangle::pin_triangle;
-use shape::stretchrect::stretch_rectangle;
+use shape::{
+    fix_rectangle,
+    pin_triangle,
+    stretch_rectangle,
+};
 
 use rand::Rng;
 use rand::rngs::SmallRng;
@@ -23,7 +25,7 @@ use arena::{
     Stage,
 };
 
-use geometry::coord::{
+use coord::{
     GCoord,
     PCoord,
     Colour,

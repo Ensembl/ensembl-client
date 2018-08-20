@@ -13,7 +13,7 @@ use stdweb::web::html_element::{
 
 use stdweb::web::TypedArray;
 use stdweb::unstable::TryInto;
-use geometry::coord::{
+use coord::{
     Colour
 };
 

@@ -10,21 +10,20 @@ use std::rc::Rc;
 use canvasutil;
 use wglraw;
 
-use geometry::{
+use compiler::{
     GLProgram
 };
-use geometry::coord::{
+use coord::{
     GCoord,
     PCoord,
     Colour
 };
 
-use geometry::stretch::stretch_geom;
-use geometry::stretchtex::stretchtex_geom;
-use geometry::fix::fix_geom;
-use geometry::fixtex::fixtex_geom;
-use geometry::pin::pin_geom;
-use geometry::pintex::pintex_geom;
+use geometry::{
+    stretch_geom, stretchtex_geom,
+    fix_geom,     fixtex_geom,
+    pin_geom,     pintex_geom
+};
 
 use canvasutil::FCFont;
 
@@ -35,9 +34,11 @@ use texture::{
     TextureSourceManager,
 };
 
-use shape::fixtexture::fix_texture;
-use shape::pintexture::pin_texture;
-use shape::stretchtexture::stretch_texture;
+use shape::{
+    fix_texture,
+    pin_texture,
+    stretch_texture
+};
 
 struct ArenaTextures {
     text: TextTextureStore,

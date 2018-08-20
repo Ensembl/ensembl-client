@@ -17,7 +17,11 @@ mod canvasutil;
 mod wglraw;
 mod alloc;
 mod texture;
+mod compiler;
 mod webgl_rendering_context;
+pub mod wglprog;
+pub mod gtype;
+pub mod coord;
 
 fn main() {
     demo::demo();

@@ -2,7 +2,7 @@ use arena::{
     ArenaData,
 };
 
-use geometry::{
+use compiler::{
     GLProgramData,
 };
 

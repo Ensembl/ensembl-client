@@ -1,20 +1,46 @@
-use arena::{
-    Arena,
-    ArenaData,
-};
+use arena::{ ArenaData, Arena };
 
-use geometry::coord::{
-    PCoord,
-    TCoord,
-};
-
-use geometry::{
-    GLProgramData,
-};
+use compiler::GLProgramData;
+use coord::{ PCoord, Colour };
 
 use shape::Shape;
+use shape::util::{ rectangle_p, rectangle_t, multi_gl };
 
 use texture::{ TexPart, TexPosItem, TextureDrawRequestHandle };
+
+/*
+ * FixRect
+ */
+
+pub struct FixRect {
+    points: [PCoord;2],
+    colour: Colour,
+}
+
+impl FixRect {
+    pub fn new(points: [PCoord;2], colour: Colour) -> FixRect {
+        FixRect { points, colour }
+    }    
+}
+
+impl Shape for FixRect {
+    fn process(&self, geom: &mut GLProgramData, _adata: &ArenaData) {
+        rectangle_p(geom,"aVertexPosition",&self.points);
+        multi_gl(geom,"aVertexColour",&self.colour,6);
+        geom.advance(6);
+    }
+}
+
+pub fn fix_rectangle(arena: &mut Arena, p: &[PCoord;2], colour: &Colour) {
+    let geom = arena.get_geom("fix");
+    geom.shapes.add_item(Box::new(
+        FixRect::new(*p,*colour)
+    ));
+}
+
+/*
+ * FixTexture
+ */
 
 pub struct FixTexture {
     pos: PCoord,
@@ -33,20 +59,7 @@ impl FixTexture {
         FixTexture {
             pos: *pos, scale: *scale, texpos: None
         }
-    }
-        
-    fn triangle(&self, pdata: &mut GLProgramData,p: &[PCoord;3],tp: &[TCoord;3]) {
-        pdata.add_attrib_data("aVertexPosition",&[&p[0], &p[1], &p[2]]);
-        pdata.add_attrib_data("aTextureCoord",&[&tp[0], &tp[1], &tp[2]]);
-        pdata.advance(3);
-    }
-    
-    fn rectangle(&self, geom: &mut GLProgramData,p:&[PCoord;2],t:&[TCoord;2]) {
-        let tp = p[0].triangles(p[1]);
-        let tt = t[0].triangles(t[1]);
-        self.triangle(geom,&tp.0,&tt.0);
-        self.triangle(geom,&tp.1,&tt.1);
-    }
+    }    
 }
 
 impl Shape for FixTexture {
@@ -57,7 +70,9 @@ impl Shape for FixTexture {
             let pos = adata.dims.nudge_p(self.pos);
             let p = [PCoord(pos.0,pos.1),
                     PCoord(pos.0,pos.1) + tp.size(self.scale)];
-            self.rectangle(geom,&p,&t);
+            rectangle_p(geom,"aVertexPosition",&p);
+            rectangle_t(geom,"aTextureCoord",&t);
+            geom.advance(6);
         }
     }
 }
