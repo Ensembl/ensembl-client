@@ -8,7 +8,7 @@ use webgl_rendering_context::{
 
 use wglraw;
 
-use geometry::{
+use compiler::{
     GLProgramCode,
     GLProgramData
 };
@@ -19,7 +19,7 @@ use arena::{
     ArenaDims,
 };
 
-use geometry::coord::{
+use coord::{
     GLData,
 };
 

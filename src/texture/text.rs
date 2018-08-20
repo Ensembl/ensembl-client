@@ -3,7 +3,7 @@ use std::collections::hash_map::Entry;
 use canvasutil::FCFont;
 use arena::ArenaCanvases;
 
-use geometry::coord::Colour;
+use coord::Colour;
 
 use texture::textureimpl::{
     TextureArtist,

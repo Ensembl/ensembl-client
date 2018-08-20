@@ -1,6 +1,6 @@
 use std::ops::Add;
 
-use geometry::gtype::{
+use gtype::{
     GType,
     GTypeAttrib,
 };
