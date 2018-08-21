@@ -1,6 +1,6 @@
 use arena::{ Arena, ArenaData };
 
-use compiler::GLProgramData;
+use program::ProgramAttribs;
 use coord::{ GCoord, PCoord, Colour };
 
 use shape::Shape;
@@ -25,7 +25,7 @@ impl PinTriangle {
 }
 
 impl Shape for PinTriangle {
-    fn process(&self, geom: &mut GLProgramData, _adata: &ArenaData) {
+    fn process(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
         let p = &self.points;
         triangle_gl(geom,"aVertexPosition",&[&p[0],&p[1],&p[2]]);
         multi_gl(geom,"aOrigin",&self.origin,3);
@@ -65,7 +65,7 @@ impl PinTexture {
 }
 
 impl Shape for PinTexture {
-    fn process(&self, geom: &mut GLProgramData, adata: &ArenaData) {
+    fn process(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
         if let Some(tp) = self.texpos {
             let flat = &adata.canvases.flat;
             let origin = adata.dims.nudge_g(self.origin);

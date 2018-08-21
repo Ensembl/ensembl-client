@@ -10,9 +10,8 @@ use std::rc::Rc;
 use canvasutil;
 use wglraw;
 
-use compiler::{
-    GLProgram
-};
+use program::Program;
+
 use coord::{
     GCoord,
     PCoord,
@@ -134,7 +133,7 @@ impl ArenaSpec {
 pub struct Arena {
     data: Rc<RefCell<ArenaData>>,
     order: Vec<String>,
-    map: HashMap<String,GLProgram>
+    map: HashMap<String,Program>
 }
 
 impl Arena {
@@ -177,7 +176,7 @@ impl Arena {
         arena
     }
 
-    pub fn get_geom(&mut self, name: &str) -> &mut GLProgram {
+    pub fn get_geom(&mut self, name: &str) -> &mut Program {
         self.map.get_mut(name).unwrap()
     }
 

@@ -10,10 +10,7 @@ continuous lines
 integral colours
 sized uniforms/attribs
 compiled programs
-generic texture geometry
 generic cacheing texture
-code split
-warning trawl
 bitmap draw
 split gcoords
 text alpha

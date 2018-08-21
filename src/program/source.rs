@@ -9,12 +9,11 @@ use webgl_rendering_context::{
     WebGLUniformLocation as gluni,
 };
 
-use gtype::{
-    GType,
-    GTypeAttrib,
-    GTypeCanvasTexture,
-    GTypeStage,
-    GLiveProgram,
+use program::objects::{
+    Object,
+    ObjectAttrib,
+    ObjectCanvasTexture,
+    ObjectStage,
 };
 
 #[derive(PartialEq,Clone,Eq)]
@@ -24,15 +23,14 @@ pub enum Phase {
     Fragment,
 }
 
-pub trait Variable {
+pub trait Source {
     fn declare(&self, _phase: &Phase) -> String { String::new() }
     fn preget(&self, _ctx: &glctx, _prog: &glprog,
               _udata: &mut HashMap<String,gluni>) {}
     fn make_attribs(&self, _adata: &ArenaData) 
-                            -> Option<(Option<&str>,Phase,Box<GType>)> {
+                            -> Option<(Option<&str>,Phase,Box<Object>)> {
         None
     }
-    fn make_liveprog(&self) -> Option<Rc<Box<GLiveProgram>>> { None }
     fn statement(&self, _phase: &Phase) -> String { String::new() }
 }
 
@@ -50,7 +48,7 @@ impl Uniform {
     }
 }
 
-impl Variable for Uniform {
+impl Source for Uniform {
     fn declare(&self, phase: &Phase) -> String {
         if *phase == self.phase {
             format!("uniform {} {};\n",self.size,self.name).to_string()
@@ -84,7 +82,7 @@ impl Attribute {
 
 const ATTRIB_NAME : [&str;4] = ["float","vec2","vec3","vec4"];
 
-impl Variable for Attribute {
+impl Source for Attribute {
     fn declare(&self, phase: &Phase) -> String {
         match phase {
             Phase::Vertex =>
@@ -95,11 +93,11 @@ impl Variable for Attribute {
     }
 
     fn make_attribs(&self, adata: &ArenaData)
-                            -> Option<(Option<&str>,Phase,Box<GType>)> {
+                            -> Option<(Option<&str>,Phase,Box<Object>)> {
         let gt = if self.phase == Phase::PrePopulate {
-            GTypeAttrib::new_pre(adata,&self.name,self.size)
+            ObjectAttrib::new_pre(adata,&self.name,self.size)
         } else {
-            GTypeAttrib::new(adata,&self.name,self.size)
+            ObjectAttrib::new(adata,&self.name,self.size)
         };
         Some((Some(&self.name),self.phase.clone(),Box::new(gt)))
     }
@@ -122,7 +120,7 @@ impl Varying {
     }
 }
 
-impl Variable for Varying {
+impl Source for Varying {
     fn declare(&self, phase: &Phase) -> String {
         match phase {
             Phase::Fragment | Phase::Vertex =>
@@ -149,7 +147,7 @@ impl Statement {
     }
 }
 
-impl Variable for Statement {
+impl Source for Statement {
     fn statement(&self, phase: &Phase) -> String {
         if *phase == self.phase {
             format!("{};\n",self.src)
@@ -169,10 +167,10 @@ impl Canvas {
     }
 }
 
-impl Variable for Canvas {
+impl Source for Canvas {
     fn make_attribs(&self, _adata: &ArenaData)
-                        -> Option<(Option<&str>,Phase,Box<GType>)> {
-        Some((None,Phase::Vertex,Box::new(GTypeCanvasTexture::new(&self.name))))
+                        -> Option<(Option<&str>,Phase,Box<Object>)> {
+        Some((None,Phase::Vertex,Box::new(ObjectCanvasTexture::new(&self.name))))
     }
 }
 
@@ -184,14 +182,14 @@ impl Stage {
     }
 }
 
-impl Variable for Stage {
+impl Source for Stage {
     fn make_attribs(&self, _adata: &ArenaData) 
-                            -> Option<(Option<&str>,Phase,Box<GType>)> {
-        Some((None,Phase::Vertex,Box::new(GTypeStage::new())))
+                            -> Option<(Option<&str>,Phase,Box<Object>)> {
+        Some((None,Phase::Vertex,Box::new(ObjectStage::new())))
     }
 }
 
-fn declare(variables: &Vec<Rc<Variable>>, phase: &Phase) -> String {
+fn declare(variables: &Vec<Rc<Source>>, phase: &Phase) -> String {
     let mut out = String::new();
     for v in variables {
         out += &v.declare(phase)[..];
@@ -199,7 +197,7 @@ fn declare(variables: &Vec<Rc<Variable>>, phase: &Phase) -> String {
     out
 }
 
-fn statements(variables: &Vec<Rc<Variable>>, phase: &Phase) -> String {
+fn statements(variables: &Vec<Rc<Source>>, phase: &Phase) -> String {
     let mut out = String::new();
     for v in variables {
         out += &v.statement(phase)[..];
@@ -207,8 +205,8 @@ fn statements(variables: &Vec<Rc<Variable>>, phase: &Phase) -> String {
     out
 }
 
-pub struct GLSource {
-    pub uniforms: Vec<Rc<Variable>>
+pub struct ProgramSource {
+    pub uniforms: Vec<Rc<Source>>
 }
 
 fn make_shader(ctx: &glctx, program: &glprog, kind: u32, src: &str) {
@@ -219,15 +217,15 @@ fn make_shader(ctx: &glctx, program: &glprog, kind: u32, src: &str) {
 }
 
 
-fn make_source(uniforms: &Vec<Rc<Variable>>, frag: &Phase) -> String {
+fn make_source(uniforms: &Vec<Rc<Source>>, frag: &Phase) -> String {
     format!("{}\n\nvoid main() {{\n{}\n}}",
         declare(uniforms,&frag),
         statements(uniforms,&frag))
 }
 
-impl GLSource {
-    pub fn new(src: Vec<Rc<Variable>>) -> GLSource {
-        GLSource { uniforms: src }
+impl ProgramSource {
+    pub fn new(src: Vec<Rc<Source>>) -> ProgramSource {
+        ProgramSource { uniforms: src }
     }
 
     pub fn prog(&self, ctx: &glctx) -> glprog {
@@ -240,8 +238,8 @@ impl GLSource {
         prog
     }
     
-    pub fn merge(&self, other: &GLSource) -> GLSource {
-        GLSource::new([
+    pub fn merge(&self, other: &ProgramSource) -> ProgramSource {
+        ProgramSource::new([
             &self.uniforms[..],
             &other.uniforms[..]
         ].concat())

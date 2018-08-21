@@ -8,10 +8,7 @@ use webgl_rendering_context::{
 
 use wglraw;
 
-use compiler::{
-    GLProgramCode,
-    GLProgramData
-};
+use program::ProgramCode;
 
 use arena::{
     Stage,
@@ -20,15 +17,11 @@ use arena::{
 };
 
 use coord::{
-    GLData,
+    Input,
 };
 
-pub trait GLiveProgram {
-    fn populate(&self, _pdata: &mut GLProgramData, _adata: &ArenaData) {}
-}
-
-/* This is the meat of each GType implementation */
-pub trait GType {
+/* This is the meat of each Object implementation */
+pub trait Object {
     fn add_f32(&mut self, _values: &[f32]) {}
     fn add_tdr(&mut self, _value: &TextureDrawRequestHandle) {}
 
@@ -36,24 +29,24 @@ pub trait GType {
         Vec::<TextureDrawRequestHandle>::new()
     }
 
-    fn add_data(&mut self, _values: &[&GLData]) {}
+    fn add_data(&mut self, _values: &[&Input]) {}
     fn populate(&mut self, _adata: &ArenaData) {}
     fn link(&self, _adata : &ArenaData, 
-            _pcode: &GLProgramCode,
+            _pcode: &ProgramCode,
             _stage: &Stage, _dims: &ArenaDims) {}
 }
 
-pub struct GTypeStage {
+pub struct ObjectStage {
 }
 
-impl GTypeStage {
-    pub fn new() -> GTypeStage {
-        GTypeStage {}
+impl ObjectStage {
+    pub fn new() -> ObjectStage {
+        ObjectStage {}
     }
 }
 
-impl GType for GTypeStage {    
-    fn link(&self, adata : &ArenaData, pcode: &GLProgramCode,
+impl Object for ObjectStage {    
+    fn link(&self, adata : &ArenaData, pcode: &ProgramCode,
             stage: &Stage, dims: &ArenaDims) {
         let ctx = &adata.ctx;
         pcode.set_uniform_1f(ctx,"uStageHpos",stage.pos.0);
@@ -66,15 +59,15 @@ impl GType for GTypeStage {
     }
 }
 
-/* GTypeCanvasTexture = GType for canvas-origin textures */
-pub struct GTypeCanvasTexture {
+/* ObjectCanvasTexture = Object for canvas-origin textures */
+pub struct ObjectCanvasTexture {
     name: String,
     texture: Option<gltex>,
 }
 
-impl GTypeCanvasTexture {
-    pub fn new(name: &str) -> GTypeCanvasTexture {
-        GTypeCanvasTexture {
+impl ObjectCanvasTexture {
+    pub fn new(name: &str) -> ObjectCanvasTexture {
+        ObjectCanvasTexture {
             name: name.to_string(),
             texture: None
         }
@@ -87,13 +80,13 @@ const TEXIDS : [u32;8] = [
     glctx::TEXTURE6, glctx::TEXTURE7
 ];
 
-impl GType for GTypeCanvasTexture {
+impl Object for ObjectCanvasTexture {
     fn populate(&mut self, adata: &ArenaData) {
         let canvases = &adata.canvases;
         self.texture = Some(wglraw::canvas_texture(&adata.ctx,canvases.flat.element()));
     }
 
-    fn link(&self, adata : &ArenaData, pcode: &GLProgramCode,
+    fn link(&self, adata : &ArenaData, pcode: &ProgramCode,
             _stage: &Stage, _dims: &ArenaDims) {
         let canvases = &adata.canvases;
         if let Some(ref texture) = self.texture {
@@ -103,10 +96,10 @@ impl GType for GTypeCanvasTexture {
         }
     }
 
-    fn add_data(&mut self, _values: &[&GLData]) {}
+    fn add_data(&mut self, _values: &[&Input]) {}
 }
 
-pub struct GTypeAttrib {
+pub struct ObjectAttrib {
     vec : Vec<f32>,
     buf: glbuf,
     name: String,
@@ -114,9 +107,9 @@ pub struct GTypeAttrib {
     pre: bool
 }
 
-impl GTypeAttrib {
-    pub fn new(adata: &ArenaData, name: &str,size: u8) -> GTypeAttrib {
-        GTypeAttrib {
+impl ObjectAttrib {
+    pub fn new(adata: &ArenaData, name: &str,size: u8) -> ObjectAttrib {
+        ObjectAttrib {
             vec: Vec::<f32>::new(),
             buf: wglraw::init_buffer(&adata.ctx),
             name: name.to_string(),
@@ -125,14 +118,14 @@ impl GTypeAttrib {
         }
     }
 
-    pub fn new_pre(adata: &ArenaData, name: &str,size: u8) -> GTypeAttrib {
-        let mut out = GTypeAttrib::new(adata,name,size);
+    pub fn new_pre(adata: &ArenaData, name: &str,size: u8) -> ObjectAttrib {
+        let mut out = ObjectAttrib::new(adata,name,size);
         out.pre = true;
         out
     }
 }
 
-impl GType for GTypeAttrib {
+impl Object for ObjectAttrib {
     fn populate(&mut self, adata: &ArenaData) {
         if !self.pre {
             wglraw::populate_buffer(&adata.ctx,glctx::ARRAY_BUFFER,
@@ -141,13 +134,13 @@ impl GType for GTypeAttrib {
         }
     }
 
-    fn link(&self, adata : &ArenaData, pcode: &GLProgramCode, _stage: &Stage, _dims: &ArenaDims) {
+    fn link(&self, adata : &ArenaData, pcode: &ProgramCode, _stage: &Stage, _dims: &ArenaDims) {
         if !self.pre {
             pcode.set_attribute(&adata.ctx,&self.name,&self.buf,self.size);
         }
     }
 
-    fn add_data(&mut self, values: &[&GLData]) {
+    fn add_data(&mut self, values: &[&Input]) {
         for v in values {
             v.to_f32(self);
         }

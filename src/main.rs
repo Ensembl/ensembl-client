@@ -8,6 +8,7 @@ extern crate rand;
 
 #[macro_use]
 mod util;
+
 mod demo;
 mod arena;
 mod geometry;
@@ -17,10 +18,8 @@ mod canvasutil;
 mod wglraw;
 mod alloc;
 mod texture;
-mod compiler;
+mod program;
 mod webgl_rendering_context;
-pub mod wglprog;
-pub mod gtype;
 pub mod coord;
 
 fn main() {

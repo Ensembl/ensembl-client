@@ -1,9 +1,9 @@
-use compiler::GLProgram;
+use program::Program;
 
 use geometry::shader::{ shader_solid, shader_texture };
 
-use wglprog::{
-    GLSource,
+use program::{
+    ProgramSource,
     Statement,
     Uniform,
     Attribute,
@@ -12,8 +12,8 @@ use wglprog::{
 
 use arena::ArenaData;
 
-fn pin_prog() -> GLSource {
-    GLSource::new(vec! {
+fn pin_prog() -> ProgramSource {
+    ProgramSource::new(vec! {
         Uniform::new("float","uStageHpos",Phase::Vertex),
         Uniform::new("float","uStageVpos",Phase::Vertex),
         Uniform::new("float","uStageZoom",Phase::Vertex),
@@ -30,10 +30,10 @@ fn pin_prog() -> GLSource {
     })
 }
 
-pub fn pin_geom(adata: &ArenaData) -> GLProgram {
-    GLProgram::new(adata,&shader_solid(&pin_prog()))
+pub fn pin_geom(adata: &ArenaData) -> Program {
+    Program::new(adata,&shader_solid(&pin_prog()))
 }
 
-pub fn pintex_geom(adata: &ArenaData) -> GLProgram {
-    GLProgram::new(adata,&shader_texture(&pin_prog()))
+pub fn pintex_geom(adata: &ArenaData) -> Program {
+    Program::new(adata,&shader_texture(&pin_prog()))
 }

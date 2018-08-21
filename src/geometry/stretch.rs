@@ -1,18 +1,18 @@
 use arena::ArenaData;
-use compiler::GLProgram;
+use program::Program;
 
 use geometry::shader::{ shader_solid, shader_texture };
 
-use wglprog::{
-    GLSource,
+use program::{
+    ProgramSource,
     Statement,
     Uniform,
     Attribute,
     Phase,
 };
 
-fn stretch_prog() -> GLSource {
-    GLSource::new(vec! {
+fn stretch_prog() -> ProgramSource {
+    ProgramSource::new(vec! {
         Uniform::new("float","uStageHpos",Phase::Vertex),
         Uniform::new("float","uStageVpos",Phase::Vertex),
         Uniform::new("float","uStageZoom",Phase::Vertex),
@@ -26,10 +26,10 @@ fn stretch_prog() -> GLSource {
     })
 }
 
-pub fn stretch_geom(adata: &ArenaData) -> GLProgram {
-    GLProgram::new(adata,&shader_solid(&stretch_prog()))
+pub fn stretch_geom(adata: &ArenaData) -> Program {
+    Program::new(adata,&shader_solid(&stretch_prog()))
 }
 
-pub fn stretchtex_geom(adata: &ArenaData) -> GLProgram {
-    GLProgram::new(adata,&shader_texture(&stretch_prog()))
+pub fn stretchtex_geom(adata: &ArenaData) -> Program {
+    Program::new(adata,&shader_texture(&stretch_prog()))
 }
