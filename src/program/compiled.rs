@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::rc::Rc;
 
 use webgl_rendering_context::{
@@ -7,91 +8,34 @@ use webgl_rendering_context::{
     WebGLUniformLocation as gluni,
 };
 
-use shape::Shape;
+use arena::{ Stage, ArenaData, ArenaDims };
+use coord::Input;
 
-use arena::{
-    Stage,
-    ArenaData,
-    ArenaDims,
-};
+use shape::ShapeManager;
+use texture::TextureTargetManager;
 
-use wglprog::{
-    Variable,
-};
+use program::source::{ Source, ProgramSource, Phase };
+use program::objects::Object;
 
-use gtype::{
-    GType,
-};
-
-use std::collections::HashMap;
-
-use wglprog::{
-    GLSource,
-    Phase
-};
-
-use coord::{
-    GLData,
-};
-
-use texture::{
-    TextureTargetManager,
-};
-
-/* Geometries must implement Geometry for the arena to use them */
-pub trait Geometry {
-    fn get_std(&mut self) -> &mut GLProgram;
-    
-    fn populate(&mut self, adata: &mut ArenaData) { self.get_std().populate(adata); }
-    fn draw(&mut self, adata: &mut ArenaData, stage:&Stage) { self.get_std().draw(adata,stage); }
-}
-
-pub struct ItemManager {
-    requests: Vec<Box<Shape>>
-}
-
-impl ItemManager {
-    pub fn new() -> ItemManager {
-        ItemManager {
-            requests: Vec::<Box<Shape>>::new()
-        }
-    }
-    
-    pub fn add_item(&mut self, item: Box<Shape>) {
-        self.requests.push(item);
-    }
-    
-    pub fn draw(&mut self, tg: &mut GLProgramData, adata: &mut ArenaData) {
-        for obj in &mut self.requests {
-            obj.process(tg,adata);
-        }
-    }
-    
-    pub fn clear(&mut self) {
-        self.requests.clear();
-    }        
-}
-
-
-pub struct GLProgramData {
+pub struct ProgramAttribs {
     indices: i32,
-    attribs: Vec<(Phase,Box<GType>)>,
+    attribs: Vec<(Phase,Box<Object>)>,
     attrib_names: HashMap<String,usize>,
 }
 
-pub struct GLProgramCode {
+pub struct ProgramCode {
     uniforms: HashMap<String,gluni>,
     prog: Box<glprog>,
 }
 
-pub struct GLProgram {
-    data: GLProgramData,
-    pub shapes: ItemManager,
+pub struct Program {
+    data: ProgramAttribs,
+    pub shapes: ShapeManager,
     pub gtexitman: TextureTargetManager,
-    code: GLProgramCode,
+    code: ProgramCode,
 }
 
-fn find_uniforms(ctx: &glctx, prog: &Box<glprog>, vars: &Vec<Rc<Variable>>) -> HashMap<String,gluni> {
+fn find_uniforms(ctx: &glctx, prog: &Box<glprog>, vars: &Vec<Rc<Source>>) -> HashMap<String,gluni> {
     let mut udata = HashMap::<String,gluni>::new();
     for v in vars {
         v.preget(ctx,prog,&mut udata);
@@ -99,9 +43,9 @@ fn find_uniforms(ctx: &glctx, prog: &Box<glprog>, vars: &Vec<Rc<Variable>>) -> H
     udata
 }
 
-fn find_attribs(adata: &ArenaData, vars: &Vec<Rc<Variable>>) 
-                        -> (Vec<(Phase,Box<GType>)>,HashMap<String,usize>) {
-    let mut attribs = Vec::<(Phase,Box<GType>)>::new();
+fn find_attribs(adata: &ArenaData, vars: &Vec<Rc<Source>>) 
+                        -> (Vec<(Phase,Box<Object>)>,HashMap<String,usize>) {
+    let mut attribs = Vec::<(Phase,Box<Object>)>::new();
     let mut attrib_names = HashMap::<String,usize>::new();
     for v in vars {
         if let Some((name,phase,value)) = v.make_attribs(adata) {
@@ -115,7 +59,7 @@ fn find_attribs(adata: &ArenaData, vars: &Vec<Rc<Variable>>)
     (attribs,attrib_names)
 }
 
-impl GLProgramCode {
+impl ProgramCode {
     pub fn set_attribute(&self, ctx: &glctx, name: &str, buf: &glbuf, step: u8) {
         let prog = &self.prog;
         let loc = ctx.get_attrib_location(prog,name) as u32;
@@ -143,30 +87,30 @@ impl GLProgramCode {
     }
 }
 
-impl GLProgramData {
+impl ProgramAttribs {
     pub fn advance(&mut self,amt: i32) { self.indices += amt; }    
 
-    pub fn add_attrib_data(&mut self, name: &str, values: &[&GLData]) {
+    pub fn add_attrib_data(&mut self, name: &str, values: &[&Input]) {
         let loc = self.attrib_names[name];
         self.attribs[loc].1.add_data(values);
     }
 }
 
-impl GLProgram {
-    pub fn new(adata: &ArenaData, src: &GLSource) -> GLProgram {
+impl Program {
+    pub fn new(adata: &ArenaData, src: &ProgramSource) -> Program {
         let ctx = &adata.ctx;
         let prog = Box::new(src.prog(ctx));
         ctx.use_program(Some(&prog));
         let uniforms = find_uniforms(ctx,&prog,&src.uniforms);
         let (attribs,attrib_names) = find_attribs(adata,&src.uniforms);
-        GLProgram {
+        Program {
             gtexitman: TextureTargetManager::new(),
-            shapes: ItemManager::new(),
-            data: GLProgramData {
+            shapes: ShapeManager::new(),
+            data: ProgramAttribs {
                 attribs, attrib_names,
                 indices: 0
             },
-            code: GLProgramCode {
+            code: ProgramCode {
                 prog, uniforms,
             }
         }

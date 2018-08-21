@@ -1,6 +1,6 @@
 use arena::{ Arena, ArenaData };
 
-use compiler::GLProgramData;
+use program::ProgramAttribs;
 use coord::{ GCoord, Colour };
 
 use shape::Shape;
@@ -24,7 +24,7 @@ impl StretchRect {
 }
 
 impl Shape for StretchRect {
-    fn process(&self, geom: &mut GLProgramData, _adata: &ArenaData) {
+    fn process(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
         rectangle_g(geom,"aVertexPosition",&self.points);
         multi_gl(geom,"aVertexColour",&self.colour,6);
         geom.advance(6);
@@ -61,7 +61,7 @@ impl StretchTexture {
 }
 
 impl Shape for StretchTexture {
-    fn process(&self, geom: &mut GLProgramData, adata: &ArenaData) {
+    fn process(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
         if let Some(tp) = self.texpos {
             let flat = &adata.canvases.flat;
             let t = tp.to_rect(flat);

@@ -1,5 +1,5 @@
-use wglprog::{
-    GLSource,
+use program::{
+    ProgramSource,
     Statement,
     Uniform,
     Attribute,
@@ -9,15 +9,15 @@ use wglprog::{
     Stage,
 };
 
-fn shader_standard() -> GLSource {
-    GLSource::new(vec! {
+fn shader_standard() -> ProgramSource {
+    ProgramSource::new(vec! {
         Stage::new()
     })
 }
 
-pub fn shader_solid(pos: &GLSource) -> GLSource {
+pub fn shader_solid(pos: &ProgramSource) -> ProgramSource {
     shader_standard().merge(pos).merge(
-        &GLSource::new(vec! {
+        &ProgramSource::new(vec! {
             Attribute::new(3,"aVertexColour",Phase::Vertex),
             Varying::new("lowp","vec3","vColour"),
             Statement::new("vColour = aVertexColour",Phase::Vertex),
@@ -26,9 +26,9 @@ pub fn shader_solid(pos: &GLSource) -> GLSource {
     )
 }
 
-pub fn shader_texture(pos: &GLSource) -> GLSource {
+pub fn shader_texture(pos: &ProgramSource) -> ProgramSource {
     shader_standard().merge(pos).merge(
-        &GLSource::new(vec! {
+        &ProgramSource::new(vec! {
             Canvas::new("uSampler"),
             Uniform::new("sampler2D","uSampler",Phase::Fragment),
             Attribute::new(2,"aTextureCoord",Phase::Vertex),

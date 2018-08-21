@@ -1,6 +1,6 @@
 use arena::{ ArenaData, Arena };
 
-use compiler::GLProgramData;
+use program::ProgramAttribs;
 use coord::{ PCoord, Colour };
 
 use shape::Shape;
@@ -24,7 +24,7 @@ impl FixRect {
 }
 
 impl Shape for FixRect {
-    fn process(&self, geom: &mut GLProgramData, _adata: &ArenaData) {
+    fn process(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
         rectangle_p(geom,"aVertexPosition",&self.points);
         multi_gl(geom,"aVertexColour",&self.colour,6);
         geom.advance(6);
@@ -63,7 +63,7 @@ impl FixTexture {
 }
 
 impl Shape for FixTexture {
-    fn process(&self, geom: &mut GLProgramData, adata: &ArenaData) {
+    fn process(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
         if let Some(tp) = self.texpos {
             let flat = &adata.canvases.flat;
             let t = tp.to_rect(flat);

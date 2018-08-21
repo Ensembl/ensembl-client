@@ -1,12 +1,8 @@
 use std::ops::Add;
+use program::{ Object, ObjectAttrib };
 
-use gtype::{
-    GType,
-    GTypeAttrib,
-};
-
-pub trait GLData {
-    fn to_f32(&self, _attrib: &mut GTypeAttrib) {}
+pub trait Input {
+    fn to_f32(&self, _attrib: &mut ObjectAttrib) {}
 }
 
 #[derive(Clone,Copy)]
@@ -23,8 +19,8 @@ impl GCoord {
     }
 }
 
-impl GLData for GCoord {
-    fn to_f32(&self, attrib: &mut GTypeAttrib) {
+impl Input for GCoord {
+    fn to_f32(&self, attrib: &mut ObjectAttrib) {
         attrib.add_f32(&[self.0,self.1]);
     }
 }
@@ -48,8 +44,8 @@ impl PCoord {
     }
 }
 
-impl GLData for PCoord {
-    fn to_f32(&self, attrib: &mut GTypeAttrib) {
+impl Input for PCoord {
+    fn to_f32(&self, attrib: &mut ObjectAttrib) {
         attrib.add_f32(&[self.0,self.1]);
     }
 }
@@ -76,8 +72,8 @@ impl TCoord {
     }
 }
 
-impl GLData for TCoord {
-    fn to_f32(&self, attrib: &mut GTypeAttrib) {
+impl Input for TCoord {
+    fn to_f32(&self, attrib: &mut ObjectAttrib) {
         attrib.add_f32(&[self.0,self.1]);
     }
 }
@@ -91,8 +87,8 @@ impl Colour {
     }    
 }
 
-impl GLData for Colour {
-    fn to_f32(&self, attrib: &mut GTypeAttrib) {
+impl Input for Colour {
+    fn to_f32(&self, attrib: &mut ObjectAttrib) {
         attrib.add_f32(&[self.0 as f32 / 255.,
                          self.1 as f32 / 255.,
                          self.2 as f32 / 255.]);

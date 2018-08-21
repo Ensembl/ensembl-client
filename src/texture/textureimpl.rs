@@ -5,9 +5,7 @@ use canvasutil::FlatCanvas;
 
 use shape::Shape;
 
-use compiler::{
-    GLProgramData
-};
+use program::ProgramAttribs;
     
 use arena::{
     ArenaCanvases,
@@ -108,7 +106,7 @@ impl TextureSourceManager {
  * canvas using textures. Parameterised by geometry so each will have
  * its own (as it has its own co-rodinate data to store).
  * 
- * T = Geometry
+ * T = Program
  */
 
 pub trait TexPosItem : Shape {
@@ -159,7 +157,7 @@ impl TextureTargetManager {
         self.requests.push((req,item));
     }
     
-    pub fn draw(&mut self, tg: &mut GLProgramData, adata: &mut ArenaData) {
+    pub fn draw(&mut self, tg: &mut ProgramAttribs, adata: &mut ArenaData) {
         let src = &adata.gtexreqman;
         for (ref mut req,ref mut obj) in &mut self.requests {
             let tp = req.measure(src);

@@ -4,7 +4,10 @@ mod fix;
 mod shapeimpl;
 mod util;
 
-pub use shape::shapeimpl::Shape;
+pub use shape::shapeimpl::{
+    Shape,
+    ShapeManager
+};
 
 pub use shape::fix::{
     fix_rectangle,
