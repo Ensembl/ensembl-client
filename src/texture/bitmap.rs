@@ -1,4 +1,4 @@
-use arena::ArenaCanvases;
+use arena::{ Arena, ArenaCanvases };
 
 use texture::{
     TextureDrawRequestHandle,
@@ -45,4 +45,10 @@ impl BitmapTextureStore {
                             Box::new(BitmapTextureArtist::new(data,width,height)),
                             width,height)
     }
+}
+
+pub fn bitmap_texture(arena: &mut Arena, data: Vec<u8>, width: u32, height: u32) -> TextureDrawRequestHandle {
+    let datam = &mut arena.data.borrow_mut();
+    let (canvases,textures,gtexreqman,_) = datam.burst_texture();
+    return textures.bitmap.add(gtexreqman,canvases,data,width,height);
 }

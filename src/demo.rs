@@ -3,8 +3,11 @@ use canvasutil;
 
 use shape::{
     fix_rectangle,
+    fix_texture,
     pin_triangle,
+    pin_texture,
     stretch_rectangle,
+    stretch_texture,
 };
 
 use rand::Rng;
@@ -30,6 +33,8 @@ use coord::{
     PCoord,
     Colour,
 };
+
+use texture::{ text_texture, bitmap_texture };
 
 use rand::distributions::Distribution;
 use rand::distributions::range::Range;
@@ -203,18 +208,21 @@ pub fn demo() {
     for yidx in 0..20 {
         let y = (yidx as f32) * 60.0;
         let val = daft(&mut rng);
-        arena.text_fix(&PCoord(0.,y+24.),&val,&fc_font,&col);
+        let tx = text_texture(&mut arena,&val,&fc_font,&col);
+        fix_texture(&mut arena, tx, &PCoord(0.,y+24.), &PCoord(1.,1.));
         if yidx == middle {
-            arena.bitmap_stretch(&[GCoord(-10.,y-5.),GCoord(10.,y+5.)],
+            let tx = bitmap_texture(&mut arena,
                                 vec! { 0,0,255,255,
                                          255,0,0,255,
                                          0,255,0,255,
                                          255,255,0,255 },4,1);
-            arena.bitmap_pin(&GCoord(0.,y+5.),&PCoord(10.,10.),
+            stretch_texture(&mut arena,tx,&[GCoord(-10.,y-5.),GCoord(10.,y+5.)]);
+            let tx = bitmap_texture(&mut arena,
                                 vec! { 0,0,255,255,
                                          255,0,0,255,
                                          0,255,0,255,
                                          255,255,0,255 },2,2);
+            pin_texture(&mut arena,tx,&GCoord(0.,y+5.),&PCoord(10.,10.));
         } else {
             for idx in -100..100 {
                 let v1 = (idx as f32) * 0.1;
@@ -239,7 +247,8 @@ pub fn demo() {
                 }
                 if showtext_gen.sample(&mut rng) == 0 {
                     let val = bio_daft(&mut rng);
-                    arena.text_pin(&GCoord(x,y+12.),&val,&fc_font,&col);
+                    let tx = text_texture(&mut arena,&val,&fc_font,&col);
+                    pin_texture(&mut arena, tx, &GCoord(x,y+12.), &PCoord(1.,1.));
                 }
             }
         }
@@ -250,11 +259,11 @@ pub fn demo() {
     let (sw,sh) = (dims.width_px as f32,dims.height_px as f32);
     fix_rectangle(&mut arena,&[PCoord(sw/2.,0.),PCoord(sw/2.+1.,sh)],
                         &Colour(0,0,0));
-    arena.bitmap_fix(&PCoord(99.,0.),&PCoord(1.,sh),
-                        vec! { 0,0,255,255,
+    let tx = bitmap_texture(&mut arena, vec! { 0,0,255,255,
                                  255,0,0,255,
                                  0,255,0,255,
                                  255,255,0,255 },1,4);
+    fix_texture(&mut arena, tx, &PCoord(99.,0.),&PCoord(1.,sh));
     arena.populate();
 
     arena.settle(&mut stage);

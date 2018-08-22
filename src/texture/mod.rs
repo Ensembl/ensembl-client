@@ -31,3 +31,6 @@ pub use texture::textureimpl::{
     /* A rectangle in the canvas */
     TexPart,
 };
+
+pub use texture::text::text_texture;
+pub use texture::bitmap::bitmap_texture;
