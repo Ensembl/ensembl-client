@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 use canvasutil::FCFont;
-use arena::ArenaCanvases;
+use arena::{ Arena, ArenaCanvases };
 
 use coord::Colour;
 
@@ -67,4 +67,10 @@ impl TextTextureStore {
         };
         tr.clone()
     }
+}
+
+pub fn text_texture(arena: &mut Arena, chars: &str,font: &FCFont, col: &Colour) -> TextureDrawRequestHandle {
+    let datam = &mut arena.data.borrow_mut();
+    let (canvases,textures,gtexreqman,_) = datam.burst_texture();
+    return textures.text.add(gtexreqman,canvases,chars,font,col);
 }

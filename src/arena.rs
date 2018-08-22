@@ -15,7 +15,6 @@ use program::Program;
 use coord::{
     GCoord,
     PCoord,
-    Colour
 };
 
 use geometry::{
@@ -24,8 +23,6 @@ use geometry::{
     pin_geom,     pintex_geom
 };
 
-use canvasutil::FCFont;
-
 use texture::text::TextTextureStore;
 use texture::bitmap::BitmapTextureStore;
 
@@ -33,15 +30,9 @@ use texture::{
     TextureSourceManager,
 };
 
-use shape::{
-    fix_texture,
-    pin_texture,
-    stretch_texture
-};
-
-struct ArenaTextures {
-    text: TextTextureStore,
-    bitmap: BitmapTextureStore,
+pub struct ArenaTextures {
+    pub text: TextTextureStore,
+    pub bitmap: BitmapTextureStore,
 }
 
 impl ArenaTextures {
@@ -68,7 +59,7 @@ pub struct ArenaDims {
 #[allow(dead_code)]
 pub struct ArenaData {
     spec: ArenaSpec,
-    textures: ArenaTextures,
+    pub textures: ArenaTextures,
     pub dims: ArenaDims,
     pub canvases: ArenaCanvases,
     pub gtexreqman: TextureSourceManager,
@@ -79,7 +70,7 @@ impl ArenaData {
     /* help the borrow checker by splitting a mut in a way that it
      * understands is disjoint.
      */
-    fn burst_texture<'a>(&'a mut self) -> (&'a mut ArenaCanvases, &'a mut ArenaTextures, &'a mut TextureSourceManager,&'a mut ArenaDims) {
+    pub fn burst_texture<'a>(&'a mut self) -> (&'a mut ArenaCanvases, &'a mut ArenaTextures, &'a mut TextureSourceManager,&'a mut ArenaDims) {
         (&mut self.canvases,&mut self.textures, &mut self.gtexreqman,
          &mut self.dims)
     }
@@ -131,7 +122,7 @@ impl ArenaSpec {
 }
 
 pub struct Arena {
-    data: Rc<RefCell<ArenaData>>,
+    pub data: Rc<RefCell<ArenaData>>,
     order: Vec<String>,
     map: HashMap<String,Program>
 }
@@ -187,57 +178,7 @@ impl Arena {
     pub fn settle(&self, stage: &mut Stage) {
         self.data.borrow().dims.settle(stage);
     }  
-
-    pub fn text_pin(&mut self, origin:&GCoord,chars: &str,font: &FCFont, col: &Colour) {
-        let tr;
-        {
-            let datam = &mut self.data.borrow_mut();
-            let (canvases,textures,gtexreqman,_) = datam.burst_texture();
-            tr = textures.text.add(gtexreqman,canvases,chars,font,col);
-        }
-        pin_texture(self,tr,origin,&PCoord(1.,1.));
-    }
-
-    pub fn bitmap_stretch(&mut self, pos:&[GCoord;2], data: Vec<u8>, width: u32, height: u32) {
-        let tr;
-        {
-            let datam = &mut self.data.borrow_mut();
-            let (canvases,textures,gtexreqman,_) = datam.burst_texture();
-            tr = textures.bitmap.add(gtexreqman,canvases,data,width,height);
-        }
-        stretch_texture(self,tr,pos);
-    }
-
-    pub fn bitmap_pin(&mut self, origin:&GCoord, scale: &PCoord, data: Vec<u8>, width: u32, height: u32) {
-        let tr;
-        {
-            let datam = &mut self.data.borrow_mut();
-            let (canvases,textures,gtexreqman,_) = datam.burst_texture();
-            tr = textures.bitmap.add(gtexreqman,canvases,data,width,height);
-        }
-        pin_texture(self,tr,origin,scale);
-    }
-
-    pub fn bitmap_fix(&mut self, pos: &PCoord, scale: &PCoord, data: Vec<u8>, width: u32, height: u32) {
-        let tr;
-        {
-            let datam = &mut self.data.borrow_mut();
-            let (canvases,textures,gtexreqman,_) = datam.burst_texture();
-            tr = textures.bitmap.add(gtexreqman,canvases,data,width,height);
-        }
-        fix_texture(self,tr,pos,scale);
-    }
         
-    pub fn text_fix(&mut self, origin:&PCoord,chars: &str,font: &FCFont, col: &Colour) {
-        let tr;
-        {
-            let datam = &mut self.data.borrow_mut();
-            let (canvases,textures,gtexreqman,_) = datam.burst_texture();
-            tr = textures.text.add(gtexreqman,canvases,chars,font,col);
-        }
-        fix_texture(self,tr,origin,&PCoord(1.,1.));
-    }
-
     pub fn populate(&mut self) {
         let datam = &mut self.data.borrow_mut();
         {
