@@ -2,15 +2,11 @@ use arena::{ Arena, ArenaCanvases };
 
 use texture::{
     TextureDrawRequestHandle,
-    TextureSourceManager,
 };
 
 use texture::textureimpl::{
     TextureArtist,
-    create_draw_request,
 };
-
-/* BitmapTextureArtist - a TextureArtist that can draw bitmaps */
 
 struct BitmapTextureArtist {
     data: Vec<u8>,
@@ -28,27 +24,15 @@ impl TextureArtist for BitmapTextureArtist {
     fn draw(&self, canvs: &mut ArenaCanvases, x: u32, y: u32) {
         canvs.flat.bitmap(&self.data,x,y,self.width,self.height);
     }
-}
-
-/* BitmapTextureStore - mainly a noop, we don't cache */
-
-pub struct BitmapTextureStore {
-}
-
-impl BitmapTextureStore {
-    pub fn new() -> BitmapTextureStore {
-        BitmapTextureStore { }
-    }
-
-    pub fn add(&mut self, gtexreqman: &mut TextureSourceManager, _canvas: &mut ArenaCanvases, data: Vec<u8>, width: u32, height: u32) -> TextureDrawRequestHandle {
-        create_draw_request(gtexreqman,
-                            Box::new(BitmapTextureArtist::new(data,width,height)),
-                            width,height)
+    
+    fn measure(&self, _canvas: &mut ArenaCanvases) -> (u32, u32) {
+        (self.width, self.height)
     }
 }
 
 pub fn bitmap_texture(arena: &mut Arena, data: Vec<u8>, width: u32, height: u32) -> TextureDrawRequestHandle {
     let datam = &mut arena.data.borrow_mut();
-    let (canvases,textures,gtexreqman,_) = datam.burst_texture();
-    return textures.bitmap.add(gtexreqman,canvases,data,width,height);
+    let (canvases,gtexreqman,_) = datam.burst_texture();
+    let a = Box::new(BitmapTextureArtist::new(data,width,height));
+    gtexreqman.add_request(canvases,a)
 }

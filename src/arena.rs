@@ -23,26 +23,9 @@ use geometry::{
     pin_geom,     pintex_geom
 };
 
-use texture::text::TextTextureStore;
-use texture::bitmap::BitmapTextureStore;
-
 use texture::{
     TextureSourceManager,
 };
-
-pub struct ArenaTextures {
-    pub text: TextTextureStore,
-    pub bitmap: BitmapTextureStore,
-}
-
-impl ArenaTextures {
-    pub fn new() -> ArenaTextures {
-        ArenaTextures {
-            text: TextTextureStore::new(),
-            bitmap: BitmapTextureStore::new(),
-        }
-    }
-}
 
 pub struct ArenaCanvases {
     pub flat: Rc<canvasutil::FlatCanvas>,
@@ -59,7 +42,6 @@ pub struct ArenaDims {
 #[allow(dead_code)]
 pub struct ArenaData {
     spec: ArenaSpec,
-    pub textures: ArenaTextures,
     pub dims: ArenaDims,
     pub canvases: ArenaCanvases,
     pub gtexreqman: TextureSourceManager,
@@ -70,8 +52,8 @@ impl ArenaData {
     /* help the borrow checker by splitting a mut in a way that it
      * understands is disjoint.
      */
-    pub fn burst_texture<'a>(&'a mut self) -> (&'a mut ArenaCanvases, &'a mut ArenaTextures, &'a mut TextureSourceManager,&'a mut ArenaDims) {
-        (&mut self.canvases,&mut self.textures, &mut self.gtexreqman,
+    pub fn burst_texture<'a>(&'a mut self) -> (&'a mut ArenaCanvases, &'a mut TextureSourceManager,&'a mut ArenaDims) {
+        (&mut self.canvases, &mut self.gtexreqman,
          &mut self.dims)
     }
 }
@@ -134,7 +116,6 @@ impl Arena {
         let flat = Rc::new(canvasutil::FlatCanvas::create(2,2));
         let data = Rc::new(RefCell::new(ArenaData {
             ctx, spec, 
-            textures: ArenaTextures::new(),
             gtexreqman: TextureSourceManager::new(),
             dims: ArenaDims {
                 aspect: canvasutil::aspect_ratio(&canvas),
@@ -182,12 +163,12 @@ impl Arena {
     pub fn populate(&mut self) {
         let datam = &mut self.data.borrow_mut();
         {
-            let (canvases,_textures,gtexreqman,_) = datam.burst_texture();
+            let (canvases,gtexreqman,_) = datam.burst_texture();
             let (x,y) = gtexreqman.allocate();
             canvases.flat = Rc::new(canvasutil::FlatCanvas::create(x,y));
         }
         {
-            let (canvases,_,gtexreqman,_) = datam.burst_texture();
+            let (canvases,gtexreqman,_) = datam.burst_texture();
             gtexreqman.draw(canvases);
         }
         for k in &self.order {
