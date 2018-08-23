@@ -1,7 +1,7 @@
 use arena::{ ArenaData, Arena };
 
 use program::ProgramAttribs;
-use coord::{ PCoord, Colour };
+use coord::{ CPixel, Colour };
 
 use shape::Shape;
 use shape::util::{ rectangle_p, rectangle_t, multi_gl };
@@ -13,12 +13,12 @@ use texture::{ TexPart, TexPosItem, TextureDrawRequestHandle };
  */
 
 pub struct FixRect {
-    points: [PCoord;2],
+    points: [CPixel;2],
     colour: Colour,
 }
 
 impl FixRect {
-    pub fn new(points: [PCoord;2], colour: Colour) -> FixRect {
+    pub fn new(points: [CPixel;2], colour: Colour) -> FixRect {
         FixRect { points, colour }
     }    
 }
@@ -31,7 +31,7 @@ impl Shape for FixRect {
     }
 }
 
-pub fn fix_rectangle(arena: &mut Arena, p: &[PCoord;2], colour: &Colour) {
+pub fn fix_rectangle(arena: &mut Arena, p: &[CPixel;2], colour: &Colour) {
     let geom = arena.get_geom("fix");
     geom.shapes.add_item(Box::new(
         FixRect::new(*p,*colour)
@@ -43,8 +43,8 @@ pub fn fix_rectangle(arena: &mut Arena, p: &[PCoord;2], colour: &Colour) {
  */
 
 pub struct FixTexture {
-    pos: PCoord,
-    scale: PCoord,
+    pos: CPixel,
+    scale: CPixel,
     texpos: Option<TexPart>
 }
 
@@ -55,7 +55,7 @@ impl TexPosItem for FixTexture {
 }
 
 impl FixTexture {
-    pub fn new(pos: &PCoord, scale: &PCoord) -> FixTexture {
+    pub fn new(pos: &CPixel, scale: &CPixel) -> FixTexture {
         FixTexture {
             pos: *pos, scale: *scale, texpos: None
         }
@@ -67,9 +67,7 @@ impl Shape for FixTexture {
         if let Some(tp) = self.texpos {
             let flat = &adata.canvases.flat;
             let t = tp.to_rect(flat);
-            let pos = adata.dims.nudge_p(self.pos);
-            let p = [PCoord(pos.0,pos.1),
-                    PCoord(pos.0,pos.1) + tp.size(self.scale)];
+            let p = [self.pos, self.pos + tp.size(self.scale)];
             rectangle_p(geom,"aVertexPosition",&p);
             rectangle_t(geom,"aTextureCoord",&t);
             geom.advance(6);
@@ -77,7 +75,7 @@ impl Shape for FixTexture {
     }
 }
 
-pub fn fix_texture(arena: &mut Arena,req: TextureDrawRequestHandle, origin: &PCoord, scale: &PCoord) {
+pub fn fix_texture(arena: &mut Arena,req: TextureDrawRequestHandle, origin: &CPixel, scale: &CPixel) {
     let ri = FixTexture::new(origin,scale);
     arena.get_geom("fixtex").gtexitman.add_item(req,Box::new(ri));
 }

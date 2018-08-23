@@ -31,7 +31,7 @@ impl TextTextureArtist {
 }
 
 impl TextureArtist for TextTextureArtist {
-    fn draw(&self, canvs: &mut ArenaCanvases, x: u32, y: u32) {
+    fn draw(&self, canvs: &mut ArenaCanvases, x: i32, y: i32) {
         canvs.flat.text(&self.chars,x,y,&self.font, &self.colour);
     }
     
@@ -39,7 +39,7 @@ impl TextureArtist for TextTextureArtist {
         Some(TDRKey::new(( &self.chars, &self.font, &self.colour )))
     }
     
-    fn measure(&self, canvas: &mut ArenaCanvases) -> (u32, u32) {
+    fn measure(&self, canvas: &mut ArenaCanvases) -> (i32, i32) {
         canvas.flat.measure(&self.chars,&self.font)
     }
 }

@@ -50,7 +50,7 @@ impl Object for ObjectStage {
             stage: &Stage, dims: &ArenaDims) {
         let ctx = &adata.ctx;
         pcode.set_uniform_1f(ctx,"uStageHpos",stage.pos.0);
-        pcode.set_uniform_1f(ctx,"uStageVpos",stage.pos.1 + (dims.height_px as f32/2.));
+        pcode.set_uniform_1f(ctx,"uStageVpos",(stage.pos.1 + dims.height_px) as f32/2.);
         pcode.set_uniform_1f(ctx,"uStageZoom",stage.zoom);
         pcode.set_uniform_1f(ctx,"uAspect",dims.aspect);
         pcode.set_uniform_2f(ctx,"uSize",[

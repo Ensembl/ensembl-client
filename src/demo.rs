@@ -29,8 +29,8 @@ use arena::{
 };
 
 use coord::{
-    GCoord,
-    PCoord,
+    CLeaf,
+    CPixel,
     Colour,
 };
 
@@ -124,8 +124,7 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
         
         let d = time - state.old_time;
         state.old_time = time;
-        let mut stage = state.stage;
-        state.arena.borrow_mut().settle(&mut stage);
+        let stage = state.stage;
         state.stage = stage;
         state.phase += 1;
         if state.phase >= state.gear {
@@ -204,71 +203,71 @@ pub fn demo() {
     let thick_gen = Range::new(0,13);
     let showtext_gen = Range::new(0,10);
 
-    let col = Colour(200,200,200);
-    for yidx in 0..20 {
-        let y = (yidx as f32) * 60.0;
-        let val = daft(&mut rng);
-        let tx = text_texture(&mut arena,&val,&fc_font,&col);
-        fix_texture(&mut arena, tx, &PCoord(0.,y+18.), &PCoord(1.,1.));
-        if yidx == middle {
-            let tx = bitmap_texture(&mut arena,
-                                vec! { 0,0,255,255,
-                                         255,0,0,255,
-                                         0,255,0,255,
-                                         255,255,0,255 },4,1);
-            stretch_texture(&mut arena,tx,&[GCoord(-10.,y-5.),GCoord(10.,y+5.)]);
-            let tx = bitmap_texture(&mut arena,
-                                vec! { 0,0,255,255,
-                                         255,0,0,255,
-                                         0,255,0,255,
-                                         255,255,0,255 },2,2);
-            pin_texture(&mut arena,tx,&GCoord(0.,y-25.),&PCoord(10.,10.));
-        } else {
-            for idx in -100..100 {
-                let v1 = (idx as f32) * 0.1;
-                let v2 = (idx as f32)+10.0*(yidx as f32) * 0.1;
-                let dx = len_gen.sample(&mut rng);
-                let x = v1 * 1.0 + (yidx as f32).cos();
-                let colour = Colour(
-                    (128.*v2.cos()+128.) as u32,
-                    (128.*v2.sin()+128.) as u32,
-                    (128.*(v2+1.0).sin()+128.) as u32,
-                );
-                let h = if thick_gen.sample(&mut rng) == 0 { 1. } else { 5. };
-                stretch_rectangle(&mut arena,&[GCoord(x,y-h),
-                                          GCoord(x+dx,y+h)],&colour);
-                if idx %5 == 0 {
-                    let colour = Colour(colour.2,colour.0,colour.1);
-                    pin_triangle(&mut arena,&GCoord(x,y),
-                                       &[PCoord(0.,0.),
-                                         PCoord(-5.,10.),
-                                         PCoord(5.,10.)],
-                                       &colour);
-                }
-                if showtext_gen.sample(&mut rng) == 0 {
-                    let val = bio_daft(&mut rng);
-                    let tx = text_texture(&mut arena,&val,&fc_font,&col);
-                    pin_texture(&mut arena, tx, &GCoord(x,y-24.), &PCoord(1.,1.));
+    {
+        let col = Colour(200,200,200);
+        let a = &mut arena;
+        for yidx in 0..20 {
+            let y = yidx * 60;
+            let val = daft(&mut rng);
+            let tx = text_texture(a,&val,&fc_font,&col);
+            fix_texture(a, tx, &CPixel(0,y+18), &CPixel(1,1));
+            if yidx == middle {
+                let tx = bitmap_texture(a,
+                                    vec! { 0,0,255,255,
+                                             255,0,0,255,
+                                             0,255,0,255,
+                                             255,255,0,255 },4,1);
+                stretch_texture(a,tx,&[CLeaf(-10.,y-5),CLeaf(10.,y+5)]);
+                let tx = bitmap_texture(a,
+                                    vec! { 0,0,255,255,
+                                             255,0,0,255,
+                                             0,255,0,255,
+                                             255,255,0,255 },2,2);
+                pin_texture(a,tx,&CLeaf(0.,y-25),&CPixel(10,10));
+            } else {
+                for idx in -100..100 {
+                    let v1 = (idx as f32) * 0.1;
+                    let v2 = (idx as f32)+10.0*(yidx as f32) * 0.1;
+                    let dx = len_gen.sample(&mut rng);
+                    let x = v1 * 1.0 + (yidx as f32).cos();
+                    let colour = Colour(
+                        (128.*v2.cos()+128.) as u32,
+                        (128.*v2.sin()+128.) as u32,
+                        (128.*(v2+1.0).sin()+128.) as u32,
+                    );
+                    let h = if thick_gen.sample(&mut rng) == 0 { 1 } else { 5 };
+                    stretch_rectangle(a,&[CLeaf(x,y-h),
+                                              CLeaf(x+dx,y+h)],&colour);
+                    if idx %5 == 0 {
+                        let colour = Colour(colour.2,colour.0,colour.1);
+                        pin_triangle(a,&CLeaf(x,y),
+                                           &[CPixel(0,0),
+                                             CPixel(-5,10),
+                                             CPixel(5,10)],
+                                           &colour);
+                    }
+                    if showtext_gen.sample(&mut rng) == 0 {
+                        let val = bio_daft(&mut rng);
+                        let tx = text_texture(a,&val,&fc_font,&col);
+                        pin_texture(a, tx, &CLeaf(x,y-24), &CPixel(1,1));
+                    }
                 }
             }
         }
+
+        let dims = a.dims();
+        let (sw,sh) = (dims.width_px,dims.height_px);
+        
+        fix_rectangle(a,&[CPixel(sw/2,0),CPixel(sw/2+1,sh)],
+                            &Colour(0,0,0));
+        let tx = bitmap_texture(a, vec! { 0,0,255,255,
+                                     255,0,0,255,
+                                     0,255,0,255,
+                                     255,255,0,255 },1,4);
+        fix_texture(a, tx, &CPixel(99,0),&CPixel(1,sh));
+        a.populate();
+        a.animate(&stage);
     }
-
-    let dims = arena.dims();
-    let (sw,sh) = (dims.width_px as f32,dims.height_px as f32);
-    
-    fix_rectangle(&mut arena,&[PCoord(sw/2.,0.),PCoord(sw/2.+1.,sh)],
-                        &Colour(0,0,0));
-    let tx = bitmap_texture(&mut arena, vec! { 0,0,255,255,
-                                 255,0,0,255,
-                                 0,255,0,255,
-                                 255,255,0,255 },1,4);
-    fix_texture(&mut arena, tx, &PCoord(99.,0.),&PCoord(1.,sh));
-    arena.populate();
-
-    arena.settle(&mut stage);
-    arena.animate(&stage);
-
 
     let state = Rc::new(RefCell::new(State {
         arena: RefCell::new(arena),

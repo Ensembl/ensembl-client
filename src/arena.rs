@@ -13,8 +13,7 @@ use wglraw;
 use program::Program;
 
 use coord::{
-    GCoord,
-    PCoord,
+    CLeaf,
 };
 
 use geometry::{
@@ -35,8 +34,8 @@ pub struct ArenaCanvases {
 #[derive(Clone,Copy)]
 pub struct ArenaDims {
     pub aspect: f32,
-    pub width_px: u32,
-    pub height_px: u32,
+    pub width_px: i32,
+    pub height_px: i32,
 }
 
 #[allow(dead_code)]
@@ -60,35 +59,14 @@ impl ArenaData {
 
 impl ArenaDims {
     #[allow(dead_code)]
-    pub fn prop_x(&self,x_px: u32) -> f32 {
+    pub fn prop_x(&self,x_px: i32) -> f32 {
         (x_px as f64 * 2.0 / self.width_px as f64) as f32
     }
 
     #[allow(dead_code)]
-    pub fn prop_y(&self,y_px: u32) -> f32 {
+    pub fn prop_y(&self,y_px: i32) -> f32 {
         (y_px as f64 * 2.0 / self.height_px as f64) as f32
-    }
-    
-    fn nudge1(&self,val: f32, size: u32) -> f32 {
-        let n = (val * size as f32 / 2.).round();
-        n * 2. / size as f32
-    }
-    
-    pub fn nudge_g(&self,input: GCoord) -> GCoord {
-        GCoord(self.nudge1(input.0,self.width_px),
-               self.nudge1(input.1,self.height_px))
-    }
-
-    pub fn nudge_p(&self,input: PCoord) -> PCoord {
-        PCoord(self.nudge1(input.0,self.width_px),
-               self.nudge1(input.1,self.height_px))
-    }
-
-    pub fn settle(&self, stage: &mut Stage) {
-        // XXX settle should account for zoom
-        stage.pos = self.nudge_g(stage.pos);
-    }
-    
+    }        
 }
 
 pub struct ArenaSpec {
@@ -119,8 +97,8 @@ impl Arena {
             gtexreqman: TextureSourceManager::new(),
             dims: ArenaDims {
                 aspect: canvasutil::aspect_ratio(&canvas),
-                width_px: canvas.width(),
-                height_px: canvas.height(),
+                width_px: canvas.width() as i32,
+                height_px: canvas.height() as i32,
             },
             canvases: ArenaCanvases {
                 flat,
@@ -155,10 +133,6 @@ impl Arena {
     pub fn dims(&self) -> ArenaDims {
         self.data.borrow().dims
     }
-
-    pub fn settle(&self, stage: &mut Stage) {
-        self.data.borrow().dims.settle(stage);
-    }  
         
     pub fn populate(&mut self) {
         let datam = &mut self.data.borrow_mut();
@@ -195,12 +169,12 @@ impl Arena {
 
 #[derive(Clone,Copy)]
 pub struct Stage {
-    pub pos: GCoord,
+    pub pos: CLeaf,
     pub zoom: f32,
 }
 
 impl Stage {
     pub fn new() -> Stage {
-        Stage { pos: GCoord(0.0,0.0), zoom: 1.0 }
+        Stage { pos: CLeaf(0.,0), zoom: 1.0 }
     }
 }
