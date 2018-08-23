@@ -195,8 +195,8 @@ impl TexPart {
     }
     
     pub fn to_rect(&self,flat: &Rc<FlatCanvas>) -> [TCoord;2] {
-        [TCoord(flat.prop_x(self.x), flat.prop_y(self.y + self.height)),
-         TCoord(flat.prop_x(self.x + self.width), flat.prop_y(self.y))]
+        [TCoord(flat.prop_x(self.x), flat.prop_y(self.y)),
+         TCoord(flat.prop_x(self.x + self.width), flat.prop_y(self.y + self.height))]
     }
     
     

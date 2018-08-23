@@ -209,7 +209,7 @@ pub fn demo() {
         let y = (yidx as f32) * 60.0;
         let val = daft(&mut rng);
         let tx = text_texture(&mut arena,&val,&fc_font,&col);
-        fix_texture(&mut arena, tx, &PCoord(0.,y+24.), &PCoord(1.,1.));
+        fix_texture(&mut arena, tx, &PCoord(0.,y+18.), &PCoord(1.,1.));
         if yidx == middle {
             let tx = bitmap_texture(&mut arena,
                                 vec! { 0,0,255,255,
@@ -222,7 +222,7 @@ pub fn demo() {
                                          255,0,0,255,
                                          0,255,0,255,
                                          255,255,0,255 },2,2);
-            pin_texture(&mut arena,tx,&GCoord(0.,y+5.),&PCoord(10.,10.));
+            pin_texture(&mut arena,tx,&GCoord(0.,y-25.),&PCoord(10.,10.));
         } else {
             for idx in -100..100 {
                 let v1 = (idx as f32) * 0.1;
@@ -241,22 +241,22 @@ pub fn demo() {
                     let colour = Colour(colour.2,colour.0,colour.1);
                     pin_triangle(&mut arena,&GCoord(x,y),
                                        &[PCoord(0.,0.),
-                                         PCoord(-5.,-10.),
-                                         PCoord(5.,-10.)],
+                                         PCoord(-5.,10.),
+                                         PCoord(5.,10.)],
                                        &colour);
                 }
                 if showtext_gen.sample(&mut rng) == 0 {
                     let val = bio_daft(&mut rng);
                     let tx = text_texture(&mut arena,&val,&fc_font,&col);
-                    pin_texture(&mut arena, tx, &GCoord(x,y+12.), &PCoord(1.,1.));
+                    pin_texture(&mut arena, tx, &GCoord(x,y-24.), &PCoord(1.,1.));
                 }
             }
         }
     }
-    
-    // XXX in pixels
+
     let dims = arena.dims();
     let (sw,sh) = (dims.width_px as f32,dims.height_px as f32);
+    
     fix_rectangle(&mut arena,&[PCoord(sw/2.,0.),PCoord(sw/2.+1.,sh)],
                         &Colour(0,0,0));
     let tx = bitmap_texture(&mut arena, vec! { 0,0,255,255,

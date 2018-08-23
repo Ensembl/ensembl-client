@@ -24,8 +24,7 @@ fn pin_prog() -> ProgramSource {
             gl_Position = vec4(
                 (aOrigin.x - uStageHpos) * uStageZoom + 
                             aVertexPosition.x / uSize.x,
-                (aOrigin.y - uStageVpos) / uSize.y + 
-                            aVertexPosition.y / uSize.y,
+                - (aOrigin.y - uStageVpos + aVertexPosition.y) / uSize.y, 
                 0.0, 1.0)",Phase::Vertex)
     })
 }

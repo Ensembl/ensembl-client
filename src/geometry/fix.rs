@@ -17,7 +17,7 @@ fn fix_prog() -> ProgramSource {
         Attribute::new(2,"aVertexPosition",Phase::Vertex),
         Statement::new("
             gl_Position = vec4(aVertexPosition.x / uSize.x - 1.0,
-                               aVertexPosition.y / uSize.y - 1.0,
+                               1.0 - aVertexPosition.y / uSize.y,
                                0.0, 1.0)",Phase::Vertex)
     })
 }
