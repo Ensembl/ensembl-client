@@ -8,8 +8,8 @@ use std::cmp::max;
 
 #[derive(Debug)]
 struct Origin {
-    x: u32,
-    y: u32,
+    x: i32,
+    y: i32,
 }
 
 impl Clone for Origin {
@@ -27,8 +27,8 @@ impl Origin {
      * 1-3 tranches. The first is always the desired space and has
      * width/height as requested. The second and third are the leftovers.
      */
-    fn chop(&self, width: u32, height: u32, 
-            total_width: u32, total_height: u32) -> Vec<Tranche> {
+    fn chop(&self, width: i32, height: i32, 
+            total_width: i32, total_height: i32) -> Vec<Tranche> {
         let mut out = Vec::<Tranche>::new();
         out.push(Tranche {
             h: height,
@@ -57,11 +57,11 @@ impl Origin {
 
 struct Tranche {
     r: Origin,
-    h: u32
+    h: i32
 }
 
 impl Tranche {
-    fn chop(&self, width: u32, height:u32, max_width: u32) -> Vec<Tranche> {
+    fn chop(&self, width: i32, height: i32, max_width: i32) -> Vec<Tranche> {
         self.r.chop(width,height,max_width-self.r.x,self.h)
     }
 }
@@ -74,7 +74,7 @@ impl Clone for Tranche {
 
 #[derive(Debug)]
 struct Height {
-    height: u32,
+    height: i32,
     spaces: Vec<Origin>
 }
 
@@ -87,7 +87,7 @@ impl fmt::Display for Height {
 }
 
 impl Height {
-    fn new(height: u32) -> Height {
+    fn new(height: i32) -> Height {
         Height {
             height,
             spaces: Vec::<Origin>::new()
@@ -102,7 +102,7 @@ impl Height {
      * It's the responsibility of the caller to chop it up and return
      * any fragments into the relevant Heights.
      */
-    fn alloc(&mut self, width: u32, max_width: u32) -> Option<Tranche> {
+    fn alloc(&mut self, width: i32, max_width: i32) -> Option<Tranche> {
         let mut target : Option<usize> = None;
         for (i,space) in self.spaces.iter().enumerate() {
             if space.x + width <= max_width {
@@ -135,8 +135,8 @@ impl Clone for Height {
  
 #[derive(Debug)]
 struct Half {
-    width: u32,
-    watermark: u32,
+    width: i32,
+    watermark: i32,
     spaces: Vec<Height>
 }
 
@@ -149,7 +149,7 @@ impl fmt::Display for Half {
 }
 
 impl Half {
-    pub fn new(width: u32) -> Half {
+    pub fn new(width: i32) -> Half {
         Half {
             width,
             watermark: 0,
@@ -162,13 +162,13 @@ impl Half {
         let len = self.spaces.len();
         if len < h {
             for h in len..h {
-                self.spaces.push(Height::new((h+1) as u32));
+                self.spaces.push(Height::new((h+1) as i32));
             }
         }
         self.spaces[h-1].add(tranche.r);
     }
         
-    fn alloc_space(&mut self, width: u32, height: u32) -> Option<Origin> {
+    fn alloc_space(&mut self, width: i32, height: i32) -> Option<Origin> {
         let h = height as usize;
         let len = self.spaces.len();
         if self.spaces.len() >= h {
@@ -194,7 +194,7 @@ impl Half {
         None
     }
     
-    fn alloc_watermark(&mut self,width: u32,height: u32) -> Option<(u32,u32)> {
+    fn alloc_watermark(&mut self,width: i32,height: i32) -> Option<(i32,i32)> {
         let tranche = Tranche {
             r: Origin { y: self.watermark, x: 0 },
             h: height
@@ -211,15 +211,15 @@ impl Half {
         }
     }
     
-    fn allocate(&mut self,width: u32,height: u32) -> Option<(u32,u32)> {
+    fn allocate(&mut self,width: i32,height: i32) -> Option<(i32,i32)> {
         match self.alloc_space(width,height) {
             Some(space) => Some((space.x,space.y)),
             None => self.alloc_watermark(width,height)
         }
     }
     
-    fn get_height(&self) -> u32 { self.watermark }
-    fn get_width(&self) -> u32 { self.width }
+    fn get_height(&self) -> i32 { self.watermark }
+    fn get_width(&self) -> i32 { self.width }
 }
 
 /* The allocator is the publicly available struct. It is implemented by
@@ -228,40 +228,42 @@ impl Half {
  */
 
 struct TicketReq {
-    width: u32,
-    height: u32
+    width: i32,
+    height: i32
 }
 
 #[derive(Clone)]
 struct TicketRes {
-    x: u32,
-    y: u32
+    x: i32,
+    y: i32
 }
 
 pub struct Allocator {
     reqs: Vec<TicketReq>,
     res: Vec<TicketRes>,
-    max_width: u32,
-    area: u32,
-    threshold: u32,
+    max_width: i32,
+    area: i32,
+    threshold: i32,
 }
 
 #[derive(Clone)]
 pub struct Ticket {
     index: usize,
-    width: u32,
-    height: u32,
+    width: i32,
+    height: i32,
 }
 
 struct AllocatorImpl {
     big: Half,
     small: Half,
-    threshold: u32,
+    threshold: i32,
 }
 
+fn pow2_i32(v: i32) -> i32 { (v as u32).next_power_of_two() as i32 }
+
 impl AllocatorImpl {
-    fn new(threshold: u32, max_width: u32, area: u32) -> AllocatorImpl {
-        let size = max(max_width.next_power_of_two(),(area as f32).sqrt() as u32);
+    fn new(threshold: i32, max_width: i32, area: i32) -> AllocatorImpl {
+        let size = max(pow2_i32(max_width),(area as f32).sqrt() as i32);
         AllocatorImpl {
             big: Half::new(size),
             small: Half::new(size),
@@ -269,10 +271,8 @@ impl AllocatorImpl {
         }
     }
     
-    fn allocate_one(&mut self,width: u32,height: u32) -> (bool,u32,u32) {
-        println!("{}x{} t={}",width,height,self.threshold);
+    fn allocate_one(&mut self,width: i32,height: i32) -> (bool,i32,i32) {
         if height < (self.threshold / 2) {
-            println!("small");
             let (x,y) = self.small.allocate(width,height).unwrap();
             (false,x,y)
         } else {
@@ -282,13 +282,13 @@ impl AllocatorImpl {
         }
     }
     
-    fn width(&self) -> u32 { self.big.get_width() }
-    fn split_point(&self) -> u32 { self.big.get_height() * self.threshold }
-    fn total_height(&self) -> u32 { self.split_point() + self.small.get_height() }
+    fn width(&self) -> i32 { self.big.get_width() }
+    fn split_point(&self) -> i32 { self.big.get_height() * self.threshold }
+    fn total_height(&self) -> i32 { self.split_point() + self.small.get_height() }
 }
 
 impl Allocator {
-    pub fn new(threshold: u32) -> Allocator {
+    pub fn new(threshold: i32) -> Allocator {
         Allocator {
             reqs: Vec::<TicketReq>::new(),
             res:  Vec::<TicketRes>::new(),
@@ -298,7 +298,7 @@ impl Allocator {
         }
     }
     
-    pub fn request(&mut self, width: u32, height: u32) -> Ticket {
+    pub fn request(&mut self, width: i32, height: i32) -> Ticket {
         self.max_width = max(width,self.max_width);
         self.area = self.area + width*height;
         let data = TicketReq { width, height };
@@ -306,9 +306,9 @@ impl Allocator {
         Ticket { index: self.reqs.len()-1, width, height }
     }
 
-    pub fn allocate(&mut self) -> (u32,u32) {
+    pub fn allocate(&mut self) -> (i32,i32) {
         let mut aimpl = AllocatorImpl::new(self.threshold,self.max_width,self.area);
-        let mut res = Vec::<(bool,u32,u32)>::new();
+        let mut res = Vec::<(bool,i32,i32)>::new();
         for t in &self.reqs {
             res.push(aimpl.allocate_one(t.width,t.height));
         }
@@ -323,16 +323,16 @@ impl Allocator {
             }
             self.res.push(val);
         }
-        let height = aimpl.total_height().next_power_of_two();
+        let height = pow2_i32(aimpl.total_height());
         (aimpl.width(), height)
     }
     
-    pub fn position(&self,t : &Ticket) -> (u32, u32) {
+    pub fn position(&self,t : &Ticket) -> (i32, i32) {
         let res = self.res[t.index].clone();
         (res.x, res.y)
     }
     
-    pub fn size(&self,t : &Ticket) -> (u32, u32) {
+    pub fn size(&self,t : &Ticket) -> (i32, i32) {
         (t.width, t.height)
     }
 }

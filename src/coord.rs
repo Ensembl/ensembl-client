@@ -6,73 +6,73 @@ pub trait Input {
 }
 
 #[derive(Clone,Copy)]
-pub struct GCoord(pub f32,pub f32);
+pub struct CLeaf(pub f32,pub i32);
 
-impl GCoord {
-    pub fn mix(&self, other: GCoord) -> (GCoord,GCoord) {
-        (GCoord(self.0,other.1), GCoord(other.0,self.1))
+impl CLeaf {
+    pub fn mix(&self, other: CLeaf) -> (CLeaf,CLeaf) {
+        (CLeaf(self.0,other.1), CLeaf(other.0,self.1))
     }
 
-    pub fn triangles(&self, other: GCoord) -> ([GCoord;3],[GCoord;3]) {
+    pub fn triangles(&self, other: CLeaf) -> ([CLeaf;3],[CLeaf;3]) {
         let mix = self.mix(other);
         ([*self, mix.1, mix.0],[other, mix.0, mix.1])
     }
 }
 
-impl Input for GCoord {
+impl Input for CLeaf {
     fn to_f32(&self, attrib: &mut ObjectAttrib) {
-        attrib.add_f32(&[self.0,self.1]);
+        attrib.add_f32(&[self.0,self.1 as f32]);
     }
 }
 
 #[derive(Clone,Copy)]
-pub struct PCoord(pub f32,pub f32);
+pub struct CPixel(pub i32,pub i32);
 
-impl PCoord {
-    pub fn mix(&self, other: PCoord) -> (PCoord,PCoord) {
-        (PCoord(self.0,other.1), PCoord(other.0,self.1))
+impl CPixel {
+    pub fn mix(&self, other: CPixel) -> (CPixel,CPixel) {
+        (CPixel(self.0,other.1), CPixel(other.0,self.1))
     }
     
-    pub fn triangles(&self, other: PCoord) -> ([PCoord;3],[PCoord;3]) {
+    pub fn triangles(&self, other: CPixel) -> ([CPixel;3],[CPixel;3]) {
         let mix = self.mix(other);
         ([*self, mix.1, mix.0],[other, mix.0, mix.1])
     }
     
     #[allow(dead_code)]
-    fn scale(&self, scale: PCoord) -> PCoord {
-        PCoord(self.0 * scale.0, self.1 * scale.1)
+    fn scale(&self, scale: CPixel) -> CPixel {
+        CPixel(self.0 * scale.0, self.1 * scale.1)
     }
 }
 
-impl Input for PCoord {
+impl Input for CPixel {
     fn to_f32(&self, attrib: &mut ObjectAttrib) {
-        attrib.add_f32(&[self.0,self.1]);
+        attrib.add_f32(&[self.0 as f32,self.1 as f32]);
     }
 }
 
-impl Add for PCoord {
-    type Output = PCoord;
+impl Add for CPixel {
+    type Output = CPixel;
     
-    fn add(self,other: PCoord) -> PCoord {
-        PCoord(self.0+other.0, self.1+other.1)
+    fn add(self,other: CPixel) -> CPixel {
+        CPixel(self.0+other.0, self.1+other.1)
     }
 }
 
 #[derive(Clone,Copy)]
-pub struct TCoord(pub f32,pub f32);
+pub struct CFraction(pub f32,pub f32);
 
-impl TCoord {
-    pub fn mix(&self, other: TCoord) -> (TCoord,TCoord) {
-        (TCoord(self.0,other.1), TCoord(other.0,self.1))
+impl CFraction {
+    pub fn mix(&self, other: CFraction) -> (CFraction,CFraction) {
+        (CFraction(self.0,other.1), CFraction(other.0,self.1))
     }
     
-    pub fn triangles(&self, other: TCoord) -> ([TCoord;3],[TCoord;3]) {
+    pub fn triangles(&self, other: CFraction) -> ([CFraction;3],[CFraction;3]) {
         let mix = self.mix(other);
         ([*self, mix.1, mix.0],[other, mix.0, mix.1])
     }
 }
 
-impl Input for TCoord {
+impl Input for CFraction {
     fn to_f32(&self, attrib: &mut ObjectAttrib) {
         attrib.add_f32(&[self.0,self.1]);
     }
