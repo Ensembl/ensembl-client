@@ -1,6 +1,9 @@
 use std::ops::Add;
 use program::{ Object, ObjectAttrib };
 
+#[derive(Clone,Copy)]
+pub struct COrigin(pub f32,pub f32);
+
 pub trait Input {
     fn to_f32(&self, _attrib: &mut ObjectAttrib) {}
 }

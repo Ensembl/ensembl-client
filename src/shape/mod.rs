@@ -1,6 +1,6 @@
 mod stretch;
 mod pin;
-mod fix;
+mod fixpage;
 mod shapeimpl;
 mod util;
 
@@ -9,9 +9,11 @@ pub use shape::shapeimpl::{
     ShapeManager
 };
 
-pub use shape::fix::{
+pub use shape::fixpage::{
     fix_rectangle,
     fix_texture,
+    page_rectangle,
+    page_texture,
 };
 
 pub use shape::pin::{

@@ -13,13 +13,14 @@ use wglraw;
 use program::Program;
 
 use coord::{
-    CLeaf,
+    COrigin,
 };
 
 use geometry::{
     stretch_geom, stretchtex_geom,
     fix_geom,     fixtex_geom,
-    pin_geom,     pintex_geom
+    pin_geom,     pintex_geom,
+    page_geom,    pagetex_geom,
 };
 
 use texture::{
@@ -112,6 +113,7 @@ impl Arena {
             order: vec_s! {
                 "stretch", "stretchtex", 
                 "pin", "pintex",
+                "page", "pagetex",
                 "fix", "fixtex"
             },
             map: hashmap_s! {
@@ -120,7 +122,9 @@ impl Arena {
                 "pin" => pin_geom(&data_b),
                 "pintex" => pintex_geom(&data_b),
                 "fix" => fix_geom(&data_b),
-                "fixtex" => fixtex_geom(&data_b)
+                "fixtex" => fixtex_geom(&data_b),
+                "page" => page_geom(&data_b),
+                "pagetex" => pagetex_geom(&data_b)
             }
         };
         arena
@@ -169,12 +173,12 @@ impl Arena {
 
 #[derive(Clone,Copy)]
 pub struct Stage {
-    pub pos: CLeaf,
+    pub pos: COrigin,
     pub zoom: f32,
 }
 
 impl Stage {
     pub fn new() -> Stage {
-        Stage { pos: CLeaf(0.,0), zoom: 1.0 }
+        Stage { pos: COrigin(0.,0.), zoom: 1.0 }
     }
 }
