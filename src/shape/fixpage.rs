@@ -31,11 +31,20 @@ impl Shape for FixRect {
     }
 }
 
-pub fn fix_rectangle(arena: &mut Arena, p: &[CPixel;2], colour: &Colour) {
-    let geom = arena.get_geom("fix");
+fn rectangle(arena: &mut Arena, p: &[CPixel;2], colour: &Colour, geom: &str) {
+    let geom = arena.get_geom(geom);
     geom.shapes.add_item(Box::new(
         FixRect::new(*p,*colour)
     ));
+}
+
+pub fn fix_rectangle(arena: &mut Arena, p: &[CPixel;2], colour: &Colour) {
+    rectangle(arena, p, colour, "fix");
+}
+
+#[allow(dead_code)]
+pub fn page_rectangle(arena: &mut Arena, p: &[CPixel;2], colour: &Colour) {
+    rectangle(arena, p, colour, "page");
 }
 
 /*
@@ -75,7 +84,16 @@ impl Shape for FixTexture {
     }
 }
 
-pub fn fix_texture(arena: &mut Arena,req: TextureDrawRequestHandle, origin: &CPixel, scale: &CPixel) {
+fn texture(arena: &mut Arena,req: TextureDrawRequestHandle, origin: &CPixel, scale: &CPixel, geom: &str) {
     let ri = FixTexture::new(origin,scale);
-    arena.get_geom("fixtex").gtexitman.add_item(req,Box::new(ri));
+    arena.get_geom(geom).gtexitman.add_item(req,Box::new(ri));
+}
+
+
+pub fn fix_texture(arena: &mut Arena,req: TextureDrawRequestHandle, origin: &CPixel, scale: &CPixel) {
+    texture(arena, req, origin, scale, "fixtex");
+}
+
+pub fn page_texture(arena: &mut Arena,req: TextureDrawRequestHandle, origin: &CPixel, scale: &CPixel) {
+    texture(arena, req, origin, scale, "pagetex");
 }

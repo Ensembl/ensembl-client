@@ -1,6 +1,5 @@
 TODO:
 
-integral y
 animated y
 P/GCoord utils
 Rectangle types
@@ -8,8 +7,7 @@ indexed vertices
 continuous lines
 integral colours
 sized uniforms/attribs
-compiled programs
 generic cacheing texture
 bitmap draw
-split gcoords
 text alpha
+only draw if any

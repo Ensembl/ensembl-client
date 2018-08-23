@@ -4,6 +4,7 @@ use canvasutil;
 use shape::{
     fix_rectangle,
     fix_texture,
+    page_texture,
     pin_triangle,
     pin_texture,
     stretch_rectangle,
@@ -44,6 +45,7 @@ struct State {
     stage: Stage,
     zoomscale: f32,
     hpos: f32,
+    vpos: f32,
     old_time: f64,
     fpos: f32,
     call: i32,
@@ -117,9 +119,11 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
             state.call += 1;
             state.zoomscale += delta* 5.0;
             state.hpos += delta *3.763;
+            state.vpos += delta *5.414;
             state.fpos += delta *7.21;
             state.stage.zoom = ((state.zoomscale.cos() + 1.5)/3.0) as f32;
             state.stage.pos.0 = ((state.hpos.cos())*1.5) as f32;
+            state.stage.pos.1 = ((state.vpos.sin())*300.) as f32;
         }
         
         let d = time - state.old_time;
@@ -210,7 +214,7 @@ pub fn demo() {
             let y = yidx * 60;
             let val = daft(&mut rng);
             let tx = text_texture(a,&val,&fc_font,&col);
-            fix_texture(a, tx, &CPixel(0,y+18), &CPixel(1,1));
+            page_texture(a, tx, &CPixel(4,y+18), &CPixel(1,1));
             if yidx == middle {
                 let tx = bitmap_texture(a,
                                     vec! { 0,0,255,255,
@@ -273,6 +277,7 @@ pub fn demo() {
         arena: RefCell::new(arena),
         stage,
         hpos: 0.0,
+        vpos: 0.0,
         fpos: 0.0,
         zoomscale: 0.0,
         old_time: -1.0,
