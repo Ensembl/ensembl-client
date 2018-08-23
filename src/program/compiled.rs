@@ -117,15 +117,9 @@ impl Program {
     }
   
     pub fn draw(&mut self, adata: &ArenaData, stage:&Stage) {
-        // link
-        {
-            self.link(adata,stage,&adata.dims);
-        }
-        // draw
-        {
-            let indices = self.data.indices;
-            let ctx = &adata.ctx;
-            ctx.draw_arrays(glctx::TRIANGLES,0,indices);
+        self.link(adata,stage,&adata.dims);
+        if self.data.indices > 0 {
+            adata.ctx.draw_arrays(glctx::TRIANGLES,0,self.data.indices);
         }
     }
     
