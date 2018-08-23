@@ -1,7 +1,7 @@
 mod stretch;
 mod pin;
 mod fix;
-mod shader;
+mod common;
 mod page;
 
 pub use geometry::fix::{ fix_geom, fixtex_geom };

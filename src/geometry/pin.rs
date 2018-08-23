@@ -1,8 +1,7 @@
-use program::Program;
-
-use geometry::shader::{ shader_solid, shader_texture };
+use geometry::common::{ shader_solid, shader_texture, PR_DEF };
 
 use program::{
+    Program,
     ProgramSource,
     Statement,
     Uniform,
@@ -17,8 +16,8 @@ fn pin_prog() -> ProgramSource {
         Uniform::new_vert("float","uStageVpos"),
         Uniform::new_vert("float","uStageZoom"),
         Uniform::new_vert("vec2","uSize"),
-        Attribute::new(2,"aVertexPosition"),
-        Attribute::new(2,"aOrigin"),
+        Attribute::new(&PR_DEF,2,"aVertexPosition"),
+        Attribute::new(&PR_DEF,2,"aOrigin"),
         Statement::new_vert("
             gl_Position = vec4(
                 (aOrigin.x - uStageHpos) * uStageZoom + 

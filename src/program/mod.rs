@@ -1,6 +1,7 @@
 mod compiled;
 mod objects;
 mod source;
+mod gpuspec;
 
 pub use program::compiled::{
     Program,
@@ -21,4 +22,8 @@ pub use program::source::{
     Varying,
     Canvas,
     Stage,
+};
+
+pub use program::gpuspec::{
+    Precision
 };

@@ -16,6 +16,8 @@ use program::objects::{
     ObjectStage,
 };
 
+use program::gpuspec::Precision;
+
 #[derive(PartialEq,Clone,Eq)]
 pub enum Phase {
     Vertex,
@@ -79,7 +81,7 @@ pub struct Attribute {
 }
 
 impl Attribute {
-    pub fn new(size: u8, name: &str) -> Rc<Attribute> {
+    pub fn new(_p: &Precision,size: u8, name: &str) -> Rc<Attribute> {
         Rc::new(Attribute {
             size, name: name.to_string()
         })

@@ -1,7 +1,7 @@
 use program::Program;
 use arena::ArenaData;
 
-use geometry::shader::{ shader_solid, shader_texture };
+use geometry::common::{ shader_solid, shader_texture, PR_DEF };
 
 use program::{
     ProgramSource,
@@ -14,7 +14,7 @@ fn page_prog() -> ProgramSource {
     ProgramSource::new(vec! {
         Uniform::new_vert("vec2","uSize"),
         Uniform::new_vert("float","uStageVpos"),
-        Attribute::new(2,"aVertexPosition"),
+        Attribute::new(&PR_DEF,2,"aVertexPosition"),
         Statement::new_vert("
             gl_Position = vec4(aVertexPosition.x / uSize.x - 1.0,
                                - (aVertexPosition.y - uStageVpos) / uSize.y, 
