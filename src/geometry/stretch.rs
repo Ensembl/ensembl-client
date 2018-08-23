@@ -21,7 +21,7 @@ fn stretch_prog() -> ProgramSource {
         Statement::new("
             gl_Position = vec4(
                 (aVertexPosition.x - uStageHpos) * uStageZoom,
-                (aVertexPosition.y - uStageVpos) / uSize.y,
+                - (aVertexPosition.y - uStageVpos) / uSize.y,
                 0.0, 1.0)",Phase::Vertex)
     })
 }
