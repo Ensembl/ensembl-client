@@ -7,25 +7,24 @@ use program::{
     Statement,
     Uniform,
     Attribute,
-    Phase,
 };
 
 use arena::ArenaData;
 
 fn pin_prog() -> ProgramSource {
     ProgramSource::new(vec! {
-        Uniform::new("float","uStageHpos",Phase::Vertex),
-        Uniform::new("float","uStageVpos",Phase::Vertex),
-        Uniform::new("float","uStageZoom",Phase::Vertex),
-        Uniform::new("vec2","uSize",Phase::Vertex),
-        Attribute::new(2,"aVertexPosition",Phase::Vertex),
-        Attribute::new(2,"aOrigin",Phase::Vertex),
-        Statement::new("
+        Uniform::new_vert("float","uStageHpos"),
+        Uniform::new_vert("float","uStageVpos"),
+        Uniform::new_vert("float","uStageZoom"),
+        Uniform::new_vert("vec2","uSize"),
+        Attribute::new(2,"aVertexPosition"),
+        Attribute::new(2,"aOrigin"),
+        Statement::new_vert("
             gl_Position = vec4(
                 (aOrigin.x - uStageHpos) * uStageZoom + 
                             aVertexPosition.x / uSize.x,
                 - (aOrigin.y - uStageVpos + aVertexPosition.y) / uSize.y, 
-                0.0, 1.0)",Phase::Vertex)
+                0.0, 1.0)")
     })
 }
 

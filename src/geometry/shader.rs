@@ -3,7 +3,6 @@ use program::{
     Statement,
     Uniform,
     Attribute,
-    Phase,
     Varying,
     Canvas,
     Stage,
@@ -18,10 +17,10 @@ fn shader_standard() -> ProgramSource {
 pub fn shader_solid(pos: &ProgramSource) -> ProgramSource {
     shader_standard().merge(pos).merge(
         &ProgramSource::new(vec! {
-            Attribute::new(3,"aVertexColour",Phase::Vertex),
+            Attribute::new(3,"aVertexColour"),
             Varying::new("lowp","vec3","vColour"),
-            Statement::new("vColour = aVertexColour",Phase::Vertex),
-            Statement::new("gl_FragColor = vec4(vColour, 1.0)",Phase::Fragment),
+            Statement::new_vert("vColour = aVertexColour"),
+            Statement::new_frag("gl_FragColor = vec4(vColour, 1.0)"),
         })
     )
 }
@@ -30,11 +29,11 @@ pub fn shader_texture(pos: &ProgramSource) -> ProgramSource {
     shader_standard().merge(pos).merge(
         &ProgramSource::new(vec! {
             Canvas::new("uSampler"),
-            Uniform::new("sampler2D","uSampler",Phase::Fragment),
-            Attribute::new(2,"aTextureCoord",Phase::Vertex),
+            Uniform::new_frag("sampler2D","uSampler"),
+            Attribute::new(2,"aTextureCoord"),
             Varying::new("highp","vec2","vTextureCoord"),
-            Statement::new("vTextureCoord = aTextureCoord",Phase::Vertex),
-            Statement::new("gl_FragColor = texture2D(uSampler, vTextureCoord)",Phase::Fragment),
+            Statement::new_vert("vTextureCoord = aTextureCoord"),
+            Statement::new_frag("gl_FragColor = texture2D(uSampler, vTextureCoord)"),
         })
     )
 }

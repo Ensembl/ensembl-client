@@ -14,12 +14,12 @@ use coord::Input;
 use shape::ShapeManager;
 use texture::TextureTargetManager;
 
-use program::source::{ Source, ProgramSource, Phase };
+use program::source::{ Source, ProgramSource };
 use program::objects::Object;
 
 pub struct ProgramAttribs {
     indices: i32,
-    attribs: Vec<(Phase,Box<Object>)>,
+    attribs: Vec<Box<Object>>,
     attrib_names: HashMap<String,usize>,
 }
 
@@ -44,13 +44,13 @@ fn find_uniforms(ctx: &glctx, prog: &Box<glprog>, vars: &Vec<Rc<Source>>) -> Has
 }
 
 fn find_attribs(adata: &ArenaData, vars: &Vec<Rc<Source>>) 
-                        -> (Vec<(Phase,Box<Object>)>,HashMap<String,usize>) {
-    let mut attribs = Vec::<(Phase,Box<Object>)>::new();
+                        -> (Vec<Box<Object>>,HashMap<String,usize>) {
+    let mut attribs = Vec::<Box<Object>>::new();
     let mut attrib_names = HashMap::<String,usize>::new();
     for v in vars {
-        if let Some((name,phase,value)) = v.make_attribs(adata) {
+        if let Some((name,value)) = v.make_attribs(adata) {
             let loc = attribs.len();
-            attribs.push((phase,value));
+            attribs.push(value);
             if let Some(name) = name {
                 attrib_names.insert(name.to_string(),loc);
             }
@@ -92,7 +92,7 @@ impl ProgramAttribs {
 
     pub fn add_attrib_data(&mut self, name: &str, values: &[&Input]) {
         let loc = self.attrib_names[name];
-        self.attribs[loc].1.add_data(values);
+        self.attribs[loc].add_data(values);
     }
 }
 
@@ -127,25 +127,18 @@ impl Program {
         let ctx = &adata.ctx;
         let prog = &self.code.prog;
         ctx.use_program(Some(&prog));
-        for (_p,a) in &self.data.attribs {
+        for a in &self.data.attribs {
             a.link(adata,&self.code,stage,dims);
         }
     }
     
     pub fn populate(&mut self, adata: &mut ArenaData) {
-        for (p,a) in &mut self.data.attribs {
-            if *p == Phase::PrePopulate {
-                a.populate(adata);
-            }
-        }
         self.gtexitman.draw(&mut self.data,adata);
         self.gtexitman.clear();
         self.shapes.draw(&mut self.data,adata);
         self.shapes.clear();
-        for (p,a) in &mut self.data.attribs {
-            if *p == Phase::Vertex || *p == Phase::Fragment {
-                a.populate(adata);
-            }
+        for a in &mut self.data.attribs {
+            a.populate(adata);
         }
     }
 }

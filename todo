@@ -1,13 +1,10 @@
 TODO:
 
-animated y
 P/GCoord utils
 Rectangle types
-indexed vertices
+indexed vertices       (2)
 continuous lines
 integral colours
-sized uniforms/attribs
-generic cacheing texture
+sized uniforms/attribs (1)
 bitmap draw
 text alpha
-only draw if any
