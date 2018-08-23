@@ -18,7 +18,6 @@ use program::objects::{
 
 #[derive(PartialEq,Clone,Eq)]
 pub enum Phase {
-    PrePopulate,
     Vertex,
     Fragment,
 }
@@ -28,7 +27,7 @@ pub trait Source {
     fn preget(&self, _ctx: &glctx, _prog: &glprog,
               _udata: &mut HashMap<String,gluni>) {}
     fn make_attribs(&self, _adata: &ArenaData) 
-                            -> Option<(Option<&str>,Phase,Box<Object>)> {
+                            -> Option<(Option<&str>,Box<Object>)> {
         None
     }
     fn statement(&self, _phase: &Phase) -> String { String::new() }
@@ -41,10 +40,18 @@ pub struct Uniform {
 }
 
 impl Uniform {
-    pub fn new(size: &str, name: &str, phase: Phase) -> Rc<Uniform> {
+    fn new(size: &str, name: &str, phase: Phase) -> Rc<Uniform> {
         Rc::new(Uniform {
             size: size.to_string(), name: name.to_string(), phase
         })
+    }
+    
+    pub fn new_frag(size: &str, name: &str) -> Rc<Uniform> {
+        Uniform::new(size, name, Phase::Fragment)
+    }
+
+    pub fn new_vert(size: &str, name: &str) -> Rc<Uniform> {
+        Uniform::new(size, name, Phase::Vertex)
     }
 }
 
@@ -69,13 +76,12 @@ impl Source for Uniform {
 pub struct Attribute {
     size: u8,
     pub name: String,
-    phase: Phase,
 }
 
 impl Attribute {
-    pub fn new(size: u8, name: &str, phase: Phase) -> Rc<Attribute> {
+    pub fn new(size: u8, name: &str) -> Rc<Attribute> {
         Rc::new(Attribute {
-            phase, size, name: name.to_string()
+            size, name: name.to_string()
         })
     }
 }
@@ -93,13 +99,9 @@ impl Source for Attribute {
     }
 
     fn make_attribs(&self, adata: &ArenaData)
-                            -> Option<(Option<&str>,Phase,Box<Object>)> {
-        let gt = if self.phase == Phase::PrePopulate {
-            ObjectAttrib::new_pre(adata,&self.name,self.size)
-        } else {
-            ObjectAttrib::new(adata,&self.name,self.size)
-        };
-        Some((Some(&self.name),self.phase.clone(),Box::new(gt)))
+                            -> Option<(Option<&str>,Box<Object>)> {
+        let gt = ObjectAttrib::new(adata,&self.name,self.size);
+        Some((Some(&self.name),Box::new(gt)))
     }
 }
 
@@ -121,14 +123,9 @@ impl Varying {
 }
 
 impl Source for Varying {
-    fn declare(&self, phase: &Phase) -> String {
-        match phase {
-            Phase::Fragment | Phase::Vertex =>
-                format!("varying {} {} {};\n",
-                    self.prec,self.size,self.name).to_string(),
-            _ =>
-                String::new()
-        }
+    fn declare(&self, _phase: &Phase) -> String {
+        format!("varying {} {} {};\n",
+            self.prec,self.size,self.name).to_string()
     }
 }
 
@@ -139,11 +136,19 @@ pub struct Statement {
 }
 
 impl Statement {
-    pub fn new(src: &str, phase: Phase) -> Rc<Statement> {
+    fn new(src: &str, phase: Phase) -> Rc<Statement> {
         Rc::new(Statement {
             src: src.to_string(),
             phase
         })
+    }
+    
+    pub fn new_vert(src: &str) -> Rc<Statement> {
+        Statement::new(src, Phase::Vertex)
+    }
+
+    pub fn new_frag(src: &str) -> Rc<Statement> {
+        Statement::new(src, Phase::Fragment)
     }
 }
 
@@ -169,8 +174,8 @@ impl Canvas {
 
 impl Source for Canvas {
     fn make_attribs(&self, _adata: &ArenaData)
-                        -> Option<(Option<&str>,Phase,Box<Object>)> {
-        Some((None,Phase::Vertex,Box::new(ObjectCanvasTexture::new(&self.name))))
+                        -> Option<(Option<&str>,Box<Object>)> {
+        Some((None,Box::new(ObjectCanvasTexture::new(&self.name))))
     }
 }
 
@@ -184,8 +189,8 @@ impl Stage {
 
 impl Source for Stage {
     fn make_attribs(&self, _adata: &ArenaData) 
-                            -> Option<(Option<&str>,Phase,Box<Object>)> {
-        Some((None,Phase::Vertex,Box::new(ObjectStage::new())))
+                            -> Option<(Option<&str>,Box<Object>)> {
+        Some((None,Box::new(ObjectStage::new())))
     }
 }
 

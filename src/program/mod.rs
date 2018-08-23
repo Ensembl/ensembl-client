@@ -18,7 +18,6 @@ pub use program::source::{
     Statement,
     Uniform,
     Attribute,
-    Phase,
     Varying,
     Canvas,
     Stage,
