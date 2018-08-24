@@ -1,9 +1,9 @@
-mod compiled;
+mod execute;
 mod objects;
 mod source;
 mod gpuspec;
 
-pub use program::compiled::{
+pub use program::execute::{
     Program,
     ProgramAttribs,
     ProgramCode,

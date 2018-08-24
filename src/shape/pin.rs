@@ -4,7 +4,10 @@ use program::ProgramAttribs;
 use coord::{ CLeaf, CPixel, Colour };
 
 use shape::Shape;
-use shape::util::{ triangle_gl, rectangle_p, rectangle_t, multi_gl };
+use shape::util::{
+    triangle_gl, rectangle_p, rectangle_t,
+    multi_gl, vertices_rect, vertices_tri,
+};
 
 use texture::{ TexPart, TexPosItem, TextureDrawRequestHandle };
 
@@ -27,10 +30,10 @@ impl PinTriangle {
 impl Shape for PinTriangle {
     fn process(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
         let p = &self.points;
+        vertices_tri(geom);
         triangle_gl(geom,"aVertexPosition",&[&p[0],&p[1],&p[2]]);
         multi_gl(geom,"aOrigin",&self.origin,3);
         multi_gl(geom,"aVertexColour",&self.colour,3);
-        geom.advance(3);
     }
 }
 
@@ -67,15 +70,13 @@ impl PinTexture {
 impl Shape for PinTexture {
     fn process(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
         if let Some(tp) = self.texpos {
-            let flat = &adata.canvases.flat;
-            
+            let flat = &adata.canvases.flat;            
             let p = [CPixel(0,0), tp.size(self.scale)];
             let t = tp.to_rect(flat);
-
+            vertices_rect(geom);                                    
             rectangle_p(geom,"aVertexPosition",&p);
             rectangle_t(geom,"aTextureCoord",&t);
-            multi_gl(geom,"aOrigin",&self.origin,6);
-            geom.advance(6);
+            multi_gl(geom,"aOrigin",&self.origin,4);
         }
     }
 }

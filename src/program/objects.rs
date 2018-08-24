@@ -95,28 +95,23 @@ impl Object for ObjectCanvasTexture {
             pcode.set_uniform_1i(&adata.ctx,&self.name,canvases.idx);
         }
     }
-
-    fn add_data(&mut self, _values: &[&Input]) {}
 }
 
 pub struct ObjectAttrib {
-    idx_vec : Vec<u16>,
     vec : Vec<f32>,
     buf: glbuf,
-    idx_buf: glbuf,
     name: String,
     size: u8,
+    len: u16
 }
 
 impl ObjectAttrib {
     pub fn new(adata: &ArenaData, name: &str, size: u8) -> ObjectAttrib {
         ObjectAttrib {
-            idx_vec: Vec::<u16>::new(),
             vec: Vec::<f32>::new(),
             buf: wglraw::init_buffer(&adata.ctx),
-            idx_buf: wglraw::init_buffer(&adata.ctx),
             name: name.to_string(),
-            size
+            size, len: 0
         }
     }
 }
@@ -125,31 +120,25 @@ impl Object for ObjectAttrib {
     fn populate(&mut self, adata: &ArenaData) {
         wglraw::populate_buffer(&adata.ctx,glctx::ARRAY_BUFFER,
                                 &self.buf,&self.vec);
-        wglraw::populate_buffer_short(&adata.ctx,glctx::ELEMENT_ARRAY_BUFFER,
-                                &self.idx_buf,&self.idx_vec);
         self.vec.clear();
+        self.len = 0;
     }
 
     fn link(&self, adata : &ArenaData, pcode: &ProgramCode, _stage: &Stage, _dims: &ArenaDims) {
-        pcode.set_attribute(&adata.ctx,&self.name,&self.buf,
-                            &self.idx_buf,self.size);
+        pcode.set_attribute(&adata.ctx,&self.name,&self.buf,self.size);
     }
 
     fn add_data(&mut self, values: &[&Input]) {
+        self.len += values.len() as u16;
         for v in values {
             v.to_f32(self);
         }
     }
 
     fn add_f32(&mut self,values : &[f32]) {
-        for i in 0..values.len() {
-            self.idx_vec.push((self.vec.len()+i) as u16);
-            let s = format!("{} {}\n",i,self.idx_vec[i]);
-        }
         if self.vec.len() > 65536 {
             js! { console.log("too long!"); };
         }
         self.vec.extend_from_slice(values);
-        let s = format!("{} {}\n",self.vec.len(),self.idx_vec.len());
     }
 }

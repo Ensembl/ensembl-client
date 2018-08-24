@@ -20,6 +20,11 @@ impl CLeaf {
         let mix = self.mix(other);
         ([*self, mix.1, mix.0],[other, mix.0, mix.1])
     }
+    
+    pub fn rectangle(&self, other: CLeaf) -> [CLeaf;4] {
+        let mix = self.mix(other);
+        [*self, mix.0, other, mix.1]
+    }
 }
 
 impl Input for CLeaf {
@@ -39,6 +44,11 @@ impl CPixel {
     pub fn triangles(&self, other: CPixel) -> ([CPixel;3],[CPixel;3]) {
         let mix = self.mix(other);
         ([*self, mix.1, mix.0],[other, mix.0, mix.1])
+    }
+
+    pub fn rectangle(&self, other: CPixel) -> [CPixel;4] {
+        let mix = self.mix(other);
+        [*self, mix.0, other, mix.1]
     }
     
     #[allow(dead_code)]
@@ -72,6 +82,11 @@ impl CFraction {
     pub fn triangles(&self, other: CFraction) -> ([CFraction;3],[CFraction;3]) {
         let mix = self.mix(other);
         ([*self, mix.1, mix.0],[other, mix.0, mix.1])
+    }    
+
+    pub fn rectangle(&self, other: CFraction) -> [CFraction;4] {
+        let mix = self.mix(other);
+        [*self, mix.0, other, mix.1]
     }
 }
 
