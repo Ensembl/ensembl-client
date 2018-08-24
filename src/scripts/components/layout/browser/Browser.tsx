@@ -37,7 +37,7 @@ class Browser extends Component<BrowserProps, BrowserState> {
   }
 
   componentDidMount() {
-    this.toggleDrawer(this.props.location);
+    this.toggleDrawer();
 
     this.historyUnlistener = this.props.history.listen((location: Location) => {
       this.toggleDrawer(location);
@@ -54,8 +54,10 @@ class Browser extends Component<BrowserProps, BrowserState> {
     this.setState({ browserExpanded });
   }
 
-  toggleDrawer(location: Location) {
+  toggleDrawer(location?: Location) {
     let drawerOpened: boolean = true;
+
+    location = location || this.props.location;
 
     if (location.pathname === this.props.match.path) {
       drawerOpened = false;
@@ -101,7 +103,7 @@ class Browser extends Component<BrowserProps, BrowserState> {
             </div>
           </div>
         </section>
-        <TrackPanel toggleBrowser={this.toggleBrowser} updateCurrentTrackName={this.updateCurrentTrackName} />
+        <TrackPanel drawerOpened={drawerOpened} closeDrawer={this.closeDrawer} toggleBrowser={this.toggleBrowser} updateCurrentTrackName={this.updateCurrentTrackName} />
         {drawerOpened && <Track currentTrack={this.state.currentTrack}>{this.props.trackRoutes}</Track>}
       </Fragment>
     );

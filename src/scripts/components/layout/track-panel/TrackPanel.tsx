@@ -4,6 +4,8 @@ import TrackPanelBar from './TrackPanelBar';
 import TrackPanelList from './TrackPanelList';
 
 type TrackPanelProps = {
+  drawerOpened: boolean,
+  closeDrawer: () => void,
   toggleBrowser: () => void,
   updateCurrentTrackName: (currentTrack: string) => void
 };
@@ -24,6 +26,12 @@ class TrackPanel extends Component<TrackPanelProps, TrackPanelState> {
   }
 
   toggleTrackPanel() {
+    if (this.props.drawerOpened === true) {
+      this.props.closeDrawer();
+
+      return;
+    }
+
     const expanded: boolean = !this.state.expanded;
 
     this.setState({ expanded });
