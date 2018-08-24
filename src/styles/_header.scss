@@ -4,12 +4,12 @@
 
   color: $white;
 
-  & .logo {
+  .logo {
     font-size: 16px;
     font-weight: $global-weight-bold;
   }
 
-  & .strapline {
+  .strapline {
     display: none;
     margin-left: 30px;
 
@@ -18,8 +18,8 @@
     }
   }
 
-  & .top-bar-right {
-    & button {
+  .top-bar-right {
+    button {
       margin-left: 30px;
       height: 24px;
       width: 24px;
@@ -34,7 +34,7 @@
   padding: 0 30px;
   @include flex;
 
-  & .categories-wrapper {
+  .categories-wrapper {
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -45,17 +45,17 @@
     }
   }
 
-  & .categories {
+  .categories {
     flex: 0 0 auto;
   }
 
-  & .about {
+  .about {
     @include flex;
     @include flex-align(right, top);
     margin-left: 20px;
   }
 
-  & dl {
+  dl {
     display: inline-block;
     margin: 5px 0;
     padding: 0 5px;
@@ -65,7 +65,7 @@
     }
   }
 
-  & dt {
+  dt {
     display: inline-block;
     padding: 5px 10px;
   }

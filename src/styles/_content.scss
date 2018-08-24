@@ -1,7 +1,15 @@
 main {
+  min-height: calc(100vh - 96px);
+  @include flex;
+
   h2 {
     color: $ens-grey;
-    margin-top: 200px;
+    margin: 0;
+    padding: 15px 0;
     text-align: center;
+  }
+
+  > h2 {
+    width: 100%;
   }
 }

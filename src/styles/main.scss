@@ -7,6 +7,13 @@
 
 @import 'header';
 @import 'content';
+@import 'track-panel';
+@import 'browser';
+@import 'drawer';
 
 @include foundation-global-styles;
 @include foundation-prototype-classes;
+
+img {
+  max-width: initial;
+}

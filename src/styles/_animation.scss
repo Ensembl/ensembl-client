@@ -1,8 +1,6 @@
 .react-slidedown {
   height: 0;
-  transition-property: none;
-  transition-duration: .5s;
-  transition-timing-function: ease-in;
+  transition: none 0.5s ease-in;
 }
 
 .react-slidedown.transitioning {
@@ -11,4 +9,8 @@
 
 .react-slidedown.closed {
   display: none;
+}
+
+.react-slide-drawer {
+  transition: all 0.5s ease-in;
 }

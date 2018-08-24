@@ -1,0 +1,39 @@
+.browser {
+  &.semi-expanded {
+    width: 75%;
+  }
+
+  &.expanded {
+    width: calc(100vw - 41px);
+  }
+
+  &.collapsed {
+    width: 41px;
+
+    .browser-canvas-wrapper {
+      width: 41px;
+    }
+
+    .browser-canvas {
+      display: none;
+    }
+  }
+}
+
+.browser-canvas-wrapper {
+  height: calc(100% - 33px);
+  padding: 10px;
+}
+
+.browser-bar {
+  dl {
+    border-bottom: 1px solid $ens-black;
+    margin: 0;
+    padding: 5px 10px;
+  }
+
+  img {
+    height: 20px;
+    width: 20px;
+  }
+}
