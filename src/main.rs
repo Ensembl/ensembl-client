@@ -4,6 +4,8 @@ extern crate stdweb;
 extern crate serde_derive;
 #[macro_use]
 extern crate stdweb_derive;
+#[macro_use]
+extern crate lazy_static;
 extern crate rand;
 
 #[macro_use]

@@ -9,3 +9,5 @@ sized uniforms/attribs   (1)
 bitmap draw              (7)
 text alpha               (9)
 proper speccing of sizes (8)
+tab deselected jank
+font load race

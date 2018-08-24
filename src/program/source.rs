@@ -25,7 +25,7 @@ pub enum Phase {
 }
 
 pub trait Source {
-    fn declare(&self, _phase: &Phase) -> String { String::new() }
+    fn declare(&self, _adata: &ArenaData, _phase: &Phase) -> String { String::new() }
     fn preget(&self, _ctx: &glctx, _prog: &glprog,
               _udata: &mut HashMap<String,gluni>) {}
     fn make_attribs(&self, _adata: &ArenaData) 
@@ -39,28 +39,39 @@ pub struct Uniform {
     size: String,
     pub name: String,
     phase: Phase,
+    prec: Precision,
 }
 
 impl Uniform {
-    fn new(size: &str, name: &str, phase: Phase) -> Rc<Uniform> {
+    fn new(prec: &Precision, size: &str, name: &str, phase: Phase) -> Rc<Uniform> {
         Rc::new(Uniform {
-            size: size.to_string(), name: name.to_string(), phase
+            size: size.to_string(), name: name.to_string(), phase, 
+            prec: *prec
         })
     }
     
-    pub fn new_frag(size: &str, name: &str) -> Rc<Uniform> {
-        Uniform::new(size, name, Phase::Fragment)
+    pub fn new_frag(prec: &Precision, size: &str, name: &str) -> Rc<Uniform> {
+        Uniform::new(prec,size, name, Phase::Fragment)
     }
 
-    pub fn new_vert(size: &str, name: &str) -> Rc<Uniform> {
-        Uniform::new(size, name, Phase::Vertex)
+    pub fn new_vert(prec: &Precision, size: &str, name: &str) -> Rc<Uniform> {
+        Uniform::new(prec,size, name, Phase::Vertex)
     }
 }
 
 impl Source for Uniform {
-    fn declare(&self, phase: &Phase) -> String {
+    fn declare(&self, adata: &ArenaData, phase: &Phase) -> String {
         if *phase == self.phase {
-            format!("uniform {} {};\n",self.size,self.name).to_string()
+            let prec = match self.phase {
+                Phase::Vertex =>
+                    adata.gpuspec.best_float_vert(&self.prec),
+                Phase::Fragment =>
+                    adata.gpuspec.best_float_frag(&self.prec)
+            };
+            format!("uniform {} {} {};\n",
+                prec.as_string(),
+                self.size,
+                self.name).to_string()
         } else {
             String::new()
         }
@@ -77,13 +88,14 @@ impl Source for Uniform {
 #[derive(Clone)]
 pub struct Attribute {
     size: u8,
+    prec: Precision,
     pub name: String,
 }
 
 impl Attribute {
-    pub fn new(_p: &Precision,size: u8, name: &str) -> Rc<Attribute> {
+    pub fn new(prec: &Precision,size: u8, name: &str) -> Rc<Attribute> {
         Rc::new(Attribute {
-            size, name: name.to_string()
+            size, name: name.to_string(), prec: *prec
         })
     }
 }
@@ -91,13 +103,12 @@ impl Attribute {
 const ATTRIB_NAME : [&str;4] = ["float","vec2","vec3","vec4"];
 
 impl Source for Attribute {
-    fn declare(&self, phase: &Phase) -> String {
-        match phase {
-            Phase::Vertex =>
-                format!("attribute {} {};\n",ATTRIB_NAME[(self.size-1) as usize],self.name).to_string(),
-            _ =>
-                String::new()
-        }
+    fn declare(&self, adata: &ArenaData, phase: &Phase) -> String {
+        if *phase != Phase::Vertex { return String::new(); }
+        format!("attribute {} {} {};\n",
+            adata.gpuspec.best_float_vert(&self.prec).as_string(),
+            ATTRIB_NAME[(self.size-1) as usize],
+            self.name).to_string()
     }
 
     fn make_attribs(&self, adata: &ArenaData)
@@ -109,15 +120,15 @@ impl Source for Attribute {
 
 #[derive(Clone)]
 pub struct Varying {
-    prec: String,
+    prec: Precision,
     size: String,
     name: String,
 }
 
 impl Varying {
-    pub fn new(prec: &str, size: &str, name: &str) -> Rc<Varying> {
+    pub fn new(prec: &Precision, size: &str, name: &str) -> Rc<Varying> {
         Rc::new(Varying {
-            prec: prec.to_string(),
+            prec: *prec,
             size: size.to_string(),
             name: name.to_string()
         })
@@ -125,9 +136,10 @@ impl Varying {
 }
 
 impl Source for Varying {
-    fn declare(&self, _phase: &Phase) -> String {
+    fn declare(&self, adata: &ArenaData, _phase: &Phase) -> String {
         format!("varying {} {} {};\n",
-            self.prec,self.size,self.name).to_string()
+            adata.gpuspec.best_float_frag(&self.prec).as_string(),
+            self.size,self.name).to_string()
     }
 }
 
@@ -196,10 +208,10 @@ impl Source for Stage {
     }
 }
 
-fn declare(variables: &Vec<Rc<Source>>, phase: &Phase) -> String {
+fn declare(adata: &ArenaData, variables: &Vec<Rc<Source>>, phase: &Phase) -> String {
     let mut out = String::new();
     for v in variables {
-        out += &v.declare(phase)[..];
+        out += &v.declare(adata,phase)[..];
     }
     out
 }
@@ -224,9 +236,9 @@ fn make_shader(ctx: &glctx, program: &glprog, kind: u32, src: &str) {
 }
 
 
-fn make_source(uniforms: &Vec<Rc<Source>>, frag: &Phase) -> String {
+fn make_source(adata: &ArenaData, uniforms: &Vec<Rc<Source>>, frag: &Phase) -> String {
     format!("{}\n\nvoid main() {{\n{}\n}}",
-        declare(uniforms,&frag),
+        declare(adata,uniforms,&frag),
         statements(uniforms,&frag))
 }
 
@@ -235,13 +247,13 @@ impl ProgramSource {
         ProgramSource { uniforms: src }
     }
 
-    pub fn prog(&self, ctx: &glctx) -> glprog {
-        let prog = ctx.create_program().unwrap();
-        let vertex = make_source(&self.uniforms,&Phase::Vertex);
-        let fragment = make_source(&self.uniforms,&Phase::Fragment);
-        make_shader(ctx,&prog,glctx::VERTEX_SHADER,&vertex);
-        make_shader(ctx,&prog,glctx::FRAGMENT_SHADER,&fragment);
-        ctx.link_program(&prog);        
+    pub fn prog(&self, adata: &ArenaData) -> glprog {
+        let prog = adata.ctx.create_program().unwrap();
+        let vertex = make_source(adata,&self.uniforms,&Phase::Vertex);
+        let fragment = make_source(adata,&self.uniforms,&Phase::Fragment);
+        make_shader(&adata.ctx,&prog,glctx::VERTEX_SHADER,&vertex);
+        make_shader(&adata.ctx,&prog,glctx::FRAGMENT_SHADER,&fragment);
+        adata.ctx.link_program(&prog);        
         prog
     }
     

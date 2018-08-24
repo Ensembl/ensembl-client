@@ -98,10 +98,9 @@ impl ProgramAttribs {
 
 impl Program {
     pub fn new(adata: &ArenaData, src: &ProgramSource) -> Program {
-        let ctx = &adata.ctx;
-        let prog = Box::new(src.prog(ctx));
-        ctx.use_program(Some(&prog));
-        let uniforms = find_uniforms(ctx,&prog,&src.uniforms);
+        let prog = Box::new(src.prog(adata));
+        adata.ctx.use_program(Some(&prog));
+        let uniforms = find_uniforms(&adata.ctx,&prog,&src.uniforms);
         let (attribs,attrib_names) = find_attribs(adata,&src.uniforms);
         Program {
             gtexitman: TextureTargetManager::new(),
