@@ -4,7 +4,7 @@ use program::ProgramAttribs;
 use coord::{ CLeaf, Colour };
 
 use shape::Shape;
-use shape::util::{ rectangle_g, rectangle_t, multi_gl };
+use shape::util::{ rectangle_g, rectangle_t, multi_gl, vertices_rect };
 
 use texture::{ TexPart, TexPosItem, TextureDrawRequestHandle };
 
@@ -25,9 +25,9 @@ impl StretchRect {
 
 impl Shape for StretchRect {
     fn process(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+        vertices_rect(geom);                                    
         rectangle_g(geom,"aVertexPosition",&self.points);
-        multi_gl(geom,"aVertexColour",&self.colour,6);
-        geom.advance(6);
+        multi_gl(geom,"aVertexColour",&self.colour,4);
     }
 }
 
@@ -65,9 +65,9 @@ impl Shape for StretchTexture {
         if let Some(tp) = self.texpos {
             let flat = &adata.canvases.flat;
             let t = tp.to_rect(flat);
+            vertices_rect(geom);                                    
             rectangle_g(geom,"aVertexPosition",&self.pos);
             rectangle_t(geom,"aTextureCoord",&t);
-            geom.advance(6);
         }
     }
 }

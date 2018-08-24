@@ -4,7 +4,7 @@ use program::ProgramAttribs;
 use coord::{ CPixel, Colour };
 
 use shape::Shape;
-use shape::util::{ rectangle_p, rectangle_t, multi_gl };
+use shape::util::{ rectangle_p, rectangle_t, multi_gl, vertices_rect };
 
 use texture::{ TexPart, TexPosItem, TextureDrawRequestHandle };
 
@@ -25,9 +25,9 @@ impl FixRect {
 
 impl Shape for FixRect {
     fn process(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+        vertices_rect(geom);                                    
         rectangle_p(geom,"aVertexPosition",&self.points);
-        multi_gl(geom,"aVertexColour",&self.colour,6);
-        geom.advance(6);
+        multi_gl(geom,"aVertexColour",&self.colour,4);
     }
 }
 
@@ -77,9 +77,9 @@ impl Shape for FixTexture {
             let flat = &adata.canvases.flat;
             let t = tp.to_rect(flat);
             let p = [self.pos, self.pos + tp.size(self.scale)];
+            vertices_rect(geom);
             rectangle_p(geom,"aVertexPosition",&p);
             rectangle_t(geom,"aTextureCoord",&t);
-            geom.advance(6);
         }
     }
 }
