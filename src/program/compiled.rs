@@ -60,11 +60,13 @@ fn find_attribs(adata: &ArenaData, vars: &Vec<Rc<Source>>)
 }
 
 impl ProgramCode {
-    pub fn set_attribute(&self, ctx: &glctx, name: &str, buf: &glbuf, step: u8) {
+    pub fn set_attribute(&self, ctx: &glctx, name: &str, buf: &glbuf, 
+                         idx_buf: &glbuf, step: u8) {
         let prog = &self.prog;
         let loc = ctx.get_attrib_location(prog,name) as u32;
         ctx.enable_vertex_attrib_array(loc);
         ctx.bind_buffer(glctx::ARRAY_BUFFER,Some(buf));
+        ctx.bind_buffer(glctx::ELEMENT_ARRAY_BUFFER,Some(idx_buf));
         ctx.vertex_attrib_pointer(loc, step as i32, glctx::FLOAT, false, 0, 0);
     }
     
@@ -119,6 +121,9 @@ impl Program {
         self.link(adata,stage,&adata.dims);
         if self.data.indices > 0 {
             adata.ctx.draw_arrays(glctx::TRIANGLES,0,self.data.indices);
+            
+            adata.ctx.draw_elements(glctx::TRIANGLES,self.data.indices,
+                                    glctx::UNSIGNED_SHORT,0);
         }
     }
     
