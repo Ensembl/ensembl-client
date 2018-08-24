@@ -136,7 +136,7 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
         }
         if state.phase == 0 {
             detect_jank(&mut state,d as u32,time as f32/1000.0);
-            state.arena.borrow_mut().animate(&state.stage);
+            state.arena.borrow_mut().draw(&state.stage);
         }
     }
     window().request_animation_frame(move |x| animate(x,s.clone()));
@@ -270,7 +270,7 @@ pub fn demo() {
                                      255,255,0,255 },1,4);
         fix_texture(a, tx, &CPixel(99,0),&CPixel(1,sh));
         a.populate();
-        a.animate(&stage);
+        a.draw(&stage);
     }
 
     let state = Rc::new(RefCell::new(State {

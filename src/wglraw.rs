@@ -26,6 +26,12 @@ pub fn populate_buffer(ctx:&glctx, buftype: u32, buf:&glbuf, values:&Vec<f32>) {
     ctx.buffer_data_1(buftype,Some(&data),glctx::STATIC_DRAW);
 }
 
+pub fn populate_buffer_short(ctx:&glctx, buftype: u32, buf:&glbuf, values:&Vec<u16>) {
+    ctx.bind_buffer(buftype,Some(&buf));
+    let data = TypedArray::<u16>::from(&(values[..])).buffer();
+    ctx.buffer_data_1(buftype,Some(&data),glctx::STATIC_DRAW);
+}
+
 fn fix_tex_image2_d_cnv(ctx: &glctx, 
                     target: GLenum, level: GLint, internalformat: GLint,
                     format: GLenum, type_: GLenum, canvas: &CanvasElement) {

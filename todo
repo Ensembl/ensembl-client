@@ -5,9 +5,13 @@ Rectangle types          (5)
 indexed vertices         (2)
 continuous lines         (4)
 integral colours         (3)
-sized uniforms/attribs   (1)
 bitmap draw              (7)
 text alpha               (9)
 proper speccing of sizes (8)
 tab deselected jank
 font load race
+
+
+index at all
+index share
+indexed many

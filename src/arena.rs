@@ -163,7 +163,7 @@ impl Arena {
 
     }
 
-    pub fn animate(&mut self, stage: &Stage) {
+    pub fn draw(&mut self, stage: &Stage) {
         // prepare arena
         {
             let ctx = &self.data.borrow().ctx;
