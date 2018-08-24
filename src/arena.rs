@@ -10,7 +10,7 @@ use std::rc::Rc;
 use canvasutil;
 use wglraw;
 
-use program::Program;
+use program::{ Program, GPUSpec };
 
 use coord::{
     COrigin,
@@ -46,6 +46,7 @@ pub struct ArenaData {
     pub canvases: ArenaCanvases,
     pub gtexreqman: TextureSourceManager,
     pub ctx: glctx,
+    pub gpuspec: GPUSpec
 }
 
 impl ArenaData {
@@ -95,6 +96,7 @@ impl Arena {
         let flat = Rc::new(canvasutil::FlatCanvas::create(2,2));
         let data = Rc::new(RefCell::new(ArenaData {
             ctx, spec, 
+            gpuspec: GPUSpec::new(),
             gtexreqman: TextureSourceManager::new(),
             dims: ArenaDims {
                 aspect: canvasutil::aspect_ratio(&canvas),
@@ -106,8 +108,13 @@ impl Arena {
                 idx: 0,
             },
         }));
+        {
+            let mut gpuspec = GPUSpec::new();
+            gpuspec.populate(&data.borrow_mut());
+            data.borrow_mut().gpuspec = gpuspec;
+        }
         let data_g = data.clone();
-        let data_b = data_g.borrow();        
+        let data_b = data_g.borrow();
         let arena = Arena {
             data, 
             order: vec_s! {

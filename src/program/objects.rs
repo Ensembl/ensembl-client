@@ -104,40 +104,28 @@ pub struct ObjectAttrib {
     buf: glbuf,
     name: String,
     size: u8,
-    pre: bool
 }
 
 impl ObjectAttrib {
-    pub fn new(adata: &ArenaData, name: &str,size: u8) -> ObjectAttrib {
+    pub fn new(adata: &ArenaData, name: &str, size: u8) -> ObjectAttrib {
         ObjectAttrib {
             vec: Vec::<f32>::new(),
             buf: wglraw::init_buffer(&adata.ctx),
             name: name.to_string(),
-            pre: false,
             size
         }
-    }
-
-    pub fn new_pre(adata: &ArenaData, name: &str,size: u8) -> ObjectAttrib {
-        let mut out = ObjectAttrib::new(adata,name,size);
-        out.pre = true;
-        out
     }
 }
 
 impl Object for ObjectAttrib {
     fn populate(&mut self, adata: &ArenaData) {
-        if !self.pre {
-            wglraw::populate_buffer(&adata.ctx,glctx::ARRAY_BUFFER,
-                                    &self.buf,&self.vec);
-            self.vec.clear();
-        }
+        wglraw::populate_buffer(&adata.ctx,glctx::ARRAY_BUFFER,
+                                &self.buf,&self.vec);
+        self.vec.clear();
     }
 
     fn link(&self, adata : &ArenaData, pcode: &ProgramCode, _stage: &Stage, _dims: &ArenaDims) {
-        if !self.pre {
-            pcode.set_attribute(&adata.ctx,&self.name,&self.buf,self.size);
-        }
+        pcode.set_attribute(&adata.ctx,&self.name,&self.buf,self.size);
     }
 
     fn add_data(&mut self, values: &[&Input]) {

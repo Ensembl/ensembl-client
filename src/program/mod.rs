@@ -25,5 +25,7 @@ pub use program::source::{
 };
 
 pub use program::gpuspec::{
-    Precision
+    Precision,
+    GPUSpec,
+    GLSize,
 };

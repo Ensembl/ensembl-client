@@ -12,8 +12,8 @@ use program::{
 
 fn page_prog() -> ProgramSource {
     ProgramSource::new(vec! {
-        Uniform::new_vert("vec2","uSize"),
-        Uniform::new_vert("float","uStageVpos"),
+        Uniform::new_vert(&PR_DEF,"vec2","uSize"),
+        Uniform::new_vert(&PR_DEF,"float","uStageVpos"),
         Attribute::new(&PR_DEF,2,"aVertexPosition"),
         Statement::new_vert("
             gl_Position = vec4(aVertexPosition.x / uSize.x - 1.0,

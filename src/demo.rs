@@ -57,7 +57,7 @@ struct State {
     last_down: bool,
 }
 
-const MAX_GEAR : u32 = 6;
+const MAX_GEAR : u32 = 4;
 const MAX_GRACE: u32 = 300;
 const JANK_WINDOW: f32 = 60.;
 
@@ -221,7 +221,7 @@ pub fn demo() {
                                              255,0,0,255,
                                              0,255,0,255,
                                              255,255,0,255 },4,1);
-                stretch_texture(a,tx,&[CLeaf(-10.,y-5),CLeaf(10.,y+5)]);
+                stretch_texture(a,tx,&[CLeaf(-5.,y-5),CLeaf(5.,y+5)]);
                 let tx = bitmap_texture(a,
                                     vec! { 0,0,255,255,
                                              255,0,0,255,
@@ -293,4 +293,3 @@ pub fn demo() {
     animate(0.,state);
     stdweb::event_loop();
 }
-

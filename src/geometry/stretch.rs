@@ -12,10 +12,10 @@ use program::{
 
 fn stretch_prog() -> ProgramSource {
     ProgramSource::new(vec! {
-        Uniform::new_vert("float","uStageHpos"),
-        Uniform::new_vert("float","uStageVpos"),
-        Uniform::new_vert("float","uStageZoom"),
-        Uniform::new_vert("vec2","uSize"),
+        Uniform::new_vert(&PR_DEF,"float","uStageHpos"),
+        Uniform::new_vert(&PR_DEF,"float","uStageVpos"),
+        Uniform::new_vert(&PR_DEF,"float","uStageZoom"),
+        Uniform::new_vert(&PR_DEF,"vec2","uSize"),
         Attribute::new(&PR_DEF,2,"aVertexPosition"),
         Statement::new_vert("
             gl_Position = vec4(
