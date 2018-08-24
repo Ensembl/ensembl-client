@@ -80,7 +80,10 @@ module.exports = {
     open: true
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js', '.scss']
+    extensions: ['.tsx', '.ts', '.js', '.scss'],
+    alias: {
+      assets: path.join(__dirname, '../assets')
+    }
   },
   watchOptions: {
     ignored: /node_modules/

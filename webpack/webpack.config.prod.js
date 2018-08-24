@@ -113,6 +113,9 @@ module.exports = {
     new BundleAnalyzerPlugin()
   ],
   resolve: {
-    extensions: ['.tsx', '.ts', '.js', '.scss']
+    extensions: ['.tsx', '.ts', '.js', '.scss'],
+    alias: {
+      assets: path.join(__dirname, '../assets')
+    }
   }
 };
