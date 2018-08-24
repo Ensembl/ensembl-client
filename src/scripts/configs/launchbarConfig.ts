@@ -15,7 +15,7 @@ export type LaunchbarDetails = {
   about: LaunchbarApp
 };
 
-const launchbarIcon = require('../../../assets/img/launchbar/launchbar_icon_placeholder.png');
+const launchbarIcon = require('assets/img/launchbar/launchbar_icon_placeholder.png');
 
 export const launchbarConfig: LaunchbarDetails = {
   categories: [

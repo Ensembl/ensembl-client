@@ -1,11 +1,11 @@
-import React, { Component, MouseEventHandler, SFC } from 'react';
+import React, { MouseEventHandler, SFC } from 'react';
 
 type NavProps = {
   toggleLaunchbar: MouseEventHandler,
   toggleAccount: MouseEventHandler
 };
 
-const headerIcon = require('../../../../../assets/img/launchbar/header_icon_placeholder.png');
+const headerIcon = require('assets/img/launchbar/header_icon_placeholder.png');
 
 const Nav: SFC<NavProps> = (props: NavProps) => (
   <div className="top-bar-right">
