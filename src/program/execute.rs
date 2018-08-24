@@ -13,18 +13,46 @@ use webgl_rendering_context::{
 use arena::{ Stage, ArenaData, ArenaDims };
 use coord::Input;
 
-use shape::ShapeManager;
-use texture::TextureTargetManager;
+use shape::SolidShapeManager;
+use texture::TexShapeManager;
 
 use program::source::{ Source, ProgramSource };
 use program::objects::Object;
 
-pub struct ProgramAttribs {
+const BATCH_LIMIT : u32 = 65535;
+
+pub struct DataBatch {
     idx_buf: glbuf,
     idx_vec: Vec<u16>,
     num_points: u16,
-    attribs: Vec<Box<Object>>,
-    attrib_names: HashMap<String,usize>,
+    id_val: u32
+}
+
+impl DataBatch {
+    fn new(adata: &ArenaData, id: u32) -> DataBatch {
+        DataBatch {
+            num_points: 0,
+            idx_buf: wglraw::init_buffer(&adata.ctx),
+            idx_vec: Vec::<u16>::new(),
+            id_val: id
+        }
+    }
+
+    pub fn add_vertices(&mut self, indexes: &[u16], points: u16) {
+        for v in indexes {
+            self.idx_vec.push(self.num_points+*v);
+        }
+        self.num_points += points;
+    }
+    
+    pub fn id(&self) -> u32 { self.id_val }
+}
+
+pub struct ProgramAttribs {
+    batches: Vec<DataBatch>,
+    batch_num: u32,
+    objects: Vec<Box<Object>>,
+    object_names: HashMap<String,usize>,
 }
 
 pub struct ProgramCode {
@@ -34,8 +62,8 @@ pub struct ProgramCode {
 
 pub struct Program {
     data: ProgramAttribs,
-    pub shapes: ShapeManager,
-    pub gtexitman: TextureTargetManager,
+    pub solid_shapes: SolidShapeManager,
+    pub tex_shapes: TexShapeManager,
     code: ProgramCode,
 }
 
@@ -93,15 +121,19 @@ impl ProgramCode {
 
 impl ProgramAttribs {
     pub fn add_attrib_data(&mut self, name: &str, values: &[&Input]) {
-        let loc = self.attrib_names[name];
-        self.attribs[loc].add_data(values);
+        let loc = self.object_names[name];
+        let (objs, batches) = (&mut self.objects, &mut self.batches);
+        objs[loc].add_data(batches.last_mut().unwrap(),values);
     }
     
-    pub fn add_vertices(&mut self, indexes: &[u16], points: u16) {
-        for v in indexes {
-            self.idx_vec.push(self.num_points+*v);
+    pub fn add_vertices(&mut self, adata: &ArenaData, indexes: &[u16], points: u16) {
+        self.batch_num += points as u32;
+        if self.batch_num > BATCH_LIMIT {
+            let idx = self.batches.len() as u32;
+            self.batches.push(DataBatch::new(adata,idx));
+            self.batch_num = points as u32;
         }
-        self.num_points += points;
+        self.batches.last_mut().unwrap().add_vertices(indexes,points);
     }
 }
 
@@ -110,49 +142,56 @@ impl Program {
         let prog = Box::new(src.prog(adata));
         adata.ctx.use_program(Some(&prog));
         let uniforms = find_uniforms(&adata.ctx,&prog,&src.uniforms);
-        let (attribs,attrib_names) = find_attribs(adata,&src.uniforms);
+        let (objects,object_names) = find_attribs(adata,&src.uniforms);
         Program {
-            gtexitman: TextureTargetManager::new(),
-            shapes: ShapeManager::new(),
+            tex_shapes: TexShapeManager::new(),
+            solid_shapes: SolidShapeManager::new(),
             data: ProgramAttribs {
-                attribs, attrib_names,
-                num_points: 0,
-                idx_buf: wglraw::init_buffer(&adata.ctx),
-                idx_vec: Vec::<u16>::new(),
+                objects, object_names,
+                batch_num: 0,
+                batches: vec! { DataBatch::new(adata,0) }
             },
             code: ProgramCode {
                 prog, uniforms,
             }
         }
     }
-  
-    pub fn draw(&mut self, adata: &ArenaData, stage:&Stage) {
-        self.link(adata,stage,&adata.dims);
-        if self.data.idx_vec.len() > 0 {
+
+    fn draw_triangles(&self, adata: &ArenaData,b: &DataBatch) {
+        if b.idx_vec.len() > 0 {
             wglraw::populate_buffer_short(&adata.ctx,glctx::ELEMENT_ARRAY_BUFFER,
-                                    &self.data.idx_buf,&self.data.idx_vec);
-            adata.ctx.bind_buffer(glctx::ELEMENT_ARRAY_BUFFER,Some(&self.data.idx_buf));
-            adata.ctx.draw_elements(glctx::TRIANGLES,self.data.idx_vec.len() as i32,
+                                    &b.idx_buf,&b.idx_vec);
+            adata.ctx.bind_buffer(glctx::ELEMENT_ARRAY_BUFFER,Some(&b.idx_buf));
+            adata.ctx.draw_elements(glctx::TRIANGLES,b.idx_vec.len() as i32,
                                     glctx::UNSIGNED_SHORT,0);
         }
     }
-    
-    pub fn link(&mut self, adata : &ArenaData,  stage: &Stage, dims: &ArenaDims) {
-        let ctx = &adata.ctx;
-        let prog = &self.code.prog;
-        ctx.use_program(Some(&prog));
-        for a in &self.data.attribs {
-            a.link(adata,&self.code,stage,dims);
+  
+    pub fn draw(&mut self, adata: &ArenaData, stage:&Stage) {
+        for b in self.data.batches.iter() {
+            self.execute(adata,b,stage,&adata.dims);
+            self.draw_triangles(adata,b);
         }
     }
     
-    pub fn populate(&mut self, adata: &mut ArenaData) {
-        self.gtexitman.draw(&mut self.data,adata);
-        self.gtexitman.clear();
-        self.shapes.draw(&mut self.data,adata);
-        self.shapes.clear();
-        for a in &mut self.data.attribs {
-            a.populate(adata);
+    fn execute(&self, adata : &ArenaData, batch: &DataBatch,  stage: &Stage, dims: &ArenaDims) {
+        let ctx = &adata.ctx;
+        let prog = &self.code.prog;
+        ctx.use_program(Some(&prog));
+        for a in &self.data.objects {
+            a.execute(adata,&self.code,batch,stage,dims);
+        }
+    }
+    
+    pub fn shapes_to_gl(&mut self, adata: &mut ArenaData) {
+        self.tex_shapes.into_objects(&mut self.data,adata);
+        self.tex_shapes.clear();
+        self.solid_shapes.into_objects(&mut self.data,adata);
+        self.solid_shapes.clear();
+        for b in self.data.batches.iter_mut() {
+            for a in &mut self.data.objects {
+                a.to_gl(b,adata);
+            }
         }
     }
 }

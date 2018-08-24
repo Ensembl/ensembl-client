@@ -24,15 +24,15 @@ impl StretchRect {
 }
 
 impl Shape for StretchRect {
-    fn process(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
-        vertices_rect(geom);                                    
+    fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
+        vertices_rect(adata,geom);                                    
         rectangle_g(geom,"aVertexPosition",&self.points);
         multi_gl(geom,"aVertexColour",&self.colour,4);
     }
 }
 
 pub fn stretch_rectangle(arena: &mut Arena, p:&[CLeaf;2], colour:&Colour) {
-    arena.get_geom("stretch").shapes.add_item(Box::new(
+    arena.get_geom("stretch").solid_shapes.add_item(Box::new(
         StretchRect::new(*p,*colour)
     ));
 }
@@ -61,11 +61,11 @@ impl StretchTexture {
 }
 
 impl Shape for StretchTexture {
-    fn process(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
+    fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
         if let Some(tp) = self.texpos {
             let flat = &adata.canvases.flat;
             let t = tp.to_rect(flat);
-            vertices_rect(geom);                                    
+            vertices_rect(adata,geom);                                    
             rectangle_g(geom,"aVertexPosition",&self.pos);
             rectangle_t(geom,"aTextureCoord",&t);
         }
@@ -74,5 +74,5 @@ impl Shape for StretchTexture {
 
 pub fn stretch_texture(arena: &mut Arena, req: TextureDrawRequestHandle, pos: &[CLeaf;2]) {
     let ri = StretchTexture::new(pos);
-    arena.get_geom("stretchtex").gtexitman.add_item(req,Box::new(ri));
+    arena.get_geom("stretchtex").tex_shapes.add_item(req,Box::new(ri));
 }

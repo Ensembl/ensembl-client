@@ -28,9 +28,9 @@ impl PinTriangle {
 }
 
 impl Shape for PinTriangle {
-    fn process(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+    fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
         let p = &self.points;
-        vertices_tri(geom);
+        vertices_tri(adata,geom);
         triangle_gl(geom,"aVertexPosition",&[&p[0],&p[1],&p[2]]);
         multi_gl(geom,"aOrigin",&self.origin,3);
         multi_gl(geom,"aVertexColour",&self.colour,3);
@@ -38,7 +38,7 @@ impl Shape for PinTriangle {
 }
 
 pub fn pin_triangle(arena: &mut Arena, origin: &CLeaf, p: &[CPixel;3], colour: &Colour) {
-    arena.get_geom("pin").shapes.add_item(Box::new(
+    arena.get_geom("pin").solid_shapes.add_item(Box::new(
         PinTriangle::new(*origin,*p,*colour)
     ));
 }
@@ -68,12 +68,12 @@ impl PinTexture {
 }
 
 impl Shape for PinTexture {
-    fn process(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
+    fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
         if let Some(tp) = self.texpos {
             let flat = &adata.canvases.flat;            
             let p = [CPixel(0,0), tp.size(self.scale)];
             let t = tp.to_rect(flat);
-            vertices_rect(geom);                                    
+            vertices_rect(adata,geom);                                    
             rectangle_p(geom,"aVertexPosition",&p);
             rectangle_t(geom,"aTextureCoord",&t);
             multi_gl(geom,"aOrigin",&self.origin,4);
@@ -83,5 +83,5 @@ impl Shape for PinTexture {
 
 pub fn pin_texture(arena: &mut Arena, req: TextureDrawRequestHandle, origin: &CLeaf, scale: &CPixel) {
     let ri = PinTexture::new(origin,scale);
-    arena.get_geom("pintex").gtexitman.add_item(req,Box::new(ri));
+    arena.get_geom("pintex").tex_shapes.add_item(req,Box::new(ri));
 }

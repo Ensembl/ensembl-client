@@ -6,7 +6,7 @@ mod util;
 
 pub use shape::shapeimpl::{
     Shape,
-    ShapeManager
+    SolidShapeManager
 };
 
 pub use shape::fixpage::{

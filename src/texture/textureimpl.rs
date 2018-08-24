@@ -205,17 +205,17 @@ impl TexPart {
     }
 }
 
-/* A TextureTargetManager manages requests to draw an item onto a WebGL
+/* A TexShapeManager manages requests to draw an item onto a WebGL
  * canvas by storing relevant TextureItems. One per geometry.
  */
 
-pub struct TextureTargetManager {
+pub struct TexShapeManager {
     requests: Vec<(TextureDrawRequestHandle,Box<TexPosItem>)>
 }
 
-impl TextureTargetManager {
-    pub fn new() -> TextureTargetManager {
-        TextureTargetManager {
+impl TexShapeManager {
+    pub fn new() -> TexShapeManager {
+        TexShapeManager {
             requests: Vec::<(TextureDrawRequestHandle,Box<TexPosItem>)>::new()
         }
     }
@@ -224,12 +224,12 @@ impl TextureTargetManager {
         self.requests.push((req,item));
     }
     
-    pub fn draw(&mut self, tg: &mut ProgramAttribs, adata: &mut ArenaData) {
+    pub fn into_objects(&mut self, tg: &mut ProgramAttribs, adata: &mut ArenaData) {
         let src = &adata.gtexreqman;
         for (ref mut req,ref mut obj) in &mut self.requests {
             let tp = req.measure(src);
             obj.set_texpos(&tp);
-            obj.process(tg,adata);
+            obj.into_objects(tg,adata);
         }
     }
     

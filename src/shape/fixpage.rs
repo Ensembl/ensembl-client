@@ -24,8 +24,8 @@ impl FixRect {
 }
 
 impl Shape for FixRect {
-    fn process(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
-        vertices_rect(geom);                                    
+    fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
+        vertices_rect(adata,geom);                                    
         rectangle_p(geom,"aVertexPosition",&self.points);
         multi_gl(geom,"aVertexColour",&self.colour,4);
     }
@@ -33,7 +33,7 @@ impl Shape for FixRect {
 
 fn rectangle(arena: &mut Arena, p: &[CPixel;2], colour: &Colour, geom: &str) {
     let geom = arena.get_geom(geom);
-    geom.shapes.add_item(Box::new(
+    geom.solid_shapes.add_item(Box::new(
         FixRect::new(*p,*colour)
     ));
 }
@@ -72,12 +72,12 @@ impl FixTexture {
 }
 
 impl Shape for FixTexture {
-    fn process(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
+    fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
         if let Some(tp) = self.texpos {
             let flat = &adata.canvases.flat;
             let t = tp.to_rect(flat);
             let p = [self.pos, self.pos + tp.size(self.scale)];
-            vertices_rect(geom);
+            vertices_rect(adata,geom);
             rectangle_p(geom,"aVertexPosition",&p);
             rectangle_t(geom,"aTextureCoord",&t);
         }
@@ -86,7 +86,7 @@ impl Shape for FixTexture {
 
 fn texture(arena: &mut Arena,req: TextureDrawRequestHandle, origin: &CPixel, scale: &CPixel, geom: &str) {
     let ri = FixTexture::new(origin,scale);
-    arena.get_geom(geom).gtexitman.add_item(req,Box::new(ri));
+    arena.get_geom(geom).tex_shapes.add_item(req,Box::new(ri));
 }
 
 

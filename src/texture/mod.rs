@@ -9,7 +9,7 @@ pub use texture::textureimpl::{
     
     /* Different INSTANCES OF THINGS To be drawn */
     TexPosItem,
-    TextureTargetManager,
+    TexShapeManager,
     TexPart,
 };
 
