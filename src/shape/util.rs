@@ -1,4 +1,5 @@
 use std::iter;
+use arena::ArenaData;
 use program::ProgramAttribs;
 use coord::{ CPixel, CFraction, CLeaf, Input };
 
@@ -27,10 +28,10 @@ pub fn multi_gl(pdata: &mut ProgramAttribs, key: &str, d: &Input, mul: u8) {
     pdata.add_attrib_data(key,&v.as_slice());
 }
 
-pub fn vertices_rect(pdata: &mut ProgramAttribs) {
-    pdata.add_vertices(&[0,3,1,2,1,3],4);
+pub fn vertices_rect(adata: &ArenaData, pdata: &mut ProgramAttribs) {
+    pdata.add_vertices(adata,&[0,3,1,2,1,3],4);
 }
 
-pub fn vertices_tri(pdata: &mut ProgramAttribs) {
-    pdata.add_vertices(&[0,1,2],3);
+pub fn vertices_tri(adata: &ArenaData, pdata: &mut ProgramAttribs) {
+    pdata.add_vertices(adata,&[0,1,2],3);
 }

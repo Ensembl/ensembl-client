@@ -2,31 +2,31 @@ use arena::ArenaData;
 use program::ProgramAttribs;
 
 pub trait Shape {
-    fn process(&self, geom: &mut ProgramAttribs, adata: &ArenaData);
+    fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData);
 }
 
-pub struct ShapeManager {
-    requests: Vec<Box<Shape>>
+pub struct SolidShapeManager {
+    shapes: Vec<Box<Shape>>
 }
 
-impl ShapeManager {
-    pub fn new() -> ShapeManager {
-        ShapeManager {
-            requests: Vec::<Box<Shape>>::new()
+impl SolidShapeManager {
+    pub fn new() -> SolidShapeManager {
+        SolidShapeManager {
+            shapes: Vec::<Box<Shape>>::new()
         }
     }
     
     pub fn add_item(&mut self, item: Box<Shape>) {
-        self.requests.push(item);
+        self.shapes.push(item);
     }
     
-    pub fn draw(&mut self, tg: &mut ProgramAttribs, adata: &mut ArenaData) {
-        for obj in &mut self.requests {
-            obj.process(tg,adata);
+    pub fn into_objects(&mut self, tg: &mut ProgramAttribs, adata: &mut ArenaData) {
+        for s in &mut self.shapes {
+            s.into_objects(tg,adata);
         }
     }
     
     pub fn clear(&mut self) {
-        self.requests.clear();
+        self.shapes.clear();
     }        
 }

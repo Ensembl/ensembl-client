@@ -7,6 +7,7 @@ pub use program::execute::{
     Program,
     ProgramAttribs,
     ProgramCode,
+    DataBatch,
 };
 
 pub use program::objects::{

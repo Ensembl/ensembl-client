@@ -157,7 +157,7 @@ impl Arena {
             gtexreqman.draw(canvases);
         }
         for k in &self.order {
-            self.map.get_mut(k).unwrap().populate(datam);
+            self.map.get_mut(k).unwrap().shapes_to_gl(datam);
         }
         datam.gtexreqman.clear();
 
