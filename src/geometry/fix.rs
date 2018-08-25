@@ -8,12 +8,13 @@ use program::{
     Statement,
     Uniform,
     Attribute,
+    Arity,
 };
 
 fn fix_prog() -> ProgramSource {
     ProgramSource::new(vec! {
-        Uniform::new_vert(&PR_DEF,"vec2","uSize"),
-        Attribute::new(&PR_DEF,2,"aVertexPosition"),
+        Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
+        Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
         Statement::new_vert("
             gl_Position = vec4(aVertexPosition.x / uSize.x - 1.0,
                                1.0 - aVertexPosition.y / uSize.y,

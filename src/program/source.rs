@@ -16,7 +16,7 @@ use program::objects::{
     ObjectStage,
 };
 
-use program::gpuspec::Precision;
+use program::gpuspec::{ Precision, Arity };
 
 #[derive(PartialEq,Clone,Eq)]
 pub enum Phase {
@@ -36,25 +36,25 @@ pub trait Source {
 }
 
 pub struct Uniform {
-    size: String,
+    size: Arity,
     pub name: String,
     phase: Phase,
     prec: Precision,
 }
 
 impl Uniform {
-    fn new(prec: &Precision, size: &str, name: &str, phase: Phase) -> Rc<Uniform> {
+    fn new(prec: &Precision, size: Arity, name: &str, phase: Phase) -> Rc<Uniform> {
         Rc::new(Uniform {
-            size: size.to_string(), name: name.to_string(), phase, 
+            size: size, name: name.to_string(), phase, 
             prec: *prec
         })
     }
     
-    pub fn new_frag(prec: &Precision, size: &str, name: &str) -> Rc<Uniform> {
+    pub fn new_frag(prec: &Precision, size: Arity, name: &str) -> Rc<Uniform> {
         Uniform::new(prec,size, name, Phase::Fragment)
     }
 
-    pub fn new_vert(prec: &Precision, size: &str, name: &str) -> Rc<Uniform> {
+    pub fn new_vert(prec: &Precision, size: Arity, name: &str) -> Rc<Uniform> {
         Uniform::new(prec,size, name, Phase::Vertex)
     }
 }
@@ -64,13 +64,12 @@ impl Source for Uniform {
         if *phase == self.phase {
             let prec = match self.phase {
                 Phase::Vertex =>
-                    adata.gpuspec.best_float_vert(&self.prec),
+                    adata.gpuspec.best_vert(&self.prec),
                 Phase::Fragment =>
-                    adata.gpuspec.best_float_frag(&self.prec)
+                    adata.gpuspec.best_frag(&self.prec)
             };
-            format!("uniform {} {} {};\n",
-                prec.as_string(),
-                self.size,
+            format!("uniform {} {};\n",
+                prec.as_string(self.size),
                 self.name).to_string()
         } else {
             String::new()
@@ -87,33 +86,30 @@ impl Source for Uniform {
 
 #[derive(Clone)]
 pub struct Attribute {
-    size: u8,
+    size: Arity,
     prec: Precision,
     pub name: String,
 }
 
 impl Attribute {
-    pub fn new(prec: &Precision,size: u8, name: &str) -> Rc<Attribute> {
+    pub fn new(prec: &Precision, size: Arity, name: &str) -> Rc<Attribute> {
         Rc::new(Attribute {
             size, name: name.to_string(), prec: *prec
         })
     }
 }
 
-const ATTRIB_NAME : [&str;4] = ["float","vec2","vec3","vec4"];
-
 impl Source for Attribute {
     fn declare(&self, adata: &ArenaData, phase: &Phase) -> String {
         if *phase != Phase::Vertex { return String::new(); }
-        format!("attribute {} {} {};\n",
-            adata.gpuspec.best_float_vert(&self.prec).as_string(),
-            ATTRIB_NAME[(self.size-1) as usize],
+        format!("attribute {} {};\n",
+            adata.gpuspec.best_vert(&self.prec).as_string(self.size),
             self.name).to_string()
     }
 
     fn make_attribs(&self, adata: &ArenaData)
                             -> Option<(Option<&str>,Box<Object>)> {
-        let gt = ObjectAttrib::new(adata,&self.name,self.size);
+        let gt = ObjectAttrib::new(adata,&self.name,self.size.to_num());
         Some((Some(&self.name),Box::new(gt)))
     }
 }
@@ -121,15 +117,15 @@ impl Source for Attribute {
 #[derive(Clone)]
 pub struct Varying {
     prec: Precision,
-    size: String,
+    size: Arity,
     name: String,
 }
 
 impl Varying {
-    pub fn new(prec: &Precision, size: &str, name: &str) -> Rc<Varying> {
+    pub fn new(prec: &Precision, size: Arity, name: &str) -> Rc<Varying> {
         Rc::new(Varying {
             prec: *prec,
-            size: size.to_string(),
+            size: size,
             name: name.to_string()
         })
     }
@@ -137,9 +133,9 @@ impl Varying {
 
 impl Source for Varying {
     fn declare(&self, adata: &ArenaData, _phase: &Phase) -> String {
-        format!("varying {} {} {};\n",
-            adata.gpuspec.best_float_frag(&self.prec).as_string(),
-            self.size,self.name).to_string()
+        format!("varying {} {};\n",
+            adata.gpuspec.best_frag(&self.prec).as_string(self.size),
+            self.name).to_string()
     }
 }
 

@@ -8,15 +8,16 @@ use program::{
     Statement,
     Uniform,
     Attribute,
+    Arity,
 };
 
 fn stretch_prog() -> ProgramSource {
     ProgramSource::new(vec! {
-        Uniform::new_vert(&PR_DEF,"float","uStageHpos"),
-        Uniform::new_vert(&PR_DEF,"float","uStageVpos"),
-        Uniform::new_vert(&PR_DEF,"float","uStageZoom"),
-        Uniform::new_vert(&PR_DEF,"vec2","uSize"),
-        Attribute::new(&PR_DEF,2,"aVertexPosition"),
+        Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageHpos"),
+        Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageVpos"),
+        Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageZoom"),
+        Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
+        Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
         Statement::new_vert("
             gl_Position = vec4(
                 (aVertexPosition.x - uStageHpos) * uStageZoom,

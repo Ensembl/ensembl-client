@@ -2,9 +2,7 @@ TODO:
 
 P/GCoord utils           (6)
 Rectangle types          (5)
-indexed vertices         (2)
 continuous lines         (4)
-integral colours         (3)
 bitmap draw              (7)
 text alpha               (9)
 proper speccing of sizes (8)
@@ -12,5 +10,4 @@ tab deselected jank
 font load race
 clearing audit
 subbuffers
-
-indexed many
+missing sizes

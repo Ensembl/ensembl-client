@@ -8,21 +8,46 @@ use webgl_rendering_context::{
 };
 
 #[derive(PartialEq,Clone,Copy)]
-pub struct Precision(pub i32,pub i32);
+pub enum Precision {
+    Float(i32,i32),
+    Int(i32)
+}
+
+#[derive(PartialEq,Eq,Clone,Copy,Hash)]
+pub enum Arity {
+    Scalar,
+    Vec2,
+    Vec3,
+    Vec4,
+    Sampler2D,
+}
+
+impl Arity {
+    pub fn to_num(&self) -> u8 {
+        *ARITY.get(self).unwrap_or(&0)
+    }
+}
 
 impl PartialOrd for Precision {
     fn partial_cmp(&self, other: &Precision) -> Option<Ordering> {
-        let less =
-            (self.0 < other.0 && self.1 <= other.1) ||
-            (self.1 < other.1 && self.0 <= other.0);
-        if less {
-            Some(Ordering::Less)
-        } else if other < self {
-            Some(Ordering::Greater)
-        } else if other == self {
-            Some(Ordering::Equal)
-        } else {
-            None
+        match (self,other) {
+            (Precision::Float(ap,ar),Precision::Float(bp,br)) => {
+                if (ap<bp && ar<=br) || (ar<br && ap<=bp) {
+                    Some(Ordering::Less)
+                } else if other < self {
+                    Some(Ordering::Greater)
+                } else if other == self {
+                    Some(Ordering::Equal)
+                } else {
+                    None
+                }
+            },
+            (Precision::Float(_,_),Precision::Int(_)) =>
+                Some(Ordering::Greater),
+            (Precision::Int(_),Precision::Float(_,_)) =>
+                Some(Ordering::Less),
+            (Precision::Int(a),Precision::Int(b)) =>
+                Some(a.cmp(&b))
         }
     }
 }
@@ -43,15 +68,44 @@ lazy_static! {
         GLSize::FloatMed => "mediump", GLSize::IntMed => "mediump",
         GLSize::FloatLow => "lowp", GLSize::IntLow => "lowp"
     };
+    
+    static ref IS_INT : HashMap<GLSize,bool> = hashmap! {
+        GLSize::IntHigh => true,
+        GLSize::IntMed => true,
+        GLSize::IntLow => true
+    };
+    
+    static ref TYPES : HashMap<Arity,[&'static str;2]> = hashmap! {
+        Arity::Scalar => ["float","int"],
+        Arity::Vec2 => ["vec2","ivec2"],
+        Arity::Vec3 => ["vec3","ivec3"],
+        Arity::Vec4 => ["vec4","ivec4"],
+        Arity::Sampler2D => ["sampler2D",""]
+    };
+    
+    static ref ARITY : HashMap<Arity,u8> = hashmap! {
+        Arity::Scalar => 1,
+        Arity::Vec2 => 2,
+        Arity::Vec3 => 3,
+        Arity::Vec4 => 4
+    };
 }
 
 impl GLSize {
-    pub fn as_string(&self) -> &str {
-        PREC_STR[self]
+    pub fn as_string(&self, size: Arity) -> String {
+        let idx = if self.is_int() { 1 } else { 0 };
+        format!("{} {}",PREC_STR[self],TYPES[&size][idx]).to_string()
+    }
+
+    fn is_int(&self) -> bool {
+        *IS_INT.get(self).unwrap_or(&false)
     }
 }
 
-const FLOATS: &[GLSize] = &[GLSize::FloatLow, GLSize::FloatMed, GLSize::FloatHigh];
+const ORDER: &[GLSize] = &[
+    GLSize::IntLow, GLSize::IntMed, GLSize::IntHigh,
+    GLSize::FloatLow, GLSize::FloatMed, GLSize::FloatHigh,
+];
 
 pub struct GPUSpecImpl {
     vert_precs: HashMap<GLSize,Precision>,
@@ -67,12 +121,12 @@ impl GPUSpec {
         self.0 = Some(GPUSpecImpl::new(adata));
     }
     
-    pub fn best_float_vert(&self, want: &Precision) -> GLSize {
-        self.0.as_ref().unwrap().best_vert(want,FLOATS)
+    pub fn best_vert(&self, want: &Precision) -> GLSize {
+        self.0.as_ref().unwrap().best_vert(want)
     }
 
-    pub fn best_float_frag(&self, want: &Precision) -> GLSize {
-        self.0.as_ref().unwrap().best_frag(want,FLOATS)
+    pub fn best_frag(&self, want: &Precision) -> GLSize {
+        self.0.as_ref().unwrap().best_frag(want)
     }
 }
 
@@ -81,7 +135,12 @@ fn get_prec(out: &mut HashMap<GLSize,Precision>, adata: &ArenaData,
     let prec = adata.ctx.get_shader_precision_format(shader_en,type_en);
     if let Some(prec) = prec {
         let range = min(prec.range_min(),prec.range_max());
-        out.insert(size,Precision(prec.precision(),range));
+        let val = if size.is_int() {
+            Precision::Int(range)
+        } else {
+            Precision::Float(prec.precision(),range)
+        };
+        out.insert(size,val);
     }
 }
 
@@ -105,19 +164,19 @@ impl GPUSpecImpl {
         }
     }
     
-    fn best(&self, want: &Precision, try: &[GLSize],
+    fn best(&self, want: &Precision,
             precs: &HashMap<GLSize,Precision>) -> GLSize {
-        for p in try {
+        for p in ORDER {
             if precs[p] > *want { return *p; }
         }
-        return *try.last().unwrap();
+        return *ORDER.last().unwrap();
     }
     
-    pub fn best_vert(&self, want: &Precision, try: &[GLSize]) -> GLSize {
-        self.best(want,try,&self.vert_precs)
+    pub fn best_vert(&self, want: &Precision) -> GLSize {
+        self.best(want,&self.vert_precs)
     }
     
-    pub fn best_frag(&self, want: &Precision, try: &[GLSize]) -> GLSize {
-        self.best(want,try,&self.frag_precs)
+    pub fn best_frag(&self, want: &Precision) -> GLSize {
+        self.best(want,&self.frag_precs)
     }    
 }
