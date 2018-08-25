@@ -1,13 +1,15 @@
 TODO:
 
-P/GCoord utils           (6)
-Rectangle types          (5)
-continuous lines         (4)
-bitmap draw              (7)
-text alpha               (9)
-proper speccing of sizes (8)
+P/GCoord utils           (3)
+Rectangle types          (2)
+continuous lines         (1)
+bitmap draw              (4)
+text alpha               (5)
 tab deselected jank
 font load race
 clearing audit
 subbuffers
 missing sizes
+
+predicate types on shapes
+arena/leaf separation
