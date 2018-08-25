@@ -10,7 +10,7 @@ use webgl_rendering_context::{
 
 use wglraw;
 
-use program::ProgramCode;
+use program::{ ProgramCode };
 use program::execute::DataBatch;
 
 use arena::{

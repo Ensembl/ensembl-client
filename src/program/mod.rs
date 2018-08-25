@@ -27,6 +27,7 @@ pub use program::source::{
 
 pub use program::gpuspec::{
     Precision,
+    Arity,
     GPUSpec,
     GLSize,
 };
