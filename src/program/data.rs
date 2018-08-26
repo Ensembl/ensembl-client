@@ -1,12 +1,9 @@
-use std::rc::Rc;
-
 use arena::ArenaData;
 use wglraw;
 
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
     WebGLBuffer as glbuf,
-    WebGLProgram as glprog,
 };
 
 pub struct DataBatch {
@@ -14,22 +11,16 @@ pub struct DataBatch {
     idx_vec: Vec<u16>,
     num_points: u16,
     id_val: u32,
-    prog: Rc<glprog>,
 }
 
 impl DataBatch {
-    pub fn new(adata: &ArenaData, id: u32, prog: Rc<glprog>) -> DataBatch {
+    pub fn new(adata: &ArenaData, id: u32) -> DataBatch {
         DataBatch {
-            prog,
             num_points: 0,
             idx_buf: wglraw::init_buffer(&adata.ctx),
             idx_vec: Vec::<u16>::new(),
             id_val: id
         }
-    }
-
-    pub fn use_program(&self, adata : &ArenaData) {
-        adata.ctx.use_program(Some(&self.prog));
     }
 
     pub fn draw_triangles(&self, adata: &ArenaData) {
@@ -49,14 +40,6 @@ impl DataBatch {
         self.num_points += points;
     }
     
-    pub fn set_attribute(&self, ctx: &glctx, name: &str, buf: &glbuf, step: u8) {
-        let prog = &self.prog;
-        let loc = ctx.get_attrib_location(prog,name) as u32;
-        ctx.enable_vertex_attrib_array(loc);
-        ctx.bind_buffer(glctx::ARRAY_BUFFER,Some(buf));
-        ctx.vertex_attrib_pointer(loc, step as i32, glctx::FLOAT, false, 0, 0);
-    }    
-
     pub fn id(&self) -> u32 { self.id_val }
 }
 

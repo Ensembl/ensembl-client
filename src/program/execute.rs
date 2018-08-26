@@ -20,14 +20,13 @@ const BATCH_LIMIT : u32 = 65535;
 struct DataGroup {
     batches: Vec<DataBatch>,    
     batch_num: u32,
-    prog: Rc<glprog>,
 }
 
 impl DataGroup {
-    pub fn new(adata: &ArenaData, prog: Rc<glprog>) -> DataGroup {
+    pub fn new(adata: &ArenaData) -> DataGroup {
         let mut out = DataGroup {
             batches: Vec::<DataBatch>::new(),
-            batch_num: 0, prog
+            batch_num: 0,
         };
         out.new_batch(adata);
         out
@@ -35,7 +34,7 @@ impl DataGroup {
     
     pub fn new_batch(&mut self, adata: &ArenaData) {
         let idx = self.batches.len() as u32;
-        self.batches.push(DataBatch::new(adata,idx,self.prog.clone()));
+        self.batches.push(DataBatch::new(adata,idx));
         self.batch_num = 0;
     }
 
@@ -58,7 +57,6 @@ impl DataGroup {
 
     pub fn draw(&mut self, adata: &ArenaData, stage:&Stage, objs: &Vec<Box<Object>>) {
         for b in self.batches.iter() {
-            b.use_program(adata);
             for a in objs {
                 a.execute(adata,b,stage,&adata.dims);
             }
@@ -85,6 +83,7 @@ pub struct Program {
     data: ProgramAttribs,
     pub solid_shapes: SolidShapeManager,
     pub tex_shapes: TexShapeManager,
+    prog: Rc<glprog>,
 }
 
 fn find_attribs(adata: &ArenaData, vars: &Vec<Rc<Source>>,
@@ -124,16 +123,22 @@ impl Program {
             tex_shapes: TexShapeManager::new(),
             solid_shapes: SolidShapeManager::new(),
             data: ProgramAttribs {
-                group: DataGroup::new(adata,prog.clone()),
+                group: DataGroup::new(adata),
                 objects, object_names,
             },
+            prog,
         }
+    }
+
+    pub fn use_program(&self, adata : &ArenaData) {
+        adata.ctx.use_program(Some(&self.prog));
     }
   
     pub fn draw(&mut self, adata: &ArenaData, stage:&Stage) {
         for obj in self.data.objects.iter_mut() {
             obj.stage_gl(adata,stage);
         }
+        self.use_program(adata);
         self.data.group.draw(adata, stage, &self.data.objects);
     }
         
