@@ -2,9 +2,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use webgl_rendering_context::{
-    WebGLRenderingContext as glctx,
     WebGLProgram as glprog,
-    WebGLUniformLocation as gluni,
 };
 
 use arena::{ Stage, ArenaData };
@@ -23,15 +21,13 @@ struct DataGroup {
     batches: Vec<DataBatch>,    
     batch_num: u32,
     prog: Rc<glprog>,
-    uniforms: Rc<HashMap<String,gluni>>,
 }
 
 impl DataGroup {
-    pub fn new(adata: &ArenaData, prog: Rc<glprog>, 
-                uniforms: Rc<HashMap<String,gluni>>) -> DataGroup {
+    pub fn new(adata: &ArenaData, prog: Rc<glprog>) -> DataGroup {
         let mut out = DataGroup {
             batches: Vec::<DataBatch>::new(),
-            batch_num: 0, prog, uniforms
+            batch_num: 0, prog
         };
         out.new_batch(adata);
         out
@@ -39,7 +35,7 @@ impl DataGroup {
     
     pub fn new_batch(&mut self, adata: &ArenaData) {
         let idx = self.batches.len() as u32;
-        self.batches.push(DataBatch::new(adata,idx,self.prog.clone(),self.uniforms.clone()));
+        self.batches.push(DataBatch::new(adata,idx,self.prog.clone()));
         self.batch_num = 0;
     }
 
@@ -91,21 +87,13 @@ pub struct Program {
     pub tex_shapes: TexShapeManager,
 }
 
-fn find_uniforms(ctx: &glctx, prog: &Rc<glprog>, vars: &Vec<Rc<Source>>) 
-                                        -> Rc<HashMap<String,gluni>> {
-    let mut udata = HashMap::<String,gluni>::new();
-    for v in vars {
-        v.preget(ctx,prog,&mut udata);
-    }
-    Rc::new(udata)
-}
-
-fn find_attribs(adata: &ArenaData, vars: &Vec<Rc<Source>>) 
+fn find_attribs(adata: &ArenaData, vars: &Vec<Rc<Source>>,
+                prog: Rc<glprog>) 
                         -> (Vec<Box<Object>>,HashMap<String,usize>) {
     let mut attribs = Vec::<Box<Object>>::new();
     let mut attrib_names = HashMap::<String,usize>::new();
     for v in vars {
-        if let Some((name,value)) = v.make_attribs(adata) {
+        if let Some((name,value)) = v.make_attribs(adata,prog.clone()) {
             let loc = attribs.len();
             attribs.push(value);
             if let Some(name) = name {
@@ -131,19 +119,21 @@ impl Program {
     pub fn new(adata: &ArenaData, src: &ProgramSource) -> Program {
         let prog = Rc::new(src.prog(adata));
         adata.ctx.use_program(Some(&prog));
-        let uniforms = find_uniforms(&adata.ctx,&prog,&src.uniforms);
-        let (objects,object_names) = find_attribs(adata,&src.uniforms);
+        let (objects,object_names) = find_attribs(adata,&src.uniforms,prog.clone());
         Program {
             tex_shapes: TexShapeManager::new(),
             solid_shapes: SolidShapeManager::new(),
             data: ProgramAttribs {
-                group: DataGroup::new(adata,prog.clone(),uniforms.clone()),
+                group: DataGroup::new(adata,prog.clone()),
                 objects, object_names,
             },
         }
     }
   
     pub fn draw(&mut self, adata: &ArenaData, stage:&Stage) {
+        for obj in self.data.objects.iter_mut() {
+            obj.stage_gl(adata,stage);
+        }
         self.data.group.draw(adata, stage, &self.data.objects);
     }
         

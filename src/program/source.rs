@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::rc::Rc;
 
 use arena::ArenaData;
@@ -6,14 +5,13 @@ use arena::ArenaData;
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
     WebGLProgram as glprog,
-    WebGLUniformLocation as gluni,
 };
 
 use program::objects::{
     Object,
     ObjectAttrib,
+    ObjectUniform,
     ObjectCanvasTexture,
-    ObjectStage,
 };
 
 use program::gpuspec::{ Precision, Arity };
@@ -26,9 +24,7 @@ pub enum Phase {
 
 pub trait Source {
     fn declare(&self, _adata: &ArenaData, _phase: &Phase) -> String { String::new() }
-    fn preget(&self, _ctx: &glctx, _prog: &glprog,
-              _udata: &mut HashMap<String,gluni>) {}
-    fn make_attribs(&self, _adata: &ArenaData) 
+    fn make_attribs(&self, _adata: &ArenaData, _prog: Rc<glprog>) 
                             -> Option<(Option<&str>,Box<Object>)> {
         None
     }
@@ -76,11 +72,10 @@ impl Source for Uniform {
         }
     }
 
-    fn preget(&self, ctx: &glctx, prog: &glprog, udata: &mut HashMap<String,gluni>) {
-        let loc = ctx.get_uniform_location(&prog,&self.name);
-        if loc.is_some() {
-            udata.insert(self.name.to_string(),loc.unwrap());
-        }
+    fn make_attribs(&self, adata: &ArenaData, prog: Rc<glprog>)
+                            -> Option<(Option<&str>,Box<Object>)> {
+        let gt = ObjectUniform::new(adata,&prog,&self.name);
+        Some((Some(&self.name),Box::new(gt)))
     }
 }
 
@@ -107,7 +102,7 @@ impl Source for Attribute {
             self.name).to_string()
     }
 
-    fn make_attribs(&self, adata: &ArenaData)
+    fn make_attribs(&self, adata: &ArenaData, _prog: Rc<glprog>)
                             -> Option<(Option<&str>,Box<Object>)> {
         let gt = ObjectAttrib::new(adata,&self.name,self.size.to_num());
         Some((Some(&self.name),Box::new(gt)))
@@ -173,34 +168,18 @@ impl Source for Statement {
 }
 
 pub struct Canvas {
-    name: String,
 }
 
 impl Canvas {
-    pub fn new(name: &str) -> Rc<Canvas> {
-        Rc::new(Canvas { name: name.to_string() })
+    pub fn new() -> Rc<Canvas> {
+        Rc::new(Canvas { })
     }
 }
 
 impl Source for Canvas {
-    fn make_attribs(&self, _adata: &ArenaData)
+    fn make_attribs(&self, _adata: &ArenaData, _prog: Rc<glprog>)
                         -> Option<(Option<&str>,Box<Object>)> {
-        Some((None,Box::new(ObjectCanvasTexture::new(&self.name))))
-    }
-}
-
-pub struct Stage {}
-
-impl Stage {
-    pub fn new() -> Rc<Stage> {
-        Rc::new(Stage {})
-    }
-}
-
-impl Source for Stage {
-    fn make_attribs(&self, _adata: &ArenaData) 
-                            -> Option<(Option<&str>,Box<Object>)> {
-        Some((None,Box::new(ObjectStage::new())))
+        Some((None,Box::new(ObjectCanvasTexture::new())))
     }
 }
 

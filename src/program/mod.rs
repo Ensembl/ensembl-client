@@ -13,7 +13,8 @@ pub use program::data::DataBatch;
 
 pub use program::objects::{
     Object,
-    ObjectAttrib
+    ObjectAttrib,
+    UniformValue
 };
     
 pub use program::source::{
@@ -23,7 +24,6 @@ pub use program::source::{
     Attribute,
     Varying,
     Canvas,
-    Stage,
 };
 
 pub use program::gpuspec::{
