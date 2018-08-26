@@ -125,16 +125,17 @@ impl Object for ObjectUniform {
 pub struct ObjectAttrib {
     vec : HashMap<u32,Vec<f32>>,
     buf: HashMap<u32,glbuf>,
-    name: String,
+    loc: u32,
     size: u8,
 }
 
 impl ObjectAttrib {
-    pub fn new(_adata: &ArenaData, name: &str, size: u8) -> ObjectAttrib {
+    pub fn new(adata: &ArenaData, prog: &glprog, name: &str, size: u8) -> ObjectAttrib {
+        let ctx = &adata.ctx;
         ObjectAttrib {
             vec: HashMap::<u32,Vec<f32>>::new(),
             buf: HashMap::<u32,glbuf>::new(),
-            name: name.to_string(),
+            loc: ctx.get_attrib_location(prog,name) as u32,
             size
         }
     }
@@ -165,8 +166,12 @@ impl Object for ObjectAttrib {
     }
 
     fn execute(&self, adata : &ArenaData, batch: &DataBatch, _stage: &Stage, _dims: &ArenaDims) {
+        let ctx = &adata.ctx;
         if let Some(buf) = self.buffer(batch) {
-            batch.set_attribute(&adata.ctx,&self.name,buf,self.size);
+            ctx.enable_vertex_attrib_array(self.loc);
+            ctx.bind_buffer(glctx::ARRAY_BUFFER,Some(buf));
+            ctx.vertex_attrib_pointer(self.loc, self.size as i32,
+                                      glctx::FLOAT, false, 0, 0);
         }
     }
 

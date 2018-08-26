@@ -102,9 +102,9 @@ impl Source for Attribute {
             self.name).to_string()
     }
 
-    fn make_attribs(&self, adata: &ArenaData, _prog: Rc<glprog>)
+    fn make_attribs(&self, adata: &ArenaData, prog: Rc<glprog>)
                             -> Option<(Option<&str>,Box<Object>)> {
-        let gt = ObjectAttrib::new(adata,&self.name,self.size.to_num());
+        let gt = ObjectAttrib::new(adata,&prog,&self.name,self.size.to_num());
         Some((Some(&self.name),Box::new(gt)))
     }
 }
