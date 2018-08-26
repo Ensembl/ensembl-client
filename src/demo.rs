@@ -206,7 +206,6 @@ pub fn demo() {
     let len_gen = Range::new(0.,0.2);
     let thick_gen = Range::new(0,13);
     let showtext_gen = Range::new(0,10);
-
     {
         let col = Colour(200,200,200);
         let a = &mut arena;
@@ -228,6 +227,8 @@ pub fn demo() {
                                              0,255,0,255,
                                              255,255,0,255 },2,2);
                 pin_texture(a,tx,&CLeaf(0.,y-25),&CPixel(10,10));
+            } else if yidx == middle+2 {
+                
             } else {
                 for idx in -100..100 {
                     let v1 = (idx as f32) * 0.1;

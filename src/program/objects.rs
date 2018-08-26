@@ -10,8 +10,7 @@ use webgl_rendering_context::{
 
 use wglraw;
 
-use program::{ ProgramCode };
-use program::execute::DataBatch;
+use program::data::DataBatch;
 
 use arena::{
     Stage,
@@ -34,8 +33,7 @@ pub trait Object {
 
     fn add_data(&mut self, _batch: &mut DataBatch, _values: &[&Input]) {}
     fn to_gl(&mut self, _batch: &mut DataBatch, _adata: &ArenaData) {}
-    fn execute(&self, _adata : &ArenaData, 
-               _pcode: &ProgramCode, _batch: &DataBatch,
+    fn execute(&self, _adata : &ArenaData, _batch: &DataBatch,
                _stage: &Stage, _dims: &ArenaDims) {}
 }
 
@@ -49,14 +47,14 @@ impl ObjectStage {
 }
 
 impl Object for ObjectStage {    
-    fn execute(&self, adata : &ArenaData, pcode: &ProgramCode,
-                _batch: &DataBatch, stage: &Stage, dims: &ArenaDims) {
+    fn execute(&self, adata : &ArenaData, batch: &DataBatch, 
+                stage: &Stage, dims: &ArenaDims) {
         let ctx = &adata.ctx;
-        pcode.set_uniform_1f(ctx,"uStageHpos",stage.pos.0);
-        pcode.set_uniform_1f(ctx,"uStageVpos",(stage.pos.1 + dims.height_px as f32)/2.);
-        pcode.set_uniform_1f(ctx,"uStageZoom",stage.zoom);
-        pcode.set_uniform_1f(ctx,"uAspect",dims.aspect);
-        pcode.set_uniform_2f(ctx,"uSize",[
+        batch.set_uniform_1f(ctx,"uStageHpos",stage.pos.0);
+        batch.set_uniform_1f(ctx,"uStageVpos",(stage.pos.1 + dims.height_px as f32)/2.);
+        batch.set_uniform_1f(ctx,"uStageZoom",stage.zoom);
+        batch.set_uniform_1f(ctx,"uAspect",dims.aspect);
+        batch.set_uniform_2f(ctx,"uSize",[
             dims.width_px as f32/2.,
             dims.height_px as f32/2.]);
     }
@@ -89,13 +87,13 @@ impl Object for ObjectCanvasTexture {
         self.texture = Some(wglraw::canvas_texture(&adata.ctx,canvases.flat.element()));
     }
 
-    fn execute(&self, adata : &ArenaData, pcode: &ProgramCode,
-                _batch: &DataBatch, _stage: &Stage, _dims: &ArenaDims) {
+    fn execute(&self, adata : &ArenaData, batch: &DataBatch,
+               _stage: &Stage, _dims: &ArenaDims) {
         let canvases = &adata.canvases;
         if let Some(ref texture) = self.texture {
             adata.ctx.active_texture(TEXIDS[canvases.idx as usize]);
             adata.ctx.bind_texture(glctx::TEXTURE_2D,Some(&texture));
-            pcode.set_uniform_1i(&adata.ctx,&self.name,canvases.idx);
+            batch.set_uniform_1i(&adata.ctx,&self.name,canvases.idx);
         }
     }
 }
@@ -142,9 +140,9 @@ impl Object for ObjectAttrib {
         }
     }
 
-    fn execute(&self, adata : &ArenaData, pcode: &ProgramCode, batch: &DataBatch, _stage: &Stage, _dims: &ArenaDims) {
+    fn execute(&self, adata : &ArenaData, batch: &DataBatch, _stage: &Stage, _dims: &ArenaDims) {
         if let Some(buf) = self.buffer(batch) {
-            pcode.set_attribute(&adata.ctx,&self.name,buf,self.size);
+            batch.set_attribute(&adata.ctx,&self.name,buf,self.size);
         }
     }
 
