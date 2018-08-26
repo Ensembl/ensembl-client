@@ -5,14 +5,13 @@ use program::{
     Attribute,
     Varying,
     Canvas,
-    Stage,
     Precision,
     Arity,
 };
 
 fn shader_standard() -> ProgramSource {
     ProgramSource::new(vec! {
-        Stage::new()
+        /* Anything in common can go here, when there is such */
     })
 }
 
@@ -30,7 +29,7 @@ pub fn shader_solid(pos: &ProgramSource) -> ProgramSource {
 pub fn shader_texture(pos: &ProgramSource) -> ProgramSource {
     shader_standard().merge(pos).merge(
         &ProgramSource::new(vec! {
-            Canvas::new("uSampler"),
+            Canvas::new(),
             Uniform::new_frag(&PR_DEF,Arity::Sampler2D,"uSampler"),
             Attribute::new(&PR_DEF,Arity::Vec2,"aTextureCoord"),
             Varying::new(&PR_DEF,Arity::Vec2,"vTextureCoord"),

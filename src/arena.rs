@@ -10,7 +10,7 @@ use std::rc::Rc;
 use canvasutil;
 use wglraw;
 
-use program::{ Program, GPUSpec };
+use program::{ Program, GPUSpec, UniformValue };
 
 use coord::{
     COrigin,
@@ -157,7 +157,8 @@ impl Arena {
             gtexreqman.draw(canvases);
         }
         for k in &self.order {
-            self.map.get_mut(k).unwrap().shapes_to_gl(datam);
+            let geom = self.map.get_mut(k).unwrap();
+            geom.shapes_to_gl(datam);
         }
         datam.gtexreqman.clear();
 
@@ -173,7 +174,8 @@ impl Arena {
         // draw each geometry
         let datam = &mut self.data.borrow_mut();
         for k in &self.order {
-            self.map.get_mut(k).unwrap().draw(datam,&stage);
+            let geom = self.map.get_mut(k).unwrap();
+            geom.draw(datam,&stage);
         }
     }
 }
@@ -187,5 +189,19 @@ pub struct Stage {
 impl Stage {
     pub fn new() -> Stage {
         Stage { pos: COrigin(0.,0.), zoom: 1.0 }
+    }
+
+    pub fn get_key(&self, canvs: &ArenaCanvases, dims: &ArenaDims, key: &str) -> Option<UniformValue> {
+        match key {
+            "uSampler" => Some(UniformValue::Int(canvs.idx)),
+            "uStageHpos" => Some(UniformValue::Float(self.pos.0)),
+            "uStageVpos" => Some(UniformValue::Float((self.pos.1 + dims.height_px as f32)/2.)),
+            "uStageZoom" => Some(UniformValue::Float(self.zoom)),
+            "uAspect" =>    Some(UniformValue::Float(dims.aspect)),
+            "uSize" => Some(UniformValue::Vec2F(
+                dims.width_px as f32/2.,
+                dims.height_px as f32/2.)),
+            _ => None
+        }
     }
 }

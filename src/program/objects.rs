@@ -6,6 +6,8 @@ use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
     WebGLBuffer as glbuf,
     WebGLTexture as gltex,
+    WebGLUniformLocation as gluni,
+    WebGLProgram as glprog,
 };
 
 use wglraw;
@@ -33,43 +35,19 @@ pub trait Object {
 
     fn add_data(&mut self, _batch: &mut DataBatch, _values: &[&Input]) {}
     fn to_gl(&mut self, _batch: &mut DataBatch, _adata: &ArenaData) {}
+    fn stage_gl(&mut self, _adata: &ArenaData, _stage: &Stage) {}
     fn execute(&self, _adata : &ArenaData, _batch: &DataBatch,
                _stage: &Stage, _dims: &ArenaDims) {}
 }
 
-pub struct ObjectStage {
-}
-
-impl ObjectStage {
-    pub fn new() -> ObjectStage {
-        ObjectStage {}
-    }
-}
-
-impl Object for ObjectStage {    
-    fn execute(&self, adata : &ArenaData, batch: &DataBatch, 
-                stage: &Stage, dims: &ArenaDims) {
-        let ctx = &adata.ctx;
-        batch.set_uniform_1f(ctx,"uStageHpos",stage.pos.0);
-        batch.set_uniform_1f(ctx,"uStageVpos",(stage.pos.1 + dims.height_px as f32)/2.);
-        batch.set_uniform_1f(ctx,"uStageZoom",stage.zoom);
-        batch.set_uniform_1f(ctx,"uAspect",dims.aspect);
-        batch.set_uniform_2f(ctx,"uSize",[
-            dims.width_px as f32/2.,
-            dims.height_px as f32/2.]);
-    }
-}
-
 /* ObjectCanvasTexture = Object for canvas-origin textures */
 pub struct ObjectCanvasTexture {
-    name: String,
     texture: Option<gltex>,
 }
 
 impl ObjectCanvasTexture {
-    pub fn new(name: &str) -> ObjectCanvasTexture {
+    pub fn new() -> ObjectCanvasTexture {
         ObjectCanvasTexture {
-            name: name.to_string(),
             texture: None
         }
     }
@@ -87,13 +65,59 @@ impl Object for ObjectCanvasTexture {
         self.texture = Some(wglraw::canvas_texture(&adata.ctx,canvases.flat.element()));
     }
 
-    fn execute(&self, adata : &ArenaData, batch: &DataBatch,
+    fn execute(&self, adata : &ArenaData, _batch: &DataBatch,
                _stage: &Stage, _dims: &ArenaDims) {
         let canvases = &adata.canvases;
         if let Some(ref texture) = self.texture {
             adata.ctx.active_texture(TEXIDS[canvases.idx as usize]);
             adata.ctx.bind_texture(glctx::TEXTURE_2D,Some(&texture));
-            batch.set_uniform_1i(&adata.ctx,&self.name,canvases.idx);
+        }
+    }
+}
+
+#[derive(Clone,Copy)]
+pub enum UniformValue {
+    Float(f32),
+    Vec2F(f32,f32),
+    Int(i32)
+}
+
+pub struct ObjectUniform {
+    name: String,
+    val: Option<UniformValue>,
+    buf: Option<gluni>,
+}
+
+impl ObjectUniform {
+    pub fn new(adata: &ArenaData, prog: &glprog, name: &str) -> ObjectUniform {
+        ObjectUniform {
+            name: name.to_string(),
+            buf: adata.ctx.get_uniform_location(prog,name),
+            val: None
+        }
+    }
+}
+
+impl Object for ObjectUniform {
+    fn execute(&self, adata : &ArenaData, _batch: &DataBatch, _stage: &Stage, _dims: &ArenaDims) {
+        if let Some(ref loc) = self.buf {
+            match self.val {
+                Some(UniformValue::Vec2F(u,v)) =>
+                    adata.ctx.uniform2f(Some(loc),u,v),
+                Some(UniformValue::Float(v)) =>
+                    adata.ctx.uniform1f(Some(loc),v),
+                Some(UniformValue::Int(v)) =>
+                    adata.ctx.uniform1i(Some(loc),v),
+                None => ()
+            }
+        }
+    }
+    
+    fn stage_gl(&mut self, adata: &ArenaData, stage: &Stage) {
+        let dims = &adata.dims;
+        let canvs = &adata.canvases;
+        if let Some(uval) = stage.get_key(canvs,dims,&self.name) {
+            self.val = Some(uval);
         }
     }
 }
