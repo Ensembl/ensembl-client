@@ -22,6 +22,8 @@ pub use shape::pin::{
 };
 
 pub use shape::stretch::{
+    StretchSpot,
     stretch_rectangle,
-    stretch_texture
+    stretch_texture,
+    stretchspot_rectangle,
 };

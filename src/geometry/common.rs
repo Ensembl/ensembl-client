@@ -16,6 +16,15 @@ fn shader_standard() -> ProgramSource {
     })
 }
 
+pub fn shader_mono(pos: &ProgramSource) -> ProgramSource {
+    shader_standard().merge(pos).merge(
+        &ProgramSource::new(vec! {
+            Uniform::new_frag(&PR_LOW,Arity::Vec3,"uColour"),
+            Statement::new_frag("gl_FragColor = vec4(uColour, 1.0)"),
+        })
+    )
+}
+
 pub fn shader_solid(pos: &ProgramSource) -> ProgramSource {
     shader_standard().merge(pos).merge(
         &ProgramSource::new(vec! {

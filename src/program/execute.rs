@@ -5,7 +5,7 @@ use webgl_rendering_context::{
     WebGLProgram as glprog,
 };
 
-use arena::{ Stage, ArenaData };
+use arena::{ ArenaData };
 
 use shape::SolidShapeManager;
 use texture::TexShapeManager;
@@ -50,12 +50,25 @@ fn find_attribs(adata: &ArenaData, vars: &Vec<Rc<Source>>,
 }
 
 impl ProgramAttribs {
-    pub fn get_object(&mut self, name: &str) -> &mut Box<Object> {
-        self.objects.get_mut(self.object_names[name]).unwrap()
+    pub fn get_object(&mut self, name: &str) -> Option<&mut Box<Object>> {
+        if let Some(idx) = self.object_names.get(name) {
+            self.objects.get_mut(*idx)
+        } else {
+            None
+        }
     }
     
-    pub fn add_vertices(&mut self, indexes: &[u16], points: u16) -> DataBatch {
-        let b = self.bman.get_batch(self.default_group,points);
+    pub fn get_default_group(&self) -> DataGroup {
+        self.default_group
+    }
+    
+    pub fn new_group(&mut self) -> DataGroup {
+        self.bman.new_group()
+    }
+    
+    pub fn add_vertices(&mut self, group: DataGroup,
+                        indexes: &[u16], points: u16) -> DataBatch {
+        let b = self.bman.get_batch(group,points);
         if let Some(obj_idx) = self.main_idx {
             let mut main = &mut self.objects[obj_idx];
             main.add_index(&b,indexes,points);
@@ -86,10 +99,15 @@ impl Program {
         adata.ctx.use_program(Some(&self.prog));
     }
   
-    pub fn draw(&mut self, adata: &ArenaData, stage:&Stage) {
-        for obj in self.data.objects.iter_mut() {
-            obj.stage_gl(adata,stage);
-        }
+    pub fn get_object(&mut self, name: &str) -> Option<&mut Box<Object>> {
+        self.data.get_object(name)
+    }
+
+    pub fn new_group(&mut self) -> DataGroup {
+        self.data.new_group()
+    }
+  
+    pub fn draw(&mut self, adata: &ArenaData) {
         self.use_program(adata);
         for b in self.data.bman.iter() {
             let mut main = None;
@@ -97,11 +115,11 @@ impl Program {
                 if a.is_main() {
                     main = Some(a);
                 } else {
-                    a.execute(adata,&b,stage,&adata.dims);
+                    a.execute(adata,&b,&adata.dims);
                 }
             }
             if let Some(a) = main {
-                a.execute(adata,&b,stage,&adata.dims);
+                a.execute(adata,&b,&adata.dims);
             }
         }
     }

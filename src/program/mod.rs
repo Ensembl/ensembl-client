@@ -9,7 +9,10 @@ pub use program::execute::{
     ProgramAttribs,
 };
 
-pub use program::data::DataBatch;
+pub use program::data::{
+    DataBatch,
+    DataGroup
+};
 
 pub use program::objects::{
     Object,
