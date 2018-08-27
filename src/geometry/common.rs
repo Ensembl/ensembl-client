@@ -5,13 +5,14 @@ use program::{
     Attribute,
     Varying,
     Canvas,
+    Main,
     Precision,
     Arity,
 };
 
 fn shader_standard() -> ProgramSource {
     ProgramSource::new(vec! {
-        /* Anything in common can go here, when there is such */
+        Main::new(),
     })
 }
 

@@ -1,45 +1,70 @@
-use arena::ArenaData;
-use wglraw;
+use arena::{ ArenaData, Stage };
+use program::objects::Object;
 
-use webgl_rendering_context::{
-    WebGLRenderingContext as glctx,
-    WebGLBuffer as glbuf,
-};
-
-pub struct DataBatch {
-    idx_buf: glbuf,
-    idx_vec: Vec<u16>,
-    num_points: u16,
-    id_val: u32,
-}
+#[derive(Clone,Copy)]
+pub struct DataBatch(u32);
 
 impl DataBatch {
-    pub fn new(adata: &ArenaData, id: u32) -> DataBatch {
-        DataBatch {
-            num_points: 0,
-            idx_buf: wglraw::init_buffer(&adata.ctx),
-            idx_vec: Vec::<u16>::new(),
-            id_val: id
-        }
-    }
-
-    pub fn draw_triangles(&self, adata: &ArenaData) {
-        if self.idx_vec.len() > 0 {
-            wglraw::populate_buffer_short(&adata.ctx,glctx::ELEMENT_ARRAY_BUFFER,
-                                    &self.idx_buf,&self.idx_vec);
-            adata.ctx.bind_buffer(glctx::ELEMENT_ARRAY_BUFFER,Some(&self.idx_buf));
-            adata.ctx.draw_elements(glctx::TRIANGLES,self.idx_vec.len() as i32,
-                                    glctx::UNSIGNED_SHORT,0);
-        }
-    }
-
-    pub fn add_vertices(&mut self, indexes: &[u16], points: u16) {
-        for v in indexes {
-            self.idx_vec.push(self.num_points+*v);
-        }
-        self.num_points += points;
+    pub fn new(id: u32) -> DataBatch {
+        DataBatch(id)
     }
     
-    pub fn id(&self) -> u32 { self.id_val }
+    pub fn id(&self) -> u32 { self.0 }
+}
+
+const BATCH_LIMIT : u32 = 65535;
+
+pub struct DataGroupImpl {
+    batches: Vec<DataBatch>,    
+    batch_size: u32,
+}
+
+impl DataGroupImpl {
+    pub fn new() -> DataGroupImpl {
+        let mut out = DataGroupImpl {
+            batches: Vec::<DataBatch>::new(),
+            batch_size: 0,
+        };
+        out.new_batch();
+        out
+    }
+    
+    pub fn new_batch(&mut self) {
+        let idx = self.batches.len() as u32;
+        self.batches.push(DataBatch::new(idx));
+        self.batch_size = 0;
+    }
+
+    pub fn batch_for(&mut self, more: u16) -> &DataBatch {
+        if self.batch_size + more as u32 > BATCH_LIMIT {
+            self.new_batch();
+        }
+        self.batch_size += more as u32;
+        self.batches.last().unwrap()
+    }
+    
+    pub fn draw(&mut self, adata: &ArenaData, stage:&Stage, objs: &Vec<Box<Object>>) {
+        for b in self.batches.iter() {
+            let mut main = None;
+            for a in objs {
+                if a.is_main() {
+                    main = Some(a);
+                } else {
+                    a.execute(adata,b,stage,&adata.dims);
+                }
+            }
+            if let Some(a) = main {
+                a.execute(adata,b,stage,&adata.dims);
+            }
+        }
+    }
+
+    pub fn to_gl(&mut self, adata: &ArenaData, objs: &mut Vec<Box<Object>>) {
+        for b in self.batches.iter_mut() {
+            for a in &mut objs.iter_mut() {
+                a.to_gl(b,adata);
+            }
+        }
+    }
 }
 
