@@ -13,7 +13,6 @@ use texture::{ TexPart, TexPosItem, TextureDrawRequestHandle };
  */
 
 pub struct StretchSpot {
-    //colour: Colour,
     group: DataGroup
 }
 
