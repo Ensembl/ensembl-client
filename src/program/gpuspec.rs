@@ -34,7 +34,7 @@ impl PartialOrd for Precision {
             (Precision::Float(ap,ar),Precision::Float(bp,br)) => {
                 if (ap<bp && ar<=br) || (ar<br && ap<=bp) {
                     Some(Ordering::Less)
-                } else if other < self {
+                } else if (bp<ap && br<=ar) || (br<ar && bp<=ap) {
                     Some(Ordering::Greater)
                 } else if other == self {
                     Some(Ordering::Equal)
