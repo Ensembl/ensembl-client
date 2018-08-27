@@ -12,11 +12,11 @@ use texture::TexShapeManager;
 
 use program::source::{ Source, ProgramSource };
 use program::objects::Object;
-use program::data::{ DataBatch, DataGroupImpl };
+use program::data::{ DataBatch, DataGroup, BatchManager };
 
 pub struct ProgramAttribs {
-//    max_batch: u32,
-    group: DataGroupImpl,
+    bman: BatchManager,
+    default_group: DataGroup,
     objects: Vec<Box<Object>>,
     main_idx: Option<usize>,
     object_names: HashMap<String,usize>,
@@ -55,12 +55,12 @@ impl ProgramAttribs {
     }
     
     pub fn add_vertices(&mut self, indexes: &[u16], points: u16) -> DataBatch {
-        let b = self.group.batch_for(points);
+        let b = self.bman.get_batch(self.default_group,points);
         if let Some(obj_idx) = self.main_idx {
             let mut main = &mut self.objects[obj_idx];
-            main.add_index(b,indexes,points);
+            main.add_index(&b,indexes,points);
         }
-        *b
+        b
     }
 }
 
@@ -69,12 +69,13 @@ impl Program {
         let prog = Rc::new(src.prog(adata));
         adata.ctx.use_program(Some(&prog));
         let (objects,main_idx,object_names) = find_attribs(adata,&src.uniforms,prog.clone());
+        let mut bman = BatchManager::new();
+        let default_group = bman.new_group();
         Program {
             tex_shapes: TexShapeManager::new(),
             solid_shapes: SolidShapeManager::new(),
             data: ProgramAttribs {
-//                max_batch: 0,
-                group: DataGroupImpl::new(),
+                bman, default_group,
                 objects, object_names, main_idx,
             },
             prog,
@@ -90,7 +91,19 @@ impl Program {
             obj.stage_gl(adata,stage);
         }
         self.use_program(adata);
-        self.data.group.draw(adata, stage, &self.data.objects);
+        for b in self.data.bman.iter() {
+            let mut main = None;
+            for a in &self.data.objects {
+                if a.is_main() {
+                    main = Some(a);
+                } else {
+                    a.execute(adata,&b,stage,&adata.dims);
+                }
+            }
+            if let Some(a) = main {
+                a.execute(adata,&b,stage,&adata.dims);
+            }
+        }
     }
         
     pub fn shapes_to_gl(&mut self, adata: &mut ArenaData) {
@@ -98,6 +111,10 @@ impl Program {
         self.tex_shapes.clear();
         self.solid_shapes.into_objects(&mut self.data,adata);
         self.solid_shapes.clear();
-        self.data.group.to_gl(adata,&mut self.data.objects);
+        for b in self.data.bman.iter() {
+            for a in &mut self.data.objects.iter_mut() {
+                a.to_gl(&b,adata);
+            }
+        }
     }
 }
