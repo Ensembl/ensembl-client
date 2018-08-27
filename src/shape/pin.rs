@@ -30,7 +30,7 @@ impl PinTriangle {
 impl Shape for PinTriangle {
     fn into_objects(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
         let p = &self.points;
-        let b = vertices_tri(geom);
+        let b = vertices_tri(geom,None);
         triangle_gl(b,geom,"aVertexPosition",&[&p[0],&p[1],&p[2]]);
         multi_gl(b,geom,"aOrigin",&self.origin,3);
         multi_gl(b,geom,"aVertexColour",&self.colour,3);
@@ -73,7 +73,7 @@ impl Shape for PinTexture {
             let flat = &adata.canvases.flat;            
             let p = [CPixel(0,0), tp.size(self.scale)];
             let t = tp.to_rect(flat);
-            let b = vertices_rect(geom);                                    
+            let b = vertices_rect(geom,None);
             rectangle_p(b,geom,"aVertexPosition",&p);
             rectangle_t(b,geom,"aTextureCoord",&t);
             multi_gl(b,geom,"aOrigin",&self.origin,4);

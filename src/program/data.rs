@@ -1,31 +1,40 @@
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
-use std::collections::hash_map::Keys;
 
-#[derive(Clone,Copy)]
+#[derive(Clone,Copy,Debug)]
 pub struct DataGroup(u32);
 
-#[derive(Clone,Copy)]
-pub struct DataBatch(u32);
+#[derive(Clone,Copy,Debug)]
+pub struct DataBatch(u32,u32);
 
 impl DataBatch {
-    pub fn id(&self) -> u32 { self.0 }
+    pub fn group(&self) -> DataGroup { DataGroup(self.0) }
+    pub fn id(&self) -> u32 { self.1 }
 }
 
-pub struct BatchIter<'a>(Keys<'a,u32,u16>);
+impl DataGroup {
+    pub fn id(&self) -> u32 { self.0 }
+}    
 
-impl<'a> BatchIter<'a> {
-    fn new(bm: &'a BatchManager) -> BatchIter<'a> {
-        BatchIter(bm.batch_size.keys())
+pub struct BatchIter(Vec<DataBatch>,usize);
+
+impl BatchIter {
+    fn new(bm: &BatchManager) -> BatchIter {
+        let mut out = Vec::<DataBatch>::new();
+        for k in bm.batch_size.keys() {
+            out.push(DataBatch(bm.batch_group[k],*k));
+        }
+        BatchIter(out,0)
     }
 }
 
-impl<'a> Iterator for BatchIter<'a> {
+impl Iterator for BatchIter {
     type Item = DataBatch;
     
     fn next(&mut self) -> Option<DataBatch> {
-        if let Some(v) = self.0.next() {
-            Some(DataBatch(*v))
+        if self.1 < self.0.len() {
+            self.1 += 1;
+            Some(self.0[self.1-1])
         } else {
             None
         }
@@ -36,6 +45,7 @@ pub struct BatchManager {
     max_group: u32,
     max_batch: u32,
     batch_size: HashMap<u32,u16>,
+    batch_group: HashMap<u32,u32>,
     group_batch: HashMap<u32,u32>
 }
 
@@ -47,7 +57,8 @@ impl BatchManager {
             max_group: 0,
             max_batch: 0,
             batch_size: HashMap::<u32,u16>::new(),
-            group_batch: HashMap::<u32,u32>::new()
+            group_batch: HashMap::<u32,u32>::new(),
+            batch_group: HashMap::<u32,u32>::new()
         }
     }
     
@@ -66,6 +77,7 @@ impl BatchManager {
             Entry::Occupied(e) => *e.get(),
             Entry::Vacant(e) => {
                 self.max_batch += 1;
+                self.batch_group.insert(self.max_batch,g.0);
                 *e.insert(self.max_batch)
             }
         };        
@@ -74,12 +86,13 @@ impl BatchManager {
         /* Create a new, if full */
         if (size as u32) + (points as u32) > BATCH_LIMIT {
             self.max_batch += 1;
+            self.batch_group.insert(self.max_batch,g.0);
             let batch = self.max_batch;
             self.group_batch.insert(g.0,batch);
             size = 0;
         }
         /* Add in new points */
         self.batch_size.insert(batch,size+points);
-        DataBatch(batch)
+        DataBatch(g.0,batch)
     }
 }

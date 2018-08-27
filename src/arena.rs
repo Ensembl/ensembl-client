@@ -17,7 +17,7 @@ use coord::{
 };
 
 use geometry::{
-    stretch_geom, stretchtex_geom,
+    stretch_geom, stretchtex_geom, stretchspot_geom,
     fix_geom,     fixtex_geom,
     pin_geom,     pintex_geom,
     page_geom,    pagetex_geom,
@@ -118,7 +118,7 @@ impl Arena {
         let arena = Arena {
             data, 
             order: vec_s! {
-                "stretch", "stretchtex", 
+                "stretch", "stretchspot", "stretchtex", 
                 "pin", "pintex",
                 "page", "pagetex",
                 "fix", "fixtex"
@@ -126,6 +126,7 @@ impl Arena {
             map: hashmap_s! {
                 "stretch" => stretch_geom(&data_b),
                 "stretchtex" => stretchtex_geom(&data_b),
+                "stretchspot" => stretchspot_geom(&data_b),
                 "pin" => pin_geom(&data_b),
                 "pintex" => pintex_geom(&data_b),
                 "fix" => fix_geom(&data_b),
@@ -175,7 +176,14 @@ impl Arena {
         let datam = &mut self.data.borrow_mut();
         for k in &self.order {
             let geom = self.map.get_mut(k).unwrap();
-            geom.draw(datam,&stage);
+            let u = stage.get_uniforms(&datam.canvases,
+                                       &datam.dims);
+            for (key, value) in &u {
+                if let Some(obj) = geom.get_object(key) {
+                    obj.set_uniform(None,*value);
+                }
+            }
+            geom.draw(datam);
         }
     }
 }
@@ -191,17 +199,16 @@ impl Stage {
         Stage { pos: COrigin(0.,0.), zoom: 1.0 }
     }
 
-    pub fn get_key(&self, canvs: &ArenaCanvases, dims: &ArenaDims, key: &str) -> Option<UniformValue> {
-        match key {
-            "uSampler" => Some(UniformValue::Int(canvs.idx)),
-            "uStageHpos" => Some(UniformValue::Float(self.pos.0)),
-            "uStageVpos" => Some(UniformValue::Float((self.pos.1 + dims.height_px as f32)/2.)),
-            "uStageZoom" => Some(UniformValue::Float(self.zoom)),
-            "uAspect" =>    Some(UniformValue::Float(dims.aspect)),
-            "uSize" => Some(UniformValue::Vec2F(
+    pub fn get_uniforms(&self, canvs: &ArenaCanvases, dims: &ArenaDims) -> HashMap<&str,UniformValue> {
+        hashmap! {
+            "uSampler" => UniformValue::Int(canvs.idx),
+            "uStageHpos" => UniformValue::Float(self.pos.0),
+            "uStageVpos" => UniformValue::Float((self.pos.1 + dims.height_px as f32)/2.),
+            "uStageZoom" => UniformValue::Float(self.zoom),
+            "uAspect" =>    UniformValue::Float(dims.aspect),
+            "uSize" => UniformValue::Vec2F(
                 dims.width_px as f32/2.,
-                dims.height_px as f32/2.)),
-            _ => None
+                dims.height_px as f32/2.)
         }
     }
 }

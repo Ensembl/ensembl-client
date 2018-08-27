@@ -1,7 +1,7 @@
 use arena::ArenaData;
 use program::Program;
 
-use geometry::common::{ shader_solid, shader_texture, PR_DEF };
+use geometry::common::{ shader_solid, shader_texture, shader_mono, PR_DEF };
 
 use program::{
     ProgramSource,
@@ -34,3 +34,6 @@ pub fn stretchtex_geom(adata: &ArenaData) -> Program {
     Program::new(adata,&shader_texture(&stretch_prog()))
 }
 
+pub fn stretchspot_geom(adata: &ArenaData) -> Program {
+    Program::new(adata,&shader_mono(&stretch_prog()))
+}

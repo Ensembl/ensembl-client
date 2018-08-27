@@ -12,10 +12,9 @@ use webgl_rendering_context::{
 
 use wglraw;
 
-use program::data::DataBatch;
+use program::data::{ DataBatch, DataGroup };
 
 use arena::{
-    Stage,
     ArenaData,
     ArenaDims,
 };
@@ -34,14 +33,14 @@ pub trait Object {
     }
 
     fn add_data(&mut self, _batch: &DataBatch, _values: &[&Input]) {}
+    fn set_uniform(&mut self, _group: Option<DataGroup>, _value: UniformValue) {}
 
     fn is_main(&self) -> bool { false }
     fn add_index(&mut self, _batch: &DataBatch, _indexes: &[u16], _points: u16) {}
 
     fn to_gl(&mut self, _batch: &DataBatch, _adata: &ArenaData) {}
-    fn stage_gl(&mut self, _adata: &ArenaData, _stage: &Stage) {}
     fn execute(&self, _adata : &ArenaData, _batch: &DataBatch,
-               _stage: &Stage, _dims: &ArenaDims) {}
+               _dims: &ArenaDims) {}
 }
 
 /* ObjectCanvasTexture = Object for canvas-origin textures */
@@ -70,7 +69,7 @@ impl Object for ObjectCanvasTexture {
     }
 
     fn execute(&self, adata : &ArenaData, _batch: &DataBatch,
-               _stage: &Stage, _dims: &ArenaDims) {
+               _dims: &ArenaDims) {
         let canvases = &adata.canvases;
         if let Some(ref texture) = self.texture {
             adata.ctx.active_texture(TEXIDS[canvases.idx as usize]);
@@ -79,33 +78,46 @@ impl Object for ObjectCanvasTexture {
     }
 }
 
-#[derive(Clone,Copy)]
+#[derive(Clone,Copy,Debug)]
 pub enum UniformValue {
     Float(f32),
     Vec2F(f32,f32),
+    Vec3F(f32,f32,f32),
     Int(i32)
 }
 
 pub struct ObjectUniform {
-    name: String,
-    val: Option<UniformValue>,
+    val: HashMap<Option<u32>,UniformValue>,
     buf: Option<gluni>,
 }
 
 impl ObjectUniform {
     pub fn new(adata: &ArenaData, prog: &glprog, name: &str) -> ObjectUniform {
         ObjectUniform {
-            name: name.to_string(),
             buf: adata.ctx.get_uniform_location(prog,name),
-            val: None
+            val: HashMap::<Option<u32>,UniformValue>::new()
         }
     }
 }
 
 impl Object for ObjectUniform {
-    fn execute(&self, adata : &ArenaData, _batch: &DataBatch, _stage: &Stage, _dims: &ArenaDims) {
+    fn set_uniform(&mut self, group: Option<DataGroup>, value: UniformValue) {
+        self.val.insert(group.map(|g| g.id()),value);
+    }
+
+    fn execute(&self, adata : &ArenaData, batch: &DataBatch, _dims: &ArenaDims) {
+        let gid = batch.group().id();
+        
         if let Some(ref loc) = self.buf {
-            match self.val {
+            let val = 
+                if let Some(val) = self.val.get(&Some(gid)) {
+                    Some(*val)
+                } else {
+                    self.val.get(&None).map(|s| *s)
+                };
+            match val {
+                Some(UniformValue::Vec3F(t,u,v)) =>
+                    adata.ctx.uniform3f(Some(loc),t,u,v),
                 Some(UniformValue::Vec2F(u,v)) =>
                     adata.ctx.uniform2f(Some(loc),u,v),
                 Some(UniformValue::Float(v)) =>
@@ -115,15 +127,7 @@ impl Object for ObjectUniform {
                 None => ()
             }
         }
-    }
-    
-    fn stage_gl(&mut self, adata: &ArenaData, stage: &Stage) {
-        let dims = &adata.dims;
-        let canvs = &adata.canvases;
-        if let Some(uval) = stage.get_key(canvs,dims,&self.name) {
-            self.val = Some(uval);
-        }
-    }
+    }    
 }
 
 pub struct ObjectIndex {
@@ -183,7 +187,7 @@ impl Object for ObjectIndex {
         }
     }
 
-    fn execute(&self, adata : &ArenaData, batch: &DataBatch, _stage: &Stage, _dims: &ArenaDims) {
+    fn execute(&self, adata : &ArenaData, batch: &DataBatch, _dims: &ArenaDims) {
         if let Some(data) = self.data(batch) {
             if let Some(buf) = self.buffer(batch) {
                 adata.ctx.bind_buffer(glctx::ELEMENT_ARRAY_BUFFER,Some(&buf));
@@ -237,7 +241,7 @@ impl Object for ObjectAttrib {
         }
     }
 
-    fn execute(&self, adata : &ArenaData, batch: &DataBatch, _stage: &Stage, _dims: &ArenaDims) {
+    fn execute(&self, adata : &ArenaData, batch: &DataBatch, _dims: &ArenaDims) {
         let ctx = &adata.ctx;
         if let Some(buf) = self.buffer(batch) {
             ctx.enable_vertex_attrib_array(self.loc);
