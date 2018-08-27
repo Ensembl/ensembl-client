@@ -24,10 +24,10 @@ impl StretchRect {
 }
 
 impl Shape for StretchRect {
-    fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
-        vertices_rect(adata,geom);                                    
-        rectangle_g(geom,"aVertexPosition",&self.points);
-        multi_gl(geom,"aVertexColour",&self.colour,4);
+    fn into_objects(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+        let b = vertices_rect(geom);                                    
+        rectangle_g(b,geom,"aVertexPosition",&self.points);
+        multi_gl(b,geom,"aVertexColour",&self.colour,4);
     }
 }
 
@@ -65,9 +65,9 @@ impl Shape for StretchTexture {
         if let Some(tp) = self.texpos {
             let flat = &adata.canvases.flat;
             let t = tp.to_rect(flat);
-            vertices_rect(adata,geom);                                    
-            rectangle_g(geom,"aVertexPosition",&self.pos);
-            rectangle_t(geom,"aTextureCoord",&t);
+            let b = vertices_rect(geom);                                    
+            rectangle_g(b,geom,"aVertexPosition",&self.pos);
+            rectangle_t(b,geom,"aTextureCoord",&t);
         }
     }
 }

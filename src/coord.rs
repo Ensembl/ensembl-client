@@ -5,7 +5,7 @@ use program::{ Object, ObjectAttrib, DataBatch };
 pub struct COrigin(pub f32,pub f32);
 
 pub trait Input {
-    fn to_f32(&self, _attrib: &mut ObjectAttrib, _batch: &mut DataBatch) {}
+    fn to_f32(&self, _attrib: &mut ObjectAttrib, _batch: &DataBatch) {}
 }
 
 #[derive(Clone,Copy)]
@@ -28,7 +28,7 @@ impl CLeaf {
 }
 
 impl Input for CLeaf {
-    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &mut DataBatch) {
+    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
         attrib.add_f32(&[self.0,self.1 as f32],batch);
     }
 }
@@ -58,7 +58,7 @@ impl CPixel {
 }
 
 impl Input for CPixel {
-    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &mut DataBatch) {
+    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
         attrib.add_f32(&[self.0 as f32,self.1 as f32], batch);
     }
 }
@@ -91,7 +91,7 @@ impl CFraction {
 }
 
 impl Input for CFraction {
-    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &mut DataBatch) {
+    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
         attrib.add_f32(&[self.0,self.1],batch);
     }
 }
@@ -106,7 +106,7 @@ impl Colour {
 }
 
 impl Input for Colour {
-    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &mut DataBatch) {
+    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
         attrib.add_f32(&[self.0 as f32 / 255.,
                          self.1 as f32 / 255.,
                          self.2 as f32 / 255.], batch);

@@ -24,10 +24,10 @@ impl FixRect {
 }
 
 impl Shape for FixRect {
-    fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
-        vertices_rect(adata,geom);                                    
-        rectangle_p(geom,"aVertexPosition",&self.points);
-        multi_gl(geom,"aVertexColour",&self.colour,4);
+    fn into_objects(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+        let b = vertices_rect(geom);                                    
+        rectangle_p(b,geom,"aVertexPosition",&self.points);
+        multi_gl(b,geom,"aVertexColour",&self.colour,4);
     }
 }
 
@@ -77,9 +77,9 @@ impl Shape for FixTexture {
             let flat = &adata.canvases.flat;
             let t = tp.to_rect(flat);
             let p = [self.pos, self.pos + tp.size(self.scale)];
-            vertices_rect(adata,geom);
-            rectangle_p(geom,"aVertexPosition",&p);
-            rectangle_t(geom,"aTextureCoord",&t);
+            let b = vertices_rect(geom);
+            rectangle_p(b,geom,"aVertexPosition",&p);
+            rectangle_t(b,geom,"aTextureCoord",&t);
         }
     }
 }

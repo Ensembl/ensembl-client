@@ -26,14 +26,18 @@ use coord::{
 
 /* This is the meat of each Object implementation */
 pub trait Object {
-    fn add_f32(&mut self, _values: &[f32], _batch: &mut DataBatch) {}
+    fn add_f32(&mut self, _values: &[f32], _batch: &DataBatch) {}
     fn add_tdr(&mut self, _value: &TextureDrawRequestHandle) {}
 
     fn get_tdr(&self) -> Vec<TextureDrawRequestHandle> {
         Vec::<TextureDrawRequestHandle>::new()
     }
 
-    fn add_data(&mut self, _batch: &mut DataBatch, _values: &[&Input]) {}
+    fn add_data(&mut self, _batch: &DataBatch, _values: &[&Input]) {}
+
+    fn is_main(&self) -> bool { false }
+    fn add_index(&mut self, _batch: &DataBatch, _indexes: &[u16], _points: u16) {}
+
     fn to_gl(&mut self, _batch: &mut DataBatch, _adata: &ArenaData) {}
     fn stage_gl(&mut self, _adata: &ArenaData, _stage: &Stage) {}
     fn execute(&self, _adata : &ArenaData, _batch: &DataBatch,
@@ -122,6 +126,74 @@ impl Object for ObjectUniform {
     }
 }
 
+pub struct ObjectIndex {
+    vec: HashMap<u32,Vec<u16>>,
+    buf: HashMap<u32,glbuf>,
+    num: HashMap<u32,u16>,
+}
+
+impl ObjectIndex {
+    pub fn new() -> ObjectIndex {
+        ObjectIndex {
+            vec: HashMap::<u32,Vec<u16>>::new(),
+            buf: HashMap::<u32,glbuf>::new(),
+            num: HashMap::<u32,u16>::new()
+        }
+    }
+
+    fn buffer(&self, b: &DataBatch) -> Option<&glbuf> {
+        self.buf.get(&b.id())
+    }
+
+    fn data(&self, b: &DataBatch) -> Option<&Vec<u16>> {
+        self.vec.get(&b.id())
+    }
+
+    fn data_mut(&mut self, b: &DataBatch) -> &mut Vec<u16> {
+        self.vec.entry(b.id()).or_insert_with(|| Vec::<u16>::new())
+    }
+    
+    fn nudge(&mut self, b: &DataBatch, points: u16) -> u16 {
+        let bid = b.id();
+        let v = *self.num.entry(bid).or_insert(0);
+        self.num.insert(bid,v+points);
+        v
+    }
+}
+
+impl Object for ObjectIndex {
+    fn is_main(&self) -> bool { true }
+
+    fn add_index(&mut self, batch: &DataBatch, indexes: &[u16], points: u16) {
+        let offset = self.nudge(batch,points);
+        let b = self.data_mut(batch);
+        for v in indexes {
+            b.push(v+offset);
+        }
+    }
+
+    fn to_gl(&mut self, batch: &mut DataBatch, adata: &ArenaData) {
+        self.buf.entry(batch.id()).or_insert_with(|| wglraw::init_buffer(&adata.ctx));
+        if let Some(data) = self.data(batch) {
+            if let Some(buf) = self.buffer(batch) {
+                adata.ctx.bind_buffer(glctx::ELEMENT_ARRAY_BUFFER,Some(&buf));
+                let data = TypedArray::<u16>::from(&(data[..])).buffer();
+                adata.ctx.buffer_data_1(glctx::ELEMENT_ARRAY_BUFFER,Some(&data),glctx::STATIC_DRAW);
+            }
+        }
+    }
+
+    fn execute(&self, adata : &ArenaData, batch: &DataBatch, _stage: &Stage, _dims: &ArenaDims) {
+        if let Some(data) = self.data(batch) {
+            if let Some(buf) = self.buffer(batch) {
+                adata.ctx.bind_buffer(glctx::ELEMENT_ARRAY_BUFFER,Some(&buf));
+                adata.ctx.draw_elements(glctx::TRIANGLES,data.len() as i32,
+                                    glctx::UNSIGNED_SHORT,0);
+            }
+        }
+    }
+}
+
 pub struct ObjectAttrib {
     vec : HashMap<u32,Vec<f32>>,
     buf: HashMap<u32,glbuf>,
@@ -175,13 +247,13 @@ impl Object for ObjectAttrib {
         }
     }
 
-    fn add_data(&mut self, batch: &mut DataBatch, values: &[&Input]) {
+    fn add_data(&mut self, batch: &DataBatch, values: &[&Input]) {
         for v in values {
             v.to_f32(self,batch);
         }
     }
 
-    fn add_f32(&mut self,values : &[f32], batch: &mut DataBatch) {
+    fn add_f32(&mut self,values : &[f32], batch: &DataBatch) {
         self.data_mut(batch).extend_from_slice(values);
     }
 }

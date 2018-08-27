@@ -24,6 +24,7 @@ pub use program::source::{
     Attribute,
     Varying,
     Canvas,
+    Main,
 };
 
 pub use program::gpuspec::{
