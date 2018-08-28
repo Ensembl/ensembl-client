@@ -6,7 +6,9 @@ mod util;
 
 pub use shape::shapeimpl::{
     Shape,
-    SolidShapeManager
+    SolidShapeManager,
+    Spot,
+    ColourSpec
 };
 
 pub use shape::fixpage::{
@@ -22,8 +24,6 @@ pub use shape::pin::{
 };
 
 pub use shape::stretch::{
-    StretchSpot,
     stretch_rectangle,
     stretch_texture,
-    stretchspot_rectangle,
 };
