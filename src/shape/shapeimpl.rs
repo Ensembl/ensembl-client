@@ -33,7 +33,7 @@ impl SolidShapeManager {
     }        
 }
 
-const SPOTS : [&str;2] = ["stretchspot","pinspot"];
+const SPOTS : [&str;3] = ["stretchspot","pinspot","stretchstrip"];
 
 pub struct Spot {
     group: HashMap<&'static str,DataGroup>
@@ -45,8 +45,6 @@ impl Spot {
         for g in SPOTS.iter() {    
             let geom = arena.get_geom(g);
             let group = geom.new_group();
-            let s = format!("{:?} -> {:?}",g,group);
-            js! { console.log(@{s}); };
             groups.insert(g,group);
             if let Some(obj) = geom.get_object("uColour") {
                 obj.set_uniform(Some(group),c.to_uniform());
@@ -56,13 +54,11 @@ impl Spot {
     }
     
     pub fn get_group(&self, name: &str) -> DataGroup {
-        let s = format!("? {:?}",name);
-        js! { console.log(@{s}); };
         self.group[name]
     }
 }
 
-pub enum ColourSpec {
-    Colour(Colour),
-    Spot(Spot)
+pub enum ColourSpec<'a> {
+    Colour(&'a Colour),
+    Spot(&'a Spot)
 }

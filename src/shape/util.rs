@@ -52,6 +52,24 @@ pub fn vertices_tri(pdata: &mut ProgramAttribs, g: Option<DataGroup>) -> DataBat
     pdata.add_vertices(g,&[0,1,2],3)
 }
 
+pub fn vertices_strip(pdata: &mut ProgramAttribs, len: u16, g: Option<DataGroup>) -> DataBatch {
+    let g = group(pdata,g);
+    let mut v = Vec::<u16>::new();
+    for i in 0..len {
+        v.push(i);
+    }
+    pdata.add_vertices(g,&v,len)
+}
+
+pub fn points_g(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p_in: &[CLeaf], y: i32) {
+    if let Some(obj) = pdata.get_object(key) {
+        for p in p_in {
+            let q = *p + CLeaf(0.,y);
+            obj.add_data(&b,&[p,&q]);
+        }
+    }
+}
+
 pub enum ColourSpecImpl {
     Colour(Colour),
     Spot(DataGroup)
@@ -70,7 +88,7 @@ pub fn despot(geom: &str, spec: &ColourSpec) -> (String, ColourSpecImpl) {
         let mut g_out = geom.to_string();
         let c_out = match spec {
             ColourSpec::Colour(c) => 
-                ColourSpecImpl::Colour(*c),
+                ColourSpecImpl::Colour(**c),
             ColourSpec::Spot(s) => {
                 g_out.push_str("spot");
                 ColourSpecImpl::Spot(s.get_group(&g_out))

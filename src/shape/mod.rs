@@ -26,4 +26,5 @@ pub use shape::pin::{
 pub use shape::stretch::{
     stretch_rectangle,
     stretch_texture,
+    stretch_wiggle,
 };

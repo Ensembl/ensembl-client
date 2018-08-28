@@ -1,11 +1,15 @@
 use arena::{ Arena, ArenaData };
 
-use program::{ ProgramAttribs };
+use program::{ ProgramAttribs, DataGroup };
 use coord::{ CLeaf };
 
-use shape::{ Shape, ColourSpec };
-use shape::util::{ rectangle_g, rectangle_t, multi_gl, vertices_rect, despot };
-use shape::util::ColourSpecImpl;
+use shape::{ Shape, ColourSpec, Spot };
+use shape::util::{
+    rectangle_g, rectangle_t, points_g,
+    multi_gl,
+    vertices_rect, vertices_strip,
+    despot, ColourSpecImpl
+};
 
 use texture::{ TexPart, TexPosItem, TextureDrawRequestHandle };
 
@@ -39,6 +43,35 @@ pub fn stretch_rectangle(arena: &mut Arena, p:&[CLeaf;2], colour: &ColourSpec) {
     arena.get_geom(&g).solid_shapes.add_item(Box::new(
         StretchRect::new(*p,c)
     ));
+}
+
+/*
+ * StretchWiggle
+ */
+
+pub struct StretchWiggle {
+    points: Vec<CLeaf>,
+    y: i32,
+    group: DataGroup
+}
+
+impl StretchWiggle {
+    pub fn new(points: Vec<CLeaf>, group: DataGroup, y: i32) -> StretchWiggle {
+        StretchWiggle { points, group, y }
+    }
+}
+
+impl Shape for StretchWiggle {
+    fn into_objects(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+        let b = vertices_strip(geom,self.points.len() as u16*2,Some(self.group));
+        points_g(b,geom,"aVertexPosition",&self.points,self.y);
+    }
+}
+
+pub fn stretch_wiggle(arena: &mut Arena, p: Vec<CLeaf>, y: i32, spot: &Spot) {
+    arena.get_geom("stretchstrip").solid_shapes.add_item(Box::new(
+        StretchWiggle::new(p,spot.get_group("stretchstrip"),y)
+    ));    
 }
 
 /*

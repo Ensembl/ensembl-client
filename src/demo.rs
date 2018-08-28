@@ -9,6 +9,7 @@ use shape::{
     pin_texture,
     stretch_rectangle,
     stretch_texture,
+    stretch_wiggle,
     Spot,
     ColourSpec,
 };
@@ -189,6 +190,16 @@ fn daft<R>(rng: &mut R) -> String where R: Rng {
     out
 }
 
+fn wiggly<R>(rng: &mut R, num: u32, origin: CLeaf, sep: f32, h: i32) 
+                -> Vec<CLeaf> where R: Rng {
+    let mut out = Vec::<CLeaf>::new();
+    for i in 0..num {
+        let v : i32 = rng.gen_range(0,h);
+        out.push(origin + CLeaf(i as f32*sep,v));
+    }
+    out
+}
+
 pub fn demo() {
     stdweb::initialize();
 
@@ -205,8 +216,10 @@ pub fn demo() {
     let mut arena = Arena::new("#glcanvas","#managedcanvasholder",a_spec);
     let middle = arena.dims().height_px / 120;
     
-    let red = ColourSpec::Spot(Spot::new(&mut arena, &Colour(255,0,0)));
-    let green = ColourSpec::Spot(Spot::new(&mut arena, &Colour(0,255,0)));
+    let red_spot = Spot::new(&mut arena, &Colour(255,100,50));;
+    let red = ColourSpec::Spot(&red_spot);
+    let green_spot = Spot::new(&mut arena, &Colour(50,255,150));
+    let green = ColourSpec::Spot(&green_spot);
     
     let len_gen = Range::new(0.,0.2);
     let thick_gen = Range::new(0,13);
@@ -243,6 +256,8 @@ pub fn demo() {
                                          CPixel(5,10)],
                                          &green);
             } else if yidx == middle+2 {
+                let wiggle = wiggly(&mut rng,500,CLeaf(-5.,y-5),0.02,20);
+                stretch_wiggle(a,wiggle,2,&green_spot);
             } else {
                 for idx in -100..100 {
                     let v1 = (idx as f32) * 0.1;
@@ -257,14 +272,14 @@ pub fn demo() {
                     let h = if thick_gen.sample(&mut rng) == 0 { 1 } else { 5 };
                     stretch_rectangle(a,&[CLeaf(x,y-h),
                                           CLeaf(x+dx,y+h)],
-                                          &ColourSpec::Colour(colour));
+                                          &ColourSpec::Colour(&colour));
                     if idx %5 == 0 {
                         let colour = Colour(colour.2,colour.0,colour.1);
                         pin_triangle(a,&CLeaf(x,y),
                                        &[CPixel(0,0),
                                          CPixel(-5,10),
                                          CPixel(5,10)],
-                                       &ColourSpec::Colour(colour));
+                                       &ColourSpec::Colour(&colour));
                     }
                     if showtext_gen.sample(&mut rng) == 0 {
                         let val = bio_daft(&mut rng);

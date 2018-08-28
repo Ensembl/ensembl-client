@@ -17,7 +17,7 @@ use coord::{
 };
 
 use geometry::{
-    stretch_geom, stretchtex_geom, stretchspot_geom,
+    stretch_geom, stretchtex_geom, stretchspot_geom, stretchstrip_geom,
     fix_geom,     fixtex_geom,
     pin_geom,     pintex_geom,     pinspot_geom,
     page_geom,    pagetex_geom,
@@ -118,7 +118,7 @@ impl Arena {
         let arena = Arena {
             data, 
             order: vec_s! {
-                "stretch", "stretchspot", "stretchtex", 
+                "stretch", "stretchstrip", "stretchspot", "stretchtex", 
                 "pin", "pinspot", "pintex",
                 "page", "pagetex",
                 "fix", "fixtex"
@@ -126,6 +126,7 @@ impl Arena {
             map: hashmap_s! {
                 "stretch" => stretch_geom(&data_b),
                 "stretchtex" => stretchtex_geom(&data_b),
+                "stretchstrip" => stretchstrip_geom(&data_b),
                 "stretchspot" => stretchspot_geom(&data_b),
                 "pin" => pin_geom(&data_b),
                 "pinspot" => pinspot_geom(&data_b),

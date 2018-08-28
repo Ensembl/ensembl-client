@@ -1,7 +1,7 @@
 use program::Program;
 use arena::ArenaData;
 
-use geometry::common::{ shader_solid, shader_texture, PR_DEF };
+use geometry::common::{ shader_triangle, shader_solid, shader_texture, PR_DEF };
 
 use program::{
     ProgramSource,
@@ -23,10 +23,10 @@ fn fix_prog() -> ProgramSource {
 }
 
 pub fn fix_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_solid(&fix_prog()))
+    Program::new(adata,&shader_solid(&shader_triangle(),&fix_prog()))
 
 }
 
 pub fn fixtex_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_texture(&fix_prog()))
+    Program::new(adata,&shader_texture(&shader_triangle(),&fix_prog()))
 }

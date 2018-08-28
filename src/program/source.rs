@@ -11,7 +11,7 @@ use program::objects::{
     Object,
     ObjectAttrib,
     ObjectUniform,
-    ObjectIndex,
+    ObjectMain,
     ObjectCanvasTexture,
 };
 
@@ -184,18 +184,20 @@ impl Source for Canvas {
     }
 }
 
-pub struct Main { }
+pub struct Main {
+    method: u32
+}
 
 impl Main {
-    pub fn new() -> Rc<Main> {
-        Rc::new(Main {})
+    pub fn new(method: u32) -> Rc<Main> {
+        Rc::new(Main { method })
     }
 }
 
 impl Source for Main {
     fn make_attribs(&self, _adata: &ArenaData, _prog: Rc<glprog>)
                         -> Option<(Option<&str>,Box<Object>)> {
-        Some((None,Box::new(ObjectIndex::new())))
+        Some((None,Box::new(ObjectMain::new(self.method))))
     }
 }
 

@@ -33,6 +33,14 @@ impl Input for CLeaf {
     }
 }
 
+impl Add for CLeaf {
+    type Output = CLeaf;
+    
+    fn add(self,other: CLeaf) -> CLeaf {
+        CLeaf(self.0+other.0, self.1+other.1)
+    }
+}
+
 #[derive(Clone,Copy)]
 pub struct CPixel(pub i32,pub i32);
 
