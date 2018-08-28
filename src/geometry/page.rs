@@ -1,7 +1,7 @@
 use program::Program;
 use arena::ArenaData;
 
-use geometry::common::{ shader_solid, shader_texture, PR_DEF };
+use geometry::common::{ shader_solid, shader_texture, PR_DEF, shader_triangle };
 
 use program::{
     ProgramSource,
@@ -24,10 +24,10 @@ fn page_prog() -> ProgramSource {
 }
 
 pub fn page_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_solid(&page_prog()))
+    Program::new(adata,&shader_solid(&shader_triangle(),&page_prog()))
 
 }
 
 pub fn pagetex_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_texture(&page_prog()))
+    Program::new(adata,&shader_texture(&shader_triangle(),&page_prog()))
 }

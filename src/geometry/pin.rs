@@ -1,4 +1,4 @@
-use geometry::common::{ shader_solid, shader_texture, shader_mono, PR_DEF };
+use geometry::common::{ shader_solid, shader_texture, shader_mono, PR_DEF, shader_triangle };
 
 use program::{
     Program,
@@ -29,13 +29,13 @@ fn pin_prog() -> ProgramSource {
 }
 
 pub fn pin_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_solid(&pin_prog()))
+    Program::new(adata,&shader_solid(&shader_triangle(),&pin_prog()))
 }
 
 pub fn pintex_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_texture(&pin_prog()))
+    Program::new(adata,&shader_texture(&shader_triangle(),&pin_prog()))
 }
 
 pub fn pinspot_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_mono(&pin_prog()))
+    Program::new(adata,&shader_mono(&shader_triangle(),&pin_prog()))
 }

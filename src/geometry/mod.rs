@@ -16,5 +16,6 @@ pub use geometry::pin::{
 pub use geometry::stretch::{
     stretch_geom,
     stretchtex_geom,
-    stretchspot_geom
+    stretchspot_geom,
+    stretchstrip_geom,
 };

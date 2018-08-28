@@ -130,15 +130,17 @@ impl Object for ObjectUniform {
     }    
 }
 
-pub struct ObjectIndex {
+pub struct ObjectMain {
+    method: u32,
     vec: HashMap<u32,Vec<u16>>,
     buf: HashMap<u32,glbuf>,
     num: HashMap<u32,u16>,
 }
 
-impl ObjectIndex {
-    pub fn new() -> ObjectIndex {
-        ObjectIndex {
+impl ObjectMain {
+    pub fn new(method: u32) -> ObjectMain {
+        ObjectMain {
+            method,
             vec: HashMap::<u32,Vec<u16>>::new(),
             buf: HashMap::<u32,glbuf>::new(),
             num: HashMap::<u32,u16>::new()
@@ -165,7 +167,7 @@ impl ObjectIndex {
     }
 }
 
-impl Object for ObjectIndex {
+impl Object for ObjectMain {
     fn is_main(&self) -> bool { true }
 
     fn add_index(&mut self, batch: &DataBatch, indexes: &[u16], points: u16) {
@@ -191,7 +193,7 @@ impl Object for ObjectIndex {
         if let Some(data) = self.data(batch) {
             if let Some(buf) = self.buffer(batch) {
                 adata.ctx.bind_buffer(glctx::ELEMENT_ARRAY_BUFFER,Some(&buf));
-                adata.ctx.draw_elements(glctx::TRIANGLES,data.len() as i32,
+                adata.ctx.draw_elements(self.method,data.len() as i32,
                                     glctx::UNSIGNED_SHORT,0);
             }
         }
