@@ -1,8 +1,8 @@
-import React, { MouseEventHandler, SFC } from 'react';
+import React, { MouseEventHandler, SFC, ReactEventHandler } from 'react';
 
 type NavProps = {
-  toggleLaunchbar: MouseEventHandler,
-  toggleAccount: MouseEventHandler
+  toggleLaunchbar: ReactEventHandler,
+  toggleAccount: ReactEventHandler
 };
 
 const headerIcon = require('assets/img/launchbar/header_icon_placeholder.png');

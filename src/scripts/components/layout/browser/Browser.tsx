@@ -22,14 +22,14 @@ type BrowserState = {
 class Browser extends Component<BrowserProps, BrowserState> {
   historyUnlistener: UnregisterCallback = () => null;
 
+  readonly state: BrowserState = {
+    browserExpanded: false,
+    drawerOpened: false,
+    currentTrack: ''
+  };
+
   constructor(props: BrowserProps) {
     super(props);
-
-    this.state = {
-      browserExpanded: false,
-      drawerOpened: false,
-      currentTrack: ''
-    };
 
     this.toggleBrowser = this.toggleBrowser.bind(this);
     this.closeDrawer = this.closeDrawer.bind(this);

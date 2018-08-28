@@ -16,6 +16,10 @@ type DrawerBarState = {
 const closeButton = require('assets/img/track-panel/times-solid.svg');
 
 class DrawerBar extends Component<DrawerBarProps, DrawerBarState> {
+  readonly state: DrawerBarState = {
+    currentPage: ''
+  };
+
   changePage(page: string) {
     this.setState({ currentPage: name });
 

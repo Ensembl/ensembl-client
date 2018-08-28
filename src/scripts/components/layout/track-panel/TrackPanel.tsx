@@ -15,12 +15,12 @@ type TrackPanelState = {
 };
 
 class TrackPanel extends Component<TrackPanelProps, TrackPanelState> {
+  readonly state: TrackPanelState = {
+    expanded: true
+  };
+
   constructor(props: TrackPanelProps) {
     super(props);
-
-    this.state = {
-      expanded: true
-    };
 
     this.toggleTrackPanel = this.toggleTrackPanel.bind(this);
   }

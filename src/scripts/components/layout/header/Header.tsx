@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, MouseEventHandler } from 'react';
 
 import Nav from './Nav';
 import Launchbar from './Launchbar';
@@ -11,19 +11,19 @@ type HeaderState = {
 };
 
 class Header extends Component<HeaderProps, HeaderState> {
+  readonly state: HeaderState = {
+    launchbarExpanded: true,
+    accountExpanded: false
+  };
+
   constructor(props: HeaderProps) {
     super(props);
-
-    this.state = {
-      launchbarExpanded: true,
-      accountExpanded: false
-    };
 
     this.toggleLaunchbar = this.toggleLaunchbar.bind(this);
     this.toggleAccount = this.toggleAccount.bind(this);
   }
 
-  toggleLaunchbar(): void {
+  toggleLaunchbar() {
     const currentToggleState: boolean = !this.state.launchbarExpanded;
 
     this.setState({
@@ -31,7 +31,7 @@ class Header extends Component<HeaderProps, HeaderState> {
     });
   }
 
-  toggleAccount(): void {
+  toggleAccount() {
     const currentToggleState: boolean = !this.state.accountExpanded;
 
     this.setState({

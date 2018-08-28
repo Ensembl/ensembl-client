@@ -35,12 +35,12 @@ const trackPanelConfig: TrackPanelConfig[] = [
 class TrackPanelList extends Component<TrackPanelListProps, TrackPanelListState> {
   historyUnlistener: UnregisterCallback = () => null;
 
+  readonly state: TrackPanelListState = {
+    currentTrack: ''
+  };
+
   constructor(props: TrackPanelListProps) {
     super(props);
-
-    this.state = {
-      currentTrack: ''
-    };
 
     this.changeTrack = this.changeTrack.bind(this);
   }

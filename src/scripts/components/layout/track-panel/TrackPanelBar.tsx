@@ -1,4 +1,4 @@
-import React, { SFC, MouseEventHandler } from 'react';
+import React, { SFC, ReactEventHandler } from 'react';
 
 const squareIcon = require('assets/img/track-panel/square-regular.svg');
 const chevronLeftIcon = require('assets/img/track-panel/chevron-left-solid.svg');
@@ -6,7 +6,7 @@ const chevronRightIcon = require('assets/img/track-panel/chevron-right-solid.svg
 
 type TrackPanelBarProps = {
   expanded: boolean,
-  toggleTrackPanel: MouseEventHandler
+  toggleTrackPanel: ReactEventHandler
 };
 
 const TrackPanelBar: SFC<TrackPanelBarProps> = (props: TrackPanelBarProps) => (
