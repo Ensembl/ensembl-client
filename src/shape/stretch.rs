@@ -1,55 +1,13 @@
 use arena::{ Arena, ArenaData };
 
-use program::{ ProgramAttribs, DataGroup };
-use coord::{ CLeaf, Colour };
+use program::{ ProgramAttribs };
+use coord::{ CLeaf };
 
-use shape::Shape;
-use shape::util::{ rectangle_g, rectangle_t, multi_gl, vertices_rect };
+use shape::{ Shape, ColourSpec };
+use shape::util::{ rectangle_g, rectangle_t, multi_gl, vertices_rect, despot };
+use shape::util::ColourSpecImpl;
 
 use texture::{ TexPart, TexPosItem, TextureDrawRequestHandle };
-
-/*
- * Monochrome
- */
-
-pub struct StretchSpot {
-    group: DataGroup
-}
-
-impl StretchSpot {
-    pub fn new(arena: &mut Arena, c: &Colour) -> StretchSpot {
-        let geom = arena.get_geom("stretchspot");
-        let group = geom.new_group();
-        if let Some(obj) = geom.get_object("uColour") {
-            obj.set_uniform(Some(group),c.to_uniform());
-        }
-        StretchSpot { group }
-    }
-}
-
-pub struct StretchSpotRect {
-    points: [CLeaf;2],
-    spot: DataGroup,
-}
-
-impl StretchSpotRect {
-    pub fn new(points: [CLeaf;2], spot: &StretchSpot) -> StretchSpotRect {
-        StretchSpotRect { points: points, spot: spot.group }
-    }
-}
-
-impl Shape for StretchSpotRect {
-    fn into_objects(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
-        let b = vertices_rect(geom,Some(self.spot));
-        rectangle_g(b,geom,"aVertexPosition",&self.points);
-    }
-}
-
-pub fn stretchspot_rectangle(arena: &mut Arena, p: &[CLeaf;2], spot: &StretchSpot) {
-    arena.get_geom("stretchspot").solid_shapes.add_item(Box::new(
-        StretchSpotRect::new(*p,spot)
-    ));
-}
 
 /*
  * StretchRect
@@ -57,26 +15,29 @@ pub fn stretchspot_rectangle(arena: &mut Arena, p: &[CLeaf;2], spot: &StretchSpo
 
 pub struct StretchRect {
     points: [CLeaf;2],
-    colour: Colour
+    colspec: ColourSpecImpl,
 }
 
 impl StretchRect {
-    pub fn new(points: [CLeaf;2], colour: Colour) -> StretchRect {
-        StretchRect { points, colour }
-    }    
+    pub fn new(points: [CLeaf;2], colspec: ColourSpecImpl) -> StretchRect {
+        StretchRect { points, colspec }
+    }
 }
 
 impl Shape for StretchRect {
     fn into_objects(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
-        let b = vertices_rect(geom,None);
+        let b = vertices_rect(geom,self.colspec.to_group());
         rectangle_g(b,geom,"aVertexPosition",&self.points);
-        multi_gl(b,geom,"aVertexColour",&self.colour,4);
+        if let ColourSpecImpl::Colour(c) = self.colspec {        
+            multi_gl(b,geom,"aVertexColour",&c,4);
+        }
     }
 }
 
-pub fn stretch_rectangle(arena: &mut Arena, p:&[CLeaf;2], colour:&Colour) {
-    arena.get_geom("stretch").solid_shapes.add_item(Box::new(
-        StretchRect::new(*p,*colour)
+pub fn stretch_rectangle(arena: &mut Arena, p:&[CLeaf;2], colour: &ColourSpec) {
+    let (g,c) = despot("stretch",colour);
+    arena.get_geom(&g).solid_shapes.add_item(Box::new(
+        StretchRect::new(*p,c)
     ));
 }
 

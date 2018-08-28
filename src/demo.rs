@@ -9,8 +9,8 @@ use shape::{
     pin_texture,
     stretch_rectangle,
     stretch_texture,
-    StretchSpot,
-    stretchspot_rectangle,
+    Spot,
+    ColourSpec,
 };
 
 use rand::Rng;
@@ -205,8 +205,8 @@ pub fn demo() {
     let mut arena = Arena::new("#glcanvas","#managedcanvasholder",a_spec);
     let middle = arena.dims().height_px / 120;
     
-    let red = StretchSpot::new(&mut arena, &Colour(255,0,0));
-    let green = StretchSpot::new(&mut arena, &Colour(0,255,0));
+    let red = ColourSpec::Spot(Spot::new(&mut arena, &Colour(255,0,0)));
+    let green = ColourSpec::Spot(Spot::new(&mut arena, &Colour(0,255,0)));
     
     let len_gen = Range::new(0.,0.2);
     let thick_gen = Range::new(0,13);
@@ -232,9 +232,17 @@ pub fn demo() {
                                              0,255,0,255,
                                              255,255,0,255 },2,2);
                 pin_texture(a,tx,&CLeaf(0.,y-25),&CPixel(10,10));
+                stretch_rectangle(a,&[CLeaf(-2.,y-20),CLeaf(-1.,y-15)],&red);
+                stretch_rectangle(a,&[CLeaf(-2.,y-15),CLeaf(-1.,y-10)],&green);
+                pin_triangle(a,&CLeaf(-2.,y-15),&[CPixel(0,0),
+                                         CPixel(-5,10),
+                                         CPixel(5,10)],
+                                         &red);
+                pin_triangle(a,&CLeaf(-1.,y-15),&[CPixel(0,0),
+                                         CPixel(-5,10),
+                                         CPixel(5,10)],
+                                         &green);
             } else if yidx == middle+2 {
-                stretchspot_rectangle(a,&[CLeaf(-5.,y-5),CLeaf(5.,y)],&red);
-                stretchspot_rectangle(a,&[CLeaf(-5.,y),CLeaf(5.,y+5)],&green);
             } else {
                 for idx in -100..100 {
                     let v1 = (idx as f32) * 0.1;
@@ -248,14 +256,15 @@ pub fn demo() {
                     );
                     let h = if thick_gen.sample(&mut rng) == 0 { 1 } else { 5 };
                     stretch_rectangle(a,&[CLeaf(x,y-h),
-                                              CLeaf(x+dx,y+h)],&colour);
+                                          CLeaf(x+dx,y+h)],
+                                          &ColourSpec::Colour(colour));
                     if idx %5 == 0 {
                         let colour = Colour(colour.2,colour.0,colour.1);
                         pin_triangle(a,&CLeaf(x,y),
-                                           &[CPixel(0,0),
-                                             CPixel(-5,10),
-                                             CPixel(5,10)],
-                                           &colour);
+                                       &[CPixel(0,0),
+                                         CPixel(-5,10),
+                                         CPixel(5,10)],
+                                       &ColourSpec::Colour(colour));
                     }
                     if showtext_gen.sample(&mut rng) == 0 {
                         let val = bio_daft(&mut rng);

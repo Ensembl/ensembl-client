@@ -1,12 +1,13 @@
 use arena::{ Arena, ArenaData };
 
 use program::ProgramAttribs;
-use coord::{ CLeaf, CPixel, Colour };
+use coord::{ CLeaf, CPixel };
 
-use shape::Shape;
+use shape::{ Shape, ColourSpec };
 use shape::util::{
     triangle_gl, rectangle_p, rectangle_t,
     multi_gl, vertices_rect, vertices_tri,
+    despot, ColourSpecImpl
 };
 
 use texture::{ TexPart, TexPosItem, TextureDrawRequestHandle };
@@ -18,28 +19,31 @@ use texture::{ TexPart, TexPosItem, TextureDrawRequestHandle };
 pub struct PinTriangle {
     origin: CLeaf,
     points: [CPixel;3],
-    colour: Colour
+    colspec: ColourSpecImpl
 }
 
 impl PinTriangle {
-    pub fn new(origin: CLeaf, points: [CPixel;3], colour: Colour) -> PinTriangle {
-        PinTriangle { origin, points, colour }
+    pub fn new(origin: CLeaf, points: [CPixel;3], colspec: ColourSpecImpl) -> PinTriangle {
+        PinTriangle { origin, points, colspec }
     }    
 }
 
 impl Shape for PinTriangle {
     fn into_objects(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
         let p = &self.points;
-        let b = vertices_tri(geom,None);
+        let b = vertices_tri(geom,self.colspec.to_group());
         triangle_gl(b,geom,"aVertexPosition",&[&p[0],&p[1],&p[2]]);
         multi_gl(b,geom,"aOrigin",&self.origin,3);
-        multi_gl(b,geom,"aVertexColour",&self.colour,3);
+        if let ColourSpecImpl::Colour(c) = self.colspec {        
+            multi_gl(b,geom,"aVertexColour",&c,3);
+        }
     }
 }
 
-pub fn pin_triangle(arena: &mut Arena, origin: &CLeaf, p: &[CPixel;3], colour: &Colour) {
-    arena.get_geom("pin").solid_shapes.add_item(Box::new(
-        PinTriangle::new(*origin,*p,*colour)
+pub fn pin_triangle(arena: &mut Arena, origin: &CLeaf, p: &[CPixel;3], colspec: &ColourSpec) {
+    let (g,c) = despot("pin",colspec);
+    arena.get_geom(&g).solid_shapes.add_item(Box::new(
+        PinTriangle::new(*origin,*p,c)
     ));
 }
 

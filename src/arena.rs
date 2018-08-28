@@ -19,7 +19,7 @@ use coord::{
 use geometry::{
     stretch_geom, stretchtex_geom, stretchspot_geom,
     fix_geom,     fixtex_geom,
-    pin_geom,     pintex_geom,
+    pin_geom,     pintex_geom,     pinspot_geom,
     page_geom,    pagetex_geom,
 };
 
@@ -119,7 +119,7 @@ impl Arena {
             data, 
             order: vec_s! {
                 "stretch", "stretchspot", "stretchtex", 
-                "pin", "pintex",
+                "pin", "pinspot", "pintex",
                 "page", "pagetex",
                 "fix", "fixtex"
             },
@@ -128,6 +128,7 @@ impl Arena {
                 "stretchtex" => stretchtex_geom(&data_b),
                 "stretchspot" => stretchspot_geom(&data_b),
                 "pin" => pin_geom(&data_b),
+                "pinspot" => pinspot_geom(&data_b),
                 "pintex" => pintex_geom(&data_b),
                 "fix" => fix_geom(&data_b),
                 "fixtex" => fixtex_geom(&data_b),

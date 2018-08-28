@@ -1,6 +1,7 @@
 use std::iter;
 use program::{ ProgramAttribs, DataBatch, DataGroup };
-use coord::{ CPixel, CFraction, CLeaf, Input };
+use coord::{ CPixel, CFraction, CLeaf, Input, Colour };
+use shape::ColourSpec;
 
 pub fn triangle_gl(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[&Input;3]) {
     if let Some(obj) = pdata.get_object(key) {
@@ -49,4 +50,31 @@ pub fn vertices_rect(pdata: &mut ProgramAttribs, g: Option<DataGroup>) -> DataBa
 pub fn vertices_tri(pdata: &mut ProgramAttribs, g: Option<DataGroup>) -> DataBatch {
     let g = group(pdata,g);
     pdata.add_vertices(g,&[0,1,2],3)
+}
+
+pub enum ColourSpecImpl {
+    Colour(Colour),
+    Spot(DataGroup)
+}
+
+impl ColourSpecImpl {
+    pub fn to_group(&self) -> Option<DataGroup> {
+        match self {
+            ColourSpecImpl::Spot(dg) => Some(*dg),
+            ColourSpecImpl::Colour(_) => None
+        }
+    }
+}
+
+pub fn despot(geom: &str, spec: &ColourSpec) -> (String, ColourSpecImpl) {
+        let mut g_out = geom.to_string();
+        let c_out = match spec {
+            ColourSpec::Colour(c) => 
+                ColourSpecImpl::Colour(*c),
+            ColourSpec::Spot(s) => {
+                g_out.push_str("spot");
+                ColourSpecImpl::Spot(s.get_group(&g_out))
+            }
+        };
+        (g_out,c_out)
 }
