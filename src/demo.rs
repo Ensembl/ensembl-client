@@ -34,7 +34,9 @@ use arena::{
 
 use coord::{
     CLeaf,
+    RLeaf,
     CPixel,
+    RPixel,
     Colour,
 };
 
@@ -238,15 +240,15 @@ pub fn demo() {
                                              255,0,0,255,
                                              0,255,0,255,
                                              255,255,0,255 },4,1);
-                stretch_texture(a,tx,&[CLeaf(-5.,y-5),CLeaf(5.,y+5)]);
+                stretch_texture(a,tx,&RLeaf(CLeaf(-5.,y-5),CLeaf(10.,10)));
                 let tx = bitmap_texture(a,
                                     vec! { 0,0,255,255,
                                              255,0,0,255,
                                              0,255,0,255,
                                              255,255,0,255 },2,2);
                 pin_texture(a,tx,&CLeaf(0.,y-25),&CPixel(10,10));
-                stretch_rectangle(a,&[CLeaf(-2.,y-20),CLeaf(-1.,y-15)],&red);
-                stretch_rectangle(a,&[CLeaf(-2.,y-15),CLeaf(-1.,y-10)],&green);
+                stretch_rectangle(a,&RLeaf(CLeaf(-2.,y-20),CLeaf(1.,5)),&red);
+                stretch_rectangle(a,&RLeaf(CLeaf(-2.,y-15),CLeaf(1.,5)),&green);
                 pin_triangle(a,&CLeaf(-2.,y-15),&[CPixel(0,0),
                                          CPixel(-5,10),
                                          CPixel(5,10)],
@@ -270,8 +272,7 @@ pub fn demo() {
                         (128.*(v2+1.0).sin()+128.) as u32,
                     );
                     let h = if thick_gen.sample(&mut rng) == 0 { 1 } else { 5 };
-                    stretch_rectangle(a,&[CLeaf(x,y-h),
-                                          CLeaf(x+dx,y+h)],
+                    stretch_rectangle(a,&RLeaf(CLeaf(x,y-h),CLeaf(dx,2*h)),
                                           &ColourSpec::Colour(&colour));
                     if idx %5 == 0 {
                         let colour = Colour(colour.2,colour.0,colour.1);
@@ -293,7 +294,7 @@ pub fn demo() {
         let dims = a.dims();
         let (sw,sh) = (dims.width_px,dims.height_px);
         
-        fix_rectangle(a,&[CPixel(sw/2,0),CPixel(sw/2+1,sh)],
+        fix_rectangle(a,&RPixel(CPixel(sw/2,0),CPixel(1,sh)),
                             &Colour(0,0,0));
         let tx = bitmap_texture(a, vec! { 0,0,255,255,
                                      255,0,0,255,

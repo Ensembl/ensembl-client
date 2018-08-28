@@ -1,7 +1,7 @@
 use arena::{ Arena, ArenaData };
 
 use program::{ ProgramAttribs, DataGroup };
-use coord::{ CLeaf, TexPart };
+use coord::{ CLeaf, RLeaf, RPixel };
 
 use shape::{ Shape, ColourSpec, Spot };
 use shape::util::{
@@ -18,12 +18,12 @@ use texture::{ DrawnShape, Drawing };
  */
 
 pub struct StretchRect {
-    points: [CLeaf;2],
+    points: RLeaf,
     colspec: ColourSpecImpl,
 }
 
 impl StretchRect {
-    pub fn new(points: [CLeaf;2], colspec: ColourSpecImpl) -> StretchRect {
+    pub fn new(points: RLeaf, colspec: ColourSpecImpl) -> StretchRect {
         StretchRect { points, colspec }
     }
 }
@@ -38,7 +38,7 @@ impl Shape for StretchRect {
     }
 }
 
-pub fn stretch_rectangle(arena: &mut Arena, p:&[CLeaf;2], colour: &ColourSpec) {
+pub fn stretch_rectangle(arena: &mut Arena, p:&RLeaf, colour: &ColourSpec) {
     let (g,c) = despot("stretch",colour);
     arena.get_geom(&g).solid_shapes.add_item(Box::new(
         StretchRect::new(*p,c)
@@ -79,29 +79,28 @@ pub fn stretch_wiggle(arena: &mut Arena, p: Vec<CLeaf>, y: i32, spot: &Spot) {
  */
 
 pub struct StretchTexture {
-    pos: [CLeaf;2],
-    texpos: Option<TexPart>
+    pos: RLeaf,
+    texpos: Option<RPixel>
 }
 
 impl DrawnShape for StretchTexture {
-    fn set_texpos(&mut self, data: &TexPart) {
+    fn set_texpos(&mut self, data: &RPixel) {
         self.texpos = Some(*data);
     }
 }
 
 impl StretchTexture {
-    pub fn new(pos: &[CLeaf;2]) -> StretchTexture {
+    pub fn new(pos: &RLeaf) -> StretchTexture {
         StretchTexture {
             pos: *pos, texpos: None
         }
-    }    
+    }
 }
 
 impl Shape for StretchTexture {
     fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
         if let Some(tp) = self.texpos {
-            let flat = &adata.canvases.flat;
-            let t = tp.to_rect(flat);
+            let t = tp / adata.canvases.flat.size();
             let b = vertices_rect(geom,None);                                    
             rectangle_g(b,geom,"aVertexPosition",&self.pos);
             rectangle_t(b,geom,"aTextureCoord",&t);
@@ -109,7 +108,7 @@ impl Shape for StretchTexture {
     }
 }
 
-pub fn stretch_texture(arena: &mut Arena, req: Drawing, pos: &[CLeaf;2]) {
+pub fn stretch_texture(arena: &mut Arena, req: Drawing, pos: &RLeaf) {
     let ri = StretchTexture::new(pos);
     arena.get_geom("stretchtex").tex_shapes.add_item(req,Box::new(ri));
 }

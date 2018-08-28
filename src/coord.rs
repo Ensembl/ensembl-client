@@ -1,14 +1,16 @@
-use std::rc::Rc;
-use std::ops::Add;
+use std::ops::{ Add, Mul, Div };
 use program::{ Object, ObjectAttrib, DataBatch, UniformValue };
-use canvasutil::FlatCanvas;
-
-#[derive(Clone,Copy)]
-pub struct COrigin(pub f32,pub f32);
 
 pub trait Input {
     fn to_f32(&self, _attrib: &mut ObjectAttrib, _batch: &DataBatch) {}
 }
+
+/* COrigin */
+
+#[derive(Clone,Copy)]
+pub struct COrigin(pub f32,pub f32);
+
+/* CLeaf */
 
 #[derive(Clone,Copy)]
 pub struct CLeaf(pub f32,pub i32);
@@ -43,7 +45,38 @@ impl Add for CLeaf {
     }
 }
 
+/* RLeaf */
+
 #[derive(Clone,Copy)]
+pub struct RLeaf(pub CLeaf,pub CLeaf);
+
+impl RLeaf {
+    pub fn expand(&self) -> RLeaf {
+        RLeaf(self.0, self.0+self.1)
+    }
+
+    pub fn rectangle(&self) -> [CLeaf;4] {
+        let x = self.expand();
+        [
+            x.0,
+            CLeaf((x.0).0, (x.1).1), 
+            x.1,
+            CLeaf((x.1).0, (x.0).1)
+        ]
+    }
+}
+
+impl Input for RLeaf {
+    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
+        for c in self.rectangle().iter() {
+            attrib.add_f32(&[c.0 as f32,c.1 as f32],batch);
+        }
+    }
+}
+
+/* CPixel */
+
+#[derive(Clone,Copy,Debug)]
 pub struct CPixel(pub i32,pub i32);
 
 impl CPixel {
@@ -81,6 +114,98 @@ impl Add for CPixel {
     }
 }
 
+impl Mul for CPixel {
+    type Output = CPixel;
+    
+    fn mul(self, other: CPixel) -> CPixel {
+        CPixel(self.0*other.0, self.1*other.1)
+    }
+}
+
+impl Mul<i32> for CPixel {
+    type Output = CPixel;
+    
+    fn mul(self, other: i32) -> CPixel {
+        CPixel(self.0*other, self.1*other)
+    }
+}
+
+impl Div for CPixel {
+    type Output = CFraction;
+    
+    fn div(self, other: CPixel) -> CFraction {
+        CFraction((self.0 as f32)/(other.0 as f32),
+                  (self.1 as f32)/(other.1 as f32))
+    }
+}
+
+/* RPixel */
+
+#[derive(Clone,Copy,Debug)]
+pub struct RPixel(pub CPixel,pub CPixel);
+
+impl RPixel {
+    pub fn at_origin(self) -> RPixel {
+        RPixel(CPixel(0,0),self.1)
+    }
+    
+    pub fn expand(&self) -> RPixel {
+        RPixel(self.0, self.0+self.1)
+    }
+
+    pub fn rectangle(&self) -> [CPixel;4] {
+        let x = self.expand();
+        [
+            x.0,
+            CPixel((x.0).0, (x.1).1), 
+            x.1,
+            CPixel((x.1).0, (x.0).1)
+        ]
+    }
+}
+
+impl Add<CPixel> for RPixel {
+    type Output = RPixel;
+    
+    fn add(self, other: CPixel) -> RPixel {
+        RPixel(self.0+other,self.1)
+    }
+}
+
+impl Mul<CPixel> for RPixel {
+    type Output = RPixel;
+    
+    fn mul(self, other: CPixel) -> RPixel {
+        RPixel(self.0*other, self.1*other)
+    }
+}
+
+impl Div for RPixel {
+    type Output = RFraction;
+    
+    fn div(self, other: RPixel) -> RFraction {
+        RFraction(self.0/other.0,self.1/other.1)
+    }
+}
+
+impl Div<CPixel> for RPixel {
+    type Output = RFraction;
+    
+    fn div(self, other: CPixel) -> RFraction {
+        RFraction(self.0/other,self.1/other)
+    }
+}
+
+impl Input for RPixel {
+    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
+        for c in self.rectangle().iter() {
+            attrib.add_f32(&[c.0 as f32,c.1 as f32],batch);
+        }
+    }
+}
+
+/* CFraction */
+
 #[derive(Clone,Copy)]
 pub struct CFraction(pub f32,pub f32);
 
@@ -100,35 +225,50 @@ impl CFraction {
     }
 }
 
+impl Add for CFraction {
+    type Output = CFraction;
+    
+    fn add(self,other: CFraction) -> CFraction {
+        CFraction(self.0+other.0, self.1+other.1)
+    }
+}
+
 impl Input for CFraction {
     fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
         attrib.add_f32(&[self.0,self.1],batch);
     }
 }
 
+/* RFraction */
+
 #[derive(Clone,Copy)]
-pub struct TexPart {
-    x: i32,
-    y: i32,
-    width: i32,
-    height: i32
+pub struct RFraction(pub CFraction,pub CFraction);
+
+impl RFraction {
+    pub fn expand(&self) -> RFraction {
+        RFraction(self.0, self.0+self.1)
+    }
+    
+    pub fn rectangle(&self) -> [CFraction;4] {
+        let x = self.expand();
+        [
+            x.0,
+            CFraction((x.0).0, (x.1).1), 
+            x.1,
+            CFraction((x.1).0, (x.0).1)
+        ]
+    }
 }
 
-impl TexPart {
-    pub fn new(x: i32, y: i32, width: i32, height: i32) -> TexPart {
-        TexPart { x, y, width, height }
-    }
-    
-    pub fn to_rect(&self,flat: &Rc<FlatCanvas>) -> [CFraction;2] {
-        [CFraction(flat.prop_x(self.x), flat.prop_y(self.y)),
-         CFraction(flat.prop_x(self.x + self.width), flat.prop_y(self.y + self.height))]
-    }
-    
-    
-    pub fn size(&self, scale: CPixel) -> CPixel {
-        CPixel(self.width * scale.0, self.height * scale.1)
+impl Input for RFraction {
+    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
+        for c in self.rectangle().iter() {
+            attrib.add_f32(&[c.0,c.1],batch);
+        }
     }
 }
+
+/* Colour */
 
 #[derive(Clone,Copy,PartialEq,Hash,Eq)]
 pub struct Colour(pub u32,pub u32,pub u32);
