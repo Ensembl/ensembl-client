@@ -1,12 +1,12 @@
 use arena::{ ArenaData, Arena };
 
 use program::ProgramAttribs;
-use coord::{ CPixel, Colour };
+use coord::{ CPixel, Colour, TexPart };
 
 use shape::Shape;
 use shape::util::{ rectangle_p, rectangle_t, multi_gl, vertices_rect };
 
-use texture::{ TexPart, TexPosItem, TextureDrawRequestHandle };
+use texture::{ DrawnShape, Drawing };
 
 /*
  * FixRect
@@ -57,7 +57,7 @@ pub struct FixTexture {
     texpos: Option<TexPart>
 }
 
-impl TexPosItem for FixTexture {
+impl DrawnShape for FixTexture {
     fn set_texpos(&mut self, data: &TexPart) {
         self.texpos = Some(*data);
     }
@@ -84,16 +84,16 @@ impl Shape for FixTexture {
     }
 }
 
-fn texture(arena: &mut Arena,req: TextureDrawRequestHandle, origin: &CPixel, scale: &CPixel, geom: &str) {
+fn texture(arena: &mut Arena,req: Drawing, origin: &CPixel, scale: &CPixel, geom: &str) {
     let ri = FixTexture::new(origin,scale);
     arena.get_geom(geom).tex_shapes.add_item(req,Box::new(ri));
 }
 
 
-pub fn fix_texture(arena: &mut Arena,req: TextureDrawRequestHandle, origin: &CPixel, scale: &CPixel) {
+pub fn fix_texture(arena: &mut Arena,req: Drawing, origin: &CPixel, scale: &CPixel) {
     texture(arena, req, origin, scale, "fixtex");
 }
 
-pub fn page_texture(arena: &mut Arena,req: TextureDrawRequestHandle, origin: &CPixel, scale: &CPixel) {
+pub fn page_texture(arena: &mut Arena,req: Drawing, origin: &CPixel, scale: &CPixel) {
     texture(arena, req, origin, scale, "pagetex");
 }

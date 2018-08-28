@@ -4,13 +4,12 @@ mod textureimpl;
 
 pub use texture::textureimpl::{
     /* Different KINDS OF THING to be drawn */
-    TextureDrawRequestHandle,
-    TextureSourceManager,
+    Drawing,
+    LeafDrawingManager,
     
     /* Different INSTANCES OF THINGS To be drawn */
-    TexPosItem,
-    TexShapeManager,
-    TexPart,
+    DrawnShape,
+    DrawnShapeManager,
 };
 
 pub use texture::text::text_texture;

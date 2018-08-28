@@ -1,7 +1,7 @@
 use arena::{ Arena, ArenaData };
 
 use program::{ ProgramAttribs, DataGroup };
-use coord::{ CLeaf };
+use coord::{ CLeaf, TexPart };
 
 use shape::{ Shape, ColourSpec, Spot };
 use shape::util::{
@@ -11,7 +11,7 @@ use shape::util::{
     despot, ColourSpecImpl
 };
 
-use texture::{ TexPart, TexPosItem, TextureDrawRequestHandle };
+use texture::{ DrawnShape, Drawing };
 
 /*
  * StretchRect
@@ -83,7 +83,7 @@ pub struct StretchTexture {
     texpos: Option<TexPart>
 }
 
-impl TexPosItem for StretchTexture {
+impl DrawnShape for StretchTexture {
     fn set_texpos(&mut self, data: &TexPart) {
         self.texpos = Some(*data);
     }
@@ -109,7 +109,7 @@ impl Shape for StretchTexture {
     }
 }
 
-pub fn stretch_texture(arena: &mut Arena, req: TextureDrawRequestHandle, pos: &[CLeaf;2]) {
+pub fn stretch_texture(arena: &mut Arena, req: Drawing, pos: &[CLeaf;2]) {
     let ri = StretchTexture::new(pos);
     arena.get_geom("stretchtex").tex_shapes.add_item(req,Box::new(ri));
 }

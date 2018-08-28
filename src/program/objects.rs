@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use texture::TextureDrawRequestHandle;
+use texture::Drawing;
 use stdweb::web::TypedArray;
 
 use webgl_rendering_context::{
@@ -26,10 +26,10 @@ use coord::{
 /* This is the meat of each Object implementation */
 pub trait Object {
     fn add_f32(&mut self, _values: &[f32], _batch: &DataBatch) {}
-    fn add_tdr(&mut self, _value: &TextureDrawRequestHandle) {}
+    fn add_tdr(&mut self, _value: &Drawing) {}
 
-    fn get_tdr(&self) -> Vec<TextureDrawRequestHandle> {
-        Vec::<TextureDrawRequestHandle>::new()
+    fn get_tdr(&self) -> Vec<Drawing> {
+        Vec::<Drawing>::new()
     }
 
     fn add_data(&mut self, _batch: &DataBatch, _values: &[&Input]) {}

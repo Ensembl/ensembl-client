@@ -4,9 +4,10 @@ use std::hash::Hash;
 use std::hash::Hasher;
 use std::collections::hash_map::DefaultHasher;
 
+use coord::TexPart;
+
 use alloc::Ticket;
 use alloc::Allocator;
-use canvasutil::FlatCanvas;
 
 use shape::Shape;
 
@@ -17,37 +18,32 @@ use arena::{
     ArenaData,
 };
 
-use coord::{
-    CPixel,
-    CFraction,
-};
+pub struct DrawingHash(u64);
 
-pub struct TDRKey(u64);
-
-impl TDRKey {
-    pub fn new<K>(val: K) -> TDRKey where K : Hash + Eq {
+impl DrawingHash {
+    pub fn new<K>(val: K) -> DrawingHash where K : Hash + Eq {
         let mut hasher = DefaultHasher::new();
         val.hash(&mut hasher);
-        TDRKey(hasher.finish())
+        DrawingHash(hasher.finish())
     }
 }
 
-pub struct TDRMemory {
-    cache: HashMap<u64,TextureDrawRequestHandle>
+pub struct DrawingMemory {
+    cache: HashMap<u64,Drawing>
 }
 
-impl TDRMemory {
-    pub fn new() -> TDRMemory {
-        TDRMemory {
-            cache: HashMap::<u64,TextureDrawRequestHandle>::new()
+impl DrawingMemory {
+    pub fn new() -> DrawingMemory {
+        DrawingMemory {
+            cache: HashMap::<u64,Drawing>::new()
         }
     }
 
-    pub fn insert(&mut self, key: &TDRKey, val: TextureDrawRequestHandle) {
+    pub fn insert(&mut self, key: &DrawingHash, val: Drawing) {
         self.cache.insert(key.0,val);
     }
     
-    pub fn lookup(&self, a: &Box<TextureArtist>) -> (Option<TDRKey>,Option<TextureDrawRequestHandle>) {
+    pub fn lookup(&self, a: &Box<Artist>) -> (Option<DrawingHash>,Option<Drawing>) {
         let tdrk = a.memoize_key();
         if let Some(tdrk) = tdrk {
             if let Some(obj) = self.cache.get(&tdrk.0) {
@@ -68,76 +64,76 @@ impl TDRMemory {
     }
 }
 
-/* A TextureArtist can service some class of TextureDrawRequests.
+/* A Artist can service some class of DrawingImpls.
  * A texture type will create an instance of them. Note that a
- * TextureArtist is not parameterised, it can draw exactly one thing.
+ * Artist is not parameterised, it can draw exactly one thing.
  */
-pub trait TextureArtist {
+pub trait Artist {
     fn draw(&self, canv: &mut ArenaCanvases, x: i32, y: i32);
-    fn memoize_key(&self) -> Option<TDRKey>  { None }
+    fn memoize_key(&self) -> Option<DrawingHash>  { None }
     fn measure(&self, canv: &mut ArenaCanvases) -> (i32, i32);
 }
 
 /* One request to draw on the backing canvas. A combination of
- * TextureArtist and a ticket (to get a location, when ready)
+ * Artist and a ticket (to get a location, when ready)
  */
-pub struct TextureDrawRequest {
-    gen: Box<TextureArtist>,
+pub struct DrawingImpl {
+    gen: Box<Artist>,
     ticket: Ticket
 }
 
 #[derive(Clone)]
-pub struct TextureDrawRequestHandle(Rc<TextureDrawRequest>);
+pub struct Drawing(Rc<DrawingImpl>);
 
-impl TextureDrawRequestHandle {
-    pub fn new(gen: Box<TextureArtist>, ticket: Ticket) -> TextureDrawRequestHandle {
-        TextureDrawRequestHandle(
-            Rc::new(TextureDrawRequest {
+impl Drawing {
+    pub fn new(gen: Box<Artist>, ticket: Ticket) -> Drawing {
+        Drawing(
+            Rc::new(DrawingImpl {
                 gen,ticket
             }))
     }
 
-    pub fn draw(&self, canvs: &mut ArenaCanvases, gtexreqman: &TextureSourceManager) {
+    pub fn draw(&self, canvs: &mut ArenaCanvases, gtexreqman: &LeafDrawingManager) {
         let (x,y) = gtexreqman.allocator.position(&self.0.ticket);
         self.0.gen.draw(canvs,x,y);
     }
     
-    pub fn measure(&self, src: &TextureSourceManager) -> TexPart {
+    pub fn measure(&self, src: &LeafDrawingManager) -> TexPart {
         let (width,height) = src.allocator.size(&self.0.ticket);
         let (x,y) = src.allocator.position(&self.0.ticket);
         TexPart::new(x,y,width,height)
     }
 }
 
-/* Utility method to make creating TextureDrawRequests simpler */
-pub fn create_draw_request(gtexreqman: &mut TextureSourceManager, ta: Box<TextureArtist>, width: i32, height: i32) -> TextureDrawRequestHandle {
+/* Utility method to make creating DrawingImpls simpler */
+pub fn create_draw_request(gtexreqman: &mut LeafDrawingManager, ta: Box<Artist>, width: i32, height: i32) -> Drawing {
     let req;
     {
         let flat_alloc = &mut gtexreqman.allocator;
-        req = TextureDrawRequestHandle::new(ta,flat_alloc.request(width,height));
+        req = Drawing::new(ta,flat_alloc.request(width,height));
     }
     req
 }
 
-/* Manages TextureDrawRequests. Single instance in Arena. Just stores
+/* Manages DrawingImpls. Single instance in Leaf. Just stores
  * them and calls draw when ready really. Little more than a fancy Vec.
  */
-pub struct TextureSourceManager {
-    cache: TDRMemory,
-    tickets: Vec<TextureDrawRequestHandle>,
+pub struct LeafDrawingManager {
+    cache: DrawingMemory,
+    tickets: Vec<Drawing>,
     allocator: Allocator,
 }
 
-impl TextureSourceManager {
-    pub fn new() -> TextureSourceManager {
-        TextureSourceManager {
-            cache: TDRMemory::new(),
-            tickets: Vec::<TextureDrawRequestHandle>::new(),
+impl LeafDrawingManager {
+    pub fn new() -> LeafDrawingManager {
+        LeafDrawingManager {
+            cache: DrawingMemory::new(),
+            tickets: Vec::<Drawing>::new(),
             allocator: Allocator::new(16),
         }
     }
 
-    pub fn add_request(&mut self, canvas: &mut ArenaCanvases, a: Box<TextureArtist>) -> TextureDrawRequestHandle {
+    pub fn add_request(&mut self, canvas: &mut ArenaCanvases, a: Box<Artist>) -> Drawing {
         let (tdrk,val) = self.cache.lookup(&a);
         if let Some(tdrh) = val {
             // already in cache
@@ -174,53 +170,29 @@ impl TextureSourceManager {
  * canvas using textures. Parameterised by geometry so each will have
  * its own (as it has its own co-rodinate data to store).
  * 
- * T = Program
  */
 
-pub trait TexPosItem : Shape {
+pub trait DrawnShape : Shape {
     fn set_texpos(&mut self, data: &TexPart);    
 }
 
-#[derive(Clone,Copy)]
-pub struct TexPart {
-    x: i32,
-    y: i32,
-    width: i32,
-    height: i32
-}
 
-impl TexPart {
-    pub fn new(x: i32, y: i32, width: i32, height: i32) -> TexPart {
-        TexPart { x, y, width, height }
-    }
-    
-    pub fn to_rect(&self,flat: &Rc<FlatCanvas>) -> [CFraction;2] {
-        [CFraction(flat.prop_x(self.x), flat.prop_y(self.y)),
-         CFraction(flat.prop_x(self.x + self.width), flat.prop_y(self.y + self.height))]
-    }
-    
-    
-    pub fn size(&self, scale: CPixel) -> CPixel {
-        CPixel(self.width * scale.0, self.height * scale.1)
-    }
-}
-
-/* A TexShapeManager manages requests to draw an item onto a WebGL
+/* A DrawnShapeManager manages requests to draw an item onto a WebGL
  * canvas by storing relevant TextureItems. One per geometry.
  */
 
-pub struct TexShapeManager {
-    requests: Vec<(TextureDrawRequestHandle,Box<TexPosItem>)>
+pub struct DrawnShapeManager {
+    requests: Vec<(Drawing,Box<DrawnShape>)>
 }
 
-impl TexShapeManager {
-    pub fn new() -> TexShapeManager {
-        TexShapeManager {
-            requests: Vec::<(TextureDrawRequestHandle,Box<TexPosItem>)>::new()
+impl DrawnShapeManager {
+    pub fn new() -> DrawnShapeManager {
+        DrawnShapeManager {
+            requests: Vec::<(Drawing,Box<DrawnShape>)>::new()
         }
     }
     
-    pub fn add_item(&mut self, req: TextureDrawRequestHandle, item: Box<TexPosItem>) {
+    pub fn add_item(&mut self, req: Drawing, item: Box<DrawnShape>) {
         self.requests.push((req,item));
     }
     

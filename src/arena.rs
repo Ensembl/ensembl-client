@@ -24,7 +24,7 @@ use geometry::{
 };
 
 use texture::{
-    TextureSourceManager,
+    LeafDrawingManager,
 };
 
 pub struct ArenaCanvases {
@@ -44,7 +44,7 @@ pub struct ArenaData {
     spec: ArenaSpec,
     pub dims: ArenaDims,
     pub canvases: ArenaCanvases,
-    pub gtexreqman: TextureSourceManager,
+    pub gtexreqman: LeafDrawingManager,
     pub ctx: glctx,
     pub gpuspec: GPUSpec
 }
@@ -53,7 +53,7 @@ impl ArenaData {
     /* help the borrow checker by splitting a mut in a way that it
      * understands is disjoint.
      */
-    pub fn burst_texture<'a>(&'a mut self) -> (&'a mut ArenaCanvases, &'a mut TextureSourceManager,&'a mut ArenaDims) {
+    pub fn burst_texture<'a>(&'a mut self) -> (&'a mut ArenaCanvases, &'a mut LeafDrawingManager,&'a mut ArenaDims) {
         (&mut self.canvases, &mut self.gtexreqman,
          &mut self.dims)
     }
@@ -97,7 +97,7 @@ impl Arena {
         let data = Rc::new(RefCell::new(ArenaData {
             ctx, spec, 
             gpuspec: GPUSpec::new(),
-            gtexreqman: TextureSourceManager::new(),
+            gtexreqman: LeafDrawingManager::new(),
             dims: ArenaDims {
                 aspect: canvasutil::aspect_ratio(&canvas),
                 width_px: canvas.width() as i32,
@@ -125,9 +125,9 @@ impl Arena {
             },
             map: hashmap_s! {
                 "stretch" => stretch_geom(&data_b),
-                "stretchtex" => stretchtex_geom(&data_b),
                 "stretchstrip" => stretchstrip_geom(&data_b),
                 "stretchspot" => stretchspot_geom(&data_b),
+                "stretchtex" => stretchtex_geom(&data_b),
                 "pin" => pin_geom(&data_b),
                 "pinspot" => pinspot_geom(&data_b),
                 "pintex" => pintex_geom(&data_b),
