@@ -63,9 +63,16 @@ pub fn vertices_strip(pdata: &mut ProgramAttribs, len: u16, g: Option<DataGroup>
 
 pub fn points_g(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p_in: &[CLeaf], y: i32) {
     if let Some(obj) = pdata.get_object(key) {
+        if let Some(v) = p_in.first() { // double first for strip break
+            obj.add_data(&b,&[v]);
+        }
         for p in p_in {
             let q = *p + CLeaf(0.,y);
             obj.add_data(&b,&[p,&q]);
+        }
+        if let Some(v) = p_in.last() { // double last for strip break
+            let q = *v + CLeaf(0.,y);
+            obj.add_data(&b,&[&q]);
         }
     }
 }

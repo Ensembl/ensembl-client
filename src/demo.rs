@@ -255,7 +255,7 @@ pub fn demo() {
                                          CPixel(-5,10),
                                          CPixel(5,10)],
                                          &green);
-            } else if yidx == middle+2 {
+            } else if yidx == middle+2 || yidx == middle+4 {
                 let wiggle = wiggly(&mut rng,500,CLeaf(-5.,y-5),0.02,20);
                 stretch_wiggle(a,wiggle,2,&green_spot);
             } else {

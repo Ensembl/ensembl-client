@@ -2,9 +2,8 @@ TODO:
 
 P/GCoord utils           (3)
 Rectangle types          (2)
-continuous lines         (1)
-bitmap draw              (4)
-text alpha               (5)
+bitmap draw              (1)
+text alpha               (4)
 tab deselected jank
 font load race
 clearing audit
