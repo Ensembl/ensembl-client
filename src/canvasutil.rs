@@ -14,7 +14,7 @@ use stdweb::web::html_element::{
 use stdweb::web::TypedArray;
 use stdweb::unstable::TryInto;
 use coord::{
-    Colour
+    Colour, CPixel
 };
 
 use domutil;
@@ -125,6 +125,10 @@ impl FlatCanvas {
     
     pub fn element(&self) -> &CanvasElement {
         &self.canvas
+    }
+    
+    pub fn size(&self) -> CPixel {
+        CPixel(self.width,self.height)
     }
     
     pub fn prop_x(&self,x: i32) -> f32 {

@@ -4,7 +4,7 @@ use std::hash::Hash;
 use std::hash::Hasher;
 use std::collections::hash_map::DefaultHasher;
 
-use coord::TexPart;
+use coord::{ CPixel, RPixel };
 
 use alloc::Ticket;
 use alloc::Allocator;
@@ -98,10 +98,10 @@ impl Drawing {
         self.0.gen.draw(canvs,x,y);
     }
     
-    pub fn measure(&self, src: &LeafDrawingManager) -> TexPart {
+    pub fn measure(&self, src: &LeafDrawingManager) -> RPixel {
         let (width,height) = src.allocator.size(&self.0.ticket);
         let (x,y) = src.allocator.position(&self.0.ticket);
-        TexPart::new(x,y,width,height)
+        RPixel(CPixel(x,y),CPixel(width,height))
     }
 }
 
@@ -173,7 +173,7 @@ impl LeafDrawingManager {
  */
 
 pub trait DrawnShape : Shape {
-    fn set_texpos(&mut self, data: &TexPart);    
+    fn set_texpos(&mut self, data: &RPixel);    
 }
 
 

@@ -1,7 +1,7 @@
 use arena::{ Arena, ArenaData };
 
 use program::ProgramAttribs;
-use coord::{ CLeaf, CPixel, TexPart };
+use coord::{ CLeaf, CPixel, RPixel };
 
 use shape::{ Shape, ColourSpec };
 use shape::util::{
@@ -54,11 +54,11 @@ pub fn pin_triangle(arena: &mut Arena, origin: &CLeaf, p: &[CPixel;3], colspec: 
 pub struct PinTexture {
     origin: CLeaf,
     scale: CPixel,
-    texpos: Option<TexPart>
+    texpos: Option<RPixel>
 }
 
 impl DrawnShape for PinTexture {
-    fn set_texpos(&mut self, data: &TexPart) {
+    fn set_texpos(&mut self, data: &RPixel) {
         self.texpos = Some(*data);
     }
 }
@@ -74,9 +74,8 @@ impl PinTexture {
 impl Shape for PinTexture {
     fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
         if let Some(tp) = self.texpos {
-            let flat = &adata.canvases.flat;            
-            let p = [CPixel(0,0), tp.size(self.scale)];
-            let t = tp.to_rect(flat);
+            let p = tp.at_origin() * self.scale;
+            let t = tp / adata.canvases.flat.size();
             let b = vertices_rect(geom,None);
             rectangle_p(b,geom,"aVertexPosition",&p);
             rectangle_t(b,geom,"aTextureCoord",&t);

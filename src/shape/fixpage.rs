@@ -1,7 +1,7 @@
 use arena::{ ArenaData, Arena };
 
 use program::ProgramAttribs;
-use coord::{ CPixel, Colour, TexPart };
+use coord::{ CPixel, Colour, RPixel };
 
 use shape::Shape;
 use shape::util::{ rectangle_p, rectangle_t, multi_gl, vertices_rect };
@@ -13,12 +13,12 @@ use texture::{ DrawnShape, Drawing };
  */
 
 pub struct FixRect {
-    points: [CPixel;2],
+    points: RPixel,
     colour: Colour,
 }
 
 impl FixRect {
-    pub fn new(points: [CPixel;2], colour: Colour) -> FixRect {
+    pub fn new(points: RPixel, colour: Colour) -> FixRect {
         FixRect { points, colour }
     }    
 }
@@ -31,19 +31,19 @@ impl Shape for FixRect {
     }
 }
 
-fn rectangle(arena: &mut Arena, p: &[CPixel;2], colour: &Colour, geom: &str) {
+fn rectangle(arena: &mut Arena, p: &RPixel, colour: &Colour, geom: &str) {
     let geom = arena.get_geom(geom);
     geom.solid_shapes.add_item(Box::new(
         FixRect::new(*p,*colour)
     ));
 }
 
-pub fn fix_rectangle(arena: &mut Arena, p: &[CPixel;2], colour: &Colour) {
+pub fn fix_rectangle(arena: &mut Arena, p: &RPixel, colour: &Colour) {
     rectangle(arena, p, colour, "fix");
 }
 
 #[allow(dead_code)]
-pub fn page_rectangle(arena: &mut Arena, p: &[CPixel;2], colour: &Colour) {
+pub fn page_rectangle(arena: &mut Arena, p: &RPixel, colour: &Colour) {
     rectangle(arena, p, colour, "page");
 }
 
@@ -54,11 +54,11 @@ pub fn page_rectangle(arena: &mut Arena, p: &[CPixel;2], colour: &Colour) {
 pub struct FixTexture {
     pos: CPixel,
     scale: CPixel,
-    texpos: Option<TexPart>
+    texpos: Option<RPixel>
 }
 
 impl DrawnShape for FixTexture {
-    fn set_texpos(&mut self, data: &TexPart) {
+    fn set_texpos(&mut self, data: &RPixel) {
         self.texpos = Some(*data);
     }
 }
@@ -74,9 +74,8 @@ impl FixTexture {
 impl Shape for FixTexture {
     fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
         if let Some(tp) = self.texpos {
-            let flat = &adata.canvases.flat;
-            let t = tp.to_rect(flat);
-            let p = [self.pos, self.pos + tp.size(self.scale)];
+            let p = tp.at_origin() * self.scale + self.pos;
+            let t = tp / adata.canvases.flat.size();
             let b = vertices_rect(geom,None);
             rectangle_p(b,geom,"aVertexPosition",&p);
             rectangle_t(b,geom,"aTextureCoord",&t);

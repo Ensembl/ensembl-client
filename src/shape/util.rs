@@ -1,6 +1,6 @@
 use std::iter;
 use program::{ ProgramAttribs, DataBatch, DataGroup };
-use coord::{ CPixel, CFraction, CLeaf, Input, Colour };
+use coord::{ CPixel, RFraction, CLeaf, Input, Colour, RPixel, RLeaf };
 use shape::ColourSpec;
 
 pub fn triangle_gl(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[&Input;3]) {
@@ -9,24 +9,21 @@ pub fn triangle_gl(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[&In
     }
 }
 
-pub fn rectangle_g(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[CLeaf;2]) {
-    let v = &p[0].rectangle(p[1]);
+pub fn rectangle_g(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &RLeaf) {
     if let Some(obj) = pdata.get_object(key) {
-        obj.add_data(&b,&[&v[0], &v[1], &v[2], &v[3]]);
+        obj.add_data(&b,&[p]);
     }
 }
 
-pub fn rectangle_p(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[CPixel;2]) {
-    let v = &p[0].rectangle(p[1]);
+pub fn rectangle_p(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &RPixel) {
     if let Some(obj) = pdata.get_object(key) {
-        obj.add_data(&b,&[&v[0], &v[1], &v[2], &v[3]]);
+        obj.add_data(&b,&[p]);
     }
 }
 
-pub fn rectangle_t(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[CFraction;2]) {
-    let v = &p[0].rectangle(p[1]);
+pub fn rectangle_t(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &RFraction) {
     if let Some(obj) = pdata.get_object(key) {
-        obj.add_data(&b,&[&v[0], &v[1], &v[2], &v[3]]);
+        obj.add_data(&b,&[p]);
     }
 }
 
