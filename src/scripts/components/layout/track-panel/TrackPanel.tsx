@@ -15,7 +15,7 @@ type TrackPanelState = {
 };
 
 class TrackPanel extends Component<TrackPanelProps, TrackPanelState> {
-  readonly state: TrackPanelState = {
+  public readonly state: TrackPanelState = {
     expanded: true
   };
 
@@ -25,7 +25,7 @@ class TrackPanel extends Component<TrackPanelProps, TrackPanelState> {
     this.toggleTrackPanel = this.toggleTrackPanel.bind(this);
   }
 
-  toggleTrackPanel() {
+  public toggleTrackPanel() {
     if (this.props.drawerOpened === true) {
       this.props.closeDrawer();
 
@@ -39,13 +39,13 @@ class TrackPanel extends Component<TrackPanelProps, TrackPanelState> {
     this.props.toggleBrowser();
   }
 
-  render() {
+  public render() {
     const { expanded } = this.state;
 
     return (
       <section className={`track-panel react-slide-drawer ${expanded ? 'expanded' : 'collapsed'}`}>
         <TrackPanelBar expanded={expanded} toggleTrackPanel={this.toggleTrackPanel} />
-        { expanded ? <TrackPanelList updateCurrentTrackName={this.props.updateCurrentTrackName} /> : null }
+        {expanded ? <TrackPanelList updateCurrentTrackName={this.props.updateCurrentTrackName} /> : null}
       </section>
     );
   }

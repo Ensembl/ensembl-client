@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, SFC, ReactEventHandler } from 'react';
+import React, { ReactEventHandler, SFC } from 'react';
 
 type NavProps = {
   toggleLaunchbar: ReactEventHandler,

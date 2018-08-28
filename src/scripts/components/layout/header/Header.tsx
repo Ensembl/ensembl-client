@@ -4,16 +4,16 @@ import Nav from './Nav';
 import Launchbar from './Launchbar';
 import Account from './Account';
 
-type HeaderProps = Object;
+type HeaderProps = {};
 type HeaderState = {
-  launchbarExpanded: boolean,
-  accountExpanded: boolean
+  accountExpanded: boolean,
+  launchbarExpanded: boolean
 };
 
 class Header extends Component<HeaderProps, HeaderState> {
-  readonly state: HeaderState = {
-    launchbarExpanded: true,
-    accountExpanded: false
+  public readonly state: HeaderState = {
+    accountExpanded: false,
+    launchbarExpanded: true
   };
 
   constructor(props: HeaderProps) {
@@ -23,7 +23,7 @@ class Header extends Component<HeaderProps, HeaderState> {
     this.toggleAccount = this.toggleAccount.bind(this);
   }
 
-  toggleLaunchbar() {
+  public toggleLaunchbar() {
     const currentToggleState: boolean = !this.state.launchbarExpanded;
 
     this.setState({
@@ -31,7 +31,7 @@ class Header extends Component<HeaderProps, HeaderState> {
     });
   }
 
-  toggleAccount() {
+  public toggleAccount() {
     const currentToggleState: boolean = !this.state.accountExpanded;
 
     this.setState({
@@ -39,7 +39,7 @@ class Header extends Component<HeaderProps, HeaderState> {
     });
   }
 
-  render() {
+  public render() {
     return (
       <header>
         <div className="top-bar">

@@ -1,6 +1,6 @@
 export type TrackPage = {
-  name: string,
-  label: string
+  label: string,
+  name: string
 };
 
 export type TrackPageList = {
@@ -10,16 +10,16 @@ export type TrackPageList = {
 export const trackPagesConfig: TrackPageList = {
   'track-one': [
     {
+      label: 'Page 1',
       name: 'page-one',
-      label: 'Page 1'
     },
     {
+      label: 'Page 2',
       name: 'page-two',
-      label: 'Page 2'
     },
     {
-      name: 'page-three',
-      label: 'Page 3'
+      label: 'Page 3',
+      name: 'page-three'
     }
   ],
   'track-two': []

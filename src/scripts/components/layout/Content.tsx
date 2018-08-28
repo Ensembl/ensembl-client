@@ -18,7 +18,7 @@ const SpeciesBrowser = Loadable({
 });
 
 class Content extends Component {
-  render() {
+  public render() {
     return (
       <main>
         <Route path="/app/globalsearch" component={GlobalSearch} />

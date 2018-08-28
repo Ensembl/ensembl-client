@@ -15,20 +15,18 @@ type BrowserProps = RouteComponentProps<BrowserParams> & {
 
 type BrowserState = {
   browserExpanded: boolean,
-  drawerOpened: boolean,
-  currentTrack: string
+  currentTrack: string,
+  drawerOpened: boolean
 };
 
 class Browser extends Component<BrowserProps, BrowserState> {
-  historyUnlistener: UnregisterCallback = () => null;
-
-  readonly state: BrowserState = {
+  public readonly state: BrowserState = {
     browserExpanded: false,
-    drawerOpened: false,
-    currentTrack: ''
+    currentTrack: '',
+    drawerOpened: false
   };
 
-  constructor(props: BrowserProps) {
+  public constructor(props: BrowserProps) {
     super(props);
 
     this.toggleBrowser = this.toggleBrowser.bind(this);
@@ -36,7 +34,7 @@ class Browser extends Component<BrowserProps, BrowserState> {
     this.updateCurrentTrackName = this.updateCurrentTrackName.bind(this);
   }
 
-  componentDidMount() {
+  public componentDidMount() {
     this.toggleDrawer();
 
     this.historyUnlistener = this.props.history.listen((location: Location) => {
@@ -44,29 +42,17 @@ class Browser extends Component<BrowserProps, BrowserState> {
     });
   }
 
-  componentWillUnmount() {
+  public componentWillUnmount() {
     this.historyUnlistener();
   }
 
-  toggleBrowser() {
+  public toggleBrowser() {
     const browserExpanded = !this.state.browserExpanded;
 
     this.setState({ browserExpanded });
   }
 
-  toggleDrawer(location?: Location) {
-    let drawerOpened: boolean = true;
-
-    location = location || this.props.location;
-
-    if (location.pathname === this.props.match.path) {
-      drawerOpened = false;
-    }
-
-    this.setState({ drawerOpened });
-  }
-
-  closeDrawer() {
+  public closeDrawer() {
     if (this.state.drawerOpened === false) {
       return;
     }
@@ -76,11 +62,11 @@ class Browser extends Component<BrowserProps, BrowserState> {
     history.push(`${match.path}`);
   }
 
-  updateCurrentTrackName(currentTrack: string) {
+  public updateCurrentTrackName(currentTrack: string) {
     this.setState({ currentTrack });
   }
 
-  render() {
+  public render() {
     const { browserExpanded, drawerOpened } = this.state;
 
     let className: string = 'browser ';
@@ -103,11 +89,30 @@ class Browser extends Component<BrowserProps, BrowserState> {
             </div>
           </div>
         </section>
-        <TrackPanel drawerOpened={drawerOpened} closeDrawer={this.closeDrawer} toggleBrowser={this.toggleBrowser} updateCurrentTrackName={this.updateCurrentTrackName} />
+        <TrackPanel
+          drawerOpened={drawerOpened}
+          closeDrawer={this.closeDrawer}
+          toggleBrowser={this.toggleBrowser}
+          updateCurrentTrackName={this.updateCurrentTrackName}
+        />
         {drawerOpened && <Track currentTrack={this.state.currentTrack}>{this.props.trackRoutes}</Track>}
       </Fragment>
     );
   }
+
+  private toggleDrawer(location?: Location) {
+    let drawerOpened: boolean = true;
+
+    location = location || this.props.location;
+
+    if (location.pathname === this.props.match.path) {
+      drawerOpened = false;
+    }
+
+    this.setState({ drawerOpened });
+  }
+
+  private historyUnlistener: UnregisterCallback = () => null;
 }
 
 export default withRouter((props: BrowserProps) => <Browser {...props} />);

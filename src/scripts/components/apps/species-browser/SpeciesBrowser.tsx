@@ -20,7 +20,7 @@ const trackRoutes = (
 );
 
 class SpeciesBrowser extends Component<SpeciesBrowserProps, SpeciesBrowserState> {
-  render() {
+  public render() {
     return (
       <Browser trackRoutes={trackRoutes}>
         <h2>Species Browser content area placeholder</h2>

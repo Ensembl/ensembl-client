@@ -9,7 +9,7 @@ type BrowserBarProps = {
 };
 
 class BrowserBar extends Component<BrowserBarProps> {
-  render() {
+  public render() {
     return (
       <div className="browser-bar">
         <dl>

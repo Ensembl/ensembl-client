@@ -9,7 +9,7 @@ type TrackProps = {
 type TrackState = {};
 
 class Track extends Component<TrackProps, TrackState> {
-  render() {
+  public render() {
     return (
       <section className="drawer">
         <DrawerBar currentTrack={this.props.currentTrack} />

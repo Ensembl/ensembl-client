@@ -1,133 +1,156 @@
 export type LaunchbarApp = {
-  name: string,
+  description: string,
   icon: string,
-  description: string
+  id: number,
+  name: string
 };
 
 export type LaunchbarCategory = {
+  apps: LaunchbarApp[],
+  id: number,
   name: string,
-  separator: boolean,
-  apps: Array<LaunchbarApp>
+  separator: boolean
 };
 
 export type LaunchbarDetails = {
-  categories: Array<LaunchbarCategory>,
-  about: LaunchbarApp
+  about: LaunchbarApp,
+  categories: LaunchbarCategory[]
 };
 
 const launchbarIcon = require('assets/img/launchbar/launchbar_icon_placeholder.png');
 
 export const launchbarConfig: LaunchbarDetails = {
+  about: {
+    description: 'about ensembl',
+    icon: launchbarIcon,
+    id: 16,
+    name: 'About'
+  },
   categories: [
     {
+      apps: [
+        {
+          description: 'global search',
+          icon: launchbarIcon,
+          id: 1,
+          name: 'GlobalSearch'
+        },
+        {
+          description: 'species selector',
+          icon: launchbarIcon,
+          id: 2,
+          name: 'SpeciesSelector'
+        }
+      ],
+      id: 1,
       name: 'search',
       separator: true,
-      apps: [
-        {
-          name: 'GlobalSearch',
-          icon: launchbarIcon,
-          description: 'global search'
-        },
-        {
-          name: 'SpeciesSelector',
-          icon: launchbarIcon,
-          description: 'species selector'
-        }
-      ]
     },
     {
+      apps: [
+        {
+          description: 'species browser',
+          icon: launchbarIcon,
+          id: 3,
+          name: 'SpeciesBrowser'
+        },
+        {
+          description: 'compare browser',
+          icon: launchbarIcon,
+          id: 4,
+          name: 'CompareBrowser',
+        },
+        {
+          description: 'sequence browser',
+          icon: launchbarIcon,
+          id: 5,
+          name: 'SequenceBrowser'
+        }
+      ],
+      id: 2,
       name: 'browsers',
       separator: true,
-      apps: [
-        {
-          name: 'SpeciesBrowser',
-          icon: launchbarIcon,
-          description: 'species browser'
-        },
-        {
-          name: 'CompareBrowser',
-          icon: launchbarIcon,
-          description: 'compare browser'
-        },
-        {
-          name: 'SequenceBrowser',
-          icon: launchbarIcon,
-          description: 'sequence browser'
-        }
-      ]
     },
     {
+      apps: [
+        {
+          description: 'BLAST/BLAT',
+          icon: launchbarIcon,
+          id: 6,
+          name: 'Blast'
+        },
+        {
+          description: 'VEP',
+          icon: launchbarIcon,
+          id: 7,
+          name: 'VEP'
+        },
+        {
+          description: 'Conversions',
+          icon: launchbarIcon,
+          id: 8,
+          name: 'Conversions'
+        },
+        {
+          description: 'LD calculator',
+          icon: launchbarIcon,
+          id: 9,
+          name: 'LD'
+        }
+      ],
+      id: 3,
       name: 'tools',
-      separator: true,
-      apps: [
-        {
-          name: 'Blast',
-          icon: launchbarIcon,
-          description: 'BLAST/BLAT'
-        },
-        {
-          name: 'VEP',
-          icon: launchbarIcon,
-          description: 'VEP'
-        },
-        {
-          name: 'Conversions',
-          icon: launchbarIcon,
-          description: 'Conversions'
-        },
-        {
-          name: 'LD',
-          icon: launchbarIcon,
-          description: 'LD calculator'
-        }
-      ]
+      separator: true
     },
     {
+      apps: [
+        {
+          description: 'bulk download',
+          icon: launchbarIcon,
+          id: 10,
+          name: 'BulkDownload'
+        },
+        {
+          description: 'APIs download',
+          icon: launchbarIcon,
+          id: 11,
+          name: 'APIDownload'
+        }
+      ],
+      id: 4,
       name: 'downloads',
-      separator: true,
-      apps: [
-        {
-          name: 'BulkDownload',
-          icon: launchbarIcon,
-          description: 'bulk download'
-        },
-        {
-          name: 'APIDownload',
-          icon: launchbarIcon,
-          description: 'APIs download'
-        }
-      ]
+      separator: true
     },
     {
+      apps: [
+        {
+          description: 'using ensembl',
+          icon: launchbarIcon,
+          id: 12,
+          name: 'EnsemblHelp',
+        },
+        {
+          description: 'help and documentation',
+          icon: launchbarIcon,
+          id: 13,
+          name: 'HelpDocs'
+        },
+        {
+          description: 'glossary',
+          icon: launchbarIcon,
+          id: 14,
+          name: 'Glossary'
+        },
+        {
+          description: 'what is new and what has changed',
+          icon: launchbarIcon,
+          id: 15,
+          name: 'NewInfo'
+        }
+      ],
+      id: 5,
       name: 'learning',
       separator: false,
-      apps: [
-        {
-          name: 'EnsemblHelp',
-          icon: launchbarIcon,
-          description: 'using ensembl'
-        },
-        {
-          name: 'HelpDocs',
-          icon: launchbarIcon,
-          description: 'help and documentation'
-        },
-        {
-          name: 'Glossary',
-          icon: launchbarIcon,
-          description: 'glossary'
-        },
-        {
-          name: 'NewInfo',
-          icon: launchbarIcon,
-          description: 'what is new and what has changed'
-        }
-      ]
     },
-  ],
-  about: {
-    name: 'About',
-    icon: launchbarIcon,
-    description: 'about ensembl'
-  }
+  ]
 };

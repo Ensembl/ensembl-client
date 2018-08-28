@@ -6,7 +6,7 @@ type AccountProps = {
 };
 
 class Account extends Component<AccountProps> {
-  render() {
+  public render() {
     const AccountChildren: ReactNode = (
       <div className="account">
         <h2>Account area placeholder</h2>
@@ -15,7 +15,7 @@ class Account extends Component<AccountProps> {
 
     return (
       <SlideDown>
-        { this.props.expanded ? AccountChildren : null }
+        {this.props.expanded ? AccountChildren : null}
       </SlideDown>
     );
   }

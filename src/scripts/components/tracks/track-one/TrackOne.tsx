@@ -20,8 +20,7 @@ const PageThree = Loadable({
 });
 
 class TrackOne extends Component {
-
-  render() {
+  public render() {
     return (
       <div className="track-page-wrapper track-one">
         <Switch>

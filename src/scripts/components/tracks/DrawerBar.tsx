@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Link, withRouter, RouteComponentProps, Switch } from 'react-router-dom';
+import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 
 import { TrackPage, trackPagesConfig } from '../../configs/trackPages';
 
@@ -16,19 +16,11 @@ type DrawerBarState = {
 const closeButton = require('assets/img/track-panel/times-solid.svg');
 
 class DrawerBar extends Component<DrawerBarProps, DrawerBarState> {
-  readonly state: DrawerBarState = {
+  public readonly state: DrawerBarState = {
     currentPage: ''
   };
 
-  changePage(page: string) {
-    this.setState({ currentPage: name });
-
-    const { match, currentTrack } = this.props;
-
-    this.props.history.push(`${match.path}/track/${currentTrack}/${page}`);
-  }
-
-  render() {
+  public render() {
     const trackPages: TrackPage[] = trackPagesConfig[this.props.currentTrack];
 
     return (
@@ -48,6 +40,14 @@ class DrawerBar extends Component<DrawerBarProps, DrawerBarState> {
         </Link>
       </div>
     );
+  }
+
+  private changePage(page: string) {
+    this.setState({ currentPage: name });
+
+    const { match, currentTrack } = this.props;
+
+    this.props.history.push(`${match.path}/track/${currentTrack}/${page}`);
   }
 }
 

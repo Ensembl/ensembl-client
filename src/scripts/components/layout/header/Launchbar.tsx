@@ -21,13 +21,12 @@ type LaunchbarSectionProps = {
 };
 
 const LaunchbarSection: SFC<LaunchbarSectionProps> = (props: LaunchbarSectionProps) => {
-  const separatorClass: string = props.category.separator ? 'border' : '';
+  const { separator, apps } = props.category;
+  const separatorClass: string = separator ? 'border' : '';
 
   return (
     <dl className={`${separatorClass}`}>
-      {props.category.apps.map((app: LaunchbarApp, index: number) => (
-        <LaunchbarIcon app={app} key={`${app.name}-${index}`} />
-      ))}
+      {apps.map((app: LaunchbarApp) => <LaunchbarIcon app={app} key={app.id} />)}
     </dl>
   );
 };
@@ -37,18 +36,19 @@ type LaunchbarProps = {
 };
 
 class Launchbar extends Component<LaunchbarProps> {
-  render() {
+  public render() {
+    const { categories, about } = launchbarConfig;
+
     const LaunchbarChildren: ReactNode = (
       <div className="launchbar">
         <div className="categories-wrapper">
           <div className="categories">
-          {launchbarConfig.categories.map((category: LaunchbarCategory, index: number) =>
-            <LaunchbarSection key={`${category.name}-${index}`} category={category} />)}
+          {categories.map((category: LaunchbarCategory) => <LaunchbarSection key={category.id} category={category} />)}
           </div>
         </div>
         <div className="about">
             <dl>
-              <LaunchbarIcon app={launchbarConfig.about} />
+              <LaunchbarIcon app={about} />
             </dl>
         </div>
       </div>

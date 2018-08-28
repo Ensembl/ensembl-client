@@ -3,8 +3,8 @@ import { withRouter } from 'react-router-dom';
 import { RouteComponentProps } from 'react-router';
 import { UnregisterCallback, Location } from 'history';
 
-const ellipsisIcon = require('assets/img/track-panel/ellipsis-h-solid.svg');
-const eyeIcon = require('assets/img/track-panel/eye-solid.svg');
+import TrackPanelListItem from './TrackPanelListItem';
+import { TrackPanelConfig, trackPanelConfig } from '../../../configs/trackPanelConfig';
 
 type TrackPanelListParams = {};
 
@@ -16,26 +16,8 @@ type TrackPanelListState = {
   currentTrack: string
 };
 
-type TrackPanelConfig = {
-  name: string,
-  label: string
-};
-
-const trackPanelConfig: TrackPanelConfig[] = [
-  {
-    name: 'track-one',
-    label: 'Track 1',
-  },
-  {
-    name: 'track-two',
-    label: 'Track 2'
-  }
-];
-
 class TrackPanelList extends Component<TrackPanelListProps, TrackPanelListState> {
-  historyUnlistener: UnregisterCallback = () => null;
-
-  readonly state: TrackPanelListState = {
+  public readonly state: TrackPanelListState = {
     currentTrack: ''
   };
 
@@ -45,7 +27,7 @@ class TrackPanelList extends Component<TrackPanelListProps, TrackPanelListState>
     this.changeTrack = this.changeTrack.bind(this);
   }
 
-  componentDidMount() {
+  public componentDidMount() {
     this.highlightCurrentTrack(this.props.location);
 
     this.historyUnlistener = this.props.history.listen((location: Location) => {
@@ -53,11 +35,11 @@ class TrackPanelList extends Component<TrackPanelListProps, TrackPanelListState>
     });
   }
 
-  componentWillUnmount() {
+  public componentWillUnmount() {
     this.historyUnlistener();
   }
 
-  changeTrack(track: string) {
+  public changeTrack(track: string) {
     const { path } = this.props.match;
 
     this.props.history.push(`${path}/track/${track}`);
@@ -65,34 +47,37 @@ class TrackPanelList extends Component<TrackPanelListProps, TrackPanelListState>
     this.props.updateCurrentTrackName(track);
   }
 
-  highlightCurrentTrack(location: Location) {
+  public render() {
+    return (
+      <div className="track-panel-list">
+        <dl>
+          {
+            trackPanelConfig.map((track: TrackPanelConfig, index: number) =>
+              <TrackPanelListItem key={track.id} className={this.getTrackClassName(track.name)} track={track} changeTrack={this.changeTrack} />)
+          }
+        </dl>
+      </div>
+    );
+  }
+
+  private historyUnlistener: UnregisterCallback = () => null;
+
+  private getTrackClassName(track: string) {
+    const { currentTrack } = this.state;
+
+    if (currentTrack.indexOf(track) > -1) {
+      return 'current-track';
+    } else {
+      return '';
+    }
+  }
+
+  private highlightCurrentTrack(location: Location) {
     const { match } = this.props;
     const currentTrack = location.pathname.replace(`${match.path}/track/`, '');
 
     // changing the current track state should highlight the current track
     this.setState({ currentTrack });
-  }
-
-  render() {
-    return (
-      <div className="track-panel-list">
-        <dl>
-          {
-            trackPanelConfig.map((track: TrackPanelConfig, index: number) => (
-              <dt key={`${track.name}--${index}`} className={(this.state.currentTrack.indexOf(track.name) > -1) ? 'current-track' : ''}>
-                <label>{track.label}</label>
-                <button onClick={() => this.changeTrack(track.name)}>
-                  <img src={ellipsisIcon} alt={`Go to ${track.label}`} />
-                </button>
-                <button>
-                  <img src={eyeIcon} alt="" />
-                </button>
-              </dt>
-            ))
-          }
-        </dl>
-      </div>
-    );
   }
 }
 
