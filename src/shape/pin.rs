@@ -1,7 +1,7 @@
 use arena::{ Arena, ArenaData };
 
 use program::ProgramAttribs;
-use coord::{ CLeaf, CPixel };
+use coord::{ CLeaf, CPixel, TexPart };
 
 use shape::{ Shape, ColourSpec };
 use shape::util::{
@@ -10,7 +10,7 @@ use shape::util::{
     despot, ColourSpecImpl
 };
 
-use texture::{ TexPart, TexPosItem, TextureDrawRequestHandle };
+use texture::{ DrawnShape, Drawing };
 
 /*
  * PinTriangle
@@ -57,7 +57,7 @@ pub struct PinTexture {
     texpos: Option<TexPart>
 }
 
-impl TexPosItem for PinTexture {
+impl DrawnShape for PinTexture {
     fn set_texpos(&mut self, data: &TexPart) {
         self.texpos = Some(*data);
     }
@@ -85,7 +85,7 @@ impl Shape for PinTexture {
     }
 }
 
-pub fn pin_texture(arena: &mut Arena, req: TextureDrawRequestHandle, origin: &CLeaf, scale: &CPixel) {
+pub fn pin_texture(arena: &mut Arena, req: Drawing, origin: &CLeaf, scale: &CPixel) {
     let ri = PinTexture::new(origin,scale);
     arena.get_geom("pintex").tex_shapes.add_item(req,Box::new(ri));
 }

@@ -8,7 +8,7 @@ use webgl_rendering_context::{
 use arena::{ ArenaData };
 
 use shape::SolidShapeManager;
-use texture::TexShapeManager;
+use texture::DrawnShapeManager;
 
 use program::source::{ Source, ProgramSource };
 use program::objects::Object;
@@ -25,7 +25,7 @@ pub struct ProgramAttribs {
 pub struct Program {
     data: ProgramAttribs,
     pub solid_shapes: SolidShapeManager,
-    pub tex_shapes: TexShapeManager,
+    pub tex_shapes: DrawnShapeManager,
     prog: Rc<glprog>,
 }
 
@@ -85,7 +85,7 @@ impl Program {
         let mut bman = BatchManager::new();
         let default_group = bman.new_group();
         Program {
-            tex_shapes: TexShapeManager::new(),
+            tex_shapes: DrawnShapeManager::new(),
             solid_shapes: SolidShapeManager::new(),
             data: ProgramAttribs {
                 bman, default_group,

@@ -1,5 +1,7 @@
+use std::rc::Rc;
 use std::ops::Add;
 use program::{ Object, ObjectAttrib, DataBatch, UniformValue };
+use canvasutil::FlatCanvas;
 
 #[derive(Clone,Copy)]
 pub struct COrigin(pub f32,pub f32);
@@ -101,6 +103,30 @@ impl CFraction {
 impl Input for CFraction {
     fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
         attrib.add_f32(&[self.0,self.1],batch);
+    }
+}
+
+#[derive(Clone,Copy)]
+pub struct TexPart {
+    x: i32,
+    y: i32,
+    width: i32,
+    height: i32
+}
+
+impl TexPart {
+    pub fn new(x: i32, y: i32, width: i32, height: i32) -> TexPart {
+        TexPart { x, y, width, height }
+    }
+    
+    pub fn to_rect(&self,flat: &Rc<FlatCanvas>) -> [CFraction;2] {
+        [CFraction(flat.prop_x(self.x), flat.prop_y(self.y)),
+         CFraction(flat.prop_x(self.x + self.width), flat.prop_y(self.y + self.height))]
+    }
+    
+    
+    pub fn size(&self, scale: CPixel) -> CPixel {
+        CPixel(self.width * scale.0, self.height * scale.1)
     }
 }
 
