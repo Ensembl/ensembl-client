@@ -3,7 +3,7 @@ const postcssPresetEnv = require('postcss-preset-env');
 const HtmlPlugin = require('html-webpack-plugin');
 const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
 const TSLintWebpackPlugin = require('tslint-webpack-plugin');
-const SASSLintWebpackPlugin = require('sasslint-webpack-plugin');
+const StylelintWebpackPlugin = require('stylelint-webpack-plugin');
 const history = require('connect-history-api-fallback');
 const convert = require('koa-connect');
 
@@ -76,10 +76,10 @@ module.exports = {
       ],
       format: 'codeFrame'
     }),
-    new SASSLintWebpackPlugin({
-      configFile: path.join(__dirname, '../sass-lint.yml'),
-      ignoreFiles: ['node_modules/**/*'],
-      glob: 'src/**/*.scss'
+    new StylelintWebpackPlugin({
+      context: 'src',
+      files: '**/*.scss',
+      
     })
   ],
   serve: {
