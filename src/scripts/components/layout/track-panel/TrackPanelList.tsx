@@ -1,4 +1,4 @@
-import React, { Component, MouseEvent } from 'react';
+import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { RouteComponentProps } from 'react-router';
 import { UnregisterCallback, Location } from 'history';
@@ -52,7 +52,7 @@ class TrackPanelList extends Component<TrackPanelListProps, TrackPanelListState>
       <div className="track-panel-list">
         <dl>
           {
-            trackPanelConfig.map((track: TrackPanelConfig, index: number) =>
+            trackPanelConfig.map((track: TrackPanelConfig) =>
               <TrackPanelListItem key={track.id} className={this.getTrackClassName(track.name)} track={track} changeTrack={this.changeTrack} />)
           }
         </dl>
