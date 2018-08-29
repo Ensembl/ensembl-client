@@ -16,12 +16,17 @@ module.exports = {
   },
   mode: 'production',
   module: {
-    rules: [{
+    rules: [
+      {
         test: /.tsx?$/,
-        loader: 'ts-loader',
-        options: {
-          transpileOnly: false
-        }
+        exclude: /node_modules/,
+        loader: 'babel-loader'
+      },
+      {
+        test: /.js$/,
+        exclude: /node_modules/,
+        use: ['source-map-loader'],
+        enforce: 'pre'
       },
       {
         test: /.scss$/,

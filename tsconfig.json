@@ -2,27 +2,20 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "declaration": false,
-    "esModuleInterop": true,
     "jsx": "react",
-    "lib": [
-      "dom",
-      "es5",
-      "scripthost",
-      "es2015"
-    ],
     "module": "esnext",
     "moduleResolution": "node",
-    "outDir": "./dist/",
-    "preserveConstEnums": true,
+    "noEmit": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "removeComments": true,
+    "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "target": "es5"
+    "target": "esnext"
   },
+  "exclude": ["node_modules", "**/node_modules/*"],
   "include": [
     "./src/**/*"
-  ],
-  "exclude": [
-    "./node_modules/"
   ]
 }

@@ -3,6 +3,7 @@ const postcssPresetEnv = require('postcss-preset-env');
 const HtmlPlugin = require('html-webpack-plugin');
 const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
 const TSLintWebpackPlugin = require('tslint-webpack-plugin');
+const SASSLintWebpackPlugin = require('sasslint-webpack-plugin');
 const history = require('connect-history-api-fallback');
 const convert = require('koa-connect');
 
@@ -13,11 +14,14 @@ module.exports = {
   module: {
     rules: [{
         test: /.tsx?$/,
-        loader: 'ts-loader',
-        options: {
-          transpileOnly: true,
-          experimentalWatchApi: true
-        }
+        exclude: /node_modules/,
+        loader: 'babel-loader'
+      },
+      {
+        test: /.js$/,
+        exclude: /node_modules/,
+        use: ['source-map-loader'],
+        enforce: 'pre'
       },
       {
         test: /.scss$/,
@@ -71,6 +75,11 @@ module.exports = {
         path.join(__dirname, '../src/**/*.tsx')
       ],
       format: 'codeFrame'
+    }),
+    new SASSLintWebpackPlugin({
+      configFile: path.join(__dirname, '../sass-lint.yml'),
+      ignoreFiles: ['node_modules/**/*'],
+      glob: 'src/**/*.scss'
     })
   ],
   serve: {
