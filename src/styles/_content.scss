@@ -1,6 +1,6 @@
 main {
-  min-height: calc(100vh - 96px);
   @include flex;
+  min-height: calc(100vh - 96px);
 
   h2 {
     color: $ens-grey;
