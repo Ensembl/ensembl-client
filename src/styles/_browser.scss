@@ -1,3 +1,8 @@
+.browser-canvas-wrapper {
+  height: calc(100% - 33px);
+  padding: 10px;
+}
+
 .browser {
   &.semi-expanded {
     width: 75%;
@@ -18,11 +23,6 @@
       display: none;
     }
   }
-}
-
-.browser-canvas-wrapper {
-  height: calc(100% - 33px);
-  padding: 10px;
 }
 
 .browser-bar {

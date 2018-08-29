@@ -1,29 +1,6 @@
 .track-panel {
-  border-left: 1px solid $ens-black;
   @include flex;
-
-  &.expanded {
-    width: 25%;
-
-    .track-panel-list {
-      display: block;
-    }
-  }
-
-  &.collapsed {
-    width: 44px;
-
-    .track-panel-list {
-      display: none;
-    }
-  }
-
-  dl {
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 146px);
-    margin: 0;
-  }
+  border-left: 1px solid $ens-black;
 
   .track-panel-bar {
     margin: 10px;
@@ -46,7 +23,7 @@
       margin: auto 0 0 0;
     }
   }
-
+  
   .track-panel-list {
     box-sizing: border-box;
     margin: 15px 15px 15px 0;
@@ -74,5 +51,28 @@
         margin-left: 5px;
       }
     }
+  }
+
+  &.expanded {
+    width: 25%;
+
+    .track-panel-list {
+      display: block;
+    }
+  }
+
+  &.collapsed {
+    width: 44px;
+
+    .track-panel-list {
+      display: none;
+    }
+  }
+
+  dl {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 146px);
+    margin: 0;
   }
 }
