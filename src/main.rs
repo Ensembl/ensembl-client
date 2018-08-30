@@ -19,7 +19,7 @@ mod domutil;
 mod canvasutil;
 mod wglraw;
 mod alloc;
-mod texture;
+mod drawing;
 mod program;
 mod webgl_rendering_context;
 pub mod coord;

@@ -67,8 +67,6 @@ pub fn vertices_poly(pdata: &mut ProgramAttribs, n: u16, g: Option<DataGroup>) -
     v.push(0);
     v.push(n);
     v.push(1);
-    let s = format!("{:?}",v);
-    js! { console.log(@{s}); };
     pdata.add_vertices(g,&v,n+1)
 }
 

@@ -24,7 +24,7 @@ use geometry::{
     pagetex_geom,
 };
 
-use texture::{
+use drawing::{
     LeafDrawingManager,
 };
 

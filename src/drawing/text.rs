@@ -3,12 +3,12 @@ use arena::{ Arena, ArenaCanvases };
 
 use coord::Colour;
 
-use texture::textureimpl::{
+use drawing::drawingimpl::{
     Artist,
     DrawingHash,
 };
 
-use texture::{
+use drawing::{
     Drawing,
 };
 

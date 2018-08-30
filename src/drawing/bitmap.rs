@@ -1,10 +1,10 @@
 use arena::{ Arena, ArenaCanvases };
 
-use texture::{
+use drawing::{
     Drawing,
 };
 
-use texture::textureimpl::{
+use drawing::drawingimpl::{
     Artist,
 };
 

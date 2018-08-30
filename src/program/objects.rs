@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use texture::Drawing;
+use drawing::Drawing;
 use stdweb::web::TypedArray;
 
 use webgl_rendering_context::{
