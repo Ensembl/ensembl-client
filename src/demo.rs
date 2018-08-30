@@ -44,7 +44,7 @@ use coord::{
     Colour,
 };
 
-use texture::{ text_texture, bitmap_texture };
+use drawing::{ text_texture, bitmap_texture };
 
 use rand::distributions::Distribution;
 use rand::distributions::range::Range;

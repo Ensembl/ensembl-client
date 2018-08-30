@@ -11,7 +11,7 @@ use shape::util::{
     despot, ColourSpecImpl
 };
 
-use texture::{ Drawing };
+use drawing::{ Drawing };
 
 /*
  * StretchRect

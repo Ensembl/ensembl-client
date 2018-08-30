@@ -6,7 +6,7 @@ use coord::{ CPixel, Colour, RPixel };
 use shape::Shape;
 use shape::util::{ rectangle_p, rectangle_t, multi_gl, vertices_rect };
 
-use texture::{ Drawing };
+use drawing::{ Drawing };
 
 /*
  * FixRect

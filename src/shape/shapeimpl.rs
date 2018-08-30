@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use arena::{ Arena, ArenaData };
 use program::{ ProgramAttribs, DataGroup };
 use coord::{ Colour, RPixel };
-use texture::Drawing;
+use drawing::Drawing;
 
 pub trait Shape {
     fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData);
