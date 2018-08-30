@@ -1,36 +1,12 @@
 use std::collections::HashMap;
 use arena::{ Arena, ArenaData };
 use program::{ ProgramAttribs, DataGroup };
-use coord::Colour;
+use coord::{ Colour, RPixel };
+use texture::Drawing;
 
 pub trait Shape {
     fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData);
-}
-
-pub struct SolidShapeManager {
-    shapes: Vec<Box<Shape>>
-}
-
-impl SolidShapeManager {
-    pub fn new() -> SolidShapeManager {
-        SolidShapeManager {
-            shapes: Vec::<Box<Shape>>::new()
-        }
-    }
-    
-    pub fn add_item(&mut self, item: Box<Shape>) {
-        self.shapes.push(item);
-    }
-    
-    pub fn into_objects(&mut self, tg: &mut ProgramAttribs, adata: &mut ArenaData) {
-        for s in &mut self.shapes {
-            s.into_objects(tg,adata);
-        }
-    }
-    
-    pub fn clear(&mut self) {
-        self.shapes.clear();
-    }        
+    fn set_texpos(&mut self, _data: &RPixel) {}   
 }
 
 const SPOTS : [&str;3] = ["stretchspot","pinspot","stretchstrip"];
@@ -61,4 +37,35 @@ impl Spot {
 pub enum ColourSpec<'a> {
     Colour(&'a Colour),
     Spot(&'a Spot)
+}
+
+pub struct ShapeManager {
+    requests: Vec<(Option<Drawing>,Box<Shape>)>
+}
+
+impl ShapeManager {
+    pub fn new() -> ShapeManager {
+        ShapeManager {
+            requests: Vec::<(Option<Drawing>,Box<Shape>)>::new()
+        }
+    }
+    
+    pub fn add_item(&mut self, req: Option<Drawing>, item: Box<Shape>) {
+        self.requests.push((req,item));
+    }
+    
+    pub fn into_objects(&mut self, tg: &mut ProgramAttribs, adata: &mut ArenaData) {
+        let src = &adata.gtexreqman;
+        for (ref mut req,ref mut obj) in &mut self.requests {
+            if let Some(req) = req {
+              let tp = req.measure(src);
+              obj.set_texpos(&tp);
+            }
+            obj.into_objects(tg,adata);
+        }
+    }
+    
+    pub fn clear(&mut self) {
+        self.requests.clear();
+    }        
 }

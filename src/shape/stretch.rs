@@ -11,7 +11,7 @@ use shape::util::{
     despot, ColourSpecImpl
 };
 
-use texture::{ DrawnShape, Drawing };
+use texture::{ Drawing };
 
 /*
  * StretchRect
@@ -40,7 +40,7 @@ impl Shape for StretchRect {
 
 pub fn stretch_rectangle(arena: &mut Arena, p:&RLeaf, colour: &ColourSpec) {
     let (g,c) = despot("stretch",colour);
-    arena.get_geom(&g).solid_shapes.add_item(Box::new(
+    arena.get_geom(&g).shapes.add_item(None,Box::new(
         StretchRect::new(*p,c)
     ));
 }
@@ -69,7 +69,7 @@ impl Shape for StretchWiggle {
 }
 
 pub fn stretch_wiggle(arena: &mut Arena, p: Vec<CLeaf>, y: i32, spot: &Spot) {
-    arena.get_geom("stretchstrip").solid_shapes.add_item(Box::new(
+    arena.get_geom("stretchstrip").shapes.add_item(None,Box::new(
         StretchWiggle::new(p,spot.get_group("stretchstrip"),y)
     ));    
 }
@@ -83,12 +83,6 @@ pub struct StretchTexture {
     texpos: Option<RPixel>
 }
 
-impl DrawnShape for StretchTexture {
-    fn set_texpos(&mut self, data: &RPixel) {
-        self.texpos = Some(*data);
-    }
-}
-
 impl StretchTexture {
     pub fn new(pos: &RLeaf) -> StretchTexture {
         StretchTexture {
@@ -98,6 +92,10 @@ impl StretchTexture {
 }
 
 impl Shape for StretchTexture {
+    fn set_texpos(&mut self, data: &RPixel) {
+        self.texpos = Some(*data);
+    }
+
     fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
         if let Some(tp) = self.texpos {
             let t = tp / adata.canvases.flat.size();
@@ -110,5 +108,5 @@ impl Shape for StretchTexture {
 
 pub fn stretch_texture(arena: &mut Arena, req: Drawing, pos: &RLeaf) {
     let ri = StretchTexture::new(pos);
-    arena.get_geom("stretchtex").tex_shapes.add_item(req,Box::new(ri));
+    arena.get_geom("stretchtex").shapes.add_item(Some(req),Box::new(ri));
 }

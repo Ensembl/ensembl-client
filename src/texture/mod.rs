@@ -3,13 +3,8 @@ mod bitmap;
 mod textureimpl;
 
 pub use texture::textureimpl::{
-    /* Different KINDS OF THING to be drawn */
     Drawing,
     LeafDrawingManager,
-    
-    /* Different INSTANCES OF THINGS To be drawn */
-    DrawnShape,
-    DrawnShapeManager,
 };
 
 pub use texture::text::text_texture;

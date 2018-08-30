@@ -8,14 +8,9 @@ use coord::{ CPixel, RPixel };
 
 use alloc::Ticket;
 use alloc::Allocator;
-
-use shape::Shape;
-
-use program::ProgramAttribs;
     
 use arena::{
     ArenaCanvases,
-    ArenaData,
 };
 
 pub struct DrawingHash(u64);
@@ -164,48 +159,4 @@ impl LeafDrawingManager {
     pub fn allocate(&mut self) -> (i32,i32) {
         self.allocator.allocate()
     }
-}
-
-/* A TextureItem is a trait which can place a drawn item onto a WebGL
- * canvas using textures. Parameterised by geometry so each will have
- * its own (as it has its own co-rodinate data to store).
- * 
- */
-
-pub trait DrawnShape : Shape {
-    fn set_texpos(&mut self, data: &RPixel);    
-}
-
-
-/* A DrawnShapeManager manages requests to draw an item onto a WebGL
- * canvas by storing relevant TextureItems. One per geometry.
- */
-
-pub struct DrawnShapeManager {
-    requests: Vec<(Drawing,Box<DrawnShape>)>
-}
-
-impl DrawnShapeManager {
-    pub fn new() -> DrawnShapeManager {
-        DrawnShapeManager {
-            requests: Vec::<(Drawing,Box<DrawnShape>)>::new()
-        }
-    }
-    
-    pub fn add_item(&mut self, req: Drawing, item: Box<DrawnShape>) {
-        self.requests.push((req,item));
-    }
-    
-    pub fn into_objects(&mut self, tg: &mut ProgramAttribs, adata: &mut ArenaData) {
-        let src = &adata.gtexreqman;
-        for (ref mut req,ref mut obj) in &mut self.requests {
-            let tp = req.measure(src);
-            obj.set_texpos(&tp);
-            obj.into_objects(tg,adata);
-        }
-    }
-    
-    pub fn clear(&mut self) {
-        self.requests.clear();
-    }        
 }

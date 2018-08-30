@@ -6,9 +6,9 @@ mod util;
 
 pub use shape::shapeimpl::{
     Shape,
-    SolidShapeManager,
     Spot,
-    ColourSpec
+    ColourSpec,
+    ShapeManager
 };
 
 pub use shape::fixpage::{

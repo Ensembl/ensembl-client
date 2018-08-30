@@ -1,6 +1,6 @@
 use std::iter;
 use program::{ ProgramAttribs, DataBatch, DataGroup };
-use coord::{ CPixel, RFraction, CLeaf, Input, Colour, RPixel, RLeaf };
+use coord::{ RFraction, CLeaf, Input, Colour, RPixel, RLeaf };
 use shape::ColourSpec;
 
 pub fn triangle_gl(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[&Input;3]) {
