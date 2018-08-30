@@ -26,7 +26,7 @@ pub fn shader_strip() -> ProgramSource {
     })
 }
 
-pub fn shader_mono(method: &ProgramSource, pos: &ProgramSource) -> ProgramSource {
+pub fn shader_spot(method: &ProgramSource, pos: &ProgramSource) -> ProgramSource {
     method.merge(pos).merge(
         &ProgramSource::new(vec! {
             Uniform::new_frag(&PR_LOW,Arity::Vec3,"uColour"),

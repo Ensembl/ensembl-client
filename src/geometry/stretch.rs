@@ -2,7 +2,7 @@ use arena::ArenaData;
 use program::Program;
 
 use geometry::common::{
-    shader_solid, shader_texture, shader_mono, shader_triangle, 
+    shader_solid, shader_texture, shader_spot, shader_triangle, 
     shader_strip, PR_DEF
 };
 
@@ -38,9 +38,9 @@ pub fn stretchtex_geom(adata: &ArenaData) -> Program {
 }
 
 pub fn stretchspot_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_mono(&shader_triangle(),&stretch_prog()))
+    Program::new(adata,&shader_spot(&shader_triangle(),&stretch_prog()))
 }
 
 pub fn stretchstrip_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_mono(&shader_strip(),&stretch_prog()))
+    Program::new(adata,&shader_spot(&shader_strip(),&stretch_prog()))
 }

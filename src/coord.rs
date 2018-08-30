@@ -206,7 +206,7 @@ impl Input for RPixel {
 
 /* CFraction */
 
-#[derive(Clone,Copy)]
+#[derive(Clone,Copy,Debug)]
 pub struct CFraction(pub f32,pub f32);
 
 impl CFraction {

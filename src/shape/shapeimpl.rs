@@ -9,7 +9,8 @@ pub trait Shape {
     fn set_texpos(&mut self, _data: &RPixel) {}   
 }
 
-const SPOTS : [&str;3] = ["stretchspot","pinspot","stretchstrip"];
+const SPOTS : [&str;4] = [
+    "stretchspot","pinspot","pinstripspot","stretchstrip"];
 
 pub struct Spot {
     group: HashMap<&'static str,DataGroup>

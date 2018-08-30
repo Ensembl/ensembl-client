@@ -16,3 +16,4 @@ predicate types on shapes
 arena/leaf separation
 
 boxes
+anti-alias with alpha
