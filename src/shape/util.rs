@@ -1,6 +1,6 @@
 use std::iter;
 use program::{ ProgramAttribs, DataBatch, DataGroup };
-use coord::{ RFraction, CLeaf, Input, Colour, RPixel, RLeaf };
+use coord::{ RFraction, CLeaf, Input, Colour, RPixel, RLeaf  };
 use shape::ColourSpec;
 
 pub fn triangle_gl(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[&Input;3]) {
@@ -21,13 +21,19 @@ pub fn rectangle_p(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &RPix
     }
 }
 
+pub fn poly_p(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[&Input]) {
+    if let Some(obj) = pdata.get_object(key) {
+        obj.add_data(&b,p);
+    }
+}
+
 pub fn rectangle_t(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &RFraction) {
     if let Some(obj) = pdata.get_object(key) {
         obj.add_data(&b,&[p]);
     }
 }
 
-pub fn multi_gl(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, d: &Input, mul: u8) {
+pub fn multi_gl(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, d: &Input, mul: u16) {
     let mut v = Vec::<&Input>::new();
     v.extend(iter::repeat(d).take(mul as usize));
     if let Some(obj) = pdata.get_object(key) {
@@ -47,6 +53,37 @@ pub fn vertices_rect(pdata: &mut ProgramAttribs, g: Option<DataGroup>) -> DataBa
 pub fn vertices_tri(pdata: &mut ProgramAttribs, g: Option<DataGroup>) -> DataBatch {
     let g = group(pdata,g);
     pdata.add_vertices(g,&[0,1,2],3)
+}
+
+pub fn vertices_poly(pdata: &mut ProgramAttribs, n: u16, g: Option<DataGroup>) -> DataBatch {
+    let g = group(pdata,g);
+    let mut v = Vec::<u16>::new();
+    
+    for i in 0..n-1 {
+        v.push(0);
+        v.push(i+1);
+        v.push(i+2);
+    }
+    v.push(0);
+    v.push(n);
+    v.push(1);
+    let s = format!("{:?}",v);
+    js! { console.log(@{s}); };
+    pdata.add_vertices(g,&v,n+1)
+}
+
+
+pub fn vertices_hollowpoly(pdata: &mut ProgramAttribs, n: u16, g: Option<DataGroup>) -> DataBatch {
+    let g = group(pdata,g);
+    let mut v = Vec::<u16>::new();
+    v.push(0);
+    for i in 0..n*2 {
+        v.push(i);
+    }
+    v.push(0);
+    v.push(1);
+    v.push(1);
+    pdata.add_vertices(g,&v,n*2)
 }
 
 pub fn vertices_strip(pdata: &mut ProgramAttribs, len: u16, g: Option<DataGroup>) -> DataBatch {

@@ -20,7 +20,11 @@ pub use shape::fixpage::{
 
 pub use shape::pin::{
     pin_triangle,
-    pin_texture
+    pin_texture,
+    pin_poly,
+    pin_hollowpoly,
+    pin_circle,
+    pin_hollowcircle,
 };
 
 pub use shape::stretch::{

@@ -17,10 +17,11 @@ use coord::{
 };
 
 use geometry::{
-    stretch_geom, stretchtex_geom, stretchspot_geom, stretchstrip_geom,
-    fix_geom,     fixtex_geom,
-    pin_geom,     pintex_geom,     pinspot_geom,
-    page_geom,    pagetex_geom,
+    stretch_geom,      stretchtex_geom,   stretchspot_geom,
+    stretchstrip_geom, fix_geom,          fixtex_geom,
+    pin_geom,          pintex_geom,       pinspot_geom,
+    pinstrip_geom,     pinstripspot_geom, page_geom,
+    pagetex_geom,
 };
 
 use texture::{
@@ -119,7 +120,7 @@ impl Arena {
             data, 
             order: vec_s! {
                 "stretch", "stretchstrip", "stretchspot", "stretchtex", 
-                "pin", "pinspot", "pintex",
+                "pin", "pinstrip", "pinspot", "pinstripspot",  "pintex",
                 "page", "pagetex",
                 "fix", "fixtex"
             },
@@ -129,6 +130,8 @@ impl Arena {
                 "stretchspot" => stretchspot_geom(&data_b),
                 "stretchtex" => stretchtex_geom(&data_b),
                 "pin" => pin_geom(&data_b),
+                "pinstrip" => pinstrip_geom(&data_b),
+                "pinstripspot" => pinstripspot_geom(&data_b),
                 "pinspot" => pinspot_geom(&data_b),
                 "pintex" => pintex_geom(&data_b),
                 "fix" => fix_geom(&data_b),

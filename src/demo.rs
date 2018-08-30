@@ -6,7 +6,11 @@ use shape::{
     fix_texture,
     page_texture,
     pin_triangle,
+    pin_hollowpoly,
     pin_texture,
+    pin_poly,
+    pin_circle,
+    pin_hollowcircle,
     stretch_rectangle,
     stretch_texture,
     stretch_wiggle,
@@ -234,6 +238,36 @@ pub fn demo() {
             let val = daft(&mut rng);
             let tx = text_texture(a,&val,&fc_font,&col);
             page_texture(a, tx, &CPixel(4,y+18), &CPixel(1,1));
+            if yidx == middle - 5 {
+                for i in 1..10 {
+                    pin_circle(a, &CLeaf(-1.+0.4*(i as f32),y+20),
+                               10. * i as f32,&green);
+                    let colour = Colour(255,0,128);
+                    pin_hollowcircle(a, &CLeaf(-3.+0.4*(i as f32),y+20),
+                               10. * i as f32,2.,&ColourSpec::Colour(&colour));
+
+                }
+            }
+            if yidx == middle - 3 {
+                for i in 3..8 {
+                    pin_poly(a, &CLeaf(-1.+0.4*(i as f32),y+20),
+                                   i, 10., 0.2 * i as f32,&red);
+                    let colour = Colour(0,128,255);
+                    pin_poly(a, &CLeaf(-3.+0.4*(i as f32),y+20),
+                                   i, 10., 0.2 * i as f32,
+                                   &ColourSpec::Colour(&colour));
+                }
+            }
+            if yidx == middle - 2 {
+                for i in 3..8 {
+                    pin_hollowpoly(a, &CLeaf(-1.+0.4*(i as f32),y+20),
+                                   i, 10., 2., 0.2 * i as f32,&red);
+                    let colour = Colour(0,128,255);
+                    pin_hollowpoly(a, &CLeaf(-3.+0.4*(i as f32),y+20),
+                                   i, 10., 2., 0.2 * i as f32,
+                                   &ColourSpec::Colour(&colour));
+                }
+            }
             if yidx == middle {
                 let tx = bitmap_texture(a,
                                     vec! { 0,0,255,255,

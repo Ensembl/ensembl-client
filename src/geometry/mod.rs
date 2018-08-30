@@ -10,7 +10,9 @@ pub use geometry::page::{ page_geom, pagetex_geom };
 pub use geometry::pin::{
     pin_geom,
     pintex_geom, 
-    pinspot_geom
+    pinspot_geom,
+    pinstrip_geom,
+    pinstripspot_geom,
 };
 
 pub use geometry::stretch::{

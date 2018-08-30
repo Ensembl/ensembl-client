@@ -1,3 +1,4 @@
+use stdweb::unstable::TryInto;
 use stdweb::web::html_element::CanvasElement;
 
 use webgl_rendering_context::{
@@ -8,8 +9,15 @@ use webgl_rendering_context::{
     GLint,
 };
 
+fn get_context(canvas: &CanvasElement) -> glctx {
+    (js! {
+        return @{canvas}.getContext("webgl",{ antialias: true });
+    }).try_into().ok().unwrap()
+}
+
 pub fn prepare_context(canvas: &CanvasElement) -> glctx {
-    let context: glctx = canvas.get_context().unwrap();
+    //let context: glctx = canvas.get_context().unwrap();
+    let context: glctx = get_context(canvas);
     context.clear_color(1.0,1.0,1.0,1.0);
     context.clear(glctx::COLOR_BUFFER_BIT);
     context
