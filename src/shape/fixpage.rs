@@ -6,7 +6,7 @@ use coord::{ CPixel, Colour, RPixel };
 use shape::Shape;
 use shape::util::{ rectangle_p, rectangle_t, multi_gl, vertices_rect };
 
-use texture::{ DrawnShape, Drawing };
+use texture::{ Drawing };
 
 /*
  * FixRect
@@ -33,7 +33,7 @@ impl Shape for FixRect {
 
 fn rectangle(arena: &mut Arena, p: &RPixel, colour: &Colour, geom: &str) {
     let geom = arena.get_geom(geom);
-    geom.solid_shapes.add_item(Box::new(
+    geom.shapes.add_item(None,Box::new(
         FixRect::new(*p,*colour)
     ));
 }
@@ -57,12 +57,6 @@ pub struct FixTexture {
     texpos: Option<RPixel>
 }
 
-impl DrawnShape for FixTexture {
-    fn set_texpos(&mut self, data: &RPixel) {
-        self.texpos = Some(*data);
-    }
-}
-
 impl FixTexture {
     pub fn new(pos: &CPixel, scale: &CPixel) -> FixTexture {
         FixTexture {
@@ -72,6 +66,10 @@ impl FixTexture {
 }
 
 impl Shape for FixTexture {
+    fn set_texpos(&mut self, data: &RPixel) {
+        self.texpos = Some(*data);
+    }
+  
     fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
         if let Some(tp) = self.texpos {
             let p = tp.at_origin() * self.scale + self.pos;
@@ -85,7 +83,7 @@ impl Shape for FixTexture {
 
 fn texture(arena: &mut Arena,req: Drawing, origin: &CPixel, scale: &CPixel, geom: &str) {
     let ri = FixTexture::new(origin,scale);
-    arena.get_geom(geom).tex_shapes.add_item(req,Box::new(ri));
+    arena.get_geom(geom).shapes.add_item(Some(req),Box::new(ri));
 }
 
 

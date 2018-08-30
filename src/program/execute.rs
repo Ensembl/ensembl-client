@@ -7,8 +7,7 @@ use webgl_rendering_context::{
 
 use arena::{ ArenaData };
 
-use shape::SolidShapeManager;
-use texture::DrawnShapeManager;
+use shape::ShapeManager;
 
 use program::source::{ Source, ProgramSource };
 use program::objects::Object;
@@ -24,8 +23,7 @@ pub struct ProgramAttribs {
 
 pub struct Program {
     data: ProgramAttribs,
-    pub solid_shapes: SolidShapeManager,
-    pub tex_shapes: DrawnShapeManager,
+    pub shapes: ShapeManager,
     prog: Rc<glprog>,
 }
 
@@ -85,8 +83,7 @@ impl Program {
         let mut bman = BatchManager::new();
         let default_group = bman.new_group();
         Program {
-            tex_shapes: DrawnShapeManager::new(),
-            solid_shapes: SolidShapeManager::new(),
+            shapes: ShapeManager::new(),
             data: ProgramAttribs {
                 bman, default_group,
                 objects, object_names, main_idx,
@@ -125,10 +122,8 @@ impl Program {
     }
         
     pub fn shapes_to_gl(&mut self, adata: &mut ArenaData) {
-        self.tex_shapes.into_objects(&mut self.data,adata);
-        self.tex_shapes.clear();
-        self.solid_shapes.into_objects(&mut self.data,adata);
-        self.solid_shapes.clear();
+        self.shapes.into_objects(&mut self.data,adata);
+        self.shapes.clear();
         for b in self.data.bman.iter() {
             for a in &mut self.data.objects.iter_mut() {
                 a.to_gl(&b,adata);

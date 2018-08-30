@@ -10,7 +10,7 @@ use shape::util::{
     despot, ColourSpecImpl
 };
 
-use texture::{ DrawnShape, Drawing };
+use texture::{ Drawing };
 
 /*
  * PinTriangle
@@ -42,7 +42,7 @@ impl Shape for PinTriangle {
 
 pub fn pin_triangle(arena: &mut Arena, origin: &CLeaf, p: &[CPixel;3], colspec: &ColourSpec) {
     let (g,c) = despot("pin",colspec);
-    arena.get_geom(&g).solid_shapes.add_item(Box::new(
+    arena.get_geom(&g).shapes.add_item(None,Box::new(
         PinTriangle::new(*origin,*p,c)
     ));
 }
@@ -57,12 +57,6 @@ pub struct PinTexture {
     texpos: Option<RPixel>
 }
 
-impl DrawnShape for PinTexture {
-    fn set_texpos(&mut self, data: &RPixel) {
-        self.texpos = Some(*data);
-    }
-}
-
 impl PinTexture {
     pub fn new(origin: &CLeaf, scale: &CPixel) -> PinTexture {
         PinTexture {
@@ -72,6 +66,10 @@ impl PinTexture {
 }
 
 impl Shape for PinTexture {
+    fn set_texpos(&mut self, data: &RPixel) {
+        self.texpos = Some(*data);
+    }
+  
     fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
         if let Some(tp) = self.texpos {
             let p = tp.at_origin() * self.scale;
@@ -86,5 +84,5 @@ impl Shape for PinTexture {
 
 pub fn pin_texture(arena: &mut Arena, req: Drawing, origin: &CLeaf, scale: &CPixel) {
     let ri = PinTexture::new(origin,scale);
-    arena.get_geom("pintex").tex_shapes.add_item(req,Box::new(ri));
+    arena.get_geom("pintex").shapes.add_item(Some(req),Box::new(ri));
 }
