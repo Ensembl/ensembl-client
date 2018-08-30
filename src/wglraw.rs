@@ -16,7 +16,6 @@ fn get_context(canvas: &CanvasElement) -> glctx {
 }
 
 pub fn prepare_context(canvas: &CanvasElement) -> glctx {
-    //let context: glctx = canvas.get_context().unwrap();
     let context: glctx = get_context(canvas);
     context.clear_color(1.0,1.0,1.0,1.0);
     context.clear(glctx::COLOR_BUFFER_BIT);
@@ -48,7 +47,7 @@ pub fn canvas_texture(ctx: &glctx,cnv : &CanvasElement) -> gltex {
                        glctx::LINEAR as i32);
     ctx.tex_parameteri(glctx::TEXTURE_2D,
                        glctx::TEXTURE_MAG_FILTER,
-                       glctx::LINEAR as i32);
+                       glctx::NEAREST as i32);
     ctx.tex_parameteri(glctx::TEXTURE_2D,
                        glctx::TEXTURE_WRAP_S,
                        glctx::CLAMP_TO_EDGE as i32);

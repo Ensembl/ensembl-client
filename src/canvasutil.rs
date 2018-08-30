@@ -4,7 +4,7 @@ use stdweb::web::{
     TextBaseline,
     CanvasRenderingContext2d,
     document,
-    Element,
+    Element
 };
 
 use stdweb::web::html_element::{
@@ -14,7 +14,7 @@ use stdweb::web::html_element::{
 use stdweb::web::TypedArray;
 use stdweb::unstable::TryInto;
 use coord::{
-    Colour, CPixel
+    Colour, CPixel, RPixel
 };
 
 use domutil;
@@ -94,33 +94,42 @@ impl FlatCanvas {
         FlatCanvas { canvas, context, height, width }
     }
     
-    pub fn text(&self,text : &str,x : i32, y: i32, font: &FCFont, col: &Colour) -> (i32,i32) {
+    pub fn text(&self,text : &str, pos: CPixel, font: &FCFont, col: &Colour) -> (i32,i32) {
         font.setup(&self.context);
         self.context.set_text_baseline(TextBaseline::Top);
         self.context.set_fill_style_color(&col.to_css()[..]);
         self.context.set_stroke_style_color(&col.to_css()[..]);
-        self.context.fill_text(text,(x+font.xpad).into(),(y+font.ypadtop).into(),None);
+        self.context.fill_text(text,(pos.0+font.xpad).into(),(pos.1+font.ypadtop).into(),None);
         let m = self.context.measure_text(text);
         let width_px = m.unwrap().get_width().ceil() as i32;
         let height_px = font.height;
         (width_px+2*font.xpad,height_px+font.ypadtop+font.ypadbot)
     }
     
-    pub fn bitmap(&self, data: &Vec<u8>, x: i32, y: i32, width: i32, height: i32) {
+    pub fn bitmap(&self, data: &Vec<u8>, coords: RPixel) {
         let pixels: TypedArray<u8> = data[..].into();
+        let RPixel(CPixel(x,y),CPixel(width,height)) = coords;
         js! {
             var id = @{&self.context}.createImageData(@{width},@{height});
             id.data.set(@{pixels});
             @{&self.context}.putImageData(id,@{x},@{y});
         };
     }
+    
+    pub fn rectangle(&self, coords: RPixel, col: &Colour) {
+        let RPixel(CPixel(x,y),CPixel(w,h)) = coords;
+        let s = format!("{:?} {:?}",coords,&col);
+        js! { console.log(@{s}); };
+        self.context.set_fill_style_color(&col.to_css()[..]);
+        self.context.fill_rect(x as f64,y as f64,w as f64,h as f64);
+    }
 
-    pub fn measure(&self,text : &str, font: &FCFont) -> (i32,i32) {
+    pub fn measure(&self,text : &str, font: &FCFont) -> CPixel {
         font.setup(&self.context);
         let m = self.context.measure_text(text);
         let width_px = m.unwrap().get_width().ceil() as i32;
         let height_px = font.height;
-        (width_px+2*font.xpad,height_px+font.ypadtop+font.ypadbot)
+        CPixel(width_px+2*font.xpad,height_px+font.ypadtop+font.ypadbot)
     }
     
     pub fn element(&self) -> &CanvasElement {

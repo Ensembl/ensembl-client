@@ -56,7 +56,7 @@ impl ShapeManager {
     }
     
     pub fn into_objects(&mut self, tg: &mut ProgramAttribs, adata: &mut ArenaData) {
-        let src = &adata.gtexreqman;
+        let src = &adata.leafdrawman;
         for (ref mut req,ref mut obj) in &mut self.requests {
             if let Some(req) = req {
               let tp = req.measure(src);

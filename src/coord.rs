@@ -270,7 +270,7 @@ impl Input for RFraction {
 
 /* Colour */
 
-#[derive(Clone,Copy,PartialEq,Hash,Eq)]
+#[derive(Clone,Copy,PartialEq,Hash,Eq,Debug)]
 pub struct Colour(pub u32,pub u32,pub u32);
 
 impl Colour {

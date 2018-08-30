@@ -34,3 +34,10 @@ macro_rules! vec_s {
         vec
     }}
 }
+
+macro_rules! console {
+    ($($arg:tt)*) => {{
+        let s = format!($($arg)*);
+        js! { console.log(@{s}); };
+    }}
+}

@@ -1,5 +1,7 @@
 use arena::{ Arena, ArenaCanvases };
 
+use coord::{ CPixel, RPixel };
+
 use drawing::{
     Drawing,
 };
@@ -10,29 +12,28 @@ use drawing::drawingimpl::{
 
 struct BitmapArtist {
     data: Vec<u8>,
-    width: i32,
-    height: i32
+    size: CPixel,
 }
 
 impl BitmapArtist {
-    fn new(data: Vec<u8>, width: i32, height: i32) -> BitmapArtist {
-        BitmapArtist { data, width, height }
+    fn new(data: Vec<u8>, size: CPixel) -> BitmapArtist {
+        BitmapArtist { data, size }
     }
 }
 
 impl Artist for BitmapArtist {
-    fn draw(&self, canvs: &mut ArenaCanvases, x: i32, y: i32) {
-        canvs.flat.bitmap(&self.data,x,y,self.width,self.height);
+    fn draw(&self, canvs: &mut ArenaCanvases, pos: CPixel) {
+        canvs.flat.bitmap(&self.data,RPixel(pos,self.size));
     }
     
-    fn measure(&self, _canvas: &mut ArenaCanvases) -> (i32, i32) {
-        (self.width, self.height)
+    fn measure(&self, _canvas: &mut ArenaCanvases) -> CPixel {
+        self.size
     }
 }
 
-pub fn bitmap_texture(arena: &mut Arena, data: Vec<u8>, width: i32, height: i32) -> Drawing {
+pub fn bitmap_texture(arena: &mut Arena, data: Vec<u8>, size: CPixel) -> Drawing {
     let datam = &mut arena.data.borrow_mut();
-    let (canvases,gtexreqman,_) = datam.burst_texture();
-    let a = Box::new(BitmapArtist::new(data,width,height));
-    gtexreqman.add_request(canvases,a)
+    let (canvases,leafdrawman,_) = datam.burst_texture();
+    let a = Box::new(BitmapArtist::new(data,size));
+    leafdrawman.add_request(canvases,a)
 }

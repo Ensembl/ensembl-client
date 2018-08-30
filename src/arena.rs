@@ -45,7 +45,7 @@ pub struct ArenaData {
     spec: ArenaSpec,
     pub dims: ArenaDims,
     pub canvases: ArenaCanvases,
-    pub gtexreqman: LeafDrawingManager,
+    pub leafdrawman: LeafDrawingManager,
     pub ctx: glctx,
     pub gpuspec: GPUSpec
 }
@@ -55,7 +55,7 @@ impl ArenaData {
      * understands is disjoint.
      */
     pub fn burst_texture<'a>(&'a mut self) -> (&'a mut ArenaCanvases, &'a mut LeafDrawingManager,&'a mut ArenaDims) {
-        (&mut self.canvases, &mut self.gtexreqman,
+        (&mut self.canvases, &mut self.leafdrawman,
          &mut self.dims)
     }
 }
@@ -98,7 +98,7 @@ impl Arena {
         let data = Rc::new(RefCell::new(ArenaData {
             ctx, spec, 
             gpuspec: GPUSpec::new(),
-            gtexreqman: LeafDrawingManager::new(),
+            leafdrawman: LeafDrawingManager::new(),
             dims: ArenaDims {
                 aspect: canvasutil::aspect_ratio(&canvas),
                 width_px: canvas.width() as i32,
@@ -154,19 +154,19 @@ impl Arena {
     pub fn populate(&mut self) {
         let datam = &mut self.data.borrow_mut();
         {
-            let (canvases,gtexreqman,_) = datam.burst_texture();
-            let (x,y) = gtexreqman.allocate();
+            let (canvases,leafdrawman,_) = datam.burst_texture();
+            let (x,y) = leafdrawman.allocate();
             canvases.flat = Rc::new(canvasutil::FlatCanvas::create(x,y));
         }
         {
-            let (canvases,gtexreqman,_) = datam.burst_texture();
-            gtexreqman.draw(canvases);
+            let (canvases,leafdrawman,_) = datam.burst_texture();
+            leafdrawman.draw(canvases);
         }
         for k in &self.order {
             let geom = self.map.get_mut(k).unwrap();
             geom.shapes_to_gl(datam);
         }
-        datam.gtexreqman.clear();
+        datam.leafdrawman.clear();
 
     }
 
