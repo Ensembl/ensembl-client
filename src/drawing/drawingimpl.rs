@@ -64,9 +64,9 @@ impl DrawingMemory {
  * Artist is not parameterised, it can draw exactly one thing.
  */
 pub trait Artist {
-    fn draw(&self, canv: &mut ArenaCanvases, x: i32, y: i32);
+    fn draw(&self, canv: &mut ArenaCanvases, pos: CPixel);
     fn memoize_key(&self) -> Option<DrawingHash>  { None }
-    fn measure(&self, canv: &mut ArenaCanvases) -> (i32, i32);
+    fn measure(&self, canv: &mut ArenaCanvases) -> CPixel;
 }
 
 /* One request to draw on the backing canvas. A combination of
@@ -88,9 +88,9 @@ impl Drawing {
             }))
     }
 
-    pub fn draw(&self, canvs: &mut ArenaCanvases, gtexreqman: &LeafDrawingManager) {
-        let (x,y) = gtexreqman.allocator.position(&self.0.ticket);
-        self.0.gen.draw(canvs,x,y);
+    pub fn draw(&self, canvs: &mut ArenaCanvases, leafdrawman: &LeafDrawingManager) {
+        let (x,y) = leafdrawman.allocator.position(&self.0.ticket);
+        self.0.gen.draw(canvs,CPixel(x,y));
     }
     
     pub fn measure(&self, src: &LeafDrawingManager) -> RPixel {
@@ -100,11 +100,11 @@ impl Drawing {
     }
 }
 
-/* Utility method to make creating DrawingImpls simpler */
-pub fn create_draw_request(gtexreqman: &mut LeafDrawingManager, ta: Box<Artist>, width: i32, height: i32) -> Drawing {
+/* Utility method to make creating Drawings simpler */
+pub fn create_draw_request(leafdrawman: &mut LeafDrawingManager, ta: Box<Artist>, width: i32, height: i32) -> Drawing {
     let req;
     {
-        let flat_alloc = &mut gtexreqman.allocator;
+        let flat_alloc = &mut leafdrawman.allocator;
         req = Drawing::new(ta,flat_alloc.request(width,height));
     }
     req
@@ -134,7 +134,7 @@ impl LeafDrawingManager {
             // already in cache
             tdrh
         } else {
-            let (width, height) = a.measure(canvas);
+            let CPixel(width, height) = a.measure(canvas);
             let val = create_draw_request(self,a,width,height);
             if let Some(tdrk) = tdrk {
                 // put in cache

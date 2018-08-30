@@ -18,6 +18,10 @@ use shape::{
     ColourSpec,
 };
 
+use drawing::{
+    mark_rectangle,
+};
+
 use rand::Rng;
 use rand::rngs::SmallRng;
 use rand::SeedableRng;
@@ -44,7 +48,7 @@ use coord::{
     Colour,
 };
 
-use drawing::{ text_texture, bitmap_texture };
+use drawing::{ text_texture, bitmap_texture, collage, Mark };
 
 use rand::distributions::Distribution;
 use rand::distributions::range::Range;
@@ -220,7 +224,8 @@ pub fn demo() {
     let mut a_spec = ArenaSpec::new();
     a_spec.debug = false;
     let mut arena = Arena::new("#glcanvas","#managedcanvasholder",a_spec);
-    let middle = arena.dims().height_px / 120;
+    let mut middle = arena.dims().height_px / 120;
+    if middle < 5 { middle = 5; }
     
     let red_spot = Spot::new(&mut arena, &Colour(255,100,50));;
     let red = ColourSpec::Spot(&red_spot);
@@ -245,10 +250,9 @@ pub fn demo() {
                     let colour = Colour(255,0,128);
                     pin_hollowcircle(a, &CLeaf(-3.+0.4*(i as f32),y+20),
                                10. * i as f32,2.,&ColourSpec::Colour(&colour));
-
                 }
             }
-            if yidx == middle - 3 {
+            if yidx == middle {
                 for i in 3..8 {
                     pin_poly(a, &CLeaf(-1.+0.4*(i as f32),y+20),
                                    i, 10., 0.2 * i as f32,&red);
@@ -258,7 +262,7 @@ pub fn demo() {
                                    &ColourSpec::Colour(&colour));
                 }
             }
-            if yidx == middle - 2 {
+            if yidx == middle +1 {
                 for i in 3..8 {
                     pin_hollowpoly(a, &CLeaf(-1.+0.4*(i as f32),y+20),
                                    i, 10., 2., 0.2 * i as f32,&red);
@@ -273,13 +277,13 @@ pub fn demo() {
                                     vec! { 0,0,255,255,
                                              255,0,0,255,
                                              0,255,0,255,
-                                             255,255,0,255 },4,1);
+                                             255,255,0,255 },CPixel(4,1));
                 stretch_texture(a,tx,&RLeaf(CLeaf(-5.,y-5),CLeaf(10.,10)));
                 let tx = bitmap_texture(a,
                                     vec! { 0,0,255,255,
                                              255,0,0,255,
                                              0,255,0,255,
-                                             255,255,0,255 },2,2);
+                                             255,255,0,255 },CPixel(2,2));
                 pin_texture(a,tx,&CLeaf(0.,y-25),&CPixel(10,10));
                 stretch_rectangle(a,&RLeaf(CLeaf(-2.,y-20),CLeaf(1.,5)),&red);
                 stretch_rectangle(a,&RLeaf(CLeaf(-2.,y-15),CLeaf(1.,5)),&green);
@@ -291,6 +295,33 @@ pub fn demo() {
                                          CPixel(-5,10),
                                          CPixel(5,10)],
                                          &green);
+            } else if yidx == middle-2 {
+                let mut parts = Vec::<Box<Mark>>::new();
+                for row in 0..8 {
+                    let mut off = 0;
+                    for _pos in 0..100 {
+                        let size = rng.gen_range(1,7);
+                        let gap = rng.gen_range(1,5);
+                        if off + gap + size > 1000 { continue }
+                        off += gap;
+                        parts.push(mark_rectangle(
+                            &RPixel(CPixel(off,row*5),CPixel(size,4)),
+                            &Colour(255,200,100)));
+                        if rng.gen_range(0,2) == 1 {
+                            parts.push(mark_rectangle(
+                                &RPixel(CPixel(off,row*5),CPixel(1,4)),
+                                &Colour(200,0,0)));
+                        }
+                        if rng.gen_range(0,2) == 1 {
+                            parts.push(mark_rectangle(
+                                &RPixel(CPixel(off+size-1,row*5),CPixel(1,4)),
+                                &Colour(0,0,200)));
+                        }
+                        off += size;
+                    }
+                }                
+                let tx = collage(a,parts,CPixel(1000,40));
+                stretch_texture(a,tx,&RLeaf(CLeaf(-7.,y-25),CLeaf(20.,40)));
             } else if yidx == middle+2 || yidx == middle+4 {
                 let wiggle = wiggly(&mut rng,500,CLeaf(-5.,y-5),0.02,20);
                 stretch_wiggle(a,wiggle,2,&green_spot);
@@ -333,9 +364,10 @@ pub fn demo() {
         let tx = bitmap_texture(a, vec! { 0,0,255,255,
                                      255,0,0,255,
                                      0,255,0,255,
-                                     255,255,0,255 },1,4);
+                                     255,255,0,255 },CPixel(1,4));
         fix_texture(a, tx, &CPixel(99,0),&CPixel(1,sh));
         a.populate();
+        stage.zoom = 0.5;
         a.draw(&stage);
     }
 
