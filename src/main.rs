@@ -17,6 +17,7 @@ mod geometry;
 mod shape;
 mod domutil;
 mod canvasutil;
+mod campaign;
 mod wglraw;
 mod alloc;
 mod drawing;
