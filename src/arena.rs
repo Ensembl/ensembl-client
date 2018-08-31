@@ -156,8 +156,8 @@ impl Arena {
         let datam = &mut self.data.borrow_mut();
         {
             let (canvases,leafdrawman,_) = datam.burst_texture();
-            let (x,y) = leafdrawman.allocate();
-            canvases.flat = Rc::new(canvasutil::FlatCanvas::create(x,y));
+            let size = leafdrawman.allocate();
+            canvases.flat = Rc::new(canvasutil::FlatCanvas::create(size.0,size.1));
         }
         {
             let (canvases,leafdrawman,_) = datam.burst_texture();
