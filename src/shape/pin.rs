@@ -23,12 +23,13 @@ use onoff::OnOffExpr;
 pub struct PinTriangle {
     origin: CLeaf,
     points: [CPixel;3],
-    colspec: ColourSpecImpl
+    colspec: ColourSpecImpl,
+    geom: String
 }
 
 impl PinTriangle {
-    pub fn new(origin: CLeaf, points: [CPixel;3], colspec: ColourSpecImpl) -> PinTriangle {
-        PinTriangle { origin, points, colspec }
+    pub fn new(origin: CLeaf, points: [CPixel;3], colspec: ColourSpecImpl, geom: &str) -> PinTriangle {
+        PinTriangle { origin, points, colspec, geom: geom.to_string() }
     }    
 }
 
@@ -42,13 +43,13 @@ impl Shape for PinTriangle {
             multi_gl(b,geom,"aVertexColour",&c,3);
         }
     }
+    
+    fn get_geometry(&self) -> &str { &self.geom }
 }
 
 pub fn pin_triangle(arena: &mut Arena, origin: &CLeaf, p: &[CPixel;3], colspec: &ColourSpec, ooe: Rc<OnOffExpr>) {
     let (g,c) = despot("pin",colspec);
-    arena.get_geom(&g).shapes.add_item(None,Box::new(
-        PinTriangle::new(*origin,*p,c)
-    ),ooe);
+    arena.add_shape(None,Box::new(PinTriangle::new(*origin,*p,c,&g)),ooe);
 }
 
 /*
@@ -62,7 +63,8 @@ pub struct PinPoly {
     points: u16,
     offset: f32,
     colspec: ColourSpecImpl,
-    hollow: bool
+    hollow: bool,
+    geom: String
 }
 
 impl PinPoly {
@@ -105,18 +107,19 @@ impl Shape for PinPoly {
             self.add(b,geom,v,self.points+1);
         }
     }
+
+    fn get_geometry(&self) -> &str { &self.geom }
 }
 
 fn pin_poly_impl(arena: &mut Arena, gname: &str, origin: &CLeaf, points: u16,
                  size: f32, width: f32, offset: f32, 
                  colspec: &ColourSpec, hollow: bool, ooe: Rc<OnOffExpr>) {
     let (g,c) = despot(gname,colspec);
-    arena.get_geom(&g).shapes.add_item(None,Box::new(
-        PinPoly {
-            origin: *origin, points, size, offset, width, colspec: c,
-            hollow
-        }
-    ),ooe);
+    let ri = PinPoly {
+        origin: *origin, points, size, offset, width, colspec: c,
+        hollow, geom: g.to_string()
+    };
+    arena.add_shape(None,Box::new(ri),ooe);
 }
 
 pub fn pin_poly(arena: &mut Arena, origin: &CLeaf, points: u16,
@@ -166,7 +169,7 @@ impl PinTexture {
         PinTexture {
             origin: *origin, scale: *scale, texpos: None
         }
-    }    
+    }        
 }
 
 impl Shape for PinTexture {
@@ -184,9 +187,11 @@ impl Shape for PinTexture {
             multi_gl(b,geom,"aOrigin",&self.origin,4);
         }
     }
+
+    fn get_geometry(&self) -> &str { "pintex" }
 }
 
 pub fn pin_texture(arena: &mut Arena, req: Drawing, origin: &CLeaf, scale: &CPixel, ooe: Rc<OnOffExpr>) {
     let ri = PinTexture::new(origin,scale);
-    arena.get_geom("pintex").shapes.add_item(Some(req),Box::new(ri),ooe);
+    arena.add_shape(Some(req),Box::new(ri),ooe);
 }

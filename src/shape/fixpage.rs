@@ -17,11 +17,12 @@ use onoff::OnOffExpr;
 pub struct FixRect {
     points: RPixel,
     colour: Colour,
+    geom: String
 }
 
 impl FixRect {
-    pub fn new(points: RPixel, colour: Colour) -> FixRect {
-        FixRect { points, colour }
+    pub fn new(points: RPixel, colour: Colour, geom: &str) -> FixRect {
+        FixRect { points, colour, geom: geom.to_string() }
     }    
 }
 
@@ -31,13 +32,12 @@ impl Shape for FixRect {
         rectangle_p(b,geom,"aVertexPosition",&self.points);
         multi_gl(b,geom,"aVertexColour",&self.colour,4);
     }
+    
+    fn get_geometry(&self) -> &str { &self.geom }
 }
 
 fn rectangle(arena: &mut Arena, p: &RPixel, colour: &Colour, geom: &str, ooe: Rc<OnOffExpr>) {
-    let geom = arena.get_geom(geom);
-    geom.shapes.add_item(None,Box::new(
-        FixRect::new(*p,*colour)
-    ),ooe);
+    arena.add_shape(None,Box::new(FixRect::new(*p,*colour,geom)),ooe);
 }
 
 pub fn fix_rectangle(arena: &mut Arena, p: &RPixel, colour: &Colour, ooe: Rc<OnOffExpr>) {
@@ -56,13 +56,14 @@ pub fn page_rectangle(arena: &mut Arena, p: &RPixel, colour: &Colour, ooe: Rc<On
 pub struct FixTexture {
     pos: CPixel,
     scale: CPixel,
-    texpos: Option<RPixel>
+    texpos: Option<RPixel>,
+    geom: String
 }
 
 impl FixTexture {
-    pub fn new(pos: &CPixel, scale: &CPixel) -> FixTexture {
+    pub fn new(pos: &CPixel, scale: &CPixel, geom: &str) -> FixTexture {
         FixTexture {
-            pos: *pos, scale: *scale, texpos: None
+            pos: *pos, scale: *scale, texpos: None, geom: geom.to_string()
         }
     }    
 }
@@ -81,11 +82,13 @@ impl Shape for FixTexture {
             rectangle_t(b,geom,"aTextureCoord",&t);
         }
     }
+    
+    fn get_geometry(&self) -> &str { &self.geom }
 }
 
 fn texture(arena: &mut Arena,req: Drawing, origin: &CPixel, scale: &CPixel, geom: &str, ooe: Rc<OnOffExpr>) {
-    let ri = FixTexture::new(origin,scale);
-    arena.get_geom(geom).shapes.add_item(Some(req),Box::new(ri),ooe);
+    let ri = FixTexture::new(origin,scale,geom);
+    arena.add_shape(Some(req),Box::new(ri),ooe);
 }
 
 

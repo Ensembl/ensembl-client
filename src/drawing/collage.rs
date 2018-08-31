@@ -26,7 +26,6 @@ impl CollageArtist {
 
 impl Artist for CollageArtist {
     fn draw(&self, canvs: &mut ArenaCanvases, pos: CPixel) {
-        console!("{:?}",self.parts.len());
         for part in &self.parts {
             let loc = part.get_offset();
             part.draw(canvs,pos+loc);
@@ -42,8 +41,6 @@ pub fn collage(arena: &mut Arena, parts: Vec<Box<Mark>>, size: CPixel) -> Drawin
     let datam = &mut arena.data.borrow_mut();
     let (canvases,leafdrawman,_) = datam.burst_texture();
     let a = Box::new(CollageArtist::new(parts,size));
-    js! { console.log("hi"); };
-    console!("hi");
     leafdrawman.add_request(canvases,a)
 }
 
@@ -62,7 +59,6 @@ impl Artist for RectMark {
     }
 
     fn draw(&self, canvs: &mut ArenaCanvases, pos: CPixel) {
-        console!("{:?}",self.coords + pos);
         canvs.flat.rectangle(self.coords.at_origin() + pos, &self.colour);
     }
 }

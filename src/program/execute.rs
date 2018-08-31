@@ -7,24 +7,20 @@ use webgl_rendering_context::{
 
 use arena::{ ArenaData };
 
-use shape::ShapeManager;
-
 use program::source::{ Source, ProgramSource };
 use program::objects::Object;
 use program::data::{ DataBatch, DataGroup, BatchManager };
-use onoff::OnOffManager;
 
 pub struct ProgramAttribs {
-    bman: BatchManager,
+    pub bman: BatchManager,
     default_group: DataGroup,
-    objects: Vec<Box<Object>>,
+    pub objects: Vec<Box<Object>>,
     main_idx: Option<usize>,
     object_names: HashMap<String,usize>,
 }
 
 pub struct Program {
-    data: ProgramAttribs,
-    pub shapes: ShapeManager,
+    pub data: ProgramAttribs,
     prog: Rc<glprog>,
 }
 
@@ -56,6 +52,14 @@ impl ProgramAttribs {
             None
         }
     }
+
+    pub fn objects_to_gl(&mut self, datam: &ArenaData) {
+        for b in self.bman.iter() {
+            for a in &mut self.objects.iter_mut() {
+                a.to_gl(&b,datam);
+            }
+        }
+    }
     
     pub fn get_default_group(&self) -> DataGroup {
         self.default_group
@@ -84,7 +88,6 @@ impl Program {
         let mut bman = BatchManager::new();
         let default_group = bman.new_group();
         Program {
-            shapes: ShapeManager::new(),
             data: ProgramAttribs {
                 bman, default_group,
                 objects, object_names, main_idx,
@@ -120,15 +123,5 @@ impl Program {
                 a.execute(adata,&b,&adata.dims);
             }
         }
-    }
-        
-    pub fn shapes_to_gl(&mut self, adata: &mut ArenaData, oom: &OnOffManager) {
-        self.shapes.into_objects(&mut self.data,adata,oom);
-        self.shapes.clear();
-        for b in self.data.bman.iter() {
-            for a in &mut self.data.objects.iter_mut() {
-                a.to_gl(&b,adata);
-            }
-        }
-    }
+    }        
 }
