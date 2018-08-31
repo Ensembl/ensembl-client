@@ -118,8 +118,6 @@ impl FlatCanvas {
     
     pub fn rectangle(&self, coords: RPixel, col: &Colour) {
         let RPixel(CPixel(x,y),CPixel(w,h)) = coords;
-        let s = format!("{:?} {:?}",coords,&col);
-        js! { console.log(@{s}); };
         self.context.set_fill_style_color(&col.to_css()[..]);
         self.context.fill_rect(x as f64,y as f64,w as f64,h as f64);
     }
