@@ -15,11 +15,11 @@ Provisional
 ADR-0002 (to wrap WebGL) identified the need for a good place in-browser
 for doing data heavy-lifting. Data manipulation in GC-ed environments
 tends to suffer easily from jank when there are realtime refresh
-constraints . Single-threaded environments (such as the base model for
+constraints. Single-threaded environments (such as the basic model for
 in-browser js) are particularly sueecptible.
 
-Browsers offer a number of alternatives which take code out of the
-event processing loop. These include
+Browsers offer a number of alternatives to this status quo which take
+code out of the event processing loop. These include
 
 * asm.js
 * WebWorkers

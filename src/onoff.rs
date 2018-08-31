@@ -50,14 +50,16 @@ impl OnOffExpr for OnOffOp {
 
 pub struct OnOffManager {
     atoms: HashMap<String,bool>,
-    exprs: HashMap<String,Rc<OnOffExpr>>
+    exprs: HashMap<String,Rc<OnOffExpr>>,
+    changed: bool
 }
 
 impl OnOffManager {
     pub fn new() -> OnOffManager {
         OnOffManager {
             atoms: HashMap::<String,bool>::new(),
-            exprs: HashMap::<String,Rc<OnOffExpr>>::new()
+            exprs: HashMap::<String,Rc<OnOffExpr>>::new(),
+            changed: false
         }
     }
     
@@ -71,5 +73,9 @@ impl OnOffManager {
     
     pub fn set_atom_state(&mut self, name: &str, val: bool) {
        self.atoms.insert(name.to_string(),val); 
+       self.changed = true;
     }
+    
+    pub fn has_changed(&self) -> bool { self.changed }
+    pub fn reset_changed(&mut self) { self.changed = false; }
 }

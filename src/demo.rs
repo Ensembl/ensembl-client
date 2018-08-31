@@ -228,7 +228,7 @@ pub fn demo() {
     stage.zoom = 0.1;
 
     let mut a_spec = ArenaSpec::new();
-    a_spec.debug = false;
+    a_spec.debug = true;
     let mut arena = Arena::new("#glcanvas","#managedcanvasholder",a_spec);
     let mut middle = arena.dims().height_px / 120;
     if middle < 5 { middle = 5; }

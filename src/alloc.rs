@@ -1,24 +1,21 @@
 use std::fmt;
 use std::cmp::max;
 
+use coord::CPixel;
+
 /* An origin is the top left corner of an allocation or free space. The
  * extent of the space is not recorded and must be determined from
  * context.
  */
 
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 struct Origin {
-    x: i32,
-    y: i32,
-}
-
-impl Clone for Origin {
-    fn clone(&self) -> Origin { Origin { x: self.x, y: self.y } }
+    pos: CPixel
 }
 
 impl fmt::Display for Origin {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "({},{})", self.x, self.y)
+        write!(f, "({},{})", self.pos.0, self.pos.1)
     }
 }
 
@@ -27,23 +24,23 @@ impl Origin {
      * 1-3 tranches. The first is always the desired space and has
      * width/height as requested. The second and third are the leftovers.
      */
-    fn chop(&self, width: i32, height: i32, 
+    fn chop(&self, size: CPixel,
             total_width: i32, total_height: i32) -> Vec<Tranche> {
         let mut out = Vec::<Tranche>::new();
         out.push(Tranche {
-            h: height,
-            r: Origin { x: self.x, y: self.y }
+            h: size.1,
+            r: Origin { pos: self.pos }
         });
-        if height < total_height {
+        if size.1 < total_height {
             out.push(Tranche {
-                h: total_height-height,
-                r: Origin { x: self.x, y: self.y + height }
+                h: total_height-size.1,
+                r: Origin { pos: CPixel(self.pos.0,self.pos.1 + size.1) }
             });
         }
-        if width < total_width {
+        if size.0 < total_width {
             out.push(Tranche {
-                h: height,
-                r: Origin { x: self.x + width, y: self.y }
+                h: size.1,
+                r: Origin { pos: CPixel(self.pos.0 + size.0,self.pos.1) }
             });
         }
         out
@@ -61,8 +58,8 @@ struct Tranche {
 }
 
 impl Tranche {
-    fn chop(&self, width: i32, height: i32, max_width: i32) -> Vec<Tranche> {
-        self.r.chop(width,height,max_width-self.r.x,self.h)
+    fn chop(&self, size: CPixel, max_width: i32) -> Vec<Tranche> {
+        self.r.chop(size,max_width-self.r.pos.0,self.h)
     }
 }
 
@@ -105,7 +102,7 @@ impl Height {
     fn alloc(&mut self, width: i32, max_width: i32) -> Option<Tranche> {
         let mut target : Option<usize> = None;
         for (i,space) in self.spaces.iter().enumerate() {
-            if space.x + width <= max_width {
+            if space.pos.0 + width <= max_width {
                 target = Some(i);
                 break;
             }
@@ -149,7 +146,7 @@ impl fmt::Display for Half {
 }
 
 impl Half {
-    pub fn new(width: i32) -> Half {
+    fn new(width: i32) -> Half {
         Half {
             width,
             watermark: 0,
@@ -168,15 +165,15 @@ impl Half {
         self.spaces[h-1].add(tranche.r);
     }
         
-    fn alloc_space(&mut self, width: i32, height: i32) -> Option<Origin> {
-        let h = height as usize;
+    fn alloc_space(&mut self, size: CPixel) -> Option<Origin> {
+        let h = size.1 as usize;
         let len = self.spaces.len();
         if self.spaces.len() >= h {
             let mut frags : Option<Vec<Tranche>> = None;
             for i in h-1..len {
-                let mut result = self.spaces[i].alloc(width,self.width);
+                let mut result = self.spaces[i].alloc(size.0,self.width);
                 if let Some(tranche) = result {
-                    frags = Some(tranche.chop(width,height,self.width));
+                    frags = Some(tranche.chop(size,self.width));
                     break
                 }
             }
@@ -194,16 +191,16 @@ impl Half {
         None
     }
     
-    fn alloc_watermark(&mut self,width: i32,height: i32) -> Option<(i32,i32)> {
+    fn alloc_watermark(&mut self,size: CPixel) -> Option<CPixel> {
         let tranche = Tranche {
-            r: Origin { y: self.watermark, x: 0 },
-            h: height
+            r: Origin { pos: CPixel(0,self.watermark) },
+            h: size.1
         };
-        self.watermark = self.watermark + height;
+        self.watermark = self.watermark + size.1;
         self.add_space(tranche);
-        let out = self.alloc_space(width,height);
+        let out = self.alloc_space(size);
         match out {
-            Some(Origin { x, y }) => Some((x,y)),
+            Some(Origin { pos }) => Some(pos),
             None => {
                 js! { console.log("Watermark alloc failed. Should be impossible"); };
                 None
@@ -211,10 +208,10 @@ impl Half {
         }
     }
     
-    fn allocate(&mut self,width: i32,height: i32) -> Option<(i32,i32)> {
-        match self.alloc_space(width,height) {
-            Some(space) => Some((space.x,space.y)),
-            None => self.alloc_watermark(width,height)
+    fn allocate(&mut self,size: CPixel) -> Option<CPixel> {
+        match self.alloc_space(size) {
+            Some(space) => Some(space.pos),
+            None => self.alloc_watermark(size)
         }
     }
     
@@ -228,14 +225,12 @@ impl Half {
  */
 
 struct TicketReq {
-    width: i32,
-    height: i32
+    size: CPixel
 }
 
 #[derive(Clone)]
 struct TicketRes {
-    x: i32,
-    y: i32
+    pos: CPixel
 }
 
 pub struct Allocator {
@@ -249,8 +244,7 @@ pub struct Allocator {
 #[derive(Clone)]
 pub struct Ticket {
     index: usize,
-    width: i32,
-    height: i32,
+    size: CPixel
 }
 
 struct AllocatorImpl {
@@ -271,14 +265,14 @@ impl AllocatorImpl {
         }
     }
     
-    fn allocate_one(&mut self,width: i32,height: i32) -> (bool,i32,i32) {
-        if height < (self.threshold / 2) {
-            let (x,y) = self.small.allocate(width,height).unwrap();
-            (false,x,y)
+    fn allocate_one(&mut self, size: CPixel) -> (bool,CPixel) {
+        if size.1 < (self.threshold / 2) {
+            let pos = self.small.allocate(size).unwrap();
+            (false,pos)
         } else {
-            let height = ( height + self.threshold - 1) / self.threshold;
-            let (x,y) = self.big.allocate(width,height).unwrap();
-            (true,x,y)
+            let height = ( size.1 + self.threshold - 1) / self.threshold;
+            let pos = self.big.allocate(CPixel(size.0,height)).unwrap();
+            (true,pos)
         }
     }
     
@@ -298,43 +292,39 @@ impl Allocator {
         }
     }
     
-    pub fn request(&mut self, width: i32, height: i32) -> Ticket {
-        self.max_width = max(width,self.max_width);
-        self.area = self.area + width*height;
-        let data = TicketReq { width, height };
+    pub fn request(&mut self, size: CPixel) -> Ticket {
+        self.max_width = max(size.0,self.max_width);
+        self.area = self.area + size.0*size.1;
+        let data = TicketReq { size };
         self.reqs.push(data);
-        Ticket { index: self.reqs.len()-1, width, height }
+        Ticket { index: self.reqs.len()-1, size }
     }
 
-    pub fn allocate(&mut self) -> (i32,i32) {
+    pub fn allocate(&mut self) -> CPixel {
         let mut aimpl = AllocatorImpl::new(self.threshold,self.max_width,self.area);
-        let mut res = Vec::<(bool,i32,i32)>::new();
+        let mut res = Vec::<(bool,CPixel)>::new();
         for t in &self.reqs {
-            res.push(aimpl.allocate_one(t.width,t.height));
+            res.push(aimpl.allocate_one(t.size));
         }
         let split = aimpl.split_point();
-        for (big,x,y) in res {
-            println!("{:?}",(big,x,y));
-            let mut val = TicketRes { x, y };
+        for (big,pos) in res {
+            let mut val = TicketRes { pos };
             if big {
-                val.y = val.y * self.threshold;
+                val.pos.1 *= self.threshold;
             } else {
-                val.y = val.y + split;
+                val.pos.1 += split;
             }
             self.res.push(val);
         }
         let height = pow2_i32(aimpl.total_height());
-        (aimpl.width(), height)
+        CPixel(aimpl.width(), height)
     }
     
-    pub fn position(&self,t : &Ticket) -> (i32, i32) {
-        let res = self.res[t.index].clone();
-        (res.x, res.y)
+    pub fn position(&self,t : &Ticket) -> CPixel {
+        self.res[t.index].clone().pos
     }
     
-    pub fn size(&self,t : &Ticket) -> (i32, i32) {
-        (t.width, t.height)
-    }
+    pub fn size(&self,t : &Ticket) -> CPixel { t.size }
 }
 
 #[test]
@@ -343,11 +333,11 @@ fn half_test() {
     let input = [(100,6),(100,6),(100,6),(4,6),  (20,5), (50,1)];
     let check = [(0,0),  (100,0),(0,6),  (200,0),(100,6),(100,11)];
     for (i,(x,y)) in input.iter().enumerate() {
-        let (s,t) = alloc.allocate(*x,*y).unwrap();
+        let CPixel(s,t) = alloc.allocate(CPixel(*x,*y)).unwrap();
         println!("({}x{}) -> ({},{}) want ({},{})",x,y,s,t,check[i].0,check[i].1);
         assert_eq!((s,t),check[i]);
     }
-    assert_eq!(alloc.height(),12);
+    assert_eq!(alloc.get_height(),12);
 }
 
 #[test]
@@ -357,11 +347,11 @@ fn full_test() {
     let c = [(0,0),   (0,48),(0,16), (10,0),(12,0),(0,49),(50,49),(0,51)];
     let mut t = Vec::<Ticket>::new();
     for (x,y) in &s {
-        t.push(ac.request(*x,*y));
+        t.push(ac.request(CPixel(*x,*y)));
     }
     ac.allocate();
     for (i,t) in t.iter().enumerate() {
-        let (x,y) = ac.position(t);
+        let CPixel(x,y) = ac.position(t);
         assert_eq!((x,y),c[i]);
     }
 }

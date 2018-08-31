@@ -89,23 +89,23 @@ impl Drawing {
     }
 
     pub fn draw(&self, canvs: &mut ArenaCanvases, leafdrawman: &LeafDrawingManager) {
-        let (x,y) = leafdrawman.allocator.position(&self.0.ticket);
-        self.0.gen.draw(canvs,CPixel(x,y));
+        let pos = leafdrawman.allocator.position(&self.0.ticket);
+        self.0.gen.draw(canvs,pos);
     }
     
     pub fn measure(&self, src: &LeafDrawingManager) -> RPixel {
-        let (width,height) = src.allocator.size(&self.0.ticket);
-        let (x,y) = src.allocator.position(&self.0.ticket);
-        RPixel(CPixel(x,y),CPixel(width,height))
+        let size = src.allocator.size(&self.0.ticket);
+        let pos = src.allocator.position(&self.0.ticket);
+        RPixel(pos,size)
     }
 }
 
 /* Utility method to make creating Drawings simpler */
-pub fn create_draw_request(leafdrawman: &mut LeafDrawingManager, ta: Box<Artist>, width: i32, height: i32) -> Drawing {
+pub fn create_draw_request(leafdrawman: &mut LeafDrawingManager, ta: Box<Artist>, size: CPixel) -> Drawing {
     let req;
     {
         let flat_alloc = &mut leafdrawman.allocator;
-        req = Drawing::new(ta,flat_alloc.request(width,height));
+        req = Drawing::new(ta,flat_alloc.request(size));
     }
     req
 }
@@ -134,8 +134,8 @@ impl LeafDrawingManager {
             // already in cache
             tdrh
         } else {
-            let CPixel(width, height) = a.measure(canvas);
-            let val = create_draw_request(self,a,width,height);
+            let size = a.measure(canvas);
+            let val = create_draw_request(self,a,size);
             if let Some(tdrk) = tdrk {
                 // put in cache
                 self.cache.insert(&tdrk,val.clone());
@@ -156,7 +156,7 @@ impl LeafDrawingManager {
         self.tickets.clear();
     }
 
-    pub fn allocate(&mut self) -> (i32,i32) {
+    pub fn allocate(&mut self) -> CPixel {
         self.allocator.allocate()
     }
 }
