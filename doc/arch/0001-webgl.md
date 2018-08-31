@@ -6,6 +6,10 @@ Date: <2018-08-31
 
 Provisional
 
+## Consequence of
+
+* User input
+
 ## Context
 
 We repeatedly hear that a reason for choosing browsers other than ours

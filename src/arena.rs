@@ -11,6 +11,7 @@ use canvasutil;
 use wglraw;
 
 use program::{ Program, GPUSpec, UniformValue };
+use onoff::OnOffManager;
 
 use coord::{
     COrigin,
@@ -151,7 +152,7 @@ impl Arena {
         self.data.borrow().dims
     }
         
-    pub fn populate(&mut self) {
+    pub fn populate(&mut self, oom: &OnOffManager) {
         let datam = &mut self.data.borrow_mut();
         {
             let (canvases,leafdrawman,_) = datam.burst_texture();
@@ -164,7 +165,7 @@ impl Arena {
         }
         for k in &self.order {
             let geom = self.map.get_mut(k).unwrap();
-            geom.shapes_to_gl(datam);
+            geom.shapes_to_gl(datam,oom);
         }
         datam.leafdrawman.clear();
 
