@@ -12,7 +12,7 @@ pub struct COrigin(pub f32,pub f32);
 
 /* CLeaf */
 
-#[derive(Clone,Copy)]
+#[derive(Clone,Copy,Debug)]
 pub struct CLeaf(pub f32,pub i32);
 
 impl CLeaf {
@@ -45,9 +45,15 @@ impl Add for CLeaf {
     }
 }
 
+impl From<CFraction> for CLeaf {
+    fn from(val: CFraction) -> Self {
+        CLeaf(val.0, val.1 as i32)
+    }
+}
+
 /* RLeaf */
 
-#[derive(Clone,Copy)]
+#[derive(Clone,Copy,Debug)]
 pub struct RLeaf(pub CLeaf,pub CLeaf);
 
 impl RLeaf {
@@ -71,6 +77,23 @@ impl Input for RLeaf {
         for c in self.rectangle().iter() {
             attrib.add_f32(&[c.0 as f32,c.1 as f32],batch);
         }
+    }
+}
+
+impl Add<CLeaf> for RLeaf {
+    type Output = RLeaf;
+    
+    fn add(self, other: CLeaf) -> RLeaf {
+        RLeaf(self.0 + other, self.1)
+    }
+}
+
+impl Div<CPixel> for CLeaf {
+    type Output = CLeaf;
+    
+    fn div(self, other: CPixel) -> CLeaf {
+        CLeaf((self.0 as f32)/(other.0 as f32),
+              ((self.1 as f32)/(other.1 as f32)) as i32)
     }
 }
 
@@ -136,6 +159,12 @@ impl Div for CPixel {
     fn div(self, other: CPixel) -> CFraction {
         CFraction((self.0 as f32)/(other.0 as f32),
                   (self.1 as f32)/(other.1 as f32))
+    }
+}
+
+impl From<CFraction> for CPixel {
+    fn from(val: CFraction) -> Self {
+        CPixel(val.0 as i32, val.1 as i32)
     }
 }
 
@@ -239,9 +268,18 @@ impl Input for CFraction {
     }
 }
 
+impl Div for CFraction {
+    type Output = CFraction;
+    
+    fn div(self, other: CFraction) -> CFraction {
+        CFraction(self.0/other.0,self.1/other.1)
+    }
+}
+
+
 /* RFraction */
 
-#[derive(Clone,Copy)]
+#[derive(Clone,Copy,Debug)]
 pub struct RFraction(pub CFraction,pub CFraction);
 
 impl RFraction {
@@ -265,6 +303,14 @@ impl Input for RFraction {
         for c in self.rectangle().iter() {
             attrib.add_f32(&[c.0,c.1],batch);
         }
+    }
+}
+
+impl Add<CFraction> for RFraction {
+    type Output = RFraction;
+    
+    fn add(self, other: CFraction) -> RFraction {
+        RFraction(self.0 + other, self.1)
     }
 }
 
