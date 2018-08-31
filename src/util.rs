@@ -35,6 +35,7 @@ macro_rules! vec_s {
     }}
 }
 
+#[allow(unused_macros)]
 macro_rules! console {
     ($($arg:tt)*) => {{
         let s = format!($($arg)*);

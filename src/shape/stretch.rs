@@ -24,11 +24,12 @@ use onoff::OnOffExpr;
 pub struct StretchRect {
     points: RLeaf,
     colspec: ColourSpecImpl,
+    geom: String
 }
 
 impl StretchRect {
-    pub fn new(points: RLeaf, colspec: ColourSpecImpl) -> StretchRect {
-        StretchRect { points, colspec }
+    pub fn new(points: RLeaf, colspec: ColourSpecImpl, geom: &str) -> StretchRect {
+        StretchRect { points, colspec, geom: geom.to_string() }
     }
 }
 
@@ -36,17 +37,17 @@ impl Shape for StretchRect {
     fn into_objects(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
         let b = vertices_rect(geom,self.colspec.to_group());
         rectangle_g(b,geom,"aVertexPosition",&self.points);
-        if let ColourSpecImpl::Colour(c) = self.colspec {        
+        if let ColourSpecImpl::Colour(c) = self.colspec {
             multi_gl(b,geom,"aVertexColour",&c,4);
         }
     }
+    
+    fn get_geometry(&self) -> &str { &self.geom }
 }
 
 pub fn stretch_rectangle(arena: &mut Arena, p:&RLeaf, colour: &ColourSpec, ooe: Rc<OnOffExpr>) {
     let (g,c) = despot("stretch",colour);
-    arena.get_geom(&g).shapes.add_item(None,Box::new(
-        StretchRect::new(*p,c)
-    ),ooe);
+    arena.add_shape(None,Box::new(StretchRect::new(*p,c,&g)),ooe);
 }
 
 /*
@@ -70,10 +71,12 @@ impl Shape for StretchWiggle {
         let b = vertices_strip(geom,self.points.len() as u16*2,Some(self.group));
         points_g(b,geom,"aVertexPosition",&self.points,self.y);
     }
+    
+    fn get_geometry(&self) -> &str { "stretchstrip" }
 }
 
 pub fn stretch_wiggle(arena: &mut Arena, p: Vec<CLeaf>, y: i32, spot: &Spot, ooe: Rc<OnOffExpr>) {
-    arena.get_geom("stretchstrip").shapes.add_item(None,Box::new(
+    arena.add_shape(None,Box::new(
         StretchWiggle::new(p,spot.get_group("stretchstrip"),y)
     ),ooe);
 }
@@ -124,9 +127,11 @@ impl Shape for StretchTexture {
             }
         }
     }
+    
+    fn get_geometry(&self) -> &str { "stretchtex" }
 }
 
 pub fn stretch_texture(arena: &mut Arena, req: Drawing, pos: &RLeaf, ooe: Rc<OnOffExpr>) {
     let ri = StretchTexture::new(pos);
-    arena.get_geom("stretchtex").shapes.add_item(Some(req),Box::new(ri),ooe);
+    arena.add_shape(Some(req),Box::new(ri),ooe);
 }

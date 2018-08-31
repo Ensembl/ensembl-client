@@ -7,11 +7,13 @@ use webgl_rendering_context::{
 use std::cell::RefCell;
 use std::rc::Rc;
 
+use shape::{ ShapeManager, Shape };
+
 use canvasutil;
 use wglraw;
 
 use program::{ Program, GPUSpec, UniformValue };
-use onoff::OnOffManager;
+use onoff::{ OnOffManager, OnOffExpr };
 
 use coord::{
     COrigin,
@@ -27,6 +29,7 @@ use geometry::{
 
 use drawing::{
     LeafDrawingManager,
+    Drawing,
 };
 
 pub struct ArenaCanvases {
@@ -88,7 +91,8 @@ impl ArenaSpec {
 pub struct Arena {
     pub data: Rc<RefCell<ArenaData>>,
     order: Vec<String>,
-    map: HashMap<String,Program>
+    map: HashMap<String,Program>,
+    shapes: ShapeManager
 }
 
 impl Arena {
@@ -118,6 +122,7 @@ impl Arena {
         let data_g = data.clone();
         let data_b = data_g.borrow();
         let arena = Arena {
+            shapes: ShapeManager::new(),
             data, 
             order: vec_s! {
                 "stretch", "stretchstrip", "stretchspot", "stretchtex", 
@@ -148,6 +153,11 @@ impl Arena {
         self.map.get_mut(name).unwrap()
     }
 
+    pub fn add_shape(&mut self,req: Option<Drawing>, item: Box<Shape>, ooe: Rc<OnOffExpr>) {
+        let datam = &mut self.data.borrow_mut();
+        self.shapes.add_item(req,item,ooe);
+    }
+
     pub fn dims(&self) -> ArenaDims {
         self.data.borrow().dims
     }
@@ -163,9 +173,11 @@ impl Arena {
             let (canvases,leafdrawman,_) = datam.burst_texture();
             leafdrawman.draw(canvases);
         }
+        self.shapes.into_objects(&mut self.map,datam,oom);
+        self.shapes.clear();
         for k in &self.order {
             let geom = self.map.get_mut(k).unwrap();
-            geom.shapes_to_gl(datam,oom);
+            geom.data.objects_to_gl(datam);
         }
         datam.leafdrawman.clear();
 

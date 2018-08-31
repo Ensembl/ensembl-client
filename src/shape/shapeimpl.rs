@@ -1,7 +1,7 @@
 use std::rc::Rc;
 use std::collections::HashMap;
 use arena::{ Arena, ArenaData };
-use program::{ ProgramAttribs, DataGroup };
+use program::{ ProgramAttribs, DataGroup, Program };
 use coord::{ Colour, RPixel };
 use drawing::Drawing;
 use onoff::{ OnOffManager, OnOffExpr };
@@ -9,6 +9,7 @@ use onoff::{ OnOffManager, OnOffExpr };
 pub trait Shape {
     fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData);
     fn set_texpos(&mut self, _data: &RPixel) {}
+    fn get_geometry(&self) -> &str;
 }
 
 const SPOTS : [&str;4] = [
@@ -57,16 +58,18 @@ impl ShapeManager {
         self.requests.push((req,item,ooe));
     }
     
-    pub fn into_objects(&mut self, tg: &mut ProgramAttribs,
+    pub fn into_objects(&mut self, map: &mut HashMap<String,Program>,
                         adata: &mut ArenaData, oom: &OnOffManager) {
         let src = &adata.leafdrawman;
-        for (ref mut req,ref mut obj,ref ooe) in &mut self.requests {
+        for (ref mut req,ref mut s,ref ooe) in &mut self.requests {
             if ooe.is_on(oom) {
                 if let Some(req) = req {
                   let tp = req.measure(src);
-                  obj.set_texpos(&tp);
+                  s.set_texpos(&tp);
                 }
-                obj.into_objects(tg,adata);
+                if let Some(geom) = map.get_mut(s.get_geometry()) {                
+                    s.into_objects(&mut geom.data,adata);
+                }
             }
         }
     }
