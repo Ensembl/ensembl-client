@@ -1,12 +1,14 @@
+use std::rc::Rc;
 use std::collections::HashMap;
 use arena::{ Arena, ArenaData };
 use program::{ ProgramAttribs, DataGroup };
 use coord::{ Colour, RPixel };
 use drawing::Drawing;
+use onoff::{ OnOffManager, OnOffExpr };
 
 pub trait Shape {
     fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData);
-    fn set_texpos(&mut self, _data: &RPixel) {}   
+    fn set_texpos(&mut self, _data: &RPixel) {}
 }
 
 const SPOTS : [&str;4] = [
@@ -41,28 +43,31 @@ pub enum ColourSpec<'a> {
 }
 
 pub struct ShapeManager {
-    requests: Vec<(Option<Drawing>,Box<Shape>)>
+    requests: Vec<(Option<Drawing>,Box<Shape>,Rc<OnOffExpr>)>
 }
 
 impl ShapeManager {
     pub fn new() -> ShapeManager {
         ShapeManager {
-            requests: Vec::<(Option<Drawing>,Box<Shape>)>::new()
+            requests: Vec::<(Option<Drawing>,Box<Shape>,Rc<OnOffExpr>)>::new()
         }
     }
     
-    pub fn add_item(&mut self, req: Option<Drawing>, item: Box<Shape>) {
-        self.requests.push((req,item));
+    pub fn add_item(&mut self, req: Option<Drawing>, item: Box<Shape>, ooe: Rc<OnOffExpr>) {
+        self.requests.push((req,item,ooe));
     }
     
-    pub fn into_objects(&mut self, tg: &mut ProgramAttribs, adata: &mut ArenaData) {
+    pub fn into_objects(&mut self, tg: &mut ProgramAttribs,
+                        adata: &mut ArenaData, oom: &OnOffManager) {
         let src = &adata.leafdrawman;
-        for (ref mut req,ref mut obj) in &mut self.requests {
-            if let Some(req) = req {
-              let tp = req.measure(src);
-              obj.set_texpos(&tp);
+        for (ref mut req,ref mut obj,ref ooe) in &mut self.requests {
+            if ooe.is_on(oom) {
+                if let Some(req) = req {
+                  let tp = req.measure(src);
+                  obj.set_texpos(&tp);
+                }
+                obj.into_objects(tg,adata);
             }
-            obj.into_objects(tg,adata);
         }
     }
     

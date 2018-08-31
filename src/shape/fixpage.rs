@@ -1,3 +1,4 @@
+use std::rc::Rc;
 use arena::{ ArenaData, Arena };
 
 use program::ProgramAttribs;
@@ -7,6 +8,7 @@ use shape::Shape;
 use shape::util::{ rectangle_p, rectangle_t, multi_gl, vertices_rect };
 
 use drawing::{ Drawing };
+use onoff::OnOffExpr;
 
 /*
  * FixRect
@@ -31,20 +33,20 @@ impl Shape for FixRect {
     }
 }
 
-fn rectangle(arena: &mut Arena, p: &RPixel, colour: &Colour, geom: &str) {
+fn rectangle(arena: &mut Arena, p: &RPixel, colour: &Colour, geom: &str, ooe: Rc<OnOffExpr>) {
     let geom = arena.get_geom(geom);
     geom.shapes.add_item(None,Box::new(
         FixRect::new(*p,*colour)
-    ));
+    ),ooe);
 }
 
-pub fn fix_rectangle(arena: &mut Arena, p: &RPixel, colour: &Colour) {
-    rectangle(arena, p, colour, "fix");
+pub fn fix_rectangle(arena: &mut Arena, p: &RPixel, colour: &Colour, ooe: Rc<OnOffExpr>) {
+    rectangle(arena, p, colour, "fix",ooe);
 }
 
 #[allow(dead_code)]
-pub fn page_rectangle(arena: &mut Arena, p: &RPixel, colour: &Colour) {
-    rectangle(arena, p, colour, "page");
+pub fn page_rectangle(arena: &mut Arena, p: &RPixel, colour: &Colour, ooe: Rc<OnOffExpr>) {
+    rectangle(arena, p, colour, "page",ooe);
 }
 
 /*
@@ -81,16 +83,16 @@ impl Shape for FixTexture {
     }
 }
 
-fn texture(arena: &mut Arena,req: Drawing, origin: &CPixel, scale: &CPixel, geom: &str) {
+fn texture(arena: &mut Arena,req: Drawing, origin: &CPixel, scale: &CPixel, geom: &str, ooe: Rc<OnOffExpr>) {
     let ri = FixTexture::new(origin,scale);
-    arena.get_geom(geom).shapes.add_item(Some(req),Box::new(ri));
+    arena.get_geom(geom).shapes.add_item(Some(req),Box::new(ri),ooe);
 }
 
 
-pub fn fix_texture(arena: &mut Arena,req: Drawing, origin: &CPixel, scale: &CPixel) {
-    texture(arena, req, origin, scale, "fixtex");
+pub fn fix_texture(arena: &mut Arena,req: Drawing, origin: &CPixel, scale: &CPixel, ooe: Rc<OnOffExpr>) {
+    texture(arena, req, origin, scale, "fixtex",ooe);
 }
 
-pub fn page_texture(arena: &mut Arena,req: Drawing, origin: &CPixel, scale: &CPixel) {
-    texture(arena, req, origin, scale, "pagetex");
+pub fn page_texture(arena: &mut Arena,req: Drawing, origin: &CPixel, scale: &CPixel, ooe: Rc<OnOffExpr>) {
+    texture(arena, req, origin, scale, "pagetex",ooe);
 }

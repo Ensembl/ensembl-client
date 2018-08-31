@@ -1,4 +1,5 @@
 use std::f32;
+use std::rc::Rc;
 use arena::{ Arena, ArenaData };
 
 use program::{ ProgramAttribs, DataBatch };
@@ -13,6 +14,7 @@ use shape::util::{
 };
 
 use drawing::{ Drawing };
+use onoff::OnOffExpr;
 
 /*
  * PinTriangle
@@ -42,11 +44,11 @@ impl Shape for PinTriangle {
     }
 }
 
-pub fn pin_triangle(arena: &mut Arena, origin: &CLeaf, p: &[CPixel;3], colspec: &ColourSpec) {
+pub fn pin_triangle(arena: &mut Arena, origin: &CLeaf, p: &[CPixel;3], colspec: &ColourSpec, ooe: Rc<OnOffExpr>) {
     let (g,c) = despot("pin",colspec);
     arena.get_geom(&g).shapes.add_item(None,Box::new(
         PinTriangle::new(*origin,*p,c)
-    ));
+    ),ooe);
 }
 
 /*
@@ -107,26 +109,26 @@ impl Shape for PinPoly {
 
 fn pin_poly_impl(arena: &mut Arena, gname: &str, origin: &CLeaf, points: u16,
                  size: f32, width: f32, offset: f32, 
-                 colspec: &ColourSpec, hollow: bool) {
+                 colspec: &ColourSpec, hollow: bool, ooe: Rc<OnOffExpr>) {
     let (g,c) = despot(gname,colspec);
     arena.get_geom(&g).shapes.add_item(None,Box::new(
         PinPoly {
             origin: *origin, points, size, offset, width, colspec: c,
             hollow
         }
-    ));
+    ),ooe);
 }
 
 pub fn pin_poly(arena: &mut Arena, origin: &CLeaf, points: u16,
                 size: f32, offset: f32, 
-                colspec: &ColourSpec) {
-    pin_poly_impl(arena,"pin",origin,points,size,0.,offset,colspec,false);
+                colspec: &ColourSpec, ooe: Rc<OnOffExpr>) {
+    pin_poly_impl(arena,"pin",origin,points,size,0.,offset,colspec,false,ooe);
 }
 
 pub fn pin_hollowpoly(arena: &mut Arena, origin: &CLeaf, points: u16,
                       size: f32, width: f32, offset: f32, 
-                      colspec: &ColourSpec) {
-    pin_poly_impl(arena,"pinstrip",origin,points,size,width,offset,colspec,true);
+                      colspec: &ColourSpec, ooe: Rc<OnOffExpr>) {
+    pin_poly_impl(arena,"pinstrip",origin,points,size,width,offset,colspec,true,ooe);
 }
 
 const CIRC_TOL : f32 = 1.; // max px undercut
@@ -138,15 +140,15 @@ fn circle_points(r: f32) -> u16 {
 
 pub fn pin_circle(arena: &mut Arena, origin: &CLeaf,
                   size: f32,
-                  colspec: &ColourSpec) {
-    pin_poly(arena, origin, circle_points(size), size, 0., colspec);
+                  colspec: &ColourSpec, ooe: Rc<OnOffExpr>) {
+    pin_poly(arena, origin, circle_points(size), size, 0., colspec, ooe);
 }
 
 pub fn pin_hollowcircle(arena: &mut Arena, origin: &CLeaf,
                         size: f32, width: f32,
-                        colspec: &ColourSpec) {
+                        colspec: &ColourSpec, ooe: Rc<OnOffExpr>) {
     pin_hollowpoly(arena, origin, circle_points(size), size, width,
-                   0., colspec);
+                   0., colspec, ooe);
 }
 
 /*
@@ -184,7 +186,7 @@ impl Shape for PinTexture {
     }
 }
 
-pub fn pin_texture(arena: &mut Arena, req: Drawing, origin: &CLeaf, scale: &CPixel) {
+pub fn pin_texture(arena: &mut Arena, req: Drawing, origin: &CLeaf, scale: &CPixel, ooe: Rc<OnOffExpr>) {
     let ri = PinTexture::new(origin,scale);
-    arena.get_geom("pintex").shapes.add_item(Some(req),Box::new(ri));
+    arena.get_geom("pintex").shapes.add_item(Some(req),Box::new(ri),ooe);
 }

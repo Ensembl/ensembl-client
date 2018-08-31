@@ -12,6 +12,7 @@ use shape::ShapeManager;
 use program::source::{ Source, ProgramSource };
 use program::objects::Object;
 use program::data::{ DataBatch, DataGroup, BatchManager };
+use onoff::OnOffManager;
 
 pub struct ProgramAttribs {
     bman: BatchManager,
@@ -121,8 +122,8 @@ impl Program {
         }
     }
         
-    pub fn shapes_to_gl(&mut self, adata: &mut ArenaData) {
-        self.shapes.into_objects(&mut self.data,adata);
+    pub fn shapes_to_gl(&mut self, adata: &mut ArenaData, oom: &OnOffManager) {
+        self.shapes.into_objects(&mut self.data,adata,oom);
         self.shapes.clear();
         for b in self.data.bman.iter() {
             for a in &mut self.data.objects.iter_mut() {

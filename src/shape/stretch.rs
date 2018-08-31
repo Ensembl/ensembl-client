@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use arena::{ Arena, ArenaData };
 
 use program::{ ProgramAttribs, DataGroup };
@@ -12,6 +14,8 @@ use shape::util::{
 };
 
 use drawing::{ Drawing };
+
+use onoff::OnOffExpr;
 
 /*
  * StretchRect
@@ -38,11 +42,11 @@ impl Shape for StretchRect {
     }
 }
 
-pub fn stretch_rectangle(arena: &mut Arena, p:&RLeaf, colour: &ColourSpec) {
+pub fn stretch_rectangle(arena: &mut Arena, p:&RLeaf, colour: &ColourSpec, ooe: Rc<OnOffExpr>) {
     let (g,c) = despot("stretch",colour);
     arena.get_geom(&g).shapes.add_item(None,Box::new(
         StretchRect::new(*p,c)
-    ));
+    ),ooe);
 }
 
 /*
@@ -68,10 +72,10 @@ impl Shape for StretchWiggle {
     }
 }
 
-pub fn stretch_wiggle(arena: &mut Arena, p: Vec<CLeaf>, y: i32, spot: &Spot) {
+pub fn stretch_wiggle(arena: &mut Arena, p: Vec<CLeaf>, y: i32, spot: &Spot, ooe: Rc<OnOffExpr>) {
     arena.get_geom("stretchstrip").shapes.add_item(None,Box::new(
         StretchWiggle::new(p,spot.get_group("stretchstrip"),y)
-    ));    
+    ),ooe);
 }
 
 /*
@@ -122,7 +126,7 @@ impl Shape for StretchTexture {
     }
 }
 
-pub fn stretch_texture(arena: &mut Arena, req: Drawing, pos: &RLeaf) {
+pub fn stretch_texture(arena: &mut Arena, req: Drawing, pos: &RLeaf, ooe: Rc<OnOffExpr>) {
     let ri = StretchTexture::new(pos);
-    arena.get_geom("stretchtex").shapes.add_item(Some(req),Box::new(ri));
+    arena.get_geom("stretchtex").shapes.add_item(Some(req),Box::new(ri),ooe);
 }
