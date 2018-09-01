@@ -51,7 +51,7 @@ module.exports = {
         ]
       },
       {
-        test: /\.(svg|gif|png|jpe?g)$/i,
+        test: /assets\/img\/.*\.(svg|gif|png|jpe?g)$/i,
         use: [
           {
             loader: 'file-loader',
@@ -64,7 +64,7 @@ module.exports = {
         ]
       },
       {
-        test: /\.(woff2?|eot|ttf|otf|svg)/,
+        test: /assets\/fonts\/.*\.(woff2?|eot|ttf|otf|svg)$/i,
         loader: 'file-loader',
         options: {
           emitFile: true,
@@ -94,7 +94,9 @@ module.exports = {
     hints: 'error'
   },
   plugins: [
-    new ForkTsCheckerPlugin(),
+    new ForkTsCheckerPlugin({
+      tslint: true
+    }),
     new MiniCssExtractPlugin({
       filename: '[name].[contenthash].css',
       chunkFilename: '[id].[contenthash].css'

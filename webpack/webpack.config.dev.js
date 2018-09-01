@@ -2,7 +2,6 @@ const path = require('path');
 const postcssPresetEnv = require('postcss-preset-env');
 const HtmlPlugin = require('html-webpack-plugin');
 const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
-const TSLintWebpackPlugin = require('tslint-webpack-plugin');
 const StylelintWebpackPlugin = require('stylelint-webpack-plugin');
 const history = require('connect-history-api-fallback');
 const convert = require('koa-connect');
@@ -64,22 +63,16 @@ module.exports = {
     publicPath: '/'
   },
   plugins: [
-    new ForkTsCheckerPlugin(),
+    new ForkTsCheckerPlugin({
+      tslint: true
+    }),
     new HtmlPlugin({
       filename: 'index.html',
       template: path.join(__dirname, '../assets/html/template.html')
     }),
-    new TSLintWebpackPlugin({
-      files: [
-        path.join(__dirname, '../src/**/*.ts'),
-        path.join(__dirname, '../src/**/*.tsx')
-      ],
-      format: 'codeFrame'
-    }),
     new StylelintWebpackPlugin({
       context: 'src',
-      files: '**/*.scss',
-      
+      files: '**/*.scss'
     })
   ],
   serve: {
