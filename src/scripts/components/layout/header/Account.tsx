@@ -1,5 +1,5 @@
 import React, { Component, ReactNode } from 'react';
-import { SlideDown } from 'react-slidedown';
+import SlideDown from 'react-slidedown';
 
 type AccountProps = {
   expanded: boolean

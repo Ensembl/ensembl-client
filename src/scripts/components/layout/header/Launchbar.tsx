@@ -1,6 +1,6 @@
 import React, { Component, SFC, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { SlideDown } from 'react-slidedown';
+import SlideDown from 'react-slidedown';
 
 import { LaunchbarApp, LaunchbarCategory, launchbarConfig } from '../../../configs/launchbarConfig';
 
