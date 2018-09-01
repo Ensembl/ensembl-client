@@ -1,8 +1,8 @@
 import React, { SFC, ReactEventHandler } from 'react';
 
-const squareIcon = require('assets/img/track-panel/square-regular.svg');
-const chevronLeftIcon = require('assets/img/track-panel/chevron-left-solid.svg');
-const chevronRightIcon = require('assets/img/track-panel/chevron-right-solid.svg');
+import squareIcon from 'assets/img/track-panel/square-regular.svg';
+import chevronLeftIcon from 'assets/img/track-panel/chevron-left-solid.svg';
+import chevronRightIcon from 'assets/img/track-panel/chevron-right-solid.svg';
 
 type TrackPanelBarProps = {
   expanded: boolean,

@@ -1,3 +1,5 @@
+import launchbarIcon from 'assets/img/launchbar/launchbar_icon_placeholder.png';
+
 export type LaunchbarApp = {
   description: string,
   icon: string,
@@ -16,8 +18,6 @@ export type LaunchbarDetails = {
   about: LaunchbarApp,
   categories: LaunchbarCategory[]
 };
-
-const launchbarIcon = require('assets/img/launchbar/launchbar_icon_placeholder.png');
 
 export const launchbarConfig: LaunchbarDetails = {
   about: {
