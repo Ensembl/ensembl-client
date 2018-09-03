@@ -93,3 +93,9 @@ impl ColourSpec {
         }
     }
 }
+
+#[derive(Clone,Copy)]
+pub enum MathsShape {
+    Polygon(u16,f32), // (points,offset/rev)
+    Circle
+}

@@ -5,7 +5,7 @@ use arena::{ Arena, ArenaData };
 use program::{ ProgramAttribs, DataBatch };
 use coord::{ CLeaf, CPixel, RPixel, Input, CFraction };
 
-use shape::{ Shape, ColourSpec };
+use shape::{ Shape, ColourSpec, MathsShape };
 use shape::util::{
     triangle_gl, rectangle_p, rectangle_t,
     multi_gl, poly_p, vertices_poly,
@@ -123,18 +123,6 @@ fn pin_poly_impl(arena: &mut Arena, gname: &str, origin: &CLeaf, points: u16,
     arena.add_shape(None,Box::new(ri),ooe);
 }
 
-pub fn pin_poly(arena: &mut Arena, origin: &CLeaf, points: u16,
-                size: f32, offset: f32, 
-                colspec: &ColourSpec, ooe: Rc<OnOffExpr>) {
-    pin_poly_impl(arena,"pin",origin,points,size,0.,offset,colspec,false,ooe);
-}
-
-pub fn pin_hollowpoly(arena: &mut Arena, origin: &CLeaf, points: u16,
-                      size: f32, width: f32, offset: f32, 
-                      colspec: &ColourSpec, ooe: Rc<OnOffExpr>) {
-    pin_poly_impl(arena,"pinstrip",origin,points,size,width,offset,colspec,true,ooe);
-}
-
 const CIRC_TOL : f32 = 1.; // max px undercut
 
 fn circle_points(r: f32) -> u16 {
@@ -142,17 +130,20 @@ fn circle_points(r: f32) -> u16 {
     (3.54 * (r/CIRC_TOL).sqrt()) as u16
 }
 
-pub fn pin_circle(arena: &mut Arena, origin: &CLeaf,
-                  size: f32,
-                  colspec: &ColourSpec, ooe: Rc<OnOffExpr>) {
-    pin_poly(arena, origin, circle_points(size), size, 0., colspec, ooe);
-}
-
-pub fn pin_hollowcircle(arena: &mut Arena, origin: &CLeaf,
-                        size: f32, width: f32,
-                        colspec: &ColourSpec, ooe: Rc<OnOffExpr>) {
-    pin_hollowpoly(arena, origin, circle_points(size), size, width,
-                   0., colspec, ooe);
+pub fn pin_mathsshape(a: &mut Arena, origin: &CLeaf,
+                      size: f32, width: Option<f32>, ms: MathsShape,
+                      colspec: &ColourSpec, ooe: Rc<OnOffExpr>) {
+    /* Convert circles to polygons */
+    let (points, offset) = match ms {
+        MathsShape::Circle => (circle_points(size),0.),
+        MathsShape::Polygon(p,o) => (p,o)
+    };
+    /* hollow or solid? */
+    let (geom,width,hollow) = match width {
+        Some(width) => ("pinstrip",width,true),
+        None        => ("pin",0.,false)
+    };
+    pin_poly_impl(a,geom,origin,points,size,width,offset,colspec,hollow,ooe);
 }
 
 /*

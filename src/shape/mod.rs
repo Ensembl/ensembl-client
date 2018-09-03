@@ -9,6 +9,7 @@ pub use shape::shapeimpl::{
     ShapeContext,
     Spot,
     ColourSpec,
+    MathsShape,
 };
 
 pub use shape::fixpage::{
@@ -21,10 +22,7 @@ pub use shape::fixpage::{
 pub use shape::pin::{
     pin_triangle,
     pin_texture,
-    pin_poly,
-    pin_hollowpoly,
-    pin_circle,
-    pin_hollowcircle,
+    pin_mathsshape,
 };
 
 pub use shape::stretch::{
