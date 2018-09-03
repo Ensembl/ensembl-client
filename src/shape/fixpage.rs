@@ -1,5 +1,5 @@
 use std::rc::Rc;
-use arena::{ ArenaData, Arena };
+use arena::ArenaData;
 
 use program::ProgramAttribs;
 use geometry::{ ProgramType, PTGeom, PTSkin, PTMethod };
@@ -9,7 +9,6 @@ use shape::{ Shape, ColourSpec };
 use shape::util::{ rectangle_p, rectangle_t, multi_gl, vertices_rect, despot };
 
 use drawing::Artist;
-use campaign::OnOffExpr;
 
 /*
  * FixRect
@@ -39,18 +38,18 @@ impl Shape for FixRect {
     fn get_geometry(&self) -> ProgramType { self.geom }
 }
 
-fn rectangle(arena: &mut Arena, p: &RPixel, colspec: &ColourSpec, gt: PTGeom, ooe: Rc<OnOffExpr>) {
+fn rectangle(p: &RPixel, colspec: &ColourSpec, gt: PTGeom) -> Box<Shape> {
     let pt = despot(gt,PTMethod::Triangle,colspec);
-    arena.add_shape(Box::new(FixRect::new(*p,colspec.clone(),pt)),ooe);
+    Box::new(FixRect::new(*p,colspec.clone(),pt))
 }
 
-pub fn fix_rectangle(arena: &mut Arena, p: &RPixel, colour: &ColourSpec, ooe: Rc<OnOffExpr>) {
-    rectangle(arena,p,colour,PTGeom::Fix,ooe);
+pub fn fix_rectangle(p: &RPixel, colour: &ColourSpec) -> Box<Shape> {
+    rectangle(p,colour,PTGeom::Fix)
 }
 
 #[allow(dead_code)]
-pub fn page_rectangle(arena: &mut Arena, p: &RPixel, colour: &ColourSpec, ooe: Rc<OnOffExpr>) {
-    rectangle(arena,p,colour,PTGeom::Page,ooe);
+pub fn page_rectangle(p: &RPixel, colour: &ColourSpec) -> Box<Shape> {
+    rectangle(p,colour,PTGeom::Page)
 }
 
 /*
@@ -88,17 +87,15 @@ impl Shape for FixTexture {
     fn get_artist(&self) -> Option<Rc<Artist>> { Some(self.artist.clone()) }
 }
 
-fn texture(arena: &mut Arena, a: Rc<Artist>, origin: &CPixel, scale: &CPixel, gt: PTGeom, ooe: Rc<OnOffExpr>) {
+fn texture(a: Rc<Artist>, origin: &CPixel, scale: &CPixel, gt: PTGeom) -> Box<Shape> {
     let pt = ProgramType(gt,PTMethod::Triangle,PTSkin::Texture);
-    let ri = FixTexture::new(origin,scale,pt,&a);
-    arena.add_shape(Box::new(ri),ooe);
+    Box::new(FixTexture::new(origin,scale,pt,&a))
 }
 
-
-pub fn fix_texture(arena: &mut Arena, req: Rc<Artist>, origin: &CPixel, scale: &CPixel, ooe: Rc<OnOffExpr>) {
-    texture(arena, req, origin, scale, PTGeom::Fix,ooe);
+pub fn fix_texture(req: Rc<Artist>, origin: &CPixel, scale: &CPixel) -> Box<Shape> {
+    texture(req, origin, scale, PTGeom::Fix)
 }
 
-pub fn page_texture(arena: &mut Arena, req: Rc<Artist>, origin: &CPixel, scale: &CPixel, ooe: Rc<OnOffExpr>) {
-    texture(arena, req, origin, scale, PTGeom::Page,ooe);
+pub fn page_texture(req: Rc<Artist>, origin: &CPixel, scale: &CPixel) -> Box<Shape> {
+    texture(req, origin, scale, PTGeom::Page)
 }
