@@ -21,11 +21,7 @@ use coord::{
 use campaign::{ OnOffExpr, OnOffManager, Campaign, OnOffFixed };
 
 use geometry::{
-    stretch_geom,      stretchtex_geom,   stretchspot_geom,
-    stretchstrip_geom, fix_geom,          fixtex_geom,
-    pin_geom,          pintex_geom,       pinspot_geom,
-    pinstrip_geom,     pinstripspot_geom, page_geom,
-    pagetex_geom,
+    ProgramType
 };
 
 use drawing::{
@@ -91,8 +87,8 @@ impl ArenaSpec {
 
 pub struct Arena {
     pub data: Rc<RefCell<ArenaData>>,
-    order: Vec<String>,
-    map: HashMap<String,Program>,
+    order: Vec<ProgramType>,
+    map: HashMap<ProgramType,Program>,
     shapes: Campaign
 }
 
@@ -122,30 +118,16 @@ impl Arena {
         }
         let data_g = data.clone();
         let data_b = data_g.borrow();
+        
+        let order = ProgramType::all();
+        let mut map = HashMap::<ProgramType,Program>::new();
+        for pt in &order {
+            map.insert(*pt,pt.to_program(&data_b));
+        }
+        
         let arena = Arena {
             shapes: Campaign::new(Rc::new(OnOffFixed(true))),
-            data, 
-            order: vec_s! {
-                "stretch", "stretchstrip", "stretchspot", "stretchtex", 
-                "pin", "pinstrip", "pinspot", "pinstripspot",  "pintex",
-                "page", "pagetex",
-                "fix", "fixtex"
-            },
-            map: hashmap_s! {
-                "stretch" => stretch_geom(&data_b),
-                "stretchstrip" => stretchstrip_geom(&data_b),
-                "stretchspot" => stretchspot_geom(&data_b),
-                "stretchtex" => stretchtex_geom(&data_b),
-                "pin" => pin_geom(&data_b),
-                "pinstrip" => pinstrip_geom(&data_b),
-                "pinstripspot" => pinstripspot_geom(&data_b),
-                "pinspot" => pinspot_geom(&data_b),
-                "pintex" => pintex_geom(&data_b),
-                "fix" => fix_geom(&data_b),
-                "fixtex" => fixtex_geom(&data_b),
-                "page" => page_geom(&data_b),
-                "pagetex" => pagetex_geom(&data_b)
-            }
+            data, order, map,
         };
         arena
     }

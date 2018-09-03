@@ -19,6 +19,7 @@ macro_rules! hashmap {
     }}
 }
 
+#[allow(unused_macros)]
 macro_rules! hashmap_s {
     ($( $key: expr => $val: expr ),*) => {{
          let mut map = ::std::collections::HashMap::new();
@@ -27,6 +28,7 @@ macro_rules! hashmap_s {
     }}
 }
 
+#[allow(unused_macros)]
 macro_rules! vec_s {
     ($( $val: expr ),*) => {{
         let mut vec = ::std::vec::Vec::new();

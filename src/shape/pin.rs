@@ -13,6 +13,8 @@ use shape::util::{
     despot
 };
 
+use geometry::{ PTGeom, PTMethod, PTSkin, ProgramType };
+
 use drawing::{ Drawing };
 use campaign::OnOffExpr;
 
@@ -24,17 +26,17 @@ pub struct PinTriangle {
     origin: CLeaf,
     points: [CPixel;3],
     colspec: ColourSpec,
-    geom: String
+    geom: ProgramType
 }
 
 impl PinTriangle {
-    pub fn new(origin: CLeaf, points: [CPixel;3], colspec: &ColourSpec, geom: &str) -> PinTriangle {
-        PinTriangle { origin, points, colspec: colspec.clone(), geom: geom.to_string() }
+    pub fn new(origin: CLeaf, points: [CPixel;3], colspec: &ColourSpec, geom: ProgramType) -> PinTriangle {
+        PinTriangle { origin, points, colspec: colspec.clone(), geom }
     }    
 }
 
 impl Shape for PinTriangle {
-    fn into_objects(&self, geom_name:&str, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData) {
         let p = &self.points;
         let b = vertices_tri(geom,self.colspec.to_group(geom_name));
         triangle_gl(b,geom,"aVertexPosition",&[&p[0],&p[1],&p[2]]);
@@ -44,12 +46,12 @@ impl Shape for PinTriangle {
         }
     }
     
-    fn get_geometry(&self) -> &str { &self.geom }
+    fn get_geometry(&self) -> ProgramType { self.geom }
 }
 
 pub fn pin_triangle(arena: &mut Arena, origin: &CLeaf, p: &[CPixel;3], colspec: &ColourSpec, ooe: Rc<OnOffExpr>) {
-    let g = despot("pin",colspec);
-    arena.add_shape(None,Box::new(PinTriangle::new(*origin,*p,colspec,&g)),ooe);
+    let g = despot(PTGeom::Pin,PTMethod::Triangle,colspec);
+    arena.add_shape(None,Box::new(PinTriangle::new(*origin,*p,colspec,g)),ooe);
 }
 
 /*
@@ -64,7 +66,7 @@ pub struct PinPoly {
     offset: f32,
     colspec: ColourSpec,
     hollow: bool,
-    geom: String
+    geom: ProgramType
 }
 
 impl PinPoly {
@@ -96,7 +98,7 @@ impl PinPoly {
 }
 
 impl Shape for PinPoly {
-    fn into_objects(&self, geom_name:&str, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData) {
         let group = self.colspec.to_group(geom_name);
         if self.hollow {
             let b = vertices_hollowpoly(geom,self.points,group);
@@ -109,16 +111,16 @@ impl Shape for PinPoly {
         }
     }
 
-    fn get_geometry(&self) -> &str { &self.geom }
+    fn get_geometry(&self) -> ProgramType { self.geom }
 }
 
-fn pin_poly_impl(arena: &mut Arena, gname: &str, origin: &CLeaf, points: u16,
+fn pin_poly_impl(arena: &mut Arena, gt: PTGeom, mt: PTMethod, origin: &CLeaf, points: u16,
                  size: f32, width: f32, offset: f32, 
                  colspec: &ColourSpec, hollow: bool, ooe: Rc<OnOffExpr>) {
-    let g = despot(gname,colspec);
+    let g = despot(gt,mt,colspec);
     let ri = PinPoly {
         origin: *origin, points, size, offset, width, colspec: colspec.clone(),
-        hollow, geom: g.to_string()
+        hollow, geom: g
     };
     arena.add_shape(None,Box::new(ri),ooe);
 }
@@ -139,11 +141,11 @@ pub fn pin_mathsshape(a: &mut Arena, origin: &CLeaf,
         MathsShape::Polygon(p,o) => (p,o)
     };
     /* hollow or solid? */
-    let (geom,width,hollow) = match width {
-        Some(width) => ("pinstrip",width,true),
-        None        => ("pin",0.,false)
+    let (mt,width,hollow) = match width {
+        Some(width) => (PTMethod::Strip,width,true),
+        None        => (PTMethod::Triangle,0.,false)
     };
-    pin_poly_impl(a,geom,origin,points,size,width,offset,colspec,hollow,ooe);
+    pin_poly_impl(a,PTGeom::Pin,mt,origin,points,size,width,offset,colspec,hollow,ooe);
 }
 
 /*
@@ -169,7 +171,7 @@ impl Shape for PinTexture {
         self.texpos = Some(*data);
     }
   
-    fn into_objects(&self, _geom_name: &str, geom: &mut ProgramAttribs, adata: &ArenaData) {
+    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData) {
         if let Some(tp) = self.texpos {
             let p = tp.at_origin() * self.scale;
             let t = tp / adata.canvases.flat.size();
@@ -180,7 +182,9 @@ impl Shape for PinTexture {
         }
     }
 
-    fn get_geometry(&self) -> &str { "pintex" }
+    fn get_geometry(&self) -> ProgramType {
+        ProgramType(PTGeom::Pin,PTMethod::Triangle,PTSkin::Texture)
+    }
 }
 
 pub fn pin_texture(arena: &mut Arena, req: Drawing, origin: &CLeaf, scale: &CPixel, ooe: Rc<OnOffExpr>) {
