@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use arena::{ Arena, ArenaData };
 
-use program::{ ProgramAttribs, DataGroup };
+use program::{ ProgramAttribs };
 use coord::{ CLeaf, RLeaf, RPixel, RFraction, CFraction, CPixel };
 
 use shape::{ Shape, ColourSpec, Spot };
@@ -10,12 +10,12 @@ use shape::util::{
     rectangle_g, rectangle_t, points_g,
     multi_gl,
     vertices_rect, vertices_strip,
-    despot, ColourSpecImpl
+    despot
 };
 
 use drawing::{ Drawing };
 
-use onoff::OnOffExpr;
+use campaign::OnOffExpr;
 
 /*
  * StretchRect
@@ -23,21 +23,21 @@ use onoff::OnOffExpr;
 
 pub struct StretchRect {
     points: RLeaf,
-    colspec: ColourSpecImpl,
+    colspec: ColourSpec,
     geom: String
 }
 
 impl StretchRect {
-    pub fn new(points: RLeaf, colspec: ColourSpecImpl, geom: &str) -> StretchRect {
-        StretchRect { points, colspec, geom: geom.to_string() }
+    pub fn new(points: RLeaf, colspec: &ColourSpec, geom: &str) -> StretchRect {
+        StretchRect { points, colspec: colspec.clone(), geom: geom.to_string() }
     }
 }
 
 impl Shape for StretchRect {
-    fn into_objects(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
-        let b = vertices_rect(geom,self.colspec.to_group());
+    fn into_objects(&self, geom_name: &str, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+        let b = vertices_rect(geom,self.colspec.to_group(geom_name));
         rectangle_g(b,geom,"aVertexPosition",&self.points);
-        if let ColourSpecImpl::Colour(c) = self.colspec {
+        if let ColourSpec::Colour(c) = self.colspec {
             multi_gl(b,geom,"aVertexColour",&c,4);
         }
     }
@@ -46,8 +46,8 @@ impl Shape for StretchRect {
 }
 
 pub fn stretch_rectangle(arena: &mut Arena, p:&RLeaf, colour: &ColourSpec, ooe: Rc<OnOffExpr>) {
-    let (g,c) = despot("stretch",colour);
-    arena.add_shape(None,Box::new(StretchRect::new(*p,c,&g)),ooe);
+    let g = despot("stretch",colour);
+    arena.add_shape(None,Box::new(StretchRect::new(*p,colour,&g)),ooe);
 }
 
 /*
@@ -57,18 +57,18 @@ pub fn stretch_rectangle(arena: &mut Arena, p:&RLeaf, colour: &ColourSpec, ooe: 
 pub struct StretchWiggle {
     points: Vec<CLeaf>,
     y: i32,
-    group: DataGroup
+    group: Spot
 }
 
 impl StretchWiggle {
-    pub fn new(points: Vec<CLeaf>, group: DataGroup, y: i32) -> StretchWiggle {
+    pub fn new(points: Vec<CLeaf>, group: Spot, y: i32) -> StretchWiggle {
         StretchWiggle { points, group, y }
     }
 }
 
 impl Shape for StretchWiggle {
-    fn into_objects(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
-        let b = vertices_strip(geom,self.points.len() as u16*2,Some(self.group));
+    fn into_objects(&self, _geom_name: &str, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+        let b = vertices_strip(geom,self.points.len() as u16*2,Some(self.group.get_group("stretchstrip")));
         points_g(b,geom,"aVertexPosition",&self.points,self.y);
     }
     
@@ -77,7 +77,7 @@ impl Shape for StretchWiggle {
 
 pub fn stretch_wiggle(arena: &mut Arena, p: Vec<CLeaf>, y: i32, spot: &Spot, ooe: Rc<OnOffExpr>) {
     arena.add_shape(None,Box::new(
-        StretchWiggle::new(p,spot.get_group("stretchstrip"),y)
+        StretchWiggle::new(p,spot.clone(),y)
     ),ooe);
 }
 
@@ -105,7 +105,7 @@ impl Shape for StretchTexture {
         self.texpos = Some(*data);
     }
 
-    fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
+    fn into_objects(&self, _geom_name: &str, geom: &mut ProgramAttribs, adata: &ArenaData) {
         if let Some(tp) = self.texpos {
             let t = tp / adata.canvases.flat.size();
             

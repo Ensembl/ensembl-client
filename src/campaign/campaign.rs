@@ -2,78 +2,59 @@ use std::rc::Rc;
 use std::collections::HashMap;
 
 use arena::ArenaData;
-use shape::Shape;
-use program::ProgramAttribs;
-use onoff::{ OnOffManager, OnOffExpr };
+use shape::{ Shape, ShapeContext };
+use program::Program;
+use campaign::onoff::{ OnOffManager, OnOffExpr };
 use drawing::Drawing;
 
 pub struct Campaign {
-    id: Option<u32>,
+    pub id: Option<u32>,
     ooe: Rc<OnOffExpr>,
+    contexts: Vec<Box<ShapeContext>>,
     shapes: Vec<(Option<Drawing>,Box<Shape>)>,
 }
 
 impl Campaign {
     pub fn new(ooe: Rc<OnOffExpr>) -> Campaign {
         Campaign {
+            contexts: Vec::<Box<ShapeContext>>::new(),
             shapes: Vec::<(Option<Drawing>,Box<Shape>)>::new(),
             ooe, id: None
         }
+    }
+    
+    pub fn add_context(&mut self, ctx: Box<ShapeContext>) {
+        self.contexts.push(ctx);
     }
     
     pub fn add_item(&mut self, req: Option<Drawing>, item: Box<Shape>) {
         self.shapes.push((req,item));
     }
     
-    pub fn into_objects(&mut self, tg: &mut ProgramAttribs,
+    pub fn into_objects(&mut self, map: &mut HashMap<String,Program>,
                         adata: &mut ArenaData, oom: &OnOffManager) {
+        /* context */
+        for c in &mut self.contexts {
+            c.reset();
+        }
+        for (ref gk,ref mut geom) in map.iter_mut() {
+            for c in &mut self.contexts {
+                c.into_objects(gk,&mut geom.data,adata);
+            }
+        }
+        /* shapes */                    
         let src = &adata.leafdrawman;
-        for (ref mut req,ref mut obj) in &mut self.shapes {
+        for (ref mut req,ref mut s) in &mut self.shapes {
             if self.ooe.is_on(oom) {
                 if let Some(req) = req {
                   let tp = req.measure(src);
-                  obj.set_texpos(&tp);
+                  s.set_texpos(&tp);
                 }
-                obj.into_objects(tg,adata);
+                let geom_name = s.get_geometry();
+                if let Some(geom) = map.get_mut(geom_name) {                
+                    s.into_objects(&geom_name,&mut geom.data,adata);
+                }
             }
         }
     }
-}
-
-pub struct CampaignManager {
-    idx: u32,
-    requests: HashMap<u32,Campaign>
-}
-
-impl CampaignManager {
-    pub fn new() -> CampaignManager {
-        CampaignManager {
-            requests: HashMap::<u32,Campaign>::new(),
-            idx: 0
-        }
-    }
-    
-    pub fn add(&mut self, mut c: Campaign) {
-        self.idx += 1;
-        c.id = Some(self.idx);
-        self.requests.insert(self.idx,c);
-    }
-
-    pub fn remove(&mut self, c: &mut Campaign) {
-        if let Some(idx) = c.id {
-            c.id = None;
-            self.requests.remove(&idx);
-        }
-    }
-    
-    pub fn into_objects(&mut self, tg: &mut ProgramAttribs,
-                        adata: &mut ArenaData, oom: &OnOffManager) {
-        for r in &mut self.requests.values_mut() {
-            r.into_objects(tg,adata,oom);
-        }
-    }
-    
-    pub fn clear(&mut self) {
-        self.requests.clear();
-    }        
 }
