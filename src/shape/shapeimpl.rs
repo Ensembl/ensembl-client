@@ -6,10 +6,11 @@ use program::{ ProgramAttribs, DataGroup };
 use coord::{ Colour, RPixel };
 use campaign::Campaign;
 use geometry::{ ProgramType, PTSkin };
+use drawing::Artist;
 
 pub trait Shape {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData);
-    fn set_texpos(&mut self, _data: &RPixel) {}
+    fn get_artist(&self) -> Option<Rc<Artist>> { None }
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData, d: Option<RPixel>);
     fn get_geometry(&self) -> ProgramType;
 }
 

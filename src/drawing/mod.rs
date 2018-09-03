@@ -5,6 +5,7 @@ mod drawingimpl;
 
 pub use drawing::drawingimpl::{
     Drawing,
+    Artist,
     LeafDrawingManager,
 };
 

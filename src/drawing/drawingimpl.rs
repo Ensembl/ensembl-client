@@ -38,7 +38,7 @@ impl DrawingMemory {
         self.cache.insert(key.0,val);
     }
     
-    pub fn lookup(&self, a: &Box<Artist>) -> (Option<DrawingHash>,Option<Drawing>) {
+    pub fn lookup(&self, a: &Rc<Artist>) -> (Option<DrawingHash>,Option<Drawing>) {
         let tdrk = a.memoize_key();
         if let Some(tdrk) = tdrk {
             if let Some(obj) = self.cache.get(&tdrk.0) {
@@ -52,10 +52,6 @@ impl DrawingMemory {
             // Can't cache
             (None,None)
         }
-    }
-    
-    pub fn clear(&mut self) {
-        self.cache.clear();
     }
 }
 
@@ -73,7 +69,7 @@ pub trait Artist {
  * Artist and a ticket (to get a location, when ready)
  */
 pub struct DrawingImpl {
-    gen: Box<Artist>,
+    gen: Rc<Artist>,
     ticket: Ticket
 }
 
@@ -81,7 +77,7 @@ pub struct DrawingImpl {
 pub struct Drawing(Rc<DrawingImpl>);
 
 impl Drawing {
-    pub fn new(gen: Box<Artist>, ticket: Ticket) -> Drawing {
+    pub fn new(gen: Rc<Artist>, ticket: Ticket) -> Drawing {
         Drawing(
             Rc::new(DrawingImpl {
                 gen,ticket
@@ -101,7 +97,7 @@ impl Drawing {
 }
 
 /* Utility method to make creating Drawings simpler */
-pub fn create_draw_request(leafdrawman: &mut LeafDrawingManager, ta: Box<Artist>, size: CPixel) -> Drawing {
+pub fn create_draw_request(leafdrawman: &mut LeafDrawingManager, ta: Rc<Artist>, size: CPixel) -> Drawing {
     let req;
     {
         let flat_alloc = &mut leafdrawman.allocator;
@@ -128,7 +124,7 @@ impl LeafDrawingManager {
         }
     }
 
-    pub fn add_request(&mut self, canvas: &mut ArenaCanvases, a: Box<Artist>) -> Drawing {
+    pub fn add_request(&mut self, canvas: &mut ArenaCanvases, a: Rc<Artist>) -> Drawing {
         let (tdrk,val) = self.cache.lookup(&a);
         if let Some(tdrh) = val {
             // already in cache
@@ -151,11 +147,6 @@ impl LeafDrawingManager {
         }
     }
     
-    pub fn clear(&mut self) {
-        self.cache.clear();
-        self.tickets.clear();
-    }
-
     pub fn allocate(&mut self) -> CPixel {
         self.allocator.allocate()
     }

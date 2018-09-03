@@ -24,11 +24,6 @@ use geometry::{
     ProgramType
 };
 
-use drawing::{
-    LeafDrawingManager,
-    Drawing,
-};
-
 pub struct ArenaCanvases {
     pub flat: Rc<canvasutil::FlatCanvas>,
     pub idx: i32,
@@ -46,19 +41,8 @@ pub struct ArenaData {
     spec: ArenaSpec,
     pub dims: ArenaDims,
     pub canvases: ArenaCanvases,
-    pub leafdrawman: LeafDrawingManager,
     pub ctx: glctx,
     pub gpuspec: GPUSpec
-}
-
-impl ArenaData {
-    /* help the borrow checker by splitting a mut in a way that it
-     * understands is disjoint.
-     */
-    pub fn burst_texture<'a>(&'a mut self) -> (&'a mut ArenaCanvases, &'a mut LeafDrawingManager,&'a mut ArenaDims) {
-        (&mut self.canvases, &mut self.leafdrawman,
-         &mut self.dims)
-    }
 }
 
 impl ArenaDims {
@@ -100,7 +84,6 @@ impl Arena {
         let data = Rc::new(RefCell::new(ArenaData {
             ctx, spec, 
             gpuspec: GPUSpec::new(),
-            leafdrawman: LeafDrawingManager::new(),
             dims: ArenaDims {
                 aspect: canvasutil::aspect_ratio(&canvas),
                 width_px: canvas.width() as i32,
@@ -136,8 +119,8 @@ impl Arena {
         &mut self.shapes
     }
 
-    pub fn add_shape(&mut self,req: Option<Drawing>, item: Box<Shape>, _ooe: Rc<OnOffExpr>) {
-        self.shapes.add_item(req,item);
+    pub fn add_shape(&mut self,item: Box<Shape>, _ooe: Rc<OnOffExpr>) {
+        self.shapes.add_item(item);
     }
 
     pub fn dims(&self) -> ArenaDims {
@@ -150,18 +133,11 @@ impl Arena {
             let geom = self.map.get_mut(k).unwrap();
             geom.data.clear();
         }
-        {
-            let (canvases,leafdrawman,_) = datam.burst_texture();
-            let size = leafdrawman.allocate();
-            canvases.flat = Rc::new(canvasutil::FlatCanvas::create(size.0,size.1));
-            leafdrawman.draw(canvases);
-        }
         self.shapes.into_objects(&mut self.map,datam,oom);
         for k in &self.order {
             let geom = self.map.get_mut(k).unwrap();
             geom.data.objects_to_gl(datam);
         }
-        datam.leafdrawman.clear();
     }
 
     pub fn draw(&mut self, stage: &Stage) {
