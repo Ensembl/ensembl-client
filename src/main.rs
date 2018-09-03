@@ -22,7 +22,6 @@ mod wglraw;
 mod alloc;
 mod drawing;
 mod program;
-mod onoff;
 mod webgl_rendering_context;
 pub mod coord;
 

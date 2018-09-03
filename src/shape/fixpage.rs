@@ -8,7 +8,7 @@ use shape::Shape;
 use shape::util::{ rectangle_p, rectangle_t, multi_gl, vertices_rect };
 
 use drawing::{ Drawing };
-use onoff::OnOffExpr;
+use campaign::OnOffExpr;
 
 /*
  * FixRect
@@ -27,7 +27,7 @@ impl FixRect {
 }
 
 impl Shape for FixRect {
-    fn into_objects(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+    fn into_objects(&self, _geom_name: &str, geom: &mut ProgramAttribs, _adata: &ArenaData) {
         let b = vertices_rect(geom,None);
         rectangle_p(b,geom,"aVertexPosition",&self.points);
         multi_gl(b,geom,"aVertexColour",&self.colour,4);
@@ -73,7 +73,7 @@ impl Shape for FixTexture {
         self.texpos = Some(*data);
     }
   
-    fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
+    fn into_objects(&self, _geom_name:&str, geom: &mut ProgramAttribs, adata: &ArenaData) {
         if let Some(tp) = self.texpos {
             let p = tp.at_origin() * self.scale + self.pos;
             let t = tp / adata.canvases.flat.size();

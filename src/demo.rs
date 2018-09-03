@@ -2,7 +2,7 @@ use std::clone::Clone;
 use stdweb;
 use canvasutil;
 
-use onoff::{ OnOffManager, OnOffFixed, OnOffExpr };
+use campaign::{ OnOffManager, OnOffFixed, OnOffExpr };
 
 use shape::{
     fix_rectangle,
@@ -233,10 +233,10 @@ pub fn demo() {
     let mut middle = arena.dims().height_px / 120;
     if middle < 5 { middle = 5; }
     
-    let red_spot = Spot::new(&mut arena, &Colour(255,100,50));;
-    let red = ColourSpec::Spot(&red_spot);
-    let green_spot = Spot::new(&mut arena, &Colour(50,255,150));
-    let green = ColourSpec::Spot(&green_spot);
+    let red_spot = Spot::new(arena.get_campaign(),&Colour(255,100,50));
+    let red = ColourSpec::Spot(red_spot.clone());
+    let green_spot = Spot::new(arena.get_campaign(),&Colour(50,255,150));
+    let green = ColourSpec::Spot(green_spot.clone());
     
     let len_gen = Range::new(0.,0.2);
     let thick_gen = Range::new(0,13);
@@ -255,7 +255,7 @@ pub fn demo() {
                                10. * i as f32,&green,ooe_true.clone());
                     let colour = Colour(255,0,128);
                     pin_hollowcircle(a, &CLeaf(-3.+0.4*(i as f32),y+20),
-                               10. * i as f32,2.,&ColourSpec::Colour(&colour),ooe_true.clone());
+                               10. * i as f32,2.,&ColourSpec::Colour(colour),ooe_true.clone());
                 }
             }
             if yidx == middle {
@@ -265,7 +265,7 @@ pub fn demo() {
                     let colour = Colour(0,128,255);
                     pin_poly(a, &CLeaf(-3.+0.4*(i as f32),y+20),
                                    i, 10., 0.2 * i as f32,
-                                   &ColourSpec::Colour(&colour),ooe_true.clone());
+                                   &ColourSpec::Colour(colour),ooe_true.clone());
                 }
             }
             if yidx == middle +1 {
@@ -276,7 +276,7 @@ pub fn demo() {
                     let colour = Colour(0,128,255);
                     pin_hollowpoly(a, &CLeaf(-3.+0.4*(i as f32),y+20),
                                    i, 10., 2., 0.2 * i as f32,
-                                   &ColourSpec::Colour(&colour),ooe.clone());
+                                   &ColourSpec::Colour(colour),ooe.clone());
                 }
             }
             if yidx == middle {
@@ -345,14 +345,14 @@ pub fn demo() {
                     );
                     let h = if thick_gen.sample(&mut rng) == 0 { 1 } else { 5 };
                     stretch_rectangle(a,&RLeaf(CLeaf(x,y-h),CLeaf(dx,2*h)),
-                                    &ColourSpec::Colour(&colour),ooe_true.clone());
+                                    &ColourSpec::Colour(colour),ooe_true.clone());
                     if idx %5 == 0 {
                         let colour = Colour(colour.2,colour.0,colour.1);
                         pin_triangle(a,&CLeaf(x,y),
                                        &[CPixel(0,0),
                                          CPixel(-5,10),
                                          CPixel(5,10)],
-                                       &ColourSpec::Colour(&colour),ooe_true.clone());
+                                       &ColourSpec::Colour(colour),ooe_true.clone());
                     }
                     if showtext_gen.sample(&mut rng) == 0 {
                         let val = bio_daft(&mut rng);
@@ -373,7 +373,7 @@ pub fn demo() {
                                      0,255,0,255,
                                      255,255,0,255 },CPixel(1,4));
         fix_texture(a, tx, &CPixel(99,0),&CPixel(1,sh),ooe_true.clone());
-        a.populate(&oom);
+        a.shapes_to_gl(&oom);
         stage.zoom = 0.5;
         a.draw(&stage);
     }

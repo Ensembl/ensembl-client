@@ -41,6 +41,7 @@ pub trait Object {
     fn to_gl(&mut self, _batch: &DataBatch, _adata: &ArenaData) {}
     fn execute(&self, _adata : &ArenaData, _batch: &DataBatch,
                _dims: &ArenaDims) {}
+    fn clear(&mut self) {}
 }
 
 /* ObjectCanvasTexture = Object for canvas-origin textures */
@@ -75,7 +76,7 @@ impl Object for ObjectCanvasTexture {
             adata.ctx.active_texture(TEXIDS[canvases.idx as usize]);
             adata.ctx.bind_texture(glctx::TEXTURE_2D,Some(&texture));
         }
-    }
+    }    
 }
 
 #[derive(Clone,Copy,Debug)]
@@ -127,7 +128,11 @@ impl Object for ObjectUniform {
                 None => ()
             }
         }
-    }    
+    }
+    
+    fn clear(&mut self) {
+        self.val.clear();
+    }
 }
 
 pub struct ObjectMain {
@@ -164,7 +169,7 @@ impl ObjectMain {
         let v = *self.num.entry(bid).or_insert(0);
         self.num.insert(bid,v+points);
         v
-    }
+    }    
 }
 
 impl Object for ObjectMain {
@@ -197,6 +202,12 @@ impl Object for ObjectMain {
                                     glctx::UNSIGNED_SHORT,0);
             }
         }
+    }
+
+    fn clear(&mut self) {
+        self.vec.clear();
+        self.buf.clear();
+        self.num.clear();
     }
 }
 
@@ -261,5 +272,9 @@ impl Object for ObjectAttrib {
 
     fn add_f32(&mut self,values : &[f32], batch: &DataBatch) {
         self.data_mut(batch).extend_from_slice(values);
+    }
+    
+    fn clear(&mut self) {
+        self.vec.clear();
     }
 }

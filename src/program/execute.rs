@@ -53,6 +53,12 @@ impl ProgramAttribs {
         }
     }
 
+    pub fn clear(&mut self) {
+        for a in &mut self.objects.iter_mut() {
+            a.clear();
+        }
+    }
+
     pub fn objects_to_gl(&mut self, datam: &ArenaData) {
         for b in self.bman.iter() {
             for a in &mut self.objects.iter_mut() {
@@ -102,10 +108,6 @@ impl Program {
   
     pub fn get_object(&mut self, name: &str) -> Option<&mut Box<Object>> {
         self.data.get_object(name)
-    }
-
-    pub fn new_group(&mut self) -> DataGroup {
-        self.data.new_group()
     }
   
     pub fn draw(&mut self, adata: &ArenaData) {

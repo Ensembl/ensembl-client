@@ -7,17 +7,18 @@ use webgl_rendering_context::{
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use shape::{ ShapeManager, Shape };
+use shape::Shape;
 
 use canvasutil;
 use wglraw;
 
 use program::{ Program, GPUSpec, UniformValue };
-use onoff::{ OnOffManager, OnOffExpr };
 
 use coord::{
     COrigin,
 };
+
+use campaign::{ OnOffExpr, OnOffManager, Campaign, OnOffFixed };
 
 use geometry::{
     stretch_geom,      stretchtex_geom,   stretchspot_geom,
@@ -92,7 +93,7 @@ pub struct Arena {
     pub data: Rc<RefCell<ArenaData>>,
     order: Vec<String>,
     map: HashMap<String,Program>,
-    shapes: ShapeManager
+    shapes: Campaign
 }
 
 impl Arena {
@@ -122,7 +123,7 @@ impl Arena {
         let data_g = data.clone();
         let data_b = data_g.borrow();
         let arena = Arena {
-            shapes: ShapeManager::new(),
+            shapes: Campaign::new(Rc::new(OnOffFixed(true))),
             data, 
             order: vec_s! {
                 "stretch", "stretchstrip", "stretchspot", "stretchtex", 
@@ -149,38 +150,36 @@ impl Arena {
         arena
     }
 
-    pub fn get_geom(&mut self, name: &str) -> &mut Program {
-        self.map.get_mut(name).unwrap()
+    pub fn get_campaign(&mut self) -> &mut Campaign {
+        &mut self.shapes
     }
 
-    pub fn add_shape(&mut self,req: Option<Drawing>, item: Box<Shape>, ooe: Rc<OnOffExpr>) {
-        let datam = &mut self.data.borrow_mut();
-        self.shapes.add_item(req,item,ooe);
+    pub fn add_shape(&mut self,req: Option<Drawing>, item: Box<Shape>, _ooe: Rc<OnOffExpr>) {
+        self.shapes.add_item(req,item);
     }
 
     pub fn dims(&self) -> ArenaDims {
         self.data.borrow().dims
     }
         
-    pub fn populate(&mut self, oom: &OnOffManager) {
+    pub fn shapes_to_gl(&mut self, oom: &OnOffManager) {
         let datam = &mut self.data.borrow_mut();
+        for k in &self.order {
+            let geom = self.map.get_mut(k).unwrap();
+            geom.data.clear();
+        }
         {
             let (canvases,leafdrawman,_) = datam.burst_texture();
             let size = leafdrawman.allocate();
             canvases.flat = Rc::new(canvasutil::FlatCanvas::create(size.0,size.1));
-        }
-        {
-            let (canvases,leafdrawman,_) = datam.burst_texture();
             leafdrawman.draw(canvases);
         }
         self.shapes.into_objects(&mut self.map,datam,oom);
-        self.shapes.clear();
         for k in &self.order {
             let geom = self.map.get_mut(k).unwrap();
             geom.data.objects_to_gl(datam);
         }
         datam.leafdrawman.clear();
-
     }
 
     pub fn draw(&mut self, stage: &Stage) {

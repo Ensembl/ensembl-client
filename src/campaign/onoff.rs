@@ -29,6 +29,7 @@ impl OnOffExpr for OnOffAtom {
     }
 }
 
+#[allow(unused)]
 pub enum OnOffOp {
     And(Rc<OnOffExpr>,Rc<OnOffExpr>),
     Or(Rc<OnOffExpr>,Rc<OnOffExpr>),
@@ -48,12 +49,14 @@ impl OnOffExpr for OnOffOp {
     }    
 }
 
+#[allow(unused,dead_code)]
 pub struct OnOffManager {
     atoms: HashMap<String,bool>,
     exprs: HashMap<String,Rc<OnOffExpr>>,
     changed: bool
 }
 
+#[allow(unused)]
 impl OnOffManager {
     pub fn new() -> OnOffManager {
         OnOffManager {

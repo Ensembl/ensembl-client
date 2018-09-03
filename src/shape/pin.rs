@@ -10,11 +10,11 @@ use shape::util::{
     triangle_gl, rectangle_p, rectangle_t,
     multi_gl, poly_p, vertices_poly,
     vertices_rect, vertices_tri, vertices_hollowpoly,
-    despot, ColourSpecImpl
+    despot
 };
 
 use drawing::{ Drawing };
-use onoff::OnOffExpr;
+use campaign::OnOffExpr;
 
 /*
  * PinTriangle
@@ -23,23 +23,23 @@ use onoff::OnOffExpr;
 pub struct PinTriangle {
     origin: CLeaf,
     points: [CPixel;3],
-    colspec: ColourSpecImpl,
+    colspec: ColourSpec,
     geom: String
 }
 
 impl PinTriangle {
-    pub fn new(origin: CLeaf, points: [CPixel;3], colspec: ColourSpecImpl, geom: &str) -> PinTriangle {
-        PinTriangle { origin, points, colspec, geom: geom.to_string() }
+    pub fn new(origin: CLeaf, points: [CPixel;3], colspec: &ColourSpec, geom: &str) -> PinTriangle {
+        PinTriangle { origin, points, colspec: colspec.clone(), geom: geom.to_string() }
     }    
 }
 
 impl Shape for PinTriangle {
-    fn into_objects(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+    fn into_objects(&self, geom_name:&str, geom: &mut ProgramAttribs, _adata: &ArenaData) {
         let p = &self.points;
-        let b = vertices_tri(geom,self.colspec.to_group());
+        let b = vertices_tri(geom,self.colspec.to_group(geom_name));
         triangle_gl(b,geom,"aVertexPosition",&[&p[0],&p[1],&p[2]]);
         multi_gl(b,geom,"aOrigin",&self.origin,3);
-        if let ColourSpecImpl::Colour(c) = self.colspec {        
+        if let ColourSpec::Colour(c) = self.colspec {        
             multi_gl(b,geom,"aVertexColour",&c,3);
         }
     }
@@ -48,8 +48,8 @@ impl Shape for PinTriangle {
 }
 
 pub fn pin_triangle(arena: &mut Arena, origin: &CLeaf, p: &[CPixel;3], colspec: &ColourSpec, ooe: Rc<OnOffExpr>) {
-    let (g,c) = despot("pin",colspec);
-    arena.add_shape(None,Box::new(PinTriangle::new(*origin,*p,c,&g)),ooe);
+    let g = despot("pin",colspec);
+    arena.add_shape(None,Box::new(PinTriangle::new(*origin,*p,colspec,&g)),ooe);
 }
 
 /*
@@ -62,7 +62,7 @@ pub struct PinPoly {
     width: f32,
     points: u16,
     offset: f32,
-    colspec: ColourSpecImpl,
+    colspec: ColourSpec,
     hollow: bool,
     geom: String
 }
@@ -72,7 +72,7 @@ impl PinPoly {
         let w : Vec<&Input> = v.iter().map(|s| s as &Input).collect();
         poly_p(b,geom,"aVertexPosition",&w);
         multi_gl(b,geom,"aOrigin",&self.origin,nump);
-        if let ColourSpecImpl::Colour(c) = self.colspec {        
+        if let ColourSpec::Colour(c) = self.colspec {        
             multi_gl(b,geom,"aVertexColour",&c,nump);
         }
     }
@@ -96,13 +96,14 @@ impl PinPoly {
 }
 
 impl Shape for PinPoly {
-    fn into_objects(&self, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+    fn into_objects(&self, geom_name:&str, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+        let group = self.colspec.to_group(geom_name);
         if self.hollow {
-            let b = vertices_hollowpoly(geom,self.points,self.colspec.to_group());
+            let b = vertices_hollowpoly(geom,self.points,group);
             let v = self.build_points(true);
             self.add(b,geom,v,self.points*2);
         } else {
-            let b = vertices_poly(geom,self.points,self.colspec.to_group());
+            let b = vertices_poly(geom,self.points,group);
             let v = self.build_points(false);
             self.add(b,geom,v,self.points+1);
         }
@@ -114,9 +115,9 @@ impl Shape for PinPoly {
 fn pin_poly_impl(arena: &mut Arena, gname: &str, origin: &CLeaf, points: u16,
                  size: f32, width: f32, offset: f32, 
                  colspec: &ColourSpec, hollow: bool, ooe: Rc<OnOffExpr>) {
-    let (g,c) = despot(gname,colspec);
+    let g = despot(gname,colspec);
     let ri = PinPoly {
-        origin: *origin, points, size, offset, width, colspec: c,
+        origin: *origin, points, size, offset, width, colspec: colspec.clone(),
         hollow, geom: g.to_string()
     };
     arena.add_shape(None,Box::new(ri),ooe);
@@ -177,7 +178,7 @@ impl Shape for PinTexture {
         self.texpos = Some(*data);
     }
   
-    fn into_objects(&self, geom: &mut ProgramAttribs, adata: &ArenaData) {
+    fn into_objects(&self, _geom_name: &str, geom: &mut ProgramAttribs, adata: &ArenaData) {
         if let Some(tp) = self.texpos {
             let p = tp.at_origin() * self.scale;
             let t = tp / adata.canvases.flat.size();

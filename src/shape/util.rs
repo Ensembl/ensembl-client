@@ -1,6 +1,6 @@
 use std::iter;
 use program::{ ProgramAttribs, DataBatch, DataGroup };
-use coord::{ RFraction, CLeaf, Input, Colour, RPixel, RLeaf  };
+use coord::{ RFraction, CLeaf, Input, RPixel, RLeaf  };
 use shape::ColourSpec;
 
 pub fn triangle_gl(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[&Input;3]) {
@@ -109,29 +109,10 @@ pub fn points_g(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p_in: &[CLe
     }
 }
 
-pub enum ColourSpecImpl {
-    Colour(Colour),
-    Spot(DataGroup)
-}
-
-impl ColourSpecImpl {
-    pub fn to_group(&self) -> Option<DataGroup> {
-        match self {
-            ColourSpecImpl::Spot(dg) => Some(*dg),
-            ColourSpecImpl::Colour(_) => None
-        }
+pub fn despot(geom: &str, spec: &ColourSpec) -> String {
+    let mut g_out = geom.to_string();
+    if let ColourSpec::Spot(_) = spec {
+        g_out.push_str("spot");
     }
-}
-
-pub fn despot(geom: &str, spec: &ColourSpec) -> (String, ColourSpecImpl) {
-        let mut g_out = geom.to_string();
-        let c_out = match spec {
-            ColourSpec::Colour(c) => 
-                ColourSpecImpl::Colour(**c),
-            ColourSpec::Spot(s) => {
-                g_out.push_str("spot");
-                ColourSpecImpl::Spot(s.get_group(&g_out))
-            }
-        };
-        (g_out,c_out)
+    g_out
 }
