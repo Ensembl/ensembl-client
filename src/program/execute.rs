@@ -59,10 +59,10 @@ impl ProgramAttribs {
         }
     }
 
-    pub fn objects_to_gl(&mut self, datam: &ArenaData) {
+    pub fn objects_final(&mut self, datam: &ArenaData) {
         for b in self.bman.iter() {
             for a in &mut self.objects.iter_mut() {
-                a.to_gl(&b,datam);
+                a.obj_final(&b,datam);
             }
         }
     }

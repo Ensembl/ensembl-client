@@ -123,14 +123,17 @@ impl Arena {
         
     pub fn shapes_to_gl(&mut self, oom: &OnOffManager) {
         let datam = &mut self.data.borrow_mut();
+        /* clear objects */
         for k in &self.order {
             let geom = self.map.get_mut(k).unwrap();
             geom.data.clear();
         }
+        /* shapes -> objects */
         self.shapes.into_objects(&mut self.map,datam,oom);
+        /* finalise objects */
         for k in &self.order {
             let geom = self.map.get_mut(k).unwrap();
-            geom.data.objects_to_gl(datam);
+            geom.data.objects_final(datam);
         }
     }
 
