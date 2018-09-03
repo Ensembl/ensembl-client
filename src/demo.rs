@@ -9,16 +9,14 @@ use shape::{
     fix_texture,
     page_texture,
     pin_triangle,
-    pin_hollowpoly,
     pin_texture,
-    pin_poly,
-    pin_circle,
-    pin_hollowcircle,
+    pin_mathsshape,
     stretch_rectangle,
     stretch_texture,
     stretch_wiggle,
     Spot,
     ColourSpec,
+    MathsShape,
 };
 
 use drawing::{
@@ -251,31 +249,35 @@ pub fn demo() {
             page_texture(a, tx, &CPixel(4,y+18), &CPixel(1,1),ooe_true.clone());
             if yidx == middle - 5 {
                 for i in 1..10 {
-                    pin_circle(a, &CLeaf(-1.+0.4*(i as f32),y+20),
-                               10. * i as f32,&green,ooe_true.clone());
+                    pin_mathsshape(a,&CLeaf(-1.+0.4*(i as f32),y+20),
+                                   10. * i as f32,None,MathsShape::Circle,
+                                   &green,ooe_true.clone());
                     let colour = Colour(255,0,128);
-                    pin_hollowcircle(a, &CLeaf(-3.+0.4*(i as f32),y+20),
-                               10. * i as f32,2.,&ColourSpec::Colour(colour),ooe_true.clone());
+                    pin_mathsshape(a,&CLeaf(-3.+0.4*(i as f32),y+20),
+                                   10. * i as f32,Some(2.),MathsShape::Circle,
+                                   &ColourSpec::Colour(colour),ooe_true.clone());
                 }
             }
             if yidx == middle {
                 for i in 3..8 {
-                    pin_poly(a, &CLeaf(-1.+0.4*(i as f32),y+20),
-                                   i, 10., 0.2 * i as f32,&red,ooe_true.clone());
+                    pin_mathsshape(a, &CLeaf(-1.+0.4*(i as f32),y+20),
+                                   10., None, MathsShape::Polygon(i,0.2*i as f32),
+                                   &red,ooe_true.clone());
                     let colour = Colour(0,128,255);
-                    pin_poly(a, &CLeaf(-3.+0.4*(i as f32),y+20),
-                                   i, 10., 0.2 * i as f32,
+                    pin_mathsshape(a, &CLeaf(-3.+0.4*(i as f32),y+20),
+                                   10., None, MathsShape::Polygon(i,0.2*i as f32),
                                    &ColourSpec::Colour(colour),ooe_true.clone());
                 }
             }
             if yidx == middle +1 {
                 for i in 3..8 {
                     let ooe : Rc<OnOffExpr> = if i % 2 == 1 { ooe_odd.clone() } else { ooe_true.clone() };
-                    pin_hollowpoly(a, &CLeaf(-1.+0.4*(i as f32),y+20),
-                                   i, 10., 2., 0.2 * i as f32,&red,ooe.clone());
+                    pin_mathsshape(a, &CLeaf(-1.+0.4*(i as f32),y+20),
+                                   10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
+                                   &red,ooe.clone());
                     let colour = Colour(0,128,255);
-                    pin_hollowpoly(a, &CLeaf(-3.+0.4*(i as f32),y+20),
-                                   i, 10., 2., 0.2 * i as f32,
+                    pin_mathsshape(a, &CLeaf(-3.+0.4*(i as f32),y+20),
+                                   10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
                                    &ColourSpec::Colour(colour),ooe.clone());
                 }
             }
