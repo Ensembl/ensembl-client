@@ -245,7 +245,7 @@ pub fn demo() {
         for yidx in 0..20 {
             let y = yidx * 60;
             let val = daft(&mut rng);
-            let tx = text_texture(a,&val,&fc_font,&col);
+            let tx = text_texture(&val,&fc_font,&col);
             page_texture(a, tx, &CPixel(4,y+18), &CPixel(1,1),ooe_true.clone());
             if yidx == middle - 5 {
                 for i in 1..10 {
@@ -282,13 +282,13 @@ pub fn demo() {
                 }
             }
             if yidx == middle {
-                let tx = bitmap_texture(a,
+                let tx = bitmap_texture(
                                     vec! { 0,0,255,255,
                                              255,0,0,255,
                                              0,255,0,255,
                                              255,255,0,255 },CPixel(4,1));
                 stretch_texture(a,tx,&RLeaf(CLeaf(-5.,y-5),CLeaf(10.,10)),ooe_true.clone());
-                let tx = bitmap_texture(a,
+                let tx = bitmap_texture(
                                     vec! { 0,0,255,255,
                                              255,0,0,255,
                                              0,255,0,255,
@@ -329,7 +329,7 @@ pub fn demo() {
                         off += size;
                     }
                 }                
-                let tx = collage(a,parts,CPixel(1000,40));
+                let tx = collage(parts,CPixel(1000,40));
                 stretch_texture(a,tx,&RLeaf(CLeaf(-7.,y-25),CLeaf(20.,40)),ooe_true.clone());
             } else if yidx == middle+2 || yidx == middle+4 {
                 let wiggle = wiggly(&mut rng,500,CLeaf(-5.,y-5),0.02,20);
@@ -358,7 +358,7 @@ pub fn demo() {
                     }
                     if showtext_gen.sample(&mut rng) == 0 {
                         let val = bio_daft(&mut rng);
-                        let tx = text_texture(a,&val,&fc_font,&col);
+                        let tx = text_texture(&val,&fc_font,&col);
                         pin_texture(a, tx, &CLeaf(x,y-24), &CPixel(1,1),ooe_true.clone());
                     }
                 }
@@ -372,7 +372,7 @@ pub fn demo() {
                             &ColourSpec::Colour(Colour(0,0,0)),ooe_true.clone());
         fix_rectangle(a,&RPixel(CPixel(sw/2+5,0),CPixel(3,sh)),
                             &red,ooe_true.clone());
-        let tx = bitmap_texture(a, vec! { 0,0,255,255,
+        let tx = bitmap_texture(vec! { 0,0,255,255,
                                      255,0,0,255,
                                      0,255,0,255,
                                      255,255,0,255 },CPixel(1,4));

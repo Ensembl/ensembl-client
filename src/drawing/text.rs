@@ -1,15 +1,12 @@
+use std::rc::Rc;
 use canvasutil::FCFont;
-use arena::{ Arena, ArenaCanvases };
+use arena::{ ArenaCanvases };
 
 use coord::{ Colour, CPixel };
 
 use drawing::drawingimpl::{
     Artist,
     DrawingHash,
-};
-
-use drawing::{
-    Drawing,
 };
 
 /* TextArtist - A Artist which can draw text */
@@ -44,9 +41,6 @@ impl Artist for TextArtist {
     }
 }
 
-pub fn text_texture(arena: &mut Arena, chars: &str,font: &FCFont, col: &Colour) -> Drawing {
-    let datam = &mut arena.data.borrow_mut();
-    let (canvases,leafdrawman,_) = datam.burst_texture();
-    let a = Box::new(TextArtist::new(chars,font,col));
-    leafdrawman.add_request(canvases,a)
+pub fn text_texture(chars: &str,font: &FCFont, col: &Colour) -> Rc<Artist> {
+    Rc::new(TextArtist::new(chars,font,col))
 }

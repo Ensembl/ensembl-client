@@ -1,9 +1,6 @@
-use arena::{ Arena, ArenaCanvases };
+use std::rc::Rc;
+use arena::{ ArenaCanvases };
 use coord::{ CPixel, RPixel, Colour };
-
-use drawing::{
-    Drawing,
-};
 
 use drawing::drawingimpl::{
     Artist,
@@ -37,11 +34,8 @@ impl Artist for CollageArtist {
     }
 }
 
-pub fn collage(arena: &mut Arena, parts: Vec<Box<Mark>>, size: CPixel) -> Drawing {
-    let datam = &mut arena.data.borrow_mut();
-    let (canvases,leafdrawman,_) = datam.burst_texture();
-    let a = Box::new(CollageArtist::new(parts,size));
-    leafdrawman.add_request(canvases,a)
+pub fn collage(parts: Vec<Box<Mark>>, size: CPixel) -> Rc<Artist> {
+    Rc::new(CollageArtist::new(parts,size))
 }
 
 pub struct RectMark {

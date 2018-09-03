@@ -1,10 +1,7 @@
-use arena::{ Arena, ArenaCanvases };
+use std::rc::Rc;
+use arena::{ ArenaCanvases };
 
 use coord::{ CPixel, RPixel };
-
-use drawing::{
-    Drawing,
-};
 
 use drawing::drawingimpl::{
     Artist,
@@ -31,9 +28,6 @@ impl Artist for BitmapArtist {
     }
 }
 
-pub fn bitmap_texture(arena: &mut Arena, data: Vec<u8>, size: CPixel) -> Drawing {
-    let datam = &mut arena.data.borrow_mut();
-    let (canvases,leafdrawman,_) = datam.burst_texture();
-    let a = Box::new(BitmapArtist::new(data,size));
-    leafdrawman.add_request(canvases,a)
+pub fn bitmap_texture(data: Vec<u8>, size: CPixel) -> Rc<Artist> {
+    Rc::new(BitmapArtist::new(data,size))
 }

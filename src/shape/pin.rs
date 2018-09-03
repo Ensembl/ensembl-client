@@ -15,7 +15,7 @@ use shape::util::{
 
 use geometry::{ PTGeom, PTMethod, PTSkin, ProgramType };
 
-use drawing::{ Drawing };
+use drawing::Artist;
 use campaign::OnOffExpr;
 
 /*
@@ -36,7 +36,7 @@ impl PinTriangle {
 }
 
 impl Shape for PinTriangle {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, _texpos: Option<RPixel>) {
         let p = &self.points;
         let b = vertices_tri(geom,self.colspec.to_group(geom_name));
         triangle_gl(b,geom,"aVertexPosition",&[&p[0],&p[1],&p[2]]);
@@ -51,7 +51,7 @@ impl Shape for PinTriangle {
 
 pub fn pin_triangle(arena: &mut Arena, origin: &CLeaf, p: &[CPixel;3], colspec: &ColourSpec, ooe: Rc<OnOffExpr>) {
     let g = despot(PTGeom::Pin,PTMethod::Triangle,colspec);
-    arena.add_shape(None,Box::new(PinTriangle::new(*origin,*p,colspec,g)),ooe);
+    arena.add_shape(Box::new(PinTriangle::new(*origin,*p,colspec,g)),ooe);
 }
 
 /*
@@ -98,7 +98,7 @@ impl PinPoly {
 }
 
 impl Shape for PinPoly {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, _texpos: Option<RPixel>) {
         let group = self.colspec.to_group(geom_name);
         if self.hollow {
             let b = vertices_hollowpoly(geom,self.points,group);
@@ -122,7 +122,7 @@ fn pin_poly_impl(arena: &mut Arena, gt: PTGeom, mt: PTMethod, origin: &CLeaf, po
         origin: *origin, points, size, offset, width, colspec: colspec.clone(),
         hollow, geom: g
     };
-    arena.add_shape(None,Box::new(ri),ooe);
+    arena.add_shape(Box::new(ri),ooe);
 }
 
 const CIRC_TOL : f32 = 1.; // max px undercut
@@ -155,24 +155,21 @@ pub fn pin_mathsshape(a: &mut Arena, origin: &CLeaf,
 pub struct PinTexture {
     origin: CLeaf,
     scale: CPixel,
-    texpos: Option<RPixel>
+    artist: Rc<Artist>
 }
 
 impl PinTexture {
-    pub fn new(origin: &CLeaf, scale: &CPixel) -> PinTexture {
+    pub fn new(artist: Rc<Artist>,origin: &CLeaf, scale: &CPixel) -> PinTexture {
         PinTexture {
-            origin: *origin, scale: *scale, texpos: None
+            origin: *origin, scale: *scale,
+            artist: artist.clone()
         }
     }        
 }
 
 impl Shape for PinTexture {
-    fn set_texpos(&mut self, data: &RPixel) {
-        self.texpos = Some(*data);
-    }
-  
-    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData) {
-        if let Some(tp) = self.texpos {
+    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData, texpos: Option<RPixel>) {
+        if let Some(tp) = texpos {
             let p = tp.at_origin() * self.scale;
             let t = tp / adata.canvases.flat.size();
             let b = vertices_rect(geom,None);
@@ -185,9 +182,11 @@ impl Shape for PinTexture {
     fn get_geometry(&self) -> ProgramType {
         ProgramType(PTGeom::Pin,PTMethod::Triangle,PTSkin::Texture)
     }
+
+    fn get_artist(&self) -> Option<Rc<Artist>> { Some(self.artist.clone()) }
 }
 
-pub fn pin_texture(arena: &mut Arena, req: Drawing, origin: &CLeaf, scale: &CPixel, ooe: Rc<OnOffExpr>) {
-    let ri = PinTexture::new(origin,scale);
-    arena.add_shape(Some(req),Box::new(ri),ooe);
+pub fn pin_texture(arena: &mut Arena, a: Rc<Artist>, origin: &CLeaf, scale: &CPixel, ooe: Rc<OnOffExpr>) {
+    let ri = PinTexture::new(a,origin,scale);
+    arena.add_shape(Box::new(ri),ooe);
 }

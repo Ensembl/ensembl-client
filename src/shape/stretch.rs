@@ -15,7 +15,7 @@ use shape::util::{
 
 use geometry::{ PTGeom, PTMethod, PTSkin, ProgramType };
 
-use drawing::{ Drawing };
+use drawing::Artist;
 
 use campaign::OnOffExpr;
 
@@ -36,7 +36,7 @@ impl StretchRect {
 }
 
 impl Shape for StretchRect {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, _texpos: Option<RPixel>) {
         let b = vertices_rect(geom,self.colspec.to_group(geom_name));
         rectangle_g(b,geom,"aVertexPosition",&self.points);
         if let ColourSpec::Colour(c) = self.colspec {
@@ -49,7 +49,7 @@ impl Shape for StretchRect {
 
 pub fn stretch_rectangle(arena: &mut Arena, p:&RLeaf, colour: &ColourSpec, ooe: Rc<OnOffExpr>) {
     let g = despot(PTGeom::Stretch,PTMethod::Triangle,colour);
-    arena.add_shape(None,Box::new(StretchRect::new(*p,colour,g)),ooe);
+    arena.add_shape(Box::new(StretchRect::new(*p,colour,g)),ooe);
 }
 
 /*
@@ -69,7 +69,7 @@ impl StretchWiggle {
 }
 
 impl Shape for StretchWiggle {
-    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, _texpos: Option<RPixel>) {
         let dg = self.group.get_group(self.get_geometry());
         let b = vertices_strip(geom,self.points.len() as u16*2,Some(dg));
         points_g(b,geom,"aVertexPosition",&self.points,self.y);
@@ -81,9 +81,7 @@ impl Shape for StretchWiggle {
 }
 
 pub fn stretch_wiggle(arena: &mut Arena, p: Vec<CLeaf>, y: i32, spot: &Spot, ooe: Rc<OnOffExpr>) {
-    arena.add_shape(None,Box::new(
-        StretchWiggle::new(p,spot.clone(),y)
-    ),ooe);
+    arena.add_shape(Box::new(StretchWiggle::new(p,spot.clone(),y)),ooe);
 }
 
 /*
@@ -92,13 +90,13 @@ pub fn stretch_wiggle(arena: &mut Arena, p: Vec<CLeaf>, y: i32, spot: &Spot, ooe
 
 pub struct StretchTexture {
     pos: RLeaf,
-    texpos: Option<RPixel>
+    artist: Rc<Artist>
 }
 
 impl StretchTexture {
-    pub fn new(pos: &RLeaf) -> StretchTexture {
+    pub fn new(artist: Rc<Artist>,pos: &RLeaf) -> StretchTexture {
         StretchTexture {
-            pos: *pos, texpos: None
+            pos: *pos, artist: artist.clone()
         }
     }
 }
@@ -106,12 +104,8 @@ impl StretchTexture {
 const CHUNK_SIZE : f32 = 10.;
 
 impl Shape for StretchTexture {
-    fn set_texpos(&mut self, data: &RPixel) {
-        self.texpos = Some(*data);
-    }
-
-    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData) {
-        if let Some(tp) = self.texpos {
+    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData, texpos: Option<RPixel>) {
+        if let Some(tp) = texpos {
             let t = tp / adata.canvases.flat.size();
             
             /* some cards baulk at very large textured areas, so split */
@@ -136,9 +130,11 @@ impl Shape for StretchTexture {
     fn get_geometry(&self) -> ProgramType {
         ProgramType(PTGeom::Stretch,PTMethod::Triangle,PTSkin::Texture)
     }
+
+    fn get_artist(&self) -> Option<Rc<Artist>> { Some(self.artist.clone()) }
 }
 
-pub fn stretch_texture(arena: &mut Arena, req: Drawing, pos: &RLeaf, ooe: Rc<OnOffExpr>) {
-    let ri = StretchTexture::new(pos);
-    arena.add_shape(Some(req),Box::new(ri),ooe);
+pub fn stretch_texture(arena: &mut Arena, a: Rc<Artist>, pos: &RLeaf, ooe: Rc<OnOffExpr>) {
+    let ri = StretchTexture::new(a,pos);
+    arena.add_shape(Box::new(ri),ooe);
 }

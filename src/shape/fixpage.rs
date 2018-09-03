@@ -8,7 +8,7 @@ use coord::{ CPixel, RPixel };
 use shape::{ Shape, ColourSpec };
 use shape::util::{ rectangle_p, rectangle_t, multi_gl, vertices_rect, despot };
 
-use drawing::{ Drawing };
+use drawing::Artist;
 use campaign::OnOffExpr;
 
 /*
@@ -28,7 +28,7 @@ impl FixRect {
 }
 
 impl Shape for FixRect {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, _texpos: Option<RPixel>) {
         let b = vertices_rect(geom,self.colspec.to_group(geom_name));
         rectangle_p(b,geom,"aVertexPosition",&self.points);
         if let ColourSpec::Colour(c) = self.colspec {        
@@ -41,7 +41,7 @@ impl Shape for FixRect {
 
 fn rectangle(arena: &mut Arena, p: &RPixel, colspec: &ColourSpec, gt: PTGeom, ooe: Rc<OnOffExpr>) {
     let pt = despot(gt,PTMethod::Triangle,colspec);
-    arena.add_shape(None,Box::new(FixRect::new(*p,colspec.clone(),pt)),ooe);
+    arena.add_shape(Box::new(FixRect::new(*p,colspec.clone(),pt)),ooe);
 }
 
 pub fn fix_rectangle(arena: &mut Arena, p: &RPixel, colour: &ColourSpec, ooe: Rc<OnOffExpr>) {
@@ -60,25 +60,21 @@ pub fn page_rectangle(arena: &mut Arena, p: &RPixel, colour: &ColourSpec, ooe: R
 pub struct FixTexture {
     pos: CPixel,
     scale: CPixel,
-    texpos: Option<RPixel>,
-    geom: ProgramType
+    geom: ProgramType,
+    artist: Rc<Artist>
 }
 
 impl FixTexture {
-    pub fn new(pos: &CPixel, scale: &CPixel, geom: ProgramType) -> FixTexture {
+    pub fn new(pos: &CPixel, scale: &CPixel, geom: ProgramType, artist: &Rc<Artist>) -> FixTexture {
         FixTexture {
-            pos: *pos, scale: *scale, texpos: None, geom
+            pos: *pos, scale: *scale, geom, artist: artist.clone()
         }
     }    
 }
 
 impl Shape for FixTexture {
-    fn set_texpos(&mut self, data: &RPixel) {
-        self.texpos = Some(*data);
-    }
-  
-    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData) {
-        if let Some(tp) = self.texpos {
+    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData, texpos: Option<RPixel>) {
+        if let Some(tp) = texpos {
             let p = tp.at_origin() * self.scale + self.pos;
             let t = tp / adata.canvases.flat.size();
             let b = vertices_rect(geom,None);
@@ -88,19 +84,21 @@ impl Shape for FixTexture {
     }
     
     fn get_geometry(&self) -> ProgramType { self.geom }
+
+    fn get_artist(&self) -> Option<Rc<Artist>> { Some(self.artist.clone()) }
 }
 
-fn texture(arena: &mut Arena,req: Drawing, origin: &CPixel, scale: &CPixel, gt: PTGeom, ooe: Rc<OnOffExpr>) {
+fn texture(arena: &mut Arena, a: Rc<Artist>, origin: &CPixel, scale: &CPixel, gt: PTGeom, ooe: Rc<OnOffExpr>) {
     let pt = ProgramType(gt,PTMethod::Triangle,PTSkin::Texture);
-    let ri = FixTexture::new(origin,scale,pt);
-    arena.add_shape(Some(req),Box::new(ri),ooe);
+    let ri = FixTexture::new(origin,scale,pt,&a);
+    arena.add_shape(Box::new(ri),ooe);
 }
 
 
-pub fn fix_texture(arena: &mut Arena,req: Drawing, origin: &CPixel, scale: &CPixel, ooe: Rc<OnOffExpr>) {
+pub fn fix_texture(arena: &mut Arena, req: Rc<Artist>, origin: &CPixel, scale: &CPixel, ooe: Rc<OnOffExpr>) {
     texture(arena, req, origin, scale, PTGeom::Fix,ooe);
 }
 
-pub fn page_texture(arena: &mut Arena,req: Drawing, origin: &CPixel, scale: &CPixel, ooe: Rc<OnOffExpr>) {
+pub fn page_texture(arena: &mut Arena, req: Rc<Artist>, origin: &CPixel, scale: &CPixel, ooe: Rc<OnOffExpr>) {
     texture(arena, req, origin, scale, PTGeom::Page,ooe);
 }
