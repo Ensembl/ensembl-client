@@ -3,10 +3,10 @@ use arena::{ ArenaData, Arena };
 
 use program::ProgramAttribs;
 use geometry::{ ProgramType, PTGeom, PTSkin, PTMethod };
-use coord::{ CPixel, Colour, RPixel };
+use coord::{ CPixel, RPixel };
 
-use shape::Shape;
-use shape::util::{ rectangle_p, rectangle_t, multi_gl, vertices_rect };
+use shape::{ Shape, ColourSpec };
+use shape::util::{ rectangle_p, rectangle_t, multi_gl, vertices_rect, despot };
 
 use drawing::{ Drawing };
 use campaign::OnOffExpr;
@@ -17,37 +17,39 @@ use campaign::OnOffExpr;
 
 pub struct FixRect {
     points: RPixel,
-    colour: Colour,
+    colspec: ColourSpec,
     geom: ProgramType
 }
 
 impl FixRect {
-    pub fn new(points: RPixel, colour: Colour, geom: ProgramType) -> FixRect {
-        FixRect { points, colour, geom }
+    pub fn new(points: RPixel, colspec: ColourSpec, geom: ProgramType) -> FixRect {
+        FixRect { points, colspec, geom }
     }    
 }
 
 impl Shape for FixRect {
-    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData) {
-        let b = vertices_rect(geom,None);
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+        let b = vertices_rect(geom,self.colspec.to_group(geom_name));
         rectangle_p(b,geom,"aVertexPosition",&self.points);
-        multi_gl(b,geom,"aVertexColour",&self.colour,4);
+        if let ColourSpec::Colour(c) = self.colspec {        
+            multi_gl(b,geom,"aVertexColour",&c,4);
+        }
     }
     
     fn get_geometry(&self) -> ProgramType { self.geom }
 }
 
-fn rectangle(arena: &mut Arena, p: &RPixel, colour: &Colour, gt: PTGeom, ooe: Rc<OnOffExpr>) {
-    let pt = ProgramType(gt, PTMethod::Triangle, PTSkin::Colour);
-    arena.add_shape(None,Box::new(FixRect::new(*p,*colour,pt)),ooe);
+fn rectangle(arena: &mut Arena, p: &RPixel, colspec: &ColourSpec, gt: PTGeom, ooe: Rc<OnOffExpr>) {
+    let pt = despot(gt,PTMethod::Triangle,colspec);
+    arena.add_shape(None,Box::new(FixRect::new(*p,colspec.clone(),pt)),ooe);
 }
 
-pub fn fix_rectangle(arena: &mut Arena, p: &RPixel, colour: &Colour, ooe: Rc<OnOffExpr>) {
+pub fn fix_rectangle(arena: &mut Arena, p: &RPixel, colour: &ColourSpec, ooe: Rc<OnOffExpr>) {
     rectangle(arena,p,colour,PTGeom::Fix,ooe);
 }
 
 #[allow(dead_code)]
-pub fn page_rectangle(arena: &mut Arena, p: &RPixel, colour: &Colour, ooe: Rc<OnOffExpr>) {
+pub fn page_rectangle(arena: &mut Arena, p: &RPixel, colour: &ColourSpec, ooe: Rc<OnOffExpr>) {
     rectangle(arena,p,colour,PTGeom::Page,ooe);
 }
 

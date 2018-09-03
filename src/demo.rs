@@ -369,7 +369,9 @@ pub fn demo() {
         let (sw,sh) = (dims.width_px,dims.height_px);
         
         fix_rectangle(a,&RPixel(CPixel(sw/2,0),CPixel(1,sh)),
-                            &Colour(0,0,0),ooe_true.clone());
+                            &ColourSpec::Colour(Colour(0,0,0)),ooe_true.clone());
+        fix_rectangle(a,&RPixel(CPixel(sw/2+5,0),CPixel(3,sh)),
+                            &red,ooe_true.clone());
         let tx = bitmap_texture(a, vec! { 0,0,255,255,
                                      255,0,0,255,
                                      0,255,0,255,
