@@ -17,6 +17,7 @@ use program::{
     Arity,
 };
 
+#[derive(Clone,Copy,Debug,PartialEq,Eq,Hash)]
 pub enum PTGeom {
     Pin,
     Stretch,
@@ -24,17 +25,20 @@ pub enum PTGeom {
     Page
 }
 
+#[derive(Clone,Copy,Debug,PartialEq,Eq,Hash)]
 pub enum PTMethod {
     Triangle,
     Strip
 }
 
+#[derive(Clone,Copy,Debug,PartialEq,Eq,Hash)]
 pub enum PTSkin {
     Colour,
     Spot,
     Texture
 }
 
+#[derive(Clone,Copy,Debug,PartialEq,Eq,Hash)]
 pub struct ProgramType(pub PTGeom,pub PTMethod,pub PTSkin);
 
 impl PTGeom {
@@ -122,10 +126,32 @@ impl PTSkin {
     }
 }
 
+const GEOM_ORDER : [PTGeom;4] = [
+    PTGeom::Stretch, PTGeom::Pin, PTGeom::Page, PTGeom::Fix
+];
+
+const SKINMETH_ORDER : [(PTSkin,PTMethod);5] = [
+    (PTSkin::Spot,    PTMethod::Strip),
+    (PTSkin::Colour,  PTMethod::Strip),
+    (PTSkin::Spot,    PTMethod::Triangle),
+    (PTSkin::Colour,  PTMethod::Triangle),
+    (PTSkin::Texture, PTMethod::Triangle),
+];
+
 impl ProgramType {
     pub fn to_program(&self, adata: &ArenaData) -> Program {
         let src = self.0.to_source().merge(&self.1.to_source()).merge(&self.2.to_source());
         Program::new(adata,&src)
+    }
+    
+    pub fn all() -> Vec<ProgramType> {
+        let mut out = Vec::<ProgramType>::new();
+        for gt in GEOM_ORDER.iter() {
+            for (st,mt) in SKINMETH_ORDER.iter() {
+                out.push(ProgramType(*gt,*mt,*st));
+            }
+        }
+        out
     }
 }
 

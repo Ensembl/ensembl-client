@@ -2,6 +2,7 @@ use std::rc::Rc;
 use arena::{ ArenaData, Arena };
 
 use program::ProgramAttribs;
+use geometry::{ ProgramType, PTGeom, PTSkin, PTMethod };
 use coord::{ CPixel, Colour, RPixel };
 
 use shape::Shape;
@@ -17,36 +18,37 @@ use campaign::OnOffExpr;
 pub struct FixRect {
     points: RPixel,
     colour: Colour,
-    geom: String
+    geom: ProgramType
 }
 
 impl FixRect {
-    pub fn new(points: RPixel, colour: Colour, geom: &str) -> FixRect {
-        FixRect { points, colour, geom: geom.to_string() }
+    pub fn new(points: RPixel, colour: Colour, geom: ProgramType) -> FixRect {
+        FixRect { points, colour, geom }
     }    
 }
 
 impl Shape for FixRect {
-    fn into_objects(&self, _geom_name: &str, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData) {
         let b = vertices_rect(geom,None);
         rectangle_p(b,geom,"aVertexPosition",&self.points);
         multi_gl(b,geom,"aVertexColour",&self.colour,4);
     }
     
-    fn get_geometry(&self) -> &str { &self.geom }
+    fn get_geometry(&self) -> ProgramType { self.geom }
 }
 
-fn rectangle(arena: &mut Arena, p: &RPixel, colour: &Colour, geom: &str, ooe: Rc<OnOffExpr>) {
-    arena.add_shape(None,Box::new(FixRect::new(*p,*colour,geom)),ooe);
+fn rectangle(arena: &mut Arena, p: &RPixel, colour: &Colour, gt: PTGeom, ooe: Rc<OnOffExpr>) {
+    let pt = ProgramType(gt, PTMethod::Triangle, PTSkin::Colour);
+    arena.add_shape(None,Box::new(FixRect::new(*p,*colour,pt)),ooe);
 }
 
 pub fn fix_rectangle(arena: &mut Arena, p: &RPixel, colour: &Colour, ooe: Rc<OnOffExpr>) {
-    rectangle(arena, p, colour, "fix",ooe);
+    rectangle(arena,p,colour,PTGeom::Fix,ooe);
 }
 
 #[allow(dead_code)]
 pub fn page_rectangle(arena: &mut Arena, p: &RPixel, colour: &Colour, ooe: Rc<OnOffExpr>) {
-    rectangle(arena, p, colour, "page",ooe);
+    rectangle(arena,p,colour,PTGeom::Page,ooe);
 }
 
 /*
@@ -57,13 +59,13 @@ pub struct FixTexture {
     pos: CPixel,
     scale: CPixel,
     texpos: Option<RPixel>,
-    geom: String
+    geom: ProgramType
 }
 
 impl FixTexture {
-    pub fn new(pos: &CPixel, scale: &CPixel, geom: &str) -> FixTexture {
+    pub fn new(pos: &CPixel, scale: &CPixel, geom: ProgramType) -> FixTexture {
         FixTexture {
-            pos: *pos, scale: *scale, texpos: None, geom: geom.to_string()
+            pos: *pos, scale: *scale, texpos: None, geom
         }
     }    
 }
@@ -73,7 +75,7 @@ impl Shape for FixTexture {
         self.texpos = Some(*data);
     }
   
-    fn into_objects(&self, _geom_name:&str, geom: &mut ProgramAttribs, adata: &ArenaData) {
+    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData) {
         if let Some(tp) = self.texpos {
             let p = tp.at_origin() * self.scale + self.pos;
             let t = tp / adata.canvases.flat.size();
@@ -83,19 +85,20 @@ impl Shape for FixTexture {
         }
     }
     
-    fn get_geometry(&self) -> &str { &self.geom }
+    fn get_geometry(&self) -> ProgramType { self.geom }
 }
 
-fn texture(arena: &mut Arena,req: Drawing, origin: &CPixel, scale: &CPixel, geom: &str, ooe: Rc<OnOffExpr>) {
-    let ri = FixTexture::new(origin,scale,geom);
+fn texture(arena: &mut Arena,req: Drawing, origin: &CPixel, scale: &CPixel, gt: PTGeom, ooe: Rc<OnOffExpr>) {
+    let pt = ProgramType(gt,PTMethod::Triangle,PTSkin::Texture);
+    let ri = FixTexture::new(origin,scale,pt);
     arena.add_shape(Some(req),Box::new(ri),ooe);
 }
 
 
 pub fn fix_texture(arena: &mut Arena,req: Drawing, origin: &CPixel, scale: &CPixel, ooe: Rc<OnOffExpr>) {
-    texture(arena, req, origin, scale, "fixtex",ooe);
+    texture(arena, req, origin, scale, PTGeom::Fix,ooe);
 }
 
 pub fn page_texture(arena: &mut Arena,req: Drawing, origin: &CPixel, scale: &CPixel, ooe: Rc<OnOffExpr>) {
-    texture(arena, req, origin, scale, "pagetex",ooe);
+    texture(arena, req, origin, scale, PTGeom::Page,ooe);
 }

@@ -2,6 +2,7 @@ use std::iter;
 use program::{ ProgramAttribs, DataBatch, DataGroup };
 use coord::{ RFraction, CLeaf, Input, RPixel, RLeaf  };
 use shape::ColourSpec;
+use geometry::{ ProgramType, PTMethod, PTGeom, PTSkin };
 
 pub fn triangle_gl(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[&Input;3]) {
     if let Some(obj) = pdata.get_object(key) {
@@ -109,10 +110,11 @@ pub fn points_g(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p_in: &[CLe
     }
 }
 
-pub fn despot(geom: &str, spec: &ColourSpec) -> String {
-    let mut g_out = geom.to_string();
-    if let ColourSpec::Spot(_) = spec {
-        g_out.push_str("spot");
-    }
-    g_out
+pub fn despot(gt: PTGeom, mt: PTMethod, spec: &ColourSpec) -> ProgramType {
+    let st = if let ColourSpec::Spot(_) = spec {
+        PTSkin::Spot
+    } else {
+        PTSkin::Colour
+    };
+    ProgramType(gt,mt,st)
 }

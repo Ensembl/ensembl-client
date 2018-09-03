@@ -6,6 +6,7 @@ use shape::{ Shape, ShapeContext };
 use program::Program;
 use campaign::onoff::{ OnOffManager, OnOffExpr };
 use drawing::Drawing;
+use geometry::ProgramType;
 
 pub struct Campaign {
     pub id: Option<u32>,
@@ -31,7 +32,7 @@ impl Campaign {
         self.shapes.push((req,item));
     }
     
-    pub fn into_objects(&mut self, map: &mut HashMap<String,Program>,
+    pub fn into_objects(&mut self, map: &mut HashMap<ProgramType,Program>,
                         adata: &mut ArenaData, oom: &OnOffManager) {
         /* context */
         for c in &mut self.contexts {
@@ -51,8 +52,8 @@ impl Campaign {
                   s.set_texpos(&tp);
                 }
                 let geom_name = s.get_geometry();
-                if let Some(geom) = map.get_mut(geom_name) {                
-                    s.into_objects(&geom_name,&mut geom.data,adata);
+                if let Some(geom) = map.get_mut(&geom_name) {                
+                    s.into_objects(geom_name,&mut geom.data,adata);
                 }
             }
         }

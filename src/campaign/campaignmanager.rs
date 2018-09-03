@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use arena::ArenaData;
 use program::Program;
 use campaign::{ Campaign, OnOffManager };
+use geometry::ProgramType;
 
 pub struct CampaignManager {
     idx: u32,
@@ -31,7 +32,7 @@ impl CampaignManager {
         }
     }
     
-    pub fn into_objects(&mut self, map: &mut HashMap<String,Program>,
+    pub fn into_objects(&mut self, map: &mut HashMap<ProgramType,Program>,
                         adata: &mut ArenaData, oom: &OnOffManager) {
         for r in &mut self.requests.values_mut() {
             r.into_objects(map,adata,oom);
