@@ -2,45 +2,21 @@ use arena::ArenaData;
 use program::Program;
 
 use geometry::common::{
-    shader_solid, shader_texture, shader_spot, shader_triangle, 
-    shader_strip, PR_DEF
+    PTGeom, PTMethod, PTSkin, ProgramType
 };
-
-use program::{
-    ProgramSource,
-    Statement,
-    Uniform,
-    Attribute,
-    Arity,
-};
-
-fn stretch_prog() -> ProgramSource {
-    ProgramSource::new(vec! {
-        Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageHpos"),
-        Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageVpos"),
-        Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageZoom"),
-        Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
-        Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
-        Statement::new_vert("
-            gl_Position = vec4(
-                (aVertexPosition.x - uStageHpos) * uStageZoom,
-                - (aVertexPosition.y - uStageVpos) / uSize.y,
-                0.0, 1.0)")
-    })
-}
 
 pub fn stretch_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_solid(&shader_triangle(),&stretch_prog()))
+    ProgramType(PTGeom::Stretch,PTMethod::Triangle,PTSkin::Colour).to_program(adata)
 }
 
 pub fn stretchtex_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_texture(&shader_triangle(),&stretch_prog()))
+    ProgramType(PTGeom::Stretch,PTMethod::Triangle,PTSkin::Texture).to_program(adata)
 }
 
 pub fn stretchspot_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_spot(&shader_triangle(),&stretch_prog()))
+    ProgramType(PTGeom::Stretch,PTMethod::Triangle,PTSkin::Spot).to_program(adata)
 }
 
 pub fn stretchstrip_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_spot(&shader_strip(),&stretch_prog()))
+    ProgramType(PTGeom::Stretch,PTMethod::Strip,PTSkin::Spot).to_program(adata)
 }
