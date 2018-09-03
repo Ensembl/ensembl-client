@@ -1,6 +1,6 @@
 use std::f32;
 use std::rc::Rc;
-use arena::{ Arena, ArenaData };
+use arena::ArenaData;
 
 use program::{ ProgramAttribs, DataBatch };
 use coord::{ CLeaf, CPixel, RPixel, Input, CFraction };
@@ -16,7 +16,6 @@ use shape::util::{
 use geometry::{ PTGeom, PTMethod, PTSkin, ProgramType };
 
 use drawing::Artist;
-use campaign::OnOffExpr;
 
 /*
  * PinTriangle
@@ -49,9 +48,9 @@ impl Shape for PinTriangle {
     fn get_geometry(&self) -> ProgramType { self.geom }
 }
 
-pub fn pin_triangle(arena: &mut Arena, origin: &CLeaf, p: &[CPixel;3], colspec: &ColourSpec, ooe: Rc<OnOffExpr>) {
+pub fn pin_triangle(origin: &CLeaf, p: &[CPixel;3], colspec: &ColourSpec) -> Box<Shape> {
     let g = despot(PTGeom::Pin,PTMethod::Triangle,colspec);
-    arena.add_shape(Box::new(PinTriangle::new(*origin,*p,colspec,g)),ooe);
+    Box::new(PinTriangle::new(*origin,*p,colspec,g))
 }
 
 /*
@@ -114,15 +113,14 @@ impl Shape for PinPoly {
     fn get_geometry(&self) -> ProgramType { self.geom }
 }
 
-fn pin_poly_impl(arena: &mut Arena, gt: PTGeom, mt: PTMethod, origin: &CLeaf, points: u16,
+fn pin_poly_impl(gt: PTGeom, mt: PTMethod, origin: &CLeaf, points: u16,
                  size: f32, width: f32, offset: f32, 
-                 colspec: &ColourSpec, hollow: bool, ooe: Rc<OnOffExpr>) {
+                 colspec: &ColourSpec, hollow: bool) -> Box<Shape> {
     let g = despot(gt,mt,colspec);
-    let ri = PinPoly {
+    Box::new(PinPoly {
         origin: *origin, points, size, offset, width, colspec: colspec.clone(),
         hollow, geom: g
-    };
-    arena.add_shape(Box::new(ri),ooe);
+    })
 }
 
 const CIRC_TOL : f32 = 1.; // max px undercut
@@ -132,9 +130,9 @@ fn circle_points(r: f32) -> u16 {
     (3.54 * (r/CIRC_TOL).sqrt()) as u16
 }
 
-pub fn pin_mathsshape(a: &mut Arena, origin: &CLeaf,
+pub fn pin_mathsshape(origin: &CLeaf,
                       size: f32, width: Option<f32>, ms: MathsShape,
-                      colspec: &ColourSpec, ooe: Rc<OnOffExpr>) {
+                      colspec: &ColourSpec) -> Box<Shape> {
     /* Convert circles to polygons */
     let (points, offset) = match ms {
         MathsShape::Circle => (circle_points(size),0.),
@@ -145,7 +143,7 @@ pub fn pin_mathsshape(a: &mut Arena, origin: &CLeaf,
         Some(width) => (PTMethod::Strip,width,true),
         None        => (PTMethod::Triangle,0.,false)
     };
-    pin_poly_impl(a,PTGeom::Pin,mt,origin,points,size,width,offset,colspec,hollow,ooe);
+    pin_poly_impl(PTGeom::Pin,mt,origin,points,size,width,offset,colspec,hollow)
 }
 
 /*
@@ -186,7 +184,6 @@ impl Shape for PinTexture {
     fn get_artist(&self) -> Option<Rc<Artist>> { Some(self.artist.clone()) }
 }
 
-pub fn pin_texture(arena: &mut Arena, a: Rc<Artist>, origin: &CLeaf, scale: &CPixel, ooe: Rc<OnOffExpr>) {
-    let ri = PinTexture::new(a,origin,scale);
-    arena.add_shape(Box::new(ri),ooe);
+pub fn pin_texture(a: Rc<Artist>, origin: &CLeaf, scale: &CPixel) -> Box<Shape> {
+    Box::new(PinTexture::new(a,origin,scale))
 }

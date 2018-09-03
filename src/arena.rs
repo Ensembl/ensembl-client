@@ -7,8 +7,6 @@ use webgl_rendering_context::{
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use shape::Shape;
-
 use canvasutil;
 use wglraw;
 
@@ -18,7 +16,7 @@ use coord::{
     COrigin,
 };
 
-use campaign::{ OnOffExpr, OnOffManager, Campaign, OnOffFixed };
+use campaign::{ OnOffManager, Campaign, OnOffFixed };
 
 use geometry::{
     ProgramType
@@ -117,10 +115,6 @@ impl Arena {
 
     pub fn get_campaign(&mut self) -> &mut Campaign {
         &mut self.shapes
-    }
-
-    pub fn add_shape(&mut self,item: Box<Shape>, _ooe: Rc<OnOffExpr>) {
-        self.shapes.add_item(item);
     }
 
     pub fn dims(&self) -> ArenaDims {

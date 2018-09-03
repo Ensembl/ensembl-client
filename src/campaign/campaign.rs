@@ -29,7 +29,7 @@ impl Campaign {
         self.contexts.push(ctx);
     }
     
-    pub fn add_item(&mut self, item: Box<Shape>) {
+    pub fn add_shape(&mut self, item: Box<Shape>) {
         self.shapes.push(item);
     }
     

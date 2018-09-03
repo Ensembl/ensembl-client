@@ -221,8 +221,8 @@ pub fn demo() {
     let fc_font = canvasutil::FCFont::new(12,"Roboto");
     let mut stage = Stage::new();
     let oom = OnOffManager::new();
-    let ooe_true = Rc::new(OnOffFixed(true));
-    let ooe_odd = Rc::new(oom.get_atom("odd"));
+    //let ooe_true = Rc::new(OnOffFixed(true));
+    //let ooe_odd = Rc::new(oom.get_atom("odd"));
     stage.zoom = 0.1;
 
     let mut a_spec = ArenaSpec::new();
@@ -239,46 +239,55 @@ pub fn demo() {
     let len_gen = Range::new(0.,0.2);
     let thick_gen = Range::new(0,13);
     let showtext_gen = Range::new(0,10);
+    let (sw,sh);
+    {
+        let a = &mut arena;
+        
+        let dims = a.dims();
+        sw = dims.width_px;
+        sh = dims.height_px;
+    }
     {
         let col = Colour(200,200,200);
-        let a = &mut arena;
+        {
+        let c = &mut arena.get_campaign();
         for yidx in 0..20 {
             let y = yidx * 60;
             let val = daft(&mut rng);
             let tx = text_texture(&val,&fc_font,&col);
-            page_texture(a, tx, &CPixel(4,y+18), &CPixel(1,1),ooe_true.clone());
+            c.add_shape(page_texture(tx, &CPixel(4,y+18), &CPixel(1,1)));
             if yidx == middle - 5 {
                 for i in 1..10 {
-                    pin_mathsshape(a,&CLeaf(-1.+0.4*(i as f32),y+20),
+                    c.add_shape(pin_mathsshape(&CLeaf(-1.+0.4*(i as f32),y+20),
                                    10. * i as f32,None,MathsShape::Circle,
-                                   &green,ooe_true.clone());
+                                   &green));
                     let colour = Colour(255,0,128);
-                    pin_mathsshape(a,&CLeaf(-3.+0.4*(i as f32),y+20),
+                    c.add_shape(pin_mathsshape(&CLeaf(-3.+0.4*(i as f32),y+20),
                                    10. * i as f32,Some(2.),MathsShape::Circle,
-                                   &ColourSpec::Colour(colour),ooe_true.clone());
+                                   &ColourSpec::Colour(colour)));
                 }
             }
             if yidx == middle {
                 for i in 3..8 {
-                    pin_mathsshape(a, &CLeaf(-1.+0.4*(i as f32),y+20),
+                    c.add_shape(pin_mathsshape( &CLeaf(-1.+0.4*(i as f32),y+20),
                                    10., None, MathsShape::Polygon(i,0.2*i as f32),
-                                   &red,ooe_true.clone());
+                                   &red));
                     let colour = Colour(0,128,255);
-                    pin_mathsshape(a, &CLeaf(-3.+0.4*(i as f32),y+20),
+                    c.add_shape(pin_mathsshape(&CLeaf(-3.+0.4*(i as f32),y+20),
                                    10., None, MathsShape::Polygon(i,0.2*i as f32),
-                                   &ColourSpec::Colour(colour),ooe_true.clone());
+                                   &ColourSpec::Colour(colour)));
                 }
             }
             if yidx == middle +1 {
                 for i in 3..8 {
-                    let ooe : Rc<OnOffExpr> = if i % 2 == 1 { ooe_odd.clone() } else { ooe_true.clone() };
-                    pin_mathsshape(a, &CLeaf(-1.+0.4*(i as f32),y+20),
+                    //let ooe : Rc<OnOffExpr> = if i % 2 == 1 { ooe_odd.clone() } else { ooe_true.clone() };
+                    c.add_shape(pin_mathsshape(&CLeaf(-1.+0.4*(i as f32),y+20),
                                    10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
-                                   &red,ooe.clone());
+                                   &red));
                     let colour = Colour(0,128,255);
-                    pin_mathsshape(a, &CLeaf(-3.+0.4*(i as f32),y+20),
+                    c.add_shape(pin_mathsshape(&CLeaf(-3.+0.4*(i as f32),y+20),
                                    10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
-                                   &ColourSpec::Colour(colour),ooe.clone());
+                                   &ColourSpec::Colour(colour)));
                 }
             }
             if yidx == middle {
@@ -287,23 +296,23 @@ pub fn demo() {
                                              255,0,0,255,
                                              0,255,0,255,
                                              255,255,0,255 },CPixel(4,1));
-                stretch_texture(a,tx,&RLeaf(CLeaf(-5.,y-5),CLeaf(10.,10)),ooe_true.clone());
+                c.add_shape(stretch_texture(tx,&RLeaf(CLeaf(-5.,y-5),CLeaf(10.,10))));
                 let tx = bitmap_texture(
                                     vec! { 0,0,255,255,
                                              255,0,0,255,
                                              0,255,0,255,
                                              255,255,0,255 },CPixel(2,2));
-                pin_texture(a,tx,&CLeaf(0.,y-25),&CPixel(10,10),ooe_true.clone());
-                stretch_rectangle(a,&RLeaf(CLeaf(-2.,y-20),CLeaf(1.,5)),&red,ooe_true.clone());
-                stretch_rectangle(a,&RLeaf(CLeaf(-2.,y-15),CLeaf(1.,5)),&green,ooe_true.clone());
-                pin_triangle(a,&CLeaf(-2.,y-15),&[CPixel(0,0),
+                c.add_shape(pin_texture(tx,&CLeaf(0.,y-25),&CPixel(10,10)));
+                c.add_shape(stretch_rectangle(&RLeaf(CLeaf(-2.,y-20),CLeaf(1.,5)),&red));
+                c.add_shape(stretch_rectangle(&RLeaf(CLeaf(-2.,y-15),CLeaf(1.,5)),&green));
+                c.add_shape(pin_triangle(&CLeaf(-2.,y-15),&[CPixel(0,0),
                                          CPixel(-5,10),
                                          CPixel(5,10)],
-                                         &red,ooe_true.clone());
-                pin_triangle(a,&CLeaf(-1.,y-15),&[CPixel(0,0),
+                                         &red));
+                c.add_shape(pin_triangle(&CLeaf(-1.,y-15),&[CPixel(0,0),
                                          CPixel(-5,10),
                                          CPixel(5,10)],
-                                         &green,ooe_true.clone());
+                                         &green));
             } else if yidx == middle-2 {
                 let mut parts = Vec::<Box<Mark>>::new();
                 for row in 0..8 {
@@ -328,12 +337,12 @@ pub fn demo() {
                         }
                         off += size;
                     }
-                }                
+                }
                 let tx = collage(parts,CPixel(1000,40));
-                stretch_texture(a,tx,&RLeaf(CLeaf(-7.,y-25),CLeaf(20.,40)),ooe_true.clone());
+                c.add_shape(stretch_texture(tx,&RLeaf(CLeaf(-7.,y-25),CLeaf(20.,40))));
             } else if yidx == middle+2 || yidx == middle+4 {
                 let wiggle = wiggly(&mut rng,500,CLeaf(-5.,y-5),0.02,20);
-                stretch_wiggle(a,wiggle,2,&green_spot,ooe_true.clone());
+                c.add_shape(stretch_wiggle(wiggle,2,&green_spot));
             } else {
                 for idx in -100..100 {
                     let v1 = (idx as f32) * 0.1;
@@ -346,40 +355,41 @@ pub fn demo() {
                         (128.*(v2+1.0).sin()+128.) as u32,
                     );
                     let h = if thick_gen.sample(&mut rng) == 0 { 1 } else { 5 };
-                    stretch_rectangle(a,&RLeaf(CLeaf(x,y-h),CLeaf(dx,2*h)),
-                                    &ColourSpec::Colour(colour),ooe_true.clone());
+                    c.add_shape(stretch_rectangle(&RLeaf(CLeaf(x,y-h),CLeaf(dx,2*h)),
+                                    &ColourSpec::Colour(colour)));
                     if idx %5 == 0 {
                         let colour = Colour(colour.2,colour.0,colour.1);
-                        pin_triangle(a,&CLeaf(x,y),
+                        c.add_shape(pin_triangle(&CLeaf(x,y),
                                        &[CPixel(0,0),
                                          CPixel(-5,10),
                                          CPixel(5,10)],
-                                       &ColourSpec::Colour(colour),ooe_true.clone());
+                                       &ColourSpec::Colour(colour)));
                     }
                     if showtext_gen.sample(&mut rng) == 0 {
                         let val = bio_daft(&mut rng);
                         let tx = text_texture(&val,&fc_font,&col);
-                        pin_texture(a, tx, &CLeaf(x,y-24), &CPixel(1,1),ooe_true.clone());
+                        c.add_shape(pin_texture(tx, &CLeaf(x,y-24), &CPixel(1,1)));
                     }
                 }
             }
         }
-
-        let dims = a.dims();
-        let (sw,sh) = (dims.width_px,dims.height_px);
         
-        fix_rectangle(a,&RPixel(CPixel(sw/2,0),CPixel(1,sh)),
-                            &ColourSpec::Colour(Colour(0,0,0)),ooe_true.clone());
-        fix_rectangle(a,&RPixel(CPixel(sw/2+5,0),CPixel(3,sh)),
-                            &red,ooe_true.clone());
+        c.add_shape(fix_rectangle(&RPixel(CPixel(sw/2,0),CPixel(1,sh)),
+                            &ColourSpec::Colour(Colour(0,0,0))));
+        c.add_shape(fix_rectangle(&RPixel(CPixel(sw/2+5,0),CPixel(3,sh)),
+                            &red));
         let tx = bitmap_texture(vec! { 0,0,255,255,
                                      255,0,0,255,
                                      0,255,0,255,
                                      255,255,0,255 },CPixel(1,4));
-        fix_texture(a, tx, &CPixel(99,0),&CPixel(1,sh),ooe_true.clone());
+        c.add_shape(fix_texture(tx, &CPixel(sw/2-5,0),&CPixel(1,sh)));
+        }
+        {
+                let a = &mut arena;
         a.shapes_to_gl(&oom);
         stage.zoom = 0.5;
         a.draw(&stage);
+    }
     }
 
     let state = Rc::new(RefCell::new(State {

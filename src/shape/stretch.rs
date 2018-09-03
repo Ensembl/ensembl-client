@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use arena::{ Arena, ArenaData };
+use arena::ArenaData;
 
 use program::{ ProgramAttribs };
 use coord::{ CLeaf, RLeaf, RPixel, RFraction, CFraction, CPixel };
@@ -17,7 +17,6 @@ use geometry::{ PTGeom, PTMethod, PTSkin, ProgramType };
 
 use drawing::Artist;
 
-use campaign::OnOffExpr;
 
 /*
  * StretchRect
@@ -47,9 +46,9 @@ impl Shape for StretchRect {
     fn get_geometry(&self) -> ProgramType { self.geom }
 }
 
-pub fn stretch_rectangle(arena: &mut Arena, p:&RLeaf, colour: &ColourSpec, ooe: Rc<OnOffExpr>) {
+pub fn stretch_rectangle(p:&RLeaf, colour: &ColourSpec) -> Box<Shape> {
     let g = despot(PTGeom::Stretch,PTMethod::Triangle,colour);
-    arena.add_shape(Box::new(StretchRect::new(*p,colour,g)),ooe);
+    Box::new(StretchRect::new(*p,colour,g))
 }
 
 /*
@@ -80,8 +79,8 @@ impl Shape for StretchWiggle {
     }
 }
 
-pub fn stretch_wiggle(arena: &mut Arena, p: Vec<CLeaf>, y: i32, spot: &Spot, ooe: Rc<OnOffExpr>) {
-    arena.add_shape(Box::new(StretchWiggle::new(p,spot.clone(),y)),ooe);
+pub fn stretch_wiggle(p: Vec<CLeaf>, y: i32, spot: &Spot) -> Box<Shape> {
+    Box::new(StretchWiggle::new(p,spot.clone(),y))
 }
 
 /*
@@ -134,7 +133,6 @@ impl Shape for StretchTexture {
     fn get_artist(&self) -> Option<Rc<Artist>> { Some(self.artist.clone()) }
 }
 
-pub fn stretch_texture(arena: &mut Arena, a: Rc<Artist>, pos: &RLeaf, ooe: Rc<OnOffExpr>) {
-    let ri = StretchTexture::new(a,pos);
-    arena.add_shape(Box::new(ri),ooe);
+pub fn stretch_texture(a: Rc<Artist>, pos: &RLeaf) -> Box<Shape> {
+    Box::new(StretchTexture::new(a,pos))
 }
