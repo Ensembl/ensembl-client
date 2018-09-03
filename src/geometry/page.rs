@@ -1,33 +1,14 @@
-use program::Program;
 use arena::ArenaData;
+use program::Program;
 
-use geometry::common::{ shader_solid, shader_texture, PR_DEF, shader_triangle };
-
-use program::{
-    ProgramSource,
-    Statement,
-    Uniform,
-    Attribute,
-    Arity,
+use geometry::common::{
+    PTGeom, PTMethod, PTSkin, ProgramType
 };
 
-fn page_prog() -> ProgramSource {
-    ProgramSource::new(vec! {
-        Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
-        Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageVpos"),
-        Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
-        Statement::new_vert("
-            gl_Position = vec4(aVertexPosition.x / uSize.x - 1.0,
-                               - (aVertexPosition.y - uStageVpos) / uSize.y, 
-                               0.0, 1.0)")
-    })
-}
-
 pub fn page_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_solid(&shader_triangle(),&page_prog()))
-
+    ProgramType(PTGeom::Page,PTMethod::Triangle,PTSkin::Colour).to_program(adata)
 }
 
 pub fn pagetex_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_texture(&shader_triangle(),&page_prog()))
+    ProgramType(PTGeom::Page,PTMethod::Triangle,PTSkin::Texture).to_program(adata)
 }

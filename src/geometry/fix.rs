@@ -1,32 +1,14 @@
-use program::Program;
 use arena::ArenaData;
+use program::Program;
 
-use geometry::common::{ shader_triangle, shader_solid, shader_texture, PR_DEF };
-
-use program::{
-    ProgramSource,
-    Statement,
-    Uniform,
-    Attribute,
-    Arity,
+use geometry::common::{
+    PTGeom, PTMethod, PTSkin, ProgramType
 };
 
-fn fix_prog() -> ProgramSource {
-    ProgramSource::new(vec! {
-        Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
-        Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
-        Statement::new_vert("
-            gl_Position = vec4(aVertexPosition.x / uSize.x - 1.0,
-                               1.0 - aVertexPosition.y / uSize.y,
-                               0.0, 1.0)")
-    })
-}
-
 pub fn fix_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_solid(&shader_triangle(),&fix_prog()))
-
+    ProgramType(PTGeom::Fix,PTMethod::Triangle,PTSkin::Colour).to_program(adata)
 }
 
 pub fn fixtex_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_texture(&shader_triangle(),&fix_prog()))
+    ProgramType(PTGeom::Fix,PTMethod::Triangle,PTSkin::Texture).to_program(adata)
 }

@@ -1,9 +1,12 @@
+use arena::ArenaData;
+
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx
 };
 
 use program::{
     ProgramSource,
+    Program,
     Statement,
     Uniform,
     Attribute,
@@ -14,49 +17,116 @@ use program::{
     Arity,
 };
 
-pub fn shader_triangle() -> ProgramSource {
-    ProgramSource::new(vec! {
-        Main::new(glctx::TRIANGLES),
-    })
+pub enum PTGeom {
+    Pin,
+    Stretch,
+    Fix,
+    Page
 }
 
-pub fn shader_strip() -> ProgramSource {
-    ProgramSource::new(vec! {
-        Main::new(glctx::TRIANGLE_STRIP),
-    })
+pub enum PTMethod {
+    Triangle,
+    Strip
 }
 
-pub fn shader_spot(method: &ProgramSource, pos: &ProgramSource) -> ProgramSource {
-    method.merge(pos).merge(
-        &ProgramSource::new(vec! {
-            Uniform::new_frag(&PR_LOW,Arity::Vec3,"uColour"),
-            Statement::new_frag("gl_FragColor = vec4(uColour, 1.0)"),
+pub enum PTSkin {
+    Colour,
+    Spot,
+    Texture
+}
+
+pub struct ProgramType(pub PTGeom,pub PTMethod,pub PTSkin);
+
+impl PTGeom {
+    fn to_source(&self) -> ProgramSource {
+        ProgramSource::new(match self {
+            PTGeom::Pin => vec! {
+                Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageHpos"),
+                Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageVpos"),
+                Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageZoom"),
+                Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
+                Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
+                Attribute::new(&PR_DEF,Arity::Vec2,"aOrigin"),
+                Statement::new_vert("
+                    gl_Position = vec4(
+                        (aOrigin.x - uStageHpos) * uStageZoom + 
+                                    aVertexPosition.x / uSize.x,
+                        - (aOrigin.y - uStageVpos + aVertexPosition.y) / uSize.y, 
+                        0.0, 1.0)")
+
+            },
+            PTGeom::Stretch => vec! {
+                Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageHpos"),
+                Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageVpos"),
+                Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageZoom"),
+                Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
+                Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
+                Statement::new_vert("
+                    gl_Position = vec4(
+                        (aVertexPosition.x - uStageHpos) * uStageZoom,
+                        - (aVertexPosition.y - uStageVpos) / uSize.y,
+                        0.0, 1.0)")
+            },
+            PTGeom::Fix => vec! {
+                Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
+                Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
+                Statement::new_vert("
+                    gl_Position = vec4(aVertexPosition.x / uSize.x - 1.0,
+                                       1.0 - aVertexPosition.y / uSize.y,
+                                       0.0, 1.0)")
+            },
+            PTGeom::Page => vec! {
+                Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
+                Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageVpos"),
+                Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
+                Statement::new_vert("
+                    gl_Position = vec4(aVertexPosition.x / uSize.x - 1.0,
+                                       - (aVertexPosition.y - uStageVpos) / uSize.y, 
+                                       0.0, 1.0)")
+            }
         })
-    )
+    }
 }
 
-pub fn shader_solid(method: &ProgramSource, pos: &ProgramSource) -> ProgramSource {
-    method.merge(pos).merge(
-        &ProgramSource::new(vec! {
-            Attribute::new(&PR_LOW,Arity::Vec3,"aVertexColour"),
-            Varying::new(&PR_LOW,Arity::Vec3,"vColour"),
-            Statement::new_vert("vColour = vec3(aVertexColour)"),
-            Statement::new_frag("gl_FragColor = vec4(vColour, 1.0)"),
+impl PTMethod {
+    fn to_source(&self) -> ProgramSource {
+        ProgramSource::new(match self {
+            PTMethod::Triangle => vec! { Main::new(glctx::TRIANGLES) },
+            PTMethod::Strip => vec! { Main::new(glctx::TRIANGLE_STRIP) }
         })
-    )
+    }
 }
 
-pub fn shader_texture(method: &ProgramSource, pos: &ProgramSource) -> ProgramSource {
-    method.merge(pos).merge(
-        &ProgramSource::new(vec! {
-            Canvas::new(),
-            Uniform::new_frag(&PR_DEF,Arity::Sampler2D,"uSampler"),
-            Attribute::new(&PR_DEF,Arity::Vec2,"aTextureCoord"),
-            Varying::new(&PR_DEF,Arity::Vec2,"vTextureCoord"),
-            Statement::new_vert("vTextureCoord = aTextureCoord"),
-            Statement::new_frag("gl_FragColor = texture2D(uSampler, vTextureCoord)"),
+impl PTSkin {
+    fn to_source(&self) -> ProgramSource {
+        ProgramSource::new(match self {
+            PTSkin::Colour => vec! {
+                Attribute::new(&PR_LOW,Arity::Vec3,"aVertexColour"),
+                Varying::new(&PR_LOW,Arity::Vec3,"vColour"),
+                Statement::new_vert("vColour = vec3(aVertexColour)"),
+                Statement::new_frag("gl_FragColor = vec4(vColour, 1.0)"),
+            },
+            PTSkin::Spot => vec! {
+                Uniform::new_frag(&PR_LOW,Arity::Vec3,"uColour"),
+                Statement::new_frag("gl_FragColor = vec4(uColour, 1.0)"),
+            },
+            PTSkin::Texture => vec! {
+                Canvas::new(),
+                Uniform::new_frag(&PR_DEF,Arity::Sampler2D,"uSampler"),
+                Attribute::new(&PR_DEF,Arity::Vec2,"aTextureCoord"),
+                Varying::new(&PR_DEF,Arity::Vec2,"vTextureCoord"),
+                Statement::new_vert("vTextureCoord = aTextureCoord"),
+                Statement::new_frag("gl_FragColor = texture2D(uSampler, vTextureCoord)"),
+            }
         })
-    )
+    }
+}
+
+impl ProgramType {
+    pub fn to_program(&self, adata: &ArenaData) -> Program {
+        let src = self.0.to_source().merge(&self.1.to_source()).merge(&self.2.to_source());
+        Program::new(adata,&src)
+    }
 }
 
 pub static PR_DEF : Precision = Precision::Float(25,16);

@@ -1,52 +1,26 @@
-use geometry::common::{
-    shader_solid, shader_texture, shader_spot, shader_strip,
-    shader_triangle, PR_DEF,
-};
-
-use program::{
-    Program,
-    ProgramSource,
-    Statement,
-    Uniform,
-    Attribute,
-    Arity,
-};
-
 use arena::ArenaData;
+use program::Program;
 
-fn pin_prog() -> ProgramSource {
-    ProgramSource::new(vec! {
-        Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageHpos"),
-        Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageVpos"),
-        Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageZoom"),
-        Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
-        Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
-        Attribute::new(&PR_DEF,Arity::Vec2,"aOrigin"),
-        Statement::new_vert("
-            gl_Position = vec4(
-                (aOrigin.x - uStageHpos) * uStageZoom + 
-                            aVertexPosition.x / uSize.x,
-                - (aOrigin.y - uStageVpos + aVertexPosition.y) / uSize.y, 
-                0.0, 1.0)")
-    })
-}
+use geometry::common::{
+    PTGeom, PTMethod, PTSkin, ProgramType
+};
 
 pub fn pin_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_solid(&shader_triangle(),&pin_prog()))
+    ProgramType(PTGeom::Pin,PTMethod::Triangle,PTSkin::Colour).to_program(adata)
 }
 
 pub fn pintex_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_texture(&shader_triangle(),&pin_prog()))
+    ProgramType(PTGeom::Pin,PTMethod::Triangle,PTSkin::Texture).to_program(adata)
 }
 
 pub fn pinspot_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_spot(&shader_triangle(),&pin_prog()))
+    ProgramType(PTGeom::Pin,PTMethod::Triangle,PTSkin::Spot).to_program(adata)
 }
 
 pub fn pinstrip_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_solid(&shader_strip(),&pin_prog()))
+    ProgramType(PTGeom::Pin,PTMethod::Strip,PTSkin::Colour).to_program(adata)
 }
 
 pub fn pinstripspot_geom(adata: &ArenaData) -> Program {
-    Program::new(adata,&shader_spot(&shader_strip(),&pin_prog()))
+    ProgramType(PTGeom::Pin,PTMethod::Strip,PTSkin::Spot).to_program(adata)
 }
