@@ -38,7 +38,7 @@ pub trait Object {
     fn is_main(&self) -> bool { false }
     fn add_index(&mut self, _batch: &DataBatch, _indexes: &[u16], _points: u16) {}
 
-    fn to_gl(&mut self, _batch: &DataBatch, _adata: &ArenaData) {}
+    fn obj_final(&mut self, _batch: &DataBatch, _adata: &ArenaData) {}
     fn execute(&self, _adata : &ArenaData, _batch: &DataBatch,
                _dims: &ArenaDims) {}
     fn clear(&mut self) {}
@@ -64,7 +64,7 @@ const TEXIDS : [u32;8] = [
 ];
 
 impl Object for ObjectCanvasTexture {
-    fn to_gl(&mut self, _batch: &DataBatch, adata: &ArenaData) {
+    fn obj_final(&mut self, _batch: &DataBatch, adata: &ArenaData) {
         let canvases = &adata.canvases;
         self.texture = Some(wglraw::canvas_texture(&adata.ctx,canvases.flat.element()));
     }
@@ -183,7 +183,7 @@ impl Object for ObjectMain {
         }
     }
 
-    fn to_gl(&mut self, batch: &DataBatch, adata: &ArenaData) {
+    fn obj_final(&mut self, batch: &DataBatch, adata: &ArenaData) {
         self.buf.entry(batch.id()).or_insert_with(|| wglraw::init_buffer(&adata.ctx));
         if let Some(data) = self.data(batch) {
             if let Some(buf) = self.buffer(batch) {
@@ -243,7 +243,7 @@ impl ObjectAttrib {
 }
 
 impl Object for ObjectAttrib {
-    fn to_gl(&mut self, batch: &DataBatch, adata: &ArenaData) {
+    fn obj_final(&mut self, batch: &DataBatch, adata: &ArenaData) {
         self.buf.entry(batch.id()).or_insert_with(|| wglraw::init_buffer(&adata.ctx));
         if let Some(data) = self.data(batch) {
             if let Some(buf) = self.buffer(batch) {
