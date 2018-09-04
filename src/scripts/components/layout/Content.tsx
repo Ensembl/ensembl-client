@@ -12,8 +12,8 @@ const SpeciesSelector = Loadable({
   loading: () => null
 });
 
-const SpeciesBrowser = Loadable({
-  loader: () => import('../apps/species-browser/SpeciesBrowser'),
+const Browser = Loadable({
+  loader: () => import('../apps/browser/Browser'),
   loading: () => null
 });
 
@@ -21,9 +21,9 @@ class Content extends Component {
   public render() {
     return (
       <main>
-        <Route path="/app/globalsearch" component={GlobalSearch} />
-        <Route path="/app/speciesselector" component={SpeciesSelector} />
-        <Route path="/app/speciesbrowser" component={SpeciesBrowser} />
+        <Route path="/app/global-search" component={GlobalSearch} />
+        <Route path="/app/species-selector" component={SpeciesSelector} />
+        <Route path="/app/browser" component={Browser} />
       </main>
     );
   }
