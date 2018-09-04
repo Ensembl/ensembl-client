@@ -4,29 +4,29 @@ import { RouteComponentProps } from 'react-router';
 import { UnregisterCallback, Location } from 'history';
 
 import BrowserBar from './BrowserBar';
-import TrackPanel from '../../layout/track-panel/TrackPanel';
+import TrackPanel from '../track-panel/TrackPanel';
 import Track from '../../tracks/Track';
 
-type BrowserParams = {};
+type BrowserCanvasParams = {};
 
-type BrowserProps = RouteComponentProps<BrowserParams> & {
+type BrowserCanvasProps = RouteComponentProps<BrowserCanvasParams> & {
   trackRoutes: ReactNode
 };
 
-type BrowserState = {
+type BrowserCanvasState = {
   browserExpanded: boolean,
   currentTrack: string,
   drawerOpened: boolean
 };
 
-class Browser extends Component<BrowserProps, BrowserState> {
-  public readonly state: BrowserState = {
+class BrowserCanvas extends Component<BrowserCanvasProps, BrowserCanvasState> {
+  public readonly state: BrowserCanvasState = {
     browserExpanded: false,
     currentTrack: '',
     drawerOpened: false
   };
 
-  public constructor(props: BrowserProps) {
+  public constructor(props: BrowserCanvasProps) {
     super(props);
 
     this.toggleBrowser = this.toggleBrowser.bind(this);
@@ -115,4 +115,4 @@ class Browser extends Component<BrowserProps, BrowserState> {
   private historyUnlistener: UnregisterCallback = () => null;
 }
 
-export default withRouter((props: BrowserProps) => <Browser {...props} />);
+export default withRouter((props: BrowserCanvasProps) => <BrowserCanvas {...props} />);

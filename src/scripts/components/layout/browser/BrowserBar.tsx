@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
-const chevronUpIcon = require('assets/img/track-panel/chevron-up-solid.svg');
-const chevronDownIcon = require('assets/img/track-panel/chevron-down-solid.svg');
+import chevronUpIcon from 'assets/img/track-panel/chevron-up.svg';
+import chevronDownIcon from 'assets/img/track-panel/chevron-down.svg';
 
 type BrowserBarProps = {
   expanded: boolean,
