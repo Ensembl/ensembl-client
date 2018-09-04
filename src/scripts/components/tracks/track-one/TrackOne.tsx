@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import Loadable from 'react-loadable';
-import SwipeableRoutes from 'react-swipeable-routes';
 import { hot } from 'react-hot-loader';
 
 const PageOne = Loadable({
@@ -25,12 +24,9 @@ class TrackOne extends Component {
       <div className="track-page-wrapper track-one">
         <Switch>
           <Redirect from="/app/speciesbrowser/track/track-one" exact={true} to="/app/speciesbrowser/track/track-one/page-one" />
-
-          <SwipeableRoutes>
-            <Route path="/app/speciesbrowser/track/track-one/page-one" component={PageOne} />
-            <Route path="/app/speciesbrowser/track/track-one/page-two" component={PageTwo} />
-            <Route path="/app/speciesbrowser/track/track-one/page-three" component={PageThree} />
-          </SwipeableRoutes>
+          <Route path="/app/speciesbrowser/track/track-one/page-one" component={PageOne} />
+          <Route path="/app/speciesbrowser/track/track-one/page-two" component={PageTwo} />
+          <Route path="/app/speciesbrowser/track/track-one/page-three" component={PageThree} />
         </Switch>
       </div>
 
