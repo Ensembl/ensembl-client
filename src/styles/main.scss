@@ -14,6 +14,10 @@
 @include foundation-global-styles;
 @include foundation-prototype-classes;
 
+button {
+  cursor: pointer;
+}
+
 img {
   max-width: initial;
 }

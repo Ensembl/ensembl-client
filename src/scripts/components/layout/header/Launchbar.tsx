@@ -10,8 +10,8 @@ type LaunchbarIconProps = {
 
 const LaunchbarIcon: SFC<LaunchbarIconProps> = (props: LaunchbarIconProps) => (
   <dt>
-    <Link to={`/app/${props.app.name.toLowerCase()}`}>
-      <img src={props.app.icon} alt={props.app.description} title={props.app.description} />
+    <Link to={`/app/${props.app.name}`}>
+      <img src={props.app.icon.default} alt={props.app.description} title={props.app.description} />
     </Link>
   </dt>
 );
@@ -26,7 +26,7 @@ const LaunchbarSection: SFC<LaunchbarSectionProps> = (props: LaunchbarSectionPro
 
   return (
     <dl className={`${separatorClass}`}>
-      {apps.map((app: LaunchbarApp) => <LaunchbarIcon app={app} key={app.id} />)}
+      {apps.map((app: LaunchbarApp) => <LaunchbarIcon app={app} key={app.name} />)}
     </dl>
   );
 };
@@ -43,7 +43,7 @@ class Launchbar extends Component<LaunchbarProps> {
       <div className="launchbar">
         <div className="categories-wrapper">
           <div className="categories">
-          {categories.map((category: LaunchbarCategory) => <LaunchbarSection key={category.id} category={category} />)}
+          {categories.map((category: LaunchbarCategory) => <LaunchbarSection key={category.name} category={category} />)}
           </div>
         </div>
         <div className="about">

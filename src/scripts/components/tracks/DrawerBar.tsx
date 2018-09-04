@@ -3,6 +3,8 @@ import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 
 import { TrackPage, trackPagesConfig } from '../../configs/trackPages';
 
+import closeIcon from 'assets/img/track-panel/close.svg';
+
 type DrawerBarParams = {};
 
 type DrawerBarProps = RouteComponentProps<DrawerBarParams> & {
@@ -12,8 +14,6 @@ type DrawerBarProps = RouteComponentProps<DrawerBarParams> & {
 type DrawerBarState = {
   currentPage: string
 };
-
-const closeButton = require('assets/img/track-panel/times-solid.svg');
 
 class DrawerBar extends Component<DrawerBarProps, DrawerBarState> {
   public readonly state: DrawerBarState = {
@@ -36,7 +36,7 @@ class DrawerBar extends Component<DrawerBarProps, DrawerBarState> {
           }
         </dl>
         <Link className="close" to="/app/speciesbrowser">
-          <img src={closeButton} alt="close drawer" />
+          <img src={closeIcon} alt="close drawer" />
         </Link>
       </div>
     );

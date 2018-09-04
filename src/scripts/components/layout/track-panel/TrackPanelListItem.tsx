@@ -1,5 +1,5 @@
-import React, { SFC } from 'react';
-import { TrackPanelConfig } from '../../../configs/trackPanelConfig';
+import React, { Component } from 'react';
+import { TrackPanelConfig, trackPanelIconConfig } from '../../../configs/trackPanelConfig';
 
 type TrackPanelListItemProps = {
   className: string,
@@ -7,19 +7,30 @@ type TrackPanelListItemProps = {
   changeTrack: (name: string) => void
 };
 
-const ellipsisIcon = require('assets/img/track-panel/ellipsis-h-solid.svg');
-const eyeIcon = require('assets/img/track-panel/eye-solid.svg');
+class TrackPanelListItem extends Component<TrackPanelListItemProps> {
+  constructor(props: TrackPanelListItemProps) {
+    super(props);
 
-const TrackPanelListItem: SFC<TrackPanelListItemProps> = (props: TrackPanelListItemProps) => (
-  <dt className={props.className}>
-    <label>{props.track.label}</label>
-    <button onClick={() => props.changeTrack(props.track.name)}>
-      <img src={ellipsisIcon} alt={`Go to ${props.track.label}`} />
-    </button>
-    <button>
-      <img src={eyeIcon} alt="" />
-    </button>
-  </dt>
-);
+    this.changeTrackHandler = this.changeTrackHandler.bind(this);
+  }
+
+  public changeTrackHandler() {
+    this.props.changeTrack(this.props.track.name);
+  }
+
+  public render() {
+    return (
+      <dt className={this.props.className}>
+        <label>{this.props.track.label}</label>
+        <button onClick={this.changeTrackHandler}>
+          <img src={trackPanelIconConfig.ellipsis.icon.on} alt={`Go to ${this.props.track.label}`} />
+        </button>
+        <button>
+          <img src={trackPanelIconConfig.eye.icon.on} alt={trackPanelIconConfig.ellipsis.description} />
+        </button>
+      </dt>
+    );
+  }
+}
 
 export default TrackPanelListItem;

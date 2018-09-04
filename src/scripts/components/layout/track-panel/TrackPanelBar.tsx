@@ -1,13 +1,22 @@
 import React, { SFC, ReactEventHandler } from 'react';
 
-import squareIcon from 'assets/img/track-panel/square-regular.svg';
-import chevronLeftIcon from 'assets/img/track-panel/chevron-left-solid.svg';
-import chevronRightIcon from 'assets/img/track-panel/chevron-right-solid.svg';
+import { trackPanelBarConfig, TrackPanelBarItem } from '../../../configs/trackPanelBarConfig';
+
+import chevronLeftIcon from 'assets/img/track-panel/chevron-left.svg';
+import chevronRightIcon from 'assets/img/track-panel/chevron-right.svg';
+
+type TrackPanelBarIconProps = {
+  iconConfig: TrackPanelBarItem
+};
 
 type TrackPanelBarProps = {
   expanded: boolean,
   toggleTrackPanel: ReactEventHandler
 };
+
+const TrackPanelBarIcon: SFC<TrackPanelBarIconProps> = (props: TrackPanelBarIconProps) => (
+  <dt><img src={props.iconConfig.icon.default} alt={props.iconConfig.description}/></dt>
+);
 
 const TrackPanelBar: SFC<TrackPanelBarProps> = (props: TrackPanelBarProps) => (
   <div className="track-panel-bar">
@@ -17,10 +26,7 @@ const TrackPanelBar: SFC<TrackPanelBarProps> = (props: TrackPanelBarProps) => (
           {props.expanded ? <img src={chevronRightIcon} alt="collapse" /> : <img src={chevronLeftIcon} alt="expand" />}
         </button>
       </dt>
-      <dt><img src={squareIcon} alt="" /></dt>
-      <dt><img src={squareIcon} alt="" /></dt>
-      <dt><img src={squareIcon} alt="" /></dt>
-      <dt className="reset"><img src={squareIcon} alt="" /></dt>
+      {trackPanelBarConfig.map((item: TrackPanelBarItem) => <TrackPanelBarIcon key={item.name} iconConfig={item} />)}
     </dl>
   </div>
 );
