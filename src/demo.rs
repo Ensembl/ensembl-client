@@ -1,6 +1,8 @@
 use std::clone::Clone;
 use stdweb;
 use canvasutil;
+use stageutil;
+use domutil;
 
 use campaign::{ StateManager, StateFixed, Campaign, StateValue };
 
@@ -228,6 +230,11 @@ fn wiggly<R>(rng: &mut R, num: u32, origin: CLeaf, sep: f32, h: i32)
 pub fn demo() {
     stdweb::initialize();
 
+    domutil::inner_html(&domutil::query_select("#stage"),stageutil::STAGE);
+    let el = domutil::append_element(&domutil::query_select("head"),"style");
+    domutil::inner_html(&el,stageutil::STAGE_CSS);
+
+
     let seed = 12345678;
     let s = seed as u8;
     let t = (seed/256) as u8;
@@ -243,7 +250,7 @@ pub fn demo() {
     stage.zoom = 0.1;
 
     let mut a_spec = ArenaSpec::new();
-    a_spec.debug = false;
+    a_spec.debug = true;
     let mut arena = Arena::new("#glcanvas","#managedcanvasholder",a_spec);
     let mut middle = arena.dims().height_px / 120;
     if middle < 5 { middle = 5; }

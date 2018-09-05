@@ -5,7 +5,8 @@ use stdweb::web::{
     document,
     Element,
     IElement,
-    IParentNode
+    IParentNode,
+    INode
 };
 
 pub fn query_select(sel: &str) -> Element {
@@ -17,7 +18,6 @@ pub fn add_attr(el: &Element,key: &str, more: &str) {
         Some(x) => x,
         None => "".to_string(),
     } + " " + more;
-    js! { console.log(@{&el},@{&val}); };
     el.set_attribute(key,&val).ok();
 }
 
@@ -27,4 +27,15 @@ pub fn add_class(el: &Element, klass: &str) {
 
 pub fn add_style(el: &Element, key: &str, value: &str) {
     add_attr(el,"style",&format!("{}: {};",key,value));
+}
+
+pub fn inner_html(el: &Element, value: &str) {
+    js! { @{el.as_ref()}.innerHTML = @{value} };
+}
+
+pub fn append_element(el: &Element, name: &str) -> Element {
+    let doc = el.owner_document().unwrap();
+    let new = doc.create_element(name).ok().unwrap();
+    el.append_child(&new);
+    new
 }

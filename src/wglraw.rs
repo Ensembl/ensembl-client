@@ -11,7 +11,7 @@ use webgl_rendering_context::{
 
 fn get_context(canvas: &CanvasElement) -> glctx {
     (js! {
-        return @{canvas}.getContext("webgl",{ antialias: true });
+        return @{canvas.as_ref()}.getContext("webgl",{ antialias: true });
     }).try_into().ok().unwrap()
 }
 
@@ -30,7 +30,7 @@ fn fix_tex_image2_d_cnv(ctx: &glctx,
                     target: GLenum, level: GLint, internalformat: GLint,
                     format: GLenum, type_: GLenum, canvas: &CanvasElement) {
     js! {
-        @{ctx}.texImage2D(@{target}, @{level}, @{internalformat}, 
+        @{ctx.as_ref()}.texImage2D(@{target}, @{level}, @{internalformat}, 
                            @{format}, @{type_}, @{canvas});
     };
 }
