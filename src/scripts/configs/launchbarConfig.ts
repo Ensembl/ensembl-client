@@ -41,23 +41,23 @@ import newInfoIcon from 'assets/img/launchbar/new-info.svg';
 import newInfoSelectedIcon from 'assets/img/launchbar/new-info-selected.svg';
 
 export type LaunchbarApp = {
-  description: string,
+  description: string;
   icon: {
-    default: string,
-    selected: string
-  },
-  name: string
+    default: string;
+    selected: string;
+  };
+  name: string;
 };
 
 export type LaunchbarCategory = {
-  apps: LaunchbarApp[],
-  name: string,
-  separator: boolean
+  apps: LaunchbarApp[];
+  name: string;
+  separator: boolean;
 };
 
 export type LaunchbarDetails = {
-  about: LaunchbarApp,
-  categories: LaunchbarCategory[]
+  about: LaunchbarApp;
+  categories: LaunchbarCategory[];
 };
 
 export const launchbarConfig: LaunchbarDetails = {
@@ -65,7 +65,7 @@ export const launchbarConfig: LaunchbarDetails = {
     description: 'about ensembl',
     icon: {
       default: ensemblIcon,
-      selected: ensemblSelectedIcon,
+      selected: ensemblSelectedIcon
     },
     name: 'about'
   },
@@ -90,7 +90,7 @@ export const launchbarConfig: LaunchbarDetails = {
         }
       ],
       name: 'search',
-      separator: true,
+      separator: true
     },
     {
       apps: [
@@ -104,7 +104,7 @@ export const launchbarConfig: LaunchbarDetails = {
         }
       ],
       name: 'browsers',
-      separator: true,
+      separator: true
     },
     {
       apps: [
@@ -202,7 +202,7 @@ export const launchbarConfig: LaunchbarDetails = {
         }
       ],
       name: 'learning',
-      separator: false,
-    },
+      separator: false
+    }
   ]
 };

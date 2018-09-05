@@ -4,14 +4,14 @@ import TrackPanelBar from './TrackPanelBar';
 import TrackPanelList from './TrackPanelList';
 
 type TrackPanelProps = {
-  drawerOpened: boolean,
-  closeDrawer: () => void,
-  toggleBrowser: () => void,
-  updateCurrentTrackName: (currentTrack: string) => void
+  drawerOpened: boolean;
+  closeDrawer: () => void;
+  toggleBrowser: () => void;
+  updateCurrentTrackName: (currentTrack: string) => void;
 };
 
 type TrackPanelState = {
-  expanded: boolean
+  expanded: boolean;
 };
 
 class TrackPanel extends Component<TrackPanelProps, TrackPanelState> {
@@ -43,9 +43,20 @@ class TrackPanel extends Component<TrackPanelProps, TrackPanelState> {
     const { expanded } = this.state;
 
     return (
-      <section className={`track-panel react-slide-drawer ${expanded ? 'expanded' : 'collapsed'}`}>
-        <TrackPanelBar expanded={expanded} toggleTrackPanel={this.toggleTrackPanel} />
-        {expanded ? <TrackPanelList updateCurrentTrackName={this.props.updateCurrentTrackName} /> : null}
+      <section
+        className={`track-panel react-slide-drawer ${
+          expanded ? 'expanded' : 'collapsed'
+        }`}
+      >
+        <TrackPanelBar
+          expanded={expanded}
+          toggleTrackPanel={this.toggleTrackPanel}
+        />
+        {expanded ? (
+          <TrackPanelList
+            updateCurrentTrackName={this.props.updateCurrentTrackName}
+          />
+        ) : null}
       </section>
     );
   }

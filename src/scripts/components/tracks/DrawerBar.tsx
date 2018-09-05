@@ -8,11 +8,11 @@ import closeIcon from 'assets/img/track-panel/close.svg';
 type DrawerBarParams = {};
 
 type DrawerBarProps = RouteComponentProps<DrawerBarParams> & {
-  currentTrack: string
+  currentTrack: string;
 };
 
 type DrawerBarState = {
-  currentPage: string
+  currentPage: string;
 };
 
 class DrawerBar extends Component<DrawerBarProps, DrawerBarState> {
@@ -20,20 +20,26 @@ class DrawerBar extends Component<DrawerBarProps, DrawerBarState> {
     currentPage: ''
   };
 
+  constructor(props: DrawerBarProps) {
+    super(props);
+
+    this.changePage = this.changePage.bind(this);
+  }
+
   public render() {
     const trackPages: TrackPage[] = trackPagesConfig[this.props.currentTrack];
 
     return (
       <div className="drawer-bar">
         <dl className="page-list">
-          {
-            trackPages &&
+          {trackPages &&
             trackPages.map((page: TrackPage, index: number) => (
               <dt key={`${page.name}--${index}`}>
-                <button onClick={() => this.changePage(page.name)}>{page.label}</button>
+                <button onClick={() => this.changePage(page.name)}>
+                  {page.label}
+                </button>
               </dt>
-            ))
-          }
+            ))}
         </dl>
         <Link className="close" to="/app/speciesbrowser">
           <img src={closeIcon} alt="close drawer" />

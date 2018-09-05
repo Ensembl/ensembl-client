@@ -2,37 +2,49 @@ import React, { Component, SFC, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import SlideDown from 'react-slidedown';
 
-import { LaunchbarApp, LaunchbarCategory, launchbarConfig } from '../../../configs/launchbarConfig';
+import {
+  LaunchbarApp,
+  LaunchbarCategory,
+  launchbarConfig
+} from '../../../configs/launchbarConfig';
 
 type LaunchbarIconProps = {
-  app: LaunchbarApp
+  app: LaunchbarApp;
 };
 
 const LaunchbarIcon: SFC<LaunchbarIconProps> = (props: LaunchbarIconProps) => (
   <dt>
     <Link to={`/app/${props.app.name}`}>
-      <img src={props.app.icon.default} alt={props.app.description} title={props.app.description} />
+      <img
+        src={props.app.icon.default}
+        alt={props.app.description}
+        title={props.app.description}
+      />
     </Link>
   </dt>
 );
 
 type LaunchbarSectionProps = {
-  category: LaunchbarCategory
+  category: LaunchbarCategory;
 };
 
-const LaunchbarSection: SFC<LaunchbarSectionProps> = (props: LaunchbarSectionProps) => {
+const LaunchbarSection: SFC<LaunchbarSectionProps> = (
+  props: LaunchbarSectionProps
+) => {
   const { separator, apps } = props.category;
   const separatorClass: string = separator ? 'border' : '';
 
   return (
     <dl className={`${separatorClass}`}>
-      {apps.map((app: LaunchbarApp) => <LaunchbarIcon app={app} key={app.name} />)}
+      {apps.map((app: LaunchbarApp) => (
+        <LaunchbarIcon app={app} key={app.name} />
+      ))}
     </dl>
   );
 };
 
 type LaunchbarProps = {
-  expanded: boolean
+  expanded: boolean;
 };
 
 class Launchbar extends Component<LaunchbarProps> {
@@ -43,13 +55,15 @@ class Launchbar extends Component<LaunchbarProps> {
       <div className="launchbar">
         <div className="categories-wrapper">
           <div className="categories">
-          {categories.map((category: LaunchbarCategory) => <LaunchbarSection key={category.name} category={category} />)}
+            {categories.map((category: LaunchbarCategory) => (
+              <LaunchbarSection key={category.name} category={category} />
+            ))}
           </div>
         </div>
         <div className="about">
-            <dl>
-              <LaunchbarIcon app={about} />
-            </dl>
+          <dl>
+            <LaunchbarIcon app={about} />
+          </dl>
         </div>
       </div>
     );

@@ -4,19 +4,25 @@ import { RouteComponentProps } from 'react-router';
 import { UnregisterCallback, Location } from 'history';
 
 import TrackPanelListItem from './TrackPanelListItem';
-import { TrackPanelConfig, trackPanelConfig } from '../../../configs/trackPanelConfig';
+import {
+  TrackPanelConfig,
+  trackPanelConfig
+} from '../../../configs/trackPanelConfig';
 
 type TrackPanelListParams = {};
 
 type TrackPanelListProps = RouteComponentProps<TrackPanelListParams> & {
-  updateCurrentTrackName: (currentTrack: string) => void
+  updateCurrentTrackName: (currentTrack: string) => void;
 };
 
 type TrackPanelListState = {
-  currentTrack: string
+  currentTrack: string;
 };
 
-class TrackPanelList extends Component<TrackPanelListProps, TrackPanelListState> {
+class TrackPanelList extends Component<
+  TrackPanelListProps,
+  TrackPanelListState
+> {
   public readonly state: TrackPanelListState = {
     currentTrack: ''
   };
@@ -51,10 +57,14 @@ class TrackPanelList extends Component<TrackPanelListProps, TrackPanelListState>
     return (
       <div className="track-panel-list">
         <dl>
-          {
-            trackPanelConfig.map((track: TrackPanelConfig) =>
-              <TrackPanelListItem key={track.id} className={this.getTrackClassName(track.name)} track={track} changeTrack={this.changeTrack} />)
-          }
+          {trackPanelConfig.map((track: TrackPanelConfig) => (
+            <TrackPanelListItem
+              key={track.id}
+              className={this.getTrackClassName(track.name)}
+              track={track}
+              changeTrack={this.changeTrack}
+            />
+          ))}
         </dl>
       </div>
     );
@@ -81,4 +91,6 @@ class TrackPanelList extends Component<TrackPanelListProps, TrackPanelListState>
   }
 }
 
-export default withRouter((props: TrackPanelListProps) => <TrackPanelList {...props} />);
+export default withRouter((props: TrackPanelListProps) => (
+  <TrackPanelList {...props} />
+));

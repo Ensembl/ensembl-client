@@ -2,6 +2,7 @@ const path = require('path');
 const postcssPresetEnv = require('postcss-preset-env');
 const HtmlPlugin = require('html-webpack-plugin');
 const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
+const PrettierWebpackPlugin = require('prettier-webpack-plugin');
 const StylelintWebpackPlugin = require('stylelint-webpack-plugin');
 const history = require('connect-history-api-fallback');
 const convert = require('koa-connect');
@@ -70,6 +71,7 @@ module.exports = {
       filename: 'index.html',
       template: path.join(__dirname, '../assets/html/template.html')
     }),
+    new PrettierWebpackPlugin(),
     new StylelintWebpackPlugin({
       context: 'src',
       files: '**/*.scss'

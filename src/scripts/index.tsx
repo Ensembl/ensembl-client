@@ -6,6 +6,6 @@ import { registerSW } from './registerServiceWorker';
 
 import '../styles/main';
 
-render(<App/>, document.getElementById('ens-app'));
+render(<App />, document.getElementById('ens-app'));
 
 registerSW();

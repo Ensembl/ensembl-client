@@ -16,12 +16,12 @@ import shareSelectedIcon from 'assets/img/track-panel/share-selected.svg';
 import resetIcon from 'assets/img/track-panel/reset.svg';
 
 export type TrackPanelBarItem = {
-  description: string,
+  description: string;
   icon: {
-    default: string,
-    selected: string
-  },
-  name: string
+    default: string;
+    selected: string;
+  };
+  name: string;
 };
 
 export const trackPanelBarConfig: TrackPanelBarItem[] = [

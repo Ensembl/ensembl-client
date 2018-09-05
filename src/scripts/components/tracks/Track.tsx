@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import DrawerBar from './DrawerBar';
 
 type TrackProps = {
-  currentTrack: string
+  currentTrack: string;
 };
 
 type TrackState = {};
@@ -13,9 +13,7 @@ class Track extends Component<TrackProps, TrackState> {
     return (
       <section className="drawer">
         <DrawerBar currentTrack={this.props.currentTrack} />
-        <div className="track-canvas">
-          {this.props.children}
-        </div>
+        <div className="track-canvas">{this.props.children}</div>
       </section>
     );
   }

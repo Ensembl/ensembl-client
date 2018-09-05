@@ -4,8 +4,8 @@ import launchbarIcon from 'assets/img/header/launchbar.svg';
 import userIcon from 'assets/img/header/user.svg';
 
 type NavProps = {
-  toggleLaunchbar: ReactEventHandler,
-  toggleAccount: ReactEventHandler
+  toggleLaunchbar: ReactEventHandler;
+  toggleAccount: ReactEventHandler;
 };
 
 const Nav: SFC<NavProps> = (props: NavProps) => (

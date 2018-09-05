@@ -5,21 +5,21 @@ import ellipsisOnIcon from 'assets/img/track-panel/ellipsis-on.svg';
 import ellipsisOffIcon from 'assets/img/track-panel/ellipsis-off.svg';
 
 export type TrackPanelConfig = {
-  id: number,
-  label: string,
-  name: string
+  id: number;
+  label: string;
+  name: string;
 };
 
 export type TrackPanelIcon = {
-  description: string,
+  description: string;
   icon: {
-    off: string,
-    on: string
-  }
+    off: string;
+    on: string;
+  };
 };
 
 export type TrackPanelIcons = {
-  [key: string]: TrackPanelIcon
+  [key: string]: TrackPanelIcon;
 };
 
 export const trackPanelConfig: TrackPanelConfig[] = [

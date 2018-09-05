@@ -10,13 +10,13 @@ import Track from '../../tracks/Track';
 type BrowserCanvasParams = {};
 
 type BrowserCanvasProps = RouteComponentProps<BrowserCanvasParams> & {
-  trackRoutes: ReactNode
+  trackRoutes: ReactNode;
 };
 
 type BrowserCanvasState = {
-  browserExpanded: boolean,
-  currentTrack: string,
-  drawerOpened: boolean
+  browserExpanded: boolean;
+  currentTrack: string;
+  drawerOpened: boolean;
 };
 
 class BrowserCanvas extends Component<BrowserCanvasProps, BrowserCanvasState> {
@@ -84,9 +84,7 @@ class BrowserCanvas extends Component<BrowserCanvasProps, BrowserCanvasState> {
         <section className={className}>
           <BrowserBar expanded={false} drawerOpened={drawerOpened} />
           <div className="browser-canvas-wrapper" onClick={this.closeDrawer}>
-            <div className="browser-canvas">
-              {this.props.children}
-            </div>
+            <div className="browser-canvas">{this.props.children}</div>
           </div>
         </section>
         <TrackPanel
@@ -95,7 +93,11 @@ class BrowserCanvas extends Component<BrowserCanvasProps, BrowserCanvasState> {
           toggleBrowser={this.toggleBrowser}
           updateCurrentTrackName={this.updateCurrentTrackName}
         />
-        {drawerOpened && <Track currentTrack={this.state.currentTrack}>{this.props.trackRoutes}</Track>}
+        {drawerOpened && (
+          <Track currentTrack={this.state.currentTrack}>
+            {this.props.trackRoutes}
+          </Track>
+        )}
       </Fragment>
     );
   }
@@ -115,4 +117,6 @@ class BrowserCanvas extends Component<BrowserCanvasProps, BrowserCanvasState> {
   private historyUnlistener: UnregisterCallback = () => null;
 }
 
-export default withRouter((props: BrowserCanvasProps) => <BrowserCanvas {...props} />);
+export default withRouter((props: BrowserCanvasProps) => (
+  <BrowserCanvas {...props} />
+));

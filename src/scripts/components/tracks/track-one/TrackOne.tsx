@@ -23,13 +23,25 @@ class TrackOne extends Component {
     return (
       <div className="track-page-wrapper track-one">
         <Switch>
-          <Redirect from="/app/speciesbrowser/track/track-one" exact={true} to="/app/speciesbrowser/track/track-one/page-one" />
-          <Route path="/app/speciesbrowser/track/track-one/page-one" component={PageOne} />
-          <Route path="/app/speciesbrowser/track/track-one/page-two" component={PageTwo} />
-          <Route path="/app/speciesbrowser/track/track-one/page-three" component={PageThree} />
+          <Redirect
+            from="/app/speciesbrowser/track/track-one"
+            exact={true}
+            to="/app/speciesbrowser/track/track-one/page-one"
+          />
+          <Route
+            path="/app/speciesbrowser/track/track-one/page-one"
+            component={PageOne}
+          />
+          <Route
+            path="/app/speciesbrowser/track/track-one/page-two"
+            component={PageTwo}
+          />
+          <Route
+            path="/app/speciesbrowser/track/track-one/page-three"
+            component={PageThree}
+          />
         </Switch>
       </div>
-
     );
   }
 }

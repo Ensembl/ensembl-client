@@ -1,21 +1,21 @@
 export type TrackPage = {
-  label: string,
-  name: string
+  label: string;
+  name: string;
 };
 
 export type TrackPageList = {
-  [key: string]: TrackPage[]
+  [key: string]: TrackPage[];
 };
 
 export const trackPagesConfig: TrackPageList = {
   'track-one': [
     {
       label: 'Page 1',
-      name: 'page-one',
+      name: 'page-one'
     },
     {
       label: 'Page 2',
-      name: 'page-two',
+      name: 'page-two'
     },
     {
       label: 'Page 3',

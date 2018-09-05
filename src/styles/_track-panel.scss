@@ -23,7 +23,7 @@
       margin-bottom: 30px;
     }
   }
-  
+
   .track-panel-list {
     box-sizing: border-box;
     margin: 15px 15px 15px 0;
@@ -39,7 +39,8 @@
       margin-bottom: 5px;
       padding: 5px 10px;
 
-      &:hover, &.current-track {
+      &:hover,
+      &.current-track {
         background: lighten($ens-blue, 40%);
       }
 
