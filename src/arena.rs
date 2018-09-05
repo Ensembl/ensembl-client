@@ -16,7 +16,7 @@ use coord::{
     COrigin,
 };
 
-use campaign::{ OnOffManager, CampaignManager };
+use campaign::{ StateManager, CampaignManager };
 
 use geometry::{
     ProgramType
@@ -121,7 +121,7 @@ impl Arena {
         &mut self.cman
     }
 
-    pub fn shapes_to_gl(&mut self, oom: &OnOffManager) {
+    pub fn shapes_to_gl(&mut self, oom: &StateManager) {
         let datam = &mut self.data.borrow_mut();
         /* clear objects */
         for k in &self.order {
