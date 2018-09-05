@@ -3,10 +3,8 @@ TODO:
 text alpha               (4)
 tab deselected jank
 font load race
-clearing audit
 reload on resize event
 
-predicate types on shapes
 arena/leaf separation
 
 anti-alias with alpha
@@ -15,3 +13,5 @@ more than on/off
 not even in canvas
 
 fade-between refreshes
+
+refresh necessity to geometry
