@@ -2,7 +2,7 @@ use std::clone::Clone;
 use stdweb;
 use canvasutil;
 
-use campaign::{ OnOffManager, OnOffFixed, Campaign };
+use campaign::{ StateManager, StateFixed, Campaign, StateValue };
 
 use shape::{
     fix_rectangle,
@@ -220,10 +220,10 @@ pub fn demo() {
     let mut rng = SmallRng::from_seed([s,s,s,s,s,s,s,s,t,t,t,t,t,t,t,t]);
     let fc_font = canvasutil::FCFont::new(12,"Roboto");
     let mut stage = Stage::new();
-    let oom = OnOffManager::new();
+    let oom = StateManager::new();
 
-    let mut c = Campaign::new(Rc::new(OnOffFixed(true)));
-    let mut cb = Campaign::new(Rc::new(OnOffFixed(true)));
+    let mut c = Campaign::new(Rc::new(StateFixed(StateValue::On())));
+    let mut cb = Campaign::new(Rc::new(StateFixed(StateValue::On())));
     let mut c_odd = Campaign::new(Rc::new(oom.get_atom("odd")));
     stage.zoom = 0.1;
 
