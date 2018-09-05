@@ -80,7 +80,12 @@ pub struct FlatCanvas {
     height: i32,
 }
 
-impl FlatCanvas {
+impl FlatCanvas {        
+    pub fn reset() {
+        let ch = domutil::query_select("#managedcanvasholder");
+        domutil::inner_html(&ch,"");        
+    }
+        
     pub fn create(width: i32,height: i32) -> FlatCanvas {
         let canvas_holder = domutil::query_select("#managedcanvasholder");
         let canvas : CanvasElement = document().create_element("canvas").ok().unwrap().try_into().unwrap();

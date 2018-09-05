@@ -27,6 +27,7 @@ impl DrawingSession {
     
     fn finalise(&mut self, adata: &mut ArenaData) {
         let size = self.drawman.allocate();
+        canvasutil::FlatCanvas::reset();
         adata.canvases.flat = Rc::new(canvasutil::FlatCanvas::create(size.0,size.1));
         self.drawman.draw(&mut adata.canvases);
     }

@@ -24,6 +24,7 @@ mod drawing;
 mod program;
 mod webgl_rendering_context;
 pub mod coord;
+mod stageutil;
 
 fn main() {
     demo::demo();
