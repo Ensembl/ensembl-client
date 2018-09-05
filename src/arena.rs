@@ -16,7 +16,7 @@ use coord::{
     COrigin,
 };
 
-use campaign::{ OnOffManager, Campaign, OnOffFixed };
+use campaign::{ OnOffManager, CampaignManager };
 
 use geometry::{
     ProgramType
@@ -71,7 +71,7 @@ pub struct Arena {
     pub data: Rc<RefCell<ArenaData>>,
     order: Vec<ProgramType>,
     map: HashMap<ProgramType,Program>,
-    shapes: Campaign
+    cman: CampaignManager
 }
 
 impl Arena {
@@ -107,20 +107,20 @@ impl Arena {
         }
         
         let arena = Arena {
-            shapes: Campaign::new(Rc::new(OnOffFixed(true))),
+            cman: CampaignManager::new(),
             data, order, map,
         };
         arena
     }
 
-    pub fn get_campaign(&mut self) -> &mut Campaign {
-        &mut self.shapes
-    }
-
     pub fn dims(&self) -> ArenaDims {
         self.data.borrow().dims
     }
-        
+
+    pub fn get_cman(&mut self) -> &mut CampaignManager {
+        &mut self.cman
+    }
+
     pub fn shapes_to_gl(&mut self, oom: &OnOffManager) {
         let datam = &mut self.data.borrow_mut();
         /* clear objects */
@@ -129,7 +129,7 @@ impl Arena {
             geom.data.clear();
         }
         /* shapes -> objects */
-        self.shapes.into_objects(&mut self.map,datam,oom);
+        self.cman.into_objects(&mut self.map,datam,oom);
         /* finalise objects */
         for k in &self.order {
             let geom = self.map.get_mut(k).unwrap();

@@ -1,51 +1,33 @@
-use canvasutil;
 use std::rc::Rc;
 use std::collections::HashMap;
 
 use arena::ArenaData;
-use shape::{ Shape, ShapeContext };
+use shape::{ Shape };
 use program::Program;
 use campaign::onoff::{ OnOffManager, OnOffExpr };
 use drawing::{ Drawing, LeafDrawingManager };
 use geometry::ProgramType;
 
 pub struct Campaign {
-    pub id: Option<u32>,
     ooe: Rc<OnOffExpr>,
-    contexts: Vec<Box<ShapeContext>>,
     shapes: Vec<Box<Shape>>,
 }
 
 impl Campaign {
     pub fn new(ooe: Rc<OnOffExpr>) -> Campaign {
         Campaign {
-            contexts: Vec::<Box<ShapeContext>>::new(),
             shapes: Vec::<Box<Shape>>::new(),
-            ooe, id: None
+            ooe
         }
     }
-    
-    pub fn add_context(&mut self, ctx: Box<ShapeContext>) {
-        self.contexts.push(ctx);
-    }
-    
+        
     pub fn add_shape(&mut self, item: Box<Shape>) {
         self.shapes.push(item);
     }
     
-    pub fn into_objects(&mut self, map: &mut HashMap<ProgramType,Program>,
-                        adata: &mut ArenaData, oom: &OnOffManager) {
-        /* context */
-        for c in &mut self.contexts {
-            c.reset();
-        }
-        for (ref gk,ref mut geom) in map.iter_mut() {
-            for c in &mut self.contexts {
-                c.into_objects(gk,&mut geom.data,adata);
-            }
-        }
-        /* canvas */
-        let mut leafdrawman = LeafDrawingManager::new();
+    pub fn draw_drawings(&mut self,
+                        leafdrawman: &mut LeafDrawingManager,
+                        adata: &mut ArenaData, oom: &OnOffManager) -> Vec<Option<Drawing>> {
         let mut drawings = Vec::<Option<Drawing>>::new();
         for s in &mut self.shapes {
             let mut drawing = None;
@@ -57,9 +39,13 @@ impl Campaign {
             }
             drawings.push(drawing);
         }
-        let size = leafdrawman.allocate();
-        adata.canvases.flat = Rc::new(canvasutil::FlatCanvas::create(size.0,size.1));
-        leafdrawman.draw(&mut adata.canvases);
+        drawings
+    }
+
+    pub fn into_objects(&mut self, map: &mut HashMap<ProgramType,Program>,
+                        leafdrawman: &mut LeafDrawingManager,
+                        adata: &mut ArenaData, oom: &OnOffManager,
+                        drawings: &Vec<Option<Drawing>>) {
         /* shapes */
         for (i,mut s) in self.shapes.iter().enumerate() {
             let req = &drawings[i];

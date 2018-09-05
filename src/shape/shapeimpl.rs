@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use arena::ArenaData;
 use program::{ ProgramAttribs, DataGroup };
 use coord::{ Colour, RPixel };
-use campaign::Campaign;
+use campaign::CampaignManager;
 use geometry::{ ProgramType, PTSkin };
 use drawing::Artist;
 
@@ -57,7 +57,7 @@ impl ShapeContext for SpotImpl {
 }
 
 impl Spot {
-    pub fn new(camps: &mut Campaign, colour: &Colour) -> Spot {
+    pub fn new(camps: &mut CampaignManager, colour: &Colour) -> Spot {
         let s = Spot(Rc::new(RefCell::new(SpotImpl::new(colour))));
         camps.add_context(Box::new(s.clone()));
         s

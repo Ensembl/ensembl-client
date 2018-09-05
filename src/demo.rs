@@ -2,7 +2,7 @@ use std::clone::Clone;
 use stdweb;
 use canvasutil;
 
-use campaign::{ OnOffManager, OnOffFixed, OnOffExpr };
+use campaign::{ OnOffManager, OnOffFixed, Campaign };
 
 use shape::{
     fix_rectangle,
@@ -221,8 +221,10 @@ pub fn demo() {
     let fc_font = canvasutil::FCFont::new(12,"Roboto");
     let mut stage = Stage::new();
     let oom = OnOffManager::new();
-    //let ooe_true = Rc::new(OnOffFixed(true));
-    //let ooe_odd = Rc::new(oom.get_atom("odd"));
+
+    let mut c = Campaign::new(Rc::new(OnOffFixed(true)));
+    let mut cb = Campaign::new(Rc::new(OnOffFixed(true)));
+    let mut c_odd = Campaign::new(Rc::new(oom.get_atom("odd")));
     stage.zoom = 0.1;
 
     let mut a_spec = ArenaSpec::new();
@@ -231,9 +233,9 @@ pub fn demo() {
     let mut middle = arena.dims().height_px / 120;
     if middle < 5 { middle = 5; }
     
-    let red_spot = Spot::new(arena.get_campaign(),&Colour(255,100,50));
+    let red_spot = Spot::new(arena.get_cman(),&Colour(255,100,50));
     let red = ColourSpec::Spot(red_spot.clone());
-    let green_spot = Spot::new(arena.get_campaign(),&Colour(50,255,150));
+    let green_spot = Spot::new(arena.get_cman(),&Colour(50,255,150));
     let green = ColourSpec::Spot(green_spot.clone());
     
     let len_gen = Range::new(0.,0.2);
@@ -250,7 +252,6 @@ pub fn demo() {
     {
         let col = Colour(200,200,200);
         {
-        let c = &mut arena.get_campaign();
         for yidx in 0..20 {
             let y = yidx * 60;
             let val = daft(&mut rng);
@@ -280,12 +281,12 @@ pub fn demo() {
             }
             if yidx == middle +1 {
                 for i in 3..8 {
-                    //let ooe : Rc<OnOffExpr> = if i % 2 == 1 { ooe_odd.clone() } else { ooe_true.clone() };
-                    c.add_shape(pin_mathsshape(&CLeaf(-1.+0.4*(i as f32),y+20),
+                    let cs = if i % 2 == 1 { &mut c_odd } else { &mut c };
+                    cs.add_shape(pin_mathsshape(&CLeaf(-1.+0.4*(i as f32),y+20),
                                    10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
                                    &red));
                     let colour = Colour(0,128,255);
-                    c.add_shape(pin_mathsshape(&CLeaf(-3.+0.4*(i as f32),y+20),
+                    cs.add_shape(pin_mathsshape(&CLeaf(-3.+0.4*(i as f32),y+20),
                                    10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
                                    &ColourSpec::Colour(colour)));
                 }
@@ -368,7 +369,7 @@ pub fn demo() {
                     if showtext_gen.sample(&mut rng) == 0 {
                         let val = bio_daft(&mut rng);
                         let tx = text_texture(&val,&fc_font,&col);
-                        c.add_shape(pin_texture(tx, &CLeaf(x,y-24), &CPixel(1,1)));
+                        cb.add_shape(pin_texture(tx, &CLeaf(x,y-24), &CPixel(1,1)));
                     }
                 }
             }
@@ -386,6 +387,10 @@ pub fn demo() {
         }
         {
                 let a = &mut arena;
+        a.get_cman().add_campaign(c);
+        a.get_cman().add_campaign(cb);
+        a.get_cman().add_campaign(c_odd);
+
         a.shapes_to_gl(&oom);
         stage.zoom = 0.5;
         a.draw(&stage);
