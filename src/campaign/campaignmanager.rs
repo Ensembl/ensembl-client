@@ -2,10 +2,8 @@ use canvasutil;
 use std::rc::Rc;
 use std::collections::HashMap;
 
-use arena::ArenaData;
-use program::Program;
+use arena::{ ArenaData, ArenaPrograms };
 use campaign::{ Campaign, StateManager };
-use geometry::ProgramType;
 use drawing::{ Drawing, LeafDrawingManager };
 use shape::ShapeContext;
 use campaign::state::CampaignRedo;
@@ -80,12 +78,12 @@ impl CampaignManager {
         redo
     }
     
-    fn apply_contexts(&mut self, map: &mut HashMap<ProgramType,Program>,
+    fn apply_contexts(&mut self, progs: &mut ArenaPrograms,
                       adata: &mut ArenaData) {
         for c in &mut self.contexts {
             c.reset();
         }
-        for (ref gk,ref mut geom) in map.iter_mut() {
+        for (ref gk,ref mut geom) in progs.map.iter_mut() {
             for c in &mut self.contexts {
                 c.into_objects(gk,&mut geom.data,adata);
             }
@@ -100,24 +98,25 @@ impl CampaignManager {
         self.ds.finalise(adata);
     }
 
-    fn redraw_objects(&mut self, map: &mut HashMap<ProgramType,Program>,
-                      adata: &mut ArenaData) {
+    fn redraw_objects(&mut self, progs: &mut ArenaPrograms, adata: &mut ArenaData) {
         for (i,c) in &mut self.campaigns {
             if c.is_on() {
                 let d = self.ds.drawings_for(*i);
-                c.into_objects(map,&self.ds.drawman,adata,d);
+                c.into_objects(progs,&self.ds.drawman,adata,d);
             }
         }
     }
 
-    pub fn into_objects(&mut self, map: &mut HashMap<ProgramType,Program>,
+    pub fn into_objects(&mut self, progs: &mut ArenaPrograms,
                         adata: &mut ArenaData, oom: &StateManager) {
         let redo = self.calc_level(oom);
         if redo == CampaignRedo::None { return; }
-        self.apply_contexts(map,adata);
+        progs.clear_objects();
+        self.apply_contexts(progs,adata);
         if redo == CampaignRedo::Major {
             self.redraw_drawings(adata);
         }
-        self.redraw_objects(map,adata);
+        self.redraw_objects(progs,adata);
+        progs.finalize_objects(adata);
     }
 }

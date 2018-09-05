@@ -1,12 +1,9 @@
 use std::rc::Rc;
-use std::collections::HashMap;
 
-use arena::ArenaData;
+use arena::{ ArenaData, ArenaPrograms };
 use shape::{ Shape };
-use program::Program;
 use campaign::state::{ StateManager, StateExpr, StateValue, CampaignRedo };
 use drawing::{ Drawing, LeafDrawingManager };
-use geometry::ProgramType;
 
 pub struct Campaign {
     prev_value: StateValue,
@@ -60,7 +57,7 @@ impl Campaign {
         drawings
     }
 
-    pub fn into_objects(&mut self, map: &mut HashMap<ProgramType,Program>,
+    pub fn into_objects(&mut self, progs: &mut ArenaPrograms,
                         leafdrawman: &LeafDrawingManager,
                         adata: &mut ArenaData,
                         drawings: &Vec<Option<Drawing>>) {
@@ -71,7 +68,7 @@ impl Campaign {
                 tp = Some(req.measure(&leafdrawman));
             }
             let geom_name = s.get_geometry();
-            if let Some(geom) = map.get_mut(&geom_name) {                
+            if let Some(geom) = progs.map.get_mut(&geom_name) {                
                 s.into_objects(geom_name,&mut geom.data,adata,tp);
             }
         }
