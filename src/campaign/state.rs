@@ -2,7 +2,7 @@ use std::rc::Rc;
 use std::collections::HashMap;
 use std::ops::{ BitAnd, BitOr, Not };
 
-#[derive(PartialEq)]
+#[derive(PartialEq,Debug)]
 pub enum CampaignRedo {
     Major,
     Minor,
@@ -57,6 +57,7 @@ impl Not for StateValue {
     }
 }
 
+#[allow(unused,non_snake_case)]
 impl StateValue {
     pub fn OffCold() -> StateValue { StateValue(false,true) }
     pub fn OffWarm() -> StateValue { StateValue(false,false) }
@@ -66,7 +67,6 @@ impl StateValue {
     
     pub fn on(self) -> bool { self.0 }
     pub fn offcold(self) -> bool { !self.0 && self.1 }
-    pub fn offwarm(self) -> bool { !self.0 && !self.1 }
 }
 
 pub trait StateExpr {

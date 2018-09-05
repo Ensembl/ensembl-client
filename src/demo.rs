@@ -56,6 +56,7 @@ use rand::distributions::range::Range;
 
 struct State {
     arena: RefCell<Arena>,
+    oom: StateManager,
     stage: Stage,
     zoomscale: f32,
     hpos: f32,
@@ -138,6 +139,18 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
             state.stage.zoom = ((state.zoomscale.cos() + 1.5)/3.0) as f32;
             state.stage.pos.0 = ((state.hpos.cos())*1.5) as f32;
             state.stage.pos.1 = ((state.vpos.sin())*300.) as f32;
+            let odd_state = if state.hpos.cos() > 0. {
+                StateValue::OffWarm()
+            } else {
+                StateValue::On()
+            };
+            let even_state = if state.vpos.sin() > 0. {
+                StateValue::OffCold()
+            } else {
+                StateValue::On()
+            };
+            state.oom.set_atom_state("odd",odd_state);
+            state.oom.set_atom_state("even",even_state);
         }
         
         let d = time - state.old_time;
@@ -150,7 +163,8 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
         }
         if state.phase == 0 {
             detect_jank(&mut state,d as u32,time as f32/1000.0);
-            state.arena.borrow_mut().draw(&state.stage);
+            let mut a = state.arena.borrow_mut();
+            a.draw(&state.oom,&state.stage);
         }
     }
     window().request_animation_frame(move |x| animate(x,s.clone()));
@@ -225,6 +239,7 @@ pub fn demo() {
     let mut c = Campaign::new(Rc::new(StateFixed(StateValue::On())));
     let mut cb = Campaign::new(Rc::new(StateFixed(StateValue::On())));
     let mut c_odd = Campaign::new(Rc::new(oom.get_atom("odd")));
+    let mut c_even = Campaign::new(Rc::new(oom.get_atom("even")));
     stage.zoom = 0.1;
 
     let mut a_spec = ArenaSpec::new();
@@ -281,7 +296,7 @@ pub fn demo() {
             }
             if yidx == middle +1 {
                 for i in 3..8 {
-                    let cs = if i % 2 == 1 { &mut c_odd } else { &mut c };
+                    let cs = if i % 2 == 1 { &mut c_odd } else { &mut c_even };
                     cs.add_shape(pin_mathsshape(&CLeaf(-1.+0.4*(i as f32),y+20),
                                    10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
                                    &red));
@@ -390,15 +405,16 @@ pub fn demo() {
         a.get_cman().add_campaign(c);
         a.get_cman().add_campaign(cb);
         a.get_cman().add_campaign(c_odd);
+        a.get_cman().add_campaign(c_even);
 
-        a.shapes_to_gl(&oom);
         stage.zoom = 0.5;
-        a.draw(&stage);
+        //a.draw(&stage);
     }
     }
 
     let state = Rc::new(RefCell::new(State {
         arena: RefCell::new(arena),
+        oom,
         stage,
         hpos: 0.0,
         vpos: 0.0,

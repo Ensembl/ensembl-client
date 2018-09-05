@@ -67,10 +67,30 @@ impl ArenaSpec {
     }
 }
 
+pub struct ArenaPrograms {
+    order: Vec<ProgramType>,
+    pub map: HashMap<ProgramType,Program>,
+}
+
+impl ArenaPrograms {
+    pub fn clear_objects(&mut self) {
+        for k in &self.order {
+            let geom = self.map.get_mut(k).unwrap();
+            geom.data.clear();
+        }        
+    }
+
+    pub fn finalize_objects(&mut self, adata: &mut ArenaData) {
+        for k in &self.order {
+            let geom = self.map.get_mut(k).unwrap();
+            geom.data.objects_final(adata);
+        }
+    }
+}
+
 pub struct Arena {
     pub data: Rc<RefCell<ArenaData>>,
-    order: Vec<ProgramType>,
-    map: HashMap<ProgramType,Program>,
+    pub progs: ArenaPrograms,
     cman: CampaignManager
 }
 
@@ -108,7 +128,9 @@ impl Arena {
         
         let arena = Arena {
             cman: CampaignManager::new(),
-            data, order, map,
+            progs: ArenaPrograms {
+                    order, map
+            }, data
         };
         arena
     }
@@ -121,33 +143,25 @@ impl Arena {
         &mut self.cman
     }
 
-    pub fn shapes_to_gl(&mut self, oom: &StateManager) {
-        let datam = &mut self.data.borrow_mut();
-        /* clear objects */
-        for k in &self.order {
-            let geom = self.map.get_mut(k).unwrap();
-            geom.data.clear();
+    pub fn draw(&mut self, oom: &StateManager, stage: &Stage) {
+        /* maybe update scene */
+        {
+            let (cman,datam,progs) = (
+                &mut self.cman,
+                &mut self.data.borrow_mut(),
+                &mut self.progs);
+            cman.into_objects(progs,datam,oom);
         }
-        /* shapes -> objects */
-        self.cman.into_objects(&mut self.map,datam,oom);
-        /* finalise objects */
-        for k in &self.order {
-            let geom = self.map.get_mut(k).unwrap();
-            geom.data.objects_final(datam);
-        }
-    }
-
-    pub fn draw(&mut self, stage: &Stage) {
-        // prepare arena
+        /* prepare arena */
         {
             let ctx = &self.data.borrow().ctx;
             ctx.enable(glctx::DEPTH_TEST);
             ctx.depth_func(glctx::LEQUAL);
         }
-        // draw each geometry
+        /* draw each geometry */
         let datam = &mut self.data.borrow_mut();
-        for k in &self.order {
-            let geom = self.map.get_mut(k).unwrap();
+        for k in &self.progs.order {
+            let geom = self.progs.map.get_mut(k).unwrap();
             let u = stage.get_uniforms(&datam.canvases,
                                        &datam.dims);
             for (key, value) in &u {
