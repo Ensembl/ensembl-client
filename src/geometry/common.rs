@@ -18,25 +18,13 @@ use program::{
 };
 
 #[derive(Clone,Copy,Debug,PartialEq,Eq,Hash)]
-pub enum PTGeom {
-    Pin,
-    Stretch,
-    Fix,
-    Page
-}
+pub enum PTGeom { Pin, Stretch, Fix, Page }
 
 #[derive(Clone,Copy,Debug,PartialEq,Eq,Hash)]
-pub enum PTMethod {
-    Triangle,
-    Strip
-}
+pub enum PTMethod { Triangle, Strip }
 
 #[derive(Clone,Copy,Debug,PartialEq,Eq,Hash)]
-pub enum PTSkin {
-    Colour,
-    Spot,
-    Texture
-}
+pub enum PTSkin { Colour, Spot, Texture }
 
 #[derive(Clone,Copy,Debug,PartialEq,Eq,Hash)]
 pub struct ProgramType(pub PTGeom,pub PTMethod,pub PTSkin);

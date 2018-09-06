@@ -22,9 +22,9 @@ mod wglraw;
 mod alloc;
 mod drawing;
 mod program;
+mod dom;
 mod webgl_rendering_context;
 pub mod coord;
-mod stageutil;
 
 fn main() {
     demo::demo();

@@ -1,8 +1,8 @@
 use std::clone::Clone;
 use stdweb;
 use canvasutil;
-use stageutil;
 use domutil;
+use dom;
 
 use campaign::{ StateManager, StateFixed, Campaign, StateValue };
 
@@ -230,9 +230,7 @@ fn wiggly<R>(rng: &mut R, num: u32, origin: CLeaf, sep: f32, h: i32)
 pub fn demo() {
     stdweb::initialize();
 
-    domutil::inner_html(&domutil::query_select("#stage"),stageutil::STAGE);
-    let el = domutil::append_element(&domutil::query_select("head"),"style");
-    domutil::inner_html(&el,stageutil::STAGE_CSS);
+    dom::setup_stage_debug();
 
 
     let seed = 12345678;
