@@ -229,10 +229,21 @@ fn wiggly<R>(rng: &mut R, num: u32, origin: CLeaf, sep: f32, h: i32)
 pub fn demo() {
     stdweb::initialize();
 
-    dom::setup_stage_debug();
-
     debug!("global","starting");
+    dom::setup_stage_debug();
+    stdweb::event_loop();
+}
 
+pub fn testcard(name: &str) {
+    debug!("global","starting testcard {}",name);
+    match name {
+        "draw" => testcard_visual(false),
+        "onoff" => testcard_visual(true),
+        _ => ()
+    };
+}
+
+pub fn testcard_visual(onoff: bool) {
     let seed = 12345678;
     let s = seed as u8;
     let t = (seed/256) as u8;
@@ -241,10 +252,19 @@ pub fn demo() {
     let mut stage = Stage::new();
     let oom = StateManager::new();
 
+    let (mut c_odd,mut c_even) = if onoff {
+        (
+            Campaign::new(Rc::new(oom.get_atom("odd"))),
+            Campaign::new(Rc::new(oom.get_atom("even"))),
+        )
+    } else {
+        (
+            Campaign::new(Rc::new(StateFixed(StateValue::On()))),
+            Campaign::new(Rc::new(StateFixed(StateValue::On())))
+        )
+    };
+
     let mut c = Campaign::new(Rc::new(StateFixed(StateValue::On())));
-    let mut cb = Campaign::new(Rc::new(StateFixed(StateValue::On())));
-    let mut c_odd = Campaign::new(Rc::new(oom.get_atom("odd")));
-    let mut c_even = Campaign::new(Rc::new(oom.get_atom("even")));
     stage.zoom = 0.1;
 
     let mut a_spec = ArenaSpec::new();
@@ -279,22 +299,22 @@ pub fn demo() {
             c.add_shape(page_texture(tx, &CPixel(4,y+18), &CPixel(1,1)));
             if yidx == middle - 5 {
                 for i in 1..10 {
-                    c.add_shape(pin_mathsshape(&CLeaf(-1.+0.4*(i as f32),y+20),
+                    c_odd.add_shape(pin_mathsshape(&CLeaf(-1.+0.4*(i as f32),y+20),
                                    10. * i as f32,None,MathsShape::Circle,
                                    &green));
                     let colour = Colour(255,0,128);
-                    c.add_shape(pin_mathsshape(&CLeaf(-3.+0.4*(i as f32),y+20),
+                    c_even.add_shape(pin_mathsshape(&CLeaf(-3.+0.4*(i as f32),y+20),
                                    10. * i as f32,Some(2.),MathsShape::Circle,
                                    &ColourSpec::Colour(colour)));
                 }
             }
             if yidx == middle {
                 for i in 3..8 {
-                    c.add_shape(pin_mathsshape( &CLeaf(-1.+0.4*(i as f32),y+20),
+                    c_odd.add_shape(pin_mathsshape( &CLeaf(-1.+0.4*(i as f32),y+20),
                                    10., None, MathsShape::Polygon(i,0.2*i as f32),
                                    &red));
                     let colour = Colour(0,128,255);
-                    c.add_shape(pin_mathsshape(&CLeaf(-3.+0.4*(i as f32),y+20),
+                    c_even.add_shape(pin_mathsshape(&CLeaf(-3.+0.4*(i as f32),y+20),
                                    10., None, MathsShape::Polygon(i,0.2*i as f32),
                                    &ColourSpec::Colour(colour)));
                 }
@@ -324,13 +344,13 @@ pub fn demo() {
                                              0,255,0,255,
                                              255,255,0,255 },CPixel(2,2));
                 c.add_shape(pin_texture(tx,&CLeaf(0.,y-25),&CPixel(10,10)));
-                c.add_shape(stretch_rectangle(&RLeaf(CLeaf(-2.,y-20),CLeaf(1.,5)),&red));
-                c.add_shape(stretch_rectangle(&RLeaf(CLeaf(-2.,y-15),CLeaf(1.,5)),&green));
-                c.add_shape(pin_triangle(&CLeaf(-2.,y-15),&[CPixel(0,0),
+                c_odd.add_shape(stretch_rectangle(&RLeaf(CLeaf(-2.,y-20),CLeaf(1.,5)),&red));
+                c_even.add_shape(stretch_rectangle(&RLeaf(CLeaf(-2.,y-15),CLeaf(1.,5)),&green));
+                c_odd.add_shape(pin_triangle(&CLeaf(-2.,y-15),&[CPixel(0,0),
                                          CPixel(-5,10),
                                          CPixel(5,10)],
                                          &red));
-                c.add_shape(pin_triangle(&CLeaf(-1.,y-15),&[CPixel(0,0),
+                c_even.add_shape(pin_triangle(&CLeaf(-1.,y-15),&[CPixel(0,0),
                                          CPixel(-5,10),
                                          CPixel(5,10)],
                                          &green));
@@ -363,7 +383,7 @@ pub fn demo() {
                 c.add_shape(stretch_texture(tx,&RLeaf(CLeaf(-7.,y-25),CLeaf(20.,40))));
             } else if yidx == middle+2 || yidx == middle+4 {
                 let wiggle = wiggly(&mut rng,500,CLeaf(-5.,y-5),0.02,20);
-                c.add_shape(stretch_wiggle(wiggle,2,&green_spot));
+                c_odd.add_shape(stretch_wiggle(wiggle,2,&green_spot));
             } else {
                 for idx in -100..100 {
                     let v1 = (idx as f32) * 0.1;
@@ -389,7 +409,7 @@ pub fn demo() {
                     if showtext_gen.sample(&mut rng) == 0 {
                         let val = bio_daft(&mut rng);
                         let tx = text_texture(&val,&fc_font,&col);
-                        cb.add_shape(pin_texture(tx, &CLeaf(x,y-24), &CPixel(1,1)));
+                        c.add_shape(pin_texture(tx, &CLeaf(x,y-24), &CPixel(1,1)));
                     }
                 }
             }
@@ -408,12 +428,10 @@ pub fn demo() {
         {
                 let a = &mut arena;
         a.get_cman().add_campaign(c);
-        a.get_cman().add_campaign(cb);
         a.get_cman().add_campaign(c_odd);
         a.get_cman().add_campaign(c_even);
 
         stage.zoom = 0.5;
-        //a.draw(&stage);
     }
     }
 
@@ -436,5 +454,4 @@ pub fn demo() {
     }));
 
     animate(0.,state);
-    stdweb::event_loop();
 }

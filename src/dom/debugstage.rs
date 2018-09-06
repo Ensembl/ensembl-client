@@ -3,10 +3,12 @@ use std::collections::HashMap;
 use stdweb::traits::IEvent;
 use std::cell::RefCell;
 use stdweb::web::IEventTarget;
-use stdweb::web::event::ChangeEvent;
+use stdweb::web::event::{ ClickEvent, ChangeEvent };
 use stdweb::web::html_element::SelectElement;
 use stdweb::unstable::TryInto;
 use domutil;
+use demo;
+use dom;
 
 pub struct DebugFolderEntry {
     name: String,
@@ -29,6 +31,11 @@ impl DebugFolderEntry {
     
     pub fn reset(&mut self) {
         self.contents = String::new();
+    }
+    
+    pub fn mark(&mut self) {
+        console!("mark {:?}",&self.name);
+        self.add("-- MARK --");
     }
     
     pub fn add(&mut self, value: &str) {
@@ -112,6 +119,14 @@ impl DebugPanel {
         }
     }
     
+    fn mark(&mut self) {
+        for e in &mut self.folder.values_mut() {
+            e.mark();
+        }
+        let sel = self.selected.clone();
+        self.update_contents(&sel);
+    }
+    
     pub fn get_entry(&mut self, name: &str) -> &mut DebugFolderEntry {
         if let None = self.folder.get(name) {
             self.folder.insert(name.to_string(),DebugFolderEntry::new(name));
@@ -121,14 +136,24 @@ impl DebugPanel {
     }
 }
 
+const CANVAS : &str = r##"
+    <canvas id="glcanvas"></canvas>
+"##;
+
 const STAGE : &str = r##"
 <div id="bpane-container">
     <div id="bpane-canv">
-        <canvas id="glcanvas"></canvas>
+        <h1>Debug Mode</h1>
     </div>
     <div id="bpane-right">
         <div id="console">
+            <select class="testcard">
+                <option value="">- testcards -</option>
+                <option value="draw">Draw Testcard</option>
+                <option value="onoff">On/Off Testcard</option>
+            </select>
             <select class="folder"></select>
+            <button class="mark">mark!</button>
             <pre class="content"></pre>
         </div>
         <div id="managedcanvasholder"></div>
@@ -192,6 +217,31 @@ html, body {
 @import url('https://fonts.googleapis.com/css?family=Roboto');
 "##;
 
+fn setup_testcard(name: &str) {
+    debug!("global","setup testcard {}",name);
+    let pane_el = domutil::query_select("#bpane-canv");
+    if name.len() > 0 {
+        domutil::inner_html(&pane_el,CANVAS);
+        demo::testcard(name);
+    } else {
+        domutil::inner_html(&pane_el,"");
+    }
+}
+
+fn setup_events() {
+    let sel_el = domutil::query_select("#console .testcard");
+    sel_el.add_event_listener(|e: ChangeEvent| {
+        let node : SelectElement = e.target().unwrap().try_into().ok().unwrap();
+        if let Some(name) = node.value() {
+            setup_testcard(&name);
+        }
+    });
+    let mark_el = domutil::query_select("#console .mark");
+    mark_el.add_event_listener(|e: ClickEvent| {
+        debug_panel_entry_mark();
+    });
+}
+
 pub fn setup_stage_debug() {
     domutil::inner_html(&domutil::query_select("#stage"),STAGE);
     let el = domutil::append_element(&domutil::query_select("head"),"style");
@@ -199,6 +249,7 @@ pub fn setup_stage_debug() {
     debug_panel.with(|p| {
         *p.borrow_mut() = Some(DebugPanel::new());
     });
+    setup_events();
 }
 
 thread_local! {
@@ -210,6 +261,15 @@ pub fn debug_panel_entry_reset(name: &str) {
         let mut po = p.borrow_mut();
         if let Some(panel) = po.as_mut() {
             panel.get_entry(name).reset()
+        }
+    })
+}
+
+pub fn debug_panel_entry_mark() {
+    debug_panel.with(|p| {
+        let mut po = p.borrow_mut();
+        if let Some(panel) = po.as_mut() {
+            panel.mark()
         }
     })
 }
