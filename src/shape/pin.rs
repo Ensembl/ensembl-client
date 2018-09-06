@@ -2,7 +2,10 @@ use std::f32;
 use std::rc::Rc;
 use arena::ArenaData;
 
-use program::{ ProgramAttribs, DataBatch };
+use program::{
+    ProgramAttribs, DataBatch, PTGeom, PTMethod, PTSkin, ProgramType
+};
+
 use coord::{ CLeaf, CPixel, RPixel, Input, CFraction };
 
 use shape::{ Shape, ColourSpec, MathsShape };
@@ -12,8 +15,6 @@ use shape::util::{
     vertices_rect, vertices_tri, vertices_hollowpoly,
     despot
 };
-
-use geometry::{ PTGeom, PTMethod, PTSkin, ProgramType };
 
 use drawing::Artist;
 

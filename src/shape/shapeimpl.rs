@@ -2,10 +2,9 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use arena::ArenaData;
-use program::{ ProgramAttribs, DataGroup };
+use program::{ ProgramAttribs, DataGroup, ProgramType, PTSkin };
 use coord::{ Colour, RPixel };
 use campaign::CampaignManager;
-use geometry::{ ProgramType, PTSkin };
 use drawing::Artist;
 
 pub trait Shape {

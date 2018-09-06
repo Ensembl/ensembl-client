@@ -1,3 +1,4 @@
+use dom;
 use std::collections::HashMap;
 
 use webgl_rendering_context::{
@@ -10,17 +11,11 @@ use std::rc::Rc;
 use canvasutil;
 use wglraw;
 
-use program::{ Program, GPUSpec, UniformValue };
+use program::{ Program, GPUSpec, UniformValue, ProgramType };
 
-use coord::{
-    COrigin,
-};
+use coord::COrigin;
 
 use campaign::{ StateManager, CampaignManager };
-
-use geometry::{
-    ProgramType
-};
 
 pub struct ArenaCanvases {
     pub flat: Rc<canvasutil::FlatCanvas>,
@@ -95,8 +90,8 @@ pub struct Arena {
 }
 
 impl Arena {
-    pub fn new(selector: &str, mcsel: &str, spec: ArenaSpec) -> Arena {
-        let canvas = canvasutil::prepare_canvas(selector,mcsel,spec.debug);
+    pub fn new(selector: &str, spec: ArenaSpec) -> Arena {
+        let canvas = canvasutil::prepare_canvas(selector);
         let ctx = wglraw::prepare_context(&canvas);
         let flat = Rc::new(canvasutil::FlatCanvas::create(2,2));
         console!("{:?} x {:?}",canvas.width(),canvas.height());
@@ -124,6 +119,7 @@ impl Arena {
         let order = ProgramType::all();
         let mut map = HashMap::<ProgramType,Program>::new();
         for pt in &order {
+            debug!("webgl programs","=== {:?} ===",&pt);
             map.insert(*pt,pt.to_program(&data_b));
         }
         

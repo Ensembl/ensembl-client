@@ -1,7 +1,6 @@
 use std::clone::Clone;
 use stdweb;
 use canvasutil;
-use domutil;
 use dom;
 
 use campaign::{ StateManager, StateFixed, Campaign, StateValue };
@@ -112,7 +111,7 @@ fn detect_jank(state : &mut State, delta: u32, time: f32) {
             state.grace_at = time + state.grace_next.1 as f32;
             state.last_down = false;
             state.gear += 1;
-            js! { console.log(">gear",@{state.gear},@{state.grace_next.1}); };
+            debug!("jank gear",">gear {:?} {:?}",state.gear,state.grace_next.1);
         }
     }
     if state.grace_at <= time && state.gear > 1 {
@@ -124,7 +123,7 @@ fn detect_jank(state : &mut State, delta: u32, time: f32) {
         state.grace_at = time + JANK_WINDOW;
         state.last_down = true;
         state.gear -= 1;
-        js! { console.log("<gear",@{state.gear},@{state.grace_next.1}); };
+        debug!("jank gear","<gear {:?} {:?}",state.gear,state.grace_next.1);
     }
 }
 
@@ -232,6 +231,7 @@ pub fn demo() {
 
     dom::setup_stage_debug();
 
+    debug!("global","starting");
 
     let seed = 12345678;
     let s = seed as u8;
@@ -249,7 +249,7 @@ pub fn demo() {
 
     let mut a_spec = ArenaSpec::new();
     a_spec.debug = true;
-    let mut arena = Arena::new("#glcanvas","#managedcanvasholder",a_spec);
+    let mut arena = Arena::new("#glcanvas",a_spec);
     let mut middle = arena.dims().height_px / 120;
     if middle < 5 { middle = 5; }
     

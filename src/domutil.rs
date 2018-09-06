@@ -21,16 +21,16 @@ pub fn add_attr(el: &Element,key: &str, more: &str) {
     el.set_attribute(key,&val).ok();
 }
 
-pub fn add_class(el: &Element, klass: &str) {
-    add_attr(el,"class",klass);
-}
-
 pub fn add_style(el: &Element, key: &str, value: &str) {
     add_attr(el,"style",&format!("{}: {};",key,value));
 }
 
 pub fn inner_html(el: &Element, value: &str) {
     js! { @{el.as_ref()}.innerHTML = @{value} };
+}
+
+pub fn text_content(el: &Element, value: &str) {
+    js! { @{el.as_ref()}.textContent = @{value} };
 }
 
 pub fn append_element(el: &Element, name: &str) -> Element {

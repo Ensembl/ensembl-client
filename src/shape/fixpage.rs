@@ -1,12 +1,13 @@
 use std::rc::Rc;
 use arena::ArenaData;
 
-use program::ProgramAttribs;
-use geometry::{ ProgramType, PTGeom, PTSkin, PTMethod };
+use program::{ ProgramType, PTGeom, PTSkin, PTMethod, ProgramAttribs };
 use coord::{ CPixel, RPixel };
 
 use shape::{ Shape, ColourSpec };
-use shape::util::{ rectangle_p, rectangle_t, multi_gl, vertices_rect, despot };
+use shape::util::{
+    rectangle_p, rectangle_t, multi_gl, vertices_rect, despot
+};
 
 use drawing::Artist;
 

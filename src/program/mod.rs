@@ -3,6 +3,7 @@ mod execute;
 mod objects;
 mod source;
 mod gpuspec;
+mod impls;
 
 pub use program::execute::{
     Program,
@@ -35,4 +36,12 @@ pub use program::gpuspec::{
     Arity,
     GPUSpec,
     GLSize,
+};
+
+
+pub use program::impls::{
+    ProgramType,
+    PTMethod,
+    PTSkin,
+    PTGeom
 };

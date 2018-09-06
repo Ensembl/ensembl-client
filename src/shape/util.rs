@@ -1,8 +1,10 @@
 use std::iter;
-use program::{ ProgramAttribs, DataBatch, DataGroup };
+use program::{
+    ProgramAttribs, DataBatch, DataGroup, ProgramType, PTMethod, 
+    PTGeom, PTSkin
+};
 use coord::{ RFraction, CLeaf, Input, RPixel, RLeaf  };
 use shape::ColourSpec;
-use geometry::{ ProgramType, PTMethod, PTGeom, PTSkin };
 
 pub fn triangle_gl(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[&Input;3]) {
     if let Some(obj) = pdata.get_object(key) {
