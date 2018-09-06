@@ -24,28 +24,23 @@ pub fn prepare_canvas(sel: &str, mcsel: &str, debug: bool) -> CanvasElement {
     // get canvas
     let canvasel: Element = domutil::query_select(sel);
     let canvas: CanvasElement = canvasel.try_into().unwrap();
-    if debug {
-        let mc : Element = domutil::query_select(mcsel);
-        domutil::add_class(&mc,"debug");
-        let mc : Element = domutil::query_select(sel);
-        domutil::add_class(&mc,"debug");
-    } else {
-        // force CSS onto attributes of canvas tag
-        let width = canvas.offset_width() as u32;
-        let height = canvas.offset_height() as u32;
-        let width = width - width % 2;
-        let height = height - height % 2;
-        canvas.set_width(width);
-        canvas.set_height(height);
-        // update CSS in px, as %'s are dodgy on canvas tags
-        let mc : Element = domutil::query_select(sel);
-        domutil::add_style(&mc,"width",&format!("{}px",width));
-        domutil::add_style(&mc,"height",&format!("{}px",height));
-        //window().add_event_listener(enclose!( (canvas) move |_:ResizeEvent| {
-        //    canvas.set_width(canvas.offset_width() as u32);
-        //    canvas.set_height(canvas.offset_height() as u32);
-        //}));
-    }
+
+    // force CSS onto attributes of canvas tag
+    let width = canvas.offset_width() as u32;
+    let height = canvas.offset_height() as u32;
+    console!("offset {:?} x {:?}",width,height);
+    let width = width - width % 2;
+    let height = height - height % 2;
+    canvas.set_width(width);
+    canvas.set_height(height);
+    // update CSS in px, as %'s are dodgy on canvas tags
+    let mc : Element = domutil::query_select(sel);
+    //domutil::add_style(&mc,"width",&format!("{}px",width));
+    //domutil::add_style(&mc,"height",&format!("{}px",height));
+    //window().add_event_listener(enclose!( (canvas) move |_:ResizeEvent| {
+    //    canvas.set_width(canvas.offset_width() as u32);
+    //    canvas.set_height(canvas.offset_height() as u32);
+    //}));
     canvas
 }
 

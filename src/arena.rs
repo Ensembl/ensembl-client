@@ -99,6 +99,7 @@ impl Arena {
         let canvas = canvasutil::prepare_canvas(selector,mcsel,spec.debug);
         let ctx = wglraw::prepare_context(&canvas);
         let flat = Rc::new(canvasutil::FlatCanvas::create(2,2));
+        console!("{:?} x {:?}",canvas.width(),canvas.height());
         let data = Rc::new(RefCell::new(ArenaData {
             ctx, spec, 
             gpuspec: GPUSpec::new(),
