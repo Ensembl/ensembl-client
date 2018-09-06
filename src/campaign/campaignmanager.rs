@@ -1,3 +1,4 @@
+use dom;
 use canvasutil;
 use std::rc::Rc;
 use std::collections::HashMap;
@@ -112,6 +113,7 @@ impl CampaignManager {
                         adata: &mut ArenaData, oom: &StateManager) {
         let redo = self.calc_level(oom);
         if redo == CampaignRedo::None { return; }
+        debug!("redraw","{:?}",redo);
         progs.clear_objects();
         self.apply_contexts(progs,adata);
         if redo == CampaignRedo::Major {

@@ -39,3 +39,7 @@ pub fn append_element(el: &Element, name: &str) -> Element {
     el.append_child(&new);
     new
 }
+
+pub fn scroll_to_bottom(el: &Element) {
+    js! { @{el.as_ref()}.scrollTop = @{el.as_ref()}.scrollHeight; };
+}

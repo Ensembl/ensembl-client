@@ -49,9 +49,6 @@ macro_rules! console {
 macro_rules! debug {
     ($k: expr, $($arg:tt)*) => {{
         let s = format!($($arg)*);
-        let mut v = dom::debug_panel_entry_get($k);
-        v.push_str("\n");
-        v.push_str(&s);
-        dom::debug_panel_entry_set($k,&v);
+        dom::debug_panel_entry_add($k,&s);
     }}
 }
