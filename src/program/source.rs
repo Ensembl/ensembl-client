@@ -1,5 +1,5 @@
 use std::rc::Rc;
-
+use dom;
 use arena::ArenaData;
 
 use webgl_rendering_context::{
@@ -246,6 +246,8 @@ impl ProgramSource {
         let fragment = make_source(adata,&self.uniforms,&Phase::Fragment);
         make_shader(&adata.ctx,&prog,glctx::VERTEX_SHADER,&vertex);
         make_shader(&adata.ctx,&prog,glctx::FRAGMENT_SHADER,&fragment);
+        debug!("webgl programs","--- vertex ---\n{}",&vertex);
+        debug!("webgl programs","--- fragment ---\n{}",&fragment);
         adata.ctx.link_program(&prog);        
         prog
     }

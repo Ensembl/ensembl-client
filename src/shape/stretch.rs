@@ -2,7 +2,6 @@ use std::rc::Rc;
 
 use arena::ArenaData;
 
-use program::{ ProgramAttribs };
 use coord::{ CLeaf, RLeaf, RPixel, RFraction, CFraction, CPixel };
 
 use shape::{ Shape, ColourSpec, Spot };
@@ -13,7 +12,7 @@ use shape::util::{
     despot
 };
 
-use geometry::{ PTGeom, PTMethod, PTSkin, ProgramType };
+use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
 
 use drawing::Artist;
 

@@ -13,7 +13,6 @@ mod util;
 
 mod demo;
 mod arena;
-mod geometry;
 mod shape;
 mod domutil;
 mod canvasutil;
