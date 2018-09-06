@@ -10,23 +10,51 @@ use domutil;
 
 pub struct DebugFolderEntry {
     name: String,
-    contents: String
+    contents: String,
+    last: String,
+    mul: u32
 }
+
+const MAX_LEN : i32 = 1000000;
 
 impl DebugFolderEntry {
     pub fn new(name: &str) -> DebugFolderEntry {
         DebugFolderEntry {
             name: name.to_string(),
-            contents: String::new()
+            contents: String::new(),
+            last: String::new(),
+            mul: 0
         }
     }
     
-    pub fn set(&mut self, value: &str) {
-        self.contents = value.to_string();
+    pub fn reset(&mut self) {
+        self.contents = String::new();
+    }
+    
+    pub fn add(&mut self, value: &str) {
+        if value == self.last {
+            self.mul += 1;
+        } else {
+            if self.mul >1 {
+                self.contents.push_str(&format!(" [x{}]",self.mul));
+            }
+            self.contents.push_str("\n");
+            self.contents.push_str(value);
+            self.last = value.to_string();
+            self.mul = 1;
+        }
+        let too_long = self.contents.len() as i32 - MAX_LEN;
+        if too_long > 0 {
+            self.contents = self.contents[too_long as usize..].to_string();
+        }
     }
     
     pub fn get(&mut self) -> String {
-        self.contents.clone()
+        let mut out = self.contents.clone();
+        if self.mul > 1 {
+            out.push_str(&format!(" [x{}]",self.mul));
+        }
+        out
     }
 }
 
@@ -44,13 +72,13 @@ impl DebugPanel {
             selected: DEBUG_FOLDER.to_string()
         };
         out.add_event();
-        out.update_contents();
+        out.update_contents(DEBUG_FOLDER);
         out
     }
     
     fn select(&mut self, name: &str) {
         self.selected = name.to_string();
-        self.update_contents();
+        self.update_contents(name);
     }
     
     fn add_event(&mut self) {
@@ -63,11 +91,14 @@ impl DebugPanel {
         });
     }
     
-    fn update_contents(&mut self) {
-        let panel_el = domutil::query_select("#console .content");
-        let sel = self.selected.clone();
-        let entry = self.get_entry(&sel);
-        domutil::text_content(&panel_el,&entry.contents);
+    fn update_contents(&mut self, name: &str) {
+        if name == self.selected {
+            let panel_el = domutil::query_select("#console .content");
+            let sel = self.selected.clone();
+            let entry = self.get_entry(&sel);
+            domutil::text_content(&panel_el,&entry.get());
+            domutil::scroll_to_bottom(&panel_el);
+        }
     }
     
     fn render_dropdown(&self) {
@@ -174,23 +205,21 @@ thread_local! {
     static debug_panel : RefCell<Option<DebugPanel>> = RefCell::new(None);
 }
 
-pub fn debug_panel_entry_get(name: &str) -> String {
+pub fn debug_panel_entry_reset(name: &str) {
     debug_panel.with(|p| {
         let mut po = p.borrow_mut();
         if let Some(panel) = po.as_mut() {
-            panel.get_entry(name).get()
-        } else {
-            "".to_string()
+            panel.get_entry(name).reset()
         }
     })
 }
 
-pub fn debug_panel_entry_set(name: &str, value: &str) {
+pub fn debug_panel_entry_add(name: &str, value: &str) {
     debug_panel.with(|p| {
         let mut po = p.borrow_mut();
         if let Some(panel) = po.as_mut() {
-            panel.get_entry(name).set(value);
-            panel.update_contents();
+            panel.get_entry(name).add(value);
+            panel.update_contents(name);
         }
     });
 }
