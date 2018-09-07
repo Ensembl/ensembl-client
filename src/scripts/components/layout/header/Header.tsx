@@ -1,62 +1,48 @@
-import React, { Component } from 'react';
+import React, { SFC } from 'react';
+import { Dispatch } from 'redux';
+import { connect } from 'react-redux';
 
 import Nav from './Nav';
-import Launchbar from './Launchbar';
+import Launchbar from './launchbar/Launchbar';
 import Account from './Account';
+import { toggleAccount, toggleLaunchbar } from '../../../actions/headerActions';
+import { RootState } from '../../../reducers';
 
-type HeaderProps = {};
-type HeaderState = {
+type HeaderProps = {
   accountExpanded: boolean;
   launchbarExpanded: boolean;
+  toggleAccount: () => void;
+  toggleLaunchbar: () => void;
 };
 
-class Header extends Component<HeaderProps, HeaderState> {
-  public readonly state: HeaderState = {
-    accountExpanded: false,
-    launchbarExpanded: true
-  };
+const Header: SFC<HeaderProps> = (props: HeaderProps) => (
+  <header>
+    <div className="top-bar">
+      <div className="top-bar-left">
+        <div className="inline logo">Ensembl</div>
+        <div className="strapline">genome research database</div>
+      </div>
+      <Nav
+        toggleAccount={props.toggleAccount}
+        toggleLaunchbar={props.toggleLaunchbar}
+      />
+    </div>
+    <Account accountExpanded={props.accountExpanded} />
+    <Launchbar launchbarExpanded={props.launchbarExpanded} />
+  </header>
+);
 
-  constructor(props: HeaderProps) {
-    super(props);
+const mapStateToProps = (state: RootState) => {
+  const { accountExpanded, launchbarExpanded } = state.header;
+  return { accountExpanded, launchbarExpanded };
+};
 
-    this.toggleLaunchbar = this.toggleLaunchbar.bind(this);
-    this.toggleAccount = this.toggleAccount.bind(this);
-  }
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  toggleAccount: () => dispatch(toggleAccount()),
+  toggleLaunchbar: () => dispatch(toggleLaunchbar())
+});
 
-  public toggleLaunchbar() {
-    const currentToggleState: boolean = !this.state.launchbarExpanded;
-
-    this.setState({
-      launchbarExpanded: currentToggleState
-    });
-  }
-
-  public toggleAccount() {
-    const currentToggleState: boolean = !this.state.accountExpanded;
-
-    this.setState({
-      accountExpanded: currentToggleState
-    });
-  }
-
-  public render() {
-    return (
-      <header>
-        <div className="top-bar">
-          <div className="top-bar-left">
-            <div className="inline logo">Ensembl</div>
-            <div className="strapline">genome research database</div>
-          </div>
-          <Nav
-            toggleLaunchbar={this.toggleLaunchbar}
-            toggleAccount={this.toggleAccount}
-          />
-        </div>
-        <Account expanded={this.state.accountExpanded} />
-        <Launchbar expanded={this.state.launchbarExpanded} />
-      </header>
-    );
-  }
-}
-
-export default Header;
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Header);

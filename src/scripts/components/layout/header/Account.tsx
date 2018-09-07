@@ -2,7 +2,7 @@ import React, { Component, ReactNode } from 'react';
 import SlideDown from 'react-slidedown';
 
 type AccountProps = {
-  expanded: boolean;
+  accountExpanded: boolean;
 };
 
 class Account extends Component<AccountProps> {
@@ -14,7 +14,9 @@ class Account extends Component<AccountProps> {
     );
 
     return (
-      <SlideDown>{this.props.expanded ? AccountChildren : null}</SlideDown>
+      <SlideDown>
+        {this.props.accountExpanded ? AccountChildren : null}
+      </SlideDown>
     );
   }
 }
