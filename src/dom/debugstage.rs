@@ -151,6 +151,7 @@ const STAGE : &str = r##"
                 <option value="">- testcards -</option>
                 <option value="draw">Draw Testcard</option>
                 <option value="onoff">On/Off Testcard</option>
+                <option value="button">Button Testcard</option>
             </select>
             <select class="folder"></select>
             <button class="mark">mark!</button>
