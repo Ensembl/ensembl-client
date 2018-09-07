@@ -3,10 +3,10 @@ export function registerSW() {
     window.addEventListener('load', () => {
       navigator.serviceWorker
         .register('/service-worker.js')
-        .then(registration => {
+        .then((registration) => {
           console.info('SW registered: ', registration);
         })
-        .catch(registrationError => {
+        .catch((registrationError) => {
           console.info('SW registration failed: ', registrationError);
         });
     });
