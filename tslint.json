@@ -21,6 +21,7 @@
     "no-var-requires": false,
     "ordered-imports": false,
     "quotemark": [true, "single", "jsx-double"],
+    "semicolon": [true, "always"],
     "trailing-comma": false
   }
 }
