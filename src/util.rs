@@ -45,10 +45,15 @@ macro_rules! console {
     }}
 }
 
-#[allow(unused_macros)]
 macro_rules! debug {
     ($k: expr, $($arg:tt)*) => {{
         let s = format!($($arg)*);
         dom::debug_panel_entry_add($k,&s);
+    }}
+}
+
+macro_rules! button {
+    ($name: expr) => {{
+        dom::debug_panel_button_add($name);
     }}
 }

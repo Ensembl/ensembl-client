@@ -4,7 +4,7 @@ use std::rc::Rc;
 
 use stdweb::web::{ window, IElement };
 
-use domutil;
+use dom::domutil;
 use dom;
 use jank::JankBuster;
 use campaign::{ StateManager, StateValue };
