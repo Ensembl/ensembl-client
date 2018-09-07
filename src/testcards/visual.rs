@@ -1,7 +1,8 @@
 use std::clone::Clone;
-use stdweb;
 use canvasutil;
+use domutil;
 use dom;
+use stdweb::web::IElement;
 
 use campaign::{ StateManager, StateFixed, Campaign, StateValue };
 
@@ -67,6 +68,7 @@ struct State {
     call: i32,
     phase: u32,
     gear: u32,
+    inst: String,
     
     grace_next: (u32,u32),
     grace_at: f32,
@@ -128,8 +130,15 @@ fn detect_jank(state : &mut State, delta: u32, time: f32) {
 }
 
 fn animate(time : f64, s: Rc<RefCell<State>>) {
+    let canv_el = domutil::query_select("#bpane-canv canvas");
     {
         let mut state = s.borrow_mut();
+        if let Some(inst) = canv_el.get_attribute("data-inst") {
+            if inst != state.inst {
+                debug!("global","quitting out of date testcard");
+                return;
+            }
+        }
         if state.old_time > 0.0 {
             let delta = ((time - state.old_time) / 5000.0) as f32;
             state.call += 1;
@@ -226,24 +235,7 @@ fn wiggly<R>(rng: &mut R, num: u32, origin: CLeaf, sep: f32, h: i32)
     out
 }
 
-pub fn demo() {
-    stdweb::initialize();
-
-    debug!("global","starting");
-    dom::setup_stage_debug();
-    stdweb::event_loop();
-}
-
-pub fn testcard(name: &str) {
-    debug!("global","starting testcard {}",name);
-    match name {
-        "draw" => testcard_visual(false),
-        "onoff" => testcard_visual(true),
-        _ => ()
-    };
-}
-
-pub fn testcard_visual(onoff: bool) {
+pub fn testcard_visual(onoff: bool, inst: &str) {
     let seed = 12345678;
     let s = seed as u8;
     let t = (seed/256) as u8;
@@ -447,6 +439,7 @@ pub fn testcard_visual(onoff: bool) {
         call: 0,
         phase: 0,
         gear: 1,
+        inst: inst.to_string(),
 
         grace_next: (1,1),
         grace_at: 0.,

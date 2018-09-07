@@ -11,7 +11,7 @@ extern crate rand;
 #[macro_use]
 mod util;
 
-mod demo;
+mod testcards;
 mod arena;
 mod shape;
 mod domutil;
@@ -26,6 +26,9 @@ mod webgl_rendering_context;
 pub mod coord;
 
 fn main() {
-    demo::demo();
+    stdweb::initialize();
+    dom::setup_stage_debug();
+    debug!("global","starting");
+    stdweb::event_loop();
 }
 
