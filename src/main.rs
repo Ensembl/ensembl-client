@@ -22,6 +22,7 @@ mod alloc;
 mod drawing;
 mod program;
 mod dom;
+mod jank;
 mod webgl_rendering_context;
 pub mod coord;
 
