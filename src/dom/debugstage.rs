@@ -10,7 +10,7 @@ use stdweb::unstable::TryInto;
 
 use dom;
 use dom::domutil;
-use dom::event::{ EventListener, ElementEvents, EventControl };
+use dom::event::{ EventListener, ElementEvents, EventControl, EventType, MouseEvent, EventListenerHandle, KeyboardEvent };
 use testcards;
 
 pub struct DebugFolderEntry {
@@ -81,9 +81,14 @@ impl MyEventListener {
 }
 
 impl EventListener for MyEventListener {    
-    fn receive(&mut self, el: &Element, name: &str) {
+    fn receive_mouse(&mut self, el: &Element, typ: &EventType, ev: &MouseEvent) {
         self.val += 1;
-        debug!("event","receive {} {} {:?}",name,self.val,el);
+        debug!("event","receive {:?} {} {:?} {:?}",typ,self.val,el,ev);
+    }
+
+    fn receive_keyboard(&mut self, el: &Element, typ: &EventType, ev: &KeyboardEvent) {
+        self.val += 1;
+        debug!("event","receive {:?} {} {:?} {:?}",typ,self.val,el,ev);
     }
 }
 
@@ -125,7 +130,10 @@ impl DebugPanel {
             selected: DEBUG_FOLDER.to_string(),
             myc: EventControl::new(),
         };
-        out.myc.add_event("click",Box::new(MyEventListener::new()));
+        let el = EventListenerHandle::new(Box::new(MyEventListener::new()));
+        out.myc.add_event(EventType::KeyPressEvent,&el);
+        out.myc.add_event(EventType::ClickEvent,&el);
+        out.myc.add_element(&domutil::query_select("body"));
         out.add_event();
         out.update_contents(DEBUG_FOLDER);
         out
