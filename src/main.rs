@@ -14,7 +14,6 @@ mod util;
 mod testcards;
 mod arena;
 mod shape;
-mod domutil;
 mod canvasutil;
 mod campaign;
 mod wglraw;

@@ -17,7 +17,7 @@ use coord::{
     Colour, CPixel, RPixel
 };
 
-use domutil;
+use dom::domutil;
 
 // Prepare a canvas ready for WebGL
 pub fn prepare_canvas(sel: &str) -> CanvasElement {

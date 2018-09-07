@@ -1,14 +1,17 @@
 use std::cmp::Ord;
 use std::collections::HashMap;
-use stdweb::traits::IEvent;
 use std::cell::RefCell;
-use stdweb::web::{ IEventTarget, IElement };
+
+use stdweb::web::{ IEventTarget, IElement, Element };
+use stdweb::traits::IEvent;
 use stdweb::web::event::{ ClickEvent, ChangeEvent };
 use stdweb::web::html_element::SelectElement;
 use stdweb::unstable::TryInto;
-use domutil;
-use testcards;
+
 use dom;
+use dom::domutil;
+use dom::event::{ EventListener, ElementEvents, EventControl };
+use testcards;
 
 pub struct DebugFolderEntry {
     name: String,
@@ -65,9 +68,51 @@ impl DebugFolderEntry {
     }
 }
 
+pub struct MyEventListener {
+    val: u32,
+}
+
+impl MyEventListener {
+    fn new() -> MyEventListener {
+        MyEventListener {
+            val: 0
+        }
+    }
+}
+
+impl EventListener for MyEventListener {    
+    fn receive(&mut self, el: &Element, name: &str) {
+        self.val += 1;
+        debug!("event","receive {} {} {:?}",name,self.val,el);
+    }
+}
+
+pub struct DebugButton {
+    name: String,
+    em: Option<ElementEvents>
+}
+
+impl DebugButton {
+    pub fn new(name: &str) -> DebugButton {
+        DebugButton {
+            name: name.to_string(),
+            em: None,
+        }
+    }
+        
+    pub fn set_el(&mut self, el: &Element, myc: &EventControl) {
+        if let Some(ref mut em) = self.em {
+            em.clear();
+        }
+        self.em = Some(myc.add_element(el));
+    }
+}
+
 pub struct DebugPanel {
     folder: HashMap<String,DebugFolderEntry>,
+    buttons: HashMap<String,DebugButton>,
     selected: String,
+    myc: EventControl,
 }
 
 const DEBUG_FOLDER : &str = "- debug folder -";
@@ -76,8 +121,11 @@ impl DebugPanel {
     pub fn new() -> DebugPanel {
         let mut out = DebugPanel {
             folder: HashMap::<String,DebugFolderEntry>::new(),
-            selected: DEBUG_FOLDER.to_string()
+            buttons: HashMap::<String,DebugButton>::new(),
+            selected: DEBUG_FOLDER.to_string(),
+            myc: EventControl::new(),
         };
+        out.myc.add_event("click",Box::new(MyEventListener::new()));
         out.add_event();
         out.update_contents(DEBUG_FOLDER);
         out
@@ -96,6 +144,18 @@ impl DebugPanel {
                 debug_panel_select(&name);
             }
         });
+    }
+    
+    fn render_buttons(&mut self) {
+        let sel_el = domutil::query_select("#bpane-right .buttons");
+        domutil::inner_html(&sel_el,"");
+        let mut keys : Vec<&mut DebugButton> = self.buttons.values_mut().collect();
+        keys.sort_by(|a,b| a.name.cmp(&b.name));
+        for e in keys.iter_mut() {
+            let opt_el = domutil::append_element(&sel_el,"button");
+            domutil::text_content(&opt_el,&e.name);
+            e.set_el(&opt_el,&self.myc);
+        }
     }
     
     fn update_contents(&mut self, name: &str) {
@@ -134,6 +194,14 @@ impl DebugPanel {
         }
         self.folder.get_mut(name).unwrap()
     }
+    
+    pub fn add_button(&mut self, name: &str) {
+        self.buttons.insert(name.to_string(),DebugButton::new(name));
+    }
+    
+    pub fn clear_buttons(&mut self) {
+        self.buttons.clear();
+    }
 }
 
 const CANVAS : &str = r##"
@@ -157,6 +225,7 @@ const STAGE : &str = r##"
             <button class="mark">mark!</button>
             <pre class="content"></pre>
         </div>
+        <div class="buttons"></div>
         <div id="managedcanvasholder"></div>
     </div>
 </div>
@@ -246,6 +315,7 @@ fn setup_events() {
     sel_el.add_event_listener(|e: ChangeEvent| {
         let node : SelectElement = e.target().unwrap().try_into().ok().unwrap();
         if let Some(name) = node.value() {
+            debug_panel_buttons_clear();
             setup_testcard(&name);
         }
     });
@@ -299,6 +369,26 @@ pub fn debug_panel_select(name: &str) {
         let mut po = p.borrow_mut();
         if let Some(panel) = po.as_mut() {
             panel.select(name);
+        }
+    });
+}
+
+pub fn debug_panel_buttons_clear() {
+    DEBUG_PANEL.with(|p| {
+        let mut po = p.borrow_mut();
+        if let Some(panel) = po.as_mut() {
+            panel.clear_buttons();
+            panel.render_buttons();
+        }
+    });
+}
+
+pub fn debug_panel_button_add(name: &str) {
+    DEBUG_PANEL.with(|p| {
+        let mut po = p.borrow_mut();
+        if let Some(panel) = po.as_mut() {
+            panel.add_button(name);
+            panel.render_buttons();
         }
     });
 }
