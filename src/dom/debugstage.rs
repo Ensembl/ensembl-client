@@ -2,12 +2,12 @@ use std::cmp::Ord;
 use std::collections::HashMap;
 use stdweb::traits::IEvent;
 use std::cell::RefCell;
-use stdweb::web::IEventTarget;
+use stdweb::web::{ IEventTarget, IElement };
 use stdweb::web::event::{ ClickEvent, ChangeEvent };
 use stdweb::web::html_element::SelectElement;
 use stdweb::unstable::TryInto;
 use domutil;
-use demo;
+use testcards;
 use dom;
 
 pub struct DebugFolderEntry {
@@ -217,12 +217,24 @@ html, body {
 @import url('https://fonts.googleapis.com/css?family=Roboto');
 "##;
 
+thread_local! {
+    static CANVAS_INST : RefCell<u32> = RefCell::new(0);
+    static DEBUG_PANEL : RefCell<Option<DebugPanel>> = RefCell::new(None);
+}
+
 fn setup_testcard(name: &str) {
     debug!("global","setup testcard {}",name);
     let pane_el = domutil::query_select("#bpane-canv");
     if name.len() > 0 {
         domutil::inner_html(&pane_el,CANVAS);
-        demo::testcard(name);
+        let canv_el = domutil::query_select("#bpane-canv canvas");
+        CANVAS_INST.with(|ci| {
+            let mut inst = ci.borrow_mut();
+            *inst += 1;
+            let inst_s = format!("{}",*inst);
+            canv_el.set_attribute("data-inst",&inst_s).ok();
+            testcards::testcard(name,&inst_s);
+        });
     } else {
         domutil::inner_html(&pane_el,"");
     }
@@ -237,7 +249,7 @@ fn setup_events() {
         }
     });
     let mark_el = domutil::query_select("#console .mark");
-    mark_el.add_event_listener(|e: ClickEvent| {
+    mark_el.add_event_listener(|_e: ClickEvent| {
         debug_panel_entry_mark();
     });
 }
@@ -246,18 +258,15 @@ pub fn setup_stage_debug() {
     domutil::inner_html(&domutil::query_select("#stage"),STAGE);
     let el = domutil::append_element(&domutil::query_select("head"),"style");
     domutil::inner_html(&el,STAGE_CSS);
-    debug_panel.with(|p| {
+    DEBUG_PANEL.with(|p| {
         *p.borrow_mut() = Some(DebugPanel::new());
     });
     setup_events();
 }
 
-thread_local! {
-    static debug_panel : RefCell<Option<DebugPanel>> = RefCell::new(None);
-}
-
+#[allow(dead_code)]
 pub fn debug_panel_entry_reset(name: &str) {
-    debug_panel.with(|p| {
+    DEBUG_PANEL.with(|p| {
         let mut po = p.borrow_mut();
         if let Some(panel) = po.as_mut() {
             panel.get_entry(name).reset()
@@ -266,7 +275,7 @@ pub fn debug_panel_entry_reset(name: &str) {
 }
 
 pub fn debug_panel_entry_mark() {
-    debug_panel.with(|p| {
+    DEBUG_PANEL.with(|p| {
         let mut po = p.borrow_mut();
         if let Some(panel) = po.as_mut() {
             panel.mark()
@@ -275,7 +284,7 @@ pub fn debug_panel_entry_mark() {
 }
 
 pub fn debug_panel_entry_add(name: &str, value: &str) {
-    debug_panel.with(|p| {
+    DEBUG_PANEL.with(|p| {
         let mut po = p.borrow_mut();
         if let Some(panel) = po.as_mut() {
             panel.get_entry(name).add(value);
@@ -285,7 +294,7 @@ pub fn debug_panel_entry_add(name: &str, value: &str) {
 }
 
 pub fn debug_panel_select(name: &str) {
-    debug_panel.with(|p| {
+    DEBUG_PANEL.with(|p| {
         let mut po = p.borrow_mut();
         if let Some(panel) = po.as_mut() {
             panel.select(name);
