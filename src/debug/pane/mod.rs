@@ -1,5 +1,6 @@
 mod debugstage;
 mod console;
+mod buttons;
 
 pub use debug::pane::debugstage::{
     setup_stage_debug,
