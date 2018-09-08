@@ -28,10 +28,15 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=1
-FILE_NAME_0=2246;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdrawing%2Fdrawingimpl.rs;0;2
-FILE_NAME_1=3885;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fshape%2Fstretch.rs;0;2
-FILE_NAME_2=668;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdrawing%2Fbitmap.rs;0;2
+current_page=6
+FILE_NAME_0=300;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Farena.rs;0;4
+FILE_NAME_1=6578;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdemo.rs;0;4
+FILE_NAME_2=975;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdomutil.rs;0;4
+FILE_NAME_3=353;HTML;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fstatic%2Findex.html;0;4
+FILE_NAME_4=0;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcanvasutil.rs;0;4
+FILE_NAME_5=1027;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fwglraw.rs;0;4
+FILE_NAME_6=515;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fstageutil.rs;0;4
+FILE_NAME_7=394;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fmain.rs;0;4
 
 [VTE]
 last_dir=/home/dan

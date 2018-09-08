@@ -68,72 +68,87 @@ impl DebugFolderEntry {
     }
 }
 
-pub struct MyEventListener {
+pub struct BodyEventListener {
     val: u32,
 }
 
-impl MyEventListener {
-    fn new() -> MyEventListener {
-        MyEventListener {
+impl BodyEventListener {
+    fn new() -> BodyEventListener {
+        BodyEventListener {
             val: 0
         }
     }
 }
 
-impl EventListener for MyEventListener {    
-    fn receive_mouse(&mut self, el: &Element, typ: &EventType, ev: &MouseEvent) {
+impl EventListener<()> for BodyEventListener {    
+    fn receive_mouse(&mut self, el: &Element, typ: &EventType, ev: &MouseEvent, _p: &()) {
         self.val += 1;
-        debug!("event","receive {:?} {} {:?} {:?}",typ,self.val,el,ev);
+        debug!("test event","{:?} {} {:?} {:?}",typ,self.val,el,ev);
     }
 
-    fn receive_keyboard(&mut self, el: &Element, typ: &EventType, ev: &KeyboardEvent) {
+    fn receive_keyboard(&mut self, el: &Element, typ: &EventType, ev: &KeyboardEvent, _p: &()) {
         self.val += 1;
-        debug!("event","receive {:?} {} {:?} {:?}",typ,self.val,el,ev);
+        debug!("test event","{:?} {} {:?} {:?}",typ,self.val,el,ev);
+    }
+}
+
+pub struct ButtonEventListener {
+}
+
+impl ButtonEventListener {
+    pub fn new() -> ButtonEventListener {
+        ButtonEventListener {}
+    }
+}
+
+impl EventListener<usize> for ButtonEventListener {
+    fn receive_mouse(&mut self, el: &Element, typ: &EventType, e: &MouseEvent, p: &usize) {
+        debug!("global","click {}",p);
     }
 }
 
 pub struct DebugButton {
     name: String,
-    em: Option<ElementEvents>
 }
 
 impl DebugButton {
     pub fn new(name: &str) -> DebugButton {
         DebugButton {
             name: name.to_string(),
-            em: None,
         }
-    }
-        
-    pub fn set_el(&mut self, el: &Element, myc: &EventControl) {
-        if let Some(ref mut em) = self.em {
-            em.clear();
-        }
-        self.em = Some(myc.add_element(el));
-    }
+    }        
 }
 
 pub struct DebugPanel {
     folder: HashMap<String,DebugFolderEntry>,
     buttons: HashMap<String,DebugButton>,
     selected: String,
-    myc: EventControl,
+    bodyev: EventControl<()>,
+    buttonev: EventControl<usize>,
+    buttonelev: Option<ElementEvents<usize>>
 }
 
 const DEBUG_FOLDER : &str = "- debug folder -";
 
 impl DebugPanel {
     pub fn new() -> DebugPanel {
+        debug!("global","new debug panel");
         let mut out = DebugPanel {
             folder: HashMap::<String,DebugFolderEntry>::new(),
             buttons: HashMap::<String,DebugButton>::new(),
             selected: DEBUG_FOLDER.to_string(),
-            myc: EventControl::new(),
+            bodyev: EventControl::new(),
+            buttonev: EventControl::new(),
+            buttonelev: None
         };
-        let el = EventListenerHandle::new(Box::new(MyEventListener::new()));
-        out.myc.add_event(EventType::KeyPressEvent,&el);
-        out.myc.add_event(EventType::ClickEvent,&el);
-        out.myc.add_element(&domutil::query_select("body"));
+        let el = EventListenerHandle::new(Box::new(BodyEventListener::new()));
+        out.bodyev.add_event(EventType::KeyPressEvent,&el);
+        out.bodyev.add_event(EventType::ClickEvent,&el);
+        out.bodyev.add_element(&domutil::query_select("body"),());
+
+        let bel = EventListenerHandle::new(Box::new(ButtonEventListener::new()));
+        out.buttonev.add_event(EventType::ClickEvent,&bel);
+
         out.add_event();
         out.update_contents(DEBUG_FOLDER);
         out
@@ -155,6 +170,9 @@ impl DebugPanel {
     }
     
     fn render_buttons(&mut self) {
+        if let Some(ref mut elev) = &mut self.buttonelev {
+            elev.clear();
+        }
         let sel_el = domutil::query_select("#bpane-right .buttons");
         domutil::inner_html(&sel_el,"");
         let mut keys : Vec<&mut DebugButton> = self.buttons.values_mut().collect();
@@ -162,8 +180,8 @@ impl DebugPanel {
         for e in keys.iter_mut() {
             let opt_el = domutil::append_element(&sel_el,"button");
             domutil::text_content(&opt_el,&e.name);
-            e.set_el(&opt_el,&self.myc);
         }
+        self.buttonelev = Some(self.buttonev.add_element(&sel_el,0));
     }
     
     fn update_contents(&mut self, name: &str) {
