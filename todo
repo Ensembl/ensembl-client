@@ -6,12 +6,9 @@ font load race
 reload on resize event
 
 arena/leaf separation
-
 anti-alias with alpha
-
 more than on/off
 not even in canvas
-
 fade-between refreshes
-
 refresh necessity to geometry
+check in/out of event handlers

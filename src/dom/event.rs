@@ -19,6 +19,21 @@ impl<T> EventListenerHandle<T> {
     }
 }
 
+pub struct EventKiller<T>(Vec<ElementEvents<T>>);
+
+impl<T: 'static> EventKiller<T> {
+    pub fn new() -> EventKiller<T> {
+        EventKiller(Vec::<ElementEvents<T>>::new())
+    }
+    
+    pub fn kill(&mut self) {
+        for ee in &mut self.0 {
+            ee.clear();
+        }
+        self.0.clear();
+    }
+}
+
 pub struct EventControl<T> {
     mappings: Vec<(EventType,EventListenerHandle<T>)>,
     phantom: PhantomData<T>
@@ -37,12 +52,12 @@ impl<T: 'static> EventControl<T> {
         self.mappings.push((typ,cbc));
     }
     
-    pub fn add_element(&self, el: &Element, t: T) -> ElementEvents<T> {
+    pub fn add_element(&self, ek: &mut EventKiller<T>, el: &Element, t: T) {
         let mut m = ElementEvents::new(el,t);
         for (name,cb) in &self.mappings {
             m.add_event(name,&cb.0);
         }
-        m
+        ek.0.push(m);
     }
 }
 
@@ -92,14 +107,14 @@ impl IEvent for KeyboardEvent {}
 impl IUiEvent for KeyboardEvent {}
 impl IKeyboardEvent for KeyboardEvent {}
 
-struct EventKiller {
+struct JsEventKiller {
     name: String,
     cb_js: Reference
 }
 
 pub struct ElementEvents<T> {
     el: Element,
-    kills: Vec<EventKiller>,
+    kills: Vec<JsEventKiller>,
     payload: Rc<T>
 }
 
@@ -126,7 +141,7 @@ impl<T: 'static> ElementEvents<T> {
     fn new(el: &Element, p: T) -> ElementEvents<T> {
         ElementEvents {
             el: el.clone(),
-            kills: Vec::<EventKiller>::new(),
+            kills: Vec::<JsEventKiller>::new(),
             payload: Rc::new(p)
         }
     }
@@ -159,7 +174,7 @@ impl<T: 'static> ElementEvents<T> {
                 event_type!(obj,el,name,typc,KeyboardEvent,receive_keyboard,p)
             }
         };
-        self.kills.push(EventKiller {
+        self.kills.push(JsEventKiller {
             name: name.to_string(),
             cb_js
         });
