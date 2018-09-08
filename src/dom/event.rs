@@ -1,36 +1,44 @@
+use std::rc::Rc;
 use std::fmt;
 use std::sync::{ Arc, Mutex };
+use std::marker::PhantomData;
+
 use stdweb::unstable::TryInto;
 use stdweb::Reference;
 use stdweb::web::Element;
 use stdweb::web::event::{ IEvent, IUiEvent, IMouseEvent, IKeyboardEvent };
 
 #[derive(Clone)]
-pub struct EventListenerHandle(Arc<Mutex<Box<EventListener>>>);
+pub struct EventListenerHandle<T>(
+    Arc<Mutex<Box<EventListener<T>>>>
+);
 
-impl EventListenerHandle {
-    pub fn new(el: Box<EventListener>) -> EventListenerHandle {
+impl<T> EventListenerHandle<T> {
+    pub fn new(el: Box<EventListener<T>>) -> EventListenerHandle<T> {
         EventListenerHandle(Arc::new(Mutex::new(el)))
     }
 }
 
-pub struct EventControl {
-    mappings: Vec<(EventType,EventListenerHandle)>
+pub struct EventControl<T> {
+    mappings: Vec<(EventType,EventListenerHandle<T>)>,
+    phantom: PhantomData<T>
 }
 
-impl EventControl {
-    pub fn new() -> EventControl {
+impl<T: 'static> EventControl<T> {
+    pub fn new() -> EventControl<T> {
         EventControl {
-            mappings: Vec::<(EventType,EventListenerHandle)>::new()
+            mappings: Vec::<(EventType,EventListenerHandle<T>)>::new(),
+            phantom: PhantomData
         }
     }
     
-    pub fn add_event(&mut self, typ: EventType, cb: &EventListenerHandle) {
-        self.mappings.push((typ,cb.clone()));
+    pub fn add_event(&mut self, typ: EventType, cb: &EventListenerHandle<T>) {
+        let cbc = EventListenerHandle(cb.0.clone());
+        self.mappings.push((typ,cbc));
     }
     
-    pub fn add_element(&self, el: &Element) -> ElementEvents {
-        let mut m = ElementEvents::new(el);
+    pub fn add_element(&self, el: &Element, t: T) -> ElementEvents<T> {
+        let mut m = ElementEvents::new(el,t);
         for (name,cb) in &self.mappings {
             m.add_event(name,&cb.0);
         }
@@ -38,6 +46,7 @@ impl EventControl {
     }
 }
 
+#[allow(dead_code)]
 #[derive(Debug,Clone,Copy)]
 pub enum EventType {
     ClickEvent,
@@ -88,19 +97,21 @@ struct EventKiller {
     cb_js: Reference
 }
 
-pub struct ElementEvents {
+pub struct ElementEvents<T> {
     el: Element,
-    kills: Vec<EventKiller>
+    kills: Vec<EventKiller>,
+    payload: Rc<T>
 }
 
 macro_rules! event_type {
     ($obj:ident, $el:ident, $name:ident, $typc:ident,
-     $evtype:ident, $cbname:ident) => {{
+     $evtype:ident, $cbname:ident, $payload:ident) => {{
         let elc1 = $el.clone();
         let elc2 = $el.clone();
+        let p = $payload;
         let cb = move |e: Reference| {
             $obj.lock().unwrap().$cbname(
-                &elc1,&$typc,&$evtype(e.clone()));
+                &elc1,&$typc,&$evtype(e.clone()),&p);
         };
         let v = js! {
             var cb = @{cb};
@@ -111,11 +122,12 @@ macro_rules! event_type {
     }}
 }
 
-impl ElementEvents {
-    fn new(el: &Element) -> ElementEvents {
+impl<T: 'static> ElementEvents<T> {
+    fn new(el: &Element, p: T) -> ElementEvents<T> {
         ElementEvents {
             el: el.clone(),
-            kills: Vec::<EventKiller>::new()
+            kills: Vec::<EventKiller>::new(),
+            payload: Rc::new(p)
         }
     }
     
@@ -132,18 +144,19 @@ impl ElementEvents {
         }
     }
     
-    fn add_event(&mut self, typ: &EventType, evl: &Arc<Mutex<Box<EventListener>>>) {
+    fn add_event(&mut self, typ: &EventType, evl: &Arc<Mutex<Box<EventListener<T>>>>) {
         let obj = evl.clone();
         let typc = *typ;
         let name = typ.get_name();
         let el = &self.el;
+        let p = self.payload.clone();
         let cb_js : Reference = match typ {
             EventType::ClickEvent |
             EventType::MouseMoveEvent => {
-                event_type!(obj,el,name,typc,MouseEvent,receive_mouse)
+                event_type!(obj,el,name,typc,MouseEvent,receive_mouse,p)
             },
             EventType::KeyPressEvent => {
-                event_type!(obj,el,name,typc,KeyboardEvent,receive_keyboard)
+                event_type!(obj,el,name,typc,KeyboardEvent,receive_keyboard,p)
             }
         };
         self.kills.push(EventKiller {
@@ -153,7 +166,7 @@ impl ElementEvents {
     }
 }
 
-pub trait EventListener {
-    fn receive_mouse(&mut self, _el: &Element, _typ: &EventType, _ev: &MouseEvent) {}
-    fn receive_keyboard(&mut self, _el: &Element, _typ: &EventType, _ev: &KeyboardEvent) {}
+pub trait EventListener<T> {
+    fn receive_mouse(&mut self, _el: &Element, _typ: &EventType, _ev: &MouseEvent, _p: &T) {}
+    fn receive_keyboard(&mut self, _el: &Element, _typ: &EventType, _ev: &KeyboardEvent, _p: &T) {}
 }
