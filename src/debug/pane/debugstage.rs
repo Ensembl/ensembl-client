@@ -1,5 +1,5 @@
+use std::rc::Rc;
 use std::cmp::Ord;
-use std::collections::HashMap;
 use std::cell::RefCell;
 
 use stdweb::web::{ IEventTarget, IElement, Element };
@@ -8,65 +8,11 @@ use stdweb::web::event::{ ClickEvent, ChangeEvent };
 use stdweb::web::html_element::SelectElement;
 use stdweb::unstable::TryInto;
 
-use dom;
+use debug;
 use dom::domutil;
-use dom::event::{ EventListener, ElementEvents, EventControl, EventType, MouseEvent, EventListenerHandle, KeyboardEvent, EventKiller };
-use testcards;
-
-pub struct DebugFolderEntry {
-    name: String,
-    contents: String,
-    last: String,
-    mul: u32
-}
-
-const MAX_LEN : i32 = 1000000;
-
-impl DebugFolderEntry {
-    pub fn new(name: &str) -> DebugFolderEntry {
-        DebugFolderEntry {
-            name: name.to_string(),
-            contents: String::new(),
-            last: String::new(),
-            mul: 0
-        }
-    }
-    
-    pub fn reset(&mut self) {
-        self.contents = String::new();
-    }
-    
-    pub fn mark(&mut self) {
-        console!("mark {:?}",&self.name);
-        self.add("-- MARK --");
-    }
-    
-    pub fn add(&mut self, value: &str) {
-        if value == self.last {
-            self.mul += 1;
-        } else {
-            if self.mul >1 {
-                self.contents.push_str(&format!(" [x{}]",self.mul));
-            }
-            self.contents.push_str("\n");
-            self.contents.push_str(value);
-            self.last = value.to_string();
-            self.mul = 1;
-        }
-        let too_long = self.contents.len() as i32 - MAX_LEN;
-        if too_long > 0 {
-            self.contents = self.contents[too_long as usize..].to_string();
-        }
-    }
-    
-    pub fn get(&mut self) -> String {
-        let mut out = self.contents.clone();
-        if self.mul > 1 {
-            out.push_str(&format!(" [x{}]",self.mul));
-        }
-        out
-    }
-}
+use dom::event::{ EventListener, EventControl, EventType, MouseEvent, EventListenerHandle, KeyboardEvent, EventKiller };
+use debug::testcards;
+use debug::pane::console::DebugConsole;
 
 pub struct BodyEventListener {
     val: u32,
@@ -93,17 +39,18 @@ impl EventListener<()> for BodyEventListener {
 }
 
 pub struct ButtonEventListener {
+    panel: Rc<RefCell<DebugPanel>>
 }
 
 impl ButtonEventListener {
-    pub fn new() -> ButtonEventListener {
-        ButtonEventListener {}
+    pub fn new(panel: Rc<RefCell<DebugPanel>>) -> ButtonEventListener {
+        ButtonEventListener { panel }
     }
 }
 
 impl EventListener<usize> for ButtonEventListener {
     fn receive_mouse(&mut self, _el: &Element, _typ: &EventType, _e: &MouseEvent, p: &usize) {
-        debug!("global","click {}",p);
+        self.panel.borrow_mut().trigger_button(*p);
     }
 }
 
@@ -116,49 +63,47 @@ impl DebugButton {
         DebugButton {
             name: name.to_string(),
         }
-    }        
+    }
+    
+    pub fn trigger(&self, c: &mut DebugConsole) {
+        debugp!(c,"debug panel","Button event '{}'",&self.name);
+    }
 }
 
 pub struct DebugPanel {
-    folder: HashMap<String,DebugFolderEntry>,
-    buttons: HashMap<String,DebugButton>,
-    selected: String,
+    pub console: DebugConsole,
+    buttons: Vec<DebugButton>,
     bodyev: EventControl<()>,
     buttonev: EventControl<usize>,
     buttonek: EventKiller<usize>
 }
 
-const DEBUG_FOLDER : &str = "- debug folder -";
-
 impl DebugPanel {
-    pub fn new() -> DebugPanel {
+    pub fn new() -> Rc<RefCell<DebugPanel>> {
         debug!("global","new debug panel");
-        let mut out = DebugPanel {
-            folder: HashMap::<String,DebugFolderEntry>::new(),
-            buttons: HashMap::<String,DebugButton>::new(),
-            selected: DEBUG_FOLDER.to_string(),
+        debug!("debug panel","new debug panel");
+        let out = Rc::new(RefCell::new(DebugPanel {
+            console: DebugConsole::new(),
+            buttons: Vec::<DebugButton>::new(),
             bodyev: EventControl::new(),
             buttonev: EventControl::new(),
             buttonek: EventKiller::new()
-        };
-        let el = EventListenerHandle::new(Box::new(BodyEventListener::new()));
-        out.bodyev.add_event(EventType::KeyPressEvent,&el);
-        out.bodyev.add_event(EventType::ClickEvent,&el);
-        out.bodyev.add_element(&mut EventKiller::new(),&domutil::query_select("body"),());
+        }));
+        {
+            let rc = &mut out.borrow_mut();
+            let el = EventListenerHandle::new(Box::new(BodyEventListener::new()));
+            rc.bodyev.add_event(EventType::KeyPressEvent,&el);
+            rc.bodyev.add_event(EventType::ClickEvent,&el);
+            rc.bodyev.add_element(&mut EventKiller::new(),&domutil::query_select("body"),());
 
-        let bel = EventListenerHandle::new(Box::new(ButtonEventListener::new()));
-        out.buttonev.add_event(EventType::ClickEvent,&bel);
+            let bel = EventListenerHandle::new(Box::new(ButtonEventListener::new(out.clone())));
+            rc.buttonev.add_event(EventType::ClickEvent,&bel);
 
-        out.add_event();
-        out.update_contents(DEBUG_FOLDER);
+            rc.add_event();
+        }
         out
     }
-    
-    fn select(&mut self, name: &str) {
-        self.selected = name.to_string();
-        self.update_contents(name);
-    }
-    
+        
     fn add_event(&mut self) {
         let sel_el = domutil::query_select("#console .folder");
         sel_el.add_event_listener(|e: ChangeEvent| {
@@ -168,59 +113,28 @@ impl DebugPanel {
             }
         });
     }
+
+    fn trigger_button(&mut self, idx: usize) {
+        let b = self.buttons.get(idx);
+        if let Some(b) = b {
+            b.trigger(&mut self.console);
+        }
+    }
     
     fn render_buttons(&mut self) {
         self.buttonek.kill();
         let sel_el = domutil::query_select("#bpane-right .buttons");
         domutil::inner_html(&sel_el,"");
-        let mut keys : Vec<&mut DebugButton> = self.buttons.values_mut().collect();
-        keys.sort_by(|a,b| a.name.cmp(&b.name));
-        for (i,e) in keys.iter_mut().enumerate() {
+        self.buttons.sort_by(|a,b| a.name.cmp(&b.name));
+        for (i,e) in self.buttons.iter_mut().enumerate() {
             let opt_el = domutil::append_element(&sel_el,"button");
             domutil::text_content(&opt_el,&e.name);
             self.buttonev.add_element(&mut self.buttonek,&opt_el,i);
         }
     }
-    
-    fn update_contents(&mut self, name: &str) {
-        if name == self.selected {
-            let panel_el = domutil::query_select("#console .content");
-            let sel = self.selected.clone();
-            let entry = self.get_entry(&sel);
-            domutil::text_content(&panel_el,&entry.get());
-            domutil::scroll_to_bottom(&panel_el);
-        }
-    }
-    
-    fn render_dropdown(&self) {
-        let sel_el = domutil::query_select("#console .folder");
-        domutil::inner_html(&sel_el,"");
-        let mut keys : Vec<&DebugFolderEntry> = self.folder.values().collect();
-        keys.sort_by(|a,b| a.name.cmp(&b.name));
-        for e in keys {
-            let opt_el = domutil::append_element(&sel_el,"option");
-            domutil::text_content(&opt_el,&e.name);
-        }
-    }
-    
-    fn mark(&mut self) {
-        for e in &mut self.folder.values_mut() {
-            e.mark();
-        }
-        let sel = self.selected.clone();
-        self.update_contents(&sel);
-    }
-    
-    pub fn get_entry(&mut self, name: &str) -> &mut DebugFolderEntry {
-        if let None = self.folder.get(name) {
-            self.folder.insert(name.to_string(),DebugFolderEntry::new(name));
-            self.render_dropdown();
-        }
-        self.folder.get_mut(name).unwrap()
-    }
-    
+                    
     pub fn add_button(&mut self, name: &str) {
-        self.buttons.insert(name.to_string(),DebugButton::new(name));
+        self.buttons.push(DebugButton::new(name));
     }
     
     pub fn clear_buttons(&mut self) {
@@ -313,7 +227,7 @@ html, body {
 
 thread_local! {
     static CANVAS_INST : RefCell<u32> = RefCell::new(0);
-    static DEBUG_PANEL : RefCell<Option<DebugPanel>> = RefCell::new(None);
+    static DEBUG_PANEL : RefCell<Option<Rc<RefCell<DebugPanel>>>> = RefCell::new(None);
 }
 
 fn setup_testcard(name: &str) {
@@ -362,45 +276,44 @@ pub fn setup_stage_debug() {
 #[allow(dead_code)]
 pub fn debug_panel_entry_reset(name: &str) {
     DEBUG_PANEL.with(|p| {
-        let mut po = p.borrow_mut();
-        if let Some(panel) = po.as_mut() {
-            panel.get_entry(name).reset()
+        if let Some(ref po) = *p.borrow_mut() {
+            let mut panel = po.borrow_mut();
+            panel.console.get_entry(name).reset()
         }
     })
 }
 
 pub fn debug_panel_entry_mark() {
     DEBUG_PANEL.with(|p| {
-        let mut po = p.borrow_mut();
-        if let Some(panel) = po.as_mut() {
-            panel.mark()
+        if let Some(ref po) = *p.borrow_mut() {
+            let mut panel = po.borrow_mut();
+            panel.console.mark()
         }
     })
 }
 
 pub fn debug_panel_entry_add(name: &str, value: &str) {
     DEBUG_PANEL.with(|p| {
-        let mut po = p.borrow_mut();
-        if let Some(panel) = po.as_mut() {
-            panel.get_entry(name).add(value);
-            panel.update_contents(name);
+        if let Some(ref po) = *p.borrow_mut() {
+            let mut panel = po.borrow_mut();
+            panel.console.debug(name,value);
         }
     });
 }
 
 pub fn debug_panel_select(name: &str) {
     DEBUG_PANEL.with(|p| {
-        let mut po = p.borrow_mut();
-        if let Some(panel) = po.as_mut() {
-            panel.select(name);
+        if let Some(ref po) = *p.borrow_mut() {
+            let mut panel = po.borrow_mut();
+            panel.console.select(name);
         }
     });
 }
 
 pub fn debug_panel_buttons_clear() {
     DEBUG_PANEL.with(|p| {
-        let mut po = p.borrow_mut();
-        if let Some(panel) = po.as_mut() {
+        if let Some(ref po) = *p.borrow_mut() {
+            let mut panel = po.borrow_mut();
             panel.clear_buttons();
             panel.render_buttons();
         }
@@ -409,8 +322,8 @@ pub fn debug_panel_buttons_clear() {
 
 pub fn debug_panel_button_add(name: &str) {
     DEBUG_PANEL.with(|p| {
-        let mut po = p.borrow_mut();
-        if let Some(panel) = po.as_mut() {
+        if let Some(ref po) = *p.borrow_mut() {
+            let mut panel = po.borrow_mut();
             panel.add_button(name);
             panel.render_buttons();
         }

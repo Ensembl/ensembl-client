@@ -2,7 +2,7 @@ use std::clone::Clone;
 use canvasutil;
 use campaign::{ StateManager, StateFixed, Campaign, StateValue };
 
-use testcards::common::{ daft, bio_daft, wiggly };
+use debug::testcards::common::{ daft, bio_daft, wiggly };
 
 use shape::{
     fix_rectangle,

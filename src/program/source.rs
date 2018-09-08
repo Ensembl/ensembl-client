@@ -1,5 +1,5 @@
 use std::rc::Rc;
-use dom;
+use debug;
 use arena::ArenaData;
 
 use webgl_rendering_context::{

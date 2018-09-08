@@ -1,4 +1,4 @@
-use dom;
+use debug;
 use canvasutil;
 use std::rc::Rc;
 use std::collections::HashMap;
