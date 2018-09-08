@@ -10,7 +10,7 @@ use stdweb::unstable::TryInto;
 
 use dom;
 use dom::domutil;
-use dom::event::{ EventListener, ElementEvents, EventControl, EventType, MouseEvent, EventListenerHandle, KeyboardEvent };
+use dom::event::{ EventListener, ElementEvents, EventControl, EventType, MouseEvent, EventListenerHandle, KeyboardEvent, EventKiller };
 use testcards;
 
 pub struct DebugFolderEntry {
@@ -102,7 +102,7 @@ impl ButtonEventListener {
 }
 
 impl EventListener<usize> for ButtonEventListener {
-    fn receive_mouse(&mut self, el: &Element, typ: &EventType, e: &MouseEvent, p: &usize) {
+    fn receive_mouse(&mut self, _el: &Element, _typ: &EventType, _e: &MouseEvent, p: &usize) {
         debug!("global","click {}",p);
     }
 }
@@ -125,7 +125,7 @@ pub struct DebugPanel {
     selected: String,
     bodyev: EventControl<()>,
     buttonev: EventControl<usize>,
-    buttonelev: Option<ElementEvents<usize>>
+    buttonek: EventKiller<usize>
 }
 
 const DEBUG_FOLDER : &str = "- debug folder -";
@@ -139,12 +139,12 @@ impl DebugPanel {
             selected: DEBUG_FOLDER.to_string(),
             bodyev: EventControl::new(),
             buttonev: EventControl::new(),
-            buttonelev: None
+            buttonek: EventKiller::new()
         };
         let el = EventListenerHandle::new(Box::new(BodyEventListener::new()));
         out.bodyev.add_event(EventType::KeyPressEvent,&el);
         out.bodyev.add_event(EventType::ClickEvent,&el);
-        out.bodyev.add_element(&domutil::query_select("body"),());
+        out.bodyev.add_element(&mut EventKiller::new(),&domutil::query_select("body"),());
 
         let bel = EventListenerHandle::new(Box::new(ButtonEventListener::new()));
         out.buttonev.add_event(EventType::ClickEvent,&bel);
@@ -170,18 +170,16 @@ impl DebugPanel {
     }
     
     fn render_buttons(&mut self) {
-        if let Some(ref mut elev) = &mut self.buttonelev {
-            elev.clear();
-        }
+        self.buttonek.kill();
         let sel_el = domutil::query_select("#bpane-right .buttons");
         domutil::inner_html(&sel_el,"");
         let mut keys : Vec<&mut DebugButton> = self.buttons.values_mut().collect();
         keys.sort_by(|a,b| a.name.cmp(&b.name));
-        for e in keys.iter_mut() {
+        for (i,e) in keys.iter_mut().enumerate() {
             let opt_el = domutil::append_element(&sel_el,"button");
             domutil::text_content(&opt_el,&e.name);
+            self.buttonev.add_element(&mut self.buttonek,&opt_el,i);
         }
-        self.buttonelev = Some(self.buttonev.add_element(&sel_el,0));
     }
     
     fn update_contents(&mut self, name: &str) {
