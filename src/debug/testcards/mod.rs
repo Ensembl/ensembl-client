@@ -3,4 +3,4 @@ mod button;
 mod common;
 mod bigscience;
 
-pub use testcards::common::testcard;
+pub use debug::testcards::common::testcard;

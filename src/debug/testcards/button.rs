@@ -1,6 +1,6 @@
-use dom;
+use debug;
 use campaign::{ StateManager };
-use testcards::bigscience::big_science;
+use debug::testcards::bigscience::big_science;
 use arena::Stage;
 
 pub fn testcard_button() {

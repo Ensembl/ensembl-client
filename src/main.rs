@@ -11,7 +11,7 @@ extern crate rand;
 #[macro_use]
 mod util;
 
-mod testcards;
+mod debug;
 mod arena;
 mod shape;
 mod canvasutil;
@@ -27,7 +27,7 @@ pub mod coord;
 
 fn main() {
     stdweb::initialize();
-    dom::setup_stage_debug();
+    debug::setup_stage_debug();
     debug!("global","starting");
     stdweb::event_loop();
 }

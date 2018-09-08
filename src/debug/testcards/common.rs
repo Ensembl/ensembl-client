@@ -1,6 +1,6 @@
-use dom;
-use testcards::visual::testcard_visual;
-use testcards::button::testcard_button;
+use debug;
+use debug::testcards::visual::testcard_visual;
+use debug::testcards::button::testcard_button;
 use coord::CLeaf;
 use rand::{ Rng, seq };
 use rand::distributions::Distribution;

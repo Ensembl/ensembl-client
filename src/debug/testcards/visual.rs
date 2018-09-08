@@ -5,10 +5,10 @@ use std::rc::Rc;
 use stdweb::web::{ window, IElement };
 
 use dom::domutil;
-use dom;
+use debug;
 use jank::JankBuster;
 use campaign::{ StateManager, StateValue };
-use testcards::bigscience::big_science;
+use debug::testcards::bigscience::big_science;
 use arena::{ Arena, Stage };
 
 struct State {

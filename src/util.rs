@@ -48,12 +48,19 @@ macro_rules! console {
 macro_rules! debug {
     ($k: expr, $($arg:tt)*) => {{
         let s = format!($($arg)*);
-        dom::debug_panel_entry_add($k,&s);
+        debug::debug_panel_entry_add($k,&s);
+    }}
+}
+
+macro_rules! debugp {
+    ($c: expr, $k: expr, $($arg:tt)*) => {{
+        let s = format!($($arg)*);
+        $c.debug($k,&s);
     }}
 }
 
 macro_rules! button {
     ($name: expr) => {{
-        dom::debug_panel_button_add($name);
+        debug::debug_panel_button_add($name);
     }}
 }

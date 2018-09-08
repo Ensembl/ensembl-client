@@ -1,4 +1,4 @@
-use dom;
+use debug;
 use std::collections::HashMap;
 
 use webgl_rendering_context::{
