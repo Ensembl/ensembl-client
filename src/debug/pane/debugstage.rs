@@ -1,5 +1,4 @@
 use std::rc::Rc;
-use std::cmp::Ord;
 use std::cell::RefCell;
 
 use stdweb::web::{ IEventTarget, IElement, Element };
@@ -13,6 +12,7 @@ use dom::domutil;
 use dom::event::{ EventListener, EventControl, EventType, MouseEvent, EventListenerHandle, KeyboardEvent, EventKiller };
 use debug::testcards;
 use debug::pane::console::DebugConsole;
+use debug::pane::buttons::DebugButtons;
 
 pub struct BodyEventListener {
     val: u32,
@@ -38,44 +38,10 @@ impl EventListener<()> for BodyEventListener {
     }
 }
 
-pub struct ButtonEventListener {
-    panel: Rc<RefCell<DebugPanel>>
-}
-
-impl ButtonEventListener {
-    pub fn new(panel: Rc<RefCell<DebugPanel>>) -> ButtonEventListener {
-        ButtonEventListener { panel }
-    }
-}
-
-impl EventListener<usize> for ButtonEventListener {
-    fn receive_mouse(&mut self, _el: &Element, _typ: &EventType, _e: &MouseEvent, p: &usize) {
-        self.panel.borrow_mut().trigger_button(*p);
-    }
-}
-
-pub struct DebugButton {
-    name: String,
-}
-
-impl DebugButton {
-    pub fn new(name: &str) -> DebugButton {
-        DebugButton {
-            name: name.to_string(),
-        }
-    }
-    
-    pub fn trigger(&self, c: &mut DebugConsole) {
-        debugp!(c,"debug panel","Button event '{}'",&self.name);
-    }
-}
-
 pub struct DebugPanel {
     pub console: DebugConsole,
-    buttons: Vec<DebugButton>,
+    pub buttons: DebugButtons,
     bodyev: EventControl<()>,
-    buttonev: EventControl<usize>,
-    buttonek: EventKiller<usize>
 }
 
 impl DebugPanel {
@@ -84,20 +50,16 @@ impl DebugPanel {
         debug!("debug panel","new debug panel");
         let out = Rc::new(RefCell::new(DebugPanel {
             console: DebugConsole::new(),
-            buttons: Vec::<DebugButton>::new(),
             bodyev: EventControl::new(),
-            buttonev: EventControl::new(),
-            buttonek: EventKiller::new()
+            buttons: DebugButtons::new(None)
         }));
         {
             let rc = &mut out.borrow_mut();
+            rc.buttons = DebugButtons::new(Some(&mut out.clone()));
             let el = EventListenerHandle::new(Box::new(BodyEventListener::new()));
             rc.bodyev.add_event(EventType::KeyPressEvent,&el);
             rc.bodyev.add_event(EventType::ClickEvent,&el);
             rc.bodyev.add_element(&mut EventKiller::new(),&domutil::query_select("body"),());
-
-            let bel = EventListenerHandle::new(Box::new(ButtonEventListener::new(out.clone())));
-            rc.buttonev.add_event(EventType::ClickEvent,&bel);
 
             rc.add_event();
         }
@@ -112,33 +74,6 @@ impl DebugPanel {
                 debug_panel_select(&name);
             }
         });
-    }
-
-    fn trigger_button(&mut self, idx: usize) {
-        let b = self.buttons.get(idx);
-        if let Some(b) = b {
-            b.trigger(&mut self.console);
-        }
-    }
-    
-    fn render_buttons(&mut self) {
-        self.buttonek.kill();
-        let sel_el = domutil::query_select("#bpane-right .buttons");
-        domutil::inner_html(&sel_el,"");
-        self.buttons.sort_by(|a,b| a.name.cmp(&b.name));
-        for (i,e) in self.buttons.iter_mut().enumerate() {
-            let opt_el = domutil::append_element(&sel_el,"button");
-            domutil::text_content(&opt_el,&e.name);
-            self.buttonev.add_element(&mut self.buttonek,&opt_el,i);
-        }
-    }
-                    
-    pub fn add_button(&mut self, name: &str) {
-        self.buttons.push(DebugButton::new(name));
-    }
-    
-    pub fn clear_buttons(&mut self) {
-        self.buttons.clear();
     }
 }
 
@@ -314,8 +249,8 @@ pub fn debug_panel_buttons_clear() {
     DEBUG_PANEL.with(|p| {
         if let Some(ref po) = *p.borrow_mut() {
             let mut panel = po.borrow_mut();
-            panel.clear_buttons();
-            panel.render_buttons();
+            panel.buttons.clear_buttons();
+            panel.buttons.render_buttons();
         }
     });
 }
@@ -324,8 +259,8 @@ pub fn debug_panel_button_add(name: &str) {
     DEBUG_PANEL.with(|p| {
         if let Some(ref po) = *p.borrow_mut() {
             let mut panel = po.borrow_mut();
-            panel.add_button(name);
-            panel.render_buttons();
+            panel.buttons.add_button(name);
+            panel.buttons.render_buttons();
         }
     });
 }
