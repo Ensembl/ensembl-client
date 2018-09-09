@@ -1,3 +1,4 @@
+use stdweb::unstable::TryInto;
 use std::rc::Rc;
 use std::cell::RefCell;
 use debug;
@@ -6,6 +7,8 @@ use campaign::{ StateManager };
 use debug::testcards::bigscience::big_science;
 use debug::pane::ButtonActionImpl;
 use arena::Stage;
+use serde_json::Value as JSONValue;
+use stdweb::Value as StdwebValue;
 
 pub fn testcard_button() {
     let body = domutil::query_select("body");
@@ -17,9 +20,13 @@ pub fn testcard_button() {
 
     let a = x.clone();
     let b = x.clone();
+    let details = json!({
+        "hello": "world"
+    });
+    let v: StdwebValue = details.try_into().unwrap();
     button!("test", move || {
         js! {
-            var e = new Event("custom");
+            var e = new CustomEvent("custom",{ detail: @{&v} });
             @{body.as_ref()}.dispatchEvent(e);
         };
     });
