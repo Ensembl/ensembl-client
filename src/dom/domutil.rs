@@ -1,6 +1,9 @@
 // We keep these separate from the other utils partly because these imports
 // are very hairy.
 
+use stdweb::Value;
+use serde_json::Value as JSONValue;
+use stdweb::unstable::TryInto;
 use stdweb::web::{
     document,
     Element,
@@ -42,4 +45,12 @@ pub fn append_element(el: &Element, name: &str) -> Element {
 
 pub fn scroll_to_bottom(el: &Element) {
     js! { @{el.as_ref()}.scrollTop = @{el.as_ref()}.scrollHeight; };
+}
+
+pub fn send_custom_event(el: &Element, name: &str, data: &JSONValue) {
+    let v: Value = data.clone().try_into().unwrap();
+    js! {
+        var e = new CustomEvent(@{name},{ detail: @{&v} });
+        @{el.as_ref()}.dispatchEvent(e);
+    };
 }

@@ -37,7 +37,7 @@ impl EventListener<()> for BodyEventListener {
         debug!("test event","{:?} {} {:?} {:?}",typ,self.val,el,ev);
     }
     
-    fn receive_custom(&mut self, el: &Element, typ: &EventType, ev: &CustomEvent, _p: &()) {
+    fn receive_custom(&mut self, _el: &Element, _typ: &EventType, ev: &CustomEvent, _p: &()) {
         debug!("test event","Custom Event {:?}",ev.details());
     }
 }
