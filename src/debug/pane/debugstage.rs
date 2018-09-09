@@ -9,7 +9,7 @@ use stdweb::unstable::TryInto;
 
 use debug;
 use dom::domutil;
-use dom::event::{ EventListener, EventControl, EventType, MouseEvent, EventListenerHandle, KeyboardEvent, EventKiller, CustomEvent, ICustomEvent };
+use dom::event::{ EventListener, EventControl, EventType, EventListenerHandle, EventKiller, ICustomEvent, EventData };
 use debug::testcards;
 use debug::pane::console::DebugConsole;
 use debug::pane::buttons::{ DebugButtons, ButtonAction };
@@ -27,18 +27,9 @@ impl BodyEventListener {
 }
 
 impl EventListener<()> for BodyEventListener {    
-    fn receive_mouse(&mut self, el: &Element, typ: &EventType, ev: &MouseEvent, _p: &()) {
+    fn receive(&mut self, el: &Element, ev: &EventData, _p: &()) {
         self.val += 1;
-        debug!("test event","{:?} {} {:?} {:?}",typ,self.val,el,ev);
-    }
-
-    fn receive_keyboard(&mut self, el: &Element, typ: &EventType, ev: &KeyboardEvent, _p: &()) {
-        self.val += 1;
-        debug!("test event","{:?} {} {:?} {:?}",typ,self.val,el,ev);
-    }
-    
-    fn receive_custom(&mut self, _el: &Element, _typ: &EventType, ev: &CustomEvent, _p: &()) {
-        debug!("test event","Custom Event {:?}",ev.details());
+        debug!("test event","{} {:?} {:?}",self.val,el,ev);
     }
 }
 

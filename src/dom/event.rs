@@ -73,6 +73,30 @@ pub enum EventType {
     CustomEvent(String)
 }
 
+#[derive(Debug)]
+pub enum EventData {
+    MouseEvent(EventType,MouseData),
+    KeyboardEvent(EventType,KeyboardData),
+    CustomEvent(EventType,String,CustomData)
+}
+
+impl EventData {
+    fn new(et: EventType, e: Reference) -> EventData {
+        let e = e.clone();
+        match &et {
+            EventType::ClickEvent |
+            EventType::MouseMoveEvent =>
+                EventData::MouseEvent(et.clone(),MouseData(e)),
+
+            EventType::KeyPressEvent =>
+                EventData::KeyboardEvent(et.clone(),KeyboardData(e)),
+                
+            EventType::CustomEvent(n) =>
+                EventData::CustomEvent(et.clone(),n.clone(),CustomData(e)),
+        }
+    }
+}
+
 impl EventType {
     fn get_name(&self) -> &str {
         match self {
@@ -85,48 +109,48 @@ impl EventType {
 }
 
 #[derive(ReferenceType,Clone,PartialEq,Eq)]
-#[reference(instance_of = "MouseEvent")]
-pub struct MouseEvent(Reference);
+#[reference(instance_of = "MouseData")]
+pub struct MouseData(Reference);
 
-impl fmt::Debug for MouseEvent {
+impl fmt::Debug for MouseData {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "MouseEvent {{ x={} y={} }}",self.client_x(),self.client_y())
+        write!(f, "MouseData {{ x={} y={} }}",self.client_x(),self.client_y())
     }
 }
 
-impl IEvent for MouseEvent {}
-impl IUiEvent for MouseEvent {}
-impl IMouseEvent for MouseEvent {}
+impl IEvent for MouseData {}
+impl IUiEvent for MouseData {}
+impl IMouseEvent for MouseData {}
 
 #[derive(ReferenceType,Clone,PartialEq,Eq)]
-#[reference(instance_of = "KeyboardEvent")]
-pub struct KeyboardEvent(Reference);
+#[reference(instance_of = "KeyboardData")]
+pub struct KeyboardData(Reference);
 
-impl fmt::Debug for KeyboardEvent {
+impl fmt::Debug for KeyboardData {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "KeyboardEvent {{ code={} }}",self.code())
+        write!(f, "KeyboardData {{ code={} }}",self.code())
     }
 }
 
-impl IEvent for KeyboardEvent {}
-impl IUiEvent for KeyboardEvent {}
-impl IKeyboardEvent for KeyboardEvent {}
+impl IEvent for KeyboardData {}
+impl IUiEvent for KeyboardData {}
+impl IKeyboardEvent for KeyboardData {}
 
 pub trait ICustomEvent {
     fn details(&self) -> Option<JSONValue>;
 }
 
 #[derive(ReferenceType,Clone,PartialEq,Eq)]
-#[reference(instance_of = "CustomEvent")]
-pub struct CustomEvent(Reference);
+#[reference(instance_of = "CustomData")]
+pub struct CustomData(Reference);
 
-impl fmt::Debug for CustomEvent {
+impl fmt::Debug for CustomData {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "CustomEvent {{ {:?} }}",self.details())
+        write!(f, "CustomData {{ {:?} }}",self.details())
     }
 }
 
-impl ICustomEvent for CustomEvent {
+impl ICustomEvent for CustomData {
     fn details(&self) -> Option<JSONValue> {
         let js_val : Value = js! {
             return @{self.0.as_ref()}.detail;
@@ -145,25 +169,6 @@ pub struct ElementEvents<T> {
     el: Element,
     kills: Vec<JsEventKiller>,
     payload: Rc<T>
-}
-
-macro_rules! event_type {
-    ($obj:ident, $el:ident, $name:ident, $typc:ident,
-     $evtype:ident, $cbname:ident, $payload:ident) => {{
-        let elc1 = $el.clone();
-        let elc2 = $el.clone();
-        let p = $payload;
-        let cb = move |e: Reference| {
-            $obj.lock().unwrap().$cbname(
-                &elc1,&$typc,&$evtype(e.clone()),&p);
-        };
-        let v = js! {
-            var cb = @{cb};
-            @{elc2.as_ref()}.addEventListener(@{$name},cb);
-            return cb;
-        };
-        v.try_into().unwrap()
-    }}
 }
 
 impl<T: 'static> ElementEvents<T> {
@@ -189,23 +194,20 @@ impl<T: 'static> ElementEvents<T> {
     }
     
     fn add_event(&mut self, typ: &EventType, evl: &Arc<Mutex<Box<EventListener<T>>>>) {
-        let obj = evl.clone();
-        let typc = typ.clone();
-        let name = typ.get_name();
+        let name = typ.get_name().to_string();
         let el = &self.el;
         let p = self.payload.clone();
-        let cb_js : Reference = match typ {
-            EventType::ClickEvent |
-            EventType::MouseMoveEvent => {
-                event_type!(obj,el,name,typc,MouseEvent,receive_mouse,p)
-            },
-            EventType::KeyPressEvent => {
-                event_type!(obj,el,name,typc,KeyboardEvent,receive_keyboard,p)
-            },
-            EventType::CustomEvent(name) => {
-                event_type!(obj,el,name,typc,CustomEvent,receive_custom,p)
-            }
+        let typc = typ.clone();
+        let cb = enclose! { (el,evl) move |e: Reference| {
+            let ed = EventData::new(typc.clone(),e);
+            evl.lock().unwrap().receive(&el,&ed,&p);
+        }};
+        let v = js! {
+            var cb = @{cb};
+            @{el.as_ref()}.addEventListener(@{&name},cb);
+            return cb;
         };
+        let cb_js : Reference = v.try_into().unwrap();
         self.kills.push(JsEventKiller {
             name: name.to_string(),
             cb_js
@@ -214,7 +216,5 @@ impl<T: 'static> ElementEvents<T> {
 }
 
 pub trait EventListener<T> {
-    fn receive_mouse(&mut self, _el: &Element, _typ: &EventType, _ev: &MouseEvent, _p: &T) {}
-    fn receive_keyboard(&mut self, _el: &Element, _typ: &EventType, _ev: &KeyboardEvent, _p: &T) {}
-    fn receive_custom(&mut self, _el: &Element, _typ: &EventType, _ev: &CustomEvent, _p: &T) {}
+    fn receive(&mut self, _el: &Element, _ev: &EventData, _p: &T) {}
 }

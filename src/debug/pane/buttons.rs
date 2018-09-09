@@ -5,7 +5,10 @@ use std::cell::RefCell;
 use stdweb::web::Element;
 
 use dom::domutil;
-use dom::event::{ EventListener, EventControl, EventType, MouseEvent, EventListenerHandle, EventKiller };
+use dom::event::{
+    EventListener, EventControl, EventType, EventListenerHandle,
+    EventKiller, EventData
+};
 use debug::pane::console::DebugConsole;
 use debug::pane::debugstage::DebugPanel;
 
@@ -24,12 +27,12 @@ fn burst<'a>(p: &'a mut DebugPanel) -> (&'a mut DebugConsole, &'a mut DebugButto
 }
 
 impl EventListener<usize> for ButtonEventListener {
-    fn receive_mouse(&mut self, _el: &Element, _typ: &EventType, _e: &MouseEvent, idx: &usize) {
+    fn receive(&mut self, _el: &Element,  _e: &EventData, idx: &usize) {
         let t;
         {
-        let p =  &mut self.panel.borrow_mut();
-        let (console, buttons) = burst(p);
-        t = buttons.trigger_button(console,*idx);
+            let p =  &mut self.panel.borrow_mut();
+            let (console, buttons) = burst(p);
+            t = buttons.trigger_button(console,*idx);
         }
         if let Some(t) = t {
             t.borrow_mut().press();
