@@ -25,26 +25,45 @@ fn burst<'a>(p: &'a mut DebugPanel) -> (&'a mut DebugConsole, &'a mut DebugButto
 
 impl EventListener<usize> for ButtonEventListener {
     fn receive_mouse(&mut self, _el: &Element, _typ: &EventType, _e: &MouseEvent, idx: &usize) {
+        let t;
+        {
         let p =  &mut self.panel.borrow_mut();
         let (console, buttons) = burst(p);
-        buttons.trigger_button(console,*idx);
+        t = buttons.trigger_button(console,*idx);
+        }
+        if let Some(t) = t {
+            t.borrow_mut().press();
+        }
     }
 }
 
 pub struct DebugButton {
     name: String,
+    cb: Rc<RefCell<ButtonAction>>
 }
 
 impl DebugButton {
-    pub fn new(name: &str) -> DebugButton {
+    pub fn new(name: &str, cb: Rc<RefCell<ButtonAction>>) -> DebugButton {
         DebugButton {
             name: name.to_string(),
+            cb
         }
     }
     
-    pub fn trigger(&self, c: &mut DebugConsole) {
+    pub fn trigger(&self, c: &mut DebugConsole) -> Rc<RefCell<ButtonAction>> {
         debugp!(c,"debug panel","Button event '{}'",&self.name);
+        self.cb.clone()
     }
+}
+
+pub trait ButtonAction {
+    fn press(&mut self);
+}
+
+pub struct ButtonActionImpl<F>(pub F) where F: FnMut() -> ();
+
+impl<F> ButtonAction for ButtonActionImpl<F> where F: FnMut() -> () {
+    fn press(&mut self) { self.0() }
 }
 
 pub struct DebugButtons {
@@ -83,14 +102,16 @@ impl DebugButtons {
         }
     }
 
-    pub fn add_button(&mut self, name: &str) {
-        self.buttons.push(DebugButton::new(name));
+    pub fn add_button(&mut self, name: &str, cb: Rc<RefCell<ButtonAction>>) {
+        self.buttons.push(DebugButton::new(name,cb));
     }
 
-    fn trigger_button(&mut self, console: &mut DebugConsole, idx: usize) {
+    fn trigger_button(&mut self, console: &mut DebugConsole, idx: usize) -> Option<Rc<RefCell<ButtonAction>>> {
         let b = self.buttons.get(idx);
         if let Some(b) = b {
-            b.trigger(console);
+            Some(b.trigger(console))
+        } else {
+            None
         }
     }
 }

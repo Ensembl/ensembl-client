@@ -12,7 +12,7 @@ use dom::domutil;
 use dom::event::{ EventListener, EventControl, EventType, MouseEvent, EventListenerHandle, KeyboardEvent, EventKiller };
 use debug::testcards;
 use debug::pane::console::DebugConsole;
-use debug::pane::buttons::DebugButtons;
+use debug::pane::buttons::{ DebugButtons, ButtonAction };
 
 pub struct BodyEventListener {
     val: u32,
@@ -208,59 +208,45 @@ pub fn setup_stage_debug() {
     setup_events();
 }
 
-#[allow(dead_code)]
-pub fn debug_panel_entry_reset(name: &str) {
+fn panel_op(cb: &mut FnMut(&mut DebugPanel) -> ()) {
     DEBUG_PANEL.with(|p| {
         if let Some(ref po) = *p.borrow_mut() {
             let mut panel = po.borrow_mut();
-            panel.console.get_entry(name).reset()
+            cb(&mut panel);
         }
     })
+}
+
+#[allow(dead_code)]
+pub fn debug_panel_entry_reset(name: &str) {
+    panel_op(&mut |p| p.console.get_entry(name).reset())
 }
 
 pub fn debug_panel_entry_mark() {
-    DEBUG_PANEL.with(|p| {
-        if let Some(ref po) = *p.borrow_mut() {
-            let mut panel = po.borrow_mut();
-            panel.console.mark()
-        }
-    })
+    panel_op(&mut |p| p.console.mark())
 }
 
 pub fn debug_panel_entry_add(name: &str, value: &str) {
-    DEBUG_PANEL.with(|p| {
-        if let Some(ref po) = *p.borrow_mut() {
-            let mut panel = po.borrow_mut();
-            panel.console.debug(name,value);
-        }
-    });
+    panel_op(&mut |p| p.console.debug(name,value))
 }
 
 pub fn debug_panel_select(name: &str) {
-    DEBUG_PANEL.with(|p| {
-        if let Some(ref po) = *p.borrow_mut() {
-            let mut panel = po.borrow_mut();
-            panel.console.select(name);
-        }
-    });
+    panel_op(&mut |p| p.console.select(name))
 }
 
 pub fn debug_panel_buttons_clear() {
-    DEBUG_PANEL.with(|p| {
-        if let Some(ref po) = *p.borrow_mut() {
-            let mut panel = po.borrow_mut();
-            panel.buttons.clear_buttons();
-            panel.buttons.render_buttons();
-        }
+    panel_op(&mut |p| {
+        p.buttons.clear_buttons();
+        p.buttons.render_buttons();
     });
 }
 
-pub fn debug_panel_button_add(name: &str) {
+pub fn debug_panel_button_add(name: &str, cb: Rc<RefCell<ButtonAction>>) {
     DEBUG_PANEL.with(|p| {
         if let Some(ref po) = *p.borrow_mut() {
             let mut panel = po.borrow_mut();
-            panel.buttons.add_button(name);
+            panel.buttons.add_button(name,cb);
             panel.buttons.render_buttons();
         }
-    });
+    })
 }

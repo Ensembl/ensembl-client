@@ -60,7 +60,8 @@ macro_rules! debugp {
 }
 
 macro_rules! button {
-    ($name: expr) => {{
-        debug::debug_panel_button_add($name);
+    ($name: expr, $cb: expr) => {{        
+        let bai = ButtonActionImpl($cb);
+        ::debug::debug_panel_button_add($name,::std::rc::Rc::new(::std::cell::RefCell::new(bai)));
     }}
 }
