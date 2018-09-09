@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::rc::Rc;
 use std::fmt;
 use std::sync::{ Arc, Mutex };
@@ -62,11 +63,12 @@ impl<T: 'static> EventControl<T> {
 }
 
 #[allow(dead_code)]
-#[derive(Debug,Clone,Copy)]
+#[derive(Debug,Clone)]
 pub enum EventType {
     ClickEvent,
     MouseMoveEvent,
-    KeyPressEvent
+    KeyPressEvent,
+    CustomEvent(String)
 }
 
 impl EventType {
@@ -75,8 +77,9 @@ impl EventType {
             EventType::ClickEvent => "click",
             EventType::MouseMoveEvent => "mousemove",
             EventType::KeyPressEvent => "keypress",
+            EventType::CustomEvent(n) => &n
         }
-    } 
+    }
 }
 
 #[derive(ReferenceType,Clone,PartialEq,Eq)]
@@ -106,6 +109,22 @@ impl fmt::Debug for KeyboardEvent {
 impl IEvent for KeyboardEvent {}
 impl IUiEvent for KeyboardEvent {}
 impl IKeyboardEvent for KeyboardEvent {}
+
+pub trait ICustomEvent {
+    fn details(&self) -> Option<HashMap<String,String>> {
+        None
+    }
+}
+
+pub struct CustomEvent(Reference);
+
+impl fmt::Debug for CustomEvent {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "CustomEvent {{ {:?} }}",self.details())
+    }
+}
+
+impl ICustomEvent for CustomEvent {}
 
 struct JsEventKiller {
     name: String,
@@ -161,7 +180,7 @@ impl<T: 'static> ElementEvents<T> {
     
     fn add_event(&mut self, typ: &EventType, evl: &Arc<Mutex<Box<EventListener<T>>>>) {
         let obj = evl.clone();
-        let typc = *typ;
+        let typc = typ.clone();
         let name = typ.get_name();
         let el = &self.el;
         let p = self.payload.clone();
@@ -172,6 +191,9 @@ impl<T: 'static> ElementEvents<T> {
             },
             EventType::KeyPressEvent => {
                 event_type!(obj,el,name,typc,KeyboardEvent,receive_keyboard,p)
+            },
+            EventType::CustomEvent(name) => {
+                event_type!(obj,el,name,typc,CustomEvent,receive_custom,p)
             }
         };
         self.kills.push(JsEventKiller {
@@ -184,4 +206,5 @@ impl<T: 'static> ElementEvents<T> {
 pub trait EventListener<T> {
     fn receive_mouse(&mut self, _el: &Element, _typ: &EventType, _ev: &MouseEvent, _p: &T) {}
     fn receive_keyboard(&mut self, _el: &Element, _typ: &EventType, _ev: &KeyboardEvent, _p: &T) {}
+    fn receive_custom(&mut self, _el: &Element, _typ: &EventType, _ev: &CustomEvent, _p: &T) {}
 }

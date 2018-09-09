@@ -9,7 +9,7 @@ use stdweb::unstable::TryInto;
 
 use debug;
 use dom::domutil;
-use dom::event::{ EventListener, EventControl, EventType, MouseEvent, EventListenerHandle, KeyboardEvent, EventKiller };
+use dom::event::{ EventListener, EventControl, EventType, MouseEvent, EventListenerHandle, KeyboardEvent, EventKiller, CustomEvent };
 use debug::testcards;
 use debug::pane::console::DebugConsole;
 use debug::pane::buttons::{ DebugButtons, ButtonAction };
@@ -36,6 +36,10 @@ impl EventListener<()> for BodyEventListener {
         self.val += 1;
         debug!("test event","{:?} {} {:?} {:?}",typ,self.val,el,ev);
     }
+    
+    fn receive_custom(&mut self, el: &Element, typ: &EventType, ev: &CustomEvent, _p: &()) {
+        debug!("test event","Custom Event");
+    }
 }
 
 pub struct DebugPanel {
@@ -59,6 +63,7 @@ impl DebugPanel {
             let el = EventListenerHandle::new(Box::new(BodyEventListener::new()));
             rc.bodyev.add_event(EventType::KeyPressEvent,&el);
             rc.bodyev.add_event(EventType::ClickEvent,&el);
+            rc.bodyev.add_event(EventType::CustomEvent("custom".to_string()),&el);
             rc.bodyev.add_element(&mut EventKiller::new(),&domutil::query_select("body"),());
 
             rc.add_event();
