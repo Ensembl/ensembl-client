@@ -8,3 +8,7 @@ pub use debug::pane::debugstage::{
     debug_panel_entry_add,
     debug_panel_entry_reset,
 };
+
+pub use debug::pane::buttons::{
+    ButtonActionImpl
+};
