@@ -1,15 +1,30 @@
+use std::rc::Rc;
+use std::cell::RefCell;
 use debug;
+use dom::domutil;
 use campaign::{ StateManager };
 use debug::testcards::bigscience::big_science;
 use debug::pane::ButtonActionImpl;
 use arena::Stage;
 
 pub fn testcard_button() {
+    let body = domutil::query_select("body");
+
     let mut stage = Stage::new();
     let oom = StateManager::new();
 
-    button!("left",|| { debug!("global","left") });
-    button!("right",|| { debug!("global","right") });
+    let x = Rc::new(RefCell::new(0));
+
+    let a = x.clone();
+    let b = x.clone();
+    button!("test", move || {
+        js! {
+            var e = new Event("custom");
+            @{body.as_ref()}.dispatchEvent(e);
+        };
+    });
+    button!("left", move || { let mut y = a.borrow_mut(); *y-=1; debug!("global","left {}",y) });
+    button!("right",move || { let mut y = b.borrow_mut(); *y+=1; debug!("global","right {}",y) });
     button!("in",|| { debug!("global","in") });
     button!("out",|| { debug!("global","out") });
 
