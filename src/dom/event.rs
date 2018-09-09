@@ -4,6 +4,9 @@ use std::fmt;
 use std::sync::{ Arc, Mutex };
 use std::marker::PhantomData;
 
+use stdweb::serde::Serde;
+use serde_json::Value as JSONValue;
+use stdweb::Value as Value;
 use stdweb::unstable::TryInto;
 use stdweb::Reference;
 use stdweb::web::Element;
@@ -111,11 +114,11 @@ impl IUiEvent for KeyboardEvent {}
 impl IKeyboardEvent for KeyboardEvent {}
 
 pub trait ICustomEvent {
-    fn details(&self) -> Option<HashMap<String,String>> {
-        None
-    }
+    fn details(&self) -> Option<JSONValue>;
 }
 
+#[derive(ReferenceType,Clone,PartialEq,Eq)]
+#[reference(instance_of = "CustomEvent")]
 pub struct CustomEvent(Reference);
 
 impl fmt::Debug for CustomEvent {
@@ -124,7 +127,15 @@ impl fmt::Debug for CustomEvent {
     }
 }
 
-impl ICustomEvent for CustomEvent {}
+impl ICustomEvent for CustomEvent {
+    fn details(&self) -> Option<JSONValue> {
+        let js_val : Value = js! {
+            return @{self.0.as_ref()}.detail;
+        }.try_into().unwrap();
+        let val : Serde<JSONValue> = js_val.try_into().ok().unwrap();
+        Some(val.0)
+    }
+}
 
 struct JsEventKiller {
     name: String,

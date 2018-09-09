@@ -9,6 +9,9 @@ extern crate lazy_static;
 extern crate rand;
 
 #[macro_use]
+extern crate serde_json;
+
+#[macro_use]
 mod util;
 
 mod debug;

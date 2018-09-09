@@ -8,6 +8,7 @@ stdweb = "*"
 stdweb-derive = "*"
 serde = "*"
 serde_derive = "*"
+serde_json = "*"
 lazy_static = "*"
 rand="0.5.4"
 
