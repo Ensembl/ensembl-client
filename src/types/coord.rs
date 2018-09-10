@@ -1,14 +1,5 @@
 use std::ops::{ Add, Mul, Div };
-use program::{ Object, ObjectAttrib, DataBatch, UniformValue };
-
-pub trait Input {
-    fn to_f32(&self, _attrib: &mut ObjectAttrib, _batch: &DataBatch) {}
-}
-
-/* COrigin */
-
-#[derive(Clone,Copy)]
-pub struct COrigin(pub f32,pub f32);
+use program::{ Object, ObjectAttrib, DataBatch, UniformValue, Input };
 
 /* CLeaf */
 

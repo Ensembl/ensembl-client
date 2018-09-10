@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use arena::ArenaData;
 
-use coord::{ CLeaf, RLeaf, RPixel, RFraction, CFraction, CPixel };
+use types::{ CLeaf, RLeaf, RPixel, RFraction, CFraction, CPixel };
 
 use shape::{ Shape, ColourSpec, Spot };
 use shape::util::{

@@ -12,7 +12,8 @@ pub use program::execute::{
 
 pub use program::data::{
     DataBatch,
-    DataGroup
+    DataGroup,
+    Input
 };
 
 pub use program::objects::{

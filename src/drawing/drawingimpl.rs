@@ -4,7 +4,7 @@ use std::hash::Hash;
 use std::hash::Hasher;
 use std::collections::hash_map::DefaultHasher;
 
-use coord::{ CPixel, RPixel };
+use types::{ CPixel, RPixel };
 
 use alloc::Ticket;
 use alloc::Allocator;

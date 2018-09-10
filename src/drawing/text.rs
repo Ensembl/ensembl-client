@@ -2,7 +2,7 @@ use std::rc::Rc;
 use canvasutil::FCFont;
 use arena::{ ArenaCanvases };
 
-use coord::{ Colour, CPixel };
+use types::{ Colour, CPixel };
 
 use drawing::drawingimpl::{
     Artist,

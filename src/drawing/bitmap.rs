@@ -1,7 +1,7 @@
 use std::rc::Rc;
 use arena::{ ArenaCanvases };
 
-use coord::{ CPixel, RPixel };
+use types::{ CPixel, RPixel };
 
 use drawing::drawingimpl::{
     Artist,
