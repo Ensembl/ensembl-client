@@ -16,6 +16,7 @@ mod util;
 
 mod debug;
 mod arena;
+mod global;
 mod shape;
 mod canvasutil;
 mod campaign;

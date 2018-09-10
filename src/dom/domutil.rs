@@ -12,6 +12,10 @@ use stdweb::web::{
     INode
 };
 
+pub fn query_selector(el: &Element, sel: &str) -> Element {
+    el.query_selector(sel).unwrap().unwrap()
+}
+
 pub fn query_select(sel: &str) -> Element {
     document().query_selector(sel).unwrap().unwrap()
 }

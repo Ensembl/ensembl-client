@@ -1,3 +1,4 @@
+use std::sync::{ Mutex, Arc };
 use std::clone::Clone;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -9,12 +10,11 @@ use debug;
 use jank::JankBuster;
 use campaign::{ StateManager, StateValue };
 use debug::testcards::bigscience::big_science;
-use arena::{ Arena, Stage };
+use global::{ Global };
 
 struct State {
-    arena: RefCell<Arena>,
+    g: Arc<Mutex<Global>>,
     oom: StateManager,
-    stage: Stage,
     zoomscale: f32,
     hpos: f32,
     vpos: f32,
@@ -43,9 +43,11 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
             state.hpos += delta *3.763;
             state.vpos += delta *5.414;
             state.fpos += delta *7.21;
-            state.stage.zoom = ((state.zoomscale.cos() + 1.5)/3.0) as f32;
-            state.stage.pos.0 = ((state.hpos.cos())*1.5) as f32;
-            state.stage.pos.1 = ((state.vpos.sin())*300.) as f32;
+            state.g.lock().unwrap().with_stage(|s| {
+                s.zoom = ((state.zoomscale.cos() + 1.5)/3.0) as f32;
+                s.pos.0 = ((state.hpos.cos())*1.5) as f32;
+                s.pos.1 = ((state.vpos.sin())*300.) as f32;
+            });
             let odd_state = if state.hpos.cos() > 0. {
                 StateValue::OffWarm()
             } else {
@@ -62,8 +64,6 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
         
         let d = time - state.old_time;
         state.old_time = time;
-        let stage = state.stage;
-        state.stage = stage;
         state.phase += 1;
         let gear = state.jank.gear();
         if state.phase >= gear {
@@ -71,23 +71,20 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
         }
         if state.phase == 0 {
             state.jank.detect(d as u32,time as f32/1000.0);
-            let mut a = state.arena.borrow_mut();
-            a.draw(&state.oom,&state.stage);
+            state.g.lock().unwrap().draw(&state.oom);
         }
     }
     window().request_animation_frame(move |x| animate(x,s.clone()));
 }
 
-pub fn testcard_visual(onoff: bool, inst: &str) {
-    let mut stage = Stage::new();
+pub fn testcard_visual(g: Arc<Mutex<Global>>, onoff: bool, inst: &str) {
     let oom = StateManager::new();
 
-    let arena = big_science(&oom,&mut stage,onoff);
+    big_science(&mut g.lock().unwrap(),&oom,onoff);
 
     let state = Rc::new(RefCell::new(State {
-        arena: RefCell::new(arena),
+        g,
         oom,
-        stage,
         hpos: 0.0,
         vpos: 0.0,
         fpos: 0.0,

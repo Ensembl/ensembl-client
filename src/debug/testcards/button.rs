@@ -1,16 +1,16 @@
+use std::sync::{ Mutex, Arc };
 use std::rc::Rc;
 use std::cell::RefCell;
+use global::Global;
 use debug;
 use dom::domutil;
 use campaign::{ StateManager };
 use debug::testcards::bigscience::big_science;
 use debug::pane::ButtonActionImpl;
-use arena::Stage;
 
-pub fn testcard_button() {
+pub fn testcard_button(g: Arc<Mutex<Global>>) {
     let body = domutil::query_select("body");
 
-    let mut stage = Stage::new();
     let oom = StateManager::new();
 
     let x = Rc::new(RefCell::new(0));
@@ -28,6 +28,6 @@ pub fn testcard_button() {
     button!("in",|| { debug!("global","in") });
     button!("out",|| { debug!("global","out") });
 
-    let mut a = big_science(&oom,&mut stage,false);
-    a.draw(&oom,&stage);
+    big_science(&mut g.lock().unwrap(),&oom,false);
+    g.lock().unwrap().draw(&oom);
 }

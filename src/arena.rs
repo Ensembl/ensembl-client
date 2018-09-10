@@ -1,5 +1,6 @@
 use debug;
 use std::collections::HashMap;
+use stdweb::web::{ Element };
 
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
@@ -13,7 +14,7 @@ use wglraw;
 
 use program::{ Program, GPUSpec, UniformValue, ProgramType };
 
-use coord::COrigin;
+use coord::{ COrigin, CPixel };
 
 use campaign::{ StateManager, CampaignManager };
 
@@ -22,44 +23,12 @@ pub struct ArenaCanvases {
     pub idx: i32,
 }
 
-#[derive(Clone,Copy)]
-pub struct ArenaDims {
-    pub aspect: f32,
-    pub width_px: i32,
-    pub height_px: i32,
-}
-
 #[allow(dead_code)]
 pub struct ArenaData {
-    spec: ArenaSpec,
-    pub dims: ArenaDims,
+    pub dims: CPixel,
     pub canvases: ArenaCanvases,
     pub ctx: glctx,
     pub gpuspec: GPUSpec
-}
-
-impl ArenaDims {
-    #[allow(dead_code)]
-    pub fn prop_x(&self,x_px: i32) -> f32 {
-        (x_px as f64 * 2.0 / self.width_px as f64) as f32
-    }
-
-    #[allow(dead_code)]
-    pub fn prop_y(&self,y_px: i32) -> f32 {
-        (y_px as f64 * 2.0 / self.height_px as f64) as f32
-    }        
-}
-
-pub struct ArenaSpec {
-    pub debug: bool,
-}
-
-impl ArenaSpec {
-    pub fn new() -> ArenaSpec {
-        ArenaSpec {
-            debug: false
-        }
-    }
 }
 
 pub struct ArenaPrograms {
@@ -90,19 +59,17 @@ pub struct Arena {
 }
 
 impl Arena {
-    pub fn new(selector: &str, spec: ArenaSpec) -> Arena {
-        let canvas = canvasutil::prepare_canvas(selector);
+    pub fn new(el: &Element) -> Arena {
+        let canvas = canvasutil::prepare_canvas(el);
         let ctx = wglraw::prepare_context(&canvas);
         let flat = Rc::new(canvasutil::FlatCanvas::create(2,2));
-        console!("{:?} x {:?}",canvas.width(),canvas.height());
         let data = Rc::new(RefCell::new(ArenaData {
-            ctx, spec, 
+            ctx,
             gpuspec: GPUSpec::new(),
-            dims: ArenaDims {
-                aspect: canvasutil::aspect_ratio(&canvas),
-                width_px: canvas.width() as i32,
-                height_px: canvas.height() as i32,
-            },
+            dims: CPixel(
+                canvas.width() as i32,
+                canvas.height() as i32,
+            ),
             canvases: ArenaCanvases {
                 flat,
                 idx: 0,
@@ -132,7 +99,7 @@ impl Arena {
         arena
     }
 
-    pub fn dims(&self) -> ArenaDims {
+    pub fn dims(&self) -> CPixel {
         self.data.borrow().dims
     }
 
@@ -182,16 +149,15 @@ impl Stage {
         Stage { pos: COrigin(0.,0.), zoom: 1.0 }
     }
 
-    pub fn get_uniforms(&self, canvs: &ArenaCanvases, dims: &ArenaDims) -> HashMap<&str,UniformValue> {
+    pub fn get_uniforms(&self, canvs: &ArenaCanvases, dims: &CPixel) -> HashMap<&str,UniformValue> {
         hashmap! {
             "uSampler" => UniformValue::Int(canvs.idx),
             "uStageHpos" => UniformValue::Float(self.pos.0),
-            "uStageVpos" => UniformValue::Float((self.pos.1 + dims.height_px as f32)/2.),
+            "uStageVpos" => UniformValue::Float((self.pos.1 + dims.1 as f32)/2.),
             "uStageZoom" => UniformValue::Float(self.zoom),
-            "uAspect" =>    UniformValue::Float(dims.aspect),
             "uSize" => UniformValue::Vec2F(
-                dims.width_px as f32/2.,
-                dims.height_px as f32/2.)
+                dims.0 as f32/2.,
+                dims.1 as f32/2.)
         }
     }
 }
