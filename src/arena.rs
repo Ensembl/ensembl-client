@@ -14,7 +14,7 @@ use wglraw;
 
 use program::{ Program, GPUSpec, UniformValue, ProgramType };
 
-use coord::{ COrigin, CPixel };
+use types::{ CFraction, CPixel };
 
 use campaign::{ StateManager, CampaignManager };
 
@@ -140,13 +140,13 @@ impl Arena {
 
 #[derive(Clone,Copy)]
 pub struct Stage {
-    pub pos: COrigin,
+    pub pos: CFraction,
     pub zoom: f32,
 }
 
 impl Stage {
     pub fn new() -> Stage {
-        Stage { pos: COrigin(0.,0.), zoom: 1.0 }
+        Stage { pos: CFraction(0.,0.), zoom: 1.0 }
     }
 
     pub fn get_uniforms(&self, canvs: &ArenaCanvases, dims: &CPixel) -> HashMap<&str,UniformValue> {

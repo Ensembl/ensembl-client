@@ -12,15 +12,11 @@ use webgl_rendering_context::{
 
 use wglraw;
 
-use coord::CPixel;
-use program::data::{ DataBatch, DataGroup };
+use types::CPixel;
+use program::data::{ DataBatch, DataGroup, Input };
 
 use arena::{
     ArenaData,
-};
-
-use coord::{
-    Input,
 };
 
 /* This is the meat of each Object implementation */

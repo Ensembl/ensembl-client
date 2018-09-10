@@ -2,7 +2,7 @@ use std::rc::Rc;
 use arena::ArenaData;
 
 use program::{ ProgramType, PTGeom, PTSkin, PTMethod, ProgramAttribs };
-use coord::{ CPixel, RPixel };
+use types::{ CPixel, RPixel };
 
 use shape::{ Shape, ColourSpec };
 use shape::util::{

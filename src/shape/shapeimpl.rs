@@ -3,7 +3,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use arena::ArenaData;
 use program::{ ProgramAttribs, DataGroup, ProgramType, PTSkin };
-use coord::{ Colour, RPixel };
+use types::{ Colour, RPixel };
 use campaign::CampaignManager;
 use drawing::Artist;
 

@@ -27,7 +27,7 @@ mod program;
 mod dom;
 mod jank;
 mod webgl_rendering_context;
-pub mod coord;
+mod types;
 
 fn main() {
     stdweb::initialize();

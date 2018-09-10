@@ -3,10 +3,11 @@ use std::rc::Rc;
 use arena::ArenaData;
 
 use program::{
-    ProgramAttribs, DataBatch, PTGeom, PTMethod, PTSkin, ProgramType
+    ProgramAttribs, DataBatch, PTGeom, PTMethod, PTSkin, ProgramType,
+    Input
 };
 
-use coord::{ CLeaf, CPixel, RPixel, Input, CFraction };
+use types::{ CLeaf, CPixel, RPixel, CFraction };
 
 use shape::{ Shape, ColourSpec, MathsShape };
 use shape::util::{

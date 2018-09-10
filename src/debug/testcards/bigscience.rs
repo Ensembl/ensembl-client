@@ -31,7 +31,7 @@ use std::rc::Rc;
 
 use global::Global;
 
-use coord::{
+use types::{
     CLeaf,
     RLeaf,
     CPixel,

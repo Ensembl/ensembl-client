@@ -1,6 +1,6 @@
 use std::rc::Rc;
 use arena::{ ArenaCanvases };
-use coord::{ CPixel, RPixel, Colour };
+use types::{ CPixel, RPixel, Colour };
 
 use drawing::drawingimpl::{
     Artist,

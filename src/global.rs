@@ -3,7 +3,7 @@ use dom::domutil;
 use dom::event::{ EventKiller, EventListener, EventControl, EventType, EventListenerHandle, EventData };
 use stdweb::web::{ IElement, Element };
 use arena::{ Arena, Stage };
-use coord::{ CLeaf, CPixel, CFraction };
+use types::{ CLeaf, CPixel, CFraction };
 use serde_json::Value as JSONValue;
 
 use campaign::{ StateManager };

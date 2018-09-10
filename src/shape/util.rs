@@ -3,8 +3,9 @@ use program::{
     ProgramAttribs, DataBatch, DataGroup, ProgramType, PTMethod, 
     PTGeom, PTSkin
 };
-use coord::{ RFraction, CLeaf, Input, RPixel, RLeaf  };
+use types::{ RFraction, CLeaf, RPixel, RLeaf  };
 use shape::ColourSpec;
+use program::Input;
 
 pub fn triangle_gl(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[&Input;3]) {
     if let Some(obj) = pdata.get_object(key) {
