@@ -1,3 +1,4 @@
+use std::sync::{ Mutex, Arc };
 use debug;
 use debug::testcards::visual::testcard_visual;
 use debug::testcards::button::testcard_button;
@@ -5,13 +6,14 @@ use coord::CLeaf;
 use rand::{ Rng, seq };
 use rand::distributions::Distribution;
 use rand::distributions::range::Range;
+use global::Global;
 
-pub fn testcard(name: &str, inst: &str) {
+pub fn testcard(g: Arc<Mutex<Global>>, name: &str, inst: &str) {
     debug!("global","starting testcard {} inst={}",name,inst);
     match name {
-        "draw" => testcard_visual(false,inst),
-        "onoff" => testcard_visual(true,inst),
-        "button" => testcard_button(),
+        "draw" => testcard_visual(g,false,inst),
+        "onoff" => testcard_visual(g,true,inst),
+        "button" => testcard_button(g),
         _ => ()
     };
 }

@@ -29,11 +29,7 @@ use rand::SeedableRng;
 
 use std::rc::Rc;
 
-use arena::{
-    Arena,
-    ArenaSpec,
-    Stage,
-};
+use global::Global;
 
 use coord::{
     CLeaf,
@@ -48,11 +44,14 @@ use drawing::{ text_texture, bitmap_texture, collage, Mark };
 use rand::distributions::Distribution;
 use rand::distributions::range::Range;
 
-pub fn big_science(oom: &StateManager, stage: &mut Stage, onoff: bool) -> Arena {
+pub fn big_science(g: &mut Global, oom: &StateManager, onoff: bool) {
     let seed = 12345678;
     let s = seed as u8;
     let t = (seed/256) as u8;
     let mut rng = SmallRng::from_seed([s,s,s,s,s,s,s,s,t,t,t,t,t,t,t,t]);
+
+    g.with_arena(|a |{
+        
     let fc_font = canvasutil::FCFont::new(12,"Roboto");
 
     let (mut c_odd,mut c_even) = if onoff {
@@ -68,17 +67,15 @@ pub fn big_science(oom: &StateManager, stage: &mut Stage, onoff: bool) -> Arena 
     };
 
     let mut c = Campaign::new(Rc::new(StateFixed(StateValue::On())));
-    stage.zoom = 0.1;
 
-    let mut a_spec = ArenaSpec::new();
-    a_spec.debug = true;
-    let mut arena = Arena::new("#glcanvas",a_spec);
-    let mut middle = arena.dims().height_px / 120;
+    let mut middle = a.dims().1 / 120;
     if middle < 5 { middle = 5; }
     
-    let red_spot = Spot::new(arena.get_cman(),&Colour(255,100,50));
+
+    
+    let red_spot = Spot::new(a.get_cman(),&Colour(255,100,50));
     let red = ColourSpec::Spot(red_spot.clone());
-    let green_spot = Spot::new(arena.get_cman(),&Colour(50,255,150));
+    let green_spot = Spot::new(a.get_cman(),&Colour(50,255,150));
     let green = ColourSpec::Spot(green_spot.clone());
     
     let len_gen = Range::new(0.,0.2);
@@ -86,15 +83,11 @@ pub fn big_science(oom: &StateManager, stage: &mut Stage, onoff: bool) -> Arena 
     let showtext_gen = Range::new(0,10);
     let (sw,sh);
     {
-        let a = &mut arena;
-        
         let dims = a.dims();
-        sw = dims.width_px;
-        sh = dims.height_px;
+        sw = dims.0;
+        sh = dims.1;
     }
-    {
         let col = Colour(200,200,200);
-        {
         for yidx in 0..20 {
             let y = yidx * 60;
             let val = daft(&mut rng);
@@ -227,15 +220,9 @@ pub fn big_science(oom: &StateManager, stage: &mut Stage, onoff: bool) -> Arena 
                                      0,255,0,255,
                                      255,255,0,255 },CPixel(1,4));
         c.add_shape(fix_texture(tx, &CPixel(sw/2-5,0),&CPixel(1,sh)));
-        }
-        {
-                let a = &mut arena;
         a.get_cman().add_campaign(c);
         a.get_cman().add_campaign(c_odd);
         a.get_cman().add_campaign(c_even);
-
-        stage.zoom = 0.5;
-    }
-    }
-    arena
+    });
+    g.with_stage(|s| s.zoom = 0.5);
 }

@@ -12,11 +12,11 @@ use webgl_rendering_context::{
 
 use wglraw;
 
+use coord::CPixel;
 use program::data::{ DataBatch, DataGroup };
 
 use arena::{
     ArenaData,
-    ArenaDims,
 };
 
 use coord::{
@@ -40,7 +40,7 @@ pub trait Object {
 
     fn obj_final(&mut self, _batch: &DataBatch, _adata: &ArenaData) {}
     fn execute(&self, _adata : &ArenaData, _batch: &DataBatch,
-               _dims: &ArenaDims) {}
+               _dims: &CPixel) {}
     fn clear(&mut self) {}
 }
 
@@ -70,7 +70,7 @@ impl Object for ObjectCanvasTexture {
     }
 
     fn execute(&self, adata : &ArenaData, _batch: &DataBatch,
-               _dims: &ArenaDims) {
+               _dims: &CPixel) {
         let canvases = &adata.canvases;
         if let Some(ref texture) = self.texture {
             adata.ctx.active_texture(TEXIDS[canvases.idx as usize]);
@@ -106,7 +106,7 @@ impl Object for ObjectUniform {
         self.val.insert(group.map(|g| g.id()),value);
     }
 
-    fn execute(&self, adata : &ArenaData, batch: &DataBatch, _dims: &ArenaDims) {
+    fn execute(&self, adata : &ArenaData, batch: &DataBatch, _dims: &CPixel) {
         let gid = batch.group().id();
         
         if let Some(ref loc) = self.buf {
@@ -194,7 +194,7 @@ impl Object for ObjectMain {
         }
     }
 
-    fn execute(&self, adata : &ArenaData, batch: &DataBatch, _dims: &ArenaDims) {
+    fn execute(&self, adata : &ArenaData, batch: &DataBatch, _dims: &CPixel) {
         if let Some(data) = self.data(batch) {
             if let Some(buf) = self.buffer(batch) {
                 adata.ctx.bind_buffer(glctx::ELEMENT_ARRAY_BUFFER,Some(&buf));
@@ -254,7 +254,7 @@ impl Object for ObjectAttrib {
         }
     }
 
-    fn execute(&self, adata : &ArenaData, batch: &DataBatch, _dims: &ArenaDims) {
+    fn execute(&self, adata : &ArenaData, batch: &DataBatch, _dims: &CPixel) {
         let ctx = &adata.ctx;
         if let Some(buf) = self.buffer(batch) {
             ctx.enable_vertex_attrib_array(self.loc);
