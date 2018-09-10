@@ -3,6 +3,8 @@ use dom::domutil;
 use dom::event::{ EventKiller, EventListener, EventControl, EventType, EventListenerHandle, EventData };
 use stdweb::web::{ IElement, Element };
 use arena::{ Arena, Stage };
+use coord::{ CLeaf, CPixel, CFraction };
+use serde_json::Value as JSONValue;
 
 use campaign::{ StateManager };
 
@@ -69,6 +71,28 @@ impl Global {
         let ar = &mut self.arena.as_ref().unwrap();
         ar.lock().unwrap().draw(oom,&stage);
     }
+}
+
+#[derive(Debug,Clone,Copy)]
+enum Event {
+    Noop,
+    MovePixels(CPixel),
+    MoveBases(CLeaf),
+    MoveScreens(CFraction)
+}
+
+fn custom_make_one_event(k: &String, v: &JSONValue) -> Event {
+    Event::Noop
+}
+
+fn custom_make_events(j: &JSONValue) -> Vec<Event> {
+    let mut out = Vec::<Event>::new();
+    if let JSONValue::Object(map) = j {
+        for (k,v) in map {
+            out.push(custom_make_one_event(k,v));
+        }
+    }
+    out
 }
 
 pub struct ArenaEventListener {
