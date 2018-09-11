@@ -1,5 +1,3 @@
-use debug;
-
 const MAX_GEAR : u32 = 4;
 const MAX_GRACE: u32 = 300;
 const JANK_WINDOW: f32 = 60.;

@@ -1,4 +1,3 @@
-use debug;
 use dom::domutil;
 use std::collections::HashMap;
 use stdweb::web::{ Element, HtmlElement };
@@ -129,7 +128,7 @@ impl Arena {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 pub struct Stage {
     dims: CPixel,
     pub pos: CFraction,

@@ -6,7 +6,6 @@ use std::rc::Rc;
 use stdweb::web::{ window, IElement };
 
 use dom::domutil;
-use debug;
 use jank::JankBuster;
 use campaign::{ StateManager, StateValue };
 use debug::testcards::bigscience::big_science;
@@ -44,7 +43,7 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
             state.vpos += delta *5.414;
             state.fpos += delta *7.21;
             state.g.lock().unwrap().with_stage(|s| {
-                s.zoom = ((state.zoomscale.cos() + 1.5)/3.0) as f32;
+                s.zoom = ((state.zoomscale.cos() + 1.5)/300.0) as f32;
                 s.pos.0 = ((state.hpos.cos())*1.5) as f32;
                 s.pos.1 = ((state.vpos.sin())*300.) as f32;
             });

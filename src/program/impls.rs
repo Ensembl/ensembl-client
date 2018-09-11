@@ -32,6 +32,18 @@ pub struct ProgramType(pub PTGeom,pub PTMethod,pub PTSkin);
 impl PTGeom {
     fn to_source(&self) -> ProgramSource {
         ProgramSource::new(match self {
+            PTGeom::Stretch => vec! {
+                Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageHpos"),
+                Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageVpos"),
+                Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageZoom"),
+                Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
+                Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
+                Statement::new_vert("
+                    gl_Position = vec4(
+                        (aVertexPosition.x - uStageHpos/uSize.x) * uStageZoom,
+                        - (aVertexPosition.y - uStageVpos) / uSize.y,
+                        0.0, 1.0)")
+            },
             PTGeom::Pin => vec! {
                 Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageHpos"),
                 Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageVpos"),
@@ -41,23 +53,11 @@ impl PTGeom {
                 Attribute::new(&PR_DEF,Arity::Vec2,"aOrigin"),
                 Statement::new_vert("
                     gl_Position = vec4(
-                        (aOrigin.x - uStageHpos) * uStageZoom + 
+                        (aOrigin.x -uStageHpos/uSize.x) * uStageZoom + 
                                     aVertexPosition.x / uSize.x,
                         - (aOrigin.y - uStageVpos + aVertexPosition.y) / uSize.y, 
                         0.0, 1.0)")
 
-            },
-            PTGeom::Stretch => vec! {
-                Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageHpos"),
-                Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageVpos"),
-                Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageZoom"),
-                Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
-                Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
-                Statement::new_vert("
-                    gl_Position = vec4(
-                        (aVertexPosition.x - uStageHpos) * uStageZoom,
-                        - (aVertexPosition.y - uStageVpos) / uSize.y,
-                        0.0, 1.0)")
             },
             PTGeom::Fix => vec! {
                 Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),

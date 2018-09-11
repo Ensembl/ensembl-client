@@ -1,5 +1,4 @@
 use std::rc::Rc;
-use std::cmp::Ord;
 use std::cell::RefCell;
 
 use stdweb::web::Element;
@@ -97,7 +96,6 @@ impl DebugButtons {
         self.buttonek.kill();
         let sel_el = domutil::query_select("#bpane-right .buttons");
         domutil::inner_html(&sel_el,"");
-        self.buttons.sort_by(|a,b| a.name.cmp(&b.name));
         for (i,e) in self.buttons.iter_mut().enumerate() {
             let opt_el = domutil::append_element(&sel_el,"button");
             domutil::text_content(&opt_el,&e.name);
