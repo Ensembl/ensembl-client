@@ -76,7 +76,7 @@ impl Shape for FixTexture {
     fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData, texpos: Option<RPixel>) {
         if let Some(tp) = texpos {
             let p = tp.at_origin() * self.scale + self.pos;
-            let t = tp / adata.canvases.flat.size();
+            let t = tp.as_fraction() / adata.canvases.flat.size().as_fraction();
             let b = vertices_rect(geom,None);
             rectangle_p(b,geom,"aVertexPosition",&p);
             rectangle_t(b,geom,"aTextureCoord",&t);

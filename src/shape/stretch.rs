@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use arena::ArenaData;
 
-use types::{ CLeaf, RLeaf, RPixel, RFraction, CFraction, CPixel };
+use types::{ CLeaf, RLeaf, RPixel, cfraction, rfraction, cleaf, rleaf };
 
 use shape::{ Shape, ColourSpec, Spot };
 use shape::util::{
@@ -104,23 +104,23 @@ const CHUNK_SIZE : f32 = 10.;
 impl Shape for StretchTexture {
     fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData, texpos: Option<RPixel>) {
         if let Some(tp) = texpos {
-            let t = tp / adata.canvases.flat.size();
+            let t = tp.as_fraction() / adata.canvases.flat.size().as_fraction();
             
             /* some cards baulk at very large textured areas, so split */
             let mut chunks = ((self.pos.1).0.abs() / CHUNK_SIZE) as i32;
             if chunks < 1 { chunks = 1; }
             
-            let widthp = self.pos.1 / CPixel(chunks,1);
-            let widtht = t.1 / CFraction(chunks as f32,1.);
+            let widthp = (self.pos.1).0 / chunks as f32;
+            let widtht = t.1 / cfraction(chunks as f32,1.);
             
-            let mut p = RLeaf(self.pos.0,widthp);
-            let mut t = RFraction(t.0,widtht);
+            let mut p = rleaf(self.pos.0,cleaf(widthp,(self.pos.1).1));
+            let mut t = rfraction(t.0,widtht);
             for _i in 0..chunks {
                 let b = vertices_rect(geom,None);
                 rectangle_g(b,geom,"aVertexPosition",&p);
                 rectangle_t(b,geom,"aTextureCoord",&t);
-                p = p + CLeaf(widthp.0,0);
-                t = t + CFraction(widtht.0,0.);
+                p = p + cleaf(widthp,0);
+                t = t + cfraction(widtht.0,0.);
             }
         }
     }

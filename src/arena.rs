@@ -14,7 +14,7 @@ use wglraw;
 
 use program::{ Program, GPUSpec, UniformValue, ProgramType };
 
-use types::{ CFraction, CPixel };
+use types::{ CFraction, CPixel, cfraction, cpixel };
 
 use campaign::{ StateManager, CampaignManager };
 
@@ -66,7 +66,7 @@ impl Arena {
         let data = Rc::new(RefCell::new(ArenaData {
             ctx,
             gpuspec: GPUSpec::new(),
-            dims: CPixel(
+            dims: cpixel(
                 canvas.width() as i32,
                 canvas.height() as i32,
             ),
@@ -146,7 +146,7 @@ pub struct Stage {
 
 impl Stage {
     pub fn new() -> Stage {
-        Stage { pos: CFraction(0.,0.), zoom: 1.0 }
+        Stage { pos: cfraction(0.,0.), zoom: 1.0 }
     }
 
     pub fn get_uniforms(&self, canvs: &ArenaCanvases, dims: &CPixel) -> HashMap<&str,UniformValue> {
