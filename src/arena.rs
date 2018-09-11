@@ -1,6 +1,7 @@
 use debug;
+use dom::domutil;
 use std::collections::HashMap;
-use stdweb::web::{ Element };
+use stdweb::web::{ Element, HtmlElement };
 
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
@@ -25,7 +26,6 @@ pub struct ArenaCanvases {
 
 #[allow(dead_code)]
 pub struct ArenaData {
-    pub dims: CPixel,
     pub canvases: ArenaCanvases,
     pub ctx: glctx,
     pub gpuspec: GPUSpec
@@ -66,10 +66,6 @@ impl Arena {
         let data = Rc::new(RefCell::new(ArenaData {
             ctx,
             gpuspec: GPUSpec::new(),
-            dims: cpixel(
-                canvas.width() as i32,
-                canvas.height() as i32,
-            ),
             canvases: ArenaCanvases {
                 flat,
                 idx: 0,
@@ -99,10 +95,6 @@ impl Arena {
         arena
     }
 
-    pub fn dims(&self) -> CPixel {
-        self.data.borrow().dims
-    }
-
     pub fn get_cman(&mut self) -> &mut CampaignManager {
         &mut self.cman
     }
@@ -126,38 +118,53 @@ impl Arena {
         let datam = &mut self.data.borrow_mut();
         for k in &self.progs.order {
             let geom = self.progs.map.get_mut(k).unwrap();
-            let u = stage.get_uniforms(&datam.canvases,
-                                       &datam.dims);
+            let u = stage.get_uniforms(&datam.canvases);
             for (key, value) in &u {
                 if let Some(obj) = geom.get_object(key) {
                     obj.set_uniform(None,*value);
                 }
             }
-            geom.draw(datam);
+            geom.draw(datam,stage);
         }
     }
 }
 
-#[derive(Clone,Copy)]
+#[derive(Clone)]
 pub struct Stage {
+    dims: CPixel,
     pub pos: CFraction,
     pub zoom: f32,
+    el: HtmlElement,
 }
 
 impl Stage {
-    pub fn new() -> Stage {
-        Stage { pos: cfraction(0.,0.), zoom: 1.0 }
+    pub fn new(el: &HtmlElement) -> Stage {
+        let size = cpixel(0,0);
+        let mut out = Stage {
+            pos: cfraction(0.,0.), zoom: 1.0, el: el.clone(),
+            dims: size
+        };
+        out.recalc_size();
+        out
     }
 
-    pub fn get_uniforms(&self, canvs: &ArenaCanvases, dims: &CPixel) -> HashMap<&str,UniformValue> {
+    pub fn get_size(&self) -> CPixel {
+        self.dims
+    }
+
+    pub fn recalc_size(&mut self) {
+        self.dims = domutil::size(&self.el);
+    }
+
+    pub fn get_uniforms(&self, canvs: &ArenaCanvases) -> HashMap<&str,UniformValue> {
         hashmap! {
             "uSampler" => UniformValue::Int(canvs.idx),
             "uStageHpos" => UniformValue::Float(self.pos.0),
-            "uStageVpos" => UniformValue::Float((self.pos.1 + dims.1 as f32)/2.),
+            "uStageVpos" => UniformValue::Float((self.pos.1 + self.dims.1 as f32)/2.),
             "uStageZoom" => UniformValue::Float(self.zoom),
             "uSize" => UniformValue::Vec2F(
-                dims.0 as f32/2.,
-                dims.1 as f32/2.)
+                self.dims.0 as f32/2.,
+                self.dims.1 as f32/2.)
         }
     }
 }

@@ -2,7 +2,7 @@ use std::sync::{ Mutex, Arc };
 use std::rc::Rc;
 use std::cell::RefCell;
 
-use stdweb::web::{ IEventTarget, Element };
+use stdweb::web::{ IEventTarget, Element, HtmlElement };
 use stdweb::traits::IEvent;
 use stdweb::web::event::{ ClickEvent, ChangeEvent };
 use stdweb::web::html_element::SelectElement;
@@ -161,13 +161,13 @@ thread_local! {
 
 fn setup_testcard(name: &str) {
     debug!("global","setup testcard {}",name);
-    let pane_el = domutil::query_select("#bpane-canv");
+    let pane_el: HtmlElement = domutil::query_select("#bpane-canv").try_into().unwrap();
     let g = Arc::new(Mutex::new(Global::new(&pane_el)));
     if name.len() > 0 {
         let inst_s = g.lock().unwrap().reset();
         testcards::testcard(g,name,&inst_s);
     } else {
-        domutil::inner_html(&pane_el,"");
+        domutil::inner_html(&pane_el.into(),"");
     }
 }
 

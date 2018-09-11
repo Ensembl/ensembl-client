@@ -1,7 +1,7 @@
 use std::sync::{ Arc, Mutex };
 use dom::domutil;
 use dom::event::{ EventKiller, EventListener, EventControl, EventType, EventListenerHandle, EventData };
-use stdweb::web::{ IElement, Element };
+use stdweb::web::{ IElement, Element, HtmlElement };
 use arena::{ Arena, Stage };
 use types::{ CLeaf, CPixel, CFraction };
 use serde_json::Value as JSONValue;
@@ -14,7 +14,7 @@ const CANVAS : &str = r##"
 
 pub struct Global {
     inst: u32,
-    root: Element,
+    root: HtmlElement,
     arena: Option<Arc<Mutex<Arena>>>,
     stage: Arc<Mutex<Stage>>,
     control: EventControl<()>,
@@ -22,30 +22,34 @@ pub struct Global {
 }
 
 impl Global {
-    pub fn new(root: &Element) -> Global {
-        let s = Arc::new(Mutex::new(Stage::new()));
-        let g = Global {
+    pub fn new(root: &HtmlElement) -> Global {
+        let s = Arc::new(Mutex::new(Stage::new(root)));
+        Global {
             inst: 0,
             root: root.clone(),
             arena: None,
             stage: s.clone(),
             control: EventControl::new(),
             eventkiller: EventKiller::new()
-        };
-        g
+        }
+    }
+    
+    pub fn dims(&mut self) -> CPixel {
+        self.stage.lock().unwrap().get_size()
     }
     
     pub fn reset(&mut self) -> String {
+        let el = &self.root.clone().into();
         self.eventkiller.kill();
         self.inst += 1;
-        domutil::inner_html(&self.root,CANVAS);
-        let canv_el = domutil::query_selector(&self.root,"canvas");
+        domutil::inner_html(el,CANVAS);
+        let canv_el = domutil::query_selector(el,"canvas");
         let inst_s = format!("{}",self.inst);
         self.root.set_attribute("data-inst",&inst_s).ok();
         self.arena = Some(Arc::new(Mutex::new(Arena::new(&canv_el))));
         self.control = EventControl::new();
         let lr = ArenaEventListener::new(
-                            &self.root,
+                            el,
                             self.arena.as_ref().unwrap().clone(),
                             self.stage.clone());
         let lrh = EventListenerHandle::new(Box::new(lr));
