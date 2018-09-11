@@ -1,17 +1,104 @@
+use arena::Stage;
+use std::fmt::Debug;
 use std::ops::{ Add, Mul, Div, Neg };
 use program::{ Object, ObjectAttrib, DataBatch, Input };
 
 /***** Direction types *****/
 
+#[derive(Clone,Copy,Debug)]
 pub enum Units { Pixels, Bases, Screens }
-pub enum Direction { Up, Down, Left, Right }
-pub enum Move<T: Neg<Output=T>,
-              U: Neg<Output=U>> {
-    Up(U,Units),
-    Down(U,Units),
-    Left(T,Units),
-    Right(T,Units)
+
+pub enum Axis { Horiz, Vert }
+pub enum AxisSense { Pos, Neg }
+
+pub struct Direction(pub Axis,pub AxisSense);
+
+pub const LEFT : Direction = Direction(Axis::Horiz,AxisSense::Neg);
+pub const RIGHT : Direction = Direction(Axis::Horiz,AxisSense::Pos);
+pub const UP : Direction = Direction(Axis::Vert,AxisSense::Neg);
+pub const DOWN : Direction = Direction(Axis::Vert,AxisSense::Pos);
+
+#[derive(Clone,Copy,Debug)]
+pub struct Distance<T : Clone + Copy + Debug>(pub T,pub Units);
+
+impl<T: Clone + Copy + Mul<f32,Output=T> + Div<f32,Output=T> + Debug> Distance<T> {
+    pub fn convert(&self, target: Units, axis: Axis, stage: &Stage) -> Distance<T> {
+        let Distance(quant,source) = self;
+        let dims = stage.get_size();
+        let (size,zoom) = match axis {
+            Axis::Horiz => (dims.0 as f32,stage.zoom),
+            Axis::Vert => (dims.1 as f32,1.0)
+        };
+        let quant = match source {
+            Units::Pixels => match target {
+                Units::Pixels => *quant,
+                Units::Bases => *quant / zoom,
+                Units::Screens => *quant / size
+            },
+            Units::Bases => match target {
+                Units::Pixels => *quant * zoom,
+                Units::Bases => *quant,
+                Units::Screens => *quant * zoom / size
+            },
+            Units::Screens => match target {
+                Units::Pixels => *quant * size,
+                Units::Bases => *quant * size / zoom,
+                Units::Screens => *quant
+            },            
+        };
+        Distance(quant,target)
+    }
 }
+
+#[derive(Clone,Copy,Debug)]
+pub enum Move<T: Neg<Output=T> + Clone + Copy + Debug +
+                 Mul<f32,Output=T> + Div<f32,Output=T>,
+              U: Neg<Output=U> + Clone + Copy + Debug +
+                 Mul<f32,Output=U> + Div<f32,Output=U>> {
+    Up(Distance<U>),
+    Down(Distance<U>),
+    Left(Distance<T>),
+    Right(Distance<T>)
+}
+
+impl<T: Neg<Output=T> + Clone + Copy + Debug + Mul<f32,Output=T> + Div<f32,Output=T>,
+     U: Neg<Output=U> + Clone + Copy + Debug + Mul<f32,Output=U> + Div<f32,Output=U>> Move<T,U> {
+         
+    pub fn convert(&self, target: Units, stage: &Stage) -> Move<T,U> {
+        match self {
+            Move::Up(u) => Move::Up(u.convert(target,Axis::Vert, stage)),
+            Move::Down(u) => Move::Down(u.convert(target,Axis::Vert, stage)),
+            Move::Left(u) => Move::Left(u.convert(target,Axis::Horiz, stage)),
+            Move::Right(u) => Move::Right(u.convert(target,Axis::Horiz, stage)),
+        }
+    }
+    
+    pub fn direction(&self) -> Direction {
+        match self {
+            Move::Up(_) => UP,
+            Move::Down(_) => DOWN,
+            Move::Left(_) => LEFT,
+            Move::Right(_) => RIGHT
+        }
+    }
+    
+}
+
+impl<T: Clone + Copy + Debug + Add<T,Output=T> + Neg<Output=T> + Mul<f32,Output=T> + Div<f32,Output=T>,
+     U: Clone + Copy + Debug + Add<U,Output=U> + Neg<Output=U> + Mul<f32,Output=U> + Div<f32,Output=U>> 
+        Add<Move<T,U>> for Dot<T,U> {
+    type Output = Dot<T,U>;
+         
+    fn add(self, other: Move<T,U>) -> Dot<T,U> {
+        match other {
+            Move::Up(Distance(y,_)) =>    Dot(self.0,      self.1+(-y)),
+            Move::Down(Distance(y,_)) =>  Dot(self.0,      self.1+y),
+            Move::Left(Distance(x,_)) =>  Dot(self.0+(-x), self.1),
+            Move::Right(Distance(x,_)) => Dot(self.0+x,    self.1),
+        }        
+    }
+}
+
 
 /***** Dot types *****/
 
@@ -29,18 +116,6 @@ pub type CPixel = Dot<i32,i32>;
 pub fn cpixel(x: i32, y: i32) -> CPixel { Dot(x,y) }
 
 /*** impls for dot types ***/
-
-impl<T: Clone + Copy + Add<T, Output=T> + Neg<Output=T>,
-     U: Clone + Copy + Add<U, Output=U> + Neg<Output=U>> Dot<T,U> {
-    pub fn move_by(&self, m: Move<T,U>) -> Dot<T,U> {
-        match m {
-            Move::Up(y,_) =>    Dot(self.0,      self.1+(-y)),
-            Move::Down(y,_) =>  Dot(self.0,      self.1+y),
-            Move::Left(x,_) =>  Dot(self.0+(-x), self.1),
-            Move::Right(x,_) => Dot(self.0+x,    self.1),
-        }
-    }
-}
 
 impl<T : Clone + Copy + Into<f64>,
      U : Clone + Copy + Into<f64>> Dot<T,U> {    

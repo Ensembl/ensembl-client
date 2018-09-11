@@ -1,5 +1,4 @@
 use std::sync::{ Mutex, Arc };
-use debug;
 use debug::testcards::visual::testcard_visual;
 use debug::testcards::button::testcard_button;
 use types::{ CLeaf, cleaf };

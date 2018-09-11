@@ -1,9 +1,9 @@
 use std::sync::{ Arc, Mutex };
 use dom::domutil;
-use dom::event::{ EventKiller, EventListener, EventControl, EventType, EventListenerHandle, EventData };
+use dom::event::{ EventKiller, EventListener, EventControl, EventType, EventListenerHandle, EventData, ICustomEvent };
 use stdweb::web::{ IElement, Element, HtmlElement };
 use arena::{ Arena, Stage };
-use types::{ CLeaf, CPixel, CFraction };
+use types::{ CPixel,  Move, Distance, Units, Axis };
 use serde_json::Value as JSONValue;
 
 use campaign::{ StateManager };
@@ -55,7 +55,7 @@ impl Global {
         let lrh = EventListenerHandle::new(Box::new(lr));
         self.control.add_event(EventType::CustomEvent("bpane".to_string()),&lrh);
         self.control.add_event(EventType::ClickEvent,&lrh);
-        self.control.add_element(&mut self.eventkiller,&canv_el,());
+        self.control.add_element(&mut self.eventkiller,&el,());
         format!("{}",self.inst)
     }
         
@@ -80,12 +80,38 @@ impl Global {
 #[derive(Debug,Clone,Copy)]
 enum Event {
     Noop,
-    MovePixels(CPixel),
-    MoveBases(CLeaf),
-    MoveScreens(CFraction)
+    Move(Move<f32,f32>)
+}
+
+fn custom_movement_event(dir: &str, unit: &str, v: &JSONValue) -> Event {
+    if let JSONValue::Number(quant) = v {
+        let quant = quant.as_f64().unwrap() as f32;
+        let unit = match unit {
+            "base"|"bases"|"bp" => Units::Bases,
+            "pixel"|"pixels"|"px" => Units::Pixels,
+            "screen"|"screens"|"sc" => Units::Screens,
+            _ => { return Event::Noop; }
+        };
+        Event::Move(match dir {
+            "left" => Move::Left(Distance(quant,unit)),
+            "right" => Move::Right(Distance(quant,unit)),
+            "up" => Move::Up(Distance(quant,unit)),
+            "down" => Move::Down(Distance(quant,unit)),
+            _ => { return Event::Noop; }
+        })
+    } else {
+        Event::Noop
+    }
 }
 
 fn custom_make_one_event(k: &String, v: &JSONValue) -> Event {
+    let parts : Vec<&str> = k.split("_").collect();
+    if parts.len() == 3 {
+        return match parts[0] {
+            "move" => custom_movement_event(parts[1],parts[2],v),
+            _ => Event::Noop
+        }
+    }
     Event::Noop
 }
 
@@ -101,19 +127,53 @@ fn custom_make_events(j: &JSONValue) -> Vec<Event> {
 
 pub struct ArenaEventListener {
     arena: Arc<Mutex<Arena>>,
-    stage: Arc<Mutex<Stage>>
-}
-
-impl EventListener<()> for ArenaEventListener {
-    fn receive(&mut self, _el: &Element,  _e: &EventData, _idx: &()) {
-        console!("event!");
-    }
+    stage: Arc<Mutex<Stage>>,
+    stale: bool
 }
 
 impl ArenaEventListener {
     pub fn new(_root: &Element,
                arena: Arc<Mutex<Arena>>,
                stage: Arc<Mutex<Stage>>) -> ArenaEventListener {
-        ArenaEventListener { arena, stage }
+        ArenaEventListener { arena, stage, stale: false }
+    }
+    
+    fn refresh(&mut self) {
+        debug!("global","refresh due to stage event");
+        let arena = &mut self.arena.lock().unwrap();
+        let stage = &mut self.stage.lock().unwrap();
+        
+        arena.draw(&StateManager::new(),stage);
+        self.stale = false;
+    }
+    
+    fn exe_move_event(&mut self, v: Move<f32,f32>) {
+        let stage = &mut self.stage.lock().unwrap();
+        
+        let v = match v.direction().0 {
+            Axis::Horiz => v.convert(Units::Bases,stage),
+            Axis::Vert => v.convert(Units::Pixels,stage),
+        };
+        stage.pos = stage.pos + v;
+        self.stale = true;
+    }
+}
+
+impl EventListener<()> for ArenaEventListener {    
+    fn receive(&mut self, _el: &Element,  e: &EventData, _idx: &()) {
+        let evs = match e {
+            EventData::CustomEvent(_,_,c) =>
+                custom_make_events(&c.details().unwrap()),
+            _ => Vec::<Event>::new()
+        };
+        for ev in evs {
+            match ev {
+                Event::Move(v) => self.exe_move_event(v),
+                Event::Noop => ()
+            }
+        }
+        if self.stale {
+            self.refresh();
+        }
     }
 }

@@ -9,7 +9,6 @@ use stdweb::web::html_element::SelectElement;
 use stdweb::unstable::TryInto;
 
 use global::Global;
-use debug;
 use dom::domutil;
 use dom::event::{ EventListener, EventControl, EventType, EventListenerHandle, EventKiller, EventData };
 use debug::testcards;

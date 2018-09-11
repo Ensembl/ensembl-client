@@ -8,7 +8,8 @@ pub use types::coord::{
     cfraction, rfraction,
     cleaf, rleaf,
     cpixel, rpixel,
-    Area, Dot
+    Area, Dot, Move, Distance, Units, Axis,
+    LEFT, RIGHT, UP, DOWN
 };
 
 pub use types::colour::{

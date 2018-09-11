@@ -48,7 +48,7 @@ macro_rules! console {
 macro_rules! debug {
     ($k: expr, $($arg:tt)*) => {{
         let s = format!($($arg)*);
-        debug::debug_panel_entry_add($k,&s);
+        ::debug::debug_panel_entry_add($k,&s);
     }}
 }
 
