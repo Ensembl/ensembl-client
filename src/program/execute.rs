@@ -5,7 +5,7 @@ use webgl_rendering_context::{
     WebGLProgram as glprog,
 };
 
-use arena::{ ArenaData };
+use arena::{ ArenaData, Stage };
 
 use program::source::{ Source, ProgramSource };
 use program::objects::Object;
@@ -110,7 +110,8 @@ impl Program {
         self.data.get_object(name)
     }
   
-    pub fn draw(&mut self, adata: &ArenaData) {
+    pub fn draw(&mut self, adata: &ArenaData, stage: &Stage) {
+        let dims = stage.get_size();
         self.use_program(adata);
         for b in self.data.bman.iter() {
             let mut main = None;
@@ -118,11 +119,11 @@ impl Program {
                 if a.is_main() {
                     main = Some(a);
                 } else {
-                    a.execute(adata,&b,&adata.dims);
+                    a.execute(adata,&b,&dims);
                 }
             }
             if let Some(a) = main {
-                a.execute(adata,&b,&adata.dims);
+                a.execute(adata,&b,&dims);
             }
         }
     }        

@@ -7,10 +7,13 @@ use stdweb::unstable::TryInto;
 use stdweb::web::{
     document,
     Element,
+    HtmlElement,
+    IHtmlElement,
     IElement,
     IParentNode,
     INode
 };
+use types::{ CPixel, cpixel };
 
 pub fn query_selector(el: &Element, sel: &str) -> Element {
     el.query_selector(sel).unwrap().unwrap()
@@ -18,6 +21,11 @@ pub fn query_selector(el: &Element, sel: &str) -> Element {
 
 pub fn query_select(sel: &str) -> Element {
     document().query_selector(sel).unwrap().unwrap()
+}
+
+pub fn size(el: &HtmlElement) -> CPixel {
+    let r = el.get_bounding_client_rect();
+    cpixel(r.get_width() as i32,r.get_height() as i32)
 }
 
 pub fn add_attr(el: &Element,key: &str, more: &str) {

@@ -36,6 +36,7 @@ pub fn big_science(g: &mut Global, oom: &StateManager, onoff: bool) {
     let t = (seed/256) as u8;
     let mut rng = SmallRng::from_seed([s,s,s,s,s,s,s,s,t,t,t,t,t,t,t,t]);
 
+    let size = g.dims();
     g.with_arena(|a |{
         
     let fc_font = canvasutil::FCFont::new(12,"Roboto");
@@ -54,7 +55,7 @@ pub fn big_science(g: &mut Global, oom: &StateManager, onoff: bool) {
 
     let mut c = Campaign::new(Rc::new(StateFixed(StateValue::On())));
 
-    let mut middle = a.dims().1 / 120;
+    let mut middle = size.1 / 120;
     if middle < 5 { middle = 5; }
     
 
@@ -69,9 +70,8 @@ pub fn big_science(g: &mut Global, oom: &StateManager, onoff: bool) {
     let showtext_gen = Range::new(0,10);
     let (sw,sh);
     {
-        let dims = a.dims();
-        sw = dims.0;
-        sh = dims.1;
+        sw = size.0;
+        sh = size.1;
     }
         let col = Colour(200,200,200);
         for yidx in 0..20 {

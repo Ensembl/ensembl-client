@@ -1,5 +1,19 @@
-use std::ops::{ Add, Mul, Div };
+use std::ops::{ Add, Mul, Div, Neg };
 use program::{ Object, ObjectAttrib, DataBatch, Input };
+
+/***** Direction types *****/
+
+pub enum Units { Pixels, Bases, Screens }
+pub enum Direction { Up, Down, Left, Right }
+pub enum Move<T: Neg<Output=T>,
+              U: Neg<Output=U>> {
+    Up(U,Units),
+    Down(U,Units),
+    Left(T,Units),
+    Right(T,Units)
+}
+
+/***** Dot types *****/
 
 #[derive(Clone,Copy,Debug)]
 pub struct Dot<T : Clone + Copy,
@@ -13,6 +27,20 @@ pub fn cleaf(x: f32, y: i32) -> CLeaf { Dot(x,y) }
 
 pub type CPixel = Dot<i32,i32>;
 pub fn cpixel(x: i32, y: i32) -> CPixel { Dot(x,y) }
+
+/*** impls for dot types ***/
+
+impl<T: Clone + Copy + Add<T, Output=T> + Neg<Output=T>,
+     U: Clone + Copy + Add<U, Output=U> + Neg<Output=U>> Dot<T,U> {
+    pub fn move_by(&self, m: Move<T,U>) -> Dot<T,U> {
+        match m {
+            Move::Up(y,_) =>    Dot(self.0,      self.1+(-y)),
+            Move::Down(y,_) =>  Dot(self.0,      self.1+y),
+            Move::Left(x,_) =>  Dot(self.0+(-x), self.1),
+            Move::Right(x,_) => Dot(self.0+x,    self.1),
+        }
+    }
+}
 
 impl<T : Clone + Copy + Into<f64>,
      U : Clone + Copy + Into<f64>> Dot<T,U> {    
@@ -60,6 +88,8 @@ impl<T: Clone + Copy + Div<T, Output=T> + Into<f32>,
     }
 }
 
+/***** Area types *****/
+
 #[derive(Clone,Copy,Debug)]
 pub struct Area<T: Clone + Copy,
                 U: Clone + Copy>(pub Dot<T,U>, pub Dot<T,U>);
@@ -81,6 +111,8 @@ pub fn rpixel<T : Clone + Copy,
                  U : Clone + Copy>(x: Dot<T,U>, y: Dot<T,U>) -> Area<T,U> { 
     Area(x,y)
 }
+
+/*** impls for area types ***/
 
 impl<T: Clone + Copy + From<u8>,
      U: Clone + Copy + From<u8>> Area<T,U> {
