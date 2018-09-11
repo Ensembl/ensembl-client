@@ -14,7 +14,7 @@ use stdweb::web::html_element::{
 use stdweb::web::TypedArray;
 use stdweb::unstable::TryInto;
 use types::{
-    Colour, CPixel, RPixel
+    Colour, CPixel, RPixel, cpixel, Area, Dot
 };
 
 use dom::domutil;
@@ -53,7 +53,7 @@ pub struct FCFont {
 impl FCFont {
     pub fn new(size : i32,family: &str) -> FCFont {
         FCFont { spec: format!("{}px {}",size,family),
-                 height: size, ypadtop: 0, ypadbot: 4, xpad: 0 }
+                 height: size, ypadtop: 0, ypadbot: 5, xpad: 0 }
     }
     
     fn setup(&self, canvas : &CanvasRenderingContext2d) {
@@ -101,7 +101,7 @@ impl FlatCanvas {
     
     pub fn bitmap(&self, data: &Vec<u8>, coords: RPixel) {
         let pixels: TypedArray<u8> = data[..].into();
-        let RPixel(CPixel(x,y),CPixel(width,height)) = coords;
+        let Area(Dot(x,y),Dot(width,height)) = coords;
         js! {
             var id = @{&self.context}.createImageData(@{width},@{height});
             id.data.set(@{pixels});
@@ -110,7 +110,7 @@ impl FlatCanvas {
     }
     
     pub fn rectangle(&self, coords: RPixel, col: &Colour) {
-        let RPixel(CPixel(x,y),CPixel(w,h)) = coords;
+        let Area(Dot(x,y),Dot(w,h)) = coords;
         self.context.set_fill_style_color(&col.to_css()[..]);
         self.context.fill_rect(x as f64,y as f64,w as f64,h as f64);
     }
@@ -120,7 +120,7 @@ impl FlatCanvas {
         let m = self.context.measure_text(text);
         let width_px = m.unwrap().get_width().ceil() as i32;
         let height_px = font.height;
-        CPixel(width_px+2*font.xpad,height_px+font.ypadtop+font.ypadbot)
+        cpixel(width_px+2*font.xpad,height_px+font.ypadtop+font.ypadbot)
     }
     
     pub fn element(&self) -> &CanvasElement {
@@ -128,15 +128,6 @@ impl FlatCanvas {
     }
     
     pub fn size(&self) -> CPixel {
-        CPixel(self.width,self.height)
-    }
-    
-    pub fn prop_x(&self,x: i32) -> f32 {
-        (x as f64 / self.width as f64) as f32
-    }
-
-    pub fn prop_y(&self,y: i32) -> f32 {
-        (y as f64 / self.height as f64) as f32
-    }
-
+        cpixel(self.width,self.height)
+    }    
 }

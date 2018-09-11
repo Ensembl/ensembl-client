@@ -1,7 +1,7 @@
 use std::fmt;
 use std::cmp::max;
 
-use types::CPixel;
+use types::{ CPixel, cpixel };
 
 /* An origin is the top left corner of an allocation or free space. The
  * extent of the space is not recorded and must be determined from
@@ -34,13 +34,13 @@ impl Origin {
         if size.1 < total_height {
             out.push(Tranche {
                 h: total_height-size.1,
-                r: Origin { pos: CPixel(self.pos.0,self.pos.1 + size.1) }
+                r: Origin { pos: cpixel(self.pos.0,self.pos.1 + size.1) }
             });
         }
         if size.0 < total_width {
             out.push(Tranche {
                 h: size.1,
-                r: Origin { pos: CPixel(self.pos.0 + size.0,self.pos.1) }
+                r: Origin { pos: cpixel(self.pos.0 + size.0,self.pos.1) }
             });
         }
         out
@@ -193,7 +193,7 @@ impl Half {
     
     fn alloc_watermark(&mut self,size: CPixel) -> Option<CPixel> {
         let tranche = Tranche {
-            r: Origin { pos: CPixel(0,self.watermark) },
+            r: Origin { pos: cpixel(0,self.watermark) },
             h: size.1
         };
         self.watermark = self.watermark + size.1;
@@ -271,7 +271,7 @@ impl AllocatorImpl {
             (false,pos)
         } else {
             let height = ( size.1 + self.threshold - 1) / self.threshold;
-            let pos = self.big.allocate(CPixel(size.0,height)).unwrap();
+            let pos = self.big.allocate(cpixel(size.0,height)).unwrap();
             (true,pos)
         }
     }
@@ -317,7 +317,7 @@ impl Allocator {
             self.res.push(val);
         }
         let height = pow2_i32(aimpl.total_height());
-        CPixel(aimpl.width(), height)
+        cpixel(aimpl.width(), height)
     }
     
     pub fn position(&self,t : &Ticket) -> CPixel {
@@ -333,7 +333,7 @@ fn half_test() {
     let input = [(100,6),(100,6),(100,6),(4,6),  (20,5), (50,1)];
     let check = [(0,0),  (100,0),(0,6),  (200,0),(100,6),(100,11)];
     for (i,(x,y)) in input.iter().enumerate() {
-        let CPixel(s,t) = alloc.allocate(CPixel(*x,*y)).unwrap();
+        let cpixel(s,t) = alloc.allocate(cpixel(*x,*y)).unwrap();
         println!("({}x{}) -> ({},{}) want ({},{})",x,y,s,t,check[i].0,check[i].1);
         assert_eq!((s,t),check[i]);
     }
@@ -347,11 +347,11 @@ fn full_test() {
     let c = [(0,0),   (0,48),(0,16), (10,0),(12,0),(0,49),(50,49),(0,51)];
     let mut t = Vec::<Ticket>::new();
     for (x,y) in &s {
-        t.push(ac.request(CPixel(*x,*y)));
+        t.push(ac.request(cpixel(*x,*y)));
     }
     ac.allocate();
     for (i,t) in t.iter().enumerate() {
-        let CPixel(x,y) = ac.position(t);
+        let cpixel(x,y) = ac.position(t);
         assert_eq!((x,y),c[i]);
     }
 }

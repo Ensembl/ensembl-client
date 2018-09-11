@@ -2,7 +2,7 @@ use std::sync::{ Mutex, Arc };
 use debug;
 use debug::testcards::visual::testcard_visual;
 use debug::testcards::button::testcard_button;
-use types::CLeaf;
+use types::{ CLeaf, cleaf };
 use rand::{ Rng, seq };
 use rand::distributions::Distribution;
 use rand::distributions::range::Range;
@@ -68,7 +68,7 @@ pub fn wiggly<R>(rng: &mut R, num: u32, origin: CLeaf, sep: f32, h: i32)
     let mut out = Vec::<CLeaf>::new();
     for i in 0..num {
         let v : i32 = rng.gen_range(0,h);
-        out.push(origin + CLeaf(i as f32*sep,v));
+        out.push(origin + cleaf(i as f32*sep,v));
     }
     out
 }

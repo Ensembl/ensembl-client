@@ -271,7 +271,8 @@ impl AllocatorImpl {
         }
     }
     
-    fn split_point(&self) -> u32 { self.big.height() }
+    fn split_point(&self) -> u32 { self.big.height() * self.threshold }
+    fn total_height(&self) -> u32 { self.split_point() + self.small.height() }
 }
 
 impl Allocator {
@@ -292,14 +293,14 @@ impl Allocator {
         self.reqs.push(data);
         Ticket { index: self.reqs.len()-1 }
     }
-                
-    pub fn allocate(&mut self) {
+
+    pub fn allocate(&mut self) -> (u32,u32) {
         let mut aimpl = AllocatorImpl::new(self.threshold,self.max_width,self.area);
         let mut res = Vec::<(bool,u32,u32)>::new();
         for t in &self.reqs {
             res.push(aimpl.allocate_one(t.width,t.height));
         }
-        let split = aimpl.split_point() * self.threshold;
+        let split = aimpl.split_point();
         for (big,x,y) in res {
             println!("{:?}",(big,x,y));
             let mut val = TicketRes { x, y };
@@ -310,6 +311,8 @@ impl Allocator {
             }
             self.res.push(val);
         }
+        let height = (split + 
+        (self.max_width, height)
     }
     
     pub fn position(&self,t : &Ticket) -> (u32, u32) {

@@ -1,7 +1,7 @@
 use std::rc::Rc;
 use arena::{ ArenaCanvases };
 
-use types::{ CPixel, RPixel };
+use types::{ CPixel, rpixel };
 
 use drawing::drawingimpl::{
     Artist,
@@ -20,7 +20,7 @@ impl BitmapArtist {
 
 impl Artist for BitmapArtist {
     fn draw(&self, canvs: &mut ArenaCanvases, pos: CPixel) {
-        canvs.flat.bitmap(&self.data,RPixel(pos,self.size));
+        canvs.flat.bitmap(&self.data,rpixel(pos,self.size));
     }
     
     fn measure(&self, _canvas: &mut ArenaCanvases) -> CPixel {

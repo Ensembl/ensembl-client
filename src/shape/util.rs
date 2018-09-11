@@ -3,7 +3,7 @@ use program::{
     ProgramAttribs, DataBatch, DataGroup, ProgramType, PTMethod, 
     PTGeom, PTSkin
 };
-use types::{ RFraction, CLeaf, RPixel, RLeaf  };
+use types::{ RFraction, CLeaf, RPixel, RLeaf, cleaf };
 use shape::ColourSpec;
 use program::Input;
 
@@ -103,11 +103,11 @@ pub fn points_g(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p_in: &[CLe
             obj.add_data(&b,&[v]);
         }
         for p in p_in {
-            let q = *p + CLeaf(0.,y);
+            let q = *p + cleaf(0.,y);
             obj.add_data(&b,&[p,&q]);
         }
         if let Some(v) = p_in.last() { // double last for strip break
-            let q = *v + CLeaf(0.,y);
+            let q = *v + cleaf(0.,y);
             obj.add_data(&b,&[&q]);
         }
     }

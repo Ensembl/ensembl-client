@@ -5,18 +5,10 @@ use campaign::{ StateManager, StateFixed, Campaign, StateValue };
 use debug::testcards::common::{ daft, bio_daft, wiggly };
 
 use shape::{
-    fix_rectangle,
-    fix_texture,
-    page_texture,
-    pin_triangle,
-    pin_texture,
-    pin_mathsshape,
-    stretch_rectangle,
-    stretch_texture,
-    stretch_wiggle,
-    Spot,
-    ColourSpec,
-    MathsShape,
+    fix_rectangle, fix_texture,
+    page_texture,  pin_triangle, pin_texture,  pin_mathsshape,
+    stretch_rectangle, stretch_texture, stretch_wiggle,
+    Spot, ColourSpec, MathsShape,
 };
 
 use drawing::{
@@ -31,13 +23,7 @@ use std::rc::Rc;
 
 use global::Global;
 
-use types::{
-    CLeaf,
-    RLeaf,
-    CPixel,
-    RPixel,
-    Colour,
-};
+use types::{ Colour, cleaf, rleaf, cpixel, rpixel };
 
 use drawing::{ text_texture, bitmap_texture, collage, Mark };
 
@@ -92,25 +78,25 @@ pub fn big_science(g: &mut Global, oom: &StateManager, onoff: bool) {
             let y = yidx * 60;
             let val = daft(&mut rng);
             let tx = text_texture(&val,&fc_font,&col);
-            c.add_shape(page_texture(tx, &CPixel(4,y+18), &CPixel(1,1)));
+            c.add_shape(page_texture(tx, &cpixel(4,y+18), &cpixel(1,1)));
             if yidx == middle - 5 {
                 for i in 1..10 {
-                    c_odd.add_shape(pin_mathsshape(&CLeaf(-1.+0.4*(i as f32),y+20),
+                    c_odd.add_shape(pin_mathsshape(&cleaf(-1.+0.4*(i as f32),y+20),
                                    10. * i as f32,None,MathsShape::Circle,
                                    &green));
                     let colour = Colour(255,0,128);
-                    c_even.add_shape(pin_mathsshape(&CLeaf(-3.+0.4*(i as f32),y+20),
+                    c_even.add_shape(pin_mathsshape(&cleaf(-3.+0.4*(i as f32),y+20),
                                    10. * i as f32,Some(2.),MathsShape::Circle,
                                    &ColourSpec::Colour(colour)));
                 }
             }
             if yidx == middle {
                 for i in 3..8 {
-                    c_odd.add_shape(pin_mathsshape( &CLeaf(-1.+0.4*(i as f32),y+20),
+                    c_odd.add_shape(pin_mathsshape( &cleaf(-1.+0.4*(i as f32),y+20),
                                    10., None, MathsShape::Polygon(i,0.2*i as f32),
                                    &red));
                     let colour = Colour(0,128,255);
-                    c_even.add_shape(pin_mathsshape(&CLeaf(-3.+0.4*(i as f32),y+20),
+                    c_even.add_shape(pin_mathsshape(&cleaf(-3.+0.4*(i as f32),y+20),
                                    10., None, MathsShape::Polygon(i,0.2*i as f32),
                                    &ColourSpec::Colour(colour)));
                 }
@@ -118,11 +104,11 @@ pub fn big_science(g: &mut Global, oom: &StateManager, onoff: bool) {
             if yidx == middle +1 {
                 for i in 3..8 {
                     let cs = if i % 2 == 1 { &mut c_odd } else { &mut c_even };
-                    cs.add_shape(pin_mathsshape(&CLeaf(-1.+0.4*(i as f32),y+20),
+                    cs.add_shape(pin_mathsshape(&cleaf(-1.+0.4*(i as f32),y+20),
                                    10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
                                    &red));
                     let colour = Colour(0,128,255);
-                    cs.add_shape(pin_mathsshape(&CLeaf(-3.+0.4*(i as f32),y+20),
+                    cs.add_shape(pin_mathsshape(&cleaf(-3.+0.4*(i as f32),y+20),
                                    10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
                                    &ColourSpec::Colour(colour)));
                 }
@@ -132,23 +118,23 @@ pub fn big_science(g: &mut Global, oom: &StateManager, onoff: bool) {
                                     vec! { 0,0,255,255,
                                              255,0,0,255,
                                              0,255,0,255,
-                                             255,255,0,255 },CPixel(4,1));
-                c.add_shape(stretch_texture(tx,&RLeaf(CLeaf(-5.,y-5),CLeaf(10.,10))));
+                                             255,255,0,255 },cpixel(4,1));
+                c.add_shape(stretch_texture(tx,&rleaf(cleaf(-5.,y-5),cleaf(10.,10))));
                 let tx = bitmap_texture(
                                     vec! { 0,0,255,255,
                                              255,0,0,255,
                                              0,255,0,255,
-                                             255,255,0,255 },CPixel(2,2));
-                c.add_shape(pin_texture(tx,&CLeaf(0.,y-25),&CPixel(10,10)));
-                c_odd.add_shape(stretch_rectangle(&RLeaf(CLeaf(-2.,y-20),CLeaf(1.,5)),&red));
-                c_even.add_shape(stretch_rectangle(&RLeaf(CLeaf(-2.,y-15),CLeaf(1.,5)),&green));
-                c_odd.add_shape(pin_triangle(&CLeaf(-2.,y-15),&[CPixel(0,0),
-                                         CPixel(-5,10),
-                                         CPixel(5,10)],
+                                             255,255,0,255 },cpixel(2,2));
+                c.add_shape(pin_texture(tx,&cleaf(0.,y-25),&cpixel(10,10)));
+                c_odd.add_shape(stretch_rectangle(&rleaf(cleaf(-2.,y-20),cleaf(1.,5)),&red));
+                c_even.add_shape(stretch_rectangle(&rleaf(cleaf(-2.,y-15),cleaf(1.,5)),&green));
+                c_odd.add_shape(pin_triangle(&cleaf(-2.,y-15),&[cpixel(0,0),
+                                         cpixel(-5,10),
+                                         cpixel(5,10)],
                                          &red));
-                c_even.add_shape(pin_triangle(&CLeaf(-1.,y-15),&[CPixel(0,0),
-                                         CPixel(-5,10),
-                                         CPixel(5,10)],
+                c_even.add_shape(pin_triangle(&cleaf(-1.,y-15),&[cpixel(0,0),
+                                         cpixel(-5,10),
+                                         cpixel(5,10)],
                                          &green));
             } else if yidx == middle-2 {
                 let mut parts = Vec::<Box<Mark>>::new();
@@ -160,25 +146,25 @@ pub fn big_science(g: &mut Global, oom: &StateManager, onoff: bool) {
                         if off + gap + size > 1000 { continue }
                         off += gap;
                         parts.push(mark_rectangle(
-                            &RPixel(CPixel(off,row*5),CPixel(size,4)),
+                            &rpixel(cpixel(off,row*5),cpixel(size,4)),
                             &Colour(255,200,100)));
                         if rng.gen_range(0,2) == 1 {
                             parts.push(mark_rectangle(
-                                &RPixel(CPixel(off,row*5),CPixel(1,4)),
+                                &rpixel(cpixel(off,row*5),cpixel(1,4)),
                                 &Colour(200,0,0)));
                         }
                         if rng.gen_range(0,2) == 1 {
                             parts.push(mark_rectangle(
-                                &RPixel(CPixel(off+size-1,row*5),CPixel(1,4)),
+                                &rpixel(cpixel(off+size-1,row*5),cpixel(1,4)),
                                 &Colour(0,0,200)));
                         }
                         off += size;
                     }
                 }
-                let tx = collage(parts,CPixel(1000,40));
-                c.add_shape(stretch_texture(tx,&RLeaf(CLeaf(-7.,y-25),CLeaf(20.,40))));
+                let tx = collage(parts,cpixel(1000,40));
+                c.add_shape(stretch_texture(tx,&rleaf(cleaf(-7.,y-25),cleaf(20.,40))));
             } else if yidx == middle+2 || yidx == middle+4 {
-                let wiggle = wiggly(&mut rng,500,CLeaf(-5.,y-5),0.02,20);
+                let wiggle = wiggly(&mut rng,500,cleaf(-5.,y-5),0.02,20);
                 c_odd.add_shape(stretch_wiggle(wiggle,2,&green_spot));
             } else {
                 for idx in -100..100 {
@@ -192,34 +178,34 @@ pub fn big_science(g: &mut Global, oom: &StateManager, onoff: bool) {
                         (128.*(v2+1.0).sin()+128.) as u32,
                     );
                     let h = if thick_gen.sample(&mut rng) == 0 { 1 } else { 5 };
-                    c.add_shape(stretch_rectangle(&RLeaf(CLeaf(x,y-h),CLeaf(dx,2*h)),
+                    c.add_shape(stretch_rectangle(&rleaf(cleaf(x,y-h),cleaf(dx,2*h)),
                                     &ColourSpec::Colour(colour)));
                     if idx %5 == 0 {
                         let colour = Colour(colour.2,colour.0,colour.1);
-                        c.add_shape(pin_triangle(&CLeaf(x,y),
-                                       &[CPixel(0,0),
-                                         CPixel(-5,10),
-                                         CPixel(5,10)],
+                        c.add_shape(pin_triangle(&cleaf(x,y),
+                                       &[cpixel(0,0),
+                                         cpixel(-5,10),
+                                         cpixel(5,10)],
                                        &ColourSpec::Colour(colour)));
                     }
                     if showtext_gen.sample(&mut rng) == 0 {
                         let val = bio_daft(&mut rng);
                         let tx = text_texture(&val,&fc_font,&col);
-                        c.add_shape(pin_texture(tx, &CLeaf(x,y-24), &CPixel(1,1)));
+                        c.add_shape(pin_texture(tx, &cleaf(x,y-24), &cpixel(1,1)));
                     }
                 }
             }
         }
         
-        c.add_shape(fix_rectangle(&RPixel(CPixel(sw/2,0),CPixel(1,sh)),
+        c.add_shape(fix_rectangle(&rpixel(cpixel(sw/2,0),cpixel(1,sh)),
                             &ColourSpec::Colour(Colour(0,0,0))));
-        c.add_shape(fix_rectangle(&RPixel(CPixel(sw/2+5,0),CPixel(3,sh)),
+        c.add_shape(fix_rectangle(&rpixel(cpixel(sw/2+5,0),cpixel(3,sh)),
                             &red));
         let tx = bitmap_texture(vec! { 0,0,255,255,
                                      255,0,0,255,
                                      0,255,0,255,
-                                     255,255,0,255 },CPixel(1,4));
-        c.add_shape(fix_texture(tx, &CPixel(sw/2-5,0),&CPixel(1,sh)));
+                                     255,255,0,255 },cpixel(1,4));
+        c.add_shape(fix_texture(tx, &cpixel(sw/2-5,0),&cpixel(1,sh)));
         a.get_cman().add_campaign(c);
         a.get_cman().add_campaign(c_odd);
         a.get_cman().add_campaign(c_even);

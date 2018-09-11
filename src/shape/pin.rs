@@ -7,7 +7,7 @@ use program::{
     Input
 };
 
-use types::{ CLeaf, CPixel, RPixel, CFraction };
+use types::{ CLeaf, CPixel, RPixel, CFraction, cfraction };
 
 use shape::{ Shape, ColourSpec, MathsShape };
 use shape::util::{
@@ -84,15 +84,15 @@ impl PinPoly {
         let mut v = Vec::<CFraction>::new();
         let delta = f32::consts::PI * 2. / self.points as f32;
         let mut t = self.offset * f32::consts::PI * 2.;
-        if !hollow { v.push(CFraction(0.,0.)); }
+        if !hollow { v.push(cfraction(0.,0.)); }
         let outer = self.size + self.width;
         for _i in 0..self.points {
             let (x,y) = (t.cos(),t.sin());
             t += delta;
             if hollow {
-                v.push(CFraction(x*outer,y*outer));
+                v.push(cfraction(x*outer,y*outer));
             }
-            v.push(CFraction(x * self.size,y * self.size));
+            v.push(cfraction(x * self.size,y * self.size));
         }
         v
     }    
@@ -171,7 +171,7 @@ impl Shape for PinTexture {
     fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData, texpos: Option<RPixel>) {
         if let Some(tp) = texpos {
             let p = tp.at_origin() * self.scale;
-            let t = tp / adata.canvases.flat.size();
+            let t = tp.as_fraction() / adata.canvases.flat.size().as_fraction();
             let b = vertices_rect(geom,None);
             rectangle_p(b,geom,"aVertexPosition",&p);
             rectangle_t(b,geom,"aTextureCoord",&t);

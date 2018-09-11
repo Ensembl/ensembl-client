@@ -1,334 +1,158 @@
 use std::ops::{ Add, Mul, Div };
-use program::{ Object, ObjectAttrib, DataBatch, UniformValue, Input };
-
-/* CLeaf */
+use program::{ Object, ObjectAttrib, DataBatch, Input };
 
 #[derive(Clone,Copy,Debug)]
-pub struct CLeaf(pub f32,pub i32);
+pub struct Dot<T : Clone + Copy,
+               U : Clone + Copy>(pub T, pub U);
 
-impl CLeaf {
-    pub fn mix(&self, other: CLeaf) -> (CLeaf,CLeaf) {
-        (CLeaf(self.0,other.1), CLeaf(other.0,self.1))
-    }
+pub type CFraction = Dot<f32,f32>;
+pub fn cfraction(x: f32, y: f32) -> CFraction { Dot(x,y) }
 
-    pub fn triangles(&self, other: CLeaf) -> ([CLeaf;3],[CLeaf;3]) {
-        let mix = self.mix(other);
-        ([*self, mix.1, mix.0],[other, mix.0, mix.1])
-    }
-    
-    pub fn rectangle(&self, other: CLeaf) -> [CLeaf;4] {
-        let mix = self.mix(other);
-        [*self, mix.0, other, mix.1]
+pub type CLeaf = Dot<f32,i32>;
+pub fn cleaf(x: f32, y: i32) -> CLeaf { Dot(x,y) }
+
+pub type CPixel = Dot<i32,i32>;
+pub fn cpixel(x: i32, y: i32) -> CPixel { Dot(x,y) }
+
+impl<T : Clone + Copy + Into<f64>,
+     U : Clone + Copy + Into<f64>> Dot<T,U> {    
+    pub fn as_fraction(&self) -> CFraction {
+        cfraction(self.0.into() as f32,self.1.into() as f32)
     }
 }
 
-impl Input for CLeaf {
+impl<T : Clone + Copy + Into<f64>,
+     U : Clone + Copy + Into<f64>> Input for Dot<T,U> {
     fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
-        attrib.add_f32(&[self.0,self.1 as f32],batch);
+        let (a,b): (f64,f64) = (self.0.into(), self.1.into());
+        attrib.add_f32(&[a as f32,b as f32],batch);
     }
 }
 
-impl Add for CLeaf {
-    type Output = CLeaf;
+/* Dot + Dot => add like vectors */
+impl<T : Clone + Copy + Add<T, Output=T>,
+     U : Clone + Copy + Add<U, Output=U>> Add for Dot<T,U> {
+    type Output = Dot<T,U>;
     
-    fn add(self,other: CLeaf) -> CLeaf {
-        CLeaf(self.0+other.0, self.1+other.1)
+    fn add(self,other: Dot<T,U>) -> Dot<T,U> {
+        Dot(self.0+other.0, self.1+other.1)
     }
 }
 
-impl From<CFraction> for CLeaf {
-    fn from(val: CFraction) -> Self {
-        CLeaf(val.0, val.1 as i32)
+/* Dot * Dot => scale */
+impl<T : Clone + Copy + Mul<T, Output=T>,
+     U : Clone + Copy + Mul<U, Output=U>> Mul for Dot<T,U> {
+    type Output = Dot<T,U>;
+    
+    fn mul(self,other: Dot<T,U>) -> Dot<T,U> {
+        Dot(self.0*other.0, self.1*other.1)
     }
 }
 
-/* RLeaf */
+/* Dot/Dot => divide and force into fractional Dot */
+impl<T: Clone + Copy + Div<T, Output=T> + Into<f32>,
+     U: Clone + Copy + Div<U, Output=U> + Into<f32>> Div for Dot<T,U> {
+    type Output = Dot<f32,f32>;
+    
+    fn div(self, other: Dot<T,U>) -> Dot<f32,f32> {
+        Dot((self.0.into() as f64 / other.0.into() as f64) as f32,
+            (self.1.into() as f64 / other.1.into() as f64) as f32)
+    }
+}
 
 #[derive(Clone,Copy,Debug)]
-pub struct RLeaf(pub CLeaf,pub CLeaf);
+pub struct Area<T: Clone + Copy,
+                U: Clone + Copy>(pub Dot<T,U>, pub Dot<T,U>);
 
-impl RLeaf {
-    pub fn expand(&self) -> RLeaf {
-        RLeaf(self.0, self.0+self.1)
+pub type RFraction = Area<f32,f32>;
+pub fn rfraction<T : Clone + Copy,
+                 U : Clone + Copy>(x: Dot<T,U>, y: Dot<T,U>) -> Area<T,U> { 
+    Area(x,y)
+}
+
+pub type RLeaf = Area<f32,i32>;
+pub fn rleaf<T : Clone + Copy,
+                 U : Clone + Copy>(x: Dot<T,U>, y: Dot<T,U>) -> Area<T,U> { 
+    Area(x,y)
+}
+
+pub type RPixel = Area<i32,i32>;
+pub fn rpixel<T : Clone + Copy,
+                 U : Clone + Copy>(x: Dot<T,U>, y: Dot<T,U>) -> Area<T,U> { 
+    Area(x,y)
+}
+
+impl<T: Clone + Copy + From<u8>,
+     U: Clone + Copy + From<u8>> Area<T,U> {
+
+    pub fn at_origin(self) -> Area<T,U> {
+        Area(Dot(0.into(),0.into()),self.1)
     }
+}
 
-    pub fn rectangle(&self) -> [CLeaf;4] {
+impl<T: Clone + Copy + Add<T, Output=T>,
+     U: Clone + Copy + Add<U, Output=U>> Area<T,U> {
+    
+    pub fn expand(&self) -> Area<T,U> {
+        Area(self.0, self.0+self.1)
+    }
+    
+    pub fn rectangle(&self) -> [Dot<T,U>;4] {
         let x = self.expand();
         [
             x.0,
-            CLeaf((x.0).0, (x.1).1), 
+            Dot((x.0).0, (x.1).1), 
             x.1,
-            CLeaf((x.1).0, (x.0).1)
+            Dot((x.1).0, (x.0).1)
         ]
     }
 }
 
-impl Input for RLeaf {
+impl<T : Clone + Copy + Into<f64>,
+     U : Clone + Copy + Into<f64>> Area<T,U> {    
+    pub fn as_fraction(&self) -> RFraction {
+        rfraction(self.0.as_fraction(),self.1.as_fraction())
+    }
+}
+
+impl<T : Clone + Copy + Into<f64> + Add<T, Output=T>,
+     U : Clone + Copy + Into<f64> + Add<U, Output=U>> Input for Area<T,U> {
     fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
         for c in self.rectangle().iter() {
-            attrib.add_f32(&[c.0 as f32,c.1 as f32],batch);
+            attrib.add_f32(&[c.0.into() as f32,c.1.into() as f32],batch);
         }
     }
 }
 
-impl Add<CLeaf> for RLeaf {
-    type Output = RLeaf;
+/* Area + Dot => offset */
+impl<T : Clone + Copy + Add<T, Output=T>,
+     U : Clone + Copy + Add<U, Output=U>>
+        Add<Dot<T,U>> for Area<T,U> {
+    type Output = Area<T,U>;
     
-    fn add(self, other: CLeaf) -> RLeaf {
-        RLeaf(self.0 + other, self.1)
-    }
+    fn add(self, other: Dot<T,U>) -> Area<T,U> {
+        Area(self.0 + other, self.1)
+    }         
 }
 
-impl Div<CPixel> for CLeaf {
-    type Output = CLeaf;
+/* Area * Dot => scale size and offset as given, into self */
+impl<T : Clone + Copy + Mul<T, Output=T>,
+     U : Clone + Copy + Mul<U, Output=U>>
+        Mul<Dot<T,U>> for Area<T,U> {
+    type Output = Area<T,U>;
     
-    fn div(self, other: CPixel) -> CLeaf {
-        CLeaf((self.0 as f32)/(other.0 as f32),
-              ((self.1 as f32)/(other.1 as f32)) as i32)
-    }
+    fn mul(self, other: Dot<T,U>) -> Area<T,U> {
+        Area(self.0 * other, self.1 * other)
+    }         
 }
 
-/* CPixel */
-
-#[derive(Clone,Copy,Debug)]
-pub struct CPixel(pub i32,pub i32);
-
-impl CPixel {
-    pub fn mix(&self, other: CPixel) -> (CPixel,CPixel) {
-        (CPixel(self.0,other.1), CPixel(other.0,self.1))
-    }
+/* Area / Dot => scale size and offset as given, into fraction */
+impl<T : Clone + Copy + Div<T, Output=T> + Into<f32>,
+     U : Clone + Copy + Div<U, Output=U> + Into<f32>>
+        Div<Dot<T,U>> for Area<T,U> {
+    type Output = Area<f32,f32>;
     
-    pub fn triangles(&self, other: CPixel) -> ([CPixel;3],[CPixel;3]) {
-        let mix = self.mix(other);
-        ([*self, mix.1, mix.0],[other, mix.0, mix.1])
-    }
-
-    pub fn rectangle(&self, other: CPixel) -> [CPixel;4] {
-        let mix = self.mix(other);
-        [*self, mix.0, other, mix.1]
-    }
-    
-    #[allow(dead_code)]
-    fn scale(&self, scale: CPixel) -> CPixel {
-        CPixel(self.0 * scale.0, self.1 * scale.1)
-    }
-}
-
-impl Input for CPixel {
-    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
-        attrib.add_f32(&[self.0 as f32,self.1 as f32], batch);
-    }
-}
-
-impl Add for CPixel {
-    type Output = CPixel;
-    
-    fn add(self,other: CPixel) -> CPixel {
-        CPixel(self.0+other.0, self.1+other.1)
-    }
-}
-
-impl Mul for CPixel {
-    type Output = CPixel;
-    
-    fn mul(self, other: CPixel) -> CPixel {
-        CPixel(self.0*other.0, self.1*other.1)
-    }
-}
-
-impl Mul<i32> for CPixel {
-    type Output = CPixel;
-    
-    fn mul(self, other: i32) -> CPixel {
-        CPixel(self.0*other, self.1*other)
-    }
-}
-
-impl Div for CPixel {
-    type Output = CFraction;
-    
-    fn div(self, other: CPixel) -> CFraction {
-        CFraction((self.0 as f32)/(other.0 as f32),
-                  (self.1 as f32)/(other.1 as f32))
-    }
-}
-
-impl From<CFraction> for CPixel {
-    fn from(val: CFraction) -> Self {
-        CPixel(val.0 as i32, val.1 as i32)
-    }
-}
-
-/* RPixel */
-
-#[derive(Clone,Copy,Debug)]
-pub struct RPixel(pub CPixel,pub CPixel);
-
-impl RPixel {
-    pub fn at_origin(self) -> RPixel {
-        RPixel(CPixel(0,0),self.1)
-    }
-    
-    pub fn expand(&self) -> RPixel {
-        RPixel(self.0, self.0+self.1)
-    }
-
-    pub fn rectangle(&self) -> [CPixel;4] {
-        let x = self.expand();
-        [
-            x.0,
-            CPixel((x.0).0, (x.1).1), 
-            x.1,
-            CPixel((x.1).0, (x.0).1)
-        ]
-    }
-}
-
-impl Add<CPixel> for RPixel {
-    type Output = RPixel;
-    
-    fn add(self, other: CPixel) -> RPixel {
-        RPixel(self.0+other,self.1)
-    }
-}
-
-impl Mul<CPixel> for RPixel {
-    type Output = RPixel;
-    
-    fn mul(self, other: CPixel) -> RPixel {
-        RPixel(self.0*other, self.1*other)
-    }
-}
-
-impl Div for RPixel {
-    type Output = RFraction;
-    
-    fn div(self, other: RPixel) -> RFraction {
-        RFraction(self.0/other.0,self.1/other.1)
-    }
-}
-
-impl Div<CPixel> for RPixel {
-    type Output = RFraction;
-    
-    fn div(self, other: CPixel) -> RFraction {
-        RFraction(self.0/other,self.1/other)
-    }
-}
-
-impl Input for RPixel {
-    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
-        for c in self.rectangle().iter() {
-            attrib.add_f32(&[c.0 as f32,c.1 as f32],batch);
-        }
-    }
-}
-
-/* CFraction */
-
-#[derive(Clone,Copy,Debug)]
-pub struct CFraction(pub f32,pub f32);
-
-impl CFraction {
-    pub fn mix(&self, other: CFraction) -> (CFraction,CFraction) {
-        (CFraction(self.0,other.1), CFraction(other.0,self.1))
-    }
-    
-    pub fn triangles(&self, other: CFraction) -> ([CFraction;3],[CFraction;3]) {
-        let mix = self.mix(other);
-        ([*self, mix.1, mix.0],[other, mix.0, mix.1])
-    }    
-
-    pub fn rectangle(&self, other: CFraction) -> [CFraction;4] {
-        let mix = self.mix(other);
-        [*self, mix.0, other, mix.1]
-    }
-}
-
-impl Add for CFraction {
-    type Output = CFraction;
-    
-    fn add(self,other: CFraction) -> CFraction {
-        CFraction(self.0+other.0, self.1+other.1)
-    }
-}
-
-impl Input for CFraction {
-    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
-        attrib.add_f32(&[self.0,self.1],batch);
-    }
-}
-
-impl Div for CFraction {
-    type Output = CFraction;
-    
-    fn div(self, other: CFraction) -> CFraction {
-        CFraction(self.0/other.0,self.1/other.1)
-    }
-}
-
-
-/* RFraction */
-
-#[derive(Clone,Copy,Debug)]
-pub struct RFraction(pub CFraction,pub CFraction);
-
-impl RFraction {
-    pub fn expand(&self) -> RFraction {
-        RFraction(self.0, self.0+self.1)
-    }
-    
-    pub fn rectangle(&self) -> [CFraction;4] {
-        let x = self.expand();
-        [
-            x.0,
-            CFraction((x.0).0, (x.1).1), 
-            x.1,
-            CFraction((x.1).0, (x.0).1)
-        ]
-    }
-}
-
-impl Input for RFraction {
-    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
-        for c in self.rectangle().iter() {
-            attrib.add_f32(&[c.0,c.1],batch);
-        }
-    }
-}
-
-impl Add<CFraction> for RFraction {
-    type Output = RFraction;
-    
-    fn add(self, other: CFraction) -> RFraction {
-        RFraction(self.0 + other, self.1)
-    }
-}
-
-/* Colour */
-
-#[derive(Clone,Copy,PartialEq,Hash,Eq,Debug)]
-pub struct Colour(pub u32,pub u32,pub u32);
-
-impl Colour {
-    pub fn to_css(&self) -> String {
-        format!("rgb({},{},{})",self.0,self.1,self.2)
-    }
-    
-    pub fn to_uniform(&self) -> UniformValue {
-        let f = self.to_frac();
-        UniformValue::Vec3F(f[0],f[1],f[2])
-    }
-    
-    pub fn to_frac(&self) -> [f32;3] {
-        [self.0 as f32 / 255.,
-         self.1 as f32 / 255.,
-         self.2 as f32 / 255.]
-    }
-}
-
-impl Input for Colour {
-    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
-        attrib.add_f32(&self.to_frac(), batch);
-    }
+    fn div(self, other: Dot<T,U>) -> Area<f32,f32> {
+        Area(self.0 / other, self.1 / other)
+    }         
 }
