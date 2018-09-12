@@ -40,7 +40,7 @@ impl PTGeom {
                 Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
                 Statement::new_vert("
                     gl_Position = vec4(
-                        (aVertexPosition.x - uStageHpos/uSize.x) * uStageZoom,
+                        (aVertexPosition.x - uStageHpos) * uStageZoom,
                         - (aVertexPosition.y - uStageVpos) / uSize.y,
                         0.0, 1.0)")
             },
@@ -53,7 +53,7 @@ impl PTGeom {
                 Attribute::new(&PR_DEF,Arity::Vec2,"aOrigin"),
                 Statement::new_vert("
                     gl_Position = vec4(
-                        (aOrigin.x -uStageHpos/uSize.x) * uStageZoom + 
+                        (aOrigin.x -uStageHpos) * uStageZoom + 
                                     aVertexPosition.x / uSize.x,
                         - (aOrigin.y - uStageVpos + aVertexPosition.y) / uSize.y, 
                         0.0, 1.0)")

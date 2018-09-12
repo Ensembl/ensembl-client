@@ -43,8 +43,8 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
             state.vpos += delta *5.414;
             state.fpos += delta *7.21;
             state.g.lock().unwrap().with_stage(|s| {
-                s.zoom = ((state.zoomscale.cos() + 1.5)/300.0) as f32;
-                s.pos.0 = ((state.hpos.cos())*1.5) as f32;
+                s.set_zoom((state.zoomscale.cos()/2.0 + 2.5) as f32);
+                s.pos.0 = ((state.hpos.cos())*150.) as f32;
                 s.pos.1 = ((state.vpos.sin())*300.) as f32;
             });
             let odd_state = if state.hpos.cos() > 0. {
