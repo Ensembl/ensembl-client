@@ -210,5 +210,5 @@ pub fn big_science(g: &mut Global, oom: &StateManager, onoff: bool) {
         a.get_cman().add_campaign(c_odd);
         a.get_cman().add_campaign(c_even);
     });
-    g.with_stage(|s| s.zoom = 0.001);
+    g.with_stage(|s| s.set_zoom(3.));
 }

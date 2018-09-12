@@ -26,23 +26,23 @@ impl<T: Clone + Copy + Mul<f32,Output=T> + Div<f32,Output=T> + Debug> Distance<T
         let Distance(quant,source) = self;
         let dims = stage.get_size();
         let (size,zoom) = match axis {
-            Axis::Horiz => (dims.0 as f32,stage.zoom),
+            Axis::Horiz => (dims.0 as f32,stage.get_linear_zoom()),
             Axis::Vert => (dims.1 as f32,1.0)
         };
         let quant = match source {
             Units::Pixels => match target {
                 Units::Pixels => *quant,
-                Units::Bases => *quant / zoom,
+                Units::Bases => *quant / zoom / size,
                 Units::Screens => *quant / size
             },
             Units::Bases => match target {
-                Units::Pixels => *quant * zoom,
+                Units::Pixels => *quant * zoom * size,
                 Units::Bases => *quant,
-                Units::Screens => *quant * zoom / size
+                Units::Screens => *quant * zoom
             },
             Units::Screens => match target {
                 Units::Pixels => *quant * size,
-                Units::Bases => *quant * size / zoom,
+                Units::Bases => *quant / zoom,
                 Units::Screens => *quant
             },            
         };
