@@ -44,7 +44,7 @@ pub fn canvas_texture(ctx: &glctx,cnv : &CanvasElement) -> gltex {
     
     ctx.tex_parameteri(glctx::TEXTURE_2D,
                        glctx::TEXTURE_MIN_FILTER,
-                       glctx::LINEAR as i32);
+                       glctx::NEAREST as i32);
     ctx.tex_parameteri(glctx::TEXTURE_2D,
                        glctx::TEXTURE_MAG_FILTER,
                        glctx::NEAREST as i32);
