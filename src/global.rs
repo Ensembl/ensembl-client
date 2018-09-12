@@ -3,7 +3,7 @@ use dom::domutil;
 use dom::event::{ EventKiller, EventListener, EventControl, EventType, EventListenerHandle, EventData, ICustomEvent };
 use stdweb::web::{ IElement, Element, HtmlElement };
 use arena::{ Arena, Stage };
-use types::{ CPixel,  Move, Distance, Units, Axis };
+use types::{ CPixel,  Move, Distance, Units, Axis, cpixel, CFraction, cfraction };
 use serde_json::Value as JSONValue;
 
 use campaign::{ StateManager };
@@ -55,6 +55,10 @@ impl Global {
         let lrh = EventListenerHandle::new(Box::new(lr));
         self.control.add_event(EventType::CustomEvent("bpane".to_string()),&lrh);
         self.control.add_event(EventType::ClickEvent,&lrh);
+        self.control.add_event(EventType::MouseDownEvent,&lrh);
+        self.control.add_event(EventType::MouseUpEvent,&lrh);
+        self.control.add_event(EventType::MouseMoveEvent,&lrh);
+        self.control.add_event(EventType::MouseWheelEvent,&lrh);
         self.control.add_element(&mut self.eventkiller,&el,());
         format!("{}",self.inst)
     }
@@ -80,7 +84,8 @@ impl Global {
 #[derive(Debug,Clone,Copy)]
 enum Event {
     Noop,
-    Move(Move<f32,f32>)
+    Move(Move<f32,f32>),
+    Zoom(f32)
 }
 
 fn custom_movement_event(dir: &str, unit: &str, v: &JSONValue) -> Event {
@@ -104,13 +109,32 @@ fn custom_movement_event(dir: &str, unit: &str, v: &JSONValue) -> Event {
     }
 }
 
-fn custom_make_one_event(k: &String, v: &JSONValue) -> Event {
-    let parts : Vec<&str> = k.split("_").collect();
-    if parts.len() == 3 {
-        return match parts[0] {
-            "move" => custom_movement_event(parts[1],parts[2],v),
+fn custom_zoom_event(kind: &str, v: &JSONValue) -> Event {
+    if let JSONValue::Number(quant) = v {
+        let quant = quant.as_f64().unwrap() as f32;
+        match kind {
+            "by" => {
+                Event::Zoom(quant)
+            },
             _ => Event::Noop
         }
+    } else {
+        Event::Noop
+    }
+}
+
+fn custom_make_one_event(k: &String, v: &JSONValue) -> Event {
+    let parts : Vec<&str> = k.split("_").collect();
+    match parts.len() {
+        2 => return match parts[0] {
+            "zoom" => custom_zoom_event(parts[1],v),
+            _ => Event::Noop
+        },
+        3 => return match parts[0] {
+            "move" => custom_movement_event(parts[1],parts[2],v),
+            _ => Event::Noop
+        },
+        _ => ()
     }
     Event::Noop
 }
@@ -128,14 +152,16 @@ fn custom_make_events(j: &JSONValue) -> Vec<Event> {
 pub struct ArenaEventListener {
     arena: Arc<Mutex<Arena>>,
     stage: Arc<Mutex<Stage>>,
-    stale: bool
+    stale: bool,
+    down_at: Option<CFraction>,
+    delta_applied: Option<CFraction>,
 }
 
 impl ArenaEventListener {
     pub fn new(_root: &Element,
                arena: Arc<Mutex<Arena>>,
                stage: Arc<Mutex<Stage>>) -> ArenaEventListener {
-        ArenaEventListener { arena, stage, stale: false }
+        ArenaEventListener { arena, stage, stale: false, down_at: None, delta_applied: None }
     }
     
     fn refresh(&mut self) {
@@ -157,6 +183,13 @@ impl ArenaEventListener {
         stage.pos = stage.pos + v;
         self.stale = true;
     }
+    
+    fn exe_zoom_by_event(&mut self, z: f32) {
+        let stage = &mut self.stage.lock().unwrap();
+        let z = stage.get_zoom()+z;
+        stage.set_zoom(z);
+        self.stale = true;
+    }
 }
 
 impl EventListener<()> for ArenaEventListener {    
@@ -164,11 +197,46 @@ impl EventListener<()> for ArenaEventListener {
         let evs = match e {
             EventData::CustomEvent(_,_,c) =>
                 custom_make_events(&c.details().unwrap()),
+            EventData::MouseEvent(EventType::MouseWheelEvent,e) =>
+                {
+                    let delta = e.wheel_delta();
+                    vec! {
+                        Event::Zoom(delta as f32/1000.)
+                    }
+                }
+            EventData::MouseEvent(EventType::MouseDownEvent,e) =>
+                { 
+                    self.down_at = Some(e.at().as_fraction());
+                    self.delta_applied = Some(cfraction(0.,0.));
+                    console!("mousedown"); 
+                    Vec::<Event>::new()
+                },
+            EventData::MouseEvent(EventType::MouseUpEvent,_) =>
+                { 
+                    self.down_at = None;
+                    Vec::<Event>::new()
+                },
+            EventData::MouseEvent(EventType::MouseMoveEvent,e) =>
+                { 
+                    let at = e.at().as_fraction();
+                    if let Some(down_at) = self.down_at {
+                        let delta = at - down_at;
+                        let new_delta = delta - self.delta_applied.unwrap();
+                        self.delta_applied = Some(delta);
+                        vec! {
+                            Event::Move(Move::Left(Distance(new_delta.0,Units::Pixels))),
+                            Event::Move(Move::Up(Distance(new_delta.1,Units::Pixels)))
+                        }
+                    } else {
+                        Vec::<Event>::new()
+                    }
+                },
             _ => Vec::<Event>::new()
         };
         for ev in evs {
             match ev {
                 Event::Move(v) => self.exe_move_event(v),
+                Event::Zoom(z) => self.exe_zoom_by_event(z),
                 Event::Noop => ()
             }
         }

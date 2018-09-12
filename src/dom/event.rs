@@ -10,6 +10,7 @@ use stdweb::unstable::TryInto;
 use stdweb::Reference;
 use stdweb::web::Element;
 use stdweb::web::event::{ IEvent, IUiEvent, IMouseEvent, IKeyboardEvent };
+use types::{ CPixel, cpixel };
 
 #[derive(Clone)]
 pub struct EventListenerHandle<T>(
@@ -67,6 +68,9 @@ impl<T: 'static> EventControl<T> {
 #[allow(dead_code)]
 #[derive(Debug,Clone)]
 pub enum EventType {
+    MouseUpEvent,
+    MouseDownEvent,
+    MouseWheelEvent,
     ClickEvent,
     MouseMoveEvent,
     KeyPressEvent,
@@ -85,7 +89,10 @@ impl EventData {
         let e = e.clone();
         match &et {
             EventType::ClickEvent |
-            EventType::MouseMoveEvent =>
+            EventType::MouseMoveEvent |
+            EventType::MouseDownEvent |
+            EventType::MouseUpEvent |
+            EventType::MouseWheelEvent =>
                 EventData::MouseEvent(et.clone(),MouseData(e)),
 
             EventType::KeyPressEvent =>
@@ -101,8 +108,11 @@ impl EventType {
     fn get_name(&self) -> &str {
         match self {
             EventType::ClickEvent => "click",
+            EventType::MouseDownEvent => "mousedown",
+            EventType::MouseUpEvent => "mouseup",
             EventType::MouseMoveEvent => "mousemove",
             EventType::KeyPressEvent => "keypress",
+            EventType::MouseWheelEvent => "wheel",
             EventType::CustomEvent(n) => &n
         }
     }
@@ -111,6 +121,22 @@ impl EventType {
 #[derive(ReferenceType,Clone,PartialEq,Eq)]
 #[reference(instance_of = "MouseData")]
 pub struct MouseData(Reference);
+
+impl MouseData {
+    pub fn at(&self) -> CPixel {
+        cpixel(self.client_x(),self.client_y())
+    }
+    
+    pub fn wheel_delta(&self) -> i32 {
+        let delta : i32 = js! { return @{self.as_ref()}.deltaY; }.try_into().unwrap();
+        let mode : i32 = js! { return @{self.as_ref()}.deltaMode; }.try_into().unwrap();
+        match mode {
+            0 => delta,
+            1 => delta * 40,
+            _ => delta * 800
+        }
+    }
+}
 
 impl fmt::Debug for MouseData {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

@@ -15,3 +15,7 @@ check in/out of event handlers
 
 enstops on stage
 pid
+
+mousemove on/off
+out of region mouse up
+

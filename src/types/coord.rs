@@ -1,6 +1,6 @@
 use arena::Stage;
 use std::fmt::Debug;
-use std::ops::{ Add, Mul, Div, Neg };
+use std::ops::{ Add, Sub, Mul, Div, Neg };
 use program::{ Object, ObjectAttrib, DataBatch, Input };
 
 /***** Direction types *****/
@@ -139,6 +139,16 @@ impl<T : Clone + Copy + Add<T, Output=T>,
     
     fn add(self,other: Dot<T,U>) -> Dot<T,U> {
         Dot(self.0+other.0, self.1+other.1)
+    }
+}
+
+/* Dot - Dot => subtract like vectors */
+impl<T : Clone + Copy + Sub<T, Output=T>,
+     U : Clone + Copy + Sub<U, Output=U>> Sub for Dot<T,U> {
+    type Output = Dot<T,U>;
+    
+    fn sub(self,other: Dot<T,U>) -> Dot<T,U> {
+        Dot(self.0-other.0, self.1-other.1)
     }
 }
 

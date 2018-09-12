@@ -23,15 +23,13 @@ pub fn testcard_button(g: Arc<Mutex<Global>>) {
 
     let oom = StateManager::new();
     
-    custom(&body,"shimmy",json!({ "move_left_px": 12, "move_down_screen": 0.1 }));
+    custom(&body,"shimmy",json!({ "move_left_px": 120, "move_down_screen": 0.25, "zoom_by": 0.1 }));
     custom(&body,"left",json!({ "move_left_px": 50 }));
     custom(&body,"right",json!({ "move_right_px": 50 }));
     custom(&body,"up",json!({ "move_up_px": 50 }));
     custom(&body,"down",json!({ "move_down_px": 50 }));
-
-    
-    button!("in",|| { debug!("global","in") });
-    button!("out",|| { debug!("global","out") });
+    custom(&body,"in",json!({ "zoom_by": -0.3 }));
+    custom(&body,"out",json!({ "zoom_by": 0.3 }));
 
     button!("on",|| { debug!("global","on") });
     button!("off",|| { debug!("global","off") });
