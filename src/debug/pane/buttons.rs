@@ -21,17 +21,12 @@ impl ButtonEventListener {
     }
 }
 
-fn burst<'a>(p: &'a mut DebugPanel) -> (&'a mut DebugConsole, &'a mut DebugButtons) {
-    (&mut p.console, &mut p.buttons)
-}
-
 impl EventListener<usize> for ButtonEventListener {
     fn receive(&mut self, _el: &Element,  _e: &EventData, idx: &usize) {
         let t;
         {
             let p =  &mut self.panel.borrow_mut();
-            let (console, buttons) = burst(p);
-            t = buttons.trigger_button(console,*idx);
+            t = p.buttons.trigger_button(*idx);
         }
         if let Some(t) = t {
             t.borrow_mut().press();
@@ -52,8 +47,8 @@ impl DebugButton {
         }
     }
     
-    pub fn trigger(&self, c: &mut DebugConsole) -> Rc<RefCell<ButtonAction>> {
-        debugp!(c,"debug panel","Button event '{}'",&self.name);
+    pub fn trigger(&self) -> Rc<RefCell<ButtonAction>> {
+        debug!("debug panel","Button event '{}'",&self.name);
         self.cb.clone()
     }
 }
@@ -107,10 +102,10 @@ impl DebugButtons {
         self.buttons.push(DebugButton::new(name,cb));
     }
 
-    fn trigger_button(&mut self, console: &mut DebugConsole, idx: usize) -> Option<Rc<RefCell<ButtonAction>>> {
+    fn trigger_button(&mut self, idx: usize) -> Option<Rc<RefCell<ButtonAction>>> {
         let b = self.buttons.get(idx);
         if let Some(b) = b {
-            Some(b.trigger(console))
+            Some(b.trigger())
         } else {
             None
         }

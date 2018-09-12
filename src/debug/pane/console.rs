@@ -5,7 +5,7 @@ use dom::domutil;
 const DEBUG_FOLDER : &str = "- debug folder -";
 
 pub struct DebugFolderEntry {
-    name: String,
+    pub name: String,
     contents: String,
     last: String,
     mul: u32

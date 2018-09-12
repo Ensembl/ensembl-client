@@ -62,7 +62,7 @@ pub fn scroll_to_bottom(el: &Element) {
 pub fn send_custom_event(el: &Element, name: &str, data: &JSONValue) {
     let v: Value = data.clone().try_into().unwrap();
     js! {
-        var e = new CustomEvent(@{name},{ detail: @{&v} });
+        var e = new CustomEvent(@{name},{ detail: @{&v}, bubbles: true });
         @{el.as_ref()}.dispatchEvent(e);
     };
 }
