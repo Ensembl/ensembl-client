@@ -3,7 +3,14 @@ import { hot } from 'react-hot-loader';
 
 class TrackTwo extends Component {
   public render() {
-    return <h2>Content for Page 1 (Track 2)</h2>;
+    return (
+      <div className="track-section-wrapper track-two">
+        <section id="main">
+          <h3>Main</h3>
+          <h2>Content for Track 2</h2>
+        </section>
+      </div>
+    );
   }
 }
 

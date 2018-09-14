@@ -6,7 +6,8 @@ class TrackOne extends Component {
     return (
       <div className="track-section-wrapper track-one">
         <section id="main">
-          <h2>Placeholder for Track One</h2>
+          <h3>Main</h3>
+          <h2>Content for Track 1</h2>
         </section>
         <section id="summary">
           <h3>Summary</h3>

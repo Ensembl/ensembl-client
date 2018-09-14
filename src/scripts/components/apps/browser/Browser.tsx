@@ -68,7 +68,7 @@ class Browser extends Component<BrowserProps> {
           <BrowserBar expanded={false} drawerOpened={this.props.drawerOpened} />
           <div className="browser-canvas-wrapper" onClick={this.closeTrack}>
             <div className="browser-canvas">
-              <h2>Species Browser content area placeholder</h2>
+              <h2>Species Browser Placeholder</h2>
             </div>
           </div>
         </section>
