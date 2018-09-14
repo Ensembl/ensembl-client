@@ -14,7 +14,7 @@ Since the frontend uses TypeScript and SCSS (SASS) for coding, there needs to be
 
 ## Decision
 
-Three tools is used to enforce this:
+Three tools are used to enforce this:
 
 1. [TSLint](https://palantir.github.io/tslint/): for TypeScript rules
 2. [Stylelint](https://stylelint.io/): for SASS/SCSS rules (Stylelint is originally for CSS but can be used for SASS too)
