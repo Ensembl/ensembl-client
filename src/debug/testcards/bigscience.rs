@@ -21,7 +21,7 @@ use rand::SeedableRng;
 
 use std::rc::Rc;
 
-use global::Global;
+use controller::Global;
 
 use types::{ Colour, cleaf, rleaf, cpixel, rpixel };
 

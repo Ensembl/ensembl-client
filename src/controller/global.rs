@@ -7,10 +7,12 @@ use dom::event::{
 };
 use stdweb::web::{ IElement, Element, HtmlElement };
 use arena::{ Arena, Stage };
-use types::{ CPixel,  Move, Distance, Units, Axis, CFraction, cfraction };
+use types::{ CPixel,  Move, Distance, Units, CFraction, cfraction };
 use serde_json::Value as JSONValue;
 
 use campaign::{ StateManager };
+
+use controller::{ Event, EventRunner };
 
 const CANVAS : &str = r##"
     <canvas id="glcanvas"></canvas>
@@ -53,7 +55,6 @@ impl Global {
         self.root.set_attribute("data-inst",&inst_s).ok();
         self.arena = Some(Arc::new(Mutex::new(Arena::new(&canv_el))));
         let lr = ArenaEventListener::new(
-                            el,
                             self.arena.as_ref().unwrap().clone(),
                             self.stage.clone());
         self.control = Some(EventControl::new(Box::new(lr)));
@@ -96,13 +97,6 @@ impl<T: 'static> DirectEventManager<T> {
             phantom: PhantomData
         }
     }
-}
-
-#[derive(Debug,Clone,Copy)]
-enum Event {
-    Noop,
-    Move(Move<f32,f32>),
-    Zoom(f32)
 }
 
 fn custom_movement_event(dir: &str, unit: &str, v: &JSONValue) -> Event {
@@ -166,49 +160,20 @@ fn custom_make_events(j: &JSONValue) -> Vec<Event> {
     out
 }
 
-
-
 pub struct ArenaEventListener {
-    arena: Arc<Mutex<Arena>>,
-    stage: Arc<Mutex<Stage>>,
-    stale: bool,
+    runner: EventRunner,
     down_at: Option<CFraction>,
     delta_applied: Option<CFraction>,
 }
 
 impl ArenaEventListener {
-    pub fn new(_root: &Element,
-               arena: Arc<Mutex<Arena>>,
+    pub fn new(arena: Arc<Mutex<Arena>>,
                stage: Arc<Mutex<Stage>>) -> ArenaEventListener {
-        ArenaEventListener { arena, stage, stale: false, down_at: None, delta_applied: None }
-    }
-    
-    fn refresh(&mut self) {
-        debug!("global","refresh due to stage event");
-        let arena = &mut self.arena.lock().unwrap();
-        let stage = &mut self.stage.lock().unwrap();
-        
-        arena.draw(&StateManager::new(),stage);
-        self.stale = false;
-    }
-    
-    fn exe_move_event(&mut self, v: Move<f32,f32>) {
-        let stage = &mut self.stage.lock().unwrap();
-        
-        let v = match v.direction().0 {
-            Axis::Horiz => v.convert(Units::Bases,stage),
-            Axis::Vert => v.convert(Units::Pixels,stage),
-        };
-        stage.pos = stage.pos + v;
-        self.stale = true;
-    }
-    
-    fn exe_zoom_by_event(&mut self, z: f32) {
-        let stage = &mut self.stage.lock().unwrap();
-        let z = stage.get_zoom()+z;
-        stage.set_zoom(z);
-        self.stale = true;
-    }
+        ArenaEventListener {
+            runner: EventRunner::new(arena,stage), 
+            down_at: None, delta_applied: None
+        }
+    }        
 }
 
 impl EventListener<()> for ArenaEventListener {    
@@ -252,15 +217,6 @@ impl EventListener<()> for ArenaEventListener {
                 },
             _ => Vec::<Event>::new()
         };
-        for ev in evs {
-            match ev {
-                Event::Move(v) => self.exe_move_event(v),
-                Event::Zoom(z) => self.exe_zoom_by_event(z),
-                Event::Noop => ()
-            }
-        }
-        if self.stale {
-            self.refresh();
-        }
+        self.runner.run(evs);
     }
 }

@@ -16,7 +16,7 @@ mod util;
 
 mod debug;
 mod arena;
-mod global;
+mod controller;
 mod shape;
 mod canvasutil;
 mod campaign;

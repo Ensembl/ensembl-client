@@ -1,5 +1,5 @@
 use std::sync::{ Mutex, Arc };
-use global::Global;
+use controller::Global;
 use dom::domutil;
 use campaign::{ StateManager };
 use debug::testcards::bigscience::big_science;
