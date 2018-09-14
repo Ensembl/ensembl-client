@@ -1,8 +1,13 @@
+use std::rc::Rc;
+use std::cell::RefCell;
 use std::collections::HashMap;
+use std::collections::hash_map::Entry;
+use serde_json::Value as JSONValue;
 
+use stdweb::web::Element;
+
+use dom::event::{ EventListener, EventControl, EventType, EventListenerHandle, EventKiller, EventData, ICustomEvent };
 use dom::domutil;
-
-const DEBUG_FOLDER : &str = "- debug folder -";
 
 pub struct DebugFolderEntry {
     pub name: String,
@@ -58,66 +63,140 @@ impl DebugFolderEntry {
         out
     }
 }
-
-pub struct DebugConsole {
+pub struct DebugConsoleImpl {
+    el: Element,
+    base_el: Element,
     folder: HashMap<String,DebugFolderEntry>,
-    selected: String,
+    selected: Option<String>,
+    refresh: bool
 }
 
-impl DebugConsole {
-    pub fn new() -> DebugConsole {
-        let mut out = DebugConsole {
+impl DebugConsoleImpl {
+    pub fn new(el: &Element, base_el: &Element) -> DebugConsoleImpl {
+        DebugConsoleImpl {
+            el: el.clone(),
+            base_el: base_el.clone(),
             folder: HashMap::<String,DebugFolderEntry>::new(),
-            selected: DEBUG_FOLDER.to_string(),
-        };
-        out.update_contents(DEBUG_FOLDER);
-        out
-    }
-
-    pub fn debug(&mut self, name: &str, value: &str) {
-        self.get_entry(name).add(value);
-        self.update_contents(name);
-    }
-    
-    pub fn get_entry(&mut self, name: &str) -> &mut DebugFolderEntry {
-        if let None = self.folder.get(name) {
-            self.folder.insert(name.to_string(),DebugFolderEntry::new(name));
-            self.render_dropdown();
-        }
-        self.folder.get_mut(name).unwrap()
-    }
-
-    pub fn mark(&mut self) {
-        for e in &mut self.folder.values_mut() {
-            e.mark();
-        }
-        let sel = self.selected.clone();
-        self.update_contents(&sel);
-    }
-    
-    fn render_dropdown(&self) {
-        let sel_el = domutil::query_select("#console .folder");
-        domutil::inner_html(&sel_el,"");
-        let mut keys : Vec<&DebugFolderEntry> = self.folder.values().collect();
-        keys.sort_by(|a,b| a.name.cmp(&b.name));
-        for e in keys {
-            let opt_el = domutil::append_element(&sel_el,"option");
-            domutil::text_content(&opt_el,&e.name);
+            selected: None,
+            refresh: false
         }
     }
     
-    fn update_contents(&mut self, name: &str) {
-        if name == self.selected {
-            let panel_el = domutil::query_select("#console .content");
-            let sel = self.selected.clone();
-            let entry = self.get_entry(&sel);
-            domutil::text_content(&panel_el,&entry.get());
-            domutil::scroll_to_bottom(&panel_el);
+    fn entry(&mut self, k: &str) -> &mut DebugFolderEntry {
+        let mut keys : Vec<String> = self.folder.keys().map(|s| s.to_string()).collect();
+        match self.folder.entry(k.to_string()) {
+            Entry::Occupied(e) => e.into_mut(),
+            Entry::Vacant(e) => {
+                keys.push(k.to_string());
+                let out = DebugFolderEntry::new(k);
+                domutil::send_custom_event(&self.base_el,"refresh",&json!({
+                    "keys": keys
+                }));
+                self.refresh = true;
+                e.insert(out)
+            }
         }
     }
     
     pub fn select(&mut self, name: &str) {
-        self.selected = name.to_string();
-        self.update_contents(name);
+        self.selected = Some(name.to_string());
+        self.update_contents();
+    }
+    
+    fn update_contents(&mut self) {
+        let el = self.el.clone();
+        domutil::text_content(&el,"");
+        let sel = self.selected.clone();
+        if let Some(ref sel) = sel {
+            let e = self.entry(&sel);
+            domutil::text_content(&el,&e.get());
+        }
+        domutil::scroll_to_bottom(&el);
+    }
+    
+    fn maybe_update_contents(&mut self, name: &str) {
+        if let Some(ref sel) = self.selected.clone() {
+            if sel == name {
+                self.update_contents();
+            }
+        }
+    }
+        
+    pub fn mark(&mut self) {
+        for e in &mut self.folder.values_mut() {
+            e.mark();
+        }
+        self.update_contents();
+    }
+        
+    pub fn add(&mut self, name: &str, value: &str) {
+        self.entry(name).add(value);
+        self.maybe_update_contents(name);
+    }
+    
+    pub fn reset(&mut self,name: &str) {
+        self.entry(name).reset();
+    }
+}
+
+impl EventListener<()> for DebugConsoleImpl {
+    fn receive(&mut self, _el: &Element, ev: &EventData, _p: &()) {
+        if let EventData::CustomEvent(_,n,v) = ev {
+            let mut data = HashMap::<String,String>::new();
+            if let JSONValue::Object(map) = v.details().unwrap() {
+                for (k,v) in &map {
+                    if let JSONValue::String(v) = v {
+                        data.insert(k.to_string(),v.to_string());
+                    }
+                }
+            }
+            match &n[..] {
+                "reset" => { self.reset(data.get("name").unwrap()) },
+                "mark" => { self.mark() },
+                "select" => { self.select(data.get("name").unwrap()); },
+                "add" => {
+                    self.add(data.get("name").unwrap(),
+                             data.get("value").unwrap());
+                },
+                _ => ()
+            }
+        }
+    }
+}
+
+struct DebugConsoleListener(Rc<RefCell<DebugConsoleImpl>>);
+
+impl EventListener<()> for DebugConsoleListener {
+    fn receive(&mut self, el: &Element, ev: &EventData, p: &()) {
+        self.0.borrow_mut().receive(el,ev,p);
+    }
+}
+
+pub struct DebugConsole {
+    imp: Rc<RefCell<DebugConsoleImpl>>,
+    evctrl: EventControl<()>
+}
+
+impl DebugConsole {
+    pub fn new(el: &Element, base_el: &Element) -> DebugConsole {
+        let mut out = DebugConsole {
+            imp: Rc::new(RefCell::new(DebugConsoleImpl::new(el,base_el))),
+            evctrl: EventControl::new(),
+        };
+        let li = DebugConsoleListener(out.imp.clone());
+        let elh = EventListenerHandle::new(Box::new(li));
+        out.evctrl.add_event(EventType::CustomEvent("add".to_string()),&elh);
+        out.evctrl.add_event(EventType::CustomEvent("mark".to_string()),&elh);
+        out.evctrl.add_event(EventType::CustomEvent("select".to_string()),&elh);
+        out.evctrl.add_element(&mut EventKiller::new(),&el,());
+        out
+    }
+        
+    pub fn add(&mut self, name: &str, value: &str) {
+        self.imp.borrow_mut().add(name,value);
+    }
+
+    pub fn select(&mut self, name: &str) {
+        self.imp.borrow_mut().select(name);
     }
 }
