@@ -9,28 +9,23 @@ use dom::event::{
     EventKiller, EventData
 };
 use debug::pane::console::DebugConsole;
-use debug::pane::debugstage::DebugPanel;
+use debug::pane::debugstage::{
+    DebugPanel,
+    debug_panel_trigger_button
+};
 
 pub struct ButtonEventListener {
-    panel: Rc<RefCell<DebugPanel>>
 }
 
 impl ButtonEventListener {
-    pub fn new(panel: Rc<RefCell<DebugPanel>>) -> ButtonEventListener {
-        ButtonEventListener { panel }
+    pub fn new() -> ButtonEventListener {
+        ButtonEventListener {}
     }
 }
 
 impl EventListener<usize> for ButtonEventListener {
     fn receive(&mut self, _el: &Element,  _e: &EventData, idx: &usize) {
-        let t;
-        {
-            let p =  &mut self.panel.borrow_mut();
-            t = p.buttons.trigger_button(*idx);
-        }
-        if let Some(t) = t {
-            t.borrow_mut().press();
-        }
+        debug_panel_trigger_button(*idx);
     }
 }
 
@@ -47,9 +42,9 @@ impl DebugButton {
         }
     }
     
-    pub fn trigger(&self) -> Rc<RefCell<ButtonAction>> {
+    pub fn trigger(&self) {
         debug!("debug panel","Button event '{}'",&self.name);
-        self.cb.clone()
+        self.cb.borrow_mut().press();
     }
 }
 
@@ -70,16 +65,14 @@ pub struct DebugButtons {
 }
 
 impl DebugButtons {
-    pub fn new(panel : Option<&mut Rc<RefCell<DebugPanel>>>) -> DebugButtons {
+    pub fn new() -> DebugButtons {
         let mut out = DebugButtons {
             buttons: Vec::<DebugButton>::new(),
             buttonev: EventControl::new(),
             buttonek: EventKiller::new()
         };
-        if let Some(panel) = panel {
-            let mut bel = EventListenerHandle::new(Box::new(ButtonEventListener::new(panel.clone())));
-            out.buttonev.add_event(EventType::ClickEvent,&bel);
-        }
+        let mut bel = EventListenerHandle::new(Box::new(ButtonEventListener::new()));
+        out.buttonev.add_event(EventType::ClickEvent,&bel);
         out
     }
     
@@ -102,12 +95,11 @@ impl DebugButtons {
         self.buttons.push(DebugButton::new(name,cb));
     }
 
-    fn trigger_button(&mut self, idx: usize) -> Option<Rc<RefCell<ButtonAction>>> {
+    pub fn trigger_button(&mut self, idx: usize) {
         let b = self.buttons.get(idx);
+        console!("X {:?}",idx);
         if let Some(b) = b {
-            Some(b.trigger())
-        } else {
-            None
+            b.trigger();
         }
     }
 }

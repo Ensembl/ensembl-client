@@ -1,5 +1,6 @@
 mod coord;
 mod colour;
+mod todo;
 
 pub use types::coord::{
     CPixel, RPixel,
@@ -15,3 +16,5 @@ pub use types::coord::{
 pub use types::colour::{
     Colour
 };
+
+pub use types::todo::Todo;
