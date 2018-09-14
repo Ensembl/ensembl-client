@@ -1,7 +1,10 @@
 use std::sync::{ Arc, Mutex };
 use std::marker::PhantomData;
 use dom::domutil;
-use dom::event::{ EventKiller, EventListener, EventControl, EventType, EventListenerHandle, EventData, ICustomEvent };
+use dom::event::{ 
+    EventKiller, EventListener, EventControl, EventType, EventData, 
+    ICustomEvent
+};
 use stdweb::web::{ IElement, Element, HtmlElement };
 use arena::{ Arena, Stage };
 use types::{ CPixel,  Move, Distance, Units, Axis, CFraction, cfraction };
@@ -53,8 +56,7 @@ impl Global {
                             el,
                             self.arena.as_ref().unwrap().clone(),
                             self.stage.clone());
-        let lrh = EventListenerHandle::new(Box::new(lr));
-        self.control = Some(EventControl::new(&lrh));
+        self.control = Some(EventControl::new(Box::new(lr)));
         DirectEventManager::new(&mut self.control.as_mut().unwrap());
         self.control.as_mut().unwrap().add_event(EventType::CustomEvent("bpane".to_string()));
         self.control.as_mut().unwrap().add_element(&mut self.eventkiller,&el,());

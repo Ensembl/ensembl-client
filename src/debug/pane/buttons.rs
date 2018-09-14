@@ -5,8 +5,7 @@ use stdweb::web::Element;
 
 use dom::domutil;
 use dom::event::{
-    EventListener, EventControl, EventType, EventListenerHandle,
-    EventKiller, EventData
+    EventListener, EventControl, EventType, EventKiller, EventData
 };
 
 use debug::pane::debugstage::debug_panel_trigger_button;
@@ -63,10 +62,9 @@ pub struct DebugButtons {
 
 impl DebugButtons {
     pub fn new() -> DebugButtons {
-        let bel = EventListenerHandle::new(Box::new(ButtonEventListener::new()));
         let mut out = DebugButtons {
             buttons: Vec::<DebugButton>::new(),
-            buttonev: EventControl::new(&bel),
+            buttonev: EventControl::new(Box::new(ButtonEventListener::new())),
             buttonek: EventKiller::new()
         };
         out.buttonev.add_event(EventType::ClickEvent);
