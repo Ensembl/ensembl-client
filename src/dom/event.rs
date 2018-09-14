@@ -11,17 +11,6 @@ use stdweb::web::Element;
 use stdweb::web::event::{ IEvent, IUiEvent, IMouseEvent, IKeyboardEvent };
 use types::{ CPixel, cpixel };
 
-#[derive(Clone)]
-pub struct EventListenerHandle<T>(
-    Arc<Mutex<Box<EventListener<T>>>>
-);
-
-impl<T> EventListenerHandle<T> {
-    pub fn new(el: Box<EventListener<T>>) -> EventListenerHandle<T> {
-        EventListenerHandle(Arc::new(Mutex::new(el)))
-    }
-}
-
 pub struct EventKiller<T>(Vec<ElementEvents<T>>);
 
 impl<T: 'static> EventKiller<T> {
@@ -38,14 +27,14 @@ impl<T: 'static> EventKiller<T> {
 }
 
 pub struct EventControl<T> {
-    handle: EventListenerHandle<T>,
+    handle: Arc<Mutex<Box<EventListener<T>>>>,
     mappings: Vec<EventType>,
 }
 
 impl<T: 'static> EventControl<T> {
-    pub fn new(handle: &EventListenerHandle<T>) -> EventControl<T> {
+    pub fn new(handle: Box<EventListener<T>>) -> EventControl<T> {
         EventControl {
-            handle: EventListenerHandle(handle.0.clone()),
+            handle: Arc::new(Mutex::new(handle)),
             mappings: Vec::<EventType>::new(),
         }
     }
@@ -57,7 +46,7 @@ impl<T: 'static> EventControl<T> {
     pub fn add_element(&self, ek: &mut EventKiller<T>, el: &Element, t: T) {
         let mut m = ElementEvents::new(el,t);
         for name in &self.mappings {
-            m.add_event(name,&self.handle.0);
+            m.add_event(name,&self.handle);
         }
         ek.0.push(m);
     }

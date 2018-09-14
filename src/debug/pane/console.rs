@@ -6,7 +6,7 @@ use serde_json::Value as JSONValue;
 
 use stdweb::web::Element;
 
-use dom::event::{ EventListener, EventControl, EventType, EventListenerHandle, EventKiller, EventData, ICustomEvent };
+use dom::event::{ EventListener, EventControl, EventType, EventKiller, EventData, ICustomEvent };
 use dom::domutil;
 
 pub struct DebugFolderEntry {
@@ -181,10 +181,9 @@ impl DebugConsole {
     pub fn new(el: &Element, base_el: &Element) -> DebugConsole {
         let imp = Rc::new(RefCell::new(DebugConsoleImpl::new(el,base_el)));
         let li = DebugConsoleListener(imp.clone());
-        let elh = EventListenerHandle::new(Box::new(li));
         let mut out = DebugConsole {
             imp,
-            evctrl: EventControl::new(&elh),
+            evctrl: EventControl::new(Box::new(li))
         };
         out.evctrl.add_event(EventType::CustomEvent("add".to_string()));
         out.evctrl.add_event(EventType::CustomEvent("mark".to_string()));

@@ -12,7 +12,7 @@ use stdweb::unstable::TryInto;
 
 use global::Global;
 use dom::domutil;
-use dom::event::{ EventListener, EventControl, EventType, EventListenerHandle, EventKiller, EventData, ICustomEvent };
+use dom::event::{ EventListener, EventControl, EventType, EventKiller, EventData, ICustomEvent };
 use debug::testcards;
 use debug::pane::console::DebugConsole;
 use debug::pane::buttons::{ DebugButtons, ButtonAction };
@@ -79,8 +79,7 @@ impl DebugPanelImpl {
     pub fn new(base: &Element) -> Rc<RefCell<DebugPanelImpl>> {
         debug!("global","new debug panel");
         debug!("debug panel","new debug panel");
-        let el = EventListenerHandle::new(Box::new(BodyEventListener::new()));
-        let mut bec = EventControl::new(&el);
+        let mut bec = EventControl::new(Box::new(BodyEventListener::new()));
         bec.add_event(EventType::KeyPressEvent);
         bec.add_event(EventType::ClickEvent);
         bec.add_event(EventType::CustomEvent("custom".to_string()));
@@ -100,8 +99,7 @@ impl DebugPanelImpl {
         self.console2 = Some(DebugConsole::new(&cons_el,&self.base));
         self.console2.as_mut().unwrap().select("hello");
         self.console2.as_mut().unwrap().add("hello","world");
-        let li = EventListenerHandle::new(Box::new(DebugPanelListener{ panel: p.clone() }));
-        self.evc = Some(EventControl::new(&li));
+        self.evc = Some(EventControl::new(Box::new(DebugPanelListener{ panel: p.clone() })));
         self.evc.as_mut().unwrap().add_event(EventType::CustomEvent("refresh".to_string()));
         self.evc.as_mut().unwrap().add_element(&mut EventKiller::new(),&self.base,());
         self.add_event();
