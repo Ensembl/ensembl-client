@@ -5,7 +5,7 @@ use types::{ CLeaf, cleaf };
 use rand::{ Rng, seq };
 use rand::distributions::Distribution;
 use rand::distributions::range::Range;
-use global::Global;
+use controller::Global;
 
 pub fn testcard(g: Arc<Mutex<Global>>, name: &str, inst: &str) {
     debug!("global","starting testcard {} inst={}",name,inst);

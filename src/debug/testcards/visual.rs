@@ -9,7 +9,7 @@ use dom::domutil;
 use jank::JankBuster;
 use campaign::{ StateManager, StateValue };
 use debug::testcards::bigscience::big_science;
-use global::{ Global };
+use controller::{ Global };
 
 struct State {
     g: Arc<Mutex<Global>>,
