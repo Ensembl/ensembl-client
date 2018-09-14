@@ -31,7 +31,7 @@
 .launchbar {
   border-top: 1px solid $ens-black;
   border-bottom: 1px solid $ens-black;
-  padding: 0 30px;
+  padding: 0 20px;
   @include flex;
 
   .categories-wrapper {
@@ -58,7 +58,7 @@
   dl {
     display: inline-block;
     margin: 5px 0;
-    padding: 0 5px;
+    padding: 0 10px;
 
     &.border {
       border-right: 1px solid $ens-black;
@@ -67,7 +67,7 @@
 
   dt {
     display: inline-block;
-    padding: 5px 10px;
+    padding: 5px 15px;
   }
 
   img {

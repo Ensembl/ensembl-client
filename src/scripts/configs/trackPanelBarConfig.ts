@@ -24,6 +24,14 @@ export type TrackPanelBarItem = {
 
 export const trackPanelBarConfig: TrackPanelBarItem[] = [
   {
+    description: 'search',
+    icon: {
+      default: searchIcon,
+      selected: searchSelectedIcon
+    },
+    name: 'search'
+  },
+  {
     description: 'bookmark',
     icon: {
       default: bookmarkIcon,
@@ -38,14 +46,6 @@ export const trackPanelBarConfig: TrackPanelBarItem[] = [
       selected: downloadSelectedIcon
     },
     name: 'download'
-  },
-  {
-    description: 'search',
-    icon: {
-      default: searchIcon,
-      selected: searchSelectedIcon
-    },
-    name: 'search'
   },
   {
     description: 'own data',
