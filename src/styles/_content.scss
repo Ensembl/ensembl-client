@@ -2,6 +2,10 @@ main {
   @include flex;
   min-height: calc(100vh - 96px);
 
+  &.expanded {
+    min-height: calc(100vh - 38px);
+  }
+
   h2 {
     color: $ens-grey;
     margin: 0;

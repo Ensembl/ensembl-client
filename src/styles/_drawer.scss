@@ -30,11 +30,14 @@
   }
 
   .track-canvas {
+    height: calc(100vh - 141px);
+    overflow: scroll;
+
     h2 {
       text-align: center;
     }
 
-    .track-page {
+    section {
       height: calc(100vh - 141px);
       width: 100%;
       padding: 20px;
