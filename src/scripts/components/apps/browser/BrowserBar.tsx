@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+import resetIcon from 'assets/img/track-panel/reset.svg';
 import chevronUpIcon from 'assets/img/track-panel/chevron-up.svg';
 import chevronDownIcon from 'assets/img/track-panel/chevron-down.svg';
 
@@ -13,6 +14,11 @@ class BrowserBar extends Component<BrowserBarProps> {
     return (
       <div className="browser-bar">
         <dl>
+          <dt className="reset">
+            <button>
+              <img src={resetIcon} alt="reset" />
+            </button>
+          </dt>
           <dt className="slider">
             <button>
               {this.props.expanded ? (
