@@ -3,7 +3,7 @@
 exports[`<App /> renders correctly 1`] = `
 <BrowserRouter>
   <StrictMode>
-    <Header />
+    <Connect(Header) />
     <Content />
   </StrictMode>
 </BrowserRouter>
