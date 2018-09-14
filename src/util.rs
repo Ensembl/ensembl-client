@@ -52,13 +52,6 @@ macro_rules! debug {
     }}
 }
 
-macro_rules! debugp {
-    ($c: expr, $k: expr, $($arg:tt)*) => {{
-        let s = format!($($arg)*);
-        $c.debug($k,&s);
-    }}
-}
-
 macro_rules! button {
     ($name: expr, $cb: expr) => {{        
         let bai = ButtonActionImpl($cb);

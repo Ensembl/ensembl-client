@@ -8,11 +8,8 @@ use dom::event::{
     EventListener, EventControl, EventType, EventListenerHandle,
     EventKiller, EventData
 };
-use debug::pane::console::DebugConsole;
-use debug::pane::debugstage::{
-    DebugPanel,
-    debug_panel_trigger_button
-};
+
+use debug::pane::debugstage::debug_panel_trigger_button;
 
 pub struct ButtonEventListener {
 }
@@ -71,7 +68,7 @@ impl DebugButtons {
             buttonev: EventControl::new(),
             buttonek: EventKiller::new()
         };
-        let mut bel = EventListenerHandle::new(Box::new(ButtonEventListener::new()));
+        let bel = EventListenerHandle::new(Box::new(ButtonEventListener::new()));
         out.buttonev.add_event(EventType::ClickEvent,&bel);
         out
     }
