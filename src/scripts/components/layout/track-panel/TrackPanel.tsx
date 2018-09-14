@@ -1,65 +1,72 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 
 import TrackPanelBar from './TrackPanelBar';
 import TrackPanelList from './TrackPanelList';
+import { RootState } from '../../../reducers';
+import {
+  toggleTrackPanel,
+  updateTrack,
+  openDrawer,
+  closeDrawer
+} from '../../../actions/browserActions';
 
 type TrackPanelProps = {
-  drawerOpened: boolean;
   closeDrawer: () => void;
-  toggleBrowser: () => void;
-  updateCurrentTrackName: (currentTrack: string) => void;
+  currentTrack: string;
+  drawerOpened: boolean;
+  openDrawer: () => void;
+  toggleTrackPanel: () => void;
+  trackPanelOpened: boolean;
+  updateTrack: (currentTrack: string) => void;
 };
 
-type TrackPanelState = {
-  expanded: boolean;
-};
-
-class TrackPanel extends Component<TrackPanelProps, TrackPanelState> {
-  public readonly state: TrackPanelState = {
-    expanded: true
-  };
-
-  constructor(props: TrackPanelProps) {
-    super(props);
-
-    this.toggleTrackPanel = this.toggleTrackPanel.bind(this);
-  }
-
-  public toggleTrackPanel() {
-    if (this.props.drawerOpened === true) {
-      this.props.closeDrawer();
-
-      return;
-    }
-
-    const expanded: boolean = !this.state.expanded;
-
-    this.setState({ expanded });
-
-    this.props.toggleBrowser();
-  }
-
+class TrackPanel extends Component<TrackPanelProps> {
   public render() {
-    const { expanded } = this.state;
-
     return (
       <section
-        className={`track-panel react-slide-drawer ${
-          expanded ? 'expanded' : 'collapsed'
-        }`}
+        className={`track-panel react-slide-drawer ${this.getToggleClass()}`}
       >
         <TrackPanelBar
-          expanded={expanded}
-          toggleTrackPanel={this.toggleTrackPanel}
+          closeDrawer={this.props.closeDrawer}
+          drawerOpened={this.props.drawerOpened}
+          trackPanelOpened={this.props.trackPanelOpened}
+          toggleTrackPanel={this.props.toggleTrackPanel}
         />
-        {expanded ? (
+        {this.props.trackPanelOpened ? (
           <TrackPanelList
-            updateCurrentTrackName={this.props.updateCurrentTrackName}
+            currentTrack={this.props.currentTrack}
+            openDrawer={this.props.openDrawer}
+            updateTrack={this.props.updateTrack}
           />
         ) : null}
       </section>
     );
   }
+
+  private getToggleClass(): string {
+    if (this.props.trackPanelOpened === true) {
+      return 'expanded';
+    } else {
+      return 'collapsed';
+    }
+  }
 }
 
-export default TrackPanel;
+const mapStateToProps = (state: RootState) => {
+  const { currentTrack, drawerOpened, trackPanelOpened } = state.browser;
+  return { currentTrack, drawerOpened, trackPanelOpened };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  closeDrawer: () => dispatch(closeDrawer()),
+  openDrawer: () => dispatch(openDrawer()),
+  toggleTrackPanel: () => dispatch(toggleTrackPanel()),
+  updateTrack: (currentTrack: string) => dispatch(updateTrack(currentTrack))
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TrackPanel);

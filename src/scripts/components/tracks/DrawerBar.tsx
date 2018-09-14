@@ -1,59 +1,40 @@
 import React, { Component } from 'react';
-import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router';
+import { HashLink } from 'react-router-hash-link';
 
-import { TrackPage, trackPagesConfig } from '../../configs/trackPages';
+import { DrawerSection } from '../../configs/drawerSectionConfig';
 
 import closeIcon from 'assets/img/track-panel/close.svg';
 
 type DrawerBarParams = {};
 
 type DrawerBarProps = RouteComponentProps<DrawerBarParams> & {
+  closeDrawer: () => void;
   currentTrack: string;
+  drawerSections: DrawerSection[];
 };
 
-type DrawerBarState = {
-  currentPage: string;
-};
-
-class DrawerBar extends Component<DrawerBarProps, DrawerBarState> {
-  public readonly state: DrawerBarState = {
-    currentPage: ''
-  };
-
-  constructor(props: DrawerBarProps) {
-    super(props);
-
-    this.changePage = this.changePage.bind(this);
-  }
+class DrawerBar extends Component<DrawerBarProps> {
+  public drawerSections: DrawerSection[] = [];
 
   public render() {
-    const trackPages: TrackPage[] = trackPagesConfig[this.props.currentTrack];
-
     return (
       <div className="drawer-bar">
         <dl className="page-list">
-          {trackPages &&
-            trackPages.map((page: TrackPage, index: number) => (
-              <dt key={`${page.name}--${index}`}>
-                <button onClick={() => this.changePage(page.name)}>
-                  {page.label}
-                </button>
+          <dt><HashLink smooth={true} to={`${this.props.location.pathname}#main`}>Main</HashLink></dt>
+          {this.props.drawerSections &&
+            this.props.drawerSections.map((page: DrawerSection) => (
+              <dt key={page.name}>
+                <HashLink smooth={true} to={`${this.props.location.pathname}#${page.name}`}>{page.label}</HashLink>
               </dt>
             ))}
         </dl>
-        <Link className="close" to="/app/speciesbrowser">
+        <button className="close" onClick={this.props.closeDrawer}>
           <img src={closeIcon} alt="close drawer" />
-        </Link>
+        </button>
       </div>
     );
-  }
-
-  private changePage(page: string) {
-    this.setState({ currentPage: name });
-
-    const { match, currentTrack } = this.props;
-
-    this.props.history.push(`${match.path}/track/${currentTrack}/${page}`);
   }
 }
 

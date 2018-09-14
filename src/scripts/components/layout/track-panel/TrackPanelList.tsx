@@ -12,21 +12,12 @@ import {
 type TrackPanelListParams = {};
 
 type TrackPanelListProps = RouteComponentProps<TrackPanelListParams> & {
-  updateCurrentTrackName: (currentTrack: string) => void;
-};
-
-type TrackPanelListState = {
   currentTrack: string;
+  openDrawer: () => void;
+  updateTrack: (currentTrack: string) => void;
 };
 
-class TrackPanelList extends Component<
-  TrackPanelListProps,
-  TrackPanelListState
-> {
-  public readonly state: TrackPanelListState = {
-    currentTrack: ''
-  };
-
+class TrackPanelList extends Component<TrackPanelListProps> {
   constructor(props: TrackPanelListProps) {
     super(props);
 
@@ -45,12 +36,13 @@ class TrackPanelList extends Component<
     this.historyUnlistener();
   }
 
-  public changeTrack(track: string) {
-    const { path } = this.props.match;
+  public changeTrack(currentTrack: string) {
+    const { history, match, openDrawer, updateTrack } = this.props;
 
-    this.props.history.push(`${path}/track/${track}`);
+    history.push(`${match.path}/track/${currentTrack}`);
 
-    this.props.updateCurrentTrackName(track);
+    updateTrack(currentTrack);
+    openDrawer();
   }
 
   public render() {
@@ -60,7 +52,7 @@ class TrackPanelList extends Component<
           {trackPanelConfig.map((track: TrackPanelConfig) => (
             <TrackPanelListItem
               key={track.id}
-              className={this.getTrackClassName(track.name)}
+              className={this.getTrackClass(track.name)}
               track={track}
               changeTrack={this.changeTrack}
             />
@@ -72,10 +64,8 @@ class TrackPanelList extends Component<
 
   private historyUnlistener: UnregisterCallback = () => null;
 
-  private getTrackClassName(track: string) {
-    const { currentTrack } = this.state;
-
-    if (currentTrack.indexOf(track) > -1) {
+  private getTrackClass(trackName: string): string {
+    if (this.props.currentTrack === trackName) {
       return 'current-track';
     } else {
       return '';
@@ -83,11 +73,14 @@ class TrackPanelList extends Component<
   }
 
   private highlightCurrentTrack(location: Location) {
-    const { match } = this.props;
-    const currentTrack = location.pathname.replace(`${match.path}/track/`, '');
+    if (location.pathname.indexOf('/track') === -1) {
+      return;
+    }
+
+    const currentTrack = location.pathname.replace(`${this.props.match.path}/track/`, '');
 
     // changing the current track state should highlight the current track
-    this.setState({ currentTrack });
+    this.props.updateTrack(currentTrack);
   }
 }
 

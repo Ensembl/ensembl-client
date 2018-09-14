@@ -1,4 +1,4 @@
 import { createAction } from 'typesafe-actions';
 
-export const toggleAccount = createAction('toggle_account');
-export const toggleLaunchbar = createAction('toggle_launchbar');
+export const toggleAccount = createAction('header/toggle-account');
+export const toggleLaunchbar = createAction('header/toggle-launchbar');

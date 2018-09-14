@@ -4,8 +4,8 @@ import chevronUpIcon from 'assets/img/track-panel/chevron-up.svg';
 import chevronDownIcon from 'assets/img/track-panel/chevron-down.svg';
 
 type BrowserBarProps = {
-  expanded: boolean;
   drawerOpened: boolean;
+  expanded: boolean;
 };
 
 class BrowserBar extends Component<BrowserBarProps> {

@@ -1,32 +1,105 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { hot } from 'react-hot-loader';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, withRouter } from 'react-router-dom';
 import { RouteComponentProps } from 'react-router';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 
-import BrowserCanvas from '../../layout/browser/BrowserCanvas';
+import BrowserBar from './BrowserBar';
+import TrackPanel from '../../layout/track-panel/TrackPanel';
+import Track from '../../tracks/Track';
 import { TrackOne, TrackTwo } from '../../../configs/tracks';
+import { RootState } from '../../../reducers';
+import { BrowserOpenState } from '../../../reducers/browserReducer';
+import { closeDrawer } from '../../../actions/browserActions';
 
-type BrowserParams = {};
+type BrowserProps = RouteComponentProps<{}> & {
+  browserOpenState: BrowserOpenState;
+  currentTrack: string;
+  closeDrawer: () => void;
+  drawerOpened: boolean;
+};
 
-type BrowserProps = RouteComponentProps<BrowserParams>;
+class Browser extends Component<BrowserProps> {
+  constructor(props: BrowserProps) {
+    super(props);
 
-type BrowserState = {};
+    this.closeTrack = this.closeTrack.bind(this);
+  }
 
-const trackRoutes = (
-  <Switch>
-    <Route path="/app/browser/track/track-one" component={TrackOne} />
-    <Route path="/app/browser/track/track-two" component={TrackTwo} />
-  </Switch>
-);
+  public componentDidMount() {
+    const { currentTrack, drawerOpened, history, match } = this.props;
 
-class Browser extends Component<BrowserProps, BrowserState> {
+    if (drawerOpened === true) {
+      history.push(`${match.path}/track/${currentTrack}`);
+    }
+  }
+
+  public componentDidUpdate(prevProps: BrowserProps) {
+    if (
+      this.props.drawerOpened !== prevProps.drawerOpened &&
+      this.props.drawerOpened === false
+    ) {
+      this.redirectToBrowser();
+    }
+  }
+
+  public closeTrack() {
+    if (this.props.drawerOpened === false) {
+      return;
+    }
+
+    this.props.closeDrawer();
+    this.redirectToBrowser();
+  }
+
+  public redirectToBrowser() {
+    if (this.props.history.location.pathname.indexOf('/track') === -1) {
+      return;
+    }
+
+    this.props.history.push(this.props.match.path);
+  }
+
   public render() {
     return (
-      <BrowserCanvas trackRoutes={trackRoutes}>
-        <h2>Species Browser content area placeholder</h2>
-      </BrowserCanvas>
+      <Fragment>
+        <section className={`browser ${this.props.browserOpenState}`}>
+          <BrowserBar expanded={false} drawerOpened={this.props.drawerOpened} />
+          <div className="browser-canvas-wrapper" onClick={this.closeTrack}>
+            <div className="browser-canvas">
+              <h2>Species Browser content area placeholder</h2>
+            </div>
+          </div>
+        </section>
+        <TrackPanel />
+        {this.props.drawerOpened && (
+          <Track>
+            <Switch>
+              <Route path="/app/browser/track/track-one" component={TrackOne} />
+              <Route path="/app/browser/track/track-two" component={TrackTwo} />
+            </Switch>
+          </Track>
+        )}
+      </Fragment>
     );
   }
 }
 
-export default hot(module)(Browser);
+const mapStateToProps = (state: RootState) => {
+  const { currentTrack, browserOpenState, drawerOpened } = state.browser;
+  return { currentTrack, browserOpenState, drawerOpened };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  closeDrawer: () => dispatch(closeDrawer())
+});
+
+export default hot(module)(
+  withRouter(
+    connect(
+      mapStateToProps,
+      mapDispatchToProps
+    )(Browser)
+  )
+);
