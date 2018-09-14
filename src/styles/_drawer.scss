@@ -36,7 +36,6 @@
     h2 {
       @include flex;
       @include flex-align(center, middle);
-      margin-top: 35%;
       text-align: center;
     }
 
