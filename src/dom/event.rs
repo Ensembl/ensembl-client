@@ -1,7 +1,6 @@
 use std::rc::Rc;
 use std::fmt;
 use std::sync::{ Arc, Mutex };
-use std::marker::PhantomData;
 
 use stdweb::serde::Serde;
 use serde_json::Value as JSONValue;
@@ -39,27 +38,26 @@ impl<T: 'static> EventKiller<T> {
 }
 
 pub struct EventControl<T> {
-    mappings: Vec<(EventType,EventListenerHandle<T>)>,
-    phantom: PhantomData<T>
+    handle: EventListenerHandle<T>,
+    mappings: Vec<EventType>,
 }
 
 impl<T: 'static> EventControl<T> {
-    pub fn new() -> EventControl<T> {
+    pub fn new(handle: &EventListenerHandle<T>) -> EventControl<T> {
         EventControl {
-            mappings: Vec::<(EventType,EventListenerHandle<T>)>::new(),
-            phantom: PhantomData
+            handle: EventListenerHandle(handle.0.clone()),
+            mappings: Vec::<EventType>::new(),
         }
     }
     
-    pub fn add_event(&mut self, typ: EventType, cb: &EventListenerHandle<T>) {
-        let cbc = EventListenerHandle(cb.0.clone());
-        self.mappings.push((typ,cbc));
+    pub fn add_event(&mut self, typ: EventType) {
+        self.mappings.push(typ);
     }
     
     pub fn add_element(&self, ek: &mut EventKiller<T>, el: &Element, t: T) {
         let mut m = ElementEvents::new(el,t);
-        for (name,cb) in &self.mappings {
-            m.add_event(name,&cb.0);
+        for name in &self.mappings {
+            m.add_event(name,&self.handle.0);
         }
         ek.0.push(m);
     }

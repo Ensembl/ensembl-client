@@ -72,17 +72,24 @@ pub struct DebugPanelImpl {
     console2: Option<DebugConsole>,
     buttons: DebugButtons,
     bodyev: EventControl<()>,
-    evc: EventControl<()>,
+    evc: Option<EventControl<()>>,
 }
 
 impl DebugPanelImpl {
     pub fn new(base: &Element) -> Rc<RefCell<DebugPanelImpl>> {
         debug!("global","new debug panel");
         debug!("debug panel","new debug panel");
+        let el = EventListenerHandle::new(Box::new(BodyEventListener::new()));
+        let mut bec = EventControl::new(&el);
+        bec.add_event(EventType::KeyPressEvent);
+        bec.add_event(EventType::ClickEvent);
+        bec.add_event(EventType::CustomEvent("custom".to_string()));
+        bec.add_event(EventType::CustomEvent("dropdown".to_string()));
+        bec.add_element(&mut EventKiller::new(),&domutil::query_select("body"),());
         Rc::new(RefCell::new(DebugPanelImpl {
             base: base.clone(),
-            bodyev: EventControl::new(),
-            evc: EventControl::new(),
+            bodyev: bec,
+            evc: None,
             buttons: DebugButtons::new(),
             console2: None
         }))
@@ -93,15 +100,10 @@ impl DebugPanelImpl {
         self.console2 = Some(DebugConsole::new(&cons_el,&self.base));
         self.console2.as_mut().unwrap().select("hello");
         self.console2.as_mut().unwrap().add("hello","world");
-        let el = EventListenerHandle::new(Box::new(BodyEventListener::new()));
-        self.bodyev.add_event(EventType::KeyPressEvent,&el);
-        self.bodyev.add_event(EventType::ClickEvent,&el);
-        self.bodyev.add_event(EventType::CustomEvent("custom".to_string()),&el);
-        self.bodyev.add_event(EventType::CustomEvent("dropdown".to_string()),&el);
-        self.bodyev.add_element(&mut EventKiller::new(),&domutil::query_select("body"),());
         let li = EventListenerHandle::new(Box::new(DebugPanelListener{ panel: p.clone() }));
-        self.evc.add_event(EventType::CustomEvent("refresh".to_string()),&li);
-        self.evc.add_element(&mut EventKiller::new(),&self.base,());
+        self.evc = Some(EventControl::new(&li));
+        self.evc.as_mut().unwrap().add_event(EventType::CustomEvent("refresh".to_string()));
+        self.evc.as_mut().unwrap().add_element(&mut EventKiller::new(),&self.base,());
         self.add_event();
     }
      

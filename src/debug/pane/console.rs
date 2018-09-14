@@ -179,15 +179,16 @@ pub struct DebugConsole {
 
 impl DebugConsole {
     pub fn new(el: &Element, base_el: &Element) -> DebugConsole {
-        let mut out = DebugConsole {
-            imp: Rc::new(RefCell::new(DebugConsoleImpl::new(el,base_el))),
-            evctrl: EventControl::new(),
-        };
-        let li = DebugConsoleListener(out.imp.clone());
+        let imp = Rc::new(RefCell::new(DebugConsoleImpl::new(el,base_el)));
+        let li = DebugConsoleListener(imp.clone());
         let elh = EventListenerHandle::new(Box::new(li));
-        out.evctrl.add_event(EventType::CustomEvent("add".to_string()),&elh);
-        out.evctrl.add_event(EventType::CustomEvent("mark".to_string()),&elh);
-        out.evctrl.add_event(EventType::CustomEvent("select".to_string()),&elh);
+        let mut out = DebugConsole {
+            imp,
+            evctrl: EventControl::new(&elh),
+        };
+        out.evctrl.add_event(EventType::CustomEvent("add".to_string()));
+        out.evctrl.add_event(EventType::CustomEvent("mark".to_string()));
+        out.evctrl.add_event(EventType::CustomEvent("select".to_string()));
         out.evctrl.add_element(&mut EventKiller::new(),&el,());
         out
     }
