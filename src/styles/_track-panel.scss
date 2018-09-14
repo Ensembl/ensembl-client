@@ -3,8 +3,12 @@
   border-left: 1px solid $ens-black;
 
   .track-panel-bar {
-    margin: 10px;
+    border-right: 1px solid $ens-black;
     width: 44px;
+
+    button {
+      padding: 10px;
+    }
 
     img {
       height: 24px;
@@ -13,10 +17,6 @@
 
     dt {
       margin-bottom: 10px;
-
-      &:last-child {
-        margin: auto 0 0 0;
-      }
     }
 
     .slider {
@@ -26,7 +26,7 @@
 
   .track-panel-list {
     box-sizing: border-box;
-    margin: 15px 15px 15px 0;
+    margin: 15px;
     width: 100%;
 
     img {

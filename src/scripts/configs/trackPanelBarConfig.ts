@@ -13,8 +13,6 @@ import ownDataSelectedIcon from 'assets/img/track-panel/own-data-selected.svg';
 import shareIcon from 'assets/img/track-panel/share.svg';
 import shareSelectedIcon from 'assets/img/track-panel/share-selected.svg';
 
-import resetIcon from 'assets/img/track-panel/reset.svg';
-
 export type TrackPanelBarItem = {
   description: string;
   icon: {
@@ -64,13 +62,5 @@ export const trackPanelBarConfig: TrackPanelBarItem[] = [
       selected: shareSelectedIcon
     },
     name: 'share'
-  },
-  {
-    description: 'reset',
-    icon: {
-      default: resetIcon,
-      selected: resetIcon
-    },
-    name: 'reset'
   }
 ];

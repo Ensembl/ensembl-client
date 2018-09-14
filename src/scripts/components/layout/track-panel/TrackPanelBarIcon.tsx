@@ -5,12 +5,16 @@ type TrackPanelBarIconProps = {
   iconConfig: TrackPanelBarItem;
 };
 
-const TrackPanelBarIcon: SFC<TrackPanelBarIconProps> = (props: TrackPanelBarIconProps) => (
+const TrackPanelBarIcon: SFC<TrackPanelBarIconProps> = (
+  props: TrackPanelBarIconProps
+) => (
   <dt>
-    <img
-      src={props.iconConfig.icon.default}
-      alt={props.iconConfig.description}
-    />
+    <button>
+      <img
+        src={props.iconConfig.icon.default}
+        alt={props.iconConfig.description}
+      />
+    </button>
   </dt>
 );
 
