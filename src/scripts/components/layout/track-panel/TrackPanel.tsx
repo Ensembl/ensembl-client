@@ -7,7 +7,7 @@ import TrackPanelList from './TrackPanelList';
 import { RootState } from '../../../reducers';
 import {
   toggleTrackPanel,
-  updateTrack,
+  changeCurrentTrack,
   openDrawer,
   closeDrawer
 } from '../../../actions/browserActions';
@@ -63,7 +63,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   closeDrawer: () => dispatch(closeDrawer()),
   openDrawer: () => dispatch(openDrawer()),
   toggleTrackPanel: () => dispatch(toggleTrackPanel()),
-  updateTrack: (currentTrack: string) => dispatch(updateTrack(currentTrack))
+  updateTrack: (currentTrack: string) => dispatch(changeCurrentTrack(currentTrack))
 });
 
 export default connect(

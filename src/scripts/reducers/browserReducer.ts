@@ -71,7 +71,7 @@ export default (
   switch (action.type) {
     case getType(browser.toggleTrackPanel):
       return trackPanelState(state);
-    case getType(browser.updateTrack):
+    case getType(browser.changeCurrentTrack):
       return {
         ...state,
         currentTrack: action.payload,

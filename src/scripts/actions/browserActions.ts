@@ -1,8 +1,8 @@
 import { createAction } from 'typesafe-actions';
 
 export const toggleTrackPanel = createAction('browser/toggle-track-panel');
-export const updateTrack = createAction(
-  'browser/update-track',
+export const changeCurrentTrack = createAction(
+  'browser/change-current-track',
   (resolve) => {
     return (currentTrack: string) => resolve(currentTrack);
   }
