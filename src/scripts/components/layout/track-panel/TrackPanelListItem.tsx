@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import {
   TrackPanelConfig,
   trackPanelIconConfig
@@ -10,7 +10,7 @@ type TrackPanelListItemProps = {
   changeTrack: (name: string) => void;
 };
 
-class TrackPanelListItem extends Component<TrackPanelListItemProps> {
+class TrackPanelListItem extends PureComponent<TrackPanelListItemProps> {
   constructor(props: TrackPanelListItemProps) {
     super(props);
 
