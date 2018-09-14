@@ -1,4 +1,5 @@
 use std::sync::{ Arc, Mutex };
+use std::marker::PhantomData;
 use dom::domutil;
 use dom::event::{ EventKiller, EventListener, EventControl, EventType, EventListenerHandle, EventData, ICustomEvent };
 use stdweb::web::{ IElement, Element, HtmlElement };
@@ -17,7 +18,7 @@ pub struct Global {
     root: HtmlElement,
     arena: Option<Arc<Mutex<Arena>>>,
     stage: Arc<Mutex<Stage>>,
-    control: EventControl<()>,
+    control: Option<EventControl<()>>,
     eventkiller: EventKiller<()>
 }
 
@@ -29,7 +30,7 @@ impl Global {
             root: root.clone(),
             arena: None,
             stage: s.clone(),
-            control: EventControl::new(),
+            control: None,
             eventkiller: EventKiller::new()
         }
     }
@@ -48,19 +49,15 @@ impl Global {
         debug!("global","start card {}",inst_s);
         self.root.set_attribute("data-inst",&inst_s).ok();
         self.arena = Some(Arc::new(Mutex::new(Arena::new(&canv_el))));
-        self.control = EventControl::new();
         let lr = ArenaEventListener::new(
                             el,
                             self.arena.as_ref().unwrap().clone(),
                             self.stage.clone());
         let lrh = EventListenerHandle::new(Box::new(lr));
-        self.control.add_event(EventType::CustomEvent("bpane".to_string()),&lrh);
-        self.control.add_event(EventType::ClickEvent,&lrh);
-        self.control.add_event(EventType::MouseDownEvent,&lrh);
-        self.control.add_event(EventType::MouseUpEvent,&lrh);
-        self.control.add_event(EventType::MouseMoveEvent,&lrh);
-        self.control.add_event(EventType::MouseWheelEvent,&lrh);
-        self.control.add_element(&mut self.eventkiller,&el,());
+        self.control = Some(EventControl::new(&lrh));
+        DirectEventManager::new(&mut self.control.as_mut().unwrap());
+        self.control.as_mut().unwrap().add_event(EventType::CustomEvent("bpane".to_string()));
+        self.control.as_mut().unwrap().add_element(&mut self.eventkiller,&el,());
         format!("{}",self.inst)
     }
         
@@ -79,6 +76,23 @@ impl Global {
         let stage = self.stage.lock().unwrap();
         let ar = &mut self.arena.as_ref().unwrap();
         ar.lock().unwrap().draw(oom,&stage);
+    }
+}
+
+struct DirectEventManager<T> {
+    phantom: PhantomData<T>
+}
+
+impl<T: 'static> DirectEventManager<T> {
+    fn new(elc: &mut EventControl<T>) -> DirectEventManager<T> {
+        elc.add_event(EventType::ClickEvent);
+        elc.add_event(EventType::MouseDownEvent);
+        elc.add_event(EventType::MouseUpEvent);
+        elc.add_event(EventType::MouseMoveEvent);
+        elc.add_event(EventType::MouseWheelEvent);        
+        DirectEventManager {
+            phantom: PhantomData
+        }
     }
 }
 
@@ -149,6 +163,8 @@ fn custom_make_events(j: &JSONValue) -> Vec<Event> {
     }
     out
 }
+
+
 
 pub struct ArenaEventListener {
     arena: Arc<Mutex<Arena>>,

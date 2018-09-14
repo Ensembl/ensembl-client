@@ -63,13 +63,13 @@ pub struct DebugButtons {
 
 impl DebugButtons {
     pub fn new() -> DebugButtons {
+        let bel = EventListenerHandle::new(Box::new(ButtonEventListener::new()));
         let mut out = DebugButtons {
             buttons: Vec::<DebugButton>::new(),
-            buttonev: EventControl::new(),
+            buttonev: EventControl::new(&bel),
             buttonek: EventKiller::new()
         };
-        let bel = EventListenerHandle::new(Box::new(ButtonEventListener::new()));
-        out.buttonev.add_event(EventType::ClickEvent,&bel);
+        out.buttonev.add_event(EventType::ClickEvent);
         out
     }
     
