@@ -26,7 +26,7 @@ struct State {
 }
 
 fn animate(time : f64, s: Rc<RefCell<State>>) {
-    let canv_el = domutil::query_select("#bpane-canv canvas");
+    let canv_el = domutil::query_select("#bpane-canv");
     {
         let mut state = s.borrow_mut();
         if let Some(inst) = canv_el.get_attribute("data-inst") {

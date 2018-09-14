@@ -45,6 +45,7 @@ impl Global {
         domutil::inner_html(el,CANVAS);
         let canv_el = domutil::query_selector(el,"canvas");
         let inst_s = format!("{}",self.inst);
+        debug!("global","start card {}",inst_s);
         self.root.set_attribute("data-inst",&inst_s).ok();
         self.arena = Some(Arc::new(Mutex::new(Arena::new(&canv_el))));
         self.control = EventControl::new();

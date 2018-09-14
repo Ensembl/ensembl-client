@@ -1,3 +1,4 @@
+use std::iter;
 use std::sync::{ Mutex, Arc };
 use std::rc::{ Rc, Weak };
 use std::cell::RefCell;
@@ -110,6 +111,7 @@ impl DebugPanelImpl {
         domutil::inner_html(&sel_el,"");
         if self.console2.is_some() {
             keys.sort();
+            keys.splice(..0,iter::once("- select -".to_string()));
             for e in keys {
                 let opt_el = domutil::append_element(&sel_el,"option");
                 domutil::text_content(&opt_el,&e);
@@ -260,25 +262,23 @@ thread_local! {
     static DEBUG_PANEL : RefCell<Option<Rc<DebugPanel>>> = RefCell::new(None);
 }
 
-fn setup_testcard(name: &str) {
+fn setup_testcard(g: &Arc<Mutex<Global>>, name: &str) {
     debug!("global","setup testcard {}",name);
-    let pane_el: HtmlElement = domutil::query_select("#bpane-canv").try_into().unwrap();
-    let g = Arc::new(Mutex::new(Global::new(&pane_el)));
     if name.len() > 0 {
         let inst_s = g.lock().unwrap().reset();
-        testcards::testcard(g,name,&inst_s);
-    } else {
-        domutil::inner_html(&pane_el.into(),"");
+        testcards::testcard(g.clone(),name,&inst_s);
     }
 }
 
 fn setup_events() {
+    let pane_el: HtmlElement = domutil::query_select("#bpane-canv").try_into().unwrap();
+    let g = Arc::new(Mutex::new(Global::new(&pane_el)));
     let sel_el = domutil::query_select("#console .testcard");
-    sel_el.add_event_listener(|e: ChangeEvent| {
+    sel_el.add_event_listener(move |e: ChangeEvent| {
         let node : SelectElement = e.target().unwrap().try_into().ok().unwrap();
         if let Some(name) = node.value() {
             debug_panel_buttons_clear();
-            setup_testcard(&name);
+            setup_testcard(&g,&name);
         }
     });
     let mark_el = domutil::query_select("#console .mark");
@@ -324,7 +324,6 @@ pub fn debug_panel_entry_add(name: &str, value: &str) {
         "name": name,
         "value": value
     }));
-    //debug_panel_render_dropdown();
 }
 
 pub fn debug_panel_select(name: &str) {
