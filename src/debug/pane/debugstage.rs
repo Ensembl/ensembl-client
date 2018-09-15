@@ -12,7 +12,7 @@ use stdweb::unstable::TryInto;
 
 use controller::Global;
 use dom::domutil;
-use dom::event::{ EventListener, EventControl, EventType, EventKiller, EventData, ICustomEvent };
+use dom::event::{ EventListener, EventControl, EventType, EventData, ICustomEvent };
 use debug::testcards;
 use debug::pane::console::DebugConsole;
 use debug::pane::buttons::{ DebugButtons, ButtonAction };
@@ -71,7 +71,6 @@ pub struct DebugPanelImpl {
     base: Element,
     console2: Option<DebugConsole>,
     buttons: DebugButtons,
-    bodyev: EventControl<()>,
     evc: Option<EventControl<()>>,
 }
 
@@ -84,10 +83,9 @@ impl DebugPanelImpl {
         bec.add_event(EventType::ClickEvent);
         bec.add_event(EventType::CustomEvent("custom".to_string()));
         bec.add_event(EventType::CustomEvent("dropdown".to_string()));
-        bec.add_element(&mut EventKiller::new(),&domutil::query_select("body"),());
+        bec.add_element(&domutil::query_select("body"),());
         Rc::new(RefCell::new(DebugPanelImpl {
             base: base.clone(),
-            bodyev: bec,
             evc: None,
             buttons: DebugButtons::new(),
             console2: None
@@ -101,7 +99,7 @@ impl DebugPanelImpl {
         self.console2.as_mut().unwrap().add("hello","world");
         self.evc = Some(EventControl::new(Box::new(DebugPanelListener{ panel: p.clone() })));
         self.evc.as_mut().unwrap().add_event(EventType::CustomEvent("refresh".to_string()));
-        self.evc.as_mut().unwrap().add_element(&mut EventKiller::new(),&self.base,());
+        self.evc.as_mut().unwrap().add_element(&self.base,());
         self.add_event();
     }
      

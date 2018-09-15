@@ -23,3 +23,5 @@ mouse up -> body
 inertia
 visual improvements
 global -> controller
+
+verify event unregister
