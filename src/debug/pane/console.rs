@@ -6,7 +6,7 @@ use serde_json::Value as JSONValue;
 
 use stdweb::web::Element;
 
-use dom::event::{ EventListener, EventControl, EventType, EventKiller, EventData, ICustomEvent };
+use dom::event::{ EventListener, EventControl, EventType, EventData, ICustomEvent };
 use dom::domutil;
 
 pub struct DebugFolderEntry {
@@ -188,7 +188,7 @@ impl DebugConsole {
         out.evctrl.add_event(EventType::CustomEvent("add".to_string()));
         out.evctrl.add_event(EventType::CustomEvent("mark".to_string()));
         out.evctrl.add_event(EventType::CustomEvent("select".to_string()));
-        out.evctrl.add_element(&mut EventKiller::new(),&el,());
+        out.evctrl.add_element(&el,());
         out
     }
         

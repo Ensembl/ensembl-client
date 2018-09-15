@@ -5,7 +5,7 @@ use stdweb::web::Element;
 
 use dom::domutil;
 use dom::event::{
-    EventListener, EventControl, EventType, EventKiller, EventData
+    EventListener, EventControl, EventType, EventData
 };
 
 use debug::pane::debugstage::debug_panel_trigger_button;
@@ -57,7 +57,6 @@ impl<F> ButtonAction for ButtonActionImpl<F> where F: FnMut() -> () {
 pub struct DebugButtons {
     buttons: Vec<DebugButton>,
     buttonev: EventControl<usize>,
-    buttonek: EventKiller<usize>
 }
 
 impl DebugButtons {
@@ -65,7 +64,6 @@ impl DebugButtons {
         let mut out = DebugButtons {
             buttons: Vec::<DebugButton>::new(),
             buttonev: EventControl::new(Box::new(ButtonEventListener::new())),
-            buttonek: EventKiller::new()
         };
         out.buttonev.add_event(EventType::ClickEvent);
         out
@@ -76,13 +74,13 @@ impl DebugButtons {
     }
     
     pub fn render_buttons(&mut self) {
-        self.buttonek.kill();
+        self.buttonev.reset();
         let sel_el = domutil::query_select("#bpane-right .buttons");
         domutil::inner_html(&sel_el,"");
         for (i,e) in self.buttons.iter_mut().enumerate() {
             let opt_el = domutil::append_element(&sel_el,"button");
             domutil::text_content(&opt_el,&e.name);
-            self.buttonev.add_element(&mut self.buttonek,&opt_el,i);
+            self.buttonev.add_element(&opt_el,i);
         }
     }
 
