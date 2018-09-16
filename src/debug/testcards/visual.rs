@@ -13,7 +13,6 @@ use controller::{ Global };
 
 struct State {
     g: Arc<Mutex<Global>>,
-    oom: StateManager,
     zoomscale: f32,
     hpos: f32,
     vpos: f32,
@@ -47,18 +46,20 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
                 s.pos.0 = ((state.hpos.cos())*150.) as f32;
                 s.pos.1 = ((state.vpos.sin())*300.) as f32;
             });
-            let odd_state = if state.hpos.cos() > 0. {
-                StateValue::OffWarm()
-            } else {
-                StateValue::On()
-            };
-            let even_state = if state.vpos.sin() > 0. {
-                StateValue::OffCold()
-            } else {
-                StateValue::On()
-            };
-            state.oom.set_atom_state("odd",odd_state);
-            state.oom.set_atom_state("even",even_state);
+            state.g.lock().unwrap().with_state(|s| {
+                let odd_state = if state.hpos.cos() > 0. {
+                    StateValue::OffWarm()
+                } else {
+                    StateValue::On()
+                };
+                let even_state = if state.vpos.sin() > 0. {
+                    StateValue::OffCold()
+                } else {
+                    StateValue::On()
+                };
+                s.set_atom_state("odd",odd_state);
+                s.set_atom_state("even",even_state);
+            });
         }
         
         let d = time - state.old_time;
@@ -70,20 +71,17 @@ fn animate(time : f64, s: Rc<RefCell<State>>) {
         }
         if state.phase == 0 {
             state.jank.detect(d as u32,time as f32/1000.0);
-            state.g.lock().unwrap().draw(&state.oom);
+            state.g.lock().unwrap().draw();
         }
     }
     window().request_animation_frame(move |x| animate(x,s.clone()));
 }
 
 pub fn testcard_visual(g: Arc<Mutex<Global>>, onoff: bool, inst: &str) {
-    let oom = StateManager::new();
-
-    big_science(&mut g.lock().unwrap(),&oom,onoff);
+    big_science(&mut g.lock().unwrap(),onoff);
 
     let state = Rc::new(RefCell::new(State {
         g,
-        oom,
         hpos: 0.0,
         vpos: 0.0,
         fpos: 0.0,

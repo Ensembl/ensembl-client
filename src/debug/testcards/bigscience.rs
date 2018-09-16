@@ -1,6 +1,6 @@
 use std::clone::Clone;
 use canvasutil;
-use campaign::{ StateManager, StateFixed, Campaign, StateValue };
+use campaign::{ StateManager, StateFixed, Campaign, StateValue, StateExpr };
 
 use debug::testcards::common::{ daft, bio_daft, wiggly };
 
@@ -30,28 +30,29 @@ use drawing::{ text_texture, bitmap_texture, collage, Mark };
 use rand::distributions::Distribution;
 use rand::distributions::range::Range;
 
-pub fn big_science(g: &mut Global, oom: &StateManager, onoff: bool) {
+pub fn big_science(g: &mut Global, onoff: bool) {
     let seed = 12345678;
     let s = seed as u8;
     let t = (seed/256) as u8;
     let mut rng = SmallRng::from_seed([s,s,s,s,s,s,s,s,t,t,t,t,t,t,t,t]);
 
     let size = g.dims();
+    
+    let mut c_odd = Campaign::new(if onoff {
+        Rc::new(g.with_state(|s| s.get_atom("odd")))
+    } else {
+        Rc::new(StateFixed(StateValue::On()))
+    });
+    let mut c_even = Campaign::new(if onoff {
+        Rc::new(g.with_state(|s| s.get_atom("even")))
+    } else {
+        Rc::new(StateFixed(StateValue::On()))
+    });
+
+
     g.with_arena(|a |{
         
     let fc_font = canvasutil::FCFont::new(12,"Roboto");
-
-    let (mut c_odd,mut c_even) = if onoff {
-        (
-            Campaign::new(Rc::new(oom.get_atom("odd"))),
-            Campaign::new(Rc::new(oom.get_atom("even"))),
-        )
-    } else {
-        (
-            Campaign::new(Rc::new(StateFixed(StateValue::On()))),
-            Campaign::new(Rc::new(StateFixed(StateValue::On())))
-        )
-    };
 
     let mut c = Campaign::new(Rc::new(StateFixed(StateValue::On())));
 

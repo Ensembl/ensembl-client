@@ -66,3 +66,16 @@ pub fn send_custom_event(el: &Element, name: &str, data: &JSONValue) {
         @{el.as_ref()}.dispatchEvent(e);
     };
 }
+
+pub fn clear_selection() {
+    js! {
+        var sel = window.getSelection ? window.getSelection() : document.selection;
+        if (sel) {
+            if (sel.removeAllRanges) {
+                sel.removeAllRanges();
+            } else if (sel.empty) {
+                sel.empty();
+            }
+        }
+    }
+}

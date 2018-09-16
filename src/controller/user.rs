@@ -1,24 +1,31 @@
+use stdweb::unstable::TryInto;
+use std::sync::{ Arc, Mutex };
+use dom::domutil;
 use std::rc::Rc;
 use std::cell::RefCell;
 use dom::event::{ EventListener, EventType, EventData, EventControl };
-use stdweb::web::{ Element };
-use types::{ Move, Distance, Units, CFraction, cfraction };
+use stdweb::web::{ Element, HtmlElement, IHtmlElement };
+use types::{ Move, Distance, Units, CFraction, cfraction, CPixel };
 
 use controller::{ Event, EventRunner };
+use controller::physics::MousePhysics;
 
 pub struct UserEventListener {
+    canv_el: HtmlElement,
     runner: Rc<RefCell<EventRunner>>,
-    down_at: Option<CFraction>,
-    delta_applied: Option<CFraction>,
+    mouse: Arc<Mutex<MousePhysics>>
 }
 
 impl UserEventListener {
-    pub fn new(er: &Rc<RefCell<EventRunner>>) -> UserEventListener {
+    pub fn new(er: &Rc<RefCell<EventRunner>>,
+               canv_el: &HtmlElement,
+               mouse: &Arc<Mutex<MousePhysics>>) -> UserEventListener {
         UserEventListener {
-            runner: er.clone(), 
-            down_at: None, delta_applied: None
+            runner: er.clone(),
+            mouse: mouse.clone(),
+            canv_el: canv_el.clone()
         }
-    }        
+    }    
 }
 
 impl EventListener<()> for UserEventListener {    
@@ -33,26 +40,17 @@ impl EventListener<()> for UserEventListener {
                 }
             EventData::MouseEvent(EventType::MouseDownEvent,e) =>
                 { 
-                    self.down_at = Some(e.at().as_fraction());
-                    self.delta_applied = Some(cfraction(0.,0.));
-                    console!("mousedown"); 
-                    Vec::<Event>::new()
-                },
-            EventData::MouseEvent(EventType::MouseUpEvent,_) =>
-                { 
-                    self.down_at = None;
+                    self.canv_el.focus();
+                    domutil::clear_selection();
+                    self.mouse.lock().unwrap().down(e.at());
                     Vec::<Event>::new()
                 },
             EventData::MouseEvent(EventType::MouseMoveEvent,e) =>
                 { 
-                    let at = e.at().as_fraction();
-                    if let Some(down_at) = self.down_at {
-                        let delta = at - down_at;
-                        let new_delta = delta - self.delta_applied.unwrap();
-                        self.delta_applied = Some(delta);
+                    if let Some(delta) = self.mouse.lock().unwrap().move_to(e.at()) {
                         vec! {
-                            Event::Move(Move::Left(Distance(new_delta.0,Units::Pixels))),
-                            Event::Move(Move::Up(Distance(new_delta.1,Units::Pixels)))
+                            Event::Move(Move::Left(Distance(delta.0,Units::Pixels))),
+                            Event::Move(Move::Up(Distance(delta.1,Units::Pixels)))
                         }
                     } else {
                         Vec::<Event>::new()
@@ -64,24 +62,54 @@ impl EventListener<()> for UserEventListener {
     }
 }
 
+pub struct UserEventListenerBody {
+    runner: Rc<RefCell<EventRunner>>,
+    mouse: Arc<Mutex<MousePhysics>>
+}
+
+impl UserEventListenerBody {
+    pub fn new(er: &Rc<RefCell<EventRunner>>,
+               mouse: &Arc<Mutex<MousePhysics>>) -> UserEventListenerBody {
+        UserEventListenerBody {
+            runner: er.clone(),
+            mouse: mouse.clone()
+        }
+    }
+}
+
+impl EventListener<()> for UserEventListenerBody {    
+    fn receive(&mut self, _el: &Element,  e: &EventData, _idx: &()) {
+        if let EventData::MouseEvent(EventType::MouseUpEvent,_) = e {
+            self.mouse.lock().unwrap().up();
+        }
+    }
+}
+
 pub struct UserEventManager {
-    ec: EventControl<()>
+    ec_canv: EventControl<()>,
+    ec_body: EventControl<()>
 }
 
 impl UserEventManager {
     pub fn new(er: &Rc<RefCell<EventRunner>>, el: &Element) -> UserEventManager {
-        let dlr = UserEventListener::new(er);
-        let mut ec = EventControl::new(Box::new(dlr));
-        ec.add_event(EventType::ClickEvent);
-        ec.add_event(EventType::MouseDownEvent);
-        ec.add_event(EventType::MouseUpEvent);
-        ec.add_event(EventType::MouseMoveEvent);
-        ec.add_event(EventType::MouseWheelEvent);        
-        ec.add_element(el,());
-        UserEventManager { ec }
+        let html_el: HtmlElement = el.clone().try_into().unwrap();
+        let mp = Arc::new(Mutex::new(MousePhysics::new()));
+        let uel = UserEventListener::new(er,&html_el,&mp);
+        let mut ec_canv = EventControl::new(Box::new(uel));
+        ec_canv.add_event(EventType::ClickEvent);
+        ec_canv.add_event(EventType::MouseDownEvent);
+        ec_canv.add_event(EventType::MouseMoveEvent);
+        ec_canv.add_event(EventType::MouseWheelEvent);        
+        ec_canv.add_element(el.into(),());
+        let uel_body = UserEventListenerBody::new(er,&mp);
+        let mut ec_body = EventControl::new(Box::new(uel_body));
+        ec_body.add_event(EventType::MouseUpEvent);
+        ec_body.add_element(&domutil::query_select("body"),());        
+        UserEventManager { ec_canv, ec_body }
     }
     
     pub fn reset(&mut self) {
-        self.ec.reset();
+        self.ec_canv.reset();
+        self.ec_body.reset();
     }
 }
