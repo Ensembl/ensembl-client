@@ -25,9 +25,9 @@ mod alloc;
 mod drawing;
 mod program;
 mod dom;
-mod jank;
 mod webgl_rendering_context;
 mod types;
+mod stage;
 
 fn main() {
     stdweb::initialize();

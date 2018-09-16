@@ -1,5 +1,6 @@
 use std::sync::{ Arc, Mutex };
-use arena::{ Arena, Stage };
+use arena::Arena; 
+use stage::Stage;
 use campaign::{ StateManager };
 use types::{ Move, Units, Axis };
 
@@ -60,7 +61,7 @@ impl EventRunner {
             }
         }
         if self.stale {
-            self.refresh();
+            //self.refresh();
         }
     }
 }

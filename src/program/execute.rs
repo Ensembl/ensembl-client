@@ -5,7 +5,8 @@ use webgl_rendering_context::{
     WebGLProgram as glprog,
 };
 
-use arena::{ ArenaData, Stage };
+use arena::ArenaData;
+use stage::Stage;
 
 use program::source::{ Source, ProgramSource };
 use program::objects::Object;

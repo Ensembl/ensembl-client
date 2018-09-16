@@ -1,7 +1,6 @@
 use std::sync::{ Mutex, Arc };
 use controller::Global;
 use dom::domutil;
-use campaign::{ StateManager };
 use debug::testcards::bigscience::big_science;
 use debug::pane::ButtonActionImpl;
 
