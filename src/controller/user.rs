@@ -5,7 +5,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use dom::event::{ EventListener, EventType, EventData, EventControl };
 use stdweb::web::{ Element, HtmlElement, IHtmlElement };
-use types::{ Move, Distance, Units, CFraction, cfraction, CPixel };
+use types::{ Move, Distance, Units };
 
 use controller::{ Event, EventRunner };
 use controller::physics::MousePhysics;

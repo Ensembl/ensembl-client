@@ -1,6 +1,6 @@
 use std::clone::Clone;
 use canvasutil;
-use campaign::{ StateManager, StateFixed, Campaign, StateValue, StateExpr };
+use campaign::{ StateFixed, Campaign, StateValue };
 
 use debug::testcards::common::{ daft, bio_daft, wiggly };
 
