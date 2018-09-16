@@ -17,11 +17,9 @@ enstops on stage
 pid
 
 mousemove on/off
-out of region mouse up
 
-mouse up -> body
 inertia
 visual improvements
-global -> controller
+focused zoom
 
 verify event unregister

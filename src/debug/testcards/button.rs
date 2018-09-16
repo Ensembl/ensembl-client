@@ -20,8 +20,6 @@ fn custom(body: &Element, name: &str,json: JSONValue) {
 
 pub fn testcard_button(g: Arc<Mutex<Global>>) {
     let body = domutil::query_select("body");
-
-    let oom = StateManager::new();
     
     custom(&body,"shimmy",json!({ "move_left_px": 120, "move_down_screen": 0.25, "zoom_by": 0.1 }));
     custom(&body,"left",json!({ "move_left_px": 50 }));
@@ -35,6 +33,6 @@ pub fn testcard_button(g: Arc<Mutex<Global>>) {
     button!("off",|| { debug!("global","off") });
     button!("zero",|| { debug!("global","zero") });
 
-    big_science(&mut g.lock().unwrap(),&oom,false);
-    g.lock().unwrap().draw(&oom);
+    big_science(&mut g.lock().unwrap(),false);
+    g.lock().unwrap().draw();
 }

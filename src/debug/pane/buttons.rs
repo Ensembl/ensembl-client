@@ -90,7 +90,6 @@ impl DebugButtons {
 
     pub fn trigger_button(&mut self, idx: usize) {
         let b = self.buttons.get(idx);
-        console!("X {:?}",idx);
         if let Some(b) = b {
             b.trigger();
         }

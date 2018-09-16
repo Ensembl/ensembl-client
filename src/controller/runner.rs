@@ -13,13 +13,15 @@ pub enum Event {
 pub struct EventRunner {
     arena: Arc<Mutex<Arena>>,
     stage: Arc<Mutex<Stage>>,
+    state: Arc<Mutex<StateManager>>,
     stale: bool,
 }
 
 impl EventRunner {
     pub fn new(arena: Arc<Mutex<Arena>>,
-               stage: Arc<Mutex<Stage>>) -> EventRunner {
-        EventRunner { arena, stage, stale: false }
+               stage: Arc<Mutex<Stage>>,
+               state: Arc<Mutex<StateManager>>) -> EventRunner {
+        EventRunner { arena, stage, state, stale: false }
     }
     
     pub fn refresh(&mut self) {
@@ -27,7 +29,7 @@ impl EventRunner {
         let arena = &mut self.arena.lock().unwrap();
         let stage = &mut self.stage.lock().unwrap();
         
-        arena.draw(&StateManager::new(),stage);
+        arena.draw(&self.state.lock().unwrap(),stage);
         self.stale = false;
     }
 
