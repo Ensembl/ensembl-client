@@ -9,6 +9,7 @@ use types::{ Move, Distance, Units };
 
 use controller::{ Event, EventRunner };
 use controller::physics::MousePhysics;
+use controller::timers::Timers;
 
 pub struct UserEventListener {
     canv_el: HtmlElement,
@@ -91,9 +92,10 @@ pub struct UserEventManager {
 }
 
 impl UserEventManager {
-    pub fn new(er: &Rc<RefCell<EventRunner>>, el: &Element) -> UserEventManager {
+    pub fn new(er: &Rc<RefCell<EventRunner>>, el: &Element,
+               timers: &mut Timers) -> UserEventManager {
         let html_el: HtmlElement = el.clone().try_into().unwrap();
-        let mp = Arc::new(Mutex::new(MousePhysics::new()));
+        let mp = Arc::new(Mutex::new(MousePhysics::new(timers)));
         let uel = UserEventListener::new(er,&html_el,&mp);
         let mut ec_canv = EventControl::new(Box::new(uel));
         ec_canv.add_event(EventType::ClickEvent);

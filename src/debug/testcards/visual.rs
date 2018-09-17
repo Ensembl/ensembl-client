@@ -5,7 +5,6 @@ use std::rc::Rc;
 
 use stdweb::web::{ window, IElement };
 
-use dom::domutil;
 use campaign::StateValue;
 use debug::testcards::bigscience::big_science;
 use controller::{ Global };

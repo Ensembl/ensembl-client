@@ -57,8 +57,8 @@ impl Projector {
                     }
                 }
             }
-            cg.borrow_mut().run_timers(time);
             if refresh {
+                cg.borrow_mut().run_timers(time);
                 self.canvas_frame(&mut cg.borrow_mut().cg);
             }
             self.another();
