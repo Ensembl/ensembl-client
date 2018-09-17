@@ -5,7 +5,6 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use dom::event::{ EventListener, EventType, EventData, EventControl };
 use stdweb::web::{ Element, HtmlElement, IHtmlElement };
-use types::{ Move, Distance, Units };
 
 use controller::{ Event, EventRunner };
 use controller::physics::MousePhysics;
@@ -48,14 +47,8 @@ impl EventListener<()> for UserEventListener {
                 },
             EventData::MouseEvent(EventType::MouseMoveEvent,e) =>
                 { 
-                    if let Some(delta) = self.mouse.lock().unwrap().move_to(e.at()) {
-                        vec! {
-                            Event::Move(Move::Left(Distance(delta.0,Units::Pixels))),
-                            Event::Move(Move::Up(Distance(delta.1,Units::Pixels)))
-                        }
-                    } else {
-                        Vec::<Event>::new()
-                    }
+                    self.mouse.lock().unwrap().move_to(e.at());
+                    Vec::<Event>::new()
                 },
             _ => Vec::<Event>::new()
         };

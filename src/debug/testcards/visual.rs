@@ -3,8 +3,6 @@ use std::clone::Clone;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use stdweb::web::{ window, IElement };
-
 use campaign::StateValue;
 use debug::testcards::bigscience::big_science;
 use controller::{ Global };

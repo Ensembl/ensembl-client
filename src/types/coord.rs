@@ -117,6 +117,12 @@ pub fn cpixel(x: i32, y: i32) -> CPixel { Dot(x,y) }
 
 /*** impls for dot types ***/
 
+impl<T: Clone + Copy + Mul<T, Output=U>,U: Add<U, Output=U>> Dot<T,T> {
+    pub fn abs_sq(&self) -> U {
+        self.0*self.0+self.1*self.1
+    }
+}
+
 impl<T : Clone + Copy + Into<f64>,
      U : Clone + Copy + Into<f64>> Dot<T,U> {    
     pub fn as_fraction(&self) -> CFraction {
