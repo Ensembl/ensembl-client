@@ -18,6 +18,7 @@ use controller::timers::{ Timers, Timer };
 const CANVAS : &str = r##"<canvas id="glcanvas"></canvas>"##;
 
 pub struct CanvasGlobal {
+    pub er: Rc<RefCell<EventRunner>>,
     arena: Arc<Mutex<Arena>>,
     stage: Arc<Mutex<Stage>>,
     state: Arc<Mutex<StateManager>>,
@@ -117,16 +118,18 @@ impl Global {
                             arena.clone(),
                             stage.clone(),
                             self.state.clone())));
+        let mut timers = Timers::new();
         self.cg = Some(Rc::new(RefCell::new(
             CanvasGlobalInst {
                 cg: CanvasGlobal {
                     arena, stage,
+                    er: er.clone(),
                     state: self.state.clone(),
-                    userev: UserEventManager::new(&er,&canv_el),
+                    userev: UserEventManager::new(&er,&canv_el,&mut timers),
                     directev: DirectEventManager::new(&er,el),
                     projector: None
                 },
-                timers: Timers::new()
+                timers
             })));
         self.cg.as_ref().unwrap().borrow_mut().cg.projector = Some(
             Projector::new(self.cg.as_ref().unwrap())
