@@ -1,22 +1,43 @@
-import React, { SFC } from 'react';
-import { Link } from 'react-router-dom';
+import React, { PureComponent } from 'react';
 
 import { LaunchbarApp } from '../../../../configs/launchbarConfig';
 
 type LaunchbarIconProps = {
   app: LaunchbarApp;
+  changeCurrentApp: (currentApp: string) => void;
+  currentApp: string;
 };
 
-const LaunchbarIcon: SFC<LaunchbarIconProps> = (props: LaunchbarIconProps) => (
-  <dt>
-    <Link to={`/app/${props.app.name}`}>
-      <img
-        src={props.app.icon.default}
-        alt={props.app.description}
-        title={props.app.description}
-      />
-    </Link>
-  </dt>
-);
+class LaunchbarIcon extends PureComponent<LaunchbarIconProps> {
+  constructor(props: LaunchbarIconProps) {
+    super(props);
+
+    this.changeCurrentApp = this.changeCurrentApp.bind(this);
+  }
+
+  public render() {
+    return (
+      <dt>
+        <button onClick={this.changeCurrentApp}>
+          <img
+            src={this.getAppIcon()}
+            alt={this.props.app.description}
+            title={this.props.app.description}
+          />
+        </button>
+      </dt>
+    );
+  }
+
+  private changeCurrentApp() {
+    this.props.changeCurrentApp(this.props.app.name);
+  }
+
+  private getAppIcon(): string {
+    const { app, currentApp } = this.props;
+
+    return currentApp === app.name ? app.icon.selected : app.icon.default;
+  }
+}
 
 export default LaunchbarIcon;

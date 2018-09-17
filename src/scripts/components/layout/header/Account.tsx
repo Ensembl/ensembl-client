@@ -1,5 +1,8 @@
 import React, { Component, ReactNode } from 'react';
 import SlideDown from 'react-slidedown';
+import { connect } from 'react-redux';
+
+import { RootState } from '../../../reducers';
 
 type AccountProps = {
   accountExpanded: boolean;
@@ -21,4 +24,9 @@ class Account extends Component<AccountProps> {
   }
 }
 
-export default Account;
+const mapStateToProps = (state: RootState) => {
+  const { accountExpanded } = state.header;
+  return { accountExpanded };
+};
+
+export default connect(mapStateToProps)(Account);

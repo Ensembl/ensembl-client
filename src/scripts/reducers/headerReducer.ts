@@ -6,11 +6,13 @@ export type HeaderAction = ActionType<typeof header>;
 
 export type HeaderState = Readonly<{
   accountExpanded: boolean;
+  currentApp: string;
   launchbarExpanded: boolean;
 }>;
 
 const defaultState: HeaderState = {
   accountExpanded: false,
+  currentApp: '',
   launchbarExpanded: true
 };
 
@@ -23,6 +25,8 @@ export default (
       return { ...state, accountExpanded: !state.accountExpanded };
     case getType(header.toggleLaunchbar):
       return { ...state, launchbarExpanded: !state.launchbarExpanded };
+    case getType(header.changeCurrentApp):
+      return { ...state, currentApp: action.payload };
     default:
       return state;
   }

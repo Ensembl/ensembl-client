@@ -1,4 +1,8 @@
 import React, { PureComponent } from 'react';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
+
+import { toggleAccount, toggleLaunchbar } from '../../../actions/headerActions';
 
 import launchbarIcon from 'assets/img/header/launchbar.svg';
 import userIcon from 'assets/img/header/user.svg';
@@ -23,4 +27,11 @@ class Nav extends PureComponent<NavProps> {
   }
 }
 
-export default Nav;
+const mapStateToProps = () => ({});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  toggleAccount: () => dispatch(toggleAccount()),
+  toggleLaunchbar: () => dispatch(toggleLaunchbar())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Nav);
