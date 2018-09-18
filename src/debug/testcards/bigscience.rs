@@ -214,9 +214,9 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                                  255,255,0,255 },cpixel(1,4));
     c.add_shape(fix_texture(tx, &cpixel(sw/2-5,0),&cpixel(1,sh)));
     g.with_compo(|co| {
-        co.add_campaign(c);
-        co.add_campaign(c_odd);
-        co.add_campaign(c_even);
+        co.add_component(c);
+        co.add_component(c_odd);
+        co.add_component(c_even);
     });
     g.add_events(vec!{ Event::Zoom(2.5) });
 }
