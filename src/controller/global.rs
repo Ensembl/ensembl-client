@@ -7,7 +7,6 @@ use stdweb::web::{ IElement, HtmlElement, Element };
 use dom::domutil;
 use arena::Arena;
 use stage::Stage;
-use types::{ CPixel };
 use campaign::{ StateManager };
 use controller::EventRunner;
 use controller::direct::DirectEventManager;
@@ -82,13 +81,7 @@ impl Global {
             state: Arc::new(Mutex::new(StateManager::new())),
         }
     }
-    
-    pub fn dims(&mut self) -> CPixel {
-        let cg = self.cg.as_ref().unwrap().borrow_mut();
-        let out = cg.cg.stage.lock().unwrap().get_size();
-        out
-    }
-    
+        
     fn setup_dom(&mut self, el: &Element) -> (Element,String) {
         self.inst += 1;
         domutil::inner_html(el,CANVAS);

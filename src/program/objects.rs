@@ -12,7 +12,6 @@ use webgl_rendering_context::{
 
 use wglraw;
 
-use types::CPixel;
 use program::data::{ DataBatch, DataGroup, Input };
 
 use arena::{
@@ -35,8 +34,7 @@ pub trait Object {
     fn add_index(&mut self, _batch: &DataBatch, _indexes: &[u16], _points: u16) {}
 
     fn obj_final(&mut self, _batch: &DataBatch, _adata: &ArenaData) {}
-    fn execute(&self, _adata : &ArenaData, _batch: &DataBatch,
-               _dims: &CPixel) {}
+    fn execute(&self, _adata : &ArenaData, _batch: &DataBatch) {}
     fn clear(&mut self) {}
 }
 
@@ -65,8 +63,7 @@ impl Object for ObjectCanvasTexture {
         self.texture = Some(wglraw::canvas_texture(&adata.ctx,canvases.flat.element()));
     }
 
-    fn execute(&self, adata : &ArenaData, _batch: &DataBatch,
-               _dims: &CPixel) {
+    fn execute(&self, adata : &ArenaData, _batch: &DataBatch) {
         let canvases = &adata.canvases;
         if let Some(ref texture) = self.texture {
             adata.ctx.active_texture(TEXIDS[canvases.idx as usize]);
@@ -102,7 +99,7 @@ impl Object for ObjectUniform {
         self.val.insert(group.map(|g| g.id()),value);
     }
 
-    fn execute(&self, adata : &ArenaData, batch: &DataBatch, _dims: &CPixel) {
+    fn execute(&self, adata : &ArenaData, batch: &DataBatch) {
         let gid = batch.group().id();
         
         if let Some(ref loc) = self.buf {
@@ -190,7 +187,7 @@ impl Object for ObjectMain {
         }
     }
 
-    fn execute(&self, adata : &ArenaData, batch: &DataBatch, _dims: &CPixel) {
+    fn execute(&self, adata : &ArenaData, batch: &DataBatch) {
         if let Some(data) = self.data(batch) {
             if let Some(buf) = self.buffer(batch) {
                 adata.ctx.bind_buffer(glctx::ELEMENT_ARRAY_BUFFER,Some(&buf));
@@ -250,7 +247,7 @@ impl Object for ObjectAttrib {
         }
     }
 
-    fn execute(&self, adata : &ArenaData, batch: &DataBatch, _dims: &CPixel) {
+    fn execute(&self, adata : &ArenaData, batch: &DataBatch) {
         let ctx = &adata.ctx;
         if let Some(buf) = self.buffer(batch) {
             ctx.enable_vertex_attrib_array(self.loc);

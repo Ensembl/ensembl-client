@@ -36,7 +36,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
     let t = (seed/256) as u8;
     let mut rng = SmallRng::from_seed([s,s,s,s,s,s,s,s,t,t,t,t,t,t,t,t]);
 
-    let size = g.dims();
+    let size = g.with_stage(|s| s.get_size()).unwrap();
     
     let mut c_odd = Campaign::new(if onoff {
         Rc::new(g.with_state(|s| s.get_atom("odd")))
@@ -211,5 +211,5 @@ pub fn big_science(g: &mut Global, onoff: bool) {
         a.get_cman().add_campaign(c_odd);
         a.get_cman().add_campaign(c_even);
     });
-    g.with_stage(|s| s.set_zoom(3.));
+    g.with_stage(|s| s.set_zoom(2.5));
 }
