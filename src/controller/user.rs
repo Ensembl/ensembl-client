@@ -5,6 +5,10 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use dom::event::{ EventListener, EventType, EventData, EventControl };
 use stdweb::web::{ Element, HtmlElement, IHtmlElement };
+use stdweb::web::event::{ MouseButton };
+use stdweb::traits::{ IMouseEvent, IEvent };
+use dom::event;
+use types::{ Move, Distance, Units };
 
 use controller::{ Event, EventRunner };
 use controller::physics::MousePhysics;
@@ -39,17 +43,30 @@ impl EventListener<()> for UserEventListener {
                     }
                 }
             EventData::MouseEvent(EventType::MouseDownEvent,e) =>
-                { 
+                {
+                    console!("down {:?}",e.at()); 
                     self.canv_el.focus();
                     domutil::clear_selection();
-                    self.mouse.lock().unwrap().down(e.at());
-                    Vec::<Event>::new()
+                    e.stop_propagation();
+                    if e.button() == MouseButton::Right {
+                        vec! {
+                            Event::Move(Move::Up(Distance(60.,Units::Pixels))),
+                        }
+                    } else {                    
+                        self.mouse.lock().unwrap().down(e.at());
+                        Vec::<Event>::new()
+                    }
                 },
             EventData::MouseEvent(EventType::MouseMoveEvent,e) =>
                 { 
                     self.mouse.lock().unwrap().move_to(e.at());
                     Vec::<Event>::new()
                 },
+            EventData::MouseEvent(EventType::MouseClickEvent,e) =>
+                {
+                    e.stop_propagation();
+                    Vec::<Event>::new()
+                }
             _ => Vec::<Event>::new()
         };
         self.runner.borrow_mut().run(evs);
@@ -87,11 +104,12 @@ pub struct UserEventManager {
 impl UserEventManager {
     pub fn new(er: &Rc<RefCell<EventRunner>>, el: &Element,
                timers: &mut Timers) -> UserEventManager {
+        event::disable_context_menu();
         let html_el: HtmlElement = el.clone().try_into().unwrap();
         let mp = Arc::new(Mutex::new(MousePhysics::new(timers)));
         let uel = UserEventListener::new(er,&html_el,&mp);
         let mut ec_canv = EventControl::new(Box::new(uel));
-        ec_canv.add_event(EventType::ClickEvent);
+        ec_canv.add_event(EventType::MouseClickEvent);
         ec_canv.add_event(EventType::MouseDownEvent);
         ec_canv.add_event(EventType::MouseMoveEvent);
         ec_canv.add_event(EventType::MouseWheelEvent);        

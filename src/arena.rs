@@ -116,7 +116,7 @@ impl Arena {
                     obj.set_uniform(None,*value);
                 }
             }
-            geom.draw(datam,stage);
+            geom.draw(datam);
         }
     }
 }

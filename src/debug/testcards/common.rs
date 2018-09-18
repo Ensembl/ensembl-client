@@ -7,11 +7,11 @@ use rand::distributions::Distribution;
 use rand::distributions::range::Range;
 use controller::Global;
 
-pub fn testcard(g: Arc<Mutex<Global>>, name: &str, inst: &str) {
-    debug!("global","starting testcard {} inst={}",name,inst);
+pub fn testcard(g: Arc<Mutex<Global>>, name: &str) {
+    debug!("global","starting testcard {}",name);
     match name {
-        "draw" => testcard_visual(g,false,inst),
-        "onoff" => testcard_visual(g,true,inst),
+        "draw" => testcard_visual(g,false),
+        "onoff" => testcard_visual(g,true),
         "button" => testcard_button(g),
         _ => ()
     };

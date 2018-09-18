@@ -51,8 +51,8 @@ impl<T: 'static> EventControl<T> {
 pub enum EventType {
     MouseUpEvent,
     MouseDownEvent,
+    MouseClickEvent,
     MouseWheelEvent,
-    ClickEvent,
     MouseMoveEvent,
     KeyPressEvent,
     CustomEvent(String)
@@ -69,10 +69,10 @@ impl EventData {
     fn new(et: EventType, e: Reference) -> EventData {
         let e = e.clone();
         match &et {
-            EventType::ClickEvent |
             EventType::MouseMoveEvent |
             EventType::MouseDownEvent |
             EventType::MouseUpEvent |
+            EventType::MouseClickEvent |
             EventType::MouseWheelEvent =>
                 EventData::MouseEvent(et.clone(),MouseData(e)),
 
@@ -88,7 +88,7 @@ impl EventData {
 impl EventType {
     fn get_name(&self) -> &str {
         match self {
-            EventType::ClickEvent => "click",
+            EventType::MouseClickEvent => "click",
             EventType::MouseDownEvent => "mousedown",
             EventType::MouseUpEvent => "mouseup",
             EventType::MouseMoveEvent => "mousemove",
@@ -224,4 +224,13 @@ impl<T: 'static> ElementEvents<T> {
 
 pub trait EventListener<T> {
     fn receive(&mut self, _el: &Element, _ev: &EventData, _p: &T) {}
+}
+
+pub fn disable_context_menu() {
+    js! { document.addEventListener("contextmenu",function(e) {
+            console.log("aha");
+            e.stopPropagation();
+            e.preventDefault();
+            return false;
+        },false); };
 }

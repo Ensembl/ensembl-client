@@ -6,7 +6,6 @@ use webgl_rendering_context::{
 };
 
 use arena::ArenaData;
-use stage::Stage;
 
 use program::source::{ Source, ProgramSource };
 use program::objects::Object;
@@ -111,7 +110,7 @@ impl Program {
         self.data.get_object(name)
     }
   
-    pub fn draw(&mut self, adata: &ArenaData, stage: &Stage) {
+    pub fn draw(&mut self, adata: &ArenaData) {
         self.use_program(adata);
         for b in self.data.bman.iter() {
             let mut main = None;
