@@ -1,7 +1,7 @@
 use std::sync::{ Arc, Mutex };
 use arena::Arena; 
 use stage::Stage;
-use campaign::{ StateManager };
+use composit::{ StateManager };
 use types::{ Move, Units, Axis };
 
 #[derive(Debug,Clone,Copy)]

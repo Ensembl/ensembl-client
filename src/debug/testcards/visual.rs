@@ -3,7 +3,7 @@ use std::clone::Clone;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use campaign::StateValue;
+use composit::StateValue;
 use debug::testcards::bigscience::big_science;
 use controller::{ Global };
 use controller::CanvasGlobal;

@@ -3,22 +3,22 @@ use std::collections::HashMap;
 use std::ops::{ BitAnd, BitOr, Not };
 
 #[derive(PartialEq,Debug)]
-pub enum CampaignRedo {
+pub enum ComponentRedo {
     Major,
     Minor,
     None
 }
 
-impl BitOr for CampaignRedo {
+impl BitOr for ComponentRedo {
     type Output = Self;
     
     fn bitor(self, other: Self) -> Self {
-        if self == CampaignRedo::Major || other == CampaignRedo::Major {
-            CampaignRedo::Major
-        } else if self == CampaignRedo::Minor || other == CampaignRedo::Minor {
-            CampaignRedo::Minor
+        if self == ComponentRedo::Major || other == ComponentRedo::Major {
+            ComponentRedo::Major
+        } else if self == ComponentRedo::Minor || other == ComponentRedo::Minor {
+            ComponentRedo::Minor
         } else {
-            CampaignRedo::None
+            ComponentRedo::None
         }
     }
 }
