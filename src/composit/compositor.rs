@@ -61,7 +61,7 @@ impl Compositor {
         self.contexts.push(ctx);
     }
     
-    pub fn add_campaign(&mut self, c: Component) -> ComponentRemover {
+    pub fn add_component(&mut self, c: Component) -> ComponentRemover {
         self.idx += 1;
         self.campaigns.insert(self.idx,c);
         ComponentRemover(self.idx)
