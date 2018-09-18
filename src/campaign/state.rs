@@ -84,7 +84,7 @@ pub struct StateAtom {
 }
 
 impl StateAtom {
-    fn new(name: &str) -> StateAtom {
+    pub fn new(name: &str) -> StateAtom {
         StateAtom {
             name: name.to_string()
         }
