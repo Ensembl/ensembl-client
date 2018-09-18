@@ -47,7 +47,6 @@ impl ArenaPrograms {
 pub struct Arena {
     pub data: Rc<RefCell<ArenaData>>,
     pub progs: ArenaPrograms,
-    cman: Compositor
 }
 
 impl Arena {
@@ -79,7 +78,6 @@ impl Arena {
         }
         
         let arena = Arena {
-            cman: Compositor::new(),
             progs: ArenaPrograms {
                     order, map
             }, data
@@ -87,15 +85,10 @@ impl Arena {
         arena
     }
 
-    pub fn get_cman(&mut self) -> &mut Compositor {
-        &mut self.cman
-    }
-
-    pub fn draw(&mut self, oom: &StateManager, stage: &Stage) {
+    pub fn draw(&mut self, cman: &mut Compositor, oom: &StateManager, stage: &Stage) {
         /* maybe update scene */
         {
-            let (cman,datam,progs) = (
-                &mut self.cman,
+            let (datam,progs) = (
                 &mut self.data.borrow_mut(),
                 &mut self.progs);
             cman.into_objects(progs,datam,oom);
@@ -120,4 +113,3 @@ impl Arena {
         }
     }
 }
-
