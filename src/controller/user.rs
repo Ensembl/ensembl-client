@@ -5,10 +5,8 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use dom::event::{ EventListener, EventType, EventData, EventControl };
 use stdweb::web::{ Element, HtmlElement, IHtmlElement };
-use stdweb::web::event::{ MouseButton };
-use stdweb::traits::{ IMouseEvent, IEvent };
+use stdweb::traits::{ IEvent };
 use dom::event;
-use types::{ Move, Distance, Units };
 
 use controller::{ Event, EventRunner };
 use controller::physics::MousePhysics;
@@ -34,55 +32,35 @@ impl UserEventListener {
 
 impl EventListener<()> for UserEventListener {    
     fn receive(&mut self, _el: &Element,  e: &EventData, _idx: &()) {
-        let evs = match e {
-            EventData::MouseEvent(EventType::MouseWheelEvent,e) =>
-                {
-                    let delta = e.wheel_delta();
-                    vec! {
-                        Event::Zoom(delta as f32/1000.)
-                    }
-                }
-            EventData::MouseEvent(EventType::MouseDownEvent,e) =>
-                {
-                    console!("down {:?}",e.at()); 
-                    self.canv_el.focus();
-                    domutil::clear_selection();
-                    e.stop_propagation();
-                    if e.button() == MouseButton::Right {
-                        vec! {
-                            Event::Move(Move::Up(Distance(60.,Units::Pixels))),
-                        }
-                    } else {                    
-                        self.mouse.lock().unwrap().down(e.at());
-                        Vec::<Event>::new()
-                    }
-                },
-            EventData::MouseEvent(EventType::MouseMoveEvent,e) =>
-                { 
-                    self.mouse.lock().unwrap().move_to(e.at());
-                    Vec::<Event>::new()
-                },
-            EventData::MouseEvent(EventType::MouseClickEvent,e) =>
-                {
-                    e.stop_propagation();
-                    Vec::<Event>::new()
-                }
-            _ => Vec::<Event>::new()
+        let mut r = self.runner.borrow_mut();
+        match e {
+            EventData::MouseEvent(EventType::MouseWheelEvent,e) => {
+                r.run(vec! { Event::Zoom(e.wheel_delta() as f32/1000.) })
+            },
+            EventData::MouseEvent(EventType::MouseDownEvent,e) => {
+                self.canv_el.focus();
+                domutil::clear_selection();
+                e.stop_propagation();
+                self.mouse.lock().unwrap().down(e.at());
+            },
+            EventData::MouseEvent(EventType::MouseMoveEvent,e) => { 
+                self.mouse.lock().unwrap().move_to(e.at());
+            },
+            EventData::MouseEvent(EventType::MouseClickEvent,e) => {
+                e.stop_propagation();
+            }
+            _ => ()
         };
-        self.runner.borrow_mut().run(evs);
     }
 }
 
 pub struct UserEventListenerBody {
-    runner: Rc<RefCell<EventRunner>>,
     mouse: Arc<Mutex<MousePhysics>>
 }
 
 impl UserEventListenerBody {
-    pub fn new(er: &Rc<RefCell<EventRunner>>,
-               mouse: &Arc<Mutex<MousePhysics>>) -> UserEventListenerBody {
+    pub fn new(mouse: &Arc<Mutex<MousePhysics>>) -> UserEventListenerBody {
         UserEventListenerBody {
-            runner: er.clone(),
             mouse: mouse.clone()
         }
     }
@@ -114,7 +92,7 @@ impl UserEventManager {
         ec_canv.add_event(EventType::MouseMoveEvent);
         ec_canv.add_event(EventType::MouseWheelEvent);        
         ec_canv.add_element(el.into(),());
-        let uel_body = UserEventListenerBody::new(er,&mp);
+        let uel_body = UserEventListenerBody::new(&mp);
         let mut ec_body = EventControl::new(Box::new(uel_body));
         ec_body.add_event(EventType::MouseUpEvent);
         ec_body.add_element(&domutil::query_select("body"),());        

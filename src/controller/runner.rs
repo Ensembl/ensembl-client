@@ -25,15 +25,6 @@ impl EventRunner {
         EventRunner { arena, stage, state, stale: false }
     }
     
-    pub fn refresh(&mut self) {
-        debug!("global","refresh due to stage event");
-        let arena = &mut self.arena.lock().unwrap();
-        let stage = &mut self.stage.lock().unwrap();
-        
-        arena.draw(&self.state.lock().unwrap(),stage);
-        self.stale = false;
-    }
-
     fn exe_move_event(&mut self, v: Move<f32,f32>) {
         let stage = &mut self.stage.lock().unwrap();
         

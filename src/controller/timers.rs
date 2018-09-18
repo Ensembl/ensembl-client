@@ -30,7 +30,8 @@ impl Timers {
         });
         Timer(idx)
     }
-    
+
+    #[allow(unused)]
     pub fn remove(&mut self, t: Timer) {
         self.timers.remove(&t.0);
     }

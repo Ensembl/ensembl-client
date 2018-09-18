@@ -10,5 +10,6 @@ pub use campaign::state::{
     StateExpr,
     StateManager,
     StateFixed,
-    StateValue
+    StateValue,
+    StateAtom
 };

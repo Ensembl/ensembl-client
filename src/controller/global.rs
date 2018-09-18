@@ -13,6 +13,8 @@ use controller::direct::DirectEventManager;
 use controller::user::UserEventManager;
 use controller::projector::Projector;
 use controller::timers::{ Timers, Timer };
+use controller::runner::Event;
+use types::CPixel;
 
 const CANVAS : &str = r##"<canvas id="glcanvas"></canvas>"##;
 
@@ -129,23 +131,25 @@ impl Global {
         );
         inst_s
     }
-        
+    
+    pub fn add_events(&mut self, evv: Vec<Event>) {
+        self.cg.as_mut().map(|cg| {
+            let cg = &mut cg.borrow_mut();
+            cg.cg.er.borrow_mut().run(evv);
+        });
+    }
+    
     pub fn with_arena<F,G>(&mut self, cb: F) -> Option<G> where F: FnOnce(&mut Arena) -> G {
         self.cg.as_mut().map(|cg| {
             cg.borrow_mut().cg.with_arena(cb)
         })
     }
     
-    pub fn with_stage<F,G>(&mut self, cb: F) -> Option<G> where F: FnOnce(&mut Stage) -> G {
-        self.cg.as_mut().map(|cg| {
-            cg.borrow_mut().cg.with_stage(cb)
-        })
-    }
-    
-    pub fn with_state<F,G>(&mut self, cb: F) -> G where F: FnOnce(&mut StateManager) -> G {
-        self.cg.as_mut().map(|cg| {
-            cg.borrow_mut().cg.with_state(cb)
-        }).unwrap()
+    /* only for test-cards, etc, which need to know how big to draw */
+    pub fn canvas_size(&self) -> CPixel {
+        let cg = &self.cg.as_ref().unwrap().borrow();
+        let out = cg.cg.stage.lock().unwrap().get_size();
+        out
     }
 
     pub fn draw(&mut self) {
@@ -155,9 +159,5 @@ impl Global {
     pub fn add_timer<F>(&mut self, cb: F) -> Option<Timer> 
                             where F: FnMut(&mut CanvasGlobal, f64) + 'static {
         self.cg.as_mut().map(|cg| cg.borrow_mut().add_timer(cb))
-    }
-    
-    pub fn run_timers(&mut self, time: f64) {
-        self.cg.as_mut().map(|cg| cg.borrow_mut().run_timers(time));
-    }
+    }    
 }
