@@ -14,6 +14,7 @@ use controller::user::UserEventManager;
 use controller::projector::Projector;
 use controller::timers::{ Timers, Timer };
 use controller::runner::Event;
+use composit::Compositor;
 use types::CPixel;
 
 const CANVAS : &str = r##"<canvas id="glcanvas"></canvas>"##;
@@ -23,6 +24,7 @@ pub struct CanvasGlobal {
     arena: Arc<Mutex<Arena>>,
     stage: Arc<Mutex<Stage>>,
     state: Arc<Mutex<StateManager>>,
+    compo: Arc<Mutex<Compositor>>,
     userev: UserEventManager,
     directev: DirectEventManager,
     projector: Option<Projector>,
@@ -37,12 +39,8 @@ impl CanvasGlobal {
     pub fn draw(&mut self) {
         let stage = self.stage.lock().unwrap();
         let oom = self.state.lock().unwrap();
-        self.arena.lock().unwrap().draw(&oom,&stage);
-    }
-
-    pub fn with_arena<F,G>(&mut self, cb: F) -> G where F: FnOnce(&mut Arena) -> G {
-        let a = &mut self.arena.lock().unwrap();
-        cb(a)
+        let mut compo = self.compo.lock().unwrap();
+        self.arena.lock().unwrap().draw(&mut compo,&oom,&stage);
     }
     
     pub fn with_stage<F,G>(&mut self, cb: F) -> G where F: FnOnce(&mut Stage) -> G {
@@ -52,6 +50,11 @@ impl CanvasGlobal {
 
     pub fn with_state<F,G>(&self, cb: F) -> G where F: FnOnce(&mut StateManager) -> G {
         let a = &mut self.state.lock().unwrap();
+        cb(a)
+    }
+
+    pub fn with_compo<F,G>(&self, cb: F) -> G where F: FnOnce(&mut Compositor) -> G {
+        let a = &mut self.compo.lock().unwrap();
         cb(a)
     }
 }
@@ -108,6 +111,7 @@ impl Global {
         self.clear_old_events();
         let (canv_el,inst_s) = self.setup_dom(el);
         let arena = Arc::new(Mutex::new(Arena::new(&canv_el)));
+        let compo = Arc::new(Mutex::new(Compositor::new()));
         let stage = Arc::new(Mutex::new(Stage::new(&self.root)));
         let er = Rc::new(RefCell::new(EventRunner::new(
                             arena.clone(),
@@ -117,7 +121,7 @@ impl Global {
         self.cg = Some(Rc::new(RefCell::new(
             CanvasGlobalInst {
                 cg: CanvasGlobal {
-                    arena, stage,
+                    arena, stage, compo,
                     er: er.clone(),
                     state: self.state.clone(),
                     userev: UserEventManager::new(&er,&canv_el,&mut timers),
@@ -139,9 +143,9 @@ impl Global {
         });
     }
     
-    pub fn with_arena<F,G>(&mut self, cb: F) -> Option<G> where F: FnOnce(&mut Arena) -> G {
+    pub fn with_compo<F,G>(&mut self, cb: F) -> Option<G> where F: FnOnce(&mut Compositor) -> G {
         self.cg.as_mut().map(|cg| {
-            cg.borrow_mut().cg.with_arena(cb)
+            cg.borrow_mut().cg.with_compo(cb)
         })
     }
     
