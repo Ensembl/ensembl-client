@@ -55,8 +55,8 @@ impl Stage {
         hashmap! {
             "uSampler" => UniformValue::Int(canvs.idx),
             "uStageHpos" => UniformValue::Float(self.pos.0),
-            "uStageVpos" => UniformValue::Float((self.pos.1 + self.dims.1 as f32)/2.),
-            "uStageZoom" => UniformValue::Float(self.get_linear_zoom()),
+            "uStageVpos" => UniformValue::Float(self.pos.1 + self.dims.1 as f32/2.),
+            "uStageZoom" => UniformValue::Float(self.get_linear_zoom()*2.),
             "uSize" => UniformValue::Vec2F(
                 self.dims.0 as f32/2.,
                 self.dims.1 as f32/2.)

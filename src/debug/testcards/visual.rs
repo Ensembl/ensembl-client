@@ -15,7 +15,6 @@ struct State {
     fpos: f32,
     call: i32,
     old_time: f64,
-    inst: String,
 }
 
 fn animate(time : f64, cg: &mut CanvasGlobal, s: Rc<RefCell<State>>) {
@@ -31,7 +30,7 @@ fn animate(time : f64, cg: &mut CanvasGlobal, s: Rc<RefCell<State>>) {
     cg.with_stage(|s| {
         s.set_zoom((state.zoomscale.cos()/2.0 + 2.5) as f32);
         s.pos.0 = ((state.hpos.cos())*150.) as f32;
-        s.pos.1 = ((state.vpos.sin())*300.) as f32;
+        s.pos.1 = ((state.vpos.sin())*150.-75.) as f32;
     });
     cg.with_state(|s| {
         let odd_state = if state.hpos.cos() > 0. {
@@ -49,7 +48,7 @@ fn animate(time : f64, cg: &mut CanvasGlobal, s: Rc<RefCell<State>>) {
     });
 }
 
-pub fn testcard_visual(g: Arc<Mutex<Global>>, onoff: bool, inst: &str) {
+pub fn testcard_visual(g: Arc<Mutex<Global>>, onoff: bool) {
     big_science(&mut g.lock().unwrap(),onoff);
 
     let state = Rc::new(RefCell::new(State {
@@ -59,7 +58,6 @@ pub fn testcard_visual(g: Arc<Mutex<Global>>, onoff: bool, inst: &str) {
         zoomscale: 0.0,
         old_time: 0.0,
         call: 0,
-        inst: inst.to_string(),
     }));
 
     g.lock().unwrap().add_timer(move |cg,t| {

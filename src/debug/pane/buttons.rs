@@ -65,7 +65,7 @@ impl DebugButtons {
             buttons: Vec::<DebugButton>::new(),
             buttonev: EventControl::new(Box::new(ButtonEventListener::new())),
         };
-        out.buttonev.add_event(EventType::ClickEvent);
+        out.buttonev.add_event(EventType::MouseClickEvent);
         out
     }
     

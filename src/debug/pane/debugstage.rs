@@ -80,7 +80,7 @@ impl DebugPanelImpl {
         debug!("debug panel","new debug panel");
         let mut bec = EventControl::new(Box::new(BodyEventListener::new()));
         bec.add_event(EventType::KeyPressEvent);
-        bec.add_event(EventType::ClickEvent);
+        bec.add_event(EventType::MouseClickEvent);
         bec.add_event(EventType::CustomEvent("custom".to_string()));
         bec.add_event(EventType::CustomEvent("dropdown".to_string()));
         bec.add_element(&domutil::query_select("body"),());
@@ -263,8 +263,8 @@ thread_local! {
 fn setup_testcard(g: &Arc<Mutex<Global>>, name: &str) {
     debug!("global","setup testcard {}",name);
     if name.len() > 0 {
-        let inst_s = g.lock().unwrap().reset();
-        testcards::testcard(g.clone(),name,&inst_s);
+        g.lock().unwrap().reset();
+        testcards::testcard(g.clone(),name);
     }
 }
 
