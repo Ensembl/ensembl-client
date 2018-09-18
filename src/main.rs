@@ -19,7 +19,7 @@ mod arena;
 mod controller;
 mod shape;
 mod canvasutil;
-mod campaign;
+mod composit;
 mod wglraw;
 mod alloc;
 mod drawing;

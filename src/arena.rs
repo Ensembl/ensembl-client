@@ -9,7 +9,7 @@ use canvasutil;
 use wglraw;
 use stage::Stage;
 use program::{ Program, GPUSpec, ProgramType };
-use campaign::{ StateManager, CampaignManager };
+use composit::{ StateManager, Compositor };
 
 pub struct ArenaCanvases {
     pub flat: Rc<canvasutil::FlatCanvas>,
@@ -47,7 +47,7 @@ impl ArenaPrograms {
 pub struct Arena {
     pub data: Rc<RefCell<ArenaData>>,
     pub progs: ArenaPrograms,
-    cman: CampaignManager
+    cman: Compositor
 }
 
 impl Arena {
@@ -79,7 +79,7 @@ impl Arena {
         }
         
         let arena = Arena {
-            cman: CampaignManager::new(),
+            cman: Compositor::new(),
             progs: ArenaPrograms {
                     order, map
             }, data
@@ -87,7 +87,7 @@ impl Arena {
         arena
     }
 
-    pub fn get_cman(&mut self) -> &mut CampaignManager {
+    pub fn get_cman(&mut self) -> &mut Compositor {
         &mut self.cman
     }
 

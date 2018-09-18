@@ -3,10 +3,10 @@ use std::rc::Rc;
 use std::collections::HashMap;
 
 use arena::{ ArenaData, ArenaPrograms };
-use campaign::{ Campaign, StateManager };
+use composit::{ Component, StateManager };
 use drawing::{ Drawing, LeafDrawingManager };
 use shape::ShapeContext;
-use campaign::state::CampaignRedo;
+use composit::state::ComponentRedo;
 
 pub struct DrawingSession {
     drawman: LeafDrawingManager,
@@ -21,7 +21,7 @@ impl DrawingSession {
         }
     }
 
-    fn redraw_campaign(&mut self, adata: &mut ArenaData, idx: u32, c: &mut Campaign) {
+    fn redraw_campaign(&mut self, adata: &mut ArenaData, idx: u32, c: &mut Component) {
         self.all_drawings.insert(idx,c.draw_drawings(&mut self.drawman,adata));
     }
     
@@ -37,20 +37,20 @@ impl DrawingSession {
     }
 }
 
-pub struct CampaignManager {
+pub struct Compositor {
     idx: u32,
     contexts: Vec<Box<ShapeContext>>,
-    campaigns: HashMap<u32,Campaign>,
+    campaigns: HashMap<u32,Component>,
     ds: DrawingSession
 }
 
-pub struct CampaignKiller(u32);
+pub struct ComponentRemover(u32);
 
 #[allow(unused)]
-impl CampaignManager {
-    pub fn new() -> CampaignManager {
-        CampaignManager {
-            campaigns: HashMap::<u32,Campaign>::new(),
+impl Compositor {
+    pub fn new() -> Compositor {
+        Compositor {
+            campaigns: HashMap::<u32,Component>::new(),
             contexts: Vec::<Box<ShapeContext>>::new(),
             ds: DrawingSession::new(),
             idx: 0
@@ -61,18 +61,18 @@ impl CampaignManager {
         self.contexts.push(ctx);
     }
     
-    pub fn add_campaign(&mut self, c: Campaign) -> CampaignKiller {
+    pub fn add_campaign(&mut self, c: Component) -> ComponentRemover {
         self.idx += 1;
         self.campaigns.insert(self.idx,c);
-        CampaignKiller(self.idx)
+        ComponentRemover(self.idx)
     }
 
-    pub fn remove(&mut self, k: CampaignKiller) {
+    pub fn remove(&mut self, k: ComponentRemover) {
         self.campaigns.remove(&k.0);
     }
     
-    fn calc_level(&mut self, oom: &StateManager) -> CampaignRedo {
-        let mut redo = CampaignRedo::None;
+    fn calc_level(&mut self, oom: &StateManager) -> ComponentRedo {
+        let mut redo = ComponentRedo::None;
         for c in &mut self.campaigns.values_mut() {
             redo = redo | c.update_state(oom);
         }
@@ -111,11 +111,11 @@ impl CampaignManager {
     pub fn into_objects(&mut self, progs: &mut ArenaPrograms,
                         adata: &mut ArenaData, oom: &StateManager) {
         let redo = self.calc_level(oom);
-        if redo == CampaignRedo::None { return; }
+        if redo == ComponentRedo::None { return; }
         debug!("redraw","{:?}",redo);
         progs.clear_objects();
         self.apply_contexts(progs,adata);
-        if redo == CampaignRedo::Major {
+        if redo == ComponentRedo::Major {
             self.redraw_drawings(adata);
         }
         self.redraw_objects(progs,adata);

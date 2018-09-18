@@ -7,7 +7,7 @@ use stdweb::web::{ IElement, HtmlElement, Element };
 use dom::domutil;
 use arena::Arena;
 use stage::Stage;
-use campaign::{ StateManager };
+use composit::{ StateManager };
 use controller::EventRunner;
 use controller::direct::DirectEventManager;
 use controller::user::UserEventManager;

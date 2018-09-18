@@ -2,19 +2,19 @@ use std::rc::Rc;
 
 use arena::{ ArenaData, ArenaPrograms };
 use shape::{ Shape };
-use campaign::state::{ StateManager, StateExpr, StateValue, CampaignRedo };
+use composit::state::{ StateManager, StateExpr, StateValue, ComponentRedo };
 use drawing::{ Drawing, LeafDrawingManager };
 
-pub struct Campaign {
+pub struct Component {
     prev_value: StateValue,
     cur_value: StateValue,
     ooe: Rc<StateExpr>,
     shapes: Vec<Box<Shape>>,
 }
 
-impl Campaign {
-    pub fn new(ooe: Rc<StateExpr>) -> Campaign {
-        Campaign {
+impl Component {
+    pub fn new(ooe: Rc<StateExpr>) -> Component {
+        Component {
             shapes: Vec::<Box<Shape>>::new(),
             prev_value: StateValue::OffCold(),
             cur_value: StateValue::OffCold(),
@@ -24,17 +24,17 @@ impl Campaign {
     
     pub fn is_on(&self) -> bool { self.cur_value.on() }
     
-    pub fn update_state(&mut self, m: &StateManager) -> CampaignRedo {
+    pub fn update_state(&mut self, m: &StateManager) -> ComponentRedo {
         self.prev_value = self.cur_value;
         self.cur_value = self.ooe.is_on(m);
         if self.prev_value == self.cur_value {
-            CampaignRedo::None // no change => Noop
+            ComponentRedo::None // no change => Noop
         } else if self.prev_value.on() && self.cur_value.on() {
-            CampaignRedo::None // was on, is on => Noop
+            ComponentRedo::None // was on, is on => Noop
         } else if self.prev_value.offcold() || self.cur_value.offcold() {
-            CampaignRedo::Major // was/now off-cold => Major
+            ComponentRedo::Major // was/now off-cold => Major
         } else {
-            CampaignRedo::Minor // was/is off-warm, is/was on => Minor
+            ComponentRedo::Minor // was/is off-warm, is/was on => Minor
         }
     }
     

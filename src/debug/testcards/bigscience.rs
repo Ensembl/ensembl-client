@@ -1,6 +1,6 @@
 use std::clone::Clone;
 use canvasutil;
-use campaign::{ StateFixed, Campaign, StateValue, StateAtom };
+use composit::{ StateFixed, Component, StateValue, StateAtom };
 
 use debug::testcards::common::{ daft, bio_daft, wiggly };
 
@@ -44,12 +44,12 @@ pub fn big_science(g: &mut Global, onoff: bool) {
 
     
     
-    let mut c_odd = Campaign::new(if onoff {
+    let mut c_odd = Component::new(if onoff {
         Rc::new(StateAtom::new("odd"))
     } else {
         Rc::new(StateFixed(StateValue::On()))
     });
-    let mut c_even = Campaign::new(if onoff {
+    let mut c_even = Component::new(if onoff {
         Rc::new(StateAtom::new("even"))
     } else {
         Rc::new(StateFixed(StateValue::On()))
@@ -60,7 +60,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
         
     let fc_font = canvasutil::FCFont::new(12,"Roboto");
 
-    let mut c = Campaign::new(Rc::new(StateFixed(StateValue::On())));
+    let mut c = Component::new(Rc::new(StateFixed(StateValue::On())));
 
     let mut middle = size.1 / 120;
     if middle < 5 { middle = 5; }
