@@ -1,77 +1,57 @@
 const path = require('path');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const postcssPresetEnv = require('postcss-preset-env');
-const HtmlPlugin = require('html-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
-const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
 const BrotliPlugin = require('brotli-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
-module.exports = {
-  devtool: 'source-map',
-  entry: {
-    index: path.join(__dirname, '../src/scripts/index.tsx')
-  },
-  mode: 'production',
-  module: {
-    rules: [
+const moduleRules = [
+  {
+    test: /assets\/img\/.*\.(svg|gif|png|jpe?g)$/i,
+    use: [
       {
-        test: /.tsx?$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader'
-      },
-      {
-        test: /.js$/,
-        exclude: /node_modules/,
-        use: ['source-map-loader'],
-        enforce: 'pre'
-      },
-      {
-        test: /.scss$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          {
-            loader: 'css-loader',
-            options: {
-              importLoaders: 2
-            }
-          },
-          {
-            loader: 'postcss-loader',
-            options: {
-              ident: 'postcss',
-              plugins: () => [
-                postcssPresetEnv()
-              ]
-            }
-          },
-          'sass-loader'
-        ]
-      },
-      {
-        test: /assets\/img\/.*\.(svg|gif|png|jpe?g)$/i,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              emitFile: true,
-              name: '[path][name].[hash].[ext]'
-            }
-          },
-          'image-webpack-loader'
-        ]
-      },
-      {
-        test: /assets\/fonts\/.*\.(woff2?|eot|ttf|otf|svg)$/i,
         loader: 'file-loader',
         options: {
           emitFile: true,
           name: '[path][name].[hash].[ext]'
         }
-      }
+      },
+      'image-webpack-loader'
     ]
+  },
+  {
+    test: /assets\/fonts\/.*\.(woff2?|eot|ttf|otf|svg)$/i,
+    loader: 'file-loader',
+    options: {
+      emitFile: true,
+      name: '[path][name].[hash].[ext]'
+    }
+  }
+];
+
+const plugins = [
+  new MiniCssExtractPlugin({
+    filename: '[name].[contenthash].css',
+    chunkFilename: '[id].[contenthash].css'
+  }),
+  new webpack.HashedModuleIdsPlugin(),
+  new BrotliPlugin({
+    test: /.(js|css|html)$/,
+    threshold: 10240, // 10kB
+    minRatio: 0.8
+  }),
+  new ManifestPlugin(),
+  new WorkboxPlugin.GenerateSW({
+    clientsClaim: true,
+    skipWaiting: true
+  }),
+  new BundleAnalyzerPlugin()
+];
+
+const prodConfig = {
+  entry: {
+    index: path.join(__dirname, '../src/scripts/index.tsx')
   },
   optimization: {
     runtimeChunk: true,
@@ -85,44 +65,11 @@ module.exports = {
       }
     }
   },
-  output: {
-    filename: '[name].[contenthash].js',
-    pathinfo: false,
-    publicPath: '/'
-  },
   performance: {
     hints: 'error'
-  },
-  plugins: [
-    new ForkTsCheckerPlugin({
-      tslint: true
-    }),
-    new MiniCssExtractPlugin({
-      filename: '[name].[contenthash].css',
-      chunkFilename: '[id].[contenthash].css'
-    }),
-    new HtmlPlugin({
-      filename: 'index.html',
-      template: path.join(__dirname, '../assets/html/template.html'),
-      publicPath: '/'
-    }),
-    new webpack.HashedModuleIdsPlugin(),
-    new BrotliPlugin({
-      test: /.(js|css|html)$/,
-      threshold: 10240, // 10kB
-      minRatio: 0.8
-    }),
-    new ManifestPlugin(),
-    new WorkboxPlugin.GenerateSW({
-      clientsClaim: true,
-      skipWaiting: true
-    }),
-    new BundleAnalyzerPlugin()
-  ],
-  resolve: {
-    extensions: ['.tsx', '.ts', '.js', '.scss'],
-    alias: {
-      assets: path.join(__dirname, '../assets')
-    }
   }
 };
+
+const commonConfig = require('./webpack.common')(false, moduleRules, plugins);
+
+module.exports = Object.assign({}, commonConfig, prodConfig);
