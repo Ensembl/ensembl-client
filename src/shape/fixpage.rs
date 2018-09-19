@@ -2,11 +2,12 @@ use std::rc::Rc;
 use arena::ArenaData;
 
 use program::{ ProgramType, PTGeom, PTSkin, PTMethod, ProgramAttribs };
-use types::{ CPixel, RPixel };
+use types::{ CPixel, RPixel, RCorner, CCorner };
 
 use shape::{ Shape, ColourSpec };
 use shape::util::{
-    rectangle_p, rectangle_t, multi_gl, vertices_rect, despot
+    rectangle_p, rectangle_t, multi_gl, vertices_rect, despot,
+    rectangle_c
 };
 
 use drawing::Artist;
@@ -16,22 +17,22 @@ use drawing::Artist;
  */
 
 pub struct FixRect {
-    points: RPixel,
+    points: RCorner,
     colspec: ColourSpec,
     geom: ProgramType
 }
 
 impl FixRect {
-    pub fn new(points: RPixel, colspec: ColourSpec, geom: ProgramType) -> FixRect {
+    pub fn new(points: RCorner, colspec: ColourSpec, geom: ProgramType) -> FixRect {
         FixRect { points, colspec, geom }
     }    
 }
 
 impl Shape for FixRect {
     fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, _texpos: Option<RPixel>) {
-        let b = vertices_rect(geom,self.colspec.to_group(geom_name));
-        rectangle_p(b,geom,"aVertexPosition",&self.points);
-        if let ColourSpec::Colour(c) = self.colspec {        
+        let b = vertices_rect(geom,self.colspec.to_group(geom_name));        
+        rectangle_c(b,geom,"aVertexPositive","aVertexSign",&self.points);
+        if let ColourSpec::Colour(c) = self.colspec {
             multi_gl(b,geom,"aVertexColour",&c,4);
         }
     }
@@ -39,17 +40,17 @@ impl Shape for FixRect {
     fn get_geometry(&self) -> ProgramType { self.geom }
 }
 
-fn rectangle(p: &RPixel, colspec: &ColourSpec, gt: PTGeom) -> Box<Shape> {
+fn rectangle(p: &RCorner, colspec: &ColourSpec, gt: PTGeom) -> Box<Shape> {
     let pt = despot(gt,PTMethod::Triangle,colspec);
     Box::new(FixRect::new(*p,colspec.clone(),pt))
 }
 
-pub fn fix_rectangle(p: &RPixel, colour: &ColourSpec) -> Box<Shape> {
+pub fn fix_rectangle(p: &RCorner, colour: &ColourSpec) -> Box<Shape> {
     rectangle(p,colour,PTGeom::Fix)
 }
 
 #[allow(dead_code)]
-pub fn page_rectangle(p: &RPixel, colour: &ColourSpec) -> Box<Shape> {
+pub fn page_rectangle(p: &RCorner, colour: &ColourSpec) -> Box<Shape> {
     rectangle(p,colour,PTGeom::Page)
 }
 
@@ -58,14 +59,14 @@ pub fn page_rectangle(p: &RPixel, colour: &ColourSpec) -> Box<Shape> {
  */
 
 pub struct FixTexture {
-    pos: CPixel,
+    pos: CCorner,
     scale: CPixel,
     geom: ProgramType,
     artist: Rc<Artist>
 }
 
 impl FixTexture {
-    pub fn new(pos: &CPixel, scale: &CPixel, geom: ProgramType, artist: &Rc<Artist>) -> FixTexture {
+    pub fn new(pos: &CCorner, scale: &CPixel, geom: ProgramType, artist: &Rc<Artist>) -> FixTexture {
         FixTexture {
             pos: *pos, scale: *scale, geom, artist: artist.clone()
         }
@@ -78,7 +79,7 @@ impl Shape for FixTexture {
             let p = tp.at_origin() * self.scale + self.pos;
             let t = tp.as_fraction() / adata.canvases.flat.size().as_fraction();
             let b = vertices_rect(geom,None);
-            rectangle_p(b,geom,"aVertexPosition",&p);
+            rectangle_c(b,geom,"aVertexPositive","aVertexSign",&p);
             rectangle_t(b,geom,"aTextureCoord",&t);
         }
     }
@@ -88,15 +89,15 @@ impl Shape for FixTexture {
     fn get_artist(&self) -> Option<Rc<Artist>> { Some(self.artist.clone()) }
 }
 
-fn texture(a: Rc<Artist>, origin: &CPixel, scale: &CPixel, gt: PTGeom) -> Box<Shape> {
+fn texture(a: Rc<Artist>, origin: &CCorner, scale: &CPixel, gt: PTGeom) -> Box<Shape> {
     let pt = ProgramType(gt,PTMethod::Triangle,PTSkin::Texture);
     Box::new(FixTexture::new(origin,scale,pt,&a))
 }
 
-pub fn fix_texture(req: Rc<Artist>, origin: &CPixel, scale: &CPixel) -> Box<Shape> {
+pub fn fix_texture(req: Rc<Artist>, origin: &CCorner, scale: &CPixel) -> Box<Shape> {
     texture(req, origin, scale, PTGeom::Fix)
 }
 
-pub fn page_texture(req: Rc<Artist>, origin: &CPixel, scale: &CPixel) -> Box<Shape> {
+pub fn page_texture(req: Rc<Artist>, origin: &CCorner, scale: &CPixel) -> Box<Shape> {
     texture(req, origin, scale, PTGeom::Page)
 }

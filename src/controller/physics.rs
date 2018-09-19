@@ -18,7 +18,7 @@ pub struct MousePhysicsImpl {
 pub struct MousePhysics(Arc<Mutex<MousePhysicsImpl>>);
 
 const LETHARGY : f32 = 3500.;
-const BOING : f32 = 1.05;
+const BOING : f32 = 1.00;
 
 impl MousePhysicsImpl {
     pub fn set_drive(&mut self, f: CFraction) {

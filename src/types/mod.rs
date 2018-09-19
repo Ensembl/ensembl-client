@@ -6,11 +6,14 @@ pub use types::coord::{
     CPixel, RPixel,
     CLeaf, RLeaf,
     CFraction, RFraction,
+    CCorner, RCorner,
     cfraction, rfraction,
     cleaf, rleaf,
     cpixel, rpixel,
+    ccorner, rcorner,
     Area, Dot, Move, Distance, Units, Axis,
-    LEFT, RIGHT, UP, DOWN
+    LEFT, RIGHT, UP, DOWN,
+    TOPLEFT, BOTTOMLEFT, TOPRIGHT, BOTTOMRIGHT
 };
 
 pub use types::colour::{

@@ -1,6 +1,7 @@
 use std::sync::{ Mutex, Arc };
 use debug::testcards::visual::testcard_visual;
 use debug::testcards::button::testcard_button;
+use debug::testcards::polar::testcard_polar;
 use types::{ CLeaf, cleaf };
 use rand::{ Rng, seq };
 use rand::distributions::Distribution;
@@ -13,6 +14,7 @@ pub fn testcard(g: Arc<Mutex<Global>>, name: &str) {
         "draw" => testcard_visual(g,false),
         "onoff" => testcard_visual(g,true),
         "button" => testcard_button(g),
+        "polar" => testcard_polar(g),
         _ => ()
     };
 }
