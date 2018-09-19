@@ -18,7 +18,7 @@ use program::{
 };
 
 #[derive(Clone,Copy,Debug,PartialEq,Eq,Hash)]
-pub enum PTGeom { Pin, Stretch, Fix, Page }
+pub enum PTGeom { Pin, Stretch, Fix, Tape, Page }
 
 #[derive(Clone,Copy,Debug,PartialEq,Eq,Hash)]
 pub enum PTMethod { Triangle, Strip }
@@ -56,6 +56,21 @@ impl PTGeom {
                         (aOrigin.x -uStageHpos) * uStageZoom + 
                                     aVertexPosition.x / uSize.x,
                         - (aOrigin.y - uStageVpos + aVertexPosition.y) / uSize.y, 
+                        0.0, 1.0)")
+
+            },
+            PTGeom::Tape => vec! {
+                Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageHpos"),
+                Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageZoom"),
+                Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
+                Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
+                Attribute::new(&PR_DEF,Arity::Vec2,"aVertexSign"),
+                Attribute::new(&PR_DEF,Arity::Vec2,"aOrigin"),
+                Statement::new_vert("
+                    gl_Position = vec4(
+                        (aOrigin.x -uStageHpos) * uStageZoom + 
+                                    aVertexPosition.x / uSize.x,
+                        (1.0 - aVertexPositive.y / uSize.y) * aVertexSign.y,
                         0.0, 1.0)")
 
             },
@@ -118,8 +133,8 @@ impl PTSkin {
     }
 }
 
-const GEOM_ORDER : [PTGeom;4] = [
-    PTGeom::Stretch, PTGeom::Pin, PTGeom::Page, PTGeom::Fix
+const GEOM_ORDER : [PTGeom;5] = [
+    PTGeom::Stretch, PTGeom::Pin, PTGeom::Page, PTGeom::Tape, PTGeom::Fix
 ];
 
 const SKINMETH_ORDER : [(PTSkin,PTMethod);5] = [
