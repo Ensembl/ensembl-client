@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import { hot } from 'react-hot-loader';
-import { Switch, Route, withRouter } from 'react-router-dom';
 import { RouteComponentProps } from 'react-router';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
@@ -8,7 +7,6 @@ import { Dispatch } from 'redux';
 import BrowserBar from './BrowserBar';
 import TrackPanel from '../../layout/track-panel/TrackPanel';
 import Track from '../../tracks/Track';
-import { TrackOne, TrackTwo } from '../../../configs/tracks';
 import { RootState } from '../../../reducers';
 import { BrowserOpenState } from '../../../reducers/browserReducer';
 import { closeDrawer } from '../../../actions/browserActions';
@@ -73,14 +71,7 @@ class Browser extends Component<BrowserProps> {
           </div>
         </section>
         <TrackPanel />
-        {this.props.drawerOpened && (
-          <Track>
-            <Switch>
-              <Route path="/app/browser/track/track-one" component={TrackOne} />
-              <Route path="/app/browser/track/track-two" component={TrackTwo} />
-            </Switch>
-          </Track>
-        )}
+        {this.props.drawerOpened && <Track />}
       </Fragment>
     );
   }
@@ -96,10 +87,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 });
 
 export default hot(module)(
-  withRouter(
-    connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(Browser)
-  )
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(Browser)
 );

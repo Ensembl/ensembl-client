@@ -1,7 +1,4 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
-import { RouteComponentProps } from 'react-router';
-import { UnregisterCallback, Location } from 'history';
 
 import TrackPanelListItem from './TrackPanelListItem';
 import {
@@ -9,9 +6,7 @@ import {
   trackPanelConfig
 } from '../../../configs/trackPanelConfig';
 
-type TrackPanelListParams = {};
-
-type TrackPanelListProps = RouteComponentProps<TrackPanelListParams> & {
+type TrackPanelListProps = {
   currentTrack: string;
   openDrawer: () => void;
   updateTrack: (currentTrack: string) => void;
@@ -24,22 +19,8 @@ class TrackPanelList extends Component<TrackPanelListProps> {
     this.changeTrack = this.changeTrack.bind(this);
   }
 
-  public componentDidMount() {
-    this.highlightCurrentTrack(this.props.location);
-
-    this.historyUnlistener = this.props.history.listen((location: Location) => {
-      this.highlightCurrentTrack(location);
-    });
-  }
-
-  public componentWillUnmount() {
-    this.historyUnlistener();
-  }
-
   public changeTrack(currentTrack: string) {
-    const { history, match, openDrawer, updateTrack } = this.props;
-
-    history.push(`${match.path}/track/${currentTrack}`);
+    const { openDrawer, updateTrack } = this.props;
 
     updateTrack(currentTrack);
     openDrawer();
@@ -62,8 +43,6 @@ class TrackPanelList extends Component<TrackPanelListProps> {
     );
   }
 
-  private historyUnlistener: UnregisterCallback = () => null;
-
   private getTrackClass(trackName: string): string {
     if (this.props.currentTrack === trackName) {
       return 'current-track';
@@ -71,19 +50,6 @@ class TrackPanelList extends Component<TrackPanelListProps> {
       return '';
     }
   }
-
-  private highlightCurrentTrack(location: Location) {
-    if (location.pathname.indexOf('/track') === -1) {
-      return;
-    }
-
-    const currentTrack = location.pathname.replace(`${this.props.match.path}/track/`, '');
-
-    // changing the current track state should highlight the current track
-    this.props.updateTrack(currentTrack);
-  }
 }
 
-export default withRouter((props: TrackPanelListProps) => (
-  <TrackPanelList {...props} />
-));
+export default TrackPanelList;

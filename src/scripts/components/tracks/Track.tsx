@@ -8,6 +8,7 @@ import DrawerBar from './DrawerBar';
 import { RootState } from '../../reducers';
 import { closeDrawer } from '../../actions/browserActions';
 import { DrawerSection } from '../../configs/drawerSectionConfig';
+import { trackPanelConfig, TrackPanelConfig } from '../../configs/trackPanelConfig';
 
 type TrackParams = {};
 
@@ -18,6 +19,18 @@ type TrackProps = RouteComponentProps<TrackParams> & {
 };
 
 class Track extends Component<TrackProps> {
+  public trackConfig: object = {};
+
+  public componentDidMount() {
+    this.trackConfig = this.getCurrentTrackConfig() as TrackPanelConfig;
+  }
+
+  public componentDidUpdate(prevProps: TrackProps) {
+    if (this.props.currentTrack !== prevProps.currentTrack) {
+      this.trackConfig = this.getCurrentTrackConfig() as TrackPanelConfig;
+    }
+  }
+
   public render() {
     return (
       <section className="drawer">
@@ -26,9 +39,13 @@ class Track extends Component<TrackProps> {
           currentTrack={this.props.currentTrack}
           drawerSections={this.props.drawerSections}
         />
-        <div className="track-canvas">{this.props.children}</div>
+        <div className="track-canvas">{}</div>
       </section>
     );
+  }
+
+  private getCurrentTrackConfig(): TrackPanelConfig {
+    return trackPanelConfig.filter((track: TrackPanelConfig) => this.props.currentTrack === track.name)[0];
   }
 }
 
