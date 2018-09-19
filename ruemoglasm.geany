@@ -29,18 +29,18 @@ long_line_column=72
 
 [files]
 current_page=11
-FILE_NAME_0=1792;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcontroller%2Fuser.rs;0;4
-FILE_NAME_1=2863;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcontroller%2Fphysics.rs;0;4
-FILE_NAME_2=2542;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Ftypes%2Fcoord.rs;0;4
-FILE_NAME_3=2059;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdebug%2Ftestcards%2Fbigscience.rs;0;4
-FILE_NAME_4=6360;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdom%2Fevent.rs;0;4
-FILE_NAME_5=1379;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fstage.rs;0;4
-FILE_NAME_6=1299;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fprogram%2Fimpls.rs;0;4
-FILE_NAME_7=1410;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdebug%2Ftestcards%2Fvisual.rs;0;4
-FILE_NAME_8=381;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdebug%2Ftestcards%2Fcommon.rs;0;4
-FILE_NAME_9=7664;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdebug%2Fpane%2Fdebugstage.rs;0;4
-FILE_NAME_10=133;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fprogram%2Fexecute.rs;0;4
-FILE_NAME_11=1116;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Farena.rs;0;4
+FILE_NAME_0=1223;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcontroller%2Fglobal.rs;0;4
+FILE_NAME_1=296;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcontroller%2Fuser.rs;0;4
+FILE_NAME_2=198;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcontroller%2Frunner.rs;0;4
+FILE_NAME_3=698;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcontroller%2Ftimers.rs;0;4
+FILE_NAME_4=7439;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdebug%2Ftestcards%2Fbigscience.rs;0;4
+FILE_NAME_5=0;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdebug%2Ftestcards%2Fcommon.rs;0;4
+FILE_NAME_6=0;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcampaign%2Fcampaign.rs;0;4
+FILE_NAME_7=2150;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcampaign%2Fstate.rs;0;4
+FILE_NAME_8=244;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcampaign%2Fmod.rs;0;4
+FILE_NAME_9=742;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdebug%2Ftestcards%2Fvisual.rs;0;4
+FILE_NAME_10=0;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fstage.rs;0;4
+FILE_NAME_11=8372;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Falloc.rs;0;4
 
 [VTE]
 last_dir=/home/dan

@@ -8,7 +8,10 @@ use program::{ Object, ObjectAttrib, DataBatch, Input };
 #[derive(Clone,Copy,Debug)]
 pub enum Units { Pixels, Bases, Screens }
 
+#[derive(Clone,Copy,Debug)]
 pub enum Axis { Horiz, Vert }
+
+#[derive(Clone,Copy,Debug)]
 pub enum AxisSense { Pos, Neg }
 
 pub struct Direction(pub Axis,pub AxisSense);
@@ -17,6 +20,71 @@ pub const LEFT : Direction = Direction(Axis::Horiz,AxisSense::Neg);
 pub const RIGHT : Direction = Direction(Axis::Horiz,AxisSense::Pos);
 pub const UP : Direction = Direction(Axis::Vert,AxisSense::Neg);
 pub const DOWN : Direction = Direction(Axis::Vert,AxisSense::Pos);
+
+#[derive(Clone,Copy,Debug)]
+pub struct Corner(pub AxisSense, pub AxisSense);
+
+pub const TOPLEFT    : Corner = Corner(AxisSense::Pos,AxisSense::Pos);
+pub const TOPRIGHT   : Corner = Corner(AxisSense::Neg,AxisSense::Pos);
+pub const BOTTOMLEFT : Corner = Corner(AxisSense::Pos,AxisSense::Neg);
+pub const BOTTOMRIGHT: Corner = Corner(AxisSense::Neg,AxisSense::Neg);
+
+impl From<AxisSense> for f32 {
+    fn from(xs: AxisSense) -> f32 {
+        match xs {
+            AxisSense::Pos =>  1.0,
+            AxisSense::Neg => -1.0
+        }
+    }
+}
+
+impl Input for Corner {
+    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
+        let (a,b): (f32,f32) = (self.0.into(), self.1.into());
+        attrib.add_f32(&[a,b],batch);
+    }
+}
+
+impl Corners {
+    pub fn rectangle(&self) -> [Corner;4] {
+        [
+            self.0,
+            Corner((self.0).0,(self.1).1),
+            self.1,
+            Corner((self.1).0,(self.0).1)
+        ]
+    }
+}
+
+#[derive(Clone,Copy,Debug)]
+pub struct Corners(pub Corner, pub Corner);
+impl Input for Corners {
+    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
+        for c in self.rectangle().iter() {
+            let (a,b) : (f32,f32) = (c.0.into(), c.1.into());
+            attrib.add_f32(&[a,b],batch);
+        }
+    }    
+}
+
+#[derive(Clone,Copy,Debug)]
+pub struct CSticky<T: Clone + Copy + Debug,
+                   U: Clone + Copy + Debug>(Corner,Dot<T,U>);
+
+#[derive(Clone,Copy,Debug)]
+pub struct RSticky<T: Clone + Copy + Debug,
+                   U: Clone + Copy + Debug>(CSticky<T,U>,CSticky<T,U>);
+
+impl<T: Clone + Copy + Debug + Add<T,Output=T> + Sub<T,Output=T>,
+     U: Clone + Copy + Debug + Add<U,Output=U> + Sub<U,Output=U>> RSticky<T,U> {
+    pub fn corners(&self) -> Corners {
+        Corners((self.0).0,(self.1).0)
+    }
+    
+    pub fn quantity(&self) -> Area<T,U> {
+        Area((self.0).1,(self.1).1).contract()
+    }
+}
 
 #[derive(Clone,Copy,Debug)]
 pub struct Distance<T : Clone + Copy + Debug>(pub T,pub Units);
@@ -115,6 +183,9 @@ pub fn cleaf(x: f32, y: i32) -> CLeaf { Dot(x,y) }
 pub type CPixel = Dot<i32,i32>;
 pub fn cpixel(x: i32, y: i32) -> CPixel { Dot(x,y) }
 
+pub type CCorner = CSticky<i32,i32>;
+pub fn ccorner(c: Corner, q: Dot<i32,i32>) -> CCorner { CSticky(c,q) }
+
 /*** impls for dot types ***/
 
 impl<T: Clone + Copy + Mul<T, Output=U>,U: Add<U, Output=U>> Dot<T,T> {
@@ -135,6 +206,16 @@ impl<T : Clone + Copy + Into<f64>,
     fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
         let (a,b): (f64,f64) = (self.0.into(), self.1.into());
         attrib.add_f32(&[a as f32,b as f32],batch);
+    }
+}
+
+/* Corner + Dot => add like vectors, keep orientation */
+impl<T : Clone + Copy + Debug + Add<T, Output=T>,
+     U : Clone + Copy + Debug + Add<U, Output=U>> Add<Dot<T,U>> for CSticky<T,U> {
+    type Output = CSticky<T,U>;
+    
+    fn add(self, other: Dot<T,U>) -> CSticky<T,U> {
+        CSticky(self.0, self.1+other)
     }
 }
 
@@ -203,6 +284,11 @@ pub fn rpixel<T : Clone + Copy,
     Area(x,y)
 }
 
+pub type RCorner = RSticky<i32,i32>;
+pub fn rcorner(x: CCorner, y: CCorner) -> RCorner {
+    RSticky(x,y)
+}
+
 /*** impls for area types ***/
 
 impl<T: Clone + Copy + From<u8>,
@@ -213,11 +299,15 @@ impl<T: Clone + Copy + From<u8>,
     }
 }
 
-impl<T: Clone + Copy + Add<T, Output=T>,
-     U: Clone + Copy + Add<U, Output=U>> Area<T,U> {
+impl<T: Clone + Copy + Add<T, Output=T> + Sub<T, Output=T>,
+     U: Clone + Copy + Add<U, Output=U> + Sub<U, Output=U>> Area<T,U> {
     
     pub fn expand(&self) -> Area<T,U> {
         Area(self.0, self.0+self.1)
+    }
+    
+    pub fn contract(&self) -> Area<T,U> {
+        Area(self.0, self.1-self.0)
     }
     
     pub fn rectangle(&self) -> [Dot<T,U>;4] {
@@ -238,8 +328,8 @@ impl<T : Clone + Copy + Into<f64>,
     }
 }
 
-impl<T : Clone + Copy + Into<f64> + Add<T, Output=T>,
-     U : Clone + Copy + Into<f64> + Add<U, Output=U>> Input for Area<T,U> {
+impl<T : Clone + Copy + Into<f64> + Add<T, Output=T> + Sub<T, Output=T>,
+     U : Clone + Copy + Into<f64> + Add<U, Output=U> + Sub<U, Output=U>> Input for Area<T,U> {
     fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
         for c in self.rectangle().iter() {
             attrib.add_f32(&[c.0.into() as f32,c.1.into() as f32],batch);
@@ -255,6 +345,18 @@ impl<T : Clone + Copy + Add<T, Output=T>,
     
     fn add(self, other: Dot<T,U>) -> Area<T,U> {
         Area(self.0 + other, self.1)
+    }         
+}
+
+/* Area + Corner => offset and keep orientation */
+impl<T : Clone + Copy + Debug + Add<T, Output=T> + Sub<T, Output=T>,
+     U : Clone + Copy + Debug + Add<U, Output=U> + Sub<U, Output=U>>
+        Add<CSticky<T,U>> for Area<T,U> {
+    type Output = RSticky<T,U>;
+    
+    fn add(self, other: CSticky<T,U>) -> RSticky<T,U> {
+        let r = self.expand();
+        RSticky(CSticky(other.0,other.1+r.0),CSticky(other.0,other.1+r.1))
     }         
 }
 
