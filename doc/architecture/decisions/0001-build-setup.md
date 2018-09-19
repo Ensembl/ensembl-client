@@ -16,7 +16,7 @@ A build tool is necessary for various tasks such as compile, optimise and bundle
 
 [Babel](https://babeljs.io/) is used along with Webpack for transpiling of TypeScript.
 
-Linters are also used for TypeScript and SASS to enforce code best practices and detect potential issues.
+Linters are also used for TypeScript and SASS to enforce code best practices and detect potential issues. Also, `git` hooks are used through `npm` packages, `lint-staged` and `husky`, to do automated code formatting and linting.
 
 ## Consequences
 
