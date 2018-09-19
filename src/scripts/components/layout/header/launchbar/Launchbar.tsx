@@ -44,7 +44,7 @@ class Launchbar extends PureComponent<LaunchbarProps> {
         <div className="categories-wrapper">
           <div className="categories">
             {launchbarConfig.categories.map((category: LaunchbarCategory) => (
-              <dl className={this.getSeparatorClass(category.separator)}>
+              <dl className={this.getSeparatorClass(category.separator)} key={category.name}>
                 {category.apps.map((app: LaunchbarApp) => (
                   <LaunchbarIcon
                     app={app}
@@ -83,7 +83,8 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  changeCurrentApp: (currentApp: string) => dispatch(changeCurrentApp(currentApp))
+  changeCurrentApp: (currentApp: string) =>
+    dispatch(changeCurrentApp(currentApp))
 });
 
 export default withRouter(
