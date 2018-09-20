@@ -1,5 +1,5 @@
 mod stretch;
-mod pin;
+mod pintape;
 mod fixpage;
 mod shapeimpl;
 mod util;
@@ -19,7 +19,8 @@ pub use shape::fixpage::{
     page_texture,
 };
 
-pub use shape::pin::{
+pub use shape::pintape::{
+    pin_rectangle,
     pin_texture,
     pin_mathsshape,
 };
