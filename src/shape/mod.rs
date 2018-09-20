@@ -23,6 +23,7 @@ pub use shape::pintape::{
     pin_rectangle,
     pin_texture,
     pin_mathsshape,
+    tape_rectangle,
 };
 
 pub use shape::stretch::{

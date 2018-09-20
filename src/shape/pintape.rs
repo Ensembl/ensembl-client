@@ -9,12 +9,12 @@ use program::{
 
 use types::{
     CLeaf, CPixel, RPixel, CFraction, cfraction, Dot, AxisSense, 
-    Bounds, area_size
+    Bounds, area_size, CTape, Rect, Edge
 };
 
 use shape::{ Shape, ColourSpec, MathsShape };
 use shape::util::{
-    rectangle_p, rectangle_t,
+    rectangle_p, rectangle_t, rectangle_c,
     multi_gl, poly_p, vertices_poly,
     vertices_rect, vertices_hollowpoly,
     despot
@@ -26,26 +26,39 @@ use drawing::Artist;
  * PinRect
  */
 
+enum PinOrTape {
+    Pin(Rect<i32,i32>),
+    Tape(Rect<i32,Edge<i32>>)
+}
+
 pub struct PinRect {
     origin: CLeaf,
-    offset: CPixel,
-    size: CPixel,
+    offset: PinOrTape,
     colspec: ColourSpec,
     geom: ProgramType
 }
 
 impl PinRect {
-    pub fn new(origin: CLeaf, offset: CPixel, size: CPixel, colspec: &ColourSpec, geom: ProgramType) -> PinRect {
-        PinRect { origin, offset, size, colspec: colspec.clone(), geom }
+    fn new(origin: CLeaf, offset: PinOrTape, colspec: &ColourSpec, geom: ProgramType) -> PinRect {
+        PinRect { origin, offset, colspec: colspec.clone(), geom }
     }
 }
 
 impl Shape for PinRect {
     fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, _texpos: Option<RPixel>) {
         let b = vertices_rect(geom,self.colspec.to_group(geom_name));
-        rectangle_p(b,geom,"aVertexPosition",
-                &area_size(self.offset,self.size));
-        multi_gl(b,geom,"aOrigin",&self.origin,4);
+        match self.offset {
+            PinOrTape::Pin(offset) => {
+                rectangle_p(b,geom,"aVertexPosition",&offset);
+                multi_gl(b,geom,"aOrigin",&self.origin,4);
+            },
+            PinOrTape::Tape(offset) => {
+                let offset = offset.x_edge(AxisSense::Pos,AxisSense::Pos);
+                rectangle_c(b,geom,"aVertexPosition","aVertexSign",&offset);
+                multi_gl(b,geom,"aOrigin",&self.origin,4);
+                
+            },
+        };
         if let ColourSpec::Colour(c) = self.colspec {
             multi_gl(b,geom,"aVertexColour",&c,4);
         }
@@ -54,9 +67,14 @@ impl Shape for PinRect {
     fn get_geometry(&self) -> ProgramType { self.geom }
 }
 
-pub fn pin_rectangle(r: &CLeaf, f: &CPixel, s: &CPixel, colour: &ColourSpec) -> Box<Shape> {
+pub fn pin_rectangle(r: &CLeaf, f: &Rect<i32,i32>, colour: &ColourSpec) -> Box<Shape> {
     let g = despot(PTGeom::Pin,PTMethod::Triangle,colour);
-    Box::new(PinRect::new(*r,*f,*s,colour,g))
+    Box::new(PinRect::new(*r,PinOrTape::Pin(*f),colour,g))
+}
+
+pub fn tape_rectangle(r: &CLeaf, f: &Rect<i32,Edge<i32>>, colour: &ColourSpec) -> Box<Shape> {
+    let g = despot(PTGeom::Tape,PTMethod::Triangle,colour);
+    Box::new(PinRect::new(*r,PinOrTape::Tape(*f),colour,g))
 }
 
 /*
