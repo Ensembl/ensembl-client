@@ -6,7 +6,7 @@ use debug::testcards::common::{ daft, bio_daft, wiggly };
 
 use shape::{
     fix_rectangle, fix_texture,
-    page_texture,  pin_texture,  pin_mathsshape,
+    page_texture,  pin_texture,  pin_mathsshape, pin_rectangle,
     stretch_rectangle, stretch_texture, stretch_wiggle,
     Spot, ColourSpec, MathsShape,
 };
@@ -137,6 +137,9 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                                10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
                                &ColourSpec::Colour(colour)));
             }
+        }
+        if yidx == middle+3 {
+            c.add_shape(pin_rectangle(&cleaf(0.,y-10),&cpixel(0,-10),&cpixel(20,20),&ColourSpec::Colour(Colour(128,0,0))));
         }
         if yidx == middle {
             let tx = bitmap_texture(

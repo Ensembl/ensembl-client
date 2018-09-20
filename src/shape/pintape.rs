@@ -7,7 +7,10 @@ use program::{
     Input
 };
 
-use types::{ CLeaf, CPixel, RPixel, CFraction, cfraction, Dot, AxisSense, Bounds };
+use types::{
+    CLeaf, CPixel, RPixel, CFraction, cfraction, Dot, AxisSense, 
+    Bounds, area_size
+};
 
 use shape::{ Shape, ColourSpec, MathsShape };
 use shape::util::{
@@ -18,6 +21,43 @@ use shape::util::{
 };
 
 use drawing::Artist;
+
+/*
+ * PinRect
+ */
+
+pub struct PinRect {
+    origin: CLeaf,
+    offset: CPixel,
+    size: CPixel,
+    colspec: ColourSpec,
+    geom: ProgramType
+}
+
+impl PinRect {
+    pub fn new(origin: CLeaf, offset: CPixel, size: CPixel, colspec: &ColourSpec, geom: ProgramType) -> PinRect {
+        PinRect { origin, offset, size, colspec: colspec.clone(), geom }
+    }
+}
+
+impl Shape for PinRect {
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, _texpos: Option<RPixel>) {
+        let b = vertices_rect(geom,self.colspec.to_group(geom_name));
+        rectangle_p(b,geom,"aVertexPosition",
+                &area_size(self.offset,self.size));
+        multi_gl(b,geom,"aOrigin",&self.origin,4);
+        if let ColourSpec::Colour(c) = self.colspec {
+            multi_gl(b,geom,"aVertexColour",&c,4);
+        }
+    }
+    
+    fn get_geometry(&self) -> ProgramType { self.geom }
+}
+
+pub fn pin_rectangle(r: &CLeaf, f: &CPixel, s: &CPixel, colour: &ColourSpec) -> Box<Shape> {
+    let g = despot(PTGeom::Pin,PTMethod::Triangle,colour);
+    Box::new(PinRect::new(*r,*f,*s,colour,g))
+}
 
 /*
  * PinPoly
