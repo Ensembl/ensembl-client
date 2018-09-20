@@ -4,7 +4,7 @@ use std::hash::Hash;
 use std::hash::Hasher;
 use std::collections::hash_map::DefaultHasher;
 
-use types::{ CPixel, RPixel, rpixel };
+use types::{ CPixel, RPixel, area_size };
 
 use alloc::Ticket;
 use alloc::Allocator;
@@ -92,7 +92,7 @@ impl Drawing {
     pub fn measure(&self, src: &LeafDrawingManager) -> RPixel {
         let size = src.allocator.size(&self.0.ticket);
         let pos = src.allocator.position(&self.0.ticket);
-        rpixel(pos,size)
+        area_size(pos,size)
     }
 }
 

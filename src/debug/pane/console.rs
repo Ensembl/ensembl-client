@@ -33,7 +33,6 @@ impl DebugFolderEntry {
     }
     
     pub fn mark(&mut self) {
-        console!("mark {:?}",&self.name);
         self.add("-- MARK --");
     }
     

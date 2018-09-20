@@ -28,19 +28,7 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=11
-FILE_NAME_0=1223;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcontroller%2Fglobal.rs;0;4
-FILE_NAME_1=296;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcontroller%2Fuser.rs;0;4
-FILE_NAME_2=198;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcontroller%2Frunner.rs;0;4
-FILE_NAME_3=698;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcontroller%2Ftimers.rs;0;4
-FILE_NAME_4=7439;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdebug%2Ftestcards%2Fbigscience.rs;0;4
-FILE_NAME_5=0;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdebug%2Ftestcards%2Fcommon.rs;0;4
-FILE_NAME_6=0;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcampaign%2Fcampaign.rs;0;4
-FILE_NAME_7=2150;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcampaign%2Fstate.rs;0;4
-FILE_NAME_8=244;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcampaign%2Fmod.rs;0;4
-FILE_NAME_9=742;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdebug%2Ftestcards%2Fvisual.rs;0;4
-FILE_NAME_10=0;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fstage.rs;0;4
-FILE_NAME_11=8372;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Falloc.rs;0;4
+current_page=-1
 
 [VTE]
 last_dir=/home/dan

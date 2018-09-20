@@ -3,7 +3,7 @@ use program::{
     ProgramAttribs, DataBatch, DataGroup, ProgramType, PTMethod, 
     PTGeom, PTSkin
 };
-use types::{ RFraction, CLeaf, RPixel, RLeaf, cleaf, RCorner };
+use types::{ RFraction, CLeaf, RPixel, RLeaf, cleaf, Rect, Edge };
 use shape::ColourSpec;
 use program::Input;
 
@@ -26,7 +26,7 @@ pub fn rectangle_p(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &RPix
 }
 
 pub fn rectangle_c(b: DataBatch, pdata: &mut ProgramAttribs, 
-                   key: &str, key_sgn: &str, p: &RCorner) {
+                   key: &str, key_sgn: &str, p: &Rect<Edge<i32>,Edge<i32>>) {
     rectangle_p(b,pdata,key,&p.quantity());
     if let Some(obj) = pdata.get_object(key_sgn) {
         obj.add_data(&b,&[&p.corners()]);

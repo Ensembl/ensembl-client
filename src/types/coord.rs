@@ -2,6 +2,7 @@ use stage::Stage;
 use std::fmt::Debug;
 use std::ops::{ Add, Sub, Mul, Div, Neg };
 use program::{ Object, ObjectAttrib, DataBatch, Input };
+use types::area::{ area, Rect };
 
 /***** Direction types *****/
 
@@ -31,40 +32,50 @@ pub const BOTTOMRIGHT: Corner = Corner(AxisSense::Neg,AxisSense::Neg);
 
 impl From<AxisSense> for f32 {
     fn from(xs: AxisSense) -> f32 {
+        let x : f64 = xs.into();
+        (x as f64) as f32
+    }
+}
+
+impl From<AxisSense> for f64 {
+    fn from(xs: AxisSense) -> f64 {
         match xs {
             AxisSense::Pos =>  1.0,
             AxisSense::Neg => -1.0
-        }
+        }        
     }
 }
+
+#[derive(Clone,Copy,Debug)]
+pub struct Edge<T>(AxisSense,T);
+
+pub fn cedge<T: Clone+Copy+Debug,U: Clone+Copy+Debug>
+        (c: Corner, d: Dot<T,U>) -> Dot<Edge<T>,Edge<U>> {
+    Dot(Edge(c.0,d.0),Edge(c.1,d.1))
+}
+
+impl<T: Clone+Copy+Debug+Add<T,Output=U>,
+     U: Clone+Copy+Debug> Add<T> for Edge<T> {
+    type Output = Edge<U>;
+    
+    fn add(self, other: T) -> Self::Output {
+        Edge(self.0, self.1+other)
+    }
+}
+
+impl From<Dot<Corner,Corner>> for Rect<AxisSense,AxisSense> {
+    fn from(c: Dot<Corner,Corner>) -> Rect<AxisSense,AxisSense> {
+        area(Dot((c.0).0,(c.0).1),Dot((c.1).0,(c.1).1))
+    }
+}
+
+pub type EPixel = Dot<Edge<i32>,Edge<i32>>;
 
 impl Input for Corner {
     fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
         let (a,b): (f32,f32) = (self.0.into(), self.1.into());
         attrib.add_f32(&[a,b],batch);
     }
-}
-
-impl Corners {
-    pub fn rectangle(&self) -> [Corner;4] {
-        [
-            self.0,
-            Corner((self.0).0,(self.1).1),
-            self.1,
-            Corner((self.1).0,(self.0).1)
-        ]
-    }
-}
-
-#[derive(Clone,Copy,Debug)]
-pub struct Corners(pub Corner, pub Corner);
-impl Input for Corners {
-    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
-        for c in self.rectangle().iter() {
-            let (a,b) : (f32,f32) = (c.0.into(), c.1.into());
-            attrib.add_f32(&[a,b],batch);
-        }
-    }    
 }
 
 #[derive(Clone,Copy,Debug)]
@@ -75,14 +86,13 @@ pub struct CSticky<T: Clone + Copy + Debug,
 pub struct RSticky<T: Clone + Copy + Debug,
                    U: Clone + Copy + Debug>(CSticky<T,U>,CSticky<T,U>);
 
-impl<T: Clone + Copy + Debug + Add<T,Output=T> + Sub<T,Output=T>,
-     U: Clone + Copy + Debug + Add<U,Output=U> + Sub<U,Output=U>> RSticky<T,U> {
-    pub fn corners(&self) -> Corners {
-        Corners((self.0).0,(self.1).0)
+impl<T: Clone+Copy+Debug, U: Clone+Copy+Debug> Dot<Edge<T>,Edge<U>> {
+    pub fn corner(&self) -> Corner {
+        Corner((self.0).0,(self.1).0)
     }
     
-    pub fn quantity(&self) -> Area<T,U> {
-        Area((self.0).1,(self.1).1).contract()
+    pub fn quantity(&self) -> Dot<T,U> {
+        Dot((self.0).1,(self.1).1)
     }
 }
 
@@ -183,9 +193,6 @@ pub fn cleaf(x: f32, y: i32) -> CLeaf { Dot(x,y) }
 pub type CPixel = Dot<i32,i32>;
 pub fn cpixel(x: i32, y: i32) -> CPixel { Dot(x,y) }
 
-pub type CCorner = CSticky<i32,i32>;
-pub fn ccorner(c: Corner, q: Dot<i32,i32>) -> CCorner { CSticky(c,q) }
-
 /*** impls for dot types ***/
 
 impl<T: Clone + Copy + Mul<T, Output=U>,U: Add<U, Output=U>> Dot<T,T> {
@@ -220,12 +227,16 @@ impl<T : Clone + Copy + Debug + Add<T, Output=T>,
 }
 
 /* Dot + Dot => add like vectors */
-impl<T : Clone + Copy + Add<T, Output=T>,
-     U : Clone + Copy + Add<U, Output=U>> Add for Dot<T,U> {
+impl<A: Clone+Copy+Debug + Add<C,Output=T>,
+     B: Clone+Copy+Debug + Add<D,Output=U>,
+     C: Clone+Copy+Debug,
+     D: Clone+Copy+Debug,
+     T: Clone+Copy+Debug,
+     U: Clone+Copy+Debug> Add<Dot<C,D>> for Dot<A,B> {
     type Output = Dot<T,U>;
     
-    fn add(self,other: Dot<T,U>) -> Dot<T,U> {
-        Dot(self.0+other.0, self.1+other.1)
+    fn add(self, other: Dot<C,D>) -> Self::Output {
+        Dot(self.0 + other.0, self.1+other.1)
     }
 }
 
@@ -258,126 +269,4 @@ impl<T: Clone + Copy + Div<T, Output=T> + Into<f32>,
         Dot((self.0.into() as f64 / other.0.into() as f64) as f32,
             (self.1.into() as f64 / other.1.into() as f64) as f32)
     }
-}
-
-/***** Area types *****/
-
-#[derive(Clone,Copy,Debug)]
-pub struct Area<T: Clone + Copy,
-                U: Clone + Copy>(pub Dot<T,U>, pub Dot<T,U>);
-
-pub type RFraction = Area<f32,f32>;
-pub fn rfraction<T : Clone + Copy,
-                 U : Clone + Copy>(x: Dot<T,U>, y: Dot<T,U>) -> Area<T,U> { 
-    Area(x,y)
-}
-
-pub type RLeaf = Area<f32,i32>;
-pub fn rleaf<T : Clone + Copy,
-                 U : Clone + Copy>(x: Dot<T,U>, y: Dot<T,U>) -> Area<T,U> { 
-    Area(x,y)
-}
-
-pub type RPixel = Area<i32,i32>;
-pub fn rpixel<T : Clone + Copy,
-                 U : Clone + Copy>(x: Dot<T,U>, y: Dot<T,U>) -> Area<T,U> { 
-    Area(x,y)
-}
-
-pub type RCorner = RSticky<i32,i32>;
-pub fn rcorner(x: CCorner, y: CCorner) -> RCorner {
-    RSticky(x,y)
-}
-
-/*** impls for area types ***/
-
-impl<T: Clone + Copy + From<u8>,
-     U: Clone + Copy + From<u8>> Area<T,U> {
-
-    pub fn at_origin(self) -> Area<T,U> {
-        Area(Dot(0.into(),0.into()),self.1)
-    }
-}
-
-impl<T: Clone + Copy + Add<T, Output=T> + Sub<T, Output=T>,
-     U: Clone + Copy + Add<U, Output=U> + Sub<U, Output=U>> Area<T,U> {
-    
-    pub fn expand(&self) -> Area<T,U> {
-        Area(self.0, self.0+self.1)
-    }
-    
-    pub fn contract(&self) -> Area<T,U> {
-        Area(self.0, self.1-self.0)
-    }
-    
-    pub fn rectangle(&self) -> [Dot<T,U>;4] {
-        let x = self.expand();
-        [
-            x.0,
-            Dot((x.0).0, (x.1).1), 
-            x.1,
-            Dot((x.1).0, (x.0).1)
-        ]
-    }
-}
-
-impl<T : Clone + Copy + Into<f64>,
-     U : Clone + Copy + Into<f64>> Area<T,U> {    
-    pub fn as_fraction(&self) -> RFraction {
-        rfraction(self.0.as_fraction(),self.1.as_fraction())
-    }
-}
-
-impl<T : Clone + Copy + Into<f64> + Add<T, Output=T> + Sub<T, Output=T>,
-     U : Clone + Copy + Into<f64> + Add<U, Output=U> + Sub<U, Output=U>> Input for Area<T,U> {
-    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
-        for c in self.rectangle().iter() {
-            attrib.add_f32(&[c.0.into() as f32,c.1.into() as f32],batch);
-        }
-    }
-}
-
-/* Area + Dot => offset */
-impl<T : Clone + Copy + Add<T, Output=T>,
-     U : Clone + Copy + Add<U, Output=U>>
-        Add<Dot<T,U>> for Area<T,U> {
-    type Output = Area<T,U>;
-    
-    fn add(self, other: Dot<T,U>) -> Area<T,U> {
-        Area(self.0 + other, self.1)
-    }         
-}
-
-/* Area + Corner => offset and keep orientation */
-impl<T : Clone + Copy + Debug + Add<T, Output=T> + Sub<T, Output=T>,
-     U : Clone + Copy + Debug + Add<U, Output=U> + Sub<U, Output=U>>
-        Add<CSticky<T,U>> for Area<T,U> {
-    type Output = RSticky<T,U>;
-    
-    fn add(self, other: CSticky<T,U>) -> RSticky<T,U> {
-        let r = self.expand();
-        RSticky(CSticky(other.0,other.1+r.0),CSticky(other.0,other.1+r.1))
-    }         
-}
-
-/* Area * Dot => scale size and offset as given, into self */
-impl<T : Clone + Copy + Mul<T, Output=T>,
-     U : Clone + Copy + Mul<U, Output=U>>
-        Mul<Dot<T,U>> for Area<T,U> {
-    type Output = Area<T,U>;
-    
-    fn mul(self, other: Dot<T,U>) -> Area<T,U> {
-        Area(self.0 * other, self.1 * other)
-    }         
-}
-
-/* Area / Dot => scale size and offset as given, into fraction */
-impl<T : Clone + Copy + Div<T, Output=T> + Into<f32>,
-     U : Clone + Copy + Div<U, Output=U> + Into<f32>>
-        Div<Dot<T,U>> for Area<T,U> {
-    type Output = Area<f32,f32>;
-    
-    fn div(self, other: Dot<T,U>) -> Area<f32,f32> {
-        Area(self.0 / other, self.1 / other)
-    }         
 }

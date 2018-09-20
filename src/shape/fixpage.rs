@@ -2,7 +2,7 @@ use std::rc::Rc;
 use arena::ArenaData;
 
 use program::{ ProgramType, PTGeom, PTSkin, PTMethod, ProgramAttribs };
-use types::{ CPixel, RPixel, RCorner, CCorner };
+use types::{ CPixel, RPixel, EPixel, Rect, Edge };
 
 use shape::{ Shape, ColourSpec };
 use shape::util::{
@@ -17,13 +17,13 @@ use drawing::Artist;
  */
 
 pub struct FixRect {
-    points: RCorner,
+    points: Rect<Edge<i32>,Edge<i32>>,
     colspec: ColourSpec,
     geom: ProgramType
 }
 
 impl FixRect {
-    pub fn new(points: RCorner, colspec: ColourSpec, geom: ProgramType) -> FixRect {
+    pub fn new(points: Rect<Edge<i32>,Edge<i32>>, colspec: ColourSpec, geom: ProgramType) -> FixRect {
         FixRect { points, colspec, geom }
     }    
 }
@@ -40,17 +40,17 @@ impl Shape for FixRect {
     fn get_geometry(&self) -> ProgramType { self.geom }
 }
 
-fn rectangle(p: &RCorner, colspec: &ColourSpec, gt: PTGeom) -> Box<Shape> {
+fn rectangle(p: &Rect<Edge<i32>,Edge<i32>>, colspec: &ColourSpec, gt: PTGeom) -> Box<Shape> {
     let pt = despot(gt,PTMethod::Triangle,colspec);
     Box::new(FixRect::new(*p,colspec.clone(),pt))
 }
 
-pub fn fix_rectangle(p: &RCorner, colour: &ColourSpec) -> Box<Shape> {
+pub fn fix_rectangle(p: &Rect<Edge<i32>,Edge<i32>>, colour: &ColourSpec) -> Box<Shape> {
     rectangle(p,colour,PTGeom::Fix)
 }
 
 #[allow(dead_code)]
-pub fn page_rectangle(p: &RCorner, colour: &ColourSpec) -> Box<Shape> {
+pub fn page_rectangle(p: &Rect<Edge<i32>,Edge<i32>>, colour: &ColourSpec) -> Box<Shape> {
     rectangle(p,colour,PTGeom::Page)
 }
 
@@ -59,14 +59,14 @@ pub fn page_rectangle(p: &RCorner, colour: &ColourSpec) -> Box<Shape> {
  */
 
 pub struct FixTexture {
-    pos: CCorner,
+    pos: EPixel,
     scale: CPixel,
     geom: ProgramType,
     artist: Rc<Artist>
 }
 
 impl FixTexture {
-    pub fn new(pos: &CCorner, scale: &CPixel, geom: ProgramType, artist: &Rc<Artist>) -> FixTexture {
+    pub fn new(pos: &EPixel, scale: &CPixel, geom: ProgramType, artist: &Rc<Artist>) -> FixTexture {
         FixTexture {
             pos: *pos, scale: *scale, geom, artist: artist.clone()
         }
@@ -76,7 +76,8 @@ impl FixTexture {
 impl Shape for FixTexture {
     fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData, texpos: Option<RPixel>) {
         if let Some(tp) = texpos {
-            let p = tp.at_origin() * self.scale + self.pos;
+            let p : RPixel = tp.at_origin() * self.scale;
+            let p : Rect<Edge<i32>,Edge<i32>> = self.pos + p;
             let t = tp.as_fraction() / adata.canvases.flat.size().as_fraction();
             let b = vertices_rect(geom,None);
             rectangle_c(b,geom,"aVertexPositive","aVertexSign",&p);
@@ -89,15 +90,15 @@ impl Shape for FixTexture {
     fn get_artist(&self) -> Option<Rc<Artist>> { Some(self.artist.clone()) }
 }
 
-fn texture(a: Rc<Artist>, origin: &CCorner, scale: &CPixel, gt: PTGeom) -> Box<Shape> {
+fn texture(a: Rc<Artist>, origin: &EPixel, scale: &CPixel, gt: PTGeom) -> Box<Shape> {
     let pt = ProgramType(gt,PTMethod::Triangle,PTSkin::Texture);
     Box::new(FixTexture::new(origin,scale,pt,&a))
 }
 
-pub fn fix_texture(req: Rc<Artist>, origin: &CCorner, scale: &CPixel) -> Box<Shape> {
+pub fn fix_texture(req: Rc<Artist>, origin: &EPixel, scale: &CPixel) -> Box<Shape> {
     texture(req, origin, scale, PTGeom::Fix)
 }
 
-pub fn page_texture(req: Rc<Artist>, origin: &CCorner, scale: &CPixel) -> Box<Shape> {
+pub fn page_texture(req: Rc<Artist>, origin: &EPixel, scale: &CPixel) -> Box<Shape> {
     texture(req, origin, scale, PTGeom::Page)
 }

@@ -133,8 +133,8 @@ impl PTSkin {
     }
 }
 
-const GEOM_ORDER : [PTGeom;5] = [
-    PTGeom::Stretch, PTGeom::Pin, PTGeom::Page, PTGeom::Tape, PTGeom::Fix
+const GEOM_ORDER : [PTGeom;4] = [
+    PTGeom::Stretch, PTGeom::Pin, PTGeom::Page, /*PTGeom::Tape,*/ PTGeom::Fix
 ];
 
 const SKINMETH_ORDER : [(PTSkin,PTMethod);5] = [

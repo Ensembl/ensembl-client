@@ -44,12 +44,12 @@ pub struct RectMark {
 }
 
 impl Mark for RectMark {
-    fn get_offset(&self) -> CPixel { self.coords.0 }
+    fn get_offset(&self) -> CPixel { self.coords.offset() }
 }
 
 impl Artist for RectMark {
     fn measure(&self, _canvas: &mut ArenaCanvases) -> CPixel {
-        self.coords.1
+        self.coords.area()
     }
 
     fn draw(&self, canvs: &mut ArenaCanvases, pos: CPixel) {
