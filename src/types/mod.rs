@@ -6,7 +6,7 @@ mod area;
 pub use types::coord::{
     CPixel, CLeaf, CFraction, CTape,
     cpixel, cleaf, cfraction, cedge,
-    Edge, EPixel,
+    Edge, EPixel, Corner,
     Dot, Move, Distance, Units, Axis, AxisSense,
     LEFT, RIGHT, UP, DOWN,
     TOPLEFT, BOTTOMLEFT, TOPRIGHT, BOTTOMRIGHT
