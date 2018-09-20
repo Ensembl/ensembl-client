@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use std::f32;
 use std::rc::Rc;
 use arena::ArenaData;
@@ -26,20 +27,27 @@ use drawing::Artist;
  * PinRect
  */
 
-enum PinOrTape {
-    Pin(Rect<i32,i32>),
-    Tape(Rect<i32,Edge<i32>>)
+#[derive(Clone,Copy,Debug)]
+enum RPinOrTape<T: Clone+Copy+Debug> {
+    Pin(Rect<T,i32>),
+    Tape(Rect<T,Edge<i32>>)
+}
+
+#[derive(Clone,Copy,Debug)]
+enum CPinOrTape<T: Clone+Copy+Debug> {
+    Pin(Dot<T,i32>),
+    Tape(Dot<T,Edge<i32>>)
 }
 
 pub struct PinRect {
     origin: CLeaf,
-    offset: PinOrTape,
+    offset: RPinOrTape<i32>,
     colspec: ColourSpec,
     geom: ProgramType
 }
 
 impl PinRect {
-    fn new(origin: CLeaf, offset: PinOrTape, colspec: &ColourSpec, geom: ProgramType) -> PinRect {
+    fn new(origin: CLeaf, offset: RPinOrTape<i32>, colspec: &ColourSpec, geom: ProgramType) -> PinRect {
         PinRect { origin, offset, colspec: colspec.clone(), geom }
     }
 }
@@ -48,11 +56,11 @@ impl Shape for PinRect {
     fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, _texpos: Option<RPixel>) {
         let b = vertices_rect(geom,self.colspec.to_group(geom_name));
         match self.offset {
-            PinOrTape::Pin(offset) => {
+            RPinOrTape::Pin(offset) => {
                 rectangle_p(b,geom,"aVertexPosition",&offset);
                 multi_gl(b,geom,"aOrigin",&self.origin,4);
             },
-            PinOrTape::Tape(offset) => {
+            RPinOrTape::Tape(offset) => {
                 let offset = offset.x_edge(AxisSense::Pos,AxisSense::Pos);
                 rectangle_c(b,geom,"aVertexPosition","aVertexSign",&offset);
                 multi_gl(b,geom,"aOrigin",&self.origin,4);
@@ -69,12 +77,12 @@ impl Shape for PinRect {
 
 pub fn pin_rectangle(r: &CLeaf, f: &Rect<i32,i32>, colour: &ColourSpec) -> Box<Shape> {
     let g = despot(PTGeom::Pin,PTMethod::Triangle,colour);
-    Box::new(PinRect::new(*r,PinOrTape::Pin(*f),colour,g))
+    Box::new(PinRect::new(*r,RPinOrTape::Pin(*f),colour,g))
 }
 
 pub fn tape_rectangle(r: &CLeaf, f: &Rect<i32,Edge<i32>>, colour: &ColourSpec) -> Box<Shape> {
     let g = despot(PTGeom::Tape,PTMethod::Triangle,colour);
-    Box::new(PinRect::new(*r,PinOrTape::Tape(*f),colour,g))
+    Box::new(PinRect::new(*r,RPinOrTape::Tape(*f),colour,g))
 }
 
 /*
@@ -82,7 +90,7 @@ pub fn tape_rectangle(r: &CLeaf, f: &Rect<i32,Edge<i32>>, colour: &ColourSpec) -
  */
 
 pub struct PinPoly {
-    origin: CLeaf,
+    origin: CPinOrTape<f32>,
     anchor: Dot<Option<AxisSense>,Option<AxisSense>>,
     size: f32,
     width: f32,
@@ -99,7 +107,16 @@ impl PinPoly {
         let v : Vec<CFraction> = v.iter().map(|s| *s-d).collect();
         let w : Vec<&Input> = v.iter().map(|s| s as &Input).collect();
         poly_p(b,geom,"aVertexPosition",&w);
-        multi_gl(b,geom,"aOrigin",&self.origin,nump);
+        match self.origin {
+            CPinOrTape::Pin(origin) => {
+                multi_gl(b,geom,"aOrigin",&origin,nump);
+            },
+            CPinOrTape::Tape(origin) => {
+                let origin = origin.x_edge(AxisSense::Pos);
+                multi_gl(b,geom,"aOrigin",&origin.quantity(),nump);
+                multi_gl(b,geom,"aVertexSign",&origin.corner(),nump);
+            }
+        }
         if let ColourSpec::Colour(c) = self.colspec {        
             multi_gl(b,geom,"aVertexColour",&c,nump);
         }
@@ -159,18 +176,6 @@ impl Shape for PinPoly {
     fn get_geometry(&self) -> ProgramType { self.geom }
 }
 
-fn pin_poly_impl(gt: PTGeom,
-                 anchor: Dot<Option<AxisSense>,Option<AxisSense>>,
-                 mt: PTMethod, origin: &CLeaf, points: u16,
-                 size: f32, width: f32, offset: f32, 
-                 colspec: &ColourSpec, hollow: bool) -> Box<Shape> {
-    let g = despot(gt,mt,colspec);
-    Box::new(PinPoly {
-        origin: *origin, points, size, offset, width, colspec: colspec.clone(),
-        hollow, geom: g, anchor
-    })
-}
-
 const CIRC_TOL : f32 = 1.; // max px undercut
 
 fn circle_points(r: f32) -> u16 {
@@ -178,10 +183,10 @@ fn circle_points(r: f32) -> u16 {
     (3.54 * (r/CIRC_TOL).sqrt()) as u16
 }
 
-pub fn pin_mathsshape(origin: &CLeaf,
-                      anchor: Dot<Option<AxisSense>,Option<AxisSense>>,
-                      size: f32, width: Option<f32>, ms: MathsShape,
-                      colspec: &ColourSpec) -> Box<Shape> {
+fn poly_impl(pt: PTGeom, origin: &CPinOrTape<f32>,
+             anchor: Dot<Option<AxisSense>,Option<AxisSense>>,
+             size: f32, width: Option<f32>, ms: MathsShape,
+             colspec: &ColourSpec) -> Box<Shape> {
     /* Convert circles to polygons */
     let (points, offset) = match ms {
         MathsShape::Circle => (circle_points(size),0.),
@@ -192,7 +197,26 @@ pub fn pin_mathsshape(origin: &CLeaf,
         Some(width) => (PTMethod::Strip,width,true),
         None        => (PTMethod::Triangle,0.,false)
     };
-    pin_poly_impl(PTGeom::Pin,anchor,mt,origin,points,size,width,offset,colspec,hollow)
+    /* Do it! */
+    let g = despot(pt,mt,colspec);
+    Box::new(PinPoly {
+        origin: *origin, points, size, offset, width, colspec: colspec.clone(),
+        hollow, geom: g, anchor
+    })
+}
+
+pub fn pin_mathsshape(origin: &Dot<f32,i32>,
+                      anchor: Dot<Option<AxisSense>,Option<AxisSense>>,
+                      size: f32, width: Option<f32>, ms: MathsShape,
+                      colspec: &ColourSpec) -> Box<Shape> {
+    poly_impl(PTGeom::Pin,&CPinOrTape::Pin(*origin),anchor,size,width,ms,colspec)
+}
+
+pub fn tape_mathsshape(origin: &Dot<f32,Edge<i32>>,
+                       anchor: Dot<Option<AxisSense>,Option<AxisSense>>,
+                       size: f32, width: Option<f32>, ms: MathsShape,
+                       colspec: &ColourSpec) -> Box<Shape> {
+    poly_impl(PTGeom::Tape,&CPinOrTape::Tape(*origin),anchor,size,width,ms,colspec)
 }
 
 /*
@@ -200,15 +224,16 @@ pub fn pin_mathsshape(origin: &CLeaf,
  */
 
 pub struct PinTexture {
-    origin: CLeaf,
+    pt: PTGeom,
+    origin: CPinOrTape<f32>,
     scale: CPixel,
     artist: Rc<Artist>
 }
 
 impl PinTexture {
-    pub fn new(artist: Rc<Artist>,origin: &CLeaf, scale: &CPixel) -> PinTexture {
+    fn new(pt: PTGeom, artist: Rc<Artist>,origin: &CPinOrTape<f32>, scale: &CPixel) -> PinTexture {
         PinTexture {
-            origin: *origin, scale: *scale,
+            pt, origin: *origin, scale: *scale,
             artist: artist.clone()
         }
     }        
@@ -222,17 +247,30 @@ impl Shape for PinTexture {
             let b = vertices_rect(geom,None);
             rectangle_p(b,geom,"aVertexPosition",&p);
             rectangle_t(b,geom,"aTextureCoord",&t);
-            multi_gl(b,geom,"aOrigin",&self.origin,4);
+            match self.origin {
+                CPinOrTape::Pin(origin) => {
+                    multi_gl(b,geom,"aOrigin",&origin,4);
+                },
+                CPinOrTape::Tape(origin) => {
+                    let origin = origin.x_edge(AxisSense::Pos);
+                    multi_gl(b,geom,"aOrigin",&origin.quantity(),4);
+                    multi_gl(b,geom,"aVertexSign",&origin.corner(),4);
+                }
+            }
         }
     }
 
     fn get_geometry(&self) -> ProgramType {
-        ProgramType(PTGeom::Pin,PTMethod::Triangle,PTSkin::Texture)
+        ProgramType(self.pt,PTMethod::Triangle,PTSkin::Texture)
     }
 
     fn get_artist(&self) -> Option<Rc<Artist>> { Some(self.artist.clone()) }
 }
 
 pub fn pin_texture(a: Rc<Artist>, origin: &CLeaf, scale: &CPixel) -> Box<Shape> {
-    Box::new(PinTexture::new(a,origin,scale))
+    Box::new(PinTexture::new(PTGeom::Pin,a,&CPinOrTape::Pin(*origin),scale))
+}
+
+pub fn tape_texture(a: Rc<Artist>, origin: &Dot<f32,Edge<i32>>, scale: &CPixel) -> Box<Shape> {
+    Box::new(PinTexture::new(PTGeom::Tape,a,&CPinOrTape::Tape(*origin),scale))
 }

@@ -24,6 +24,8 @@ pub use shape::pintape::{
     pin_texture,
     pin_mathsshape,
     tape_rectangle,
+    tape_texture,
+    tape_mathsshape,
 };
 
 pub use shape::stretch::{
