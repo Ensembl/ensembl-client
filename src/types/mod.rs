@@ -12,7 +12,7 @@ pub use types::coord::{
     cpixel,
     cedge, Edge,
     EPixel,
-    Dot, Move, Distance, Units, Axis,
+    Dot, Move, Distance, Units, Axis, AxisSense,
     LEFT, RIGHT, UP, DOWN,
     TOPLEFT, BOTTOMLEFT, TOPRIGHT, BOTTOMRIGHT
 };
@@ -22,6 +22,7 @@ pub use types::area::{
     RFraction,
     RPixel,
     area, Rect, area_size,
+    Bounds,
 };
 
 pub use types::colour::{

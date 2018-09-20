@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 use std::ops::{ Add, Sub, Mul, Div };
 use program::{ Object, ObjectAttrib, DataBatch, Input };
-use types::coord::{ Dot, Edge, Corner, AxisSense };
+use types::coord::{ Dot, Edge, AxisSense };
 
 /***** Rect types *****/
 
@@ -37,6 +37,7 @@ impl<T: Copy + Clone + Debug + Sub<T,Output=T>,
      U: Copy + Clone + Debug + Sub<U,Output=U>> Rect<T,U> {
 
     pub fn offset(&self) -> Dot<T,U> { self.0 }
+    pub fn far_offset(&self) -> Dot<T,U> { self.1 }
 
     pub fn at_origin(self) -> Rect<T,U> {
         Rect(self.0-self.0,self.1-self.0)
@@ -123,3 +124,19 @@ impl<T : Copy + Clone + Debug + Div<T, Output=T> + Into<f32>,
     }         
 }
 
+pub struct Bounds<T: Copy+Clone+Debug + PartialOrd,
+                  U: Copy+Clone+Debug + PartialOrd>(Option<Rect<T,U>>);
+
+impl<T: Copy+Clone+Debug + PartialOrd,
+     U: Copy+Clone+Debug + PartialOrd> Bounds<T,U> {
+    pub fn new() -> Bounds<T,U> { Bounds(None) }
+    pub fn get(&self) -> Option<Rect<T,U>> { self.0 }
+    
+    pub fn add(&mut self, pt: Dot<T,U>) {
+        if self.0.is_none() { self.0 = Some(area(pt,pt)); }
+        self.0 = Some(
+            Rect(self.0.unwrap().0.min(&pt),
+                 self.0.unwrap().1.max(&pt))
+        )
+    }
+}
