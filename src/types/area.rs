@@ -23,6 +23,16 @@ pub fn area_size<T: Clone+Copy+Debug + Add<T,Output=T>,
 
 /*** impls for area types ***/
 
+impl<T: Clone+Copy+Debug, U: Clone+Copy+Debug> Rect<T,U> {
+    pub fn x_edge(&self, x1: AxisSense, x2: AxisSense) -> Rect<Edge<T>,U> {
+        Rect(self.0.x_edge(x1),self.1.x_edge(x2))
+    }
+
+    pub fn y_edge(&self, x1: AxisSense, x2: AxisSense) -> Rect<T,Edge<U>> {
+        Rect(self.0.y_edge(x1),self.1.y_edge(x2))
+    }
+}
+
 impl<T: Clone+Copy+Debug, U: Clone+Copy+Debug> Rect<Edge<T>,Edge<U>> {
     pub fn corners(&self) -> Rect<AxisSense,AxisSense> {
         Dot((self.0).corner(),(self.1).corner()).into()

@@ -31,10 +31,16 @@ pub const TOPRIGHT   : Corner = Corner(AxisSense::Neg,AxisSense::Pos);
 pub const BOTTOMLEFT : Corner = Corner(AxisSense::Pos,AxisSense::Neg);
 pub const BOTTOMRIGHT: Corner = Corner(AxisSense::Neg,AxisSense::Neg);
 
+impl Input for f32 {
+    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
+        attrib.add_f32(&[*self],batch);
+    }
+}
+
 impl From<AxisSense> for f32 {
     fn from(xs: AxisSense) -> f32 {
         let x : f64 = xs.into();
-        (x as f64) as f32
+        x as f32
     }
 }
 
@@ -44,6 +50,16 @@ impl From<AxisSense> for f64 {
             AxisSense::Pos =>  1.0,
             AxisSense::Neg => -1.0
         }        
+    }
+}
+
+impl<T: Clone+Copy+Debug, U: Clone+Copy+Debug> Dot<T,U> {
+    pub fn x_edge(&self,xs: AxisSense) -> Dot<Edge<T>,U> {
+        Dot(Edge(xs,self.0),self.1)
+    }
+
+    pub fn y_edge(&self,xs: AxisSense) -> Dot<T,Edge<U>> {
+        Dot(self.0,Edge(xs,self.1))
     }
 }
 
@@ -62,6 +78,12 @@ impl<T: Clone+Copy+Debug+Add<T,Output=U>,
     fn add(self, other: T) -> Self::Output {
         Edge(self.0, self.1+other)
     }
+    
+}
+
+impl<T: Clone+Copy+Debug> Edge<T> {
+    pub fn corner(self) -> AxisSense { self.0 }
+    pub fn quantity(self) -> T { self.1 }
 }
 
 impl From<Dot<Corner,Corner>> for Rect<AxisSense,AxisSense> {
@@ -193,6 +215,9 @@ pub fn cleaf(x: f32, y: i32) -> CLeaf { Dot(x,y) }
 
 pub type CPixel = Dot<i32,i32>;
 pub fn cpixel(x: i32, y: i32) -> CPixel { Dot(x,y) }
+
+pub type CTape = Dot<f32,Edge<i32>>;
+pub fn ctape(x: f32, y: Edge<i32>) -> CTape { Dot(x,y) }
 
 /*** impls for dot types ***/
 
