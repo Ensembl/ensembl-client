@@ -14,7 +14,7 @@ use stdweb::web::html_element::{
 use stdweb::web::TypedArray;
 use stdweb::unstable::TryInto;
 use types::{
-    Colour, CPixel, RPixel, cpixel, Area, Dot
+    Colour, CPixel, RPixel, cpixel, Dot
 };
 
 use dom::domutil;
@@ -101,16 +101,18 @@ impl FlatCanvas {
     
     pub fn bitmap(&self, data: &Vec<u8>, coords: RPixel) {
         let pixels: TypedArray<u8> = data[..].into();
-        let Area(Dot(x,y),Dot(width,height)) = coords;
+        let Dot(x,y) = coords.offset();
+        let Dot(w,h) = coords.area();
         js! {
-            var id = @{&self.context}.createImageData(@{width},@{height});
+            var id = @{&self.context}.createImageData(@{w},@{h});
             id.data.set(@{pixels});
             @{&self.context}.putImageData(id,@{x},@{y});
         };
     }
     
     pub fn rectangle(&self, coords: RPixel, col: &Colour) {
-        let Area(Dot(x,y),Dot(w,h)) = coords;
+        let Dot(x,y) = coords.offset();
+        let Dot(w,h) = coords.area();
         self.context.set_fill_style_color(&col.to_css()[..]);
         self.context.fill_rect(x as f64,y as f64,w as f64,h as f64);
     }

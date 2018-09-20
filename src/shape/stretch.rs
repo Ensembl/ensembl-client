@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use arena::ArenaData;
 
-use types::{ CLeaf, RLeaf, RPixel, cfraction, rfraction, cleaf, rleaf };
+use types::{ CLeaf, RLeaf, RPixel, cfraction, cleaf, area_size };
 
 use shape::{ Shape, ColourSpec, Spot };
 use shape::util::{
@@ -107,14 +107,14 @@ impl Shape for StretchTexture {
             let t = tp.as_fraction() / adata.canvases.flat.size().as_fraction();
             
             /* some cards baulk at very large textured areas, so split */
-            let mut chunks = ((self.pos.1).0.abs() / CHUNK_SIZE) as i32;
+            let mut chunks = ((self.pos.area()).0.abs() / CHUNK_SIZE) as i32;
             if chunks < 1 { chunks = 1; }
             
-            let widthp = (self.pos.1).0 / chunks as f32;
-            let widtht = t.1 / cfraction(chunks as f32,1.);
+            let widthp = (self.pos.area()).0 / chunks as f32;
+            let widtht = t.area() / cfraction(chunks as f32,1.);
             
-            let mut p = rleaf(self.pos.0,cleaf(widthp,(self.pos.1).1));
-            let mut t = rfraction(t.0,widtht);
+            let mut p = area_size(self.pos.offset(),cleaf(widthp,(self.pos.area()).1));
+            let mut t = area_size(t.offset(),widtht);
             for _i in 0..chunks {
                 let b = vertices_rect(geom,None);
                 rectangle_g(b,geom,"aVertexPosition",&p);

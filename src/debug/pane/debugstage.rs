@@ -257,7 +257,6 @@ html, body {
 "##;
 
 thread_local! {
-    static CANVAS_INST : RefCell<u32> = RefCell::new(0);
     static DEBUG_PANEL : RefCell<Option<Rc<DebugPanel>>> = RefCell::new(None);
 }
 
