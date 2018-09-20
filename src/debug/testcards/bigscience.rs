@@ -5,9 +5,9 @@ use composit::{ StateFixed, Component, StateValue, StateAtom };
 use debug::testcards::common::{ daft, bio_daft, wiggly };
 
 use shape::{
-    fix_rectangle, fix_texture, tape_rectangle,
+    fix_rectangle, fix_texture, tape_rectangle, tape_mathsshape,
     page_texture,  pin_texture,  pin_mathsshape, pin_rectangle,
-    stretch_rectangle, stretch_texture, stretch_wiggle,
+    stretch_rectangle, stretch_texture, stretch_wiggle, tape_texture,
     Spot, ColourSpec, MathsShape,
 };
 
@@ -42,11 +42,24 @@ fn battenberg() -> Rc<Artist> {
                           255,255,0,255 },cpixel(2,2))
 }
 
-fn measure(c: &mut Component, cs: &ColourSpec) {
+fn measure(c: &mut Component, cs: &ColourSpec, cs2: &ColourSpec) {
     for x in -10..10 {
         c.add_shape(tape_rectangle(
             &cleaf(x as f32*100.,0),
             &area_size(cpixel(0,0),cpixel(20,20)).y_edge(AxisSense::Pos,AxisSense::Pos),
+            cs));
+        c.add_shape(tape_mathsshape(
+            &cleaf(x as f32*100.+25.,0).y_edge(AxisSense::Pos),
+            Dot(None,Some(AxisSense::Pos)),
+            10., None, MathsShape::Polygon(5,0.05),
+            cs2));
+        c.add_shape(tape_texture(battenberg(),
+            &cleaf(x as f32*100.+50.,0).y_edge(AxisSense::Pos),
+            &cpixel(10,10)));
+        c.add_shape(tape_mathsshape(
+            &cleaf(x as f32*100.+75.,0).y_edge(AxisSense::Pos),
+            Dot(None,Some(AxisSense::Pos)),
+            10., Some(1.), MathsShape::Circle,
             cs));
     }
 }
@@ -87,7 +100,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
     let red = ColourSpec::Spot(red_spot.clone());
     let green = ColourSpec::Spot(green_spot.clone());
 
-    measure(&mut c,&red);
+    measure(&mut c,&red,&green);
     
     let len_gen = Range::new(0.,0.2);
     let thick_gen = Range::new(0,13);
