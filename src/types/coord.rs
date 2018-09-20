@@ -1,3 +1,4 @@
+use std::cmp::{  Ordering };
 use stage::Stage;
 use std::fmt::Debug;
 use std::ops::{ Add, Sub, Mul, Div, Neg };
@@ -205,6 +206,25 @@ impl<T : Clone + Copy + Into<f64>,
      U : Clone + Copy + Into<f64>> Dot<T,U> {    
     pub fn as_fraction(&self) -> CFraction {
         cfraction(self.0.into() as f32,self.1.into() as f32)
+    }
+}
+
+fn pmin<'a,T: PartialOrd>(a: &'a T, b: &'a T) -> &'a T {
+    if let Some(Ordering::Greater) = a.partial_cmp(b) { b } else { a }
+}
+
+fn pmax<'a,T: PartialOrd>(a: &'a T, b: &'a T) -> &'a T {
+    if let Some(Ordering::Less) = a.partial_cmp(b) { b } else { a }
+}
+
+impl<T: Clone+Copy+Debug + PartialOrd,
+     U: Clone+Copy+Debug + PartialOrd> Dot<T,U> {
+    pub fn min(&self, other: &Dot<T,U>) -> Dot<T,U> {
+        Dot(*pmin(&self.0,&other.0),*pmin(&self.1,&other.1))
+    }
+
+    pub fn max(&self, other: &Dot<T,U>) -> Dot<T,U> {
+        Dot(*pmax(&self.0,&other.0),*pmax(&self.1,&other.1))
     }
 }
 

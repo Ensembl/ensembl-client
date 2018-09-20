@@ -6,8 +6,7 @@ use types::{ CPixel, RPixel, EPixel, Rect, Edge };
 
 use shape::{ Shape, ColourSpec };
 use shape::util::{
-    rectangle_p, rectangle_t, multi_gl, vertices_rect, despot,
-    rectangle_c
+    rectangle_t, multi_gl, vertices_rect, despot, rectangle_c
 };
 
 use drawing::Artist;

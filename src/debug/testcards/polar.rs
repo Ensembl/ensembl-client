@@ -7,7 +7,7 @@ use debug::testcards::common::{ daft, bio_daft, wiggly };
 
 use shape::{
     fix_rectangle, fix_texture,
-    page_texture,  pin_triangle, pin_texture,  pin_mathsshape,
+    page_texture, pin_texture,  pin_mathsshape,
     stretch_rectangle, stretch_texture, stretch_wiggle,
     Spot, ColourSpec, MathsShape,
 };
@@ -103,6 +103,7 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
         //c.add_shape(page_texture(tx, &cpixel(4,y+18), &cpixel(1,1)));
         if yidx == middle - 5 {
             for i in 1..10 {
+                /*
                 c_odd.add_shape(pin_mathsshape(&cleaf(-100.+40.*(i as f32),y+20),
                                10. * i as f32,None,MathsShape::Circle,
                                &green));
@@ -110,10 +111,12 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
                 c_even.add_shape(pin_mathsshape(&cleaf(-300.+40.*(i as f32),y+20),
                                10. * i as f32,Some(2.),MathsShape::Circle,
                                &ColourSpec::Colour(colour)));
+                */
             }
         }
         if yidx == middle {
             for i in 3..8 {
+                /*
                 c_odd.add_shape(pin_mathsshape( &cleaf(-100.+40.*(i as f32),y+20),
                                10., None, MathsShape::Polygon(i,0.2*i as f32),
                                &red));
@@ -121,11 +124,13 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
                 c_even.add_shape(pin_mathsshape(&cleaf(-300.+40.*(i as f32),y+20),
                                10., None, MathsShape::Polygon(i,0.2*i as f32),
                                &ColourSpec::Colour(colour)));
+                */
             }
         }
         if yidx == middle +1 {
             for i in 3..8 {
                 let cs = if i % 2 == 1 { &mut c_odd } else { &mut c_even };
+                /*
                 cs.add_shape(pin_mathsshape(&cleaf(-100.+40.*(i as f32),y+20),
                                10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
                                &red));
@@ -133,6 +138,7 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
                 cs.add_shape(pin_mathsshape(&cleaf(-300.+40.*(i as f32),y+20),
                                10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
                                &ColourSpec::Colour(colour)));
+                */
             }
         }
         if yidx == middle {
@@ -150,6 +156,7 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
             c.add_shape(pin_texture(tx,&cleaf(0.,y-25),&cpixel(10,10)));
             c_odd.add_shape(stretch_rectangle(&area_size(cleaf(-200.,y-20),cleaf(100.,5)),&red));
             c_even.add_shape(stretch_rectangle(&area_size(cleaf(-200.,y-15),cleaf(100.,5)),&green));
+            /*
             c_odd.add_shape(pin_triangle(&cleaf(-200.,y-15),&[cpixel(0,0),
                                      cpixel(-5,10),
                                      cpixel(5,10)],
@@ -158,6 +165,7 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
                                      cpixel(-5,10),
                                      cpixel(5,10)],
                                      &green));
+            */
         } else if yidx == middle-2 {
             let mut parts = Vec::<Box<Mark>>::new();
             for row in 0..8 {
@@ -204,11 +212,11 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
                                 &ColourSpec::Colour(colour)));
                 if idx %5 == 0 {
                     let colour = Colour(colour.2,colour.0,colour.1);
-                    c.add_shape(pin_triangle(&cleaf(x,y),
-                                   &[cpixel(0,0),
-                                     cpixel(-5,10),
-                                     cpixel(5,10)],
-                                   &ColourSpec::Colour(colour)));
+                    //c.add_shape(pin_triangle(&cleaf(x,y),
+                    //               &[cpixel(0,0),
+                    //                 cpixel(-5,10),
+                    //                 cpixel(5,10)],
+                    //               &ColourSpec::Colour(colour)));
                 }
                 if showtext_gen.sample(&mut rng) == 0 {
                     let val = bio_daft(&mut rng);

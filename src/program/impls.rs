@@ -70,7 +70,7 @@ impl PTGeom {
                     gl_Position = vec4(
                         (aOrigin.x -uStageHpos) * uStageZoom + 
                                     aVertexPosition.x / uSize.x,
-                        (1.0 - aVertexPositive.y / uSize.y) * aVertexSign.y,
+                        (1.0 - aVertexPosition.y / uSize.y) * aVertexSign.y,
                         0.0, 1.0)")
 
             },
@@ -133,8 +133,8 @@ impl PTSkin {
     }
 }
 
-const GEOM_ORDER : [PTGeom;4] = [
-    PTGeom::Stretch, PTGeom::Pin, PTGeom::Page, /*PTGeom::Tape,*/ PTGeom::Fix
+const GEOM_ORDER : [PTGeom;5] = [
+    PTGeom::Stretch, PTGeom::Pin, PTGeom::Page, PTGeom::Tape, PTGeom::Fix
 ];
 
 const SKINMETH_ORDER : [(PTSkin,PTMethod);5] = [

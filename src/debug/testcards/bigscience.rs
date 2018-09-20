@@ -6,7 +6,7 @@ use debug::testcards::common::{ daft, bio_daft, wiggly };
 
 use shape::{
     fix_rectangle, fix_texture,
-    page_texture,  pin_triangle, pin_texture,  pin_mathsshape,
+    page_texture,  pin_texture,  pin_mathsshape,
     stretch_rectangle, stretch_texture, stretch_wiggle,
     Spot, ColourSpec, MathsShape,
 };
@@ -24,7 +24,7 @@ use std::rc::Rc;
 use controller::Global;
 
 use types::{
-    Colour, cleaf, cpixel, area, cedge,
+    Colour, cleaf, cpixel, area, cedge, AxisSense, Dot,
     TOPLEFT, BOTTOMLEFT, TOPRIGHT, BOTTOMRIGHT, area_size
 };
 
@@ -101,10 +101,12 @@ pub fn big_science(g: &mut Global, onoff: bool) {
         if yidx == middle - 5 {
             for i in 1..10 {
                 c_odd.add_shape(pin_mathsshape(&cleaf(-100.+40.*(i as f32),y+20),
+                               Dot(None,Some(AxisSense::Pos)),
                                10. * i as f32,None,MathsShape::Circle,
                                &green));
                 let colour = Colour(255,0,128);
                 c_even.add_shape(pin_mathsshape(&cleaf(-300.+40.*(i as f32),y+20),
+                               Dot(None,Some(AxisSense::Pos)),
                                10. * i as f32,Some(2.),MathsShape::Circle,
                                &ColourSpec::Colour(colour)));
             }
@@ -112,10 +114,12 @@ pub fn big_science(g: &mut Global, onoff: bool) {
         if yidx == middle {
             for i in 3..8 {
                 c_odd.add_shape(pin_mathsshape( &cleaf(-100.+40.*(i as f32),y+20),
+                               Dot(None,Some(AxisSense::Pos)),
                                10., None, MathsShape::Polygon(i,0.2*i as f32),
                                &red));
                 let colour = Colour(0,128,255);
                 c_even.add_shape(pin_mathsshape(&cleaf(-300.+40.*(i as f32),y+20),
+                               Dot(None,Some(AxisSense::Pos)),
                                10., None, MathsShape::Polygon(i,0.2*i as f32),
                                &ColourSpec::Colour(colour)));
             }
@@ -124,10 +128,12 @@ pub fn big_science(g: &mut Global, onoff: bool) {
             for i in 3..8 {
                 let cs = if i % 2 == 1 { &mut c_odd } else { &mut c_even };
                 cs.add_shape(pin_mathsshape(&cleaf(-100.+40.*(i as f32),y+20),
+                               Dot(None,Some(AxisSense::Pos)),
                                10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
                                &red));
                 let colour = Colour(0,128,255);
                 cs.add_shape(pin_mathsshape(&cleaf(-300.+40.*(i as f32),y+20),
+                               Dot(None,Some(AxisSense::Pos)),
                                10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
                                &ColourSpec::Colour(colour)));
             }
@@ -147,14 +153,20 @@ pub fn big_science(g: &mut Global, onoff: bool) {
             c.add_shape(pin_texture(tx,&cleaf(0.,y-25),&cpixel(10,10)));
             c_odd.add_shape(stretch_rectangle(&area_size(cleaf(-200.,y-20),cleaf(100.,5)),&red));
             c_even.add_shape(stretch_rectangle(&area_size(cleaf(-200.,y-15),cleaf(100.,5)),&green));
-            c_odd.add_shape(pin_triangle(&cleaf(-200.,y-15),&[cpixel(0,0),
-                                     cpixel(-5,10),
-                                     cpixel(5,10)],
-                                     &red));
-            c_even.add_shape(pin_triangle(&cleaf(-100.,y-15),&[cpixel(0,0),
-                                     cpixel(-5,10),
-                                     cpixel(5,10)],
-                                     &green));
+
+
+            c_odd.add_shape(pin_mathsshape(
+                            &cleaf(-200.,y-15),
+                            Dot(Some(AxisSense::Neg),None),
+                            5.,None,
+                            MathsShape::Polygon(3,0.),
+                            &red));
+            c_even.add_shape(pin_mathsshape(
+                            &cleaf(-100.,y-15),
+                            Dot(Some(AxisSense::Pos),None),
+                            5.,None,
+                            MathsShape::Polygon(3,0.5),
+                            &green));
         } else if yidx == middle-2 {
             let mut parts = Vec::<Box<Mark>>::new();
             for row in 0..8 {
@@ -201,11 +213,12 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                                 &ColourSpec::Colour(colour)));
                 if idx %5 == 0 {
                     let colour = Colour(colour.2,colour.0,colour.1);
-                    c.add_shape(pin_triangle(&cleaf(x,y),
-                                   &[cpixel(0,0),
-                                     cpixel(-5,10),
-                                     cpixel(5,10)],
-                                   &ColourSpec::Colour(colour)));
+                    c.add_shape(pin_mathsshape(
+                                    &cleaf(x,y+h),
+                                    Dot(None,Some(AxisSense::Pos)),
+                                    8.,None,
+                                    MathsShape::Polygon(3,0.75),
+                                    &ColourSpec::Colour(colour)));
                 }
                 if showtext_gen.sample(&mut rng) == 0 {
                     let val = bio_daft(&mut rng);

@@ -7,12 +7,6 @@ use types::{ RFraction, CLeaf, RPixel, RLeaf, cleaf, Rect, Edge };
 use shape::ColourSpec;
 use program::Input;
 
-pub fn triangle_gl(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[&Input;3]) {
-    if let Some(obj) = pdata.get_object(key) {
-        obj.add_data(&b,&[p[0], p[1], p[2]]);
-    }
-}
-
 pub fn rectangle_g(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &RLeaf) {
     if let Some(obj) = pdata.get_object(key) {
         obj.add_data(&b,&[p]);
@@ -60,11 +54,6 @@ fn group(pdata: &ProgramAttribs, g: Option<DataGroup>) -> DataGroup {
 pub fn vertices_rect(pdata: &mut ProgramAttribs, g: Option<DataGroup>) -> DataBatch {
     let g = group(pdata,g);
     pdata.add_vertices(g,&[0,3,1,2,1,3],4)
-}
-
-pub fn vertices_tri(pdata: &mut ProgramAttribs, g: Option<DataGroup>) -> DataBatch {
-    let g = group(pdata,g);
-    pdata.add_vertices(g,&[0,1,2],3)
 }
 
 pub fn vertices_poly(pdata: &mut ProgramAttribs, n: u16, g: Option<DataGroup>) -> DataBatch {

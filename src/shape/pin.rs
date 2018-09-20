@@ -7,53 +7,17 @@ use program::{
     Input
 };
 
-use types::{ CLeaf, CPixel, RPixel, CFraction, cfraction };
+use types::{ CLeaf, CPixel, RPixel, CFraction, cfraction, Dot, AxisSense, Bounds };
 
 use shape::{ Shape, ColourSpec, MathsShape };
 use shape::util::{
-    triangle_gl, rectangle_p, rectangle_t,
+    rectangle_p, rectangle_t,
     multi_gl, poly_p, vertices_poly,
-    vertices_rect, vertices_tri, vertices_hollowpoly,
+    vertices_rect, vertices_hollowpoly,
     despot
 };
 
 use drawing::Artist;
-
-/*
- * PinTriangle
- */
-
-pub struct PinTriangle {
-    origin: CLeaf,
-    points: [CPixel;3],
-    colspec: ColourSpec,
-    geom: ProgramType
-}
-
-impl PinTriangle {
-    pub fn new(origin: CLeaf, points: [CPixel;3], colspec: &ColourSpec, geom: ProgramType) -> PinTriangle {
-        PinTriangle { origin, points, colspec: colspec.clone(), geom }
-    }    
-}
-
-impl Shape for PinTriangle {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, _texpos: Option<RPixel>) {
-        let p = &self.points;
-        let b = vertices_tri(geom,self.colspec.to_group(geom_name));
-        triangle_gl(b,geom,"aVertexPosition",&[&p[0],&p[1],&p[2]]);
-        multi_gl(b,geom,"aOrigin",&self.origin,3);
-        if let ColourSpec::Colour(c) = self.colspec {        
-            multi_gl(b,geom,"aVertexColour",&c,3);
-        }
-    }
-    
-    fn get_geometry(&self) -> ProgramType { self.geom }
-}
-
-pub fn pin_triangle(origin: &CLeaf, p: &[CPixel;3], colspec: &ColourSpec) -> Box<Shape> {
-    let g = despot(PTGeom::Pin,PTMethod::Triangle,colspec);
-    Box::new(PinTriangle::new(*origin,*p,colspec,g))
-}
 
 /*
  * PinPoly
@@ -61,6 +25,7 @@ pub fn pin_triangle(origin: &CLeaf, p: &[CPixel;3], colspec: &ColourSpec) -> Box
 
 pub struct PinPoly {
     origin: CLeaf,
+    anchor: Dot<Option<AxisSense>,Option<AxisSense>>,
     size: f32,
     width: f32,
     points: u16,
@@ -71,7 +36,9 @@ pub struct PinPoly {
 }
 
 impl PinPoly {
-    fn add(&self, b: DataBatch, geom: &mut ProgramAttribs, v: Vec<CFraction>, nump: u16) {
+    fn add(&self, b: DataBatch, geom: &mut ProgramAttribs, 
+           v: Vec<CFraction>, d: CFraction, nump: u16) {
+        let v : Vec<CFraction> = v.iter().map(|s| *s-d).collect();
         let w : Vec<&Input> = v.iter().map(|s| s as &Input).collect();
         poly_p(b,geom,"aVertexPosition",&w);
         multi_gl(b,geom,"aOrigin",&self.origin,nump);
@@ -95,7 +62,24 @@ impl PinPoly {
             v.push(cfraction(x * self.size,y * self.size));
         }
         v
-    }    
+    }
+    
+    fn delta(&self, pts: &Vec<CFraction>) -> CFraction {
+        let mut b = Bounds::new();
+        for p in pts { b.add(*p); }
+        let b = b.get().unwrap();
+        let h = match self.anchor.0 {
+            Some(AxisSense::Pos) => b.offset().0,
+            Some(AxisSense::Neg) => b.far_offset().0,
+            None => (b.offset().0+b.far_offset().0)/2.
+        };
+        let v = match self.anchor.1 {
+            Some(AxisSense::Pos) => b.offset().1,
+            Some(AxisSense::Neg) => b.far_offset().1,
+            None => (b.offset().1+b.far_offset().1)/2.
+        };
+        cfraction(h,v)
+    }
 }
 
 impl Shape for PinPoly {
@@ -104,24 +88,28 @@ impl Shape for PinPoly {
         if self.hollow {
             let b = vertices_hollowpoly(geom,self.points,group);
             let v = self.build_points(true);
-            self.add(b,geom,v,self.points*2);
+            let d = self.delta(&v);
+            self.add(b,geom,v,d,self.points*2);
         } else {
             let b = vertices_poly(geom,self.points,group);
             let v = self.build_points(false);
-            self.add(b,geom,v,self.points+1);
+            let d = self.delta(&v);
+            self.add(b,geom,v,d,self.points+1);
         }
     }
 
     fn get_geometry(&self) -> ProgramType { self.geom }
 }
 
-fn pin_poly_impl(gt: PTGeom, mt: PTMethod, origin: &CLeaf, points: u16,
+fn pin_poly_impl(gt: PTGeom,
+                 anchor: Dot<Option<AxisSense>,Option<AxisSense>>,
+                 mt: PTMethod, origin: &CLeaf, points: u16,
                  size: f32, width: f32, offset: f32, 
                  colspec: &ColourSpec, hollow: bool) -> Box<Shape> {
     let g = despot(gt,mt,colspec);
     Box::new(PinPoly {
         origin: *origin, points, size, offset, width, colspec: colspec.clone(),
-        hollow, geom: g
+        hollow, geom: g, anchor
     })
 }
 
@@ -133,6 +121,7 @@ fn circle_points(r: f32) -> u16 {
 }
 
 pub fn pin_mathsshape(origin: &CLeaf,
+                      anchor: Dot<Option<AxisSense>,Option<AxisSense>>,
                       size: f32, width: Option<f32>, ms: MathsShape,
                       colspec: &ColourSpec) -> Box<Shape> {
     /* Convert circles to polygons */
@@ -145,7 +134,7 @@ pub fn pin_mathsshape(origin: &CLeaf,
         Some(width) => (PTMethod::Strip,width,true),
         None        => (PTMethod::Triangle,0.,false)
     };
-    pin_poly_impl(PTGeom::Pin,mt,origin,points,size,width,offset,colspec,hollow)
+    pin_poly_impl(PTGeom::Pin,anchor,mt,origin,points,size,width,offset,colspec,hollow)
 }
 
 /*

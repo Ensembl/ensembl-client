@@ -20,7 +20,6 @@ pub use shape::fixpage::{
 };
 
 pub use shape::pin::{
-    pin_triangle,
     pin_texture,
     pin_mathsshape,
 };
