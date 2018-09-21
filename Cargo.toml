@@ -12,6 +12,7 @@ serde_json = "*"
 lazy_static = "*"
 rand="0.5.4"
 num = "*"
+separator = "0.3.1"
 
 [build-dependencies]
 webgl_generator = "0.1.0"

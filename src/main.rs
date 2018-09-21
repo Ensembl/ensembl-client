@@ -8,13 +8,13 @@ extern crate stdweb_derive;
 extern crate lazy_static;
 extern crate rand;
 extern crate num;
+extern crate separator;
 
 #[macro_use]
 extern crate serde_json;
 
 #[macro_use]
 mod util;
-
 mod debug;
 mod arena;
 mod controller;
