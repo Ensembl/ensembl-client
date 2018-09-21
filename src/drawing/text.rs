@@ -1,5 +1,5 @@
 use std::rc::Rc;
-use canvasutil::FCFont;
+use drawing::FCFont;
 use arena::{ ArenaCanvases };
 
 use types::{ Colour, CPixel };

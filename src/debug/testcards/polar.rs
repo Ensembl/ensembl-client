@@ -1,7 +1,6 @@
 use std::sync::{ Arc, Mutex };
 use std::clone::Clone;
-use canvasutil;
-use canvasutil::FCFont;
+use drawing::FCFont;
 use composit::{ StateFixed, Component, StateValue, StateAtom };
 
 use debug::testcards::common::{ daft, bio_daft, wiggly };
@@ -92,7 +91,7 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
     let mut rng = SmallRng::from_seed([s,s,s,s,s,s,s,s,t,t,t,t,t,t,t,t]);
 
     let p = g.with_compo(|c| Palette {
-        lato_12: canvasutil::FCFont::new(12,"Lato"),
+        lato_12: FCFont::new(12,"Lato"),
         white: ColourSpec::Spot(Spot::new(c,&Colour(255,255,255))),
         grey: ColourSpec::Spot(Spot::new(c,&Colour(199,208,213)))
     }).unwrap();
@@ -119,13 +118,8 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
 
     let size = g.canvas_size();
 
-    
-    
-    
     let mut c_odd = Component::new(Rc::new(StateAtom::new("odd")));
     let mut c_even = Component::new(Rc::new(StateAtom::new("even")));
-        
-    let fc_font = canvasutil::FCFont::new(12,"Lato");
 
     let mut c = Component::new(Rc::new(StateFixed(StateValue::On())));
 

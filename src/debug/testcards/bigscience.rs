@@ -1,5 +1,4 @@
 use std::clone::Clone;
-use canvasutil;
 use composit::{ StateFixed, Component, StateValue, StateAtom };
 
 use debug::testcards::common::{ daft, bio_daft, wiggly };
@@ -28,7 +27,7 @@ use types::{
     TOPLEFT, BOTTOMLEFT, TOPRIGHT, BOTTOMRIGHT, area_size
 };
 
-use drawing::{ text_texture, bitmap_texture, collage, Mark, Artist };
+use drawing::{ text_texture, bitmap_texture, collage, Mark, Artist, FCFont };
 
 use rand::distributions::Distribution;
 use rand::distributions::range::Range;
@@ -89,7 +88,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
          Spot::new(c,&Colour(50,255,150)))
     }).unwrap();
         
-    let fc_font = canvasutil::FCFont::new(12,"Lato");
+    let fc_font = FCFont::new(12,"Lato");
 
     let mut c = Component::new(Rc::new(StateFixed(StateValue::On())));
 

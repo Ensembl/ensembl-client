@@ -1,4 +1,4 @@
-use canvasutil;
+use drawing::FlatCanvas;
 use std::rc::Rc;
 use std::collections::HashMap;
 
@@ -27,8 +27,8 @@ impl DrawingSession {
     
     fn finalise(&mut self, adata: &mut ArenaData) {
         let size = self.drawman.allocate();
-        canvasutil::FlatCanvas::reset();
-        adata.canvases.flat = Rc::new(canvasutil::FlatCanvas::create(size.0,size.1));
+        FlatCanvas::reset();
+        adata.canvases.flat = Rc::new(FlatCanvas::create(size.0,size.1));
         self.drawman.draw(&mut adata.canvases);
     }
     

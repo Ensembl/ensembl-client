@@ -216,9 +216,6 @@ pub fn cleaf(x: f32, y: i32) -> CLeaf { Dot(x,y) }
 pub type CPixel = Dot<i32,i32>;
 pub fn cpixel(x: i32, y: i32) -> CPixel { Dot(x,y) }
 
-pub type CTape = Dot<f32,Edge<i32>>;
-pub fn ctape(x: f32, y: Edge<i32>) -> CTape { Dot(x,y) }
-
 /*** impls for dot types ***/
 
 impl<T: Clone + Copy + Mul<T, Output=U>,U: Add<U, Output=U>> Dot<T,T> {

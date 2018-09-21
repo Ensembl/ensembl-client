@@ -6,8 +6,8 @@ use std::collections::hash_map::DefaultHasher;
 
 use types::{ CPixel, RPixel, area_size };
 
-use alloc::Ticket;
-use alloc::Allocator;
+use drawing::alloc::Ticket;
+use drawing::alloc::Allocator;
     
 use arena::{
     ArenaCanvases,
