@@ -10,7 +10,7 @@ use program::{
 
 use types::{
     CLeaf, CPixel, RPixel, CFraction, cfraction, Dot, AxisSense, 
-    Bounds, area_size, Rect, Edge, RFraction, cpixel
+    Bounds, area_size, Rect, Edge, RFraction, cpixel, APixel
 };
 
 use shape::{ Shape, ColourSpec, MathsShape };
@@ -226,14 +226,14 @@ pub fn tape_mathsshape(origin: &Dot<f32,Edge<i32>>,
 pub struct PinTexture {
     pt: PTGeom,
     origin: CPinOrTape<f32>,
-    offset: CPixel,
+    offset: APixel,
     scale: CPixel,
     artist: Rc<Artist>
 }
 
 impl PinTexture {
     fn new(pt: PTGeom, artist: Rc<Artist>,origin: &CPinOrTape<f32>, 
-           offset: &CPixel, scale: &CPixel) -> PinTexture {
+           offset: &APixel, scale: &CPixel) -> PinTexture {
         PinTexture {
             pt, origin: *origin, offset: *offset, scale: *scale,
             artist: artist.clone()
@@ -245,7 +245,7 @@ impl Shape for PinTexture {
     fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, 
                     adata: &ArenaData, artwork: Option<Artwork>) {
         if let Some(art) = artwork {
-            let p = area_size(cpixel(0,0),art.size) * self.scale + self.offset;
+            let p = area_size(cpixel(0,0),art.size) * self.scale + self.offset.quantity();
             let b = vertices_rect(geom,None);
             let mut mp = art.mask_pos;
             let mut ap = art.pos;            
@@ -274,10 +274,10 @@ impl Shape for PinTexture {
     fn get_artist(&self) -> Option<Rc<Artist>> { Some(self.artist.clone()) }
 }
 
-pub fn pin_texture(a: Rc<Artist>, origin: &CLeaf, offset: &CPixel, scale: &CPixel) -> Box<Shape> {
+pub fn pin_texture(a: Rc<Artist>, origin: &CLeaf, offset: &APixel, scale: &CPixel) -> Box<Shape> {
     Box::new(PinTexture::new(PTGeom::Pin,a,&CPinOrTape::Pin(*origin),offset,scale))
 }
 
-pub fn tape_texture(a: Rc<Artist>, origin: &Dot<f32,Edge<i32>>, offset: &CPixel, scale: &CPixel) -> Box<Shape> {
+pub fn tape_texture(a: Rc<Artist>, origin: &Dot<f32,Edge<i32>>, offset: &APixel, scale: &CPixel) -> Box<Shape> {
     Box::new(PinTexture::new(PTGeom::Tape,a,&CPinOrTape::Tape(*origin),offset,scale))
 }

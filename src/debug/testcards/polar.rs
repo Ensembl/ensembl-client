@@ -28,7 +28,7 @@ use std::rc::Rc;
 use controller::Global;
 
 use types::{ Colour, cleaf, cpixel, area_size, area, cedge,
-             TOPLEFT, TOPRIGHT, Dot, AxisSense, Corner };
+             TOPLEFT, TOPRIGHT, Dot, AxisSense, Corner, A_MIDDLE };
 
 use drawing::{ text_texture, bitmap_texture, collage, Mark, Artist };
 
@@ -80,7 +80,7 @@ fn measure(edge: AxisSense, p: &Palette) -> Component {
         let tx = text_texture(&format!("{}",((x+20)*100000).separated_string()),
                               &p.lato_12,&Colour(199,208,213),&Colour(255,255,255));
         c.add_shape(tape_texture(tx,&cleaf(x as f32*100.,4).y_edge(edge),
-                                 &cpixel(8,0),&cpixel(1,1)));
+                                 &cpixel(8,0).anchor(A_MIDDLE),&cpixel(1,1)));
     }
     c
 }
