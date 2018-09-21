@@ -7,7 +7,6 @@ extern crate stdweb_derive;
 #[macro_use]
 extern crate lazy_static;
 extern crate rand;
-extern crate num;
 extern crate separator;
 
 #[macro_use]
@@ -34,4 +33,3 @@ fn main() {
     debug!("global","starting");
     stdweb::event_loop();
 }
-

@@ -1,5 +1,5 @@
 use std::fmt::Debug;
-use std::ops::{ Add, Sub, Mul, Div, Neg };
+use std::ops::{ Add, Sub, Mul, Div };
 use program::{ Object, ObjectAttrib, DataBatch, Input };
 use types::coord::{ Dot, Edge, AxisSense };
 
@@ -82,6 +82,7 @@ impl<T: Copy + Clone + Debug + Sub<T,Output=T>,
 
     pub fn offset(&self) -> Dot<T,U> { self.0 }
     pub fn far_offset(&self) -> Dot<T,U> { self.1 }
+    pub fn size(&self) -> Dot<T,U> { self.1-self.0 }
 
     pub fn at_origin(self) -> Rect<T,U> {
         Rect(self.0-self.0,self.1-self.0)

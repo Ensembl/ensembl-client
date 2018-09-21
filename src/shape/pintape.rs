@@ -245,10 +245,10 @@ impl Shape for PinTexture {
     fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, 
                     adata: &ArenaData, artwork: Option<Artwork>) {
         if let Some(art) = artwork {
-            let p = area_size(cpixel(0,0),art.size) * self.scale + self.offset.quantity();
             let b = vertices_rect(geom,None);
             let mut mp = art.mask_pos;
-            let mut ap = art.pos;            
+            let mut ap = art.pos;
+            let mut offset = self.offset;            
             match self.origin {
                 CPinOrTape::Pin(origin) => {
                     multi_gl(b,geom,"aOrigin",&origin,4);
@@ -257,13 +257,16 @@ impl Shape for PinTexture {
                     let origin = origin.x_edge(AxisSense::Pos);
                     ap = ap.flip_d(origin);
                     mp = mp.flip_d(origin);
+                    offset = offset.flip(origin);
                     multi_gl(b,geom,"aOrigin",&origin.quantity(),4);
                     multi_gl(b,geom,"aVertexSign",&origin.corner(),4);
                 }
             }
+            let p = area_size(cpixel(0,0),art.size).as_fraction() + self.offset.quantity().as_fraction();
+            let p = offset.as_fraction().from_nw(p * self.scale.as_fraction());
             rectangle_t(b,geom,"aTextureCoord",&ap);
             rectangle_t(b,geom,"aMaskCoord",&mp);
-            rectangle_p(b,geom,"aVertexPosition",&p);
+            rectangle_t(b,geom,"aVertexPosition",&p);
         }
     }
 

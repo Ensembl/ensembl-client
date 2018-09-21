@@ -19,17 +19,48 @@ pub enum AxisSense { Pos, Neg }
 #[derive(Clone,Copy,Debug)]
 pub struct Anchor(Option<AxisSense>);
 
+impl Anchor {
+    pub fn prop(&self) -> f32 {
+        match self.0 {
+            Some(AxisSense::Pos) =>  1.0,
+            Some(AxisSense::Neg) => -1.0,
+            None => 0.0
+        }
+    }
+    
+    pub fn flip(&self) -> Anchor {
+        Anchor(match self.0 {
+            Some(AxisSense::Pos) => Some(AxisSense::Neg),
+            Some(AxisSense::Neg) => Some(AxisSense::Pos),
+            None => None
+        })
+    }
+}
+
 pub type Anchors = Dot<Anchor,Anchor>;
 
-pub const A_TOP : Anchors = Dot(Anchor(None),Anchor(Some(AxisSense::Pos)));
-pub const A_TOPLEFT : Anchors = Dot(Anchor(Some(AxisSense::Pos)),Anchor(Some(AxisSense::Pos)));
-pub const A_TOPRIGHT : Anchors = Dot(Anchor(Some(AxisSense::Neg)),Anchor(Some(AxisSense::Pos)));
-pub const A_BOT : Anchors = Dot(Anchor(None),Anchor(Some(AxisSense::Neg)));
-pub const A_BOTLEFT : Anchors = Dot(Anchor(Some(AxisSense::Pos)),Anchor(Some(AxisSense::Neg)));
-pub const A_BOTRIGHT : Anchors = Dot(Anchor(Some(AxisSense::Neg)),Anchor(Some(AxisSense::Neg)));
-pub const A_LEFT : Anchors = Dot(Anchor(Some(AxisSense::Pos)),Anchor(None));
-pub const A_RIGHT : Anchors = Dot(Anchor(Some(AxisSense::Neg)),Anchor(None));
-pub const A_MIDDLE : Anchors = Dot(Anchor(None),Anchor(None));
+const AS : Anchor = Anchor(Some(AxisSense::Pos));
+const AM : Anchor = Anchor(None);
+const AE : Anchor = Anchor(Some(AxisSense::Neg));
+
+#[allow(unused)]
+pub const A_TOP      : Anchors = Dot(AM,AS);
+#[allow(unused)]
+pub const A_TOPLEFT  : Anchors = Dot(AS,AS);
+#[allow(unused)]
+pub const A_TOPRIGHT : Anchors = Dot(AE,AS);
+#[allow(unused)]
+pub const A_BOT      : Anchors = Dot(AM,AE);
+#[allow(unused)]
+pub const A_BOTLEFT  : Anchors = Dot(AS,AE);
+#[allow(unused)]
+pub const A_BOTRIGHT : Anchors = Dot(AE,AE);
+#[allow(unused)]
+pub const A_LEFT     : Anchors = Dot(AS,AM);
+#[allow(unused)]
+pub const A_RIGHT    : Anchors = Dot(AE,AM);
+#[allow(unused)]
+pub const A_MIDDLE   : Anchors = Dot(AM,AM);
 
 pub struct Direction(pub Axis,pub AxisSense);
 
@@ -105,11 +136,26 @@ impl<T: Clone+Copy+Debug, U: Clone+Copy+Debug> Dot<T,U> {
     }
 }
 
+impl Dot<Anchored<f32>,Anchored<f32>> {
+    pub fn from_nw(&self, r: Rect<f32,f32>) -> Rect<f32,f32> {
+        let s = r.size();
+        r + Dot((self.0.prop()-1.)/2.,(self.1.prop()-1.)/2.) * s
+    }
+}
+
 #[derive(Clone,Copy,Debug)]
 pub struct Edge<T>(AxisSense,T);
 
 #[derive(Clone,Copy,Debug)]
 pub struct Anchored<T>(Anchor,T);
+
+impl<T: Clone+Copy> Anchored<T> {
+    pub fn prop(&self) -> f32 { self.0.prop() }
+    pub fn flip(&self) -> Anchored<T> {
+        Anchored(self.0.flip(),self.1)
+    }
+}
+
 
 pub fn cedge<T: Clone+Copy+Debug,U: Clone+Copy+Debug>
         (c: Corner, d: Dot<T,U>) -> Dot<Edge<T>,Edge<U>> {
@@ -168,6 +214,18 @@ impl<T: Clone+Copy+Debug, U: Clone+Copy+Debug> Dot<Anchored<T>,Anchored<U>> {
     
     pub fn quantity(&self) -> Dot<T,U> {
         Dot((self.0).1,(self.1).1)
+    }
+    
+    pub fn flip<A: Clone+Copy+Debug,
+                B: Clone+Copy+Debug>(&self, f: Dot<Edge<A>,Edge<B>>) -> Dot<Anchored<T>,Anchored<U>> {
+        let mut out = *self;
+        if let AxisSense::Neg = (f.0).0 { // x
+           out.0 = out.0.flip();
+        }
+        if let AxisSense::Neg = (f.1).0 { // x
+           out.1 = out.1.flip();
+        }
+        out
     }
 }
 
@@ -269,7 +327,6 @@ pub type CPixel = Dot<i32,i32>;
 pub fn cpixel(x: i32, y: i32) -> CPixel { Dot(x,y) }
 
 pub type APixel = Dot<Anchored<i32>,Anchored<i32>>;
-pub fn apixel(x: Anchored<i32>, y: Anchored<i32>) -> APixel { Dot(x,y) }
 
 /*** impls for dot types ***/
 
@@ -283,6 +340,19 @@ impl<T : Clone + Copy + Into<f64>,
      U : Clone + Copy + Into<f64>> Dot<T,U> {    
     pub fn as_fraction(&self) -> CFraction {
         cfraction(self.0.into() as f32,self.1.into() as f32)
+    }
+}
+
+impl<T : Clone + Copy + Into<f64>> Anchored<T> {
+    pub fn as_fraction(&self) -> Anchored<f32> {
+        Anchored(self.0,self.1.into() as f32)
+    }
+}
+
+impl<T : Clone + Copy + Into<f64>,
+     U : Clone + Copy + Into<f64>> Dot<Anchored<T>,Anchored<U>> {
+    pub fn as_fraction(&self) -> Dot<Anchored<f32>,Anchored<f32>> {
+        Dot(self.0.as_fraction(),self.1.as_fraction())
     }
 }
 
