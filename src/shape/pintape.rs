@@ -10,7 +10,7 @@ use program::{
 
 use types::{
     CLeaf, CPixel, RPixel, CFraction, cfraction, Dot, AxisSense, 
-    Bounds, area_size, Rect, Edge
+    Bounds, area_size, Rect, Edge, RFraction, cpixel
 };
 
 use shape::{ Shape, ColourSpec, MathsShape };
@@ -21,7 +21,7 @@ use shape::util::{
     despot
 };
 
-use drawing::Artist;
+use drawing::{ Artist, Artwork };
 
 /*
  * PinRect
@@ -53,7 +53,7 @@ impl PinRect {
 }
 
 impl Shape for PinRect {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, _texpos: Option<RPixel>) {
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, art: Option<Artwork>) {
         let b = vertices_rect(geom,self.colspec.to_group(geom_name));
         match self.offset {
             RPinOrTape::Pin(offset) => {
@@ -158,7 +158,7 @@ impl PinPoly {
 }
 
 impl Shape for PinPoly {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, _texpos: Option<RPixel>) {
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, _art: Option<Artwork>) {
         let group = self.colspec.to_group(geom_name);
         if self.hollow {
             let b = vertices_hollowpoly(geom,self.points,group);
@@ -240,20 +240,20 @@ impl PinTexture {
 }
 
 impl Shape for PinTexture {
-    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData, texpos: Option<RPixel>) {
-        if let Some(tp) = texpos {
-            let p = tp.at_origin() * self.scale;
-            let t = tp.as_fraction() / adata.canvases.flat.size().as_fraction();
+    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, 
+                    adata: &ArenaData, artwork: Option<Artwork>) {
+        if let Some(art) = artwork {
+            let p = area_size(cpixel(0,0),art.size) * self.scale;
             let b = vertices_rect(geom,None);
+            rectangle_t(b,geom,"aMaskCoord",&art.mask_pos);
             rectangle_p(b,geom,"aVertexPosition",&p);
-            rectangle_t(b,geom,"aTextureCoord",&t);
+            rectangle_t(b,geom,"aTextureCoord",&art.pos);
             match self.origin {
                 CPinOrTape::Pin(origin) => {
                     multi_gl(b,geom,"aOrigin",&origin,4);
                 },
                 CPinOrTape::Tape(origin) => {
                     let origin = origin.x_edge(AxisSense::Pos);
-                    console!("origin={:?} q={:?} p={:?}",origin,origin.quantity(),p);
                     multi_gl(b,geom,"aOrigin",&origin.quantity(),4);
                     multi_gl(b,geom,"aVertexSign",&origin.corner(),4);
                 }

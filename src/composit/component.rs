@@ -63,13 +63,11 @@ impl Component {
                         drawings: &Vec<Option<Drawing>>) {
         for (i,mut s) in self.shapes.iter().enumerate() {
             let req = &drawings[i];
-            let mut tp = None;
-            if let Some(ref req) = req {
-                tp = Some(req.measure(&leafdrawman));
-            }
+            let cs = adata.canvases.flat.size().as_fraction();
+            let artwork = req.as_ref().map(|r| r.artwork(&leafdrawman,&adata.canvases.flat.size()));
             let geom_name = s.get_geometry();
             if let Some(geom) = progs.map.get_mut(&geom_name) {                
-                s.into_objects(geom_name,&mut geom.data,adata,tp);
+                s.into_objects(geom_name,&mut geom.data,adata,artwork);
             }
         }
     }

@@ -123,9 +123,15 @@ impl PTSkin {
                 Canvas::new(),
                 Uniform::new_frag(&PR_DEF,Arity::Sampler2D,"uSampler"),
                 Attribute::new(&PR_DEF,Arity::Vec2,"aTextureCoord"),
+                Attribute::new(&PR_DEF,Arity::Vec2,"aMaskCoord"),
                 Varying::new(&PR_DEF,Arity::Vec2,"vTextureCoord"),
+                Varying::new(&PR_DEF,Arity::Vec2,"vMaskCoord"),
                 Statement::new_vert("vTextureCoord = aTextureCoord"),
-                Statement::new_frag("gl_FragColor = texture2D(uSampler, vTextureCoord)"),
+                Statement::new_vert("vMaskCoord = aMaskCoord"),
+                Statement::new_frag("
+                    gl_FragColor = texture2D(uSampler, vTextureCoord);
+                    if( texture2D(uSampler, vMaskCoord).r > 0.95) discard;
+                "),
             }
         })
     }

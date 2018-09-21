@@ -2,14 +2,14 @@ use std::rc::Rc;
 use arena::ArenaData;
 
 use program::{ ProgramType, PTGeom, PTSkin, PTMethod, ProgramAttribs };
-use types::{ CPixel, RPixel, EPixel, Rect, Edge };
+use types::{ CPixel, RPixel, EPixel, Rect, Edge, RFraction, area_size, cpixel };
 
 use shape::{ Shape, ColourSpec };
 use shape::util::{
     rectangle_t, multi_gl, vertices_rect, despot, rectangle_c
 };
 
-use drawing::Artist;
+use drawing::{ Artist, Artwork };
 
 /*
  * FixRect
@@ -28,7 +28,8 @@ impl FixRect {
 }
 
 impl Shape for FixRect {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, _texpos: Option<RPixel>) {
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, 
+                    _adata: &ArenaData, _art: Option<Artwork>) {
         let b = vertices_rect(geom,self.colspec.to_group(geom_name));        
         rectangle_c(b,geom,"aVertexPositive","aVertexSign",&self.points);
         if let ColourSpec::Colour(c) = self.colspec {
@@ -67,20 +68,21 @@ pub struct FixTexture {
 impl FixTexture {
     pub fn new(pos: &EPixel, scale: &CPixel, geom: ProgramType, artist: &Rc<Artist>) -> FixTexture {
         FixTexture {
-            pos: *pos, scale: *scale, geom, artist: artist.clone()
+            pos: *pos, scale: *scale, geom, artist: artist.clone(),
         }
     }    
 }
 
 impl Shape for FixTexture {
-    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData, texpos: Option<RPixel>) {
-        if let Some(tp) = texpos {
-            let p : RPixel = tp.at_origin() * self.scale;
+    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs,
+                    adata: &ArenaData, artwork: Option<Artwork>) {
+        if let Some(art) = artwork {
+            let p : RPixel = area_size(cpixel(0,0),art.size) * self.scale;
             let p : Rect<Edge<i32>,Edge<i32>> = self.pos + p;
-            let t = tp.as_fraction() / adata.canvases.flat.size().as_fraction();
             let b = vertices_rect(geom,None);
             rectangle_c(b,geom,"aVertexPositive","aVertexSign",&p);
-            rectangle_t(b,geom,"aTextureCoord",&t);
+            rectangle_t(b,geom,"aTextureCoord",&art.pos);
+            rectangle_t(b,geom,"aMaskCoord",&art.mask_pos);
         }
     }
     

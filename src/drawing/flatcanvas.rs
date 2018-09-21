@@ -27,7 +27,7 @@ pub struct FCFont {
 impl FCFont {
     pub fn new(size : i32,family: &str) -> FCFont {
         FCFont { spec: format!("{}px {}",size,family),
-                 height: size, ypadtop: 0, ypadbot: 5, xpad: 0 }
+                 height: size, ypadtop: 0, ypadbot: 5, xpad: 1 }
     }
     
     fn setup(&self, canvas : &CanvasRenderingContext2d) {
@@ -55,22 +55,28 @@ impl FlatCanvas {
         canvas.set_width(width as u32);
         canvas.set_height(height as u32);
         let context : CanvasRenderingContext2d = canvas.get_context().unwrap();
-        context.set_fill_style_color("white");
-        context.fill_rect(0.,0.,width as f64,height as f64);
+        //context.set_fill_style_color("blue");
+        //context.fill_rect(0.,0.,width as f64,height as f64);
         context.set_fill_style_color("black");
         FlatCanvas { canvas, context, height, width }
     }
     
-    pub fn text(&self,text : &str, pos: CPixel, font: &FCFont, col: &Colour) -> (i32,i32) {
+    pub fn text(&self,text : &str, pos: CPixel, font: &FCFont, col: &Colour, bg: &Colour) -> (i32,i32) {
         font.setup(&self.context);
+        let m = self.context.measure_text(text);
+        let width_px = m.unwrap().get_width().ceil() as i32;
+        let height_px = font.height;
+        let fullwidth_px = width_px + 2*font.xpad;
+        let fullheight_px = height_px + font.ypadtop + font.ypadbot;
+        self.context.set_fill_style_color(&bg.to_css()[..]);
+        self.context.fill_rect(pos.0 as f64,pos.1 as f64,
+                               fullwidth_px as f64,
+                               fullheight_px as f64);
         self.context.set_text_baseline(TextBaseline::Top);
         self.context.set_fill_style_color(&col.to_css()[..]);
         self.context.set_stroke_style_color(&col.to_css()[..]);
         self.context.fill_text(text,(pos.0+font.xpad).into(),(pos.1+font.ypadtop).into(),None);
-        let m = self.context.measure_text(text);
-        let width_px = m.unwrap().get_width().ceil() as i32;
-        let height_px = font.height;
-        (width_px+2*font.xpad,height_px+font.ypadtop+font.ypadbot)
+        (fullwidth_px,fullheight_px)
     }
     
     pub fn bitmap(&self, data: &Vec<u8>, coords: RPixel) {

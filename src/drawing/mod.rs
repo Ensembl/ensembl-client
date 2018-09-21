@@ -6,9 +6,7 @@ mod drawingimpl;
 mod flatcanvas;
 
 pub use drawing::drawingimpl::{
-    Drawing,
-    Artist,
-    LeafDrawingManager,
+    Drawing, Artist, Artwork, LeafDrawingManager
 };
 
 pub use drawing::text::text_texture;

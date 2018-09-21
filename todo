@@ -23,3 +23,5 @@ visual improvements
 focused zoom
 
 verify event unregister
+
+transparency for non-text drawings via superclass
