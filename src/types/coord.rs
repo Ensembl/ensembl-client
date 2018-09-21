@@ -16,6 +16,21 @@ pub enum Axis { Horiz, Vert }
 #[derive(Clone,Copy,Debug)]
 pub enum AxisSense { Pos, Neg }
 
+#[derive(Clone,Copy,Debug)]
+pub struct Anchor(Option<AxisSense>);
+
+pub type Anchors = Dot<Anchor,Anchor>;
+
+pub const A_TOP : Anchors = Dot(Anchor(None),Anchor(Some(AxisSense::Pos)));
+pub const A_TOPLEFT : Anchors = Dot(Anchor(Some(AxisSense::Pos)),Anchor(Some(AxisSense::Pos)));
+pub const A_TOPRIGHT : Anchors = Dot(Anchor(Some(AxisSense::Neg)),Anchor(Some(AxisSense::Pos)));
+pub const A_BOT : Anchors = Dot(Anchor(None),Anchor(Some(AxisSense::Neg)));
+pub const A_BOTLEFT : Anchors = Dot(Anchor(Some(AxisSense::Pos)),Anchor(Some(AxisSense::Neg)));
+pub const A_BOTRIGHT : Anchors = Dot(Anchor(Some(AxisSense::Neg)),Anchor(Some(AxisSense::Neg)));
+pub const A_LEFT : Anchors = Dot(Anchor(Some(AxisSense::Pos)),Anchor(None));
+pub const A_RIGHT : Anchors = Dot(Anchor(Some(AxisSense::Neg)),Anchor(None));
+pub const A_MIDDLE : Anchors = Dot(Anchor(None),Anchor(None));
+
 pub struct Direction(pub Axis,pub AxisSense);
 
 pub const LEFT : Direction = Direction(Axis::Horiz,AxisSense::Neg);
@@ -76,10 +91,25 @@ impl<T: Clone+Copy+Debug, U: Clone+Copy+Debug> Dot<T,U> {
     pub fn y_edge(&self,xs: AxisSense) -> Dot<T,Edge<U>> {
         Dot(self.0,Edge(xs,self.1))
     }
+
+    pub fn x_anchor(&self,xs: Anchor) -> Dot<Anchored<T>,U> {
+        Dot(Anchored(xs,self.0),self.1)
+    }
+
+    pub fn y_anchor(&self,xs: Anchor) -> Dot<T,Anchored<U>> {
+        Dot(self.0,Anchored(xs,self.1))
+    }
+    
+    pub fn anchor(&self, a: Anchors) -> Dot<Anchored<T>,Anchored<U>> {
+        self.x_anchor(a.0).y_anchor(a.1)
+    }
 }
 
 #[derive(Clone,Copy,Debug)]
 pub struct Edge<T>(AxisSense,T);
+
+#[derive(Clone,Copy,Debug)]
+pub struct Anchored<T>(Anchor,T);
 
 pub fn cedge<T: Clone+Copy+Debug,U: Clone+Copy+Debug>
         (c: Corner, d: Dot<T,U>) -> Dot<Edge<T>,Edge<U>> {
@@ -101,6 +131,11 @@ impl<T: Clone+Copy+Debug> Edge<T> {
     pub fn quantity(self) -> T { self.1 }
 }
 
+impl<T: Clone+Copy+Debug> Anchored<T> {
+    pub fn corner(self) -> Option<AxisSense> { (self.0).0 }
+    pub fn quantity(self) -> T { self.1 }
+}
+
 impl From<Dot<Corner,Corner>> for Rect<AxisSense,AxisSense> {
     fn from(c: Dot<Corner,Corner>) -> Rect<AxisSense,AxisSense> {
         area(Dot((c.0).0,(c.0).1),Dot((c.1).0,(c.1).1))
@@ -116,17 +151,19 @@ impl Input for Corner {
     }
 }
 
-#[derive(Clone,Copy,Debug)]
-pub struct CSticky<T: Clone + Copy + Debug,
-                   U: Clone + Copy + Debug>(Corner,Dot<T,U>);
-
-#[derive(Clone,Copy,Debug)]
-pub struct RSticky<T: Clone + Copy + Debug,
-                   U: Clone + Copy + Debug>(CSticky<T,U>,CSticky<T,U>);
-
 impl<T: Clone+Copy+Debug, U: Clone+Copy+Debug> Dot<Edge<T>,Edge<U>> {
     pub fn corner(&self) -> Corner {
         Corner((self.0).0,(self.1).0)
+    }
+    
+    pub fn quantity(&self) -> Dot<T,U> {
+        Dot((self.0).1,(self.1).1)
+    }
+}
+
+impl<T: Clone+Copy+Debug, U: Clone+Copy+Debug> Dot<Anchored<T>,Anchored<U>> {
+    pub fn corner(&self) -> Dot<Anchor,Anchor> {
+        Dot((self.0).0,(self.1).0)
     }
     
     pub fn quantity(&self) -> Dot<T,U> {
@@ -231,6 +268,9 @@ pub fn cleaf(x: f32, y: i32) -> CLeaf { Dot(x,y) }
 pub type CPixel = Dot<i32,i32>;
 pub fn cpixel(x: i32, y: i32) -> CPixel { Dot(x,y) }
 
+pub type APixel = Dot<Anchored<i32>,Anchored<i32>>;
+pub fn apixel(x: Anchored<i32>, y: Anchored<i32>) -> APixel { Dot(x,y) }
+
 /*** impls for dot types ***/
 
 impl<T: Clone + Copy + Mul<T, Output=U>,U: Add<U, Output=U>> Dot<T,T> {
@@ -270,16 +310,6 @@ impl<T : Clone + Copy + Into<f64>,
     fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
         let (a,b): (f64,f64) = (self.0.into(), self.1.into());
         attrib.add_f32(&[a as f32,b as f32],batch);
-    }
-}
-
-/* Corner + Dot => add like vectors, keep orientation */
-impl<T : Clone + Copy + Debug + Add<T, Output=T>,
-     U : Clone + Copy + Debug + Add<U, Output=U>> Add<Dot<T,U>> for CSticky<T,U> {
-    type Output = CSticky<T,U>;
-    
-    fn add(self, other: Dot<T,U>) -> CSticky<T,U> {
-        CSticky(self.0, self.1+other)
     }
 }
 

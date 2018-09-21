@@ -4,12 +4,16 @@ mod todo;
 mod area;
 
 pub use types::coord::{
-    CPixel, CLeaf, CFraction,
+    CPixel, CLeaf, CFraction, APixel,
     cpixel, cleaf, cfraction, cedge,
     Edge, EPixel, Corner,
     Dot, Move, Distance, Units, Axis, AxisSense,
     LEFT, RIGHT, UP, DOWN,
-    TOPLEFT, BOTTOMLEFT, TOPRIGHT, BOTTOMRIGHT
+    TOPLEFT, BOTTOMLEFT, TOPRIGHT, BOTTOMRIGHT,
+    
+    A_TOPLEFT, A_TOP,    A_TOPRIGHT,
+    A_LEFT,    A_MIDDLE, A_RIGHT,
+    A_BOTLEFT, A_BOT,    A_BOTRIGHT
 };
 
 pub use types::area::{
