@@ -1,7 +1,9 @@
+mod alloc;
 mod text;
 mod bitmap;
 mod collage;
 mod drawingimpl;
+mod flatcanvas;
 
 pub use drawing::drawingimpl::{
     Drawing,
@@ -16,3 +18,4 @@ pub use drawing::collage::{
     collage,
     Mark
 };
+pub use drawing::flatcanvas::{ FlatCanvas, FCFont };

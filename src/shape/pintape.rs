@@ -10,7 +10,7 @@ use program::{
 
 use types::{
     CLeaf, CPixel, RPixel, CFraction, cfraction, Dot, AxisSense, 
-    Bounds, area_size, CTape, Rect, Edge
+    Bounds, area_size, Rect, Edge
 };
 
 use shape::{ Shape, ColourSpec, MathsShape };

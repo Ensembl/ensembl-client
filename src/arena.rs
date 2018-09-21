@@ -2,17 +2,19 @@ use std::collections::HashMap;
 use std::cell::RefCell;
 use std::rc::Rc;
 
+use dom::prepare_canvas;
+
 use stdweb::web::Element;
 use webgl_rendering_context::WebGLRenderingContext as glctx;
 
-use canvasutil;
+use drawing::FlatCanvas;
 use wglraw;
 use stage::Stage;
 use program::{ Program, GPUSpec, ProgramType };
 use composit::{ StateManager, Compositor };
 
 pub struct ArenaCanvases {
-    pub flat: Rc<canvasutil::FlatCanvas>,
+    pub flat: Rc<FlatCanvas>,
     pub idx: i32,
 }
 
@@ -51,9 +53,9 @@ pub struct Arena {
 
 impl Arena {
     pub fn new(el: &Element) -> Arena {
-        let canvas = canvasutil::prepare_canvas(el);
+        let canvas = prepare_canvas(el);
         let ctx = wglraw::prepare_context(&canvas);
-        let flat = Rc::new(canvasutil::FlatCanvas::create(2,2));
+        let flat = Rc::new(FlatCanvas::create(2,2));
         let data = Rc::new(RefCell::new(ArenaData {
             ctx,
             gpuspec: GPUSpec::new(),
