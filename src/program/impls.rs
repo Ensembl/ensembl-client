@@ -70,7 +70,7 @@ impl PTGeom {
                     gl_Position = vec4(
                         (aOrigin.x -uStageHpos) * uStageZoom + 
                                     aVertexPosition.x / uSize.x,
-                        (1.0 - aVertexPosition.y / uSize.y) * aVertexSign.y,
+                        (1.0 - ((aOrigin.y + aVertexPosition.y) / uSize.y)) * aVertexSign.y,
                         0.0, 1.0)")
 
             },
@@ -79,8 +79,6 @@ impl PTGeom {
                 Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPositive"),
                 Attribute::new(&PR_DEF,Arity::Vec2,"aVertexSign"),
                 Statement::new_vert("
-                    
-                
                     gl_Position = vec4((aVertexPositive.x / uSize.x - 1.0) * aVertexSign.x,
                                        (1.0 - aVertexPositive.y / uSize.y) * aVertexSign.y,
                                        0.0, 1.0)")
