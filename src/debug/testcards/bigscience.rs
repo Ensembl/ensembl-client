@@ -113,7 +113,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
     for yidx in 0..20 {
         let y = yidx * 60;
         let val = daft(&mut rng);
-        let tx = text_texture(&val,&fc_font,&col);
+        let tx = text_texture(&val,&fc_font,&col,&Colour(255,255,255));
         c.add_shape(page_texture(tx, 
                             &cedge(TOPLEFT,cpixel(4,y+18)),
                             &cpixel(1,1)));
@@ -244,7 +244,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                 }
                 if showtext_gen.sample(&mut rng) == 0 {
                     let val = bio_daft(&mut rng);
-                    let tx = text_texture(&val,&fc_font,&col);
+                    let tx = text_texture(&val,&fc_font,&col,&Colour(255,255,255));
                     c.add_shape(pin_texture(tx, &cleaf(x,y-24), &cpixel(1,1)));
                 }
             }

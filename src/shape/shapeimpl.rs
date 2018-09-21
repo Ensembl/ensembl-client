@@ -3,13 +3,14 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use arena::ArenaData;
 use program::{ ProgramAttribs, DataGroup, ProgramType, PTSkin };
-use types::{ Colour, RPixel };
+use types::{ Colour, RPixel, RFraction };
 use composit::Compositor;
-use drawing::Artist;
+use drawing::{ Artist, Artwork };
 
 pub trait Shape {
     fn get_artist(&self) -> Option<Rc<Artist>> { None }
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData, d: Option<RPixel>);
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, 
+        adata: &ArenaData, art: Option<Artwork>);
     fn get_geometry(&self) -> ProgramType;
 }
 

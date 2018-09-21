@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use arena::ArenaData;
 
-use types::{ CLeaf, RLeaf, RPixel, cfraction, cleaf, area_size };
+use types::{ CLeaf, RLeaf, RPixel, cfraction, cleaf, area_size, RFraction };
 
 use shape::{ Shape, ColourSpec, Spot };
 use shape::util::{
@@ -14,8 +14,7 @@ use shape::util::{
 
 use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
 
-use drawing::Artist;
-
+use drawing::{ Artist, Artwork };
 
 /*
  * StretchRect
@@ -34,7 +33,7 @@ impl StretchRect {
 }
 
 impl Shape for StretchRect {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, _texpos: Option<RPixel>) {
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, _art: Option<Artwork>) {
         let b = vertices_rect(geom,self.colspec.to_group(geom_name));
         rectangle_g(b,geom,"aVertexPosition",&self.points);
         if let ColourSpec::Colour(c) = self.colspec {
@@ -67,7 +66,7 @@ impl StretchWiggle {
 }
 
 impl Shape for StretchWiggle {
-    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, _texpos: Option<RPixel>) {
+    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, art: Option<Artwork>) {
         let dg = self.group.get_group(self.get_geometry());
         let b = vertices_strip(geom,self.points.len() as u16*2,Some(dg));
         points_g(b,geom,"aVertexPosition",&self.points,self.y);
@@ -102,25 +101,27 @@ impl StretchTexture {
 const CHUNK_SIZE : f32 = 10.;
 
 impl Shape for StretchTexture {
-    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData, texpos: Option<RPixel>) {
-        if let Some(tp) = texpos {
-            let t = tp.as_fraction() / adata.canvases.flat.size().as_fraction();
-            
+    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData, artwork: Option<Artwork>) {
+        if let Some(art) = artwork {
             /* some cards baulk at very large textured areas, so split */
             let mut chunks = ((self.pos.area()).0.abs() / CHUNK_SIZE) as i32;
             if chunks < 1 { chunks = 1; }
             
             let widthp = (self.pos.area()).0 / chunks as f32;
-            let widtht = t.area() / cfraction(chunks as f32,1.);
+            let widtht = art.pos.area() / cfraction(chunks as f32,1.);
+            let widthtm = art.mask_pos.area() / cfraction(chunks as f32,1.);
             
             let mut p = area_size(self.pos.offset(),cleaf(widthp,(self.pos.area()).1));
-            let mut t = area_size(t.offset(),widtht);
+            let mut t = area_size(art.pos.offset(),widtht);
+            let mut tm = area_size(art.mask_pos.offset(),widthtm);
             for _i in 0..chunks {
                 let b = vertices_rect(geom,None);
                 rectangle_g(b,geom,"aVertexPosition",&p);
                 rectangle_t(b,geom,"aTextureCoord",&t);
+                rectangle_t(b,geom,"aMaskCoord",&tm);
                 p = p + cleaf(widthp,0);
                 t = t + cfraction(widtht.0,0.);
+                tm = tm + cfraction(widtht.0,0.);
             }
         }
     }

@@ -41,11 +41,11 @@ pub fn testcard_text(g: Arc<Mutex<Global>>) {
     let mut c = Component::new(Rc::new(StateFixed(StateValue::On())));
  
     let font = FCFont::new(120,"Lato");
-    let tx = text_texture("hello",&font,&Colour(199,208,213));
+    let tx = text_texture("hello",&font,&Colour(199,208,213),&Colour(0,0,0));
     c.add_shape(tape_rectangle(
         &cleaf(0.,0),
         &area_size(cpixel(-50,1),cpixel(400,400)).y_edge(AxisSense::Pos,AxisSense::Pos),
-        &ColourSpec::Colour(Colour(50,0,0))));
+        &ColourSpec::Colour(Colour(150,0,0))));
 
     c.add_shape(tape_texture(tx,&cleaf(0.,100).y_edge(AxisSense::Pos),&cpixel(1,1)));
 
