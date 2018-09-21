@@ -3,6 +3,8 @@ use std::clone::Clone;
 use drawing::FCFont;
 use composit::{ StateFixed, Component, StateValue, StateAtom };
 
+use separator::Separatable;
+
 use debug::testcards::common::{ daft, bio_daft, wiggly };
 
 use shape::{
@@ -75,7 +77,7 @@ fn measure(edge: AxisSense, p: &Palette) -> Component {
             &cleaf(x as f32*100.,0),
             &area_size(cpixel(0,1),cpixel(1,18)).y_edge(edge,edge),
             &p.grey));
-        let tx = text_texture(&format!("{}",x*1000+1000),
+        let tx = text_texture(&format!("{}",((x+20)*100000).separated_string()),
                               &p.lato_12,&Colour(199,208,213),&Colour(255,255,255));
         c.add_shape(tape_texture(tx,&cleaf(x as f32*100.+8.,4).y_edge(edge),
                                  &cpixel(1,1)));
