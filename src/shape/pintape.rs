@@ -245,19 +245,23 @@ impl Shape for PinTexture {
         if let Some(art) = artwork {
             let p = area_size(cpixel(0,0),art.size) * self.scale;
             let b = vertices_rect(geom,None);
-            rectangle_t(b,geom,"aMaskCoord",&art.mask_pos);
-            rectangle_p(b,geom,"aVertexPosition",&p);
-            rectangle_t(b,geom,"aTextureCoord",&art.pos);
+            let mut mp = art.mask_pos;
+            let mut ap = art.pos;            
             match self.origin {
                 CPinOrTape::Pin(origin) => {
                     multi_gl(b,geom,"aOrigin",&origin,4);
                 },
                 CPinOrTape::Tape(origin) => {
                     let origin = origin.x_edge(AxisSense::Pos);
+                    ap = ap.flip_d(origin);
+                    mp = mp.flip_d(origin);
                     multi_gl(b,geom,"aOrigin",&origin.quantity(),4);
                     multi_gl(b,geom,"aVertexSign",&origin.corner(),4);
                 }
             }
+            rectangle_t(b,geom,"aTextureCoord",&ap);
+            rectangle_t(b,geom,"aMaskCoord",&mp);
+            rectangle_p(b,geom,"aVertexPosition",&p);
         }
     }
 

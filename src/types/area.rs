@@ -1,5 +1,5 @@
 use std::fmt::Debug;
-use std::ops::{ Add, Sub, Mul, Div };
+use std::ops::{ Add, Sub, Mul, Div, Neg };
 use program::{ Object, ObjectAttrib, DataBatch, Input };
 use types::coord::{ Dot, Edge, AxisSense };
 
@@ -40,6 +40,40 @@ impl<T: Clone+Copy+Debug, U: Clone+Copy+Debug> Rect<Edge<T>,Edge<U>> {
     
     pub fn quantity(&self) -> Rect<T,U> {        
         Rect((self.0).quantity(),(self.1).quantity())
+    }
+}
+
+impl<T: Copy+Clone+Debug,
+     U: Copy+Clone+Debug> Rect<T,U> {
+    pub fn flip_d<A: Copy+Clone+Debug + PartialOrd,
+                  B: Copy+Clone+Debug + PartialOrd>(&self, xs: Dot<Edge<A>,Edge<B>>) -> Rect<T,U> {
+        let mut out = *self;
+        if let AxisSense::Neg = (xs.0).corner() { // x
+            out = Rect(Dot((out.1).0,(out.0).1),
+                       Dot((out.0).0,(out.1).1));
+        }
+        if let AxisSense::Neg = (xs.1).corner() { // y
+            out = Rect(Dot((out.0).0,(out.1).1),
+                       Dot((out.1).0,(out.0).1));
+        }
+        out
+    }
+}
+
+impl<T: Copy+Clone+Debug,
+     U: Copy+Clone+Debug> Rect<T,U> {
+    pub fn flip_r<A: Copy+Clone+Debug + PartialOrd,
+                  B: Copy+Clone+Debug + PartialOrd>(&self, xs: Rect<Edge<A>,Edge<B>>) -> Rect<T,U> {
+        let mut out = *self;
+        if Dot((xs.0).0,(xs.1).0).is_backward() { // x
+            out = Rect(Dot((out.1).0,(out.0).1),
+                       Dot((out.0).0,(out.1).1));
+        }
+        if Dot((xs.0).1,(xs.1).1).is_backward() { // y
+            out = Rect(Dot((out.0).0,(out.1).1),
+                       Dot((out.1).0,(out.0).1));
+        }
+        out
     }
 }
 

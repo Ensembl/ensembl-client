@@ -28,7 +28,31 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=-1
+current_page=23
+FILE_NAME_0=1058;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdrawing%2Fflatcanvas.rs;0;4
+FILE_NAME_1=197;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdrawing%2Fdrawingimpl.rs;0;4
+FILE_NAME_2=7788;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fshape%2Fpintape.rs;0;4
+FILE_NAME_3=1175;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdrawing%2Ftext.rs;0;4
+FILE_NAME_4=5732;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fprogram%2Fimpls.rs;0;4
+FILE_NAME_5=1416;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fshape%2Fshapeimpl.rs;0;4
+FILE_NAME_6=1919;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcomposit%2Fcomponent.rs;0;4
+FILE_NAME_7=1760;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fshape%2Ffixpage.rs;0;4
+FILE_NAME_8=3596;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fshape%2Fstretch.rs;0;4
+FILE_NAME_9=711;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdebug%2Ftestcards%2Ftext.rs;0;4
+FILE_NAME_10=1950;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdebug%2Ftestcards%2Fpolar.rs;0;4
+FILE_NAME_11=1081;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fshape%2Futil.rs;0;4
+FILE_NAME_12=0;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Ftypes%2Farea.rs;0;4
+FILE_NAME_13=161;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdrawing%2Fmod.rs;0;4
+FILE_NAME_14=10032;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdebug%2Ftestcards%2Fbigscience.rs;0;4
+FILE_NAME_15=185;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdrawing%2Fbitmap.rs;0;4
+FILE_NAME_16=688;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdrawing%2Fcollage.rs;0;4
+FILE_NAME_17=214;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fmain.rs;0;4
+FILE_NAME_18=12;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Futil%2Fmod.rs;0;4
+FILE_NAME_19=249;None;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2FCargo.toml;0;4
+FILE_NAME_20=1913;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fwglraw.rs;0;4
+FILE_NAME_21=1028;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdom%2Fcanvasutil.rs;0;4
+FILE_NAME_22=0;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcontroller%2Fprojector.rs;0;4
+FILE_NAME_23=0;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcontroller%2Fjank.rs;0;4
 
 [VTE]
 last_dir=/home/dan
