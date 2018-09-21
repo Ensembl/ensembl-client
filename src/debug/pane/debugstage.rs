@@ -189,6 +189,7 @@ const STAGE : &str = r##"
                 <option value="draw">Jank Testcard</option>
                 <option value="onoff">On/Off Testcard</option>
                 <option value="button">Button Testcard</option>
+                <option value="text">Text Testcard</option>
             </select>
             <select class="folder"></select>
             <button class="mark">mark!</button>
