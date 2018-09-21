@@ -54,7 +54,7 @@ fn measure(c: &mut Component, cs: &ColourSpec, cs2: &ColourSpec) {
             cs2));
         c.add_shape(tape_texture(battenberg(),
             &cleaf(x as f32*100.+50.,0).y_edge(AxisSense::Pos),
-            &cpixel(10,10)));
+            &cpixel(0,0),&cpixel(10,10)));
         c.add_shape(tape_mathsshape(
             &cleaf(x as f32*100.+75.,0).y_edge(AxisSense::Pos),
             Dot(None,Some(AxisSense::Pos)),
@@ -172,7 +172,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                                          255,0,0,255,
                                          0,255,0,255,
                                          255,255,0,255 },cpixel(2,2));
-            c.add_shape(pin_texture(tx,&cleaf(0.,y-25),&cpixel(10,10)));
+            c.add_shape(pin_texture(tx,&cleaf(0.,y-25),&cpixel(0,0),&cpixel(10,10)));
             c_odd.add_shape(stretch_rectangle(&area_size(cleaf(-200.,y-20),cleaf(100.,5)),&red));
             c_even.add_shape(stretch_rectangle(&area_size(cleaf(-200.,y-15),cleaf(100.,5)),&green));
 
@@ -245,7 +245,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                 if showtext_gen.sample(&mut rng) == 0 {
                     let val = bio_daft(&mut rng);
                     let tx = text_texture(&val,&fc_font,&col,&Colour(255,255,255));
-                    c.add_shape(pin_texture(tx, &cleaf(x,y-24), &cpixel(1,1)));
+                    c.add_shape(pin_texture(tx, &cleaf(x,y-24), &cpixel(0,0), &cpixel(1,1)));
                 }
             }
         }

@@ -79,8 +79,8 @@ fn measure(edge: AxisSense, p: &Palette) -> Component {
             &p.grey));
         let tx = text_texture(&format!("{}",((x+20)*100000).separated_string()),
                               &p.lato_12,&Colour(199,208,213),&Colour(255,255,255));
-        c.add_shape(tape_texture(tx,&cleaf(x as f32*100.+8.,4).y_edge(edge),
-                                 &cpixel(1,1)));
+        c.add_shape(tape_texture(tx,&cleaf(x as f32*100.,4).y_edge(edge),
+                                 &cpixel(8,0),&cpixel(1,1)));
     }
     c
 }
