@@ -1,15 +1,12 @@
-import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
-import { RouteComponentProps } from 'react-router';
-import { HashLink } from 'react-router-hash-link';
+import React, { Component, ReactEventHandler } from 'react';
 
 import { DrawerSection } from '../../configs/drawerSectionConfig';
+import { EventHandlers } from '../../types/objects';
 
 import closeIcon from 'assets/img/track-panel/close.svg';
 
-type DrawerBarParams = {};
-
-type DrawerBarProps = RouteComponentProps<DrawerBarParams> & {
+type DrawerBarProps = {
+  changeCurrentDrawerSection: (currentDrawerSection: string) => void;
   closeDrawer: () => void;
   currentTrack: string;
   drawerSections: DrawerSection[];
@@ -17,16 +14,21 @@ type DrawerBarProps = RouteComponentProps<DrawerBarParams> & {
 
 class DrawerBar extends Component<DrawerBarProps> {
   public drawerSections: DrawerSection[] = [];
+  public clickHandlers: EventHandlers = {};
 
   public render() {
     return (
       <div className="drawer-bar">
         <dl className="page-list">
-          <dt><HashLink smooth={true} to={`${this.props.location.pathname}#main`}>Main</HashLink></dt>
+          <dt>
+            <button onClick={this.getClickHandler('main')}>{'Main'}</button>
+          </dt>
           {this.props.drawerSections &&
-            this.props.drawerSections.map((page: DrawerSection) => (
-              <dt key={page.name}>
-                <HashLink smooth={true} to={`${this.props.location.pathname}#${page.name}`}>{page.label}</HashLink>
+            this.props.drawerSections.map((section: DrawerSection) => (
+              <dt key={section.name}>
+                <button onClick={this.getClickHandler(section.name)}>
+                  {section.label}
+                </button>
               </dt>
             ))}
         </dl>
@@ -36,6 +38,18 @@ class DrawerBar extends Component<DrawerBarProps> {
       </div>
     );
   }
+
+  private getClickHandler(key: string) {
+    if (!this.clickHandlers.hasOwnProperty(key)) {
+      const handler: ReactEventHandler = () => {
+        this.props.changeCurrentDrawerSection(key);
+      };
+
+      this.clickHandlers[key] = handler;
+    }
+
+    return this.clickHandlers[key];
+  }
 }
 
-export default withRouter((props: DrawerBarProps) => <DrawerBar {...props} />);
+export default DrawerBar;

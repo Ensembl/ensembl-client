@@ -1,66 +1,92 @@
-import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
-import { RouteComponentProps } from 'react-router';
+import React, { Component, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
-import DrawerBar from './DrawerBar';
 import { RootState } from '../../reducers';
-import { closeDrawer } from '../../actions/browserActions';
+import {
+  changeCurrentDrawerSection,
+  closeDrawer
+} from '../../actions/browserActions';
 import { DrawerSection } from '../../configs/drawerSectionConfig';
-import { trackPanelConfig, TrackPanelConfig } from '../../configs/trackPanelConfig';
+import {
+  trackPanelConfig,
+  TrackPanelConfig
+} from '../../configs/trackPanelConfig';
 
-type TrackParams = {};
+import DrawerBar from './DrawerBar';
+import TrackOne from './track-one/TrackOne';
+import TrackTwo from './track-two/TrackTwo';
 
-type TrackProps = RouteComponentProps<TrackParams> & {
+type TrackProps = {
+  changeCurrentDrawerSection: (currentDrawerSection: string) => void;
   closeDrawer: () => void;
+  currentDrawerSection: string;
   currentTrack: string;
   drawerSections: DrawerSection[];
 };
 
 class Track extends Component<TrackProps> {
-  public trackConfig: object = {};
-
-  public componentDidMount() {
-    this.trackConfig = this.getCurrentTrackConfig() as TrackPanelConfig;
-  }
-
-  public componentDidUpdate(prevProps: TrackProps) {
-    if (this.props.currentTrack !== prevProps.currentTrack) {
-      this.trackConfig = this.getCurrentTrackConfig() as TrackPanelConfig;
-    }
-  }
-
   public render() {
+    const TrackComponent = this.getCurrentTrackComponent();
+
     return (
       <section className="drawer">
         <DrawerBar
+          changeCurrentDrawerSection={this.props.changeCurrentDrawerSection}
           closeDrawer={this.props.closeDrawer}
           currentTrack={this.props.currentTrack}
           drawerSections={this.props.drawerSections}
         />
-        <div className="track-canvas">{}</div>
+        <div className="track-canvas">{TrackComponent}</div>
       </section>
     );
   }
 
-  private getCurrentTrackConfig(): TrackPanelConfig {
-    return trackPanelConfig.filter((track: TrackPanelConfig) => this.props.currentTrack === track.name)[0];
+  private getCurrentTrackComponent(): ReactNode {
+    const { currentDrawerSection, currentTrack, drawerSections } = this.props;
+
+    const currentTrackConfig: TrackPanelConfig = trackPanelConfig.filter(
+      (track: TrackPanelConfig) => currentTrack === track.name
+    )[0];
+
+    switch (currentTrackConfig.name) {
+      case 'track-one':
+        return (
+          <TrackOne
+            currentDrawerSection={currentDrawerSection}
+            drawerSections={drawerSections}
+          />
+        );
+      case 'track-two':
+        return (
+          <TrackTwo
+            currentDrawerSection={currentDrawerSection}
+            drawerSections={drawerSections}
+          />
+        );
+      default:
+        return (
+          <TrackOne
+            currentDrawerSection={currentDrawerSection}
+            drawerSections={drawerSections}
+          />
+        );
+    }
   }
 }
 
 const mapStateToProps = (state: RootState) => {
-  const { currentTrack, drawerSections } = state.browser;
-  return { currentTrack, drawerSections };
+  const { currentDrawerSection, currentTrack, drawerSections } = state.browser;
+  return { currentDrawerSection, currentTrack, drawerSections };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
+  changeCurrentDrawerSection: (currentDrawerSection: string) =>
+    dispatch(changeCurrentDrawerSection(currentDrawerSection)),
   closeDrawer: () => dispatch(closeDrawer())
 });
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(Track)
-);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Track);

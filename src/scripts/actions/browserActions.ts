@@ -11,3 +11,9 @@ export const changeCurrentTrack = createAction(
 export const toggleDrawer = createAction('browser/toggle-drawer');
 export const openDrawer = createAction('browser/open-drawer');
 export const closeDrawer = createAction('browser/close-drawer');
+export const changeCurrentDrawerSection = createAction(
+  'browser/change-current-drawer-section',
+  (resolve) => {
+    return (currentDrawerSection: string) => resolve(currentDrawerSection);
+  }
+);
