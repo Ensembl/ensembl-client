@@ -80,9 +80,11 @@ impl Shape for FixTexture {
             let p : RPixel = area_size(cpixel(0,0),art.size) * self.scale;
             let p : Rect<Edge<i32>,Edge<i32>> = self.pos + p;
             let b = vertices_rect(geom,None);
+            let mut ap = art.pos.flip_r(p);
+            let mut mp = art.mask_pos.flip_r(p);
             rectangle_c(b,geom,"aVertexPositive","aVertexSign",&p);
-            rectangle_t(b,geom,"aTextureCoord",&art.pos);
-            rectangle_t(b,geom,"aMaskCoord",&art.mask_pos);
+            rectangle_t(b,geom,"aTextureCoord",&ap);
+            rectangle_t(b,geom,"aMaskCoord",&mp);
         }
     }
     

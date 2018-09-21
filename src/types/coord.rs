@@ -1,4 +1,4 @@
-use std::cmp::{  Ordering };
+use std::cmp::{ Ordering, PartialOrd };
 use stage::Stage;
 use std::fmt::Debug;
 use std::ops::{ Add, Sub, Mul, Div, Neg };
@@ -50,6 +50,21 @@ impl From<AxisSense> for f64 {
             AxisSense::Pos =>  1.0,
             AxisSense::Neg => -1.0
         }        
+    }
+}
+
+impl<T: Clone+Copy+Debug + PartialOrd> Dot<Edge<T>, Edge<T>> {
+    pub fn is_backward(&self) -> bool {
+        match ((self.0).0,(self.1).0) {
+            (AxisSense::Pos,AxisSense::Pos) =>
+                ((self.0).1).partial_cmp(&(self.1).1).unwrap() == Ordering::Greater,
+            (AxisSense::Neg,AxisSense::Neg) =>
+                ((self.0).1).partial_cmp(&(self.1).1).unwrap() == Ordering::Less,
+            (AxisSense::Neg,AxisSense::Pos) =>
+                true,
+            (AxisSense::Pos,AxisSense::Neg) =>
+                false
+        }
     }
 }
 
