@@ -253,6 +253,7 @@ impl Shape for PinTexture {
                 },
                 CPinOrTape::Tape(origin) => {
                     let origin = origin.x_edge(AxisSense::Pos);
+                    console!("origin={:?} q={:?} p={:?}",origin,origin.quantity(),p);
                     multi_gl(b,geom,"aOrigin",&origin.quantity(),4);
                     multi_gl(b,geom,"aVertexSign",&origin.corner(),4);
                 }

@@ -1,6 +1,7 @@
 use std::sync::{ Arc, Mutex };
 use std::clone::Clone;
 use canvasutil;
+use canvasutil::FCFont;
 use composit::{ StateFixed, Component, StateValue, StateAtom };
 
 use debug::testcards::common::{ daft, bio_daft, wiggly };
@@ -36,7 +37,9 @@ use rand::distributions::range::Range;
 use controller::Event;
 
 struct Palette {
-    white: Spot
+    lato_12: FCFont,
+    white: ColourSpec,
+    grey: ColourSpec
 }
 
 fn draw_frame(edge: AxisSense, p: &Palette) -> Component {
@@ -44,9 +47,14 @@ fn draw_frame(edge: AxisSense, p: &Palette) -> Component {
     let right = Corner(AxisSense::Neg,edge);
     
     let mut c = Component::new(Rc::new(StateFixed(StateValue::On())));
-    c.add_shape(fix_rectangle(&area(cedge(left,cpixel(0,0)),
-                                    cedge(right,cpixel(0,20))),
-                        &ColourSpec::Spot(p.white.clone())));
+    c.add_shape(fix_rectangle(&area(cedge(left,cpixel(0,1)),
+                                    cedge(right,cpixel(0,18))),
+                        &p.white));
+    for y in [1,18].iter() {
+        c.add_shape(fix_rectangle(&area(cedge(left,cpixel(0,*y)),
+                                        cedge(right,cpixel(0,*y+1))),
+                            &p.grey));
+    }
     c
 }
 
@@ -57,26 +65,21 @@ fn battenberg() -> Rc<Artist> {
                           255,255,0,255 },cpixel(2,2))
 }
 
-fn measure(edge: AxisSense, cs: &ColourSpec, cs2: &ColourSpec) -> Component {
+fn measure(edge: AxisSense, p: &Palette) -> Component {
+    let left = Corner(AxisSense::Pos,edge);
+    let right = Corner(AxisSense::Neg,edge);
+    
+    let bat = battenberg();
     let mut c = Component::new(Rc::new(StateFixed(StateValue::On())));
     for x in -10..10 {
         c.add_shape(tape_rectangle(
             &cleaf(x as f32*100.,0),
-            &area_size(cpixel(0,0),cpixel(20,20)).y_edge(edge,edge),
-            cs));
-        c.add_shape(tape_mathsshape(
-            &cleaf(x as f32*100.+25.,0).y_edge(edge),
-            Dot(None,Some(AxisSense::Pos)),
-            10., None, MathsShape::Polygon(5,0.05),
-            cs2));
-        c.add_shape(tape_texture(battenberg(),
-            &cleaf(x as f32*100.+50.,0).y_edge(edge),
-            &cpixel(10,10)));
-        c.add_shape(tape_mathsshape(
-            &cleaf(x as f32*100.+75.,0).y_edge(edge),
-            Dot(None,Some(AxisSense::Pos)),
-            10., Some(2.), MathsShape::Circle,
-            cs));
+            &area_size(cpixel(0,1),cpixel(1,18)).y_edge(edge,edge),
+            &p.grey));
+        let tx = text_texture(&format!("{}",x*1000+1000),
+                              &p.lato_12,&Colour(199,208,213));
+        c.add_shape(tape_texture(tx,&cleaf(x as f32*100.+8.,4).y_edge(edge),
+                                 &cpixel(1,1)));
     }
     c
 }
@@ -89,7 +92,9 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
     let mut rng = SmallRng::from_seed([s,s,s,s,s,s,s,s,t,t,t,t,t,t,t,t]);
 
     let p = g.with_compo(|c| Palette {
-        white: Spot::new(c,&Colour(255,255,25))
+        lato_12: canvasutil::FCFont::new(12,"Lato"),
+        white: ColourSpec::Spot(Spot::new(c,&Colour(255,255,255))),
+        grey: ColourSpec::Spot(Spot::new(c,&Colour(199,208,213)))
     }).unwrap();
 
 
@@ -103,8 +108,8 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
 
     let top_f = draw_frame(AxisSense::Pos,&p);
     let bot_f = draw_frame(AxisSense::Neg,&p);
-    let top_m = measure(AxisSense::Pos,&red,&green);
-    let bot_m = measure(AxisSense::Neg,&red,&green);
+    let top_m = measure(AxisSense::Pos,&p);
+    let bot_m = measure(AxisSense::Neg,&p);
     g.with_compo(|co| {
         co.add_component(top_f);
         co.add_component(bot_f);

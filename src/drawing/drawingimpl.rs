@@ -120,7 +120,7 @@ impl LeafDrawingManager {
         LeafDrawingManager {
             cache: DrawingMemory::new(),
             tickets: Vec::<Drawing>::new(),
-            allocator: Allocator::new(16),
+            allocator: Allocator::new(20),
         }
     }
 
