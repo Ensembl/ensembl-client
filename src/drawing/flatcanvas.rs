@@ -1,10 +1,8 @@
 use stdweb::web::{
-    IHtmlElement,
     INode,
     TextBaseline,
     CanvasRenderingContext2d,
     document,
-    Element
 };
 
 use stdweb::web::html_element::CanvasElement;
