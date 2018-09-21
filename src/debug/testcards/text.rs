@@ -47,7 +47,7 @@ pub fn testcard_text(g: Arc<Mutex<Global>>) {
         &area_size(cpixel(-50,1),cpixel(400,400)).y_edge(AxisSense::Pos,AxisSense::Pos),
         &ColourSpec::Colour(Colour(150,0,0))));
 
-    c.add_shape(tape_texture(tx,&cleaf(0.,100).y_edge(AxisSense::Pos),&cpixel(1,1)));
+    c.add_shape(tape_texture(tx,&cleaf(0.,100).y_edge(AxisSense::Pos),&cpixel(0,0),&cpixel(1,1)));
 
 
     g.with_compo(|co| {
