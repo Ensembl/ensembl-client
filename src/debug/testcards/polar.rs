@@ -5,7 +5,7 @@ use composit::{ StateFixed, Component, StateValue, StateAtom };
 
 use separator::Separatable;
 
-use debug::testcards::common::{ daft, bio_daft, wiggly };
+use debug::testcards::common::{ daft, bio_daft, wiggly, track_data };
 
 use shape::{
     fix_rectangle, fix_texture, page_rectangle,
@@ -53,18 +53,7 @@ struct Palette {
     grey: ColourSpec
 }
 
-fn one_offs(c: &mut Component, p: &Palette) {
-    c.add_shape(fix_rectangle(&area(cedge(TOPLEFT,cpixel(0,2)),
-                                    cedge(TOPLEFT,cpixel(36,16))),
-                                &p.white));
-    c.add_shape(fix_rectangle(&area(cedge(TOPLEFT,cpixel(36,1)),
-                                    cedge(TOPLEFT,cpixel(37,17))),
-                                &p.grey));
-    let tx = text_texture("bp",
-                          &p.lato_12,&Colour(199,208,213),&Colour(255,255,255));
-    c.add_shape(fix_texture(tx,&cedge(TOPLEFT,cpixel(34,9)),
-                            &cpixel(1,1).anchor(A_RIGHT)));
-    
+fn one_offs(c: &mut Component, p: &Palette) {    
 }
 
 fn draw_frame(c: &mut Component,edge: AxisSense, p: &Palette) {
@@ -77,6 +66,16 @@ fn draw_frame(c: &mut Component,edge: AxisSense, p: &Palette) {
     c.add_shape(fixundertape_rectangle(&area(cedge(left,cpixel(0,1)),
                                     cedge(right,cpixel(0,18))),
                         &p.white));
+    c.add_shape(fix_rectangle(&area(cedge(left,cpixel(0,2)),
+                                    cedge(left,cpixel(36,16))),
+                                &p.white));
+    c.add_shape(fix_rectangle(&area(cedge(left,cpixel(36,1)),
+                                    cedge(left,cpixel(37,17))),
+                                &p.grey));
+    let tx = text_texture("bp",
+                          &p.lato_12,&Colour(199,208,213),&Colour(255,255,255));
+    c.add_shape(fix_texture(tx,&cedge(left,cpixel(34,9)),
+                            &cpixel(1,1).anchor(A_RIGHT)));
     for y in [0,17].iter() {
         c.add_shape(fix_rectangle(&area(cedge(left,cpixel(0,*y)),
                                         cedge(right,cpixel(0,*y+1))),
@@ -105,6 +104,15 @@ fn measure(c: &mut Component,edge: AxisSense, p: &Palette) {
     }
 }
 
+fn data(t: i32) -> Vec<f32> {
+    track_data(match t % 4 {
+        0 => "rosabelle believe",
+        1 => "england expects",
+        2 => "hello world",
+        _ => "hwat we gardena in geardagum"
+    })
+}
+
 fn track(c: &mut Component, p: &Palette, t: i32) {
     let name = if t % 7 == 3 { "E" } else { "K" };
     let tx = text_texture(name,&p.lato_18,
@@ -115,6 +123,62 @@ fn track(c: &mut Component, p: &Palette, t: i32) {
         c.add_shape(page_rectangle(&area(cedge(TOPLEFT,cpixel(0,t*PITCH-PITCH/3+TOP)),
                                          cedge(TOPLEFT,cpixel(6,t*PITCH+PITCH/3+TOP))),
                                    &ColourSpec::Colour(Colour(75,168,252))));
+    }
+    let d = data(t);
+    let st = (t as f32).cos() * -10. - 100.;
+    let mut x = st;
+    let y = t*PITCH+TOP;
+    for v in &d {
+        if t < 4 || t % 3 == 0 { // gene
+            if *v > 0. {
+                c.add_shape(stretch_rectangle(
+                        &area_size(cleaf(x,y-3),
+                                   cleaf(*v,6)),
+                        &ColourSpec::Colour(Colour(75,168,252))));
+            }
+            x += v.abs();
+        } else {
+            let w = ((x as f32)*10.).cos();
+            let col = ColourSpec::Colour(if t == 4 {
+                if *v > 0. {
+                    if w > 0.3 {
+                        Colour(244,228,55)
+                    } else if w < -0.3 {
+                        Colour(55,244,228)
+                    } else {
+                        Colour(228,55,244)
+                    }
+                } else {
+                    Colour(190,219,213)
+                }
+            } else if t % 3 == 1 {
+                if *v > 0. {
+                    if w > 0. {
+                        Colour(255,192,192)
+                    } else {
+                        Colour(255,64,64)
+                    }
+                } else {
+                    Colour(255,255,255)
+                }
+            } else {
+                if *v > 0. {
+                    Colour(192,192,192)
+                } else {
+                    Colour(220,220,220)
+                }
+            });
+            c.add_shape(stretch_rectangle(
+                    &area_size(cleaf(x,y-3),
+                               cleaf(v.abs(),6)),
+                    &col));
+            x += v.abs();            
+        }
+    }
+    if t < 4 || t % 3 == 0 { // gene
+        c.add_shape(stretch_rectangle(
+                        &area_size(cleaf(st,y-1),cleaf(x-st,2)),
+                        &ColourSpec::Colour(Colour(75,168,252))));
     }
 }
 
