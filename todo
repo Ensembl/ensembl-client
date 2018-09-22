@@ -1,12 +1,10 @@
 TODO:
 
-text alpha               (4)
 tab deselected jank
 font load race
 reload on resize event
 
 arena/leaf separation
-anti-alias with alpha
 more than on/off
 not even in canvas
 fade-between refreshes
@@ -15,6 +13,8 @@ check in/out of event handlers
 
 enstops on stage
 pid
+rm adata from into_objects
+only render if objects
 
 mousemove on/off
 
@@ -25,3 +25,5 @@ focused zoom
 verify event unregister
 
 transparency for non-text drawings via superclass
+
+merge fix and pintape textures (to add anchors to former)

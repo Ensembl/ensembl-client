@@ -77,8 +77,8 @@ impl<T: Copy+Clone+Debug,
     }
 }
 
-impl<T: Copy + Clone + Debug + Sub<T,Output=T>,
-     U: Copy + Clone + Debug + Sub<U,Output=U>> Rect<T,U> {
+impl<T: Copy+Clone+Debug + Sub<T,Output=T>,
+     U: Copy+Clone+Debug + Sub<U,Output=U>> Rect<T,U> {
 
     pub fn offset(&self) -> Dot<T,U> { self.0 }
     pub fn far_offset(&self) -> Dot<T,U> { self.1 }
@@ -88,6 +88,14 @@ impl<T: Copy + Clone + Debug + Sub<T,Output=T>,
         Rect(self.0-self.0,self.1-self.0)
     }
 }
+
+impl<T: Copy+Clone+Debug + Sub<T,Output=T> + Add<T,Output=T>,
+     U: Copy+Clone+Debug + Sub<U,Output=U> + Add<U,Output=U>> Rect<T,U> {
+    pub fn inset(self, amt: Rect<T,U>) -> Rect<T,U> {
+        Rect(self.0+amt.0,self.1-amt.1)
+    }
+}
+
 impl<T: Copy+Clone+Debug + From<u8> + Sub<T,Output=T>,
      U: Copy+Clone+Debug + From<u8> + Sub<U,Output=U>> Rect<T,U> {
     pub fn area(&self) -> Dot<T,U> { self.1 - self.0 }
