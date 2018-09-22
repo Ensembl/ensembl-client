@@ -8,8 +8,8 @@ use program::{
 };
 
 use types::{
-    CLeaf, CPixel, RPixel, CFraction, cfraction, Dot, AxisSense, 
-    Bounds, area_size, Rect, Edge, RFraction, cpixel, APixel
+    CLeaf, CPixel, CFraction, cfraction, Dot, AxisSense, 
+    Bounds, area_size, Rect, Edge, APixel
 };
 
 use shape::{ Shape, ColourSpec, MathsShape };

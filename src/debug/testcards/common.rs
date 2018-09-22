@@ -75,3 +75,31 @@ pub fn wiggly<R>(rng: &mut R, num: u32, origin: CLeaf, sep: f32, h: i32)
     }
     out
 }
+
+const MORSE_AL : &str = "abcdefghijklmnopqrstuvwxyz ";
+const MORSE_DD : [&str;27] = [
+    ".-", "-...", "-.-.", "-..", ".",
+    "..-.", "--.", "....", "..", ".---",
+    "-.-", ".-..", "--", "-.", "---",
+    ".--.", "--.-", ".-.", "...", "-",
+    "..-", "...-", ".--", "-..-", "-.--",
+    "--..", " "
+];
+
+pub fn track_data(s: &str) -> Vec<f32> {
+    let mut out = Vec::<f32>::new();
+    for c in s.to_lowercase().chars() {
+        if let Some(idx) = MORSE_AL.find(c) {
+            for d in MORSE_DD[idx].chars() {
+                out.push(match d {
+                    '-' => 3.,
+                    '.' => 1.,
+                    _ => -9.
+                });
+                out.push(-1.);
+            }
+            out.push(-9.);
+        }
+    }
+    out
+}

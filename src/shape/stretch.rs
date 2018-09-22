@@ -1,7 +1,5 @@
 use std::rc::Rc;
 
-use arena::ArenaData;
-
 use types::{ CLeaf, RLeaf, RPixel, cfraction, cleaf, area_size, RFraction };
 
 use shape::{ Shape, ColourSpec, Spot };
