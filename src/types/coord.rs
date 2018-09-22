@@ -43,24 +43,15 @@ const AS : Anchor = Anchor(Some(AxisSense::Pos));
 const AM : Anchor = Anchor(None);
 const AE : Anchor = Anchor(Some(AxisSense::Neg));
 
-#[allow(unused)]
-pub const A_TOP      : Anchors = Dot(AM,AS);
-#[allow(unused)]
-pub const A_TOPLEFT  : Anchors = Dot(AS,AS);
-#[allow(unused)]
-pub const A_TOPRIGHT : Anchors = Dot(AE,AS);
-#[allow(unused)]
-pub const A_BOT      : Anchors = Dot(AM,AE);
-#[allow(unused)]
-pub const A_BOTLEFT  : Anchors = Dot(AS,AE);
-#[allow(unused)]
-pub const A_BOTRIGHT : Anchors = Dot(AE,AE);
-#[allow(unused)]
-pub const A_LEFT     : Anchors = Dot(AS,AM);
-#[allow(unused)]
-pub const A_RIGHT    : Anchors = Dot(AE,AM);
-#[allow(unused)]
-pub const A_MIDDLE   : Anchors = Dot(AM,AM);
+pub const A_TOP        : Anchors = Dot(AM,AS);
+pub const A_TOPLEFT    : Anchors = Dot(AS,AS);
+pub const A_TOPRIGHT   : Anchors = Dot(AE,AS);
+pub const A_BOTTOM     : Anchors = Dot(AM,AE);
+pub const A_BOTTOMLEFT : Anchors = Dot(AS,AE);
+pub const A_BOTTOMRIGHT: Anchors = Dot(AE,AE);
+pub const A_LEFT       : Anchors = Dot(AS,AM);
+pub const A_RIGHT      : Anchors = Dot(AE,AM);
+pub const A_MIDDLE     : Anchors = Dot(AM,AM);
 
 pub struct Direction(pub Axis,pub AxisSense);
 
@@ -136,7 +127,8 @@ impl<T: Clone+Copy+Debug, U: Clone+Copy+Debug> Dot<T,U> {
     }
 }
 
-impl Dot<Anchored<f32>,Anchored<f32>> {
+impl<T: Clone+Copy+Debug,
+     U: Clone+Copy+Debug> Dot<Anchored<T>,Anchored<U>> {
     pub fn from_nw(&self, r: Rect<f32,f32>) -> Rect<f32,f32> {
         let s = r.size();
         r + Dot((self.0.prop()-1.)/2.,(self.1.prop()-1.)/2.) * s

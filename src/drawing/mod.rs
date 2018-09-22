@@ -6,7 +6,7 @@ mod drawingimpl;
 mod flatcanvas;
 
 pub use drawing::drawingimpl::{
-    Drawing, Artist, Artwork, LeafDrawingManager
+    Drawing, Artist, Artwork, LeafDrawingManager,
 };
 
 pub use drawing::text::text_texture;
@@ -16,4 +16,4 @@ pub use drawing::collage::{
     collage,
     Mark
 };
-pub use drawing::flatcanvas::{ FlatCanvas, FCFont };
+pub use drawing::flatcanvas::{ FlatCanvas, FCFont, FontVariety };

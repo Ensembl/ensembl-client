@@ -9,8 +9,7 @@ use drawing::{ Artist, Artwork };
 
 pub trait Shape {
     fn get_artist(&self) -> Option<Rc<Artist>> { None }
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, 
-        adata: &ArenaData, art: Option<Artwork>);
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, art: Option<Artwork>);
     fn get_geometry(&self) -> ProgramType;
 }
 

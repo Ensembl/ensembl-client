@@ -10,10 +10,6 @@ use shape::{
     Spot, ColourSpec, MathsShape,
 };
 
-use drawing::{
-    mark_rectangle,
-};
-
 use rand::Rng;
 use rand::rngs::SmallRng;
 use rand::SeedableRng;
@@ -25,10 +21,13 @@ use controller::Global;
 use types::{
     Colour, cleaf, cpixel, area, cedge, AxisSense, Dot,
     TOPLEFT, BOTTOMLEFT, TOPRIGHT, BOTTOMRIGHT, area_size,
-    A_MIDDLE
+    A_MIDDLE, A_BOTTOMRIGHT, A_BOTTOMLEFT, A_TOPLEFT, A_TOPRIGHT,
 };
 
-use drawing::{ text_texture, bitmap_texture, collage, Mark, Artist, FCFont };
+use drawing::{
+    text_texture, bitmap_texture, collage, Mark, Artist, FCFont,
+    mark_rectangle, FontVariety
+};
 
 use rand::distributions::Distribution;
 use rand::distributions::range::Range;
@@ -55,7 +54,7 @@ fn measure(c: &mut Component, cs: &ColourSpec, cs2: &ColourSpec) {
             cs2));
         c.add_shape(tape_texture(battenberg(),
             &cleaf(x as f32*100.+50.,0).y_edge(AxisSense::Pos),
-            &cpixel(0,0).anchor(A_MIDDLE),&cpixel(10,10)));
+            &cpixel(0,0),&cpixel(10,10).anchor(A_MIDDLE)));
         c.add_shape(tape_mathsshape(
             &cleaf(x as f32*100.+75.,0).y_edge(AxisSense::Pos),
             Dot(None,Some(AxisSense::Pos)),
@@ -89,7 +88,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
          Spot::new(c,&Colour(50,255,150)))
     }).unwrap();
         
-    let fc_font = FCFont::new(12,"Lato");
+    let fc_font = FCFont::new(12,"Lato",FontVariety::Normal);
 
     let mut c = Component::new(Rc::new(StateFixed(StateValue::On())));
 
@@ -117,7 +116,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
         let tx = text_texture(&val,&fc_font,&col,&Colour(255,255,255));
         c.add_shape(page_texture(tx, 
                             &cedge(TOPLEFT,cpixel(4,y+18)),
-                            &cpixel(1,1)));
+                            &cpixel(1,1).anchor(A_TOPLEFT)));
         if yidx == middle - 5 {
             for i in 1..10 {
                 c_odd.add_shape(pin_mathsshape(&cleaf(-100.+40.*(i as f32),y+20),
@@ -173,10 +172,9 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                                          255,0,0,255,
                                          0,255,0,255,
                                          255,255,0,255 },cpixel(2,2));
-            c.add_shape(pin_texture(tx,&cleaf(0.,y-25),&cpixel(0,0).anchor(A_MIDDLE),&cpixel(10,10)));
+            c.add_shape(pin_texture(tx,&cleaf(0.,y-25),&cpixel(0,0),&cpixel(10,10).anchor(A_TOPLEFT)));
             c_odd.add_shape(stretch_rectangle(&area_size(cleaf(-200.,y-20),cleaf(100.,5)),&red));
             c_even.add_shape(stretch_rectangle(&area_size(cleaf(-200.,y-15),cleaf(100.,5)),&green));
-
 
             c_odd.add_shape(pin_mathsshape(
                             &cleaf(-200.,y-15),
@@ -246,7 +244,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                 if showtext_gen.sample(&mut rng) == 0 {
                     let val = bio_daft(&mut rng);
                     let tx = text_texture(&val,&fc_font,&col,&Colour(255,255,255));
-                    c.add_shape(pin_texture(tx, &cleaf(x,y-24), &cpixel(0,0).anchor(A_MIDDLE), &cpixel(1,1)));
+                    c.add_shape(pin_texture(tx, &cleaf(x,y-24), &cpixel(0,0), &cpixel(1,1).anchor(A_MIDDLE)));
                 }
             }
         }
@@ -264,20 +262,20 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                                  255,255,0,255 },cpixel(1,4));
     c.add_shape(fix_texture(tx, 
                             &cedge(TOPLEFT,cpixel(sw/2-5,0)),
-                            &cpixel(1,sh)));
+                            &cpixel(1,sh).anchor(A_TOPLEFT)));
 
     c.add_shape(fix_texture(battenberg(),
                             &cedge(TOPLEFT,cpixel(0,0)),
-                            &cpixel(10,10)));
+                            &cpixel(10,10).anchor(A_TOPLEFT)));
     c.add_shape(fix_texture(battenberg(),
                             &cedge(BOTTOMLEFT,cpixel(0,0)),
-                            &cpixel(10,10)));
+                            &cpixel(10,10).anchor(A_BOTTOMLEFT)));
     c.add_shape(fix_texture(battenberg(),
                             &cedge(TOPRIGHT,cpixel(0,0)),
-                            &cpixel(10,10)));
+                            &cpixel(10,10).anchor(A_TOPRIGHT)));
     c.add_shape(fix_texture(battenberg(),
                             &cedge(BOTTOMRIGHT,cpixel(0,0)),
-                            &cpixel(10,10)));
+                            &cpixel(10,10).anchor(A_BOTTOMRIGHT)));
 
 
     g.with_compo(|co| {

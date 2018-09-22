@@ -1,6 +1,5 @@
 use std::sync::{ Arc, Mutex };
 use std::clone::Clone;
-use drawing::FCFont;
 use composit::{ StateFixed, Component, StateValue, StateAtom };
 
 use debug::testcards::common::{ daft, bio_daft, wiggly };
@@ -14,7 +13,7 @@ use shape::{
 };
 
 use drawing::{
-    mark_rectangle,
+    mark_rectangle, FCFont, FontVariety
 };
 
 use rand::Rng;
@@ -40,7 +39,7 @@ pub fn testcard_text(g: Arc<Mutex<Global>>) {
 
     let mut c = Component::new(Rc::new(StateFixed(StateValue::On())));
  
-    let font = FCFont::new(120,"Lato");
+    let font = FCFont::new(120,"Lato",FontVariety::Normal);
     let tx = text_texture("hello",&font,&Colour(199,208,213),&Colour(0,0,0));
     c.add_shape(tape_rectangle(
         &cleaf(0.,0),
@@ -48,7 +47,7 @@ pub fn testcard_text(g: Arc<Mutex<Global>>) {
         &ColourSpec::Colour(Colour(150,0,0))));
 
     c.add_shape(tape_texture(tx,&cleaf(0.,100).y_edge(AxisSense::Pos),
-                &cpixel(0,0).anchor(A_TOPLEFT),&cpixel(1,1)));
+                &cpixel(0,0),&cpixel(1,1).anchor(A_TOPLEFT)));
 
 
     g.with_compo(|co| {
