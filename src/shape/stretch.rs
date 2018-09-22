@@ -33,7 +33,7 @@ impl StretchRect {
 }
 
 impl Shape for StretchRect {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, _art: Option<Artwork>) {
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _art: Option<Artwork>) {
         let b = vertices_rect(geom,self.colspec.to_group(geom_name));
         rectangle_g(b,geom,"aVertexPosition",&self.points);
         if let ColourSpec::Colour(c) = self.colspec {
@@ -66,7 +66,7 @@ impl StretchWiggle {
 }
 
 impl Shape for StretchWiggle {
-    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, art: Option<Artwork>) {
+    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, _art: Option<Artwork>) {
         let dg = self.group.get_group(self.get_geometry());
         let b = vertices_strip(geom,self.points.len() as u16*2,Some(dg));
         points_g(b,geom,"aVertexPosition",&self.points,self.y);
@@ -101,7 +101,7 @@ impl StretchTexture {
 const CHUNK_SIZE : f32 = 10.;
 
 impl Shape for StretchTexture {
-    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData, artwork: Option<Artwork>) {
+    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, artwork: Option<Artwork>) {
         if let Some(art) = artwork {
             /* some cards baulk at very large textured areas, so split */
             let mut chunks = ((self.pos.area()).0.abs() / CHUNK_SIZE) as i32;

@@ -15,8 +15,10 @@ pub use shape::shapeimpl::{
 pub use shape::fixpage::{
     fix_rectangle,
     fix_texture,
-    fixunder_rectangle,
-    fixunder_texture,
+    fixunderpage_rectangle,
+    fixunderpage_texture,
+    fixundertape_rectangle,
+    fixundertape_texture,
     page_rectangle,
     page_texture,
 };

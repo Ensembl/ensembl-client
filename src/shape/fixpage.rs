@@ -1,8 +1,9 @@
 use std::rc::Rc;
-use arena::ArenaData;
 
 use program::{ ProgramType, PTGeom, PTSkin, PTMethod, ProgramAttribs };
-use types::{ CPixel, RPixel, EPixel, Rect, Edge, RFraction, area_size, cpixel };
+use types::{
+    EPixel, Rect, Edge, area_size, APixel
+};
 
 use shape::{ Shape, ColourSpec };
 use shape::util::{
@@ -29,7 +30,7 @@ impl FixRect {
 
 impl Shape for FixRect {
     fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, 
-                    _adata: &ArenaData, _art: Option<Artwork>) {
+                    _art: Option<Artwork>) {
         let b = vertices_rect(geom,self.colspec.to_group(geom_name));        
         rectangle_c(b,geom,"aVertexPositive","aVertexSign",&self.points);
         if let ColourSpec::Colour(c) = self.colspec {
@@ -49,8 +50,12 @@ pub fn fix_rectangle(p: &Rect<Edge<i32>,Edge<i32>>, colour: &ColourSpec) -> Box<
     rectangle(p,colour,PTGeom::Fix)
 }
 
-pub fn fixunder_rectangle(p: &Rect<Edge<i32>,Edge<i32>>, colour: &ColourSpec) -> Box<Shape> {
-    rectangle(p,colour,PTGeom::FixUnder)
+pub fn fixunderpage_rectangle(p: &Rect<Edge<i32>,Edge<i32>>, colour: &ColourSpec) -> Box<Shape> {
+    rectangle(p,colour,PTGeom::FixUnderPage)
+}
+
+pub fn fixundertape_rectangle(p: &Rect<Edge<i32>,Edge<i32>>, colour: &ColourSpec) -> Box<Shape> {
+    rectangle(p,colour,PTGeom::FixUnderTape)
 }
 
 #[allow(dead_code)]
@@ -64,13 +69,13 @@ pub fn page_rectangle(p: &Rect<Edge<i32>,Edge<i32>>, colour: &ColourSpec) -> Box
 
 pub struct FixTexture {
     pos: EPixel,
-    scale: CPixel,
+    scale: APixel,
     geom: ProgramType,
     artist: Rc<Artist>
 }
 
 impl FixTexture {
-    pub fn new(pos: &EPixel, scale: &CPixel, geom: ProgramType, artist: &Rc<Artist>) -> FixTexture {
+    pub fn new(pos: &EPixel, scale: &APixel, geom: ProgramType, artist: &Rc<Artist>) -> FixTexture {
         FixTexture {
             pos: *pos, scale: *scale, geom, artist: artist.clone(),
         }
@@ -79,14 +84,16 @@ impl FixTexture {
 
 impl Shape for FixTexture {
     fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs,
-                    adata: &ArenaData, artwork: Option<Artwork>) {
+                    artwork: Option<Artwork>) {
         if let Some(art) = artwork {
-            let p : RPixel = area_size(cpixel(0,0),art.size) * self.scale;
-            let p : Rect<Edge<i32>,Edge<i32>> = self.pos + p;
+            let pos = self.pos.quantity();
+            let p = area_size(pos,art.size * self.scale.quantity());
+            let p = self.scale.from_nw(p.as_fraction());
             let b = vertices_rect(geom,None);
-            let mut ap = art.pos.flip_r(p);
-            let mut mp = art.mask_pos.flip_r(p);
-            rectangle_c(b,geom,"aVertexPositive","aVertexSign",&p);
+            let mut ap = art.pos.flip_d(self.pos);
+            let mut mp = art.mask_pos.flip_d(self.pos);
+            rectangle_t(b,geom,"aVertexPositive",&p);
+            multi_gl(b,geom,"aVertexSign",&self.pos.corner(),4);
             rectangle_t(b,geom,"aTextureCoord",&ap);
             rectangle_t(b,geom,"aMaskCoord",&mp);
         }
@@ -97,19 +104,23 @@ impl Shape for FixTexture {
     fn get_artist(&self) -> Option<Rc<Artist>> { Some(self.artist.clone()) }
 }
 
-fn texture(a: Rc<Artist>, origin: &EPixel, scale: &CPixel, gt: PTGeom) -> Box<Shape> {
+fn texture(a: Rc<Artist>, origin: &EPixel, scale: &APixel, gt: PTGeom) -> Box<Shape> {
     let pt = ProgramType(gt,PTMethod::Triangle,PTSkin::Texture);
     Box::new(FixTexture::new(origin,scale,pt,&a))
 }
 
-pub fn fix_texture(req: Rc<Artist>, origin: &EPixel, scale: &CPixel) -> Box<Shape> {
+pub fn fix_texture(req: Rc<Artist>, origin: &EPixel, scale: &APixel) -> Box<Shape> {
     texture(req, origin, scale, PTGeom::Fix)
 }
 
-pub fn fixunder_texture(req: Rc<Artist>, origin: &EPixel, scale: &CPixel) -> Box<Shape> {
-    texture(req, origin, scale, PTGeom::FixUnder)
+pub fn fixunderpage_texture(req: Rc<Artist>, origin: &EPixel, scale: &APixel) -> Box<Shape> {
+    texture(req, origin, scale, PTGeom::FixUnderPage)
 }
 
-pub fn page_texture(req: Rc<Artist>, origin: &EPixel, scale: &CPixel) -> Box<Shape> {
+pub fn fixundertape_texture(req: Rc<Artist>, origin: &EPixel, scale: &APixel) -> Box<Shape> {
+    texture(req, origin, scale, PTGeom::FixUnderTape)
+}
+
+pub fn page_texture(req: Rc<Artist>, origin: &EPixel, scale: &APixel) -> Box<Shape> {
     texture(req, origin, scale, PTGeom::Page)
 }

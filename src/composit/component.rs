@@ -67,7 +67,7 @@ impl Component {
             let artwork = req.as_ref().map(|r| r.artwork(&leafdrawman,&adata.canvases.flat.size()));
             let geom_name = s.get_geometry();
             if let Some(geom) = progs.map.get_mut(&geom_name) {                
-                s.into_objects(geom_name,&mut geom.data,adata,artwork);
+                s.into_objects(geom_name,&mut geom.data,artwork);
             }
         }
     }

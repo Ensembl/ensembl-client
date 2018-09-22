@@ -15,6 +15,21 @@ use types::{
 
 use dom::domutil;
 
+#[derive(Clone,Copy,Debug)]
+pub enum FontVariety {
+    Normal,
+    Bold
+}
+
+impl FontVariety {
+    pub fn text(&self) -> &str {
+        match self {
+            FontVariety::Normal => "",
+            FontVariety::Bold => "bold ",
+        }
+    }
+}
+
 #[derive(Clone,Eq,PartialEq,Hash)]
 pub struct FCFont {
     spec: String,
@@ -25,8 +40,8 @@ pub struct FCFont {
 }
 
 impl FCFont {
-    pub fn new(size : i32,family: &str) -> FCFont {
-        FCFont { spec: format!("{}px {}",size,family),
+    pub fn new(size : i32, family: &str, v: FontVariety) -> FCFont {
+        FCFont { spec: format!("{}{}px {}",v.text(),size,family),
                  height: size, ypadtop: 0, ypadbot: 4, xpad: 1 }
     }
     

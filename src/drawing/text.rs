@@ -1,13 +1,9 @@
 use std::rc::Rc;
-use drawing::FCFont;
-use arena::{ ArenaCanvases };
 
-use types::{ Colour, CPixel, cpixel };
-
-use drawing::drawingimpl::{
-    Artist,
-    DrawingHash,
-};
+use arena::ArenaCanvases;
+use drawing::{ FCFont, Artist };
+use drawing::drawingimpl::DrawingHash;
+use types::{ Colour, CPixel };
 
 /* TextArtist - A Artist which can draw text */
 

@@ -18,7 +18,7 @@ use program::{
 };
 
 #[derive(Clone,Copy,Debug,PartialEq,Eq,Hash)]
-pub enum PTGeom { Pin, Stretch, Fix, FixUnder, Tape, Page }
+pub enum PTGeom { Pin, Stretch, Fix, FixUnderTape, FixUnderPage, Tape, Page }
 
 #[derive(Clone,Copy,Debug,PartialEq,Eq,Hash)]
 pub enum PTMethod { Triangle, Strip }
@@ -74,7 +74,7 @@ impl PTGeom {
                         0.0, 1.0)")
 
             },
-            PTGeom::Fix | PTGeom::FixUnder => vec! {
+            PTGeom::Fix | PTGeom::FixUnderPage | PTGeom::FixUnderTape => vec! {
                 Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
                 Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPositive"),
                 Attribute::new(&PR_DEF,Arity::Vec2,"aVertexSign"),
@@ -137,9 +137,10 @@ impl PTSkin {
     }
 }
 
-const GEOM_ORDER : [PTGeom;6] = [
-    PTGeom::Stretch, PTGeom::Pin, PTGeom::FixUnder,
-    PTGeom::Page, PTGeom::Tape, PTGeom::Fix, 
+const GEOM_ORDER : [PTGeom;7] = [
+    PTGeom::Stretch, PTGeom::Pin, 
+    PTGeom::FixUnderPage, PTGeom::Page,
+    PTGeom::FixUnderTape, PTGeom::Tape, PTGeom::Fix, 
 ];
 
 const SKINMETH_ORDER : [(PTSkin,PTMethod);5] = [

@@ -11,9 +11,9 @@ pub use types::coord::{
     LEFT, RIGHT, UP, DOWN,
     TOPLEFT, BOTTOMLEFT, TOPRIGHT, BOTTOMRIGHT,
     
-    A_TOPLEFT, A_TOP,    A_TOPRIGHT,
-    A_LEFT,    A_MIDDLE, A_RIGHT,
-    A_BOTLEFT, A_BOT,    A_BOTRIGHT
+    A_TOPLEFT,    A_TOP,    A_TOPRIGHT,
+    A_LEFT,       A_MIDDLE, A_RIGHT,
+    A_BOTTOMLEFT, A_BOTTOM, A_BOTTOMRIGHT
 };
 
 pub use types::area::{

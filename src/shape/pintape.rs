@@ -1,7 +1,6 @@
 use std::fmt::Debug;
 use std::f32;
 use std::rc::Rc;
-use arena::ArenaData;
 
 use program::{
     ProgramAttribs, DataBatch, PTGeom, PTMethod, PTSkin, ProgramType,
@@ -53,7 +52,7 @@ impl PinRect {
 }
 
 impl Shape for PinRect {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, art: Option<Artwork>) {
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, art: Option<Artwork>) {
         let b = vertices_rect(geom,self.colspec.to_group(geom_name));
         match self.offset {
             RPinOrTape::Pin(offset) => {
@@ -158,7 +157,7 @@ impl PinPoly {
 }
 
 impl Shape for PinPoly {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData, _art: Option<Artwork>) {
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _art: Option<Artwork>) {
         let group = self.colspec.to_group(geom_name);
         if self.hollow {
             let b = vertices_hollowpoly(geom,self.points,group);
@@ -226,14 +225,14 @@ pub fn tape_mathsshape(origin: &Dot<f32,Edge<i32>>,
 pub struct PinTexture {
     pt: PTGeom,
     origin: CPinOrTape<f32>,
-    offset: APixel,
-    scale: CPixel,
+    offset: CPixel,
+    scale: APixel,
     artist: Rc<Artist>
 }
 
 impl PinTexture {
     fn new(pt: PTGeom, artist: Rc<Artist>,origin: &CPinOrTape<f32>, 
-           offset: &APixel, scale: &CPixel) -> PinTexture {
+           offset: &CPixel, scale: &APixel) -> PinTexture {
         PinTexture {
             pt, origin: *origin, offset: *offset, scale: *scale,
             artist: artist.clone()
@@ -243,12 +242,12 @@ impl PinTexture {
 
 impl Shape for PinTexture {
     fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, 
-                    adata: &ArenaData, artwork: Option<Artwork>) {
+                    artwork: Option<Artwork>) {
         if let Some(art) = artwork {
             let b = vertices_rect(geom,None);
             let mut mp = art.mask_pos;
             let mut ap = art.pos;
-            let mut offset = self.offset;            
+            let mut scale = self.scale;            
             match self.origin {
                 CPinOrTape::Pin(origin) => {
                     multi_gl(b,geom,"aOrigin",&origin,4);
@@ -257,13 +256,15 @@ impl Shape for PinTexture {
                     let origin = origin.x_edge(AxisSense::Pos);
                     ap = ap.flip_d(origin);
                     mp = mp.flip_d(origin);
-                    offset = offset.flip(origin);
+                    scale = scale.flip(origin);
                     multi_gl(b,geom,"aOrigin",&origin.quantity(),4);
                     multi_gl(b,geom,"aVertexSign",&origin.corner(),4);
                 }
             }
-            let p = area_size(cpixel(0,0),art.size).as_fraction() + self.offset.quantity().as_fraction();
-            let p = offset.as_fraction().from_nw(p * self.scale.as_fraction());
+            /* create rect the scaled rect and displace by offset */
+            let p = area_size(self.offset,art.size * scale.quantity());
+            /* modify offset relative to chosen point */
+            let p = scale.from_nw(p.as_fraction());
             rectangle_t(b,geom,"aTextureCoord",&ap);
             rectangle_t(b,geom,"aMaskCoord",&mp);
             rectangle_t(b,geom,"aVertexPosition",&p);
@@ -277,10 +278,10 @@ impl Shape for PinTexture {
     fn get_artist(&self) -> Option<Rc<Artist>> { Some(self.artist.clone()) }
 }
 
-pub fn pin_texture(a: Rc<Artist>, origin: &CLeaf, offset: &APixel, scale: &CPixel) -> Box<Shape> {
+pub fn pin_texture(a: Rc<Artist>, origin: &CLeaf, offset: &CPixel, scale: &APixel) -> Box<Shape> {
     Box::new(PinTexture::new(PTGeom::Pin,a,&CPinOrTape::Pin(*origin),offset,scale))
 }
 
-pub fn tape_texture(a: Rc<Artist>, origin: &Dot<f32,Edge<i32>>, offset: &APixel, scale: &CPixel) -> Box<Shape> {
+pub fn tape_texture(a: Rc<Artist>, origin: &Dot<f32,Edge<i32>>, offset: &CPixel, scale: &APixel) -> Box<Shape> {
     Box::new(PinTexture::new(PTGeom::Tape,a,&CPinOrTape::Tape(*origin),offset,scale))
 }
