@@ -26,7 +26,7 @@ use std::rc::Rc;
 use controller::Global;
 
 use types::{ Colour, cleaf, cpixel, area_size, area, cedge,
-             TOPLEFT, TOPRIGHT, Dot, AxisSense, Corner, A_MIDDLE };
+             TOPLEFT, TOPRIGHT, Dot, AxisSense, Corner, A_TOPLEFT };
 
 use drawing::{ text_texture, bitmap_texture, collage, Mark, Artist };
 
@@ -48,7 +48,7 @@ pub fn testcard_text(g: Arc<Mutex<Global>>) {
         &ColourSpec::Colour(Colour(150,0,0))));
 
     c.add_shape(tape_texture(tx,&cleaf(0.,100).y_edge(AxisSense::Pos),
-                &cpixel(0,0).anchor(A_MIDDLE),&cpixel(1,1)));
+                &cpixel(0,0).anchor(A_TOPLEFT),&cpixel(1,1)));
 
 
     g.with_compo(|co| {

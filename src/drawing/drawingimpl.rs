@@ -4,7 +4,7 @@ use std::hash::Hash;
 use std::hash::Hasher;
 use std::collections::hash_map::DefaultHasher;
 
-use types::{ CPixel, RPixel, area_size, RFraction, cpixel };
+use types::{ CPixel, RPixel, area_size, RFraction, cpixel, area };
 
 use drawing::alloc::Ticket;
 use drawing::alloc::Allocator;
@@ -62,7 +62,11 @@ impl DrawingMemory {
 pub trait Artist {
     fn draw(&self, canv: &mut ArenaCanvases, pos: CPixel);
     fn draw_mask(&self, canv: &mut ArenaCanvases, pos: CPixel) {
-        canv.flat.bitmap(&vec!{ 0,0,0,255 },area_size(cpixel(0,0),cpixel(1,1)));
+        canv.flat.bitmap(&vec!{ 
+            0,0,0,255,0,0,0,255,0,0,0,255,
+            0,0,0,255,0,0,0,255,0,0,0,255,
+            0,0,0,255,0,0,0,255,0,0,0,255,
+        }, area_size(cpixel(0,0),cpixel(3,3)));
     }
     fn memoize_key(&self) -> Option<DrawingHash>  { None }
     fn measure(&self, canv: &mut ArenaCanvases) -> CPixel;
@@ -98,13 +102,13 @@ impl Drawing {
         let pos = leafdrawman.allocator.position(&self.0.ticket);
         self.0.gen.draw(canvs,pos);
         let mask_pos = leafdrawman.allocator.position(&self.0.mask_ticket);
-        self.0.gen.draw_mask(canvs,mask_pos);
+        self.0.gen.draw_mask(canvs,mask_pos + cpixel(1,1));
     }
 
     pub fn artwork(&self, src: &LeafDrawingManager, csize: &CPixel) -> Artwork {
         let cs = csize.as_fraction();
         let m = self.measure(src);
-        let mm = self.measure_mask(src);
+        let mm = self.measure_mask(src).inset(area(cpixel(1,1),cpixel(1,1)));
         Artwork {
             pos: m.as_fraction() / cs,
             mask_pos: mm.as_fraction() / cs,
@@ -152,7 +156,7 @@ impl LeafDrawingManager {
             let size = a.measure(canvas);
             let flat_alloc = &mut self.allocator;
             let req = flat_alloc.request(size);
-            let mask_req = flat_alloc.request(size);
+            let mask_req = flat_alloc.request(size + cpixel(2,2));
             let val = Drawing::new(a,req,mask_req);
             if let Some(tdrk) = tdrk {
                 // put in cache

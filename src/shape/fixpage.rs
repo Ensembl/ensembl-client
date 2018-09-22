@@ -49,6 +49,10 @@ pub fn fix_rectangle(p: &Rect<Edge<i32>,Edge<i32>>, colour: &ColourSpec) -> Box<
     rectangle(p,colour,PTGeom::Fix)
 }
 
+pub fn fixunder_rectangle(p: &Rect<Edge<i32>,Edge<i32>>, colour: &ColourSpec) -> Box<Shape> {
+    rectangle(p,colour,PTGeom::FixUnder)
+}
+
 #[allow(dead_code)]
 pub fn page_rectangle(p: &Rect<Edge<i32>,Edge<i32>>, colour: &ColourSpec) -> Box<Shape> {
     rectangle(p,colour,PTGeom::Page)
@@ -100,6 +104,10 @@ fn texture(a: Rc<Artist>, origin: &EPixel, scale: &CPixel, gt: PTGeom) -> Box<Sh
 
 pub fn fix_texture(req: Rc<Artist>, origin: &EPixel, scale: &CPixel) -> Box<Shape> {
     texture(req, origin, scale, PTGeom::Fix)
+}
+
+pub fn fixunder_texture(req: Rc<Artist>, origin: &EPixel, scale: &CPixel) -> Box<Shape> {
+    texture(req, origin, scale, PTGeom::FixUnder)
 }
 
 pub fn page_texture(req: Rc<Artist>, origin: &EPixel, scale: &CPixel) -> Box<Shape> {

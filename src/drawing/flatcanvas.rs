@@ -27,7 +27,7 @@ pub struct FCFont {
 impl FCFont {
     pub fn new(size : i32,family: &str) -> FCFont {
         FCFont { spec: format!("{}px {}",size,family),
-                 height: size, ypadtop: 0, ypadbot: 5, xpad: 1 }
+                 height: size, ypadtop: 0, ypadbot: 4, xpad: 1 }
     }
     
     fn setup(&self, canvas : &CanvasRenderingContext2d) {
