@@ -1,5 +1,4 @@
-use std::rc::Rc;
-use std::cell::RefCell;
+use std::sync::{ Arc, Mutex };
 use dom::event::{ 
     EventListener, EventControl, EventType, EventData, 
     ICustomEvent
@@ -7,9 +6,9 @@ use dom::event::{
 use stdweb::web::{ Element };
 use types::{ Move, Distance, Units };
 use serde_json::Value as JSONValue;
-
-use controller::{ Event, EventRunner };
-use controller::global::CanvasGlobalInst;
+use controller::runner::events_run;
+use controller::Event;
+use controller::global::{ CanvasGlobal, CanvasGlobalInst };
 
 fn custom_movement_event(dir: &str, unit: &str, v: &JSONValue) -> Event {
     if let JSONValue::Number(quant) = v {
@@ -73,14 +72,12 @@ fn custom_make_events(j: &JSONValue) -> Vec<Event> {
 }
 
 pub struct DirectEventListener {
-    runner: Rc<RefCell<EventRunner>>,
+    cg: Arc<Mutex<CanvasGlobal>>,
 }
 
 impl DirectEventListener {
-    pub fn new(er: &Rc<RefCell<EventRunner>>) -> DirectEventListener {
-        DirectEventListener {
-            runner: er.clone()
-        }
+    pub fn new(cg: &Arc<Mutex<CanvasGlobal>>) -> DirectEventListener {
+        DirectEventListener { cg: cg.clone() }
     }        
 }
 
@@ -91,16 +88,14 @@ impl EventListener<()> for DirectEventListener {
                 custom_make_events(&c.details().unwrap()),
             _ => Vec::<Event>::new()
         };
-        self.runner.borrow_mut().run(evs);
+        events_run(&self.cg.lock().unwrap(),evs);
     }
 }
 
-pub fn register_direct_events(
-           gc: &mut CanvasGlobalInst,
-           er: &Rc<RefCell<EventRunner>>, el: &Element) {
-    let dlr = DirectEventListener::new(er);
+pub fn register_direct_events(gc: &mut CanvasGlobalInst, el: &Element) {
+    let dlr = DirectEventListener::new(&gc.cg);
     let mut ec = EventControl::new(Box::new(dlr));
     ec.add_event(EventType::CustomEvent("bpane".to_string()));
     ec.add_element(el,());
-    gc.cg.add_control(Box::new(ec));
+    gc.cg.lock().unwrap().add_control(Box::new(ec));
 }

@@ -52,7 +52,7 @@ impl PinRect {
 }
 
 impl Shape for PinRect {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, art: Option<Artwork>) {
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _art: Option<Artwork>) {
         let b = vertices_rect(geom,self.colspec.to_group(geom_name));
         match self.offset {
             RPinOrTape::Pin(offset) => {

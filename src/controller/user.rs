@@ -1,30 +1,28 @@
 use stdweb::unstable::TryInto;
 use std::sync::{ Arc, Mutex };
 use dom::domutil;
-use std::rc::Rc;
-use std::cell::RefCell;
 use dom::event::{ EventListener, EventType, EventData, EventControl };
 use stdweb::web::{ Element, HtmlElement, IHtmlElement };
 use stdweb::traits::{ IEvent };
 use dom::event;
 
-use controller::{ Event, EventRunner };
+use controller::Event;
 use controller::physics::MousePhysics;
-use controller::timers::Timers;
-use controller::global::CanvasGlobalInst;
+use controller::global::{ CanvasGlobal, CanvasGlobalInst };
+use controller::runner::events_run;
 
 pub struct UserEventListener {
     canv_el: HtmlElement,
-    runner: Rc<RefCell<EventRunner>>,
+    cg: Arc<Mutex<CanvasGlobal>>,
     mouse: Arc<Mutex<MousePhysics>>
 }
 
 impl UserEventListener {
-    pub fn new(er: &Rc<RefCell<EventRunner>>,
+    pub fn new(cg: &Arc<Mutex<CanvasGlobal>>,
                canv_el: &HtmlElement,
                mouse: &Arc<Mutex<MousePhysics>>) -> UserEventListener {
         UserEventListener {
-            runner: er.clone(),
+            cg: cg.clone(),
             mouse: mouse.clone(),
             canv_el: canv_el.clone()
         }
@@ -33,10 +31,11 @@ impl UserEventListener {
 
 impl EventListener<()> for UserEventListener {    
     fn receive(&mut self, _el: &Element,  e: &EventData, _idx: &()) {
-        let mut r = self.runner.borrow_mut();
         match e {
             EventData::MouseEvent(EventType::MouseWheelEvent,e) => {
-                r.run(vec! { Event::Zoom(e.wheel_delta() as f32/1000.) })
+                events_run(&self.cg.lock().unwrap(),vec! {
+                    Event::Zoom(e.wheel_delta() as f32/1000.) 
+                });
             },
             EventData::MouseEvent(EventType::MouseDownEvent,e) => {
                 self.canv_el.focus();
@@ -75,13 +74,11 @@ impl EventListener<()> for UserEventListenerBody {
     }
 }
 
-pub fn register_user_events(
-           gc: &mut CanvasGlobalInst,
-           er: &Rc<RefCell<EventRunner>>, el: &Element) {
+pub fn register_user_events(gc: &mut CanvasGlobalInst, el: &Element) {
     event::disable_context_menu();
     let html_el: HtmlElement = el.clone().try_into().unwrap();
     let mp = Arc::new(Mutex::new(MousePhysics::new(&mut gc.timers)));
-    let uel = UserEventListener::new(er,&html_el,&mp);
+    let uel = UserEventListener::new(&gc.cg,&html_el,&mp);
     let mut ec_canv = EventControl::new(Box::new(uel));
     ec_canv.add_event(EventType::MouseClickEvent);
     ec_canv.add_event(EventType::MouseDownEvent);
@@ -92,6 +89,6 @@ pub fn register_user_events(
     let mut ec_body = EventControl::new(Box::new(uel_body));
     ec_body.add_event(EventType::MouseUpEvent);
     ec_body.add_element(&domutil::query_select("body"),());        
-    gc.cg.add_control(Box::new(ec_canv));
-    gc.cg.add_control(Box::new(ec_body));
+    gc.cg.lock().unwrap().add_control(Box::new(ec_canv));
+    gc.cg.lock().unwrap().add_control(Box::new(ec_body));
 }

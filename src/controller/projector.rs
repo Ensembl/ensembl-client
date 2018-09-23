@@ -59,7 +59,8 @@ impl Projector {
             }
             if refresh {
                 cg.borrow_mut().run_timers(time);
-                self.canvas_frame(&mut cg.borrow_mut().cg);
+                let cg = &mut cg.borrow_mut();
+                self.canvas_frame(&mut cg.cg.lock().unwrap());
             }
             self.another();
         } else {
