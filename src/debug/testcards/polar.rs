@@ -35,10 +35,7 @@ use types::{
     A_MIDDLE, A_LEFT, A_TOPLEFT, A_RIGHT,
 };
 
-use drawing::{ text_texture, bitmap_texture, collage, Mark, Artist };
-
-use rand::distributions::Distribution;
-use rand::distributions::range::Range;
+use drawing::{ text_texture, collage, Mark, Artist };
 
 use controller::Event;
 
@@ -89,9 +86,6 @@ fn draw_frame(c: &mut Component,edge: AxisSense, p: &Palette) {
 }
 
 fn measure(c: &mut Component,edge: AxisSense, p: &Palette) {
-    let left = Corner(AxisSense::Pos,edge);
-    let right = Corner(AxisSense::Neg,edge);
-    
     for x in -10..10 {
         c.add_shape(tape_rectangle(
             &cleaf(x as f32*100.,0),

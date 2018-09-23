@@ -86,9 +86,9 @@ pub struct ObjectUniform {
 }
 
 impl ObjectUniform {
-    pub fn new(adata: &ArenaData, prog: &glprog, name: &str) -> ObjectUniform {
+    pub fn new(ctx: &glctx, prog: &glprog, name: &str) -> ObjectUniform {
         ObjectUniform {
-            buf: adata.ctx.get_uniform_location(prog,name),
+            buf: ctx.get_uniform_location(prog,name),
             val: HashMap::<Option<u32>,UniformValue>::new()
         }
     }
@@ -212,8 +212,7 @@ pub struct ObjectAttrib {
 }
 
 impl ObjectAttrib {
-    pub fn new(adata: &ArenaData, prog: &glprog, name: &str, size: u8) -> ObjectAttrib {
-        let ctx = &adata.ctx;
+    pub fn new(ctx: &glctx, prog: &glprog, name: &str, size: u8) -> ObjectAttrib {
         ObjectAttrib {
             vec: HashMap::<u32,Vec<f32>>::new(),
             buf: HashMap::<u32,glbuf>::new(),

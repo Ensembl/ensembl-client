@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use webgl_rendering_context::{
+    WebGLRenderingContext as glctx,
     WebGLProgram as glprog,
 };
 
@@ -10,6 +11,7 @@ use arena::ArenaData;
 use program::source::{ Source, ProgramSource };
 use program::objects::Object;
 use program::data::{ DataBatch, DataGroup, BatchManager };
+use program::gpuspec::GPUSpec;
 
 pub struct ProgramAttribs {
     pub bman: BatchManager,
@@ -24,7 +26,7 @@ pub struct Program {
     prog: Rc<glprog>,
 }
 
-fn find_attribs(adata: &ArenaData, vars: &Vec<Rc<Source>>,
+fn find_attribs(ctx: &glctx, vars: &Vec<Rc<Source>>,
                 prog: Rc<glprog>) 
                         -> (Vec<Box<Object>>,Option<usize>,
                             HashMap<String,usize>) {
@@ -32,7 +34,7 @@ fn find_attribs(adata: &ArenaData, vars: &Vec<Rc<Source>>,
     let mut attribs = Vec::<Box<Object>>::new();
     let mut attrib_names = HashMap::<String,usize>::new();
     for v in vars {
-        if let Some((name,value)) = v.make_attribs(adata,prog.clone()) {
+        if let Some((name,value)) = v.make_attribs(ctx,prog.clone()) {
             if value.is_main() { main = Some(attribs.len()); }
             let loc = attribs.len();
             attribs.push(value);
@@ -87,10 +89,10 @@ impl ProgramAttribs {
 }
 
 impl Program {
-    pub fn new(adata: &ArenaData, src: &ProgramSource) -> Program {
-        let prog = Rc::new(src.prog(adata));
-        adata.ctx.use_program(Some(&prog));
-        let (objects,main_idx,object_names) = find_attribs(adata,&src.uniforms,prog.clone());
+    pub fn new(gpuspec: &GPUSpec, ctx: &glctx, src: &ProgramSource) -> Program {
+        let prog = Rc::new(src.prog(gpuspec,ctx));
+        ctx.use_program(Some(&prog));
+        let (objects,main_idx,object_names) = find_attribs(ctx,&src.uniforms,prog.clone());
         let mut bman = BatchManager::new();
         let default_group = bman.new_group();
         Program {

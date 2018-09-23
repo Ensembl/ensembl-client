@@ -5,17 +5,11 @@ use webgl_rendering_context::{
 };
 
 use program::{
-    ProgramSource,
-    Program,
-    Statement,
-    Uniform,
-    Attribute,
-    Varying,
-    Canvas,
-    Main,
-    Precision,
-    Arity,
+    ProgramSource, Program, Statement, Uniform, Attribute, Varying,
+    Canvas, Main, Precision, Arity,
 };
+
+use program::gpuspec::GPUSpec;
 
 #[derive(Clone,Copy,Debug,PartialEq,Eq,Hash)]
 pub enum PTGeom { Pin, Stretch, Fix, FixUnderTape, FixUnderPage, Tape, Page }
@@ -152,9 +146,9 @@ const SKINMETH_ORDER : [(PTSkin,PTMethod);5] = [
 ];
 
 impl ProgramType {
-    pub fn to_program(&self, adata: &ArenaData) -> Program {
+    pub fn to_program(&self, gpuspec: &GPUSpec, ctx: &glctx) -> Program {
         let src = self.0.to_source().merge(&self.1.to_source()).merge(&self.2.to_source());
-        Program::new(adata,&src)
+        Program::new(gpuspec,ctx,&src)
     }
     
     pub fn all() -> Vec<ProgramType> {

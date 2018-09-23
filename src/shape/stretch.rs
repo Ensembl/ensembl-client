@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use types::{ CLeaf, RLeaf, RPixel, cfraction, cleaf, area_size, RFraction };
+use types::{ CLeaf, RLeaf, cfraction, cleaf, area_size };
 
 use shape::{ Shape, ColourSpec, Spot };
 use shape::util::{
