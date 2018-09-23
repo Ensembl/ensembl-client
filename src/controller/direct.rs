@@ -9,6 +9,7 @@ use types::{ Move, Distance, Units };
 use serde_json::Value as JSONValue;
 
 use controller::{ Event, EventRunner };
+use controller::global::CanvasGlobalInst;
 
 fn custom_movement_event(dir: &str, unit: &str, v: &JSONValue) -> Event {
     if let JSONValue::Number(quant) = v {
@@ -94,20 +95,12 @@ impl EventListener<()> for DirectEventListener {
     }
 }
 
-pub struct DirectEventManager {
-    ec: EventControl<()>
-}
-
-impl DirectEventManager {
-    pub fn new(er: &Rc<RefCell<EventRunner>>, el: &Element) -> DirectEventManager {
-        let dlr = DirectEventListener::new(er);
-        let mut ec = EventControl::new(Box::new(dlr));
-        ec.add_event(EventType::CustomEvent("bpane".to_string()));
-        ec.add_element(el,());
-        DirectEventManager { ec }
-    }
-    
-    pub fn reset(&mut self) {
-        self.ec.reset();
-    }
+pub fn register_direct_events(
+           gc: &mut CanvasGlobalInst,
+           er: &Rc<RefCell<EventRunner>>, el: &Element) {
+    let dlr = DirectEventListener::new(er);
+    let mut ec = EventControl::new(Box::new(dlr));
+    ec.add_event(EventType::CustomEvent("bpane".to_string()));
+    ec.add_element(el,());
+    gc.cg.add_control(Box::new(ec));
 }

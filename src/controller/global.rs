@@ -5,12 +5,13 @@ use std::sync::{ Arc, Mutex };
 use stdweb::web::{ IElement, HtmlElement, Element };
 
 use dom::domutil;
+use dom::event::EventControl;
 use arena::Arena;
 use stage::Stage;
 use composit::{ StateManager };
 use controller::EventRunner;
-use controller::direct::DirectEventManager;
-use controller::user::UserEventManager;
+use controller::direct::register_direct_events;
+use controller::user::register_user_events;
 use controller::projector::Projector;
 use controller::timers::{ Timers, Timer };
 use controller::runner::Event;
@@ -25,14 +26,13 @@ pub struct CanvasGlobal {
     stage: Arc<Mutex<Stage>>,
     state: Arc<Mutex<StateManager>>,
     compo: Arc<Mutex<Compositor>>,
-    userev: UserEventManager,
-    directev: DirectEventManager,
     projector: Option<Projector>,
+    controls: Vec<Box<EventControl<()>>>
 }
 
 pub struct CanvasGlobalInst {
     pub cg: CanvasGlobal,
-    timers: Timers
+    pub timers: Timers
 }
 
 impl CanvasGlobal {
@@ -56,6 +56,17 @@ impl CanvasGlobal {
     pub fn with_compo<F,G>(&self, cb: F) -> G where F: FnOnce(&mut Compositor) -> G {
         let a = &mut self.compo.lock().unwrap();
         cb(a)
+    }
+    
+    pub fn add_control(&mut self, control: Box<EventControl<()>>) {
+        self.controls.push(control);
+    }
+
+    pub fn unregister(&mut self) {
+        for c in &mut self.controls.iter_mut() {
+            c.reset();
+        }
+        self.controls.clear();
     }
 }
 
@@ -100,8 +111,7 @@ impl Global {
     fn clear_old_events(&mut self) {
         if let Some(ref mut cg) = self.cg {
             let mut cg = cg.borrow_mut();
-            cg.cg.userev.reset();
-            cg.cg.directev.reset();
+            cg.cg.unregister();
             cg.cg.projector = None;
         }
     }
@@ -124,12 +134,16 @@ impl Global {
                     arena, stage, compo,
                     er: er.clone(),
                     state: self.state.clone(),
-                    userev: UserEventManager::new(&er,&canv_el,&mut timers),
-                    directev: DirectEventManager::new(&er,el),
-                    projector: None
+                    projector: None,
+                    controls: Vec::<Box<EventControl<()>>>::new()
                 },
                 timers
             })));
+        {
+            let mut cgr = &mut self.cg.as_ref().unwrap().borrow_mut();        
+            register_user_events(cgr,&er,&canv_el);
+            register_direct_events(cgr,&er,&canv_el);
+        }
         self.cg.as_ref().unwrap().borrow_mut().cg.projector = Some(
             Projector::new(self.cg.as_ref().unwrap())
         );
@@ -163,5 +177,5 @@ impl Global {
     pub fn add_timer<F>(&mut self, cb: F) -> Option<Timer> 
                             where F: FnMut(&mut CanvasGlobal, f64) + 'static {
         self.cg.as_mut().map(|cg| cg.borrow_mut().add_timer(cb))
-    }    
+    }
 }
