@@ -14,7 +14,7 @@ use program::objects::{
     ObjectCanvasTexture,
 };
 
-use program::gpuspec::{ Precision, Arity };
+use program::gpuspec::{ Precision, Arity, GPUSpec };
 
 #[derive(PartialEq,Clone,Eq)]
 pub enum Phase {
@@ -23,8 +23,8 @@ pub enum Phase {
 }
 
 pub trait Source {
-    fn declare(&self, _adata: &ArenaData, _phase: &Phase) -> String { String::new() }
-    fn make_attribs(&self, _adata: &ArenaData, _prog: Rc<glprog>) 
+    fn declare(&self, _adata: &GPUSpec, _phase: &Phase) -> String { String::new() }
+    fn make_attribs(&self, _ctx: &glctx, _prog: Rc<glprog>) 
                             -> Option<(Option<&str>,Box<Object>)> {
         None
     }
@@ -56,13 +56,13 @@ impl Uniform {
 }
 
 impl Source for Uniform {
-    fn declare(&self, adata: &ArenaData, phase: &Phase) -> String {
+    fn declare(&self, gpuspec: &GPUSpec, phase: &Phase) -> String {
         if *phase == self.phase {
             let prec = match self.phase {
                 Phase::Vertex =>
-                    adata.gpuspec.best_vert(&self.prec),
+                    gpuspec.best_vert(&self.prec),
                 Phase::Fragment =>
-                    adata.gpuspec.best_frag(&self.prec)
+                    gpuspec.best_frag(&self.prec)
             };
             format!("uniform {} {};\n",
                 prec.as_string(self.size),
@@ -72,9 +72,9 @@ impl Source for Uniform {
         }
     }
 
-    fn make_attribs(&self, adata: &ArenaData, prog: Rc<glprog>)
+    fn make_attribs(&self, ctx: &glctx, prog: Rc<glprog>)
                             -> Option<(Option<&str>,Box<Object>)> {
-        let gt = ObjectUniform::new(adata,&prog,&self.name);
+        let gt = ObjectUniform::new(ctx,&prog,&self.name);
         Some((Some(&self.name),Box::new(gt)))
     }
 }
@@ -95,16 +95,16 @@ impl Attribute {
 }
 
 impl Source for Attribute {
-    fn declare(&self, adata: &ArenaData, phase: &Phase) -> String {
+    fn declare(&self, gpuspec: &GPUSpec, phase: &Phase) -> String {
         if *phase != Phase::Vertex { return String::new(); }
         format!("attribute {} {};\n",
-            adata.gpuspec.best_vert(&self.prec).as_string(self.size),
+            gpuspec.best_vert(&self.prec).as_string(self.size),
             self.name).to_string()
     }
 
-    fn make_attribs(&self, adata: &ArenaData, prog: Rc<glprog>)
+    fn make_attribs(&self, ctx: &glctx, prog: Rc<glprog>)
                             -> Option<(Option<&str>,Box<Object>)> {
-        let gt = ObjectAttrib::new(adata,&prog,&self.name,self.size.to_num());
+        let gt = ObjectAttrib::new(ctx,&prog,&self.name,self.size.to_num());
         Some((Some(&self.name),Box::new(gt)))
     }
 }
@@ -127,9 +127,9 @@ impl Varying {
 }
 
 impl Source for Varying {
-    fn declare(&self, adata: &ArenaData, _phase: &Phase) -> String {
+    fn declare(&self, gpuspec: &GPUSpec, _phase: &Phase) -> String {
         format!("varying {} {};\n",
-            adata.gpuspec.best_frag(&self.prec).as_string(self.size),
+            gpuspec.best_frag(&self.prec).as_string(self.size),
             self.name).to_string()
     }
 }
@@ -177,7 +177,7 @@ impl Canvas {
 }
 
 impl Source for Canvas {
-    fn make_attribs(&self, _adata: &ArenaData, _prog: Rc<glprog>)
+    fn make_attribs(&self, _ctx: &glctx, _prog: Rc<glprog>)
                         -> Option<(Option<&str>,Box<Object>)> {
         Some((None,Box::new(ObjectCanvasTexture::new())))
     }
@@ -194,16 +194,16 @@ impl Main {
 }
 
 impl Source for Main {
-    fn make_attribs(&self, _adata: &ArenaData, _prog: Rc<glprog>)
+    fn make_attribs(&self, _ctx: &glctx, _prog: Rc<glprog>)
                         -> Option<(Option<&str>,Box<Object>)> {
         Some((None,Box::new(ObjectMain::new(self.method))))
     }
 }
 
-fn declare(adata: &ArenaData, variables: &Vec<Rc<Source>>, phase: &Phase) -> String {
+fn declare(gpuspec: &GPUSpec, variables: &Vec<Rc<Source>>, phase: &Phase) -> String {
     let mut out = String::new();
     for v in variables {
-        out += &v.declare(adata,phase)[..];
+        out += &v.declare(gpuspec,phase)[..];
     }
     out
 }
@@ -228,9 +228,9 @@ fn make_shader(ctx: &glctx, program: &glprog, kind: u32, src: &str) {
 }
 
 
-fn make_source(adata: &ArenaData, uniforms: &Vec<Rc<Source>>, frag: &Phase) -> String {
+fn make_source(gpuspec: &GPUSpec, uniforms: &Vec<Rc<Source>>, frag: &Phase) -> String {
     format!("{}\n\nvoid main() {{\n{}\n}}",
-        declare(adata,uniforms,&frag),
+        declare(gpuspec,uniforms,&frag),
         statements(uniforms,&frag))
 }
 
@@ -239,15 +239,15 @@ impl ProgramSource {
         ProgramSource { uniforms: src }
     }
 
-    pub fn prog(&self, adata: &ArenaData) -> glprog {
-        let prog = adata.ctx.create_program().unwrap();
-        let vertex = make_source(adata,&self.uniforms,&Phase::Vertex);
-        let fragment = make_source(adata,&self.uniforms,&Phase::Fragment);
-        make_shader(&adata.ctx,&prog,glctx::VERTEX_SHADER,&vertex);
-        make_shader(&adata.ctx,&prog,glctx::FRAGMENT_SHADER,&fragment);
+    pub fn prog(&self, gpuspec: &GPUSpec, ctx: &glctx) -> glprog {
+        let prog = ctx.create_program().unwrap();
+        let vertex = make_source(gpuspec,&self.uniforms,&Phase::Vertex);
+        let fragment = make_source(gpuspec,&self.uniforms,&Phase::Fragment);
+        make_shader(ctx,&prog,glctx::VERTEX_SHADER,&vertex);
+        make_shader(ctx,&prog,glctx::FRAGMENT_SHADER,&fragment);
         debug!("webgl programs","--- vertex ---\n{}",&vertex);
         debug!("webgl programs","--- fragment ---\n{}",&fragment);
-        adata.ctx.link_program(&prog);        
+        ctx.link_program(&prog);        
         prog
     }
     

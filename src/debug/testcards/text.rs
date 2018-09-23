@@ -1,38 +1,19 @@
 use std::sync::{ Arc, Mutex };
-use std::clone::Clone;
-use composit::{ StateFixed, Component, StateValue, StateAtom };
-
-use debug::testcards::common::{ daft, bio_daft, wiggly };
+use composit::{ StateFixed, Component, StateValue };
 
 use shape::{
-    fix_rectangle, fix_texture,
-    page_texture, pin_texture,  pin_mathsshape,
-    stretch_rectangle, stretch_texture, stretch_wiggle,
-    Spot, ColourSpec, MathsShape, tape_mathsshape,
+    ColourSpec,
     tape_rectangle, tape_texture
 };
 
-use drawing::{
-    mark_rectangle, FCFont, FontVariety
-};
-
-use rand::Rng;
-use rand::rngs::SmallRng;
-use rand::SeedableRng;
+use drawing::{ FCFont, FontVariety, text_texture };
 
 use std::rc::Rc;
 
-use controller::Global;
+use controller::{ Global, Event };
 
 use types::{ Colour, cleaf, cpixel, area_size, area, cedge,
-             TOPLEFT, TOPRIGHT, Dot, AxisSense, Corner, A_TOPLEFT };
-
-use drawing::{ text_texture, bitmap_texture, collage, Mark, Artist };
-
-use rand::distributions::Distribution;
-use rand::distributions::range::Range;
-
-use controller::Event;
+             AxisSense, A_TOPLEFT };
 
 pub fn testcard_text(g: Arc<Mutex<Global>>) {
     let g = &mut g.lock().unwrap();

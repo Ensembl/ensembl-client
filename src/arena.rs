@@ -22,7 +22,6 @@ pub struct ArenaCanvases {
 pub struct ArenaData {
     pub canvases: ArenaCanvases,
     pub ctx: glctx,
-    pub gpuspec: GPUSpec
 }
 
 pub struct ArenaPrograms {
@@ -58,16 +57,14 @@ impl Arena {
         let flat = Rc::new(FlatCanvas::create(2,2));
         let data = Rc::new(RefCell::new(ArenaData {
             ctx,
-            gpuspec: GPUSpec::new(),
             canvases: ArenaCanvases {
                 flat,
                 idx: 0,
             },
         }));
+        let mut gpuspec = GPUSpec::new();
         {
-            let mut gpuspec = GPUSpec::new();
             gpuspec.populate(&data.borrow_mut());
-            data.borrow_mut().gpuspec = gpuspec;
         }
         let data_g = data.clone();
         let data_b = data_g.borrow();
@@ -76,7 +73,7 @@ impl Arena {
         let mut map = HashMap::<ProgramType,Program>::new();
         for pt in &order {
             debug!("webgl programs","=== {:?} ===",&pt);
-            map.insert(*pt,pt.to_program(&data_b));
+            map.insert(*pt,pt.to_program(&gpuspec,&data_b.ctx));
         }
         
         let arena = Arena {
