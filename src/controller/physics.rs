@@ -2,7 +2,7 @@ use std::sync::{ Arc, Mutex };
 use types::{ CFraction, cfraction, CPixel };
 use controller::timers::Timers;
 use controller::global::CanvasGlobal;
-use controller::runner::Event;
+use controller::runner::{ Event, events_run };
 use types::{ Move, Distance, Units };
 
 pub struct MousePhysicsImpl {
@@ -39,7 +39,7 @@ impl MousePhysicsImpl {
     }
 
     pub fn move_by(&mut self, cg: &CanvasGlobal, dx: CFraction) {
-        cg.er.borrow_mut().run(vec! {
+        events_run(cg,vec! {
             Event::Move(Move::Left(Distance(dx.0,Units::Pixels))),
             Event::Move(Move::Up(Distance(dx.1,Units::Pixels)))
         });

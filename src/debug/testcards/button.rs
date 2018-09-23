@@ -8,7 +8,7 @@ use stdweb::web::Element;
 
 use serde_json::Value as JSONValue;
 
-fn custom(body: &Element, name: &str,json: JSONValue) {
+fn custom(body: &Element, name: &str, json: JSONValue) {
     let body = body.clone();
     let cb = move || {
         let canv = domutil::query_selector(&body,"#bpane-canv");

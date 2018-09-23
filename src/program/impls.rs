@@ -1,5 +1,3 @@
-use arena::ArenaData;
-
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx
 };

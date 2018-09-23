@@ -66,7 +66,7 @@ pub trait Artist {
             0,0,0,255,0,0,0,255,0,0,0,255,
             0,0,0,255,0,0,0,255,0,0,0,255,
             0,0,0,255,0,0,0,255,0,0,0,255,
-        }, area_size(cpixel(0,0),cpixel(3,3)));
+        }, area_size(pos,cpixel(3,3)));
     }
     fn memoize_key(&self) -> Option<DrawingHash>  { None }
     fn measure(&self, canv: &mut ArenaCanvases) -> CPixel;

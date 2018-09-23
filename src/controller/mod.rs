@@ -8,5 +8,5 @@ mod jank;
 mod timers;
 
 pub use self::global::{ Global, CanvasGlobal };
-pub use self::runner::{ Event, EventRunner };
+pub use self::runner::Event;
 pub use self::jank::JankBuster;

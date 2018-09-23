@@ -9,7 +9,6 @@ use dom::event::EventControl;
 use arena::Arena;
 use stage::Stage;
 use composit::{ StateManager };
-use controller::EventRunner;
 use controller::direct::register_direct_events;
 use controller::user::register_user_events;
 use controller::projector::Projector;
@@ -17,11 +16,11 @@ use controller::timers::{ Timers, Timer };
 use controller::runner::Event;
 use composit::Compositor;
 use types::CPixel;
+use controller::runner::events_run;
 
 const CANVAS : &str = r##"<canvas id="glcanvas"></canvas>"##;
 
 pub struct CanvasGlobal {
-    pub er: Rc<RefCell<EventRunner>>,
     arena: Arc<Mutex<Arena>>,
     stage: Arc<Mutex<Stage>>,
     state: Arc<Mutex<StateManager>>,
@@ -31,7 +30,7 @@ pub struct CanvasGlobal {
 }
 
 pub struct CanvasGlobalInst {
-    pub cg: CanvasGlobal,
+    pub cg: Arc<Mutex<CanvasGlobal>>,
     pub timers: Timers
 }
 
@@ -43,7 +42,7 @@ impl CanvasGlobal {
         self.arena.lock().unwrap().draw(&mut compo,&oom,&stage);
     }
     
-    pub fn with_stage<F,G>(&mut self, cb: F) -> G where F: FnOnce(&mut Stage) -> G {
+    pub fn with_stage<F,G>(&self, cb: F) -> G where F: FnOnce(&mut Stage) -> G {
         let a = &mut self.stage.lock().unwrap();
         cb(a)
     }
@@ -77,7 +76,7 @@ impl CanvasGlobalInst {
     }
 
     pub fn run_timers(&mut self, time: f64) {
-        self.timers.run(&mut self.cg, time);
+        self.timers.run(&mut self.cg.lock().unwrap(), time);
     }
 }
 
@@ -111,8 +110,8 @@ impl Global {
     fn clear_old_events(&mut self) {
         if let Some(ref mut cg) = self.cg {
             let mut cg = cg.borrow_mut();
-            cg.cg.unregister();
-            cg.cg.projector = None;
+            cg.cg.lock().unwrap().unregister();
+            cg.cg.lock().unwrap().projector = None;
         }
     }
     
@@ -123,55 +122,54 @@ impl Global {
         let arena = Arc::new(Mutex::new(Arena::new(&canv_el)));
         let compo = Arc::new(Mutex::new(Compositor::new()));
         let stage = Arc::new(Mutex::new(Stage::new(&self.root)));
-        let er = Rc::new(RefCell::new(EventRunner::new(
-                            arena.clone(),
-                            stage.clone(),
-                            self.state.clone())));
-        let mut timers = Timers::new();
+        let timers = Timers::new();
         self.cg = Some(Rc::new(RefCell::new(
             CanvasGlobalInst {
-                cg: CanvasGlobal {
+                cg: Arc::new(Mutex::new(CanvasGlobal {
                     arena, stage, compo,
-                    er: er.clone(),
                     state: self.state.clone(),
                     projector: None,
                     controls: Vec::<Box<EventControl<()>>>::new()
-                },
+                })),
                 timers
             })));
         {
-            let mut cgr = &mut self.cg.as_ref().unwrap().borrow_mut();        
-            register_user_events(cgr,&er,&canv_el);
-            register_direct_events(cgr,&er,&canv_el);
+            let cgr = &mut self.cg.as_ref().unwrap().borrow_mut();        
+            register_user_events(cgr,&canv_el);
+            register_direct_events(cgr,&el);
         }
-        self.cg.as_ref().unwrap().borrow_mut().cg.projector = Some(
-            Projector::new(self.cg.as_ref().unwrap())
-        );
+        let cg = &mut self.cg.as_ref().unwrap().borrow_mut();
+        let cg = &mut cg.cg.lock().unwrap();
+        cg.projector = Some(Projector::new(self.cg.as_ref().unwrap()));
         inst_s
     }
     
     pub fn add_events(&mut self, evv: Vec<Event>) {
         self.cg.as_mut().map(|cg| {
             let cg = &mut cg.borrow_mut();
-            cg.cg.er.borrow_mut().run(evv);
+            events_run(&cg.cg.lock().unwrap(),evv);
         });
     }
     
     pub fn with_compo<F,G>(&mut self, cb: F) -> Option<G> where F: FnOnce(&mut Compositor) -> G {
         self.cg.as_mut().map(|cg| {
-            cg.borrow_mut().cg.with_compo(cb)
+            let cg = &mut cg.borrow_mut();
+            let cg = cg.cg.lock().unwrap();
+            cg.with_compo(cb)
         })
     }
     
     /* only for test-cards, etc, which need to know how big to draw */
     pub fn canvas_size(&self) -> CPixel {
         let cg = &self.cg.as_ref().unwrap().borrow();
-        let out = cg.cg.stage.lock().unwrap().get_size();
+        let st = cg.cg.lock().unwrap();
+        let out = st.stage.lock().unwrap().get_size();
         out
     }
 
     pub fn draw(&mut self) {
-        self.cg.as_ref().unwrap().borrow_mut().cg.draw();
+        let cg = &mut self.cg.as_ref().unwrap().borrow_mut();
+        cg.cg.lock().unwrap().draw();
     }
     
     pub fn add_timer<F>(&mut self, cb: F) -> Option<Timer> 

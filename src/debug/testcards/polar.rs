@@ -1,11 +1,10 @@
 use std::sync::{ Arc, Mutex };
-use std::clone::Clone;
 use drawing::{ FCFont, FontVariety };
 use composit::{ StateFixed, Component, StateValue, StateAtom };
 
 use separator::Separatable;
 
-use debug::testcards::common::{ daft, bio_daft, wiggly, track_data };
+use debug::testcards::common::track_data;
 
 use shape::{
     fix_rectangle, fix_texture, page_rectangle,
@@ -50,7 +49,7 @@ struct Palette {
     grey: ColourSpec
 }
 
-fn one_offs(c: &mut Component, p: &Palette) {    
+fn one_offs(_c: &mut Component, _p: &Palette) {    
 }
 
 fn draw_frame(c: &mut Component,edge: AxisSense, p: &Palette) {
@@ -199,10 +198,5 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
         co.add_component(c);
     });
 
-    let size = g.canvas_size();
-
-    let mut middle = size.1 / 120;
-    if middle < 5 { middle = 5; }
-                
     g.add_events(vec!{ Event::Zoom(2.5) });
 }
