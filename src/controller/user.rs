@@ -11,6 +11,7 @@ use dom::event;
 use controller::{ Event, EventRunner };
 use controller::physics::MousePhysics;
 use controller::timers::Timers;
+use controller::global::CanvasGlobalInst;
 
 pub struct UserEventListener {
     canv_el: HtmlElement,
@@ -74,33 +75,23 @@ impl EventListener<()> for UserEventListenerBody {
     }
 }
 
-pub struct UserEventManager {
-    ec_canv: EventControl<()>,
-    ec_body: EventControl<()>
-}
-
-impl UserEventManager {
-    pub fn new(er: &Rc<RefCell<EventRunner>>, el: &Element,
-               timers: &mut Timers) -> UserEventManager {
-        event::disable_context_menu();
-        let html_el: HtmlElement = el.clone().try_into().unwrap();
-        let mp = Arc::new(Mutex::new(MousePhysics::new(timers)));
-        let uel = UserEventListener::new(er,&html_el,&mp);
-        let mut ec_canv = EventControl::new(Box::new(uel));
-        ec_canv.add_event(EventType::MouseClickEvent);
-        ec_canv.add_event(EventType::MouseDownEvent);
-        ec_canv.add_event(EventType::MouseMoveEvent);
-        ec_canv.add_event(EventType::MouseWheelEvent);        
-        ec_canv.add_element(el.into(),());
-        let uel_body = UserEventListenerBody::new(&mp);
-        let mut ec_body = EventControl::new(Box::new(uel_body));
-        ec_body.add_event(EventType::MouseUpEvent);
-        ec_body.add_element(&domutil::query_select("body"),());        
-        UserEventManager { ec_canv, ec_body }
-    }
-    
-    pub fn reset(&mut self) {
-        self.ec_canv.reset();
-        self.ec_body.reset();
-    }
+pub fn register_user_events(
+           gc: &mut CanvasGlobalInst,
+           er: &Rc<RefCell<EventRunner>>, el: &Element) {
+    event::disable_context_menu();
+    let html_el: HtmlElement = el.clone().try_into().unwrap();
+    let mp = Arc::new(Mutex::new(MousePhysics::new(&mut gc.timers)));
+    let uel = UserEventListener::new(er,&html_el,&mp);
+    let mut ec_canv = EventControl::new(Box::new(uel));
+    ec_canv.add_event(EventType::MouseClickEvent);
+    ec_canv.add_event(EventType::MouseDownEvent);
+    ec_canv.add_event(EventType::MouseMoveEvent);
+    ec_canv.add_event(EventType::MouseWheelEvent);        
+    ec_canv.add_element(el.into(),());
+    let uel_body = UserEventListenerBody::new(&mp);
+    let mut ec_body = EventControl::new(Box::new(uel_body));
+    ec_body.add_event(EventType::MouseUpEvent);
+    ec_body.add_element(&domutil::query_select("body"),());        
+    gc.cg.add_control(Box::new(ec_canv));
+    gc.cg.add_control(Box::new(ec_body));
 }
