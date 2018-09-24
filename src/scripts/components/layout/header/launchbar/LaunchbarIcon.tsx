@@ -4,7 +4,7 @@ import { LaunchbarApp } from '../../../../configs/launchbarConfig';
 
 type LaunchbarIconProps = {
   app: LaunchbarApp;
-  changeCurrentApp: (currentApp: string) => void;
+  gotoApp: (appName: string) => void;
   currentApp: string;
 };
 
@@ -12,13 +12,13 @@ class LaunchbarIcon extends PureComponent<LaunchbarIconProps> {
   constructor(props: LaunchbarIconProps) {
     super(props);
 
-    this.changeCurrentApp = this.changeCurrentApp.bind(this);
+    this.gotoAppHandler = this.gotoAppHandler.bind(this);
   }
 
   public render() {
     return (
       <dt>
-        <button onClick={this.changeCurrentApp}>
+        <button onClick={this.gotoAppHandler}>
           <img
             src={this.getAppIcon()}
             alt={this.props.app.description}
@@ -29,8 +29,8 @@ class LaunchbarIcon extends PureComponent<LaunchbarIconProps> {
     );
   }
 
-  private changeCurrentApp() {
-    this.props.changeCurrentApp(this.props.app.name);
+  private gotoAppHandler() {
+    this.props.gotoApp(this.props.app.name);
   }
 
   private getAppIcon(): string {

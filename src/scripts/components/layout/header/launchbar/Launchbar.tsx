@@ -26,12 +26,18 @@ class Launchbar extends PureComponent<LaunchbarProps> {
   constructor(props: LaunchbarProps) {
     super(props);
 
-    this.changeCurrentApp = this.changeCurrentApp.bind(this);
+    this.gotoApp = this.gotoApp.bind(this);
   }
 
-  public changeCurrentApp(currentApp: string) {
-    this.props.history.push(`/app/${currentApp}`);
+  public componentDidMount() {
+    const currentApp = this.props.location.pathname.replace('/app/', '');
+
     this.props.changeCurrentApp(currentApp);
+  }
+
+  public gotoApp(appName: string) {
+    this.props.history.push(`/app/${appName}`);
+    this.props.changeCurrentApp(appName);
   }
 
   public getSeparatorClass(separator: boolean): string {
@@ -44,11 +50,14 @@ class Launchbar extends PureComponent<LaunchbarProps> {
         <div className="categories-wrapper">
           <div className="categories">
             {launchbarConfig.categories.map((category: LaunchbarCategory) => (
-              <dl className={this.getSeparatorClass(category.separator)} key={category.name}>
+              <dl
+                className={this.getSeparatorClass(category.separator)}
+                key={category.name}
+              >
                 {category.apps.map((app: LaunchbarApp) => (
                   <LaunchbarIcon
                     app={app}
-                    changeCurrentApp={this.changeCurrentApp}
+                    gotoApp={this.gotoApp}
                     currentApp={this.props.currentApp}
                     key={app.name}
                   />
@@ -61,7 +70,7 @@ class Launchbar extends PureComponent<LaunchbarProps> {
           <dl>
             <LaunchbarIcon
               app={launchbarConfig.about}
-              changeCurrentApp={this.props.changeCurrentApp}
+              gotoApp={this.gotoApp}
               currentApp={this.props.currentApp}
             />
           </dl>
