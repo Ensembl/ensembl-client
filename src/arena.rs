@@ -50,11 +50,24 @@ pub struct Arena {
     pub progs: ArenaPrograms,
 }
 
+fn build_programs(ctx: &glctx) -> ArenaPrograms {
+    let mut gpuspec = GPUSpec::new();
+    gpuspec.populate(&ctx);
+    let order = ProgramType::all();
+    let mut map = HashMap::<ProgramType,Program>::new();
+    for pt in &order {
+        debug!("webgl programs","=== {:?} ===",&pt);
+        map.insert(*pt,pt.to_program(&gpuspec,&ctx));
+    }
+    ArenaPrograms { order, map }
+}
+
 impl Arena {
     pub fn new(el: &Element) -> Arena {
         let canvas = prepare_canvas(el);
         let ctx = wglraw::prepare_context(&canvas);
         let flat = Rc::new(FlatCanvas::create(2,2));
+        let progs = build_programs(&ctx);
         let data = Rc::new(RefCell::new(ArenaData {
             ctx,
             canvases: ArenaCanvases {
@@ -62,24 +75,8 @@ impl Arena {
                 idx: 0,
             },
         }));
-        let mut gpuspec = GPUSpec::new();
-        {
-            gpuspec.populate(&data.borrow_mut());
-        }
-        let data_g = data.clone();
-        let data_b = data_g.borrow();
-        
-        let order = ProgramType::all();
-        let mut map = HashMap::<ProgramType,Program>::new();
-        for pt in &order {
-            debug!("webgl programs","=== {:?} ===",&pt);
-            map.insert(*pt,pt.to_program(&gpuspec,&data_b.ctx));
-        }
-        
         let arena = Arena {
-            progs: ArenaPrograms {
-                    order, map
-            }, data
+            progs, data
         };
         arena
     }
