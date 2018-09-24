@@ -13,7 +13,6 @@ import { closeDrawer } from '../../../actions/browserActions';
 
 type BrowserProps = RouteComponentProps<{}> & {
   browserOpenState: BrowserOpenState;
-  currentTrack: string;
   closeDrawer: () => void;
   drawerOpened: boolean;
 };
@@ -52,8 +51,8 @@ class Browser extends Component<BrowserProps> {
 }
 
 const mapStateToProps = (state: RootState) => {
-  const { currentTrack, browserOpenState, drawerOpened } = state.browser;
-  return { currentTrack, browserOpenState, drawerOpened };
+  const { browserOpenState, drawerOpened } = state.browser;
+  return { browserOpenState, drawerOpened };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
