@@ -1,11 +1,15 @@
+use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
-use drawing::{ FCFont, FontVariety };
+
 use composit::{ StateFixed, Component, StateValue, StateAtom };
-
-use separator::Separatable;
-
+use controller::global::Global;
+use controller::input::Event;
 use debug::testcards::common::track_data;
-
+use drawing::{
+    mark_rectangle, text_texture, collage, Mark, Artist,
+    FCFont, FontVariety
+};
+use separator::Separatable;
 use shape::{
     fix_rectangle, fix_texture, page_rectangle,
     fixundertape_rectangle, fixundertape_texture,
@@ -15,28 +19,11 @@ use shape::{
     Spot, ColourSpec, MathsShape, tape_mathsshape,
     tape_rectangle, tape_texture
 };
-
-use drawing::{
-    mark_rectangle,
-};
-
-use rand::Rng;
-use rand::rngs::SmallRng;
-use rand::SeedableRng;
-
-use std::rc::Rc;
-
-use controller::Global;
-
 use types::{ 
     Colour, cleaf, cpixel, area_size, area, cedge,
     TOPLEFT, TOPRIGHT, Dot, AxisSense, Corner, 
     A_MIDDLE, A_LEFT, A_TOPLEFT, A_RIGHT,
 };
-
-use drawing::{ text_texture, collage, Mark, Artist };
-
-use controller::Event;
 
 const TRACKS: i32 = 20;
 const PITCH : i32 = 63;

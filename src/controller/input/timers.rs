@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
-use controller::global::CanvasGlobal;
+use controller::global::CanvasState;
 
 struct TimerImpl {
-    cb: Box<FnMut(&mut CanvasGlobal, f64) + 'static>
+    cb: Box<FnMut(&mut CanvasState, f64) + 'static>
 }
 
 #[derive(Clone,Copy)]
@@ -22,7 +22,7 @@ impl Timers {
         }
     }
     
-    pub fn add<F>(&mut self, cb: F) -> Timer where F: FnMut(&mut CanvasGlobal, f64) + 'static {
+    pub fn add<F>(&mut self, cb: F) -> Timer where F: FnMut(&mut CanvasState, f64) + 'static {
         let idx = self.next;
         self.next += 1;
         self.timers.insert(idx,TimerImpl {
@@ -36,7 +36,7 @@ impl Timers {
         self.timers.remove(&t.0);
     }
     
-    pub fn run(&mut self, cg: &mut CanvasGlobal, time: f64) {
+    pub fn run(&mut self, cg: &mut CanvasState, time: f64) {
         for t in self.timers.values_mut() {
             (t.cb)(cg,time);
         }

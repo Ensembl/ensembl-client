@@ -3,22 +3,21 @@ use std::sync::{ Arc, Mutex };
 use dom::domutil;
 use dom::event::{ EventListener, EventType, EventData, EventControl };
 use stdweb::web::{ Element, HtmlElement, IHtmlElement };
-use stdweb::traits::{ IEvent };
+use stdweb::traits::IEvent;
 use dom::event;
 
-use controller::Event;
-use controller::physics::MousePhysics;
-use controller::global::{ CanvasGlobal, CanvasGlobalInst };
-use controller::runner::events_run;
+use controller::global::{ CanvasState, CanvasRunner };
+use controller::input::{ Event, events_run };
+use controller::input::physics::MousePhysics;
 
 pub struct UserEventListener {
     canv_el: HtmlElement,
-    cg: Arc<Mutex<CanvasGlobal>>,
+    cg: Arc<Mutex<CanvasState>>,
     mouse: Arc<Mutex<MousePhysics>>
 }
 
 impl UserEventListener {
-    pub fn new(cg: &Arc<Mutex<CanvasGlobal>>,
+    pub fn new(cg: &Arc<Mutex<CanvasState>>,
                canv_el: &HtmlElement,
                mouse: &Arc<Mutex<MousePhysics>>) -> UserEventListener {
         UserEventListener {
@@ -74,7 +73,7 @@ impl EventListener<()> for UserEventListenerBody {
     }
 }
 
-pub fn register_user_events(gc: &mut CanvasGlobalInst, el: &Element) {
+pub fn register_user_events(gc: &mut CanvasRunner, el: &Element) {
     event::disable_context_menu();
     let html_el: HtmlElement = el.clone().try_into().unwrap();
     let mp = Arc::new(Mutex::new(MousePhysics::new(&mut gc.timers)));

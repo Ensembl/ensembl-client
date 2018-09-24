@@ -1,19 +1,12 @@
-use std::sync::{ Arc, Mutex };
-use composit::{ StateFixed, Component, StateValue };
-
-use shape::{
-    ColourSpec,
-    tape_rectangle, tape_texture
-};
-
-use drawing::{ FCFont, FontVariety, text_texture };
-
 use std::rc::Rc;
+use std::sync::{ Arc, Mutex };
 
-use controller::{ Global, Event };
-
-use types::{ Colour, cleaf, cpixel, area_size, area, cedge,
-             AxisSense, A_TOPLEFT };
+use composit::{ StateFixed, Component, StateValue };
+use controller::global::Global;
+use controller::input::Event;
+use drawing::{ FCFont, FontVariety, text_texture };
+use shape::{ ColourSpec, tape_rectangle, tape_texture };
+use types::{ Colour, cleaf, cpixel, area_size, AxisSense, A_TOPLEFT };
 
 pub fn testcard_text(g: Arc<Mutex<Global>>) {
     let g = &mut g.lock().unwrap();

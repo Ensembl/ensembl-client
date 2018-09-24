@@ -10,7 +10,7 @@ use stdweb::web::event::{ ClickEvent, ChangeEvent };
 use stdweb::web::html_element::SelectElement;
 use stdweb::unstable::TryInto;
 
-use controller::Global;
+use controller::global::Global;
 use dom::domutil;
 use dom::event::{ EventListener, EventControl, EventType, EventData, ICustomEvent };
 use debug::testcards;

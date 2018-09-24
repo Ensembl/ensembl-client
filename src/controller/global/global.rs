@@ -4,23 +4,21 @@ use std::sync::{ Arc, Mutex };
 
 use stdweb::web::{ IElement, HtmlElement, Element };
 
+use arena::Arena;
+use composit::{ Compositor, StateManager };
+use controller::input::{
+    register_direct_events, register_user_events, Event, events_run,
+    Timers, Timer
+};
+use controller::output::Projector;
 use dom::domutil;
 use dom::event::EventControl;
-use arena::Arena;
 use stage::Stage;
-use composit::{ StateManager };
-use controller::direct::register_direct_events;
-use controller::user::register_user_events;
-use controller::projector::Projector;
-use controller::timers::{ Timers, Timer };
-use controller::runner::Event;
-use composit::Compositor;
 use types::CPixel;
-use controller::runner::events_run;
 
 const CANVAS : &str = r##"<canvas id="glcanvas"></canvas>"##;
 
-pub struct CanvasGlobal {
+pub struct CanvasState {
     arena: Arc<Mutex<Arena>>,
     stage: Arc<Mutex<Stage>>,
     state: Arc<Mutex<StateManager>>,
@@ -29,12 +27,12 @@ pub struct CanvasGlobal {
     controls: Vec<Box<EventControl<()>>>
 }
 
-pub struct CanvasGlobalInst {
-    pub cg: Arc<Mutex<CanvasGlobal>>,
+pub struct CanvasRunner {
+    pub cg: Arc<Mutex<CanvasState>>,
     pub timers: Timers
 }
 
-impl CanvasGlobal {
+impl CanvasState {
     pub fn draw(&mut self) {
         let stage = self.stage.lock().unwrap();
         let oom = self.state.lock().unwrap();
@@ -69,9 +67,9 @@ impl CanvasGlobal {
     }
 }
 
-impl CanvasGlobalInst {
+impl CanvasRunner {
     pub fn add_timer<F>(&mut self, cb: F) -> Timer 
-                            where F: FnMut(&mut CanvasGlobal, f64) + 'static {
+                            where F: FnMut(&mut CanvasState, f64) + 'static {
         self.timers.add(cb)
     }
 
@@ -82,7 +80,7 @@ impl CanvasGlobalInst {
 
 pub struct Global {
     root: HtmlElement,
-    cg: Option<Rc<RefCell<CanvasGlobalInst>>>,
+    cg: Option<Rc<RefCell<CanvasRunner>>>,
     inst: u32,
     state: Arc<Mutex<StateManager>>,
 }
@@ -124,8 +122,8 @@ impl Global {
         let stage = Arc::new(Mutex::new(Stage::new(&self.root)));
         let timers = Timers::new();
         self.cg = Some(Rc::new(RefCell::new(
-            CanvasGlobalInst {
-                cg: Arc::new(Mutex::new(CanvasGlobal {
+            CanvasRunner {
+                cg: Arc::new(Mutex::new(CanvasState {
                     arena, stage, compo,
                     state: self.state.clone(),
                     projector: None,
@@ -173,7 +171,7 @@ impl Global {
     }
     
     pub fn add_timer<F>(&mut self, cb: F) -> Option<Timer> 
-                            where F: FnMut(&mut CanvasGlobal, f64) + 'static {
+                            where F: FnMut(&mut CanvasState, f64) + 'static {
         self.cg.as_mut().map(|cg| cg.borrow_mut().add_timer(cb))
     }
 }
