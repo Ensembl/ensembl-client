@@ -28,9 +28,9 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=1
+current_page=12
 FILE_NAME_0=1944;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Ftypes%2Farea.rs;0;4
-FILE_NAME_1=5674;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fshape%2Fpintape.rs;0;4
+FILE_NAME_1=7046;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fshape%2Fpintape.rs;0;4
 FILE_NAME_2=9053;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Ftypes%2Fcoord.rs;0;4
 FILE_NAME_3=1987;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdrawing%2Fdrawingimpl.rs;0;4
 FILE_NAME_4=2673;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fshape%2Ffixpage.rs;0;4
@@ -38,6 +38,14 @@ FILE_NAME_5=1716;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2F
 FILE_NAME_6=1594;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdebug%2Ftestcards%2Fpolar.rs;0;4
 FILE_NAME_7=707;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdebug%2Ftestcards%2Ftext.rs;0;4
 FILE_NAME_8=512;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Ftypes%2Fmod.rs;0;4
+FILE_NAME_9=483;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fmain.rs;0;4
+FILE_NAME_10=11315;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdebug%2Fpane%2Fdebugstage.rs;0;4
+FILE_NAME_11=515;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdom%2Fdomutil.rs;0;4
+FILE_NAME_12=1830;None;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fensembl-new%2Fsrc%2Fscripts%2Fcomponents%2Fapps%2Fbrowser%2FBrowser.tsx;0;4
+FILE_NAME_13=1155;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Futil%2Fmacros.rs;0;4
+FILE_NAME_14=6410;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdom%2Fevent.rs;0;4
+FILE_NAME_15=66;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdebug%2Fmod.rs;0;4
+FILE_NAME_16=295;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdebug%2Fpane%2Fmod.rs;0;4
 
 [VTE]
 last_dir=/home/dan

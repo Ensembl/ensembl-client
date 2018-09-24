@@ -29,6 +29,7 @@ mod stage;
 
 fn main() {
     stdweb::initialize();
+    debug::setup_global();
     debug::setup_stage_debug();
     debug!("global","starting");
     stdweb::event_loop();

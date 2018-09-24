@@ -11,9 +11,18 @@ use stdweb::web::{
     IHtmlElement,
     IElement,
     IParentNode,
-    INode
+    INode,
+    Node
 };
 use types::{ CPixel, cpixel };
+
+pub fn query_selector_new(sel: &str) -> Option<Element> {
+    if let Some(Some(el)) = document().query_selector(sel).ok() {
+        Some(el)
+    } else {
+        None
+    }
+}
 
 pub fn query_selector(el: &Element, sel: &str) -> Element {
     el.query_selector(sel).unwrap().unwrap()
