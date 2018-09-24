@@ -25,38 +25,12 @@ class Browser extends Component<BrowserProps> {
     this.closeTrack = this.closeTrack.bind(this);
   }
 
-  public componentDidMount() {
-    const { currentTrack, drawerOpened, history, match } = this.props;
-
-    if (drawerOpened === true) {
-      history.push(`${match.path}/track/${currentTrack}`);
-    }
-  }
-
-  public componentDidUpdate(prevProps: BrowserProps) {
-    if (
-      this.props.drawerOpened !== prevProps.drawerOpened &&
-      this.props.drawerOpened === false
-    ) {
-      this.redirectToBrowser();
-    }
-  }
-
   public closeTrack() {
     if (this.props.drawerOpened === false) {
       return;
     }
 
     this.props.closeDrawer();
-    this.redirectToBrowser();
-  }
-
-  public redirectToBrowser() {
-    if (this.props.history.location.pathname.indexOf('/track') === -1) {
-      return;
-    }
-
-    this.props.history.push(this.props.match.path);
   }
 
   public render() {
