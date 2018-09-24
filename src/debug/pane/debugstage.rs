@@ -4,7 +4,7 @@ use std::rc::{ Rc, Weak };
 use std::cell::RefCell;
 use serde_json::Value as JSONValue;
 
-use stdweb::web::{ IEventTarget, Element, HtmlElement };
+use stdweb::web::{ IEventTarget, Element, HtmlElement, document };
 use stdweb::traits::IEvent;
 use stdweb::web::event::{ ClickEvent, ChangeEvent };
 use stdweb::web::html_element::SelectElement;
@@ -34,6 +34,11 @@ impl EventListener<()> for BodyEventListener {
     fn receive(&mut self, el: &Element, ev: &EventData, _p: &()) {
         self.val += 1;
         debug!("test event","{} {:?} {:?}",self.val,el,ev);
+        if let EventData::CustomEvent(_,n,e) = ev {
+            if n == "bpane-start" {
+                setup_stage_debug();
+            }
+        }
     }
 }
 
@@ -83,6 +88,7 @@ impl DebugPanelImpl {
         bec.add_event(EventType::MouseClickEvent);
         bec.add_event(EventType::CustomEvent("custom".to_string()));
         bec.add_event(EventType::CustomEvent("dropdown".to_string()));
+        bec.add_event(EventType::CustomEvent("bpane-start".to_string()));
         bec.add_element(&domutil::query_select("body"),());
         Rc::new(RefCell::new(DebugPanelImpl {
             base: base.clone(),
@@ -193,6 +199,7 @@ const STAGE : &str = r##"
             </select>
             <select class="folder"></select>
             <button class="mark">mark!</button>
+            <button class="start">start</button>
             <pre id="console2" class="content"></pre>
         </div>
         <div class="buttons"></div>
@@ -287,14 +294,20 @@ fn setup_events() {
 }
 
 pub fn setup_stage_debug() {
-    let stage = domutil::query_select("#stage");
-    domutil::inner_html(&stage,STAGE);
-    let el = domutil::append_element(&domutil::query_select("head"),"style");
-    domutil::inner_html(&el,STAGE_CSS);
-    DEBUG_PANEL.with(|p| {
-        *p.borrow_mut() = Some(DebugPanel::new(&stage));
-    });
-    setup_events();
+    if let Some(stage) = domutil::query_selector_new("#stage") {
+        domutil::inner_html(&stage,STAGE);
+        let el = domutil::append_element(&domutil::query_select("head"),"style");
+        domutil::inner_html(&el,STAGE_CSS);
+        DEBUG_PANEL.with(|p| {
+            *p.borrow_mut() = Some(DebugPanel::new(&stage));
+        });
+        setup_events();
+        let mark_el = domutil::query_select("#console .start");
+        mark_el.add_event_listener(|_e: ClickEvent| {
+            let cel = domutil::query_select("body");
+            domutil::send_custom_event(&cel,"bpane-start",&json!({}));
+        });
+    }
 }
 
 fn panel_op(cb: &mut FnMut(&DebugPanel) -> ()) {
@@ -318,11 +331,13 @@ pub fn debug_panel_entry_mark() {
 }
 
 pub fn debug_panel_entry_add(name: &str, value: &str) {
-    let cel = domutil::query_select("#console2");
-    domutil::send_custom_event(&cel,"add",&json!({
-        "name": name,
-        "value": value
-    }));
+    let cel = domutil::query_selector_new("#console2");
+    if let Some(cel) = cel {
+        domutil::send_custom_event(&cel,"add",&json!({
+            "name": name,
+            "value": value
+        }));
+    }
 }
 
 pub fn debug_panel_select(name: &str) {
@@ -354,4 +369,10 @@ pub fn debug_panel_trigger_button(idx: usize) {
             po.trigger_button(idx);
         }
     });
+}
+
+pub fn setup_global() {
+    let mut bec = EventControl::new(Box::new(BodyEventListener::new()));
+    bec.add_event(EventType::CustomEvent("bpane-start".to_string()));
+    bec.add_element(&domutil::query_select("body"),());
 }
