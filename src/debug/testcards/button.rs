@@ -1,5 +1,5 @@
 use std::sync::{ Mutex, Arc };
-use controller::Global;
+use controller::global::Global;
 use dom::domutil;
 use debug::testcards::bigscience::big_science;
 use debug::pane::ButtonActionImpl;

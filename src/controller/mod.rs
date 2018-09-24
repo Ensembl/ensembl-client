@@ -1,12 +1,3 @@
-mod global;
-mod runner;
-mod direct;
-mod user;
-mod physics;
-mod projector;
-mod jank;
-mod timers;
-
-pub use self::global::{ Global, CanvasGlobal };
-pub use self::runner::Event;
-pub use self::jank::JankBuster;
+pub mod global;
+pub mod input;
+pub mod output;

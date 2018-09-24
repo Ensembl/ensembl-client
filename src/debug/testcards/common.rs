@@ -1,13 +1,15 @@
 use std::sync::{ Mutex, Arc };
+
+use rand::{ Rng, seq };
+use rand::distributions::Distribution;
+use rand::distributions::range::Range;
+
+use controller::global::Global;
 use debug::testcards::visual::testcard_visual;
 use debug::testcards::button::testcard_button;
 use debug::testcards::polar::testcard_polar;
 use debug::testcards::text::testcard_text;
 use types::{ CLeaf, cleaf };
-use rand::{ Rng, seq };
-use rand::distributions::Distribution;
-use rand::distributions::range::Range;
-use controller::Global;
 
 pub fn testcard(g: Arc<Mutex<Global>>, name: &str) {
     debug!("global","starting testcard {}",name);

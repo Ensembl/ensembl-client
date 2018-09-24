@@ -1,4 +1,12 @@
 use std::clone::Clone;
+use std::rc::Rc;
+
+use rand::distributions::Distribution;
+use rand::distributions::range::Range;
+use rand::Rng;
+use rand::rngs::SmallRng;
+use rand::SeedableRng;
+
 use composit::{ StateFixed, Component, StateValue, StateAtom };
 
 use debug::testcards::common::{ daft, bio_daft, wiggly };
@@ -10,13 +18,7 @@ use shape::{
     Spot, ColourSpec, MathsShape,
 };
 
-use rand::Rng;
-use rand::rngs::SmallRng;
-use rand::SeedableRng;
-
-use std::rc::Rc;
-
-use controller::Global;
+use controller::global::Global;
 
 use types::{
     Colour, cleaf, cpixel, area, cedge, AxisSense, Dot,
@@ -29,10 +31,7 @@ use drawing::{
     mark_rectangle, FontVariety
 };
 
-use rand::distributions::Distribution;
-use rand::distributions::range::Range;
-
-use controller::Event;
+use controller::input::Event;
 
 fn battenberg() -> Rc<Artist> {
     bitmap_texture(vec! { 0,0,255,255,

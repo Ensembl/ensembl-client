@@ -3,11 +3,11 @@ use std::cell::RefCell;
 
 use stdweb::web::window;
 
-use controller::jank::JankBuster;
-use controller::global::{ CanvasGlobal, CanvasGlobalInst };
+use controller::global::{ CanvasState, CanvasRunner };
+use controller::output::jank::JankBuster;
 
 struct ProjectorImpl {
-    cg: Weak<RefCell<CanvasGlobalInst>>,
+    cg: Weak<RefCell<CanvasRunner>>,
     phase: u32,
     old_time: Option<f64>,
     jank: JankBuster
@@ -17,7 +17,7 @@ struct ProjectorImpl {
 pub struct Projector(Rc<RefCell<ProjectorImpl>>);
 
 impl Projector {
-    pub fn new(cg: &Rc<RefCell<CanvasGlobalInst>>) -> Projector {
+    pub fn new(cg: &Rc<RefCell<CanvasRunner>>) -> Projector {
         let mut out = Projector(Rc::new(RefCell::new(ProjectorImpl {
             cg: Rc::downgrade(cg),
             phase: 0,
@@ -35,7 +35,7 @@ impl Projector {
         );
     }
 
-    fn canvas_frame(&mut self, cg: &mut CanvasGlobal) {
+    fn canvas_frame(&mut self, cg: &mut CanvasState) {
         cg.draw();
     }
 

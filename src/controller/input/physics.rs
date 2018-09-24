@@ -1,8 +1,7 @@
 use std::sync::{ Arc, Mutex };
 use types::{ CFraction, cfraction, CPixel };
-use controller::timers::Timers;
-use controller::global::CanvasGlobal;
-use controller::runner::{ Event, events_run };
+use controller::global::CanvasState;
+use controller::input::{ Event, events_run, Timers };
 use types::{ Move, Distance, Units };
 
 pub struct MousePhysicsImpl {
@@ -38,7 +37,7 @@ impl MousePhysicsImpl {
         return self.vel * dt;
     }
 
-    pub fn move_by(&mut self, cg: &CanvasGlobal, dx: CFraction) {
+    pub fn move_by(&mut self, cg: &CanvasState, dx: CFraction) {
         events_run(cg,vec! {
             Event::Move(Move::Left(Distance(dx.0,Units::Pixels))),
             Event::Move(Move::Up(Distance(dx.1,Units::Pixels)))
@@ -69,7 +68,7 @@ impl MousePhysics {
         out
     }
 
-    pub fn tick(&mut self, cg: &CanvasGlobal, t: f64) {
+    pub fn tick(&mut self, cg: &CanvasState, t: f64) {
         let mut mp = self.0.lock().unwrap();
         let mut dt = None;
         {

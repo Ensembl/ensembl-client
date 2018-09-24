@@ -1,14 +1,15 @@
 use std::sync::{ Arc, Mutex };
+
+use serde_json::Value as JSONValue;
+use stdweb::web::{ Element };
+
+use controller::global::{ CanvasState, CanvasRunner };
+use controller::input::{ events_run, Event };
 use dom::event::{ 
     EventListener, EventControl, EventType, EventData, 
     ICustomEvent
 };
-use stdweb::web::{ Element };
 use types::{ Move, Distance, Units };
-use serde_json::Value as JSONValue;
-use controller::runner::events_run;
-use controller::Event;
-use controller::global::{ CanvasGlobal, CanvasGlobalInst };
 
 fn custom_movement_event(dir: &str, unit: &str, v: &JSONValue) -> Event {
     if let JSONValue::Number(quant) = v {
@@ -72,11 +73,11 @@ fn custom_make_events(j: &JSONValue) -> Vec<Event> {
 }
 
 pub struct DirectEventListener {
-    cg: Arc<Mutex<CanvasGlobal>>,
+    cg: Arc<Mutex<CanvasState>>,
 }
 
 impl DirectEventListener {
-    pub fn new(cg: &Arc<Mutex<CanvasGlobal>>) -> DirectEventListener {
+    pub fn new(cg: &Arc<Mutex<CanvasState>>) -> DirectEventListener {
         DirectEventListener { cg: cg.clone() }
     }        
 }
@@ -92,7 +93,7 @@ impl EventListener<()> for DirectEventListener {
     }
 }
 
-pub fn register_direct_events(gc: &mut CanvasGlobalInst, el: &Element) {
+pub fn register_direct_events(gc: &mut CanvasRunner, el: &Element) {
     let dlr = DirectEventListener::new(&gc.cg);
     let mut ec = EventControl::new(Box::new(dlr));
     ec.add_event(EventType::CustomEvent("bpane".to_string()));
