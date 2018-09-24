@@ -1,5 +1,4 @@
 use std::cmp::{ min, Ordering };
-use arena::ArenaData;
 use std::collections::HashMap;
 
 use webgl_rendering_context::{
@@ -117,8 +116,8 @@ pub struct GPUSpec(Option<GPUSpecImpl>);
 impl GPUSpec {
     pub fn new() -> GPUSpec { GPUSpec(None) }
     
-    pub fn populate(&mut self, adata: &ArenaData) {
-        self.0 = Some(GPUSpecImpl::new(adata));
+    pub fn populate(&mut self, ctx: &glctx) {
+        self.0 = Some(GPUSpecImpl::new(ctx));
     }
     
     pub fn best_vert(&self, want: &Precision) -> GLSize {
@@ -130,9 +129,9 @@ impl GPUSpec {
     }
 }
 
-fn get_prec(out: &mut HashMap<GLSize,Precision>, adata: &ArenaData,
+fn get_prec(out: &mut HashMap<GLSize,Precision>, ctx: &glctx,
             shader_en: GLenum, size: GLSize, type_en: GLenum) {
-    let prec = adata.ctx.get_shader_precision_format(shader_en,type_en);
+    let prec = ctx.get_shader_precision_format(shader_en,type_en);
     if let Some(prec) = prec {
         let range = min(prec.range_min(),prec.range_max());
         let val = if size.is_int() {
@@ -144,23 +143,23 @@ fn get_prec(out: &mut HashMap<GLSize,Precision>, adata: &ArenaData,
     }
 }
 
-fn get_precisions(adata: &ArenaData, shader_en: GLenum) 
+fn get_precisions(ctx: &glctx, shader_en: GLenum) 
                                         -> HashMap<GLSize,Precision> {
     let mut out = HashMap::<GLSize,Precision>::new();
-    get_prec(&mut out,adata,shader_en,GLSize::FloatHigh,glctx::HIGH_FLOAT);
-    get_prec(&mut out,adata,shader_en,GLSize::FloatMed,glctx::MEDIUM_FLOAT);
-    get_prec(&mut out,adata,shader_en,GLSize::FloatLow,glctx::LOW_FLOAT);
-    get_prec(&mut out,adata,shader_en,GLSize::IntHigh,glctx::HIGH_INT);
-    get_prec(&mut out,adata,shader_en,GLSize::IntMed,glctx::MEDIUM_INT);
-    get_prec(&mut out,adata,shader_en,GLSize::IntLow,glctx::LOW_INT);
+    get_prec(&mut out,ctx,shader_en,GLSize::FloatHigh,glctx::HIGH_FLOAT);
+    get_prec(&mut out,ctx,shader_en,GLSize::FloatMed,glctx::MEDIUM_FLOAT);
+    get_prec(&mut out,ctx,shader_en,GLSize::FloatLow,glctx::LOW_FLOAT);
+    get_prec(&mut out,ctx,shader_en,GLSize::IntHigh,glctx::HIGH_INT);
+    get_prec(&mut out,ctx,shader_en,GLSize::IntMed,glctx::MEDIUM_INT);
+    get_prec(&mut out,ctx,shader_en,GLSize::IntLow,glctx::LOW_INT);
     out
 }
 
 impl GPUSpecImpl {
-    pub fn new(adata: &ArenaData) -> GPUSpecImpl {
+    pub fn new(ctx: &glctx) -> GPUSpecImpl {
         GPUSpecImpl {
-            vert_precs: get_precisions(adata,glctx::VERTEX_SHADER),
-            frag_precs: get_precisions(adata,glctx::FRAGMENT_SHADER)
+            vert_precs: get_precisions(ctx,glctx::VERTEX_SHADER),
+            frag_precs: get_precisions(ctx,glctx::FRAGMENT_SHADER)
         }
     }
     
