@@ -1,13 +1,13 @@
-use std::rc::{ Rc, Weak };
+use std::rc::Rc;
 use std::cell::RefCell;
 
 use stdweb::web::window;
 
-use controller::global::{ CanvasState, CanvasRunner };
+use controller::global::CanvasRunnerWeak;
 use controller::output::jank::JankBuster;
 
 struct ProjectorImpl {
-    cg: Weak<RefCell<CanvasRunner>>,
+    cg: CanvasRunnerWeak,
     phase: u32,
     old_time: Option<f64>,
     jank: JankBuster
@@ -17,16 +17,16 @@ struct ProjectorImpl {
 pub struct Projector(Rc<RefCell<ProjectorImpl>>);
 
 impl Projector {
-    pub fn new(cg: &Rc<RefCell<CanvasRunner>>) -> Projector {
+    pub fn new(cg: &CanvasRunnerWeak) -> Projector {
         let mut out = Projector(Rc::new(RefCell::new(ProjectorImpl {
-            cg: Rc::downgrade(cg),
+            cg: cg.clone(),
             phase: 0,
             old_time: None,
             jank: JankBuster::new(),
         })));
         out.another();
         out
-    }    
+    }
 
     fn another(&mut self) {
         let c = self.clone();
@@ -35,14 +35,10 @@ impl Projector {
         );
     }
 
-    fn canvas_frame(&mut self, cg: &mut CanvasState) {
-        cg.draw();
-    }
-
     fn machine_frame(&mut self, time: f64) {
         let cg = self.0.borrow_mut().cg.upgrade();
         let mut refresh = false;
-        if let Some(cg) = cg {
+        if let Some(mut cg) = cg {
             {
                 let mut pi = self.0.borrow_mut();
                 let gear = pi.jank.gear();
@@ -58,14 +54,12 @@ impl Projector {
                 }
             }
             if refresh {
-                cg.borrow_mut().run_timers(time);
-                let cg = &mut cg.borrow_mut();
-                self.canvas_frame(&mut cg.cg.lock().unwrap());
+                cg.run_timers(time);
+                cg.draw();
             }
             self.another();
         } else {
             debug!("projector","stopping");
         }
     }
-
 }

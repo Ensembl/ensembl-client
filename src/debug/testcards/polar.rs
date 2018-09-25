@@ -165,11 +165,13 @@ fn track(c: &mut Component, p: &Palette, t: i32) {
 pub fn testcard_polar(g: Arc<Mutex<Global>>) {
     let g = &mut g.lock().unwrap();
 
-    let p = g.with_compo(|c| Palette {
-        lato_12: FCFont::new(12,"Lato",FontVariety::Normal),
-        lato_18: FCFont::new(12,"Lato",FontVariety::Bold),
-        white: ColourSpec::Spot(Spot::new(c,&Colour(255,255,255))),
-        grey: ColourSpec::Spot(Spot::new(c,&Colour(199,208,213)))
+    let p = g.with_state(|s| {
+        s.with_compo(|c| Palette {
+            lato_12: FCFont::new(12,"Lato",FontVariety::Normal),
+            lato_18: FCFont::new(12,"Lato",FontVariety::Bold),
+            white: ColourSpec::Spot(Spot::new(c,&Colour(255,255,255))),
+            grey: ColourSpec::Spot(Spot::new(c,&Colour(199,208,213)))
+        })
     }).unwrap();
             
     let mut c = Component::new(Rc::new(StateFixed(StateValue::On())));
@@ -181,9 +183,8 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
     for t in 0..TRACKS {
         track(&mut c,&p,t);
     }
-    g.with_compo(|co| {
-        co.add_component(c);
+    g.with_state(|s| {
+        s.with_compo(|co| { co.add_component(c); });
+        s.run_events(vec!{ Event::Zoom(2.5) });
     });
-
-    g.add_events(vec!{ Event::Zoom(2.5) });
 }

@@ -11,8 +11,7 @@ use stdweb::web::{
     IHtmlElement,
     IElement,
     IParentNode,
-    INode,
-    Node
+    INode
 };
 use types::{ CPixel, cpixel };
 

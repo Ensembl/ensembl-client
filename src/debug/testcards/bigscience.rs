@@ -82,11 +82,13 @@ pub fn big_science(g: &mut Global, onoff: bool) {
     });
 
 
-    let (red_spot, green_spot) = g.with_compo(|c| {
-        (Spot::new(c,&Colour(255,100,50)),
-         Spot::new(c,&Colour(50,255,150)))
+    let (red_spot, green_spot) = 
+    g.with_state(|s| {
+        s.with_compo(|c| {
+            (Spot::new(c,&Colour(255,100,50)),
+             Spot::new(c,&Colour(50,255,150)))
+        })
     }).unwrap();
-        
     let fc_font = FCFont::new(12,"Lato",FontVariety::Normal);
 
     let mut c = Component::new(Rc::new(StateFixed(StateValue::On())));
@@ -276,11 +278,12 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                             &cedge(BOTTOMRIGHT,cpixel(0,0)),
                             &cpixel(10,10).anchor(A_BOTTOMRIGHT)));
 
-
-    g.with_compo(|co| {
-        co.add_component(c);
-        co.add_component(c_odd);
-        co.add_component(c_even);
+    g.with_state(|s| {
+        s.with_compo(|co| {
+            co.add_component(c);
+            co.add_component(c_odd);
+            co.add_component(c_even);
+        });
+        s.run_events(vec!{ Event::Zoom(2.5) });
     });
-    g.add_events(vec!{ Event::Zoom(2.5) });
 }
