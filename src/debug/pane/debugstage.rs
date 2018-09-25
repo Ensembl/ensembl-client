@@ -12,7 +12,10 @@ use stdweb::unstable::TryInto;
 
 use controller::global::Global;
 use dom::domutil;
-use dom::event::{ EventListener, EventControl, EventType, EventData, ICustomEvent };
+use dom::event::{
+    EventListener, EventControl, EventType, EventData, ICustomEvent,
+    Target
+};
 use debug::testcards;
 use debug::pane::console::DebugConsole;
 use debug::pane::buttons::{ DebugButtons, ButtonAction };
@@ -31,10 +34,10 @@ impl BodyEventListener {
 }
 
 impl EventListener<()> for BodyEventListener {    
-    fn receive(&mut self, el: &Element, ev: &EventData, _p: &()) {
+    fn receive(&mut self, el: &Target, ev: &EventData, _p: &()) {
         self.val += 1;
         debug!("test event","{} {:?} {:?}",self.val,el,ev);
-        if let EventData::CustomEvent(_,n,e) = ev {
+        if let EventData::CustomEvent(_,n,_) = ev {
             if n == "bpane-start" {
                 setup_stage_debug();
             }
@@ -47,7 +50,7 @@ pub struct DebugPanelListener {
 }
 
 impl EventListener<()> for DebugPanelListener {
-    fn receive(&mut self, _el: &Element, ev: &EventData, _p: &()) {
+    fn receive(&mut self, _el: &Target, ev: &EventData, _p: &()) {
         if let EventData::CustomEvent(_,n,e) = ev {
             if n == "refresh" {
                 let mut keys = None;
@@ -83,7 +86,7 @@ impl DebugPanelImpl {
     pub fn new(base: &Element) -> Rc<RefCell<DebugPanelImpl>> {
         debug!("global","new debug panel");
         debug!("debug panel","new debug panel");
-        let mut bec = EventControl::new(Box::new(BodyEventListener::new()));
+        let mut bec = EventControl::new(Box::new(BodyEventListener::new()),());
         bec.add_event(EventType::KeyPressEvent);
         bec.add_event(EventType::MouseClickEvent);
         bec.add_event(EventType::CustomEvent("custom".to_string()));
@@ -103,7 +106,7 @@ impl DebugPanelImpl {
         self.console2 = Some(DebugConsole::new(&cons_el,&self.base));
         self.console2.as_mut().unwrap().select("hello");
         self.console2.as_mut().unwrap().add("hello","world");
-        self.evc = Some(EventControl::new(Box::new(DebugPanelListener{ panel: p.clone() })));
+        self.evc = Some(EventControl::new(Box::new(DebugPanelListener{ panel: p.clone() }),()));
         self.evc.as_mut().unwrap().add_event(EventType::CustomEvent("refresh".to_string()));
         self.evc.as_mut().unwrap().add_element(&self.base,());
         self.add_event();
@@ -372,7 +375,7 @@ pub fn debug_panel_trigger_button(idx: usize) {
 }
 
 pub fn setup_global() {
-    let mut bec = EventControl::new(Box::new(BodyEventListener::new()));
+    let mut bec = EventControl::new(Box::new(BodyEventListener::new()),());
     bec.add_event(EventType::CustomEvent("bpane-start".to_string()));
     bec.add_element(&domutil::query_select("body"),());
 }

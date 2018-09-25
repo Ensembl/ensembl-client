@@ -2,7 +2,6 @@ TODO:
 
 tab deselected jank
 font load race
-reload on resize event
 
 arena/leaf separation
 more than on/off
@@ -18,7 +17,6 @@ only render if objects
 
 mousemove on/off
 
-inertia
 visual improvements
 focused zoom
 
@@ -27,3 +25,5 @@ verify event unregister
 transparency for non-text drawings via superclass
 
 merge fix and pintape textures (to add anchors to former)
+
+fix/remove parameter passing in events.

@@ -44,11 +44,17 @@ impl CanvasRunner {
         imp.timers.run(&mut state.lock().unwrap(), time);
     }
     
-    pub fn start_projector(&mut self) {
-        let w = CanvasRunnerWeak(Arc::downgrade(&self.0.clone()));
-        let proj = Projector::new(&w);
-        let mut imp = self.0.lock().unwrap();
-        imp.projector = Some(proj);
+    pub fn init(&mut self) {
+        /* start projector */
+        {
+            let w = CanvasRunnerWeak(Arc::downgrade(&self.0.clone()));
+            let proj = Projector::new(&w);
+            let mut imp = self.0.lock().unwrap();
+            imp.projector = Some(proj);
+        }
+        /* size canvas */
+        let r = self.state();
+        r.lock().unwrap().check_size();
     }
     
     pub fn draw(&mut self) {
