@@ -23,10 +23,8 @@ pub fn testcard_text(g: Arc<Mutex<Global>>) {
     c.add_shape(tape_texture(tx,&cleaf(0.,100).y_edge(AxisSense::Pos),
                 &cpixel(0,0),&cpixel(1,1).anchor(A_TOPLEFT)));
 
-
-    g.with_compo(|co| {
-        co.add_component(c);
+    g.with_state(|s| {
+        s.with_compo(|co| { co.add_component(c); });
+        s.run_events(vec!{ Event::Zoom(2.5) });
     });
-
-    g.add_events(vec!{ Event::Zoom(2.5) });
 }

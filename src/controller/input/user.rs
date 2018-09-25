@@ -76,8 +76,8 @@ impl EventListener<()> for UserEventListenerBody {
 pub fn register_user_events(gc: &mut CanvasRunner, el: &Element) {
     event::disable_context_menu();
     let html_el: HtmlElement = el.clone().try_into().unwrap();
-    let mp = Arc::new(Mutex::new(MousePhysics::new(&mut gc.timers)));
-    let uel = UserEventListener::new(&gc.cg,&html_el,&mp);
+    let mp = Arc::new(Mutex::new(MousePhysics::new(gc)));
+    let uel = UserEventListener::new(&gc.state(),&html_el,&mp);
     let mut ec_canv = EventControl::new(Box::new(uel));
     ec_canv.add_event(EventType::MouseClickEvent);
     ec_canv.add_event(EventType::MouseDownEvent);
@@ -88,6 +88,6 @@ pub fn register_user_events(gc: &mut CanvasRunner, el: &Element) {
     let mut ec_body = EventControl::new(Box::new(uel_body));
     ec_body.add_event(EventType::MouseUpEvent);
     ec_body.add_element(&domutil::query_select("body"),());        
-    gc.cg.lock().unwrap().add_control(Box::new(ec_canv));
-    gc.cg.lock().unwrap().add_control(Box::new(ec_body));
+    gc.add_control(Box::new(ec_canv));
+    gc.add_control(Box::new(ec_body));
 }

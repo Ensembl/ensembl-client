@@ -1,7 +1,7 @@
 use std::sync::{ Arc, Mutex };
 use types::{ CFraction, cfraction, CPixel };
-use controller::global::CanvasState;
-use controller::input::{ Event, events_run, Timers };
+use controller::global::{ CanvasState, CanvasRunner };
+use controller::input::{ Event, events_run };
 use types::{ Move, Distance, Units };
 
 pub struct MousePhysicsImpl {
@@ -54,7 +54,7 @@ impl MousePhysicsImpl {
 }
 
 impl MousePhysics {
-    pub fn new(timers: &mut Timers) -> MousePhysics {
+    pub fn new(ru: &mut CanvasRunner) -> MousePhysics {
         let out = MousePhysics(Arc::new(Mutex::new(MousePhysicsImpl {
             last_t: None,
             force_origin: None,
@@ -64,7 +64,7 @@ impl MousePhysics {
             vel: cfraction(0.,0.),
         })));
         let c = out.clone();
-        timers.add(move |cg,t| c.clone().tick(cg,t));
+        ru.add_timer(move |cg,t| c.clone().tick(cg,t));
         out
     }
 

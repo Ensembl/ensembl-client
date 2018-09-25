@@ -94,9 +94,9 @@ impl EventListener<()> for DirectEventListener {
 }
 
 pub fn register_direct_events(gc: &mut CanvasRunner, el: &Element) {
-    let dlr = DirectEventListener::new(&gc.cg);
+    let dlr = DirectEventListener::new(&gc.state());
     let mut ec = EventControl::new(Box::new(dlr));
     ec.add_event(EventType::CustomEvent("bpane".to_string()));
     ec.add_element(el,());
-    gc.cg.lock().unwrap().add_control(Box::new(ec));
+    gc.add_control(Box::new(ec));
 }

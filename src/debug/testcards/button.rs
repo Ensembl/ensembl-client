@@ -33,5 +33,4 @@ pub fn testcard_button(g: Arc<Mutex<Global>>) {
     button!("zero",|| { debug!("global","zero") });
 
     big_science(&mut g.lock().unwrap(),false);
-    g.lock().unwrap().draw();
 }
