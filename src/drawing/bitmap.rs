@@ -1,8 +1,8 @@
 use std::rc::Rc;
-use arena::{ ArenaCanvases };
 
 use types::{ CPixel, area_size };
 
+use drawing::FlatCanvas;
 use drawing::drawingimpl::{
     Artist,
 };
@@ -19,11 +19,11 @@ impl BitmapArtist {
 }
 
 impl Artist for BitmapArtist {
-    fn draw(&self, canvs: &mut ArenaCanvases, pos: CPixel) {
-        canvs.flat.bitmap(&self.data,area_size(pos,self.size));
+    fn draw(&self, canvs: &FlatCanvas, pos: CPixel) {
+        canvs.bitmap(&self.data,area_size(pos,self.size));
     }
     
-    fn measure(&self, _canvas: &mut ArenaCanvases) -> CPixel {
+    fn measure(&self, _canvas: &FlatCanvas) -> CPixel {
         self.size
     }
 }

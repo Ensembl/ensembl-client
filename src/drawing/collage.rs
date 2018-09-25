@@ -1,7 +1,7 @@
 use std::rc::Rc;
-use arena::{ ArenaCanvases };
 use types::{ CPixel, RPixel, Colour };
 
+use drawing::FlatCanvas;
 use drawing::drawingimpl::{
     Artist,
 };
@@ -22,14 +22,14 @@ impl CollageArtist {
 }
 
 impl Artist for CollageArtist {
-    fn draw(&self, canvs: &mut ArenaCanvases, pos: CPixel) {
+    fn draw(&self, canvs: &FlatCanvas, pos: CPixel) {
         for part in &self.parts {
             let loc = part.get_offset();
             part.draw(canvs,pos+loc);
         }
     }
     
-    fn measure(&self, _canvas: &mut ArenaCanvases) -> CPixel {
+    fn measure(&self, _canvas: &FlatCanvas) -> CPixel {
         self.size
     }
 }
@@ -48,12 +48,12 @@ impl Mark for RectMark {
 }
 
 impl Artist for RectMark {
-    fn measure(&self, _canvas: &mut ArenaCanvases) -> CPixel {
+    fn measure(&self, _canvas: &FlatCanvas) -> CPixel {
         self.coords.area()
     }
 
-    fn draw(&self, canvs: &mut ArenaCanvases, pos: CPixel) {
-        canvs.flat.rectangle(self.coords.at_origin() + pos, &self.colour);
+    fn draw(&self, canvs: &FlatCanvas, pos: CPixel) {
+        canvs.rectangle(self.coords.at_origin() + pos, &self.colour);
     }
 }
 

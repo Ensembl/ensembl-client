@@ -1,9 +1,6 @@
 use std::collections::HashMap;
 
-use stdweb::web::HtmlElement;
-
-use arena::ArenaCanvases;
-use dom::domutil;
+use arena::ArenaFlatCanvas;
 use program::UniformValue;
 use types::{ CFraction, CPixel, cfraction, cpixel };
 
@@ -49,10 +46,10 @@ impl Stage {
         self.dims = *size;
     }
 
-    pub fn get_uniforms(&self, canvs: &ArenaCanvases) -> HashMap<&str,UniformValue> {
+    pub fn get_uniforms(&self, canvs: &ArenaFlatCanvas) -> HashMap<&str,UniformValue> {
         console!("size={:?}",self.dims);
         hashmap! {
-            "uSampler" => UniformValue::Int(canvs.idx),
+            "uSampler" => UniformValue::Int(0), // XXX
             "uStageHpos" => UniformValue::Float(self.pos.0),
             "uStageVpos" => UniformValue::Float(self.pos.1 + self.dims.1 as f32/2.),
             "uStageZoom" => UniformValue::Float(self.get_linear_zoom()*2.),

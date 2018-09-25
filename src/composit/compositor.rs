@@ -4,32 +4,32 @@ use std::collections::HashMap;
 
 use arena::{ ArenaData, ArenaPrograms };
 use composit::{ Component, StateManager };
-use drawing::{ Drawing, LeafDrawingManager };
+use drawing::{ Drawing, FlatCanvasManager };
 use shape::ShapeContext;
 use composit::state::ComponentRedo;
 
 pub struct DrawingSession {
-    drawman: LeafDrawingManager,
+    flatcanvman: FlatCanvasManager,
     all_drawings: HashMap<u32,Vec<Option<Drawing>>>
 }
 
 impl DrawingSession {
     fn new() -> DrawingSession {
         DrawingSession {
-            drawman: LeafDrawingManager::new(),
+            flatcanvman: FlatCanvasManager::new(),
             all_drawings: HashMap::<u32,Vec<Option<Drawing>>>::new(),
         }
     }
 
     fn redraw_campaign(&mut self, adata: &mut ArenaData, idx: u32, c: &mut Component) {
-        self.all_drawings.insert(idx,c.draw_drawings(&mut self.drawman,adata));
+        self.all_drawings.insert(idx,c.draw_drawings(&mut self.flatcanvman,adata));
     }
     
     fn finalise(&mut self, adata: &mut ArenaData) {
-        let size = self.drawman.allocate();
+        let size = self.flatcanvman.allocate();
         FlatCanvas::reset();
-        adata.canvases.flat = Rc::new(FlatCanvas::create(size.0,size.1));
-        self.drawman.draw(&mut adata.canvases);
+        let canv = adata.flat_allocate(size);
+        self.flatcanvman.draw(canv);
     }
     
     fn drawings_for(&self, idx: u32) -> &Vec<Option<Drawing>> {
@@ -103,7 +103,7 @@ impl Compositor {
         for (i,c) in &mut self.campaigns {
             if c.is_on() {
                 let d = self.ds.drawings_for(*i);
-                c.into_objects(progs,&self.ds.drawman,adata,d);
+                c.into_objects(progs,&self.ds.flatcanvman,adata,d);
             }
         }
     }
