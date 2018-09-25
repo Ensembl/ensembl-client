@@ -7,21 +7,23 @@ use serde_json::Value as JSONValue;
 use stdweb::Value as Value;
 use stdweb::unstable::TryInto;
 use stdweb::Reference;
-use stdweb::web::Element;
+use stdweb::web::{ window, Element };
 use stdweb::web::event::{ IEvent, IUiEvent, IMouseEvent, IKeyboardEvent };
 use types::{ CPixel, cpixel };
 
 pub struct EventControl<T> {
     handle: Arc<Mutex<Box<EventListener<T>>>>,
     mappings: Vec<EventType>,
+    window: ElementEvents<T>,
     current: Vec<ElementEvents<T>>
 }
 
 impl<T: 'static> EventControl<T> {
-    pub fn new(handle: Box<EventListener<T>>) -> EventControl<T> {
+    pub fn new(handle: Box<EventListener<T>>, p: T) -> EventControl<T> {
         EventControl {
             handle: Arc::new(Mutex::new(handle)),
             mappings: Vec::<EventType>::new(),
+            window: ElementEvents::<T>::new(&Target::Window,p),
             current: Vec::<ElementEvents<T>>::new()
         }
     }
@@ -31,14 +33,19 @@ impl<T: 'static> EventControl<T> {
             ee.clear();
         }
         self.current.clear();
+        self.window.clear();
     }
     
     pub fn add_event(&mut self, typ: EventType) {
-        self.mappings.push(typ);
+        if window_event(&typ) {
+            self.window.add_event(&typ,&self.handle);
+        } else {
+            self.mappings.push(typ);
+        }
     }
     
     pub fn add_element(&mut self, el: &Element, t: T) {
-        let mut m = ElementEvents::new(el,t);
+        let mut m = ElementEvents::new(&Target::Element(el.clone()),t);
         for name in &self.mappings {
             m.add_event(name,&self.handle);
         }
@@ -55,14 +62,23 @@ pub enum EventType {
     MouseWheelEvent,
     MouseMoveEvent,
     KeyPressEvent,
+    ResizeEvent,
     CustomEvent(String)
+}
+
+fn window_event(et: &EventType) -> bool {
+    match et {
+        EventType::ResizeEvent => true,
+        _ => false
+    }
 }
 
 #[derive(Debug)]
 pub enum EventData {
     MouseEvent(EventType,MouseData),
     KeyboardEvent(EventType,KeyboardData),
-    CustomEvent(EventType,String,CustomData)
+    CustomEvent(EventType,String,CustomData),
+    GenericEvent(EventType),
 }
 
 impl EventData {
@@ -81,6 +97,8 @@ impl EventData {
                 
             EventType::CustomEvent(n) =>
                 EventData::CustomEvent(et.clone(),n.clone(),CustomData(e)),
+            EventType::ResizeEvent =>
+                EventData::GenericEvent(et.clone())
         }
     }
 }
@@ -94,6 +112,7 @@ impl EventType {
             EventType::MouseMoveEvent => "mousemove",
             EventType::KeyPressEvent => "keypress",
             EventType::MouseWheelEvent => "wheel",
+            EventType::ResizeEvent => "resize",
             EventType::CustomEvent(n) => &n
         }
     }
@@ -172,14 +191,20 @@ struct JsEventKiller {
     cb_js: Reference
 }
 
+#[derive(Clone,Debug)]
+pub enum Target {
+    Element(Element),
+    Window
+}
+
 pub struct ElementEvents<T> {
-    el: Element,
+    el: Target,
     kills: Vec<JsEventKiller>,
     payload: Rc<T>
 }
 
 impl<T: 'static> ElementEvents<T> {
-    fn new(el: &Element, p: T) -> ElementEvents<T> {
+    fn new(el: &Target, p: T) -> ElementEvents<T> {
         ElementEvents {
             el: el.clone(),
             kills: Vec::<JsEventKiller>::new(),
@@ -187,9 +212,16 @@ impl<T: 'static> ElementEvents<T> {
         }
     }
     
+    fn as_ref(&self) -> Reference {
+        match &self.el {
+            Target::Element(el) => el.as_ref().clone(),
+            Target::Window => window().as_ref().clone()
+        }
+    }
+    
     pub fn clear(&mut self) {
-        let el = self.el.as_ref();
         for ek in &self.kills {
+            let el = self.as_ref();
             let name = &ek.name;
             let cb_js = &ek.cb_js;
             js! { @(no_return)
@@ -209,10 +241,14 @@ impl<T: 'static> ElementEvents<T> {
             let ed = EventData::new(typc.clone(),e);
             evl.lock().unwrap().receive(&el,&ed,&p);
         }};
-        let v = js! {
-            var cb = @{cb};
-            @{el.as_ref()}.addEventListener(@{&name},cb);
-            return cb;
+        let v;
+        {
+            let elr = self.as_ref();
+            v = js! {
+                var cb = @{cb};
+                @{elr}.addEventListener(@{&name},cb);
+                return cb;
+            };
         };
         let cb_js : Reference = v.try_into().unwrap();
         self.kills.push(JsEventKiller {
@@ -223,12 +259,11 @@ impl<T: 'static> ElementEvents<T> {
 }
 
 pub trait EventListener<T> {
-    fn receive(&mut self, _el: &Element, _ev: &EventData, _p: &T) {}
+    fn receive(&mut self, _el: &Target, _ev: &EventData, _p: &T) {}
 }
 
 pub fn disable_context_menu() {
     js! { document.addEventListener("contextmenu",function(e) {
-            console.log("aha");
             e.stopPropagation();
             e.preventDefault();
             return false;

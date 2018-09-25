@@ -1,11 +1,12 @@
-use types::{ Move, Units, Axis };
+use types::{ Move, Units, Axis, Dot };
 use controller::global::CanvasState;
 
 #[derive(Debug,Clone,Copy)]
 pub enum Event {
     Noop,
     Move(Move<f32,f32>),
-    Zoom(f32)
+    Zoom(f32),
+    Resize(Dot<i32,i32>)
 }
 
 fn exe_move_event(cg: &CanvasState, v: Move<f32,f32>) {
@@ -25,11 +26,20 @@ fn exe_zoom_by_event(cg: &CanvasState, z: f32) {
     });
 }
 
+fn exe_resize(cg: &CanvasState, sz: Dot<i32,i32>) {    
+    console!("sz={:?}",sz);
+    cg.with_stage(|s| {
+        s.set_size(&sz);
+    });
+    cg.force_size(sz);
+}
+
 pub fn events_run(cg: &CanvasState, evs: Vec<Event>) {
     for ev in evs {
         match ev {
             Event::Move(v) => exe_move_event(cg,v),
             Event::Zoom(z) => exe_zoom_by_event(cg,z),
+            Event::Resize(sz) => exe_resize(cg,sz),
             Event::Noop => ()
         }
     }

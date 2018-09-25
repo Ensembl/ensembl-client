@@ -2,13 +2,14 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::sync::{ Arc, Mutex };
 
+use stdweb::unstable::TryInto;
 use stdweb::web::{ IElement, HtmlElement, Element };
 
 use arena::Arena;
 use composit::{ Compositor, StateManager };
 use controller::input::{
-    register_direct_events, register_user_events, Event, events_run,
-    Timers, Timer
+    register_direct_events, register_user_events, register_dom_events,
+    Event, events_run, Timers, Timer
 };
 use controller::global::{ CanvasRunner, CanvasState };
 use controller::output::Projector;
@@ -36,36 +37,27 @@ impl Global {
         }
     }
         
-    fn setup_dom(&mut self, el: &Element) -> (Element,String) {
+    fn setup_dom(&mut self, el: &Element) -> (HtmlElement,String) {
         self.inst += 1;
         domutil::inner_html(el,CANVAS);
-        let canv_el = domutil::query_selector(el,"canvas");
+        let canv_el : HtmlElement = domutil::query_selector(el,"canvas").try_into().unwrap();
         debug!("global","start card {}",self.inst);
         let inst_s = format!("{}",self.inst);
         self.root.set_attribute("data-inst",&inst_s).ok();
         (canv_el,inst_s)
     }
-
-    fn clear_old_events(&mut self) {
-        self.cg.as_mut().map(|cg| { cg.unregister() });
-    }
     
     pub fn reset(&mut self) -> String {
-        let el = &self.root.clone().into();
-        self.clear_old_events();
-        let (canv_el,inst_s) = self.setup_dom(el);
-        let arena = Arc::new(Mutex::new(Arena::new(&canv_el)));
-        let compo = Arc::new(Mutex::new(Compositor::new()));
-        let stage = Arc::new(Mutex::new(Stage::new(&self.root)));
-        let mut cg = CanvasRunner::new(
-                CanvasState {
-                    arena, stage, compo,
-                    state: self.state.clone(),
-                }
-        );
+        let el : HtmlElement = self.root.clone().into();
+        let elel : Element = self.root.clone().into();
+        self.cg.as_mut().map(|cg| { cg.unregister() });
+        let (canv_el,inst_s) = self.setup_dom(&elel);
+        let cs = CanvasState::new(&self.state,&canv_el);
+        let mut cg = CanvasRunner::new(cs);
         register_user_events(&mut cg,&canv_el);
         register_direct_events(&mut cg,&el);
-        cg.start_projector();
+        register_dom_events(&mut cg,&canv_el);
+        cg.init();
         self.cg = Some(cg);
         inst_s
     }

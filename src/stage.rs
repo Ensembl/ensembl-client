@@ -13,19 +13,17 @@ pub struct Stage {
     pub pos: CFraction,
     zoom: f32,
     linzoom: f32,
-    el: HtmlElement,
 }
 
 impl Stage {
-    pub fn new(el: &HtmlElement) -> Stage {
+    pub fn new() -> Stage {
         let size = cpixel(0,0);
         let mut out = Stage {
-            pos: cfraction(0.,0.), el: el.clone(),
+            pos: cfraction(0.,0.),
             zoom: 0., linzoom: 0.,
             dims: size
         };
         out.set_zoom(0.);
-        out.recalc_size();
         out
     }
 
@@ -47,11 +45,12 @@ impl Stage {
         self.dims
     }
 
-    pub fn recalc_size(&mut self) {
-        self.dims = domutil::size(&self.el);
+    pub fn set_size(&mut self, size: &CPixel) {
+        self.dims = *size;
     }
 
     pub fn get_uniforms(&self, canvs: &ArenaCanvases) -> HashMap<&str,UniformValue> {
+        console!("size={:?}",self.dims);
         hashmap! {
             "uSampler" => UniformValue::Int(canvs.idx),
             "uStageHpos" => UniformValue::Float(self.pos.0),

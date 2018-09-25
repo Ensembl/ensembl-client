@@ -2,9 +2,8 @@ use std::collections::HashMap;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use dom::prepare_canvas;
-
-use stdweb::web::Element;
+use stdweb::unstable::TryInto;
+use stdweb::web::HtmlElement;
 use webgl_rendering_context::WebGLRenderingContext as glctx;
 
 use drawing::FlatCanvas;
@@ -63,8 +62,8 @@ fn build_programs(ctx: &glctx) -> ArenaPrograms {
 }
 
 impl Arena {
-    pub fn new(el: &Element) -> Arena {
-        let canvas = prepare_canvas(el);
+    pub fn new(el: &HtmlElement) -> Arena {
+        let canvas = el.clone().try_into().unwrap();
         let ctx = wglraw::prepare_context(&canvas);
         let flat = Rc::new(FlatCanvas::create(2,2));
         let progs = build_programs(&ctx);
@@ -107,5 +106,11 @@ impl Arena {
             }
             geom.draw(datam);
         }
+    }
+    
+    pub fn update_viewport(&self, s: &Stage) {
+        let datam = &mut self.data.borrow_mut();
+        let sz = s.get_size();
+        datam.ctx.viewport(0,0,sz.0,sz.1);
     }
 }

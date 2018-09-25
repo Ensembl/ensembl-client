@@ -1,13 +1,13 @@
 use std::sync::{ Arc, Mutex };
 
 use serde_json::Value as JSONValue;
-use stdweb::web::{ Element };
+use stdweb::web::{ Element, HtmlElement };
 
 use controller::global::{ CanvasState, CanvasRunner };
 use controller::input::{ events_run, Event };
 use dom::event::{ 
     EventListener, EventControl, EventType, EventData, 
-    ICustomEvent
+    ICustomEvent, Target
 };
 use types::{ Move, Distance, Units };
 
@@ -83,7 +83,7 @@ impl DirectEventListener {
 }
 
 impl EventListener<()> for DirectEventListener {    
-    fn receive(&mut self, _el: &Element,  e: &EventData, _idx: &()) {
+    fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
         let evs = match e {
             EventData::CustomEvent(_,_,c) =>
                 custom_make_events(&c.details().unwrap()),
@@ -93,10 +93,11 @@ impl EventListener<()> for DirectEventListener {
     }
 }
 
-pub fn register_direct_events(gc: &mut CanvasRunner, el: &Element) {
+pub fn register_direct_events(gc: &mut CanvasRunner, el: &HtmlElement) {
+    let elel : Element = el.clone().into();
     let dlr = DirectEventListener::new(&gc.state());
-    let mut ec = EventControl::new(Box::new(dlr));
+    let mut ec = EventControl::new(Box::new(dlr),());
     ec.add_event(EventType::CustomEvent("bpane".to_string()));
-    ec.add_element(el,());
+    ec.add_element(&elel,());
     gc.add_control(Box::new(ec));
 }

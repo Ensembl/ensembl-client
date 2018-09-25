@@ -6,7 +6,10 @@ use serde_json::Value as JSONValue;
 
 use stdweb::web::Element;
 
-use dom::event::{ EventListener, EventControl, EventType, EventData, ICustomEvent };
+use dom::event::{
+    EventListener, EventControl, EventType, EventData, ICustomEvent,
+    Target
+};
 use dom::domutil;
 
 pub struct DebugFolderEntry {
@@ -139,7 +142,7 @@ impl DebugConsoleImpl {
 }
 
 impl EventListener<()> for DebugConsoleImpl {
-    fn receive(&mut self, _el: &Element, ev: &EventData, _p: &()) {
+    fn receive(&mut self, _el: &Target, ev: &EventData, _p: &()) {
         if let EventData::CustomEvent(_,n,v) = ev {
             let mut data = HashMap::<String,String>::new();
             if let JSONValue::Object(map) = v.details().unwrap() {
@@ -166,7 +169,7 @@ impl EventListener<()> for DebugConsoleImpl {
 struct DebugConsoleListener(Rc<RefCell<DebugConsoleImpl>>);
 
 impl EventListener<()> for DebugConsoleListener {
-    fn receive(&mut self, el: &Element, ev: &EventData, p: &()) {
+    fn receive(&mut self, el: &Target, ev: &EventData, p: &()) {
         self.0.borrow_mut().receive(el,ev,p);
     }
 }
@@ -182,7 +185,7 @@ impl DebugConsole {
         let li = DebugConsoleListener(imp.clone());
         let mut out = DebugConsole {
             imp,
-            evctrl: EventControl::new(Box::new(li))
+            evctrl: EventControl::new(Box::new(li),())
         };
         out.evctrl.add_event(EventType::CustomEvent("add".to_string()));
         out.evctrl.add_event(EventType::CustomEvent("mark".to_string()));
