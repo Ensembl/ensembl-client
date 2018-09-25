@@ -3,7 +3,7 @@ use std::rc::Rc;
 use arena::{ ArenaData, ArenaPrograms };
 use shape::{ Shape };
 use composit::state::{ StateManager, StateExpr, StateValue, ComponentRedo };
-use drawing::{ Drawing, LeafDrawingManager };
+use drawing::{ Drawing, FlatCanvasManager };
 
 pub struct Component {
     prev_value: StateValue,
@@ -43,13 +43,13 @@ impl Component {
     }
     
     pub fn draw_drawings(&mut self,
-                        leafdrawman: &mut LeafDrawingManager,
+                        leafdrawman: &mut FlatCanvasManager,
                         adata: &mut ArenaData) -> Vec<Option<Drawing>> {
         let mut drawings = Vec::<Option<Drawing>>::new();
         for s in &mut self.shapes {
             let mut drawing = None;
             if let Some(a) = s.get_artist() {
-                let d = leafdrawman.add_request(&mut adata.canvases,a);
+                let d = leafdrawman.add_request(a);
                 drawing = Some(d);
             }
             drawings.push(drawing);
@@ -58,12 +58,12 @@ impl Component {
     }
 
     pub fn into_objects(&mut self, progs: &mut ArenaPrograms,
-                        leafdrawman: &LeafDrawingManager,
+                        leafdrawman: &FlatCanvasManager,
                         adata: &mut ArenaData,
                         drawings: &Vec<Option<Drawing>>) {
         for (i,mut s) in self.shapes.iter().enumerate() {
             let req = &drawings[i];
-            let artwork = req.as_ref().map(|r| r.artwork(&leafdrawman,&adata.canvases.flat.size()));
+            let artwork = req.as_ref().map(|r| r.artwork(&leafdrawman));
             let geom_name = s.get_geometry();
             if let Some(geom) = progs.map.get_mut(&geom_name) {                
                 s.into_objects(geom_name,&mut geom.data,artwork);

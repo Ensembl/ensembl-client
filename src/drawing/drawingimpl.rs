@@ -8,9 +8,10 @@ use types::{ CPixel, RPixel, area_size, RFraction, cpixel, area };
 
 use drawing::alloc::Ticket;
 use drawing::alloc::Allocator;
+use drawing::FlatCanvas;
     
 use arena::{
-    ArenaCanvases,
+    ArenaFlatCanvas,
 };
 
 pub struct DrawingHash(u64);
@@ -60,16 +61,16 @@ impl DrawingMemory {
  * Artist is not parameterised, it can draw exactly one thing.
  */
 pub trait Artist {
-    fn draw(&self, canv: &mut ArenaCanvases, pos: CPixel);
-    fn draw_mask(&self, canv: &mut ArenaCanvases, pos: CPixel) {
-        canv.flat.bitmap(&vec!{ 
+    fn draw(&self, canv: &FlatCanvas, pos: CPixel);
+    fn draw_mask(&self, canv: &FlatCanvas, pos: CPixel) {
+        canv.bitmap(&vec!{ 
             0,0,0,255,0,0,0,255,0,0,0,255,
             0,0,0,255,0,0,0,255,0,0,0,255,
             0,0,0,255,0,0,0,255,0,0,0,255,
         }, area_size(pos,cpixel(3,3)));
     }
     fn memoize_key(&self) -> Option<DrawingHash>  { None }
-    fn measure(&self, canv: &mut ArenaCanvases) -> CPixel;
+    fn measure(&self, canv: &FlatCanvas) -> CPixel;
 }
 
 pub struct Artwork {
@@ -98,15 +99,16 @@ impl Drawing {
             }))
     }
 
-    pub fn draw(&self, canvs: &mut ArenaCanvases, leafdrawman: &LeafDrawingManager) {
+    pub fn draw(&self, leafdrawman: &FlatCanvasManager) {
         let pos = leafdrawman.allocator.position(&self.0.ticket);
-        self.0.gen.draw(canvs,pos);
+        self.0.gen.draw(&mut leafdrawman.canvas.unwrap().canvas(),pos);
         let mask_pos = leafdrawman.allocator.position(&self.0.mask_ticket);
-        self.0.gen.draw_mask(canvs,mask_pos + cpixel(1,1));
+        self.0.gen.draw_mask(&mut leafdrawman.canvas.unwrap().canvas(),mask_pos + cpixel(1,1));
     }
 
-    pub fn artwork(&self, src: &LeafDrawingManager, csize: &CPixel) -> Artwork {
-        let cs = csize.as_fraction();
+    pub fn artwork(&self, src: &FlatCanvasManager) -> Artwork {
+        let canvas = src.canvas.unwrap();
+        let cs = canvas.canvas().size().as_fraction();
         let m = self.measure(src);
         let mm = self.measure_mask(src).inset(area(cpixel(1,1),cpixel(1,1)));
         Artwork {
@@ -116,13 +118,13 @@ impl Drawing {
         }
     }
     
-    pub fn measure(&self, src: &LeafDrawingManager) -> RPixel {
+    pub fn measure(&self, src: &FlatCanvasManager) -> RPixel {
         let size = src.allocator.size(&self.0.ticket);
         let pos = src.allocator.position(&self.0.ticket);
         area_size(pos,size)
     }
 
-    pub fn measure_mask(&self, src: &LeafDrawingManager) -> RPixel {
+    pub fn measure_mask(&self, src: &FlatCanvasManager) -> RPixel {
         let size = src.allocator.size(&self.0.mask_ticket);
         let pos = src.allocator.position(&self.0.mask_ticket);
         area_size(pos,size)
@@ -132,28 +134,32 @@ impl Drawing {
 /* Manages DrawingImpls. Single instance in Leaf. Just stores
  * them and calls draw when ready really. Little more than a fancy Vec.
  */
-pub struct LeafDrawingManager {
+pub struct FlatCanvasManager {
+    canvas: Option<ArenaFlatCanvas>,
+    standin: FlatCanvas,
     cache: DrawingMemory,
     tickets: Vec<Drawing>,
     allocator: Allocator,
 }
 
-impl LeafDrawingManager {
-    pub fn new() -> LeafDrawingManager {
-        LeafDrawingManager {
+impl FlatCanvasManager {
+    pub fn new() -> FlatCanvasManager {
+        FlatCanvasManager {
+            canvas: None,
+            standin: FlatCanvas::create(2,2),
             cache: DrawingMemory::new(),
             tickets: Vec::<Drawing>::new(),
             allocator: Allocator::new(20),
         }
     }
 
-    pub fn add_request(&mut self, canvas: &mut ArenaCanvases, a: Rc<Artist>) -> Drawing {
+    pub fn add_request(&mut self, a: Rc<Artist>) -> Drawing {
         let (tdrk,val) = self.cache.lookup(&a);
         if let Some(tdrh) = val {
             // already in cache
             tdrh
         } else {
-            let size = a.measure(canvas);
+            let size = a.measure(&self.canvas.unwrap().canvas());
             let flat_alloc = &mut self.allocator;
             let req = flat_alloc.request(size);
             let mask_req = flat_alloc.request(size + cpixel(2,2));
@@ -167,9 +173,10 @@ impl LeafDrawingManager {
         }
     }
 
-    pub fn draw(&self, canvs: &mut ArenaCanvases) {
+    pub fn draw(&mut self, canvs: ArenaFlatCanvas) {
+        self.canvas = Some(canvs);
         for tr in &self.tickets {
-            tr.draw(canvs,self);
+            tr.draw(self);
         }
     }
     

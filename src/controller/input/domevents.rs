@@ -1,17 +1,13 @@
 use std::sync::{ Arc, Mutex };
 
 use dom::domutil;
-use serde_json::Value as JSONValue;
-use stdweb::unstable::TryInto;
 use stdweb::web::{ Element, HtmlElement };
 
 use controller::global::{ CanvasState, CanvasRunner };
 use controller::input::{ events_run, Event };
 use dom::event::{ 
-    EventListener, EventControl, EventType, EventData, 
-    ICustomEvent, Target
+    EventListener, EventControl, EventType, EventData, Target
 };
-use types::{ Move, Distance, Units };
 
 pub struct DomEventListener {
     el: HtmlElement,
@@ -28,7 +24,6 @@ impl EventListener<()> for DomEventListener {
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
         let evs = match e {
             EventData::GenericEvent(EventType::ResizeEvent) => {
-                console!("resize! A");
                 vec! {
                     Event::Resize(domutil::size(&self.el))
                 }

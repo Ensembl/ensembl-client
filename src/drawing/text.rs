@@ -1,7 +1,6 @@
 use std::rc::Rc;
 
-use arena::ArenaCanvases;
-use drawing::{ FCFont, Artist };
+use drawing::{ FCFont, Artist, FlatCanvas };
 use drawing::drawingimpl::DrawingHash;
 use types::{ Colour, CPixel };
 
@@ -26,20 +25,20 @@ impl TextArtist {
 }
 
 impl Artist for TextArtist {
-    fn draw(&self, canvs: &mut ArenaCanvases, pos: CPixel) {
-        canvs.flat.text(&self.chars,pos,&self.font, &self.colour, &self.background);
+    fn draw(&self, canvs: &FlatCanvas, pos: CPixel) {
+        canvs.text(&self.chars,pos,&self.font, &self.colour, &self.background);
     }
         
-    fn draw_mask(&self, canvs: &mut ArenaCanvases, pos: CPixel) {
-        canvs.flat.text(&self.chars,pos,&self.font, &Colour(0,0,0), &Colour(255,255,255));
+    fn draw_mask(&self, canvs: &FlatCanvas, pos: CPixel) {
+        canvs.text(&self.chars,pos,&self.font, &Colour(0,0,0), &Colour(255,255,255));
     }
     
     fn memoize_key(&self) -> Option<DrawingHash> {
         Some(DrawingHash::new(( &self.chars, &self.font, &self.colour )))
     }
     
-    fn measure(&self, canvas: &mut ArenaCanvases) -> CPixel {
-        canvas.flat.measure(&self.chars,&self.font)
+    fn measure(&self, canvas: &FlatCanvas) -> CPixel {
+        canvas.measure(&self.chars,&self.font)
     }
 }
 

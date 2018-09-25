@@ -60,13 +60,13 @@ const TEXIDS : [u32;8] = [
 impl Object for ObjectCanvasTexture {
     fn obj_final(&mut self, _batch: &DataBatch, adata: &ArenaData) {
         let canvases = &adata.canvases;
-        self.texture = Some(wglraw::canvas_texture(&adata.ctx,canvases.flat.element()));
+        self.texture = Some(wglraw::canvas_texture(&adata.ctx,canvases[0].canvas().element())); // XXX
     }
 
     fn execute(&self, adata : &ArenaData, _batch: &DataBatch) {
         let canvases = &adata.canvases;
         if let Some(ref texture) = self.texture {
-            adata.ctx.active_texture(TEXIDS[canvases.idx as usize]);
+            adata.ctx.active_texture(TEXIDS[0]); // XXX
             adata.ctx.bind_texture(glctx::TEXTURE_2D,Some(&texture));
         }
     }    

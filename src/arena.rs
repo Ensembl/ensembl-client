@@ -11,16 +11,30 @@ use wglraw;
 use stage::Stage;
 use program::{ Program, GPUSpec, ProgramType };
 use composit::{ StateManager, Compositor };
+use types::{ Dot };
 
-pub struct ArenaCanvases {
-    pub flat: Rc<FlatCanvas>,
-    pub idx: i32,
+pub struct ArenaFlatCanvas(Rc<FlatCanvas>);
+
+impl ArenaFlatCanvas {
+    pub fn canvas(&self) -> Rc<FlatCanvas> { self.0 }
 }
 
 #[allow(dead_code)]
 pub struct ArenaData {
-    pub canvases: ArenaCanvases,
+    pub canvases: Vec<ArenaFlatCanvas>,
     pub ctx: glctx,
+}
+
+impl ArenaData {
+    pub fn standin_canvas(&self) -> ArenaFlatCanvas {
+        ArenaFlatCanvas(Rc::new(FlatCanvas::create(2,2)))
+    }
+    
+    pub fn flat_allocate(&mut self, size: Dot<i32,i32>) -> ArenaFlatCanvas {
+        let out = ArenaFlatCanvas(Rc::new(FlatCanvas::create(size.0,size.1)));
+        self.canvases.push(out);
+        out
+    }
 }
 
 pub struct ArenaPrograms {
@@ -69,10 +83,7 @@ impl Arena {
         let progs = build_programs(&ctx);
         let data = Rc::new(RefCell::new(ArenaData {
             ctx,
-            canvases: ArenaCanvases {
-                flat,
-                idx: 0,
-            },
+            canvases: Vec::<ArenaFlatCanvas>::new()
         }));
         let arena = Arena {
             progs, data
@@ -98,7 +109,7 @@ impl Arena {
         let datam = &mut self.data.borrow_mut();
         for k in &self.progs.order {
             let geom = self.progs.map.get_mut(k).unwrap();
-            let u = stage.get_uniforms(&datam.canvases);
+            let u = stage.get_uniforms(&datam.canvases[0]); // XXX
             for (key, value) in &u {
                 if let Some(obj) = geom.get_object(key) {
                     obj.set_uniform(None,*value);
