@@ -5,14 +5,10 @@ use std::hash::Hasher;
 use std::collections::hash_map::DefaultHasher;
 
 use types::{ CPixel, RPixel, area_size, RFraction, cpixel, area };
-
-use drawing::alloc::Ticket;
-use drawing::alloc::Allocator;
+use drawing::alloc::{ Ticket, Allocator };
 use drawing::FlatCanvas;
-    
-use arena::{
-    ArenaFlatCanvas,
-};
+use shape::CanvasIdx;
+use arena::ArenaFlatCanvas;
 
 pub struct DrawingHash(u64);
 
@@ -71,12 +67,14 @@ pub trait Artist {
     }
     fn memoize_key(&self) -> Option<DrawingHash>  { None }
     fn measure(&self, canv: &FlatCanvas) -> CPixel;
+    fn measure_mask(&self, canv: &FlatCanvas) -> CPixel { cpixel(1,1) }
 }
 
 pub struct Artwork {
     pub pos: RFraction,
     pub mask_pos: RFraction,
-    pub size: CPixel
+    pub size: CPixel,
+    pub index: CanvasIdx
 }
 
 /* One request to draw on the backing canvas. A combination of
@@ -84,6 +82,7 @@ pub struct Artwork {
  */
 pub struct DrawingImpl {
     gen: Rc<Artist>,
+    canvas_idx: Option<CanvasIdx>,
     ticket: Ticket,
     mask_ticket: Ticket
 }
@@ -95,7 +94,7 @@ impl Drawing {
     pub fn new(gen: Rc<Artist>, ticket: Ticket, mask_ticket: Ticket) -> Drawing {
         Drawing(
             Rc::new(DrawingImpl {
-                gen,ticket, mask_ticket
+                gen, ticket, mask_ticket, canvas_idx: None
             }))
     }
 
@@ -114,7 +113,8 @@ impl Drawing {
         Artwork {
             pos: m.as_fraction() / cs,
             mask_pos: mm.as_fraction() / cs,
-            size: m.area()
+            size: m.area(),
+            index: src.canvas_idx.as_ref().unwrap().clone()
         }
     }
     
@@ -136,9 +136,10 @@ impl Drawing {
  */
 pub struct FlatCanvasManager {
     canvas: Option<ArenaFlatCanvas>,
+    canvas_idx: Option<CanvasIdx>,
     standin: FlatCanvas,
     cache: DrawingMemory,
-    tickets: Vec<Drawing>,
+    drawings: Vec<Drawing>,
     allocator: Allocator,
 }
 
@@ -146,9 +147,10 @@ impl FlatCanvasManager {
     pub fn new() -> FlatCanvasManager {
         FlatCanvasManager {
             canvas: None,
+            canvas_idx: None,
             standin: FlatCanvas::create(2,2),
             cache: DrawingMemory::new(),
-            tickets: Vec::<Drawing>::new(),
+            drawings: Vec::<Drawing>::new(),
             allocator: Allocator::new(20),
         }
     }
@@ -160,22 +162,24 @@ impl FlatCanvasManager {
             tdrh
         } else {
             let size = a.measure(&self.standin);
+            let mask_size = a.measure_mask(&self.standin);
             let flat_alloc = &mut self.allocator;
             let req = flat_alloc.request(size);
-            let mask_req = flat_alloc.request(size + cpixel(2,2));
+            let mask_req = flat_alloc.request(mask_size + cpixel(2,2));
             let val = Drawing::new(a,req,mask_req);
             if let Some(tdrk) = tdrk {
                 // put in cache
                 self.cache.insert(&tdrk,val.clone());
             }
-            self.tickets.push(val.clone());
+            self.drawings.push(val.clone());
             val
         }
     }
 
-    pub fn draw(&mut self, canvs: ArenaFlatCanvas) {
+    pub fn draw(&mut self, canvs: ArenaFlatCanvas, canvas_idx: CanvasIdx) {
         self.canvas = Some(canvs);
-        for tr in &self.tickets {
+        self.canvas_idx = Some(canvas_idx);
+        for tr in &self.drawings {
             tr.draw(self);
         }
     }

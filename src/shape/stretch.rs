@@ -99,7 +99,7 @@ impl StretchTexture {
 const CHUNK_SIZE : f32 = 10.;
 
 impl Shape for StretchTexture {
-    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, artwork: Option<Artwork>) {
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, artwork: Option<Artwork>) {
         if let Some(art) = artwork {
             /* some cards baulk at very large textured areas, so split */
             let mut chunks = ((self.pos.area()).0.abs() / CHUNK_SIZE) as i32;
@@ -113,7 +113,7 @@ impl Shape for StretchTexture {
             let mut t = area_size(art.pos.offset(),widtht);
             let mut tm = area_size(art.mask_pos.offset(),widthtm);
             for _i in 0..chunks {
-                let b = vertices_rect(geom,None);
+                let b = vertices_rect(geom,Some(art.index.get_group(geom_name)));
                 rectangle_g(b,geom,"aVertexPosition",&p);
                 rectangle_t(b,geom,"aTextureCoord",&t);
                 rectangle_t(b,geom,"aMaskCoord",&tm);

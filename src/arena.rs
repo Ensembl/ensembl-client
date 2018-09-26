@@ -14,10 +14,17 @@ use composit::{ StateManager, Compositor };
 use types::{ Dot };
 
 #[derive(Clone)]
-pub struct ArenaFlatCanvas(Rc<FlatCanvas>);
+pub struct ArenaFlatCanvas {
+    canvas: Rc<FlatCanvas>,
+    index: Option<usize>
+}
 
 impl ArenaFlatCanvas {
-    pub fn canvas(&self) -> Rc<FlatCanvas> { self.0.clone() }
+    pub fn canvas(&self) -> Rc<FlatCanvas> { 
+        self.canvas.clone()
+    }
+    
+    pub fn index(&self) -> usize { self.index.unwrap() }
 }
 
 #[allow(dead_code)]
@@ -28,13 +35,23 @@ pub struct ArenaData {
 
 impl ArenaData {
     pub fn standin_canvas(&self) -> ArenaFlatCanvas {
-        ArenaFlatCanvas(Rc::new(FlatCanvas::create(2,2)))
+        ArenaFlatCanvas {
+            canvas: Rc::new(FlatCanvas::create(2,2)),
+            index: None
+        }
     }
     
     pub fn flat_allocate(&mut self, size: Dot<i32,i32>) -> ArenaFlatCanvas {
-        let out = ArenaFlatCanvas(Rc::new(FlatCanvas::create(size.0,size.1)));
+        let out = ArenaFlatCanvas {
+            canvas: Rc::new(FlatCanvas::create(size.0,size.1)),
+            index: Some(self.canvases.len())
+        };
         self.canvases.push(out.clone());
         out
+    }
+    
+    pub fn get_canvas(&self, idx: i32) -> Option<&ArenaFlatCanvas> {
+        self.canvases.get(idx as usize)
     }
 }
 

@@ -46,6 +46,29 @@ impl Iterator for BatchIter {
     }
 }
 
+/* BatchManager manages the running of multiple instances of a WebGL
+ * program due to data-volume or different values for uniforms.
+ * 
+ * A DataGroup represents a set of runs with particular parameter
+ * settings. A DataBatch is an indivdual run within a DataGroup.
+ * 
+ * A property with particular requirements for a uniform creates a new
+ * DataGroup at the time it is set up. A DataBatch is created, or an
+ * existing one returned. Whether data is partitioned according to
+ * batch (ie whether batches are used) is left to the individual program
+ * objects. However both ObjectAttrib and ObjectUniform do implelement
+ * them so, in parctice their use can be relied upon.
+ * 
+ * Properties which use groups implement ShapeContext which ensures they
+ * are run prior to adding shapes. They create groups and populate
+ * objects with the values of their uniforms before any shape is 
+ * created. If no data goes into these groups, they are unused. Some,
+ * such as spot values, have values known as part of the composition.
+ * 
+ * Program::draw is called just once per program. This iterates through
+ * the batches and calls Object::execute on each.
+ */
+
 pub struct BatchManager {
     max_group: u32,
     max_batch: u32,

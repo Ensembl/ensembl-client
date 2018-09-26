@@ -40,6 +40,10 @@ impl Artist for TextArtist {
     fn measure(&self, canvas: &FlatCanvas) -> CPixel {
         canvas.measure(&self.chars,&self.font)
     }
+    
+    fn measure_mask(&self, canvas: &FlatCanvas) -> CPixel {
+        self.measure(canvas)
+    }
 }
 
 pub fn text_texture(chars: &str,font: &FCFont, col: &Colour, bg: &Colour) -> Rc<Artist> {

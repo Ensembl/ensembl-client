@@ -2,15 +2,19 @@ mod stretch;
 mod pintape;
 mod fixpage;
 mod shapeimpl;
+mod spot;
 mod util;
+mod canvasidx;
 
 pub use shape::shapeimpl::{
     Shape,
     ShapeContext,
-    Spot,
     ColourSpec,
     MathsShape,
 };
+
+pub use shape::spot::Spot;
+pub use shape::canvasidx::CanvasIdx;
 
 pub use shape::fixpage::{
     fix_rectangle,
