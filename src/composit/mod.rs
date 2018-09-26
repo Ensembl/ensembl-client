@@ -4,7 +4,7 @@ mod compositor;
 
 pub use self::component::Component;
 
-pub use self::compositor::Compositor;
+pub use self::compositor::{ Compositor, DrawingSession };
 
 pub use self::state::{
     StateExpr,

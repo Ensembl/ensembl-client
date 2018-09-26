@@ -40,34 +40,38 @@ pub trait Object {
 
 /* ObjectCanvasTexture = Object for canvas-origin textures */
 pub struct ObjectCanvasTexture {
-    texture: Option<gltex>,
+    textures: Vec<gltex>,
 }
 
 impl ObjectCanvasTexture {
     pub fn new() -> ObjectCanvasTexture {
         ObjectCanvasTexture {
-            texture: None
+            textures: Vec::<gltex>::new()
         }
     }
 }
 
-const TEXIDS : [u32;8] = [
-    glctx::TEXTURE0, glctx::TEXTURE1, glctx::TEXTURE2,
-    glctx::TEXTURE3, glctx::TEXTURE4, glctx::TEXTURE5,
-    glctx::TEXTURE6, glctx::TEXTURE7
-];
-
 impl Object for ObjectCanvasTexture {
     fn obj_final(&mut self, _batch: &DataBatch, adata: &ArenaData) {
-        let canvases = &adata.canvases;
-        self.texture = Some(wglraw::canvas_texture(&adata.ctx,canvases[0].canvas().element())); // XXX
+        // TODO: make into iterator
+        let mut i = 0;
+        loop {
+            let c = adata.get_canvas(i);
+            if let Some(c) = c {
+                self.textures.push(
+                    wglraw::canvas_texture(&adata.ctx,c.canvas().element()));
+                i += 1;
+            } else {
+                break;
+            }
+        }
     }
 
     fn execute(&self, adata : &ArenaData, _batch: &DataBatch) {
         let canvases = &adata.canvases;
-        if let Some(ref texture) = self.texture {
-            adata.ctx.active_texture(TEXIDS[0]); // XXX
-            adata.ctx.bind_texture(glctx::TEXTURE_2D,Some(&texture));
+        for (i,t) in self.textures.iter().enumerate() {
+            adata.ctx.active_texture(glctx::TEXTURE0+(i as u32));
+            adata.ctx.bind_texture(glctx::TEXTURE_2D,Some(&t));
         }
     }    
 }

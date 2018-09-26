@@ -62,7 +62,7 @@ impl FlatCanvas {
         let ch = domutil::query_select("#managedcanvasholder");
         domutil::inner_html(&ch,"");        
     }
-        
+    
     pub fn create(width: i32,height: i32) -> FlatCanvas {
         let canvas_holder = domutil::query_select("#managedcanvasholder");
         let canvas : CanvasElement = document().create_element("canvas").ok().unwrap().try_into().unwrap();
@@ -70,8 +70,6 @@ impl FlatCanvas {
         canvas.set_width(width as u32);
         canvas.set_height(height as u32);
         let context : CanvasRenderingContext2d = canvas.get_context().unwrap();
-        //context.set_fill_style_color("blue");
-        //context.fill_rect(0.,0.,width as f64,height as f64);
         context.set_fill_style_color("black");
         FlatCanvas { canvas, context, height, width }
     }

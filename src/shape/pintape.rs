@@ -241,10 +241,10 @@ impl PinTexture {
 }
 
 impl Shape for PinTexture {
-    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, 
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, 
                     artwork: Option<Artwork>) {
         if let Some(art) = artwork {
-            let b = vertices_rect(geom,None);
+            let b = vertices_rect(geom,Some(art.index.get_group(geom_name)));
             let mut mp = art.mask_pos;
             let mut ap = art.pos;
             let mut scale = self.scale;            

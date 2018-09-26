@@ -5,11 +5,12 @@ use std::collections::HashMap;
 use arena::{ ArenaData, ArenaPrograms };
 use composit::{ Component, StateManager };
 use drawing::{ Drawing, FlatCanvasManager };
-use shape::ShapeContext;
+use shape::{ ShapeContext, CanvasIdx };
 use composit::state::ComponentRedo;
 
 pub struct DrawingSession {
     flatcanvman: FlatCanvasManager,
+    contexts: Vec<Box<ShapeContext>>,
     all_drawings: HashMap<u32,Vec<Option<Drawing>>>
 }
 
@@ -18,6 +19,23 @@ impl DrawingSession {
         DrawingSession {
             flatcanvman: FlatCanvasManager::new(),
             all_drawings: HashMap::<u32,Vec<Option<Drawing>>>::new(),
+            contexts: Vec::<Box<ShapeContext>>::new(),
+        }
+    }
+
+    pub fn add_context(&mut self, ctx: Box<ShapeContext>) {
+        self.contexts.push(ctx);
+    }
+
+    fn apply_contexts(&mut self, progs: &mut ArenaPrograms,
+                      adata: &mut ArenaData) {
+        for c in &mut self.contexts {
+            c.reset();
+        }
+        for (ref gk,ref mut geom) in progs.map.iter_mut() {
+            for c in &mut self.contexts {
+                c.into_objects(gk,&mut geom.data,adata);
+            }
         }
     }
 
@@ -25,11 +43,13 @@ impl DrawingSession {
         self.all_drawings.insert(idx,c.draw_drawings(&mut self.flatcanvman,adata));
     }
     
-    fn finalise(&mut self, adata: &mut ArenaData) {
+    fn finalise(&mut self, progs: &mut ArenaPrograms, adata: &mut ArenaData) {
         let size = self.flatcanvman.allocate();
         FlatCanvas::reset();
         let canv = adata.flat_allocate(size);
-        self.flatcanvman.draw(canv);
+        let canvas_idx = CanvasIdx::new(self,canv.index());
+        self.flatcanvman.draw(canv,canvas_idx);
+        self.apply_contexts(progs,adata);
     }
     
     fn drawings_for(&self, idx: u32) -> &Vec<Option<Drawing>> {
@@ -91,12 +111,12 @@ impl Compositor {
         }
     }
 
-    fn redraw_drawings(&mut self, adata: &mut ArenaData) {
+    fn redraw_drawings(&mut self, progs: &mut ArenaPrograms, adata: &mut ArenaData) {
         self.ds = DrawingSession::new();
         for (idx,c) in &mut self.campaigns {
             self.ds.redraw_campaign(adata,*idx,c);
         }
-        self.ds.finalise(adata);
+        self.ds.finalise(progs,adata);
     }
 
     fn redraw_objects(&mut self, progs: &mut ArenaPrograms, adata: &mut ArenaData) {
@@ -116,7 +136,7 @@ impl Compositor {
         progs.clear_objects();
         self.apply_contexts(progs,adata);
         if redo == ComponentRedo::Major {
-            self.redraw_drawings(adata);
+            self.redraw_drawings(progs,adata);
         }
         self.redraw_objects(progs,adata);
         progs.finalize_objects(adata);

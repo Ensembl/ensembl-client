@@ -83,13 +83,13 @@ impl FixTexture {
 }
 
 impl Shape for FixTexture {
-    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs,
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs,
                     artwork: Option<Artwork>) {
         if let Some(art) = artwork {
             let pos = self.pos.quantity();
             let p = area_size(pos,art.size * self.scale.quantity());
             let p = self.scale.from_nw(p.as_fraction());
-            let b = vertices_rect(geom,None);
+            let b = vertices_rect(geom,Some(art.index.get_group(geom_name)));
             let mut ap = art.pos.flip_d(self.pos);
             let mut mp = art.mask_pos.flip_d(self.pos);
             rectangle_t(b,geom,"aVertexPositive",&p);
