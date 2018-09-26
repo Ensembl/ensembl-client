@@ -46,9 +46,8 @@ impl Stage {
         self.dims = *size;
     }
 
-    pub fn get_uniforms(&self, canvs: &ArenaFlatCanvas) -> HashMap<&str,UniformValue> {
+    pub fn get_uniforms(&self) -> HashMap<&str,UniformValue> {
         hashmap! {
-            "uSampler" => UniformValue::Int(0), // XXX
             "uStageHpos" => UniformValue::Float(self.pos.0),
             "uStageVpos" => UniformValue::Float(self.pos.1 + self.dims.1 as f32/2.),
             "uStageZoom" => UniformValue::Float(self.get_linear_zoom()*2.),
