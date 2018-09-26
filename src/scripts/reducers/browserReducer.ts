@@ -24,7 +24,7 @@ export type BrowserState = Readonly<{
   trackPanelOpened: boolean;
 }>;
 
-const defaultState: BrowserState = {
+export const defaultState: BrowserState = {
   browserOpenState: BrowserOpenState.SEMI_EXPANDED,
   currentDrawerSection: '',
   currentTrack: '',
@@ -47,23 +47,17 @@ const trackPanelState = (state: BrowserState) => {
 };
 
 const drawerState = (state: BrowserState, drawerOpened: boolean) => {
-  const browserOpenState: BrowserOpenState = drawerOpened
-    ? BrowserOpenState.COLLAPSED
-    : BrowserOpenState.SEMI_EXPANDED;
-
-  const currentTrack = drawerOpened ? state.currentTrack : '';
-
-  const drawerSections = drawerOpened
-    ? drawerSectionConfig[state.currentTrack]
-    : [];
-
-  return {
-    ...state,
-    browserOpenState,
-    currentTrack,
-    drawerOpened,
-    drawerSections
-  };
+  if (drawerOpened === true) {
+    return {
+      ...state,
+      browserOpenState: BrowserOpenState.COLLAPSED,
+      drawerOpened
+    };
+  } else {
+    return {
+      ...defaultState
+    };
+  }
 };
 
 export default (
