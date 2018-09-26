@@ -127,7 +127,7 @@ impl Arena {
         let datam = &mut self.data.borrow_mut();
         for k in &self.progs.order {
             let geom = self.progs.map.get_mut(k).unwrap();
-            let u = stage.get_uniforms(&datam.canvases[0]); // XXX
+            let u = stage.get_uniforms();
             for (key, value) in &u {
                 if let Some(obj) = geom.get_object(key) {
                     obj.set_uniform(None,*value);
