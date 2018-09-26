@@ -27,7 +27,6 @@ fn exe_zoom_by_event(cg: &CanvasState, z: f32) {
 }
 
 fn exe_resize(cg: &CanvasState, sz: Dot<i32,i32>) {    
-    console!("sz={:?}",sz);
     cg.with_stage(|s| {
         s.set_size(&sz);
     });

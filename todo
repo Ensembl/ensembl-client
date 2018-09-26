@@ -27,3 +27,5 @@ transparency for non-text drawings via superclass
 merge fix and pintape textures (to add anchors to former)
 
 fix/remove parameter passing in events.
+
+check flat canvas management

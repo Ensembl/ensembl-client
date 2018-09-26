@@ -47,7 +47,6 @@ impl Stage {
     }
 
     pub fn get_uniforms(&self, canvs: &ArenaFlatCanvas) -> HashMap<&str,UniformValue> {
-        console!("size={:?}",self.dims);
         hashmap! {
             "uSampler" => UniformValue::Int(0), // XXX
             "uStageHpos" => UniformValue::Float(self.pos.0),
