@@ -101,13 +101,13 @@ impl Drawing {
 
     pub fn draw(&self, leafdrawman: &FlatCanvasManager) {
         let pos = leafdrawman.allocator.position(&self.0.ticket);
-        self.0.gen.draw(&mut leafdrawman.canvas.unwrap().canvas(),pos);
+        self.0.gen.draw(&mut leafdrawman.canvas.as_ref().unwrap().canvas(),pos);
         let mask_pos = leafdrawman.allocator.position(&self.0.mask_ticket);
-        self.0.gen.draw_mask(&mut leafdrawman.canvas.unwrap().canvas(),mask_pos + cpixel(1,1));
+        self.0.gen.draw_mask(&mut leafdrawman.canvas.as_ref().unwrap().canvas(),mask_pos + cpixel(1,1));
     }
 
     pub fn artwork(&self, src: &FlatCanvasManager) -> Artwork {
-        let canvas = src.canvas.unwrap();
+        let canvas = src.canvas.as_ref().unwrap();
         let cs = canvas.canvas().size().as_fraction();
         let m = self.measure(src);
         let mm = self.measure_mask(src).inset(area(cpixel(1,1),cpixel(1,1)));
@@ -159,7 +159,7 @@ impl FlatCanvasManager {
             // already in cache
             tdrh
         } else {
-            let size = a.measure(&self.canvas.unwrap().canvas());
+            let size = a.measure(&self.standin);
             let flat_alloc = &mut self.allocator;
             let req = flat_alloc.request(size);
             let mask_req = flat_alloc.request(size + cpixel(2,2));

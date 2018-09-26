@@ -13,10 +13,11 @@ use program::{ Program, GPUSpec, ProgramType };
 use composit::{ StateManager, Compositor };
 use types::{ Dot };
 
+#[derive(Clone)]
 pub struct ArenaFlatCanvas(Rc<FlatCanvas>);
 
 impl ArenaFlatCanvas {
-    pub fn canvas(&self) -> Rc<FlatCanvas> { self.0 }
+    pub fn canvas(&self) -> Rc<FlatCanvas> { self.0.clone() }
 }
 
 #[allow(dead_code)]
@@ -32,7 +33,7 @@ impl ArenaData {
     
     pub fn flat_allocate(&mut self, size: Dot<i32,i32>) -> ArenaFlatCanvas {
         let out = ArenaFlatCanvas(Rc::new(FlatCanvas::create(size.0,size.1)));
-        self.canvases.push(out);
+        self.canvases.push(out.clone());
         out
     }
 }
