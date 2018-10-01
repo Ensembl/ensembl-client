@@ -8,7 +8,7 @@ type AccountProps = {
   accountExpanded: boolean;
 };
 
-class Account extends Component<AccountProps> {
+export class Account extends Component<AccountProps> {
   public render() {
     const AccountChildren: ReactNode = (
       <div className="account">

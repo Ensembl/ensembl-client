@@ -1,0 +1,172 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Launchbar /> renders correctly 1`] = `
+<div
+  class="react-slidedown"
+>
+  <div
+    class="launchbar"
+  >
+    <div
+      class="categories-wrapper"
+    >
+      <div
+        class="categories"
+      >
+        <dl
+          class="border"
+        >
+          <dt>
+            <button>
+              <img
+                alt="global search"
+                src="[object Object]"
+                title="global search"
+              />
+            </button>
+          </dt>
+          <dt>
+            <button>
+              <img
+                alt="species selector"
+                src="[object Object]"
+                title="species selector"
+              />
+            </button>
+          </dt>
+        </dl>
+        <dl
+          class="border"
+        >
+          <dt>
+            <button>
+              <img
+                alt="browser"
+                src="[object Object]"
+                title="browser"
+              />
+            </button>
+          </dt>
+        </dl>
+        <dl
+          class="border"
+        >
+          <dt>
+            <button>
+              <img
+                alt="BLAST/BLAT"
+                src="[object Object]"
+                title="BLAST/BLAT"
+              />
+            </button>
+          </dt>
+          <dt>
+            <button>
+              <img
+                alt="VEP"
+                src="[object Object]"
+                title="VEP"
+              />
+            </button>
+          </dt>
+          <dt>
+            <button>
+              <img
+                alt="Conversions"
+                src="[object Object]"
+                title="Conversions"
+              />
+            </button>
+          </dt>
+          <dt>
+            <button>
+              <img
+                alt="LD calculator"
+                src="[object Object]"
+                title="LD calculator"
+              />
+            </button>
+          </dt>
+          <dt>
+            <button>
+              <img
+                alt="biomart"
+                src="[object Object]"
+                title="biomart"
+              />
+            </button>
+          </dt>
+        </dl>
+        <dl
+          class="border"
+        >
+          <dt>
+            <button>
+              <img
+                alt="bulk download"
+                src="[object Object]"
+                title="bulk download"
+              />
+            </button>
+          </dt>
+          <dt>
+            <button>
+              <img
+                alt="custom download"
+                src="[object Object]"
+                title="custom download"
+              />
+            </button>
+          </dt>
+        </dl>
+        <dl
+          class=""
+        >
+          <dt>
+            <button>
+              <img
+                alt="help and documentation"
+                src="[object Object]"
+                title="help and documentation"
+              />
+            </button>
+          </dt>
+          <dt>
+            <button>
+              <img
+                alt="glossary"
+                src="[object Object]"
+                title="glossary"
+              />
+            </button>
+          </dt>
+          <dt>
+            <button>
+              <img
+                alt="what is new and what has changed"
+                src="[object Object]"
+                title="what is new and what has changed"
+              />
+            </button>
+          </dt>
+        </dl>
+      </div>
+    </div>
+    <div
+      class="about"
+    >
+      <dl>
+        <dt>
+          <button>
+            <img
+              alt="about ensembl"
+              src="[object Object]"
+              title="about ensembl"
+            />
+          </button>
+        </dt>
+      </dl>
+    </div>
+  </div>
+</div>
+`;

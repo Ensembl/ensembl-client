@@ -3,8 +3,8 @@
 exports[`<App /> renders correctly 1`] = `
 <BrowserRouter>
   <StrictMode>
-    <Connect(Header) />
-    <Content />
+    <Header />
+    <withRouter(Connect(Content)) />
   </StrictMode>
 </BrowserRouter>
 `;

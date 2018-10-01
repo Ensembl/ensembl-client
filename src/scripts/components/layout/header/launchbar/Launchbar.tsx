@@ -22,7 +22,7 @@ type LaunchbarProps = RouteComponentProps<LaunchbarParams> & {
   launchbarExpanded: boolean;
 };
 
-class Launchbar extends PureComponent<LaunchbarProps> {
+export class Launchbar extends PureComponent<LaunchbarProps> {
   constructor(props: LaunchbarProps) {
     super(props);
 

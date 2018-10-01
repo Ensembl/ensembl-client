@@ -27,7 +27,7 @@ type ContentProps = RouteComponentProps<ContentParams> & {
   launchbarExpanded: boolean;
 };
 
-class Content extends Component<ContentProps> {
+export class Content extends Component<ContentProps> {
   public render() {
     return (
       <main className={this.getMainClass()}>
