@@ -10,7 +10,7 @@ export type HeaderState = Readonly<{
   launchbarExpanded: boolean;
 }>;
 
-const defaultState: HeaderState = {
+export const defaultState: HeaderState = {
   accountExpanded: false,
   currentApp: '',
   launchbarExpanded: true
