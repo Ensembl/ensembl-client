@@ -1,4 +1,3 @@
-const path = require('path');
 const StylelintWebpackPlugin = require('stylelint-webpack-plugin');
 
 // laoders specific to dev
