@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<LaunchbarIcon /> renders correctly 1`] = `
+<dt>
+  <button
+    onClick={[Function]}
+  >
+    <img
+      alt="about ensembl"
+      src="/assets/img/launchbar/ensembl-selected.svg"
+      title="about ensembl"
+    />
+  </button>
+</dt>
+`;
