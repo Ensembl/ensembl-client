@@ -43,8 +43,7 @@ impl Component {
     }
     
     pub fn draw_drawings(&mut self,
-                        leafdrawman: &mut FlatCanvasManager,
-                        adata: &mut ArenaData) -> Vec<Option<Drawing>> {
+                        leafdrawman: &mut FlatCanvasManager) -> Vec<Option<Drawing>> {
         let mut drawings = Vec::<Option<Drawing>>::new();
         for s in &mut self.shapes {
             let mut drawing = None;
@@ -59,7 +58,6 @@ impl Component {
 
     pub fn into_objects(&mut self, progs: &mut ArenaPrograms,
                         leafdrawman: &FlatCanvasManager,
-                        adata: &mut ArenaData,
                         drawings: &Vec<Option<Drawing>>) {
         for (i,mut s) in self.shapes.iter().enumerate() {
             let req = &drawings[i];

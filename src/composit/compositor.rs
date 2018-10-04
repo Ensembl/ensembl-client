@@ -1,12 +1,12 @@
-use drawing::FlatCanvas;
 use std::rc::Rc;
 use std::collections::HashMap;
 
 use arena::{ ArenaData, ArenaPrograms };
 use composit::{ Component, StateManager };
-use drawing::{ Drawing, FlatCanvasManager };
+use drawing::{ Drawing, FlatCanvasManager, FlatCanvas, AllCanvasMan };
 use shape::{ ShapeContext, CanvasIdx };
 use composit::state::ComponentRedo;
+use program::{ CanvasWeave };
 
 pub struct DrawingSession {
     flatcanvman: FlatCanvasManager,
@@ -15,9 +15,9 @@ pub struct DrawingSession {
 }
 
 impl DrawingSession {
-    fn new() -> DrawingSession {
+    fn new(acm: &mut AllCanvasMan) -> DrawingSession {
         DrawingSession {
-            flatcanvman: FlatCanvasManager::new(),
+            flatcanvman: FlatCanvasManager::new(acm),
             all_drawings: HashMap::<u32,Vec<Option<Drawing>>>::new(),
             contexts: Vec::<Box<ShapeContext>>::new(),
         }
@@ -39,14 +39,14 @@ impl DrawingSession {
         }
     }
 
-    fn redraw_campaign(&mut self, adata: &mut ArenaData, idx: u32, c: &mut Component) {
-        self.all_drawings.insert(idx,c.draw_drawings(&mut self.flatcanvman,adata));
+    fn redraw_campaign(&mut self, idx: u32, c: &mut Component) {
+        self.all_drawings.insert(idx,c.draw_drawings(&mut self.flatcanvman));
     }
     
-    fn finalise(&mut self, progs: &mut ArenaPrograms, adata: &mut ArenaData) {
+    fn finalise(&mut self, progs: &mut ArenaPrograms, 
+                acm: &mut AllCanvasMan, adata: &mut ArenaData) {
         let size = self.flatcanvman.allocate();
-        FlatCanvas::reset();
-        let canv = adata.flat_allocate(size);
+        let canv = adata.flat_allocate(acm,size,CanvasWeave::Pixelate);
         let canvas_idx = CanvasIdx::new(self,canv.index());
         self.flatcanvman.draw(canv,canvas_idx);
         self.apply_contexts(progs,adata);
@@ -61,7 +61,7 @@ pub struct Compositor {
     idx: u32,
     contexts: Vec<Box<ShapeContext>>,
     campaigns: HashMap<u32,Component>,
-    ds: DrawingSession
+    ds: Option<DrawingSession>
 }
 
 pub struct ComponentRemover(u32);
@@ -72,7 +72,7 @@ impl Compositor {
         Compositor {
             campaigns: HashMap::<u32,Component>::new(),
             contexts: Vec::<Box<ShapeContext>>::new(),
-            ds: DrawingSession::new(),
+            ds: None,
             idx: 0
         }
     }
@@ -111,24 +111,26 @@ impl Compositor {
         }
     }
 
-    fn redraw_drawings(&mut self, progs: &mut ArenaPrograms, adata: &mut ArenaData) {
-        self.ds = DrawingSession::new();
+    fn redraw_drawings(&mut self, progs: &mut ArenaPrograms, acm: &mut AllCanvasMan, adata: &mut ArenaData) {
+        self.ds = Some(DrawingSession::new(acm));
         for (idx,c) in &mut self.campaigns {
-            self.ds.redraw_campaign(adata,*idx,c);
+            self.ds.as_mut().unwrap().redraw_campaign(*idx,c);
         }
-        self.ds.finalise(progs,adata);
+        self.ds.as_mut().unwrap().finalise(progs,acm,adata);
     }
 
     fn redraw_objects(&mut self, progs: &mut ArenaPrograms, adata: &mut ArenaData) {
         for (i,c) in &mut self.campaigns {
             if c.is_on() {
-                let d = self.ds.drawings_for(*i);
-                c.into_objects(progs,&self.ds.flatcanvman,adata,d);
+                let ds = self.ds.as_ref().unwrap();
+                let d = ds.drawings_for(*i);
+                c.into_objects(progs,&ds.flatcanvman,d);
             }
         }
     }
 
     pub fn into_objects(&mut self, progs: &mut ArenaPrograms,
+                        acm: &mut AllCanvasMan,
                         adata: &mut ArenaData, oom: &StateManager) {
         let redo = self.calc_level(oom);
         if redo == ComponentRedo::None { return; }
@@ -136,7 +138,7 @@ impl Compositor {
         progs.clear_objects();
         self.apply_contexts(progs,adata);
         if redo == ComponentRedo::Major {
-            self.redraw_drawings(progs,adata);
+            self.redraw_drawings(progs,acm,adata);
         }
         self.redraw_objects(progs,adata);
         progs.finalize_objects(adata);

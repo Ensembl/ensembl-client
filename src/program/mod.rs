@@ -19,7 +19,8 @@ pub use program::data::{
 pub use program::objects::{
     Object,
     ObjectAttrib,
-    UniformValue
+    UniformValue,
+    CanvasWeave
 };
     
 pub use program::source::{

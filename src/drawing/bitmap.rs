@@ -2,10 +2,7 @@ use std::rc::Rc;
 
 use types::{ CPixel, area_size };
 
-use drawing::FlatCanvas;
-use drawing::drawingimpl::{
-    Artist,
-};
+use drawing::{ FlatCanvas, Artist };
 
 struct BitmapArtist {
     data: Vec<u8>,

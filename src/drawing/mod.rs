@@ -2,18 +2,23 @@ mod alloc;
 mod text;
 mod bitmap;
 mod collage;
-mod drawingimpl;
+mod onecanvasman;
 mod flatcanvas;
+mod drawing;
+mod artist;
+mod allcanvasman;
 
-pub use drawing::drawingimpl::{
-    Drawing, Artist, Artwork, FlatCanvasManager,
+pub use self::artist::Artist;
+
+pub use self::drawing::{ Drawing, Artwork };
+
+pub use self::allcanvasman::AllCanvasMan;
+
+pub use self::onecanvasman::{
+    FlatCanvasManager, DrawingHash
 };
 
-pub use drawing::text::text_texture;
-pub use drawing::bitmap::bitmap_texture;
-pub use drawing::collage::{
-    mark_rectangle,
-    collage,
-    Mark
-};
-pub use drawing::flatcanvas::{ FlatCanvas, FCFont, FontVariety };
+pub use self::text::text_texture;
+pub use self::bitmap::bitmap_texture;
+pub use self::collage::{ mark_rectangle, collage, Mark };
+pub use self::flatcanvas::{ FlatCanvas, FCFont, FontVariety };

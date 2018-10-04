@@ -1,7 +1,6 @@
 use std::rc::Rc;
 
-use drawing::{ FCFont, Artist, FlatCanvas };
-use drawing::drawingimpl::DrawingHash;
+use drawing::{ FCFont, Artist, FlatCanvas, DrawingHash };
 use types::{ Colour, CPixel };
 
 /* TextArtist - A Artist which can draw text */

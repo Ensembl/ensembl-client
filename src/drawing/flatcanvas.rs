@@ -2,18 +2,14 @@ use stdweb::web::{
     INode,
     TextBaseline,
     CanvasRenderingContext2d,
-    document,
 };
 
 use stdweb::web::html_element::CanvasElement;
-
 use stdweb::web::TypedArray;
-use stdweb::unstable::TryInto;
+
 use types::{
     Colour, CPixel, RPixel, cpixel, Dot
 };
-
-use dom::domutil;
 
 #[derive(Clone,Copy,Debug)]
 pub enum FontVariety {
@@ -57,21 +53,17 @@ pub struct FlatCanvas {
     height: i32,
 }
 
-impl FlatCanvas {        
-    pub fn reset() {
-        let ch = domutil::query_select("#managedcanvasholder");
-        domutil::inner_html(&ch,"");        
-    }
-    
-    pub fn create(width: i32,height: i32) -> FlatCanvas {
-        let canvas_holder = domutil::query_select("#managedcanvasholder");
-        let canvas : CanvasElement = document().create_element("canvas").ok().unwrap().try_into().unwrap();
-        canvas_holder.append_child(&canvas);
+impl FlatCanvas {    
+    pub fn create(canvas: CanvasElement, width: i32, height: i32) -> FlatCanvas {
         canvas.set_width(width as u32);
         canvas.set_height(height as u32);
         let context : CanvasRenderingContext2d = canvas.get_context().unwrap();
         context.set_fill_style_color("black");
         FlatCanvas { canvas, context, height, width }
+    }
+    
+    pub fn remove(&self) {
+        self.canvas.parent_node().unwrap().remove_child(&self.canvas).ok();
     }
     
     pub fn text(&self,text : &str, pos: CPixel, font: &FCFont, col: &Colour, bg: &Colour) -> (i32,i32) {

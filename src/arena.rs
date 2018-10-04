@@ -6,17 +6,18 @@ use stdweb::unstable::TryInto;
 use stdweb::web::HtmlElement;
 use webgl_rendering_context::WebGLRenderingContext as glctx;
 
-use drawing::FlatCanvas;
+use drawing::{ FlatCanvas, AllCanvasMan };
 use wglraw;
 use stage::Stage;
-use program::{ Program, GPUSpec, ProgramType };
+use program::{ Program, GPUSpec, ProgramType, CanvasWeave };
 use composit::{ StateManager, Compositor };
 use types::{ Dot };
 
 #[derive(Clone)]
 pub struct ArenaFlatCanvas {
     canvas: Rc<FlatCanvas>,
-    index: Option<usize>
+    index: Option<usize>,
+    w: CanvasWeave
 }
 
 impl ArenaFlatCanvas {
@@ -34,17 +35,11 @@ pub struct ArenaData {
 }
 
 impl ArenaData {
-    pub fn standin_canvas(&self) -> ArenaFlatCanvas {
-        ArenaFlatCanvas {
-            canvas: Rc::new(FlatCanvas::create(2,2)),
-            index: None
-        }
-    }
-    
-    pub fn flat_allocate(&mut self, size: Dot<i32,i32>) -> ArenaFlatCanvas {
+    pub fn flat_allocate(&mut self, acm: &mut AllCanvasMan, size: Dot<i32,i32>, w: CanvasWeave) -> ArenaFlatCanvas {
         let out = ArenaFlatCanvas {
-            canvas: Rc::new(FlatCanvas::create(size.0,size.1)),
-            index: Some(self.canvases.len())
+            canvas: Rc::new(acm.allocate(size.0,size.1)),
+            index: Some(self.canvases.len()),
+            w
         };
         self.canvases.push(out.clone());
         out
@@ -79,6 +74,7 @@ impl ArenaPrograms {
 pub struct Arena {
     pub data: Rc<RefCell<ArenaData>>,
     pub progs: ArenaPrograms,
+    acm: AllCanvasMan,
 }
 
 fn build_programs(ctx: &glctx) -> ArenaPrograms {
@@ -97,14 +93,14 @@ impl Arena {
     pub fn new(el: &HtmlElement) -> Arena {
         let canvas = el.clone().try_into().unwrap();
         let ctx = wglraw::prepare_context(&canvas);
-        let flat = Rc::new(FlatCanvas::create(2,2));
         let progs = build_programs(&ctx);
         let data = Rc::new(RefCell::new(ArenaData {
             ctx,
             canvases: Vec::<ArenaFlatCanvas>::new()
         }));
         let arena = Arena {
-            progs, data
+            progs, data,
+            acm: AllCanvasMan::new("#managedcanvasholder"),
         };
         arena
     }
@@ -112,10 +108,11 @@ impl Arena {
     pub fn draw(&mut self, cman: &mut Compositor, oom: &StateManager, stage: &Stage) {
         /* maybe update scene */
         {
-            let (datam,progs) = (
+            let (datam,progs,acm) = (
                 &mut self.data.borrow_mut(),
-                &mut self.progs);
-            cman.into_objects(progs,datam,oom);
+                &mut self.progs,
+                &mut self.acm);
+            cman.into_objects(progs,acm,datam,oom);
         }
         /* prepare arena */
         {
