@@ -1,10 +1,7 @@
 use std::rc::Rc;
-use types::{ CPixel, RPixel, Colour };
 
-use drawing::FlatCanvas;
-use drawing::drawingimpl::{
-    Artist,
-};
+use types::{ CPixel, RPixel, Colour };
+use drawing::{ FlatCanvas, Artist };
 
 pub trait Mark : Artist {
     fn get_offset(&self) -> CPixel;
