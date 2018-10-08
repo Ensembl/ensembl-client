@@ -8,7 +8,6 @@ use types::{ CPixel, RPixel, area_size, RFraction, cpixel, area };
 use drawing::alloc::{ Ticket, Allocator };
 use drawing::{ FlatCanvas, Drawing, Artist, AllCanvasMan };
 use shape::CanvasIdx;
-use drawing::allcanvasman::ArenaFlatCanvas;
 use program::CanvasWeave;
 
 pub struct DrawingHash(u64);
@@ -56,18 +55,18 @@ impl DrawingMemory {
 /* Manages DrawingImpls. Single instance in Leaf. Just stores
  * them and calls draw when ready really. Little more than a fancy Vec.
  */
-pub struct FlatCanvasManager {
-    pub canvas: Option<ArenaFlatCanvas>,
+pub struct OneCanvasManager {
+    pub canvas: Option<Rc<FlatCanvas>>,
     pub canvas_idx: Option<CanvasIdx>,
-    standin: ArenaFlatCanvas,
+    standin: Rc<FlatCanvas>,
     cache: DrawingMemory,
     drawings: Vec<Drawing>,
     pub allocator: Allocator,
 }
 
-impl FlatCanvasManager {
-    pub fn new(acm: &mut AllCanvasMan) -> FlatCanvasManager {
-        FlatCanvasManager {
+impl OneCanvasManager {
+    pub fn new(acm: &mut AllCanvasMan) -> OneCanvasManager {
+        OneCanvasManager {
             canvas: None,
             canvas_idx: None,
             standin: acm.flat_allocate(cpixel(2,2),CanvasWeave::Pixelate),
@@ -83,8 +82,8 @@ impl FlatCanvasManager {
             // already in cache
             tdrh
         } else {
-            let size = a.measure(&self.standin.canvas());
-            let mask_size = a.measure_mask(&self.standin.canvas());
+            let size = a.measure(&self.standin);
+            let mask_size = a.measure_mask(&self.standin);
             let flat_alloc = &mut self.allocator;
             let req = flat_alloc.request(size);
             let mask_req = flat_alloc.request(mask_size + cpixel(2,2));
@@ -98,9 +97,9 @@ impl FlatCanvasManager {
         }
     }
 
-    pub fn draw(&mut self, canvs: ArenaFlatCanvas, canvas_idx: CanvasIdx) {
+    pub fn draw(&mut self, canvs: Rc<FlatCanvas>, canvas_idx: CanvasIdx) {
         if let Some(ref old) = self.canvas {
-            old.canvas().remove();
+            old.remove();
         }
         self.canvas = Some(canvs);
         self.canvas_idx = Some(canvas_idx);

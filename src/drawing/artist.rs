@@ -8,7 +8,6 @@ use types::{ CPixel, RPixel, area_size, RFraction, cpixel, area };
 use drawing::alloc::{ Ticket, Allocator };
 use drawing::{ FlatCanvas, DrawingHash };
 use shape::CanvasIdx;
-use drawing::allcanvasman::ArenaFlatCanvas;
 
 /* A Artist can service some class of DrawingImpls.
  * A texture type will create an instance of them. Note that a

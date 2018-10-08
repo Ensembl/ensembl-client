@@ -50,13 +50,13 @@ fn fix_tex_image2_d_cnv(ctx: &glctx,
     };
 }
 
-fn canvas_texture(ctx: &glctx,cnv : &CanvasElement) -> gltex {
+fn canvas_texture(ctx: &glctx, cnv : &CanvasElement, w: &CanvasWeave) -> gltex {
     let texture = ctx.create_texture().unwrap();
     ctx.bind_texture(glctx::TEXTURE_2D, Some(&texture));
     fix_tex_image2_d_cnv(&ctx,
         glctx::TEXTURE_2D,0,glctx::RGBA as i32,
         glctx::RGBA,glctx::UNSIGNED_BYTE,cnv);
-    CanvasWeave::Pixelate.apply(ctx);
+    w.apply(ctx);
     texture    
 }
 
@@ -82,7 +82,7 @@ impl Object for ObjectCanvasTexture {
             if let Some(c) = c {
                 self.textures.insert(
                     c.index() as u32,
-                    canvas_texture(ctx,c.canvas().element())
+                    canvas_texture(ctx,c.element(),c.weave())
                 );
                 i += 1;
             } else {

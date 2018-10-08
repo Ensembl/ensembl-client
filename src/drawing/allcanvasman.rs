@@ -10,49 +10,30 @@ use drawing::FlatCanvas;
 use program::CanvasWeave;
 use types::Dot;
 
-#[derive(Clone)]
-pub struct ArenaFlatCanvas {
-    canvas: Rc<FlatCanvas>,
-    index: Option<usize>,
-    w: CanvasWeave
-}
-
-impl ArenaFlatCanvas {
-    pub fn canvas(&self) -> Rc<FlatCanvas> { 
-        self.canvas.clone()
-    }
-    
-    pub fn index(&self) -> usize { self.index.unwrap() }
-}
-
 pub struct AllCanvasMan {
     root: Element,
-    pub canvases: Vec<ArenaFlatCanvas>,
+    pub canvases: Vec<Rc<FlatCanvas>>,
 }
 
 impl AllCanvasMan {
     pub fn new(id: &str) -> AllCanvasMan {
         AllCanvasMan {
             root: domutil::query_select(id),
-            canvases: Vec::<ArenaFlatCanvas>::new()
+            canvases: Vec::<Rc<FlatCanvas>>::new()
         }
     }
     
-    pub fn get_canvas(&self, idx: i32) -> Option<&ArenaFlatCanvas> {
+    pub fn get_canvas(&self, idx: i32) -> Option<&Rc<FlatCanvas>> {
         self.canvases.get(idx as usize)
     }
     
-    pub fn flat_allocate(&mut self, size: Dot<i32,i32>, w: CanvasWeave) -> ArenaFlatCanvas {
+    pub fn flat_allocate(&mut self, size: Dot<i32,i32>, w: CanvasWeave) -> Rc<FlatCanvas> {
         let canvas : CanvasElement = 
             document().create_element("canvas")
                 .ok().unwrap().try_into().unwrap();
         self.root.append_child(&canvas);
-        let canvas = FlatCanvas::create(canvas,size.0,size.1);
-        let out = ArenaFlatCanvas {
-            canvas: Rc::new(canvas),
-            index: Some(self.canvases.len()),
-            w
-        };
+        let canvas = FlatCanvas::create(canvas,self.canvases.len(),size.0,size.1,w);
+        let out = Rc::new(canvas);
         self.canvases.push(out.clone());
         out
     }
