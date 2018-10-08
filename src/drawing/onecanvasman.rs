@@ -8,7 +8,8 @@ use types::{ CPixel, RPixel, area_size, RFraction, cpixel, area };
 use drawing::alloc::{ Ticket, Allocator };
 use drawing::{ FlatCanvas, Drawing, Artist, AllCanvasMan };
 use shape::CanvasIdx;
-use arena::ArenaFlatCanvas;
+use drawing::allcanvasman::ArenaFlatCanvas;
+use program::CanvasWeave;
 
 pub struct DrawingHash(u64);
 
@@ -58,7 +59,7 @@ impl DrawingMemory {
 pub struct FlatCanvasManager {
     pub canvas: Option<ArenaFlatCanvas>,
     pub canvas_idx: Option<CanvasIdx>,
-    standin: FlatCanvas,
+    standin: ArenaFlatCanvas,
     cache: DrawingMemory,
     drawings: Vec<Drawing>,
     pub allocator: Allocator,
@@ -69,7 +70,7 @@ impl FlatCanvasManager {
         FlatCanvasManager {
             canvas: None,
             canvas_idx: None,
-            standin: acm.allocate(2,2),
+            standin: acm.flat_allocate(cpixel(2,2),CanvasWeave::Pixelate),
             cache: DrawingMemory::new(),
             drawings: Vec::<Drawing>::new(),
             allocator: Allocator::new(20),
@@ -82,8 +83,8 @@ impl FlatCanvasManager {
             // already in cache
             tdrh
         } else {
-            let size = a.measure(&self.standin);
-            let mask_size = a.measure_mask(&self.standin);
+            let size = a.measure(&self.standin.canvas());
+            let mask_size = a.measure_mask(&self.standin.canvas());
             let flat_alloc = &mut self.allocator;
             let req = flat_alloc.request(size);
             let mask_req = flat_alloc.request(mask_size + cpixel(2,2));

@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use arena::{ ArenaData, ArenaPrograms };
+use arena::{  ArenaPrograms };
 use shape::{ Shape };
 use composit::state::{ StateManager, StateExpr, StateValue, ComponentRedo };
 use drawing::{ Drawing, FlatCanvasManager };

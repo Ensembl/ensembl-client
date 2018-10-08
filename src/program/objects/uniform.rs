@@ -17,8 +17,6 @@ use drawing::Drawing;
 use program::data::{ DataBatch, DataGroup, Input };
 use program::objects::Object;
 
-use arena::ArenaData;
-
 #[derive(Clone,Copy,Debug)]
 pub enum UniformValue {
     Float(f32),
@@ -46,7 +44,7 @@ impl Object for ObjectUniform {
         self.val.insert(group.map(|g| g.id()),value);
     }
 
-    fn execute(&self, adata : &ArenaData, batch: &DataBatch) {
+    fn execute(&self, ctx: &glctx, batch: &DataBatch) {
         let gid = batch.group().id();
         
         if let Some(ref loc) = self.buf {
@@ -58,13 +56,13 @@ impl Object for ObjectUniform {
                 };
             match val {
                 Some(UniformValue::Vec3F(t,u,v)) =>
-                    adata.ctx.uniform3f(Some(loc),t,u,v),
+                    ctx.uniform3f(Some(loc),t,u,v),
                 Some(UniformValue::Vec2F(u,v)) =>
-                    adata.ctx.uniform2f(Some(loc),u,v),
+                    ctx.uniform2f(Some(loc),u,v),
                 Some(UniformValue::Float(v)) =>
-                    adata.ctx.uniform1f(Some(loc),v),
+                    ctx.uniform1f(Some(loc),v),
                 Some(UniformValue::Int(v)) =>
-                    adata.ctx.uniform1i(Some(loc),v),
+                    ctx.uniform1i(Some(loc),v),
                 None => ()
             }
         }

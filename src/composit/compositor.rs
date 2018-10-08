@@ -1,7 +1,9 @@
 use std::rc::Rc;
 use std::collections::HashMap;
 
-use arena::{ ArenaData, ArenaPrograms };
+use webgl_rendering_context::WebGLRenderingContext as glctx;
+
+use arena::{ ArenaPrograms };
 use composit::{ Component, StateManager };
 use drawing::{ Drawing, FlatCanvasManager, FlatCanvas, AllCanvasMan };
 use shape::{ ShapeContext, CanvasIdx };
@@ -28,13 +30,13 @@ impl DrawingSession {
     }
 
     fn apply_contexts(&mut self, progs: &mut ArenaPrograms,
-                      adata: &mut ArenaData) {
+                      ctx: &glctx) {
         for c in &mut self.contexts {
             c.reset();
         }
         for (ref gk,ref mut geom) in progs.map.iter_mut() {
             for c in &mut self.contexts {
-                c.into_objects(gk,&mut geom.data,adata);
+                c.into_objects(gk,&mut geom.data,ctx);
             }
         }
     }
@@ -44,12 +46,12 @@ impl DrawingSession {
     }
     
     fn finalise(&mut self, progs: &mut ArenaPrograms, 
-                acm: &mut AllCanvasMan, adata: &mut ArenaData) {
+                acm: &mut AllCanvasMan, ctx: &glctx) {
         let size = self.flatcanvman.allocate();
-        let canv = adata.flat_allocate(acm,size,CanvasWeave::Pixelate);
+        let canv = acm.flat_allocate(size,CanvasWeave::Pixelate);
         let canvas_idx = CanvasIdx::new(self,canv.index());
         self.flatcanvman.draw(canv,canvas_idx);
-        self.apply_contexts(progs,adata);
+        self.apply_contexts(progs,ctx);
     }
     
     fn drawings_for(&self, idx: u32) -> &Vec<Option<Drawing>> {
@@ -100,26 +102,26 @@ impl Compositor {
     }
     
     fn apply_contexts(&mut self, progs: &mut ArenaPrograms,
-                      adata: &mut ArenaData) {
+                      ctx: &glctx) {
         for c in &mut self.contexts {
             c.reset();
         }
         for (ref gk,ref mut geom) in progs.map.iter_mut() {
             for c in &mut self.contexts {
-                c.into_objects(gk,&mut geom.data,adata);
+                c.into_objects(gk,&mut geom.data,ctx);
             }
         }
     }
 
-    fn redraw_drawings(&mut self, progs: &mut ArenaPrograms, acm: &mut AllCanvasMan, adata: &mut ArenaData) {
+    fn redraw_drawings(&mut self, progs: &mut ArenaPrograms, acm: &mut AllCanvasMan, ctx: &glctx) {
         self.ds = Some(DrawingSession::new(acm));
         for (idx,c) in &mut self.campaigns {
             self.ds.as_mut().unwrap().redraw_campaign(*idx,c);
         }
-        self.ds.as_mut().unwrap().finalise(progs,acm,adata);
+        self.ds.as_mut().unwrap().finalise(progs,acm,ctx);
     }
 
-    fn redraw_objects(&mut self, progs: &mut ArenaPrograms, adata: &mut ArenaData) {
+    fn redraw_objects(&mut self, progs: &mut ArenaPrograms, ctx: &glctx) {
         for (i,c) in &mut self.campaigns {
             if c.is_on() {
                 let ds = self.ds.as_ref().unwrap();
@@ -130,17 +132,18 @@ impl Compositor {
     }
 
     pub fn into_objects(&mut self, progs: &mut ArenaPrograms,
+                        ctx: &glctx,
                         acm: &mut AllCanvasMan,
-                        adata: &mut ArenaData, oom: &StateManager) {
+                        oom: &StateManager) {
         let redo = self.calc_level(oom);
         if redo == ComponentRedo::None { return; }
         debug!("redraw","{:?}",redo);
         progs.clear_objects();
-        self.apply_contexts(progs,adata);
+        self.apply_contexts(progs,ctx);
         if redo == ComponentRedo::Major {
-            self.redraw_drawings(progs,acm,adata);
+            self.redraw_drawings(progs,acm,ctx);
         }
-        self.redraw_objects(progs,adata);
-        progs.finalize_objects(adata);
+        self.redraw_objects(progs,ctx);
+        progs.finalize_objects(ctx,acm);
     }
 }

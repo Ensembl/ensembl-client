@@ -6,12 +6,11 @@ use webgl_rendering_context::{
     WebGLProgram as glprog,
 };
 
-use arena::ArenaData;
-
 use program::source::{ Source, ProgramSource };
 use program::objects::Object;
 use program::data::{ DataBatch, DataGroup, BatchManager };
 use program::gpuspec::GPUSpec;
+use drawing::AllCanvasMan;
 
 pub struct ProgramAttribs {
     pub bman: BatchManager,
@@ -61,10 +60,10 @@ impl ProgramAttribs {
         }
     }
 
-    pub fn objects_final(&mut self, datam: &ArenaData) {
+    pub fn objects_final(&mut self, ctx: &glctx, acm: &AllCanvasMan) {
         for b in self.bman.iter() {
             for a in &mut self.objects.iter_mut() {
-                a.obj_final(&b,datam);
+                a.obj_final(&b,ctx,acm);
             }
         }
     }
@@ -104,27 +103,27 @@ impl Program {
         }
     }
 
-    pub fn use_program(&self, adata : &ArenaData) {
-        adata.ctx.use_program(Some(&self.prog));
+    pub fn use_program(&self, ctx: &glctx) {
+        ctx.use_program(Some(&self.prog));
     }
   
     pub fn get_object(&mut self, name: &str) -> Option<&mut Box<Object>> {
         self.data.get_object(name)
     }
   
-    pub fn draw(&mut self, adata: &ArenaData) {
-        self.use_program(adata);
+    pub fn draw(&mut self, ctx: &glctx) {
+        self.use_program(ctx);
         for b in self.data.bman.iter() {
             let mut main = None;
             for a in &self.data.objects {
                 if a.is_main() {
                     main = Some(a);
                 } else {
-                    a.execute(adata,&b);
+                    a.execute(ctx,&b);
                 }
             }
             if let Some(a) = main {
-                a.execute(adata,&b);
+                a.execute(ctx,&b);
             }
         }
     }        

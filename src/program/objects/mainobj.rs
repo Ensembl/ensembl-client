@@ -16,8 +16,7 @@ use wglraw;
 use drawing::Drawing;
 use program::data::{ DataBatch, DataGroup, Input };
 use program::objects::Object;
-
-use arena::ArenaData;
+use drawing::AllCanvasMan;
 
 pub struct ObjectMain {
     method: u32,
@@ -67,22 +66,22 @@ impl Object for ObjectMain {
         }
     }
 
-    fn obj_final(&mut self, batch: &DataBatch, adata: &ArenaData) {
-        self.buf.entry(batch.id()).or_insert_with(|| wglraw::init_buffer(&adata.ctx));
+    fn obj_final(&mut self, batch: &DataBatch, ctx: &glctx, _acm: &AllCanvasMan) {
+        self.buf.entry(batch.id()).or_insert_with(|| wglraw::init_buffer(ctx));
         if let Some(data) = self.data(batch) {
             if let Some(buf) = self.buffer(batch) {
-                adata.ctx.bind_buffer(glctx::ELEMENT_ARRAY_BUFFER,Some(&buf));
+                ctx.bind_buffer(glctx::ELEMENT_ARRAY_BUFFER,Some(&buf));
                 let data = TypedArray::<u16>::from(&(data[..])).buffer();
-                adata.ctx.buffer_data_1(glctx::ELEMENT_ARRAY_BUFFER,Some(&data),glctx::STATIC_DRAW);
+                ctx.buffer_data_1(glctx::ELEMENT_ARRAY_BUFFER,Some(&data),glctx::STATIC_DRAW);
             }
         }
     }
 
-    fn execute(&self, adata : &ArenaData, batch: &DataBatch) {
+    fn execute(&self, ctx: &glctx, batch: &DataBatch) {
         if let Some(data) = self.data(batch) {
             if let Some(buf) = self.buffer(batch) {
-                adata.ctx.bind_buffer(glctx::ELEMENT_ARRAY_BUFFER,Some(&buf));
-                adata.ctx.draw_elements(self.method,data.len() as i32,
+                ctx.bind_buffer(glctx::ELEMENT_ARRAY_BUFFER,Some(&buf));
+                ctx.draw_elements(self.method,data.len() as i32,
                                     glctx::UNSIGNED_SHORT,0);
             }
         }

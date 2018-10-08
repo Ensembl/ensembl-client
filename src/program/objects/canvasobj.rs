@@ -6,9 +6,9 @@ use webgl_rendering_context::{
     GLint, GLenum,
 };
 
-use arena::ArenaData;
 use program::data::DataBatch;
 use program::objects::Object;
+use drawing::AllCanvasMan;
 
 #[derive(Clone)]
 pub enum CanvasWeave {
@@ -74,15 +74,15 @@ impl ObjectCanvasTexture {
 }
 
 impl Object for ObjectCanvasTexture {
-    fn obj_final(&mut self, _batch: &DataBatch, adata: &ArenaData) {
+    fn obj_final(&mut self, _batch: &DataBatch, ctx: &glctx, acm: &AllCanvasMan) {
         // TODO: make into iterator
         let mut i = 0;
         loop {
-            let c = adata.get_canvas(i);
+            let c = acm.get_canvas(i);
             if let Some(c) = c {
                 self.textures.insert(
                     c.index() as u32,
-                    canvas_texture(&adata.ctx,c.canvas().element())
+                    canvas_texture(ctx,c.canvas().element())
                 );
                 i += 1;
             } else {
@@ -91,10 +91,10 @@ impl Object for ObjectCanvasTexture {
         }
     }
 
-    fn execute(&self, adata : &ArenaData, _batch: &DataBatch) {
+    fn execute(&self, ctx: &glctx, _batch: &DataBatch) {
         for (i,t) in self.textures.iter() {
-            adata.ctx.active_texture(glctx::TEXTURE0+*i);
-            adata.ctx.bind_texture(glctx::TEXTURE_2D,Some(&t));
+            ctx.active_texture(glctx::TEXTURE0+*i);
+            ctx.bind_texture(glctx::TEXTURE_2D,Some(&t));
         }
     }    
 }

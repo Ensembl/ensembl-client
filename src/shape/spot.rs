@@ -2,7 +2,8 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::collections::HashMap;
 
-use arena::ArenaData;
+use webgl_rendering_context::WebGLRenderingContext as glctx;
+
 use program::{ ProgramAttribs, DataGroup, ProgramType, PTSkin };
 use types::{ Colour };
 use composit::Compositor;
@@ -35,7 +36,7 @@ impl ShapeContext for SpotImpl {
         self.group.clear();
     }
 
-    fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+    fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs, _ctx: &glctx) {
         if geom_name.2 == PTSkin::Spot {
             let group = geom.new_group();
             self.group.insert(*geom_name,group);
@@ -63,7 +64,7 @@ impl ShapeContext for Spot {
         self.0.borrow_mut().reset();
     }
 
-    fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData) {
-        self.0.borrow_mut().into_objects(geom_name,geom,adata);
+    fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs, ctx: &glctx) {
+        self.0.borrow_mut().into_objects(geom_name,geom,ctx);
     }
 }

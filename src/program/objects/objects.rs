@@ -5,19 +5,13 @@ use stdweb::web::TypedArray;
 use stdweb::web::html_element::CanvasElement;
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
-    WebGLBuffer as glbuf,
-    WebGLTexture as gltex,
-    WebGLUniformLocation as gluni,
-    WebGLProgram as glprog,
-    GLint, GLenum,
 };
 
 use wglraw;
 use drawing::Drawing;
+use drawing::AllCanvasMan;
 use program::data::{ DataBatch, DataGroup, Input };
 use program::objects::UniformValue;
-
-use arena::ArenaData;
 
 /* This is the meat of each Object implementation */
 pub trait Object {
@@ -34,7 +28,7 @@ pub trait Object {
     fn is_main(&self) -> bool { false }
     fn add_index(&mut self, _batch: &DataBatch, _indexes: &[u16], _points: u16) {}
 
-    fn obj_final(&mut self, _batch: &DataBatch, _adata: &ArenaData) {}
-    fn execute(&self, _adata : &ArenaData, _batch: &DataBatch) {}
+    fn obj_final(&mut self, _batch: &DataBatch, _ctx: &glctx, _acm: &AllCanvasMan) {}
+    fn execute(&self, _ctx: &glctx, _batch: &DataBatch) {}
     fn clear(&mut self) {}
 }

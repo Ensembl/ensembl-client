@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use arena::ArenaFlatCanvas;
+use drawing::ArenaFlatCanvas;
 use program::UniformValue;
 use types::{ CFraction, CPixel, cfraction, cpixel };
 

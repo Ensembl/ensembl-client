@@ -1,7 +1,7 @@
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::collections::HashMap;
-use arena::ArenaData;
+use webgl_rendering_context::WebGLRenderingContext as glctx;
 use program::{ ProgramAttribs, DataGroup, ProgramType, PTSkin };
 use types::{ Colour };
 use composit::Compositor;
@@ -16,7 +16,7 @@ pub trait Shape {
 
 pub trait ShapeContext {
     fn reset(&mut self);
-    fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData);
+    fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs, ctx: &glctx);
 }
 
 #[derive(Clone)]

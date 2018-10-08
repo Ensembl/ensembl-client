@@ -13,43 +13,6 @@ use program::{ Program, GPUSpec, ProgramType, CanvasWeave };
 use composit::{ StateManager, Compositor };
 use types::{ Dot };
 
-#[derive(Clone)]
-pub struct ArenaFlatCanvas {
-    canvas: Rc<FlatCanvas>,
-    index: Option<usize>,
-    w: CanvasWeave
-}
-
-impl ArenaFlatCanvas {
-    pub fn canvas(&self) -> Rc<FlatCanvas> { 
-        self.canvas.clone()
-    }
-    
-    pub fn index(&self) -> usize { self.index.unwrap() }
-}
-
-#[allow(dead_code)]
-pub struct ArenaData {
-    pub canvases: Vec<ArenaFlatCanvas>,
-    pub ctx: glctx,
-}
-
-impl ArenaData {
-    pub fn flat_allocate(&mut self, acm: &mut AllCanvasMan, size: Dot<i32,i32>, w: CanvasWeave) -> ArenaFlatCanvas {
-        let out = ArenaFlatCanvas {
-            canvas: Rc::new(acm.allocate(size.0,size.1)),
-            index: Some(self.canvases.len()),
-            w
-        };
-        self.canvases.push(out.clone());
-        out
-    }
-    
-    pub fn get_canvas(&self, idx: i32) -> Option<&ArenaFlatCanvas> {
-        self.canvases.get(idx as usize)
-    }
-}
-
 pub struct ArenaPrograms {
     order: Vec<ProgramType>,
     pub map: HashMap<ProgramType,Program>,
@@ -63,16 +26,16 @@ impl ArenaPrograms {
         }        
     }
 
-    pub fn finalize_objects(&mut self, adata: &mut ArenaData) {
+    pub fn finalize_objects(&mut self, ctx: &glctx, acm: &mut AllCanvasMan) {
         for k in &self.order {
             let geom = self.map.get_mut(k).unwrap();
-            geom.data.objects_final(adata);
+            geom.data.objects_final(ctx,acm);
         }
     }
 }
 
 pub struct Arena {
-    pub data: Rc<RefCell<ArenaData>>,
+    pub ctx: glctx,
     pub progs: ArenaPrograms,
     acm: AllCanvasMan,
 }
@@ -94,12 +57,8 @@ impl Arena {
         let canvas = el.clone().try_into().unwrap();
         let ctx = wglraw::prepare_context(&canvas);
         let progs = build_programs(&ctx);
-        let data = Rc::new(RefCell::new(ArenaData {
-            ctx,
-            canvases: Vec::<ArenaFlatCanvas>::new()
-        }));
         let arena = Arena {
-            progs, data,
+            progs, ctx,
             acm: AllCanvasMan::new("#managedcanvasholder"),
         };
         arena
@@ -108,20 +67,19 @@ impl Arena {
     pub fn draw(&mut self, cman: &mut Compositor, oom: &StateManager, stage: &Stage) {
         /* maybe update scene */
         {
-            let (datam,progs,acm) = (
-                &mut self.data.borrow_mut(),
+            let (ctx,progs,acm) = (
+                &self.ctx,
                 &mut self.progs,
                 &mut self.acm);
-            cman.into_objects(progs,acm,datam,oom);
+            cman.into_objects(progs,&self.ctx,acm,oom);
         }
         /* prepare arena */
         {
-            let ctx = &self.data.borrow().ctx;
+            let ctx = &self.ctx;
             ctx.enable(glctx::DEPTH_TEST);
             ctx.depth_func(glctx::LEQUAL);
         }
         /* draw each geometry */
-        let datam = &mut self.data.borrow_mut();
         for k in &self.progs.order {
             let geom = self.progs.map.get_mut(k).unwrap();
             let u = stage.get_uniforms();
@@ -130,13 +88,12 @@ impl Arena {
                     obj.set_uniform(None,*value);
                 }
             }
-            geom.draw(datam);
+            geom.draw(&self.ctx);
         }
     }
     
     pub fn update_viewport(&self, s: &Stage) {
-        let datam = &mut self.data.borrow_mut();
         let sz = s.get_size();
-        datam.ctx.viewport(0,0,sz.0,sz.1);
+        self.ctx.viewport(0,0,sz.0,sz.1);
     }
 }
