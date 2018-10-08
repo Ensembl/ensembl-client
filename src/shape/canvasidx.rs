@@ -2,7 +2,8 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::collections::HashMap;
 
-use arena::ArenaData;
+use webgl_rendering_context::WebGLRenderingContext as glctx;
+
 use program::{ ProgramAttribs, DataGroup, ProgramType, PTSkin };
 use types::{ Colour };
 use composit::{ Compositor, DrawingSession };
@@ -37,11 +38,11 @@ impl ShapeContext for CanvasIdxImpl {
         self.group.clear();
     }
 
-    fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs, _adata: &ArenaData) {
+    fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs, _ctx: &glctx) {
         if geom_name.2 == PTSkin::Texture {
             let group = geom.new_group();
             self.group.insert(*geom_name,group);
-            if let Some(obj) = geom.get_object("uSpot") {
+            if let Some(obj) = geom.get_object("uSampler") {
                 obj.set_uniform(Some(group),UniformValue::Int(self.index as i32));
             }
         }
@@ -65,7 +66,7 @@ impl ShapeContext for CanvasIdx {
         self.0.borrow_mut().reset();
     }
 
-    fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs, adata: &ArenaData) {
-        self.0.borrow_mut().into_objects(geom_name,geom,adata);
+    fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs, ctx: &glctx) {
+        self.0.borrow_mut().into_objects(geom_name,geom,ctx);
     }
 }

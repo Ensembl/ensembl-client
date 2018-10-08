@@ -14,9 +14,9 @@ use webgl_rendering_context::{
 
 use wglraw;
 use drawing::Drawing;
+use drawing::AllCanvasMan;
 use program::data::{ DataBatch, DataGroup, Input };
 
-use arena::ArenaData;
 use program::objects::Object;
 
 pub struct ObjectAttrib {
@@ -50,19 +50,18 @@ impl ObjectAttrib {
 }
 
 impl Object for ObjectAttrib {
-    fn obj_final(&mut self, batch: &DataBatch, adata: &ArenaData) {
-        self.buf.entry(batch.id()).or_insert_with(|| wglraw::init_buffer(&adata.ctx));
+    fn obj_final(&mut self, batch: &DataBatch, ctx: &glctx, _acm: &AllCanvasMan) {
+        self.buf.entry(batch.id()).or_insert_with(|| wglraw::init_buffer(ctx));
         if let Some(data) = self.data(batch) {
             if let Some(buf) = self.buffer(batch) {
-                adata.ctx.bind_buffer(glctx::ARRAY_BUFFER,Some(&buf));
+                ctx.bind_buffer(glctx::ARRAY_BUFFER,Some(&buf));
                 let data = TypedArray::<f32>::from(&(data[..])).buffer();
-                adata.ctx.buffer_data_1(glctx::ARRAY_BUFFER,Some(&data),glctx::STATIC_DRAW);
+                ctx.buffer_data_1(glctx::ARRAY_BUFFER,Some(&data),glctx::STATIC_DRAW);
             }
         }
     }
 
-    fn execute(&self, adata : &ArenaData, batch: &DataBatch) {
-        let ctx = &adata.ctx;
+    fn execute(&self, ctx: &glctx, batch: &DataBatch) {
         if let Some(buf) = self.buffer(batch) {
             ctx.enable_vertex_attrib_array(self.loc);
             ctx.bind_buffer(glctx::ARRAY_BUFFER,Some(buf));

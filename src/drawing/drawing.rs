@@ -8,7 +8,7 @@ use types::{ CPixel, RPixel, area_size, RFraction, cpixel, area };
 use drawing::alloc::{ Ticket, Allocator };
 use drawing::{ FlatCanvas, Artist, FlatCanvasManager };
 use shape::CanvasIdx;
-use arena::ArenaFlatCanvas;
+use drawing::allcanvasman::ArenaFlatCanvas;
 
 pub struct Artwork {
     pub pos: RFraction,
