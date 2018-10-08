@@ -3,7 +3,7 @@ use std::rc::Rc;
 use arena::{  ArenaPrograms };
 use shape::{ Shape };
 use composit::state::{ StateManager, StateExpr, StateValue, ComponentRedo };
-use drawing::{ Drawing, FlatCanvasManager };
+use drawing::{ Drawing, OneCanvasManager };
 
 pub struct Component {
     prev_value: StateValue,
@@ -43,7 +43,7 @@ impl Component {
     }
     
     pub fn draw_drawings(&mut self,
-                        leafdrawman: &mut FlatCanvasManager) -> Vec<Option<Drawing>> {
+                        leafdrawman: &mut OneCanvasManager) -> Vec<Option<Drawing>> {
         let mut drawings = Vec::<Option<Drawing>>::new();
         for s in &mut self.shapes {
             let mut drawing = None;
@@ -57,7 +57,7 @@ impl Component {
     }
 
     pub fn into_objects(&mut self, progs: &mut ArenaPrograms,
-                        leafdrawman: &FlatCanvasManager,
+                        leafdrawman: &OneCanvasManager,
                         drawings: &Vec<Option<Drawing>>) {
         for (i,mut s) in self.shapes.iter().enumerate() {
             let req = &drawings[i];

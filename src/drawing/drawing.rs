@@ -6,9 +6,8 @@ use std::collections::hash_map::DefaultHasher;
 
 use types::{ CPixel, RPixel, area_size, RFraction, cpixel, area };
 use drawing::alloc::{ Ticket, Allocator };
-use drawing::{ FlatCanvas, Artist, FlatCanvasManager };
+use drawing::{ FlatCanvas, Artist, OneCanvasManager };
 use shape::CanvasIdx;
-use drawing::allcanvasman::ArenaFlatCanvas;
 
 pub struct Artwork {
     pub pos: RFraction,
@@ -37,16 +36,16 @@ impl Drawing {
             }))
     }
 
-    pub fn draw(&self, leafdrawman: &FlatCanvasManager) {
+    pub fn draw(&self, leafdrawman: &OneCanvasManager) {
         let pos = leafdrawman.allocator.position(&self.0.ticket);
-        self.0.gen.draw(&mut leafdrawman.canvas.as_ref().unwrap().canvas(),pos);
+        self.0.gen.draw(&mut leafdrawman.canvas.as_ref().unwrap(),pos);
         let mask_pos = leafdrawman.allocator.position(&self.0.mask_ticket);
-        self.0.gen.draw_mask(&mut leafdrawman.canvas.as_ref().unwrap().canvas(),mask_pos + cpixel(1,1));
+        self.0.gen.draw_mask(&mut leafdrawman.canvas.as_ref().unwrap(),mask_pos + cpixel(1,1));
     }
 
-    pub fn artwork(&self, src: &FlatCanvasManager) -> Artwork {
+    pub fn artwork(&self, src: &OneCanvasManager) -> Artwork {
         let canvas = src.canvas.as_ref().unwrap();
-        let cs = canvas.canvas().size().as_fraction();
+        let cs = canvas.size().as_fraction();
         let m = self.measure(src);
         let mm = self.measure_mask(src).inset(area(cpixel(1,1),cpixel(1,1)));
         Artwork {
@@ -57,13 +56,13 @@ impl Drawing {
         }
     }
     
-    pub fn measure(&self, src: &FlatCanvasManager) -> RPixel {
+    pub fn measure(&self, src: &OneCanvasManager) -> RPixel {
         let size = src.allocator.size(&self.0.ticket);
         let pos = src.allocator.position(&self.0.ticket);
         area_size(pos,size)
     }
 
-    pub fn measure_mask(&self, src: &FlatCanvasManager) -> RPixel {
+    pub fn measure_mask(&self, src: &OneCanvasManager) -> RPixel {
         let size = src.allocator.size(&self.0.mask_ticket);
         let pos = src.allocator.position(&self.0.mask_ticket);
         area_size(pos,size)

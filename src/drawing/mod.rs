@@ -12,10 +12,10 @@ pub use self::artist::Artist;
 
 pub use self::drawing::{ Drawing, Artwork };
 
-pub use self::allcanvasman::{ AllCanvasMan, ArenaFlatCanvas };
+pub use self::allcanvasman::{ AllCanvasMan };
 
 pub use self::onecanvasman::{
-    FlatCanvasManager, DrawingHash
+    OneCanvasManager, DrawingHash
 };
 
 pub use self::text::text_texture;

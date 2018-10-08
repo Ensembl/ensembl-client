@@ -5,13 +5,13 @@ use webgl_rendering_context::WebGLRenderingContext as glctx;
 
 use arena::{ ArenaPrograms };
 use composit::{ Component, StateManager };
-use drawing::{ Drawing, FlatCanvasManager, FlatCanvas, AllCanvasMan };
+use drawing::{ Drawing, OneCanvasManager, FlatCanvas, AllCanvasMan };
 use shape::{ ShapeContext, CanvasIdx };
 use composit::state::ComponentRedo;
 use program::{ CanvasWeave };
 
 pub struct DrawingSession {
-    flatcanvman: FlatCanvasManager,
+    onecanvman: OneCanvasManager,
     contexts: Vec<Box<ShapeContext>>,
     all_drawings: HashMap<u32,Vec<Option<Drawing>>>
 }
@@ -19,7 +19,7 @@ pub struct DrawingSession {
 impl DrawingSession {
     fn new(acm: &mut AllCanvasMan) -> DrawingSession {
         DrawingSession {
-            flatcanvman: FlatCanvasManager::new(acm),
+            onecanvman: OneCanvasManager::new(acm),
             all_drawings: HashMap::<u32,Vec<Option<Drawing>>>::new(),
             contexts: Vec::<Box<ShapeContext>>::new(),
         }
@@ -42,15 +42,15 @@ impl DrawingSession {
     }
 
     fn redraw_campaign(&mut self, idx: u32, c: &mut Component) {
-        self.all_drawings.insert(idx,c.draw_drawings(&mut self.flatcanvman));
+        self.all_drawings.insert(idx,c.draw_drawings(&mut self.onecanvman));
     }
     
     fn finalise(&mut self, progs: &mut ArenaPrograms, 
                 acm: &mut AllCanvasMan, ctx: &glctx) {
-        let size = self.flatcanvman.allocate();
+        let size = self.onecanvman.allocate();
         let canv = acm.flat_allocate(size,CanvasWeave::Pixelate);
         let canvas_idx = CanvasIdx::new(self,canv.index());
-        self.flatcanvman.draw(canv,canvas_idx);
+        self.onecanvman.draw(canv,canvas_idx);
         self.apply_contexts(progs,ctx);
     }
     
@@ -126,7 +126,7 @@ impl Compositor {
             if c.is_on() {
                 let ds = self.ds.as_ref().unwrap();
                 let d = ds.drawings_for(*i);
-                c.into_objects(progs,&ds.flatcanvman,d);
+                c.into_objects(progs,&ds.onecanvman,d);
             }
         }
     }

@@ -7,7 +7,6 @@ use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
 };
 
-use wglraw;
 use drawing::Drawing;
 use drawing::AllCanvasMan;
 use program::data::{ DataBatch, DataGroup, Input };

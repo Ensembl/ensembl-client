@@ -11,6 +11,8 @@ use types::{
     Colour, CPixel, RPixel, cpixel, Dot
 };
 
+use program::CanvasWeave;
+
 #[derive(Clone,Copy,Debug)]
 pub enum FontVariety {
     Normal,
@@ -51,15 +53,18 @@ pub struct FlatCanvas {
     context : CanvasRenderingContext2d,
     width: i32,
     height: i32,
+    index: usize,
+    weave: CanvasWeave
 }
 
 impl FlatCanvas {    
-    pub fn create(canvas: CanvasElement, width: i32, height: i32) -> FlatCanvas {
+    pub fn create(canvas: CanvasElement, index: usize,
+                  width: i32, height: i32, weave: CanvasWeave) -> FlatCanvas {
         canvas.set_width(width as u32);
         canvas.set_height(height as u32);
         let context : CanvasRenderingContext2d = canvas.get_context().unwrap();
         context.set_fill_style_color("black");
-        FlatCanvas { canvas, context, height, width }
+        FlatCanvas { canvas, context, height, width, index, weave }
     }
     
     pub fn remove(&self) {
@@ -116,5 +121,8 @@ impl FlatCanvas {
     
     pub fn size(&self) -> CPixel {
         cpixel(self.width,self.height)
-    }    
+    }
+    
+    pub fn index(&self) -> usize { self.index }
+    pub fn weave(&self) -> &CanvasWeave { &self.weave }
 }
