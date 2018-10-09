@@ -30,4 +30,5 @@ pub trait Artist {
     fn select_canvas<'a>(&self, ds: &'a mut DrawingSession) -> &'a mut OneCanvasManager {
         ds.get_ocm(CanvasWeave::Pixelate)
     }
+    fn margin(&self) -> CPixel { cpixel(0,0) }
 }

@@ -24,7 +24,8 @@ pub struct Artwork {
 pub struct DrawingImpl {
     gen: Rc<Artist>,
     ticket: Ticket,
-    mask_ticket: Ticket
+    mask_ticket: Ticket,
+    margin: CPixel
 }
 
 #[derive(Clone)]
@@ -32,15 +33,16 @@ pub struct Drawing(Rc<DrawingImpl>);
 
 impl Drawing {
     pub fn new(gen: Rc<Artist>, ticket: Ticket, mask_ticket: Ticket) -> Drawing {
+        let margin = gen.margin();
         Drawing(
             Rc::new(DrawingImpl {
-                gen, ticket, mask_ticket
+                gen, ticket, mask_ticket, margin
             }))
     }
 
     pub fn draw(&self, src: &OneCanvasManager) {
         let pos = src.ticket_pos(&self.0.ticket);
-        self.0.gen.draw(&mut src.canvas.as_ref().unwrap(),pos);
+        self.0.gen.draw(&mut src.canvas.as_ref().unwrap(),pos + self.0.margin);
         let mask_pos = src.ticket_pos(&self.0.mask_ticket);
         self.0.gen.draw_mask(&mut src.canvas.as_ref().unwrap(),mask_pos + cpixel(1,1));
     }
@@ -49,7 +51,7 @@ impl Drawing {
         let src = self.0.gen.select_canvas(ds);
         let canvas = src.canvas.as_ref().unwrap();
         let cs = canvas.size().as_fraction();
-        let m = self.measure(src);
+        let m = self.measure(src).inset(area(self.0.margin,self.0.margin));
         let mm = self.measure_mask(src).inset(area(cpixel(1,1),cpixel(1,1)));
         Artwork {
             pos: m.as_fraction() / cs,

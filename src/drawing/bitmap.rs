@@ -1,10 +1,8 @@
 use std::rc::Rc;
 
-use types::{ CPixel, area_size };
-
 use drawing::{ FlatCanvas, Artist, DrawingSession, OneCanvasManager };
 use program::CanvasWeave;
-
+use types::{ CPixel, area_size, cpixel };
 
 struct BitmapArtist {
     data: Vec<u8>,
@@ -31,6 +29,7 @@ impl Artist for BitmapArtist {
         ds.get_ocm(if self.blur { CanvasWeave::Blur } else { CanvasWeave::Pixelate })
     }
 
+    fn margin(&self) -> CPixel { cpixel(1,1) }
 }
 
 pub fn bitmap_texture(data: Vec<u8>, size: CPixel, blur: bool) -> Rc<Artist> {
