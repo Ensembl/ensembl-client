@@ -6,7 +6,7 @@ use program::{ ProgramAttribs, DataGroup, ProgramType, PTSkin };
 use types::{ Colour };
 use composit::Compositor;
 use arena::{  ArenaPrograms };
-use drawing::{ Artist, Artwork, Drawing, OneCanvasManager };
+use drawing::{ Artist, Artwork, Drawing, OneCanvasManager, DrawingSession };
 use shape::Spot;
 
 pub trait Shape {
@@ -28,17 +28,18 @@ impl DrawnShape {
         }
     }
     
-    pub fn redraw(&mut self, ocm: &mut OneCanvasManager) {
+    pub fn redraw(&mut self, ds: &mut DrawingSession) {
         if let Some(a) = self.shape.get_artist() {
+            let ocm = a.select_canvas(ds);
             self.drawing = Some(ocm.add_request(a));
         }
     }
     
     pub fn into_objects(&self, progs: &mut ArenaPrograms,
-                        ocm: &OneCanvasManager) {
+                        ds: &mut DrawingSession) {
         let geom_name = self.shape.get_geometry();
         if let Some(geom) = progs.map.get_mut(&geom_name) {
-            let artwork = self.drawing.as_ref().map(|r| r.artwork(&ocm));
+            let artwork = self.drawing.as_ref().map(|r| r.artwork(ds));
             self.shape.into_objects(geom_name,&mut geom.data,artwork);
         }
     }    

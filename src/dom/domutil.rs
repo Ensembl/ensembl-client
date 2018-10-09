@@ -28,6 +28,7 @@ pub fn query_selector(el: &Element, sel: &str) -> Element {
 }
 
 pub fn query_select(sel: &str) -> Element {
+    console!("{:?}",document().query_selector(sel)); // XXX
     document().query_selector(sel).unwrap().unwrap()
 }
 
