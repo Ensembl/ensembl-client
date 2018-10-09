@@ -61,7 +61,7 @@ pub struct OneCanvasManager {
     standin: Rc<FlatCanvas>,
     cache: DrawingMemory,
     drawings: Vec<Drawing>,
-    pub allocator: Allocator,
+    allocator: Allocator,
 }
 
 impl OneCanvasManager {
@@ -111,4 +111,14 @@ impl OneCanvasManager {
     pub fn allocate(&mut self) -> CPixel {
         self.allocator.allocate()
     }
+    
+    pub fn ticket_pos(&self, t: &Ticket) -> CPixel {
+        self.allocator.position(&t)
+    }
+    
+    pub fn ticket_size(&self, t: &Ticket) -> RPixel {
+        let size = self.allocator.size(t);
+        let pos = self.allocator.position(t);
+        area_size(pos,size)
+    }    
 }

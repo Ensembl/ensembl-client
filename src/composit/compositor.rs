@@ -13,14 +13,12 @@ use program::{ CanvasWeave };
 pub struct DrawingSession {
     onecanvman: OneCanvasManager,
     contexts: Vec<Box<ShapeContext>>,
-    all_drawings: HashMap<u32,Vec<Option<Drawing>>>
 }
 
 impl DrawingSession {
     fn new(acm: &mut AllCanvasMan) -> DrawingSession {
         DrawingSession {
             onecanvman: OneCanvasManager::new(acm),
-            all_drawings: HashMap::<u32,Vec<Option<Drawing>>>::new(),
             contexts: Vec::<Box<ShapeContext>>::new(),
         }
     }
@@ -41,8 +39,8 @@ impl DrawingSession {
         }
     }
 
-    fn redraw_campaign(&mut self, idx: u32, c: &mut Component) {
-        self.all_drawings.insert(idx,c.draw_drawings(&mut self.onecanvman));
+    fn redraw_component(&mut self, idx: u32, c: &mut Component) {
+        c.draw_drawings(&mut self.onecanvman);
     }
     
     fn finalise(&mut self, progs: &mut ArenaPrograms, 
@@ -53,16 +51,12 @@ impl DrawingSession {
         self.onecanvman.draw(canv,canvas_idx);
         self.apply_contexts(progs,ctx);
     }
-    
-    fn drawings_for(&self, idx: u32) -> &Vec<Option<Drawing>> {
-        self.all_drawings.get(&idx).unwrap()
-    }
 }
 
 pub struct Compositor {
     idx: u32,
     contexts: Vec<Box<ShapeContext>>,
-    campaigns: HashMap<u32,Component>,
+    components: HashMap<u32,Component>,
     ds: Option<DrawingSession>
 }
 
@@ -72,7 +66,7 @@ pub struct ComponentRemover(u32);
 impl Compositor {
     pub fn new() -> Compositor {
         Compositor {
-            campaigns: HashMap::<u32,Component>::new(),
+            components: HashMap::<u32,Component>::new(),
             contexts: Vec::<Box<ShapeContext>>::new(),
             ds: None,
             idx: 0
@@ -85,17 +79,17 @@ impl Compositor {
     
     pub fn add_component(&mut self, c: Component) -> ComponentRemover {
         self.idx += 1;
-        self.campaigns.insert(self.idx,c);
+        self.components.insert(self.idx,c);
         ComponentRemover(self.idx)
     }
 
     pub fn remove(&mut self, k: ComponentRemover) {
-        self.campaigns.remove(&k.0);
+        self.components.remove(&k.0);
     }
     
     fn calc_level(&mut self, oom: &StateManager) -> ComponentRedo {
         let mut redo = ComponentRedo::None;
-        for c in &mut self.campaigns.values_mut() {
+        for c in &mut self.components.values_mut() {
             redo = redo | c.update_state(oom);
         }
         redo
@@ -115,18 +109,17 @@ impl Compositor {
 
     fn redraw_drawings(&mut self, progs: &mut ArenaPrograms, acm: &mut AllCanvasMan, ctx: &glctx) {
         self.ds = Some(DrawingSession::new(acm));
-        for (idx,c) in &mut self.campaigns {
-            self.ds.as_mut().unwrap().redraw_campaign(*idx,c);
+        for (idx,c) in &mut self.components {
+            self.ds.as_mut().unwrap().redraw_component(*idx,c);
         }
         self.ds.as_mut().unwrap().finalise(progs,acm,ctx);
     }
 
     fn redraw_objects(&mut self, progs: &mut ArenaPrograms, ctx: &glctx) {
-        for (i,c) in &mut self.campaigns {
+        for (i,c) in &mut self.components {
             if c.is_on() {
                 let ds = self.ds.as_ref().unwrap();
-                let d = ds.drawings_for(*i);
-                c.into_objects(progs,&ds.onecanvman,d);
+                c.into_objects(progs,&ds.onecanvman);
             }
         }
     }
