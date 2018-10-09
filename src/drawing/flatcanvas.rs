@@ -148,9 +148,9 @@ pub struct FlatCanvas(Rc<RefCell<FlatCanvasImpl>>);
 
 impl FlatCanvas {
     pub fn create(canvas: CanvasElement, index: usize,
-                  width: i32, height: i32, weave: CanvasWeave) -> FlatCanvas {
+                  width: i32, height: i32, weave: &CanvasWeave) -> FlatCanvas {
         FlatCanvas(Rc::new(RefCell::new(
-            FlatCanvasImpl::create(canvas,index,width,height,weave)
+            FlatCanvasImpl::create(canvas,index,width,height,weave.clone())
         )))
     }
 

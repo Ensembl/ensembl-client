@@ -37,7 +37,7 @@ fn battenberg() -> Rc<Artist> {
     bitmap_texture(vec! { 0,0,255,255,
                           255,0,0,255,
                           0,255,0,255,
-                          255,255,0,255 },cpixel(2,2))
+                          255,255,0,255 },cpixel(2,2),true)
 }
 
 fn measure(c: &mut Component, cs: &ColourSpec, cs2: &ColourSpec) {
@@ -166,13 +166,13 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                                 vec! { 0,0,255,255,
                                          255,0,0,255,
                                          0,255,0,255,
-                                         255,255,0,255 },cpixel(4,1));
+                                         255,255,0,255 },cpixel(4,1),true);
             c.add_shape(stretch_texture(tx,&area_size(cleaf(-500.,y-5),cleaf(1000.,10))));
             let tx = bitmap_texture(
                                 vec! { 0,0,255,255,
                                          255,0,0,255,
                                          0,255,0,255,
-                                         255,255,0,255 },cpixel(2,2));
+                                         255,255,0,255 },cpixel(2,2),true);
             c.add_shape(pin_texture(tx,&cleaf(0.,y-25),&cpixel(0,0),&cpixel(10,10).anchor(A_TOPLEFT)));
             c_odd.add_shape(stretch_rectangle(&area_size(cleaf(-200.,y-20),cleaf(100.,5)),&red));
             c_even.add_shape(stretch_rectangle(&area_size(cleaf(-200.,y-15),cleaf(100.,5)),&green));
@@ -260,7 +260,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
     let tx = bitmap_texture(vec! { 0,0,255,255,
                                  255,0,0,255,
                                  0,255,0,255,
-                                 255,255,0,255 },cpixel(1,4));
+                                 255,255,0,255 },cpixel(1,4),true);
     c.add_shape(fix_texture(tx, 
                             &cedge(TOPLEFT,cpixel(sw/2-5,0)),
                             &cpixel(1,sh).anchor(A_TOPLEFT)));
