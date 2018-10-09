@@ -42,24 +42,16 @@ impl Component {
         self.shapes.push(DrawnShape::new(item));
     }
     
-    pub fn draw_drawings(&mut self,
-                        leafdrawman: &mut OneCanvasManager) {
+    pub fn draw_drawings(&mut self, leafdrawman: &mut OneCanvasManager) {
         for s in &mut self.shapes {
-            if let Some(a) = s.shape().get_artist() {
-                s.set_drawing(leafdrawman.add_request(a));
-            }
+            s.redraw(leafdrawman);
         }
     }
 
     pub fn into_objects(&mut self, progs: &mut ArenaPrograms,
                         leafdrawman: &OneCanvasManager) {
-        for (i,mut s) in self.shapes.iter().enumerate() {
-            let req = s.get_drawing();
-            let artwork = req.as_ref().map(|r| r.artwork(&leafdrawman));
-            let geom_name = s.shape().get_geometry();
-            if let Some(geom) = progs.map.get_mut(&geom_name) {                
-                s.shape().into_objects(geom_name,&mut geom.data,artwork);
-            }
+        for s in &mut self.shapes {
+            s.into_objects(progs,leafdrawman);
         }
     }
 }

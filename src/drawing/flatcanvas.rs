@@ -1,3 +1,6 @@
+use std::rc::Rc;
+use std::cell::RefCell;
+
 use stdweb::web::{
     INode,
     TextBaseline,
@@ -6,10 +9,13 @@ use stdweb::web::{
 
 use stdweb::web::html_element::CanvasElement;
 use stdweb::web::TypedArray;
+use webgl_rendering_context::WebGLRenderingContext as glctx;
 
 use types::{
     Colour, CPixel, RPixel, cpixel, Dot
 };
+use shape::{ CanvasIdx, ShapeContext };
+use arena::{ ArenaPrograms };
 
 use program::CanvasWeave;
 
@@ -48,23 +54,33 @@ impl FCFont {
     }
 }
 
-pub struct FlatCanvas {
+pub struct FlatCanvasImpl {
     canvas: CanvasElement,
     context : CanvasRenderingContext2d,
     width: i32,
     height: i32,
-    index: usize,
-    weave: CanvasWeave
+    weave: CanvasWeave,
+    index: CanvasIdx
 }
 
-impl FlatCanvas {    
+impl FlatCanvasImpl {    
     pub fn create(canvas: CanvasElement, index: usize,
-                  width: i32, height: i32, weave: CanvasWeave) -> FlatCanvas {
+                  width: i32, height: i32, weave: CanvasWeave) -> FlatCanvasImpl {
         canvas.set_width(width as u32);
         canvas.set_height(height as u32);
         let context : CanvasRenderingContext2d = canvas.get_context().unwrap();
         context.set_fill_style_color("black");
-        FlatCanvas { canvas, context, height, width, index, weave }
+        FlatCanvasImpl {
+            canvas, context, height, width,  weave,
+            index: CanvasIdx::new(index)
+        }
+    }
+
+    pub fn apply_context(&mut self, progs: &mut ArenaPrograms, ctx: &glctx) {
+        self.index.reset();
+        for (ref gk,ref mut geom) in progs.map.iter_mut() {
+            self.index.into_objects(gk,&mut geom.data,ctx);
+        }
     }
     
     pub fn remove(&self) {
@@ -123,6 +139,53 @@ impl FlatCanvas {
         cpixel(self.width,self.height)
     }
     
-    pub fn index(&self) -> usize { self.index }
+    pub fn index(&self) -> &CanvasIdx { &self.index }
     pub fn weave(&self) -> &CanvasWeave { &self.weave }
+}
+
+#[derive(Clone)]
+pub struct FlatCanvas(Rc<RefCell<FlatCanvasImpl>>);
+
+impl FlatCanvas {
+    pub fn create(canvas: CanvasElement, index: usize,
+                  width: i32, height: i32, weave: CanvasWeave) -> FlatCanvas {
+        FlatCanvas(Rc::new(RefCell::new(
+            FlatCanvasImpl::create(canvas,index,width,height,weave)
+        )))
+    }
+
+    pub fn apply_context(&mut self, progs: &mut ArenaPrograms, ctx: &glctx) {
+        self.0.borrow_mut().apply_context(progs,ctx);
+    }
+    
+    pub fn remove(&self) {
+        self.0.borrow().remove();
+    }
+    
+    pub fn text(&self,text : &str, pos: CPixel, font: &FCFont, col: &Colour, bg: &Colour) -> (i32,i32) {
+        self.0.borrow().text(text,pos,font,col,bg)
+    }
+    
+    pub fn bitmap(&self, data: &Vec<u8>, coords: RPixel) {
+        self.0.borrow().bitmap(data,coords);
+    }
+    
+    pub fn rectangle(&self, coords: RPixel, col: &Colour) {
+        self.0.borrow().rectangle(coords,col);
+    }
+
+    pub fn measure(&self,text : &str, font: &FCFont) -> CPixel {
+        self.0.borrow().measure(text,font)
+    }
+    
+    pub fn element(&self) -> CanvasElement {
+        self.0.borrow().element().clone()
+    }
+    
+    pub fn size(&self) -> CPixel {
+        self.0.borrow().size()
+    }
+    
+    pub fn index(&self) -> CanvasIdx { self.0.borrow().index().clone() }
+    pub fn weave(&self) -> CanvasWeave { self.0.borrow().weave.clone() }
 }

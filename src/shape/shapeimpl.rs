@@ -5,7 +5,8 @@ use webgl_rendering_context::WebGLRenderingContext as glctx;
 use program::{ ProgramAttribs, DataGroup, ProgramType, PTSkin };
 use types::{ Colour };
 use composit::Compositor;
-use drawing::{ Artist, Artwork, Drawing };
+use arena::{  ArenaPrograms };
+use drawing::{ Artist, Artwork, Drawing, OneCanvasManager };
 use shape::Spot;
 
 pub trait Shape {
@@ -27,17 +28,20 @@ impl DrawnShape {
         }
     }
     
-    pub fn shape(&self) -> &Box<Shape> { // XXX
-        &self.shape
+    pub fn redraw(&mut self, ocm: &mut OneCanvasManager) {
+        if let Some(a) = self.shape.get_artist() {
+            self.drawing = Some(ocm.add_request(a));
+        }
     }
     
-    pub fn set_drawing(&mut self, d: Drawing) { // XXX
-        self.drawing = Some(d)
-    }
-    
-    pub fn get_drawing(&self) -> Option<&Drawing> { // XXX
-        self.drawing.as_ref()
-    }
+    pub fn into_objects(&self, progs: &mut ArenaPrograms,
+                        ocm: &OneCanvasManager) {
+        let geom_name = self.shape.get_geometry();
+        if let Some(geom) = progs.map.get_mut(&geom_name) {
+            let artwork = self.drawing.as_ref().map(|r| r.artwork(&ocm));
+            self.shape.into_objects(geom_name,&mut geom.data,artwork);
+        }
+    }    
 }
 
 pub trait ShapeContext {

@@ -12,44 +12,25 @@ use program::{ CanvasWeave };
 
 pub struct DrawingSession {
     onecanvman: OneCanvasManager,
-    contexts: Vec<Box<ShapeContext>>,
 }
 
 impl DrawingSession {
     fn new(acm: &mut AllCanvasMan) -> DrawingSession {
         DrawingSession {
             onecanvman: OneCanvasManager::new(acm),
-            contexts: Vec::<Box<ShapeContext>>::new(),
         }
     }
 
-    pub fn add_context(&mut self, ctx: Box<ShapeContext>) {
-        self.contexts.push(ctx);
-    }
-
-    fn apply_contexts(&mut self, progs: &mut ArenaPrograms,
-                      ctx: &glctx) {
-        for c in &mut self.contexts {
-            c.reset();
-        }
-        for (ref gk,ref mut geom) in progs.map.iter_mut() {
-            for c in &mut self.contexts {
-                c.into_objects(gk,&mut geom.data,ctx);
-            }
-        }
-    }
-
-    fn redraw_component(&mut self, idx: u32, c: &mut Component) {
+    fn redraw_component(&mut self, c: &mut Component) {
         c.draw_drawings(&mut self.onecanvman);
     }
     
     fn finalise(&mut self, progs: &mut ArenaPrograms, 
                 acm: &mut AllCanvasMan, ctx: &glctx) {
         let size = self.onecanvman.allocate();
-        let canv = acm.flat_allocate(size,CanvasWeave::Pixelate);
-        let canvas_idx = CanvasIdx::new(self,canv.index());
-        self.onecanvman.draw(canv,canvas_idx);
-        self.apply_contexts(progs,ctx);
+        let mut canv = acm.flat_allocate(size,CanvasWeave::Pixelate);
+        canv.apply_context(progs,ctx);
+        self.onecanvman.draw(canv);
     }
 }
 
@@ -110,7 +91,7 @@ impl Compositor {
     fn redraw_drawings(&mut self, progs: &mut ArenaPrograms, acm: &mut AllCanvasMan, ctx: &glctx) {
         self.ds = Some(DrawingSession::new(acm));
         for (idx,c) in &mut self.components {
-            self.ds.as_mut().unwrap().redraw_component(*idx,c);
+            self.ds.as_mut().unwrap().redraw_component(c);
         }
         self.ds.as_mut().unwrap().finalise(progs,acm,ctx);
     }

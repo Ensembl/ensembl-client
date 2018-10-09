@@ -50,11 +50,11 @@ impl ShapeContext for CanvasIdxImpl {
 }
 
 impl CanvasIdx {
-    pub fn new(ds: &mut DrawingSession, index: usize) -> CanvasIdx {
-        let s = CanvasIdx(Rc::new(RefCell::new(CanvasIdxImpl::new(index))));
-        ds.add_context(Box::new(s.clone()));
-        s
+    pub fn new(index: usize) -> CanvasIdx {
+        CanvasIdx(Rc::new(RefCell::new(CanvasIdxImpl::new(index))))
     }
+
+    pub fn get_index(&self) -> usize { self.0.borrow().index }
 
     pub fn get_group(&self, name: ProgramType) -> DataGroup {
         self.0.borrow().get_group(name)
