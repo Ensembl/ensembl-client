@@ -7,7 +7,7 @@ mod util;
 mod canvasidx;
 
 pub use shape::shapeimpl::{
-    Shape,
+    Shape, DrawnShape,
     ShapeContext,
     ColourSpec,
     MathsShape,

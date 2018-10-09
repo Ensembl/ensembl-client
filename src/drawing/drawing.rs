@@ -36,11 +36,11 @@ impl Drawing {
             }))
     }
 
-    pub fn draw(&self, leafdrawman: &OneCanvasManager) {
-        let pos = leafdrawman.allocator.position(&self.0.ticket);
-        self.0.gen.draw(&mut leafdrawman.canvas.as_ref().unwrap(),pos);
-        let mask_pos = leafdrawman.allocator.position(&self.0.mask_ticket);
-        self.0.gen.draw_mask(&mut leafdrawman.canvas.as_ref().unwrap(),mask_pos + cpixel(1,1));
+    pub fn draw(&self, src: &OneCanvasManager) {
+        let pos = src.ticket_pos(&self.0.ticket);
+        self.0.gen.draw(&mut src.canvas.as_ref().unwrap(),pos);
+        let mask_pos = src.ticket_pos(&self.0.mask_ticket);
+        self.0.gen.draw_mask(&mut src.canvas.as_ref().unwrap(),mask_pos + cpixel(1,1));
     }
 
     pub fn artwork(&self, src: &OneCanvasManager) -> Artwork {
@@ -57,14 +57,10 @@ impl Drawing {
     }
     
     pub fn measure(&self, src: &OneCanvasManager) -> RPixel {
-        let size = src.allocator.size(&self.0.ticket);
-        let pos = src.allocator.position(&self.0.ticket);
-        area_size(pos,size)
+        src.ticket_size(&self.0.ticket)
     }
 
     pub fn measure_mask(&self, src: &OneCanvasManager) -> RPixel {
-        let size = src.allocator.size(&self.0.mask_ticket);
-        let pos = src.allocator.position(&self.0.mask_ticket);
-        area_size(pos,size)
+        src.ticket_size(&self.0.mask_ticket)
     }
 }

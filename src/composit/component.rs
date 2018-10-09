@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use arena::{  ArenaPrograms };
-use shape::{ Shape };
+use shape::{ Shape, DrawnShape };
 use composit::state::{ StateManager, StateExpr, StateValue, ComponentRedo };
 use drawing::{ Drawing, OneCanvasManager };
 
@@ -9,13 +9,13 @@ pub struct Component {
     prev_value: StateValue,
     cur_value: StateValue,
     ooe: Rc<StateExpr>,
-    shapes: Vec<Box<Shape>>,
+    shapes: Vec<DrawnShape>,
 }
 
 impl Component {
     pub fn new(ooe: Rc<StateExpr>) -> Component {
         Component {
-            shapes: Vec::<Box<Shape>>::new(),
+            shapes: Vec::<DrawnShape>::new(),
             prev_value: StateValue::OffCold(),
             cur_value: StateValue::OffCold(),
             ooe
@@ -39,32 +39,26 @@ impl Component {
     }
     
     pub fn add_shape(&mut self, item: Box<Shape>) {
-        self.shapes.push(item);
+        self.shapes.push(DrawnShape::new(item));
     }
     
     pub fn draw_drawings(&mut self,
-                        leafdrawman: &mut OneCanvasManager) -> Vec<Option<Drawing>> {
-        let mut drawings = Vec::<Option<Drawing>>::new();
+                        leafdrawman: &mut OneCanvasManager) {
         for s in &mut self.shapes {
-            let mut drawing = None;
-            if let Some(a) = s.get_artist() {
-                let d = leafdrawman.add_request(a);
-                drawing = Some(d);
+            if let Some(a) = s.shape().get_artist() {
+                s.set_drawing(leafdrawman.add_request(a));
             }
-            drawings.push(drawing);
         }
-        drawings
     }
 
     pub fn into_objects(&mut self, progs: &mut ArenaPrograms,
-                        leafdrawman: &OneCanvasManager,
-                        drawings: &Vec<Option<Drawing>>) {
+                        leafdrawman: &OneCanvasManager) {
         for (i,mut s) in self.shapes.iter().enumerate() {
-            let req = &drawings[i];
+            let req = s.get_drawing();
             let artwork = req.as_ref().map(|r| r.artwork(&leafdrawman));
-            let geom_name = s.get_geometry();
+            let geom_name = s.shape().get_geometry();
             if let Some(geom) = progs.map.get_mut(&geom_name) {                
-                s.into_objects(geom_name,&mut geom.data,artwork);
+                s.shape().into_objects(geom_name,&mut geom.data,artwork);
             }
         }
     }

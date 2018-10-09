@@ -67,8 +67,7 @@ impl Arena {
     pub fn draw(&mut self, cman: &mut Compositor, oom: &StateManager, stage: &Stage) {
         /* maybe update scene */
         {
-            let (ctx,progs,acm) = (
-                &self.ctx,
+            let (progs,acm) = (
                 &mut self.progs,
                 &mut self.acm);
             cman.into_objects(progs,&self.ctx,acm,oom);
