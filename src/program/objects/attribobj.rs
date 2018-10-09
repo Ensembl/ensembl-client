@@ -15,7 +15,7 @@ use webgl_rendering_context::{
 use wglraw;
 use drawing::Drawing;
 use drawing::AllCanvasMan;
-use program::data::{ DataBatch, DataGroup, Input };
+use program::data::{ DataBatch, Input };
 
 use program::objects::Object;
 

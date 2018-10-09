@@ -10,7 +10,7 @@ use program::data::DataBatch;
 use program::objects::Object;
 use drawing::AllCanvasMan;
 
-#[derive(Clone,PartialEq,Eq,Hash)]
+#[derive(Clone,PartialEq,Eq,Hash,Debug)]
 pub enum CanvasWeave {
     Pixelate,
     Blur

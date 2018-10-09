@@ -28,7 +28,7 @@ impl AllCanvasMan {
         self.canvases.get(idx as usize)
     }
     
-    pub fn flat_allocate(&mut self, size: Dot<i32,i32>, w: CanvasWeave) -> FlatCanvas {
+    pub fn flat_allocate(&mut self, size: Dot<i32,i32>, w: &CanvasWeave) -> FlatCanvas {
         let canvas : CanvasElement = 
             document().create_element("canvas")
                 .ok().unwrap().try_into().unwrap();
