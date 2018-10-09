@@ -7,11 +7,12 @@ mod flatcanvas;
 mod drawing;
 mod artist;
 mod allcanvasman;
+mod drawingsession;
 
 pub use self::artist::Artist;
 
 pub use self::drawing::{ Drawing, Artwork };
-
+pub use self::drawingsession::DrawingSession;
 pub use self::allcanvasman::{ AllCanvasMan };
 
 pub use self::onecanvasman::{

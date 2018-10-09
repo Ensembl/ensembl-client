@@ -66,10 +66,10 @@ pub struct OneCanvasManager {
 }
 
 impl OneCanvasManager {
-    pub fn new(acm: &mut AllCanvasMan) -> OneCanvasManager {
+    pub fn new(standin: &FlatCanvas) -> OneCanvasManager {
         OneCanvasManager {
             canvas: None,
-            standin: acm.flat_allocate(cpixel(2,2),CanvasWeave::Pixelate),
+            standin: standin.clone(),
             cache: DrawingMemory::new(),
             drawings: Vec::<Drawing>::new(),
             allocator: Allocator::new(20),

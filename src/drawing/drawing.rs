@@ -7,7 +7,9 @@ use std::collections::hash_map::DefaultHasher;
 use types::{ CPixel, RPixel, area_size, RFraction, cpixel, area };
 use drawing::alloc::{ Ticket, Allocator };
 use drawing::{ FlatCanvas, Artist, OneCanvasManager };
+use drawing::DrawingSession;
 use shape::CanvasIdx;
+use program::CanvasWeave;
 
 pub struct Artwork {
     pub pos: RFraction,
@@ -43,7 +45,8 @@ impl Drawing {
         self.0.gen.draw_mask(&mut src.canvas.as_ref().unwrap(),mask_pos + cpixel(1,1));
     }
 
-    pub fn artwork(&self, src: &OneCanvasManager) -> Artwork {
+    pub fn artwork(&self, ds: &mut DrawingSession) -> Artwork {
+        let src = self.0.gen.select_canvas(ds);
         let canvas = src.canvas.as_ref().unwrap();
         let cs = canvas.size().as_fraction();
         let m = self.measure(src);
@@ -55,7 +58,7 @@ impl Drawing {
             index: src.canvas.as_ref().unwrap().index()
         }
     }
-    
+        
     pub fn measure(&self, src: &OneCanvasManager) -> RPixel {
         src.ticket_size(&self.0.ticket)
     }

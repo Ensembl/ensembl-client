@@ -3,7 +3,7 @@ use std::rc::Rc;
 use arena::{  ArenaPrograms };
 use shape::{ Shape, DrawnShape };
 use composit::state::{ StateManager, StateExpr, StateValue, ComponentRedo };
-use drawing::{ Drawing, OneCanvasManager };
+use drawing::{ Drawing, OneCanvasManager, DrawingSession };
 
 pub struct Component {
     prev_value: StateValue,
@@ -42,16 +42,16 @@ impl Component {
         self.shapes.push(DrawnShape::new(item));
     }
     
-    pub fn draw_drawings(&mut self, leafdrawman: &mut OneCanvasManager) {
+    pub fn draw_drawings(&mut self, ds: &mut DrawingSession) {
         for s in &mut self.shapes {
-            s.redraw(leafdrawman);
+            s.redraw(ds);
         }
     }
 
     pub fn into_objects(&mut self, progs: &mut ArenaPrograms,
-                        leafdrawman: &OneCanvasManager) {
+                        ds: &mut DrawingSession) {
         for s in &mut self.shapes {
-            s.into_objects(progs,leafdrawman);
+            s.into_objects(progs,ds);
         }
     }
 }

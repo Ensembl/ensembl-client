@@ -5,34 +5,10 @@ use webgl_rendering_context::WebGLRenderingContext as glctx;
 
 use arena::{ ArenaPrograms };
 use composit::{ Component, StateManager };
-use drawing::{ Drawing, OneCanvasManager, FlatCanvas, AllCanvasMan };
+use drawing::{ Drawing, OneCanvasManager, FlatCanvas, AllCanvasMan, DrawingSession };
 use shape::{ ShapeContext, CanvasIdx };
 use composit::state::ComponentRedo;
 use program::{ CanvasWeave };
-
-pub struct DrawingSession {
-    onecanvman: OneCanvasManager,
-}
-
-impl DrawingSession {
-    fn new(acm: &mut AllCanvasMan) -> DrawingSession {
-        DrawingSession {
-            onecanvman: OneCanvasManager::new(acm),
-        }
-    }
-
-    fn redraw_component(&mut self, c: &mut Component) {
-        c.draw_drawings(&mut self.onecanvman);
-    }
-    
-    fn finalise(&mut self, progs: &mut ArenaPrograms, 
-                acm: &mut AllCanvasMan, ctx: &glctx) {
-        let size = self.onecanvman.allocate();
-        let mut canv = acm.flat_allocate(size,CanvasWeave::Pixelate);
-        canv.apply_context(progs,ctx);
-        self.onecanvman.draw(canv);
-    }
-}
 
 pub struct Compositor {
     idx: u32,
@@ -99,8 +75,8 @@ impl Compositor {
     fn redraw_objects(&mut self, progs: &mut ArenaPrograms, ctx: &glctx) {
         for (i,c) in &mut self.components {
             if c.is_on() {
-                let ds = self.ds.as_ref().unwrap();
-                c.into_objects(progs,&ds.onecanvman);
+                let mut ds = self.ds.as_mut().unwrap();
+                c.into_objects(progs,ds);
             }
         }
     }
