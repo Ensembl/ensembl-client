@@ -81,8 +81,8 @@ impl Object for ObjectCanvasTexture {
             let c = acm.get_canvas(i);
             if let Some(c) = c {
                 self.textures.insert(
-                    c.index() as u32,
-                    canvas_texture(ctx,c.element(),c.weave())
+                    c.index().get_index() as u32,
+                    canvas_texture(ctx,&c.element(),&c.weave())
                 );
                 i += 1;
             } else {

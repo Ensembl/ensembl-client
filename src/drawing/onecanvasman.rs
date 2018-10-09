@@ -4,10 +4,12 @@ use std::hash::Hash;
 use std::hash::Hasher;
 use std::collections::hash_map::DefaultHasher;
 
+use webgl_rendering_context::WebGLRenderingContext as glctx;
 use types::{ CPixel, RPixel, area_size, RFraction, cpixel, area };
 use drawing::alloc::{ Ticket, Allocator };
 use drawing::{ FlatCanvas, Drawing, Artist, AllCanvasMan };
-use shape::CanvasIdx;
+use shape::{ ShapeContext, CanvasIdx };
+use arena::{  ArenaPrograms };
 use program::CanvasWeave;
 
 pub struct DrawingHash(u64);
@@ -56,9 +58,8 @@ impl DrawingMemory {
  * them and calls draw when ready really. Little more than a fancy Vec.
  */
 pub struct OneCanvasManager {
-    pub canvas: Option<Rc<FlatCanvas>>,
-    pub canvas_idx: Option<CanvasIdx>,
-    standin: Rc<FlatCanvas>,
+    pub canvas: Option<FlatCanvas>,
+    standin: FlatCanvas,
     cache: DrawingMemory,
     drawings: Vec<Drawing>,
     allocator: Allocator,
@@ -68,7 +69,6 @@ impl OneCanvasManager {
     pub fn new(acm: &mut AllCanvasMan) -> OneCanvasManager {
         OneCanvasManager {
             canvas: None,
-            canvas_idx: None,
             standin: acm.flat_allocate(cpixel(2,2),CanvasWeave::Pixelate),
             cache: DrawingMemory::new(),
             drawings: Vec::<Drawing>::new(),
@@ -97,12 +97,11 @@ impl OneCanvasManager {
         }
     }
 
-    pub fn draw(&mut self, canvs: Rc<FlatCanvas>, canvas_idx: CanvasIdx) {
+    pub fn draw(&mut self, canvs: FlatCanvas) {
         if let Some(ref old) = self.canvas {
             old.remove();
         }
         self.canvas = Some(canvs);
-        self.canvas_idx = Some(canvas_idx);
         for tr in &self.drawings {
             tr.draw(self);
         }
