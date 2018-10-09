@@ -23,7 +23,7 @@ use controller::global::Global;
 use types::{
     Colour, cleaf, cpixel, area, cedge, AxisSense, Dot,
     TOPLEFT, BOTTOMLEFT, TOPRIGHT, BOTTOMRIGHT, area_size,
-    A_MIDDLE, A_BOTTOMRIGHT, A_BOTTOMLEFT, A_TOPLEFT, A_TOPRIGHT,
+    A_MIDDLE, A_BOTTOMRIGHT, A_BOTTOMLEFT, A_TOPLEFT, A_TOPRIGHT, A_TOP,
 };
 
 use drawing::{
@@ -37,7 +37,7 @@ fn battenberg() -> Rc<Artist> {
     bitmap_texture(vec! { 0,0,255,255,
                           255,0,0,255,
                           0,255,0,255,
-                          255,255,0,255 },cpixel(2,2),true)
+                          255,255,0,255 },cpixel(2,2),false)
 }
 
 fn measure(c: &mut Component, cs: &ColourSpec, cs2: &ColourSpec) {
@@ -53,7 +53,7 @@ fn measure(c: &mut Component, cs: &ColourSpec, cs2: &ColourSpec) {
             cs2));
         c.add_shape(tape_texture(battenberg(),
             &cleaf(x as f32*100.+50.,0).y_edge(AxisSense::Pos),
-            &cpixel(0,0),&cpixel(10,10).anchor(A_MIDDLE)));
+            &cpixel(0,0),&cpixel(10,10).anchor(A_TOP)));
         c.add_shape(tape_mathsshape(
             &cleaf(x as f32*100.+75.,0).y_edge(AxisSense::Pos),
             Dot(None,Some(AxisSense::Pos)),
@@ -172,7 +172,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                                 vec! { 0,0,255,255,
                                          255,0,0,255,
                                          0,255,0,255,
-                                         255,255,0,255 },cpixel(2,2),true);
+                                         255,255,0,255 },cpixel(2,2),false);
             c.add_shape(pin_texture(tx,&cleaf(0.,y-25),&cpixel(0,0),&cpixel(10,10).anchor(A_TOPLEFT)));
             c_odd.add_shape(stretch_rectangle(&area_size(cleaf(-200.,y-20),cleaf(100.,5)),&red));
             c_even.add_shape(stretch_rectangle(&area_size(cleaf(-200.,y-15),cleaf(100.,5)),&green));
@@ -260,7 +260,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
     let tx = bitmap_texture(vec! { 0,0,255,255,
                                  255,0,0,255,
                                  0,255,0,255,
-                                 255,255,0,255 },cpixel(1,4),true);
+                                 255,255,0,255 },cpixel(1,4),false);
     c.add_shape(fix_texture(tx, 
                             &cedge(TOPLEFT,cpixel(sw/2-5,0)),
                             &cpixel(1,sh).anchor(A_TOPLEFT)));

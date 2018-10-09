@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use stdweb::web::TypedArray;
 
-use stdweb::web::html_element::CanvasElement;
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
 };

@@ -24,7 +24,7 @@ impl CanvasWeave {
                  glctx::CLAMP_TO_EDGE,glctx::CLAMP_TO_EDGE),
             CanvasWeave::Blur =>
                 (glctx::LINEAR,glctx::LINEAR,
-                 glctx::CLAMP_TO_EDGE,glctx::CLAMP_TO_EDGE)
+                 glctx::REPEAT,glctx::REPEAT)
         };
         ctx.tex_parameteri(glctx::TEXTURE_2D,
                            glctx::TEXTURE_MIN_FILTER,

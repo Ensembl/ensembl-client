@@ -257,7 +257,7 @@ fn pow2_i32(v: i32) -> i32 { (v as u32).next_power_of_two() as i32 }
 
 impl AllocatorImpl {
     fn new(threshold: i32, max_width: i32, area: i32) -> AllocatorImpl {
-        let size = max(pow2_i32(max_width),(area as f32).sqrt() as i32);
+        let size = pow2_i32(max(max_width,(area as f32).sqrt() as i32));
         AllocatorImpl {
             big: Half::new(size),
             small: Half::new(size),
