@@ -7,6 +7,7 @@ mod util;
 mod canvasidx;
 mod spec;
 mod rect;
+mod poly;
 
 pub use self::shapeimpl::{
     Shape, DrawnShape,
@@ -36,12 +37,15 @@ pub use self::rect::{
     RectSpec
 };
 
-pub use self::pintape::{
-    pin_texture,
+pub use shape::poly::{
     pin_mathsshape,
-    tape_texture,
     tape_mathsshape,
     PinPolySpec,
+};
+
+pub use self::pintape::{
+    pin_texture,
+    tape_texture,
 };
 
 pub use self::stretch::{
