@@ -1,14 +1,12 @@
-use std::rc::Rc;
 use std::collections::HashMap;
 
 use webgl_rendering_context::WebGLRenderingContext as glctx;
 
 use arena::{ ArenaPrograms };
 use composit::{ Component, StateManager };
-use drawing::{ Drawing, OneCanvasManager, FlatCanvas, AllCanvasMan, DrawingSession };
-use shape::{ ShapeContext, CanvasIdx };
+use drawing::{ AllCanvasMan, DrawingSession };
+use shape::{ ShapeContext };
 use composit::state::ComponentRedo;
-use program::{ CanvasWeave };
 
 pub struct Compositor {
     idx: u32,

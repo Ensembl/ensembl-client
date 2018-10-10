@@ -9,12 +9,12 @@ use program::{
 
 use types::{
     CLeaf, CPixel, CFraction, cfraction, Dot, AxisSense, 
-    Bounds, area_size, Rect, Edge, APixel, Anchors
+    Bounds, area_size, Rect, Edge, APixel, Anchors, RLeaf
 };
 
-use shape::{ Shape, ColourSpec, MathsShape };
+use shape::{ Shape, ColourSpec, MathsShape, ShapeSpec };
 use shape::util::{
-    rectangle_p, rectangle_t, rectangle_c,
+    rectangle_p, rectangle_t, rectangle_c, rectangle_g,
     multi_gl, poly_p, vertices_poly,
     vertices_rect, vertices_hollowpoly,
     despot
@@ -22,66 +22,45 @@ use shape::util::{
 
 use drawing::{ Artist, Artwork };
 
-/*
- * PinRect
- */
-
-#[derive(Clone,Copy,Debug)]
-enum RPinOrTape<T: Clone+Copy+Debug> {
-    Pin(Rect<T,i32>),
-    Tape(Rect<T,Edge<i32>>)
-}
-
 #[derive(Clone,Copy,Debug)]
 enum CPinOrTape<T: Clone+Copy+Debug> {
     Pin(Dot<T,i32>),
     Tape(Dot<T,Edge<i32>>)
 }
 
-pub struct PinRect {
-    origin: CLeaf,
-    offset: RPinOrTape<i32>,
-    colspec: ColourSpec,
-    geom: ProgramType
+pub struct PinPolySpec {
+    pt: PTGeom,
+    origin: CPinOrTape<f32>,
+    anchor: Anchors,
+    size: f32,
+    width: Option<f32>,
+    ms: MathsShape,
+    colspec: ColourSpec
 }
 
-impl PinRect {
-    fn new(origin: CLeaf, offset: RPinOrTape<i32>, colspec: &ColourSpec, geom: ProgramType) -> PinRect {
-        PinRect { origin, offset, colspec: colspec.clone(), geom }
-    }
-}
-
-impl Shape for PinRect {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _art: Option<Artwork>) {
-        let b = vertices_rect(geom,self.colspec.to_group(geom_name));
-        match self.offset {
-            RPinOrTape::Pin(offset) => {
-                rectangle_p(b,geom,"aVertexPosition",&offset);
-                multi_gl(b,geom,"aOrigin",&self.origin,4);
-            },
-            RPinOrTape::Tape(offset) => {
-                let offset = offset.x_edge(AxisSense::Pos,AxisSense::Pos);
-                rectangle_c(b,geom,"aVertexPosition","aVertexSign",&offset);
-                multi_gl(b,geom,"aOrigin",&self.origin,4);
-                
-            },
+impl PinPolySpec {
+    pub fn create(&self) -> Box<Shape> {
+        /* Convert circles to polygons */
+        let (points, offset) = match self.ms {
+            MathsShape::Circle => (circle_points(self.size),0.),
+            MathsShape::Polygon(p,o) => (p,o)
         };
-        if let ColourSpec::Colour(c) = self.colspec {
-            multi_gl(b,geom,"aVertexColour",&c,4);
-        }
+        /* hollow or solid? */
+        let (mt,width,hollow) = match self.width {
+            Some(width) => (PTMethod::Strip,width,true),
+            None        => (PTMethod::Triangle,0.,false)
+        };
+        /* Do it! */
+        let geom = despot(self.pt,mt,&self.colspec);
+        Box::new(PinPoly {
+            origin: self.origin, 
+            size: self.size, 
+            colspec: self.colspec.clone(),
+            geom: geom,
+            anchor: self.anchor,
+            points, offset, width, hollow,
+        })
     }
-    
-    fn get_geometry(&self) -> ProgramType { self.geom }
-}
-
-pub fn pin_rectangle(r: &CLeaf, f: &Rect<i32,i32>, colour: &ColourSpec) -> Box<Shape> {
-    let g = despot(PTGeom::Pin,PTMethod::Triangle,colour);
-    Box::new(PinRect::new(*r,RPinOrTape::Pin(*f),colour,g))
-}
-
-pub fn tape_rectangle(r: &CLeaf, f: &Rect<i32,Edge<i32>>, colour: &ColourSpec) -> Box<Shape> {
-    let g = despot(PTGeom::Tape,PTMethod::Triangle,colour);
-    Box::new(PinRect::new(*r,RPinOrTape::Tape(*f),colour,g))
 }
 
 /*
@@ -172,44 +151,11 @@ fn circle_points(r: f32) -> u16 {
     (3.54 * (r/CIRC_TOL).sqrt()) as u16
 }
 
-struct PinPolySpec {
-    pt: PTGeom,
-    origin: CPinOrTape<f32>,
-    anchor: Anchors,
-    size: f32,
-    width: Option<f32>,
-    ms: MathsShape,
-    colspec: ColourSpec
-}
-
-fn spec_to_shape(spec: PinPolySpec) -> Box<Shape> {
-    /* Convert circles to polygons */
-    let (points, offset) = match spec.ms {
-        MathsShape::Circle => (circle_points(spec.size),0.),
-        MathsShape::Polygon(p,o) => (p,o)
-    };
-    /* hollow or solid? */
-    let (mt,width,hollow) = match spec.width {
-        Some(width) => (PTMethod::Strip,width,true),
-        None        => (PTMethod::Triangle,0.,false)
-    };
-    /* Do it! */
-    let geom = despot(spec.pt,mt,&spec.colspec);
-    Box::new(PinPoly {
-        origin: spec.origin, 
-        size: spec.size, 
-        colspec: spec.colspec,
-        geom: geom,
-        anchor: spec.anchor,
-        points, offset, width, hollow,
-    })
-}
-
 pub fn pin_mathsshape(origin: &Dot<f32,i32>,
                       anchor: Anchors,
                       size: f32, width: Option<f32>, ms: MathsShape,
-                      colspec: &ColourSpec) -> Box<Shape> {
-    spec_to_shape(PinPolySpec {
+                      colspec: &ColourSpec) -> ShapeSpec {
+    ShapeSpec::PinPoly(PinPolySpec {
         pt: PTGeom::Pin,
         origin: CPinOrTape::Pin(*origin),
         colspec: colspec.clone(),
@@ -220,8 +166,8 @@ pub fn pin_mathsshape(origin: &Dot<f32,i32>,
 pub fn tape_mathsshape(origin: &Dot<f32,Edge<i32>>,
                        anchor: Anchors,
                        size: f32, width: Option<f32>, ms: MathsShape,
-                       colspec: &ColourSpec) -> Box<Shape> {
-    spec_to_shape(PinPolySpec {
+                       colspec: &ColourSpec) -> ShapeSpec {
+    ShapeSpec::PinPoly(PinPolySpec {
         pt: PTGeom::Tape,
         origin: CPinOrTape::Tape(*origin),
         colspec: colspec.clone(),

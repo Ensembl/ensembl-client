@@ -5,63 +5,12 @@ use types::{
     EPixel, Rect, Edge, area_size, APixel
 };
 
-use shape::{ Shape, ColourSpec };
+use shape::{ Shape, ColourSpec, ShapeSpec };
 use shape::util::{
     rectangle_t, multi_gl, vertices_rect, despot, rectangle_c
 };
 
 use drawing::{ Artist, Artwork };
-
-/*
- * FixRect
- */
-
-pub struct FixRect {
-    points: Rect<Edge<i32>,Edge<i32>>,
-    colspec: ColourSpec,
-    geom: ProgramType
-}
-
-impl FixRect {
-    pub fn new(points: Rect<Edge<i32>,Edge<i32>>, colspec: ColourSpec, geom: ProgramType) -> FixRect {
-        FixRect { points, colspec, geom }
-    }    
-}
-
-impl Shape for FixRect {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, 
-                    _art: Option<Artwork>) {
-        let b = vertices_rect(geom,self.colspec.to_group(geom_name));        
-        rectangle_c(b,geom,"aVertexPositive","aVertexSign",&self.points);
-        if let ColourSpec::Colour(c) = self.colspec {
-            multi_gl(b,geom,"aVertexColour",&c,4);
-        }
-    }
-    
-    fn get_geometry(&self) -> ProgramType { self.geom }
-}
-
-fn rectangle(p: &Rect<Edge<i32>,Edge<i32>>, colspec: &ColourSpec, gt: PTGeom) -> Box<Shape> {
-    let pt = despot(gt,PTMethod::Triangle,colspec);
-    Box::new(FixRect::new(*p,colspec.clone(),pt))
-}
-
-pub fn fix_rectangle(p: &Rect<Edge<i32>,Edge<i32>>, colour: &ColourSpec) -> Box<Shape> {
-    rectangle(p,colour,PTGeom::Fix)
-}
-
-pub fn fixunderpage_rectangle(p: &Rect<Edge<i32>,Edge<i32>>, colour: &ColourSpec) -> Box<Shape> {
-    rectangle(p,colour,PTGeom::FixUnderPage)
-}
-
-pub fn fixundertape_rectangle(p: &Rect<Edge<i32>,Edge<i32>>, colour: &ColourSpec) -> Box<Shape> {
-    rectangle(p,colour,PTGeom::FixUnderTape)
-}
-
-#[allow(dead_code)]
-pub fn page_rectangle(p: &Rect<Edge<i32>,Edge<i32>>, colour: &ColourSpec) -> Box<Shape> {
-    rectangle(p,colour,PTGeom::Page)
-}
 
 /*
  * FixTexture

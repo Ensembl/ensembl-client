@@ -1,12 +1,11 @@
 use std::rc::Rc;
-use std::cell::RefCell;
-use std::collections::HashMap;
+
 use webgl_rendering_context::WebGLRenderingContext as glctx;
-use program::{ ProgramAttribs, DataGroup, ProgramType, PTSkin };
+
+use program::{ ProgramAttribs, DataGroup, ProgramType };
 use types::{ Colour };
-use composit::Compositor;
 use arena::{  ArenaPrograms };
-use drawing::{ Artist, Artwork, Drawing, OneCanvasManager, DrawingSession };
+use drawing::{ Artist, Artwork, Drawing, DrawingSession };
 use shape::Spot;
 
 pub trait Shape {

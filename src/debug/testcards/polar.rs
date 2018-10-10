@@ -48,13 +48,13 @@ fn draw_frame(c: &mut Component,edge: AxisSense, p: &Palette) {
     /* top/bottom */
     c.add_shape(fixundertape_rectangle(&area(cedge(left,cpixel(0,1)),
                                     cedge(right,cpixel(0,18))),
-                        &p.white));
+                        &p.white).create());
     c.add_shape(fix_rectangle(&area(cedge(left,cpixel(0,2)),
                                     cedge(left,cpixel(36,16))),
-                                &p.white));
+                                &p.white).create());
     c.add_shape(fix_rectangle(&area(cedge(left,cpixel(36,1)),
                                     cedge(left,cpixel(37,17))),
-                                &p.grey));
+                                &p.grey).create());
     let tx = text_texture("bp",
                           &p.lato_12,&Colour(199,208,213),&Colour(255,255,255));
     c.add_shape(fix_texture(tx,&cedge(left,cpixel(34,9)),
@@ -62,13 +62,13 @@ fn draw_frame(c: &mut Component,edge: AxisSense, p: &Palette) {
     for y in [0,17].iter() {
         c.add_shape(fix_rectangle(&area(cedge(left,cpixel(0,*y)),
                                         cedge(right,cpixel(0,*y+1))),
-                            &p.grey));
+                            &p.grey).create());
     }
 
     /* left/right */
     c.add_shape(fixunderpage_rectangle(&area(cedge(top,cpixel(0,18)),
                                     cedge(bottom,cpixel(36,18))),
-                        &p.white));
+                        &p.white).create());
 }
 
 fn measure(c: &mut Component,edge: AxisSense, p: &Palette) {
@@ -76,7 +76,7 @@ fn measure(c: &mut Component,edge: AxisSense, p: &Palette) {
         c.add_shape(tape_rectangle(
             &cleaf(x as f32*100.,0),
             &area_size(cpixel(0,1),cpixel(1,18)).y_edge(edge,edge),
-            &p.grey));
+            &p.grey).create());
         let tx = text_texture(&format!("{}",((x+20)*100000).separated_string()),
                               &p.lato_12,&Colour(199,208,213),&Colour(255,255,255));
         c.add_shape(tape_texture(tx,&cleaf(x as f32*100.,4).y_edge(edge),
@@ -102,7 +102,7 @@ fn track(c: &mut Component, p: &Palette, t: i32) {
     if t == 2 {
         c.add_shape(page_rectangle(&area(cedge(TOPLEFT,cpixel(0,t*PITCH-PITCH/3+TOP)),
                                          cedge(TOPLEFT,cpixel(6,t*PITCH+PITCH/3+TOP))),
-                                   &ColourSpec::Colour(Colour(75,168,252))));
+                                   &ColourSpec::Colour(Colour(75,168,252))).create());
     }
     let d = data(t);
     let st = (t as f32).cos() * -10. - 100.;
@@ -114,7 +114,7 @@ fn track(c: &mut Component, p: &Palette, t: i32) {
                 c.add_shape(stretch_rectangle(
                         &area_size(cleaf(x,y-3),
                                    cleaf(*v,6)),
-                        &ColourSpec::Colour(Colour(75,168,252))));
+                        &ColourSpec::Colour(Colour(75,168,252))).create());
             }
             x += v.abs();
         } else {
@@ -151,14 +151,14 @@ fn track(c: &mut Component, p: &Palette, t: i32) {
             c.add_shape(stretch_rectangle(
                     &area_size(cleaf(x,y-3),
                                cleaf(v.abs(),6)),
-                    &col));
+                    &col).create());
             x += v.abs();            
         }
     }
     if t < 4 || t % 3 == 0 { // gene
         c.add_shape(stretch_rectangle(
                         &area_size(cleaf(st,y-1),cleaf(x-st,2)),
-                        &ColourSpec::Colour(Colour(75,168,252))));
+                        &ColourSpec::Colour(Colour(75,168,252))).create());
     }
 }
 

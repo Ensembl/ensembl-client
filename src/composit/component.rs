@@ -3,7 +3,7 @@ use std::rc::Rc;
 use arena::{  ArenaPrograms };
 use shape::{ Shape, DrawnShape };
 use composit::state::{ StateManager, StateExpr, StateValue, ComponentRedo };
-use drawing::{ Drawing, OneCanvasManager, DrawingSession };
+use drawing::DrawingSession;
 
 pub struct Component {
     prev_value: StateValue,

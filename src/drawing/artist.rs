@@ -1,13 +1,5 @@
-use std::rc::Rc;
-use std::collections::HashMap;
-use std::hash::Hash;
-use std::hash::Hasher;
-use std::collections::hash_map::DefaultHasher;
-
-use types::{ CPixel, RPixel, area_size, RFraction, cpixel, area };
-use drawing::alloc::{ Ticket, Allocator };
+use types::{ CPixel, area_size, cpixel };
 use drawing::{ FlatCanvas, DrawingHash, DrawingSession, OneCanvasManager };
-use shape::CanvasIdx;
 use program::CanvasWeave;
 
 /* A Artist can service some class of DrawingImpls.

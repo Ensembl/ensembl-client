@@ -1,12 +1,10 @@
-use std::rc::Rc;
-use std::collections::hash_map::{ HashMap, Entry };
+use std::collections::HashMap;
 
 use webgl_rendering_context::WebGLRenderingContext as glctx;
 
 use arena::{ ArenaPrograms };
-use composit::{ Component, StateManager };
-use drawing::{ Drawing, OneCanvasManager, FlatCanvas, AllCanvasMan };
-use shape::{ ShapeContext, CanvasIdx };
+use composit::{ Component };
+use drawing::{ OneCanvasManager, FlatCanvas, AllCanvasMan };
 use program::{ CanvasWeave };
 use types::cpixel;
 

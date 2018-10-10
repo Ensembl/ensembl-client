@@ -4,13 +4,9 @@ use std::hash::Hash;
 use std::hash::Hasher;
 use std::collections::hash_map::DefaultHasher;
 
-use webgl_rendering_context::WebGLRenderingContext as glctx;
-use types::{ CPixel, RPixel, area_size, RFraction, cpixel, area };
+use types::{ CPixel, RPixel, area_size, cpixel };
 use drawing::alloc::{ Ticket, Allocator };
-use drawing::{ FlatCanvas, Drawing, Artist, AllCanvasMan };
-use shape::{ ShapeContext, CanvasIdx };
-use arena::{  ArenaPrograms };
-use program::CanvasWeave;
+use drawing::{ FlatCanvas, Drawing, Artist };
 
 pub struct DrawingHash(u64);
 
