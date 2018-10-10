@@ -1,7 +1,3 @@
-use std::rc::Rc;
-use std::collections::HashMap;
-use std::cell::RefCell;
-
 use stdweb::web::{ Element, INode, document };
 use stdweb::web::html_element::CanvasElement;
 use stdweb::unstable::TryInto;

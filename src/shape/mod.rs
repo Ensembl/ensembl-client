@@ -5,39 +5,48 @@ mod shapeimpl;
 mod spot;
 mod util;
 mod canvasidx;
+mod spec;
+mod rect;
 
-pub use shape::shapeimpl::{
+pub use self::shapeimpl::{
     Shape, DrawnShape,
     ShapeContext,
     ColourSpec,
     MathsShape,
 };
 
-pub use shape::spot::Spot;
-pub use shape::canvasidx::CanvasIdx;
+pub use self::spot::Spot;
+pub use self::canvasidx::CanvasIdx;
 
-pub use shape::fixpage::{
-    fix_rectangle,
+pub use self::fixpage::{
     fix_texture,
-    fixunderpage_rectangle,
     fixunderpage_texture,
-    fixundertape_rectangle,
     fixundertape_texture,
-    page_rectangle,
     page_texture,
 };
 
-pub use shape::pintape::{
+pub use self::rect::{
     pin_rectangle,
-    pin_texture,
-    pin_mathsshape,
+    fix_rectangle,
+    page_rectangle,
+    fixunderpage_rectangle,
+    fixundertape_rectangle,
     tape_rectangle,
-    tape_texture,
-    tape_mathsshape,
+    stretch_rectangle,
+    RectSpec
 };
 
-pub use shape::stretch::{
-    stretch_rectangle,
+pub use self::pintape::{
+    pin_texture,
+    pin_mathsshape,
+    tape_texture,
+    tape_mathsshape,
+    PinPolySpec,
+};
+
+pub use self::stretch::{
     stretch_texture,
     stretch_wiggle,
 };
+
+use self::spec::ShapeSpec;

@@ -4,9 +4,6 @@ use stdweb::web::html_element::CanvasElement;
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
     WebGLBuffer as glbuf,
-    WebGLTexture as gltex,
-    GLenum,
-    GLint,
 };
 
 fn get_context(canvas: &CanvasElement) -> glctx {

@@ -1,16 +1,12 @@
 use std::collections::HashMap;
 
-use stdweb::web::TypedArray;
-use stdweb::web::html_element::CanvasElement;
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
     WebGLUniformLocation as gluni,
     WebGLProgram as glprog,
-    GLint, GLenum,
 };
 
-use drawing::Drawing;
-use program::data::{ DataBatch, DataGroup, Input };
+use program::data::{ DataBatch, DataGroup };
 use program::objects::Object;
 
 #[derive(Clone,Copy,Debug)]

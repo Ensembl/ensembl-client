@@ -18,7 +18,7 @@ pub fn testcard_text(g: Arc<Mutex<Global>>) {
     c.add_shape(tape_rectangle(
         &cleaf(0.,0),
         &area_size(cpixel(-50,1),cpixel(400,400)).y_edge(AxisSense::Pos,AxisSense::Pos),
-        &ColourSpec::Colour(Colour(150,0,0))));
+        &ColourSpec::Colour(Colour(150,0,0))).create());
 
     c.add_shape(tape_texture(tx,&cleaf(0.,100).y_edge(AxisSense::Pos),
                 &cpixel(0,0),&cpixel(1,1).anchor(A_TOPLEFT)));

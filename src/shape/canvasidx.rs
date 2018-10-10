@@ -5,9 +5,6 @@ use std::collections::HashMap;
 use webgl_rendering_context::WebGLRenderingContext as glctx;
 
 use program::{ ProgramAttribs, DataGroup, ProgramType, PTSkin };
-use types::{ Colour };
-use composit::Compositor;
-use drawing::{ Artist, Artwork, DrawingSession };
 use shape::shapeimpl::ShapeContext;
 use program::UniformValue;
 

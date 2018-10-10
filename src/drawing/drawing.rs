@@ -1,15 +1,10 @@
 use std::rc::Rc;
-use std::collections::HashMap;
-use std::hash::Hash;
-use std::hash::Hasher;
-use std::collections::hash_map::DefaultHasher;
 
-use types::{ CPixel, RPixel, area_size, RFraction, cpixel, area };
-use drawing::alloc::{ Ticket, Allocator };
-use drawing::{ FlatCanvas, Artist, OneCanvasManager };
+use types::{ CPixel, RPixel, RFraction, cpixel, area };
+use drawing::alloc::Ticket;
+use drawing::{ Artist, OneCanvasManager };
 use drawing::DrawingSession;
 use shape::CanvasIdx;
-use program::CanvasWeave;
 
 pub struct Artwork {
     pub pos: RFraction,

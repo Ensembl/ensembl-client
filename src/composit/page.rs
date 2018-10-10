@@ -1,5 +1,3 @@
-use std::hash::Hash;
-
 #[derive(Clone,PartialEq,Eq,Hash)]
 pub struct Leaf {
     svc_num: i32

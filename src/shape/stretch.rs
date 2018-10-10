@@ -15,39 +15,6 @@ use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
 use drawing::{ Artist, Artwork };
 
 /*
- * StretchRect
- */
-
-pub struct StretchRect {
-    points: RLeaf,
-    colspec: ColourSpec,
-    geom: ProgramType
-}
-
-impl StretchRect {
-    pub fn new(points: RLeaf, colspec: &ColourSpec, geom: ProgramType) -> StretchRect {
-        StretchRect { points, colspec: colspec.clone(), geom }
-    }
-}
-
-impl Shape for StretchRect {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _art: Option<Artwork>) {
-        let b = vertices_rect(geom,self.colspec.to_group(geom_name));
-        rectangle_g(b,geom,"aVertexPosition",&self.points);
-        if let ColourSpec::Colour(c) = self.colspec {
-            multi_gl(b,geom,"aVertexColour",&c,4);
-        }
-    }
-    
-    fn get_geometry(&self) -> ProgramType { self.geom }
-}
-
-pub fn stretch_rectangle(p:&RLeaf, colour: &ColourSpec) -> Box<Shape> {
-    let g = despot(PTGeom::Stretch,PTMethod::Triangle,colour);
-    Box::new(StretchRect::new(*p,colour,g))
-}
-
-/*
  * StretchWiggle
  */
 
