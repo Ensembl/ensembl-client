@@ -35,6 +35,13 @@ impl Anchor {
             None => None
         })
     }
+
+    pub fn sense(self, s: AxisSense) -> Anchor {
+        match s {
+            AxisSense::Pos => self,
+            AxisSense::Neg => self.flip()
+        }
+    }
 }
 
 pub type Anchors = Dot<Anchor,Anchor>;
@@ -146,6 +153,10 @@ impl<T: Clone+Copy> Anchored<T> {
     pub fn flip(&self) -> Anchored<T> {
         Anchored(self.0.flip(),self.1)
     }
+
+    pub fn sense<U>(&self, e: Edge<U>) -> Anchored<T> {
+        Anchored(self.0.sense(e.0),self.1)
+    }
 }
 
 
@@ -210,14 +221,7 @@ impl<T: Clone+Copy+Debug, U: Clone+Copy+Debug> Dot<Anchored<T>,Anchored<U>> {
     
     pub fn flip<A: Clone+Copy+Debug,
                 B: Clone+Copy+Debug>(&self, f: Dot<Edge<A>,Edge<B>>) -> Dot<Anchored<T>,Anchored<U>> {
-        let mut out = *self;
-        if let AxisSense::Neg = (f.0).0 { // x
-           out.0 = out.0.flip();
-        }
-        if let AxisSense::Neg = (f.1).0 { // x
-           out.1 = out.1.flip();
-        }
-        out
+        Dot(self.0.sense(f.0),self.1.sense(f.1))
     }
 }
 
