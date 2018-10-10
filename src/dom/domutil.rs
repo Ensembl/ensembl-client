@@ -37,6 +37,7 @@ pub fn size(el: &HtmlElement) -> CPixel {
     cpixel(r.get_width() as i32,r.get_height() as i32)
 }
 
+#[allow(unused)]
 pub fn add_attr(el: &Element,key: &str, more: &str) {
     let val = match el.get_attribute(key) {
         Some(x) => x,
@@ -45,6 +46,7 @@ pub fn add_attr(el: &Element,key: &str, more: &str) {
     el.set_attribute(key,&val).ok();
 }
 
+#[allow(unused)]
 pub fn add_style(el: &Element, key: &str, value: &str) {
     add_attr(el,"style",&format!("{}: {};",key,value));
 }
