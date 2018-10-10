@@ -1,6 +1,8 @@
 mod state;
 mod component;
 mod compositor;
+mod fixedsource;
+mod page;
 
 pub use self::component::Component;
 

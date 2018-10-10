@@ -1,7 +1,3 @@
-use std::collections::HashMap;
-
-use stdweb::web::TypedArray;
-
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
 };
