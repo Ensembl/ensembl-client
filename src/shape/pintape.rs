@@ -9,7 +9,7 @@ use program::{
 
 use types::{
     CLeaf, CPixel, CFraction, cfraction, Dot, AxisSense, 
-    Bounds, area_size, Rect, Edge, APixel
+    Bounds, area_size, Rect, Edge, APixel, Anchors
 };
 
 use shape::{ Shape, ColourSpec, MathsShape };
@@ -90,7 +90,7 @@ pub fn tape_rectangle(r: &CLeaf, f: &Rect<i32,Edge<i32>>, colour: &ColourSpec) -
 
 pub struct PinPoly {
     origin: CPinOrTape<f32>,
-    anchor: Dot<Option<AxisSense>,Option<AxisSense>>,
+    anchor: Anchors,
     size: f32,
     width: f32,
     points: u16,
@@ -142,17 +142,7 @@ impl PinPoly {
         let mut b = Bounds::new();
         for p in pts { b.add(*p); }
         let b = b.get().unwrap();
-        let h = match self.anchor.0 {
-            Some(AxisSense::Pos) => b.offset().0,
-            Some(AxisSense::Neg) => b.far_offset().0,
-            None => (b.offset().0+b.far_offset().0)/2.
-        };
-        let v = match self.anchor.1 {
-            Some(AxisSense::Pos) => b.offset().1,
-            Some(AxisSense::Neg) => b.far_offset().1,
-            None => (b.offset().1+b.far_offset().1)/2.
-        };
-        cfraction(h,v)
+        self.anchor.delta(b)
     }
 }
 
@@ -182,40 +172,61 @@ fn circle_points(r: f32) -> u16 {
     (3.54 * (r/CIRC_TOL).sqrt()) as u16
 }
 
-fn poly_impl(pt: PTGeom, origin: &CPinOrTape<f32>,
-             anchor: Dot<Option<AxisSense>,Option<AxisSense>>,
-             size: f32, width: Option<f32>, ms: MathsShape,
-             colspec: &ColourSpec) -> Box<Shape> {
+struct PinPolySpec {
+    pt: PTGeom,
+    origin: CPinOrTape<f32>,
+    anchor: Anchors,
+    size: f32,
+    width: Option<f32>,
+    ms: MathsShape,
+    colspec: ColourSpec
+}
+
+fn spec_to_shape(spec: PinPolySpec) -> Box<Shape> {
     /* Convert circles to polygons */
-    let (points, offset) = match ms {
-        MathsShape::Circle => (circle_points(size),0.),
+    let (points, offset) = match spec.ms {
+        MathsShape::Circle => (circle_points(spec.size),0.),
         MathsShape::Polygon(p,o) => (p,o)
     };
     /* hollow or solid? */
-    let (mt,width,hollow) = match width {
+    let (mt,width,hollow) = match spec.width {
         Some(width) => (PTMethod::Strip,width,true),
         None        => (PTMethod::Triangle,0.,false)
     };
     /* Do it! */
-    let g = despot(pt,mt,colspec);
+    let geom = despot(spec.pt,mt,&spec.colspec);
     Box::new(PinPoly {
-        origin: *origin, points, size, offset, width, colspec: colspec.clone(),
-        hollow, geom: g, anchor
+        origin: spec.origin, 
+        size: spec.size, 
+        colspec: spec.colspec,
+        geom: geom,
+        anchor: spec.anchor,
+        points, offset, width, hollow,
     })
 }
 
 pub fn pin_mathsshape(origin: &Dot<f32,i32>,
-                      anchor: Dot<Option<AxisSense>,Option<AxisSense>>,
+                      anchor: Anchors,
                       size: f32, width: Option<f32>, ms: MathsShape,
                       colspec: &ColourSpec) -> Box<Shape> {
-    poly_impl(PTGeom::Pin,&CPinOrTape::Pin(*origin),anchor,size,width,ms,colspec)
+    spec_to_shape(PinPolySpec {
+        pt: PTGeom::Pin,
+        origin: CPinOrTape::Pin(*origin),
+        colspec: colspec.clone(),
+        anchor, size, width, ms
+    })
 }
 
 pub fn tape_mathsshape(origin: &Dot<f32,Edge<i32>>,
-                       anchor: Dot<Option<AxisSense>,Option<AxisSense>>,
+                       anchor: Anchors,
                        size: f32, width: Option<f32>, ms: MathsShape,
                        colspec: &ColourSpec) -> Box<Shape> {
-    poly_impl(PTGeom::Tape,&CPinOrTape::Tape(*origin),anchor,size,width,ms,colspec)
+    spec_to_shape(PinPolySpec {
+        pt: PTGeom::Tape,
+        origin: CPinOrTape::Tape(*origin),
+        colspec: colspec.clone(),
+        anchor, size, width, ms
+    })
 }
 
 /*

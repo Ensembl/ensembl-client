@@ -134,6 +134,18 @@ impl<T: Clone+Copy+Debug, U: Clone+Copy+Debug> Dot<T,U> {
     }
 }
 
+impl Dot<Anchor,Anchor> {
+    pub fn delta(&self, r: Rect<f32,f32>) -> CFraction {
+        let s = r.size();
+        Dot((-self.0.prop())/2.,(-self.1.prop())/2.) * s
+    }
+    
+    pub fn from_nw(&self, r: Rect<f32,f32>) -> Rect<f32,f32> {
+        let s = r.size();
+        r + Dot((self.0.prop()-1.)/2.,(self.1.prop()-1.)/2.) * s        
+    }
+}
+
 impl<T: Clone+Copy+Debug,
      U: Clone+Copy+Debug> Dot<Anchored<T>,Anchored<U>> {
     pub fn from_nw(&self, r: Rect<f32,f32>) -> Rect<f32,f32> {
