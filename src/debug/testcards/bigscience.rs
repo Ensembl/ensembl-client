@@ -116,8 +116,10 @@ pub fn big_science(g: &mut Global, onoff: bool) {
         let y = yidx * 60;
         let val = daft(&mut rng);
         let tx = text_texture(&val,&fc_font,&col,&Colour(255,255,255));
+        //c.add_shape(
+        
         c.add_shape(page_texture(tx, 
-                            &cedge(TOPLEFT,cpixel(4,y+18)),
+                            &cedge(TOPLEFT,cpixel(12,y+18)),
                             &cpixel(1,1).anchor(A_TOPLEFT)));
         if yidx == middle - 5 {
             for i in 1..10 {

@@ -100,8 +100,8 @@ fn track(c: &mut Component, p: &Palette, t: i32) {
     c.add_shape(page_texture(tx,&cedge(TOPLEFT,cpixel(30,t*PITCH+TOP)),
                                 &cpixel(1,1).anchor(A_RIGHT)));
     if t == 2 {
-        c.add_shape(page_rectangle(&area(cedge(TOPLEFT,cpixel(0,t*PITCH-PITCH/3+TOP)),
-                                         cedge(TOPLEFT,cpixel(6,t*PITCH+PITCH/3+TOP))),
+        c.add_shape(page_rectangle(&area(cpixel(0,t*PITCH-PITCH/3+TOP).x_edge(AxisSense::Pos),
+                                         cpixel(6,t*PITCH+PITCH/3+TOP).x_edge(AxisSense::Pos)),
                                    &ColourSpec::Colour(Colour(75,168,252))).create());
     }
     let d = data(t);
