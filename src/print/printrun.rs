@@ -1,7 +1,7 @@
 use webgl_rendering_context::WebGLRenderingContext as glctx;
 
 use composit::{ StateManager, Compositor };
-use drawing::{ FlatCanvas, AllCanvasMan };
+use drawing::AllCanvasMan;
 use stage::Stage;
 use print::Programs;
 
@@ -20,14 +20,14 @@ impl PrintRun {
         ctx.enable(glctx::DEPTH_TEST);
         ctx.depth_func(glctx::LEQUAL);
         for k in &progs.order {
-            let geom = progs.map.get_mut(k).unwrap();
+            let prog = progs.map.get_mut(k).unwrap();
             let u = stage.get_uniforms();
             for (key, value) in &u {
-                if let Some(obj) = geom.get_object(key) {
+                if let Some(obj) = prog.get_object(key) {
                     obj.set_uniform(None,*value);
                 }
             }
-            geom.draw(&ctx);
+            prog.execute(&ctx);
         }
     }
 }
