@@ -15,7 +15,7 @@ use types::{
     Colour, CPixel, RPixel, cpixel, Dot
 };
 use shape::{ CanvasIdx, ShapeContext };
-use arena::{ ArenaPrograms };
+use print::Programs;
 
 use program::CanvasWeave;
 
@@ -76,7 +76,7 @@ impl FlatCanvasImpl {
         }
     }
 
-    pub fn apply_context(&mut self, progs: &mut ArenaPrograms, ctx: &glctx) {
+    pub fn apply_context(&mut self, progs: &mut Programs, ctx: &glctx) {
         self.index.reset();
         for (ref gk,ref mut geom) in progs.map.iter_mut() {
             self.index.into_objects(gk,&mut geom.data,ctx);
@@ -154,7 +154,7 @@ impl FlatCanvas {
         )))
     }
 
-    pub fn apply_context(&mut self, progs: &mut ArenaPrograms, ctx: &glctx) {
+    pub fn apply_context(&mut self, progs: &mut Programs, ctx: &glctx) {
         self.0.borrow_mut().apply_context(progs,ctx);
     }
     

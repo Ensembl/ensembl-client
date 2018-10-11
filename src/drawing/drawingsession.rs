@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use webgl_rendering_context::WebGLRenderingContext as glctx;
 
-use arena::{ ArenaPrograms };
+use print::Programs;
 use composit::{ Component };
 use drawing::{ OneCanvasManager, FlatCanvas, AllCanvasMan };
 use program::{ CanvasWeave };
@@ -33,7 +33,7 @@ impl DrawingSession {
         c.draw_drawings(self);
     }
     
-    pub fn finalise(&mut self, progs: &mut ArenaPrograms, 
+    pub fn finalise(&mut self, progs: &mut Programs, 
                 acm: &mut AllCanvasMan, ctx: &glctx) {
         for (ref weave,ref mut ocm) in &mut self.canvases {                    
             let size = ocm.allocate();

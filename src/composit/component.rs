@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use arena::{  ArenaPrograms };
+use print::Programs;
 use shape::{ Shape, DrawnShape };
 use composit::state::{ StateManager, StateExpr, StateValue, ComponentRedo };
 use drawing::DrawingSession;
@@ -48,7 +48,7 @@ impl Component {
         }
     }
 
-    pub fn into_objects(&mut self, progs: &mut ArenaPrograms,
+    pub fn into_objects(&mut self, progs: &mut Programs,
                         ds: &mut DrawingSession) {
         for s in &mut self.shapes {
             s.into_objects(progs,ds);

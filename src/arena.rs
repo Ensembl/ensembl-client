@@ -11,84 +11,28 @@ use wglraw;
 use stage::Stage;
 use program::{ Program, GPUSpec, ProgramType, CanvasWeave };
 use composit::{ StateManager, Compositor };
+use print::{ Programs, PrintRun };
 use types::{ Dot };
-
-pub struct ArenaPrograms {
-    order: Vec<ProgramType>,
-    pub map: HashMap<ProgramType,Program>,
-}
-
-impl ArenaPrograms {
-    pub fn clear_objects(&mut self) {
-        for k in &self.order {
-            let geom = self.map.get_mut(k).unwrap();
-            geom.data.clear();
-        }        
-    }
-
-    pub fn finalize_objects(&mut self, ctx: &glctx, acm: &mut AllCanvasMan) {
-        for k in &self.order {
-            let geom = self.map.get_mut(k).unwrap();
-            geom.data.objects_final(ctx,acm);
-        }
-    }
-}
 
 pub struct Arena {
     pub ctx: glctx,
-    pub progs: ArenaPrograms,
-    acm: AllCanvasMan,
-}
-
-fn build_programs(ctx: &glctx) -> ArenaPrograms {
-    let mut gpuspec = GPUSpec::new();
-    gpuspec.populate(&ctx);
-    let order = ProgramType::all();
-    let mut map = HashMap::<ProgramType,Program>::new();
-    for pt in &order {
-        debug!("webgl programs","=== {:?} ===",&pt);
-        map.insert(*pt,pt.to_program(&gpuspec,&ctx));
-    }
-    ArenaPrograms { order, map }
+    pub progs: Programs,
 }
 
 impl Arena {
     pub fn new(el: &HtmlElement) -> Arena {
         let canvas = el.clone().try_into().unwrap();
         let ctx = wglraw::prepare_context(&canvas);
-        let progs = build_programs(&ctx);
+        let progs = Programs::new(&ctx);
         let arena = Arena {
             progs, ctx,
-            acm: AllCanvasMan::new("#managedcanvasholder"),
         };
         arena
     }
 
-    pub fn draw(&mut self, cman: &mut Compositor, oom: &StateManager, stage: &Stage) {
-        /* maybe update scene */
-        {
-            let (progs,acm) = (
-                &mut self.progs,
-                &mut self.acm);
-            cman.into_objects(progs,&self.ctx,acm,oom);
-        }
-        /* prepare arena */
-        {
-            let ctx = &self.ctx;
-            ctx.enable(glctx::DEPTH_TEST);
-            ctx.depth_func(glctx::LEQUAL);
-        }
-        /* draw each geometry */
-        for k in &self.progs.order {
-            let geom = self.progs.map.get_mut(k).unwrap();
-            let u = stage.get_uniforms();
-            for (key, value) in &u {
-                if let Some(obj) = geom.get_object(key) {
-                    obj.set_uniform(None,*value);
-                }
-            }
-            geom.draw(&self.ctx);
-        }
+    pub fn draw(&mut self, cman: &mut Compositor, oom: &StateManager, stage: &Stage, acm: &mut AllCanvasMan) {
+        let mut pr = PrintRun::new();
+        pr.go(cman,oom,stage,&mut self.progs,&self.ctx,acm);
     }
     
     pub fn update_viewport(&self, s: &Stage) {
