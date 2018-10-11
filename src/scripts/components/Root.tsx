@@ -6,7 +6,7 @@ import { hot } from 'react-hot-loader';
 import Header from './layout/header/Header';
 import Content from './layout/Content';
 
-const App: SFC = () => (
+const Root: SFC = () => (
   <BrowserRouter>
     <React.StrictMode>
       <Header />
@@ -15,4 +15,4 @@ const App: SFC = () => (
   </BrowserRouter>
 );
 
-export default hot(module)(App);
+export default hot(module)(Root);

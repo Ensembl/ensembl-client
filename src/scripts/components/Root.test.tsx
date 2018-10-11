@@ -2,15 +2,15 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import toJson from 'enzyme-to-json';
 
-import App from './App';
+import Root from './Root';
 import Header from './layout/header/Header';
 import Content from './layout/Content';
 
-describe('<App />', () => {
+describe('<Root />', () => {
   let wrapper: any;
 
   beforeEach(() => {
-    wrapper = shallow(<App />);
+    wrapper = shallow(<Root />);
   });
 
   describe('contains', () => {
