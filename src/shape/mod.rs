@@ -8,6 +8,7 @@ mod canvasidx;
 mod spec;
 mod rect;
 mod poly;
+mod wiggle;
 
 pub use self::shapeimpl::{
     Shape, DrawnShape,
@@ -45,6 +46,10 @@ pub use shape::poly::{
     PinPolySpec,
 };
 
+pub use shape::wiggle::{
+    stretch_wiggle,
+};
+
 pub use self::pintape::{
     pin_texture,
     tape_texture,
@@ -52,7 +57,6 @@ pub use self::pintape::{
 
 pub use self::stretch::{
     stretch_texture,
-    stretch_wiggle,
 };
 
 use self::spec::ShapeSpec;
