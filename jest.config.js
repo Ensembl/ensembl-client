@@ -1,23 +1,15 @@
 module.exports = {
-  moduleFileExtensions: [
-    'ts',
-    'tsx',
-    'js',
-    'jsx',
-    'json',
-    'node'
-  ],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   moduleNameMapper: {
-    '(assets\/.*)$': '<rootDir>/$1'
+    '(assets/.*)$': '<rootDir>/$1'
   },
-  roots: [
-    '<rootDir>/src'
-  ],
-  transform: {
-    '^.+\\.tsx?$': 'ts-jest',
-    '.+\\.(css|scss|png|jpg|svg|gif|eot|ttf|otf|woff|woff2)$': 'jest-transform-stub'
-  },
-  testRegex: '(.*\.test\.tsx?)$',
+  preset: 'ts-jest',
+  roots: ['<rootDir>/src'],
+  setupTestFrameworkScriptFile: '<rootDir>/setup-enzyme.ts',
   snapshotSerializers: ['enzyme-to-json/serializer'],
-  setupTestFrameworkScriptFile: '<rootDir>/setup-enzyme.ts'
+  testEnvironment: 'jsdom',
+  transform: {
+    '.+\\.(css|scss|png|jpg|svg|gif|eot|ttf|otf|woff|woff2)$':
+      'jest-transform-stub'
+  }
 };
