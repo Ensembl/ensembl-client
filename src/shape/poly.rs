@@ -8,13 +8,12 @@ use program::{
 
 use types::{
     CLeaf, CPixel, CFraction, cfraction, Dot, AxisSense, 
-    Bounds,  Rect, Edge, Anchors 
+    Bounds,  Rect, Edge, Anchors, RFraction, TOPLEFT
 };
 
 use shape::{ Shape, ColourSpec, MathsShape, ShapeSpec };
 use shape::util::{
     multi_gl, poly_p, vertices_poly, vertices_hollowpoly, despot,
-    rectangle_c
 };
 
 use drawing::{ Artwork };
@@ -23,6 +22,8 @@ use drawing::{ Artwork };
 enum PolyPosition<T: Clone+Copy+Debug> {
     Pin(Dot<T,i32>),
     Tape(Dot<T,Edge<i32>>),
+    Fix(Dot<Edge<i32>,Edge<i32>>),
+    Page(Dot<Edge<i32>,i32>)
 }
 
 pub struct PinPolySpec {
@@ -78,8 +79,37 @@ pub struct PinPoly {
 
 impl PinPoly {
     fn add(&self, b: DataBatch, geom: &mut ProgramAttribs, 
-           v: Vec<CFraction>, d: CFraction, nump: u16) {
-        let v : Vec<CFraction> = v.iter().map(|s| *s-d).collect();
+           v: Vec<CFraction>, nump: u16) {
+        let bbox = self.bounding_box(&v);
+        /* Which corner will, ultimately, our axes be based against,
+         * ie in which direction will they run?
+         */
+        let corner = match self.origin {
+            PolyPosition::Pin(_) => TOPLEFT,
+            PolyPosition::Tape(origin) => origin.x_edge(AxisSense::Pos).corner(),
+            PolyPosition::Page(origin) => origin.y_edge(AxisSense::Pos).corner(),
+            PolyPosition::Fix(origin) => origin.corner(),
+        };
+        /* What's the offset to the MIDDLE of our shape from our
+         * chosen anchor point?
+         */
+        let middle = self.anchor.flip(&corner).to_middle(bbox);
+        /* For geometries without an explicit origin, add that in. */
+        let delta = match self.origin {
+            PolyPosition::Fix(origin) =>
+                origin.quantity().as_fraction(),
+            PolyPosition::Page(origin) =>
+                origin.y_edge(AxisSense::Pos).quantity().as_fraction(),
+            _ => cfraction(0.,0.)
+        };
+        /* Transform each of our points according to the middle above,
+         * then flipping them, if necessary, to take into account our
+         * chosen co-ordinate system (to preserve orientation)
+         */
+        let bbox = bbox + middle;        
+        let v : Vec<CFraction> = v.iter().map(|s|
+            bbox.flip_area(*s+middle,corner)+delta
+        ).collect();
         let w : Vec<&Input> = v.iter().map(|s| s as &Input).collect();
         match self.origin {
             PolyPosition::Pin(origin) => {
@@ -91,6 +121,14 @@ impl PinPoly {
                 poly_p(b,geom,"aVertexPosition",&w);
                 multi_gl(b,geom,"aOrigin",&origin.quantity(),nump);
                 multi_gl(b,geom,"aVertexSign",&origin.corner(),nump);
+            },
+            PolyPosition::Fix(origin) => {
+                poly_p(b,geom,"aVertexPositive",&w);
+                multi_gl(b,geom,"aVertexSign",&origin.corner(),nump);
+            },
+            PolyPosition::Page(origin) => {
+                poly_p(b,geom,"aVertexPositive",&w);
+                multi_gl(b,geom,"aVertexSign",&origin.y_edge(AxisSense::Pos).corner(),nump);
             },
         }
         if let ColourSpec::Colour(c) = self.colspec {        
@@ -114,13 +152,12 @@ impl PinPoly {
         }
         v
     }
-    
-    fn delta(&self, pts: &Vec<CFraction>) -> CFraction {
+
+    fn bounding_box(&self, pts: &Vec<CFraction>) -> RFraction {
         let mut b = Bounds::new();
         for p in pts { b.add(*p); }
-        let b = b.get().unwrap();
-        self.anchor.delta(b)
-    }
+        b.get().unwrap()
+    }    
 }
 
 impl Shape for PinPoly {
@@ -129,13 +166,11 @@ impl Shape for PinPoly {
         if self.hollow {
             let b = vertices_hollowpoly(geom,self.points,group);
             let v = self.build_points(true);
-            let d = self.delta(&v);
-            self.add(b,geom,v,d,self.points*2);
+            self.add(b,geom,v,self.points*2);
         } else {
             let b = vertices_poly(geom,self.points,group);
             let v = self.build_points(false);
-            let d = self.delta(&v);
-            self.add(b,geom,v,d,self.points+1);
+            self.add(b,geom,v,self.points+1);
         }
     }
 
@@ -161,7 +196,18 @@ pub fn pin_mathsshape(origin: &Dot<f32,i32>,
     })
 }
 
-/*
+pub fn fix_mathsshape(origin: &Dot<Edge<i32>,Edge<i32>>,
+                       anchor: Anchors,
+                       size: f32, width: Option<f32>, ms: MathsShape,
+                       colspec: &ColourSpec) -> ShapeSpec {
+    ShapeSpec::PinPoly(PinPolySpec {
+        pt: PTGeom::Fix,
+        origin: PolyPosition::Fix(*origin),
+        colspec: colspec.clone(),
+        anchor, size, width, ms
+    })
+}
+
 pub fn page_mathsshape(origin: &Dot<Edge<i32>,i32>,
                        anchor: Anchors,
                        size: f32, width: Option<f32>, ms: MathsShape,
@@ -173,7 +219,6 @@ pub fn page_mathsshape(origin: &Dot<Edge<i32>,i32>,
         anchor, size, width, ms
     })
 }
-*/
 
 pub fn tape_mathsshape(origin: &Dot<f32,Edge<i32>>,
                        anchor: Anchors,

@@ -46,6 +46,12 @@ impl Anchor {
 
 pub type Anchors = Dot<Anchor,Anchor>;
 
+impl Anchors {
+    pub fn flip(&self, c: &Corner) -> Anchors {
+        Dot(self.0.sense(c.0),self.1.sense(c.1))
+    }
+}
+
 const AS : Anchor = Anchor(Some(AxisSense::Pos));
 const AM : Anchor = Anchor(None);
 const AE : Anchor = Anchor(Some(AxisSense::Neg));
@@ -97,7 +103,7 @@ impl From<AxisSense> for f64 {
     }
 }
 
-impl<T: Clone+Copy+Debug + PartialOrd> Dot<Edge<T>, Edge<T>> {
+impl<T: Clone+Copy+Debug + PartialOrd> Dot<Edge<T>, Edge<T>> {    
     pub fn is_backward(&self) -> bool {
         match ((self.0).0,(self.1).0) {
             (AxisSense::Pos,AxisSense::Pos) =>
@@ -135,9 +141,9 @@ impl<T: Clone+Copy+Debug, U: Clone+Copy+Debug> Dot<T,U> {
 }
 
 impl Dot<Anchor,Anchor> {
-    pub fn delta(&self, r: Rect<f32,f32>) -> CFraction {
+    pub fn to_middle(&self, r: Rect<f32,f32>) -> CFraction {
         let s = r.size();
-        Dot((-self.0.prop())/2.,(-self.1.prop())/2.) * s
+        Dot((self.0.prop())/2.,(self.1.prop())/2.) * s
     }
     
     pub fn from_nw(&self, r: Rect<f32,f32>) -> Rect<f32,f32> {
@@ -406,12 +412,21 @@ impl<A: Clone+Copy+Debug + Add<C,Output=T>,
 }
 
 /* Dot - Dot => subtract like vectors */
-impl<T : Clone + Copy + Sub<T, Output=T>,
-     U : Clone + Copy + Sub<U, Output=U>> Sub for Dot<T,U> {
+impl<T : Clone+Copy + Sub<T, Output=T>,
+     U : Clone+Copy + Sub<U, Output=U>> Sub for Dot<T,U> {
     type Output = Dot<T,U>;
     
     fn sub(self,other: Dot<T,U>) -> Dot<T,U> {
         Dot(self.0-other.0, self.1-other.1)
+    }
+}
+
+impl<T : Clone+Copy + Neg<Output=T>,
+     U : Clone+Copy + Neg<Output=U>> Neg for Dot<T,U> {
+    type Output = Dot<T,U>;
+    
+    fn neg(self) -> Dot<T,U> {
+        Dot(-self.0,-self.1)
     }
 }
 
