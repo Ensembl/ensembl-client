@@ -6,10 +6,16 @@ import { toggleAccount, toggleLaunchbar } from '../../../actions/headerActions';
 import launchbarIcon from 'assets/img/header/launchbar.svg';
 import userIcon from 'assets/img/header/user.svg';
 
-export type NavProps = {
+type StateProps = {};
+
+type DispatchProps = {
   toggleLaunchbar: () => void;
   toggleAccount: () => void;
 };
+
+type OwnProps = {};
+
+type NavProps = StateProps & DispatchProps & OwnProps;
 
 export class Nav extends PureComponent<NavProps> {
   public render() {
@@ -32,9 +38,9 @@ export class Nav extends PureComponent<NavProps> {
   }
 }
 
-const mapStateToProps = () => ({});
+const mapStateToProps = (): StateProps => ({});
 
-const mapDispatchToProps = {
+const mapDispatchToProps: DispatchProps = {
   toggleAccount,
   toggleLaunchbar
 };

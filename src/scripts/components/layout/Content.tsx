@@ -30,7 +30,7 @@ export class Content extends Component<ContentProps> {
   }
 }
 
-const mapStateToProps = (state: RootState) => ({
+const mapStateToProps = (state: RootState): StateProps => ({
   launchbarExpanded: getLaunchbarExpanded(state)
 });
 
