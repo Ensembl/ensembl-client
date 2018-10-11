@@ -5,7 +5,6 @@ use std::sync::{ Arc, Mutex };
 use stdweb::unstable::TryInto;
 use stdweb::web::{ IElement, HtmlElement, Element };
 
-use arena::Arena;
 use composit::{ Compositor, StateManager };
 use controller::input::{
     register_direct_events, register_user_events, register_dom_events,

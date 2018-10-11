@@ -15,7 +15,6 @@ extern crate serde_json;
 #[macro_use]
 mod util;
 mod debug;
-mod arena;
 mod controller;
 mod shape;
 mod composit;
