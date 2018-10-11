@@ -85,7 +85,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
 
     let (red_spot, green_spot) = 
     g.with_state(|s| {
-        s.with_compo(|c| {
+        s.with_printer(|c| {
             (Spot::new(c,&Colour(255,100,50)),
              Spot::new(c,&Colour(50,255,150)))
         })
@@ -110,7 +110,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
         sh = size.1;
     }
     let col = Colour(200,200,200);
-    //measure(&mut c,&red,&green);
+    measure(&mut c,&red,&green);
     for yidx in 0..20 {
         let y = yidx * 60;
         let val = daft(&mut rng);

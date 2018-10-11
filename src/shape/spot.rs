@@ -6,7 +6,7 @@ use webgl_rendering_context::WebGLRenderingContext as glctx;
 
 use program::{ ProgramAttribs, DataGroup, ProgramType, PTSkin };
 use types::{ Colour };
-use composit::Compositor;
+use print::Printer;
 use shape::shapeimpl::ShapeContext;
 
 pub struct SpotImpl {
@@ -47,9 +47,9 @@ impl ShapeContext for SpotImpl {
 }
 
 impl Spot {
-    pub fn new(camps: &mut Compositor, colour: &Colour) -> Spot {
+    pub fn new(p: &mut Printer, colour: &Colour) -> Spot {
         let s = Spot(Rc::new(RefCell::new(SpotImpl::new(colour))));
-        camps.add_context(Box::new(s.clone()));
+        p.add_context(Box::new(s.clone()));
         s
     }
 

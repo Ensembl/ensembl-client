@@ -166,7 +166,7 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
     let g = &mut g.lock().unwrap();
 
     let p = g.with_state(|s| {
-        s.with_compo(|c| Palette {
+        s.with_printer(|c| Palette {
             lato_12: FCFont::new(12,"Lato",FontVariety::Normal),
             lato_18: FCFont::new(12,"Lato",FontVariety::Bold),
             white: ColourSpec::Spot(Spot::new(c,&Colour(255,255,255))),
