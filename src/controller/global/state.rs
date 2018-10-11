@@ -6,6 +6,7 @@ use stdweb::web::{ IElement, HtmlElement, Element };
 use arena::Arena;
 use composit::{ Compositor, StateManager };
 use controller::input::{ Event, events_run };
+use drawing::AllCanvasMan;
 use dom::domutil;
 use stage::Stage;
 use types::{ Dot };
@@ -15,6 +16,7 @@ use stdweb::web::html_element::{
 };
 pub struct CanvasState {
     canv_el: HtmlElement,
+    acm: AllCanvasMan,
     pub arena: Arc<Mutex<Arena>>,
     pub stage: Arc<Mutex<Stage>>,
     pub state: Arc<Mutex<StateManager>>,
@@ -26,6 +28,7 @@ impl CanvasState {
     pub fn new(state: &Arc<Mutex<StateManager>>, canv_el: &HtmlElement) -> CanvasState {
         CanvasState {
             canv_el: canv_el.clone(),
+            acm: AllCanvasMan::new("#managedcanvasholder"),
             arena: Arc::new(Mutex::new(Arena::new(&canv_el))),
             stage:  Arc::new(Mutex::new(Stage::new())),
             compo: Arc::new(Mutex::new(Compositor::new())),
@@ -37,7 +40,7 @@ impl CanvasState {
         let stage = self.stage.lock().unwrap();
         let oom = self.state.lock().unwrap();
         let mut compo = self.compo.lock().unwrap();
-        self.arena.lock().unwrap().draw(&mut compo,&oom,&stage);
+        self.arena.lock().unwrap().draw(&mut compo,&oom,&stage,&mut self.acm);
     }
     
     pub fn with_stage<F,G>(&self, cb: F) -> G where F: FnOnce(&mut Stage) -> G {

@@ -4,7 +4,7 @@ use webgl_rendering_context::WebGLRenderingContext as glctx;
 
 use program::{ ProgramAttribs, DataGroup, ProgramType };
 use types::{ Colour };
-use arena::{  ArenaPrograms };
+use print::Programs;
 use drawing::{ Artist, Artwork, Drawing, DrawingSession };
 use shape::Spot;
 
@@ -34,7 +34,7 @@ impl DrawnShape {
         }
     }
     
-    pub fn into_objects(&self, progs: &mut ArenaPrograms,
+    pub fn into_objects(&self, progs: &mut Programs,
                         ds: &mut DrawingSession) {
         let geom_name = self.shape.get_geometry();
         if let Some(geom) = progs.map.get_mut(&geom_name) {

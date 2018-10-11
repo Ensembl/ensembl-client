@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use webgl_rendering_context::WebGLRenderingContext as glctx;
 
-use arena::{ ArenaPrograms };
+use print::Programs;
 use composit::{ Component, StateManager };
 use drawing::{ AllCanvasMan, DrawingSession };
 use shape::{ ShapeContext };
@@ -50,7 +50,7 @@ impl Compositor {
         redo
     }
     
-    fn apply_contexts(&mut self, progs: &mut ArenaPrograms,
+    fn apply_contexts(&mut self, progs: &mut Programs,
                       ctx: &glctx) {
         for c in &mut self.contexts {
             c.reset();
@@ -62,7 +62,7 @@ impl Compositor {
         }
     }
 
-    fn redraw_drawings(&mut self, progs: &mut ArenaPrograms, acm: &mut AllCanvasMan, ctx: &glctx) {
+    fn redraw_drawings(&mut self, progs: &mut Programs, acm: &mut AllCanvasMan, ctx: &glctx) {
         self.ds = Some(DrawingSession::new(acm));
         for (idx,c) in &mut self.components {
             self.ds.as_mut().unwrap().redraw_component(c);
@@ -70,7 +70,7 @@ impl Compositor {
         self.ds.as_mut().unwrap().finalise(progs,acm,ctx);
     }
 
-    fn redraw_objects(&mut self, progs: &mut ArenaPrograms, ctx: &glctx) {
+    fn redraw_objects(&mut self, progs: &mut Programs, ctx: &glctx) {
         for (i,c) in &mut self.components {
             if c.is_on() {
                 let mut ds = self.ds.as_mut().unwrap();
@@ -79,7 +79,7 @@ impl Compositor {
         }
     }
 
-    pub fn into_objects(&mut self, progs: &mut ArenaPrograms,
+    pub fn into_objects(&mut self, progs: &mut Programs,
                         ctx: &glctx,
                         acm: &mut AllCanvasMan,
                         oom: &StateManager) {
