@@ -3,33 +3,38 @@ use std::sync::{ Arc, Mutex };
 use stdweb::unstable::TryInto;
 use stdweb::web::{ IElement, HtmlElement, Element };
 
-use arena::Arena;
+use print::{ PrintRun, Programs };
 use composit::{ Compositor, StateManager };
 use controller::input::{ Event, events_run };
 use drawing::AllCanvasMan;
 use dom::domutil;
 use stage::Stage;
 use types::{ Dot };
+use wglraw;
 
+use webgl_rendering_context::WebGLRenderingContext as glctx;
 use stdweb::web::html_element::{
     CanvasElement
 };
 pub struct CanvasState {
     canv_el: HtmlElement,
+    ctx: glctx,
+    progs: Programs,
     acm: AllCanvasMan,
-    pub arena: Arc<Mutex<Arena>>,
     pub stage: Arc<Mutex<Stage>>,
     pub state: Arc<Mutex<StateManager>>,
     pub compo: Arc<Mutex<Compositor>>
 }
 
 impl CanvasState {
-
     pub fn new(state: &Arc<Mutex<StateManager>>, canv_el: &HtmlElement) -> CanvasState {
+        let canvas = canv_el.clone().try_into().unwrap();
+        let ctx = wglraw::prepare_context(&canvas);
+        let progs = Programs::new(&ctx);
         CanvasState {
             canv_el: canv_el.clone(),
+            ctx, progs,
             acm: AllCanvasMan::new("#managedcanvasholder"),
-            arena: Arc::new(Mutex::new(Arena::new(&canv_el))),
             stage:  Arc::new(Mutex::new(Stage::new())),
             compo: Arc::new(Mutex::new(Compositor::new())),
             state: state.clone(),
@@ -40,7 +45,8 @@ impl CanvasState {
         let stage = self.stage.lock().unwrap();
         let oom = self.state.lock().unwrap();
         let mut compo = self.compo.lock().unwrap();
-        self.arena.lock().unwrap().draw(&mut compo,&oom,&stage,&mut self.acm);
+        let mut pr = PrintRun::new();
+        pr.go(&mut compo,&oom,&stage,&mut self.progs,&self.ctx,&mut self.acm);
     }
     
     pub fn with_stage<F,G>(&self, cb: F) -> G where F: FnOnce(&mut Stage) -> G {
@@ -72,11 +78,10 @@ impl CanvasState {
         // force CSS onto attributes of canvas tag
         let elel: Element =  self.canv_el.clone().into();
         let elc : CanvasElement = elel.clone().try_into().unwrap();
-        
         elc.set_width(sz.0 as u32);
         elc.set_height(sz.1 as u32);
         let stage = self.stage.lock().unwrap();
-        let arena = self.arena.lock().unwrap();
-        arena.update_viewport(&stage);
+        let sz = stage.get_size();
+        self.ctx.viewport(0,0,sz.0,sz.1);
     }
 }

@@ -4,7 +4,6 @@ use std::sync::{ Arc, Mutex, Weak };
 
 use stdweb::web::{ IElement, HtmlElement, Element };
 
-use arena::Arena;
 use controller::input::{ Timers, Timer };
 use controller::global::CanvasState;
 use controller::output::Projector;
