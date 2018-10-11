@@ -3,7 +3,7 @@ use std::sync::{ Arc, Mutex };
 use stdweb::unstable::TryInto;
 use stdweb::web::{ IElement, HtmlElement, Element };
 
-use print::{ PrintRun, Programs };
+use print::{ Printer, PrintRun, Programs };
 use composit::{ Compositor, StateManager };
 use controller::input::{ Event, events_run };
 use drawing::AllCanvasMan;
@@ -17,10 +17,7 @@ use stdweb::web::html_element::{
     CanvasElement
 };
 pub struct CanvasState {
-    canv_el: HtmlElement,
-    ctx: glctx,
-    progs: Programs,
-    acm: AllCanvasMan,
+    pub printer: Arc<Mutex<Printer>>,
     pub stage: Arc<Mutex<Stage>>,
     pub state: Arc<Mutex<StateManager>>,
     pub compo: Arc<Mutex<Compositor>>
@@ -28,13 +25,8 @@ pub struct CanvasState {
 
 impl CanvasState {
     pub fn new(state: &Arc<Mutex<StateManager>>, canv_el: &HtmlElement) -> CanvasState {
-        let canvas = canv_el.clone().try_into().unwrap();
-        let ctx = wglraw::prepare_context(&canvas);
-        let progs = Programs::new(&ctx);
         CanvasState {
-            canv_el: canv_el.clone(),
-            ctx, progs,
-            acm: AllCanvasMan::new("#managedcanvasholder"),
+            printer: Arc::new(Mutex::new(Printer::new(&canv_el))),
             stage:  Arc::new(Mutex::new(Stage::new())),
             compo: Arc::new(Mutex::new(Compositor::new())),
             state: state.clone(),
@@ -45,8 +37,7 @@ impl CanvasState {
         let stage = self.stage.lock().unwrap();
         let oom = self.state.lock().unwrap();
         let mut compo = self.compo.lock().unwrap();
-        let mut pr = PrintRun::new();
-        pr.go(&mut compo,&oom,&stage,&mut self.progs,&self.ctx,&mut self.acm);
+        self.printer.lock().unwrap().draw(&stage,&oom,&mut compo);
     }
     
     pub fn with_stage<F,G>(&self, cb: F) -> G where F: FnOnce(&mut Stage) -> G {
@@ -69,19 +60,14 @@ impl CanvasState {
     }
     
     pub fn check_size(self: &CanvasState) {
+        let sz = self.printer.lock().unwrap().get_real_size();
         events_run(self,vec! {
-            Event::Resize(domutil::size(&self.canv_el))
+            Event::Resize(sz)
         });
     }
  
-    pub fn force_size(self: &CanvasState, sz: Dot<i32,i32>) {
-        // force CSS onto attributes of canvas tag
-        let elel: Element =  self.canv_el.clone().into();
-        let elc : CanvasElement = elel.clone().try_into().unwrap();
-        elc.set_width(sz.0 as u32);
-        elc.set_height(sz.1 as u32);
+    pub fn force_size(self: &CanvasState) {
         let stage = self.stage.lock().unwrap();
-        let sz = stage.get_size();
-        self.ctx.viewport(0,0,sz.0,sz.1);
+        self.printer.lock().unwrap().set_size(stage.get_size());
     }
 }

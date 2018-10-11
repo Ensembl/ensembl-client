@@ -26,11 +26,11 @@ fn exe_zoom_by_event(cg: &CanvasState, z: f32) {
     });
 }
 
-fn exe_resize(cg: &CanvasState, sz: Dot<i32,i32>) {    
+fn exe_resize(cg: &CanvasState, sz: Dot<i32,i32>) {
     cg.with_stage(|s| {
         s.set_size(&sz);
     });
-    cg.force_size(sz);
+    cg.force_size();
 }
 
 pub fn events_run(cg: &CanvasState, evs: Vec<Event>) {

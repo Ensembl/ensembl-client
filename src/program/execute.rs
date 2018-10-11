@@ -111,7 +111,7 @@ impl Program {
         self.data.get_object(name)
     }
   
-    pub fn draw(&mut self, ctx: &glctx) {
+    pub fn execute(&mut self, ctx: &glctx) {
         self.use_program(ctx);
         for b in self.data.bman.iter() {
             let mut main = None;
@@ -126,5 +126,5 @@ impl Program {
                 a.execute(ctx,&b);
             }
         }
-    }        
+    }
 }
