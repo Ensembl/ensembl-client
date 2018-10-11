@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
 
 import { toggleAccount, toggleLaunchbar } from '../../../actions/headerActions';
 
@@ -35,10 +34,10 @@ export class Nav extends PureComponent<NavProps> {
 
 const mapStateToProps = () => ({});
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-  toggleAccount: () => dispatch(toggleAccount()),
-  toggleLaunchbar: () => dispatch(toggleLaunchbar())
-});
+const mapDispatchToProps = {
+  toggleAccount,
+  toggleLaunchbar
+};
 
 export default connect(
   mapStateToProps,

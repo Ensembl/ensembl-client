@@ -1,13 +1,19 @@
 import React, { Component, ReactNode } from 'react';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
 
 import { RootState } from '../../reducers';
 import {
   changeCurrentDrawerSection,
   closeDrawer
 } from '../../actions/browserActions';
+import {
+  getCurrentDrawerSection,
+  getCurrentTrack,
+  getDrawerSections
+} from '../../selectors/browserSelectors';
+
 import { DrawerSection } from '../../configs/drawerSectionConfig';
+
 import {
   trackPanelConfig,
   TrackPanelConfig
@@ -17,13 +23,20 @@ import DrawerBar from './DrawerBar';
 import TrackOne from './track-one/TrackOne';
 import TrackTwo from './track-two/TrackTwo';
 
-type TrackProps = {
-  changeCurrentDrawerSection: (currentDrawerSection: string) => void;
-  closeDrawer: () => void;
+type StateProps = {
   currentDrawerSection: string;
   currentTrack: string;
   drawerSections: DrawerSection[];
 };
+
+type DispatchProps = {
+  changeCurrentDrawerSection: (currentDrawerSection: string) => void;
+  closeDrawer: () => void;
+};
+
+type OwnProps = {};
+
+type TrackProps = StateProps & DispatchProps & OwnProps;
 
 class Track extends Component<TrackProps> {
   public render() {
@@ -75,16 +88,16 @@ class Track extends Component<TrackProps> {
   }
 }
 
-const mapStateToProps = (state: RootState) => {
-  const { currentDrawerSection, currentTrack, drawerSections } = state.browser;
-  return { currentDrawerSection, currentTrack, drawerSections };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-  changeCurrentDrawerSection: (currentDrawerSection: string) =>
-    dispatch(changeCurrentDrawerSection(currentDrawerSection)),
-  closeDrawer: () => dispatch(closeDrawer())
+const mapStateToProps = (state: RootState): StateProps => ({
+  currentDrawerSection: getCurrentDrawerSection(state),
+  currentTrack: getCurrentTrack(state),
+  drawerSections: getDrawerSections(state)
 });
+
+const mapDispatchToProps: DispatchProps = {
+  changeCurrentDrawerSection,
+  closeDrawer
+};
 
 export default connect(
   mapStateToProps,
