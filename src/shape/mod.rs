@@ -40,6 +40,8 @@ pub use self::rect::{
 pub use shape::poly::{
     pin_mathsshape,
     tape_mathsshape,
+    fix_mathsshape,
+    page_mathsshape,
     PinPolySpec,
 };
 

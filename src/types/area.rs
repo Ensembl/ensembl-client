@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 use std::ops::{ Add, Sub, Mul, Div };
 use program::{ Object, ObjectAttrib, DataBatch, Input };
-use types::coord::{ Dot, Edge, AxisSense };
+use types::coord::{ Dot, Edge, AxisSense, Corner };
 
 /***** Rect types *****/
 
@@ -57,6 +57,22 @@ impl<T: Copy+Clone+Debug,
                        Dot((out.1).0,(out.0).1));
         }
         out
+    }
+}
+
+impl<T: Copy+Clone+Debug + Sub<T,Output=T> + Add<T,Output=T>,
+     U: Copy+Clone+Debug + Sub<U,Output=U> + Add<U,Output=U>> Rect<T,U> {    
+    pub fn flip_area(&self, d: Dot<T,U>, c: Corner) -> Dot<T,U> {
+        Dot(
+            match c.0 {
+                AxisSense::Neg => (self.1).0 - (d.0 - (self.0).0),
+                AxisSense::Pos => d.0
+            },
+            match c.1 {
+                AxisSense::Neg => (self.1).1 - (d.1 - (self.0).1),
+                AxisSense::Pos => d.1
+            },
+        )
     }
 }
 
