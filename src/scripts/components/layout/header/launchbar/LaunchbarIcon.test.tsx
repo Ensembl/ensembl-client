@@ -18,15 +18,10 @@ describe('<LaunchbarIcon />', () => {
     }
   });
 
-  let gotoAppFn: (appName: string) => void;
   let wrapper: any;
 
   beforeEach(() => {
-    gotoAppFn = jest.fn();
-
-    wrapper = shallow(
-      <LaunchbarIcon app={app} gotoApp={gotoAppFn} currentApp={currentApp} />
-    );
+    wrapper = shallow(<LaunchbarIcon app={app} currentApp={currentApp} />);
   });
 
   test('displays selected icon if current app', () => {
@@ -41,12 +36,6 @@ describe('<LaunchbarIcon />', () => {
     expect(wrapper.instance().getAppIcon()).not.toEqual(
       expect.stringContaining('selected')
     );
-  });
-
-  test('should go to app on button click', () => {
-    wrapper.find('button').simulate('click');
-
-    expect(gotoAppFn).toHaveBeenCalled();
   });
 
   test('renders correctly', () => {

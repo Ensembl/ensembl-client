@@ -22,6 +22,6 @@ exports[`<Header /> renders correctly 1`] = `
     <Connect(Nav) />
   </div>
   <Connect(Account) />
-  <withRouter(Connect(Launchbar)) />
+  <Connect(LaunchbarContainer) />
 </header>
 `;

@@ -1,172 +1,302 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`<Launchbar /> renders correctly 1`] = `
-<div
-  class="react-slidedown"
+<ForwardRef
+  transitionOnAppear={false}
 >
   <div
-    class="launchbar"
+    className="launchbar"
   >
     <div
-      class="categories-wrapper"
+      className="categories-wrapper"
     >
       <div
-        class="categories"
+        className="categories"
       >
         <dl
-          class="border"
+          className="border"
+          key="search"
         >
-          <dt>
-            <button>
-              <img
-                alt="global search"
-                src="[object Object]"
-                title="global search"
-              />
-            </button>
+          <dt
+            className="global-search-app-icon"
+            key="global-search"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "global search",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "global-search",
+                }
+              }
+              currentApp=""
+            />
           </dt>
-          <dt>
-            <button>
-              <img
-                alt="species selector"
-                src="[object Object]"
-                title="species selector"
-              />
-            </button>
+          <dt
+            className="species-selector-app-icon"
+            key="species-selector"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "species selector",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "species-selector",
+                }
+              }
+              currentApp=""
+            />
           </dt>
         </dl>
         <dl
-          class="border"
+          className="border"
+          key="browsers"
         >
-          <dt>
-            <button>
-              <img
-                alt="browser"
-                src="[object Object]"
-                title="browser"
-              />
-            </button>
+          <dt
+            className="browser-app-icon"
+            key="browser"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "browser",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "browser",
+                }
+              }
+              currentApp=""
+            />
           </dt>
         </dl>
         <dl
-          class="border"
+          className="border"
+          key="tools"
         >
-          <dt>
-            <button>
-              <img
-                alt="BLAST/BLAT"
-                src="[object Object]"
-                title="BLAST/BLAT"
-              />
-            </button>
+          <dt
+            className="blast-app-icon"
+            key="blast"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "BLAST/BLAT",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "blast",
+                }
+              }
+              currentApp=""
+            />
           </dt>
-          <dt>
-            <button>
-              <img
-                alt="VEP"
-                src="[object Object]"
-                title="VEP"
-              />
-            </button>
+          <dt
+            className="vep-app-icon"
+            key="vep"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "VEP",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "vep",
+                }
+              }
+              currentApp=""
+            />
           </dt>
-          <dt>
-            <button>
-              <img
-                alt="Conversions"
-                src="[object Object]"
-                title="Conversions"
-              />
-            </button>
+          <dt
+            className="conversions-app-icon"
+            key="conversions"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "Conversions",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "conversions",
+                }
+              }
+              currentApp=""
+            />
           </dt>
-          <dt>
-            <button>
-              <img
-                alt="LD calculator"
-                src="[object Object]"
-                title="LD calculator"
-              />
-            </button>
+          <dt
+            className="ld-app-icon"
+            key="ld"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "LD calculator",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "ld",
+                }
+              }
+              currentApp=""
+            />
           </dt>
-          <dt>
-            <button>
-              <img
-                alt="biomart"
-                src="[object Object]"
-                title="biomart"
-              />
-            </button>
+          <dt
+            className="biomart-app-icon"
+            key="biomart"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "biomart",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "biomart",
+                }
+              }
+              currentApp=""
+            />
           </dt>
         </dl>
         <dl
-          class="border"
+          className="border"
+          key="downloads"
         >
-          <dt>
-            <button>
-              <img
-                alt="bulk download"
-                src="[object Object]"
-                title="bulk download"
-              />
-            </button>
+          <dt
+            className="bulk-download-app-icon"
+            key="bulk-download"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "bulk download",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "bulk-download",
+                }
+              }
+              currentApp=""
+            />
           </dt>
-          <dt>
-            <button>
-              <img
-                alt="custom download"
-                src="[object Object]"
-                title="custom download"
-              />
-            </button>
+          <dt
+            className="custom-download-app-icon"
+            key="custom-download"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "custom download",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "custom-download",
+                }
+              }
+              currentApp=""
+            />
           </dt>
         </dl>
         <dl
-          class=""
+          className=""
+          key="learning"
         >
-          <dt>
-            <button>
-              <img
-                alt="help and documentation"
-                src="[object Object]"
-                title="help and documentation"
-              />
-            </button>
+          <dt
+            className="help-docs-app-icon"
+            key="help-docs"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "help and documentation",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "help-docs",
+                }
+              }
+              currentApp=""
+            />
           </dt>
-          <dt>
-            <button>
-              <img
-                alt="glossary"
-                src="[object Object]"
-                title="glossary"
-              />
-            </button>
+          <dt
+            className="glossary-app-icon"
+            key="glossary"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "glossary",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "glossary",
+                }
+              }
+              currentApp=""
+            />
           </dt>
-          <dt>
-            <button>
-              <img
-                alt="what is new and what has changed"
-                src="[object Object]"
-                title="what is new and what has changed"
-              />
-            </button>
+          <dt
+            className="new-info-app-icon"
+            key="new-info"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "what is new and what has changed",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "new-info",
+                }
+              }
+              currentApp=""
+            />
           </dt>
         </dl>
       </div>
     </div>
     <div
-      class="about"
+      className="about"
     >
       <dl>
-        <dt>
-          <button>
-            <img
-              alt="about ensembl"
-              src="[object Object]"
-              title="about ensembl"
-            />
-          </button>
+        <dt
+          className="about-app-icon"
+        >
+          <LaunchbarIcon
+            app={
+              Object {
+                "description": "about ensembl",
+                "icon": Object {
+                  "default": Object {},
+                  "selected": Object {},
+                },
+                "name": "about",
+              }
+            }
+            currentApp=""
+          />
         </dt>
       </dl>
     </div>
   </div>
-</div>
+</ForwardRef>
 `;

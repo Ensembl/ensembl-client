@@ -4,7 +4,7 @@ import toJson from 'enzyme-to-json';
 
 import Header from './Header';
 import Account from './Account';
-import Launchbar from './launchbar/Launchbar';
+import LaunchbarContainer from './launchbar/LaunchbarContainer';
 import Nav from './Nav';
 
 describe('<Header />', () => {
@@ -32,7 +32,7 @@ describe('<Header />', () => {
     });
 
     test('Launchbar', () => {
-      expect(wrapper.contains(<Launchbar />)).toBe(true);
+      expect(wrapper.contains(<LaunchbarContainer />)).toBe(true);
     });
 
     test('Nav', () => {
