@@ -11,12 +11,12 @@ describe('<Account />', () => {
     wrapper = shallow(<Account accountExpanded={true} />);
   });
 
-  describe('when props accountExpanded', () => {
-    test('is "true" renders children', () => {
+  describe('when account is', () => {
+    test('expanded renders children', () => {
       expect(wrapper.find('.account')).toHaveLength(1);
     });
 
-    test('is "false" does not render children', () => {
+    test('collapsed does not render children', () => {
       wrapper.setProps({ accountExpanded: false });
       expect(wrapper.find('.account')).toHaveLength(0);
     });
