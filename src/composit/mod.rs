@@ -13,5 +13,6 @@ pub use self::state::{
     StateManager,
     StateFixed,
     StateValue,
-    StateAtom
+    StateAtom,
+    ComponentRedo
 };

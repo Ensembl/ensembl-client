@@ -38,7 +38,7 @@ fn animate(time : f64, cg: &mut CanvasState, s: Rc<RefCell<State>>) {
             StateValue::On()
         };
         let even_state = if state.vpos.sin() > 0. {
-            StateValue::OffCold()
+            StateValue::OffWarm() // XXX cold
         } else {
             StateValue::On()
         };
