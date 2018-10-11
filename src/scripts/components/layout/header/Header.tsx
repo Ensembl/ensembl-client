@@ -1,7 +1,7 @@
 import React, { SFC } from 'react';
 
 import Nav from './Nav';
-import Launchbar from './launchbar/Launchbar';
+import LaunchbarContainer from './launchbar/LaunchbarContainer';
 import Account from './Account';
 
 type HeaderProps = {};
@@ -16,7 +16,7 @@ const Header: SFC<HeaderProps> = () => (
       <Nav />
     </div>
     <Account />
-    <Launchbar />
+    <LaunchbarContainer />
   </header>
 );
 

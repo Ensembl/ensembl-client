@@ -1,36 +1,26 @@
 import React, { PureComponent } from 'react';
+import { Link } from 'react-router-dom';
 
 import { LaunchbarApp } from '../../../../configs/launchbarConfig';
 
 type LaunchbarIconProps = {
   app: LaunchbarApp;
-  gotoApp: (appName: string) => void;
   currentApp: string;
 };
 
 class LaunchbarIcon extends PureComponent<LaunchbarIconProps> {
-  constructor(props: LaunchbarIconProps) {
-    super(props);
-
-    this.gotoAppHandler = this.gotoAppHandler.bind(this);
-  }
-
   public render() {
-    return (
-      <dt>
-        <button onClick={this.gotoAppHandler}>
-          <img
-            src={this.getAppIcon()}
-            alt={this.props.app.description}
-            title={this.props.app.description}
-          />
-        </button>
-      </dt>
-    );
-  }
+    const { app } = this.props;
 
-  private gotoAppHandler() {
-    this.props.gotoApp(this.props.app.name);
+    return (
+      <Link to={`/app/${app.name}`}>
+        <img
+          src={this.getAppIcon()}
+          alt={app.description}
+          title={app.description}
+        />
+      </Link>
+    );
   }
 
   private getAppIcon(): string {
