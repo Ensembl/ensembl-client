@@ -52,7 +52,7 @@ impl Drawing {
             pos: m.as_fraction() / cs,
             mask_pos: mm.as_fraction() / cs,
             size: m.area(),
-            index: src.canvas.as_ref().unwrap().index()
+            index: src.canvas.as_ref().unwrap().index().unwrap()
         }
     }
         

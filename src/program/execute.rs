@@ -54,7 +54,7 @@ impl ProgramAttribs {
         }
     }
 
-    pub fn clear(&mut self) {
+    fn clear(&mut self) {
         for a in &mut self.objects.iter_mut() {
             a.clear();
         }
@@ -101,6 +101,11 @@ impl Program {
             },
             prog,
         }
+    }
+
+    pub fn clear(&mut self) {
+        self.data.bman.reset();
+        self.data.clear();
     }
 
     pub fn use_program(&self, ctx: &glctx) {

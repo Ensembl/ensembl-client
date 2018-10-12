@@ -31,12 +31,11 @@ impl Programs {
         }
         Programs { order, map }
     }
-
     
     pub fn clear_objects(&mut self) {
         for k in &self.order {
             let geom = self.map.get_mut(k).unwrap();
-            geom.data.clear();
+            geom.clear();
         }        
     }
 

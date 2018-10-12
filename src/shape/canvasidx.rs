@@ -9,7 +9,7 @@ use shape::shapeimpl::ShapeContext;
 use program::UniformValue;
 
 pub struct CanvasIdxImpl {
-    index: usize,
+    index: u32,
     group: HashMap<ProgramType,DataGroup>
 }
 
@@ -18,7 +18,7 @@ pub struct CanvasIdxImpl {
 pub struct CanvasIdx(Rc<RefCell<CanvasIdxImpl>>);
 
 impl CanvasIdxImpl {
-    pub fn new(index: usize) -> CanvasIdxImpl {
+    pub fn new(index: u32) -> CanvasIdxImpl {
         CanvasIdxImpl {
             group: HashMap::<ProgramType,DataGroup>::new(),
             index
@@ -47,11 +47,11 @@ impl ShapeContext for CanvasIdxImpl {
 }
 
 impl CanvasIdx {
-    pub fn new(index: usize) -> CanvasIdx {
+    pub fn new(index: u32) -> CanvasIdx {
         CanvasIdx(Rc::new(RefCell::new(CanvasIdxImpl::new(index))))
     }
 
-    pub fn get_index(&self) -> usize { self.0.borrow().index }
+    pub fn get_index(&self) -> u32 { self.0.borrow().index }
 
     pub fn get_group(&self, name: ProgramType) -> DataGroup {
         self.0.borrow().get_group(name)

@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use stdweb::web::{ Element, INode, document };
 use stdweb::web::html_element::CanvasElement;
 use stdweb::unstable::TryInto;
@@ -7,30 +9,47 @@ use drawing::FlatCanvas;
 use program::CanvasWeave;
 use types::Dot;
 
+pub struct CanvasRemover(u32);
+
+impl CanvasRemover {
+    pub fn remove(&self, acm: &mut AllCanvasMan) {
+        acm.remove(self.0);
+    }
+}
+
 pub struct AllCanvasMan {
     root: Element,
-    pub canvases: Vec<FlatCanvas>,
+    idx: u32,
+    pub canvases: HashMap<u32,FlatCanvas>
 }
 
 impl AllCanvasMan {
     pub fn new(id: &str) -> AllCanvasMan {
         AllCanvasMan {
             root: domutil::query_select(id),
-            canvases: Vec::<FlatCanvas>::new()
+            canvases: HashMap::<u32,FlatCanvas>::new(),
+            idx: 0,
         }
     }
-    
-    pub fn get_canvas(&self, idx: i32) -> Option<&FlatCanvas> {
-        self.canvases.get(idx as usize)
+        
+    pub fn all_canvases(&self) -> Vec<&FlatCanvas> {
+        self.canvases.values().collect()
     }
     
-    pub fn flat_allocate(&mut self, size: Dot<i32,i32>, w: &CanvasWeave) -> FlatCanvas {
+    fn remove(&mut self, idx: u32) {
+        self.canvases.remove(&idx);
+    }
+    
+    pub fn flat_allocate(&mut self, size: Dot<i32,i32>, 
+                         w: &CanvasWeave, idx: Option<u32>) -> FlatCanvas {
         let canvas : CanvasElement = 
             document().create_element("canvas")
                 .ok().unwrap().try_into().unwrap();
         self.root.append_child(&canvas);
-        let canvas = FlatCanvas::create(canvas,self.canvases.len(),size.0,size.1,w);
-        self.canvases.push(canvas.clone());
+        let rm = CanvasRemover(self.idx);
+        let canvas = FlatCanvas::create(canvas,idx,size.0,size.1,w,rm);
+        self.canvases.insert(self.idx,canvas.clone());
+        self.idx += 1;
         canvas
     }
 }

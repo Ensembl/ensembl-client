@@ -15,7 +15,7 @@ pub struct DrawingSession {
 
 impl DrawingSession {
     pub fn new(acm: &mut AllCanvasMan) -> DrawingSession {
-        let standin = acm.flat_allocate(cpixel(2,2),&CanvasWeave::Pixelate);
+        let standin = acm.flat_allocate(cpixel(2,2),&CanvasWeave::Pixelate,None);
         DrawingSession {
             canvases: HashMap::<CanvasWeave,OneCanvasManager>::new(),
             standin
@@ -35,11 +35,20 @@ impl DrawingSession {
     
     pub fn finalise(&mut self, progs: &mut Programs, 
                 acm: &mut AllCanvasMan, ctx: &glctx) {
+        let mut idx : u32 = 0;
         for (ref weave,ref mut ocm) in &mut self.canvases {                    
             let size = ocm.allocate();
-            let mut canv = acm.flat_allocate(size,*weave);
+            let mut canv = acm.flat_allocate(size,*weave,Some(idx));
             canv.apply_context(progs,ctx);
-            ocm.draw(canv);
+            ocm.draw(acm,canv);
+            idx += 1;
+        }
+    }
+    
+    pub fn finish(&mut self, acm: &mut AllCanvasMan) {
+        self.standin.remove(acm);
+        for ocm in self.canvases.values() {
+            ocm.finish(acm);
         }
     }
 }

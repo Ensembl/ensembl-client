@@ -13,7 +13,8 @@ pub use program::execute::{
 pub use program::data::{
     DataBatch,
     DataGroup,
-    Input
+    Input,
+    BatchManager
 };
 
 pub use program::objects::{

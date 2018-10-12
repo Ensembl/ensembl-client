@@ -6,7 +6,7 @@ use std::collections::hash_map::DefaultHasher;
 
 use types::{ CPixel, RPixel, area_size, cpixel };
 use drawing::alloc::{ Ticket, Allocator };
-use drawing::{ FlatCanvas, Drawing, Artist };
+use drawing::{ FlatCanvas, Drawing, Artist, AllCanvasMan };
 
 pub struct DrawingHash(u64);
 
@@ -94,9 +94,9 @@ impl OneCanvasManager {
         }
     }
 
-    pub fn draw(&mut self, canvs: FlatCanvas) {
+    pub fn draw(&mut self, acm: &mut AllCanvasMan, canvs: FlatCanvas) {
         if let Some(ref old) = self.canvas {
-            old.remove();
+            old.remove(acm);
         }
         self.canvas = Some(canvs);
         for tr in &self.drawings {
@@ -116,5 +116,11 @@ impl OneCanvasManager {
         let size = self.allocator.size(t);
         let pos = self.allocator.position(t);
         area_size(pos,size)
-    }    
+    } 
+    
+    pub fn finish(&self, acm: &mut AllCanvasMan) {
+        if let Some(ref fc) = self.canvas {
+            fc.remove(acm);
+        }
+    }   
 }
