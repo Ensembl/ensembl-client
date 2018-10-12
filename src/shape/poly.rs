@@ -15,7 +15,7 @@ use shape::{ Shape, ColourSpec, MathsShape, ShapeSpec };
 use shape::util::{
     multi_gl, poly_p, vertices_poly, vertices_hollowpoly, despot,
 };
-
+use print::PrintEdition;
 use drawing::{ Artwork };
 
 #[derive(Clone,Copy,Debug)]
@@ -161,8 +161,8 @@ impl PinPoly {
 }
 
 impl Shape for PinPoly {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _art: Option<Artwork>) {
-        let group = self.colspec.to_group(geom_name);
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut PrintEdition) {
+        let group = self.colspec.to_group(geom_name,geom,e);
         if self.hollow {
             let b = vertices_hollowpoly(geom,self.points,group);
             let v = self.build_points(true);

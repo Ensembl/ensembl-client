@@ -4,13 +4,12 @@ use webgl_rendering_context::WebGLRenderingContext as glctx;
 
 use program::{ ProgramAttribs, DataGroup, ProgramType };
 use types::{ Colour };
-use print::Programs;
+use print::{ Programs, PrintEdition };
 use drawing::{ Artist, Artwork, Drawing, DrawingSession };
-use shape::Spot;
 
 pub trait Shape {
     fn get_artist(&self) -> Option<Rc<Artist>> { None }
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, art: Option<Artwork>);
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, art: Option<Artwork>,e: &mut PrintEdition);
     fn get_geometry(&self) -> ProgramType;
 }
 
@@ -35,13 +34,13 @@ impl DrawnShape {
     }
     
     pub fn into_objects(&self, progs: &mut Programs,
-                        ds: &mut DrawingSession) {
+                        ds: &mut DrawingSession, e: &mut PrintEdition) {
         let geom_name = self.shape.get_geometry();
         if let Some(geom) = progs.map.get_mut(&geom_name) {
             let artwork = self.drawing.as_ref().map(|r| r.artwork(ds));
-            self.shape.into_objects(geom_name,&mut geom.data,artwork);
+            self.shape.into_objects(geom_name,&mut geom.data,artwork,e);
         }
-    }    
+    }
 }
 
 pub trait ShapeContext {
@@ -52,13 +51,15 @@ pub trait ShapeContext {
 #[derive(Clone)]
 pub enum ColourSpec {
     Colour(Colour),
-    Spot(Spot)
+    Spot(Colour),
+    //Spot(Spot)
 }
 
 impl ColourSpec {
-    pub fn to_group(&self, gn: ProgramType) -> Option<DataGroup> {
+    pub fn to_group(&self, gn: ProgramType, g: &mut ProgramAttribs, e: &mut PrintEdition) -> Option<DataGroup> {
         match self {
-            ColourSpec::Spot(s) => Some(s.get_group(gn)),
+            //ColourSpec::Spot(s) => Some(s.get_group(gn)),
+            ColourSpec::Spot(c) => Some(e.spot().get_group(gn,g,c)),
             ColourSpec::Colour(_) => None
         }
     }

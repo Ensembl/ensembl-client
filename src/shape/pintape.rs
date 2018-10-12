@@ -21,6 +21,7 @@ use shape::util::{
 };
 
 use drawing::{ Artist, Artwork };
+use print::PrintEdition;
 
 /*
  * PinTexture
@@ -52,7 +53,7 @@ impl PinTexture {
 
 impl Shape for PinTexture {
     fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, 
-                    artwork: Option<Artwork>) {
+                    artwork: Option<Artwork>, _e: &mut PrintEdition) {
         if let Some(art) = artwork {
             let group = art.index.get_group(geom_name,geom);
             let b = vertices_rect(geom,Some(group));

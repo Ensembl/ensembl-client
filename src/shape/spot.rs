@@ -5,28 +5,31 @@ use std::collections::HashMap;
 use webgl_rendering_context::WebGLRenderingContext as glctx;
 
 use program::{ ProgramAttribs, DataGroup, ProgramType, PTSkin };
-use types::{ Colour };
-use print::Printer;
 use shape::shapeimpl::ShapeContext;
+use program::UniformValue;
+use types::Colour;
 
 pub struct SpotImpl {
-    colour: Colour,
-    group: HashMap<ProgramType,DataGroup>
+    group: HashMap<ProgramType,HashMap<Colour,DataGroup>>
 }
 
 #[derive(Clone)]
-pub struct Spot(Rc<RefCell<SpotImpl>>);
+pub struct Spot(pub Rc<RefCell<SpotImpl>>);
 
 impl SpotImpl {
-    pub fn new(colour: &Colour) -> SpotImpl {
+    pub fn new() -> SpotImpl {
         SpotImpl {
-            group: HashMap::<ProgramType,DataGroup>::new(),
-            colour: *colour
+            group: HashMap::<ProgramType,HashMap<Colour,DataGroup>>::new(),
         }
     }
 
-    pub fn get_group(&self, name: ProgramType) -> DataGroup {
-        self.group[&name]
+    pub fn get_group(&mut self, name: ProgramType, geom: &mut ProgramAttribs, colour: &Colour) -> DataGroup {
+        let m = self.group.entry(name).or_insert_with(||
+            HashMap::<Colour,DataGroup>::new()
+        );
+        *m.entry(*colour).or_insert_with(|| {
+            geom.new_group()
+        })
     }
 }
 
@@ -37,24 +40,24 @@ impl ShapeContext for SpotImpl {
 
     fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs, _ctx: &glctx) {
         if geom_name.2 == PTSkin::Spot {
-            let group = geom.new_group();
-            self.group.insert(*geom_name,group);
             if let Some(obj) = geom.get_object("uColour") {
-                obj.set_uniform(Some(group),self.colour.to_uniform());
+                if let Some(m) = self.group.get(geom_name) {
+                    for (c,g) in m {
+                        obj.set_uniform(Some(*g),c.to_uniform());
+                    }
+                }
             }
         }
-    }    
+    }
 }
 
 impl Spot {
-    pub fn new(p: &mut Printer, colour: &Colour) -> Spot {
-        let s = Spot(Rc::new(RefCell::new(SpotImpl::new(colour))));
-        p.add_context(Box::new(s.clone()));
-        s
+    pub fn new() -> Spot {
+        Spot(Rc::new(RefCell::new(SpotImpl::new())))
     }
 
-    pub fn get_group(&self, name: ProgramType) -> DataGroup {
-        self.0.borrow().get_group(name)
+    pub fn get_group(&self, name: ProgramType, prog: &mut ProgramAttribs, colour: &Colour) -> DataGroup {
+        self.0.borrow_mut().get_group(name,prog,colour)
     }
 }
 

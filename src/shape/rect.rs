@@ -8,7 +8,7 @@ use shape::util::{
     rectangle_p, rectangle_c, rectangle_g, multi_gl, vertices_rect,
     despot
 };
-
+use print::PrintEdition;
 use drawing::{ Artwork };
 
 #[derive(Clone,Copy,Debug)]
@@ -44,8 +44,9 @@ pub struct PinRect {
 }
 
 impl Shape for PinRect {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _art: Option<Artwork>) {
-        let b = vertices_rect(geom,self.colspec.to_group(geom_name));
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut PrintEdition) {
+        let group = self.colspec.to_group(geom_name,geom,e);
+        let b = vertices_rect(geom,group);
         match self.offset {
             RectPosition::Pin(origin,offset) => {
                 rectangle_p(b,geom,"aVertexPosition",&offset);

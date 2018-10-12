@@ -16,7 +16,7 @@ use shape::{
     fixunderpage_rectangle, fixunderpage_texture,
     page_texture, pin_texture,  pin_mathsshape,
     stretch_rectangle, stretch_texture, stretch_wiggle,
-    Spot, ColourSpec, MathsShape, tape_mathsshape,
+    ColourSpec, MathsShape, tape_mathsshape,
     tape_rectangle, tape_texture
 };
 use types::{ 
@@ -166,12 +166,12 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
     let g = &mut g.lock().unwrap();
 
     let p = g.with_state(|s| {
-        s.with_printer(|c| Palette {
+        Palette {
             lato_12: FCFont::new(12,"Lato",FontVariety::Normal),
             lato_18: FCFont::new(12,"Lato",FontVariety::Bold),
-            white: ColourSpec::Spot(Spot::new(c,&Colour(255,255,255))),
-            grey: ColourSpec::Spot(Spot::new(c,&Colour(199,208,213)))
-        })
+            white: ColourSpec::Spot(Colour(255,255,255)),
+            grey: ColourSpec::Spot(Colour(199,208,213))
+        }
     }).unwrap();
             
     let mut c = Component::new(Rc::new(StateFixed(StateValue::On())));

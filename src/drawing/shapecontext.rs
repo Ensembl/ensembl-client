@@ -37,10 +37,8 @@ impl ShapeContextList {
     }
     
     pub fn go(&mut self, ctx: &glctx, progs: &mut Programs) {
-        console!("M2 {:?}",self.contexts.len());
         for (ref gk,ref mut prog) in progs.map.iter_mut() {
             for ref mut c in &mut self.contexts {
-                console!("M3");
                 c.into_objects(gk,&mut prog.data,ctx);
             }
         }

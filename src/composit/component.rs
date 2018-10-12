@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use print::Programs;
+use print::{ Programs, PrintEdition };
 use shape::{ Shape, DrawnShape };
 use composit::state::{ StateManager, StateExpr, StateValue, ComponentRedo };
 use drawing::DrawingSession;
@@ -49,9 +49,9 @@ impl Component {
     }
 
     pub fn into_objects(&mut self, progs: &mut Programs,
-                        ds: &mut DrawingSession) {
+                        ds: &mut DrawingSession, e: &mut PrintEdition) {
         for s in &mut self.shapes {
-            s.into_objects(progs,ds);
+            s.into_objects(progs,ds,e);
         }
     }
 }

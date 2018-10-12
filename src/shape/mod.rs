@@ -2,13 +2,13 @@ mod stretch;
 mod pintape;
 mod fixpage;
 mod shapeimpl;
-mod spot;
 mod util;
 mod canvasidx;
 mod spec;
 mod rect;
 mod poly;
 mod wiggle;
+mod spot;
 
 pub use self::shapeimpl::{
     Shape, DrawnShape,
@@ -17,7 +17,6 @@ pub use self::shapeimpl::{
     MathsShape,
 };
 
-pub use self::spot::Spot;
 pub use self::canvasidx::CanvasIdx;
 
 pub use self::fixpage::{
@@ -60,3 +59,4 @@ pub use self::stretch::{
 };
 
 use self::spec::ShapeSpec;
+pub use self::spot::Spot;

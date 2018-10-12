@@ -15,7 +15,7 @@ use shape::{
     fix_rectangle, fix_texture, tape_rectangle, tape_mathsshape,
     page_texture,  pin_texture,  pin_mathsshape, pin_rectangle,
     stretch_rectangle, stretch_texture, stretch_wiggle, tape_texture,
-    Spot, ColourSpec, MathsShape, fix_mathsshape, page_mathsshape
+    ColourSpec, MathsShape, fix_mathsshape, page_mathsshape
 };
 
 use controller::global::Global;
@@ -82,14 +82,6 @@ pub fn big_science(g: &mut Global, onoff: bool) {
         Rc::new(StateFixed(StateValue::On()))
     });
 
-
-    let (red_spot, green_spot) = 
-    g.with_state(|s| {
-        s.with_printer(|c| {
-            (Spot::new(c,&Colour(255,100,50)),
-             Spot::new(c,&Colour(50,255,150)))
-        })
-    }).unwrap();
     let fc_font = FCFont::new(12,"Lato",FontVariety::Normal);
 
     let mut c = Component::new(Rc::new(StateFixed(StateValue::On())));
@@ -97,9 +89,9 @@ pub fn big_science(g: &mut Global, onoff: bool) {
     let mut middle = size.1 / 120;
     if middle < 5 { middle = 5; }
     
-    
-    let red = ColourSpec::Spot(red_spot.clone());
-    let green = ColourSpec::Spot(green_spot.clone());
+    let green_col = Colour(50,255,150);
+    let green = ColourSpec::Spot(green_col);
+    let red = ColourSpec::Spot(Colour(255,100,50));
     
     let len_gen = Range::new(0.,0.2);
     let thick_gen = Range::new(0,13);
@@ -110,6 +102,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
         sh = size.1;
     }
     let col = Colour(200,200,200);
+    
     measure(&mut c,&red,&green);
     for yidx in 0..20 {
         let y = yidx * 60;
@@ -226,7 +219,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
             c.add_shape(stretch_texture(tx,&area_size(cleaf(-700.,y-25),cleaf(2000.,40))));
         } else if yidx == middle+2 || yidx == middle+4 {
             let wiggle = wiggly(&mut rng,500,cleaf(-500.,y-5),2.,20);
-            c_odd.add_shape(stretch_wiggle(wiggle,2,&green_spot));
+            c_odd.add_shape(stretch_wiggle(wiggle,2,&green_col));
         } else {
             for idx in -100..100 {
                 let v1 = (idx as f32) * 0.1;
@@ -285,6 +278,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
     c.add_shape(fix_texture(battenberg(),
                             &cedge(BOTTOMRIGHT,cpixel(0,0)),
                             &cpixel(10,10).anchor(A_BOTTOMRIGHT)));
+    
     c.add_shape(fix_mathsshape(&cedge(TOPLEFT,cpixel(30,30)),
                                A_TOPLEFT,
                                20.,None,MathsShape::Polygon(5,0.),
