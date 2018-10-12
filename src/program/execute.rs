@@ -10,7 +10,7 @@ use program::source::{ Source, ProgramSource };
 use program::objects::Object;
 use program::data::{ DataBatch, DataGroup, BatchManager };
 use program::gpuspec::GPUSpec;
-use drawing::AllCanvasMan;
+use drawing::{ AllCanvasMan, DrawingSession };
 
 pub struct ProgramAttribs {
     pub bman: BatchManager,
@@ -60,10 +60,10 @@ impl ProgramAttribs {
         }
     }
 
-    pub fn objects_final(&mut self, ctx: &glctx, acm: &AllCanvasMan) {
+    pub fn objects_final(&mut self, ctx: &glctx, ds: &DrawingSession) {
         for b in self.bman.iter() {
             for a in &mut self.objects.iter_mut() {
-                a.obj_final(&b,ctx,acm);
+                a.obj_final(&b,ctx,ds);
             }
         }
     }

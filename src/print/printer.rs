@@ -3,7 +3,7 @@ use stdweb::web::{ HtmlElement, Element };
 
 use print::{ PrintRun, Programs };
 use composit::{ Compositor, Component, StateManager };
-use drawing::{ AllCanvasMan, DrawingSession };
+use drawing::{ AllCanvasMan, DrawingSession, ShapeContextList };
 use shape::ShapeContext;
 use dom::domutil;
 use stage::Stage;
@@ -21,7 +21,7 @@ pub struct Printer {
     progs: Programs,
     acm: AllCanvasMan,
     ds: Option<DrawingSession>,
-    contexts: Vec<Box<ShapeContext>>,
+    contexts: ShapeContextList,
 }
 
 impl Printer {
@@ -32,14 +32,14 @@ impl Printer {
         Printer {
             canv_el: canv_el.clone(),
             acm: AllCanvasMan::new("#managedcanvasholder"),
-            contexts: Vec::<Box<ShapeContext>>::new(),
+            contexts: ShapeContextList::new(),
             ctx, progs,
             ds: None
         }
     }
     
     pub fn add_context(&mut self, ctx: Box<ShapeContext>) {
-        self.contexts.push(ctx);
+        self.contexts.add(ctx);
     }
     
     pub fn redraw_objects(&mut self, comps: &mut Vec<&mut Component>) {
@@ -49,24 +49,18 @@ impl Printer {
             }
         }
     }
-    
-    pub fn apply_contexts(&mut self) {
-        for c in &mut self.contexts {
-            c.reset();
-        }
-        for (ref gk,ref mut prog) in self.progs.map.iter_mut() {
-            for ref mut c in &mut self.contexts {
-                c.into_objects(gk,&mut prog.data,&self.ctx);
-            }
-        }
-    }
-    
-    pub fn clear_objects(&mut self) {
+            
+    pub fn init(&mut self) {
         self.progs.clear_objects();
+        self.contexts.reset();
+        self.contexts.go(&self.ctx,&mut self.progs);
     }
     
-    pub fn finalize_objects(&mut self) {
-        self.progs.finalize_objects(&self.ctx,&mut self.acm);
+    pub fn fini(&mut self) {
+        if let Some(ref mut ds) = self.ds {
+            self.progs.finalize_objects(&self.ctx,ds);
+        }
+        self.ds.as_mut().unwrap().go_contexts(&self.ctx,&mut self.progs);
     }
     
     pub fn redraw_drawings(&mut self, comps: &mut Vec<&mut Component>) {
@@ -74,6 +68,7 @@ impl Printer {
             ds.finish(&mut self.acm);
         }
         self.ds = Some(DrawingSession::new(&mut self.acm));
+        self.ds.as_mut().unwrap().reset_contexts();
         for mut c in comps.iter_mut() {
             self.ds.as_mut().unwrap().redraw_component(*c);
         }

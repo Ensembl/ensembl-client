@@ -6,13 +6,12 @@ use stdweb::unstable::TryInto;
 use stdweb::web::HtmlElement;
 use webgl_rendering_context::WebGLRenderingContext as glctx;
 
-use drawing::{ FlatCanvas, AllCanvasMan };
+use drawing::{ FlatCanvas, AllCanvasMan, DrawingSession };
 use wglraw;
 use stage::Stage;
 use program::{ Program, GPUSpec, ProgramType, CanvasWeave };
 use composit::{ StateManager, Compositor };
 use print::PrintRun;
-use types::{ Dot };
 
 pub struct Programs {
     pub order: Vec<ProgramType>,
@@ -39,10 +38,10 @@ impl Programs {
         }        
     }
 
-    pub fn finalize_objects(&mut self, ctx: &glctx, acm: &mut AllCanvasMan) {
+    pub fn finalize_objects(&mut self, ctx: &glctx, ds: &mut DrawingSession) {
         for k in &self.order {
             let geom = self.map.get_mut(k).unwrap();
-            geom.data.objects_final(ctx,acm);
+            geom.data.objects_final(ctx,ds);
         }
     }
 }

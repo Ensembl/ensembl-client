@@ -7,6 +7,7 @@ use std::collections::hash_map::DefaultHasher;
 use types::{ CPixel, RPixel, area_size, cpixel };
 use drawing::alloc::{ Ticket, Allocator };
 use drawing::{ FlatCanvas, Drawing, Artist, AllCanvasMan };
+use shape::CanvasIdx;
 
 pub struct DrawingHash(u64);
 
@@ -55,6 +56,7 @@ impl DrawingMemory {
  */
 pub struct OneCanvasManager {
     pub canvas: Option<FlatCanvas>,
+    index: CanvasIdx,
     standin: FlatCanvas,
     cache: DrawingMemory,
     drawings: Vec<Drawing>,
@@ -62,9 +64,10 @@ pub struct OneCanvasManager {
 }
 
 impl OneCanvasManager {
-    pub fn new(standin: &FlatCanvas) -> OneCanvasManager {
+    pub fn new(canv_idx: u32, standin: &FlatCanvas) -> OneCanvasManager {
         OneCanvasManager {
             canvas: None,
+            index: CanvasIdx::new(canv_idx),
             standin: standin.clone(),
             cache: DrawingMemory::new(),
             drawings: Vec::<Drawing>::new(),
@@ -122,5 +125,7 @@ impl OneCanvasManager {
         if let Some(ref fc) = self.canvas {
             fc.remove(acm);
         }
-    }   
+    }
+    
+    pub fn index(&self) -> &CanvasIdx { &self.index }
 }

@@ -41,13 +41,13 @@ impl AllCanvasMan {
     }
     
     pub fn flat_allocate(&mut self, size: Dot<i32,i32>, 
-                         w: &CanvasWeave, idx: Option<u32>) -> FlatCanvas {
+                         w: &CanvasWeave) -> FlatCanvas {
         let canvas : CanvasElement = 
             document().create_element("canvas")
                 .ok().unwrap().try_into().unwrap();
         self.root.append_child(&canvas);
         let rm = CanvasRemover(self.idx);
-        let canvas = FlatCanvas::create(canvas,idx,size.0,size.1,w,rm);
+        let canvas = FlatCanvas::create(canvas,size.0,size.1,w,rm);
         self.canvases.insert(self.idx,canvas.clone());
         self.idx += 1;
         canvas

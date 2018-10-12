@@ -60,12 +60,11 @@ pub struct FlatCanvasImpl {
     width: i32,
     height: i32,
     weave: CanvasWeave,
-    index: Option<CanvasIdx>,
     rm: CanvasRemover
 }
 
 impl FlatCanvasImpl {    
-    pub fn create(canvas: CanvasElement, index: Option<u32>,
+    pub fn create(canvas: CanvasElement,
                   width: i32, height: i32, weave: CanvasWeave,
                   rm: CanvasRemover) -> FlatCanvasImpl {
         canvas.set_width(width as u32);
@@ -73,15 +72,7 @@ impl FlatCanvasImpl {
         let context : CanvasRenderingContext2d = canvas.get_context().unwrap();
         context.set_fill_style_color("black");
         FlatCanvasImpl {
-            canvas, context, height, width,  weave, rm,
-            index: index.map(|x| CanvasIdx::new(x))
-        }
-    }
-
-    pub fn apply_context(&mut self, progs: &mut Programs, ctx: &glctx) {
-        self.index.as_mut().map(|x| x.reset());
-        for (ref gk,ref mut geom) in progs.map.iter_mut() {
-            self.index.as_mut().map(|x| x.into_objects(gk,&mut geom.data,ctx));
+            canvas, context, height, width,  weave, rm
         }
     }
     
@@ -142,7 +133,6 @@ impl FlatCanvasImpl {
         cpixel(self.width,self.height)
     }
     
-    pub fn index(&self) -> &Option<CanvasIdx> { &self.index }
     pub fn weave(&self) -> &CanvasWeave { &self.weave }
 }
 
@@ -150,16 +140,12 @@ impl FlatCanvasImpl {
 pub struct FlatCanvas(Rc<RefCell<FlatCanvasImpl>>);
 
 impl FlatCanvas {
-    pub fn create(canvas: CanvasElement, index: Option<u32>,
+    pub fn create(canvas: CanvasElement,
                   width: i32, height: i32, weave: &CanvasWeave,
                   rm: CanvasRemover) -> FlatCanvas {
         FlatCanvas(Rc::new(RefCell::new(
-            FlatCanvasImpl::create(canvas,index,width,height,weave.clone(),rm)
+            FlatCanvasImpl::create(canvas,width,height,weave.clone(),rm)
         )))
-    }
-
-    pub fn apply_context(&mut self, progs: &mut Programs, ctx: &glctx) {
-        self.0.borrow_mut().apply_context(progs,ctx);
     }
     
     pub fn remove(&self, acm: &mut AllCanvasMan) {
@@ -190,6 +176,5 @@ impl FlatCanvas {
         self.0.borrow().size()
     }
     
-    pub fn index(&self) -> Option<CanvasIdx> { self.0.borrow().index().clone() }
     pub fn weave(&self) -> CanvasWeave { self.0.borrow().weave.clone() }
 }
