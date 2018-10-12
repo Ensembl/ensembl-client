@@ -3,7 +3,7 @@ use webgl_rendering_context::{
 };
 
 use drawing::Drawing;
-use drawing::AllCanvasMan;
+use drawing::DrawingSession;
 use program::data::{ DataBatch, DataGroup, Input };
 use program::objects::UniformValue;
 
@@ -22,7 +22,7 @@ pub trait Object {
     fn is_main(&self) -> bool { false }
     fn add_index(&mut self, _batch: &DataBatch, _indexes: &[u16], _points: u16) {}
 
-    fn obj_final(&mut self, _batch: &DataBatch, _ctx: &glctx, _acm: &AllCanvasMan) {}
+    fn obj_final(&mut self, _batch: &DataBatch, _ctx: &glctx, _ds: &DrawingSession) {}
     fn execute(&self, _ctx: &glctx, _batch: &DataBatch) {}
     fn clear(&mut self) {}
 }

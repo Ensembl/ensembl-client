@@ -1,9 +1,8 @@
 use webgl_rendering_context::WebGLRenderingContext as glctx;
 
 use composit::{ StateManager, Compositor, Component };
-use drawing::AllCanvasMan;
 use stage::Stage;
-use print::{ Programs, Printer };
+use print::Printer;
 use composit::ComponentRedo;
 
 pub struct PrintRun {
@@ -21,13 +20,12 @@ impl PrintRun {
         if level == ComponentRedo::None { return; }
         let mut comps = cman.components();
         debug!("redraw","{:?}",level);
-        p.clear_objects();
-        p.apply_contexts();
+        p.init();
         if level == ComponentRedo::Major {
             p.redraw_drawings(&mut comps);
         }
         p.redraw_objects(&mut comps);
-        p.finalize_objects();
+        p.fini();
     }
 
     pub fn go(&mut self, cman: &mut Compositor,

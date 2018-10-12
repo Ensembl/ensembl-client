@@ -3,7 +3,7 @@ use std::rc::Rc;
 use types::{ CPixel, RPixel, RFraction, cpixel, area };
 use drawing::alloc::Ticket;
 use drawing::{ Artist, OneCanvasManager };
-use drawing::DrawingSession;
+use drawing::{ DrawingSession, ShapeContextList };
 use shape::CanvasIdx;
 
 pub struct Artwork {
@@ -20,7 +20,8 @@ pub struct DrawingImpl {
     gen: Rc<Artist>,
     ticket: Ticket,
     mask_ticket: Ticket,
-    margin: CPixel
+    margin: CPixel,
+    contexts: ShapeContextList,
 }
 
 #[derive(Clone)]
@@ -31,7 +32,8 @@ impl Drawing {
         let margin = gen.margin();
         Drawing(
             Rc::new(DrawingImpl {
-                gen, ticket, mask_ticket, margin
+                gen, ticket, mask_ticket, margin,
+                contexts: ShapeContextList::new()
             }))
     }
 
@@ -52,7 +54,7 @@ impl Drawing {
             pos: m.as_fraction() / cs,
             mask_pos: mm.as_fraction() / cs,
             size: m.area(),
-            index: src.canvas.as_ref().unwrap().index().unwrap()
+            index: src.index().clone()
         }
     }
         

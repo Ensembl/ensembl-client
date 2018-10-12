@@ -6,6 +6,7 @@ use webgl_rendering_context::{
     GLint, GLenum,
 };
 
+use drawing::DrawingSession;
 use program::data::DataBatch;
 use program::objects::Object;
 use drawing::AllCanvasMan;
@@ -74,15 +75,14 @@ impl ObjectCanvasTexture {
 }
 
 impl Object for ObjectCanvasTexture {
-    fn obj_final(&mut self, _batch: &DataBatch, ctx: &glctx, acm: &AllCanvasMan) {
-        let canvs = acm.all_canvases();
+    fn obj_final(&mut self, _batch: &DataBatch, ctx: &glctx, ds: &DrawingSession) {
+        let canvs = ds.all_ocm();
         for c in canvs {
-            if let Some(idx) = c.index() {
-                self.textures.insert(
-                    idx.get_index(),
-                    canvas_texture(ctx,&c.element(),&c.weave())
-                );
-            }
+            self.textures.insert(
+                c.index().get_index(),
+                canvas_texture(ctx,&c.canvas.as_ref().unwrap().element(),
+                                &c.canvas.as_ref().unwrap().weave())
+            );
         }
     }
 

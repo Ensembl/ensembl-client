@@ -25,7 +25,7 @@ impl Artist for BitmapArtist {
         self.size
     }
     
-    fn select_canvas<'a>(&self, ds: &'a mut DrawingSession) -> &'a mut OneCanvasManager {
+    fn select_canvas<'a>(&self, ds: &'a mut DrawingSession) -> &'a mut OneCanvasManager { 
         ds.get_ocm(if self.blur { CanvasWeave::Blur } else { CanvasWeave::Pixelate })
     }
 

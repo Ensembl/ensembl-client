@@ -9,13 +9,13 @@ use shape::shapeimpl::ShapeContext;
 use program::UniformValue;
 
 pub struct CanvasIdxImpl {
-    index: u32,
+    pub index: u32,
     group: HashMap<ProgramType,DataGroup>
 }
 
 // XXX merge with spot
 #[derive(Clone)]
-pub struct CanvasIdx(Rc<RefCell<CanvasIdxImpl>>);
+pub struct CanvasIdx(pub Rc<RefCell<CanvasIdxImpl>>);
 
 impl CanvasIdxImpl {
     pub fn new(index: u32) -> CanvasIdxImpl {
@@ -25,8 +25,10 @@ impl CanvasIdxImpl {
         }
     }
 
-    pub fn get_group(&self, name: ProgramType) -> DataGroup {
-        self.group[&name]
+    pub fn get_group(&mut self, name: ProgramType, geom: &mut ProgramAttribs) -> DataGroup {
+        self.group.entry(name).or_insert_with(|| {
+            geom.new_group()
+        }).clone()
     }
 }
 
@@ -37,10 +39,10 @@ impl ShapeContext for CanvasIdxImpl {
 
     fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs, _ctx: &glctx) {
         if geom_name.2 == PTSkin::Texture {
-            let group = geom.new_group();
-            self.group.insert(*geom_name,group);
             if let Some(obj) = geom.get_object("uSampler") {
-                obj.set_uniform(Some(group),UniformValue::Int(self.index as i32));
+                if let Some(group) = self.group.get(geom_name) {
+                    obj.set_uniform(Some(*group),UniformValue::Int(self.index as i32));
+                }
             }
         }
     }
@@ -53,8 +55,8 @@ impl CanvasIdx {
 
     pub fn get_index(&self) -> u32 { self.0.borrow().index }
 
-    pub fn get_group(&self, name: ProgramType) -> DataGroup {
-        self.0.borrow().get_group(name)
+    pub fn get_group(&self, name: ProgramType, prog: &mut ProgramAttribs) -> DataGroup {
+        self.0.borrow_mut().get_group(name,prog)
     }
 }
 
@@ -67,3 +69,4 @@ impl ShapeContext for CanvasIdx {
         self.0.borrow_mut().into_objects(geom_name,geom,ctx);
     }
 }
+

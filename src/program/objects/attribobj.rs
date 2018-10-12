@@ -8,7 +8,7 @@ use webgl_rendering_context::{
 };
 
 use wglraw;
-use drawing::AllCanvasMan;
+use drawing::DrawingSession;
 use program::data::{ DataBatch, Input };
 
 use program::objects::Object;
@@ -44,7 +44,7 @@ impl ObjectAttrib {
 }
 
 impl Object for ObjectAttrib {
-    fn obj_final(&mut self, batch: &DataBatch, ctx: &glctx, _acm: &AllCanvasMan) {
+    fn obj_final(&mut self, batch: &DataBatch, ctx: &glctx, _acm: &DrawingSession) {
         self.buf.entry(batch.id()).or_insert_with(|| wglraw::init_buffer(ctx));
         if let Some(data) = self.data(batch) {
             if let Some(buf) = self.buffer(batch) {

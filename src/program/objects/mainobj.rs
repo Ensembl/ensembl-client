@@ -10,7 +10,7 @@ use webgl_rendering_context::{
 use wglraw;
 use program::data::{ DataBatch };
 use program::objects::Object;
-use drawing::AllCanvasMan;
+use drawing::DrawingSession;
 
 pub struct ObjectMain {
     method: u32,
@@ -60,7 +60,7 @@ impl Object for ObjectMain {
         }
     }
 
-    fn obj_final(&mut self, batch: &DataBatch, ctx: &glctx, _acm: &AllCanvasMan) {
+    fn obj_final(&mut self, batch: &DataBatch, ctx: &glctx, _acm: &DrawingSession) {
         self.buf.entry(batch.id()).or_insert_with(|| wglraw::init_buffer(ctx));
         if let Some(data) = self.data(batch) {
             if let Some(buf) = self.buffer(batch) {
