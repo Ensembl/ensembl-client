@@ -31,7 +31,6 @@ module.exports = (isDev, moduleRules, plugins) => ({
       // babel-loader is used for typescript as it has good tree shaking support compared to tsc
       {
         test: /.tsx?$/,
-        exclude: /node_modules/,
         loader: 'babel-loader'
       },
 
