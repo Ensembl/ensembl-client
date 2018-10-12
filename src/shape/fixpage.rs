@@ -11,6 +11,7 @@ use shape::util::{
 };
 
 use drawing::{ Artist, Artwork };
+use print::PrintEdition;
 
 /*
  * FixTexture
@@ -33,7 +34,7 @@ impl FixTexture {
 
 impl Shape for FixTexture {
     fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs,
-                    artwork: Option<Artwork>) {
+                    artwork: Option<Artwork>, _e: &mut PrintEdition) {
         if let Some(art) = artwork {
             let pos = self.pos.quantity();
             let p = area_size(pos,art.size * self.scale.quantity());

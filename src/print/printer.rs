@@ -1,7 +1,7 @@
 use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element };
 
-use print::{ PrintRun, Programs };
+use print::{ PrintRun, Programs, PrintEdition };
 use composit::{ Compositor, Component, StateManager };
 use drawing::{ AllCanvasMan, DrawingSession, ShapeContextList };
 use shape::ShapeContext;
@@ -21,7 +21,6 @@ pub struct Printer {
     progs: Programs,
     acm: AllCanvasMan,
     ds: Option<DrawingSession>,
-    contexts: ShapeContextList,
 }
 
 impl Printer {
@@ -32,34 +31,28 @@ impl Printer {
         Printer {
             canv_el: canv_el.clone(),
             acm: AllCanvasMan::new("#managedcanvasholder"),
-            contexts: ShapeContextList::new(),
             ctx, progs,
             ds: None
         }
     }
-    
-    pub fn add_context(&mut self, ctx: Box<ShapeContext>) {
-        self.contexts.add(ctx);
-    }
-    
-    pub fn redraw_objects(&mut self, comps: &mut Vec<&mut Component>) {
+        
+    pub fn redraw_objects(&mut self, comps: &mut Vec<&mut Component>,e: &mut PrintEdition) {
         for c in comps.iter_mut() {
             if c.is_on() {
-                c.into_objects(&mut self.progs,self.ds.as_mut().unwrap());
+                c.into_objects(&mut self.progs,self.ds.as_mut().unwrap(),e);
             }
         }
     }
             
     pub fn init(&mut self) {
         self.progs.clear_objects();
-        self.contexts.reset();
-        self.contexts.go(&self.ctx,&mut self.progs);
     }
     
-    pub fn fini(&mut self) {
+    pub fn fini(&mut self,e: &mut PrintEdition) {
         if let Some(ref mut ds) = self.ds {
             self.progs.finalize_objects(&self.ctx,ds);
         }
+        e.go(&self.ctx,&mut self.progs);
         self.ds.as_mut().unwrap().go_contexts(&self.ctx,&mut self.progs);
     }
     

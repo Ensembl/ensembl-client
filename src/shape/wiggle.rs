@@ -1,8 +1,8 @@
 use std::rc::Rc;
 
-use types::{ CLeaf, RLeaf, cfraction, cleaf, area_size };
+use types::{ CLeaf, RLeaf, cfraction, cleaf, area_size, Colour };
 
-use shape::{ Shape, ColourSpec, Spot };
+use shape::{ Shape, ColourSpec };
 use shape::util::{
     points_g,
     multi_gl,
@@ -11,25 +11,26 @@ use shape::util::{
 };
 
 use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
+use print::PrintEdition;
 
 use drawing::Artwork;
 
 pub struct StretchWiggle {
     points: Vec<CLeaf>,
     y: i32,
-    group: Spot
+    group: Colour
 }
 
 impl StretchWiggle {
-    pub fn new(points: Vec<CLeaf>, group: Spot, y: i32) -> StretchWiggle {
+    pub fn new(points: Vec<CLeaf>, group: Colour, y: i32) -> StretchWiggle {
         StretchWiggle { points, group, y }
     }
 }
 
 impl Shape for StretchWiggle {
-    fn into_objects(&self, _geom_name: ProgramType, geom: &mut ProgramAttribs, _art: Option<Artwork>) {
-        let dg = self.group.get_group(self.get_geometry());
-        let b = vertices_strip(geom,self.points.len() as u16*2,Some(dg));
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut PrintEdition) {
+        let dg = ColourSpec::Spot(self.group).to_group(geom_name,geom,e);
+        let b = vertices_strip(geom,self.points.len() as u16*2,dg);
         points_g(b,geom,"aVertexPosition",&self.points,self.y);
     }
     
@@ -38,6 +39,6 @@ impl Shape for StretchWiggle {
     }
 }
 
-pub fn stretch_wiggle(p: Vec<CLeaf>, y: i32, spot: &Spot) -> Box<Shape> {
-    Box::new(StretchWiggle::new(p,spot.clone(),y))
+pub fn stretch_wiggle(p: Vec<CLeaf>, y: i32, colour: &Colour) -> Box<Shape> {
+    Box::new(StretchWiggle::new(p,colour.clone(),y))
 }

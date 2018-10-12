@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use types::{ CLeaf, RLeaf, cfraction, cleaf, area_size };
 
-use shape::{ Shape, ColourSpec, Spot };
+use shape::{ Shape, ColourSpec };
 use shape::util::{
     rectangle_g, rectangle_t, points_g,
     multi_gl,
@@ -11,7 +11,7 @@ use shape::util::{
 };
 
 use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
-
+use print::PrintEdition;
 use drawing::{ Artist, Artwork };
 
 /*
@@ -34,7 +34,7 @@ impl StretchTexture {
 const CHUNK_SIZE : f32 = 10.;
 
 impl Shape for StretchTexture {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, artwork: Option<Artwork>) {
+    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, artwork: Option<Artwork>, e: &mut PrintEdition) {
         if let Some(art) = artwork {
             /* some cards baulk at very large textured areas, so split */
             let mut chunks = ((self.pos.area()).0.abs() / CHUNK_SIZE) as i32;
