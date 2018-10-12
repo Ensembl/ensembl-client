@@ -3,8 +3,6 @@ use stdweb::web::{ HtmlElement, Element };
 
 use print::{ PrintRun, Programs };
 use composit::{ Compositor, Component, StateManager };
-use composit::ComponentRedo;
-use controller::input::{ Event, events_run };
 use drawing::{ AllCanvasMan, DrawingSession };
 use shape::ShapeContext;
 use dom::domutil;
@@ -72,6 +70,9 @@ impl Printer {
     }
     
     pub fn redraw_drawings(&mut self, comps: &mut Vec<&mut Component>) {
+        if let Some(ref mut ds) = self.ds {
+            ds.finish(&mut self.acm);
+        }
         self.ds = Some(DrawingSession::new(&mut self.acm));
         for mut c in comps.iter_mut() {
             self.ds.as_mut().unwrap().redraw_component(*c);
@@ -82,7 +83,7 @@ impl Printer {
     pub fn draw(&mut self,stage: &Stage, oom: &StateManager, compo: &mut Compositor) {
         let redo = compo.calc_level(oom);
         let mut pr = PrintRun::new();
-        pr.go(compo,oom,stage,self,redo);
+        pr.go(compo,stage,self,redo);
     }
     
     pub fn go(&mut self, stage: &Stage) {

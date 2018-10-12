@@ -75,18 +75,13 @@ impl ObjectCanvasTexture {
 
 impl Object for ObjectCanvasTexture {
     fn obj_final(&mut self, _batch: &DataBatch, ctx: &glctx, acm: &AllCanvasMan) {
-        // TODO: make into iterator
-        let mut i = 0;
-        loop {
-            let c = acm.get_canvas(i);
-            if let Some(c) = c {
+        let canvs = acm.all_canvases();
+        for c in canvs {
+            if let Some(idx) = c.index() {
                 self.textures.insert(
-                    c.index().get_index() as u32,
+                    idx.get_index(),
                     canvas_texture(ctx,&c.element(),&c.weave())
                 );
-                i += 1;
-            } else {
-                break;
             }
         }
     }

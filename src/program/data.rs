@@ -90,6 +90,14 @@ impl BatchManager {
         }
     }
     
+    pub fn reset(&mut self) {
+        self.max_group = 0;
+        self.max_batch = 0;
+        self.batch_size.clear();
+        self.batch_group.clear();
+        self.group_batch.clear();
+    }
+    
     pub fn iter(&self) -> BatchIter {
         BatchIter::new(self)
     }
@@ -108,7 +116,7 @@ impl BatchManager {
                 self.batch_group.insert(self.max_batch,g.0);
                 *e.insert(self.max_batch)
             }
-        };        
+        };
         /* Get current batch size */
         let mut size = *self.batch_size.entry(batch).or_insert(0);
         /* Create a new, if full */

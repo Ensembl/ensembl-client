@@ -17,7 +17,6 @@ impl PrintRun {
     pub fn into_objects(&mut self,
                         cman: &mut Compositor,
                         p: &mut Printer,
-                        oom: &StateManager,
                         level: ComponentRedo) {
         if level == ComponentRedo::None { return; }
         let mut comps = cman.components();
@@ -31,9 +30,9 @@ impl PrintRun {
         p.finalize_objects();
     }
 
-    pub fn go(&mut self, cman: &mut Compositor, oom: &StateManager,
+    pub fn go(&mut self, cman: &mut Compositor,
                 stage: &Stage, p: &mut Printer, level: ComponentRedo) {
-        self.into_objects(cman,p,oom,level);
+        self.into_objects(cman,p,level);
         p.go(stage);
     }
 }
