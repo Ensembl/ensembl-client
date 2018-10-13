@@ -48,7 +48,7 @@ impl Shape for StretchTexture {
             let mut t = area_size(art.pos.offset(),widtht);
             let mut tm = area_size(art.mask_pos.offset(),widthtm);
             for _i in 0..chunks {
-                let group = art.index.get_group(geom_name,geom);
+                let group = e.canvas().get_group(geom_name,geom,&art.weave);
                 let b = vertices_rect(geom,Some(group));
                 rectangle_g(b,geom,"aVertexPosition",&p);
                 rectangle_t(b,geom,"aTextureCoord",&t);

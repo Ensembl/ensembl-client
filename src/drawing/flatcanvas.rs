@@ -16,7 +16,7 @@ use types::{
 };
 use shape::{ CanvasIdx, ShapeContext };
 use print::Programs;
-use drawing::{ CanvasRemover, AllCanvasMan };
+use drawing::{ CanvasRemover, AllCanvasMan, AllCanvasAllocator };
 use program::CanvasWeave;
 
 #[derive(Clone,Copy,Debug)]
@@ -76,9 +76,9 @@ impl FlatCanvasImpl {
         }
     }
     
-    pub fn remove(&self, acm: &mut AllCanvasMan) {
+    pub fn remove(&self, aca: &mut AllCanvasAllocator) {
         self.canvas.parent_node().unwrap().remove_child(&self.canvas).ok();
-        self.rm.remove(acm);
+        self.rm.remove(aca);
     }
     
     pub fn text(&self,text : &str, pos: CPixel, font: &FCFont, col: &Colour, bg: &Colour) -> (i32,i32) {
@@ -148,8 +148,8 @@ impl FlatCanvas {
         )))
     }
     
-    pub fn remove(&self, acm: &mut AllCanvasMan) {
-        self.0.borrow().remove(acm);
+    pub fn remove(&self, aca: &mut AllCanvasAllocator) {
+        self.0.borrow().remove(aca);
     }
     
     pub fn text(&self,text : &str, pos: CPixel, font: &FCFont, col: &Colour, bg: &Colour) -> (i32,i32) {
@@ -176,5 +176,5 @@ impl FlatCanvas {
         self.0.borrow().size()
     }
     
-    pub fn weave(&self) -> CanvasWeave { self.0.borrow().weave.clone() }
+    pub fn weave(&self) -> CanvasWeave { self.0.borrow().weave().clone() }
 }

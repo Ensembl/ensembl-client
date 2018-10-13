@@ -6,8 +6,9 @@ use std::collections::hash_map::DefaultHasher;
 
 use types::{ CPixel, RPixel, area_size, cpixel };
 use drawing::alloc::{ Ticket, Allocator };
-use drawing::{ FlatCanvas, Drawing, Artist, AllCanvasMan };
+use drawing::{ FlatCanvas, Drawing, Artist, AllCanvasMan, AllCanvasAllocator };
 use shape::CanvasIdx;
+use program::CanvasWeave;
 
 pub struct DrawingHash(u64);
 
@@ -61,17 +62,21 @@ pub struct OneCanvasManager {
     cache: DrawingMemory,
     drawings: Vec<Drawing>,
     allocator: Allocator,
+    index2: u32,
+    weave: CanvasWeave
 }
 
 impl OneCanvasManager {
-    pub fn new(canv_idx: u32, standin: &FlatCanvas) -> OneCanvasManager {
+    pub fn new(canv_idx: u32, weave: CanvasWeave, standin: &FlatCanvas) -> OneCanvasManager {
         OneCanvasManager {
             canvas: None,
             index: CanvasIdx::new(canv_idx),
+            index2: canv_idx,
             standin: standin.clone(),
             cache: DrawingMemory::new(),
             drawings: Vec::<Drawing>::new(),
             allocator: Allocator::new(20),
+            weave
         }
     }
 
@@ -97,9 +102,9 @@ impl OneCanvasManager {
         }
     }
 
-    pub fn draw(&mut self, acm: &mut AllCanvasMan, canvs: FlatCanvas) {
+    pub fn draw(&mut self, aca: &mut AllCanvasAllocator, canvs: FlatCanvas) {
         if let Some(ref old) = self.canvas {
-            old.remove(acm);
+            old.remove(aca);
         }
         self.canvas = Some(canvs);
         for tr in &self.drawings {
@@ -121,11 +126,13 @@ impl OneCanvasManager {
         area_size(pos,size)
     } 
     
-    pub fn finish(&self, acm: &mut AllCanvasMan) {
+    pub fn finish(&self, aca: &mut AllCanvasAllocator) {
         if let Some(ref fc) = self.canvas {
-            fc.remove(acm);
+            fc.remove(aca);
         }
     }
-    
+
+    pub fn index2(&self) -> u32 { self.index2 }  // XXX
     pub fn index(&self) -> &CanvasIdx { &self.index }
+    pub fn weave(&self) -> CanvasWeave { self.weave }
 }

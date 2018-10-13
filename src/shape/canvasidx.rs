@@ -37,7 +37,7 @@ impl ShapeContext for CanvasIdxImpl {
         self.group.clear();
     }
 
-    fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs, _ctx: &glctx) {
+    fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs) {
         if geom_name.2 == PTSkin::Texture {
             if let Some(obj) = geom.get_object("uSampler") {
                 if let Some(group) = self.group.get(geom_name) {
@@ -65,8 +65,7 @@ impl ShapeContext for CanvasIdx {
         self.0.borrow_mut().reset();
     }
 
-    fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs, ctx: &glctx) {
-        self.0.borrow_mut().into_objects(geom_name,geom,ctx);
+    fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs) {
+        self.0.borrow_mut().into_objects(geom_name,geom);
     }
 }
-

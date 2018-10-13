@@ -53,9 +53,9 @@ impl PinTexture {
 
 impl Shape for PinTexture {
     fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, 
-                    artwork: Option<Artwork>, _e: &mut PrintEdition) {
+                    artwork: Option<Artwork>, e: &mut PrintEdition) {
         if let Some(art) = artwork {
-            let group = art.index.get_group(geom_name,geom);
+            let group = e.canvas().get_group(geom_name,geom,&art.weave);
             let b = vertices_rect(geom,Some(group));
             let mut mp = art.mask_pos;
             let mut ap = art.pos;
