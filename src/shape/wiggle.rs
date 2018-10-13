@@ -1,14 +1,7 @@
-use std::rc::Rc;
-
-use types::{ CLeaf, RLeaf, cfraction, cleaf, area_size, Colour };
+use types::{ CLeaf, Colour };
 
 use shape::{ Shape, ColourSpec };
-use shape::util::{
-    points_g,
-    multi_gl,
-    vertices_rect, vertices_strip,
-    despot
-};
+use shape::util::{ points_g, vertices_strip };
 
 use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
 use print::PrintEdition;
@@ -28,8 +21,8 @@ impl StretchWiggle {
 }
 
 impl Shape for StretchWiggle {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut PrintEdition) {
-        let dg = ColourSpec::Spot(self.group).to_group(geom_name,geom,e);
+    fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut PrintEdition) {
+        let dg = ColourSpec::Spot(self.group).to_group(geom,e);
         let b = vertices_strip(geom,self.points.len() as u16*2,dg);
         points_g(b,geom,"aVertexPosition",&self.points,self.y);
     }

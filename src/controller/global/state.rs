@@ -1,21 +1,14 @@
 use std::sync::{ Arc, Mutex };
 
 use stdweb::unstable::TryInto;
-use stdweb::web::{ IElement, HtmlElement, Element };
+use stdweb::web::HtmlElement;
 
 use print::{ Printer, PrintRun, Programs };
 use composit::{ Compositor, StateManager };
 use controller::input::{ Event, events_run };
-use drawing::AllCanvasMan;
-use dom::domutil;
 use stage::Stage;
-use types::{ Dot };
 use wglraw;
 
-use webgl_rendering_context::WebGLRenderingContext as glctx;
-use stdweb::web::html_element::{
-    CanvasElement
-};
 pub struct CanvasState {
     pub printer: Arc<Mutex<Printer>>,
     pub stage: Arc<Mutex<Stage>>,

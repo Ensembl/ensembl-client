@@ -6,18 +6,14 @@ use stdweb::web::{
     TextBaseline,
     CanvasRenderingContext2d,
 };
-
 use stdweb::web::html_element::CanvasElement;
 use stdweb::web::TypedArray;
 use webgl_rendering_context::WebGLRenderingContext as glctx;
 
-use types::{
-    Colour, CPixel, RPixel, cpixel, Dot
-};
-use shape::{ CanvasIdx, ShapeContext };
-use print::Programs;
 use drawing::{ CanvasRemover, AllCanvasMan, AllCanvasAllocator };
+use print::Programs;
 use program::CanvasWeave;
+use types::{ Colour, CPixel, RPixel, cpixel, Dot };
 
 #[derive(Clone,Copy,Debug)]
 pub enum FontVariety {

@@ -5,16 +5,14 @@ use webgl_rendering_context::WebGLRenderingContext as glctx;
 
 use print::Programs;
 use composit::{ Component };
-use drawing::{ OneCanvasManager, FlatCanvas, AllCanvasMan, ShapeContextList, AllCanvasAllocator };
+use drawing::{ OneCanvasManager, FlatCanvas, AllCanvasMan, AllCanvasAllocator };
 use program::{ CanvasWeave };
 use types::cpixel;
-use shape::{ ShapeContext, CanvasIdx };
 
 pub struct DrawingSession {
     next_canv_idx: u32,
     canvases: HashMap<CanvasWeave,OneCanvasManager>,
     standin: FlatCanvas,
-    contexts: ShapeContextList
 }
 
 impl DrawingSession {
@@ -23,7 +21,6 @@ impl DrawingSession {
         DrawingSession {
             next_canv_idx: 0,
             canvases: HashMap::<CanvasWeave,OneCanvasManager>::new(),
-            contexts: ShapeContextList::new(),
             standin,
         }
     }
@@ -31,7 +28,7 @@ impl DrawingSession {
     pub fn indices(&self) -> HashMap<CanvasWeave,u32> {
         let mut out = HashMap::<CanvasWeave,u32>::new();
         for (w,ocm) in &self.canvases {
-            out.insert(*w,ocm.index2());
+            out.insert(*w,ocm.index());
         }
         out
     }
@@ -51,26 +48,16 @@ impl DrawingSession {
         }
     }
 
-    pub fn reset_contexts(&mut self) {
-        self.contexts.reset();
-    }
-
-    pub fn go_contexts(&mut self, progs: &mut Programs) {
-        self.contexts.go(progs);
-    }
-
     pub fn redraw_component(&mut self, c: &mut Component) {
         c.draw_drawings(self);
     }
     
     pub fn finalise(&mut self, progs: &mut Programs, 
                 aca: &mut AllCanvasAllocator, ctx: &glctx) {
-        let mut sc = Vec::<Box<ShapeContext>>::new();
         for (ref weave,ref mut ocm) in &mut self.canvases {                    
             let size = ocm.allocate();
             let mut canv = aca.flat_allocate(size,*weave);
             ocm.draw(aca,canv);
-            self.contexts.add(Box::new(ocm.index().clone()));
         }
     }
     

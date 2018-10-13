@@ -79,7 +79,7 @@ impl Object for ObjectCanvasTexture {
         let canvs = ds.all_ocm();
         for c in canvs {
             self.textures.insert(
-                c.index().get_index(),
+                c.index(),
                 canvas_texture(ctx,&c.canvas.as_ref().unwrap().element(),
                                 &c.canvas.as_ref().unwrap().weave())
             );

@@ -7,7 +7,6 @@ use std::collections::hash_map::DefaultHasher;
 use types::{ CPixel, RPixel, area_size, cpixel };
 use drawing::alloc::{ Ticket, Allocator };
 use drawing::{ FlatCanvas, Drawing, Artist, AllCanvasMan, AllCanvasAllocator };
-use shape::CanvasIdx;
 use program::CanvasWeave;
 
 pub struct DrawingHash(u64);
@@ -57,12 +56,11 @@ impl DrawingMemory {
  */
 pub struct OneCanvasManager {
     pub canvas: Option<FlatCanvas>,
-    index: CanvasIdx,
     standin: FlatCanvas,
     cache: DrawingMemory,
     drawings: Vec<Drawing>,
     allocator: Allocator,
-    index2: u32,
+    index: u32,
     weave: CanvasWeave
 }
 
@@ -70,8 +68,7 @@ impl OneCanvasManager {
     pub fn new(canv_idx: u32, weave: CanvasWeave, standin: &FlatCanvas) -> OneCanvasManager {
         OneCanvasManager {
             canvas: None,
-            index: CanvasIdx::new(canv_idx),
-            index2: canv_idx,
+            index: canv_idx,
             standin: standin.clone(),
             cache: DrawingMemory::new(),
             drawings: Vec::<Drawing>::new(),
@@ -132,7 +129,6 @@ impl OneCanvasManager {
         }
     }
 
-    pub fn index2(&self) -> u32 { self.index2 }  // XXX
-    pub fn index(&self) -> &CanvasIdx { &self.index }
+    pub fn index(&self) -> u32 { self.index }
     pub fn weave(&self) -> CanvasWeave { self.weave }
 }

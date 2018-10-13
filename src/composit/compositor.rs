@@ -1,11 +1,8 @@
 use std::collections::HashMap;
 
-use webgl_rendering_context::WebGLRenderingContext as glctx;
-
 use print::Programs;
 use composit::{ Component, StateManager };
 use drawing::{ AllCanvasMan, DrawingSession };
-use shape::{ ShapeContext };
 use composit::state::ComponentRedo;
 
 pub struct Compositor {

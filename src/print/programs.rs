@@ -10,8 +10,6 @@ use drawing::{ FlatCanvas, AllCanvasMan, DrawingSession };
 use wglraw;
 use stage::Stage;
 use program::{ Program, GPUSpec, ProgramType, CanvasWeave };
-use composit::{ StateManager, Compositor };
-use print::PrintRun;
 
 pub struct Programs {
     pub order: Vec<ProgramType>,
