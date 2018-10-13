@@ -45,7 +45,7 @@ impl DrawnShape {
 
 pub trait ShapeContext {
     fn reset(&mut self);
-    fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs, ctx: &glctx);
+    fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs);
 }
 
 #[derive(Clone)]

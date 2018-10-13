@@ -4,6 +4,7 @@ mod fixpage;
 mod shapeimpl;
 mod util;
 mod canvasidx;
+mod canvasidx2;
 mod spec;
 mod rect;
 mod poly;
@@ -18,6 +19,7 @@ pub use self::shapeimpl::{
 };
 
 pub use self::canvasidx::CanvasIdx;
+pub use self::canvasidx2::CanvasIdx2;
 
 pub use self::fixpage::{
     fix_texture,

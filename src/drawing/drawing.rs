@@ -5,12 +5,13 @@ use drawing::alloc::Ticket;
 use drawing::{ Artist, OneCanvasManager };
 use drawing::{ DrawingSession, ShapeContextList };
 use shape::CanvasIdx;
+use program::CanvasWeave;
 
 pub struct Artwork {
     pub pos: RFraction,
     pub mask_pos: RFraction,
     pub size: CPixel,
-    pub index: CanvasIdx
+    pub weave: CanvasWeave
 }
 
 /* One request to draw on the backing canvas. A combination of
@@ -54,7 +55,7 @@ impl Drawing {
             pos: m.as_fraction() / cs,
             mask_pos: mm.as_fraction() / cs,
             size: m.area(),
-            index: src.index().clone()
+            weave: src.weave()
         }
     }
         

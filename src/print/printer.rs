@@ -20,7 +20,6 @@ pub struct Printer {
     ctx: glctx,
     progs: Programs,
     acm: AllCanvasMan,
-    ds: Option<DrawingSession>,
 }
 
 impl Printer {
@@ -32,14 +31,17 @@ impl Printer {
             canv_el: canv_el.clone(),
             acm: AllCanvasMan::new("#managedcanvasholder"),
             ctx, progs,
-            ds: None
         }
     }
-        
+    
+    pub fn new_edition(&mut self) -> PrintEdition {
+        PrintEdition::new(self.acm.get_drawing_session())
+    }
+    
     pub fn redraw_objects(&mut self, comps: &mut Vec<&mut Component>,e: &mut PrintEdition) {
         for c in comps.iter_mut() {
             if c.is_on() {
-                c.into_objects(&mut self.progs,self.ds.as_mut().unwrap(),e);
+                c.into_objects(&mut self.progs,self.acm.get_drawing_session(),e);
             }
         }
     }
@@ -49,23 +51,19 @@ impl Printer {
     }
     
     pub fn fini(&mut self,e: &mut PrintEdition) {
-        if let Some(ref mut ds) = self.ds {
-            self.progs.finalize_objects(&self.ctx,ds);
-        }
+        self.progs.finalize_objects(&self.ctx,self.acm.get_drawing_session());
         e.go(&self.ctx,&mut self.progs);
-        self.ds.as_mut().unwrap().go_contexts(&self.ctx,&mut self.progs);
+        self.acm.get_drawing_session().go_contexts(&mut self.progs);
     }
     
     pub fn redraw_drawings(&mut self, comps: &mut Vec<&mut Component>) {
-        if let Some(ref mut ds) = self.ds {
-            ds.finish(&mut self.acm);
-        }
-        self.ds = Some(DrawingSession::new(&mut self.acm));
-        self.ds.as_mut().unwrap().reset_contexts();
+        let acm = &mut self.acm;
+        acm.reset();
+        let (ds,alloc) = acm.get_ds_alloc();
         for mut c in comps.iter_mut() {
-            self.ds.as_mut().unwrap().redraw_component(*c);
+            ds.redraw_component(*c);
         }
-        self.ds.as_mut().unwrap().finalise(&mut self.progs,&mut self.acm,&self.ctx);
+        ds.finalise(&mut self.progs,alloc,&self.ctx);
     }
     
     pub fn draw(&mut self,stage: &Stage, oom: &StateManager, compo: &mut Compositor) {

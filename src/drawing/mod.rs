@@ -14,7 +14,7 @@ pub use self::artist::Artist;
 
 pub use self::drawing::{ Drawing, Artwork };
 pub use self::drawingsession::DrawingSession;
-pub use self::allcanvasman::{ AllCanvasMan, CanvasRemover };
+pub use self::allcanvasman::{ AllCanvasMan, CanvasRemover, AllCanvasAllocator };
 
 pub use self::onecanvasman::{
     OneCanvasManager, DrawingHash

@@ -34,12 +34,12 @@ impl FixTexture {
 
 impl Shape for FixTexture {
     fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs,
-                    artwork: Option<Artwork>, _e: &mut PrintEdition) {
+                    artwork: Option<Artwork>, e: &mut PrintEdition) {
         if let Some(art) = artwork {
             let pos = self.pos.quantity();
             let p = area_size(pos,art.size * self.scale.quantity());
             let p = self.scale.flip(self.pos).from_nw(p.as_fraction());
-            let group = art.index.get_group(geom_name,geom);
+            let group = e.canvas().get_group(geom_name,geom,&art.weave);
             let b = vertices_rect(geom,Some(group));
             let mut ap = art.pos.flip_d(self.pos);
             let mut mp = art.mask_pos.flip_d(self.pos);
