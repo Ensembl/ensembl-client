@@ -4,7 +4,6 @@ mod fixpage;
 mod shapeimpl;
 mod util;
 mod canvasidx;
-mod canvasidx2;
 mod spec;
 mod rect;
 mod poly;
@@ -13,13 +12,11 @@ mod spot;
 
 pub use self::shapeimpl::{
     Shape, DrawnShape,
-    ShapeContext,
     ColourSpec,
     MathsShape,
 };
 
 pub use self::canvasidx::CanvasIdx;
-pub use self::canvasidx2::CanvasIdx2;
 
 pub use self::fixpage::{
     fix_texture,

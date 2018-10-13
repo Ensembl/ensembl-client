@@ -65,7 +65,6 @@ impl AllCanvasMan {
     
     fn ds_init(&mut self) {
         self.ds = Some(DrawingSession::new(&mut self.alloc));
-        self.ds.as_mut().unwrap().reset_contexts();
     }
     
     pub fn get_drawing_session<'a>(&'a mut self) -> &'a mut DrawingSession {

@@ -8,7 +8,6 @@ mod drawing;
 mod artist;
 mod allcanvasman;
 mod drawingsession;
-mod shapecontext;
 
 pub use self::artist::Artist;
 
@@ -24,4 +23,3 @@ pub use self::text::text_texture;
 pub use self::bitmap::bitmap_texture;
 pub use self::collage::{ mark_rectangle, collage, Mark };
 pub use self::flatcanvas::{ FlatCanvas, FCFont, FontVariety };
-pub use self::shapecontext::ShapeContextList;

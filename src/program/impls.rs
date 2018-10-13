@@ -146,7 +146,7 @@ const SKINMETH_ORDER : [(PTSkin,PTMethod);5] = [
 impl ProgramType {
     pub fn to_program(&self, gpuspec: &GPUSpec, ctx: &glctx) -> Program {
         let src = self.0.to_source().merge(&self.1.to_source()).merge(&self.2.to_source());
-        Program::new(gpuspec,ctx,&src)
+        Program::new(*self,gpuspec,ctx,&src)
     }
     
     pub fn all() -> Vec<ProgramType> {

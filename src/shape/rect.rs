@@ -44,8 +44,8 @@ pub struct PinRect {
 }
 
 impl Shape for PinRect {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut PrintEdition) {
-        let group = self.colspec.to_group(geom_name,geom,e);
+    fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut PrintEdition) {
+        let group = self.colspec.to_group(geom,e);
         let b = vertices_rect(geom,group);
         match self.offset {
             RectPosition::Pin(origin,offset) => {

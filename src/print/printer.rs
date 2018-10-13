@@ -3,8 +3,7 @@ use stdweb::web::{ HtmlElement, Element };
 
 use print::{ PrintRun, Programs, PrintEdition };
 use composit::{ Compositor, Component, StateManager };
-use drawing::{ AllCanvasMan, DrawingSession, ShapeContextList };
-use shape::ShapeContext;
+use drawing::AllCanvasMan;
 use dom::domutil;
 use stage::Stage;
 use types::{ Dot };
@@ -53,7 +52,6 @@ impl Printer {
     pub fn fini(&mut self,e: &mut PrintEdition) {
         self.progs.finalize_objects(&self.ctx,self.acm.get_drawing_session());
         e.go(&self.ctx,&mut self.progs);
-        self.acm.get_drawing_session().go_contexts(&mut self.progs);
     }
     
     pub fn redraw_drawings(&mut self, comps: &mut Vec<&mut Component>) {

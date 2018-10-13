@@ -10,9 +10,11 @@ use program::source::{ Source, ProgramSource };
 use program::objects::Object;
 use program::data::{ DataBatch, DataGroup, BatchManager };
 use program::gpuspec::GPUSpec;
+use program::impls::ProgramType;
 use drawing::{ AllCanvasMan, DrawingSession };
 
 pub struct ProgramAttribs {
+    pt: ProgramType,
     pub bman: BatchManager,
     default_group: DataGroup,
     pub objects: Vec<Box<Object>>,
@@ -67,6 +69,8 @@ impl ProgramAttribs {
             }
         }
     }
+
+    pub fn prog_type(&self) -> &ProgramType { &self.pt }
     
     pub fn get_default_group(&self) -> DataGroup {
         self.default_group
@@ -88,7 +92,7 @@ impl ProgramAttribs {
 }
 
 impl Program {
-    pub fn new(gpuspec: &GPUSpec, ctx: &glctx, src: &ProgramSource) -> Program {
+    pub fn new(pt: ProgramType, gpuspec: &GPUSpec, ctx: &glctx, src: &ProgramSource) -> Program {
         let prog = Rc::new(src.prog(gpuspec,ctx));
         ctx.use_program(Some(&prog));
         let (objects,main_idx,object_names) = find_attribs(ctx,&src.uniforms,prog.clone());
@@ -96,7 +100,7 @@ impl Program {
         let default_group = bman.new_group();
         Program {
             data: ProgramAttribs {
-                bman, default_group,
+                bman, default_group, pt,
                 objects, object_names, main_idx,
             },
             prog,

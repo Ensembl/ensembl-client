@@ -7,8 +7,8 @@ use program::{
 };
 
 use types::{
-    CLeaf, CPixel, CFraction, cfraction, Dot, AxisSense, 
-    Bounds,  Rect, Edge, Anchors, RFraction, TOPLEFT
+    CFraction, cfraction, Dot, AxisSense, Bounds, Edge, Anchors, 
+    RFraction, TOPLEFT
 };
 
 use shape::{ Shape, ColourSpec, MathsShape, ShapeSpec };
@@ -161,8 +161,8 @@ impl PinPoly {
 }
 
 impl Shape for PinPoly {
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut PrintEdition) {
-        let group = self.colspec.to_group(geom_name,geom,e);
+    fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut PrintEdition) {
+        let group = self.colspec.to_group(geom,e);
         if self.hollow {
             let b = vertices_hollowpoly(geom,self.points,group);
             let v = self.build_points(true);

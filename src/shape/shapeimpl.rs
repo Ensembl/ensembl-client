@@ -9,7 +9,7 @@ use drawing::{ Artist, Artwork, Drawing, DrawingSession };
 
 pub trait Shape {
     fn get_artist(&self) -> Option<Rc<Artist>> { None }
-    fn into_objects(&self, geom_name: ProgramType, geom: &mut ProgramAttribs, art: Option<Artwork>,e: &mut PrintEdition);
+    fn into_objects(&self, geom: &mut ProgramAttribs, art: Option<Artwork>,e: &mut PrintEdition);
     fn get_geometry(&self) -> ProgramType;
 }
 
@@ -38,14 +38,9 @@ impl DrawnShape {
         let geom_name = self.shape.get_geometry();
         if let Some(geom) = progs.map.get_mut(&geom_name) {
             let artwork = self.drawing.as_ref().map(|r| r.artwork(ds));
-            self.shape.into_objects(geom_name,&mut geom.data,artwork,e);
+            self.shape.into_objects(&mut geom.data,artwork,e);
         }
     }
-}
-
-pub trait ShapeContext {
-    fn reset(&mut self);
-    fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs);
 }
 
 #[derive(Clone)]
@@ -56,10 +51,9 @@ pub enum ColourSpec {
 }
 
 impl ColourSpec {
-    pub fn to_group(&self, gn: ProgramType, g: &mut ProgramAttribs, e: &mut PrintEdition) -> Option<DataGroup> {
+    pub fn to_group(&self, g: &mut ProgramAttribs, e: &mut PrintEdition) -> Option<DataGroup> {
         match self {
-            //ColourSpec::Spot(s) => Some(s.get_group(gn)),
-            ColourSpec::Spot(c) => Some(e.spot().get_group(gn,g,c)),
+            ColourSpec::Spot(c) => Some(e.spot().get_group(g,c)),
             ColourSpec::Colour(_) => None
         }
     }

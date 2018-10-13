@@ -1,71 +1,40 @@
-use std::rc::Rc;
-use std::cell::RefCell;
 use std::collections::HashMap;
 
-use webgl_rendering_context::WebGLRenderingContext as glctx;
-
-use program::{ ProgramAttribs, DataGroup, ProgramType, PTSkin };
-use shape::shapeimpl::ShapeContext;
+use program::{ ProgramAttribs, DataGroup, ProgramType, PTSkin, CanvasWeave };
 use program::UniformValue;
 
-pub struct CanvasIdxImpl {
-    pub index: u32,
-    group: HashMap<ProgramType,DataGroup>
-}
-
-// XXX merge with spot
-#[derive(Clone)]
-pub struct CanvasIdx(pub Rc<RefCell<CanvasIdxImpl>>);
-
-impl CanvasIdxImpl {
-    pub fn new(index: u32) -> CanvasIdxImpl {
-        CanvasIdxImpl {
-            group: HashMap::<ProgramType,DataGroup>::new(),
-            index
-        }
-    }
-
-    pub fn get_group(&mut self, name: ProgramType, geom: &mut ProgramAttribs) -> DataGroup {
-        self.group.entry(name).or_insert_with(|| {
-            geom.new_group()
-        }).clone()
-    }
-}
-
-impl ShapeContext for CanvasIdxImpl {
-    fn reset(&mut self) {
-        self.group.clear();
-    }
-
-    fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs) {
-        if geom_name.2 == PTSkin::Texture {
-            if let Some(obj) = geom.get_object("uSampler") {
-                if let Some(group) = self.group.get(geom_name) {
-                    obj.set_uniform(Some(*group),UniformValue::Int(self.index as i32));
-                }
-            }
-        }
-    }
+pub struct CanvasIdx {
+    group: HashMap<ProgramType,HashMap<CanvasWeave,DataGroup>>,
+    glindexes: HashMap<CanvasWeave,u32>
 }
 
 impl CanvasIdx {
-    pub fn new(index: u32) -> CanvasIdx {
-        CanvasIdx(Rc::new(RefCell::new(CanvasIdxImpl::new(index))))
+    pub fn new(glindexes: HashMap<CanvasWeave,u32>) -> CanvasIdx {
+        CanvasIdx {
+            group: HashMap::<ProgramType,HashMap<CanvasWeave,DataGroup>>::new(),
+            glindexes
+        }
     }
 
-    pub fn get_index(&self) -> u32 { self.0.borrow().index }
-
-    pub fn get_group(&self, name: ProgramType, prog: &mut ProgramAttribs) -> DataGroup {
-        self.0.borrow_mut().get_group(name,prog)
-    }
-}
-
-impl ShapeContext for CanvasIdx {
-    fn reset(&mut self) {
-        self.0.borrow_mut().reset();
+    pub fn get_group(&mut self, geom: &mut ProgramAttribs, weave: &CanvasWeave) -> DataGroup {
+        *self.group.entry(*geom.prog_type()).or_insert_with(||
+            HashMap::<CanvasWeave,DataGroup>::new()
+        ).entry(*weave).or_insert_with(|| {
+            geom.new_group()
+        })
     }
 
-    fn into_objects(&mut self, geom_name: &ProgramType, geom: &mut ProgramAttribs) {
-        self.0.borrow_mut().into_objects(geom_name,geom);
+    pub fn into_objects(&mut self, geom: &mut ProgramAttribs) {
+        let geom_name = *geom.prog_type();
+        if geom_name.2 == PTSkin::Texture {
+            if let Some(obj) = geom.get_object("uSampler") {
+                if let Some(m) = self.group.get(&geom_name) {
+                    for (w,g) in m {
+                        let idx = self.glindexes[w] as i32;
+                        obj.set_uniform(Some(*g),UniformValue::Int(idx));
+                    }
+                }
+            }
+        }
     }
 }

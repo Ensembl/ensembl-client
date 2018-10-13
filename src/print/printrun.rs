@@ -1,9 +1,6 @@
-use webgl_rendering_context::WebGLRenderingContext as glctx;
-
-use composit::{ StateManager, Compositor, Component };
-use stage::Stage;
+use composit::{ Compositor, ComponentRedo };
 use print::Printer;
-use composit::ComponentRedo;
+use stage::Stage;
 
 pub struct PrintRun {
 }
