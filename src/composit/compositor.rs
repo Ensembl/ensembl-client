@@ -1,8 +1,6 @@
 use std::collections::HashMap;
 
-use print::Programs;
 use composit::{ Component, StateManager };
-use drawing::{ AllCanvasMan, DrawingSession };
 use composit::state::ComponentRedo;
 
 pub struct Compositor {

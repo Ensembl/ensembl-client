@@ -1,15 +1,9 @@
 use std::collections::HashMap;
-use std::cell::RefCell;
-use std::rc::Rc;
 
-use stdweb::unstable::TryInto;
-use stdweb::web::HtmlElement;
 use webgl_rendering_context::WebGLRenderingContext as glctx;
 
-use drawing::{ FlatCanvas, AllCanvasMan, DrawingSession };
-use wglraw;
-use stage::Stage;
-use program::{ Program, GPUSpec, ProgramType, CanvasWeave };
+use drawing::DrawingSession;
+use program::{ Program, GPUSpec, ProgramType };
 
 pub struct Programs {
     pub order: Vec<ProgramType>,

@@ -1,8 +1,6 @@
 use std::rc::Rc;
 use std::cell::RefCell;
 
-use stdweb::web::Element;
-
 use dom::domutil;
 use dom::event::{
     EventListener, EventControl, EventType, EventData, Target

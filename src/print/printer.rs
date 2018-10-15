@@ -51,7 +51,7 @@ impl Printer {
     
     pub fn fini(&mut self,e: &mut PrintEdition) {
         self.progs.finalize_objects(&self.ctx,self.acm.get_drawing_session());
-        e.go(&self.ctx,&mut self.progs);
+        e.go(&mut self.progs);
     }
     
     pub fn redraw_drawings(&mut self, comps: &mut Vec<&mut Component>) {
@@ -61,7 +61,7 @@ impl Printer {
         for mut c in comps.iter_mut() {
             ds.redraw_component(*c);
         }
-        ds.finalise(&mut self.progs,alloc,&self.ctx);
+        ds.finalise(alloc);
     }
     
     pub fn draw(&mut self,stage: &Stage, oom: &StateManager, compo: &mut Compositor) {

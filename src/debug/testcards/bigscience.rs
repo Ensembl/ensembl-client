@@ -1,4 +1,3 @@
-use std::clone::Clone;
 use std::rc::Rc;
 
 use rand::distributions::Distribution;
@@ -21,15 +20,15 @@ use shape::{
 use controller::global::Global;
 
 use types::{
-    Colour, cleaf, cpixel, area, cedge, AxisSense, Dot,
+    Colour, cleaf, cpixel, area, cedge, AxisSense,
     TOPLEFT, BOTTOMLEFT, TOPRIGHT, BOTTOMRIGHT, area_size,
     A_MIDDLE, A_BOTTOMRIGHT, A_BOTTOMLEFT, A_TOPLEFT, A_TOPRIGHT, A_TOP,
     A_RIGHT, A_LEFT
 };
 
 use drawing::{
-    text_texture, bitmap_texture, collage, Mark, Artist, FCFont,
-    mark_rectangle, FontVariety
+    text_texture, bitmap_texture, collage, Artist, FCFont,
+    mark_rectangle, FontVariety, MarkSpec
 };
 
 use controller::input::Event;
@@ -191,7 +190,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                             MathsShape::Polygon(3,0.5),
                             &green).create());
         } else if yidx == middle-2 {
-            let mut parts = Vec::<Box<Mark>>::new();
+            let mut parts = Vec::<MarkSpec>::new();
             for row in 0..8 {
                 let mut off = 0;
                 for _pos in 0..100 {

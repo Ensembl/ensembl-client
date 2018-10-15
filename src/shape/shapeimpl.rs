@@ -1,7 +1,5 @@
 use std::rc::Rc;
 
-use webgl_rendering_context::WebGLRenderingContext as glctx;
-
 use program::{ ProgramAttribs, DataGroup, ProgramType };
 use types::{ Colour };
 use print::{ Programs, PrintEdition };
@@ -43,11 +41,10 @@ impl DrawnShape {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone,Copy,Debug)]
 pub enum ColourSpec {
     Colour(Colour),
     Spot(Colour),
-    //Spot(Spot)
 }
 
 impl ColourSpec {
@@ -59,7 +56,7 @@ impl ColourSpec {
     }
 }
 
-#[derive(Clone,Copy)]
+#[derive(Clone,Copy,Debug)]
 pub enum MathsShape {
     Polygon(u16,f32), // (points,offset/rev)
     Circle

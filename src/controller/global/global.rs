@@ -1,20 +1,15 @@
-use std::rc::Rc;
-use std::cell::RefCell;
 use std::sync::{ Arc, Mutex };
 
 use stdweb::unstable::TryInto;
 use stdweb::web::{ IElement, HtmlElement, Element };
 
-use composit::{ Compositor, StateManager };
+use composit::StateManager;
 use controller::input::{
     register_direct_events, register_user_events, register_dom_events,
     Event, events_run, Timers, Timer
 };
 use controller::global::{ CanvasRunner, CanvasState };
-use controller::output::Projector;
 use dom::domutil;
-use dom::event::EventControl;
-use stage::Stage;
 use types::CPixel;
 
 const CANVAS : &str = r##"<canvas id="glcanvas"></canvas>"##;

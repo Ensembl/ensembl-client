@@ -4,7 +4,8 @@ use drawing::{ FlatCanvas, Artist, DrawingSession, OneCanvasManager };
 use program::CanvasWeave;
 use types::{ CPixel, area_size, cpixel };
 
-struct BitmapArtist {
+#[derive(Clone,Debug)]
+pub struct BitmapArtist {
     data: Vec<u8>,
     size: CPixel,
     blur: bool

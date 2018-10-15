@@ -20,6 +20,7 @@ enum RectPosition<T: Clone+Copy+Debug> {
     Stretch(RLeaf)
 }
 
+#[derive(Clone,Copy,Debug)]
 pub struct RectSpec {
     pt: PTGeom,
     offset: RectPosition<i32>,

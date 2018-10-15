@@ -3,11 +3,10 @@ use std::sync::{ Arc, Mutex };
 use stdweb::unstable::TryInto;
 use stdweb::web::HtmlElement;
 
-use print::{ Printer, PrintRun, Programs };
+use print::Printer;
 use composit::{ Compositor, StateManager };
 use controller::input::{ Event, events_run };
 use stage::Stage;
-use wglraw;
 
 pub struct CanvasState {
     pub printer: Arc<Mutex<Printer>>,

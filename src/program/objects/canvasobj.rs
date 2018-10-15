@@ -9,7 +9,6 @@ use webgl_rendering_context::{
 use drawing::DrawingSession;
 use program::data::DataBatch;
 use program::objects::Object;
-use drawing::AllCanvasMan;
 
 #[derive(Clone,Copy,PartialEq,Eq,Hash,Debug)]
 pub enum CanvasWeave {

@@ -1,8 +1,4 @@
-use std::rc::Rc;
-use std::cell::RefCell;
 use std::sync::{ Arc, Mutex, Weak };
-
-use stdweb::web::{ IElement, HtmlElement, Element };
 
 use controller::input::{ Timers, Timer };
 use controller::global::CanvasState;

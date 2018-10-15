@@ -5,7 +5,8 @@ use types::{ Colour, CPixel };
 
 /* TextArtist - A Artist which can draw text */
 
-struct TextArtist {
+#[derive(Clone,Debug)]
+pub struct TextArtist {
     chars: String,
     font: FCFont,
     colour: Colour,
