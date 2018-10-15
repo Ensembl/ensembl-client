@@ -5,7 +5,7 @@ use webgl_rendering_context::WebGLRenderingContext as glctx;
 
 use print::Programs;
 use composit::{ Component };
-use drawing::{ OneCanvasManager, FlatCanvas, AllCanvasMan, AllCanvasAllocator };
+use drawing::{ OneCanvasManager, FlatCanvas, AllCanvasAllocator };
 use program::{ CanvasWeave };
 use types::cpixel;
 
@@ -52,8 +52,7 @@ impl DrawingSession {
         c.draw_drawings(self);
     }
     
-    pub fn finalise(&mut self, progs: &mut Programs, 
-                aca: &mut AllCanvasAllocator, ctx: &glctx) {
+    pub fn finalise(&mut self, aca: &mut AllCanvasAllocator) {
         for (ref weave,ref mut ocm) in &mut self.canvases {                    
             let size = ocm.allocate();
             let mut canv = aca.flat_allocate(size,*weave);

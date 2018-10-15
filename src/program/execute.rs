@@ -11,7 +11,7 @@ use program::objects::Object;
 use program::data::{ DataBatch, DataGroup, BatchManager };
 use program::gpuspec::GPUSpec;
 use program::impls::ProgramType;
-use drawing::{ AllCanvasMan, DrawingSession };
+use drawing::DrawingSession;
 
 pub struct ProgramAttribs {
     pt: ProgramType,

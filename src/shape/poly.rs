@@ -26,6 +26,7 @@ enum PolyPosition<T: Clone+Copy+Debug> {
     Page(Dot<Edge<i32>,i32>)
 }
 
+#[derive(Clone,Copy,Debug)]
 pub struct PinPolySpec {
     pt: PTGeom,
     origin: PolyPosition<f32>,

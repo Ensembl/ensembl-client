@@ -7,13 +7,27 @@ pub trait Mark : Artist {
     fn get_offset(&self) -> CPixel;
 }
 
-struct CollageArtist {
-    parts: Vec<Box<Mark>>,
+#[derive(Clone,Debug)]
+pub enum MarkSpec {
+    Rect(RectMark)
+}
+
+impl MarkSpec {
+    pub fn to_mark(&self) -> Box<Mark> {
+        match self {
+            MarkSpec::Rect(rm) => Box::new(rm.clone())
+        }
+    }
+}
+
+#[derive(Clone,Debug)]
+pub struct CollageArtist {
+    parts: Vec<MarkSpec>,
     size: CPixel
 }
 
 impl CollageArtist {
-    fn new(parts: Vec<Box<Mark>>, size: CPixel) -> CollageArtist {
+    fn new(parts: Vec<MarkSpec>, size: CPixel) -> CollageArtist {
         CollageArtist { parts, size }
     }
 }
@@ -21,8 +35,9 @@ impl CollageArtist {
 impl Artist for CollageArtist {
     fn draw(&self, canvs: &FlatCanvas, pos: CPixel) {
         for part in &self.parts {
-            let loc = part.get_offset();
-            part.draw(canvs,pos+loc);
+            let mark = part.to_mark();
+            let loc = mark.get_offset();
+            mark.draw(canvs,pos+loc);
         }
     }
     
@@ -31,10 +46,11 @@ impl Artist for CollageArtist {
     }
 }
 
-pub fn collage(parts: Vec<Box<Mark>>, size: CPixel) -> Rc<Artist> {
+pub fn collage(parts: Vec<MarkSpec>, size: CPixel) -> Rc<Artist> {
     Rc::new(CollageArtist::new(parts,size))
 }
 
+#[derive(Clone,Debug)]
 pub struct RectMark {
     coords: RPixel,
     colour: Colour
@@ -54,6 +70,6 @@ impl Artist for RectMark {
     }
 }
 
-pub fn mark_rectangle(coords: &RPixel, colour: &Colour) -> Box<Mark> {
-    Box::new(RectMark { coords: *coords, colour: *colour })
+pub fn mark_rectangle(coords: &RPixel, colour: &Colour) -> MarkSpec {
+    MarkSpec::Rect(RectMark { coords: *coords, colour: *colour })
 }

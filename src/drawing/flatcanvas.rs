@@ -8,10 +8,8 @@ use stdweb::web::{
 };
 use stdweb::web::html_element::CanvasElement;
 use stdweb::web::TypedArray;
-use webgl_rendering_context::WebGLRenderingContext as glctx;
 
-use drawing::{ CanvasRemover, AllCanvasMan, AllCanvasAllocator };
-use print::Programs;
+use drawing::{ CanvasRemover, AllCanvasAllocator };
 use program::CanvasWeave;
 use types::{ Colour, CPixel, RPixel, cpixel, Dot };
 
@@ -30,7 +28,7 @@ impl FontVariety {
     }
 }
 
-#[derive(Clone,Eq,PartialEq,Hash)]
+#[derive(Clone,Eq,PartialEq,Hash,Debug)]
 pub struct FCFont {
     spec: String,
     height: i32,

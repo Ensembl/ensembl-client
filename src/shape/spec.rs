@@ -1,5 +1,6 @@
 use shape::{ PinPolySpec, RectSpec, Shape };
 
+#[derive(Clone,Copy,Debug)]
 pub enum ShapeSpec {
     PinPoly(PinPolySpec),
     PinRect(RectSpec),

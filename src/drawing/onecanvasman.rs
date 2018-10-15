@@ -6,7 +6,7 @@ use std::collections::hash_map::DefaultHasher;
 
 use types::{ CPixel, RPixel, area_size, cpixel };
 use drawing::alloc::{ Ticket, Allocator };
-use drawing::{ FlatCanvas, Drawing, Artist, AllCanvasMan, AllCanvasAllocator };
+use drawing::{ FlatCanvas, Drawing, Artist,  AllCanvasAllocator };
 use program::CanvasWeave;
 
 pub struct DrawingHash(u64);

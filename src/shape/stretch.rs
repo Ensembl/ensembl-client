@@ -1,13 +1,10 @@
 use std::rc::Rc;
 
-use types::{ CLeaf, RLeaf, cfraction, cleaf, area_size };
+use types::{ RLeaf, cfraction, cleaf, area_size };
 
-use shape::{ Shape, ColourSpec };
+use shape::Shape;
 use shape::util::{
-    rectangle_g, rectangle_t, points_g,
-    multi_gl,
-    vertices_rect, vertices_strip,
-    despot
+    rectangle_g, rectangle_t, vertices_rect, despot
 };
 
 use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
