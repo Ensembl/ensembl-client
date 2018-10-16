@@ -4,7 +4,7 @@ use std::rc::{ Rc, Weak };
 use std::cell::RefCell;
 use serde_json::Value as JSONValue;
 
-use stdweb::web::{ IEventTarget, Element, HtmlElement, document };
+use stdweb::web::{ IEventTarget, Element, HtmlElement };
 use stdweb::traits::IEvent;
 use stdweb::web::event::{ ClickEvent, ChangeEvent };
 use stdweb::web::html_element::SelectElement;
@@ -36,7 +36,7 @@ impl BodyEventListener {
 impl EventListener<()> for BodyEventListener {    
     fn receive(&mut self, el: &Target, ev: &EventData, _p: &()) {
         self.val += 1;
-        debug!("test event","{} {:?} {:?}",self.val,el,ev);
+        //debug!("test event","{} {:?} {:?}",self.val,el,ev);
         if let EventData::CustomEvent(_,n,_) = ev {
             if n == "bpane-start" {
                 setup_stage_debug();

@@ -24,7 +24,7 @@ impl BitOr for ComponentRedo {
 }
 
 // (on/off,permanentish?)
-#[derive(Clone,Copy,PartialEq)]
+#[derive(Clone,Copy,PartialEq,Debug)]
 pub struct StateValue(bool,bool);
 
 impl BitAnd for StateValue {
