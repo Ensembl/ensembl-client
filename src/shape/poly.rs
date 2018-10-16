@@ -124,11 +124,11 @@ impl PinPoly {
                 multi_gl(b,geom,"aVertexSign",&origin.corner(),nump);
             },
             PolyPosition::Fix(origin) => {
-                poly_p(b,geom,"aVertexPositive",&w);
+                poly_p(b,geom,"aVertexPosition",&w);
                 multi_gl(b,geom,"aVertexSign",&origin.corner(),nump);
             },
             PolyPosition::Page(origin) => {
-                poly_p(b,geom,"aVertexPositive",&w);
+                poly_p(b,geom,"aVertexPosition",&w);
                 multi_gl(b,geom,"aVertexSign",&origin.y_edge(AxisSense::Pos).corner(),nump);
             },
         }

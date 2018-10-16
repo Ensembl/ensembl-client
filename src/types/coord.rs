@@ -118,6 +118,13 @@ impl<T: Clone+Copy+Debug + PartialOrd> Dot<Edge<T>, Edge<T>> {
     }
 }
 
+impl<T: Clone+Copy+Debug + Neg<Output=T>,
+     U: Clone+Copy+Debug + Neg<Output=U>> Dot<T,U> {
+    pub fn flip(&self, c: &Corner) -> Dot<T,U> {
+        Dot(c.0.flip(self.0), c.1.flip(self.1))
+    }
+}
+
 impl<T: Clone+Copy+Debug, U: Clone+Copy+Debug> Dot<T,U> {
     pub fn x_edge(&self,xs: AxisSense) -> Dot<Edge<T>,U> {
         Dot(Edge(xs,self.0),self.1)
@@ -142,21 +149,8 @@ impl<T: Clone+Copy+Debug, U: Clone+Copy+Debug> Dot<T,U> {
 
 impl Dot<Anchor,Anchor> {
     pub fn to_middle(&self, r: Rect<f32,f32>) -> CFraction {
-        let s = r.size();
-        Dot((self.0.prop())/2.,(self.1.prop())/2.) * s
-    }
-    
-    pub fn from_nw(&self, r: Rect<f32,f32>) -> Rect<f32,f32> {
-        let s = r.size();
-        r + Dot((self.0.prop()-1.)/2.,(self.1.prop()-1.)/2.) * s        
-    }
-}
-
-impl<T: Clone+Copy+Debug,
-     U: Clone+Copy+Debug> Dot<Anchored<T>,Anchored<U>> {
-    pub fn from_nw(&self, r: Rect<f32,f32>) -> Rect<f32,f32> {
-        let s = r.size();
-        r + Dot((self.0.prop()-1.)/2.,(self.1.prop()-1.)/2.) * s
+        let s = r.size() / cfraction(2.,2.);
+        Dot(self.0.prop(),self.1.prop()) * s
     }
 }
 
@@ -191,6 +185,15 @@ impl<T: Clone+Copy+Debug+Add<T,Output=U>,
         Edge(self.0, self.1+other)
     }
     
+}
+
+impl AxisSense {
+    pub fn flip<T: Clone+Copy+Debug + Neg<Output=T>>(&self, t: T) -> T {
+        match self {
+            AxisSense::Pos => t,
+            AxisSense::Neg => -t
+        }
+    }
 }
 
 impl<T: Clone+Copy+Debug> Edge<T> {

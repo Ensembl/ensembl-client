@@ -55,7 +55,7 @@ impl Shape for PinRect {
             },
             RectPosition::Page(offset) => {
                 let offset = offset.y_edge(AxisSense::Pos,AxisSense::Pos);
-                rectangle_c(b,geom,"aVertexPositive","aVertexSign",&offset);
+                rectangle_c(b,geom,"aVertexPosition","aVertexSign",&offset);
             },
             RectPosition::Tape(origin,offset) => {
                 let offset = offset.x_edge(AxisSense::Pos,AxisSense::Pos);
@@ -63,7 +63,7 @@ impl Shape for PinRect {
                 multi_gl(b,geom,"aOrigin",&origin,4);
             },
             RectPosition::Fix(offset) => {
-                rectangle_c(b,geom,"aVertexPositive","aVertexSign",&offset);
+                rectangle_c(b,geom,"aVertexPosition","aVertexSign",&offset);
             },
             RectPosition::Stretch(offset) => {
                 rectangle_g(b,geom,"aVertexPosition",&offset);

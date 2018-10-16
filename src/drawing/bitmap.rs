@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use drawing::{ FlatCanvas, Artist, DrawingSession, OneCanvasManager };
+use drawing::{ FlatCanvas, Artist, DrawingSession, OneCanvasManager, DrawingSpec };
 use program::CanvasWeave;
 use types::{ CPixel, area_size, cpixel };
 
@@ -33,6 +33,6 @@ impl Artist for BitmapArtist {
     fn margin(&self) -> CPixel { cpixel(1,1) }
 }
 
-pub fn bitmap_texture(data: Vec<u8>, size: CPixel, blur: bool) -> Rc<Artist> {
-    Rc::new(BitmapArtist::new(data,size,blur))
+pub fn bitmap_texture(data: Vec<u8>, size: CPixel, blur: bool) -> DrawingSpec {
+    DrawingSpec::Bitmap(BitmapArtist::new(data,size,blur))
 }

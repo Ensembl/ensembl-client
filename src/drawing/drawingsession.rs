@@ -1,9 +1,6 @@
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 
-use webgl_rendering_context::WebGLRenderingContext as glctx;
-
-use print::Programs;
 use composit::{ Component };
 use drawing::{ OneCanvasManager, FlatCanvas, AllCanvasAllocator };
 use program::{ CanvasWeave };

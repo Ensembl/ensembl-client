@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use types::{ CPixel, RPixel, Colour };
-use drawing::{ FlatCanvas, Artist };
+use drawing::{ FlatCanvas, Artist, DrawingSpec };
 
 pub trait Mark : Artist {
     fn get_offset(&self) -> CPixel;
@@ -46,8 +46,8 @@ impl Artist for CollageArtist {
     }
 }
 
-pub fn collage(parts: Vec<MarkSpec>, size: CPixel) -> Rc<Artist> {
-    Rc::new(CollageArtist::new(parts,size))
+pub fn collage(parts: Vec<MarkSpec>, size: CPixel) -> DrawingSpec {
+    DrawingSpec::Collage(CollageArtist::new(parts,size))
 }
 
 #[derive(Clone,Debug)]

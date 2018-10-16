@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use drawing::{ FCFont, Artist, FlatCanvas, DrawingHash };
+use drawing::{ FCFont, Artist, FlatCanvas, DrawingHash, DrawingSpec };
 use types::{ Colour, CPixel };
 
 /* TextArtist - A Artist which can draw text */
@@ -46,6 +46,6 @@ impl Artist for TextArtist {
     }
 }
 
-pub fn text_texture(chars: &str,font: &FCFont, col: &Colour, bg: &Colour) -> Rc<Artist> {
-    Rc::new(TextArtist::new(chars,font,col,bg))
+pub fn text_texture(chars: &str,font: &FCFont, col: &Colour, bg: &Colour) -> DrawingSpec {
+    DrawingSpec::Text(TextArtist::new(chars,font,col,bg))
 }
