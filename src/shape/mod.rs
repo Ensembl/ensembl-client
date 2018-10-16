@@ -48,6 +48,7 @@ pub use shape::poly::{
 
 pub use shape::wiggle::{
     stretch_wiggle,
+    StretchWiggle
 };
 
 pub use self::stretch::{
@@ -55,5 +56,5 @@ pub use self::stretch::{
     StretchTextureSpec
 };
 
-use self::spec::ShapeSpec;
+pub use self::spec::ShapeSpec;
 pub use self::spot::Spot;

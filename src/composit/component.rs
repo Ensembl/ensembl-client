@@ -1,8 +1,9 @@
 use std::rc::Rc;
 
 use print::{ Programs, PrintEdition };
-use shape::{ Shape, DrawnShape };
+use shape::{ DrawnShape, ShapeSpec };
 use composit::state::{ StateManager, StateExpr, StateValue, ComponentRedo };
+use composit::Source;
 use drawing::DrawingSession;
 
 pub struct Component {
@@ -10,15 +11,17 @@ pub struct Component {
     cur_value: StateValue,
     ooe: Rc<StateExpr>,
     shapes: Vec<DrawnShape>,
+    source: Box<Source>
 }
 
 impl Component {
-    pub fn new(ooe: Rc<StateExpr>) -> Component {
+    pub fn new(source: Box<Source>, ooe: Rc<StateExpr>) -> Component {
         Component {
             shapes: Vec::<DrawnShape>::new(),
             prev_value: StateValue::OffCold(),
             cur_value: StateValue::OffCold(),
-            ooe
+            ooe,
+            source: source
         }
     }
     
@@ -38,8 +41,8 @@ impl Component {
         }
     }
     
-    pub fn add_shape(&mut self, item: Box<Shape>) {
-        self.shapes.push(DrawnShape::new(item));
+    pub fn add_shape(&mut self, item: ShapeSpec) {
+        self.shapes.push(DrawnShape::new(item.create()));
     }
     
     pub fn draw_drawings(&mut self, ds: &mut DrawingSession) {
@@ -48,7 +51,8 @@ impl Component {
         }
     }
 
-    pub fn into_objects(&mut self, progs: &mut Programs,
+    pub fn into_objects(&mut self, 
+                        progs: &mut Programs,
                         ds: &mut DrawingSession, e: &mut PrintEdition) {
         for s in &mut self.shapes {
             s.into_objects(progs,ds,e);

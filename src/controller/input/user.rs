@@ -1,4 +1,3 @@
-use stdweb::unstable::TryInto;
 use std::sync::{ Arc, Mutex };
 use dom::domutil;
 use dom::event::{ EventListener, EventType, EventData, EventControl, Target };
