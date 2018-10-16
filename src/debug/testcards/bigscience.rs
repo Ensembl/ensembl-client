@@ -1,3 +1,4 @@
+#![allow(unused)]
 use std::rc::Rc;
 
 use rand::distributions::Distribution;
@@ -30,7 +31,7 @@ use types::{
 };
 
 use drawing::{
-    text_texture, bitmap_texture, collage, Artist, FCFont,
+    text_texture, bitmap_texture, collage, FCFont,
     mark_rectangle, FontVariety, MarkSpec, DrawingSpec
 };
 
@@ -75,13 +76,13 @@ pub fn big_science(g: &mut Global, onoff: bool) {
     let size = g.canvas_size();
 
     let mut fs_odd = FixedSource::new();
-    let mut c_odd = Component::new(Box::new(fs_odd.clone()),if onoff {
+    let c_odd = Component::new(Box::new(fs_odd.clone()),if onoff {
         Rc::new(StateAtom::new("odd"))
     } else {
         Rc::new(StateFixed(StateValue::On()))
     });
     let mut fs_even = FixedSource::new();
-    let mut c_even = Component::new(Box::new(fs_even.clone()),if onoff {
+    let c_even = Component::new(Box::new(fs_even.clone()),if onoff {
         Rc::new(StateAtom::new("even"))
     } else {
         Rc::new(StateFixed(StateValue::On()))
@@ -90,7 +91,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
     let fc_font = FCFont::new(12,"Lato",FontVariety::Normal);
 
     let mut fs = FixedSource::new();
-    let mut c = Component::new(Box::new(fs.clone()),Rc::new(StateFixed(StateValue::On())));
+    let c = Component::new(Box::new(fs.clone()),Rc::new(StateFixed(StateValue::On())));
 
     let mut middle = size.1 / 120;
     if middle < 5 { middle = 5; }

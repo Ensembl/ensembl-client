@@ -2,7 +2,7 @@ use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element };
 
 use print::{ PrintRun, Programs, PrintEdition };
-use composit::{ Compositor, LeafComponent, StateManager, Leaf };
+use composit::{ Compositor, LeafComponent, StateManager };
 use drawing::AllCanvasMan;
 use dom::domutil;
 use stage::Stage;

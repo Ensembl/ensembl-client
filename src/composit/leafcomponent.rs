@@ -1,9 +1,8 @@
 use std::rc::Rc;
 
 use print::{ Programs, PrintEdition };
-use shape::{ DrawnShape, ShapeSpec };
+use shape::DrawnShape;
 use composit::state::{ StateManager, StateExpr, StateValue, ComponentRedo };
-use composit::Source;
 use drawing::DrawingSession;
 
 pub struct LeafComponent {
@@ -14,7 +13,7 @@ pub struct LeafComponent {
 }
 
 impl LeafComponent {
-    pub fn new(source: &Box<Source>, ooe: &Rc<StateExpr>) -> LeafComponent {
+    pub fn new(ooe: &Rc<StateExpr>) -> LeafComponent {
         LeafComponent {
             shapes: Vec::<DrawnShape>::new(),
             prev_value: StateValue::OffCold(),

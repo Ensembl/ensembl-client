@@ -45,11 +45,6 @@ impl CanvasState {
         let a = &mut self.compo.lock().unwrap();
         cb(a)
     }
-
-    pub fn with_printer<F,G>(&self, cb: F) -> G where F: FnOnce(&mut Printer) -> G {
-        let a = &mut self.printer.lock().unwrap();
-        cb(a)
-    }
     
     pub fn run_events(self: &CanvasState, evs: Vec<Event>) {
         events_run(self,evs);
