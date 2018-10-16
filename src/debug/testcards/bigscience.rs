@@ -168,7 +168,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                                          255,0,0,255,
                                          0,255,0,255,
                                          255,255,0,255 },cpixel(4,1),true);
-            c.add_shape(stretch_texture(tx,&area_size(cleaf(-500.,y-5),cleaf(1000.,10))));
+            c.add_shape(stretch_texture(tx,&area_size(cleaf(-500.,y-5),cleaf(1000.,10))).create());
             let tx = bitmap_texture(
                                 vec! { 0,0,255,255,
                                          255,0,0,255,
@@ -216,7 +216,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                 }
             }
             let tx = collage(parts,cpixel(1000,40));
-            c.add_shape(stretch_texture(tx,&area_size(cleaf(-700.,y-25),cleaf(2000.,40))));
+            c.add_shape(stretch_texture(tx,&area_size(cleaf(-700.,y-25),cleaf(2000.,40))).create());
         } else if yidx == middle+2 || yidx == middle+4 {
             let wiggle = wiggly(&mut rng,500,cleaf(-500.,y-5),2.,20);
             c_odd.add_shape(stretch_wiggle(wiggle,2,&green_col));
