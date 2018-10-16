@@ -1,5 +1,3 @@
-use std::rc::Rc;
-
 use drawing::{ FCFont, Artist, FlatCanvas, DrawingHash, DrawingSpec };
 use types::{ Colour, CPixel };
 

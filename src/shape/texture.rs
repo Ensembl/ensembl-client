@@ -16,7 +16,7 @@ use drawing::{ Artist, Artwork, DrawingSpec };
 use print::PrintEdition;
 
 #[derive(Clone,Copy,Debug)]
-enum TexturePosition<T: Clone+Copy+Debug> {
+pub enum TexturePosition<T: Clone+Copy+Debug> {
     Pin(Dot<T,i32>),
     Tape(Dot<T,Edge<i32>>),
     Fix(EPixel),
@@ -32,6 +32,13 @@ pub struct TextureSpec {
     geom: ProgramType,
     aspec: DrawingSpec
 }
+
+impl TextureSpec {
+    pub fn create(&self) -> Box<Shape> {
+        Box::new(self.clone())
+    }
+}
+
 
 impl Shape for TextureSpec {
     fn into_objects(&self, geom: &mut ProgramAttribs, 
@@ -92,33 +99,31 @@ impl TextureSpec {
     }        
 }
 
-pub fn pin_texture(a: DrawingSpec, origin: &CLeaf, offset: &CPixel, scale: &APixel) -> Box<Shape> {
-    let pt = ProgramType(PTGeom::Pin,PTMethod::Triangle,PTSkin::Texture);
-    Box::new(TextureSpec::new(pt,a,&TexturePosition::Pin(*origin),offset,scale))
-}
-
-pub fn tape_texture(a: DrawingSpec, origin: &Dot<f32,Edge<i32>>, offset: &CPixel, scale: &APixel) -> Box<Shape> {
-    let pt = ProgramType(PTGeom::Tape,PTMethod::Triangle,PTSkin::Texture);
-    Box::new(TextureSpec::new(pt,a,&TexturePosition::Tape(*origin),offset,scale))
-}
-
-fn texture(a: DrawingSpec, origin: &EPixel, scale: &APixel, offset: &CPixel, gt: PTGeom) -> Box<Shape> {
+fn texture(a: DrawingSpec, origin: &TexturePosition<f32>, scale: &APixel, offset: &CPixel, gt: PTGeom) -> ShapeSpec {
     let pt = ProgramType(gt,PTMethod::Triangle,PTSkin::Texture);
-    Box::new(TextureSpec::new(pt,a,&TexturePosition::Fix(*origin),offset,scale))
+    ShapeSpec::PinTexture(TextureSpec::new(pt,a,origin,offset,scale))
 }
 
-pub fn fix_texture(req: DrawingSpec, origin: &EPixel, offset: &CPixel, scale: &APixel) -> Box<Shape> {
-    texture(req, origin, scale, offset, PTGeom::Fix)
+pub fn pin_texture(a: DrawingSpec, origin: &CLeaf, offset: &CPixel, scale: &APixel) -> ShapeSpec {
+    texture(a, &TexturePosition::Pin(*origin), scale, offset, PTGeom::Pin)
 }
 
-pub fn fixunderpage_texture(req: DrawingSpec, origin: &EPixel, offset: &CPixel, scale: &APixel) -> Box<Shape> {
-    texture(req, origin, scale, offset, PTGeom::FixUnderPage)
+pub fn tape_texture(a: DrawingSpec, origin: &Dot<f32,Edge<i32>>, offset: &CPixel, scale: &APixel) -> ShapeSpec {
+    texture(a, &TexturePosition::Tape(*origin), scale, offset, PTGeom::Tape)
 }
 
-pub fn fixundertape_texture(req: DrawingSpec, origin: &EPixel, offset: &CPixel, scale: &APixel) -> Box<Shape> {
-    texture(req, origin, scale, offset, PTGeom::FixUnderTape)
+pub fn fix_texture(req: DrawingSpec, origin: &EPixel, offset: &CPixel, scale: &APixel) -> ShapeSpec {
+    texture(req, &TexturePosition::Fix(*origin), scale, offset, PTGeom::Fix)
 }
 
-pub fn page_texture(req: DrawingSpec, origin: &EPixel, offset: &CPixel, scale: &APixel) -> Box<Shape> {
-    texture(req, origin, scale, offset, PTGeom::Page)
+pub fn fixunderpage_texture(req: DrawingSpec, origin: &EPixel, offset: &CPixel, scale: &APixel) -> ShapeSpec {
+    texture(req, &TexturePosition::Fix(*origin), scale, offset, PTGeom::FixUnderPage)
+}
+
+pub fn fixundertape_texture(req: DrawingSpec, origin: &EPixel, offset: &CPixel, scale: &APixel) -> ShapeSpec {
+    texture(req, &TexturePosition::Fix(*origin), scale, offset, PTGeom::FixUnderTape)
+}
+
+pub fn page_texture(req: DrawingSpec, origin: &EPixel, offset: &CPixel, scale: &APixel) -> ShapeSpec {
+    texture(req, &TexturePosition::Fix(*origin), scale, offset, PTGeom::Page)
 }

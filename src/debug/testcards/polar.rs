@@ -59,7 +59,7 @@ fn draw_frame(c: &mut Component,edge: AxisSense, p: &Palette) {
                           &p.lato_12,&Colour(199,208,213),&Colour(255,255,255));
     c.add_shape(fix_texture(tx,&cedge(left,cpixel(34,9)),
                             &cpixel(0,0),
-                            &cpixel(1,1).anchor(A_RIGHT)));
+                            &cpixel(1,1).anchor(A_RIGHT)).create());
     for y in [0,17].iter() {
         c.add_shape(fix_rectangle(&area(cedge(left,cpixel(0,*y)),
                                         cedge(right,cpixel(0,*y+1))),
@@ -81,7 +81,7 @@ fn measure(c: &mut Component,edge: AxisSense, p: &Palette) {
         let tx = text_texture(&format!("{}",((x+20)*100000).separated_string()),
                               &p.lato_12,&Colour(199,208,213),&Colour(255,255,255));
         c.add_shape(tape_texture(tx,&cleaf(x as f32*100.,4).y_edge(edge),
-                                 &cpixel(4,6),&cpixel(1,1).anchor(A_LEFT)));
+                                 &cpixel(4,6),&cpixel(1,1).anchor(A_LEFT)).create());
     }
 }
 
@@ -100,7 +100,7 @@ fn track(c: &mut Component, p: &Palette, t: i32) {
                           &Colour(96,96,96),&Colour(255,255,255));
     c.add_shape(page_texture(tx,&cedge(TOPLEFT,cpixel(30,t*PITCH+TOP)),
                                 &cpixel(0,0),
-                                &cpixel(1,1).anchor(A_RIGHT)));
+                                &cpixel(1,1).anchor(A_RIGHT)).create());
     if t == 2 {
         c.add_shape(page_rectangle(&area(cpixel(0,t*PITCH-PITCH/3+TOP).x_edge(AxisSense::Pos),
                                          cpixel(6,t*PITCH+PITCH/3+TOP).x_edge(AxisSense::Pos)),

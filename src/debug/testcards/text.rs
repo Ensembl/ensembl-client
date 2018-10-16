@@ -21,7 +21,7 @@ pub fn testcard_text(g: Arc<Mutex<Global>>) {
         &ColourSpec::Colour(Colour(150,0,0))).create());
 
     c.add_shape(tape_texture(tx,&cleaf(0.,100).y_edge(AxisSense::Pos),
-                &cpixel(0,0),&cpixel(1,1).anchor(A_TOPLEFT)));
+                &cpixel(0,0),&cpixel(1,1).anchor(A_TOPLEFT)).create());
 
     g.with_state(|s| {
         s.with_compo(|co| { co.add_component(c); });
