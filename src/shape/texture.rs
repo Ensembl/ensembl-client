@@ -3,14 +3,12 @@ use std::rc::Rc;
 
 use program::{ ProgramType, PTGeom, PTSkin, PTMethod, ProgramAttribs };
 use types::{
-    EPixel, Rect, Edge, area_size, APixel, AxisSense, Dot, CPixel, 
+    EPixel, Edge, APixel, AxisSense, Dot, CPixel, 
     CLeaf, area_centred, Anchors, cfraction
 };
 
-use shape::{ Shape, ColourSpec, ShapeSpec };
-use shape::util::{
-    rectangle_t, multi_gl, vertices_rect, despot, rectangle_c
-};
+use shape::{ Shape, ShapeSpec };
+use shape::util::{ rectangle_t, multi_gl, vertices_rect };
 
 use drawing::{ Artist, Artwork, DrawingSpec };
 use print::PrintEdition;
@@ -38,7 +36,6 @@ impl TextureSpec {
         Box::new(self.clone())
     }
 }
-
 
 impl Shape for TextureSpec {
     fn into_objects(&self, geom: &mut ProgramAttribs, 

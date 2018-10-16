@@ -2,35 +2,36 @@ use std::rc::Rc;
 
 use types::{ RLeaf, cfraction, cleaf, area_size };
 
-use shape::Shape;
-use shape::util::{
-    rectangle_g, rectangle_t, vertices_rect, despot
-};
+use shape::{ Shape, ShapeSpec };
+use shape::util::{ rectangle_g, rectangle_t, vertices_rect };
 
 use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
 use print::PrintEdition;
 use drawing::{ Artist, Artwork, DrawingSpec };
 
-/*
- * StretchTexture
- */
-
-pub struct StretchTexture {
+#[derive(Clone,Debug)]
+pub struct StretchTextureSpec {
     pos: RLeaf,
-    artist: Rc<Artist>
+    aspec: DrawingSpec
 }
 
-impl StretchTexture {
-    pub fn new(aspec: DrawingSpec,pos: &RLeaf) -> StretchTexture {
-        StretchTexture {
-            pos: *pos, artist: aspec.to_artist()
+impl StretchTextureSpec {
+    pub fn new(aspec: DrawingSpec,pos: &RLeaf) -> StretchTextureSpec {
+        StretchTextureSpec {
+            pos: *pos, aspec
         }
+    }
+}
+
+impl StretchTextureSpec {
+    pub fn create(&self) -> Box<Shape> {
+        Box::new(self.clone())
     }
 }
 
 const CHUNK_SIZE : f32 = 10.;
 
-impl Shape for StretchTexture {
+impl Shape for StretchTextureSpec {
     fn into_objects(&self, geom: &mut ProgramAttribs, artwork: Option<Artwork>, e: &mut PrintEdition) {
         if let Some(art) = artwork {
             /* some cards baulk at very large textured areas, so split */
@@ -61,9 +62,9 @@ impl Shape for StretchTexture {
         ProgramType(PTGeom::Stretch,PTMethod::Triangle,PTSkin::Texture)
     }
 
-    fn get_artist(&self) -> Option<Rc<Artist>> { Some(self.artist.clone()) }
+    fn get_artist(&self) -> Option<Rc<Artist>> { Some(self.aspec.to_artist()) }
 }
 
-pub fn stretch_texture(a: DrawingSpec, pos: &RLeaf) -> Box<Shape> {
-    Box::new(StretchTexture::new(a,pos))
+pub fn stretch_texture(a: DrawingSpec, pos: &RLeaf) -> ShapeSpec {
+    ShapeSpec::StretchTexture(StretchTextureSpec::new(a,pos))
 }

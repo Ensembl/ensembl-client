@@ -52,6 +52,7 @@ pub use shape::wiggle::{
 
 pub use self::stretch::{
     stretch_texture,
+    StretchTextureSpec
 };
 
 use self::spec::ShapeSpec;
