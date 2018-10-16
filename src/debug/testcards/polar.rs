@@ -1,3 +1,4 @@
+#![allow(unused)]
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
@@ -171,14 +172,12 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
     let g = &mut g.lock().unwrap();
 
     let leaf = Leaf::new(0);
-    let p = g.with_state(|s| {
-        Palette {
-            lato_12: FCFont::new(12,"Lato",FontVariety::Normal),
-            lato_18: FCFont::new(12,"Lato",FontVariety::Bold),
-            white: ColourSpec::Spot(Colour(255,255,255)),
-            grey: ColourSpec::Spot(Colour(199,208,213))
-        }
-    }).unwrap();
+    let p = Palette {
+        lato_12: FCFont::new(12,"Lato",FontVariety::Normal),
+        lato_18: FCFont::new(12,"Lato",FontVariety::Bold),
+        white: ColourSpec::Spot(Colour(255,255,255)),
+        grey: ColourSpec::Spot(Colour(199,208,213))
+    };
     
     let mut fs = FixedSource::new();
     let mut c = Component::new(Box::new(fs.clone()),Rc::new(StateFixed(StateValue::On())));

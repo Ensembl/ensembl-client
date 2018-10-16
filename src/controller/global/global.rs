@@ -6,7 +6,7 @@ use stdweb::web::{ IElement, HtmlElement, Element };
 use composit::StateManager;
 use controller::input::{
     register_direct_events, register_user_events, register_dom_events,
-    Event, events_run, Timers, Timer
+    Timer
 };
 use controller::global::{ CanvasRunner, CanvasState };
 use dom::domutil;

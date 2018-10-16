@@ -13,7 +13,7 @@ pub fn testcard_text(g: Arc<Mutex<Global>>) {
 
     let leaf = Leaf::new(0);
     let mut fs = FixedSource::new();
-    let mut c = Component::new(Box::new(fs.clone()),Rc::new(StateFixed(StateValue::On())));
+    let c = Component::new(Box::new(fs.clone()),Rc::new(StateFixed(StateValue::On())));
  
     let font = FCFont::new(120,"Lato",FontVariety::Normal);
     let tx = text_texture("hello",&font,&Colour(199,208,213),&Colour(0,0,0));

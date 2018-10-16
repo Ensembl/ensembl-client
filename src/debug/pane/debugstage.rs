@@ -34,9 +34,8 @@ impl BodyEventListener {
 }
 
 impl EventListener<()> for BodyEventListener {    
-    fn receive(&mut self, el: &Target, ev: &EventData, _p: &()) {
+    fn receive(&mut self, _el: &Target, ev: &EventData, _p: &()) {
         self.val += 1;
-        //debug!("test event","{} {:?} {:?}",self.val,el,ev);
         if let EventData::CustomEvent(_,n,_) = ev {
             if n == "bpane-start" {
                 setup_stage_debug();
