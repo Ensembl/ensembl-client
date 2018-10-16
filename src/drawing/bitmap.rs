@@ -1,5 +1,3 @@
-use std::rc::Rc;
-
 use drawing::{ FlatCanvas, Artist, DrawingSession, OneCanvasManager, DrawingSpec };
 use program::CanvasWeave;
 use types::{ CPixel, area_size, cpixel };

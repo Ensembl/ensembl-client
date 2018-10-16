@@ -53,7 +53,7 @@ fn measure(c: &mut Component, cs: &ColourSpec, cs2: &ColourSpec) {
             cs2).create());
         c.add_shape(tape_texture(battenberg(),
             &cleaf(x as f32*100.+50.,0).y_edge(AxisSense::Pos),
-            &cpixel(0,0),&cpixel(10,10).anchor(A_TOP)));
+            &cpixel(0,0),&cpixel(10,10).anchor(A_TOP)).create());
         c.add_shape(tape_mathsshape(
             &cleaf(x as f32*100.+75.,0).y_edge(AxisSense::Pos),
             A_TOP,
@@ -111,7 +111,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
         c.add_shape(page_texture(tx, 
                             &cedge(TOPLEFT,cpixel(12,y+18)),
                             &cpixel(0,0),
-                            &cpixel(1,1).anchor(A_TOPLEFT)));
+                            &cpixel(1,1).anchor(A_TOPLEFT)).create());
         
         c.add_shape(page_mathsshape(
                             &cpixel(0,y+18).x_edge(AxisSense::Pos),
@@ -174,7 +174,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                                          255,0,0,255,
                                          0,255,0,255,
                                          255,255,0,255 },cpixel(2,2),false);
-            c.add_shape(pin_texture(tx,&cleaf(0.,y-25),&cpixel(0,0),&cpixel(10,10).anchor(A_TOPLEFT)));
+            c.add_shape(pin_texture(tx,&cleaf(0.,y-25),&cpixel(0,0),&cpixel(10,10).anchor(A_TOPLEFT)).create());
             c_odd.add_shape(stretch_rectangle(&area_size(cleaf(-200.,y-20),cleaf(100.,5)),&red).create());
             c_even.add_shape(stretch_rectangle(&area_size(cleaf(-200.,y-15),cleaf(100.,5)),&green).create());
 
@@ -246,7 +246,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                 if showtext_gen.sample(&mut rng) == 0 {
                     let val = bio_daft(&mut rng);
                     let tx = text_texture(&val,&fc_font,&col,&Colour(255,255,255));
-                    c.add_shape(pin_texture(tx, &cleaf(x,y-24), &cpixel(0,0), &cpixel(1,1).anchor(A_MIDDLE)));
+                    c.add_shape(pin_texture(tx, &cleaf(x,y-24), &cpixel(0,0), &cpixel(1,1).anchor(A_MIDDLE)).create());
                 }
             }
         }
@@ -265,24 +265,24 @@ pub fn big_science(g: &mut Global, onoff: bool) {
     c.add_shape(fix_texture(tx, 
                             &cedge(TOPLEFT,cpixel(sw/2-5,0)),
                             &cpixel(0,0),
-                            &cpixel(1,sh).anchor(A_TOPLEFT)));
+                            &cpixel(1,sh).anchor(A_TOPLEFT)).create());
 
     c.add_shape(fix_texture(battenberg(),
                             &cedge(TOPLEFT,cpixel(0,0)),
                             &cpixel(0,0),
-                            &cpixel(10,10).anchor(A_TOPLEFT)));
+                            &cpixel(10,10).anchor(A_TOPLEFT)).create());
     c.add_shape(fix_texture(battenberg(),
                             &cedge(BOTTOMLEFT,cpixel(0,0)),
                             &cpixel(0,0),
-                            &cpixel(10,10).anchor(A_BOTTOMLEFT)));
+                            &cpixel(10,10).anchor(A_BOTTOMLEFT)).create());
     c.add_shape(fix_texture(battenberg(),
                             &cedge(TOPRIGHT,cpixel(0,0)),
                             &cpixel(0,0),
-                            &cpixel(10,10).anchor(A_TOPRIGHT)));
+                            &cpixel(10,10).anchor(A_TOPRIGHT)).create());
     c.add_shape(fix_texture(battenberg(),
                             &cedge(BOTTOMRIGHT,cpixel(0,0)),
                             &cpixel(0,0),
-                            &cpixel(10,10).anchor(A_BOTTOMRIGHT)));
+                            &cpixel(10,10).anchor(A_BOTTOMRIGHT)).create());
     
     c.add_shape(fix_mathsshape(&cedge(TOPLEFT,cpixel(30,30)),
                                A_TOPLEFT,

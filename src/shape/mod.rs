@@ -24,6 +24,7 @@ pub use self::texture::{
     page_texture,
     pin_texture,
     tape_texture,
+    TextureSpec
 };
 
 pub use self::rect::{

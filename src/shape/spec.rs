@@ -1,9 +1,10 @@
-use shape::{ PinPolySpec, RectSpec, Shape };
+use shape::{ PinPolySpec, RectSpec, Shape, TextureSpec };
 
-#[derive(Clone,Copy,Debug)]
+#[derive(Clone,Debug)]
 pub enum ShapeSpec {
     PinPoly(PinPolySpec),
     PinRect(RectSpec),
+    PinTexture(TextureSpec)
 }
 
 impl ShapeSpec {
@@ -11,6 +12,7 @@ impl ShapeSpec {
         match self {
             ShapeSpec::PinPoly(pp) => pp.create(),
             ShapeSpec::PinRect(pr) => pr.create(),
+            ShapeSpec::PinTexture(pt) => pt.create()
         }
     }
 }
