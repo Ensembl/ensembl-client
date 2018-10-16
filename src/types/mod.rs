@@ -20,7 +20,7 @@ pub use types::area::{
     RLeaf,
     RFraction,
     RPixel,
-    area, Rect, area_size,
+    area, Rect, area_size, area_centred,
     Bounds,
 };
 

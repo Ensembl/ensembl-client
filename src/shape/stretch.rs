@@ -9,7 +9,7 @@ use shape::util::{
 
 use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
 use print::PrintEdition;
-use drawing::{ Artist, Artwork };
+use drawing::{ Artist, Artwork, DrawingSpec };
 
 /*
  * StretchTexture
@@ -21,9 +21,9 @@ pub struct StretchTexture {
 }
 
 impl StretchTexture {
-    pub fn new(artist: Rc<Artist>,pos: &RLeaf) -> StretchTexture {
+    pub fn new(aspec: DrawingSpec,pos: &RLeaf) -> StretchTexture {
         StretchTexture {
-            pos: *pos, artist: artist.clone()
+            pos: *pos, artist: aspec.to_artist()
         }
     }
 }
@@ -64,6 +64,6 @@ impl Shape for StretchTexture {
     fn get_artist(&self) -> Option<Rc<Artist>> { Some(self.artist.clone()) }
 }
 
-pub fn stretch_texture(a: Rc<Artist>, pos: &RLeaf) -> Box<Shape> {
+pub fn stretch_texture(a: DrawingSpec, pos: &RLeaf) -> Box<Shape> {
     Box::new(StretchTexture::new(a,pos))
 }

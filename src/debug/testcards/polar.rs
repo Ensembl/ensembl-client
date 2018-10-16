@@ -58,6 +58,7 @@ fn draw_frame(c: &mut Component,edge: AxisSense, p: &Palette) {
     let tx = text_texture("bp",
                           &p.lato_12,&Colour(199,208,213),&Colour(255,255,255));
     c.add_shape(fix_texture(tx,&cedge(left,cpixel(34,9)),
+                            &cpixel(0,0),
                             &cpixel(1,1).anchor(A_RIGHT)));
     for y in [0,17].iter() {
         c.add_shape(fix_rectangle(&area(cedge(left,cpixel(0,*y)),
@@ -98,6 +99,7 @@ fn track(c: &mut Component, p: &Palette, t: i32) {
     let tx = text_texture(name,&p.lato_18,
                           &Colour(96,96,96),&Colour(255,255,255));
     c.add_shape(page_texture(tx,&cedge(TOPLEFT,cpixel(30,t*PITCH+TOP)),
+                                &cpixel(0,0),
                                 &cpixel(1,1).anchor(A_RIGHT)));
     if t == 2 {
         c.add_shape(page_rectangle(&area(cpixel(0,t*PITCH-PITCH/3+TOP).x_edge(AxisSense::Pos),

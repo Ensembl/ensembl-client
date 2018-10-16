@@ -68,21 +68,21 @@ impl PTGeom {
             },
             PTGeom::Fix | PTGeom::FixUnderPage | PTGeom::FixUnderTape => vec! {
                 Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
-                Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPositive"),
+                Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
                 Attribute::new(&PR_DEF,Arity::Vec2,"aVertexSign"),
                 Statement::new_vert("
-                    gl_Position = vec4((aVertexPositive.x / uSize.x - 1.0) * aVertexSign.x,
-                                       (1.0 - aVertexPositive.y / uSize.y) * aVertexSign.y,
+                    gl_Position = vec4((aVertexPosition.x / uSize.x - 1.0) * aVertexSign.x,
+                                       (1.0 - aVertexPosition.y / uSize.y) * aVertexSign.y,
                                        0.0, 1.0)")
             },
             PTGeom::Page => vec! {
                 Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
                 Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageVpos"),
-                Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPositive"),
+                Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
                 Attribute::new(&PR_DEF,Arity::Vec2,"aVertexSign"),
                 Statement::new_vert("
-                    gl_Position = vec4((aVertexPositive.x / uSize.x - 1.0) * aVertexSign.x,
-                                       (- (aVertexPositive.y - uStageVpos) / uSize.y) * aVertexSign.y, 
+                    gl_Position = vec4((aVertexPosition.x / uSize.x - 1.0) * aVertexSign.x,
+                                       (- (aVertexPosition.y - uStageVpos) / uSize.y) * aVertexSign.y, 
                                        0.0, 1.0)")
             }
         })

@@ -1,6 +1,4 @@
 mod stretch;
-mod pintape;
-mod fixpage;
 mod shapeimpl;
 mod util;
 mod canvasidx;
@@ -9,6 +7,7 @@ mod rect;
 mod poly;
 mod wiggle;
 mod spot;
+mod texture;
 
 pub use self::shapeimpl::{
     Shape, DrawnShape,
@@ -18,11 +17,13 @@ pub use self::shapeimpl::{
 
 pub use self::canvasidx::CanvasIdx;
 
-pub use self::fixpage::{
+pub use self::texture::{
     fix_texture,
     fixunderpage_texture,
     fixundertape_texture,
     page_texture,
+    pin_texture,
+    tape_texture,
 };
 
 pub use self::rect::{
@@ -46,11 +47,6 @@ pub use shape::poly::{
 
 pub use shape::wiggle::{
     stretch_wiggle,
-};
-
-pub use self::pintape::{
-    pin_texture,
-    tape_texture,
 };
 
 pub use self::stretch::{

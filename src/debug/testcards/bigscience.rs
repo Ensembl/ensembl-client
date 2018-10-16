@@ -28,12 +28,12 @@ use types::{
 
 use drawing::{
     text_texture, bitmap_texture, collage, Artist, FCFont,
-    mark_rectangle, FontVariety, MarkSpec
+    mark_rectangle, FontVariety, MarkSpec, DrawingSpec
 };
 
 use controller::input::Event;
 
-fn battenberg() -> Rc<Artist> {
+fn battenberg() -> DrawingSpec {
     bitmap_texture(vec! { 0,0,255,255,
                           255,0,0,255,
                           0,255,0,255,
@@ -110,6 +110,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
   
         c.add_shape(page_texture(tx, 
                             &cedge(TOPLEFT,cpixel(12,y+18)),
+                            &cpixel(0,0),
                             &cpixel(1,1).anchor(A_TOPLEFT)));
         
         c.add_shape(page_mathsshape(
@@ -263,19 +264,24 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                                  255,255,0,255 },cpixel(1,4),false);
     c.add_shape(fix_texture(tx, 
                             &cedge(TOPLEFT,cpixel(sw/2-5,0)),
+                            &cpixel(0,0),
                             &cpixel(1,sh).anchor(A_TOPLEFT)));
 
     c.add_shape(fix_texture(battenberg(),
                             &cedge(TOPLEFT,cpixel(0,0)),
+                            &cpixel(0,0),
                             &cpixel(10,10).anchor(A_TOPLEFT)));
     c.add_shape(fix_texture(battenberg(),
                             &cedge(BOTTOMLEFT,cpixel(0,0)),
+                            &cpixel(0,0),
                             &cpixel(10,10).anchor(A_BOTTOMLEFT)));
     c.add_shape(fix_texture(battenberg(),
                             &cedge(TOPRIGHT,cpixel(0,0)),
+                            &cpixel(0,0),
                             &cpixel(10,10).anchor(A_TOPRIGHT)));
     c.add_shape(fix_texture(battenberg(),
                             &cedge(BOTTOMRIGHT,cpixel(0,0)),
+                            &cpixel(0,0),
                             &cpixel(10,10).anchor(A_BOTTOMRIGHT)));
     
     c.add_shape(fix_mathsshape(&cedge(TOPLEFT,cpixel(30,30)),

@@ -1,5 +1,5 @@
 use std::fmt::Debug;
-use std::ops::{ Add, Sub, Mul, Div };
+use std::ops::{ Add, Sub, Mul, Div, Neg };
 use program::{ Object, ObjectAttrib, DataBatch, Input };
 use types::coord::{ Dot, Edge, AxisSense, Corner };
 
@@ -20,6 +20,14 @@ pub fn area_size<T: Clone+Copy+Debug + Add<T,Output=T>,
                  U: Clone+Copy+Debug + Add<U,Output=U>>(x: Dot<T,U>, y: Dot<T,U>) -> Rect<T,U> {
     Rect(x,x+y)
 }
+
+pub fn area_centred<T: Clone+Copy+Debug + Add<T,Output=T> + 
+                       Div<f32,Output=T> + Neg<Output=T>,
+                    U: Clone+Copy+Debug + Add<U,Output=U> + 
+                       Div<f32,Output=U> + Neg<Output=U>>(x: Dot<T,U>, y: Dot<T,U>) -> Rect<T,U> {
+    Rect(x,x+y) + Dot(-y.0/2.,-y.1/2.)
+}
+
 
 /*** impls for area types ***/
 
