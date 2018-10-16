@@ -1,6 +1,6 @@
 use types::{ CLeaf, Colour };
 
-use shape::{ Shape, ColourSpec };
+use shape::{ Shape, ColourSpec, ShapeSpec };
 use shape::util::{ points_g, vertices_strip };
 
 use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
@@ -8,6 +8,7 @@ use print::PrintEdition;
 
 use drawing::Artwork;
 
+#[derive(Clone,Debug)]
 pub struct StretchWiggle {
     points: Vec<CLeaf>,
     y: i32,
@@ -17,6 +18,13 @@ pub struct StretchWiggle {
 impl StretchWiggle {
     pub fn new(points: Vec<CLeaf>, group: Colour, y: i32) -> StretchWiggle {
         StretchWiggle { points, group, y }
+    }
+}
+
+// XXX abolish non-spec shapes
+impl StretchWiggle {
+    pub fn create(&self) -> Box<Shape> {
+        Box::new(self.clone())
     }
 }
 
@@ -32,6 +40,6 @@ impl Shape for StretchWiggle {
     }
 }
 
-pub fn stretch_wiggle(p: Vec<CLeaf>, y: i32, colour: &Colour) -> Box<Shape> {
-    Box::new(StretchWiggle::new(p,colour.clone(),y))
+pub fn stretch_wiggle(p: Vec<CLeaf>, y: i32, colour: &Colour) -> ShapeSpec {
+    ShapeSpec::Wiggle(StretchWiggle::new(p,colour.clone(),y))
 }

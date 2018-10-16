@@ -6,7 +6,7 @@ use rand::Rng;
 use rand::rngs::SmallRng;
 use rand::SeedableRng;
 
-use composit::{ StateFixed, Component, StateValue, StateAtom };
+use composit::{ StateFixed, Component, StateValue, StateAtom, FixedSource };
 
 use debug::testcards::common::{ daft, bio_daft, wiggly };
 
@@ -45,20 +45,20 @@ fn measure(c: &mut Component, cs: &ColourSpec, cs2: &ColourSpec) {
         c.add_shape(tape_rectangle(
             &cleaf(x as f32*100.,0),
             &area_size(cpixel(0,0),cpixel(20,20)).y_edge(AxisSense::Pos,AxisSense::Pos),
-            cs).create());
+            cs));
         c.add_shape(tape_mathsshape(
             &cleaf(x as f32*100.+25.,0).y_edge(AxisSense::Pos),
             A_TOP,
             10., None, MathsShape::Polygon(5,0.05),
-            cs2).create());
+            cs2));
         c.add_shape(tape_texture(battenberg(),
             &cleaf(x as f32*100.+50.,0).y_edge(AxisSense::Pos),
-            &cpixel(0,0),&cpixel(10,10).anchor(A_TOP)).create());
+            &cpixel(0,0),&cpixel(10,10).anchor(A_TOP)));
         c.add_shape(tape_mathsshape(
             &cleaf(x as f32*100.+75.,0).y_edge(AxisSense::Pos),
             A_TOP,
             10., Some(1.), MathsShape::Circle,
-            cs).create());
+            cs));
     }
 }
 
@@ -70,12 +70,14 @@ pub fn big_science(g: &mut Global, onoff: bool) {
 
     let size = g.canvas_size();
 
-    let mut c_odd = Component::new(if onoff {
+    let mut fs_odd = FixedSource::new();
+    let mut c_odd = Component::new(Box::new(fs_odd),if onoff {
         Rc::new(StateAtom::new("odd"))
     } else {
         Rc::new(StateFixed(StateValue::On()))
     });
-    let mut c_even = Component::new(if onoff {
+    let mut fs_even = FixedSource::new();
+    let mut c_even = Component::new(Box::new(fs_even),if onoff {
         Rc::new(StateAtom::new("even"))
     } else {
         Rc::new(StateFixed(StateValue::On()))
@@ -83,7 +85,8 @@ pub fn big_science(g: &mut Global, onoff: bool) {
 
     let fc_font = FCFont::new(12,"Lato",FontVariety::Normal);
 
-    let mut c = Component::new(Rc::new(StateFixed(StateValue::On())));
+    let mut fs = FixedSource::new();
+    let mut c = Component::new(Box::new(fs),Rc::new(StateFixed(StateValue::On())));
 
     let mut middle = size.1 / 120;
     if middle < 5 { middle = 5; }
@@ -111,25 +114,25 @@ pub fn big_science(g: &mut Global, onoff: bool) {
         c.add_shape(page_texture(tx, 
                             &cedge(TOPLEFT,cpixel(12,y+18)),
                             &cpixel(0,0),
-                            &cpixel(1,1).anchor(A_TOPLEFT)).create());
+                            &cpixel(1,1).anchor(A_TOPLEFT)));
         
         c.add_shape(page_mathsshape(
                             &cpixel(0,y+18).x_edge(AxisSense::Pos),
                             A_LEFT,
                             5.,None,MathsShape::Polygon(3,0.),
-                            &green).create());
+                            &green));
         
         if yidx == middle - 5 {
             for i in 1..10 {
                 c_odd.add_shape(pin_mathsshape(&cleaf(-100.+40.*(i as f32),y+20),
                                A_MIDDLE,
                                10. * i as f32,None,MathsShape::Circle,
-                               &green).create());
+                               &green));
                 let colour = Colour(255,0,128);
                 c_even.add_shape(pin_mathsshape(&cleaf(-300.+40.*(i as f32),y+20),
                                A_MIDDLE,
                                10. * i as f32,Some(2.),MathsShape::Circle,
-                               &ColourSpec::Colour(colour)).create());
+                               &ColourSpec::Colour(colour)));
             }
         }
         if yidx == middle {
@@ -137,12 +140,12 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                 c_odd.add_shape(pin_mathsshape(&cleaf(-100.+40.*(i as f32),y+20),
                                A_TOP,
                                10., None, MathsShape::Polygon(i,0.2*i as f32),
-                               &red).create());
+                               &red));
                 let colour = Colour(0,128,255);
                 c_even.add_shape(pin_mathsshape(&cleaf(-300.+40.*(i as f32),y+20),
                                A_TOP,
                                10., None, MathsShape::Polygon(i,0.2*i as f32),
-                               &ColourSpec::Colour(colour)).create());
+                               &ColourSpec::Colour(colour)));
             }
         }
         if yidx == middle +1 {
@@ -151,16 +154,16 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                 cs.add_shape(pin_mathsshape(&cleaf(-100.+40.*(i as f32),y+20),
                                A_TOP,
                                10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
-                               &red).create());
+                               &red));
                 let colour = Colour(0,128,255);
                 cs.add_shape(pin_mathsshape(&cleaf(-300.+40.*(i as f32),y+20),
                                A_TOP,
                                10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
-                               &ColourSpec::Colour(colour)).create());
+                               &ColourSpec::Colour(colour)));
             }
         }
         if yidx == middle+3 {
-            c.add_shape(pin_rectangle(&cleaf(0.,y-10),&area_size(cpixel(0,-10),cpixel(20,20)),&ColourSpec::Colour(Colour(128,0,0))).create());
+            c.add_shape(pin_rectangle(&cleaf(0.,y-10),&area_size(cpixel(0,-10),cpixel(20,20)),&ColourSpec::Colour(Colour(128,0,0))));
         }
         if yidx == middle {
             let tx = bitmap_texture(
@@ -168,28 +171,28 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                                          255,0,0,255,
                                          0,255,0,255,
                                          255,255,0,255 },cpixel(4,1),true);
-            c.add_shape(stretch_texture(tx,&area_size(cleaf(-500.,y-5),cleaf(1000.,10))).create());
+            c.add_shape(stretch_texture(tx,&area_size(cleaf(-500.,y-5),cleaf(1000.,10))));
             let tx = bitmap_texture(
                                 vec! { 0,0,255,255,
                                          255,0,0,255,
                                          0,255,0,255,
                                          255,255,0,255 },cpixel(2,2),false);
-            c.add_shape(pin_texture(tx,&cleaf(0.,y-25),&cpixel(0,0),&cpixel(10,10).anchor(A_TOPLEFT)).create());
-            c_odd.add_shape(stretch_rectangle(&area_size(cleaf(-200.,y-20),cleaf(100.,5)),&red).create());
-            c_even.add_shape(stretch_rectangle(&area_size(cleaf(-200.,y-15),cleaf(100.,5)),&green).create());
+            c.add_shape(pin_texture(tx,&cleaf(0.,y-25),&cpixel(0,0),&cpixel(10,10).anchor(A_TOPLEFT)));
+            c_odd.add_shape(stretch_rectangle(&area_size(cleaf(-200.,y-20),cleaf(100.,5)),&red));
+            c_even.add_shape(stretch_rectangle(&area_size(cleaf(-200.,y-15),cleaf(100.,5)),&green));
 
             c_odd.add_shape(pin_mathsshape(
                             &cleaf(-200.,y-15),
                             A_RIGHT,
                             5.,None,
                             MathsShape::Polygon(3,0.),
-                            &red).create());
+                            &red));
             c_even.add_shape(pin_mathsshape(
                             &cleaf(-100.,y-15),
                             A_LEFT,
                             5.,None,
                             MathsShape::Polygon(3,0.5),
-                            &green).create());
+                            &green));
         } else if yidx == middle-2 {
             let mut parts = Vec::<MarkSpec>::new();
             for row in 0..8 {
@@ -216,7 +219,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                 }
             }
             let tx = collage(parts,cpixel(1000,40));
-            c.add_shape(stretch_texture(tx,&area_size(cleaf(-700.,y-25),cleaf(2000.,40))).create());
+            c.add_shape(stretch_texture(tx,&area_size(cleaf(-700.,y-25),cleaf(2000.,40))));
         } else if yidx == middle+2 || yidx == middle+4 {
             let wiggle = wiggly(&mut rng,500,cleaf(-500.,y-5),2.,20);
             c_odd.add_shape(stretch_wiggle(wiggle,2,&green_col));
@@ -233,7 +236,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                 );
                 let h = if thick_gen.sample(&mut rng) == 0 { 1 } else { 5 };
                 c.add_shape(stretch_rectangle(&area_size(cleaf(x,y-h),cleaf(dx,2*h)),
-                                &ColourSpec::Colour(colour)).create());
+                                &ColourSpec::Colour(colour)));
                 if idx %5 == 0 {
                     let colour = Colour(colour.2,colour.0,colour.1);
                     c.add_shape(pin_mathsshape(
@@ -241,12 +244,12 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                                     A_TOP,
                                     8.,None,
                                     MathsShape::Polygon(3,0.75),
-                                    &ColourSpec::Colour(colour)).create());
+                                    &ColourSpec::Colour(colour)));
                 }
                 if showtext_gen.sample(&mut rng) == 0 {
                     let val = bio_daft(&mut rng);
                     let tx = text_texture(&val,&fc_font,&col,&Colour(255,255,255));
-                    c.add_shape(pin_texture(tx, &cleaf(x,y-24), &cpixel(0,0), &cpixel(1,1).anchor(A_MIDDLE)).create());
+                    c.add_shape(pin_texture(tx, &cleaf(x,y-24), &cpixel(0,0), &cpixel(1,1).anchor(A_MIDDLE)));
                 }
             }
         }
@@ -254,10 +257,10 @@ pub fn big_science(g: &mut Global, onoff: bool) {
         
     c.add_shape(fix_rectangle(&area(cedge(TOPLEFT,cpixel(sw/2,0)),
                                     cedge(TOPLEFT,cpixel(sw/2+1,sh))),
-                        &ColourSpec::Colour(Colour(0,0,0))).create());
+                        &ColourSpec::Colour(Colour(0,0,0))));
     c.add_shape(fix_rectangle(&area(cedge(TOPLEFT,cpixel(sw/2+5,0)),
                                     cedge(TOPLEFT,cpixel(sw/2+8,sh))),
-                        &red).create());
+                        &red));
     let tx = bitmap_texture(vec! { 0,0,255,255,
                                  255,0,0,255,
                                  0,255,0,255,
@@ -265,41 +268,41 @@ pub fn big_science(g: &mut Global, onoff: bool) {
     c.add_shape(fix_texture(tx, 
                             &cedge(TOPLEFT,cpixel(sw/2-5,0)),
                             &cpixel(0,0),
-                            &cpixel(1,sh).anchor(A_TOPLEFT)).create());
+                            &cpixel(1,sh).anchor(A_TOPLEFT)));
 
     c.add_shape(fix_texture(battenberg(),
                             &cedge(TOPLEFT,cpixel(0,0)),
                             &cpixel(0,0),
-                            &cpixel(10,10).anchor(A_TOPLEFT)).create());
+                            &cpixel(10,10).anchor(A_TOPLEFT)));
     c.add_shape(fix_texture(battenberg(),
                             &cedge(BOTTOMLEFT,cpixel(0,0)),
                             &cpixel(0,0),
-                            &cpixel(10,10).anchor(A_BOTTOMLEFT)).create());
+                            &cpixel(10,10).anchor(A_BOTTOMLEFT)));
     c.add_shape(fix_texture(battenberg(),
                             &cedge(TOPRIGHT,cpixel(0,0)),
                             &cpixel(0,0),
-                            &cpixel(10,10).anchor(A_TOPRIGHT)).create());
+                            &cpixel(10,10).anchor(A_TOPRIGHT)));
     c.add_shape(fix_texture(battenberg(),
                             &cedge(BOTTOMRIGHT,cpixel(0,0)),
                             &cpixel(0,0),
-                            &cpixel(10,10).anchor(A_BOTTOMRIGHT)).create());
+                            &cpixel(10,10).anchor(A_BOTTOMRIGHT)));
     
     c.add_shape(fix_mathsshape(&cedge(TOPLEFT,cpixel(30,30)),
                                A_TOPLEFT,
                                20.,None,MathsShape::Polygon(5,0.),
-                               &red).create());
+                               &red));
     c.add_shape(fix_mathsshape(&cedge(TOPRIGHT,cpixel(30,30)),
                                A_TOPRIGHT,
                                20.,None,MathsShape::Polygon(5,0.),
-                               &red).create());
+                               &red));
     c.add_shape(fix_mathsshape(&cedge(BOTTOMLEFT,cpixel(30,30)),
                                A_BOTTOMLEFT,
                                20.,None,MathsShape::Polygon(5,0.),
-                               &red).create());
+                               &red));
     c.add_shape(fix_mathsshape(&cedge(BOTTOMRIGHT,cpixel(30,30)),
                                A_BOTTOMRIGHT,
                                20.,None,MathsShape::Polygon(5,0.),
-                               &red).create());
+                               &red));
 
     g.with_state(|s| {
         s.with_compo(|co| {

@@ -24,10 +24,6 @@ pub struct AllCanvasAllocator {
 }
 
 impl AllCanvasAllocator {
-    pub fn all_canvases(&self) -> Vec<&FlatCanvas> {
-        self.canvases.values().collect()
-    }
-    
     fn remove(&mut self, idx: u32) {
         self.canvases.remove(&idx);
     }

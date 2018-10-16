@@ -1,7 +1,9 @@
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
-use composit::{ StateFixed, Component, StateValue, StateAtom };
+use composit::{
+    StateFixed, Component, StateValue, StateAtom, FixedSource
+};
 use controller::global::Global;
 use controller::input::Event;
 use debug::testcards::common::track_data;
@@ -48,28 +50,28 @@ fn draw_frame(c: &mut Component,edge: AxisSense, p: &Palette) {
     /* top/bottom */
     c.add_shape(fixundertape_rectangle(&area(cedge(left,cpixel(0,1)),
                                     cedge(right,cpixel(0,18))),
-                        &p.white).create());
+                        &p.white));
     c.add_shape(fix_rectangle(&area(cedge(left,cpixel(0,2)),
                                     cedge(left,cpixel(36,16))),
-                                &p.white).create());
+                                &p.white));
     c.add_shape(fix_rectangle(&area(cedge(left,cpixel(36,1)),
                                     cedge(left,cpixel(37,17))),
-                                &p.grey).create());
+                                &p.grey));
     let tx = text_texture("bp",
                           &p.lato_12,&Colour(199,208,213),&Colour(255,255,255));
     c.add_shape(fix_texture(tx,&cedge(left,cpixel(34,9)),
                             &cpixel(0,0),
-                            &cpixel(1,1).anchor(A_RIGHT)).create());
+                            &cpixel(1,1).anchor(A_RIGHT)));
     for y in [0,17].iter() {
         c.add_shape(fix_rectangle(&area(cedge(left,cpixel(0,*y)),
                                         cedge(right,cpixel(0,*y+1))),
-                            &p.grey).create());
+                            &p.grey));
     }
 
     /* left/right */
     c.add_shape(fixunderpage_rectangle(&area(cedge(top,cpixel(0,18)),
                                     cedge(bottom,cpixel(36,18))),
-                        &p.white).create());
+                        &p.white));
 }
 
 fn measure(c: &mut Component,edge: AxisSense, p: &Palette) {
@@ -77,11 +79,11 @@ fn measure(c: &mut Component,edge: AxisSense, p: &Palette) {
         c.add_shape(tape_rectangle(
             &cleaf(x as f32*100.,0),
             &area_size(cpixel(0,1),cpixel(1,18)).y_edge(edge,edge),
-            &p.grey).create());
+            &p.grey));
         let tx = text_texture(&format!("{}",((x+20)*100000).separated_string()),
                               &p.lato_12,&Colour(199,208,213),&Colour(255,255,255));
         c.add_shape(tape_texture(tx,&cleaf(x as f32*100.,4).y_edge(edge),
-                                 &cpixel(4,6),&cpixel(1,1).anchor(A_LEFT)).create());
+                                 &cpixel(4,6),&cpixel(1,1).anchor(A_LEFT)));
     }
 }
 
@@ -100,11 +102,11 @@ fn track(c: &mut Component, p: &Palette, t: i32) {
                           &Colour(96,96,96),&Colour(255,255,255));
     c.add_shape(page_texture(tx,&cedge(TOPLEFT,cpixel(30,t*PITCH+TOP)),
                                 &cpixel(0,0),
-                                &cpixel(1,1).anchor(A_RIGHT)).create());
+                                &cpixel(1,1).anchor(A_RIGHT)));
     if t == 2 {
         c.add_shape(page_rectangle(&area(cpixel(0,t*PITCH-PITCH/3+TOP).x_edge(AxisSense::Pos),
                                          cpixel(6,t*PITCH+PITCH/3+TOP).x_edge(AxisSense::Pos)),
-                                   &ColourSpec::Colour(Colour(75,168,252))).create());
+                                   &ColourSpec::Colour(Colour(75,168,252))));
     }
     let d = data(t);
     let st = (t as f32).cos() * -10. - 100.;
@@ -116,7 +118,7 @@ fn track(c: &mut Component, p: &Palette, t: i32) {
                 c.add_shape(stretch_rectangle(
                         &area_size(cleaf(x,y-3),
                                    cleaf(*v,6)),
-                        &ColourSpec::Colour(Colour(75,168,252))).create());
+                        &ColourSpec::Colour(Colour(75,168,252))));
             }
             x += v.abs();
         } else {
@@ -153,14 +155,14 @@ fn track(c: &mut Component, p: &Palette, t: i32) {
             c.add_shape(stretch_rectangle(
                     &area_size(cleaf(x,y-3),
                                cleaf(v.abs(),6)),
-                    &col).create());
+                    &col));
             x += v.abs();            
         }
     }
     if t < 4 || t % 3 == 0 { // gene
         c.add_shape(stretch_rectangle(
                         &area_size(cleaf(st,y-1),cleaf(x-st,2)),
-                        &ColourSpec::Colour(Colour(75,168,252))).create());
+                        &ColourSpec::Colour(Colour(75,168,252))));
     }
 }
 
@@ -175,8 +177,9 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
             grey: ColourSpec::Spot(Colour(199,208,213))
         }
     }).unwrap();
-            
-    let mut c = Component::new(Rc::new(StateFixed(StateValue::On())));
+    
+    let mut fs = FixedSource::new();
+    let mut c = Component::new(Box::new(fs),Rc::new(StateFixed(StateValue::On())));
     one_offs(&mut c,&p);
     draw_frame(&mut c,AxisSense::Pos,&p);
     draw_frame(&mut c,AxisSense::Neg,&p);

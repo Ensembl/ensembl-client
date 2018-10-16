@@ -1,6 +1,5 @@
 use std::sync::{ Arc, Mutex };
 
-use stdweb::unstable::TryInto;
 use stdweb::web::HtmlElement;
 
 use print::Printer;
