@@ -2,7 +2,7 @@ use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element };
 
 use print::{ PrintRun, Programs, PrintEdition };
-use composit::{ Compositor, Component, StateManager };
+use composit::{ Compositor, LeafComponent, StateManager, Leaf };
 use drawing::AllCanvasMan;
 use dom::domutil;
 use stage::Stage;
@@ -37,7 +37,7 @@ impl Printer {
         PrintEdition::new(self.acm.get_drawing_session())
     }
     
-    pub fn redraw_objects(&mut self, comps: &mut Vec<&mut Component>,e: &mut PrintEdition) {
+    pub fn redraw_objects(&mut self, comps: &mut Vec<&mut LeafComponent>,e: &mut PrintEdition) {
         for c in comps.iter_mut() {
             if c.is_on() {
                 c.into_objects(&mut self.progs,self.acm.get_drawing_session(),e);
@@ -54,7 +54,7 @@ impl Printer {
         e.go(&mut self.progs);
     }
     
-    pub fn redraw_drawings(&mut self, comps: &mut Vec<&mut Component>) {
+    pub fn redraw_drawings(&mut self, comps: &mut Vec<&mut LeafComponent>) {
         let acm = &mut self.acm;
         acm.reset();
         let (ds,alloc) = acm.get_ds_alloc();
@@ -65,9 +65,11 @@ impl Printer {
     }
     
     pub fn draw(&mut self,stage: &Stage, oom: &StateManager, compo: &mut Compositor) {
-        let redo = compo.calc_level(oom);
-        let mut pr = PrintRun::new();
-        pr.go(compo,stage,self,redo);
+        for ref leaf in compo.leafs() {
+            let redo = compo.calc_level(leaf,oom);
+            let mut pr = PrintRun::new();
+            pr.go(compo,stage,self,leaf,redo);
+        }
     }
     
     pub fn go(&mut self, stage: &Stage) {

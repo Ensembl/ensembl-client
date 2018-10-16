@@ -2,9 +2,8 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use composit::{ Source };
-use composit::page::{ Page, Leaf };
-use shape::{ ShapeSpec };
+use composit::{ Source, LeafComponent, Leaf };
+use shape::{ ShapeSpec, DrawnShape };
 
 pub struct FixedSourceImpl {
     shapes: HashMap<Leaf,Vec<ShapeSpec>>,
@@ -24,15 +23,15 @@ impl FixedSource {
         self.0.borrow_mut().shapes.entry(leaf.clone()).or_insert_with(||
             Vec::<ShapeSpec>::new()
         ).push(item);
-    }    
+    }
 }
 
 impl Source for FixedSource {
-    fn get_shapes(&self, _page: &Page, leaf: &Leaf) -> Vec<ShapeSpec> {
-        if let Some(v) = self.0.borrow().shapes.get(leaf) {
-            v.to_vec()
-        } else {
-            Vec::<ShapeSpec>::new()
+    fn populate(&self, lc: &mut LeafComponent, leaf: &Leaf) {
+        if let Some(specs) = self.0.borrow().shapes.get(leaf) {
+            for s in specs {
+                lc.add_shape(DrawnShape::new(s.create()));
+            }
         }
     }
 }

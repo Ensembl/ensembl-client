@@ -1,6 +1,6 @@
-use composit::page::{ Page, Leaf };
+use composit::{ Leaf, LeafComponent };
 use shape::{ ShapeSpec };
 
 pub trait Source {
-    fn get_shapes(&self, page: &Page, leaf: &Leaf) -> Vec<ShapeSpec>;
+    fn populate(&self, lc: &mut LeafComponent, leaf: &Leaf);
 }
