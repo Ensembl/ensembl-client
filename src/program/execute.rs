@@ -20,6 +20,7 @@ pub struct ProgramAttribs {
     pub objects: Vec<Box<Object>>,
     main_idx: Option<usize>,
     object_names: HashMap<String,usize>,
+    source: Vec<Rc<Source>>,
 }
 
 pub struct Program {
@@ -31,6 +32,7 @@ fn find_attribs(ctx: &glctx, vars: &Vec<Rc<Source>>,
                 prog: Rc<glprog>) 
                         -> (Vec<Box<Object>>,Option<usize>,
                             HashMap<String,usize>) {
+    ctx.use_program(Some(&prog));
     let mut main = None;
     let mut attribs = Vec::<Box<Object>>::new();
     let mut attrib_names = HashMap::<String,usize>::new();
@@ -48,6 +50,17 @@ fn find_attribs(ctx: &glctx, vars: &Vec<Rc<Source>>,
 }
 
 impl ProgramAttribs {
+    pub fn new(pt: ProgramType, ctx: &glctx, src: &Vec<Rc<Source>>, prog: &Rc<glprog>) -> ProgramAttribs {
+        let mut bman = BatchManager::new();
+        let default_group = bman.new_group();
+        let (objects,main_idx,object_names) = find_attribs(ctx,&src,prog.clone());
+        ProgramAttribs {
+                bman, default_group, pt,
+                objects, object_names, main_idx,
+                source: src.clone()
+        }
+    }
+        
     pub fn get_object(&mut self, name: &str) -> Option<&mut Box<Object>> {
         if let Some(idx) = self.object_names.get(name) {
             self.objects.get_mut(*idx)
@@ -94,16 +107,16 @@ impl ProgramAttribs {
 impl Program {
     pub fn new(pt: ProgramType, gpuspec: &GPUSpec, ctx: &glctx, src: &ProgramSource) -> Program {
         let prog = Rc::new(src.prog(gpuspec,ctx));
-        ctx.use_program(Some(&prog));
-        let (objects,main_idx,object_names) = find_attribs(ctx,&src.uniforms,prog.clone());
-        let mut bman = BatchManager::new();
-        let default_group = bman.new_group();
         Program {
-            data: ProgramAttribs {
-                bman, default_group, pt,
-                objects, object_names, main_idx,
-            },
+            data: ProgramAttribs::new(pt,ctx,&src.uniforms,&prog),
             prog,
+        }
+    }
+
+    pub fn clean_instance(&self, ctx: &glctx) -> Program {
+        Program {
+            data: ProgramAttribs::new(self.data.pt,ctx,&self.data.source,&self.prog),
+            prog: self.prog.clone()
         }
     }
 
