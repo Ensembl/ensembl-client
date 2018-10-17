@@ -9,6 +9,7 @@ use debug::testcards::visual::testcard_visual;
 use debug::testcards::button::testcard_button;
 use debug::testcards::polar::testcard_polar;
 use debug::testcards::text::testcard_text;
+use debug::testcards::leftright::testcard_leftright;
 use types::{ CLeaf, cleaf };
 
 pub fn testcard(g: Arc<Mutex<Global>>, name: &str) {
@@ -19,6 +20,7 @@ pub fn testcard(g: Arc<Mutex<Global>>, name: &str) {
         "button" => testcard_button(g),
         "polar" => testcard_polar(g),
         "text" => testcard_text(g),
+        "leftright" => testcard_leftright(g),
         _ => ()
     };
 }
