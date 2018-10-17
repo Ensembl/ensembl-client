@@ -4,7 +4,6 @@ use std::collections::hash_map::Entry;
 use composit::LeafComponent;
 use drawing::{ OneCanvasManager, FlatCanvas, AllCanvasAllocator };
 use program::{ CanvasWeave };
-use types::cpixel;
 
 pub struct DrawingSession {
     next_canv_idx: u32,
@@ -13,12 +12,11 @@ pub struct DrawingSession {
 }
 
 impl DrawingSession {
-    pub fn new(aca: &mut AllCanvasAllocator) -> DrawingSession {
-        let standin = aca.flat_allocate(cpixel(2,2),&CanvasWeave::Pixelate);
+    pub fn new(aca: &mut AllCanvasAllocator, standin: &FlatCanvas) -> DrawingSession {
         DrawingSession {
             next_canv_idx: 0,
             canvases: HashMap::<CanvasWeave,OneCanvasManager>::new(),
-            standin,
+            standin: standin.clone()
         }
     }
 

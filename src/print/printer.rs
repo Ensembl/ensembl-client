@@ -2,7 +2,7 @@ use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element };
 
 use print::{ PrintRun, Programs, PrintEdition };
-use composit::{ Compositor, LeafComponent, StateManager };
+use composit::{ Compositor, LeafComponent, StateManager, Leaf };
 use drawing::AllCanvasMan;
 use dom::domutil;
 use stage::Stage;
@@ -33,14 +33,15 @@ impl Printer {
         }
     }
     
-    pub fn new_edition(&mut self) -> PrintEdition {
-        PrintEdition::new(self.acm.get_drawing_session())
+    pub fn new_edition(&mut self, leaf: &Leaf) -> PrintEdition {
+        PrintEdition::new(self.acm.get_drawing_session(leaf))
     }
     
-    pub fn redraw_objects(&mut self, comps: &mut Vec<&mut LeafComponent>,e: &mut PrintEdition) {
+    pub fn redraw_objects(&mut self, comps: &mut Vec<&mut LeafComponent>,
+                          leaf: &Leaf, e: &mut PrintEdition) {
         for c in comps.iter_mut() {
             if c.is_on() {
-                c.into_objects(&mut self.progs,self.acm.get_drawing_session(),e);
+                c.into_objects(&mut self.progs,self.acm.get_drawing_session(leaf),e);
             }
         }
     }
@@ -49,15 +50,15 @@ impl Printer {
         self.progs.clear_objects();
     }
     
-    pub fn fini(&mut self,e: &mut PrintEdition) {
-        self.progs.finalize_objects(&self.ctx,self.acm.get_drawing_session());
+    pub fn fini(&mut self,e: &mut PrintEdition, leaf: &Leaf) {
+        self.progs.finalize_objects(&self.ctx,self.acm.get_drawing_session(leaf));
         e.go(&mut self.progs);
     }
     
-    pub fn redraw_drawings(&mut self, comps: &mut Vec<&mut LeafComponent>) {
+    pub fn redraw_drawings(&mut self, leaf: &Leaf, comps: &mut Vec<&mut LeafComponent>) {
         let acm = &mut self.acm;
-        acm.reset();
-        let (ds,alloc) = acm.get_ds_alloc();
+        acm.reset(leaf);
+        let (ds,alloc) = acm.get_ds_alloc(leaf);
         for mut c in comps.iter_mut() {
             ds.redraw_component(*c);
         }
@@ -67,8 +68,8 @@ impl Printer {
     pub fn draw(&mut self,stage: &Stage, oom: &StateManager, compo: &mut Compositor) {
         for ref leaf in compo.leafs() {
             let redo = compo.calc_level(leaf,oom);
-            let mut pr = PrintRun::new();
-            pr.go(compo,stage,self,leaf,redo);
+            let mut pr = PrintRun::new(leaf);
+            pr.go(compo,stage,self,redo);
         }
     }
     

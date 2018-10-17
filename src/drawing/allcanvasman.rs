@@ -4,10 +4,11 @@ use stdweb::web::{ Element, INode, document };
 use stdweb::web::html_element::CanvasElement;
 use stdweb::unstable::TryInto;
 
+use composit::Leaf;
 use dom::domutil;
 use drawing::{  DrawingSession, FlatCanvas };
 use program::CanvasWeave;
-use types::Dot;
+use types::{ Dot, cpixel };
 
 pub struct CanvasRemover(u32);
 
@@ -44,41 +45,40 @@ impl AllCanvasAllocator {
 
 pub struct AllCanvasMan {
     alloc: AllCanvasAllocator,
-    ds: Option<DrawingSession>
+    ds: HashMap<Leaf,DrawingSession>,
+    standin: FlatCanvas,
 }
 
 impl AllCanvasMan {
     pub fn new(id: &str) -> AllCanvasMan {
+        let mut alloc = AllCanvasAllocator {
+            root: domutil::query_select(id),
+            canvases: HashMap::<u32,FlatCanvas>::new(),
+            idx: 0,
+        };
+        let standin = alloc.flat_allocate(cpixel(2,2),&CanvasWeave::Pixelate);
         AllCanvasMan {
-            alloc: AllCanvasAllocator {
-                root: domutil::query_select(id),
-                canvases: HashMap::<u32,FlatCanvas>::new(),
-                idx: 0,
-            },
-            ds: None,
+            alloc,
+            ds: HashMap::<Leaf,DrawingSession>::new(),
+            standin
         }
     }
-    
-    fn ds_init(&mut self) {
-        self.ds = Some(DrawingSession::new(&mut self.alloc));
+        
+    pub fn get_drawing_session<'a>(&'a mut self, leaf: &Leaf) -> &'a mut DrawingSession {
+        self.get_ds_alloc(leaf).0
     }
     
-    pub fn get_drawing_session<'a>(&'a mut self) -> &'a mut DrawingSession {
-        self.get_ds_alloc().0
+    pub fn get_ds_alloc<'a>(&'a mut self, leaf: &Leaf) -> (&'a mut DrawingSession,&'a mut AllCanvasAllocator) {
+        let (dss,alloc,standin) = (&mut self.ds, &mut self.alloc,&self.standin);
+        let ds = dss.entry(leaf.clone()).or_insert_with(|| 
+            DrawingSession::new(alloc,standin)
+        );
+        (ds,alloc)
     }
     
-    pub fn get_ds_alloc<'a>(&'a mut self) -> (&'a mut DrawingSession,&'a mut AllCanvasAllocator) {
-        if let None = self.ds {
-            self.ds_init();
-        }
-        (self.ds.as_mut().unwrap(),&mut self.alloc)
-    }
-    
-    pub fn reset(&mut self) {
-        let ds = self.ds.take();
-        if let Some(ref ds) = ds {
+    pub fn reset(&mut self, leaf: &Leaf) {
+        if let Some(ds) = self.ds.remove(leaf) {
             ds.finish(&mut self.alloc);
         }
-        self.ds_init();
     }    
 }
