@@ -36,4 +36,11 @@ impl Programs {
             geom.data.objects_final(ctx,ds);
         }
     }
+    
+    pub fn clean_instance(&self, ctx: &glctx) -> Programs {
+        Programs {
+            order: self.order.clone(),
+            map: self.map.iter().map(|(k,v)| (*k,v.clean_instance(ctx))).collect()
+        }
+    }
 }

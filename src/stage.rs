@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use composit::Leaf;
 use program::UniformValue;
 use types::{ CFraction, CPixel, cfraction, cpixel };
 
@@ -45,9 +46,9 @@ impl Stage {
         self.dims = *size;
     }
 
-    pub fn get_uniforms(&self) -> HashMap<&str,UniformValue> {
+    pub fn get_uniforms(&self, leaf: &Leaf) -> HashMap<&str,UniformValue> {
         hashmap! {
-            "uStageHpos" => UniformValue::Float(self.pos.0),
+            "uStageHpos" => UniformValue::Float(self.pos.0 - leaf.get_offset()),
             "uStageVpos" => UniformValue::Float(self.pos.1 + self.dims.1 as f32/2.),
             "uStageZoom" => UniformValue::Float(self.get_linear_zoom()*2.),
             "uSize" => UniformValue::Vec2F(

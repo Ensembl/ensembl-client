@@ -1,9 +1,13 @@
+use std::collections::HashMap;
+use std::collections::hash_map::Entry;
+use std::rc::Rc;
+
 use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element };
 
-use print::{ PrintRun, Programs, PrintEdition };
+use print::{ PrintRun, Programs, PrintEdition, LeafPrinter };
 use composit::{ Compositor, LeafComponent, StateManager, Leaf };
-use drawing::AllCanvasMan;
+use drawing::{ AllCanvasMan, DrawingSession, AllCanvasAllocator };
 use dom::domutil;
 use stage::Stage;
 use types::{ Dot };
@@ -16,78 +20,51 @@ use stdweb::web::html_element::{
 
 pub struct Printer {
     canv_el: HtmlElement,
-    ctx: glctx,
-    progs: Programs,
+    ctx: Rc<glctx>,
+    base_progs: Programs,
     acm: AllCanvasMan,
+    lp: HashMap<Leaf,LeafPrinter>
 }
 
 impl Printer {
     pub fn new(canv_el: &HtmlElement) -> Printer {
         let canvas = canv_el.clone().try_into().unwrap();
-        let ctx = wglraw::prepare_context(&canvas);
+        let ctx = Rc::new(wglraw::prepare_context(&canvas));
         let progs = Programs::new(&ctx);
+        let mut acm = AllCanvasMan::new("#managedcanvasholder");
         Printer {
             canv_el: canv_el.clone(),
-            acm: AllCanvasMan::new("#managedcanvasholder"),
-            ctx, progs,
+            acm, ctx,
+            base_progs: progs,
+            lp: HashMap::<Leaf,LeafPrinter>::new()
         }
     }
-    
-    pub fn new_edition(&mut self, leaf: &Leaf) -> PrintEdition {
-        PrintEdition::new(self.acm.get_drawing_session(leaf))
+
+    pub fn finish(&mut self) {
+        for (_i,mut lp) in &mut self.lp {
+            lp.finish(&mut self.acm.get_allocator());
+        }
     }
-    
-    pub fn redraw_objects(&mut self, comps: &mut Vec<&mut LeafComponent>,
-                          leaf: &Leaf, e: &mut PrintEdition) {
-        for c in comps.iter_mut() {
-            if c.is_on() {
-                c.into_objects(&mut self.progs,self.acm.get_drawing_session(leaf),e);
+
+    pub fn get_lp_aca(&mut self, leaf: &Leaf) -> (&mut LeafPrinter, &mut AllCanvasAllocator) {
+        let lp = match self.lp.entry(leaf.clone()) {
+            Entry::Occupied(e) => e.into_mut(),
+            Entry::Vacant(e) => {
+                let progs = self.base_progs.clean_instance(&self.ctx);
+                e.insert(LeafPrinter::new(&mut self.acm,leaf,&progs,&self.ctx))
             }
-        }
+        };        
+        (lp, self.acm.get_allocator())
     }
-            
-    pub fn init(&mut self) {
-        self.progs.clear_objects();
-    }
-    
-    pub fn fini(&mut self,e: &mut PrintEdition, leaf: &Leaf) {
-        self.progs.finalize_objects(&self.ctx,self.acm.get_drawing_session(leaf));
-        e.go(&mut self.progs);
-    }
-    
-    pub fn redraw_drawings(&mut self, leaf: &Leaf, comps: &mut Vec<&mut LeafComponent>) {
-        let acm = &mut self.acm;
-        acm.reset(leaf);
-        let (ds,alloc) = acm.get_ds_alloc(leaf);
-        for mut c in comps.iter_mut() {
-            ds.redraw_component(*c);
-        }
-        ds.finalise(alloc);
-    }
-    
-    pub fn draw(&mut self,stage: &Stage, oom: &StateManager, compo: &mut Compositor) {
+        
+    pub fn go(&mut self,stage: &Stage, oom: &StateManager, compo: &mut Compositor) {
         for ref leaf in compo.leafs() {
             let redo = compo.calc_level(leaf,oom);
             let mut pr = PrintRun::new(leaf);
-            pr.go(compo,stage,self,redo);
+            pr.build_snap(compo,stage,self,redo);
         }
     }
-    
-    pub fn go(&mut self, stage: &Stage) {
-        self.ctx.enable(glctx::DEPTH_TEST);
-        self.ctx.depth_func(glctx::LEQUAL);
-        for k in &self.progs.order {
-            let prog = self.progs.map.get_mut(k).unwrap();
-            let u = stage.get_uniforms();
-            for (key, value) in &u {
-                if let Some(obj) = prog.get_object(key) {
-                    obj.set_uniform(None,*value);
-                }
-            }
-            prog.execute(&self.ctx);
-        }
-    }
-    
+        
     pub fn set_size(&mut self, s: Dot<i32,i32>) {
         let elel: Element =  self.canv_el.clone().into();
         let elc : CanvasElement = elel.clone().try_into().unwrap();

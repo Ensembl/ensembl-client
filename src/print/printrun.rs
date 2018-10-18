@@ -1,5 +1,6 @@
 use composit::{ Compositor, ComponentRedo, Leaf };
-use print::Printer;
+use drawing::AllCanvasAllocator;
+use print::{ Printer, LeafPrinter };
 use stage::Stage;
 
 pub struct PrintRun {
@@ -13,25 +14,26 @@ impl PrintRun {
 
     pub fn into_objects(&mut self,
                         cman: &mut Compositor,
-                        p: &mut Printer,
+                        lp: &mut LeafPrinter, aca: &mut AllCanvasAllocator,
                         level: ComponentRedo) {
         if level == ComponentRedo::None { return; }
         debug!("redraw","{:?}",level);
         if let Some(ref mut comps) = cman.get_components(&self.leaf) {
-            p.init();
+            lp.init();
             if level == ComponentRedo::Major {
-                p.redraw_drawings(&self.leaf,comps);
+                lp.redraw_drawings(aca,comps);
             }
-            let mut e = p.new_edition(&self.leaf);
-            p.redraw_objects(comps,&self.leaf,&mut e);
-            p.fini(&mut e,&self.leaf);
+            let mut e = lp.new_edition();
+            lp.redraw_objects(comps,&mut e);
+            lp.fini(&mut e);
         }
     }
 
-    pub fn go(&mut self, cman: &mut Compositor,
+    pub fn build_snap(&mut self, cman: &mut Compositor,
                 stage: &Stage, p: &mut Printer, 
                 level: ComponentRedo) {
-        self.into_objects(cman,p,level);
-        p.go(stage);
+        let (lp,aca) = p.get_lp_aca(&self.leaf);
+        self.into_objects(cman,lp,aca,level);
+        lp.take_snap(stage);
     }
 }

@@ -74,7 +74,9 @@ impl CanvasRunner {
             cc.clear();
         }
         self.0.lock().unwrap().projector = None;
-    }    
+        let r = self.state();
+        r.lock().unwrap().finish();        
+    }
 }
 
 impl CanvasRunnerWeak {

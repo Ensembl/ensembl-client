@@ -10,6 +10,7 @@ use drawing::{  DrawingSession, FlatCanvas };
 use program::CanvasWeave;
 use types::{ Dot, cpixel };
 
+#[derive(Debug)]
 pub struct CanvasRemover(u32);
 
 impl CanvasRemover {
@@ -40,13 +41,12 @@ impl AllCanvasAllocator {
         self.canvases.insert(self.idx,canvas.clone());
         self.idx += 1;
         canvas
-    }
+    }    
 }
 
 pub struct AllCanvasMan {
     alloc: AllCanvasAllocator,
-    ds: HashMap<Leaf,DrawingSession>,
-    standin: FlatCanvas,
+    standin: FlatCanvas
 }
 
 impl AllCanvasMan {
@@ -59,26 +59,14 @@ impl AllCanvasMan {
         let standin = alloc.flat_allocate(cpixel(2,2),&CanvasWeave::Pixelate);
         AllCanvasMan {
             alloc,
-            ds: HashMap::<Leaf,DrawingSession>::new(),
             standin
         }
     }
-        
-    pub fn get_drawing_session<'a>(&'a mut self, leaf: &Leaf) -> &'a mut DrawingSession {
-        self.get_ds_alloc(leaf).0
-    }
+
+    pub fn get_allocator(&mut self) -> &mut AllCanvasAllocator { &mut self.alloc }
+    pub fn get_standin(&self) -> FlatCanvas { self.standin.clone() }
     
-    pub fn get_ds_alloc<'a>(&'a mut self, leaf: &Leaf) -> (&'a mut DrawingSession,&'a mut AllCanvasAllocator) {
-        let (dss,alloc,standin) = (&mut self.ds, &mut self.alloc,&self.standin);
-        let ds = dss.entry(leaf.clone()).or_insert_with(|| 
-            DrawingSession::new(alloc,standin)
-        );
-        (ds,alloc)
-    }
-    
-    pub fn reset(&mut self, leaf: &Leaf) {
-        if let Some(ds) = self.ds.remove(leaf) {
-            ds.finish(&mut self.alloc);
-        }
+    pub fn make_drawing_session(&mut self) -> DrawingSession {
+        DrawingSession::new(&mut self.alloc,&self.standin)
     }    
 }
