@@ -1,3 +1,4 @@
+use std::cmp::max;
 use std::collections::{ HashMap, HashSet };
 
 use composit::{ LeafComponent, StateManager, Component, Leaf, vscale_bp_per_leaf };
@@ -63,7 +64,7 @@ impl Compositor {
     
     pub fn set_zoom(&mut self, bp_per_screen: f64) {
         let leaf_per_screen = bp_per_screen / vscale_bp_per_leaf(self.vscale);
-        self.train_flank = (3.*leaf_per_screen) as i32;
+        self.train_flank = max((3.*leaf_per_screen) as i32,1);
         debug!("trains","set  bp_per_screen={} bp_per_leaf={} leaf_per_screen={}",
             bp_per_screen,vscale_bp_per_leaf(self.vscale),leaf_per_screen);
         self.add_missing_leafs();
