@@ -16,6 +16,7 @@ pub struct CanvasState {
 
 impl CanvasState {
     pub fn new(state: &Arc<Mutex<StateManager>>, canv_el: &HtmlElement) -> CanvasState {
+        console!("CanvasState");
         CanvasState {
             printer: Arc::new(Mutex::new(Printer::new(&canv_el))),
             stage:  Arc::new(Mutex::new(Stage::new())),
@@ -24,11 +25,15 @@ impl CanvasState {
         }
     }
     
+    pub fn finish(&mut self) {
+        self.printer.lock().unwrap().finish();
+    }
+    
     pub fn draw(&mut self) {
         let stage = self.stage.lock().unwrap();
         let oom = self.state.lock().unwrap();
         let mut compo = self.compo.lock().unwrap();
-        self.printer.lock().unwrap().draw(&stage,&oom,&mut compo);
+        self.printer.lock().unwrap().go(&stage,&oom,&mut compo);
     }
     
     pub fn with_stage<F,G>(&self, cb: F) -> G where F: FnOnce(&mut Stage) -> G {

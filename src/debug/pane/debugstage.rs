@@ -375,13 +375,9 @@ pub fn debug_panel_trigger_button(idx: usize) {
 }
 
 pub fn setup_global() {
-    console!("A");
     let mut bec = EventControl::new(Box::new(BodyEventListener::new()),());
-    console!("B");
+    console!("B1");
     bec.add_event(EventType::CustomEvent("bpane-start".to_string()));
-    console!("C");
-    console!("{:?}",domutil::query_select("body"));
-    console!("D");
+    console!("C1");
     bec.add_element(&domutil::query_select("body"),());
-    console!("E");
 }
