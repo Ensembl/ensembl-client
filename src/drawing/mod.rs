@@ -6,7 +6,7 @@ mod onecanvasman;
 mod flatcanvas;
 mod drawing;
 mod artist;
-mod allcanvasman;
+mod canvasalloc;
 mod drawingsession;
 mod spec;
 
@@ -14,7 +14,7 @@ pub use self::artist::Artist;
 
 pub use self::drawing::{ Drawing, Artwork };
 pub use self::drawingsession::DrawingSession;
-pub use self::allcanvasman::{ AllCanvasMan, CanvasRemover, AllCanvasAllocator };
+pub use self::canvasalloc::{ CanvasRemover, AllCanvasAllocator };
 
 pub use self::onecanvasman::{
     OneCanvasManager, DrawingHash

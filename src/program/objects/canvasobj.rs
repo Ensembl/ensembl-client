@@ -85,7 +85,7 @@ impl Object for ObjectCanvasTexture {
         }
     }
 
-    fn execute(&self, ctx: &glctx, _batch: &DataBatch) {
+    fn execute(&mut self, ctx: &glctx, _batch: &DataBatch) {
         for (i,t) in self.textures.iter() {
             ctx.active_texture(glctx::TEXTURE0+*i);
             ctx.bind_texture(glctx::TEXTURE_2D,Some(&t));

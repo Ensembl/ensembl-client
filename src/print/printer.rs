@@ -7,7 +7,7 @@ use stdweb::web::{ HtmlElement, Element };
 
 use print::{ PrintRun, Programs, PrintEdition, LeafPrinter };
 use composit::{ Compositor, LeafComponent, StateManager, Leaf };
-use drawing::{ AllCanvasMan, DrawingSession, AllCanvasAllocator };
+use drawing::{ DrawingSession, AllCanvasAllocator };
 use dom::domutil;
 use stage::Stage;
 use types::{ Dot };
@@ -22,7 +22,7 @@ pub struct Printer {
     canv_el: HtmlElement,
     ctx: Rc<glctx>,
     base_progs: Programs,
-    acm: AllCanvasMan,
+    acm: AllCanvasAllocator,
     lp: HashMap<Leaf,LeafPrinter>
 }
 
@@ -31,7 +31,7 @@ impl Printer {
         let canvas = canv_el.clone().try_into().unwrap();
         let ctx = Rc::new(wglraw::prepare_context(&canvas));
         let progs = Programs::new(&ctx);
-        let mut acm = AllCanvasMan::new("#managedcanvasholder");
+        let acm = AllCanvasAllocator::new("#managedcanvasholder");
         Printer {
             canv_el: canv_el.clone(),
             acm, ctx,
@@ -42,19 +42,20 @@ impl Printer {
 
     pub fn finish(&mut self) {
         for (_i,mut lp) in &mut self.lp {
-            lp.finish(&mut self.acm.get_allocator());
+            lp.finish(&mut self.acm);
         }
+        self.acm.finish();
     }
 
     pub fn get_lp_aca(&mut self, leaf: &Leaf) -> (&mut LeafPrinter, &mut AllCanvasAllocator) {
         let lp = match self.lp.entry(leaf.clone()) {
             Entry::Occupied(e) => e.into_mut(),
             Entry::Vacant(e) => {
-                let progs = self.base_progs.clean_instance(&self.ctx);
+                let progs = self.base_progs.clean_instance();
                 e.insert(LeafPrinter::new(&mut self.acm,leaf,&progs,&self.ctx))
             }
         };        
-        (lp, self.acm.get_allocator())
+        (lp, &mut self.acm)
     }
         
     pub fn go(&mut self,stage: &Stage, oom: &StateManager, compo: &mut Compositor) {

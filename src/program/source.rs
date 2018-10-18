@@ -23,8 +23,7 @@ pub enum Phase {
 
 pub trait Source {
     fn declare(&self, _adata: &GPUSpec, _phase: &Phase) -> String { String::new() }
-    fn make_attribs(&self, _ctx: &glctx, _prog: Rc<glprog>) 
-                            -> Option<(Option<&str>,Box<Object>)> {
+    fn create(&self, _prog: Rc<glprog>) -> Option<(Option<&str>,Box<Object>)> {
         None
     }
     fn statement(&self, _phase: &Phase) -> String { String::new() }
@@ -71,9 +70,8 @@ impl Source for Uniform {
         }
     }
 
-    fn make_attribs(&self, ctx: &glctx, prog: Rc<glprog>)
-                            -> Option<(Option<&str>,Box<Object>)> {
-        let gt = ObjectUniform::new(ctx,&prog,&self.name);
+    fn create(&self, prog: Rc<glprog>) -> Option<(Option<&str>,Box<Object>)> {
+        let gt = ObjectUniform::new(&prog,&self.name);
         Some((Some(&self.name),Box::new(gt)))
     }
 }
@@ -101,9 +99,8 @@ impl Source for Attribute {
             self.name).to_string()
     }
 
-    fn make_attribs(&self, ctx: &glctx, prog: Rc<glprog>)
-                            -> Option<(Option<&str>,Box<Object>)> {
-        let gt = ObjectAttrib::new(ctx,&prog,&self.name,self.size.to_num());
+    fn create(&self, prog: Rc<glprog>) -> Option<(Option<&str>,Box<Object>)> {
+        let gt = ObjectAttrib::new(&prog,&self.name,self.size.to_num());
         Some((Some(&self.name),Box::new(gt)))
     }
 }
@@ -176,8 +173,7 @@ impl Canvas {
 }
 
 impl Source for Canvas {
-    fn make_attribs(&self, _ctx: &glctx, _prog: Rc<glprog>)
-                        -> Option<(Option<&str>,Box<Object>)> {
+    fn create(&self, _prog: Rc<glprog>) -> Option<(Option<&str>,Box<Object>)> {
         Some((None,Box::new(ObjectCanvasTexture::new())))
     }
 }
@@ -193,8 +189,7 @@ impl Main {
 }
 
 impl Source for Main {
-    fn make_attribs(&self, _ctx: &glctx, _prog: Rc<glprog>)
-                        -> Option<(Option<&str>,Box<Object>)> {
+    fn create(&self, _prog: Rc<glprog>) -> Option<(Option<&str>,Box<Object>)> {
         Some((None,Box::new(ObjectMain::new(self.method))))
     }
 }

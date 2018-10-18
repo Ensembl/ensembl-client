@@ -28,14 +28,12 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=3
-FILE_NAME_0=3250;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fprogram%2Fexecute.rs;0;4
-FILE_NAME_1=925;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fprint%2Fprintrun.rs;0;4
-FILE_NAME_2=1702;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcomposit%2Fcompositor.rs;0;4
-FILE_NAME_3=1177;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fprint%2Fprinter.rs;0;4
-FILE_NAME_4=142;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fprint%2Fmod.rs;0;4
-FILE_NAME_5=2030;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcontroller%2Fglobal%2Fstate.rs;0;4
-FILE_NAME_6=0;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fcontroller%2Fglobal%2Fmod.rs;0;4
+current_page=4
+FILE_NAME_0=1235;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdebug%2Ftestcards%2Fleftright.rs;0;4
+FILE_NAME_1=0;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fdrawing%2Fallcanvasman.rs;0;4
+FILE_NAME_2=507;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fprint%2Fprinter.rs;0;4
+FILE_NAME_3=0;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fprogram%2Fimpls.rs;0;4
+FILE_NAME_4=3475;Rust;0;EUTF-8;0;1;0;%2Fhome%2Fdan%2Fruemoglasm%2Fdemo1%2Fsrc%2Fprogram%2Fexecute.rs;0;4
 
 [VTE]
 last_dir=/home/dan

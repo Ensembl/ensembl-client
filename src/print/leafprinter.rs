@@ -2,25 +2,23 @@ use std::rc::Rc;
 
 use print::{ PrintRun, Programs, PrintEdition };
 use composit::{ Compositor, LeafComponent, StateManager, Leaf };
-use drawing::{ AllCanvasMan, DrawingSession, AllCanvasAllocator, FlatCanvas };
+use drawing::{ DrawingSession, AllCanvasAllocator, FlatCanvas };
 use stage::Stage;
 use webgl_rendering_context::WebGLRenderingContext as glctx;
 
 pub struct LeafPrinter {
     ds: DrawingSession,
-    standin: FlatCanvas,
     leaf: Leaf,
     progs: Programs,
     ctx: Rc<glctx>
 }
 
 impl LeafPrinter {
-    pub fn new(acm: &mut AllCanvasMan, leaf: &Leaf, progs: &Programs, ctx: &Rc<glctx>) -> LeafPrinter {
+    pub fn new(acm: &mut AllCanvasAllocator, leaf: &Leaf, progs: &Programs, ctx: &Rc<glctx>) -> LeafPrinter {
         LeafPrinter {
             ds: acm.make_drawing_session(),
-            standin: acm.get_standin(),
             leaf: leaf.clone(),
-            progs: progs.clean_instance(ctx),
+            progs: progs.clean_instance(),
             ctx: ctx.clone()
         }
     }
@@ -35,7 +33,7 @@ impl LeafPrinter {
         
     pub fn redraw_drawings(&mut self, alloc: &mut AllCanvasAllocator, comps: &mut Vec<&mut LeafComponent>) {
         self.ds.finish(alloc);
-        self.ds = DrawingSession::new(alloc,&self.standin);
+        self.ds = DrawingSession::new(alloc);
         for mut c in comps.iter_mut() {
             self.ds.redraw_component(*c);
         }

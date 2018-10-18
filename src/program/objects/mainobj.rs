@@ -71,7 +71,7 @@ impl Object for ObjectMain {
         }
     }
 
-    fn execute(&self, ctx: &glctx, batch: &DataBatch) {
+    fn execute(&mut self, ctx: &glctx, batch: &DataBatch) {
         if let Some(data) = self.data(batch) {
             if let Some(buf) = self.buffer(batch) {
                 ctx.bind_buffer(glctx::ELEMENT_ARRAY_BUFFER,Some(&buf));
