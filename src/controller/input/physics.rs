@@ -1,5 +1,5 @@
 use std::sync::{ Arc, Mutex };
-use types::{ CFraction, cfraction, CPixel, CDFraction, cdfraction };
+use types::{ CPixel, CDFraction, cdfraction };
 use controller::global::{ CanvasState, CanvasRunner };
 use controller::input::{ Event, events_run };
 use types::{ Move, Distance, Units, ddiv };
@@ -18,6 +18,7 @@ pub struct MousePhysics(Arc<Mutex<MousePhysicsImpl>>);
 
 const LETHARGY : f64 = 3500.;
 const BOING : f64 = 1.00;
+const EPS : f64 = 0.01;
 
 impl MousePhysicsImpl {
     pub fn set_drive(&mut self, f: CDFraction) {
@@ -38,17 +39,19 @@ impl MousePhysicsImpl {
     }
 
     pub fn move_by(&mut self, cg: &CanvasState, dx: CDFraction) {
-        events_run(cg,vec! {
-            Event::Move(Move::Left(Distance(dx.0,Units::Pixels))),
-            Event::Move(Move::Up(Distance(dx.1,Units::Pixels)))
-        });
-        if let Some(force_origin) = self.force_origin {
-            self.force_origin = Some(force_origin + dx);
-            if let Some(mouse_pos) = self.mouse_pos {
-                self.set_drive(mouse_pos - force_origin);
+        if dx.0.abs() > EPS || dx.0.abs() > EPS {
+            events_run(cg,vec! {
+                Event::Move(Move::Left(Distance(dx.0,Units::Pixels))),
+                Event::Move(Move::Up(Distance(dx.1,Units::Pixels)))
+            });
+            if let Some(force_origin) = self.force_origin {
+                self.force_origin = Some(force_origin + dx);
+                if let Some(mouse_pos) = self.mouse_pos {
+                    self.set_drive(mouse_pos - force_origin);
+                }
+            } else {
+                self.drive = None;
             }
-        } else {
-            self.drive = None;
         }
     }
 }

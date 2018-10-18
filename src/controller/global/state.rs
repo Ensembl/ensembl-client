@@ -4,7 +4,7 @@ use stdweb::web::HtmlElement;
 
 use print::Printer;
 use composit::{ Compositor, StateManager, Stage };
-use controller::input::{ Event, events_run };
+use controller::input::{ Event, events_run, startup_events };
 
 pub struct CanvasState {
     pub printer: Arc<Mutex<Printer>>,
@@ -15,13 +15,14 @@ pub struct CanvasState {
 
 impl CanvasState {
     pub fn new(state: &Arc<Mutex<StateManager>>, canv_el: &HtmlElement) -> CanvasState {
-        console!("CanvasState");
-        CanvasState {
+        let out = CanvasState {
             printer: Arc::new(Mutex::new(Printer::new(&canv_el))),
             stage:  Arc::new(Mutex::new(Stage::new())),
             compo: Arc::new(Mutex::new(Compositor::new())),
             state: state.clone(),
-        }
+        };
+        out.run_events(startup_events());
+        out
     }
     
     pub fn finish(&mut self) {

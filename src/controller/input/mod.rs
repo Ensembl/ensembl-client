@@ -6,7 +6,7 @@ mod user;
 mod domevents;
 
 pub use self::physics::MousePhysics;
-pub use self::events::{ Event, events_run };
+pub use self::events::{ Event, events_run, startup_events };
 pub use self::timers::{ Timer, Timers };
 
 pub use self::domevents::register_dom_events;
