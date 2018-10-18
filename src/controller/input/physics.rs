@@ -1,35 +1,35 @@
 use std::sync::{ Arc, Mutex };
-use types::{ CFraction, cfraction, CPixel };
+use types::{ CFraction, cfraction, CPixel, CDFraction, cdfraction };
 use controller::global::{ CanvasState, CanvasRunner };
 use controller::input::{ Event, events_run };
-use types::{ Move, Distance, Units };
+use types::{ Move, Distance, Units, ddiv };
 
 pub struct MousePhysicsImpl {
-    last_t: Option<f64>,             /* last update */
-    force_origin: Option<CFraction>, /* spring anchor */
-    mouse_pos: Option<CFraction>,    /* spring free-end */
-    drive: Option<CFraction>,        /* driving force */
-    accel: CFraction,                /* accel */
-    vel: CFraction,                  /* vel */
+    last_t: Option<f64>,              /* last update */
+    force_origin: Option<CDFraction>, /* spring anchor */
+    mouse_pos: Option<CDFraction>,    /* spring free-end */
+    drive: Option<CDFraction>,        /* driving force */
+    accel: CDFraction,                /* accel */
+    vel: CDFraction,                  /* vel */
 }
 
 #[derive(Clone)]
 pub struct MousePhysics(Arc<Mutex<MousePhysicsImpl>>);
 
-const LETHARGY : f32 = 3500.;
-const BOING : f32 = 1.00;
+const LETHARGY : f64 = 3500.;
+const BOING : f64 = 1.00;
 
 impl MousePhysicsImpl {
-    pub fn set_drive(&mut self, f: CFraction) {
+    pub fn set_drive(&mut self, f: CDFraction) {
         self.drive = Some(f);
     }
     
-    pub fn run_dynamics(&mut self, t: f64) -> CFraction {
-        let dt = cfraction(t as f32,t as f32);
-        let mut f = self.drive.unwrap_or(cfraction(0.,0.)) / cfraction(LETHARGY,LETHARGY);
+    pub fn run_dynamics(&mut self, t: f64) -> CDFraction {
+        let dt = cdfraction(t as f64,t as f64);
+        let mut f = ddiv(self.drive.unwrap_or(cdfraction(0.,0.)),cdfraction(LETHARGY,LETHARGY));
         /* apply friction */
         let crit = (4./LETHARGY).sqrt()/BOING; // critical damping eq'n.
-        let friction = (cfraction(0.,0.) - self.vel) * cfraction(crit,crit);
+        let friction = (cdfraction(0.,0.) - self.vel) * cdfraction(crit,crit);
         f = f + friction;
         /* Run ODE */
         self.accel = f;
@@ -37,7 +37,7 @@ impl MousePhysicsImpl {
         return self.vel * dt;
     }
 
-    pub fn move_by(&mut self, cg: &CanvasState, dx: CFraction) {
+    pub fn move_by(&mut self, cg: &CanvasState, dx: CDFraction) {
         events_run(cg,vec! {
             Event::Move(Move::Left(Distance(dx.0,Units::Pixels))),
             Event::Move(Move::Up(Distance(dx.1,Units::Pixels)))
@@ -60,8 +60,8 @@ impl MousePhysics {
             force_origin: None,
             mouse_pos: None,
             drive: None,
-            accel: cfraction(0.,0.),
-            vel: cfraction(0.,0.),
+            accel: cdfraction(0.,0.),
+            vel: cdfraction(0.,0.),
         })));
         let c = out.clone();
         ru.add_timer(move |cg,t| c.clone().tick(cg,t));
@@ -85,10 +85,10 @@ impl MousePhysics {
 
     pub fn down(&mut self, e: CPixel) {
         let mut mp = self.0.lock().unwrap();
-        mp.accel = cfraction(0.,0.);
-        mp.vel = cfraction(0.,0.);
-        mp.force_origin = Some(e.as_fraction());
-        mp.mouse_pos = Some(e.as_fraction());
+        mp.accel = cdfraction(0.,0.);
+        mp.vel = cdfraction(0.,0.);
+        mp.force_origin = Some(e.as_dfraction());
+        mp.mouse_pos = Some(e.as_dfraction());
     }
     
     pub fn up(&mut self) {
@@ -98,7 +98,7 @@ impl MousePhysics {
 
     pub fn move_to(&mut self, e: CPixel) {
         let mut mp = self.0.lock().unwrap();
-        let at = e.as_fraction();            
+        let at = e.as_dfraction();            
         mp.mouse_pos = Some(at);
         if let Some(force_origin) = mp.force_origin {
             mp.set_drive(at - force_origin);

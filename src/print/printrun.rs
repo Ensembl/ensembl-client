@@ -1,7 +1,6 @@
-use composit::{ Compositor, ComponentRedo, Leaf };
+use composit::{ Compositor, ComponentRedo, Leaf, Stage };
 use drawing::AllCanvasAllocator;
 use print::{ Printer, LeafPrinter };
-use stage::Stage;
 
 pub struct PrintRun {
     leaf: Leaf
@@ -30,9 +29,9 @@ impl PrintRun {
     }
 
     pub fn build_snap(&mut self, cman: &mut Compositor,
-                stage: &Stage, p: &mut Printer, 
+                stage: &Stage, lp: &mut LeafPrinter,
+                aca: &mut AllCanvasAllocator,
                 level: ComponentRedo) {
-        let (lp,aca) = p.get_lp_aca(&self.leaf);
         self.into_objects(cman,lp,aca,level);
         lp.take_snap(stage);
     }

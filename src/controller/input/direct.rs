@@ -13,7 +13,7 @@ use types::{ Move, Distance, Units };
 
 fn custom_movement_event(dir: &str, unit: &str, v: &JSONValue) -> Event {
     if let JSONValue::Number(quant) = v {
-        let quant = quant.as_f64().unwrap() as f32;
+        let quant = quant.as_f64().unwrap() as f64;
         let unit = match unit {
             "base"|"bases"|"bp" => Units::Bases,
             "pixel"|"pixels"|"px" => Units::Pixels,

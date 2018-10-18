@@ -4,8 +4,8 @@ mod todo;
 mod area;
 
 pub use types::coord::{
-    CPixel, CLeaf, CFraction, APixel, Anchors,
-    cpixel, cleaf, cfraction, cedge,
+    CPixel, CLeaf, CFraction, APixel, Anchors, CDFraction,
+    cpixel, cleaf, cfraction, cedge, cdfraction, ddiv,
     Edge, EPixel, Corner,
     Dot, Move, Distance, Units, Axis, AxisSense,
     LEFT, RIGHT, UP, DOWN,

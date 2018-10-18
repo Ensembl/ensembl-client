@@ -3,9 +3,8 @@ use std::sync::{ Arc, Mutex };
 use stdweb::web::HtmlElement;
 
 use print::Printer;
-use composit::{ Compositor, StateManager };
+use composit::{ Compositor, StateManager, Stage };
 use controller::input::{ Event, events_run };
-use stage::Stage;
 
 pub struct CanvasState {
     pub printer: Arc<Mutex<Printer>>,
@@ -55,6 +54,10 @@ impl CanvasState {
         events_run(self,evs);
     }
     
+    pub fn update_leaf_position(&mut self, position: f64) {
+        self.compo.lock().unwrap().set_position(position);
+    }
+    
     pub fn check_size(self: &CanvasState) {
         let sz = self.printer.lock().unwrap().get_real_size();
         events_run(self,vec! {
@@ -64,6 +67,7 @@ impl CanvasState {
  
     pub fn force_size(self: &CanvasState) {
         let stage = self.stage.lock().unwrap();
+        self.compo.lock().unwrap().set_screen_width(stage.get_size().0);
         self.printer.lock().unwrap().set_size(stage.get_size());
     }
 }

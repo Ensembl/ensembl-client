@@ -1,9 +1,8 @@
 use std::rc::Rc;
 
-use print::{ PrintRun, Programs, PrintEdition };
-use composit::{ Compositor, LeafComponent, StateManager, Leaf };
-use drawing::{ DrawingSession, AllCanvasAllocator, FlatCanvas };
-use stage::Stage;
+use print::{ Programs, PrintEdition };
+use composit::{ LeafComponent, Leaf, Stage };
+use drawing::{ DrawingSession, AllCanvasAllocator };
 use webgl_rendering_context::WebGLRenderingContext as glctx;
 
 pub struct LeafPrinter {

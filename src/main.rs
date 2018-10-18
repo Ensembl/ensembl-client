@@ -24,7 +24,6 @@ mod program;
 mod dom;
 mod webgl_rendering_context;
 mod types;
-mod stage;
 mod print;
 
 fn main() {
