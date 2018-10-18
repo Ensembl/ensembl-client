@@ -171,7 +171,7 @@ fn track(fs: &mut FixedSource, leaf: &Leaf, p: &Palette, t: i32) {
 pub fn testcard_polar(g: Arc<Mutex<Global>>) {
     let g = &mut g.lock().unwrap();
 
-    let leaf = Leaf::new(0);
+    let leaf = Leaf::new(0,0);
     let p = Palette {
         lato_12: FCFont::new(12,"Lato",FontVariety::Normal),
         lato_18: FCFont::new(12,"Lato",FontVariety::Bold),

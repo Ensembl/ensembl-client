@@ -72,7 +72,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
     let t = (seed/256) as u8;
     let mut rng = SmallRng::from_seed([s,s,s,s,s,s,s,s,t,t,t,t,t,t,t,t]);
 
-    let leaf = Leaf::new(0);
+    let leaf = Leaf::new(0,0);
     let size = g.canvas_size();
 
     let mut fs_odd = FixedSource::new();

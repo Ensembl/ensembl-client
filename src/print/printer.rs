@@ -5,7 +5,7 @@ use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element };
 
 use print::{ PrintRun, Programs, LeafPrinter };
-use composit::{ Compositor, LeafComponent, StateManager, Leaf, Stage };
+use composit::{ Compositor, StateManager, Leaf, Stage };
 use drawing::{ AllCanvasAllocator };
 use dom::domutil;
 use types::{ Dot };

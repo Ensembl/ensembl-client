@@ -23,4 +23,4 @@ pub use self::state::{
     ComponentRedo
 };
 
-pub use self::leaf::Leaf;
+pub use self::leaf::{ Leaf, vscale_bp_per_leaf };

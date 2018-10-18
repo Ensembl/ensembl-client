@@ -1,12 +1,12 @@
-use std::collections::HashMap;
+use std::collections::{ HashMap, HashSet };
 
-use composit::{ LeafComponent, StateManager, Component, Leaf };
+use composit::{ LeafComponent, StateManager, Component, Leaf, vscale_bp_per_leaf };
 use composit::state::ComponentRedo;
 
 pub struct Compositor {
     vscale: i32,
-    train_length: i32,
-    first_leaf: i32,
+    train_flank: i32,
+    middle_leaf: i64,
     comp_idx: u32,
     components: HashMap<u32,Component>,
     leafcomps: HashMap<Leaf,HashMap<u32,LeafComponent>>
@@ -21,17 +21,53 @@ impl Compositor {
             leafcomps: HashMap::<Leaf,HashMap<u32,LeafComponent>>::new(),
             comp_idx: 0,
             vscale: 0,
-            train_length: 10,
-            first_leaf: 0,
+            train_flank: 10,
+            middle_leaf: 0,
         }
     }
-
+    
     pub fn set_screen_width(&mut self, width: i32) {
         debug!("trains","set width {}",width);
     }
 
-    pub fn set_position(&mut self, position: f64) {
-        debug!("trains","set position {}",position);
+    pub fn set_position(&mut self, position_bp: f64) {
+        self.middle_leaf = (position_bp / vscale_bp_per_leaf(self.vscale) as f64) as i64;
+        debug!("trains","set position leaf={}",self.middle_leaf);
+        self.add_missing_leafs();
+        self.remove_unused_leafs();        
+    }
+    
+    fn add_missing_leafs(&mut self) {
+        for idx in -self.train_flank..self.train_flank+1 {
+            let hindex = self.middle_leaf + idx as i64;
+            let leaf = Leaf::new(hindex,self.vscale);
+            if !self.leafcomps.contains_key(&leaf) {
+                debug!("trains","adding {}",hindex);
+                self.add_leaf(leaf);
+            }
+        }
+    }
+    
+    fn remove_unused_leafs(&mut self) {
+        let mut doomed = HashSet::new();
+        for leaf in self.leafcomps.keys() {
+            if (leaf.get_index()-self.middle_leaf).abs() > self.train_flank as i64 {
+                doomed.insert(leaf.clone());
+            }
+        }
+        for d in doomed {
+            debug!("trains","removing {}",d.get_index());
+            self.remove_leaf(&d);
+        }
+    }
+    
+    pub fn set_zoom(&mut self, bp_per_screen: f64) {
+        let leaf_per_screen = bp_per_screen / vscale_bp_per_leaf(self.vscale);
+        self.train_flank = (3.*leaf_per_screen) as i32;
+        debug!("trains","set  bp_per_screen={} bp_per_leaf={} leaf_per_screen={}",
+            bp_per_screen,vscale_bp_per_leaf(self.vscale),leaf_per_screen);
+        self.add_missing_leafs();
+        self.remove_unused_leafs();
     }
 
     pub fn leafs(&self) -> Vec<Leaf> {

@@ -5,5 +5,6 @@ mod bigscience;
 mod polar;
 mod text;
 mod leftright;
+mod closuresource;
 
 pub use debug::testcards::common::testcard;

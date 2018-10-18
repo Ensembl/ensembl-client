@@ -4,7 +4,6 @@ use stdweb::web::{ Element, INode, document };
 use stdweb::web::html_element::CanvasElement;
 use stdweb::unstable::TryInto;
 
-use composit::Leaf;
 use dom::domutil;
 use drawing::{  DrawingSession, FlatCanvas };
 use program::CanvasWeave;

@@ -1,6 +1,6 @@
 use composit::{ Compositor, ComponentRedo, Leaf, Stage };
 use drawing::AllCanvasAllocator;
-use print::{ Printer, LeafPrinter };
+use print::LeafPrinter;
 
 pub struct PrintRun {
     leaf: Leaf

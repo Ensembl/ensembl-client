@@ -11,7 +11,7 @@ use types::{ Colour, cleaf, cpixel, area_size, AxisSense, A_TOPLEFT };
 pub fn testcard_text(g: Arc<Mutex<Global>>) {
     let g = &mut g.lock().unwrap();
 
-    let leaf = Leaf::new(0);
+    let leaf = Leaf::new(0,0);
     let mut fs = FixedSource::new();
     let c = Component::new(Box::new(fs.clone()),Rc::new(StateFixed(StateValue::On())));
  
