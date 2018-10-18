@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::rc::Rc;
 
 use webgl_rendering_context::{
     WebGLRenderingContext as glctx,
@@ -19,14 +20,24 @@ pub enum UniformValue {
 
 pub struct ObjectUniform {
     val: HashMap<Option<u32>,UniformValue>,
-    buf: Option<gluni>,
+    buffer: Option<Option<gluni>>,
+    prog: Rc<glprog>,
+    name: String
 }
 
 impl ObjectUniform {
-    pub fn new(ctx: &glctx, prog: &glprog, name: &str) -> ObjectUniform {
+    pub fn new(prog: &Rc<glprog>, name: &str) -> ObjectUniform {
         ObjectUniform {
-            buf: ctx.get_uniform_location(prog,name),
-            val: HashMap::<Option<u32>,UniformValue>::new()
+            buffer: None,
+            val: HashMap::<Option<u32>,UniformValue>::new(),
+            prog: prog.clone(),
+            name: name.to_string()
+        }
+    }
+    
+    fn calc_buffer(&mut self, ctx: &glctx)  {
+        if let None = self.buffer {
+            self.buffer = Some(ctx.get_uniform_location(&self.prog,&self.name));
         }
     }
 }
@@ -36,10 +47,10 @@ impl Object for ObjectUniform {
         self.val.insert(group.map(|g| g.id()),value);
     }
 
-    fn execute(&self, ctx: &glctx, batch: &DataBatch) {
+    fn execute(&mut self, ctx: &glctx, batch: &DataBatch) {
         let gid = batch.group().id();
-        
-        if let Some(ref loc) = self.buf {
+        self.calc_buffer(ctx);
+        if let Some(ref loc) = self.buffer.as_ref().unwrap() {
             let val = 
                 if let Some(val) = self.val.get(&Some(gid)) {
                     Some(*val)

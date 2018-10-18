@@ -37,10 +37,10 @@ impl Programs {
         }
     }
     
-    pub fn clean_instance(&self, ctx: &glctx) -> Programs {
+    pub fn clean_instance(&self) -> Programs {
         Programs {
             order: self.order.clone(),
-            map: self.map.iter().map(|(k,v)| (*k,v.clean_instance(ctx))).collect()
+            map: self.map.iter().map(|(k,v)| (*k,v.clean_instance())).collect()
         }
     }
 }

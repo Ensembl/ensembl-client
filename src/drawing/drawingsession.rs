@@ -12,11 +12,11 @@ pub struct DrawingSession {
 }
 
 impl DrawingSession {
-    pub fn new(aca: &mut AllCanvasAllocator, standin: &FlatCanvas) -> DrawingSession {
+    pub fn new(aca: &mut AllCanvasAllocator) -> DrawingSession {
         DrawingSession {
             next_canv_idx: 0,
             canvases: HashMap::<CanvasWeave,OneCanvasManager>::new(),
-            standin: standin.clone()
+            standin: aca.get_standin().clone()
         }
     }
 

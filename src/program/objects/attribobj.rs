@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::rc::Rc;
 
 use stdweb::web::TypedArray;
 use webgl_rendering_context::{
@@ -16,18 +17,29 @@ use program::objects::Object;
 pub struct ObjectAttrib {
     vec : HashMap<u32,Vec<f32>>,
     buf: HashMap<u32,glbuf>,
-    loc: u32,
+    loc: Option<u32>,
     size: u8,
+    prog: Rc<glprog>,
+    name: String
 }
 
 impl ObjectAttrib {
-    pub fn new(ctx: &glctx, prog: &glprog, name: &str, size: u8) -> ObjectAttrib {
+    pub fn new(prog: &Rc<glprog>, name: &str, size: u8) -> ObjectAttrib {
         ObjectAttrib {
             vec: HashMap::<u32,Vec<f32>>::new(),
             buf: HashMap::<u32,glbuf>::new(),
-            loc: ctx.get_attrib_location(prog,name) as u32,
+            loc: None,
+            prog: prog.clone(),
+            name: name.to_string(),
             size,
         }
+    }
+    
+    fn location(&mut self, ctx: &glctx) -> u32 {
+        if self.loc == None {
+            self.loc = Some(ctx.get_attrib_location(&self.prog,&self.name) as u32)
+        }
+        self.loc.unwrap()
     }
     
     fn buffer(&self, b: &DataBatch) -> Option<&glbuf> {
@@ -56,11 +68,12 @@ impl Object for ObjectAttrib {
         }
     }
 
-    fn execute(&self, ctx: &glctx, batch: &DataBatch) {
+    fn execute(&mut self, ctx: &glctx, batch: &DataBatch) {
+        let loc = self.location(ctx);
         if let Some(buf) = self.buffer(batch) {
-            ctx.enable_vertex_attrib_array(self.loc);
+            ctx.enable_vertex_attrib_array(loc);
             ctx.bind_buffer(glctx::ARRAY_BUFFER,Some(buf));
-            ctx.vertex_attrib_pointer(self.loc, self.size as i32,
+            ctx.vertex_attrib_pointer(loc, self.size as i32,
                                       glctx::FLOAT, false, 0, 0);
         }
     }

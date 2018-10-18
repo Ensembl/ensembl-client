@@ -28,32 +28,30 @@ pub struct Program {
     prog: Rc<glprog>,
 }
 
-fn find_attribs(ctx: &glctx, vars: &Vec<Rc<Source>>,
-                prog: Rc<glprog>) 
+fn make_objects(vars: &Vec<Rc<Source>>, prog: Rc<glprog>) 
                         -> (Vec<Box<Object>>,Option<usize>,
                             HashMap<String,usize>) {
-    ctx.use_program(Some(&prog));
     let mut main = None;
-    let mut attribs = Vec::<Box<Object>>::new();
-    let mut attrib_names = HashMap::<String,usize>::new();
+    let mut objects = Vec::<Box<Object>>::new();
+    let mut object_names = HashMap::<String,usize>::new();
     for v in vars {
-        if let Some((name,value)) = v.make_attribs(ctx,prog.clone()) {
-            if value.is_main() { main = Some(attribs.len()); }
-            let loc = attribs.len();
-            attribs.push(value);
+        if let Some((name,value)) = v.create(prog.clone()) {
+            if value.is_main() { main = Some(objects.len()); }
+            let loc = objects.len();
+            objects.push(value);
             if let Some(name) = name {
-                attrib_names.insert(name.to_string(),loc);
+                object_names.insert(name.to_string(),loc);
             }
         }
     }
-    (attribs,main,attrib_names)
+    (objects,main,object_names)
 }
 
 impl ProgramAttribs {
-    pub fn new(pt: ProgramType, ctx: &glctx, src: &Vec<Rc<Source>>, prog: &Rc<glprog>) -> ProgramAttribs {
+    pub fn new(pt: ProgramType, src: &Vec<Rc<Source>>, prog: &Rc<glprog>) -> ProgramAttribs {
         let mut bman = BatchManager::new();
         let default_group = bman.new_group();
-        let (objects,main_idx,object_names) = find_attribs(ctx,&src,prog.clone());
+        let (objects,main_idx,object_names) = make_objects(&src,prog.clone());
         ProgramAttribs {
                 bman, default_group, pt,
                 objects, object_names, main_idx,
@@ -108,14 +106,14 @@ impl Program {
     pub fn new(pt: ProgramType, gpuspec: &GPUSpec, ctx: &glctx, src: &ProgramSource) -> Program {
         let prog = Rc::new(src.prog(gpuspec,ctx));
         Program {
-            data: ProgramAttribs::new(pt,ctx,&src.uniforms,&prog),
+            data: ProgramAttribs::new(pt,&src.uniforms,&prog),
             prog,
         }
     }
 
-    pub fn clean_instance(&self, ctx: &glctx) -> Program {
+    pub fn clean_instance(&self) -> Program {
         Program {
-            data: ProgramAttribs::new(self.data.pt,ctx,&self.data.source,&self.prog),
+            data: ProgramAttribs::new(self.data.pt,&self.data.source,&self.prog),
             prog: self.prog.clone()
         }
     }
@@ -137,7 +135,7 @@ impl Program {
         self.use_program(ctx);
         for b in self.data.bman.iter() {
             let mut main = None;
-            for a in &self.data.objects {
+            for a in &mut self.data.objects {
                 if a.is_main() {
                     main = Some(a);
                 } else {

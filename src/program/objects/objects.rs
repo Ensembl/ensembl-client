@@ -23,6 +23,6 @@ pub trait Object {
     fn add_index(&mut self, _batch: &DataBatch, _indexes: &[u16], _points: u16) {}
 
     fn obj_final(&mut self, _batch: &DataBatch, _ctx: &glctx, _ds: &DrawingSession) {}
-    fn execute(&self, _ctx: &glctx, _batch: &DataBatch) {}
+    fn execute(&mut self, _ctx: &glctx, _batch: &DataBatch) {}
     fn clear(&mut self) {}
 }

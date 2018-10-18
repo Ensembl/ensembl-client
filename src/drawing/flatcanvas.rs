@@ -71,8 +71,6 @@ impl FlatCanvasImpl {
     }
     
     pub fn remove(&self, aca: &mut AllCanvasAllocator) {
-        console!("REMOVE {:?}",self.rm);
-        self.canvas.parent_node().unwrap().remove_child(&self.canvas).ok();
         self.rm.remove(aca);
     }
     
