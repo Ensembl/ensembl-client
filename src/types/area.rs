@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 use std::ops::{ Add, Sub, Mul, Div, Neg };
 use program::{ Object, ObjectAttrib, DataBatch, Input };
-use types::coord::{ Dot, Edge, AxisSense, Corner };
+use types::{ Dot, Edge, AxisSense, Corner };
 
 /***** Rect types *****/
 
