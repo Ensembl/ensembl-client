@@ -8,7 +8,7 @@ use composit::Leaf;
 use dom::domutil;
 use drawing::{  DrawingSession, FlatCanvas };
 use program::CanvasWeave;
-use types::{ Dot, cpixel };
+use types::Dot;
 
 #[derive(Debug)]
 pub struct CanvasRemover(CanvasElement,u32);

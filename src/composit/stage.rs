@@ -2,12 +2,15 @@ use std::collections::HashMap;
 
 use composit::Leaf;
 use program::UniformValue;
-use types::{ CFraction, CPixel, cfraction, cpixel };
+use types::{ CFraction, CPixel, cfraction, cpixel, Move, Dot };
+
+// XXX TODO avoid big-big type calculations
 
 #[derive(Clone,Debug)]
 pub struct Stage {
     dims: CPixel,
-    pub pos: CFraction,
+    base: f64,
+    pos: Dot<f64,f64>,
     zoom: f32,
     linzoom: f32,
 }
@@ -16,12 +19,20 @@ impl Stage {
     pub fn new() -> Stage {
         let size = cpixel(0,0);
         let mut out = Stage {
-            pos: cfraction(0.,0.),
-            zoom: 0., linzoom: 0.,
+            pos: Dot(0.,0.),
+            zoom: 0., linzoom: 0., base: 0.,
             dims: size
         };
         out.set_zoom(0.);
         out
+    }
+
+    pub fn inc_pos(&mut self, delta: &Move<f64,f64>) {
+        self.pos = self.pos + *delta;
+    }
+
+    pub fn set_pos(&mut self, pos: &Dot<f64,f64>) {
+        self.pos = *pos;
     }
 
     pub fn set_zoom(&mut self, val: f32) {
@@ -48,8 +59,8 @@ impl Stage {
 
     pub fn get_uniforms(&self, leaf: &Leaf) -> HashMap<&str,UniformValue> {
         hashmap! {
-            "uStageHpos" => UniformValue::Float(self.pos.0 - leaf.get_offset()),
-            "uStageVpos" => UniformValue::Float(self.pos.1 + self.dims.1 as f32/2.),
+            "uStageHpos" => UniformValue::Float((self.pos.0 - leaf.get_offset()) as f32),
+            "uStageVpos" => UniformValue::Float((self.pos.1 + self.dims.1 as f64/2.) as f32),
             "uStageZoom" => UniformValue::Float(self.get_linear_zoom()*2.),
             "uSize" => UniformValue::Vec2F(
                 self.dims.0 as f32/2.,

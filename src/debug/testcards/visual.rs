@@ -6,6 +6,7 @@ use std::sync::{ Mutex, Arc };
 use composit::StateValue;
 use controller::global::{ Global, CanvasState };
 use debug::testcards::bigscience::big_science;
+use types::Dot;
 
 struct State {
     zoomscale: f32,
@@ -28,8 +29,9 @@ fn animate(time : f64, cg: &mut CanvasState, s: Rc<RefCell<State>>) {
     state.fpos += delta *7.21;
     cg.with_stage(|s| {
         s.set_zoom((state.zoomscale.cos()/2.0 + 2.5) as f32);
-        s.pos.0 = ((state.hpos.cos())*150.) as f32;
-        s.pos.1 = ((state.vpos.sin())*150.-75.) as f32;
+        s.set_pos(&Dot(
+            ((state.hpos.cos())*150.) as f64,
+            ((state.vpos.sin())*150.-75.) as f64));
     });
     cg.with_state(|s| {
         let odd_state = if state.hpos.cos() > 0. {

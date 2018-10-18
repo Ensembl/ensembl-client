@@ -4,18 +4,18 @@ use controller::global::CanvasState;
 #[derive(Debug,Clone,Copy)]
 pub enum Event {
     Noop,
-    Move(Move<f32,f32>),
+    Move(Move<f64,f64>),
     Zoom(f32),
     Resize(Dot<i32,i32>)
 }
 
-fn exe_move_event(cg: &CanvasState, v: Move<f32,f32>) {
+fn exe_move_event(cg: &CanvasState, v: Move<f64,f64>) {
     cg.with_stage(|s| {
         let v = match v.direction().0 {
             Axis::Horiz => v.convert(Units::Bases,s),
             Axis::Vert => v.convert(Units::Pixels,s),
         };
-        s.pos = s.pos + v;
+        s.inc_pos(&v);
     });
 }
 

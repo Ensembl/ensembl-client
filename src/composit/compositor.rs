@@ -4,7 +4,10 @@ use composit::{ LeafComponent, StateManager, Component, Leaf };
 use composit::state::ComponentRedo;
 
 pub struct Compositor {
-    idx: u32,
+    vscale: i32,
+    train_length: i32,
+    first_leaf: i32,
+    comp_idx: u32,
     components: HashMap<u32,Component>,
     leafcomps: HashMap<Leaf,HashMap<u32,LeafComponent>>
 }
@@ -16,8 +19,19 @@ impl Compositor {
         Compositor {
             components: HashMap::<u32,Component>::new(),
             leafcomps: HashMap::<Leaf,HashMap<u32,LeafComponent>>::new(),
-            idx: 0
+            comp_idx: 0,
+            vscale: 0,
+            train_length: 10,
+            first_leaf: 0,
         }
+    }
+
+    pub fn set_screen_width(&mut self, width: i32) {
+        debug!("trains","set width {}",width);
+    }
+
+    pub fn set_position(&mut self, position: f64) {
+        debug!("trains","set position {}",position);
     }
 
     pub fn leafs(&self) -> Vec<Leaf> {
@@ -41,12 +55,12 @@ impl Compositor {
     }
     
     pub fn add_component(&mut self, c: Component) -> ComponentRemover {
-        self.idx += 1;
+        self.comp_idx += 1;
         for (ref mut leaf,ref mut lcc) in &mut self.leafcomps {
-            lcc.insert(self.idx,c.make_leafcomp(&leaf));
+            lcc.insert(self.comp_idx,c.make_leafcomp(&leaf));
         }
-        self.components.insert(self.idx,c);
-        ComponentRemover(self.idx)
+        self.components.insert(self.comp_idx,c);
+        ComponentRemover(self.comp_idx)
     }
 
     pub fn remove(&mut self, k: ComponentRemover) {

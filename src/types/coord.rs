@@ -1,5 +1,5 @@
 use std::cmp::{ Ordering, PartialOrd };
-use stage::Stage;
+use composit::Stage;
 use std::fmt::Debug;
 use std::ops::{ Add, Sub, Mul, Div, Neg };
 use program::{ Object, ObjectAttrib, DataBatch, Input };
@@ -249,13 +249,13 @@ impl<T: Clone+Copy+Debug, U: Clone+Copy+Debug> Dot<Anchored<T>,Anchored<U>> {
 #[derive(Clone,Copy,Debug)]
 pub struct Distance<T : Clone + Copy + Debug>(pub T,pub Units);
 
-impl<T: Clone + Copy + Mul<f32,Output=T> + Div<f32,Output=T> + Debug> Distance<T> {
+impl<T: Clone + Copy + Mul<f64,Output=T> + Div<f64,Output=T> + Debug> Distance<T> {
     pub fn convert(&self, target: Units, axis: Axis, stage: &Stage) -> Distance<T> {
         let Distance(quant,source) = self;
         let dims = stage.get_size();
         let (size,zoom) = match axis {
-            Axis::Horiz => (dims.0 as f32,stage.get_linear_zoom()),
-            Axis::Vert => (dims.1 as f32,1.0)
+            Axis::Horiz => (dims.0 as f64,stage.get_linear_zoom() as f64),
+            Axis::Vert => (dims.1 as f64,1.0)
         };
         let quant = match source {
             Units::Pixels => match target {
@@ -279,18 +279,16 @@ impl<T: Clone + Copy + Mul<f32,Output=T> + Div<f32,Output=T> + Debug> Distance<T
 }
 
 #[derive(Clone,Copy,Debug)]
-pub enum Move<T: Neg<Output=T> + Clone + Copy + Debug +
-                 Mul<f32,Output=T> + Div<f32,Output=T>,
-              U: Neg<Output=U> + Clone + Copy + Debug +
-                 Mul<f32,Output=U> + Div<f32,Output=U>> {
+pub enum Move<T: Neg<Output=T> + Clone + Copy + Debug,
+              U: Neg<Output=U> + Clone + Copy + Debug> {
     Up(Distance<U>),
     Down(Distance<U>),
     Left(Distance<T>),
     Right(Distance<T>)
 }
 
-impl<T: Neg<Output=T> + Clone + Copy + Debug + Mul<f32,Output=T> + Div<f32,Output=T>,
-     U: Neg<Output=U> + Clone + Copy + Debug + Mul<f32,Output=U> + Div<f32,Output=U>> Move<T,U> {
+impl<T: Neg<Output=T> + Clone+Copy+Debug + Mul<f64,Output=T> + Div<f64,Output=T>,
+     U: Neg<Output=U> + Clone+Copy+Debug + Mul<f64,Output=U> + Div<f64,Output=U>> Move<T,U> {
          
     pub fn convert(&self, target: Units, stage: &Stage) -> Move<T,U> {
         match self {
@@ -309,11 +307,10 @@ impl<T: Neg<Output=T> + Clone + Copy + Debug + Mul<f32,Output=T> + Div<f32,Outpu
             Move::Right(_) => RIGHT
         }
     }
-    
 }
 
-impl<T: Clone + Copy + Debug + Add<T,Output=T> + Neg<Output=T> + Mul<f32,Output=T> + Div<f32,Output=T>,
-     U: Clone + Copy + Debug + Add<U,Output=U> + Neg<Output=U> + Mul<f32,Output=U> + Div<f32,Output=U>> 
+impl<T: Clone + Copy + Debug + Add<T,Output=T> + Neg<Output=T>,
+     U: Clone + Copy + Debug + Add<U,Output=U> + Neg<Output=U>> 
         Add<Move<T,U>> for Dot<T,U> {
     type Output = Dot<T,U>;
          
@@ -337,6 +334,10 @@ pub struct Dot<T : Clone + Copy,
 pub type CFraction = Dot<f32,f32>;
 pub fn cfraction(x: f32, y: f32) -> CFraction { Dot(x,y) }
 
+pub type CDFraction = Dot<f64,f64>;
+pub fn cdfraction(x: f64, y: f64) -> CDFraction { Dot(x,y) }
+
+
 pub type CLeaf = Dot<f32,i32>;
 pub fn cleaf(x: f32, y: i32) -> CLeaf { Dot(x,y) }
 
@@ -357,6 +358,10 @@ impl<T : Clone + Copy + Into<f64>,
      U : Clone + Copy + Into<f64>> Dot<T,U> {    
     pub fn as_fraction(&self) -> CFraction {
         cfraction(self.0.into() as f32,self.1.into() as f32)
+    }
+
+    pub fn as_dfraction(&self) -> CDFraction {
+        cdfraction(self.0.into() as f64,self.1.into() as f64)
     }
 }
 
@@ -452,4 +457,10 @@ impl<T: Clone + Copy + Div<T, Output=T> + Into<f32>,
         Dot((self.0.into() as f64 / other.0.into() as f64) as f32,
             (self.1.into() as f64 / other.1.into() as f64) as f32)
     }
+}
+
+pub fn ddiv<T: Clone + Copy + Div<T, Output=T> + Into<f64>,
+        U: Clone + Copy + Div<U, Output=U> + Into<f64>>(a: Dot<T,U>, b: Dot<T,U>) -> Dot<f64,f64> {
+    Dot((a.0.into() as f64 / b.0.into() as f64) as f64,
+        (a.1.into() as f64 / b.1.into() as f64) as f64)
 }

@@ -2,7 +2,6 @@ use std::rc::Rc;
 use std::cell::RefCell;
 
 use stdweb::web::{
-    INode,
     TextBaseline,
     CanvasRenderingContext2d,
 };
