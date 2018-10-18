@@ -58,7 +58,6 @@ impl DrawingSession {
     pub fn finish(&self, aca: &mut AllCanvasAllocator) {
         //self.standin.remove(aca); // XXX standin global now but should be freed on unload
         for ocm in self.canvases.values() {
-            console!("FINISH");
             ocm.finish(aca);
         }
     }

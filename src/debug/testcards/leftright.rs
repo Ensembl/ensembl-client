@@ -2,17 +2,16 @@ use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
 use debug::testcards::closuresource::{ ClosureSource, closure_add };
-use composit::{ StateFixed, Component, StateValue, FixedSource, Leaf };
+use composit::{ StateFixed, Component, StateValue };
 use controller::global::Global;
-use controller::input::Event;
 use drawing::{ FCFont, FontVariety, text_texture };
-use shape::{ ColourSpec, tape_rectangle, pin_texture, stretch_rectangle };
-use types::{ Colour, cleaf, cpixel, area_size, AxisSense, A_TOPLEFT, area };
+use shape::{ ColourSpec, pin_texture, stretch_rectangle };
+use types::{ Colour, cleaf, cpixel, A_TOPLEFT, area };
 
 pub fn testcard_leftright(g: Arc<Mutex<Global>>) {
     let g = &mut g.lock().unwrap();
-    let font = FCFont::new(120,"Lato",FontVariety::Normal);
-    let mut cs = ClosureSource::new(move |lc,leaf| {
+    let font = FCFont::new(60,"Lato",FontVariety::Normal);
+    let cs = ClosureSource::new(move |lc,leaf| {
         let i = leaf.get_index();
         let (colour,offset) = if i % 2 == 0 {
             (ColourSpec::Colour(Colour(255,0,0)),0)
