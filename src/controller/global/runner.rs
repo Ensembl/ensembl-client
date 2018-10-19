@@ -20,12 +20,18 @@ pub struct CanvasRunnerWeak(Weak<Mutex<CanvasRunnerImpl>>);
 
 impl CanvasRunner {
     pub fn new(st: CanvasState) -> CanvasRunner {
-        CanvasRunner(Arc::new(Mutex::new(CanvasRunnerImpl {
+        let mut out = CanvasRunner(Arc::new(Mutex::new(CanvasRunnerImpl {
             cg: Arc::new(Mutex::new(st)),
             projector: None,
             controls: Vec::<Box<EventControl<()>>>::new(),
             timers: Timers::new()
-        })))
+        })));
+        out.add_timer(|cs,t| {
+            cs.with_compo(|co| {
+                co.tick(t);
+            });
+        });
+        out
     }
     
     pub fn add_timer<F>(&mut self, cb: F) -> Timer 

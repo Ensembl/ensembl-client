@@ -79,12 +79,12 @@ fn draw_frame(fs: &mut FixedSource, leaf: &Leaf, edge: AxisSense, p: &Palette) {
 fn measure(fs: &mut FixedSource, leaf: &Leaf, edge: AxisSense, p: &Palette) {
     for x in -10..10 {
         fs.add_shape(leaf,tape_rectangle(
-            &cleaf(x as f32*100.,0),
+            &cleaf(x as f32/10.,0),
             &area_size(cpixel(0,1),cpixel(1,18)).y_edge(edge,edge),
             &p.grey));
         let tx = text_texture(&format!("{}",((x+20)*100000).separated_string()),
                               &p.lato_12,&Colour(199,208,213),&Colour(255,255,255));
-        fs.add_shape(leaf,tape_texture(tx,&cleaf(x as f32*100.,4).y_edge(edge),
+        fs.add_shape(leaf,tape_texture(tx,&cleaf(x as f32/10.,4).y_edge(edge),
                                  &cpixel(4,6),&cpixel(1,1).anchor(A_LEFT)));
     }
 }
@@ -118,8 +118,8 @@ fn track(fs: &mut FixedSource, leaf: &Leaf, p: &Palette, t: i32) {
         if t < 4 || t % 3 == 0 { // gene
             if *v > 0. {
                 fs.add_shape(&leaf,stretch_rectangle(
-                        &area_size(cleaf(x,y-3),
-                                   cleaf(*v,6)),
+                        &area_size(cleaf(x/1000.,y-3),
+                                   cleaf(*v/1000.,6)),
                         &ColourSpec::Colour(Colour(75,168,252))));
             }
             x += v.abs();
@@ -155,7 +155,7 @@ fn track(fs: &mut FixedSource, leaf: &Leaf, p: &Palette, t: i32) {
                 }
             });
             fs.add_shape(&leaf,stretch_rectangle(
-                    &area_size(cleaf(x,y-3),
+                    &area_size(cleaf(x/1000.,y-3),
                                cleaf(v.abs(),6)),
                     &col));
             x += v.abs();            
@@ -163,7 +163,7 @@ fn track(fs: &mut FixedSource, leaf: &Leaf, p: &Palette, t: i32) {
     }
     if t < 4 || t % 3 == 0 { // gene
         fs.add_shape(&leaf,stretch_rectangle(
-                        &area_size(cleaf(st,y-1),cleaf(x-st,2)),
+                        &area_size(cleaf(st/1000.,y-1),cleaf((x-st)/1000.,2)),
                         &ColourSpec::Colour(Colour(75,168,252))));
     }
 }
@@ -194,6 +194,6 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
             co.add_leaf(leaf);
             co.add_component(c);
         });
-        s.run_events(vec!{ Event::Zoom(2.5) });
+        //s.run_events(vec!{ Event::Zoom(2.5) });
     });
 }
