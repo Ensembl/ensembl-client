@@ -54,11 +54,7 @@ impl CanvasState {
     pub fn run_events(self: &CanvasState, evs: Vec<Event>) {
         events_run(self,evs);
     }
-    
-    pub fn update_leaf_position(&mut self, position: f64) {
-        self.compo.lock().unwrap().set_position(position);
-    }
-    
+        
     pub fn check_size(self: &CanvasState) {
         let sz = self.printer.lock().unwrap().get_real_size();
         events_run(self,vec! {

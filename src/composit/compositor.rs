@@ -6,13 +6,17 @@ use composit::state::ComponentRedo;
 
 const MAX_FLANK : i32 = 10;
 
+const MS_PER_UPDATE : f64 = 250.;
+
 pub struct Compositor {
     vscale: i32,
     train_flank: i32,
     middle_leaf: i64,
     comp_idx: u32,
     components: HashMap<u32,Component>,
-    leafcomps: HashMap<Leaf,HashMap<u32,LeafComponent>>
+    leafcomps: HashMap<Leaf,HashMap<u32,LeafComponent>>,
+    updated: bool,
+    last_updated: Option<f64>
 }
 
 pub struct ComponentRemover(u32);
@@ -26,6 +30,8 @@ impl Compositor {
             vscale: 0,
             train_flank: 10,
             middle_leaf: 0,
+            updated: true,
+            last_updated: None
         }
     }
     
@@ -33,11 +39,22 @@ impl Compositor {
         debug!("trains","set width {}",width);
     }
 
+    pub fn tick(&mut self, t: f64) {
+        if self.updated {
+            if let Some(prev_t) = self.last_updated {
+                if t-prev_t < MS_PER_UPDATE { return; }
+            }
+            self.add_missing_leafs();
+            self.remove_unused_leafs();    
+            self.updated = false;
+            self.last_updated = Some(t);
+        }
+    }
+
     pub fn set_position(&mut self, position_bp: f64) {
         self.middle_leaf = (position_bp / vscale_bp_per_leaf(self.vscale) as f64) as i64;
         debug!("trains","set position leaf={}",self.middle_leaf);
-        self.add_missing_leafs();
-        self.remove_unused_leafs();        
+        self.updated = true;
     }
     
     fn add_missing_leafs(&mut self) {
@@ -69,8 +86,7 @@ impl Compositor {
         self.train_flank = min(max((3.*leaf_per_screen) as i32,1),MAX_FLANK);
         debug!("trains","set  bp_per_screen={} bp_per_leaf={} leaf_per_screen={}",
             bp_per_screen,vscale_bp_per_leaf(self.vscale),leaf_per_screen);
-        self.add_missing_leafs();
-        self.remove_unused_leafs();
+        self.updated = true;
     }
 
     pub fn leafs(&self) -> Vec<Leaf> {

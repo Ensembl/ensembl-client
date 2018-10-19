@@ -34,7 +34,7 @@ fn exe_move_event(cg: &CanvasState, v: Move<f64,f64>) {
 }
 
 fn exe_zoom_by_event(cg: &CanvasState, z: f32) {
-    let z = cg.with_stage(|s| { 
+    let z = cg.with_stage(|s| {
         let z = s.get_zoom()+z;
         s.set_zoom(z);
         s.get_linear_zoom()
@@ -65,7 +65,7 @@ pub fn events_run(cg: &CanvasState, evs: Vec<Event>) {
 
 pub fn startup_events() -> Vec<Event> {
     vec! {
-        Event::Pos(Dot(10000_f64,0_f64)),
-        Event::Zoom(-4.)
+        Event::Pos(Dot(0_f64,0_f64)),
+        Event::Zoom(-3.)
     }
 }
