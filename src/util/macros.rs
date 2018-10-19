@@ -51,10 +51,3 @@ macro_rules! debug {
         ::debug::debug_panel_entry_add($k,&s);
     }}
 }
-
-macro_rules! button {
-    ($name: expr, $cb: expr) => {{        
-        let bai = ButtonActionImpl($cb);
-        ::debug::debug_panel_button_add($name,::std::rc::Rc::new(::std::cell::RefCell::new(bai)));
-    }}
-}

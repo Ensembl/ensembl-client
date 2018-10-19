@@ -4,13 +4,15 @@ use std::rc::{ Rc, Weak };
 use std::cell::RefCell;
 use serde_json::Value as JSONValue;
 
-use stdweb::web::{ IEventTarget, Element, HtmlElement };
+use stdweb::web::{ IEventTarget, Element, HtmlElement, IHtmlElement };
 use stdweb::traits::IEvent;
 use stdweb::web::event::{ ClickEvent, ChangeEvent };
 use stdweb::web::html_element::SelectElement;
 use stdweb::unstable::TryInto;
+use stdweb::traits::IKeyboardEvent;
 
 use controller::global::Global;
+use dom::{ DEBUGSTAGE, DEBUGSTAGE_CSS };
 use dom::domutil;
 use dom::event::{
     EventListener, EventControl, EventType, EventData, ICustomEvent,
@@ -36,16 +38,28 @@ impl BodyEventListener {
 impl EventListener<()> for BodyEventListener {    
     fn receive(&mut self, _el: &Target, ev: &EventData, _p: &()) {
         self.val += 1;
-        if let EventData::CustomEvent(_,n,_) = ev {
-            if n == "bpane-start" {
-                setup_stage_debug();
-            }
+        match ev {
+            EventData::CustomEvent(_,n,_) => {
+                if n == "bpane-start" {
+                    setup_stage_debug();
+                }
+            },
+            EventData::KeyboardEvent(EventType::KeyPressEvent,k) => {
+                if k.ctrl_key() && k.alt_key() {
+                    match &k.key()[..] {
+                        "d" => { setup_stage_debug(); },
+                        _ => ()
+                    }
+                }
+            },
+            _ => ()
         }
     }
 }
 
 pub struct DebugPanelListener {
-    panel: Weak<DebugPanel>
+    panel: Weak<DebugPanel>,
+    cont_el: Element
 }
 
 impl EventListener<()> for DebugPanelListener {
@@ -66,7 +80,7 @@ impl EventListener<()> for DebugPanelListener {
                         }
                     }
                     if let Some(keys) = keys {
-                        panel.render_dropdown(keys);
+                        panel.render_dropdown(&self.cont_el,keys);
                     }
                 }
             }
@@ -101,19 +115,23 @@ impl DebugPanelImpl {
     }
     
     pub fn init(&mut self, p: Weak<DebugPanel>) {
-        let cons_el = domutil::query_selector(&self.base,"#console2");
+        let cons_el = domutil::query_selector(&self.base,".console2");
         self.console2 = Some(DebugConsole::new(&cons_el,&self.base));
         self.console2.as_mut().unwrap().select("hello");
         self.console2.as_mut().unwrap().add("hello","world");
-        self.evc = Some(EventControl::new(Box::new(DebugPanelListener{ panel: p.clone() }),()));
+        let cont_el = domutil::query_selector_new("#bpane-container").unwrap();
+        self.evc = Some(EventControl::new(Box::new(DebugPanelListener{
+            panel: p.clone(),
+            cont_el: cont_el.clone()
+        }),()));
         self.evc.as_mut().unwrap().add_event(EventType::CustomEvent("refresh".to_string()));
         self.evc.as_mut().unwrap().add_element(&self.base,());
-        self.add_event();
+        self.add_event(&cont_el);
     }
      
-    fn render_dropdown(&self, keys: &Vec<String>) {
+    fn render_dropdown(&self, cont_el: &Element, keys: &Vec<String>) {
         let mut keys : Vec<String> = keys.iter().map(|s| s.to_string()).collect();
-        let sel_el = domutil::query_select("#console .folder");
+        let sel_el = domutil::query_selector2(cont_el,".console .folder").unwrap();
         domutil::inner_html(&sel_el,"");
         if self.console2.is_some() {
             keys.sort();
@@ -125,22 +143,22 @@ impl DebugPanelImpl {
         }
     }
 
-    fn add_event(&mut self) {
-        let sel_el = domutil::query_select("#console .folder");
-        sel_el.add_event_listener(|e: ChangeEvent| {
+    fn add_event(&mut self, cont_el: &Element) {
+        let sel_el = domutil::query_select("#bpane-container .console .folder");
+        sel_el.add_event_listener(enclose! { (cont_el) move |e: ChangeEvent| {
             let node : SelectElement = e.target().unwrap().try_into().ok().unwrap();
             if let Some(name) = node.value() {
-                debug_panel_select(&name);
+                debug_panel_select(&cont_el,&name);
             }
-        });
+        }});
     }
     
     fn clear_buttons(&mut self) {
         self.buttons.clear_buttons();
     }
 
-    fn render_buttons(&mut self) {
-        self.buttons.render_buttons();
+    fn render_buttons(&mut self, cont_el: &Element) {
+        self.buttons.render_buttons(cont_el);
     }
     
     fn add_button(&mut self, name: &str, cb: Rc<RefCell<ButtonAction>>) {
@@ -162,16 +180,20 @@ impl DebugPanel {
         out
     }
     
-    fn render_dropdown(&self, keys: Vec<String>) {
-        self.0.run(move |p| p.borrow_mut().render_dropdown(&keys));
+    fn render_dropdown(&self, cont_el: &Element, keys: Vec<String>) {
+        self.0.run(enclose! { (cont_el) move |p| { 
+            p.borrow_mut().render_dropdown(&cont_el,&keys)
+        }});
     }
     
     fn clear_buttons(&self) {
         self.0.run(|p| p.borrow_mut().clear_buttons());
     }
     
-    fn render_buttons(&self) {
-        self.0.run(|p| { p.borrow_mut().render_buttons(); });
+    fn render_buttons(&self, cont_el: &Element) {
+        self.0.run(enclose! { (cont_el) move |p| { 
+            p.borrow_mut().render_buttons(&cont_el);
+        }});
     }
 
     fn add_button(&self, name: &str, cb: Rc<RefCell<ButtonAction>>) {
@@ -184,113 +206,30 @@ impl DebugPanel {
     }
 }
 
-const STAGE : &str = r##"
-<div id="bpane-container">
-    <div id="bpane-canv">
-        <h1>Debug Mode</h1>
-    </div>
-    <div id="bpane-right">
-        <div id="console">
-            <select class="testcard">
-                <option value="">- testcards -</option>
-                <option value="polar">Polar Testcard</option>
-                <option value="draw">Jank Testcard</option>
-                <option value="onoff">On/Off Testcard</option>
-                <option value="button">Button Testcard</option>
-                <option value="text">Text Testcard</option>
-                <option value="leftright">Left/Right Testcard</option>
-            </select>
-            <select class="folder"></select>
-            <button class="mark">mark!</button>
-            <button class="start">start</button>
-            <pre id="console2" class="content"></pre>
-        </div>
-        <div class="buttons"></div>
-        <div id="managedcanvasholder"></div>
-    </div>
-</div>
-"##;
-
-const STAGE_CSS : &str = r##"
-html, body {
-    margin: 0px;
-    padding: 0px;
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-}
-#bpane-container {
-    display: flex;
-    height: 100%;
-}
-#bpane-right {
-    width: 20%;
-}
-
-
-#console .content {
-    height: 85%;
-    overflow: scroll;
-    border: 1px solid #ccc;
-}
-
-#managedcanvasholder {
-    display: block;
-    border: 2px solid red;
-    display: inline-block;
-    overflow: scroll;
-    width: 100%;
-}
-
-#bpane-canv canvas {
-    height: 100%;
-    width: 100%;
-}
-
-#bpane-canv {
-    width: 80%;
-    height: 100%;
-}
-
-#bpane-canv canvas {
-    width: 100%;
-    height: 100%;
-}
-
-#stage {
-    height: 100%;
-}
-
-#console {
-    height: 50%;
-}
-@import url('https://fonts.googleapis.com/css?family=Roboto');
-"##;
-
 thread_local! {
     static DEBUG_PANEL : RefCell<Option<Rc<DebugPanel>>> = RefCell::new(None);
 }
 
-fn setup_testcard(g: &Arc<Mutex<Global>>, name: &str) {
+fn setup_testcard(cont_el: &Element, g: &Arc<Mutex<Global>>, name: &str) {
     debug!("global","setup testcard {}",name);
     if name.len() > 0 {
         g.lock().unwrap().reset();
-        testcards::testcard(g.clone(),name);
+        testcards::testcard(cont_el,g.clone(),name);
     }
 }
 
-fn setup_events() {
-    let pane_el: HtmlElement = domutil::query_select("#bpane-canv").try_into().unwrap();
+fn setup_events(cont_el: &Element) {
+    let pane_el: HtmlElement = domutil::query_selector2(cont_el,".bpane-canv").unwrap().try_into().unwrap();
     let g = Arc::new(Mutex::new(Global::new(&pane_el)));
-    let sel_el = domutil::query_select("#console .testcard");
-    sel_el.add_event_listener(move |e: ChangeEvent| {
+    let sel_el = domutil::query_selector2(cont_el,".console .testcard").unwrap();
+    sel_el.add_event_listener(enclose! { (cont_el) move |e: ChangeEvent| {
         let node : SelectElement = e.target().unwrap().try_into().ok().unwrap();
         if let Some(name) = node.value() {
-            debug_panel_buttons_clear();
-            setup_testcard(&g,&name);
+            debug_panel_buttons_clear(&cont_el);
+            setup_testcard(&cont_el,&g,&name);
         }
-    });
-    let mark_el = domutil::query_select("#console .mark");
+    }});
+    let mark_el = domutil::query_selector2(cont_el,".console .mark").unwrap();
     mark_el.add_event_listener(|_e: ClickEvent| {
         debug_panel_entry_mark();
     });
@@ -298,18 +237,20 @@ fn setup_events() {
 
 pub fn setup_stage_debug() {
     if let Some(stage) = domutil::query_selector_new("#stage") {
-        domutil::inner_html(&stage,STAGE);
+        domutil::inner_html(&stage,DEBUGSTAGE);
         let el = domutil::append_element(&domutil::query_select("head"),"style");
-        domutil::inner_html(&el,STAGE_CSS);
+        domutil::inner_html(&el,DEBUGSTAGE_CSS);
         DEBUG_PANEL.with(|p| {
             *p.borrow_mut() = Some(DebugPanel::new(&stage));
         });
-        setup_events();
-        let mark_el = domutil::query_select("#console .start");
-        mark_el.add_event_listener(|_e: ClickEvent| {
-            let cel = domutil::query_select("body");
-            domutil::send_custom_event(&cel,"bpane-start",&json!({}));
-        });
+        if let Some(cont_el) = domutil::query_selector_new("#bpane-container") {
+            setup_events(&cont_el);
+            let mark_el = domutil::query_select("#bpane-container .console .start");
+            mark_el.add_event_listener(|_e: ClickEvent| {
+                let cel = domutil::query_select("body");
+                domutil::send_custom_event(&cel,"bpane-start",&json!({}));
+            });
+        }
     }
 }
 
@@ -324,17 +265,17 @@ fn panel_op(cb: &mut FnMut(&DebugPanel) -> ()) {
 
 #[allow(dead_code)]
 pub fn debug_panel_entry_reset(name: &str) {
-    let cel = domutil::query_select("#console2");
+    let cel = domutil::query_select("#bpane-container .console2");
     domutil::send_custom_event(&cel,"reset",&json!({ "name": name }));
 }
 
 pub fn debug_panel_entry_mark() {
-    let cel = domutil::query_select("#console2");
+    let cel = domutil::query_select("#bpane-container .console2");
     domutil::send_custom_event(&cel,"mark",&json!({}));
 }
 
 pub fn debug_panel_entry_add(name: &str, value: &str) {
-    let cel = domutil::query_selector_new("#console2");
+    let cel = domutil::query_selector_new("#bpane-container .console2");
     if let Some(cel) = cel {
         domutil::send_custom_event(&cel,"add",&json!({
             "name": name,
@@ -343,24 +284,24 @@ pub fn debug_panel_entry_add(name: &str, value: &str) {
     }
 }
 
-pub fn debug_panel_select(name: &str) {
-    let cel = domutil::query_select("#console2");
+pub fn debug_panel_select(cont_el: &Element, name: &str) {
+    let cel = domutil::query_selector2(cont_el,".console2").unwrap();
     domutil::send_custom_event(&cel,"select",&json!({ "name": name }));
 }
 
-pub fn debug_panel_buttons_clear() {
+pub fn debug_panel_buttons_clear(cont_el: &Element) {
     panel_op(&mut |p| {
         p.clear_buttons();
-        p.render_buttons();
+        p.render_buttons(cont_el);
     });
 }
 
-pub fn debug_panel_button_add(name: &str, cb: Rc<RefCell<ButtonAction>>) {
+pub fn debug_panel_button_add(cont_el: &Element, name: &str, cb: Rc<RefCell<ButtonAction>>) {
     DEBUG_PANEL.with(|p| {
         let p : &Option<Rc<DebugPanel>> = &p.borrow();
         if let Some(ref po) = &p {
             po.add_button(name,cb);
-            po.render_buttons();
+            po.render_buttons(cont_el);
         }
     });
 }
@@ -378,6 +319,9 @@ pub fn setup_global() {
     let mut bec = EventControl::new(Box::new(BodyEventListener::new()),());
     console!("B1");
     bec.add_event(EventType::CustomEvent("bpane-start".to_string()));
+    bec.add_event(EventType::KeyPressEvent);
     console!("C1");
     bec.add_element(&domutil::query_select("body"),());
+    let h : HtmlElement = domutil::query_select("body").try_into().ok().unwrap();
+    h.focus();
 }

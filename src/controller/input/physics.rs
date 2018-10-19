@@ -25,11 +25,7 @@ impl MousePhysicsImpl {
     pub fn set_drive(&mut self, f: CDFraction) {
         self.drive = Some(f);
     }
-    
-    pub fn reset(&mut self) {
-        self.vel = cdfraction(0.,0.);
-    }
-    
+        
     pub fn run_dynamics(&mut self, t: f64) -> Option<CDFraction> {
         if t > MAXPERIOD { return None; }
         let drive = self.drive.unwrap_or(cdfraction(0.,0.));

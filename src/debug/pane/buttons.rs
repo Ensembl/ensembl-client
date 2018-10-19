@@ -1,6 +1,8 @@
 use std::rc::Rc;
 use std::cell::RefCell;
 
+use stdweb::web::Element;
+
 use dom::domutil;
 use dom::event::{
     EventListener, EventControl, EventType, EventData, Target
@@ -71,9 +73,9 @@ impl DebugButtons {
         self.buttons.clear();
     }
     
-    pub fn render_buttons(&mut self) {
+    pub fn render_buttons(&mut self, cont_el: &Element) {
         self.buttonev.reset();
-        let sel_el = domutil::query_select("#bpane-right .buttons");
+        let sel_el = domutil::query_selector2(cont_el,".bpane-right .buttons").unwrap();
         domutil::inner_html(&sel_el,"");
         for (i,e) in self.buttons.iter_mut().enumerate() {
             let opt_el = domutil::append_element(&sel_el,"button");

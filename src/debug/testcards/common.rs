@@ -11,13 +11,14 @@ use debug::testcards::polar::testcard_polar;
 use debug::testcards::text::testcard_text;
 use debug::testcards::leftright::testcard_leftright;
 use types::{ CLeaf, cleaf };
+use stdweb::web::{ Element };
 
-pub fn testcard(g: Arc<Mutex<Global>>, name: &str) {
+pub fn testcard(cont_el: &Element, g: Arc<Mutex<Global>>, name: &str) {
     debug!("global","starting testcard {}",name);
     match name {
         "draw" => testcard_visual(g,false),
         "onoff" => testcard_visual(g,true),
-        "button" => testcard_button(g),
+        "button" => testcard_button(cont_el,g),
         "polar" => testcard_polar(g),
         "text" => testcard_text(g),
         "leftright" => testcard_leftright(g),
