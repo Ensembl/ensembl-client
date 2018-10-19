@@ -28,10 +28,10 @@ fn animate(time : f64, cg: &mut CanvasState, s: Rc<RefCell<State>>) {
     state.vpos += delta *5.414;
     state.fpos += delta *7.21;
     cg.with_stage(|s| {
-        s.set_zoom((state.zoomscale.cos()/2.0 + 2.5) as f32);
+        s.set_zoom((state.zoomscale.cos()/2.0)-2.5 as f32);
         s.set_pos(&Dot(
-            ((state.hpos.cos())*150.) as f64,
-            ((state.vpos.sin())*150.-75.) as f64));
+            ((state.hpos.cos())*0.15) as f64,
+            ((state.vpos.sin())*150.-50.) as f64));
     });
     cg.with_state(|s| {
         let odd_state = if state.hpos.cos() > 0. {
