@@ -23,6 +23,10 @@ pub fn query_selector_new(sel: &str) -> Option<Element> {
     }
 }
 
+pub fn query_selector2(root: &Element, sel: &str) -> Option<Element> {
+    root.query_selector(sel).ok().map(|s| s.unwrap())
+}
+
 pub fn query_selector(el: &Element, sel: &str) -> Element {
     el.query_selector(sel).unwrap().unwrap()
 }

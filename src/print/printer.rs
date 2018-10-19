@@ -29,7 +29,7 @@ impl Printer {
         let canvas = canv_el.clone().try_into().unwrap();
         let ctx = Rc::new(wglraw::prepare_context(&canvas));
         let progs = Programs::new(&ctx);
-        let acm = AllCanvasAllocator::new("#managedcanvasholder");
+        let acm = AllCanvasAllocator::new("#bpane-container .managedcanvasholder");
         Printer {
             canv_el: canv_el.clone(),
             acm, ctx,
