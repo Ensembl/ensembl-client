@@ -19,7 +19,7 @@ fn button<F>(cont_el: &Element,name: &str, cb: F) where F: FnMut() -> () + 'stat
 fn custom(cont_el: &Element,body: &Element, name: &str, json: JSONValue) {
     let body = body.clone();
     let cb = move || {
-        let canv = domutil::query_selector(&body,"#bpane-canv");
+        let canv = domutil::query_selector(&body,".bpane-canv");
         domutil::send_custom_event(&canv,"bpane",&json);
     };
     button(cont_el,name,cb);
