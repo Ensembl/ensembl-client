@@ -4,6 +4,7 @@ use std::sync::{ Arc, Mutex };
 use debug::testcards::closuresource::{ ClosureSource, closure_add };
 use composit::{ StateFixed, Component, StateValue };
 use controller::global::Global;
+use controller::input::Event;
 use drawing::{ FCFont, FontVariety, text_texture };
 use shape::{ ColourSpec, pin_texture, stretch_rectangle };
 use types::{ Colour, cleaf, cpixel, A_TOPLEFT, area };
@@ -33,5 +34,9 @@ pub fn testcard_leftright(g: Arc<Mutex<Global>>) {
         s.with_compo(|co| {
             co.add_component(c);
         });
+        s.run_events(vec!{ Event::Zoom(-1.) });
     });
+    
+    
+    
 }

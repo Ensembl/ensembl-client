@@ -47,19 +47,19 @@ fn battenberg() -> DrawingSpec {
 fn measure(fs: &mut FixedSource, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSpec) {
     for x in -10..10 {
         fs.add_shape(leaf,tape_rectangle(
-            &cleaf(x as f32*100.,0),
+            &cleaf(x as f32/10.,0),
             &area_size(cpixel(0,0),cpixel(20,20)).y_edge(AxisSense::Pos,AxisSense::Pos),
             cs));
         fs.add_shape(leaf,tape_mathsshape(
-            &cleaf(x as f32*100.+25.,0).y_edge(AxisSense::Pos),
+            &cleaf(x as f32/10.+25.,0).y_edge(AxisSense::Pos),
             A_TOP,
             10., None, MathsShape::Polygon(5,0.05),
             cs2));
         fs.add_shape(leaf,tape_texture(battenberg(),
-            &cleaf(x as f32*100.+50.,0).y_edge(AxisSense::Pos),
+            &cleaf(x as f32/10.+0.05,0).y_edge(AxisSense::Pos),
             &cpixel(0,0),&cpixel(10,10).anchor(A_TOP)));
         fs.add_shape(leaf,tape_mathsshape(
-            &cleaf(x as f32*100.+75.,0).y_edge(AxisSense::Pos),
+            &cleaf(x as f32/10.+0.075,0).y_edge(AxisSense::Pos),
             A_TOP,
             10., Some(1.), MathsShape::Circle,
             cs));
@@ -129,12 +129,12 @@ pub fn big_science(g: &mut Global, onoff: bool) {
         
         if yidx == middle - 5 {
             for i in 1..10 {
-                fs_odd.add_shape(&leaf,pin_mathsshape(&cleaf(-100.+40.*(i as f32),y+20),
+                fs_odd.add_shape(&leaf,pin_mathsshape(&cleaf(-0.1+0.04*(i as f32),y+20),
                                A_MIDDLE,
                                10. * i as f32,None,MathsShape::Circle,
                                &green));
                 let colour = Colour(255,0,128);
-                fs_even.add_shape(&leaf,pin_mathsshape(&cleaf(-300.+40.*(i as f32),y+20),
+                fs_even.add_shape(&leaf,pin_mathsshape(&cleaf(-0.3+0.04*(i as f32),y+20),
                                A_MIDDLE,
                                10. * i as f32,Some(2.),MathsShape::Circle,
                                &ColourSpec::Colour(colour)));
@@ -142,12 +142,12 @@ pub fn big_science(g: &mut Global, onoff: bool) {
         }
         if yidx == middle {
             for i in 3..8 {
-                fs_odd.add_shape(&leaf,pin_mathsshape(&cleaf(-100.+40.*(i as f32),y+20),
+                fs_odd.add_shape(&leaf,pin_mathsshape(&cleaf(-0.1+0.04*(i as f32),y+20),
                                A_TOP,
                                10., None, MathsShape::Polygon(i,0.2*i as f32),
                                &red));
                 let colour = Colour(0,128,255);
-                fs_even.add_shape(&leaf,pin_mathsshape(&cleaf(-300.+40.*(i as f32),y+20),
+                fs_even.add_shape(&leaf,pin_mathsshape(&cleaf(-0.3+0.04*(i as f32),y+20),
                                A_TOP,
                                10., None, MathsShape::Polygon(i,0.2*i as f32),
                                &ColourSpec::Colour(colour)));
@@ -156,12 +156,12 @@ pub fn big_science(g: &mut Global, onoff: bool) {
         if yidx == middle +1 {
             for i in 3..8 {
                 let fs = if i % 2 == 1 { &mut fs_odd } else { &mut fs_even };
-                fs.add_shape(&leaf,pin_mathsshape(&cleaf(-100.+40.*(i as f32),y+20),
+                fs.add_shape(&leaf,pin_mathsshape(&cleaf(-0.1+0.04*(i as f32),y+20),
                                A_TOP,
                                10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
                                &red));
                 let colour = Colour(0,128,255);
-                fs.add_shape(&leaf,pin_mathsshape(&cleaf(-300.+40.*(i as f32),y+20),
+                fs.add_shape(&leaf,pin_mathsshape(&cleaf(-0.3+0.04*(i as f32),y+20),
                                A_TOP,
                                10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
                                &ColourSpec::Colour(colour)));
@@ -176,24 +176,24 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                                          255,0,0,255,
                                          0,255,0,255,
                                          255,255,0,255 },cpixel(4,1),true);
-            fs.add_shape(&leaf,stretch_texture(tx,&area_size(cleaf(-500.,y-5),cleaf(1000.,10))));
+            fs.add_shape(&leaf,stretch_texture(tx,&area_size(cleaf(-0.5,y-5),cleaf(1.,10))));
             let tx = bitmap_texture(
                                 vec! { 0,0,255,255,
                                          255,0,0,255,
                                          0,255,0,255,
                                          255,255,0,255 },cpixel(2,2),false);
             fs.add_shape(&leaf,pin_texture(tx,&cleaf(0.,y-25),&cpixel(0,0),&cpixel(10,10).anchor(A_TOPLEFT)));
-            fs_odd.add_shape(&leaf,stretch_rectangle(&area_size(cleaf(-200.,y-20),cleaf(100.,5)),&red));
-            fs_even.add_shape(&leaf,stretch_rectangle(&area_size(cleaf(-200.,y-15),cleaf(100.,5)),&green));
+            fs_odd.add_shape(&leaf,stretch_rectangle(&area_size(cleaf(-0.2,y-20),cleaf(0.1,5)),&red));
+            fs_even.add_shape(&leaf,stretch_rectangle(&area_size(cleaf(-0.2,y-15),cleaf(0.1,5)),&green));
 
             fs_odd.add_shape(&leaf,pin_mathsshape(
-                            &cleaf(-200.,y-15),
+                            &cleaf(-0.2,y-15),
                             A_RIGHT,
                             5.,None,
                             MathsShape::Polygon(3,0.),
                             &red));
             fs_even.add_shape(&leaf,pin_mathsshape(
-                            &cleaf(-100.,y-15),
+                            &cleaf(-0.1,y-15),
                             A_LEFT,
                             5.,None,
                             MathsShape::Polygon(3,0.5),
@@ -224,9 +224,9 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                 }
             }
             let tx = collage(parts,cpixel(1000,40));
-            fs.add_shape(&leaf,stretch_texture(tx,&area_size(cleaf(-700.,y-25),cleaf(2000.,40))));
+            fs.add_shape(&leaf,stretch_texture(tx,&area_size(cleaf(-0.7,y-25),cleaf(2.,40))));
         } else if yidx == middle+2 || yidx == middle+4 {
-            let wiggle = wiggly(&mut rng,500,cleaf(-500.,y-5),2.,20);
+            let wiggle = wiggly(&mut rng,500,cleaf(-0.5,y-5),0.002,20);
             fs_odd.add_shape(&leaf,stretch_wiggle(wiggle,2,&green_col));
         } else {
             for idx in -100..100 {
@@ -240,12 +240,12 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                     (128.*(v2+1.0).sin()+128.) as u32,
                 );
                 let h = if thick_gen.sample(&mut rng) == 0 { 1 } else { 5 };
-                fs.add_shape(&leaf,stretch_rectangle(&area_size(cleaf(x,y-h),cleaf(dx,2*h)),
+                fs.add_shape(&leaf,stretch_rectangle(&area_size(cleaf(x/1000.,y-h),cleaf(dx/1000.,2*h)),
                                 &ColourSpec::Colour(colour)));
                 if idx %5 == 0 {
                     let colour = Colour(colour.2,colour.0,colour.1);
                     fs.add_shape(&leaf,pin_mathsshape(
-                                    &cleaf(x,y+h),
+                                    &cleaf(x/1000.,y+h),
                                     A_TOP,
                                     8.,None,
                                     MathsShape::Polygon(3,0.75),
@@ -254,7 +254,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                 if showtext_gen.sample(&mut rng) == 0 {
                     let val = bio_daft(&mut rng);
                     let tx = text_texture(&val,&fc_font,&col,&Colour(255,255,255));
-                    fs.add_shape(&leaf,pin_texture(tx, &cleaf(x,y-24), &cpixel(0,0), &cpixel(1,1).anchor(A_MIDDLE)));
+                    fs.add_shape(&leaf,pin_texture(tx, &cleaf(x/1000.,y-24), &cpixel(0,0), &cpixel(1,1).anchor(A_MIDDLE)));
                 }
             }
         }
@@ -316,6 +316,6 @@ pub fn big_science(g: &mut Global, onoff: bool) {
             co.add_component(c_odd);
             co.add_component(c_even);
         });
-        s.run_events(vec!{ Event::Zoom(2.5) });
+        s.run_events(vec!{ Event::Zoom(0.) });
     });
 }
