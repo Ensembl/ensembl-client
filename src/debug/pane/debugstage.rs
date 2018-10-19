@@ -230,9 +230,9 @@ fn setup_events(cont_el: &Element) {
         }
     }});
     let mark_el = domutil::query_selector2(cont_el,".console .mark").unwrap();
-    mark_el.add_event_listener(|_e: ClickEvent| {
-        debug_panel_entry_mark();
-    });
+    mark_el.add_event_listener(enclose! { (cont_el) move |_e: ClickEvent| {
+        debug_panel_entry_mark(&cont_el);
+    }});
 }
 
 pub fn setup_stage_debug() {
@@ -245,7 +245,7 @@ pub fn setup_stage_debug() {
         });
         if let Some(cont_el) = domutil::query_selector_new("#bpane-container") {
             setup_events(&cont_el);
-            let mark_el = domutil::query_select("#bpane-container .console .start");
+            let mark_el = domutil::query_selector2(&cont_el,".console .start").unwrap();
             mark_el.add_event_listener(|_e: ClickEvent| {
                 let cel = domutil::query_select("body");
                 domutil::send_custom_event(&cel,"bpane-start",&json!({}));
@@ -264,19 +264,18 @@ fn panel_op(cb: &mut FnMut(&DebugPanel) -> ()) {
 }
 
 #[allow(dead_code)]
-pub fn debug_panel_entry_reset(name: &str) {
-    let cel = domutil::query_select("#bpane-container .console2");
+pub fn debug_panel_entry_reset(cont_el: &Element, name: &str) {
+    let cel = domutil::query_selector2(cont_el,".console2").unwrap();
     domutil::send_custom_event(&cel,"reset",&json!({ "name": name }));
 }
 
-pub fn debug_panel_entry_mark() {
-    let cel = domutil::query_select("#bpane-container .console2");
+pub fn debug_panel_entry_mark(cont_el: &Element) {
+    let cel = domutil::query_selector2(cont_el,".console2").unwrap();
     domutil::send_custom_event(&cel,"mark",&json!({}));
 }
 
 pub fn debug_panel_entry_add(name: &str, value: &str) {
-    let cel = domutil::query_selector_new("#bpane-container .console2");
-    if let Some(cel) = cel {
+    if let Some(cel) = domutil::query_selector_new("#bpane-container .console2") {
         domutil::send_custom_event(&cel,"add",&json!({
             "name": name,
             "value": value
