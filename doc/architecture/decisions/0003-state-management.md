@@ -17,3 +17,5 @@ The state of data and UI will grow in the application as the development goes on
 ## Consequences
 
 Redux does not use any magic and instead uses functions and objects to create its various components i.e. actions, reducers, etc. This should make it straightforward to implement it. However, it does contain a lot of boilerplate. Using `redux-actions` can reduce the boilerplate to a certain degree.
+
+Also, selectors will be used to improve maintenance and managing of state. Using `reselect` for complex reducers should improve performance through memoization.
