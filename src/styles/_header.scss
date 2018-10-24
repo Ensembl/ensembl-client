@@ -30,7 +30,6 @@
 
 .launchbar {
   border-top: 1px solid $ens-black;
-  border-bottom: 1px solid $ens-black;
   padding: 0 20px;
   @include flex;
 
@@ -78,7 +77,6 @@
 
 .account {
   height: 300px;
-  border-bottom: 1px solid $ens-black;
   @include flex;
   @include flex-align(center, middle);
 
