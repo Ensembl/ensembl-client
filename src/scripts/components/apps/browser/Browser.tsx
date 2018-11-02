@@ -11,6 +11,8 @@ import { RootState } from '../../../reducers';
 import { BrowserOpenState } from '../../../reducers/browserReducer';
 import { closeDrawer } from '../../../actions/browserActions';
 
+import 'assets/browser/browser';
+
 type BrowserProps = RouteComponentProps<{}> & {
   browserOpenState: BrowserOpenState;
   closeDrawer: () => void;
@@ -18,10 +20,32 @@ type BrowserProps = RouteComponentProps<{}> & {
 };
 
 class Browser extends Component<BrowserProps> {
+  private browserCanvas: React.RefObject<HTMLDivElement>;
+
   constructor(props: BrowserProps) {
     super(props);
 
+    this.browserCanvas = React.createRef();
     this.closeTrack = this.closeTrack.bind(this);
+  }
+
+  public componentDidMount() {
+    const moveEvent = new CustomEvent('bpane-start', {
+      bubbles: true,
+      detail: {}
+    });
+
+    const currentEl = this.browserCanvas.current;
+
+    if (currentEl && currentEl.ownerDocument) {
+      const browserEl = currentEl.ownerDocument.querySelector(
+        'body'
+      ) as HTMLBodyElement;
+
+      if (browserEl) {
+        browserEl.dispatchEvent(moveEvent);
+      }
+    }
   }
 
   public closeTrack() {
@@ -38,8 +62,8 @@ class Browser extends Component<BrowserProps> {
         <section className={`browser ${this.props.browserOpenState}`}>
           <BrowserBar expanded={false} drawerOpened={this.props.drawerOpened} />
           <div className="browser-canvas-wrapper" onClick={this.closeTrack}>
-            <div className="browser-canvas">
-              <h2>Species Browser Placeholder</h2>
+            <div className="browser-canvas" ref={this.browserCanvas}>
+              <div id="stage" />
             </div>
           </div>
         </section>

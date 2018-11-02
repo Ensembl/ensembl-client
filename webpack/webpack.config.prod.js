@@ -1,5 +1,7 @@
 const webpack = require('webpack');
+const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 const ManifestPlugin = require('webpack-manifest-plugin');
 const BrotliPlugin = require('brotli-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
@@ -42,6 +44,15 @@ const plugins = [
     filename: '[name].[contenthash].css',
     chunkFilename: '[id].[contenthash].css'
   }),
+
+  // copy the browser assets into the production dist/ directory
+  // this is only temporarily until a better solution is found
+  new CopyWebpackPlugin([
+    {
+      from: path.join(__dirname, '../assets/browser'),
+      to: path.join(__dirname, '../dist/assets/browser')
+    }
+  ]),
 
   // generate unique hashes for files based on the relative paths
   new webpack.HashedModuleIdsPlugin(),

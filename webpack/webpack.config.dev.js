@@ -1,3 +1,4 @@
+const path = require('path');
 const StylelintWebpackPlugin = require('stylelint-webpack-plugin');
 
 // laoders specific to dev
@@ -33,6 +34,24 @@ const devConfig = {
 
   // configuration to run webpack server for development
   devServer: {
+    before(app) {
+      // use proper mime-type for wasm files
+      app.get('*.wasm', function(req, res, next) {
+        var options = {
+          root: path.join(__dirname, '..'),
+          dotfiles: 'deny',
+          headers: {
+            'Content-Type': 'application/wasm'
+          }
+        };
+        res.sendFile(req.url, options, function(err) {
+          if (err) {
+            next(err);
+          }
+        });
+      });
+    },
+
     // fallback for the history API used by the react router when page is reloaded
     // this should prevent 404 errors that usually occur in SPA on reloads
     historyApiFallback: true,
