@@ -74,6 +74,11 @@ module.exports = (isDev, moduleRules, plugins) => ({
     ]
   },
 
+  // prevent webpack from searching fs (node API) to load the web assembly files
+  node: {
+    fs: 'empty'
+  },
+
   // this is the config to define how the output files needs to be
   output: {
     // dev will take the default file names as no physical files are emitted
