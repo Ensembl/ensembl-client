@@ -9,16 +9,18 @@ pub struct LeafComponent {
     prev_value: StateValue,
     cur_value: StateValue,
     ooe: Rc<StateExpr>,
-    shapes: Vec<DrawnShape>
+    shapes: Vec<DrawnShape>,
+    comp_idx: u32
 }
 
 impl LeafComponent {
-    pub fn new(ooe: &Rc<StateExpr>) -> LeafComponent {
+    pub fn new(ooe: &Rc<StateExpr>, comp_idx: u32) -> LeafComponent {
         LeafComponent {
             shapes: Vec::<DrawnShape>::new(),
             prev_value: StateValue::OffCold(),
             cur_value: StateValue::OffCold(),
-            ooe: ooe.clone()
+            ooe: ooe.clone(),
+            comp_idx
         }
     }
     
@@ -55,4 +57,6 @@ impl LeafComponent {
             s.into_objects(progs,ds,e);
         }
     }
+    
+    pub fn get_component_index(&self) -> u32 { self.comp_idx }
 }

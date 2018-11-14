@@ -1,4 +1,4 @@
-#[derive(Clone,PartialEq,Eq,Hash,Debug)]
+#[derive(Clone,Copy,PartialEq,Eq,Hash,Debug)]
 pub struct Leaf {
     hindex: i64,
     vscale: i32
