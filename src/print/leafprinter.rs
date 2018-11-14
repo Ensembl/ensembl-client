@@ -1,7 +1,8 @@
 use std::rc::Rc;
 
 use print::{ Programs, PrintEdition };
-use composit::{ LeafComponent, Leaf, Stage };
+use program::ProgramType;
+use composit::{ LeafComponent, Leaf, Stage, ComponentRedo, Compositor };
 use drawing::{ DrawingSession, AllCanvasAllocator };
 use webgl_rendering_context::WebGLRenderingContext as glctx;
 
@@ -57,6 +58,23 @@ impl LeafPrinter {
         e.go(&mut self.progs);
     }
     
+    pub fn into_objects(&mut self, leaf: &Leaf,
+                        cman: &mut Compositor,
+                        aca: &mut AllCanvasAllocator,
+                        level: ComponentRedo) {
+        if level == ComponentRedo::None { return; }
+        debug!("redraw","{:?}",level);
+        if let Some(ref mut comps) = cman.get_components(leaf) {
+            self.init();
+            if level == ComponentRedo::Major {
+                self.redraw_drawings(aca,comps);
+            }
+            let mut e = self.new_edition();
+            self.redraw_objects(comps,&mut e);
+            self.fini(&mut e);
+        }
+    }
+
     pub fn take_snap(&mut self, stage: &Stage) {
         self.ctx.enable(glctx::DEPTH_TEST);
         self.ctx.depth_func(glctx::LEQUAL);
@@ -68,7 +86,12 @@ impl LeafPrinter {
                     obj.set_uniform(None,*value);
                 }
             }
-            prog.execute(&self.ctx);
+            //prog.execute(&self.ctx);
         }
+    }
+    
+    pub fn execute(&mut self, pt: &ProgramType) {
+        let prog = self.progs.map.get_mut(pt).unwrap();
+        prog.execute(&self.ctx);
     }
 }

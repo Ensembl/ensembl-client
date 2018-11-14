@@ -4,7 +4,7 @@ use std::rc::Rc;
 use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element };
 
-use print::{ PrintRun, Programs, LeafPrinter };
+use print::{ Programs, LeafPrinter };
 use composit::{ Compositor, StateManager, Leaf, Stage };
 use drawing::{ AllCanvasAllocator };
 use dom::domutil;
@@ -75,9 +75,15 @@ impl Printer {
         self.remove_old_leafs(&leafs);
         for ref leaf in &leafs {
             let lp = &mut self.lp.get_mut(&leaf).unwrap();
-            let mut pr = PrintRun::new(leaf);
             let redo = compo.calc_level(leaf,oom);
-            pr.build_snap(compo,stage,lp,&mut self.acm,redo);
+            lp.into_objects(&leaf,compo,&mut self.acm,redo);
+            lp.take_snap(stage);
+        }
+        for pt in &self.base_progs.order {
+            for ref leaf in &leafs {
+                let lp = &mut self.lp.get_mut(&leaf).unwrap();
+                lp.execute(&pt);
+            }
         }
     }
         
