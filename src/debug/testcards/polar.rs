@@ -3,12 +3,13 @@ use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
 use composit::{
-    StateFixed, Component, StateValue, StateAtom, FixedSource, Leaf,
+    StateFixed, Component, StateValue, StateAtom, Leaf,
     LeafComponent
 };
 use controller::global::Global;
 use controller::input::Event;
 use debug::testcards::common::track_data;
+use debug::testcards::closuresource::{ ClosureSource, closure_add };
 use drawing::{
     mark_rectangle, text_texture, collage, Mark, Artist,
     FCFont, FontVariety
@@ -40,52 +41,53 @@ struct Palette {
     grey: ColourSpec
 }
 
-fn one_offs(_c: &mut Component, _p: &Palette) {    
+fn one_offs(_lc: &mut LeafComponent, _p: &Palette) {    
 }
 
-fn draw_frame(fs: &mut FixedSource, leaf: &Leaf, edge: AxisSense, p: &Palette) {
+fn draw_frame(lc: &mut LeafComponent, leaf: &Leaf, edge: AxisSense, p: &Palette) {
     let left = Corner(AxisSense::Pos,edge);
     let right = Corner(AxisSense::Neg,edge);
     let top = Corner(edge,AxisSense::Pos);
     let bottom = Corner(edge,AxisSense::Neg);
     
     /* top/bottom */
-    fs.add_shape(leaf,fixundertape_rectangle(&area(cedge(left,cpixel(0,1)),
+    closure_add(lc,&fixundertape_rectangle(&area(cedge(left,cpixel(0,1)),
                                     cedge(right,cpixel(0,18))),
                         &p.white));
-    fs.add_shape(leaf,fix_rectangle(&area(cedge(left,cpixel(0,2)),
+    closure_add(lc,&fix_rectangle(&area(cedge(left,cpixel(0,2)),
                                     cedge(left,cpixel(36,16))),
                                 &p.white));
-    fs.add_shape(leaf,fix_rectangle(&area(cedge(left,cpixel(36,1)),
+    closure_add(lc,&fix_rectangle(&area(cedge(left,cpixel(36,1)),
                                     cedge(left,cpixel(37,17))),
                                 &p.grey));
     let tx = text_texture("bp",
                           &p.lato_12,&Colour(199,208,213),&Colour(255,255,255));
-    fs.add_shape(leaf,fix_texture(tx,&cedge(left,cpixel(34,9)),
+    closure_add(lc,&fix_texture(tx,&cedge(left,cpixel(34,10)),
                             &cpixel(0,0),
                             &cpixel(1,1).anchor(A_RIGHT)));
     for y in [0,17].iter() {
-        fs.add_shape(leaf,fix_rectangle(&area(cedge(left,cpixel(0,*y)),
+        closure_add(lc,&fix_rectangle(&area(cedge(left,cpixel(0,*y)),
                                         cedge(right,cpixel(0,*y+1))),
                             &p.grey));
     }
 
     /* left/right */
-    fs.add_shape(leaf,fixunderpage_rectangle(&area(cedge(top,cpixel(0,18)),
+    closure_add(lc,&fixunderpage_rectangle(&area(cedge(top,cpixel(0,18)),
                                     cedge(bottom,cpixel(36,18))),
                         &p.white));
 }
 
-fn measure(fs: &mut FixedSource, leaf: &Leaf, edge: AxisSense, p: &Palette) {
-    for x in -10..10 {
-        fs.add_shape(leaf,tape_rectangle(
+fn measure(lc: &mut LeafComponent, leaf: &Leaf, edge: AxisSense, p: &Palette) {
+    let b = leaf.get_index();
+    for x in 0..10 {
+        closure_add(lc,&tape_rectangle(
             &cleaf(x as f32/10.,0),
-            &area_size(cpixel(0,1),cpixel(1,18)).y_edge(edge,edge),
+            &area_size(cpixel(0,1),cpixel(1,17)).y_edge(edge,edge),
             &p.grey));
-        let tx = text_texture(&format!("{}",((x+20)*100000).separated_string()),
+        let tx = text_texture(&format!("{}",((10*b+x+20)*100000).separated_string()),
                               &p.lato_12,&Colour(199,208,213),&Colour(255,255,255));
-        fs.add_shape(leaf,tape_texture(tx,&cleaf(x as f32/10.,4).y_edge(edge),
-                                 &cpixel(4,6),&cpixel(1,1).anchor(A_LEFT)));
+        closure_add(lc,&tape_texture(tx,&cleaf(x as f32/10.,9).y_edge(edge),
+                                 &cpixel(4,1),&cpixel(1,1).anchor(A_LEFT)));
     }
 }
 
@@ -98,15 +100,15 @@ fn data(t: i32) -> Vec<f32> {
     })
 }
 
-fn track(fs: &mut FixedSource, leaf: &Leaf, p: &Palette, t: i32) {
+fn track(lc: &mut LeafComponent, leaf: &Leaf, p: &Palette, t: i32) {
     let name = if t % 7 == 3 { "E" } else { "K" };
     let tx = text_texture(name,&p.lato_18,
                           &Colour(96,96,96),&Colour(255,255,255));
-    fs.add_shape(&leaf,page_texture(tx,&cedge(TOPLEFT,cpixel(30,t*PITCH+TOP)),
+    closure_add(lc,&page_texture(tx,&cedge(TOPLEFT,cpixel(30,t*PITCH+TOP)),
                                 &cpixel(0,0),
                                 &cpixel(1,1).anchor(A_RIGHT)));
     if t == 2 {
-        fs.add_shape(&leaf,page_rectangle(&area(cpixel(0,t*PITCH-PITCH/3+TOP).x_edge(AxisSense::Pos),
+        closure_add(lc,&page_rectangle(&area(cpixel(0,t*PITCH-PITCH/3+TOP).x_edge(AxisSense::Pos),
                                          cpixel(6,t*PITCH+PITCH/3+TOP).x_edge(AxisSense::Pos)),
                                    &ColourSpec::Colour(Colour(75,168,252))));
     }
@@ -117,7 +119,7 @@ fn track(fs: &mut FixedSource, leaf: &Leaf, p: &Palette, t: i32) {
     for v in &d {
         if t < 4 || t % 3 == 0 { // gene
             if *v > 0. {
-                fs.add_shape(&leaf,stretch_rectangle(
+                closure_add(lc,&stretch_rectangle(
                         &area_size(cleaf(x/1000.,y-3),
                                    cleaf(*v/1000.,6)),
                         &ColourSpec::Colour(Colour(75,168,252))));
@@ -154,15 +156,15 @@ fn track(fs: &mut FixedSource, leaf: &Leaf, p: &Palette, t: i32) {
                     Colour(220,220,220)
                 }
             });
-            fs.add_shape(&leaf,stretch_rectangle(
+            closure_add(lc,&stretch_rectangle(
                     &area_size(cleaf(x/1000.,y-3),
-                               cleaf(v.abs(),6)),
+                               cleaf(v.abs()/1000.,6)),
                     &col));
             x += v.abs();            
         }
     }
     if t < 4 || t % 3 == 0 { // gene
-        fs.add_shape(&leaf,stretch_rectangle(
+        closure_add(lc,&stretch_rectangle(
                         &area_size(cleaf(st/1000.,y-1),cleaf((x-st)/1000.,2)),
                         &ColourSpec::Colour(Colour(75,168,252))));
     }
@@ -179,21 +181,21 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
         grey: ColourSpec::Spot(Colour(199,208,213))
     };
     
-    let mut fs = FixedSource::new();
-    let mut c = Component::new(Box::new(fs.clone()),Rc::new(StateFixed(StateValue::On())));
-    one_offs(&mut c,&p);
-    draw_frame(&mut fs,&leaf,AxisSense::Pos,&p);
-    draw_frame(&mut fs,&leaf,AxisSense::Neg,&p);
-    measure(&mut fs,&leaf,AxisSense::Pos,&p);
-    measure(&mut fs,&leaf,AxisSense::Neg,&p);
-    for t in 0..TRACKS {
-        track(&mut fs,&leaf,&p,t);
-    }
+    let cs = ClosureSource::new(move |ref mut lc,leaf| {
+        one_offs(lc,&p);
+        draw_frame(lc,&leaf,AxisSense::Pos,&p);
+        draw_frame(lc,&leaf,AxisSense::Neg,&p);
+        measure(lc,&leaf,AxisSense::Pos,&p);
+        measure(lc,&leaf,AxisSense::Neg,&p);
+        for t in 0..TRACKS {
+            track(lc,&leaf,&p,t);
+        }
+    });
+    let c = Component::new(Box::new(cs.clone()),Rc::new(StateFixed(StateValue::On())));
     g.with_state(|s| {
         s.with_compo(|co| {
-            co.add_leaf(leaf);
             co.add_component(c);
         });
-        //s.run_events(vec!{ Event::Zoom(2.5) });
+        s.run_events(vec!{ Event::Zoom(0.) });
     });
 }

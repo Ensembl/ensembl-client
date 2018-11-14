@@ -93,7 +93,7 @@ impl Compositor {
         self.leafcomps.keys().map(|s| s.clone()).collect()
     }
 
-    pub fn add_leaf(&mut self, leaf: Leaf) {
+    fn add_leaf(&mut self, leaf: Leaf) {
         let mut lcc = HashMap::<u32,LeafComponent>::new();
         for (k,c) in &self.components {
             lcc.insert(*k,c.make_leafcomp(&leaf));
@@ -101,7 +101,7 @@ impl Compositor {
         self.leafcomps.insert(leaf,lcc);
     }
     
-    pub fn remove_leaf(&mut self, leaf: &Leaf) {
+    fn remove_leaf(&mut self, leaf: &Leaf) {
         self.leafcomps.remove(leaf);
     }
     
