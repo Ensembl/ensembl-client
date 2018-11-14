@@ -86,7 +86,6 @@ impl LeafPrinter {
                     obj.set_uniform(None,*value);
                 }
             }
-            //prog.execute(&self.ctx);
         }
     }
     
