@@ -18,7 +18,7 @@ impl Component {
     
     pub fn make_leafcomp(&self, leaf: &Leaf) -> LeafComponent {
         let mut out = LeafComponent::new(&self.ooe,self.index.unwrap());
-        self.source.populate(&mut out,leaf);
+        self.source.populate(&mut out.get_lcbuilder(),leaf);
         out
     }
     

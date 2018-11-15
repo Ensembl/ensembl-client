@@ -4,7 +4,7 @@ use std::sync::{ Arc, Mutex };
 
 use composit::{
     StateFixed, Component, StateValue, StateAtom, Leaf,
-    LeafComponent
+    LeafComponent, LCBuilder
 };
 use controller::global::Global;
 use controller::input::Event;
@@ -41,10 +41,10 @@ struct Palette {
     grey: ColourSpec
 }
 
-fn one_offs(_lc: &mut LeafComponent, _p: &Palette) {    
+fn one_offs(_lc: &mut LCBuilder, _p: &Palette) {    
 }
 
-fn draw_frame(lc: &mut LeafComponent, leaf: &Leaf, edge: AxisSense, p: &Palette) {
+fn draw_frame(lc: &mut LCBuilder, leaf: &Leaf, edge: AxisSense, p: &Palette) {
     let left = Corner(AxisSense::Pos,edge);
     let right = Corner(AxisSense::Neg,edge);
     let top = Corner(edge,AxisSense::Pos);
@@ -77,7 +77,7 @@ fn draw_frame(lc: &mut LeafComponent, leaf: &Leaf, edge: AxisSense, p: &Palette)
                         &p.white));
 }
 
-fn measure(lc: &mut LeafComponent, leaf: &Leaf, edge: AxisSense, p: &Palette) {
+fn measure(lc: &mut LCBuilder, leaf: &Leaf, edge: AxisSense, p: &Palette) {
     let b = leaf.get_index();
     for x in 0..10 {
         closure_add(lc,&tape_rectangle(
@@ -102,7 +102,7 @@ fn data(t: i32) -> Vec<f32> {
 
 const SCALE : f32 = 400.;
 
-fn track(lc: &mut LeafComponent, leaf: &Leaf, p: &Palette, t: i32) {
+fn track(lc: &mut LCBuilder, leaf: &Leaf, p: &Palette, t: i32) {
     let name = if t % 7 == 3 { "E" } else { "K" };
     let tx = text_texture(name,&p.lato_18,
                           &Colour(96,96,96),&Colour(255,255,255));
