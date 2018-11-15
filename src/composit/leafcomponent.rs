@@ -2,6 +2,7 @@ use std::rc::Rc;
 
 use print::{ Programs, PrintEdition };
 use shape::DrawnShape;
+use composit::LCBuilder;
 use composit::state::{ StateManager, StateExpr, StateValue, ComponentRedo };
 use drawing::DrawingSession;
 
@@ -9,14 +10,14 @@ pub struct LeafComponent {
     prev_value: StateValue,
     cur_value: StateValue,
     ooe: Rc<StateExpr>,
-    shapes: Vec<DrawnShape>,
+    shapes: LCBuilder,
     comp_idx: u32
 }
 
 impl LeafComponent {
     pub fn new(ooe: &Rc<StateExpr>, comp_idx: u32) -> LeafComponent {
         LeafComponent {
-            shapes: Vec::<DrawnShape>::new(),
+            shapes: LCBuilder::new(),
             prev_value: StateValue::OffCold(),
             cur_value: StateValue::OffCold(),
             ooe: ooe.clone(),
@@ -40,22 +41,22 @@ impl LeafComponent {
         }
     }
     
-    pub fn add_shape(&mut self, item: DrawnShape) {
-        self.shapes.push(item);
+    pub fn get_lcbuilder(&self) -> LCBuilder {
+        self.shapes.clone()
     }
-    
-    pub fn draw_drawings(&mut self, ds: &mut DrawingSession) {
-        for s in &mut self.shapes {
+        
+    pub fn draw_drawings(&mut self, ds: &mut DrawingSession) -> bool {
+        self.shapes.each_shape(|s| {
             s.redraw(ds);
-        }
+        })
     }
 
     pub fn into_objects(&mut self, 
                         progs: &mut Programs,
-                        ds: &mut DrawingSession, e: &mut PrintEdition) {
-        for s in &mut self.shapes {
+                        ds: &mut DrawingSession, e: &mut PrintEdition) -> bool {
+        self.shapes.each_shape(|s| {
             s.into_objects(progs,ds,e);
-        }
+        })
     }
     
     pub fn get_component_index(&self) -> u32 { self.comp_idx }

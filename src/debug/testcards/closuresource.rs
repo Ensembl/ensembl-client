@@ -23,5 +23,6 @@ impl Source for ClosureSource {
 }
 
 pub fn closure_add(lc: &mut LeafComponent, s: &ShapeSpec) {
-    lc.add_shape(DrawnShape::new(s.create()));
+    lc.get_lcbuilder().add_shape(DrawnShape::new(s.create()));
+    lc.get_lcbuilder().done(); // XXX
 }

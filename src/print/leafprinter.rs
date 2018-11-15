@@ -27,11 +27,11 @@ impl LeafPrinter {
         self.ds.finish(alloc);
     }
 
-    pub fn new_edition(&mut self) -> PrintEdition {
+    fn new_edition(&mut self) -> PrintEdition {
         PrintEdition::new(&mut self.ds)
     }
         
-    pub fn redraw_drawings(&mut self, alloc: &mut AllCanvasAllocator, comps: &mut Vec<&mut LeafComponent>) {
+    fn redraw_drawings(&mut self, alloc: &mut AllCanvasAllocator, comps: &mut Vec<&mut LeafComponent>) {
         self.ds.finish(alloc);
         self.ds = DrawingSession::new(alloc);
         for mut c in comps.iter_mut() {
@@ -40,7 +40,7 @@ impl LeafPrinter {
         self.ds.finalise(alloc);
     }
     
-    pub fn redraw_objects(&mut self, comps: &mut Vec<&mut LeafComponent>,
+    fn redraw_objects(&mut self, comps: &mut Vec<&mut LeafComponent>,
                           e: &mut PrintEdition) {
         for c in comps.iter_mut() {
             if c.is_on() {
@@ -49,11 +49,11 @@ impl LeafPrinter {
         }
     }
 
-    pub fn init(&mut self) {
+    fn init(&mut self) {
         self.progs.clear_objects();
     }
     
-    pub fn fini(&mut self, e: &mut PrintEdition) {
+    fn fini(&mut self, e: &mut PrintEdition) {
         self.progs.finalize_objects(&self.ctx,&mut self.ds);
         e.go(&mut self.progs);
     }

@@ -100,6 +100,8 @@ fn data(t: i32) -> Vec<f32> {
     })
 }
 
+const SCALE : f32 = 400.;
+
 fn track(lc: &mut LeafComponent, leaf: &Leaf, p: &Palette, t: i32) {
     let name = if t % 7 == 3 { "E" } else { "K" };
     let tx = text_texture(name,&p.lato_18,
@@ -120,8 +122,8 @@ fn track(lc: &mut LeafComponent, leaf: &Leaf, p: &Palette, t: i32) {
         if t < 4 || t % 3 == 0 { // gene
             if *v > 0. {
                 closure_add(lc,&stretch_rectangle(
-                        &area_size(cleaf(x/1000.,y-3),
-                                   cleaf(*v/1000.,6)),
+                        &area_size(cleaf(x/SCALE,y-3),
+                                   cleaf(*v/SCALE,6)),
                         &ColourSpec::Colour(Colour(75,168,252))));
             }
             x += v.abs();
@@ -157,15 +159,15 @@ fn track(lc: &mut LeafComponent, leaf: &Leaf, p: &Palette, t: i32) {
                 }
             });
             closure_add(lc,&stretch_rectangle(
-                    &area_size(cleaf(x/1000.,y-3),
-                               cleaf(v.abs()/1000.,6)),
+                    &area_size(cleaf(x/SCALE,y-3),
+                               cleaf(v.abs()/SCALE,6)),
                     &col));
             x += v.abs();            
         }
     }
     if t < 4 || t % 3 == 0 { // gene
         closure_add(lc,&stretch_rectangle(
-                        &area_size(cleaf(st/1000.,y-1),cleaf((x-st)/1000.,2)),
+                        &area_size(cleaf(st/SCALE,y-1),cleaf((x-st)/SCALE,2)),
                         &ColourSpec::Colour(Colour(75,168,252))));
     }
 }
