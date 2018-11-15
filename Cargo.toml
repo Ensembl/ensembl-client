@@ -16,3 +16,6 @@ separator = "0.3.1"
 [build-dependencies]
 webgl_generator = "0.1.0"
 cargo-web="0.6.15"
+
+[profile.release]
+lto = true
