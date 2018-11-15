@@ -2,9 +2,10 @@ use std::sync::{ Arc, Mutex };
 
 use stdweb::web::HtmlElement;
 
-use print::Printer;
+use debug::setup_stage_debug;
 use composit::{ Compositor, StateManager, Stage };
 use controller::input::{ Event, events_run, startup_events };
+use print::Printer;
 
 pub struct CanvasState {
     pub printer: Arc<Mutex<Printer>>,
