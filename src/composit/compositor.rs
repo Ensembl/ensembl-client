@@ -65,13 +65,7 @@ impl Compositor {
         self.updated = true;
     }
 
-    pub fn leafs(&self) -> Vec<Leaf> {
-        self.sc.leafs()
-    }
-    
-    pub fn get_components(&mut self, leaf: &Leaf) -> Option<Vec<&mut LeafComponent>> {
-        self.sc.get_components(leaf)
-    }
+    pub fn get_sc(&mut self) -> &mut ScaleCompositor { &mut self.sc }
     
     pub fn add_component(&mut self, mut c: Component) -> ComponentRemover {
         self.comp_idx += 1;

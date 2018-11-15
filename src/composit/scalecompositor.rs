@@ -55,8 +55,6 @@ impl ScaleCompositor {
             if !self.leafcomps.contains_key(&leaf) {
                 debug!("trains","adding {}",hindex);
                 out.push(leaf);
-                //self.add_leaf(leaf);
-                
             }
         }
         return out;
@@ -85,7 +83,16 @@ impl ScaleCompositor {
     }
     
     pub fn get_components(&mut self, leaf: &Leaf) -> Option<Vec<&mut LeafComponent>> {
-        self.leafcomps.get_mut(leaf).map(|s| s.values_mut().collect())
+        let lcc = self.leafcomps.get_mut(leaf);
+        let out = if let Some(lcc) = lcc {
+            lcc.values_mut().collect()
+        } else {
+            vec!{}
+        };
+        for lc in &out {
+            if !lc.is_done() { return None; }
+        }
+        Some(out)
     }
 
     pub fn calc_level(&mut self, leaf: &Leaf, oom: &StateManager) -> ComponentRedo {

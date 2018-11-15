@@ -25,6 +25,8 @@ impl LCBuilderImpl {
         self.done = true;
     }
     
+    fn is_done(&self) -> bool { self.done }
+    
     fn get_shapes(&self) -> Option<&Vec<DrawnShape>> {
         if self.done {
             Some(&self.shapes)
@@ -33,13 +35,12 @@ impl LCBuilderImpl {
         }
     }
     
-    fn each_shape<F>(&mut self, mut cb: F) -> bool where F: FnMut(&mut DrawnShape) {
+    fn each_shape<F>(&mut self, mut cb: F) where F: FnMut(&mut DrawnShape) {
         if self.done {
             for mut s in &mut self.shapes {
                 cb(&mut s);
             }
         }
-        self.done
     }
 }
 
@@ -59,7 +60,9 @@ impl LCBuilder {
         self.0.borrow_mut().done();
     }
     
-    pub fn each_shape<F>(&mut self, cb: F) -> bool where F: FnMut(&mut DrawnShape) {
-        self.0.borrow_mut().each_shape(cb)
+    pub fn is_done(&self) -> bool { self.0.borrow().is_done() }
+    
+    pub fn each_shape<F>(&mut self, cb: F) where F: FnMut(&mut DrawnShape) {
+        self.0.borrow_mut().each_shape(cb);
     }
 }

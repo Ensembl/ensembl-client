@@ -44,19 +44,21 @@ impl LeafComponent {
     pub fn get_lcbuilder(&self) -> LCBuilder {
         self.shapes.clone()
     }
+     
+    pub fn is_done(&self) -> bool { self.shapes.is_done() }
         
-    pub fn draw_drawings(&mut self, ds: &mut DrawingSession) -> bool {
+    pub fn draw_drawings(&mut self, ds: &mut DrawingSession){
         self.shapes.each_shape(|s| {
             s.redraw(ds);
-        })
+        });
     }
 
     pub fn into_objects(&mut self, 
                         progs: &mut Programs,
-                        ds: &mut DrawingSession, e: &mut PrintEdition) -> bool {
+                        ds: &mut DrawingSession, e: &mut PrintEdition) {
         self.shapes.each_shape(|s| {
             s.into_objects(progs,ds,e);
-        })
+        });
     }
     
     pub fn get_component_index(&self) -> u32 { self.comp_idx }
