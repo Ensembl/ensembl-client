@@ -60,32 +60,6 @@ impl Compositor {
         lcomps
     }
 
-    /*
-    fn add_missing_leafs(&mut self) {
-        for idx in -self.train_flank..self.train_flank+1 {
-            let hindex = self.middle_leaf + idx as i64;
-            let leaf = Leaf::new(hindex,self.vscale);
-            if !self.leafcomps.contains_key(&leaf) {
-                debug!("trains","adding {}",hindex);
-                self.add_leaf(leaf);
-            }
-        }
-    }
-    
-    fn remove_unused_leafs(&mut self) {
-        let mut doomed = HashSet::new();
-        for leaf in self.leafcomps.keys() {
-            if (leaf.get_index()-self.middle_leaf).abs() > self.train_flank as i64 {
-                doomed.insert(leaf.clone());
-            }
-        }
-        for d in doomed {
-            debug!("trains","removing {}",d.get_index());
-            self.remove_leaf(&d);
-        }
-    }
-    */
-    
     pub fn set_zoom(&mut self, bp_per_screen: f64) {
         self.sc.set_zoom(bp_per_screen);
         self.updated = true;
@@ -94,20 +68,6 @@ impl Compositor {
     pub fn leafs(&self) -> Vec<Leaf> {
         self.sc.leafs()
     }
-
-    /*
-    fn add_leaf(&mut self, leaf: Leaf) {
-        let mut lcc = HashMap::<u32,LeafComponent>::new();
-        for (k,c) in &self.components {
-            lcc.insert(*k,c.make_leafcomp(&leaf));
-        }
-        self.leafcomps.insert(leaf,lcc);
-    }
-    
-    fn remove_leaf(&mut self, leaf: &Leaf) {
-        self.leafcomps.remove(leaf);
-    }
-    */
     
     pub fn get_components(&mut self, leaf: &Leaf) -> Option<Vec<&mut LeafComponent>> {
         self.sc.get_components(leaf)

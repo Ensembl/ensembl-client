@@ -1,5 +1,6 @@
 mod state;
 mod leafcomponent;
+mod lcbuilder;
 mod compositor;
 mod scalecompositor;
 mod leaf;
@@ -8,6 +9,7 @@ mod component;
 mod stage;
 
 pub use self::leafcomponent::LeafComponent;
+pub use self::lcbuilder::LCBuilder;
 pub use self::source::Source;
 pub use self::compositor::Compositor;
 pub use self::scalecompositor::ScaleCompositor;
