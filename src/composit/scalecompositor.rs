@@ -10,7 +10,9 @@ pub struct ScaleCompositor {
     vscale: i32,
     train_flank: i32,
     middle_leaf: i64,
-    leafcomps: HashMap<Leaf,HashMap<u32,LeafComponent>>
+    leafcomps: HashMap<Leaf,HashMap<u32,LeafComponent>>,
+    done_seen: HashMap<Leaf,u32>,
+    done_now: u32
 }
 
 impl ScaleCompositor {
@@ -20,6 +22,8 @@ impl ScaleCompositor {
             train_flank: 10,
             middle_leaf: 0,
             leafcomps: HashMap::<Leaf,HashMap<u32,LeafComponent>>::new(),
+            done_seen: HashMap::<Leaf,u32>::new(),
+            done_now: 0
         }
     }
     
@@ -41,6 +45,7 @@ impl ScaleCompositor {
         for lc in lcomps.drain(..) {
             lcc.insert(lc.get_component_index(),lc);
         }
+        self.done_now += 1;
     }
         
     fn remove_leaf(&mut self, leaf: &Leaf) {
@@ -82,24 +87,41 @@ impl ScaleCompositor {
         self.leafcomps.keys().map(|s| s.clone()).collect()
     }
     
+    fn is_done(&mut self) -> bool {
+        for leaf in self.leafcomps.keys() {            
+            if let Some(lcc) = self.leafcomps.get(leaf) {
+                for lc in lcc.values() {
+                    if !lc.is_done() { return false; }
+                }
+            }
+        }
+        return true;
+    }
+    
     pub fn get_components(&mut self, leaf: &Leaf) -> Option<Vec<&mut LeafComponent>> {
+        if !self.is_done() { return None; }
         let lcc = self.leafcomps.get_mut(leaf);
-        let out = if let Some(lcc) = lcc {
+        Some(if let Some(lcc) = lcc {
             lcc.values_mut().collect()
         } else {
             vec!{}
-        };
-        for lc in &out {
-            if !lc.is_done() { return None; }
-        }
-        Some(out)
+        })
     }
 
     pub fn calc_level(&mut self, leaf: &Leaf, oom: &StateManager) -> ComponentRedo {
+        /* Any change due to component changes? */
         let mut redo = ComponentRedo::None;
         if let Some(ref mut lcc) = self.leafcomps.get_mut(leaf) {
             for c in lcc.values_mut() {
                 redo = redo | c.update_state(oom);
+            }
+        }
+        /* Any change due to availability? */
+        let done_seen = *self.done_seen.entry(*leaf).or_insert(0);
+        if done_seen < self.done_now {
+            if self.is_done() {
+                self.done_seen.insert(*leaf,self.done_now);
+                return ComponentRedo::Major;
             }
         }
         redo

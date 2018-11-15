@@ -14,7 +14,7 @@ pub fn testcard_text(g: Arc<Mutex<Global>>) {
  
     let font = FCFont::new(120,"Lato",FontVariety::Normal);
     
-    let cs = ClosureSource::new(move |lc,leaf| {
+    let cs = ClosureSource::new(0.,move |lc,leaf| {
         let tx = text_texture("hello",&font,&Colour(199,208,213),&Colour(0,0,0));
         closure_add(lc,&tape_rectangle(
             &cleaf(0.,0),

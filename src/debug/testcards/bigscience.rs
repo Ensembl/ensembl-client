@@ -97,7 +97,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
     }
     let col = Colour(200,200,200);
     
-    let cs_odd = ClosureSource::new(move |lc,leaf| {
+    let cs_odd = ClosureSource::new(0.,move |lc,leaf| {
         let mut rng = make_rng(seed);
         for yidx in 0..20 {
             let y = yidx * 60;
@@ -144,7 +144,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
         }
     });
 
-    let cs_even = ClosureSource::new(move |lc,leaf| {
+    let cs_even = ClosureSource::new(0.,move |lc,leaf| {
         let mut rng = make_rng(seed);
         for yidx in 0..20 {
             let y = yidx * 60;
@@ -190,7 +190,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
         }
     });
     
-    let cs = ClosureSource::new(move |ref mut lc,leaf| {
+    let cs = ClosureSource::new(0.,move |ref mut lc,leaf| {
         let mut rng = make_rng(seed);
         measure(lc,&leaf,&red,&green);
         for yidx in 0..20 {

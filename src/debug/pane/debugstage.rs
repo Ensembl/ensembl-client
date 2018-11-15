@@ -23,6 +23,8 @@ use debug::pane::console::DebugConsole;
 use debug::pane::buttons::{ DebugButtons, ButtonAction };
 use types::Todo;
 
+const MODIFIER_BYPASS : bool = true;
+
 pub struct BodyEventListener {
     val: u32,
 }
@@ -45,7 +47,7 @@ impl EventListener<()> for BodyEventListener {
                 }
             },
             EventData::KeyboardEvent(EventType::KeyPressEvent,k) => {
-                if k.ctrl_key() && k.alt_key() {
+                if MODIFIER_BYPASS || (k.ctrl_key() && k.alt_key()) {
                     match &k.key()[..] {
                         "d" => { setup_stage_debug(); },
                         _ => ()

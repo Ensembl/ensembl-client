@@ -12,7 +12,7 @@ use types::{ Colour, cleaf, cpixel, A_TOPLEFT, area };
 pub fn testcard_leftright(g: Arc<Mutex<Global>>) {
     let g = &mut g.lock().unwrap();
     let font = FCFont::new(20,"Lato",FontVariety::Normal);
-    let cs = ClosureSource::new(move |lc,leaf| {
+    let cs = ClosureSource::new(0.,move |lc,leaf| {
         for j in 0..10 {
             let i = leaf.get_index();
             let (colour,offset) = if i % 2 == 0 {

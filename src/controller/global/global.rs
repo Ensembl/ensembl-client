@@ -9,6 +9,7 @@ use controller::input::{
     Timer
 };
 use controller::global::{ CanvasRunner, CanvasState };
+use debug::setup_stage_debug;
 use dom::domutil;
 use types::CPixel;
 

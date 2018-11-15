@@ -183,7 +183,7 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
         grey: ColourSpec::Spot(Colour(199,208,213))
     };
     
-    let cs = ClosureSource::new(move |ref mut lc,leaf| {
+    let cs = ClosureSource::new(5.,move |ref mut lc,leaf| {
         one_offs(lc,&p);
         draw_frame(lc,&leaf,AxisSense::Pos,&p);
         draw_frame(lc,&leaf,AxisSense::Neg,&p);
