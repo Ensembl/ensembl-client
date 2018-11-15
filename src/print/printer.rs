@@ -5,7 +5,7 @@ use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element };
 
 use print::{ Programs, LeafPrinter };
-use composit::{ Compositor, StateManager, Leaf, Stage };
+use composit::{ Compositor, ScaleCompositor, StateManager, Leaf, Stage };
 use drawing::{ AllCanvasAllocator };
 use dom::domutil;
 use types::{ Dot };
@@ -69,14 +69,19 @@ impl Printer {
         }
     }
 
-    pub fn go(&mut self, stage: &Stage, oom: &StateManager, compo: &mut Compositor) {
-        let leafs = compo.leafs();
+    fn manage_leafs(&mut self, c: &mut Compositor) {
+        let sc = c.get_sc();
+        let leafs = sc.leafs();
         self.create_new_leafs(&leafs);
-        self.remove_old_leafs(&leafs);
+        self.remove_old_leafs(&leafs);        
+    }
+
+    fn go_scale(&mut self, stage: &Stage, oom: &StateManager, sc: &mut ScaleCompositor) {
+        let leafs = sc.leafs();
         for ref leaf in &leafs {
             let lp = &mut self.lp.get_mut(&leaf).unwrap();
-            let redo = compo.calc_level(leaf,oom);
-            lp.into_objects(&leaf,compo,&mut self.acm,redo);
+            let redo = sc.calc_level(leaf,oom);
+            lp.into_objects(&leaf,sc,&mut self.acm,redo);
             lp.take_snap(stage);
         }
         for pt in &self.base_progs.order {
@@ -85,6 +90,11 @@ impl Printer {
                 lp.execute(&pt);
             }
         }
+    }
+
+    pub fn go(&mut self, stage: &Stage, oom: &StateManager, compo: &mut Compositor) {
+        self.manage_leafs(compo);
+        self.go_scale(stage,oom,compo.get_sc());
     }
         
     pub fn set_size(&mut self, s: Dot<i32,i32>) {

@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use print::{ Programs, PrintEdition };
 use program::ProgramType;
-use composit::{ LeafComponent, Leaf, Stage, ComponentRedo, Compositor };
+use composit::{ LeafComponent, Leaf, Stage, ComponentRedo, ScaleCompositor };
 use drawing::{ DrawingSession, AllCanvasAllocator };
 use webgl_rendering_context::WebGLRenderingContext as glctx;
 
@@ -59,19 +59,23 @@ impl LeafPrinter {
     }
     
     pub fn into_objects(&mut self, leaf: &Leaf,
-                        cman: &mut Compositor,
+                        sc: &mut ScaleCompositor,
                         aca: &mut AllCanvasAllocator,
                         level: ComponentRedo) {
         if level == ComponentRedo::None { return; }
         debug!("redraw","{:?}",level);
-        if let Some(ref mut comps) = cman.get_components(leaf) {
-            self.init();
-            if level == ComponentRedo::Major {
-                self.redraw_drawings(aca,comps);
+        if let Some(ref mut comps) = sc.get_components(leaf) {
+            if comps.len() > 0 {            
+                self.init();
+                if level == ComponentRedo::Major {
+                    self.redraw_drawings(aca,comps);
+                }
+                let mut e = self.new_edition();
+                self.redraw_objects(comps,&mut e);
+                self.fini(&mut e);
             }
-            let mut e = self.new_edition();
-            self.redraw_objects(comps,&mut e);
-            self.fini(&mut e);
+        } else {
+            console!("I am undone");
         }
     }
 
