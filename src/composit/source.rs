@@ -1,5 +1,5 @@
-use composit::{ Leaf, LeafComponent };
+use composit::{ Leaf, LCBuilder };
 
 pub trait Source {
-    fn populate(&self, lc: &mut LeafComponent, leaf: &Leaf);
+    fn populate(&self, lc: &mut LCBuilder, leaf: &Leaf);
 }
