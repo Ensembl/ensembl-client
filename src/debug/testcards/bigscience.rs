@@ -251,6 +251,8 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                 }
                 let tx = collage(parts,cpixel(1000,40));
                 closure_add(lc,&stretch_texture(tx,&area_size(cleaf(-0.7,y-25),cleaf(2.,40))));
+            } else if yidx == middle+2 || yidx == middle+4 {
+                // no-op, wiggles
             } else {
                 for idx in -100..100 {
                     let v1 = (idx as f32) * 0.1;
