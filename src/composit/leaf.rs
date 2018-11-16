@@ -23,3 +23,18 @@ pub fn vscale_bp_per_leaf(vscale: i32) -> f64 {
     if vscale > 0 { bp_px = 1./bp_px; }
     bp_px * FRAME
 }
+
+pub fn best_vscale(bp_per_screen: f64) -> i32 {
+    let mut best_ratio = 0.;
+    let mut best_delta = 0;
+    let v_approx = -((2.*((bp_per_screen/FRAME).log10())).round()) as i32;
+    for delta in -2..3 {
+        let mut ratio = bp_per_screen / vscale_bp_per_leaf(v_approx+delta);
+        if ratio > 1. { ratio = 1./ratio; }
+        if ratio > best_ratio {
+            best_ratio = ratio;
+            best_delta = delta;
+        }
+    }
+    v_approx+best_delta
+}
