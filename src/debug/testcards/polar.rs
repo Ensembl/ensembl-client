@@ -162,7 +162,7 @@ fn track(lc: &mut LCBuilder, leaf: &Leaf, p: &Palette, t: i32) {
                     &area_size(cleaf(x/SCALE,y-3),
                                cleaf(v.abs()/SCALE,6)),
                     &col));
-            x += v.abs();            
+            x += v.abs();
         }
     }
     if t < 4 || t % 3 == 0 { // gene
