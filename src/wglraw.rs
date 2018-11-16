@@ -14,7 +14,8 @@ fn get_context(canvas: &CanvasElement) -> glctx {
 
 pub fn prepare_context(canvas: &CanvasElement) -> glctx {
     let context: glctx = get_context(canvas);
-    context.clear_color(1.0,1.0,1.0,1.0);
+    context.clear_color(1.0,1.0,1.0,0.0);
+    //context.color_mask(false,false,false,true);
     context.clear(glctx::COLOR_BUFFER_BIT);
     context
 }

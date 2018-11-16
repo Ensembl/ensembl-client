@@ -82,6 +82,8 @@ impl LeafPrinter {
     pub fn take_snap(&mut self, stage: &Stage) {
         self.ctx.enable(glctx::DEPTH_TEST);
         self.ctx.depth_func(glctx::LEQUAL);
+        self.ctx.enable(glctx::BLEND);
+        self.ctx.blend_func(glctx::ONE, glctx::ONE_MINUS_SRC_ALPHA);
         for k in &self.progs.order {
             let prog = self.progs.map.get_mut(k).unwrap();
             let u = stage.get_uniforms(&self.leaf);
