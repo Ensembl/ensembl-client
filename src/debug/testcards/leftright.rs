@@ -17,8 +17,9 @@ const TARGET: i32 = 20;
 const MARK_TARGET: i32 = 1000;
 
 const BY125 : &[f64] = &[0.05,0.1,0.2,0.5,1.,2.,5.,10.,20.];
-const BY15 : &[f64] = &[0.05,0.1,0.5,1.,5.,10.];
-const BY1 : &[f64] = &[0.1,1.,10.];
+const BY12 : &[f64] =  &[     0.1,0.2,    1.,   5.,10.    ];
+const BY15 : &[f64] =  &[0.05,0.1,    0.5,1.,2.,   10.,20.];
+const BY1 : &[f64] =   &[     0.1,        1.,      10.    ];
 
 fn goby(start: f64, bp_leaf: f64, target: i32, by: &[f64]) -> f64 {
     let approx = 10_i64.pow((bp_leaf/5.).log10().round() as u32) as f64;
@@ -42,11 +43,11 @@ fn range(start: f64, bp_leaf: f64, target: i32, by: &[f64]) -> impl Iterator<Ite
 pub fn testcard_leftright(g: Arc<Mutex<Global>>) {
     let g = &mut g.lock().unwrap();
     let font = FCFont::new(16,"Lato",FontVariety::Normal);
-    let cs = ClosureSource::new(0.5,move |lc,leaf| {
+    let cs = ClosureSource::new(0.2,move |lc,leaf| {
         let i = leaf.get_index();
         let mut mul = vscale_bp_per_leaf(leaf.get_vscale());
         let start = leaf.get_index() as f64 * mul;
-        for v in range(start,mul,TARGET,BY125) {
+        for v in range(start,mul,TARGET,BY12) {
             let offset = (v as f64-start)/mul;
             let tx = text_texture(&format!("{}",v.separated_string()),&font,&Colour(199,208,213),&Colour(255,255,255));
             closure_add(lc,&pin_texture(tx,&cleaf(offset as f32,1),

@@ -5,6 +5,7 @@ use composit::{ LeafComponent, StateManager, Component, Leaf, vscale_bp_per_leaf
 use composit::state::ComponentRedo;
 
 const MS_PER_UPDATE : f64 = 250.;
+const MS_FADE : f64 = 500.;
 
 pub struct ComponentManager {
     comp_idx: u32,
@@ -45,6 +46,8 @@ impl ComponentManager {
 pub struct Compositor {
     current_sc: ScaleCompositor,
     future_sc: Option<ScaleCompositor>,
+    transition_sc: Option<ScaleCompositor>,
+    transition_start: Option<f64>,
     bp_per_screen: f64,
     updated: bool,
     last_updated: Option<f64>,
@@ -58,6 +61,8 @@ impl Compositor {
         Compositor {
             current_sc: ScaleCompositor::new(0),
             future_sc: None,
+            transition_sc: None,
+            transition_start: None,
             components: ComponentManager::new(),
             bp_per_screen: 1.,
             updated: true,
@@ -69,23 +74,38 @@ impl Compositor {
         debug!("trains","set width {}",width);
     }
 
-    pub fn future_is_waiting(&mut self) -> bool {
+    fn transition_is_done(&mut self, t: f64) {
+        if let Some(start) = self.transition_start {
+            if t-start < MS_FADE {
+                console!("Fading for {}ms",t-start);
+            } else {
+                console!("Fade done");
+                self.current_sc = self.transition_sc.take().unwrap();
+                self.transition_start = None;
+            }
+        }
+    }
+
+    fn future_is_waiting(&mut self, t: f64) {
         let mut ready = false;
         if let Some(ref mut future_sc) = self.future_sc {
             if future_sc.is_done() {
                 ready = true;
             }
         }
-        if ready {
-            self.current_sc = self.future_sc.take().unwrap();
-            self.future_sc = None;
-            console!("future is ready at {}",self.current_sc.get_vscale());
+        if ready && self.transition_sc.is_none() {
+            self.transition_sc = self.future_sc.take();
+            self.transition_start = Some(t);
+            console!("future is ready for transition at {}",self.current_sc.get_vscale());
         }
-        ready
     }
 
     pub fn tick(&mut self, t: f64) {
-        if self.future_is_waiting() || self.updated {
+        /* Move into future */
+        self.transition_is_done(t);
+        self.future_is_waiting(t);
+        /* Manage useful leafs */
+        if self.updated {
             if let Some(prev_t) = self.last_updated {
                 if t-prev_t < MS_PER_UPDATE { return; }
             }
@@ -148,6 +168,10 @@ impl Compositor {
     pub fn get_current_sc(&mut self) -> &mut ScaleCompositor {
         &mut self.current_sc
     }
+
+    pub fn get_transition_sc(&mut self) -> Option<&mut ScaleCompositor> {
+        self.transition_sc.as_mut()
+    }
     
     pub fn add_component(&mut self, mut c: Component) -> ComponentRemover {
         self.components.prepare(&mut c);
@@ -160,5 +184,13 @@ impl Compositor {
 
     pub fn remove(&mut self, k: ComponentRemover) {
         self.components.remove(k);
-    }    
+    }
+    
+    pub fn all_leafs(&self) -> Vec<Leaf> {
+        let mut out = self.current_sc.leafs();
+        if let Some(ref transition_sc) = self.transition_sc {
+            //out.append(&mut transition_sc.leafs());
+        }
+        out
+    }
 }

@@ -102,17 +102,21 @@ impl PTSkin {
     fn to_source(&self) -> ProgramSource {
         ProgramSource::new(match self {
             PTSkin::Colour => vec! {
+                Uniform::new_frag(&PR_LOW,Arity::Scalar,"uOpacity"),
                 Attribute::new(&PR_LOW,Arity::Vec3,"aVertexColour"),
                 Varying::new(&PR_LOW,Arity::Vec3,"vColour"),
                 Statement::new_vert("vColour = vec3(aVertexColour)"),
-                Statement::new_frag("gl_FragColor = vec4(vColour, 1.0)"),
+                Statement::new_frag("gl_FragColor = vec4(vColour, uOpacity);
+                gl_FragColor.a = 0.5;"),
             },
             PTSkin::Spot => vec! {
+                Uniform::new_frag(&PR_LOW,Arity::Scalar,"uOpacity"),
                 Uniform::new_frag(&PR_LOW,Arity::Vec3,"uColour"),
-                Statement::new_frag("gl_FragColor = vec4(uColour, 1.0)"),
+                Statement::new_frag("gl_FragColor = vec4(uColour, uOpacity)"),
             },
             PTSkin::Texture => vec! {
                 Canvas::new(),
+                Uniform::new_frag(&PR_LOW,Arity::Scalar,"uOpacity"),
                 Uniform::new_frag(&PR_DEF,Arity::Sampler2D,"uSampler"),
                 Attribute::new(&PR_DEF,Arity::Vec2,"aTextureCoord"),
                 Attribute::new(&PR_DEF,Arity::Vec2,"aMaskCoord"),
