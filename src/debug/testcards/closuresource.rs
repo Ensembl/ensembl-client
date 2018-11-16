@@ -36,5 +36,8 @@ impl Source for ClosureSource {
 
 pub fn closure_add(lcb: &mut LCBuilder, s: &ShapeSpec) {
     lcb.add_shape(DrawnShape::new(s.create()));
-    lcb.done(); // XXX
+}
+
+pub fn closure_done(lcb: &mut LCBuilder) {
+    lcb.done();
 }
