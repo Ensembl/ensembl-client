@@ -1,15 +1,18 @@
 use std::cmp::{ max, min };
 use std::collections::{ HashMap, HashSet };
 
-use composit::{ Compositor, Leaf, LeafComponent, StateManager, vscale_bp_per_leaf };
+use composit::{ Compositor, Leaf, LeafComponent, StateManager, vscale_bp_per_leaf, ComponentManager, Component };
 use composit::state::ComponentRedo;
 
 const MAX_FLANK : i32 = 10;
 
 pub struct ScaleCompositor {
     vscale: i32,
+    position_bp: f64,
     train_flank: i32,
     middle_leaf: i64,
+    bp_per_screen: f64,
+    leaf_per_screen: f64,
     leafcomps: HashMap<Leaf,HashMap<u32,LeafComponent>>,
     done_seen: HashMap<Leaf,u32>,
     done_now: u32
@@ -21,25 +24,44 @@ impl ScaleCompositor {
             vscale,
             train_flank: 10,
             middle_leaf: 0,
+            leaf_per_screen: 1.,
+            bp_per_screen: 1.,
+            position_bp: 0.,
             leafcomps: HashMap::<Leaf,HashMap<u32,LeafComponent>>::new(),
             done_seen: HashMap::<Leaf,u32>::new(),
             done_now: 0
         }
     }
     
+    pub fn duplicate(&self, cm: &mut ComponentManager, vscale: i32) -> ScaleCompositor {
+        let mut out = ScaleCompositor::new(vscale);
+        out.set_position(self.position_bp);
+        out.set_zoom(self.bp_per_screen);
+        out.manage_leafs(cm);
+        out
+    }
+    
+    pub fn get_vscale(&self) -> i32 { self.vscale }
+    
+    pub fn get_leaf_per_screen(&self) -> f64 {
+        self.leaf_per_screen
+    }
+    
     pub fn set_position(&mut self, position_bp: f64) {
+        self.position_bp = position_bp;
         self.middle_leaf = (position_bp / vscale_bp_per_leaf(self.vscale) as f64) as i64;
         debug!("trains","set position leaf={}",self.middle_leaf);
     }
     
     pub fn set_zoom(&mut self, bp_per_screen: f64) {
-        let leaf_per_screen = bp_per_screen / vscale_bp_per_leaf(self.vscale);
-        self.train_flank = min(max((3.*leaf_per_screen) as i32,1),MAX_FLANK);
+        self.bp_per_screen = bp_per_screen;
+        self.leaf_per_screen = bp_per_screen / vscale_bp_per_leaf(self.vscale);
+        self.train_flank = min(max((3.*self.leaf_per_screen) as i32,1),MAX_FLANK);
         debug!("trains","set  bp_per_screen={} bp_per_leaf={} leaf_per_screen={}",
-            bp_per_screen,vscale_bp_per_leaf(self.vscale),leaf_per_screen);
+            bp_per_screen,vscale_bp_per_leaf(self.vscale),self.leaf_per_screen);
     }
 
-    pub fn add_lcomps_to_leaf(&mut self, leaf: Leaf, mut lcomps: Vec<LeafComponent>) {
+    fn add_lcomps_to_leaf(&mut self, leaf: Leaf, mut lcomps: Vec<LeafComponent>) {
         let mut lcc = self.leafcomps.entry(leaf).or_insert_with(||
             HashMap::<u32,LeafComponent>::new());
         for lc in lcomps.drain(..) {
@@ -78,16 +100,19 @@ impl ScaleCompositor {
         }
     }
 
-    pub fn manage_leafs(&mut self) -> Vec<Leaf> {
+    pub fn manage_leafs(&mut self, cm: &mut ComponentManager) {
         self.remove_unused_leafs();
-        return self.get_missing_leafs();
+        for leaf in self.get_missing_leafs() {
+            let lcomps = cm.make_leafcomps(leaf);
+            self.add_lcomps_to_leaf(leaf,lcomps);
+        }
     }
     
     pub fn leafs(&self) -> Vec<Leaf> {
         self.leafcomps.keys().map(|s| s.clone()).collect()
     }
     
-    fn is_done(&mut self) -> bool {
+    pub fn is_done(&mut self) -> bool {
         for leaf in self.leafcomps.keys() {            
             if let Some(lcc) = self.leafcomps.get(leaf) {
                 for lc in lcc.values() {
@@ -125,5 +150,12 @@ impl ScaleCompositor {
             }
         }
         redo
+    }
+
+    pub fn add_component(&mut self, c: &Component) {
+        for leaf in self.leafs() {
+            let lcomps = vec! { c.make_leafcomp(&leaf) };
+            self.add_lcomps_to_leaf(leaf,lcomps);
+        }
     }
 }

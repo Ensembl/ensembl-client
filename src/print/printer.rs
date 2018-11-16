@@ -70,7 +70,7 @@ impl Printer {
     }
 
     fn manage_leafs(&mut self, c: &mut Compositor) {
-        let sc = c.get_sc();
+        let sc = c.get_current_sc();
         let leafs = sc.leafs();
         self.create_new_leafs(&leafs);
         self.remove_old_leafs(&leafs);        
@@ -94,7 +94,7 @@ impl Printer {
 
     pub fn go(&mut self, stage: &Stage, oom: &StateManager, compo: &mut Compositor) {
         self.manage_leafs(compo);
-        self.go_scale(stage,oom,compo.get_sc());
+        self.go_scale(stage,oom,compo.get_current_sc());
     }
         
     pub fn set_size(&mut self, s: Dot<i32,i32>) {
