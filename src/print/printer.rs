@@ -75,13 +75,15 @@ impl Printer {
         self.remove_old_leafs(&leafs);        
     }
 
-    fn prepare_scale(&mut self, stage: &Stage, oom: &StateManager, sc: &mut ScaleCompositor) {
+    fn prepare_scale(&mut self, stage: &Stage, oom: &StateManager, 
+                     sc: &mut ScaleCompositor, opacity: f32) {
         let leafs = sc.leafs();
         for ref leaf in &leafs {
-            let lp = &mut self.lp.get_mut(&leaf).unwrap();
-            let redo = sc.calc_level(leaf,oom);
-            lp.into_objects(&leaf,sc,&mut self.acm,redo);
-            lp.take_snap(stage);
+            if let Some(lp) = &mut self.lp.get_mut(&leaf) {
+                let redo = sc.calc_level(leaf,oom);
+                lp.into_objects(&leaf,sc,&mut self.acm,redo);
+                lp.take_snap(stage,opacity);
+            }
         }
     }
         
@@ -97,9 +99,9 @@ impl Printer {
 
     pub fn go(&mut self, stage: &Stage, oom: &StateManager, compo: &mut Compositor) {
         self.manage_leafs(compo);
-        self.prepare_scale(stage,oom,compo.get_current_sc());
+        self.prepare_scale(stage,oom,compo.get_current_sc(),1.0);
         if let Some(transition_sc) = compo.get_transition_sc() {
-            //self.prepare_scale(stage,oom,transition_sc);
+            self.prepare_scale(stage,oom,transition_sc,0.5);
         }
         self.execute(stage,oom,compo);
     }

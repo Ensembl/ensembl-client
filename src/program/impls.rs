@@ -106,8 +106,7 @@ impl PTSkin {
                 Attribute::new(&PR_LOW,Arity::Vec3,"aVertexColour"),
                 Varying::new(&PR_LOW,Arity::Vec3,"vColour"),
                 Statement::new_vert("vColour = vec3(aVertexColour)"),
-                Statement::new_frag("gl_FragColor = vec4(vColour, uOpacity);
-                gl_FragColor.a = 0.5;"),
+                Statement::new_frag("gl_FragColor = vec4(vColour, uOpacity)"),
             },
             PTSkin::Spot => vec! {
                 Uniform::new_frag(&PR_LOW,Arity::Scalar,"uOpacity"),
@@ -126,6 +125,7 @@ impl PTSkin {
                 Statement::new_vert("vMaskCoord = aMaskCoord"),
                 Statement::new_frag("
                     gl_FragColor = texture2D(uSampler, vTextureCoord);
+                    gl_FragColor.a = gl_FragColor.a * uOpacity;
                     if( texture2D(uSampler, vMaskCoord).r > 0.95) discard;
                 "),
             }

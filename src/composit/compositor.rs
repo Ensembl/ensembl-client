@@ -5,7 +5,7 @@ use composit::{ LeafComponent, StateManager, Component, Leaf, vscale_bp_per_leaf
 use composit::state::ComponentRedo;
 
 const MS_PER_UPDATE : f64 = 250.;
-const MS_FADE : f64 = 500.;
+const MS_FADE : f64 = 5000.;
 
 pub struct ComponentManager {
     comp_idx: u32,
@@ -77,7 +77,7 @@ impl Compositor {
     fn transition_is_done(&mut self, t: f64) {
         if let Some(start) = self.transition_start {
             if t-start < MS_FADE {
-                console!("Fading for {}ms",t-start);
+                //console!("Fading for {}ms",t-start);
             } else {
                 console!("Fade done");
                 self.current_sc = self.transition_sc.take().unwrap();
@@ -187,10 +187,11 @@ impl Compositor {
     }
     
     pub fn all_leafs(&self) -> Vec<Leaf> {
-        let mut out = self.current_sc.leafs();
+        let mut out = Vec::<Leaf>::new();
         if let Some(ref transition_sc) = self.transition_sc {
-            //out.append(&mut transition_sc.leafs());
+            out.append(&mut transition_sc.leafs());
         }
+        out.append(&mut self.current_sc.leafs());
         out
     }
 }
