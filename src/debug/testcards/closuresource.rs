@@ -23,12 +23,10 @@ impl ClosureSource {
 
 impl Source for ClosureSource {
     fn populate(&self, lc: &mut LCBuilder, leaf: &Leaf) {
-        console!("Asekd for {:?}",leaf);
         let cs = self.clone();
         let mut lc = lc.clone();
         let leaf = leaf.clone();
         window().set_timeout(move || {
-            console!("yup");
             (cs.0.f)(&mut lc,&leaf);
         },(self.0.delay * 1000.) as u32);
     }

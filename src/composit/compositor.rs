@@ -5,7 +5,7 @@ use composit::{ LeafComponent, StateManager, Component, Leaf, vscale_bp_per_leaf
 use composit::state::ComponentRedo;
 
 const MS_PER_UPDATE : f64 = 250.;
-const MS_FADE : f64 = 5000.;
+const MS_FADE : f64 = 500.;
 
 pub struct ComponentManager {
     comp_idx: u32,
@@ -48,6 +48,7 @@ pub struct Compositor {
     future_sc: Option<ScaleCompositor>,
     transition_sc: Option<ScaleCompositor>,
     transition_start: Option<f64>,
+    transition_prop: Option<f64>,
     bp_per_screen: f64,
     updated: bool,
     last_updated: Option<f64>,
@@ -63,6 +64,7 @@ impl Compositor {
             future_sc: None,
             transition_sc: None,
             transition_start: None,
+            transition_prop: None,
             components: ComponentManager::new(),
             bp_per_screen: 1.,
             updated: true,
@@ -77,13 +79,19 @@ impl Compositor {
     fn transition_is_done(&mut self, t: f64) {
         if let Some(start) = self.transition_start {
             if t-start < MS_FADE {
+                self.transition_prop = Some((t-start)/MS_FADE);
                 //console!("Fading for {}ms",t-start);
             } else {
-                console!("Fade done");
+                console!("Fade done to {}",self.transition_sc.as_ref().unwrap().get_vscale());
                 self.current_sc = self.transition_sc.take().unwrap();
                 self.transition_start = None;
+                self.transition_prop = None;
             }
         }
+    }
+
+    pub fn get_prop_trans(&self) -> f32 {
+        self.transition_prop.unwrap_or(0.) as f32
     }
 
     fn future_is_waiting(&mut self, t: f64) {
@@ -96,7 +104,9 @@ impl Compositor {
         if ready && self.transition_sc.is_none() {
             self.transition_sc = self.future_sc.take();
             self.transition_start = Some(t);
-            console!("future is ready for transition at {}",self.current_sc.get_vscale());
+            self.transition_prop = Some(0.);
+            console!("future is ready for transition at {}",
+                    self.transition_sc.as_ref().unwrap().get_vscale());
         }
     }
 
@@ -110,6 +120,9 @@ impl Compositor {
                 if t-prev_t < MS_PER_UPDATE { return; }
             }
             self.current_sc.manage_leafs(&mut self.components);
+            if let Some(ref mut transition_sc) = self.transition_sc {
+                transition_sc.manage_leafs(&mut self.components);
+            }
             if let Some(ref mut future_sc) = self.future_sc {
                 future_sc.manage_leafs(&mut self.components);
             }
@@ -120,6 +133,9 @@ impl Compositor {
 
     pub fn set_position(&mut self, position_bp: f64) {
         self.current_sc.set_position(position_bp);
+        if let Some(ref mut transition_sc) = self.transition_sc {
+            transition_sc.set_position(position_bp);
+        }
         if let Some(ref mut future_sc) = self.future_sc {
             future_sc.set_position(position_bp);
         }
@@ -136,11 +152,19 @@ impl Compositor {
         self.future_sc = None;
     }
     
+    fn target_vscale(&self) -> i32 {
+        if let Some(ref transition_sc) = self.transition_sc {
+            transition_sc.get_vscale()
+        } else {
+            self.current_sc.get_vscale()
+        }
+    }
+    
     fn maybe_new_scale(&mut self) {
         let best = best_vscale(self.bp_per_screen);
         let mut end_future = false;
         let mut new_future = false;
-        if best != self.current_sc.get_vscale() {
+        if best != self.target_vscale() {
             if let Some(ref mut future_sc) = self.future_sc {
                 if best != future_sc.get_vscale() {
                     end_future = true;
@@ -149,7 +173,10 @@ impl Compositor {
             } else {
                 new_future = true;
             }
+        } else if self.future_sc.is_some() {
+            end_future = true;
         }
+        
         if end_future { self.end_future(); }
         if new_future { self.new_future(best); }
         console!("best {}",best);
@@ -160,6 +187,9 @@ impl Compositor {
         self.current_sc.set_zoom(bp_per_screen);
         if let Some(ref mut future_sc) = self.future_sc {
             future_sc.set_zoom(bp_per_screen);
+        }
+        if let Some(ref mut transition_sc) = self.transition_sc {
+            transition_sc.set_zoom(bp_per_screen);
         }
         self.maybe_new_scale();
         self.updated = true;
@@ -176,6 +206,9 @@ impl Compositor {
     pub fn add_component(&mut self, mut c: Component) -> ComponentRemover {
         self.components.prepare(&mut c);
         self.current_sc.add_component(&c);
+        if let Some(ref mut transition_sc) = self.transition_sc {
+            transition_sc.add_component(&c);
+        }
         if let Some(ref mut future_sc) = self.future_sc {
             future_sc.add_component(&c);
         }
