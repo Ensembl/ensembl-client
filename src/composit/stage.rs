@@ -59,14 +59,14 @@ impl Stage {
         self.dims = *size;
     }
 
-    pub fn get_uniforms(&self, leaf: &Leaf) -> HashMap<&str,UniformValue> {
+    pub fn get_uniforms(&self, leaf: &Leaf, opacity: f32) -> HashMap<&str,UniformValue> {
         let z = self.get_linear_zoom();
         let zl = vscale_bp_per_leaf(leaf.get_vscale());
         let ls = z as f64 / zl;
         //debug!("trains","{} bp/screen; {} bp/leaf; {} leaf/screen",z,zl,ls);
         let x = self.pos.0*ls/z as f64*1_f64;
         hashmap! {
-            "uOpacity" => UniformValue::Float(0.5),
+            "uOpacity" => UniformValue::Float(opacity),
             "uStageHpos" => UniformValue::Float((x - leaf.get_offset() as f64) as f32),
             "uStageVpos" => UniformValue::Float((self.pos.1 + self.dims.1 as f64/2.) as f32),
             "uStageZoom" => UniformValue::Float((2_f64/ls) as f32),

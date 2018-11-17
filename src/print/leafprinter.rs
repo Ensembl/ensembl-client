@@ -74,19 +74,24 @@ impl LeafPrinter {
                 self.redraw_objects(comps,&mut e);
                 self.fini(&mut e);
             }
-        } else {
-            console!("I am undone");
         }
     }
 
-    pub fn take_snap(&mut self, stage: &Stage) {
+    pub fn take_snap(&mut self, stage: &Stage, opacity: f32) {
         self.ctx.enable(glctx::DEPTH_TEST);
-        self.ctx.depth_func(glctx::LEQUAL);
         self.ctx.enable(glctx::BLEND);
-        self.ctx.blend_func(glctx::ONE, glctx::ONE_MINUS_SRC_ALPHA);
+        self.ctx.blend_func_separate(
+            glctx::SRC_ALPHA,
+            glctx::ONE_MINUS_SRC_ALPHA,
+            glctx::ONE,
+            glctx::ONE_MINUS_SRC_ALPHA);        
+        self.ctx.depth_mask(true);
+        self.ctx.clear(glctx::COLOR_BUFFER_BIT | glctx::DEPTH_BUFFER_BIT);
+
+        
         for k in &self.progs.order {
             let prog = self.progs.map.get_mut(k).unwrap();
-            let u = stage.get_uniforms(&self.leaf);
+            let u = stage.get_uniforms(&self.leaf, opacity);
             for (key, value) in &u {
                 if let Some(obj) = prog.get_object(key) {
                     obj.set_uniform(None,*value);
