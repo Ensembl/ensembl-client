@@ -75,6 +75,18 @@ impl Printer {
         self.remove_old_leafs(&leafs);        
     }
 
+    fn prepare_all(&mut self) {
+        self.ctx.enable(glctx::DEPTH_TEST);
+        self.ctx.enable(glctx::BLEND);
+        self.ctx.blend_func_separate(
+            glctx::SRC_ALPHA,
+            glctx::ONE_MINUS_SRC_ALPHA,
+            glctx::ONE,
+            glctx::ONE_MINUS_SRC_ALPHA);        
+        self.ctx.depth_mask(false);
+        self.ctx.clear(glctx::COLOR_BUFFER_BIT | glctx::DEPTH_BUFFER_BIT);
+    }
+
     fn prepare_scale(&mut self, stage: &Stage, oom: &StateManager, 
                      sc: &mut ScaleCompositor, opacity: f32) {
         let leafs = sc.leafs();
@@ -99,9 +111,11 @@ impl Printer {
 
     pub fn go(&mut self, stage: &Stage, oom: &StateManager, compo: &mut Compositor) {
         self.manage_leafs(compo);
-        self.prepare_scale(stage,oom,compo.get_current_sc(),1.0);
+        self.prepare_all();
+        let prop = compo.get_prop_trans();
+        self.prepare_scale(stage,oom,compo.get_current_sc(),1.-prop);
         if let Some(transition_sc) = compo.get_transition_sc() {
-            self.prepare_scale(stage,oom,transition_sc,0.5);
+            self.prepare_scale(stage,oom,transition_sc,prop);
         }
         self.execute(stage,oom,compo);
     }
