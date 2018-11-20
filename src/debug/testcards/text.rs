@@ -4,7 +4,7 @@ use std::sync::{ Arc, Mutex };
 use composit::{ StateFixed, Component, StateValue };
 use controller::global::Global;
 use controller::input::Event;
-use debug::testcards::closuresource::{ ClosureSource, closure_add };
+use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
 use drawing::{ FCFont, FontVariety, text_texture };
 use shape::{ ColourSpec, tape_rectangle, tape_texture };
 use types::{ Colour, cleaf, cpixel, area_size, AxisSense, A_TOPLEFT };
@@ -23,6 +23,7 @@ pub fn testcard_text(g: Arc<Mutex<Global>>) {
 
         closure_add(lc,&tape_texture(tx,&cleaf(0.,100).y_edge(AxisSense::Pos),
                     &cpixel(0,0),&cpixel(1,1).anchor(A_TOPLEFT)));
+        closure_done(lc,200);
     });
     
     let c = Component::new(Box::new(cs.clone()),Rc::new(StateFixed(StateValue::On())));

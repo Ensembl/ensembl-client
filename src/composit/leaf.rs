@@ -15,7 +15,7 @@ impl Leaf {
     pub fn get_vscale(&self) -> i32 { self.vscale }
 }
 
-const FRAME : f64 = 2000.;
+const FRAME : f64 = 5000.;
 
 pub fn vscale_bp_per_leaf(vscale: i32) -> f64 {
     let mut bp_px = 10_i64.pow(vscale.abs() as u32/2) as f64;
