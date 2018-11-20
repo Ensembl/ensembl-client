@@ -1,8 +1,9 @@
+use std::f64::consts::PI;
 use std::sync::{ Arc, Mutex };
 use types::{ CPixel, CDFraction, cdfraction };
 use controller::global::{ CanvasState, CanvasRunner };
 use controller::input::{ Event, events_run };
-use types::{ Move, Distance, Units, ddiv };
+use types::{ Move, Distance, Units, ddiv, Dot };
 
 pub struct MousePhysicsImpl {
     last_t: Option<f64>,              /* last update */
@@ -19,10 +20,32 @@ const LETHARGY : f64 = 3500.;
 const BOING : f64 = 1.00;
 const EPS : f64 = 0.01;
 const MUL: i32 = 20;
-const MAXPERIOD: f64 = 100.;
+const MAXPERIOD : f64 = 100.;
+const STICKFORCE : f64 = 75.;
+const VERTFORCE : f64 = 25.;
+const VERTMUL : f64 = 2.75; // 70deg, near enough
 
 impl MousePhysicsImpl {
-    fn set_drive(&mut self, f: CDFraction) {
+    fn new() -> MousePhysicsImpl {
+        MousePhysicsImpl {
+            last_t: None,
+            force_origin: None,
+            mouse_pos: None,
+            drive: None,
+            vel: cdfraction(0.,0.),
+        }
+    }
+    
+    fn apply_stiction(&mut self, f: &CDFraction) -> CDFraction {
+        let mut out = *f;
+        if out.1.abs() < STICKFORCE {
+            out.1 = 0.;
+        }
+        out
+    }
+    
+    fn set_drive(&mut self, mut f: CDFraction) {
+        let f = self.apply_stiction(&f);
         self.drive = Some(f);
     }
         
@@ -67,7 +90,7 @@ impl MousePhysicsImpl {
     
     /* when mouse moves, so does the handle */
     fn shift_handle_to(&mut self, e: &CPixel) {
-        let at = e.as_dfraction();            
+        let at = e.as_dfraction();
         self.mouse_pos = Some(at);
         if let Some(force_origin) = self.force_origin {
             self.set_drive(at - force_origin);
@@ -80,56 +103,67 @@ impl MousePhysicsImpl {
             self.shift_attachment_with_canvas(&dx);
         }
     }
+    
+    fn calc_delta(&mut self, t: f64) -> Option<f64> {
+        let mut out = None;
+        if let Some(last_t) = self.last_t {
+            out = Some(t - last_t);
+        }
+        self.last_t = Some(t);
+        out
+    }
+    
+    fn physics_step(&mut self, cg: &CanvasState, dt: f64) -> bool {
+        if let Some(dx) = self.run_dynamics(dt) {
+            self.move_by(cg,dx);
+        } else if self.force_origin.is_some() {
+            /* Couldn't run dynamics (step too long?). Reset. */
+            self.force_origin = self.mouse_pos;
+            return false;
+        }
+        true
+    }
+    
+    fn tick(&mut self, cg: &CanvasState, t: f64) {
+        if let Some(dt) = self.calc_delta(t) {
+            for _i in 0..MUL {
+                if !self.physics_step(cg,dt/MUL as f64) { break; }
+            }
+        }
+        if self.force_origin.is_none() {
+            cg.with_stage(|s| s.settle());
+        }
+    }
+    
+    fn mouse_down(&mut self, e: CPixel) {
+        self.vel = cdfraction(0.,0.);
+        self.force_origin = Some(e.as_dfraction());
+        self.mouse_pos = Some(e.as_dfraction());        
+    }
+    
+    fn mouse_up(&mut self) {
+        self.force_origin = None;
+    }
 }
 
 impl MousePhysics {
     pub fn new(ru: &mut CanvasRunner) -> MousePhysics {
-        let out = MousePhysics(Arc::new(Mutex::new(MousePhysicsImpl {
-            last_t: None,
-            force_origin: None,
-            mouse_pos: None,
-            drive: None,
-            vel: cdfraction(0.,0.),
-        })));
+        let out = MousePhysics(Arc::new(Mutex::new(MousePhysicsImpl::new())));
         let c = out.clone();
         ru.add_timer(move |cg,t| c.clone().tick(cg,t));
         out
     }
 
     pub fn tick(&mut self, cg: &CanvasState, t: f64) {
-        let mut mp = self.0.lock().unwrap();
-        let mut dt = None;
-        {
-            if let Some(last_t) = mp.last_t {
-                dt = Some(t - last_t);
-            }
-            mp.last_t = Some(t);
-        }
-        if let Some(dt) = dt {
-            for _i in 0..MUL {
-                if let Some(dx) = mp.run_dynamics(dt/MUL as f64) {
-                    mp.move_by(cg,dx);
-                } else if mp.force_origin.is_some() {
-                    mp.force_origin = mp.mouse_pos;
-                    break;
-                }
-            }
-        }
-        if mp.force_origin.is_none() {
-            cg.with_stage(|s| s.settle());
-        }
+        self.0.lock().unwrap().tick(cg,t);
     }
 
     pub fn down(&mut self, e: CPixel) {
-        let mut mp = self.0.lock().unwrap();
-        mp.vel = cdfraction(0.,0.);
-        mp.force_origin = Some(e.as_dfraction());
-        mp.mouse_pos = Some(e.as_dfraction());
+        self.0.lock().unwrap().mouse_down(e);
     }
     
     pub fn up(&mut self) {
-        let mut mp = self.0.lock().unwrap();
-        mp.force_origin = None;
+        self.0.lock().unwrap().mouse_up();
     }
 
     pub fn move_to(&mut self, e: CPixel) {
