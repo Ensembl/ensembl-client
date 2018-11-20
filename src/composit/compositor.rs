@@ -1,5 +1,5 @@
 use std::cmp::{ max, min };
-use std::collections::{ HashMap, HashSet };
+use std::collections::HashMap;
 
 use composit::{ LeafComponent, StateManager, Component, Leaf, vscale_bp_per_leaf,ScaleCompositor, best_vscale };
 use composit::state::ComponentRedo;
@@ -25,7 +25,7 @@ impl ComponentManager {
         c.set_index(self.comp_idx);
     }
     
-    pub fn add(&mut self, mut c: Component) -> ComponentRemover {
+    pub fn add(&mut self, c: Component) -> ComponentRemover {
         self.components.insert(self.comp_idx,c);
         ComponentRemover(self.comp_idx)
     }

@@ -17,10 +17,7 @@ impl Component {
     }
     
     pub fn make_leafcomp(&self, leaf: &Leaf) -> LeafComponent {
-        if self.index == None {
-            console!("OOOH");
-        }
-        let mut out = LeafComponent::new(&self.ooe,self.index.unwrap());
+        let out = LeafComponent::new(&self.ooe,self.index.unwrap());
         self.source.populate(&mut out.get_lcbuilder(),leaf);
         out
     }
