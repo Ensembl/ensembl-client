@@ -2,7 +2,6 @@ use std::sync::{ Mutex, Arc };
 
 use rand::{ Rng, seq };
 use rand::distributions::Distribution;
-use rand::distributions::range::Range;
 
 use controller::global::Global;
 use debug::testcards::visual::testcard_visual;
@@ -60,9 +59,8 @@ pub fn daft<R>(rng: &mut R) -> String where R: Rng {
                        "b", "c", "d", "f", "g", "h", "j",
                        "k", "l", "m", "n", "p", "r", "s", "t", "u", "v",
                        "w", "x", "y", "z" ];
-    let num_gen = Range::new(1,8);
     let mut out = String::new();
-    let num = num_gen.sample(rng);
+    let num : i32 = rng.gen_range(1,8);
     for _i in 0..num {
         out += &choose(rng,&[&onset[..],&nuc[..],&coda[..]])[..];
         let sp: bool = rng.gen();
