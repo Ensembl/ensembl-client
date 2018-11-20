@@ -215,6 +215,15 @@ impl Compositor {
         self.components.add(c)
     }
 
+    pub fn get_max_y(&self) -> i32 {
+        let mut max = self.current_sc.get_max_y();
+        if let Some(ref transition_sc) = self.transition_sc {
+            let y = transition_sc.get_max_y();
+            if y > max { max = y; }
+        }
+        max
+    }
+
     pub fn remove(&mut self, k: ComponentRemover) {
         self.components.remove(k);
     }

@@ -36,6 +36,6 @@ pub fn closure_add(lcb: &mut LCBuilder, s: &ShapeSpec) {
     lcb.add_shape(DrawnShape::new(s.create()));
 }
 
-pub fn closure_done(lcb: &mut LCBuilder) {
-    lcb.done();
+pub fn closure_done(lcb: &mut LCBuilder, max_y: i32) {
+    lcb.done(max_y);
 }

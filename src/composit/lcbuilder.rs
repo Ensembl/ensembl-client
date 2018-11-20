@@ -6,6 +6,7 @@ use shape::DrawnShape;
 
 pub struct LCBuilderImpl {
     shapes: Vec<DrawnShape>,
+    max_y: Option<i32>,
     done: bool
 }
 
@@ -13,6 +14,7 @@ impl LCBuilderImpl {
     fn new() -> LCBuilderImpl {
         LCBuilderImpl {
             shapes: Vec::<DrawnShape>::new(),
+            max_y: None,
             done: false
         }
     }
@@ -21,9 +23,12 @@ impl LCBuilderImpl {
         self.shapes.push(item);
     }
     
-    fn done(&mut self) {
+    fn done(&mut self, max_y: i32) {
+        self.max_y = Some(max_y);
         self.done = true;
     }
+    
+    fn get_max_y(&self) -> i32 { self.max_y.unwrap_or(0) }
     
     fn is_done(&self) -> bool { self.done }
     
@@ -56,11 +61,12 @@ impl LCBuilder {
         self.0.borrow_mut().add_shape(item);
     }
     
-    pub fn done(&mut self) {
-        self.0.borrow_mut().done();
+    pub fn done(&mut self, max_y: i32) {
+        self.0.borrow_mut().done(max_y);
     }
     
     pub fn is_done(&self) -> bool { self.0.borrow().is_done() }
+    pub fn get_max_y(&self) -> i32 { self.0.borrow().get_max_y() }
     
     pub fn each_shape<F>(&mut self, cb: F) where F: FnMut(&mut DrawnShape) {
         self.0.borrow_mut().each_shape(cb);
