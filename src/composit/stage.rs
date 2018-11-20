@@ -1,4 +1,3 @@
-use std::cmp::max;
 use std::collections::HashMap;
 
 use composit::{ Leaf, vscale_bp_per_leaf };
@@ -27,6 +26,10 @@ impl Stage {
         };
         out.set_zoom(0.);
         out
+    }
+
+    pub fn settle(&mut self) {
+        self.pos.1 = self.pos.1.round();
     }
 
     pub fn get_pos(&self) -> Dot<f64,f64> { self.pos }
