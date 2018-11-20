@@ -7,6 +7,7 @@ pub struct JankBuster {
     grace_next: (u32,u32),
     grace_at: f32,
     last_down: bool,
+    enabled: bool
 }
 
 fn fib_inc(val: (u32,u32)) -> (u32,u32) {
@@ -28,10 +29,35 @@ impl JankBuster {
             grace_next: (1,1),
             grace_at: 0.,
             last_down: true,
+            enabled: true
+        }
+    }
+
+    fn _reset(&mut self) {
+        self.gear = 1;
+        self.grace_next = (1,1);
+        self.grace_at = 0.;
+        self.last_down = true;
+    }
+
+    pub fn disable(&mut self) {
+        if self.enabled {
+            self.enabled = false;
+            self.gear = MAX_GEAR;
+            debug!("jank gear","lost focus");
+        }
+    }
+    
+    pub fn enable(&mut self) {
+        if !self.enabled {
+            self.enabled = true;
+            self._reset();
+            debug!("jank gear","gained focus");
         }
     }
 
     pub fn detect(&mut self, delta: u32, time: f32) {
+        if !self.enabled { return; }
         if delta > self.gear as u32 * 20 {
             if self.gear < MAX_GEAR {
                 /* Go up a gear */
