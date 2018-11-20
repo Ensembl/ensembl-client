@@ -27,9 +27,11 @@ impl CanvasRunner {
             timers: Timers::new()
         })));
         out.add_timer(|cs,t| {
-            cs.with_compo(|co| {
+            let max_y = cs.with_compo(|co| {
                 co.tick(t);
+                co.get_max_y()
             });
+            cs.with_stage(|s| s.set_max_y(max_y));
         });
         out
     }

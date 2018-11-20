@@ -6,8 +6,8 @@ use types::{ Move, Distance, Units, ddiv };
 
 pub struct MousePhysicsImpl {
     last_t: Option<f64>,              /* last update */
-    force_origin: Option<CDFraction>, /* spring anchor */
-    mouse_pos: Option<CDFraction>,    /* spring free-end */
+    force_origin: Option<CDFraction>, /* spring attachment point */
+    mouse_pos: Option<CDFraction>,    /* spring handle */
     drive: Option<CDFraction>,        /* driving force */
     vel: CDFraction,                  /* vel */
 }
@@ -22,11 +22,11 @@ const MUL: i32 = 20;
 const MAXPERIOD: f64 = 100.;
 
 impl MousePhysicsImpl {
-    pub fn set_drive(&mut self, f: CDFraction) {
+    fn set_drive(&mut self, f: CDFraction) {
         self.drive = Some(f);
     }
         
-    pub fn run_dynamics(&mut self, t: f64) -> Option<CDFraction> {
+    fn run_dynamics(&mut self, t: f64) -> Option<CDFraction> {
         if t > MAXPERIOD { return None; }
         let drive = self.drive.unwrap_or(cdfraction(0.,0.));
         let drive = ddiv(drive,cdfraction(LETHARGY,LETHARGY));
@@ -38,20 +38,46 @@ impl MousePhysicsImpl {
         Some(self.vel * dtv)
     }
 
-    pub fn move_by(&mut self, cg: &CanvasState, dx: CDFraction) {
-        if dx.0.abs() > EPS || dx.1.abs() > EPS {
-            events_run(cg,vec! {
-                Event::Move(Move::Left(Distance(dx.0,Units::Pixels))),
-                Event::Move(Move::Up(Distance(dx.1,Units::Pixels)))
-            });
-            if let Some(force_origin) = self.force_origin {
-                self.force_origin = Some(force_origin + dx);
-                if let Some(mouse_pos) = self.mouse_pos {
-                    self.set_drive(mouse_pos - force_origin);
-                }
-            } else {
-                self.drive = None;
+    fn significant_move(&self, dx: &CDFraction) -> bool {
+        dx.0.abs() > EPS || dx.1.abs() > EPS
+    }
+
+    fn make_events(&self, cg: &CanvasState, dx: &CDFraction) {
+        events_run(cg,vec! {
+            Event::Move(Move::Left(Distance(dx.0,Units::Pixels))),
+            Event::Move(Move::Up(Distance(dx.1,Units::Pixels)))
+        });
+    }
+
+    /* when the canvas moves, the "attachment point" moves with it.
+     * Even if the attachment stalls (eg at edges) the attachment point
+     * skids to fully use up the mouse move ready for the next valid
+     * move.
+     */
+    fn shift_attachment_with_canvas(&mut self, dx: &CDFraction) {
+        if let Some(force_origin) = self.force_origin {
+            self.force_origin = Some(force_origin + *dx);
+            if let Some(mouse_pos) = self.mouse_pos {
+                self.set_drive(mouse_pos - force_origin);
             }
+        } else {
+            self.drive = None;
+        }        
+    }
+    
+    /* when mouse moves, so does the handle */
+    fn shift_handle_to(&mut self, e: &CPixel) {
+        let at = e.as_dfraction();            
+        self.mouse_pos = Some(at);
+        if let Some(force_origin) = self.force_origin {
+            self.set_drive(at - force_origin);
+        }
+    }
+
+    fn move_by(&mut self, cg: &CanvasState, dx: CDFraction) {
+        if self.significant_move(&dx) {
+            self.make_events(cg,&dx);
+            self.shift_attachment_with_canvas(&dx);
         }
     }
 }
@@ -104,11 +130,6 @@ impl MousePhysics {
     }
 
     pub fn move_to(&mut self, e: CPixel) {
-        let mut mp = self.0.lock().unwrap();
-        let at = e.as_dfraction();            
-        mp.mouse_pos = Some(at);
-        if let Some(force_origin) = mp.force_origin {
-            mp.set_drive(at - force_origin);
-        }
+        self.0.lock().unwrap().shift_handle_to(&e);
     }
 }

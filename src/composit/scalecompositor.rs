@@ -62,7 +62,7 @@ impl ScaleCompositor {
     }
 
     fn add_lcomps_to_leaf(&mut self, leaf: Leaf, mut lcomps: Vec<LeafComponent>) {
-        let mut lcc = self.leafcomps.entry(leaf).or_insert_with(||
+        let lcc = self.leafcomps.entry(leaf).or_insert_with(||
             HashMap::<u32,LeafComponent>::new());
         for lc in lcomps.drain(..) {
             lcc.insert(lc.get_component_index(),lc);
@@ -131,6 +131,19 @@ impl ScaleCompositor {
         } else {
             vec!{}
         })
+    }
+    
+    pub fn get_max_y(&self) -> i32 {
+        let mut max = 0;
+        for leaf in self.leafs() {
+            if let Some(lcc) = self.leafcomps.get(&leaf) {
+                for lc in lcc.values() {
+                    let y = lc.get_max_y();
+                    if y > max { max = y; }
+                }
+            }
+        }
+        max
     }
 
     pub fn calc_level(&mut self, leaf: &Leaf, oom: &StateManager) -> ComponentRedo {

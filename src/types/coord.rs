@@ -83,8 +83,10 @@ pub enum Move<T: Neg<Output=T> + Clone + Copy + Debug,
     Right(Distance<T>)
 }
 
-impl<T: Neg<Output=T> + Clone+Copy+Debug + Mul<f64,Output=T> + Div<f64,Output=T>,
-     U: Neg<Output=U> + Clone+Copy+Debug + Mul<f64,Output=U> + Div<f64,Output=U>> Move<T,U> {
+impl<T: Neg<Output=T> + Clone+Copy+Debug + Mul<f64,Output=T> + 
+        Div<f64,Output=T> + PartialOrd<f64>,
+     U: Neg<Output=U> + Clone+Copy+Debug + Mul<f64,Output=U> + 
+        Div<f64,Output=U> + PartialOrd<f64>> Move<T,U> {
          
     pub fn convert(&self, target: Units, stage: &Stage) -> Move<T,U> {
         match self {
@@ -101,6 +103,15 @@ impl<T: Neg<Output=T> + Clone+Copy+Debug + Mul<f64,Output=T> + Div<f64,Output=T>
             Move::Down(_) => DOWN,
             Move::Left(_) => LEFT,
             Move::Right(_) => RIGHT
+        }
+    }
+
+    pub fn true_direction(&self) -> Direction {
+        match self {
+            Move::Up(x) =>    if x.0 > 0. { UP } else { DOWN }
+            Move::Down(x) =>  if x.0 > 0. { DOWN } else { UP }
+            Move::Left(x) =>  if x.0 > 0. { LEFT } else { RIGHT }
+            Move::Right(x) => if x.0 > 0. { RIGHT } else { LEFT }
         }
     }
 }

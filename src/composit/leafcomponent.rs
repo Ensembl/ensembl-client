@@ -46,6 +46,7 @@ impl LeafComponent {
     }
      
     pub fn is_done(&self) -> bool { self.shapes.is_done() }
+    pub fn get_max_y(&self) -> i32 { self.shapes.get_max_y() }
         
     pub fn draw_drawings(&mut self, ds: &mut DrawingSession){
         self.shapes.each_shape(|s| {

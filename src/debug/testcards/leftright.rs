@@ -82,7 +82,7 @@ pub fn testcard_leftright(g: Arc<Mutex<Global>>) {
                         cleaf(1.,offset+10),
                      ),&colour));
         */
-        closure_done(lc);
+        closure_done(lc,60);
     });
 
     let c = Component::new(Box::new(cs.clone()),Rc::new(StateFixed(StateValue::On())));
