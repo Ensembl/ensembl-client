@@ -12,7 +12,7 @@ use composit::{
     LCBuilder
 };
 
-use debug::testcards::closuresource::{ ClosureSource, closure_add };
+use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
 use debug::testcards::common::{ daft, bio_daft, wiggly };
 
 use shape::{
@@ -142,6 +142,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                 }
             }
         }
+        closure_done(lc,1200);
     });
 
     let cs_even = ClosureSource::new(0.,move |lc,leaf| {
@@ -188,6 +189,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                 }
             }
         }
+        closure_done(lc,1200);
     });
     
     let cs = ClosureSource::new(0.,move |ref mut lc,leaf| {
@@ -333,6 +335,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                                    A_BOTTOMRIGHT,
                                    20.,None,MathsShape::Polygon(5,0.),
                                    &red));
+        closure_done(lc,1200);
     });
     
     let c = Component::new(Box::new(cs.clone()),Rc::new(StateFixed(StateValue::On())));

@@ -9,7 +9,7 @@ use composit::{
 use controller::global::Global;
 use controller::input::Event;
 use debug::testcards::common::track_data;
-use debug::testcards::closuresource::{ ClosureSource, closure_add };
+use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
 use drawing::{
     mark_rectangle, text_texture, collage, Mark, Artist,
     FCFont, FontVariety
@@ -192,6 +192,7 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
         for t in 0..TRACKS {
             track(lc,&leaf,&p,t);
         }
+        closure_done(lc,TRACKS*PITCH+TOP);
     });
     let c = Component::new(Box::new(cs.clone()),Rc::new(StateFixed(StateValue::On())));
     g.with_state(|s| {
