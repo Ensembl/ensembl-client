@@ -81,7 +81,6 @@ impl Projector {
 
     fn machine_frame(&mut self, time: f64) {
         let cr = self.0.borrow_mut().cr.upgrade();
-        let mut refresh = false;
         if let Some(mut cr) = cr {
             if self.should_run(time) {
                 cr.run_timers(time);

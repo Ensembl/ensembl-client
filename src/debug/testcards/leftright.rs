@@ -45,7 +45,7 @@ pub fn testcard_leftright(g: Arc<Mutex<Global>>) {
     let font = FCFont::new(16,"Lato",FontVariety::Normal);
     let cs = ClosureSource::new(0.2,move |lc,leaf| {
         let i = leaf.get_index();
-        let mut mul = vscale_bp_per_leaf(leaf.get_vscale());
+        let mul = vscale_bp_per_leaf(leaf.get_vscale());
         let start = leaf.get_index() as f64 * mul;
         for v in range(start,mul,TARGET,BY12) {
             let offset = (v as f64-start)/mul;
