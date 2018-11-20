@@ -10,12 +10,12 @@ serde = "*"
 serde_derive = "*"
 serde_json = "*"
 lazy_static = "*"
-rand="0.5.4"
-separator = "0.3.1"
+rand="*"
+separator = "*"
 
 [build-dependencies]
-webgl_generator = "0.1.0"
-cargo-web="0.6.15"
+webgl_generator = "*"
+cargo-web="*"
 
-#[profile.release]
-#lto = true
+[profile.release]
+lto = true
