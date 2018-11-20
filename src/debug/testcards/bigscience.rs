@@ -2,7 +2,6 @@
 use std::rc::Rc;
 
 use rand::distributions::Distribution;
-use rand::distributions::range::Range;
 use rand::Rng;
 use rand::rngs::SmallRng;
 use rand::SeedableRng;
@@ -87,9 +86,9 @@ pub fn big_science(g: &mut Global, onoff: bool) {
     let green = ColourSpec::Spot(green_col);
     let red = ColourSpec::Spot(Colour(255,100,50));
     
-    let len_gen = Range::new(0.,0.2);
-    let thick_gen = Range::new(0,13);
-    let showtext_gen = Range::new(0,10);
+    //let len_gen = Range::new(0.,0.2);
+    //let thick_gen = Range::new(0,13);
+    //let showtext_gen = Range::new(0,10);
     let (sw,sh);
     {
         sw = size.0;
@@ -259,14 +258,14 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                 for idx in -100..100 {
                     let v1 = (idx as f32) * 0.1;
                     let v2 = (idx as f32)+10.0*(yidx as f32) * 0.1;
-                    let dx = len_gen.sample(&mut rng) * 100.;
+                    let dx = rng.gen_range(0.,20.);
                     let x = v1 * 100. + (yidx as f32).cos() * 100.;
                     let colour = Colour(
                         (128.*v2.cos()+128.) as u32,
                         (128.*v2.sin()+128.) as u32,
                         (128.*(v2+1.0).sin()+128.) as u32,
                     );
-                    let h = if thick_gen.sample(&mut rng) == 0 { 1 } else { 5 };
+                    let h = if rng.gen_range(0,13) == 0 { 1 } else { 5 };
                     closure_add(lc,&stretch_rectangle(&area_size(cleaf(x/1000.,y-h),cleaf(dx/1000.,2*h)),
                                     &ColourSpec::Colour(colour)));
                     if idx %5 == 0 {
@@ -278,7 +277,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
                                         MathsShape::Polygon(3,0.75),
                                         &ColourSpec::Colour(colour)));
                     }
-                    if showtext_gen.sample(&mut rng) == 0 {
+                    if rng.gen_range(0,10) == 0 {
                         let val = bio_daft(&mut rng);
                         let tx = text_texture(&val,&fc_font,&col,&Colour(255,255,255));
                         closure_add(lc,&pin_texture(tx, &cleaf(x/1000.,y-24), &cpixel(0,0), &cpixel(1,1).anchor(A_MIDDLE)));
