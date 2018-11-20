@@ -115,6 +115,9 @@ impl MousePhysics {
                 }
             }
         }
+        if mp.force_origin.is_none() {
+            cg.with_stage(|s| s.settle());
+        }
     }
 
     pub fn down(&mut self, e: CPixel) {
