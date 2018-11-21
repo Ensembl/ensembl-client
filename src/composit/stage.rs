@@ -9,6 +9,7 @@ use types::{CPixel, cpixel, Move, Dot, DOWN };
 #[derive(Clone,Debug)]
 pub struct Stage {
     dims: CPixel,
+    mouse_pos: CPixel,
     base: f64,
     pos: Dot<f64,f64>,
     zoom: f32,
@@ -21,6 +22,7 @@ impl Stage {
         let size = cpixel(0,0);
         let mut out = Stage {
             pos: Dot(0.,0.),
+            mouse_pos: Dot(0,0),
             zoom: 0., linzoom: 0., base: 0., max_y: 0,
             dims: size,
         };
@@ -28,6 +30,28 @@ impl Stage {
         out
     }
 
+    pub fn set_mouse_pos(&mut self, c: &CPixel) {
+        self.mouse_pos = *c;
+    }
+    
+    pub fn get_mouse_pos_prop(&self) -> f64 {
+        self.mouse_pos.0 as f64 / self.get_size().0 as f64
+    }
+
+    pub fn get_pos_prop_bp(&self, prop: f64) -> f64 {
+        let start = self.get_pos().0 - self.get_linear_zoom() / 2.;
+        start + prop * self.get_linear_zoom()
+    }
+
+    pub fn get_mouse_pos_bp(&self) -> f64 {
+        self.get_pos_prop_bp(self.get_mouse_pos_prop())
+    }
+        
+    pub fn pos_prop_bp_to_origin(&self, pos: f64, prop: f64) -> f64 {
+        let start = pos - prop * self.get_linear_zoom();
+        start + self.get_linear_zoom()/2.
+    }
+        
     pub fn settle(&mut self) {
         self.pos.1 = self.pos.1.round();
     }

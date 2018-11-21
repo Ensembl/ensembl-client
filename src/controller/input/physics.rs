@@ -22,8 +22,6 @@ const EPS : f64 = 0.01;
 const MUL: i32 = 20;
 const MAXPERIOD : f64 = 100.;
 const STICKFORCE : f64 = 75.;
-const VERTFORCE : f64 = 25.;
-const VERTMUL : f64 = 2.75; // 70deg, near enough
 
 impl MousePhysicsImpl {
     fn new() -> MousePhysicsImpl {
@@ -44,7 +42,7 @@ impl MousePhysicsImpl {
         out
     }
     
-    fn set_drive(&mut self, mut f: CDFraction) {
+    fn set_drive(&mut self, f: CDFraction) {
         let f = self.apply_stiction(&f);
         self.drive = Some(f);
     }
