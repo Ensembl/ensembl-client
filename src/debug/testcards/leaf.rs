@@ -37,7 +37,26 @@ fn goby(start: f64, bp_leaf: f64, target: i32, by: &[f64]) -> f64 {
 fn range(start: f64, bp_leaf: f64, target: i32, by: &[f64]) -> impl Iterator<Item=i64> {
     let step = goby(start,bp_leaf,target,by);
     let end = start+bp_leaf;
-    ((start/step).ceil() as i64..(end/step).floor() as i64+1).map(move |x| x*step as i64)
+    ((start/step).ceil() as i64 .. (end/step).floor() as i64+1)
+        .map(move |x| x*step as i64)
+}
+
+fn round_sf(value: f64, sf: i32) -> f64 {
+    if value == 0. { return 0.; }
+    let mag = 10_f64.powi(value.abs().log10().floor() as i32+1-sf);
+    console!("round({}) {}->{}",sf,value,(value/mag).floor()*mag);
+    (value/mag).floor()*mag
+}
+
+fn common_sf(a: f64, b: f64) -> i32 {
+    for i in 1..50 {
+        if round_sf(a,i) != round_sf(b,i) { return i-1; }
+    }
+    50
+}
+
+fn format_str(v: i64, vdiv: f64, delta: f64) -> String {
+    (delta+v as f64/vdiv).separated_string()
 }
 
 pub fn testcard_leaf(g: Arc<Mutex<Global>>, show_leaf: bool) {
@@ -45,11 +64,23 @@ pub fn testcard_leaf(g: Arc<Mutex<Global>>, show_leaf: bool) {
     let font = FCFont::new(16,"Lato",FontVariety::Normal);
     let cs = ClosureSource::new(0.2,move |lc,leaf| {
         let i = leaf.get_index();
-        let mul = vscale_bp_per_leaf(leaf.get_vscale());
-        let start = leaf.get_index() as f64 * mul;
+        let mut mul = vscale_bp_per_leaf(leaf.get_vscale());
+        let mut vdiv = 1.;
+        let mut delta = 0.;
+        let mut start = leaf.get_index() as f64 * mul;
+        if mul < 100. {
+            delta = round_sf(start,common_sf(start,start+mul));
+            start -= delta;
+            console!("was mul={} [{}]",mul,mul.log10().round());
+            vdiv = 10_i64.pow((3-mul.log10().round() as i32) as u32) as f64;
+            mul *= vdiv;
+            console!("now mul={} vdiv={}",mul,vdiv);
+            start *= vdiv;
+        }
+        console!("mul={} vdiv={} delta={} start={}",mul,vdiv,delta,start);
         for v in range(start,mul,TARGET,BY12) {
             let offset = (v as f64-start)/mul;
-            let tx = text_texture(&format!("{}",v.separated_string()),&font,&Colour(199,208,213),&Colour(255,255,255));
+            let tx = text_texture(&format_str(v,vdiv,delta),&font,&Colour(199,208,213),&Colour(255,255,255));
             closure_add(lc,&pin_texture(tx,&cleaf(offset as f32,1),
                         &cpixel(0,40),&cpixel(1,1).anchor(A_TOP)));
         }
