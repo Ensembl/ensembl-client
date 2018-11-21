@@ -12,12 +12,10 @@ pub enum Event {
 
 fn exe_pos_event(cg: &CanvasState, v: Dot<f64,f64>, prop: Option<f64>) {
     let prop = prop.unwrap_or(0.5);
-    console!("v was {:?}",v);
     let v = cg.with_stage(|s|
         Dot(s.pos_prop_bp_to_origin(v.0,prop),v.1)
     );
     cg.with_stage(|s| { s.set_pos(&v); });
-    console!("v now {:?}",v);
     cg.with_compo(|co| { co.set_position(v.0); });
 }
 

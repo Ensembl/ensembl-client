@@ -8,7 +8,7 @@ use debug::testcards::visual::testcard_visual;
 use debug::testcards::button::testcard_button;
 use debug::testcards::polar::testcard_polar;
 use debug::testcards::text::testcard_text;
-use debug::testcards::leftright::testcard_leftright;
+use debug::testcards::leaf::testcard_leaf;
 use types::{ CLeaf, cleaf };
 use stdweb::web::{ Element };
 
@@ -20,7 +20,8 @@ pub fn testcard(cont_el: &Element, g: Arc<Mutex<Global>>, name: &str) {
         "button" => testcard_button(cont_el,g),
         "polar" => testcard_polar(g),
         "text" => testcard_text(g),
-        "leftright" => testcard_leftright(g),
+        "ruler" => testcard_leaf(g,false),
+        "leaf" => testcard_leaf(g,true),
         _ => ()
     };
 }
