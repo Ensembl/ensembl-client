@@ -4,19 +4,21 @@ use controller::global::CanvasState;
 #[derive(Debug,Clone,Copy)]
 pub enum Event {
     Noop,
-    Pos(Dot<f64,f64>),
+    Pos(Dot<f64,f64>,Option<f64>),
     Move(Move<f64,f64>),
     Zoom(f32),
     Resize(Dot<i32,i32>)
 }
 
-fn exe_pos_event(cg: &CanvasState, v: Dot<f64,f64>) {
-    cg.with_stage(|s| {
-        s.set_pos(&v);
-    });
-    cg.with_compo(|co| {
-        co.set_position(v.0);
-    });
+fn exe_pos_event(cg: &CanvasState, v: Dot<f64,f64>, prop: Option<f64>) {
+    let prop = prop.unwrap_or(0.5);
+    console!("v was {:?}",v);
+    let v = cg.with_stage(|s|
+        Dot(s.pos_prop_bp_to_origin(v.0,prop),v.1)
+    );
+    cg.with_stage(|s| { s.set_pos(&v); });
+    console!("v now {:?}",v);
+    cg.with_compo(|co| { co.set_position(v.0); });
 }
 
 fn exe_move_event(cg: &CanvasState, v: Move<f64,f64>) {
@@ -54,7 +56,7 @@ fn exe_resize(cg: &CanvasState, sz: Dot<i32,i32>) {
 pub fn events_run(cg: &CanvasState, evs: Vec<Event>) {
     for ev in evs {
         match ev {
-            Event::Pos(v) => exe_pos_event(cg,v),
+            Event::Pos(v,prop) => exe_pos_event(cg,v,prop),
             Event::Move(v) => exe_move_event(cg,v),
             Event::Zoom(z) => exe_zoom_by_event(cg,z),
             Event::Resize(sz) => exe_resize(cg,sz),
@@ -65,7 +67,7 @@ pub fn events_run(cg: &CanvasState, evs: Vec<Event>) {
 
 pub fn startup_events() -> Vec<Event> {
     vec! {
-        Event::Pos(Dot(0_f64,0_f64)),
+        Event::Pos(Dot(0_f64,0_f64),None),
         Event::Zoom(-3.)
     }
 }

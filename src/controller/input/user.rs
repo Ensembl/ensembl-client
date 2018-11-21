@@ -8,19 +8,20 @@ use dom::event;
 use controller::global::{ CanvasState, CanvasRunner };
 use controller::input::{ Event, events_run };
 use controller::input::physics::MousePhysics;
+use types::Dot;
 
 pub struct UserEventListener {
     canv_el: HtmlElement,
-    cg: Arc<Mutex<CanvasState>>,
+    cs: Arc<Mutex<CanvasState>>,
     mouse: Arc<Mutex<MousePhysics>>
 }
 
 impl UserEventListener {
-    pub fn new(cg: &Arc<Mutex<CanvasState>>,
+    pub fn new(cs: &Arc<Mutex<CanvasState>>,
                canv_el: &HtmlElement,
                mouse: &Arc<Mutex<MousePhysics>>) -> UserEventListener {
         UserEventListener {
-            cg: cg.clone(),
+            cs: cs.clone(),
             mouse: mouse.clone(),
             canv_el: canv_el.clone()
         }
@@ -31,8 +32,16 @@ impl EventListener<()> for UserEventListener {
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
         match e {
             EventData::MouseEvent(EventType::MouseWheelEvent,e) => {
-                events_run(&self.cg.lock().unwrap(),vec! {
-                    Event::Zoom(e.wheel_delta() as f32/1000.) 
+                let cs = self.cs.lock().unwrap();
+                let (pos,pos_bp,pos_prop) = cs.with_stage(|s|
+                    (s.get_pos(),
+                     s.get_mouse_pos_bp(),
+                     s.get_mouse_pos_prop())
+                );
+                let pos = Dot(pos_bp,pos.1);
+                events_run(&cs,vec! {
+                    Event::Zoom(-e.wheel_delta() as f32/1000.),
+                    Event::Pos(pos,Some(pos_prop))
                 });
             },
             EventData::MouseEvent(EventType::MouseDownEvent,e) => {
@@ -43,6 +52,9 @@ impl EventListener<()> for UserEventListener {
             },
             EventData::MouseEvent(EventType::MouseMoveEvent,e) => { 
                 self.mouse.lock().unwrap().move_to(e.at());
+                self.cs.lock().unwrap().with_stage(|s| 
+                    s.set_mouse_pos(&e.at())
+                );
             },
             EventData::MouseEvent(EventType::MouseClickEvent,e) => {
                 e.stop_propagation();
