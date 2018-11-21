@@ -4,7 +4,7 @@ mod common;
 mod bigscience;
 mod polar;
 mod text;
-mod leftright;
+mod leaf;
 mod closuresource;
 
 pub use debug::testcards::common::testcard;

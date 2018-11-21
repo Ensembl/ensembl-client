@@ -12,7 +12,8 @@ pub const DEBUGSTAGE : &str = r##"
                 <option value="onoff">On/Off Testcard</option>
                 <option value="button">Button Testcard</option>
                 <option value="text">Text Testcard</option>
-                <option value="leftright">Left/Right Testcard</option>
+                <option value="ruler">Ruler Testcard</option>
+                <option value="leaf">Leaf Testcard</option>
             </select>
             <select class="folder"></select>
             <button class="mark">mark!</button>

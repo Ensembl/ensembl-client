@@ -40,7 +40,7 @@ fn range(start: f64, bp_leaf: f64, target: i32, by: &[f64]) -> impl Iterator<Ite
     ((start/step).ceil() as i64..(end/step).floor() as i64+1).map(move |x| x*step as i64)
 }
 
-pub fn testcard_leftright(g: Arc<Mutex<Global>>) {
+pub fn testcard_leaf(g: Arc<Mutex<Global>>, show_leaf: bool) {
     let g = &mut g.lock().unwrap();
     let font = FCFont::new(16,"Lato",FontVariety::Normal);
     let cs = ClosureSource::new(0.2,move |lc,leaf| {
@@ -76,13 +76,15 @@ pub fn testcard_leftright(g: Arc<Mutex<Global>>) {
         } else {
             (ColourSpec::Colour(Colour(0,255,0)),10)
         };
-        /*
-        closure_add(lc,&stretch_rectangle(&area(
-                        cleaf(0.,offset),
-                        cleaf(1.,offset+10),
-                     ),&colour));
-        */
-        closure_done(lc,60);
+        if show_leaf {
+            closure_add(lc,&stretch_rectangle(&area(
+                            cleaf(0.,70),
+                            cleaf(1.,80),
+                         ),&colour));
+            closure_done(lc,80);
+        } else {
+            closure_done(lc,60);
+        }
     });
 
     let c = Component::new(Box::new(cs.clone()),Rc::new(StateFixed(StateValue::On())));
