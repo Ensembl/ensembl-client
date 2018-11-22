@@ -1,7 +1,7 @@
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
-use composit::{ StateFixed, Component, StateValue };
+use composit::{ StateFixed, Component, StateValue, Stick };
 use controller::global::Global;
 use controller::input::Event;
 use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
@@ -31,6 +31,7 @@ pub fn testcard_text(g: Arc<Mutex<Global>>) {
     g.with_state(|s| {
         s.with_compo(|co| {
             co.add_component(c);
+            co.set_stick(&Stick::new("A",1000000,false));
         });
         s.run_events(vec!{ Event::Zoom(2.5) });
     });

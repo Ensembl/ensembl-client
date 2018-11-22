@@ -4,6 +4,7 @@ use std::rc::Rc;
 use std::sync::{ Mutex, Arc };
 
 use composit::StateValue;
+use controller::input::Event;
 use controller::global::{ Global, CanvasState };
 use debug::testcards::bigscience::big_science;
 use types::Dot;
@@ -27,12 +28,15 @@ fn animate(time : f64, cg: &mut CanvasState, s: Rc<RefCell<State>>) {
     state.hpos += delta *3.763;
     state.vpos += delta *5.414;
     state.fpos += delta *7.21;
+    /*
     cg.with_stage(|s| {
         s.set_zoom((state.zoomscale.cos()/2.0)-2.5 as f32);
         s.set_pos(&Dot(
             ((state.hpos.cos())*0.15) as f64,
             ((state.vpos.sin())*150.-50.) as f64));
     });
+    */
+    cg.run_events(vec!{ Event::ZoomTo((state.zoomscale.cos()/2.0+4.0) as f32) });
     cg.with_state(|s| {
         let odd_state = if state.hpos.cos() > 0. {
             StateValue::OffWarm()

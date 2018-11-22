@@ -4,7 +4,7 @@ use std::sync::{ Arc, Mutex };
 
 use composit::{
     StateFixed, Component, StateValue, StateAtom, Leaf,
-    LeafComponent, LCBuilder
+    LeafComponent, LCBuilder, Stick
 };
 use controller::global::Global;
 use controller::input::Event;
@@ -198,6 +198,7 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
     g.with_state(|s| {
         s.with_compo(|co| {
             co.add_component(c);
+            co.set_stick(&Stick::new("Hs. chr13",114364328,false));
         });
         s.run_events(vec!{ Event::Zoom(0.) });
     });

@@ -113,7 +113,9 @@ impl Printer {
         self.manage_leafs(compo);
         self.prepare_all();
         let prop = compo.get_prop_trans();
-        self.prepare_scale(stage,oom,compo.get_current_sc(),1.-prop);
+        if let Some(current_sc) = compo.get_current_sc() {
+            self.prepare_scale(stage,oom,current_sc,1.-prop);
+        }
         if let Some(transition_sc) = compo.get_transition_sc() {
             self.prepare_scale(stage,oom,transition_sc,prop);
         }
