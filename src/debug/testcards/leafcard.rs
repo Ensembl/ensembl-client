@@ -44,7 +44,6 @@ fn range(start: f64, bp_leaf: f64, target: i32, by: &[f64]) -> impl Iterator<Ite
 fn round_sf(value: f64, sf: i32) -> f64 {
     if value == 0. { return 0.; }
     let mag = 10_f64.powi(value.abs().log10().floor() as i32+1-sf);
-    console!("round({}) {}->{}",sf,value,(value/mag).floor()*mag);
     (value/mag).floor()*mag
 }
 
@@ -71,13 +70,10 @@ pub fn testcard_leaf(g: Arc<Mutex<Global>>, show_leaf: bool) {
         if mul < 100. {
             delta = round_sf(start,common_sf(start,start+mul));
             start -= delta;
-            console!("was mul={} [{}]",mul,mul.log10().round());
             vdiv = 10_i64.pow((3-mul.log10().round() as i32) as u32) as f64;
             mul *= vdiv;
-            console!("now mul={} vdiv={}",mul,vdiv);
             start *= vdiv;
         }
-        console!("mul={} vdiv={} delta={} start={}",mul,vdiv,delta,start);
         for v in range(start,mul,TARGET,BY12) {
             let offset = (v as f64-start)/mul;
             let tx = text_texture(&format_str(v,vdiv,delta),&font,&Colour(199,208,213),&Colour(255,255,255));
