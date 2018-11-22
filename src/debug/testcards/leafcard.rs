@@ -6,7 +6,7 @@ use std::sync::{ Arc, Mutex };
 use separator::Separatable;
 
 use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
-use composit::{ StateFixed, Component, StateValue, vscale_bp_per_leaf, Stick };
+use composit::{ StateFixed, Component, StateValue, vscale_bp_per_leaf, Stick, Source };
 use controller::global::Global;
 use controller::input::Event;
 use drawing::{ FCFont, FontVariety, text_texture };
@@ -58,13 +58,11 @@ fn format_str(v: i64, vdiv: f64, delta: f64) -> String {
     (delta+v as f64/vdiv).separated_string()
 }
 
-pub fn testcard_leaf(g: Arc<Mutex<Global>>, show_leaf: bool) {
-    let g = &mut g.lock().unwrap();
+pub fn leafcard_source(leaf_marks: bool) -> impl Source {
     let font = FCFont::new(16,"Lato",FontVariety::Normal);
-    let cs = ClosureSource::new(0.2,move |lc,leaf| {
+    ClosureSource::new(0.2,move |lc,leaf| {
         let i = leaf.get_index();
         let mut mul = vscale_bp_per_leaf(leaf.get_vscale());
-        console!("i={} mul={}",i,mul);
         let mut vdiv = 1.;
         let mut delta = 0.;
         let mut start = leaf.get_index() as f64 * mul;
@@ -104,7 +102,7 @@ pub fn testcard_leaf(g: Arc<Mutex<Global>>, show_leaf: bool) {
         } else {
             (ColourSpec::Colour(Colour(0,255,0)),10)
         };
-        if show_leaf {
+        if leaf_marks {
             closure_add(lc,&stretch_rectangle(&area(
                             cleaf(0.,70),
                             cleaf(1.,80),
@@ -113,18 +111,5 @@ pub fn testcard_leaf(g: Arc<Mutex<Global>>, show_leaf: bool) {
         } else {
             closure_done(lc,60);
         }
-    });
-
-    let c = Component::new(Box::new(cs.clone()),Rc::new(StateFixed(StateValue::On())));
-
-    g.with_state(|s| {
-        s.with_compo(|co| {
-            co.add_component(c);
-            co.set_stick(&Stick::new("A",123456789,true));
-        });
-        //s.run_events(vec!{ Event::Zoom(-1.) });
-    });
-    
-    
-    
+    })  
 }

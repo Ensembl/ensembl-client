@@ -4,11 +4,10 @@ use rand::{ Rng, seq };
 use rand::distributions::Distribution;
 
 use controller::global::Global;
+use debug::testcards::base::testcard_base;
 use debug::testcards::visual::testcard_visual;
 use debug::testcards::button::testcard_button;
 use debug::testcards::polar::testcard_polar;
-use debug::testcards::text::testcard_text;
-use debug::testcards::leafcard::testcard_leaf;
 use types::{ CLeaf, cleaf };
 use stdweb::web::{ Element };
 
@@ -19,9 +18,9 @@ pub fn testcard(cont_el: &Element, g: Arc<Mutex<Global>>, name: &str) {
         "onoff" => testcard_visual(g,true),
         "button" => testcard_button(cont_el,g),
         "polar" => testcard_polar(g),
-        "text" => testcard_text(g),
-        "ruler" => testcard_leaf(g,false),
-        "leaf" => testcard_leaf(g,true),
+        "text" => testcard_base(g,"text"),
+        "ruler" => testcard_base(g,"ruler"),
+        "leaf" => testcard_base(g,"leaf"),
         _ => ()
     };
 }

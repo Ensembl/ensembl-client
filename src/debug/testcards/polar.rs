@@ -175,7 +175,6 @@ fn track(lc: &mut LCBuilder, leaf: &Leaf, p: &Palette, t: i32) {
 pub fn testcard_polar(g: Arc<Mutex<Global>>) {
     let g = &mut g.lock().unwrap();
 
-    let leaf = Leaf::new(0,0);
     let p = Palette {
         lato_12: FCFont::new(12,"Lato",FontVariety::Normal),
         lato_18: FCFont::new(12,"Lato",FontVariety::Bold),
@@ -198,7 +197,7 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
     g.with_state(|s| {
         s.with_compo(|co| {
             co.add_component(c);
-            co.set_stick(&Stick::new("Hs. chr13",114364328,false));
+            co.set_stick(&Stick::new(0,"Hs. chr13",114364328,false));
         });
         s.run_events(vec!{ Event::Zoom(0.) });
     });
