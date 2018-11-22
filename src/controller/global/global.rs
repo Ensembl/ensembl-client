@@ -1,7 +1,8 @@
 use std::sync::{ Arc, Mutex };
 
 use stdweb::unstable::TryInto;
-use stdweb::web::{ IElement, HtmlElement, Element };
+use stdweb::web::{ IElement, HtmlElement, Element, IHtmlElement };
+
 
 use composit::StateManager;
 use controller::input::{
@@ -10,6 +11,7 @@ use controller::input::{
 };
 use controller::global::{ CanvasRunner, CanvasState };
 use debug::setup_stage_debug;
+use debug::setup_testcards;
 use dom::domutil;
 use types::CPixel;
 
@@ -80,5 +82,27 @@ impl Global {
     pub fn add_timer<F>(&mut self, cb: F) -> Option<Timer> 
                             where F: FnMut(&mut CanvasState, f64) + 'static {
         self.cg.as_mut().map(|cg| cg.add_timer(cb))
+    }
+}
+
+fn find_main_element() -> Option<HtmlElement> {
+    for name in vec!{ "main", "body" } {
+        let el : Option<Element> = domutil::query_selector_new(name);
+        if let Some(el) = el {
+            let el : Option<HtmlElement> = el.try_into().ok();
+            if let Some(h) = el {
+                return Some(h);   
+            }
+        }
+    }
+    None
+}
+
+pub fn setup_global() {
+    setup_testcards();
+    if let Some(h) = find_main_element() {
+        h.focus();
+        domutil::add_attr(&h.clone().into(),"class","browser-app-ready");
+        domutil::remove_attr(&h.into(),"class","browser-app-not-ready");
     }
 }

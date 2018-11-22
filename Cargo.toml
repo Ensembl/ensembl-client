@@ -12,6 +12,7 @@ serde_json = "*"
 lazy_static = "*"
 rand="*"
 separator = "*"
+itertools = "*"
 
 [build-dependencies]
 webgl_generator = "*"

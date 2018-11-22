@@ -642,6 +642,7 @@ name = "hellostdweb"
 version = "0.1.0"
 dependencies = [
  "cargo-web 0.6.20 (registry+https://github.com/rust-lang/crates.io-index)",
+ "itertools 0.7.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "separator 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",

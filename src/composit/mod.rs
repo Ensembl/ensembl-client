@@ -9,6 +9,7 @@ mod component;
 mod stage;
 mod compmanager;
 mod stick;
+mod stickmanager;
 
 pub use self::leafcomponent::LeafComponent;
 pub use self::lcbuilder::LCBuilder;
@@ -19,6 +20,7 @@ pub use self::scalecompositor::ScaleCompositor;
 pub use self::component::Component;
 pub use self::stage::Stage;
 pub use self::stick::Stick;
+pub use self::stickmanager::StickManager;
 
 pub use self::state::{
     StateExpr,

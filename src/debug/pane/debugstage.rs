@@ -19,6 +19,8 @@ use dom::event::{
     Target
 };
 use debug::testcards;
+use debug::testcards::StickSource;
+use debug::testcards::debug_stick_source;
 use debug::pane::console::DebugConsole;
 use debug::pane::buttons::{ DebugButtons, ButtonAction };
 use types::Todo;
@@ -94,7 +96,7 @@ pub struct DebugPanelImpl {
     base: Element,
     console2: Option<DebugConsole>,
     buttons: DebugButtons,
-    evc: Option<EventControl<()>>,
+    evc: Option<EventControl<()>>
 }
 
 impl DebugPanelImpl {
@@ -112,7 +114,7 @@ impl DebugPanelImpl {
             base: base.clone(),
             evc: None,
             buttons: DebugButtons::new(),
-            console2: None
+            console2: None,
         }))
     }
     
@@ -246,6 +248,7 @@ pub fn setup_stage_debug() {
             *p.borrow_mut() = Some(DebugPanel::new(&stage));
         });
         if let Some(cont_el) = domutil::query_selector_new("#bpane-container") {
+            
             setup_events(&cont_el);
             let mark_el = domutil::query_selector2(&cont_el,".console .start").unwrap();
             mark_el.add_event_listener(|_e: ClickEvent| {
@@ -316,13 +319,9 @@ pub fn debug_panel_trigger_button(idx: usize) {
     });
 }
 
-pub fn setup_global() {
+pub fn setup_testcards() {
     let mut bec = EventControl::new(Box::new(BodyEventListener::new()),());
-    console!("B1");
     bec.add_event(EventType::CustomEvent("bpane-start".to_string()));
     bec.add_event(EventType::KeyPressEvent);
-    console!("C1");
     bec.add_element(&domutil::query_select("body"),());
-    let h : HtmlElement = domutil::query_select("body").try_into().ok().unwrap();
-    h.focus();
 }

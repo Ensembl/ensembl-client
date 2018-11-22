@@ -7,7 +7,7 @@ use composit::{
 };
 use composit::state::ComponentRedo;
 
-const MAX_FLANK : i32 = 3;
+const MAX_FLANK : i32 = 5;
 
 pub struct ScaleCompositor {
     stick: Stick,
@@ -61,7 +61,7 @@ impl ScaleCompositor {
     pub fn set_zoom(&mut self, bp_per_screen: f64) {
         self.bp_per_screen = bp_per_screen;
         self.leaf_per_screen = bp_per_screen / vscale_bp_per_leaf(self.vscale);
-        self.train_flank = min(max((self.leaf_per_screen) as i32,1),MAX_FLANK);
+        self.train_flank = min(max((2. * self.leaf_per_screen) as i32,1),MAX_FLANK);
         debug!("trains","set  bp_per_screen={} bp_per_leaf={} leaf_per_screen={} flank={}",
             bp_per_screen,vscale_bp_per_leaf(self.vscale),self.leaf_per_screen,self.train_flank);
     }

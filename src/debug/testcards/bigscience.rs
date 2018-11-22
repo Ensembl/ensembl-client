@@ -352,7 +352,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
             co.add_component(c);
             co.add_component(c_odd);
             co.add_component(c_even);
-            co.set_stick(&Stick::new(0,"A",1000000000,false));
+            co.set_stick(&Stick::new("A",1000000000,false));
         });
         s.run_events(vec!{ Event::Zoom(0.) });
     });
