@@ -83,7 +83,7 @@ impl ScaleCompositor {
         let mut out = Vec::<Leaf>::new();
         for idx in -self.train_flank..self.train_flank+1 {
             let hindex = self.middle_leaf + idx as i64;
-            let leaf = Leaf::new(hindex,self.vscale);
+            let leaf = Leaf::new(&self.stick,hindex,self.vscale);
             if !self.leafcomps.contains_key(&leaf) {
                 debug!("trains","adding {}",hindex);
                 out.push(leaf);
@@ -108,7 +108,7 @@ impl ScaleCompositor {
     pub fn manage_leafs(&mut self, cm: &mut ComponentManager) {
         self.remove_unused_leafs();
         for leaf in self.get_missing_leafs() {
-            let lcomps = cm.make_leafcomps(leaf);
+            let lcomps = cm.make_leafcomps(leaf.clone());
             self.add_lcomps_to_leaf(leaf,lcomps);
         }
     }
@@ -160,10 +160,10 @@ impl ScaleCompositor {
             }
         }
         /* Any change due to availability? */
-        let done_seen = *self.done_seen.entry(*leaf).or_insert(0);
+        let done_seen = *self.done_seen.entry(leaf.clone()).or_insert(0);
         if done_seen < self.done_now {
             if self.is_done() {
-                self.done_seen.insert(*leaf,self.done_now);
+                self.done_seen.insert(leaf.clone(),self.done_now);
                 return ComponentRedo::Major;
             }
         }

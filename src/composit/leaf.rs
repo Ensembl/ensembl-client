@@ -1,14 +1,18 @@
-#[derive(Clone,Copy,PartialEq,Eq,Hash,Debug)]
+use composit::Stick;
+
+#[derive(Clone,PartialEq,Eq,Hash,Debug)]
 pub struct Leaf {
+    stick: Stick,
     hindex: i64,
     vscale: i32
 }
 
 impl Leaf {
-    pub fn new(hindex: i64, vscale: i32) -> Leaf {
-        Leaf { hindex, vscale }
+    pub fn new(stick: &Stick, hindex: i64, vscale: i32) -> Leaf {
+        Leaf { hindex, vscale, stick: stick.clone() }
     }
     
+    pub fn get_stick(&self) -> &Stick { &self.stick }
     pub fn get_index(&self) -> i64 { self.hindex }
     pub fn get_vscale(&self) -> i32 { self.vscale }
 }
