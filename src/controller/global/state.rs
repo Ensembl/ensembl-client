@@ -65,7 +65,6 @@ impl CanvasState {
  
     pub fn force_size(self: &CanvasState) {
         let stage = self.stage.lock().unwrap();
-        self.compo.lock().unwrap().set_screen_width(stage.get_size().0);
         self.printer.lock().unwrap().set_size(stage.get_size());
     }
 }

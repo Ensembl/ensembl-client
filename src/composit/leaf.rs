@@ -10,8 +10,6 @@ impl Leaf {
     }
     
     pub fn get_index(&self) -> i64 { self.hindex }
-    pub fn get_offset(&self) -> f64 { self.hindex as f64 }
-    
     pub fn get_vscale(&self) -> i32 { self.vscale }
 }
 

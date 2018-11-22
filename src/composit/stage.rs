@@ -120,7 +120,7 @@ impl Stage {
         let x = self.pos.0*ls/z as f64*1_f64;
         hashmap! {
             "uOpacity" => UniformValue::Float(opacity),
-            "uStageHpos" => UniformValue::Float((x - leaf.get_offset() as f64) as f32),
+            "uStageHpos" => UniformValue::Float((x - leaf.get_index() as f64) as f32),
             "uStageVpos" => UniformValue::Float((self.pos.1 + self.dims.1 as f64/2.) as f32),
             "uStageZoom" => UniformValue::Float((2_f64/ls) as f32),
             "uSize" => UniformValue::Vec2F(
