@@ -7,7 +7,32 @@
 	</head>
 	<body>
         <div style="display: none; font: 'Lato';">preload</div>
-        <div id="stage"></div>
+        <main class="browser-app-not-ready" id="main">
+            <div id="stage"></div>
+        </main>
 		<script src="js/app.js"></script>
+        <script>
+            function startup_mutate(mutations,observer) {
+                var ready = false;
+                for(var mutation of mutations) {
+                    for(var klass of mutation.target.classList) {
+                        if(klass == 'browser-app-ready') {
+                            ready = true;
+                        }
+                    }
+                }
+                if(ready) {
+                    console.log("browser app ready");
+                    mutation.target.dispatchEvent(
+                        new CustomEvent("bpane-start",{
+                            bubbles: true
+                        })
+                    );
+                }
+            }
+            
+            var observer = new MutationObserver(startup_mutate);
+            observer.observe(document.getElementById("main"),{ attributes: true });
+        </script>
 	</body>
 </html>

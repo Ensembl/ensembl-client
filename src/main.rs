@@ -8,6 +8,7 @@ extern crate stdweb_derive;
 extern crate lazy_static;
 extern crate rand;
 extern crate separator;
+extern crate itertools;
 
 #[macro_use]
 extern crate serde_json;
@@ -26,10 +27,11 @@ mod webgl_rendering_context;
 mod types;
 mod print;
 
+use controller::global;
+
 fn main() {
     stdweb::initialize();
-    debug::setup_global();
-    //debug::setup_stage_debug();
+    global::setup_global();
     debug!("global","starting");
     stdweb::event_loop();
 }

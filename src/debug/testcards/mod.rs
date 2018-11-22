@@ -10,3 +10,5 @@ mod sticksource;
 mod base;
 
 pub use debug::testcards::common::testcard;
+pub use debug::testcards::base::debug_stick_source;
+pub use debug::testcards::sticksource::StickSource;

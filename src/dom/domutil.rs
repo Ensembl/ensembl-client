@@ -13,6 +13,9 @@ use stdweb::web::{
     IParentNode,
     INode
 };
+use itertools::Itertools;
+
+
 use types::{ CPixel, cpixel };
 
 pub fn query_selector_new(sel: &str) -> Option<Element> {
@@ -32,7 +35,6 @@ pub fn query_selector(el: &Element, sel: &str) -> Element {
 }
 
 pub fn query_select(sel: &str) -> Element {
-    console!("{:?}",document().query_selector(sel)); // XXX
     document().query_selector(sel).unwrap().unwrap()
 }
 
@@ -41,12 +43,20 @@ pub fn size(el: &HtmlElement) -> CPixel {
     cpixel(r.get_width() as i32,r.get_height() as i32)
 }
 
-#[allow(unused)]
 pub fn add_attr(el: &Element,key: &str, more: &str) {
+    let val = match el.get_attribute(key) {
+        Some(x) => x+" ",
+        None => "".to_string(),
+    } + more;
+    el.set_attribute(key,&val).ok();
+}
+
+pub fn remove_attr(el: &Element,key: &str, togo: &str) {
     let val = match el.get_attribute(key) {
         Some(x) => x,
         None => "".to_string(),
-    } + " " + more;
+    };
+    let val = val.split(" ").filter(|x| *x != togo).join(" ");
     el.set_attribute(key,&val).ok();
 }
 
