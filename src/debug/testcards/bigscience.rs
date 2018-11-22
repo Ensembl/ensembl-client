@@ -8,7 +8,7 @@ use rand::SeedableRng;
 
 use composit::{
     StateFixed, Component, StateValue, StateAtom, Leaf, LeafComponent,
-    LCBuilder
+    LCBuilder, Stick
 };
 
 use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
@@ -86,9 +86,6 @@ pub fn big_science(g: &mut Global, onoff: bool) {
     let green = ColourSpec::Spot(green_col);
     let red = ColourSpec::Spot(Colour(255,100,50));
     
-    //let len_gen = Range::new(0.,0.2);
-    //let thick_gen = Range::new(0,13);
-    //let showtext_gen = Range::new(0,10);
     let (sw,sh);
     {
         sw = size.0;
@@ -355,6 +352,7 @@ pub fn big_science(g: &mut Global, onoff: bool) {
             co.add_component(c);
             co.add_component(c_odd);
             co.add_component(c_even);
+            co.set_stick(&Stick::new("A",1000000000,false));
         });
         s.run_events(vec!{ Event::Zoom(0.) });
     });

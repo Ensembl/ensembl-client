@@ -1,12 +1,14 @@
 use types::{ Move, Units, Axis, Dot };
+use composit::Stick;
 use controller::global::CanvasState;
 
-#[derive(Debug,Clone,Copy)]
+#[derive(Debug,Clone)]
 pub enum Event {
     Noop,
     Pos(Dot<f64,f64>,Option<f64>),
     Move(Move<f64,f64>),
     Zoom(f32),
+    ZoomTo(f32),
     Resize(Dot<i32,i32>)
 }
 
@@ -33,9 +35,9 @@ fn exe_move_event(cg: &CanvasState, v: Move<f64,f64>) {
     });
 }
 
-fn exe_zoom_by_event(cg: &CanvasState, z: f32) {
+fn exe_zoom_event(cg: &CanvasState, mut z: f32, by: bool) {
     let z = cg.with_stage(|s| {
-        let z = s.get_zoom()+z;
+        if by { z += s.get_zoom(); }
         s.set_zoom(z);
         s.get_linear_zoom()
     });
@@ -56,7 +58,8 @@ pub fn events_run(cg: &CanvasState, evs: Vec<Event>) {
         match ev {
             Event::Pos(v,prop) => exe_pos_event(cg,v,prop),
             Event::Move(v) => exe_move_event(cg,v),
-            Event::Zoom(z) => exe_zoom_by_event(cg,z),
+            Event::Zoom(z) => exe_zoom_event(cg,z,true),
+            Event::ZoomTo(z) => exe_zoom_event(cg,z,false),
             Event::Resize(sz) => exe_resize(cg,sz),
             Event::Noop => ()
         }
@@ -66,6 +69,6 @@ pub fn events_run(cg: &CanvasState, evs: Vec<Event>) {
 pub fn startup_events() -> Vec<Event> {
     vec! {
         Event::Pos(Dot(0_f64,0_f64),None),
-        Event::Zoom(-3.)
+        //Event::Zoom(-3.)
     }
 }

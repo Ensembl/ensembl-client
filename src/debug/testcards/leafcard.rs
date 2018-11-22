@@ -6,7 +6,7 @@ use std::sync::{ Arc, Mutex };
 use separator::Separatable;
 
 use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
-use composit::{ StateFixed, Component, StateValue, vscale_bp_per_leaf };
+use composit::{ StateFixed, Component, StateValue, vscale_bp_per_leaf, Stick };
 use controller::global::Global;
 use controller::input::Event;
 use drawing::{ FCFont, FontVariety, text_texture };
@@ -64,6 +64,7 @@ pub fn testcard_leaf(g: Arc<Mutex<Global>>, show_leaf: bool) {
     let cs = ClosureSource::new(0.2,move |lc,leaf| {
         let i = leaf.get_index();
         let mut mul = vscale_bp_per_leaf(leaf.get_vscale());
+        console!("i={} mul={}",i,mul);
         let mut vdiv = 1.;
         let mut delta = 0.;
         let mut start = leaf.get_index() as f64 * mul;
@@ -119,8 +120,9 @@ pub fn testcard_leaf(g: Arc<Mutex<Global>>, show_leaf: bool) {
     g.with_state(|s| {
         s.with_compo(|co| {
             co.add_component(c);
+            co.set_stick(&Stick::new("A",123456789,true));
         });
-        s.run_events(vec!{ Event::Zoom(-1.) });
+        //s.run_events(vec!{ Event::Zoom(-1.) });
     });
     
     

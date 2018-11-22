@@ -1,12 +1,16 @@
 use std::cmp::{ max, min };
 use std::collections::{ HashMap, HashSet };
 
-use composit::{ Compositor, Leaf, LeafComponent, StateManager, vscale_bp_per_leaf, ComponentManager, Component };
+use composit::{
+    Compositor, Leaf, LeafComponent, StateManager, vscale_bp_per_leaf,
+    ComponentManager, Component, Stick
+};
 use composit::state::ComponentRedo;
 
-const MAX_FLANK : i32 = 10;
+const MAX_FLANK : i32 = 3;
 
 pub struct ScaleCompositor {
+    stick: Stick,
     vscale: i32,
     position_bp: f64,
     train_flank: i32,
@@ -19,8 +23,9 @@ pub struct ScaleCompositor {
 }
 
 impl ScaleCompositor {
-    pub fn new(vscale: i32) -> ScaleCompositor {
+    pub fn new(stick: &Stick, vscale: i32) -> ScaleCompositor {
         ScaleCompositor {
+            stick: stick.clone(),
             vscale,
             train_flank: 10,
             middle_leaf: 0,
@@ -34,7 +39,7 @@ impl ScaleCompositor {
     }
     
     pub fn duplicate(&self, cm: &mut ComponentManager, vscale: i32) -> ScaleCompositor {
-        let mut out = ScaleCompositor::new(vscale);
+        let mut out = ScaleCompositor::new(&self.stick,vscale);
         out.set_position(self.position_bp);
         out.set_zoom(self.bp_per_screen);
         out.manage_leafs(cm);
@@ -56,9 +61,9 @@ impl ScaleCompositor {
     pub fn set_zoom(&mut self, bp_per_screen: f64) {
         self.bp_per_screen = bp_per_screen;
         self.leaf_per_screen = bp_per_screen / vscale_bp_per_leaf(self.vscale);
-        self.train_flank = min(max((3.*self.leaf_per_screen) as i32,1),MAX_FLANK);
-        debug!("trains","set  bp_per_screen={} bp_per_leaf={} leaf_per_screen={}",
-            bp_per_screen,vscale_bp_per_leaf(self.vscale),self.leaf_per_screen);
+        self.train_flank = min(max((self.leaf_per_screen) as i32,1),MAX_FLANK);
+        debug!("trains","set  bp_per_screen={} bp_per_leaf={} leaf_per_screen={} flank={}",
+            bp_per_screen,vscale_bp_per_leaf(self.vscale),self.leaf_per_screen,self.train_flank);
     }
 
     fn add_lcomps_to_leaf(&mut self, leaf: Leaf, mut lcomps: Vec<LeafComponent>) {
