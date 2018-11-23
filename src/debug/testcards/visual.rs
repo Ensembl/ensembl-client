@@ -5,7 +5,7 @@ use std::sync::{ Mutex, Arc };
 
 use composit::StateValue;
 use controller::input::Event;
-use controller::global::{ Global, App };
+use controller::global::{ Global, App, AppRunner };
 use debug::testcards::bigscience::big_science;
 use types::Dot;
 
@@ -37,7 +37,7 @@ fn animate(time : f64, cg: &mut App, s: Rc<RefCell<State>>) {
     });
     */
     cg.run_events(vec!{ Event::ZoomTo((state.zoomscale.cos()/2.0+4.0) as f32) });
-    cg.with_state(|s| {
+    cg.with_app(|s| {
         let odd_state = if state.hpos.cos() > 0. {
             StateValue::OffWarm()
         } else {
@@ -53,8 +53,10 @@ fn animate(time : f64, cg: &mut App, s: Rc<RefCell<State>>) {
     });
 }
 
-pub fn testcard_visual(g: Arc<Mutex<Global>>, onoff: bool) {
-    big_science(&mut g.lock().unwrap(),onoff);
+pub fn testcard_visual(ar: &mut AppRunner, onoff: bool) {
+    let mut a = ar.state();
+    let mut a = a.lock().unwrap();
+    big_science(&mut a,onoff);
 
     let state = Rc::new(RefCell::new(State {
         hpos: 0.0,
@@ -65,8 +67,8 @@ pub fn testcard_visual(g: Arc<Mutex<Global>>, onoff: bool) {
         call: 0,
     }));
 
-    g.lock().unwrap().with_runner(|cr| cr.add_timer(move |cg,t| {
+    ar.add_timer(move |cg,t| {
         let st = state.clone();
         animate(t,cg,st);
-    }));
+    });
 }

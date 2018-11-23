@@ -6,7 +6,7 @@ use composit::{
     StateFixed, Component, StateValue, StateAtom, Leaf,
     LeafComponent, LCBuilder, Stick
 };
-use controller::global::Global;
+use controller::global::App;
 use controller::input::Event;
 use debug::testcards::common::track_data;
 use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
@@ -172,9 +172,7 @@ fn track(lc: &mut LCBuilder, leaf: &Leaf, p: &Palette, t: i32) {
     }
 }
 
-pub fn testcard_polar(g: Arc<Mutex<Global>>) {
-    let g = &mut g.lock().unwrap();
-
+pub fn testcard_polar(a: &mut App) {
     let p = Palette {
         lato_12: FCFont::new(12,"Lato",FontVariety::Normal),
         lato_18: FCFont::new(12,"Lato",FontVariety::Bold),
@@ -194,11 +192,10 @@ pub fn testcard_polar(g: Arc<Mutex<Global>>) {
         closure_done(lc,TRACKS*PITCH+TOP);
     });
     let c = Component::new(Box::new(cs.clone()),Rc::new(StateFixed(StateValue::On())));
-    g.with_state(|s| {
-        s.with_compo(|co| {
-            co.add_component(c);
-            co.set_stick(&Stick::new("Hs. chr13",114364328,false));
-        });
-        s.run_events(vec!{ Event::Zoom(0.) });
+
+    a.with_compo(|co| {
+        co.add_component(c);
+        co.set_stick(&Stick::new("Hs. chr13",114364328,false));
     });
+    a.run_events(vec!{ Event::Zoom(0.) });
 }

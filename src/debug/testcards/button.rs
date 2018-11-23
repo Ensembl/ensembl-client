@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::{ Mutex, Arc };
-use controller::global::Global;
+use controller::global::App;
 use dom::domutil;
 use debug::DebugPanel;
 use debug::testcards::bigscience::big_science;
@@ -26,7 +26,7 @@ fn custom(po: &DebugPanel, cont_el: &Element,body: &Element, name: &str, json: J
     button(po,cont_el,name,cb);
 }
 
-pub fn testcard_button(po: &DebugPanel, cont_el: &Element, g: Arc<Mutex<Global>>) {
+pub fn testcard_button(po: &DebugPanel, cont_el: &Element, a: &mut App) {
     let body = domutil::query_select("body");
     
     custom(po,cont_el,&body,"shimmy",json!({ "move_left_px": 120, "move_down_screen": 0.25, "zoom_by": 0.1 }));
@@ -41,5 +41,5 @@ pub fn testcard_button(po: &DebugPanel, cont_el: &Element, g: Arc<Mutex<Global>>
     button(po,cont_el,"off",|| { debug!("global","off") });
     button(po,cont_el,"zero",|| { debug!("global","zero") });
 
-    big_science(&mut g.lock().unwrap(),false);
+    big_science(a,false);
 }

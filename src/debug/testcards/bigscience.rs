@@ -21,7 +21,7 @@ use shape::{
     ColourSpec, MathsShape, fix_mathsshape, page_mathsshape
 };
 
-use controller::global::Global;
+use controller::global::App;
 
 use types::{
     Colour, cleaf, cpixel, area, cedge, AxisSense,
@@ -73,14 +73,10 @@ fn make_rng(seed: i32) -> SmallRng {
     SmallRng::from_seed([s,s,s,s,s,s,s,s,t,t,t,t,t,t,t,t])
 }
 
-pub fn big_science(g: &mut Global, onoff: bool) {
+pub fn big_science(a: &mut App, onoff: bool) {
     let seed = 12345678;
     
-    let size = g.with_state(|s| {
-        s.with_stage(|s| {
-            s.get_size()
-        })
-    }).unwrap();
+    let size = a.with_stage(|s| s.get_size());
 
     let fc_font = FCFont::new(12,"Lato",FontVariety::Normal);
 
@@ -352,13 +348,11 @@ pub fn big_science(g: &mut Global, onoff: bool) {
         Rc::new(StateFixed(StateValue::On()))
     });
     
-    g.with_state(|s| {
-        s.with_compo(|co| {
-            co.add_component(c);
-            co.add_component(c_odd);
-            co.add_component(c_even);
-            co.set_stick(&Stick::new("A",1000000000,false));
-        });
-        s.run_events(vec!{ Event::Zoom(0.) });
+    a.with_compo(|co| {
+        co.add_component(c);
+        co.add_component(c_odd);
+        co.add_component(c_even);
+        co.set_stick(&Stick::new("A",1000000000,false));
     });
+    a.run_events(vec!{ Event::Zoom(0.) });
 }
