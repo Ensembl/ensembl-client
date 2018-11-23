@@ -43,14 +43,14 @@ impl EventListener<()> for BodyEventListener {
     fn receive(&mut self, _el: &Target, ev: &EventData, _p: &()) {
         self.val += 1;
         match ev {
-            EventData::CustomEvent(_,n,kv) => {
+            EventData::CustomEvent(_,_,n,kv) => {
                 if n == "bpane-start" {
                     setup_stage_debug();
                 } else if n == "bpane-debugger" {
                     console!("testcard {:?}",kv);
                 }
             },
-            EventData::KeyboardEvent(EventType::KeyPressEvent,k) => {
+            EventData::KeyboardEvent(EventType::KeyPressEvent,_,k) => {
                 if MODIFIER_BYPASS || (k.ctrl_key() && k.alt_key()) {
                     match &k.key()[..] {
                         "d" => { setup_stage_debug(); },
@@ -70,7 +70,7 @@ pub struct DebugPanelListener {
 
 impl EventListener<()> for DebugPanelListener {
     fn receive(&mut self, _el: &Target, ev: &EventData, _p: &()) {
-        if let EventData::CustomEvent(_,n,e) = ev {
+        if let EventData::CustomEvent(_,_,n,e) = ev {
             if n == "refresh" {
                 let mut keys = None;
                 let detail = e.details();        
@@ -213,21 +213,13 @@ fn setup_testcard(po: &DebugPanel,cont_el: &Element, g: &Arc<Mutex<Global>>, nam
 }
 
 fn setup_events(po: Rc<DebugPanel>, cont_el: &Element) {
-    let pane_el: HtmlElement = domutil::query_selector2(cont_el,".bpane-canv").unwrap().try_into().unwrap();
-    let g = Arc::new(Mutex::new(Global::new(&pane_el)));
+    let g = Arc::new(Mutex::new(Global::new()));
     let sel_el = domutil::query_selector2(cont_el,".console .testcard").unwrap();
     sel_el.add_event_listener(enclose! { (cont_el) move |e: ChangeEvent| {
         let node : SelectElement = e.target().unwrap().try_into().ok().unwrap();
         if let Some(name) = node.value() {
             debug_panel_buttons_clear(&po,&cont_el);
             setup_testcard(&po,&cont_el,&g,&name);
-            /*
-            let canv = domutil::query_selector_new("#stage").unwrap();
-            domutil::send_custom_event(&canv,"bpane-debugger",&json!({}));
-            */
-            
-            
-            
         }
     }});
     let mark_el = domutil::query_selector2(cont_el,".console .mark").unwrap();
@@ -236,7 +228,7 @@ fn setup_events(po: Rc<DebugPanel>, cont_el: &Element) {
     }});
 }
 
-fn setup_stage_debug() {
+pub fn setup_stage_debug() {
     if let Some(stage) = domutil::query_selector_new("#stage") {
         domutil::inner_html(&stage,DEBUGSTAGE);
         let el = domutil::append_element(&domutil::query_select("head"),"style");

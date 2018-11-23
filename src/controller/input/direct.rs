@@ -85,7 +85,7 @@ impl DirectEventListener {
 impl EventListener<()> for DirectEventListener {    
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
         let evs = match e {
-            EventData::CustomEvent(_,_,c) =>
+            EventData::CustomEvent(_,_,_,c) =>
                 custom_make_events(&c.details().unwrap()),
             _ => Vec::<Event>::new()
         };

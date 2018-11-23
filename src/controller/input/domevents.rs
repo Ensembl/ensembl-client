@@ -23,7 +23,7 @@ impl DomEventListener {
 impl EventListener<()> for DomEventListener {    
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
         let evs = match e {
-            EventData::GenericEvent(EventType::ResizeEvent) => {
+            EventData::GenericEvent(EventType::ResizeEvent,_) => {
                 vec! {
                     Event::Resize(domutil::size(&self.el))
                 }

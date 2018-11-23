@@ -31,7 +31,7 @@ impl UserEventListener {
 impl EventListener<()> for UserEventListener {    
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
         match e {
-            EventData::MouseEvent(EventType::MouseWheelEvent,e) => {
+            EventData::MouseEvent(EventType::MouseWheelEvent,_,e) => {
                 let cs = self.cs.lock().unwrap();
                 let (pos,pos_bp,pos_prop) = cs.with_stage(|s|
                     (s.get_pos(),
@@ -44,19 +44,19 @@ impl EventListener<()> for UserEventListener {
                     Event::Pos(pos,Some(pos_prop))
                 });
             },
-            EventData::MouseEvent(EventType::MouseDownEvent,e) => {
+            EventData::MouseEvent(EventType::MouseDownEvent,_,e) => {
                 self.canv_el.focus();
                 domutil::clear_selection();
                 e.stop_propagation();
                 self.mouse.lock().unwrap().down(e.at());
             },
-            EventData::MouseEvent(EventType::MouseMoveEvent,e) => { 
+            EventData::MouseEvent(EventType::MouseMoveEvent,_,e) => { 
                 self.mouse.lock().unwrap().move_to(e.at());
                 self.cs.lock().unwrap().with_stage(|s| 
                     s.set_mouse_pos(&e.at())
                 );
             },
-            EventData::MouseEvent(EventType::MouseClickEvent,e) => {
+            EventData::MouseEvent(EventType::MouseClickEvent,_,e) => {
                 e.stop_propagation();
             }
             _ => ()
@@ -78,7 +78,7 @@ impl UserEventListenerBody {
 
 impl EventListener<()> for UserEventListenerBody {    
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
-        if let EventData::MouseEvent(EventType::MouseUpEvent,_) = e {
+        if let EventData::MouseEvent(EventType::MouseUpEvent,_,_) = e {
             self.mouse.lock().unwrap().up();
         }
     }

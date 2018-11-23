@@ -143,7 +143,7 @@ impl DebugConsoleImpl {
 
 impl EventListener<()> for DebugConsoleImpl {
     fn receive(&mut self, _el: &Target, ev: &EventData, _p: &()) {
-        if let EventData::CustomEvent(_,n,v) = ev {
+        if let EventData::CustomEvent(_,_,n,v) = ev {
             let mut data = HashMap::<String,String>::new();
             if let JSONValue::Object(map) = v.details().unwrap() {
                 for (k,v) in &map {

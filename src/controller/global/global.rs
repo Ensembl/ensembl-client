@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::sync::{ Arc, Mutex };
 
 use stdweb::unstable::TryInto;
@@ -7,7 +8,7 @@ use stdweb::web::{ IElement, HtmlElement, Element, IHtmlElement };
 use composit::StateManager;
 use controller::input::{
     register_direct_events, register_user_events, register_dom_events,
-    Timer
+    Timer, register_startup_events
 };
 use controller::global::{ CanvasRunner, CanvasState };
 use debug::setup_testcards;
@@ -17,37 +18,39 @@ use types::CPixel;
 const CANVAS : &str = r##"<canvas id="glcanvas"></canvas>"##;
 
 pub struct Global {
-    root: HtmlElement,
     cg: Option<CanvasRunner>,
     inst: u32,
     state: Arc<Mutex<StateManager>>,
+    elements: HashMap<String,Element>
+    
 }
 
 impl Global {
-    pub fn new(root: &HtmlElement) -> Global {
+    pub fn new() -> Global {
         Global {
             cg: None,
             inst: 0,
-            root: root.clone(),
             state: Arc::new(Mutex::new(StateManager::new())),
+            elements: HashMap::<String,Element>::new()
         }
     }
         
-    fn setup_dom(&mut self, el: &Element) -> (HtmlElement,String) {
+    fn setup_dom(&mut self, root: &Element, el: &Element) -> (HtmlElement,String) {
         self.inst += 1;
         domutil::inner_html(el,CANVAS);
         let canv_el : HtmlElement = domutil::query_selector(el,"canvas").try_into().unwrap();
         debug!("global","start card {}",self.inst);
         let inst_s = format!("{}",self.inst);
-        self.root.set_attribute("data-inst",&inst_s).ok();
+        root.set_attribute("data-inst",&inst_s).ok();
         (canv_el,inst_s)
     }
     
     pub fn reset(&mut self) -> String {
-        let el : HtmlElement = self.root.clone().into();
-        let elel : Element = self.root.clone().into();
+        let root : HtmlElement = domutil::query_selector_new("#bpane-container .bpane-canv").unwrap().try_into().unwrap();
+        let el : HtmlElement = root.clone().into();
+        let elel : Element = root.clone().into();
         self.cg.as_mut().map(|cg| { cg.unregister() });
-        let (canv_el,inst_s) = self.setup_dom(&elel);
+        let (canv_el,inst_s) = self.setup_dom(&root.into(),&elel);
         let cs = CanvasState::new(&self.state,&canv_el);
         let mut cg = CanvasRunner::new(cs);
         register_user_events(&mut cg,&canv_el);
@@ -60,28 +63,22 @@ impl Global {
     
     pub fn with_state<F,G>(&mut self, cb: F) -> Option<G>
             where F: FnOnce(&mut CanvasState) -> G {
-        if let Some(st) = self.cg.as_mut() {
-            let mut st = st.state();
+        self.with_runner(|r| {
+            let mut st = r.state();
             let mut st = st.lock().unwrap();
+            cb(&mut st)
+        })
+    }
+    
+    pub fn with_runner<F,G>(&mut self, cb:F) -> Option<G>
+            where F: FnOnce(&mut CanvasRunner) -> G {
+        if let Some(mut st) = self.cg.as_mut() {
             Some(cb(&mut st))
         } else {
             None
         }
     }
     
-    /* only for test-cards, etc, which need to know how big to draw */
-    pub fn canvas_size(&self) -> CPixel {
-        let cg = self.cg.as_ref().unwrap().state();
-        let st = cg.lock().unwrap();
-        let out = st.stage.lock().unwrap().get_size();
-        out
-    }
-    
-    /* only for animated test-cards */
-    pub fn add_timer<F>(&mut self, cb: F) -> Option<Timer> 
-                            where F: FnMut(&mut CanvasState, f64) + 'static {
-        self.cg.as_mut().map(|cg| cg.add_timer(cb))
-    }
 }
 
 fn find_main_element() -> Option<HtmlElement> {
@@ -98,6 +95,7 @@ fn find_main_element() -> Option<HtmlElement> {
 }
 
 pub fn setup_global() {
+    register_startup_events();
     setup_testcards();
     if let Some(h) = find_main_element() {
         h.focus();
