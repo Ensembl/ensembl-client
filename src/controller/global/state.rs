@@ -2,7 +2,6 @@ use std::sync::{ Arc, Mutex };
 
 use stdweb::web::HtmlElement;
 
-use debug::setup_stage_debug;
 use composit::{ Compositor, StateManager, Stage };
 use controller::input::{ Event, events_run, startup_events };
 use print::Printer;
