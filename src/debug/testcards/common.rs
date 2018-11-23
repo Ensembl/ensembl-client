@@ -14,16 +14,20 @@ use stdweb::web::{ Element };
 
 pub fn testcard(po: &DebugPanel, cont_el: &Element, g: Arc<Mutex<Global>>, name: &str) {
     debug!("global","starting testcard {}",name);
-    match name {
-        "draw" => testcard_visual(g,false),
-        "onoff" => testcard_visual(g,true),
-        "button" => testcard_button(po,cont_el,g),
-        "polar" => testcard_polar(g),
-        "text" => testcard_base(g,"text"),
-        "ruler" => testcard_base(g,"ruler"),
-        "leaf" => testcard_base(g,"leaf"),
-        _ => ()
-    };
+    g.lock().unwrap().with_apprunner(|ar| {
+        let mut a = ar.state();
+        let mut a = a.lock().unwrap();
+        match name {
+            "draw" => testcard_visual(ar,false),
+            "onoff" => testcard_visual(ar,true),
+            "button" => testcard_button(po,cont_el,&mut a),
+            "polar" => testcard_polar(&mut a),
+            "text" => testcard_base(&mut a,"text"),
+            "ruler" => testcard_base(&mut a,"ruler"),
+            "leaf" => testcard_base(&mut a,"leaf"),
+            _ => ()
+        };
+    });
 }
 
 fn choose<R>(rng: &mut R, vals: &[&[&str]]) -> String

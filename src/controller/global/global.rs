@@ -60,17 +60,8 @@ impl Global {
         self.cg = Some(cg);
         inst_s
     }
-    
-    pub fn with_state<F,G>(&mut self, cb: F) -> Option<G>
-            where F: FnOnce(&mut App) -> G {
-        self.with_runner(|r| {
-            let mut st = r.state();
-            let mut st = st.lock().unwrap();
-            cb(&mut st)
-        })
-    }
-    
-    pub fn with_runner<F,G>(&mut self, cb:F) -> Option<G>
+        
+    pub fn with_apprunner<F,G>(&mut self, cb:F) -> Option<G>
             where F: FnOnce(&mut AppRunner) -> G {
         if let Some(mut st) = self.cg.as_mut() {
             Some(cb(&mut st))

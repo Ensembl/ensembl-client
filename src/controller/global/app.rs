@@ -41,7 +41,7 @@ impl App {
         cb(a)
     }
 
-    pub fn with_state<F,G>(&self, cb: F) -> G where F: FnOnce(&mut StateManager) -> G {
+    pub fn with_app<F,G>(&self, cb: F) -> G where F: FnOnce(&mut StateManager) -> G {
         let a = &mut self.state.lock().unwrap();
         cb(a)
     }
