@@ -5,7 +5,7 @@ use std::sync::{ Mutex, Arc };
 
 use composit::StateValue;
 use controller::input::Event;
-use controller::global::{ Global, CanvasState };
+use controller::global::{ Global, App };
 use debug::testcards::bigscience::big_science;
 use types::Dot;
 
@@ -18,7 +18,7 @@ struct State {
     old_time: f64,
 }
 
-fn animate(time : f64, cg: &mut CanvasState, s: Rc<RefCell<State>>) {
+fn animate(time : f64, cg: &mut App, s: Rc<RefCell<State>>) {
     let mut state = s.borrow_mut();
     if state.old_time < 1. { state.old_time = time; }
     let delta = ((time - state.old_time) / 5000.0) as f32;

@@ -1,26 +1,26 @@
 use std::sync::{ Arc, Mutex, Weak };
 
 use controller::input::{ Timers, Timer };
-use controller::global::CanvasState;
+use controller::global::App;
 use controller::output::Projector;
 use dom::event::EventControl;
 
-struct CanvasRunnerImpl {
-    cg: Arc<Mutex<CanvasState>>,
+struct AppRunnerImpl {
+    cg: Arc<Mutex<App>>,
     projector: Option<Projector>,
     controls: Vec<Box<EventControl<()>>>,
     timers: Timers
 }
 
 #[derive(Clone)]
-pub struct CanvasRunner(Arc<Mutex<CanvasRunnerImpl>>);
+pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 
 #[derive(Clone)]
-pub struct CanvasRunnerWeak(Weak<Mutex<CanvasRunnerImpl>>);
+pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
-impl CanvasRunner {
-    pub fn new(st: CanvasState) -> CanvasRunner {
-        let mut out = CanvasRunner(Arc::new(Mutex::new(CanvasRunnerImpl {
+impl AppRunner {
+    pub fn new(st: App) -> AppRunner {
+        let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
             cg: Arc::new(Mutex::new(st)),
             projector: None,
             controls: Vec::<Box<EventControl<()>>>::new(),
@@ -37,7 +37,7 @@ impl CanvasRunner {
     }
     
     pub fn add_timer<F>(&mut self, cb: F) -> Timer 
-                            where F: FnMut(&mut CanvasState, f64) + 'static {
+                            where F: FnMut(&mut App, f64) + 'static {
         self.0.lock().unwrap().timers.add(cb)
     }
 
@@ -50,7 +50,7 @@ impl CanvasRunner {
     pub fn init(&mut self) {
         /* start projector */
         {
-            let w = CanvasRunnerWeak(Arc::downgrade(&self.0.clone()));
+            let w = AppRunnerWeak(Arc::downgrade(&self.0.clone()));
             let proj = Projector::new(&w);
             let mut imp = self.0.lock().unwrap();
             imp.projector = Some(proj);
@@ -69,7 +69,7 @@ impl CanvasRunner {
         self.0.lock().unwrap().controls.push(control);
     }
     
-    pub fn state(&self) -> Arc<Mutex<CanvasState>> {
+    pub fn state(&self) -> Arc<Mutex<App>> {
         self.0.lock().unwrap().cg.clone()
     }
     
@@ -87,8 +87,8 @@ impl CanvasRunner {
     }
 }
 
-impl CanvasRunnerWeak {
-    pub fn upgrade(&self) -> Option<CanvasRunner> {
-        self.0.upgrade().map(|cr| CanvasRunner(cr))
+impl AppRunnerWeak {
+    pub fn upgrade(&self) -> Option<AppRunner> {
+        self.0.upgrade().map(|cr| AppRunner(cr))
     }    
 }

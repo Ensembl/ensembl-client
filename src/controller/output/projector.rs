@@ -3,13 +3,13 @@ use std::cell::RefCell;
 
 use stdweb::web::window;
 
-use controller::global::CanvasRunnerWeak;
+use controller::global::AppRunnerWeak;
 use controller::output::jank::JankBuster;
 
 const NEGLECTED_MS : f64 = 100.;
 
 struct ProjectorImpl {
-    cr: CanvasRunnerWeak,
+    cr: AppRunnerWeak,
     phase: u32,
     old_time: Option<f64>,
     delta: Option<f64>,
@@ -52,7 +52,7 @@ impl ProjectorImpl {
 pub struct Projector(Rc<RefCell<ProjectorImpl>>);
 
 impl Projector {
-    pub fn new(cr: &CanvasRunnerWeak) -> Projector {
+    pub fn new(cr: &AppRunnerWeak) -> Projector {
         let mut out = Projector(Rc::new(RefCell::new(ProjectorImpl {
             cr: cr.clone(),
             phase: 0,

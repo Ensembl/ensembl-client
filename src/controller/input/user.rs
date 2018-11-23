@@ -5,19 +5,19 @@ use stdweb::web::{ Element, HtmlElement, IHtmlElement };
 use stdweb::traits::IEvent;
 use dom::event;
 
-use controller::global::{ CanvasState, CanvasRunner };
+use controller::global::{ App, AppRunner };
 use controller::input::{ Event, events_run };
 use controller::input::physics::MousePhysics;
 use types::Dot;
 
 pub struct UserEventListener {
     canv_el: HtmlElement,
-    cs: Arc<Mutex<CanvasState>>,
+    cs: Arc<Mutex<App>>,
     mouse: Arc<Mutex<MousePhysics>>
 }
 
 impl UserEventListener {
-    pub fn new(cs: &Arc<Mutex<CanvasState>>,
+    pub fn new(cs: &Arc<Mutex<App>>,
                canv_el: &HtmlElement,
                mouse: &Arc<Mutex<MousePhysics>>) -> UserEventListener {
         UserEventListener {
@@ -84,7 +84,7 @@ impl EventListener<()> for UserEventListenerBody {
     }
 }
 
-pub fn register_user_events(gc: &mut CanvasRunner, el: &HtmlElement) {
+pub fn register_user_events(gc: &mut AppRunner, el: &HtmlElement) {
     event::disable_context_menu();
     let mp = Arc::new(Mutex::new(MousePhysics::new(gc)));
     let uel = UserEventListener::new(&gc.state(),&el,&mp);
