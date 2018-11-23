@@ -34,8 +34,8 @@ pub fn testcard_button(po: &DebugPanel, cont_el: &Element, g: Arc<Mutex<Global>>
     custom(po,cont_el,&body,"right",json!({ "move_right_px": 50 }));
     custom(po,cont_el,&body,"up",json!({ "move_up_px": 50 }));
     custom(po,cont_el,&body,"down",json!({ "move_down_px": 50 }));
-    custom(po,cont_el,&body,"in",json!({ "zoom_by": -0.3 }));
-    custom(po,cont_el,&body,"out",json!({ "zoom_by": 0.3 }));
+    custom(po,cont_el,&body,"in",json!({ "zoom_by": 0.3 }));
+    custom(po,cont_el,&body,"out",json!({ "zoom_by": -0.3 }));
 
     button(po,cont_el,"on",|| { debug!("global","on") });
     button(po,cont_el,"off",|| { debug!("global","off") });

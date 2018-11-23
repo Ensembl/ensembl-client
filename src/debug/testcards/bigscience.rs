@@ -75,7 +75,12 @@ fn make_rng(seed: i32) -> SmallRng {
 
 pub fn big_science(g: &mut Global, onoff: bool) {
     let seed = 12345678;
-    let size = g.canvas_size();
+    
+    let size = g.with_state(|s| {
+        s.with_stage(|s| {
+            s.get_size()
+        })
+    }).unwrap();
 
     let fc_font = FCFont::new(12,"Lato",FontVariety::Normal);
 

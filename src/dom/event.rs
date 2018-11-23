@@ -74,31 +74,59 @@ fn window_event(et: &EventType) -> bool {
 }
 
 #[derive(Debug)]
+pub struct EventContext {
+    e: Reference
+}
+
+impl EventContext {
+    pub fn new(e: &Reference) -> EventContext {
+        EventContext {
+            e: e.clone()
+        }
+    }
+    
+    pub fn target(&self) -> Element {
+        let el = js!{ return @{&self.e}.target; }.try_into().unwrap();
+        el
+    }
+}
+
+#[derive(Debug)]
 pub enum EventData {
-    MouseEvent(EventType,MouseData),
-    KeyboardEvent(EventType,KeyboardData),
-    CustomEvent(EventType,String,CustomData),
-    GenericEvent(EventType),
+    MouseEvent(EventType,EventContext,MouseData),
+    KeyboardEvent(EventType,EventContext,KeyboardData),
+    CustomEvent(EventType,EventContext,String,CustomData),
+    GenericEvent(EventType,EventContext),
 }
 
 impl EventData {
     fn new(et: EventType, e: Reference) -> EventData {
         let e = e.clone();
+        let ec = EventContext::new(&e);
         match &et {
             EventType::MouseMoveEvent |
             EventType::MouseDownEvent |
             EventType::MouseUpEvent |
             EventType::MouseClickEvent |
             EventType::MouseWheelEvent =>
-                EventData::MouseEvent(et.clone(),MouseData(e)),
+                EventData::MouseEvent(et.clone(),ec,MouseData(e)),
 
             EventType::KeyPressEvent =>
-                EventData::KeyboardEvent(et.clone(),KeyboardData(e)),
+                EventData::KeyboardEvent(et.clone(),ec,KeyboardData(e)),
                 
             EventType::CustomEvent(n) =>
-                EventData::CustomEvent(et.clone(),n.clone(),CustomData(e)),
+                EventData::CustomEvent(et.clone(),ec,n.clone(),CustomData(e)),
             EventType::ResizeEvent =>
-                EventData::GenericEvent(et.clone())
+                EventData::GenericEvent(et.clone(),ec)
+        }
+    }
+    
+    pub fn context(&self) -> &EventContext {
+        match self {
+            EventData::MouseEvent(_,ec,_) => ec,
+            EventData::KeyboardEvent(_,ec,_) => ec,
+            EventData::CustomEvent(_,ec,_,_) => ec,
+            EventData::GenericEvent(_,ec) => ec
         }
     }
 }

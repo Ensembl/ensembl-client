@@ -24,7 +24,18 @@
                 if(ready) {
                     console.log("browser app ready");
                     mutation.target.dispatchEvent(
-                        new CustomEvent("bpane-start",{
+                        new CustomEvent("bpane-activate",{
+                            detail: {
+                                key: 'main'
+                            },
+                            bubbles: true
+                        })
+                    );
+                    mutation.target.dispatchEvent(
+                        new CustomEvent("bpane-debugger",{
+                            detail: {
+                                key: 'main'
+                            },
                             bubbles: true
                         })
                     );

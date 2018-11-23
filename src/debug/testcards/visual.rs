@@ -65,8 +65,8 @@ pub fn testcard_visual(g: Arc<Mutex<Global>>, onoff: bool) {
         call: 0,
     }));
 
-    g.lock().unwrap().add_timer(move |cg,t| {
+    g.lock().unwrap().with_runner(|cr| cr.add_timer(move |cg,t| {
         let st = state.clone();
         animate(t,cg,st);
-    });
+    }));
 }
