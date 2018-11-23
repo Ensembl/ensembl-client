@@ -5,7 +5,7 @@ use stdweb::web::{ Element, HtmlElement, IHtmlElement, INode };
 use stdweb::traits::IEvent;
 
 
-use controller::global::{ CanvasState, CanvasRunner };
+use controller::global::{ App, AppRunner };
 use controller::input::{ Event, events_run };
 use controller::input::physics::MousePhysics;
 use debug::setup_stage_debug;

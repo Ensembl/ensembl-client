@@ -3,7 +3,7 @@ use std::sync::{ Arc, Mutex };
 use dom::domutil;
 use stdweb::web::{ Element, HtmlElement };
 
-use controller::global::{ CanvasState, CanvasRunner };
+use controller::global::{ App, AppRunner };
 use controller::input::{ events_run, Event };
 use dom::event::{ 
     EventListener, EventControl, EventType, EventData, Target
@@ -11,11 +11,11 @@ use dom::event::{
 
 pub struct DomEventListener {
     el: HtmlElement,
-    cg: Arc<Mutex<CanvasState>>,
+    cg: Arc<Mutex<App>>,
 }
 
 impl DomEventListener {
-    pub fn new(cg: &Arc<Mutex<CanvasState>>, el: &HtmlElement) -> DomEventListener {
+    pub fn new(cg: &Arc<Mutex<App>>, el: &HtmlElement) -> DomEventListener {
         DomEventListener { cg: cg.clone(), el: el.clone() }
     }        
 }
@@ -34,7 +34,7 @@ impl EventListener<()> for DomEventListener {
     }
 }
 
-pub fn register_dom_events(gc: &mut CanvasRunner, el: &HtmlElement) {
+pub fn register_dom_events(gc: &mut AppRunner, el: &HtmlElement) {
     let elel : Element = el.clone().into();
     let dlr = DomEventListener::new(&gc.state(),el);
     let mut ec = EventControl::new(Box::new(dlr),());

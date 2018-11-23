@@ -1,7 +1,7 @@
 use std::f64::consts::PI;
 use std::sync::{ Arc, Mutex };
 use types::{ CPixel, CDFraction, cdfraction };
-use controller::global::{ CanvasState, CanvasRunner };
+use controller::global::{ App, AppRunner };
 use controller::input::{ Event, events_run };
 use types::{ Move, Distance, Units, ddiv, Dot };
 
@@ -63,7 +63,7 @@ impl MousePhysicsImpl {
         dx.0.abs() > EPS || dx.1.abs() > EPS
     }
 
-    fn make_events(&self, cg: &CanvasState, dx: &CDFraction) {
+    fn make_events(&self, cg: &App, dx: &CDFraction) {
         events_run(cg,vec! {
             Event::Move(Move::Left(Distance(dx.0,Units::Pixels))),
             Event::Move(Move::Up(Distance(dx.1,Units::Pixels)))
@@ -95,7 +95,7 @@ impl MousePhysicsImpl {
         }
     }
 
-    fn move_by(&mut self, cg: &CanvasState, dx: CDFraction) {
+    fn move_by(&mut self, cg: &App, dx: CDFraction) {
         if self.significant_move(&dx) {
             self.make_events(cg,&dx);
             self.shift_attachment_with_canvas(&dx);
@@ -111,7 +111,7 @@ impl MousePhysicsImpl {
         out
     }
     
-    fn physics_step(&mut self, cg: &CanvasState, dt: f64) -> bool {
+    fn physics_step(&mut self, cg: &App, dt: f64) -> bool {
         if let Some(dx) = self.run_dynamics(dt) {
             self.move_by(cg,dx);
         } else if self.force_origin.is_some() {
@@ -122,7 +122,7 @@ impl MousePhysicsImpl {
         true
     }
     
-    fn tick(&mut self, cg: &CanvasState, t: f64) {
+    fn tick(&mut self, cg: &App, t: f64) {
         if let Some(dt) = self.calc_delta(t) {
             for _i in 0..MUL {
                 if !self.physics_step(cg,dt/MUL as f64) { break; }
@@ -145,14 +145,14 @@ impl MousePhysicsImpl {
 }
 
 impl MousePhysics {
-    pub fn new(ru: &mut CanvasRunner) -> MousePhysics {
+    pub fn new(ru: &mut AppRunner) -> MousePhysics {
         let out = MousePhysics(Arc::new(Mutex::new(MousePhysicsImpl::new())));
         let c = out.clone();
         ru.add_timer(move |cg,t| c.clone().tick(cg,t));
         out
     }
 
-    pub fn tick(&mut self, cg: &CanvasState, t: f64) {
+    pub fn tick(&mut self, cg: &App, t: f64) {
         self.0.lock().unwrap().tick(cg,t);
     }
 

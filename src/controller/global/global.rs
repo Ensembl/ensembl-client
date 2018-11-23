@@ -10,7 +10,7 @@ use controller::input::{
     register_direct_events, register_user_events, register_dom_events,
     Timer, register_startup_events
 };
-use controller::global::{ CanvasRunner, CanvasState };
+use controller::global::{ AppRunner, App };
 use debug::setup_testcards;
 use dom::domutil;
 use types::CPixel;
@@ -18,7 +18,7 @@ use types::CPixel;
 const CANVAS : &str = r##"<canvas id="glcanvas"></canvas>"##;
 
 pub struct Global {
-    cg: Option<CanvasRunner>,
+    cg: Option<AppRunner>,
     inst: u32,
     state: Arc<Mutex<StateManager>>,
     elements: HashMap<String,Element>
@@ -51,8 +51,8 @@ impl Global {
         let elel : Element = root.clone().into();
         self.cg.as_mut().map(|cg| { cg.unregister() });
         let (canv_el,inst_s) = self.setup_dom(&root.into(),&elel);
-        let cs = CanvasState::new(&self.state,&canv_el);
-        let mut cg = CanvasRunner::new(cs);
+        let cs = App::new(&self.state,&canv_el);
+        let mut cg = AppRunner::new(cs);
         register_user_events(&mut cg,&canv_el);
         register_direct_events(&mut cg,&el);
         register_dom_events(&mut cg,&canv_el);
@@ -62,7 +62,7 @@ impl Global {
     }
     
     pub fn with_state<F,G>(&mut self, cb: F) -> Option<G>
-            where F: FnOnce(&mut CanvasState) -> G {
+            where F: FnOnce(&mut App) -> G {
         self.with_runner(|r| {
             let mut st = r.state();
             let mut st = st.lock().unwrap();
@@ -71,7 +71,7 @@ impl Global {
     }
     
     pub fn with_runner<F,G>(&mut self, cb:F) -> Option<G>
-            where F: FnOnce(&mut CanvasRunner) -> G {
+            where F: FnOnce(&mut AppRunner) -> G {
         if let Some(mut st) = self.cg.as_mut() {
             Some(cb(&mut st))
         } else {

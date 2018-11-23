@@ -3,7 +3,7 @@ use std::sync::{ Arc, Mutex };
 use serde_json::Value as JSONValue;
 use stdweb::web::{ Element, HtmlElement };
 
-use controller::global::{ CanvasState, CanvasRunner };
+use controller::global::{ App, AppRunner };
 use controller::input::{ events_run, Event };
 use dom::event::{ 
     EventListener, EventControl, EventType, EventData, 
@@ -73,11 +73,11 @@ fn custom_make_events(j: &JSONValue) -> Vec<Event> {
 }
 
 pub struct DirectEventListener {
-    cg: Arc<Mutex<CanvasState>>,
+    cg: Arc<Mutex<App>>,
 }
 
 impl DirectEventListener {
-    pub fn new(cg: &Arc<Mutex<CanvasState>>) -> DirectEventListener {
+    pub fn new(cg: &Arc<Mutex<App>>) -> DirectEventListener {
         DirectEventListener { cg: cg.clone() }
     }        
 }
@@ -93,7 +93,7 @@ impl EventListener<()> for DirectEventListener {
     }
 }
 
-pub fn register_direct_events(gc: &mut CanvasRunner, el: &HtmlElement) {
+pub fn register_direct_events(gc: &mut AppRunner, el: &HtmlElement) {
     let elel : Element = el.clone().into();
     let dlr = DirectEventListener::new(&gc.state());
     let mut ec = EventControl::new(Box::new(dlr),());

@@ -1,7 +1,7 @@
 mod global;
-mod runner;
-mod state;
+mod apprunner;
+mod app;
 
 pub use self::global::{ Global, setup_global };
-pub use self::runner::{ CanvasRunner, CanvasRunnerWeak };
-pub use self::state::CanvasState;
+pub use self::apprunner::{ AppRunner, AppRunnerWeak };
+pub use self::app::App;

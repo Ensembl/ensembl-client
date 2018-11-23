@@ -1,6 +1,6 @@
 use types::{ Move, Units, Axis, Dot };
 use composit::Stick;
-use controller::global::CanvasState;
+use controller::global::App;
 
 #[derive(Debug,Clone)]
 pub enum Event {
@@ -12,7 +12,7 @@ pub enum Event {
     Resize(Dot<i32,i32>)
 }
 
-fn exe_pos_event(cg: &CanvasState, v: Dot<f64,f64>, prop: Option<f64>) {
+fn exe_pos_event(cg: &App, v: Dot<f64,f64>, prop: Option<f64>) {
     let prop = prop.unwrap_or(0.5);
     let v = cg.with_stage(|s|
         Dot(s.pos_prop_bp_to_origin(v.0,prop),v.1)
@@ -21,7 +21,7 @@ fn exe_pos_event(cg: &CanvasState, v: Dot<f64,f64>, prop: Option<f64>) {
     cg.with_compo(|co| { co.set_position(v.0); });
 }
 
-fn exe_move_event(cg: &CanvasState, v: Move<f64,f64>) {
+fn exe_move_event(cg: &App, v: Move<f64,f64>) {
     let pos = cg.with_stage(|s| {
         let v = match v.direction().0 {
             Axis::Horiz => v.convert(Units::Bases,s),
@@ -35,7 +35,7 @@ fn exe_move_event(cg: &CanvasState, v: Move<f64,f64>) {
     });
 }
 
-fn exe_zoom_event(cg: &CanvasState, mut z: f32, by: bool) {
+fn exe_zoom_event(cg: &App, mut z: f32, by: bool) {
     let z = cg.with_stage(|s| {
         if by { z += s.get_zoom(); }
         s.set_zoom(z);
@@ -46,14 +46,14 @@ fn exe_zoom_event(cg: &CanvasState, mut z: f32, by: bool) {
     });
 }
 
-fn exe_resize(cg: &CanvasState, sz: Dot<i32,i32>) {
+fn exe_resize(cg: &App, sz: Dot<i32,i32>) {
     cg.with_stage(|s| {
         s.set_size(&sz);
     });
     cg.force_size();
 }
 
-pub fn events_run(cg: &CanvasState, evs: Vec<Event>) {
+pub fn events_run(cg: &App, evs: Vec<Event>) {
     for ev in evs {
         match ev {
             Event::Pos(v,prop) => exe_pos_event(cg,v,prop),
