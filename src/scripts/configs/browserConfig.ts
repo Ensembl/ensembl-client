@@ -24,15 +24,6 @@ import navigateRightOffIcon from 'assets/img/browser/navigate-right-off.svg';
 export type BrowserInfoItem = {
   description: string;
   icon: {
-    on: string;
-    off: string;
-  };
-  name: string;
-};
-
-export type BrowserNavItem = {
-  description: string;
-  icon: {
     default: string;
     selected: string;
   };
@@ -40,7 +31,19 @@ export type BrowserNavItem = {
 };
 
 export type BrowserInfoType = {
-  [key: string]: BrowserNavItem;
+  [key: string]: BrowserInfoItem;
+};
+
+export type BrowserNavItem = {
+  description: string;
+  detail: {
+    [key: string]: number;
+  };
+  icon: {
+    on: string;
+    off: string;
+  };
+  name: string;
 };
 
 export const browserInfoConfig: BrowserInfoType = {
@@ -65,50 +68,68 @@ export const browserInfoConfig: BrowserInfoType = {
 export const browserNavConfig: BrowserNavItem[] = [
   {
     description: 'navigate up',
+    detail: {
+      move_up_px: 50
+    },
     icon: {
-      default: navigateUpIcon,
-      selected: navigateUpOffIcon
+      off: navigateUpOffIcon,
+      on: navigateUpIcon
     },
     name: 'navigate-up'
   },
   {
     description: 'navigate down',
+    detail: {
+      move_down_px: 50
+    },
     icon: {
-      default: navigateDownIcon,
-      selected: navigateDownOffIcon
+      off: navigateDownOffIcon,
+      on: navigateDownIcon
     },
     name: 'navigate-down'
   },
   {
     description: 'zoom out',
+    detail: {
+      zoom_by: -0.3
+    },
     icon: {
-      default: zoomOutIcon,
-      selected: zoomOutOffIcon
+      off: zoomOutOffIcon,
+      on: zoomOutIcon
     },
     name: 'zoom-out'
   },
   {
     description: 'zoom in',
+    detail: {
+      zoom_by: 0.3
+    },
     icon: {
-      default: zoomInIcon,
-      selected: zoomInOffIcon
+      off: zoomInOffIcon,
+      on: zoomInIcon
     },
     name: 'zoom-in'
   },
   {
     description: 'navigate left',
+    detail: {
+      move_left_px: 50
+    },
     icon: {
-      default: navigateLeftIcon,
-      selected: navigateLeftOffIcon
+      off: navigateLeftOffIcon,
+      on: navigateLeftIcon
     },
     name: 'navigate left'
+  },
+  {
+    description: 'navigate right',
+    detail: {
+      move_right_px: 50
+    },
+    icon: {
+      off: navigateRightOffIcon,
+      on: navigateRightIcon
+    },
+    name: 'navigate right'
   }
-  // {
-  //   description: 'navigate right',
-  //   icon: {
-  //     default: navigateRightIcon,
-  //     selected: navigateRightOffIcon
-  //   },
-  //   name: 'navigate right'
-  // }
 ];
