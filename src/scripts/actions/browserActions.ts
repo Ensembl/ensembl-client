@@ -17,3 +17,7 @@ export const changeCurrentDrawerSection = createAction(
     return (currentDrawerSection: string) => resolve(currentDrawerSection);
   }
 );
+
+export const toggleBrowserNav = createAction(
+  'browser/toggle-browser-navigation'
+);

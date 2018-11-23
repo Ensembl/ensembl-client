@@ -1,51 +1,39 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { hot } from 'react-hot-loader';
 import { RouteComponentProps } from 'react-router';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
 
-import BrowserBar from './BrowserBar';
+import BrowserHeaderBar from './BrowserHeaderBar';
+import BrowserImage from './BrowserImage';
+import BrowserInfoBar from './BrowserInfoBar';
+import BrowserNavBar from './BrowserNavBar';
 import TrackPanel from '../../layout/track-panel/TrackPanel';
 import Track from '../../tracks/Track';
+
 import { RootState } from '../../../reducers';
 import { BrowserOpenState } from '../../../reducers/browserReducer';
-import { closeDrawer } from '../../../actions/browserActions';
+import { closeDrawer, toggleBrowserNav } from '../../../actions/browserActions';
+import {
+  getBrowserOpenState,
+  getDrawerOpened,
+  getBrowserNavOpened
+} from '../../../selectors/browserSelectors';
 
 import 'assets/browser/browser';
 
 type BrowserProps = RouteComponentProps<{}> & {
+  browserNavOpened: boolean;
   browserOpenState: BrowserOpenState;
   closeDrawer: () => void;
   drawerOpened: boolean;
+  toggleBrowserNav: () => void;
 };
 
 class Browser extends Component<BrowserProps> {
-  private browserCanvas: React.RefObject<HTMLDivElement>;
-
   constructor(props: BrowserProps) {
     super(props);
 
-    this.browserCanvas = React.createRef();
     this.closeTrack = this.closeTrack.bind(this);
-  }
-
-  public componentDidMount() {
-    const moveEvent = new CustomEvent('bpane-start', {
-      bubbles: true,
-      detail: {}
-    });
-
-    const currentEl = this.browserCanvas.current;
-
-    if (currentEl && currentEl.ownerDocument) {
-      const browserEl = currentEl.ownerDocument.querySelector(
-        'body'
-      ) as HTMLBodyElement;
-
-      if (browserEl) {
-        browserEl.dispatchEvent(moveEvent);
-      }
-    }
   }
 
   public closeTrack() {
@@ -58,30 +46,39 @@ class Browser extends Component<BrowserProps> {
 
   public render() {
     return (
-      <Fragment>
-        <section className={`browser ${this.props.browserOpenState}`}>
-          <BrowserBar expanded={false} drawerOpened={this.props.drawerOpened} />
-          <div className="browser-canvas-wrapper" onClick={this.closeTrack}>
-            <div className="browser-canvas" ref={this.browserCanvas}>
-              <div id="stage" />
-            </div>
+      <section className="browser">
+        <BrowserHeaderBar />
+        <div className="browser-inner-wrapper">
+          <div
+            className={`browser-image-wrapper ${this.props.browserOpenState}`}
+            onClick={this.closeTrack}
+          >
+            <BrowserInfoBar
+              browserNavOpened={this.props.browserNavOpened}
+              expanded={true}
+              toggleBrowserNav={this.props.toggleBrowserNav}
+            />
+            {this.props.browserNavOpened && <BrowserNavBar />}
+            <BrowserImage />
           </div>
-        </section>
-        <TrackPanel />
-        {this.props.drawerOpened && <Track />}
-      </Fragment>
+          <TrackPanel />
+          {this.props.drawerOpened && <Track />}
+        </div>
+      </section>
     );
   }
 }
 
-const mapStateToProps = (state: RootState) => {
-  const { browserOpenState, drawerOpened } = state.browser;
-  return { browserOpenState, drawerOpened };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-  closeDrawer: () => dispatch(closeDrawer())
+const mapStateToProps = (state: RootState) => ({
+  browserNavOpened: getBrowserNavOpened(state),
+  browserOpenState: getBrowserOpenState(state),
+  drawerOpened: getDrawerOpened(state)
 });
+
+const mapDispatchToProps = {
+  closeDrawer,
+  toggleBrowserNav
+};
 
 export default hot(module)(
   connect(

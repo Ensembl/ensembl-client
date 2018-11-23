@@ -29,8 +29,9 @@
 }
 
 .launchbar {
+  border-bottom: 1px solid $ens-black;
   border-top: 1px solid $ens-black;
-  padding: 0 20px;
+  padding: 0 5px;
   @include flex;
 
   .categories-wrapper {

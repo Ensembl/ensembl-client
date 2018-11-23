@@ -16,6 +16,7 @@ export enum BrowserOpenState {
 }
 
 export type BrowserState = Readonly<{
+  browserNavOpened: boolean;
   browserOpenState: BrowserOpenState;
   currentDrawerSection: string;
   currentTrack: string;
@@ -25,6 +26,7 @@ export type BrowserState = Readonly<{
 }>;
 
 export const defaultState: BrowserState = {
+  browserNavOpened: false,
   browserOpenState: BrowserOpenState.SEMI_EXPANDED,
   currentDrawerSection: '',
   currentTrack: '',
@@ -82,6 +84,8 @@ export default (
       return drawerState(state, false);
     case getType(browser.changeCurrentDrawerSection):
       return { ...state, currentDrawerSection: action.payload };
+    case getType(browser.toggleBrowserNav):
+      return { ...state, browserNavOpened: !state.browserNavOpened };
     default:
       return state;
   }

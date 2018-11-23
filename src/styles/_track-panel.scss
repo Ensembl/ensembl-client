@@ -1,9 +1,10 @@
 .track-panel {
   @include flex;
-  border-left: 1px solid $ens-black;
+  border-left: 1px solid $ens-medium-grey;
 
   .track-panel-bar {
-    border-right: 1px solid $ens-black;
+    border-right: 1px solid $ens-medium-grey;
+    background: $ens-light-grey;
     width: 44px;
 
     button {
@@ -73,7 +74,17 @@
   dl {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 146px);
+    height: calc(100vh - 166px);
     margin: 0;
+  }
+}
+
+main {
+  &.expanded {
+    .track-panel {
+      dl {
+        height: calc(100vh - 109px);
+      }
+    }
   }
 }

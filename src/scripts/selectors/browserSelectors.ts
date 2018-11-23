@@ -19,3 +19,6 @@ export const getDrawerSections = (state: RootState): DrawerSection[] =>
 
 export const getTrackPanelOpened = (state: RootState): boolean =>
   state.browser.trackPanelOpened;
+
+export const getBrowserNavOpened = (state: RootState): boolean =>
+  state.browser.browserNavOpened;

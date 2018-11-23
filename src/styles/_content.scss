@@ -1,6 +1,5 @@
 main {
   @include flex;
-  border-top: 1px solid $ens-black;
   min-height: calc(100vh - 96px);
 
   &.expanded {

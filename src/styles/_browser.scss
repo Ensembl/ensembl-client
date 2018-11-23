@@ -1,9 +1,45 @@
-.browser-canvas-wrapper {
-  height: calc(100% - 41px);
-  padding: 10px;
+.browser {
+  width: 100%;
 }
 
-.browser {
+.browser-header-bar {
+  @include flex;
+  background: $ens-grey;
+  height: 40px;
+  padding: 7px 20px;
+
+  dl {
+    margin: 0;
+
+    &.browser-header-bar-left {
+      flex: 1 1 auto;
+    }
+
+    &.browser-header-bar-right {
+      flex: 0 1 auto;
+    }
+  }
+
+  dt {
+    display: inline-block;
+    margin: 0 10px;
+  }
+
+  button {
+    border: 1px solid $ens-blue;
+    padding: 5px 10px;
+
+    &.selected {
+      background: $ens-white;
+    }
+  }
+}
+
+.browser-inner-wrapper {
+  @include flex;
+}
+
+.browser-image-wrapper {
   &.semi-expanded {
     width: 75%;
   }
@@ -15,46 +51,82 @@
   &.collapsed {
     width: 41px;
 
-    .browser-canvas-wrapper {
+    .browser-inner-wrapper {
       width: 41px;
     }
 
-    .browser-canvas {
+    .browser-image {
       display: none;
     }
   }
 }
 
-.browser-bar {
+.browser-info-bar {
+  @include flex;
+  flex-wrap: nowrap;
+  font-size: 12px;
+
   dl {
-    @include flex;
-    flex-wrap: nowrap;
     overflow: hidden;
-    border-bottom: 1px solid $ens-black;
     margin: 0;
-    width: 100%;
+
+    &.browser-info-bar-left {
+      flex: 1 1 auto;
+    }
+
+    &.browser-info-bar-right {
+      flex: 0 1 auto;
+    }
   }
 
   dt {
-    flex: 0 0 auto;
-  }
-
-  button {
+    display: inline-block;
     padding: 10px;
-  }
-
-  img {
-    height: 20px;
-    width: 20px;
+    white-space: nowrap;
   }
 
   .reset {
-    @include flex-align(left, top);
-    width: calc(100% - 80px);
+    img {
+      height: 20px;
+      width: 20px;
+    }
   }
 
   .slider {
-    @include flex-align(right, top);
-    margin-left: 40px;
+    font-size: 15px;
+
+    img {
+      height: 16px;
+      margin-left: 5px;
+      width: 16px;
+    }
+  }
+
+  .navigator {
+    img {
+      height: 25px;
+      width: 25px;
+    }
+  }
+}
+
+.browser-nav-bar {
+  @include flex;
+  justify-content: flex-end;
+
+  dl {
+    margin: 0;
+  }
+
+  dt {
+    display: inline-block;
+    padding: 10px;
+  }
+
+  button {
+    & > img {
+      height: 25px;
+      width: 25px;
+    }
   }
 }

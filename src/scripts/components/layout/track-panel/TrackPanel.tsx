@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
 
 import TrackPanelBar from './TrackPanelBar';
 import TrackPanelList from './TrackPanelList';
+
 import { RootState } from '../../../reducers';
 import {
   toggleTrackPanel,
@@ -11,15 +11,20 @@ import {
   openDrawer,
   closeDrawer
 } from '../../../actions/browserActions';
+import {
+  getCurrentTrack,
+  getDrawerOpened,
+  getTrackPanelOpened
+} from '../../../selectors/browserSelectors';
 
 type TrackPanelProps = {
+  changeCurrentTrack: (currentTrack: string) => void;
   closeDrawer: () => void;
   currentTrack: string;
   drawerOpened: boolean;
   openDrawer: () => void;
   toggleTrackPanel: () => void;
   trackPanelOpened: boolean;
-  updateTrack: (currentTrack: string) => void;
 };
 
 class TrackPanel extends Component<TrackPanelProps> {
@@ -38,7 +43,7 @@ class TrackPanel extends Component<TrackPanelProps> {
           <TrackPanelList
             currentTrack={this.props.currentTrack}
             openDrawer={this.props.openDrawer}
-            updateTrack={this.props.updateTrack}
+            updateTrack={this.props.changeCurrentTrack}
           />
         ) : null}
       </section>
@@ -54,17 +59,18 @@ class TrackPanel extends Component<TrackPanelProps> {
   }
 }
 
-const mapStateToProps = (state: RootState) => {
-  const { currentTrack, drawerOpened, trackPanelOpened } = state.browser;
-  return { currentTrack, drawerOpened, trackPanelOpened };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-  closeDrawer: () => dispatch(closeDrawer()),
-  openDrawer: () => dispatch(openDrawer()),
-  toggleTrackPanel: () => dispatch(toggleTrackPanel()),
-  updateTrack: (currentTrack: string) => dispatch(changeCurrentTrack(currentTrack))
+const mapStateToProps = (state: RootState) => ({
+  currentTrack: getCurrentTrack(state),
+  drawerOpened: getDrawerOpened(state),
+  trackPanelOpened: getTrackPanelOpened(state)
 });
+
+const mapDispatchToProps = {
+  changeCurrentTrack,
+  closeDrawer,
+  openDrawer,
+  toggleTrackPanel
+};
 
 export default connect(
   mapStateToProps,

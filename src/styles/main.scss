@@ -21,3 +21,15 @@ button {
 img {
   max-width: initial;
 }
+
+div[contenteditable] {
+  color: $ens-blue;
+  display: inline-block;
+
+  &.content-editable-box {
+    background: $ens-blue;
+    color: $ens-white;
+    margin: 0 2px;
+    padding: 2px 4px;
+  }
+}
