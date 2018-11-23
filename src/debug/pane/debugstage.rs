@@ -4,7 +4,7 @@ use std::rc::{ Rc, Weak };
 use std::cell::RefCell;
 use serde_json::Value as JSONValue;
 
-use stdweb::web::{ IEventTarget, Element, HtmlElement, IHtmlElement };
+use stdweb::web::{ IEventTarget, Element, HtmlElement };
 use stdweb::traits::IEvent;
 use stdweb::web::event::{ ClickEvent, ChangeEvent };
 use stdweb::web::html_element::SelectElement;
@@ -43,9 +43,11 @@ impl EventListener<()> for BodyEventListener {
     fn receive(&mut self, _el: &Target, ev: &EventData, _p: &()) {
         self.val += 1;
         match ev {
-            EventData::CustomEvent(_,n,_) => {
+            EventData::CustomEvent(_,n,kv) => {
                 if n == "bpane-start" {
                     setup_stage_debug();
+                } else if n == "bpane-debugger" {
+                    console!("testcard {:?}",kv);
                 }
             },
             EventData::KeyboardEvent(EventType::KeyPressEvent,k) => {
@@ -168,10 +170,6 @@ impl DebugPanelImpl {
     fn add_button(&mut self, name: &str, cb: Rc<RefCell<ButtonAction>>) {
         self.buttons.add_button(name,cb);        
     }
-    
-    fn trigger_button(&mut self, idx: usize) {
-        self.buttons.trigger_button(idx);
-    }
 }
 
 pub struct DebugPanel(Todo<Rc<RefCell<DebugPanelImpl>>>);
@@ -204,33 +202,32 @@ impl DebugPanel {
         let name = name.to_string();
         self.0.run(move |p| { p.borrow_mut().add_button(&name,cb.clone())});
     }
-    
-    fn trigger_button(&self, idx: usize) {
-        self.0.run(move |p| { p.borrow_mut().trigger_button(idx) });
-    }
 }
 
-thread_local! {
-    static DEBUG_PANEL : RefCell<Option<Rc<DebugPanel>>> = RefCell::new(None);
-}
-
-fn setup_testcard(cont_el: &Element, g: &Arc<Mutex<Global>>, name: &str) {
+fn setup_testcard(po: &DebugPanel,cont_el: &Element, g: &Arc<Mutex<Global>>, name: &str) {
     debug!("global","setup testcard {}",name);
     if name.len() > 0 {
         g.lock().unwrap().reset();
-        testcards::testcard(cont_el,g.clone(),name);
+        testcards::testcard(po,cont_el,g.clone(),name);
     }
 }
 
-fn setup_events(cont_el: &Element) {
+fn setup_events(po: Rc<DebugPanel>, cont_el: &Element) {
     let pane_el: HtmlElement = domutil::query_selector2(cont_el,".bpane-canv").unwrap().try_into().unwrap();
     let g = Arc::new(Mutex::new(Global::new(&pane_el)));
     let sel_el = domutil::query_selector2(cont_el,".console .testcard").unwrap();
     sel_el.add_event_listener(enclose! { (cont_el) move |e: ChangeEvent| {
         let node : SelectElement = e.target().unwrap().try_into().ok().unwrap();
         if let Some(name) = node.value() {
-            debug_panel_buttons_clear(&cont_el);
-            setup_testcard(&cont_el,&g,&name);
+            debug_panel_buttons_clear(&po,&cont_el);
+            setup_testcard(&po,&cont_el,&g,&name);
+            /*
+            let canv = domutil::query_selector_new("#stage").unwrap();
+            domutil::send_custom_event(&canv,"bpane-debugger",&json!({}));
+            */
+            
+            
+            
         }
     }});
     let mark_el = domutil::query_selector2(cont_el,".console .mark").unwrap();
@@ -239,33 +236,15 @@ fn setup_events(cont_el: &Element) {
     }});
 }
 
-pub fn setup_stage_debug() {
+fn setup_stage_debug() {
     if let Some(stage) = domutil::query_selector_new("#stage") {
         domutil::inner_html(&stage,DEBUGSTAGE);
         let el = domutil::append_element(&domutil::query_select("head"),"style");
         domutil::inner_html(&el,DEBUGSTAGE_CSS);
-        DEBUG_PANEL.with(|p| {
-            *p.borrow_mut() = Some(DebugPanel::new(&stage));
-        });
-        if let Some(cont_el) = domutil::query_selector_new("#bpane-container") {
-            
-            setup_events(&cont_el);
-            let mark_el = domutil::query_selector2(&cont_el,".console .start").unwrap();
-            mark_el.add_event_listener(|_e: ClickEvent| {
-                let cel = domutil::query_select("body");
-                domutil::send_custom_event(&cel,"bpane-start",&json!({}));
-            });
+        if let Some(cont_el) = domutil::query_selector_new("#bpane-container") {            
+            setup_events(DebugPanel::new(&stage),&cont_el);
         }
     }
-}
-
-fn panel_op(cb: &mut FnMut(&DebugPanel) -> ()) {
-    DEBUG_PANEL.with(|p| {
-        let p : &Option<Rc<DebugPanel>> = &p.borrow();
-        if let Some(ref po) = &p {
-            cb(&po);
-        }
-    })
 }
 
 #[allow(dead_code)]
@@ -293,35 +272,20 @@ pub fn debug_panel_select(cont_el: &Element, name: &str) {
     domutil::send_custom_event(&cel,"select",&json!({ "name": name }));
 }
 
-pub fn debug_panel_buttons_clear(cont_el: &Element) {
-    panel_op(&mut |p| {
-        p.clear_buttons();
-        p.render_buttons(cont_el);
-    });
+pub fn debug_panel_buttons_clear(po: &DebugPanel, cont_el: &Element) {
+    po.clear_buttons();
+    po.render_buttons(cont_el);
 }
 
-pub fn debug_panel_button_add(cont_el: &Element, name: &str, cb: Rc<RefCell<ButtonAction>>) {
-    DEBUG_PANEL.with(|p| {
-        let p : &Option<Rc<DebugPanel>> = &p.borrow();
-        if let Some(ref po) = &p {
-            po.add_button(name,cb);
-            po.render_buttons(cont_el);
-        }
-    });
-}
-
-pub fn debug_panel_trigger_button(idx: usize) {
-    DEBUG_PANEL.with(|p| {
-        let p : &Option<Rc<DebugPanel>> = &p.borrow();
-        if let Some(ref po) = &p {
-            po.trigger_button(idx);
-        }
-    });
+pub fn debug_panel_button_add(po: &DebugPanel, cont_el: &Element, name: &str, cb: Rc<RefCell<ButtonAction>>) {
+    po.add_button(name,cb);
+    po.render_buttons(cont_el);
 }
 
 pub fn setup_testcards() {
     let mut bec = EventControl::new(Box::new(BodyEventListener::new()),());
     bec.add_event(EventType::CustomEvent("bpane-start".to_string()));
+    bec.add_event(EventType::CustomEvent("bpane-debugger".to_string()));
     bec.add_event(EventType::KeyPressEvent);
     bec.add_element(&domutil::query_select("body"),());
 }

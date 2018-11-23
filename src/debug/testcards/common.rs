@@ -4,6 +4,7 @@ use rand::{ Rng, seq };
 use rand::distributions::Distribution;
 
 use controller::global::Global;
+use debug::DebugPanel;
 use debug::testcards::base::testcard_base;
 use debug::testcards::visual::testcard_visual;
 use debug::testcards::button::testcard_button;
@@ -11,12 +12,12 @@ use debug::testcards::polar::testcard_polar;
 use types::{ CLeaf, cleaf };
 use stdweb::web::{ Element };
 
-pub fn testcard(cont_el: &Element, g: Arc<Mutex<Global>>, name: &str) {
+pub fn testcard(po: &DebugPanel, cont_el: &Element, g: Arc<Mutex<Global>>, name: &str) {
     debug!("global","starting testcard {}",name);
     match name {
         "draw" => testcard_visual(g,false),
         "onoff" => testcard_visual(g,true),
-        "button" => testcard_button(cont_el,g),
+        "button" => testcard_button(po,cont_el,g),
         "polar" => testcard_polar(g),
         "text" => testcard_base(g,"text"),
         "ruler" => testcard_base(g,"ruler"),
