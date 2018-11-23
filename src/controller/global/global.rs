@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{ HashMap, HashSet };
 use std::sync::{ Arc, Mutex };
 
 use stdweb::unstable::TryInto;
@@ -20,9 +20,8 @@ const CANVAS : &str = r##"<canvas id="glcanvas"></canvas>"##;
 pub struct Global {
     cg: Option<AppRunner>,
     inst: u32,
-    state: Arc<Mutex<StateManager>>,
-    elements: HashMap<String,Element>
-    
+    elements: HashMap<String,Element>,
+    active: HashSet<String>
 }
 
 impl Global {
@@ -30,8 +29,8 @@ impl Global {
         Global {
             cg: None,
             inst: 0,
-            state: Arc::new(Mutex::new(StateManager::new())),
-            elements: HashMap::<String,Element>::new()
+            elements: HashMap::<String,Element>::new(),
+            active: HashSet::<String>::new()
         }
     }
         
@@ -51,11 +50,7 @@ impl Global {
         let elel : Element = root.clone().into();
         self.cg.as_mut().map(|cg| { cg.unregister() });
         let (canv_el,inst_s) = self.setup_dom(&root.into(),&elel);
-        let cs = App::new(&self.state,&canv_el);
-        let mut cg = AppRunner::new(cs);
-        register_user_events(&mut cg,&canv_el);
-        register_direct_events(&mut cg,&el);
-        register_dom_events(&mut cg,&canv_el);
+        let mut cg = AppRunner::new(&canv_el);
         cg.init();
         self.cg = Some(cg);
         inst_s

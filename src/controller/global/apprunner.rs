@@ -1,9 +1,14 @@
 use std::sync::{ Arc, Mutex, Weak };
 
+use stdweb::web::{ Element, HtmlElement };
+
 use controller::input::{ Timers, Timer };
 use controller::global::App;
 use controller::output::Projector;
 use dom::event::EventControl;
+use controller::input::{
+    register_direct_events, register_user_events, register_dom_events,
+};
 
 struct AppRunnerImpl {
     cg: Arc<Mutex<App>>,
@@ -19,7 +24,8 @@ pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
 impl AppRunner {
-    pub fn new(st: App) -> AppRunner {
+    pub fn new(canv_el: &HtmlElement) -> AppRunner {
+        let st = App::new(&canv_el);
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
             cg: Arc::new(Mutex::new(st)),
             projector: None,
@@ -47,7 +53,22 @@ impl AppRunner {
         imp.timers.run(&mut state.lock().unwrap(), time);
     }
     
+    fn get_element(&self) -> HtmlElement {
+        let mut imp = self.0.lock().unwrap();
+        let a = &mut imp.cg.clone();
+        let out : HtmlElement = a.lock().unwrap().get_element().clone();
+        out
+    }
+    
     pub fn init(&mut self) {
+        /* register canvas-bound events */
+        // XXX too many: customs should mainly be on body
+        let el = self.get_element();
+        register_user_events(self,&el);
+        register_direct_events(self,&el);
+        register_dom_events(self,&el);
+
+        
         /* start projector */
         {
             let w = AppRunnerWeak(Arc::downgrade(&self.0.clone()));

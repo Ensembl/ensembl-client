@@ -1,12 +1,13 @@
 use std::sync::{ Arc, Mutex };
 
-use stdweb::web::HtmlElement;
+use stdweb::web::{ Element, HtmlElement };
 
 use composit::{ Compositor, StateManager, Stage };
 use controller::input::{ Event, events_run, startup_events };
 use print::Printer;
 
 pub struct App {
+    el: HtmlElement,
     pub printer: Arc<Mutex<Printer>>,
     pub stage: Arc<Mutex<Stage>>,
     pub state: Arc<Mutex<StateManager>>,
@@ -14,16 +15,19 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(state: &Arc<Mutex<StateManager>>, canv_el: &HtmlElement) -> App {
+    pub fn new(canv_el: &HtmlElement) -> App {
         let out = App {
+            el: canv_el.clone(),
             printer: Arc::new(Mutex::new(Printer::new(&canv_el))),
             stage:  Arc::new(Mutex::new(Stage::new())),
             compo: Arc::new(Mutex::new(Compositor::new())),
-            state: state.clone(),
+            state: Arc::new(Mutex::new(StateManager::new())),
         };
         out.run_events(startup_events());
         out
     }
+    
+    pub fn get_element(&self) -> &HtmlElement { &self.el }
     
     pub fn finish(&mut self) {
         self.printer.lock().unwrap().finish();

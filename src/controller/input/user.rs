@@ -87,7 +87,7 @@ impl EventListener<()> for UserEventListenerBody {
 pub fn register_user_events(gc: &mut AppRunner, el: &HtmlElement) {
     event::disable_context_menu();
     let mp = Arc::new(Mutex::new(MousePhysics::new(gc)));
-    let uel = UserEventListener::new(&gc.state(),&el,&mp);
+    let uel = UserEventListener::new(&gc.state(),el,&mp);
     let mut ec_canv = EventControl::new(Box::new(uel),());
     ec_canv.add_event(EventType::MouseClickEvent);
     ec_canv.add_event(EventType::MouseDownEvent);
