@@ -4,6 +4,7 @@ use stdweb::web::{ Element, HtmlElement };
 
 use controller::input::{ Timers, Timer };
 use controller::global::App;
+use dom::{ domutil, Bling };
 use controller::output::Projector;
 use dom::event::EventControl;
 use controller::input::{
@@ -11,7 +12,7 @@ use controller::input::{
 };
 
 struct AppRunnerImpl {
-    cg: Arc<Mutex<App>>,
+    app: Arc<Mutex<App>>,
     projector: Option<Projector>,
     controls: Vec<Box<EventControl<()>>>,
     timers: Timers
@@ -24,10 +25,10 @@ pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
 impl AppRunner {
-    pub fn new(canv_el: &HtmlElement) -> AppRunner {
-        let st = App::new(&canv_el);
+    pub fn new(el: &Element, bling: Box<Bling>) -> AppRunner {
+        let st = App::new(el,bling);
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
-            cg: Arc::new(Mutex::new(st)),
+            app: Arc::new(Mutex::new(st)),
             projector: None,
             controls: Vec::<Box<EventControl<()>>>::new(),
             timers: Timers::new()
@@ -39,9 +40,10 @@ impl AppRunner {
             });
             cs.with_stage(|s| s.set_max_y(max_y));
         });
+        out.init();
         out
     }
-    
+        
     pub fn add_timer<F>(&mut self, cb: F) -> Timer 
                             where F: FnMut(&mut App, f64) + 'static {
         self.0.lock().unwrap().timers.add(cb)
@@ -49,13 +51,13 @@ impl AppRunner {
 
     pub fn run_timers(&mut self, time: f64) {
         let mut imp = self.0.lock().unwrap();
-        let state = &mut imp.cg.clone();
+        let state = &mut imp.app.clone();
         imp.timers.run(&mut state.lock().unwrap(), time);
     }
     
     fn get_element(&self) -> HtmlElement {
         let mut imp = self.0.lock().unwrap();
-        let a = &mut imp.cg.clone();
+        let a = &mut imp.app.clone();
         let out : HtmlElement = a.lock().unwrap().get_canvas_element().clone();
         out
     }
@@ -83,7 +85,7 @@ impl AppRunner {
     
     pub fn draw(&mut self) {
         let imp = self.0.lock().unwrap();
-        imp.cg.lock().unwrap().draw();
+        imp.app.lock().unwrap().draw();
     }
     
     pub fn add_control(&mut self, control: Box<EventControl<()>>) {
@@ -91,7 +93,7 @@ impl AppRunner {
     }
     
     pub fn state(&self) -> Arc<Mutex<App>> {
-        self.0.lock().unwrap().cg.clone()
+        self.0.lock().unwrap().app.clone()
     }
     
     pub fn unregister(&mut self) {
