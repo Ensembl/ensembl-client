@@ -11,7 +11,7 @@ use stdweb::web::html_element::SelectElement;
 use stdweb::unstable::TryInto;
 use stdweb::traits::IKeyboardEvent;
 
-use controller::global::Global;
+use controller::global::{ Global, AppRunner };
 use dom::{ DEBUGSTAGE, DEBUGSTAGE_CSS };
 use dom::domutil;
 use dom::event::{
@@ -44,18 +44,8 @@ impl EventListener<()> for BodyEventListener {
         self.val += 1;
         match ev {
             EventData::CustomEvent(_,_,n,kv) => {
-                if n == "bpane-start" {
-                    setup_stage_debug();
-                } else if n == "bpane-debugger" {
+                if n == "bpane-debugger" {
                     console!("testcard {:?}",kv);
-                }
-            },
-            EventData::KeyboardEvent(EventType::KeyPressEvent,_,k) => {
-                if MODIFIER_BYPASS || (k.ctrl_key() && k.alt_key()) {
-                    match &k.key()[..] {
-                        "d" => { setup_stage_debug(); },
-                        _ => ()
-                    }
                 }
             },
             _ => ()
@@ -204,22 +194,29 @@ impl DebugPanel {
     }
 }
 
-fn setup_testcard(po: &DebugPanel,cont_el: &Element, g: &Arc<Mutex<Global>>, name: &str) {
+fn setup_testcard(po: &DebugPanel,cont_el: &Element, g: &Arc<Mutex<Global>>, 
+                  ar: &mut AppRunner, name: &str) {
     debug!("global","setup testcard {}",name);
+    let g = g.clone();
+    let mut g = g.lock().unwrap();
     if name.len() > 0 {
-        g.lock().unwrap().reset();
-        testcards::testcard(po,cont_el,g.clone(),name);
+        let arr = ar.state();
+        let app = arr.lock().unwrap();
+        g.register_app("MAIN",app.get_element(),true);
+        testcards::testcard(po,cont_el,ar,name);
     }
 }
 
-fn setup_events(po: Rc<DebugPanel>, cont_el: &Element) {
+fn setup_events(po: Rc<DebugPanel>, ar: &mut AppRunner, cont_el: &Element) {
     let g = Arc::new(Mutex::new(Global::new()));
     let sel_el = domutil::query_selector2(cont_el,".console .testcard").unwrap();
+    let ar = ar.clone();
     sel_el.add_event_listener(enclose! { (cont_el) move |e: ChangeEvent| {
+        let mut ar = ar.clone();
         let node : SelectElement = e.target().unwrap().try_into().ok().unwrap();
         if let Some(name) = node.value() {
             debug_panel_buttons_clear(&po,&cont_el);
-            setup_testcard(&po,&cont_el,&g,&name);
+            setup_testcard(&po,&cont_el,&g,&mut ar,&name);
         }
     }});
     let mark_el = domutil::query_selector2(cont_el,".console .mark").unwrap();
@@ -228,13 +225,13 @@ fn setup_events(po: Rc<DebugPanel>, cont_el: &Element) {
     }});
 }
 
-pub fn setup_stage_debug() {
+pub fn setup_stage_debug(ar: &mut AppRunner) {
     if let Some(stage) = domutil::query_selector_new("#stage") {
         domutil::inner_html(&stage,DEBUGSTAGE);
         let el = domutil::append_element(&domutil::query_select("head"),"style");
         domutil::inner_html(&el,DEBUGSTAGE_CSS);
         if let Some(cont_el) = domutil::query_selector_new("#bpane-container") {            
-            setup_events(DebugPanel::new(&stage),&cont_el);
+            setup_events(DebugPanel::new(&stage),ar,&cont_el);
         }
     }
 }

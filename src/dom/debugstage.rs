@@ -26,6 +26,15 @@ pub const DEBUGSTAGE : &str = r##"
 </div>
 "##;
 
+pub const PLAINSTAGE : &str = r##"
+<div id="bpane-container">
+    <div class="bpane-canv">
+        <h1>Debug Mode</h1>
+    </div>
+    <div class="managedcanvasholder"></div>
+</div>
+"##;
+
 pub const DEBUGSTAGE_CSS : &str = r##"
 html, body {
     margin: 0px;

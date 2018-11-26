@@ -18,5 +18,5 @@ itertools = "*"
 webgl_generator = "*"
 cargo-web="*"
 
-#[profile.release]
-#lto = true
+[profile.release]
+lto = true

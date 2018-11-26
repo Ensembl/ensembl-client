@@ -1,4 +1,5 @@
 use std::collections::{ HashMap, HashSet };
+use std::collections::hash_map::Entry;
 use std::sync::{ Arc, Mutex };
 
 use stdweb::unstable::TryInto;
@@ -12,13 +13,11 @@ use controller::input::{
 };
 use controller::global::{ AppRunner, App };
 use debug::setup_testcards;
-use dom::domutil;
+use dom::{ domutil, DebugBling, NoBling, Bling };
 use types::CPixel;
 
-const CANVAS : &str = r##"<canvas id="glcanvas"></canvas>"##;
-
 pub struct Global {
-    cg: Option<AppRunner>,
+    apps: HashMap<String,AppRunner>,
     elements: HashMap<String,Element>,
     active: HashSet<String>
 }
@@ -26,26 +25,33 @@ pub struct Global {
 impl Global {
     pub fn new() -> Global {
         Global {
-            cg: None,
+            apps: HashMap::<String,AppRunner>::new(),
             elements: HashMap::<String,Element>::new(),
             active: HashSet::<String>::new()
         }
     }
 
-    pub fn reset(&mut self) {
-        self.cg.as_mut().map(|cg| { cg.unregister() });
-        let el : Element = domutil::query_selector_new("#bpane-container .bpane-canv").unwrap();
-        domutil::inner_html(&el,CANVAS);
-        let canv_el : HtmlElement = domutil::query_selector(&el,"canvas").try_into().unwrap();
-        let mut cg = AppRunner::new(&canv_el);
-        cg.init();
-        self.cg = Some(cg);
+    pub fn unregister_app(&mut self, key: &str) {
+        if let Entry::Occupied(mut e) = self.apps.entry(key.to_string()) {
+            e.get_mut().unregister();
+        }
+    }
+
+    pub fn register_app(&mut self, key: &str, el: &Element, debug: bool) {
+        self.unregister_app(key);
+        let bling : Box<Bling> = if debug {
+            Box::new(DebugBling::new())
+        } else { 
+            Box::new(NoBling::new())
+        };
+        let mut ar = AppRunner::new(&el,bling);
+        self.apps.insert(key.to_string(),ar);
     }
         
-    pub fn with_apprunner<F,G>(&mut self, cb:F) -> Option<G>
+    pub fn with_apprunner<F,G>(&mut self, key: &str, cb:F) -> Option<G>
             where F: FnOnce(&mut AppRunner) -> G {
-        if let Some(mut st) = self.cg.as_mut() {
-            Some(cb(&mut st))
+        if let Entry::Occupied(mut e) = self.apps.entry(key.to_string()) {
+            Some(cb(&mut e.get_mut()))
         } else {
             None
         }
@@ -67,7 +73,8 @@ fn find_main_element() -> Option<HtmlElement> {
 }
 
 pub fn setup_global() {
-    register_startup_events();
+    let g = Arc::new(Mutex::new(Global::new()));
+    register_startup_events(&g);
     setup_testcards();
     if let Some(h) = find_main_element() {
         h.focus();

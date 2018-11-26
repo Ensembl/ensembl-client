@@ -1,12 +1,18 @@
 use std::sync::{ Arc, Mutex };
 
 use stdweb::web::{ Element, HtmlElement };
+use stdweb::unstable::TryInto;
 
 use composit::{ Compositor, StateManager, Stage };
 use controller::input::{ Event, events_run, startup_events };
+use dom::{ domutil, Bling };
 use print::Printer;
 
+const CANVAS : &str = r##"<canvas id="glcanvas"></canvas>"##;
+
 pub struct App {
+    el: Element,
+    browser_el: Element,
     canv_el: HtmlElement,
     pub printer: Arc<Mutex<Printer>>,
     pub stage: Arc<Mutex<Stage>>,
@@ -15,9 +21,13 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(canv_el: &HtmlElement) -> App {
+    pub fn new(el: &Element, bling: Box<Bling>) -> App {
+        let el = el.clone();
+        let browser_el : Element = bling.apply_bling(&el);
+        domutil::inner_html(&browser_el,CANVAS);
+        let canv_el : HtmlElement = domutil::query_selector(&browser_el,"canvas").try_into().unwrap();
         let out = App {
-            canv_el: canv_el.clone(),
+            el, browser_el, canv_el: canv_el.clone(),
             printer: Arc::new(Mutex::new(Printer::new(&canv_el))),
             stage:  Arc::new(Mutex::new(Stage::new())),
             compo: Arc::new(Mutex::new(Compositor::new())),
@@ -26,6 +36,8 @@ impl App {
         out.run_events(startup_events());
         out
     }
+    
+    pub fn get_element(&self) -> &Element { &self.el }
     
     pub fn get_canvas_element(&self) -> &HtmlElement { &self.canv_el }
     
