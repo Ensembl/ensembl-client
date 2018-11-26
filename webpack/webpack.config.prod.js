@@ -5,6 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const ManifestPlugin = require('webpack-manifest-plugin');
 const BrotliPlugin = require('brotli-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
+const RobotstxtPlugin = require("robotstxt-webpack-plugin").default;
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 // loaders specific to prod
@@ -73,6 +74,8 @@ const plugins = [
     clientsClaim: true,
     skipWaiting: true
   }),
+
+  new RobotstxtPlugin(),
 
   // analyse the file sizes of bundled files
   new BundleAnalyzerPlugin()
