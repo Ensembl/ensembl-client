@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { hot } from 'react-hot-loader';
-import { RouteComponentProps } from 'react-router';
 import { connect } from 'react-redux';
 
 import BrowserHeaderBar from './BrowserHeaderBar';
@@ -21,7 +20,7 @@ import {
 
 import 'assets/browser/browser';
 
-type BrowserProps = RouteComponentProps<{}> & {
+type BrowserProps = {
   browserNavOpened: boolean;
   browserOpenState: BrowserOpenState;
   closeDrawer: () => void;
@@ -29,7 +28,7 @@ type BrowserProps = RouteComponentProps<{}> & {
   toggleBrowserNav: () => void;
 };
 
-class Browser extends Component<BrowserProps> {
+export class Browser extends Component<BrowserProps> {
   constructor(props: BrowserProps) {
     super(props);
 
