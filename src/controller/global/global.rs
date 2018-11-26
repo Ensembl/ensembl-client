@@ -19,7 +19,6 @@ const CANVAS : &str = r##"<canvas id="glcanvas"></canvas>"##;
 
 pub struct Global {
     cg: Option<AppRunner>,
-    inst: u32,
     elements: HashMap<String,Element>,
     active: HashSet<String>
 }
@@ -28,32 +27,19 @@ impl Global {
     pub fn new() -> Global {
         Global {
             cg: None,
-            inst: 0,
             elements: HashMap::<String,Element>::new(),
             active: HashSet::<String>::new()
         }
     }
-        
-    fn setup_dom(&mut self, root: &Element, el: &Element) -> (HtmlElement,String) {
-        self.inst += 1;
-        domutil::inner_html(el,CANVAS);
-        let canv_el : HtmlElement = domutil::query_selector(el,"canvas").try_into().unwrap();
-        debug!("global","start card {}",self.inst);
-        let inst_s = format!("{}",self.inst);
-        root.set_attribute("data-inst",&inst_s).ok();
-        (canv_el,inst_s)
-    }
-    
-    pub fn reset(&mut self) -> String {
-        let root : HtmlElement = domutil::query_selector_new("#bpane-container .bpane-canv").unwrap().try_into().unwrap();
-        let el : HtmlElement = root.clone().into();
-        let elel : Element = root.clone().into();
+
+    pub fn reset(&mut self) {
         self.cg.as_mut().map(|cg| { cg.unregister() });
-        let (canv_el,inst_s) = self.setup_dom(&root.into(),&elel);
+        let el : Element = domutil::query_selector_new("#bpane-container .bpane-canv").unwrap();
+        domutil::inner_html(&el,CANVAS);
+        let canv_el : HtmlElement = domutil::query_selector(&el,"canvas").try_into().unwrap();
         let mut cg = AppRunner::new(&canv_el);
         cg.init();
         self.cg = Some(cg);
-        inst_s
     }
         
     pub fn with_apprunner<F,G>(&mut self, cb:F) -> Option<G>

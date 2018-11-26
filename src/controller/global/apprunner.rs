@@ -56,7 +56,7 @@ impl AppRunner {
     fn get_element(&self) -> HtmlElement {
         let mut imp = self.0.lock().unwrap();
         let a = &mut imp.cg.clone();
-        let out : HtmlElement = a.lock().unwrap().get_element().clone();
+        let out : HtmlElement = a.lock().unwrap().get_canvas_element().clone();
         out
     }
     
