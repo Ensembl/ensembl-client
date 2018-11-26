@@ -7,7 +7,7 @@ use controller::input::{ Event, events_run, startup_events };
 use print::Printer;
 
 pub struct App {
-    el: HtmlElement,
+    canv_el: HtmlElement,
     pub printer: Arc<Mutex<Printer>>,
     pub stage: Arc<Mutex<Stage>>,
     pub state: Arc<Mutex<StateManager>>,
@@ -17,7 +17,7 @@ pub struct App {
 impl App {
     pub fn new(canv_el: &HtmlElement) -> App {
         let out = App {
-            el: canv_el.clone(),
+            canv_el: canv_el.clone(),
             printer: Arc::new(Mutex::new(Printer::new(&canv_el))),
             stage:  Arc::new(Mutex::new(Stage::new())),
             compo: Arc::new(Mutex::new(Compositor::new())),
@@ -27,7 +27,7 @@ impl App {
         out
     }
     
-    pub fn get_element(&self) -> &HtmlElement { &self.el }
+    pub fn get_canvas_element(&self) -> &HtmlElement { &self.canv_el }
     
     pub fn finish(&mut self) {
         self.printer.lock().unwrap().finish();
@@ -45,7 +45,7 @@ impl App {
         cb(a)
     }
 
-    pub fn with_app<F,G>(&self, cb: F) -> G where F: FnOnce(&mut StateManager) -> G {
+    pub fn with_state<F,G>(&self, cb: F) -> G where F: FnOnce(&mut StateManager) -> G {
         let a = &mut self.state.lock().unwrap();
         cb(a)
     }

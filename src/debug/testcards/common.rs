@@ -1,6 +1,7 @@
 use std::sync::{ Mutex, Arc };
 
 use rand::{ Rng, seq };
+use rand::prelude::SliceRandom;
 use rand::distributions::Distribution;
 
 use controller::global::Global;
@@ -34,7 +35,7 @@ fn choose<R>(rng: &mut R, vals: &[&[&str]]) -> String
                     where R: Rng {
     let mut out = String::new();
     for val in vals {
-        out += seq::sample_iter(rng,*val,1).unwrap()[0]
+        out += val[..].choose(rng).unwrap();
     }
     out
 }
