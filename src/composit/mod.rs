@@ -10,6 +10,9 @@ mod stage;
 mod compmanager;
 mod stick;
 mod stickmanager;
+mod transit;
+mod compsource;
+mod compsourcelist;
 
 pub use self::leafcomponent::LeafComponent;
 pub use self::lcbuilder::LCBuilder;
@@ -21,6 +24,9 @@ pub use self::component::Component;
 pub use self::stage::Stage;
 pub use self::stick::Stick;
 pub use self::stickmanager::StickManager;
+pub use self::transit::Transit;
+pub use self::compsource::ComponentSource;
+pub use self::compsourcelist::ComponentSourceList;
 
 pub use self::state::{
     StateExpr,

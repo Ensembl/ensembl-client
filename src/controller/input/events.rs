@@ -9,7 +9,10 @@ pub enum Event {
     Move(Move<f64,f64>),
     Zoom(f32),
     ZoomTo(f32),
-    Resize(Dot<i32,i32>)
+    Resize(Dot<i32,i32>),
+    AddComponent(String),
+    RemoveComponent(String),
+    SetStick(String)
 }
 
 fn exe_pos_event(cg: &App, v: Dot<f64,f64>, prop: Option<f64>) {
@@ -53,6 +56,15 @@ fn exe_resize(cg: &App, sz: Dot<i32,i32>) {
     cg.force_size();
 }
 
+fn exe_component_add(name: &str) {
+}
+
+fn exe_component_remove(name: &str) {
+}
+
+fn exe_set_stick(name: &str) {
+}
+
 pub fn events_run(cg: &App, evs: Vec<Event>) {
     for ev in evs {
         match ev {
@@ -61,6 +73,9 @@ pub fn events_run(cg: &App, evs: Vec<Event>) {
             Event::Zoom(z) => exe_zoom_event(cg,z,true),
             Event::ZoomTo(z) => exe_zoom_event(cg,z,false),
             Event::Resize(sz) => exe_resize(cg,sz),
+            Event::AddComponent(name) => exe_component_add(&name),
+            Event::RemoveComponent(name) => exe_component_remove(&name),
+            Event::SetStick(name) => exe_set_stick(&name),
             Event::Noop => ()
         }
     }

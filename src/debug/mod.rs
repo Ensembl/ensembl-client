@@ -9,3 +9,8 @@ pub use debug::pane::{
     debug_panel_entry_add,
     debug_panel_entry_reset,
 };
+
+pub use debug::testcards::{
+    DebugComponentSource,
+    debug_stick_source
+};
