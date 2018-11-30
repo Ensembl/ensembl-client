@@ -1,7 +1,7 @@
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
-use composit::{ Component, StateValue, StateFixed, Stick, Source };
+use composit::{ Component, StateValue, StateFixed, Stick, Source, ComponentSource };
 use controller::global::App;
 use debug::testcards::text::text_source;
 use debug::testcards::leafcard::leafcard_source;
@@ -23,4 +23,27 @@ pub fn testcard_base(a: &mut App, stick_name: &str) {
         co.add_component(c);
         co.set_stick(&Stick::new(stick_name,1000000,false));
     });
+}
+
+pub fn debug_main() -> Component {
+    let cs = debug_stick_source();
+    Component::new(Box::new(cs),Rc::new(StateFixed(StateValue::On())))    
+}
+
+pub struct DebugComponentSource {
+}
+
+impl DebugComponentSource {
+    pub fn new() -> DebugComponentSource {
+        DebugComponentSource {}
+    }
+}
+
+impl ComponentSource for DebugComponentSource {
+    fn get_component(&mut self, name: &str) -> Option<Component> {
+        match name {
+            "internal:debug-main" => Some(debug_main()),
+            _ => None
+        }
+    }
 }

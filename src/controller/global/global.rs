@@ -6,29 +6,34 @@ use stdweb::unstable::TryInto;
 use stdweb::web::{ IElement, HtmlElement, Element, IHtmlElement };
 
 
-use composit::StateManager;
+use composit::{ StateManager, ComponentSourceList, StickManager };
 use controller::input::{
     register_direct_events, register_user_events, register_dom_events,
     Timer, register_startup_events
 };
 use controller::global::{ AppRunner, App };
-use debug::setup_testcards;
+use debug::{ setup_testcards, DebugComponentSource };
+use debug::debug_stick_source;
 use dom::{ domutil, DebugBling, NoBling, Bling };
 use types::CPixel;
 
 pub struct Global {
     apps: HashMap<String,AppRunner>,
     elements: HashMap<String,Element>,
-    active: HashSet<String>
+    csl: ComponentSourceList,
+    sticks: Box<StickManager>
 }
 
 impl Global {
     pub fn new() -> Global {
-        Global {
+        let mut out = Global {
             apps: HashMap::<String,AppRunner>::new(),
             elements: HashMap::<String,Element>::new(),
-            active: HashSet::<String>::new()
-        }
+            csl: ComponentSourceList::new(),
+            sticks: Box::new(debug_stick_source())
+        };
+        out.csl.add_compsource(Box::new(DebugComponentSource::new()));
+        out
     }
 
     pub fn unregister_app(&mut self, key: &str) {
@@ -56,7 +61,6 @@ impl Global {
             None
         }
     }
-    
 }
 
 fn find_main_element() -> Option<HtmlElement> {
