@@ -3,6 +3,7 @@ mod testcards;
 
 pub use debug::pane::{
     DebugPanel,
+    DebugConsole,
     setup_testcards,
     setup_stage_debug,
     debug_panel_button_add,
