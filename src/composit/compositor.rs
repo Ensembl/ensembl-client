@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use composit::{
     LeafComponent, StateManager, Component, Leaf, vscale_bp_per_leaf,
-    ScaleCompositor, best_vscale, ComponentManager, ComponentRemover,
+    ScaleCompositor, best_vscale, ComponentManager,
     Stick, Transit
 };
 use composit::state::ComponentRedo;
@@ -52,6 +52,7 @@ impl Compositor {
 
     pub fn set_stick(&mut self, st: &Stick) {
         self.transit.set_stick(st,self.bp_per_screen);
+        self.updated = true;
     }
 
     pub fn set_position(&mut self, position_bp: f64) {
@@ -79,18 +80,17 @@ impl Compositor {
         self.transit.get_transition_sc()
     }
     
-    pub fn add_component(&mut self, mut c: Component) -> ComponentRemover {
-        self.components.prepare(&mut c);
+    pub fn add_component(&mut self, mut c: Component) {
         self.transit.each_scale(|sc|
             sc.add_component(&c)
         );
-        self.components.add(c)
+        self.components.add(c);
     }
 
     pub fn get_max_y(&self) -> i32 { self.transit.get_max_y() }
 
-    pub fn remove(&mut self, k: ComponentRemover) {
-        self.components.remove(k);
+    pub fn remove(&mut self, name: &str) {
+        self.components.remove(name);
     }
     
     pub fn all_leafs(&self) -> Vec<Leaf> { self.transit.all_leafs() }

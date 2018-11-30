@@ -14,6 +14,7 @@ use types::{ CLeaf, cleaf };
 use stdweb::web::{ Element };
 
 pub fn testcard(po: &DebugPanel, cont_el: &Element, ar: &mut AppRunner, name: &str) {
+    console!("tc");
     let mut a = ar.state();
     let mut a = a.lock().unwrap();
     match name {

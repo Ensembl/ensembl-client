@@ -11,17 +11,17 @@ pub struct LeafComponent {
     cur_value: StateValue,
     ooe: Rc<StateExpr>,
     shapes: LCBuilder,
-    comp_idx: u32
+    comp_name: String
 }
 
 impl LeafComponent {
-    pub fn new(ooe: &Rc<StateExpr>, comp_idx: u32) -> LeafComponent {
+    pub fn new(ooe: &Rc<StateExpr>, comp_name: &str) -> LeafComponent {
         LeafComponent {
             shapes: LCBuilder::new(),
             prev_value: StateValue::OffCold(),
             cur_value: StateValue::OffCold(),
             ooe: ooe.clone(),
-            comp_idx
+            comp_name: comp_name.to_string(),
         }
     }
     
@@ -62,5 +62,5 @@ impl LeafComponent {
         });
     }
     
-    pub fn get_component_index(&self) -> u32 { self.comp_idx }
+    pub fn get_component_name(&self) -> &str { &self.comp_name }
 }

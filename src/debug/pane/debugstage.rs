@@ -19,8 +19,7 @@ use dom::event::{
     Target
 };
 use debug::testcards;
-use debug::testcards::StickSource;
-use debug::testcards::debug_stick_source;
+//use debug::testcards::debug_stick_source;
 use debug::pane::console::DebugConsole;
 use debug::pane::buttons::{ DebugButtons, ButtonAction };
 use types::Todo;

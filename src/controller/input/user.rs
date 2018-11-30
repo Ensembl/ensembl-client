@@ -32,14 +32,14 @@ impl EventListener<()> for UserEventListener {
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
         match e {
             EventData::MouseEvent(EventType::MouseWheelEvent,_,e) => {
-                let cs = self.cs.lock().unwrap();
+                let cs = &mut self.cs.lock().unwrap();
                 let (pos,pos_bp,pos_prop) = cs.with_stage(|s|
                     (s.get_pos(),
                      s.get_mouse_pos_bp(),
                      s.get_mouse_pos_prop())
                 );
                 let pos = Dot(pos_bp,pos.1);
-                events_run(&cs,vec! {
+                events_run(cs,vec! {
                     Event::Zoom(-e.wheel_delta() as f32/1000.),
                     Event::Pos(pos,Some(pos_prop))
                 });

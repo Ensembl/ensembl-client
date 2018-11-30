@@ -89,7 +89,7 @@ impl EventListener<()> for DirectEventListener {
                 custom_make_events(&c.details().unwrap()),
             _ => Vec::<Event>::new()
         };
-        events_run(&self.cg.lock().unwrap(),evs);
+        events_run(&mut self.cg.lock().unwrap(),evs);
     }
 }
 
