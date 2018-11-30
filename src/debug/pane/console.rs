@@ -1,10 +1,15 @@
+use std::iter;
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 use serde_json::Value as JSONValue;
 
-use stdweb::web::Element;
+use stdweb::traits::IEvent;
+use stdweb::unstable::TryInto;
+use stdweb::web::{ Element, IEventTarget };
+use stdweb::web::html_element::SelectElement;
+use stdweb::web::event::ChangeEvent;
 
 use dom::event::{
     EventListener, EventControl, EventType, EventData, ICustomEvent,
@@ -57,7 +62,7 @@ impl DebugFolderEntry {
         }
     }
     
-    pub fn get(&mut self) -> String {
+    fn get(&mut self) -> String {
         let mut out = self.contents.clone();
         if self.mul > 1 {
             out.push_str(&format!(" [x{}]",self.mul));
@@ -70,7 +75,6 @@ pub struct DebugConsoleImpl {
     base_el: Element,
     folder: HashMap<String,DebugFolderEntry>,
     selected: Option<String>,
-    refresh: bool
 }
 
 impl DebugConsoleImpl {
@@ -79,25 +83,35 @@ impl DebugConsoleImpl {
             el: el.clone(),
             base_el: base_el.clone(),
             folder: HashMap::<String,DebugFolderEntry>::new(),
-            selected: None,
-            refresh: false
+            selected: None
+        }
+    }
+    
+    fn refresh_dropdown(&self) {
+        if let Some(sel_el) = domutil::query_selector2(&self.base_el,".console .folder") {
+            domutil::inner_html(&sel_el,"");
+            let top = "- select -".to_string();
+            let mut keys : Vec<&String> = self.folder.keys().collect();
+            keys.sort();
+            keys.splice(..0,iter::once(&top));
+            for e in keys {
+                let opt_el = domutil::append_element(&sel_el,"option");
+                domutil::text_content(&opt_el,&e);
+            }
         }
     }
     
     fn entry(&mut self, k: &str) -> &mut DebugFolderEntry {
-        let mut keys : Vec<String> = self.folder.keys().map(|s| s.to_string()).collect();
-        match self.folder.entry(k.to_string()) {
-            Entry::Occupied(e) => e.into_mut(),
-            Entry::Vacant(e) => {
-                keys.push(k.to_string());
-                let out = DebugFolderEntry::new(k);
-                domutil::send_custom_event(&self.base_el,"refresh",&json!({
-                    "keys": keys
-                }));
-                self.refresh = true;
-                e.insert(out)
-            }
+        let k = k.to_string();
+        let mut refresh= false;
+        if !self.folder.contains_key(&k) {
+            self.folder.insert(k.clone(),DebugFolderEntry::new(&k));
+            self.refresh_dropdown();
         }
+        if self.selected == None {
+            self.select(&k);
+        }
+        self.folder.get_mut(&k).unwrap()
     }
     
     pub fn select(&mut self, name: &str) {
@@ -174,6 +188,19 @@ impl EventListener<()> for DebugConsoleListener {
     }
 }
 
+fn add_dropdown_event(dc: &mut DebugConsole) {
+    let base_el = &dc.imp.borrow().base_el;
+    let imp = dc.imp.clone();
+    if let Some(sel_el) = domutil::query_selector2(&base_el,".console .folder") {
+        sel_el.add_event_listener(enclose! { (imp) move |e: ChangeEvent| {
+            let node : SelectElement = e.target().unwrap().try_into().ok().unwrap();
+            if let Some(value) = node.value() {
+                imp.borrow_mut().select(&value);
+            }
+        }});
+    }
+}
+
 pub struct DebugConsole {
     imp: Rc<RefCell<DebugConsoleImpl>>,
     evctrl: EventControl<()>
@@ -187,6 +214,7 @@ impl DebugConsole {
             imp,
             evctrl: EventControl::new(Box::new(li),())
         };
+        add_dropdown_event(&mut out);
         out.evctrl.add_event(EventType::CustomEvent("add".to_string()));
         out.evctrl.add_event(EventType::CustomEvent("mark".to_string()));
         out.evctrl.add_event(EventType::CustomEvent("select".to_string()));

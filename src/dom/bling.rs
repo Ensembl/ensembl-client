@@ -2,10 +2,11 @@ use stdweb::web::html_element::SelectElement;
 use stdweb::traits::IEvent;
 use stdweb::unstable::TryInto;
 use stdweb::web::{ Element, IEventTarget };
-use stdweb::web::event::ChangeEvent;
+use stdweb::web::event::{ ChangeEvent, ClickEvent };
 
 use controller::global::AppRunner;
 use debug::testcard_base;
+use debug::DebugConsole;
 use dom::{ DEBUGSTAGE, PLAINSTAGE, DEBUGSTAGE_CSS };
 use dom::domutil;
 
@@ -29,6 +30,23 @@ impl Bling for NoBling {
     fn activate(&self, ar: &mut AppRunner, el: &Element) {}
 }
 
+fn setup_debug_console(ar: &mut AppRunner, el: &Element) {
+    let cons_el = domutil::query_selector(el,".console2");
+    DebugConsole::new(&cons_el,el);
+    domutil::send_custom_event(&cons_el,"select",&json!({
+        "name": "hello",
+    }));
+    domutil::send_custom_event(&cons_el,"add",&json!({
+        "name": "hello",
+        "value": "world"
+    }));
+    let mark_el = domutil::query_selector2(el,".console .mark").unwrap();
+    mark_el.add_event_listener(enclose! { (cons_el) move |_e: ClickEvent| {
+        domutil::send_custom_event(&cons_el,"mark",&json!({}));
+    }});
+
+}
+
 fn setup_testcard_selector(ar: &mut AppRunner, el: &Element) {
     let ar = ar.clone();
     let sel_el = domutil::query_selector2(el,".console .testcard").unwrap();
@@ -37,25 +55,9 @@ fn setup_testcard_selector(ar: &mut AppRunner, el: &Element) {
         let mut a = a.lock().unwrap();
         let node : SelectElement = e.target().unwrap().try_into().ok().unwrap();
         if let Some(name) = node.value() {
-            console!("A {}",name);
             testcard_base(&mut a,&name);
         }
     }});
-    /*
-    let ar = ar.clone();
-    sel_el.add_event_listener(enclose! { (cont_el) move |e: ChangeEvent| {
-        let mut ar = ar.clone();
-        let node : SelectElement = e.target().unwrap().try_into().ok().unwrap();
-        if let Some(name) = node.value() {
-            debug_panel_buttons_clear(&po,&cont_el);
-            setup_testcard(&po,&cont_el,&g,&mut ar,&name);
-        }
-    }});
-    let mark_el = domutil::query_selector2(cont_el,".console .mark").unwrap();
-    mark_el.add_event_listener(enclose! { (cont_el) move |_e: ClickEvent| {
-        debug_panel_entry_mark(&cont_el);
-    }});
-    */
 }
 
 pub struct DebugBling {}
@@ -66,7 +68,6 @@ impl DebugBling {
 
 impl Bling for DebugBling {
     fn apply_bling(&self, el: &Element) -> Element {
-        console!("DEBUG");
         let css = domutil::append_element(&domutil::query_select("head"),"style");
         domutil::inner_html(&css,DEBUGSTAGE_CSS);
         domutil::inner_html(el,DEBUGSTAGE);
@@ -75,5 +76,6 @@ impl Bling for DebugBling {
     
     fn activate(&self, ar: &mut AppRunner, el: &Element) {
         setup_testcard_selector(ar,el);
+        setup_debug_console(ar,el);
     }
 }
