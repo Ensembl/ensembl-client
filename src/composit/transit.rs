@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use composit::{
     Leaf,
-    ScaleCompositor, best_vscale, ComponentManager, ComponentRemover,
+    ScaleCompositor, best_vscale, ComponentManager,
     Stick
 };
 use composit::state::ComponentRedo;

@@ -3,7 +3,7 @@ use std::sync::{ Arc, Mutex, Weak };
 use stdweb::web::{ Element, HtmlElement };
 
 use controller::input::{ Timers, Timer };
-use controller::global::App;
+use controller::global::{ App, GlobalWeak };
 use dom::{ domutil, Bling };
 use controller::output::Projector;
 use dom::event::EventControl;
@@ -25,8 +25,8 @@ pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
 impl AppRunner {
-    pub fn new(el: &Element, bling: Box<Bling>) -> AppRunner {
-        let st = App::new(el,bling);
+    pub fn new(g: &GlobalWeak, el: &Element, bling: Box<Bling>) -> AppRunner {
+        let st = App::new(g,el,&bling);
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
             app: Arc::new(Mutex::new(st)),
             projector: None,
@@ -41,6 +41,7 @@ impl AppRunner {
             cs.with_stage(|s| s.set_max_y(max_y));
         });
         out.init();
+        bling.activate(&mut out,&el);
         out
     }
         

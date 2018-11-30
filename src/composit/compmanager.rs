@@ -1,36 +1,30 @@
 use std::collections::HashMap;
+use std::collections::hash_map::Entry;
 
 use composit::{
     Component, Leaf, LeafComponent
 };
 
 pub struct ComponentManager {
-    comp_idx: u32,
-    components: HashMap<u32,Component>    
+    components: HashMap<String,Component>    
 }
-
-pub struct ComponentRemover(u32);
 
 impl ComponentManager {
     pub fn new() -> ComponentManager {
         ComponentManager {
-            comp_idx: 0,
-            components: HashMap::<u32,Component>::new()
+            components: HashMap::<String,Component>::new()
         }
     }
-    
-    pub fn prepare(&mut self, c: &mut Component) {
-        self.comp_idx += 1;
-        c.set_index(self.comp_idx);
-    }
-    
-    pub fn add(&mut self, c: Component) -> ComponentRemover {
-        self.components.insert(self.comp_idx,c);
-        ComponentRemover(self.comp_idx)
+        
+    pub fn add(&mut self, c: Component) {
+        let name = c.get_name().to_string();
+        if let Entry::Vacant(e) = self.components.entry(name) {
+            e.insert(c);
+        }
     }
 
-    pub fn remove(&mut self, k: ComponentRemover) {
-        self.components.remove(&k.0);
+    pub fn remove(&mut self, k: &str) {
+        self.components.remove(k);
     }
     
     pub fn make_leafcomps(&self, leaf: Leaf) -> Vec<LeafComponent> {

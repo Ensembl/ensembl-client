@@ -17,7 +17,7 @@ pub struct ScaleCompositor {
     middle_leaf: i64,
     bp_per_screen: f64,
     leaf_per_screen: f64,
-    leafcomps: HashMap<Leaf,HashMap<u32,LeafComponent>>,
+    leafcomps: HashMap<Leaf,HashMap<String,LeafComponent>>,
     done_seen: HashMap<Leaf,u32>,
     done_now: u32
 }
@@ -32,7 +32,7 @@ impl ScaleCompositor {
             leaf_per_screen: 1.,
             bp_per_screen: 1.,
             position_bp: 0.,
-            leafcomps: HashMap::<Leaf,HashMap<u32,LeafComponent>>::new(),
+            leafcomps: HashMap::<Leaf,HashMap<String,LeafComponent>>::new(),
             done_seen: HashMap::<Leaf,u32>::new(),
             done_now: 0
         }
@@ -68,9 +68,9 @@ impl ScaleCompositor {
 
     fn add_lcomps_to_leaf(&mut self, leaf: Leaf, mut lcomps: Vec<LeafComponent>) {
         let lcc = self.leafcomps.entry(leaf).or_insert_with(||
-            HashMap::<u32,LeafComponent>::new());
+            HashMap::<String,LeafComponent>::new());
         for lc in lcomps.drain(..) {
-            lcc.insert(lc.get_component_index(),lc);
+            lcc.insert(lc.get_component_name().to_string(),lc);
         }
         self.done_now += 1;
     }

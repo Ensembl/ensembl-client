@@ -12,5 +12,6 @@ pub use debug::pane::{
 
 pub use debug::testcards::{
     DebugComponentSource,
-    debug_stick_source
+    debug_stick_manager,
+    testcard_base
 };

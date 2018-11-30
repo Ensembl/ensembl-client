@@ -335,14 +335,14 @@ pub fn big_science(a: &mut App, onoff: bool) {
         closure_done(lc,1200);
     });
     
-    let c = Component::new(Box::new(cs.clone()),Rc::new(StateFixed(StateValue::On())));
+    let c = Component::new("XXX",Box::new(cs.clone()),Rc::new(StateFixed(StateValue::On())));
 
-    let c_odd = Component::new(Box::new(cs_odd.clone()),if onoff {
+    let c_odd = Component::new("XXX",Box::new(cs_odd.clone()),if onoff {
         Rc::new(StateAtom::new("odd"))
     } else {
         Rc::new(StateFixed(StateValue::On()))
     });
-    let c_even = Component::new(Box::new(cs_even.clone()),if onoff {
+    let c_even = Component::new("XXX",Box::new(cs_even.clone()),if onoff {
         Rc::new(StateAtom::new("even"))
     } else {
         Rc::new(StateFixed(StateValue::On()))

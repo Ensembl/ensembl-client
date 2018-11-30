@@ -1,5 +1,5 @@
 use types::{ Move, Units, Axis, Dot };
-use composit::Stick;
+use composit::{ Stick, StickManager };
 use controller::global::App;
 
 #[derive(Debug,Clone)]
@@ -11,7 +11,6 @@ pub enum Event {
     ZoomTo(f32),
     Resize(Dot<i32,i32>),
     AddComponent(String),
-    RemoveComponent(String),
     SetStick(String)
 }
 
@@ -56,16 +55,21 @@ fn exe_resize(cg: &App, sz: Dot<i32,i32>) {
     cg.force_size();
 }
 
-fn exe_component_add(name: &str) {
+fn exe_component_add(a: &mut App, name: &str) {
+    if let Some(Some(c)) = a.with_global(|g| g.get_component(name)) {
+        console!("A1");
+        a.with_compo(|co| co.add_component(c));
+    }
 }
 
-fn exe_component_remove(name: &str) {
+fn exe_set_stick(a: &mut App, name: &str) {
+    if let Some(Some(s)) = a.with_global(|g| g.get_stick(name)) {
+        console!("A2");
+        a.with_compo(|co| co.set_stick(&s));
+    }
 }
 
-fn exe_set_stick(name: &str) {
-}
-
-pub fn events_run(cg: &App, evs: Vec<Event>) {
+pub fn events_run(cg: &mut App, evs: Vec<Event>) {
     for ev in evs {
         match ev {
             Event::Pos(v,prop) => exe_pos_event(cg,v,prop),
@@ -73,9 +77,8 @@ pub fn events_run(cg: &App, evs: Vec<Event>) {
             Event::Zoom(z) => exe_zoom_event(cg,z,true),
             Event::ZoomTo(z) => exe_zoom_event(cg,z,false),
             Event::Resize(sz) => exe_resize(cg,sz),
-            Event::AddComponent(name) => exe_component_add(&name),
-            Event::RemoveComponent(name) => exe_component_remove(&name),
-            Event::SetStick(name) => exe_set_stick(&name),
+            Event::AddComponent(name) => exe_component_add(cg,&name),
+            Event::SetStick(name) => exe_set_stick(cg,&name),
             Event::Noop => ()
         }
     }

@@ -191,7 +191,7 @@ pub fn testcard_polar(a: &mut App) {
         }
         closure_done(lc,TRACKS*PITCH+TOP);
     });
-    let c = Component::new(Box::new(cs.clone()),Rc::new(StateFixed(StateValue::On())));
+    let c = Component::new("XXX",Box::new(cs.clone()),Rc::new(StateFixed(StateValue::On())));
 
     a.with_compo(|co| {
         co.add_component(c);

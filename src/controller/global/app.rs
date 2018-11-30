@@ -3,6 +3,7 @@ use std::sync::{ Arc, Mutex };
 use stdweb::web::{ Element, HtmlElement };
 use stdweb::unstable::TryInto;
 
+use global::{ Global, GlobalWeak };
 use composit::{ Compositor, StateManager, Stage };
 use controller::input::{ Event, events_run, startup_events };
 use dom::{ domutil, Bling };
@@ -11,6 +12,7 @@ use print::Printer;
 const CANVAS : &str = r##"<canvas id="glcanvas"></canvas>"##;
 
 pub struct App {
+    g: GlobalWeak,
     el: Element,
     browser_el: Element,
     canv_el: HtmlElement,
@@ -21,13 +23,14 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(el: &Element, bling: Box<Bling>) -> App {
+    pub fn new(g: &GlobalWeak, el: &Element, bling: &Box<Bling>) -> App {
         let el = el.clone();
         let browser_el : Element = bling.apply_bling(&el);
         domutil::inner_html(&browser_el,CANVAS);
         let canv_el : HtmlElement = domutil::query_selector(&browser_el,"canvas").try_into().unwrap();
-        let out = App {
-            el, browser_el, canv_el: canv_el.clone(),
+        let mut out = App {
+            g: g.clone(), el: el.clone(),
+            browser_el, canv_el: canv_el.clone(),
             printer: Arc::new(Mutex::new(Printer::new(&canv_el))),
             stage:  Arc::new(Mutex::new(Stage::new())),
             compo: Arc::new(Mutex::new(Compositor::new())),
@@ -35,6 +38,11 @@ impl App {
         };
         out.run_events(startup_events());
         out
+    }
+    
+    pub fn with_global<F,G>(&mut self, cb:F) -> Option<G>
+            where F: FnOnce(&mut Global) -> G {
+        self.g.upgrade().as_mut().map(cb)
     }
     
     pub fn get_element(&self) -> &Element { &self.el }
@@ -67,11 +75,11 @@ impl App {
         cb(a)
     }
     
-    pub fn run_events(self: &App, evs: Vec<Event>) {
+    pub fn run_events(self: &mut App, evs: Vec<Event>) {
         events_run(self,evs);
     }
         
-    pub fn check_size(self: &App) {
+    pub fn check_size(self: &mut App) {
         let sz = self.printer.lock().unwrap().get_real_size();
         events_run(self,vec! {
             Event::Resize(sz)
