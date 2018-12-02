@@ -1,5 +1,5 @@
 use types::{ Move, Units, Axis, Dot };
-use composit::{ Stick, StickManager };
+use composit::{ Stick, StickManager, StateValue };
 use controller::global::App;
 
 #[derive(Debug,Clone)]
@@ -11,7 +11,8 @@ pub enum Event {
     ZoomTo(f32),
     Resize(Dot<i32,i32>),
     AddComponent(String),
-    SetStick(String)
+    SetStick(String),
+    SetState(String,StateValue)
 }
 
 fn exe_pos_event(cg: &App, v: Dot<f64,f64>, prop: Option<f64>) {
@@ -57,16 +58,20 @@ fn exe_resize(cg: &App, sz: Dot<i32,i32>) {
 
 fn exe_component_add(a: &mut App, name: &str) {
     if let Some(Some(c)) = a.with_global(|g| g.get_component(name)) {
-        console!("A1");
         a.with_compo(|co| co.add_component(c));
     }
 }
 
 fn exe_set_stick(a: &mut App, name: &str) {
     if let Some(Some(s)) = a.with_global(|g| g.get_stick(name)) {
-        console!("A2");
         a.with_compo(|co| co.set_stick(&s));
     }
+}
+
+fn exe_set_state(a: &mut App, name: &str, on: StateValue) {
+    a.with_state(|s| {
+        s.set_atom_state(name,on);
+    });
 }
 
 pub fn events_run(cg: &mut App, evs: Vec<Event>) {
@@ -79,6 +84,7 @@ pub fn events_run(cg: &mut App, evs: Vec<Event>) {
             Event::Resize(sz) => exe_resize(cg,sz),
             Event::AddComponent(name) => exe_component_add(cg,&name),
             Event::SetStick(name) => exe_set_stick(cg,&name),
+            Event::SetState(name,on) => exe_set_state(cg,&name,on),
             Event::Noop => ()
         }
     }

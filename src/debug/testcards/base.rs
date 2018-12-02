@@ -41,7 +41,9 @@ pub fn testcard_base(a: &mut App, stick_name: &str) {
         Event::AddComponent("internal:debug-main".to_string()),
         Event::AddComponent("internal:debug-even".to_string()),
         Event::AddComponent("internal:debug-odd".to_string()),
-        Event::SetStick(stick_name.to_string())
+        Event::SetStick(stick_name.to_string()),
+        Event::SetState("even".to_string(),StateValue::On()),
+        Event::SetState("odd".to_string(),StateValue::On()),
     });
 }
 
