@@ -17,10 +17,12 @@ use controller::input::{
     Timer, register_startup_events
 };
 use controller::global::{ AppRunner, App };
-use debug::{ setup_testcards, DebugComponentSource };
+use debug::{ setup_testcards, DebugComponentSource, DebugBling, create_interactors };
 use debug::debug_stick_manager;
-use dom::{ domutil, DebugBling, NoBling, Bling };
+use dom::{ domutil, NoBling, Bling };
 use types::CPixel;
+
+
 
 pub struct GlobalImpl {
     apps: HashMap<String,AppRunner>,
@@ -87,7 +89,7 @@ impl Global {
     pub fn register_app(&mut self, key: &str, el: &Element, debug: bool) {
         self.unregister_app(key);
         let bling : Box<Bling> = if debug {
-            Box::new(DebugBling::new())
+            Box::new(DebugBling::new(create_interactors()))
         } else { 
             Box::new(NoBling::new())
         };
