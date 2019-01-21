@@ -1,6 +1,5 @@
 mod coord;
 mod colour;
-mod todo;
 mod area;
 mod corners;
 
@@ -34,4 +33,3 @@ pub use types::colour::{
     Colour
 };
 
-pub use types::todo::Todo;

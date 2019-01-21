@@ -2,11 +2,10 @@ mod pane;
 mod testcards;
 
 pub use debug::pane::{
-    DebugPanel,
     DebugConsole,
     setup_testcards,
-    setup_stage_debug,
-    debug_panel_button_add,
+    DebugBling,
+    create_interactors,
     debug_panel_entry_add,
     debug_panel_entry_reset,
 };

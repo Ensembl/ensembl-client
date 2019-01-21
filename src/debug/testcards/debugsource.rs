@@ -22,7 +22,11 @@ impl DebugSource {
 impl Source for DebugSource {
     fn populate(&self, lc: &mut LCBuilder, leaf: &Leaf) {
         let stick_name = leaf.get_stick().get_name();
-        self.sources[&stick_name].populate(lc,leaf);
+        if let Some(source) = self.sources.get(&stick_name) {
+            source.populate(lc,leaf);
+        } else {
+            lc.done(0);
+        }
     }
 }
 

@@ -9,7 +9,6 @@ use serde_json::Map as JSONMap;
 use controller::global::{ Global, App, AppRunner };
 use controller::input::{ Event, events_run };
 use controller::input::physics::MousePhysics;
-use debug::setup_stage_debug;
 use dom::domutil;
 use dom::event::{ EventListener, EventType, EventData, EventControl, Target, ICustomEvent };
 use dom::event;
