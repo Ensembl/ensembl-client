@@ -25,7 +25,7 @@ pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
 impl AppRunner {
-    pub fn new(g: &GlobalWeak, el: &Element, bling: Box<Bling>) -> AppRunner {
+    pub fn new(g: &GlobalWeak, el: &Element, mut bling: Box<Bling>) -> AppRunner {
         let st = App::new(g,el,&bling);
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
             app: Arc::new(Mutex::new(st)),
