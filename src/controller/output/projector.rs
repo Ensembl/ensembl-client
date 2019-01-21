@@ -6,7 +6,7 @@ use stdweb::web::window;
 use controller::global::AppRunnerWeak;
 use controller::output::jank::JankBuster;
 
-const NEGLECTED_MS : f64 = 100.;
+const NEGLECTED_MS : f64 = 250.;
 
 struct ProjectorImpl {
     cr: AppRunnerWeak,
