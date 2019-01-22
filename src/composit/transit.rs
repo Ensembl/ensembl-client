@@ -1,12 +1,8 @@
-use std::cmp::{ max, min };
-use std::collections::HashMap;
-
 use composit::{
     Leaf,
     ScaleCompositor, best_vscale, ComponentManager,
     Stick
 };
-use composit::state::ComponentRedo;
 
 const MS_FADE : f64 = 300.;
 

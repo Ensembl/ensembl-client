@@ -1,5 +1,4 @@
 use std::rc::Rc;
-use std::sync::{ Arc, Mutex };
 
 use composit::{ 
     Component, StateValue, StateFixed, Stick, Source, ComponentSource,

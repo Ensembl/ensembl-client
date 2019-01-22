@@ -7,25 +7,9 @@ use rand::distributions::Distribution;
 use controller::global::{ Global, AppRunner };
 use debug::testcards::base::testcard_base;
 use debug::testcards::visual::testcard_visual;
-use debug::testcards::button::testcard_button;
 use debug::testcards::polar::testcard_polar;
 use types::{ CLeaf, cleaf };
 use stdweb::web::{ Element };
-
-pub fn testcard(cont_el: &Element, ar: &mut AppRunner, name: &str) {
-    let mut a = ar.state();
-    let mut a = a.lock().unwrap();
-    match name {
-        "draw" => testcard_visual(ar,false),
-        "onoff" => testcard_visual(ar,true),
-        "button" => testcard_button(cont_el,&mut a),
-        "polar" => testcard_polar(&mut a),
-        "text" => testcard_base(&mut a,"text"),
-        "ruler" => testcard_base(&mut a,"ruler"),
-        "leaf" => testcard_base(&mut a,"leaf"),
-        _ => ()
-    };
-}
 
 fn choose<R>(rng: &mut R, vals: &[&[&str]]) -> String
                     where R: Rng {

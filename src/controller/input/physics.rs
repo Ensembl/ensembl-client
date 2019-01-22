@@ -1,9 +1,8 @@
-use std::f64::consts::PI;
 use std::sync::{ Arc, Mutex };
 use types::{ CPixel, CDFraction, cdfraction };
 use controller::global::{ App, AppRunner };
 use controller::input::{ Event, events_run };
-use types::{ Move, Distance, Units, ddiv, Dot };
+use types::{ Move, Distance, Units, ddiv };
 
 pub struct MousePhysicsImpl {
     last_t: Option<f64>,              /* last update */

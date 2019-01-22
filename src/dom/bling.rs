@@ -1,20 +1,8 @@
-use std::collections::HashMap;
-
-use stdweb::web::html_element::SelectElement;
-use stdweb::traits::IEvent;
-use stdweb::unstable::TryInto;
-use stdweb::web::{ Element, IEventTarget };
-use stdweb::web::event::{ ChangeEvent, ClickEvent };
+use stdweb::web::Element;
 
 use controller::global::AppRunner;
-use debug::testcard_base;
-use debug::DebugConsole;
-use dom::{ DEBUGSTAGE, PLAINSTAGE, DEBUGSTAGE_CSS };
+use dom::PLAINSTAGE;
 use dom::domutil;
-
-use dom::event::{
-    EventListener, EventControl, EventType, EventData, Target
-};
 
 pub trait Bling {
     fn apply_bling(&self, el: &Element) -> Element;
@@ -33,5 +21,5 @@ impl Bling for NoBling {
         domutil::query_selector(el,".bpane-canv").clone()        
     }
     
-    fn activate(&mut self, ar: &mut AppRunner, el: &Element) {}
+    fn activate(&mut self, _ar: &mut AppRunner, _el: &Element) {}
 }

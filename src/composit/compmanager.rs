@@ -29,7 +29,7 @@ impl ComponentManager {
     
     pub fn make_leafcomps(&self, leaf: Leaf) -> Vec<LeafComponent> {
         let mut lcomps = Vec::<LeafComponent>::new();        
-        for (k,c) in &self.components {
+        for (_k,c) in &self.components {
             lcomps.push(c.make_leafcomp(&leaf));
         }
         lcomps

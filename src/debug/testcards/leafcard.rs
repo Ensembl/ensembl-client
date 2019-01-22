@@ -1,14 +1,11 @@
 use std::collections::HashSet;
 use std::ops::Range;
 use std::rc::Rc;
-use std::sync::{ Arc, Mutex };
 
 use separator::Separatable;
 
 use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
-use composit::{ StateFixed, Component, StateValue, vscale_bp_per_leaf, Stick, Source };
-use controller::global::Global;
-use controller::input::Event;
+use composit::{ vscale_bp_per_leaf, Source };
 use drawing::{ FCFont, FontVariety, text_texture };
 use shape::{ ColourSpec, pin_texture, stretch_rectangle, pin_rectangle };
 use types::{ Colour, cleaf, cpixel, A_TOP, area, area_size };

@@ -1,7 +1,6 @@
 use std::rc::Rc;
 
 use print::{ Programs, PrintEdition };
-use shape::DrawnShape;
 use composit::LCBuilder;
 use composit::state::{ StateManager, StateExpr, StateValue, ComponentRedo };
 use drawing::DrawingSession;

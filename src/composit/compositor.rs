@@ -1,12 +1,6 @@
-use std::cmp::{ max, min };
-use std::collections::HashMap;
-
 use composit::{
-    LeafComponent, StateManager, Component, Leaf, vscale_bp_per_leaf,
-    ScaleCompositor, best_vscale, ComponentManager,
-    Stick, Transit
+    Component, Leaf, ScaleCompositor, ComponentManager, Stick, Transit
 };
-use composit::state::ComponentRedo;
 
 const MS_PER_UPDATE : f64 = 250.;
 
