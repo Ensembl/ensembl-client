@@ -6,7 +6,6 @@ use rand::distributions::Distribution;
 
 use controller::global::{ Global, AppRunner };
 use debug::testcards::base::testcard_base;
-use debug::testcards::visual::testcard_visual;
 use debug::testcards::polar::testcard_polar;
 use types::{ CLeaf, cleaf };
 use stdweb::web::{ Element };
