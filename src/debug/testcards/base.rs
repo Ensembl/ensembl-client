@@ -10,10 +10,11 @@ use controller::input::{ Event, events_run };
 use debug::testcards::text::text_source;
 use debug::testcards::leafcard::leafcard_source;
 use debug::testcards::debugsource::{ DebugSource, DebugStickManager };
-use debug::testcards::{ bs_source_main, bs_source_sub };
+use debug::testcards::{ bs_source_main, bs_source_sub, polar_source };
 
 fn debug_source_main() -> DebugSource {
     let mut s = DebugSource::new();
+    s.add_stick("polar",Box::new(polar_source()));
     s.add_stick("text",Box::new(text_source()));
     s.add_stick("leaf",Box::new(leafcard_source(true)));
     s.add_stick("ruler",Box::new(leafcard_source(false)));
@@ -29,6 +30,7 @@ fn debug_source_sub(even: bool) -> DebugSource {
 
 pub fn debug_stick_manager() -> DebugStickManager {
     let mut s = DebugStickManager::new();
+    s.add_stick("polar",1000000000,false);
     s.add_stick("text",1000000000,false);
     s.add_stick("leaf",1000000000,false);
     s.add_stick("ruler",1000000000,false);
