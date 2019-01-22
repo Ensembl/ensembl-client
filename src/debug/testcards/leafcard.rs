@@ -1,4 +1,6 @@
+use std::cmp::{ min, max };
 use std::collections::HashSet;
+use std::f64;
 use std::ops::Range;
 use std::rc::Rc;
 
@@ -12,6 +14,8 @@ use types::{ Colour, cleaf, cpixel, A_TOP, area, area_size };
 
 const TARGET: i32 = 20;
 const MARK_TARGET: i32 = 1000;
+
+const EPSILON : f64 = 0.00000001;
 
 const BY125 : &[f64] = &[0.05,0.1,0.2,0.5,1.,2.,5.,10.,20.];
 const BY12 : &[f64] =  &[     0.1,0.2,    1.,   5.,10.    ];
@@ -40,19 +44,62 @@ fn range(start: f64, bp_leaf: f64, target: i32, by: &[f64]) -> impl Iterator<Ite
 
 fn round_sf(value: f64, sf: i32) -> f64 {
     if value == 0. { return 0.; }
-    let mag = 10_f64.powi(value.abs().log10().floor() as i32+1-sf);
+    let mag = 10_f64.powi(value.abs().log10().trunc() as i32+1-sf);
     (value/mag).floor()*mag
 }
 
 fn common_sf(a: f64, b: f64) -> i32 {
-    for i in 1..50 {
+    for i in 2..50 {
         if round_sf(a,i) != round_sf(b,i) { return i-1; }
     }
     50
 }
 
+fn nudge_format(v: f64, mut eps: i64) -> f64 {
+    if v == 0.0 { eps = 0 }
+    let bits = ((v.to_bits() as i64)+eps) as u64;
+    f64::from_bits(bits)
+}
+
+fn find_short(mut a: f64, mut b:f64) -> String {
+    let mut out = String::new();
+    let mut divs: i32 = 0;
+    while a >= 1. || b >= 1. {
+        divs += 1;
+        a /= 10.;
+        b /= 10.;
+    }
+    if divs == 0 { out.push_str("0"); }
+    while a != 0.0 && b != 0.0 {
+        let ad = (a*10.).floor() as u8;
+        let bd = (b*10.).floor() as u8;
+        a = (a*10.)-(ad as f64);
+        b = (b*10.)-(bd as f64);
+        if divs == 0 { out.push_str("."); }
+        divs -= 1;
+        out.push_str(&format!("{}",max(ad,bd)));
+        if ad != bd { break; }
+    }
+    if divs > 0 { out.push_str(&"0".repeat(divs as usize)); }
+    out
+}
+
 fn format_str(v: i64, vdiv: f64, delta: f64) -> String {
-    (delta+v as f64/vdiv).separated_string()
+    let mut out = String::new();
+    let mut value = delta+v as f64/vdiv;
+    if value < 0.0 {
+        out.push_str("-");
+        value = -value;
+    }
+    let mut little = value - EPSILON;
+    let mut large = value + EPSILON;
+
+    if little <= 0.0 || large <= 0.0 {
+        out.push_str("0");
+    } else {
+        out.push_str(&find_short(little,large));
+    }
+    out
 }
 
 pub fn leafcard_source(leaf_marks: bool) -> impl Source {
