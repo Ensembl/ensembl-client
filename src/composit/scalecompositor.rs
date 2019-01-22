@@ -54,7 +54,7 @@ impl ScaleCompositor {
     
     pub fn set_position(&mut self, position_bp: f64) {
         self.position_bp = position_bp;
-        self.middle_leaf = (position_bp / vscale_bp_per_leaf(self.vscale) as f64) as i64;
+        self.middle_leaf = (position_bp / vscale_bp_per_leaf(self.vscale) as f64).round() as i64;
         debug!("trains","set position leaf={}",self.middle_leaf);
     }
     
