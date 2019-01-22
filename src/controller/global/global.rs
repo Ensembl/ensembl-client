@@ -5,24 +5,18 @@ use std::rc::{ Rc, Weak };
 use std::sync::{ Arc, Mutex };
 
 use stdweb::unstable::TryInto;
-use stdweb::web::{ IElement, HtmlElement, Element, IHtmlElement };
+use stdweb::web::{ HtmlElement, Element, IHtmlElement };
 
 
 use composit::{
     StateManager, ComponentSourceList, StickManager, Component,
     ComponentSource, Stick
 };
-use controller::input::{
-    register_direct_events, register_user_events, register_dom_events,
-    Timer, register_startup_events
-};
-use controller::global::{ AppRunner, App };
+use controller::input::register_startup_events;
+use controller::global::AppRunner;
 use debug::{ setup_testcards, DebugComponentSource, DebugBling, create_interactors };
 use debug::debug_stick_manager;
 use dom::{ domutil, NoBling, Bling };
-use types::CPixel;
-
-
 
 pub struct GlobalImpl {
     apps: HashMap<String,AppRunner>,
@@ -93,7 +87,7 @@ impl Global {
         } else { 
             Box::new(NoBling::new())
         };
-        let mut ar = AppRunner::new(&GlobalWeak::new(&self),&el,bling);
+        let ar = AppRunner::new(&GlobalWeak::new(&self),&el,bling);
         self.0.borrow_mut().register_app(key,ar);
     }
     
@@ -105,6 +99,7 @@ impl Global {
         self.0.borrow_mut().get_stick(name)
     }
     
+    #[allow(unused,dead_code)]
     pub fn with_apprunner<F,G>(&mut self, key: &str, cb:F) -> Option<G>
             where F: FnOnce(&mut AppRunner) -> G {
         self.0.borrow_mut().with_apprunner(key,cb)

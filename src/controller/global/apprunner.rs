@@ -4,7 +4,7 @@ use stdweb::web::{ Element, HtmlElement };
 
 use controller::input::{ Timers, Timer };
 use controller::global::{ App, GlobalWeak };
-use dom::{ domutil, Bling };
+use dom::Bling;
 use controller::output::Projector;
 use dom::event::EventControl;
 use controller::input::{

@@ -1,5 +1,5 @@
 use types::{ Move, Units, Axis, Dot };
-use composit::{ Stick, StickManager, StateValue };
+use composit::StateValue;
 use controller::global::App;
 
 #[derive(Debug,Clone)]

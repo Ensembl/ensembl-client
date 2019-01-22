@@ -1,19 +1,11 @@
-use std::collections::HashMap;
 use std::sync::{ Arc, Mutex };
 
-use stdweb::web::{ Element, HtmlElement, IHtmlElement, INode };
-use stdweb::traits::IEvent;
-use serde_json::Value as JSONValue;
-use serde_json::Map as JSONMap;
+use stdweb::web::INode;
 
-use controller::global::{ Global, App, AppRunner };
-use controller::input::{ Event, events_run };
-use controller::input::physics::MousePhysics;
+use controller::global::Global;
 use dom::domutil;
-use dom::event::{ EventListener, EventType, EventData, EventControl, Target, ICustomEvent };
-use dom::event;
+use dom::event::{ EventListener, EventType, EventData, EventControl, Target };
 use dom::AppEventData;
-use types::Dot;
 
 pub struct StartupEventListener {
     g: Arc<Mutex<Global>>

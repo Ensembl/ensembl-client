@@ -103,7 +103,7 @@ impl DebugConsoleImpl {
     
     fn entry(&mut self, k: &str) -> &mut DebugFolderEntry {
         let k = k.to_string();
-        let mut refresh= false;
+        let refresh = false;
         if !self.folder.contains_key(&k) {
             self.folder.insert(k.clone(),DebugFolderEntry::new(&k));
             self.refresh_dropdown();

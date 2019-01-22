@@ -38,7 +38,7 @@ fn setup_testcard_selector(ar: &mut AppRunner, el: &Element) {
     let ar = ar.clone();
     let sel_el = domutil::query_selector2(el,".console .testcard").unwrap();
     sel_el.add_event_listener(enclose! { (ar,el) move |e: ChangeEvent| {
-        let mut a = ar.state();
+        let a = ar.state();
         let mut a = a.lock().unwrap();
         let node : SelectElement = e.target().unwrap().try_into().ok().unwrap();
         if let Some(name) = node.value() {

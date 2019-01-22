@@ -1,7 +1,6 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use composit::state::StateExpr;
 use shape::DrawnShape;
 
 pub struct LCBuilderImpl {
@@ -31,14 +30,6 @@ impl LCBuilderImpl {
     fn get_max_y(&self) -> i32 { self.max_y.unwrap_or(0) }
     
     fn is_done(&self) -> bool { self.done }
-    
-    fn get_shapes(&self) -> Option<&Vec<DrawnShape>> {
-        if self.done {
-            Some(&self.shapes)
-        } else {
-            None
-        }
-    }
     
     fn each_shape<F>(&mut self, mut cb: F) where F: FnMut(&mut DrawnShape) {
         if self.done {

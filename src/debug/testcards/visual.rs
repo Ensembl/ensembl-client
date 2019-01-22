@@ -54,7 +54,7 @@ fn animate(time : f64, cg: &mut App, s: Rc<RefCell<State>>) {
 }
 
 pub fn testcard_visual(ar: &mut AppRunner, onoff: bool) {
-    let mut a = ar.state();
+    let a = ar.state();
     let mut a = a.lock().unwrap();
     big_science(&mut a,onoff);
 
