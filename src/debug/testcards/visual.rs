@@ -6,7 +6,6 @@ use std::sync::{ Mutex, Arc };
 use composit::StateValue;
 use controller::input::Event;
 use controller::global::{ Global, App, AppRunner };
-use debug::testcards::bigscience::big_science;
 use types::Dot;
 
 struct State {
@@ -53,10 +52,11 @@ fn animate(time : f64, cg: &mut App, s: Rc<RefCell<State>>) {
     });
 }
 
-pub fn testcard_visual(ar: &mut AppRunner, onoff: bool) {
+/*
+fn testcard_visual(ar: &mut AppRunner, onoff: bool) {
     let a = ar.state();
     let mut a = a.lock().unwrap();
-    big_science(&mut a,onoff);
+    //big_science(&mut a,onoff);
 
     let state = Rc::new(RefCell::new(State {
         hpos: 0.0,
@@ -72,3 +72,4 @@ pub fn testcard_visual(ar: &mut AppRunner, onoff: bool) {
         animate(t,cg,st);
     });
 }
+*/
