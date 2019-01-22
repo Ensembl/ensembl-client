@@ -172,6 +172,26 @@ fn track(lc: &mut LCBuilder, leaf: &Leaf, p: &Palette, t: i32) {
     }
 }
 
+pub fn polar_source() -> ClosureSource {
+    let p = Palette {
+        lato_12: FCFont::new(12,"Lato",FontVariety::Normal),
+        lato_18: FCFont::new(12,"Lato",FontVariety::Bold),
+        white: ColourSpec::Spot(Colour(255,255,255)),
+        grey: ColourSpec::Spot(Colour(199,208,213))
+    };
+    ClosureSource::new(0.5,move |ref mut lc,leaf| {
+        one_offs(lc,&p);
+        draw_frame(lc,&leaf,AxisSense::Pos,&p);
+        draw_frame(lc,&leaf,AxisSense::Neg,&p);
+        measure(lc,&leaf,AxisSense::Pos,&p);
+        measure(lc,&leaf,AxisSense::Neg,&p);
+        for t in 0..TRACKS {
+            track(lc,&leaf,&p,t);
+        }
+        closure_done(lc,TRACKS*PITCH+TOP);
+    })
+}
+
 pub fn testcard_polar(a: &mut App) {
     let p = Palette {
         lato_12: FCFont::new(12,"Lato",FontVariety::Normal),
