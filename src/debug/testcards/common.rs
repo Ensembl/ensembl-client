@@ -41,8 +41,8 @@ const RNG_BLOCK_SIZE : i32 = 1000000;
 
 pub fn rng_pos(kind: [u8;8], start: i32, end: i32, sep: i32, size: i32) -> Vec<[i32;2]> {
     let mut out = Vec::<[i32;2]>::new();
-    let start_block = start/RNG_BLOCK_SIZE;
-    let end_block = end/RNG_BLOCK_SIZE;
+    let start_block = (start as f32/RNG_BLOCK_SIZE as f32).floor() as i32;
+    let end_block = (end as f32/RNG_BLOCK_SIZE as f32).ceil() as i32;
     for block in start_block..(end_block+1) {
         let block_start = block * RNG_BLOCK_SIZE;
         let seed = [kind[0],kind[1],kind[2],kind[3],
