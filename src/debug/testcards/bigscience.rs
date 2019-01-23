@@ -86,54 +86,71 @@ fn make_rng(seed: i32) -> SmallRng {
 fn source_odd() -> ClosureSource {
     let seed = 12345678;
     
-    let p = Palette::new();
-    ClosureSource::new(0.,enclose! { (p) move |lc,leaf| {
+    let pal = Palette::new();
+    ClosureSource::new(0.,enclose! { (pal) move |lc,leaf| {
+        let mul = vscale_bp_per_leaf(leaf.get_vscale());
+        let start_leaf = (leaf.get_index() as f64 * mul).floor() as i32;
+        let end_leaf = ((leaf.get_index()+1) as f64 * mul).ceil() as i32;
         let mut rng = make_rng(seed);
-        /*
         for yidx in 0..20 {
+            let wiggle = 200000;
+            let poly_rng = rng_pos([yidx as u8,0,0,0,0,0,0,8],start_leaf-wiggle,end_leaf,400000,10000);
             let y = yidx * 60;
-            if yidx == p.middle - 5 {
-                for i in 1..10 {
-                    closure_add(lc,&pin_mathsshape(&cleaf(-0.1+0.04*(i as f32),y+20),
-                       A_MIDDLE,
-                       10. * i as f32,None,MathsShape::Circle,
-                       &p.green));
+            if yidx == pal.middle - 5 {
+                if start_leaf < 100000 && end_leaf > 0 {
+                    let start_prop = prop(leaf,0);
+                    for i in 1..10 {
+                        closure_add(lc,&pin_mathsshape(&cleaf(start_prop+10000.*(i as f32)/mul as f32,y+20),
+                           A_MIDDLE,
+                           10. * i as f32,None,MathsShape::Circle,
+                           &pal.green));
+                    }
                 }
             }
-            if yidx == p.middle {
-                closure_add(lc,&stretch_rectangle(&area_size(cleaf(-0.2,y-20),cleaf(0.1,5)),&p.red));
-                for i in 3..8 {
-                    closure_add(lc,&pin_mathsshape(&cleaf(-0.1+0.04*(i as f32),y+20),
-                                   A_TOP,
-                                   10., None, MathsShape::Polygon(i,0.2*i as f32),
-                                   &p.red));
+            if yidx == pal.middle {
+                for p in poly_rng.iter() {
+                    let start_prop = prop(leaf,p[0]);
+                    for i in 3..8 {
+                        closure_add(lc,&pin_mathsshape(&cleaf(start_prop+10000.*(i as f32)/mul as f32,y+20),
+                                       A_TOP,
+                                       10., None, MathsShape::Polygon(i,0.2*i as f32),
+                                       &pal.red));
+                    }
                 }
-                closure_add(lc,&pin_mathsshape(
-                    &cleaf(-0.2,y-15),
-                    A_RIGHT,
-                    5.,None,
-                    MathsShape::Polygon(3,0.),
-                    &p.red));
+                if start_leaf < 100000 && end_leaf > 0 {
+                    let start_prop = prop(leaf,0);
+                    closure_add(lc,&stretch_rectangle(&area_size(cleaf(start_prop,y-20),cleaf(10000./mul as f32,5)),&pal.red));
+                    closure_add(lc,&pin_mathsshape(
+                        &cleaf(start_prop,y-15),
+                        A_RIGHT,
+                        5.,None,
+                        MathsShape::Polygon(3,0.),
+                        &pal.red));
+                }
             }
-            if yidx == p.middle+2 || yidx == p.middle+4 {
+            if yidx == pal.middle+2 || yidx == pal.middle+4 {
+                /*
                 let wiggle = wiggly(&mut rng,500,cleaf(-0.5,y-5),0.002,20);
                 closure_add(lc,&stretch_wiggle(wiggle,2,&p.green_col));
+                */
             }
-            if yidx == p.middle +1 {
-                for i in (3..7).step_by(2) {
-                    closure_add(lc,&pin_mathsshape(&cleaf(-0.1+0.04*(i as f32),y+20),
-                                   A_TOP,
-                                   10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
-                                   &p.red));
-                    let colour = Colour(0,128,255);
-                    closure_add(lc,&pin_mathsshape(&cleaf(-0.3+0.04*(i as f32),y+20),
-                                   A_TOP,
-                                   10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
-                                   &ColourSpec::Colour(colour)));
+            if yidx == pal.middle + 1 {
+                for p in poly_rng.iter() {
+                    let start_prop = prop(leaf,p[0]);
+                    for i in (3..7).step_by(2) {
+                        closure_add(lc,&pin_mathsshape(&cleaf(start_prop+10000.*(i as f32+0.5)/mul as f32,y+20),
+                                       A_TOP,
+                                       10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
+                                       &pal.red));
+                        let colour = Colour(0,128,255);
+                        closure_add(lc,&pin_mathsshape(&cleaf(start_prop+10000.*(i as f32)/mul as f32,y+20),
+                                       A_TOP,
+                                       10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
+                                       &ColourSpec::Colour(colour)));
+                    }
                 }
             }
         }
-        */
         closure_done(lc,1200);
     }})
 }
@@ -141,52 +158,67 @@ fn source_odd() -> ClosureSource {
 fn source_even() -> ClosureSource {
     let seed = 12345678;
     
-    let p = Palette::new();
-    ClosureSource::new(0.,enclose! { (p) move |lc,leaf| {
+    let pal = Palette::new();
+    ClosureSource::new(0.,enclose! { (pal) move |lc,leaf| {
         let mut rng = make_rng(seed);
+        let mul = vscale_bp_per_leaf(leaf.get_vscale());
+        let start_leaf = (leaf.get_index() as f64 * mul).floor() as i32;
+        let end_leaf = ((leaf.get_index()+1) as f64 * mul).ceil() as i32;
         for yidx in 0..20 {
+            let wiggle = 200000;
+            let poly_rng = rng_pos([yidx as u8,0,0,0,0,0,0,8],start_leaf-wiggle,end_leaf,400000,10000);
             let y = yidx * 60;
-            /*
-            if yidx == p.middle - 5 {
-                for i in 1..10 {
-                    let colour = Colour(255,0,128);
-                    closure_add(lc,&pin_mathsshape(&cleaf(-0.3+0.04*(i as f32),y+20),
-                                   A_MIDDLE,
-                                   10. * i as f32,Some(2.),MathsShape::Circle,
-                                   &ColourSpec::Colour(colour)));
+            if yidx == pal.middle - 5 {
+                if start_leaf < 100000 && end_leaf > 0 {
+                    let start_prop = prop(leaf,0);
+                    for i in 1..10 {
+                        let colour = Colour(255,0,128);
+                        closure_add(lc,&pin_mathsshape(&cleaf(start_prop+10000.*(i as f32)/mul as f32,y+20),
+                                       A_MIDDLE,
+                                       10. * i as f32,Some(2.),MathsShape::Circle,
+                                       &ColourSpec::Colour(colour)));
+                    }
                 }
             }
-            if yidx == p.middle {
-                closure_add(lc,&stretch_rectangle(&area_size(cleaf(-0.2,y-15),cleaf(0.1,5)),&p.green));
-                for i in 3..8 {
-                    let colour = Colour(0,128,255);
-                    closure_add(lc,&pin_mathsshape(&cleaf(-0.3+0.04*(i as f32),y+20),
-                       A_TOP,
-                       10., None, MathsShape::Polygon(i,0.2*i as f32),
-                       &ColourSpec::Colour(colour)));
+            if yidx == pal.middle {
+                for p in poly_rng.iter() {
+                    let start_prop = prop(leaf,p[0]);
+                    for i in 3..8 {
+                        let colour = Colour(0,128,255);
+                        closure_add(lc,&pin_mathsshape(&cleaf(start_prop+10000.*(i as f32+8.)/mul as f32,y+20),
+                           A_TOP,
+                           10., None, MathsShape::Polygon(i,0.2*i as f32),
+                           &ColourSpec::Colour(colour)));
 
+                    }
                 }
-                closure_add(lc,&pin_mathsshape(
-                    &cleaf(-0.1,y-15),
-                    A_LEFT,
-                    5.,None,
-                    MathsShape::Polygon(3,0.5),
-                    &p.green));
-            }
-            if yidx == p.middle +1 {
-                for i in (4..8).step_by(2) {
-                    closure_add(lc,&pin_mathsshape(&cleaf(-0.1+0.04*(i as f32),y+20),
-                                   A_TOP,
-                                   10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
-                                   &p.red));
-                    let colour = Colour(0,128,255);
-                    closure_add(lc,&pin_mathsshape(&cleaf(-0.3+0.04*(i as f32),y+20),
-                                   A_TOP,
-                                   10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
-                                   &ColourSpec::Colour(colour)));                    
+                if start_leaf < 100000 && end_leaf > 0 {
+                    let start_prop = prop(leaf,0);                
+                    closure_add(lc,&stretch_rectangle(&area_size(cleaf(0.,y-15),cleaf(10000./mul as f32,5)),&pal.green));
+                    closure_add(lc,&pin_mathsshape(
+                        &cleaf(10000./mul as f32,y-15),
+                        A_LEFT,
+                        5.,None,
+                        MathsShape::Polygon(3,0.5),
+                        &pal.green));
                 }
             }
-            */
+            if yidx == pal.middle +1 {
+                for p in poly_rng.iter() {
+                    let start_prop = prop(leaf,p[0]);
+                    for i in (4..8).step_by(2) {
+                        closure_add(lc,&pin_mathsshape(&cleaf(start_prop+10000.*(i as f32+0.5)/mul as f32,y+20),
+                                       A_TOP,
+                                       10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
+                                       &pal.red));
+                        let colour = Colour(0,128,255);
+                        closure_add(lc,&pin_mathsshape(&cleaf(start_prop+10000.*(i as f32)/mul as f32,y+20),
+                                       A_TOP,
+                                       10., Some(2.), MathsShape::Polygon(i,0.2*i as f32),
+                                       &ColourSpec::Colour(colour)));                    
+                    }
+                }
+            }
         }
         closure_done(lc,1200);
     }})
@@ -204,10 +236,8 @@ pub fn bs_source_sub(even: bool) -> ClosureSource {
 
 fn prop(leaf: &Leaf, pos: i32) -> f32 {
     let mul = vscale_bp_per_leaf(leaf.get_vscale());
-    let start_leaf = (leaf.get_index() as f64 * mul).floor() as f64;
-    let end_leaf = ((leaf.get_index()+1) as f64 * mul).ceil() as f64;
-    let leaf_size = end_leaf-start_leaf;
-    ((pos as f64-start_leaf)/leaf_size) as f32
+    let start_leaf = (leaf.get_index() as f64 * mul) as f64;
+    ((pos as f64-start_leaf)/mul) as f32
 }
 
 const TINSEL_LENGTH : i32 = 100000;
@@ -221,7 +251,6 @@ pub fn bs_source_main() -> ClosureSource {
         let mul = vscale_bp_per_leaf(leaf.get_vscale());
         let start_leaf = (leaf.get_index() as f64 * mul).floor() as i32;
         let end_leaf = ((leaf.get_index()+1) as f64 * mul).ceil() as i32;
-        
         let mut rng = make_rng(seed);
         measure(lc,&leaf,&pal.red,&pal.green);
         
@@ -243,8 +272,9 @@ pub fn bs_source_main() -> ClosureSource {
                                 5.,None,MathsShape::Polygon(3,0.),
                                 &pal.green));            
             if yidx == pal.middle+3 {
-                if start_leaf == 0 {
-                    closure_add(lc,&pin_rectangle(&cleaf(0.,y-10),&area_size(cpixel(0,-10),cpixel(20,20)),&ColourSpec::Colour(Colour(128,0,0))));
+                if start_leaf < 100000 && end_leaf > 0 {
+                    let start_prop = prop(leaf,0);
+                    closure_add(lc,&pin_rectangle(&cleaf(start_prop,y-10),&area_size(cpixel(0,-10),cpixel(20,20)),&ColourSpec::Colour(Colour(128,0,0))));
                 }
             }
             if yidx == pal.middle {
