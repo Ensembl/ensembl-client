@@ -65,6 +65,6 @@ impl Shape for StretchTextureSpec {
     fn get_artist(&self) -> Option<Rc<Artist>> { Some(self.aspec.to_artist()) }
 }
 
-pub fn stretch_texture(a: DrawingSpec, pos: &RLeaf) -> ShapeSpec {
-    ShapeSpec::StretchTexture(StretchTextureSpec::new(a,pos))
+pub fn stretch_texture(a: &DrawingSpec, pos: &RLeaf) -> ShapeSpec {
+    ShapeSpec::StretchTexture(StretchTextureSpec::new(a.clone(),pos))
 }

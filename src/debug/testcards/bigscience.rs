@@ -15,7 +15,10 @@ use composit::{
 };
 
 use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
-use debug::testcards::common::{ daft, bio_daft, wiggly };
+use debug::testcards::common::{
+    daft, bio_daft, wiggly, rng_prob, rng_pos, rng_colour,
+    rng_subdivide, bio_mark
+};
 
 use shape::{
     fix_rectangle, fix_texture, tape_rectangle, tape_mathsshape,
@@ -189,96 +192,17 @@ fn source_even() -> ClosureSource {
     }})
 }
 
+fn tinsel() -> Vec<u8> {
+    vec! {
+        0,0,255,255,   255,0,0,255,  0,255,0,255,  255,255,0,255,
+        255,255,0,255, 0,255,0,255,  255,0,0,255,  0,0,255,255 }
+}
+
 pub fn bs_source_sub(even: bool) -> ClosureSource {
     if even { source_even() } else { source_odd() }
 }
 
-fn bytes_of_u32(v: u32) -> [u8;4] {
-    [
-        ((v>>24)&0xff) as u8,
-        ((v>>16)&0xff) as u8,
-        ((v>> 8)&0xff) as u8,
-        ((v    )&0xff) as u8
-    ]
-}
-
-fn bytes_of_u64(v: u64) -> [u8;8] {
-    [
-        ((v>>56)&0xff) as u8,
-        ((v>>48)&0xff) as u8,
-        ((v>>40)&0xff) as u8,
-        ((v>>32)&0xff) as u8,
-        ((v>>24)&0xff) as u8,
-        ((v>>16)&0xff) as u8,
-        ((v>> 8)&0xff) as u8,
-        ((v    )&0xff) as u8
-    ]
-}
-
-const RNG_BLOCK_SIZE : u32 = 1000000;
-
-fn rng_pos(kind: [u8;8], start: u32, end: u32, sep: u32, size: u32) -> Vec<[u32;2]> {
-    let mut out = Vec::<[u32;2]>::new();
-    let start_block = start/RNG_BLOCK_SIZE;
-    let end_block = end/RNG_BLOCK_SIZE;
-    for block in start_block..(end_block+1) {
-        let block_start = block * RNG_BLOCK_SIZE;
-        let seed = [kind[0],kind[1],kind[2],kind[3],
-                    kind[4],kind[5],kind[6],kind[7],
-                    0,0,0,0,
-                    ((block>>24)&0xff) as u8,
-                    ((block>>16)&0xff) as u8,
-                    ((block>> 8)&0xff) as u8,
-                    ((block    )&0xff) as u8];
-        let mut rng = SmallRng::from_seed(seed);
-        let mut min_start = 0;
-        while min_start < RNG_BLOCK_SIZE {
-            let rnd_start = min_start + rng.gen_range(sep/2,sep);
-            let rnd_end = rng.gen_range(0,size) + rnd_start;
-            let obj_start = rnd_start + block_start;
-            let obj_end = rnd_end + block_start;
-            if obj_end >= start && obj_start <= end {
-                out.push([obj_start,obj_end]);
-            }
-            min_start = rnd_end + rng.gen_range(size/2,size);
-        }
-    }
-    out.sort();
-    out
-}
-
-fn rng_colour(kind: [u8;8], start: &[u32;2]) -> Colour {
-    let mut h = DefaultHasher::new();
-    h.write(&kind);
-    h.write_u32(start[0]);
-    h.write_u32(start[1]);
-    let b = bytes_of_u64(h.finish());
-    Colour(b[0] as u32,b[1] as u32,b[2] as u32)
-}
-
-fn rng_subdivide(kind: [u8;8], extent: &[u32;2], parts: u32) -> Vec<[u32;2]> {
-    let mut h = DefaultHasher::new();
-    h.write(&kind);
-    h.write_u32(extent[0]);
-    h.write_u32(extent[1]);
-    let b = bytes_of_u64(h.finish());
-    let seed = [b[0],b[1],b[2],b[3],b[4],b[5],b[6],b[7],
-                kind[0],kind[1],kind[2],kind[3],
-                kind[4],kind[5],kind[6],kind[7]];
-    let mut rng = SmallRng::from_seed(seed);
-    let mut breaks = Vec::<u32>::new();
-    for i in 0..parts {
-        breaks.push(rng.gen_range(extent[0],extent[1]));
-    }
-    breaks.sort();
-    let mut out = Vec::<[u32;2]>::new();
-    for i in 0..breaks.len()-1 {
-        out.push([breaks[i],breaks[i+1]]);
-    }
-    out
-}
-
-fn prop(leaf: &Leaf, pos: u32) -> f32 {
+fn prop(leaf: &Leaf, pos: i32) -> f32 {
     let mul = vscale_bp_per_leaf(leaf.get_vscale());
     let start_leaf = (leaf.get_index() as f64 * mul).floor() as f64;
     let end_leaf = ((leaf.get_index()+1) as f64 * mul).ceil() as f64;
@@ -286,23 +210,27 @@ fn prop(leaf: &Leaf, pos: u32) -> f32 {
     ((pos as f64-start_leaf)/leaf_size) as f32
 }
 
+const TINSEL_LENGTH : i32 = 100000;
+const WALL_LENGTH : i32 = 1000000;
+
 pub fn bs_source_main() -> ClosureSource {
     let seed = 12345678;
     
-    let p = Palette::new();
-    ClosureSource::new(0.,enclose! { (p) move |ref mut lc,leaf| {
+    let pal = Palette::new();
+    ClosureSource::new(0.,enclose! { (pal) move |ref mut lc,leaf| {
         let mul = vscale_bp_per_leaf(leaf.get_vscale());
-        let start_leaf = (leaf.get_index() as f64 * mul).floor() as u32;
-        let end_leaf = ((leaf.get_index()+1) as f64 * mul).ceil() as u32;
+        let start_leaf = (leaf.get_index() as f64 * mul).floor() as i32;
+        let end_leaf = ((leaf.get_index()+1) as f64 * mul).ceil() as i32;
         
         let mut rng = make_rng(seed);
-        measure(lc,&leaf,&p.red,&p.green);
+        measure(lc,&leaf,&pal.red,&pal.green);
         
         for yidx in 0..20 {
             let genestart_rng = rng_pos([yidx as u8,0,0,0,0,0,0,0],start_leaf,end_leaf,10000,10000);
+            let bberg_rng = rng_pos([yidx as u8,0,0,0,0,0,0,6],start_leaf,end_leaf,100000,10000);
             let y = yidx * 60;
             let val = daft(&mut rng);
-            let tx = text_texture(&val,&p.fc_font,&p.col,&Colour(255,255,255));
+            let tx = text_texture(&val,&pal.fc_font,&pal.col,&Colour(255,255,255));
             
             closure_add(lc,&page_texture(tx, 
                                 &cedge(TOPLEFT,cpixel(12,y+18)),
@@ -313,33 +241,37 @@ pub fn bs_source_main() -> ClosureSource {
                                 &cpixel(0,y+18).x_edge(AxisSense::Pos),
                                 A_LEFT,
                                 5.,None,MathsShape::Polygon(3,0.),
-                                &p.green));            
-            if yidx == p.middle+3 {
-                //closure_add(lc,&pin_rectangle(&cleaf(0.,y-10),&area_size(cpixel(0,-10),cpixel(20,20)),&ColourSpec::Colour(Colour(128,0,0))));
+                                &pal.green));            
+            if yidx == pal.middle+3 {
+                if start_leaf == 0 {
+                    closure_add(lc,&pin_rectangle(&cleaf(0.,y-10),&area_size(cpixel(0,-10),cpixel(20,20)),&ColourSpec::Colour(Colour(128,0,0))));
+                }
             }
-            if yidx == p.middle {
-                /*
-                let tx = bitmap_texture(
-                                    vec! { 0,0,255,255,
-                                             255,0,0,255,
-                                             0,255,0,255,
-                                             255,255,0,255 },cpixel(4,1),true);
-                closure_add(lc,&stretch_texture(tx,&area_size(cleaf(-0.5,y-5),cleaf(1.,10))));
-                let tx = bitmap_texture(
-                                    vec! { 0,0,255,255,
-                                             255,0,0,255,
-                                             0,255,0,255,
-                                             255,255,0,255 },cpixel(2,2),false);
-                closure_add(lc,&pin_texture(tx,&cleaf(0.,y-25),&cpixel(0,0),&cpixel(10,10).anchor(A_TOPLEFT)));
-                */
-            } else if yidx == p.middle-2 {
-                /*
+            if yidx == pal.middle {
+                let tx = bitmap_texture(tinsel(),
+                                        cpixel(tinsel().len() as i32/4,1),true);
+                let tinsel_len = TINSEL_LENGTH as f64/mul;
+                let mut tinsel_start = (tinsel_len-(start_leaf % TINSEL_LENGTH) as f64)/mul;
+                while tinsel_start < 1. {
+                    closure_add(lc,&stretch_texture(&tx,&area_size(cleaf(tinsel_start as f32,y-5),cleaf(tinsel_len as f32,10))));
+                    tinsel_start += tinsel_len;
+                }
+                for p in bberg_rng.iter() {
+                    let tx = bitmap_texture(
+                                        vec! { 0,0,255,255,
+                                                 255,0,0,255,
+                                                 0,255,0,255,
+                                                 255,255,0,255 },cpixel(2,2),false);
+                    let start_prop = prop(leaf,p[0]);
+                    closure_add(lc,&pin_texture(tx,&cleaf(start_prop,y-25),&cpixel(0,0),&cpixel(10,10).anchor(A_TOPLEFT)));
+                }
+            } else if yidx == pal.middle-2 {
                 let mut parts = Vec::<MarkSpec>::new();
                 for row in 0..8 {
                     let mut off = 0;
                     for _pos in 0..100 {
-                        let size = rng.gen_range(1,7);
-                        let gap = rng.gen_range(1,5);
+                        let size = rng.gen_range(1,14);
+                        let gap = rng.gen_range(1,10);
                         if off + gap + size > 1000 { continue }
                         off += gap;
                         parts.push(mark_rectangle(
@@ -359,16 +291,19 @@ pub fn bs_source_main() -> ClosureSource {
                     }
                 }
                 let tx = collage(parts,cpixel(1000,40));
-                closure_add(lc,&stretch_texture(tx,&area_size(cleaf(-0.7,y-25),cleaf(2.,40))));
-                */
-            } else if yidx == p.middle+2 || yidx == p.middle+4 {
+                let wall_len = WALL_LENGTH as f64/mul;
+                let mut wall_start = (wall_len-(start_leaf % WALL_LENGTH) as f64)/mul;
+                while wall_start < 1. {
+                    closure_add(lc,&stretch_texture(&tx,&area_size(cleaf(wall_start as f32,y-5),cleaf(wall_len as f32,40))));
+                    wall_start += wall_len;
+                }
+            } else if yidx == pal.middle+2 || yidx == pal.middle+4 {
                 // no-op, wiggles
             } else {
-                
                 for (i,start) in genestart_rng.iter().enumerate() {
                     let colour = rng_colour([yidx as u8,0,0,0,0,0,0,1],start);
                     let mut hh = 0;
-                    for p in rng_subdivide([yidx as u8,0,0,0,0,0,0,2],start,6) {
+                    for (j,p) in rng_subdivide([yidx as u8,0,0,0,0,0,0,2],start,6).iter().enumerate() {
                         let h = hh+1;
                         hh = 5 -hh;
                         let start_prop = prop(leaf,p[0]);
@@ -376,43 +311,22 @@ pub fn bs_source_main() -> ClosureSource {
                         closure_add(lc,
                             &stretch_rectangle(&area(cleaf(start_prop,y-h),cleaf(end_prop,y+h)),
                                         &ColourSpec::Colour(colour)));
+                        if rng_prob([yidx as u8,j as u8,0,0,0,0,0,5],start,0.2) {
+                            let tri_col = rng_colour([yidx as u8,i as u8,j as u8,0,0,0,0,3],start);
+                            closure_add(lc,&pin_mathsshape(
+                                            &cleaf(start_prop,y+5),
+                                            A_TOP,
+                                            8.,None,
+                                            MathsShape::Polygon(3,0.75),
+                                            &ColourSpec::Colour(tri_col)));
+                        }
+                        if rng_prob([yidx as u8,j as u8,0,0,0,0,0,4],start,0.1) {
+                            let val = bio_mark([yidx as u8,j as u8,0,0,0,0,0,7],start);
+                            let tx = text_texture(&val,&pal.fc_font,&pal.col,&Colour(255,255,255));
+                            closure_add(lc,&pin_texture(tx, &cleaf(start_prop,y-12), &cpixel(0,0), &cpixel(1,1).anchor(A_MIDDLE)));
+                        }                    
+
                     }
-                    
-                }
- 
-                for idx in -100..100 {
-                    let v1 = (idx as f32) * 0.1;
-                    let v2 = (idx as f32)+10.0*(yidx as f32) * 0.1;
-                    let dx = rng.gen_range(0.,20.);
-                    let x = v1 * 100. + (yidx as f32).cos() * 100.;
-                    let colour = Colour(
-                        (128.*v2.cos()+128.) as u32,
-                        (128.*v2.sin()+128.) as u32,
-                        (128.*(v2+1.0).sin()+128.) as u32,
-                    );
-                    //let h = if rng.gen_range(0,13) == 0 { 1 } else { 5 };
-                    
-                    
-                    
-                    let h = 1;
-                    //closure_add(lc,&stretch_rectangle(&area_size(cleaf(x/1000.,y-h),cleaf(dx/1000.,2*h)),
-                    //                &ColourSpec::Colour(colour)));
-                    /*
-                    if idx %5 == 0 {
-                        let colour = Colour(colour.2,colour.0,colour.1);
-                        closure_add(lc,&pin_mathsshape(
-                                        &cleaf(x/1000.,y+h),
-                                        A_TOP,
-                                        8.,None,
-                                        MathsShape::Polygon(3,0.75),
-                                        &ColourSpec::Colour(colour)));
-                    }
-                    if rng.gen_range(0,10) == 0 {
-                        let val = bio_daft(&mut rng);
-                        let tx = text_texture(&val,&p.fc_font,&p.col,&Colour(255,255,255));
-                        closure_add(lc,&pin_texture(tx, &cleaf(x/1000.,y-24), &cpixel(0,0), &cpixel(1,1).anchor(A_MIDDLE)));
-                    }
-                    */
                 }
             }
         }
@@ -422,7 +336,7 @@ pub fn bs_source_main() -> ClosureSource {
                             &ColourSpec::Colour(Colour(0,0,0))));
         closure_add(lc,&fix_rectangle(&area(cedge(TOPLEFT,cpixel(SW/2+5,0)),
                                         cedge(TOPLEFT,cpixel(SW/2+8,SH))),
-                            &p.red));
+                            &pal.red));
         let tx = bitmap_texture(vec! { 0,0,255,255,
                                      255,0,0,255,
                                      0,255,0,255,
@@ -452,19 +366,19 @@ pub fn bs_source_main() -> ClosureSource {
         closure_add(lc,&fix_mathsshape(&cedge(TOPLEFT,cpixel(30,30)),
                                    A_TOPLEFT,
                                    20.,None,MathsShape::Polygon(5,0.),
-                                   &p.red));
+                                   &pal.red));
         closure_add(lc,&fix_mathsshape(&cedge(TOPRIGHT,cpixel(30,30)),
                                    A_TOPRIGHT,
                                    20.,None,MathsShape::Polygon(5,0.),
-                                   &p.red));
+                                   &pal.red));
         closure_add(lc,&fix_mathsshape(&cedge(BOTTOMLEFT,cpixel(30,30)),
                                    A_BOTTOMLEFT,
                                    20.,None,MathsShape::Polygon(5,0.),
-                                   &p.red));
+                                   &pal.red));
         closure_add(lc,&fix_mathsshape(&cedge(BOTTOMRIGHT,cpixel(30,30)),
                                    A_BOTTOMRIGHT,
                                    20.,None,MathsShape::Polygon(5,0.),
-                                   &p.red));
+                                   &pal.red));
         closure_done(lc,1200);
     }})
 }
