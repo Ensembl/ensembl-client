@@ -69,8 +69,10 @@ pub fn create_interactors() -> Vec<Box<DebugInteractor>> {
     event_button(&mut dii,"down",json!({ "move_down_px": 50 }));
     event_button(&mut dii,"in",json!({ "zoom_by": 0.3 }));
     event_button(&mut dii,"out",json!({ "zoom_by": -0.3 }));
-    event_button(&mut dii,"on",json!({}));
-    event_button(&mut dii,"off",json!({}));
+    event_button(&mut dii,"odd on",json!({ "on": "odd" }));
+    event_button(&mut dii,"odd off",json!({ "off": "odd" }));
+    event_button(&mut dii,"even on",json!({ "on": "even" }));
+    event_button(&mut dii,"even off",json!({ "off": "even" }));
     event_button(&mut dii,"zero",json!({}));
     dii
 }
