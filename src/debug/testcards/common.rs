@@ -1,18 +1,13 @@
 use std::collections::hash_map::DefaultHasher;
 use std::hash::Hasher;
-use std::sync::{ Mutex, Arc };
 
-use rand::{ Rng, seq };
+use rand::Rng;
 use rand::distributions::Distribution;
 use rand::prelude::SliceRandom;
 use rand::rngs::SmallRng;
 use rand::SeedableRng;
 
-use stdweb::web::{ Element };
-
 use controller::global::{ Global, AppRunner };
-use debug::testcards::base::testcard_base;
-use debug::testcards::polar::testcard_polar;
 use types::{ CLeaf, cleaf, Colour };
 
 fn bytes_of_u32(v: u32) -> [u8;4] {
@@ -77,7 +72,7 @@ fn start_hash(kind: [u8;8], start: &[i32;2]) -> u64 {
     h.finish()
 }
 
-fn start_rng(kind: [u8;8], start: &[i32;2]) -> SmallRng {
+pub fn start_rng(kind: [u8;8], start: &[i32;2]) -> SmallRng {
     let b = bytes_of_u64(start_hash(kind,start));
     let seed = [b[0],b[1],b[2],b[3],b[4],b[5],b[6],b[7],
                 kind[0],kind[1],kind[2],kind[3],
@@ -146,7 +141,7 @@ pub fn bio_daft<R>(rng: &mut R) -> String where R: Rng {
     choose(rng,&[&vals[..]])
 }
 
-pub fn daft<R>(rng: &mut R) -> String where R: Rng {    
+pub fn rng_tracks(kind: [u8;8], num: i32) -> Vec<String> {    
     let onset = [
         "bl", "br", "ch", "cl", "cr", "dr", "fl", "fr", "gh", "gl", 
         "gr", "ph", "pl", "pr", "qu", "sc", "sh", "sk", "sl", "sm", 
@@ -164,12 +159,17 @@ pub fn daft<R>(rng: &mut R) -> String where R: Rng {
         "nth", "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", 
         "p", "r", "s", "t", "u", "v", "w", "x", "y", "z"
     ];
-    let mut out = String::new();
-    let num : i32 = rng.gen_range(1,8);
-    for _i in 0..num {
-        out += &choose(rng,&[&onset[..],&nuc[..],&coda[..]])[..];
-        let sp: bool = rng.gen();
-        if sp { out += " "; }
+    let mut out = Vec::<String>::new();
+    let mut rng = start_rng(kind,&[0,0]);
+    for _ in 0..num {
+        let mut s = String::new();
+        let num : i32 = rng.gen_range(1,8);
+        for _i in 0..num {
+            s += &choose(&mut rng,&[&onset[..],&nuc[..],&coda[..]])[..];
+            let sp: bool = rng.gen();
+            if sp { s += " "; }
+        }
+        out.push(s);
     }
     out
 }
