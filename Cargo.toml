@@ -16,7 +16,7 @@ itertools = "*"
 
 [build-dependencies]
 webgl_generator = "*"
-cargo-web="*"
+cargo-web="0.6.22"
 
-[profile.release]
-lto = true
+#[profile.release]
+#lto = true
