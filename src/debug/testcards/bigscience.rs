@@ -243,6 +243,10 @@ fn prop(leaf: &Leaf, pos: i32) -> f32 {
 const TINSEL_LENGTH : i32 = 100000;
 const WALL_LENGTH : i32 = 1000000;
 
+fn round_down(num: i32, denom: i32) -> i32 {
+    ((num as f32/denom as f32).floor() * denom as f32) as i32
+}
+
 pub fn bs_source_main() -> ClosureSource {
     let seed = 12345678;
     
@@ -280,11 +284,13 @@ pub fn bs_source_main() -> ClosureSource {
             if yidx == pal.middle {
                 let tx = bitmap_texture(tinsel(),
                                         cpixel(tinsel().len() as i32/4,1),true);
-                let tinsel_len = TINSEL_LENGTH as f64/mul;
-                let mut tinsel_start = (tinsel_len-(start_leaf % TINSEL_LENGTH) as f64)/mul;
-                while tinsel_start < 1. {
-                    closure_add(lc,&stretch_texture(&tx,&area_size(cleaf(tinsel_start as f32,y-5),cleaf(tinsel_len as f32,10))));
-                    tinsel_start += tinsel_len;
+                let mut tinsel_start = round_down(start_leaf,TINSEL_LENGTH);
+                while tinsel_start < end_leaf {
+                    let pos_start = prop(leaf,tinsel_start);
+                    let pos_end = prop(leaf,tinsel_start+WALL_LENGTH);
+                    closure_add(lc,&stretch_texture(&tx,
+                        &area(cleaf(pos_start,y-5),cleaf(pos_end,y+5))));
+                    tinsel_start += TINSEL_LENGTH;
                 }
                 for p in bberg_rng.iter() {
                     let tx = bitmap_texture(
@@ -321,11 +327,14 @@ pub fn bs_source_main() -> ClosureSource {
                     }
                 }
                 let tx = collage(parts,cpixel(1000,40));
-                let wall_len = WALL_LENGTH as f64/mul;
-                let mut wall_start = (wall_len-(start_leaf % WALL_LENGTH) as f64)/mul;
-                while wall_start < 1. {
-                    closure_add(lc,&stretch_texture(&tx,&area_size(cleaf(wall_start as f32,y-5),cleaf(wall_len as f32,40))));
-                    wall_start += wall_len;
+                let mut wall_start = round_down(start_leaf,WALL_LENGTH);
+                while wall_start < end_leaf {
+                    let pos_start = prop(leaf,wall_start);
+                    let pos_end = prop(leaf,wall_start+WALL_LENGTH);
+                    closure_add(lc,&stretch_texture(&tx,&area(
+                        cleaf(pos_start,y-5),cleaf(pos_end,y+45))
+                    ));
+                    wall_start += WALL_LENGTH;
                 }
             } else if yidx == pal.middle+2 || yidx == pal.middle+4 {
                 // no-op, wiggles
