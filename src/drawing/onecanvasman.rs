@@ -84,10 +84,11 @@ impl OneCanvasManager {
             tdrh
         } else {
             let margin = a.margin();
+            let padding = a.padding();
             let size = a.measure(&self.standin);
             let mask_size = a.measure_mask(&self.standin);
             let flat_alloc = &mut self.allocator;
-            let req = flat_alloc.request(size + cpixel(2,2)*margin);
+            let req = flat_alloc.request(size + cpixel(2,2)*(margin+padding));
             let mask_req = flat_alloc.request(mask_size + cpixel(2,2));
             let val = Drawing::new(a,req,mask_req);
             if let Some(tdrk) = tdrk {

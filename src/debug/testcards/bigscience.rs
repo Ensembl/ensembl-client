@@ -227,7 +227,8 @@ fn source_even() -> ClosureSource {
 fn tinsel() -> Vec<u8> {
     vec! {
         0,0,255,255,   255,0,0,255,  0,255,0,255,  255,255,0,255,
-        255,255,0,255, 0,255,0,255,  255,0,0,255,  0,0,255,255 }
+        255,255,0,255, 0,255,0,255,  255,0,0,255,  0,0,255,255,
+    }
 }
 
 pub fn bs_source_sub(even: bool) -> ClosureSource {
@@ -287,7 +288,7 @@ pub fn bs_source_main() -> ClosureSource {
                 let mut tinsel_start = round_down(start_leaf,TINSEL_LENGTH);
                 while tinsel_start < end_leaf {
                     let pos_start = prop(leaf,tinsel_start);
-                    let pos_end = prop(leaf,tinsel_start+WALL_LENGTH);
+                    let pos_end = prop(leaf,tinsel_start+TINSEL_LENGTH);
                     closure_add(lc,&stretch_texture(&tx,
                         &area(cleaf(pos_start,y-5),cleaf(pos_end,y+5))));
                     tinsel_start += TINSEL_LENGTH;

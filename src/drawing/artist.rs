@@ -23,4 +23,5 @@ pub trait Artist {
         ds.get_ocm(CanvasWeave::Pixelate)
     }
     fn margin(&self) -> CPixel { cpixel(0,0) }
+    fn padding(&self) -> CPixel { cpixel(0,0) }
 }
