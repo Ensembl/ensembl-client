@@ -147,22 +147,23 @@ pub fn bio_daft<R>(rng: &mut R) -> String where R: Rng {
 }
 
 pub fn daft<R>(rng: &mut R) -> String where R: Rng {    
-    let onset = [ "bl", "br", "ch", "cl", "cr", "dr", "fl",
-                       "fr", "gh", "gl", "gr", "ph", "pl", "pr",
-                       "qu", "sc", "sh", "sk", "sl", "sm", "sn", "sp",
-                       "st", "sw", "th", "tr", "tw", "wh", "wr",
-                       "sch", "scr", "shr", "spl", "spr", "squ",
-                       "str", "thr", "b", "c", "d", "f", "g", "h", "j",
-                       "k", "l", "m", "n", "p", "r", "s", "t", "u", "v",
-                       "w", "x", "y", "z" ];
-    let nuc = [ "ai", "au", "aw", "ay", "ea", "ee", "ei", "eu",
-                    "ew", "ey", "ie", "oi", "oo", "ou", "ow", "oy",
-                    "a", "e", "i", "o", "u" ];
-    let coda = [  "ch", "ck", "gh", "ng", "ph", "sh", "sm", "sp",
-                       "st", "th",  "nth", 
-                       "b", "c", "d", "f", "g", "h", "j",
-                       "k", "l", "m", "n", "p", "r", "s", "t", "u", "v",
-                       "w", "x", "y", "z" ];
+    let onset = [
+        "bl", "br", "ch", "cl", "cr", "dr", "fl", "fr", "gh", "gl", 
+        "gr", "ph", "pl", "pr", "qu", "sc", "sh", "sk", "sl", "sm", 
+        "sn", "sp", "st", "sw", "th", "tr", "tw", "wh", "wr", "sch", 
+        "scr", "shr", "spl", "spr", "squ", "str", "thr", "b", "c", "d",
+        "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", 
+        "u", "v", "w", "x", "y", "z"
+    ];
+    let nuc = [
+        "ai", "au", "aw", "ay", "ea", "ee", "ei", "eu", "ew", "ey",
+        "ie", "oi", "oo", "ou", "ow", "oy", "a", "e", "i", "o", "u"
+    ];
+    let coda = [
+        "ch", "ck", "gh", "ng", "ph", "sh", "sm", "sp", "st", "th",
+        "nth", "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", 
+        "p", "r", "s", "t", "u", "v", "w", "x", "y", "z"
+    ];
     let mut out = String::new();
     let num : i32 = rng.gen_range(1,8);
     for _i in 0..num {
@@ -173,14 +174,42 @@ pub fn daft<R>(rng: &mut R) -> String where R: Rng {
     out
 }
 
-pub fn wiggly<R>(rng: &mut R, num: u32, origin: CLeaf, sep: f32, h: i32) 
-                -> Vec<CLeaf> where R: Rng {
-    let mut out = Vec::<CLeaf>::new();
-    for i in 0..num {
-        let v : i32 = rng.gen_range(0,h);
-        out.push(origin + cleaf(i as f32*sep,v));
-    }
+fn scale_wiggle(in_: &Vec<CLeaf>, start: i32, end: i32) -> Vec<CLeaf> {
+    let size = end-start;
+    in_.iter().map(|x| {
+        cleaf((x.0-start as f32)/size as f32,x.1)
+    }).collect()
+}
+
+pub fn delta(fun: &Vec<f32>, pos: f32, scale: f32) -> f32 {
+    let a = ((pos/scale)%(fun.len() as f32-1.)).abs() as usize;
+    let d = ((pos%scale)/scale).abs();
+    let p = d*d;
+    fun[a] * (1.-p) + fun[a+1] * p
+}
+
+pub fn wiggle_func(fun: &Vec<f32>, pos: f32) -> f32 {
+    let slow = delta(fun,pos,10000.);
+    let fast = delta(fun,pos,100.);
+    let out = (pos/1000.).cos()*0.1+slow*0.7+fast*0.2;
     out
+}
+
+pub fn wiggly(num: i32, start: i32, end: i32, offset: i32, h: i32) -> Vec<CLeaf> {
+    let mut rng = SmallRng::from_seed([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+    let mut fun = Vec::<f32>::new();
+    for _ in 0..100 {
+        fun.push(rng.gen_range(0.,1.));
+    }
+    let mut out = Vec::<CLeaf>::new();
+    let mut x_pos = start as f32;
+    let x_inc = (end-start) as f32/(num as f32-1.);
+    for i in 0..num {
+        let v : i32 = (wiggle_func(&fun,x_pos)*h as f32) as i32;
+        out.push(cleaf(x_pos,offset+v));
+        x_pos += x_inc;
+    }
+    scale_wiggle(&out,start,end)
 }
 
 const MORSE_AL : &str = "abcdefghijklmnopqrstuvwxyz ";

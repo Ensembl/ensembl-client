@@ -129,10 +129,8 @@ fn source_odd() -> ClosureSource {
                 }
             }
             if yidx == pal.middle+2 || yidx == pal.middle+4 {
-                /*
-                let wiggle = wiggly(&mut rng,500,cleaf(-0.5,y-5),0.002,20);
-                closure_add(lc,&stretch_wiggle(wiggle,2,&p.green_col));
-                */
+                let wiggle = wiggly(500,start_leaf,end_leaf,y-5,20);
+                closure_add(lc,&stretch_wiggle(wiggle,2,&pal.green_col));
             }
             if yidx == pal.middle + 1 {
                 for p in poly_rng.iter() {
