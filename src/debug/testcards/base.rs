@@ -45,6 +45,7 @@ pub fn testcard_base(a: &mut App, stick_name: &str) {
         Event::SetStick(stick_name.to_string()),
         Event::SetState("even".to_string(),StateValue::On()),
         Event::SetState("odd".to_string(),StateValue::On()),
+        Event::ZoomTo(-5.)
     });
 }
 

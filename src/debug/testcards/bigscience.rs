@@ -16,8 +16,8 @@ use composit::{
 
 use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
 use debug::testcards::common::{
-    daft, bio_daft, wiggly, rng_prob, rng_pos, rng_colour,
-    rng_subdivide, bio_mark
+    bio_daft, wiggly, rng_prob, rng_pos, rng_colour, start_rng,
+    rng_subdivide, bio_mark, rng_tracks
 };
 
 use shape::{
@@ -246,6 +246,35 @@ fn round_down(num: i32, denom: i32) -> i32 {
     ((num as f32/denom as f32).floor() * denom as f32) as i32
 }
 
+fn bs_collage() -> DrawingSpec {
+    let mut rng = start_rng([0,0,0,0,0,0,0,0],&[0,0]);
+    let mut parts = Vec::<MarkSpec>::new();
+    for row in 0..8 {
+        let mut off = 0;
+        for _pos in 0..100 {
+            let size = rng.gen_range(1,14);
+            let gap = rng.gen_range(1,10);
+            if off + gap + size > 1000 { continue }
+            off += gap;
+            parts.push(mark_rectangle(
+                &area_size(cpixel(off,row*5),cpixel(size,4)),
+                &Colour(255,200,100)));
+            if rng.gen_range(0,2) == 1 {
+                parts.push(mark_rectangle(
+                    &area_size(cpixel(off,row*5),cpixel(1,4)),
+                    &Colour(200,0,0)));
+            }
+            if rng.gen_range(0,2) == 1 {
+                parts.push(mark_rectangle(
+                    &area_size(cpixel(off+size-1,row*5),cpixel(1,4)),
+                    &Colour(0,0,200)));
+            }
+            off += size;
+        }
+    }
+    collage(parts,cpixel(1000,40))
+}
+
 pub fn bs_source_main() -> ClosureSource {
     let seed = 12345678;
     
@@ -254,15 +283,13 @@ pub fn bs_source_main() -> ClosureSource {
         let mul = vscale_bp_per_leaf(leaf.get_vscale());
         let start_leaf = (leaf.get_index() as f64 * mul).floor() as i32;
         let end_leaf = ((leaf.get_index()+1) as f64 * mul).ceil() as i32;
-        let mut rng = make_rng(seed);
         measure(lc,&leaf,&pal.red,&pal.green);
-        
+        let tracks = rng_tracks([0,0,0,0,0,0,0,10],20);
         for yidx in 0..20 {
             let genestart_rng = rng_pos([yidx as u8,0,0,0,0,0,0,0],start_leaf,end_leaf,10000,10000);
             let bberg_rng = rng_pos([yidx as u8,0,0,0,0,0,0,6],start_leaf,end_leaf,100000,10000);
             let y = yidx * 60;
-            let val = daft(&mut rng);
-            let tx = text_texture(&val,&pal.fc_font,&pal.col,&Colour(255,255,255));
+            let tx = text_texture(&tracks[yidx as usize],&pal.fc_font,&pal.col,&Colour(255,255,255));
             
             closure_add(lc,&page_texture(tx, 
                                 &cedge(TOPLEFT,cpixel(12,y+18)),
@@ -301,31 +328,7 @@ pub fn bs_source_main() -> ClosureSource {
                     closure_add(lc,&pin_texture(tx,&cleaf(start_prop,y-25),&cpixel(0,0),&cpixel(10,10).anchor(A_TOPLEFT)));
                 }
             } else if yidx == pal.middle-2 {
-                let mut parts = Vec::<MarkSpec>::new();
-                for row in 0..8 {
-                    let mut off = 0;
-                    for _pos in 0..100 {
-                        let size = rng.gen_range(1,14);
-                        let gap = rng.gen_range(1,10);
-                        if off + gap + size > 1000 { continue }
-                        off += gap;
-                        parts.push(mark_rectangle(
-                            &area_size(cpixel(off,row*5),cpixel(size,4)),
-                            &Colour(255,200,100)));
-                        if rng.gen_range(0,2) == 1 {
-                            parts.push(mark_rectangle(
-                                &area_size(cpixel(off,row*5),cpixel(1,4)),
-                                &Colour(200,0,0)));
-                        }
-                        if rng.gen_range(0,2) == 1 {
-                            parts.push(mark_rectangle(
-                                &area_size(cpixel(off+size-1,row*5),cpixel(1,4)),
-                                &Colour(0,0,200)));
-                        }
-                        off += size;
-                    }
-                }
-                let tx = collage(parts,cpixel(1000,40));
+                let tx = bs_collage();
                 let mut wall_start = round_down(start_leaf,WALL_LENGTH);
                 while wall_start < end_leaf {
                     let pos_start = prop(leaf,wall_start);
