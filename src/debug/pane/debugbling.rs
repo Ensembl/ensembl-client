@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use serde_json::Value as JSONValue;
 use stdweb::web::html_element::SelectElement;
 use stdweb::traits::IEvent;
@@ -10,7 +8,7 @@ use stdweb::web::event::{ ChangeEvent, ClickEvent };
 use controller::global::AppRunner;
 use debug::testcard_base;
 use debug::DebugConsole;
-use dom::{ DEBUGSTAGE, PLAINSTAGE, DEBUGSTAGE_CSS, Bling };
+use dom::{ DEBUGSTAGE, DEBUGSTAGE_CSS, Bling };
 use dom::domutil;
 
 use dom::event::{

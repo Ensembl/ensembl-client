@@ -1,12 +1,9 @@
 use std::cell::RefCell;
-use std::clone::Clone;
 use std::rc::Rc;
-use std::sync::{ Mutex, Arc };
 
 use composit::StateValue;
 use controller::input::Event;
-use controller::global::{ Global, App, AppRunner };
-use types::Dot;
+use controller::global::App;
 
 struct State {
     zoomscale: f32,

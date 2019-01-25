@@ -1,22 +1,9 @@
-use std::cell::RefCell;
-use serde_json::Value as JSONValue;
+use stdweb::web::Element;
 
-use stdweb::web::{ IEventTarget, Element, HtmlElement };
-use stdweb::traits::IEvent;
-use stdweb::web::event::{ ClickEvent, ChangeEvent };
-use stdweb::web::html_element::SelectElement;
-use stdweb::unstable::TryInto;
-use stdweb::traits::IKeyboardEvent;
-
-use controller::global::{ Global, AppRunner };
-use dom::{ DEBUGSTAGE, DEBUGSTAGE_CSS };
 use dom::domutil;
 use dom::event::{
-    EventListener, EventControl, EventType, EventData, ICustomEvent,
-    Target
+    EventListener, EventControl, EventType, EventData, Target
 };
-use debug::testcards;
-use debug::pane::console::DebugConsole;
 
 const MODIFIER_BYPASS : bool = true;
 

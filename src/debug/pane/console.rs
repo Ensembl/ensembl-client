@@ -2,7 +2,6 @@ use std::iter;
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::collections::HashMap;
-use std::collections::hash_map::Entry;
 use serde_json::Value as JSONValue;
 
 use stdweb::traits::IEvent;

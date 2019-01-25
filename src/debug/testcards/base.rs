@@ -1,8 +1,7 @@
 use std::rc::Rc;
 
 use composit::{ 
-    Component, StateValue, StateFixed, Stick, Source, ComponentSource,
-    StateAtom
+    Component, StateValue, StateFixed, ComponentSource, StateAtom
 };
 use controller::global::App;
 use controller::input::{ Event, events_run };

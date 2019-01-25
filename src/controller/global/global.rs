@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use std::collections::{ HashMap, HashSet };
+use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 use std::rc::{ Rc, Weak };
 use std::sync::{ Arc, Mutex };
@@ -9,8 +9,7 @@ use stdweb::web::{ HtmlElement, Element, IHtmlElement };
 
 
 use composit::{
-    StateManager, ComponentSourceList, StickManager, Component,
-    ComponentSource, Stick
+    ComponentSourceList, StickManager, Component, ComponentSource, Stick
 };
 use controller::input::register_startup_events;
 use controller::global::AppRunner;
