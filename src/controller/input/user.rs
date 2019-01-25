@@ -6,7 +6,7 @@ use stdweb::traits::IEvent;
 use dom::event;
 
 use controller::global::{ App, AppRunner };
-use controller::input::{ Event, events_run };
+use controller::input::{ Event, events_run, EggDetector };
 use controller::input::physics::MousePhysics;
 use types::Dot;
 
@@ -58,28 +58,43 @@ impl EventListener<()> for UserEventListener {
             },
             EventData::MouseEvent(EventType::MouseClickEvent,_,e) => {
                 e.stop_propagation();
-            }
+            },
             _ => ()
         };
     }
 }
 
 pub struct UserEventListenerBody {
-    mouse: Arc<Mutex<MousePhysics>>
+    app_runner: AppRunner,
+    mouse: Arc<Mutex<MousePhysics>>,
+    egg: EggDetector
 }
 
 impl UserEventListenerBody {
-    pub fn new(mouse: &Arc<Mutex<MousePhysics>>) -> UserEventListenerBody {
+    pub fn new(app_runner: &AppRunner, mouse: &Arc<Mutex<MousePhysics>>) -> UserEventListenerBody {
         UserEventListenerBody {
-            mouse: mouse.clone()
+            mouse: mouse.clone(),
+            app_runner: app_runner.clone(),
+            egg: EggDetector::new("@gander#")
         }
     }
 }
 
 impl EventListener<()> for UserEventListenerBody {    
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
-        if let EventData::MouseEvent(EventType::MouseUpEvent,_,_) = e {
-            self.mouse.lock().unwrap().up();
+        match e {
+            EventData::MouseEvent(EventType::MouseUpEvent,_,_) => {
+                self.mouse.lock().unwrap().up();
+            },
+            EventData::KeyboardEvent(EventType::KeyPressEvent,_,e) => {
+                if !self.egg.is_active() {
+                    self.egg.new_char(&e.key_char());
+                    if self.egg.is_active() {
+                        self.app_runner.activate_debug();
+                    }
+                }
+            },
+            _ => ()
         }
     }
 }
@@ -95,9 +110,10 @@ pub fn register_user_events(gc: &mut AppRunner, el: &HtmlElement) {
     ec_canv.add_event(EventType::MouseWheelEvent);        
     let elel: Element = el.clone().into();
     ec_canv.add_element(&elel,());
-    let uel_body = UserEventListenerBody::new(&mp);
+    let uel_body = UserEventListenerBody::new(gc,&mp);
     let mut ec_body = EventControl::new(Box::new(uel_body),());
     ec_body.add_event(EventType::MouseUpEvent);
+    ec_body.add_event(EventType::KeyPressEvent);
     ec_body.add_element(&domutil::query_select("body"),());        
     gc.add_control(Box::new(ec_canv));
     gc.add_control(Box::new(ec_body));

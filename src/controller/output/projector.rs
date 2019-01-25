@@ -13,7 +13,8 @@ struct ProjectorImpl {
     phase: u32,
     old_time: Option<f64>,
     delta: Option<f64>,
-    jank: JankBuster
+    jank: JankBuster,
+    stopping: bool
 }
 
 impl ProjectorImpl {
@@ -59,9 +60,14 @@ impl Projector {
             delta: None,
             old_time: None,
             jank: JankBuster::new(),
+            stopping: false
         })));
         out.another();
         out
+    }
+
+    pub fn stop(&mut self) {
+        self.0.borrow_mut().stopping = true;
     }
 
     fn another(&mut self) {
@@ -81,15 +87,20 @@ impl Projector {
 
     fn machine_frame(&mut self, time: f64) {
         let cr = self.0.borrow_mut().cr.upgrade();
-        if let Some(mut cr) = cr {
-            if self.should_run(time) {
-                cr.run_timers(time);
-                cr.draw();
+        if !self.0.borrow().stopping {
+            if let Some(mut cr) = cr {
+                if self.should_run(time) {
+                    cr.run_timers(time);
+                    cr.draw();
+                } else {
+                    self.detect_deselected();
+                }
+                self.another();
             } else {
-                self.detect_deselected();
+                self.0.borrow_mut().stopping = true;
             }
-            self.another();
-        } else {
+        }
+        if self.0.borrow().stopping {
             debug!("projector","stopping");
         }
     }

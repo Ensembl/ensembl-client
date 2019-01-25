@@ -180,6 +180,12 @@ impl IMouseEvent for MouseData {}
 #[reference(instance_of = "KeyboardData")]
 pub struct KeyboardData(Reference);
 
+impl KeyboardData {
+    pub fn key_char(&self) -> String {
+        return js! { return @{self.as_ref()}.key; }.try_into().unwrap();
+    }
+}
+
 impl fmt::Debug for KeyboardData {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "KeyboardData {{ code={} }}",self.code())

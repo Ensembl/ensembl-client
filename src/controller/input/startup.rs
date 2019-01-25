@@ -1,7 +1,5 @@
 use std::sync::{ Arc, Mutex };
 
-use stdweb::web::INode;
-
 use controller::global::Global;
 use dom::domutil;
 use dom::event::{ EventListener, EventType, EventData, EventControl, Target };
@@ -31,18 +29,11 @@ impl EventListener<()> for StartupEventListener {
                         console!("Activate browser {} on {:?}",key,cx.target());
                         g.register_app(&key,&cx.target(),false);
                     },
-                    "bpane-debugger" => {
-                        let key = aed.get_simple_str("key",Some("only")).unwrap();
-                        console!("Restart in debug mode key={}",key);
-                        g.register_app(&key,&cx.target(),true);
-                    },
                     _ => ()
                 }
             },
             _ => ()
         }
-        
-        console!("hi! e={:?}",e.context().target().node_name());
     }
 }
 
@@ -50,6 +41,5 @@ pub fn register_startup_events(g: &Arc<Mutex<Global>>) {
     let uel = StartupEventListener::new(g);
     let mut ec_start = EventControl::new(Box::new(uel),());
     ec_start.add_event(EventType::CustomEvent("bpane-activate".to_string()));
-    ec_start.add_event(EventType::CustomEvent("bpane-debugger".to_string()));
     ec_start.add_element(&domutil::query_select("body"),());
 }
