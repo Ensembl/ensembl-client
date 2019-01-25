@@ -1,3 +1,5 @@
+use std::rc::Rc;
+use std::sync::{ Arc, Mutex };
 use serde_json::Value as JSONValue;
 use stdweb::web::html_element::SelectElement;
 use stdweb::traits::IEvent;
@@ -5,7 +7,8 @@ use stdweb::unstable::TryInto;
 use stdweb::web::{ Element, IEventTarget };
 use stdweb::web::event::{ ChangeEvent, ClickEvent };
 
-use controller::global::AppRunner;
+use controller::input::EggDetector;
+use controller::global::{ AppRunner, App };
 use debug::testcard_base;
 use debug::DebugConsole;
 use dom::{ DEBUGSTAGE, DEBUGSTAGE_CSS, Bling };
@@ -32,11 +35,10 @@ fn setup_debug_console(el: &Element) {
 
 }
 
-fn setup_testcard_selector(ar: &mut AppRunner, el: &Element) {
-    let ar = ar.clone();
+fn setup_testcard_selector(a: &Arc<Mutex<App>>, el: &Element) {
+    let a = a.clone();
     let sel_el = domutil::query_selector2(el,".console .testcard").unwrap();
-    sel_el.add_event_listener(enclose! { (ar,el) move |e: ChangeEvent| {
-        let a = ar.state();
+    sel_el.add_event_listener(enclose! { (a,el) move |e: ChangeEvent| {
         let mut a = a.lock().unwrap();
         let node : SelectElement = e.target().unwrap().try_into().ok().unwrap();
         if let Some(name) = node.value() {
@@ -46,68 +48,72 @@ fn setup_testcard_selector(ar: &mut AppRunner, el: &Element) {
     }});
 }
 
-fn event_button(dii: &mut Vec<Box<DebugInteractor>>, name: &str, json: JSONValue) {
-    let bi = ButtonDebugInteractor::new(name,move |ar| {
+fn event_button(dii: &mut Vec<Box<DebugInteractor>>, name: &str, egg: Option<&str>, json: JSONValue) {
+    let bi = ButtonDebugInteractor::new(name,egg,move |a| {
         let canv: Element = {
-            let mut a = ar.state();
-            let mut a = a.lock().unwrap();
-            a.get_canvas_element().clone().into()
+            a.lock().unwrap().get_canvas_element().clone().into()
         };
-        domutil::send_custom_event(&canv,"bpane",&json);
+        domutil::send_custom_event(&canv.clone(),"bpane",&json.clone());
     });
     dii.push(bi);
 }
 
 pub fn create_interactors() -> Vec<Box<DebugInteractor>> {
     let mut dii = Vec::<Box<DebugInteractor>>::new();
-    event_button(&mut dii,"shimmy",json!({ "move_left_px": 120, "move_down_screen": 0.25, "zoom_by": 0.1 }));
-    event_button(&mut dii,"left",json!({ "move_left_px": 50 }));
-    event_button(&mut dii,"right",json!({ "move_right_px": 50 }));
-    event_button(&mut dii,"up",json!({ "move_up_px": 50 }));
-    event_button(&mut dii,"down",json!({ "move_down_px": 50 }));
-    event_button(&mut dii,"in",json!({ "zoom_by": 0.3 }));
-    event_button(&mut dii,"out",json!({ "zoom_by": -0.3 }));
-    event_button(&mut dii,"odd on",json!({ "on": "odd" }));
-    event_button(&mut dii,"odd off",json!({ "off": "odd" }));
-    event_button(&mut dii,"even on",json!({ "on": "even" }));
-    event_button(&mut dii,"even off",json!({ "off": "even" }));
-    event_button(&mut dii,"zero",json!({}));
+    event_button(&mut dii,"shimmy",None,json!({ "move_left_px": 120, "move_down_screen": 0.25, "zoom_by": 0.1 }));
+    event_button(&mut dii,"left",Some("h"),json!({ "move_left_px": 50 }));
+    event_button(&mut dii,"right",Some("l"),json!({ "move_right_px": 50 }));
+    event_button(&mut dii,"up",None,json!({ "move_up_px": 50 }));
+    event_button(&mut dii,"down",None,json!({ "move_down_px": 50 }));
+    event_button(&mut dii,"in",None,json!({ "zoom_by": 0.3 }));
+    event_button(&mut dii,"out",None,json!({ "zoom_by": -0.3 }));
+    event_button(&mut dii,"odd on",None,json!({ "on": "odd" }));
+    event_button(&mut dii,"odd off",None,json!({ "off": "odd" }));
+    event_button(&mut dii,"even on",None,json!({ "on": "even" }));
+    event_button(&mut dii,"even off",None,json!({ "off": "even" }));
+    event_button(&mut dii,"zero",None,json!({}));
     dii
 }
 
 pub trait DebugInteractor {
     fn name(&self) -> &str;
-    fn render(&mut self, ar: &AppRunner, el: &Element);
+    fn render(&mut self, ar: &Arc<Mutex<App>>, el: &Element);
+    fn key(&mut self, app: &Arc<Mutex<App>>, key: &str) {}
 }
 
-pub struct ButtonEventListener<F> where F: FnMut(&mut AppRunner) {
-    cb: F
+pub struct ButtonEventListener<F> where F: Fn(&Arc<Mutex<App>>) {
+    cb: Rc<F>
 }
     
-impl<F> ButtonEventListener<F>  where F: FnMut(&mut AppRunner) {
-    pub fn new(cb: F) -> ButtonEventListener<F> where F: FnMut(&mut AppRunner) {
-        ButtonEventListener { cb }
+impl<F> ButtonEventListener<F>  where F: Fn(&Arc<Mutex<App>>) {
+    pub fn new(cb: Rc<F>) -> ButtonEventListener<F> where F: Fn(&Arc<Mutex<App>>) {
+        ButtonEventListener { cb: cb }
     }
 }
 
-impl<F> EventListener<Option<AppRunner>> for ButtonEventListener<F> where F: FnMut(&mut AppRunner) {
-    fn receive(&mut self, _el: &Target,  _e: &EventData, ar: &Option<AppRunner>) {
+impl<F> EventListener<Option<Arc<Mutex<App>>>> for ButtonEventListener<F> where F: Fn(&Arc<Mutex<App>>) {
+    fn receive(&mut self, _el: &Target,  _e: &EventData, ar: &Option<Arc<Mutex<App>>>) {
         if let Some(ar) = ar {
-            (self.cb)(&mut ar.clone());
+            (self.cb)(ar);
         }
     }
 }
 
 pub struct ButtonDebugInteractor {
     name: String,
-    ec: EventControl<Option<AppRunner>>
+    ec: EventControl<Option<Arc<Mutex<App>>>>,
+    egg: EggDetector,
+    cb: Rc<Fn(&Arc<Mutex<App>>)>
 }
 
 impl ButtonDebugInteractor {
-    pub fn new<F>(name: &str, cb: F) -> Box<ButtonDebugInteractor> where F: FnMut(&mut AppRunner) + 'static {
+    pub fn new<F>(name: &str, egg: Option<&str>, cb: F) -> Box<ButtonDebugInteractor> where F: Fn(&Arc<Mutex<App>>) + 'static {
+        let cb = Rc::new(cb);
         let mut out = Box::new(ButtonDebugInteractor {
-            ec: EventControl::new(Box::new(ButtonEventListener::new(cb)),None),
-            name: name.to_string()
+            ec: EventControl::new(Box::new(ButtonEventListener::new(cb.clone())),None),
+            name: name.to_string(),
+            egg: EggDetector::new(egg),
+            cb
         });
         out.ec.add_event(EventType::MouseClickEvent);
         out
@@ -117,11 +123,19 @@ impl ButtonDebugInteractor {
 impl DebugInteractor for ButtonDebugInteractor {
     fn name(&self) -> &str { &self.name }
     
-    fn render(&mut self, ar: &AppRunner, el: &Element) {
+    fn render(&mut self, ar: &Arc<Mutex<App>>, el: &Element) {
         if let Some(button_div) = domutil::query_selector2(&el,".buttons") {
             let button_el = domutil::append_element(&button_div,"button");
             domutil::text_content(&button_el,&self.name);
             self.ec.add_element(&button_el,Some(ar.clone()));
+        }
+    }
+    
+    fn key(&mut self, app: &Arc<Mutex<App>>, key: &str) {
+        self.egg.new_char(key);
+        if self.egg.is_active() {
+            self.egg.reset();
+            (self.cb)(app);
         }
     }
 }
@@ -144,13 +158,19 @@ impl Bling for DebugBling {
         domutil::query_selector(el,".bpane-canv").clone()
     }
     
-    fn activate(&mut self, ar: &mut AppRunner, el: &Element) {
+    fn activate(&mut self, ar: &Arc<Mutex<App>>, el: &Element) {
         setup_testcard_selector(ar,el);
         setup_debug_console(el);
         for di in &mut self.dii {
             di.render(&ar.clone(),el);
         }
-    }    
+    }   
+    
+    fn key(&mut self, app: &Arc<Mutex<App>>, key: &str) {
+        for di in &mut self.dii {
+            di.key(app,key);
+        }
+    }
 }
 
 /* for debug! macro */

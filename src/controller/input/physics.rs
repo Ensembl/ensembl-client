@@ -63,7 +63,7 @@ impl MousePhysicsImpl {
     }
 
     fn make_events(&self, cg: &mut App, dx: &CDFraction) {
-        events_run(cg,vec! {
+        events_run(cg,&vec! {
             Event::Move(Move::Left(Distance(dx.0,Units::Pixels))),
             Event::Move(Move::Up(Distance(dx.1,Units::Pixels)))
         });

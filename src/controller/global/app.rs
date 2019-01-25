@@ -13,7 +13,6 @@ const CANVAS : &str = r##"<canvas id="glcanvas"></canvas>"##;
 
 pub struct App {
     g: GlobalWeak,
-    el: Element,
     browser_el: Element,
     canv_el: HtmlElement,
     pub printer: Arc<Mutex<Printer>>,
@@ -23,20 +22,20 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(g: &GlobalWeak, el: &Element, bling: &Box<Bling>) -> App {
-        let el = el.clone();
-        let browser_el : Element = bling.apply_bling(&el);
+    pub fn new(g: &GlobalWeak, browser_el: &Element) -> App {        
         domutil::inner_html(&browser_el,CANVAS);
         let canv_el : HtmlElement = domutil::query_selector(&browser_el,"canvas").try_into().unwrap();
+        console!("canv_el {:?}",canv_el);
         let mut out = App {
-            g: g.clone(), el: el.clone(),
-            browser_el, canv_el: canv_el.clone(),
+            g: g.clone(),
+            browser_el: browser_el.clone(),
+            canv_el: canv_el.clone(),
             printer: Arc::new(Mutex::new(Printer::new(&canv_el))),
             stage:  Arc::new(Mutex::new(Stage::new())),
             compo: Arc::new(Mutex::new(Compositor::new())),
             state: Arc::new(Mutex::new(StateManager::new())),
         };
-        out.run_events(startup_events());
+        out.run_events(&startup_events());
         out
     }
     
@@ -44,8 +43,6 @@ impl App {
             where F: FnOnce(&mut Global) -> G {
         self.g.upgrade().as_mut().map(cb)
     }
-    
-    pub fn get_element(&self) -> &Element { &self.el }
     
     pub fn get_canvas_element(&self) -> &HtmlElement { &self.canv_el }
     
@@ -75,13 +72,13 @@ impl App {
         cb(a)
     }
     
-    pub fn run_events(self: &mut App, evs: Vec<Event>) {
+    pub fn run_events(self: &mut App, evs: &Vec<Event>) {
         events_run(self,evs);
     }
         
     pub fn check_size(self: &mut App) {
         let sz = self.printer.lock().unwrap().get_real_size();
-        events_run(self,vec! {
+        events_run(self,&vec! {
             Event::Resize(sz)
         });
     }

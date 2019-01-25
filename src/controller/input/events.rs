@@ -74,8 +74,9 @@ fn exe_set_state(a: &mut App, name: &str, on: StateValue) {
     });
 }
 
-pub fn events_run(cg: &mut App, evs: Vec<Event>) {
+pub fn events_run(cg: &mut App, evs: &Vec<Event>) {
     for ev in evs {
+        let ev = ev.clone();
         match ev {
             Event::Pos(v,prop) => exe_pos_event(cg,v,prop),
             Event::Move(v) => exe_move_event(cg,v),

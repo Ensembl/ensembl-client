@@ -37,7 +37,7 @@ pub fn debug_stick_manager() -> DebugStickManager {
 }
 
 pub fn testcard_base(a: &mut App, stick_name: &str) {
-    events_run(a,vec! {
+    events_run(a,&vec! {
         Event::AddComponent("internal:debug-main".to_string()),
         Event::AddComponent("internal:debug-even".to_string()),
         Event::AddComponent("internal:debug-odd".to_string()),

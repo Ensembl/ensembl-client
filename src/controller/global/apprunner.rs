@@ -17,6 +17,7 @@ use debug::{ DebugBling, create_interactors };
 struct AppRunnerImpl {
     g: GlobalWeak,
     el: Element,
+    bling: Box<Bling>,
     app: Arc<Mutex<App>>,
     projector: Option<Projector>,
     controls: Vec<Box<EventControl<()>>>,
@@ -31,17 +32,24 @@ pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
 impl AppRunner {
     pub fn new(g: &GlobalWeak, el: &Element, mut bling: Box<Bling>) -> AppRunner {
-        let st = App::new(g,el,&bling);
+        let browser_el : Element = bling.apply_bling(&el);
+        let st = App::new(g,&browser_el);
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
             g: g.clone(),
             el: el.clone(),
+            bling,
             app: Arc::new(Mutex::new(st)),
             projector: None,
             controls: Vec::<Box<EventControl<()>>>::new(),
             timers: Timers::new()
         })));
         out.init();
-        bling.activate(&mut out,&el);
+        {
+            let mut imp = out.0.lock().unwrap();
+            let app = imp.app.clone();
+            let el = imp.el.clone();
+            imp.bling.activate(&app,&el);
+        }
         out
     }
 
@@ -49,14 +57,20 @@ impl AppRunner {
         self.unregister();
         {
             let mut imp = self.0.lock().unwrap();
-            imp.app = Arc::new(Mutex::new(App::new(&imp.g,&imp.el,&bling)));
+            imp.bling = bling;
+            let browser_el : Element = imp.bling.apply_bling(&imp.el);
+            imp.app = Arc::new(Mutex::new(App::new(&imp.g,&browser_el)));
             imp.projector = None;
             imp.controls = Vec::<Box<EventControl<()>>>::new();
             imp.timers = Timers::new();
         }
         self.init();
-        let el = self.0.lock().unwrap().el.clone();
-        bling.activate(self,&el);
+        {
+            let mut imp = self.0.lock().unwrap();
+            let el = imp.el.clone();
+            let app = imp.app.clone();
+            imp.bling.activate(&app,&el);
+        }
     }
 
     pub fn add_timer<F>(&mut self, cb: F) -> Timer 
@@ -131,6 +145,12 @@ impl AppRunner {
     
     pub fn activate_debug(&mut self) {
         self.reset(Box::new(DebugBling::new(create_interactors())));
+    }
+    
+    pub fn bling_key(&mut self, key: &str) {
+        let mut imp = self.0.lock().unwrap();   
+        let app = imp.app.clone();     
+        imp.bling.key(&app,key);
     }
 }
 

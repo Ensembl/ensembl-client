@@ -4,6 +4,6 @@ mod debugstage;
 mod appeventdata;
 mod bling;
 
-pub use self::debugstage::{ DEBUGSTAGE, DEBUGSTAGE_CSS, PLAINSTAGE };
+pub use self::debugstage::{ DEBUGSTAGE, DEBUGSTAGE_CSS, PLAINSTAGE, PLAINSTAGE_CSS };
 pub use self::appeventdata::AppEventData;
 pub use self::bling::{ Bling, NoBling };

@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::sync::{ Arc, Mutex };
 use dom::domutil;
 use dom::event::{ EventListener, EventType, EventData, EventControl, Target };
@@ -39,7 +40,7 @@ impl EventListener<()> for UserEventListener {
                      s.get_mouse_pos_prop())
                 );
                 let pos = Dot(pos_bp,pos.1);
-                events_run(cs,vec! {
+                events_run(cs,&vec! {
                     Event::Zoom(-e.wheel_delta() as f32/1000.),
                     Event::Pos(pos,Some(pos_prop))
                 });
@@ -64,18 +65,51 @@ impl EventListener<()> for UserEventListener {
     }
 }
 
+struct EventEggs {
+    patterns: Vec<(EggDetector,Vec<Event>)>
+}
+
+impl EventEggs {
+    pub fn new(actions: HashMap<&str,Vec<Event>>) -> EventEggs {
+        EventEggs {
+            patterns: actions.iter().map(|(k,v)| {
+                (EggDetector::new(Some(k)),v.clone())
+            }).collect()
+        }
+    }
+    
+    pub fn key(&mut self, app: &Arc<Mutex<App>>, key: &str) {
+        for (pattern,actions) in &mut self.patterns {
+            pattern.new_char(key);
+            if pattern.is_active() {
+                pattern.reset();
+                events_run(&mut app.lock().unwrap(),actions);
+            }
+        }
+    }
+}
+
 pub struct UserEventListenerBody {
     app_runner: AppRunner,
     mouse: Arc<Mutex<MousePhysics>>,
+    event_eggs: EventEggs,
     egg: EggDetector
 }
 
 impl UserEventListenerBody {
     pub fn new(app_runner: &AppRunner, mouse: &Arc<Mutex<MousePhysics>>) -> UserEventListenerBody {
+        let event_eggs = hashmap! {
+            "@polar#" => [
+                Event::AddComponent("internal:debug-main".to_string()),
+                Event::SetStick("polar".to_string()),
+                Event::ZoomTo(-5.)
+            ].to_vec()
+        };
         UserEventListenerBody {
             mouse: mouse.clone(),
             app_runner: app_runner.clone(),
-            egg: EggDetector::new("@gander#")
+            event_eggs: EventEggs::new(event_eggs),
+            egg: EggDetector::new(Some("@gander#"))
         }
     }
 }
@@ -93,6 +127,8 @@ impl EventListener<()> for UserEventListenerBody {
                         self.app_runner.activate_debug();
                     }
                 }
+                self.app_runner.bling_key(&e.key_char());
+                self.event_eggs.key(&self.app_runner.state(),&e.key_char());
             },
             _ => ()
         }

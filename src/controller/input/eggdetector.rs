@@ -1,13 +1,13 @@
 pub struct EggDetector {
-    egg_str: String,
+    egg_str: Option<String>,
     offset: usize,
     active: bool
 }
 
 impl EggDetector {
-    pub fn new(egg_str: &str) -> EggDetector {
+    pub fn new(egg_str: Option<&str>) -> EggDetector {
         EggDetector {
-            egg_str: egg_str.to_string(),
+            egg_str: egg_str.map(|x| x.to_string()),
             offset: 0,
             active: false
         }
@@ -15,17 +15,19 @@ impl EggDetector {
     
     pub fn new_char(&mut self, c: &str) {
         if self.active { return; }
-        if self.egg_str[self.offset..].starts_with(c) {
-            debug!("eggs","egg good char '{}'",c);
-            self.offset += c.len();
-            if self.offset >= self.egg_str.len() {
+        if let Some(ref egg_str) = self.egg_str {
+            if egg_str[self.offset..].starts_with(c) {
+                debug!("eggs","egg good char '{}'",c);
+                self.offset += c.len();
+                if self.offset >= egg_str.len() {
+                    self.offset = 0;
+                    self.active = true;
+                    debug!("eggs","egg '{}' activated",egg_str);
+                }
+            } else {
+                debug!("eggs","egg bad char '{}'",c);
                 self.offset = 0;
-                self.active = true;
-                debug!("eggs","egg '{}' activated",self.egg_str);
             }
-        } else {
-            debug!("eggs","egg bad char '{}'",c);
-            self.offset = 0;
         }
     }
     
