@@ -2,16 +2,21 @@ use std::sync::{ Arc, Mutex, Weak };
 
 use stdweb::web::{ Element, HtmlElement };
 
-use controller::input::{ Timers, Timer };
+use composit::register_compositor_ticks;
 use controller::global::{ App, GlobalWeak };
-use dom::Bling;
-use controller::output::Projector;
-use dom::event::EventControl;
 use controller::input::{
     register_direct_events, register_user_events, register_dom_events,
+    Timers, Timer
 };
+use controller::output::Projector;
+use dom::Bling;
+use dom::event::EventControl;
+
+use debug::{ DebugBling, create_interactors };
 
 struct AppRunnerImpl {
+    g: GlobalWeak,
+    el: Element,
     app: Arc<Mutex<App>>,
     projector: Option<Projector>,
     controls: Vec<Box<EventControl<()>>>,
@@ -28,23 +33,32 @@ impl AppRunner {
     pub fn new(g: &GlobalWeak, el: &Element, mut bling: Box<Bling>) -> AppRunner {
         let st = App::new(g,el,&bling);
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
+            g: g.clone(),
+            el: el.clone(),
             app: Arc::new(Mutex::new(st)),
             projector: None,
             controls: Vec::<Box<EventControl<()>>>::new(),
             timers: Timers::new()
         })));
-        out.add_timer(|cs,t| {
-            let max_y = cs.with_compo(|co| {
-                co.tick(t);
-                co.get_max_y()
-            });
-            cs.with_stage(|s| s.set_max_y(max_y));
-        });
         out.init();
         bling.activate(&mut out,&el);
         out
     }
-        
+
+    pub fn reset(&mut self, mut bling: Box<Bling>) {
+        self.unregister();
+        {
+            let mut imp = self.0.lock().unwrap();
+            imp.app = Arc::new(Mutex::new(App::new(&imp.g,&imp.el,&bling)));
+            imp.projector = None;
+            imp.controls = Vec::<Box<EventControl<()>>>::new();
+            imp.timers = Timers::new();
+        }
+        self.init();
+        let el = self.0.lock().unwrap().el.clone();
+        bling.activate(self,&el);
+    }
+
     pub fn add_timer<F>(&mut self, cb: F) -> Timer 
                             where F: FnMut(&mut App, f64) + 'static {
         self.0.lock().unwrap().timers.add(cb)
@@ -64,8 +78,10 @@ impl AppRunner {
     }
     
     pub fn init(&mut self) {
+        /* register main heartbeat of compositor */
+        register_compositor_ticks(self);
+        
         /* register canvas-bound events */
-        // XXX too many: customs should mainly be on body
         let el = self.get_element();
         register_user_events(self,&el);
         register_direct_events(self,&el);
@@ -105,9 +121,16 @@ impl AppRunner {
             }
             cc.clear();
         }
+        if let Some(ref mut proj) = self.0.lock().unwrap().projector {
+            proj.stop();
+        }
         self.0.lock().unwrap().projector = None;
         let r = self.state();
         r.lock().unwrap().finish();        
+    }
+    
+    pub fn activate_debug(&mut self) {
+        self.reset(Box::new(DebugBling::new(create_interactors())));
     }
 }
 

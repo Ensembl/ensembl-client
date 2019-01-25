@@ -17,7 +17,7 @@ mod compsourcelist;
 pub use self::leafcomponent::LeafComponent;
 pub use self::lcbuilder::LCBuilder;
 pub use self::source::Source;
-pub use self::compositor::Compositor;
+pub use self::compositor::{ Compositor, register_compositor_ticks };
 pub use self::compmanager::{ ComponentManager };
 pub use self::scalecompositor::ScaleCompositor;
 pub use self::component::Component;

@@ -1,6 +1,7 @@
 use composit::{
     Component, Leaf, ScaleCompositor, ComponentManager, Stick, Transit
 };
+use controller::global::AppRunner;
 
 const MS_PER_UPDATE : f64 = 250.;
 
@@ -88,4 +89,14 @@ impl Compositor {
     }
     
     pub fn all_leafs(&self) -> Vec<Leaf> { self.transit.all_leafs() }
+}
+
+pub fn register_compositor_ticks(ar: &mut AppRunner) {
+    ar.add_timer(|cs,t| {
+        let max_y = cs.with_compo(|co| {
+            co.tick(t);
+            co.get_max_y()
+        });
+        cs.with_stage(|s| s.set_max_y(max_y));
+    });
 }

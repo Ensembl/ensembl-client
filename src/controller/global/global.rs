@@ -13,7 +13,7 @@ use composit::{
 };
 use controller::input::register_startup_events;
 use controller::global::AppRunner;
-use debug::{ setup_testcards, DebugComponentSource, DebugBling, create_interactors };
+use debug::{ DebugComponentSource, DebugBling, create_interactors };
 use debug::debug_stick_manager;
 use dom::{ domutil, NoBling, Bling };
 
@@ -131,7 +131,6 @@ fn find_main_element() -> Option<HtmlElement> {
 pub fn setup_global() {
     let g = Arc::new(Mutex::new(Global::new()));
     register_startup_events(&g);
-    setup_testcards();
     if let Some(h) = find_main_element() {
         h.focus();
         domutil::add_attr(&h.clone().into(),"class","browser-app-ready");
