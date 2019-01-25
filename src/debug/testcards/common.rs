@@ -2,22 +2,13 @@ use std::collections::hash_map::DefaultHasher;
 use std::hash::Hasher;
 
 use rand::Rng;
-use rand::distributions::Distribution;
 use rand::prelude::SliceRandom;
 use rand::rngs::SmallRng;
 use rand::SeedableRng;
 
-use controller::global::{ Global, AppRunner };
+use composit::vscale_bp_per_leaf;
+use composit::Leaf;
 use types::{ CLeaf, cleaf, Colour };
-
-fn bytes_of_u32(v: u32) -> [u8;4] {
-    [
-        ((v>>24)&0xff) as u8,
-        ((v>>16)&0xff) as u8,
-        ((v>> 8)&0xff) as u8,
-        ((v    )&0xff) as u8
-    ]
-}
 
 fn bytes_of_u64(v: u64) -> [u8;8] {
     [
@@ -30,6 +21,12 @@ fn bytes_of_u64(v: u64) -> [u8;8] {
         ((v>> 8)&0xff) as u8,
         ((v    )&0xff) as u8
     ]
+}
+
+pub fn prop(leaf: &Leaf, pos: i32) -> f32 {
+    let mul = vscale_bp_per_leaf(leaf.get_vscale());
+    let start_leaf = (leaf.get_index() as f64 * mul) as f64;
+    ((pos as f64-start_leaf)/mul) as f32
 }
 
 const RNG_BLOCK_SIZE : i32 = 1000000;
@@ -103,7 +100,7 @@ pub fn rng_choose(kind: [u8;8], start: &[i32;2], vals: &[&[&str]]) -> String {
 pub fn rng_subdivide(kind: [u8;8], extent: &[i32;2], parts: u32) -> Vec<[i32;2]> {
     let mut rng = start_rng(kind,extent);
     let mut breaks = Vec::<i32>::new();
-    for i in 0..parts {
+    for _ in 0..parts {
         breaks.push(rng.gen_range(extent[0],extent[1]));
     }
     breaks.push(extent[0]);
@@ -131,14 +128,6 @@ pub fn bio_mark(kind: [u8;8], start: &[i32;2]) -> String {
                  "5'","3'","snp","ins","del",
                  "C","G","A","T" ];
     rng_choose(kind,start,&[&vals[..]])
-}
-
-pub fn bio_daft<R>(rng: &mut R) -> String where R: Rng {
-    let vals = [ "5'","3'","snp","ins","del",
-                 "5'","3'","snp","ins","del",
-                 "5'","3'","snp","ins","del",
-                 "C","G","A","T" ];
-    choose(rng,&[&vals[..]])
 }
 
 pub fn rng_tracks(kind: [u8;8], num: i32) -> Vec<String> {    
@@ -204,7 +193,7 @@ pub fn wiggly(num: i32, start: i32, end: i32, offset: i32, h: i32) -> Vec<CLeaf>
     let mut out = Vec::<CLeaf>::new();
     let mut x_pos = start as f32;
     let x_inc = (end-start) as f32/(num as f32-1.);
-    for i in 0..num {
+    for _ in 0..num {
         let v : i32 = (wiggle_func(&fun,x_pos)*h as f32) as i32;
         out.push(cleaf(x_pos,offset+v));
         x_pos += x_inc;
@@ -237,5 +226,7 @@ pub fn track_data(s: &str) -> Vec<f32> {
             out.push(-9.);
         }
     }
+    out.pop();
+    out.pop();
     out
 }

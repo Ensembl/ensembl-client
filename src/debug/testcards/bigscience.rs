@@ -16,8 +16,8 @@ use composit::{
 
 use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
 use debug::testcards::common::{
-    bio_daft, wiggly, rng_prob, rng_pos, rng_colour, start_rng,
-    rng_subdivide, bio_mark, rng_tracks
+     wiggly, rng_prob, rng_pos, rng_colour, start_rng,
+    rng_subdivide, bio_mark, rng_tracks, prop
 };
 
 use shape::{
@@ -231,12 +231,6 @@ fn tinsel() -> Vec<u8> {
 
 pub fn bs_source_sub(even: bool) -> ClosureSource {
     if even { source_even() } else { source_odd() }
-}
-
-fn prop(leaf: &Leaf, pos: i32) -> f32 {
-    let mul = vscale_bp_per_leaf(leaf.get_vscale());
-    let start_leaf = (leaf.get_index() as f64 * mul) as f64;
-    ((pos as f64-start_leaf)/mul) as f32
 }
 
 const TINSEL_LENGTH : i32 = 100000;
