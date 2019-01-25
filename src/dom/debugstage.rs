@@ -87,5 +87,40 @@ html, body {
 #bpane-container .console {
     height: 50%;
 }
-@import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url('https://fonts.googleapis.com/css?family=Lato');
+"##;
+
+pub const PLAINSTAGE_CSS : &str = r##"
+html, body {
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+#bpane-container {
+    display: flex;
+    height: 100%;
+}
+
+#bpane-container .managedcanvasholder {
+    display: none;
+}
+
+#bpane-container .bpane-canv canvas {
+    height: 100%;
+    width: 100%;
+}
+
+#bpane-container .bpane-canv {
+    width: 100%;
+    height: 100%;
+}
+
+#bpane-container .bpane-canv canvas {
+    width: 100%;
+    height: 100%;
+}
+
+@import url('https://fonts.googleapis.com/css?family=Lato');
 "##;

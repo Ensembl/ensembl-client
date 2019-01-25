@@ -32,7 +32,7 @@ fn animate(time : f64, cg: &mut App, s: Rc<RefCell<State>>) {
             ((state.vpos.sin())*150.-50.) as f64));
     });
     */
-    cg.run_events(vec!{ Event::ZoomTo((state.zoomscale.cos()/2.0+4.0) as f32) });
+    cg.run_events(&vec!{ Event::ZoomTo((state.zoomscale.cos()/2.0+4.0) as f32) });
     cg.with_state(|s| {
         let odd_state = if state.hpos.cos() > 0. {
             StateValue::OffWarm()
