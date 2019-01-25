@@ -143,7 +143,7 @@ impl RulerGenerator {
         let big_mark = make_set(self.range_1(tick_tg));
         let mid_mark = make_set(self.range_12(tick_tg));
         let small_mark = make_set(self.range_125(tick_tg));
-        for (idx,offset,value) in self.range_1(mark_tg) {
+        for (idx,offset,value) in self.range_12(mark_tg) {
             let h = if big_mark.contains(&idx) {
                 3
             } else if mid_mark.contains(&idx) {
