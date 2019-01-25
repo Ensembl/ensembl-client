@@ -14,5 +14,5 @@ pub use self::timers::{ Timer, Timers };
 pub use self::domevents::register_dom_events;
 pub use self::direct::register_direct_events;
 pub use self::user::register_user_events;
-pub use self::startup::register_startup_events;
+pub use self::startup::{ register_startup_events, initial_events };
 pub use self::eggdetector::EggDetector;

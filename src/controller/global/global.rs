@@ -11,7 +11,7 @@ use stdweb::web::{ HtmlElement, Element, IHtmlElement };
 use composit::{
     ComponentSourceList, StickManager, Component, ComponentSource, Stick
 };
-use controller::input::register_startup_events;
+use controller::input::{ register_startup_events, initial_events, events_run };
 use controller::global::AppRunner;
 use debug::{ DebugComponentSource, DebugBling, create_interactors };
 use debug::debug_stick_manager;
@@ -57,11 +57,21 @@ impl GlobalImpl {
     pub fn with_apprunner<F,G>(&mut self, key: &str, cb:F) -> Option<G>
             where F: FnOnce(&mut AppRunner) -> G {
         if let Entry::Occupied(mut e) = self.apps.entry(key.to_string()) {
-            Some(cb(&mut e.get_mut()))
+            let mut ar = e.get_mut().clone();
+            Some(cb(&mut ar))
         } else {
             None
         }
-    }
+    }    
+
+    pub fn get_apprunner(&mut self, key: &str) -> Option<AppRunner> {
+        if let Entry::Occupied(mut e) = self.apps.entry(key.to_string()) {
+            let mut ar = e.get_mut().clone();
+            Some(ar)
+        } else {
+            None
+        }
+    }    
 }
 
 #[derive(Clone)]
@@ -87,7 +97,14 @@ impl Global {
             Box::new(NoBling::new())
         };
         let ar = AppRunner::new(&GlobalWeak::new(&self),&el,bling);
-        self.0.borrow_mut().register_app(key,ar);
+        {
+            self.0.borrow_mut().register_app(key,ar);
+        }
+        let ar = self.0.borrow_mut().get_apprunner(key);
+        if let Some(ar) = ar {
+            let app = ar.clone().state();
+            events_run(&mut app.lock().unwrap(),&initial_events());
+        }
     }
     
     pub fn get_component(&mut self, name: &str) -> Option<Component> {
