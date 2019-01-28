@@ -1,11 +1,16 @@
-#! /bin/sh
+#! /bin/bash
 
 set -ev
 
-SRC=$HOME/ruemoglasm/demo1
-DEST=$HOME/ensembl-new
+pushd $(dirname "${0}") > /dev/null
+BASE=$(pwd -L)
+popd > /dev/null
 
+SRC="$BASE"
+DEST="$BASE/../../ensembl/assets/browser"
+
+cargo +nightly web build --target=wasm32-unknown-unknown --release
 cargo +nightly web deploy --target=wasm32-unknown-unknown --release
-cp $SRC/target/deploy/hellostdweb.wasm $DEST/public/hellostdweb.wasm
-cp $SRC/target/deploy/hellostdweb.js $DEST/src/scripts/browser/hellostdweb.js
-sed -i -e 's/"hellostdweb.wasm"/"\/public\/hellostdweb.wasm"/g' $DEST/src/scripts/browser/hellostdweb.js
+cp $SRC/target/deploy/hellostdweb.wasm $DEST/browser.wasm
+cp $SRC/target/deploy/hellostdweb.js $DEST/browser.js
+sed -i -e 's~"hellostdweb.wasm"~"/assets/browser/browser.wasm"~g' $DEST/browser.js
