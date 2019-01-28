@@ -27,7 +27,7 @@ pub const DEBUGSTAGE : &str = r##"
 "##;
 
 pub const PLAINSTAGE : &str = r##"
-<div id="bpane-container">
+<div class="bpane-container">
     <div class="bpane-canv">
         <h1>Debug Mode</h1>
     </div>
@@ -43,21 +43,22 @@ html, body {
     width: 100%;
     overflow: hidden;
 }
-#bpane-container {
+.bpane-container {
     display: flex;
     height: 100%;
+    width: 100%;
 }
-#bpane-container .bpane-right {
+.bpane-container .bpane-right {
     width: 20%;
 }
 
-#bpane-container .console .content {
+.bpane-container .console .content {
     height: 85%;
     overflow: scroll;
     border: 1px solid #ccc;
 }
 
-#bpane-container .managedcanvasholder {
+.bpane-container .managedcanvasholder {
     display: block;
     border: 2px solid red;
     display: inline-block;
@@ -65,17 +66,17 @@ html, body {
     width: 100%;
 }
 
-#bpane-container .bpane-canv canvas {
+.bpane-container, .bpane-container .bpane-canv canvas {
     height: 100%;
     width: 100%;
 }
 
-#bpane-container .bpane-canv {
+.bpane-container .bpane-canv {
     width: 80%;
     height: 100%;
 }
 
-#bpane-container .bpane-canv canvas {
+.bpane-container .bpane-canv canvas {
     width: 100%;
     height: 100%;
 }
@@ -84,7 +85,7 @@ html, body {
     height: 100%;
 }
 
-#bpane-container .console {
+.bpane-container .console {
     height: 50%;
 }
 @import url('https://fonts.googleapis.com/css?family=Lato');
@@ -98,26 +99,28 @@ html, body {
     width: 100%;
     overflow: hidden;
 }
-#bpane-container {
+.bpane-container {
     display: flex;
     height: 100%;
+    width: 100%;
+    margin-bottom: -7px;
 }
 
-#bpane-container .managedcanvasholder {
+.bpane-container .managedcanvasholder {
     display: none;
 }
 
-#bpane-container .bpane-canv canvas {
+.bpane-container, .bpane-container .bpane-canv canvas {
     height: 100%;
     width: 100%;
 }
 
-#bpane-container .bpane-canv {
+.bpane-container .bpane-canv {
     width: 100%;
     height: 100%;
 }
 
-#bpane-container .bpane-canv canvas {
+.bpane-container .bpane-canv canvas {
     width: 100%;
     height: 100%;
 }

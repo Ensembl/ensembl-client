@@ -175,7 +175,7 @@ impl Bling for DebugBling {
 
 /* for debug! macro */
 pub fn debug_panel_entry_add(name: &str, value: &str) {
-    if let Some(cel) = domutil::query_selector_new("#bpane-container .console2") {
+    if let Some(cel) = domutil::query_selector_new(".bpane-container .console2") {
         domutil::send_custom_event(&cel,"add",&json!({
             "name": name,
             "value": value
