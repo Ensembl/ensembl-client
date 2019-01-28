@@ -133,7 +133,7 @@ impl GlobalWeak {
 }
 
 fn find_main_element() -> Option<HtmlElement> {
-    for name in vec!{ "main", "body" } {
+    for name in vec!{ "body" } {
         let el : Option<Element> = domutil::query_selector_new(name);
         if let Some(el) = el {
             let el : Option<HtmlElement> = el.try_into().ok();
