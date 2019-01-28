@@ -40,6 +40,9 @@
 }
 
 .browser-image-wrapper {
+  display: flex;
+  flex-direction: column;
+
   &.semi-expanded {
     width: 75%;
   }
@@ -108,6 +111,11 @@
       width: 25px;
     }
   }
+}
+
+.browser-stage {
+  width: 100%;
+  height: 100%;
 }
 
 .browser-nav-bar {
