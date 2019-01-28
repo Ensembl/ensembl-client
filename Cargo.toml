@@ -1,0 +1,22 @@
+[package]
+name = "hellostdweb"
+version = "0.1.0"
+authors = ["Dan Sheppard <dan@ebi.ac.uk>"]
+
+[dependencies]
+stdweb = "*"
+stdweb-derive = "*"
+serde = "*"
+serde_derive = "*"
+serde_json = "*"
+lazy_static = "*"
+rand="*"
+separator = "*"
+itertools = "*"
+
+[build-dependencies]
+webgl_generator = "*"
+cargo-web="0.6.22"
+
+#[profile.release]
+#lto = true

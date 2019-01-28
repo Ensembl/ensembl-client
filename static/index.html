@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>stdweb • WebGL</title>
+        <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+	</head>
+	<body>
+        <div style="display: none; font: 'Lato';">preload</div>
+        <main class="browser-app-not-ready" id="main" style="height: 100%">
+            <div id="stage"></div>
+        </main>
+		<script src="hellostdweb.js"></script>
+        <script>
+            function startup_mutate(mutations,observer) {
+                var ready = false;
+                for(var mutation of mutations) {
+                    for(var klass of mutation.target.classList) {
+                        if(klass == 'browser-app-ready') {
+                            ready = true;
+                        }
+                    }
+                }
+                if(ready) {
+                    console.log("browser app ready");
+                    mutation.target.dispatchEvent(
+                        new CustomEvent("bpane-activate",{
+                            detail: {
+                                key: 'main'
+                            },
+                            bubbles: true
+                        })
+                    );
+                    mutation.target.dispatchEvent(
+                        new CustomEvent("bpane-debugger",{
+                            detail: {
+                                key: 'main'
+                            },
+                            bubbles: true
+                        })
+                    );
+                }
+            }
+            
+            var observer = new MutationObserver(startup_mutate);
+            observer.observe(document.getElementById("main"),{ attributes: true });
+        </script>
+	</body>
+</html>
