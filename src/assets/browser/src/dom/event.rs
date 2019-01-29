@@ -63,7 +63,8 @@ pub enum EventType {
     MouseMoveEvent,
     KeyPressEvent,
     ResizeEvent,
-    CustomEvent(String)
+    CustomEvent(String),
+    ContextMenuEvent
 }
 
 fn window_event(et: &EventType) -> bool {
@@ -88,6 +89,14 @@ impl EventContext {
     pub fn target(&self) -> Element {
         let el = js!{ return @{&self.e}.target; }.try_into().unwrap();
         el
+    }
+    
+    pub fn stop_propagation(&self) {
+        js!{ @{&self.e}.stopPropagation(); };
+    }
+
+    pub fn prevent_default(&self) {
+        js!{ @{&self.e}.preventDefault(); };
     }
 }
 
@@ -116,7 +125,9 @@ impl EventData {
                 
             EventType::CustomEvent(n) =>
                 EventData::CustomEvent(et.clone(),ec,n.clone(),CustomData(e)),
-            EventType::ResizeEvent =>
+                
+            EventType::ResizeEvent |
+            EventType::ContextMenuEvent =>
                 EventData::GenericEvent(et.clone(),ec)
         }
     }
@@ -126,7 +137,7 @@ impl EventData {
             EventData::MouseEvent(_,ec,_) => ec,
             EventData::KeyboardEvent(_,ec,_) => ec,
             EventData::CustomEvent(_,ec,_,_) => ec,
-            EventData::GenericEvent(_,ec) => ec
+            EventData::GenericEvent(_,ec) => ec,
         }
     }
 }
@@ -141,6 +152,7 @@ impl EventType {
             EventType::KeyPressEvent => "keypress",
             EventType::MouseWheelEvent => "wheel",
             EventType::ResizeEvent => "resize",
+            EventType::ContextMenuEvent => "contextmenu",
             EventType::CustomEvent(n) => &n
         }
     }
@@ -171,6 +183,11 @@ impl MouseData {
             1 => delta * 40.,
             _ => delta * 800.
         }
+    }
+    
+    pub fn button(&self) -> i8 {
+        let out: i8 = js! { return @{self.as_ref()}.button; }.try_into().unwrap();
+        out
     }
 }
 
@@ -302,12 +319,4 @@ impl<T: 'static> ElementEvents<T> {
 
 pub trait EventListener<T> {
     fn receive(&mut self, _el: &Target, _ev: &EventData, _p: &T) {}
-}
-
-pub fn disable_context_menu() {
-    js! { document.addEventListener("contextmenu",function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            return false;
-        },false); };
 }
