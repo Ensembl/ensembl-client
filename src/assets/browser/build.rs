@@ -37,4 +37,8 @@ fn main() {
     let out = cmd_re.replace_all(&tmpl,command_output);
     write(&Path::new(&dest).join("thisbuild.rs"),out.as_bytes()).ok();
     to_console(&out);
+    
+    /* rerun stuff */
+    println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo:rerun-if-changed=Cargo.lock");
 }
