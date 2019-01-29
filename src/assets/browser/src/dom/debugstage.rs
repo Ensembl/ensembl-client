@@ -1,5 +1,5 @@
 pub const DEBUGSTAGE : &str = r##"
-<div id="bpane-container">
+<div class="bpane-container">
     <div class="bpane-canv">
         <h1>Debug Mode</h1>
     </div>
