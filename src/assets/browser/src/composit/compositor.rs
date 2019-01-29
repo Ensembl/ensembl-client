@@ -98,5 +98,5 @@ pub fn register_compositor_ticks(ar: &mut AppRunner) {
             co.get_max_y()
         });
         cs.with_stage(|s| s.set_max_y(max_y));
-    });
+    },None);
 }
