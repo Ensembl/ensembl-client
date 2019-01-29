@@ -60,6 +60,10 @@ impl EventListener<()> for UserEventListener {
             EventData::MouseEvent(EventType::MouseClickEvent,_,e) => {
                 e.stop_propagation();
             },
+            EventData::GenericEvent(EventType::ContextMenuEvent,e) => {
+                e.stop_propagation();
+                e.prevent_default();
+            }
             _ => ()
         };
     }
@@ -136,14 +140,14 @@ impl EventListener<()> for UserEventListenerBody {
 }
 
 pub fn register_user_events(gc: &mut AppRunner, el: &HtmlElement) {
-    event::disable_context_menu();
     let mp = Arc::new(Mutex::new(MousePhysics::new(gc)));
     let uel = UserEventListener::new(&gc.state(),el,&mp);
     let mut ec_canv = EventControl::new(Box::new(uel),());
     ec_canv.add_event(EventType::MouseClickEvent);
     ec_canv.add_event(EventType::MouseDownEvent);
     ec_canv.add_event(EventType::MouseMoveEvent);
-    ec_canv.add_event(EventType::MouseWheelEvent);        
+    ec_canv.add_event(EventType::MouseWheelEvent);
+    ec_canv.add_event(EventType::ContextMenuEvent);
     let elel: Element = el.clone().into();
     ec_canv.add_element(&elel,());
     let uel_body = UserEventListenerBody::new(gc,&mp);

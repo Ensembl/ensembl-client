@@ -150,18 +150,26 @@ impl EventType {
 #[reference(instance_of = "MouseData")]
 pub struct MouseData(Reference);
 
+fn float_or_int(in_: &Value) -> f32 {
+    let out_int: Result<i64,_> = in_.clone().try_into();
+    if let Ok(out) = out_int { return out as f32; }
+    let out_int: Result<f64,_> = in_.clone().try_into();
+    if let Ok(out) = out_int { return out as f32; }
+    return 0.;
+}
+
 impl MouseData {
     pub fn at(&self) -> CPixel {
         cpixel(self.client_x(),self.client_y())
     }
     
-    pub fn wheel_delta(&self) -> i32 {
-        let delta : i32 = js! { return @{self.as_ref()}.deltaY; }.try_into().unwrap();
+    pub fn wheel_delta(&self) -> f32 {
+        let delta : f32 = float_or_int(&js! { return @{self.as_ref()}.deltaY; });
         let mode : i32 = js! { return @{self.as_ref()}.deltaMode; }.try_into().unwrap();
         match mode {
             0 => delta,
-            1 => delta * 40,
-            _ => delta * 800
+            1 => delta * 40.,
+            _ => delta * 800.
         }
     }
 }
