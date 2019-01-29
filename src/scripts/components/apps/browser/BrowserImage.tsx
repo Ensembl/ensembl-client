@@ -11,9 +11,7 @@ class BrowserImage extends PureComponent<BrowserImageProps> {
     this.browserCanvas = React.createRef();
   }
 
-  activate_if_possible(currentEl) {
-    console.log('aip');
-
+  activate_if_possible(currentEl: HTMLElement | null) {
     const activateEvent = new CustomEvent('bpane-activate', {
       bubbles: true,
       detail: {
@@ -27,11 +25,8 @@ class BrowserImage extends PureComponent<BrowserImageProps> {
         '.browser-stage'
       ) as HTMLBodyElement;
 
-      let loaded = false;
-      let bodyEl = currentEl.ownerDocument.querySelector('body');
-      console.log('bod', bodyEl);
+      const bodyEl = currentEl.ownerDocument.querySelector('body');
       if (bodyEl && bodyEl.classList.contains('browser-app-ready')) {
-        console.log('sending');
         browserEl.dispatchEvent(activateEvent);
         done = true;
       }
