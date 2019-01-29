@@ -35,6 +35,7 @@ fn main() {
     let tmpl = String::from_utf8(read("thisbuild.rs.tmpl").unwrap()).unwrap();
     let cmd_re = Regex::new(r"@(.*?)@").unwrap();
     let out = cmd_re.replace_all(&tmpl,command_output);
+    to_console(&format!("{}",out));
     write(&Path::new(&dest).join("thisbuild.rs"),out.as_bytes()).ok();
     to_console(&out);
     
