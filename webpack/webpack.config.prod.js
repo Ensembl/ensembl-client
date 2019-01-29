@@ -39,7 +39,7 @@ const moduleRules = [
 ];
 
 // plugins specific to prod
-const plugins = [
+let plugins = [
   // plugin to extract css from the webpack javascript build files
   new MiniCssExtractPlugin({
     filename: '[name].[contenthash].css',
@@ -76,9 +76,6 @@ const plugins = [
   }),
 
   new RobotstxtPlugin(),
-
-  // analyse the file sizes of bundled files
-  new BundleAnalyzerPlugin()
 ];
 
 // prod specific configuration
@@ -110,4 +107,11 @@ const prodConfig = {
 const commonConfig = require('./webpack.common')(false, moduleRules, plugins);
 
 // concatenate the common config with the prod config
-module.exports = Object.assign({}, commonConfig, prodConfig);
+module.exports = env => {
+  if(!env || !env.RUN_FROM_SCRIPT) {
+    // Only these if NOT run from a script
+    // analyse the file sizes of bundled files
+    commonConfig.plugins.push(new BundleAnalyzerPlugin());
+  }
+  return Object.assign({}, commonConfig, prodConfig);
+}
