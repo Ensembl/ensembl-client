@@ -21,7 +21,7 @@ pub use self::compositor::{ Compositor, register_compositor_ticks };
 pub use self::compmanager::{ ComponentManager };
 pub use self::scalecompositor::ScaleCompositor;
 pub use self::component::Component;
-pub use self::stage::Stage;
+pub use self::stage::{ Stage };
 pub use self::stick::Stick;
 pub use self::stickmanager::StickManager;
 pub use self::transit::Transit;

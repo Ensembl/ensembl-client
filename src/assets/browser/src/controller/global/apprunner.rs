@@ -2,7 +2,7 @@ use std::sync::{ Arc, Mutex, Weak };
 
 use stdweb::web::{ Element, HtmlElement };
 
-use composit::register_compositor_ticks;
+use composit::{ register_compositor_ticks };
 use controller::global::{ App, GlobalWeak };
 use controller::input::{
     register_direct_events, register_user_events, register_dom_events,
@@ -13,6 +13,8 @@ use dom::Bling;
 use dom::event::EventControl;
 
 use debug::{ DebugBling, create_interactors };
+
+const SIZE_CHECK_INTERVAL_MS: f64 = 1000.;
 
 struct AppRunnerImpl {
     g: GlobalWeak,
@@ -73,9 +75,9 @@ impl AppRunner {
         }
     }
 
-    pub fn add_timer<F>(&mut self, cb: F) -> Timer 
+    pub fn add_timer<F>(&mut self, cb: F, min_interval: Option<f64>) -> Timer 
                             where F: FnMut(&mut App, f64) + 'static {
-        self.0.lock().unwrap().timers.add(cb)
+        self.0.lock().unwrap().timers.add(cb, min_interval)
     }
 
     pub fn run_timers(&mut self, time: f64) {
@@ -101,7 +103,6 @@ impl AppRunner {
         register_direct_events(self,&el);
         register_dom_events(self,&el);
 
-        
         /* start projector */
         {
             let w = AppRunnerWeak(Arc::downgrade(&self.0.clone()));
@@ -109,9 +110,15 @@ impl AppRunner {
             let mut imp = self.0.lock().unwrap();
             imp.projector = Some(proj);
         }
-        /* size canvas */
+        
+        /* size canvas, now and regularly */
         let r = self.state();
         r.lock().unwrap().check_size();
+        {
+            self.add_timer(|app,t| {
+                app.check_size();
+            },Some(SIZE_CHECK_INTERVAL_MS));
+        }
     }
     
     pub fn draw(&mut self) {

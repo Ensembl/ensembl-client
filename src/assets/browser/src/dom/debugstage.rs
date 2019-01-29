@@ -92,18 +92,7 @@ html, body {
 "##;
 
 pub const PLAINSTAGE_CSS : &str = r##"
-html, body {
-    margin: 0px;
-    padding: 0px;
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-}
 .bpane-container {
-    display: flex;
-    height: 100%;
-    width: 100%;
-    margin-bottom: -7px;
 }
 
 .bpane-container .managedcanvasholder {

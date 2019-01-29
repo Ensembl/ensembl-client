@@ -18,7 +18,8 @@ pub struct App {
     pub printer: Arc<Mutex<Printer>>,
     pub stage: Arc<Mutex<Stage>>,
     pub state: Arc<Mutex<StateManager>>,
-    pub compo: Arc<Mutex<Compositor>>
+    pub compo: Arc<Mutex<Compositor>>,
+    last_boxsize: Option<f64>
 }
 
 impl App {
@@ -34,6 +35,7 @@ impl App {
             stage:  Arc::new(Mutex::new(Stage::new())),
             compo: Arc::new(Mutex::new(Compositor::new())),
             state: Arc::new(Mutex::new(StateManager::new())),
+            last_boxsize: None
         };
         out.run_events(&startup_events());
         out
@@ -43,6 +45,8 @@ impl App {
             where F: FnOnce(&mut Global) -> G {
         self.g.upgrade().as_mut().map(cb)
     }
+    
+    pub fn get_browser_element(&self) -> &Element { &self.browser_el }
     
     pub fn get_canvas_element(&self) -> &HtmlElement { &self.canv_el }
     
@@ -77,7 +81,9 @@ impl App {
     }
         
     pub fn check_size(self: &mut App) {
-        let sz = self.printer.lock().unwrap().get_real_size();
+        let sz = self.printer.lock().unwrap().get_available_size();
+        
+        console!("check size {:?}",sz);
         events_run(self,&vec! {
             Event::Resize(sz)
         });

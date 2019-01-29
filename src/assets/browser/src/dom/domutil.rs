@@ -16,7 +16,7 @@ use stdweb::web::{
 use itertools::Itertools;
 
 
-use types::{ CPixel, cpixel };
+use types::{ CPixel, cpixel, RPixel, area };
 
 pub fn query_selector_new(sel: &str) -> Option<Element> {
     if let Some(Some(el)) = document().query_selector(sel).ok() {
@@ -40,7 +40,28 @@ pub fn query_select(sel: &str) -> Element {
 
 pub fn size(el: &HtmlElement) -> CPixel {
     let r = el.get_bounding_client_rect();
-    cpixel(r.get_width() as i32,r.get_height() as i32)
+    js! { console.log("r",@{&r}); };
+    cpixel(r.get_width().round() as i32,r.get_height().round() as i32)
+}
+
+pub fn window_size() -> CPixel {
+    let v : Vec<f64> = js! { 
+        return [document.documentElement.clientWidth,
+                document.documentElement.clientHeight];
+    }.try_into().unwrap();
+    cpixel(v[0] as i32,v[1] as i32)
+}
+
+pub fn position(el: &HtmlElement) -> RPixel {
+    let r = el.get_bounding_client_rect();
+    area(cpixel(r.get_left() as i32,r.get_top() as i32),
+         cpixel(r.get_right() as i32,r.get_bottom() as i32))
+}
+
+pub fn window_space(el: &HtmlElement) -> RPixel {
+    let pos = position(el).rectangle();
+    let wsz = window_size();
+    area(pos[0],cpixel(wsz.0-pos[2].0,wsz.1-pos[2].1))
 }
 
 pub fn add_attr(el: &Element,key: &str, more: &str) {

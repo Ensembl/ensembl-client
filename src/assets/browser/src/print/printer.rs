@@ -2,7 +2,7 @@ use std::collections::{ HashMap, HashSet };
 use std::rc::Rc;
 
 use stdweb::unstable::TryInto;
-use stdweb::web::{ HtmlElement, Element };
+use stdweb::web::{ HtmlElement, Element, INode };
 
 use print::{ Programs, LeafPrinter };
 use composit::{ Compositor, ScaleCompositor, StateManager, Leaf, Stage };
@@ -130,7 +130,15 @@ impl Printer {
         self.ctx.viewport(0,0,s.0,s.1);
     }
     
-    pub fn get_real_size(&self) -> Dot<i32,i32> {
-        domutil::size(&self.canv_el)
+    pub fn get_available_size(&self) -> Dot<i32,i32> {
+        let ws = domutil::window_space(&self.canv_el);
+        let mut size = domutil::size(&self.canv_el);
+        // TODO left/top/right
+        let rb = ws.far_offset();
+        if rb.1 < 0 {
+            // off the bottom, fix
+            size.1 += rb.1
+        }
+        size
     }
 }

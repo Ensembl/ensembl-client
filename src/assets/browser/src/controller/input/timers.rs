@@ -3,7 +3,9 @@ use std::collections::HashMap;
 use controller::global::App;
 
 struct TimerImpl {
-    cb: Box<FnMut(&mut App, f64) + 'static>
+    cb: Box<FnMut(&mut App, f64) + 'static>,
+    min_interval: Option<f64>,
+    last_run: Option<f64>
 }
 
 #[derive(Clone,Copy)]
@@ -22,11 +24,13 @@ impl Timers {
         }
     }
     
-    pub fn add<F>(&mut self, cb: F) -> Timer where F: FnMut(&mut App, f64) + 'static {
+    pub fn add<F>(&mut self, cb: F, min_interval: Option<f64>) -> Timer where F: FnMut(&mut App, f64) + 'static {
         let idx = self.next;
         self.next += 1;
         self.timers.insert(idx,TimerImpl {
-            cb: Box::new(cb)
+            cb: Box::new(cb),
+            min_interval,
+            last_run: None
         });
         Timer(idx)
     }
@@ -38,7 +42,13 @@ impl Timers {
     
     pub fn run(&mut self, cg: &mut App, time: f64) {
         for t in self.timers.values_mut() {
+            if let Some(min_interval) = t.min_interval {
+                if let Some(last_run) = t.last_run {
+                    if last_run + min_interval > time { return; }
+                }
+            }
             (t.cb)(cg,time);
+            t.last_run = Some(time);
         }
     }
 }
