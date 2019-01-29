@@ -7,12 +7,13 @@
 	</head>
 	<body>
         <div style="display: none; font: 'Lato';">preload</div>
-        <main class="browser-app-not-ready" id="main" style="height: 100%">
+        <main id="main" style="height: 100%">
             <div id="stage"></div>
         </main>
 		<script src="hellostdweb.js"></script>
         <script>
             function startup_mutate(mutations,observer) {
+                console.log("mutate");
                 var ready = false;
                 for(var mutation of mutations) {
                     for(var klass of mutation.target.classList) {
@@ -35,7 +36,7 @@
             }
             
             var observer = new MutationObserver(startup_mutate);
-            observer.observe(document.getElementById("main"),{ attributes: true });
+            observer.observe(document.getElementsByTagName("body")[0],{ attributes: true });
         </script>
 	</body>
 </html>
