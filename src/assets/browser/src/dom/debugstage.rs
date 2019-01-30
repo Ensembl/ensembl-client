@@ -29,7 +29,6 @@ pub const DEBUGSTAGE : &str = r##"
 pub const PLAINSTAGE : &str = r##"
 <div class="bpane-container">
     <div class="bpane-canv">
-        <h1>Debug Mode</h1>
     </div>
     <div class="managedcanvasholder"></div>
 </div>
@@ -99,19 +98,14 @@ pub const PLAINSTAGE_CSS : &str = r##"
     display: none;
 }
 
-.bpane-container, .bpane-container .bpane-canv canvas {
-    height: 100%;
-    width: 100%;
+.bpane-canv canvas {
+  margin: 0;
+  display:block;
 }
 
-.bpane-container .bpane-canv {
-    width: 100%;
+.bpane-container, .bpane-container .bpane-canv {
     height: 100%;
-}
-
-.bpane-container .bpane-canv canvas {
     width: 100%;
-    height: 100%;
 }
 
 @import url('https://fonts.googleapis.com/css?family=Lato');

@@ -14,7 +14,7 @@ use dom::event::EventControl;
 
 use debug::{ DebugBling, create_interactors };
 
-const SIZE_CHECK_INTERVAL_MS: f64 = 1000.;
+const SIZE_CHECK_INTERVAL_MS: f64 = 500.;
 
 struct AppRunnerImpl {
     g: GlobalWeak,
