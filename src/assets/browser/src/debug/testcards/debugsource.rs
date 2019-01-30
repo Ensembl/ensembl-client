@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use composit::{ Source, LCBuilder, Leaf, Stick, StickManager };
+use composit::{ Source, SourceResponse, Leaf, Stick, StickManager };
 
 pub struct DebugSource {
     sources: HashMap<String,Box<Source>>
@@ -20,7 +20,7 @@ impl DebugSource {
 }
 
 impl Source for DebugSource {
-    fn populate(&self, lc: &mut LCBuilder, leaf: &Leaf) {
+    fn populate(&self, lc: &mut SourceResponse, leaf: &Leaf) {
         let stick_name = leaf.get_stick().get_name();
         if let Some(source) = self.sources.get(&stick_name) {
             source.populate(lc,leaf);

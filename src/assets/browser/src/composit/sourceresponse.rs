@@ -3,15 +3,15 @@ use std::rc::Rc;
 
 use shape::DrawnShape;
 
-pub struct LCBuilderImpl {
+pub struct SourceResponseImpl {
     shapes: Vec<DrawnShape>,
     max_y: Option<i32>,
     done: bool
 }
 
-impl LCBuilderImpl {
-    fn new() -> LCBuilderImpl {
-        LCBuilderImpl {
+impl SourceResponseImpl {
+    fn new() -> SourceResponseImpl {
+        SourceResponseImpl {
             shapes: Vec::<DrawnShape>::new(),
             max_y: None,
             done: false
@@ -41,11 +41,11 @@ impl LCBuilderImpl {
 }
 
 #[derive(Clone)]
-pub struct LCBuilder(Rc<RefCell<LCBuilderImpl>>);
+pub struct SourceResponse(Rc<RefCell<SourceResponseImpl>>);
 
-impl LCBuilder {
-    pub fn new() -> LCBuilder {
-        LCBuilder(Rc::new(RefCell::new(LCBuilderImpl::new())))
+impl SourceResponse {
+    pub fn new() -> SourceResponse {
+        SourceResponse(Rc::new(RefCell::new(SourceResponseImpl::new())))
     }
     
     pub fn add_shape(&mut self, item: DrawnShape) {

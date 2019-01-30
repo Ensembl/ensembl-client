@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use print::{ Programs, PrintEdition };
 use program::ProgramType;
-use composit::{ LeafComponent, Leaf, Stage, ComponentRedo, ScaleCompositor };
+use composit::{ Carriage, Leaf, Stage, ComponentRedo, Train };
 use drawing::{ DrawingSession, AllCanvasAllocator };
 use webgl_rendering_context::WebGLRenderingContext as glctx;
 
@@ -31,7 +31,7 @@ impl LeafPrinter {
         PrintEdition::new(&mut self.ds)
     }
         
-    fn redraw_drawings(&mut self, alloc: &mut AllCanvasAllocator, comps: &mut Vec<&mut LeafComponent>) {
+    fn redraw_drawings(&mut self, alloc: &mut AllCanvasAllocator, comps: &mut Vec<&mut Carriage>) {
         self.ds.finish(alloc);
         self.ds = DrawingSession::new(alloc);
         for mut c in comps.iter_mut() {
@@ -40,7 +40,7 @@ impl LeafPrinter {
         self.ds.finalise(alloc);
     }
     
-    fn redraw_objects(&mut self, comps: &mut Vec<&mut LeafComponent>,
+    fn redraw_objects(&mut self, comps: &mut Vec<&mut Carriage>,
                           e: &mut PrintEdition) {
         for c in comps.iter_mut() {
             if c.is_on() {
@@ -59,7 +59,7 @@ impl LeafPrinter {
     }
     
     pub fn into_objects(&mut self, leaf: &Leaf,
-                        sc: &mut ScaleCompositor,
+                        sc: &mut Train,
                         aca: &mut AllCanvasAllocator,
                         level: ComponentRedo) {
         if level == ComponentRedo::None { return; }

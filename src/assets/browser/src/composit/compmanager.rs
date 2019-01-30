@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 
 use composit::{
-    Component, Leaf, LeafComponent
+    Component, Leaf, Carriage
 };
 
 pub struct ComponentManager {
@@ -27,8 +27,8 @@ impl ComponentManager {
         self.components.remove(k);
     }
     
-    pub fn make_leafcomps(&self, leaf: Leaf) -> Vec<LeafComponent> {
-        let mut lcomps = Vec::<LeafComponent>::new();        
+    pub fn make_leafcomps(&self, leaf: Leaf) -> Vec<Carriage> {
+        let mut lcomps = Vec::<Carriage>::new();        
         for (_k,c) in &self.components {
             lcomps.push(c.make_leafcomp(&leaf));
         }
