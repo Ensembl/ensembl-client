@@ -37,9 +37,7 @@ impl Compositor {
                 if t-prev_t < MS_PER_UPDATE { return; }
             }
             let comps = &mut self.components;
-            self.transit.each_train(|sc|
-                sc.manage_leafs(comps)
-            );            
+            self.transit.each_train(|sc| sc.manage_leafs(comps));            
             self.updated = false;
             self.last_updated = Some(t);
         }
@@ -51,18 +49,13 @@ impl Compositor {
     }
 
     pub fn set_position(&mut self, position_bp: f64) {
-        self.transit.each_train(|sc|
-            sc.set_position(position_bp)
-        );        
+        self.transit.set_position(position_bp);
         self.updated = true;
     }
     
     pub fn set_zoom(&mut self, bp_per_screen: f64) {
         self.bp_per_screen = bp_per_screen;
-        self.transit.each_train(|sc|
-            sc.set_zoom(bp_per_screen)
-        );
-        self.transit.maybe_switch_trains(&mut self.components, bp_per_screen);
+        self.transit.set_zoom(&mut self.components, bp_per_screen);
         self.updated = true;
     }
 

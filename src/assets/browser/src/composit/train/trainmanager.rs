@@ -13,18 +13,24 @@
 
 use composit::{
     Leaf,
-    Train, best_vscale, ComponentManager,
+    Train, best_vscale, ComponentManager, Component,
     Stick
 };
 
 const MS_FADE : f64 = 300.;
 
 pub struct TrainManager {
+    /* the trains themselves */
     current_train: Option<Train>,
     future_train: Option<Train>,
     transition_train: Option<Train>,
+    /* progress of transition */
     transition_start: Option<f64>,
-    transition_prop: Option<f64>,    
+    transition_prop: Option<f64>, 
+    /* current position/scale */
+    stick: Option<Stick>,
+    bp_per_screen: f64,
+    position_bp: f64
 }
 
 impl TrainManager {
@@ -34,13 +40,18 @@ impl TrainManager {
             future_train: None,
             transition_train: None,
             transition_start: None,
-            transition_prop: None,            
+            transition_prop: None, 
+            bp_per_screen: 1.,
+            position_bp: 0.,
+            stick: None
         }
     }
     
     /* COMPOSITOR sets new stick. Existing trains useless */
     pub fn set_stick(&mut self, st: &Stick, bp_per_screen: f64) {
         // XXX not the right thing to do: should transition
+        self.stick = Some(st.clone());
+        self.bp_per_screen = bp_per_screen;
         let vscale = best_vscale(bp_per_screen);
         self.current_train = Some(Train::new(st,vscale));
         self.current_train.as_mut().unwrap().set_zoom(bp_per_screen);
@@ -89,7 +100,7 @@ impl TrainManager {
         self.future_ready(t);
     }
     
-    /* used by COMPOSITOR to update trains as to position, zoom, etc */
+    /* used by COMPOSITOR to update trains as to manage components etc */
     pub fn each_train<F>(&mut self, mut cb: F)
                                   where F: FnMut(&mut Train) {
         if let Some(ref mut current_train) = self.current_train {
@@ -102,7 +113,11 @@ impl TrainManager {
             cb(future_train);
         }
     }
-        
+    
+    pub fn add_component(&mut self, c: &Component) {
+        self.each_train(|tr| tr.add_component(&c));
+    }
+    
     /* used by COMPOSITOR to determine y-limit for viewport scrolling */
     pub fn get_max_y(&self) -> i32 {
         let mut max = 0;
@@ -135,8 +150,13 @@ impl TrainManager {
 
     /* Create future train */
     fn new_future(&mut self, cm: &mut ComponentManager, vscale: i32) {
-        let f = self.current_train.as_ref().unwrap().duplicate(cm,vscale);
-        self.future_train = Some(f);
+        if let Some(ref stick) = self.stick {
+            let mut f = Train::new(&stick,vscale);
+            f.set_position(self.position_bp);
+            f.set_zoom(self.bp_per_screen);
+            f.manage_leafs(cm);
+            self.future_train = Some(f);
+        }
     }
     
     /* Abandon future train */
@@ -144,8 +164,8 @@ impl TrainManager {
         self.future_train = None;
     }
 
-    /* compositor notifies of bp/screen update (change trains?) */
-    pub fn maybe_switch_trains(&mut self, cm: &mut ComponentManager, bp_per_screen: f64) {
+    /* scale may have changed significantly to change trains */
+    fn maybe_change_trains(&mut self, cm: &mut ComponentManager, bp_per_screen: f64) {
         if let Some(printing_vscale) = self.printing_vscale() {
             let best = best_vscale(bp_per_screen);
             let mut end_future = false;
@@ -171,6 +191,19 @@ impl TrainManager {
             if end_future { self.end_future(); }
             if new_future { self.new_future(cm,best); }
         }
+    }
+
+    /* compositor notifies of bp/screen update (change trains?) */
+    pub fn set_zoom(&mut self, cm: &mut ComponentManager, bp_per_screen: f64) {
+        self.bp_per_screen = bp_per_screen;
+        self.maybe_change_trains(cm,bp_per_screen);
+        self.each_train(|t| t.set_zoom(bp_per_screen));
+    }
+            
+    /* compositor notifies of position update */
+    pub fn set_position(&mut self, position_bp: f64) {
+        self.position_bp = position_bp;
+        self.each_train(|t| t.set_position(position_bp));
     }
     
     /* ***************************************************************
