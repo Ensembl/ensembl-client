@@ -16,7 +16,7 @@ pub use self::sourceresponse::SourceResponse;
 pub use self::source::Source;
 pub use self::compositor::{ Compositor, register_compositor_ticks };
 pub use self::compmanager::{ ComponentManager };
-pub use self::train::{ Train, TrainManager, Carriage };
+pub use self::train::{ Train, TrainManager, Carriage, CarriageSet, StaleCarriages };
 pub use self::component::Component;
 pub use self::stage::{ Stage };
 pub use self::stick::Stick;

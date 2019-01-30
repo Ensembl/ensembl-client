@@ -3,23 +3,19 @@ use std::collections::{ HashMap, HashSet };
 
 use composit::{
     Leaf, Carriage, StateManager, vscale_bp_per_leaf,
-    ComponentManager, Component, Stick
+    ComponentManager, Component, Stick, CarriageSet, StaleCarriages
 };
 use composit::state::ComponentRedo;
 
 const MAX_FLANK : i32 = 5;
 
 pub struct Train {
+    carriages: CarriageSet,
+    stale: StaleCarriages,
     stick: Stick,
     vscale: i32,
-    position_bp: f64,
     train_flank: i32,
-    middle_leaf: i64,
-    bp_per_screen: f64,
-    leaf_per_screen: f64,
-    leafcomps: HashMap<Leaf,HashMap<String,Carriage>>,
-    done_seen: HashMap<Leaf,u32>,
-    done_now: u32
+    middle_leaf: i64,    
 }
 
 impl Train {
@@ -29,62 +25,64 @@ impl Train {
             vscale,
             train_flank: 10,
             middle_leaf: 0,
-            leaf_per_screen: 1.,
-            bp_per_screen: 1.,
-            position_bp: 0.,
-            leafcomps: HashMap::<Leaf,HashMap<String,Carriage>>::new(),
-            done_seen: HashMap::<Leaf,u32>::new(),
-            done_now: 0
+            carriages: CarriageSet::new(),
+            stale: StaleCarriages::new(),
         }
     }
-    
-    pub fn duplicate(&self, cm: &mut ComponentManager, vscale: i32) -> Train {
-        let mut out = Train::new(&self.stick,vscale);
-        out.set_position(self.position_bp);
-        out.set_zoom(self.bp_per_screen);
-        out.manage_leafs(cm);
-        out
-    }
-    
+        
+    /* *****************************************************************
+     * Methods for TRAINMANAGER to call when the user changes something.
+     * *****************************************************************
+     */
+        
+    /* which scale are we (ie which train)? */
     pub fn get_vscale(&self) -> i32 { self.vscale }
     
-    pub fn get_leaf_per_screen(&self) -> f64 {
-        self.leaf_per_screen
-    }
-    
+    /* called when position changes, to update carriages */
     pub fn set_position(&mut self, position_bp: f64) {
-        self.position_bp = position_bp;
         self.middle_leaf = (position_bp / vscale_bp_per_leaf(self.vscale) as f64).round() as i64;
         debug!("trains","set position leaf={}",self.middle_leaf);
     }
     
+    /* called when zoom changes, to update flank */
     pub fn set_zoom(&mut self, bp_per_screen: f64) {
-        self.bp_per_screen = bp_per_screen;
-        self.leaf_per_screen = bp_per_screen / vscale_bp_per_leaf(self.vscale);
-        self.train_flank = min(max((2. * self.leaf_per_screen) as i32,1),MAX_FLANK);
+        let leaf_per_screen = bp_per_screen / vscale_bp_per_leaf(self.vscale);
+        self.train_flank = min(max((2. * leaf_per_screen) as i32,1),MAX_FLANK);
         debug!("trains","set  bp_per_screen={} bp_per_leaf={} leaf_per_screen={} flank={}",
-            bp_per_screen,vscale_bp_per_leaf(self.vscale),self.leaf_per_screen,self.train_flank);
+            bp_per_screen,vscale_bp_per_leaf(self.vscale),leaf_per_screen,self.train_flank);
     }
-
-    fn add_lcomps_to_leaf(&mut self, leaf: Leaf, mut lcomps: Vec<Carriage>) {
-        let lcc = self.leafcomps.entry(leaf).or_insert_with(||
-            HashMap::<String,Carriage>::new());
-        for lc in lcomps.drain(..) {
-            lcc.insert(lc.get_component_name().to_string(),lc);
+    
+    /* add component to leaf */
+    pub fn add_component(&mut self, c: &Component) {
+        for leaf in self.leafs() {
+            let lcomps = vec! { c.make_leafcomp(&leaf) };
+            self.add_carriages_to_leaf(leaf,lcomps);
         }
-        self.done_now += 1;
-    }
-        
-    fn remove_leaf(&mut self, leaf: &Leaf) {
-        self.leafcomps.remove(leaf);
     }
 
+    /* *****************************************************************
+     * manage_leafs is called by COMPOSITOR on a tick if we've moved to 
+     * allow leafs to scroll in and out of view, and by TRAINMANAGER on
+     * creating new scales. Adds and removes carriages corresponging to 
+     * the relevant leafs.
+     * *****************************************************************
+     */
+
+    /* add leafs created below */
+    fn add_carriages_to_leaf(&mut self, leaf: Leaf, mut cc: Vec<Carriage>) {
+        for lc in cc.drain(..) {
+            self.carriages.add_carriage(&leaf,lc);
+        }
+        self.stale.all_stale();
+    }
+    
+    /* make leafs to be added */
     fn get_missing_leafs(&mut self) -> Vec<Leaf> {
         let mut out = Vec::<Leaf>::new();
         for idx in -self.train_flank..self.train_flank+1 {
             let hindex = self.middle_leaf + idx as i64;
             let leaf = Leaf::new(&self.stick,hindex,self.vscale);
-            if !self.leafcomps.contains_key(&leaf) {
+            if !self.carriages.contains_leaf(&leaf) {
                 debug!("trains","adding {}",hindex);
                 out.push(leaf);
             }
@@ -92,88 +90,83 @@ impl Train {
         return out;
     }
     
+    /* remove leafs out of scope */
     fn remove_unused_leafs(&mut self) {
         let mut doomed = HashSet::new();
-        for leaf in self.leafcomps.keys() {
+        for leaf in self.carriages.all_leafs() {
             if (leaf.get_index()-self.middle_leaf).abs() > self.train_flank as i64 {
                 doomed.insert(leaf.clone());
             }
         }
         for d in doomed {
             debug!("trains","removing {}",d.get_index());
-            self.remove_leaf(&d);
+            self.carriages.remove_leaf(&d);
         }
     }
 
+    /* manage_leafs entry point */
     pub fn manage_leafs(&mut self, cm: &mut ComponentManager) {
         self.remove_unused_leafs();
         for leaf in self.get_missing_leafs() {
-            let lcomps = cm.make_leafcomps(leaf.clone());
-            self.add_lcomps_to_leaf(leaf,lcomps);
+            let cc = cm.make_carriages(leaf.clone());
+            self.add_carriages_to_leaf(leaf,cc);
         }
     }
+
+    /* ***********************************************************
+     * Aggregate information about our carriages for TRAINMANAGER.
+     * ***********************************************************
+     */
     
+    /* used by TRAINMANAGER to generate all_printing_leafs for printer,
+     * and by PRINTER to work out what needs preparing.
+     */
     pub fn leafs(&self) -> Vec<Leaf> {
-        self.leafcomps.keys().map(|s| s.clone()).collect()
+        let mut out = Vec::<Leaf>::new();
+        for leaf in self.carriages.all_leafs() {
+            out.push(leaf.clone());
+        }
+        out
     }
     
+    /* Are all the carriages done? */
     pub fn is_done(&mut self) -> bool {
-        for leaf in self.leafcomps.keys() {            
-            if let Some(lcc) = self.leafcomps.get(leaf) {
-                for lc in lcc.values() {
-                    if !lc.is_done() { return false; }
-                }
-            }
+        for c in self.carriages.all_carriages() {
+            if !c.is_done() { return false; }
         }
         return true;
     }
     
-    pub fn get_components(&mut self, leaf: &Leaf) -> Option<Vec<&mut Carriage>> {
+    /* used in LEAFPRINTER to get actual data to print from components */
+    pub fn get_carriages(&mut self, leaf: &Leaf) -> Option<Vec<&mut Carriage>> {
         if !self.is_done() { return None; }
-        let lcc = self.leafcomps.get_mut(leaf);
-        Some(if let Some(lcc) = lcc {
-            lcc.values_mut().collect()
-        } else {
-            vec!{}
-        })
+        Some(self.carriages.leaf_carriages(leaf))
     }
     
+    /* Maximum y of all carriages (for y endstop) */
     pub fn get_max_y(&self) -> i32 {
         let mut max = 0;
-        for leaf in self.leafs() {
-            if let Some(lcc) = self.leafcomps.get(&leaf) {
-                for lc in lcc.values() {
-                    let y = lc.get_max_y();
-                    if y > max { max = y; }
-                }
-            }
+        for c in self.carriages.all_carriages() {
+            let y = c.get_max_y();
+            if y > max { max = y; }
         }
         max
     }
 
+    /* how much redrawing is needed? */
     pub fn calc_level(&mut self, leaf: &Leaf, oom: &StateManager) -> ComponentRedo {
         /* Any change due to component changes? */
         let mut redo = ComponentRedo::None;
-        if let Some(ref mut lcc) = self.leafcomps.get_mut(leaf) {
-            for c in lcc.values_mut() {
-                redo = redo | c.update_state(oom);
-            }
+        for c in self.carriages.leaf_carriages(leaf) {
+            redo = redo | c.update_state(oom);
         }
         /* Any change due to availability? */
-        let done_seen = *self.done_seen.entry(leaf.clone()).or_insert(0);
-        if done_seen < self.done_now {
+        if self.stale.is_stale(&leaf) {
             if self.is_done() {
-                self.done_seen.insert(leaf.clone(),self.done_now);
+                self.stale.not_stale(&leaf);
                 return ComponentRedo::Major;
             }
         }
         redo
-    }
-
-    pub fn add_component(&mut self, c: &Component) {
-        for leaf in self.leafs() {
-            let lcomps = vec! { c.make_leafcomp(&leaf) };
-            self.add_lcomps_to_leaf(leaf,lcomps);
-        }
     }
 }

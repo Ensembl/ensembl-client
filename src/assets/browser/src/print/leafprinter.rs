@@ -64,7 +64,7 @@ impl LeafPrinter {
                         level: ComponentRedo) {
         if level == ComponentRedo::None { return; }
         debug!("redraw","{:?}",level);
-        if let Some(ref mut comps) = sc.get_components(leaf) {
+        if let Some(ref mut comps) = sc.get_carriages(leaf) {
             if comps.len() > 0 {            
                 self.init();
                 if level == ComponentRedo::Major {

@@ -27,7 +27,7 @@ impl ComponentManager {
         self.components.remove(k);
     }
     
-    pub fn make_leafcomps(&self, leaf: Leaf) -> Vec<Carriage> {
+    pub fn make_carriages(&self, leaf: Leaf) -> Vec<Carriage> {
         let mut lcomps = Vec::<Carriage>::new();        
         for (_k,c) in &self.components {
             lcomps.push(c.make_leafcomp(&leaf));
