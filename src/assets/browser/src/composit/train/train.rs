@@ -2,7 +2,7 @@ use std::cmp::{ max, min };
 use std::collections::{ HashMap, HashSet };
 
 use composit::{
-    Leaf, Carriage, StateManager, vscale_bp_per_leaf,
+    Leaf, Carriage, StateManager, vscale_bp_per_leaf, SourceFactory,
     ComponentManager, Component, Stick, CarriageSet, StaleCarriages
 };
 use composit::state::ComponentRedo;
@@ -53,9 +53,9 @@ impl Train {
     }
     
     /* add component to leaf */
-    pub fn add_component(&mut self, c: &Component) {
+    pub fn add_component(&mut self, cm: &mut ComponentManager, c: &Component) {
         for leaf in self.leafs() {
-            let lcomps = vec! { c.make_leafcomp(&leaf) };
+            let lcomps = vec! { cm.make_carriage(c,&leaf) };
             self.add_carriages_to_leaf(leaf,lcomps);
         }
     }

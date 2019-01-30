@@ -1,6 +1,8 @@
+use std::fmt;
+
 use composit::Stick;
 
-#[derive(Clone,PartialEq,Eq,Hash,Debug)]
+#[derive(Clone,PartialEq,Eq,Hash)]
 pub struct Leaf {
     stick: Stick,
     hindex: i64,
@@ -39,4 +41,10 @@ pub fn best_vscale(bp_per_screen: f64) -> i32 {
         }
     }
     v_approx+best_delta
+}
+
+impl fmt::Debug for Leaf {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f,"{:?}:{}:{}",self.stick,self.hindex,self.vscale)
+    }
 }

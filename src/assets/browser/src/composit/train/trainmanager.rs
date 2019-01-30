@@ -114,8 +114,8 @@ impl TrainManager {
         }
     }
     
-    pub fn add_component(&mut self, c: &Component) {
-        self.each_train(|tr| tr.add_component(&c));
+    pub fn add_component(&mut self, cm: &mut ComponentManager, c: &Component) {
+        self.each_train(|tr| tr.add_component(cm,&c));
     }
     
     /* used by COMPOSITOR to determine y-limit for viewport scrolling */
