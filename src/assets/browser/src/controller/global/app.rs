@@ -27,7 +27,6 @@ impl App {
     pub fn new(g: &GlobalWeak, browser_el: &Element) -> App {        
         domutil::inner_html(&browser_el,CANVAS);
         let canv_el : HtmlElement = domutil::query_selector(&browser_el,"canvas").try_into().unwrap();
-        console!("canv_el {:?}",canv_el);
         let mut out = App {
             g: g.clone(),
             browser_el: browser_el.clone(),
@@ -83,11 +82,7 @@ impl App {
         
     pub fn check_size(self: &mut App) {
         let sz = self.printer.lock().unwrap().get_available_size();
-        
-        console!("check size {:?}",sz);
-        events_run(self,&vec! {
-            Event::Resize(sz)
-        });
+        events_run(self,&vec! { Event::Resize(sz) });
     }
  
     pub fn force_size(self: &App) {

@@ -50,14 +50,14 @@ pub fn testcard_base(a: &mut App, stick_name: &str) {
 
 fn component_debug_main(name: &str) -> Component {
     let cs = debug_source_main();
-    Component::new(name,Box::new(cs),Rc::new(StateFixed(StateValue::On())))    
+    Component::new(name,Rc::new(cs),Rc::new(StateFixed(StateValue::On())))    
 }
 
 fn component_debug_sub(name: &str, even: bool) -> Component {
     let cs = debug_source_sub(even);
     let state_name = if even { "even" } else { "odd" };
     let state = Rc::new(StateAtom::new(state_name));
-    Component::new(name,Box::new(cs),state)
+    Component::new(name,Rc::new(cs),state)
 }
 
 pub struct DebugComponentSource {

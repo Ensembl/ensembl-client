@@ -3,22 +3,22 @@ use std::hash::{ Hash, Hasher };
 use std::rc::Rc;
 
 use composit::state::StateExpr;
-use composit::{ Source, Carriage, Leaf };
+use composit::{ Source, Carriage, Leaf, SourceFactory };
 
 pub struct Component {
     name: String,
     ooe: Rc<StateExpr>,
-    source: Box<Source>
+    source: Rc<Source>
 }
 
 impl Component {
-    pub fn new(name: &str, source: Box<Source>, ooe: Rc<StateExpr>) -> Component {
+    pub fn new(name: &str, source: Rc<Source>, ooe: Rc<StateExpr>) -> Component {
         Component { ooe, source, name: name.to_string() }
     }
     
-    pub fn make_leafcomp(&self, leaf: &Leaf) -> Carriage {
-        let out = Carriage::new(&self.ooe,&self.name);
-        self.source.populate(&mut out.get_sourceresponse(),leaf);
+    pub fn make_carriage(&self, sf: &mut SourceFactory, leaf: &Leaf) -> Carriage {
+        let out = Carriage::new(&self.ooe,&self.name,leaf,&self.source);
+        sf.populate_carriage(&out);
         out
     }
     

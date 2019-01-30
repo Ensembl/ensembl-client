@@ -1,26 +1,32 @@
+use std::fmt;
 use std::rc::Rc;
 
 use print::{ Programs, PrintEdition };
-use composit::SourceResponse;
+use composit::{ Source, SourceResponse, Leaf };
 use composit::state::{ StateManager, StateExpr, StateValue, ComponentRedo };
 use drawing::DrawingSession;
 
 pub struct Carriage {
     prev_value: StateValue,
     cur_value: StateValue,
+    source: Rc<Source>,
     ooe: Rc<StateExpr>,
     response: SourceResponse,
-    comp_name: String
+    comp_name: String,
+    leaf: Leaf
 }
 
 impl Carriage {
-    pub fn new(ooe: &Rc<StateExpr>, comp_name: &str) -> Carriage {
+    pub fn new(ooe: &Rc<StateExpr>, comp_name: &str, leaf: &Leaf,
+               source: &Rc<Source>) -> Carriage {
         Carriage {
             response: SourceResponse::new(),
             prev_value: StateValue::OffCold(),
             cur_value: StateValue::OffCold(),
             ooe: ooe.clone(),
             comp_name: comp_name.to_string(),
+            leaf: leaf.clone(),
+            source: source.clone()
         }
     }
     
@@ -39,27 +45,29 @@ impl Carriage {
             ComponentRedo::Minor // was/is off-warm, is/was on => Minor
         }
     }
-    
-    pub fn get_sourceresponse(&self) -> SourceResponse {
-        self.response.clone()
-    }
-     
+         
     pub fn is_done(&self) -> bool { self.response.is_done() }
     pub fn get_max_y(&self) -> i32 { self.response.get_max_y() }
         
     pub fn draw_drawings(&mut self, ds: &mut DrawingSession){
-        self.response.each_shape(|s| {
-            s.redraw(ds);
-        });
+        self.response.each_shape(|s| s.redraw(ds));
     }
 
     pub fn into_objects(&mut self, 
                         progs: &mut Programs,
                         ds: &mut DrawingSession, e: &mut PrintEdition) {
-        self.response.each_shape(|s| {
-            s.into_objects(progs,ds,e);
-        });
+        self.response.each_shape(|s| s.into_objects(progs,ds,e));
     }
     
     pub fn get_component_name(&self) -> &str { &self.comp_name }
+    
+    pub fn populate(&self) {
+        self.source.populate(&mut self.response.clone(),&self.leaf);
+    }
+}
+
+impl fmt::Debug for Carriage {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f,"{}:{:?}",self.comp_name,self.leaf)
+    }
 }

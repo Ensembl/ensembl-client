@@ -1,5 +1,4 @@
 mod state;
-mod sourceresponse;
 mod compositor;
 mod train;
 mod leaf;
@@ -12,8 +11,7 @@ mod stickmanager;
 mod compsource;
 mod compsourcelist;
 
-pub use self::sourceresponse::SourceResponse;
-pub use self::source::Source;
+pub use self::source::{ Source, SourceResponse, SourceFactory };
 pub use self::compositor::{ Compositor, register_compositor_ticks };
 pub use self::compmanager::{ ComponentManager };
 pub use self::train::{ Train, TrainManager, Carriage, CarriageSet, StaleCarriages };

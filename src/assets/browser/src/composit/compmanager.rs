@@ -2,17 +2,19 @@ use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 
 use composit::{
-    Component, Leaf, Carriage
+    Component, Leaf, Carriage, SourceFactory
 };
 
 pub struct ComponentManager {
-    components: HashMap<String,Component>    
+    components: HashMap<String,Component>,
+    source_factory: SourceFactory
 }
 
 impl ComponentManager {
     pub fn new() -> ComponentManager {
         ComponentManager {
-            components: HashMap::<String,Component>::new()
+            components: HashMap::<String,Component>::new(),
+            source_factory: SourceFactory::new()
         }
     }
         
@@ -27,10 +29,14 @@ impl ComponentManager {
         self.components.remove(k);
     }
     
-    pub fn make_carriages(&self, leaf: Leaf) -> Vec<Carriage> {
+    pub fn make_carriage(&mut self, c: &Component, leaf: &Leaf) -> Carriage {
+        c.make_carriage(&mut self.source_factory,&leaf)
+    }
+    
+    pub fn make_carriages(&mut self, leaf: Leaf) -> Vec<Carriage> {
         let mut lcomps = Vec::<Carriage>::new();        
         for (_k,c) in &self.components {
-            lcomps.push(c.make_leafcomp(&leaf));
+            lcomps.push(c.make_carriage(&mut self.source_factory,&leaf));
         }
         lcomps
     }    
