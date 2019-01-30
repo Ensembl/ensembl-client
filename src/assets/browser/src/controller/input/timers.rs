@@ -8,6 +8,18 @@ struct TimerImpl {
     last_run: Option<f64>
 }
 
+impl TimerImpl {
+    fn is_ready(&mut self, time: f64) -> bool {
+        if let Some(min_interval) = self.min_interval {
+            if let Some(last_run) = self.last_run {
+                if last_run + min_interval > time { return false; }
+            }
+        }
+        self.last_run = Some(time);
+        return true;
+    }
+}
+
 #[derive(Clone,Copy)]
 pub struct Timer(u32);
 
@@ -42,13 +54,9 @@ impl Timers {
     
     pub fn run(&mut self, cg: &mut App, time: f64) {
         for t in self.timers.values_mut() {
-            if let Some(min_interval) = t.min_interval {
-                if let Some(last_run) = t.last_run {
-                    if last_run + min_interval > time { return; }
-                }
+            if t.is_ready(time) {
+                (t.cb)(cg,time);
             }
-            (t.cb)(cg,time);
-            t.last_run = Some(time);
         }
     }
 }

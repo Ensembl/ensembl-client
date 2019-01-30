@@ -40,8 +40,7 @@ pub fn query_select(sel: &str) -> Element {
 
 pub fn size(el: &HtmlElement) -> CPixel {
     let r = el.get_bounding_client_rect();
-    js! { console.log("r",@{&r}); };
-    cpixel(r.get_width().round() as i32,r.get_height().round() as i32)
+    cpixel(r.get_width() as i32,r.get_height() as i32)
 }
 
 pub fn window_size() -> CPixel {
