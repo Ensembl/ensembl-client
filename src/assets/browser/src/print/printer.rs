@@ -5,7 +5,7 @@ use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element, INode, IElement };
 
 use print::{ Programs, LeafPrinter };
-use composit::{ Compositor, ScaleCompositor, StateManager, Leaf, Stage };
+use composit::{ Compositor, Train, StateManager, Leaf, Stage };
 use drawing::{ AllCanvasAllocator };
 use dom::domutil;
 use types::{ Dot };
@@ -70,7 +70,7 @@ impl Printer {
     }
 
     fn manage_leafs(&mut self, c: &mut Compositor) {
-        let leafs = c.all_leafs();
+        let leafs = c.all_printing_leafs();
         self.create_new_leafs(&leafs);
         self.remove_old_leafs(&leafs);        
     }
@@ -88,7 +88,7 @@ impl Printer {
     }
 
     fn prepare_scale(&mut self, stage: &Stage, oom: &StateManager, 
-                     sc: &mut ScaleCompositor, opacity: f32) {
+                     sc: &mut Train, opacity: f32) {
         let leafs = sc.leafs();
         for ref leaf in &leafs {
             if let Some(lp) = &mut self.lp.get_mut(&leaf) {
@@ -100,7 +100,7 @@ impl Printer {
     }
         
     fn execute(&mut self, stage: &Stage, oom: &StateManager, c: &mut Compositor) {
-        let leafs = c.all_leafs();
+        let leafs = c.all_printing_leafs();
         for pt in &self.base_progs.order {
             for ref leaf in &leafs {
                 let lp = &mut self.lp.get_mut(&leaf).unwrap();
@@ -113,11 +113,11 @@ impl Printer {
         self.manage_leafs(compo);
         self.prepare_all();
         let prop = compo.get_prop_trans();
-        if let Some(current_sc) = compo.get_current_sc() {
-            self.prepare_scale(stage,oom,current_sc,1.-prop);
+        if let Some(current_train) = compo.get_current_train() {
+            self.prepare_scale(stage,oom,current_train,1.-prop);
         }
-        if let Some(transition_sc) = compo.get_transition_sc() {
-            self.prepare_scale(stage,oom,transition_sc,prop);
+        if let Some(transition_train) = compo.get_transition_train() {
+            self.prepare_scale(stage,oom,transition_train,prop);
         }
         self.execute(stage,oom,compo);
     }

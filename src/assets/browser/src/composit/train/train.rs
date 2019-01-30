@@ -2,14 +2,14 @@ use std::cmp::{ max, min };
 use std::collections::{ HashMap, HashSet };
 
 use composit::{
-    Leaf, LeafComponent, StateManager, vscale_bp_per_leaf,
+    Leaf, Carriage, StateManager, vscale_bp_per_leaf,
     ComponentManager, Component, Stick
 };
 use composit::state::ComponentRedo;
 
 const MAX_FLANK : i32 = 5;
 
-pub struct ScaleCompositor {
+pub struct Train {
     stick: Stick,
     vscale: i32,
     position_bp: f64,
@@ -17,14 +17,14 @@ pub struct ScaleCompositor {
     middle_leaf: i64,
     bp_per_screen: f64,
     leaf_per_screen: f64,
-    leafcomps: HashMap<Leaf,HashMap<String,LeafComponent>>,
+    leafcomps: HashMap<Leaf,HashMap<String,Carriage>>,
     done_seen: HashMap<Leaf,u32>,
     done_now: u32
 }
 
-impl ScaleCompositor {
-    pub fn new(stick: &Stick, vscale: i32) -> ScaleCompositor {
-        ScaleCompositor {
+impl Train {
+    pub fn new(stick: &Stick, vscale: i32) -> Train {
+        Train {
             stick: stick.clone(),
             vscale,
             train_flank: 10,
@@ -32,14 +32,14 @@ impl ScaleCompositor {
             leaf_per_screen: 1.,
             bp_per_screen: 1.,
             position_bp: 0.,
-            leafcomps: HashMap::<Leaf,HashMap<String,LeafComponent>>::new(),
+            leafcomps: HashMap::<Leaf,HashMap<String,Carriage>>::new(),
             done_seen: HashMap::<Leaf,u32>::new(),
             done_now: 0
         }
     }
     
-    pub fn duplicate(&self, cm: &mut ComponentManager, vscale: i32) -> ScaleCompositor {
-        let mut out = ScaleCompositor::new(&self.stick,vscale);
+    pub fn duplicate(&self, cm: &mut ComponentManager, vscale: i32) -> Train {
+        let mut out = Train::new(&self.stick,vscale);
         out.set_position(self.position_bp);
         out.set_zoom(self.bp_per_screen);
         out.manage_leafs(cm);
@@ -66,9 +66,9 @@ impl ScaleCompositor {
             bp_per_screen,vscale_bp_per_leaf(self.vscale),self.leaf_per_screen,self.train_flank);
     }
 
-    fn add_lcomps_to_leaf(&mut self, leaf: Leaf, mut lcomps: Vec<LeafComponent>) {
+    fn add_lcomps_to_leaf(&mut self, leaf: Leaf, mut lcomps: Vec<Carriage>) {
         let lcc = self.leafcomps.entry(leaf).or_insert_with(||
-            HashMap::<String,LeafComponent>::new());
+            HashMap::<String,Carriage>::new());
         for lc in lcomps.drain(..) {
             lcc.insert(lc.get_component_name().to_string(),lc);
         }
@@ -128,7 +128,7 @@ impl ScaleCompositor {
         return true;
     }
     
-    pub fn get_components(&mut self, leaf: &Leaf) -> Option<Vec<&mut LeafComponent>> {
+    pub fn get_components(&mut self, leaf: &Leaf) -> Option<Vec<&mut Carriage>> {
         if !self.is_done() { return None; }
         let lcc = self.leafcomps.get_mut(leaf);
         Some(if let Some(lcc) = lcc {

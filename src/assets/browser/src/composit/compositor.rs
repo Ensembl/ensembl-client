@@ -1,12 +1,12 @@
 use composit::{
-    Component, Leaf, ScaleCompositor, ComponentManager, Stick, Transit
+    Component, Leaf, Train, ComponentManager, Stick, TrainManager
 };
 use controller::global::AppRunner;
 
 const MS_PER_UPDATE : f64 = 250.;
 
 pub struct Compositor {
-    transit: Transit,
+    transit: TrainManager,
     bp_per_screen: f64,
     updated: bool,
     last_updated: Option<f64>,
@@ -16,7 +16,7 @@ pub struct Compositor {
 impl Compositor {
     pub fn new() -> Compositor {
         let mut out = Compositor {
-            transit: Transit::new(),
+            transit: TrainManager::new(),
             components: ComponentManager::new(),
             bp_per_screen: 1.,
             updated: true,
@@ -30,14 +30,14 @@ impl Compositor {
 
     pub fn tick(&mut self, t: f64) {
         /* Move into future */
-        self.transit.switch_scales(t);
+        self.transit.tick(t);
         /* Manage useful leafs */
         if self.updated {
             if let Some(prev_t) = self.last_updated {
                 if t-prev_t < MS_PER_UPDATE { return; }
             }
             let comps = &mut self.components;
-            self.transit.each_scale(|sc|
+            self.transit.each_train(|sc|
                 sc.manage_leafs(comps)
             );            
             self.updated = false;
@@ -51,44 +51,45 @@ impl Compositor {
     }
 
     pub fn set_position(&mut self, position_bp: f64) {
-        self.transit.each_scale(|sc|
+        self.transit.each_train(|sc|
             sc.set_position(position_bp)
         );        
         self.updated = true;
     }
     
     pub fn set_zoom(&mut self, bp_per_screen: f64) {
-        //console!("zoom = {}",bp_per_screen);
         self.bp_per_screen = bp_per_screen;
-        self.transit.each_scale(|sc|
+        self.transit.each_train(|sc|
             sc.set_zoom(bp_per_screen)
         );
-        self.transit.maybe_new_scale(&mut self.components, bp_per_screen);
+        self.transit.maybe_switch_trains(&mut self.components, bp_per_screen);
         self.updated = true;
     }
 
-    pub fn get_current_sc(&mut self) -> Option<&mut ScaleCompositor> {
-        self.transit.get_current_sc()
+    pub fn get_current_train(&mut self) -> Option<&mut Train> {
+        self.transit.get_current_train()
     }
 
-    pub fn get_transition_sc(&mut self) -> Option<&mut ScaleCompositor> {
-        self.transit.get_transition_sc()
+    pub fn get_transition_train(&mut self) -> Option<&mut Train> {
+        self.transit.get_transition_train()
     }
     
     pub fn add_component(&mut self, mut c: Component) {
-        self.transit.each_scale(|sc|
+        self.transit.each_train(|sc|
             sc.add_component(&c)
         );
         self.components.add(c);
     }
 
-    pub fn get_max_y(&self) -> i32 { self.transit.get_max_y() }
+    fn get_max_y(&self) -> i32 { self.transit.get_max_y() }
 
     pub fn remove(&mut self, name: &str) {
         self.components.remove(name);
     }
     
-    pub fn all_leafs(&self) -> Vec<Leaf> { self.transit.all_leafs() }
+    pub fn all_printing_leafs(&self) -> Vec<Leaf> {
+        self.transit.all_printing_leafs()
+    }
 }
 
 pub fn register_compositor_ticks(ar: &mut AppRunner) {

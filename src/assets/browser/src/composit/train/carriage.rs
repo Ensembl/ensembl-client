@@ -1,22 +1,22 @@
 use std::rc::Rc;
 
 use print::{ Programs, PrintEdition };
-use composit::LCBuilder;
+use composit::SourceResponse;
 use composit::state::{ StateManager, StateExpr, StateValue, ComponentRedo };
 use drawing::DrawingSession;
 
-pub struct LeafComponent {
+pub struct Carriage {
     prev_value: StateValue,
     cur_value: StateValue,
     ooe: Rc<StateExpr>,
-    shapes: LCBuilder,
+    response: SourceResponse,
     comp_name: String
 }
 
-impl LeafComponent {
-    pub fn new(ooe: &Rc<StateExpr>, comp_name: &str) -> LeafComponent {
-        LeafComponent {
-            shapes: LCBuilder::new(),
+impl Carriage {
+    pub fn new(ooe: &Rc<StateExpr>, comp_name: &str) -> Carriage {
+        Carriage {
+            response: SourceResponse::new(),
             prev_value: StateValue::OffCold(),
             cur_value: StateValue::OffCold(),
             ooe: ooe.clone(),
@@ -40,15 +40,15 @@ impl LeafComponent {
         }
     }
     
-    pub fn get_lcbuilder(&self) -> LCBuilder {
-        self.shapes.clone()
+    pub fn get_sourceresponse(&self) -> SourceResponse {
+        self.response.clone()
     }
      
-    pub fn is_done(&self) -> bool { self.shapes.is_done() }
-    pub fn get_max_y(&self) -> i32 { self.shapes.get_max_y() }
+    pub fn is_done(&self) -> bool { self.response.is_done() }
+    pub fn get_max_y(&self) -> i32 { self.response.get_max_y() }
         
     pub fn draw_drawings(&mut self, ds: &mut DrawingSession){
-        self.shapes.each_shape(|s| {
+        self.response.each_shape(|s| {
             s.redraw(ds);
         });
     }
@@ -56,7 +56,7 @@ impl LeafComponent {
     pub fn into_objects(&mut self, 
                         progs: &mut Programs,
                         ds: &mut DrawingSession, e: &mut PrintEdition) {
-        self.shapes.each_shape(|s| {
+        self.response.each_shape(|s| {
             s.into_objects(progs,ds,e);
         });
     }

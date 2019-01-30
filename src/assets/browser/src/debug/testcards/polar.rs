@@ -5,7 +5,7 @@ use std::sync::{ Arc, Mutex };
 use composit::vscale_bp_per_leaf;
 use composit::{
     StateFixed, Component, StateValue, StateAtom, Leaf,
-    LeafComponent, LCBuilder, Stick
+    Carriage, SourceResponse, Stick
 };
 use controller::global::App;
 use controller::input::Event;
@@ -49,10 +49,10 @@ struct Palette {
     grey: ColourSpec
 }
 
-fn one_offs(_lc: &mut LCBuilder, _p: &Palette) {    
+fn one_offs(_lc: &mut SourceResponse, _p: &Palette) {    
 }
 
-fn draw_frame(lc: &mut LCBuilder, leaf: &Leaf, edge: AxisSense, p: &Palette) {
+fn draw_frame(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette) {
     let left = Corner(AxisSense::Pos,edge);
     let right = Corner(AxisSense::Neg,edge);
     let top = Corner(edge,AxisSense::Pos);
@@ -85,7 +85,7 @@ fn draw_frame(lc: &mut LCBuilder, leaf: &Leaf, edge: AxisSense, p: &Palette) {
                         &p.white));
 }
 
-fn measure(lc: &mut LCBuilder, leaf: &Leaf, edge: AxisSense, p: &Palette) {
+fn measure(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette) {
     let mul = vscale_bp_per_leaf(leaf.get_vscale());
     let start_leaf = (leaf.get_index() as f64 * mul).floor() as i32;
     let end_leaf = (((leaf.get_index()+1) as f64) * mul).floor() as i32;
@@ -148,7 +148,7 @@ fn choose_colour(t: i32, x: f32) -> ColourSpec {
     ColourSpec::Colour(Colour(r,g,b))
 }
 
-fn draw_gene_part(lc: &mut LCBuilder, x: f32, y: i32, v: f32) {
+fn draw_gene_part(lc: &mut SourceResponse, x: f32, y: i32, v: f32) {
     if v > 0. {
         closure_add(lc,&stretch_rectangle(
                 &area_size(cleaf(x,y-3),
@@ -157,7 +157,7 @@ fn draw_gene_part(lc: &mut LCBuilder, x: f32, y: i32, v: f32) {
     }
 }
 
-fn draw_varreg_part(lc: &mut LCBuilder, t: i32, x: f32, y: i32, v: f32, col: ColourSpec) {
+fn draw_varreg_part(lc: &mut SourceResponse, t: i32, x: f32, y: i32, v: f32, col: ColourSpec) {
     closure_add(lc,&stretch_rectangle(
             &area_size(cleaf(x,y-3),
                        cleaf(v.abs(),6)),
@@ -165,7 +165,7 @@ fn draw_varreg_part(lc: &mut LCBuilder, t: i32, x: f32, y: i32, v: f32, col: Col
 }
 
 /* designed to fill most of 100kb scale */
-fn track(lc: &mut LCBuilder, leaf: &Leaf, p: &Palette, t: i32) {
+fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
     let is_gene = (t<4 || t%3 == 0);
     let name = if t % 7 == 3 { "E" } else { "K" };
     let tx = text_texture(name,&p.lato_18,

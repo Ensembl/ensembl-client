@@ -3,7 +3,7 @@ use std::hash::{ Hash, Hasher };
 use std::rc::Rc;
 
 use composit::state::StateExpr;
-use composit::{ Source, LeafComponent, Leaf };
+use composit::{ Source, Carriage, Leaf };
 
 pub struct Component {
     name: String,
@@ -16,9 +16,9 @@ impl Component {
         Component { ooe, source, name: name.to_string() }
     }
     
-    pub fn make_leafcomp(&self, leaf: &Leaf) -> LeafComponent {
-        let out = LeafComponent::new(&self.ooe,&self.name);
-        self.source.populate(&mut out.get_lcbuilder(),leaf);
+    pub fn make_leafcomp(&self, leaf: &Leaf) -> Carriage {
+        let out = Carriage::new(&self.ooe,&self.name);
+        self.source.populate(&mut out.get_sourceresponse(),leaf);
         out
     }
     
