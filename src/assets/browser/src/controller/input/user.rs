@@ -4,7 +4,6 @@ use dom::domutil;
 use dom::event::{ EventListener, EventType, EventData, EventControl, Target };
 use stdweb::web::{ Element, HtmlElement, IHtmlElement };
 use stdweb::traits::IEvent;
-use dom::event;
 
 use controller::global::{ App, AppRunner };
 use controller::input::{ Event, events_run, EggDetector };

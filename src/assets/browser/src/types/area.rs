@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 use std::ops::{ Add, Sub, Mul, Div, Neg };
-use program::{ Object, ObjectAttrib, DataBatch, Input };
+use program::Input;
 use types::{ Dot, Edge, AxisSense, Corner };
 
 /***** Rect types *****/

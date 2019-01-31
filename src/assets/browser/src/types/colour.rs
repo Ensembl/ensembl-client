@@ -1,4 +1,4 @@
-use program::{ Object, ObjectAttrib, DataBatch, UniformValue, Input };
+use program::{ UniformValue, Input };
 
 /* Colour */
 

@@ -49,10 +49,6 @@ impl ObjectAttrib {
     fn data(&self, b: &DataBatch) -> Option<&Vec<f32>> {
         self.vec.get(&b.id())
     }
-
-    fn data_mut(&mut self, b: &DataBatch) -> &mut Vec<f32> {
-        self.vec.entry(b.id()).or_insert_with(|| Vec::<f32>::new())
-    }
 }
 
 impl Object for ObjectAttrib {
@@ -86,7 +82,10 @@ impl Object for ObjectAttrib {
     }
 
     fn get_f32_slice(&mut self, b: &DataBatch) -> Option<&mut Vec<f32>> {
-        Some(self.vec.entry(b.id()).or_insert_with(|| Vec::<f32>::new()))
+        let out = self.vec.entry(b.id()).or_insert_with(|| Vec::<f32>::new());
+        let len = out.len()/3;
+        out.reserve(len);
+        Some(out)
     }
     
     fn clear(&mut self) {
