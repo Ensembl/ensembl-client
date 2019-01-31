@@ -1,14 +1,14 @@
 use std::sync::{ Arc, Mutex };
 use stdweb::web::Element;
 
-use controller::global::{ AppRunner, App };
+use controller::global::App;
 use dom::{ PLAINSTAGE, PLAINSTAGE_CSS };
 use dom::domutil;
 
 pub trait Bling {
     fn apply_bling(&self, el: &Element) -> Element;
-    fn activate(&mut self, ar: &Arc<Mutex<App>>, el: &Element) {}
-    fn key(&mut self, app: &Arc<Mutex<App>>, key: &str) {}
+    fn activate(&mut self, _ar: &Arc<Mutex<App>>, _el: &Element) {}
+    fn key(&mut self, _app: &Arc<Mutex<App>>, _key: &str) {}
 }
 
 pub struct NoBling {}

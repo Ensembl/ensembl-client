@@ -1,5 +1,5 @@
 use composit::{
-    Component, Leaf, Train, ComponentManager, Stick, TrainManager
+    ActiveSource, Leaf, Train, ComponentManager, Stick, TrainManager
 };
 use controller::global::AppRunner;
 
@@ -29,6 +29,8 @@ impl Compositor {
     pub fn get_prop_trans(&self) -> f32 { self.train_manager.get_prop_trans() }
 
     pub fn tick(&mut self, t: f64) {
+        /* Kick off requests */
+        self.components.tick(t);
         /* Move into future */
         self.train_manager.tick(t);
         /* Manage useful leafs */
@@ -67,7 +69,7 @@ impl Compositor {
         self.train_manager.get_transition_train()
     }
     
-    pub fn add_component(&mut self, mut c: Component) {
+    pub fn add_component(&mut self, c: ActiveSource) {
         {
             let cc = &mut self.components;
             self.train_manager.each_train(|sc|

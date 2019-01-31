@@ -13,7 +13,7 @@
 
 use composit::{
     Leaf,
-    Train, best_vscale, ComponentManager, Component,
+    Train, best_vscale, ComponentManager, ActiveSource,
     Stick
 };
 
@@ -114,7 +114,7 @@ impl TrainManager {
         }
     }
     
-    pub fn add_component(&mut self, cm: &mut ComponentManager, c: &Component) {
+    pub fn add_component(&mut self, cm: &mut ComponentManager, c: &ActiveSource) {
         self.each_train(|tr| tr.add_component(cm,&c));
     }
     

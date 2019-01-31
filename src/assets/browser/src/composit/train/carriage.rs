@@ -1,32 +1,26 @@
 use std::fmt;
-use std::rc::Rc;
 
 use print::{ Programs, PrintEdition };
-use composit::{ Source, SourceResponse, Leaf };
+use composit::{ SourceResponse, Leaf, ActiveSource, DrawnResponse };
 use composit::state::{ StateManager, StateExpr, StateValue, ComponentRedo };
 use drawing::DrawingSession;
 
 pub struct Carriage {
+    comp: ActiveSource,
     prev_value: StateValue,
     cur_value: StateValue,
-    source: Rc<Source>,
-    ooe: Rc<StateExpr>,
-    response: SourceResponse,
-    comp_name: String,
+    response: Option<DrawnResponse>,
     leaf: Leaf
 }
 
 impl Carriage {
-    pub fn new(ooe: &Rc<StateExpr>, comp_name: &str, leaf: &Leaf,
-               source: &Rc<Source>) -> Carriage {
+    pub fn new(comp: ActiveSource, leaf: &Leaf) -> Carriage {
         Carriage {
-            response: SourceResponse::new(),
+            response: None,
             prev_value: StateValue::OffCold(),
             cur_value: StateValue::OffCold(),
-            ooe: ooe.clone(),
-            comp_name: comp_name.to_string(),
             leaf: leaf.clone(),
-            source: source.clone()
+            comp
         }
     }
     
@@ -34,7 +28,7 @@ impl Carriage {
     
     pub fn update_state(&mut self, m: &StateManager) -> ComponentRedo {
         self.prev_value = self.cur_value;
-        self.cur_value = self.ooe.is_on(m);
+        self.cur_value = self.comp.is_on(m);
         if self.prev_value == self.cur_value {
             ComponentRedo::None // no change => Noop
         } else if self.prev_value.on() && self.cur_value.on() {
@@ -46,28 +40,38 @@ impl Carriage {
         }
     }
          
-    pub fn is_done(&self) -> bool { self.response.is_done() }
-    pub fn get_max_y(&self) -> i32 { self.response.get_max_y() }
+    pub fn is_done(&self) -> bool { 
+        self.response.as_ref().map(|x| x.get_response().is_done()).unwrap_or(false)
+    }
+    
+    pub fn get_max_y(&self) -> i32 {
+        self.response.as_ref().map(|x| x.get_response().get_max_y()).unwrap_or(0)
+    }
         
-    pub fn draw_drawings(&mut self, ds: &mut DrawingSession){
-        self.response.each_shape(|s| s.redraw(ds));
+    pub fn draw_drawings(&mut self, ds: &mut DrawingSession) {
+        if let Some(ref mut response) = self.response {
+            response.each_shape(|s| s.redraw(ds));
+        }
     }
 
     pub fn into_objects(&mut self, 
                         progs: &mut Programs,
                         ds: &mut DrawingSession, e: &mut PrintEdition) {
-        self.response.each_shape(|s| s.into_objects(progs,ds,e));
+        if let Some(ref mut response) = self.response {
+            response.each_shape(|s| s.into_objects(progs,ds,e));
+        }
     }
     
-    pub fn get_component_name(&self) -> &str { &self.comp_name }
+    pub fn get_leaf(&self) -> &Leaf { &self.leaf }
+    pub fn get_source(&self) -> &ActiveSource { &self.comp }
     
-    pub fn populate(&self) {
-        self.source.populate(&mut self.response.clone(),&self.leaf);
+    pub fn set_response(&mut self, r: SourceResponse) {
+        self.response = Some(DrawnResponse::new(r));
     }
 }
 
 impl fmt::Debug for Carriage {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f,"{}:{:?}",self.comp_name,self.leaf)
+        write!(f,"{:?}:{:?}",self.comp,self.leaf)
     }
 }

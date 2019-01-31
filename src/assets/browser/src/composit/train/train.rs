@@ -1,9 +1,9 @@
 use std::cmp::{ max, min };
-use std::collections::{ HashMap, HashSet };
+use std::collections::HashSet;
 
 use composit::{
     Leaf, Carriage, StateManager, vscale_bp_per_leaf, SourceFactory,
-    ComponentManager, Component, Stick, CarriageSet, StaleCarriages
+    ComponentManager, ActiveSource, Stick, CarriageSet, StaleCarriages
 };
 use composit::state::ComponentRedo;
 
@@ -41,7 +41,6 @@ impl Train {
     /* called when position changes, to update carriages */
     pub fn set_position(&mut self, position_bp: f64) {
         self.middle_leaf = (position_bp / vscale_bp_per_leaf(self.vscale) as f64).round() as i64;
-        debug!("trains","set position leaf={}",self.middle_leaf);
     }
     
     /* called when zoom changes, to update flank */
@@ -53,11 +52,12 @@ impl Train {
     }
     
     /* add component to leaf */
-    pub fn add_component(&mut self, cm: &mut ComponentManager, c: &Component) {
+    pub fn add_component(&mut self, cm: &mut ComponentManager, c: &ActiveSource) {
         for leaf in self.leafs() {
             let lcomps = vec! { cm.make_carriage(c,&leaf) };
             self.add_carriages_to_leaf(leaf,lcomps);
         }
+        self.stale.all_stale();
     }
 
     /* *****************************************************************
@@ -73,7 +73,6 @@ impl Train {
         for lc in cc.drain(..) {
             self.carriages.add_carriage(&leaf,lc);
         }
-        self.stale.all_stale();
     }
     
     /* make leafs to be added */
@@ -160,10 +159,14 @@ impl Train {
         for c in self.carriages.leaf_carriages(leaf) {
             redo = redo | c.update_state(oom);
         }
+        if redo != ComponentRedo::None {
+            debug!("redraw","{:?} {:?}",leaf,redo);
+        }
         /* Any change due to availability? */
         if self.stale.is_stale(&leaf) {
             if self.is_done() {
                 self.stale.not_stale(&leaf);
+                debug!("redraw","stale {:?}",leaf);
                 return ComponentRedo::Major;
             }
         }

@@ -33,7 +33,7 @@ pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
 impl AppRunner {
-    pub fn new(g: &GlobalWeak, el: &Element, mut bling: Box<Bling>) -> AppRunner {
+    pub fn new(g: &GlobalWeak, el: &Element, bling: Box<Bling>) -> AppRunner {
         let browser_el : Element = bling.apply_bling(&el);
         let st = App::new(g,&browser_el);
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
@@ -55,7 +55,7 @@ impl AppRunner {
         out
     }
 
-    pub fn reset(&mut self, mut bling: Box<Bling>) {
+    pub fn reset(&mut self, bling: Box<Bling>) {
         self.unregister();
         {
             let mut imp = self.0.lock().unwrap();

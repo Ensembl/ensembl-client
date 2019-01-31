@@ -4,7 +4,7 @@ use std::sync::{ Arc, Mutex };
 
 use composit::vscale_bp_per_leaf;
 use composit::{
-    StateFixed, Component, StateValue, StateAtom, Leaf,
+    StateFixed, StateValue, StateAtom, Leaf,
     Carriage, SourceResponse, Stick
 };
 use controller::global::App;

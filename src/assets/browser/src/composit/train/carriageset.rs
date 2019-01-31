@@ -1,22 +1,22 @@
 use std::collections::HashMap;
-use composit::{ Carriage, Leaf };
+use composit::{ Carriage, Leaf, ActiveSource };
 
 pub struct CarriageSet {
-    carriages: HashMap<Leaf,HashMap<String,Carriage>>
+    carriages: HashMap<Leaf,HashMap<ActiveSource,Carriage>>
 }
 
 impl CarriageSet {
     pub fn new() -> CarriageSet {
         CarriageSet {
-            carriages: HashMap::<Leaf,HashMap<String,Carriage>>::new()
+            carriages: HashMap::<Leaf,HashMap<ActiveSource,Carriage>>::new()
         }
     }
     
     pub fn add_carriage(&mut self, leaf: &Leaf, carriage: Carriage) {
         let lcc = self.carriages.entry(leaf.clone()).or_insert_with(||
-            HashMap::<String,Carriage>::new()
+            HashMap::<ActiveSource,Carriage>::new()
         );
-        lcc.insert(carriage.get_component_name().to_string(),carriage);
+        lcc.insert(carriage.get_source().clone(),carriage);
     }
     
     pub fn remove_leaf(&mut self, leaf: &Leaf) {
@@ -33,7 +33,7 @@ impl CarriageSet {
 
     pub fn all_carriages(&self) -> Vec<&Carriage> {
         let mut out = Vec::<&Carriage>::new();
-        for (leaf,lcc) in &self.carriages {     
+        for (leaf,lcc) in &self.carriages {
             for lc in lcc.values() {
                 out.push(lc);
             }

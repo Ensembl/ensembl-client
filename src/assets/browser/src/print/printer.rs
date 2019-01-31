@@ -99,7 +99,7 @@ impl Printer {
         }
     }
         
-    fn execute(&mut self, stage: &Stage, oom: &StateManager, c: &mut Compositor) {
+    fn execute(&mut self, c: &mut Compositor) {
         let leafs = c.all_printing_leafs();
         for pt in &self.base_progs.order {
             for ref leaf in &leafs {
@@ -119,7 +119,7 @@ impl Printer {
         if let Some(transition_train) = compo.get_transition_train() {
             self.prepare_scale(stage,oom,transition_train,prop);
         }
-        self.execute(stage,oom,compo);
+        self.execute(compo);
     }
         
     pub fn set_size(&mut self, s: Dot<i32,i32>) {

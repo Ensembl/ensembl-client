@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use composit::{ Leaf, vscale_bp_per_leaf };
-use global::{ App, AppRunner };
 use program::UniformValue;
 use types::{CPixel, cpixel, Move, Dot, DOWN };
 
