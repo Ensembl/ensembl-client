@@ -197,22 +197,31 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
         let mut x = 0.;
         let scale : f32 = (pos[1]-pos[0]) as f32/data_len as f32;
         for v in &d {
-            let x_genome = pos[0] as f32+x as f32;
-            let x_start = prop(leaf,x_genome as i32);
-            let x_end = prop(leaf,(x_genome+*v*scale) as i32);
-            if is_gene {
-                if x == 0. {
-                    let x_all_end = prop(leaf,pos[1]);
-                    closure_add(lc,&stretch_rectangle(
-                                    &area(cleaf(x_start,y-1),cleaf(x_all_end,y+1)),
-                                    &ColourSpec::Colour(Colour(75,168,252))));
+            if prop_end-prop_start > 0.01 {
+                let x_genome = pos[0] as f32+x as f32;
+                let x_start = prop(leaf,x_genome as i32);
+                let x_end = prop(leaf,(x_genome+*v*scale) as i32);
+                if is_gene {
+                    if x == 0. {
+                        let x_all_end = prop(leaf,pos[1]);
+                        closure_add(lc,&stretch_rectangle(
+                                        &area(cleaf(x_start,y-1),cleaf(x_all_end,y+1)),
+                                        &ColourSpec::Colour(Colour(75,168,252))));
+                    }
+                    draw_gene_part(lc,x_start,y,x_end-x_start);
+                } else {
+                    let col = choose_colour(t,x_genome);
+                    draw_varreg_part(lc,t,x_start,y,x_end-x_start,col);
                 }
-                draw_gene_part(lc,x_start,y,x_end-x_start);
+                x += v.abs() * scale;
             } else {
-                let col = choose_colour(t,x_genome);
-                draw_varreg_part(lc,t,x_start,y,x_end-x_start,col);
+                if is_gene {
+                    draw_gene_part(lc,prop_start,y,prop_end-prop_start);
+                } else {
+                    let col = choose_colour(t,prop_start);
+                    draw_varreg_part(lc,t,prop_start,y,prop_end-prop_start,col);
+                }
             }
-            x += v.abs() * scale;
         }
     }
 }
