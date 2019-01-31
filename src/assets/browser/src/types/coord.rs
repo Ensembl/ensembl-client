@@ -15,8 +15,8 @@ use types::{
 pub enum Units { Pixels, Bases, Screens }
 
 impl Input for f32 {
-    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
-        attrib.add_f32(&[*self],batch);
+    fn to_f32(&self, dest: &mut Vec<f32>) {
+        dest.push(*self);
     }
 }
 
@@ -200,9 +200,10 @@ impl<T: Clone+Copy+Debug + PartialOrd,
 
 impl<T : Clone + Copy + Into<f64>,
      U : Clone + Copy + Into<f64>> Input for Dot<T,U> {
-    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
+    fn to_f32(&self, dest: &mut Vec<f32>) {
         let (a,b): (f64,f64) = (self.0.into(), self.1.into());
-        attrib.add_f32(&[a as f32,b as f32],batch);
+        dest.push(a as f32);
+        dest.push(b as f32);
     }
 }
 

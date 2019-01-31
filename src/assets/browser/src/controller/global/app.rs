@@ -8,7 +8,6 @@ use composit::{ Compositor, StateManager, Stage };
 use controller::input::{ Event, events_run, startup_events };
 use dom::{ domutil, Bling };
 use print::Printer;
-use types::cpixel;
 
 const CANVAS : &str = r##"<canvas id="glcanvas"></canvas>"##;
 

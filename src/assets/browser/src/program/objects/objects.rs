@@ -9,7 +9,11 @@ use program::objects::UniformValue;
 
 /* This is the meat of each Object implementation */
 pub trait Object {
-    fn add_f32(&mut self, _values: &[f32], _batch: &DataBatch) {}
+    //fn add_f32(&mut self, _values: &[f32], _batch: &DataBatch) {}
+    fn get_f32_slice(&mut self, batch: &DataBatch) -> Option<&mut Vec<f32>> {
+        None
+    }
+    
     fn add_tdr(&mut self, _value: &Drawing) {}
 
     fn get_tdr(&self) -> Vec<Drawing> {

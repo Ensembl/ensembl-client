@@ -145,9 +145,10 @@ impl<T : Copy + Clone + Debug + Into<f64>,
 
 impl<T : Copy + Clone + Debug + Into<f64>,
      U : Copy + Clone + Debug + Into<f64>> Input for Rect<T,U> {
-    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
+    fn to_f32(&self, dest: &mut Vec<f32>) {
         for c in self.rectangle().iter() {
-            attrib.add_f32(&[c.0.into() as f32,c.1.into() as f32],batch);
+            dest.push(c.0.into() as f32);
+            dest.push(c.1.into() as f32);
         }
     }
 }
