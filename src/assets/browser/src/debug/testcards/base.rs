@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use composit::{ 
-    Component, StateValue, StateFixed, ComponentSource, StateAtom
+    StateValue, StateFixed, ComponentSource, StateAtom, ActiveSource
 };
 use controller::global::App;
 use controller::input::{ Event, events_run };
@@ -48,16 +48,16 @@ pub fn testcard_base(a: &mut App, stick_name: &str) {
     });
 }
 
-fn component_debug_main(name: &str) -> Component {
+fn component_debug_main(name: &str) -> ActiveSource {
     let cs = debug_source_main();
-    Component::new(name,Rc::new(cs),Rc::new(StateFixed(StateValue::On())))    
+    ActiveSource::new(name,Rc::new(cs),Rc::new(StateFixed(StateValue::On())))    
 }
 
-fn component_debug_sub(name: &str, even: bool) -> Component {
+fn component_debug_sub(name: &str, even: bool) -> ActiveSource {
     let cs = debug_source_sub(even);
     let state_name = if even { "even" } else { "odd" };
     let state = Rc::new(StateAtom::new(state_name));
-    Component::new(name,Rc::new(cs),state)
+    ActiveSource::new(name,Rc::new(cs),state)
 }
 
 pub struct DebugComponentSource {
@@ -70,7 +70,7 @@ impl DebugComponentSource {
 }
 
 impl ComponentSource for DebugComponentSource {
-    fn get_component(&mut self, name: &str) -> Option<Component> {
+    fn get_component(&mut self, name: &str) -> Option<ActiveSource> {
         match name {
             "internal:debug-main" => Some(component_debug_main(name)),
             "internal:debug-even" => Some(component_debug_sub(name,true)),

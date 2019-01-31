@@ -33,7 +33,7 @@ impl Source for ClosureSource {
 }
 
 pub fn closure_add(lcb: &mut SourceResponse, s: &ShapeSpec) {
-    lcb.add_shape(DrawnShape::new(s.create()));
+    lcb.add_shape(s.clone());
 }
 
 pub fn closure_done(lcb: &mut SourceResponse, max_y: i32) {

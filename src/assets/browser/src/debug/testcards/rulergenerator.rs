@@ -120,22 +120,27 @@ impl RulerGenerator {
         out
     }
     
+    #[allow(unused)]
     pub fn range_1(&self, target: i32) -> Vec<(i64,f64,f64)> {
         self._range(target,BY1)
     }
 
+    #[allow(unused)]
     pub fn range_12(&self, target: i32) -> Vec<(i64,f64,f64)> {
         self._range(target,BY12)
     }
 
+    #[allow(unused)]
     pub fn range_15(&self, target: i32) -> Vec<(i64,f64,f64)> {
         self._range(target,BY15)
     }
 
+    #[allow(unused)]
     pub fn range_125(&self, target: i32) -> Vec<(i64,f64,f64)> {
         self._range(target,BY125)
     }
     
+    #[allow(unused)]
     pub fn ruler(&self, mark_tg: i32, tick_tg: i32, num_tg: i32,
                  heights: &[i32;4]) -> Vec<(f32,i32,Option<String>)> {
         let mut out = Vec::<(f32,i32,Option<String>)>::new();

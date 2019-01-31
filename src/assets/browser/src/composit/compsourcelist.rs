@@ -1,4 +1,4 @@
-use composit::{ Component, ComponentSource };
+use composit::{ ActiveSource, ComponentSource };
 
 pub struct ComponentSourceList {
     cs: Vec<Box<ComponentSource>>
@@ -17,7 +17,7 @@ impl ComponentSourceList {
 }
 
 impl ComponentSource for ComponentSourceList {
-    fn get_component(&mut self, name: &str) -> Option<Component> {
+    fn get_component(&mut self, name: &str) -> Option<ActiveSource> {
         self.cs.iter_mut().find_map(|cs| cs.get_component(name))
     }
 }

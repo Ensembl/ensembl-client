@@ -10,7 +10,7 @@ impl StaleCarriages {
     pub fn new() -> StaleCarriages {
         StaleCarriages {
             done_seen: HashMap::<Leaf,u32>::new(),
-            done_now: 0
+            done_now: 1
         }
     }
     

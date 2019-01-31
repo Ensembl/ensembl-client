@@ -1,10 +1,10 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use shape::DrawnShape;
+use shape::ShapeSpec;
 
 pub struct SourceResponseImpl {
-    shapes: Vec<DrawnShape>,
+    shapes: Vec<ShapeSpec>,
     max_y: Option<i32>,
     done: bool
 }
@@ -12,13 +12,13 @@ pub struct SourceResponseImpl {
 impl SourceResponseImpl {
     fn new() -> SourceResponseImpl {
         SourceResponseImpl {
-            shapes: Vec::<DrawnShape>::new(),
+            shapes: Vec::<ShapeSpec>::new(),
             max_y: None,
             done: false
         }
     }
     
-    fn add_shape(&mut self, item: DrawnShape) {
+    fn add_shape(&mut self, item: ShapeSpec) {
         self.shapes.push(item);
     }
     
@@ -30,13 +30,11 @@ impl SourceResponseImpl {
     fn get_max_y(&self) -> i32 { self.max_y.unwrap_or(0) }
     
     fn is_done(&self) -> bool { self.done }
-    
-    fn each_shape<F>(&mut self, mut cb: F) where F: FnMut(&mut DrawnShape) {
-        if self.done {
-            for mut s in &mut self.shapes {
-                cb(&mut s);
-            }
-        }
+
+    fn get_shapes(&self) -> &Vec<ShapeSpec> { &self.shapes }
+        
+    pub fn size(&self) -> usize {
+        self.shapes.len()
     }
 }
 
@@ -48,7 +46,7 @@ impl SourceResponse {
         SourceResponse(Rc::new(RefCell::new(SourceResponseImpl::new())))
     }
     
-    pub fn add_shape(&mut self, item: DrawnShape) {
+    pub fn add_shape(&mut self, item: ShapeSpec) {
         self.0.borrow_mut().add_shape(item);
     }
     
@@ -58,8 +56,10 @@ impl SourceResponse {
     
     pub fn is_done(&self) -> bool { self.0.borrow().is_done() }
     pub fn get_max_y(&self) -> i32 { self.0.borrow().get_max_y() }
-    
-    pub fn each_shape<F>(&mut self, cb: F) where F: FnMut(&mut DrawnShape) {
-        self.0.borrow_mut().each_shape(cb);
+        
+    pub fn size(&self) -> usize { self.0.borrow_mut().size() }
+
+    pub fn get_shapes(&self) -> Vec<ShapeSpec> {
+        self.0.borrow_mut().get_shapes().clone()
     }
 }
