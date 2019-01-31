@@ -2,7 +2,7 @@ use std::cmp::{ max, min };
 use std::collections::HashSet;
 
 use composit::{
-    Leaf, Carriage, StateManager, vscale_bp_per_leaf, SourceFactory,
+    Leaf, Carriage, StateManager, vscale_bp_per_leaf,
     ComponentManager, ActiveSource, Stick, CarriageSet, StaleCarriages
 };
 use composit::state::ComponentRedo;

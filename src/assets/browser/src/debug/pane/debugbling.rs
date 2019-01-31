@@ -8,7 +8,7 @@ use stdweb::web::{ Element, IEventTarget };
 use stdweb::web::event::{ ChangeEvent, ClickEvent };
 
 use controller::input::EggDetector;
-use controller::global::{ AppRunner, App };
+use controller::global::App;
 use debug::testcard_base;
 use debug::DebugConsole;
 use dom::{ DEBUGSTAGE, DEBUGSTAGE_CSS, Bling };

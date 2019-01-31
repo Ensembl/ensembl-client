@@ -3,7 +3,7 @@ use std::collections::hash_map::Entry;
 use program::ObjectAttrib;
 
 pub trait Input {
-    fn to_f32(&self, _attrib: &mut ObjectAttrib, _batch: &DataBatch) {}
+    fn to_f32(&self, _dest: &mut Vec<f32>) {}
 }
 
 #[derive(Clone,Copy,Debug)]

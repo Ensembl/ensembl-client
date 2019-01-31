@@ -23,7 +23,7 @@ impl Colour {
 }
 
 impl Input for Colour {
-    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
-        attrib.add_f32(&self.to_frac(), batch);
+    fn to_f32(&self, dest: &mut Vec<f32>) {
+        dest.extend_from_slice(&self.to_frac());
     }
 }

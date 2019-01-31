@@ -4,7 +4,7 @@ use stdweb::web::window;
 use stdweb::web::IWindowOrWorker;
 
 use composit::{ Source, SourceResponse, Leaf };
-use shape::{ ShapeSpec, DrawnShape };
+use shape::ShapeSpec;
 
 pub struct ClosureSourceImpl {
     f: Box<Fn(&mut SourceResponse,&Leaf)>,

@@ -136,9 +136,10 @@ impl From<Dot<Corner,Corner>> for Rect<AxisSense,AxisSense> {
 }
 
 impl Input for Corner {
-    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
+    fn to_f32(&self, dest: &mut Vec<f32>) {
         let (a,b): (f32,f32) = (self.0.into(), self.1.into());
-        attrib.add_f32(&[a,b],batch);
+        dest.push(a);
+        dest.push(b);
     }
 }
 
