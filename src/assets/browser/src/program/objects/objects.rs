@@ -10,7 +10,7 @@ use program::objects::UniformValue;
 /* This is the meat of each Object implementation */
 pub trait Object {
     //fn add_f32(&mut self, _values: &[f32], _batch: &DataBatch) {}
-    fn get_f32_slice(&mut self, batch: &DataBatch) -> Option<&mut Vec<f32>> {
+    fn get_f32_slice(&mut self, _batch: &DataBatch) -> Option<&mut Vec<f32>> {
         None
     }
     

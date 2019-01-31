@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use std::ops::{ Add, Sub, Mul, Div, Neg };
 
 use composit::Stage;
-use program::{ Object, ObjectAttrib, DataBatch, Input };
+use program::Input;
 use types::{
     Rect, Anchored, Axis, Edge, Corner, Anchor, Direction,
     RIGHT, LEFT, DOWN, UP

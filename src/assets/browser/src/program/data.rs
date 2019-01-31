@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
-use program::ObjectAttrib;
 
 pub trait Input {
     fn to_f32(&self, _dest: &mut Vec<f32>) {}

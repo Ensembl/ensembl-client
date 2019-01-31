@@ -2,7 +2,7 @@ use std::cmp::{ Ordering, PartialOrd };
 use std::fmt::Debug;
 use std::ops::{ Add, Neg };
 
-use program::{ Object, ObjectAttrib, DataBatch, Input };
+use program::Input;
 use types::{ Dot, area, Rect };
 
 #[derive(Clone,Copy,Debug,PartialEq)]

@@ -6,7 +6,7 @@ use stdweb::unstable::TryInto;
 use global::{ Global, GlobalWeak };
 use composit::{ Compositor, StateManager, Stage };
 use controller::input::{ Event, events_run, startup_events };
-use dom::{ domutil, Bling };
+use dom::domutil;
 use print::Printer;
 
 const CANVAS : &str = r##"<canvas id="glcanvas"></canvas>"##;
