@@ -58,7 +58,7 @@ impl Object for ObjectAttrib {
             if let Some(buf) = self.buffer(batch) {
                 ctx.bind_buffer(glctx::ARRAY_BUFFER,Some(&buf));
                 let data = TypedArray::<f32>::from(&(data[..])).buffer();
-                //console!("len {:?} {:?}",self.name,data.len());
+                //debug!("bug3","len {:?} {:?}",self.name,data.len());
                 ctx.buffer_data_1(glctx::ARRAY_BUFFER,Some(&data),glctx::STATIC_DRAW);
             }
         }

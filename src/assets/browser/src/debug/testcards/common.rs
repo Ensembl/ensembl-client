@@ -2,6 +2,7 @@ use std::collections::hash_map::DefaultHasher;
 use std::hash::Hasher;
 
 use rand::Rng;
+use rand::RngCore;
 use rand::prelude::SliceRandom;
 use rand::rngs::SmallRng;
 use rand::SeedableRng;
@@ -58,6 +59,32 @@ pub fn rng_pos(kind: [u8;8], start: i32, end: i32, sep: i32, size: i32) -> Vec<[
         }
     }
     out.sort();
+    out
+}
+
+pub fn rng_seq(kind: [u8;8], start: i32, end: i32) -> String {
+    let mut out = String::new();
+    let start_block = (start as f32/RNG_BLOCK_SIZE as f32).floor() as i32;
+    let end_block = (end as f32/RNG_BLOCK_SIZE as f32).ceil() as i32;
+    for block in start_block..(end_block+1) {
+        let mut block_start = block * RNG_BLOCK_SIZE;
+        let seed = [kind[0],kind[1],kind[2],kind[3],
+                    kind[4],kind[5],kind[6],kind[7],
+                    0,0,0,0,
+                    ((block>>24)&0xff) as u8,
+                    ((block>>16)&0xff) as u8,
+                    ((block>> 8)&0xff) as u8,
+                    ((block    )&0xff) as u8];
+        let mut rng = SmallRng::from_seed(seed);
+        while block_start < start {
+            rng.next_u32();
+            block_start += 1;
+        }        
+        for _ in 0..(end-start) {
+            let v : usize = (rng.next_u32()%4) as usize;
+            out.push_str(&["C","G","A","T"][v]);
+        }
+    }
     out
 }
 
