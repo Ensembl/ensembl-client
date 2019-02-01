@@ -1,0 +1,16 @@
+.react-slidedown {
+  height: 0;
+  transition: none 0.5s ease-in;
+}
+
+.react-slidedown.transitioning {
+  overflow-y: hidden;
+}
+
+.react-slidedown.closed {
+  display: none;
+}
+
+.react-slide-drawer {
+  transition: all 0.5s ease-in;
+}

@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Nav /> renders correctly 1`] = `
+<div
+  className="top-bar-right"
+>
+  <button
+    className="inline launchbar-button"
+    onClick={[MockFunction]}
+  >
+    <img
+      alt="toggle launchbar"
+      src={Object {}}
+      title="Launchbar"
+    />
+  </button>
+  <button
+    className="inline account-button"
+    onClick={[MockFunction]}
+  >
+    <img
+      alt="toggle account"
+      src={Object {}}
+      title="Account"
+    />
+  </button>
+</div>
+`;
