@@ -12,7 +12,7 @@ use composit::{
 use controller::global::App;
 use controller::input::Event;
 use debug::testcards::common::{
-    track_data, rng_pos, prop
+    track_data, rng_pos, prop, rng_seq
 };
 use debug::testcards::rulergenerator::RulerGenerator;
 use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
@@ -233,12 +233,44 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
     let wiggle = 1000000;
     let pr = if is_gene { 0.1 } else { 0.5 };
     let starts_rng = rng_pos([t as u8,0,0,0,0,0,0,8],start_leaf-wiggle,
-                             end_leaf,100000,(100000.*pr) as i32);
+                             end_leaf+wiggle,100000,(100000.*pr) as i32);
     let d = data(t);
     let st = (t as f32).cos() * -10. - 100.;
     let mut x = st;
     let y = t*PITCH+TOP;
-    if leaf.get_vscale() > -6 {
+    let scale = leaf.get_vscale();
+    if scale > 5 {
+        // why?
+    } else if scale > 1 {
+        let h = if scale > 3 { 12 } else if scale > 2 { 6 } else { 4 };
+        let t = if scale > 3 { 3 } else if scale > 2 { 2 } else { 0 };
+        for (i,pos) in starts_rng.iter().enumerate() {
+            let prop_start = prop(leaf,pos[0]);
+            let prop_end = prop(leaf,pos[1]);
+            if prop_end < 0. || prop_start > 1. { continue; }
+            let seq = if scale > 2 {
+                rng_seq([0,0,0,0,0,0,0,0],pos[0],pos[1])
+            } else {
+                "".to_string()
+            };
+            for (i,bp) in (pos[0]..pos[1]).enumerate() {
+                let cur_bp = prop(leaf,bp);
+                let size_bp = prop(leaf,bp+1) - cur_bp;
+                let prop_start = cur_bp - 0.45*size_bp;
+                let prop_end = cur_bp + 0.45*size_bp;
+                if prop_start < 1. && prop_end > 0. {
+                    closure_add(lc,&stretch_rectangle(
+                                &area(cleaf(prop_start,y-h),
+                                      cleaf(prop_end,y+h)),
+                                &ColourSpec::Spot(Colour(75,168,252))));
+                    if t > 0 {
+                        let tx = text_texture(&seq[i..i+1],&p.lato_18,&Colour(255,255,255),&Colour(72,168,252));
+                        closure_add(lc,&pin_texture(tx, &cleaf((prop_start+prop_end)/2.,y), &cpixel(0,t), &cpixel(1,1).anchor(A_MIDDLE)));
+                    }
+                }
+            }
+        }  
+    } else if leaf.get_vscale() > -6 {
         for (i,pos) in starts_rng.iter().enumerate() {
             let prop_start = prop(leaf,pos[0]);
             let prop_end = prop(leaf,pos[1]);

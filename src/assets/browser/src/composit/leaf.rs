@@ -45,6 +45,9 @@ pub fn best_vscale(bp_per_screen: f64) -> i32 {
 
 impl fmt::Debug for Leaf {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f,"{:?}:{}:{}",self.stick,self.hindex,self.vscale)
+        let mul = vscale_bp_per_leaf(self.get_vscale());
+        let start = (self.get_index() as f64 * mul).floor() as i32;
+        let end = ((self.get_index()+1) as f64 * mul).ceil() as i32;
+        write!(f,"{:?}:{}:{}[{}-{}]",self.stick,self.hindex,self.vscale,start,end)
     }
 }

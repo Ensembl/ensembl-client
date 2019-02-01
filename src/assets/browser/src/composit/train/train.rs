@@ -7,7 +7,7 @@ use composit::{
 };
 use composit::state::ComponentRedo;
 
-const MAX_FLANK : i32 = 4;
+const MAX_FLANK : i32 = 2;
 
 pub struct Train {
     carriages: CarriageSet,
@@ -40,7 +40,7 @@ impl Train {
     
     /* called when position changes, to update carriages */
     pub fn set_position(&mut self, position_bp: f64) {
-        self.middle_leaf = (position_bp / vscale_bp_per_leaf(self.vscale) as f64).round() as i64;
+        self.middle_leaf = (position_bp / vscale_bp_per_leaf(self.vscale) as f64).floor() as i64;
     }
     
     /* called when zoom changes, to update flank */
@@ -159,7 +159,7 @@ impl Train {
         for c in self.carriages.leaf_carriages(leaf) {
             redo = redo | c.update_state(oom);
         }
-        if redo == ComponentRedo::Major {
+        if redo == ComponentRedo::Major && self.is_done() {
             self.stale.not_stale(&leaf);
         }
         if redo != ComponentRedo::None {

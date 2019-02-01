@@ -18,7 +18,7 @@ use composit::{
 };
 
 const MS_FADE : f64 = 300.;
-const OUTER_TRAINS : usize = 3;
+const OUTER_TRAINS : usize = 2;
 
 pub struct TrainManager {
     /* the trains themselves */
@@ -118,7 +118,7 @@ impl TrainManager {
             let scale = self.transition_train.as_ref().unwrap().get_vscale();
             debug!("redraw","outer is {}",scale-1);
             for i in 0..OUTER_TRAINS {
-                self.outer_train[i] = self.make_train(cm,scale-i as i32-1);
+                //self.outer_train[i] = self.make_train(cm,scale-i as i32-1);
             }
         }
     }

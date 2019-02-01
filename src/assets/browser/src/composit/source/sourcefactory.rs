@@ -33,7 +33,7 @@ impl SourceFactory {
         let mut togo = Vec::<(ActiveSource,Leaf)>::new();
         for (k,r) in &self.pending {
             if r.is_done() {
-                debug!("sources","end {:?}",k);
+                debug!("sources","end {:?}",k,);
                 togo.push(k.clone());
             }
         }

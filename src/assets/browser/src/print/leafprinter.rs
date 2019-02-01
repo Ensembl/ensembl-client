@@ -63,9 +63,8 @@ impl LeafPrinter {
                         aca: &mut AllCanvasAllocator,
                         level: ComponentRedo) {
         if level == ComponentRedo::None { return; }
-        debug!("redraw","{:?} {:?}",leaf,level);
         if let Some(ref mut comps) = sc.get_carriages(leaf) {
-            if comps.len() > 0 {            
+            if comps.len() > 0 {
                 self.init();
                 if level == ComponentRedo::Major {
                     self.redraw_drawings(aca,comps);

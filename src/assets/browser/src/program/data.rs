@@ -82,8 +82,12 @@ impl BatchManager {
     pub fn reset(&mut self) {
         self.batch_source.clear();
         self.batches.clear();
+        let len = self.groups.len();
         self.max_group = 0;
         self.groups.clear();
+        for i in 0..len {
+            self.new_group();
+        }
     }
     
     pub fn batches(&self) -> &Vec<DataBatch> { &self.batches }
