@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`headerActions dispatches the correct actions and payloads 1`] = `
+Array [
+  Object {
+    "meta": undefined,
+    "payload": undefined,
+    "type": "header/toggle-account",
+  },
+  Object {
+    "meta": undefined,
+    "payload": undefined,
+    "type": "header/toggle-launchbar",
+  },
+  Object {
+    "meta": undefined,
+    "payload": "global-search",
+    "type": "header/change-current-app",
+  },
+]
+`;

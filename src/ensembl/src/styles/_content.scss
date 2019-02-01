@@ -1,0 +1,19 @@
+main {
+  @include flex;
+  min-height: calc(100vh - 96px);
+
+  &.expanded {
+    min-height: calc(100vh - 38px);
+  }
+
+  h2 {
+    color: $ens-grey;
+    margin-top: 35%;
+    padding: 15px 0;
+    text-align: center;
+  }
+
+  > h2 {
+    width: 100%;
+  }
+}

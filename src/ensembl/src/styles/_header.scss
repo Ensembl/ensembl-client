@@ -1,0 +1,88 @@
+.top-bar {
+  @include top-bar-container;
+  @include top-bar-unstack;
+
+  color: $white;
+
+  .logo {
+    font-size: 16px;
+    font-weight: $global-weight-bold;
+  }
+
+  .strapline {
+    display: none;
+    margin-left: 30px;
+
+    @include breakpoint(960px) {
+      display: inline-block;
+    }
+  }
+
+  .top-bar-right {
+    button {
+      margin-left: 30px;
+      height: 24px;
+      width: 24px;
+      vertical-align: middle;
+    }
+  }
+}
+
+.launchbar {
+  border-bottom: 1px solid $ens-black;
+  border-top: 1px solid $ens-black;
+  padding: 0 5px;
+  @include flex;
+
+  .categories-wrapper {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    width: calc(100% - 86px);
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .categories {
+    flex: 0 0 auto;
+  }
+
+  .about {
+    @include flex;
+    @include flex-align(right, top);
+    margin-left: 20px;
+  }
+
+  dl {
+    display: inline-block;
+    margin: 5px 0;
+    padding: 0 10px;
+
+    &.border {
+      border-right: 1px solid $ens-black;
+    }
+  }
+
+  dt {
+    display: inline-block;
+    padding: 5px 15px;
+  }
+
+  img {
+    height: 36px;
+    width: 36px;
+  }
+}
+
+.account {
+  height: 300px;
+  @include flex;
+  @include flex-align(center, middle);
+
+  h2 {
+    color: $ens-grey;
+    text-align: center;
+  }
+}
