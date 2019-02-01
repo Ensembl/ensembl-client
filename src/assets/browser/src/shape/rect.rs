@@ -6,7 +6,7 @@ use types::{ CLeaf, AxisSense, Rect, Edge, RLeaf };
 use shape::{ Shape, ColourSpec, ShapeSpec };
 use shape::util::{
     rectangle_p, rectangle_c, rectangle_g, multi_gl, vertices_rect,
-    despot
+    despot, colour
 };
 use print::PrintEdition;
 use drawing::{ Artwork };
@@ -70,7 +70,9 @@ impl Shape for PinRect {
             },
         };
         if let ColourSpec::Colour(c) = self.colspec {
-            multi_gl(b,geom,"aVertexColour",&c,4);
+            for i in 0..4 {
+                colour(b,geom,"aVertexColour",&c);
+            }
         }
     }
     

@@ -29,8 +29,15 @@ fn find_short(mut a: f64, mut b:f64) -> String {
         divs -= 1;
         out.push_str(&format!("{}",max(ad,bd)));
         if ad != bd { break; }
+        if divs > 0 && divs % 3 == 0 { out.push_str(","); }
     }
-    if divs > 0 { out.push_str(&"0".repeat(divs as usize)); }
+    if divs > 0 {
+        while divs > 0 {
+            if divs % 3 == 0 { out.push_str(","); }
+            out.push_str("0");
+            divs -= 1;
+        }
+    }
     out
 }
 

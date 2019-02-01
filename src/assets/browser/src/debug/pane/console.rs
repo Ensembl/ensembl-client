@@ -23,7 +23,7 @@ pub struct DebugFolderEntry {
     mul: u32
 }
 
-const MAX_LEN : i32 = 1000000;
+const MAX_LEN : i32 = 10000;
 
 impl DebugFolderEntry {
     pub fn new(name: &str) -> DebugFolderEntry {

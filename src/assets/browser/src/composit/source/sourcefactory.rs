@@ -46,7 +46,7 @@ impl SourceFactory {
     pub fn tick(&mut self, t: f64) {
         self.remove_finished();
     }
-    
+        
     pub fn populate_carriage(&mut self, c: &mut Carriage) {
         let key = (c.get_source().clone(),c.get_leaf().clone());
         let resp = if let Some(resp) = self.cache.get(&key) {

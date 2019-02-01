@@ -4,7 +4,7 @@ use webgl_rendering_context::{
 
 use drawing::Drawing;
 use drawing::DrawingSession;
-use program::data::{ DataBatch, DataGroup, Input };
+use program::data::{ DataBatch, DataGroupIndex, Input };
 use program::objects::UniformValue;
 
 /* This is the meat of each Object implementation */
@@ -20,8 +20,9 @@ pub trait Object {
         Vec::<Drawing>::new()
     }
 
+    fn add_data_f32(&mut self, _batch: &DataBatch, _values: &[f32]) {}
     fn add_data(&mut self, _batch: &DataBatch, _values: &[&Input]) {}
-    fn set_uniform(&mut self, _group: Option<DataGroup>, _value: UniformValue) {}
+    fn set_uniform(&mut self, _group: Option<DataGroupIndex>, _value: UniformValue) {}
 
     fn is_main(&self) -> bool { false }
     fn add_index(&mut self, _batch: &DataBatch, _indexes: &[u16], _points: u16) {}

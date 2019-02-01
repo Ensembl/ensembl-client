@@ -24,6 +24,7 @@ pub struct TrainManager {
     current_train: Option<Train>,
     future_train: Option<Train>,
     transition_train: Option<Train>,
+    outer_train: Option<Train>,
     /* progress of transition */
     transition_start: Option<f64>,
     transition_prop: Option<f64>, 
@@ -37,6 +38,7 @@ impl TrainManager {
     pub fn new() -> TrainManager {
         TrainManager {
             current_train: None,
+            outer_train: None,
             future_train: None,
             transition_train: None,
             transition_start: None,
@@ -46,6 +48,20 @@ impl TrainManager {
             stick: None
         }
     }
+    
+    /* utility: makes new train at given scale */
+    fn make_train(&mut self, cm: &mut ComponentManager, vscale: i32) -> Option<Train> {
+        if let Some(ref stick) = self.stick {
+            let mut f = Train::new(&stick,vscale);
+            f.set_position(self.position_bp);
+            f.set_zoom(self.bp_per_screen);
+            f.manage_leafs(cm);
+            Some(f)
+        } else {
+            None
+        }
+    }
+
     
     /* COMPOSITOR sets new stick. Existing trains useless */
     pub fn set_stick(&mut self, st: &Stick, bp_per_screen: f64) {
@@ -57,6 +73,7 @@ impl TrainManager {
         self.current_train.as_mut().unwrap().set_zoom(bp_per_screen);
         self.transition_train = None;
         self.future_train = None;
+        self.outer_train = None;
     }
     
     /* ********************************************************
@@ -76,9 +93,9 @@ impl TrainManager {
             }
         }
     }
-    
+        
     /* if there is a future train and it is done, move to transition */
-    fn future_ready(&mut self, t: f64) {
+    fn future_ready(&mut self, cm: &mut ComponentManager, t: f64) {
         /* is it ready? */
         let mut ready = false;
         if let Some(ref mut future_train) = self.future_train {
@@ -91,13 +108,16 @@ impl TrainManager {
             self.transition_train = self.future_train.take();
             self.transition_start = Some(t);
             self.transition_prop = Some(0.);
+            let scale = self.transition_train.as_ref().unwrap().get_vscale();
+            debug!("redraw","outer is {}",scale-1);
+            self.outer_train = self.make_train(cm,scale-1);
         }
     }
     
     /* called regularly by compositor to let us perform transitions */
-    pub fn tick(&mut self, t: f64) {
+    pub fn tick(&mut self, t: f64, cm: &mut ComponentManager) {
         self.transition_maybe_done(t);
-        self.future_ready(t);
+        self.future_ready(cm,t);
     }
     
     /* used by COMPOSITOR to update trains as to manage components etc */
@@ -112,6 +132,9 @@ impl TrainManager {
         if let Some(ref mut future_train) = self.future_train {
             cb(future_train);
         }
+        if let Some(ref mut outer_train) = self.outer_train {
+            cb(outer_train);
+        }        
     }
     
     pub fn add_component(&mut self, cm: &mut ComponentManager, c: &ActiveSource) {
@@ -150,13 +173,7 @@ impl TrainManager {
 
     /* Create future train */
     fn new_future(&mut self, cm: &mut ComponentManager, vscale: i32) {
-        if let Some(ref stick) = self.stick {
-            let mut f = Train::new(&stick,vscale);
-            f.set_position(self.position_bp);
-            f.set_zoom(self.bp_per_screen);
-            f.manage_leafs(cm);
-            self.future_train = Some(f);
-        }
+        self.future_train = self.make_train(cm,vscale);
     }
     
     /* Abandon future train */
