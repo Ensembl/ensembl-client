@@ -14,7 +14,7 @@ pub struct Stage {
     pos: Dot<f64,f64>,
     zoom: f32,
     linzoom: f64, /* bp/screen */
-    max_y: i32
+    max_y: i32,
 }
 
 impl Stage {
@@ -24,7 +24,7 @@ impl Stage {
             pos: Dot(0.,0.),
             mouse_pos: Dot(0,0),
             zoom: 0., linzoom: 0., base: 0., max_y: 0,
-            dims: size,
+            dims: size
         };
         out.set_zoom(0.);
         out
@@ -65,7 +65,6 @@ impl Stage {
     pub fn inc_pos(&mut self, delta: &Move<f64,f64>) {
         let mut pos = self.pos + *delta;
         self.limit_min_y(&mut pos);
-        //console!("delta={:?}",delta);
         if delta.true_direction() == DOWN {
             self.limit_max_y(&mut pos);
         }
@@ -79,7 +78,6 @@ impl Stage {
     fn limit_max_y(&self, pos: &mut Dot<f64,f64>) {
         let mut max_dy = (self.max_y - self.dims.1) as f64;
         if max_dy < 0. { max_dy = 0.; }
-        //console!("max_dy = {:?} pos.1={:?}",max_dy,pos.1);
         if pos.1 > max_dy { pos.1 = max_dy; }
     }
 
@@ -109,7 +107,6 @@ impl Stage {
     }
 
     pub fn set_size(&mut self, size: &CPixel) {
-        console!("screen size {:?}",size);
         self.dims = *size;
     }
 

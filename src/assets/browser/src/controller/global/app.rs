@@ -6,7 +6,7 @@ use stdweb::unstable::TryInto;
 use global::{ Global, GlobalWeak };
 use composit::{ Compositor, StateManager, Stage };
 use controller::input::{ Event, events_run, startup_events };
-use dom::{ domutil, Bling };
+use dom::domutil;
 use print::Printer;
 
 const CANVAS : &str = r##"<canvas id="glcanvas"></canvas>"##;
@@ -18,14 +18,14 @@ pub struct App {
     pub printer: Arc<Mutex<Printer>>,
     pub stage: Arc<Mutex<Stage>>,
     pub state: Arc<Mutex<StateManager>>,
-    pub compo: Arc<Mutex<Compositor>>
+    pub compo: Arc<Mutex<Compositor>>,
+    last_boxsize: Option<f64>
 }
 
 impl App {
     pub fn new(g: &GlobalWeak, browser_el: &Element) -> App {        
         domutil::inner_html(&browser_el,CANVAS);
         let canv_el : HtmlElement = domutil::query_selector(&browser_el,"canvas").try_into().unwrap();
-        console!("canv_el {:?}",canv_el);
         let mut out = App {
             g: g.clone(),
             browser_el: browser_el.clone(),
@@ -34,6 +34,7 @@ impl App {
             stage:  Arc::new(Mutex::new(Stage::new())),
             compo: Arc::new(Mutex::new(Compositor::new())),
             state: Arc::new(Mutex::new(StateManager::new())),
+            last_boxsize: None
         };
         out.run_events(&startup_events());
         out
@@ -43,6 +44,8 @@ impl App {
             where F: FnOnce(&mut Global) -> G {
         self.g.upgrade().as_mut().map(cb)
     }
+    
+    pub fn get_browser_element(&self) -> &Element { &self.browser_el }
     
     pub fn get_canvas_element(&self) -> &HtmlElement { &self.canv_el }
     
@@ -77,10 +80,8 @@ impl App {
     }
         
     pub fn check_size(self: &mut App) {
-        let sz = self.printer.lock().unwrap().get_real_size();
-        events_run(self,&vec! {
-            Event::Resize(sz)
-        });
+        let sz = self.printer.lock().unwrap().get_available_size();
+        events_run(self,&vec! { Event::Resize(sz) });
     }
  
     pub fn force_size(self: &App) {

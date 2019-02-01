@@ -2,10 +2,10 @@ use std::collections::{ HashMap, HashSet };
 use std::rc::Rc;
 
 use stdweb::unstable::TryInto;
-use stdweb::web::{ HtmlElement, Element };
+use stdweb::web::{ HtmlElement, Element, INode, IElement };
 
 use print::{ Programs, LeafPrinter };
-use composit::{ Compositor, ScaleCompositor, StateManager, Leaf, Stage };
+use composit::{ Compositor, Train, StateManager, Leaf, Stage };
 use drawing::{ AllCanvasAllocator };
 use dom::domutil;
 use types::{ Dot };
@@ -70,7 +70,7 @@ impl Printer {
     }
 
     fn manage_leafs(&mut self, c: &mut Compositor) {
-        let leafs = c.all_leafs();
+        let leafs = c.all_printing_leafs();
         self.create_new_leafs(&leafs);
         self.remove_old_leafs(&leafs);        
     }
@@ -88,7 +88,7 @@ impl Printer {
     }
 
     fn prepare_scale(&mut self, stage: &Stage, oom: &StateManager, 
-                     sc: &mut ScaleCompositor, opacity: f32) {
+                     sc: &mut Train, opacity: f32) {
         let leafs = sc.leafs();
         for ref leaf in &leafs {
             if let Some(lp) = &mut self.lp.get_mut(&leaf) {
@@ -99,8 +99,8 @@ impl Printer {
         }
     }
         
-    fn execute(&mut self, stage: &Stage, oom: &StateManager, c: &mut Compositor) {
-        let leafs = c.all_leafs();
+    fn execute(&mut self, c: &mut Compositor) {
+        let leafs = c.all_printing_leafs();
         for pt in &self.base_progs.order {
             for ref leaf in &leafs {
                 let lp = &mut self.lp.get_mut(&leaf).unwrap();
@@ -113,13 +113,13 @@ impl Printer {
         self.manage_leafs(compo);
         self.prepare_all();
         let prop = compo.get_prop_trans();
-        if let Some(current_sc) = compo.get_current_sc() {
-            self.prepare_scale(stage,oom,current_sc,1.-prop);
+        if let Some(current_train) = compo.get_current_train() {
+            self.prepare_scale(stage,oom,current_train,1.-prop);
         }
-        if let Some(transition_sc) = compo.get_transition_sc() {
-            self.prepare_scale(stage,oom,transition_sc,prop);
+        if let Some(transition_train) = compo.get_transition_train() {
+            self.prepare_scale(stage,oom,transition_train,prop);
         }
-        self.execute(stage,oom,compo);
+        self.execute(compo);
     }
         
     pub fn set_size(&mut self, s: Dot<i32,i32>) {
@@ -128,9 +128,18 @@ impl Printer {
         elc.set_width(s.0 as u32);
         elc.set_height(s.1 as u32);
         self.ctx.viewport(0,0,s.0,s.1);
+        elel.set_attribute("style",&format!("width: {}px; height: {}px",s.0,s.1)).ok();
     }
     
-    pub fn get_real_size(&self) -> Dot<i32,i32> {
-        domutil::size(&self.canv_el)
+    pub fn get_available_size(&self) -> Dot<i32,i32> {
+        let ws = domutil::window_space(&self.canv_el.parent_node().unwrap().try_into().unwrap());
+        let mut size = domutil::size(&self.canv_el.parent_node().unwrap().try_into().unwrap());
+        // TODO left/top/right
+        let rb = ws.far_offset();
+        if rb.1 < 0 {
+            // off the bottom, fix
+            size.1 += rb.1
+        }
+        size
     }
 }

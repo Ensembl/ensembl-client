@@ -1,24 +1,24 @@
 use std::collections::HashMap;
 
-use program::{ ProgramAttribs, DataGroup, ProgramType, PTSkin, CanvasWeave };
+use program::{ ProgramAttribs, DataGroupIndex, ProgramType, PTSkin, CanvasWeave };
 use program::UniformValue;
 
 pub struct CanvasIdx {
-    group: HashMap<ProgramType,HashMap<CanvasWeave,DataGroup>>,
+    group: HashMap<ProgramType,HashMap<CanvasWeave,DataGroupIndex>>,
     glindexes: HashMap<CanvasWeave,u32>
 }
 
 impl CanvasIdx {
     pub fn new(glindexes: HashMap<CanvasWeave,u32>) -> CanvasIdx {
         CanvasIdx {
-            group: HashMap::<ProgramType,HashMap<CanvasWeave,DataGroup>>::new(),
+            group: HashMap::<ProgramType,HashMap<CanvasWeave,DataGroupIndex>>::new(),
             glindexes
         }
     }
 
-    pub fn get_group(&mut self, geom: &mut ProgramAttribs, weave: &CanvasWeave) -> DataGroup {
+    pub fn get_group(&mut self, geom: &mut ProgramAttribs, weave: &CanvasWeave) -> DataGroupIndex {
         *self.group.entry(*geom.prog_type()).or_insert_with(||
-            HashMap::<CanvasWeave,DataGroup>::new()
+            HashMap::<CanvasWeave,DataGroupIndex>::new()
         ).entry(*weave).or_insert_with(|| {
             geom.new_group()
         })

@@ -9,7 +9,7 @@ use stdweb::web::{ HtmlElement, Element, IHtmlElement };
 
 
 use composit::{
-    ComponentSourceList, StickManager, Component, ComponentSource, Stick
+    ComponentSourceList, StickManager, ActiveSource, ComponentSource, Stick
 };
 use controller::input::{ register_startup_events, initial_events, events_run };
 use controller::global::AppRunner;
@@ -46,7 +46,7 @@ impl GlobalImpl {
         self.apps.insert(key.to_string(),ar);
     }
     
-    pub fn get_component(&mut self, name: &str) -> Option<Component> {
+    pub fn get_component(&mut self, name: &str) -> Option<ActiveSource> {
         self.csl.get_component(name)
     }
     
@@ -107,7 +107,7 @@ impl Global {
         }
     }
     
-    pub fn get_component(&mut self, name: &str) -> Option<Component> {
+    pub fn get_component(&mut self, name: &str) -> Option<ActiveSource> {
         self.0.borrow_mut().get_component(name)
     }
     

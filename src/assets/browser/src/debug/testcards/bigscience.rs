@@ -10,8 +10,8 @@ use rand::rngs::SmallRng;
 use rand::SeedableRng;
 
 use composit::{
-    StateFixed, Component, StateValue, StateAtom, Leaf, LeafComponent,
-    LCBuilder, Stick, vscale_bp_per_leaf
+    StateFixed, StateValue, StateAtom, Leaf, Carriage,
+    SourceResponse, Stick, vscale_bp_per_leaf
 };
 
 use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
@@ -53,7 +53,7 @@ fn battenberg() -> DrawingSpec {
                           255,255,0,255 },cpixel(2,2),false)
 }
 
-fn measure(lc: &mut LCBuilder, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSpec) {
+fn measure(lc: &mut SourceResponse, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSpec) {
     for x in -10..10 {
         closure_add(lc,&tape_rectangle(
             &cleaf(x as f32/10.,0),

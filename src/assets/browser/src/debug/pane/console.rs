@@ -23,7 +23,7 @@ pub struct DebugFolderEntry {
     mul: u32
 }
 
-const MAX_LEN : i32 = 1000000;
+const MAX_LEN : i32 = 10000;
 
 impl DebugFolderEntry {
     pub fn new(name: &str) -> DebugFolderEntry {
@@ -102,7 +102,6 @@ impl DebugConsoleImpl {
     
     fn entry(&mut self, k: &str) -> &mut DebugFolderEntry {
         let k = k.to_string();
-        let refresh = false;
         if !self.folder.contains_key(&k) {
             self.folder.insert(k.clone(),DebugFolderEntry::new(&k));
             self.refresh_dropdown();

@@ -9,7 +9,7 @@ const BY12 : &[f64] =  &[     0.1,0.2,    1.,   5.,10.    ];
 const BY15 : &[f64] =  &[0.05,0.1,    0.5,1.,2.,   10.,20.];
 const BY1 : &[f64] =   &[     0.1,        1.,      10.    ];
 
-const EPSILON : f64 = 0.00000001;
+const EPSILON : f64 = 0.000001;
 
 fn find_short(mut a: f64, mut b:f64) -> String {
     let mut out = String::new();
@@ -29,8 +29,15 @@ fn find_short(mut a: f64, mut b:f64) -> String {
         divs -= 1;
         out.push_str(&format!("{}",max(ad,bd)));
         if ad != bd { break; }
+        if divs > 0 && divs % 3 == 0 { out.push_str(","); }
     }
-    if divs > 0 { out.push_str(&"0".repeat(divs as usize)); }
+    if divs > 0 {
+        while divs > 0 {
+            if divs % 3 == 0 { out.push_str(","); }
+            out.push_str("0");
+            divs -= 1;
+        }
+    }
     out
 }
 
@@ -120,22 +127,27 @@ impl RulerGenerator {
         out
     }
     
+    #[allow(unused)]
     pub fn range_1(&self, target: i32) -> Vec<(i64,f64,f64)> {
         self._range(target,BY1)
     }
 
+    #[allow(unused)]
     pub fn range_12(&self, target: i32) -> Vec<(i64,f64,f64)> {
         self._range(target,BY12)
     }
 
+    #[allow(unused)]
     pub fn range_15(&self, target: i32) -> Vec<(i64,f64,f64)> {
         self._range(target,BY15)
     }
 
+    #[allow(unused)]
     pub fn range_125(&self, target: i32) -> Vec<(i64,f64,f64)> {
         self._range(target,BY125)
     }
     
+    #[allow(unused)]
     pub fn ruler(&self, mark_tg: i32, tick_tg: i32, num_tg: i32,
                  heights: &[i32;4]) -> Vec<(f32,i32,Option<String>)> {
         let mut out = Vec::<(f32,i32,Option<String>)>::new();

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 
-use composit::LeafComponent;
+use composit::Carriage;
 use drawing::{ OneCanvasManager, FlatCanvas, AllCanvasAllocator };
 use program::{ CanvasWeave };
 
@@ -43,7 +43,7 @@ impl DrawingSession {
         }
     }
 
-    pub fn redraw_component(&mut self, c: &mut LeafComponent) {
+    pub fn redraw_component(&mut self, c: &mut Carriage) {
         c.draw_drawings(self);
     }
     
