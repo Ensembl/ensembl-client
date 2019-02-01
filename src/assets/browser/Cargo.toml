@@ -13,6 +13,7 @@ lazy_static = "*"
 rand="*"
 separator = "*"
 itertools = "*"
+hsl = "*"
 
 [build-dependencies]
 webgl_generator = "*"
