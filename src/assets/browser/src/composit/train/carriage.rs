@@ -2,7 +2,7 @@ use std::fmt;
 
 use print::{ Programs, PrintEdition };
 use composit::{ SourceResponse, Leaf, ActiveSource, DrawnResponse };
-use composit::state::{ StateManager, StateExpr, StateValue, ComponentRedo };
+use composit::state::{ StateManager, StateValue, ComponentRedo };
 use drawing::DrawingSession;
 
 pub struct Carriage {

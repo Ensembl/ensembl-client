@@ -9,7 +9,7 @@ const BY12 : &[f64] =  &[     0.1,0.2,    1.,   5.,10.    ];
 const BY15 : &[f64] =  &[0.05,0.1,    0.5,1.,2.,   10.,20.];
 const BY1 : &[f64] =   &[     0.1,        1.,      10.    ];
 
-const EPSILON : f64 = 0.00000001;
+const EPSILON : f64 = 0.000001;
 
 fn find_short(mut a: f64, mut b:f64) -> String {
     let mut out = String::new();

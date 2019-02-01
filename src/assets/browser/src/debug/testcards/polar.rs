@@ -1,12 +1,13 @@
 #![allow(unused)]
 use std::cmp::{ min, max };
+use std::iter::repeat;
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
 use composit::vscale_bp_per_leaf;
 use composit::{
-    StateFixed, StateValue, StateAtom, Leaf,
-    Carriage, SourceResponse, Stick
+    StateFixed, StateValue, StateAtom, Leaf, Carriage, SourceResponse,
+    Stick
 };
 use controller::global::App;
 use controller::input::Event;
@@ -165,7 +166,51 @@ fn draw_varreg_part(lc: &mut SourceResponse, t: i32, x: f32, y: i32, v: f32, col
             &col));
 }
 
-const BLOCK_BUCKET : usize = 1000;
+const BLOCK_TARGET : usize = 400;
+const BUCKETS : &[usize] = &[500,1000,5000];
+
+fn try_bucket(leaf: &Leaf,starts_rng: &Vec<[i32;2]>, buckets: usize) -> Vec<(f32,f32,f32,f32)> {
+    let mut buc : Vec<(bool,f32,f32,f32)> = 
+                    repeat((false,1.0,0.0,0.0)).take(buckets).collect();
+    for pos in starts_rng {
+        let start_p = prop(leaf,pos[0]);
+        let start_b = max((start_p*buckets as f32) as usize,0);
+        let end_p = prop(leaf,pos[1]);
+        let end_b = min((end_p*buckets as f32) as usize,buckets-1);
+        for i in start_b..end_b+1 {
+            let start = buc[i].1.min(start_p);
+            let end = buc[i].2.max(end_p);
+            let density = buc[i].3 + end_p - start_p;
+            buc[i] = (true,start,end,density);
+        }
+    }
+    let mut blocks = Vec::<(f32,f32,f32,f32)>::new();
+    let mut prev = false;
+    for v in buc {
+        if v.0 {
+            if prev { 
+                let e = blocks.len()-1;
+                blocks[e].0 = blocks[e].0.min(v.1).max(0.);
+                blocks[e].1 = blocks[e].1.max(v.2).min(1.);
+                blocks[e].2 = blocks[e].2 + v.3;
+                blocks[e].3 += 1.;
+            } else {
+                blocks.push((v.1.max(0.),v.2.min(1.),v.3,1.));
+            }
+        }
+        prev = v.0;
+    }
+    blocks
+}
+
+fn get_blocks(leaf: &Leaf,starts_rng: &Vec<[i32;2]>) -> Vec<(f32,f32,f32,f32)> {
+    let mut out = None;
+    for buckets in BUCKETS {
+        out = Some(try_bucket(leaf,&starts_rng,*buckets));
+        if out.as_ref().unwrap().len() > BLOCK_TARGET { break; }
+    }
+    out.unwrap()
+}
 
 /* designed to fill most of 100kb scale */
 fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
@@ -219,47 +264,49 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
                     }
                     x += v.abs() * scale;
                 } else if prop_end-prop_start > 0.0001 {
-                    if is_gene {
-                        draw_gene_part(lc,prop_start,y,prop_end-prop_start);
+                    let mut colour = if is_gene {
+                        Colour(75,168,252)
+                    } else if t == 4 {
+                        Colour(190,219,213)
+                    } else if t%3 == 1 {
+                        Colour(255,64,64)
                     } else {
-                        let col = choose_colour(t,prop_start);
-                        draw_varreg_part(lc,t,prop_start,y,prop_end-prop_start,col);
-                    }
+                        Colour(192,192,192)
+                    };
+                    closure_add(lc,&stretch_rectangle(
+                        &area(cleaf(prop_start,y-3),cleaf(prop_end,y+3)),
+                        &ColourSpec::Colour(colour)));
                 }
             }
         }
     } else {
-        let mut buc = vec![(false,1.0_f32,0.0_f32);BLOCK_BUCKET];
-        for pos in starts_rng {
-            let start_p = prop(leaf,pos[0]);
-            let start_b = max((start_p*BLOCK_BUCKET as f32) as usize,0);
-            let end_p = prop(leaf,pos[1]);
-            let end_b = min((end_p*BLOCK_BUCKET as f32) as usize,BLOCK_BUCKET-1);
-            for i in start_b..end_b+1 {
-                buc[i] = (true,buc[i].1.min(start_p),buc[i].2.max(end_p));
-            }
+        let blocks = get_blocks(leaf,&starts_rng);
+        let mut max_density = 0.0_f32;
+        for (m,n,dn,dd) in blocks.iter() {
+            let density = (dn/ (n-m)).min(1.);
+            max_density = max_density.min(density);
         }
-        let mut blocks = Vec::<(f32,f32)>::new();
-        let mut prev = false;
-        for v in buc {
-            if v.0 {
-                if prev { 
-                    let e = blocks.len()-1;
-                    blocks[e].0 = blocks[e].0.min(v.1).max(0.);
-                    blocks[e].1 = blocks[e].1.max(v.2).min(1.);
-                } else {
-                    blocks.push((v.1.max(0.),v.2.min(1.)));
-                }
-            }
-            prev = v.0;
-        }
-        for (m,n) in blocks.iter() {
-            if is_gene {
-                draw_gene_part(lc,*m,y,*n-*m);
+        for (m,n,dn,dd) in blocks.iter() {
+            let mut col_hsl = if is_gene {
+                Colour(75,168,252)
+            } else if t == 4 {
+                Colour(190,219,213)
+            } else if t%3 == 1 {
+                Colour(255,64,64)
             } else {
-                let col = choose_colour(t,0.);
-                draw_varreg_part(lc,t,*m,y,*n-*m,col);
+                Colour(192,192,192)
+            }.to_hsl();
+            let mul = if max_density < 0.5 { 1.5 } else { 1.0 };
+            let mut density = ((dn/ (n-m))*mul).min(1.);
+            if density < 0.95 { density = density.min(0.8); }
+            if col_hsl[1] > 0.5 {
+                col_hsl[1] = 0.5 + col_hsl[1] * 0.5 * (1.0 - density) as f64;
             }
+            col_hsl[2] = col_hsl[2] + (1.-col_hsl[2]) * (1.0 - density) as f64;
+            let colour = Colour::from_hsl(col_hsl);
+            closure_add(lc,&stretch_rectangle(
+                &area(cleaf(*m,y-3),cleaf(*n,y+3)),
+                &ColourSpec::Colour(colour)));
         }
     }
 }
@@ -271,7 +318,7 @@ pub fn polar_source() -> ClosureSource {
         white: ColourSpec::Spot(Colour(255,255,255)),
         grey: ColourSpec::Spot(Colour(199,208,213))
     };
-    ClosureSource::new(0.5,move |ref mut lc,leaf| {
+    ClosureSource::new(0.,move |ref mut lc,leaf| {
         one_offs(lc,&p);
         draw_frame(lc,&leaf,AxisSense::Pos,&p);
         draw_frame(lc,&leaf,AxisSense::Neg,&p);
