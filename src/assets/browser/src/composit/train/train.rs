@@ -7,7 +7,7 @@ use composit::{
 };
 use composit::state::ComponentRedo;
 
-const MAX_FLANK : i32 = 2;
+const MAX_FLANK : i32 = 4;
 
 pub struct Train {
     carriages: CarriageSet,

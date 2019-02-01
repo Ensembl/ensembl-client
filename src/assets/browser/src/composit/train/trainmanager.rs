@@ -18,13 +18,14 @@ use composit::{
 };
 
 const MS_FADE : f64 = 300.;
+const OUTER_TRAINS : usize = 3;
 
 pub struct TrainManager {
     /* the trains themselves */
     current_train: Option<Train>,
     future_train: Option<Train>,
     transition_train: Option<Train>,
-    outer_train: Option<Train>,
+    outer_train: Vec<Option<Train>>,
     /* progress of transition */
     transition_start: Option<f64>,
     transition_prop: Option<f64>, 
@@ -36,9 +37,9 @@ pub struct TrainManager {
 
 impl TrainManager {
     pub fn new() -> TrainManager {
-        TrainManager {
+        let mut out = TrainManager {
             current_train: None,
-            outer_train: None,
+            outer_train: Vec::<Option<Train>>::new(),
             future_train: None,
             transition_train: None,
             transition_start: None,
@@ -46,7 +47,13 @@ impl TrainManager {
             bp_per_screen: 1.,
             position_bp: 0.,
             stick: None
-        }
+        };
+        out.reset_outers();
+        out
+    }
+    
+    fn reset_outers(&mut self) {
+        for _ in 0..OUTER_TRAINS { self.outer_train.push(None); }
     }
     
     /* utility: makes new train at given scale */
@@ -73,7 +80,7 @@ impl TrainManager {
         self.current_train.as_mut().unwrap().set_zoom(bp_per_screen);
         self.transition_train = None;
         self.future_train = None;
-        self.outer_train = None;
+        self.reset_outers();
     }
     
     /* ********************************************************
@@ -110,7 +117,9 @@ impl TrainManager {
             self.transition_prop = Some(0.);
             let scale = self.transition_train.as_ref().unwrap().get_vscale();
             debug!("redraw","outer is {}",scale-1);
-            self.outer_train = self.make_train(cm,scale-1);
+            for i in 0..OUTER_TRAINS {
+                self.outer_train[i] = self.make_train(cm,scale-i as i32-1);
+            }
         }
     }
     
@@ -132,9 +141,11 @@ impl TrainManager {
         if let Some(ref mut future_train) = self.future_train {
             cb(future_train);
         }
-        if let Some(ref mut outer_train) = self.outer_train {
-            cb(outer_train);
-        }        
+        for mut train in &mut self.outer_train {
+            if let Some(ref mut train) = train {
+                cb(train);
+            }
+        }
     }
     
     pub fn add_component(&mut self, cm: &mut ComponentManager, c: &ActiveSource) {
