@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`browserActions dispaches the correct actions and payloads 1`] = `
+Array [
+  Object {
+    "meta": undefined,
+    "payload": undefined,
+    "type": "browser/toggle-track-panel",
+  },
+  Object {
+    "meta": undefined,
+    "payload": undefined,
+    "type": "browser/toggle-drawer",
+  },
+  Object {
+    "meta": undefined,
+    "payload": undefined,
+    "type": "browser/open-drawer",
+  },
+  Object {
+    "meta": undefined,
+    "payload": undefined,
+    "type": "browser/close-drawer",
+  },
+  Object {
+    "meta": undefined,
+    "payload": "track-1",
+    "type": "browser/change-current-track",
+  },
+  Object {
+    "meta": undefined,
+    "payload": "main",
+    "type": "browser/change-current-drawer-section",
+  },
+]
+`;

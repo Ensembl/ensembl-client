@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "declaration": false,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noEmit": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "paths": {
+      "assets/*": [
+        "assets/*"
+      ]
+    },
+    "removeComments": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "esnext"
+  },
+  "exclude": [
+    "./src/**/*.test.ts",
+    "./src/**/*.test.tsx"
+  ],
+  "include": [
+    "./src/**/*",
+    "./assets/**/*",
+    "./typings"
+  ],
+  "typeRoots": [
+    "./typings"
+  ]
+}

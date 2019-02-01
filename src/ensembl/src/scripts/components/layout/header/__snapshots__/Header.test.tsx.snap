@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Header /> renders correctly 1`] = `
+<header>
+  <div
+    className="top-bar"
+  >
+    <div
+      className="top-bar-left"
+    >
+      <div
+        className="inline logo"
+      >
+        Ensembl
+      </div>
+      <div
+        className="strapline"
+      >
+        genome research database
+      </div>
+    </div>
+    <Connect(Nav) />
+  </div>
+  <Connect(Account) />
+  <Connect(LaunchbarContainer) />
+</header>
+`;

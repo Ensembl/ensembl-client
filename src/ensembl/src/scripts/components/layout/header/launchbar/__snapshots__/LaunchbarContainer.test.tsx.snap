@@ -1,0 +1,228 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<LaunchbarContainer /> renders correctly 1`] = `
+<div
+  class="react-slidedown"
+>
+  <div
+    class="launchbar"
+  >
+    <div
+      class="categories-wrapper"
+    >
+      <div
+        class="categories"
+      >
+        <dl
+          class="border"
+        >
+          <dt
+            class="global-search-app-icon"
+          >
+            <a
+              href="/app/global-search"
+            >
+              <img
+                alt="global search"
+                src="[object Object]"
+                title="global search"
+              />
+            </a>
+          </dt>
+          <dt
+            class="species-selector-app-icon"
+          >
+            <a
+              href="/app/species-selector"
+            >
+              <img
+                alt="species selector"
+                src="[object Object]"
+                title="species selector"
+              />
+            </a>
+          </dt>
+        </dl>
+        <dl
+          class="border"
+        >
+          <dt
+            class="browser-app-icon"
+          >
+            <a
+              href="/app/browser"
+            >
+              <img
+                alt="browser"
+                src="[object Object]"
+                title="browser"
+              />
+            </a>
+          </dt>
+        </dl>
+        <dl
+          class="border"
+        >
+          <dt
+            class="blast-app-icon"
+          >
+            <a
+              href="/app/blast"
+            >
+              <img
+                alt="BLAST/BLAT"
+                src="[object Object]"
+                title="BLAST/BLAT"
+              />
+            </a>
+          </dt>
+          <dt
+            class="vep-app-icon"
+          >
+            <a
+              href="/app/vep"
+            >
+              <img
+                alt="VEP"
+                src="[object Object]"
+                title="VEP"
+              />
+            </a>
+          </dt>
+          <dt
+            class="conversions-app-icon"
+          >
+            <a
+              href="/app/conversions"
+            >
+              <img
+                alt="Conversions"
+                src="[object Object]"
+                title="Conversions"
+              />
+            </a>
+          </dt>
+          <dt
+            class="ld-app-icon"
+          >
+            <a
+              href="/app/ld"
+            >
+              <img
+                alt="LD calculator"
+                src="[object Object]"
+                title="LD calculator"
+              />
+            </a>
+          </dt>
+          <dt
+            class="biomart-app-icon"
+          >
+            <a
+              href="/app/biomart"
+            >
+              <img
+                alt="biomart"
+                src="[object Object]"
+                title="biomart"
+              />
+            </a>
+          </dt>
+        </dl>
+        <dl
+          class="border"
+        >
+          <dt
+            class="bulk-download-app-icon"
+          >
+            <a
+              href="/app/bulk-download"
+            >
+              <img
+                alt="bulk download"
+                src="[object Object]"
+                title="bulk download"
+              />
+            </a>
+          </dt>
+          <dt
+            class="custom-download-app-icon"
+          >
+            <a
+              href="/app/custom-download"
+            >
+              <img
+                alt="custom download"
+                src="[object Object]"
+                title="custom download"
+              />
+            </a>
+          </dt>
+        </dl>
+        <dl
+          class=""
+        >
+          <dt
+            class="help-docs-app-icon"
+          >
+            <a
+              href="/app/help-docs"
+            >
+              <img
+                alt="help and documentation"
+                src="[object Object]"
+                title="help and documentation"
+              />
+            </a>
+          </dt>
+          <dt
+            class="glossary-app-icon"
+          >
+            <a
+              href="/app/glossary"
+            >
+              <img
+                alt="glossary"
+                src="[object Object]"
+                title="glossary"
+              />
+            </a>
+          </dt>
+          <dt
+            class="new-info-app-icon"
+          >
+            <a
+              href="/app/new-info"
+            >
+              <img
+                alt="what is new and what has changed"
+                src="[object Object]"
+                title="what is new and what has changed"
+              />
+            </a>
+          </dt>
+        </dl>
+      </div>
+    </div>
+    <div
+      class="about"
+    >
+      <dl>
+        <dt
+          class="about-app-icon"
+        >
+          <a
+            href="/app/about"
+          >
+            <img
+              alt="about ensembl"
+              src="[object Object]"
+              title="about ensembl"
+            />
+          </a>
+        </dt>
+      </dl>
+    </div>
+  </div>
+</div>
+`;
