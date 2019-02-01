@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 
-const MAX_PENDING : i32 = 16;
-const CACHE_SIZE : usize = 100;
+const MAX_PENDING : i32 = 0;
+const CACHE_SIZE : usize = 10;
 
 use composit::{
     ActiveSource, Leaf, Carriage, SourceFactory

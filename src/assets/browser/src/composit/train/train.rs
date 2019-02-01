@@ -7,7 +7,7 @@ use composit::{
 };
 use composit::state::ComponentRedo;
 
-const MAX_FLANK : i32 = 5;
+const MAX_FLANK : i32 = 2;
 
 pub struct Train {
     carriages: CarriageSet,
@@ -158,6 +158,9 @@ impl Train {
         let mut redo = ComponentRedo::None;
         for c in self.carriages.leaf_carriages(leaf) {
             redo = redo | c.update_state(oom);
+        }
+        if redo == ComponentRedo::Major {
+            self.stale.not_stale(&leaf);
         }
         if redo != ComponentRedo::None {
             debug!("redraw","{:?} {:?}",leaf,redo);

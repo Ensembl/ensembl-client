@@ -32,7 +32,7 @@ impl Compositor {
         /* Kick off requests */
         self.components.tick(t);
         /* Move into future */
-        self.train_manager.tick(t);
+        self.train_manager.tick(t,&mut self.components);
         /* Manage useful leafs */
         if self.updated {
             if let Some(prev_t) = self.last_updated {

@@ -1,4 +1,5 @@
 #![allow(unused)]
+use std::cmp::{ min, max };
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
@@ -145,7 +146,7 @@ fn choose_colour(t: i32, x: f32) -> ColourSpec {
         /* monochrome variant track */
         if v > 0. { (192,192,192) } else { (220,220,220) }
     });
-    ColourSpec::Colour(Colour(r,g,b))
+    ColourSpec::Spot(Colour(r,g,b))
 }
 
 fn draw_gene_part(lc: &mut SourceResponse, x: f32, y: i32, v: f32) {
@@ -153,7 +154,7 @@ fn draw_gene_part(lc: &mut SourceResponse, x: f32, y: i32, v: f32) {
         closure_add(lc,&stretch_rectangle(
                 &area_size(cleaf(x,y-3),
                            cleaf(v,6)),
-                &ColourSpec::Colour(Colour(75,168,252))));
+                &ColourSpec::Spot(Colour(75,168,252))));
     }
 }
 
@@ -163,6 +164,8 @@ fn draw_varreg_part(lc: &mut SourceResponse, t: i32, x: f32, y: i32, v: f32, col
                        cleaf(v.abs(),6)),
             &col));
 }
+
+const BLOCK_BUCKET : usize = 1000;
 
 /* designed to fill most of 100kb scale */
 fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
@@ -190,37 +193,72 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
     let st = (t as f32).cos() * -10. - 100.;
     let mut x = st;
     let y = t*PITCH+TOP;
-    for (i,pos) in starts_rng.iter().enumerate() {
-        let prop_start = prop(leaf,pos[0]);
-        let prop_end = prop(leaf,pos[1]);
-        let data_len = d.iter().fold(-d[d.len()-1],|a,v| a+v.abs());
-        let mut x = 0.;
-        let scale : f32 = (pos[1]-pos[0]) as f32/data_len as f32;
-        for v in &d {
-            if prop_end-prop_start > 0.01 {
-                let x_genome = pos[0] as f32+x as f32;
-                let x_start = prop(leaf,x_genome as i32);
-                let x_end = prop(leaf,(x_genome+*v*scale) as i32);
-                if is_gene {
-                    if x == 0. {
-                        let x_all_end = prop(leaf,pos[1]);
-                        closure_add(lc,&stretch_rectangle(
-                                        &area(cleaf(x_start,y-1),cleaf(x_all_end,y+1)),
-                                        &ColourSpec::Colour(Colour(75,168,252))));
+    if leaf.get_vscale() > -6 {
+        for (i,pos) in starts_rng.iter().enumerate() {
+            let prop_start = prop(leaf,pos[0]);
+            let prop_end = prop(leaf,pos[1]);
+            let data_len = d.iter().fold(-d[d.len()-1],|a,v| a+v.abs());
+            let mut x = 0.;
+            let scale : f32 = (pos[1]-pos[0]) as f32/data_len as f32;
+            for v in &d {
+                if prop_end-prop_start > 0.02 {
+                    let x_genome = pos[0] as f32+x as f32;
+                    let x_start = prop(leaf,x_genome as i32);
+                    let x_end = prop(leaf,(x_genome+*v*scale) as i32);
+                    if is_gene {
+                        if x == 0. {
+                            let x_all_end = prop(leaf,pos[1]);
+                            closure_add(lc,&stretch_rectangle(
+                                            &area(cleaf(x_start,y-1),cleaf(x_all_end,y+1)),
+                                            &ColourSpec::Spot(Colour(75,168,252))));
+                        }
+                        draw_gene_part(lc,x_start,y,x_end-x_start);
+                    } else {
+                        let col = choose_colour(t,x_genome);
+                        draw_varreg_part(lc,t,x_start,y,x_end-x_start,col);
                     }
-                    draw_gene_part(lc,x_start,y,x_end-x_start);
-                } else {
-                    let col = choose_colour(t,x_genome);
-                    draw_varreg_part(lc,t,x_start,y,x_end-x_start,col);
+                    x += v.abs() * scale;
+                } else if prop_end-prop_start > 0.0001 {
+                    if is_gene {
+                        draw_gene_part(lc,prop_start,y,prop_end-prop_start);
+                    } else {
+                        let col = choose_colour(t,prop_start);
+                        draw_varreg_part(lc,t,prop_start,y,prop_end-prop_start,col);
+                    }
                 }
-                x += v.abs() * scale;
+            }
+        }
+    } else {
+        let mut buc = vec![(false,1.0_f32,0.0_f32);BLOCK_BUCKET];
+        for pos in starts_rng {
+            let start_p = prop(leaf,pos[0]);
+            let start_b = max((start_p*BLOCK_BUCKET as f32) as usize,0);
+            let end_p = prop(leaf,pos[1]);
+            let end_b = min((end_p*BLOCK_BUCKET as f32) as usize,BLOCK_BUCKET-1);
+            for i in start_b..end_b+1 {
+                buc[i] = (true,buc[i].1.min(start_p),buc[i].2.max(end_p));
+            }
+        }
+        let mut blocks = Vec::<(f32,f32)>::new();
+        let mut prev = false;
+        for v in buc {
+            if v.0 {
+                if prev { 
+                    let e = blocks.len()-1;
+                    blocks[e].0 = blocks[e].0.min(v.1).max(0.);
+                    blocks[e].1 = blocks[e].1.max(v.2).min(1.);
+                } else {
+                    blocks.push((v.1.max(0.),v.2.min(1.)));
+                }
+            }
+            prev = v.0;
+        }
+        for (m,n) in blocks.iter() {
+            if is_gene {
+                draw_gene_part(lc,*m,y,*n-*m);
             } else {
-                if is_gene {
-                    draw_gene_part(lc,prop_start,y,prop_end-prop_start);
-                } else {
-                    let col = choose_colour(t,prop_start);
-                    draw_varreg_part(lc,t,prop_start,y,prop_end-prop_start,col);
-                }
+                let col = choose_colour(t,0.);
+                draw_varreg_part(lc,t,*m,y,*n-*m,col);
             }
         }
     }

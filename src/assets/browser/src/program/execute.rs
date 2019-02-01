@@ -8,7 +8,7 @@ use webgl_rendering_context::{
 
 use program::source::{ Source, ProgramSource };
 use program::objects::Object;
-use program::data::{ DataBatch, DataGroup, BatchManager };
+use program::data::{ DataBatch, DataGroupIndex, BatchManager };
 use program::gpuspec::GPUSpec;
 use program::impls::ProgramType;
 use drawing::DrawingSession;
@@ -16,7 +16,7 @@ use drawing::DrawingSession;
 pub struct ProgramAttribs {
     pt: ProgramType,
     pub bman: BatchManager,
-    default_group: DataGroup,
+    default_group: DataGroupIndex,
     pub objects: Vec<Box<Object>>,
     main_idx: Option<usize>,
     object_names: HashMap<String,usize>,
@@ -71,10 +71,11 @@ impl ProgramAttribs {
         for a in &mut self.objects.iter_mut() {
             a.clear();
         }
+        self.default_group = self.bman.new_group();
     }
 
     pub fn objects_final(&mut self, ctx: &glctx, ds: &DrawingSession) {
-        for b in self.bman.iter() {
+        for b in self.bman.batches() {
             for a in &mut self.objects.iter_mut() {
                 a.obj_final(&b,ctx,ds);
             }
@@ -83,17 +84,17 @@ impl ProgramAttribs {
 
     pub fn prog_type(&self) -> &ProgramType { &self.pt }
     
-    pub fn get_default_group(&self) -> DataGroup {
+    pub fn get_default_group(&self) -> DataGroupIndex {
         self.default_group
     }
     
-    pub fn new_group(&mut self) -> DataGroup {
+    pub fn new_group(&mut self) -> DataGroupIndex {
         self.bman.new_group()
     }
     
-    pub fn add_vertices(&mut self, group: DataGroup,
+    pub fn add_vertices(&mut self, group: DataGroupIndex,
                         indexes: &[u16], points: u16) -> DataBatch {
-        let b = self.bman.get_batch(group,points);
+        let b = self.bman.get_batch(&group,points);
         if let Some(obj_idx) = self.main_idx {
             let mut main = &mut self.objects[obj_idx];
             main.add_index(&b,indexes,points);
@@ -119,6 +120,7 @@ impl Program {
     }
 
     pub fn clear(&mut self) {
+        /* Must be in this order */
         self.data.bman.reset();
         self.data.clear();
     }
@@ -133,7 +135,7 @@ impl Program {
   
     pub fn execute(&mut self, ctx: &glctx) {
         self.use_program(ctx);
-        for b in self.data.bman.iter() {
+        for b in self.data.bman.batches() {
             let mut main = None;
             for a in &mut self.data.objects {
                 if a.is_main() {

@@ -150,7 +150,7 @@ impl<T : Copy + Clone + Debug + Into<f64>,
             dest.push(c.0.into() as f32);
             dest.push(c.1.into() as f32);
         }
-    }
+    }    
 }
 
 /* Rect + Dot => offset */

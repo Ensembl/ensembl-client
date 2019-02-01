@@ -17,6 +17,8 @@ impl DrawnResponse {
         ).collect());
     }
     
+    pub fn size(&self) -> usize { self.shapes.as_ref().unwrap().len() }
+    
     pub fn get_response(&self) -> &SourceResponse { &self.sr }
     
     pub fn each_shape<F>(&mut self, mut cb: F) where F: FnMut(&mut DrawnShape) {

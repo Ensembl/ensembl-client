@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use program::{ ProgramAttribs, DataGroup, ProgramType };
+use program::{ ProgramAttribs, DataGroupIndex, ProgramType };
 use types::{ Colour };
 use print::{ Programs, PrintEdition };
 use drawing::{ Artist, Artwork, Drawing, DrawingSession };
@@ -48,7 +48,7 @@ pub enum ColourSpec {
 }
 
 impl ColourSpec {
-    pub fn to_group(&self, g: &mut ProgramAttribs, e: &mut PrintEdition) -> Option<DataGroup> {
+    pub fn to_group(&self, g: &mut ProgramAttribs, e: &mut PrintEdition) -> Option<DataGroupIndex> {
         match self {
             ColourSpec::Spot(c) => Some(e.spot().get_group(g,c)),
             ColourSpec::Colour(_) => None

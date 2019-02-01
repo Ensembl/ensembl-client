@@ -7,7 +7,7 @@ use webgl_rendering_context::{
     WebGLProgram as glprog,
 };
 
-use program::data::{ DataBatch, DataGroup };
+use program::data::{ DataBatch, DataGroupIndex };
 use program::objects::Object;
 
 #[derive(Clone,Copy,Debug)]
@@ -19,7 +19,7 @@ pub enum UniformValue {
 }
 
 pub struct ObjectUniform {
-    val: HashMap<Option<u32>,UniformValue>,
+    val: HashMap<Option<DataGroupIndex>,UniformValue>,
     buffer: Option<Option<gluni>>,
     prog: Rc<glprog>,
     name: String
@@ -29,7 +29,7 @@ impl ObjectUniform {
     pub fn new(prog: &Rc<glprog>, name: &str) -> ObjectUniform {
         ObjectUniform {
             buffer: None,
-            val: HashMap::<Option<u32>,UniformValue>::new(),
+            val: HashMap::<Option<DataGroupIndex>,UniformValue>::new(),
             prog: prog.clone(),
             name: name.to_string()
         }
@@ -43,12 +43,12 @@ impl ObjectUniform {
 }
 
 impl Object for ObjectUniform {
-    fn set_uniform(&mut self, group: Option<DataGroup>, value: UniformValue) {
-        self.val.insert(group.map(|g| g.id()),value);
+    fn set_uniform(&mut self, group: Option<DataGroupIndex>, value: UniformValue) {
+        self.val.insert(group,value);
     }
 
     fn execute(&mut self, ctx: &glctx, batch: &DataBatch) {
-        let gid = batch.group().id();
+        let gid = batch.group();
         self.calc_buffer(ctx);
         if let Some(ref loc) = self.buffer.as_ref().unwrap() {
             let val = 
