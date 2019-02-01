@@ -9,6 +9,7 @@ extern crate lazy_static;
 extern crate rand;
 extern crate separator;
 extern crate itertools;
+extern crate hsl;
 
 #[macro_use]
 extern crate serde_json;

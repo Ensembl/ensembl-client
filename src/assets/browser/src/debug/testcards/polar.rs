@@ -1,11 +1,13 @@
 #![allow(unused)]
+use std::cmp::{ min, max };
+use std::iter::repeat;
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
 use composit::vscale_bp_per_leaf;
 use composit::{
-    StateFixed, Component, StateValue, StateAtom, Leaf,
-    LeafComponent, LCBuilder, Stick
+    StateFixed, StateValue, StateAtom, Leaf, Carriage, SourceResponse,
+    Stick
 };
 use controller::global::App;
 use controller::input::Event;
@@ -49,10 +51,10 @@ struct Palette {
     grey: ColourSpec
 }
 
-fn one_offs(_lc: &mut LCBuilder, _p: &Palette) {    
+fn one_offs(_lc: &mut SourceResponse, _p: &Palette) {    
 }
 
-fn draw_frame(lc: &mut LCBuilder, leaf: &Leaf, edge: AxisSense, p: &Palette) {
+fn draw_frame(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette) {
     let left = Corner(AxisSense::Pos,edge);
     let right = Corner(AxisSense::Neg,edge);
     let top = Corner(edge,AxisSense::Pos);
@@ -85,7 +87,7 @@ fn draw_frame(lc: &mut LCBuilder, leaf: &Leaf, edge: AxisSense, p: &Palette) {
                         &p.white));
 }
 
-fn measure(lc: &mut LCBuilder, leaf: &Leaf, edge: AxisSense, p: &Palette) {
+fn measure(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette) {
     let mul = vscale_bp_per_leaf(leaf.get_vscale());
     let start_leaf = (leaf.get_index() as f64 * mul).floor() as i32;
     let end_leaf = (((leaf.get_index()+1) as f64) * mul).floor() as i32;
@@ -145,27 +147,73 @@ fn choose_colour(t: i32, x: f32) -> ColourSpec {
         /* monochrome variant track */
         if v > 0. { (192,192,192) } else { (220,220,220) }
     });
-    ColourSpec::Colour(Colour(r,g,b))
+    ColourSpec::Spot(Colour(r,g,b))
 }
 
-fn draw_gene_part(lc: &mut LCBuilder, x: f32, y: i32, v: f32) {
+fn draw_gene_part(lc: &mut SourceResponse, x: f32, y: i32, v: f32) {
     if v > 0. {
         closure_add(lc,&stretch_rectangle(
                 &area_size(cleaf(x,y-3),
                            cleaf(v,6)),
-                &ColourSpec::Colour(Colour(75,168,252))));
+                &ColourSpec::Spot(Colour(75,168,252))));
     }
 }
 
-fn draw_varreg_part(lc: &mut LCBuilder, t: i32, x: f32, y: i32, v: f32, col: ColourSpec) {
+fn draw_varreg_part(lc: &mut SourceResponse, t: i32, x: f32, y: i32, v: f32, col: ColourSpec) {
     closure_add(lc,&stretch_rectangle(
             &area_size(cleaf(x,y-3),
                        cleaf(v.abs(),6)),
             &col));
 }
 
+const BLOCK_TARGET : usize = 400;
+const BUCKETS : &[usize] = &[500,1000,5000];
+
+fn try_bucket(leaf: &Leaf,starts_rng: &Vec<[i32;2]>, buckets: usize) -> Vec<(f32,f32,f32,f32)> {
+    let mut buc : Vec<(bool,f32,f32,f32)> = 
+                    repeat((false,1.0,0.0,0.0)).take(buckets).collect();
+    for pos in starts_rng {
+        let start_p = prop(leaf,pos[0]);
+        let start_b = max((start_p*buckets as f32) as usize,0);
+        let end_p = prop(leaf,pos[1]);
+        let end_b = min((end_p*buckets as f32) as usize,buckets-1);
+        for i in start_b..end_b+1 {
+            let start = buc[i].1.min(start_p);
+            let end = buc[i].2.max(end_p);
+            let density = buc[i].3 + end_p - start_p;
+            buc[i] = (true,start,end,density);
+        }
+    }
+    let mut blocks = Vec::<(f32,f32,f32,f32)>::new();
+    let mut prev = false;
+    for v in buc {
+        if v.0 {
+            if prev { 
+                let e = blocks.len()-1;
+                blocks[e].0 = blocks[e].0.min(v.1).max(0.);
+                blocks[e].1 = blocks[e].1.max(v.2).min(1.);
+                blocks[e].2 = blocks[e].2 + v.3;
+                blocks[e].3 += 1.;
+            } else {
+                blocks.push((v.1.max(0.),v.2.min(1.),v.3,1.));
+            }
+        }
+        prev = v.0;
+    }
+    blocks
+}
+
+fn get_blocks(leaf: &Leaf,starts_rng: &Vec<[i32;2]>) -> Vec<(f32,f32,f32,f32)> {
+    let mut out = None;
+    for buckets in BUCKETS {
+        out = Some(try_bucket(leaf,&starts_rng,*buckets));
+        if out.as_ref().unwrap().len() > BLOCK_TARGET { break; }
+    }
+    out.unwrap()
+}
+
 /* designed to fill most of 100kb scale */
-fn track(lc: &mut LCBuilder, leaf: &Leaf, p: &Palette, t: i32) {
+fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
     let is_gene = (t<4 || t%3 == 0);
     let name = if t % 7 == 3 { "E" } else { "K" };
     let tx = text_texture(name,&p.lato_18,
@@ -190,29 +238,75 @@ fn track(lc: &mut LCBuilder, leaf: &Leaf, p: &Palette, t: i32) {
     let st = (t as f32).cos() * -10. - 100.;
     let mut x = st;
     let y = t*PITCH+TOP;
-    for (i,pos) in starts_rng.iter().enumerate() {
-        let prop_start = prop(leaf,pos[0]);
-        let prop_end = prop(leaf,pos[1]);
-        let data_len = d.iter().fold(-d[d.len()-1],|a,v| a+v.abs());
-        let mut x = 0.;
-        let scale : f32 = (pos[1]-pos[0]) as f32/data_len as f32;
-        for v in &d {
-            let x_genome = pos[0] as f32+x as f32;
-            let x_start = prop(leaf,x_genome as i32);
-            let x_end = prop(leaf,(x_genome+*v*scale) as i32);
-            if is_gene {
-                if x == 0. {
-                    let x_all_end = prop(leaf,pos[1]);
+    if leaf.get_vscale() > -6 {
+        for (i,pos) in starts_rng.iter().enumerate() {
+            let prop_start = prop(leaf,pos[0]);
+            let prop_end = prop(leaf,pos[1]);
+            let data_len = d.iter().fold(-d[d.len()-1],|a,v| a+v.abs());
+            let mut x = 0.;
+            let scale : f32 = (pos[1]-pos[0]) as f32/data_len as f32;
+            for v in &d {
+                if prop_end-prop_start > 0.02 {
+                    let x_genome = pos[0] as f32+x as f32;
+                    let x_start = prop(leaf,x_genome as i32);
+                    let x_end = prop(leaf,(x_genome+*v*scale) as i32);
+                    if is_gene {
+                        if x == 0. {
+                            let x_all_end = prop(leaf,pos[1]);
+                            closure_add(lc,&stretch_rectangle(
+                                            &area(cleaf(x_start,y-1),cleaf(x_all_end,y+1)),
+                                            &ColourSpec::Spot(Colour(75,168,252))));
+                        }
+                        draw_gene_part(lc,x_start,y,x_end-x_start);
+                    } else {
+                        let col = choose_colour(t,x_genome);
+                        draw_varreg_part(lc,t,x_start,y,x_end-x_start,col);
+                    }
+                    x += v.abs() * scale;
+                } else if prop_end-prop_start > 0.0001 {
+                    let mut colour = if is_gene {
+                        Colour(75,168,252)
+                    } else if t == 4 {
+                        Colour(190,219,213)
+                    } else if t%3 == 1 {
+                        Colour(255,64,64)
+                    } else {
+                        Colour(192,192,192)
+                    };
                     closure_add(lc,&stretch_rectangle(
-                                    &area(cleaf(x_start,y-1),cleaf(x_all_end,y+1)),
-                                    &ColourSpec::Colour(Colour(75,168,252))));
+                        &area(cleaf(prop_start,y-3),cleaf(prop_end,y+3)),
+                        &ColourSpec::Colour(colour)));
                 }
-                draw_gene_part(lc,x_start,y,x_end-x_start);
-            } else {
-                let col = choose_colour(t,x_genome);
-                draw_varreg_part(lc,t,x_start,y,x_end-x_start,col);
             }
-            x += v.abs() * scale;
+        }
+    } else {
+        let blocks = get_blocks(leaf,&starts_rng);
+        let mut max_density = 0.0_f32;
+        for (m,n,dn,dd) in blocks.iter() {
+            let density = (dn/ (n-m)).min(1.);
+            max_density = max_density.min(density);
+        }
+        for (m,n,dn,dd) in blocks.iter() {
+            let mut col_hsl = if is_gene {
+                Colour(75,168,252)
+            } else if t == 4 {
+                Colour(190,219,213)
+            } else if t%3 == 1 {
+                Colour(255,64,64)
+            } else {
+                Colour(192,192,192)
+            }.to_hsl();
+            let mul = if max_density < 0.5 { 1.5 } else { 1.0 };
+            let mut density = ((dn/ (n-m))*mul).min(1.);
+            if density < 0.95 { density = density.min(0.8); }
+            if col_hsl[1] > 0.5 {
+                col_hsl[1] = 0.5 + col_hsl[1] * 0.5 * (1.0 - density) as f64;
+            }
+            col_hsl[2] = col_hsl[2] + (1.-col_hsl[2]) * (1.0 - density) as f64;
+            let colour = Colour::from_hsl(col_hsl);
+            closure_add(lc,&stretch_rectangle(
+                &area(cleaf(*m,y-3),cleaf(*n,y+3)),
+                &ColourSpec::Colour(colour)));
         }
     }
 }
@@ -224,7 +318,7 @@ pub fn polar_source() -> ClosureSource {
         white: ColourSpec::Spot(Colour(255,255,255)),
         grey: ColourSpec::Spot(Colour(199,208,213))
     };
-    ClosureSource::new(0.5,move |ref mut lc,leaf| {
+    ClosureSource::new(0.,move |ref mut lc,leaf| {
         one_offs(lc,&p);
         draw_frame(lc,&leaf,AxisSense::Pos,&p);
         draw_frame(lc,&leaf,AxisSense::Neg,&p);

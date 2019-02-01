@@ -1,4 +1,5 @@
-use program::{ Object, ObjectAttrib, DataBatch, UniformValue, Input };
+use program::{ UniformValue, Input };
+use hsl::HSL;
 
 /* Colour */
 
@@ -20,10 +21,21 @@ impl Colour {
          self.1 as f32 / 255.,
          self.2 as f32 / 255.]
     }
+    
+    pub fn to_hsl(&self) -> [f64;3] {
+        let hsl = HSL::from_rgb(&[self.0 as u8,self.1 as u8,self.2 as u8]);
+        [hsl.h/360.,hsl.s,hsl.l]
+    }
+    
+    pub fn from_hsl(hsl: [f64;3]) -> Colour {
+        let hsl = HSL { h: hsl[0]*360., s: hsl[1], l: hsl[2] };
+        let rgb = hsl.to_rgb();
+        Colour(rgb.0 as u32, rgb.1 as u32, rgb.2 as u32)
+    }
 }
 
 impl Input for Colour {
-    fn to_f32(&self, attrib: &mut ObjectAttrib, batch: &DataBatch) {
-        attrib.add_f32(&self.to_frac(), batch);
+    fn to_f32(&self, dest: &mut Vec<f32>) {
+        dest.extend_from_slice(&self.to_frac());
     }
 }

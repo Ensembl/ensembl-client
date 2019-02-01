@@ -1,22 +1,22 @@
 use std::collections::HashMap;
 
-use program::{ ProgramAttribs, DataGroup, ProgramType, PTSkin };
+use program::{ ProgramAttribs, DataGroupIndex, ProgramType, PTSkin };
 use types::Colour;
 
 pub struct Spot {
-    group: HashMap<ProgramType,HashMap<Colour,DataGroup>>
+    group: HashMap<ProgramType,HashMap<Colour,DataGroupIndex>>
 }
 
 impl Spot {
     pub fn new() -> Spot {
         Spot {
-            group: HashMap::<ProgramType,HashMap<Colour,DataGroup>>::new(),
+            group: HashMap::<ProgramType,HashMap<Colour,DataGroupIndex>>::new(),
         }
     }
 
-    pub fn get_group(&mut self, geom: &mut ProgramAttribs, colour: &Colour) -> DataGroup {
+    pub fn get_group(&mut self, geom: &mut ProgramAttribs, colour: &Colour) -> DataGroupIndex {
         *self.group.entry(*geom.prog_type()).or_insert_with(||
-            HashMap::<Colour,DataGroup>::new()
+            HashMap::<Colour,DataGroupIndex>::new()
         ).entry(*colour).or_insert_with(|| {
             geom.new_group()
         })

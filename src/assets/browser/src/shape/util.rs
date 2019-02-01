@@ -1,15 +1,22 @@
 use std::iter;
 use program::{
-    ProgramAttribs, DataBatch, DataGroup, ProgramType, PTMethod, 
+    ProgramAttribs, DataBatch, DataGroupIndex, ProgramType, PTMethod, 
     PTGeom, PTSkin
 };
-use types::{ RFraction, CLeaf, RPixel, RLeaf, cleaf, Rect, Edge };
+use types::{ RFraction, CLeaf, RPixel, RLeaf, cleaf, Rect, Edge, Colour };
 use shape::ColourSpec;
 use program::Input;
 
 pub fn rectangle_g(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &RLeaf) {
     if let Some(obj) = pdata.get_object(key) {
-        obj.add_data(&b,&[p]);
+        let m = p.offset();
+        let n = p.far_offset();
+        obj.add_data_f32(&b,&[
+            m.0,m.1 as f32,
+            m.0,n.1 as f32,
+            n.0,n.1 as f32,
+            n.0,m.1 as f32
+        ]);
     }
 }
 
@@ -39,6 +46,12 @@ pub fn rectangle_t(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &RFra
     }
 }
 
+pub fn colour(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, c: &Colour) {
+    if let Some(obj) = pdata.get_object(key) {
+        obj.add_data_f32(&b,&c.to_frac());
+    }
+}
+
 pub fn multi_gl(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, d: &Input, mul: u16) {
     let mut v = Vec::<&Input>::new();
     v.extend(iter::repeat(d).take(mul as usize));
@@ -47,16 +60,16 @@ pub fn multi_gl(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, d: &Input, 
     }
 }
 
-fn group(pdata: &ProgramAttribs, g: Option<DataGroup>) -> DataGroup {
+fn group(pdata: &ProgramAttribs, g: Option<DataGroupIndex>) -> DataGroupIndex {
     g.unwrap_or_else(|| pdata.get_default_group())
 }
 
-pub fn vertices_rect(pdata: &mut ProgramAttribs, g: Option<DataGroup>) -> DataBatch {
+pub fn vertices_rect(pdata: &mut ProgramAttribs, g: Option<DataGroupIndex>) -> DataBatch {
     let g = group(pdata,g);
     pdata.add_vertices(g,&[0,3,1,2,1,3],4)
 }
 
-pub fn vertices_poly(pdata: &mut ProgramAttribs, n: u16, g: Option<DataGroup>) -> DataBatch {
+pub fn vertices_poly(pdata: &mut ProgramAttribs, n: u16, g: Option<DataGroupIndex>) -> DataBatch {
     let g = group(pdata,g);
     let mut v = Vec::<u16>::new();
     
@@ -72,7 +85,7 @@ pub fn vertices_poly(pdata: &mut ProgramAttribs, n: u16, g: Option<DataGroup>) -
 }
 
 
-pub fn vertices_hollowpoly(pdata: &mut ProgramAttribs, n: u16, g: Option<DataGroup>) -> DataBatch {
+pub fn vertices_hollowpoly(pdata: &mut ProgramAttribs, n: u16, g: Option<DataGroupIndex>) -> DataBatch {
     let g = group(pdata,g);
     let mut v = Vec::<u16>::new();
     v.push(0);
@@ -85,7 +98,7 @@ pub fn vertices_hollowpoly(pdata: &mut ProgramAttribs, n: u16, g: Option<DataGro
     pdata.add_vertices(g,&v,n*2)
 }
 
-pub fn vertices_strip(pdata: &mut ProgramAttribs, len: u16, g: Option<DataGroup>) -> DataBatch {
+pub fn vertices_strip(pdata: &mut ProgramAttribs, len: u16, g: Option<DataGroupIndex>) -> DataBatch {
     let g = group(pdata,g);
     let mut v = Vec::<u16>::new();
     for i in 0..len {

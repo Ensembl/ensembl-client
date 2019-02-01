@@ -12,7 +12,7 @@ pub use program::execute::{
 
 pub use program::data::{
     DataBatch,
-    DataGroup,
+    DataGroupIndex,
     Input,
     BatchManager
 };
