@@ -1,0 +1,302 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Launchbar /> renders correctly 1`] = `
+<ForwardRef
+  transitionOnAppear={false}
+>
+  <div
+    className="launchbar"
+  >
+    <div
+      className="categories-wrapper"
+    >
+      <div
+        className="categories"
+      >
+        <dl
+          className="border"
+          key="search"
+        >
+          <dt
+            className="global-search-app-icon"
+            key="global-search"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "global search",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "global-search",
+                }
+              }
+              currentApp=""
+            />
+          </dt>
+          <dt
+            className="species-selector-app-icon"
+            key="species-selector"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "species selector",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "species-selector",
+                }
+              }
+              currentApp=""
+            />
+          </dt>
+        </dl>
+        <dl
+          className="border"
+          key="browsers"
+        >
+          <dt
+            className="browser-app-icon"
+            key="browser"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "browser",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "browser",
+                }
+              }
+              currentApp=""
+            />
+          </dt>
+        </dl>
+        <dl
+          className="border"
+          key="tools"
+        >
+          <dt
+            className="blast-app-icon"
+            key="blast"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "BLAST/BLAT",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "blast",
+                }
+              }
+              currentApp=""
+            />
+          </dt>
+          <dt
+            className="vep-app-icon"
+            key="vep"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "VEP",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "vep",
+                }
+              }
+              currentApp=""
+            />
+          </dt>
+          <dt
+            className="conversions-app-icon"
+            key="conversions"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "Conversions",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "conversions",
+                }
+              }
+              currentApp=""
+            />
+          </dt>
+          <dt
+            className="ld-app-icon"
+            key="ld"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "LD calculator",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "ld",
+                }
+              }
+              currentApp=""
+            />
+          </dt>
+          <dt
+            className="biomart-app-icon"
+            key="biomart"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "biomart",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "biomart",
+                }
+              }
+              currentApp=""
+            />
+          </dt>
+        </dl>
+        <dl
+          className="border"
+          key="downloads"
+        >
+          <dt
+            className="bulk-download-app-icon"
+            key="bulk-download"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "bulk download",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "bulk-download",
+                }
+              }
+              currentApp=""
+            />
+          </dt>
+          <dt
+            className="custom-download-app-icon"
+            key="custom-download"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "custom download",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "custom-download",
+                }
+              }
+              currentApp=""
+            />
+          </dt>
+        </dl>
+        <dl
+          className=""
+          key="learning"
+        >
+          <dt
+            className="help-docs-app-icon"
+            key="help-docs"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "help and documentation",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "help-docs",
+                }
+              }
+              currentApp=""
+            />
+          </dt>
+          <dt
+            className="glossary-app-icon"
+            key="glossary"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "glossary",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "glossary",
+                }
+              }
+              currentApp=""
+            />
+          </dt>
+          <dt
+            className="new-info-app-icon"
+            key="new-info"
+          >
+            <LaunchbarIcon
+              app={
+                Object {
+                  "description": "what is new and what has changed",
+                  "icon": Object {
+                    "default": Object {},
+                    "selected": Object {},
+                  },
+                  "name": "new-info",
+                }
+              }
+              currentApp=""
+            />
+          </dt>
+        </dl>
+      </div>
+    </div>
+    <div
+      className="about"
+    >
+      <dl>
+        <dt
+          className="about-app-icon"
+        >
+          <LaunchbarIcon
+            app={
+              Object {
+                "description": "about ensembl",
+                "icon": Object {
+                  "default": Object {},
+                  "selected": Object {},
+                },
+                "name": "about",
+              }
+            }
+            currentApp=""
+          />
+        </dt>
+      </dl>
+    </div>
+  </div>
+</ForwardRef>
+`;

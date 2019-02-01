@@ -1,0 +1,35 @@
+@import 'settings';
+@import '~foundation-sites/scss/foundation';
+
+@import 'fonts';
+@import 'utils';
+@import 'animation';
+
+@import 'header';
+@import 'content';
+@import 'track-panel';
+@import 'browser';
+@import 'drawer';
+
+@include foundation-global-styles;
+@include foundation-prototype-classes;
+
+button {
+  cursor: pointer;
+}
+
+img {
+  max-width: initial;
+}
+
+div[contenteditable] {
+  color: $ens-blue;
+  display: inline-block;
+
+  &.content-editable-box {
+    background: $ens-blue;
+    color: $ens-white;
+    margin: 0 2px;
+    padding: 2px 4px;
+  }
+}

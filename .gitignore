@@ -2,3 +2,15 @@
 **/*.rs.bk
 **/*.geany
 *.geany
+
+node_modules/
+dist/
+coverage/
+
+*.log
+.DS_Store
+
+package-lock.json
+
+localhost.crt
+localhost.key
