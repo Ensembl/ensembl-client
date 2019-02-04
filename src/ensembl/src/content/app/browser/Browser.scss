@@ -6,6 +6,7 @@
 
 .browserInnerWrapper {
   @include flex;
+  height: calc(100% - 40px);
 }
 
 .browserImageWrapper {
