@@ -67,6 +67,14 @@ impl ProgramAttribs {
         }
     }
 
+    fn size(&self) -> usize {
+        let mut size = 0;
+        for obj in &self.objects {
+            size += obj.size();
+        }
+        size
+    }
+
     fn clear(&mut self) {
         for a in &mut self.objects.iter_mut() {
             a.clear();
@@ -117,6 +125,10 @@ impl Program {
             data: ProgramAttribs::new(self.data.pt,&self.data.source,&self.prog),
             prog: self.prog.clone()
         }
+    }
+
+    pub fn size(&self) -> usize {
+        self.data.size()
     }
 
     pub fn clear(&mut self) {

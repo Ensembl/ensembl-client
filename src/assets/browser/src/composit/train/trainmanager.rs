@@ -53,12 +53,13 @@ impl TrainManager {
     }
     
     /* utility: makes new train at given scale */
-    fn make_train(&mut self, cm: &mut ComponentManager, scale: Scale) -> Option<Train> {
+    fn make_train(&mut self, cm: &mut ComponentManager, scale: Scale, preload: bool) -> Option<Train> {
         if let Some(ref stick) = self.stick {
             let mut f = Train::new(&stick,scale);
             f.set_position(self.position_bp);
             f.set_zoom(self.bp_per_screen);
             f.manage_leafs(cm);
+            if !preload { f.enter_service(); }
             Some(f)
         } else {
             None
@@ -114,7 +115,7 @@ impl TrainManager {
             let scale = self.transition_train.as_ref().unwrap().get_scale().clone();
             for i in 0..OUTER_TRAINS {
                 let out_scale = scale.next_scale(1-i as i32);
-                self.outer_train[i] = self.make_train(cm,out_scale);
+                self.outer_train[i] = self.make_train(cm,out_scale,true);
             }
         }
     }
@@ -180,7 +181,7 @@ impl TrainManager {
 
     /* Create future train */
     fn new_future(&mut self, cm: &mut ComponentManager, scale: Scale) {
-        self.future_train = self.make_train(cm,scale);
+        self.future_train = self.make_train(cm,scale,false);
     }
     
     /* Abandon future train */

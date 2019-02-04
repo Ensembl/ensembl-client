@@ -43,7 +43,7 @@ impl SourceFactory {
         self.run_queue();
     }
     
-    pub fn tick(&mut self, t: f64) {
+    pub fn tick(&mut self, _t: f64) {
         self.remove_finished();
     }
         

@@ -1,4 +1,3 @@
-use std::cmp::{ max, min };
 use std::collections::HashSet;
 
 use composit::{
@@ -14,16 +13,17 @@ pub struct Train {
     stale: StaleCarriages,
     stick: Stick,
     scale: Scale,
-    train_flank: i32,
-    middle_leaf: i64,    
+    ideal_flank: i32,
+    middle_leaf: i64,
+    preload: bool,
 }
 
 impl Train {
     pub fn new(stick: &Stick, scale: Scale) -> Train {
         Train {
             stick: stick.clone(),
-            scale,
-            train_flank: 10,
+            scale, preload: true,
+            ideal_flank: 0,
             middle_leaf: 0,
             carriages: CarriageSet::new(),
             stale: StaleCarriages::new(),
@@ -43,10 +43,15 @@ impl Train {
         self.middle_leaf = (position_bp / self.scale.total_bp()).floor() as i64;
     }
     
+    /* called when no-longer preload, so flanks should be expanded */
+    pub fn enter_service(&mut self) {
+        self.preload = false;
+    }
+    
     /* called when zoom changes, to update flank */
     pub fn set_zoom(&mut self, bp_per_screen: f64) {
-        let leaf_per_screen = bp_per_screen / self.scale.total_bp();
-        self.train_flank = min(max((2. * leaf_per_screen) as i32,1),MAX_FLANK);
+        self.ideal_flank = (bp_per_screen / self.scale.total_bp()) as i32;
+        debug!("bug","({}/{})={}",bp_per_screen,self.scale.total_bp(),self.ideal_flank);
     }
     
     /* add component to leaf */
@@ -66,6 +71,13 @@ impl Train {
      * *****************************************************************
      */
 
+    /* flank to use taking into account train status */
+    fn true_flank(&self) -> i32 {
+        let mut f = self.ideal_flank.min(MAX_FLANK);
+        if !self.preload { f = f.max(1); }
+        f
+    }
+
     /* add leafs created below */
     fn add_carriages_to_leaf(&mut self, leaf: Leaf, mut cc: Vec<Carriage>) {
         for lc in cc.drain(..) {
@@ -76,7 +88,8 @@ impl Train {
     /* make leafs to be added */
     fn get_missing_leafs(&mut self) -> Vec<Leaf> {
         let mut out = Vec::<Leaf>::new();
-        for idx in -self.train_flank..self.train_flank+1 {
+        let flank = self.true_flank();
+        for idx in -flank..flank+1 {
             let hindex = self.middle_leaf + idx as i64;
             let leaf = Leaf::new(&self.stick,hindex,&self.scale);
             if !self.carriages.contains_leaf(&leaf) {
@@ -90,8 +103,9 @@ impl Train {
     /* remove leafs out of scope */
     fn remove_unused_leafs(&mut self) {
         let mut doomed = HashSet::new();
+        let flank = self.true_flank();
         for leaf in self.carriages.all_leafs() {
-            if (leaf.get_index()-self.middle_leaf).abs() > self.train_flank as i64 {
+            if (leaf.get_index()-self.middle_leaf).abs() > flank as i64 {
                 doomed.insert(leaf.clone());
             }
         }

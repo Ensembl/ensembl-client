@@ -165,7 +165,7 @@ fn draw_varreg_part(lc: &mut SourceResponse, t: i32, x: f32, y: i32, v: f32, col
             &col));
 }
 
-const BLOCK_TARGET : usize = 400;
+const BLOCK_TARGET : usize = 200;
 const BUCKETS : &[usize] = &[500,1000,5000];
 
 fn try_bucket(leaf: &Leaf,starts_rng: &Vec<[i32;2]>, buckets: usize) -> Vec<(f32,f32,f32,f32)> {
@@ -173,9 +173,9 @@ fn try_bucket(leaf: &Leaf,starts_rng: &Vec<[i32;2]>, buckets: usize) -> Vec<(f32
                     repeat((false,1.0,0.0,0.0)).take(buckets).collect();
     for pos in starts_rng {
         let start_p = prop(leaf,pos[0]);
-        let start_b = max((start_p*buckets as f32) as usize,0);
+        let start_b = ((start_p*buckets as f32) as usize).max(0);
         let end_p = prop(leaf,pos[1]);
-        let end_b = min((end_p*buckets as f32) as usize,buckets-1);
+        let end_b = ((end_p*buckets as f32) as usize).min(buckets-1);
         for i in start_b..end_b+1 {
             let start = buc[i].1.min(start_p);
             let end = buc[i].2.max(end_p);
@@ -238,7 +238,7 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
     let mut x = st;
     let y = t*PITCH+TOP;
     let total_bp = leaf.total_bp();
-    if total_bp < 20. {
+    if total_bp < 10. {
         // why?
     } else if total_bp < 1000. {
         let h = if total_bp < 100. { 12 } else if total_bp < 200. { 6 } else { 4 };
@@ -269,15 +269,21 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
                 }
             }
         }  
-    } else if total_bp < 5000000. {
+    } else if total_bp < 2000000. {
+        let mut xxx = 0;
+        let mut yyy = 0;
+        let mut zzz = 0;
         for (i,pos) in starts_rng.iter().enumerate() {
+            yyy += 1;
             let prop_start = prop(leaf,pos[0]);
             let prop_end = prop(leaf,pos[1]);
+            if prop_end < 0. || prop_start > 1. { continue; }
+            zzz += 1;
             let data_len = d.iter().fold(-d[d.len()-1],|a,v| a+v.abs());
             let mut x = 0.;
             let scale : f32 = (pos[1]-pos[0]) as f32/data_len as f32;
-            for v in &d {
-                if prop_end-prop_start > 0.02 {
+            if prop_end-prop_start > 0.1 {
+                for v in &d {
                     let x_genome = pos[0] as f32+x as f32;
                     let x_start = prop(leaf,x_genome as i32);
                     let x_end = prop(leaf,(x_genome+*v*scale) as i32);
@@ -289,25 +295,28 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
                                             &ColourSpec::Spot(Colour(75,168,252))));
                         }
                         draw_gene_part(lc,x_start,y,x_end-x_start);
+                        xxx += 1;
                     } else {
                         let col = choose_colour(t,x_genome);
                         draw_varreg_part(lc,t,x_start,y,x_end-x_start,col);
+                        xxx += 1;
                     }
                     x += v.abs() * scale;
-                } else if prop_end-prop_start > 0.0001 {
-                    let mut colour = if is_gene {
-                        Colour(75,168,252)
-                    } else if t == 4 {
-                        Colour(190,219,213)
-                    } else if t%3 == 1 {
-                        Colour(255,64,64)
-                    } else {
-                        Colour(192,192,192)
-                    };
-                    closure_add(lc,&stretch_rectangle(
-                        &area(cleaf(prop_start,y-3),cleaf(prop_end,y+3)),
-                        &ColourSpec::Colour(colour)));
                 }
+            } else if prop_end-prop_start > 0.0002 {
+                let mut colour = if is_gene {
+                    Colour(75,168,252)
+                } else if t == 4 {
+                    Colour(190,219,213)
+                } else if t%3 == 1 {
+                    Colour(255,64,64)
+                } else {
+                    Colour(192,192,192)
+                };
+                xxx += 1;
+                closure_add(lc,&stretch_rectangle(
+                    &area(cleaf(prop_start,y-3),cleaf(prop_end,y+3)),
+                    &ColourSpec::Spot(colour)));
             }
         }
     } else {

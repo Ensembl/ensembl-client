@@ -22,6 +22,14 @@ impl Programs {
         }
         Programs { order, map }
     }
+
+    pub fn size(&self) -> usize {
+        let mut size = 0;
+        for p in self.map.values() {
+            size += p.size();
+        }
+        size
+    }
     
     pub fn clear_objects(&mut self) {
         for k in &self.order {

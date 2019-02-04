@@ -95,4 +95,12 @@ impl Object for ObjectAttrib {
     fn clear(&mut self) {
         self.vec.clear();
     }
+    
+    fn size(&self) -> usize {
+        let mut size = 0;
+        for v in self.vec.values() {
+            size += v.len();
+        }
+        size
+    }
 }
