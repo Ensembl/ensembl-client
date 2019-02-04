@@ -65,11 +65,13 @@ fn exe_component_add(a: &mut App, name: &str) {
 }
 
 fn exe_set_stick(a: &mut App, name: &str) {
-    if let Some(Some(st)) = a.with_global(|g| g.get_stick(name)) {
-        a.with_compo(|co| co.set_stick(&st));
+    if let Some(Some(stick)) = a.with_global(|g| g.get_stick(name)) {
+        a.with_compo(|co| co.set_stick(&stick));
         a.with_stage(|s| {
             s.set_limit(&LEFT,0.);
-            s.set_limit(&RIGHT,st.length() as f64);
+            s.set_limit(&RIGHT,stick.length() as f64);
+            s.set_wrapping(&stick.get_wrapping());
+            
         });
         exe_pos_event(a,cdfraction(0.,0.),None);
     }

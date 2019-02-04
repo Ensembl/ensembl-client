@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
-use composit::{ Leaf, Position };
+use composit::{ Leaf, Position, Wrapping };
 use program::UniformValue;
-use types::{CPixel, cpixel, Move, Dot, Direction };
+use types::{CPixel, cpixel, Move, Dot, Direction, LEFT, RIGHT };
 
 // XXX TODO avoid big-minus-big type calculations which accumulate error
 
@@ -24,6 +24,11 @@ impl Stage {
             dims: size,
         };
         out
+    }
+
+    pub fn set_wrapping(&mut self, w: &Wrapping) {
+        self.pos.set_bumper(&LEFT,w.get_bumper(&LEFT));
+        self.pos.set_bumper(&RIGHT,w.get_bumper(&RIGHT));
     }
 
     pub fn set_mouse_pos(&mut self, c: &CPixel) {

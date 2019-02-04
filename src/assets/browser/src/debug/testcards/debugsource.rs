@@ -49,5 +49,5 @@ impl DebugStickManager {
 impl StickManager for DebugStickManager {
     fn get_stick(&mut self, name: &str) -> Option<Stick> {
         self.sticks.get(name).map(|x| x.clone())
-    }
+    }    
 }

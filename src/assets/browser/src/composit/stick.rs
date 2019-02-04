@@ -3,6 +3,8 @@ use std::fmt;
 use std::hash::{ Hash, Hasher };
 use std::rc::Rc;
 
+use composit::Wrapping;
+
 #[derive(Debug)]
 pub struct StickImpl {
     name: String,
@@ -45,6 +47,10 @@ impl Stick {
     pub fn length(&self) -> u64 { self.0.borrow().length() }
     pub fn get_name(&self) -> String { 
         self.0.borrow().get_name().to_string()
+    }
+    
+    pub fn get_wrapping(&self) -> Wrapping {
+        Wrapping::new(36.,36.)
     }
 }
 
