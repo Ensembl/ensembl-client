@@ -8,22 +8,26 @@ use stdweb::traits::IEvent;
 use controller::global::{ App, AppRunner };
 use controller::input::{ Event, events_run, EggDetector };
 use controller::input::physics::MousePhysics;
+use controller::input::optical::Optical;
 use types::Dot;
 
 pub struct UserEventListener {
     canv_el: HtmlElement,
     cs: Arc<Mutex<App>>,
-    mouse: Arc<Mutex<MousePhysics>>
+    mouse: Arc<Mutex<MousePhysics>>,
+    optical: Arc<Mutex<Optical>>
 }
 
 impl UserEventListener {
     pub fn new(cs: &Arc<Mutex<App>>,
                canv_el: &HtmlElement,
-               mouse: &Arc<Mutex<MousePhysics>>) -> UserEventListener {
+               mouse: &Arc<Mutex<MousePhysics>>,
+               optical: &Arc<Mutex<Optical>>) -> UserEventListener {
         UserEventListener {
             cs: cs.clone(),
             mouse: mouse.clone(),
-            canv_el: canv_el.clone()
+            canv_el: canv_el.clone(),
+            optical: optical.clone()
         }
     }    
 }
@@ -38,11 +42,17 @@ impl EventListener<()> for UserEventListener {
                      s.get_mouse_pos_bp(),
                      s.get_mouse_pos_prop())
                 );
+
                 let pos = Dot(pos_bp,y);
+                self.optical.lock().unwrap().move_by(
+                    -e.wheel_delta() as f64/1000.,
+                    pos,pos_prop);
+                /*
                 events_run(cs,&vec! {
-                    Event::Zoom(-e.wheel_delta() as f64/1000.),
+                    //Event::Zoom(-e.wheel_delta() as f64/1000.),
                     Event::Pos(pos,Some(pos_prop))
                 });
+                */
             },
             EventData::MouseEvent(EventType::MouseDownEvent,_,e) => {
                 self.canv_el.focus();
@@ -140,7 +150,8 @@ impl EventListener<()> for UserEventListenerBody {
 
 pub fn register_user_events(gc: &mut AppRunner, el: &HtmlElement) {
     let mp = Arc::new(Mutex::new(MousePhysics::new(gc)));
-    let uel = UserEventListener::new(&gc.state(),el,&mp);
+    let op = Arc::new(Mutex::new(Optical::new(gc)));
+    let uel = UserEventListener::new(&gc.state(),el,&mp,&op);
     let mut ec_canv = EventControl::new(Box::new(uel),());
     ec_canv.add_event(EventType::MouseClickEvent);
     ec_canv.add_event(EventType::MouseDownEvent);
