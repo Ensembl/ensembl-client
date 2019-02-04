@@ -8,6 +8,7 @@ mod poly;
 mod wiggle;
 mod spot;
 mod texture;
+mod boxshape;
 
 pub use self::shapeimpl::{
     Shape, DrawnShape,
@@ -54,6 +55,11 @@ pub use shape::wiggle::{
 pub use self::stretch::{
     stretch_texture,
     StretchTextureSpec
+};
+
+pub use self::boxshape::{
+    BoxSpec,
+    stretch_box
 };
 
 pub use self::spec::ShapeSpec;

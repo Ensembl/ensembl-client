@@ -27,7 +27,7 @@ use shape::{
     page_texture, pin_texture,  pin_mathsshape,
     stretch_rectangle, stretch_texture, stretch_wiggle,
     ColourSpec, MathsShape, tape_mathsshape,
-    tape_rectangle, tape_texture
+    tape_rectangle, tape_texture, stretch_box
 };
 use types::{ 
     Colour, cleaf, cpixel, area_size, area, cedge,
@@ -240,7 +240,7 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
     let total_bp = leaf.total_bp();
     if total_bp < 10. {
         // why?
-    } else if total_bp < 1000. {
+    } else if total_bp < 1000. && is_gene {
         let h = if total_bp < 100. { 12 } else if total_bp < 200. { 6 } else { 4 };
         let t = if total_bp < 100. {  3 } else if total_bp < 200. { 2 } else { 0 };
         for (i,pos) in starts_rng.iter().enumerate() {
@@ -252,33 +252,50 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
             } else {
                 "".to_string()
             };
+            let data_len = d.iter().fold(-d[d.len()-1],|a,v| a+v.abs());
+            let scale : f32 = (pos[1]-pos[0]) as f32/data_len as f32;
             for (i,bp) in (pos[0]..pos[1]).enumerate() {
                 let cur_bp = prop(leaf,bp);
                 let size_bp = prop(leaf,bp+1) - cur_bp;
                 let prop_start = cur_bp - 0.45*size_bp;
                 let prop_end = cur_bp + 0.45*size_bp;
-                if prop_start < 1. && prop_end > 0. {
-                    closure_add(lc,&stretch_rectangle(
-                                &area(cleaf(prop_start,y-h),
-                                      cleaf(prop_end,y+h)),
-                                &ColourSpec::Spot(Colour(75,168,252))));
+                if prop_start < 1. && prop_end > 0. {                    
+                    let mut exonic = false;
+                    let mut x = 0.;
+                    for v in &d {
+                        let x_start = pos[0] as f32+x as f32;
+                        let x_end = x_start+*v*scale;
+                        if bp as f32 >= x_start && bp as f32 <= x_end {
+                            exonic = true;
+                        }
+                        x += v.abs() * scale;
+                    }
+                    if exonic {
+                        closure_add(lc,&stretch_rectangle(
+                            &area(cleaf(prop_start,y-h),
+                                  cleaf(prop_end,y+h)),
+                            &ColourSpec::Spot(Colour(75,168,252))));
+                    } else {
+                        closure_add(lc,&stretch_box(
+                            &area(cleaf(prop_start,y-h),
+                                  cleaf(prop_end,y+h)),
+                            1,&ColourSpec::Spot(Colour(75,168,252))));
+                    }
                     if t > 0 {
-                        let tx = text_texture(&seq[i..i+1],&p.lato_18,&Colour(255,255,255),&Colour(72,168,252));
+                        let mut blue = Colour(75,168,252);
+                        let mut white = Colour(255,255,255);
+                        let (fgd,bgd) = if exonic { (white,blue) } else { (blue,white) };                        
+                        let tx = text_texture(&seq[i..i+1],&p.lato_18,&fgd,&bgd);
                         closure_add(lc,&pin_texture(tx, &cleaf((prop_start+prop_end)/2.,y), &cpixel(0,t), &cpixel(1,1).anchor(A_MIDDLE)));
                     }
                 }
             }
         }  
     } else if total_bp < 2000000. {
-        let mut xxx = 0;
-        let mut yyy = 0;
-        let mut zzz = 0;
         for (i,pos) in starts_rng.iter().enumerate() {
-            yyy += 1;
             let prop_start = prop(leaf,pos[0]);
             let prop_end = prop(leaf,pos[1]);
             if prop_end < 0. || prop_start > 1. { continue; }
-            zzz += 1;
             let data_len = d.iter().fold(-d[d.len()-1],|a,v| a+v.abs());
             let mut x = 0.;
             let scale : f32 = (pos[1]-pos[0]) as f32/data_len as f32;
@@ -295,11 +312,9 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
                                             &ColourSpec::Spot(Colour(75,168,252))));
                         }
                         draw_gene_part(lc,x_start,y,x_end-x_start);
-                        xxx += 1;
                     } else {
                         let col = choose_colour(t,x_genome);
                         draw_varreg_part(lc,t,x_start,y,x_end-x_start,col);
-                        xxx += 1;
                     }
                     x += v.abs() * scale;
                 }
@@ -313,7 +328,6 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
                 } else {
                     Colour(192,192,192)
                 };
-                xxx += 1;
                 closure_add(lc,&stretch_rectangle(
                     &area(cleaf(prop_start,y-3),cleaf(prop_end,y+3)),
                     &ColourSpec::Spot(colour)));
