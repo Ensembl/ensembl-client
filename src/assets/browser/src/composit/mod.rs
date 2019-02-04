@@ -1,4 +1,5 @@
 mod state;
+mod scale;
 mod compositor;
 mod train;
 mod leaf;
@@ -9,6 +10,8 @@ mod stick;
 mod stickmanager;
 mod compsource;
 mod compsourcelist;
+mod zoom;
+mod position;
 
 pub use self::source::{
     Source, SourceResponse, SourceFactory, ActiveSource, DrawnResponse
@@ -31,4 +34,7 @@ pub use self::state::{
     ComponentRedo
 };
 
-pub use self::leaf::{ Leaf, vscale_bp_per_leaf, best_vscale };
+pub use self::leaf::Leaf;
+pub use self::scale::Scale;
+pub use self::zoom::Zoom;
+pub use self::position::Position;

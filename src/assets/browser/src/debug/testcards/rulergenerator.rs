@@ -2,7 +2,7 @@ use std::cmp::max;
 use std::collections::HashSet;
 use std::iter::FromIterator;
 
-use composit::{ Leaf, vscale_bp_per_leaf };
+use composit::Leaf;
 
 const BY125 : &[f64] = &[0.05,0.1,0.2,0.5,1.,2.,5.,10.,20.];
 const BY12 : &[f64] =  &[     0.1,0.2,    1.,   5.,10.    ];
@@ -99,7 +99,7 @@ pub struct RulerGenerator {
 
 impl RulerGenerator {
     pub fn new_leaf(leaf: &Leaf) -> RulerGenerator {
-        let mut mul = vscale_bp_per_leaf(leaf.get_vscale());
+        let mut mul = leaf.total_bp();
         let mut vdiv = 1.;
         let mut delta = 0.;
         let mut start = leaf.get_index() as f64 * mul;

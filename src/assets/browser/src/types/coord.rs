@@ -50,7 +50,7 @@ impl<T: Clone + Copy + Mul<f64,Output=T> + Div<f64,Output=T> + Debug> Distance<T
         let Distance(quant,source) = self;
         let dims = stage.get_size();
         let (size,zoom) = match axis {
-            Axis::Horiz => (dims.0 as f64,stage.get_linear_zoom() as f64),
+            Axis::Horiz => (dims.0 as f64,stage.get_zoom().get_linear_zoom() as f64),
             Axis::Vert => (dims.1 as f64,1.0)
         };
         let quant = match source {

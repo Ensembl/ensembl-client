@@ -2,7 +2,7 @@ use std::cmp::{ max, min };
 use std::collections::HashSet;
 
 use composit::{
-    Leaf, Carriage, StateManager, vscale_bp_per_leaf,
+    Leaf, Carriage, StateManager, Scale,
     ComponentManager, ActiveSource, Stick, CarriageSet, StaleCarriages
 };
 use composit::state::ComponentRedo;
@@ -13,16 +13,16 @@ pub struct Train {
     carriages: CarriageSet,
     stale: StaleCarriages,
     stick: Stick,
-    vscale: i32,
+    scale: Scale,
     train_flank: i32,
     middle_leaf: i64,    
 }
 
 impl Train {
-    pub fn new(stick: &Stick, vscale: i32) -> Train {
+    pub fn new(stick: &Stick, scale: Scale) -> Train {
         Train {
             stick: stick.clone(),
-            vscale,
+            scale,
             train_flank: 10,
             middle_leaf: 0,
             carriages: CarriageSet::new(),
@@ -36,19 +36,17 @@ impl Train {
      */
         
     /* which scale are we (ie which train)? */
-    pub fn get_vscale(&self) -> i32 { self.vscale }
+    pub fn get_scale(&self) -> &Scale { &self.scale }
     
     /* called when position changes, to update carriages */
     pub fn set_position(&mut self, position_bp: f64) {
-        self.middle_leaf = (position_bp / vscale_bp_per_leaf(self.vscale) as f64).floor() as i64;
+        self.middle_leaf = (position_bp / self.scale.total_bp()).floor() as i64;
     }
     
     /* called when zoom changes, to update flank */
     pub fn set_zoom(&mut self, bp_per_screen: f64) {
-        let leaf_per_screen = bp_per_screen / vscale_bp_per_leaf(self.vscale);
+        let leaf_per_screen = bp_per_screen / self.scale.total_bp();
         self.train_flank = min(max((2. * leaf_per_screen) as i32,1),MAX_FLANK);
-        debug!("trains","set  bp_per_screen={} bp_per_leaf={} leaf_per_screen={} flank={}",
-            bp_per_screen,vscale_bp_per_leaf(self.vscale),leaf_per_screen,self.train_flank);
     }
     
     /* add component to leaf */
@@ -80,7 +78,7 @@ impl Train {
         let mut out = Vec::<Leaf>::new();
         for idx in -self.train_flank..self.train_flank+1 {
             let hindex = self.middle_leaf + idx as i64;
-            let leaf = Leaf::new(&self.stick,hindex,self.vscale);
+            let leaf = Leaf::new(&self.stick,hindex,&self.scale);
             if !self.carriages.contains_leaf(&leaf) {
                 debug!("trains","adding {}",hindex);
                 out.push(leaf);

@@ -4,7 +4,6 @@ use std::iter::repeat;
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
-use composit::vscale_bp_per_leaf;
 use composit::{
     StateFixed, StateValue, StateAtom, Leaf, Carriage, SourceResponse,
     Stick
@@ -88,7 +87,7 @@ fn draw_frame(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette
 }
 
 fn measure(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette) {
-    let mul = vscale_bp_per_leaf(leaf.get_vscale());
+    let mul = leaf.total_bp();
     let start_leaf = (leaf.get_index() as f64 * mul).floor() as i32;
     let end_leaf = (((leaf.get_index()+1) as f64) * mul).floor() as i32;
     
@@ -227,7 +226,7 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
                                          cpixel(6,t*PITCH+PITCH/3+TOP).x_edge(AxisSense::Pos)),
                                    &ColourSpec::Colour(Colour(75,168,252))));
     }
-    let mul = vscale_bp_per_leaf(leaf.get_vscale());
+    let mul = leaf.total_bp();
     let start_leaf = (leaf.get_index() as f64 * mul).floor() as i32;
     let end_leaf = ((leaf.get_index()+1) as f64 * mul).ceil() as i32;
     let wiggle = 1000000;
@@ -238,17 +237,17 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
     let st = (t as f32).cos() * -10. - 100.;
     let mut x = st;
     let y = t*PITCH+TOP;
-    let scale = leaf.get_vscale();
-    if scale > 5 {
+    let total_bp = leaf.total_bp();
+    if total_bp < 20. {
         // why?
-    } else if scale > 1 {
-        let h = if scale > 3 { 12 } else if scale > 2 { 6 } else { 4 };
-        let t = if scale > 3 { 3 } else if scale > 2 { 2 } else { 0 };
+    } else if total_bp < 1000. {
+        let h = if total_bp < 100. { 12 } else if total_bp < 200. { 6 } else { 4 };
+        let t = if total_bp < 100. {  3 } else if total_bp < 200. { 2 } else { 0 };
         for (i,pos) in starts_rng.iter().enumerate() {
             let prop_start = prop(leaf,pos[0]);
             let prop_end = prop(leaf,pos[1]);
             if prop_end < 0. || prop_start > 1. { continue; }
-            let seq = if scale > 2 {
+            let seq = if total_bp < 200. {
                 rng_seq([0,0,0,0,0,0,0,0],pos[0],pos[1])
             } else {
                 "".to_string()
@@ -270,7 +269,7 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
                 }
             }
         }  
-    } else if leaf.get_vscale() > -6 {
+    } else if total_bp < 5000000. {
         for (i,pos) in starts_rng.iter().enumerate() {
             let prop_start = prop(leaf,pos[0]);
             let prop_end = prop(leaf,pos[1]);

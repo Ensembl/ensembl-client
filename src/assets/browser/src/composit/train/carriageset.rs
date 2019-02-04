@@ -33,7 +33,7 @@ impl CarriageSet {
 
     pub fn all_carriages(&self) -> Vec<&Carriage> {
         let mut out = Vec::<&Carriage>::new();
-        for (leaf,lcc) in &self.carriages {
+        for lcc in self.carriages.values() {
             for lc in lcc.values() {
                 out.push(lc);
             }
