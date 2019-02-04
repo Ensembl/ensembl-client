@@ -7,6 +7,10 @@ module.exports = {
         'include',
         'mixin'
       ]
-    }]
+    }],
+    'selector-pseudo-class-no-unknown': [true, {
+      ignorePseudoClasses: ['global']
+    }],
+    'string-no-newline': null
   }
 };

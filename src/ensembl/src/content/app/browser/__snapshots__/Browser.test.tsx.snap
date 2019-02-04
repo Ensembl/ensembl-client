@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Browser /> renders correctly 1`] = `
+<section
+  className="browser"
+>
+  <React.Memo
+    browserNavOpened={true}
+    expanded={true}
+    toggleBrowserNav={[MockFunction]}
+  />
+  <div
+    className="browserInnerWrapper"
+  >
+    <div
+      className="browserImageWrapper semiExpanded"
+      onClick={[Function]}
+    >
+      <BrowserNavBar />
+      <BrowserImage />
+    </div>
+    <Connect(TrackPanel) />
+  </div>
+</section>
+`;

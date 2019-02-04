@@ -1,0 +1,13 @@
+@import 'src/styles/common';
+
+.account {
+  border-bottom: 1px solid $ens-medium-grey;
+  height: 300px;
+  @include flex;
+  @include flex-align(center, middle);
+
+  h2 {
+    color: $ens-grey;
+    text-align: center;
+  }
+}

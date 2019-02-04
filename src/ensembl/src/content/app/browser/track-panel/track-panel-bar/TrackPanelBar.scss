@@ -1,0 +1,25 @@
+@import 'src/styles/common';
+
+.trackPanelBar {
+  border-right: 1px solid $ens-medium-grey;
+  background: $ens-light-grey;
+  height: calc(100vh - 166px);
+  width: 36px;
+
+  &.expanded {
+    height: calc(100vh - 129px);
+  }
+
+  .sliderButton {
+    margin: 10px 0 30px 0;
+
+    button {
+      padding: 6px;
+    }
+
+    img {
+      height: 22px;
+      width: 22px;
+    }
+  }
+}
