@@ -1,0 +1,23 @@
+@import 'src/styles/common';
+
+.drawer {
+  border-left: 1px solid $ens-black;
+  width: calc(75% - 41px);
+
+  .trackCanvas {
+    height: calc(100vh - 181px);
+    overflow: scroll;
+
+    h2 {
+      @include flex;
+      @include flex-align(center, middle);
+      text-align: center;
+    }
+
+    section {
+      height: calc(100vh - 181px);
+      width: 100%;
+      padding: 20px;
+    }
+  }
+}

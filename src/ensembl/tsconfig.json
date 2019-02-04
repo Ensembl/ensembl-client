@@ -11,8 +11,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "paths": {
-      "assets/*": [
-        "assets/*"
+      "src/*": [
+        "src/*"
+      ],
+      "static/*": [
+        "static/*"
       ]
     },
     "removeComments": true,
@@ -27,10 +30,7 @@
   ],
   "include": [
     "./src/**/*",
-    "./assets/**/*",
-    "./typings"
-  ],
-  "typeRoots": [
+    "./static/**/*",
     "./typings"
   ]
 }

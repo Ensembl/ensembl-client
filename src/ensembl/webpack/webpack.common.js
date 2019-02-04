@@ -18,7 +18,7 @@ module.exports = (isDev, moduleRules, plugins) => ({
 
   // the starting point of webpack bundling
   entry: {
-    index: path.join(__dirname, '../src/scripts/index.tsx')
+    index: path.join(__dirname, '../src/index.tsx')
   },
 
   // the mode is what notifies webpack how the build should be made
@@ -44,18 +44,46 @@ module.exports = (isDev, moduleRules, plugins) => ({
       },
 
       // the loaders for styling
+      // there are two sets of them: for global and component styles
       // a scss file will first be loaded via sass loader and transpiled
-      // afterwards it will be processed by postcss loader to make the css cross-browser compatility
+      // afterwards it will be processed by postcss loader to make the css cross-browser compatible
       // add the processed css into the html document during runtime for dev
       // and extract the css for prod and minify it as external stylesheets
       {
         test: /.scss$/,
+        include: /src\/ensembl\/src(?!\/styles)/,
         use: [
           isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: {
-              importLoaders: 2
+              sourceMap: true,
+              minimize: true,
+              modules: true,
+              localIdentName: '[local]__[name]__[hash:base64:5]'
+            }
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              ident: 'postcss',
+              plugins: () => [postcssPresetEnv()]
+            }
+          },
+          'sass-loader'
+        ]
+      },
+
+      {
+        test: /.scss$/,
+        include: /src\/ensembl\/src\/styles/,
+        use: [
+          isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 2,
+              sourceMap: true
             }
           },
           {
@@ -102,7 +130,7 @@ module.exports = (isDev, moduleRules, plugins) => ({
     // generates the index file using the provided html template
     new HtmlPlugin({
       filename: 'index.html',
-      template: path.join(__dirname, '../assets/html/template.html'),
+      template: path.join(__dirname, '../static/html/template.html'),
       publicPath: '/'
     }),
 
@@ -114,7 +142,8 @@ module.exports = (isDev, moduleRules, plugins) => ({
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.scss'],
     alias: {
-      assets: path.join(__dirname, '../assets')
+      src: path.join(__dirname, '../src'),
+      static: path.join(__dirname, '../static')
     }
   }
 });

@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<BrowserImage /> renders correctly 1`] = `
+<BrowserImage>
+  <div
+    className="browser-stage"
+  />
+</BrowserImage>
+`;

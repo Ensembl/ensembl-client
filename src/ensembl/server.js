@@ -10,7 +10,7 @@ const convert = require('koa-connect');
 const app = new Koa();
 
 app.use(convert(history()));
-app.use(serve(path.join(__dirname, 'dist')));
+app.use(serve(path.join(__dirname, 'dist'), { br: true, gzip: false }));
 
 const server = https.createServer(
   {

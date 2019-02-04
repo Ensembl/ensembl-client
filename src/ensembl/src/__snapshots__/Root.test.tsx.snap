@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Root /> renders correctly 1`] = `
+<BrowserRouter>
+  <StrictMode>
+    <React.Memo />
+    <withRouter(Connect(Content)) />
+  </StrictMode>
+</BrowserRouter>
+`;

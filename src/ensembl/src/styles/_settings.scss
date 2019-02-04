@@ -101,12 +101,20 @@ $print-transparent-backgrounds: true;
 
 $ens-black: #162f45;
 $ens-blue: #3894fb;
+$ens-dark-grey: #999;
 $ens-grey: #bdc5cd;
 $ens-medium-grey: #d5dadf;
 $ens-light-grey: #f1f3f5;
 $ens-white: #fff;
 
-$img-base-url: '/assets/img';
+$img-base-url: '/static/img';
+
+// font weights
+
+$light: 300;
+$normal: 400;
+$bold: 700;
+$dark: 900;
 
 @include add-foundation-colors;
 
@@ -823,7 +831,7 @@ $thumbnail-radius: $global-radius;
 $titlebar-background: $black;
 $titlebar-color: $white;
 $titlebar-padding: 0.5rem;
-$titlebar-text-font-weight: bold;
+$titlebar-text-font-weight: $bold;
 $titlebar-icon-color: $white;
 $titlebar-icon-color-hover: $medium-gray;
 $titlebar-icon-spacing: 0.25rem;
