@@ -34,7 +34,7 @@ class BrowserImage extends PureComponent<BrowserImageProps> {
 
     if (currentEl && currentEl.ownerDocument) {
       const browserEl = currentEl.ownerDocument.querySelector(
-        '.browser-stage'
+        '.' + styles.browserStage
       ) as HTMLBodyElement;
 
       const bodyEl = currentEl.ownerDocument.querySelector('body');
