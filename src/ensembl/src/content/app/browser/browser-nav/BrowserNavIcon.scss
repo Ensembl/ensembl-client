@@ -1,0 +1,11 @@
+.browserNavIcon {
+  display: inline-block;
+  margin-left: 10px;
+
+  button {
+    & > img {
+      height: 25px;
+      width: 25px;
+    }
+  }
+}

@@ -1,0 +1,51 @@
+@import 'src/styles/common';
+
+.launchbar {
+  border-bottom: 1px solid $ens-medium-grey;
+  border-top: 1px solid $ens-medium-grey;
+  padding: 8px 6px;
+  @include flex;
+
+  dl {
+    display: inline-block;
+    padding: 0 15px;
+
+    &.border {
+      border-right: 1px solid $ens-medium-grey;
+    }
+  }
+
+  dt {
+    display: inline-block;
+    padding: 0 12px;
+  }
+}
+
+.categoriesWrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  width: calc(100% - 86px);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  dl:first-child {
+    padding-left: 2px;
+  }
+}
+
+.categories {
+  flex: 0 0 auto;
+}
+
+.about {
+  @include flex;
+  @include flex-align(right, top);
+  margin-left: 20px;
+
+  dl:first-child {
+    padding-right: 2px;
+  }
+}

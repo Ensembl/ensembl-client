@@ -1,11 +1,13 @@
 const webpack = require('webpack');
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const BrotliPlugin = require('brotli-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
-const RobotstxtPlugin = require("robotstxt-webpack-plugin").default;
+const RobotstxtPlugin = require('robotstxt-webpack-plugin').default;
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 // loaders specific to prod
@@ -14,7 +16,7 @@ const moduleRules = [
   // image loader should compress the images
   // then file loader takes over to copy the images into the dist folder
   {
-    test: /assets\/img\/.*\.(svg|gif|png|jpe?g)$/i,
+    test: /static\/img\/.*\.(svg|gif|png|jpe?g)$/i,
     use: [
       {
         loader: 'file-loader',
@@ -29,7 +31,7 @@ const moduleRules = [
 
   // loader for fonts that copies the fonts into the dist folder
   {
-    test: /assets\/fonts\/.*\.(woff2?|eot|ttf|otf|svg)$/i,
+    test: /static\/fonts\/.*\.(woff2?|eot|ttf|otf|svg)$/i,
     loader: 'file-loader',
     options: {
       emitFile: true,
@@ -39,7 +41,7 @@ const moduleRules = [
 ];
 
 // plugins specific to prod
-let plugins = [
+const plugins = [
   // plugin to extract css from the webpack javascript build files
   new MiniCssExtractPlugin({
     filename: '[name].[contenthash].css',
@@ -50,8 +52,8 @@ let plugins = [
   // this is only temporarily until a better solution is found
   new CopyWebpackPlugin([
     {
-      from: path.join(__dirname, '../assets/browser'),
-      to: path.join(__dirname, '../dist/assets/browser')
+      from: path.join(__dirname, '../static/browser'),
+      to: path.join(__dirname, '../dist/static/browser')
     }
   ]),
 
@@ -59,10 +61,10 @@ let plugins = [
   new webpack.HashedModuleIdsPlugin(),
 
   // brotli compression for static files
-  // only files above 10kB will be compressed
+  // only files above 5kB will be compressed
   new BrotliPlugin({
     test: /.(js|css|html)$/,
-    threshold: 10240, // 10kB
+    threshold: 5120, // 5kB
     minRatio: 0.8
   }),
 
@@ -76,11 +78,26 @@ let plugins = [
   }),
 
   new RobotstxtPlugin(),
+
+  // analyse the file sizes of bundled files
+  new BundleAnalyzerPlugin({
+    analyzerMode: 'static',
+    reportFilename: path.join(__dirname, '../bundle-report.html')
+  })
 ];
 
 // prod specific configuration
 const prodConfig = {
   optimization: {
+    minimizer: [
+      new UglifyJsPlugin({
+        cache: true,
+        parallel: true,
+        sourceMap: true
+      }),
+      new OptimizeCSSAssetsPlugin({})
+    ],
+
     // create a separate webpack runtime chunk that will be used for all bundles
     runtimeChunk: true,
 
@@ -107,11 +124,4 @@ const prodConfig = {
 const commonConfig = require('./webpack.common')(false, moduleRules, plugins);
 
 // concatenate the common config with the prod config
-module.exports = env => {
-  if(!env || !env.RUN_FROM_SCRIPT) {
-    // Only these if NOT run from a script
-    // analyse the file sizes of bundled files
-    commonConfig.plugins.push(new BundleAnalyzerPlugin());
-  }
-  return Object.assign({}, commonConfig, prodConfig);
-}
+module.exports = Object.assign({}, commonConfig, prodConfig);

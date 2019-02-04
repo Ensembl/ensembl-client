@@ -1,0 +1,16 @@
+@import 'src/styles/common';
+
+.trackPanelList {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  width: 320px;
+
+  h4 {
+    border-bottom: 1px solid $ens-grey;
+    color: $ens-grey;
+    font-size: 10px;
+    padding-bottom: 2px;
+  }
+}

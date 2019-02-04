@@ -1,0 +1,8 @@
+@import 'src/styles/common';
+
+.browserNavBar {
+  @include flex;
+  justify-content: flex-end;
+  padding: 10px;
+  width: calc(100vw - 356px);
+}

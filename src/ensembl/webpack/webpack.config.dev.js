@@ -18,7 +18,7 @@ const moduleRules = [
 const plugins = [
   // lint the SASS files within the Ensembl codebase only
   new StylelintWebpackPlugin({
-    context: 'src',
+    context: path.join(__dirname, '../src'),
     files: '**/*.scss'
   })
 ];
