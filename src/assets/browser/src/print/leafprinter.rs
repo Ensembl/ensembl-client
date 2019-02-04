@@ -71,7 +71,8 @@ impl LeafPrinter {
                 }
                 let mut e = self.new_edition();
                 self.redraw_objects(comps,&mut e);
-                debug!("bug","{:?} {}objs",leaf,self.progs.size());
+                /* Useful for debugging performance */
+                //debug!("bug","{:?} {}objs",leaf,self.progs.size());
                 self.fini(&mut e);
             }
         }

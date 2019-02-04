@@ -12,6 +12,7 @@ mod compsource;
 mod compsourcelist;
 mod zoom;
 mod position;
+mod wrapping;
 
 pub use self::source::{
     Source, SourceResponse, SourceFactory, ActiveSource, DrawnResponse
@@ -38,3 +39,4 @@ pub use self::leaf::Leaf;
 pub use self::scale::Scale;
 pub use self::zoom::Zoom;
 pub use self::position::Position;
+pub use self::wrapping::Wrapping;
