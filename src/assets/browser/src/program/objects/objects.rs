@@ -30,4 +30,6 @@ pub trait Object {
     fn obj_final(&mut self, _batch: &DataBatch, _ctx: &glctx, _ds: &DrawingSession) {}
     fn execute(&mut self, _ctx: &glctx, _batch: &DataBatch) {}
     fn clear(&mut self) {}
+    
+    fn size(&self) -> usize { 0 } /* used in debugging performance */
 }

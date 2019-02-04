@@ -85,7 +85,7 @@ impl BatchManager {
         let len = self.groups.len();
         self.max_group = 0;
         self.groups.clear();
-        for i in 0..len {
+        for _ in 0..len {
             self.new_group();
         }
     }

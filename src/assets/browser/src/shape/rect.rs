@@ -70,7 +70,7 @@ impl Shape for PinRect {
             },
         };
         if let ColourSpec::Colour(c) = self.colspec {
-            for i in 0..4 {
+            for _ in 0..4 {
                 colour(b,geom,"aVertexColour",&c);
             }
         }

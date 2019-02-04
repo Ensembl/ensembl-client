@@ -115,7 +115,7 @@ impl AppRunner {
         let r = self.state();
         r.lock().unwrap().check_size();
         {
-            self.add_timer(|app,t| {
+            self.add_timer(|app,_| {
                 app.check_size();
             },Some(SIZE_CHECK_INTERVAL_MS));
         }
