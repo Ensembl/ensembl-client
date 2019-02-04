@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use composit::{ Leaf, Zoom, Position };
+use composit::{ Leaf, Position };
 use program::UniformValue;
 use types::{CPixel, cpixel, Move, Dot, Direction };
 
@@ -12,7 +12,6 @@ pub struct Stage {
     mouse_pos: CPixel,
     base: f64,
     pos: Position,
-    zoom: Zoom,
 }
 
 impl Stage {
@@ -21,19 +20,10 @@ impl Stage {
         let mut out = Stage {
             pos: Position::new(Dot(0.,0.),size),
             mouse_pos: Dot(0,0),
-            zoom: Zoom::new(0.), 
             base: 0.,
             dims: size,
         };
-        out.pos.inform_zoom(&out.zoom);
         out
-    }
-
-    pub fn get_zoom(&self) -> Zoom { self.zoom }
-
-    pub fn zoom_updated(&mut self, z: Zoom) {
-        self.zoom = z;
-        self.pos.inform_zoom(&self.zoom);
     }
 
     pub fn set_mouse_pos(&mut self, c: &CPixel) {
@@ -47,8 +37,8 @@ impl Stage {
     }
 
     pub fn get_pos_prop_bp(&self, prop: f64) -> f64 {
-        let start = self.get_pos_middle().0 - self.zoom.get_linear_zoom() / 2.;
-        start + prop * self.zoom.get_linear_zoom()
+        let start = self.get_pos_middle().0 - self.pos.get_linear_zoom() / 2.;
+        start + prop * self.pos.get_linear_zoom()
     }
 
     pub fn get_mouse_pos_bp(&self) -> f64 {
@@ -56,21 +46,42 @@ impl Stage {
     }
         
     pub fn pos_prop_bp_to_origin(&self, pos: f64, prop: f64) -> f64 {
-        let start = pos - prop * self.zoom.get_linear_zoom();
-        start + self.zoom.get_linear_zoom()/2.
+        let start = pos - prop * self.pos.get_linear_zoom();
+        start + self.pos.get_linear_zoom()/2.
     }
 
     pub fn set_limit(&mut self, which: &Direction, val: f64) {
         self.pos.set_limit(which,val);
     }
     
+    pub fn get_screen_in_bp(&self) -> f64 {
+        self.pos.get_screen_in_bp()
+    }
+    
     pub fn get_pos_middle(&self) -> Dot<f64,f64> {
         self.pos.get_middle()
     }
-
+    
     pub fn inc_pos(&mut self, delta: &Move<f64,f64>) {
         let p = self.pos.get_middle() + *delta;
         self.pos.set_middle(&p);
+    }
+
+    pub fn set_zoom(&mut self, v: f64) {
+        self.pos.set_zoom(v);
+    }
+
+    pub fn inc_zoom(&mut self, by: f64) {
+        let z = self.pos.get_zoom() + by;
+        self.pos.set_zoom(z);
+    }
+    
+    pub fn get_zoom(&self) -> f64 {
+        self.pos.get_zoom()
+    }
+
+    pub fn get_linear_zoom(&self) -> f64 {
+        self.pos.get_linear_zoom()
     }
 
     pub fn set_pos_middle(&mut self, pos: &Dot<f64,f64>) {
@@ -87,7 +98,7 @@ impl Stage {
     }
 
     pub fn get_uniforms(&self, leaf: &Leaf, opacity: f32) -> HashMap<&str,UniformValue> {
-        let z = self.zoom.get_linear_zoom();
+        let z = self.pos.get_linear_zoom();
         let zl = leaf.total_bp();
         let ls = z as f64 / zl;
         let middle = self.pos.get_middle();

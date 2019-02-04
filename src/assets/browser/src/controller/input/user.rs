@@ -40,7 +40,7 @@ impl EventListener<()> for UserEventListener {
                 );
                 let pos = Dot(pos_bp,y);
                 events_run(cs,&vec! {
-                    Event::Zoom(-e.wheel_delta() as f32/1000.),
+                    Event::Zoom(-e.wheel_delta() as f64/1000.),
                     Event::Pos(pos,Some(pos_prop))
                 });
             },

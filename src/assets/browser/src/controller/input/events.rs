@@ -7,8 +7,8 @@ pub enum Event {
     Noop,
     Pos(Dot<f64,f64>,Option<f64>),
     Move(Move<f64,f64>),
-    Zoom(f32),
-    ZoomTo(f32),
+    Zoom(f64),
+    ZoomTo(f64),
     Resize(Dot<i32,i32>),
     AddComponent(String),
     SetStick(String),
@@ -38,13 +38,15 @@ fn exe_move_event(app: &App, v: Move<f64,f64>) {
     });
 }
 
-fn exe_zoom_event(app: &App, mut z: f32, by: bool) {
+fn exe_zoom_event(app: &App, mut z: f64, by: bool) {
+    debug!("bug","zoom z={} by={}",z,by);
     let z = app.with_stage(|s| {
-        let mut zoom = s.get_zoom();
-        if by { z += zoom.get_zoom(); }
-        zoom.set_zoom(z);
-        s.zoom_updated(zoom);
-        zoom.get_linear_zoom()
+        if by {
+            s.inc_zoom(z);
+        } else {
+            s.set_zoom(z);
+        }
+        s.get_linear_zoom()
     });
     app.with_compo(|co| { co.set_zoom(z); });
 }
