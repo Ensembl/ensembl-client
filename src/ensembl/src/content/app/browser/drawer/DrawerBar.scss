@@ -1,0 +1,28 @@
+@import 'src/styles/common';
+
+.drawerBar {
+  @include flex;
+  border-bottom: 1px dashed $ens-black;
+  padding: 10px 15px;
+
+  .pageList {
+    margin: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    width: 100%;
+
+    dt {
+      display: inline-block;
+      margin-right: 15px;
+      white-space: nowrap;
+    }
+  }
+
+  .closeButton {
+    img {
+      height: 24px;
+      width: 24px;
+    }
+  }
+}

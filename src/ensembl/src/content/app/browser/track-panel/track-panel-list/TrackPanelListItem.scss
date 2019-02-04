@@ -1,0 +1,79 @@
+@import 'src/styles/common';
+
+.listItem {
+  display: flex;
+  font-size: 12px;
+  margin-left: 0;
+  padding: 4px 10px;
+
+  button {
+    margin-left: 15px;
+  }
+
+  img {
+    height: 16px;
+    width: 16px;
+
+    &.expandIcon {
+      height: 12px;
+      width: 12px;
+    }
+  }
+
+  &:hover,
+  &.currentTrack {
+    background: lighten($ens-blue, 40%);
+  }
+
+  &.main {
+    font-weight: $bold;
+  }
+
+  label {
+    width: calc(100% - 50px);
+
+    button {
+      margin-left: 0;
+    }
+
+    .mainText {
+      margin-right: 10px;
+    }
+
+    .additionalInfo {
+      color: $ens-black;
+      display: inline-block;
+      font-weight: $light;
+      margin-right: 10px;
+    }
+  }
+
+  .box {
+    border: 1px solid;
+    display: inline-block;
+    height: 11px;
+    margin-right: 10px;
+    position: relative;
+    top: 1px;
+    width: 11px;
+
+    &.blue {
+      background: $ens-blue;
+      border-color: $ens-blue;
+    }
+
+    &.darkGrey {
+      background: $ens-dark-grey;
+      border-color: $ens-dark-grey;
+    }
+
+    &.grey {
+      background: $ens-grey;
+      border-color: $ens-grey;
+    }
+
+    &.white {
+      background: $white;
+    }
+  }
+}

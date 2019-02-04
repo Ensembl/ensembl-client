@@ -1,0 +1,118 @@
+@import 'src/styles/common';
+
+.browserBar {
+  @include flex;
+  background: $ens-light-grey;
+  box-shadow: 0 2px 3px $ens-grey;
+  padding: 7px 0 3px 0;
+  position: relative;
+
+  dd {
+    display: inline-block;
+    margin: 0 18px;
+  }
+
+  button {
+    &.selected {
+      background: $ens-white;
+    }
+  }
+}
+
+.browserInfo {
+  @include flex;
+  flex-wrap: nowrap;
+  font-size: 12px;
+  margin: 0;
+  width: calc(100vw - 356px);
+
+  label {
+    color: #555;
+    font-weight: $light;
+  }
+
+  .value {
+    color: $ens-black;
+    margin: 0 3px;
+  }
+
+  dd {
+    margin-right: 10px;
+    white-space: nowrap;
+  }
+
+  dl {
+    overflow: hidden;
+
+    &.browserInfoLeft {
+      flex: 1 1 auto;
+    }
+
+    &.browserInfoRight {
+      flex: 0 1 auto;
+      text-align: right;
+    }
+
+    .geneSymbol {
+      margin-left: 14px;
+
+      .value {
+        font-size: 13px;
+        font-weight: $bold;
+      }
+    }
+  }
+
+  .resetButton {
+    position: relative;
+    top: -2px;
+
+    img {
+      height: 16px;
+      width: 16px;
+    }
+  }
+
+  .navigator {
+    margin: 0 10px 0 0;
+    position: relative;
+    top: -2px;
+
+    img {
+      height: 22px;
+      width: 22px;
+    }
+  }
+}
+
+.browserTabs {
+  @include flex;
+  font-size: 13px;
+  justify-content: flex-end;
+  padding-right: 5px;
+  width: 356px;
+
+  button {
+    color: $ens-blue;
+
+    &.active {
+      color: inherit;
+      position: relative;
+
+      &::after {
+        border: 6px solid $ens-grey;
+        border-color: transparent transparent $ens-light-grey $ens-light-grey;
+        box-shadow: -2px 2px 2px 0 $ens-grey;
+        box-sizing: border-box;
+        content: '';
+        height: 0;
+        position: absolute;
+        right: calc(60% - 6px);
+        transform-origin: 0 0;
+        transform: rotate(-45deg);
+        top: 21px;
+        width: 0;
+      }
+    }
+  }
+}

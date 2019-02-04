@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Account /> renders correctly 1`] = `
+<ForwardRef>
+  <div>
+    <h2>
+      Account area placeholder
+    </h2>
+  </div>
+</ForwardRef>
+`;

@@ -1,0 +1,61 @@
+@import 'src/styles/common';
+
+.appBar {
+  border-bottom: 1px solid $ens-medium-grey;
+  font-size: 12px;
+  padding: 8px 20px;
+  width: 100%;
+
+  > div {
+    @include flex;
+
+    &.top {
+      margin-bottom: 12px;
+    }
+  }
+}
+
+.selectedSpecies {
+  flex: 1 1 auto;
+  margin-left: 10px;
+
+  dd {
+    display: inline-block;
+    font-size: 11px;
+    margin-left: 10px;
+
+    &:not(:last-child) {
+      background: $ens-black;
+      border-radius: 30px;
+      color: $ens-white;
+      margin-right: 6px;
+      padding: 2px 20px;
+    }
+
+    strong {
+      font-size: 14px;
+    }
+  }
+}
+
+.addSpecies {
+  font-size: 11px;
+}
+
+.helpLink {
+  flex: 0 1 auto;
+  position: relative;
+  top: 5px;
+
+  a {
+    color: $ens-black;
+    font-size: 12px;
+    font-weight: $light;
+  }
+
+  img {
+    height: 14px;
+    margin-left: 5px;
+    width: 14px;
+  }
+}

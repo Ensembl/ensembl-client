@@ -1,0 +1,28 @@
+@import 'src/styles/common';
+
+.browser {
+  width: 100%;
+}
+
+.browserInnerWrapper {
+  @include flex;
+  height: calc(100% - 40px);
+}
+
+.browserImageWrapper {
+  &.semiExpanded {
+    width: calc(100vw - 356px);
+  }
+
+  &.expanded {
+    width: calc(100vw - 36px);
+  }
+
+  &.collapsed {
+    width: 41px;
+
+    .browserImage {
+      display: none;
+    }
+  }
+}
