@@ -7,7 +7,6 @@ use rand::prelude::SliceRandom;
 use rand::rngs::SmallRng;
 use rand::SeedableRng;
 
-use composit::vscale_bp_per_leaf;
 use composit::Leaf;
 use types::{ CLeaf, cleaf, Colour };
 
@@ -25,7 +24,7 @@ fn bytes_of_u64(v: u64) -> [u8;8] {
 }
 
 pub fn prop(leaf: &Leaf, pos: i32) -> f32 {
-    let mul = vscale_bp_per_leaf(leaf.get_vscale());
+    let mul = leaf.total_bp();
     let start_leaf = (leaf.get_index() as f64 * mul) as f64;
     ((pos as f64-start_leaf)/mul) as f32
 }

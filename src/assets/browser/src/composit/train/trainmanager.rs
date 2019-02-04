@@ -11,11 +11,7 @@
  * render.
  */
 
-use composit::{
-    Leaf,
-    Train, best_vscale, ComponentManager, ActiveSource,
-    Stick
-};
+use composit::{ Leaf, Train, ComponentManager, ActiveSource, Stick, Scale };
 
 const MS_FADE : f64 = 300.;
 const OUTER_TRAINS : usize = 2;
@@ -57,9 +53,9 @@ impl TrainManager {
     }
     
     /* utility: makes new train at given scale */
-    fn make_train(&mut self, cm: &mut ComponentManager, vscale: i32) -> Option<Train> {
+    fn make_train(&mut self, cm: &mut ComponentManager, scale: Scale) -> Option<Train> {
         if let Some(ref stick) = self.stick {
-            let mut f = Train::new(&stick,vscale);
+            let mut f = Train::new(&stick,scale);
             f.set_position(self.position_bp);
             f.set_zoom(self.bp_per_screen);
             f.manage_leafs(cm);
@@ -75,8 +71,8 @@ impl TrainManager {
         // XXX not the right thing to do: should transition
         self.stick = Some(st.clone());
         self.bp_per_screen = bp_per_screen;
-        let vscale = best_vscale(bp_per_screen);
-        self.current_train = Some(Train::new(st,vscale));
+        let scale = Scale::best_for_screen(bp_per_screen);
+        self.current_train = Some(Train::new(st,scale));
         self.current_train.as_mut().unwrap().set_zoom(bp_per_screen);
         self.transition_train = None;
         self.future_train = None;
@@ -115,10 +111,10 @@ impl TrainManager {
             self.transition_train = self.future_train.take();
             self.transition_start = Some(t);
             self.transition_prop = Some(0.);
-            let scale = self.transition_train.as_ref().unwrap().get_vscale();
-            debug!("redraw","outer is {}",scale-1);
+            let scale = self.transition_train.as_ref().unwrap().get_scale().clone();
             for i in 0..OUTER_TRAINS {
-                //self.outer_train[i] = self.make_train(cm,scale-i as i32-1);
+                let out_scale = scale.next_scale(1-i as i32);
+                self.outer_train[i] = self.make_train(cm,out_scale);
             }
         }
     }
@@ -172,19 +168,19 @@ impl TrainManager {
      */
     
     /* current (or soon and inevitable) printing vscale. */
-    fn printing_vscale(&self) -> Option<i32> {
+    fn printing_vscale(&self) -> Option<Scale> {
         if let Some(ref transition_train) = self.transition_train {
-            Some(transition_train.get_vscale())
+            Some(transition_train.get_scale().clone())
         } else if let Some(ref current_train) = self.current_train {
-            Some(current_train.get_vscale())
+            Some(current_train.get_scale().clone())
         } else {
             None
         }
     }
 
     /* Create future train */
-    fn new_future(&mut self, cm: &mut ComponentManager, vscale: i32) {
-        self.future_train = self.make_train(cm,vscale);
+    fn new_future(&mut self, cm: &mut ComponentManager, scale: Scale) {
+        self.future_train = self.make_train(cm,scale);
     }
     
     /* Abandon future train */
@@ -195,14 +191,14 @@ impl TrainManager {
     /* scale may have changed significantly to change trains */
     fn maybe_change_trains(&mut self, cm: &mut ComponentManager, bp_per_screen: f64) {
         if let Some(printing_vscale) = self.printing_vscale() {
-            let best = best_vscale(bp_per_screen);
+            let best = Scale::best_for_screen(bp_per_screen);
             let mut end_future = false;
             let mut new_future = false;
             if best != printing_vscale {
                 /* we're not currently showing the optimal scale */
                 if let Some(ref mut future_train) = self.future_train {
                     /* there's a future train ... */
-                    if best != future_train.get_vscale() {
+                    if best != *future_train.get_scale() {
                         /* ... and that's not optimal either */
                         end_future = true;
                         new_future = true;

@@ -28,11 +28,11 @@ fn debug_source_sub(even: bool) -> DebugSource {
 
 pub fn debug_stick_manager() -> DebugStickManager {
     let mut s = DebugStickManager::new();
-    s.add_stick("polar",1000000000,false);
-    s.add_stick("text",1000000000,false);
-    s.add_stick("leaf",1000000000,false);
-    s.add_stick("ruler",1000000000,false);
-    s.add_stick("button",1000000000,false);
+    s.add_stick("polar",17000000,false);
+    s.add_stick("text", 17000000,false);
+    s.add_stick("leaf", 17000000,false);
+    s.add_stick("ruler",17000000,false);
+    s.add_stick("button",17000000,false);
     s
 }
 

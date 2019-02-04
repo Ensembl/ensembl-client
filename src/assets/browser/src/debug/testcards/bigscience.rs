@@ -11,7 +11,7 @@ use rand::SeedableRng;
 
 use composit::{
     StateFixed, StateValue, StateAtom, Leaf, Carriage,
-    SourceResponse, Stick, vscale_bp_per_leaf
+    SourceResponse, Stick
 };
 
 use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
@@ -88,7 +88,7 @@ fn source_odd() -> ClosureSource {
     
     let pal = Palette::new();
     ClosureSource::new(0.,enclose! { (pal) move |lc,leaf| {
-        let mul = vscale_bp_per_leaf(leaf.get_vscale());
+        let mul = leaf.total_bp();
         let start_leaf = (leaf.get_index() as f64 * mul).floor() as i32;
         let end_leaf = ((leaf.get_index()+1) as f64 * mul).ceil() as i32;
         let mut rng = make_rng(seed);
@@ -159,7 +159,7 @@ fn source_even() -> ClosureSource {
     let pal = Palette::new();
     ClosureSource::new(0.,enclose! { (pal) move |lc,leaf| {
         let mut rng = make_rng(seed);
-        let mul = vscale_bp_per_leaf(leaf.get_vscale());
+        let mul = leaf.total_bp();
         let start_leaf = (leaf.get_index() as f64 * mul).floor() as i32;
         let end_leaf = ((leaf.get_index()+1) as f64 * mul).ceil() as i32;
         for yidx in 0..20 {
@@ -274,7 +274,7 @@ pub fn bs_source_main() -> ClosureSource {
     
     let pal = Palette::new();
     ClosureSource::new(0.,enclose! { (pal) move |ref mut lc,leaf| {
-        let mul = vscale_bp_per_leaf(leaf.get_vscale());
+        let mul = leaf.total_bp();
         let start_leaf = (leaf.get_index() as f64 * mul).floor() as i32;
         let end_leaf = ((leaf.get_index()+1) as f64 * mul).ceil() as i32;
         measure(lc,&leaf,&pal.red,&pal.green);

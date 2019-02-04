@@ -2,6 +2,7 @@ use composit::{
     ActiveSource, Leaf, Train, ComponentManager, Stick, TrainManager
 };
 use controller::global::AppRunner;
+use types::DOWN;
 
 const MS_PER_UPDATE : f64 = 250.;
 
@@ -96,6 +97,6 @@ pub fn register_compositor_ticks(ar: &mut AppRunner) {
             co.tick(t);
             co.get_max_y()
         });
-        cs.with_stage(|s| s.set_max_y(max_y));
+        cs.with_stage(|s| s.set_limit(&DOWN,max_y as f64));
     },None);
 }

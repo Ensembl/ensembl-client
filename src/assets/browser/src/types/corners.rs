@@ -5,10 +5,10 @@ use std::ops::{ Add, Neg };
 use program::Input;
 use types::{ Dot, area, Rect };
 
-#[derive(Clone,Copy,Debug,PartialEq)]
+#[derive(Clone,Copy,Debug,PartialEq,Eq)]
 pub enum Axis { Horiz, Vert }
 
-#[derive(Clone,Copy,Debug,PartialEq)]
+#[derive(Clone,Copy,Debug,PartialEq,Eq)]
 pub enum AxisSense { Pos, Neg }
 
 #[derive(Clone,Copy,Debug)]
@@ -61,7 +61,7 @@ pub const A_LEFT       : Anchors = Dot(AS,AM);
 pub const A_RIGHT      : Anchors = Dot(AE,AM);
 pub const A_MIDDLE     : Anchors = Dot(AM,AM);
 
-#[derive(PartialEq)]
+#[derive(PartialEq,Eq)]
 pub struct Direction(pub Axis,pub AxisSense);
 
 pub const LEFT : Direction = Direction(Axis::Horiz,AxisSense::Neg);

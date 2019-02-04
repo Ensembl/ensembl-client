@@ -1,4 +1,4 @@
-use types::{ Move, Units, Axis, Dot };
+use types::{ Move, Units, Axis, Dot, cdfraction, LEFT, RIGHT };
 use composit::StateValue;
 use controller::global::App;
 
@@ -15,38 +15,38 @@ pub enum Event {
     SetState(String,StateValue)
 }
 
-fn exe_pos_event(cg: &App, v: Dot<f64,f64>, prop: Option<f64>) {
+fn exe_pos_event(app: &App, v: Dot<f64,f64>, prop: Option<f64>) {
     let prop = prop.unwrap_or(0.5);
-    let v = cg.with_stage(|s|
+    let v = app.with_stage(|s|
         Dot(s.pos_prop_bp_to_origin(v.0,prop),v.1)
     );
-    cg.with_stage(|s| { s.set_pos(&v); });
-    cg.with_compo(|co| { co.set_position(v.0); });
+    app.with_stage(|s| { s.set_pos_middle(&v); });
+    app.with_compo(|co| { co.set_position(v.0); });
 }
 
-fn exe_move_event(cg: &App, v: Move<f64,f64>) {
-    let pos = cg.with_stage(|s| {
+fn exe_move_event(app: &App, v: Move<f64,f64>) {
+    let pos = app.with_stage(|s| {
         let v = match v.direction().0 {
             Axis::Horiz => v.convert(Units::Bases,s),
             Axis::Vert => v.convert(Units::Pixels,s),
         };
         s.inc_pos(&v);
-        s.get_pos()
+        s.get_pos_middle()
     });
-    cg.with_compo(|co| {
+    app.with_compo(|co| {
         co.set_position(pos.0);
     });
 }
 
-fn exe_zoom_event(cg: &App, mut z: f32, by: bool) {
-    let z = cg.with_stage(|s| {
-        if by { z += s.get_zoom(); }
-        s.set_zoom(z);
-        s.get_linear_zoom()
+fn exe_zoom_event(app: &App, mut z: f32, by: bool) {
+    let z = app.with_stage(|s| {
+        let mut zoom = s.get_zoom();
+        if by { z += zoom.get_zoom(); }
+        zoom.set_zoom(z);
+        s.zoom_updated(zoom);
+        zoom.get_linear_zoom()
     });
-    cg.with_compo(|co| {
-        co.set_zoom(z);
-    });
+    app.with_compo(|co| { co.set_zoom(z); });
 }
 
 fn exe_resize(cg: &App, sz: Dot<i32,i32>) {
@@ -63,8 +63,13 @@ fn exe_component_add(a: &mut App, name: &str) {
 }
 
 fn exe_set_stick(a: &mut App, name: &str) {
-    if let Some(Some(s)) = a.with_global(|g| g.get_stick(name)) {
-        a.with_compo(|co| co.set_stick(&s));
+    if let Some(Some(st)) = a.with_global(|g| g.get_stick(name)) {
+        a.with_compo(|co| co.set_stick(&st));
+        a.with_stage(|s| {
+            s.set_limit(&LEFT,0.);
+            s.set_limit(&RIGHT,st.length() as f64);
+        });
+        exe_pos_event(a,cdfraction(0.,0.),None);
     }
 }
 
