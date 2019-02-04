@@ -51,7 +51,6 @@ impl Train {
     /* called when zoom changes, to update flank */
     pub fn set_zoom(&mut self, bp_per_screen: f64) {
         self.ideal_flank = (bp_per_screen / self.scale.total_bp()) as i32;
-        debug!("bug","({}/{})={}",bp_per_screen,self.scale.total_bp(),self.ideal_flank);
     }
     
     /* add component to leaf */

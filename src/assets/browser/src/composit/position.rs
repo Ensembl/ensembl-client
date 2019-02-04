@@ -20,11 +20,6 @@ impl Position {
             max_y: 0, min_x: 0., max_x: 0.
         }
     }
-     
-    pub fn inform_zoom(&mut self, z: &Zoom) {
-        self.zoom = z.clone();
-        self.check_own_limits();
-    }
         
     pub fn inform_screen_size(&mut self, screen_size: &Dot<i32,i32>) {
         self.screen_size = *screen_size;
@@ -34,6 +29,22 @@ impl Position {
     pub fn set_middle(&mut self, pos: &Dot<f64,f64>) {
         self.pos = *pos;
         self.check_own_limits();
+    }
+    
+    pub fn get_zoom(&self) -> f64 {
+        self.zoom.get_zoom()
+    }
+
+    pub fn get_linear_zoom(&self) -> f64 {
+        self.zoom.get_linear_zoom()
+    }
+    
+    pub fn get_screen_in_bp(&self) -> f64 {
+        self.zoom.get_screen_in_bp()
+    }
+    
+    pub fn set_zoom(&mut self, z: f64) {
+        self.zoom.set_zoom(z);
     }
     
     pub fn settle(&mut self) {
@@ -53,6 +64,10 @@ impl Position {
         Dot(self.pos.0,self.pos.1)
     }
 
+    fn set_limit_min_zoom(&mut self) {
+        self.zoom.set_max_bp(self.max_x-self.min_x+1.);
+    }
+
     pub fn set_limit(&mut self, which: &Direction, val: f64) {
         match *which {
             LEFT => self.min_x = val,
@@ -60,6 +75,7 @@ impl Position {
             UP => (),
             DOWN => self.max_y = val as i32
         }
+        self.set_limit_min_zoom();
         self.check_own_limits();
     }
     
