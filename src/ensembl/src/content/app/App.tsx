@@ -1,25 +1,15 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment, lazy, Suspense } from 'react';
 import { Route, RouteComponentProps, withRouter } from 'react-router';
-import Loadable from 'react-loadable';
 import { connect } from 'react-redux';
 
 import { changeCurrentApp } from 'src/header/headerActions';
 import AppBar from './AppBar';
 
-const GlobalSearch = Loadable({
-  loader: () => import('./global-search/GlobalSearch'),
-  loading: () => null
-});
-
-const SpeciesSelector = Loadable({
-  loader: () => import('./species-selector/SpeciesSelector'),
-  loading: () => null
-});
-
-const Browser = Loadable({
-  loader: () => import('./browser/Browser'),
-  loading: () => null
-});
+const GlobalSearch = lazy(() => import('./global-search/GlobalSearch'));
+const SpeciesSelector = lazy(() =>
+  import('./species-selector/SpeciesSelector')
+);
+const Browser = lazy(() => import('./browser/Browser'));
 
 type StateProps = {};
 
@@ -46,9 +36,11 @@ export class App extends Component<AppProps> {
     return (
       <Fragment>
         <AppBar />
-        <Route path={`${url}/global-search`} component={GlobalSearch} />
-        <Route path={`${url}/species-selector`} component={SpeciesSelector} />
-        <Route path={`${url}/browser`} component={Browser} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Route path={`${url}/global-search`} component={GlobalSearch} />
+          <Route path={`${url}/species-selector`} component={SpeciesSelector} />
+          <Route path={`${url}/browser`} component={Browser} />
+        </Suspense>
       </Fragment>
     );
   }
