@@ -6,6 +6,7 @@ mod user;
 mod domevents;
 mod startup;
 mod eggdetector;
+mod optical;
 
 pub use self::physics::MousePhysics;
 pub use self::events::{ Event, events_run, startup_events };
