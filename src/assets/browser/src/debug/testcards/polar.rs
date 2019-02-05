@@ -274,10 +274,10 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
                         closure_add(lc,&stretch_rectangle(
                             &area(cleaf(prop_start,y-h),
                                   cleaf(prop_end,y+h)),
-                            &ColourSpec::Spot(Colour(131,184,222))));
+                            &ColourSpec::Spot(Colour(75,168,252))));
                     } else {
                         let mut col = Colour(75,168,252);
-                        if t == 0 { col = Colour(200,200,255); }
+                        if t == 0 { col = Colour(205,231,254); }
                         closure_add(lc,&stretch_box(
                             &area(cleaf(prop_start,y-h),
                                   cleaf(prop_end,y+h)),

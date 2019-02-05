@@ -9,11 +9,11 @@ use controller::input::{ Event, events_run, startup_events };
 use dom::domutil;
 use print::Printer;
 
-const CANVAS : &str = r##"<canvas id="glcanvas"></canvas>"##;
+const CANVAS : &str = r##"<canvas></canvas>"##;
 
 pub struct App {
     g: GlobalWeak,
-    browser_el: Element,
+    browser_el: HtmlElement,
     canv_el: HtmlElement,
     pub printer: Arc<Mutex<Printer>>,
     pub stage: Arc<Mutex<Stage>>,
@@ -23,9 +23,10 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(g: &GlobalWeak, browser_el: &Element) -> App {        
-        domutil::inner_html(&browser_el,CANVAS);
-        let canv_el : HtmlElement = domutil::query_selector(&browser_el,"canvas").try_into().unwrap();
+    pub fn new(g: &GlobalWeak, browser_el: &HtmlElement) -> App {
+        let browser_el = browser_el.clone();
+        domutil::inner_html(&browser_el.clone().into(),CANVAS);
+        let canv_el : HtmlElement = domutil::query_selector(&browser_el.clone().into(),"canvas").try_into().unwrap();
         let mut out = App {
             g: g.clone(),
             browser_el: browser_el.clone(),
@@ -45,7 +46,7 @@ impl App {
         self.g.upgrade().as_mut().map(cb)
     }
     
-    pub fn get_browser_element(&self) -> &Element { &self.browser_el }
+    pub fn get_browser_element(&self) -> &HtmlElement { &self.browser_el }
     
     pub fn get_canvas_element(&self) -> &HtmlElement { &self.canv_el }
     
@@ -80,7 +81,9 @@ impl App {
     }
         
     pub fn check_size(self: &mut App) {
-        let sz = self.printer.lock().unwrap().get_available_size();
+        let mut sz = self.printer.lock().unwrap().get_available_size();
+        sz.0 = ((sz.0+3)/4)*4;
+        sz.1 = ((sz.1+3)/4)*4;
         events_run(self,&vec! { Event::Resize(sz) });
     }
  

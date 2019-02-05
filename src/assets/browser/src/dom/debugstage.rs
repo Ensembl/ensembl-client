@@ -92,6 +92,7 @@ html, body {
 
 pub const PLAINSTAGE_CSS : &str = r##"
 .bpane-container {
+    overflow: hidden;
 }
 
 .bpane-container .managedcanvasholder {
