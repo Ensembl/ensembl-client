@@ -19,6 +19,14 @@ impl Leaf {
     pub fn get_scale(&self) -> &Scale { &self.scale }    
     
     pub fn total_bp(&self) -> f64 { self.scale.total_bp() }
+    
+    pub fn get_start(&self) -> f64 {
+        (self.get_index() as f64 * self.total_bp()).floor()
+    }
+    
+    pub fn get_end(&self) -> f64 {
+        ((self.get_index()+1) as f64 * self.total_bp()).ceil()
+    }
 }
 
 impl fmt::Debug for Leaf {

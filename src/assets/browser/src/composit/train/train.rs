@@ -111,6 +111,7 @@ impl Train {
         for d in doomed {
             debug!("trains","removing {}",d.get_index());
             self.carriages.remove_leaf(&d);
+            self.stale.set_stale(&d);
         }
     }
 
