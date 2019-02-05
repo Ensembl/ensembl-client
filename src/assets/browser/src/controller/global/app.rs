@@ -80,7 +80,9 @@ impl App {
     }
         
     pub fn check_size(self: &mut App) {
-        let sz = self.printer.lock().unwrap().get_available_size();
+        let mut sz = self.printer.lock().unwrap().get_available_size();
+        sz.0 = ((sz.0+3)/4)*4;
+        sz.1 = ((sz.1+3)/4)*4;
         events_run(self,&vec! { Event::Resize(sz) });
     }
  
