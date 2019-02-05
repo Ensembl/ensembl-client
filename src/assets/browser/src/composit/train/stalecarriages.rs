@@ -26,4 +26,8 @@ impl StaleCarriages {
     pub fn not_stale(&mut self, leaf: &Leaf) {
         self.done_seen.insert(leaf.clone(),self.done_now);
     }
+    
+    pub fn set_stale(&mut self, leaf: &Leaf) {
+        self.done_seen.remove(&leaf.clone());
+    }
 }
