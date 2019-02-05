@@ -7,13 +7,12 @@
 	</head>
 	<body style="height: 100vh; padding: 0; margin: 0;">
         <div style="display: none; font: 'Lato';">preload</div>
-        <main id="main" style="height: 100vh">
+        <main id="main" style="height: 100vh;">
             <div id="stage"></div>
         </main>
 		<script src="hellostdweb.js"></script>
         <script>
             function startup_mutate(mutations,observer) {
-                console.log("mutate");
                 var ready = false;
                 for(var mutation of mutations) {
                     for(var klass of mutation.target.classList) {
@@ -23,7 +22,7 @@
                     }
                 }
                 if(ready) {
-                    console.log("browser app ready");
+                    console.log("activate",mutation.target);
                     mutation.target.dispatchEvent(
                         new CustomEvent("bpane-activate",{
                             detail: {

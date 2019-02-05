@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::sync::{ Arc, Mutex };
 use dom::domutil;
-use dom::event::{ EventListener, EventType, EventData, EventControl, Target };
+use dom::event::{ EventListener, EventType, EventData, EventControl, Target, MouseData };
 use stdweb::web::{ Element, HtmlElement, IHtmlElement };
 use stdweb::traits::IEvent;
 
@@ -29,24 +29,26 @@ impl UserEventListener {
             canv_el: canv_el.clone(),
             optical: optical.clone()
         }
-    }    
+    }
+    
+    fn wheel(&mut self, amt: f64) {
+        let app = &mut self.cs.lock().unwrap();
+        let (y,pos_bp,pos_prop) = app.with_stage(|s|
+            (s.get_pos_middle().1,
+             s.get_mouse_pos_bp(),
+             s.get_mouse_pos_prop())
+        );
+
+        let pos = Dot(pos_bp,y);
+        self.optical.lock().unwrap().move_by(amt,pos,pos_prop);
+    }
 }
 
 impl EventListener<()> for UserEventListener {    
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
         match e {
             EventData::MouseEvent(EventType::MouseWheelEvent,_,e) => {
-                let cs = &mut self.cs.lock().unwrap();
-                let (y,pos_bp,pos_prop) = cs.with_stage(|s|
-                    (s.get_pos_middle().1,
-                     s.get_mouse_pos_bp(),
-                     s.get_mouse_pos_prop())
-                );
-
-                let pos = Dot(pos_bp,y);
-                self.optical.lock().unwrap().move_by(
-                    -e.wheel_delta() as f64/1000.,
-                    pos,pos_prop);
+                self.wheel(-e.wheel_delta() as f64/1000.);
                 e.stop_propagation();
                 e.prevent_default();
             },
@@ -63,6 +65,14 @@ impl EventListener<()> for UserEventListener {
                 );
             },
             EventData::MouseEvent(EventType::MouseClickEvent,_,e) => {
+                e.stop_propagation();
+            },
+            EventData::MouseEvent(EventType::MouseDblClickEvent,_,e) => {
+                if e.shift_key() {
+                    self.wheel(-0.5);
+                } else {
+                    self.wheel(0.5);
+                }
                 e.stop_propagation();
             },
             EventData::GenericEvent(EventType::ContextMenuEvent,e) => {
@@ -150,6 +160,7 @@ pub fn register_user_events(gc: &mut AppRunner, el: &HtmlElement) {
     let uel = UserEventListener::new(&gc.state(),el,&mp,&op);
     let mut ec_canv = EventControl::new(Box::new(uel),());
     ec_canv.add_event(EventType::MouseClickEvent);
+    ec_canv.add_event(EventType::MouseDblClickEvent);
     ec_canv.add_event(EventType::MouseDownEvent);
     ec_canv.add_event(EventType::MouseMoveEvent);
     ec_canv.add_event(EventType::MouseWheelEvent);

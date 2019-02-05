@@ -4,7 +4,7 @@ use serde_json::Value as JSONValue;
 use stdweb::web::html_element::SelectElement;
 use stdweb::traits::IEvent;
 use stdweb::unstable::TryInto;
-use stdweb::web::{ Element, IEventTarget };
+use stdweb::web::{ Element, IEventTarget, HtmlElement };
 use stdweb::web::event::{ ChangeEvent, ClickEvent };
 
 use controller::input::EggDetector;
@@ -18,9 +18,9 @@ use dom::event::{
     EventListener, EventControl, EventType, EventData, Target
 };
 
-fn setup_debug_console(el: &Element) {
-    let cons_el = domutil::query_selector(el,".console2");
-    DebugConsole::new(&cons_el,el);
+fn setup_debug_console(el: &HtmlElement) {
+    let cons_el = domutil::query_selector(&el.clone().into(),".console2");
+    DebugConsole::new(&cons_el,&el.clone().into());
     domutil::send_custom_event(&cons_el,"select",&json!({
         "name": "hello",
     }));
@@ -28,21 +28,20 @@ fn setup_debug_console(el: &Element) {
         "name": "hello",
         "value": "world"
     }));
-    let mark_el = domutil::query_selector2(el,".console .mark").unwrap();
+    let mark_el = domutil::query_selector2(&el.clone().into(),".console .mark").unwrap();
     mark_el.add_event_listener(enclose! { (cons_el) move |_e: ClickEvent| {
         domutil::send_custom_event(&cons_el,"mark",&json!({}));
     }});
 
 }
 
-fn setup_testcard_selector(a: &Arc<Mutex<App>>, el: &Element) {
+fn setup_testcard_selector(a: &Arc<Mutex<App>>, el: &HtmlElement) {
     let a = a.clone();
-    let sel_el = domutil::query_selector2(el,".console .testcard").unwrap();
+    let sel_el = domutil::query_selector2(&el.clone().into(),".console .testcard").unwrap();
     sel_el.add_event_listener(enclose! { (a,el) move |e: ChangeEvent| {
         let mut a = a.lock().unwrap();
         let node : SelectElement = e.target().unwrap().try_into().ok().unwrap();
         if let Some(name) = node.value() {
-            console!("select {}",name);
             testcard_base(&mut a,&name);
         }
     }});
@@ -151,18 +150,18 @@ impl DebugBling {
 }
 
 impl Bling for DebugBling {
-    fn apply_bling(&self, el: &Element) -> Element {
+    fn apply_bling(&self, el: &HtmlElement) -> HtmlElement {
         let css = domutil::append_element(&domutil::query_select("head"),"style");
         domutil::inner_html(&css,DEBUGSTAGE_CSS);
-        domutil::inner_html(el,DEBUGSTAGE);
-        domutil::query_selector(el,".bpane-canv").clone()
+        domutil::inner_html(&el.clone().into(),DEBUGSTAGE);
+        domutil::query_selector(&el.clone().into(),".bpane-canv").clone().try_into().unwrap()
     }
     
-    fn activate(&mut self, ar: &Arc<Mutex<App>>, el: &Element) {
+    fn activate(&mut self, ar: &Arc<Mutex<App>>, el: &HtmlElement) {
         setup_testcard_selector(ar,el);
         setup_debug_console(el);
         for di in &mut self.dii {
-            di.render(&ar.clone(),el);
+            di.render(&ar.clone(),&el.clone().into());
         }
     }   
     

@@ -59,6 +59,7 @@ pub enum EventType {
     MouseUpEvent,
     MouseDownEvent,
     MouseClickEvent,
+    MouseDblClickEvent,
     MouseWheelEvent,
     MouseMoveEvent,
     KeyPressEvent,
@@ -117,6 +118,7 @@ impl EventData {
             EventType::MouseDownEvent |
             EventType::MouseUpEvent |
             EventType::MouseClickEvent |
+            EventType::MouseDblClickEvent |
             EventType::MouseWheelEvent =>
                 EventData::MouseEvent(et.clone(),ec,MouseData(e)),
 
@@ -146,6 +148,7 @@ impl EventType {
     fn get_name(&self) -> &str {
         match self {
             EventType::MouseClickEvent => "click",
+            EventType::MouseDblClickEvent => "dblclick",
             EventType::MouseDownEvent => "mousedown",
             EventType::MouseUpEvent => "mouseup",
             EventType::MouseMoveEvent => "mousemove",
@@ -187,6 +190,11 @@ impl MouseData {
     
     pub fn button(&self) -> i8 {
         let out: i8 = js! { return @{self.as_ref()}.button; }.try_into().unwrap();
+        out
+    }
+    
+    pub fn shift_key(&self) -> bool {
+        let out: bool = js! { return @{self.as_ref()}.shiftKey; }.try_into().unwrap();
         out
     }
 }
