@@ -14,7 +14,7 @@ class BrowserImage extends PureComponent<BrowserImageProps> {
   }
 
   public componentDidMount() {
-    const currentEl = this.browserCanvas.current;
+    const currentEl = this.browserCanvas.current as HTMLElement;
     this.activateIfPossible(currentEl);
   }
 
@@ -22,7 +22,7 @@ class BrowserImage extends PureComponent<BrowserImageProps> {
     return <div className={styles.browserStage} ref={this.browserCanvas} />;
   }
 
-  private activateIfPossible(currentEl: HTMLElement | null) {
+  private activateIfPossible(currentEl: HTMLElement) {
     const activateEvent = new CustomEvent('bpane-activate', {
       bubbles: true,
       detail: {
@@ -33,20 +33,18 @@ class BrowserImage extends PureComponent<BrowserImageProps> {
     let done = false;
 
     if (currentEl && currentEl.ownerDocument) {
-      const browserEl = currentEl.ownerDocument.querySelector(
-        '.' + styles.browserStage
+      const bodyEl = currentEl.ownerDocument.querySelector(
+        'body'
       ) as HTMLBodyElement;
 
-      const bodyEl = currentEl.ownerDocument.querySelector('body');
-
-      if (bodyEl && bodyEl.classList.contains('browser-app-ready')) {
-        browserEl.dispatchEvent(activateEvent);
+      if (bodyEl.classList.contains('browser-app-ready')) {
+        currentEl.dispatchEvent(activateEvent);
         done = true;
       }
     }
 
     if (!done) {
-      setTimeout(() => this.activateIfPossible(currentEl), 50);
+      setTimeout(() => this.activateIfPossible(currentEl), 250);
     }
   }
 }
