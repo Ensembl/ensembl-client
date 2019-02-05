@@ -6,16 +6,16 @@
 
 .browserInnerWrapper {
   @include flex;
-  height: calc(100% - 40px);
+  height: calc(100% - 32px);
 }
 
 .browserImageWrapper {
   &.semiExpanded {
-    width: calc(100vw - 356px);
+    width: calc(100vw - 357px);
   }
 
   &.expanded {
-    width: calc(100vw - 36px);
+    width: calc(100vw - 37px);
   }
 
   &.collapsed {
