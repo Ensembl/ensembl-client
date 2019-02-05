@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { FunctionComponent } from 'react';
 import { Route, withRouter } from 'react-router-dom';
 import { RouteComponentProps } from 'react-router';
 import { connect } from 'react-redux';
@@ -18,19 +18,19 @@ type OwnProps = {};
 
 type ContentProps = RouteComponentProps & StateProps & OwnProps;
 
-export class Content extends Component<ContentProps> {
-  public render() {
-    return (
-      <main className={`${styles.content} ${this.getExpandClass()}`}>
-        <Route path="/app" component={App} />
-      </main>
-    );
-  }
+export const Content: FunctionComponent<ContentProps> = (
+  props: ContentProps
+) => {
+  const getExpandClass = (): string => {
+    return props.launchbarExpanded ? '' : styles.expanded;
+  };
 
-  private getExpandClass(): string {
-    return this.props.launchbarExpanded ? '' : styles.expanded;
-  }
-}
+  return (
+    <main className={`${styles.content} ${getExpandClass()}`}>
+      <Route path="/app" component={App} />
+    </main>
+  );
+};
 
 const mapStateToProps = (state: RootState): StateProps => ({
   launchbarExpanded: getLaunchbarExpanded(state)

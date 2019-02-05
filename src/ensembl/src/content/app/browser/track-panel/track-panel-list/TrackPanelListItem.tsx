@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { FunctionComponent } from 'react';
 import { TrackPanelItem, trackPanelIconConfig } from '../trackPanelConfig';
 
 import chevronDownIcon from 'static/img/track-panel/chevron-down.svg';
@@ -13,56 +13,49 @@ type TrackPanelListItemProps = {
   additionalInfo?: string;
 };
 
-class TrackPanelListItem extends PureComponent<TrackPanelListItemProps> {
-  private expanded: boolean = false;
+const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
+  props: TrackPanelListItemProps
+) => {
+  const expanded: boolean = false;
+  const { className, track, additionalInfo } = props;
+  const listItemClass = styles[className] || '';
 
-  constructor(props: TrackPanelListItemProps) {
-    super(props);
+  const changeTrackHandler = () => {
+    props.changeTrack(props.track.name);
+  };
 
-    this.changeTrackHandler = this.changeTrackHandler.bind(this);
-  }
-
-  public changeTrackHandler() {
-    this.props.changeTrack(this.props.track.name);
-  }
-
-  public render() {
-    const { className, track, additionalInfo } = this.props;
-    const listItemClass = styles[className] || '';
-
-    return (
-      <dd className={`${styles.listItem} ${listItemClass}`}>
-        <label>
-          {track.color && (
-            <span className={`${styles.box} ${styles[track.color]}`} />
-          )}
-          <span className={styles.mainText}>{track.label}</span>
-          {additionalInfo && (
-            <span className={styles.additionalInfo}>{additionalInfo}</span>
-          )}
-          <button>
-            <img
-              className={styles.expandIcon}
-              src={this.expanded ? chevronUpIcon : chevronDownIcon}
-              alt={this.expanded ? 'collapse' : 'expand'}
-            />
-          </button>
-        </label>
-        <button onClick={this.changeTrackHandler}>
-          <img
-            src={trackPanelIconConfig.ellipsis.icon.on}
-            alt={`Go to ${track.label}`}
-          />
-        </button>
+  return (
+    <dd className={`${styles.listItem} ${listItemClass}`}>
+      <label>
+        {track.color && (
+          <span className={`${styles.box} ${styles[track.color]}`} />
+        )}
+        <span className={styles.mainText}>{track.label}</span>
+        {additionalInfo && (
+          <span className={styles.additionalInfo}>{additionalInfo}</span>
+        )}
         <button>
           <img
-            src={trackPanelIconConfig.eye.icon.on}
-            alt={trackPanelIconConfig.ellipsis.description}
+            className={styles.expandIcon}
+            src={expanded ? chevronUpIcon : chevronDownIcon}
+            alt={expanded ? 'collapse' : 'expand'}
           />
         </button>
-      </dd>
-    );
-  }
-}
+      </label>
+      <button onClick={changeTrackHandler}>
+        <img
+          src={trackPanelIconConfig.ellipsis.icon.on}
+          alt={`Go to ${track.label}`}
+        />
+      </button>
+      <button>
+        <img
+          src={trackPanelIconConfig.eye.icon.on}
+          alt={trackPanelIconConfig.ellipsis.description}
+        />
+      </button>
+    </dd>
+  );
+};
 
 export default TrackPanelListItem;

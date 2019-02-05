@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { FunctionComponent } from 'react';
 import { hot } from 'react-hot-loader';
 import { connect } from 'react-redux';
 
@@ -29,46 +29,40 @@ type BrowserProps = {
   toggleBrowserNav: () => void;
 };
 
-export class Browser extends Component<BrowserProps> {
-  constructor(props: BrowserProps) {
-    super(props);
-
-    this.closeTrack = this.closeTrack.bind(this);
-  }
-
-  public closeTrack() {
-    if (this.props.drawerOpened === false) {
+export const Browser: FunctionComponent<BrowserProps> = (
+  props: BrowserProps
+) => {
+  const closeTrack = () => {
+    if (props.drawerOpened === false) {
       return;
     }
 
-    this.props.closeDrawer();
-  }
+    props.closeDrawer();
+  };
 
-  public render() {
-    return (
-      <section className={styles.browser}>
-        <BrowserBar
-          browserNavOpened={this.props.browserNavOpened}
-          expanded={true}
-          toggleBrowserNav={this.props.toggleBrowserNav}
-        />
-        <div className={styles.browserInnerWrapper}>
-          <div
-            className={`${styles.browserImageWrapper} ${
-              styles[this.props.browserOpenState]
-            }`}
-            onClick={this.closeTrack}
-          >
-            {this.props.browserNavOpened && <BrowserNavBar />}
-            <BrowserImage />
-          </div>
-          <TrackPanel />
-          {this.props.drawerOpened && <Drawer />}
+  return (
+    <section className={styles.browser}>
+      <BrowserBar
+        browserNavOpened={props.browserNavOpened}
+        expanded={true}
+        toggleBrowserNav={props.toggleBrowserNav}
+      />
+      <div className={styles.browserInnerWrapper}>
+        <div
+          className={`${styles.browserImageWrapper} ${
+            styles[props.browserOpenState]
+          }`}
+          onClick={closeTrack}
+        >
+          {props.browserNavOpened && <BrowserNavBar />}
+          <BrowserImage />
         </div>
-      </section>
-    );
-  }
-}
+        <TrackPanel />
+        {props.drawerOpened && <Drawer />}
+      </div>
+    </section>
+  );
+};
 
 const mapStateToProps = (state: RootState) => ({
   browserNavOpened: getBrowserNavOpened(state),
