@@ -1,10 +1,10 @@
 @import 'src/styles/common';
 
 .content {
-  min-height: calc(100vh - 96px);
+  min-height: calc(100vh - 73px);
 
   &.expanded {
-    min-height: calc(100vh - 38px);
+    min-height: calc(100vh - 25px);
   }
 
   h2 {
