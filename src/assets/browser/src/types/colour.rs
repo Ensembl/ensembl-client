@@ -31,7 +31,7 @@ impl Colour {
         let hsl = HSL { h: hsl[0]*360., s: hsl[1], l: hsl[2] };
         let rgb = hsl.to_rgb();
         Colour(rgb.0 as u32, rgb.1 as u32, rgb.2 as u32)
-    }
+    }    
 }
 
 impl Input for Colour {

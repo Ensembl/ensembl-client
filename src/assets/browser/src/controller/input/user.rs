@@ -47,12 +47,8 @@ impl EventListener<()> for UserEventListener {
                 self.optical.lock().unwrap().move_by(
                     -e.wheel_delta() as f64/1000.,
                     pos,pos_prop);
-                /*
-                events_run(cs,&vec! {
-                    //Event::Zoom(-e.wheel_delta() as f64/1000.),
-                    Event::Pos(pos,Some(pos_prop))
-                });
-                */
+                e.stop_propagation();
+                e.prevent_default();
             },
             EventData::MouseEvent(EventType::MouseDownEvent,_,e) => {
                 self.canv_el.focus();
