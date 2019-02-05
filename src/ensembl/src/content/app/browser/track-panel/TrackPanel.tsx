@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 
 import TrackPanelBar from './track-panel-bar/TrackPanelBar';
@@ -12,6 +12,7 @@ import {
   openDrawer,
   closeDrawer
 } from '../browserActions';
+
 import {
   getCurrentTrack,
   getDrawerOpened,
@@ -33,28 +34,28 @@ type TrackPanelProps = {
   trackPanelOpened: boolean;
 };
 
-class TrackPanel extends Component<TrackPanelProps> {
-  public render() {
-    return (
-      <section className={`${styles.trackPanel} reactSlideDrawer`}>
-        <TrackPanelBar
-          closeDrawer={this.props.closeDrawer}
-          drawerOpened={this.props.drawerOpened}
-          launchbarExpanded={this.props.launchbarExpanded}
-          trackPanelOpened={this.props.trackPanelOpened}
-          toggleTrackPanel={this.props.toggleTrackPanel}
+const TrackPanel: FunctionComponent<TrackPanelProps> = (
+  props: TrackPanelProps
+) => {
+  return (
+    <section className={`${styles.trackPanel} reactSlideDrawer`}>
+      <TrackPanelBar
+        closeDrawer={props.closeDrawer}
+        drawerOpened={props.drawerOpened}
+        launchbarExpanded={props.launchbarExpanded}
+        trackPanelOpened={props.trackPanelOpened}
+        toggleTrackPanel={props.toggleTrackPanel}
+      />
+      {props.trackPanelOpened ? (
+        <TrackPanelList
+          currentTrack={props.currentTrack}
+          openDrawer={props.openDrawer}
+          updateTrack={props.changeCurrentTrack}
         />
-        {this.props.trackPanelOpened ? (
-          <TrackPanelList
-            currentTrack={this.props.currentTrack}
-            openDrawer={this.props.openDrawer}
-            updateTrack={this.props.changeCurrentTrack}
-          />
-        ) : null}
-      </section>
-    );
-  }
-}
+      ) : null}
+    </section>
+  );
+};
 
 const mapStateToProps = (state: RootState) => ({
   currentTrack: getCurrentTrack(state),
