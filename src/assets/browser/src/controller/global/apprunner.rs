@@ -18,7 +18,7 @@ const SIZE_CHECK_INTERVAL_MS: f64 = 500.;
 
 struct AppRunnerImpl {
     g: GlobalWeak,
-    el: Element,
+    el: HtmlElement,
     bling: Box<Bling>,
     app: Arc<Mutex<App>>,
     projector: Option<Projector>,
@@ -33,8 +33,8 @@ pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
 impl AppRunner {
-    pub fn new(g: &GlobalWeak, el: &Element, bling: Box<Bling>) -> AppRunner {
-        let browser_el : Element = bling.apply_bling(&el);
+    pub fn new(g: &GlobalWeak, el: &HtmlElement, bling: Box<Bling>) -> AppRunner {
+        let browser_el : HtmlElement = bling.apply_bling(&el);
         let st = App::new(g,&browser_el);
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
             g: g.clone(),
@@ -60,7 +60,7 @@ impl AppRunner {
         {
             let mut imp = self.0.lock().unwrap();
             imp.bling = bling;
-            let browser_el : Element = imp.bling.apply_bling(&imp.el);
+            let browser_el : HtmlElement = imp.bling.apply_bling(&imp.el);
             imp.app = Arc::new(Mutex::new(App::new(&imp.g,&browser_el)));
             imp.projector = None;
             imp.controls = Vec::<Box<EventControl<()>>>::new();
@@ -89,7 +89,7 @@ impl AppRunner {
     fn get_element(&self) -> HtmlElement {
         let mut imp = self.0.lock().unwrap();
         let a = &mut imp.app.clone();
-        let out : HtmlElement = a.lock().unwrap().get_canvas_element().clone();
+        let out : HtmlElement = a.lock().unwrap().get_browser_element().clone();
         out
     }
     
@@ -98,10 +98,12 @@ impl AppRunner {
         register_compositor_ticks(self);
         
         /* register canvas-bound events */
-        let el = self.get_element();
-        register_user_events(self,&el);
-        register_direct_events(self,&el);
-        register_dom_events(self,&el);
+        {
+            let mut el = self.0.lock().unwrap().el.clone();
+            register_user_events(self,&el);
+            register_direct_events(self,&el);
+            register_dom_events(self,&el);
+        }
 
         /* start projector */
         {
