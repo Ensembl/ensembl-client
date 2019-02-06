@@ -39,7 +39,6 @@ fn exe_move_event(app: &App, v: Move<f64,f64>) {
 }
 
 fn exe_zoom_event(app: &App, mut z: f64, by: bool) {
-    debug!("bug","zoom z={} by={}",z,by);
     let z = app.with_stage(|s| {
         if by {
             s.inc_zoom(z);

@@ -12,6 +12,7 @@
  */
 
 use composit::{ Leaf, Train, ComponentManager, ActiveSource, Stick, Scale };
+use controller::output::Report;
 
 const MS_FADE : f64 = 300.;
 const OUTER_TRAINS : usize = 2;
@@ -46,6 +47,12 @@ impl TrainManager {
         };
         out.reset_outers();
         out
+    }
+    
+    pub fn update_report(&self, report: &Report) {
+        if let Some(ref stick) = self.stick {
+            report.set_status("stick",&stick.get_name());
+        }
     }
     
     fn reset_outers(&mut self) {
