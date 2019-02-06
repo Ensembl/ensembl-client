@@ -8,7 +8,7 @@ exports[`<Launchbar /> renders correctly 1`] = `
     className="launchbar"
   >
     <div
-      className="categories-wrapper"
+      className="categoriesWrapper"
     >
       <div
         className="categories"
@@ -18,15 +18,16 @@ exports[`<Launchbar /> renders correctly 1`] = `
           key="search"
         >
           <dt
-            className="global-search-app-icon"
+            className="global-searchIcon"
             key="global-search"
           >
-            <LaunchbarIcon
+            <React.Memo
               app={
                 Object {
                   "description": "global search",
                   "icon": Object {
                     "default": Object {},
+                    "grey": Object {},
                     "selected": Object {},
                   },
                   "name": "global-search",
@@ -36,15 +37,16 @@ exports[`<Launchbar /> renders correctly 1`] = `
             />
           </dt>
           <dt
-            className="species-selector-app-icon"
+            className="species-selectorIcon"
             key="species-selector"
           >
-            <LaunchbarIcon
+            <React.Memo
               app={
                 Object {
                   "description": "species selector",
                   "icon": Object {
                     "default": Object {},
+                    "grey": Object {},
                     "selected": Object {},
                   },
                   "name": "species-selector",
@@ -59,10 +61,10 @@ exports[`<Launchbar /> renders correctly 1`] = `
           key="browsers"
         >
           <dt
-            className="browser-app-icon"
+            className="browserIcon"
             key="browser"
           >
-            <LaunchbarIcon
+            <React.Memo
               app={
                 Object {
                   "description": "browser",
@@ -82,90 +84,19 @@ exports[`<Launchbar /> renders correctly 1`] = `
           key="tools"
         >
           <dt
-            className="blast-app-icon"
-            key="blast"
+            className="toolsIcon"
+            key="tools"
           >
-            <LaunchbarIcon
+            <React.Memo
               app={
                 Object {
-                  "description": "BLAST/BLAT",
+                  "description": "tools",
                   "icon": Object {
                     "default": Object {},
+                    "grey": Object {},
                     "selected": Object {},
                   },
-                  "name": "blast",
-                }
-              }
-              currentApp=""
-            />
-          </dt>
-          <dt
-            className="vep-app-icon"
-            key="vep"
-          >
-            <LaunchbarIcon
-              app={
-                Object {
-                  "description": "VEP",
-                  "icon": Object {
-                    "default": Object {},
-                    "selected": Object {},
-                  },
-                  "name": "vep",
-                }
-              }
-              currentApp=""
-            />
-          </dt>
-          <dt
-            className="conversions-app-icon"
-            key="conversions"
-          >
-            <LaunchbarIcon
-              app={
-                Object {
-                  "description": "Conversions",
-                  "icon": Object {
-                    "default": Object {},
-                    "selected": Object {},
-                  },
-                  "name": "conversions",
-                }
-              }
-              currentApp=""
-            />
-          </dt>
-          <dt
-            className="ld-app-icon"
-            key="ld"
-          >
-            <LaunchbarIcon
-              app={
-                Object {
-                  "description": "LD calculator",
-                  "icon": Object {
-                    "default": Object {},
-                    "selected": Object {},
-                  },
-                  "name": "ld",
-                }
-              }
-              currentApp=""
-            />
-          </dt>
-          <dt
-            className="biomart-app-icon"
-            key="biomart"
-          >
-            <LaunchbarIcon
-              app={
-                Object {
-                  "description": "biomart",
-                  "icon": Object {
-                    "default": Object {},
-                    "selected": Object {},
-                  },
-                  "name": "biomart",
+                  "name": "tools",
                 }
               }
               currentApp=""
@@ -177,36 +108,19 @@ exports[`<Launchbar /> renders correctly 1`] = `
           key="downloads"
         >
           <dt
-            className="bulk-download-app-icon"
-            key="bulk-download"
+            className="downloadIcon"
+            key="download"
           >
-            <LaunchbarIcon
+            <React.Memo
               app={
                 Object {
-                  "description": "bulk download",
+                  "description": "download",
                   "icon": Object {
                     "default": Object {},
+                    "grey": Object {},
                     "selected": Object {},
                   },
-                  "name": "bulk-download",
-                }
-              }
-              currentApp=""
-            />
-          </dt>
-          <dt
-            className="custom-download-app-icon"
-            key="custom-download"
-          >
-            <LaunchbarIcon
-              app={
-                Object {
-                  "description": "custom download",
-                  "icon": Object {
-                    "default": Object {},
-                    "selected": Object {},
-                  },
-                  "name": "custom-download",
+                  "name": "download",
                 }
               }
               currentApp=""
@@ -218,54 +132,19 @@ exports[`<Launchbar /> renders correctly 1`] = `
           key="learning"
         >
           <dt
-            className="help-docs-app-icon"
+            className="help-docsIcon"
             key="help-docs"
           >
-            <LaunchbarIcon
+            <React.Memo
               app={
                 Object {
                   "description": "help and documentation",
                   "icon": Object {
                     "default": Object {},
+                    "grey": Object {},
                     "selected": Object {},
                   },
                   "name": "help-docs",
-                }
-              }
-              currentApp=""
-            />
-          </dt>
-          <dt
-            className="glossary-app-icon"
-            key="glossary"
-          >
-            <LaunchbarIcon
-              app={
-                Object {
-                  "description": "glossary",
-                  "icon": Object {
-                    "default": Object {},
-                    "selected": Object {},
-                  },
-                  "name": "glossary",
-                }
-              }
-              currentApp=""
-            />
-          </dt>
-          <dt
-            className="new-info-app-icon"
-            key="new-info"
-          >
-            <LaunchbarIcon
-              app={
-                Object {
-                  "description": "what is new and what has changed",
-                  "icon": Object {
-                    "default": Object {},
-                    "selected": Object {},
-                  },
-                  "name": "new-info",
                 }
               }
               currentApp=""
@@ -279,9 +158,9 @@ exports[`<Launchbar /> renders correctly 1`] = `
     >
       <dl>
         <dt
-          className="about-app-icon"
+          className="aboutIcon"
         >
-          <LaunchbarIcon
+          <React.Memo
             app={
               Object {
                 "description": "about ensembl",

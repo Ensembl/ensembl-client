@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import toJson from 'enzyme-to-json';
 
-import Launchbar from './Launchbar';
+import Launchbar, { getCategoryClass } from './Launchbar';
 import LaunchbarIcon from './LaunchbarIcon';
 
 import {
@@ -64,10 +64,10 @@ describe('<Launchbar />', () => {
   });
 
   test('shows border for categories with separator', () => {
-    expect(wrapper.instance().getCategoryClass(true)).toBe('border');
+    expect(getCategoryClass(true)).toBe('border');
   });
 
   test('shows no border for categories without separator', () => {
-    expect(wrapper.instance().getCategoryClass(false)).toBe('');
+    expect(getCategoryClass(false)).toBe('');
   });
 });

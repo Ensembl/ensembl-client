@@ -9,33 +9,33 @@ type BrowserNavIconProps = {
   browserNavItem: BrowserNavItem;
 };
 
-const BrowserNavIcon: FunctionComponent<BrowserNavIconProps> = memo(
-  (props: BrowserNavIconProps) => {
-    const navigateBrowser = () => {
-      const { detail } = props.browserNavItem;
+export const BrowserNavIcon: FunctionComponent<BrowserNavIconProps> = (
+  props: BrowserNavIconProps
+) => {
+  const navigateBrowser = () => {
+    const { detail } = props.browserNavItem;
 
-      const navEvent = new CustomEvent('bpane', {
-        bubbles: true,
-        detail
-      });
+    const navEvent = new CustomEvent('bpane', {
+      bubbles: true,
+      detail
+    });
 
-      const browserCanvas = document.querySelector(
-        `.${imageStyles.browserStage}`
-      ) as HTMLElement;
+    const browserCanvas = document.querySelector(
+      `.${imageStyles.browserStage}`
+    ) as HTMLElement;
 
-      browserCanvas.dispatchEvent(navEvent);
-    };
+    browserCanvas.dispatchEvent(navEvent);
+  };
 
-    const { browserNavItem } = props;
+  const { browserNavItem } = props;
 
-    return (
-      <dd className={iconStyles.browserNavIcon}>
-        <button title={browserNavItem.description} onClick={navigateBrowser}>
-          <img src={browserNavItem.icon.on} alt={browserNavItem.description} />
-        </button>
-      </dd>
-    );
-  }
-);
+  return (
+    <dd className={iconStyles.browserNavIcon}>
+      <button title={browserNavItem.description} onClick={navigateBrowser}>
+        <img src={browserNavItem.icon.on} alt={browserNavItem.description} />
+      </button>
+    </dd>
+  );
+};
 
-export default BrowserNavIcon;
+export default memo(BrowserNavIcon);

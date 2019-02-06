@@ -1,3 +1,28 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<HeaderButtons /> renders correctly 1`] = `undefined`;
+exports[`<HeaderButtons /> renders correctly 1`] = `
+<div
+  className="headerButtons"
+>
+  <button
+    className="launchbarButton"
+    onClick={[MockFunction]}
+  >
+    <img
+      alt="toggle launchbar"
+      src={Object {}}
+      title="Launchbar"
+    />
+  </button>
+  <button
+    className="accountButton"
+    onClick={[MockFunction]}
+  >
+    <img
+      alt="toggle account"
+      src={Object {}}
+      title="Account"
+    />
+  </button>
+</div>
+`;

@@ -18,15 +18,17 @@ type OwnProps = {};
 
 type ContentProps = RouteComponentProps & StateProps & OwnProps;
 
+export const getExpandClass = (launchbarExpanded: boolean): string => {
+  return launchbarExpanded ? '' : styles.expanded;
+};
+
 export const Content: FunctionComponent<ContentProps> = (
   props: ContentProps
 ) => {
-  const getExpandClass = (): string => {
-    return props.launchbarExpanded ? '' : styles.expanded;
-  };
-
   return (
-    <main className={`${styles.content} ${getExpandClass()}`}>
+    <main
+      className={`${styles.content} ${getExpandClass(props.launchbarExpanded)}`}
+    >
       <Route path="/app" component={App} />
     </main>
   );

@@ -7,7 +7,7 @@ import {
 import { mount, render } from 'enzyme';
 import toJson from 'enzyme-to-json';
 
-import { Content } from './Content';
+import { Content, getExpandClass } from './Content';
 
 describe('<Content />', () => {
   let WrappedComponent: any;
@@ -31,10 +31,7 @@ describe('<Content />', () => {
       );
 
       expect(
-        wrapper
-          .find(Content)
-          .instance()
-          .getExpandClass()
+        getExpandClass(wrapper.find(Content).prop('launchbarExpanded'))
       ).toBe('');
     });
 
@@ -49,12 +46,9 @@ describe('<Content />', () => {
         </MemoryRouter>
       );
 
-      expect(
-        wrapper
-          .find(Content)
-          .instance()
-          .getExpandClass()
-      ).toBe('expanded');
+      expect(getExpandClass(wrapper.prop('launchbarExpanded'))).toBe(
+        'expanded'
+      );
     });
   });
 

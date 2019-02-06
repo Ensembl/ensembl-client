@@ -3,7 +3,7 @@
 exports[`<BrowserImage /> renders correctly 1`] = `
 <BrowserImage>
   <div
-    className="browser-stage"
+    className="browserStage"
   />
 </BrowserImage>
 `;

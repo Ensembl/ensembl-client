@@ -4,7 +4,7 @@ exports[`<Root /> renders correctly 1`] = `
 <BrowserRouter>
   <StrictMode>
     <React.Memo />
-    <withRouter(Connect(Content)) />
+    <withRouter(Connect(Component)) />
   </StrictMode>
 </BrowserRouter>
 `;

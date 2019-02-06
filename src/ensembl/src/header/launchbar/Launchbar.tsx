@@ -16,13 +16,13 @@ type LaunchbarProps = {
   launchbarExpanded: boolean;
 };
 
+export const getCategoryClass = (separator: boolean): string => {
+  return separator ? 'border' : '';
+};
+
 const Launchbar: FunctionComponent<LaunchbarProps> = (
   props: LaunchbarProps
 ) => {
-  const getCategoryClass = (separator: boolean): string => {
-    return separator ? 'border' : '';
-  };
-
   const LaunchbarChildren: ReactNode = (
     <div className={styles.launchbar}>
       <div className={styles.categoriesWrapper}>

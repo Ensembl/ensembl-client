@@ -1,3 +1,34 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<Header /> renders correctly 1`] = `undefined`;
+exports[`<Header /> renders correctly 1`] = `
+<header>
+  <div
+    className="topBar"
+  >
+    <div>
+      <div
+        className="companyText"
+      >
+        Ensembl
+      </div>
+      <div
+        className="strapline"
+      >
+        Pre-release - March 2019
+      </div>
+      <div
+        className="copyright"
+      >
+        <a
+          href="https://www.ebi.ac.uk"
+        >
+          © EMBL-EBI
+        </a>
+      </div>
+    </div>
+    <Connect(Component) />
+  </div>
+  <Connect(Component) />
+  <Connect(Component) />
+</header>
+`;
