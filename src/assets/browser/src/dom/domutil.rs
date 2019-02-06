@@ -27,7 +27,11 @@ pub fn query_selector_new(sel: &str) -> Option<Element> {
 }
 
 pub fn query_selector2(root: &Element, sel: &str) -> Option<Element> {
-    root.query_selector(sel).ok().map(|s| s.unwrap())
+    if let Ok(Some(el)) = root.query_selector(sel) {
+        Some(el)
+    } else {
+        None
+    }
 }
 
 pub fn query_selector(el: &Element, sel: &str) -> Element {
@@ -98,6 +102,11 @@ pub fn append_element(el: &Element, name: &str) -> Element {
     let new = doc.create_element(name).ok().unwrap();
     el.append_child(&new);
     new
+}
+
+pub fn remove(el: &Element) {
+    let parent: Element = el.parent_node().unwrap().try_into().ok().unwrap();
+    parent.remove_child(el).unwrap_or(el.clone().into());
 }
 
 pub fn scroll_to_bottom(el: &Element) {
