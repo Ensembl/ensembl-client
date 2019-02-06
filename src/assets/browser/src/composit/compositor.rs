@@ -2,6 +2,7 @@ use composit::{
     ActiveSource, Leaf, Train, ComponentManager, Stick, TrainManager
 };
 use controller::global::AppRunner;
+use controller::output::Report;
 use types::DOWN;
 
 const MS_PER_UPDATE : f64 = 250.;
@@ -44,6 +45,10 @@ impl Compositor {
             self.updated = false;
             self.last_updated = Some(t);
         }
+    }
+
+    pub fn update_report(&self, report: &Report) {
+        self.train_manager.update_report(report);
     }
 
     pub fn set_stick(&mut self, st: &Stick) {

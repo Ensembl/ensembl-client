@@ -8,7 +8,7 @@ use controller::input::{
     register_direct_events, register_user_events, register_dom_events,
     Timers, Timer
 };
-use controller::output::Projector;
+use controller::output::{ Projector, Report };
 use dom::Bling;
 use dom::event::EventControl;
 
@@ -46,9 +46,11 @@ impl AppRunner {
             timers: Timers::new()
         })));
         out.init();
+        let report = Report::new(&mut out);
         {
             let mut imp = out.0.lock().unwrap();
             let app = imp.app.clone();
+            app.lock().unwrap().set_report(report);
             let el = imp.el.clone();
             imp.bling.activate(&app,&el);
         }
@@ -61,16 +63,19 @@ impl AppRunner {
             let mut imp = self.0.lock().unwrap();
             imp.bling = bling;
             let browser_el : HtmlElement = imp.bling.apply_bling(&imp.el);
+            let report = imp.app.lock().unwrap().get_report().clone();
             imp.app = Arc::new(Mutex::new(App::new(&imp.g,&browser_el)));
+            imp.timers = Timers::new();
             imp.projector = None;
             imp.controls = Vec::<Box<EventControl<()>>>::new();
-            imp.timers = Timers::new();
         }
         self.init();
+        let report = Report::new(self);
         {
             let mut imp = self.0.lock().unwrap();
             let el = imp.el.clone();
             let app = imp.app.clone();
+            app.lock().unwrap().set_report(report);
             imp.bling.activate(&app,&el);
         }
     }
@@ -153,6 +158,7 @@ impl AppRunner {
     }
     
     pub fn activate_debug(&mut self) {
+        console!("activate_debug");
         self.reset(Box::new(DebugBling::new(create_interactors())));
     }
     
