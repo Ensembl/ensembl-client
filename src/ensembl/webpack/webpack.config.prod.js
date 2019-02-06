@@ -5,6 +5,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
 const BrotliPlugin = require('brotli-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const RobotstxtPlugin = require('robotstxt-webpack-plugin').default;
@@ -52,20 +53,26 @@ const plugins = [
   // this is only temporarily until a better solution is found
   new CopyWebpackPlugin([
     {
-      from: path.join(__dirname, '../static/browser'),
-      to: path.join(__dirname, '../dist/static/browser')
+      from: path.join(__dirname, '../static/browser/browser.wasm'),
+      to: path.join(__dirname, '../dist/static/browser/browser.wasm')
     }
   ]),
 
   // generate unique hashes for files based on the relative paths
   new webpack.HashedModuleIdsPlugin(),
 
+  new CompressionPlugin({
+    test: /.(js|css|html|wasm)$/,
+    threshold: 5120,
+    minRatio: 0.7
+  }),
+
   // brotli compression for static files
   // only files above 5kB will be compressed
   new BrotliPlugin({
-    test: /.(js|css|html)$/,
+    test: /.(js|css|html|wasm)$/,
     threshold: 5120, // 5kB
-    minRatio: 0.8
+    minRatio: 0.7
   }),
 
   // generate an asset manifest file that maps real file names with their cache-ready equivalents
