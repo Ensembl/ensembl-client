@@ -1,4 +1,4 @@
-import React, { FunctionComponent, memo } from 'react';
+import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 
 import { toggleAccount, toggleLaunchbar } from '../headerActions';
@@ -19,17 +19,15 @@ type OwnProps = {};
 
 type HeaderButtonsProps = StateProps & DispatchProps & OwnProps;
 
-export const HeaderButtons: FunctionComponent<HeaderButtonsProps> = memo(
-  (props) => (
-    <div className={styles.headerButtons}>
-      <button className="launchbarButton" onClick={props.toggleLaunchbar}>
-        <img src={launchbarIcon} alt="toggle launchbar" title="Launchbar" />
-      </button>
-      <button className="accountButton" onClick={props.toggleAccount}>
-        <img src={userIcon} alt="toggle account" title="Account" />
-      </button>
-    </div>
-  )
+export const HeaderButtons: FunctionComponent<HeaderButtonsProps> = (props) => (
+  <div className={styles.headerButtons}>
+    <button className="launchbarButton" onClick={props.toggleLaunchbar}>
+      <img src={launchbarIcon} alt="toggle launchbar" title="Launchbar" />
+    </button>
+    <button className="accountButton" onClick={props.toggleAccount}>
+      <img src={userIcon} alt="toggle account" title="Account" />
+    </button>
+  </div>
 );
 
 const mapStateToProps = (): StateProps => ({});

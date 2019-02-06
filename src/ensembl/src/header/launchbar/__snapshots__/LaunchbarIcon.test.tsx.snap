@@ -142,16 +142,3 @@ exports[`<LaunchbarContainer /> renders correctly 1`] = `
   </div>
 </div>
 `;
-
-exports[`<LaunchbarIcon /> renders correctly 1`] = `
-<Link
-  replace={false}
-  to="/app/about"
->
-  <img
-    alt="about ensembl"
-    src="/assets/img/launchbar/ensembl-selected.svg"
-    title="about ensembl"
-  />
-</Link>
-`;

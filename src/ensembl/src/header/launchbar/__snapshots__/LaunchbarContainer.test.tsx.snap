@@ -8,7 +8,7 @@ exports[`<LaunchbarContainer /> renders correctly 1`] = `
     class="launchbar"
   >
     <div
-      class="categories-wrapper"
+      class="categoriesWrapper"
     >
       <div
         class="categories"
@@ -17,26 +17,28 @@ exports[`<LaunchbarContainer /> renders correctly 1`] = `
           class="border"
         >
           <dt
-            class="global-search-app-icon"
+            class="global-searchIcon"
           >
             <a
               href="/app/global-search"
             >
               <img
                 alt="global search"
+                class="launchbarIcon"
                 src="[object Object]"
                 title="global search"
               />
             </a>
           </dt>
           <dt
-            class="species-selector-app-icon"
+            class="species-selectorIcon"
           >
             <a
               href="/app/species-selector"
             >
               <img
                 alt="species selector"
+                class="launchbarIcon"
                 src="[object Object]"
                 title="species selector"
               />
@@ -47,13 +49,14 @@ exports[`<LaunchbarContainer /> renders correctly 1`] = `
           class="border"
         >
           <dt
-            class="browser-app-icon"
+            class="browserIcon"
           >
             <a
               href="/app/browser"
             >
               <img
                 alt="browser"
+                class="launchbarIcon"
                 src="[object Object]"
                 title="browser"
               />
@@ -64,67 +67,16 @@ exports[`<LaunchbarContainer /> renders correctly 1`] = `
           class="border"
         >
           <dt
-            class="blast-app-icon"
+            class="toolsIcon"
           >
             <a
-              href="/app/blast"
+              href="/app/tools"
             >
               <img
-                alt="BLAST/BLAT"
+                alt="tools"
+                class="launchbarIcon"
                 src="[object Object]"
-                title="BLAST/BLAT"
-              />
-            </a>
-          </dt>
-          <dt
-            class="vep-app-icon"
-          >
-            <a
-              href="/app/vep"
-            >
-              <img
-                alt="VEP"
-                src="[object Object]"
-                title="VEP"
-              />
-            </a>
-          </dt>
-          <dt
-            class="conversions-app-icon"
-          >
-            <a
-              href="/app/conversions"
-            >
-              <img
-                alt="Conversions"
-                src="[object Object]"
-                title="Conversions"
-              />
-            </a>
-          </dt>
-          <dt
-            class="ld-app-icon"
-          >
-            <a
-              href="/app/ld"
-            >
-              <img
-                alt="LD calculator"
-                src="[object Object]"
-                title="LD calculator"
-              />
-            </a>
-          </dt>
-          <dt
-            class="biomart-app-icon"
-          >
-            <a
-              href="/app/biomart"
-            >
-              <img
-                alt="biomart"
-                src="[object Object]"
-                title="biomart"
+                title="tools"
               />
             </a>
           </dt>
@@ -133,28 +85,16 @@ exports[`<LaunchbarContainer /> renders correctly 1`] = `
           class="border"
         >
           <dt
-            class="bulk-download-app-icon"
+            class="downloadIcon"
           >
             <a
-              href="/app/bulk-download"
+              href="/app/download"
             >
               <img
-                alt="bulk download"
+                alt="download"
+                class="launchbarIcon"
                 src="[object Object]"
-                title="bulk download"
-              />
-            </a>
-          </dt>
-          <dt
-            class="custom-download-app-icon"
-          >
-            <a
-              href="/app/custom-download"
-            >
-              <img
-                alt="custom download"
-                src="[object Object]"
-                title="custom download"
+                title="download"
               />
             </a>
           </dt>
@@ -163,41 +103,16 @@ exports[`<LaunchbarContainer /> renders correctly 1`] = `
           class=""
         >
           <dt
-            class="help-docs-app-icon"
+            class="help-docsIcon"
           >
             <a
               href="/app/help-docs"
             >
               <img
                 alt="help and documentation"
+                class="launchbarIcon"
                 src="[object Object]"
                 title="help and documentation"
-              />
-            </a>
-          </dt>
-          <dt
-            class="glossary-app-icon"
-          >
-            <a
-              href="/app/glossary"
-            >
-              <img
-                alt="glossary"
-                src="[object Object]"
-                title="glossary"
-              />
-            </a>
-          </dt>
-          <dt
-            class="new-info-app-icon"
-          >
-            <a
-              href="/app/new-info"
-            >
-              <img
-                alt="what is new and what has changed"
-                src="[object Object]"
-                title="what is new and what has changed"
               />
             </a>
           </dt>
@@ -209,13 +124,14 @@ exports[`<LaunchbarContainer /> renders correctly 1`] = `
     >
       <dl>
         <dt
-          class="about-app-icon"
+          class="aboutIcon"
         >
           <a
             href="/app/about"
           >
             <img
               alt="about ensembl"
+              class="launchbarIcon"
               src="[object Object]"
               title="about ensembl"
             />

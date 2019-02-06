@@ -2,7 +2,9 @@
 
 exports[`<Account /> renders correctly 1`] = `
 <ForwardRef>
-  <div>
+  <div
+    className="account"
+  >
     <h2>
       Account area placeholder
     </h2>

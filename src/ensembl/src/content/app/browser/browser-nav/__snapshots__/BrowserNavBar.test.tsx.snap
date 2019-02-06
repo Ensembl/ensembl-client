@@ -5,7 +5,7 @@ exports[`<BrowserNavBar /> renders correctly 1`] = `
   className="browserNavBar"
 >
   <dl>
-    <BrowserNavIcon
+    <React.Memo
       browserNavItem={
         Object {
           "description": "navigate up",
@@ -21,7 +21,7 @@ exports[`<BrowserNavBar /> renders correctly 1`] = `
       }
       key="navigate-up"
     />
-    <BrowserNavIcon
+    <React.Memo
       browserNavItem={
         Object {
           "description": "navigate down",
@@ -37,7 +37,7 @@ exports[`<BrowserNavBar /> renders correctly 1`] = `
       }
       key="navigate-down"
     />
-    <BrowserNavIcon
+    <React.Memo
       browserNavItem={
         Object {
           "description": "zoom out",
@@ -53,7 +53,7 @@ exports[`<BrowserNavBar /> renders correctly 1`] = `
       }
       key="zoom-out"
     />
-    <BrowserNavIcon
+    <React.Memo
       browserNavItem={
         Object {
           "description": "zoom in",
@@ -69,7 +69,7 @@ exports[`<BrowserNavBar /> renders correctly 1`] = `
       }
       key="zoom-in"
     />
-    <BrowserNavIcon
+    <React.Memo
       browserNavItem={
         Object {
           "description": "navigate left",
@@ -85,7 +85,7 @@ exports[`<BrowserNavBar /> renders correctly 1`] = `
       }
       key="navigate left"
     />
-    <BrowserNavIcon
+    <React.Memo
       browserNavItem={
         Object {
           "description": "navigate right",

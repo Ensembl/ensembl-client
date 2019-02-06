@@ -8,7 +8,7 @@ import styles from './Header.scss';
 
 type HeaderProps = {};
 
-const Header: FunctionComponent<HeaderProps> = memo(() => (
+export const Header: FunctionComponent<HeaderProps> = () => (
   <header>
     <div className={styles.topBar}>
       <div>
@@ -23,6 +23,6 @@ const Header: FunctionComponent<HeaderProps> = memo(() => (
     <Account />
     <LaunchbarContainer />
   </header>
-));
+);
 
-export default Header;
+export default memo(Header);
