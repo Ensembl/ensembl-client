@@ -92,7 +92,14 @@ html, body {
 
 pub const PLAINSTAGE_CSS : &str = r##"
 .bpane-container {
-    overflow: hidden;
+  position: relative;
+}
+
+.bpane-canv {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
 }
 
 .bpane-container .managedcanvasholder {
