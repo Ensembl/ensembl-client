@@ -3,9 +3,10 @@ use std::sync::{ Arc, Mutex };
 use stdweb::web::{ Element, HtmlElement };
 use stdweb::unstable::TryInto;
 
-use global::{ Global, GlobalWeak };
 use composit::{ Compositor, StateManager, Stage };
 use controller::input::{ Event, events_run, startup_events };
+use controller::global::{ Global, GlobalWeak };
+use controller::output::Report;
 use dom::domutil;
 use print::Printer;
 
@@ -19,7 +20,8 @@ pub struct App {
     pub stage: Arc<Mutex<Stage>>,
     pub state: Arc<Mutex<StateManager>>,
     pub compo: Arc<Mutex<Compositor>>,
-    last_boxsize: Option<f64>
+    last_boxsize: Option<f64>,
+    report: Option<Report>
 }
 
 impl App {
@@ -35,10 +37,17 @@ impl App {
             stage:  Arc::new(Mutex::new(Stage::new())),
             compo: Arc::new(Mutex::new(Compositor::new())),
             state: Arc::new(Mutex::new(StateManager::new())),
-            last_boxsize: None
+            last_boxsize: None,
+            report: None
         };
         out.run_events(&startup_events());
         out
+    }
+        
+    pub fn get_report(&self) -> &Report { &self.report.as_ref().unwrap() }
+        
+    pub fn set_report(&mut self, report: Report) {
+        self.report = Some(report);
     }
     
     pub fn with_global<F,G>(&mut self, cb:F) -> Option<G>
@@ -62,8 +71,12 @@ impl App {
     }
     
     pub fn with_stage<F,G>(&self, cb: F) -> G where F: FnOnce(&mut Stage) -> G {
-        let a = &mut self.stage.lock().unwrap();
-        cb(a)
+        let s = &mut self.stage.lock().unwrap();
+        let out = cb(s);
+        if let Some(ref report) = self.report {
+            s.update_report(report);
+        }
+        out
     }
 
     pub fn with_state<F,G>(&self, cb: F) -> G where F: FnOnce(&mut StateManager) -> G {
@@ -72,8 +85,12 @@ impl App {
     }
 
     pub fn with_compo<F,G>(&self, cb: F) -> G where F: FnOnce(&mut Compositor) -> G {
-        let a = &mut self.compo.lock().unwrap();
-        cb(a)
+        let c = &mut self.compo.lock().unwrap();
+        let out = cb(c);
+        if let Some(ref report) = self.report {
+            c.update_report(report);
+        }
+        out
     }
     
     pub fn run_events(self: &mut App, evs: &Vec<Event>) {

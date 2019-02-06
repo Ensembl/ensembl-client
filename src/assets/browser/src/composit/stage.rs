@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use composit::{ Leaf, Position, Wrapping };
+use controller::output::Report;
 use program::UniformValue;
 use types::{CPixel, cpixel, Move, Dot, Direction, LEFT, RIGHT };
 
@@ -24,6 +25,11 @@ impl Stage {
             dims: size,
         };
         out
+    }
+
+    pub fn update_report(&self, report: &Report) {
+        report.set_status("start",&self.pos.get_edge(&LEFT).floor().to_string());
+        report.set_status("end",&self.pos.get_edge(&RIGHT).ceil().to_string());
     }
 
     pub fn set_wrapping(&mut self, w: &Wrapping) {
