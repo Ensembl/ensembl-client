@@ -4,19 +4,108 @@ use serde_json::Value as JSONValue;
 use stdweb::web::html_element::SelectElement;
 use stdweb::traits::IEvent;
 use stdweb::unstable::TryInto;
-use stdweb::web::{ Element, IEventTarget, HtmlElement, INode };
+use stdweb::web::{ Element, IEventTarget, HtmlElement };
 use stdweb::web::event::{ ChangeEvent, ClickEvent };
 
 use controller::input::EggDetector;
 use controller::global::App;
 use debug::testcard_base;
 use debug::DebugConsole;
-use dom::{ DEBUGSTAGE, DEBUGSTAGE_CSS, Bling };
+use dom::Bling;
 use dom::domutil;
 
 use dom::event::{
-    EventListener, EventControl, EventType, EventData, Target
+    EventListener, EventControl, EventType, EventData, Target,
+    ICustomEvent
 };
+
+pub const DEBUGSTAGE : &str = r##"
+<div class="bpane-container">
+    <div class="bpane-canv">
+        <h1>Debug Mode</h1>
+    </div>
+    <div class="bpane-right">
+        <div class="console">
+            <select class="testcard">
+                <option value="">- testcards -</option>
+                <option value="polar">Polar Testcard</option>
+                <option value="button">Button Testcard</option>
+                <option value="text">Text Testcard</option>
+                <option value="ruler">Ruler Testcard</option>
+                <option value="leaf">Leaf Testcard</option>
+            </select>
+            <select class="folder"></select>
+            <button class="mark">mark!</button>
+            <pre class="content console2"></pre>
+        </div>
+        <div class="events-out"></div>
+        <div class="buttons"></div>
+        <div class="managedcanvasholder"></div>
+    </div>
+</div>
+"##;
+
+pub const DEBUGSTAGE_CSS : &str = r##"
+html, body {
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+.events-out {
+    border: 1px solid blue;
+    height: 64px;
+    font-size: 10px;
+    overflow-y: scroll;
+}
+.bpane-container {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+.bpane-container .bpane-right {
+    width: 20%;
+}
+
+.bpane-container .console .content {
+    height: 85%;
+    overflow: scroll;
+    border: 1px solid #ccc;
+}
+
+.bpane-container .managedcanvasholder {
+    display: block;
+    border: 2px solid red;
+    display: inline-block;
+    overflow: scroll;
+    width: 100%;
+}
+
+.bpane-container, .bpane-container .bpane-canv canvas {
+    height: 100%;
+    width: 100%;
+}
+
+.bpane-container .bpane-canv {
+    width: 80%;
+    height: 100%;
+}
+
+.bpane-container .bpane-canv canvas {
+    width: 100%;
+    height: 100%;
+}
+
+#stage {
+    height: 100%;
+}
+
+.bpane-container .console {
+    height: 50%;
+}
+@import url('https://fonts.googleapis.com/css?family=Lato');
+"##;
 
 fn setup_debug_console(el: &HtmlElement) {
     let cons_el = domutil::query_selector(&el.clone().into(),".console2");
@@ -78,6 +167,43 @@ pub trait DebugInteractor {
     fn name(&self) -> &str;
     fn render(&mut self, ar: &Arc<Mutex<App>>, el: &Element);
     fn key(&mut self, app: &Arc<Mutex<App>>, key: &str) {}
+}
+
+pub struct OutEventListener {
+    target: HtmlElement
+}
+
+impl OutEventListener {
+    pub fn new(target: &HtmlElement) -> OutEventListener {
+        OutEventListener {
+            target: target.clone()
+        }
+    }
+}
+
+const EVENT_LENGTH : i32 = 1000;
+
+impl EventListener<()> for OutEventListener {
+    fn receive(&mut self, _el: &Target,  e: &EventData, ar: &()) {
+        if let EventData::CustomEvent(EventType::CustomEvent(_),e,s,d) = e {
+            if s == "bpane-out" {
+                let mut value = domutil::get_inner_html(&self.target.clone().into());
+                value.push_str(&format!("{}\n",d.details().unwrap_or(json!{{}})));
+                let too_long = value.len() as i32 - EVENT_LENGTH;
+                if too_long > 0 {
+                    value = value[too_long as usize..].to_string();
+                }
+                domutil::inner_html(&self.target.clone().into(),&value);
+                domutil::scroll_to_bottom(&self.target.clone().into());
+            }
+        }
+    }
+}
+
+fn setup_event_listener(el: &HtmlElement, target: &HtmlElement) {
+    let mut li = EventControl::new(Box::new(OutEventListener::new(target)),());
+    li.add_event(EventType::CustomEvent("bpane-out".to_string()));
+    li.add_element(&el.clone().into(),());
 }
 
 pub struct ButtonEventListener<F> where F: Fn(&Arc<Mutex<App>>) {
@@ -153,7 +279,6 @@ impl Bling for DebugBling {
     fn apply_bling(&self, el: &HtmlElement) -> HtmlElement {
         let el : Element = el.clone().into();
         if let Some(old) = domutil::query_selector_new("#bpane-css") {
-            console!("OLD");
             domutil::remove(&old);
         }
         let css = domutil::append_element(&domutil::query_select("head"),"style");
@@ -166,6 +291,10 @@ impl Bling for DebugBling {
     fn activate(&mut self, ar: &Arc<Mutex<App>>, el: &HtmlElement) {
         setup_testcard_selector(ar,el);
         setup_debug_console(el);
+        if let Some(ref side) = domutil::query_selector2(&el.clone().into(),".events-out") {
+            let side : HtmlElement = side.clone().try_into().unwrap();
+            setup_event_listener(el,&side);
+        }
         for di in &mut self.dii {
             di.render(&ar.clone(),&el.clone().into());
         }

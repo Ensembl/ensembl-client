@@ -1,7 +1,8 @@
 use std::sync::{ Arc, Mutex };
 
-use stdweb::web::{ Element, HtmlElement };
+use stdweb::web::HtmlElement;
 use stdweb::unstable::TryInto;
+use serde_json::Value as JSONValue;
 
 use composit::{ Compositor, StateManager, Stage };
 use controller::input::{ Event, events_run, startup_events };
@@ -43,7 +44,11 @@ impl App {
         out.run_events(&startup_events());
         out
     }
-        
+    
+    pub fn send_report(&self, value: &JSONValue) {
+        domutil::send_custom_event(&self.browser_el.clone().into(),"bpane-out",value);
+    }
+    
     pub fn get_report(&self) -> &Report { &self.report.as_ref().unwrap() }
         
     pub fn set_report(&mut self, report: Report) {
