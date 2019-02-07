@@ -1,6 +1,6 @@
 use std::sync::{ Arc, Mutex };
 
-use stdweb::web::{ Element, HtmlElement };
+use stdweb::web::HtmlElement;
 use stdweb::unstable::TryInto;
 
 use composit::{ Compositor, StateManager, Stage };

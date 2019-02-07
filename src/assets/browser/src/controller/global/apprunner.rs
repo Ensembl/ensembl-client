@@ -1,6 +1,6 @@
 use std::sync::{ Arc, Mutex, Weak };
 
-use stdweb::web::{ Element, HtmlElement };
+use stdweb::web::HtmlElement;
 
 use composit::{ register_compositor_ticks };
 use controller::global::{ App, GlobalWeak };
@@ -104,7 +104,7 @@ impl AppRunner {
         
         /* register canvas-bound events */
         {
-            let mut el = self.0.lock().unwrap().el.clone();
+            let el = self.0.lock().unwrap().el.clone();
             register_user_events(self,&el);
             register_direct_events(self,&el);
             register_dom_events(self,&el);
