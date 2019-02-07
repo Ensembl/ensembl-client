@@ -9,6 +9,10 @@
 a {
   color: $ens-blue;
   text-decoration: none;
+
+  &.inactive {
+    color: #666;
+  }
 }
 
 dl {
