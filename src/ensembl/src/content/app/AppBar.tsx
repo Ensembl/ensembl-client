@@ -15,13 +15,11 @@ const AppBar: FunctionComponent = memo(() => (
           <strong>Human</strong> GRCh38.p10
         </dd>
         <dd>
-          <a href="" className={styles.addSpecies}>
-            Change
-          </a>
+          <a className={`${styles.addSpecies} inactive`}>Change</a>
         </dd>
       </dl>
       <div className={styles.helpLink}>
-        <a href="">
+        <a className="inactive">
           Help &amp; documentation <img src={chevronRightIcon} alt="" />
         </a>
       </div>
