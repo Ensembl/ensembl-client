@@ -10,7 +10,26 @@ type LaunchbarIconProps = {
   currentApp: string;
 };
 
-function getAppIcon(props: LaunchbarIconProps): string {
+export const LaunchbarIcon: FunctionComponent<LaunchbarIconProps> = (
+  props: LaunchbarIconProps
+) => {
+  const iconImage = (
+    <img
+      className={styles.launchbarIcon}
+      src={getAppIcon(props)}
+      alt={props.app.description}
+      title={props.app.description}
+    />
+  );
+
+  if (props.app.icon.grey) {
+    return iconImage;
+  } else {
+    return <Link to={`/app/${props.app.name}`}>{iconImage}</Link>;
+  }
+};
+
+export function getAppIcon(props: LaunchbarIconProps): string {
   const { app, currentApp } = props;
 
   if (app.icon.grey) {
@@ -20,15 +39,4 @@ function getAppIcon(props: LaunchbarIconProps): string {
   }
 }
 
-const LaunchbarIcon: FunctionComponent<LaunchbarIconProps> = memo((props) => (
-  <Link to={`/app/${props.app.name}`}>
-    <img
-      className={styles.launchbarIcon}
-      src={getAppIcon(props)}
-      alt={props.app.description}
-      title={props.app.description}
-    />
-  </Link>
-));
-
-export default LaunchbarIcon;
+export default memo(LaunchbarIcon);
