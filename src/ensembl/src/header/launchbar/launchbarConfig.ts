@@ -70,7 +70,7 @@ export type LaunchbarDetails = {
 
 export const launchbarConfig: LaunchbarDetails = {
   about: {
-    description: 'about ensembl',
+    description: 'About Ensembl',
     icon: {
       default: ensemblIcon,
       selected: ensemblSelectedIcon
@@ -81,7 +81,7 @@ export const launchbarConfig: LaunchbarDetails = {
     {
       apps: [
         {
-          description: 'global search',
+          description: 'Global Search',
           icon: {
             default: searchIcon,
             grey: searchGreyIcon,
@@ -90,7 +90,7 @@ export const launchbarConfig: LaunchbarDetails = {
           name: 'global-search'
         },
         {
-          description: 'species selector',
+          description: 'Species Selector',
           icon: {
             default: speciesSelectorIcon,
             grey: speciesSelectorGreyIcon,
@@ -105,7 +105,7 @@ export const launchbarConfig: LaunchbarDetails = {
     {
       apps: [
         {
-          description: 'browser',
+          description: 'Browser',
           icon: {
             default: browserIcon,
             selected: browserSelectedIcon
@@ -159,7 +159,7 @@ export const launchbarConfig: LaunchbarDetails = {
         //   name: 'biomart'
         // }
         {
-          description: 'tools',
+          description: 'Tools',
           icon: {
             default: vepIcon,
             grey: toolsGreyIcon,
@@ -190,13 +190,13 @@ export const launchbarConfig: LaunchbarDetails = {
         //   name: 'custom-download'
         // }
         {
-          description: 'download',
+          description: 'Downloads',
           icon: {
             default: customDownloadIcon,
             grey: downloadGreyIcon,
             selected: customDownloadSelectedIcon
           },
-          name: 'download'
+          name: 'downloads'
         }
       ],
       name: 'downloads',
@@ -205,7 +205,7 @@ export const launchbarConfig: LaunchbarDetails = {
     {
       apps: [
         {
-          description: 'help and documentation',
+          description: 'Help & Documentation',
           icon: {
             default: helpIcon,
             grey: helpGreyIcon,
