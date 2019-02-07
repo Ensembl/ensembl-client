@@ -1,5 +1,7 @@
 use std::fmt;
 
+use types::AxisSense;
+
 #[derive(Clone,Copy)]
 pub struct Zoom {
     zoom: f64,
@@ -21,20 +23,19 @@ impl Zoom {
         self.max_bp = bp;
     }
     
-    fn check_min_limit(&self, val: f64) -> f64 {
-        if val < -self.max_bp.log10() {
-            return -self.max_bp.log10();
-        } else {
-            return val;
+    pub fn get_limit(&self, min_max: &AxisSense) -> f64 {
+        match *min_max {
+            AxisSense::Neg => -self.max_bp.log10(),
+            AxisSense::Pos => -MAX_LIMIT_BP.log10()
         }
     }
     
+    fn check_min_limit(&self, val: f64) -> f64 {
+        val.max(self.get_limit(&AxisSense::Neg))
+    }
+    
     fn check_max_limit(&self, val: f64) -> f64 {
-        if val > -MAX_LIMIT_BP.log10() {
-            return -MAX_LIMIT_BP.log10();
-        } else {
-            return val;
-        }
+        val.min(self.get_limit(&AxisSense::Pos))
     }
     
     pub fn set_zoom(&mut self, val: f64) {

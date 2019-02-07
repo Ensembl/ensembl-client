@@ -89,6 +89,10 @@ pub fn add_style(el: &Element, key: &str, value: &str) {
     add_attr(el,"style",&format!("{}: {};",key,value));
 }
 
+pub fn get_inner_html(el: &Element) -> String {
+    return js! { return @{el.as_ref()}.innerHTML; }.try_into().unwrap();
+}
+
 pub fn inner_html(el: &Element, value: &str) {
     js! { @{el.as_ref()}.innerHTML = @{value} };
 }

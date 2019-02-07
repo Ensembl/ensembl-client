@@ -3,7 +3,10 @@ use std::collections::HashMap;
 use composit::{ Leaf, Position, Wrapping };
 use controller::output::Report;
 use program::UniformValue;
-use types::{CPixel, cpixel, Move, Dot, Direction, LEFT, RIGHT };
+use types::{
+    CPixel, cpixel, Move, Dot, Direction, 
+    LEFT, RIGHT, UP, DOWN, IN, OUT
+};
 
 // XXX TODO avoid big-minus-big type calculations which accumulate error
 
@@ -18,18 +21,28 @@ pub struct Stage {
 impl Stage {
     pub fn new() -> Stage {
         let size = cpixel(0,0);
-        let mut out = Stage {
+        Stage {
             pos: Position::new(Dot(0.,0.),size),
             mouse_pos: Dot(0,0),
             base: 0.,
             dims: size,
-        };
-        out
+        }
+    }
+
+    fn bumped(&self, direction: &Direction) -> bool {
+        self.pos.get_edge(direction).floor() == self.pos.get_limit_of_edge(direction).floor()
     }
 
     pub fn update_report(&self, report: &Report) {
-        report.set_status("start",&self.pos.get_edge(&LEFT).floor().to_string());
-        report.set_status("end",&self.pos.get_edge(&RIGHT).ceil().to_string());
+        let (left,right) = (self.pos.get_edge(&LEFT),self.pos.get_edge(&RIGHT));
+        report.set_status("start",&left.floor().to_string());
+        report.set_status("end",&right.ceil().to_string());
+        report.set_status_bool("bumper-left",self.bumped(&LEFT));
+        report.set_status_bool("bumper-right",self.bumped(&RIGHT));
+        report.set_status_bool("bumper-top",self.bumped(&UP));
+        report.set_status_bool("bumper-bottom",self.bumped(&DOWN));
+        report.set_status_bool("bumper-in",self.bumped(&IN));
+        report.set_status_bool("bumper-out",self.bumped(&OUT));
     }
 
     pub fn set_wrapping(&mut self, w: &Wrapping) {
