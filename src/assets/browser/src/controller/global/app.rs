@@ -5,7 +5,7 @@ use stdweb::unstable::TryInto;
 use serde_json::Value as JSONValue;
 
 use composit::{ Compositor, StateManager, Stage };
-use controller::input::{ Event, events_run, startup_events };
+use controller::input::{ Action, actions_run, startup_actions };
 use controller::global::{ Global, GlobalWeak };
 use controller::output::Report;
 use dom::domutil;
@@ -21,7 +21,6 @@ pub struct App {
     pub stage: Arc<Mutex<Stage>>,
     pub state: Arc<Mutex<StateManager>>,
     pub compo: Arc<Mutex<Compositor>>,
-    last_boxsize: Option<f64>,
     report: Option<Report>
 }
 
@@ -38,10 +37,9 @@ impl App {
             stage:  Arc::new(Mutex::new(Stage::new())),
             compo: Arc::new(Mutex::new(Compositor::new())),
             state: Arc::new(Mutex::new(StateManager::new())),
-            last_boxsize: None,
             report: None
         };
-        out.run_events(&startup_events());
+        out.run_actions(&startup_actions());
         out
     }
     
@@ -98,15 +96,15 @@ impl App {
         out
     }
     
-    pub fn run_events(self: &mut App, evs: &Vec<Event>) {
-        events_run(self,evs);
+    pub fn run_actions(self: &mut App, evs: &Vec<Action>) {
+        actions_run(self,evs);
     }
         
     pub fn check_size(self: &mut App) {
         let mut sz = self.printer.lock().unwrap().get_available_size();
         sz.0 = ((sz.0+3)/4)*4;
         sz.1 = ((sz.1+3)/4)*4;
-        events_run(self,&vec! { Event::Resize(sz) });
+        actions_run(self,&vec! { Action::Resize(sz) });
     }
  
     pub fn force_size(self: &App) {

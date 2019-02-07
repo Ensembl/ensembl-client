@@ -1,20 +1,19 @@
 // We keep these separate from the other utils partly because these imports
 // are very hairy.
 
-use stdweb::Value;
+use itertools::Itertools;
 use serde_json::Value as JSONValue;
+use stdweb::Value;
 use stdweb::unstable::TryInto;
 use stdweb::web::{
-    document,
-    Element,
-    HtmlElement,
-    IHtmlElement,
-    IElement,
-    IParentNode,
-    INode
+    document, Element, HtmlElement, IHtmlElement,
+    IElement, IParentNode, INode
 };
-use itertools::Itertools;
+use stdweb::web::html_element::CanvasElement;
 
+use dom::webgl::{
+    WebGLRenderingContext as glctx,
+};
 
 use types::{ CPixel, cpixel, RPixel, area };
 
@@ -136,4 +135,10 @@ pub fn clear_selection() {
             }
         }
     }
+}
+
+pub fn get_context(canvas: &CanvasElement) -> glctx {
+    (js! {
+        return @{canvas.as_ref()}.getContext("webgl",{ antialias: true });
+    }).try_into().ok().unwrap()
 }

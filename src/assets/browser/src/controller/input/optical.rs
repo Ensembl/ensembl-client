@@ -1,6 +1,6 @@
 use std::sync::{ Arc, Mutex };
 use controller::global::{ App, AppRunner };
-use controller::input::{ Event, events_run };
+use controller::input::{ Action,actions_run };
 use types::CDFraction;
 
 pub struct OpticalImpl {
@@ -21,9 +21,9 @@ impl OpticalImpl {
 
     fn send_delta(&mut self, app: &mut App, amt: f64) {
         if let Some((pos,prop)) = self.pos {
-            events_run(app,&vec! {
-                Event::Zoom(amt),
-                Event::Pos(pos,Some(prop))
+            actions_run(app,&vec! {
+                Action::Zoom(amt),
+                Action::Pos(pos,Some(prop))
             });
         }
     }

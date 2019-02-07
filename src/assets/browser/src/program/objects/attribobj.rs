@@ -2,13 +2,12 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use stdweb::web::TypedArray;
-use webgl_rendering_context::{
+use dom::webgl::{
     WebGLRenderingContext as glctx,
     WebGLBuffer as glbuf,
     WebGLProgram as glprog,
 };
 
-use wglraw;
 use drawing::DrawingSession;
 use program::data::{ DataBatch, Input };
 
@@ -53,7 +52,7 @@ impl ObjectAttrib {
 
 impl Object for ObjectAttrib {
     fn obj_final(&mut self, batch: &DataBatch, ctx: &glctx, _acm: &DrawingSession) {
-        self.buf.entry(batch.id()).or_insert_with(|| wglraw::init_buffer(ctx));
+        self.buf.entry(batch.id()).or_insert_with(|| ctx.create_buffer().unwrap());
         if let Some(data) = self.data(batch) {
             if let Some(buf) = self.buffer(batch) {
                 ctx.bind_buffer(glctx::ARRAY_BUFFER,Some(&buf));

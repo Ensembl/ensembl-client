@@ -3,7 +3,7 @@ use composit::StateValue;
 use controller::global::App;
 
 #[derive(Debug,Clone)]
-pub enum Event {
+pub enum Action {
     Noop,
     Pos(Dot<f64,f64>,Option<f64>),
     Move(Move<f64,f64>),
@@ -39,7 +39,7 @@ fn exe_move_event(app: &App, v: Move<f64,f64>) {
     });
 }
 
-fn exe_zoom_event(app: &App, mut z: f64, by: bool) {
+fn exe_zoom_event(app: &App, z: f64, by: bool) {
     let z = app.with_stage(|s| {
         if by {
             s.inc_zoom(z);
@@ -83,26 +83,26 @@ fn exe_set_state(a: &mut App, name: &str, on: StateValue) {
     });
 }
 
-pub fn events_run(cg: &mut App, evs: &Vec<Event>) {
+pub fn actions_run(cg: &mut App, evs: &Vec<Action>) {
     for ev in evs {
         let ev = ev.clone();
         match ev {
-            Event::Pos(v,prop) => exe_pos_event(cg,v,prop),
-            Event::Move(v) => exe_move_event(cg,v),
-            Event::Zoom(z) => exe_zoom_event(cg,z,true),
-            Event::ZoomTo(z) => exe_zoom_event(cg,z,false),
-            Event::Resize(sz) => exe_resize(cg,sz),
-            Event::AddComponent(name) => exe_component_add(cg,&name),
-            Event::SetStick(name) => exe_set_stick(cg,&name),
-            Event::SetState(name,on) => exe_set_state(cg,&name,on),
-            Event::Noop => ()
+            Action::Pos(v,prop) => exe_pos_event(cg,v,prop),
+            Action::Move(v) => exe_move_event(cg,v),
+            Action::Zoom(z) => exe_zoom_event(cg,z,true),
+            Action::ZoomTo(z) => exe_zoom_event(cg,z,false),
+            Action::Resize(sz) => exe_resize(cg,sz),
+            Action::AddComponent(name) => exe_component_add(cg,&name),
+            Action::SetStick(name) => exe_set_stick(cg,&name),
+            Action::SetState(name,on) => exe_set_state(cg,&name,on),
+            Action::Noop => ()
         }
     }
 }
 
-pub fn startup_events() -> Vec<Event> {
+pub fn startup_actions() -> Vec<Action> {
     vec! {
-        Event::Pos(Dot(0_f64,0_f64),None),
-        //Event::Zoom(-3.)
+        Action::Pos(Dot(0_f64,0_f64),None),
+        //Action::Zoom(-3.)
     }
 }

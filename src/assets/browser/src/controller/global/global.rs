@@ -11,7 +11,9 @@ use stdweb::web::{ HtmlElement, Element, IHtmlElement };
 use composit::{
     ComponentSourceList, StickManager, ActiveSource, ComponentSource, Stick
 };
-use controller::input::{ register_startup_events, initial_events, events_run };
+use controller::input::{
+    register_startup_events, initial_actions, actions_run
+};
 use controller::global::AppRunner;
 use debug::{ DebugComponentSource, DebugBling, MiniBling, create_interactors };
 use debug::debug_stick_manager;
@@ -19,7 +21,6 @@ use dom::{ domutil, Bling };
 
 pub struct GlobalImpl {
     apps: HashMap<String,AppRunner>,
-    elements: HashMap<String,Element>,
     csl: ComponentSourceList,
     sticks: Box<StickManager>
 }
@@ -28,7 +29,6 @@ impl GlobalImpl {
     pub fn new() -> GlobalImpl {
         let mut out = GlobalImpl {
             apps: HashMap::<String,AppRunner>::new(),
-            elements: HashMap::<String,Element>::new(),
             csl: ComponentSourceList::new(),
             sticks: Box::new(debug_stick_manager())
         };
@@ -103,7 +103,7 @@ impl Global {
         let ar = self.0.borrow_mut().get_apprunner(key);
         if let Some(ar) = ar {
             let app = ar.clone().state();
-            events_run(&mut app.lock().unwrap(),&initial_events());
+            actions_run(&mut app.lock().unwrap(),&initial_actions());
         }
     }
     

@@ -69,8 +69,8 @@ impl Position {
     pub fn get_edge(&self, which: &Direction) -> f64 {
         let delta = self.middle_to_edge(which);
         match *which {
-            LEFT|RIGHT =>  self.pos.0 + delta,
-            UP|DOWN    =>  self.pos.1 + delta,
+            LEFT|RIGHT => self.pos.0 + delta,
+            UP|DOWN    => self.pos.1 + delta,
             IN|OUT     => self.zoom.get_zoom()
         }
     }
@@ -85,8 +85,8 @@ impl Position {
             RIGHT => self.max_x,
             DOWN => self.max_y as f64,
             UP => 0.,
-            IN  => self.zoom.get_limit(&AxisSense::Pos),
-            OUT => self.zoom.get_limit(&AxisSense::Neg),
+            IN  => self.zoom.get_limit(&AxisSense::Max),
+            OUT => self.zoom.get_limit(&AxisSense::Min),
         }
     }
 

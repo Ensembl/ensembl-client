@@ -25,7 +25,7 @@ fn command_output(c: &Captures) -> String {
 fn main() {    
     /* stdweb */
     let dest = env::var("OUT_DIR").unwrap();
-    let mut file = File::create(&Path::new(&dest).join("webgl_rendering_context.rs")).unwrap();
+    let mut file = File::create(&Path::new(&dest).join("webgl.rs")).unwrap();
 
     Registry::new(Api::WebGl, Exts::NONE)
         .write_bindings(StdwebGenerator, &mut file)

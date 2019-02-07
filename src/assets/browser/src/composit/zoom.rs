@@ -25,17 +25,17 @@ impl Zoom {
     
     pub fn get_limit(&self, min_max: &AxisSense) -> f64 {
         match *min_max {
-            AxisSense::Neg => -self.max_bp.log10(),
-            AxisSense::Pos => -MAX_LIMIT_BP.log10()
+            AxisSense::Min => -self.max_bp.log10(),
+            AxisSense::Max => -MAX_LIMIT_BP.log10()
         }
     }
     
     fn check_min_limit(&self, val: f64) -> f64 {
-        val.max(self.get_limit(&AxisSense::Neg))
+        val.max(self.get_limit(&AxisSense::Min))
     }
     
     fn check_max_limit(&self, val: f64) -> f64 {
-        val.min(self.get_limit(&AxisSense::Pos))
+        val.min(self.get_limit(&AxisSense::Max))
     }
     
     pub fn set_zoom(&mut self, val: f64) {
