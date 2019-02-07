@@ -6,6 +6,7 @@
   box-shadow: 0 2px 3px $ens-grey;
   padding: 7px 0 3px 0;
   position: relative;
+  z-index: 1;
 
   dd {
     display: inline-block;
@@ -88,9 +89,10 @@
 .browserTabs {
   @include flex;
   font-size: 13px;
-  justify-content: flex-end;
+  justify-content: space-between;
+  margin-left: 44px;
   padding-right: 5px;
-  width: 356px;
+  width: 312px;
 
   button {
     color: $ens-blue;
