@@ -3,7 +3,10 @@ use std::collections::HashMap;
 use composit::{ Leaf, Position, Wrapping };
 use controller::output::Report;
 use program::UniformValue;
-use types::{CPixel, cpixel, Move, Dot, Direction, LEFT, RIGHT, UP, DOWN };
+use types::{
+    CPixel, cpixel, Move, Dot, Direction, 
+    LEFT, RIGHT, UP, DOWN, IN, OUT
+};
 
 // XXX TODO avoid big-minus-big type calculations which accumulate error
 
@@ -38,6 +41,8 @@ impl Stage {
         report.set_status_bool("bumper-right",self.bumped(&RIGHT));
         report.set_status_bool("bumper-top",self.bumped(&UP));
         report.set_status_bool("bumper-bottom",self.bumped(&DOWN));
+        report.set_status_bool("bumper-in",self.bumped(&IN));
+        report.set_status_bool("bumper-out",self.bumped(&OUT));
     }
 
     pub fn set_wrapping(&mut self, w: &Wrapping) {

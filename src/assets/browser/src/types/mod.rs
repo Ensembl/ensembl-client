@@ -7,7 +7,7 @@ pub use types::corners::{
     Anchors, Axis, AxisSense, Anchored, Corner, Edge, Anchor,
     cedge, Direction,
 
-    LEFT, RIGHT, UP, DOWN,
+    LEFT, RIGHT, UP, DOWN, IN, OUT,
     TOPLEFT, BOTTOMLEFT, TOPRIGHT, BOTTOMRIGHT,
     
     A_TOPLEFT,    A_TOP,    A_TOPRIGHT,
