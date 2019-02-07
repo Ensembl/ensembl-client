@@ -2,7 +2,7 @@
 
 .browserNavBar {
   @include flex;
-  justify-content: flex-end;
-  padding: 10px;
+  background: $ens-light-grey;
+  padding: 16px;
   width: calc(100vw - 356px);
 }
