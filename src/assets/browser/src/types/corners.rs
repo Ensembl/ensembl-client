@@ -54,6 +54,7 @@ const AE : Anchor = Anchor(Some(AxisSense::Neg));
 pub const A_TOP        : Anchors = Dot(AM,AS);
 pub const A_TOPLEFT    : Anchors = Dot(AS,AS);
 pub const A_TOPRIGHT   : Anchors = Dot(AE,AS);
+#[allow(unused)]
 pub const A_BOTTOM     : Anchors = Dot(AM,AE);
 pub const A_BOTTOMLEFT : Anchors = Dot(AS,AE);
 pub const A_BOTTOMRIGHT: Anchors = Dot(AE,AE);
@@ -61,7 +62,7 @@ pub const A_LEFT       : Anchors = Dot(AS,AM);
 pub const A_RIGHT      : Anchors = Dot(AE,AM);
 pub const A_MIDDLE     : Anchors = Dot(AM,AM);
 
-#[derive(PartialEq,Eq)]
+#[derive(PartialEq,Eq,Debug)]
 pub struct Direction(pub Axis,pub AxisSense);
 
 pub const LEFT : Direction = Direction(Axis::Horiz,AxisSense::Neg);

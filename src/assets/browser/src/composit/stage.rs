@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use composit::{ Leaf, Position, Wrapping };
 use controller::output::Report;
 use program::UniformValue;
-use types::{CPixel, cpixel, Move, Dot, Direction, LEFT, RIGHT };
+use types::{CPixel, cpixel, Move, Dot, Direction, LEFT, RIGHT, UP, DOWN };
 
 // XXX TODO avoid big-minus-big type calculations which accumulate error
 
@@ -26,9 +26,18 @@ impl Stage {
         }
     }
 
+    fn bumped(&self, direction: &Direction) -> bool {
+        self.pos.get_edge(direction).floor() == self.pos.get_limit_of_edge(direction).floor()
+    }
+
     pub fn update_report(&self, report: &Report) {
-        report.set_status("start",&self.pos.get_edge(&LEFT).floor().to_string());
-        report.set_status("end",&self.pos.get_edge(&RIGHT).ceil().to_string());
+        let (left,right) = (self.pos.get_edge(&LEFT),self.pos.get_edge(&RIGHT));
+        report.set_status("start",&left.floor().to_string());
+        report.set_status("end",&right.ceil().to_string());
+        report.set_status_bool("bumper-left",self.bumped(&LEFT));
+        report.set_status_bool("bumper-right",self.bumped(&RIGHT));
+        report.set_status_bool("bumper-top",self.bumped(&UP));
+        report.set_status_bool("bumper-bottom",self.bumped(&DOWN));
     }
 
     pub fn set_wrapping(&mut self, w: &Wrapping) {
