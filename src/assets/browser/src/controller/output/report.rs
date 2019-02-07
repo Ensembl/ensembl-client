@@ -171,9 +171,10 @@ impl ReportImpl {
             None
         }
     }
-    
+        
     pub fn tick(&mut self, app: &App, t: f64) {
         if let Some(out) = self.new_report(t) {
+            app.send_report(&out);
             debug!("status","{}",out.to_string());
         }
     }

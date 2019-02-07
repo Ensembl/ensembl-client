@@ -15,7 +15,8 @@ use dom::Bling;
 use dom::domutil;
 
 use dom::event::{
-    EventListener, EventControl, EventType, EventData, Target
+    EventListener, EventControl, EventType, EventData, Target,
+    ICustomEvent
 };
 
 pub const DEBUGSTAGE : &str = r##"
@@ -37,9 +38,9 @@ pub const DEBUGSTAGE : &str = r##"
             </select>
             <select class="folder"></select>
             <button class="mark">mark!</button>
-            <button class="start">start</button>
             <pre class="content console2"></pre>
         </div>
+        <div class="events-out"></div>
         <div class="buttons"></div>
         <div class="managedcanvasholder"></div>
     </div>
@@ -53,6 +54,12 @@ html, body {
     height: 100%;
     width: 100%;
     overflow: hidden;
+}
+.events-out {
+    border: 1px solid blue;
+    height: 64px;
+    font-size: 10px;
+    overflow-y: scroll;
 }
 .bpane-container {
     display: flex;
@@ -164,6 +171,43 @@ pub trait DebugInteractor {
     fn key(&mut self, app: &Arc<Mutex<App>>, key: &str) {}
 }
 
+pub struct OutEventListener {
+    target: HtmlElement
+}
+
+impl OutEventListener {
+    pub fn new(target: &HtmlElement) -> OutEventListener {
+        OutEventListener {
+            target: target.clone()
+        }
+    }
+}
+
+const EVENT_LENGTH : i32 = 1000;
+
+impl EventListener<()> for OutEventListener {
+    fn receive(&mut self, _el: &Target,  e: &EventData, ar: &()) {
+        if let EventData::CustomEvent(EventType::CustomEvent(_),e,s,d) = e {
+            if s == "bpane-out" {
+                let mut value = domutil::get_inner_html(&self.target.clone().into());
+                value.push_str(&format!("{}\n",d.details().unwrap_or(json!{{}})));
+                let too_long = value.len() as i32 - EVENT_LENGTH;
+                if too_long > 0 {
+                    value = value[too_long as usize..].to_string();
+                }
+                domutil::inner_html(&self.target.clone().into(),&value);
+                domutil::scroll_to_bottom(&self.target.clone().into());
+            }
+        }
+    }
+}
+
+fn setup_event_listener(el: &HtmlElement, target: &HtmlElement) {
+    let mut li = EventControl::new(Box::new(OutEventListener::new(target)),());
+    li.add_event(EventType::CustomEvent("bpane-out".to_string()));
+    li.add_element(&el.clone().into(),());
+}
+
 pub struct ButtonEventListener<F> where F: Fn(&Arc<Mutex<App>>) {
     cb: Rc<F>
 }
@@ -237,7 +281,6 @@ impl Bling for DebugBling {
     fn apply_bling(&self, el: &HtmlElement) -> HtmlElement {
         let el : Element = el.clone().into();
         if let Some(old) = domutil::query_selector_new("#bpane-css") {
-            console!("OLD");
             domutil::remove(&old);
         }
         let css = domutil::append_element(&domutil::query_select("head"),"style");
@@ -250,6 +293,10 @@ impl Bling for DebugBling {
     fn activate(&mut self, ar: &Arc<Mutex<App>>, el: &HtmlElement) {
         setup_testcard_selector(ar,el);
         setup_debug_console(el);
+        if let Some(ref side) = domutil::query_selector2(&el.clone().into(),".events-out") {
+            let side : HtmlElement = side.clone().try_into().unwrap();
+            setup_event_listener(el,&side);
+        }
         for di in &mut self.dii {
             di.render(&ar.clone(),&el.clone().into());
         }
