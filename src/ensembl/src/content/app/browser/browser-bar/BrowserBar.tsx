@@ -33,17 +33,17 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
             <label>Stable ID</label>
             <span className={styles.value}>ENSG00000139618</span>
           </dd>
-          <dd>
+          <dd className="show-for-large">
             <label>Spliced mRNA length</label>
             <span className={styles.value}>84,793</span>
             <label>bp</label>
           </dd>
-          <dd>protein coding</dd>
-          <dd>forward strand</dd>
+          <dd className="show-for-large">protein coding</dd>
+          <dd className="show-for-large">forward strand</dd>
         </dl>
         <dl className={styles.browserInfoRight}>
           <dd>
-            <label>Chromosome</label>
+            <label className="show-for-large">Chromosome</label>
             <ContentEditable html={'13'} className="content-editable-box" />
             <ContentEditable html={'32,315,474 - 32,400,266'} />
           </dd>
