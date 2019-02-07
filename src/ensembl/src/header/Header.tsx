@@ -18,7 +18,9 @@ export const Header: FunctionComponent<HeaderProps> = () => (
         </div>
         <div className={styles.strapline}>Pre-release - March 2019</div>
         <div className={styles.copyright}>
-          <a href="https://www.ebi.ac.uk">&copy; EMBL-EBI</a>
+          <a href="https://www.ebi.ac.uk" target="_blank">
+            &copy; EMBL-EBI
+          </a>
         </div>
       </div>
       <HeaderButtons />
