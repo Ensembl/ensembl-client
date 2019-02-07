@@ -65,6 +65,28 @@ impl Position {
         }
     }
 
+    pub fn get_limit_of_middle(&self, which: &Direction) -> f64 {
+        let hw_bp = self.zoom.get_screen_in_bp()/2.;
+        let hh_px = self.screen_size.1 as f64/2.;
+        match *which {
+            LEFT => self.min_x + hw_bp - self.px_to_bp(self.min_x_bumper),
+            RIGHT => self.max_x - hw_bp + self.px_to_bp(self.min_x_bumper),
+            UP => hh_px,
+            DOWN => self.max_y as f64 - hh_px
+        }
+    }
+
+    pub fn get_limit_of_edge(&self, which: &Direction) -> f64 {
+        let hw_bp = self.zoom.get_screen_in_bp()/2.;
+        let hh_px = self.screen_size.1 as f64/2.;
+        match *which {
+            LEFT => self.min_x,
+            RIGHT => self.max_x,
+            UP => 0.,
+            DOWN => self.max_y as f64
+        }
+    }
+
     pub fn get_middle(&self) -> Dot<f64,f64> {
         Dot(self.pos.0,self.pos.1)
     }
@@ -79,7 +101,7 @@ impl Position {
             + (self.min_x_bumper+self.max_x_bumper) /* ... plus x bumpers (in px) ... */
                / self.screen_size.0 as f64    /* ... px->screen ... */
                * self.zoom.get_screen_in_bp() /* ... screen->bp... */
-        ;
+        ;        
         self.zoom.set_max_bp(max_bp);
     }
 
@@ -104,50 +126,12 @@ impl Position {
         self.check_own_limits();
     }
     
-    fn limit_min_y(&self, pos: &mut Dot<f64,f64>) {
-        let min_dy = (self.screen_size.1 as f64/2.).max(0.);
-        pos.1 = pos.1.max(min_dy);
-    }
-
-    fn limit_max_y(&self, pos: &mut Dot<f64,f64>) {
-        let max_dy = (self.max_y as f64 - self.screen_size.1 as f64/2.).max(0.);
-        pos.1 = pos.1.min(max_dy);
-    }
-
-    fn limit_min_x(&self, pos: &mut Dot<f64,f64>) {
-        let min_dx = /* minimum x-coordinate in bp for centre is ... */
-            /* ... specified min (in bp, wrt left edge) ... */
-            self.min_x
-            /* ... moved to centre ... */
-            + self.zoom.get_screen_in_bp()/2.
-            /* ... minus left bumper (in px) ... */
-            - self.min_x_bumper
-               / self.screen_size.0 as f64    /* ... px->screen ... */
-               * self.zoom.get_screen_in_bp() /* ... screen->bp */
-        ;
-        pos.0 = pos.0.max(min_dx);
-    }
-    
-    fn limit_max_x(&self, pos: &mut Dot<f64,f64>) {
-        let max_dx = /* maximum x-coordinate in bp for centre is ... */
-            /* ... specified max (in bp, wrt right edge) ... */
-            self.max_x
-            /* ... moved to centre ... */
-            - self.zoom.get_screen_in_bp()/2.
-            /* ... plus right bumper (in px) ... */
-            + self.max_x_bumper
-               / self.screen_size.0 as f64    /* ... px->screen ... */
-               * self.zoom.get_screen_in_bp() /* ... screen->bp */
-        ;
-        pos.0 = pos.0.min(max_dx);
-    }
-    
     fn check_limits(&self, pos: &mut Dot<f64,f64>) {
         /* minima always "win" when in conflict => max fn's called first */
-        self.limit_max_x(pos);
-        self.limit_min_x(pos);
-        self.limit_max_y(pos);
-        self.limit_min_y(pos);
+        pos.0 = pos.0.min(self.get_limit_of_middle(&RIGHT));
+        pos.0 = pos.0.max(self.get_limit_of_middle(&LEFT));
+        pos.1 = pos.1.min(self.get_limit_of_middle(&DOWN));
+        pos.1 = pos.1.max(self.get_limit_of_middle(&UP));
     }
     
     fn check_own_limits(&mut self) {

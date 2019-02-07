@@ -58,6 +58,12 @@ lazy_static! {
             StatusJigsaw::Atom("stick".to_string(),StatusJigsawType::String),
             StatusJigsaw::Atom("start".to_string(),StatusJigsawType::Number),
             StatusJigsaw::Atom("end".to_string(),StatusJigsawType::Number),
+        }),Some(500.)),
+        ("bumper",StatusJigsaw::Array(vec!{
+            StatusJigsaw::Atom("bumper-top".to_string(),StatusJigsawType::Boolean),
+            StatusJigsaw::Atom("bumper-right".to_string(),StatusJigsawType::Boolean),
+            StatusJigsaw::Atom("bumper-bottom".to_string(),StatusJigsawType::Boolean),
+            StatusJigsaw::Atom("bumper-left".to_string(),StatusJigsawType::Boolean),
         }),Some(500.))
     };
 }
@@ -202,6 +208,10 @@ impl Report {
     pub fn set_status(&self, key: &str, value: &str) {
         let mut imp = self.0.lock().unwrap();
         imp.set_status(key,value);
+    }    
+
+    pub fn set_status_bool(&self, key: &str, value: bool) {
+        self.set_status(key,&value.to_string());
     }    
     
     pub fn set_interval(&mut self, key: &str, interval: Option<f64>) {
