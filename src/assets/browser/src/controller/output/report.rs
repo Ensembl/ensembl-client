@@ -64,6 +64,8 @@ lazy_static! {
             StatusJigsaw::Atom("bumper-right".to_string(),StatusJigsawType::Boolean),
             StatusJigsaw::Atom("bumper-bottom".to_string(),StatusJigsawType::Boolean),
             StatusJigsaw::Atom("bumper-left".to_string(),StatusJigsawType::Boolean),
+            StatusJigsaw::Atom("bumper-out".to_string(),StatusJigsawType::Boolean),
+            StatusJigsaw::Atom("bumper-in".to_string(),StatusJigsawType::Boolean),
         }),Some(500.))
     };
 }

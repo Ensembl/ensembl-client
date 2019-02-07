@@ -29,6 +29,7 @@ fn exe_move_event(app: &App, v: Move<f64,f64>) {
         let v = match v.direction().0 {
             Axis::Horiz => v.convert(Units::Bases,s),
             Axis::Vert => v.convert(Units::Pixels,s),
+            Axis::Zoom => v // TODO invalid pre-unification
         };
         s.inc_pos(&v);
         s.get_pos_middle()

@@ -6,7 +6,7 @@ use program::Input;
 use types::{ Dot, area, Rect };
 
 #[derive(Clone,Copy,Debug,PartialEq,Eq)]
-pub enum Axis { Horiz, Vert }
+pub enum Axis { Horiz, Vert, Zoom }
 
 #[derive(Clone,Copy,Debug,PartialEq,Eq)]
 pub enum AxisSense { Pos, Neg }
@@ -69,6 +69,8 @@ pub const LEFT : Direction = Direction(Axis::Horiz,AxisSense::Neg);
 pub const RIGHT : Direction = Direction(Axis::Horiz,AxisSense::Pos);
 pub const UP : Direction = Direction(Axis::Vert,AxisSense::Neg);
 pub const DOWN : Direction = Direction(Axis::Vert,AxisSense::Pos);
+pub const OUT : Direction = Direction(Axis::Zoom,AxisSense::Neg);
+pub const IN : Direction = Direction(Axis::Zoom,AxisSense::Pos);
 
 #[derive(Clone,Copy,Debug)]
 pub struct Corner(pub AxisSense, pub AxisSense);
