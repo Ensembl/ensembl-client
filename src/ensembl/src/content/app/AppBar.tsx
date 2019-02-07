@@ -20,7 +20,7 @@ const AppBar: FunctionComponent = memo(() => (
       </dl>
       <div className={styles.helpLink}>
         <a className="inactive">
-          Help &amp; documentation <img src={chevronRightIcon} alt="" />
+          Help &amp; Documentation <img src={chevronRightIcon} alt="" />
         </a>
       </div>
     </div>
