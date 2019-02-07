@@ -81,7 +81,7 @@ export const launchbarConfig: LaunchbarDetails = {
     {
       apps: [
         {
-          description: 'Global Search',
+          description: 'Global search',
           icon: {
             default: searchIcon,
             grey: searchGreyIcon,
@@ -90,7 +90,7 @@ export const launchbarConfig: LaunchbarDetails = {
           name: 'global-search'
         },
         {
-          description: 'Species Selector',
+          description: 'Species selector',
           icon: {
             default: speciesSelectorIcon,
             grey: speciesSelectorGreyIcon,
@@ -205,7 +205,7 @@ export const launchbarConfig: LaunchbarDetails = {
     {
       apps: [
         {
-          description: 'Help & Documentation',
+          description: 'Help & documentation',
           icon: {
             default: helpIcon,
             grey: helpGreyIcon,
