@@ -56,11 +56,11 @@ impl<T: Copy+Clone+Debug,
     pub fn flip_d<A: Copy+Clone+Debug + PartialOrd,
                   B: Copy+Clone+Debug + PartialOrd>(&self, xs: Dot<Edge<A>,Edge<B>>) -> Rect<T,U> {
         let mut out = *self;
-        if let AxisSense::Neg = (xs.0).corner() { // x
+        if let AxisSense::Min = (xs.0).corner() { // x
             out = Rect(Dot((out.1).0,(out.0).1),
                        Dot((out.0).0,(out.1).1));
         }
-        if let AxisSense::Neg = (xs.1).corner() { // y
+        if let AxisSense::Min = (xs.1).corner() { // y
             out = Rect(Dot((out.0).0,(out.1).1),
                        Dot((out.1).0,(out.0).1));
         }
@@ -73,12 +73,12 @@ impl<T: Copy+Clone+Debug + Sub<T,Output=T> + Add<T,Output=T>,
     pub fn flip_area(&self, d: Dot<T,U>, c: Corner) -> Dot<T,U> {
         Dot(
             match c.0 {
-                AxisSense::Neg => (self.1).0 - (d.0 - (self.0).0),
-                AxisSense::Pos => d.0
+                AxisSense::Min => (self.1).0 - (d.0 - (self.0).0),
+                AxisSense::Max => d.0
             },
             match c.1 {
-                AxisSense::Neg => (self.1).1 - (d.1 - (self.0).1),
-                AxisSense::Pos => d.1
+                AxisSense::Min => (self.1).1 - (d.1 - (self.0).1),
+                AxisSense::Max => d.1
             },
         )
     }

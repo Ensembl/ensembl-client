@@ -219,12 +219,4 @@ impl DebugConsole {
         out.evctrl.add_element(&el,());
         out
     }
-        
-    pub fn add(&mut self, name: &str, value: &str) {
-        self.imp.borrow_mut().add(name,value);
-    }
-
-    pub fn select(&mut self, name: &str) {
-        self.imp.borrow_mut().select(name);
-    }
 }

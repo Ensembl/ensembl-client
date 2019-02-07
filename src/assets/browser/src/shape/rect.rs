@@ -54,11 +54,11 @@ impl Shape for PinRect {
                 multi_gl(b,geom,"aOrigin",&origin,4);
             },
             RectPosition::Page(offset) => {
-                let offset = offset.y_edge(AxisSense::Pos,AxisSense::Pos);
+                let offset = offset.y_edge(AxisSense::Max,AxisSense::Max);
                 rectangle_c(b,geom,"aVertexPosition","aVertexSign",&offset);
             },
             RectPosition::Tape(origin,offset) => {
-                let offset = offset.x_edge(AxisSense::Pos,AxisSense::Pos);
+                let offset = offset.x_edge(AxisSense::Max,AxisSense::Max);
                 rectangle_c(b,geom,"aVertexPosition","aVertexSign",&offset);
                 multi_gl(b,geom,"aOrigin",&origin,4);
             },
