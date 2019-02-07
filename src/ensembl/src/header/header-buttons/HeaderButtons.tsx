@@ -24,15 +24,15 @@ export const HeaderButtons: FunctionComponent<HeaderButtonsProps> = (props) => (
     <button className="launchbarButton" onClick={props.toggleLaunchbar}>
       <img
         src={launchbarIcon}
-        alt="Toggle the Ensembl App Launchbar"
-        title="Ensembl App Launchbar"
+        alt="Toggle the Ensembl app launchbar"
+        title="Ensembl app launchbar"
       />
     </button>
     <button className="accountButton" onClick={props.toggleAccount}>
       <img
         src={userIcon}
-        alt="Toggle the Ensembl Account"
-        title="Ensembl Account"
+        alt="Toggle the Ensembl account"
+        title="Ensembl account"
       />
     </button>
   </div>
