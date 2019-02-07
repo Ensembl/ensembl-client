@@ -1,5 +1,5 @@
 import React, { Component, Fragment, lazy, Suspense } from 'react';
-import { Route, RouteComponentProps, withRouter } from 'react-router';
+import { Route, RouteComponentProps, Switch, withRouter } from 'react-router';
 import { connect } from 'react-redux';
 
 import { changeCurrentApp } from 'src/header/headerActions';
@@ -30,6 +30,10 @@ export class App extends Component<AppProps> {
     this.updateCurrentApp();
   }
 
+  public componentWillUnmount() {
+    this.props.changeCurrentApp('');
+  }
+
   public render() {
     const { url } = this.props.match;
 
@@ -37,9 +41,14 @@ export class App extends Component<AppProps> {
       <Fragment>
         <AppBar />
         <Suspense fallback={<div>Loading...</div>}>
-          <Route path={`${url}/global-search`} component={GlobalSearch} />
-          <Route path={`${url}/species-selector`} component={SpeciesSelector} />
-          <Route path={`${url}/browser`} component={Browser} />
+          <Switch>
+            <Route path={`${url}/global-search`} component={GlobalSearch} />
+            <Route
+              path={`${url}/species-selector`}
+              component={SpeciesSelector}
+            />
+            <Route path={`${url}/browser`} component={Browser} />
+          </Switch>
         </Suspense>
       </Fragment>
     );

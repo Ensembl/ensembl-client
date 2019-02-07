@@ -12,6 +12,10 @@
   display: inline-block;
   font-size: 14px;
   font-weight: $global-weight-bold;
+
+  a {
+    color: $ens-white;
+  }
 }
 
 .strapline,
@@ -20,7 +24,7 @@
   font-size: 11px;
   margin-left: 30px;
 
-  @include breakpoint(960px) {
+  @include breakpoint(medium) {
     display: inline-block;
   }
 }
