@@ -13,9 +13,9 @@ use composit::{
 };
 use controller::input::{ register_startup_events, initial_events, events_run };
 use controller::global::AppRunner;
-use debug::{ DebugComponentSource, DebugBling, create_interactors };
+use debug::{ DebugComponentSource, DebugBling, MiniBling, create_interactors };
 use debug::debug_stick_manager;
-use dom::{ domutil, NoBling, Bling };
+use dom::{ domutil, Bling };
 
 pub struct GlobalImpl {
     apps: HashMap<String,AppRunner>,
@@ -94,7 +94,7 @@ impl Global {
         let bling : Box<Bling> = if debug {
             Box::new(DebugBling::new(create_interactors()))
         } else { 
-            Box::new(NoBling::new())
+            Box::new(MiniBling::new())
         };
         let ar = AppRunner::new(&GlobalWeak::new(&self),&el,bling);
         {

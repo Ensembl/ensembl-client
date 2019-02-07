@@ -12,7 +12,7 @@ use debug::testcards::{ bs_source_main, bs_source_sub, polar_source };
 
 fn debug_source_main() -> DebugSource {
     let mut s = DebugSource::new();
-    s.add_stick("polar",Box::new(polar_source()));
+    s.add_stick("polar",Box::new(polar_source(None)));
     s.add_stick("text",Box::new(text_source()));
     s.add_stick("leaf",Box::new(leafcard_source(true)));
     s.add_stick("ruler",Box::new(leafcard_source(false)));
@@ -23,6 +23,7 @@ fn debug_source_main() -> DebugSource {
 fn debug_source_sub(even: bool) -> DebugSource {
     let mut s = DebugSource::new();
     s.add_stick("button",Box::new(bs_source_sub(even)));
+    s.add_stick("polar",Box::new(polar_source(Some(even))));
     s
 }
 

@@ -212,8 +212,9 @@ fn get_blocks(leaf: &Leaf,starts_rng: &Vec<[i32;2]>) -> Vec<(f32,f32,f32,f32)> {
 }
 
 /* designed to fill most of 100kb scale */
-fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
+fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) {
     let is_gene = (t<4 || t%3 == 0);
+    if is_gene == even { return; }
     let name = if t % 7 == 3 { "E" } else { "K" };
     let tx = text_texture(name,&p.lato_18,
                           &Colour(96,96,96),&Colour(255,255,255));
@@ -367,7 +368,7 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
     }
 }
 
-pub fn polar_source() -> ClosureSource {
+pub fn polar_source(which: Option<bool>) -> ClosureSource {
     let p = Palette {
         lato_12: FCFont::new(12,"Lato",FontVariety::Normal),
         lato_18: FCFont::new(12,"Lato",FontVariety::Bold),
@@ -375,13 +376,16 @@ pub fn polar_source() -> ClosureSource {
         grey: ColourSpec::Spot(Colour(199,208,213))
     };
     ClosureSource::new(0.,move |ref mut lc,leaf| {
-        one_offs(lc,&p);
-        draw_frame(lc,&leaf,AxisSense::Pos,&p);
-        draw_frame(lc,&leaf,AxisSense::Neg,&p);
-        measure(lc,&leaf,AxisSense::Pos,&p);
-        measure(lc,&leaf,AxisSense::Neg,&p);
-        for t in 0..TRACKS {
-            track(lc,&leaf,&p,t);
+        if let Some(even) = which {
+            for t in 0..TRACKS {
+                track(lc,&leaf,&p,t,even);
+            }
+        } else {
+            one_offs(lc,&p);
+            draw_frame(lc,&leaf,AxisSense::Pos,&p);
+            draw_frame(lc,&leaf,AxisSense::Neg,&p);
+            measure(lc,&leaf,AxisSense::Pos,&p);
+            measure(lc,&leaf,AxisSense::Neg,&p);
         }
         closure_done(lc,TRACKS*PITCH+TOP);
     })

@@ -1,6 +1,6 @@
-
 mod console;
 mod debugbling;
+mod minibling;
 
 pub use self::debugbling::{
     DebugBling,
@@ -9,3 +9,4 @@ pub use self::debugbling::{
 };
 
 pub use self::console::DebugConsole;
+pub use self::minibling::MiniBling;

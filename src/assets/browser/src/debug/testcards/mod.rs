@@ -1,4 +1,3 @@
-mod visual;
 mod common;
 mod bigscience;
 mod polar;
