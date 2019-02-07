@@ -18,13 +18,12 @@ pub struct Stage {
 impl Stage {
     pub fn new() -> Stage {
         let size = cpixel(0,0);
-        let mut out = Stage {
+        Stage {
             pos: Position::new(Dot(0.,0.),size),
             mouse_pos: Dot(0,0),
             base: 0.,
             dims: size,
-        };
-        out
+        }
     }
 
     pub fn update_report(&self, report: &Report) {

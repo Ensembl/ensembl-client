@@ -56,9 +56,10 @@ impl Position {
     }
 
     pub fn get_edge(&self, which: &Direction) -> f64 {
+        let bp = self.get_screen_in_bp();
         match *which {
-            LEFT =>  self.pos.0 - self.screen_size.0 as f64/2.,
-            RIGHT => self.pos.0 + self.screen_size.0 as f64/2.,
+            LEFT =>  self.pos.0 - bp/2. + self.px_to_bp(self.min_x_bumper),
+            RIGHT => self.pos.0 + bp/2. - self.px_to_bp(self.max_x_bumper),
             UP =>    self.pos.1 - self.screen_size.1 as f64/2.,
             DOWN =>  self.pos.1 + self.screen_size.1 as f64/2.
         }
@@ -66,6 +67,10 @@ impl Position {
 
     pub fn get_middle(&self) -> Dot<f64,f64> {
         Dot(self.pos.0,self.pos.1)
+    }
+
+    fn px_to_bp(&self, px: f64) -> f64 {
+        px / self.screen_size.0 as f64 * self.zoom.get_screen_in_bp()
     }
 
     fn set_limit_min_zoom(&mut self) {
