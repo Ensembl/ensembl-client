@@ -121,13 +121,20 @@ $dark: 900;
 // 2. Breakpoints
 // --------------
 
+// $breakpoints: (
+//   small: 0,
+//   medium: 640px,
+//   large: 1024px,
+//   xlarge: 1200px,
+//   xxlarge: 1440px
+// );
+
 $breakpoints: (
   small: 0,
-  medium: 640px,
-  large: 1024px,
-  xlarge: 1200px,
-  xxlarge: 1440px
+  medium: 900px,
+  large: 1400px
 );
+
 $print-breakpoint: large;
 $breakpoint-classes: (small medium large);
 
