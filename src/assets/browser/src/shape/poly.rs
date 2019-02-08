@@ -87,8 +87,8 @@ impl PinPoly {
          */
         let corner = match self.origin {
             PolyPosition::Pin(_) => TOPLEFT,
-            PolyPosition::Tape(origin) => origin.x_edge(AxisSense::Pos).corner(),
-            PolyPosition::Page(origin) => origin.y_edge(AxisSense::Pos).corner(),
+            PolyPosition::Tape(origin) => origin.x_edge(AxisSense::Max).corner(),
+            PolyPosition::Page(origin) => origin.y_edge(AxisSense::Max).corner(),
             PolyPosition::Fix(origin) => origin.corner(),
         };
         /* What's the offset to the MIDDLE of our shape from our
@@ -100,7 +100,7 @@ impl PinPoly {
             PolyPosition::Fix(origin) =>
                 origin.quantity().as_fraction(),
             PolyPosition::Page(origin) =>
-                origin.y_edge(AxisSense::Pos).quantity().as_fraction(),
+                origin.y_edge(AxisSense::Max).quantity().as_fraction(),
             _ => cfraction(0.,0.)
         };
         /* Transform each of our points according to the middle above,
@@ -118,7 +118,7 @@ impl PinPoly {
                 multi_gl(b,geom,"aOrigin",&origin,nump);
             },
             PolyPosition::Tape(origin) => {
-                let origin = origin.x_edge(AxisSense::Pos);
+                let origin = origin.x_edge(AxisSense::Max);
                 poly_p(b,geom,"aVertexPosition",&w);
                 multi_gl(b,geom,"aOrigin",&origin.quantity(),nump);
                 multi_gl(b,geom,"aVertexSign",&origin.corner(),nump);
@@ -129,7 +129,7 @@ impl PinPoly {
             },
             PolyPosition::Page(origin) => {
                 poly_p(b,geom,"aVertexPosition",&w);
-                multi_gl(b,geom,"aVertexSign",&origin.y_edge(AxisSense::Pos).corner(),nump);
+                multi_gl(b,geom,"aVertexSign",&origin.y_edge(AxisSense::Max).corner(),nump);
             },
         }
         if let ColourSpec::Colour(c) = self.colspec {        

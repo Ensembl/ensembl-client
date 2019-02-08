@@ -4,7 +4,7 @@ use stdweb::unstable::TryInto;
 
 use composit::StateValue;
 use controller::global::Global;
-use controller::input::Event;
+use controller::input::Action;
 use dom::domutil;
 use dom::event::{ EventListener, EventType, EventData, EventControl, Target };
 use dom::AppEventData;
@@ -49,15 +49,15 @@ pub fn register_startup_events(g: &Arc<Mutex<Global>>) {
     ec_start.add_element(&domutil::query_select("body"),());
 }
 
-pub fn initial_events() -> Vec<Event> {
+pub fn initial_actions() -> Vec<Action> {
     vec! {
-        Event::AddComponent("internal:debug-main".to_string()),
-        Event::AddComponent("internal:debug-odd".to_string()),
-        Event::AddComponent("internal:debug-even".to_string()),
-        Event::SetState("even".to_string(),StateValue::On()),
-        Event::SetState("odd".to_string(),StateValue::On()),
-        Event::SetStick("polar".to_string()),
-        Event::Pos(Dot(0_f64,0_f64),None),
-        Event::ZoomTo(-5.)
+        Action::AddComponent("internal:debug-main".to_string()),
+        Action::AddComponent("internal:debug-odd".to_string()),
+        Action::AddComponent("internal:debug-even".to_string()),
+        Action::SetState("even".to_string(),StateValue::On()),
+        Action::SetState("odd".to_string(),StateValue::On()),
+        Action::SetStick("polar".to_string()),
+        Action::Pos(Dot(0_f64,0_f64),None),
+        Action::ZoomTo(-5.)
     }
 }

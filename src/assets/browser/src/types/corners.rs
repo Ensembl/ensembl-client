@@ -9,7 +9,7 @@ use types::{ Dot, area, Rect };
 pub enum Axis { Horiz, Vert, Zoom }
 
 #[derive(Clone,Copy,Debug,PartialEq,Eq)]
-pub enum AxisSense { Pos, Neg }
+pub enum AxisSense { Max, Min }
 
 #[derive(Clone,Copy,Debug)]
 pub struct Anchor(Option<AxisSense>);
@@ -17,24 +17,24 @@ pub struct Anchor(Option<AxisSense>);
 impl Anchor {
     pub fn prop(&self) -> f32 {
         match self.0 {
-            Some(AxisSense::Pos) =>  1.0,
-            Some(AxisSense::Neg) => -1.0,
+            Some(AxisSense::Max) =>  1.0,
+            Some(AxisSense::Min) => -1.0,
             None => 0.0
         }
     }
     
     pub fn flip(&self) -> Anchor {
         Anchor(match self.0 {
-            Some(AxisSense::Pos) => Some(AxisSense::Neg),
-            Some(AxisSense::Neg) => Some(AxisSense::Pos),
+            Some(AxisSense::Max) => Some(AxisSense::Min),
+            Some(AxisSense::Min) => Some(AxisSense::Max),
             None => None
         })
     }
 
     pub fn sense(self, s: AxisSense) -> Anchor {
         match s {
-            AxisSense::Pos => self,
-            AxisSense::Neg => self.flip()
+            AxisSense::Max => self,
+            AxisSense::Min => self.flip()
         }
     }
 }
@@ -47,9 +47,9 @@ impl Anchors {
     }
 }
 
-const AS : Anchor = Anchor(Some(AxisSense::Pos));
+const AS : Anchor = Anchor(Some(AxisSense::Max));
 const AM : Anchor = Anchor(None);
-const AE : Anchor = Anchor(Some(AxisSense::Neg));
+const AE : Anchor = Anchor(Some(AxisSense::Min));
 
 pub const A_TOP        : Anchors = Dot(AM,AS);
 pub const A_TOPLEFT    : Anchors = Dot(AS,AS);
@@ -65,20 +65,20 @@ pub const A_MIDDLE     : Anchors = Dot(AM,AM);
 #[derive(PartialEq,Eq,Debug)]
 pub struct Direction(pub Axis,pub AxisSense);
 
-pub const LEFT : Direction = Direction(Axis::Horiz,AxisSense::Neg);
-pub const RIGHT : Direction = Direction(Axis::Horiz,AxisSense::Pos);
-pub const UP : Direction = Direction(Axis::Vert,AxisSense::Neg);
-pub const DOWN : Direction = Direction(Axis::Vert,AxisSense::Pos);
-pub const OUT : Direction = Direction(Axis::Zoom,AxisSense::Neg);
-pub const IN : Direction = Direction(Axis::Zoom,AxisSense::Pos);
+pub const LEFT : Direction = Direction(Axis::Horiz,AxisSense::Min);
+pub const RIGHT : Direction = Direction(Axis::Horiz,AxisSense::Max);
+pub const UP : Direction = Direction(Axis::Vert,AxisSense::Min);
+pub const DOWN : Direction = Direction(Axis::Vert,AxisSense::Max);
+pub const OUT : Direction = Direction(Axis::Zoom,AxisSense::Min);
+pub const IN : Direction = Direction(Axis::Zoom,AxisSense::Max);
 
 #[derive(Clone,Copy,Debug)]
 pub struct Corner(pub AxisSense, pub AxisSense);
 
-pub const TOPLEFT    : Corner = Corner(AxisSense::Pos,AxisSense::Pos);
-pub const TOPRIGHT   : Corner = Corner(AxisSense::Neg,AxisSense::Pos);
-pub const BOTTOMLEFT : Corner = Corner(AxisSense::Pos,AxisSense::Neg);
-pub const BOTTOMRIGHT: Corner = Corner(AxisSense::Neg,AxisSense::Neg);
+pub const TOPLEFT    : Corner = Corner(AxisSense::Max,AxisSense::Max);
+pub const TOPRIGHT   : Corner = Corner(AxisSense::Min,AxisSense::Max);
+pub const BOTTOMLEFT : Corner = Corner(AxisSense::Max,AxisSense::Min);
+pub const BOTTOMRIGHT: Corner = Corner(AxisSense::Min,AxisSense::Min);
 
 impl From<AxisSense> for f32 {
     fn from(xs: AxisSense) -> f32 {
@@ -90,8 +90,8 @@ impl From<AxisSense> for f32 {
 impl From<AxisSense> for f64 {
     fn from(xs: AxisSense) -> f64 {
         match xs {
-            AxisSense::Pos =>  1.0,
-            AxisSense::Neg => -1.0
+            AxisSense::Max =>  1.0,
+            AxisSense::Min => -1.0
         }        
     }
 }
@@ -116,8 +116,8 @@ impl<T: Clone+Copy> Anchored<T> {
 impl AxisSense {
     pub fn flip<T: Clone+Copy+Debug + Neg<Output=T>>(&self, t: T) -> T {
         match self {
-            AxisSense::Pos => t,
-            AxisSense::Neg => -t
+            AxisSense::Max => t,
+            AxisSense::Min => -t
         }
     }
 }
@@ -202,13 +202,13 @@ impl<T : Clone + Copy + Into<f64>> Anchored<T> {
 impl<T: Clone+Copy+Debug + PartialOrd> Dot<Edge<T>, Edge<T>> {    
     pub fn is_backward(&self) -> bool {
         match ((self.0).0,(self.1).0) {
-            (AxisSense::Pos,AxisSense::Pos) =>
+            (AxisSense::Max,AxisSense::Max) =>
                 ((self.0).1).partial_cmp(&(self.1).1).unwrap() == Ordering::Greater,
-            (AxisSense::Neg,AxisSense::Neg) =>
+            (AxisSense::Min,AxisSense::Min) =>
                 ((self.0).1).partial_cmp(&(self.1).1).unwrap() == Ordering::Less,
-            (AxisSense::Neg,AxisSense::Pos) =>
+            (AxisSense::Min,AxisSense::Max) =>
                 true,
-            (AxisSense::Pos,AxisSense::Neg) =>
+            (AxisSense::Max,AxisSense::Min) =>
                 false
         }
     }

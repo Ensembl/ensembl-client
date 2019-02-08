@@ -41,8 +41,6 @@ use drawing::{
     mark_rectangle, FontVariety, MarkSpec, DrawingSpec
 };
 
-use controller::input::Event;
-
 const SW : i32 = 1000;
 const SH : i32 = 1000;
 
@@ -57,18 +55,18 @@ fn measure(lc: &mut SourceResponse, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSp
     for x in -10..10 {
         closure_add(lc,&tape_rectangle(
             &cleaf(x as f32/10.,0),
-            &area_size(cpixel(0,0),cpixel(20,20)).y_edge(AxisSense::Pos,AxisSense::Pos),
+            &area_size(cpixel(0,0),cpixel(20,20)).y_edge(AxisSense::Max,AxisSense::Max),
             cs));
         closure_add(lc,&tape_mathsshape(
-            &cleaf(x as f32/10.+25.,0).y_edge(AxisSense::Pos),
+            &cleaf(x as f32/10.+25.,0).y_edge(AxisSense::Max),
             A_TOP,
             10., None, MathsShape::Polygon(5,0.05),
             cs2));
         closure_add(lc,&tape_texture(battenberg(),
-            &cleaf(x as f32/10.+0.05,0).y_edge(AxisSense::Pos),
+            &cleaf(x as f32/10.+0.05,0).y_edge(AxisSense::Max),
             &cpixel(0,0),&cpixel(10,10).anchor(A_TOP)));
         closure_add(lc,&tape_mathsshape(
-            &cleaf(x as f32/10.+0.075,0).y_edge(AxisSense::Pos),
+            &cleaf(x as f32/10.+0.075,0).y_edge(AxisSense::Max),
             A_TOP,
             10., Some(1.), MathsShape::Circle,
             cs));
@@ -291,7 +289,7 @@ pub fn bs_source_main() -> ClosureSource {
                                 &cpixel(1,1).anchor(A_TOPLEFT)));
             
             closure_add(lc,&page_mathsshape(
-                                &cpixel(0,y+18).x_edge(AxisSense::Pos),
+                                &cpixel(0,y+18).x_edge(AxisSense::Max),
                                 A_LEFT,
                                 5.,None,MathsShape::Polygon(3,0.),
                                 &pal.green));            

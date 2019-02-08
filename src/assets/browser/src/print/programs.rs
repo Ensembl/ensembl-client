@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use webgl_rendering_context::WebGLRenderingContext as glctx;
+use dom::webgl::WebGLRenderingContext as glctx;
 
 use drawing::DrawingSession;
 use program::{ Program, GPUSpec, ProgramType };

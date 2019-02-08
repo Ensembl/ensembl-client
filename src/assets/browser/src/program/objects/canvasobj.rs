@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use stdweb::web::html_element::CanvasElement;
-use webgl_rendering_context::{
+use dom::webgl::{
     WebGLRenderingContext as glctx,
     WebGLTexture as gltex,
     GLint, GLenum,

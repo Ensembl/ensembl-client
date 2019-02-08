@@ -3,6 +3,7 @@ pub mod domutil;
 mod appeventdata;
 mod bling;
 mod nobling;
+pub mod webgl;
 
 pub use self::appeventdata::AppEventData;
 pub use self::bling::Bling;

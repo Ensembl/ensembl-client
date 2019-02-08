@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use webgl_rendering_context::{
+use dom::webgl::{
     WebGLRenderingContext as glctx,
     WebGLProgram as glprog,
 };

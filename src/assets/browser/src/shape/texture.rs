@@ -53,7 +53,7 @@ impl Shape for TextureSpec {
                     multi_gl(b,geom,"aOrigin",&origin,4);
                 },
                 TexturePosition::Tape(origin) => {
-                    let origin = origin.x_edge(AxisSense::Pos);
+                    let origin = origin.x_edge(AxisSense::Max);
                     ap = ap.flip_d(origin);
                     mp = mp.flip_d(origin);
                     offset = offset.flip(&origin.corner());

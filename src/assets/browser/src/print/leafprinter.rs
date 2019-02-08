@@ -4,7 +4,7 @@ use print::{ Programs, PrintEdition };
 use program::ProgramType;
 use composit::{ Carriage, Leaf, Stage, ComponentRedo, Train };
 use drawing::{ DrawingSession, AllCanvasAllocator };
-use webgl_rendering_context::WebGLRenderingContext as glctx;
+use dom::webgl::WebGLRenderingContext as glctx;
 
 pub struct LeafPrinter {
     ds: DrawingSession,

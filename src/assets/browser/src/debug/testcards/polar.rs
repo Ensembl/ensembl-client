@@ -9,7 +9,6 @@ use composit::{
     Stick
 };
 use controller::global::App;
-use controller::input::Event;
 use debug::testcards::common::{
     track_data, rng_pos, prop, rng_seq
 };
@@ -54,10 +53,10 @@ fn one_offs(_lc: &mut SourceResponse, _p: &Palette) {
 }
 
 fn draw_frame(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette) {
-    let left = Corner(AxisSense::Pos,edge);
-    let right = Corner(AxisSense::Neg,edge);
-    let top = Corner(edge,AxisSense::Pos);
-    let bottom = Corner(edge,AxisSense::Neg);
+    let left = Corner(AxisSense::Max,edge);
+    let right = Corner(AxisSense::Min,edge);
+    let top = Corner(edge,AxisSense::Max);
+    let bottom = Corner(edge,AxisSense::Min);
     
     /* top/bottom */
     closure_add(lc,&fixundertape_rectangle(&area(cedge(left,cpixel(0,1)),
@@ -223,8 +222,8 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) 
                                 &cpixel(1,1).anchor(A_RIGHT)));
     /* focus track swatch */
     if t == 2 {
-        closure_add(lc,&page_rectangle(&area(cpixel(0,t*PITCH-PITCH/3+TOP).x_edge(AxisSense::Pos),
-                                         cpixel(6,t*PITCH+PITCH/3+TOP).x_edge(AxisSense::Pos)),
+        closure_add(lc,&page_rectangle(&area(cpixel(0,t*PITCH-PITCH/3+TOP).x_edge(AxisSense::Max),
+                                         cpixel(6,t*PITCH+PITCH/3+TOP).x_edge(AxisSense::Max)),
                                    &ColourSpec::Colour(Colour(75,168,252))));
     }
     let mul = leaf.total_bp();
@@ -382,10 +381,10 @@ pub fn polar_source(which: Option<bool>) -> ClosureSource {
             }
         } else {
             one_offs(lc,&p);
-            draw_frame(lc,&leaf,AxisSense::Pos,&p);
-            draw_frame(lc,&leaf,AxisSense::Neg,&p);
-            measure(lc,&leaf,AxisSense::Pos,&p);
-            measure(lc,&leaf,AxisSense::Neg,&p);
+            draw_frame(lc,&leaf,AxisSense::Max,&p);
+            draw_frame(lc,&leaf,AxisSense::Min,&p);
+            measure(lc,&leaf,AxisSense::Max,&p);
+            measure(lc,&leaf,AxisSense::Min,&p);
         }
         closure_done(lc,TRACKS*PITCH+TOP);
     })

@@ -4,7 +4,7 @@ use composit::{
     StateValue, StateFixed, ComponentSource, StateAtom, ActiveSource
 };
 use controller::global::App;
-use controller::input::{ Event, events_run };
+use controller::input::{ Action, actions_run };
 use debug::testcards::text::text_source;
 use debug::testcards::leafcard::leafcard_source;
 use debug::testcards::debugsource::{ DebugSource, DebugStickManager };
@@ -38,14 +38,14 @@ pub fn debug_stick_manager() -> DebugStickManager {
 }
 
 pub fn testcard_base(a: &mut App, stick_name: &str) {
-    events_run(a,&vec! {
-        Event::AddComponent("internal:debug-main".to_string()),
-        Event::AddComponent("internal:debug-even".to_string()),
-        Event::AddComponent("internal:debug-odd".to_string()),
-        Event::SetStick(stick_name.to_string()),
-        Event::SetState("even".to_string(),StateValue::On()),
-        Event::SetState("odd".to_string(),StateValue::On()),
-        Event::ZoomTo(-5.)
+    actions_run(a,&vec! {
+        Action::AddComponent("internal:debug-main".to_string()),
+        Action::AddComponent("internal:debug-even".to_string()),
+        Action::AddComponent("internal:debug-odd".to_string()),
+        Action::SetStick(stick_name.to_string()),
+        Action::SetState("even".to_string(),StateValue::On()),
+        Action::SetState("odd".to_string(),StateValue::On()),
+        Action::ZoomTo(-5.)
     });
 }
 

@@ -1,12 +1,12 @@
 use std::collections::HashMap;
 use std::sync::{ Arc, Mutex };
 use dom::domutil;
-use dom::event::{ EventListener, EventType, EventData, EventControl, Target, MouseData };
+use dom::event::{ EventListener, EventType, EventData, EventControl, Target };
 use stdweb::web::{ Element, HtmlElement, IHtmlElement };
 use stdweb::traits::IEvent;
 
 use controller::global::{ App, AppRunner };
-use controller::input::{ Event, events_run, EggDetector };
+use controller::input::{ Action, actions_run, EggDetector };
 use controller::input::physics::MousePhysics;
 use controller::input::optical::Optical;
 use types::Dot;
@@ -85,11 +85,11 @@ impl EventListener<()> for UserEventListener {
 }
 
 struct EventEggs {
-    patterns: Vec<(EggDetector,Vec<Event>)>
+    patterns: Vec<(EggDetector,Vec<Action>)>
 }
 
 impl EventEggs {
-    pub fn new(actions: HashMap<&str,Vec<Event>>) -> EventEggs {
+    pub fn new(actions: HashMap<&str,Vec<Action>>) -> EventEggs {
         EventEggs {
             patterns: actions.iter().map(|(k,v)| {
                 (EggDetector::new(Some(k)),v.clone())
@@ -102,7 +102,7 @@ impl EventEggs {
             pattern.new_char(key);
             if pattern.is_active() {
                 pattern.reset();
-                events_run(&mut app.lock().unwrap(),actions);
+                actions_run(&mut app.lock().unwrap(),actions);
             }
         }
     }
@@ -119,9 +119,9 @@ impl UserEventListenerBody {
     pub fn new(app_runner: &AppRunner, mouse: &Arc<Mutex<MousePhysics>>) -> UserEventListenerBody {
         let event_eggs = hashmap! {
             "@polar#" => [
-                Event::AddComponent("internal:debug-main".to_string()),
-                Event::SetStick("polar".to_string()),
-                Event::ZoomTo(-5.)
+                Action::AddComponent("internal:debug-main".to_string()),
+                Action::SetStick("polar".to_string()),
+                Action::ZoomTo(-5.)
             ].to_vec()
         };
         UserEventListenerBody {
