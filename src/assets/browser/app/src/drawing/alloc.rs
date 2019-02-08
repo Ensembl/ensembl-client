@@ -1,7 +1,7 @@
 use std::fmt;
 use std::cmp::max;
 
-use types::{ CPixel, cpixel };
+use types::{ CPixel, cpixel, Dot };
 
 /* An origin is the top left corner of an allocation or free space. The
  * extent of the space is not recorded and must be determined from
@@ -333,7 +333,7 @@ fn half_test() {
     let input = [(100,6),(100,6),(100,6),(4,6),  (20,5), (50,1)];
     let check = [(0,0),  (100,0),(0,6),  (200,0),(100,6),(100,11)];
     for (i,(x,y)) in input.iter().enumerate() {
-        let cpixel(s,t) = alloc.allocate(cpixel(*x,*y)).unwrap();
+        let Dot(s,t) = alloc.allocate(cpixel(*x,*y)).unwrap();
         println!("({}x{}) -> ({},{}) want ({},{})",x,y,s,t,check[i].0,check[i].1);
         assert_eq!((s,t),check[i]);
     }
@@ -351,7 +351,7 @@ fn full_test() {
     }
     ac.allocate();
     for (i,t) in t.iter().enumerate() {
-        let cpixel(x,y) = ac.position(t);
+        let Dot(x,y) = ac.position(t);
         assert_eq!((x,y),c[i]);
     }
 }
