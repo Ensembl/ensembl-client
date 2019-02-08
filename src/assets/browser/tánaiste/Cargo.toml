@@ -1,0 +1,7 @@
+[package]
+name = "tánaiste"
+version = "0.1.0"
+authors = ["Dan Sheppard <dan@ebi.ac.uk>"]
+
+[dependencies]
+lazy_static="*"

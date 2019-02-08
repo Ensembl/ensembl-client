@@ -18,7 +18,6 @@ use drawing::{
     mark_rectangle, text_texture, collage, Mark, Artist,
     FCFont, FontVariety
 };
-use separator::Separatable;
 use shape::{
     fix_rectangle, fix_texture, page_rectangle,
     fixundertape_rectangle, fixundertape_texture,
