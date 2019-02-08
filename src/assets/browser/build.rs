@@ -36,5 +36,5 @@ fn main() {
     let cmd_re = Regex::new(r"@(.*?)@").unwrap();
     let out = cmd_re.replace_all(&tmpl,command_output);
     write(&Path::new(&dest).join("thisbuild.rs"),out.as_bytes()).ok();
-    to_console(&out);   
+    to_console(&out);
 }
