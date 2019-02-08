@@ -49,9 +49,10 @@ import helpGreyIcon from 'static/img/launchbar/help-grey.svg';
 
 export type LaunchbarApp = {
   description: string;
+  enabled: boolean;
   icon: {
     default: string;
-    grey?: string;
+    grey: string;
     selected: string;
   };
   name: string;
@@ -71,8 +72,10 @@ export type LaunchbarDetails = {
 export const launchbarConfig: LaunchbarDetails = {
   about: {
     description: 'About Ensembl',
+    enabled: true,
     icon: {
       default: ensemblIcon,
+      grey: '',
       selected: ensemblSelectedIcon
     },
     name: 'about'
@@ -82,6 +85,7 @@ export const launchbarConfig: LaunchbarDetails = {
       apps: [
         {
           description: 'Global search',
+          enabled: false,
           icon: {
             default: searchIcon,
             grey: searchGreyIcon,
@@ -91,6 +95,7 @@ export const launchbarConfig: LaunchbarDetails = {
         },
         {
           description: 'Species selector',
+          enabled: false,
           icon: {
             default: speciesSelectorIcon,
             grey: speciesSelectorGreyIcon,
@@ -106,8 +111,10 @@ export const launchbarConfig: LaunchbarDetails = {
       apps: [
         {
           description: 'Browser',
+          enabled: true,
           icon: {
             default: browserIcon,
+            grey: '',
             selected: browserSelectedIcon
           },
           name: 'browser'
@@ -160,6 +167,7 @@ export const launchbarConfig: LaunchbarDetails = {
         // }
         {
           description: 'Tools',
+          enabled: false,
           icon: {
             default: vepIcon,
             grey: toolsGreyIcon,
@@ -191,6 +199,7 @@ export const launchbarConfig: LaunchbarDetails = {
         // }
         {
           description: 'Downloads',
+          enabled: false,
           icon: {
             default: customDownloadIcon,
             grey: downloadGreyIcon,
@@ -206,6 +215,7 @@ export const launchbarConfig: LaunchbarDetails = {
       apps: [
         {
           description: 'Help & documentation',
+          enabled: false,
           icon: {
             default: helpIcon,
             grey: helpGreyIcon,

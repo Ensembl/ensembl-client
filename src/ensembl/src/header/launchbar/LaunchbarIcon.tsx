@@ -32,7 +32,7 @@ export const LaunchbarIcon: FunctionComponent<LaunchbarIconProps> = (
 export function getAppIcon(props: LaunchbarIconProps): string {
   const { app, currentApp } = props;
 
-  if (app.icon.grey) {
+  if (app.enabled === false) {
     return app.icon.grey;
   } else {
     return currentApp === app.name ? app.icon.selected : app.icon.default;
