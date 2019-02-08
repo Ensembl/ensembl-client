@@ -25,7 +25,7 @@ fn command_output(c: &Captures) -> String {
 fn main() {    
     /* stdweb */
     let dest = env::var("OUT_DIR").unwrap();
-    let mut file = File::create(&Path::new(&dest).join("webgl_rendering_context.rs")).unwrap();
+    let mut file = File::create(&Path::new(&dest).join("webgl.rs")).unwrap();
 
     Registry::new(Api::WebGl, Exts::NONE)
         .write_bindings(StdwebGenerator, &mut file)
@@ -36,5 +36,5 @@ fn main() {
     let cmd_re = Regex::new(r"@(.*?)@").unwrap();
     let out = cmd_re.replace_all(&tmpl,command_output);
     write(&Path::new(&dest).join("thisbuild.rs"),out.as_bytes()).ok();
-    to_console(&out);   
+    to_console(&out);
 }

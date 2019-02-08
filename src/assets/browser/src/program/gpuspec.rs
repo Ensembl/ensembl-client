@@ -1,7 +1,7 @@
 use std::cmp::{ min, Ordering };
 use std::collections::HashMap;
 
-use webgl_rendering_context::{
+use dom::webgl::{
     WebGLRenderingContext as glctx,
     GLenum,
 };

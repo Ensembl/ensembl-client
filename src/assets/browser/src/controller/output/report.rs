@@ -8,6 +8,7 @@ use serde_json::Value as JSONValue;
 use serde_json::Number as JSONNumber;
 
 #[derive(Clone)]
+#[allow(unused)]
 pub enum StatusJigsawType {
     Number,
     String,
@@ -15,6 +16,7 @@ pub enum StatusJigsawType {
 }
 
 #[derive(Clone)]
+#[allow(unused)]
 pub enum StatusJigsaw {
     Atom(String,StatusJigsawType),
     Array(Vec<StatusJigsaw>),
@@ -38,7 +40,7 @@ impl StatusOutput {
         }
     }
 
-    fn is_send_now(&self, key: &str, t: f64) -> bool {
+    fn is_send_now(&self, t: f64) -> bool {
         if let Some(interval) = self.send_every {
             if interval == 0. { return true; }
             if let Some(last_sent) = self.last_sent {
@@ -163,7 +165,7 @@ impl ReportImpl {
             if let Some(ref last_value) = s.last_value {
                 if last_value == &value { continue; }
             }
-            if s.is_send_now(k,t) {
+            if s.is_send_now(t) {
                 out.insert(k.to_string(),value.clone());
             }
         }

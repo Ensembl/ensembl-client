@@ -63,7 +63,6 @@ impl AppRunner {
             let mut imp = self.0.lock().unwrap();
             imp.bling = bling;
             let browser_el : HtmlElement = imp.bling.apply_bling(&imp.el);
-            let report = imp.app.lock().unwrap().get_report().clone();
             imp.app = Arc::new(Mutex::new(App::new(&imp.g,&browser_el)));
             imp.timers = Timers::new();
             imp.projector = None;
@@ -90,14 +89,7 @@ impl AppRunner {
         let state = &mut imp.app.clone();
         imp.timers.run(&mut state.lock().unwrap(), time);
     }
-    
-    fn get_element(&self) -> HtmlElement {
-        let mut imp = self.0.lock().unwrap();
-        let a = &mut imp.app.clone();
-        let out : HtmlElement = a.lock().unwrap().get_browser_element().clone();
-        out
-    }
-    
+        
     pub fn init(&mut self) {
         /* register main heartbeat of compositor */
         register_compositor_ticks(self);

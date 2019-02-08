@@ -9,9 +9,8 @@ use composit::{ Compositor, Train, StateManager, Leaf, Stage };
 use drawing::{ AllCanvasAllocator };
 use dom::domutil;
 use types::{ Dot };
-use wglraw;
 
-use webgl_rendering_context::WebGLRenderingContext as glctx;
+use dom::webgl::WebGLRenderingContext as glctx;
 use stdweb::web::html_element::{
     CanvasElement
 };
@@ -27,12 +26,15 @@ pub struct Printer {
 impl Printer {
     pub fn new(canv_el: &HtmlElement) -> Printer {
         let canvas = canv_el.clone().try_into().unwrap();
-        let ctx = Rc::new(wglraw::prepare_context(&canvas));
-        let progs = Programs::new(&ctx);
+        let ctx: glctx = domutil::get_context(&canvas);
+        ctx.clear_color(1.0,1.0,1.0,1.0);
+        ctx.clear(glctx::COLOR_BUFFER_BIT  | glctx::DEPTH_BUFFER_BIT);
+        let ctx_rc = Rc::new(ctx);
+        let progs = Programs::new(&ctx_rc);
         let acm = AllCanvasAllocator::new(".bpane-container .managedcanvasholder");
         Printer {
             canv_el: canv_el.clone(),
-            acm, ctx,
+            acm, ctx: ctx_rc,
             base_progs: progs,
             lp: HashMap::<Leaf,LeafPrinter>::new()
         }

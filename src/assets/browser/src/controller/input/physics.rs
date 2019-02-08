@@ -1,7 +1,7 @@
 use std::sync::{ Arc, Mutex };
 use types::{ CPixel, CDFraction, cdfraction };
 use controller::global::{ App, AppRunner };
-use controller::input::{ Event, events_run };
+use controller::input::{ Action, actions_run };
 use types::{ Move, Distance, Units, ddiv };
 
 pub struct MousePhysicsImpl {
@@ -63,9 +63,9 @@ impl MousePhysicsImpl {
     }
 
     fn make_events(&self, cg: &mut App, dx: &CDFraction) {
-        events_run(cg,&vec! {
-            Event::Move(Move::Left(Distance(dx.0,Units::Pixels))),
-            Event::Move(Move::Up(Distance(dx.1,Units::Pixels)))
+        actions_run(cg,&vec! {
+            Action::Move(Move::Left(Distance(dx.0,Units::Pixels))),
+            Action::Move(Move::Up(Distance(dx.1,Units::Pixels)))
         });
     }
 

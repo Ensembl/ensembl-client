@@ -4,7 +4,7 @@ use dom::domutil;
 use stdweb::web::{ Element, HtmlElement };
 
 use controller::global::{ App, AppRunner };
-use controller::input::{ events_run, Event };
+use controller::input::{ actions_run, Action };
 use dom::event::{ 
     EventListener, EventControl, EventType, EventData, Target
 };
@@ -24,13 +24,11 @@ impl EventListener<()> for DomEventListener {
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
         let evs = match e {
             EventData::GenericEvent(EventType::ResizeEvent,_) => {
-                vec! {
-                    Event::Resize(domutil::size(&self.el))
-                }
+                vec! { Action::Resize(domutil::size(&self.el)) }
             }
-            _ => Vec::<Event>::new()
+            _ => Vec::<Action>::new()
         };
-        events_run(&mut self.cg.lock().unwrap(),&evs);
+        actions_run(&mut self.cg.lock().unwrap(),&evs);
     }
 }
 

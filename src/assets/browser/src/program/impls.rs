@@ -1,4 +1,4 @@
-use webgl_rendering_context::{
+use dom::webgl::{
     WebGLRenderingContext as glctx
 };
 

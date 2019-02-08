@@ -127,7 +127,7 @@ fn setup_debug_console(el: &HtmlElement) {
 fn setup_testcard_selector(a: &Arc<Mutex<App>>, el: &HtmlElement) {
     let a = a.clone();
     let sel_el = domutil::query_selector2(&el.clone().into(),".console .testcard").unwrap();
-    sel_el.add_event_listener(enclose! { (a,el) move |e: ChangeEvent| {
+    sel_el.add_event_listener(enclose! { (a) move |e: ChangeEvent| {
         let mut a = a.lock().unwrap();
         let node : SelectElement = e.target().unwrap().try_into().ok().unwrap();
         if let Some(name) = node.value() {
@@ -166,7 +166,7 @@ pub fn create_interactors() -> Vec<Box<DebugInteractor>> {
 pub trait DebugInteractor {
     fn name(&self) -> &str;
     fn render(&mut self, ar: &Arc<Mutex<App>>, el: &Element);
-    fn key(&mut self, app: &Arc<Mutex<App>>, key: &str) {}
+    fn key(&mut self, _app: &Arc<Mutex<App>>, _key: &str) {}
 }
 
 pub struct OutEventListener {
@@ -184,8 +184,8 @@ impl OutEventListener {
 const EVENT_LENGTH : i32 = 1000;
 
 impl EventListener<()> for OutEventListener {
-    fn receive(&mut self, _el: &Target,  e: &EventData, ar: &()) {
-        if let EventData::CustomEvent(EventType::CustomEvent(_),e,s,d) = e {
+    fn receive(&mut self, _el: &Target,  e: &EventData, _: &()) {
+        if let EventData::CustomEvent(EventType::CustomEvent(_),_,s,d) = e {
             if s == "bpane-out" {
                 let mut value = domutil::get_inner_html(&self.target.clone().into());
                 value.push_str(&format!("{}\n",d.details().unwrap_or(json!{{}})));
