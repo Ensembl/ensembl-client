@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
@@ -96,8 +96,10 @@ const plugins = [
 // prod specific configuration
 const prodConfig = {
   optimization: {
+    // use terser plugin instead of uglify js to support minimisation for modern React.js features
+    // optimize css assets plugin to minimise css as it is not yet supported in webpack by default
     minimizer: [
-      new UglifyJsPlugin({
+      new TerserPlugin({
         cache: true,
         parallel: true,
         sourceMap: true

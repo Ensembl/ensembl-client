@@ -16,4 +16,8 @@ render(
   document.getElementById('ens-app')
 );
 
-registerSW();
+if (module.hot) {
+  module.hot.accept();
+} else {
+  registerSW();
+}

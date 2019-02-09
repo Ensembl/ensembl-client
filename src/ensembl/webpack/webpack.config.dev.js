@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const path = require('path');
 const StylelintWebpackPlugin = require('stylelint-webpack-plugin');
 
@@ -16,6 +17,10 @@ const moduleRules = [
 
 // plugins specific to dev
 const plugins = [
+  // this plugin is required to enable hot module reloading
+  // for the webpack dev server
+  new webpack.HotModuleReplacementPlugin(),
+
   // lint the SASS files within the Ensembl codebase only
   new StylelintWebpackPlugin({
     context: path.join(__dirname, '../src'),
@@ -55,6 +60,9 @@ const devConfig = {
     // fallback for the history API used by the react router when page is reloaded
     // this should prevent 404 errors that usually occur in SPA on reloads
     historyApiFallback: true,
+
+    // enable hot module reloading
+    hot: true,
 
     // configuration to customise what is displayed in the console by webpack
     stats: {
