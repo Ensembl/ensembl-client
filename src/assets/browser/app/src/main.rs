@@ -1,4 +1,5 @@
 #![feature(non_ascii_idents)]
+#![feature(linkage)]
 // (help put the E into EMBL)
 
 #[macro_use]
@@ -12,7 +13,6 @@ extern crate lazy_static;
 #[macro_use]
 extern crate serde_json;
 extern crate rand;
-extern crate separator;
 extern crate itertools;
 extern crate hsl;
 
@@ -27,7 +27,6 @@ mod drawing;
 mod print;
 mod program;
 mod shape;
-mod tánaiste;
 mod types;
 
 use controller::global;
