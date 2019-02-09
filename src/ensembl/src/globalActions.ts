@@ -1,9 +1,9 @@
 import { createAction } from 'typesafe-actions';
-import { WidthType } from './globalState';
+import { BreakpointWidth } from './globalConfig';
 
-export const updateGlobalWidth = createAction(
-  'browser/update-global-width',
+export const updateBreakpointWidth = createAction(
+  'browser/update-breakpoint-width',
   (resolve) => {
-    return (globalWidth: WidthType) => resolve(globalWidth);
+    return (breakpointWidth: BreakpointWidth) => resolve(breakpointWidth);
   }
 );

@@ -1,13 +1,9 @@
-export enum WidthType {
-  SMALL = 'small',
-  MEDIUM = 'medium',
-  LARGE = 'medium'
-}
+import { BreakpointWidth } from './globalConfig';
 
 export type GlobalState = Readonly<{
-  globalWidth: WidthType;
+  breakpointWidth: BreakpointWidth;
 }>;
 
 export const defaultState: GlobalState = {
-  globalWidth: WidthType.LARGE
+  breakpointWidth: BreakpointWidth.LARGE
 };
