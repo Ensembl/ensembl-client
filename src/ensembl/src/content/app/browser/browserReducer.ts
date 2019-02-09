@@ -16,7 +16,7 @@ export default (
 ): BrowserState => {
   switch (action.type) {
     case getType(browser.toggleTrackPanel):
-      return trackPanelState(state);
+      return trackPanelState(state, action.payload);
     case getType(browser.changeCurrentTrack):
       return {
         ...state,
@@ -25,11 +25,7 @@ export default (
         drawerSections: drawerSectionConfig[action.payload]
       };
     case getType(browser.toggleDrawer):
-      return drawerState(state, !state.drawerOpened);
-    case getType(browser.openDrawer):
-      return drawerState(state, true);
-    case getType(browser.closeDrawer):
-      return drawerState(state, false);
+      return drawerState(state, action.payload);
     case getType(browser.changeCurrentDrawerSection):
       return { ...state, currentDrawerSection: action.payload };
     case getType(browser.toggleBrowserNav):

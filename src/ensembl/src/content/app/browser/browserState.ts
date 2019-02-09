@@ -26,8 +26,10 @@ export const defaultState: BrowserState = {
   trackPanelOpened: true
 };
 
-export const trackPanelState = (state: BrowserState) => {
-  const trackPanelOpened: boolean = !state.trackPanelOpened;
+export const trackPanelState = (
+  state: BrowserState,
+  trackPanelOpened: boolean = !state.trackPanelOpened
+) => {
   const browserOpenState: BrowserOpenState = trackPanelOpened
     ? BrowserOpenState.SEMI_EXPANDED
     : BrowserOpenState.EXPANDED;
@@ -39,7 +41,10 @@ export const trackPanelState = (state: BrowserState) => {
   };
 };
 
-export const drawerState = (state: BrowserState, drawerOpened: boolean) => {
+export const drawerState = (
+  state: BrowserState,
+  drawerOpened: boolean = !state.drawerOpened
+) => {
   if (drawerOpened === true) {
     return {
       ...state,

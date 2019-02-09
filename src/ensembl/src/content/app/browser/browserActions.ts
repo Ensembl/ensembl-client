@@ -1,6 +1,12 @@
 import { createAction } from 'typesafe-actions';
 
-export const toggleTrackPanel = createAction('browser/toggle-track-panel');
+export const toggleTrackPanel = createAction(
+  'browser/toggle-track-panel',
+  (resolve) => {
+    return (trackPanelOpened?: boolean) => resolve(trackPanelOpened);
+  }
+);
+
 export const changeCurrentTrack = createAction(
   'browser/change-current-track',
   (resolve) => {
@@ -8,9 +14,10 @@ export const changeCurrentTrack = createAction(
   }
 );
 
-export const toggleDrawer = createAction('browser/toggle-drawer');
-export const openDrawer = createAction('browser/open-drawer');
-export const closeDrawer = createAction('browser/close-drawer');
+export const toggleDrawer = createAction('browser/toggle-drawer', (resolve) => {
+  return (drawerOpened?: boolean) => resolve(drawerOpened);
+});
+
 export const changeCurrentDrawerSection = createAction(
   'browser/change-current-drawer-section',
   (resolve) => {

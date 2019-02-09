@@ -64,9 +64,9 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
           </dd>
         </dl>
       </div>
-      <dl className={styles.browserTabs}>
+      <dl className={`${styles.browserTabs} show-for-large`}>
         <dd>
-          <button className={styles.active}>Key Data</button>
+          <button className={styles.active}>Genomic</button>
         </dd>
         <dd>
           <button>Variation</button>

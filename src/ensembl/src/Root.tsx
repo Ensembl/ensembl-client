@@ -1,18 +1,65 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, StrictMode, useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
-
-import { hot } from 'react-hot-loader';
+import { connect } from 'react-redux';
+import useResizeObserver from 'use-resize-observer';
 
 import Header from './header/Header';
 import Content from './content/Content';
 
-const Root: FunctionComponent = () => (
-  <BrowserRouter>
-    <React.StrictMode>
-      <Header />
-      <Content />
-    </React.StrictMode>
-  </BrowserRouter>
-);
+import { updateBreakpointWidth } from './globalActions';
+import { getBreakpointWidth } from './globalSelectors';
+import { RootState } from './rootReducer';
+import { BreakpointWidth } from './globalConfig';
 
-export default hot(module)(Root);
+type StateProps = {
+  breakpointWidth: BreakpointWidth;
+};
+
+type DispatchProps = {
+  updateBreakpointWidth: (breakpointWidth: BreakpointWidth) => void;
+};
+
+type OwnProps = {};
+
+type RootProps = StateProps & DispatchProps & OwnProps;
+
+const Root: FunctionComponent<RootProps> = (props: RootProps) => {
+  const [ref, width] = useResizeObserver();
+  const currentBreakpoint: BreakpointWidth = getBreakpoint(width);
+
+  useEffect(() => {
+    props.updateBreakpointWidth(currentBreakpoint);
+  }, [props.updateBreakpointWidth, currentBreakpoint]);
+
+  return (
+    <BrowserRouter>
+      <StrictMode>
+        <div ref={ref as React.RefObject<HTMLDivElement>}>
+          <Header />
+          <Content />
+        </div>
+      </StrictMode>
+    </BrowserRouter>
+  );
+};
+
+function getBreakpoint(width: number): BreakpointWidth {
+  if (width > BreakpointWidth.LARGE) {
+    return BreakpointWidth.LARGE;
+  } else if (width > BreakpointWidth.MEDIUM) {
+    return BreakpointWidth.MEDIUM;
+  } else {
+    return BreakpointWidth.SMALL;
+  }
+}
+
+const mapStateToProps = (state: RootState): StateProps => ({
+  breakpointWidth: getBreakpointWidth(state)
+});
+
+const mapDispatchToProps = { updateBreakpointWidth };
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Root);

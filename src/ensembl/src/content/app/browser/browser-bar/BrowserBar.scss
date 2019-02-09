@@ -25,7 +25,11 @@
   flex-wrap: nowrap;
   font-size: 12px;
   margin: 0;
-  width: calc(100vw - 356px);
+  width: calc(100vw - 36px);
+
+  @include breakpoint(large) {
+    width: calc(100vw - 356px);
+  }
 
   label {
     color: #555;

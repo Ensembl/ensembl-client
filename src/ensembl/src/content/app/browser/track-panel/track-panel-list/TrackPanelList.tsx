@@ -11,7 +11,7 @@ import styles from './TrackPanelList.scss';
 
 type TrackPanelListProps = {
   currentTrack: string;
-  openDrawer: () => void;
+  toggleDrawer: (drawerOpened: boolean) => void;
   updateTrack: (currentTrack: string) => void;
 };
 
@@ -19,10 +19,10 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   props: TrackPanelListProps
 ) => {
   const changeTrack = (currentTrack: string) => {
-    const { openDrawer, updateTrack } = props;
+    const { toggleDrawer, updateTrack } = props;
 
     updateTrack(currentTrack);
-    openDrawer();
+    toggleDrawer(true);
   };
 
   const getTrackClass = (trackName: string): string => {

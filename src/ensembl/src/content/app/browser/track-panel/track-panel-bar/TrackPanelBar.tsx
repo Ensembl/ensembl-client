@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useCallback } from 'react';
 
 import { trackPanelBarConfig, TrackPanelBarItem } from './trackPanelBarConfig';
 
@@ -10,23 +10,23 @@ import chevronRightIcon from 'static/img/track-panel/chevron-right.svg';
 import styles from './TrackPanelBar.scss';
 
 type TrackPanelBarProps = {
-  closeDrawer: () => void;
+  toggleDrawer: (drawerOpened: boolean) => void;
   drawerOpened: boolean;
   launchbarExpanded: boolean;
   trackPanelOpened: boolean;
-  toggleTrackPanel: () => void;
+  toggleTrackPanel: (trackPanelOpened?: boolean) => void;
 };
 
 const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
   props: TrackPanelBarProps
 ) => {
-  const moveTrackPanel = () => {
+  const moveTrackPanel = useCallback(() => {
     if (props.drawerOpened === true) {
-      props.closeDrawer();
+      props.toggleDrawer(false);
     } else {
       props.toggleTrackPanel();
     }
-  };
+  }, [props.drawerOpened, props.toggleDrawer, props.toggleTrackPanel]);
 
   const getClassNames = () => {
     const expandClass: string = props.launchbarExpanded ? '' : styles.expanded;

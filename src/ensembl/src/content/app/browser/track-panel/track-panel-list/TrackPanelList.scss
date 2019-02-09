@@ -4,6 +4,8 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  height: calc(100vh - 177px);
+  overflow: auto;
   padding: 15px;
   width: 320px;
 
