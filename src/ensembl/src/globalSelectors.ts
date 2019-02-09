@@ -1,5 +1,5 @@
 import { RootState } from './rootReducer';
-import { WidthType } from './globalState';
+import { BreakpointWidth } from './globalConfig';
 
-export const getGlobalWidth = (state: RootState): WidthType =>
-  state.global.globalWidth;
+export const getBreakpointWidth = (state: RootState): BreakpointWidth =>
+  state.global.breakpointWidth;
