@@ -1,5 +1,4 @@
-import React, { FunctionComponent } from 'react';
-import { hot } from 'react-hot-loader';
+import React, { FunctionComponent, useCallback } from 'react';
 import { connect } from 'react-redux';
 
 import BrowserBar from './browser-bar/BrowserBar';
@@ -10,35 +9,35 @@ import Drawer from './drawer/Drawer';
 
 import { RootState } from 'src/rootReducer';
 import { BrowserOpenState } from './browserState';
-import { closeDrawer, toggleBrowserNav } from './browserActions';
+import { toggleDrawer, toggleBrowserNav } from './browserActions';
 import {
   getBrowserOpenState,
   getDrawerOpened,
   getBrowserNavOpened
 } from './browserSelectors';
 
-import 'static/browser/browser';
+import 'static/browser/browser.js';
 
 import styles from './Browser.scss';
 
 type BrowserProps = {
   browserNavOpened: boolean;
   browserOpenState: BrowserOpenState;
-  closeDrawer: () => void;
   drawerOpened: boolean;
   toggleBrowserNav: () => void;
+  toggleDrawer: (drawerOpened: boolean) => void;
 };
 
 export const Browser: FunctionComponent<BrowserProps> = (
   props: BrowserProps
 ) => {
-  const closeTrack = () => {
+  const closeTrack = useCallback(() => {
     if (props.drawerOpened === false) {
       return;
     }
 
-    props.closeDrawer();
-  };
+    props.toggleDrawer(false);
+  }, [props.drawerOpened, props.toggleDrawer]);
 
   return (
     <section className={styles.browser}>
@@ -71,13 +70,11 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  closeDrawer,
+  toggleDrawer,
   toggleBrowserNav
 };
 
-export default hot(module)(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(Browser)
-);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Browser);
