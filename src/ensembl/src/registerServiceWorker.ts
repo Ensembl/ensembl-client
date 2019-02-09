@@ -7,7 +7,7 @@ declare global {
 export function registerSW() {
   window.nodeEnv = process.env.NODE_ENV;
 
-  if (window.nodeEnv === 'production' && 'serviceWorker' in navigator) {
+  if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker
         .register('/service-worker.js')
