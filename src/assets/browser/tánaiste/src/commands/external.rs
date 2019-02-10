@@ -2,7 +2,7 @@ use std::process;
 use std::sync::{ Arc, Mutex };
 use std::{ thread, time };
 
-use core::{ Command, RuntimeData, RuntimeProcess, Value };
+use core::{ Command, DataState, ProcState, Value };
 use util::ValueStore;
 
 struct Result {
@@ -18,13 +18,13 @@ lazy_static! {
 
 pub struct External {
     code_reg: usize,
-    stdout_reg: Option<usize>,
-    stderr_reg: Option<usize>,
+    stdout_reg: usize,
+    stderr_reg: usize,
     cmd_str: String,
 }
 
 impl External {
-    pub fn new(code_reg: usize, stdout_reg: Option<usize>, stderr_reg: Option<usize>,command: &str) -> Box<Command> {
+    pub fn new(code_reg: usize, stdout_reg: usize, stderr_reg: usize,command: &str) -> Box<Command> {
         Box::new(External {
             code_reg, stdout_reg, stderr_reg,
             cmd_str: command.to_string()
@@ -33,7 +33,7 @@ impl External {
 }
 
 impl Command for External {
-    fn execute(&self, data: &mut RuntimeData, proc: Arc<Mutex<RuntimeProcess>>) {
+    fn execute(&self, data: &mut DataState, proc: Arc<Mutex<ProcState>>) {
         let r = data.continuations().get(1).value();
         let rv = r.borrow();
         let retry = rv.value_float();
@@ -44,12 +44,12 @@ impl Command for External {
                 data.registers().set(self.code_reg,Value::new_from_float(vec! {
                     res.exit_code as f64
                 }));
-                if let Some(stdout_reg) = self.stdout_reg {
-                    data.registers().set(stdout_reg,
+                if self.stdout_reg > 0 {
+                    data.registers().set(self.stdout_reg,
                         Value::new_from_string(res.stdout));                    
                 }
-                if let Some(stderr_reg) = self.stderr_reg {
-                    data.registers().set(stderr_reg,
+                if self.stderr_reg > 0 {
+                    data.registers().set(self.stderr_reg,
                         Value::new_from_string(res.stderr));                    
                 }
                 return;

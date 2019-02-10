@@ -1,6 +1,6 @@
 use std::sync::{ Arc, Mutex };
 
-use core::{ Command, RuntimeData, RuntimeProcess, Value };
+use core::{ Command, DataState, ProcState, Value };
 
 pub struct Constant(usize,Value);
 
@@ -11,7 +11,7 @@ impl Constant {
 }
 
 impl Command for Constant {
-    fn execute(&self, rt: &mut RuntimeData, _proc: Arc<Mutex<RuntimeProcess>>) {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) {
         rt.registers().set(self.0,self.1.clone());
     }
 }
@@ -25,7 +25,7 @@ impl Move {
 }
 
 impl Command for Move {
-    fn execute(&self, rt: &mut RuntimeData, _proc: Arc<Mutex<RuntimeProcess>>) {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) {
         let regs = rt.registers();
         let v = regs.get(self.1).clone();
         regs.set(self.0,v);
