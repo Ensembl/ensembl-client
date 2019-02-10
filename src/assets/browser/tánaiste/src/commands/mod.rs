@@ -1,11 +1,11 @@
-mod debugprint;
+mod debug;
 mod loadstore;
 mod string;
-mod run;
+mod processcmds;
 mod external;
 
-pub use self::debugprint::DebugPrint;
+pub use self::debug::DebugPrint;
 pub use self::loadstore::{ Constant, Move };
 pub use self::string::{ Concat };
-pub use self::run::{ Sleep };
+pub use self::processcmds::{ Sleep, Halt };
 pub use self::external::External;

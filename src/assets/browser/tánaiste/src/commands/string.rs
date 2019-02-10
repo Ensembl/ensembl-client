@@ -1,5 +1,5 @@
 use std::sync::{ Arc, Mutex };
-use core::{ Command, RuntimeData, RuntimeProcess, Value };
+use core::{ Command, DataState, ProcState, Value };
 
 pub struct Concat(usize,usize,usize);
 
@@ -10,7 +10,7 @@ impl Concat {
 }
 
 impl Command for Concat {
-    fn execute(&self, rt: &mut RuntimeData, _proc: Arc<Mutex<RuntimeProcess>>) {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) {
         let regs = rt.registers();
         let a = regs.get(self.1).to_string().value();
         let av = a.borrow();

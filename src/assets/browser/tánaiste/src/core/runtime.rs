@@ -3,147 +3,42 @@ use std::{ thread, time };
 
 use core::{ Value, Command };
 use commands::{ Constant, DebugPrint, Concat, Sleep, External, Move };
+use core::registers::RegisterFile;
+use core::datastate::DataState;
+use core::procstate::ProcState;
 
 /* TODO
  * limit: register size, stack size, value size, execution time
  */
 
-pub struct RuntimeProcess {
-    halted: bool,
-    sleeping: bool
-}
-
-impl RuntimeProcess {
-    pub fn sleep(&mut self) {
-        self.sleeping = true;
-    }
-
-    pub fn wake(&mut self) {
-        self.sleeping = false;
-    }
-    
-    pub fn is_sleeping(&self) -> bool { self.sleeping }
-    pub fn is_halted(&self) -> bool { self.halted }
-}
-
-pub struct RegisterFile {
-    registers: Vec<Value>
-}
-
-impl RegisterFile {
-    pub fn new() -> RegisterFile {
-        RegisterFile {
-            registers: Vec::<Value>::new()
-        }
-    }
-    
-    fn registers_size(&mut self, idx: usize) {
-        if idx >= self.registers.len() {
-            self.registers.resize_with(idx+1,|| Value::new_null());
-        }
-    }
-    
-    pub fn get(&mut self, idx: usize) -> Value {
-        self.registers_size(idx);
-        self.registers[idx].clone()
-    }
-    
-    pub fn set(&mut self, idx: usize, v: Value) {
-        if idx > 0 {
-            self.registers_size(idx);
-            self.registers[idx] = v.clone();
-        }
-    }
-    
-    pub fn drop(&mut self, idx: usize) {
-        if idx > 0 {
-            self.set(idx,Value::new_null());
-        }
-    }
-    
-    pub fn clear(&mut self) {
-        self.registers.clear();
-    }
-}
-
-pub struct RuntimeData {
-    continuations: RegisterFile,
-    registers: RegisterFile,
-    data_stack: Vec<Value>,
-    pc: usize,
-    again: bool
-}
-
-impl RuntimeData {
-    pub fn continuations(&mut self) -> &mut RegisterFile { &mut self.continuations }
-    pub fn registers(&mut self) -> &mut RegisterFile { &mut self.registers }
-    
-    pub fn push_data(&mut self, v: Value) {
-        self.data_stack.push(v);
-    }
-    
-    pub fn pop_data(&mut self) -> Value {
-        self.data_stack.pop().unwrap_or_else(|| Value::new_null())
-    }
-    
-    pub fn peek_data(&self) -> Value {
-        self.data_stack.last().map(|s| s.clone()).unwrap_or_else(|| Value::new_null())
-    }    
-    
-    pub fn jump(&mut self, delta: i32) {
-        self.pc = ((self.pc as i32) + delta) as usize;
-    }
-    
-    pub fn set_again(&mut self) {
-        self.pc -= 1;
-        self.again = true;
-    }
-    
-    pub fn clear_cont(&mut self) {
-        if self.again {
-            self.again = false;
-        } else {
-            self.continuations.clear();
-        }
-    }
-}
-
 pub struct Runtime {
     program: Vec<Box<Command>>,
-    data: RuntimeData,
-    proc: Arc<Mutex<RuntimeProcess>>
+    data: DataState,
+    proc: Arc<Mutex<ProcState>>
 }
 
 impl Runtime {
     pub fn new(program: Vec<Box<Command>>) -> Runtime {
         Runtime {
             program,
-            data: RuntimeData {
-                registers: RegisterFile::new(),
-                continuations: RegisterFile::new(),
-                data_stack: Vec::<Value>::new(),
-                pc: 0,
-                again: false
-            },
-            proc: Arc::new(Mutex::new(RuntimeProcess {
-                halted: false,
-                sleeping: false
-            }))
+            data: DataState::new(),
+            proc: Arc::new(Mutex::new(ProcState::new()))
         }
     }
     
     pub fn step(&mut self) {
         let data = &mut self.data;
         {
-            let mut proc = self.proc.lock().unwrap();
-            if proc.halted || data.pc >= self.program.len() { 
-                proc.halted = true;
+            if data.pc() >= self.program.len() {
+                self.proc.lock().unwrap().halt();
+            }
+            if self.proc.lock().unwrap().is_halted() {
                 return;
             }
         }
         data.clear_cont();
-        self.program[data.pc].execute(data,self.proc.clone());
-        data.pc += 1;
+        self.program[data.pc()].execute(data,self.proc.clone());
+        data.jump(1);
     }
     
     pub fn halted(&self) -> bool {
@@ -233,9 +128,9 @@ fn external() {
         DebugPrint::new(4),
         Constant::new(1,Value::new_from_float(vec!{ 4. })),
         Constant::new(2,Value::new_from_float(vec!{ 4. })),
-        External::new(3,None,None,"touch /tmp/x"),
-        External::new(1,None,Some(4),"ls /tmp/x ; rm /tmp/x"),
-        External::new(2,None,Some(5),"ls /tmp/x ; rm /tmp/x"),
+        External::new(3,0,0,"touch /tmp/x"),
+        External::new(1,0,4,"ls /tmp/x ; rm /tmp/x"),
+        External::new(2,0,5,"ls /tmp/x ; rm /tmp/x"),
         Constant::new(0,Value::new_from_string("finished".to_string())),
         DebugPrint::new(4),
         DebugPrint::new(4),
