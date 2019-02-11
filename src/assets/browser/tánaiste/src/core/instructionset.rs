@@ -5,7 +5,7 @@ use std::time;
 
 use core::{ BinaryCode, Command, Instruction, InstructionBundle };
 use commands::{ ConstantI, DPrintI, HaltI };
-use runtime::Runtime;
+use runtime::Process;
 
 pub struct InstructionSet {
     instrs: HashMap<String,Box<Instruction>>

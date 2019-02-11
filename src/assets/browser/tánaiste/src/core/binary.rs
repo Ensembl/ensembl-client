@@ -1,7 +1,7 @@
 use std::rc::{ Rc };
 use std::collections::HashMap;
 
-use runtime::Runtime;
+use runtime::Process;
 use super::command::Command;
 
 #[derive(Debug)]
@@ -18,16 +18,16 @@ impl BinaryCode {
             commands: Rc::new(commands)
         }
     }
-        
-    pub fn exec(&self, start: Option<&str>) -> Result<Runtime,String> {
+    
+    pub fn exec(&self, start: Option<&str>) -> Result<Process,String> {
         if let Some(start) = start {
             if let Some(start) = self.symbols.get(start) {
-                Ok(Runtime::new(self.commands.clone(),*start))
+                Ok(Process::new(self.commands.clone(),*start))
             } else {
                 Err(format!("No such entry point '{}'",start))
             }
         } else {
-            Ok(Runtime::new(self.commands.clone(),0))
+            Ok(Process::new(self.commands.clone(),0))
         }
     }
 }

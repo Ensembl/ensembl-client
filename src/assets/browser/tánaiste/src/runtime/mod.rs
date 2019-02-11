@@ -1,11 +1,15 @@
-mod value;
-mod runtime;
-mod registers;
-mod procstate;
 mod datastate;
+mod environment;
+mod interp;
+mod process;
+mod procstate;
+mod registers;
+mod value;
 
-pub use self::value::Value;
-pub use self::runtime::Runtime;
+pub use self::datastate::DataState;
+pub use self::environment::{ Environment, DefaultEnvironment };
+pub use self::interp::Interp;
+pub use self::process::Process;
 pub use self::registers::RegisterFile;
 pub use self::procstate::ProcState;
-pub use self::datastate::DataState;
+pub use self::value::Value;
