@@ -43,7 +43,7 @@ mod test {
     #[test]
     fn smoke() {
         let bin = test_assemble("smoke").ok().unwrap();
-        let mut proc = bin.exec(Some("start")).ok().unwrap();
+        let mut proc = bin.exec(Some("start"),None).ok().unwrap();
         proc.run();
         while !proc.halted() {
             proc.run();

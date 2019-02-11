@@ -68,3 +68,18 @@
     dprint #1
     dprint #2
     dprint #3
+
+;;; --cut-- [interp-smoke]
+
+    const #1, [0,200]
+    const #2, "Success!"
+
+;;; --cut-- [interp-sleep-wake]
+
+    const #1, "sleeping"
+    dprint #1
+    const #1, [100]
+    sleep #1
+    const #2, "awoke"
+    dprint #2
+
