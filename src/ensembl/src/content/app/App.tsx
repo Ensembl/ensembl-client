@@ -1,4 +1,10 @@
-import React, { Component, Fragment, lazy, Suspense } from 'react';
+import React, {
+  FunctionComponent,
+  Fragment,
+  lazy,
+  Suspense,
+  useEffect
+} from 'react';
 import { Route, RouteComponentProps, Switch, withRouter } from 'react-router';
 import { connect } from 'react-redux';
 
@@ -21,45 +27,32 @@ type OwnProps = {};
 
 type AppProps = RouteComponentProps & StateProps & DispatchProps & OwnProps;
 
-export class App extends Component<AppProps> {
-  public componentDidMount() {
-    this.updateCurrentApp();
-  }
+export const App: FunctionComponent<AppProps> = (props: AppProps) => {
+  useEffect(() => {
+    const name = props.location.pathname.replace('/app/', '');
 
-  public componentDidUpdate() {
-    this.updateCurrentApp();
-  }
+    props.changeCurrentApp(name);
 
-  public componentWillUnmount() {
-    this.props.changeCurrentApp('');
-  }
+    return function unsetApp() {
+      props.changeCurrentApp('');
+    };
+  }, [props.location.pathname]);
 
-  public render() {
-    const { url } = this.props.match;
+  const { url } = props.match;
 
-    return (
-      <Fragment>
-        <AppBar />
-        <Suspense fallback={<div>Loading...</div>}>
-          <Switch>
-            <Route path={`${url}/global-search`} component={GlobalSearch} />
-            <Route
-              path={`${url}/species-selector`}
-              component={SpeciesSelector}
-            />
-            <Route path={`${url}/browser`} component={Browser} />
-          </Switch>
-        </Suspense>
-      </Fragment>
-    );
-  }
-
-  private updateCurrentApp() {
-    const name = this.props.location.pathname.replace('/app/', '');
-
-    this.props.changeCurrentApp(name);
-  }
-}
+  return (
+    <Fragment>
+      <AppBar />
+      <Suspense fallback={<div>Loading...</div>}>
+        <Switch>
+          <Route path={`${url}/global-search`} component={GlobalSearch} />
+          <Route path={`${url}/species-selector`} component={SpeciesSelector} />
+          <Route path={`${url}/browser`} component={Browser} />
+        </Switch>
+      </Suspense>
+    </Fragment>
+  );
+};
 
 const mapStateToProps = (): StateProps => ({});
 
