@@ -1,4 +1,4 @@
-import React, { FunctionComponent, memo } from 'react';
+import React, { FunctionComponent, memo, useCallback } from 'react';
 
 import { BrowserNavItem } from '../browserConfig';
 
@@ -12,20 +12,20 @@ type BrowserNavIconProps = {
 export const BrowserNavIcon: FunctionComponent<BrowserNavIconProps> = (
   props: BrowserNavIconProps
 ) => {
-  const navigateBrowser = () => {
-    const { detail } = props.browserNavItem;
+  const { detail } = props.browserNavItem;
 
-    const navEvent = new CustomEvent('bpane', {
-      bubbles: true,
-      detail
-    });
+  const navEvent = new CustomEvent('bpane', {
+    bubbles: true,
+    detail
+  });
 
-    const browserCanvas = document.querySelector(
-      `.${imageStyles.browserStage}`
-    ) as HTMLElement;
+  const browserCanvas = document.querySelector(
+    `.${imageStyles.browserStage}`
+  ) as HTMLElement;
 
+  const navigateBrowser = useCallback(() => {
     browserCanvas.dispatchEvent(navEvent);
-  };
+  }, [navEvent, browserCanvas]);
 
   const { browserNavItem } = props;
 

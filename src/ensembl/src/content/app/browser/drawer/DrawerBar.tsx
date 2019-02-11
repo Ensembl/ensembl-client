@@ -9,7 +9,7 @@ import styles from './DrawerBar.scss';
 
 type DrawerBarProps = {
   changeCurrentDrawerSection: (currentDrawerSection: string) => void;
-  closeDrawer: () => void;
+  toggleDrawer: () => void;
   currentTrack: string;
   drawerSections: DrawerSection[];
 };
@@ -46,7 +46,7 @@ const DrawerBar: FunctionComponent<DrawerBarProps> = (
             </dt>
           ))}
       </dl>
-      <button className={styles.closeButton} onClick={props.closeDrawer}>
+      <button className={styles.closeButton} onClick={props.toggleDrawer}>
         <img src={closeIcon} alt="close drawer" />
       </button>
     </div>
