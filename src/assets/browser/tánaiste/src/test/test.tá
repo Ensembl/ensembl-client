@@ -15,6 +15,7 @@
 
 ;;; --cut-- [parse-error-2]
 
+    halt
     const #1 : #2
 
 ;;; --cut-- [inst-error-1]
