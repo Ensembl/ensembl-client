@@ -1,5 +1,7 @@
 ;;; --cut-- [smoke]
 
+    const #1,"boo"
+    halt
 .start:
     const #1,"hello, tánaiste!"
     dprint #1

@@ -13,15 +13,15 @@ use super::value::Value;
  * limit: register size, stack size, value size, execution time
  */
 
-pub struct Runtime {
+pub struct Process {
     program: Rc<Vec<Box<Command>>>,
     data: DataState,
     proc: Arc<Mutex<ProcState>>
 }
 
-impl Runtime {
-    pub fn new(program: Rc<Vec<Box<Command>>>, pc: usize) -> Runtime {
-        Runtime {
+impl Process {
+    pub fn new(program: Rc<Vec<Box<Command>>>, pc: usize) -> Process {
+        Process {
             program,
             data: DataState::new(pc),
             proc: Arc::new(Mutex::new(ProcState::new()))
@@ -66,28 +66,35 @@ impl Runtime {
     }
 }
 
-#[test]
-fn registers() {
-    let mut r = Runtime::new(Rc::new(vec!{}),0);
-    let regs = r.data.registers();
-    regs.set(4,Value::new_from_string("hi".to_string()));
-    let v = regs.get(4);
-    regs.set(2,v);
-    regs.set(4,Value::new_from_string("lo".to_string()));
-    assert_eq!("\"lo\"",format!("{:?}",regs.get(4)));
-    assert_eq!("\"hi\"",format!("{:?}",regs.get(2)));
-    assert_eq!("[]",format!("{:?}",regs.get(1)));
-    regs.drop(4);
-    assert_eq!("[]",format!("{:?}",regs.get(4)));
-}
+#[cfg(test)]
+mod test {
+    use std::rc::Rc;
+    use runtime::Value;
+    use super::Process;
+    
+    #[test]
+    fn registers() {
+        let mut r = Process::new(Rc::new(vec!{}),0);
+        let regs = r.data.registers();
+        regs.set(4,Value::new_from_string("hi".to_string()));
+        let v = regs.get(4);
+        regs.set(2,v);
+        regs.set(4,Value::new_from_string("lo".to_string()));
+        assert_eq!("\"lo\"",format!("{:?}",regs.get(4)));
+        assert_eq!("\"hi\"",format!("{:?}",regs.get(2)));
+        assert_eq!("[]",format!("{:?}",regs.get(1)));
+        regs.drop(4);
+        assert_eq!("[]",format!("{:?}",regs.get(4)));
+    }
 
-#[test]
-fn data_stack() {
-    let mut r = Runtime::new(Rc::new(vec!{}),0);
-    r.data.push_data(Value::new_from_string("lo".to_string()));
-    r.data.push_data(Value::new_from_string("hi".to_string()));
-    assert_eq!("\"hi\"",format!("{:?}",r.data.peek_data()));
-    assert_eq!("\"hi\"",format!("{:?}",r.data.pop_data()));
-    assert_eq!("\"lo\"",format!("{:?}",r.data.pop_data()));
-    assert_eq!("[]",format!("{:?}",r.data.pop_data()));
+    #[test]
+    fn data_stack() {
+        let mut r = Process::new(Rc::new(vec!{}),0);
+        r.data.push_data(Value::new_from_string("lo".to_string()));
+        r.data.push_data(Value::new_from_string("hi".to_string()));
+        assert_eq!("\"hi\"",format!("{:?}",r.data.peek_data()));
+        assert_eq!("\"hi\"",format!("{:?}",r.data.pop_data()));
+        assert_eq!("\"lo\"",format!("{:?}",r.data.pop_data()));
+        assert_eq!("[]",format!("{:?}",r.data.pop_data()));
+    }
 }
