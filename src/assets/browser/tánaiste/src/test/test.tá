@@ -1,0 +1,70 @@
+;;; --cut-- [smoke]
+
+    const #1,"boo"
+    halt
+.start:
+    const #1,"hello, tánaiste!"
+    dprint #1
+    halt
+    const #1,"NOOOO!"
+    dprint #1
+
+;;; --cut-- [parse-error-1]
+
+    const #1,"hello, \300\300"
+
+;;; --cut-- [parse-error-2]
+
+    const #1 : #2
+
+;;; --cut-- [inst-error-1]
+
+    unknown #1
+
+;;; --cut-- [inst-error-2]
+
+    dprint "hello"
+
+;; --cut-- [extern]
+
+    const #4, "running"
+    dprint #4
+    const #1, [4]
+    const #2, [4]
+    const #6, "touch /tmp/x"
+    const #7, "ls /tmp/x ; rm /tmp/x"
+    extern #3, #0, #0, #6
+    extern #1, #0, #4, #7
+    extern #2, #0, #5, #7
+    const #8, "finished"
+    dprint #8
+    dprint #4
+    dprint #5
+
+;;; --cut-- [const]
+
+    const #1,"hi"
+
+;;; --cut-- [move]
+
+    const #1,"hi"
+    const #2,"lo"
+    move #2,#1
+
+;;; --cut-- [sleep]
+
+    const #1, "sleeping"
+    dprint #1
+    const #2, [100]
+    sleep #2
+    const #1, "waking"
+    dprint #1
+
+;;; --cut-- [concat]
+
+    const #1, "hello "
+    const #2, "world!"
+    concat #3, #1, #2
+    dprint #1
+    dprint #2
+    dprint #3

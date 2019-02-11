@@ -1,28 +1,29 @@
+use util::Smallest;
+
 pub struct ValueStore<T> {
-    values: Vec<Option<T>>,
-    try: usize
+    smallest: Smallest,
+    values: Vec<Option<T>>
 }
 
 impl<T> ValueStore<T> {
     pub fn new() -> ValueStore<T> {
         ValueStore {
+            smallest: Smallest::new(),
             values: Vec::<Option<T>>::new(),
-            try: 0,
         }
     }
     
     pub fn store(&mut self, v: T) -> usize {
-        while self.try < self.values.len() {
-            if self.values[self.try].is_none() {
-                self.values[self.try] = Some(v);
-                self.try += 1;
-                return self.try-1
-            } else {
-                self.try += 1;
-            }
+        let k = self.smallest.get();
+        while k >= self.values.len() {
+            self.values.push(None);
         }
-        self.values.push(Some(v));
-        self.values.len()-1
+        self.values[k] = Some(v);
+        k
+    }
+
+    pub fn get_mut(&mut self, k: usize) -> &mut T {
+        self.values.get_mut(k).unwrap().as_mut().unwrap()
     }
         
     pub fn replace(&mut self, k: usize, v: T) {
@@ -31,7 +32,7 @@ impl<T> ValueStore<T> {
     
     pub fn unstore(&mut self, k: usize) -> T {
         let out = self.values[k].take();
-        self.try = k;
+        self.smallest.put(k);
         out.unwrap()
     }
 }

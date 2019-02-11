@@ -5,3 +5,4 @@ authors = ["Dan Sheppard <dan@ebi.ac.uk>"]
 
 [dependencies]
 lazy_static="*"
+regex="*"
