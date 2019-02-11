@@ -9,18 +9,20 @@ pub enum ValueImpl {
 }
 
 impl ValueImpl {
-    pub fn value_string(&self) -> Option<&String> {
+    pub fn as_string<F,R>(&self, cb: F) -> R 
+                where F: FnOnce(&String) -> R {
         match self {
-            ValueImpl::Float(_) => None,
-            ValueImpl::String(s) => Some(&s)
+            ValueImpl::Float(f) => cb(&float_to_string(&f)),
+            ValueImpl::String(s) => cb(&s)
         }
     }
-
-    pub fn value_float(&self) -> Option<&Vec<f64>> {
+    
+    pub fn as_floats<F,R>(&self, cb: F) -> R
+                where F: FnOnce(&Vec<f64>) -> R {
         match self {
-            ValueImpl::Float(f) => Some(&f),
-            ValueImpl::String(_) => None
-        }
+            ValueImpl::Float(f) => cb(&f),
+            ValueImpl::String(s) => cb(&string_to_float(&s))
+        }        
     }
     
     pub fn len(&self) -> usize {
@@ -28,14 +30,14 @@ impl ValueImpl {
             ValueImpl::Float(f) => f.len(),
             ValueImpl::String(s) => s.len()
         }
-    }        
+    }
 }
 
 fn float_to_string(data: &Vec<f64>) -> String {
     data.iter().map(|s| char::from_u32(*s as u32).unwrap_or(' ')).collect()
 }
 
-fn string_to_float(data: String) -> Vec<f64> {
+fn string_to_float(data: &String) -> Vec<f64> {
     data.chars().map(|s| s as u32 as f64).collect()
 }
 
@@ -59,26 +61,22 @@ impl Value {
         self.0.borrow().len()
     }
 
-    pub fn value(&self) -> Rc<RefCell<ValueImpl>> {
-        self.0.clone()
+    pub fn as_string<F,R>(&self, cb: F) -> R 
+                where F: FnOnce(&String) -> R {
+        self.0.borrow().as_string(cb)                    
     }
 
-    pub fn to_string(&self) -> Value {
-        let imp = self.0.borrow();
-        match *imp {
-            ValueImpl::Float(ref f) => Value::new_from_string(float_to_string(&f.clone())),
-            ValueImpl::String(_) => self.clone()
+    pub fn as_floats<F,R>(&self, cb: F) -> R
+                where F: FnOnce(&Vec<f64>) -> R {
+        self.0.borrow().as_floats(cb)
+    }
+
+    fn update(&mut self, v: Option<ValueImpl>) {
+        if let Some(v) = v {
+            *self.0.borrow_mut() = v;
         }
     }
-    
-    pub fn to_float(&self) -> Value {
-        let imp = self.0.borrow();
-        match *imp {
-            ValueImpl::String(ref s) => Value::new_from_float(string_to_float(s.clone())),
-            ValueImpl::Float(_) => self.clone()
-        }
-    }
-    
+        
     pub fn coerce_to_string(&mut self) {
         let v = {
             match *self.0.borrow() {
@@ -87,22 +85,18 @@ impl Value {
                 ValueImpl::String(_) => None
             }
         };
-        if let Some(v) = v {
-            *self.0.borrow_mut() = v;
-        }
+        self.update(v);
     }
 
     pub fn coerce_to_float(&mut self) {
         let v = {
             match *self.0.borrow() {
                 ValueImpl::String(ref s) =>
-                    Some(ValueImpl::Float(string_to_float(s.clone()))),
+                    Some(ValueImpl::Float(string_to_float(&s))),
                 ValueImpl::Float(_) => None
             }
         };
-        if let Some(v) = v {
-            *self.0.borrow_mut() = v;
-        }
+        self.update(v);
     }
 }
 
@@ -129,13 +123,12 @@ mod test {
             104.,101.,108.,108.,111.,32.,
             116.,225.,110.,97.,105.,115.,116.,101.
         });
-        assert_eq!("\"hello tánaiste\"",format!("{:?}",v_f.to_string()));
-        assert_eq!("[104.0, 101.0, 108.0, 108.0, 111.0, 32.0, 116.0, 225.0, 110.0, 97.0, 105.0, 115.0, 116.0, 101.0]",format!("{:?}",v_f));
-        assert_eq!("[104.0, 101.0, 108.0, 108.0, 111.0, 32.0, 116.0, 225.0, 110.0, 97.0, 105.0, 115.0, 116.0, 101.0]",format!("{:?}",v_f.to_float()));
+        assert_eq!("\"hello tánaiste\"",format!("{:?}",v_f.as_string(|s| s.clone())));
+        assert_eq!("[104.0, 101.0, 108.0, 108.0, 111.0, 32.0, 116.0, 225.0, 110.0, 97.0, 105.0, 115.0, 116.0, 101.0]",v_f.as_floats(|f| format!("{:?}",f)));
         let v_s = Value::new_from_string("hello tánaiste".to_string());
         assert_eq!("\"hello tánaiste\"",format!("{:?}",v_s));
-        assert_eq!("\"hello tánaiste\"",format!("{:?}",v_s.to_string()));
-        assert_eq!("[104.0, 101.0, 108.0, 108.0, 111.0, 32.0, 116.0, 225.0, 110.0, 97.0, 105.0, 115.0, 116.0, 101.0]",format!("{:?}",v_s.to_float()));
+        assert_eq!("\"hello tánaiste\"",format!("{:?}",v_s.as_string(|s| s.clone())));
+        assert_eq!("[104.0, 101.0, 108.0, 108.0, 111.0, 32.0, 116.0, 225.0, 110.0, 97.0, 105.0, 115.0, 116.0, 101.0]",v_s.as_floats(|f| format!("{:?}",f)));
         let mut vc_s = Value::new_from_string("hello tánaiste".to_string());
         vc_s.coerce_to_float();
         assert_eq!("[104.0, 101.0, 108.0, 108.0, 111.0, 32.0, 116.0, 225.0, 110.0, 97.0, 105.0, 115.0, 116.0, 101.0]",format!("{:?}",vc_s));

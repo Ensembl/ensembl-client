@@ -17,12 +17,9 @@ impl Sleep {
 impl Command for Sleep {    
     fn execute(&self, data: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         proc.lock().unwrap().sleep();
-        let mut ms_v = data.registers().get(self.0);
-        ms_v.coerce_to_float();        
-        let ms_vi = ms_v.value();
-        let ms_s = ms_vi.borrow();
-        let ms_f = ms_s.value_float().unwrap();
-        let ms = if ms_f.len() > 0 { ms_f[0] } else { 0. };
+        let ms = data.registers().get(self.0).as_floats(|f|
+            f.get(0).map(|s| *s).unwrap_or(0.)
+        );
         thread::spawn(move || {
             thread::sleep(time::Duration::from_millis(ms as u64));
             proc.lock().unwrap().wake();
