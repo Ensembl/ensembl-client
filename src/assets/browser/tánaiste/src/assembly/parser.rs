@@ -2,10 +2,10 @@ use super::lexer::{ Lexer, Token };
 use super::parsetree::{ Statement, Argument, SourceCode };
 
 struct Parse<'input> {
-    error: Option<(usize,String,usize)>,
-    stream: Box<Iterator<Item=(usize,Token,usize)> + 'input>,
-    extra: Option<(usize,Token,usize)>,
-    pos_got: (usize,usize)
+    error: Option<(i32,String)>,
+    stream: Box<Iterator<Item=(i32,Token)> + 'input>,
+    extra: Option<(i32,Token)>,
+    pos_got: i32
 }
 
 impl<'input> Parse<'input> {
@@ -14,11 +14,11 @@ impl<'input> Parse<'input> {
             stream: Box::new(Lexer::<'input>::new(input).into_iter()),
             extra: None,
             error: None,
-            pos_got: (0,0)
+            pos_got: 0
         }
     }
     
-    fn next_tok(&mut self) -> (usize,Token,usize) {
+    fn next_tok(&mut self) -> (i32,Token) {
         if let Some(t) = self.extra.take() {
             t
         } else {
@@ -28,24 +28,24 @@ impl<'input> Parse<'input> {
                 }
                 t
             } else {
-                (0,Token::EOF,0)
+                (0,Token::EOF)
             }
         }
     }
 
     fn next(&mut self) -> Token {
         let t = self.next_tok();
-        self.pos_got = (t.0,t.2);
+        self.pos_got = t.0;
         t.1
     }
 
     fn unget(&mut self, t: Token) {
-        self.extra = Some((self.pos_got.0,t,self.pos_got.1));
+        self.extra = Some((self.pos_got,t));
     }
 
     fn set_error(&mut self, e: String) {
         if self.error.is_none() {
-            self.error = Some((self.pos_got.0,e,self.pos_got.1));
+            self.error = Some((self.pos_got,e));
         }
     }
 
@@ -127,8 +127,8 @@ impl<'input> Parse<'input> {
             self.unget(t);
             out.push(self.parse_statement());
         }
-        if let Some((a,ref error,b)) = self.error {
-            Err(format!("{} at bytes {}-{}",error.to_string(),a,b).to_string())
+        if let Some((line,ref error)) = self.error {
+            Err(format!("{} at line {}",error.to_string(),line))
         } else {
             Ok(SourceCode { statements: out })
         }

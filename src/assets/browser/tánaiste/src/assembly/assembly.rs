@@ -55,13 +55,13 @@ mod test {
     #[test]
     fn parse_error_1() {
         let e = test_assemble("parse-error-1").err().unwrap();
-        assert_eq!("Bad string: bad utf8: invalid utf-8 sequence of 1 bytes from index 7 at bytes 12-13",e.join("\n"));
+        assert_eq!("Bad string: bad utf8: invalid utf-8 sequence of 1 bytes from index 7 at line 1",e.join("\n"));
     }
 
     #[test]
     fn parse_error_2() {
         let e = test_assemble("parse-error-2").err().unwrap();
-        assert_eq!("Bad instruction Chr(\':\') at bytes 13-14",e.join("\n"));
+        assert_eq!("Bad instruction Chr(\':\') at line 2",e.join("\n"));
     }
 
     #[test]
