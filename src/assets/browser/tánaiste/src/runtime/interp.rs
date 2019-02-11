@@ -6,6 +6,9 @@ use util::ValueStore;
 use super::environment::Environment;
 use super::process::Process;
 
+#[derive(Debug,PartialEq)]
+pub enum ProcessStatus { Halted, Gone, Running, Sleeping }
+
 struct InterpProcess(Process);
 
 impl InterpProcess {
@@ -15,16 +18,25 @@ impl InterpProcess {
         env.finished(self.0.get_pid().unwrap(),exit_float,exit_str);
     }
     
-    fn run_proc(&mut self, env: &mut Box<Environment>) -> bool {
+    fn run_proc(&mut self, env: &mut Box<Environment>) {
         self.0.step();
         if self.0.halted() {
             self.send_finished(env);
         }
-        return self.0.ready()
     }
     
     fn set_pid(&mut self, pid: usize) {
         self.0.set_pid(pid);
+    }
+    
+    fn status(&self) -> ProcessStatus {
+        if self.0.halted() {
+            ProcessStatus::Halted
+        } else if self.0.ready() {
+            ProcessStatus::Running
+        } else {
+            ProcessStatus::Sleeping
+        }
     }
 }
 
@@ -77,7 +89,7 @@ impl Interp {
         match bc.exec(start,Some(self.signals.clone())) {
             Ok(p) => {
                 let pid = self.procs.store(InterpProcess(p));
-                self.procs.get_mut(pid).set_pid(pid);
+                self.procs.get_mut(pid).unwrap().set_pid(pid);
                 self.runq.insert(pid);
                 Ok(pid)
             },
@@ -95,8 +107,12 @@ impl Interp {
         if self.runq.is_empty() { return RunResult::Empty; }
         let runnable : Vec<usize> = self.runq.drain().collect();
         for pid in runnable {
-            let mut ip = self.procs.get_mut(pid);
-            if ip.run_proc(&mut self.env) {
+            let status = {
+                let mut ip = self.procs.get_mut(pid).unwrap();
+                ip.run_proc(&mut self.env);
+                ip.status()
+            };
+            if status == ProcessStatus::Running {
                 self.nextq.insert(pid);
             }
             if self.env.get_time() > end {
@@ -106,7 +122,7 @@ impl Interp {
         RunResult::Finished
     }
     
-    fn step(&mut self, end: i64) -> bool {
+    pub fn run(&mut self, end: i64) -> bool {
         loop {
             self.add_awoken();
             let r = self.drain_runq(end);
@@ -118,12 +134,24 @@ impl Interp {
             return r == RunResult::Timeout;
         }
     }
+    
+    pub fn status(&mut self, pid: usize) -> ProcessStatus {
+        if let Some(ref mut ip) = self.procs.get_mut(pid) {
+            ip.status()
+        } else {
+            ProcessStatus::Gone
+        }
+    }
+    
+    pub fn reuse(&mut self, pid: usize) {
+        self.procs.unstore(pid);
+    }
 }
 
 #[cfg(test)]
 mod test {
     use std::{ thread, time };
-    use super::Interp;
+    use super::{ Interp, ProcessStatus };
     use super::super::environment::{ DebugEnvironment, Environment };
     use test::command_compile;
     
@@ -132,7 +160,7 @@ mod test {
         let mut t_env = DebugEnvironment::new();
         let now = t_env.get_time();
         let mut t = Interp::new(t_env.make());
-        assert!(!t.step(now+1000));
+        assert!(!t.run(now+1000));
     }
     
     #[test]
@@ -142,7 +170,7 @@ mod test {
         let mut t = Interp::new(t_env.make());
         let bin = command_compile("interp-smoke");
         t.exec(&bin,None).ok().unwrap();
-        while t.step(now+1000) {}
+        while t.run(now+1000) {}
         assert_eq!("Success!",t_env.get_exit_str().unwrap());
         assert_eq!([0.,200.].to_vec(),t_env.get_exit_float().unwrap());
     }
@@ -154,9 +182,26 @@ mod test {
         let mut t = Interp::new(t_env.make());
         let bin = command_compile("interp-sleep-wake");
         t.exec(&bin,None).ok().unwrap();
-        while t.step(now+1000) {}
+        while t.run(now+1000) {}
         thread::sleep(time::Duration::from_millis(500));
-        while t.step(now+1000) {}
+        while t.run(now+1000) {}
         assert_eq!("awoke",t_env.get_exit_str().unwrap());
+    }
+    
+    #[test]
+    fn status() {
+        let mut t_env = DebugEnvironment::new();
+        let now = t_env.get_time();
+        let mut t = Interp::new(t_env.make());
+        let bin = command_compile("interp-status");
+        let pid = t.exec(&bin,None).ok().unwrap();
+        assert_eq!(ProcessStatus::Running,t.status(pid));
+        while t.run(now+1000) {}
+        assert_eq!(ProcessStatus::Sleeping,t.status(pid));
+        thread::sleep(time::Duration::from_millis(500));
+        while t.run(now+1000) {}
+        assert_eq!(ProcessStatus::Halted,t.status(pid));
+        t.reuse(pid);
+        assert_eq!(ProcessStatus::Gone,t.status(pid));
     }
 }

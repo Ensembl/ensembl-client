@@ -84,3 +84,11 @@
     const #2, "awoke"
     dprint #2
 
+;;; --cut-- [interp-status]
+
+    const #1, "sleeping"
+    dprint #1
+    const #1, [100]
+    sleep #1
+    const #2, "awoke"
+    dprint #2

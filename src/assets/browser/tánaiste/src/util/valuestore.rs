@@ -22,8 +22,8 @@ impl<T> ValueStore<T> {
         k
     }
 
-    pub fn get_mut(&mut self, k: usize) -> &mut T {
-        self.values.get_mut(k).unwrap().as_mut().unwrap()
+    pub fn get_mut(&mut self, k: usize) -> Option<&mut T> {
+        self.values.get_mut(k).and_then(|v| v.as_mut())
     }
         
     pub fn replace(&mut self, k: usize, v: T) {
