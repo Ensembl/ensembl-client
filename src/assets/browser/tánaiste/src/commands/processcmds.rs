@@ -15,11 +15,8 @@ impl Sleep {
 }
 
 impl Command for Sleep {    
-    //fn signature(&self) -> Signature { Signature::new("sleep","r") }
-
-    fn execute(&self, data: &mut DataState, proc: Arc<Mutex<ProcState>>) {
+    fn execute(&self, data: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         proc.lock().unwrap().sleep();
-        
         let mut ms_v = data.registers().get(self.0);
         ms_v.coerce_to_float();        
         let ms_vi = ms_v.value();
@@ -30,6 +27,7 @@ impl Command for Sleep {
             thread::sleep(time::Duration::from_millis(ms as u64));
             proc.lock().unwrap().wake();
         });
+        return 1;
     }
 }
 
@@ -52,8 +50,9 @@ impl Halt {
 }
 
 impl Command for Halt {
-    fn execute(&self, _data: &mut DataState, proc: Arc<Mutex<ProcState>>) {
+    fn execute(&self, _data: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         proc.lock().unwrap().halt();
+        return 0;
     }
 }
 

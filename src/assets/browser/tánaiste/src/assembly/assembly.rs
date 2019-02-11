@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use regex::Regex;
 use std::thread;
 use std::time;
 
@@ -30,6 +29,7 @@ mod test {
         BinaryCode, Instruction, instruction_bundle_core, InstructionSet
     };
     use commands::{ ConstantI, DPrintI, HaltI };
+    use runtime::PROCESS_CONFIG_DEFAULT;
     use test::TEST_CODE;
     use super::super::codegen::codegen;
     use super::super::parser::parse_source;
@@ -43,7 +43,7 @@ mod test {
     #[test]
     fn smoke() {
         let bin = test_assemble("smoke").ok().unwrap();
-        let mut proc = bin.exec(Some("start")).ok().unwrap();
+        let mut proc = bin.exec(Some("start"),None,&PROCESS_CONFIG_DEFAULT).ok().unwrap();
         proc.run();
         while !proc.halted() {
             proc.run();
@@ -55,13 +55,13 @@ mod test {
     #[test]
     fn parse_error_1() {
         let e = test_assemble("parse-error-1").err().unwrap();
-        assert_eq!("Bad string: bad utf8: invalid utf-8 sequence of 1 bytes from index 7 at bytes 12-13",e.join("\n"));
+        assert_eq!("Bad string: bad utf8: invalid utf-8 sequence of 1 bytes from index 7 at line 1",e.join("\n"));
     }
 
     #[test]
     fn parse_error_2() {
         let e = test_assemble("parse-error-2").err().unwrap();
-        assert_eq!("Bad instruction Chr(\':\') at bytes 13-14",e.join("\n"));
+        assert_eq!("Bad instruction Chr(\':\') at line 2",e.join("\n"));
     }
 
     #[test]

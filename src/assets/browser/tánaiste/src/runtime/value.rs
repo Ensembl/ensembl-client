@@ -22,6 +22,13 @@ impl ValueImpl {
             ValueImpl::String(_) => None
         }
     }
+    
+    pub fn len(&self) -> usize {
+        match self {
+            ValueImpl::Float(f) => f.len(),
+            ValueImpl::String(s) => s.len()
+        }
+    }        
 }
 
 fn float_to_string(data: &Vec<f64>) -> String {
@@ -46,6 +53,10 @@ impl Value {
     
     pub fn new_from_string(data: String) -> Value {
         Value(Rc::new(RefCell::new(ValueImpl::String(data))))
+    }
+
+    pub fn len(&self) -> usize {
+        self.0.borrow().len()
     }
 
     pub fn value(&self) -> Rc<RefCell<ValueImpl>> {
@@ -108,26 +119,31 @@ impl fmt::Debug for Value {
     }
 }
 
-#[test]
-fn interconvert() {
-    let v_f = Value::new_from_float(vec!{
-        104.,101.,108.,108.,111.,32.,
-        116.,225.,110.,97.,105.,115.,116.,101.
-    });
-    assert_eq!("\"hello tánaiste\"",format!("{:?}",v_f.to_string()));
-    assert_eq!("[104.0, 101.0, 108.0, 108.0, 111.0, 32.0, 116.0, 225.0, 110.0, 97.0, 105.0, 115.0, 116.0, 101.0]",format!("{:?}",v_f));
-    assert_eq!("[104.0, 101.0, 108.0, 108.0, 111.0, 32.0, 116.0, 225.0, 110.0, 97.0, 105.0, 115.0, 116.0, 101.0]",format!("{:?}",v_f.to_float()));
-    let v_s = Value::new_from_string("hello tánaiste".to_string());
-    assert_eq!("\"hello tánaiste\"",format!("{:?}",v_s));
-    assert_eq!("\"hello tánaiste\"",format!("{:?}",v_s.to_string()));
-    assert_eq!("[104.0, 101.0, 108.0, 108.0, 111.0, 32.0, 116.0, 225.0, 110.0, 97.0, 105.0, 115.0, 116.0, 101.0]",format!("{:?}",v_s.to_float()));
-    let mut vc_s = Value::new_from_string("hello tánaiste".to_string());
-    vc_s.coerce_to_float();
-    assert_eq!("[104.0, 101.0, 108.0, 108.0, 111.0, 32.0, 116.0, 225.0, 110.0, 97.0, 105.0, 115.0, 116.0, 101.0]",format!("{:?}",vc_s));
-    let mut vc_f = Value::new_from_float(vec!{
-        104.,101.,108.,108.,111.,32.,
-        116.,225.,110.,97.,105.,115.,116.,101.
-    });
-    vc_f.coerce_to_string();
-    assert_eq!("\"hello tánaiste\"",format!("{:?}",vc_f));
+#[cfg(test)]
+mod test {
+    use super::Value;
+    
+    #[test]
+    fn interconvert() {
+        let v_f = Value::new_from_float(vec!{
+            104.,101.,108.,108.,111.,32.,
+            116.,225.,110.,97.,105.,115.,116.,101.
+        });
+        assert_eq!("\"hello tánaiste\"",format!("{:?}",v_f.to_string()));
+        assert_eq!("[104.0, 101.0, 108.0, 108.0, 111.0, 32.0, 116.0, 225.0, 110.0, 97.0, 105.0, 115.0, 116.0, 101.0]",format!("{:?}",v_f));
+        assert_eq!("[104.0, 101.0, 108.0, 108.0, 111.0, 32.0, 116.0, 225.0, 110.0, 97.0, 105.0, 115.0, 116.0, 101.0]",format!("{:?}",v_f.to_float()));
+        let v_s = Value::new_from_string("hello tánaiste".to_string());
+        assert_eq!("\"hello tánaiste\"",format!("{:?}",v_s));
+        assert_eq!("\"hello tánaiste\"",format!("{:?}",v_s.to_string()));
+        assert_eq!("[104.0, 101.0, 108.0, 108.0, 111.0, 32.0, 116.0, 225.0, 110.0, 97.0, 105.0, 115.0, 116.0, 101.0]",format!("{:?}",v_s.to_float()));
+        let mut vc_s = Value::new_from_string("hello tánaiste".to_string());
+        vc_s.coerce_to_float();
+        assert_eq!("[104.0, 101.0, 108.0, 108.0, 111.0, 32.0, 116.0, 225.0, 110.0, 97.0, 105.0, 115.0, 116.0, 101.0]",format!("{:?}",vc_s));
+        let mut vc_f = Value::new_from_float(vec!{
+            104.,101.,108.,108.,111.,32.,
+            116.,225.,110.,97.,105.,115.,116.,101.
+        });
+        vc_f.coerce_to_string();
+        assert_eq!("\"hello tánaiste\"",format!("{:?}",vc_f));
+    }
 }

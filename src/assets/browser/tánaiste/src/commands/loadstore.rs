@@ -14,8 +14,9 @@ impl Constant {
 }
 
 impl Command for Constant {    
-    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
         rt.registers().set(self.0,self.1.clone());
+        self.1.len() as i64
     }
 }
 
@@ -38,12 +39,11 @@ impl Move {
 }
 
 impl Command for Move {
-    //fn signature(&self) -> Signature { Signature::new("move","rr") }
-
-    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
         let regs = rt.registers();
         let v = regs.get(self.1).clone();
         regs.set(self.0,v);
+        return 1;
     }
 }
 

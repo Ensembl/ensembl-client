@@ -1,7 +1,10 @@
+use std::cell::{ RefCell, RefMut };
+use std::rc::Rc;
 use std::time::Instant;
 
 pub trait Environment {
     fn get_time(&mut self) -> i64;
+    fn finished(&mut self, pid: usize, codes: Vec<f64>, string: String);
 }
 
 pub struct DefaultEnvironment {
@@ -21,4 +24,9 @@ impl Environment for DefaultEnvironment {
         let d = Instant::now().duration_since(self.start);
         d.as_secs() as i64 * 1000 + d.subsec_millis() as i64
     }
+    
+    fn finished(&mut self, pid: usize, codes: Vec<f64>, string: String) {
+        println!("exit pid={} codes={:?}, string={}",pid,codes,string);
+    }
 }
+

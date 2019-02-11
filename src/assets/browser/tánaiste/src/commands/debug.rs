@@ -14,8 +14,9 @@ impl DebugPrint {
 }
 
 impl Command for DebugPrint {
-    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
         println!("{:?}",rt.registers().get(self.0));
+        return 10
     }
 }
 

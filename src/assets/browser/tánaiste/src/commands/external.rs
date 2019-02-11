@@ -35,9 +35,7 @@ impl External {
 }
 
 impl Command for External {
-    //fn signature(&self) -> Signature { Signature::new("extern","rrrs") }
-    
-    fn execute(&self, data: &mut DataState, proc: Arc<Mutex<ProcState>>) {
+    fn execute(&self, data: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let r = data.continuations().get(1).value();
         let rv = r.borrow();
         let retry = rv.value_float();
@@ -50,13 +48,13 @@ impl Command for External {
                 }));
                 if self.stdout_reg > 0 {
                     data.registers().set(self.stdout_reg,
-                        Value::new_from_string(res.stdout));                    
+                        Value::new_from_string(res.stdout));
                 }
                 if self.stderr_reg > 0 {
                     data.registers().set(self.stderr_reg,
-                        Value::new_from_string(res.stderr));                    
+                        Value::new_from_string(res.stderr));
                 }
-                return;
+                return 0;
             }
         }
         let r_idx = results.lock().unwrap().store(None);
@@ -87,6 +85,7 @@ impl Command for External {
             }));
             proc.lock().unwrap().wake();
         });
+        return 1000;
     }
 }
 
