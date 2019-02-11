@@ -219,8 +219,8 @@ mod test {
     use std::{ thread, time };
     use super::{ Interp, ProcessState, ProcessStatus, DEFAULT_CONFIG };
     use super::super::procconf::{ ProcessConfig, PROCESS_CONFIG_DEFAULT };
-    use super::super::environment::{ DebugEnvironment, Environment };
-    use test::command_compile;
+    use super::super::environment::{ Environment };
+    use test::{ command_compile, DebugEnvironment };
         
     #[test]
     fn noprocs() {
