@@ -102,3 +102,26 @@
     concat #3, #3, #3
     concat #3, #3, #3
     concat #3, #3, #3
+    concat #3, #3, #3
+
+;;; --cut-- [limit-stack-entry]
+
+    const #1,[0,0]
+    push #1
+    push #1
+    push #1
+    push #1
+
+;;; --cut-- [limit-stack-data]
+
+    const #1,[0,0]
+    push #1
+    push #1
+
+;;; --cut-- [time-limit]
+
+    const #1,[50]
+    sleep #1
+    sleep #1
+    sleep #1
+    

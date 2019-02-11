@@ -2,13 +2,19 @@ use core::Command;
 use super::Value;
 
 pub struct RegisterFile {
-    registers: Vec<Value>
+    registers: Vec<Value>,
+    limit: Option<usize>,
+    size: usize,
+    bust: bool
 }
 
 impl RegisterFile {
-    pub fn new() -> RegisterFile {
+    pub fn new(limit: Option<usize>) -> RegisterFile {
         RegisterFile {
-            registers: Vec::<Value>::new()
+            registers: Vec::<Value>::new(),
+            limit,
+            size: 0,
+            bust: false
         }
     }
     
@@ -26,6 +32,13 @@ impl RegisterFile {
     pub fn set(&mut self, idx: usize, v: Value) {
         if idx > 0 {
             self.registers_size(idx);
+            if let Some(limit) = self.limit {
+                let delta = v.len() - self.registers[idx].len();
+                if self.size + delta > limit {
+                    self.bust = true;
+                    return;
+                }
+            }
             self.registers[idx] = v.clone();
         }
     }
@@ -38,5 +51,13 @@ impl RegisterFile {
     
     pub fn clear(&mut self) {
         self.registers.clear();
+    }
+    
+    pub fn is_bust(&self) -> Option<String> { 
+        if self.bust {
+            Some(format!("register limit {}",self.limit.unwrap()))
+        } else {
+            None
+        }
     }
 }

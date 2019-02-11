@@ -22,12 +22,14 @@ pub struct Process {
 }
 
 impl Process {
-    pub fn new(program: Rc<Vec<Box<Command>>>, pc: usize, signals: Option<Signals>) -> Process {
+    pub fn new(program: Rc<Vec<Box<Command>>>, pc: usize, 
+               signals: Option<Signals>, reg_limit: Option<usize>,
+               stack_entry_limit: Option<usize>, stack_data_limit: Option<usize>) -> Process {
         Process {
             program,
-            data: DataState::new(pc),
+            data: DataState::new(pc,reg_limit,stack_entry_limit,stack_data_limit),
             proc: Arc::new(Mutex::new(ProcState::new(signals))),
-            killed: None
+            killed: None,
         }
     }
     
@@ -35,18 +37,29 @@ impl Process {
     pub fn get_pid(&self) -> Option<usize> { self.proc.lock().unwrap().get_pid() }
     
     pub fn step(&mut self) -> i64 {
-        let data = &mut self.data;
-        {
-            if data.pc() >= self.program.len() {
+        let mut kill = None;
+        let cyc = {
+            let data = &mut self.data;
+            {
+                if data.pc() >= self.program.len() {
+                    self.proc.lock().unwrap().halt();
+                }
+                if self.proc.lock().unwrap().is_halted() {
+                    return 0;
+                }
+            }
+            data.clear_cont();
+            let cyc = self.program[data.pc()].execute(data,self.proc.clone());
+            if let Some(msg) = data.is_bust() {
+                kill = Some(format!("Exceeded memory limit: {}",msg));
                 self.proc.lock().unwrap().halt();
             }
-            if self.proc.lock().unwrap().is_halted() {
-                return 0;
-            }
+            data.jump(1);
+            cyc
+        };
+        if let Some(kill) = kill {
+            self.kill(kill);
         }
-        data.clear_cont();
-        let cyc = self.program[data.pc()].execute(data,self.proc.clone());
-        data.jump(1);
         cyc
     }
     
@@ -107,7 +120,7 @@ mod test {
     
     #[test]
     fn registers() {
-        let mut r = Process::new(Rc::new(vec!{}),0,None);
+        let mut r = Process::new(Rc::new(vec!{}),0,None,None,None,None);
         let regs = r.data.registers();
         regs.set(4,Value::new_from_string("hi".to_string()));
         let v = regs.get(4);
@@ -122,7 +135,7 @@ mod test {
 
     #[test]
     fn data_stack() {
-        let mut r = Process::new(Rc::new(vec!{}),0,None);
+        let mut r = Process::new(Rc::new(vec!{}),0,None,None,None,None);
         r.data.push_data(Value::new_from_string("lo".to_string()));
         r.data.push_data(Value::new_from_string("hi".to_string()));
         assert_eq!("\"hi\"",format!("{:?}",r.data.peek_data()));

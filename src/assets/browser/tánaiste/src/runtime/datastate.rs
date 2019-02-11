@@ -6,29 +6,59 @@ pub struct DataState {
     registers: RegisterFile,
     data_stack: Vec<Value>,
     pc: usize,
-    again: bool
+    again: bool,
+    stack_size: usize,
+    stack_data_limit: Option<usize>,
+    stack_entry_limit: Option<usize>,
+    bust: Option<String>
 }
 
 impl DataState {
-    pub fn new(pc: usize) -> DataState {
+    pub fn new(pc: usize, reg_limit: Option<usize>, 
+                stack_entry_limit: Option<usize>,
+                stack_data_limit: Option<usize>) -> DataState {
         DataState {
-            registers: RegisterFile::new(),
-            continuations: RegisterFile::new(),
+            registers: RegisterFile::new(reg_limit),
+            continuations: RegisterFile::new(None),
             data_stack: Vec::<Value>::new(),
-            pc,
-            again: false
+            pc, stack_data_limit, stack_entry_limit,
+            stack_size: 0,
+            again: false,
+            bust: None
         }
     }
     
     pub fn continuations(&mut self) -> &mut RegisterFile { &mut self.continuations }
     pub fn registers(&mut self) -> &mut RegisterFile { &mut self.registers }
     
+    pub fn is_bust(&self) -> Option<String> {
+        if let Some(msg) = self.registers.is_bust() {
+            return Some(msg);
+        }
+        return self.bust.as_ref().map(|s| s.clone())
+    }
+    
     pub fn push_data(&mut self, v: Value) {
+        if let Some(limit) = self.stack_entry_limit {
+            if limit <= self.data_stack.len() {
+                self.bust = Some(format!("stack entry limit {}",limit));
+            }
+        }
+        if let Some(limit) = self.stack_data_limit {
+            self.stack_size += v.len();
+            if limit <= self.stack_size {
+                self.bust = Some(format!("stack data limit {}",limit));
+            }
+        }
         self.data_stack.push(v);
     }
     
     pub fn pop_data(&mut self) -> Value {
-        self.data_stack.pop().unwrap_or_else(|| Value::new_null())
+        let v = self.data_stack.pop().unwrap_or_else(|| Value::new_null());
+        if let Some(limit) = self.stack_data_limit {
+            self.stack_size -= v.len();
+        }
+        v
     }
     
     pub fn peek_data(&self) -> Value {
