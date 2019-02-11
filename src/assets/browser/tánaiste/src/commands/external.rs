@@ -36,37 +36,29 @@ impl External {
 
 impl Command for External {
     fn execute(&self, data: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
-        let r = data.continuations().get(1).value();
-        let rv = r.borrow();
-        let retry = rv.value_float();
-        if let Some(ref retry) = retry {
-            if retry.len() > 0 && retry[0] > 0. {
-                let s = &mut results.lock().unwrap();
-                let res = s.unstore(retry[0] as usize-1).unwrap();
-                data.registers().set(self.code_reg,Value::new_from_float(vec! {
-                    res.exit_code as f64
-                }));
-                if self.stdout_reg > 0 {
-                    data.registers().set(self.stdout_reg,
-                        Value::new_from_string(res.stdout));
-                }
-                if self.stderr_reg > 0 {
-                    data.registers().set(self.stderr_reg,
-                        Value::new_from_string(res.stderr));
-                }
-                return 0;
+        let retry = data.continuations().get(1).as_floats(|f| 
+            f.get(0).map(|s| *s)
+        );
+        if let Some(retry) = retry {
+            let s = &mut results.lock().unwrap();
+            let res = s.unstore(retry as usize-1).unwrap();
+            data.registers().set(self.code_reg,Value::new_from_float(vec! {
+                res.exit_code as f64
+            }));
+            if self.stdout_reg > 0 {
+                data.registers().set(self.stdout_reg,
+                    Value::new_from_string(res.stdout));
             }
+            if self.stderr_reg > 0 {
+                data.registers().set(self.stderr_reg,
+                    Value::new_from_string(res.stderr));
+            }
+            return 0;
         }
         let r_idx = results.lock().unwrap().store(None);
         data.set_again();
-        data.continuations().set(1,Value::new_from_float(vec!{ (r_idx+1) as f64 }));
- 
-        let mut cmd_v = data.registers().get(self.command_reg);
-        cmd_v.coerce_to_string();
-        let cmd_vi = cmd_v.value();
-        let cmd_s = cmd_vi.borrow();
-        let cmd_str = cmd_s.value_string().unwrap().clone();
-        println!("command '{}'",cmd_str);
+        data.continuations().set(1,Value::new_from_float(vec!{ (r_idx+1) as f64 })); 
+        let cmd_str = data.registers().get(self.command_reg).as_string(|s| s.clone());
         proc.lock().unwrap().sleep();
         let res = results.clone();
         thread::spawn(move || {
