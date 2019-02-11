@@ -7,37 +7,93 @@ use super::environment::Environment;
 use super::process::Process;
 
 #[derive(Debug,PartialEq)]
-pub enum ProcessStatus { Halted, Gone, Running, Sleeping }
+pub enum ProcessState { Killed(String), Halted, Gone, Running, Sleeping }
 
-struct InterpProcess(Process);
+#[derive(Debug)]
+pub struct ProcessStatus {
+    state: ProcessState,
+    cycles: i64
+}
+
+const STATUS_GONE : ProcessStatus = ProcessStatus {
+    state: ProcessState::Gone,
+    cycles: 0
+};
+
+struct ProcessConfig {
+    cpu_limit: Option<i64>
+}
+
+const PROCESS_CONFIG_DEFAULT : ProcessConfig = ProcessConfig {
+    cpu_limit: None
+};
+
+struct InterpProcess {
+    p: Process,
+    config: ProcessConfig,
+    cycles: i64
+}
 
 impl InterpProcess {
-    fn send_finished(&mut self, env: &mut Box<Environment>) {
-        let exit_float = self.0.get_reg_float(1);
-        let exit_str = self.0.get_reg_str(2);  
-        env.finished(self.0.get_pid().unwrap(),exit_float,exit_str);
+    fn new(p: Process, config: ProcessConfig) -> InterpProcess {
+        InterpProcess {
+            p, config,
+            cycles: 0
+        }
     }
     
-    fn run_proc(&mut self, env: &mut Box<Environment>) {
-        self.0.step();
-        if self.0.halted() {
+    fn send_finished(&mut self, env: &mut Box<Environment>) {
+        let exit_float = self.p.get_reg_float(1);
+        let exit_str = self.p.get_reg_str(2);  
+        env.finished(self.p.get_pid().unwrap(),exit_float,exit_str);
+    }
+    
+    fn oob(&mut self) -> Option<String> {
+        if let Some(cpu_limit) = self.config.cpu_limit {
+            if self.cycles > cpu_limit {
+                return Some(format!("Exceeded CPU limit {}",cpu_limit));
+            }
+        }
+        None
+    }
+    
+    fn run_proc(&mut self, env: &mut Box<Environment>, cycles: i64) {
+        let mut c = 0;
+        while self.p.ready() && c < cycles {        
+            c += self.p.step();
+            if let Some(msg) = self.oob() {
+                self.p.kill(msg);
+            }
+        }
+        self.cycles += c;
+        if self.p.halted() {
             self.send_finished(env);
         }
     }
     
     fn set_pid(&mut self, pid: usize) {
-        self.0.set_pid(pid);
+        self.p.set_pid(pid);
     }
     
     fn status(&self) -> ProcessStatus {
-        if self.0.halted() {
-            ProcessStatus::Halted
-        } else if self.0.ready() {
-            ProcessStatus::Running
+        let state = if self.p.halted() {
+            if let Some(msg) = self.p.killed() {
+                ProcessState::Killed(msg.to_string())
+            } else {
+                ProcessState::Halted
+            }
+        } else if self.p.ready() {
+            ProcessState::Running
         } else {
-            ProcessStatus::Sleeping
+            ProcessState::Sleeping
+        };
+        ProcessStatus {
+            state,
+            cycles: self.cycles
         }
     }
+    
+    fn get_cycles(&self) -> i64 { self.cycles }
 }
 
 #[derive(Clone)]
@@ -65,6 +121,7 @@ impl Signals {
 
 pub struct Interp {
     env: Box<Environment>,
+    config: InterpConfig,
     procs: ValueStore<InterpProcess>,
     runq: HashSet<usize>,
     nextq: HashSet<usize>,
@@ -74,10 +131,18 @@ pub struct Interp {
 #[derive(PartialEq)]
 enum RunResult { Timeout, Empty, Finished }
 
+pub struct InterpConfig {
+    cycles_per_run: i64
+}
+
+const DEFAULT_CONFIG : InterpConfig = InterpConfig {
+    cycles_per_run: 100,
+};
+
 impl Interp {
-    pub fn new(env: Box<Environment>) -> Interp {
+    pub fn new(env: Box<Environment>, config: InterpConfig) -> Interp {
         Interp {
-            env,
+            env, config,
             procs: ValueStore::<InterpProcess>::new(),
             runq: HashSet::<usize>::new(),
             nextq: HashSet::<usize>::new(),
@@ -85,10 +150,11 @@ impl Interp {
         }
     }
     
-    pub fn exec(&mut self, bc: &BinaryCode, start: Option<&str>) -> Result<usize,String> {
+    pub fn exec(&mut self, bc: &BinaryCode, start: Option<&str>, pc: Option<ProcessConfig>) -> Result<usize,String> {
+        let pc = pc.unwrap_or(PROCESS_CONFIG_DEFAULT);
         match bc.exec(start,Some(self.signals.clone())) {
             Ok(p) => {
-                let pid = self.procs.store(InterpProcess(p));
+                let pid = self.procs.store(InterpProcess::new(p,pc));
                 self.procs.get_mut(pid).unwrap().set_pid(pid);
                 self.runq.insert(pid);
                 Ok(pid)
@@ -109,13 +175,13 @@ impl Interp {
         for pid in runnable {
             let status = {
                 let mut ip = self.procs.get_mut(pid).unwrap();
-                ip.run_proc(&mut self.env);
+                ip.run_proc(&mut self.env,self.config.cycles_per_run);
                 ip.status()
             };
-            if status == ProcessStatus::Running {
+            if status.state == ProcessState::Running {
                 self.nextq.insert(pid);
             }
-            if self.env.get_time() > end {
+            if self.env.get_time() >= end {
                 return RunResult::Timeout;
             }
         }
@@ -126,11 +192,9 @@ impl Interp {
         loop {
             self.add_awoken();
             let r = self.drain_runq(end);
-            if r == RunResult::Finished {
-                self.runq = self.nextq.clone();
-                self.nextq.clear();
-                continue;
-            }
+            self.runq = self.nextq.clone();
+            self.nextq.clear();
+            if r == RunResult::Finished { continue; }
             return r == RunResult::Timeout;
         }
     }
@@ -139,7 +203,7 @@ impl Interp {
         if let Some(ref mut ip) = self.procs.get_mut(pid) {
             ip.status()
         } else {
-            ProcessStatus::Gone
+            STATUS_GONE
         }
     }
     
@@ -151,15 +215,15 @@ impl Interp {
 #[cfg(test)]
 mod test {
     use std::{ thread, time };
-    use super::{ Interp, ProcessStatus };
+    use super::{ Interp, ProcessState, ProcessStatus, ProcessConfig, DEFAULT_CONFIG };
     use super::super::environment::{ DebugEnvironment, Environment };
     use test::command_compile;
-    
+        
     #[test]
     fn noprocs() {
         let mut t_env = DebugEnvironment::new();
         let now = t_env.get_time();
-        let mut t = Interp::new(t_env.make());
+        let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
         assert!(!t.run(now+1000));
     }
     
@@ -167,9 +231,9 @@ mod test {
     fn smoke() {
         let mut t_env = DebugEnvironment::new();
         let now = t_env.get_time();
-        let mut t = Interp::new(t_env.make());
+        let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
         let bin = command_compile("interp-smoke");
-        t.exec(&bin,None).ok().unwrap();
+        t.exec(&bin,None,None).ok().unwrap();
         while t.run(now+1000) {}
         assert_eq!("Success!",t_env.get_exit_str().unwrap());
         assert_eq!([0.,200.].to_vec(),t_env.get_exit_float().unwrap());
@@ -179,9 +243,9 @@ mod test {
     fn sleep_wake() {
         let mut t_env = DebugEnvironment::new();
         let now = t_env.get_time();
-        let mut t = Interp::new(t_env.make());
+        let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
         let bin = command_compile("interp-sleep-wake");
-        t.exec(&bin,None).ok().unwrap();
+        t.exec(&bin,None,None).ok().unwrap();
         while t.run(now+1000) {}
         thread::sleep(time::Duration::from_millis(500));
         while t.run(now+1000) {}
@@ -192,16 +256,47 @@ mod test {
     fn status() {
         let mut t_env = DebugEnvironment::new();
         let now = t_env.get_time();
-        let mut t = Interp::new(t_env.make());
+        let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
         let bin = command_compile("interp-status");
-        let pid = t.exec(&bin,None).ok().unwrap();
-        assert_eq!(ProcessStatus::Running,t.status(pid));
+        let pid = t.exec(&bin,None,None).ok().unwrap();
+        assert_eq!(ProcessState::Running,t.status(pid).state);
         while t.run(now+1000) {}
-        assert_eq!(ProcessStatus::Sleeping,t.status(pid));
+        assert_eq!(ProcessState::Sleeping,t.status(pid).state);
         thread::sleep(time::Duration::from_millis(500));
         while t.run(now+1000) {}
-        assert_eq!(ProcessStatus::Halted,t.status(pid));
+        assert_eq!(ProcessState::Halted,t.status(pid).state);
         t.reuse(pid);
-        assert_eq!(ProcessStatus::Gone,t.status(pid));
+        assert_eq!(ProcessState::Gone,t.status(pid).state);
+    }
+    
+    #[test]
+    fn cycle_count() {
+        let mut t_env = DebugEnvironment::new();
+        let now = t_env.get_time();
+        let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
+        let bin = command_compile("cycle-count");
+        let pid = t.exec(&bin,None,None).ok().unwrap();
+        t.run(0);
+        assert_eq!(192,t.status(pid).cycles);
+        assert_eq!(ProcessState::Running,t.status(pid).state);
+        t.run(0);
+        assert_eq!(384,t.status(pid).cycles);
+        assert_eq!(ProcessState::Running,t.status(pid).state);
+        t.run(0);
+        assert_eq!(ProcessState::Halted,t.status(pid).state);
+    }
+    
+    #[test]
+    fn cpu_kill() {
+        let mut t_env = DebugEnvironment::new();
+        let now = t_env.get_time();
+        let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
+        let bin = command_compile("cycle-count");
+        let pc = ProcessConfig {
+            cpu_limit: Some(100),
+        };
+        let pid = t.exec(&bin,None,Some(pc)).ok().unwrap();
+        while t.run(now+1000) {}
+        assert_eq!(ProcessState::Killed("Exceeded CPU limit 100".to_string()),t.status(pid).state);
     }
 }

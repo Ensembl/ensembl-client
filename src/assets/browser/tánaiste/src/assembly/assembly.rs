@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use regex::Regex;
 use std::thread;
 use std::time;
 
