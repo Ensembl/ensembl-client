@@ -8,6 +8,7 @@ use super::registers::RegisterFile;
 use super::datastate::DataState;
 use super::procstate::ProcState;
 use super::value::Value;
+use super::interp::Signals;
 
 /* TODO
  * limit: register size, stack size, value size, execution time
@@ -16,17 +17,20 @@ use super::value::Value;
 pub struct Process {
     program: Rc<Vec<Box<Command>>>,
     data: DataState,
-    proc: Arc<Mutex<ProcState>>
+    proc: Arc<Mutex<ProcState>>,
 }
 
 impl Process {
-    pub fn new(program: Rc<Vec<Box<Command>>>, pc: usize) -> Process {
+    pub fn new(program: Rc<Vec<Box<Command>>>, pc: usize, signals: Option<Signals>) -> Process {
         Process {
             program,
             data: DataState::new(pc),
-            proc: Arc::new(Mutex::new(ProcState::new()))
+            proc: Arc::new(Mutex::new(ProcState::new(signals)))
         }
     }
+    
+    pub fn set_pid(&mut self, pid: usize) { self.proc.lock().unwrap().set_pid(pid); }
+    pub fn get_pid(&self) -> Option<usize> { self.proc.lock().unwrap().get_pid() }
     
     pub fn step(&mut self) {
         let data = &mut self.data;
@@ -64,17 +68,33 @@ impl Process {
         let val = self.data.registers().get(idx);
         format!("{:?}",val)
     }
+
+    pub fn get_reg_str(&mut self, idx: usize) -> String {
+        let mut val_v = self.data.registers().get(idx);
+        val_v.coerce_to_string();
+        let val_vi = val_v.value();
+        let val_s = val_vi.borrow();
+        val_s.value_string().unwrap().clone()
+    }
+
+    pub fn get_reg_float(&mut self, idx: usize) -> Vec<f64> {
+        let mut val_v = self.data.registers().get(idx);
+        val_v.coerce_to_float();
+        let val_vi = val_v.value();
+        let val_s = val_vi.borrow();
+        val_s.value_float().unwrap().clone()
+    }
 }
 
 #[cfg(test)]
 mod test {
     use std::rc::Rc;
-    use runtime::Value;
+    use runtime::{ Signals, Value };
     use super::Process;
     
     #[test]
     fn registers() {
-        let mut r = Process::new(Rc::new(vec!{}),0);
+        let mut r = Process::new(Rc::new(vec!{}),0,None);
         let regs = r.data.registers();
         regs.set(4,Value::new_from_string("hi".to_string()));
         let v = regs.get(4);
@@ -89,7 +109,7 @@ mod test {
 
     #[test]
     fn data_stack() {
-        let mut r = Process::new(Rc::new(vec!{}),0);
+        let mut r = Process::new(Rc::new(vec!{}),0,None);
         r.data.push_data(Value::new_from_string("lo".to_string()));
         r.data.push_data(Value::new_from_string("hi".to_string()));
         assert_eq!("\"hi\"",format!("{:?}",r.data.peek_data()));
