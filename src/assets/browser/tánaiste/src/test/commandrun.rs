@@ -2,7 +2,7 @@ use std::{ time, thread };
 
 use assembly::assemble;
 use core::{ BinaryCode, InstructionSet, instruction_bundle_core };
-use runtime::Process;
+use runtime::{ Process, PROCESS_CONFIG_DEFAULT };
 use test::TEST_CODE;
 
 pub fn command_compile(what: &str) -> BinaryCode {
@@ -12,7 +12,7 @@ pub fn command_compile(what: &str) -> BinaryCode {
 
 pub fn command_make(what: &str) -> Process {
     let bin = command_compile(what);
-    bin.exec(None,None,None,None,None).ok().unwrap()
+    bin.exec(None,None,&PROCESS_CONFIG_DEFAULT).ok().unwrap()
 }
 
 pub fn command_run(what: &str) -> Process {

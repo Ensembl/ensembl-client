@@ -125,3 +125,12 @@
     sleep #1
     sleep #1
     
+
+;;; --cut-- [pushpop-cmd]
+
+    const #1,"hello"
+    const #2,[200]
+    push #2
+    push #1
+    pop #2
+    pop #1

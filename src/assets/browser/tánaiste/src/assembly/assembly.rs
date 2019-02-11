@@ -29,6 +29,7 @@ mod test {
         BinaryCode, Instruction, instruction_bundle_core, InstructionSet
     };
     use commands::{ ConstantI, DPrintI, HaltI };
+    use runtime::PROCESS_CONFIG_DEFAULT;
     use test::TEST_CODE;
     use super::super::codegen::codegen;
     use super::super::parser::parse_source;
@@ -42,7 +43,7 @@ mod test {
     #[test]
     fn smoke() {
         let bin = test_assemble("smoke").ok().unwrap();
-        let mut proc = bin.exec(Some("start"),None,None,None,None).ok().unwrap();
+        let mut proc = bin.exec(Some("start"),None,&PROCESS_CONFIG_DEFAULT).ok().unwrap();
         proc.run();
         while !proc.halted() {
             proc.run();
