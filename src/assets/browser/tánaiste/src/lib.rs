@@ -1,8 +1,12 @@
-#![feature(vec_resize_with)]
-
 #[macro_use]
 extern crate lazy_static;
+extern crate regex;
 
-mod core;
+mod assembly;
 mod commands;
+mod core;
+mod runtime;
 mod util;
+
+#[cfg(test)]
+mod test;
