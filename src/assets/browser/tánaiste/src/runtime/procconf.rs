@@ -22,8 +22,8 @@ mod test {
     use std::{ thread, time };
     use super::super::interp::{ Interp, ProcessState, ProcessStatus, DEFAULT_CONFIG };
     use super::{ ProcessConfig, PROCESS_CONFIG_DEFAULT };
-    use super::super::environment::{ DebugEnvironment, Environment };
-    use test::command_compile;
+    use super::super::environment::Environment;
+    use test::{ command_compile, DebugEnvironment };
         
     #[test]
     fn cpu_kill() {
