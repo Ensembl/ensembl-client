@@ -11,10 +11,6 @@ use super::procstate::ProcState;
 use super::value::Value;
 use super::interp::Signals;
 
-/* TODO
- * limit: register size, stack size, value size, execution time
- */
-
 pub struct Process {
     program: Rc<Vec<Box<Command>>>,
     data: DataState,
