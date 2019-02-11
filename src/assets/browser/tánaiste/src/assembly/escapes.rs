@@ -108,18 +108,23 @@ pub fn string_unescape(s: &str) -> Result<String,String> {
     }
 }
 
-#[test]
-fn escapes() {
-    assert_eq!(string_escape("hi",true),"hi");
-    assert_eq!(string_escape("hi\n",true),"hi\\n");
-    assert_eq!(string_escape("á\x7F\0\n",false),"á\\177\\000\\n");
-    assert_eq!(string_escape("á\x7F\0\n",true),"\\303\\241\\177\\000\\n");
-    assert_eq!(string_unescape("hi").ok().unwrap(),"hi");
-    assert_eq!(string_unescape("hi\\n").ok().unwrap(),"hi\n");
-    assert_eq!(string_unescape("á\\177\\000\\n").ok().unwrap(),"á\x7F\0\n");
-    assert_eq!(string_unescape("\\303\\241\\n").ok().unwrap(),"á\n");
-    assert_eq!(string_unescape("\\x").err().unwrap(),"Unknown escape sequence \\x");
-    assert_eq!(string_unescape("\\799").err().unwrap(),"decoding \\799: invalid digit found in string");
-    assert_eq!(string_unescape("\\241\\303").err().unwrap(),"bad utf8: invalid utf-8 sequence of 1 bytes from index 0");
-    assert_eq!(string_unescape("\\").err().unwrap(),"Unterminated escape sequence");
+#[cfg(test)]
+mod test {
+    use super::{ string_escape, string_unescape };
+    
+    #[test]
+    fn escapes() {
+        assert_eq!(string_escape("hi",true),"hi");
+        assert_eq!(string_escape("hi\n",true),"hi\\n");
+        assert_eq!(string_escape("á\x7F\0\n",false),"á\\177\\000\\n");
+        assert_eq!(string_escape("á\x7F\0\n",true),"\\303\\241\\177\\000\\n");
+        assert_eq!(string_unescape("hi").ok().unwrap(),"hi");
+        assert_eq!(string_unescape("hi\\n").ok().unwrap(),"hi\n");
+        assert_eq!(string_unescape("á\\177\\000\\n").ok().unwrap(),"á\x7F\0\n");
+        assert_eq!(string_unescape("\\303\\241\\n").ok().unwrap(),"á\n");
+        assert_eq!(string_unescape("\\x").err().unwrap(),"Unknown escape sequence \\x");
+        assert_eq!(string_unescape("\\799").err().unwrap(),"decoding \\799: invalid digit found in string");
+        assert_eq!(string_unescape("\\241\\303").err().unwrap(),"bad utf8: invalid utf-8 sequence of 1 bytes from index 0");
+        assert_eq!(string_unescape("\\").err().unwrap(),"Unterminated escape sequence");
+    }
 }

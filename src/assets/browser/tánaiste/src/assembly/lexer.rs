@@ -172,12 +172,13 @@ impl<'input> Lexer<'input> {
                 Some(';') => { 
                     self.use_line();
                 },
-                /* other */
                 Some(c) => {
                     if c.is_alphanumeric() {
+                        /* opcode */
                         self.extra = Some(c);
                         return Token::Code(self.get_id());
                     } else {
+                        /* particle */
                         return Token::Chr(c);
                     }
                 }
@@ -210,42 +211,48 @@ impl<'input> Iterator for Lexer<'input> {
     }
 }
 
-const L1 : &str = r#"
+#[cfg(test)]
+mod test {
+    use super::Token;
+    use super::Lexer;
+    
+    const L1 : &str = r#"
 .hello:
 AA "B \"CC",#6,#7,[4.5,5,6],#8 ; D E F ; G H I
 X "Y Z"
 "#;
 
-lazy_static! {
-    static ref L1T : Vec<(usize,Token,usize)> = vec!{
-        (1, Token::Id("hello".to_string()), 7),
-        (7, Token::Chr(':'), 8),
-        (9, Token::Code("AA".to_string()), 11),
-        (12, Token::Str("B \"CC".to_string()), 20),
-        (20, Token::Chr(','), 21),
-        (21, Token::Reg(6), 23),
-        (23, Token::Chr(','), 24),
-        (24, Token::Reg(7), 26),
-        (26, Token::Chr(','), 27),
-        (27, Token::Chr('['), 28),
-        (28, Token::Num(4.5), 31),
-        (31, Token::Chr(','), 32),
-        (32, Token::Num(5.0), 33),
-        (33, Token::Chr(','), 34),
-        (34, Token::Num(6.0), 35),
-        (35, Token::Chr(']'), 36),
-        (36, Token::Chr(','), 37),
-        (37, Token::Reg(8), 39),
-        (40, Token::Code("X".to_string()), 57),
-        (58, Token::Str("Y Z".to_string()), 63),
-        (64, Token::EOF, 64)
-    };
-}
+    lazy_static! {
+        static ref L1T : Vec<(usize,Token,usize)> = vec!{
+            (1, Token::Id("hello".to_string()), 7),
+            (7, Token::Chr(':'), 8),
+            (9, Token::Code("AA".to_string()), 11),
+            (12, Token::Str("B \"CC".to_string()), 20),
+            (20, Token::Chr(','), 21),
+            (21, Token::Reg(6), 23),
+            (23, Token::Chr(','), 24),
+            (24, Token::Reg(7), 26),
+            (26, Token::Chr(','), 27),
+            (27, Token::Chr('['), 28),
+            (28, Token::Num(4.5), 31),
+            (31, Token::Chr(','), 32),
+            (32, Token::Num(5.0), 33),
+            (33, Token::Chr(','), 34),
+            (34, Token::Num(6.0), 35),
+            (35, Token::Chr(']'), 36),
+            (36, Token::Chr(','), 37),
+            (37, Token::Reg(8), 39),
+            (40, Token::Code("X".to_string()), 57),
+            (58, Token::Str("Y Z".to_string()), 63),
+            (64, Token::EOF, 64)
+        };
+    }
 
-#[test]
-fn lexer() {
-    let x = Lexer::new(L1).into_iter();
-    for (i,t) in x.enumerate() {
-        assert_eq!(L1T[i],t);
+    #[test]
+    fn lexer() {
+        let x = Lexer::new(L1).into_iter();
+        for (i,t) in x.enumerate() {
+            assert_eq!(L1T[i],t);
+        }
     }
 }

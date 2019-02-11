@@ -140,19 +140,24 @@ pub fn parse_source(prog: &str) -> Result<SourceCode,String> {
     p.parse_program()
 }
 
-const P1 : &str = r#"
+#[cfg(test)]
+mod test {
+    use super::parse_source;
+    
+    const P1 : &str = r#"
 .hello:
     world #1,#2,[1,2,3.5]
     earth "tánaiste","\"\303\241\n"
 "#;
 
-const P1CHK : &str = r#".hello:
+    const P1CHK : &str = r#".hello:
     world #1, #2, [1, 2, 3.5]
     earth "tánaiste", "\"á\n"
 "#;
 
-#[test]
-fn parser() {
-    let out = parse_source(P1).ok().unwrap();
-    assert_eq!(format!("{}",out),P1CHK);
+    #[test]
+    fn parser() {
+        let out = parse_source(P1).ok().unwrap();
+        assert_eq!(format!("{}",out),P1CHK);
+    }
 }
