@@ -1,5 +1,5 @@
 use core::Command;
-use super::{ Value, RegisterFile };
+use super::{ Value, RegisterFile, ProcessConfig };
 
 pub struct DataState {
     continuations: RegisterFile,
@@ -14,14 +14,14 @@ pub struct DataState {
 }
 
 impl DataState {
-    pub fn new(pc: usize, reg_limit: Option<usize>, 
-                stack_entry_limit: Option<usize>,
-                stack_data_limit: Option<usize>) -> DataState {
+    pub fn new(pc: usize, config: &ProcessConfig) -> DataState {
         DataState {
-            registers: RegisterFile::new(reg_limit),
+            registers: RegisterFile::new(config.reg_limit),
             continuations: RegisterFile::new(None),
             data_stack: Vec::<Value>::new(),
-            pc, stack_data_limit, stack_entry_limit,
+            pc,
+            stack_data_limit: config.stack_data_limit,
+            stack_entry_limit: config.stack_entry_limit,
             stack_size: 0,
             again: false,
             bust: None

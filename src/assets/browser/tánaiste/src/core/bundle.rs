@@ -32,7 +32,8 @@ pub fn instruction_bundle_core() -> InstructionBundle {
         Box::new(HaltI()),
         Box::new(MoveI()),
         Box::new(SleepI()),
-        Box::new(PushI())
+        Box::new(PushI()),
+        Box::new(PopI())
     });
     ib
 }

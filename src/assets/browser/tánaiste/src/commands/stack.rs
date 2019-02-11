@@ -32,3 +32,48 @@ impl Instruction for PushI {
         Box::new(Push(args[0].reg()))
     }
 }
+
+#[derive(Debug)]
+pub struct Pop(usize);
+
+impl Pop {
+    pub fn new(r: usize) -> Box<Command> {
+        Box::new(Pop(r))
+    }
+}
+
+impl Command for Pop {    
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
+        let v = rt.pop_data();
+        let regs = rt.registers();
+        regs.set(self.0,v);
+        1
+    }
+}
+
+pub struct PopI();
+
+impl Instruction for PopI {
+    fn signature(&self) -> Signature { Signature::new("pop","r") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(Pop(args[0].reg()))
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use std::{ time, thread };
+    
+    use assembly::assemble;
+    use core::{
+        BinaryCode, Instruction, instruction_bundle_core, InstructionSet
+    };
+    use test::command_run;
+
+    #[test]
+    fn pushpop_cmd() {   
+        let mut r = command_run("pushpop-cmd");
+        assert_eq!("\"hello\"",r.get_reg(2));
+        assert_eq!("[200.0]",r.get_reg(1));
+    }    
+}

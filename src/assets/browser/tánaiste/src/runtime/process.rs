@@ -6,6 +6,7 @@ use core::Command;
 use commands::{ Constant, DebugPrint, Concat, Sleep, External, Move };
 use super::registers::RegisterFile;
 use super::datastate::DataState;
+use super::procconf::ProcessConfig;
 use super::procstate::ProcState;
 use super::value::Value;
 use super::interp::Signals;
@@ -23,11 +24,10 @@ pub struct Process {
 
 impl Process {
     pub fn new(program: Rc<Vec<Box<Command>>>, pc: usize, 
-               signals: Option<Signals>, reg_limit: Option<usize>,
-               stack_entry_limit: Option<usize>, stack_data_limit: Option<usize>) -> Process {
+               signals: Option<Signals>, config: &ProcessConfig) -> Process {
         Process {
             program,
-            data: DataState::new(pc,reg_limit,stack_entry_limit,stack_data_limit),
+            data: DataState::new(pc,config),
             proc: Arc::new(Mutex::new(ProcState::new(signals))),
             killed: None,
         }
@@ -115,12 +115,12 @@ impl Process {
 #[cfg(test)]
 mod test {
     use std::rc::Rc;
-    use runtime::{ Signals, Value };
+    use runtime::{ PROCESS_CONFIG_DEFAULT, Signals, Value };
     use super::Process;
     
     #[test]
     fn registers() {
-        let mut r = Process::new(Rc::new(vec!{}),0,None,None,None,None);
+        let mut r = Process::new(Rc::new(vec!{}),0,None,&PROCESS_CONFIG_DEFAULT);
         let regs = r.data.registers();
         regs.set(4,Value::new_from_string("hi".to_string()));
         let v = regs.get(4);
@@ -135,7 +135,7 @@ mod test {
 
     #[test]
     fn data_stack() {
-        let mut r = Process::new(Rc::new(vec!{}),0,None,None,None,None);
+        let mut r = Process::new(Rc::new(vec!{}),0,None,&PROCESS_CONFIG_DEFAULT);
         r.data.push_data(Value::new_from_string("lo".to_string()));
         r.data.push_data(Value::new_from_string("hi".to_string()));
         assert_eq!("\"hi\"",format!("{:?}",r.data.peek_data()));
