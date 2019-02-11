@@ -21,22 +21,32 @@ const STATUS_GONE : ProcessStatus = ProcessStatus {
 };
 
 struct ProcessConfig {
-    cpu_limit: Option<i64>
+    cpu_limit: Option<i64>,
+    reg_limit: Option<usize>,
+    stack_entry_limit: Option<usize>,
+    stack_data_limit: Option<usize>,
+    time_limit: Option<i64>
 }
 
 const PROCESS_CONFIG_DEFAULT : ProcessConfig = ProcessConfig {
-    cpu_limit: None
+    cpu_limit: None,
+    reg_limit: None,
+    stack_entry_limit: None,
+    stack_data_limit: None,
+    time_limit: None
 };
 
 struct InterpProcess {
+    start: i64,
     p: Process,
     config: ProcessConfig,
     cycles: i64
 }
 
 impl InterpProcess {
-    fn new(p: Process, config: ProcessConfig) -> InterpProcess {
+    fn new(p: Process, config: ProcessConfig, env: &mut Box<Environment>) -> InterpProcess {
         InterpProcess {
+            start: env.get_time(),
             p, config,
             cycles: 0
         }
@@ -48,10 +58,16 @@ impl InterpProcess {
         env.finished(self.p.get_pid().unwrap(),exit_float,exit_str);
     }
     
-    fn oob(&mut self) -> Option<String> {
+    fn oob(&mut self, env: &mut Box<Environment>) -> Option<String> {
         if let Some(cpu_limit) = self.config.cpu_limit {
             if self.cycles > cpu_limit {
                 return Some(format!("Exceeded CPU limit {}",cpu_limit));
+            }
+        }
+        if let Some(time_limit) = self.config.time_limit {
+            let interval = env.get_time();
+            if interval > time_limit {
+                return Some(format!("Exceeded time limit {}",time_limit));
             }
         }
         None
@@ -61,11 +77,11 @@ impl InterpProcess {
         let mut c = 0;
         while self.p.ready() && c < cycles {        
             c += self.p.step();
-            if let Some(msg) = self.oob() {
-                self.p.kill(msg);
-            }
         }
         self.cycles += c;
+        if let Some(msg) = self.oob(env) {
+            self.p.kill(msg);
+        }
         if self.p.halted() {
             self.send_finished(env);
         }
@@ -132,11 +148,12 @@ pub struct Interp {
 enum RunResult { Timeout, Empty, Finished }
 
 pub struct InterpConfig {
-    cycles_per_run: i64
+    cycles_per_run: i64,
 }
 
 const DEFAULT_CONFIG : InterpConfig = InterpConfig {
     cycles_per_run: 100,
+    
 };
 
 impl Interp {
@@ -152,9 +169,10 @@ impl Interp {
     
     pub fn exec(&mut self, bc: &BinaryCode, start: Option<&str>, pc: Option<ProcessConfig>) -> Result<usize,String> {
         let pc = pc.unwrap_or(PROCESS_CONFIG_DEFAULT);
-        match bc.exec(start,Some(self.signals.clone())) {
+        match bc.exec(start,Some(self.signals.clone()),
+            pc.reg_limit,pc.stack_entry_limit,pc.stack_data_limit) {
             Ok(p) => {
-                let pid = self.procs.store(InterpProcess::new(p,pc));
+                let pid = self.procs.store(InterpProcess::new(p,pc,&mut self.env));
                 self.procs.get_mut(pid).unwrap().set_pid(pid);
                 self.runq.insert(pid);
                 Ok(pid)
@@ -282,7 +300,7 @@ mod test {
         t.run(0);
         assert_eq!(384,t.status(pid).cycles);
         assert_eq!(ProcessState::Running,t.status(pid).state);
-        t.run(0);
+        t.run(1000);
         assert_eq!(ProcessState::Halted,t.status(pid).state);
     }
     
@@ -294,9 +312,91 @@ mod test {
         let bin = command_compile("cycle-count");
         let pc = ProcessConfig {
             cpu_limit: Some(100),
+            reg_limit: None,
+            stack_entry_limit: None,
+            stack_data_limit: None,
+            time_limit: None,
         };
         let pid = t.exec(&bin,None,Some(pc)).ok().unwrap();
         while t.run(now+1000) {}
         assert_eq!(ProcessState::Killed("Exceeded CPU limit 100".to_string()),t.status(pid).state);
+    }
+    
+    #[test]
+    fn mem_kill() {
+        let mut t_env = DebugEnvironment::new();
+        let now = t_env.get_time();
+        let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
+        let bin = command_compile("cycle-count");
+        let pc = ProcessConfig {
+            cpu_limit: None,
+            reg_limit: Some(100),
+            stack_entry_limit: None,
+            stack_data_limit: None,
+            time_limit: None,
+        };
+        let pid = t.exec(&bin,None,Some(pc)).ok().unwrap();
+        while t.run(now+1000) {}
+        assert_eq!(ProcessState::Killed("Exceeded memory limit: register limit 100".to_string()),t.status(pid).state);
+    }
+    
+    #[test]
+    fn stack_entry_kill() {
+        let mut t_env = DebugEnvironment::new();
+        let now = t_env.get_time();
+        let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
+        let bin = command_compile("limit-stack-entry");
+        let pc = ProcessConfig {
+            cpu_limit: None,
+            reg_limit: None,
+            stack_entry_limit: Some(3),
+            stack_data_limit: None,
+            time_limit: None,
+        };
+        let pid = t.exec(&bin,None,Some(pc)).ok().unwrap();
+        while t.run(now+1000) {}
+        assert_eq!(ProcessState::Killed("Exceeded memory limit: stack entry limit 3".to_string()),t.status(pid).state);
+    }
+    
+    #[test]    
+    fn stack_data_kill() {
+        let mut t_env = DebugEnvironment::new();
+        let now = t_env.get_time();
+        let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
+        let bin = command_compile("limit-stack-data");
+        let pc = ProcessConfig {
+            cpu_limit: None,
+            reg_limit: None,
+            stack_entry_limit: None,
+            stack_data_limit: Some(3),
+            time_limit: None,
+        };
+        let pid = t.exec(&bin,None,Some(pc)).ok().unwrap();
+        while t.run(now+1000) {}
+        assert_eq!(ProcessState::Killed("Exceeded memory limit: stack data limit 3".to_string()),t.status(pid).state);
+    }
+    
+    #[test]
+    fn time_limit() {
+        let mut t_env = DebugEnvironment::new();
+        let now = t_env.get_time();
+        let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
+        let bin = command_compile("time-limit");
+        let pc = ProcessConfig {
+            cpu_limit: None,
+            reg_limit: None,
+            stack_entry_limit: None,
+            stack_data_limit: None,
+            time_limit: Some(100)
+        };
+        let pid = t.exec(&bin,None,Some(pc)).ok().unwrap();
+        while t.run(now+1000) {}
+        thread::sleep(time::Duration::from_millis(200));
+        while t.run(now+1000) {}
+        thread::sleep(time::Duration::from_millis(200));
+        while t.run(now+1000) {}
+        thread::sleep(time::Duration::from_millis(200));
+        while t.run(now+1000) {}
+        assert_eq!(ProcessState::Killed("Exceeded time limit 100".to_string()),t.status(pid).state);
     }
 }

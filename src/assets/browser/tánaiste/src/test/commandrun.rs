@@ -12,7 +12,7 @@ pub fn command_compile(what: &str) -> BinaryCode {
 
 pub fn command_make(what: &str) -> Process {
     let bin = command_compile(what);
-    bin.exec(None,None).ok().unwrap()
+    bin.exec(None,None,None,None,None).ok().unwrap()
 }
 
 pub fn command_run(what: &str) -> Process {

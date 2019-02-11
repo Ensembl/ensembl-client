@@ -19,15 +19,19 @@ impl BinaryCode {
         }
     }
     
-    pub fn exec(&self, start: Option<&str>, signals: Option<Signals>) -> Result<Process,String> {
+    pub fn exec(&self, start: Option<&str>, signals: Option<Signals>,
+                reg_limit: Option<usize>,
+                stack_entry_limit: Option<usize>,
+                stack_data_limit: Option<usize>) -> Result<Process,String> {
         if let Some(start) = start {
             if let Some(start) = self.symbols.get(start) {
-                Ok(Process::new(self.commands.clone(),*start,signals))
+                Ok(Process::new(self.commands.clone(),*start,signals,
+                    reg_limit,stack_entry_limit,stack_data_limit))
             } else {
                 Err(format!("No such entry point '{}'",start))
             }
         } else {
-            Ok(Process::new(self.commands.clone(),0,signals))
+            Ok(Process::new(self.commands.clone(),0,signals, reg_limit,stack_entry_limit,stack_data_limit))
         }
     }
 }
