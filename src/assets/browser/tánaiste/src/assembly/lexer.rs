@@ -24,41 +24,66 @@ pub enum Token {
     EOF
 }
 
+struct CharLines<'a> {
+    input: Box<Iterator<Item=char> + 'a>,
+    marked_line: i32,
+    line: i32
+}
+
+impl<'a> CharLines<'a> {
+    fn new(input: &'a str) -> CharLines<'a> {
+        CharLines {
+            input: Box::new(input.chars()),
+            marked_line: 0,
+            line: 1
+        }
+    }
+    
+    pub fn mark(&mut self) {
+        self.marked_line = self.line;
+    }
+    
+    pub fn get_mark(&self) -> i32 { self.marked_line }
+}
+
+impl<'a> Iterator for CharLines<'a> {
+    type Item = (i32,char);
+    
+    fn next(&mut self) -> Option<Self::Item> {
+        let out = self.input.next();
+        if let Some('\n') = out { self.line += 1; }
+        out.map(|c| (self.line,c))
+    }
+}
+
 pub struct Lexer<'input> {
-    chars: CharIndices<'input>, /* character source */
+    chars: CharLines<'input>, /* character source */
     extra: Option<char>, /* One character pushback */
     error: Option<String>, /* Has an error occurred in this lex */
     sent_eof: bool, /* Have we ent EOF? */
-    start: Option<usize>, /* Start position of current token */
-    pos: usize /* Current position */
+    line: i32 /* Current line */
 }
 
 impl<'input> Lexer<'input> {
     pub fn new(input: &'input str) -> Self {
         Lexer {
             error: None,
-            chars: input.char_indices(),
+            chars: CharLines::new(input),
             extra: None,
             sent_eof: false,
-            start: None,
-            pos: 0
+            line: 0
         }
     }
     
     /* get next character */
     fn more(&mut self) -> Option<char> {
-        /* set start position if none set (first char of token) */
-        if self.start.is_none() {
-            let d = if self.extra.is_some() { 1 } else { 0 };
-            self.start = Some(self.pos-d);
-        }
         if self.extra.is_some() {
             /* char in push-back buffer */
             self.extra.take()
         } else {
             /* pull from stream (and update position) */
             let out = self.chars.next();
-            if let Some((i,_)) = out { self.pos = i+1; }
+            if let Some((i,_)) = out { self.line = i; }
             out.map(|s| s.1)
         }
     }
@@ -130,6 +155,7 @@ impl<'input> Lexer<'input> {
         loop {
             self.use_space();
             let next = self.more();
+            self.chars.mark();
             /* number? */
             if let Some(v) = next {
                 if v.is_digit(10) {
@@ -172,12 +198,13 @@ impl<'input> Lexer<'input> {
                 Some(';') => { 
                     self.use_line();
                 },
-                /* other */
                 Some(c) => {
                     if c.is_alphanumeric() {
+                        /* opcode */
                         self.extra = Some(c);
                         return Token::Code(self.get_id());
                     } else {
+                        /* particle */
                         return Token::Chr(c);
                     }
                 }
@@ -192,60 +219,63 @@ impl<'input> Lexer<'input> {
 }
 
 impl<'input> Iterator for Lexer<'input> {
-    type Item = (usize,Token,usize);
+    type Item = (i32,Token);
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.sent_eof { return None; }
         self.use_space();
-        self.start = None;
         let mut token = self.token();
-        let d = if self.extra.is_some() { 1 } else { 0 };
-        let end = self.pos-d;
         self.use_space();
         if let Some(ref text) = self.error {
             token = Token::Error(text.clone());
             self.sent_eof = true;
         }
-        return Some((self.start.unwrap(),token,end));
+        return Some((self.chars.get_mark(),token));
     }
 }
 
-const L1 : &str = r#"
+#[cfg(test)]
+mod test {
+    use super::Token;
+    use super::Lexer;
+    
+    const L1 : &str = r#"
 .hello:
 AA "B \"CC",#6,#7,[4.5,5,6],#8 ; D E F ; G H I
 X "Y Z"
 "#;
 
-lazy_static! {
-    static ref L1T : Vec<(usize,Token,usize)> = vec!{
-        (1, Token::Id("hello".to_string()), 7),
-        (7, Token::Chr(':'), 8),
-        (9, Token::Code("AA".to_string()), 11),
-        (12, Token::Str("B \"CC".to_string()), 20),
-        (20, Token::Chr(','), 21),
-        (21, Token::Reg(6), 23),
-        (23, Token::Chr(','), 24),
-        (24, Token::Reg(7), 26),
-        (26, Token::Chr(','), 27),
-        (27, Token::Chr('['), 28),
-        (28, Token::Num(4.5), 31),
-        (31, Token::Chr(','), 32),
-        (32, Token::Num(5.0), 33),
-        (33, Token::Chr(','), 34),
-        (34, Token::Num(6.0), 35),
-        (35, Token::Chr(']'), 36),
-        (36, Token::Chr(','), 37),
-        (37, Token::Reg(8), 39),
-        (40, Token::Code("X".to_string()), 57),
-        (58, Token::Str("Y Z".to_string()), 63),
-        (64, Token::EOF, 64)
-    };
-}
+    lazy_static! {
+        static ref L1T : Vec<(i32,Token)> = vec!{
+            (2, Token::Id("hello".to_string())),
+            (2, Token::Chr(':')),
+            (3, Token::Code("AA".to_string())),
+            (3, Token::Str("B \"CC".to_string())),
+            (3, Token::Chr(',')),
+            (3, Token::Reg(6)),
+            (3, Token::Chr(',')),
+            (3, Token::Reg(7)),
+            (3, Token::Chr(',')),
+            (3, Token::Chr('[')),
+            (3, Token::Num(4.5)),
+            (3, Token::Chr(',')),
+            (3, Token::Num(5.0)),
+            (3, Token::Chr(',')),
+            (3, Token::Num(6.0)),
+            (3, Token::Chr(']')),
+            (3, Token::Chr(',')),
+            (3, Token::Reg(8)),
+            (4, Token::Code("X".to_string())),
+            (4, Token::Str("Y Z".to_string())),
+            (5, Token::EOF)
+        };
+    }
 
-#[test]
-fn lexer() {
-    let x = Lexer::new(L1).into_iter();
-    for (i,t) in x.enumerate() {
-        assert_eq!(L1T[i],t);
+    #[test]
+    fn lexer() {
+        let x = Lexer::new(L1).into_iter();
+        for (i,t) in x.enumerate() {
+            assert_eq!(L1T[i],t);
+        }
     }
 }

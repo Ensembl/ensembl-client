@@ -15,6 +15,7 @@
 
 ;;; --cut-- [parse-error-2]
 
+    halt
     const #1 : #2
 
 ;;; --cut-- [inst-error-1]
@@ -68,3 +69,68 @@
     dprint #1
     dprint #2
     dprint #3
+
+;;; --cut-- [interp-smoke]
+
+    const #1, [0,200]
+    const #2, "Success!"
+
+;;; --cut-- [interp-sleep-wake]
+
+    const #1, "sleeping"
+    dprint #1
+    const #1, [100]
+    sleep #1
+    const #2, "awoke"
+    dprint #2
+
+;;; --cut-- [interp-status]
+
+    const #1, "sleeping"
+    dprint #1
+    const #1, [100]
+    sleep #1
+    const #2, "awoke"
+    dprint #2
+
+;;; --cut-- [cycle-count]
+
+    const #1, "hello "
+    const #2, "world!"
+    concat #3, #1, #2
+    concat #3, #3, #3
+    concat #3, #3, #3
+    concat #3, #3, #3
+    concat #3, #3, #3
+    concat #3, #3, #3
+
+;;; --cut-- [limit-stack-entry]
+
+    const #1,[0,0]
+    push #1
+    push #1
+    push #1
+    push #1
+
+;;; --cut-- [limit-stack-data]
+
+    const #1,[0,0]
+    push #1
+    push #1
+
+;;; --cut-- [time-limit]
+
+    const #1,[50]
+    sleep #1
+    sleep #1
+    sleep #1
+    
+
+;;; --cut-- [pushpop-cmd]
+
+    const #1,"hello"
+    const #2,[200]
+    push #2
+    push #1
+    pop #2
+    pop #1

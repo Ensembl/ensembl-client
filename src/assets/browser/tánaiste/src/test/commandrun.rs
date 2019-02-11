@@ -1,14 +1,18 @@
 use std::{ time, thread };
 
 use assembly::assemble;
-use core::{ InstructionSet, instruction_bundle_core };
-use runtime::Process;
+use core::{ BinaryCode, InstructionSet, instruction_bundle_core };
+use runtime::{ Process, PROCESS_CONFIG_DEFAULT };
 use test::TEST_CODE;
 
-pub fn command_make(what: &str) -> Process {
+pub fn command_compile(what: &str) -> BinaryCode {
     let is = InstructionSet::new(instruction_bundle_core());
-    let bin = assemble(&is,&TEST_CODE[what]).ok().unwrap();
-    bin.exec(None).ok().unwrap()
+    assemble(&is,&TEST_CODE[what]).ok().unwrap()
+}
+
+pub fn command_make(what: &str) -> Process {
+    let bin = command_compile(what);
+    bin.exec(None,None,&PROCESS_CONFIG_DEFAULT).ok().unwrap()
 }
 
 pub fn command_run(what: &str) -> Process {

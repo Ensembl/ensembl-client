@@ -21,11 +21,11 @@ foreach my $line (split(/\n/,$lines)) {
     $other_name = $filename;
   }
 }
-if($other > $deploy) {
+if($deploy && $other > $deploy) {
   warn "deploy wasm is older than $other_name. Run deploy.sh!\n";
   exit 1;
 }
-if($other > $asset) {
+if($asset && $other > $asset) {
   warn "asset wasm is older than $other_name. Run deploy.sh!\n";
   exit 1;
 }
