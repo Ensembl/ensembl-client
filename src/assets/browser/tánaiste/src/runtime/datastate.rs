@@ -1,4 +1,5 @@
-use core::{ Value, Command, RegisterFile };
+use core::Command;
+use super::{ Value, RegisterFile };
 
 pub struct DataState {
     continuations: RegisterFile,
@@ -9,12 +10,12 @@ pub struct DataState {
 }
 
 impl DataState {
-    pub fn new() -> DataState {
+    pub fn new(pc: usize) -> DataState {
         DataState {
             registers: RegisterFile::new(),
             continuations: RegisterFile::new(),
             data_stack: Vec::<Value>::new(),
-            pc: 0,
+            pc,
             again: false
         }
     }

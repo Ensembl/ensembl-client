@@ -1,6 +1,10 @@
 use std::sync::{ Arc, Mutex };
-use core::{ Command, DataState, ProcState, Value };
 
+use assembly::{ Argument, Signature };
+use core::{ Command, Instruction };
+use runtime::{ DataState, ProcState, Value };
+
+#[derive(Debug)]
 pub struct Concat(usize,usize,usize);
 
 impl Concat {
@@ -18,7 +22,26 @@ impl Command for Concat {
         let bv = b.borrow();
         let mut c = av.value_string().unwrap().clone();
         c.push_str(bv.value_string().unwrap());
-        println!("set {}",c);
         regs.set(self.0,Value::new_from_string(c));
+    }
+}
+
+pub struct ConcatI();
+
+impl Instruction for ConcatI {
+    fn signature(&self) -> Signature { Signature::new("concat","rrr") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(Concat(args[0].reg(),args[1].reg(),args[2].reg()))
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use test::command_run;
+
+    #[test]
+    fn commands() {
+        let mut r = command_run("concat");
+        assert_eq!("\"hello world!\"",r.get_reg(3));
     }
 }

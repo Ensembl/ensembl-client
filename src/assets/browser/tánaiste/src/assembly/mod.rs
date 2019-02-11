@@ -1,4 +1,9 @@
+mod assembly;
+mod codegen;
+mod escapes;
 mod lexer;
 mod parser;
 mod parsetree;
-mod escapes;
+
+pub use self::parsetree::{ Argument, Signature };
+pub use self::assembly::assemble;

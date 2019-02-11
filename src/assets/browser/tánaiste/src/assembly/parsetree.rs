@@ -1,5 +1,6 @@
 use std::fmt;
 
+use runtime::Value;
 use super::escapes::string_escape;
 
 #[derive(Clone,Debug)]
@@ -7,6 +8,50 @@ pub enum Argument {
     Reg(usize),
     Str(String),
     Floats(Vec<f64>)
+}
+
+impl Argument {
+    pub fn reg(&self) -> usize {
+        match self {
+            Argument::Reg(r) => *r,
+            _ => panic!(format!("not a register {:?}",self))
+        }
+    }
+    
+    pub fn value(&self) -> Value {
+        match self {
+            Argument::Str(s) => Value::new_from_string(s.to_string()),
+            Argument::Floats(f) => Value::new_from_float(f.to_vec()),
+            _ => panic!(format!("not a value {:?}",self))            
+        }
+    }
+}
+
+#[derive(Clone,Debug,PartialEq)]
+pub enum ArgumentType {
+    Reg,
+    Str,
+    Floats,
+    Const
+}
+
+pub struct Signature(pub String,pub Vec<ArgumentType>);
+
+impl Signature {
+    pub fn new(name: &str, args_s: &str) -> Signature {
+        let mut args = Vec::<ArgumentType>::new();
+        for c in args_s.chars() {
+            let v = match c {
+                'r' => Some(ArgumentType::Reg),
+                's' => Some(ArgumentType::Str),
+                'f' => Some(ArgumentType::Floats),
+                'c' => Some(ArgumentType::Const),
+                _ => None
+            };
+            if let Some(v) = v { args.push(v); }
+        }
+        Signature(name.to_string(),args)
+    }
 }
 
 // TODO string escapes parse+serial
