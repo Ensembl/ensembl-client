@@ -1,51 +1,47 @@
-import React, { PureComponent } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 
 import styles from './BrowserImage.scss';
 
 type BrowserImageProps = {};
 
-class BrowserImage extends PureComponent<BrowserImageProps> {
-  private browserCanvas: React.RefObject<HTMLDivElement>;
+const BrowserImage: FunctionComponent<BrowserImageProps> = () => {
+  const browserCanvas: React.RefObject<HTMLDivElement> = React.createRef();
+  let currentEl: HTMLDivElement | null = null;
 
-  constructor(props: BrowserImageProps) {
-    super(props);
-
-    this.browserCanvas = React.createRef();
-  }
-
-  public componentDidMount() {
-    const currentEl = this.browserCanvas.current as HTMLElement;
-    this.activateIfPossible(currentEl);
-  }
-
-  public render() {
-    return <div className={styles.browserStage} ref={this.browserCanvas} />;
-  }
-
-  private activateIfPossible(currentEl: HTMLElement) {
-    const activateEvent = new CustomEvent('bpane-activate', {
-      bubbles: true,
-      detail: {
-        key: 'main'
-      }
-    });
-
-    let done = false;
-
-    if (currentEl && currentEl.ownerDocument) {
-      const bodyEl = currentEl.ownerDocument.querySelector(
-        'body'
-      ) as HTMLBodyElement;
-
-      if (bodyEl.classList.contains('browser-app-ready')) {
-        currentEl.dispatchEvent(activateEvent);
-        done = true;
-      }
+  useEffect(() => {
+    if (browserCanvas) {
+      currentEl = browserCanvas.current as HTMLDivElement;
     }
 
-    if (!done) {
-      setTimeout(() => this.activateIfPossible(currentEl), 250);
+    activateIfPossible(currentEl as HTMLDivElement);
+  }, [currentEl]);
+
+  return <div className={styles.browserStage} ref={browserCanvas} />;
+};
+
+function activateIfPossible(currentEl: HTMLDivElement) {
+  const activateEvent = new CustomEvent('bpane-activate', {
+    bubbles: true,
+    detail: {
+      key: 'main'
     }
+  });
+
+  let done = false;
+
+  if (currentEl && currentEl.ownerDocument) {
+    const bodyEl = currentEl.ownerDocument.querySelector(
+      'body'
+    ) as HTMLBodyElement;
+
+    if (bodyEl.classList.contains('browser-app-ready')) {
+      currentEl.dispatchEvent(activateEvent);
+      done = true;
+    }
+  }
+
+  if (!done) {
+    setTimeout(() => activateIfPossible(currentEl), 250);
   }
 }
 
