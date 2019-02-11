@@ -1,13 +1,14 @@
-mod value;
-mod runtime;
+mod binary;
+mod bundle;
 mod command;
-mod registers;
-mod procstate;
-mod datastate;
+mod instruction;
+mod instructionset;
 
-pub use self::value::Value;
-pub use self::runtime::Runtime;
+pub use self::binary::BinaryCode;
+pub use self::bundle::{
+    InstructionBundle,
+    instruction_bundle_core
+};
 pub use self::command::Command;
-pub use self::registers::RegisterFile;
-pub use self::procstate::ProcState;
-pub use self::datastate::DataState;
+pub use self::instruction::Instruction;
+pub use self::instructionset::InstructionSet;

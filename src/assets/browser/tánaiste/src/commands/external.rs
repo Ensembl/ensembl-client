@@ -2,7 +2,9 @@ use std::process;
 use std::sync::{ Arc, Mutex };
 use std::{ thread, time };
 
-use core::{ Command, DataState, ProcState, Value };
+use assembly::{ Argument, Signature };
+use core::{ Command, Instruction };
+use runtime::{ DataState, ProcState, Value };
 use util::ValueStore;
 
 struct Result {
@@ -16,23 +18,25 @@ lazy_static! {
         Arc::new(Mutex::new(ValueStore::<Option<Result>>::new()));
 }
 
+#[derive(Debug)]
 pub struct External {
     code_reg: usize,
     stdout_reg: usize,
     stderr_reg: usize,
-    cmd_str: String,
+    command_reg: usize
 }
 
 impl External {
-    pub fn new(code_reg: usize, stdout_reg: usize, stderr_reg: usize,command: &str) -> Box<Command> {
+    pub fn new(code_reg: usize, stdout_reg: usize, stderr_reg: usize, command_reg: usize) -> Box<Command> {
         Box::new(External {
-            code_reg, stdout_reg, stderr_reg,
-            cmd_str: command.to_string()
+            code_reg, stdout_reg, stderr_reg, command_reg
         })
     }
 }
 
 impl Command for External {
+    //fn signature(&self) -> Signature { Signature::new("extern","rrrs") }
+    
     fn execute(&self, data: &mut DataState, proc: Arc<Mutex<ProcState>>) {
         let r = data.continuations().get(1).value();
         let rv = r.borrow();
@@ -58,7 +62,13 @@ impl Command for External {
         let r_idx = results.lock().unwrap().store(None);
         data.set_again();
         data.continuations().set(1,Value::new_from_float(vec!{ (r_idx+1) as f64 }));
-        let cmd_str = self.cmd_str.clone();
+ 
+        let mut cmd_v = data.registers().get(self.command_reg);
+        cmd_v.coerce_to_string();
+        let cmd_vi = cmd_v.value();
+        let cmd_s = cmd_vi.borrow();
+        let cmd_str = cmd_s.value_string().unwrap().clone();
+        println!("command '{}'",cmd_str);
         proc.lock().unwrap().sleep();
         let res = results.clone();
         thread::spawn(move || {
@@ -77,5 +87,36 @@ impl Command for External {
             }));
             proc.lock().unwrap().wake();
         });
+    }
+}
+
+pub struct ExternalI();
+
+impl Instruction for ExternalI {
+    fn signature(&self) -> Signature { Signature::new("extern","rrrr") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        External::new(args[0].reg(),args[1].reg(),args[2].reg(),
+                          args[3].reg())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use std::{ time, thread };
+    
+    use assembly::assemble;
+    use core::{
+        BinaryCode, Instruction, instruction_bundle_core, InstructionSet
+    };
+    use test::{ command_run, TEST_CODE };
+
+    #[test]
+    fn external() {   
+        let mut r = command_run("extern");
+        assert_eq!("[0.0]",r.get_reg(1));
+        assert_eq!("[1.0]",r.get_reg(2));
+        assert_eq!("\"\"",r.get_reg(4));
+        assert_ne!("\"\"",r.get_reg(5));
+        r.run();
     }
 }

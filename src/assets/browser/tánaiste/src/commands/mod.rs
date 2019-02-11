@@ -4,8 +4,8 @@ mod string;
 mod processcmds;
 mod external;
 
-pub use self::debug::DebugPrint;
-pub use self::loadstore::{ Constant, Move };
-pub use self::string::{ Concat };
-pub use self::processcmds::{ Sleep, Halt };
-pub use self::external::External;
+pub use self::debug::{ DebugPrint, DPrintI };
+pub use self::loadstore::{ Constant, ConstantI, Move, MoveI };
+pub use self::string::{ Concat, ConcatI };
+pub use self::processcmds::{ Sleep, SleepI, Halt, HaltI };
+pub use self::external::{ External, ExternalI };
