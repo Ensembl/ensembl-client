@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 
 import { RootState } from 'src/rootReducer';
-import { changeCurrentDrawerSection, closeDrawer } from '../browserActions';
+import { changeCurrentDrawerSection, toggleDrawer } from '../browserActions';
 import {
   getCurrentDrawerSection,
   getCurrentTrack,
@@ -30,29 +30,27 @@ type StateProps = {
 
 type DispatchProps = {
   changeCurrentDrawerSection: (currentDrawerSection: string) => void;
-  closeDrawer: () => void;
+  toggleDrawer: (drawerOpened?: boolean) => void;
 };
 
 type OwnProps = {};
 
 type DrawerProps = StateProps & DispatchProps & OwnProps;
 
-class Drawer extends Component<DrawerProps> {
-  public render() {
-    // const TrackComponent = this.getCurrentTrackComponent();
+const Drawer: FunctionComponent<DrawerProps> = (props: DrawerProps) => {
+  // const TrackComponent = this.getCurrentTrackComponent();
 
-    return (
-      <section className={styles.drawer}>
-        <DrawerBar
-          changeCurrentDrawerSection={this.props.changeCurrentDrawerSection}
-          closeDrawer={this.props.closeDrawer}
-          currentTrack={this.props.currentTrack}
-          drawerSections={this.props.drawerSections}
-        />
-        {/* <div className="track-canvas">{TrackComponent}</div> */}
-      </section>
-    );
-  }
+  return (
+    <section className={styles.drawer}>
+      <DrawerBar
+        changeCurrentDrawerSection={props.changeCurrentDrawerSection}
+        toggleDrawer={props.toggleDrawer}
+        currentTrack={props.currentTrack}
+        drawerSections={props.drawerSections}
+      />
+      {/* <div className="track-canvas">{TrackComponent}</div> */}
+    </section>
+  );
 
   // private getCurrentTrackComponent(): ReactNode {
   //   const { currentDrawerSection, currentTrack, drawerSections } = this.props;
@@ -85,7 +83,7 @@ class Drawer extends Component<DrawerProps> {
   //       );
   //   }
   // }
-}
+};
 
 const mapStateToProps = (state: RootState): StateProps => ({
   currentDrawerSection: getCurrentDrawerSection(state),
@@ -95,7 +93,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
 
 const mapDispatchToProps: DispatchProps = {
   changeCurrentDrawerSection,
-  closeDrawer
+  toggleDrawer
 };
 
 export default connect(
