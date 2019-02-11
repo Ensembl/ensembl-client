@@ -22,6 +22,13 @@ impl ValueImpl {
             ValueImpl::String(_) => None
         }
     }
+    
+    pub fn len(&self) -> usize {
+        match self {
+            ValueImpl::Float(f) => f.len(),
+            ValueImpl::String(s) => s.len()
+        }
+    }        
 }
 
 fn float_to_string(data: &Vec<f64>) -> String {
@@ -46,6 +53,10 @@ impl Value {
     
     pub fn new_from_string(data: String) -> Value {
         Value(Rc::new(RefCell::new(ValueImpl::String(data))))
+    }
+
+    pub fn len(&self) -> usize {
+        self.0.borrow().len()
     }
 
     pub fn value(&self) -> Rc<RefCell<ValueImpl>> {

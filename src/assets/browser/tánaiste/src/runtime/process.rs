@@ -18,6 +18,7 @@ pub struct Process {
     program: Rc<Vec<Box<Command>>>,
     data: DataState,
     proc: Arc<Mutex<ProcState>>,
+    killed: Option<String>
 }
 
 impl Process {
@@ -25,31 +26,43 @@ impl Process {
         Process {
             program,
             data: DataState::new(pc),
-            proc: Arc::new(Mutex::new(ProcState::new(signals)))
+            proc: Arc::new(Mutex::new(ProcState::new(signals))),
+            killed: None
         }
     }
     
     pub fn set_pid(&mut self, pid: usize) { self.proc.lock().unwrap().set_pid(pid); }
     pub fn get_pid(&self) -> Option<usize> { self.proc.lock().unwrap().get_pid() }
     
-    pub fn step(&mut self) {
+    pub fn step(&mut self) -> i64 {
         let data = &mut self.data;
         {
             if data.pc() >= self.program.len() {
                 self.proc.lock().unwrap().halt();
             }
             if self.proc.lock().unwrap().is_halted() {
-                return;
+                return 0;
             }
         }
         data.clear_cont();
-        self.program[data.pc()].execute(data,self.proc.clone());
+        let cyc = self.program[data.pc()].execute(data,self.proc.clone());
         data.jump(1);
+        cyc
+    }
+    
+    pub fn kill(&mut self, msg: String) {
+        let mut proc = self.proc.lock().unwrap();
+        self.killed = Some(msg);
+        proc.halt();
     }
     
     pub fn halted(&self) -> bool {
         let proc = self.proc.lock().unwrap();
         proc.is_halted()
+    }
+    
+    pub fn killed(&self) -> Option<String> {
+        self.killed.as_ref().map(|s| s.clone())
     }
     
     pub fn ready(&self) -> bool {
