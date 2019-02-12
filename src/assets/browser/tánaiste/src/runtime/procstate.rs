@@ -9,7 +9,8 @@ pub struct ProcState {
     sleeping: bool,
     pid: Option<usize>,
     ipid: usize,
-    polls: PollManager
+    polls: PollManager,
+    remaining: Option<i64>
 }
 
 lazy_static! {
@@ -29,9 +30,17 @@ impl ProcState {
             halted: false,
             sleeping: false,
             pid: None,
-            polls: PollManager::new()
+            polls: PollManager::new(),
+            remaining: None
         }
     }
+
+    pub fn set_remaining(&mut self, amt: Option<i64>) {
+        println!("remaining={:?}",amt);
+        self.remaining = amt;
+    }
+
+    pub fn get_remaining(&self) -> Option<i64> { self.remaining }
 
     pub fn get_ipid(&self) -> usize { self.ipid }
 

@@ -11,6 +11,12 @@ use super::procconf::{ ProcessConfig, PROCESS_CONFIG_DEFAULT };
 #[derive(Debug,PartialEq)]
 pub enum ProcessState { Killed(String), Halted, Gone, Running, Sleeping }
 
+impl ProcessState {
+    pub fn alive(&self) -> bool {
+        *self == ProcessState::Running || *self == ProcessState::Sleeping
+    }
+}
+
 #[derive(Debug)]
 pub struct ProcessStatus {
     pub state: ProcessState,

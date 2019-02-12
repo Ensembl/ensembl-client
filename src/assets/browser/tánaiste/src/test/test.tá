@@ -61,6 +61,15 @@
     const #1, "waking"
     dprint #1
 
+;;; --cut-- [sleep-inter]
+
+    const #1, "sleeping"
+    dprint #1
+    const #2, [10000]
+    sleep #2
+    const #1, "waking"
+    dprint #1
+
 ;;; --cut-- [concat]
 
     const #1, "hello "
@@ -159,13 +168,16 @@
 ;;; --cut-- [po-extern]
 
     pollmake #1
-    
+
+    ; first command
     const #2, "echo \"hello\""
     poextern #3,#1,#2
     
+    ; second command
     const #2, "sleep 1"
     poextern #4,#1,#2
     
+    ; wait for either (will get 1st) and store code/output in #7/#8
     pollany #5,#1
     pollreset #1,#5
     poexternres #7,#8,#0,#1,#5
@@ -174,6 +186,7 @@
     dprint #2
     dprint #8
     
+    ; wait for either (will get 2nd) and store code/output in #9/#10
     pollany #6,#1
     poexternres #9,#10,#0,#1,#6
     
