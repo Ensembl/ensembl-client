@@ -27,7 +27,8 @@ pub struct External {
 }
 
 impl External {
-    pub fn new(code_reg: usize, stdout_reg: usize, stderr_reg: usize, command_reg: usize) -> Box<Command> {
+    pub fn new(code_reg: usize, stdout_reg: usize, stderr_reg: usize,
+               command_reg: usize) -> Box<Command> {
         Box::new(External {
             code_reg, stdout_reg, stderr_reg, command_reg
         })
@@ -58,8 +59,8 @@ impl Command for External {
         let r_idx = results.lock().unwrap().store(None);
         data.set_again();
         data.continuations().set(1,Value::new_from_float(vec!{ (r_idx+1) as f64 })); 
-        let cmd_str = data.registers().get(self.command_reg).as_string(|s| s.clone());
         proc.lock().unwrap().sleep();
+        let cmd_str = data.registers().get(self.command_reg).as_string(|s| s.clone());
         let res = results.clone();
         thread::spawn(move || {
             let c = process::Command::new("bash")
