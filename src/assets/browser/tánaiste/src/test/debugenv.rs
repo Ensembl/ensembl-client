@@ -6,21 +6,21 @@ use runtime::Environment;
 
 pub struct DebugEnvironmentExtern {
     start: Instant,
-    last_exit_str: Option<String>,
-    last_exit_float: Option<Vec<f64>>
+    last_exit_str: Vec<String>,
+    last_exit_float: Vec<Vec<f64>>
 }
 
 impl DebugEnvironmentExtern {
     pub fn new() -> DebugEnvironmentExtern {
         DebugEnvironmentExtern {
             start: Instant::now(),
-            last_exit_str: None,
-            last_exit_float: None
+            last_exit_str: Vec::<String>::new(),
+            last_exit_float: Vec::<Vec<f64>>::new()
         }
     }
         
-    pub fn get_exit_str(&self) -> Option<&String> { self.last_exit_str.as_ref() }
-    pub fn get_exit_float(&self) -> Option<&Vec<f64>> { self.last_exit_float.as_ref() }
+    pub fn get_exit_str(&self) -> &Vec<String> { &self.last_exit_str }
+    pub fn get_exit_float(&self) -> &Vec<Vec<f64>> { &self.last_exit_float }
 }
 
 impl Environment for DebugEnvironmentExtern {
@@ -31,8 +31,8 @@ impl Environment for DebugEnvironmentExtern {
     
     fn finished(&mut self, pid: usize, codes: Vec<f64>, string: String) {
         println!("exit pid={} codes={:?}, string={}",pid,codes,string);
-        self.last_exit_str = Some(string);
-        self.last_exit_float = Some(codes);
+        self.last_exit_str.push(string);
+        self.last_exit_float.push(codes);
     }
 }
 
@@ -60,10 +60,10 @@ impl DebugEnvironment {
     }
 
     pub fn get_time(&mut self) -> i64 { self.0.borrow_mut().get_time() }
-    pub fn get_exit_str(&self) -> Option<String> {
-        self.0.borrow_mut().get_exit_str().map(|s| s.clone())
+    pub fn get_exit_str(&self) -> Vec<String> {
+        self.0.borrow_mut().get_exit_str().clone()
     }
-    pub fn get_exit_float(&self) -> Option<Vec<f64>> {
-        self.0.borrow_mut().get_exit_float().map(|s| s.clone())
+    pub fn get_exit_float(&self) -> Vec<Vec<f64>> {
+        self.0.borrow_mut().get_exit_float().clone()
     }
 }

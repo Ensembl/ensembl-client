@@ -84,6 +84,28 @@
     const #1, [0,200]
     const #2, "Success!"
 
+;;; --cut-- [multi-1]
+
+    const #1, [100]
+    sleep #1
+    sleep #1
+    sleep #1
+    sleep #1
+    sleep #1
+    const #2, "multi-1"
+    dprint #2
+
+;;; --cut-- [multi-2]
+
+    const #1, [200]
+    sleep #1
+    sleep #1
+    sleep #1
+    sleep #1
+    sleep #1
+    const #2, "multi-2"
+    dprint #2
+
 ;;; --cut-- [interp-sleep-wake]
 
     const #1, "sleeping"
