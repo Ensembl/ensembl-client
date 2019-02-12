@@ -1,10 +1,7 @@
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
-use std::{ thread, time };
 
-use core::{ Command, Value };
-use commands::{ Constant, DebugPrint, Concat, Sleep, External, Move };
-use super::registers::RegisterFile;
+use core::Command;
 use super::datastate::DataState;
 use super::procconf::ProcessConfig;
 use super::procstate::ProcState;
@@ -107,7 +104,7 @@ impl Process {
 mod test {
     use std::rc::Rc;
     use core::Value;
-    use runtime::{ PROCESS_CONFIG_DEFAULT, Signals };
+    use runtime::PROCESS_CONFIG_DEFAULT;
     use super::Process;
     
     #[test]

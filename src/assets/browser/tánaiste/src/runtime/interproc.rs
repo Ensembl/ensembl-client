@@ -1,12 +1,7 @@
-use std::collections::HashSet;
-use std::sync::{ Arc, Mutex };
-
-use core::BinaryCode;
-use util::ValueStore;
 use super::environment::Environment;
 use super::interp::{ ProcessState, ProcessStatus };
 use super::process::Process;
-use super::procconf::{ ProcessConfig, PROCESS_CONFIG_DEFAULT };
+use super::procconf::ProcessConfig;
 
 pub struct InterpProcess {
     start: i64,
@@ -38,7 +33,7 @@ impl InterpProcess {
         }
         if let Some(time_limit) = self.config.time_limit {
             let interval = env.get_time();
-            if interval > time_limit {
+            if interval - self.start > time_limit {
                 return Some(format!("Exceeded time limit {}",time_limit));
             }
         }
@@ -85,6 +80,4 @@ impl InterpProcess {
             cycles: self.cycles
         }
     }
-    
-    fn get_cycles(&self) -> i64 { self.cycles }
 }

@@ -7,12 +7,6 @@ use runtime::{ DataState, ProcState };
 #[derive(Debug)]
 pub struct Concat(usize,usize,usize);
 
-impl Concat {
-    pub fn new(r: usize, a: usize, b: usize) -> Box<Command> {
-        Box::new(Concat(r,a,b))
-    }
-}
-
 impl Command for Concat {
     fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
         let regs = rt.registers();

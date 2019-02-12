@@ -7,12 +7,6 @@ use runtime::{ DataState, ProcState };
 #[derive(Debug)]
 pub struct Constant(usize,Value);
 
-impl Constant {
-    pub fn new(r: usize, v: Value) -> Box<Command> {
-        Box::new(Constant(r,v))
-    }
-}
-
 impl Command for Constant {    
     fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
         rt.registers().set(self.0,self.1.clone());
@@ -57,13 +51,7 @@ impl Instruction for MoveI {
 }
 
 #[cfg(test)]
-mod test {
-    use std::{ time, thread };
-    
-    use assembly::assemble;
-    use core::{
-        BinaryCode, Instruction, instruction_bundle_core, InstructionSet
-    };
+mod test {    
     use test::command_run;
 
     #[test]

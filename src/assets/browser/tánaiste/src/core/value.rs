@@ -148,7 +148,7 @@ impl Value {
                     Some(ValueImpl::Bytes(string_to_bytes(&s))),
                 ValueImpl::Float(ref f) =>
                     Some(ValueImpl::Bytes(float_to_bytes(&f))),
-                ValueImpl::Bytes(ref b) => None
+                ValueImpl::Bytes(_) => None
             }
         };
         self.update(v);

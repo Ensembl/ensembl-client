@@ -1,6 +1,5 @@
-use std::collections::HashSet;
 use std::sync::{ Arc, Mutex };
-use runtime::{ DataState, ProcState };
+use runtime::ProcState;
 use util::ValueStore;
 
 struct PollGroup {
@@ -40,7 +39,7 @@ impl PollGroup {
     }
     
     pub fn add_waiter(&mut self, ps: Arc<Mutex<ProcState>>) {
-        if let Some(id) = self.get_any() {
+        if self.get_any().is_some() {
             ps.lock().unwrap().wake();
         } else {
             self.waiters.push(ps.clone());
