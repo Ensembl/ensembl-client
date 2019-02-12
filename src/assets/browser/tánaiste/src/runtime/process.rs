@@ -79,6 +79,10 @@ impl Process {
         !proc.is_sleeping() && !proc.is_halted()
     }
     
+    pub fn set_remaining(&mut self, remain: i64) {
+        self.proc.lock().unwrap().set_remaining(Some(remain));
+    }
+    
     pub fn run(&mut self) {
         loop {
             if !self.ready() { return; }

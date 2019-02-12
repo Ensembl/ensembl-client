@@ -46,6 +46,11 @@ impl InterpProcess {
     }
     
     pub fn run_proc(&mut self, env: &mut Box<Environment>, cycles: i64) {
+        if let Some(remain) = self.config.time_limit.map(|limit|
+            limit - env.get_time()
+        ) {
+            self.p.set_remaining(remain);
+        }
         let mut c = 0;
         while self.p.ready() && c < cycles {        
             c += self.p.step();
