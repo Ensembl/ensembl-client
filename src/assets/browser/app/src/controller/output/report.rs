@@ -110,13 +110,14 @@ impl ReportImpl {
     }
 
     fn make_number(&self, data: &str) -> JSONValue {
-        data.parse::<f64>()
-            .map(|v| JSONValue::Number(JSONNumber::from_f64(v).unwrap()))
+        data.parse::<f64>().ok()
+            .and_then(|v| JSONNumber::from_f64(v) )
+            .map(|v| JSONValue::Number(v) )
             .unwrap_or(JSONValue::Null)
     }
 
     fn make_bool(&self, data: &str) -> JSONValue {
-        data.parse::<bool>()
+        data.parse::<bool>().ok()
             .map(|v| JSONValue::Bool(v))
             .unwrap_or(JSONValue::Null)
     }
