@@ -1,6 +1,7 @@
 mod datastate;
 mod environment;
 mod interp;
+mod interproc;
 mod procconf;
 mod process;
 mod procstate;
