@@ -1,5 +1,5 @@
-use core::Command;
-use super::{ Value, RegisterFile, ProcessConfig };
+use core::{ Command, Value };
+use super::{ RegisterFile, ProcessConfig };
 
 pub struct DataState {
     continuations: RegisterFile,

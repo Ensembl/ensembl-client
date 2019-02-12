@@ -1,8 +1,8 @@
 use std::sync::{ Arc, Mutex };
 
 use assembly::{ Argument, Signature };
-use core::{ Command, Instruction };
-use runtime::{ DataState, ProcState, Value };
+use core::{ Command, Instruction, Value };
+use runtime::{ DataState, ProcState };
 
 #[derive(Debug)]
 pub struct Constant(usize,Value);

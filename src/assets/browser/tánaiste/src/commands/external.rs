@@ -4,8 +4,8 @@ use std::sync::{ Arc, Mutex };
 use std::{ thread, time };
 
 use assembly::{ Argument, Signature };
-use core::{ Command, Instruction };
-use runtime::{ DataState, ProcState, Value };
+use core::{ Command, Instruction, Value };
+use runtime::{ DataState, ProcState };
 use util::ValueStore;
 
 struct Result {
