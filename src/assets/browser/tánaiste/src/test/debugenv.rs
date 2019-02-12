@@ -29,8 +29,7 @@ impl Environment for DebugEnvironmentExtern {
         d.as_secs() as i64 * 1000 + d.subsec_millis() as i64
     }
     
-    fn finished(&mut self, pid: usize, codes: Vec<f64>, string: String) {
-        println!("exit pid={} codes={:?}, string={}",pid,codes,string);
+    fn finished(&mut self, _pid: usize, codes: Vec<f64>, string: String) {
         self.last_exit_str.push(string);
         self.last_exit_float.push(codes);
     }
