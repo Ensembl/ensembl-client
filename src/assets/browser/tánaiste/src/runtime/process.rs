@@ -11,10 +11,6 @@ use super::procstate::ProcState;
 use super::value::Value;
 use super::interp::Signals;
 
-/* TODO
- * limit: register size, stack size, value size, execution time
- */
-
 pub struct Process {
     program: Rc<Vec<Box<Command>>>,
     data: DataState,
@@ -96,19 +92,11 @@ impl Process {
     }
 
     pub fn get_reg_str(&mut self, idx: usize) -> String {
-        let mut val_v = self.data.registers().get(idx);
-        val_v.coerce_to_string();
-        let val_vi = val_v.value();
-        let val_s = val_vi.borrow();
-        val_s.value_string().unwrap().clone()
+        self.data.registers().get(idx).as_string(|s| s.clone())
     }
 
     pub fn get_reg_float(&mut self, idx: usize) -> Vec<f64> {
-        let mut val_v = self.data.registers().get(idx);
-        val_v.coerce_to_float();
-        let val_vi = val_v.value();
-        let val_s = val_vi.borrow();
-        val_s.value_float().unwrap().clone()
+        self.data.registers().get(idx).as_floats(|f| f.clone())
     }
 }
 
