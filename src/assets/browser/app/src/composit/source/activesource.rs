@@ -5,7 +5,7 @@ use std::rc::Rc;
 
 use composit::state::StateExpr;
 use composit::{
-    Source, Carriage, Leaf, SourceFactory, SourceResponse, StateManager,
+    Source, Carriage, Leaf, SourceSched, SourceResponse, StateManager,
     StateValue
 };
 
@@ -21,7 +21,7 @@ impl ActiveSource {
         ActiveSource { ooe, source, name: name.to_string() }
     }
     
-    pub fn make_carriage(&self, sf: &mut SourceFactory, leaf: &Leaf) -> Carriage {
+    pub fn make_carriage(&self, sf: &mut SourceSched, leaf: &Leaf) -> Carriage {
         let mut out = Carriage::new(self.clone(),leaf);
         sf.populate_carriage(&mut out);
         out
