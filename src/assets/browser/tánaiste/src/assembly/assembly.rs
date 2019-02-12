@@ -4,7 +4,8 @@ use std::thread;
 use std::time;
 
 use core::{
-    BinaryCode, Instruction, instruction_bundle_core, InstructionSet
+    BinaryCode, Instruction, instruction_bundle_core, InstructionSet,
+    instruction_bundle_test
 };
 use commands::{ ConstantI, DPrintI, HaltI };
 use super::codegen::codegen;
@@ -26,7 +27,8 @@ mod test {
     use std::time;
 
     use core::{
-        BinaryCode, Instruction, instruction_bundle_core, InstructionSet
+        BinaryCode, Instruction, instruction_bundle_core, InstructionSet,
+        instruction_bundle_test
     };
     use commands::{ ConstantI, DPrintI, HaltI };
     use runtime::PROCESS_CONFIG_DEFAULT;
@@ -36,7 +38,10 @@ mod test {
     use super::assemble;
     
     fn test_assemble(name: &str) -> Result<BinaryCode,Vec<String>> {
-        let is = InstructionSet::new(instruction_bundle_core());
+        let is = InstructionSet::new(vec! {
+            instruction_bundle_core(),
+            instruction_bundle_test()
+        });
         assemble(&is,&TEST_CODE[name])
     }
 

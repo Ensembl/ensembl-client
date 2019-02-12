@@ -27,20 +27,34 @@ pub fn instruction_bundle_core() -> InstructionBundle {
     ib.add_all(vec! {
         Box::new(ConcatI()) as Box<Instruction>,
         Box::new(ConstantI()),
-        Box::new(DPrintI()), 
-        Box::new(ExternalI()), 
         Box::new(HaltI()),
         Box::new(MoveI()),
-        Box::new(SleepI()),
         Box::new(PushI()),
         Box::new(PopI()),
         Box::new(PollAnyI()),
         Box::new(PollDoneI()),
         Box::new(PollMakeI()),
-        Box::new(PollResetI()),
+        Box::new(PollResetI())
+    });
+    ib
+}
+
+pub fn instruction_bundle_native() -> InstructionBundle {
+    let mut ib = InstructionBundle::new();
+    ib.add_all(vec! {
+        Box::new(ExternalI()), 
+        Box::new(SleepI()),
         Box::new(PoSleepI()),
         Box::new(PoExternalI()),
         Box::new(PoExternalResI())
+    });
+    ib
+}
+
+pub fn instruction_bundle_test() -> InstructionBundle {
+    let mut ib = InstructionBundle::new();
+    ib.add_all(vec! {
+        Box::new(DPrintI()), 
     });
     ib
 }

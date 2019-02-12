@@ -12,11 +12,13 @@ pub struct InstructionSet {
 }
 
 impl InstructionSet {
-    pub fn new(mut isb: InstructionBundle) -> InstructionSet {
+    pub fn new(mut isbs: Vec<InstructionBundle>) -> InstructionSet {
         let mut instrs = HashMap::<String,Box<Instruction>>::new();
-        for inst in isb.drain() {
-            let sig = inst.signature();
-            instrs.insert(sig.0.clone(),inst);
+        for mut isb in isbs {
+            for inst in isb.drain() {
+                let sig = inst.signature();
+                instrs.insert(sig.0.clone(),inst);
+            }
         }
         InstructionSet {
             instrs
