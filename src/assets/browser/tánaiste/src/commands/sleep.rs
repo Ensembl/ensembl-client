@@ -8,12 +8,6 @@ use runtime::{ DataState, ProcState };
 #[derive(Debug)]
 pub struct Sleep(usize);
 
-impl Sleep {
-    pub fn new(ms_reg: usize) -> Box<Command> {
-        Box::new(Sleep(ms_reg))
-    }
-}
-
 impl Command for Sleep {    
     fn execute(&self, data: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let mut ms = data.registers().get(self.0).as_floats(|f|
@@ -42,12 +36,6 @@ impl Instruction for SleepI {
 
 #[derive(Debug)]
 pub struct PoSleep(usize,usize,usize);
-
-impl PoSleep {
-    pub fn new(fd_reg: usize, poll_reg: usize, ms_reg: usize) -> Box<Command> {
-        Box::new(PoSleep(fd_reg,poll_reg,ms_reg))
-    }
-}
 
 impl Command for PoSleep {    
     fn execute(&self, data: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
@@ -83,12 +71,6 @@ impl Instruction for PoSleepI {
 #[derive(Debug)]
 pub struct Halt();
 
-impl Halt {
-    pub fn new() -> Box<Command> {
-        Box::new(Halt())
-    }
-}
-
 impl Command for Halt {
     fn execute(&self, _data: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         proc.lock().unwrap().halt();
@@ -100,7 +82,7 @@ pub struct HaltI();
 
 impl Instruction for HaltI {
     fn signature(&self) -> Signature { Signature::new("halt","") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, _args: &Vec<Argument>) -> Box<Command> {
         Box::new(Halt())
     }
 }
@@ -109,7 +91,7 @@ impl Instruction for HaltI {
 mod test {
     use std::{ thread, time };
     use std::time::Instant;
-    use runtime::{ Interp, DEFAULT_CONFIG, PROCESS_CONFIG_DEFAULT, ProcessState };
+    use runtime::{ Interp, DEFAULT_CONFIG, PROCESS_CONFIG_DEFAULT };
     use test::{ command_make, command_compile, DebugEnvironment };
 
     #[test]
@@ -133,7 +115,7 @@ mod test {
         let mut pc = PROCESS_CONFIG_DEFAULT.clone();
         pc.time_limit = Some(100);        
         let bin = command_compile("sleep-inter");
-        let mut t_env = DebugEnvironment::new();
+        let t_env = DebugEnvironment::new();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
         let pid = t.exec(&bin,None,Some(&pc)).ok().unwrap();
         while t.status(pid).state.alive() {

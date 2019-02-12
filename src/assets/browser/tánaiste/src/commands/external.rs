@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::process;
 use std::sync::{ Arc, Mutex };
-use std::{ thread, time };
+use std::thread;
 
 use assembly::{ Argument, Signature };
 use core::{ Command, Instruction, Value };
@@ -15,10 +15,10 @@ struct Result {
 }
 
 lazy_static! {
-    static ref results: Arc<Mutex<ValueStore<Option<Result>>>> =
+    static ref RESULTS: Arc<Mutex<ValueStore<Option<Result>>>> =
         Arc::new(Mutex::new(ValueStore::<Option<Result>>::new()));
         
-    static ref id_map: Arc<Mutex<HashMap<(usize,usize,usize),usize>>> =
+    static ref ID_MAP: Arc<Mutex<HashMap<(usize,usize,usize),usize>>> =
         Arc::new(Mutex::new(HashMap::<(usize,usize,usize),usize>::new()));
 }
 
@@ -50,7 +50,7 @@ impl Command for External {
             f.get(0).map(|s| *s)
         );
         if let Some(retry) = retry {
-            let s = &mut results.lock().unwrap();
+            let s = &mut RESULTS.lock().unwrap();
             let res = s.unstore(retry as usize-1).unwrap();
             data.registers().set(self.code_reg,Value::new_from_float(vec! {
                 res.exit_code as f64
@@ -65,12 +65,12 @@ impl Command for External {
             }
             return 0;
         }
-        let r_idx = results.lock().unwrap().store(None);
+        let r_idx = RESULTS.lock().unwrap().store(None);
         data.set_again();
         data.continuations().set(1,Value::new_from_float(vec!{ (r_idx+1) as f64 })); 
         proc.lock().unwrap().sleep();
         let cmd_str = data.registers().get(self.command_reg).as_string(|s| s.clone());
-        let res = results.clone();
+        let res = RESULTS.clone();
         thread::spawn(move || {
             let c = process::Command::new("bash")
                         .arg("-c").arg(cmd_str)
@@ -118,12 +118,12 @@ impl Command for PoExternal {
         let id = polls.allocate(g);
         data.registers().set(self.0,Value::new_from_float(vec![ id ]));
         /* create a home for the output */
-        let r_idx = results.lock().unwrap().store(None);
+        let r_idx = RESULTS.lock().unwrap().store(None);
         let map_id = (proc.lock().unwrap().get_ipid(), g as usize, id as usize);
-        id_map.lock().unwrap().insert(map_id,r_idx);
+        ID_MAP.lock().unwrap().insert(map_id,r_idx);
         /* set command going */
         let cmd_str = data.registers().get(self.2).as_string(|s| s.clone());
-        let res = results.clone();
+        let res = RESULTS.clone();
         thread::spawn(move || {
             let c = process::Command::new("bash")
                         .arg("-c").arg(cmd_str)
@@ -162,8 +162,8 @@ impl Command for PoExternalRes {
         let g = data.registers().get(self.3).as_floats(|f| *f.get(0).unwrap_or(&0.));
         let id = data.registers().get(self.4).as_floats(|f| *f.get(0).unwrap_or(&0.));
         let map_id = (proc.lock().unwrap().get_ipid(), g as usize, id as usize);
-        if let Some(r_idx) = id_map.lock().unwrap().remove(&map_id) {
-            let s = &mut results.lock().unwrap();
+        if let Some(r_idx) = ID_MAP.lock().unwrap().remove(&map_id) {
+            let s = &mut RESULTS.lock().unwrap();
             let res = s.unstore(r_idx).unwrap();
             data.registers().set(self.0,Value::new_from_float(vec! {
                 res.exit_code as f64
@@ -191,13 +191,7 @@ impl Instruction for PoExternalResI {
 
 #[cfg(test)]
 mod test {
-    use std::{ time, thread };
-    
-    use assembly::assemble;
-    use core::{
-        BinaryCode, Instruction, instruction_bundle_core, InstructionSet
-    };
-    use test::{ command_run, TEST_CODE };
+    use test::command_run;
 
     #[test]
     fn external() {   

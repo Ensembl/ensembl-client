@@ -1,19 +1,11 @@
 use std::sync::{ Arc, Mutex };
-use std::{ thread, time };
 
 use assembly::{ Argument, Signature };
 use core::{ Command, Instruction, Value };
 use runtime::{ DataState, ProcState };
-use util::{ PollManager };
 
 #[derive(Debug)]
 pub struct PollMake(usize);
-
-impl PollMake {
-    pub fn new(reg: usize) -> Box<Command> {
-        Box::new(PollMake(reg))
-    }
-}
 
 impl Command for PollMake {    
     fn execute(&self, data: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
@@ -36,12 +28,6 @@ impl Instruction for PollMakeI {
 #[derive(Debug)]
 pub struct PollDone(usize);
 
-impl PollDone {
-    pub fn new(reg: usize) -> Box<Command> {
-        Box::new(PollDone(reg))
-    }
-}
-
 impl Command for PollDone {    
     fn execute(&self, data: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let g = data.registers().get(self.0).as_floats(|f| *f.get(0).unwrap_or(&0.));
@@ -62,12 +48,6 @@ impl Instruction for PollDoneI {
 
 #[derive(Debug)]
 pub struct PollReset(usize,usize);
-
-impl PollReset {
-    pub fn new(group_reg: usize, fd_reg: usize) -> Box<Command> {
-        Box::new(PollReset(group_reg,fd_reg))
-    }
-}
 
 impl Command for PollReset {    
     fn execute(&self, data: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
@@ -90,12 +70,6 @@ impl Instruction for PollResetI {
 
 #[derive(Debug)]
 pub struct PollAny(usize,usize);
-
-impl PollAny {
-    pub fn new(fd_reg: usize, group_reg: usize) -> Box<Command> {
-        Box::new(PollAny(group_reg,fd_reg))
-    }
-}
 
 impl Command for PollAny {    
     fn execute(&self, data: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {

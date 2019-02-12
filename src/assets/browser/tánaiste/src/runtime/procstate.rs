@@ -14,13 +14,13 @@ pub struct ProcState {
 }
 
 lazy_static! {
-    static ref ipid_source: Arc<Mutex<usize>> = Arc::new(Mutex::new(0));
+    static ref IPID_SOURCE: Arc<Mutex<usize>> = Arc::new(Mutex::new(0));
 }
 
 impl ProcState {
     pub fn new(signals: Option<Signals>) -> ProcState {
         let ipid = {
-            let mut src = ipid_source.lock().unwrap();
+            let mut src = IPID_SOURCE.lock().unwrap();
             *src += 1;
             *src
         };

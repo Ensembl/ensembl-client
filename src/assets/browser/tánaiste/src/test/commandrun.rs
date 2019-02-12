@@ -5,7 +5,7 @@ use core::{
     BinaryCode, InstructionSet, instruction_bundle_core, 
     instruction_bundle_native, instruction_bundle_test
 };
-use runtime::{ Process, PROCESS_CONFIG_DEFAULT, ProcessConfig };
+use runtime::{ Process, PROCESS_CONFIG_DEFAULT };
 use test::TEST_CODE;
 
 pub fn command_compile(what: &str) -> BinaryCode {

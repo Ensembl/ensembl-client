@@ -5,7 +5,6 @@ use core::BinaryCode;
 use util::ValueStore;
 use super::environment::Environment;
 use super::interproc::InterpProcess;
-use super::process::Process;
 use super::procconf::{ ProcessConfig, PROCESS_CONFIG_DEFAULT };
 
 #[derive(Debug,PartialEq)]
@@ -147,9 +146,7 @@ impl Interp {
 #[cfg(test)]
 mod test {
     use std::{ thread, time };
-    use super::{ Interp, ProcessState, ProcessStatus, DEFAULT_CONFIG };
-    use super::super::procconf::{ ProcessConfig, PROCESS_CONFIG_DEFAULT };
-    use super::super::environment::{ Environment };
+    use super::{ Interp, ProcessState, DEFAULT_CONFIG };
     use test::{ command_compile, DebugEnvironment };
         
     #[test]
@@ -222,8 +219,7 @@ mod test {
     
     #[test]
     fn cycle_count() {
-        let mut t_env = DebugEnvironment::new();
-        let now = t_env.get_time();
+        let t_env = DebugEnvironment::new();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
         let bin = command_compile("cycle-count");
         let pid = t.exec(&bin,None,None).ok().unwrap();
