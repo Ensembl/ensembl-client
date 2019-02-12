@@ -36,7 +36,6 @@ impl ProcState {
     }
 
     pub fn set_remaining(&mut self, amt: Option<i64>) {
-        println!("remaining={:?}",amt);
         self.remaining = amt;
     }
 
