@@ -18,6 +18,11 @@ lazy_static! {
         Arc::new(Mutex::new(ValueStore::<Option<Result>>::new()));
 }
 
+/****************************************
+ * Synchronous external command: extern *
+ ****************************************
+ */
+
 #[derive(Debug)]
 pub struct External {
     code_reg: usize,
@@ -91,6 +96,11 @@ impl Instruction for ExternalI {
                           args[3].reg())
     }
 }
+
+/*******************************************
+ * Asynchronous external command: poextern *
+ *******************************************
+ */
 
 #[cfg(test)]
 mod test {
