@@ -39,6 +39,8 @@ pub fn instruction_bundle_core() -> InstructionBundle {
         Box::new(PollMakeI()),
         Box::new(PollResetI()),
         Box::new(PoSleepI()),
+        Box::new(PoExternalI()),
+        Box::new(PoExternalResI())
     });
     ib
 }
