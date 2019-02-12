@@ -155,3 +155,30 @@
     pollreset #1,#5   ; pollreset [group],[ready-fd]
     pollany #6,#1     ; pollany [ready-fd(==fd1?)],[group]
     polldone #1       ; polldone [group]
+
+;;; --cut-- [po-extern]
+
+    pollmake #1
+    
+    const #2, "echo \"hello\""
+    poextern #3,#1,#2
+    
+    const #2, "sleep 1"
+    poextern #4,#1,#2
+    
+    pollany #5,#1
+    pollreset #1,#5
+    poexternres #7,#8,#0,#1,#5
+    
+    const #2, "1st"
+    dprint #2
+    dprint #8
+    
+    pollany #6,#1
+    poexternres #9,#10,#0,#1,#6
+    
+    const #2, "2nd"
+    dprint #2
+    dprint #9
+    
+    polldone #1

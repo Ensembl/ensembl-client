@@ -1,3 +1,5 @@
+use std::sync::{ Arc, Mutex };
+
 use util::PollManager;
 use super::interp::Signals;
 
@@ -6,12 +8,23 @@ pub struct ProcState {
     halted: bool,
     sleeping: bool,
     pid: Option<usize>,
+    ipid: usize,
     polls: PollManager
+}
+
+lazy_static! {
+    static ref ipid_source: Arc<Mutex<usize>> = Arc::new(Mutex::new(0));
 }
 
 impl ProcState {
     pub fn new(signals: Option<Signals>) -> ProcState {
+        let ipid = {
+            let mut src = ipid_source.lock().unwrap();
+            *src += 1;
+            *src
+        };
         ProcState {
+            ipid,
             signals,
             halted: false,
             sleeping: false,
@@ -20,6 +33,8 @@ impl ProcState {
         }
     }
 
+    pub fn get_ipid(&self) -> usize { self.ipid }
+
     pub fn set_pid(&mut self, pid: usize) { self.pid = Some(pid); }
     pub fn get_pid(&self) -> Option<usize> { self.pid }
 
@@ -27,11 +42,9 @@ impl ProcState {
     pub fn sleep(&mut self) { self.sleeping = true; }
     
     pub fn wake(&mut self) {
-        println!("WAKE");
         self.sleeping = false;
         if let Some(ref signals) = self.signals {
             if let Some(pid) = self.pid {
-                println!("sent signal to {}",pid);
                 signals.awoke(pid);
             }
         }
