@@ -134,3 +134,24 @@
     push #1
     pop #2
     pop #1
+
+;;; --cut-- [poll-smoke]
+
+    pollmake #1       ; pollmake [group]
+    const #3,[500]
+    posleep #2,#1,#3  ; posleep [fd],[group],500ms
+    pollany #4,#1     ; pollany [ready-fd],[group]
+    polldone #1       ; polldone [group]
+    ; #4 == #2 ???    ; [ready-fd] == [fd]
+
+;;; --cut-- [poll-smoke-2]
+
+    pollmake #1       ; pollmake [group]
+    const #3,[500]
+    posleep #2,#1,#3  ; posleep [fd1],[group],500ms
+    const #3,[100]
+    posleep #4,#1,#3  ; posleep [fd2],[group],100ms
+    pollany #5,#1     ; pollany [ready-fd(==fd2?)],[group]
+    pollreset #1,#5   ; pollreset [group],[ready-fd]
+    pollany #6,#1     ; pollany [ready-fd(==fd1?)],[group]
+    polldone #1       ; polldone [group]
