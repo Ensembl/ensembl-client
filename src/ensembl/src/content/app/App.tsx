@@ -5,7 +5,12 @@ import React, {
   Suspense,
   useEffect
 } from 'react';
-import { Route, RouteComponentProps, Switch, withRouter } from 'react-router';
+import {
+  Route,
+  RouteComponentProps,
+  Switch,
+  withRouter
+} from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { changeCurrentApp } from 'src/header/headerActions';
