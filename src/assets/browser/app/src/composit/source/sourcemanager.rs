@@ -1,5 +1,5 @@
 use composit::ActiveSource;
 
-pub trait ComponentSource {
+pub trait SourceManager {
     fn get_component(&mut self, name: &str) -> Option<ActiveSource>;
 }

@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use composit::{ 
-    StateValue, StateFixed, ComponentSource, StateAtom, ActiveSource
+    StateValue, StateFixed, SourceManager, StateAtom, ActiveSource
 };
 use controller::global::App;
 use controller::input::{ Action, actions_run };
@@ -61,16 +61,16 @@ fn component_debug_sub(name: &str, even: bool) -> ActiveSource {
     ActiveSource::new(name,Rc::new(cs),state)
 }
 
-pub struct DebugComponentSource {
+pub struct DebugSourceManager {
 }
 
-impl DebugComponentSource {
-    pub fn new() -> DebugComponentSource {
-        DebugComponentSource {}
+impl DebugSourceManager {
+    pub fn new() -> DebugSourceManager {
+        DebugSourceManager {}
     }
 }
 
-impl ComponentSource for DebugComponentSource {
+impl SourceManager for DebugSourceManager {
     fn get_component(&mut self, name: &str) -> Option<ActiveSource> {
         match name {
             "internal:debug-main" => Some(component_debug_main(name)),

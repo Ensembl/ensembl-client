@@ -3,16 +3,16 @@ use std::collections::HashMap;
 use composit::{ Carriage, SourceResponse, ActiveSource, Leaf };
 use util::Cache;
 
-pub struct SourceFactory {
+pub struct SourceSched {
     max_pending: i32,
     cache: Cache<(ActiveSource,Leaf),SourceResponse>,
     queued: Vec<(ActiveSource,Leaf,SourceResponse)>,
     pending: HashMap<(ActiveSource,Leaf),SourceResponse>
 }
 
-impl SourceFactory {
-    pub fn new(max_pending: i32, cache_size: usize) -> SourceFactory {
-        SourceFactory {
+impl SourceSched {
+    pub fn new(max_pending: i32, cache_size: usize) -> SourceSched {
+        SourceSched {
             max_pending,
             cache: Cache::<(ActiveSource,Leaf),SourceResponse>::new(cache_size),
             queued: Vec::<(ActiveSource,Leaf,SourceResponse)>::new(),

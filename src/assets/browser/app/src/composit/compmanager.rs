@@ -5,19 +5,19 @@ const MAX_PENDING : i32 = 0;
 const CACHE_SIZE : usize = 10;
 
 use composit::{
-    ActiveSource, Leaf, Carriage, SourceFactory
+    ActiveSource, Leaf, Carriage, SourceSched
 };
 
 pub struct ComponentManager {
     components: HashMap<String,ActiveSource>,
-    source_factory: SourceFactory
+    source_factory: SourceSched
 }
 
 impl ComponentManager {
     pub fn new() -> ComponentManager {
         ComponentManager {
             components: HashMap::<String,ActiveSource>::new(),
-            source_factory: SourceFactory::new(MAX_PENDING,CACHE_SIZE)
+            source_factory: SourceSched::new(MAX_PENDING,CACHE_SIZE)
         }
     }
     
