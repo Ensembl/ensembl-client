@@ -21,8 +21,8 @@ impl InterpProcess {
     
     fn send_finished(&mut self, env: &mut Box<Environment>) {
         let exit_float = self.p.get_reg_float(1);
-        let exit_str = self.p.get_reg_str(2);  
-        env.finished(self.p.get_pid().unwrap(),exit_float,exit_str);
+        let exit_str = self.p.get_reg_str(2);
+        env.finished(self.p.get_pid().unwrap(),self.status().state,exit_float,exit_str);
     }
     
     fn oob(&mut self, env: &mut Box<Environment>) -> Option<String> {

@@ -7,7 +7,7 @@ use super::environment::Environment;
 use super::interproc::InterpProcess;
 use super::procconf::{ ProcessConfig, PROCESS_CONFIG_DEFAULT };
 
-#[derive(Debug,PartialEq)]
+#[derive(Debug,PartialEq,Clone)]
 pub enum ProcessState { Killed(String), Halted, Gone, Running, Sleeping }
 
 impl ProcessState {
@@ -16,7 +16,7 @@ impl ProcessState {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct ProcessStatus {
     pub state: ProcessState,
     pub cycles: i64
@@ -113,6 +113,9 @@ impl Interp {
             if status.state == ProcessState::Running {
                 self.nextq.insert(pid);
             }
+            if !status.state.alive() {
+                self.procs.unstore(pid);
+            }
             if self.env.get_time() >= end {
                 return RunResult::Timeout;
             }
@@ -137,10 +140,6 @@ impl Interp {
         } else {
             STATUS_GONE
         }
-    }
-    
-    pub fn reuse(&mut self, pid: usize) {
-        self.procs.unstore(pid);
     }
 }
 
@@ -217,9 +216,7 @@ mod test {
         assert_eq!(ProcessState::Sleeping,t.status(pid).state);
         thread::sleep(time::Duration::from_millis(500));
         while t.run(now+1000) {}
-        assert_eq!(ProcessState::Halted,t.status(pid).state);
-        t.reuse(pid);
-        assert_eq!(ProcessState::Gone,t.status(pid).state);
+        assert_eq!(t_env.get_exit_state().unwrap(),ProcessState::Halted);
     }
     
     #[test]
@@ -236,6 +233,6 @@ mod test {
         assert_eq!(384,t.status(pid).cycles);
         assert_eq!(ProcessState::Running,t.status(pid).state);
         t.run(1000);
-        assert_eq!(ProcessState::Halted,t.status(pid).state);
+        assert_eq!(t_env.get_exit_state().unwrap(),ProcessState::Halted);
     }
 }
