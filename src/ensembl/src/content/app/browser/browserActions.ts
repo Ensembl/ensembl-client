@@ -1,4 +1,5 @@
 import { createAction } from 'typesafe-actions';
+import { BrowserNavStates } from './browserState';
 
 export const toggleTrackPanel = createAction(
   'browser/toggle-track-panel',
@@ -27,4 +28,11 @@ export const changeCurrentDrawerSection = createAction(
 
 export const toggleBrowserNav = createAction(
   'browser/toggle-browser-navigation'
+);
+
+export const updateBrowserNavStates = createAction(
+  'browser/update-browser-nav-states',
+  (resolve) => {
+    return (browserNavStates: BrowserNavStates) => resolve(browserNavStates);
+  }
 );

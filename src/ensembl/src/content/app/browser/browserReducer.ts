@@ -30,6 +30,8 @@ export default (
       return { ...state, currentDrawerSection: action.payload };
     case getType(browser.toggleBrowserNav):
       return { ...state, browserNavOpened: !state.browserNavOpened };
+    case getType(browser.updateBrowserNavStates):
+      return { ...state, browserNavStates: action.payload };
     default:
       return state;
   }

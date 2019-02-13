@@ -1,5 +1,5 @@
 import { RootState } from 'src/rootReducer';
-import { BrowserOpenState } from './browserState';
+import { BrowserOpenState, BrowserNavStates } from './browserState';
 import { DrawerSection } from './drawer/drawerSectionConfig';
 
 export const getBrowserOpenState = (state: RootState): BrowserOpenState =>
@@ -22,3 +22,6 @@ export const getTrackPanelOpened = (state: RootState): boolean =>
 
 export const getBrowserNavOpened = (state: RootState): boolean =>
   state.browser.browserNavOpened;
+
+export const getBrowserNavStates = (state: RootState): BrowserNavStates =>
+  state.browser.browserNavStates;
