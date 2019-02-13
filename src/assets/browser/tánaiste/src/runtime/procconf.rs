@@ -32,7 +32,8 @@ mod test {
         let bin = command_compile("cycle-count",&tc);
         let mut pc = PROCESS_CONFIG_DEFAULT.clone();
         pc.cpu_limit = Some(100);
-        t.exec(&bin,None,Some(&pc)).ok().unwrap();
+        let pid = t.exec(&bin,None,Some(&pc)).ok().unwrap();
+        t.start(pid);
         while t.run(1000) {}
         assert_eq!(t_env.get_exit_state().unwrap(),ProcessState::Killed("Exceeded CPU limit 100".to_string()));
     }
@@ -45,7 +46,8 @@ mod test {
         let bin = command_compile("cycle-count",&tc);
         let mut pc = PROCESS_CONFIG_DEFAULT.clone();
         pc.reg_limit = Some(100);
-        t.exec(&bin,None,Some(&pc)).ok().unwrap();
+        let pid = t.exec(&bin,None,Some(&pc)).ok().unwrap();
+        t.start(pid);
         while t.run(1000) {}
         assert_eq!(ProcessState::Killed("Exceeded memory limit: register limit 100".to_string()),t_env.get_exit_state().unwrap());
     }
@@ -58,7 +60,8 @@ mod test {
         let bin = command_compile("limit-stack-entry",&tc);
         let mut pc = PROCESS_CONFIG_DEFAULT.clone();
         pc.stack_entry_limit = Some(3);
-        t.exec(&bin,None,Some(&pc)).ok().unwrap();
+        let pid = t.exec(&bin,None,Some(&pc)).ok().unwrap();
+        t.start(pid);
         while t.run(1000) {}
         assert_eq!(ProcessState::Killed("Exceeded memory limit: stack entry limit 3".to_string()),t_env.get_exit_state().unwrap());
     }
@@ -71,7 +74,8 @@ mod test {
         let bin = command_compile("limit-stack-data",&tc);
         let mut pc = PROCESS_CONFIG_DEFAULT.clone();
         pc.stack_data_limit = Some(3);
-        t.exec(&bin,None,Some(&pc)).ok().unwrap();
+        let pid = t.exec(&bin,None,Some(&pc)).ok().unwrap();
+        t.start(pid);
         while t.run(1000) {}
         assert_eq!(ProcessState::Killed("Exceeded memory limit: stack data limit 3".to_string()),t_env.get_exit_state().unwrap());
     }
@@ -84,7 +88,8 @@ mod test {
         let bin = command_compile("time-limit",&tc);
         let mut pc = PROCESS_CONFIG_DEFAULT.clone();
         pc.time_limit = Some(100);
-        t.exec(&bin,None,Some(&pc)).ok().unwrap();
+        let pid = t.exec(&bin,None,Some(&pc)).ok().unwrap();
+        t.start(pid);
         while t.run(1000) {}
         thread::sleep(time::Duration::from_millis(200));
         while t.run(1000) {}

@@ -25,7 +25,10 @@ impl Process {
         }
     }
     
-    pub fn set_pid(&mut self, pid: usize) { self.proc.lock().unwrap().set_pid(pid); }
+    pub fn start(&mut self, pid: usize) {
+        self.proc.lock().unwrap().set_pid(pid);
+    }
+    
     pub fn get_pid(&self) -> Option<usize> { self.proc.lock().unwrap().get_pid() }
     
     pub fn step(&mut self) -> i64 {

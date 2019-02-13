@@ -73,7 +73,6 @@ impl DebugEnvironment {
         Box::new(DebugEnvironmentBox(self.0.clone()))
     }
 
-    pub fn get_time(&mut self) -> i64 { self.0.borrow_mut().get_time() }
     pub fn get_exit_str(&self) -> Vec<String> {
         self.0.borrow_mut().get_exit_str().clone()
     }

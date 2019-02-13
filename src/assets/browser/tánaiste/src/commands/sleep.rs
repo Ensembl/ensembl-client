@@ -120,6 +120,7 @@ mod test {
         let t_env = DebugEnvironment::new();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
         let pid = t.exec(&bin,None,Some(&pc)).ok().unwrap();
+        t.start(pid);
         while t.status(pid).state.alive() {
             while t.run(1000) {}
             thread::sleep(time::Duration::from_millis(50));

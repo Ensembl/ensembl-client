@@ -7,7 +7,8 @@ pub struct InterpProcess {
     start: i64,
     p: Process,
     config: ProcessConfig,
-    cycles: i64
+    cycles: i64,
+    booted: bool
 }
 
 impl InterpProcess {
@@ -15,8 +16,15 @@ impl InterpProcess {
         InterpProcess {
             start: env.get_time(),
             p, config: config.clone(),
-            cycles: 0
+            cycles: 0,
+            booted: false
         }
+    }
+    
+    pub fn boot(&mut self) -> bool {
+        if self.booted { return false }
+        self.booted = true;
+        true
     }
     
     fn send_finished(&mut self, env: &mut Box<Environment>) {
@@ -59,9 +67,9 @@ impl InterpProcess {
         }
     }
     
-    pub fn set_pid(&mut self, env: &mut Box<Environment>, pid: usize) {
+    pub fn started(&mut self, env: &mut Box<Environment>, pid: usize) {
+        self.p.start(pid);
         env.started(pid);
-        self.p.set_pid(pid);
     }
     
     pub fn status(&self) -> ProcessStatus {
@@ -71,7 +79,7 @@ impl InterpProcess {
             } else {
                 ProcessState::Halted
             }
-        } else if self.p.ready() {
+        } else if self.booted && self.p.ready() {
             ProcessState::Running
         } else {
             ProcessState::Sleeping
