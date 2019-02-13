@@ -59,7 +59,8 @@ impl InterpProcess {
         }
     }
     
-    pub fn set_pid(&mut self, pid: usize) {
+    pub fn set_pid(&mut self, env: &mut Box<Environment>, pid: usize) {
+        env.started(pid);
         self.p.set_pid(pid);
     }
     
