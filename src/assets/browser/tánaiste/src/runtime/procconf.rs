@@ -20,9 +20,8 @@ pub const PROCESS_CONFIG_DEFAULT : ProcessConfig = ProcessConfig {
 #[cfg(test)]
 mod test {
     use std::{ thread, time };
-    use super::super::interp::{ Interp, ProcessState, ProcessStatus, DEFAULT_CONFIG };
-    use super::{ ProcessConfig, PROCESS_CONFIG_DEFAULT };
-    use super::super::environment::Environment;
+    use super::super::interp::{ Interp, ProcessState, DEFAULT_CONFIG };
+    use super::PROCESS_CONFIG_DEFAULT;
     use test::{ command_compile, DebugEnvironment };
         
     #[test]

@@ -1,6 +1,5 @@
-#![feature(non_ascii_idents)]
+#![feature(non_ascii_idents)] // (help put the E into EMBL)
 #![feature(linkage)]
-// (help put the E into EMBL)
 
 #[macro_use]
 extern crate stdweb;
@@ -16,6 +15,8 @@ extern crate rand;
 extern crate itertools;
 extern crate hsl;
 
+extern crate tánaiste;
+
 #[macro_use]
 mod util;
 
@@ -27,6 +28,7 @@ mod drawing;
 mod print;
 mod program;
 mod shape;
+mod tácode;
 mod types;
 
 use controller::global;

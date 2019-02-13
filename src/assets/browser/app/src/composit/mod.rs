@@ -8,14 +8,13 @@ mod stage;
 mod compmanager;
 mod stick;
 mod stickmanager;
-mod compsource;
-mod compsourcelist;
 mod zoom;
 mod position;
 mod wrapping;
 
 pub use self::source::{
-    Source, SourceResponse, SourceFactory, ActiveSource, DrawnResponse
+    Source, SourceResponse, SourceSched, ActiveSource, DrawnResponse,
+    SourceManager, SourceManagerList
 };
 pub use self::compositor::{ Compositor, register_compositor_ticks };
 pub use self::compmanager::{ ComponentManager };
@@ -23,8 +22,6 @@ pub use self::train::{ Train, TrainManager, Carriage, CarriageSet, StaleCarriage
 pub use self::stage::{ Stage };
 pub use self::stick::Stick;
 pub use self::stickmanager::StickManager;
-pub use self::compsource::ComponentSource;
-pub use self::compsourcelist::ComponentSourceList;
 
 pub use self::state::{
     StateExpr,

@@ -1,22 +1,19 @@
 use std::collections::HashMap;
-use std::rc::Rc;
-use std::thread;
-use std::time;
 
-use core::{ BinaryCode, Command, Instruction, InstructionBundle };
-use commands::{ ConstantI, DPrintI, HaltI };
-use runtime::Process;
+use core::{ Instruction, InstructionBundle };
 
 pub struct InstructionSet {
     instrs: HashMap<String,Box<Instruction>>
 }
 
 impl InstructionSet {
-    pub fn new(mut isb: InstructionBundle) -> InstructionSet {
+    pub fn new(isbs: Vec<InstructionBundle>) -> InstructionSet {
         let mut instrs = HashMap::<String,Box<Instruction>>::new();
-        for inst in isb.drain() {
-            let sig = inst.signature();
-            instrs.insert(sig.0.clone(),inst);
+        for mut isb in isbs {
+            for inst in isb.drain() {
+                let sig = inst.signature();
+                instrs.insert(sig.0.clone(),inst);
+            }
         }
         InstructionSet {
             instrs

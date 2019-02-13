@@ -5,9 +5,8 @@
  * Line numbers are also handled as state rather than arguments.
  */
 
-use std::collections::HashMap;
 use std::f64;
-use std::str::{ CharIndices, FromStr };
+use std::str::FromStr;
 
 use super::escapes::string_unescape;
 

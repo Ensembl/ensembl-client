@@ -2,16 +2,10 @@ use std::sync::{ Arc, Mutex };
 
 use assembly::{ Argument, Signature };
 use core::{ Command, Instruction };
-use runtime::{ DataState, ProcState, Value };
+use runtime::{ DataState, ProcState };
 
 #[derive(Debug)]
 pub struct Push(usize);
-
-impl Push {
-    pub fn new(r: usize) -> Box<Command> {
-        Box::new(Push(r))
-    }
-}
 
 impl Command for Push {    
     fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
@@ -36,12 +30,6 @@ impl Instruction for PushI {
 #[derive(Debug)]
 pub struct Pop(usize);
 
-impl Pop {
-    pub fn new(r: usize) -> Box<Command> {
-        Box::new(Pop(r))
-    }
-}
-
 impl Command for Pop {    
     fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
         let v = rt.pop_data();
@@ -62,12 +50,6 @@ impl Instruction for PopI {
 
 #[cfg(test)]
 mod test {
-    use std::{ time, thread };
-    
-    use assembly::assemble;
-    use core::{
-        BinaryCode, Instruction, instruction_bundle_core, InstructionSet
-    };
     use test::command_run;
 
     #[test]

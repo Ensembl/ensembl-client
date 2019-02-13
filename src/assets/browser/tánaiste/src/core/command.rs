@@ -1,7 +1,6 @@
 use std::fmt::Debug;
 use std::sync::{ Arc, Mutex };
 
-use assembly::Signature;
 use runtime::{ DataState, ProcState };
 
 pub trait Command : Debug {
