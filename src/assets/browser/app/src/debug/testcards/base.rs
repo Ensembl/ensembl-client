@@ -8,7 +8,7 @@ use controller::input::{ Action, actions_run };
 use debug::testcards::text::text_source;
 use debug::testcards::leafcard::leafcard_source;
 use debug::testcards::debugsource::{ DebugSource, DebugStickManager };
-use debug::testcards::{ bs_source_main, bs_source_sub, polar_source };
+use debug::testcards::{ bs_source_main, bs_source_sub, polar_source, tá_source };
 
 fn debug_source_main() -> DebugSource {
     let mut s = DebugSource::new();
@@ -17,6 +17,7 @@ fn debug_source_main() -> DebugSource {
     s.add_stick("leaf",Box::new(leafcard_source(true)));
     s.add_stick("ruler",Box::new(leafcard_source(false)));
     s.add_stick("button",Box::new(bs_source_main()));
+    s.add_stick("tácode",Box::new(tá_source()));
     s
 }
 
@@ -34,6 +35,7 @@ pub fn debug_stick_manager() -> DebugStickManager {
     s.add_stick("leaf", 17000000,false);
     s.add_stick("ruler",17000000,false);
     s.add_stick("button",17000000,false);
+    s.add_stick("tácode",17000000,false);
     s
 }
 
