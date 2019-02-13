@@ -13,11 +13,11 @@ use debug::testcard_base;
 use debug::DebugConsole;
 use dom::Bling;
 use dom::domutil;
-
 use dom::event::{
     EventListener, EventControl, EventType, EventData, Target,
     ICustomEvent
 };
+use util::truncate;
 
 pub const DEBUGSTAGE : &str = r##"
 <div class="bpane-container">
@@ -33,6 +33,7 @@ pub const DEBUGSTAGE : &str = r##"
                 <option value="text">Text Testcard</option>
                 <option value="ruler">Ruler Testcard</option>
                 <option value="leaf">Leaf Testcard</option>
+                <option value="tácode">Tácode Testcard</option>
             </select>
             <select class="folder"></select>
             <button class="mark">mark!</button>
@@ -181,7 +182,7 @@ impl OutEventListener {
     }
 }
 
-const EVENT_LENGTH : i32 = 1000;
+const EVENT_LENGTH : usize = 1000;
 
 impl EventListener<()> for OutEventListener {
     fn receive(&mut self, _el: &Target,  e: &EventData, _: &()) {
@@ -189,9 +190,9 @@ impl EventListener<()> for OutEventListener {
             if s == "bpane-out" {
                 let mut value = domutil::get_inner_html(&self.target.clone().into());
                 value.push_str(&format!("{}\n",d.details().unwrap_or(json!{{}})));
-                let too_long = value.len() as i32 - EVENT_LENGTH;
+                let too_long = value.len() - EVENT_LENGTH;
                 if too_long > 0 {
-                    value = value[too_long as usize..].to_string();
+                    value = truncate(&value,EVENT_LENGTH).to_string();
                 }
                 domutil::inner_html(&self.target.clone().into(),&value);
                 domutil::scroll_to_bottom(&self.target.clone().into());
