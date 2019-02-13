@@ -6,8 +6,19 @@ export enum BrowserOpenState {
   COLLAPSED = 'collapsed'
 }
 
+// states are top, right, bottom, left (TRBL) and minus (zoom out) and plus (zoom in)
+export type BrowserNavStates = [
+  boolean,
+  boolean,
+  boolean,
+  boolean,
+  boolean,
+  boolean
+];
+
 export type BrowserState = Readonly<{
   browserNavOpened: boolean;
+  browserNavStates: BrowserNavStates;
   browserOpenState: BrowserOpenState;
   currentDrawerSection: string;
   currentTrack: string;
@@ -18,6 +29,7 @@ export type BrowserState = Readonly<{
 
 export const defaultState: BrowserState = {
   browserNavOpened: false,
+  browserNavStates: [true, true, true, true, true, true],
   browserOpenState: BrowserOpenState.SEMI_EXPANDED,
   currentDrawerSection: '',
   currentTrack: '',
