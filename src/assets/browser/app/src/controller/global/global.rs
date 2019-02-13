@@ -16,23 +16,17 @@ use controller::input::{
 };
 use controller::global::AppRunner;
 use debug::{ DebugSourceManager, DebugBling, MiniBling, create_interactors };
-use debug::debug_stick_manager;
 use dom::{ domutil, Bling };
 
 pub struct GlobalImpl {
-    apps: HashMap<String,AppRunner>,
-    csl: SourceManagerList,
-    sticks: Box<StickManager>
+    apps: HashMap<String,AppRunner>
 }
 
 impl GlobalImpl {
     pub fn new() -> GlobalImpl {
         let mut out = GlobalImpl {
             apps: HashMap::<String,AppRunner>::new(),
-            csl: SourceManagerList::new(),
-            sticks: Box::new(debug_stick_manager())
         };
-        out.csl.add_compsource(Box::new(DebugSourceManager::new()));
         out
     }
 
@@ -45,15 +39,7 @@ impl GlobalImpl {
     pub fn register_app(&mut self, key: &str, ar: AppRunner) {
         self.apps.insert(key.to_string(),ar);
     }
-    
-    pub fn get_component(&mut self, name: &str) -> Option<ActiveSource> {
-        self.csl.get_component(name)
-    }
-    
-    pub fn get_stick(&mut self, name: &str) -> Option<Stick> {
-        self.sticks.get_stick(name)
-    }
-    
+        
     pub fn with_apprunner<F,G>(&mut self, key: &str, cb:F) -> Option<G>
             where F: FnOnce(&mut AppRunner) -> G {
         if let Entry::Occupied(mut e) = self.apps.entry(key.to_string()) {
@@ -106,15 +92,7 @@ impl Global {
             actions_run(&mut app.lock().unwrap(),&initial_actions());
         }
     }
-    
-    pub fn get_component(&mut self, name: &str) -> Option<ActiveSource> {
-        self.0.borrow_mut().get_component(name)
-    }
-    
-    pub fn get_stick(&mut self,name: &str) -> Option<Stick> {
-        self.0.borrow_mut().get_stick(name)
-    }
-    
+        
     #[allow(unused,dead_code)]
     pub fn with_apprunner<F,G>(&mut self, key: &str, cb:F) -> Option<G>
             where F: FnOnce(&mut AppRunner) -> G {

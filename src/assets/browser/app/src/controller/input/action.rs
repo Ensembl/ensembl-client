@@ -59,13 +59,13 @@ fn exe_resize(cg: &App, sz: Dot<i32,i32>) {
 }
 
 fn exe_component_add(a: &mut App, name: &str) {
-    if let Some(Some(c)) = a.with_global(|g| g.get_component(name)) {
+    if let Some(Some(c)) = a.with_apprunner(|g| g.get_component(name)) {
         a.with_compo(|co| co.add_component(c));
     }
 }
 
 fn exe_set_stick(a: &mut App, name: &str) {
-    if let Some(Some(stick)) = a.with_global(|g| g.get_stick(name)) {
+    if let Some(Some(stick)) = a.with_apprunner(|g| g.get_stick(name)) {
         a.with_compo(|co| co.set_stick(&stick));
         a.with_stage(|s| {
             s.set_limit(&LEFT,0.);

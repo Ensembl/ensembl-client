@@ -1,14 +1,16 @@
 use stdweb::unstable::TryInto;
 
-use tánaiste::Environment;
+use tánaiste::{ Environment, ProcessState };
+
+use tácode::TáContext;
 
 pub struct AppEnv {
+    tc: TáContext
 }
 
 impl AppEnv {
-    pub fn new() -> AppEnv {
-        AppEnv {
-        }
+    pub fn new(tc: TáContext) -> AppEnv {
+        AppEnv { tc }
     }
 }
 
@@ -18,7 +20,9 @@ impl Environment for AppEnv {
         t as i64
     }
     
-    fn finished(&mut self, pid: usize, codes: Vec<f64>, string: String) {
-        console!("pid={:?} codes={:?} string={:?}",pid,codes,string);
+    fn started(&mut self, pid: usize) {}
+    
+    fn finished(&mut self, pid: usize, state: ProcessState, codes: Vec<f64>, string: String) {
+        self.tc.finished(pid);
     }
 }
