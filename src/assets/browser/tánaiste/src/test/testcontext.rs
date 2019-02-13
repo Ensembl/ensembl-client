@@ -41,14 +41,13 @@ mod test {
     
     #[test]
     fn test_contexts() {
-        let mut t_env = DebugEnvironment::new();
-        let now = t_env.get_time();
+        let t_env = DebugEnvironment::new();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
         let tc = TestContext::new();
         assert!(!tc.get());
         let bin = command_compile("context",&tc);
         t.exec(&bin,None,None).ok().unwrap();
-        while t.run(now+1000) {}
+        while t.run(1000) {}
         assert!(tc.get());
     }
 }
