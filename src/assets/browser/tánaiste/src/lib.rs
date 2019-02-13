@@ -28,3 +28,12 @@ pub use runtime::{
     Interp, ProcessConfig, PROCESS_CONFIG_DEFAULT,
     Process, ProcessState, ProcessStatus, ProcState
 };
+
+
+#[allow(unused_macros)]
+macro_rules! console {
+    ($($arg:tt)*) => {{
+        let s = format!($($arg)*);
+        js! { console.log(@{s}); };
+    }}
+}

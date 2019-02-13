@@ -107,6 +107,7 @@ impl Interp {
         for pid in runnable {
             let status = {
                 let mut ip = self.procs.get_mut(pid).unwrap();
+                println!("one");
                 ip.run_proc(&mut self.env,self.config.cycles_per_run);
                 ip.status()
             };
@@ -123,11 +124,12 @@ impl Interp {
         RunResult::Finished
     }
     
-    pub fn run(&mut self, end: i64) -> bool {
+    pub fn run(&mut self, delta: i64) -> bool {
+        let end = self.env.get_time() + delta;
         loop {
             self.add_awoken();
             let r = self.drain_runq(end);
-            self.runq = self.nextq.clone();
+            self.runq = self.runq.union(&self.nextq).cloned().collect();
             self.nextq.clear();
             if r == RunResult::Finished { continue; }
             return r == RunResult::Timeout;
@@ -151,16 +153,14 @@ mod test {
         
     #[test]
     fn noprocs() {
-        let mut t_env = DebugEnvironment::new();
-        let now = t_env.get_time();
+        let t_env = DebugEnvironment::new();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
-        assert!(!t.run(now+1000));
+        assert!(!t.run(1000));
     }
     
     #[test]
     fn multi_proc() {
-        let mut t_env = DebugEnvironment::new();
-        let now = t_env.get_time();
+        let t_env = DebugEnvironment::new();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
         let tc = TestContext::new();
         let bin1 = command_compile("multi-1",&tc);
@@ -168,9 +168,9 @@ mod test {
         t.exec(&bin1,None,None).ok().unwrap();
         t.exec(&bin2,None,None).ok().unwrap();
         for _ in 0..40 {
-            while t.run(now+1000) {}
+            while t.run(1000) {}
             thread::sleep(time::Duration::from_millis(50));
-            while t.run(now+1000) {}        
+            while t.run(1000) {}        
         }
         assert_eq!(vec!{vec![100.],vec![200.]},t_env.get_exit_float());
         assert_eq!(vec!["multi-1","multi-2"],t_env.get_exit_str());
@@ -178,44 +178,41 @@ mod test {
     
     #[test]
     fn smoke() {
-        let mut t_env = DebugEnvironment::new();
-        let now = t_env.get_time();
+        let t_env = DebugEnvironment::new();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
         let tc = TestContext::new();
         let bin = command_compile("interp-smoke",&tc);
         t.exec(&bin,None,None).ok().unwrap();
-        while t.run(now+1000) {}
+        while t.run(1000) {}
         assert_eq!("Success!",t_env.get_exit_str()[0]);
         assert_eq!([0.,200.].to_vec(),t_env.get_exit_float()[0]);
     }
     
     #[test]
     fn sleep_wake() {
-        let mut t_env = DebugEnvironment::new();
-        let now = t_env.get_time();
+        let t_env = DebugEnvironment::new();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
         let tc = TestContext::new();
         let bin = command_compile("interp-sleep-wake",&tc);
         t.exec(&bin,None,None).ok().unwrap();
-        while t.run(now+1000) {}
+        while t.run(1000) {}
         thread::sleep(time::Duration::from_millis(500));
-        while t.run(now+1000) {}
+        while t.run(1000) {}
         assert_eq!("awoke",t_env.get_exit_str()[0]);
     }
     
     #[test]
     fn status() {
-        let mut t_env = DebugEnvironment::new();
-        let now = t_env.get_time();
+        let t_env = DebugEnvironment::new();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
         let tc = TestContext::new();
         let bin = command_compile("interp-status",&tc);
         let pid = t.exec(&bin,None,None).ok().unwrap();
         assert_eq!(ProcessState::Running,t.status(pid).state);
-        while t.run(now+1000) {}
+        while t.run(1000) {}
         assert_eq!(ProcessState::Sleeping,t.status(pid).state);
         thread::sleep(time::Duration::from_millis(500));
-        while t.run(now+1000) {}
+        while t.run(1000) {}
         assert_eq!(t_env.get_exit_state().unwrap(),ProcessState::Halted);
         assert_eq!(pid,t_env.get_pid().unwrap());
     }
