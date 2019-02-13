@@ -51,10 +51,3 @@ pub fn instruction_bundle_native() -> InstructionBundle {
     ib
 }
 
-pub fn instruction_bundle_test() -> InstructionBundle {
-    let mut ib = InstructionBundle::new();
-    ib.add_all(vec! {
-        Box::new(DPrintI()), 
-    });
-    ib
-}

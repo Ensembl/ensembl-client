@@ -38,7 +38,6 @@ pub fn codegen_cmd(is: &InstructionSet, name: &str, r: &Vec<Argument>) -> Result
     }
 }
 
-
 pub fn codegen(is: &InstructionSet, source: &SourceCode) -> Result<BinaryCode,Vec<String>> {
     let mut syms = HashMap::<String,usize>::new();
     let mut cmds = Vec::<Box<Command>>::new();

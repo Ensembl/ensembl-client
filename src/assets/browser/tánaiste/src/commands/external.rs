@@ -191,11 +191,12 @@ impl Instruction for PoExternalResI {
 
 #[cfg(test)]
 mod test {
-    use test::command_run;
+    use test::{ command_run, TestContext };
 
     #[test]
-    fn external() {   
-        let mut r = command_run("extern");
+    fn external() {
+        let tc = TestContext::new();
+        let mut r = command_run(&tc,"extern");
         assert_eq!("[0.0]",r.get_reg(1));
         assert_eq!("[1.0]",r.get_reg(2));
         assert_eq!("\"\"",r.get_reg(4));
@@ -205,7 +206,8 @@ mod test {
 
     #[test]
     fn po_external() {   
-        let mut r = command_run("po-extern");
+        let tc = TestContext::new();
+        let mut r = command_run(&tc,"po-extern");
         assert_eq!("\"hello\\n\"",r.get_reg(8));
         assert_eq!("[0.0]",r.get_reg(9));
     }

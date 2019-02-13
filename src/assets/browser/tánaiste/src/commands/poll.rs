@@ -97,17 +97,19 @@ impl Instruction for PollAnyI {
 
 #[cfg(test)]
 mod test {
-    use test::command_run;
+    use test::{ command_run, TestContext };
 
     #[test]
     fn poll_smoke() {
-        let mut r = command_run("poll-smoke");
+        let tc = TestContext::new();
+        let mut r = command_run(&tc,"poll-smoke");
         assert_eq!(r.get_reg(2),r.get_reg(4));
     }
 
     #[test]
     fn poll_smoke_2() {
-        let mut r = command_run("poll-smoke-2");
+        let tc = TestContext::new();
+        let mut r = command_run(&tc,"poll-smoke-2");
         assert_eq!(r.get_reg(5),r.get_reg(4));
         assert_eq!(r.get_reg(6),r.get_reg(2));
     }

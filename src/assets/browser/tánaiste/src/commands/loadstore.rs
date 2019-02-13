@@ -52,17 +52,19 @@ impl Instruction for MoveI {
 
 #[cfg(test)]
 mod test {    
-    use test::command_run;
+    use test::{ command_run, TestContext };
 
     #[test]
     fn const_cmd() {   
-        let mut r = command_run("const");
+        let tc = TestContext::new();
+        let mut r = command_run(&tc,"const");
         assert_eq!("\"hi\"",r.get_reg(1));
     }
     
     #[test]
     fn move_cmd() {
-        let mut r = command_run("move");
+        let tc = TestContext::new();
+        let mut r = command_run(&tc,"move");
         assert_eq!("\"hi\"",r.get_reg(2));
     }
 }

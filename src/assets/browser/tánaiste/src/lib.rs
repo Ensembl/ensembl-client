@@ -20,7 +20,7 @@ pub use assembly::{ Argument, assemble, Signature };
 pub use core::{
     BinaryCode, Command, Instruction, InstructionBundle,
     instruction_bundle_core, instruction_bundle_native,
-    instruction_bundle_test, InstructionSet, Value
+    InstructionSet, Value
 };
 
 pub use runtime::{

@@ -4,7 +4,6 @@ use std::collections::HashMap;
 use runtime::{ Process, ProcessConfig, Signals };
 use super::command::Command;
 
-#[derive(Debug)]
 pub struct BinaryCode {
     symbols: HashMap<String,usize>,
     commands: Rc<Vec<Box<Command>>>

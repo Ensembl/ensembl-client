@@ -92,11 +92,12 @@ mod test {
     use std::{ thread, time };
     use std::time::Instant;
     use runtime::{ Interp, DEFAULT_CONFIG, PROCESS_CONFIG_DEFAULT };
-    use test::{ command_make, command_compile, DebugEnvironment };
+    use test::{ command_make, command_compile, DebugEnvironment, TestContext };
 
     #[test]
     fn sleep_cmd() {
-        let mut r = command_make("sleep");
+        let tc = TestContext::new();
+        let mut r = command_make(&tc,"sleep");
         r.run();
         let mut num_f = 0;
         for _ in 0..20 {
@@ -113,8 +114,9 @@ mod test {
     fn sleep_inter() {
         let start = Instant::now();
         let mut pc = PROCESS_CONFIG_DEFAULT.clone();
-        pc.time_limit = Some(100);        
-        let bin = command_compile("sleep-inter");
+        pc.time_limit = Some(100);    
+        let tc = TestContext::new();    
+        let bin = command_compile("sleep-inter",&tc);
         let t_env = DebugEnvironment::new();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
         let pid = t.exec(&bin,None,Some(&pc)).ok().unwrap();
