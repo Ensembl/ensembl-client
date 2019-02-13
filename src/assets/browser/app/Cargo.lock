@@ -698,7 +698,7 @@ dependencies = [
  "serde_json 1.0.37 (registry+https://github.com/rust-lang/crates.io-index)",
  "stdweb 0.4.13 (registry+https://github.com/rust-lang/crates.io-index)",
  "stdweb-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "tánaiste 0.1.0",
+ "tánaiste 0.1.1",
  "webgl_generator 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -2223,9 +2223,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "tánaiste"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
- "lazy_static 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)",
+ "lazy_static 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

@@ -11,8 +11,8 @@ use controller::input::{
 use controller::output::{ Projector, Report };
 use dom::Bling;
 use dom::event::EventControl;
-
 use debug::{ DebugBling, create_interactors };
+use tácode::Tácode;
 
 const SIZE_CHECK_INTERVAL_MS: f64 = 500.;
 
@@ -23,7 +23,8 @@ struct AppRunnerImpl {
     app: Arc<Mutex<App>>,
     projector: Option<Projector>,
     controls: Vec<Box<EventControl<()>>>,
-    timers: Timers
+    timers: Timers,
+    tc: Tácode
 }
 
 #[derive(Clone)]
@@ -43,7 +44,8 @@ impl AppRunner {
             app: Arc::new(Mutex::new(st)),
             projector: None,
             controls: Vec::<Box<EventControl<()>>>::new(),
-            timers: Timers::new()
+            timers: Timers::new(),
+            tc: Tácode::new(),
         })));
         out.init();
         let report = Report::new(&mut out);
@@ -118,6 +120,21 @@ impl AppRunner {
                 app.check_size();
             },Some(SIZE_CHECK_INTERVAL_MS));
         }
+        
+        /* run tácode */
+        {
+            let mut tc = self.0.lock().unwrap().tc.clone();
+            self.add_timer(move |app,_| {
+                tc.step();
+            },None);
+        }
+        /* XXX */
+        {
+            let mut imp = self.0.lock().unwrap();
+            let b = imp.tc.assemble(&"const #2,\"hello\" const #1,[42] cprint #2 ");
+            imp.tc.run(&b.ok().unwrap()).ok();
+        }
+        /**/
     }
     
     pub fn draw(&mut self) {
