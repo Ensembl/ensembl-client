@@ -1,4 +1,3 @@
-use std::rc::{ Rc };
 use std::sync::{ Arc, Mutex, Weak };
 
 use stdweb::web::HtmlElement;
@@ -58,7 +57,7 @@ impl AppRunner {
             sticks: Box::new(debug_stick_manager())
         })));
         {
-            let mut imp = out.0.lock().unwrap();
+            let imp = out.0.lock().unwrap();
             let weak = AppRunnerWeak(Arc::downgrade(&out.0));
             imp.app.lock().unwrap().set_runner(&weak);
         }
@@ -149,7 +148,7 @@ impl AppRunner {
         
         /* run tácode */
         {
-            let mut tc = self.0.lock().unwrap().tc.clone();
+            let tc = self.0.lock().unwrap().tc.clone();
             self.add_timer(move |app,_| {
                 tc.step();
             },None);
