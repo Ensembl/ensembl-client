@@ -6,7 +6,7 @@ use serde_json::Value as JSONValue;
 
 use composit::{ Compositor, StateManager, Stage };
 use controller::input::{ Action, actions_run, startup_actions };
-use controller::global::{ Global, GlobalWeak };
+use controller::global::{ Global, GlobalWeak, AppRunnerWeak, AppRunner };
 use controller::output::Report;
 use dom::domutil;
 use print::Printer;
@@ -14,7 +14,7 @@ use print::Printer;
 const CANVAS : &str = r##"<canvas></canvas>"##;
 
 pub struct App {
-    g: GlobalWeak,
+    ar: AppRunnerWeak,
     browser_el: HtmlElement,
     canv_el: HtmlElement,
     pub printer: Arc<Mutex<Printer>>,
@@ -25,12 +25,12 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(g: &GlobalWeak, browser_el: &HtmlElement) -> App {
+    pub fn new(browser_el: &HtmlElement) -> App {
         let browser_el = browser_el.clone();
         domutil::inner_html(&browser_el.clone().into(),CANVAS);
         let canv_el : HtmlElement = domutil::query_selector(&browser_el.clone().into(),"canvas").try_into().unwrap();
         let mut out = App {
-            g: g.clone(),
+            ar: AppRunnerWeak::none(),
             browser_el: browser_el.clone(),
             canv_el: canv_el.clone(),
             printer: Arc::new(Mutex::new(Printer::new(&canv_el))),
@@ -43,6 +43,10 @@ impl App {
         out
     }
     
+    pub fn set_runner(&mut self, ar: &AppRunnerWeak) {
+        self.ar = ar.clone();
+    }
+    
     pub fn send_report(&self, value: &JSONValue) {
         domutil::send_custom_event(&self.browser_el.clone().into(),"bpane-out",value);
     }
@@ -53,9 +57,9 @@ impl App {
         self.report = Some(report);
     }
     
-    pub fn with_global<F,G>(&mut self, cb:F) -> Option<G>
-            where F: FnOnce(&mut Global) -> G {
-        self.g.upgrade().as_mut().map(cb)
+    pub fn with_apprunner<F,G>(&mut self, cb:F) -> Option<G>
+            where F: FnOnce(&mut AppRunner) -> G {
+        self.ar.upgrade().as_mut().map(cb)
     }
     
     pub fn get_browser_element(&self) -> &HtmlElement { &self.browser_el }

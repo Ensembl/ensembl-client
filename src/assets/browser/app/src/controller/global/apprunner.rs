@@ -1,17 +1,22 @@
+use std::rc::{ Rc };
 use std::sync::{ Arc, Mutex, Weak };
 
 use stdweb::web::HtmlElement;
 
-use composit::{ register_compositor_ticks };
+use composit::{
+    register_compositor_ticks,
+    SourceManager, SourceManagerList, StickManager, ActiveSource, Stick
+};
 use controller::global::{ App, GlobalWeak };
 use controller::input::{
     register_direct_events, register_user_events, register_dom_events,
     Timers, Timer
 };
 use controller::output::{ Projector, Report };
+use debug::debug_stick_manager;
 use dom::Bling;
 use dom::event::EventControl;
-use debug::{ DebugBling, create_interactors };
+use debug::{ DebugBling, create_interactors, DebugSourceManager };
 use tácode::Tácode;
 
 const SIZE_CHECK_INTERVAL_MS: f64 = 500.;
@@ -24,7 +29,9 @@ struct AppRunnerImpl {
     projector: Option<Projector>,
     controls: Vec<Box<EventControl<()>>>,
     timers: Timers,
-    tc: Tácode
+    tc: Tácode,
+    csl: SourceManagerList,
+    sticks: Box<StickManager>
 }
 
 #[derive(Clone)]
@@ -36,7 +43,8 @@ pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 impl AppRunner {
     pub fn new(g: &GlobalWeak, el: &HtmlElement, bling: Box<Bling>) -> AppRunner {
         let browser_el : HtmlElement = bling.apply_bling(&el);
-        let st = App::new(g,&browser_el);
+        let st = App::new(&browser_el);
+        let tc = Tácode::new();
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
             g: g.clone(),
             el: el.clone(),
@@ -45,8 +53,15 @@ impl AppRunner {
             projector: None,
             controls: Vec::<Box<EventControl<()>>>::new(),
             timers: Timers::new(),
-            tc: Tácode::new(),
+            tc: tc.clone(),
+            csl: SourceManagerList::new(),
+            sticks: Box::new(debug_stick_manager())
         })));
+        {
+            let mut imp = out.0.lock().unwrap();
+            let weak = AppRunnerWeak(Arc::downgrade(&out.0));
+            imp.app.lock().unwrap().set_runner(&weak);
+        }
         out.init();
         let report = Report::new(&mut out);
         {
@@ -55,8 +70,17 @@ impl AppRunner {
             app.lock().unwrap().set_report(report);
             let el = imp.el.clone();
             imp.bling.activate(&app,&el);
+            imp.csl.add_compsource(Box::new(DebugSourceManager::new(&tc)));
         }
         out
+    }
+
+    pub fn get_component(&mut self, name: &str) -> Option<ActiveSource> {
+        self.0.lock().unwrap().csl.get_component(name)
+    }
+
+    pub fn get_stick(&mut self, name: &str) -> Option<Stick> {
+        self.0.lock().unwrap().sticks.get_stick(name)
     }
 
     pub fn reset(&mut self, bling: Box<Bling>) {
@@ -65,7 +89,9 @@ impl AppRunner {
             let mut imp = self.0.lock().unwrap();
             imp.bling = bling;
             let browser_el : HtmlElement = imp.bling.apply_bling(&imp.el);
-            imp.app = Arc::new(Mutex::new(App::new(&imp.g,&browser_el)));
+            imp.app = Arc::new(Mutex::new(App::new(&browser_el)));
+            let weak = AppRunnerWeak::new(&self);
+            imp.app.lock().unwrap().set_runner(&weak);
             imp.timers = Timers::new();
             imp.projector = None;
             imp.controls = Vec::<Box<EventControl<()>>>::new();
@@ -128,13 +154,7 @@ impl AppRunner {
                 tc.step();
             },None);
         }
-        /* XXX */
-        {
-            let mut imp = self.0.lock().unwrap();
-            let b = imp.tc.assemble(&"const #2,\"hello\" const #1,[42] cprint #2 ");
-            imp.tc.run(&b.ok().unwrap()).ok();
-        }
-        /**/
+
     }
     
     pub fn draw(&mut self) {
@@ -179,7 +199,14 @@ impl AppRunner {
 }
 
 impl AppRunnerWeak {
+    pub fn new(g : &AppRunner) -> AppRunnerWeak {
+        AppRunnerWeak(Arc::downgrade(&g.0))
+    }
+
+    
     pub fn upgrade(&self) -> Option<AppRunner> {
         self.0.upgrade().map(|cr| AppRunner(cr))
-    }    
+    }
+    
+    pub fn none() -> AppRunnerWeak { AppRunnerWeak(Weak::new()) }
 }
