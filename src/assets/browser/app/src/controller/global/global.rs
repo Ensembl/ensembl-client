@@ -7,15 +7,11 @@ use std::sync::{ Arc, Mutex };
 use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element, IHtmlElement };
 
-
-use composit::{
-    SourceManager, SourceManagerList, StickManager, ActiveSource, Stick
-};
 use controller::input::{
     register_startup_events, initial_actions, actions_run
 };
 use controller::global::AppRunner;
-use debug::{ DebugSourceManager, DebugBling, MiniBling, create_interactors };
+use debug::{ DebugBling, MiniBling, create_interactors };
 use dom::{ domutil, Bling };
 
 pub struct GlobalImpl {
@@ -24,10 +20,9 @@ pub struct GlobalImpl {
 
 impl GlobalImpl {
     pub fn new() -> GlobalImpl {
-        let mut out = GlobalImpl {
+        GlobalImpl {
             apps: HashMap::<String,AppRunner>::new(),
-        };
-        out
+        }
     }
 
     pub fn unregister_app(&mut self, key: &str) {

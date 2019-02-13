@@ -1,7 +1,7 @@
 use std::fmt;
 use std::cmp::max;
 
-use types::{ CPixel, cpixel, Dot };
+use types::{ CPixel, cpixel };
 
 /* An origin is the top left corner of an allocation or free space. The
  * extent of the space is not recorded and must be determined from

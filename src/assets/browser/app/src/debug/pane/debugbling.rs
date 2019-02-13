@@ -9,7 +9,7 @@ use stdweb::web::event::{ ChangeEvent, ClickEvent };
 
 use controller::input::EggDetector;
 use controller::global::App;
-use debug::testcard_base;
+use debug::select_testcard;
 use debug::DebugConsole;
 use dom::Bling;
 use dom::domutil;
@@ -132,7 +132,7 @@ fn setup_testcard_selector(a: &Arc<Mutex<App>>, el: &HtmlElement) {
         let mut a = a.lock().unwrap();
         let node : SelectElement = e.target().unwrap().try_into().ok().unwrap();
         if let Some(name) = node.value() {
-            testcard_base(&mut a,&name);
+            select_testcard(&mut a,&name);
         }
     }});
 }

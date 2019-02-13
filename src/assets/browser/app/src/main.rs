@@ -22,6 +22,7 @@ mod util;
 
 mod controller;
 mod composit;
+mod data;
 mod debug;
 mod dom;
 mod drawing;
