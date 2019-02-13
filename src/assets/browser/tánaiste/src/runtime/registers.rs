@@ -1,5 +1,4 @@
-use core::Command;
-use super::Value;
+use core::Value;
 
 pub struct RegisterFile {
     registers: Vec<Value>,

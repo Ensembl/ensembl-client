@@ -9,19 +9,19 @@ use stdweb::web::{ HtmlElement, Element, IHtmlElement };
 
 
 use composit::{
-    ComponentSourceList, StickManager, ActiveSource, ComponentSource, Stick
+    SourceManager, SourceManagerList, StickManager, ActiveSource, Stick
 };
 use controller::input::{
     register_startup_events, initial_actions, actions_run
 };
 use controller::global::AppRunner;
-use debug::{ DebugComponentSource, DebugBling, MiniBling, create_interactors };
+use debug::{ DebugSourceManager, DebugBling, MiniBling, create_interactors };
 use debug::debug_stick_manager;
 use dom::{ domutil, Bling };
 
 pub struct GlobalImpl {
     apps: HashMap<String,AppRunner>,
-    csl: ComponentSourceList,
+    csl: SourceManagerList,
     sticks: Box<StickManager>
 }
 
@@ -29,10 +29,10 @@ impl GlobalImpl {
     pub fn new() -> GlobalImpl {
         let mut out = GlobalImpl {
             apps: HashMap::<String,AppRunner>::new(),
-            csl: ComponentSourceList::new(),
+            csl: SourceManagerList::new(),
             sticks: Box::new(debug_stick_manager())
         };
-        out.csl.add_compsource(Box::new(DebugComponentSource::new()));
+        out.csl.add_compsource(Box::new(DebugSourceManager::new()));
         out
     }
 

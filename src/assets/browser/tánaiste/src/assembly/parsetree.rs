@@ -1,6 +1,6 @@
 use std::fmt;
 
-use runtime::Value;
+use core::Value;
 use super::escapes::string_escape;
 
 #[derive(Clone,Debug)]

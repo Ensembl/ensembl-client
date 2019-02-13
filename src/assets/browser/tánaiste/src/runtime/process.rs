@@ -1,14 +1,10 @@
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
-use std::{ thread, time };
 
 use core::Command;
-use commands::{ Constant, DebugPrint, Concat, Sleep, External, Move };
-use super::registers::RegisterFile;
 use super::datastate::DataState;
 use super::procconf::ProcessConfig;
 use super::procstate::ProcState;
-use super::value::Value;
 use super::interp::Signals;
 
 pub struct Process {
@@ -79,6 +75,10 @@ impl Process {
         !proc.is_sleeping() && !proc.is_halted()
     }
     
+    pub fn set_remaining(&mut self, remain: i64) {
+        self.proc.lock().unwrap().set_remaining(Some(remain));
+    }
+    
     pub fn run(&mut self) {
         loop {
             if !self.ready() { return; }
@@ -103,7 +103,8 @@ impl Process {
 #[cfg(test)]
 mod test {
     use std::rc::Rc;
-    use runtime::{ PROCESS_CONFIG_DEFAULT, Signals, Value };
+    use core::Value;
+    use runtime::PROCESS_CONFIG_DEFAULT;
     use super::Process;
     
     #[test]

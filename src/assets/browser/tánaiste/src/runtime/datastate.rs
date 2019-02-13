@@ -1,5 +1,5 @@
-use core::Command;
-use super::{ Value, RegisterFile, ProcessConfig };
+use core::Value;
+use super::{ RegisterFile, ProcessConfig };
 
 pub struct DataState {
     continuations: RegisterFile,
@@ -55,7 +55,7 @@ impl DataState {
     
     pub fn pop_data(&mut self) -> Value {
         let v = self.data_stack.pop().unwrap_or_else(|| Value::new_null());
-        if let Some(limit) = self.stack_data_limit {
+        if self.stack_data_limit.is_some() {
             self.stack_size -= v.len();
         }
         v

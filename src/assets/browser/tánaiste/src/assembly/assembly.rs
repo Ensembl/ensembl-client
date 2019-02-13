@@ -1,12 +1,4 @@
-use std::collections::HashMap;
-
-use std::thread;
-use std::time;
-
-use core::{
-    BinaryCode, Instruction, instruction_bundle_core, InstructionSet
-};
-use commands::{ ConstantI, DPrintI, HaltI };
+use core::{ BinaryCode, InstructionSet };
 use super::codegen::codegen;
 use super::parser::parse_source;
 
@@ -19,24 +11,22 @@ pub fn assemble(is: &InstructionSet, code: &str) -> Result<BinaryCode,Vec<String
 
 #[cfg(test)]
 mod test {
-    use std::collections::HashMap;
-
-    use regex::Regex;
     use std::thread;
     use std::time;
 
     use core::{
-        BinaryCode, Instruction, instruction_bundle_core, InstructionSet
+        BinaryCode, instruction_bundle_core, InstructionSet,
+        instruction_bundle_test
     };
-    use commands::{ ConstantI, DPrintI, HaltI };
     use runtime::PROCESS_CONFIG_DEFAULT;
     use test::TEST_CODE;
-    use super::super::codegen::codegen;
-    use super::super::parser::parse_source;
     use super::assemble;
     
     fn test_assemble(name: &str) -> Result<BinaryCode,Vec<String>> {
-        let is = InstructionSet::new(instruction_bundle_core());
+        let is = InstructionSet::new(vec! {
+            instruction_bundle_core(),
+            instruction_bundle_test()
+        });
         assemble(&is,&TEST_CODE[name])
     }
 

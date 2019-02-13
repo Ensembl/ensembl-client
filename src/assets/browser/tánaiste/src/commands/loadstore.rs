@@ -1,17 +1,11 @@
 use std::sync::{ Arc, Mutex };
 
 use assembly::{ Argument, Signature };
-use core::{ Command, Instruction };
-use runtime::{ DataState, ProcState, Value };
+use core::{ Command, Instruction, Value };
+use runtime::{ DataState, ProcState };
 
 #[derive(Debug)]
 pub struct Constant(usize,Value);
-
-impl Constant {
-    pub fn new(r: usize, v: Value) -> Box<Command> {
-        Box::new(Constant(r,v))
-    }
-}
 
 impl Command for Constant {    
     fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
@@ -57,13 +51,7 @@ impl Instruction for MoveI {
 }
 
 #[cfg(test)]
-mod test {
-    use std::{ time, thread };
-    
-    use assembly::assemble;
-    use core::{
-        BinaryCode, Instruction, instruction_bundle_core, InstructionSet
-    };
+mod test {    
     use test::command_run;
 
     #[test]

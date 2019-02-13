@@ -15,6 +15,7 @@ use dom::event::{
     Target
 };
 use dom::domutil;
+use util::truncate;
 
 pub struct DebugFolderEntry {
     pub name: String,
@@ -23,7 +24,7 @@ pub struct DebugFolderEntry {
     mul: u32
 }
 
-const MAX_LEN : i32 = 10000;
+const MAX_LEN : usize = 10000;
 
 impl DebugFolderEntry {
     pub fn new(name: &str) -> DebugFolderEntry {
@@ -55,9 +56,9 @@ impl DebugFolderEntry {
             self.last = value.to_string();
             self.mul = 1;
         }
-        let too_long = self.contents.len() as i32 - MAX_LEN;
+        let too_long = self.contents.len() - MAX_LEN;
         if too_long > 0 {
-            self.contents = self.contents[too_long as usize..].to_string();
+            self.contents = truncate(&self.contents,MAX_LEN).to_string();
         }
     }
     

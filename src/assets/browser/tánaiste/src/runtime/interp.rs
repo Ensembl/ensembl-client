@@ -5,11 +5,16 @@ use core::BinaryCode;
 use util::ValueStore;
 use super::environment::Environment;
 use super::interproc::InterpProcess;
-use super::process::Process;
 use super::procconf::{ ProcessConfig, PROCESS_CONFIG_DEFAULT };
 
 #[derive(Debug,PartialEq)]
 pub enum ProcessState { Killed(String), Halted, Gone, Running, Sleeping }
+
+impl ProcessState {
+    pub fn alive(&self) -> bool {
+        *self == ProcessState::Running || *self == ProcessState::Sleeping
+    }
+}
 
 #[derive(Debug)]
 pub struct ProcessStatus {
@@ -48,8 +53,9 @@ impl Signals {
 #[derive(PartialEq)]
 enum RunResult { Timeout, Empty, Finished }
 
+#[derive(Clone)]
 pub struct InterpConfig {
-    cycles_per_run: i64,
+    pub cycles_per_run: i64,
 }
 
 pub const DEFAULT_CONFIG : InterpConfig = InterpConfig {
@@ -141,9 +147,7 @@ impl Interp {
 #[cfg(test)]
 mod test {
     use std::{ thread, time };
-    use super::{ Interp, ProcessState, ProcessStatus, DEFAULT_CONFIG };
-    use super::super::procconf::{ ProcessConfig, PROCESS_CONFIG_DEFAULT };
-    use super::super::environment::{ Environment };
+    use super::{ Interp, ProcessState, DEFAULT_CONFIG };
     use test::{ command_compile, DebugEnvironment };
         
     #[test]
@@ -155,6 +159,24 @@ mod test {
     }
     
     #[test]
+    fn multi_proc() {
+        let mut t_env = DebugEnvironment::new();
+        let now = t_env.get_time();
+        let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
+        let bin1 = command_compile("multi-1");
+        let bin2 = command_compile("multi-2");
+        t.exec(&bin1,None,None).ok().unwrap();
+        t.exec(&bin2,None,None).ok().unwrap();
+        for _ in 0..40 {
+            while t.run(now+1000) {}
+            thread::sleep(time::Duration::from_millis(50));
+            while t.run(now+1000) {}        
+        }
+        assert_eq!(vec!{vec![100.],vec![200.]},t_env.get_exit_float());
+        assert_eq!(vec!["multi-1","multi-2"],t_env.get_exit_str());
+    }
+    
+    #[test]
     fn smoke() {
         let mut t_env = DebugEnvironment::new();
         let now = t_env.get_time();
@@ -162,8 +184,8 @@ mod test {
         let bin = command_compile("interp-smoke");
         t.exec(&bin,None,None).ok().unwrap();
         while t.run(now+1000) {}
-        assert_eq!("Success!",t_env.get_exit_str().unwrap());
-        assert_eq!([0.,200.].to_vec(),t_env.get_exit_float().unwrap());
+        assert_eq!("Success!",t_env.get_exit_str()[0]);
+        assert_eq!([0.,200.].to_vec(),t_env.get_exit_float()[0]);
     }
     
     #[test]
@@ -176,7 +198,7 @@ mod test {
         while t.run(now+1000) {}
         thread::sleep(time::Duration::from_millis(500));
         while t.run(now+1000) {}
-        assert_eq!("awoke",t_env.get_exit_str().unwrap());
+        assert_eq!("awoke",t_env.get_exit_str()[0]);
     }
     
     #[test]
@@ -198,8 +220,7 @@ mod test {
     
     #[test]
     fn cycle_count() {
-        let mut t_env = DebugEnvironment::new();
-        let now = t_env.get_time();
+        let t_env = DebugEnvironment::new();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
         let bin = command_compile("cycle-count");
         let pid = t.exec(&bin,None,None).ok().unwrap();
