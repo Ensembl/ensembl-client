@@ -87,7 +87,7 @@ impl Interp {
         match bc.exec(start,Some(self.signals.clone()),pc) {
             Ok(p) => {
                 let pid = self.procs.store(InterpProcess::new(p,pc,&mut self.env));
-                self.procs.get_mut(pid).unwrap().set_pid(pid);
+                self.procs.get_mut(pid).unwrap().set_pid(&mut self.env,pid);
                 self.runq.insert(pid);
                 Ok(pid)
             },
@@ -217,6 +217,7 @@ mod test {
         thread::sleep(time::Duration::from_millis(500));
         while t.run(now+1000) {}
         assert_eq!(t_env.get_exit_state().unwrap(),ProcessState::Halted);
+        assert_eq!(pid,t_env.get_pid().unwrap());
     }
     
     #[test]
