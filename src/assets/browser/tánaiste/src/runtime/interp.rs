@@ -53,8 +53,9 @@ impl Signals {
 #[derive(PartialEq)]
 enum RunResult { Timeout, Empty, Finished }
 
+#[derive(Clone)]
 pub struct InterpConfig {
-    cycles_per_run: i64,
+    pub cycles_per_run: i64,
 }
 
 pub const DEFAULT_CONFIG : InterpConfig = InterpConfig {

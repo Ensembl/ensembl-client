@@ -24,7 +24,7 @@ pub use core::{
 };
 
 pub use runtime::{
-    DEFAULT_CONFIG, Environment,
+    DataState, DEFAULT_CONFIG, Environment,
     Interp, ProcessConfig, PROCESS_CONFIG_DEFAULT,
-    Process, ProcessState, ProcessStatus
+    Process, ProcessState, ProcessStatus, ProcState
 };
