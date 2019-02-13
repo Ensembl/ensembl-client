@@ -82,16 +82,23 @@ impl Interp {
         }
     }
     
-    pub fn exec(&mut self, bc: &BinaryCode, start: Option<&str>, pc: Option<&ProcessConfig>) -> Result<usize,String> {
+    pub fn exec(&mut self, bc: &BinaryCode, start: Option<&str>,
+                pc: Option<&ProcessConfig>) -> Result<usize,String> {
         let pc = pc.unwrap_or(&PROCESS_CONFIG_DEFAULT);
         match bc.exec(start,Some(self.signals.clone()),pc) {
             Ok(p) => {
                 let pid = self.procs.store(InterpProcess::new(p,pc,&mut self.env));
-                self.procs.get_mut(pid).unwrap().set_pid(&mut self.env,pid);
-                self.runq.insert(pid);
+                self.procs.get_mut(pid).unwrap().started(&mut self.env,pid);
                 Ok(pid)
             },
             Err(e) => Err(e)
+        }
+    }
+    
+    pub fn start(&mut self, pid: usize) {
+        let ip = self.procs.get_mut(pid).unwrap();
+        if ip.boot() {
+            self.runq.insert(pid);
         }
     }
     
@@ -107,7 +114,6 @@ impl Interp {
         for pid in runnable {
             let status = {
                 let mut ip = self.procs.get_mut(pid).unwrap();
-                println!("one");
                 ip.run_proc(&mut self.env,self.config.cycles_per_run);
                 ip.status()
             };
@@ -165,8 +171,10 @@ mod test {
         let tc = TestContext::new();
         let bin1 = command_compile("multi-1",&tc);
         let bin2 = command_compile("multi-2",&tc);
-        t.exec(&bin1,None,None).ok().unwrap();
-        t.exec(&bin2,None,None).ok().unwrap();
+        let pid = t.exec(&bin1,None,None).ok().unwrap();
+        t.start(pid);
+        let pid = t.exec(&bin2,None,None).ok().unwrap();
+        t.start(pid);
         for _ in 0..40 {
             while t.run(1000) {}
             thread::sleep(time::Duration::from_millis(50));
@@ -182,7 +190,8 @@ mod test {
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
         let tc = TestContext::new();
         let bin = command_compile("interp-smoke",&tc);
-        t.exec(&bin,None,None).ok().unwrap();
+        let pid = t.exec(&bin,None,None).ok().unwrap();
+        t.start(pid);
         while t.run(1000) {}
         assert_eq!("Success!",t_env.get_exit_str()[0]);
         assert_eq!([0.,200.].to_vec(),t_env.get_exit_float()[0]);
@@ -194,7 +203,8 @@ mod test {
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
         let tc = TestContext::new();
         let bin = command_compile("interp-sleep-wake",&tc);
-        t.exec(&bin,None,None).ok().unwrap();
+        let pid = t.exec(&bin,None,None).ok().unwrap();
+        t.start(pid);
         while t.run(1000) {}
         thread::sleep(time::Duration::from_millis(500));
         while t.run(1000) {}
@@ -208,6 +218,7 @@ mod test {
         let tc = TestContext::new();
         let bin = command_compile("interp-status",&tc);
         let pid = t.exec(&bin,None,None).ok().unwrap();
+        t.start(pid);
         assert_eq!(ProcessState::Running,t.status(pid).state);
         while t.run(1000) {}
         assert_eq!(ProcessState::Sleeping,t.status(pid).state);
@@ -224,6 +235,7 @@ mod test {
         let tc = TestContext::new();
         let bin = command_compile("cycle-count",&tc);
         let pid = t.exec(&bin,None,None).ok().unwrap();
+        t.start(pid);
         t.run(0);
         assert_eq!(192,t.status(pid).cycles);
         assert_eq!(ProcessState::Running,t.status(pid).state);

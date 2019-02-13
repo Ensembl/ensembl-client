@@ -46,7 +46,8 @@ mod test {
         let tc = TestContext::new();
         assert!(!tc.get());
         let bin = command_compile("context",&tc);
-        t.exec(&bin,None,None).ok().unwrap();
+        let pid = t.exec(&bin,None,None).ok().unwrap();
+        t.start(pid);
         while t.run(1000) {}
         assert!(tc.get());
     }
