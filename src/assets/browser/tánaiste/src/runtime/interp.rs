@@ -148,7 +148,7 @@ impl Interp {
 mod test {
     use std::{ thread, time };
     use super::{ Interp, ProcessState, DEFAULT_CONFIG };
-    use test::{ command_compile, DebugEnvironment };
+    use test::{ command_compile, DebugEnvironment, TestContext };
         
     #[test]
     fn noprocs() {
@@ -163,8 +163,9 @@ mod test {
         let mut t_env = DebugEnvironment::new();
         let now = t_env.get_time();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
-        let bin1 = command_compile("multi-1");
-        let bin2 = command_compile("multi-2");
+        let tc = TestContext::new();
+        let bin1 = command_compile("multi-1",&tc);
+        let bin2 = command_compile("multi-2",&tc);
         t.exec(&bin1,None,None).ok().unwrap();
         t.exec(&bin2,None,None).ok().unwrap();
         for _ in 0..40 {
@@ -181,7 +182,8 @@ mod test {
         let mut t_env = DebugEnvironment::new();
         let now = t_env.get_time();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
-        let bin = command_compile("interp-smoke");
+        let tc = TestContext::new();
+        let bin = command_compile("interp-smoke",&tc);
         t.exec(&bin,None,None).ok().unwrap();
         while t.run(now+1000) {}
         assert_eq!("Success!",t_env.get_exit_str()[0]);
@@ -193,7 +195,8 @@ mod test {
         let mut t_env = DebugEnvironment::new();
         let now = t_env.get_time();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
-        let bin = command_compile("interp-sleep-wake");
+        let tc = TestContext::new();
+        let bin = command_compile("interp-sleep-wake",&tc);
         t.exec(&bin,None,None).ok().unwrap();
         while t.run(now+1000) {}
         thread::sleep(time::Duration::from_millis(500));
@@ -206,7 +209,8 @@ mod test {
         let mut t_env = DebugEnvironment::new();
         let now = t_env.get_time();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
-        let bin = command_compile("interp-status");
+        let tc = TestContext::new();
+        let bin = command_compile("interp-status",&tc);
         let pid = t.exec(&bin,None,None).ok().unwrap();
         assert_eq!(ProcessState::Running,t.status(pid).state);
         while t.run(now+1000) {}
@@ -222,7 +226,8 @@ mod test {
     fn cycle_count() {
         let t_env = DebugEnvironment::new();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
-        let bin = command_compile("cycle-count");
+        let tc = TestContext::new();
+        let bin = command_compile("cycle-count",&tc);
         let pid = t.exec(&bin,None,None).ok().unwrap();
         t.run(0);
         assert_eq!(192,t.status(pid).cycles);

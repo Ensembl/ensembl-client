@@ -14,18 +14,16 @@ mod test {
     use std::thread;
     use std::time;
 
-    use core::{
-        BinaryCode, instruction_bundle_core, InstructionSet,
-        instruction_bundle_test
-    };
+    use core::{ BinaryCode, instruction_bundle_core, InstructionSet };
     use runtime::PROCESS_CONFIG_DEFAULT;
-    use test::TEST_CODE;
+    use test::{ TEST_CODE, instruction_bundle_test, TestContext };
     use super::assemble;
     
     fn test_assemble(name: &str) -> Result<BinaryCode,Vec<String>> {
+        let tc = TestContext::new();
         let is = InstructionSet::new(vec! {
             instruction_bundle_core(),
-            instruction_bundle_test()
+            instruction_bundle_test(&tc)
         });
         assemble(&is,&TEST_CODE[name])
     }

@@ -22,14 +22,15 @@ mod test {
     use std::{ thread, time };
     use super::super::interp::{ Interp, ProcessState, DEFAULT_CONFIG };
     use super::PROCESS_CONFIG_DEFAULT;
-    use test::{ command_compile, DebugEnvironment };
+    use test::{ command_compile, DebugEnvironment, TestContext };
         
     #[test]
     fn cpu_kill() {
         let mut t_env = DebugEnvironment::new();
         let now = t_env.get_time();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
-        let bin = command_compile("cycle-count");
+        let tc = TestContext::new();
+        let bin = command_compile("cycle-count",&tc);
         let mut pc = PROCESS_CONFIG_DEFAULT.clone();
         pc.cpu_limit = Some(100);
         let pid = t.exec(&bin,None,Some(&pc)).ok().unwrap();
@@ -42,7 +43,8 @@ mod test {
         let mut t_env = DebugEnvironment::new();
         let now = t_env.get_time();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
-        let bin = command_compile("cycle-count");
+        let tc = TestContext::new();
+        let bin = command_compile("cycle-count",&tc);
         let mut pc = PROCESS_CONFIG_DEFAULT.clone();
         pc.reg_limit = Some(100);
         let pid = t.exec(&bin,None,Some(&pc)).ok().unwrap();
@@ -55,7 +57,8 @@ mod test {
         let mut t_env = DebugEnvironment::new();
         let now = t_env.get_time();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
-        let bin = command_compile("limit-stack-entry");
+        let tc = TestContext::new();
+        let bin = command_compile("limit-stack-entry",&tc);
         let mut pc = PROCESS_CONFIG_DEFAULT.clone();
         pc.stack_entry_limit = Some(3);
         let pid = t.exec(&bin,None,Some(&pc)).ok().unwrap();
@@ -68,7 +71,8 @@ mod test {
         let mut t_env = DebugEnvironment::new();
         let now = t_env.get_time();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
-        let bin = command_compile("limit-stack-data");
+        let tc = TestContext::new();
+        let bin = command_compile("limit-stack-data",&tc);
         let mut pc = PROCESS_CONFIG_DEFAULT.clone();
         pc.stack_data_limit = Some(3);
         let pid = t.exec(&bin,None,Some(&pc)).ok().unwrap();
@@ -81,7 +85,8 @@ mod test {
         let mut t_env = DebugEnvironment::new();
         let now = t_env.get_time();
         let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
-        let bin = command_compile("time-limit");
+        let tc = TestContext::new();
+        let bin = command_compile("time-limit",&tc);
         let mut pc = PROCESS_CONFIG_DEFAULT.clone();
         pc.time_limit = Some(100);
         let pid = t.exec(&bin,None,Some(&pc)).ok().unwrap();

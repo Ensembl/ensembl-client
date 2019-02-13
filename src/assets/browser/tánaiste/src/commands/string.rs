@@ -29,11 +29,12 @@ impl Instruction for ConcatI {
 
 #[cfg(test)]
 mod test {
-    use test::command_run;
+    use test::{ command_run, TestContext };
 
     #[test]
     fn commands() {
-        let mut r = command_run("concat");
+        let tc = TestContext::new();
+        let mut r = command_run(&tc,"concat");
         assert_eq!("\"hello world!\"",r.get_reg(3));
     }
 }
