@@ -9,7 +9,7 @@ mod base;
 mod rulergenerator;
 mod tánaiste;
 
-pub use debug::testcards::base::select_testcard;
+pub use debug::testcards::base::{ debug_initial_actions, select_testcard };
 pub use debug::testcards::bigscience::{ bs_source_main, bs_source_sub };
 pub use self::leafcard::leafcard_source;
 pub use debug::testcards::polar::polar_source;

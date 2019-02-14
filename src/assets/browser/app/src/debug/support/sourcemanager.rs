@@ -10,7 +10,8 @@ pub enum DebugSourceType {
     GeneOther,
     Variant,
     Contig,
-    GC
+    GC,
+    Framework
 }
 
 lazy_static! {
@@ -19,7 +20,8 @@ lazy_static! {
         "internal:debug:gene-other" => DebugSourceType::GeneOther,
         "internal:debug:variant"    => DebugSourceType::Variant,
         "internal:debug:contig"     => DebugSourceType::Contig,
-        "internal:debug:gc"         => DebugSourceType::GC
+        "internal:debug:gc"         => DebugSourceType::GC,
+        "internal:debug:zzz-framework" => DebugSourceType::Framework
     };
 }
 
