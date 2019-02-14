@@ -4,8 +4,8 @@ import { trackPanelBarConfig, TrackPanelBarItem } from './trackPanelBarConfig';
 
 import TrackPanelBarIcon from './TrackPanelBarIcon';
 
-import chevronLeftIcon from 'static/img/track-panel/chevron-left.svg';
-import chevronRightIcon from 'static/img/track-panel/chevron-right.svg';
+import chevronLeftIcon from 'static/img/shared/chevron-left.svg';
+import chevronRightIcon from 'static/img/shared/chevron-right.svg';
 
 import styles from './TrackPanelBar.scss';
 

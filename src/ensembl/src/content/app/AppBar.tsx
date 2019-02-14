@@ -1,6 +1,6 @@
 import React, { FunctionComponent, memo } from 'react';
 
-import chevronRightIcon from 'static/img/track-panel/chevron-right.svg';
+import chevronRightIcon from 'static/img/shared/chevron-right-grey.svg';
 
 import styles from './AppBar.scss';
 
