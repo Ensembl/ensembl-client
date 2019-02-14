@@ -21,6 +21,10 @@ dl {
 
 button {
   cursor: pointer;
+
+  &.disabled {
+    cursor: default;
+  }
 }
 
 img {
