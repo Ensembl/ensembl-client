@@ -63,11 +63,11 @@ lazy_static! {
         }),Some(500.)),
         ("bumper",StatusJigsaw::Array(vec!{
             StatusJigsaw::Atom("bumper-top".to_string(),StatusJigsawType::Boolean),
-            StatusJigsaw::Atom("bumper-right".to_string(),StatusJigsawType::Boolean),
             StatusJigsaw::Atom("bumper-bottom".to_string(),StatusJigsawType::Boolean),
-            StatusJigsaw::Atom("bumper-left".to_string(),StatusJigsawType::Boolean),
             StatusJigsaw::Atom("bumper-out".to_string(),StatusJigsawType::Boolean),
             StatusJigsaw::Atom("bumper-in".to_string(),StatusJigsawType::Boolean),
+            StatusJigsaw::Atom("bumper-left".to_string(),StatusJigsawType::Boolean),
+            StatusJigsaw::Atom("bumper-right".to_string(),StatusJigsawType::Boolean),
         }),Some(500.))
     };
 }
@@ -186,7 +186,7 @@ impl ReportImpl {
     pub fn tick(&mut self, app: &App, t: f64) {
         if let Some(out) = self.new_report(t) {
             app.send_report(&out);
-            debug!("status","{}",out.to_string());
+            //debug!("status","{}",out.to_string());
         }
     }
 }

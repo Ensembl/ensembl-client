@@ -1,13 +1,7 @@
 use std::rc::Rc;
 
-use stdweb::web::window;
-use stdweb::web::IWindowOrWorker;
-
 use composit::{ Leaf, Source, SourceResponse };
-use drawing::{ FCFont, FontVariety, text_texture };
-use shape::{ ColourSpec, tape_rectangle, tape_texture, stretch_rectangle };
 use tácode::{ Tácode, TáTask };
-use types::{ Colour, cleaf, cpixel, area_size, AxisSense, A_TOPLEFT };
 
 pub struct TáSourceImpl {
     tc: Tácode

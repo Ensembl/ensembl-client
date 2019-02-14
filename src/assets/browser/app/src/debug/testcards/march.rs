@@ -9,7 +9,6 @@ use composit::{
     Stick
 };
 use controller::global::App;
-use debug::support::DebugSourceType;
 use debug::testcards::common::{
     track_data, rng_pos, prop, rng_seq
 };
@@ -210,19 +209,16 @@ fn get_blocks(leaf: &Leaf,starts_rng: &Vec<[i32;2]>) -> Vec<(f32,f32,f32,f32)> {
     out.unwrap()
 }
 
-fn track_meta(lc: &mut SourceResponse, p: &Palette, t: i32) {
+/* designed to fill most of 100kb scale */
+fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) {
+    let is_gene = (t<4 || t%3 == 0);
+    if is_gene == even { return; }
     let name = if t % 7 == 3 { "E" } else { "K" };
     let tx = text_texture(name,&p.lato_18,
                           &Colour(96,96,96),&Colour(255,255,255));
     closure_add(lc,&page_texture(tx,&cedge(TOPLEFT,cpixel(30,t*PITCH+TOP)),
                                 &cpixel(0,0),
                                 &cpixel(1,1).anchor(A_RIGHT)));
-}
-
-/* designed to fill most of 100kb scale */
-fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) {
-    let is_gene = (t<4 || t%3 == 0);
-    if is_gene == even { return; }
     /* focus track swatch */
     if t == 2 {
         closure_add(lc,&page_rectangle(&area(cpixel(0,t*PITCH-PITCH/3+TOP).x_edge(AxisSense::Max),
@@ -370,8 +366,7 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) 
     }
 }
 
-pub fn polar_source(type_: &DebugSourceType) -> ClosureSource {
-    let type_ = type_.clone();
+pub fn march_source(which: Option<bool>) -> ClosureSource {
     let p = Palette {
         lato_12: FCFont::new(12,"Lato",FontVariety::Normal),
         lato_18: FCFont::new(12,"Lato",FontVariety::Bold),
@@ -379,28 +374,16 @@ pub fn polar_source(type_: &DebugSourceType) -> ClosureSource {
         grey: ColourSpec::Spot(Colour(199,208,213))
     };
     ClosureSource::new(0.,move |ref mut lc,leaf| {
-        match type_ {
-            DebugSourceType::Contig => {
-                one_offs(lc,&p);
-                draw_frame(lc,&leaf,AxisSense::Max,&p);
-                draw_frame(lc,&leaf,AxisSense::Min,&p);
-                measure(lc,&leaf,AxisSense::Max,&p);
-                measure(lc,&leaf,AxisSense::Min,&p);
-                for t in 0..TRACKS {
-                    track_meta(lc,&p,t);
-                }
-            },
-            DebugSourceType::Variant => {
-                for t in 0..TRACKS {
-                    track(lc,&leaf,&p,t,true);
-                }
-            },
-            DebugSourceType::GC => {
-                for t in 0..TRACKS {
-                    track(lc,&leaf,&p,t,false);
-                }
-            },
-            _ => ()
+        if let Some(even) = which {
+            for t in 0..TRACKS {
+                track(lc,&leaf,&p,t,even);
+            }
+        } else {
+            one_offs(lc,&p);
+            draw_frame(lc,&leaf,AxisSense::Max,&p);
+            draw_frame(lc,&leaf,AxisSense::Min,&p);
+            measure(lc,&leaf,AxisSense::Max,&p);
+            measure(lc,&leaf,AxisSense::Min,&p);
         }
         closure_done(lc,TRACKS*PITCH+TOP);
     })

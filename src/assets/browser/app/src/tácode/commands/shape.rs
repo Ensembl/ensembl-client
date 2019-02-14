@@ -1,8 +1,7 @@
 use std::sync::{ Arc, Mutex };
 
 use tánaiste::{
-    Argument, Command, DataState, Instruction, ProcState, Signature,
-    Value
+    Argument, Command, DataState, Instruction, ProcState, Signature
 };
 
 use composit::{ Leaf, SourceResponse };
