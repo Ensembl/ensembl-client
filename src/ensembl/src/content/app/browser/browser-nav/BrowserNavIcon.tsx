@@ -3,36 +3,36 @@ import React, { FunctionComponent, memo, useCallback } from 'react';
 import { BrowserNavItem } from '../browserConfig';
 
 import iconStyles from './BrowserNavIcon.scss';
-import imageStyles from '../browser-image/BrowserImage.scss';
 
 type BrowserNavIconProps = {
+  browserCanvas: HTMLElement;
   browserNavItem: BrowserNavItem;
+  maxState: boolean;
 };
 
 export const BrowserNavIcon: FunctionComponent<BrowserNavIconProps> = (
   props: BrowserNavIconProps
 ) => {
-  const { detail } = props.browserNavItem;
+  const { browserNavItem, browserCanvas, maxState } = props;
+  const { detail, icon } = browserNavItem;
 
   const navEvent = new CustomEvent('bpane', {
     bubbles: true,
     detail
   });
 
-  const browserCanvas = document.querySelector(
-    `.${imageStyles.browserStage}`
-  ) as HTMLElement;
-
   const navigateBrowser = useCallback(() => {
-    browserCanvas.dispatchEvent(navEvent);
+    if (maxState === false) {
+      browserCanvas.dispatchEvent(navEvent);
+    }
   }, [navEvent, browserCanvas]);
 
-  const { browserNavItem } = props;
+  const iconUrl = maxState ? icon.off : icon.on;
 
   return (
     <dd className={iconStyles.browserNavIcon}>
       <button title={browserNavItem.description} onClick={navigateBrowser}>
-        <img src={browserNavItem.icon.on} alt={browserNavItem.description} />
+        <img src={iconUrl} alt={browserNavItem.description} />
       </button>
     </dd>
   );
