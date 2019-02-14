@@ -2,11 +2,15 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use composit::{ 
-    StateValue, StateFixed, StateAtom, ActiveSource,
-    Source, SourceResponse, Leaf
+    StateAtom, ActiveSource, Source, SourceResponse, Leaf
 };
-use debug::testcards::{ leafcard_source, text_source };
-use debug::testcards::{ bs_source_main, bs_source_sub, polar_source, tá_source };
+use debug::testcards::{
+    leafcard_source, text_source, march_source, polar_source, tá_source,
+    bs_source_main
+};
+use debug::support::{
+    DebugSourceType
+};
 use tácode::Tácode;
 
 pub struct DebugSource {
@@ -37,9 +41,10 @@ impl Source for DebugSource {
     }
 }
 
-fn debug_source_main(tc: &Tácode) -> impl Source {
+fn debug_source_type(tc: &Tácode, type_: &DebugSourceType) -> impl Source {
     let mut s = DebugSource::new();
-    s.add_stick("polar",Box::new(polar_source(None)));
+    s.add_stick("polar",Box::new(polar_source(type_)));
+    s.add_stick("march",Box::new(march_source(None)));
     s.add_stick("text",Box::new(text_source()));
     s.add_stick("leaf",Box::new(leafcard_source(true)));
     s.add_stick("ruler",Box::new(leafcard_source(false)));
@@ -48,21 +53,8 @@ fn debug_source_main(tc: &Tácode) -> impl Source {
     s
 }
 
-fn debug_source_sub(even: bool) -> impl Source {
-    let mut s = DebugSource::new();
-    s.add_stick("button",Box::new(bs_source_sub(even)));
-    s.add_stick("polar",Box::new(polar_source(Some(even))));
-    s
-}
-
-pub fn component_debug_main(tc: &Tácode, name: &str) -> ActiveSource {
-    let cs = debug_source_main(tc);
-    ActiveSource::new(name,Rc::new(cs),Rc::new(StateFixed(StateValue::On())))    
-}
-
-pub fn component_debug_sub(name: &str, even: bool) -> ActiveSource {
-    let cs = debug_source_sub(even);
-    let state_name = if even { "even" } else { "odd" };
-    let state = Rc::new(StateAtom::new(state_name));
-    ActiveSource::new(name,Rc::new(cs),state)
+pub fn debug_activesource_type(tc: &Tácode, type_: &DebugSourceType) -> ActiveSource {
+    let src = debug_source_type(tc,type_);
+    let state = Rc::new(StateAtom::new(type_.get_name()));
+    ActiveSource::new(type_.get_name(),Rc::new(src),state)
 }

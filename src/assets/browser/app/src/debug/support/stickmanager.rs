@@ -29,6 +29,7 @@ impl StickManager for DebugStickManager {
 pub fn debug_stick_manager() -> impl StickManager {
     let mut s = DebugStickManager::new();
     s.add_stick("polar",17000000,false);
+    s.add_stick("march",17000000,false);
     s.add_stick("text", 17000000,false);
     s.add_stick("leaf", 17000000,false);
     s.add_stick("ruler",17000000,false);
