@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { toggleAccount, toggleLaunchbar } from '../headerActions';
 
 import launchbarIcon from 'static/img/header/launchbar.svg';
-import userIcon from 'static/img/header/user.svg';
+import userIcon from 'static/img/header/user-grey.svg';
 
 import styles from './HeaderButtons.scss';
 
@@ -28,7 +28,7 @@ export const HeaderButtons: FunctionComponent<HeaderButtonsProps> = (props) => (
         title="Ensembl app launchbar"
       />
     </button>
-    <button className="accountButton" onClick={props.toggleAccount}>
+    <button className="accountButton disabled">
       <img
         src={userIcon}
         alt="Toggle the Ensembl account"
