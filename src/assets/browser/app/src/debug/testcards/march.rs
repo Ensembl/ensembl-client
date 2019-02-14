@@ -9,8 +9,9 @@ use composit::{
     Stick
 };
 use controller::global::App;
+use debug::support::DebugSourceType;
 use debug::testcards::common::{
-    track_data, rng_pos, prop, rng_seq
+    track_data, rng_pos, prop, rng_seq, rng_flip
 };
 use debug::testcards::rulergenerator::RulerGenerator;
 use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
@@ -33,7 +34,7 @@ use types::{
     A_MIDDLE, A_LEFT, A_TOPLEFT, A_RIGHT,
 };
 
-const TRACKS: i32 = 20;
+const TRACKS: i32 = 8;
 const PITCH : i32 = 63;
 const TOP   : i32 = 50;
 
@@ -209,27 +210,27 @@ fn get_blocks(leaf: &Leaf,starts_rng: &Vec<[i32;2]>) -> Vec<(f32,f32,f32,f32)> {
     out.unwrap()
 }
 
-/* designed to fill most of 100kb scale */
-fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) {
-    let is_gene = (t<4 || t%3 == 0);
-    if is_gene == even { return; }
-    let name = if t % 7 == 3 { "E" } else { "K" };
+fn track_meta(lc: &mut SourceResponse, p: &Palette, t: i32) {
+    let name = if t == 7 { "V" } else { "G" };
     let tx = text_texture(name,&p.lato_18,
                           &Colour(96,96,96),&Colour(255,255,255));
     closure_add(lc,&page_texture(tx,&cedge(TOPLEFT,cpixel(30,t*PITCH+TOP)),
                                 &cpixel(0,0),
                                 &cpixel(1,1).anchor(A_RIGHT)));
-    /* focus track swatch */
-    if t == 2 {
+    if t == 0 {
         closure_add(lc,&page_rectangle(&area(cpixel(0,t*PITCH-PITCH/3+TOP).x_edge(AxisSense::Max),
                                          cpixel(6,t*PITCH+PITCH/3+TOP).x_edge(AxisSense::Max)),
                                    &ColourSpec::Colour(Colour(75,168,252))));
     }
+}
+
+fn gene_track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
+    /* focus track swatch */
     let mul = leaf.total_bp();
     let start_leaf = (leaf.get_index() as f64 * mul).floor() as i32;
     let end_leaf = ((leaf.get_index()+1) as f64 * mul).ceil() as i32;
-    let wiggle = 1000000;
-    let pr = if is_gene { 0.1 } else { 0.5 };
+    let wiggle = 4000000;
+    let pr = 0.1;
     let starts_rng = rng_pos([t as u8,0,0,0,0,0,0,8],start_leaf-wiggle,
                              end_leaf+wiggle,100000,(100000.*pr) as i32);
     let d = data(t);
@@ -239,7 +240,7 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) 
     let total_bp = leaf.total_bp();
     if total_bp < 10. {
         // why?
-    } else if total_bp < 1000. && is_gene {
+    } else if total_bp < 1000. {
         let h = if total_bp < 100. { 12 } else if total_bp < 200. { 6 } else { 4 };
         let t = if total_bp < 100. {  3 } else if total_bp < 200. { 2 } else { 0 };
         for (i,pos) in starts_rng.iter().enumerate() {
@@ -305,24 +306,163 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) 
                     let x_genome = pos[0] as f32+x as f32;
                     let x_start = prop(leaf,x_genome as i32);
                     let x_end = prop(leaf,(x_genome+*v*scale) as i32);
-                    if is_gene {
-                        if x == 0. {
-                            let x_all_end = prop(leaf,pos[1]);
-                            closure_add(lc,&stretch_rectangle(
-                                            &area(cleaf(x_start,y-1),cleaf(x_all_end,y+1)),
-                                            &ColourSpec::Spot(Colour(75,168,252))));
-                        }
-                        draw_gene_part(lc,x_start,y,x_end-x_start);
-                    } else {
-                        let col = choose_colour(t,x_genome);
-                        draw_varreg_part(lc,t,x_start,y,x_end-x_start,col);
+                    if x == 0. {
+                        let x_all_end = prop(leaf,pos[1]);
+                        closure_add(lc,&stretch_rectangle(
+                                        &area(cleaf(x_start,y-1),cleaf(x_all_end,y+1)),
+                                        &ColourSpec::Spot(Colour(75,168,252))));
                     }
+                    draw_gene_part(lc,x_start,y,x_end-x_start);
                     x += v.abs() * scale;
                 }
             } else if prop_end-prop_start > 0.0002 {
-                let mut colour = if is_gene {
-                    Colour(75,168,252)
-                } else if t == 4 {
+                let mut colour = Colour(75,168,252);
+                closure_add(lc,&stretch_rectangle(
+                    &area(cleaf(prop_start,y-3),cleaf(prop_end,y+3)),
+                    &ColourSpec::Spot(colour)));
+            }
+        }
+    } else {
+        let blocks = get_blocks(leaf,&starts_rng);
+        let mut max_density = 0.0_f32;
+        for (m,n,dn,dd) in blocks.iter() {
+            let density = (dn/ (n-m)).min(1.);
+            max_density = max_density.min(density);
+        }
+        for (m,n,dn,dd) in blocks.iter() {
+            let colour = Colour(75,168,252);
+            closure_add(lc,&stretch_rectangle(
+                &area(cleaf(*m,y-3),cleaf(*n,y+3)),
+                &ColourSpec::Colour(colour)));
+        }
+    }
+}
+
+fn contig_track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
+    let mul = leaf.total_bp();
+    let start_leaf = (leaf.get_index() as f64 * mul).floor() as i32;
+    let end_leaf = ((leaf.get_index()+1) as f64 * mul).ceil() as i32;
+    let wiggle = 1000000;
+    let pr = 0.6;
+    let starts_rng = rng_flip([t as u8,0,0,0,0,0,0,8],start_leaf-wiggle,
+                             end_leaf+wiggle,5000);
+    let d = data(t);
+    let st = (t as f32).cos() * -10. - 100.;
+    let mut x = st;
+    let y = t*PITCH+TOP;
+    let total_bp = leaf.total_bp();
+    if total_bp < 10. {
+        // why?
+    } else if total_bp < 1000. {
+        let h = if total_bp < 100. { 12 } else if total_bp < 200. { 6 } else { 4 };
+        let t = if total_bp < 100. {  3 } else if total_bp < 200. { 2 } else { 0 };
+        let start = leaf.get_start() as i32;
+        let end = leaf.get_end() as i32;
+        let seq = if total_bp < 200. {
+                rng_seq([0,0,0,0,0,0,0,0],start as i32,end as i32)
+            } else {
+                "".to_string()
+            };
+        for (i,bp) in (start..end).enumerate() {
+            let cur_bp = prop(leaf,bp);
+            let size_bp = prop(leaf,bp+1) - cur_bp;
+            let prop_start = cur_bp - 0.45*size_bp;
+            let prop_end = cur_bp + 0.45*size_bp;
+            if prop_start < 1. && prop_end > 0. {                    
+                let col = Colour(192,192,192);
+                closure_add(lc,&stretch_box(
+                    &area(cleaf(prop_start,y-h),
+                          cleaf(prop_end,y+h)),
+                    1,&ColourSpec::Spot(col)));
+                if t > 0 {
+                    let mut fgd = Colour(192,192,192);
+                    let mut bgd = Colour(255,255,255);
+                    let tx = text_texture(&seq[i..i+1],&p.lato_18,&fgd,&bgd);
+                    closure_add(lc,&pin_texture(tx, &cleaf((prop_start+prop_end)/2.,y), &cpixel(0,t), &cpixel(1,1).anchor(A_MIDDLE)));
+                }
+            }
+        }
+    } else if total_bp < 200000. {
+        let mut prev_pos = 0;
+        for (pos,sense) in starts_rng.iter() {
+            let prop_start = prop(leaf,prev_pos);
+            let prop_end = prop(leaf,*pos);
+            let c = if *sense { 192 } else { 128 };
+            if prop_start < 1. && prop_end > 0. {
+                closure_add(lc,&stretch_rectangle(
+                    &area(cleaf(prop_start,y-3),cleaf(prop_end,y+3)),
+                    &ColourSpec::Spot(Colour(c,c,c))));
+            }
+            prev_pos = *pos;
+        }
+    } else {
+        let steps = 500.;
+        let bp_inc = leaf.total_bp() / steps as f64;
+        let mut buckets_end : Vec<bool> = repeat(false).take(steps as usize).collect();
+        let mut buckets_num : Vec<usize> = repeat(0).take(steps as usize).collect();
+        let mut prev_pos = 0;
+        for (pos,sense) in starts_rng.iter() {
+            let b_start = (prop(leaf,prev_pos) * steps).floor().max(0.) as usize;
+            let b_end = (prop(leaf,*pos) * steps).ceil().min(steps-1.) as usize;
+            for b in b_start..b_end {
+                buckets_end[b] = *sense;
+                buckets_num[b] += 1;
+            }
+            prev_pos = *pos;
+        }
+        for b in 0..steps as usize {
+            let sense = buckets_end[b];
+            let ops = if buckets_num[b] > 1 {
+                vec! { (0.,0.5,!sense),(0.5,1.,sense) }
+            } else if buckets_num[b] == 1 {
+                vec! { (0.,1.,sense) }
+            } else { vec!{} };
+            for (i,(start,end,sense)) in ops.iter().enumerate() {
+                let c = if *sense { 192 } else { 128 }; 
+                closure_add(lc,&stretch_rectangle(
+                    &area(cleaf((b as f32+start)/steps,y-3),
+                          cleaf((b as f32+end)/steps,y+3)),
+                    &ColourSpec::Colour(Colour(c,c,c))));
+            }
+        }
+    }
+}
+
+fn variant_track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
+    /* focus track swatch */
+    let mul = leaf.total_bp();
+    let start_leaf = (leaf.get_index() as f64 * mul).floor() as i32;
+    let end_leaf = ((leaf.get_index()+1) as f64 * mul).ceil() as i32;
+    let wiggle = 1000000;
+    let pr = 0.5;
+    let starts_rng = rng_pos([t as u8,0,0,0,0,0,0,8],start_leaf-wiggle,
+                             end_leaf+wiggle,100000,(100000.*pr) as i32);
+    let d = data(t);
+    let st = (t as f32).cos() * -10. - 100.;
+    let mut x = st;
+    let y = t*PITCH+TOP;
+    let total_bp = leaf.total_bp();
+    if total_bp < 10. {
+        // why?
+    } else if total_bp < 2000000. {
+        for (i,pos) in starts_rng.iter().enumerate() {
+            let prop_start = prop(leaf,pos[0]);
+            let prop_end = prop(leaf,pos[1]);
+            if prop_end < 0. || prop_start > 1. { continue; }
+            let data_len = d.iter().fold(-d[d.len()-1],|a,v| a+v.abs());
+            let mut x = 0.;
+            let scale : f32 = (pos[1]-pos[0]) as f32/data_len as f32;
+            if prop_end-prop_start > 0.1 {
+                for v in &d {
+                    let x_genome = pos[0] as f32+x as f32;
+                    let x_start = prop(leaf,x_genome as i32);
+                    let x_end = prop(leaf,(x_genome+*v*scale) as i32);
+                    let col = choose_colour(t,x_genome);
+                    draw_varreg_part(lc,t,x_start,y,x_end-x_start,col);
+                    x += v.abs() * scale;
+                }
+            } else if prop_end-prop_start > 0.0002 {
+                let mut colour = if t == 4 {
                     Colour(190,219,213)
                 } else if t%3 == 1 {
                     Colour(255,64,64)
@@ -342,9 +482,7 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) 
             max_density = max_density.min(density);
         }
         for (m,n,dn,dd) in blocks.iter() {
-            let mut col_hsl = if is_gene {
-                Colour(75,168,252)
-            } else if t == 4 {
+            let mut col_hsl = if t == 4 {
                 Colour(190,219,213)
             } else if t%3 == 1 {
                 Colour(255,64,64)
@@ -366,7 +504,10 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) 
     }
 }
 
-pub fn march_source(which: Option<bool>) -> ClosureSource {
+
+
+pub fn march_source(type_: &DebugSourceType) -> ClosureSource {
+    let type_ = type_.clone();
     let p = Palette {
         lato_12: FCFont::new(12,"Lato",FontVariety::Normal),
         lato_18: FCFont::new(12,"Lato",FontVariety::Bold),
@@ -374,16 +515,35 @@ pub fn march_source(which: Option<bool>) -> ClosureSource {
         grey: ColourSpec::Spot(Colour(199,208,213))
     };
     ClosureSource::new(0.,move |ref mut lc,leaf| {
-        if let Some(even) = which {
-            for t in 0..TRACKS {
-                track(lc,&leaf,&p,t,even);
-            }
-        } else {
-            one_offs(lc,&p);
-            draw_frame(lc,&leaf,AxisSense::Max,&p);
-            draw_frame(lc,&leaf,AxisSense::Min,&p);
-            measure(lc,&leaf,AxisSense::Max,&p);
-            measure(lc,&leaf,AxisSense::Min,&p);
+        match type_ {
+            DebugSourceType::Framework => {
+                one_offs(lc,&p);
+                draw_frame(lc,&leaf,AxisSense::Max,&p);
+                draw_frame(lc,&leaf,AxisSense::Min,&p);
+                measure(lc,&leaf,AxisSense::Max,&p);
+                measure(lc,&leaf,AxisSense::Min,&p);
+                for t in 0..TRACKS {
+                    track_meta(lc,&p,t);
+                }
+            },
+            DebugSourceType::Contig => {
+                contig_track(lc,&leaf,&p,3);
+            },
+            DebugSourceType::GC => {
+                // GC track goes here
+                //variant_track(lc,&leaf,&p,6);
+            },
+            DebugSourceType::Variant => {
+                // Variant track goes here
+                //variant_track(lc,&leaf,&p,7);
+            },
+            DebugSourceType::GenePc => {
+                gene_track(lc,&leaf,&p,1);
+                gene_track(lc,&leaf,&p,2);
+                gene_track(lc,&leaf,&p,4);
+                gene_track(lc,&leaf,&p,5);
+            },
+            _ => ()
         }
         closure_done(lc,TRACKS*PITCH+TOP);
     })

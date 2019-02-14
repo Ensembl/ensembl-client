@@ -44,7 +44,7 @@ impl Source for DebugSource {
 fn debug_source_type(tc: &Tácode, type_: &DebugSourceType) -> impl Source {
     let mut s = DebugSource::new();
     s.add_stick("polar",Box::new(polar_source(type_)));
-    s.add_stick("march",Box::new(march_source(None)));
+    s.add_stick("march",Box::new(march_source(type_)));
     s.add_stick("text",Box::new(text_source()));
     s.add_stick("leaf",Box::new(leafcard_source(true)));
     s.add_stick("ruler",Box::new(leafcard_source(false)));
