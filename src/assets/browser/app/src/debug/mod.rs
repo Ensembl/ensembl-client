@@ -9,4 +9,4 @@ pub use debug::pane::{
 
 pub use debug::testcards::select_testcard;
 
-pub use debug::support::{ debug_stick_manager, DebugSourceManager };
+pub use debug::support::{ debug_stick_manager, DebugSourceManager, DebugSourceType };

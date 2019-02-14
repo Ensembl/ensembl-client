@@ -11,6 +11,7 @@ use controller::input::EggDetector;
 use controller::global::App;
 use debug::select_testcard;
 use debug::DebugConsole;
+use debug::pane::MiniBling;
 use dom::Bling;
 use dom::domutil;
 use dom::event::{
@@ -29,6 +30,7 @@ pub const DEBUGSTAGE : &str = r##"
             <select class="testcard">
                 <option value="">- testcards -</option>
                 <option value="polar">Polar Testcard</option>
+                <option value="march">March Testcard</option>
                 <option value="button">Button Testcard</option>
                 <option value="text">Text Testcard</option>
                 <option value="ruler">Ruler Testcard</option>
@@ -111,13 +113,6 @@ html, body {
 fn setup_debug_console(el: &HtmlElement) {
     let cons_el = domutil::query_selector(&el.clone().into(),".console2");
     DebugConsole::new(&cons_el,&el.clone().into());
-    domutil::send_custom_event(&cons_el,"select",&json!({
-        "name": "hello",
-    }));
-    domutil::send_custom_event(&cons_el,"add",&json!({
-        "name": "hello",
-        "value": "world"
-    }));
     let mark_el = domutil::query_selector2(&el.clone().into(),".console .mark").unwrap();
     mark_el.add_event_listener(enclose! { (cons_el) move |_e: ClickEvent| {
         domutil::send_custom_event(&cons_el,"mark",&json!({}));
@@ -267,12 +262,16 @@ impl DebugInteractor for ButtonDebugInteractor {
 }
 
 pub struct DebugBling {
+    mb: MiniBling,
     dii: Vec<Box<DebugInteractor>>
 }
 
 impl DebugBling {
     pub fn new(dii: Vec<Box<DebugInteractor>>) -> DebugBling {
-        DebugBling { dii }
+        DebugBling { 
+            mb: MiniBling::new(),
+            dii
+        }
     }
 }
 
@@ -305,6 +304,7 @@ impl Bling for DebugBling {
         for di in &mut self.dii {
             di.key(app,key);
         }
+        self.mb.key(app,key);
     }
 }
 

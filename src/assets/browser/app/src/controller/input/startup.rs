@@ -5,6 +5,7 @@ use stdweb::unstable::TryInto;
 use composit::StateValue;
 use controller::global::Global;
 use controller::input::Action;
+use debug::DebugSourceType;
 use dom::domutil;
 use dom::event::{ EventListener, EventType, EventData, EventControl, Target };
 use dom::AppEventData;
@@ -50,14 +51,15 @@ pub fn register_startup_events(g: &Arc<Mutex<Global>>) {
 }
 
 pub fn initial_actions() -> Vec<Action> {
-    vec! {
-        Action::AddComponent("internal:debug-main".to_string()),
-        Action::AddComponent("internal:debug-odd".to_string()),
-        Action::AddComponent("internal:debug-even".to_string()),
-        Action::SetState("even".to_string(),StateValue::On()),
-        Action::SetState("odd".to_string(),StateValue::On()),
+    let mut out = Vec::<Action>::new();
+    for type_ in DebugSourceType::all() {
+        out.push(Action::AddComponent(type_.get_name().to_string()));
+        out.push(Action::SetState(type_.get_name().to_string(),StateValue::On()));
+    }
+    out.extend(vec! {
         Action::SetStick("polar".to_string()),
         Action::Pos(Dot(0_f64,0_f64),None),
         Action::ZoomTo(-5.)
-    }
+    });
+    out
 }

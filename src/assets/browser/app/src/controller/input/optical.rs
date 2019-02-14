@@ -38,7 +38,6 @@ impl OpticalImpl {
         
     /* when mouse moves, so does the handle */
     fn shift_handle_by(&mut self, at: f64, pos: CDFraction, prop: f64) {
-        debug!("bug","adding {} to {}",at,self.missing);
         self.missing += at;
         self.pos = Some((pos,prop));
     }
