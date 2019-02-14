@@ -1,4 +1,5 @@
 mod pane;
+mod support;
 mod testcards;
 
 pub use debug::pane::{
@@ -6,6 +7,6 @@ pub use debug::pane::{
     debug_panel_entry_add,
 };
 
-pub use debug::testcards::{
-    DebugSourceManager, debug_stick_manager, testcard_base
-};
+pub use debug::testcards::select_testcard;
+
+pub use debug::support::{ debug_stick_manager, DebugSourceManager, DebugSourceType };

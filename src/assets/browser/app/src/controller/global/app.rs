@@ -6,7 +6,7 @@ use serde_json::Value as JSONValue;
 
 use composit::{ Compositor, StateManager, Stage };
 use controller::input::{ Action, actions_run, startup_actions };
-use controller::global::{ Global, GlobalWeak, AppRunnerWeak, AppRunner };
+use controller::global::{ AppRunnerWeak, AppRunner };
 use controller::output::Report;
 use dom::domutil;
 use print::Printer;

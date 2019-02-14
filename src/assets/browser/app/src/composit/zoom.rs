@@ -19,7 +19,6 @@ impl Zoom {
     }
     
     pub fn set_max_bp(&mut self, bp: f64) {
-        if bp != self.max_bp { debug!("bug","set={}",bp); }
         self.max_bp = bp;
     }
     

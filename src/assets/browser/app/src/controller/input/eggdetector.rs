@@ -17,15 +17,13 @@ impl EggDetector {
         if self.active { return; }
         if let Some(ref egg_str) = self.egg_str {
             if egg_str[self.offset..].starts_with(c) {
-                debug!("eggs","egg good char '{}'",c);
                 self.offset += c.len();
                 if self.offset >= egg_str.len() {
                     self.offset = 0;
                     self.active = true;
-                    debug!("eggs","egg '{}' activated",egg_str);
+                    debug!("global","egg '{}' activated",egg_str);
                 }
             } else {
-                debug!("eggs","egg bad char '{}'",c);
                 self.offset = 0;
             }
         }
