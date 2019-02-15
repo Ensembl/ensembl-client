@@ -61,7 +61,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
         currentEl.removeEventListener('bpane-out', listenBpaneOut);
       }
     };
-  }, [currentEl, listenBpaneOut]);
+  }, [currentEl]);
 
   return (
     <div
