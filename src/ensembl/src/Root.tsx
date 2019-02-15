@@ -9,7 +9,7 @@ import Content from './content/Content';
 import { updateBreakpointWidth } from './globalActions';
 import { getBreakpointWidth } from './globalSelectors';
 import { RootState } from './rootReducer';
-import { BreakpointWidth } from './globalConfig';
+import { BreakpointWidth, getBreakpoint } from './globalConfig';
 
 type StateProps = {
   breakpointWidth: BreakpointWidth;
@@ -40,16 +40,6 @@ const Root: FunctionComponent<RootProps> = (props: RootProps) => {
     </BrowserRouter>
   );
 };
-
-function getBreakpoint(width: number): BreakpointWidth {
-  if (width > BreakpointWidth.LARGE) {
-    return BreakpointWidth.LARGE;
-  } else if (width > BreakpointWidth.MEDIUM) {
-    return BreakpointWidth.MEDIUM;
-  } else {
-    return BreakpointWidth.SMALL;
-  }
-}
 
 const mapStateToProps = (state: RootState): StateProps => ({
   breakpointWidth: getBreakpointWidth(state)
