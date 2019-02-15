@@ -31,7 +31,7 @@ fn draw_strects(leaf: &mut Leaf, lc: &mut SourceResponse, x_start: &Vec<f64>,
             lc.add_shape(stretch_rectangle(
                 &area(cleaf(prop_start,*y_start as i32),
                       cleaf(prop_end,(*y_start+*y_size) as i32)),&col));
-        }        
+        }
     }
 }
 

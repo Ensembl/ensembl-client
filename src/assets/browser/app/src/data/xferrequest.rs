@@ -1,7 +1,7 @@
 use composit::Leaf;
 
 // XXX no clone!
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 pub struct XferRequest {
     source_name: String,
     leaf: Leaf
@@ -14,4 +14,7 @@ impl XferRequest {
             leaf: leaf.clone()
         }
     }
+    
+    pub fn get_source_name(&self) -> &str { &self.source_name }
+    pub fn get_leaf(&self) -> &Leaf { &self.leaf }
 }

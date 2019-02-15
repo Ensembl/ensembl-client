@@ -3,7 +3,7 @@ use super::XferRequest;
 
 /* XXX clone during dev only! */
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 pub struct XferResponse {
     request: XferRequest,
     code: String,

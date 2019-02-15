@@ -11,8 +11,8 @@ use composit::{
     Stick, Source
 };
 use controller::global::App;
-use data::XferResponse;
-use debug::support::{ DebugSourceType, DebugXferClerk };
+use data::{ XferRequest, XferResponse };
+use debug::support::{ DebugSourceType, DebugXferClerk, DebugXferResponder };
 use debug::testcards::common::{
     track_data, rng_pos, prop, rng_seq, rng_flip
 };
@@ -513,21 +513,18 @@ const gc_find: &str = r#"
     request
 "#;
 
-const gc_src: &str = r#"
-    const #3, [428]
-    const #4, [6]
-    const #5, [255,120,0,120,255,0]
-    strect #1, #2, #3, #4, #5
-"#;
-    
+pub struct TáCardData {
+}
+
+impl TáCardData {
+    pub fn new() -> TáCardData {
+        TáCardData {
+        }
+    }
+}
+
 pub fn tá_source_ts(tc: &Tácode, xf: &DebugXferClerk, type_: &DebugSourceType) -> Option<impl Source> {
     let type_ = type_.clone();
-    let p = Palette {
-        lato_12: FCFont::new(12,"Lato",FontVariety::Normal),
-        lato_18: FCFont::new(12,"Lato",FontVariety::Bold),
-        white: ColourSpec::Spot(Colour(255,255,255)),
-        grey: ColourSpec::Spot(Colour(199,208,213))
-    };
     match type_ {
         DebugSourceType::GC => {
             Some(TáSource::new(&tc,Box::new(xf.clone()),type_.get_name()))

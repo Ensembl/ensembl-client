@@ -1,30 +1,33 @@
+use std::cell::RefCell;
+use std::collections::HashMap;
+use std::rc::Rc;
+
 use tánaiste::Value;
 
 use data::{ XferClerk, XferConsumer, XferRequest, XferResponse };
+use super::{ DebugSourceType, DebugXferResponder, FakeData };
 
 #[derive(Clone)]
 pub struct DebugXferClerk {
+    fakedata: Rc<FakeData>,
 }
 
 impl DebugXferClerk {
     pub fn new() -> DebugXferClerk {
-        DebugXferClerk {}
+        let fd = FakeData::new();
+        DebugXferClerk {
+            fakedata: Rc::new(fd),
+        }
     }
 }
 
-const src: &str = r#"
-    const #3, [428]
-    const #4, [6]
-    const #5, [255,120,0,120,255,0]
-    strect #1, #2, #3, #4, #5
-"#;
-
 impl XferClerk for DebugXferClerk {
     fn satisfy(&mut self, request: XferRequest, mut consumer: Box<XferConsumer>) {
-        let gc_xfer_res = XferResponse::new(request,src.to_string(),vec!{
-            Value::new_from_float(vec![10000.,17000.,20000.,30000.,40000.]),
-            Value::new_from_float(vec![4000.,1000.,6000.]),
-        }.clone());
-        consumer.consume(gc_xfer_res);
+        let type_ = DebugSourceType::from_name(request.get_source_name()).unwrap();
+        let leaf = request.get_leaf().clone();
+        // XXX errors
+        if let Some(res) = self.fakedata.satisfy(request) {
+            consumer.consume(res);
+        }
     }
 }
