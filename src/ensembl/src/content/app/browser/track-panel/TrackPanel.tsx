@@ -73,7 +73,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
+const mapStateToProps = (state: RootState): StateProps => ({
   breakpointWidth: getBreakpointWidth(state),
   currentTrack: getCurrentTrack(state),
   drawerOpened: getDrawerOpened(state),
@@ -81,7 +81,7 @@ const mapStateToProps = (state: RootState) => ({
   trackPanelOpened: getTrackPanelOpened(state)
 });
 
-const mapDispatchToProps = {
+const mapDispatchToProps: DispatchProps = {
   changeCurrentTrack,
   toggleDrawer,
   toggleTrackPanel
