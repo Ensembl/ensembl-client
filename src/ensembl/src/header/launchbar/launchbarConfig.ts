@@ -1,5 +1,5 @@
-import ensemblIcon from 'static/img/launchbar/ensembl.svg';
-import ensemblSelectedIcon from 'static/img/launchbar/ensembl-selected.svg';
+import ensemblIcon from 'static/img/launchbar/ensembl-logo.png';
+// import ensemblSelectedIcon from 'static/img/launchbar/ensembl-selected.svg';
 
 import searchIcon from 'static/img/launchbar/search.svg';
 import searchSelectedIcon from 'static/img/launchbar/search-selected.svg';
@@ -76,7 +76,7 @@ export const launchbarConfig: LaunchbarDetails = {
     icon: {
       default: ensemblIcon,
       grey: '',
-      selected: ensemblSelectedIcon
+      selected: ''
     },
     name: 'about'
   },
@@ -110,7 +110,7 @@ export const launchbarConfig: LaunchbarDetails = {
     {
       apps: [
         {
-          description: 'Browser',
+          description: 'Genome browser',
           enabled: true,
           icon: {
             default: browserIcon,

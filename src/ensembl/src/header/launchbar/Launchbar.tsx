@@ -33,22 +33,23 @@ const Launchbar: FunctionComponent<LaunchbarProps> = (
               key={category.name}
             >
               {category.apps.map((app: LaunchbarApp) => (
-                <dt key={app.name} className={`${app.name}Icon`}>
+                <dd key={app.name} className={`${app.name}Icon`}>
                   <LaunchbarIcon app={app} currentApp={props.currentApp} />
-                </dt>
+                </dd>
               ))}
             </dl>
           ))}
         </div>
       </div>
       <div className={styles.about}>
+        <h2>Genome research database</h2>
         <dl>
-          <dt className="aboutIcon">
+          <dd className={styles.about}>
             <LaunchbarIcon
               app={launchbarConfig.about}
               currentApp={props.currentApp}
             />
-          </dt>
+          </dd>
         </dl>
       </div>
     </div>
