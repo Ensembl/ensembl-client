@@ -65,6 +65,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
       {props.trackPanelOpened ? (
         <TrackPanelList
           currentTrack={props.currentTrack}
+          launchbarExpanded={props.launchbarExpanded}
           toggleDrawer={props.toggleDrawer}
           updateTrack={props.changeCurrentTrack}
         />
