@@ -1,3 +1,4 @@
+use core::Value;
 use super::environment::Environment;
 use super::interp::{ ProcessState, ProcessStatus };
 use super::process::Process;
@@ -65,6 +66,10 @@ impl InterpProcess {
         if self.p.halted() {
             self.send_finished(env);
         }
+    }
+    
+    pub fn set_reg(&mut self, idx: usize, v: Value) {
+        self.p.set_reg(idx,v);
     }
     
     pub fn started(&mut self, env: &mut Box<Environment>, pid: usize) {
