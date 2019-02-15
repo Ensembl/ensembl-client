@@ -2,8 +2,8 @@ import React, { FunctionComponent, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import styles from './BrowserImage.scss';
-import { updateBrowserNavStates } from '../browserActions';
-import { BrowserNavStates } from '../browserState';
+import { updateBrowserNavStates, updateChrLocation } from '../browserActions';
+import { BrowserNavStates, ChrLocation } from '../browserState';
 import { getBrowserNavOpened } from '../browserSelectors';
 import { RootState } from 'src/rootReducer';
 
@@ -13,6 +13,7 @@ type StateProps = {
 
 type DispatchProps = {
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
+  updateChrLocation: (chrLocation: ChrLocation) => void;
 };
 
 type OwnProps = {};
@@ -22,7 +23,7 @@ type BrowserImageProps = StateProps & DispatchProps & OwnProps;
 type BpaneOutEvent = Event & {
   detail: {
     bumper?: BrowserNavStates;
-    location?: [];
+    location?: ChrLocation;
   };
 };
 
@@ -35,9 +36,14 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   const listenBpaneOut = (event: Event) => {
     const bpaneOutEvent = event as BpaneOutEvent;
     const navIconStates = bpaneOutEvent.detail.bumper as BrowserNavStates;
+    const chrLocation = bpaneOutEvent.detail.location as ChrLocation;
 
     if (navIconStates) {
       props.updateBrowserNavStates(navIconStates);
+    }
+
+    if (chrLocation) {
+      props.updateChrLocation(chrLocation);
     }
   };
 
@@ -101,12 +107,13 @@ function getBrowserImageClasses(browserNavOpened: boolean): string {
   return classes;
 }
 
-const mapStateToProps = (state: RootState) => ({
+const mapStateToProps = (state: RootState): StateProps => ({
   browserNavOpened: getBrowserNavOpened(state)
 });
 
-const mapDispatchToProps = {
-  updateBrowserNavStates
+const mapDispatchToProps: DispatchProps = {
+  updateBrowserNavStates,
+  updateChrLocation
 };
 
 export default connect(

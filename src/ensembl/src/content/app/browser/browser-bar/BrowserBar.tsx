@@ -1,20 +1,34 @@
-import React, { FunctionComponent, memo } from 'react';
+import React, { FunctionComponent } from 'react';
+import { connect } from 'react-redux';
 import ContentEditable from 'react-contenteditable';
 
 import { browserInfoConfig } from '../browserConfig';
 
+import { toggleBrowserNav } from '../browserActions';
+import { ChrLocation } from '../browserState';
+import { RootState } from 'src/rootReducer';
+import { getBrowserNavOpened, getChrLocation } from '../browserSelectors';
+
 import styles from './BrowserBar.scss';
 
-type BrowserBarProps = {
+type StateProps = {
   browserNavOpened: boolean;
-  expanded: boolean;
+  chrLocation: ChrLocation;
+};
+
+type DispatchProps = {
   toggleBrowserNav: () => void;
 };
+
+type OwnProps = {};
+
+type BrowserBarProps = StateProps & DispatchProps & OwnProps;
 
 export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   props: BrowserBarProps
 ) => {
   const { navigator, reset } = browserInfoConfig;
+  const [chrCode, chrStart, chrEnd] = props.chrLocation;
 
   return (
     <div className={styles.browserBar}>
@@ -44,8 +58,13 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
         <dl className={styles.browserInfoRight}>
           <dd>
             <label className="show-for-large">Chromosome</label>
-            <ContentEditable html={'13'} className="content-editable-box" />
-            <ContentEditable html={'32,315,474 - 32,400,266'} />
+            <ContentEditable
+              html={`${chrCode}`}
+              className="content-editable-box"
+            />
+            <ContentEditable html={`${chrStart}`} />
+            <span> - </span>
+            <ContentEditable html={`${chrEnd}`} />
           </dd>
           <dd className={styles.navigator}>
             <button
@@ -79,4 +98,16 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   );
 };
 
-export default memo(BrowserBar);
+const mapStateToProps = (state: RootState): StateProps => ({
+  browserNavOpened: getBrowserNavOpened(state),
+  chrLocation: getChrLocation(state)
+});
+
+const mapDispatchToProps: DispatchProps = {
+  toggleBrowserNav
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(BrowserBar);
