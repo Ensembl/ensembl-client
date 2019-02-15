@@ -1,9 +1,11 @@
 @import 'src/styles/common';
 
 .content {
-  min-height: calc(100vh - 73px);
+  &.shorter {
+    min-height: calc(100vh - 73px);
+  }
 
-  &.expanded {
+  &.taller {
     min-height: calc(100vh - 25px);
   }
 
