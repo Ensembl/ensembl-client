@@ -520,7 +520,7 @@ const gc_src: &str = r#"
     strect #1, #2, #3, #4, #5
 "#;
     
-pub fn march_source_ts(tc: &Tácode, type_: &DebugSourceType) -> Option<impl Source> {
+pub fn march_source_ts(tc: &Tácode, type_: &DebugSourceType) -> Option<TáSource> {
     let type_ = type_.clone();
     let p = Palette {
         lato_12: FCFont::new(12,"Lato",FontVariety::Normal),
@@ -529,6 +529,7 @@ pub fn march_source_ts(tc: &Tácode, type_: &DebugSourceType) -> Option<impl Sou
         grey: ColourSpec::Spot(Colour(199,208,213))
     };
     match type_ {
+        /*
         DebugSourceType::GC => {
             let gc_xfer = XferResponse::new(gc_src.to_string(),vec!{
                 Value::new_from_float(vec![10000.,17000.,20000.,30000.,40000.]),
@@ -536,6 +537,7 @@ pub fn march_source_ts(tc: &Tácode, type_: &DebugSourceType) -> Option<impl Sou
             });
             Some(TáSource::new(&tc,gc_xfer))
         },
+        */
         _ => None
     }
 }
