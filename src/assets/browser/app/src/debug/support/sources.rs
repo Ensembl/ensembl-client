@@ -6,7 +6,7 @@ use composit::{
 };
 use debug::testcards::{
     leafcard_source, text_source, march_source_cs, march_source_ts,
-    polar_source, tá_source, bs_source_main
+    polar_source, tá_source_cs , tá_source_ts, bs_source_main
 };
 use debug::support::{
     DebugSourceType
@@ -53,7 +53,11 @@ fn debug_source_type(tc: &Tácode, type_: &DebugSourceType) -> impl Source {
     s.add_stick("leaf",Box::new(leafcard_source(true)));
     s.add_stick("ruler",Box::new(leafcard_source(false)));
     s.add_stick("button",Box::new(bs_source_main()));
-    s.add_stick("tácode",Box::new(tá_source(tc)));
+    if let Some(src) = tá_source_ts(&tc,type_) {
+        s.add_stick("tácode",Box::new(src));
+    } else {
+        s.add_stick("tácode",Box::new(tá_source_cs(type_)));
+    }
     s
 }
 
