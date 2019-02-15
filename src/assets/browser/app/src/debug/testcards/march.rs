@@ -4,11 +4,14 @@ use std::iter::repeat;
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
+use tánaiste::Value;
+
 use composit::{
     StateFixed, StateValue, StateAtom, Leaf, Carriage, SourceResponse,
-    Stick
+    Stick, Source
 };
 use controller::global::App;
+use data::XferResponse;
 use debug::support::DebugSourceType;
 use debug::testcards::common::{
     track_data, rng_pos, prop, rng_seq, rng_flip
@@ -28,6 +31,7 @@ use shape::{
     ColourSpec, MathsShape, tape_mathsshape,
     tape_rectangle, tape_texture, stretch_box
 };
+use tácode::{ Tácode, TáSource };
 use types::{ 
     Colour, cleaf, cpixel, area_size, area, cedge,
     TOPLEFT, TOPRIGHT, Dot, AxisSense, Corner, 
@@ -504,9 +508,19 @@ fn variant_track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
     }
 }
 
+const gc_find: &str = r#"
+    const #1, "debug:internal:gc"
+    request
+"#;
 
-
-pub fn march_source(type_: &DebugSourceType) -> ClosureSource {
+const gc_src: &str = r#"
+    const #3, [428]
+    const #4, [6]
+    const #5, [255,120,0,120,255,0]
+    strect #1, #2, #3, #4, #5
+"#;
+    
+pub fn march_source_ts(tc: &Tácode, type_: &DebugSourceType) -> Option<impl Source> {
     let type_ = type_.clone();
     let p = Palette {
         lato_12: FCFont::new(12,"Lato",FontVariety::Normal),
@@ -514,9 +528,29 @@ pub fn march_source(type_: &DebugSourceType) -> ClosureSource {
         white: ColourSpec::Spot(Colour(255,255,255)),
         grey: ColourSpec::Spot(Colour(199,208,213))
     };
-    ClosureSource::new(0.,move |ref mut lc,leaf| {
-        match type_ {
-            DebugSourceType::Framework => {
+    match type_ {
+        DebugSourceType::GC => {
+            let gc_xfer = XferResponse::new(gc_src.to_string(),vec!{
+                Value::new_from_float(vec![10000.,17000.,20000.,30000.,40000.]),
+                Value::new_from_float(vec![4000.,1000.,6000.]),
+            });
+            Some(TáSource::new(&tc,gc_xfer))
+        },
+        _ => None
+    }
+}
+
+pub fn march_source_cs(type_: &DebugSourceType) -> impl Source {
+    let type_ = type_.clone();
+    let p = Palette {
+        lato_12: FCFont::new(12,"Lato",FontVariety::Normal),
+        lato_18: FCFont::new(12,"Lato",FontVariety::Bold),
+        white: ColourSpec::Spot(Colour(255,255,255)),
+        grey: ColourSpec::Spot(Colour(199,208,213))
+    };
+    match type_ {
+        DebugSourceType::Framework => {
+            ClosureSource::new(0.,move |ref mut lc,leaf| {
                 one_offs(lc,&p);
                 draw_frame(lc,&leaf,AxisSense::Max,&p);
                 draw_frame(lc,&leaf,AxisSense::Min,&p);
@@ -525,26 +559,34 @@ pub fn march_source(type_: &DebugSourceType) -> ClosureSource {
                 for t in 0..TRACKS {
                     track_meta(lc,&p,t);
                 }
-            },
-            DebugSourceType::Contig => {
+                closure_done(lc,TRACKS*PITCH+TOP);
+            })
+        },
+        DebugSourceType::Contig => {
+            ClosureSource::new(0.,move |ref mut lc,leaf| {
                 contig_track(lc,&leaf,&p,3);
-            },
-            DebugSourceType::GC => {
-                // GC track goes here
-                //variant_track(lc,&leaf,&p,6);
-            },
-            DebugSourceType::Variant => {
+                closure_done(lc,TRACKS*PITCH+TOP);
+            })
+        },
+        /*
+        DebugSourceType::Variant => {
                 // Variant track goes here
                 //variant_track(lc,&leaf,&p,7);
-            },
-            DebugSourceType::GenePc => {
+        },
+        */
+        DebugSourceType::GenePc => {
+            ClosureSource::new(0.,move |ref mut lc,leaf| {
                 gene_track(lc,&leaf,&p,1);
                 gene_track(lc,&leaf,&p,2);
                 gene_track(lc,&leaf,&p,4);
                 gene_track(lc,&leaf,&p,5);
-            },
-            _ => ()
-        }
-        closure_done(lc,TRACKS*PITCH+TOP);
-    })
+                closure_done(lc,TRACKS*PITCH+TOP);
+            })
+        },
+        _ => {
+            ClosureSource::new(0.,move |ref mut lc,leaf| {
+                closure_done(lc,TRACKS*PITCH+TOP);
+            })
+        },
+    }
 }

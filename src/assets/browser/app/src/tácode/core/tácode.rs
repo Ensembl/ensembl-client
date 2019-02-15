@@ -2,7 +2,8 @@ use std::sync::{ Arc, Mutex };
 
 use tánaiste::{
     assemble, BinaryCode, DEFAULT_CONFIG, instruction_bundle_core,
-    InstructionSet, Interp, ProcessConfig, PROCESS_CONFIG_DEFAULT
+    InstructionSet, Interp, ProcessConfig, PROCESS_CONFIG_DEFAULT,
+    Value
 };
 
 use super::appenv::AppEnv;
@@ -60,6 +61,10 @@ impl TácodeImpl {
     pub fn context(&self) -> TáContext {
         self.tc.clone()
     }
+
+    pub fn set_reg(&mut self, pid: usize, reg: usize, v: Value) {
+        self.interp.set_reg(pid,reg,v);
+    }
 }
 
 #[derive(Clone)]
@@ -88,5 +93,9 @@ impl Tácode {
     
     pub fn step(&self) {
         self.0.lock().unwrap().step()
+    }
+    
+    pub fn set_reg(&self, pid: usize, reg: usize, v: Value) {
+        self.0.lock().unwrap().set_reg(pid, reg, v);
     }
 }

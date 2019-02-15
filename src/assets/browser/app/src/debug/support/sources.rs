@@ -5,8 +5,8 @@ use composit::{
     StateAtom, ActiveSource, Source, SourceResponse, Leaf
 };
 use debug::testcards::{
-    leafcard_source, text_source, march_source, polar_source, tá_source,
-    bs_source_main
+    leafcard_source, text_source, march_source_cs, march_source_ts,
+    polar_source, tá_source, bs_source_main
 };
 use debug::support::{
     DebugSourceType
@@ -44,7 +44,11 @@ impl Source for DebugSource {
 fn debug_source_type(tc: &Tácode, type_: &DebugSourceType) -> impl Source {
     let mut s = DebugSource::new();
     s.add_stick("polar",Box::new(polar_source(type_)));
-    s.add_stick("march",Box::new(march_source(type_)));
+    if let Some(src) = march_source_ts(&tc,type_) {
+        s.add_stick("march",Box::new(src));
+    } else {
+        s.add_stick("march",Box::new(march_source_cs(type_)));
+    }
     s.add_stick("text",Box::new(text_source()));
     s.add_stick("leaf",Box::new(leafcard_source(true)));
     s.add_stick("ruler",Box::new(leafcard_source(false)));
