@@ -9,6 +9,17 @@ pub enum TáTask {
     MakeShapes(Leaf,SourceResponse)
 }
 
+impl TáTask {
+    pub fn finished(&mut self) {
+        match self {
+            TáTask::MakeShapes(_,sr) => {
+                sr.done(200); // XXX not 200
+            },
+            _ => ()
+        }
+    }
+}
+
 pub struct TáContextImpl {
     pid: usize,
     task: Option<TáTask>
@@ -33,6 +44,9 @@ impl TáContextImpl {
     }
 
     pub fn finished(&mut self) {
+        if let Some(ref mut task) = self.task {
+            task.finished();
+        }
     }
 
     pub fn appget(&mut self) {
