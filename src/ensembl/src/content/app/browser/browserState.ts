@@ -16,10 +16,13 @@ export type BrowserNavStates = [
   boolean
 ];
 
+export type ChrLocation = [string, number, number];
+
 export type BrowserState = Readonly<{
   browserNavOpened: boolean;
   browserNavStates: BrowserNavStates;
   browserOpenState: BrowserOpenState;
+  chrLocation: ChrLocation;
   currentDrawerSection: string;
   currentTrack: string;
   drawerOpened: boolean;
@@ -31,6 +34,7 @@ export const defaultState: BrowserState = {
   browserNavOpened: false,
   browserNavStates: [true, true, true, true, true, true],
   browserOpenState: BrowserOpenState.SEMI_EXPANDED,
+  chrLocation: ['13', 0, 0],
   currentDrawerSection: '',
   currentTrack: '',
   drawerOpened: false,
