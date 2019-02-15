@@ -508,11 +508,6 @@ fn variant_track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
     }
 }
 
-const gc_find: &str = r#"
-    const #1, "debug:internal:gc"
-    request
-"#;
-
 pub struct TáCardData {
 }
 
@@ -555,6 +550,7 @@ pub fn tá_source_cs(type_: &DebugSourceType) -> impl Source {
                 closure_done(lc,TRACKS*PITCH+TOP);
             })
         },
+        
         DebugSourceType::Contig => {
             ClosureSource::new(0.,move |ref mut lc,leaf| {
                 contig_track(lc,&leaf,&p,3);

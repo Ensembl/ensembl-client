@@ -5,7 +5,8 @@ use std::rc::Rc;
 use tánaiste::Value;
 
 use data::{ XferClerk, XferConsumer, XferRequest, XferResponse };
-use super::{ DebugSourceType, DebugXferResponder, FakeData };
+use super::{ DebugSourceType, DebugXferResponder };
+use debug::fakedata::FakeData;
 
 #[derive(Clone)]
 pub struct DebugXferClerk {

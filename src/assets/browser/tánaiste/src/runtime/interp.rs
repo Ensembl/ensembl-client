@@ -67,7 +67,7 @@ pub struct Interp {
     config: InterpConfig,
     procs: ValueStore<InterpProcess>,
     runq: HashSet<usize>,
-    nextq: HashSet<usize>,
+    unq: HashSet<usize>,
     signals: Signals
 }
 
@@ -77,7 +77,7 @@ impl Interp {
             env, config,
             procs: ValueStore::<InterpProcess>::new(),
             runq: HashSet::<usize>::new(),
-            nextq: HashSet::<usize>::new(),
+            unq: HashSet::<usize>::new(),
             signals: Signals::new()
         }
     }
@@ -115,18 +115,26 @@ impl Interp {
     
     fn drain_runq(&mut self, end: i64) -> RunResult {
         if self.runq.is_empty() { return RunResult::Empty; }
-        let runnable : Vec<usize> = self.runq.drain().collect();
-        for pid in runnable {
+        self.unq.clear();
+        for pid in &self.runq {
             let status = {
-                let mut ip = self.procs.get_mut(pid).unwrap();
-                ip.run_proc(&mut self.env,self.config.cycles_per_run);
+                let mut ip = self.procs.get_mut(*pid).unwrap();
                 ip.status()
             };
             if status.state == ProcessState::Running {
-                self.nextq.insert(pid);
+                let mut ip = self.procs.get_mut(*pid).unwrap();
+                ip.run_proc(&mut self.env,self.config.cycles_per_run);
+            }
+            let status = {
+                let mut ip = self.procs.get_mut(*pid).unwrap();
+                ip.run_proc(&mut self.env,self.config.cycles_per_run);
+                ip.status()
+            };            
+            if status.state != ProcessState::Running {
+                self.unq.insert(*pid);
             }
             if !status.state.alive() {
-                self.procs.unstore(pid);
+                self.procs.unstore(*pid);
             }
             if self.env.get_time() >= end {
                 return RunResult::Timeout;
@@ -140,13 +148,12 @@ impl Interp {
         loop {
             self.add_awoken();
             let r = self.drain_runq(end);
-            self.runq = self.runq.union(&self.nextq).cloned().collect();
-            self.nextq.clear();
+            self.runq = self.runq.difference(&self.unq).cloned().collect();
             if r == RunResult::Finished { continue; }
             return r == RunResult::Timeout;
         }
     }
-    
+        
     pub fn status(&mut self, pid: usize) -> ProcessStatus {
         if let Some(ref mut ip) = self.procs.get_mut(pid) {
             ip.status()
