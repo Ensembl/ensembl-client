@@ -13,10 +13,15 @@
     &.border {
       border-right: 1px solid $ens-medium-grey;
     }
+
+    &:first-child {
+      padding-left: 2px;
+    }
   }
 
-  dt {
+  dd {
     display: inline-block;
+    margin-left: 0;
     padding: 0 12px;
   }
 }
@@ -25,14 +30,10 @@
   display: flex;
   flex-wrap: nowrap;
   overflow-x: auto;
-  width: calc(100% - 86px);
+  width: calc(100% - 226px);
 
   &::-webkit-scrollbar {
     display: none;
-  }
-
-  dl:first-child {
-    padding-left: 2px;
   }
 }
 
@@ -45,7 +46,17 @@
   @include flex-align(right, top);
   margin-left: 20px;
 
+  h2 {
+    font-size: 12px;
+    font-weight: normal;
+    margin: 7px 0 0 0;
+  }
+
   dl:first-child {
-    padding-right: 2px;
+    padding-right: 0;
+  }
+
+  dd {
+    padding: 0;
   }
 }
