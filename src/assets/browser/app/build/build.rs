@@ -32,7 +32,7 @@ fn main() {
         .unwrap();
         
     /* embed build-time / git commit */
-    let tmpl = String::from_utf8(read("thisbuild.rs.tmpl").unwrap()).unwrap();
+    let tmpl = String::from_utf8(read("build/thisbuild.rs.tmpl").unwrap()).unwrap();
     let cmd_re = Regex::new(r"@(.*?)@").unwrap();
     let out = cmd_re.replace_all(&tmpl,command_output);
     write(&Path::new(&dest).join("thisbuild.rs"),out.as_bytes()).ok();

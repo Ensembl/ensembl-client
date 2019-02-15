@@ -6,8 +6,8 @@ pushd $(dirname "${0}") > /dev/null
 BASE=$(pwd -L)
 popd > /dev/null
 
-SRC="$BASE"
-DEST="$BASE/../../../ensembl/static/browser"
+SRC="$BASE/.."
+DEST="$BASE/../../../../ensembl/static/browser"
 cd $SRC
 touch Cargo.lock # force build
 cargo +nightly web build --target=wasm32-unknown-unknown --release

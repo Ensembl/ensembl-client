@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use std::sync::{ Arc, Mutex };
 
-use core::BinaryCode;
+use core::{ BinaryCode, Value };
 use util::ValueStore;
 use super::environment::Environment;
 use super::interproc::InterpProcess;
@@ -95,6 +95,11 @@ impl Interp {
         }
     }
     
+    pub fn set_reg(&mut self, pid: usize, reg: usize, v: Value) {
+        let ip = self.procs.get_mut(pid).unwrap();
+        ip.set_reg(reg,v);
+    }
+    
     pub fn start(&mut self, pid: usize) {
         let ip = self.procs.get_mut(pid).unwrap();
         if ip.boot() {
@@ -154,8 +159,9 @@ impl Interp {
 #[cfg(test)]
 mod test {
     use std::{ thread, time };
-    use super::{ Interp, ProcessState, DEFAULT_CONFIG };
+    use core::Value;
     use test::{ command_compile, DebugEnvironment, TestContext };
+    use super::{ Interp, ProcessState, DEFAULT_CONFIG };
         
     #[test]
     fn noprocs() {
@@ -209,6 +215,19 @@ mod test {
         thread::sleep(time::Duration::from_millis(500));
         while t.run(1000) {}
         assert_eq!("awoke",t_env.get_exit_str()[0]);
+    }
+
+    #[test]
+    fn set_reg() {
+        let t_env = DebugEnvironment::new();
+        let mut t = Interp::new(t_env.make(),DEFAULT_CONFIG);
+        let tc = TestContext::new();
+        let bin = command_compile("set-reg",&tc);
+        let pid = t.exec(&bin,None,None).ok().unwrap();
+        t.set_reg(pid,2,Value::new_from_string("YES".to_string()));
+        t.start(pid);
+        while t.run(1000) {}
+        assert_eq!("YES",t_env.get_exit_str()[0]);
     }
     
     #[test]

@@ -1,21 +1,25 @@
 use composit::StateValue;
 use controller::global::App;
 use controller::input::{ Action, actions_run };
+use debug::support::DebugSourceType;
+use types::Dot;
 
-pub fn select_testcard(a: &mut App, stick_name: &str) {
-    actions_run(a,&vec! {
-        Action::AddComponent("internal:debug:gene-pc".to_string()),
-        Action::AddComponent("internal:debug:gene-other".to_string()),
-        Action::AddComponent("internal:debug:variant".to_string()),
-        Action::AddComponent("internal:debug:contig".to_string()),
-        Action::AddComponent("internal:debug:gc".to_string()),
-        Action::SetStick(stick_name.to_string()),
-        Action::SetState("internal:debug:gene-pc".to_string(),StateValue::On()),
-        Action::SetState("internal:debug:gene-other".to_string(),StateValue::On()),
-        Action::SetState("internal:debug:variant".to_string(),StateValue::On()),
-        Action::SetState("internal:debug:contig".to_string(),StateValue::On()),
-        Action::SetState("internal:debug:gc".to_string(),StateValue::On()),
+pub fn debug_initial_actions(name: &str) -> Vec<Action> {
+    let mut out = Vec::<Action>::new();
+    for type_ in DebugSourceType::all() {
+        out.push(Action::AddComponent(type_.get_name().to_string()));
+        out.push(Action::SetState(type_.get_name().to_string(),StateValue::On()));
+    }
+    out.extend(vec! {
+        Action::SetStick(name.to_string()),
+        Action::Pos(Dot(0_f64,0_f64),None),
         Action::ZoomTo(-5.)
     });
+    out
+}
+
+pub fn select_testcard(a: &mut App, stick_name: &str) {
+    let acts = debug_initial_actions(stick_name);
+    actions_run(a,&acts);
 }
 

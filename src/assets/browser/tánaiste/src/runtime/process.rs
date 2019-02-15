@@ -1,7 +1,7 @@
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
-use core::Command;
+use core::{ Command, Value };
 use super::datastate::DataState;
 use super::procconf::ProcessConfig;
 use super::procstate::ProcState;
@@ -92,6 +92,10 @@ impl Process {
     pub fn get_reg(&mut self, idx: usize) -> String {
         let val = self.data.registers().get(idx);
         format!("{:?}",val)
+    }
+
+    pub fn set_reg(&mut self, idx: usize, v: Value) {
+        self.data.registers().set(idx,v);
     }
 
     pub fn get_reg_str(&mut self, idx: usize) -> String {
