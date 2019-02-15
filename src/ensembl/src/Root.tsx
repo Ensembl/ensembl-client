@@ -57,7 +57,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
   breakpointWidth: getBreakpointWidth(state)
 });
 
-const mapDispatchToProps = { updateBreakpointWidth };
+const mapDispatchToProps: DispatchProps = { updateBreakpointWidth };
 
 export default connect(
   mapStateToProps,
