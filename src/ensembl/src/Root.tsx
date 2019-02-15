@@ -1,4 +1,4 @@
-import React, { FunctionComponent, StrictMode, useEffect } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import useResizeObserver from 'use-resize-observer';
@@ -33,12 +33,10 @@ const Root: FunctionComponent<RootProps> = (props: RootProps) => {
 
   return (
     <BrowserRouter>
-      <StrictMode>
-        <div ref={ref as React.RefObject<HTMLDivElement>}>
-          <Header />
-          <Content />
-        </div>
-      </StrictMode>
+      <div ref={ref as React.RefObject<HTMLDivElement>}>
+        <Header />
+        <Content />
+      </div>
     </BrowserRouter>
   );
 };

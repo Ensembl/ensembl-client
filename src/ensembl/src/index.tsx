@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { StrictMode } from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 
@@ -10,9 +10,11 @@ import { registerSW } from './registerServiceWorker';
 import './styles/main';
 
 render(
-  <Provider store={store}>
-    <Root />
-  </Provider>,
+  <StrictMode>
+    <Provider store={store}>
+      <Root />
+    </Provider>
+  </StrictMode>,
   document.getElementById('ens-app')
 );
 
