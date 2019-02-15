@@ -13,6 +13,9 @@ import ownDataSelectedIcon from 'static/img/track-panel/own-data-selected.svg';
 import shareIcon from 'static/img/track-panel/share.svg';
 import shareSelectedIcon from 'static/img/track-panel/share-selected.svg';
 
+import tracksManagerIcon from 'static/img/track-panel/tracks-manager.svg';
+import tracksManagerSelectedIcon from 'static/img/track-panel/tracks-manager-selected.svg';
+
 export type TrackPanelBarItem = {
   description: string;
   icon: {
@@ -24,7 +27,7 @@ export type TrackPanelBarItem = {
 
 export const trackPanelBarConfig: TrackPanelBarItem[] = [
   {
-    description: 'search',
+    description: 'Search',
     icon: {
       default: searchIcon,
       selected: searchSelectedIcon
@@ -32,7 +35,7 @@ export const trackPanelBarConfig: TrackPanelBarItem[] = [
     name: 'search'
   },
   {
-    description: 'bookmark',
+    description: 'Bookmark',
     icon: {
       default: bookmarkIcon,
       selected: bookmarkSelectedIcon
@@ -40,12 +43,12 @@ export const trackPanelBarConfig: TrackPanelBarItem[] = [
     name: 'bookmark'
   },
   {
-    description: 'download',
+    description: 'Tracks manager',
     icon: {
-      default: downloadIcon,
-      selected: downloadSelectedIcon
+      default: tracksManagerIcon,
+      selected: tracksManagerSelectedIcon
     },
-    name: 'download'
+    name: 'tracks-manager'
   },
   {
     description: 'own data',
@@ -56,11 +59,19 @@ export const trackPanelBarConfig: TrackPanelBarItem[] = [
     name: 'own-data'
   },
   {
-    description: 'share',
+    description: 'Share',
     icon: {
       default: shareIcon,
       selected: shareSelectedIcon
     },
     name: 'share'
+  },
+  {
+    description: 'Download',
+    icon: {
+      default: downloadIcon,
+      selected: downloadSelectedIcon
+    },
+    name: 'download'
   }
 ];
