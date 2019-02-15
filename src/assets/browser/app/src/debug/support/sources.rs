@@ -9,7 +9,7 @@ use debug::testcards::{
     polar_source, tá_source_cs , tá_source_ts, bs_source_main
 };
 use debug::support::{
-    DebugSourceType
+    DebugSourceType, DebugXferClerk
 };
 use tácode::Tácode;
 
@@ -41,7 +41,7 @@ impl Source for DebugSource {
     }
 }
 
-fn debug_source_type(tc: &Tácode, type_: &DebugSourceType) -> impl Source {
+fn debug_source_type(tc: &Tácode, xf: &DebugXferClerk, type_: &DebugSourceType) -> impl Source {
     let mut s = DebugSource::new();
     s.add_stick("polar",Box::new(polar_source(type_)));
     if let Some(src) = march_source_ts(&tc,type_) {
@@ -53,7 +53,7 @@ fn debug_source_type(tc: &Tácode, type_: &DebugSourceType) -> impl Source {
     s.add_stick("leaf",Box::new(leafcard_source(true)));
     s.add_stick("ruler",Box::new(leafcard_source(false)));
     s.add_stick("button",Box::new(bs_source_main()));
-    if let Some(src) = tá_source_ts(&tc,type_) {
+    if let Some(src) = tá_source_ts(&tc,xf,type_) {
         s.add_stick("tácode",Box::new(src));
     } else {
         s.add_stick("tácode",Box::new(tá_source_cs(type_)));
@@ -61,8 +61,8 @@ fn debug_source_type(tc: &Tácode, type_: &DebugSourceType) -> impl Source {
     s
 }
 
-pub fn debug_activesource_type(tc: &Tácode, type_: &DebugSourceType) -> ActiveSource {
-    let src = debug_source_type(tc,type_);
+pub fn debug_activesource_type(tc: &Tácode, xf: &DebugXferClerk, type_: &DebugSourceType) -> ActiveSource {
+    let src = debug_source_type(tc,xf,type_);
     let state = Rc::new(StateAtom::new(type_.get_name()));
     ActiveSource::new(type_.get_name(),Rc::new(src),state)
 }

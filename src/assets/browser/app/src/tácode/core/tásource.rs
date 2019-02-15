@@ -1,32 +1,44 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
+use tánaiste::Value;
+
 use composit::{ Leaf, Source, SourceResponse };
-use data::{ XferResponse, XferConsumer };
+use data::{ XferClerk, XferRequest, XferResponse, XferConsumer };
 use tácode::{ Tácode, TáTask };
 
 pub struct TáSourceImpl {
     tc: Tácode,
-    xf: XferResponse
+    xf: Box<XferClerk>,
+    name: String
 }
 
 #[derive(Clone)]
 pub struct TáSource(Rc<RefCell<TáSourceImpl>>);
 
 impl TáSource {
-    pub fn new(tc: &Tácode, xf: XferResponse) -> TáSource {
+    pub fn new(tc: &Tácode, xf: Box<XferClerk>, name: &str) -> TáSource {
         TáSource(Rc::new(RefCell::new(TáSourceImpl{
-            tc: tc.clone(), xf
+            tc: tc.clone(),
+            xf,
+            name: name.to_string()
         })))
     }
 }
 
+const gc_src: &str = r#"
+    const #3, [428]
+    const #4, [6]
+    const #5, [255,120,0,120,255,0]
+    strect #1, #2, #3, #4, #5
+"#;
+
 impl Source for TáSource {
     fn populate(&self, lc: &mut SourceResponse, leaf: &Leaf) {
-        let mut xf = self.0.borrow_mut().xf.clone(); // XXX no!
+        let gc_xfer_req = XferRequest::new(&self.0.borrow_mut().name,leaf);
         let mut tc = self.0.borrow_mut().tc.clone();
         let mut xcons = TáXferConsumer::new(&tc,leaf,lc);
-        xcons.consume(xf);
+        self.0.borrow_mut().xf.satisfy(gc_xfer_req,Box::new(xcons));
     }
 }
 

@@ -5,5 +5,5 @@ pub trait XferConsumer {
 }
 
 pub trait XferClerk {
-    fn satisfy(&mut self, request: XferRequest, consumer: XferConsumer);
+    fn satisfy(&mut self, request: XferRequest, consumer: Box<XferConsumer>);
 }

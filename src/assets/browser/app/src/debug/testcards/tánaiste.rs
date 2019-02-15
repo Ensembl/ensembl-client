@@ -12,7 +12,7 @@ use composit::{
 };
 use controller::global::App;
 use data::XferResponse;
-use debug::support::DebugSourceType;
+use debug::support::{ DebugSourceType, DebugXferClerk };
 use debug::testcards::common::{
     track_data, rng_pos, prop, rng_seq, rng_flip
 };
@@ -520,7 +520,7 @@ const gc_src: &str = r#"
     strect #1, #2, #3, #4, #5
 "#;
     
-pub fn tá_source_ts(tc: &Tácode, type_: &DebugSourceType) -> Option<impl Source> {
+pub fn tá_source_ts(tc: &Tácode, xf: &DebugXferClerk, type_: &DebugSourceType) -> Option<impl Source> {
     let type_ = type_.clone();
     let p = Palette {
         lato_12: FCFont::new(12,"Lato",FontVariety::Normal),
@@ -530,11 +530,7 @@ pub fn tá_source_ts(tc: &Tácode, type_: &DebugSourceType) -> Option<impl Sourc
     };
     match type_ {
         DebugSourceType::GC => {
-            let gc_xfer = XferResponse::new(gc_src.to_string(),vec!{
-                Value::new_from_float(vec![10000.,17000.,20000.,30000.,40000.]),
-                Value::new_from_float(vec![4000.,1000.,6000.]),
-            });
-            Some(TáSource::new(&tc,gc_xfer))
+            Some(TáSource::new(&tc,Box::new(xf.clone()),type_.get_name()))
         },
         _ => None
     }
