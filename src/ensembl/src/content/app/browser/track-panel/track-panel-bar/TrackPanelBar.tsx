@@ -29,9 +29,11 @@ const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
   }, [props.drawerOpened, props.toggleDrawer, props.toggleTrackPanel]);
 
   const getClassNames = () => {
-    const expandClass: string = props.launchbarExpanded ? '' : styles.expanded;
+    const heightClass: string = props.launchbarExpanded
+      ? styles.shorter
+      : styles.taller;
 
-    return `${styles.trackPanelBar} ${expandClass}`;
+    return `${styles.trackPanelBar} ${heightClass}`;
   };
 
   return (

@@ -2,10 +2,13 @@
 
 .trackPanelBar {
   background: $ens-light-grey;
-  height: calc(100vh - 177px);
   width: 36px;
 
-  &.expanded {
+  &.shorter {
+    height: calc(100vh - 177px);
+  }
+
+  &.taller {
     height: calc(100vh - 129px);
   }
 

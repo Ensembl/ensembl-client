@@ -11,6 +11,7 @@ import styles from './TrackPanelList.scss';
 
 type TrackPanelListProps = {
   currentTrack: string;
+  launchbarExpanded: boolean;
   toggleDrawer: (drawerOpened: boolean) => void;
   updateTrack: (currentTrack: string) => void;
 };
@@ -25,6 +26,14 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
     toggleDrawer(true);
   };
 
+  const getTrackPanelClasses = () => {
+    const heightClass: string = props.launchbarExpanded
+      ? styles.shorter
+      : styles.taller;
+
+    return `${styles.trackPanelList} ${heightClass}`;
+  };
+
   const getTrackClass = (trackName: string): string => {
     if (props.currentTrack === trackName) {
       return 'currentTrack';
@@ -34,7 +43,7 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   };
 
   return (
-    <div className={styles.trackPanelList}>
+    <div className={getTrackPanelClasses()}>
       <section>
         <dl>
           <TrackPanelListItem
