@@ -31,7 +31,6 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   props: BrowserImageProps
 ) => {
   const browserCanvas: React.RefObject<HTMLDivElement> = React.createRef();
-  let currentEl: HTMLDivElement | null = null;
 
   const listenBpaneOut = (event: Event) => {
     const bpaneOutEvent = event as BpaneOutEvent;
@@ -48,6 +47,8 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   };
 
   useEffect(() => {
+    let currentEl: HTMLDivElement | null = null;
+
     if (browserCanvas) {
       currentEl = browserCanvas.current as HTMLDivElement;
 
@@ -61,7 +62,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
         currentEl.removeEventListener('bpane-out', listenBpaneOut);
       }
     };
-  }, [currentEl]);
+  }, []);
 
   return (
     <div
