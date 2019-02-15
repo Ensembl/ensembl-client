@@ -1,17 +1,19 @@
 pub use tánaiste::Value;
+use super::XferRequest;
 
 /* XXX clone during dev only! */
 
 #[derive(Clone)]
 pub struct XferResponse {
+    request: XferRequest,
     code: String,
     data: Vec<Option<Value>>
 }
 
 impl XferResponse {
-    pub fn new(code: String, mut data: Vec<Value>) -> XferResponse {
+    pub fn new(request: XferRequest, code: String, mut data: Vec<Value>) -> XferResponse {
         XferResponse {
-            code,
+            code, request,
             data: data.drain(..).map(|x| Some(x)).collect()
         }
     }
