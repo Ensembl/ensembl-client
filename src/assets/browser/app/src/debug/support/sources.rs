@@ -6,15 +6,15 @@ use composit::{
 };
 use debug::testcards::{
     leafcard_source, text_source, march_source_cs, march_source_ts,
-    polar_source, tá_source_cs , tá_source_ts, bs_source_main
+    polar_source, tá_source_cs , bs_source_main
 };
 use debug::support::{
     DebugSourceType, DebugXferClerk
 };
-use tácode::Tácode;
+use tácode::{ Tácode, TáSource };
 
 pub struct DebugSource {
-    sources: HashMap<String,Box<Source>>
+    sources: HashMap<String,Box<Source>>,
 }
 
 impl DebugSource {
@@ -53,8 +53,8 @@ fn debug_source_type(tc: &Tácode, xf: &DebugXferClerk, type_: &DebugSourceType)
     s.add_stick("leaf",Box::new(leafcard_source(true)));
     s.add_stick("ruler",Box::new(leafcard_source(false)));
     s.add_stick("button",Box::new(bs_source_main()));
-    if let Some(src) = tá_source_ts(&tc,xf,type_) {
-        s.add_stick("tácode",Box::new(src));
+    if *type_ == DebugSourceType::GC {
+        s.add_stick("tácode",Box::new(TáSource::new(tc,Box::new(xf.clone()),type_.get_name())));
     } else {
         s.add_stick("tácode",Box::new(tá_source_cs(type_)));
     }

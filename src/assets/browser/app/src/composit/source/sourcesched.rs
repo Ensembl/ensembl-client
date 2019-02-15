@@ -41,6 +41,7 @@ impl SourceSched {
             self.pending.remove(&k);
         }
         self.run_queue();
+        //console!("{}+{} outstanding",self.queued.len(),self.pending.len());
     }
     
     pub fn tick(&mut self, _t: f64) {

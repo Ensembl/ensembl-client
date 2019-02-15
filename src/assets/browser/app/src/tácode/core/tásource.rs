@@ -26,13 +26,6 @@ impl TáSource {
     }
 }
 
-const gc_src: &str = r#"
-    const #3, [428]
-    const #4, [6]
-    const #5, [255,120,0,120,255,0]
-    strect #1, #2, #3, #4, #5
-"#;
-
 impl Source for TáSource {
     fn populate(&self, lc: &mut SourceResponse, leaf: &Leaf) {
         let gc_xfer_req = XferRequest::new(&self.0.borrow_mut().name,leaf);

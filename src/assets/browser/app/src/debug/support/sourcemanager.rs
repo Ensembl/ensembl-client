@@ -4,7 +4,7 @@ use composit::{ SourceManager, ActiveSource };
 use debug::support::{ debug_activesource_type, DebugXferClerk };
 use tácode::Tácode;
 
-#[derive(PartialEq,Eq,Hash,Clone)]
+#[derive(PartialEq,Eq,Hash,Clone,Debug)]
 pub enum DebugSourceType {
     GenePc,
     GeneOther,
