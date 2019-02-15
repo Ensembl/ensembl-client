@@ -32,6 +32,8 @@ export default (
       return { ...state, browserNavOpened: !state.browserNavOpened };
     case getType(browser.updateBrowserNavStates):
       return { ...state, browserNavStates: action.payload };
+    case getType(browser.updateChrLocation):
+      return { ...state, chrLocation: action.payload };
     default:
       return state;
   }

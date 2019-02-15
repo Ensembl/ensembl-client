@@ -1,5 +1,5 @@
 import { createAction } from 'typesafe-actions';
-import { BrowserNavStates } from './browserState';
+import { BrowserNavStates, ChrLocation } from './browserState';
 
 export const toggleTrackPanel = createAction(
   'browser/toggle-track-panel',
@@ -34,5 +34,12 @@ export const updateBrowserNavStates = createAction(
   'browser/update-browser-nav-states',
   (resolve) => {
     return (browserNavStates: BrowserNavStates) => resolve(browserNavStates);
+  }
+);
+
+export const updateChrLocation = createAction(
+  'browser/update-chromosome-location',
+  (resolve) => {
+    return (chrLocation: ChrLocation) => resolve(chrLocation);
   }
 );
