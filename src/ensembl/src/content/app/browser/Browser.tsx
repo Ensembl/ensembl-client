@@ -9,24 +9,30 @@ import Drawer from './drawer/Drawer';
 
 import { RootState } from 'src/rootReducer';
 import { BrowserOpenState } from './browserState';
-import { toggleDrawer, toggleBrowserNav } from './browserActions';
+import { toggleDrawer } from './browserActions';
 import {
   getBrowserOpenState,
   getDrawerOpened,
   getBrowserNavOpened
 } from './browserSelectors';
 
-import 'static/browser/browser.js';
-
 import styles from './Browser.scss';
 
-type BrowserProps = {
+import 'static/browser/browser.js';
+
+type StateProps = {
   browserNavOpened: boolean;
   browserOpenState: BrowserOpenState;
   drawerOpened: boolean;
-  toggleBrowserNav: () => void;
+};
+
+type DispatchProps = {
   toggleDrawer: (drawerOpened: boolean) => void;
 };
+
+type OwnProps = {};
+
+type BrowserProps = StateProps & DispatchProps & OwnProps;
 
 export const Browser: FunctionComponent<BrowserProps> = (
   props: BrowserProps
@@ -41,11 +47,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   return (
     <section className={styles.browser}>
-      <BrowserBar
-        browserNavOpened={props.browserNavOpened}
-        expanded={true}
-        toggleBrowserNav={props.toggleBrowserNav}
-      />
+      <BrowserBar />
       <div className={styles.browserInnerWrapper}>
         <div
           className={`${styles.browserImageWrapper} ${
@@ -63,15 +65,14 @@ export const Browser: FunctionComponent<BrowserProps> = (
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
+const mapStateToProps = (state: RootState): StateProps => ({
   browserNavOpened: getBrowserNavOpened(state),
   browserOpenState: getBrowserOpenState(state),
   drawerOpened: getDrawerOpened(state)
 });
 
-const mapDispatchToProps = {
-  toggleDrawer,
-  toggleBrowserNav
+const mapDispatchToProps: DispatchProps = {
+  toggleDrawer
 };
 
 export default connect(
