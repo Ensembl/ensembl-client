@@ -54,7 +54,9 @@ impl TácodeImpl {
         self.interp.exec(bin,None,Some(&self.procconf))
     }
     
-    pub fn step(&mut self) { self.interp.run(5); }
+    pub fn step(&mut self) { 
+        self.interp.run(5);
+    }
     
     pub fn start(&mut self, pid: usize) { self.interp.start(pid); }
     
@@ -92,6 +94,7 @@ impl Tácode {
     }
     
     pub fn step(&self) {
+
         self.0.lock().unwrap().step()
     }
     

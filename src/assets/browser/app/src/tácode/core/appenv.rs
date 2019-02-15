@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use stdweb::unstable::TryInto;
 
 use tánaiste::{ Environment, ProcessState };
@@ -5,7 +7,7 @@ use tánaiste::{ Environment, ProcessState };
 use tácode::TáContext;
 
 pub struct AppEnv {
-    tc: TáContext
+    tc: TáContext,
 }
 
 impl AppEnv {
@@ -20,8 +22,7 @@ impl Environment for AppEnv {
         t as i64
     }
     
-    fn started(&mut self, _pid: usize) {
-    }
+    fn started(&mut self, _pid: usize) {}
     
     fn finished(&mut self, pid: usize, state: ProcessState, codes: Vec<f64>, string: String) {
         self.tc.finished(pid);

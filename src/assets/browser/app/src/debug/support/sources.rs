@@ -53,7 +53,7 @@ fn debug_source_type(tc: &Tácode, xf: &DebugXferClerk, type_: &DebugSourceType)
     s.add_stick("leaf",Box::new(leafcard_source(true)));
     s.add_stick("ruler",Box::new(leafcard_source(false)));
     s.add_stick("button",Box::new(bs_source_main()));
-    if *type_ == DebugSourceType::GC {
+    if *type_ == DebugSourceType::GC || *type_ == DebugSourceType::Contig {
         s.add_stick("tácode",Box::new(TáSource::new(tc,Box::new(xf.clone()),type_.get_name())));
     } else {
         s.add_stick("tácode",Box::new(tá_source_cs(type_)));
