@@ -1,38 +1,38 @@
+use std::cell::RefCell;
 use std::rc::Rc;
 
 use composit::{ Leaf, Source, SourceResponse };
+use data::XferResponse;
 use tácode::{ Tácode, TáTask };
 
 pub struct TáSourceImpl {
-    tc: Tácode
+    tc: Tácode,
+    xf: XferResponse
 }
 
 #[derive(Clone)]
-pub struct TáSource(Rc<TáSourceImpl>);
+pub struct TáSource(Rc<RefCell<TáSourceImpl>>);
 
 impl TáSource {
-    pub fn new(tc: &Tácode) -> TáSource {
-        TáSource(Rc::new(TáSourceImpl{
-            tc: tc.clone()
-        }))
+    pub fn new(tc: &Tácode, xf: XferResponse) -> TáSource {
+        TáSource(Rc::new(RefCell::new(TáSourceImpl{
+            tc: tc.clone(), xf
+        })))
     }
 }
 
-const src: &str = r#"
-    const #1, [10000,17000,20000,30000]
-    const #2, [4000,1000]
-    const #3, [1]
-    const #4, [400]
-    const #5, [255,120,0,120,255,0]
-    strect #1, #2, #3, #4, #5
-"#;
-
 impl Source for TáSource {
     fn populate(&self, lc: &mut SourceResponse, leaf: &Leaf) {
-        let b = self.0.tc.assemble(&src);
-        let pid = self.0.tc.run(&b.ok().unwrap()).ok().unwrap();
-        self.0.tc.context().set_task(pid,TáTask::MakeShapes(leaf.clone(),lc.clone()));
-        self.0.tc.start(pid);
+        let mut imp = self.0.borrow_mut();        
+        let mut xf = imp.xf.clone(); // XXX no!
+        let b = imp.tc.assemble(&xf.get_code());
+        let pid = imp.tc.run(&b.ok().unwrap()).ok().unwrap();
+        imp.tc.context().set_task(pid,TáTask::MakeShapes(leaf.clone(),lc.clone()));
+        let len = xf.len();
+        for reg in 0..len {
+            imp.tc.set_reg(pid,reg+1,xf.take_data(reg));
+        }
+        imp.tc.start(pid);
         lc.done(200);
     }
 }

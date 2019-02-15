@@ -17,7 +17,7 @@ case "$1" in
         ;;
     deploy)
         echo "Running deploy"
-        $BASE/deploy.sh
+        $BASE/../deploy.sh
         ;;
     *)
         echo "Unknown command '$1'"
