@@ -13,6 +13,7 @@ fi
 case "$1" in
     start)
         echo "Running web start"
+        cd $BASE/../..
         cargo +nightly web start --target=wasm32-unknown-unknown --release
         ;;
     deploy)
