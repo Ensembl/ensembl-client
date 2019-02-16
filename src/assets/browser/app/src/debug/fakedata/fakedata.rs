@@ -39,6 +39,9 @@ fn hash_key_float(yaml: &Yaml, key: &str) -> Option<f64> {
             Some(Yaml::Integer(ref v)) => {
                 return Some(*v as f64)
             },
+            Some(Yaml::Real(ref v)) => {
+                return Some(val.unwrap().as_f64().unwrap())
+            },
             Some(Yaml::String(ref v)) => {
                 return Some(val.unwrap().as_f64().unwrap())
             },
@@ -76,8 +79,19 @@ fn make_data(out: &mut Vec<FakeValue>, e: &Yaml) {
                         "flip" => {
                             let seed = hash_key_float(v,"seed").unwrap() as u8;
                             let spacing = hash_key_float(v,"spacing").unwrap();
+                            let (sense,sense_p) = match hash_key_float(v,"sense") {
+                                Some(sense) => {
+                                    console!("A");
+                                    if sense < 0. {
+                                        (true,None)
+                                    } else {
+                                        (true,Some(sense))
+                                    }
+                                },
+                                None => (false,None)
+                            };
                             let seed = [seed,0,0,0,0,0,0,0];
-                            let rng = RngFlip::new(seed,spacing as i32,false);
+                            let rng = RngFlip::new(seed,spacing as i32,sense_p,sense);
                             out.push(FakeValue::Delayed(Box::new(rng)));
                         },
                         _ => ()

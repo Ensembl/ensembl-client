@@ -13,32 +13,35 @@ use types::{ Colour, cleaf, area };
 // TODO check ranges
 // TODO &mut-able registers
 // TODO clever copying
-fn abutt(starts: &Vec<f64>, ends: &Vec<f64>) -> (Vec<f64>, Vec<f64>) {
+fn abutt(starts: &Vec<f64>) -> (Vec<f64>, Vec<f64>) {
     let mut starts_out = Vec::<f64>::new();
     let mut sizes_out = Vec::<f64>::new();
-    starts_out.push(ends[0]);
-    let mut prev_start = ends[0];
-    for p in starts.iter() {
-        starts_out.push(*p);
-        sizes_out.push(*p-prev_start);
-        prev_start = *p;
+    let mut starts_iter = starts.iter();
+    if let Some(mut prev) = starts_iter.next() {
+        loop {
+            match starts_iter.next() {
+                Some(next) => {
+                    starts_out.push(*prev);
+                    sizes_out.push(next-*prev);
+                    prev = next;
+                },
+                None => { break; }
+            }
+        }
     }
-    sizes_out.push(ends[1]-prev_start);
     (starts_out,sizes_out)
 }
 
-// strect #sizes, #starts, #start/end
-pub struct Abutt(usize,usize,usize);
+// strect #sizes, #starts
+pub struct Abutt(usize,usize);
 
 impl Command for Abutt {
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let regs = rt.registers();
         regs.get(self.1).as_floats(|starts| {
-            regs.get(self.2).as_floats(|ends| {
-                let (starts,sizes) = abutt(starts,ends);
-                regs.set(self.1,Value::new_from_float(starts));
-                regs.set(self.0,Value::new_from_float(sizes));
-            });
+            let (starts,sizes) = abutt(starts);
+            regs.set(self.1,Value::new_from_float(starts));
+            regs.set(self.0,Value::new_from_float(sizes));
         });                   
         return 1;
     }
@@ -47,8 +50,8 @@ impl Command for Abutt {
 pub struct AbuttI();
 
 impl Instruction for AbuttI {
-    fn signature(&self) -> Signature { Signature::new("abutt","rrr") }
+    fn signature(&self) -> Signature { Signature::new("abutt","rr") }
     fn build(&self, args: &Vec<Argument>) -> Box<Command> {
-        Box::new(Abutt(args[0].reg(),args[1].reg(),args[2].reg()))
+        Box::new(Abutt(args[0].reg(),args[1].reg()))
     }
 }
