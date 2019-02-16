@@ -2,6 +2,7 @@ use data::{ XferRequest, XferResponse };
 
 pub trait XferConsumer {
     fn consume(&mut self, response: XferResponse);
+    fn abandon(&mut self);
 }
 
 pub trait XferClerk {

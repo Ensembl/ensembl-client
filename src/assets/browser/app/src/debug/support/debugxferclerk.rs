@@ -26,9 +26,10 @@ impl XferClerk for DebugXferClerk {
     fn satisfy(&mut self, request: XferRequest, mut consumer: Box<XferConsumer>) {
         let type_ = DebugSourceType::from_name(request.get_source_name()).unwrap();
         let leaf = request.get_leaf().clone();
-        // XXX errors
         if let Some(res) = self.fakedata.satisfy(request) {
             consumer.consume(res);
+        } else {
+            consumer.abandon();
         }
     }
 }
