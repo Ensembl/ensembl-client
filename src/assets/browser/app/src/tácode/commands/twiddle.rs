@@ -35,10 +35,24 @@ fn elide(data: &Vec<f64>, bools: &Vec<f64>, stride: &Vec<f64>) -> Vec<f64> {
     out
 }
 
+fn pick(source: &Vec<f64>, palette: &Vec<f64>, stride: &Vec<f64>) -> Vec<f64> {
+    let mut out = Vec::<f64>::new();
+    let stride = stride[0] as usize;
+    for s in source.iter() {
+        for i in 0..stride {
+            out.push(palette[*s as usize*stride+i]);
+        }
+    }
+    out
+}
+
 // not #target, #source
 pub struct Not(usize,usize);
 // elide #target, #bools, #stride
 pub struct Elide(usize,usize,usize);
+// pick #tagret, #source, #palette, #stride
+pub struct Pick(usize,usize,usize,usize);
+
 
 impl Command for Elide {
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
@@ -65,6 +79,21 @@ impl Command for Not {
     }
 }
 
+impl Command for Pick {
+    fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        regs.get(self.1).as_floats(|source| {
+            regs.get(self.2).as_floats(|palette| {
+                regs.get(self.3).as_floats(|stride| {
+                    let data = pick(source,palette,stride);
+                    regs.set(self.0,Value::new_from_float(data));
+                });
+            });
+        });                   
+        return 1;
+    }
+}
+
 pub struct ElideI();
 
 impl Instruction for ElideI {
@@ -80,5 +109,14 @@ impl Instruction for NotI {
     fn signature(&self) -> Signature { Signature::new("not","rr") }
     fn build(&self, args: &Vec<Argument>) -> Box<Command> {
         Box::new(Not(args[0].reg(),args[1].reg()))
+    }
+}
+
+pub struct PickI();
+
+impl Instruction for PickI {
+    fn signature(&self) -> Signature { Signature::new("pick","rrrr") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(Pick(args[0].reg(),args[1].reg(),args[2].reg(),args[3].reg()))
     }
 }

@@ -29,7 +29,7 @@ impl TáSource {
 impl Source for TáSource {
     fn populate(&self, lc: &mut SourceResponse, leaf: &Leaf) {
         let gc_xfer_req = XferRequest::new(&self.0.borrow_mut().name,leaf);
-        let mut tc = self.0.borrow_mut().tc.clone();
+        let tc = self.0.borrow_mut().tc.clone();
         let mut xcons = TáXferConsumer::new(&tc,leaf,lc);
         self.0.borrow_mut().xf.satisfy(gc_xfer_req,Box::new(xcons));
     }
@@ -61,5 +61,9 @@ impl XferConsumer for TáXferConsumer {
             self.tc.set_reg(pid,reg+1,xf.take_data(reg));
         }
         self.tc.start(pid);
+    }
+    
+    fn abandon(&mut self) {
+        self.lc.done(0);
     }
 }

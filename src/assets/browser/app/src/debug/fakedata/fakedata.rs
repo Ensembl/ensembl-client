@@ -4,7 +4,7 @@ use yaml_rust::yaml::Yaml;
 use yaml_rust::YamlLoader;
 use tánaiste::Value;
 
-use composit::Leaf;
+use composit::{ Leaf, Scale };
 use data::{ XferRequest, XferResponse };
 use super::datagen::RngFlip;
 
@@ -13,6 +13,8 @@ lazy_static! {
 }
 
 const PREFIX: &str = "internal:debug:";
+
+const ZOOMCODES: &str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 pub trait FakeDataGenerator {
     fn generate(&self, leaf: &Leaf) -> Value;
@@ -134,13 +136,36 @@ impl FakeData {
         }
         FakeData { data: yaml_data }
     }
+        
+    fn get_response(&self, leaf: &Leaf, source: &str) -> Option<&FakeResponse> {
+        let card = leaf.get_stick().get_name();
+        let c = leaf.get_scale().get_index();
+        if let Some(ref x) = self.data.get(&card) {
+            for (k,v) in x.iter() {
+                let parts : Vec<&str> = k.rsplitn(2,"--").collect();
+                if parts.len() > 1 {
+                    let (a,b) = (parts[0].chars().nth(0),parts[0].chars().nth(1));
+                    let (a,b) = (Scale::new_from_letter(a.unwrap()),Scale::new_from_letter(b.unwrap()));
+                    let (a,b) = (a.get_index(),b.get_index());
+                    if parts[1] == source && c >= a && c <= b {
+                        return Some(v);
+                    }
+                } else {
+                    if parts[0] == source {
+                        return Some(v);
+                    }
+                }
+            }
+        }
+        None
+    }
     
     pub fn satisfy(&self, request: XferRequest) -> Option<XferResponse> {
         let card = request.get_leaf().get_stick().get_name();
         let source = request.get_source_name().to_string();
         if source.starts_with(PREFIX) {
             let source = &source[PREFIX.len()..];
-            if let Some(ref fr) = self.data.get(&card).and_then(|x| x.get(source)) {
+            if let Some(ref fr) = self.get_response(request.get_leaf(),source) {
                 let mut data = Vec::<Value>::new();
                 for e in &fr.data {
                     data.push(match e {

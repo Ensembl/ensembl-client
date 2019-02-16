@@ -507,18 +507,6 @@ fn variant_track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
         }
     }
 }
-
-const gc_find: &str = r#"
-    const #1, "debug:internal:gc"
-    request
-"#;
-
-const gc_src: &str = r#"
-    const #3, [428]
-    const #4, [6]
-    const #5, [255,120,0,120,255,0]
-    strect #1, #2, #3, #4, #5
-"#;
     
 pub fn march_source_ts(tc: &Tácode, type_: &DebugSourceType) -> Option<TáSource> {
     let type_ = type_.clone();

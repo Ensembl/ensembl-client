@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use stdweb::unstable::TryInto;
 
 use tánaiste::{ Environment, ProcessState };
