@@ -6,7 +6,7 @@ use tánaiste::Value;
 
 use composit::{ Leaf, Scale };
 use data::{ XferRequest, XferResponse };
-use super::datagen::RngFlip;
+use super::datagen::{ RngFlip, RngFlipBool, RngFlipShimmer };
 
 lazy_static! {
     static ref FAKEDATA : &'static str = include_str!("fakewiredata.yaml");
@@ -14,10 +14,8 @@ lazy_static! {
 
 const PREFIX: &str = "internal:debug:";
 
-const ZOOMCODES: &str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
 pub trait FakeDataGenerator {
-    fn generate(&self, leaf: &Leaf) -> Value;
+    fn generate(&self, leaf: &Leaf) -> Vec<Value>;
 }
 
 enum FakeValue {
@@ -34,23 +32,64 @@ pub struct FakeData {
     data: HashMap<String,HashMap<String,FakeResponse>>
 }
 
+fn to_float(val: &Yaml) -> Option<f64> {
+    match val {
+        Yaml::Integer(ref v) => {
+            return Some(*v as f64)
+        },
+        Yaml::Real(ref v) => {
+            return val.as_f64()
+        },
+        Yaml::String(ref v) => {
+            return val.as_f64()
+        },
+        _ => ()
+    }
+    None
+}
+
+
 fn hash_key_float(yaml: &Yaml, key: &str) -> Option<f64> {
     if let Yaml::Hash(ref d) = yaml {
         let val = d.get(&Yaml::String(key.to_string()));
-        match val {
-            Some(Yaml::Integer(ref v)) => {
-                return Some(*v as f64)
-            },
-            Some(Yaml::Real(ref v)) => {
-                return Some(val.unwrap().as_f64().unwrap())
-            },
-            Some(Yaml::String(ref v)) => {
-                return Some(val.unwrap().as_f64().unwrap())
-            },
-            _ => ()
-        }
+        val.and_then(|v| to_float(v))
+    } else {
+        None
     }
-    None
+}
+
+fn to_bool(val: &Yaml) -> bool {
+    match val {
+        Yaml::Integer(v) => *v != 0,
+        Yaml::Real(_) => val.as_f64().unwrap() != 0.,
+        Yaml::String(v) => v != "",
+        Yaml::Boolean(v) => *v,
+        _ => false
+    }
+}
+
+fn hash_key_bool(yaml: &Yaml, key: &str) -> bool {
+    if let Yaml::Hash(ref d) = yaml {
+        let val = d.get(&Yaml::String(key.to_string()));
+        val.map(|v| to_bool(v)).unwrap_or(false)
+    } else {
+        false
+    }
+}
+
+fn flipper(v: &Yaml) -> Box<FakeDataGenerator> {
+    let seed = hash_key_float(v,"seed").unwrap() as u8;
+    let spacing = hash_key_float(v,"spacing").unwrap();
+    let seed = [seed,0,0,0,0,0,0,0];
+    if let Some(sense) = hash_key_float(v,"sense") {
+        if hash_key_bool(v,"shimmer") {
+            Box::new(RngFlipShimmer::new(seed,spacing as i32,sense))
+        } else {
+            Box::new(RngFlipBool::new(seed,spacing as i32,sense))
+        }
+    } else {
+        Box::new(RngFlip::new(seed,spacing as i32))
+    }
 }
 
 fn make_data(out: &mut Vec<FakeValue>, e: &Yaml) {
@@ -58,7 +97,7 @@ fn make_data(out: &mut Vec<FakeValue>, e: &Yaml) {
         Yaml::Array(ref v) => {
             let mut val = Vec::<f64>::new();
             for e in v {
-                val.push(e.as_f64().unwrap());
+                if let Some(v) = to_float(e) { val.push(v); }
             }
             out.push(FakeValue::Immediate(Value::new_from_float(val)));
         },
@@ -79,22 +118,7 @@ fn make_data(out: &mut Vec<FakeValue>, e: &Yaml) {
                             out.push(FakeValue::Immediate(Value::new_from_bytes(val)));
                         },
                         "flip" => {
-                            let seed = hash_key_float(v,"seed").unwrap() as u8;
-                            let spacing = hash_key_float(v,"spacing").unwrap();
-                            let (sense,sense_p) = match hash_key_float(v,"sense") {
-                                Some(sense) => {
-                                    console!("A");
-                                    if sense < 0. {
-                                        (true,None)
-                                    } else {
-                                        (true,Some(sense))
-                                    }
-                                },
-                                None => (false,None)
-                            };
-                            let seed = [seed,0,0,0,0,0,0,0];
-                            let rng = RngFlip::new(seed,spacing as i32,sense_p,sense);
-                            out.push(FakeValue::Delayed(Box::new(rng)));
+                            out.push(FakeValue::Delayed(flipper(v)));
                         },
                         _ => ()
                     }
@@ -168,14 +192,16 @@ impl FakeData {
             if let Some(ref fr) = self.get_response(request.get_leaf(),source) {
                 let mut data = Vec::<Value>::new();
                 for e in &fr.data {
-                    data.push(match e {
+                    match e {
                         FakeValue::Immediate(ref e) => {
-                            e.clone()
+                            data.push(e.clone());
                         },
                         FakeValue::Delayed(ref g) => {
-                            g.generate(request.get_leaf())
+                            for v in g.generate(request.get_leaf()) {                           
+                                data.push(v);
+                            }
                         },
-                    });
+                    }
                 }
                 return Some(XferResponse::new(request,fr.code.clone(),data));
             }
