@@ -12,6 +12,11 @@ enum TrackItemColour {
 }
 
 export type TrackPanelItem = {
+  additionalInfo?: {
+    other: string;
+    selected?: string;
+  };
+  childTrackList?: TrackPanelItem[];
   color?: string;
   id: number;
   label: string;
@@ -46,37 +51,40 @@ export const trackPanelConfig: TrackPanelConfig = {
       name: 'Genes & transcripts',
       trackList: [
         {
+          additionalInfo: {
+            other: 'Forward strand'
+          },
           color: TrackItemColour.DARK_GREY,
           id: 1,
-          label: 'Coding genes',
-          name: 'coding-genes'
+          label: 'Protein coding genes',
+          name: 'gene-pc'
         },
         {
+          additionalInfo: {
+            other: 'Forward strand'
+          },
           color: TrackItemColour.GREY,
           id: 2,
-          label: 'Non-coding-genes',
-          name: 'non-coding-genes'
+          label: 'Other genes',
+          name: 'gene-other'
         },
         {
-          color: TrackItemColour.WHITE,
+          additionalInfo: {
+            other: 'Reverse strand'
+          },
+          color: TrackItemColour.DARK_GREY,
           id: 3,
-          label: 'Psuedogenes',
-          name: 'psuedogenes'
+          label: 'Protein coding genes',
+          name: 'gene-pc-reverse'
         },
         {
+          additionalInfo: {
+            other: 'Reverse strand'
+          },
+          color: TrackItemColour.GREY,
           id: 4,
-          label: 'Gencode annotation',
-          name: 'gencode-annotation'
-        },
-        {
-          id: 5,
-          label: 'RefSeq',
-          name: 'refseq'
-        },
-        {
-          id: 6,
-          label: 'RNASeq',
-          name: 'rnaseq'
+          label: 'Other genes',
+          name: 'gene-other-reverse'
         }
       ]
     },
@@ -85,57 +93,45 @@ export const trackPanelConfig: TrackPanelConfig = {
       trackList: [
         {
           id: 101,
-          label: 'Assembly exceptions',
-          name: 'assembly-exceptions'
+          label: 'Contigs',
+          name: 'contig'
         },
         {
           id: 102,
-          label: 'Repeat regions',
-          name: 'repeat-regions'
-        },
-        {
-          id: 103,
-          label: 'Encoding regions',
-          name: 'encoding-regions'
-        },
-        {
-          id: 104,
-          label: 'Contigs',
-          name: 'contigs'
-        },
-        {
-          id: 105,
-          label: 'Tilepath',
-          name: 'tilepath'
-        },
-        {
-          id: 106,
-          label: 'ABC libraries',
-          name: 'abc-libraries'
+          label: '%GC',
+          name: 'gc'
         }
       ]
     },
     {
+      name: 'Comparative genomics',
+      trackList: []
+    },
+    {
       name: 'Experiment design',
-      trackList: [
-        {
-          id: 201,
-          label: 'Markers',
-          name: 'markers'
-        },
-        {
-          id: 202,
-          label: 'Oligo probes',
-          name: 'oligo-probes'
-        }
-      ]
+      trackList: []
+    },
+    {
+      name: 'References & evidence',
+      trackList: []
     }
   ],
   main: {
-    color: TrackItemColour.BLUE,
+    additionalInfo: {
+      other: 'Protein coding',
+      selected: 'MANE Select'
+    },
+    childTrackList: [
+      {
+        color: TrackItemColour.BLUE,
+        id: 0.1,
+        label: 'ENST00000380152.7',
+        name: 'transcript'
+      }
+    ],
     id: 0,
-    label: 'BRCA2-201',
-    name: 'main'
+    label: 'BRCA2',
+    name: 'gene'
   }
 };
 
