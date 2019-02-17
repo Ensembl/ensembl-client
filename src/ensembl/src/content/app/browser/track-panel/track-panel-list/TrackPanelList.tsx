@@ -35,37 +35,47 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   };
 
   const getTrackClass = (trackName: string): string => {
+    if (trackName === 'main') {
+      return 'main';
+    }
+
     if (props.currentTrack === trackName) {
       return 'currentTrack';
-    } else {
-      return '';
     }
+
+    return '';
   };
+
+  const getTrackListItem = (track: TrackPanelItem) => (
+    <TrackPanelListItem
+      key={track.id}
+      className={getTrackClass(track.name)}
+      track={track}
+      changeTrack={changeTrack}
+    >
+      {track.childTrackList &&
+        track.childTrackList.map((childTrack: TrackPanelItem) =>
+          getTrackListItem(childTrack)
+        )}
+    </TrackPanelListItem>
+  );
 
   return (
     <div className={getTrackPanelClasses()}>
       <section>
-        <dl>
-          <TrackPanelListItem
-            className="main"
-            track={trackPanelConfig.main}
-            changeTrack={changeTrack}
-            additionalInfo="MANE Select transcript /7"
-          />
-        </dl>
+        <dl>{getTrackListItem(trackPanelConfig.main)}</dl>
       </section>
       {trackPanelConfig.categories.map((category: TrackPanelCategory) => (
         <section key={category.name}>
           <h4>{category.name}</h4>
           <dl>
-            {category.trackList.map((track: TrackPanelItem) => (
-              <TrackPanelListItem
-                key={track.id}
-                className={getTrackClass(track.name)}
-                track={track}
-                changeTrack={changeTrack}
-              />
-            ))}
+            {category.trackList.length ? (
+              category.trackList.map((track: TrackPanelItem) =>
+                getTrackListItem(track)
+              )
+            ) : (
+              <dd className={styles.emptyListMsg}>No data available</dd>
+            )}
           </dl>
         </section>
       ))}
