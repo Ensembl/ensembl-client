@@ -46,7 +46,10 @@ impl Scale {
         Scale::new(self.index+in_by)
     }
     
-    /* scales:        C -10        D -9       E -8
+    /* scales:           A -12         B -11
+     * bp/leaf:  5,000,000,000 1,500,000,000
+     * 
+     * scales:        C -10        D -9       E -8
      * bp/leaf: 500,000,000 150,000,000 50,000,000
      * 
      * scales:        F -7      G -6      H -5    I -4

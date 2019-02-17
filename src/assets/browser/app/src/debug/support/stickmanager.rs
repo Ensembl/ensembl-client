@@ -34,6 +34,6 @@ pub fn debug_stick_manager() -> impl StickManager {
     s.add_stick("leaf", 17000000,false);
     s.add_stick("ruler",17000000,false);
     s.add_stick("button",17000000,false);
-    s.add_stick("tácode",17000000,false);
+    s.add_stick("tácode",170000000,false);
     s
 }
