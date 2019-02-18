@@ -11,7 +11,6 @@ type TrackPanelListItemProps = {
   className: string;
   track: TrackPanelItem;
   changeTrack: (name: string) => void;
-  additionalInfo?: string;
 };
 
 const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
@@ -19,7 +18,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
 ) => {
   const [expanded, setExpanded] = useState(false);
 
-  const { className, track, additionalInfo } = props;
+  const { className, track } = props;
   const listItemClass = styles[className] || '';
 
   const changeTrackHandler = () => {
@@ -38,13 +37,17 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
             <span className={`${styles.box} ${styles[track.color]}`} />
           )}
           <span className={styles.mainText}>{track.label}</span>
-          {additionalInfo && (
-            <span className={styles.additionalInfo}>{additionalInfo}</span>
+          {track.selectedInfo && (
+            <span className={styles.selectedInfo}>{track.selectedInfo}</span>
+          )}
+          {track.additionalInfo && (
+            <span className={styles.additionalInfo}>
+              {track.additionalInfo}
+            </span>
           )}
           {track.childTrackList && (
-            <button onClick={toggleExpand}>
+            <button onClick={toggleExpand} className={styles.expandBtn}>
               <img
-                className={styles.expandIcon}
                 src={expanded ? chevronUpIcon : chevronDownIcon}
                 alt={expanded ? 'collapse' : 'expand'}
               />

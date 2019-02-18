@@ -13,8 +13,12 @@
   img {
     height: 16px;
     width: 16px;
+  }
 
-    &.expandIcon {
+  .expandBtn {
+    margin-left: 10px;
+
+    img {
       height: 12px;
       width: 12px;
     }
@@ -25,7 +29,7 @@
     background: lighten($ens-blue, 40%);
   }
 
-  &.main {
+  &.gene {
     font-weight: $bold;
   }
 
@@ -40,11 +44,18 @@
       margin-right: 10px;
     }
 
-    .additionalInfo {
+    .selectedInfo {
       color: $ens-black;
       display: inline-block;
-      font-weight: $light;
+      font-size: 10px;
+      font-weight: $normal;
       margin-right: 10px;
+    }
+
+    .additionalInfo {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: $light;
     }
   }
 
