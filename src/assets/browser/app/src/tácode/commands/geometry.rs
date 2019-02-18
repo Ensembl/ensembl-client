@@ -5,7 +5,6 @@ use tánaiste::{
     Value
 };
 
-use composit::{ Leaf, SourceResponse };
 use shape::{ ColourSpec, tape_rectangle, tape_texture, stretch_rectangle };
 use tácode::core::{ TáContext, TáTask };
 
