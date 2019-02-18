@@ -22,7 +22,7 @@ tácode:
             const #4, [1]       ; #4 = elision stride
             elide #1, #2, #4    ; #1 = elided endpoints
             elide #7, #2, #4    ; #7 = elided sizes
-            const #4, [239]     ; #4 = y-offset
+            const #4, [233]     ; #4 = y-offset
             const #5, [6]       ; #5 = height
             const #8, [3]       ; #8 = pick stride
             const #6, [192,192,192,128,128,128] ; #6 = palette
@@ -42,7 +42,7 @@ tácode:
             const #4, [1]
             elide #1, #2, #4
             elide #3, #2, #4
-            const #4, [239]
+            const #4, [233]
             const #5, [6]
             const #6, [192,192,192,128,128,128]
             shape #0, #1, #3, #4, #5, #6
@@ -59,8 +59,8 @@ tácode:
             const #6, [-0.45]
             add #1, #1, #6
             const #2, [0.9]
-            const #3, [230]
-            const #4, [6]
+            const #3, [232]
+            const #4, [8]
             const #5, [192,192,192]
             const #6, [1,1]
             shape #6, #1, #2, #3, #4, #5
@@ -87,7 +87,7 @@ tácode:
             const #6, [-0.45]
             add #7, #7, #6
             const #2, [0.9]
-            const #3, [230]
+            const #3, [224]
             const #4, [24]
             const #5, [192,192,192]
             const #6, [1,1]
@@ -96,9 +96,12 @@ tácode:
             const #8, [1,1,1,1]
             text #9, #7, #8
             index #1, #1, #7
-            dprint #1
             const #10, [1]
             pick #9, #1, #9, #10
-            cprint #9
+            const #11, [3,1]
+            extent #6
+            all #7, #6  
+            const #3, [239]          
+            shape #11, #7, #0, #3, #0, #9       
         data:
             - GACATATTAC

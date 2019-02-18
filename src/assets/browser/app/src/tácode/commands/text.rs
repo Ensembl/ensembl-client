@@ -11,8 +11,8 @@ use tácode::{ TáContext, TáTask };
 use types::{ Colour };
 
 fn text(lc: &mut SourceResponse, txx: &mut Vec<DrawingSpec>, string: &String) -> usize {
-    let font = FCFont::new(12,"Lato",FontVariety::Normal);
-    let tx = text_texture(string,&font,&Colour(0,0,0),&Colour(255,255,255));
+    let font = FCFont::new(12,"Lato",FontVariety::Bold);
+    let tx = text_texture(string,&font,&Colour(192,192,192),&Colour(255,255,255));
     txx.push(tx);
     txx.len()-1
 }
