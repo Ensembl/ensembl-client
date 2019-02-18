@@ -12,6 +12,11 @@ tácode:
             - [4000,1000,6000]
             - [0,0,0,1,1]
 
+    ################
+    # CONTIG TRACK #
+    ################
+
+    # contig heatmap
     contig--AI:
         code: |
             ; #1 = endpoints
@@ -35,6 +40,7 @@ tácode:
                 sense: 0.05
                 shimmer: true
 
+    # actual contigs
     contig--JO:
         code: |
             abutt #3, #1
@@ -52,68 +58,79 @@ tácode:
                 spacing: 5000
                 sense: 0.05
 
+    # boxes without letters in
     contig--PP:
         code: |
-            extent #6
-            all #1, #6
-            const #6, [-0.45]
-            add #1, #1, #6
-            const #2, [0.9]
-            const #3, [232]
-            const #4, [8]
-            const #5, [192,192,192]
-            const #6, [1,1]
-            shape #6, #1, #2, #3, #4, #5
-        data: []
-
-    contig--QQ:
+            ; #1 = start box frag
+            ; #2 = len box frag
+            ; #3 = colour box frag
+            ; *** scales ***
+            const #13, [232] ; #13 = box y-start
+            const #14, [8] ; #14 = box y-height
+            ; *** boxes ***
+            runs #7, #1, #2    ; #7 = list of box starts
+            const #16, [-0.45] ; #16 = left shift ~0.5bp
+            add #7, #7, #16    ; #7 = starts shifted left 0.5bp
+            const #12, [0.9]   ; #12 = box size
+            runsof #3, #2, #3  ; #3 = colours to positions
+            const #15, [192,192,192,128,128,128] ; #15 = box colour palette
+            const #17, [3]     ; #17 = pallete stride 3
+            pick #15, #3, #15, #17 ; #15 = box colours
+            const #16, [1,1]   ; #16 = [hollow-box,spot-colour]
+            shape #16, #7, #12, #13, #14, #15 ; draw boxes
+        data:
+            - [ 9990,10090]
+            - [   27,  200]
+            - [    1,    0]
+ 
+    # boxes with letters in
+    contig--QZ:
         code: |
-            extent #6
-            all #7, #6
-            const #6, [-0.45]
-            add #7, #7, #6
-            const #2, [0.9]
-            const #3, [230]
-            const #4, [12]
-            const #5, [192,192,192]
-            const #6, [1,1]
-            shape #6, #7, #2, #3, #4, #5
-            const #7, "ACGT"
-            const #8, [1,1,1,1]
-            text #9, #7, #8
-            index #1, #1, #7
-            const #10, [1]
-            pick #9, #1, #9, #10
-            const #11, [3,1]
-            extent #6
-            all #7, #6  
-            const #3, [239]          
-            shape #11, #7, #0, #3, #0, #9       
+            ; #1 = sequence
+            ; #2 = start pos of seq frag
+            ; #3 = len of seq frag
+            ; #4 = start box frag
+            ; #5 = len box frag
+            ; #6 = colour box frag
+            ; *** scales ***
+            const #16, [
+                230,224,224,224,224,224,224,224,224,244
+            ] ; #16 = y-starts Q, RZ
+            const #17, [
+                 12, 24, 24, 24, 24, 24, 24, 24, 24, 24
+            ] ; #17 = y-sizes Q, RZ
+            scale #18 ; #18 = scale
+            const #19, [-16] ; #19 = start at Q
+            add #18, #18, #19 ; #18 = scale (Q-based)
+            get #13, #16, #18 ; #13 = box y-start
+            get #14, #17, #18 ; #14 = box y-height
+            ; *** boxes ***
+            runs #7, #4, #5    ; #7 = list of box starts
+            const #16, [-0.45] ; #16 = left shift ~0.5bp
+            add #7, #7, #16    ; #7 = starts shifted left 0.5bp
+            const #12, [0.9]   ; #12 = box size
+            runsof #6, #5, #6  ; #6 = colours to positions
+            const #15, [192,192,192,128,128,128] ; #15 = box colour palette
+            const #17, [3]     ; #17 = pallete stride 3
+            pick #15, #6, #15, #17 ; #15 = box colours
+            const #16, [1,1]   ; #16 = [hollow-box,spot-colour]
+            shape #16, #7, #12, #13, #14, #15 ; draw boxes
+            ; *** sequence ***
+            const #7, "ACGT"   ; #7 = available sequence
+            const #8, [1,1,1,1]; #8 = lenget of seqeunces
+            text #9, #7, #8    ; #9 = textures for A,C,G,T
+            index #1, #1, #7   ; #1 = 0=A, 1=C, 2=G, 3=T for seq
+            const #10, [1]     ; #10 = stride 1 for texture ids
+            pick #9, #1, #9, #10 ; #9 = 0123 to tex id for seq
+            const #11, [3,1]   ; #11 = [texture-pin]
+            runs #7, #2, #3    ; #7 = position of sequence
+            const #13, [239]   ; #13 = letter y-start
+            shape #11, #7, #0, #13, #0, #9 ; draw letter
         data:
             - GACATATTAC
-
-    contig--RZ:
-        code: |
-            extent #6
-            all #7, #6
-            const #6, [-0.45]
-            add #7, #7, #6
-            const #2, [0.9]
-            const #3, [224]
-            const #4, [24]
-            const #5, [192,192,192]
-            const #6, [1,1]
-            shape #6, #7, #2, #3, #4, #5
-            const #7, "ACGT"
-            const #8, [1,1,1,1]
-            text #9, #7, #8
-            index #1, #1, #7
-            const #10, [1]
-            pick #9, #1, #9, #10
-            const #11, [3,1]
-            extent #6
-            all #7, #6  
-            const #3, [239]          
-            shape #11, #7, #0, #3, #0, #9       
-        data:
-            - GACATATTAC
+            - [10000,10100]
+            - [    7,    3]
+            - [ 9990,10090]
+            - [   27,  200]
+            - [    1,    0]
+            
