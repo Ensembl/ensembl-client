@@ -126,8 +126,8 @@ impl<'input> Lexer<'input> {
     fn get_number(&mut self, frac: bool) -> Option<f64> {
         let mut dot_ok = frac;
         let v = self.get_while(|c| {
-            if c=='.' && dot_ok { dot_ok = false; return true; }            
-            c.is_digit(10)
+            if c=='.' && dot_ok { dot_ok = false; return true; }
+            c.is_digit(10) || c=='-'
         });
         f64::from_str(&v).ok()
     }
@@ -157,7 +157,7 @@ impl<'input> Lexer<'input> {
             self.chars.mark();
             /* number? */
             if let Some(v) = next {
-                if v.is_digit(10) {
+                if v.is_digit(10) || v == '-' {
                     self.extra = next;
                     if let Some(v) = self.get_number(true) {                    
                         return Token::Num(v);

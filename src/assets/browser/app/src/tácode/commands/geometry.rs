@@ -8,7 +8,6 @@ use tánaiste::{
 use composit::{ Leaf, SourceResponse };
 use shape::{ ColourSpec, tape_rectangle, tape_texture, stretch_rectangle };
 use tácode::core::{ TáContext, TáTask };
-use types::{ Colour, cleaf, area };
 
 // TODO check ranges
 // TODO &mut-able registers
@@ -32,11 +31,13 @@ fn abutt(starts: &Vec<f64>) -> (Vec<f64>, Vec<f64>) {
     (starts_out,sizes_out)
 }
 
-// strect #sizes, #starts
+// abutt #sizes, #starts
 pub struct Abutt(usize,usize);
+// extent #start/end
+pub struct Extent(TáContext,usize); 
 
 impl Command for Abutt {
-    fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
         let regs = rt.registers();
         regs.get(self.1).as_floats(|starts| {
             let (starts,sizes) = abutt(starts);
@@ -47,11 +48,35 @@ impl Command for Abutt {
     }
 }
 
+impl Command for Extent {
+    fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        let pid = proc.lock().unwrap().get_pid().unwrap();
+        self.0.with_task(pid,|task| {
+            if let TáTask::MakeShapes(leaf,lc,_) = task {
+                regs.set(self.1,Value::new_from_float(vec! {
+                    leaf.get_start(),
+                    leaf.get_end()
+                }));
+            }
+        });
+        return 1;
+    }
+}
+
 pub struct AbuttI();
+pub struct ExtentI(pub TáContext);
 
 impl Instruction for AbuttI {
     fn signature(&self) -> Signature { Signature::new("abutt","rr") }
     fn build(&self, args: &Vec<Argument>) -> Box<Command> {
         Box::new(Abutt(args[0].reg(),args[1].reg()))
+    }
+}
+
+impl Instruction for ExtentI {
+    fn signature(&self) -> Signature { Signature::new("extent","r") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(Extent(self.0.clone(),args[0].reg()))
     }
 }

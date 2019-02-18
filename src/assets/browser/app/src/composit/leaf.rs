@@ -28,10 +28,10 @@ impl Leaf {
         ((self.get_index()+1) as f64 * self.total_bp()).ceil()
     }
     
-    pub fn prop(&self, pos: i32) -> f32 {
+    pub fn prop(&self, pos: f64) -> f32 {
         let mul = self.total_bp();
         let start_leaf = (self.hindex as f64 * mul) as f64;
-        ((pos as f64-start_leaf)/mul) as f32
+        ((pos-start_leaf)/mul) as f32
     }
 }
 

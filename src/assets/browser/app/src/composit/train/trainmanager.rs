@@ -120,6 +120,7 @@ impl TrainManager {
             self.transition_start = Some(t);
             self.transition_prop = Some(0.);
             let scale = self.transition_train.as_ref().unwrap().get_scale().clone();
+            console!("transition to {:?}",scale);
             for i in 0..OUTER_TRAINS {
                 let out_scale = scale.next_scale(1-i as i32);
                 self.outer_train[i] = self.make_train(cm,out_scale,true);

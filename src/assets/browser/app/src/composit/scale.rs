@@ -71,6 +71,6 @@ impl Scale {
 
 impl fmt::Debug for Scale {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f,"sc{}",self.index)
+        write!(f,"sc{}",self.letter())
     }
 }

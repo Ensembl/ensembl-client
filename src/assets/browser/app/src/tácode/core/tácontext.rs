@@ -3,16 +3,17 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use composit::{ Leaf, SourceResponse };
+use drawing::DrawingSpec;
 
 #[derive(Clone)]
 pub enum TáTask {
-    MakeShapes(Leaf,SourceResponse)
+    MakeShapes(Leaf,SourceResponse,Vec<DrawingSpec>)
 }
 
 impl TáTask {
     pub fn finished(&mut self) {
         match self {
-            TáTask::MakeShapes(_,sr) => {
+            TáTask::MakeShapes(_,sr,_) => {
                 sr.done(200); // XXX not 200
             },
             _ => ()

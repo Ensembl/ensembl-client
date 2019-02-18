@@ -127,9 +127,8 @@ impl Interp {
             }
             let status = {
                 let mut ip = self.procs.get_mut(*pid).unwrap();
-                ip.run_proc(&mut self.env,self.config.cycles_per_run);
                 ip.status()
-            };            
+            };
             if status.state != ProcessState::Running {
                 self.unq.insert(*pid);
             }
