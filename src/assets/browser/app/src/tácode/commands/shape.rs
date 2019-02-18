@@ -1,4 +1,3 @@
-use std::iter::Cycle;
 use std::sync::{ Arc, Mutex };
 
 use tánaiste::{

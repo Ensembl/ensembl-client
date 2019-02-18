@@ -52,16 +52,28 @@ impl TáXferConsumer {
 
 impl XferConsumer for TáXferConsumer {
     fn consume(&mut self, mut xf: XferResponse) {
-        let b = self.tc.assemble(&xf.get_code());
-        let pid = self.tc.run(&b.ok().unwrap()).ok().unwrap();
-        self.tc.context().set_task(pid,TáTask::MakeShapes(
-            self.leaf.clone(),self.lc.clone(),
-            Vec::<DrawingSpec>::new()));
-        let len = xf.len();
-        for reg in 0..len {
-            self.tc.set_reg(pid,reg+1,xf.take_data(reg));
-        }
-        self.tc.start(pid);
+        match self.tc.assemble(&xf.get_code()) {
+            Ok(code) => {
+                match self.tc.run(&code) {
+                    Ok(pid) => {
+                        self.tc.context().set_task(pid,TáTask::MakeShapes(
+                            self.leaf.clone(),self.lc.clone(),
+                            Vec::<DrawingSpec>::new()));
+                        let len = xf.len();
+                        for reg in 0..len {
+                            self.tc.set_reg(pid,reg+1,xf.take_data(reg));
+                        }
+                        self.tc.start(pid);         
+                    },
+                    Err(error) => {
+                        console!("error running: {:?}",error);
+                    }
+                }
+            },
+            Err(err) => {
+                console!("error assembling: {:?}",err);
+            }
+        }        
     }
     
     fn abandon(&mut self) {

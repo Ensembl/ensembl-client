@@ -34,6 +34,8 @@ fn abutt(starts: &Vec<f64>) -> (Vec<f64>, Vec<f64>) {
 pub struct Abutt(usize,usize);
 // extent #start/end
 pub struct Extent(TáContext,usize); 
+// scale #out
+pub struct Scale(TáContext,usize);
 
 impl Command for Abutt {
     fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
@@ -63,8 +65,23 @@ impl Command for Extent {
     }
 }
 
+impl Command for Scale {
+    fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        let pid = proc.lock().unwrap().get_pid().unwrap();
+        self.0.with_task(pid,|task| {
+            if let TáTask::MakeShapes(leaf,lc,_) = task {
+                let scale = leaf.get_scale().get_index()+13;
+                regs.set(self.1,Value::new_from_float(vec![scale as f64]));
+            }
+        });
+        return 1;
+    }
+}
+
 pub struct AbuttI();
 pub struct ExtentI(pub TáContext);
+pub struct ScaleI(pub TáContext);
 
 impl Instruction for AbuttI {
     fn signature(&self) -> Signature { Signature::new("abutt","rr") }
@@ -77,5 +94,12 @@ impl Instruction for ExtentI {
     fn signature(&self) -> Signature { Signature::new("extent","r") }
     fn build(&self, args: &Vec<Argument>) -> Box<Command> {
         Box::new(Extent(self.0.clone(),args[0].reg()))
+    }
+}
+
+impl Instruction for ScaleI {
+    fn signature(&self) -> Signature { Signature::new("scale","r") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(Scale(self.0.clone(),args[0].reg()))
     }
 }

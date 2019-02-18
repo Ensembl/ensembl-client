@@ -54,6 +54,39 @@ fn index(data: &Vec<f64>, palette: &Vec<f64>) -> Vec<f64> {
     out
 }
 
+fn runs(starts: &Vec<f64>, lens: &Vec<f64>) -> Vec<f64> {
+    let mut out = Vec::<f64>::new();
+    let mut len_iter = lens.iter().cycle();
+    for v in starts.iter() {
+        let len = len_iter.next().unwrap();
+        for i in 0..*len as usize {
+            out.push(v+i as f64);
+        }
+    }
+    out
+}
+
+fn runs_of(lens: &Vec<f64>, values: &Vec<f64>) -> Vec<f64> {
+    let mut out = Vec::<f64>::new();
+    let mut val_iter = values.iter().cycle();
+    for len in lens.iter() {
+        let val = val_iter.next().unwrap();
+        for _ in 0..*len as usize {
+            out.push(*val);
+        }
+    }
+    out
+}
+
+fn get(data: &Vec<f64>, indexes: &Vec<f64>) -> Vec<f64> {
+    let mut out = Vec::<f64>::new();
+    for i in indexes.iter() {
+        let i = *i as usize % data.len();
+        out.push(data[i]);
+    }
+    out
+}
+
 // not #target, #source
 pub struct Not(usize,usize);
 // elide #target, #bools, #stride
@@ -64,6 +97,12 @@ pub struct Pick(usize,usize,usize,usize);
 pub struct All(usize,usize);
 // index #out, #source, #palette
 pub struct Index(usize,usize,usize);
+// runs #out, #start, #len
+pub struct Runs(usize,usize,usize);
+// runsof #out, #len, #values
+pub struct RunsOf(usize,usize,usize);
+// get #out, #in, #index
+pub struct Get(usize,usize,usize);
 
 impl Command for Elide {
     fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
@@ -105,6 +144,32 @@ impl Command for Pick {
     }
 }
 
+impl Command for Runs {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        regs.get(self.1).as_floats(|start| {
+            regs.get(self.2).as_floats(|len| {
+                let data = runs(start,len);
+                regs.set(self.0,Value::new_from_float(data));
+            });
+        });                   
+        return 1;
+    }
+}
+
+impl Command for RunsOf {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        regs.get(self.1).as_floats(|lens| {
+            regs.get(self.2).as_floats(|values| {
+                let data = runs_of(lens,values);
+                regs.set(self.0,Value::new_from_float(data));
+            });
+        });                   
+        return 1;
+    }
+}
+
 impl Command for All {
     fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
         let regs = rt.registers();
@@ -130,11 +195,26 @@ impl Command for Index {
     }
 }
 
+impl Command for Get {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        regs.get(self.1).as_floats(|data| {
+            regs.get(self.2).as_floats(|index| {
+                regs.set(self.0,Value::new_from_float(get(data,index)))
+            });
+        });
+        return 1;
+    }
+}
+
 pub struct ElideI();
 pub struct NotI();
 pub struct PickI();
 pub struct AllI();
 pub struct IndexI();
+pub struct RunsI();
+pub struct RunsOfI();
+pub struct GetI();
 
 impl Instruction for ElideI {
     fn signature(&self) -> Signature { Signature::new("elide","rrr") }
@@ -168,5 +248,26 @@ impl Instruction for IndexI {
     fn signature(&self) -> Signature { Signature::new("index","rrr") }
     fn build(&self, args: &Vec<Argument>) -> Box<Command> {
         Box::new(Index(args[0].reg(),args[1].reg(),args[2].reg()))
+    }
+}
+
+impl Instruction for RunsI {
+    fn signature(&self) -> Signature { Signature::new("runs","rrr") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(Runs(args[0].reg(),args[1].reg(),args[2].reg()))
+    }
+}
+
+impl Instruction for RunsOfI {
+    fn signature(&self) -> Signature { Signature::new("runsof","rrr") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(RunsOf(args[0].reg(),args[1].reg(),args[2].reg()))
+    }
+}
+
+impl Instruction for GetI {
+    fn signature(&self) -> Signature { Signature::new("get","rrr") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(Get(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
