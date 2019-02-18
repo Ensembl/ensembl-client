@@ -69,16 +69,28 @@ tácode:
     contig--QQ:
         code: |
             extent #6
-            all #1, #6
+            all #7, #6
             const #6, [-0.45]
-            add #1, #1, #6
+            add #7, #7, #6
             const #2, [0.9]
             const #3, [230]
             const #4, [12]
             const #5, [192,192,192]
             const #6, [1,1]
-            shape #6, #1, #2, #3, #4, #5
-        data: []
+            shape #6, #7, #2, #3, #4, #5
+            const #7, "ACGT"
+            const #8, [1,1,1,1]
+            text #9, #7, #8
+            index #1, #1, #7
+            const #10, [1]
+            pick #9, #1, #9, #10
+            const #11, [3,1]
+            extent #6
+            all #7, #6  
+            const #3, [239]          
+            shape #11, #7, #0, #3, #0, #9       
+        data:
+            - GACATATTAC
 
     contig--RZ:
         code: |
