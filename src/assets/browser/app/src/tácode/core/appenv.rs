@@ -22,7 +22,7 @@ impl Environment for AppEnv {
     
     fn started(&mut self, _pid: usize) {}
     
-    fn finished(&mut self, pid: usize, state: ProcessState, codes: Vec<f64>, string: String) {
+    fn finished(&mut self, pid: usize, _state: ProcessState, _codes: Vec<f64>, _string: String) {
         self.tc.finished(pid);
     }
 }

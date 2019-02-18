@@ -6,7 +6,7 @@ tácode:
             const #5, [255,120,0,120,255,0]
             const #7, [3]
             pick #5, #3, #5, #7
-            strect #1, #2, #6, #4, #5
+            shape #0, #1, #2, #6, #4, #5
         data:
             - [10000,17000,20000,30000,40000]
             - [4000,1000,6000]
@@ -27,7 +27,7 @@ tácode:
             const #8, [3]       ; #8 = pick stride
             const #6, [192,192,192,128,128,128] ; #6 = palette
             pick #6, #3, #6, #8 ; #6 = colour list
-            strect #1, #7, #4, #5, #6
+            shape #0, #1, #7, #4, #5, #6
         data:
             - flip:
                 seed: 8
@@ -35,7 +35,7 @@ tácode:
                 sense: 0.05
                 shimmer: true
 
-    contig--JN:
+    contig--JO:
         code: |
             abutt #3, #1
             not #2, #2
@@ -45,9 +45,60 @@ tácode:
             const #4, [239]
             const #5, [6]
             const #6, [192,192,192,128,128,128]
-            strect #1, #3, #4, #5, #6
+            shape #0, #1, #3, #4, #5, #6
         data:
             - flip:
                 seed: 8
                 spacing: 5000
                 sense: 0.05
+
+    contig--PP:
+        code: |
+            extent #6
+            all #1, #6
+            const #6, [-0.45]
+            add #1, #1, #6
+            const #2, [0.9]
+            const #3, [230]
+            const #4, [6]
+            const #5, [192,192,192]
+            const #6, [1,1]
+            shape #6, #1, #2, #3, #4, #5
+        data: []
+
+    contig--QQ:
+        code: |
+            extent #6
+            all #1, #6
+            const #6, [-0.45]
+            add #1, #1, #6
+            const #2, [0.9]
+            const #3, [230]
+            const #4, [12]
+            const #5, [192,192,192]
+            const #6, [1,1]
+            shape #6, #1, #2, #3, #4, #5
+        data: []
+
+    contig--RZ:
+        code: |
+            extent #6
+            all #7, #6
+            const #6, [-0.45]
+            add #7, #7, #6
+            const #2, [0.9]
+            const #3, [230]
+            const #4, [24]
+            const #5, [192,192,192]
+            const #6, [1,1]
+            shape #6, #7, #2, #3, #4, #5
+            const #7, "ACGT"
+            const #8, [1,1,1,1]
+            text #9, #7, #8
+            index #1, #1, #7
+            dprint #1
+            const #10, [1]
+            pick #9, #1, #9, #10
+            cprint #9
+        data:
+            - GACATATTAC

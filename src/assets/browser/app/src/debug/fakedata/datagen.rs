@@ -9,7 +9,6 @@ use tánaiste::Value;
 use super::fakedata::FakeDataGenerator;
 
 const RNG_BLOCK_SIZE : i32 = 1000000;
-const MAX_LEN : usize = 10000;
 
 fn burst_u32(data: u32) -> [u8;4] {
     [
@@ -114,7 +113,7 @@ impl FakeDataGenerator for RngFlipBool {
         let end = leaf.get_end() as i32 + 20*self.rnd_size;
         let out = rng_prob(self.kind,start,end,self.rnd_size,self.sense_p);
         let starts = out.iter().map(|x| x.0 as f64).collect();
-        let elides = out.iter().map(|x| if x.1 {1.} else {0.}).collect();
+        let elides = out.iter().map(|x| floatify(x.1)).collect();
         vec! {
             Value::new_from_float(starts),
             Value::new_from_float(elides)
@@ -122,38 +121,6 @@ impl FakeDataGenerator for RngFlipBool {
     }
 }
 
-/*
-        let steps = 1000.;
-        let bp_inc = leaf.total_bp() / steps as f64;
-        let mut buckets_end : Vec<bool> = repeat(false).take(steps as usize).collect();
-        let mut buckets_num : Vec<usize> = repeat(0).take(steps as usize).collect();
-        let mut prev_pos = 0;
-        for (pos,sense) in starts_rng.iter() {
-            let b_start = (prop(leaf,prev_pos) * steps).floor().max(0.) as usize;
-            let b_end = (prop(leaf,*pos) * steps).ceil().min(steps-1.) as usize;
-            for b in b_start..b_end {
-                buckets_end[b] = *sense;
-                buckets_num[b] += 1;
-            }
-            prev_pos = *pos;
-        }
-        for b in 0..steps as usize {
-            let sense = buckets_end[b];
-            let ops = if buckets_num[b] > 1 {
-                vec! { (0.,0.5,!sense),(0.5,1.,sense) }
-            } else if buckets_num[b] == 1 {
-                vec! { (0.,1.,sense) }
-            } else { vec!{} };
-            for (i,(start,end,sense)) in ops.iter().enumerate() {
-                let c = if *sense { 192 } else { 128 }; 
-                closure_add(lc,&stretch_rectangle(
-                    &area(cleaf((b as f32+start)/steps,y-3),
-                          cleaf((b as f32+end)/steps,y+3)),
-                    &ColourSpec::Colour(Colour(c,c,c))));
-            }
-        }
-    }
-*/
 const STEPS : usize = 1000;
 fn shimmer(val: Vec<(i32,bool)>, leaf: &Leaf) -> Vec<(i32,bool,bool)> {
     let mut out = Vec::<(i32,bool,bool)>::new();
@@ -163,16 +130,16 @@ fn shimmer(val: Vec<(i32,bool)>, leaf: &Leaf) -> Vec<(i32,bool,bool)> {
     let mut buckets_num : Vec<usize> = repeat(0).take(STEPS).collect();
     /* populate buckets */
     let mut sense = false;
-    let mut prev_pos = 0;
+    let mut prev_pos = 0.;
     for (pos,elide) in val.iter() {
         if *elide { continue; }
         let b_start = (leaf.prop(prev_pos) * STEPS as f32).floor().max(0.) as usize;
-        let b_end = (leaf.prop(*pos) * STEPS as f32).ceil().min(STEPS as f32-1.) as usize;
+        let b_end = (leaf.prop(*pos as f64) * STEPS as f32).ceil().min(STEPS as f32-1.) as usize;
         for b in b_start..b_end {
             buckets_end[b] = sense;
             buckets_num[b] += 1;
         }
-        prev_pos = *pos;
+        prev_pos = *pos as f64;
         sense = !sense;
     }
     /* turn into shimmer track */
@@ -215,8 +182,8 @@ impl FakeDataGenerator for RngFlipShimmer {
         let flips = rng_prob(self.kind,start,end,self.rnd_size,self.sense_p);
         let out = shimmer(flips,leaf);
         let starts = out.iter().map(|x| x.0 as f64).collect();
-        let elides = out.iter().map(|x| if x.1 {1.} else {0.}).collect();
-        let colours = out.iter().map(|x| if x.2 {1.} else {0.}).collect();
+        let elides = out.iter().map(|x| floatify(x.1)).collect();
+        let colours = out.iter().map(|x| floatify(x.2)).collect();
         vec! {
             Value::new_from_float(starts),
             Value::new_from_float(elides),
