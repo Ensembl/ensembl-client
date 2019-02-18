@@ -35,8 +35,8 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   };
 
   const getTrackClass = (trackName: string): string => {
-    if (trackName === 'main') {
-      return 'main';
+    if (trackName === 'gene') {
+      return 'gene';
     }
 
     if (props.currentTrack === trackName) {
