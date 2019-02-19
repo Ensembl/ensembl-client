@@ -41,9 +41,10 @@ impl ComponentManager {
     }
     
     pub fn make_carriages(&mut self, leaf: Leaf) -> Vec<Carriage> {
-        let mut lcomps = Vec::<Carriage>::new();        
-        for (_k,c) in &self.components {
-            debug!("redraw","make_carriages {:?}",leaf);
+        let mut lcomps = Vec::<Carriage>::new();
+        debug!("redraw","make_carriages {:?}",leaf);
+        for (k,c) in &self.components {
+            debug!("redraw","make_carriages {:?} for {}",leaf,k);
             lcomps.push(c.make_carriage(&mut self.source_factory,&leaf));
         }
         lcomps

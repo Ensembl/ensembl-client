@@ -95,9 +95,11 @@ fn flipper(v: &Yaml) -> Box<FakeDataGenerator> {
 fn contig(v: &Yaml) -> Box<FakeDataGenerator> {
     let seed = hash_key_float(v,"seed").unwrap() as u8;
     let seed = [seed,0,0,0,0,0,0,0];
-    let len = hash_key_float(v,"len").unwrap();
+    let len = hash_key_float(v,"len").unwrap() as i32;
     let prop = hash_key_float(v,"prop").unwrap();
-    Box::new(RngContig::new(seed,len as i32,prop))
+    let seq = hash_key_bool(v,"seq");
+    let pad = hash_key_float(v,"pad").unwrap() as i32;
+    Box::new(RngContig::new(seed,pad,len,prop,seq))
 }
 
 fn make_data(out: &mut Vec<FakeValue>, e: &Yaml) {

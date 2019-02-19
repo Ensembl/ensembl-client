@@ -63,6 +63,9 @@ fn runs(starts: &Vec<f64>, lens: &Vec<f64>) -> Vec<f64> {
             out.push(v+i as f64);
         }
     }
+    if starts.len() > 2000 {
+        console!("RUNS! {}",starts.len());
+    }
     out
 }
 
