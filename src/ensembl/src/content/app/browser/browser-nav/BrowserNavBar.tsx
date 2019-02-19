@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, RefObject } from 'react';
 import { connect } from 'react-redux';
 
 import { browserNavConfig, BrowserNavItem } from '../browserConfig';
@@ -10,7 +10,6 @@ import { BrowserNavStates } from '../browserState';
 import BrowserNavIcon from './BrowserNavIcon';
 
 import styles from './BrowserNavBar.scss';
-import imageStyles from '../browser-image/BrowserImage.scss';
 
 type StateProps = {
   browserNavStates: BrowserNavStates;
@@ -18,16 +17,16 @@ type StateProps = {
 
 type DispatchProps = {};
 
-type OwnProps = {};
+type OwnProps = {
+  browserRef: RefObject<HTMLDivElement>;
+};
 
 type BrowserNavBarProps = StateProps & DispatchProps & OwnProps;
 
 export const BrowserNavBar: FunctionComponent<BrowserNavBarProps> = (
   props: BrowserNavBarProps
 ) => {
-  const browserCanvas = document.querySelector(
-    `.${imageStyles.browserStage}`
-  ) as HTMLElement;
+  const browserImageEl = props.browserRef.current as HTMLDivElement;
 
   return (
     <div className={styles.browserNavBar}>
@@ -36,7 +35,7 @@ export const BrowserNavBar: FunctionComponent<BrowserNavBarProps> = (
           <BrowserNavIcon
             key={item.name}
             browserNavItem={item}
-            browserCanvas={browserCanvas}
+            browserImageEl={browserImageEl}
             maxState={props.browserNavStates[index]}
           />
         ))}

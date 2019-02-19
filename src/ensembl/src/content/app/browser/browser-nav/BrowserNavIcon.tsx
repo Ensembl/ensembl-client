@@ -5,7 +5,7 @@ import { BrowserNavItem } from '../browserConfig';
 import iconStyles from './BrowserNavIcon.scss';
 
 type BrowserNavIconProps = {
-  browserCanvas: HTMLElement;
+  browserImageEl: HTMLDivElement;
   browserNavItem: BrowserNavItem;
   maxState: boolean;
 };
@@ -13,7 +13,7 @@ type BrowserNavIconProps = {
 export const BrowserNavIcon: FunctionComponent<BrowserNavIconProps> = (
   props: BrowserNavIconProps
 ) => {
-  const { browserNavItem, browserCanvas, maxState } = props;
+  const { browserImageEl, browserNavItem, maxState } = props;
   const { detail, icon } = browserNavItem;
 
   const navEvent = new CustomEvent('bpane', {
@@ -23,9 +23,9 @@ export const BrowserNavIcon: FunctionComponent<BrowserNavIconProps> = (
 
   const navigateBrowser = useCallback(() => {
     if (maxState === false) {
-      browserCanvas.dispatchEvent(navEvent);
+      browserImageEl.dispatchEvent(navEvent);
     }
-  }, [navEvent, browserCanvas]);
+  }, [navEvent, browserImageEl]);
 
   const iconUrl = maxState ? icon.off : icon.on;
 
