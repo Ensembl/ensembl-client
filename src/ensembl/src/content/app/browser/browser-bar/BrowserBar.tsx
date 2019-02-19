@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, RefObject } from 'react';
 import { connect } from 'react-redux';
 import ContentEditable from 'react-contenteditable';
 
@@ -10,6 +10,7 @@ import { RootState } from 'src/rootReducer';
 import { getBrowserNavOpened, getChrLocation } from '../browserSelectors';
 
 import styles from './BrowserBar.scss';
+import BrowserReset from '../browser-reset/BrowserReset';
 
 type StateProps = {
   browserNavOpened: boolean;
@@ -20,7 +21,9 @@ type DispatchProps = {
   toggleBrowserNav: () => void;
 };
 
-type OwnProps = {};
+type OwnProps = {
+  browserRef: RefObject<HTMLDivElement>;
+};
 
 type BrowserBarProps = StateProps & DispatchProps & OwnProps;
 
@@ -29,16 +32,13 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
 ) => {
   const { navigator, reset } = browserInfoConfig;
   const [chrCode, chrStart, chrEnd] = props.chrLocation;
+  const browserImageEl = props.browserRef.current as HTMLDivElement;
 
   return (
     <div className={styles.browserBar}>
       <div className={styles.browserInfo}>
         <dl className={styles.browserInfoLeft}>
-          <dd className={styles.resetButton}>
-            <button>
-              <img src={reset.icon.default} alt={reset.description} />
-            </button>
-          </dd>
+          <BrowserReset details={reset} browserImageEl={browserImageEl} />
           <dd className={styles.geneSymbol}>
             <label>Gene</label>
             <span className={styles.value}>BRAC2</span>
