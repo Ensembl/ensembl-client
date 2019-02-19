@@ -13,5 +13,6 @@ pub use self::op::{ BinOpI, BinOpType };
 pub use self::shape::{ ShapeI };
 pub use self::text::{ TextI };
 pub use self::twiddle::{
-    ElideI, NotI, PickI, AllI, IndexI, RunsI, RunsOfI, GetI
+    ElideI, NotI, PickI, AllI, IndexI, RunsI, RunsOfI, GetI, MergeI,
+    AccNI
 };

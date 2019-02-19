@@ -4,7 +4,7 @@ use tácode::core::TáContext;
 use tácode::commands::{
     AppGetI, CPrintI, DPrintI, ShapeI, AbuttI, ElideI, NotI, PickI,
     ExtentI, AllI, BinOpI, BinOpType, TextI, IndexI, RunsI, RunsOfI,
-    GetI,ScaleI
+    GetI, ScaleI, MergeI, AccNI
 };
 
 pub fn instruction_bundle_app(tc: &TáContext) -> InstructionBundle {
@@ -21,7 +21,11 @@ pub fn instruction_bundle_app(tc: &TáContext) -> InstructionBundle {
         Box::new(RunsI()),
         Box::new(RunsOfI()),
         Box::new(GetI()),
+        Box::new(MergeI()),
+        Box::new(AccNI()),
         Box::new(BinOpI(BinOpType::Add)),
+        Box::new(BinOpI(BinOpType::Mul)),
+        Box::new(BinOpI(BinOpType::Eq)),
         Box::new(TextI(tc.clone())),
         Box::new(AppGetI(tc.clone())),
         Box::new(ShapeI(tc.clone())),

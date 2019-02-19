@@ -1,3 +1,4 @@
+use std::iter::repeat;
 use std::sync::{ Arc, Mutex };
 
 use tánaiste::{
@@ -90,6 +91,32 @@ fn get(data: &Vec<f64>, indexes: &Vec<f64>) -> Vec<f64> {
     out
 }
 
+fn accn(data: &Vec<f64>, strides: &Vec<f64>) -> Vec<f64> {
+    let mut out = Vec::<f64>::new();
+    let mut acc = 0.;
+    if strides.len() > 0 {
+        let mut stride_iter = strides.iter().cycle();
+        let mut reset_dist = 0;
+        for v in data.iter() {
+            if reset_dist == 0 {
+                reset_dist = *stride_iter.next().unwrap() as u32;
+                acc = 0.;
+                if reset_dist == 0 { break; }
+            }
+            acc += v;
+            reset_dist -= 1;
+            out.push(acc);
+        }
+    } else {
+        for v in data.iter() {
+            acc += v;
+            out.push(acc);
+        }
+    }
+    out
+}
+
+
 // not #target, #source
 pub struct Not(usize,usize);
 // elide #target, #bools, #stride
@@ -106,6 +133,10 @@ pub struct Runs(usize,usize,usize);
 pub struct RunsOf(usize,usize,usize);
 // get #out, #in, #index
 pub struct Get(usize,usize,usize);
+// merge #out, #select, #in0, in1, ...
+pub struct Merge(usize,usize,Vec<usize>);
+// accn #out, #parts, #strides
+pub struct AccN(usize,usize,usize);
 
 impl Command for Elide {
     fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
@@ -210,6 +241,40 @@ impl Command for Get {
     }
 }
 
+impl Command for Merge {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        regs.get(self.1).as_floats(|data| {
+            let mut out = Vec::<f64>::new();
+            let mut index : Vec<usize> = repeat(0).take(self.2.len()).collect();
+            for x in data.iter() {
+                let reg_idx = (*x as usize) % self.2.len();
+                let reg_num = self.2[reg_idx];
+                let v = regs.get(reg_num).as_floats(|values| {
+                    values[index[reg_idx] % values.len()]
+                });
+                index[reg_idx] += 1;
+                out.push(v);
+            }
+            regs.set(self.0,Value::new_from_float(out));
+        });
+        return 1;
+    }
+}
+
+impl Command for AccN {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        regs.get(self.1).as_floats(|data| {
+            regs.get(self.2).as_floats(|strides| {
+                regs.set(self.0,Value::new_from_float(accn(data,strides)));
+            });
+        });
+        return 1;
+    }
+
+}
+
 pub struct ElideI();
 pub struct NotI();
 pub struct PickI();
@@ -218,6 +283,8 @@ pub struct IndexI();
 pub struct RunsI();
 pub struct RunsOfI();
 pub struct GetI();
+pub struct MergeI();
+pub struct AccNI();
 
 impl Instruction for ElideI {
     fn signature(&self) -> Signature { Signature::new("elide","rrr") }
@@ -272,5 +339,24 @@ impl Instruction for GetI {
     fn signature(&self) -> Signature { Signature::new("get","rrr") }
     fn build(&self, args: &Vec<Argument>) -> Box<Command> {
         Box::new(Get(args[0].reg(),args[1].reg(),args[2].reg()))
+    }
+}
+
+impl Instruction for MergeI {
+    fn signature(&self) -> Signature { Signature::new("merge","rrr+") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        let mut rest = args.clone();
+        rest.remove(0);
+        rest.remove(0);
+        let rest = rest.iter().map(|x| x.reg()).collect();
+        console!("merge {:?}",args[1].reg());
+        Box::new(Merge(args[0].reg(),args[1].reg(),rest))
+    }
+}
+
+impl Instruction for AccNI {
+    fn signature(&self) -> Signature { Signature::new("accn","rrr") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(AccN(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }

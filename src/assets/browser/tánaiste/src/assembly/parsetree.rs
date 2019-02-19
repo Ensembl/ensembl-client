@@ -28,28 +28,51 @@ impl Argument {
 }
 
 #[derive(Clone,Debug,PartialEq)]
-pub enum ArgumentType {
+pub enum SimpleArgumentType {
     Reg,
     Str,
     Floats,
     Const
 }
 
+#[derive(Clone,Debug,PartialEq)]
+pub enum ArgumentType {
+    One(SimpleArgumentType),
+    Many(SimpleArgumentType)
+}
+
+impl SimpleArgumentType {
+    fn from_sig(c: char) -> Option<SimpleArgumentType> {
+        match c {
+            'r' => Some(SimpleArgumentType::Reg),
+            's' => Some(SimpleArgumentType::Str),
+            'f' => Some(SimpleArgumentType::Floats),
+            'c' => Some(SimpleArgumentType::Const),
+            _ => None
+        }
+    }
+}
+
 pub struct Signature(pub String,pub Vec<ArgumentType>);
 
 impl Signature {
     pub fn new(name: &str, args_s: &str) -> Signature {
+        let mut args_in = args_s.to_string();
         let mut args = Vec::<ArgumentType>::new();
-        for c in args_s.chars() {
-            let v = match c {
-                'r' => Some(ArgumentType::Reg),
-                's' => Some(ArgumentType::Str),
-                'f' => Some(ArgumentType::Floats),
-                'c' => Some(ArgumentType::Const),
-                _ => None
-            };
-            if let Some(v) = v { args.push(v); }
+        let mut more = None;
+        if args_in.ends_with("+") {
+            more = args_in.chars().rev().nth(1);
+            let b = args_in.len()-2;
+            args_in.split_off(b);
         }
+        for c in args_in.chars() {
+            let v = ArgumentType::One(SimpleArgumentType::from_sig(c).unwrap());
+            args.push(v);
+        }
+        if let Some(c) = more {
+            let v = ArgumentType::Many(SimpleArgumentType::from_sig(c).unwrap());
+            args.push(v);
+        }        
         Signature(name.to_string(),args)
     }
 }
