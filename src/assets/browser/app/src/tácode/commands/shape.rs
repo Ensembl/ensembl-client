@@ -7,8 +7,8 @@ use tánaiste::{
 use composit::{ Leaf, SourceResponse };
 use drawing::{ DrawingSpec };
 use shape::{
-    ColourSpec, tape_rectangle, tape_texture, stretch_rectangle,
-    stretch_box, pin_rectangle, pin_texture
+    ColourSpec, stretch_rectangle, stretch_box, pin_rectangle,
+    pin_texture
 };
 use tácode::core::{ TáContext, TáTask };
 use types::{ Colour, cleaf, Dot, area, area_size, cpixel, Rect, A_MIDDLE };

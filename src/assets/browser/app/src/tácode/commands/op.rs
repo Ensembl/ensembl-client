@@ -6,7 +6,6 @@ use tánaiste::{
 };
 
 use composit::{ Leaf, SourceResponse };
-use shape::{ ColourSpec, tape_rectangle, tape_texture, stretch_rectangle };
 
 #[derive(Clone)]
 pub enum BinOpType {
