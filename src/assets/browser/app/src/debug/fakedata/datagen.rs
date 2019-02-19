@@ -3,6 +3,7 @@ use std::iter::repeat;
 use rand::Rng;
 use rand::rngs::SmallRng;
 use rand::SeedableRng;
+use rand::seq::SliceRandom;
 
 use composit::Leaf;
 use tánaiste::Value;
@@ -62,6 +63,27 @@ pub fn rng_at<F,G>(kind: [u8;8], start: i32, end: i32, rnd_size: i32,
     out
 }
 
+pub fn rng_seq(kind: [u8;8], start: i32, end: i32, subtype: u32) -> String {
+    let mut out = String::new();
+    let start_block = (start as f32/RNG_BLOCK_SIZE as f32).floor() as i32;
+    let end_block = (end as f32/RNG_BLOCK_SIZE as f32).ceil() as i32;
+    for block in start_block..(end_block+1) {
+        let mut rng = generator(kind,subtype,block);
+        let mut pos = block * RNG_BLOCK_SIZE;
+        let mut block_end_pos = (block+1) * RNG_BLOCK_SIZE;
+        while pos < start && pos < block_end_pos {
+            ["A","C","G","T"].choose(&mut rng);
+            pos += 1;
+        }
+        while pos < end && pos < block_end_pos {
+            out.push_str(&["A","C","G","T"].choose(&mut rng).unwrap());
+            pos += 1;
+        }
+    }
+    out
+}
+
+
 pub fn rng_prob(kind: [u8;8], start: i32, end: i32, rnd_size: i32, p: f64) -> Vec<(i32,bool)> {
     rng_at(kind,start,end,rnd_size,0,|out,rng,in_| {
         out.push((in_,rng.gen_bool(p)))
@@ -80,7 +102,7 @@ pub fn rng_contig(kind: [u8;8], start: i32, end: i32, rnd_size: i32, end_p: f64)
     let start = start.max(0);
     let out = rng_at(kind,start,end,rnd_size,0,|out,rng,in_| {
         if let Some(prev) = prev_val {
-            if in_ > prev {
+            if in_ > prev && prev > 0 {
                 let delta = ((in_-prev) as f64 *end_p) as i32;
                 let omdelta = ((in_-prev) as f64 *(1.-end_p)) as i32;            
                 let prop = rng.gen_range(0,delta)+omdelta;
@@ -145,27 +167,60 @@ impl FakeDataGenerator for RngFlipBool {
 pub struct RngContig {
     kind: [u8;8],
     rnd_size: i32,
-    prop_fill: f64
+    pad: i32,
+    prop_fill: f64,
+    seq: bool
 }
 
 impl RngContig {
-    pub fn new(kind: [u8;8], rnd_size: i32, prop_fill: f64) -> RngContig {
-        RngContig { kind, rnd_size, prop_fill }
+    pub fn new(kind: [u8;8], pad: i32, rnd_size: i32, prop_fill: f64, seq: bool) -> RngContig {
+        RngContig { kind, rnd_size, prop_fill, seq, pad }
     }
 }
 
 impl FakeDataGenerator for RngContig {
     fn generate(&self, leaf: &Leaf) -> Vec<Value> {
-        let start = leaf.get_start() as i32 - 20*self.rnd_size;
-        let end = leaf.get_end() as i32 + 20*self.rnd_size;
-        let out = rng_contig(self.kind,start,end,self.rnd_size,self.prop_fill);
-        let starts = out.iter().map(|x| x.0 as f64).collect();
-        let ends = out.iter().map(|x| x.1 as f64).collect();
-        let senses = out.iter().map(|x| floatify(x.2)).collect();
-        vec! {
-            Value::new_from_float(starts),
-            Value::new_from_float(ends),
-            Value::new_from_float(senses),
+        let start = leaf.get_start() as i32;
+        let end = leaf.get_end() as i32;
+        let out = rng_contig(self.kind,start-self.pad,end+self.pad,self.rnd_size,self.prop_fill);
+        let starts : Vec<f64> = out.iter().map(|x| x.0 as f64).collect();
+        let lens : Vec<f64> = out.iter().map(|x| x.1 as f64).collect();
+        if self.seq {
+            let mut starts_out = Vec::<f64>::new();
+            let mut lens_out = Vec::<f64>::new();
+            let out_seq = {
+                let seq = rng_seq(self.kind,start,end,2);
+                let mut out_seq = String::new();
+                let mut len_iter = lens.iter();
+                for s in &starts {
+                    let mut part_start = *s as i32-start;
+                    let mut part_len = *len_iter.next().unwrap() as i32;
+                    if part_start < 0 {
+                        part_len += part_start;
+                        part_start = 0;
+                    }
+                    let part_len = part_len.min(seq.len() as i32-part_start);
+                    if part_len > 0 {
+                        let (a,b) = (part_start as usize,part_len as usize);                
+                        out_seq.push_str(&seq[a..a+b]);
+                        starts_out.push((start+part_start) as f64);
+                        lens_out.push(b as f64);
+                    }
+                }
+                out_seq
+            };
+            vec! {
+                Value::new_from_string(out_seq),
+                Value::new_from_float(starts_out),
+                Value::new_from_float(lens_out),
+            }
+        } else {
+            let senses = out.iter().map(|x| floatify(x.2)).collect();
+            vec! {
+                Value::new_from_float(starts),
+                Value::new_from_float(lens),
+                Value::new_from_float(senses),
+            }
         }
     }
 }

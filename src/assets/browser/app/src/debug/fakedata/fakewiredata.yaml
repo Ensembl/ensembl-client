@@ -41,7 +41,7 @@ tácode:
                 shimmer: true
 
     # actual contigs
-    contig--JO:
+    contig--JP:
         code: |
             ; #1 = starts
             ; #2 = lens
@@ -54,6 +54,7 @@ tácode:
                 seed: 8
                 len: 10000
                 prop: 0.9
+                pad: 20000
 
     # boxes without letters in
     contig--PP:
@@ -80,10 +81,7 @@ tácode:
                 seed: 8
                 len: 10000
                 prop: 0.9
-        
-#            - [ 9990,10090]
-#            - [   27,  200]
-#            - [    1,    0]
+                pad: 10
  
     # boxes with letters in
     contig--QS:
@@ -129,12 +127,14 @@ tácode:
             const #13, [239]   ; #13 = letter y-start
             shape #11, #7, #0, #13, #0, #9 ; draw letter
         data:
-            - GACATATTAC
-            - [10000,10100]
-            - [    7,    3]
             - contig:
-                seq: true
                 seed: 8
                 len: 10000
                 prop: 0.9
-            
+                pad: 10
+                seq: true
+            - contig:
+                seed: 8
+                len: 10000
+                prop: 0.9
+                pad: 20000
