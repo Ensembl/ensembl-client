@@ -16,6 +16,7 @@ pub struct Train {
     ideal_flank: i32,
     middle_leaf: i64,
     preload: bool,
+    position_bp: Option<f64>
 }
 
 impl Train {
@@ -27,6 +28,7 @@ impl Train {
             middle_leaf: 0,
             carriages: CarriageSet::new(),
             stale: StaleCarriages::new(),
+            position_bp: None
         }
     }
         
@@ -41,6 +43,7 @@ impl Train {
     /* called when position changes, to update carriages */
     pub fn set_position(&mut self, position_bp: f64) {
         self.middle_leaf = (position_bp / self.scale.total_bp()).floor() as i64;
+        self.position_bp = Some(position_bp);
     }
     
     /* called when no-longer preload, so flanks should be expanded */
@@ -51,6 +54,10 @@ impl Train {
     /* called when zoom changes, to update flank */
     pub fn set_zoom(&mut self, bp_per_screen: f64) {
         self.ideal_flank = (bp_per_screen / self.scale.total_bp()) as i32;
+        /* reset middle leaf after zoom */
+        if let Some(pos) = self.position_bp {
+            self.set_position(pos);
+        }
     }
     
     /* add component to leaf */

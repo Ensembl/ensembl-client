@@ -20,8 +20,8 @@ fn exe_pos_event(app: &App, v: Dot<f64,f64>, prop: Option<f64>) {
     let v = app.with_stage(|s|
         Dot(s.pos_prop_bp_to_origin(v.0,prop),v.1)
     );
-    app.with_stage(|s| { s.set_pos_middle(&v); });
-    app.with_compo(|co| { co.set_position(v.0); });
+    let pos = app.with_stage(|s| { s.set_pos_middle(&v); s.get_pos_middle() });
+    app.with_compo(|co| { co.set_position(pos.0); });
 }
 
 fn exe_move_event(app: &App, v: Move<f64,f64>) {
@@ -40,6 +40,7 @@ fn exe_move_event(app: &App, v: Move<f64,f64>) {
 }
 
 fn exe_zoom_event(app: &App, z: f64, by: bool) {
+    let middle = app.with_stage(|s| s.get_pos_middle().0);
     let z = app.with_stage(|s| {
         if by {
             s.inc_zoom(z);
@@ -48,7 +49,7 @@ fn exe_zoom_event(app: &App, z: f64, by: bool) {
         }
         s.get_linear_zoom()
     });
-    app.with_compo(|co| { co.set_zoom(z); });
+    app.with_compo(|co| { co.set_zoom(z); co.set_position(middle); });
 }
 
 fn exe_resize(cg: &App, sz: Dot<i32,i32>) {
