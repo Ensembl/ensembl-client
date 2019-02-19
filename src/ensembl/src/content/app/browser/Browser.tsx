@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback } from 'react';
+import React, { FunctionComponent, useCallback, useRef } from 'react';
 import { connect } from 'react-redux';
 
 import BrowserBar from './browser-bar/BrowserBar';
@@ -37,6 +37,8 @@ type BrowserProps = StateProps & DispatchProps & OwnProps;
 export const Browser: FunctionComponent<BrowserProps> = (
   props: BrowserProps
 ) => {
+  const browserRef: React.RefObject<HTMLDivElement> = useRef(null);
+
   const closeTrack = useCallback(() => {
     if (props.drawerOpened === false) {
       return;
@@ -47,7 +49,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   return (
     <section className={styles.browser}>
-      <BrowserBar />
+      <BrowserBar browserRef={browserRef} />
       <div className={styles.browserInnerWrapper}>
         <div
           className={`${styles.browserImageWrapper} ${
@@ -55,10 +57,10 @@ export const Browser: FunctionComponent<BrowserProps> = (
           }`}
           onClick={closeTrack}
         >
-          {props.browserNavOpened && <BrowserNavBar />}
-          <BrowserImage />
+          {props.browserNavOpened && <BrowserNavBar browserRef={browserRef} />}
+          <BrowserImage browserRef={browserRef} />
         </div>
-        <TrackPanel />
+        <TrackPanel browserRef={browserRef} />
         {props.drawerOpened && <Drawer />}
       </div>
     </section>

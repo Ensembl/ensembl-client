@@ -1,11 +1,12 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, RefObject, useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import styles from './BrowserImage.scss';
 import { updateBrowserNavStates, updateChrLocation } from '../browserActions';
 import { BrowserNavStates, ChrLocation } from '../browserState';
 import { getBrowserNavOpened } from '../browserSelectors';
 import { RootState } from 'src/rootReducer';
+
+import styles from './BrowserImage.scss';
 
 type StateProps = {
   browserNavOpened: boolean;
@@ -16,7 +17,9 @@ type DispatchProps = {
   updateChrLocation: (chrLocation: ChrLocation) => void;
 };
 
-type OwnProps = {};
+type OwnProps = {
+  browserRef: RefObject<HTMLDivElement>;
+};
 
 type BrowserImageProps = StateProps & DispatchProps & OwnProps;
 
@@ -30,8 +33,6 @@ type BpaneOutEvent = Event & {
 export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   props: BrowserImageProps
 ) => {
-  const browserCanvas: React.RefObject<HTMLDivElement> = React.createRef();
-
   const listenBpaneOut = (event: Event) => {
     const bpaneOutEvent = event as BpaneOutEvent;
     const navIconStates = bpaneOutEvent.detail.bumper as BrowserNavStates;
@@ -49,8 +50,8 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   useEffect(() => {
     let currentEl: HTMLDivElement | null = null;
 
-    if (browserCanvas) {
-      currentEl = browserCanvas.current as HTMLDivElement;
+    if (props.browserRef) {
+      currentEl = props.browserRef.current as HTMLDivElement;
 
       activateIfPossible(currentEl as HTMLDivElement);
 
@@ -67,7 +68,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   return (
     <div
       className={getBrowserImageClasses(props.browserNavOpened)}
-      ref={browserCanvas}
+      ref={props.browserRef}
     />
   );
 };

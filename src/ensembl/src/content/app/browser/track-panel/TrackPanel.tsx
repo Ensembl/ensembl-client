@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, RefObject, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import TrackPanelBar from './track-panel-bar/TrackPanelBar';
@@ -38,7 +38,9 @@ type DispatchProps = {
   toggleTrackPanel: (trackPanelOpened?: boolean) => void;
 };
 
-type OwnProps = {};
+type OwnProps = {
+  browserRef: RefObject<HTMLDivElement>;
+};
 
 type TrackPanelProps = StateProps & DispatchProps & OwnProps;
 
@@ -64,6 +66,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
       />
       {props.trackPanelOpened ? (
         <TrackPanelList
+          browserRef={props.browserRef}
           currentTrack={props.currentTrack}
           launchbarExpanded={props.launchbarExpanded}
           toggleDrawer={props.toggleDrawer}

@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, RefObject } from 'react';
 
 import TrackPanelListItem from './TrackPanelListItem';
 import {
@@ -10,6 +10,7 @@ import {
 import styles from './TrackPanelList.scss';
 
 type TrackPanelListProps = {
+  browserRef: RefObject<HTMLDivElement>;
   currentTrack: string;
   launchbarExpanded: boolean;
   toggleDrawer: (drawerOpened: boolean) => void;
@@ -19,6 +20,8 @@ type TrackPanelListProps = {
 const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   props: TrackPanelListProps
 ) => {
+  const browserImageEl = props.browserRef.current as HTMLDivElement;
+
   const changeTrack = (currentTrack: string) => {
     const { toggleDrawer, updateTrack } = props;
 
@@ -48,10 +51,11 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
 
   const getTrackListItem = (track: TrackPanelItem) => (
     <TrackPanelListItem
-      key={track.id}
+      browserImageEl={browserImageEl}
       className={getTrackClass(track.name)}
-      track={track}
       changeTrack={changeTrack}
+      key={track.id}
+      track={track}
     >
       {track.childTrackList &&
         track.childTrackList.map((childTrack: TrackPanelItem) =>
