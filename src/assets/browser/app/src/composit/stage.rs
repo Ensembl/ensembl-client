@@ -30,7 +30,8 @@ impl Stage {
     }
 
     fn bumped(&self, direction: &Direction) -> bool {
-        self.pos.get_edge(direction).floor() == self.pos.get_limit_of_edge(direction).floor()
+        let mul : f64 = direction.1.into();
+        self.pos.get_edge(direction).floor() * mul >= self.pos.get_limit_of_edge(direction).floor() * mul
     }
 
     pub fn update_report(&self, report: &Report) {
