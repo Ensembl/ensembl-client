@@ -19,35 +19,39 @@ tácode:
     # contig heatmap
     contig--AI:
         code: |
-            ; #1 = endpoints
-            ; #2 = elided
-            ; #3 = colour
-            abutt #7, #1        ; #7 = sizes
-            not #2, #2          ; #2 = not-elided
-            const #4, [1]       ; #4 = elision stride
-            elide #1, #2, #4    ; #1 = elided endpoints
-            elide #7, #2, #4    ; #7 = elided sizes
-            const #4, [233]     ; #4 = y-offset
-            const #5, [6]       ; #5 = height
-            const #8, [3]       ; #8 = pick stride
-            const #6, [192,192,192,128,128,128] ; #6 = palette
-            pick #6, #3, #6, #8 ; #6 = colour list
-            shape #0, #1, #7, #4, #5, #6
+            ; #1 = starts
+            ; #2 = lens
+            ; #3 = colour box
+            const #4, [233]
+            const #5, [6]
+            const #6, [192,192,192,128,128,128]
+            const #7, [3]
+            pick #6, #3, #6, #7
+            shape #0, #1, #2, #4, #5, #6
         data:
-            - flip:
+            - contig:
                 seed: 8
-                spacing: 5000
-                sense: 0.05
+                len: 10000
+                prop: 0.9
+                pad: 20000
                 shimmer: true
+            #- flip:
+            #    seed: 8
+            #    spacing: 5000
+            #    sense: 0.05
+            #    shimmer: true
 
     # actual contigs
     contig--JP:
         code: |
             ; #1 = starts
             ; #2 = lens
+            ; #3 = colour box
             const #4, [233]
             const #5, [6]
             const #6, [192,192,192,128,128,128]
+            const #7, [3]
+            pick #6, #3, #6, #7
             shape #0, #1, #2, #4, #5, #6
         data:
             - contig:
@@ -131,7 +135,7 @@ tácode:
                 seed: 8
                 len: 10000
                 prop: 0.9
-                pad: 10
+                pad: 0
                 seq: true
             - contig:
                 seed: 8

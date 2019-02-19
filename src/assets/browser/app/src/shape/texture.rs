@@ -113,10 +113,12 @@ pub fn fix_texture(req: DrawingSpec, origin: &EPixel, offset: &CPixel, scale: &A
     texture(req, &TexturePosition::Fix(*origin), scale, offset, PTGeom::Fix)
 }
 
+#[allow(unused)]
 pub fn fixunderpage_texture(req: DrawingSpec, origin: &EPixel, offset: &CPixel, scale: &APixel) -> ShapeSpec {
     texture(req, &TexturePosition::Fix(*origin), scale, offset, PTGeom::FixUnderPage)
 }
 
+#[allow(unused)]
 pub fn fixundertape_texture(req: DrawingSpec, origin: &EPixel, offset: &CPixel, scale: &APixel) -> ShapeSpec {
     texture(req, &TexturePosition::Fix(*origin), scale, offset, PTGeom::FixUnderTape)
 }

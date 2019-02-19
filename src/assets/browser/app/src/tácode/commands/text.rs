@@ -34,6 +34,7 @@ fn texts(tx: &mut Vec<DrawingSpec>, strings: &String, lens: &Vec<f64>) -> Vec<f6
 pub struct Text(TáContext,usize,usize,usize);
 
 impl Command for Text {
+    #[allow(irrefutable_let_patterns)]
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {

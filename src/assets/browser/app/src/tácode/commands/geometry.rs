@@ -50,6 +50,7 @@ impl Command for Abutt {
 }
 
 impl Command for Extent {
+    #[allow(irrefutable_let_patterns)]
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
@@ -66,6 +67,7 @@ impl Command for Extent {
 }
 
 impl Command for Scale {
+    #[allow(irrefutable_let_patterns)]
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();

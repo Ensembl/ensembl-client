@@ -117,9 +117,10 @@ fn draw_pintexture(leaf: &mut Leaf, lc: &mut SourceResponse,
     let mut tx_iter = colour.iter().cycle();
     let mut pp_iter = pinpoint_iter(leaf,x_start,y_start);
     for x_start in x_start.iter() {
+        let pos = pp_iter.next().unwrap();
         let shape = pin_texture(
             tx[*tx_iter.next().unwrap() as usize].clone(),
-            &pp_iter.next().unwrap(),
+            &pos,
             &cpixel(0,0), // offset
             &cpixel(1,1).anchor(A_MIDDLE)
         );
