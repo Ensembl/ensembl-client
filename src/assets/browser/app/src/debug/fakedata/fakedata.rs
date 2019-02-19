@@ -6,7 +6,7 @@ use tánaiste::Value;
 
 use composit::{ Leaf, Scale };
 use data::{ XferRequest, XferResponse };
-use super::datagen::{ RngFlip, RngFlipBool, RngFlipShimmer, RngContig };
+use super::datagen::{ RngContig };
 
 lazy_static! {
     static ref FAKEDATA : &'static str = include_str!("fakewiredata.yaml");
@@ -37,10 +37,10 @@ fn to_float(val: &Yaml) -> Option<f64> {
         Yaml::Integer(ref v) => {
             return Some(*v as f64)
         },
-        Yaml::Real(ref v) => {
+        Yaml::Real(_) => {
             return val.as_f64()
         },
-        Yaml::String(ref v) => {
+        Yaml::String(_) => {
             return val.as_f64()
         },
         _ => ()
@@ -77,21 +77,6 @@ fn hash_key_bool(yaml: &Yaml, key: &str) -> bool {
     }
 }
 
-fn flipper(v: &Yaml) -> Box<FakeDataGenerator> {
-    let seed = hash_key_float(v,"seed").unwrap() as u8;
-    let spacing = hash_key_float(v,"spacing").unwrap();
-    let seed = [seed,0,0,0,0,0,0,0];    
-    if let Some(sense) = hash_key_float(v,"sense") {
-        if hash_key_bool(v,"shimmer") {
-            Box::new(RngFlipShimmer::new(seed,spacing as i32,sense))
-        } else {
-            Box::new(RngFlipBool::new(seed,spacing as i32,sense))
-        }
-    } else {
-        Box::new(RngFlip::new(seed,spacing as i32))
-    }
-}
-
 fn contig(v: &Yaml) -> Box<FakeDataGenerator> {
     let seed = hash_key_float(v,"seed").unwrap() as u8;
     let seed = [seed,0,0,0,0,0,0,0];
@@ -99,7 +84,8 @@ fn contig(v: &Yaml) -> Box<FakeDataGenerator> {
     let prop = hash_key_float(v,"prop").unwrap();
     let seq = hash_key_bool(v,"seq");
     let pad = hash_key_float(v,"pad").unwrap() as i32;
-    Box::new(RngContig::new(seed,pad,len,prop,seq))
+    let shimmer = hash_key_bool(v,"shimmer");
+    Box::new(RngContig::new(seed,pad,len,prop,seq,shimmer))
 }
 
 fn make_data(out: &mut Vec<FakeValue>, e: &Yaml) {
@@ -126,9 +112,6 @@ fn make_data(out: &mut Vec<FakeValue>, e: &Yaml) {
                                 }
                             }
                             out.push(FakeValue::Immediate(Value::new_from_bytes(val)));
-                        },
-                        "flip" => {
-                            out.push(FakeValue::Delayed(flipper(v)));
                         },
                         "contig" => {
                             out.push(FakeValue::Delayed(contig(v)));

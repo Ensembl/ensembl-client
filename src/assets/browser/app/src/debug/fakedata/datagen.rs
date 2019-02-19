@@ -83,19 +83,6 @@ pub fn rng_seq(kind: [u8;8], start: i32, end: i32, subtype: u32) -> String {
     out
 }
 
-
-pub fn rng_prob(kind: [u8;8], start: i32, end: i32, rnd_size: i32, p: f64) -> Vec<(i32,bool)> {
-    rng_at(kind,start,end,rnd_size,0,|out,rng,in_| {
-        out.push((in_,rng.gen_bool(p)))
-    })
-}
-
-pub fn rng_flip(kind: [u8;8], start: i32, end: i32, rnd_size: i32) -> Vec<i32> {
-    rng_at(kind,start,end,rnd_size,0,|out,_,in_| {
-        out.push(in_)
-    })
-}
-
 pub fn rng_contig(kind: [u8;8], start: i32, end: i32, rnd_size: i32, end_p: f64) -> Vec<(i32,i32,bool)> {
     let mut prev_val = None;
     let mut sense = false;
@@ -117,64 +104,18 @@ pub fn rng_contig(kind: [u8;8], start: i32, end: i32, rnd_size: i32, end_p: f64)
     out
 }
 
-pub struct RngFlip {
-    kind: [u8;8],
-    rnd_size: i32,
-}
-
-impl RngFlip {
-    pub fn new(kind: [u8;8], rnd_size: i32) -> RngFlip {
-        RngFlip { kind, rnd_size }
-    }
-}
-
-impl FakeDataGenerator for RngFlip {
-    fn generate(&self, leaf: &Leaf) -> Vec<Value> {
-        let start = leaf.get_start() as i32 - 20*self.rnd_size;
-        let end = leaf.get_end() as i32 + 20*self.rnd_size;
-        let out = rng_flip(self.kind,start,end,self.rnd_size);
-        let out = out.iter().map(|x| *x as f64).collect();
-        vec! { Value::new_from_float(out) }
-    }
-}
-
-pub struct RngFlipBool {
-    kind: [u8;8],
-    rnd_size: i32,
-    sense_p: f64
-}
-
-impl RngFlipBool {
-    pub fn new(kind: [u8;8], rnd_size: i32, sense_p: f64) -> RngFlipBool {
-        RngFlipBool { kind, rnd_size, sense_p }
-    }
-}
-
-impl FakeDataGenerator for RngFlipBool {
-    fn generate(&self, leaf: &Leaf) -> Vec<Value> {
-        let start = leaf.get_start() as i32 - 20*self.rnd_size;
-        let end = leaf.get_end() as i32 + 20*self.rnd_size;
-        let out = rng_prob(self.kind,start,end,self.rnd_size,self.sense_p);
-        let starts = out.iter().map(|x| x.0 as f64).collect();
-        let elides = out.iter().map(|x| floatify(x.1)).collect();
-        vec! {
-            Value::new_from_float(starts),
-            Value::new_from_float(elides)
-        }
-    }
-}
-
 pub struct RngContig {
     kind: [u8;8],
     rnd_size: i32,
     pad: i32,
     prop_fill: f64,
-    seq: bool
+    seq: bool,
+    shimmer: bool
 }
 
 impl RngContig {
-    pub fn new(kind: [u8;8], pad: i32, rnd_size: i32, prop_fill: f64, seq: bool) -> RngContig {
-        RngContig { kind, rnd_size, prop_fill, seq, pad }
+    pub fn new(kind: [u8;8], pad: i32, rnd_size: i32, prop_fill: f64, seq: bool, shimmer: bool) -> RngContig {
+        RngContig { kind, rnd_size, prop_fill, seq, pad, shimmer }
     }
 }
 
@@ -183,68 +124,76 @@ impl FakeDataGenerator for RngContig {
         let start = leaf.get_start() as i32;
         let end = leaf.get_end() as i32;
         let out = rng_contig(self.kind,start-self.pad,end+self.pad,self.rnd_size,self.prop_fill);
-        let starts : Vec<f64> = out.iter().map(|x| x.0 as f64).collect();
-        let lens : Vec<f64> = out.iter().map(|x| x.1 as f64).collect();
-        if self.seq {
-            let mut starts_out = Vec::<f64>::new();
-            let mut lens_out = Vec::<f64>::new();
-            let out_seq = {
-                let seq = rng_seq(self.kind,start,end,2);
-                let mut out_seq = String::new();
-                let mut len_iter = lens.iter();
-                for s in &starts {
-                    let mut part_start = *s as i32-start;
-                    let mut part_len = *len_iter.next().unwrap() as i32;
-                    if part_start < 0 {
-                        part_len += part_start;
-                        part_start = 0;
-                    }
-                    let part_len = part_len.min(seq.len() as i32-part_start);
-                    if part_len > 0 {
-                        let (a,b) = (part_start as usize,part_len as usize);                
-                        out_seq.push_str(&seq[a..a+b]);
-                        starts_out.push((start+part_start) as f64);
-                        lens_out.push(b as f64);
-                    }
-                }
-                out_seq
-            };
-            vec! {
-                Value::new_from_string(out_seq),
-                Value::new_from_float(starts_out),
-                Value::new_from_float(lens_out),
-            }
-        } else {
+        if self.shimmer {
+            let out = shimmer(&out,leaf);
+            let starts : Vec<f64> = out.iter().map(|x| x.0 as f64).collect();
+            let lens : Vec<f64> = out.iter().map(|x| x.1 as f64).collect();
             let senses = out.iter().map(|x| floatify(x.2)).collect();
             vec! {
                 Value::new_from_float(starts),
                 Value::new_from_float(lens),
                 Value::new_from_float(senses),
             }
+        } else {
+            let starts : Vec<f64> = out.iter().map(|x| x.0 as f64).collect();
+            let lens : Vec<f64> = out.iter().map(|x| x.1 as f64).collect();
+            if self.seq {
+                let mut starts_out = Vec::<f64>::new();
+                let mut lens_out = Vec::<f64>::new();
+                let out_seq = {
+                    let seq = rng_seq(self.kind,start,end,2);
+                    let mut out_seq = String::new();
+                    let mut len_iter = lens.iter();
+                    for s in &starts {
+                        let mut part_start = *s as i32-start;
+                        let mut part_len = *len_iter.next().unwrap() as i32;
+                        if part_start < 0 {
+                            part_len += part_start;
+                            part_start = 0;
+                        }
+                        let part_len = part_len.min(seq.len() as i32-part_start);
+                        if part_len > 0 {
+                            let (a,b) = (part_start as usize,part_len as usize);                
+                            out_seq.push_str(&seq[a..a+b]);
+                            starts_out.push((start+part_start) as f64);
+                            lens_out.push(b as f64);
+                        }
+                    }
+                    out_seq
+                };
+                vec! {
+                    Value::new_from_string(out_seq),
+                    Value::new_from_float(starts_out),
+                    Value::new_from_float(lens_out),
+                }
+            } else {
+                let senses = out.iter().map(|x| floatify(x.2)).collect();
+                vec! {
+                    Value::new_from_float(starts),
+                    Value::new_from_float(lens),
+                    Value::new_from_float(senses),
+                }
+            }
         }
     }
 }
 
 const STEPS : usize = 1000;
-fn shimmer(val: Vec<(i32,bool)>, leaf: &Leaf) -> Vec<(i32,bool,bool)> {
-    let mut out = Vec::<(i32,bool,bool)>::new();
+
+fn shimmer(in_: &Vec<(i32,i32,bool)>, leaf: &Leaf) -> Vec<(i32,i32,bool)> {
+    let mut out = Vec::<(i32,i32,bool)>::new();
     let step_bp = leaf.total_bp() / STEPS as f64;
     /* make buckets */
     let mut buckets_end : Vec<bool> = repeat(false).take(STEPS).collect();
     let mut buckets_num : Vec<usize> = repeat(0).take(STEPS).collect();
     /* populate buckets */
-    let mut sense = false;
-    let mut prev_pos = 0.;
-    for (pos,elide) in val.iter() {
-        if *elide { continue; }
-        let b_start = (leaf.prop(prev_pos) * STEPS as f32).floor().max(0.) as usize;
-        let b_end = (leaf.prop(*pos as f64) * STEPS as f32).ceil().min(STEPS as f32-1.) as usize;
+    for (pos,len,sense) in in_.iter() {
+        let b_start = (leaf.prop(*pos as f64) * STEPS as f32).floor().max(0.) as usize;
+        let b_end = (leaf.prop((*pos+len) as f64) * STEPS as f32).ceil().min(STEPS as f32-1.) as usize;
         for b in b_start..b_end {
-            buckets_end[b] = sense;
+            buckets_end[b] = *sense;
             buckets_num[b] += 1;
         }
-        prev_pos = *pos as f64;
-        sense = !sense;
     }
     /* turn into shimmer track */
     let leaf_start = leaf.get_start();
@@ -252,46 +201,20 @@ fn shimmer(val: Vec<(i32,bool)>, leaf: &Leaf) -> Vec<(i32,bool,bool)> {
         /* calc blocks neeed in step */
         let sense = buckets_end[b];
         let ops = if buckets_num[b] > 1 {
-            vec! { (0.,!sense,false),(0.5,sense,false) }
+            vec! { (0.,0.5,!sense),(0.5,1.,sense) }
         } else if buckets_num[b] == 1 {
-            vec! { (0.,sense,false) }
+            vec! { (0.,1.,sense) }
         } else {
-            vec! { (0.,sense,true) }
+            vec! {}
         };
         /* set down those blocks */
-        for (start_p,sense,elide) in ops.iter() {
+        for (start_p,end_p,sense) in ops.iter() {
             let b_start = leaf_start + ((b as f64+start_p)*step_bp);
-            out.push((b_start as i32,*elide,*sense));
+            let b_len = (end_p-start_p) * step_bp;
+            out.push((b_start as i32,b_len as i32,*sense));
         }
     }
+    console!("shimmer2 {}->{}",in_.len(),out.len());
     out
 }
 
-pub struct RngFlipShimmer {
-    kind: [u8;8],
-    rnd_size: i32,
-    sense_p: f64
-}
-
-impl RngFlipShimmer {
-    pub fn new(kind: [u8;8], rnd_size: i32, sense_p: f64) -> RngFlipShimmer {
-        RngFlipShimmer { kind, rnd_size, sense_p }
-    }
-}
-
-impl FakeDataGenerator for RngFlipShimmer {
-    fn generate(&self, leaf: &Leaf) -> Vec<Value> {
-        let start = leaf.get_start() as i32 - 20*self.rnd_size;
-        let end = leaf.get_end() as i32 + 20*self.rnd_size;
-        let flips = rng_prob(self.kind,start,end,self.rnd_size,self.sense_p);
-        let out = shimmer(flips,leaf);
-        let starts = out.iter().map(|x| x.0 as f64).collect();
-        let elides = out.iter().map(|x| floatify(x.1)).collect();
-        let colours = out.iter().map(|x| floatify(x.2)).collect();
-        vec! {
-            Value::new_from_float(starts),
-            Value::new_from_float(elides),
-            Value::new_from_float(colours)
-        }
-    }
-}
