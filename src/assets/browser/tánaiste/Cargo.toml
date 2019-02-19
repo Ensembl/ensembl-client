@@ -6,5 +6,5 @@ authors = ["Dan Sheppard <dan@ebi.ac.uk>"]
 [dependencies]
 lazy_static="*"
 regex="*"
-serde="*"
-serde_derive="*"
+itertools="*"
+

@@ -1,22 +1,39 @@
 use std::collections::HashMap;
+use std::iter::repeat;
+
+use itertools::chain;
 
 use core::{ BinaryCode, Command, Instruction, InstructionSet };
-use super::parsetree::{ Argument, ArgumentType, SourceCode, Statement };
+use super::parsetree::{ Argument, ArgumentType, SimpleArgumentType, SourceCode, Statement };
 
 fn check_args(r: &Vec<Argument>, pat: &Vec<ArgumentType>) -> bool {
-    if pat.len() != r.len() { return false; }
     for (i,arg) in r.iter().enumerate() {
-        let v = match arg{
-            Argument::Reg(_) =>
-                pat[i] == ArgumentType::Reg,
-            Argument::Floats(_) =>
-                pat[i] == ArgumentType::Floats ||
-                pat[i] == ArgumentType::Const,
-            Argument::Str(_) =>
-                pat[i] == ArgumentType::Str ||
-                pat[i] == ArgumentType::Const
-        };
-        if !v { return false; }
+        let p = if i<pat.len() {
+            match pat[i] {
+                ArgumentType::One(ref p) => Some(p),
+                ArgumentType::Many(ref p) => Some(p)
+            }
+        } else if pat.len() != 0 {
+            match pat[pat.len()-1] {
+                ArgumentType::One(_) => None,
+                ArgumentType::Many(ref p) => Some(p)
+            }            
+        } else { None };
+        if let Some(pat) = p {
+            let v = match arg{
+                Argument::Reg(_) =>
+                    *pat == SimpleArgumentType::Reg,
+                Argument::Floats(_) =>
+                    *pat == SimpleArgumentType::Floats ||
+                    *pat == SimpleArgumentType::Const,
+                Argument::Str(_) =>
+                    *pat == SimpleArgumentType::Str ||
+                    *pat == SimpleArgumentType::Const
+            };
+            if !v { return false; }
+        } else {
+            return false;
+        }
     }
     true
 }

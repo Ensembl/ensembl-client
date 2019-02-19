@@ -9,18 +9,24 @@ use composit::{ Leaf, SourceResponse };
 
 #[derive(Clone)]
 pub enum BinOpType {
-    Add
+    Add,
+    Mul,
+    Eq
 }
 
 impl BinOpType {
     fn op(&self, a: f64, b: f64) -> f64 {
         match self {
-            BinOpType::Add => a+b
+            BinOpType::Add => a+b,
+            BinOpType::Mul => a*b,
+            BinOpType::Eq  => if a==b { 1. } else { 0. }
         }
     }
     fn name(&self) -> &str {
         match self {
-            BinOpType::Add => "add"
+            BinOpType::Add => "add",
+            BinOpType::Mul => "mul",
+            BinOpType::Eq  => "eq"
         }
     }
 }
@@ -35,6 +41,7 @@ fn binop(type_: &BinOpType, a: &Vec<f64>, b: &Vec<f64>) -> Vec<f64> {
 }
 
 // add Add, #a+b, #a, #b
+// mul Mull #a*b, #a, #b
 pub struct BinOp(BinOpType,usize,usize,usize);
 
 impl Command for BinOp {
