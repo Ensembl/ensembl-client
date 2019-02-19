@@ -74,6 +74,27 @@ pub fn rng_flip(kind: [u8;8], start: i32, end: i32, rnd_size: i32) -> Vec<i32> {
     })
 }
 
+pub fn rng_contig(kind: [u8;8], start: i32, end: i32, rnd_size: i32, end_p: f64) -> Vec<(i32,i32,bool)> {
+    let mut prev_val = None;
+    let mut sense = false;
+    let start = start.max(0);
+    let out = rng_at(kind,start,end,rnd_size,0,|out,rng,in_| {
+        if let Some(prev) = prev_val {
+            if in_ > prev {
+                let delta = ((in_-prev) as f64 *end_p) as i32;
+                let omdelta = ((in_-prev) as f64 *(1.-end_p)) as i32;            
+                let prop = rng.gen_range(0,delta)+omdelta;
+                if prev < end && prev+prop > start && prop > 0 {
+                    out.push((prev,prop,sense));
+                }
+                sense = !sense;
+            }
+        }
+        prev_val = Some(in_);
+    });
+    out
+}
+
 pub struct RngFlip {
     kind: [u8;8],
     rnd_size: i32,
@@ -117,6 +138,34 @@ impl FakeDataGenerator for RngFlipBool {
         vec! {
             Value::new_from_float(starts),
             Value::new_from_float(elides)
+        }
+    }
+}
+
+pub struct RngContig {
+    kind: [u8;8],
+    rnd_size: i32,
+    prop_fill: f64
+}
+
+impl RngContig {
+    pub fn new(kind: [u8;8], rnd_size: i32, prop_fill: f64) -> RngContig {
+        RngContig { kind, rnd_size, prop_fill }
+    }
+}
+
+impl FakeDataGenerator for RngContig {
+    fn generate(&self, leaf: &Leaf) -> Vec<Value> {
+        let start = leaf.get_start() as i32 - 20*self.rnd_size;
+        let end = leaf.get_end() as i32 + 20*self.rnd_size;
+        let out = rng_contig(self.kind,start,end,self.rnd_size,self.prop_fill);
+        let starts = out.iter().map(|x| x.0 as f64).collect();
+        let ends = out.iter().map(|x| x.1 as f64).collect();
+        let senses = out.iter().map(|x| floatify(x.2)).collect();
+        vec! {
+            Value::new_from_float(starts),
+            Value::new_from_float(ends),
+            Value::new_from_float(senses),
         }
     }
 }

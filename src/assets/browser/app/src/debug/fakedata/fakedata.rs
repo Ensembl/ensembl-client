@@ -6,7 +6,7 @@ use tánaiste::Value;
 
 use composit::{ Leaf, Scale };
 use data::{ XferRequest, XferResponse };
-use super::datagen::{ RngFlip, RngFlipBool, RngFlipShimmer };
+use super::datagen::{ RngFlip, RngFlipBool, RngFlipShimmer, RngContig };
 
 lazy_static! {
     static ref FAKEDATA : &'static str = include_str!("fakewiredata.yaml");
@@ -80,7 +80,7 @@ fn hash_key_bool(yaml: &Yaml, key: &str) -> bool {
 fn flipper(v: &Yaml) -> Box<FakeDataGenerator> {
     let seed = hash_key_float(v,"seed").unwrap() as u8;
     let spacing = hash_key_float(v,"spacing").unwrap();
-    let seed = [seed,0,0,0,0,0,0,0];
+    let seed = [seed,0,0,0,0,0,0,0];    
     if let Some(sense) = hash_key_float(v,"sense") {
         if hash_key_bool(v,"shimmer") {
             Box::new(RngFlipShimmer::new(seed,spacing as i32,sense))
@@ -90,6 +90,14 @@ fn flipper(v: &Yaml) -> Box<FakeDataGenerator> {
     } else {
         Box::new(RngFlip::new(seed,spacing as i32))
     }
+}
+
+fn contig(v: &Yaml) -> Box<FakeDataGenerator> {
+    let seed = hash_key_float(v,"seed").unwrap() as u8;
+    let seed = [seed,0,0,0,0,0,0,0];
+    let len = hash_key_float(v,"len").unwrap();
+    let prop = hash_key_float(v,"prop").unwrap();
+    Box::new(RngContig::new(seed,len as i32,prop))
 }
 
 fn make_data(out: &mut Vec<FakeValue>, e: &Yaml) {
@@ -119,6 +127,9 @@ fn make_data(out: &mut Vec<FakeValue>, e: &Yaml) {
                         },
                         "flip" => {
                             out.push(FakeValue::Delayed(flipper(v)));
+                        },
+                        "contig" => {
+                            out.push(FakeValue::Delayed(contig(v)));
                         },
                         _ => ()
                     }

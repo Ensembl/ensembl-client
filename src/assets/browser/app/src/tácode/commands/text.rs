@@ -10,14 +10,14 @@ use drawing::{ DrawingSpec, FCFont, FontVariety, text_texture };
 use tácode::{ TáContext, TáTask };
 use types::{ Colour };
 
-fn text(lc: &mut SourceResponse, txx: &mut Vec<DrawingSpec>, string: &String) -> usize {
+fn text(txx: &mut Vec<DrawingSpec>, string: &String) -> usize {
     let font = FCFont::new(12,"Lato",FontVariety::Bold);
     let tx = text_texture(string,&font,&Colour(192,192,192),&Colour(255,255,255));
     txx.push(tx);
     txx.len()-1
 }
 
-fn texts(lc: &mut SourceResponse, tx: &mut Vec<DrawingSpec>, strings: &String, lens: &Vec<f64>) -> Vec<f64> {
+fn texts(tx: &mut Vec<DrawingSpec>, strings: &String, lens: &Vec<f64>) -> Vec<f64> {
     let mut out = Vec::<f64>::new();
     let chars : Vec<char> = strings.chars().collect();
     let mut start = 0;
@@ -25,7 +25,7 @@ fn texts(lc: &mut SourceResponse, tx: &mut Vec<DrawingSpec>, strings: &String, l
         let len = *len as usize;
         let s = chars[start..start+len].iter().collect();
         start += len;
-        out.push(text(lc,tx,&s) as f64);
+        out.push(text(tx,&s) as f64);
     }
     out
 }
@@ -37,11 +37,11 @@ impl Command for Text {
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,lc,ref mut tx) = task {
+            if let TáTask::MakeShapes(_,_,ref mut tx) = task {
                 let regs = rt.registers();
                 regs.get(self.2).as_string(|strings| {                
                     regs.get(self.3).as_floats(|lens| {
-                        regs.set(self.1,Value::new_from_float(texts(lc,tx,strings,lens)));
+                        regs.set(self.1,Value::new_from_float(texts(tx,strings,lens)));
                     });
                 });
             }

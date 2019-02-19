@@ -43,20 +43,17 @@ tácode:
     # actual contigs
     contig--JO:
         code: |
-            abutt #3, #1
-            not #2, #2
-            const #4, [1]
-            elide #1, #2, #4
-            elide #3, #2, #4
+            ; #1 = starts
+            ; #2 = lens
             const #4, [233]
             const #5, [6]
             const #6, [192,192,192,128,128,128]
-            shape #0, #1, #3, #4, #5, #6
+            shape #0, #1, #2, #4, #5, #6
         data:
-            - flip:
+            - contig:
                 seed: 8
-                spacing: 5000
-                sense: 0.05
+                len: 10000
+                prop: 0.9
 
     # boxes without letters in
     contig--PP:
@@ -79,12 +76,17 @@ tácode:
             const #16, [1,1]   ; #16 = [hollow-box,spot-colour]
             shape #16, #7, #12, #13, #14, #15 ; draw boxes
         data:
-            - [ 9990,10090]
-            - [   27,  200]
-            - [    1,    0]
+            - contig:
+                seed: 8
+                len: 10000
+                prop: 0.9
+        
+#            - [ 9990,10090]
+#            - [   27,  200]
+#            - [    1,    0]
  
     # boxes with letters in
-    contig--QZ:
+    contig--QS:
         code: |
             ; #1 = sequence
             ; #2 = start pos of seq frag
@@ -92,7 +94,7 @@ tácode:
             ; #4 = start box frag
             ; #5 = len box frag
             ; #6 = colour box frag
-            ; *** scales ***
+            ; *** scale (for size) ***
             const #16, [
                 230,224,224,224,224,224,224,224,224,244
             ] ; #16 = y-starts Q, RZ
@@ -130,7 +132,9 @@ tácode:
             - GACATATTAC
             - [10000,10100]
             - [    7,    3]
-            - [ 9990,10090]
-            - [   27,  200]
-            - [    1,    0]
+            - contig:
+                seq: true
+                seed: 8
+                len: 10000
+                prop: 0.9
             
