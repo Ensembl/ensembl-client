@@ -43,3 +43,10 @@ export const updateChrLocation = createAction(
     return (chrLocation: ChrLocation) => resolve(chrLocation);
   }
 );
+
+export const updateDefaultChrLocation = createAction(
+  'browser/update-default-chromosome-location',
+  (resolve) => {
+    return (chrLocation: ChrLocation) => resolve(chrLocation);
+  }
+);

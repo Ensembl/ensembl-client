@@ -32,3 +32,6 @@ export const getBrowserNavStates = (state: RootState): BrowserNavStates =>
 
 export const getChrLocation = (state: RootState): ChrLocation =>
   state.browser.chrLocation;
+
+export const getDefaultChrLocation = (state: RootState): ChrLocation =>
+  state.browser.defaultChrLocation;
