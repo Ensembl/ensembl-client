@@ -7,6 +7,7 @@ import chevronUpIcon from 'static/img/shared/chevron-up.svg';
 import styles from './TrackPanelListItem.scss';
 
 type TrackPanelListItemProps = {
+  browserImageEl: HTMLDivElement | null;
   children?: ReactNode[];
   className: string;
   track: TrackPanelItem;
@@ -17,8 +18,10 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   props: TrackPanelListItemProps
 ) => {
   const [expanded, setExpanded] = useState(false);
+  const [trackStatus, setTrackStatus] = useState('on');
 
-  const { className, track } = props;
+  const { browserImageEl, className, track } = props;
+  const { ellipsis, eye } = trackPanelIconConfig;
   const listItemClass = styles[className] || '';
 
   const changeTrackHandler = () => {
@@ -27,6 +30,23 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
 
   const toggleExpand = () => {
     setExpanded(!expanded);
+  };
+
+  const toggleTrack = () => {
+    const currentTrackStatus = trackStatus === 'on' ? 'off' : 'on';
+
+    const navEvent = new CustomEvent('bpane', {
+      bubbles: true,
+      detail: {
+        [currentTrackStatus]: track.name
+      }
+    });
+
+    if (browserImageEl) {
+      browserImageEl.dispatchEvent(navEvent);
+    }
+
+    setTrackStatus(currentTrackStatus);
   };
 
   return (
@@ -55,15 +75,12 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
           )}
         </label>
         <button onClick={changeTrackHandler}>
-          <img
-            src={trackPanelIconConfig.ellipsis.icon.on}
-            alt={`Go to ${track.label}`}
-          />
+          <img src={ellipsis.icon.on} alt={`Go to ${track.label}`} />
         </button>
-        <button>
+        <button onClick={toggleTrack}>
           <img
-            src={trackPanelIconConfig.eye.icon.on}
-            alt={trackPanelIconConfig.ellipsis.description}
+            src={trackStatus === 'on' ? eye.icon.on : eye.icon.off}
+            alt={eye.description}
           />
         </button>
       </dd>
