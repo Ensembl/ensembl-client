@@ -42,6 +42,12 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
       }
     });
 
+    let el = document.querySelector('canvas');
+    console.log(navEvent, el);
+    if (el) {
+      el.dispatchEvent(navEvent);
+    }
+
     if (browserImageEl) {
       browserImageEl.dispatchEvent(navEvent);
     }
