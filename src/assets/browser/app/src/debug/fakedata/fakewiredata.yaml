@@ -172,6 +172,7 @@ tácode:
             runs #20, #18, #19
             const #1, [-0.45]
             add #20, #20, #1
+            move #36, #20
             const #2, [0.9]
             shape #10, #20, #2, #12, #13, #15
             ; *** exons ***
@@ -187,21 +188,51 @@ tácode:
             runs #20, #18, #19
             const #1, [-0.45]
             add #20, #20, #1
+            move #35, #20
             const #2, [0.9]
             shape #10, #20, #2, #12, #13, #15
             ; *** exon text ***
             const #27, "ACGT"
             const #28, [1,1,1,1]
-            text #29, #27, #28
-            index #7, #7, #27
+            const #40, "Lato"
+            const #41, [12,1,255,255,255,75,168,252]
+            text #29, #40, #41, #27, #28
+            index #57, #7, #27
             const #30, [1]
-            pick #29, #7, #29, #30
+            pick #29, #57, #29, #30
             const #31, [3,1]
             runs #27, #8, #9
-            ;intersect #27, #27, #20
+            member #34, #27, #35
+            elide #27, #34, #30
             const #33, [520]
+            move #33, #12
+            const #50, [0.5]
+            mul #63, #13, #50
+            const #50, [2]
+            add #63, #63, #50
+            add #33, #33, #63
             shape #31, #27, #0, #33, #0, #29
-
+            ; *** intron text ***
+            const #27, "ACGT"
+            const #28, [1,1,1,1]
+            const #40, "Lato"
+            const #41, [12,0,75,168,252,255,255,255]
+            text #29, #40, #41, #27, #28
+            index #57, #7, #27
+            const #30, [1]
+            pick #29, #57, #29, #30
+            const #31, [3,1]
+            runs #27, #8, #9
+            member #34, #27, #36
+            elide #27, #34, #30
+            const #33, [520]
+            move #33, #12
+            const #50, [0.5]
+            mul #63, #13, #50
+            const #50, [2]
+            add #63, #63, #50
+            add #33, #33, #63
+            shape #31, #27, #0, #33, #0, #29
         data:
             - gene:
                 seed: 1
@@ -315,8 +346,10 @@ tácode:
             shape #16, #7, #12, #13, #14, #15 ; draw boxes
             ; *** sequence ***
             const #7, "ACGT"   ; #7 = available sequence
-            const #8, [1,1,1,1]; #8 = lenget of seqeunces
-            text #9, #7, #8    ; #9 = textures for A,C,G,T
+            const #8, [1,1,1,1]; #8 = length of seqeunces
+            const #40, "Lato"
+            const #41, [12,1,192,192,192,255,255,255]
+            text #9, #40, #41, #7, #8    ; #9 = textures for A,C,G,T
             index #1, #1, #7   ; #1 = 0=A, 1=C, 2=G, 3=T for seq
             const #10, [1]     ; #10 = stride 1 for texture ids
             pick #9, #1, #9, #10 ; #9 = 0123 to tex id for seq

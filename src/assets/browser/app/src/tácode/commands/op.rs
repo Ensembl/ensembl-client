@@ -44,17 +44,16 @@ fn binop(type_: &BinOpType, a: &Vec<f64>, b: &Vec<f64>) -> Vec<f64> {
     out
 }
 
-fn intersect(a: &Vec<f64>, b: &Vec<f64>) -> Vec<f64> {
-    let a : HashSet<i64> = a.iter().map(|x| *x as i64).collect();
-    let b : HashSet<i64> = b.iter().map(|x| *x as i64).collect();
-    a.intersection(&b).map(|x| *x as f64).collect()
+fn member(a: &Vec<f64>, b: &Vec<f64>) -> Vec<f64> {
+    let b : HashSet<i64> = b.iter().map(|x| x.round() as i64).collect();
+    a.iter().map(|x| if b.contains(&(*x as i64)) {1.} else {0.}).collect()
 }
 
 // add Add #a+b, #a, #b
 // mul Mul #a*b, #a, #b
 pub struct BinOp(BinOpType,usize,usize,usize);
-// intersect #a&b, #a, #b
-pub struct Intersect(usize,usize,usize);
+// member #a(in)b, #a, #b
+pub struct Member(usize,usize,usize);
 
 impl Command for BinOp {
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
@@ -69,12 +68,12 @@ impl Command for BinOp {
     }
 }
 
-impl Command for Intersect {
+impl Command for Member {
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let regs = rt.registers();
         regs.get(self.1).as_floats(|a| {
             regs.get(self.2).as_floats(|b| {
-                regs.set(self.0,Value::new_from_float(intersect(a,b)));
+                regs.set(self.0,Value::new_from_float(member(a,b)));
             });
         });
         return 1;
@@ -89,10 +88,10 @@ impl Instruction for BinOpI {
     }
 }
 
-pub struct IntersectI();
-impl Instruction for IntersectI {
-    fn signature(&self) -> Signature { Signature::new("intersect","rrr") }
+pub struct MemberI();
+impl Instruction for MemberI {
+    fn signature(&self) -> Signature { Signature::new("member","rrr") }
     fn build(&self, args: &Vec<Argument>) -> Box<Command> {
-        Box::new(Intersect(args[0].reg(),args[1].reg(),args[2].reg()))
+        Box::new(Member(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
