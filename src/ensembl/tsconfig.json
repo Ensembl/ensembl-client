@@ -16,6 +16,9 @@
       ],
       "static/*": [
         "static/*"
+      ],
+      "stories/*": [
+        "stories/*"
       ]
     },
     "removeComments": true,
@@ -31,6 +34,7 @@
   "include": [
     "./src/**/*",
     "./static/**/*",
+    "stories/**/*",
     "./typings"
   ]
 }

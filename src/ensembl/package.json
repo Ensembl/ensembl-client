@@ -23,6 +23,7 @@
     "lint:scripts": "tslint -c tslint.json 'src/**/*.{ts,tsx}' -t codeFrame --force",
     "lint:styles": "stylelint 'src/styles/**/*.scss'",
     "storybook": "start-storybook -p 9001 -c .storybook",
+    "check-types": "tsc",
     "jest": "jest",
     "test": "jest --verbose",
     "test:watch": "jest --watch",
