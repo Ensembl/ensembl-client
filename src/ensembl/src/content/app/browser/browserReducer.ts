@@ -15,6 +15,8 @@ export default (
   action: ActionType<typeof browser>
 ): BrowserState => {
   switch (action.type) {
+    case getType(browser.updateBrowserActivated):
+      return { ...state, browserActivated: action.payload };
     case getType(browser.toggleTrackPanel):
       return trackPanelState(state, action.payload);
     case getType(browser.changeCurrentTrack):

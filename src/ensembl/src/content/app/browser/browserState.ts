@@ -19,6 +19,7 @@ export type BrowserNavStates = [
 export type ChrLocation = [string, number, number];
 
 export type BrowserState = Readonly<{
+  browserActivated: boolean;
   browserNavOpened: boolean;
   browserNavStates: BrowserNavStates;
   browserOpenState: BrowserOpenState;
@@ -32,6 +33,7 @@ export type BrowserState = Readonly<{
 }>;
 
 export const defaultState: BrowserState = {
+  browserActivated: false,
   browserNavOpened: false,
   browserNavStates: [true, true, true, true, true, true],
   browserOpenState: BrowserOpenState.SEMI_EXPANDED,

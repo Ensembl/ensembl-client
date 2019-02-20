@@ -1,6 +1,13 @@
 import { createAction } from 'typesafe-actions';
 import { BrowserNavStates, ChrLocation } from './browserState';
 
+export const updateBrowserActivated = createAction(
+  'browser/update-browser-activated',
+  (resolve) => {
+    return (browserActivated: boolean) => resolve(browserActivated);
+  }
+);
+
 export const toggleTrackPanel = createAction(
   'browser/toggle-track-panel',
   (resolve) => {
