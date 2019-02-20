@@ -5,7 +5,6 @@ use tánaiste::{
     Value
 };
 
-use shape::{ ColourSpec, tape_rectangle, tape_texture, stretch_rectangle };
 use tácode::core::{ TáContext, TáTask };
 
 // TODO check ranges
@@ -57,7 +56,7 @@ impl Command for Extent {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(leaf,lc,_) = task {
+            if let TáTask::MakeShapes(leaf,lc,_,_) = task {
                 regs.set(self.1,Value::new_from_float(vec! {
                     leaf.get_start(),
                     leaf.get_end()
@@ -74,7 +73,7 @@ impl Command for Scale {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(leaf,lc,_) = task {
+            if let TáTask::MakeShapes(leaf,lc,_,_) = task {
                 let scale = leaf.get_scale().get_index()+13;
                 regs.set(self.1,Value::new_from_float(vec![scale as f64]));
             }
@@ -87,7 +86,16 @@ impl Command for Plot {
     #[allow(irrefutable_let_patterns)]
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let regs = rt.registers();
-        regs.set(self.1,Value::new_from_float(vec![404.,18.]));
+        let pid = proc.lock().unwrap().get_pid().unwrap();
+        self.0.with_task(pid,|task| {
+            if let TáTask::MakeShapes(_,_,_,ls) = task {
+                let plot = ls.get_plot();
+                regs.set(self.1,Value::new_from_float(vec!{
+                    plot.get_base() as f64,
+                    plot.get_height() as f64
+                }));
+            }
+        });        
         return 1;
     }
 }

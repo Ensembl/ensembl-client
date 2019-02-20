@@ -27,6 +27,17 @@ lazy_static! {
         "internal:debug:gc"             => DebugSourceType::GC,
         "internal:debug:zzz-framework"  => DebugSourceType::Framework
     };
+    
+    static ref SOURCE_POS : HashMap<String,i32> = hashmap_s! {
+        "internal:debug:gene-pc-fwd"    => 1,
+        "internal:debug:gene-other-fwd" => 2,
+        "internal:debug:gene-pc-rev"    => 3,
+        "internal:debug:gene-other-rev" => 4,
+        "internal:debug:variant"        => 5,
+        "internal:debug:contig"         => 6,
+        "internal:debug:gc"             => 7,
+        "internal:debug:zzz-framework"  => 8
+    };
 }
 
 lazy_static! {
@@ -36,6 +47,15 @@ lazy_static! {
             out.insert(v.clone(),k.to_string());
         }
         out
+    };
+    
+    static ref SOURCE_TYPE_POS : HashMap<DebugSourceType,i32> = {
+        let mut out = HashMap::<DebugSourceType,i32>::new();
+        for (k,v) in SOURCE_POS.iter() {
+            let k : DebugSourceType = SOURCE_TYPES[k].clone();
+            out.insert(k,*v);
+        }
+        out        
     };
     
     static ref SOURCE_TYPE_KEYS : HashMap<DebugSourceType,String> = {
@@ -68,6 +88,10 @@ impl DebugSourceType {
         SOURCE_TYPE_KEYS.get(self).map(|k| {
             (k.to_uppercase(),k.clone())
         }).unwrap()
+    }
+    
+    pub fn get_pos(&self) -> i32 {
+        *SOURCE_TYPE_POS.get(self).unwrap()
     }
 }
 
