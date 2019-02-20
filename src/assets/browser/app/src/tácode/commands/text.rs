@@ -10,28 +10,39 @@ use drawing::{ DrawingSpec, FCFont, FontVariety, text_texture };
 use tácode::{ TáContext, TáTask };
 use types::{ Colour };
 
-fn text(txx: &mut Vec<DrawingSpec>, string: &String) -> usize {
-    let font = FCFont::new(12,"Lato",FontVariety::Bold);
-    let tx = text_texture(string,&font,&Colour(192,192,192),&Colour(255,255,255));
+fn process_meta(font_name: &str,meta: &Vec<f64>) -> (FCFont,Colour,Colour) {
+    let variety = match meta[1].round() as i64 {
+        1 => FontVariety::Bold,
+        _ => FontVariety::Normal
+    };
+    let fgd = Colour(meta[2] as u32,meta[3] as u32,meta[4] as u32);
+    let bgd = Colour(meta[5] as u32,meta[6] as u32,meta[7] as u32);
+    (FCFont::new(meta[0].round() as i32,font_name,variety),fgd,bgd)
+}
+
+fn text(txx: &mut Vec<DrawingSpec>, font: &FCFont, fgd: &Colour, bgd: &Colour, string: &String) -> usize {
+    let tx = text_texture(string,&font,fgd,bgd);
     txx.push(tx);
     txx.len()-1
 }
 
-fn texts(tx: &mut Vec<DrawingSpec>, strings: &String, lens: &Vec<f64>) -> Vec<f64> {
+fn texts(tx: &mut Vec<DrawingSpec>, font_name: &str, meta: &Vec<f64>,
+         strings: &String, lens: &Vec<f64>) -> Vec<f64> {
     let mut out = Vec::<f64>::new();
+    let (font,fgd,bgd) = process_meta(font_name,meta);
     let chars : Vec<char> = strings.chars().collect();
     let mut start = 0;
     for len in lens {
         let len = *len as usize;
         let s = chars[start..start+len].iter().collect();
         start += len;
-        out.push(text(tx,&s) as f64);
+        out.push(text(tx,&font,&fgd,&bgd,&s) as f64);
     }
     out
 }
 
-// text #target #texts #sizes
-pub struct Text(TáContext,usize,usize,usize);
+// text #target, #font, #meta, #texts, #sizes
+pub struct Text(TáContext,usize,usize,usize,usize,usize);
 
 impl Command for Text {
     #[allow(irrefutable_let_patterns)]
@@ -40,9 +51,13 @@ impl Command for Text {
         self.0.with_task(pid,|task| {
             if let TáTask::MakeShapes(_,_,ref mut tx) = task {
                 let regs = rt.registers();
-                regs.get(self.2).as_string(|strings| {                
-                    regs.get(self.3).as_floats(|lens| {
-                        regs.set(self.1,Value::new_from_float(texts(tx,strings,lens)));
+                regs.get(self.2).as_string(|font_name| {
+                    regs.get(self.3).as_floats(|meta| {
+                        regs.get(self.4).as_string(|strings| {
+                            regs.get(self.5).as_floats(|lens| {
+                                regs.set(self.1,Value::new_from_float(texts(tx,font_name,meta,strings,lens)));
+                            });
+                        });
                     });
                 });
             }
@@ -54,9 +69,9 @@ impl Command for Text {
 pub struct TextI(pub TáContext);
 
 impl Instruction for TextI {
-    fn signature(&self) -> Signature { Signature::new("text","rrr") }
+    fn signature(&self) -> Signature { Signature::new("text","rrrrr") }
     fn build(&self, args: &Vec<Argument>) -> Box<Command> {
         Box::new(Text(self.0.clone(),args[0].reg(),args[1].reg(),
-                      args[2].reg()))
+                      args[2].reg(),args[3].reg(),args[4].reg()))
     }
 }
