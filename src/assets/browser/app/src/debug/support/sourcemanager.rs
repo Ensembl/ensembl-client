@@ -29,14 +29,14 @@ lazy_static! {
     };
     
     static ref SOURCE_POS : HashMap<String,i32> = hashmap_s! {
-        "internal:debug:gene-pc-fwd"    => 1,
-        "internal:debug:gene-other-fwd" => 2,
-        "internal:debug:gene-pc-rev"    => 3,
-        "internal:debug:gene-other-rev" => 4,
-        "internal:debug:variant"        => 5,
-        "internal:debug:contig"         => 6,
-        "internal:debug:gc"             => 7,
-        "internal:debug:zzz-framework"  => 8
+        "internal:debug:gene-pc-fwd"    => 2,
+        "internal:debug:gene-other-fwd" => 3,
+        "internal:debug:gene-pc-rev"    => 5,
+        "internal:debug:gene-other-rev" => 6,
+        "internal:debug:variant"        => 8,
+        "internal:debug:contig"         => 4,
+        "internal:debug:gc"             => 9,
+        "internal:debug:zzz-framework"  => 0
     };
 }
 
