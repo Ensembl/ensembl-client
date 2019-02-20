@@ -20,8 +20,6 @@ type TrackPanelListProps = {
 const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   props: TrackPanelListProps
 ) => {
-  const browserImageEl = props.browserRef.current as HTMLDivElement;
-
   const changeTrack = (currentTrack: string) => {
     const { toggleDrawer, updateTrack } = props;
 
@@ -51,7 +49,7 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
 
   const getTrackListItem = (track: TrackPanelItem) => (
     <TrackPanelListItem
-      browserImageEl={browserImageEl}
+      browserRef={props.browserRef}
       className={getTrackClass(track.name)}
       changeTrack={changeTrack}
       key={track.id}

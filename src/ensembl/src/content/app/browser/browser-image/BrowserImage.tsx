@@ -1,7 +1,11 @@
 import React, { FunctionComponent, RefObject, useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { updateBrowserNavStates, updateChrLocation } from '../browserActions';
+import {
+  updateBrowserNavStates,
+  updateChrLocation,
+  updateBrowserActivated
+} from '../browserActions';
 import { BrowserNavStates, ChrLocation } from '../browserState';
 import { getBrowserNavOpened } from '../browserSelectors';
 import { RootState } from 'src/rootReducer';
@@ -13,6 +17,7 @@ type StateProps = {
 };
 
 type DispatchProps = {
+  updateBrowserActivated: (browserActivated: boolean) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateChrLocation: (chrLocation: ChrLocation) => void;
 };
@@ -48,22 +53,21 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   };
 
   useEffect(() => {
-    let currentEl: HTMLDivElement | null = null;
+    const currentEl: HTMLDivElement = props.browserRef
+      .current as HTMLDivElement;
 
-    if (props.browserRef) {
-      currentEl = props.browserRef.current as HTMLDivElement;
+    activateBrowser(currentEl, props);
 
-      activateIfPossible(currentEl as HTMLDivElement);
-
-      currentEl.addEventListener('bpane-out', listenBpaneOut);
-    }
+    currentEl.addEventListener('bpane-out', listenBpaneOut);
 
     return function cleanup() {
-      if (currentEl) {
+      if (currentEl && currentEl.ownerDocument) {
+        props.updateBrowserActivated(false);
+
         currentEl.removeEventListener('bpane-out', listenBpaneOut);
       }
     };
-  }, []);
+  }, [props.browserRef]);
 
   return (
     <div
@@ -73,7 +77,45 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   );
 };
 
-function activateIfPossible(currentEl: HTMLDivElement) {
+function activateBrowser(currentEl: HTMLDivElement, props: BrowserImageProps) {
+  if (currentEl && currentEl.ownerDocument) {
+    const bodyEl = currentEl.ownerDocument.body as HTMLBodyElement;
+
+    // no need to check for DOM mutations if the browser class is already set in body
+    if (bodyEl.classList.contains('browser-app-ready')) {
+      dispatchActivateEvents(currentEl, props);
+      return;
+    }
+
+    const observerConfig = {
+      attributeFilter: ['class'],
+      attributes: true,
+      subtree: false
+    };
+
+    const observerCallback = (mutationsList: MutationRecord[]) => {
+      for (const mutation of mutationsList) {
+        const mutationNode = mutation.target as HTMLElement;
+
+        if (mutationNode.classList.contains('browser-app-ready')) {
+          dispatchActivateEvents(currentEl, props);
+
+          observer.disconnect();
+          break;
+        }
+      }
+    };
+
+    const observer = new MutationObserver(observerCallback);
+
+    observer.observe(bodyEl, observerConfig);
+  }
+}
+
+function dispatchActivateEvents(
+  currentEl: HTMLDivElement,
+  props: BrowserImageProps
+) {
   const activateEvent = new CustomEvent('bpane-activate', {
     bubbles: true,
     detail: {
@@ -81,22 +123,8 @@ function activateIfPossible(currentEl: HTMLDivElement) {
     }
   });
 
-  let done = false;
-
-  if (currentEl && currentEl.ownerDocument) {
-    const bodyEl = currentEl.ownerDocument.querySelector(
-      'body'
-    ) as HTMLBodyElement;
-
-    if (bodyEl.classList.contains('browser-app-ready')) {
-      currentEl.dispatchEvent(activateEvent);
-      done = true;
-    }
-  }
-
-  if (!done) {
-    setTimeout(() => activateIfPossible(currentEl), 250);
-  }
+  currentEl.dispatchEvent(activateEvent);
+  props.updateBrowserActivated(true);
 }
 
 function getBrowserImageClasses(browserNavOpened: boolean): string {
@@ -114,6 +142,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
 });
 
 const mapDispatchToProps: DispatchProps = {
+  updateBrowserActivated,
   updateBrowserNavStates,
   updateChrLocation
 };

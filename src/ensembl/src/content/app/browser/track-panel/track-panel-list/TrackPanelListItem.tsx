@@ -1,4 +1,10 @@
-import React, { FunctionComponent, Fragment, ReactNode, useState } from 'react';
+import React, {
+  FunctionComponent,
+  Fragment,
+  ReactNode,
+  RefObject,
+  useState
+} from 'react';
 import { TrackPanelItem, trackPanelIconConfig } from '../trackPanelConfig';
 
 import chevronDownIcon from 'static/img/shared/chevron-down.svg';
@@ -7,12 +13,15 @@ import chevronUpIcon from 'static/img/shared/chevron-up.svg';
 import styles from './TrackPanelListItem.scss';
 
 type TrackPanelListItemProps = {
-  browserImageEl: HTMLDivElement | null;
+  browserRef: RefObject<HTMLDivElement>;
   children?: ReactNode[];
   className: string;
   track: TrackPanelItem;
   changeTrack: (name: string) => void;
 };
+
+// delete this when there is a better place to put this
+const trackPrefix = 'internal:debug';
 
 const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   props: TrackPanelListItemProps
@@ -20,7 +29,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   const [expanded, setExpanded] = useState(false);
   const [trackStatus, setTrackStatus] = useState('on');
 
-  const { browserImageEl, className, track } = props;
+  const { browserRef, className, track } = props;
   const { ellipsis, eye } = trackPanelIconConfig;
   const listItemClass = styles[className] || '';
 
@@ -35,15 +44,15 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   const toggleTrack = () => {
     const currentTrackStatus = trackStatus === 'on' ? 'off' : 'on';
 
-    const navEvent = new CustomEvent('bpane', {
+    const trackEvent = new CustomEvent('bpane', {
       bubbles: true,
       detail: {
-        [currentTrackStatus]: track.name
+        [currentTrackStatus]: `${trackPrefix}:${track.name}`
       }
     });
 
-    if (browserImageEl) {
-      browserImageEl.dispatchEvent(navEvent);
+    if (browserRef.current) {
+      browserRef.current.dispatchEvent(trackEvent);
     }
 
     setTrackStatus(currentTrackStatus);

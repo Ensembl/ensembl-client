@@ -1,4 +1,9 @@
-import React, { FunctionComponent, RefObject, useEffect } from 'react';
+import React, {
+  FunctionComponent,
+  RefObject,
+  useEffect,
+  Fragment
+} from 'react';
 import { connect } from 'react-redux';
 
 import TrackPanelBar from './track-panel-bar/TrackPanelBar';
@@ -15,7 +20,8 @@ import {
 import {
   getCurrentTrack,
   getDrawerOpened,
-  getTrackPanelOpened
+  getTrackPanelOpened,
+  getBrowserActivated
 } from '../browserSelectors';
 
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
@@ -25,6 +31,7 @@ import { BreakpointWidth } from 'src/globalConfig';
 import styles from './TrackPanel.scss';
 
 type StateProps = {
+  browserActivated: boolean;
   currentTrack: string;
   drawerOpened: boolean;
   breakpointWidth: BreakpointWidth;
@@ -57,28 +64,33 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
 
   return (
     <section className={`${styles.trackPanel} reactSlideDrawer`}>
-      <TrackPanelBar
-        drawerOpened={props.drawerOpened}
-        launchbarExpanded={props.launchbarExpanded}
-        toggleDrawer={props.toggleDrawer}
-        toggleTrackPanel={props.toggleTrackPanel}
-        trackPanelOpened={props.trackPanelOpened}
-      />
-      {props.trackPanelOpened ? (
-        <TrackPanelList
-          browserRef={props.browserRef}
-          currentTrack={props.currentTrack}
-          launchbarExpanded={props.launchbarExpanded}
-          toggleDrawer={props.toggleDrawer}
-          updateTrack={props.changeCurrentTrack}
-        />
-      ) : null}
+      {props.browserActivated && (
+        <Fragment>
+          <TrackPanelBar
+            drawerOpened={props.drawerOpened}
+            launchbarExpanded={props.launchbarExpanded}
+            toggleDrawer={props.toggleDrawer}
+            toggleTrackPanel={props.toggleTrackPanel}
+            trackPanelOpened={props.trackPanelOpened}
+          />
+          {props.trackPanelOpened ? (
+            <TrackPanelList
+              browserRef={props.browserRef}
+              currentTrack={props.currentTrack}
+              launchbarExpanded={props.launchbarExpanded}
+              toggleDrawer={props.toggleDrawer}
+              updateTrack={props.changeCurrentTrack}
+            />
+          ) : null}
+        </Fragment>
+      )}
     </section>
   );
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
   breakpointWidth: getBreakpointWidth(state),
+  browserActivated: getBrowserActivated(state),
   currentTrack: getCurrentTrack(state),
   drawerOpened: getDrawerOpened(state),
   launchbarExpanded: getLaunchbarExpanded(state),
