@@ -35,7 +35,7 @@ code:
         ;       #8 = elided lens
         ;      #17 misc
         ; *** utr ***
-        const #10, [1,0]
+        const #10, [1,1]
         move #12, #60
         const #17, [-3]
         add #12, #12, #17
@@ -50,7 +50,7 @@ code:
         elide #8, #16, #17
         shape #10, #7, #8, #12, #13, #15
         ; *** exon ***
-        const #10, [0,0]
+        const #10, [0,1]
         const #16, [1]
         eq #16, #3, #16
         move #7, #14
@@ -60,7 +60,7 @@ code:
         elide #8, #16, #17
         shape #10, #7, #8, #12, #13, #15
         ; *** intron ***
-        const #10, [0,0]
+        const #10, [0,1]
         const #16, [2]
         move #12, #60
         const #17, [-1]
@@ -91,7 +91,7 @@ code:
         add #14, #13, #14
         ; *** utrs and introns ***
         const #15, [205,231,254]
-        const #10, [1,0]
+        const #10, [1,1]
         move #12, #60
         const #17, [-3]
         add #12, #12, #17
@@ -113,7 +113,7 @@ code:
         shape #10, #9, #2, #12, #13, #15
         ; *** exons ***
         const #15, [75,168,252]
-        const #10, [0,0]
+        const #10, [0,1]
         const #16, [1]
         eq #16, #3, #16
         move #7, #14
@@ -156,7 +156,7 @@ code:
         add #14, #20, #14
         ; *** utrs and introns ***
         const #15, [205,231,254]
-        const #10, [1,0]
+        const #10, [1,1]
         const #16, [0]
         eq #20, #3, #16
         const #16, [2]
@@ -175,7 +175,7 @@ code:
         shape #10, #20, #2, #12, #13, #15
         ; *** exons ***
         const #15, [75,168,252]
-        const #10, [0,0]
+        const #10, [0,1]
         const #16, [1]
         eq #16, #3, #16
         move #18, #14
