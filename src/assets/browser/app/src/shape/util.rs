@@ -42,7 +42,14 @@ pub fn poly_p(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[&Input])
 
 pub fn rectangle_t(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &RFraction) {
     if let Some(obj) = pdata.get_object(key) {
-        obj.add_data(&b,&[p]);
+        let m = p.offset();
+        let n = p.far_offset();
+        obj.add_data_f32(&b,&[
+            m.0,m.1 as f32,
+            m.0,n.1 as f32,
+            n.0,n.1 as f32,
+            n.0,m.1 as f32
+        ]);
     }
 }
 
