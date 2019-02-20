@@ -332,7 +332,6 @@ fn shimmer(in_: &Vec<(i32,i32,bool)>, leaf: &Leaf) -> Vec<(i32,i32,bool)> {
             out.push((b_start as i32,b_len as i32,*sense));
         }
     }
-    console!("shimmer2 {}->{}",in_.len(),out.len());
     out
 }
 
