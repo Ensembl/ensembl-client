@@ -63,6 +63,46 @@ pub fn rng_at<F,G>(kind: [u8;8], start: i32, end: i32, rnd_size: i32,
     out
 }
 
+pub fn rng_pos(kind: [u8;8], start: i32, end: i32, sep: i32, size: i32, subtype: u32) -> Vec<(i32,i32)> {
+    let mut out = Vec::<(i32,i32)>::new();
+    let start_block = (start as f32/RNG_BLOCK_SIZE as f32).floor() as i32;
+    let end_block = (end as f32/RNG_BLOCK_SIZE as f32).ceil() as i32;
+    for block in start_block..(end_block+1) {
+        let block_start = block * RNG_BLOCK_SIZE;
+        let mut rng = generator(kind,subtype,block);
+        let mut min_start = 0;
+        while min_start < RNG_BLOCK_SIZE {
+            let rnd_start = min_start + rng.gen_range(sep/2,sep);
+            let rnd_end = rng.gen_range(0,size) + rnd_start;
+            let obj_start = rnd_start + block_start;
+            let obj_end = rnd_end + block_start;
+            if obj_end >= start && obj_start <= end {
+                out.push((obj_start,obj_end-obj_start));
+            }
+            min_start = rnd_end + rng.gen_range(size/2,size);
+        }
+    }
+    out.sort();
+    out
+}
+
+pub fn rng_subdivide(kind: [u8;8], extent: &(i32,i32), parts: u32, subtype: u32) -> Vec<i32> {
+    let mut rng = generator(kind,subtype,extent.0);
+    let mut breaks = Vec::<i32>::new();
+    let parts = rng.gen_range(parts/2,parts*2);
+    for _ in 0..parts {
+        breaks.push(rng.gen_range(0,extent.1));
+    }
+    breaks.push(0);
+    breaks.push(extent.1);
+    breaks.sort();
+    let mut out = Vec::<i32>::new();
+    for i in 0..breaks.len()-1 {
+        out.push(breaks[i+1]-breaks[i]);
+    }
+    out
+}
+
 pub fn rng_seq(kind: [u8;8], start: i32, end: i32, subtype: u32) -> String {
     let mut out = String::new();
     let start_block = (start as f32/RNG_BLOCK_SIZE as f32).floor() as i32;
@@ -102,6 +142,68 @@ pub fn rng_contig(kind: [u8;8], start: i32, end: i32, rnd_size: i32, end_p: f64)
         prev_val = Some(in_);
     });
     out
+}
+
+pub struct RngGene {
+    kind: [u8;8],
+    pad: i32,
+    sep: i32,
+    size: i32,
+    parts: u32
+}
+
+impl RngGene {
+    pub fn new(kind: [u8;8], pad: i32, sep: i32, size: i32, parts: u32) -> RngGene {
+        RngGene { kind, sep, size, parts, pad }
+    }
+}
+
+impl FakeDataGenerator for RngGene {
+    fn generate(&self, leaf: &Leaf) -> Vec<Value> {
+        let start = leaf.get_start() as i32;
+        let end = leaf.get_end() as i32;
+        let genes = rng_pos(self.kind,start-self.pad,end+self.pad,
+                          self.sep,self.size,0);
+        let mut starts = Vec::<f64>::new();
+        let mut lens = Vec::<f64>::new();
+        let mut pattern = Vec::<f64>::new();
+        let mut nump = Vec::<f64>::new();
+        let mut utrs = Vec::<f64>::new();
+        let mut exons = Vec::<f64>::new();
+        let mut introns = Vec::<f64>::new();
+        for (start,len) in genes {
+            if start < 0 { continue; }
+            starts.push(start as f64);
+            let subs = rng_subdivide(self.kind,&(start,len),self.parts,1);
+            pattern.push(0.);
+            let mut subs_iter = subs.iter();
+            utrs.push(*subs_iter.next().unwrap() as f64);
+            nump.push(subs.len() as f64);
+            let mut num = subs.len()-2;
+            let mut sense = true;
+            while num > 0 {
+                pattern.push(if sense { 1. } else { 2. });
+                if sense {
+                    exons.push(*subs_iter.next().unwrap() as f64);
+                } else {
+                    introns.push(*subs_iter.next().unwrap() as f64);
+                }
+                num -= 1;
+                sense = !sense;
+            }
+            pattern.push(0.);
+            utrs.push(*subs_iter.next().unwrap() as f64);
+            lens.push(len as f64);
+        }
+        vec! {
+            Value::new_from_float(starts),
+            Value::new_from_float(nump),
+            Value::new_from_float(pattern),
+            Value::new_from_float(utrs),
+            Value::new_from_float(exons),
+            Value::new_from_float(introns),
+        }
+    }
 }
 
 pub struct RngContig {

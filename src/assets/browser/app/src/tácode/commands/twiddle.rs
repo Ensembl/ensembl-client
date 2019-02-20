@@ -15,6 +15,7 @@ fn not(data: &Vec<f64>) -> Vec<f64> {
 }
 
 fn elide(data: &Vec<f64>, bools: &Vec<f64>, stride: &Vec<f64>) -> Vec<f64> {
+    if bools.len() == 0 { return vec!{}; }
     let mut out = Vec::<f64>::new();
     let mut data_iter = data.iter();
     let mut bool_iter = bools.iter().cycle();
@@ -349,7 +350,6 @@ impl Instruction for MergeI {
         rest.remove(0);
         rest.remove(0);
         let rest = rest.iter().map(|x| x.reg()).collect();
-        console!("merge {:?}",args[1].reg());
         Box::new(Merge(args[0].reg(),args[1].reg(),rest))
     }
 }
