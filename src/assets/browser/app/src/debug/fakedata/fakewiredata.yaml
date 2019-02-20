@@ -1,386 +1,498 @@
-tácode:
-    gc--AO:
-        code: |
-            ; y-position
-            plot #7
-            const #8, [0]
-            get #60, #7, #8
-            ; split transport format into parts
-            ; IN:   #1 = gene-starts
-            ;       #2 = gene-parts
-            ;       #3 = part-type
-            ;       #4 = UTR lengths
-            ;       #5 = exon lengths
-            ;       #6 = intron lengths
-            ; OUT: #14 = part start
-            ;      #11 = part len
-            ;       #3 = part type
-            ; TMP: #10, #12, #13
-            runsof #10, #2, #1
-            merge #11, #3, #4, #5, #6
-            accn #12, #11, #2
-            add #13, #10, #12
-            const #14, [-1]
-            mul #14, #11, #14
-            add #14, #13, #14
-            ; extract + draw
-            ; IN:  #14 = part start
-            ;      #11 = part len
-            ;       #3 = part type
-            ; USE: #10 = shape type
-            ;      #12 = y-pos
-            ;      #13 = height
-            ;      #15 = colour
-            ;      #16 = this type / elision array
-            ; TMP:  #7 = elided starts
-            ;       #8 = elided lens
-            ;      #17 misc
-            ; *** utr ***
-            const #10, [1,0]
-            move #12, #60
-            const #17, [-3]
-            add #12, #12, #17
-            const #13, [6]
-            const #15, [75,168,252]
-            const #16, [0]
-            eq #16, #3, #16
-            move #7, #14
-            const #17, [1]
-            elide #7, #16, #17
-            move #8, #11
-            elide #8, #16, #17
-            shape #10, #7, #8, #12, #13, #15
-            ; *** exon ***
-            const #10, [0,0]
-            const #16, [1]
-            eq #16, #3, #16
-            move #7, #14
-            const #17, [1]
-            elide #7, #16, #17
-            move #8, #11
-            elide #8, #16, #17
-            shape #10, #7, #8, #12, #13, #15
-            ; *** intron ***
-            const #10, [0,0]
-            const #16, [2]
-            move #12, #60
-            const #17, [-1]
-            add #12, #12, #17
-            const #13, [2]
-            eq #16, #3, #16
-            move #7, #14
-            const #17, [1]
-            elide #7, #16, #17
-            move #8, #11
-            elide #8, #16, #17
-            shape #10, #7, #8, #12, #13, #15
-        data:
-            - gene:
-                seed: 1
-                pad: 250000
-                sep: 54000
-                size: 54000
-                parts: 12
+code:
+    gene-transcript: |
+        ; y-position
+        plot #7
+        const #8, [0]
+        get #60, #7, #8
+        ; split transport format into parts
+        ; IN:   #1 = gene-starts
+        ;       #2 = gene-parts
+        ;       #3 = part-type
+        ;       #4 = UTR lengths
+        ;       #5 = exon lengths
+        ;       #6 = intron lengths
+        ; OUT: #14 = part start
+        ;      #11 = part len
+        ;       #3 = part type
+        ; TMP: #10, #12, #13
+        runsof #10, #2, #1
+        merge #11, #3, #4, #5, #6
+        accn #12, #11, #2
+        add #13, #10, #12
+        const #14, [-1]
+        mul #14, #11, #14
+        add #14, #13, #14
+        ; extract + draw
+        ; IN:  #14 = part start
+        ;      #11 = part len
+        ;       #3 = part type
+        ; USE: #10 = shape type
+        ;      #12 = y-pos
+        ;      #13 = height
+        ;      #15 = colour
+        ;      #16 = this type / elision array
+        ; TMP:  #7 = elided starts
+        ;       #8 = elided lens
+        ;      #17 misc
+        ; *** utr ***
+        const #10, [1,0]
+        move #12, #60
+        const #17, [-3]
+        add #12, #12, #17
+        const #13, [6]
+        const #15, [75,168,252]
+        const #16, [0]
+        eq #16, #3, #16
+        move #7, #14
+        const #17, [1]
+        elide #7, #16, #17
+        move #8, #11
+        elide #8, #16, #17
+        shape #10, #7, #8, #12, #13, #15
+        ; *** exon ***
+        const #10, [0,0]
+        const #16, [1]
+        eq #16, #3, #16
+        move #7, #14
+        const #17, [1]
+        elide #7, #16, #17
+        move #8, #11
+        elide #8, #16, #17
+        shape #10, #7, #8, #12, #13, #15
+        ; *** intron ***
+        const #10, [0,0]
+        const #16, [2]
+        move #12, #60
+        const #17, [-1]
+        add #12, #12, #17
+        const #13, [2]
+        eq #16, #3, #16
+        move #7, #14
+        const #17, [1]
+        elide #7, #16, #17
+        move #8, #11
+        elide #8, #16, #17
+        shape #10, #7, #8, #12, #13, #15
 
-    gc--PP:
-        code: |
-            ; y-position
-            plot #7
-            const #8, [0]
-            get #60, #7, #8
-            ; see previous scale for details in comments.
-            ; register usage essentially same.
-            ; We also use #9, as tmp and reuse #1,#2 as tmp.
-            runsof #10, #2, #1
-            merge #11, #3, #4, #5, #6
-            accn #12, #11, #2
-            add #13, #10, #12
-            const #14, [-1]
-            mul #14, #11, #14
-            add #14, #13, #14
-            ; *** utrs and introns ***
-            const #15, [205,231,254]
-            const #10, [1,0]
-            move #12, #60
-            const #17, [-3]
-            add #12, #12, #17
-            const #13, [6]
-            const #16, [0]
-            eq #9, #3, #16
-            const #16, [2]
-            eq #16, #3, #16
-            or #16, #16, #9
-            move #7, #14
-            const #17, [1]
-            elide #7, #16, #17
-            move #8, #11
-            elide #8, #16, #17
-            runs #9, #7, #8
-            const #1, [-0.45]
-            add #9, #9, #1
-            const #2, [0.9]
-            shape #10, #9, #2, #12, #13, #15
-            ; *** exons ***
-            const #15, [75,168,252]
-            const #10, [0,0]
-            const #16, [1]
-            eq #16, #3, #16
-            move #7, #14
-            const #17, [1]
-            elide #7, #16, #17
-            move #8, #11
-            elide #8, #16, #17
-            runs #9, #7, #8
-            const #1, [-0.45]
-            add #9, #9, #1
-            const #2, [0.9]
-            shape #10, #9, #2, #12, #13, #15
-        data:
-            - gene:
-                seed: 1
-                pad: 250000
-                sep: 54000
-                size: 54000
-                parts: 12
+    gene-empty-box: |
+        ; y-position
+        plot #7
+        const #8, [0]
+        get #60, #7, #8
+        ; see previous scale for details in comments.
+        ; register usage essentially same.
+        ; We also use #9, as tmp and reuse #1,#2 as tmp.
+        runsof #10, #2, #1
+        merge #11, #3, #4, #5, #6
+        accn #12, #11, #2
+        add #13, #10, #12
+        const #14, [-1]
+        mul #14, #11, #14
+        add #14, #13, #14
+        ; *** utrs and introns ***
+        const #15, [205,231,254]
+        const #10, [1,0]
+        move #12, #60
+        const #17, [-3]
+        add #12, #12, #17
+        const #13, [6]
+        const #16, [0]
+        eq #9, #3, #16
+        const #16, [2]
+        eq #16, #3, #16
+        or #16, #16, #9
+        move #7, #14
+        const #17, [1]
+        elide #7, #16, #17
+        move #8, #11
+        elide #8, #16, #17
+        runs #9, #7, #8
+        const #1, [-0.45]
+        add #9, #9, #1
+        const #2, [0.9]
+        shape #10, #9, #2, #12, #13, #15
+        ; *** exons ***
+        const #15, [75,168,252]
+        const #10, [0,0]
+        const #16, [1]
+        eq #16, #3, #16
+        move #7, #14
+        const #17, [1]
+        elide #7, #16, #17
+        move #8, #11
+        elide #8, #16, #17
+        runs #9, #7, #8
+        const #1, [-0.45]
+        add #9, #9, #1
+        const #2, [0.9]
+        shape #10, #9, #2, #12, #13, #15
 
-    gc--QS:
-        code: |
-            ; y-position
-            plot #61
-            const #62, [0]
-            get #60, #61, #62
-            ; see previous two scales for details in comments.
-            ; register usage essentially same except we need to move
-            ; #7 -> #18; #8 -> #19; #9 -> #20 for extra seq data
-            ; *** scale (for size) ***
-            const #17, [
-                 12, 24, 24, 24, 24, 24, 24, 24, 24, 24
-            ]
-            scale #18
-            const #19, [-16]
-            add #18, #18, #19
-            get #13, #17, #18
-            const #12, [-0.5]
-            mul #12, #13, #12
-            add #12, #12, #60
-            ; decode necklaces
-            runsof #10, #2, #1
-            merge #11, #3, #4, #5, #6
-            accn #14, #11, #2
-            add #20, #10, #14
-            const #14, [-1]
-            mul #14, #11, #14
-            add #14, #20, #14
-            ; *** utrs and introns ***
-            const #15, [205,231,254]
-            const #10, [1,0]
-            const #16, [0]
-            eq #20, #3, #16
-            const #16, [2]
-            eq #16, #3, #16
-            or #16, #16, #20
-            move #18, #14
-            const #17, [1]
-            elide #18, #16, #17
-            move #19, #11
-            elide #19, #16, #17
-            runs #20, #18, #19
-            const #1, [-0.45]
-            add #20, #20, #1
-            move #36, #20
-            const #2, [0.9]
-            shape #10, #20, #2, #12, #13, #15
-            ; *** exons ***
-            const #15, [75,168,252]
-            const #10, [0,0]
-            const #16, [1]
-            eq #16, #3, #16
-            move #18, #14
-            const #17, [1]
-            elide #18, #16, #17
-            move #19, #11
-            elide #19, #16, #17
-            runs #20, #18, #19
-            const #1, [-0.45]
-            add #20, #20, #1
-            move #35, #20
-            const #2, [0.9]
-            shape #10, #20, #2, #12, #13, #15
-            ; *** exon text ***
-            const #27, "ACGT"
-            const #28, [1,1,1,1]
-            const #40, "Lato"
-            const #41, [12,1,255,255,255,75,168,252]
-            text #29, #40, #41, #27, #28
-            index #57, #7, #27
-            const #30, [1]
-            pick #29, #57, #29, #30
-            const #31, [3,1]
-            runs #27, #8, #9
-            member #34, #27, #35
-            elide #27, #34, #30
-            const #33, [520]
-            move #33, #12
-            const #50, [0.5]
-            mul #63, #13, #50
-            const #50, [2]
-            add #63, #63, #50
-            add #33, #33, #63
-            shape #31, #27, #0, #33, #0, #29
-            ; *** intron text ***
-            const #27, "ACGT"
-            const #28, [1,1,1,1]
-            const #40, "Lato"
-            const #41, [12,0,75,168,252,255,255,255]
-            text #29, #40, #41, #27, #28
-            index #57, #7, #27
-            const #30, [1]
-            pick #29, #57, #29, #30
-            const #31, [3,1]
-            runs #27, #8, #9
-            member #34, #27, #36
-            elide #27, #34, #30
-            const #33, [520]
-            move #33, #12
-            const #50, [0.5]
-            mul #63, #13, #50
-            const #50, [2]
-            add #63, #63, #50
-            add #33, #33, #63
-            shape #31, #27, #0, #33, #0, #29
-        data:
-            - gene:
-                seed: 1
-                pad: 10
-                sep: 54000
-                size: 54000
-                parts: 12
-                seq: true
+    gene-letterbox: |
+        ; y-position
+        plot #61
+        const #62, [0]
+        get #60, #61, #62
+        ; see previous two scales for details in comments.
+        ; register usage essentially same except we need to move
+        ; #7 -> #18; #8 -> #19; #9 -> #20 for extra seq data
+        ; *** scale (for size) ***
+        const #17, [
+             12, 24, 24, 24, 24, 24, 24, 24, 24, 24
+        ]
+        scale #18
+        const #19, [-16]
+        add #18, #18, #19
+        get #13, #17, #18
+        const #12, [-0.5]
+        mul #12, #13, #12
+        add #12, #12, #60
+        ; decode necklaces
+        runsof #10, #2, #1
+        merge #11, #3, #4, #5, #6
+        accn #14, #11, #2
+        add #20, #10, #14
+        const #14, [-1]
+        mul #14, #11, #14
+        add #14, #20, #14
+        ; *** utrs and introns ***
+        const #15, [205,231,254]
+        const #10, [1,0]
+        const #16, [0]
+        eq #20, #3, #16
+        const #16, [2]
+        eq #16, #3, #16
+        or #16, #16, #20
+        move #18, #14
+        const #17, [1]
+        elide #18, #16, #17
+        move #19, #11
+        elide #19, #16, #17
+        runs #20, #18, #19
+        const #1, [-0.45]
+        add #20, #20, #1
+        move #36, #20
+        const #2, [0.9]
+        shape #10, #20, #2, #12, #13, #15
+        ; *** exons ***
+        const #15, [75,168,252]
+        const #10, [0,0]
+        const #16, [1]
+        eq #16, #3, #16
+        move #18, #14
+        const #17, [1]
+        elide #18, #16, #17
+        move #19, #11
+        elide #19, #16, #17
+        runs #20, #18, #19
+        const #1, [-0.45]
+        add #20, #20, #1
+        move #35, #20
+        const #2, [0.9]
+        shape #10, #20, #2, #12, #13, #15
+        ; *** exon text ***
+        const #27, "ACGT"
+        const #28, [1,1,1,1]
+        const #40, "Lato"
+        const #41, [12,1,255,255,255,75,168,252]
+        text #29, #40, #41, #27, #28
+        index #57, #7, #27
+        const #30, [1]
+        pick #29, #57, #29, #30
+        const #31, [3,1]
+        runs #27, #8, #9
+        member #34, #27, #35
+        elide #27, #34, #30
+        const #33, [520]
+        move #33, #12
+        const #50, [0.5]
+        mul #63, #13, #50
+        const #50, [2]
+        add #63, #63, #50
+        add #33, #33, #63
+        shape #31, #27, #0, #33, #0, #29
+        ; *** intron text ***
+        const #27, "ACGT"
+        const #28, [1,1,1,1]
+        const #40, "Lato"
+        const #41, [12,0,75,168,252,255,255,255]
+        text #29, #40, #41, #27, #28
+        index #57, #7, #27
+        const #30, [1]
+        pick #29, #57, #29, #30
+        const #31, [3,1]
+        runs #27, #8, #9
+        member #34, #27, #36
+        elide #27, #34, #30
+        const #33, [520]
+        move #33, #12
+        const #50, [0.5]
+        mul #63, #13, #50
+        const #50, [2]
+        add #63, #63, #50
+        add #33, #33, #63
+        shape #31, #27, #0, #33, #0, #29
 
-    ################
-    # CONTIG TRACK #
-    ################
+    contig-heatmap: |
+        ; #1 = starts
+        ; #2 = lens
+        ; #3 = colour box
+        const #4, [233]
+        const #5, [6]
+        const #6, [192,192,192,128,128,128]
+        const #7, [3]
+        pick #6, #3, #6, #7
+        shape #0, #1, #2, #4, #5, #6
 
-    # contig heatmap
-    contig--AI:
-        code: |
-            ; #1 = starts
-            ; #2 = lens
-            ; #3 = colour box
-            const #4, [233]
-            const #5, [6]
-            const #6, [192,192,192,128,128,128]
-            const #7, [3]
-            pick #6, #3, #6, #7
-            shape #0, #1, #2, #4, #5, #6
-        data:
-            - contig:
-                seed: 8
-                len: 10000
-                prop: 0.9
-                pad: 20000
-                shimmer: true
+    contig-normal: |
+        ; #1 = starts
+        ; #2 = lens
+        ; #3 = colour box
+        const #4, [233]
+        const #5, [6]
+        const #6, [192,192,192,128,128,128]
+        const #7, [3]
+        pick #6, #3, #6, #7
+        shape #0, #1, #2, #4, #5, #6
 
-    # actual contigs
-    contig--JO:
-        code: |
-            ; #1 = starts
-            ; #2 = lens
-            ; #3 = colour box
-            const #4, [233]
-            const #5, [6]
-            const #6, [192,192,192,128,128,128]
-            const #7, [3]
-            pick #6, #3, #6, #7
-            shape #0, #1, #2, #4, #5, #6
-        data:
-            - contig:
-                seed: 8
-                len: 10000
-                prop: 0.9
-                pad: 20000
+    contig-empty-box: |
+        ; #1 = start box frag
+        ; #2 = len box frag
+        ; #3 = colour box frag
+        ; *** scales ***
+        const #13, [232] ; #13 = box y-start
+        const #14, [8] ; #14 = box y-height
+        ; *** boxes ***
+        runs #7, #1, #2    ; #7 = list of box starts
+        const #16, [-0.45] ; #16 = left shift ~0.5bp
+        add #7, #7, #16    ; #7 = starts shifted left 0.5bp
+        const #12, [0.9]   ; #12 = box size
+        runsof #3, #2, #3  ; #3 = colours to positions
+        const #15, [192,192,192,128,128,128] ; #15 = box colour palette
+        const #17, [3]     ; #17 = pallete stride 3
+        pick #15, #3, #15, #17 ; #15 = box colours
+        const #16, [1,1]   ; #16 = [hollow-box,spot-colour]
+        shape #16, #7, #12, #13, #14, #15 ; draw boxes
 
-    # boxes without letters in
-    contig--PP:
-        code: |
-            ; #1 = start box frag
-            ; #2 = len box frag
-            ; #3 = colour box frag
-            ; *** scales ***
-            const #13, [232] ; #13 = box y-start
-            const #14, [8] ; #14 = box y-height
-            ; *** boxes ***
-            runs #7, #1, #2    ; #7 = list of box starts
-            const #16, [-0.45] ; #16 = left shift ~0.5bp
-            add #7, #7, #16    ; #7 = starts shifted left 0.5bp
-            const #12, [0.9]   ; #12 = box size
-            runsof #3, #2, #3  ; #3 = colours to positions
-            const #15, [192,192,192,128,128,128] ; #15 = box colour palette
-            const #17, [3]     ; #17 = pallete stride 3
-            pick #15, #3, #15, #17 ; #15 = box colours
-            const #16, [1,1]   ; #16 = [hollow-box,spot-colour]
-            shape #16, #7, #12, #13, #14, #15 ; draw boxes
-        data:
-            - contig:
-                seed: 8
-                len: 10000
-                prop: 0.9
-                pad: 10
- 
-    # boxes with letters in
-    contig--QS:
-        code: |
-            ; #1 = sequence
-            ; #2 = start pos of seq frag
-            ; #3 = len of seq frag
-            ; #4 = start box frag
-            ; #5 = len box frag
-            ; #6 = colour box frag
-            ; *** scale (for size) ***
-            const #16, [
-                230,224,224,224,224,224,224,224,224,244
-            ] ; #16 = y-starts Q, RZ
-            const #17, [
-                 12, 24, 24, 24, 24, 24, 24, 24, 24, 24
-            ] ; #17 = y-sizes Q, RZ
-            scale #18 ; #18 = scale
-            const #19, [-16] ; #19 = start at Q
-            add #18, #18, #19 ; #18 = scale (Q-based)
-            get #13, #16, #18 ; #13 = box y-start
-            get #14, #17, #18 ; #14 = box y-height
-            ; *** boxes ***
-            runs #7, #4, #5    ; #7 = list of box starts
-            const #16, [-0.45] ; #16 = left shift ~0.5bp
-            add #7, #7, #16    ; #7 = starts shifted left 0.5bp
-            const #12, [0.9]   ; #12 = box size
-            runsof #6, #5, #6  ; #6 = colours to positions
-            const #15, [192,192,192,128,128,128] ; #15 = box colour palette
-            const #17, [3]     ; #17 = pallete stride 3
-            pick #15, #6, #15, #17 ; #15 = box colours
-            const #16, [1,1]   ; #16 = [hollow-box,spot-colour]
-            shape #16, #7, #12, #13, #14, #15 ; draw boxes
-            ; *** sequence ***
-            const #7, "ACGT"   ; #7 = available sequence
-            const #8, [1,1,1,1]; #8 = length of seqeunces
-            const #40, "Lato"
-            const #41, [12,1,192,192,192,255,255,255]
-            text #9, #40, #41, #7, #8    ; #9 = textures for A,C,G,T
-            index #1, #1, #7   ; #1 = 0=A, 1=C, 2=G, 3=T for seq
-            const #10, [1]     ; #10 = stride 1 for texture ids
-            pick #9, #1, #9, #10 ; #9 = 0123 to tex id for seq
-            const #11, [3,1]   ; #11 = [texture-pin]
-            runs #7, #2, #3    ; #7 = position of sequence
-            const #13, [239]   ; #13 = letter y-start
-            shape #11, #7, #0, #13, #0, #9 ; draw letter
-        data:
-            - contig:
-                seed: 8
-                len: 10000
-                prop: 0.9
-                pad: 0
-                seq: true
-            - contig:
-                seed: 8
-                len: 10000
-                prop: 0.9
-                pad: 20000
+    contig-letterbox: |
+        ; #1 = sequence
+        ; #2 = start pos of seq frag
+        ; #3 = len of seq frag
+        ; #4 = start box frag
+        ; #5 = len box frag
+        ; #6 = colour box frag
+        ; *** scale (for size) ***
+        const #16, [
+            230,224,224,224,224,224,224,224,224,244
+        ] ; #16 = y-starts Q, RZ
+        const #17, [
+             12, 24, 24, 24, 24, 24, 24, 24, 24, 24
+        ] ; #17 = y-sizes Q, RZ
+        scale #18 ; #18 = scale
+        const #19, [-16] ; #19 = start at Q
+        add #18, #18, #19 ; #18 = scale (Q-based)
+        get #13, #16, #18 ; #13 = box y-start
+        get #14, #17, #18 ; #14 = box y-height
+        ; *** boxes ***
+        runs #7, #4, #5    ; #7 = list of box starts
+        const #16, [-0.45] ; #16 = left shift ~0.5bp
+        add #7, #7, #16    ; #7 = starts shifted left 0.5bp
+        const #12, [0.9]   ; #12 = box size
+        runsof #6, #5, #6  ; #6 = colours to positions
+        const #15, [192,192,192,128,128,128] ; #15 = box colour palette
+        const #17, [3]     ; #17 = pallete stride 3
+        pick #15, #6, #15, #17 ; #15 = box colours
+        const #16, [1,1]   ; #16 = [hollow-box,spot-colour]
+        shape #16, #7, #12, #13, #14, #15 ; draw boxes
+        ; *** sequence ***
+        const #7, "ACGT"   ; #7 = available sequence
+        const #8, [1,1,1,1]; #8 = length of seqeunces
+        const #40, "Lato"
+        const #41, [12,1,192,192,192,255,255,255]
+        text #9, #40, #41, #7, #8    ; #9 = textures for A,C,G,T
+        index #1, #1, #7   ; #1 = 0=A, 1=C, 2=G, 3=T for seq
+        const #10, [1]     ; #10 = stride 1 for texture ids
+        pick #9, #1, #9, #10 ; #9 = 0123 to tex id for seq
+        const #11, [3,1]   ; #11 = [texture-pin]
+        runs #7, #2, #3    ; #7 = position of sequence
+        const #13, [239]   ; #13 = letter y-start
+        shape #11, #7, #0, #13, #0, #9 ; draw letter
+
+
+
+requests:
+    tácode:
+        gene-pc-fwd--AO:
+            code: gene-transcript
+            data:
+                - gene:
+                    seed: 1
+                    pad: 250000
+                    sep: 54000
+                    size: 54000
+                    parts: 12
+
+        gene-pc-fwd--PP:
+            code: gene-empty-box
+            data:
+                - gene:
+                    seed: 1
+                    pad: 250000
+                    sep: 54000
+                    size: 54000
+                    parts: 12
+
+        gene-pc-fwd--QS:
+            code: gene-letterbox
+            data:
+                - gene:
+                    seed: 1
+                    pad: 10
+                    sep: 54000
+                    size: 54000
+                    parts: 12
+                    seq: true
+
+        gene-pc-rev--AO:
+            code: gene-transcript
+            data:
+                - gene:
+                    seed: 2
+                    pad: 250000
+                    sep: 54000
+                    size: 54000
+                    parts: 12
+
+        gene-pc-rev--PP:
+            code: gene-empty-box
+            data:
+                - gene:
+                    seed: 2
+                    pad: 250000
+                    sep: 54000
+                    size: 54000
+                    parts: 12
+
+        gene-pc-rev--QS:
+            code: gene-letterbox
+            data:
+                - gene:
+                    seed: 2
+                    pad: 10
+                    sep: 54000
+                    size: 54000
+                    parts: 12
+                    seq: true
+
+        gene-other-fwd--AO:
+            code: gene-transcript
+            data:
+                - gene:
+                    seed: 3
+                    pad: 250000
+                    sep: 54000
+                    size: 54000
+                    parts: 12
+
+        gene-other-fwd--PP:
+            code: gene-empty-box
+            data:
+                - gene:
+                    seed: 3
+                    pad: 250000
+                    sep: 54000
+                    size: 54000
+                    parts: 12
+
+        gene-other-fwd--QS:
+            code: gene-letterbox
+            data:
+                - gene:
+                    seed: 3
+                    pad: 10
+                    sep: 54000
+                    size: 54000
+                    parts: 12
+                    seq: true
+
+        gene-other-rev--AO:
+            code: gene-transcript
+            data:
+                - gene:
+                    seed: 4
+                    pad: 250000
+                    sep: 54000
+                    size: 54000
+                    parts: 12
+
+        gene-other-rev--PP:
+            code: gene-empty-box
+            data:
+                - gene:
+                    seed: 4
+                    pad: 250000
+                    sep: 54000
+                    size: 54000
+                    parts: 12
+
+        gene-other-rev--QS:
+            code: gene-letterbox
+            data:
+                - gene:
+                    seed: 4
+                    pad: 10
+                    sep: 54000
+                    size: 54000
+                    parts: 12
+                    seq: true
+
+
+        ################
+        # CONTIG TRACK #
+        ################
+
+        # contig heatmap
+        contig--AI:
+            code: contig-heatmap
+            data:
+                - contig:
+                    seed: 8
+                    len: 10000
+                    prop: 0.9
+                    pad: 20000
+                    shimmer: true
+
+        # actual contigs
+        contig--JO:
+            code: contig-normal
+            data:
+                - contig:
+                    seed: 8
+                    len: 10000
+                    prop: 0.9
+                    pad: 20000
+
+        # boxes without letters in
+        contig--PP:
+            code: contig-empty-box
+            data:
+                - contig:
+                    seed: 8
+                    len: 10000
+                    prop: 0.9
+                    pad: 10
+     
+        # boxes with letters in
+        contig--QS:
+            code: contig-letterbox
+            data:
+                - contig:
+                    seed: 8
+                    len: 10000
+                    prop: 0.9
+                    pad: 0
+                    seq: true
+                - contig:
+                    seed: 8
+                    len: 10000
+                    prop: 0.9
+                    pad: 20000
