@@ -6,6 +6,9 @@ import {
 } from './browserState';
 import { DrawerSection } from './drawer/drawerSectionConfig';
 
+export const getBrowserActivated = (state: RootState): boolean =>
+  state.browser.browserActivated;
+
 export const getBrowserOpenState = (state: RootState): BrowserOpenState =>
   state.browser.browserOpenState;
 
