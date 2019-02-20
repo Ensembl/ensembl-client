@@ -25,7 +25,7 @@ export const BrowserNavIcon: FunctionComponent<BrowserNavIconProps> = (
     if (maxState === false) {
       browserImageEl.dispatchEvent(navEvent);
     }
-  }, [navEvent, browserImageEl]);
+  }, [maxState, browserImageEl]);
 
   const iconUrl = maxState ? icon.off : icon.on;
 
