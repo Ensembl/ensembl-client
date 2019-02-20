@@ -518,16 +518,6 @@ impl TáCardData {
     }
 }
 
-pub fn tá_source_ts(tc: &Tácode, xf: &DebugXferClerk, type_: &DebugSourceType) -> Option<impl Source> {
-    let type_ = type_.clone();
-    match type_ {
-        DebugSourceType::GC => {
-            Some(TáSource::new(&tc,Box::new(xf.clone()),type_.get_name()))
-        },
-        _ => None
-    }
-}
-
 pub fn tá_source_cs(type_: &DebugSourceType) -> impl Source {
     let type_ = type_.clone();
     let p = Palette {
@@ -550,28 +540,18 @@ pub fn tá_source_cs(type_: &DebugSourceType) -> impl Source {
                 closure_done(lc,TRACKS*PITCH+TOP);
             })
         },
-        
+        /*
         DebugSourceType::Contig => {
             ClosureSource::new(0.,move |ref mut lc,leaf| {
                 contig_track(lc,&leaf,&p,3);
                 closure_done(lc,TRACKS*PITCH+TOP);
             })
         },
-        /*
         DebugSourceType::Variant => {
                 // Variant track goes here
                 //variant_track(lc,&leaf,&p,7);
         },
         */
-        DebugSourceType::GenePc => {
-            ClosureSource::new(0.,move |ref mut lc,leaf| {
-                gene_track(lc,&leaf,&p,1);
-                gene_track(lc,&leaf,&p,2);
-                gene_track(lc,&leaf,&p,4);
-                gene_track(lc,&leaf,&p,5);
-                closure_done(lc,TRACKS*PITCH+TOP);
-            })
-        },
         _ => {
             ClosureSource::new(0.,move |ref mut lc,leaf| {
                 closure_done(lc,TRACKS*PITCH+TOP);

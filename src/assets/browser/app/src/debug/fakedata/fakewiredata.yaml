@@ -1,6 +1,10 @@
 tácode:
     gc--AO:
         code: |
+            ; y-position
+            plot #7
+            const #8, [0]
+            get #60, #7, #8
             ; split transport format into parts
             ; IN:   #1 = gene-starts
             ;       #2 = gene-parts
@@ -33,7 +37,9 @@ tácode:
             ;      #17 misc
             ; *** utr ***
             const #10, [1,0]
-            const #12, [502]
+            move #12, #60
+            const #17, [-3]
+            add #12, #12, #17
             const #13, [6]
             const #15, [75,168,252]
             const #16, [0]
@@ -57,7 +63,9 @@ tácode:
             ; *** intron ***
             const #10, [0,0]
             const #16, [2]
-            const #12, [504]
+            move #12, #60
+            const #17, [-1]
+            add #12, #12, #17
             const #13, [2]
             eq #16, #3, #16
             move #7, #14
@@ -76,6 +84,10 @@ tácode:
 
     gc--PP:
         code: |
+            ; y-position
+            plot #7
+            const #8, [0]
+            get #60, #7, #8
             ; see previous scale for details in comments.
             ; register usage essentially same.
             ; We also use #9, as tmp and reuse #1,#2 as tmp.
@@ -89,7 +101,9 @@ tácode:
             ; *** utrs and introns ***
             const #15, [205,231,254]
             const #10, [1,0]
-            const #12, [502]
+            move #12, #60
+            const #17, [-3]
+            add #12, #12, #17
             const #13, [6]
             const #16, [0]
             eq #9, #3, #16
@@ -101,7 +115,6 @@ tácode:
             elide #7, #16, #17
             move #8, #11
             elide #8, #16, #17
-            ; shape #10, #7, #8, #12, #13, #15
             runs #9, #7, #8
             const #1, [-0.45]
             add #9, #9, #1
@@ -117,7 +130,6 @@ tácode:
             elide #7, #16, #17
             move #8, #11
             elide #8, #16, #17
-            ; shape #10, #7, #8, #12, #13, #15
             runs #9, #7, #8
             const #1, [-0.45]
             add #9, #9, #1
@@ -133,21 +145,24 @@ tácode:
 
     gc--QS:
         code: |
+            ; y-position
+            plot #61
+            const #62, [0]
+            get #60, #61, #62
             ; see previous two scales for details in comments.
             ; register usage essentially same except we need to move
             ; #7 -> #18; #8 -> #19; #9 -> #20 for extra seq data
             ; *** scale (for size) ***
-            const #16, [
-                500,494,494,494,494,494,494,494,494,494
-            ]
             const #17, [
                  12, 24, 24, 24, 24, 24, 24, 24, 24, 24
             ]
             scale #18
             const #19, [-16]
             add #18, #18, #19
-            get #12, #16, #18
             get #13, #17, #18
+            const #12, [-0.5]
+            mul #12, #13, #12
+            add #12, #12, #60
             ; decode necklaces
             runsof #10, #2, #1
             merge #11, #3, #4, #5, #6
