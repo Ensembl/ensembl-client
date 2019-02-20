@@ -8,7 +8,7 @@ mod twiddle;
 
 pub use self::appget::AppGetI;
 pub use self::debug::{ CPrintI, DPrintI };
-pub use self::geometry::{ AbuttI, ExtentI, ScaleI };
+pub use self::geometry::{ AbuttI, ExtentI, PlotI, ScaleI };
 pub use self::op::{ BinOpI, BinOpType, MemberI };
 pub use self::shape::{ ShapeI };
 pub use self::text::{ TextI };

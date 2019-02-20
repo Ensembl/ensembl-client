@@ -36,6 +36,8 @@ pub struct Abutt(usize,usize);
 pub struct Extent(TáContext,usize); 
 // scale #out
 pub struct Scale(TáContext,usize);
+// plot #offset/height
+pub struct Plot(TáContext,usize);
 
 impl Command for Abutt {
     fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
@@ -81,9 +83,20 @@ impl Command for Scale {
     }
 }
 
+impl Command for Plot {
+    #[allow(irrefutable_let_patterns)]
+    fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        regs.set(self.1,Value::new_from_float(vec![404.,18.]));
+        return 1;
+    }
+}
+
 pub struct AbuttI();
 pub struct ExtentI(pub TáContext);
 pub struct ScaleI(pub TáContext);
+pub struct PlotI(pub TáContext);
+
 
 impl Instruction for AbuttI {
     fn signature(&self) -> Signature { Signature::new("abutt","rr") }
@@ -103,5 +116,12 @@ impl Instruction for ScaleI {
     fn signature(&self) -> Signature { Signature::new("scale","r") }
     fn build(&self, args: &Vec<Argument>) -> Box<Command> {
         Box::new(Scale(self.0.clone(),args[0].reg()))
+    }
+}
+
+impl Instruction for PlotI {
+    fn signature(&self) -> Signature { Signature::new("plot","r") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(Plot(self.0.clone(),args[0].reg()))
     }
 }

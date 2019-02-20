@@ -6,8 +6,10 @@ use tácode::Tácode;
 
 #[derive(PartialEq,Eq,Hash,Clone,Debug)]
 pub enum DebugSourceType {
-    GenePc,
-    GeneOther,
+    GenePcFwd,
+    GeneOtherFwd,
+    GenePcRev,
+    GeneOtherRev,
     Variant,
     Contig,
     GC,
@@ -16,12 +18,14 @@ pub enum DebugSourceType {
 
 lazy_static! {
     static ref SOURCE_TYPES : HashMap<String,DebugSourceType> = hashmap_s! {
-        "internal:debug:gene-pc"    => DebugSourceType::GenePc,
-        "internal:debug:gene-other" => DebugSourceType::GeneOther,
-        "internal:debug:variant"    => DebugSourceType::Variant,
-        "internal:debug:contig"     => DebugSourceType::Contig,
-        "internal:debug:gc"         => DebugSourceType::GC,
-        "internal:debug:zzz-framework" => DebugSourceType::Framework
+        "internal:debug:gene-pc-fwd"    => DebugSourceType::GenePcFwd,
+        "internal:debug:gene-other-fwd" => DebugSourceType::GeneOtherFwd,
+        "internal:debug:gene-pc-rev"    => DebugSourceType::GenePcRev,
+        "internal:debug:gene-other-rev" => DebugSourceType::GeneOtherRev,
+        "internal:debug:variant"        => DebugSourceType::Variant,
+        "internal:debug:contig"         => DebugSourceType::Contig,
+        "internal:debug:gc"             => DebugSourceType::GC,
+        "internal:debug:zzz-framework"  => DebugSourceType::Framework
     };
 }
 
