@@ -149,12 +149,13 @@ pub struct RngGene {
     pad: i32,
     sep: i32,
     size: i32,
-    parts: u32
+    parts: u32,
+    seq: bool
 }
 
 impl RngGene {
-    pub fn new(kind: [u8;8], pad: i32, sep: i32, size: i32, parts: u32) -> RngGene {
-        RngGene { kind, sep, size, parts, pad }
+    pub fn new(kind: [u8;8], pad: i32, sep: i32, size: i32, parts: u32, seq: bool) -> RngGene {
+        RngGene { kind, sep, size, parts, pad, seq }
     }
 }
 
@@ -171,6 +172,9 @@ impl FakeDataGenerator for RngGene {
         let mut utrs = Vec::<f64>::new();
         let mut exons = Vec::<f64>::new();
         let mut introns = Vec::<f64>::new();
+        let mut seq_text = String::new();
+        let mut seq_start = Vec::<f64>::new();
+        let mut seq_len = Vec::<f64>::new();
         for (start,len) in genes {
             if start < 0 { continue; }
             starts.push(start as f64);
@@ -194,15 +198,27 @@ impl FakeDataGenerator for RngGene {
             pattern.push(0.);
             utrs.push(*subs_iter.next().unwrap() as f64);
             lens.push(len as f64);
+            if self.seq {
+                let seq = rng_seq(self.kind,start,end,2);
+                seq_text.push_str(&seq);
+                seq_start.push(start as f64);
+                seq_len.push(seq.len() as f64);
+            }
         }
-        vec! {
+        let mut out = vec! {
             Value::new_from_float(starts),
             Value::new_from_float(nump),
             Value::new_from_float(pattern),
             Value::new_from_float(utrs),
             Value::new_from_float(exons),
             Value::new_from_float(introns),
+        };
+        if self.seq {
+            out.push(Value::new_from_string(seq_text));
+            out.push(Value::new_from_float(seq_start));
+            out.push(Value::new_from_float(seq_len));
         }
+        out
     }
 }
 
