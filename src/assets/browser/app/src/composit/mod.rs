@@ -1,6 +1,7 @@
 mod state;
 mod scale;
 mod compositor;
+mod landscape;
 mod train;
 mod leaf;
 mod source;
@@ -37,3 +38,5 @@ pub use self::scale::Scale;
 pub use self::zoom::Zoom;
 pub use self::position::Position;
 pub use self::wrapping::Wrapping;
+
+pub use self::landscape::{ Landscape, Plot };

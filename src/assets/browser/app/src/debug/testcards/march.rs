@@ -564,7 +564,7 @@ pub fn march_source_cs(type_: &DebugSourceType) -> impl Source {
                 //variant_track(lc,&leaf,&p,7);
         },
         */
-        DebugSourceType::GenePc => {
+        DebugSourceType::GenePcFwd => {
             ClosureSource::new(0.,move |ref mut lc,leaf| {
                 gene_track(lc,&leaf,&p,1);
                 gene_track(lc,&leaf,&p,2);

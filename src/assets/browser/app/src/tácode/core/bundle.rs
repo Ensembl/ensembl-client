@@ -4,7 +4,7 @@ use tácode::core::TáContext;
 use tácode::commands::{
     AppGetI, CPrintI, DPrintI, ShapeI, AbuttI, ElideI, NotI, PickI,
     ExtentI, AllI, BinOpI, BinOpType, TextI, IndexI, RunsI, RunsOfI,
-    GetI, ScaleI, MergeI, AccNI, MemberI
+    GetI, ScaleI, MergeI, AccNI, MemberI, PlotI
 };
 
 pub fn instruction_bundle_app(tc: &TáContext) -> InstructionBundle {
@@ -33,6 +33,7 @@ pub fn instruction_bundle_app(tc: &TáContext) -> InstructionBundle {
         Box::new(ShapeI(tc.clone())),
         Box::new(ExtentI(tc.clone())),
         Box::new(ScaleI(tc.clone())),
+        Box::new(PlotI(tc.clone())),
     });
     ib
 }

@@ -2,7 +2,8 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use composit::{ 
-    StateAtom, ActiveSource, Source, SourceResponse, Leaf
+    ActiveSource, Landscape, Leaf, Plot, Source, SourceResponse,
+    StateAtom
 };
 use debug::testcards::{
     leafcard_source, text_source, march_source_cs, march_source_ts,
@@ -16,6 +17,8 @@ use tácode::{ Tácode, TáSource };
 pub struct DebugSource {
     sources: HashMap<String,Box<Source>>,
 }
+
+const PITCH : i32 = 63;
 
 impl DebugSource {
     fn new() -> DebugSource {
@@ -53,8 +56,10 @@ fn debug_source_type(tc: &Tácode, xf: &DebugXferClerk, type_: &DebugSourceType)
     s.add_stick("leaf",Box::new(leafcard_source(true)));
     s.add_stick("ruler",Box::new(leafcard_source(false)));
     s.add_stick("button",Box::new(bs_source_main()));
-    if *type_ == DebugSourceType::GC || *type_ == DebugSourceType::Contig {
-        s.add_stick("tácode",Box::new(TáSource::new(tc,Box::new(xf.clone()),type_.get_name())));
+    if *type_ != DebugSourceType::Framework {
+        let ls = Landscape::new(Plot::new(type_.get_pos()*PITCH,PITCH));
+        let src = TáSource::new(tc,Box::new(xf.clone()),type_.get_name(),ls);
+        s.add_stick("tácode",Box::new(src));
     } else {
         s.add_stick("tácode",Box::new(tá_source_cs(type_)));
     }
