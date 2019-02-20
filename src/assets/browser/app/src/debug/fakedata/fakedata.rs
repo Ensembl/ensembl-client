@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::iter::empty;
 
 use yaml_rust::yaml::Yaml;
 use yaml_rust::YamlLoader;
@@ -29,7 +30,18 @@ struct FakeResponse {
 }
 
 pub struct FakeData {
-    data: HashMap<String,HashMap<String,FakeResponse>>
+    data: HashMap<String,HashMap<String,FakeResponse>>,
+    code: HashMap<String,String>
+}
+
+fn to_string(val: &Yaml) -> Option<String> {
+    match val {
+        Yaml::String(ref v) => {
+            return Some(v.clone())
+        },
+        _ => ()
+    }
+    None
 }
 
 fn to_float(val: &Yaml) -> Option<f64> {
@@ -48,6 +60,22 @@ fn to_float(val: &Yaml) -> Option<f64> {
     None
 }
 
+fn hash_key_yaml<'a>(yaml: &'a Yaml, key: &str) -> Option<&'a Yaml> {
+    if let Yaml::Hash(ref d) = yaml {
+        d.get(&Yaml::String(key.to_string()))
+    } else {
+        None
+    }
+}
+
+fn hash_key_string(yaml: &Yaml, key: &str) -> Option<String> {
+    if let Yaml::Hash(ref d) = yaml {
+        let val = d.get(&Yaml::String(key.to_string()));
+        val.and_then(|v| to_string(v))
+    } else {
+        None
+    }
+}
 
 fn hash_key_float(yaml: &Yaml, key: &str) -> Option<f64> {
     if let Yaml::Hash(ref d) = yaml {
@@ -139,17 +167,30 @@ fn make_data(out: &mut Vec<FakeValue>, e: &Yaml) {
     }
 }
 
+fn hash_entries(in_: &Yaml) -> HashMap<String,Yaml> {
+    let mut out = HashMap::<String,Yaml>::new();
+    if let Yaml::Hash(ref v) = in_ {
+        for (k,v) in v.iter() {
+            if let Yaml::String(ref k) = k {
+                out.insert(k.to_string(),v.clone());
+            }
+        }
+    }
+    out
+}
+
 impl FakeData {
     pub fn new() -> FakeData {
+        let mut code = HashMap::<String,String>::new();
         let mut yaml_data = HashMap::<String,HashMap<String,FakeResponse>>::new();
         let docs = YamlLoader::load_from_str(&FAKEDATA).unwrap();
-        if let Yaml::Hash(ref h) = docs[0] {
-            for (card,v) in h {
-                if let Yaml::Hash(ref v) = v {
-                    for (source,v) in v {
-                        if let Yaml::Hash(ref v) = v {
-                            let code = &v[&Yaml::String("code".to_string())].as_str().unwrap();
-                            let data = &v[&Yaml::String("data".to_string())];
+        for (key,v) in hash_entries(&docs[0]) {
+            match key.as_str() {
+                "requests" => {        
+                    for (card,v) in hash_entries(&v) {
+                        for (source,v) in hash_entries(&v) {
+                            let code = hash_key_string(&v,"code").unwrap();
+                            let data = hash_key_yaml(&v,"data").unwrap();
                             let mut data_out = Vec::<FakeValue>::new();
                             if let Yaml::Array(ref v) = data {
                                 for e in v {
@@ -160,15 +201,21 @@ impl FakeData {
                                 code: code.to_string(),
                                 data: data_out
                             };
-                            yaml_data.entry(card.as_str().unwrap().to_string()).or_insert_with(||
+                            yaml_data.entry(card.clone()).or_insert_with(||
                                 HashMap::<String,FakeResponse>::new()
-                            ).insert(source.as_str().unwrap().to_string(),fr);
+                            ).insert(source,fr);
                         }
                     }
-                }
-            }
+                },
+                "code" => {
+                    for (k,v) in hash_entries(&v) {
+                        code.insert(k,to_string(&v).unwrap());
+                    }
+                },
+                _ => ()
+            };
         }
-        FakeData { data: yaml_data }
+        FakeData { code, data: yaml_data }
     }
         
     fn get_response(&self, leaf: &Leaf, source: &str) -> Option<&FakeResponse> {
@@ -213,7 +260,8 @@ impl FakeData {
                         },
                     }
                 }
-                return Some(XferResponse::new(request,fr.code.clone(),data));
+                let code = self.code[&fr.code].clone();
+                return Some(XferResponse::new(request,code,data));
             }
         }
         None

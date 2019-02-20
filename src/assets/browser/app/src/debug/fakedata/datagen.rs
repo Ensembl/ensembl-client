@@ -115,9 +115,11 @@ pub fn rng_seq(kind: [u8;8], start: i32, end: i32, subtype: u32) -> String {
             ["A","C","G","T"].choose(&mut rng);
             pos += 1;
         }
-        while pos < end && pos < block_end_pos {
-            out.push_str(&["A","C","G","T"].choose(&mut rng).unwrap());
-            pos += 1;
+        if pos >= start {
+            while pos < end && pos < block_end_pos {
+                out.push_str(&["A","C","G","T"].choose(&mut rng).unwrap());
+                pos += 1;
+            }
         }
     }
     out
@@ -199,9 +201,18 @@ impl FakeDataGenerator for RngGene {
             utrs.push(*subs_iter.next().unwrap() as f64);
             lens.push(len as f64);
             if self.seq {
-                let seq = rng_seq(self.kind,start,end,2);
+                let mut our_start = start;
+                let mut seq = rng_seq(self.kind,start,end,2);
+                let left_chop = leaf.get_start() - start as f64;
+                if left_chop > 0. {
+                    seq = seq.split_off(left_chop as usize);
+                    our_start = leaf.get_start() as i32;
+                }
+                if seq.len() > (end-our_start) as usize {
+                    seq.split_off((end-our_start) as usize);
+                }
                 seq_text.push_str(&seq);
-                seq_start.push(start as f64);
+                seq_start.push(our_start as f64);
                 seq_len.push(seq.len() as f64);
             }
         }
@@ -332,7 +343,6 @@ fn shimmer(in_: &Vec<(i32,i32,bool)>, leaf: &Leaf) -> Vec<(i32,i32,bool)> {
             out.push((b_start as i32,b_len as i32,*sense));
         }
     }
-    console!("shimmer2 {}->{}",in_.len(),out.len());
     out
 }
 

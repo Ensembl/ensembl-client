@@ -5,7 +5,6 @@ use tánaiste::{
     Value
 };
 
-use shape::{ ColourSpec, tape_rectangle, tape_texture, stretch_rectangle };
 use tácode::core::{ TáContext, TáTask };
 
 // TODO check ranges
@@ -36,6 +35,8 @@ pub struct Abutt(usize,usize);
 pub struct Extent(TáContext,usize); 
 // scale #out
 pub struct Scale(TáContext,usize);
+// plot #offset/height
+pub struct Plot(TáContext,usize);
 
 impl Command for Abutt {
     fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
@@ -55,7 +56,7 @@ impl Command for Extent {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(leaf,lc,_) = task {
+            if let TáTask::MakeShapes(leaf,lc,_,_) = task {
                 regs.set(self.1,Value::new_from_float(vec! {
                     leaf.get_start(),
                     leaf.get_end()
@@ -72,7 +73,7 @@ impl Command for Scale {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(leaf,lc,_) = task {
+            if let TáTask::MakeShapes(leaf,lc,_,_) = task {
                 let scale = leaf.get_scale().get_index()+13;
                 regs.set(self.1,Value::new_from_float(vec![scale as f64]));
             }
@@ -81,9 +82,29 @@ impl Command for Scale {
     }
 }
 
+impl Command for Plot {
+    #[allow(irrefutable_let_patterns)]
+    fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        let pid = proc.lock().unwrap().get_pid().unwrap();
+        self.0.with_task(pid,|task| {
+            if let TáTask::MakeShapes(_,_,_,ls) = task {
+                let plot = ls.get_plot();
+                regs.set(self.1,Value::new_from_float(vec!{
+                    plot.get_base() as f64,
+                    plot.get_height() as f64
+                }));
+            }
+        });        
+        return 1;
+    }
+}
+
 pub struct AbuttI();
 pub struct ExtentI(pub TáContext);
 pub struct ScaleI(pub TáContext);
+pub struct PlotI(pub TáContext);
+
 
 impl Instruction for AbuttI {
     fn signature(&self) -> Signature { Signature::new("abutt","rr") }
@@ -103,5 +124,12 @@ impl Instruction for ScaleI {
     fn signature(&self) -> Signature { Signature::new("scale","r") }
     fn build(&self, args: &Vec<Argument>) -> Box<Command> {
         Box::new(Scale(self.0.clone(),args[0].reg()))
+    }
+}
+
+impl Instruction for PlotI {
+    fn signature(&self) -> Signature { Signature::new("plot","r") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(Plot(self.0.clone(),args[0].reg()))
     }
 }

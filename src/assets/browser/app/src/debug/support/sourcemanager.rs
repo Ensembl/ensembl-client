@@ -6,8 +6,10 @@ use tácode::Tácode;
 
 #[derive(PartialEq,Eq,Hash,Clone,Debug)]
 pub enum DebugSourceType {
-    GenePc,
-    GeneOther,
+    GenePcFwd,
+    GeneOtherFwd,
+    GenePcRev,
+    GeneOtherRev,
     Variant,
     Contig,
     GC,
@@ -16,12 +18,25 @@ pub enum DebugSourceType {
 
 lazy_static! {
     static ref SOURCE_TYPES : HashMap<String,DebugSourceType> = hashmap_s! {
-        "internal:debug:gene-pc"    => DebugSourceType::GenePc,
-        "internal:debug:gene-other" => DebugSourceType::GeneOther,
-        "internal:debug:variant"    => DebugSourceType::Variant,
-        "internal:debug:contig"     => DebugSourceType::Contig,
-        "internal:debug:gc"         => DebugSourceType::GC,
-        "internal:debug:zzz-framework" => DebugSourceType::Framework
+        "internal:debug:gene-pc-fwd"    => DebugSourceType::GenePcFwd,
+        "internal:debug:gene-other-fwd" => DebugSourceType::GeneOtherFwd,
+        "internal:debug:gene-pc-rev"    => DebugSourceType::GenePcRev,
+        "internal:debug:gene-other-rev" => DebugSourceType::GeneOtherRev,
+        "internal:debug:variant"        => DebugSourceType::Variant,
+        "internal:debug:contig"         => DebugSourceType::Contig,
+        "internal:debug:gc"             => DebugSourceType::GC,
+        "internal:debug:zzz-framework"  => DebugSourceType::Framework
+    };
+    
+    static ref SOURCE_POS : HashMap<String,i32> = hashmap_s! {
+        "internal:debug:gene-pc-fwd"    => 2,
+        "internal:debug:gene-other-fwd" => 3,
+        "internal:debug:gene-pc-rev"    => 5,
+        "internal:debug:gene-other-rev" => 6,
+        "internal:debug:variant"        => 8,
+        "internal:debug:contig"         => 4,
+        "internal:debug:gc"             => 9,
+        "internal:debug:zzz-framework"  => 0
     };
 }
 
@@ -32,6 +47,15 @@ lazy_static! {
             out.insert(v.clone(),k.to_string());
         }
         out
+    };
+    
+    static ref SOURCE_TYPE_POS : HashMap<DebugSourceType,i32> = {
+        let mut out = HashMap::<DebugSourceType,i32>::new();
+        for (k,v) in SOURCE_POS.iter() {
+            let k : DebugSourceType = SOURCE_TYPES[k].clone();
+            out.insert(k,*v);
+        }
+        out        
     };
     
     static ref SOURCE_TYPE_KEYS : HashMap<DebugSourceType,String> = {
@@ -64,6 +88,10 @@ impl DebugSourceType {
         SOURCE_TYPE_KEYS.get(self).map(|k| {
             (k.to_uppercase(),k.clone())
         }).unwrap()
+    }
+    
+    pub fn get_pos(&self) -> i32 {
+        *SOURCE_TYPE_POS.get(self).unwrap()
     }
 }
 

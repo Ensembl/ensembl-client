@@ -16,4 +16,4 @@ pub use debug::testcards::polar::polar_source;
 pub use self::march::{ march_source_cs, march_source_ts };
 pub use debug::testcards::rulergenerator::RulerGenerator;
 pub use self::text::text_source;
-pub use self::tánaiste::{ tá_source_cs, tá_source_ts };
+pub use self::tánaiste::{ tá_source_cs };
