@@ -6,7 +6,7 @@ use tánaiste::Value;
 
 use composit::{ Leaf, Scale };
 use data::{ XferRequest, XferResponse };
-use super::datagen::{ RngContig };
+use super::datagen::{ RngContig, RngGene };
 
 lazy_static! {
     static ref FAKEDATA : &'static str = include_str!("fakewiredata.yaml");
@@ -88,6 +88,16 @@ fn contig(v: &Yaml) -> Box<FakeDataGenerator> {
     Box::new(RngContig::new(seed,pad,len,prop,seq,shimmer))
 }
 
+fn gene(v: &Yaml) -> Box<FakeDataGenerator> {
+    let seed = hash_key_float(v,"seed").unwrap() as u8;
+    let seed = [seed,0,0,0,0,0,0,0];
+    let pad = hash_key_float(v,"pad").unwrap() as i32;
+    let sep = hash_key_float(v,"sep").unwrap() as i32;
+    let size = hash_key_float(v,"size").unwrap() as i32;
+    let parts = hash_key_float(v,"parts").unwrap() as i32;
+    Box::new(RngGene::new(seed,pad,sep,size,parts as u32))
+}
+
 fn make_data(out: &mut Vec<FakeValue>, e: &Yaml) {
     match e {
         Yaml::Array(ref v) => {
@@ -115,6 +125,9 @@ fn make_data(out: &mut Vec<FakeValue>, e: &Yaml) {
                         },
                         "contig" => {
                             out.push(FakeValue::Delayed(contig(v)));
+                        },
+                        "gene" => {
+                            out.push(FakeValue::Delayed(gene(v)));
                         },
                         _ => ()
                     }
