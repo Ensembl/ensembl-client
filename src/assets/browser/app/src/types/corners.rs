@@ -12,7 +12,7 @@ pub enum Axis { Horiz, Vert, Zoom }
 pub enum AxisSense { Max, Min }
 
 #[derive(Clone,Copy,Debug)]
-pub struct Anchor(Option<AxisSense>);
+pub struct Anchor(pub Option<AxisSense>);
 
 impl Anchor {
     pub fn prop(&self) -> f32 {
