@@ -1,0 +1,45 @@
+@import 'src/styles/common';
+
+$selectedSpeciesBorderRadius: 20px;
+$selectedSpeciesPadding: 10px 28px;
+
+.selectedSpecies {
+  position: relative;
+  display: inline-block;
+  padding: $selectedSpeciesPadding;
+  background-color: $ens-black;
+  border-radius: $selectedSpeciesBorderRadius;
+  cursor: pointer;
+  user-select: none;
+
+  .name {
+    color: white;
+    font-weight: $bold;
+    margin-right: 0.6rem;
+  }
+
+  .assembly {
+    color: $white;
+  }
+}
+
+.selectedSpeciesDisabled {
+  background-color: $ens-grey;
+}
+
+.selectedSpeciesOverlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  background: white;
+  border: 1px solid $ens-blue;
+  border-radius: $selectedSpeciesBorderRadius;
+  padding: $selectedSpeciesPadding;
+
+  .overlayText {
+    color: $ens-blue;
+  }
+}
