@@ -97,6 +97,13 @@ module.exports = (isDev, moduleRules, plugins) => ({
         ]
       },
 
+      // use file-loader on svg's (to be able to require them as a path to the image),
+      // but also use @svgr/webpack to be able to require svg's directly as React components
+      {
+        test: /\.svg$/,
+        use: ['@svgr/webpack', 'file-loader'],
+      },
+
       // loaders specific to dev/prod
       ...moduleRules
     ]
