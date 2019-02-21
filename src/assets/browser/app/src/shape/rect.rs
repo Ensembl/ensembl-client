@@ -1,7 +1,10 @@
 use std::fmt::Debug;
 
 use program::{ ProgramAttribs, PTGeom, PTMethod, ProgramType };
-use types::{ CLeaf, AxisSense, Rect, Edge, RLeaf };
+use types::{ 
+    CLeaf, AxisSense, Rect, Edge, RLeaf, Anchor, Anchored, Colour,
+    area_size, cleaf, cpixel
+};
 
 use shape::{ Shape, ColourSpec, ShapeSpec };
 use shape::util::{
@@ -10,6 +13,7 @@ use shape::util::{
 };
 use print::PrintEdition;
 use drawing::{ Artwork };
+use super::boxshape::{ BoxSpec, PinBox };
 
 #[derive(Clone,Copy,Debug)]
 enum RectPosition<T: Clone+Copy+Debug> {
@@ -79,58 +83,144 @@ impl Shape for PinRect {
     fn get_geometry(&self) -> ProgramType { self.geom }
 }
 
-pub fn pin_rectangle(r: &CLeaf, f: &Rect<i32,i32>, colspec: &ColourSpec) -> ShapeSpec {
-    ShapeSpec::PinRect(RectSpec {
-        pt: PTGeom::Pin,
-        offset: RectPosition::Pin(*r,*f),
-        colspec: colspec.clone()
-    })
+/* new, cleaner API */
+
+pub struct StretchRectTypeSpec {
+    pub spot: bool,
+    pub hollow: bool
 }
 
-pub fn tape_rectangle(r: &CLeaf, f: &Rect<i32,Edge<i32>>, colspec: &ColourSpec) -> ShapeSpec {
-    ShapeSpec::PinRect(RectSpec {
-        pt: PTGeom::Tape,
-        offset: RectPosition::Tape(*r,*f),
-        colspec: colspec.clone()
-    })
+impl StretchRectTypeSpec {
+    fn new_colspec(&self, rd: &RectData) -> ColourSpec {
+        if self.spot {
+            ColourSpec::Spot(rd.colour)
+        } else {
+            ColourSpec::Colour(rd.colour)
+        }
+    }
+
+    pub fn new_shape(&self, rd: &RectData) -> ShapeSpec {
+        let colspec = self.new_colspec(rd);
+        let offset = area_size(cleaf(rd.pos_x,rd.pos_y),
+                               cleaf(rd.aux_x,rd.aux_y));
+        if self.hollow {
+            ShapeSpec::PinBox(BoxSpec {
+                offset,
+                width: 1,
+                colspec
+            })
+        } else {
+            ShapeSpec::PinRect(RectSpec {
+                pt: PTGeom::Stretch,
+                offset: RectPosition::Stretch(offset),
+                colspec
+            })
+        }
+    }
 }
 
-pub fn page_rectangle(f: &Rect<Edge<i32>,i32>, colspec: &ColourSpec) -> ShapeSpec {
-    ShapeSpec::PinRect(RectSpec {
-        pt: PTGeom::Page,
-        offset: RectPosition::Page(*f),
-        colspec: colspec.clone()
-    })
+pub struct PinRectTypeSpec {
+    pub sea_x: Option<(AxisSense,AxisSense)>,
+    pub sea_y: Option<(AxisSense,AxisSense)>,
+    pub ship_x: (Option<AxisSense>,i32),
+    pub ship_y: (Option<AxisSense>,i32),
+    pub under: Option<bool>, // page = true, tape = false
+    pub spot: bool
 }
 
-pub fn fix_rectangle(f: &Rect<Edge<i32>,Edge<i32>>, colspec: &ColourSpec) -> ShapeSpec {
-    ShapeSpec::PinRect(RectSpec {
-        pt: PTGeom::Fix,
-        offset: RectPosition::Fix(*f),
-        colspec: colspec.clone()
-    })
+pub struct RectData {
+    pub pos_x: f32,
+    pub pos_y: i32,
+    pub aux_x: f32,
+    pub aux_y: i32,
+    pub colour: Colour
 }
 
-pub fn fixunderpage_rectangle(f: &Rect<Edge<i32>,Edge<i32>>, colspec: &ColourSpec) -> ShapeSpec {
-    ShapeSpec::PinRect(RectSpec {
-        pt: PTGeom::FixUnderPage,
-        offset: RectPosition::Fix(*f),
-        colspec: colspec.clone()
-    })
-}
+impl PinRectTypeSpec {
+    fn new_colspec(&self, rd: &RectData) -> ColourSpec {
+        if self.spot {
+            ColourSpec::Spot(rd.colour)
+        } else {
+            ColourSpec::Colour(rd.colour)
+        }
+    }
+    
+    fn new_pin_delta(&self, len: i32, ship: (Option<AxisSense>,i32)) -> i32 {
+        match ship.0 {
+            Some(AxisSense::Min) => 0,
+            Some(AxisSense::Max) => len,
+            None => len/2
+        }
+    }
+    
+    fn new_pin_offset(&self, rd: &RectData) -> Rect<i32,i32> {
+        let size = cpixel(rd.aux_x as i32,rd.aux_y);
+        let delta_x = self.new_pin_delta(size.0,self.ship_x);
+        let delta_y = self.new_pin_delta(size.1,self.ship_y);
+        area_size(cpixel(-delta_x,-delta_y),size)
+    }
+    
+    fn new_pin(&self, rd: &RectData) -> ShapeSpec {
+        let offset = self.new_pin_offset(rd);
+        let colspec = self.new_colspec(rd);
+        ShapeSpec::PinRect(RectSpec {
+            pt: PTGeom::Pin,
+            offset: RectPosition::Pin(cleaf(rd.pos_x,rd.pos_y),offset),
+            colspec
+        })        
+    }
+    
+    fn new_tape(&self, rd: &RectData) -> ShapeSpec {
+        let offset = self.new_pin_offset(rd)
+                        .y_edge(self.sea_y.unwrap().0,
+                                self.sea_y.unwrap().1);
+        let colspec = self.new_colspec(rd);
+        ShapeSpec::PinRect(RectSpec {
+            pt: PTGeom::Tape,
+            offset: RectPosition::Tape(cleaf(rd.pos_x,rd.pos_y),offset),
+            colspec
+        })        
+    }
 
-pub fn fixundertape_rectangle(f: &Rect<Edge<i32>,Edge<i32>>, colspec: &ColourSpec) -> ShapeSpec {
-    ShapeSpec::PinRect(RectSpec {
-        pt: PTGeom::FixUnderTape,
-        offset: RectPosition::Fix(*f),
-        colspec: colspec.clone()
-    })
-}
+    fn new_page(&self, rd: &RectData) -> ShapeSpec {
+        let pos =  (cpixel(rd.pos_x as i32,rd.pos_y) +
+                    self.new_pin_offset(rd))
+                        .x_edge(self.sea_x.unwrap().0,
+                                self.sea_x.unwrap().1);
+        let colspec = self.new_colspec(rd);
+        ShapeSpec::PinRect(RectSpec {
+            pt: PTGeom::Page,
+            offset: RectPosition::Page(pos),
+            colspec
+        })        
+    }
 
-pub fn stretch_rectangle(p: &RLeaf, colspec: &ColourSpec) -> ShapeSpec {
-    ShapeSpec::PinRect(RectSpec {
-        pt: PTGeom::Stretch,
-        offset: RectPosition::Stretch(*p),
-        colspec: colspec.clone()
-    })
+    fn new_fix(&self, rd: &RectData) -> ShapeSpec {
+        let pos =  (cpixel(rd.pos_x as i32,rd.pos_y) +
+                    self.new_pin_offset(rd))
+                        .x_edge(self.sea_x.unwrap().0,
+                                self.sea_x.unwrap().1)
+                        .y_edge(self.sea_y.unwrap().0,
+                                self.sea_y.unwrap().1);
+        let colspec = self.new_colspec(rd);
+        let pt = match self.under {
+            Some(true) => PTGeom::FixUnderPage,
+            Some(false) => PTGeom::FixUnderTape,
+            None => PTGeom::Fix,
+        };
+        ShapeSpec::PinRect(RectSpec {
+            pt,
+            offset: RectPosition::Fix(pos),
+            colspec
+        })        
+    }
+    
+    pub fn new_shape(&self, rd: &RectData) -> ShapeSpec {
+        match (self.sea_x.is_some(),self.sea_y.is_some()) {
+            (false,false) =>self.new_pin(rd),
+            (false,true) => self.new_tape(rd),
+            (true,false) => self.new_page(rd),
+            (true,true) => self.new_fix(rd),
+        }
+    }
 }

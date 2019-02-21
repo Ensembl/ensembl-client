@@ -7,9 +7,9 @@ use types::{ RLeaf, CFraction, CLeaf, cfraction, cleaf };
 
 #[derive(Clone,Copy,Debug)]
 pub struct BoxSpec {
-    offset: RLeaf,
-    width: i32,
-    colspec: ColourSpec
+    pub offset: RLeaf,
+    pub width: i32,
+    pub colspec: ColourSpec
 }
 
 pub struct PinBox {
@@ -75,13 +75,4 @@ impl BoxSpec {
             width: self.width
         })
     }
-}
-
-
-pub fn stretch_box(p: &RLeaf, width: i32, colspec: &ColourSpec) -> ShapeSpec {
-    ShapeSpec::PinBox(BoxSpec {
-        offset: *p,
-        width,
-        colspec: colspec.clone()
-    })
 }

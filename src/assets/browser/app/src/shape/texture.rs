@@ -4,7 +4,7 @@ use std::rc::Rc;
 use program::{ ProgramType, PTGeom, PTSkin, PTMethod, ProgramAttribs };
 use types::{
     EPixel, Edge, APixel, AxisSense, Dot, CPixel, 
-    CLeaf, area_centred, Anchors, cfraction
+    CLeaf, area_centred, Anchors, cfraction, Anchor, cpixel, cleaf
 };
 
 use shape::{ Shape, ShapeSpec };
@@ -101,28 +101,78 @@ fn texture(a: DrawingSpec, origin: &TexturePosition<f32>, scale: &APixel, offset
     ShapeSpec::PinTexture(TextureSpec::new(pt,a,origin,offset,scale))
 }
 
-pub fn pin_texture(a: DrawingSpec, origin: &CLeaf, offset: &CPixel, scale: &APixel) -> ShapeSpec {
-    texture(a, &TexturePosition::Pin(*origin), scale, offset, PTGeom::Pin)
+pub struct TextureTypeSpec {
+    pub sea_x: Option<AxisSense>,
+    pub sea_y: Option<AxisSense>,
+    pub ship_x: (Option<AxisSense>,i32),
+    pub ship_y: (Option<AxisSense>,i32),
+    pub under: Option<bool>, // page = true, tape = false
+    pub scale_x: f32,
+    pub scale_y: f32
 }
 
-pub fn tape_texture(a: DrawingSpec, origin: &Dot<f32,Edge<i32>>, offset: &CPixel, scale: &APixel) -> ShapeSpec {
-    texture(a, &TexturePosition::Tape(*origin), scale, offset, PTGeom::Tape)
+pub struct TextureData {
+    pub pos_x: f32,
+    pub pos_y: i32,
+    pub aux_x: f32,
+    pub aux_y: i32,
+    pub drawing: DrawingSpec
 }
 
-pub fn fix_texture(req: DrawingSpec, origin: &EPixel, offset: &CPixel, scale: &APixel) -> ShapeSpec {
-    texture(req, &TexturePosition::Fix(*origin), scale, offset, PTGeom::Fix)
-}
+impl TextureTypeSpec {
+    fn anchor_pt(&self) -> Anchors {
+        Dot(Anchor(self.ship_x.0),Anchor(self.ship_y.0))
+    }
 
-#[allow(unused)]
-pub fn fixunderpage_texture(req: DrawingSpec, origin: &EPixel, offset: &CPixel, scale: &APixel) -> ShapeSpec {
-    texture(req, &TexturePosition::Fix(*origin), scale, offset, PTGeom::FixUnderPage)
-}
+    fn new_fix(&self, td: &TextureData) -> ShapeSpec {
+        let origin = cpixel(td.pos_x as i32,td.pos_y)
+                        .x_edge(self.sea_x.unwrap())
+                        .y_edge(self.sea_y.unwrap());
+        let scale = cpixel(self.scale_x as i32,self.scale_y as i32).anchor(self.anchor_pt());
+        let offset = cpixel(td.aux_x as i32-self.ship_x.1,
+                            td.aux_y as i32-self.ship_y.1);
+        let pt = match self.under {
+            Some(true) => PTGeom::FixUnderPage,
+            Some(false) => PTGeom::FixUnderTape,
+            None => PTGeom::Fix,
+        };
+        texture(td.drawing.clone(),&TexturePosition::Fix(origin),&scale,&offset,pt)
+    }
 
-#[allow(unused)]
-pub fn fixundertape_texture(req: DrawingSpec, origin: &EPixel, offset: &CPixel, scale: &APixel) -> ShapeSpec {
-    texture(req, &TexturePosition::Fix(*origin), scale, offset, PTGeom::FixUnderTape)
-}
 
-pub fn page_texture(req: DrawingSpec, origin: &EPixel, offset: &CPixel, scale: &APixel) -> ShapeSpec {
-    texture(req, &TexturePosition::Fix(*origin), scale, offset, PTGeom::Page)
+    fn new_page(&self, td: &TextureData) -> ShapeSpec {
+        let origin = cpixel(td.pos_x as i32,td.pos_y)
+                        .x_edge(self.sea_x.unwrap())
+                        .y_edge(AxisSense::Max);
+        let scale = cpixel(self.scale_x as i32,self.scale_y as i32).anchor(self.anchor_pt());
+        let offset = cpixel(td.aux_x as i32-self.ship_x.1,
+                            td.aux_y as i32-self.ship_y.1);
+        texture(td.drawing.clone(),&TexturePosition::Fix(origin),&scale,&offset,PTGeom::Page)
+    }
+    
+    fn new_pin(&self, td: &TextureData) -> ShapeSpec {
+        let origin = cleaf(td.pos_x,td.pos_y);
+        let scale = cpixel(self.scale_x as i32,self.scale_y as i32).anchor(self.anchor_pt());
+        let offset = cpixel(td.aux_x as i32-self.ship_x.1,
+                            td.aux_y as i32-self.ship_y.1);
+        texture(td.drawing.clone(),&TexturePosition::Pin(origin),&scale,&offset,PTGeom::Pin)
+    }
+    
+    fn new_tape(&self, td: &TextureData) -> ShapeSpec {
+        let origin = cleaf(td.pos_x,td.pos_y).y_edge(self.sea_y.unwrap());
+        let scale = cpixel(self.scale_x as i32,self.scale_y as i32).anchor(self.anchor_pt());
+        let offset = cpixel(td.aux_x as i32-self.ship_x.1,
+                            td.aux_y as i32-self.ship_y.1);
+        texture(td.drawing.clone(),&TexturePosition::Tape(origin),&scale,&offset,PTGeom::Tape)
+    }
+    
+    pub fn new_shape(&self, td: &TextureData) -> ShapeSpec {
+        match (self.sea_x.is_some(),self.sea_y.is_some()) {
+            (false,false) => Some(self.new_pin(td)),
+            (false,true) => Some(self.new_tape(td)),
+            (true,false) => Some(self.new_page(td)),
+            (true,true) => Some(self.new_fix(td)),
+            _ => None
+        }.unwrap()
+    }
 }

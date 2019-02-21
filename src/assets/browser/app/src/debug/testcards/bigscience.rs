@@ -21,10 +21,12 @@ use debug::testcards::common::{
 };
 
 use shape::{
-    fix_rectangle, fix_texture, tape_rectangle, tape_mathsshape,
-    page_texture,  pin_texture,  pin_mathsshape, pin_rectangle,
-    stretch_rectangle, stretch_texture, stretch_wiggle, tape_texture,
-    ColourSpec, MathsShape, fix_mathsshape, page_mathsshape
+    tape_mathsshape,
+    pin_mathsshape,
+    stretch_texture, stretch_wiggle,
+    ColourSpec, MathsShape, fix_mathsshape, page_mathsshape,
+    PinRectTypeSpec, RectData, StretchRectTypeSpec, TextureTypeSpec,
+    TextureData
 };
 
 use controller::global::App;
@@ -53,18 +55,42 @@ fn battenberg() -> DrawingSpec {
 
 fn measure(lc: &mut SourceResponse, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSpec) {
     for x in -10..10 {
-        closure_add(lc,&tape_rectangle(
-            &cleaf(x as f32/10.,0),
-            &area_size(cpixel(0,0),cpixel(20,20)).y_edge(AxisSense::Max,AxisSense::Max),
-            cs));
+        let prts = PinRectTypeSpec {
+            sea_x: None,
+            sea_y: Some((AxisSense::Max,AxisSense::Max)),
+            ship_x: (Some(AxisSense::Min),0),
+            ship_y: (Some(AxisSense::Min),0),
+            under: None,
+            spot: false
+        };
+        closure_add(lc,&prts.new_shape(&RectData {
+            pos_x: x as f32/10.,
+            pos_y: 0,
+            aux_x: 20.,
+            aux_y: 20,
+            colour: Colour(255,100,50)
+        }));
         closure_add(lc,&tape_mathsshape(
             &cleaf(x as f32/10.+25.,0).y_edge(AxisSense::Max),
             A_TOP,
             10., None, MathsShape::Polygon(5,0.05),
             cs2));
-        closure_add(lc,&tape_texture(battenberg(),
-            &cleaf(x as f32/10.+0.05,0).y_edge(AxisSense::Max),
-            &cpixel(0,0),&cpixel(10,10).anchor(A_TOP)));
+        
+        let tts = TextureTypeSpec {
+            sea_x: None,
+            sea_y: Some(AxisSense::Max),
+            ship_x: (None,0),
+            ship_y: (Some(AxisSense::Max),0),
+            under: None,
+            scale_x: 10., scale_y: 10.
+        };
+        closure_add(lc,&tts.new_shape(&TextureData {
+            pos_x: x as f32/10.+0.05,
+            pos_y: 0,
+            aux_x: 0.,
+            aux_y: 0,
+            drawing: battenberg()
+        }));
         closure_add(lc,&tape_mathsshape(
             &cleaf(x as f32/10.+0.075,0).y_edge(AxisSense::Max),
             A_TOP,
@@ -116,8 +142,16 @@ fn source_odd() -> ClosureSource {
                     }
                 }
                 if start_leaf < 100000 && end_leaf > 0 {
+                    debug!("bug","A");
                     let start_prop = prop(leaf,0);
-                    closure_add(lc,&stretch_rectangle(&area_size(cleaf(start_prop,y-20),cleaf(10000./mul as f32,5)),&pal.red));
+                    let srts = StretchRectTypeSpec { spot: true, hollow: false };
+                    closure_add(lc,&srts.new_shape(&RectData {
+                        pos_x: start_prop,
+                        pos_y: y-20,
+                        aux_x: 10000./mul as f32,
+                        aux_y: 5,
+                        colour: Colour(255,100,50)
+                    }));                    
                     closure_add(lc,&pin_mathsshape(
                         &cleaf(start_prop,y-15),
                         A_RIGHT,
@@ -189,8 +223,15 @@ fn source_even() -> ClosureSource {
                     }
                 }
                 if start_leaf < 100000 && end_leaf > 0 {
-                    let start_prop = prop(leaf,0);                
-                    closure_add(lc,&stretch_rectangle(&area_size(cleaf(0.,y-15),cleaf(10000./mul as f32,5)),&pal.green));
+                    let start_prop = prop(leaf,0);      
+                    let srts = StretchRectTypeSpec { spot: true, hollow: false };
+                    closure_add(lc,&srts.new_shape(&RectData {
+                        pos_x: start_prop,
+                        pos_y: y-15,
+                        aux_x: 10000./mul as f32,
+                        aux_y: 5,
+                        colour: Colour(50,255,150)
+                    }));
                     closure_add(lc,&pin_mathsshape(
                         &cleaf(10000./mul as f32,y-15),
                         A_LEFT,
@@ -283,11 +324,21 @@ pub fn bs_source_main() -> ClosureSource {
             let y = yidx * 60;
             let tx = text_texture(&tracks[yidx as usize],&pal.fc_font,&pal.col,&Colour(255,255,255));
             
-            closure_add(lc,&page_texture(tx, 
-                                &cedge(TOPLEFT,cpixel(12,y+18)),
-                                &cpixel(0,0),
-                                &cpixel(1,1).anchor(A_TOPLEFT)));
-            
+            let tts = TextureTypeSpec {
+                sea_x: Some(AxisSense::Max),
+                sea_y: None,
+                ship_x: (Some(AxisSense::Max),0),
+                ship_y: (Some(AxisSense::Max),0),
+                under: None,
+                scale_x: 1., scale_y: 1.
+            };
+            closure_add(lc,&tts.new_shape(&TextureData {
+                pos_x: 12 as f32,
+                pos_y: y+18,
+                aux_x: 0.,
+                aux_y: 0,
+                drawing: tx
+            }));
             closure_add(lc,&page_mathsshape(
                                 &cpixel(0,y+18).x_edge(AxisSense::Max),
                                 A_LEFT,
@@ -295,8 +346,22 @@ pub fn bs_source_main() -> ClosureSource {
                                 &pal.green));            
             if yidx == pal.middle+3 {
                 if start_leaf < 100000 && end_leaf > 0 {
-                    let start_prop = prop(leaf,0);
-                    closure_add(lc,&pin_rectangle(&cleaf(start_prop,y-10),&area_size(cpixel(0,-10),cpixel(20,20)),&ColourSpec::Colour(Colour(128,0,0))));
+                    
+                    let prts = PinRectTypeSpec {
+                        sea_x: None,
+                        sea_y: None,
+                        ship_x: (Some(AxisSense::Min),0),
+                        ship_y: (None,0),
+                        under: None,
+                        spot: false
+                    };
+                    closure_add(lc,&prts.new_shape(&RectData {
+                        pos_x: prop(leaf,0),
+                        pos_y: y-10,
+                        aux_x: 20.,
+                        aux_y: 20,
+                        colour: Colour(128,0,0)
+                    }));
                 }
             }
             if yidx == pal.middle {
@@ -317,7 +382,21 @@ pub fn bs_source_main() -> ClosureSource {
                                                  0,255,0,255,
                                                  255,255,0,255 },cpixel(2,2),false);
                     let start_prop = prop(leaf,p[0]);
-                    closure_add(lc,&pin_texture(tx,&cleaf(start_prop,y-25),&cpixel(0,0),&cpixel(10,10).anchor(A_TOPLEFT)));
+                    let tts = TextureTypeSpec {
+                        sea_x: None,
+                        sea_y: None,
+                        ship_x: (None,0),
+                        ship_y: (None,0),
+                        under: None,
+                        scale_x: 10., scale_y: 10.
+                    };
+                    closure_add(lc,&tts.new_shape(&TextureData {
+                        pos_x: start_prop,
+                        pos_y: y-25,
+                        aux_x: 0.,
+                        aux_y: 0,
+                        drawing: tx
+                    }));                    
                 }
             } else if yidx == pal.middle-2 {
                 let tx = bs_collage();
@@ -341,9 +420,14 @@ pub fn bs_source_main() -> ClosureSource {
                         hh = 5 -hh;
                         let start_prop = prop(leaf,p[0]);
                         let end_prop = prop(leaf,p[1]);
-                        closure_add(lc,
-                            &stretch_rectangle(&area(cleaf(start_prop,y-h),cleaf(end_prop,y+h)),
-                                        &ColourSpec::Colour(colour)));
+                        let srts = StretchRectTypeSpec { spot: false, hollow: false };
+                        closure_add(lc,&srts.new_shape(&RectData {
+                            pos_x: start_prop,
+                            pos_y: y-h,
+                            aux_x: end_prop-start_prop,
+                            aux_y: 2*h,
+                            colour
+                        }));                    
                         if rng_prob([yidx as u8,j as u8,0,0,0,0,0,5],start,0.2) {
                             let tri_col = rng_colour([yidx as u8,i as u8,j as u8,0,0,0,0,3],start);
                             closure_add(lc,&pin_mathsshape(
@@ -356,46 +440,91 @@ pub fn bs_source_main() -> ClosureSource {
                         if rng_prob([yidx as u8,j as u8,0,0,0,0,0,4],start,0.1) {
                             let val = bio_mark([yidx as u8,j as u8,0,0,0,0,0,7],start);
                             let tx = text_texture(&val,&pal.fc_font,&pal.col,&Colour(255,255,255));
-                            closure_add(lc,&pin_texture(tx, &cleaf(start_prop,y-12), &cpixel(0,0), &cpixel(1,1).anchor(A_MIDDLE)));
+                            let tts = TextureTypeSpec {
+                                sea_x: None,
+                                sea_y: None,
+                                ship_x: (None,0),
+                                ship_y: (None,0),
+                                under: None,
+                                scale_x: 1., scale_y: 1.
+                            };
+                            closure_add(lc,&tts.new_shape(&TextureData {
+                                pos_x: start_prop,
+                                pos_y: y-12,
+                                aux_x: 0.,
+                                aux_y: 0,
+                                drawing: tx
+                            }));                    
                         }                    
 
                     }
                 }
             }
         }
-            
-        closure_add(lc,&fix_rectangle(&area(cedge(TOPLEFT,cpixel(SW/2,0)),
-                                        cedge(TOPLEFT,cpixel(SW/2+1,SH))),
-                            &ColourSpec::Colour(Colour(0,0,0))));
-        closure_add(lc,&fix_rectangle(&area(cedge(TOPLEFT,cpixel(SW/2+5,0)),
-                                        cedge(TOPLEFT,cpixel(SW/2+8,SH))),
-                            &pal.red));
+        
+        let prts = PinRectTypeSpec {
+            sea_x: Some((AxisSense::Max,AxisSense::Max)),
+            sea_y: Some((AxisSense::Max,AxisSense::Max)),
+            ship_x: (Some(AxisSense::Min),0),
+            ship_y: (Some(AxisSense::Min),0),
+            under: None,
+            spot: true
+        };
+
+        closure_add(lc,&prts.new_shape(&RectData {
+            pos_x: SW as f32/2.,
+            pos_y: 0,
+            aux_x: 1.,
+            aux_y: SH,
+            colour: Colour(0,0,0)
+        }));
+        closure_add(lc,&prts.new_shape(&RectData {
+            pos_x: SW as f32/2.+5.,
+            pos_y: 0,
+            aux_x: 3.,
+            aux_y: SH,
+            colour: Colour(255,100,50)
+        }));
+
         let tx = bitmap_texture(vec! { 0,0,255,255,
                                      255,0,0,255,
                                      0,255,0,255,
                                      255,255,0,255 },cpixel(1,4),false);
-        closure_add(lc,&fix_texture(tx, 
-                                &cedge(TOPLEFT,cpixel(SW/2-5,0)),
-                                &cpixel(0,0),
-                                &cpixel(1,SH).anchor(A_TOPLEFT)));
+        let tts = TextureTypeSpec {
+            sea_x: Some(AxisSense::Max),
+            sea_y: Some(AxisSense::Max),
+            ship_x: (Some(AxisSense::Max),0),
+            ship_y: (Some(AxisSense::Max),0),
+            under: None,
+            scale_x: 1., scale_y: SH as f32
+        };
+        closure_add(lc,&tts.new_shape(&TextureData {
+            pos_x: SW as f32/2.-5.,
+            pos_y: 0,
+            aux_x: 0.,
+            aux_y: 0,
+            drawing: tx
+        }));
 
-        closure_add(lc,&fix_texture(battenberg(),
-                                &cedge(TOPLEFT,cpixel(0,0)),
-                                &cpixel(0,0),
-                                &cpixel(10,10).anchor(A_TOPLEFT)));
-        closure_add(lc,&fix_texture(battenberg(),
-                                &cedge(BOTTOMLEFT,cpixel(0,0)),
-                                &cpixel(0,0),
-                                &cpixel(10,10).anchor(A_BOTTOMLEFT)));
-        closure_add(lc,&fix_texture(battenberg(),
-                                &cedge(TOPRIGHT,cpixel(0,0)),
-                                &cpixel(0,0),
-                                &cpixel(10,10).anchor(A_TOPRIGHT)));
-        closure_add(lc,&fix_texture(battenberg(),
-                                &cedge(BOTTOMRIGHT,cpixel(0,0)),
-                                &cpixel(0,0),
-                                &cpixel(10,10).anchor(A_BOTTOMRIGHT)));
-        
+        for h in &[AxisSense::Min,AxisSense::Max] {
+            for v in &[AxisSense::Min,AxisSense::Max] {
+                let tts = TextureTypeSpec {
+                    sea_x: Some(*h),
+                    sea_y: Some(*v),
+                    ship_x: (Some(*h),0),
+                    ship_y: (Some(*v),0),
+                    under: None,
+                    scale_x: 10., scale_y: 10.
+                };
+                closure_add(lc,&tts.new_shape(&TextureData {
+                    pos_x: 0.,
+                    pos_y: 0,
+                    aux_x: 0.,
+                    aux_y: 0,
+                    drawing: battenberg()
+                }));
+            }
+        }
         closure_add(lc,&fix_mathsshape(&cedge(TOPLEFT,cpixel(30,30)),
                                    A_TOPLEFT,
                                    20.,None,MathsShape::Polygon(5,0.),

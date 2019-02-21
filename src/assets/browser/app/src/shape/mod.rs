@@ -19,24 +19,16 @@ pub use self::shapeimpl::{
 pub use self::canvasidx::CanvasIdx;
 
 pub use self::texture::{
-    fix_texture,
-    fixunderpage_texture,
-    fixundertape_texture,
-    page_texture,
-    pin_texture,
-    tape_texture,
-    TextureSpec
+    TextureSpec,
+    TextureData,
+    TextureTypeSpec
 };
 
 pub use self::rect::{
-    pin_rectangle,
-    fix_rectangle,
-    page_rectangle,
-    fixunderpage_rectangle,
-    fixundertape_rectangle,
-    tape_rectangle,
-    stretch_rectangle,
-    RectSpec
+    RectSpec,
+    PinRectTypeSpec,
+    StretchRectTypeSpec,
+    RectData
 };
 
 pub use shape::poly::{
@@ -57,10 +49,7 @@ pub use self::stretch::{
     StretchTextureSpec
 };
 
-pub use self::boxshape::{
-    BoxSpec,
-    stretch_box
-};
+pub use self::boxshape::BoxSpec;
 
 pub use self::spec::ShapeSpec;
 pub use self::spot::Spot;
