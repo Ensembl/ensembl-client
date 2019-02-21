@@ -1,24 +1,30 @@
 import React, { FunctionComponent, RefObject } from 'react';
 import { connect } from 'react-redux';
-import ContentEditable from 'react-contenteditable';
 
 import { browserInfoConfig } from '../browserConfig';
-
-import { toggleBrowserNav } from '../browserActions';
+import { toggleBrowserNav, updateDefaultChrLocation } from '../browserActions';
 import { ChrLocation } from '../browserState';
+import {
+  getBrowserNavOpened,
+  getChrLocation,
+  getBrowserActivated
+} from '../browserSelectors';
 import { RootState } from 'src/rootReducer';
-import { getBrowserNavOpened, getChrLocation } from '../browserSelectors';
+
+import BrowserReset from '../browser-reset/BrowserReset';
+import BrowserGenomeSelector from '../browser-genome-selector/BrowserGenomeSelector';
 
 import styles from './BrowserBar.scss';
-import BrowserReset from '../browser-reset/BrowserReset';
 
 type StateProps = {
+  browserActivated: boolean;
   browserNavOpened: boolean;
   chrLocation: ChrLocation;
 };
 
 type DispatchProps = {
   toggleBrowserNav: () => void;
+  updateDefaultChrLocation: (chrLocation: ChrLocation) => void;
 };
 
 type OwnProps = {
@@ -31,14 +37,13 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   props: BrowserBarProps
 ) => {
   const { navigator, reset } = browserInfoConfig;
-  const [chrCode, chrStart, chrEnd] = props.chrLocation;
   const browserImageEl = props.browserRef.current as HTMLDivElement;
 
   return (
     <div className={styles.browserBar}>
       <div className={styles.browserInfo}>
         <dl className={styles.browserInfoLeft}>
-          <BrowserReset details={reset} browserImageEl={browserImageEl} />
+          <BrowserReset browserImageEl={browserImageEl} details={reset} />
           <dd className={styles.geneSymbol}>
             <label>Gene</label>
             <span className={styles.value}>BRAC2</span>
@@ -56,16 +61,11 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
           <dd className="show-for-large">forward strand</dd>
         </dl>
         <dl className={styles.browserInfoRight}>
-          <dd>
-            <label className="show-for-large">Chromosome</label>
-            <ContentEditable
-              html={`${chrCode}`}
-              className="content-editable-box"
-            />
-            <ContentEditable html={`${chrStart}`} />
-            <span> - </span>
-            <ContentEditable html={`${chrEnd}`} />
-          </dd>
+          <BrowserGenomeSelector
+            browserActivated={props.browserActivated}
+            chrLocation={props.chrLocation}
+            updateDefaultChrLocation={props.updateDefaultChrLocation}
+          />
           <dd className={styles.navigator}>
             <button
               title={navigator.description}
@@ -99,12 +99,14 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
+  browserActivated: getBrowserActivated(state),
   browserNavOpened: getBrowserNavOpened(state),
   chrLocation: getChrLocation(state)
 });
 
 const mapDispatchToProps: DispatchProps = {
-  toggleBrowserNav
+  toggleBrowserNav,
+  updateDefaultChrLocation
 };
 
 export default connect(
