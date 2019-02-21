@@ -2,7 +2,7 @@ use debug::testcards::rulergenerator::RulerGenerator;
 use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
 use composit::Source;
 use drawing::{ FCFont, FontVariety, text_texture };
-use shape::{ ColourSpec, pin_texture, PinRectTypeSpec, RectData, StretchRectTypeSpec };
+use shape::{ ColourSpec, PinRectTypeSpec, RectData, StretchRectTypeSpec, TextureTypeSpec, TextureData };
 use types::{ Colour, cleaf, cpixel, A_TOP, area, area_size, AxisSense };
 
 const TARGET: i32 = 10;
@@ -27,8 +27,22 @@ pub fn leafcard_source(leaf_marks: bool) -> impl Source {
         for (offset,height,text) in ruler {
             if let Some(text) = text {
                 let tx = text_texture(&text,&font,&Colour(199,208,213),&Colour(255,255,255));
-                closure_add(lc,&pin_texture(tx,&cleaf(offset as f32,1),
-                            &cpixel(0,40),&cpixel(1,1).anchor(A_TOP)));
+                
+                let tts = TextureTypeSpec {
+                    sea_x: None,
+                    sea_y: None,
+                    ship_x: (None,0),
+                    ship_y: (Some(AxisSense::Max),0),
+                    under: None,
+                    scale_x: 1., scale_y: 1.
+                };
+                closure_add(lc,&tts.new_shape(&TextureData {
+                    pos_x: offset as f32,
+                    pos_y: 41,
+                    aux_x: 0.,
+                    aux_y: 0,
+                    drawing: tx
+                }));
             }
             closure_add(lc,&prts.new_shape(&RectData {
                 pos_x: offset,

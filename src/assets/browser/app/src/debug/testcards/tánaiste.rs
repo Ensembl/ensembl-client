@@ -23,11 +23,10 @@ use drawing::{
     FCFont, FontVariety
 };
 use shape::{
-    fix_texture,
-    page_texture, pin_texture,  pin_mathsshape,
+    pin_mathsshape,
     stretch_texture, stretch_wiggle,
     ColourSpec, MathsShape, tape_mathsshape,
-    tape_texture, PinRectTypeSpec, RectData
+    PinRectTypeSpec, RectData, TextureTypeSpec, TextureData
 };
 use tácode::{ Tácode, TáSource };
 use types::{ 
@@ -123,9 +122,21 @@ fn draw_frame(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette
 
     let tx = text_texture("bp",
                           &p.lato_12,&Colour(199,208,213),&Colour(255,255,255));
-    closure_add(lc,&fix_texture(tx,&cedge(left,cpixel(34,10)),
-                            &cpixel(0,0),
-                            &cpixel(1,1).anchor(A_RIGHT)));
+    let tts = TextureTypeSpec {
+        sea_x: Some(AxisSense::Max),
+        sea_y: Some(edge),
+        ship_x: (Some(AxisSense::Min),0),
+        ship_y: (None,0),
+        under: None,
+        scale_x: 1., scale_y: 1.
+    };
+    closure_add(lc,&tts.new_shape(&TextureData {
+        pos_x: 34.,
+        pos_y: 10,
+        aux_x: 0.,
+        aux_y: 0,
+        drawing: tx
+    }));
 
     /* left/right */
     let prts = PinRectTypeSpec {
@@ -165,8 +176,21 @@ fn measure(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette) {
         if let Some(text) = text {
             let tx = text_texture(&text,
                       &p.lato_12,&Colour(199,208,213),&Colour(255,255,255));
-            closure_add(lc,&tape_texture(tx,&cleaf(offset as f32,9).y_edge(edge),
-                 &cpixel(4,1),&cpixel(1,1).anchor(A_LEFT)));
+            let tts = TextureTypeSpec {
+                sea_x: None,
+                sea_y: Some(edge),
+                ship_x: (Some(AxisSense::Max),0),
+                ship_y: (None,0),
+                under: None,
+                scale_x: 1., scale_y: 1.
+            };
+            closure_add(lc,&tts.new_shape(&TextureData {
+                pos_x: offset as f32,
+                pos_y: 10,
+                aux_x: 4.,
+                aux_y: 0,
+                drawing: tx
+            }));
             closure_add(lc,&prts.new_shape(&RectData {
                 pos_x: offset,
                 pos_y: 0,
@@ -188,9 +212,21 @@ fn track_meta(lc: &mut SourceResponse, p: &Palette, t: i32) {
     let name = if t == 7 { "V" } else { "G" };
     let tx = text_texture(name,&p.lato_18,
                           &Colour(96,96,96),&Colour(255,255,255));
-    closure_add(lc,&page_texture(tx,&cedge(TOPLEFT,cpixel(30,t*PITCH+TOP)),
-                                &cpixel(0,0),
-                                &cpixel(1,1).anchor(A_RIGHT)));
+    let tts = TextureTypeSpec {
+        sea_x: Some(AxisSense::Max),
+        sea_y: None,
+        ship_x: (Some(AxisSense::Min),0),
+        ship_y: (None,0),
+        under: None,
+        scale_x: 1., scale_y: 1.
+    };
+    closure_add(lc,&tts.new_shape(&TextureData {
+        pos_x: 30 as f32,
+        pos_y: t*PITCH+TOP,
+        aux_x: 0.,
+        aux_y: 0,
+        drawing: tx
+    }));
     if t == 0 {
         let prts = PinRectTypeSpec {
             sea_x: Some((AxisSense::Max,AxisSense::Max)),

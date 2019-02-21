@@ -7,8 +7,9 @@ use tánaiste::{
 use composit::{ Leaf, SourceResponse };
 use drawing::{ DrawingSpec };
 use shape::{
-    ColourSpec, pin_texture, fix_texture,
-    PinRectTypeSpec, RectData, StretchRectTypeSpec
+    ColourSpec,
+    PinRectTypeSpec, RectData, StretchRectTypeSpec,
+    TextureData, TextureTypeSpec
 };
 use tácode::core::{ TáContext, TáTask };
 use types::{
@@ -167,16 +168,23 @@ fn draw_pintexture(leaf: &mut Leaf, lc: &mut SourceResponse,
                    y_start: &Vec<f64>, y_aux: &Vec<f64>,
                    colour: &Vec<f64>) {
     let mut tx_iter = colour.iter().cycle();
-    let mut pp_iter = pinpoint_iter(leaf,x_start,y_start);
+    let mut y_start_iter = y_start.iter().cycle();
     for x_start in x_start.iter() {
-        let pos = pp_iter.next().unwrap();
-        let shape = pin_texture(
-            tx[*tx_iter.next().unwrap() as usize].clone(),
-            &pos,
-            &cpixel(0,0), // offset
-            &cpixel(1,1).anchor(A_MIDDLE)
-        );
-        lc.add_shape(shape);
+        let tts = TextureTypeSpec {
+            sea_x: None,
+            sea_y: None,
+            ship_x: (None,0),
+            ship_y: (None,0),
+            under: None,
+            scale_x: 1., scale_y: 1.
+        };
+        lc.add_shape(tts.new_shape(&TextureData {
+            pos_x: leaf.prop(*x_start),
+            pos_y: *y_start_iter.next().unwrap() as i32,
+            aux_x: 0.,
+            aux_y: 0,
+            drawing: tx[*tx_iter.next().unwrap() as usize].clone()
+        }));
     }
 }
 
@@ -186,9 +194,28 @@ fn draw_fixtexture(leaf: &mut Leaf, lc: &mut SourceResponse,
                    y_start: &Vec<f64>, y_aux: &Vec<f64>,
                    colour: &Vec<f64>) {
     let mut tx_iter = colour.iter().cycle();
-    let mut pp_iter = fixpoint_iter(leaf,x_start,y_start);
+    let mut y_start_iter = y_start.iter().cycle();
+    let mut x_aux_iter = x_aux.iter().cycle();
+    let mut y_aux_iter = y_aux.iter().cycle();
     for x_start in x_start.iter() {
-        let pos = pp_iter.next().unwrap();
+        let tts = TextureTypeSpec {
+            sea_x: Some(AxisSense::Max),
+            sea_y: Some(AxisSense::Max),
+            ship_x: (Some(AxisSense::Min),0),
+            ship_y: (None,0),
+            under: None,
+            scale_x: 1., scale_y: 1.
+        };
+        console!("add A");
+        lc.add_shape(tts.new_shape(&TextureData {
+            pos_x: *x_start as f32,
+            pos_y: *y_start_iter.next().unwrap() as i32,
+            aux_x: *x_aux_iter.next().unwrap() as f32,
+            aux_y: *y_aux_iter.next().unwrap() as i32,
+            drawing: tx[*tx_iter.next().unwrap() as usize].clone(),
+        }));
+        console!("add B");
+        /*
         let shape = fix_texture(
             tx[*tx_iter.next().unwrap() as usize].clone(),
             &cedge(TOPLEFT,pos),
@@ -196,6 +223,7 @@ fn draw_fixtexture(leaf: &mut Leaf, lc: &mut SourceResponse,
             &cpixel(1,1).anchor(A_RIGHT)
         );
         lc.add_shape(shape);
+        */
     }
 }
 
