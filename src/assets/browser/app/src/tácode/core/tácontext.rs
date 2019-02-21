@@ -13,7 +13,8 @@ pub enum TáTask {
 impl TáTask {
     pub fn finished(&mut self) {
         match self {
-            TáTask::MakeShapes(_,sr,_,_) => {
+            TáTask::MakeShapes(leaf,sr,_,_) => {
+                //console!("{:?} for {} added {} shapes",leaf,sr.get_source_name(),sr.size());
                 sr.done(200); // XXX not 200
             },
             _ => ()

@@ -18,6 +18,7 @@ pub struct DebugSource {
     sources: HashMap<String,Box<Source>>,
 }
 
+const TOP : i32 = 50;
 const PITCH : i32 = 63;
 
 impl DebugSource {
@@ -57,7 +58,7 @@ fn debug_source_type(tc: &Tácode, xf: &DebugXferClerk, type_: &DebugSourceType)
     s.add_stick("ruler",Box::new(leafcard_source(false)));
     s.add_stick("button",Box::new(bs_source_main()));
     if *type_ != DebugSourceType::Framework {
-        let ls = Landscape::new(Plot::new(type_.get_pos()*PITCH,PITCH));
+        let ls = Landscape::new(Plot::new(type_.get_pos()*PITCH+TOP,PITCH));
         let src = TáSource::new(tc,Box::new(xf.clone()),type_.get_name(),ls);
         s.add_stick("tácode",Box::new(src));
     } else {
