@@ -21,10 +21,11 @@ use debug::testcards::common::{
 };
 
 use shape::{
-    fix_rectangle, fix_texture, tape_rectangle, tape_mathsshape,
-    page_texture,  pin_texture,  pin_mathsshape, pin_rectangle,
-    stretch_rectangle, stretch_texture, stretch_wiggle, tape_texture,
-    ColourSpec, MathsShape, fix_mathsshape, page_mathsshape
+    fix_texture, tape_mathsshape,
+    page_texture,  pin_texture,  pin_mathsshape,
+    stretch_texture, stretch_wiggle, tape_texture,
+    ColourSpec, MathsShape, fix_mathsshape, page_mathsshape,
+    PinRectTypeSpec, RectData, StretchRectTypeSpec
 };
 
 use controller::global::App;
@@ -53,10 +54,21 @@ fn battenberg() -> DrawingSpec {
 
 fn measure(lc: &mut SourceResponse, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSpec) {
     for x in -10..10 {
-        closure_add(lc,&tape_rectangle(
-            &cleaf(x as f32/10.,0),
-            &area_size(cpixel(0,0),cpixel(20,20)).y_edge(AxisSense::Max,AxisSense::Max),
-            cs));
+        let prts = PinRectTypeSpec {
+            sea_x: None,
+            sea_y: Some((AxisSense::Max,AxisSense::Max)),
+            ship_x: (Some(AxisSense::Min),0),
+            ship_y: (Some(AxisSense::Min),0),
+            under: None,
+            spot: false
+        };
+        closure_add(lc,&prts.new_shape(&RectData {
+            pos_x: x as f32/10.,
+            pos_y: 0,
+            aux_x: 20.,
+            aux_y: 20,
+            colour: Colour(255,100,50)
+        }));
         closure_add(lc,&tape_mathsshape(
             &cleaf(x as f32/10.+25.,0).y_edge(AxisSense::Max),
             A_TOP,
@@ -116,8 +128,16 @@ fn source_odd() -> ClosureSource {
                     }
                 }
                 if start_leaf < 100000 && end_leaf > 0 {
+                    debug!("bug","A");
                     let start_prop = prop(leaf,0);
-                    closure_add(lc,&stretch_rectangle(&area_size(cleaf(start_prop,y-20),cleaf(10000./mul as f32,5)),&pal.red));
+                    let srts = StretchRectTypeSpec { spot: true };
+                    closure_add(lc,&srts.new_shape(&RectData {
+                        pos_x: start_prop,
+                        pos_y: y-20,
+                        aux_x: 10000./mul as f32,
+                        aux_y: 5,
+                        colour: Colour(255,100,50)
+                    }));                    
                     closure_add(lc,&pin_mathsshape(
                         &cleaf(start_prop,y-15),
                         A_RIGHT,
@@ -189,8 +209,15 @@ fn source_even() -> ClosureSource {
                     }
                 }
                 if start_leaf < 100000 && end_leaf > 0 {
-                    let start_prop = prop(leaf,0);                
-                    closure_add(lc,&stretch_rectangle(&area_size(cleaf(0.,y-15),cleaf(10000./mul as f32,5)),&pal.green));
+                    let start_prop = prop(leaf,0);      
+                    let srts = StretchRectTypeSpec { spot: true };
+                    closure_add(lc,&srts.new_shape(&RectData {
+                        pos_x: start_prop,
+                        pos_y: y-15,
+                        aux_x: 10000./mul as f32,
+                        aux_y: 5,
+                        colour: Colour(50,255,150)
+                    }));
                     closure_add(lc,&pin_mathsshape(
                         &cleaf(10000./mul as f32,y-15),
                         A_LEFT,
@@ -295,8 +322,22 @@ pub fn bs_source_main() -> ClosureSource {
                                 &pal.green));            
             if yidx == pal.middle+3 {
                 if start_leaf < 100000 && end_leaf > 0 {
-                    let start_prop = prop(leaf,0);
-                    closure_add(lc,&pin_rectangle(&cleaf(start_prop,y-10),&area_size(cpixel(0,-10),cpixel(20,20)),&ColourSpec::Colour(Colour(128,0,0))));
+                    
+                    let prts = PinRectTypeSpec {
+                        sea_x: None,
+                        sea_y: None,
+                        ship_x: (Some(AxisSense::Min),0),
+                        ship_y: (None,0),
+                        under: None,
+                        spot: false
+                    };
+                    closure_add(lc,&prts.new_shape(&RectData {
+                        pos_x: prop(leaf,0),
+                        pos_y: y-10,
+                        aux_x: 20.,
+                        aux_y: 20,
+                        colour: Colour(128,0,0)
+                    }));
                 }
             }
             if yidx == pal.middle {
@@ -341,9 +382,14 @@ pub fn bs_source_main() -> ClosureSource {
                         hh = 5 -hh;
                         let start_prop = prop(leaf,p[0]);
                         let end_prop = prop(leaf,p[1]);
-                        closure_add(lc,
-                            &stretch_rectangle(&area(cleaf(start_prop,y-h),cleaf(end_prop,y+h)),
-                                        &ColourSpec::Colour(colour)));
+                        let srts = StretchRectTypeSpec { spot: false };
+                        closure_add(lc,&srts.new_shape(&RectData {
+                            pos_x: start_prop,
+                            pos_y: y-h,
+                            aux_x: end_prop-start_prop,
+                            aux_y: 2*h,
+                            colour
+                        }));                    
                         if rng_prob([yidx as u8,j as u8,0,0,0,0,0,5],start,0.2) {
                             let tri_col = rng_colour([yidx as u8,i as u8,j as u8,0,0,0,0,3],start);
                             closure_add(lc,&pin_mathsshape(
@@ -363,13 +409,31 @@ pub fn bs_source_main() -> ClosureSource {
                 }
             }
         }
-            
-        closure_add(lc,&fix_rectangle(&area(cedge(TOPLEFT,cpixel(SW/2,0)),
-                                        cedge(TOPLEFT,cpixel(SW/2+1,SH))),
-                            &ColourSpec::Colour(Colour(0,0,0))));
-        closure_add(lc,&fix_rectangle(&area(cedge(TOPLEFT,cpixel(SW/2+5,0)),
-                                        cedge(TOPLEFT,cpixel(SW/2+8,SH))),
-                            &pal.red));
+        
+        let prts = PinRectTypeSpec {
+            sea_x: Some((AxisSense::Max,AxisSense::Max)),
+            sea_y: Some((AxisSense::Max,AxisSense::Max)),
+            ship_x: (Some(AxisSense::Min),0),
+            ship_y: (Some(AxisSense::Min),0),
+            under: None,
+            spot: true
+        };
+
+        closure_add(lc,&prts.new_shape(&RectData {
+            pos_x: SW as f32/2.,
+            pos_y: 0,
+            aux_x: 1.,
+            aux_y: SH,
+            colour: Colour(0,0,0)
+        }));
+        closure_add(lc,&prts.new_shape(&RectData {
+            pos_x: SW as f32/2.+5.,
+            pos_y: 0,
+            aux_x: 3.,
+            aux_y: SH,
+            colour: Colour(255,100,50)
+        }));
+
         let tx = bitmap_texture(vec! { 0,0,255,255,
                                      255,0,0,255,
                                      0,255,0,255,

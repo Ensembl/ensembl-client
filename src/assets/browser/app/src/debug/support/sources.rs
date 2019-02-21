@@ -7,7 +7,7 @@ use composit::{
 };
 use debug::testcards::{
     leafcard_source, text_source, march_source_cs, march_source_ts,
-    polar_source, tá_source_cs , bs_source_main
+    polar_source, tá_source_cs , bs_source_main, bs_source_sub
 };
 use debug::support::{
     DebugSourceType, DebugXferClerk
@@ -56,7 +56,13 @@ fn debug_source_type(tc: &Tácode, xf: &DebugXferClerk, type_: &DebugSourceType)
     s.add_stick("text",Box::new(text_source()));
     s.add_stick("leaf",Box::new(leafcard_source(true)));
     s.add_stick("ruler",Box::new(leafcard_source(false)));
-    s.add_stick("button",Box::new(bs_source_main()));
+    let b = match type_ {
+        DebugSourceType::GenePcFwd => Some(bs_source_sub(true)),
+        DebugSourceType::GenePcRev => Some(bs_source_sub(false)),
+        DebugSourceType::GC => Some(bs_source_main()),
+        _ => None
+    };
+    if let Some(b) = b { s.add_stick("button",Box::new(b)); }
     let ls = Landscape::new(Plot::new(type_.get_pos()*PITCH+TOP,PITCH));
     let src = TáSource::new(tc,Box::new(xf.clone()),type_.get_name(),ls);
     s.add_stick("tácode",Box::new(src));
