@@ -29,14 +29,10 @@ pub use self::texture::{
 };
 
 pub use self::rect::{
-    pin_rectangle,
-    fix_rectangle,
-    page_rectangle,
-    fixunderpage_rectangle,
-    fixundertape_rectangle,
-    tape_rectangle,
-    stretch_rectangle,
-    RectSpec
+    RectSpec,
+    PinRectTypeSpec,
+    StretchRectTypeSpec,
+    RectData
 };
 
 pub use shape::poly::{

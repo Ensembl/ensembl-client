@@ -23,13 +23,12 @@ use drawing::{
     FCFont, FontVariety
 };
 use shape::{
-    fix_rectangle, fix_texture, page_rectangle,
-    fixundertape_rectangle, fixundertape_texture,
-    fixunderpage_rectangle, fixunderpage_texture,
+    fix_texture,
     page_texture, pin_texture,  pin_mathsshape,
-    stretch_rectangle, stretch_texture, stretch_wiggle,
+    stretch_texture, stretch_wiggle,
     ColourSpec, MathsShape, tape_mathsshape,
-    tape_rectangle, tape_texture, stretch_box
+    tape_texture, stretch_box, PinRectTypeSpec, RectData,
+    StretchRectTypeSpec
 };
 use tácode::{ Tácode, TáSource };
 use types::{ 
@@ -63,30 +62,88 @@ fn draw_frame(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette
     let bottom = Corner(edge,AxisSense::Min);
     
     /* top/bottom */
-    closure_add(lc,&fixundertape_rectangle(&area(cedge(left,cpixel(0,1)),
-                                    cedge(right,cpixel(0,18))),
-                        &p.white));
-    closure_add(lc,&fix_rectangle(&area(cedge(left,cpixel(0,2)),
-                                    cedge(left,cpixel(36,16))),
-                                &p.white));
-    closure_add(lc,&fix_rectangle(&area(cedge(left,cpixel(36,1)),
-                                    cedge(left,cpixel(37,17))),
-                                &p.grey));
+    let prts = PinRectTypeSpec {
+        sea_x: Some((AxisSense::Max,AxisSense::Min)),
+        sea_y: Some((edge,edge)),
+        ship_x: (Some(AxisSense::Min),0),
+        ship_y: (Some(AxisSense::Min),0),
+        under: Some(false),
+        spot: true
+    };
+    closure_add(lc,&prts.new_shape(&RectData {
+        pos_x: 0.,
+        pos_y: 1,
+        aux_x: 0.,
+        aux_y: 18,
+        colour: Colour(255,255,255)
+    }));        
+
+    let prts = PinRectTypeSpec {
+        sea_x: Some((AxisSense::Max,AxisSense::Max)),
+        sea_y: Some((edge,edge)),
+        ship_x: (Some(AxisSense::Min),0),
+        ship_y: (Some(AxisSense::Min),0),
+        under: None,
+        spot: true
+    };
+
+    closure_add(lc,&prts.new_shape(&RectData {
+        pos_x: 0.,
+        pos_y: 2,
+        aux_x: 36.,
+        aux_y: 16,
+        colour: Colour(255,255,255)
+    }));
+    closure_add(lc,&prts.new_shape(&RectData {
+        pos_x: 36.,
+        pos_y: 1,
+        aux_x: 1.,
+        aux_y: 16,
+        colour: Colour(199,208,213)
+    }));
+
+
+    let prts = PinRectTypeSpec {
+        sea_x: Some((AxisSense::Max,AxisSense::Min)),
+        sea_y: Some((edge,edge)),
+        ship_x: (Some(AxisSense::Min),0),
+        ship_y: (Some(AxisSense::Min),0),
+        under: None,
+        spot: true
+    };
+
+    for y in [0,17].iter() {
+        closure_add(lc,&prts.new_shape(&RectData {
+            pos_x: 0.,
+            pos_y: *y,
+            aux_x: 0.,
+            aux_y: 1,
+            colour: Colour(199,208,213)
+        }));        
+    }
+
     let tx = text_texture("bp",
                           &p.lato_12,&Colour(199,208,213),&Colour(255,255,255));
     closure_add(lc,&fix_texture(tx,&cedge(left,cpixel(34,10)),
                             &cpixel(0,0),
                             &cpixel(1,1).anchor(A_RIGHT)));
-    for y in [0,17].iter() {
-        closure_add(lc,&fix_rectangle(&area(cedge(left,cpixel(0,*y)),
-                                        cedge(right,cpixel(0,*y+1))),
-                            &p.grey));
-    }
 
     /* left/right */
-    closure_add(lc,&fixunderpage_rectangle(&area(cedge(top,cpixel(0,18)),
-                                    cedge(bottom,cpixel(36,18))),
-                        &p.white));
+    let prts = PinRectTypeSpec {
+        sea_x: Some((edge,edge)),
+        sea_y: Some((AxisSense::Max,AxisSense::Min)),
+        ship_x: (Some(AxisSense::Min),0),
+        ship_y: (Some(AxisSense::Min),0),
+        under: Some(true),
+        spot: true
+    };
+    closure_add(lc,&prts.new_shape(&RectData {
+        pos_x: 0.,
+        pos_y: 18,
+        aux_x: 36.,
+        aux_y: 0,
+        colour: Colour(255,255,255)
+    }));        
 }
 
 fn measure(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette) {
@@ -97,16 +154,28 @@ fn measure(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette) {
 
     let rg = RulerGenerator::new_leaf(leaf);
     let ruler = rg.ruler(MARK_TARGET,TICK_TARGET,TARGET,&[10,15,20,30]);
+    let prts = PinRectTypeSpec {
+        sea_x: None,
+        sea_y: Some((edge,edge)),
+        ship_x: (Some(AxisSense::Min),0),
+        ship_y: (Some(AxisSense::Min),0),
+        under: None,
+        spot: true
+    };
     for (offset,height,text) in ruler {
         if let Some(text) = text {
             let tx = text_texture(&text,
                       &p.lato_12,&Colour(199,208,213),&Colour(255,255,255));
             closure_add(lc,&tape_texture(tx,&cleaf(offset as f32,9).y_edge(edge),
                  &cpixel(4,1),&cpixel(1,1).anchor(A_LEFT)));
-            closure_add(lc,&tape_rectangle(
-                &cleaf(offset as f32,0),
-                &area_size(cpixel(0,1),cpixel(1,17)).y_edge(edge,edge),
-                &p.grey));
+                        closure_add(lc,&prts.new_shape(&RectData {
+                pos_x: offset,
+                pos_y: 0,
+                aux_x: 1.,
+                aux_y: 17,
+                colour: Colour(199,208,213)
+
+            }));
         }
     }
 }
@@ -122,7 +191,7 @@ fn data(t: i32) -> Vec<f32> {
 
 const SCALE : f32 = 400.;
 
-fn choose_colour(t: i32, x: f32) -> ColourSpec {
+fn choose_colour(t: i32, x: f32) -> Colour {
     let v = x.cos();
     let w = x.sin();
     let (r,g,b) = (if t == 4 {
@@ -149,23 +218,33 @@ fn choose_colour(t: i32, x: f32) -> ColourSpec {
         /* monochrome variant track */
         if v > 0. { (192,192,192) } else { (220,220,220) }
     });
-    ColourSpec::Spot(Colour(r,g,b))
+    Colour(r,g,b)
 }
 
 fn draw_gene_part(lc: &mut SourceResponse, x: f32, y: i32, v: f32) {
     if v > 0. {
-        closure_add(lc,&stretch_rectangle(
-                &area_size(cleaf(x,y-3),
-                           cleaf(v,6)),
-                &ColourSpec::Spot(Colour(75,168,252))));
+        let srts = StretchRectTypeSpec { spot: true };
+        closure_add(lc,&srts.new_shape(&RectData {
+            pos_x: x,
+            pos_y: y-3,
+            aux_x: v,
+            aux_y: 5,
+            colour: Colour(75,168,252)
+        }));
     }
 }
 
-fn draw_varreg_part(lc: &mut SourceResponse, t: i32, x: f32, y: i32, v: f32, col: ColourSpec) {
-    closure_add(lc,&stretch_rectangle(
-            &area_size(cleaf(x,y-3),
-                       cleaf(v.abs(),6)),
-            &col));
+fn draw_varreg_part(lc: &mut SourceResponse, t: i32, x: f32, y: i32, v: f32, col: Colour) {
+    if v > 0. {
+        let srts = StretchRectTypeSpec { spot: true };
+        closure_add(lc,&srts.new_shape(&RectData {
+            pos_x: x,
+            pos_y: y-3,
+            aux_x: v.abs(),
+            aux_y: 6,
+            colour: col
+        }));
+    }
 }
 
 const BLOCK_TARGET : usize = 200;
@@ -222,9 +301,22 @@ fn track_meta(lc: &mut SourceResponse, p: &Palette, t: i32) {
                                 &cpixel(0,0),
                                 &cpixel(1,1).anchor(A_RIGHT)));
     if t == 0 {
-        closure_add(lc,&page_rectangle(&area(cpixel(0,t*PITCH-PITCH/3+TOP).x_edge(AxisSense::Max),
-                                         cpixel(6,t*PITCH+PITCH/3+TOP).x_edge(AxisSense::Max)),
-                                   &ColourSpec::Colour(Colour(75,168,252))));
+        let prts = PinRectTypeSpec {
+            sea_x: Some((AxisSense::Max,AxisSense::Max)),
+            sea_y: None,
+            ship_x: (Some(AxisSense::Min),0),
+            ship_y: (Some(AxisSense::Min),0),
+            under: None,
+            spot: true
+        };
+
+        closure_add(lc,&prts.new_shape(&RectData {
+            pos_x: 0.,
+            pos_y: t*PITCH-PITCH/3+TOP,
+            aux_x: 6.,
+            aux_y: 2*PITCH/3,
+            colour: Colour(78,168,252)
+        }));
     }
 }
 
@@ -275,10 +367,14 @@ fn gene_track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
                         x += v.abs() * scale;
                     }
                     if exonic {
-                        closure_add(lc,&stretch_rectangle(
-                            &area(cleaf(prop_start,y-h),
-                                  cleaf(prop_end,y+h)),
-                            &ColourSpec::Spot(Colour(75,168,252))));
+                        let srts = StretchRectTypeSpec { spot: true };
+                        closure_add(lc,&srts.new_shape(&RectData {
+                            pos_x: prop_start,
+                            pos_y: y-h,
+                            aux_x: prop_end-prop_start,
+                            aux_y: 2*h,
+                            colour: Colour(75,168,252)
+                        }));
                     } else {
                         let mut col = Colour(75,168,252);
                         if t == 0 { col = Colour(205,231,254); }
@@ -312,18 +408,27 @@ fn gene_track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
                     let x_end = prop(leaf,(x_genome+*v*scale) as i32);
                     if x == 0. {
                         let x_all_end = prop(leaf,pos[1]);
-                        closure_add(lc,&stretch_rectangle(
-                                        &area(cleaf(x_start,y-1),cleaf(x_all_end,y+1)),
-                                        &ColourSpec::Spot(Colour(75,168,252))));
+                        let srts = StretchRectTypeSpec { spot: true };
+                        closure_add(lc,&srts.new_shape(&RectData {
+                            pos_x: x_start,
+                            pos_y: y-1,
+                            aux_x: x_all_end-x_start,
+                            aux_y: 2,
+                            colour: Colour(75,168,252)
+                        }));
                     }
                     draw_gene_part(lc,x_start,y,x_end-x_start);
                     x += v.abs() * scale;
                 }
             } else if prop_end-prop_start > 0.0002 {
-                let mut colour = Colour(75,168,252);
-                closure_add(lc,&stretch_rectangle(
-                    &area(cleaf(prop_start,y-3),cleaf(prop_end,y+3)),
-                    &ColourSpec::Spot(colour)));
+                let srts = StretchRectTypeSpec { spot: true };
+                closure_add(lc,&srts.new_shape(&RectData {
+                    pos_x: prop_start,
+                    pos_y: y-3,
+                    aux_x: prop_end-prop_start,
+                    aux_y: 6,
+                    colour: Colour(75,168,252)
+                }));                
             }
         }
     } else {
@@ -335,9 +440,14 @@ fn gene_track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
         }
         for (m,n,dn,dd) in blocks.iter() {
             let colour = Colour(75,168,252);
-            closure_add(lc,&stretch_rectangle(
-                &area(cleaf(*m,y-3),cleaf(*n,y+3)),
-                &ColourSpec::Colour(colour)));
+            let srts = StretchRectTypeSpec { spot: false };
+            closure_add(lc,&srts.new_shape(&RectData {
+                pos_x: *m,
+                pos_y: y-3,
+                aux_x: *n-*m,
+                aux_y: 6,
+                colour
+            }));            
         }
     }
 }
@@ -393,9 +503,14 @@ fn contig_track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
             let prop_end = prop(leaf,*pos);
             let c = if *sense { 192 } else { 128 };
             if prop_start < 1. && prop_end > 0. {
-                closure_add(lc,&stretch_rectangle(
-                    &area(cleaf(prop_start,y-3),cleaf(prop_end,y+3)),
-                    &ColourSpec::Spot(Colour(c,c,c))));
+                let srts = StretchRectTypeSpec { spot: true };
+                closure_add(lc,&srts.new_shape(&RectData {
+                    pos_x: prop_start,
+                    pos_y: y-3,
+                    aux_x: prop_end-prop_start,
+                    aux_y: 6,
+                    colour: Colour(c,c,c)
+                }));            
             }
             prev_pos = *pos;
         }
@@ -423,87 +538,15 @@ fn contig_track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
             } else { vec!{} };
             for (i,(start,end,sense)) in ops.iter().enumerate() {
                 let c = if *sense { 192 } else { 128 }; 
-                closure_add(lc,&stretch_rectangle(
-                    &area(cleaf((b as f32+start)/steps,y-3),
-                          cleaf((b as f32+end)/steps,y+3)),
-                    &ColourSpec::Colour(Colour(c,c,c))));
+                let srts = StretchRectTypeSpec { spot: true };
+                closure_add(lc,&srts.new_shape(&RectData {
+                    pos_x: (b as f32+start)/steps,
+                    pos_y: y-3,
+                    aux_x: (end-start)/steps,
+                    aux_y: 6,
+                    colour: Colour(c,c,c)
+                }));            
             }
-        }
-    }
-}
-
-fn variant_track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32) {
-    /* focus track swatch */
-    let mul = leaf.total_bp();
-    let start_leaf = (leaf.get_index() as f64 * mul).floor() as i32;
-    let end_leaf = ((leaf.get_index()+1) as f64 * mul).ceil() as i32;
-    let wiggle = 1000000;
-    let pr = 0.5;
-    let starts_rng = rng_pos([t as u8,0,0,0,0,0,0,8],start_leaf-wiggle,
-                             end_leaf+wiggle,100000,(100000.*pr) as i32);
-    let d = data(t);
-    let st = (t as f32).cos() * -10. - 100.;
-    let mut x = st;
-    let y = t*PITCH+TOP;
-    let total_bp = leaf.total_bp();
-    if total_bp < 10. {
-        // why?
-    } else if total_bp < 2000000. {
-        for (i,pos) in starts_rng.iter().enumerate() {
-            let prop_start = prop(leaf,pos[0]);
-            let prop_end = prop(leaf,pos[1]);
-            if prop_end < 0. || prop_start > 1. { continue; }
-            let data_len = d.iter().fold(-d[d.len()-1],|a,v| a+v.abs());
-            let mut x = 0.;
-            let scale : f32 = (pos[1]-pos[0]) as f32/data_len as f32;
-            if prop_end-prop_start > 0.1 {
-                for v in &d {
-                    let x_genome = pos[0] as f32+x as f32;
-                    let x_start = prop(leaf,x_genome as i32);
-                    let x_end = prop(leaf,(x_genome+*v*scale) as i32);
-                    let col = choose_colour(t,x_genome);
-                    draw_varreg_part(lc,t,x_start,y,x_end-x_start,col);
-                    x += v.abs() * scale;
-                }
-            } else if prop_end-prop_start > 0.0002 {
-                let mut colour = if t == 4 {
-                    Colour(190,219,213)
-                } else if t%3 == 1 {
-                    Colour(255,64,64)
-                } else {
-                    Colour(192,192,192)
-                };
-                closure_add(lc,&stretch_rectangle(
-                    &area(cleaf(prop_start,y-3),cleaf(prop_end,y+3)),
-                    &ColourSpec::Spot(colour)));
-            }
-        }
-    } else {
-        let blocks = get_blocks(leaf,&starts_rng);
-        let mut max_density = 0.0_f32;
-        for (m,n,dn,dd) in blocks.iter() {
-            let density = (dn/ (n-m)).min(1.);
-            max_density = max_density.min(density);
-        }
-        for (m,n,dn,dd) in blocks.iter() {
-            let mut col_hsl = if t == 4 {
-                Colour(190,219,213)
-            } else if t%3 == 1 {
-                Colour(255,64,64)
-            } else {
-                Colour(192,192,192)
-            }.to_hsl();
-            let mul = if max_density < 0.5 { 1.5 } else { 1.0 };
-            let mut density = ((dn/ (n-m))*mul).min(1.);
-            if density < 0.95 { density = density.min(0.8); }
-            if col_hsl[1] > 0.5 {
-                col_hsl[1] = 0.5 + col_hsl[1] * 0.5 * (1.0 - density) as f64;
-            }
-            col_hsl[2] = col_hsl[2] + (1.-col_hsl[2]) * (1.0 - density) as f64;
-            let colour = Colour::from_hsl(col_hsl);
-            closure_add(lc,&stretch_rectangle(
-                &area(cleaf(*m,y-3),cleaf(*n,y+3)),
-                &ColourSpec::Colour(colour)));
         }
     }
 }
@@ -558,12 +601,6 @@ pub fn march_source_cs(type_: &DebugSourceType) -> impl Source {
                 closure_done(lc,TRACKS*PITCH+TOP);
             })
         },
-        /*
-        DebugSourceType::Variant => {
-                // Variant track goes here
-                //variant_track(lc,&leaf,&p,7);
-        },
-        */
         DebugSourceType::GenePcFwd => {
             ClosureSource::new(0.,move |ref mut lc,leaf| {
                 gene_track(lc,&leaf,&p,1);
