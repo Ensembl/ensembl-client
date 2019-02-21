@@ -1,12 +1,26 @@
 import React, { FunctionComponent } from 'react';
+import classNames from 'classnames';
 
-const PopularSpeciesButton: FunctionComponent<{}> = () => {
+import styles from './PopularSpeciesButton.scss';
+
+type Props = {
+  isSelected: boolean;
+  species: string;
+  onClick: Function;
+};
+
+const PopularSpeciesButton: FunctionComponent<Props> = (props) => {
   const {
     ReactComponent: Icon
-  } = require('src/content/app/species-selector/assets/icons/human.svg');
+  } = require(`src/content/app/species-selector/assets/icons/${
+    props.species
+  }.svg`);
+  const className = classNames(styles.popularSpeciesButton, {
+    [styles.popularSpeciesButtonActive]: props.isSelected
+  });
 
   return (
-    <div>
+    <div className={className}>
       <Icon />
     </div>
   );
