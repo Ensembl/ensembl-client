@@ -45,7 +45,7 @@ pub fn leafcard_source(leaf_marks: bool) -> impl Source {
             (Colour(0,255,0),10)
         };
         if leaf_marks {
-            let srts = StretchRectTypeSpec { spot: false };
+            let srts = StretchRectTypeSpec { spot: false, hollow: false };
             closure_add(lc,&srts.new_shape(&RectData {
                 pos_x: 0.,
                 pos_y: 70,

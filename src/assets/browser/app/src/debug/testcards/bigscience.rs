@@ -130,7 +130,7 @@ fn source_odd() -> ClosureSource {
                 if start_leaf < 100000 && end_leaf > 0 {
                     debug!("bug","A");
                     let start_prop = prop(leaf,0);
-                    let srts = StretchRectTypeSpec { spot: true };
+                    let srts = StretchRectTypeSpec { spot: true, hollow: false };
                     closure_add(lc,&srts.new_shape(&RectData {
                         pos_x: start_prop,
                         pos_y: y-20,
@@ -210,7 +210,7 @@ fn source_even() -> ClosureSource {
                 }
                 if start_leaf < 100000 && end_leaf > 0 {
                     let start_prop = prop(leaf,0);      
-                    let srts = StretchRectTypeSpec { spot: true };
+                    let srts = StretchRectTypeSpec { spot: true, hollow: false };
                     closure_add(lc,&srts.new_shape(&RectData {
                         pos_x: start_prop,
                         pos_y: y-15,
@@ -382,7 +382,7 @@ pub fn bs_source_main() -> ClosureSource {
                         hh = 5 -hh;
                         let start_prop = prop(leaf,p[0]);
                         let end_prop = prop(leaf,p[1]);
-                        let srts = StretchRectTypeSpec { spot: false };
+                        let srts = StretchRectTypeSpec { spot: false, hollow: false };
                         closure_add(lc,&srts.new_shape(&RectData {
                             pos_x: start_prop,
                             pos_y: y-h,

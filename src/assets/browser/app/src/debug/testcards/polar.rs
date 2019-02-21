@@ -24,7 +24,7 @@ use shape::{
     page_texture, pin_texture,  pin_mathsshape,
     stretch_texture, stretch_wiggle,
     ColourSpec, MathsShape, tape_mathsshape,
-    tape_texture, stretch_box, PinRectTypeSpec, RectData, StretchRectTypeSpec
+    tape_texture, PinRectTypeSpec, RectData, StretchRectTypeSpec
 };
 use types::{ 
     Colour, cleaf, cpixel, area_size, area, cedge,
@@ -220,7 +220,7 @@ fn choose_colour(t: i32, x: f32) -> Colour {
 
 fn draw_gene_part(lc: &mut SourceResponse, x: f32, y: i32, v: f32) {
     if v > 0. {
-        let srts = StretchRectTypeSpec { spot: true };
+        let srts = StretchRectTypeSpec { spot: true, hollow: false };
         closure_add(lc,&srts.new_shape(&RectData {
             pos_x: x,
             pos_y: y-3,
@@ -233,7 +233,7 @@ fn draw_gene_part(lc: &mut SourceResponse, x: f32, y: i32, v: f32) {
 
 fn draw_varreg_part(lc: &mut SourceResponse, t: i32, x: f32, y: i32, v: f32, col: Colour) {
     if v > 0. {
-        let srts = StretchRectTypeSpec { spot: true };
+        let srts = StretchRectTypeSpec { spot: true, hollow: false };
         closure_add(lc,&srts.new_shape(&RectData {
             pos_x: x,
             pos_y: y-3,
@@ -368,7 +368,7 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) 
                         x += v.abs() * scale;
                     }
                     if exonic {
-                        let srts = StretchRectTypeSpec { spot: true };
+                        let srts = StretchRectTypeSpec { spot: true, hollow: false };
                         closure_add(lc,&srts.new_shape(&RectData {
                             pos_x: prop_start,
                             pos_y: y-h,
@@ -379,10 +379,14 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) 
                     } else {
                         let mut col = Colour(75,168,252);
                         if t == 0 { col = Colour(205,231,254); }
-                        closure_add(lc,&stretch_box(
-                            &area(cleaf(prop_start,y-h),
-                                  cleaf(prop_end,y+h)),
-                            1,&ColourSpec::Spot(col)));
+                        let srts = StretchRectTypeSpec { spot: true, hollow: true };
+                        closure_add(lc,&srts.new_shape(&RectData {
+                            pos_x: prop_start,
+                            pos_y: y-h,
+                            aux_x: prop_end-prop_start,
+                            aux_y: 2*h,
+                            colour: col
+                        }));
                     }
                     if t > 0 {
                         let mut blue = Colour(75,168,252);
@@ -410,7 +414,7 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) 
                     if is_gene {
                         if x == 0. {
                             let x_all_end = prop(leaf,pos[1]);
-                            let srts = StretchRectTypeSpec { spot: true };
+                            let srts = StretchRectTypeSpec { spot: true, hollow: false };
                             closure_add(lc,&srts.new_shape(&RectData {
                                 pos_x: x_start,
                                 pos_y: y-1,
@@ -436,7 +440,7 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) 
                 } else {
                     Colour(192,192,192)
                 };
-                let srts = StretchRectTypeSpec { spot: true };
+                let srts = StretchRectTypeSpec { spot: true, hollow: false };
                 closure_add(lc,&srts.new_shape(&RectData {
                     pos_x: prop_start,
                     pos_y: y-3,
@@ -472,7 +476,7 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) 
             col_hsl[2] = col_hsl[2] + (1.-col_hsl[2]) * (1.0 - density) as f64;
             let colour = Colour::from_hsl(col_hsl);
             
-            let srts = StretchRectTypeSpec { spot: false };
+            let srts = StretchRectTypeSpec { spot: false, hollow: false };
             closure_add(lc,&srts.new_shape(&RectData {
                 pos_x: *m,
                 pos_y: y-3,

@@ -7,7 +7,7 @@ use tánaiste::{
 use composit::{ Leaf, SourceResponse };
 use drawing::{ DrawingSpec };
 use shape::{
-    ColourSpec, stretch_box, pin_texture, fix_texture,
+    ColourSpec, pin_texture, fix_texture,
     PinRectTypeSpec, RectData, StretchRectTypeSpec
 };
 use tácode::core::{ TáContext, TáTask };
@@ -121,15 +121,8 @@ fn draw_strects(leaf: &mut Leaf, lc: &mut SourceResponse, x_start: &Vec<f64>,
         let col = Colour(colour[(i*3)%col_len] as u32,
                          colour[(i*3+1)%col_len] as u32,
                          colour[(i*3+2)%col_len] as u32);
-        let shape = if hollow {
-            let col = if spot {
-                ColourSpec::Spot(col)
-            } else {
-                ColourSpec::Colour(col)
-            };
-            stretch_box(area,1,&col)
-        } else {
-            let srts = StretchRectTypeSpec { spot };
+        let shape = {
+            let srts = StretchRectTypeSpec { spot, hollow };
             srts.new_shape(&RectData {
                 pos_x: prop_start,
                 pos_y: y_start_v as i32,
