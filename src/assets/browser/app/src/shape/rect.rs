@@ -13,6 +13,7 @@ use shape::util::{
 };
 use print::PrintEdition;
 use drawing::{ Artwork };
+use super::boxshape::{ BoxSpec, PinBox };
 
 #[derive(Clone,Copy,Debug)]
 enum RectPosition<T: Clone+Copy+Debug> {
@@ -85,7 +86,8 @@ impl Shape for PinRect {
 /* new, cleaner API */
 
 pub struct StretchRectTypeSpec {
-    pub spot: bool
+    pub spot: bool,
+    pub hollow: bool
 }
 
 impl StretchRectTypeSpec {
@@ -101,11 +103,19 @@ impl StretchRectTypeSpec {
         let colspec = self.new_colspec(rd);
         let offset = area_size(cleaf(rd.pos_x,rd.pos_y),
                                cleaf(rd.aux_x,rd.aux_y));
-        ShapeSpec::PinRect(RectSpec {
-            pt: PTGeom::Stretch,
-            offset: RectPosition::Stretch(offset),
-            colspec
-        })
+        if self.hollow {
+            ShapeSpec::PinBox(BoxSpec {
+                offset,
+                width: 1,
+                colspec
+            })
+        } else {
+            ShapeSpec::PinRect(RectSpec {
+                pt: PTGeom::Stretch,
+                offset: RectPosition::Stretch(offset),
+                colspec
+            })
+        }
     }
 }
 

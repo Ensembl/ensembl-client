@@ -53,10 +53,7 @@ pub use self::stretch::{
     StretchTextureSpec
 };
 
-pub use self::boxshape::{
-    BoxSpec,
-    stretch_box
-};
+pub use self::boxshape::BoxSpec;
 
 pub use self::spec::ShapeSpec;
 pub use self::spot::Spot;

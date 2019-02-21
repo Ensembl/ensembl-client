@@ -27,7 +27,7 @@ use shape::{
     page_texture, pin_texture,  pin_mathsshape,
     stretch_texture, stretch_wiggle,
     ColourSpec, MathsShape, tape_mathsshape,
-    tape_texture, stretch_box, PinRectTypeSpec, RectData
+    tape_texture, PinRectTypeSpec, RectData
 };
 use tácode::{ Tácode, TáSource };
 use types::{ 
