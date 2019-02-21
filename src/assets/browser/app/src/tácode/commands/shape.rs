@@ -8,10 +8,10 @@ use composit::{ Leaf, SourceResponse };
 use drawing::{ DrawingSpec };
 use shape::{
     ColourSpec, stretch_rectangle, stretch_box, pin_rectangle,
-    pin_texture
+    pin_texture, fix_texture
 };
 use tácode::core::{ TáContext, TáTask };
-use types::{ Colour, cleaf, Dot, area, area_size, cpixel, Rect, A_MIDDLE };
+use types::{ Colour, cedge, cleaf, Dot, area, area_size, cpixel, Rect, A_MIDDLE, A_RIGHT, A_TOPLEFT, TOPLEFT };
 
 struct ColourIter<'a>(bool,Box<Iterator<Item=&'a f64> + 'a>);
 impl<'a> Iterator for ColourIter<'a> {
@@ -45,8 +45,23 @@ impl<'a> Iterator for PinPointIter<'a> {
     }
 }
 
+struct FixPointIter<'a>(Leaf,Box<Iterator<Item=&'a f64> + 'a>,Box<Iterator<Item=&'a f64> + 'a>);
+impl<'a> Iterator for FixPointIter<'a> {
+    type Item = Dot<i32,i32>;
+    
+    fn next(&mut self) -> Option<Self::Item> {
+        let x = self.1.next().unwrap();
+        let y = self.2.next().unwrap();
+        Some(cpixel(*x as i32,*y as i32))
+    }
+}
+
 fn pinpoint_iter<'a>(leaf: &mut Leaf,x: &'a Vec<f64>, y: &'a Vec<f64>) -> Box<Iterator<Item=Dot<f32,i32>>+'a> {
     Box::new(PinPointIter(leaf.clone(),Box::new(x.iter().cycle()),Box::new(y.iter().cycle())))
+}
+
+fn fixpoint_iter<'a>(leaf: &mut Leaf,x: &'a Vec<f64>, y: &'a Vec<f64>) -> Box<Iterator<Item=Dot<i32,i32>>+'a> {
+    Box::new(FixPointIter(leaf.clone(),Box::new(x.iter().cycle()),Box::new(y.iter().cycle())))
 }
 
 struct PixelAreaIter<'a>(Box<Iterator<Item=&'a f64> + 'a>,Box<Iterator<Item=&'a f64> + 'a>);
@@ -136,6 +151,25 @@ fn draw_pintexture(leaf: &mut Leaf, lc: &mut SourceResponse,
     }
 }
 
+fn draw_fixtexture(leaf: &mut Leaf, lc: &mut SourceResponse, 
+                   tx: &Vec<DrawingSpec>,
+                   x_start: &Vec<f64>, x_aux: &Vec<f64>,
+                   y_start: &Vec<f64>, y_aux: &Vec<f64>,
+                   colour: &Vec<f64>) {
+    let mut tx_iter = colour.iter().cycle();
+    let mut pp_iter = fixpoint_iter(leaf,x_start,y_start);
+    for x_start in x_start.iter() {
+        let pos = pp_iter.next().unwrap();
+        let shape = fix_texture(
+            tx[*tx_iter.next().unwrap() as usize].clone(),
+            &cedge(TOPLEFT,pos),
+            &cpixel(0,0), // offset
+            &cpixel(1,1).anchor(A_RIGHT)
+        );
+        lc.add_shape(shape);
+    }
+}
+
 fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut SourceResponse, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_size: &Vec<f64>, y_start: &Vec<f64>, y_size: &Vec<f64>,
@@ -147,6 +181,7 @@ fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut SourceResponse,
         1 => draw_strects(leaf,lc,x_start,x_size,y_start,y_size,colour,true,spot),
         2 => draw_pinrects(leaf,lc,x_start,x_size,y_start,y_size,colour,spot),
         3 => draw_pintexture(leaf,lc,tx,x_start,x_size,y_start,y_size,colour),
+        4 => draw_fixtexture(leaf,lc,tx,x_start,x_size,y_start,y_size,colour),
         _ => ()
     }
 }

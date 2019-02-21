@@ -114,14 +114,11 @@ pub fn rng_seq(kind: [u8;8], start: i32, end: i32, subtype: u32) -> String {
         let mut rng = generator(kind,subtype,block);
         let mut pos = block * RNG_BLOCK_SIZE;
         let mut block_end_pos = (block+1) * RNG_BLOCK_SIZE;
-        while pos < start && pos < block_end_pos {
-            ["A","C","G","T"].choose(&mut rng);
-            pos += 1;
-        }
-        if pos >= start {
-            while pos < end && pos < block_end_pos {
-                out.push_str(&["A","C","G","T"].choose(&mut rng).unwrap());
-                pos += 1;
+        for idx in 0..RNG_BLOCK_SIZE {
+            if pos+idx >= end { break; }
+            let letter = ["A","C","G","T"].choose(&mut rng).unwrap();
+            if pos+idx >= start {
+                out.push_str(letter);
             }
         }
     }
