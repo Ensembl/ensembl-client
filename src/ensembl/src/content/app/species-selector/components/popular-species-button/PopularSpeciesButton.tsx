@@ -1,11 +1,13 @@
 import React, { FunctionComponent } from 'react';
 
 const PopularSpeciesButton: FunctionComponent<{}> = () => {
-  const icon = require('src/content/app/species-selector/assets/icons/human.svg');
+  const {
+    ReactComponent: Icon
+  } = require('src/content/app/species-selector/assets/icons/human.svg');
 
   return (
     <div>
-      <img src={icon} />
+      <Icon />
     </div>
   );
 };
