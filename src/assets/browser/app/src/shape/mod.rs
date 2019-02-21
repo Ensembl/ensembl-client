@@ -19,13 +19,9 @@ pub use self::shapeimpl::{
 pub use self::canvasidx::CanvasIdx;
 
 pub use self::texture::{
-    fix_texture,
-    fixunderpage_texture,
-    fixundertape_texture,
-    page_texture,
-    pin_texture,
-    tape_texture,
-    TextureSpec
+    TextureSpec,
+    TextureData,
+    TextureTypeSpec
 };
 
 pub use self::rect::{

@@ -359,7 +359,7 @@ code:
         const #7, [10]
         const #8, [0]
         get #8, #12, #8
-        shape #5, #6, #0, #7, #0, #8
+        shape #5, #6, #8, #7, #8, #8
 
 requests:
     tácode:

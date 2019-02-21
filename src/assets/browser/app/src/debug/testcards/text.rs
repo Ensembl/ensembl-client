@@ -1,7 +1,7 @@
 use composit::Source;
 use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
 use drawing::{ FCFont, FontVariety, text_texture };
-use shape::{ ColourSpec, tape_texture, PinRectTypeSpec, RectData };
+use shape::{ ColourSpec, PinRectTypeSpec, RectData, TextureTypeSpec, TextureData };
 use types::{ Colour, cleaf, cpixel, area_size, AxisSense, A_TOPLEFT };
 
 pub fn text_source() -> impl Source {
@@ -25,8 +25,22 @@ pub fn text_source() -> impl Source {
             colour: Colour(150,0,0)
 
         }));
-        closure_add(lc,&tape_texture(tx,&cleaf(0.,100).y_edge(AxisSense::Max),
-                    &cpixel(0,0),&cpixel(1,1).anchor(A_TOPLEFT)));
+        
+        let tts = TextureTypeSpec {
+            sea_x: None,
+            sea_y: Some(AxisSense::Max),
+            ship_x: (Some(AxisSense::Max),0),
+            ship_y: (Some(AxisSense::Max),0),
+            scale_x: 1., scale_y: 1.,
+            under: None,
+        };
+        closure_add(lc,&tts.new_shape(&TextureData {
+            pos_x: 0.,
+            pos_y: 100,
+            aux_x: 0.,
+            aux_y: 0,
+            drawing: tx
+        }));
         closure_done(lc,200);
     })
 }
