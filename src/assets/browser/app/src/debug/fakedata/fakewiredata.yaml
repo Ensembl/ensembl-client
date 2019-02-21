@@ -1,4 +1,15 @@
 code:
+    gene-gene: |
+        plot #7
+        const #8, [0]
+        get #60, #7, #8
+        const #8, [-3]
+        add #60, #60, #8
+        const #10, [0,1]
+        const #15, [75,168,252]
+        const #5, [6]
+        shape #10, #1, #2, #60, #5, #15
+
     gene-transcript: |
         ; y-position
         plot #7
@@ -236,7 +247,11 @@ code:
         ; #1 = starts
         ; #2 = lens
         ; #3 = colour box
-        const #4, [233]
+        plot #7
+        const #8, [0]
+        get #4, #7, #8
+        const #8, [-3]
+        add #4, #4, #8
         const #5, [6]
         const #6, [192,192,192,128,128,128]
         const #7, [3]
@@ -247,7 +262,11 @@ code:
         ; #1 = starts
         ; #2 = lens
         ; #3 = colour box
-        const #4, [233]
+        plot #7
+        const #8, [0]
+        get #4, #7, #8
+        const #8, [-3]
+        add #4, #4, #8
         const #5, [6]
         const #6, [192,192,192,128,128,128]
         const #7, [3]
@@ -258,8 +277,13 @@ code:
         ; #1 = start box frag
         ; #2 = len box frag
         ; #3 = colour box frag
+        plot #27
+        const #28, [0]
+        get #13, #27, #28
+        const #28, [-4]
+        add #13, #13, #28
         ; *** scales ***
-        const #13, [232] ; #13 = box y-start
+        ;const #13, [232] ; #13 = box y-start
         const #14, [8] ; #14 = box y-height
         ; *** boxes ***
         runs #7, #1, #2    ; #7 = list of box starts
@@ -281,17 +305,20 @@ code:
         ; #5 = len box frag
         ; #6 = colour box frag
         ; *** scale (for size) ***
-        const #16, [
-            230,224,224,224,224,224,224,224,224,244
-        ] ; #16 = y-starts Q, RZ
         const #17, [
              12, 24, 24, 24, 24, 24, 24, 24, 24, 24
         ] ; #17 = y-sizes Q, RZ
         scale #18 ; #18 = scale
         const #19, [-16] ; #19 = start at Q
         add #18, #18, #19 ; #18 = scale (Q-based)
-        get #13, #16, #18 ; #13 = box y-start
-        get #14, #17, #18 ; #14 = box y-height
+        get #14, #17, #18 ; #14 = box y-height        
+        plot #27
+        const #28, [0]
+        get #13, #27, #28
+        move #27, #14
+        const #28, [-0.5]
+        mul #27, #27, #28
+        add #13, #13, #27
         ; *** boxes ***
         runs #7, #4, #5    ; #7 = list of box starts
         const #16, [-0.45] ; #16 = left shift ~0.5bp
@@ -314,14 +341,26 @@ code:
         pick #9, #1, #9, #10 ; #9 = 0123 to tex id for seq
         const #11, [3,1]   ; #11 = [texture-pin]
         runs #7, #2, #3    ; #7 = position of sequence
-        const #13, [239]   ; #13 = letter y-start
+        const #19, [0.5]
+        mul #14, #14, #19
+        add #13, #13, #14
         shape #11, #7, #0, #13, #0, #9 ; draw letter
 
 
 
 requests:
     tácode:
-        gene-pc-fwd--AO:
+        gene-pc-fwd--AH:
+            code: gene-gene
+            data:
+                - gene:
+                    seed: 1
+                    pad: 250000
+                    sep: 54000
+                    size: 54000
+                    parts: 0
+
+        gene-pc-fwd--IO:
             code: gene-transcript
             data:
                 - gene:
@@ -352,7 +391,17 @@ requests:
                     parts: 12
                     seq: true
 
-        gene-pc-rev--AO:
+        gene-pc-rev--AH:
+            code: gene-gene
+            data:
+                - gene:
+                    seed: 2
+                    pad: 250000
+                    sep: 54000
+                    size: 54000
+                    parts: 0
+
+        gene-pc-rev--IO:
             code: gene-transcript
             data:
                 - gene:
@@ -383,7 +432,17 @@ requests:
                     parts: 12
                     seq: true
 
-        gene-other-fwd--AO:
+        gene-other-fwd--AH:
+            code: gene-gene
+            data:
+                - gene:
+                    seed: 3
+                    pad: 250000
+                    sep: 54000
+                    size: 54000
+                    parts: 0
+
+        gene-other-fwd--IO:
             code: gene-transcript
             data:
                 - gene:
@@ -414,7 +473,17 @@ requests:
                     parts: 12
                     seq: true
 
-        gene-other-rev--AO:
+        gene-other-rev--AH:
+            code: gene-gene
+            data:
+                - gene:
+                    seed: 4
+                    pad: 250000
+                    sep: 54000
+                    size: 54000
+                    parts: 0
+
+        gene-other-rev--IO:
             code: gene-transcript
             data:
                 - gene:

@@ -53,7 +53,7 @@ impl SourceSched {
             debug!("sources","cache {:?} [{}]",c,resp.size());
             resp
         } else {
-            let mut resp = SourceResponse::new();
+            let mut resp = SourceResponse::new(c.get_source().get_name());
             debug!("sources","queue {:?}",c);
             self.queued.push((c.get_source().clone(),c.get_leaf().clone(),resp.clone()));
             self.run_queue();

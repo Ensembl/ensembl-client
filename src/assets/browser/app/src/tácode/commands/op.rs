@@ -36,6 +36,7 @@ impl BinOpType {
 }
 
 fn binop(type_: &BinOpType, a: &Vec<f64>, b: &Vec<f64>) -> Vec<f64> {
+    if b.len() == 0 { return a.to_vec(); }
     let mut out = Vec::<f64>::new();
     let mut b_iter = b.iter().cycle();
     for av in a.iter() {

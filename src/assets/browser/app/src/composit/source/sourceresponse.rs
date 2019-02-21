@@ -4,19 +4,23 @@ use std::rc::Rc;
 use shape::ShapeSpec;
 
 pub struct SourceResponseImpl {
+    source_name: String,
     shapes: Vec<ShapeSpec>,
     max_y: Option<i32>,
     done: bool
 }
 
 impl SourceResponseImpl {
-    fn new() -> SourceResponseImpl {
+    fn new(source_name: &str) -> SourceResponseImpl {
         SourceResponseImpl {
             shapes: Vec::<ShapeSpec>::new(),
             max_y: None,
-            done: false
+            done: false,
+            source_name: source_name.to_string()
         }
     }
+
+    pub fn get_source_name(&self) -> &str { &self.source_name }
     
     fn add_shape(&mut self, item: ShapeSpec) {
         self.shapes.push(item);
@@ -42,12 +46,16 @@ impl SourceResponseImpl {
 pub struct SourceResponse(Rc<RefCell<SourceResponseImpl>>);
 
 impl SourceResponse {
-    pub fn new() -> SourceResponse {
-        SourceResponse(Rc::new(RefCell::new(SourceResponseImpl::new())))
+    pub fn new(source_name: &str) -> SourceResponse {
+        SourceResponse(Rc::new(RefCell::new(SourceResponseImpl::new(source_name))))
     }
     
     pub fn add_shape(&mut self, item: ShapeSpec) {
         self.0.borrow_mut().add_shape(item);
+    }
+    
+    pub fn get_source_name(&self) -> String {
+        self.0.borrow().get_source_name().to_string()
     }
     
     pub fn done(&mut self, max_y: i32) {

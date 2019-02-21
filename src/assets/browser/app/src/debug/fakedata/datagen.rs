@@ -1,4 +1,5 @@
 use std::iter::repeat;
+use std::panic;
 
 use rand::Rng;
 use rand::rngs::SmallRng;
@@ -98,7 +99,9 @@ pub fn rng_subdivide(kind: [u8;8], extent: &(i32,i32), parts: u32, subtype: u32)
     breaks.sort();
     let mut out = Vec::<i32>::new();
     for i in 0..breaks.len()-1 {
-        out.push(breaks[i+1]-breaks[i]);
+        if breaks[i+1] > breaks[i] {
+            out.push(breaks[i+1]-breaks[i]);
+        }
     }
     out
 }
@@ -159,16 +162,31 @@ impl RngGene {
     pub fn new(kind: [u8;8], pad: i32, sep: i32, size: i32, parts: u32, seq: bool) -> RngGene {
         RngGene { kind, sep, size, parts, pad, seq }
     }
-}
 
-impl FakeDataGenerator for RngGene {
-    fn generate(&self, leaf: &Leaf) -> Vec<Value> {
+    fn generate_whole(&self, leaf: &Leaf) -> Vec<Value> {
+        let start = leaf.get_start() as i32;
+        let end = leaf.get_end() as i32;
+        let mut starts = Vec::<f64>::new();
+        let mut lens = Vec::<f64>::new();
+        let genes = rng_pos(self.kind,start-self.pad,end+self.pad,
+                          self.sep,self.size,0);
+        for (start,len) in genes {
+            if start < 0 { continue; }
+            starts.push(start as f64);
+            lens.push(len as f64);
+        }
+        vec! {
+            Value::new_from_float(starts),
+            Value::new_from_float(lens)
+        }
+    }
+
+    fn generate_parts(&self, leaf: &Leaf) -> Vec<Value> {
         let start = leaf.get_start() as i32;
         let end = leaf.get_end() as i32;
         let genes = rng_pos(self.kind,start-self.pad,end+self.pad,
                           self.sep,self.size,0);
         let mut starts = Vec::<f64>::new();
-        let mut lens = Vec::<f64>::new();
         let mut pattern = Vec::<f64>::new();
         let mut nump = Vec::<f64>::new();
         let mut utrs = Vec::<f64>::new();
@@ -179,41 +197,58 @@ impl FakeDataGenerator for RngGene {
         let mut seq_len = Vec::<f64>::new();
         for (start,len) in genes {
             if start < 0 { continue; }
-            starts.push(start as f64);
             let subs = rng_subdivide(self.kind,&(start,len),self.parts,1);
-            pattern.push(0.);
-            let mut subs_iter = subs.iter();
-            utrs.push(*subs_iter.next().unwrap() as f64);
-            nump.push(subs.len() as f64);
-            let mut num = subs.len()-2;
-            let mut sense = true;
-            while num > 0 {
-                pattern.push(if sense { 1. } else { 2. });
-                if sense {
-                    exons.push(*subs_iter.next().unwrap() as f64);
-                } else {
-                    introns.push(*subs_iter.next().unwrap() as f64);
+            if subs.len() == 0 { continue; }
+            let mut type_ = 0.;
+            let mut num = 0;
+            let mut first_pos = None;
+            let mut prev_pos = 0;
+            let mut pattern_here = Vec::<f64>::new();
+            let start_pos = (leaf.get_start() as i32-start).max(0);
+            for (i,delta) in subs.iter().enumerate() {
+                let next_pos = prev_pos + delta;
+                if i == subs.len()-1 {
+                    type_ = 0.;
                 }
-                num -= 1;
-                sense = !sense;
+                if next_pos > start_pos &&
+                   start+prev_pos < leaf.get_end() as i32 &&
+                   start+next_pos > leaf.get_start() as i32 {
+                    let mut delta = next_pos - prev_pos;
+                    if first_pos.is_none() { 
+                        first_pos = Some(prev_pos as i32);
+                        if prev_pos < start_pos {
+                            first_pos = Some(start_pos);
+                            delta = next_pos - start_pos;
+                        }
+                    }
+                    pattern_here.push(type_);
+                    if type_ == 2. {
+                        introns.push(delta as f64);
+                    } else if type_ == 1. {
+                        exons.push(delta as f64);
+                    } else {
+                        utrs.push(delta as f64);
+                    }
+                    num += 1;
+                }
+                if type_ != 1. {
+                    type_ = 1.;
+                } else {
+                    type_ = 2.;
+                }
+                prev_pos = next_pos;
             }
-            pattern.push(0.);
-            utrs.push(*subs_iter.next().unwrap() as f64);
-            lens.push(len as f64);
+            if num == 0 { continue; }
+            pattern.append(&mut pattern_here);
+            let start = start + first_pos.unwrap_or(0);
+            starts.push(start as f64);
+            nump.push(num as f64);
             if self.seq {
                 let mut our_start = start;
-                let mut seq = rng_seq(self.kind,start,end,2);
-                let left_chop = leaf.get_start() - start as f64;
-                if left_chop > 0. {
-                    seq = seq.split_off(left_chop as usize);
-                    our_start = leaf.get_start() as i32;
-                }
-                if seq.len() > (end-our_start) as usize {
-                    seq.split_off((end-our_start) as usize);
-                }
+                let mut seq = rng_seq(self.kind,leaf.get_start() as i32,leaf.get_end() as i32,2);
                 seq_text.push_str(&seq);
-                seq_start.push(our_start as f64);
-                seq_len.push(seq.len() as f64);
+                seq_start.push(leaf.get_start() as f64);
+                seq_len.push((leaf.get_end()-leaf.get_start()) as f64);
             }
         }
         let mut out = vec! {
@@ -230,6 +265,16 @@ impl FakeDataGenerator for RngGene {
             out.push(Value::new_from_float(seq_len));
         }
         out
+    }
+}
+
+impl FakeDataGenerator for RngGene {
+    fn generate(&self, leaf: &Leaf) -> Vec<Value> {
+        if self.parts != 0 {
+            self.generate_parts(leaf)
+        } else {
+            self.generate_whole(leaf)
+        }
     }
 }
 

@@ -69,27 +69,35 @@ fn pixelarea_iter<'a>(x: &'a Vec<f64>, y: &'a Vec<f64>) -> Box<Iterator<Item=Rec
 fn draw_strects(leaf: &mut Leaf, lc: &mut SourceResponse, x_start: &Vec<f64>,
                 x_size: &Vec<f64>, y_start: &Vec<f64>, y_size: &Vec<f64>,
                 colour: &Vec<f64>, hollow: bool,spot: bool) {
-    let mut x_size_iter = x_size.iter().cycle();
-    let mut y_start_iter = y_start.iter().cycle();
-    let mut y_size_iter = y_size.iter().cycle();
-    let mut ci : Box<Iterator<Item=ColourSpec>> = colour_iter(colour,spot);
-    for x_start in x_start.iter() {
-        let x_size = x_size_iter.next().unwrap();
-        let y_start = y_start_iter.next().unwrap();
-        let y_size = y_size_iter.next().unwrap();
-        let prop_start = leaf.prop(*x_start);
-        let prop_end = leaf.prop(*x_start+*x_size);
-        let col : ColourSpec = ci.next().unwrap();
-        if prop_end > 0. && prop_start < 1. {
-            let area = &area(cleaf(prop_start,*y_start as i32),
-                             cleaf(prop_end,(*y_start+*y_size) as i32));
-            let shape = if hollow {
-                stretch_box(area,1,&col)
-            } else {
-                stretch_rectangle(area,&col)
-            };
-            lc.add_shape(shape);
-        }
+    let x_size_len = x_size.len();
+    let y_start_len = y_start.len();
+    let y_size_len = y_size.len();
+    let col_len = colour.len();
+    for i in 0..x_start.len() {
+        let x_start_v = x_start[i];
+        let prop_start = leaf.prop(x_start_v);
+        if prop_start > 1. { continue; }
+        let x_size_v = x_size[i%x_size_len];
+        let prop_end = leaf.prop(x_start_v+x_size_v);
+        if prop_end < 0. { continue; }
+        let y_start_v = y_start[i%y_start_len];
+        let y_size_v = y_size[i%y_size_len];
+        let area = &area(cleaf(prop_start,y_start_v as i32),
+                         cleaf(prop_end,(y_start_v+y_size_v) as i32));
+        let col = Colour(colour[(i*3)%col_len] as u32,
+                         colour[(i*3+1)%col_len] as u32,
+                         colour[(i*3+2)%col_len] as u32);
+        let col = if spot {
+            ColourSpec::Spot(col)
+        } else {
+            ColourSpec::Colour(col)
+        };
+        let shape = if hollow {
+            stretch_box(area,1,&col)
+        } else {
+            stretch_rectangle(area,&col)
+        };
+        lc.add_shape(shape);        
     }
 }
 

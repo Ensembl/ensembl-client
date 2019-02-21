@@ -16,7 +16,8 @@ pub struct Train {
     ideal_flank: i32,
     middle_leaf: i64,
     preload: bool,
-    position_bp: Option<f64>
+    position_bp: Option<f64>,
+    active: bool
 }
 
 impl Train {
@@ -28,7 +29,8 @@ impl Train {
             middle_leaf: 0,
             carriages: CarriageSet::new(),
             stale: StaleCarriages::new(),
-            position_bp: None
+            position_bp: None,
+            active: true
         }
     }
         
@@ -36,7 +38,13 @@ impl Train {
      * Methods for TRAINMANAGER to call when the user changes something.
      * *****************************************************************
      */
-        
+    
+    /* are we active (ie should we scan around as the user does?) */
+    pub fn set_active(&mut self, yn: bool) {
+        self.active = yn;
+        if yn { console!("{:?} is active",self.scale); } else { console!("{:?} is inactive",self.scale); }
+    }
+    
     /* which scale are we (ie which train)? */
     pub fn get_scale(&self) -> &Scale { &self.scale }
     
@@ -124,6 +132,7 @@ impl Train {
 
     /* manage_leafs entry point */
     pub fn manage_leafs(&mut self, cm: &mut ComponentManager) {
+        if !self.active { return; }
         self.remove_unused_leafs();
         for leaf in self.get_missing_leafs() {
             let cc = cm.make_carriages(leaf.clone());

@@ -72,7 +72,6 @@ impl TrainManager {
             None
         }
     }
-
     
     /* COMPOSITOR sets new stick. Existing trains useless */
     pub fn set_stick(&mut self, st: &Stick, bp_per_screen: f64) {
@@ -80,10 +79,12 @@ impl TrainManager {
         self.stick = Some(st.clone());
         self.bp_per_screen = bp_per_screen;
         let scale = Scale::best_for_screen(bp_per_screen);
+        self.each_train(|x| x.set_active(false));
         self.current_train = Some(Train::new(st,scale));
         self.current_train.as_mut().unwrap().set_zoom(bp_per_screen);
         self.transition_train = None;
         self.future_train = None;
+        self.current_train.as_mut().unwrap().set_active(true);
         self.reset_outers();
     }
     
@@ -122,7 +123,7 @@ impl TrainManager {
             let scale = self.transition_train.as_ref().unwrap().get_scale().clone();
             console!("transition to {:?}",scale);
             for i in 0..OUTER_TRAINS {
-                let out_scale = scale.next_scale(1-i as i32);
+                let out_scale = scale.next_scale(0-i as i32);
                 self.outer_train[i] = self.make_train(cm,out_scale,true);
             }
         }
@@ -189,11 +190,18 @@ impl TrainManager {
 
     /* Create future train */
     fn new_future(&mut self, cm: &mut ComponentManager, scale: Scale) {
+        if let Some(ref mut t) = self.future_train {
+            t.set_active(false);
+        }
         self.future_train = self.make_train(cm,scale,false);
+        self.future_train.as_mut().unwrap().set_active(true);
     }
     
     /* Abandon future train */
     fn end_future(&mut self) {
+        if let Some(ref mut t) = self.future_train {
+            t.set_active(false);
+        }
         self.future_train = None;
     }
 
