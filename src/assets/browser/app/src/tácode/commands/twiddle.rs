@@ -65,9 +65,6 @@ fn runs(starts: &Vec<f64>, lens: &Vec<f64>) -> Vec<f64> {
             out.push(v+i as f64);
         }
     }
-    if starts.len() > 2000 {
-        console!("RUNS! {}",starts.len());
-    }
     out
 }
 
@@ -138,6 +135,8 @@ pub struct Get(usize,usize,usize);
 pub struct Merge(usize,usize,Vec<usize>);
 // accn #out, #parts, #strides
 pub struct AccN(usize,usize,usize);
+// length #len(in), #in
+pub struct Length(usize,usize);
 
 impl Command for Elide {
     fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
@@ -276,6 +275,16 @@ impl Command for AccN {
 
 }
 
+impl Command for Length {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        regs.get(self.1).as_floats(|data| {
+            regs.set(self.0,Value::new_from_float(vec!{ data.len() as f64 }));
+        });
+        return 1;
+    }
+}
+
 pub struct ElideI();
 pub struct NotI();
 pub struct PickI();
@@ -286,6 +295,7 @@ pub struct RunsOfI();
 pub struct GetI();
 pub struct MergeI();
 pub struct AccNI();
+pub struct LengthI();
 
 impl Instruction for ElideI {
     fn signature(&self) -> Signature { Signature::new("elide","rrr") }
@@ -358,5 +368,12 @@ impl Instruction for AccNI {
     fn signature(&self) -> Signature { Signature::new("accn","rrr") }
     fn build(&self, args: &Vec<Argument>) -> Box<Command> {
         Box::new(AccN(args[0].reg(),args[1].reg(),args[2].reg()))
+    }
+}
+
+impl Instruction for LengthI {
+    fn signature(&self) -> Signature { Signature::new("length","rr") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(Length(args[0].reg(),args[1].reg()))
     }
 }

@@ -3,7 +3,7 @@ use std::rc::Rc;
 
 use composit::{ 
     ActiveSource, Landscape, Leaf, Plot, Source, SourceResponse,
-    StateAtom
+    StateAtom, AllLandscapes
 };
 use debug::testcards::{
     leafcard_source, text_source, march_source_cs, march_source_ts,
@@ -35,17 +35,17 @@ impl DebugSource {
 }
 
 impl Source for DebugSource {
-    fn populate(&self, lc: &mut SourceResponse, leaf: &Leaf) {
+    fn populate(&self, acs: &ActiveSource, lc: &mut SourceResponse, leaf: &Leaf) {
         let stick_name = leaf.get_stick().get_name();
         if let Some(source) = self.sources.get(&stick_name) {
-            source.populate(lc,leaf);
+            source.populate(acs,lc,leaf);
         } else {
             lc.done(0);
         }
     }
 }
 
-fn debug_source_type(tc: &Tácode, xf: &DebugXferClerk, type_: &DebugSourceType) -> impl Source {
+fn debug_source_type(tc: &Tácode, als: &mut AllLandscapes, xf: &DebugXferClerk, type_: &DebugSourceType, lid: usize) -> impl Source {
     let mut s = DebugSource::new();
     s.add_stick("polar",Box::new(polar_source(type_)));
     if let Some(src) = march_source_ts(&tc,type_) {
@@ -63,14 +63,16 @@ fn debug_source_type(tc: &Tácode, xf: &DebugXferClerk, type_: &DebugSourceType)
         _ => None
     };
     if let Some(b) = b { s.add_stick("button",Box::new(b)); }
-    let ls = Landscape::new(Plot::new(type_.get_pos()*PITCH+TOP,PITCH));
-    let src = TáSource::new(tc,Box::new(xf.clone()),type_.get_name(),ls);
+    let plot = Plot::new(type_.get_pos()*PITCH+TOP,PITCH,type_.get_letter());
+    als.with(lid, |ls| ls.set_plot(plot) );
+    let src = TáSource::new(tc,Box::new(xf.clone()),type_.get_name(),lid);
     s.add_stick("tácode",Box::new(src));
     s
 }
 
-pub fn debug_activesource_type(tc: &Tácode, xf: &DebugXferClerk, type_: &DebugSourceType) -> ActiveSource {
-    let src = debug_source_type(tc,xf,type_);
+pub fn debug_activesource_type(tc: &Tácode, als: &mut AllLandscapes, xf: &DebugXferClerk, type_: &DebugSourceType) -> ActiveSource {
+    let lid = als.allocate();
+    let src = debug_source_type(tc,als,xf,type_,lid);
     let state = Rc::new(StateAtom::new(type_.get_name()));
-    ActiveSource::new(type_.get_name(),Rc::new(src),state)
+    ActiveSource::new(type_.get_name(),Rc::new(src),state,als,lid)
 }

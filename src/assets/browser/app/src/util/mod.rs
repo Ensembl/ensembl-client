@@ -2,10 +2,14 @@
 mod macros;
 mod cache;
 mod rulergenerator;
+mod smallest;
 mod text;
 mod thisbuild;
+mod valuestore;
 
 pub use self::cache::Cache;
 pub use self::rulergenerator::RulerGenerator;
+pub use self::smallest::Smallest;
 pub use self::text::truncate;
 pub use self::thisbuild::build_summary;
+pub use self::valuestore::ValueStore;

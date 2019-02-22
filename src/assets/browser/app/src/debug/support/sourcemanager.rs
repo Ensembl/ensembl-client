@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use composit::{ SourceManager, ActiveSource };
+use composit::{ SourceManager, ActiveSource, AllLandscapes };
 use debug::support::{ debug_activesource_type, DebugXferClerk };
 use tácode::Tácode;
 
@@ -28,15 +28,15 @@ lazy_static! {
         "internal:debug:zzz-framework"  => DebugSourceType::Framework
     };
     
-    static ref SOURCE_POS : HashMap<String,i32> = hashmap_s! {
-        "internal:debug:gene-pc-fwd"    => 2,
-        "internal:debug:gene-other-fwd" => 3,
-        "internal:debug:gene-pc-rev"    => 5,
-        "internal:debug:gene-other-rev" => 6,
-        "internal:debug:variant"        => 8,
-        "internal:debug:contig"         => 4,
-        "internal:debug:gc"             => 9,
-        "internal:debug:zzz-framework"  => 0
+    static ref SOURCE_DATA : HashMap<String,(i32,&'static str)> = hashmap_s! {
+        "internal:debug:gene-pc-fwd"    => (0,"G"),
+        "internal:debug:gene-other-fwd" => (1,"G"),
+        "internal:debug:gene-pc-rev"    => (3,"G"),
+        "internal:debug:gene-other-rev" => (4,"G"),
+        "internal:debug:variant"        => (5,"V"),
+        "internal:debug:contig"         => (2,"G"),
+        "internal:debug:gc"             => (6,"G"),
+        "internal:debug:zzz-framework"  => (-1,"")
     };
 }
 
@@ -49,9 +49,9 @@ lazy_static! {
         out
     };
     
-    static ref SOURCE_TYPE_POS : HashMap<DebugSourceType,i32> = {
-        let mut out = HashMap::<DebugSourceType,i32>::new();
-        for (k,v) in SOURCE_POS.iter() {
+    static ref SOURCE_TYPE_DATA : HashMap<DebugSourceType,(i32,&'static str)> = {
+        let mut out = HashMap::<DebugSourceType,(i32,&'static str)>::new();
+        for (k,v) in SOURCE_DATA.iter() {
             let k : DebugSourceType = SOURCE_TYPES[k].clone();
             out.insert(k,*v);
         }
@@ -91,20 +91,26 @@ impl DebugSourceType {
     }
     
     pub fn get_pos(&self) -> i32 {
-        *SOURCE_TYPE_POS.get(self).unwrap()
+        SOURCE_TYPE_DATA.get(&self).unwrap().0
+    }
+
+    pub fn get_letter(&self) -> String {
+        SOURCE_TYPE_DATA.get(self).unwrap().1.to_string()
     }
 }
 
 pub struct DebugSourceManager {
     tc: Tácode,
-    xfc: DebugXferClerk
+    xfc: DebugXferClerk,
+    als: AllLandscapes
 }
 
 impl DebugSourceManager {
-    pub fn new(tc: &Tácode) -> DebugSourceManager {
+    pub fn new(tc: &Tácode, als: &AllLandscapes) -> DebugSourceManager {
         DebugSourceManager {
             tc: tc.clone(),
-            xfc: DebugXferClerk::new()
+            xfc: DebugXferClerk::new(),
+            als: als.clone()
         }
     }
 }
@@ -112,7 +118,7 @@ impl DebugSourceManager {
 impl SourceManager for DebugSourceManager {
     fn get_component(&mut self, name: &str) -> Option<ActiveSource> {
         DebugSourceType::from_name(name).map(|type_|
-            debug_activesource_type(&self.tc,&self.xfc,&type_)
+            debug_activesource_type(&self.tc,&mut self.als,&self.xfc,&type_)
         )
     }
 }

@@ -39,4 +39,4 @@ pub use self::zoom::Zoom;
 pub use self::position::Position;
 pub use self::wrapping::Wrapping;
 
-pub use self::landscape::{ Landscape, Plot };
+pub use self::landscape::{ AllLandscapes, Landscape, Plot };

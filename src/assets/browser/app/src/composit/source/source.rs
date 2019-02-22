@@ -1,5 +1,5 @@
-use composit::{ Leaf, SourceResponse };
+use composit::{ Leaf, SourceResponse, ActiveSource };
 
 pub trait Source {
-    fn populate(&self, lc: &mut SourceResponse, leaf: &Leaf);
+    fn populate(&self, acs: &ActiveSource, lc: &mut SourceResponse, leaf: &Leaf);
 }

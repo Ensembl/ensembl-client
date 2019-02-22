@@ -1,20 +1,32 @@
 code:
     gene-gene: |
-        plot #7
-        const #8, [0]
-        get #60, #7, #8
-        const #8, [-3]
-        add #60, #60, #8
+        plot #62, #0
+        const #63, [1]
+        get #61, #62, #63
+        const #60, [0.5]
+        mul #61, #61, #60
+        const #63, [0]
+        get #60, #62, #63
+        add #60, #60, #61
+        const #62, [-3]
+        add #60, #60, #62
         const #10, [1,1]
         const #15, [75,168,252]
         const #5, [6]
         shape #10, #1, #2, #60, #5, #15
 
     gene-transcript: |
+        plot #62, #0
+        const #63, [1]
+        get #61, #62, #63
+        const #60, [0.5]
+        mul #61, #61, #60
+        const #63, [0]
+        get #60, #62, #63
+        add #60, #60, #61
+        const #62, [0]
+        add #60, #60, #62
         ; y-position
-        plot #7
-        const #8, [0]
-        get #60, #7, #8
         ; split transport format into parts
         ; IN:   #1 = gene-starts
         ;       #2 = gene-parts
@@ -86,10 +98,20 @@ code:
         shape #10, #7, #8, #12, #13, #15
 
     gene-empty-box: |
+        plot #62, #0
+        const #63, [1]
+        get #61, #62, #63
+        const #60, [0.5]
+        mul #61, #61, #60
+        const #63, [0]
+        get #60, #62, #63
+        add #60, #60, #61
+        const #62, [-3]
+        add #60, #60, #62
         ; y-position
-        plot #7
-        const #8, [0]
-        get #60, #7, #8
+        ;plot #7, #0
+        ;const #8, [0]
+        ;get #60, #7, #8
         ; see previous scale for details in comments.
         ; register usage essentially same.
         ; We also use #9, as tmp and reuse #1,#2 as tmp.
@@ -104,8 +126,6 @@ code:
         const #15, [205,231,254]
         const #10, [2,1]
         move #12, #60
-        const #17, [-3]
-        add #12, #12, #17
         const #13, [6]
         const #16, [0]
         eq #9, #3, #16
@@ -139,14 +159,6 @@ code:
         shape #10, #9, #2, #12, #13, #15
 
     gene-letterbox: |
-        ; y-position
-        plot #61
-        const #62, [0]
-        get #60, #61, #62
-        ; see previous two scales for details in comments.
-        ; register usage essentially same except we need to move
-        ; #7 -> #18; #8 -> #19; #9 -> #20 for extra seq data
-        ; *** scale (for size) ***
         const #17, [
              12, 24, 24, 24, 24, 24, 24, 24, 24, 24
         ]
@@ -154,9 +166,33 @@ code:
         const #19, [-16]
         add #18, #18, #19
         get #13, #17, #18
+        plot #62, #0
+        const #63, [1]
+        get #61, #62, #63
+        const #60, [0.5]
+        mul #61, #61, #60
+        const #63, [0]
+        get #60, #62, #63
+        add #60, #60, #61
         const #12, [-0.5]
-        mul #12, #13, #12
-        add #12, #12, #60
+        mul #62, #13, #12
+        add #12, #60, #62
+        ;
+        ; y-position
+        ;plot #61, #0
+        ;const #62, [0]
+        ;get #60, #61, #62
+        ; see previous two scales for details in comments.
+        ; register usage essentially same except we need to move
+        ; #7 -> #18; #8 -> #19; #9 -> #20 for extra seq data
+        ; *** scale (for size) ***
+        ;scale #18
+        ;const #19, [-16]
+        ;add #18, #18, #19
+        ;get #13, #17, #18
+        ;const #12, [-0.5]
+        ;mul #12, #13, #12
+        ;add #12, #12, #60
         ; decode necklaces
         runsof #10, #2, #1
         merge #11, #3, #4, #5, #6
@@ -246,14 +282,19 @@ code:
         shape #31, #27, #64, #33, #64, #29
 
     contig-heatmap: |
+        plot #62, #0
+        const #63, [1]
+        get #61, #62, #63
+        const #60, [0.5]
+        mul #61, #61, #60
+        const #63, [0]
+        get #60, #62, #63
+        add #60, #60, #61
+        const #62, [-3]
+        add #4, #60, #62
         ; #1 = starts
         ; #2 = lens
         ; #3 = colour box
-        plot #7
-        const #8, [0]
-        get #4, #7, #8
-        const #8, [-3]
-        add #4, #4, #8
         const #5, [6]
         const #6, [192,192,192,128,128,128]
         const #7, [3]
@@ -262,14 +303,19 @@ code:
         shape #10, #1, #2, #4, #5, #6
 
     contig-normal: |
+        plot #62, #0
+        const #63, [1]
+        get #61, #62, #63
+        const #60, [0.5]
+        mul #61, #61, #60
+        const #63, [0]
+        get #60, #62, #63
+        add #60, #60, #61
+        const #62, [-3]
+        add #4, #60, #62
         ; #1 = starts
         ; #2 = lens
         ; #3 = colour box
-        plot #7
-        const #8, [0]
-        get #4, #7, #8
-        const #8, [-3]
-        add #4, #4, #8
         const #5, [6]
         const #6, [192,192,192,128,128,128]
         const #7, [3]
@@ -281,13 +327,17 @@ code:
         ; #1 = start box frag
         ; #2 = len box frag
         ; #3 = colour box frag
-        plot #27
-        const #28, [0]
-        get #13, #27, #28
-        const #28, [-4]
-        add #13, #13, #28
+        plot #62, #0
+        const #63, [1]
+        get #61, #62, #63
+        const #60, [0.5]
+        mul #61, #61, #60
+        const #63, [0]
+        get #60, #62, #63
+        add #60, #60, #61
+        const #62, [-4]
+        add #13, #60, #62
         ; *** scales ***
-        ;const #13, [232] ; #13 = box y-start
         const #14, [8] ; #14 = box y-height
         ; *** boxes ***
         runs #7, #1, #2    ; #7 = list of box starts
@@ -315,14 +365,19 @@ code:
         scale #18 ; #18 = scale
         const #19, [-16] ; #19 = start at Q
         add #18, #18, #19 ; #18 = scale (Q-based)
-        get #14, #17, #18 ; #14 = box y-height        
-        plot #27
-        const #28, [0]
-        get #13, #27, #28
+        get #14, #17, #18 ; #14 = box y-height
+        plot #62, #0
+        const #63, [1]
+        get #61, #62, #63
+        const #60, [0.5]
+        mul #61, #61, #60
+        const #63, [0]
+        get #60, #62, #63
+        add #60, #60, #61
         move #27, #14
         const #28, [-0.5]
         mul #27, #27, #28
-        add #13, #13, #27
+        add #13, #60, #27
         ; *** boxes ***
         runs #7, #4, #5    ; #7 = list of box starts
         const #16, [-0.45] ; #16 = left shift ~0.5bp
@@ -348,6 +403,8 @@ code:
         const #19, [0.5]
         mul #14, #14, #19
         add #13, #13, #14
+        const #50, [2]
+        add #13, #13, #50
         const #28, [0]
         shape #11, #7, #28, #13, #28, #9 ; draw letter
 
@@ -419,8 +476,8 @@ code:
         shape #5, #6, #7, #8, #9, #11
         ; *** and top ***
         const #5, [0,1,1,1,1,1,2,0,0,0,0]
-        shape #5, #6, #7, #8, #9, #10
-        ; *** ruler ***
+        shape #5, #6, #7, #8, #9, #11
+        ; *** RULER ***
         ; 1. call ruler
         const #5, [20,20,20,10,15,20,30]
         ruler #6, #7, #8, #9, #5
@@ -443,6 +500,21 @@ code:
         const #5, [3,0,0,1,2,1,2,0,2,0,0]
         const #15, [1]
         shape #5, #6, #14, #15, #14, #10
+        ; *** LHS ***
+        allplots #41,#42,#43,#44
+        const #20, "Lato"
+        const #21, [12,1,96,96,96,255,255,255]
+        text #12, #20, #21, #44, #43
+        const #45, [0.5]
+        mul #42, #42, #45
+        add #41, #41, #42
+        const #5, [3,0,1,1,0,1,2,8,1,0,0]
+        length #45, #41
+        const #6, [12]
+        runsof #6, #45, #6
+        const #7, [2]
+        const #8, [30]
+        shape #5, #6, #8, #41, #7, #12
         
 requests:
     tácode:
