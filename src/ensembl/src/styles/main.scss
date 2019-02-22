@@ -6,6 +6,18 @@
 @include foundation-prototype-classes;
 @include foundation-visibility-classes;
 
+// apply a natural box layout model
+html {
+  box-sizing: border-box;
+}
+
+// inherit the natural box layout from html; allow box-sizing to easily change if necessary
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
 a {
   color: $ens-blue;
   text-decoration: none;
