@@ -1,0 +1,22 @@
+.colorCard {
+  display: inline-block;
+  width: 200px;
+  height: 300px;
+  border: 1px solid #eaeced;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-right: 1rem;
+
+  .colorArea {
+    height: 50%;
+    border-bottom: 1px solid #eaeced;
+  }
+
+  .colorInfo {
+    padding: 0.5rem;
+  }
+
+  .colorName {
+    font-weight: 700;
+  }
+}
