@@ -1,5 +1,6 @@
 use std::fmt::Debug;
 
+use composit::Leaf;
 use program::{ ProgramAttribs, PTGeom, PTMethod, ProgramType };
 use types::{ 
     CLeaf, AxisSense, Rect, Edge, RLeaf, Anchor, Anchored, Colour,
@@ -9,7 +10,7 @@ use types::{
 use shape::{ Shape, ColourSpec, ShapeSpec };
 use shape::util::{
     rectangle_p, rectangle_c, rectangle_g, multi_gl, vertices_rect,
-    despot, colour
+    despot, colour, ShapeInstanceData, TypeToShape, Facade, FacadeType
 };
 use print::PrintEdition;
 use drawing::{ Artwork };
@@ -91,15 +92,20 @@ pub struct StretchRectTypeSpec {
 }
 
 impl StretchRectTypeSpec {
-    fn new_colspec(&self, rd: &RectData) -> ColourSpec {
-        if self.spot {
-            ColourSpec::Spot(rd.colour)
-        } else {
-            ColourSpec::Colour(rd.colour)
-        }
+    fn new_colspec(&self, rd: &ShapeInstanceData) -> ColourSpec {
+        if let Facade::Colour(c) = rd.facade {
+            if self.spot {
+                Some(ColourSpec::Spot(c))
+            } else {
+                Some(ColourSpec::Colour(c))
+            }
+        } else { None }.unwrap()
     }
+}
 
-    pub fn new_shape(&self, rd: &RectData) -> ShapeSpec {
+
+impl TypeToShape for StretchRectTypeSpec {
+    fn new_shape(&self, rd: &ShapeInstanceData) -> ShapeSpec {
         let colspec = self.new_colspec(rd);
         let offset = area_size(cleaf(rd.pos_x,rd.pos_y),
                                cleaf(rd.aux_x,rd.aux_y));
@@ -117,6 +123,10 @@ impl StretchRectTypeSpec {
             })
         }
     }
+    
+    fn get_facade_type(&self) -> FacadeType { FacadeType::Colour }
+    
+    fn needs_scale(&self) -> (bool,bool) { (true,true) }
 }
 
 pub struct PinRectTypeSpec {
@@ -128,20 +138,16 @@ pub struct PinRectTypeSpec {
     pub spot: bool
 }
 
-pub struct RectData {
-    pub pos_x: f32,
-    pub pos_y: i32,
-    pub aux_x: f32,
-    pub aux_y: i32,
-    pub colour: Colour
-}
-
 impl PinRectTypeSpec {
-    fn new_colspec(&self, rd: &RectData) -> ColourSpec {
-        if self.spot {
-            ColourSpec::Spot(rd.colour)
+    fn new_colspec(&self, rd: &ShapeInstanceData) -> Option<ColourSpec> {
+        if let Facade::Colour(c) = rd.facade {
+            if self.spot {
+                Some(ColourSpec::Spot(c))
+            } else {
+                Some(ColourSpec::Colour(c))
+            }
         } else {
-            ColourSpec::Colour(rd.colour)
+            None
         }
     }
     
@@ -153,24 +159,24 @@ impl PinRectTypeSpec {
         }
     }
     
-    fn new_pin_offset(&self, rd: &RectData) -> Rect<i32,i32> {
+    fn new_pin_offset(&self, rd: &ShapeInstanceData) -> Rect<i32,i32> {
         let size = cpixel(rd.aux_x as i32,rd.aux_y);
         let delta_x = self.new_pin_delta(size.0,self.ship_x);
         let delta_y = self.new_pin_delta(size.1,self.ship_y);
         area_size(cpixel(-delta_x,-delta_y),size)
     }
     
-    fn new_pin(&self, rd: &RectData) -> ShapeSpec {
+    fn new_pin(&self, rd: &ShapeInstanceData) -> ShapeSpec {
         let offset = self.new_pin_offset(rd);
         let colspec = self.new_colspec(rd);
         ShapeSpec::PinRect(RectSpec {
             pt: PTGeom::Pin,
             offset: RectPosition::Pin(cleaf(rd.pos_x,rd.pos_y),offset),
-            colspec
+            colspec: colspec.unwrap()
         })        
     }
     
-    fn new_tape(&self, rd: &RectData) -> ShapeSpec {
+    fn new_tape(&self, rd: &ShapeInstanceData) -> ShapeSpec {
         let offset = self.new_pin_offset(rd)
                         .y_edge(self.sea_y.unwrap().0,
                                 self.sea_y.unwrap().1);
@@ -178,11 +184,11 @@ impl PinRectTypeSpec {
         ShapeSpec::PinRect(RectSpec {
             pt: PTGeom::Tape,
             offset: RectPosition::Tape(cleaf(rd.pos_x,rd.pos_y),offset),
-            colspec
+            colspec: colspec.unwrap()
         })        
     }
 
-    fn new_page(&self, rd: &RectData) -> ShapeSpec {
+    fn new_page(&self, rd: &ShapeInstanceData) -> ShapeSpec {
         let pos =  (cpixel(rd.pos_x as i32,rd.pos_y) +
                     self.new_pin_offset(rd))
                         .x_edge(self.sea_x.unwrap().0,
@@ -191,11 +197,11 @@ impl PinRectTypeSpec {
         ShapeSpec::PinRect(RectSpec {
             pt: PTGeom::Page,
             offset: RectPosition::Page(pos),
-            colspec
+            colspec: colspec.unwrap()
         })        
     }
 
-    fn new_fix(&self, rd: &RectData) -> ShapeSpec {
+    fn new_fix(&self, rd: &ShapeInstanceData) -> ShapeSpec {
         let pos =  (cpixel(rd.pos_x as i32,rd.pos_y) +
                     self.new_pin_offset(rd))
                         .x_edge(self.sea_x.unwrap().0,
@@ -211,16 +217,22 @@ impl PinRectTypeSpec {
         ShapeSpec::PinRect(RectSpec {
             pt,
             offset: RectPosition::Fix(pos),
-            colspec
+            colspec: colspec.unwrap()
         })        
-    }
-    
-    pub fn new_shape(&self, rd: &RectData) -> ShapeSpec {
+    }    
+}
+
+impl TypeToShape for PinRectTypeSpec {
+    fn new_shape(&self, sid: &ShapeInstanceData) -> ShapeSpec {
         match (self.sea_x.is_some(),self.sea_y.is_some()) {
-            (false,false) =>self.new_pin(rd),
-            (false,true) => self.new_tape(rd),
-            (true,false) => self.new_page(rd),
-            (true,true) => self.new_fix(rd),
+            (false,false) =>self.new_pin(sid),
+            (false,true) => self.new_tape(sid),
+            (true,false) => self.new_page(sid),
+            (true,true) => self.new_fix(sid),
         }
     }
+    
+    fn get_facade_type(&self) -> FacadeType { FacadeType::Colour }
+    
+    fn needs_scale(&self) -> (bool,bool) { (self.sea_x.is_none(),false) }
 }

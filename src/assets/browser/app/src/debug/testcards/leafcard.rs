@@ -2,7 +2,7 @@ use debug::testcards::rulergenerator::RulerGenerator;
 use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
 use composit::Source;
 use drawing::{ FCFont, FontVariety, text_texture };
-use shape::{ ColourSpec, PinRectTypeSpec, RectData, StretchRectTypeSpec, TextureTypeSpec, TextureData };
+use shape::{ ColourSpec, PinRectTypeSpec, StretchRectTypeSpec, TextureTypeSpec, TypeToShape, ShapeInstanceData, Facade };
 use types::{ Colour, cleaf, cpixel, A_TOP, area, area_size, AxisSense };
 
 const TARGET: i32 = 10;
@@ -36,20 +36,20 @@ pub fn leafcard_source(leaf_marks: bool) -> impl Source {
                     under: None,
                     scale_x: 1., scale_y: 1.
                 };
-                closure_add(lc,&tts.new_shape(&TextureData {
-                    pos_x: offset as f32,
+                closure_add(lc,&tts.new_shape(&ShapeInstanceData {
+                    pos_x: offset,
                     pos_y: 41,
                     aux_x: 0.,
                     aux_y: 0,
-                    drawing: tx
+                    facade: Facade::Drawing(tx)
                 }));
             }
-            closure_add(lc,&prts.new_shape(&RectData {
+            closure_add(lc,&prts.new_shape(&ShapeInstanceData {
                 pos_x: offset,
                 pos_y: 10,
                 aux_x: 1.,
                 aux_y: height,
-                colour: Colour(199,208,213)
+                facade: Facade::Colour(Colour(199,208,213))
             }));
         }
         let i = leaf.get_index();
@@ -60,12 +60,12 @@ pub fn leafcard_source(leaf_marks: bool) -> impl Source {
         };
         if leaf_marks {
             let srts = StretchRectTypeSpec { spot: false, hollow: false };
-            closure_add(lc,&srts.new_shape(&RectData {
+            closure_add(lc,&srts.new_shape(&ShapeInstanceData {
                 pos_x: 0.,
                 pos_y: 70,
                 aux_x: 1.,
                 aux_y: 10,
-                colour
+                facade: Facade::Colour(colour)
             }));
             closure_done(lc,80);
         } else {

@@ -16,11 +16,16 @@ pub use self::shapeimpl::{
     MathsShape,
 };
 
+pub use self::util::{
+    TypeToShape,
+    ShapeInstanceData,
+    Facade, FacadeType
+};
+
 pub use self::canvasidx::CanvasIdx;
 
 pub use self::texture::{
     TextureSpec,
-    TextureData,
     TextureTypeSpec
 };
 
@@ -28,7 +33,6 @@ pub use self::rect::{
     RectSpec,
     PinRectTypeSpec,
     StretchRectTypeSpec,
-    RectData
 };
 
 pub use shape::poly::{

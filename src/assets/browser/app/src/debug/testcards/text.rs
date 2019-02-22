@@ -1,12 +1,12 @@
 use composit::Source;
 use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
 use drawing::{ FCFont, FontVariety, text_texture };
-use shape::{ ColourSpec, PinRectTypeSpec, RectData, TextureTypeSpec, TextureData };
+use shape::{ ColourSpec, Facade, PinRectTypeSpec, TextureTypeSpec, TypeToShape, ShapeInstanceData };
 use types::{ Colour, cleaf, cpixel, area_size, AxisSense, A_TOPLEFT };
 
 pub fn text_source() -> impl Source {
     let font = FCFont::new(120,"Lato",FontVariety::Normal);
-    ClosureSource::new(0.,move |lc,_leaf| {
+    ClosureSource::new(0.,move |lc,leaf| {
         let tx = text_texture("hello",&font,&Colour(199,208,213),&Colour(0,0,0));
 
         let prts = PinRectTypeSpec {
@@ -17,12 +17,12 @@ pub fn text_source() -> impl Source {
             under: None,
             spot: true
         };
-        closure_add(lc,&prts.new_shape(&RectData {
+        closure_add(lc,&prts.new_shape(&ShapeInstanceData {
             pos_x: 0.,
             pos_y: 0,
             aux_x: 400.,
             aux_y: 400,
-            colour: Colour(150,0,0)
+            facade: Facade::Colour(Colour(150,0,0))
 
         }));
         
@@ -34,12 +34,12 @@ pub fn text_source() -> impl Source {
             scale_x: 1., scale_y: 1.,
             under: None,
         };
-        closure_add(lc,&tts.new_shape(&TextureData {
+        closure_add(lc,&tts.new_shape(&ShapeInstanceData {
             pos_x: 0.,
             pos_y: 100,
             aux_x: 0.,
             aux_y: 0,
-            drawing: tx
+            facade: Facade::Drawing(tx)
         }));
         closure_done(lc,200);
     })

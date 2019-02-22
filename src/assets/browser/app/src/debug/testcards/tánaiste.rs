@@ -23,10 +23,10 @@ use drawing::{
     FCFont, FontVariety
 };
 use shape::{
-    pin_mathsshape,
+    pin_mathsshape, TypeToShape, ShapeInstanceData, Facade,
     stretch_texture, stretch_wiggle,
     ColourSpec, MathsShape, tape_mathsshape,
-    PinRectTypeSpec, RectData, TextureTypeSpec, TextureData
+    PinRectTypeSpec, TextureTypeSpec
 };
 use tácode::{ Tácode, TáSource };
 use types::{ 
@@ -68,13 +68,13 @@ fn draw_frame(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette
         under: Some(false),
         spot: true
     };
-    closure_add(lc,&prts.new_shape(&RectData {
+    closure_add(lc,&prts.new_shape(&ShapeInstanceData {
         pos_x: 0.,
         pos_y: 1,
         aux_x: 0.,
         aux_y: 18,
-        colour: Colour(255,255,255)
-    }));        
+        facade: Facade::Colour(Colour(255,255,255))
+    }));
 
     let prts = PinRectTypeSpec {
         sea_x: Some((AxisSense::Max,AxisSense::Max)),
@@ -85,19 +85,19 @@ fn draw_frame(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette
         spot: true
     };
 
-    closure_add(lc,&prts.new_shape(&RectData {
+    closure_add(lc,&prts.new_shape(&ShapeInstanceData {
         pos_x: 0.,
         pos_y: 2,
         aux_x: 36.,
         aux_y: 16,
-        colour: Colour(255,255,255)
+        facade: Facade::Colour(Colour(255,255,255))
     }));
-    closure_add(lc,&prts.new_shape(&RectData {
+    closure_add(lc,&prts.new_shape(&ShapeInstanceData {
         pos_x: 36.,
         pos_y: 1,
         aux_x: 1.,
         aux_y: 16,
-        colour: Colour(199,208,213)
+        facade: Facade::Colour(Colour(199,208,213))
     }));
 
 
@@ -111,12 +111,12 @@ fn draw_frame(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette
     };
 
     for y in [0,17].iter() {
-        closure_add(lc,&prts.new_shape(&RectData {
+        closure_add(lc,&prts.new_shape(&ShapeInstanceData {
             pos_x: 0.,
             pos_y: *y,
             aux_x: 0.,
             aux_y: 1,
-            colour: Colour(199,208,213)
+            facade: Facade::Colour(Colour(199,208,213))
         }));        
     }
 
@@ -130,12 +130,12 @@ fn draw_frame(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette
         under: None,
         scale_x: 1., scale_y: 1.
     };
-    closure_add(lc,&tts.new_shape(&TextureData {
+    closure_add(lc,&tts.new_shape(&ShapeInstanceData {
         pos_x: 34.,
         pos_y: 10,
         aux_x: 0.,
         aux_y: 0,
-        drawing: tx
+        facade: Facade::Drawing(tx)
     }));
 
     /* left/right */
@@ -147,12 +147,12 @@ fn draw_frame(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette
         under: Some(true),
         spot: true
     };
-    closure_add(lc,&prts.new_shape(&RectData {
+    closure_add(lc,&prts.new_shape(&ShapeInstanceData {
         pos_x: 0.,
         pos_y: 18,
         aux_x: 36.,
         aux_y: 0,
-        colour: Colour(255,255,255)
+        facade: Facade::Colour(Colour(255,255,255))
     }));        
 }
 
@@ -184,20 +184,19 @@ fn measure(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette) {
                 under: None,
                 scale_x: 1., scale_y: 1.
             };
-            closure_add(lc,&tts.new_shape(&TextureData {
-                pos_x: offset as f32,
+            closure_add(lc,&tts.new_shape(&ShapeInstanceData {
+                pos_x: offset,
                 pos_y: 10,
                 aux_x: 4.,
                 aux_y: 0,
-                drawing: tx
+                facade: Facade::Drawing(tx)
             }));
-            closure_add(lc,&prts.new_shape(&RectData {
+            closure_add(lc,&prts.new_shape(&ShapeInstanceData {
                 pos_x: offset,
                 pos_y: 0,
                 aux_x: 1.,
                 aux_y: 17,
-                colour: Colour(199,208,213)
-
+                facade: Facade::Colour(Colour(199,208,213))
             }));
         }
     }
@@ -220,12 +219,12 @@ fn track_meta(lc: &mut SourceResponse, p: &Palette, t: i32) {
         under: None,
         scale_x: 1., scale_y: 1.
     };
-    closure_add(lc,&tts.new_shape(&TextureData {
-        pos_x: 30 as f32,
+    closure_add(lc,&tts.new_shape(&ShapeInstanceData {
+        pos_x: 30.,
         pos_y: t*PITCH+TOP,
         aux_x: 0.,
         aux_y: 0,
-        drawing: tx
+        facade: Facade::Drawing(tx)
     }));
     if t == 0 {
         let prts = PinRectTypeSpec {
@@ -236,12 +235,12 @@ fn track_meta(lc: &mut SourceResponse, p: &Palette, t: i32) {
             under: None,
             spot: true
         };
-        closure_add(lc,&prts.new_shape(&RectData {
+        closure_add(lc,&prts.new_shape(&ShapeInstanceData {
             pos_x: 0.,
             pos_y: t*PITCH-PITCH/3+TOP,
             aux_x: 6.,
             aux_y: 2*PITCH/3,
-            colour: Colour(78,168,252)
+            facade: Facade::Colour(Colour(78,168,252))
         }));
     }
 }

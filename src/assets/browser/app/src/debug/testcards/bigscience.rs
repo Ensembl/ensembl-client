@@ -25,8 +25,8 @@ use shape::{
     pin_mathsshape,
     stretch_texture, stretch_wiggle,
     ColourSpec, MathsShape, fix_mathsshape, page_mathsshape,
-    PinRectTypeSpec, RectData, StretchRectTypeSpec, TextureTypeSpec,
-    TextureData
+    PinRectTypeSpec, StretchRectTypeSpec, TextureTypeSpec,
+    ShapeInstanceData, TypeToShape, Facade
 };
 
 use controller::global::App;
@@ -63,12 +63,12 @@ fn measure(lc: &mut SourceResponse, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSp
             under: None,
             spot: false
         };
-        closure_add(lc,&prts.new_shape(&RectData {
+        closure_add(lc,&prts.new_shape(&ShapeInstanceData {
             pos_x: x as f32/10.,
             pos_y: 0,
             aux_x: 20.,
             aux_y: 20,
-            colour: Colour(255,100,50)
+            facade: Facade::Colour(Colour(255,100,50))
         }));
         closure_add(lc,&tape_mathsshape(
             &cleaf(x as f32/10.+25.,0).y_edge(AxisSense::Max),
@@ -84,12 +84,12 @@ fn measure(lc: &mut SourceResponse, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSp
             under: None,
             scale_x: 10., scale_y: 10.
         };
-        closure_add(lc,&tts.new_shape(&TextureData {
+        closure_add(lc,&tts.new_shape(&ShapeInstanceData {
             pos_x: x as f32/10.+0.05,
             pos_y: 0,
             aux_x: 0.,
             aux_y: 0,
-            drawing: battenberg()
+            facade: Facade::Drawing(battenberg())
         }));
         closure_add(lc,&tape_mathsshape(
             &cleaf(x as f32/10.+0.075,0).y_edge(AxisSense::Max),
@@ -145,12 +145,12 @@ fn source_odd() -> ClosureSource {
                     debug!("bug","A");
                     let start_prop = prop(leaf,0);
                     let srts = StretchRectTypeSpec { spot: true, hollow: false };
-                    closure_add(lc,&srts.new_shape(&RectData {
+                    closure_add(lc,&srts.new_shape(&ShapeInstanceData {
                         pos_x: start_prop,
                         pos_y: y-20,
                         aux_x: 10000./mul as f32,
                         aux_y: 5,
-                        colour: Colour(255,100,50)
+                        facade: Facade::Colour(Colour(255,100,50))
                     }));                    
                     closure_add(lc,&pin_mathsshape(
                         &cleaf(start_prop,y-15),
@@ -225,12 +225,12 @@ fn source_even() -> ClosureSource {
                 if start_leaf < 100000 && end_leaf > 0 {
                     let start_prop = prop(leaf,0);      
                     let srts = StretchRectTypeSpec { spot: true, hollow: false };
-                    closure_add(lc,&srts.new_shape(&RectData {
+                    closure_add(lc,&srts.new_shape(&ShapeInstanceData {
                         pos_x: start_prop,
                         pos_y: y-15,
                         aux_x: 10000./mul as f32,
                         aux_y: 5,
-                        colour: Colour(50,255,150)
+                        facade: Facade::Colour(Colour(50,255,150))
                     }));
                     closure_add(lc,&pin_mathsshape(
                         &cleaf(10000./mul as f32,y-15),
@@ -332,12 +332,12 @@ pub fn bs_source_main() -> ClosureSource {
                 under: None,
                 scale_x: 1., scale_y: 1.
             };
-            closure_add(lc,&tts.new_shape(&TextureData {
+            closure_add(lc,&tts.new_shape(&ShapeInstanceData {
                 pos_x: 12 as f32,
                 pos_y: y+18,
                 aux_x: 0.,
                 aux_y: 0,
-                drawing: tx
+                facade: Facade::Drawing(tx)
             }));
             closure_add(lc,&page_mathsshape(
                                 &cpixel(0,y+18).x_edge(AxisSense::Max),
@@ -355,12 +355,12 @@ pub fn bs_source_main() -> ClosureSource {
                         under: None,
                         spot: false
                     };
-                    closure_add(lc,&prts.new_shape(&RectData {
+                    closure_add(lc,&prts.new_shape(&ShapeInstanceData {
                         pos_x: prop(leaf,0),
                         pos_y: y-10,
                         aux_x: 20.,
                         aux_y: 20,
-                        colour: Colour(128,0,0)
+                        facade: Facade::Colour(Colour(128,0,0))
                     }));
                 }
             }
@@ -390,12 +390,12 @@ pub fn bs_source_main() -> ClosureSource {
                         under: None,
                         scale_x: 10., scale_y: 10.
                     };
-                    closure_add(lc,&tts.new_shape(&TextureData {
+                    closure_add(lc,&tts.new_shape(&ShapeInstanceData {
                         pos_x: start_prop,
                         pos_y: y-25,
                         aux_x: 0.,
                         aux_y: 0,
-                        drawing: tx
+                        facade: Facade::Drawing(tx),
                     }));                    
                 }
             } else if yidx == pal.middle-2 {
@@ -421,12 +421,12 @@ pub fn bs_source_main() -> ClosureSource {
                         let start_prop = prop(leaf,p[0]);
                         let end_prop = prop(leaf,p[1]);
                         let srts = StretchRectTypeSpec { spot: false, hollow: false };
-                        closure_add(lc,&srts.new_shape(&RectData {
+                        closure_add(lc,&srts.new_shape(&ShapeInstanceData {
                             pos_x: start_prop,
                             pos_y: y-h,
                             aux_x: end_prop-start_prop,
                             aux_y: 2*h,
-                            colour
+                            facade: Facade::Colour(colour)
                         }));                    
                         if rng_prob([yidx as u8,j as u8,0,0,0,0,0,5],start,0.2) {
                             let tri_col = rng_colour([yidx as u8,i as u8,j as u8,0,0,0,0,3],start);
@@ -448,12 +448,12 @@ pub fn bs_source_main() -> ClosureSource {
                                 under: None,
                                 scale_x: 1., scale_y: 1.
                             };
-                            closure_add(lc,&tts.new_shape(&TextureData {
+                            closure_add(lc,&tts.new_shape(&ShapeInstanceData {
                                 pos_x: start_prop,
                                 pos_y: y-12,
                                 aux_x: 0.,
                                 aux_y: 0,
-                                drawing: tx
+                                facade: Facade::Drawing(tx)
                             }));                    
                         }                    
 
@@ -471,19 +471,19 @@ pub fn bs_source_main() -> ClosureSource {
             spot: true
         };
 
-        closure_add(lc,&prts.new_shape(&RectData {
+        closure_add(lc,&prts.new_shape(&ShapeInstanceData {
             pos_x: SW as f32/2.,
             pos_y: 0,
             aux_x: 1.,
             aux_y: SH,
-            colour: Colour(0,0,0)
+            facade: Facade::Colour(Colour(0,0,0))
         }));
-        closure_add(lc,&prts.new_shape(&RectData {
+        closure_add(lc,&prts.new_shape(&ShapeInstanceData {
             pos_x: SW as f32/2.+5.,
             pos_y: 0,
             aux_x: 3.,
             aux_y: SH,
-            colour: Colour(255,100,50)
+            facade: Facade::Colour(Colour(255,100,50))
         }));
 
         let tx = bitmap_texture(vec! { 0,0,255,255,
@@ -498,12 +498,12 @@ pub fn bs_source_main() -> ClosureSource {
             under: None,
             scale_x: 1., scale_y: SH as f32
         };
-        closure_add(lc,&tts.new_shape(&TextureData {
+        closure_add(lc,&tts.new_shape(&ShapeInstanceData {
             pos_x: SW as f32/2.-5.,
             pos_y: 0,
             aux_x: 0.,
             aux_y: 0,
-            drawing: tx
+            facade: Facade::Drawing(tx)
         }));
 
         for h in &[AxisSense::Min,AxisSense::Max] {
@@ -516,12 +516,12 @@ pub fn bs_source_main() -> ClosureSource {
                     under: None,
                     scale_x: 10., scale_y: 10.
                 };
-                closure_add(lc,&tts.new_shape(&TextureData {
+                closure_add(lc,&tts.new_shape(&ShapeInstanceData {
                     pos_x: 0.,
                     pos_y: 0,
                     aux_x: 0.,
                     aux_y: 0,
-                    drawing: battenberg()
+                    facade: Facade::Drawing(battenberg())
                 }));
             }
         }

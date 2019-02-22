@@ -23,8 +23,9 @@ use shape::{
     pin_mathsshape,
     stretch_texture, stretch_wiggle,
     ColourSpec, MathsShape, tape_mathsshape,
-    PinRectTypeSpec, RectData, StretchRectTypeSpec,
-    TextureTypeSpec, TextureData
+    PinRectTypeSpec, StretchRectTypeSpec,
+    ShapeInstanceData, Facade, TypeToShape,
+    TextureTypeSpec
 };
 use types::{ 
     Colour, cleaf, cpixel, area_size, area, cedge,
@@ -65,12 +66,12 @@ fn draw_frame(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette
         under: Some(false),
         spot: true
     };
-    closure_add(lc,&prts.new_shape(&RectData {
+    closure_add(lc,&prts.new_shape(&ShapeInstanceData {
         pos_x: 0.,
         pos_y: 1,
         aux_x: 0.,
         aux_y: 18,
-        colour: Colour(255,255,255)
+        facade: Facade::Colour(Colour(255,255,255))
     }));        
 
     let prts = PinRectTypeSpec {
@@ -82,19 +83,19 @@ fn draw_frame(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette
         spot: true
     };
 
-    closure_add(lc,&prts.new_shape(&RectData {
+    closure_add(lc,&prts.new_shape(&ShapeInstanceData {
         pos_x: 0.,
         pos_y: 2,
         aux_x: 36.,
         aux_y: 16,
-        colour: Colour(255,255,255)
+        facade: Facade::Colour(Colour(255,255,255))
     }));
-    closure_add(lc,&prts.new_shape(&RectData {
+    closure_add(lc,&prts.new_shape(&ShapeInstanceData {
         pos_x: 36.,
         pos_y: 1,
         aux_x: 1.,
         aux_y: 16,
-        colour: Colour(199,208,213)
+        facade: Facade::Colour(Colour(199,208,213))
     }));
 
 
@@ -108,12 +109,12 @@ fn draw_frame(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette
     };
 
     for y in [0,17].iter() {
-        closure_add(lc,&prts.new_shape(&RectData {
+        closure_add(lc,&prts.new_shape(&ShapeInstanceData {
             pos_x: 0.,
             pos_y: *y,
             aux_x: 0.,
             aux_y: 1,
-            colour: Colour(199,208,213)
+            facade: Facade::Colour(Colour(199,208,213))
         }));        
     }
 
@@ -127,12 +128,12 @@ fn draw_frame(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette
         under: None,
         scale_x: 1., scale_y: 1.
     };
-    closure_add(lc,&tts.new_shape(&TextureData {
+    closure_add(lc,&tts.new_shape(&ShapeInstanceData {
         pos_x: 34.,
         pos_y: 10,
         aux_x: 0.,
         aux_y: 0,
-        drawing: tx
+        facade: Facade::Drawing(tx)
     }));
 
     /* left/right */
@@ -144,12 +145,12 @@ fn draw_frame(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette
         under: Some(true),
         spot: true
     };
-    closure_add(lc,&prts.new_shape(&RectData {
+    closure_add(lc,&prts.new_shape(&ShapeInstanceData {
         pos_x: 0.,
         pos_y: 18,
         aux_x: 36.,
         aux_y: 0,
-        colour: Colour(255,255,255)
+        facade: Facade::Colour(Colour(255,255,255))
     }));        
 }
 
@@ -184,19 +185,19 @@ fn measure(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette) {
                 under: None,
                 scale_x: 1., scale_y: 1.
             };
-            closure_add(lc,&tts.new_shape(&TextureData {
+            closure_add(lc,&tts.new_shape(&ShapeInstanceData {
                 pos_x: offset as f32,
                 pos_y: 10,
                 aux_x: 4.,
                 aux_y: 0,
-                drawing: tx
+                facade: Facade::Drawing(tx)
             }));
-            closure_add(lc,&prts.new_shape(&RectData {
+            closure_add(lc,&prts.new_shape(&ShapeInstanceData {
                 pos_x: offset,
                 pos_y: 0,
                 aux_x: 1.,
                 aux_y: 17,
-                colour: Colour(199,208,213)
+                facade: Facade::Colour(Colour(199,208,213))
             }));
         }
     }
@@ -246,12 +247,12 @@ fn choose_colour(t: i32, x: f32) -> Colour {
 fn draw_gene_part(lc: &mut SourceResponse, x: f32, y: i32, v: f32) {
     if v > 0. {
         let srts = StretchRectTypeSpec { spot: true, hollow: false };
-        closure_add(lc,&srts.new_shape(&RectData {
+        closure_add(lc,&srts.new_shape(&ShapeInstanceData {
             pos_x: x,
             pos_y: y-3,
             aux_x: v,
             aux_y: 5,
-            colour: Colour(75,168,252)
+            facade: Facade::Colour(Colour(75,168,252))
         }));
     }
 }
@@ -259,12 +260,12 @@ fn draw_gene_part(lc: &mut SourceResponse, x: f32, y: i32, v: f32) {
 fn draw_varreg_part(lc: &mut SourceResponse, t: i32, x: f32, y: i32, v: f32, col: Colour) {
     if v > 0. {
         let srts = StretchRectTypeSpec { spot: true, hollow: false };
-        closure_add(lc,&srts.new_shape(&RectData {
+        closure_add(lc,&srts.new_shape(&ShapeInstanceData {
             pos_x: x,
             pos_y: y-3,
             aux_x: v.abs(),
             aux_y: 6,
-            colour: col
+            facade: Facade::Colour(col)
         }));
     }
 }
@@ -327,12 +328,12 @@ fn track_meta(lc: &mut SourceResponse, p: &Palette, t: i32) {
         under: None,
         scale_x: 1., scale_y: 1.
     };
-    closure_add(lc,&tts.new_shape(&TextureData {
+    closure_add(lc,&tts.new_shape(&ShapeInstanceData {
         pos_x: 30 as f32,
         pos_y: t*PITCH+TOP,
         aux_x: 0.,
         aux_y: 0,
-        drawing: tx
+        facade: Facade::Drawing(tx)
     }));
 }
 
@@ -352,12 +353,12 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) 
             spot: true
         };
 
-        closure_add(lc,&prts.new_shape(&RectData {
+        closure_add(lc,&prts.new_shape(&ShapeInstanceData {
             pos_x: 0.,
             pos_y: t*PITCH-PITCH/3+TOP,
             aux_x: 6.,
             aux_y: 2*PITCH/3,
-            colour: Colour(78,168,252)
+            facade: Facade::Colour(Colour(78,168,252))
         }));
     }
     let mul = leaf.total_bp();
@@ -406,23 +407,23 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) 
                     }
                     if exonic {
                         let srts = StretchRectTypeSpec { spot: true, hollow: false };
-                        closure_add(lc,&srts.new_shape(&RectData {
+                        closure_add(lc,&srts.new_shape(&ShapeInstanceData {
                             pos_x: prop_start,
                             pos_y: y-h,
                             aux_x: prop_end-prop_start,
                             aux_y: 2*h,
-                            colour: Colour(75,168,252)
+                            facade: Facade::Colour(Colour(75,168,252))
                         }));
                     } else {
                         let mut col = Colour(75,168,252);
                         if t == 0 { col = Colour(205,231,254); }
                         let srts = StretchRectTypeSpec { spot: true, hollow: true };
-                        closure_add(lc,&srts.new_shape(&RectData {
+                        closure_add(lc,&srts.new_shape(&ShapeInstanceData {
                             pos_x: prop_start,
                             pos_y: y-h,
                             aux_x: prop_end-prop_start,
                             aux_y: 2*h,
-                            colour: col
+                            facade: Facade::Colour(col)
                         }));
                     }
                     if t > 0 {
@@ -438,12 +439,12 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) 
                             under: None,
                             scale_x: 1., scale_y: 1.
                         };
-                        closure_add(lc,&tts.new_shape(&TextureData {
+                        closure_add(lc,&tts.new_shape(&ShapeInstanceData {
                             pos_x: (prop_start+prop_end)/2.,
                             pos_y: y+t,
                             aux_x: 0.,
                             aux_y: 0,
-                            drawing: tx
+                            facade: Facade::Drawing(tx)
                         }));
                     }
                 }
@@ -466,12 +467,12 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) 
                         if x == 0. {
                             let x_all_end = prop(leaf,pos[1]);
                             let srts = StretchRectTypeSpec { spot: true, hollow: false };
-                            closure_add(lc,&srts.new_shape(&RectData {
+                            closure_add(lc,&srts.new_shape(&ShapeInstanceData {
                                 pos_x: x_start,
                                 pos_y: y-1,
                                 aux_x: x_all_end-x_start,
                                 aux_y: 2,
-                                colour: Colour(75,168,252)
+                                facade: Facade::Colour(Colour(75,168,252))
                             }));
                         }
                         draw_gene_part(lc,x_start,y,x_end-x_start);
@@ -492,12 +493,12 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) 
                     Colour(192,192,192)
                 };
                 let srts = StretchRectTypeSpec { spot: true, hollow: false };
-                closure_add(lc,&srts.new_shape(&RectData {
+                closure_add(lc,&srts.new_shape(&ShapeInstanceData {
                     pos_x: prop_start,
                     pos_y: y-3,
                     aux_x: prop_end-prop_start,
                     aux_y: 6,
-                    colour
+                    facade: Facade::Colour(colour)
                 }));                
             }
         }
@@ -526,14 +527,13 @@ fn track(lc: &mut SourceResponse, leaf: &Leaf, p: &Palette, t: i32, even: bool) 
             }
             col_hsl[2] = col_hsl[2] + (1.-col_hsl[2]) * (1.0 - density) as f64;
             let colour = Colour::from_hsl(col_hsl);
-            
             let srts = StretchRectTypeSpec { spot: false, hollow: false };
-            closure_add(lc,&srts.new_shape(&RectData {
+            closure_add(lc,&srts.new_shape(&ShapeInstanceData {
                 pos_x: *m,
                 pos_y: y-3,
                 aux_x: *n-*m,
                 aux_y: 6,
-                colour
+                facade: Facade::Colour(colour)
             }));            
         }
     }
