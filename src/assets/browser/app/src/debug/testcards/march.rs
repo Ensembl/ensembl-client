@@ -16,7 +16,7 @@ use debug::support::DebugSourceType;
 use debug::testcards::common::{
     track_data, rng_pos, prop, rng_seq, rng_flip
 };
-use debug::testcards::rulergenerator::RulerGenerator;
+use util::RulerGenerator;
 use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
 use drawing::{
     mark_rectangle, text_texture, collage, Mark, Artist,

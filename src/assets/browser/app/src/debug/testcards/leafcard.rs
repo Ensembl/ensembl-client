@@ -1,4 +1,4 @@
-use debug::testcards::rulergenerator::RulerGenerator;
+use util::RulerGenerator;
 use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
 use composit::Source;
 use drawing::{ FCFont, FontVariety, text_texture };
