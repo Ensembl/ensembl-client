@@ -7,11 +7,12 @@ use tánaiste::{
 use composit::{ Leaf, SourceResponse };
 use drawing::{ DrawingSpec };
 use shape::{
-    ColourSpec,
-    PinRectTypeSpec, RectData, StretchRectTypeSpec,
-    TextureData, TextureTypeSpec
+    ColourSpec, Facade, FacadeType, ShapeInstanceData, TypeToShape,
+    PinRectTypeSpec, StretchRectTypeSpec,
+    TextureTypeSpec
 };
 use tácode::core::{ TáContext, TáTask };
+use super::super::shapecmd::{ build_meta };
 use types::{
     Colour, cedge, cleaf, Dot, area, area_size, cpixel, Rect, A_MIDDLE,
     A_RIGHT, A_TOPLEFT, TOPLEFT, AxisSense
@@ -124,12 +125,12 @@ fn draw_strects(leaf: &mut Leaf, lc: &mut SourceResponse, x_start: &Vec<f64>,
                          colour[(i*3+2)%col_len] as u32);
         let shape = {
             let srts = StretchRectTypeSpec { spot, hollow };
-            srts.new_shape(&RectData {
+            srts.new_shape(&ShapeInstanceData {
                 pos_x: prop_start,
                 pos_y: y_start_v as i32,
                 aux_x: prop_end-prop_start,
                 aux_y: y_size_v as i32,
-                colour: col
+                facade: Facade::Colour(col)
             })
         };
         lc.add_shape(shape);        
@@ -152,12 +153,12 @@ fn draw_pinrects(leaf: &mut Leaf, lc: &mut SourceResponse, x_start: &Vec<f64>,
     let mut x_size_iter = x_aux.iter().cycle();
     let mut y_size_iter = y_aux.iter().cycle();
     for x_start in x_start.iter() {
-        lc.add_shape(prts.new_shape(&RectData {
+        lc.add_shape(prts.new_shape(&ShapeInstanceData {
             pos_x: *x_start as f32,
             pos_y: *y_start_iter.next().unwrap() as i32,
             aux_x: *x_size_iter.next().unwrap() as f32,
             aux_y: *y_size_iter.next().unwrap() as i32,
-            colour: ci.next().unwrap()
+            facade: Facade::Colour(ci.next().unwrap())
         }));
     }
 }
@@ -178,12 +179,12 @@ fn draw_pintexture(leaf: &mut Leaf, lc: &mut SourceResponse,
             under: None,
             scale_x: 1., scale_y: 1.
         };
-        lc.add_shape(tts.new_shape(&TextureData {
+        lc.add_shape(tts.new_shape(&ShapeInstanceData {
             pos_x: leaf.prop(*x_start),
             pos_y: *y_start_iter.next().unwrap() as i32,
             aux_x: 0.,
             aux_y: 0,
-            drawing: tx[*tx_iter.next().unwrap() as usize].clone()
+            facade: Facade::Drawing(tx[*tx_iter.next().unwrap() as usize].clone())
         }));
     }
 }
@@ -206,31 +207,77 @@ fn draw_fixtexture(leaf: &mut Leaf, lc: &mut SourceResponse,
             under: None,
             scale_x: 1., scale_y: 1.
         };
-        console!("add A");
-        lc.add_shape(tts.new_shape(&TextureData {
+        lc.add_shape(tts.new_shape(&ShapeInstanceData {
             pos_x: *x_start as f32,
             pos_y: *y_start_iter.next().unwrap() as i32,
             aux_x: *x_aux_iter.next().unwrap() as f32,
             aux_y: *y_aux_iter.next().unwrap() as i32,
-            drawing: tx[*tx_iter.next().unwrap() as usize].clone(),
+            facade: Facade::Drawing(tx[*tx_iter.next().unwrap() as usize].clone())
         }));
-        console!("add B");
-        /*
-        let shape = fix_texture(
-            tx[*tx_iter.next().unwrap() as usize].clone(),
-            &cedge(TOPLEFT,pos),
-            &cpixel(0,0), // offset
-            &cpixel(1,1).anchor(A_RIGHT)
-        );
-        lc.add_shape(shape);
-        */
+    }
+}
+
+fn do_scale(spec: &Box<TypeToShape>, leaf: &Leaf, x_start: f64, x_aux: f64) -> Option<(f32,f32)> {
+    let needs_scale = spec.needs_scale();
+    let x_pos_v = if needs_scale.0 {
+        let p = leaf.prop(x_start);
+        if p < 1. { Some(p) } else { None }
+    } else {
+        Some(x_start as f32)
+    };
+    
+    let x_aux_v = if needs_scale.1 {
+        let p =leaf.prop(x_start+x_aux)-leaf.prop(x_start);
+        if p > 0. { Some(p) } else { None }
+    } else {
+        Some(x_aux as f32)
+    };
+    if x_pos_v.is_some() && x_aux_v.is_some() {
+        Some((x_pos_v.unwrap(),x_aux_v.unwrap()))
+    } else {
+        None
     }
 }
 
 fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut SourceResponse, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
-                x_size: &Vec<f64>, y_start: &Vec<f64>, y_size: &Vec<f64>,
+                x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Vec<f64>) {
+    let mut meta_iter = meta.iter().cycle();
+    let mut y_start_iter = y_start.iter().cycle();
+    let mut x_aux_iter = x_aux.iter().cycle();
+    let mut y_aux_iter = y_aux.iter().cycle();
+    let mut col_iter = colour.iter().cycle();
+    if let Some(spec) = build_meta(&mut meta_iter) {
+        for x_start in x_start.iter() {
+        // TODO only multiple metas
+            let facade = match spec.get_facade_type() {
+                FacadeType::Colour => {
+                    let r = *col_iter.next().unwrap() as u32;
+                    let g = *col_iter.next().unwrap() as u32;
+                    let b = *col_iter.next().unwrap() as u32;
+                    Facade::Colour(Colour(r,g,b))
+                },
+                FacadeType::Drawing => {
+                    let idx = col_iter.next().unwrap();
+                    Facade::Drawing(tx[*idx as usize].clone())
+                }
+            };
+            let x_aux_v = *x_aux_iter.next().unwrap();
+            if let Some((x_pos_v,x_aux_v)) = do_scale(&spec,leaf,*x_start,x_aux_v) {
+                let data = ShapeInstanceData {
+                    pos_x: x_pos_v,
+                    pos_y: *y_start_iter.next().unwrap() as i32,
+                    aux_x: x_aux_v,
+                    aux_y: *y_aux_iter.next().unwrap() as i32,
+                    facade
+                };
+                lc.add_shape(spec.new_shape(&data));
+            }
+        }
+    }
+    
+                    /*
     let kind = if meta.len() > 0 { meta[0] as i64 } else { 0 };
     let spot = if meta.len() > 1 { meta[1] != 0. } else { false };
     match kind {
@@ -241,6 +288,7 @@ fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut SourceResponse,
         4 => draw_fixtexture(leaf,lc,tx,x_start,x_size,y_start,y_size,colour),
         _ => ()
     }
+    */
 }
 
 // strect #meta, #x-start, #x-size, #y-start, #y-size, #colour

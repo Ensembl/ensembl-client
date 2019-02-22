@@ -1,91 +1,145 @@
 /* When specifying a shape type, the metadata is structured as follows:
- * [broad-type,colour-type,...]
+ * [type,colour-type,...]
  * 
- * Broad-type is one of:
- *   0 = stretch rectangle;
- *   1 = non-stretch rectangle;
- *   2 = underlay non-stretch rectangle (temporary).
+ * Type is one of:
+ *   0 = rectangle (two-anchor points)
+ *   1 = stretchtangle (no anchor points)
+ *   2 = hollow stretchtangle (no anchor points)
+ *   3 = texture (one-anchor points)
  * 
- * colour-type is one of colour = 0; spot = 1; texture = 2.
+ * Two anchor shapes are anchored at two places and can grow to suit
+ * whether that's to the screen or genome zoom. Note that you may decide
+ * not to configure a two-anchor shape to grow (such as a floating
+ * rectangle), but they can.
  * 
- * For broad-type stretch this is all the metadata. The aux axes are
- * the deltas between the sea-end of the two anchors. The ship-ends of
- * anchors for stretch types are fixed.
+ * colour-type is one of colour = 0; spot = 1. It is ignored for textures.
  * 
- * For non-stretch types there follows two values specifying the sea-end
- * of each axis of its anchor. These can have three values for each axis
- * for its co-ordinate basis:
+ * Two-anchor shapes:
+ * There then follows two pairs representing the axis of each of the
+ * sea-end of the anchors. [x1-axis,x2-axis,y1-axis,y2-axis]. Each has
+ * one of three values 0 = genome/page; 1 = left/top; 2 = right/bottom.
+ * Note that for any given axis if one axis is zero, both must be.
  * 
- * 0 = page (x=genomic, y=track)
- * 1 = minimum (left/top of screen)
- * 2 = maximum (right/bottom of screen)
+ * There then follow two pairs representing the ship-end of the anchors.
+ * [x1-type,x1-delta,x2-type,x2-delta]. -types have one of three values,
+ * 0 = left/top; 1 = middle; 2 = right/bottom. deltas are in pixels.
+ * Then the (temporary) under integer is given: 0=normal, 1=page, 2=tape.
  * 
- * The shape code distinguishes genomic- from screen-anchored, so 
- * whether the above is zero/non-zero for each axis determines the 
- * actual API call:
+ * For example [0,1,1,2,0,0,2,0,1,0,0] represents, entry by entry
+ * 0. a rectangle 
+ * 1. using spot colours
+ * 1. Fixed at one end relative to the left of the screen
+ * 2. Fixed at the other end relative to the right of the screen
+ * 00. Free to scroll up and down
+ * 2. Referenced by its right...
+ * 0. ... extreme edge
+ * 1. in the middle of that edge  ...
+ * 0. ... precisely
+ * 0. not in an under layer.
  * 
- * (0,0) = pin; (1,0) = tape; (0,1) = page; (1,1) = fix.
+ * A more common value would be [0,1,0,0,0,0,0,0,0,0,0] representing an
+ * object placed on the genome at some position referenced to its 
+ * middle. Another might be [0,1,1,1,1,1,0,0,0,0,0] representing an
+ * object relative top the top-left of the screen referenced to its own
+ * top left, using spot colours not in an under layer.
  * 
- * Textured rectangles, both stretch and non-stretch (and, in future
- * non-rectangle types) then have an offset to the ship-end of the
- * anchor in pixels, (x,y) and two sea-end anchor axis specifiers with
- * the values:
+ * For one anchor shapes the same structure is used but x2-asis and
+ * y2-axis are replaced by x-scale and y-scale which are auxilliary
+ * values used by
  * 
- * 0 = middle
- * 1 = min (left/top)
- * 2 = max (right/bot)
+ * 1: texture to scale the texture
  * 
- * Texture types then have two bytes specifying texture scale.
- * 
- * Examples:
- * 
- * [0,0] : stretch_rectangle([x,y],ColourSpec::Colour(c))
- * [0,1] : stretch_rectangle([x,y],ColourSpec::Spot(c))
- * [0,2] : stretch_texture(tx,[x,y])
- * [1,1,0,0] : pin_rectangle([x,y],ColourSpec::Spot(c))
- * [1,2,0,0,A,B,0,0,1,1] :
- *             pin_texture(tx,[x,y],[A,B],[1,1].MIDDLE)
+ * The stretchtangle and hollow stretchtangle are special. Only
+ * the first two arguments are used.
  */
 
-use program::PTGeom;
-use shape::RectSpec;
+use shape::{
+    PinRectTypeSpec, StretchRectTypeSpec, TextureTypeSpec, TypeToShape
+};
+use types::AxisSense;
 
-pub struct RectBuilder {
-    pt: PTGeom
-}
-
-pub enum ShapeMeta {
-    Rectangle(RectBuilder)
-}
-
-fn new_geom(sea_ax_x: i32, sea_ax_y: i32) -> PTGeom {
-    match (sea_ax_x != 0,sea_ax_y != 0) {
-        (false,false) => PTGeom::Pin,
-        (false,true) => PTGeom::Page,
-        (true,false) => PTGeom::Tape,
-        (true,true) => PTGeom::Fix
+fn make_under(meta: &Vec<f64>) -> Option<bool> {
+    match meta[10] as i32 {
+        0 => None,
+        1 => Some(true),
+        2 => Some(false),
+        _ => None
     }
 }
 
-fn new_rectangle(broad_type: i32, colour_type:i32, 
-                 meta_iter: &mut Iterator<Item=&f64>) -> Option<RectSpec> {
-    let sea_ax_x = *meta_iter.next().unwrap() as i32;
-    let sea_ax_y = *meta_iter.next().unwrap() as i32;
-                     
-    let geom = new_geom(sea_ax_x,sea_ax_y);
-    None
+fn sea_option(meta: &Vec<f64>, idx: usize) -> Option<AxisSense> {
+    match meta[idx] as i32 {
+        0 => None,
+        1 => Some(AxisSense::Max),
+        2 => Some(AxisSense::Min),
+        _ => None
+    }
 }
 
-impl ShapeMeta {
-    pub fn new(meta: &Vec<f64>) -> Option<ShapeMeta> {
-        let mut meta_iter = meta.iter();
-        let broad_type = *meta_iter.next().unwrap() as i32;
-        let colour_type = *meta_iter.next().unwrap() as i32;
-        if colour_type == 0 || colour_type == 1 {
-            new_rectangle(broad_type,colour_type,&mut meta_iter)
-                .map(|x| ShapeMeta::Rectangle(x))
-        } else {
-            None
-        }
+fn sea(meta: &Vec<f64>, idx: usize) -> Option<(AxisSense,AxisSense)> {
+    let sea1 = sea_option(meta,idx);
+    let sea2 = sea_option(meta,idx+1);
+    if sea1.is_none() | sea2.is_none() { return None; }
+    return Some((sea1.unwrap(),sea2.unwrap()));
+}
+
+fn ship(meta: &Vec<f64>, idx: usize) -> (Option<AxisSense>,i32) {
+    (match meta[idx] as i32 {
+        0 => Some(AxisSense::Max),
+        1 => None,
+        2 => Some(AxisSense::Min),
+        _ => None
+        
+    },meta[idx+1] as i32)
+}
+
+fn make_rectangle(meta: &Vec<f64>) -> Option<Box<TypeToShape>> {
+    Some(Box::new(PinRectTypeSpec {
+        sea_x: sea(meta,2),
+        sea_y: sea(meta,4),
+        ship_x: ship(meta,6),
+        ship_y: ship(meta,8),
+        under: make_under(meta),
+        spot: meta[1]!=0.
+    }))
+}
+
+fn make_stretchtangle(meta: &Vec<f64>) -> Option<Box<TypeToShape>> {
+    Some(Box::new(StretchRectTypeSpec {
+        hollow: meta[0] == 2.,
+        spot: meta[1]!=0.
+    }))
+}
+
+fn make_texture(meta: &Vec<f64>) -> Option<Box<TypeToShape>> {
+    Some(Box::new(TextureTypeSpec {
+        sea_x: sea_option(meta,2),
+        sea_y: sea_option(meta,4),
+        ship_x: ship(meta,6),
+        ship_y: ship(meta,8),
+        under: make_under(meta),
+        scale_x: meta[3] as f32,
+        scale_y: meta[5] as f32
+    }))
+}
+
+fn make_meta(meta: &Vec<f64>) -> Option<Box<TypeToShape>> {
+    match meta[0] as i32 {
+        0 => make_rectangle(meta),
+        1|2 => make_stretchtangle(meta),
+        3 => make_texture(meta),
+        _ => None
     }
+}
+
+pub fn build_meta(meta_iter: &mut Iterator<Item=&f64>) -> Option<Box<TypeToShape>> {
+    let mut meta = Vec::<f64>::new();
+    let first = *meta_iter.next().unwrap();
+    meta.push(first);
+    let len = if first == 1. || first == 2. { 1 } else { 10 };
+    for _ in 0..len {
+        meta.push(*meta_iter.next().unwrap());
+    }
+    let out = make_meta(&meta);
+    out
 }

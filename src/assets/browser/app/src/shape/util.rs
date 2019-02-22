@@ -1,11 +1,38 @@
 use std::iter;
+use composit::Leaf;
+use drawing::DrawingSpec;
 use program::{
     ProgramAttribs, DataBatch, DataGroupIndex, ProgramType, PTMethod, 
     PTGeom, PTSkin
 };
 use types::{ RFraction, CLeaf, RPixel, RLeaf, cleaf, Rect, Edge, Colour };
-use shape::ColourSpec;
+use shape::{ ShapeSpec, ColourSpec };
 use program::Input;
+
+pub enum FacadeType {
+    Drawing,
+    Colour
+}
+
+pub enum Facade {
+    Drawing(DrawingSpec),
+    Colour(Colour)
+}
+
+pub struct ShapeInstanceData {
+    pub pos_x: f32,
+    pub pos_y: i32,
+    pub aux_x: f32,
+    pub aux_y: i32,
+    pub facade: Facade
+}
+
+
+pub trait TypeToShape {
+    fn new_shape(&self, sid: &ShapeInstanceData) -> ShapeSpec;
+    fn get_facade_type(&self) -> FacadeType;
+    fn needs_scale(&self) -> (bool,bool);
+}
 
 pub fn rectangle_g(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &RLeaf) {
     if let Some(obj) = pdata.get_object(key) {
