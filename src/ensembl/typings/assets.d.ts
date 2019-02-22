@@ -9,8 +9,10 @@ declare module '*.jpg' {
 }
 
 declare module '*.svg' {
-  const svg: string;
-  export = svg;
+  import React = require('react');
+  export const ReactComponent: React.SFC<React.SVGProps<SVGSVGElement>>;
+  const src: string;
+  export default src;
 }
 
 declare module '*.scss' {

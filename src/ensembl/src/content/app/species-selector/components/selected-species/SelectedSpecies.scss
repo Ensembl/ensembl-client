@@ -42,4 +42,11 @@ $selectedSpeciesPadding: 10px 28px;
   .overlayText {
     color: $ens-blue;
   }
+
+  .closeButton {
+    position: absolute;
+    right: 1em;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }
