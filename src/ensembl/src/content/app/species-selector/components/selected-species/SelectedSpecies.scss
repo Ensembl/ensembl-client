@@ -37,16 +37,23 @@ $selectedSpeciesPadding: 10px 28px;
   background: white;
   border: 1px solid $ens-blue;
   border-radius: $selectedSpeciesBorderRadius;
-  padding: $selectedSpeciesPadding;
+  cursor: default;
+
+  .overlayText,
+  .closeButton {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: $selectedSpeciesPadding;
+    cursor: pointer;
+  }
 
   .overlayText {
+    left: 0;
     color: $ens-blue;
   }
 
   .closeButton {
-    position: absolute;
-    right: 1em;
-    top: 50%;
-    transform: translateY(-50%);
+    right: -0.5em;
   }
 }
