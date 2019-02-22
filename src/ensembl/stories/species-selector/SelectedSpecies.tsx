@@ -15,7 +15,9 @@ storiesOf('Components|Species Selector/Selected Species', module)
       onDisable={() => {
         console.log('disable');
       }}
-      onRemove={() => {}}
+      onRemove={() => {
+        console.log('remove');
+      }}
     />
   ))
   .add('disabled', () => (
@@ -29,6 +31,8 @@ storiesOf('Components|Species Selector/Selected Species', module)
       onDisable={() => {
         console.log('disable');
       }}
-      onRemove={() => {}}
+      onRemove={() => {
+        console.log('remove');
+      }}
     />
   ));

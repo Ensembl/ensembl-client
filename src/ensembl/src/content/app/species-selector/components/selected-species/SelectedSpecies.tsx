@@ -44,12 +44,18 @@ const SelectedSpeciesOverlay: FunctionComponent<Props> = (props) => {
       props.onEnable();
     }
   };
-  const removeSpecies = () => props.onRemove();
+  const removeSpecies = (e: Event) => {
+    e.preventDefault();
+    e.stopPropagation();
+    props.onRemove();
+  };
 
   return (
-    <div className={styles.selectedSpeciesOverlay} onClick={handleClick}>
-      <span className={styles.overlayText}>{text}</span>
-      <div className={styles.closeButton}>
+    <div className={styles.selectedSpeciesOverlay}>
+      <span className={styles.overlayText} onClick={handleClick}>
+        {text}
+      </span>
+      <div className={styles.closeButton} onClick={removeSpecies}>
         <CloseButton inverted onClick={removeSpecies} />
       </div>
     </div>
