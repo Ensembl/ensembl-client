@@ -22,7 +22,7 @@ impl SourceSched {
 
     fn run_queue(&mut self) {
         while self.queued.len() > 0  && (self.pending.len() < self.max_pending as usize || self.max_pending == 0) {
-            let (source,leaf,mut resp) = self.queued.remove(0);
+            let (mut source,leaf,mut resp) = self.queued.remove(0);
             debug!("sources","start {:?}:{:?}",source,leaf);
             self.pending.insert((source.clone(),leaf.clone()),resp.clone());            
             source.populate(&mut resp,&leaf);

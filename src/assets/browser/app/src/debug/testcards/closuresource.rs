@@ -3,7 +3,7 @@ use std::rc::Rc;
 use stdweb::web::window;
 use stdweb::web::IWindowOrWorker;
 
-use composit::{ Source, SourceResponse, Leaf };
+use composit::{ Source, SourceResponse, Leaf, ActiveSource };
 use shape::ShapeSpec;
 
 pub struct ClosureSourceImpl {
@@ -22,7 +22,7 @@ impl ClosureSource {
 }
 
 impl Source for ClosureSource {
-    fn populate(&self, lc: &mut SourceResponse, leaf: &Leaf) {
+    fn populate(&self, acs: &ActiveSource, lc: &mut SourceResponse, leaf: &Leaf) {
         let cs = self.clone();
         let mut lc = lc.clone();
         let leaf = leaf.clone();

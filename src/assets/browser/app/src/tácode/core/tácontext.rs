@@ -2,18 +2,18 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use composit::{ Landscape, Leaf, SourceResponse };
+use composit::{ ActiveSource, Landscape, Leaf, SourceResponse };
 use drawing::DrawingSpec;
 
 #[derive(Clone)]
 pub enum TáTask {
-    MakeShapes(Leaf,SourceResponse,Vec<DrawingSpec>,Landscape)
+    MakeShapes(ActiveSource,Leaf,SourceResponse,Vec<DrawingSpec>,usize)
 }
 
 impl TáTask {
     pub fn finished(&mut self) {
         match self {
-            TáTask::MakeShapes(leaf,sr,_,_) => {
+            TáTask::MakeShapes(_,_leaf,sr,_,_) => {
                 //console!("{:?} for {} added {} shapes",leaf,sr.get_source_name(),sr.size());
                 sr.done(200); // XXX not 200
             },

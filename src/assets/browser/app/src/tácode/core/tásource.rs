@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use composit::{ Landscape, Leaf, Source, SourceResponse };
+use composit::{ Landscape, Leaf, Source, SourceResponse, ActiveSource };
 use data::{ XferClerk, XferRequest, XferResponse, XferConsumer };
 use drawing::DrawingSpec;
 use tácode::{ Tácode, TáTask };
@@ -9,7 +9,7 @@ use tácode::{ Tácode, TáTask };
 pub struct TáSourceImpl {
     tc: Tácode,
     xf: Box<XferClerk>,
-    ls: Landscape,
+    lid: usize,
     name: String
 }
 
@@ -17,39 +17,41 @@ pub struct TáSourceImpl {
 pub struct TáSource(Rc<RefCell<TáSourceImpl>>);
 
 impl TáSource {
-    pub fn new(tc: &Tácode, xf: Box<XferClerk>, name: &str, ls: Landscape) -> TáSource {
+    pub fn new(tc: &Tácode, xf: Box<XferClerk>, name: &str, lid: usize) -> TáSource {
         TáSource(Rc::new(RefCell::new(TáSourceImpl{
             tc: tc.clone(),
-            xf, ls,
+            xf, lid,
             name: name.to_string()
         })))
     }
 }
 
 impl Source for TáSource {
-    fn populate(&self, lc: &mut SourceResponse, leaf: &Leaf) {
+    fn populate(&self, acs: &ActiveSource, lc: &mut SourceResponse, leaf: &Leaf) {
         let xfer_req = XferRequest::new(&self.0.borrow_mut().name,leaf);
         let tc = self.0.borrow_mut().tc.clone();
-        let ls = self.0.borrow_mut().ls.clone();
-        let xcons = TáXferConsumer::new(&tc,leaf,lc,ls);
+        let lid = self.0.borrow_mut().lid;
+        let xcons = TáXferConsumer::new(&tc,acs,leaf,lc,lid);
         self.0.borrow_mut().xf.satisfy(xfer_req,Box::new(xcons));
     }
 }
 
 struct TáXferConsumer {
     lc: SourceResponse,
-    ls: Landscape,
     tc: Tácode,
-    leaf: Leaf
+    lid: usize,
+    leaf: Leaf,
+    acs: ActiveSource
 }
 
 impl TáXferConsumer {
-    pub fn new(tc: &Tácode, leaf: &Leaf, lc: &SourceResponse, ls: Landscape) -> TáXferConsumer {
+    pub fn new(tc: &Tácode, acs: &ActiveSource, leaf: &Leaf, lc: &SourceResponse, lid: usize) -> TáXferConsumer {
         TáXferConsumer {
             lc: lc.clone(),
-            ls,
+            lid,
             tc: tc.clone(),
-            leaf: leaf.clone()
+            leaf: leaf.clone(),
+            acs: acs.clone()
         }
     }
 }
@@ -61,8 +63,9 @@ impl XferConsumer for TáXferConsumer {
                 match self.tc.run(&code) {
                     Ok(pid) => {
                         self.tc.context().set_task(pid,TáTask::MakeShapes(
+                            self.acs.clone(),
                             self.leaf.clone(),self.lc.clone(),
-                            Vec::<DrawingSpec>::new(),self.ls.clone()));
+                            Vec::<DrawingSpec>::new(),self.lid));
                         let len = xf.len();
                         for reg in 0..len {
                             self.tc.set_reg(pid,reg+1,xf.take_data(reg));

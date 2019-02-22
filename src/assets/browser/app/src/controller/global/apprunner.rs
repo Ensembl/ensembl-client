@@ -3,7 +3,7 @@ use std::sync::{ Arc, Mutex, Weak };
 use stdweb::web::HtmlElement;
 
 use composit::{
-    register_compositor_ticks,
+    register_compositor_ticks, AllLandscapes,
     SourceManager, SourceManagerList, StickManager, ActiveSource, Stick
 };
 use controller::global::{ App, GlobalWeak };
@@ -30,7 +30,8 @@ struct AppRunnerImpl {
     timers: Timers,
     tc: Tácode,
     csl: SourceManagerList,
-    sticks: Box<StickManager>
+    sticks: Box<StickManager>,
+    als: AllLandscapes
 }
 
 #[derive(Clone)]
@@ -54,7 +55,8 @@ impl AppRunner {
             timers: Timers::new(),
             tc: tc.clone(),
             csl: SourceManagerList::new(),
-            sticks: Box::new(debug_stick_manager())
+            sticks: Box::new(debug_stick_manager()),
+            als: AllLandscapes::new()
         })));
         {
             let imp = out.0.lock().unwrap();
@@ -69,7 +71,8 @@ impl AppRunner {
             app.lock().unwrap().set_report(report);
             let el = imp.el.clone();
             imp.bling.activate(&app,&el);
-            imp.csl.add_compsource(Box::new(DebugSourceManager::new(&tc)));
+            let dsm = DebugSourceManager::new(&tc,&imp.als);
+            imp.csl.add_compsource(Box::new(dsm));
         }
         out
     }
@@ -94,6 +97,8 @@ impl AppRunner {
             imp.timers = Timers::new();
             imp.projector = None;
             imp.controls = Vec::<Box<EventControl<()>>>::new();
+            imp.als = AllLandscapes::new();
+            imp.csl = SourceManagerList::new();
         }
         self.init();
         let report = Report::new(self);
@@ -103,6 +108,8 @@ impl AppRunner {
             let app = imp.app.clone();
             app.lock().unwrap().set_report(report);
             imp.bling.activate(&app,&el);
+            let dsm = DebugSourceManager::new(&imp.tc,&imp.als);
+            imp.csl.add_compsource(Box::new(dsm));
         }
     }
 
