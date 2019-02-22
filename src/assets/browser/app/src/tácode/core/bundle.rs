@@ -1,12 +1,13 @@
 use tánaiste::{ Instruction, InstructionBundle };
 
-use tácode::core::TáContext;
-use tácode::commands::{
-    AppGetI, CPrintI, DPrintI, ShapeI, AbuttI, ElideI, NotI, PickI,
+use super::super::core::TáContext;
+use super::super::commands::{
+    AppGetI, CPrintI, DPrintI, AbuttI, ElideI, NotI, PickI,
     ExtentI, AllI, BinOpI, BinOpType, TextI, IndexI, RunsI, RunsOfI,
     GetI, ScaleI, MergeI, AccNI, MemberI, PlotI, RulerI, AllPlotsI,
     LengthI
 };
+use super::super::shapecmd::ShapeI;
 
 pub fn instruction_bundle_app(tc: &TáContext) -> InstructionBundle {
     let mut ib = InstructionBundle::new();

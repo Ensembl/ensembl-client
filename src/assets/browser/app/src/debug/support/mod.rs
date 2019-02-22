@@ -1,3 +1,4 @@
+pub mod closuresource;
 mod debugxferclerk;
 mod debugxferresponder;
 mod sourcemanager;

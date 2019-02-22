@@ -5,9 +5,11 @@ use composit::{
     ActiveSource, Landscape, Leaf, Plot, Source, SourceResponse,
     StateAtom, AllLandscapes
 };
+
+#[cfg(not(deploy))]
 use debug::testcards::{
-    leafcard_source, text_source, march_source_cs, march_source_ts,
-    polar_source, tá_source_cs , bs_source_main, bs_source_sub
+    leafcard_source, text_source,
+    polar_source, bs_source_main, bs_source_sub
 };
 use debug::support::{
     DebugSourceType, DebugXferClerk
@@ -45,17 +47,11 @@ impl Source for DebugSource {
     }
 }
 
-fn debug_source_type(tc: &Tácode, als: &mut AllLandscapes, xf: &DebugXferClerk, type_: &DebugSourceType, lid: usize) -> impl Source {
-    let mut s = DebugSource::new();
-    s.add_stick("polar",Box::new(polar_source(type_)));
-    if let Some(src) = march_source_ts(&tc,type_) {
-        s.add_stick("march",Box::new(src));
-    } else {
-        s.add_stick("march",Box::new(march_source_cs(type_)));
-    }
-    s.add_stick("text",Box::new(text_source()));
-    s.add_stick("leaf",Box::new(leafcard_source(true)));
-    s.add_stick("ruler",Box::new(leafcard_source(false)));
+#[cfg(deploy)]
+fn extra_source_type(s: &mut DebugSource, type_: &DebugSourceType) {}
+
+#[cfg(not(deploy))]
+fn extra_source_type(s: &mut DebugSource, type_: &DebugSourceType) {
     let b = match type_ {
         DebugSourceType::GenePcFwd => Some(bs_source_sub(true)),
         DebugSourceType::GenePcRev => Some(bs_source_sub(false)),
@@ -63,10 +59,19 @@ fn debug_source_type(tc: &Tácode, als: &mut AllLandscapes, xf: &DebugXferClerk,
         _ => None
     };
     if let Some(b) = b { s.add_stick("button",Box::new(b)); }
+    s.add_stick("text",Box::new(text_source()));
+    s.add_stick("leaf",Box::new(leafcard_source(true)));
+    s.add_stick("ruler",Box::new(leafcard_source(false)));
+    s.add_stick("polar",Box::new(polar_source(type_)));
+}
+
+fn debug_source_type(tc: &Tácode, als: &mut AllLandscapes, xf: &DebugXferClerk, type_: &DebugSourceType, lid: usize) -> impl Source {
+    let mut s = DebugSource::new();
+    extra_source_type(&mut s,type_);
     let plot = Plot::new(type_.get_pos()*PITCH+TOP,PITCH,type_.get_letter());
     als.with(lid, |ls| ls.set_plot(plot) );
     let src = TáSource::new(tc,Box::new(xf.clone()),type_.get_name(),lid);
-    s.add_stick("tácode",Box::new(src));
+    s.add_stick("march",Box::new(src));
     s
 }
 

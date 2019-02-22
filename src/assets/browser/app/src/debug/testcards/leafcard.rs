@@ -1,5 +1,5 @@
 use util::RulerGenerator;
-use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
+use debug::support::closuresource::{ ClosureSource, closure_add, closure_done };
 use composit::Source;
 use drawing::{ FCFont, FontVariety, text_texture };
 use shape::{ ColourSpec, PinRectTypeSpec, StretchRectTypeSpec, TextureTypeSpec, TypeToShape, ShapeInstanceData, Facade };

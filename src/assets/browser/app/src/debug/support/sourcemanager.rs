@@ -29,13 +29,13 @@ lazy_static! {
     };
     
     static ref SOURCE_DATA : HashMap<String,(i32,&'static str)> = hashmap_s! {
-        "internal:debug:gene-pc-fwd"    => (0,"G"),
-        "internal:debug:gene-other-fwd" => (1,"G"),
-        "internal:debug:gene-pc-rev"    => (3,"G"),
-        "internal:debug:gene-other-rev" => (4,"G"),
-        "internal:debug:variant"        => (5,"V"),
-        "internal:debug:contig"         => (2,"G"),
-        "internal:debug:gc"             => (6,"G"),
+        "internal:debug:gene-pc-fwd"    => (1,"G"),
+        "internal:debug:gene-other-fwd" => (2,"G"),
+        "internal:debug:gene-pc-rev"    => (4,"G"),
+        "internal:debug:gene-other-rev" => (5,"G"),
+        "internal:debug:variant"        => (6,"V"),
+        "internal:debug:contig"         => (3,"G"),
+        "internal:debug:gc"             => (7,"G"),
         "internal:debug:zzz-framework"  => (-1,"")
     };
 }

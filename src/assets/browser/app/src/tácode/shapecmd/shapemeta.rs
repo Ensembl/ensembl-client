@@ -21,7 +21,7 @@
  * Note that for any given axis if one axis is zero, both must be.
  * 
  * There then follow two pairs representing the ship-end of the anchors.
- * [x1-type,x1-delta,x2-type,x2-delta]. -types have one of three values,
+ * [x-type,x-delta,y-type,y-delta]. -types have one of three values,
  * 0 = left/top; 1 = middle; 2 = right/bottom. deltas are in pixels.
  * Then the (temporary) under integer is given: 0=normal, 1=page, 2=tape.
  * 
