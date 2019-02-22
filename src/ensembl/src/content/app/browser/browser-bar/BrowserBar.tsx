@@ -63,6 +63,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
         <dl className={styles.browserInfoRight}>
           <BrowserGenomeSelector
             browserActivated={props.browserActivated}
+            browserImageEl={browserImageEl}
             chrLocation={props.chrLocation}
             updateDefaultChrLocation={props.updateDefaultChrLocation}
           />

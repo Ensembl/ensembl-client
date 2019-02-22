@@ -17,6 +17,7 @@ import styles from './BrowserGenomeSelector.scss';
 
 type BrowserGenomeSelectorProps = {
   browserActivated: boolean;
+  browserImageEl: HTMLDivElement;
   chrLocation: ChrLocation;
   updateDefaultChrLocation: (chrLocation: ChrLocation) => void;
 };
@@ -67,6 +68,8 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
 
     props.updateDefaultChrLocation([chrCodeInput, chrStartInput, chrEndInput]);
     setShowInputs(false);
+
+    sendLocationToBrowser(props.chrLocation, props.browserImageEl);
   };
 
   return props.browserActivated ? (
@@ -117,5 +120,23 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
     </dd>
   ) : null;
 };
+
+function sendLocationToBrowser(
+  chrLocation: ChrLocation,
+  browserImageEl: HTMLDivElement
+) {
+  const [chrCode, startBp, endBp] = chrLocation;
+  const midChrLocation = startBp + (endBp - startBp) / 2;
+
+  const genomeSelectorEvent = new CustomEvent('bpane', {
+    bubbles: true,
+    detail: {
+      move_to_bp: Math.round(midChrLocation),
+      stick: chrCode
+    }
+  });
+
+  browserImageEl.dispatchEvent(genomeSelectorEvent);
+}
 
 export default BrowserGenomeSelector;
