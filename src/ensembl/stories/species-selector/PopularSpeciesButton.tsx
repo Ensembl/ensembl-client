@@ -3,7 +3,7 @@ import { storiesOf } from '@storybook/react';
 
 import PopularSpeciesButton from 'src/content/app/species-selector/components/popular-species-button/PopularSpeciesButton';
 
-storiesOf('Species Selector/Popular species button', module)
+storiesOf('Components|Species Selector/Popular species button', module)
   .add('not selected', () => (
     <>
       <PopularSpeciesButton
