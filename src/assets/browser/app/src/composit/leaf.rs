@@ -33,6 +33,12 @@ impl Leaf {
         let start_leaf = (self.hindex as f64 * mul) as f64;
         ((pos-start_leaf)/mul) as f32
     }
+    
+    pub fn unprop(&self, px: f32) -> f64 {
+        let mul = self.total_bp();
+        let start_leaf = (self.hindex as f64 * mul) as f64;
+        px as f64*mul + start_leaf
+    }
 }
 
 impl fmt::Debug for Leaf {
