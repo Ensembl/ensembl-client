@@ -475,7 +475,7 @@ code:
         const #11, [199,208,213]
         shape #5, #6, #7, #8, #9, #11
         ; *** and top ***
-        const #5, [0,1,1,1,1,1,2,0,0,0,0]
+        const #5, [0,1,1,1,1,1,2,0,2,0,0]
         shape #5, #6, #7, #8, #9, #11
         ; *** RULER ***
         ; 1. call ruler
@@ -508,16 +508,33 @@ code:
         const #45, [0.5]
         mul #42, #42, #45
         add #41, #41, #42
-        const #5, [3,0,1,1,0,1,2,8,1,0,0]
+        const #5, [3,0,1,1,0,1,2,10,1,0,0]
         length #45, #41
         const #6, [12]
         runsof #6, #45, #6
         const #7, [2]
         const #8, [30]
         shape #5, #6, #8, #41, #7, #12
+        ; *** swatch *** XXX always first track ATM
+        const #5, [0,1,1,1,0,0,2,0,2,0,0]
+        const #7, [6]
+        allplots #41, #42, #43, #44
+        const #6, [1]
+        get #41, #41, #6
+        get #42, #42, #6
+        const #49, [0.1]
+        mul #43, #42, #49
+        add #43, #43, #41
+        move #44, #42
+        const #49, [0.8]
+        mul #44, #44, #49
+        const #45, [78,168,252]
+        const #6, [0]
+        shape #5, #6, #7, #43, #44, #45
+        
         
 requests:
-    tácode:
+    march:
         zzz-framework:
             code: framework
             data: []

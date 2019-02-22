@@ -14,7 +14,7 @@ use debug::testcards::common::{
     track_data, rng_pos, prop, rng_seq
 };
 use util::RulerGenerator;
-use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
+use debug::support::closuresource::{ ClosureSource, closure_add, closure_done };
 use drawing::{
     mark_rectangle, text_texture, collage, Mark, Artist,
     FCFont, FontVariety

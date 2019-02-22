@@ -16,6 +16,11 @@ case "$1" in
         cd $BASE/../..
         cargo +nightly web start --target=wasm32-unknown-unknown --release
         ;;
+    clean)
+        echo "Running cargo clean"
+        cd $BASE/../..
+        cargo +nightly clean
+        ;;
     deploy)
         echo "Running deploy"
         $BASE/../deploy.sh

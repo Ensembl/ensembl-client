@@ -14,7 +14,7 @@ use composit::{
     SourceResponse, Stick
 };
 
-use debug::testcards::closuresource::{ ClosureSource, closure_add, closure_done };
+use debug::support::closuresource::{ ClosureSource, closure_add, closure_done };
 use debug::testcards::common::{
      wiggly, rng_prob, rng_pos, rng_colour, start_rng,
     rng_subdivide, bio_mark, rng_tracks, prop

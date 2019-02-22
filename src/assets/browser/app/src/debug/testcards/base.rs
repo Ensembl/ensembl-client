@@ -4,7 +4,7 @@ use controller::input::{ Action, actions_run };
 use debug::support::DebugSourceType;
 use types::Dot;
 
-pub fn debug_initial_actions(name: &str) -> Vec<Action> {
+fn debug_initial_actions(name: &str) -> Vec<Action> {
     let mut out = Vec::<Action>::new();
     for type_ in DebugSourceType::all() {
         out.push(Action::AddComponent(type_.get_name().to_string()));

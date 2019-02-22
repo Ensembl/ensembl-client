@@ -1,7 +1,4 @@
 use std::collections::HashMap;
-use std::iter::repeat;
-
-use itertools::chain;
 
 use core::{ BinaryCode, Command, Instruction, InstructionSet };
 use super::parsetree::{ Argument, ArgumentType, SimpleArgumentType, SourceCode, Statement };

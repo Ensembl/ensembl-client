@@ -9,7 +9,7 @@ use stdweb::web::event::{ ChangeEvent, ClickEvent };
 
 use controller::input::EggDetector;
 use controller::global::App;
-use debug::select_testcard;
+use super::super::testcards::select_testcard;
 use debug::DebugConsole;
 use debug::pane::MiniBling;
 use dom::Bling;
@@ -35,7 +35,6 @@ pub const DEBUGSTAGE : &str = r##"
                 <option value="text">Text Testcard</option>
                 <option value="ruler">Ruler Testcard</option>
                 <option value="leaf">Leaf Testcard</option>
-                <option value="tácode">Tácode Testcard</option>
             </select>
             <select class="folder"></select>
             <button class="mark">mark!</button>

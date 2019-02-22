@@ -1,17 +1,20 @@
 mod base;
-mod bigscience;
 mod common;
+#[cfg(not(deploy))]
+mod bigscience;
+#[cfg(not(deploy))]
 mod polar;
+#[cfg(not(deploy))]
 mod text;
+#[cfg(not(deploy))]
 mod leafcard;
-mod march;
-mod closuresource;
-mod tánaiste;
 
-pub use debug::testcards::base::{ debug_initial_actions, select_testcard };
+pub use debug::testcards::base::{ select_testcard };
+#[cfg(not(deploy))]
 pub use debug::testcards::bigscience::{ bs_source_main, bs_source_sub };
+#[cfg(not(deploy))]
 pub use self::leafcard::leafcard_source;
+#[cfg(not(deploy))]
 pub use debug::testcards::polar::polar_source;
-pub use self::march::{ march_source_cs, march_source_ts };
+#[cfg(not(deploy))]
 pub use self::text::text_source;
-pub use self::tánaiste::{ tá_source_cs };
