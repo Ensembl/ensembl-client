@@ -1,4 +1,4 @@
 import 'src/styles/main.scss';
 
-import './species-selector/PopularSpeciesButton';
-import './species-selector/SelectedSpecies';
+import './design-primitives/index.ts';
+import './species-selector/index.ts';
