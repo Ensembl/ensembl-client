@@ -1,0 +1,30 @@
+@import 'src/styles/common';
+
+.closeButton {
+  width: 18px;
+  height: 18px;
+  border: 1px solid $ens-blue;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active,
+  &:focus {
+    outline: none;
+  }
+
+  svg {
+    width: 70%;
+    height: 70%;
+    fill: $ens-blue;
+  }
+}
+
+.closeButtonInverted {
+  background-color: $ens-blue;
+
+  svg {
+    fill: $ens-white;
+  }
+}
