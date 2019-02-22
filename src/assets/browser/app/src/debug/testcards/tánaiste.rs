@@ -50,112 +50,6 @@ struct Palette {
     grey: ColourSpec
 }
 
-fn one_offs(_lc: &mut SourceResponse, _p: &Palette) {    
-}
-
-fn draw_frame(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette) {
-    let left = Corner(AxisSense::Max,edge);
-    let right = Corner(AxisSense::Min,edge);
-    let top = Corner(edge,AxisSense::Max);
-    let bottom = Corner(edge,AxisSense::Min);
-    
-    /* top/bottom */
-    let prts = PinRectTypeSpec {
-        sea_x: Some((AxisSense::Max,AxisSense::Min)),
-        sea_y: Some((edge,edge)),
-        ship_x: (Some(AxisSense::Min),0),
-        ship_y: (Some(AxisSense::Min),0),
-        under: Some(false),
-        spot: true
-    };
-    closure_add(lc,&prts.new_shape(&ShapeInstanceData {
-        pos_x: 0.,
-        pos_y: 1,
-        aux_x: 0.,
-        aux_y: 18,
-        facade: Facade::Colour(Colour(255,255,255))
-    }));
-
-    let prts = PinRectTypeSpec {
-        sea_x: Some((AxisSense::Max,AxisSense::Max)),
-        sea_y: Some((edge,edge)),
-        ship_x: (Some(AxisSense::Min),0),
-        ship_y: (Some(AxisSense::Min),0),
-        under: None,
-        spot: true
-    };
-
-    closure_add(lc,&prts.new_shape(&ShapeInstanceData {
-        pos_x: 0.,
-        pos_y: 2,
-        aux_x: 36.,
-        aux_y: 16,
-        facade: Facade::Colour(Colour(255,255,255))
-    }));
-    closure_add(lc,&prts.new_shape(&ShapeInstanceData {
-        pos_x: 36.,
-        pos_y: 1,
-        aux_x: 1.,
-        aux_y: 16,
-        facade: Facade::Colour(Colour(199,208,213))
-    }));
-
-
-    let prts = PinRectTypeSpec {
-        sea_x: Some((AxisSense::Max,AxisSense::Min)),
-        sea_y: Some((edge,edge)),
-        ship_x: (Some(AxisSense::Min),0),
-        ship_y: (Some(AxisSense::Min),0),
-        under: None,
-        spot: true
-    };
-
-    for y in [0,17].iter() {
-        closure_add(lc,&prts.new_shape(&ShapeInstanceData {
-            pos_x: 0.,
-            pos_y: *y,
-            aux_x: 0.,
-            aux_y: 1,
-            facade: Facade::Colour(Colour(199,208,213))
-        }));        
-    }
-
-    let tx = text_texture("bp",
-                          &p.lato_12,&Colour(199,208,213),&Colour(255,255,255));
-    let tts = TextureTypeSpec {
-        sea_x: Some(AxisSense::Max),
-        sea_y: Some(edge),
-        ship_x: (Some(AxisSense::Min),0),
-        ship_y: (None,0),
-        under: None,
-        scale_x: 1., scale_y: 1.
-    };
-    closure_add(lc,&tts.new_shape(&ShapeInstanceData {
-        pos_x: 34.,
-        pos_y: 10,
-        aux_x: 0.,
-        aux_y: 0,
-        facade: Facade::Drawing(tx)
-    }));
-
-    /* left/right */
-    let prts = PinRectTypeSpec {
-        sea_x: Some((edge,edge)),
-        sea_y: Some((AxisSense::Max,AxisSense::Min)),
-        ship_x: (Some(AxisSense::Min),0),
-        ship_y: (Some(AxisSense::Min),0),
-        under: Some(true),
-        spot: true
-    };
-    closure_add(lc,&prts.new_shape(&ShapeInstanceData {
-        pos_x: 0.,
-        pos_y: 18,
-        aux_x: 36.,
-        aux_y: 0,
-        facade: Facade::Colour(Colour(255,255,255))
-    }));        
-}
-
 fn measure(lc: &mut SourceResponse, leaf: &Leaf, edge: AxisSense, p: &Palette) {
     let mul = leaf.total_bp();
     let start_leaf = (leaf.get_index() as f64 * mul).floor() as i32;
@@ -266,9 +160,6 @@ pub fn tá_source_cs(type_: &DebugSourceType) -> impl Source {
     match type_ {
         DebugSourceType::Framework => {
             ClosureSource::new(0.,move |ref mut lc,leaf| {
-                one_offs(lc,&p);
-                draw_frame(lc,&leaf,AxisSense::Max,&p);
-                draw_frame(lc,&leaf,AxisSense::Min,&p);
                 measure(lc,&leaf,AxisSense::Max,&p);
                 measure(lc,&leaf,AxisSense::Min,&p);
                 for t in 0..TRACKS {

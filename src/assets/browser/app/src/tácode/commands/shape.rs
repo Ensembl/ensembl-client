@@ -18,217 +18,18 @@ use types::{
     A_RIGHT, A_TOPLEFT, TOPLEFT, AxisSense
 };
 
-struct ColourIter<'a>(bool,Box<Iterator<Item=&'a f64> + 'a>);
-impl<'a> Iterator for ColourIter<'a> {
-    type Item = ColourSpec;
-    
-    fn next(&mut self) -> Option<ColourSpec> {
-        let r = self.1.next().unwrap();
-        let g = self.1.next().unwrap();
-        let b = self.1.next().unwrap();
-        let col = Colour(*r as u32,*g as u32,*b as u32);
-        if self.0 {
-            Some(ColourSpec::Spot(col))
-        } else {
-            Some(ColourSpec::Colour(col))
-        }        
-    }
-}
-
-fn colour_iter<'a>(colour: &'a Vec<f64>, spot: bool) -> Box<Iterator<Item=ColourSpec>+'a> {
-    Box::new(ColourIter(spot,Box::new(colour.iter().cycle())))
-}
-
-struct ColourIter2<'a>(Box<Iterator<Item=&'a f64> + 'a>);
-impl<'a> Iterator for ColourIter2<'a> {
-    type Item = Colour;
-    
-    fn next(&mut self) -> Option<Colour> {
-        let r = self.0.next().unwrap();
-        let g = self.0.next().unwrap();
-        let b = self.0.next().unwrap();
-        Some(Colour(*r as u32,*g as u32,*b as u32))
-    }
-}
-
-fn colour_iter2<'a>(colour: &'a Vec<f64>) -> Box<Iterator<Item=Colour>+'a> {
-    Box::new(ColourIter2(Box::new(colour.iter().cycle())))
-}
-
-struct PinPointIter<'a>(Leaf,Box<Iterator<Item=&'a f64> + 'a>,Box<Iterator<Item=&'a f64> + 'a>);
-impl<'a> Iterator for PinPointIter<'a> {
-    type Item = Dot<f32,i32>;
-    
-    fn next(&mut self) -> Option<Self::Item> {
-        let x = self.1.next().unwrap();
-        let y = self.2.next().unwrap();
-        Some(cleaf(self.0.prop(*x),*y as i32))
-    }
-}
-
-struct FixPointIter<'a>(Leaf,Box<Iterator<Item=&'a f64> + 'a>,Box<Iterator<Item=&'a f64> + 'a>);
-impl<'a> Iterator for FixPointIter<'a> {
-    type Item = Dot<i32,i32>;
-    
-    fn next(&mut self) -> Option<Self::Item> {
-        let x = self.1.next().unwrap();
-        let y = self.2.next().unwrap();
-        Some(cpixel(*x as i32,*y as i32))
-    }
-}
-
-fn pinpoint_iter<'a>(leaf: &mut Leaf,x: &'a Vec<f64>, y: &'a Vec<f64>) -> Box<Iterator<Item=Dot<f32,i32>>+'a> {
-    Box::new(PinPointIter(leaf.clone(),Box::new(x.iter().cycle()),Box::new(y.iter().cycle())))
-}
-
-fn fixpoint_iter<'a>(leaf: &mut Leaf,x: &'a Vec<f64>, y: &'a Vec<f64>) -> Box<Iterator<Item=Dot<i32,i32>>+'a> {
-    Box::new(FixPointIter(leaf.clone(),Box::new(x.iter().cycle()),Box::new(y.iter().cycle())))
-}
-
-struct PixelAreaIter<'a>(Box<Iterator<Item=&'a f64> + 'a>,Box<Iterator<Item=&'a f64> + 'a>);
-impl<'a> Iterator for PixelAreaIter<'a> {
-    type Item = Rect<i32,i32>;
-    
-    fn next(&mut self) -> Option<Self::Item> {
-        let x = *self.0.next().unwrap() as i32;
-        let y = *self.1.next().unwrap() as i32;
-        let xs = *self.0.next().unwrap() as i32;
-        let ys = *self.1.next().unwrap() as i32;
-        Some(area_size(cpixel(x,y),cpixel(xs,ys)))
-    }
-}
-
-fn pixelarea_iter<'a>(x: &'a Vec<f64>, y: &'a Vec<f64>) -> Box<Iterator<Item=Rect<i32,i32>>+'a> {
-    Box::new(PixelAreaIter(Box::new(x.iter().cycle()),Box::new(y.iter().cycle())))
-}
-
-fn draw_strects(leaf: &mut Leaf, lc: &mut SourceResponse, x_start: &Vec<f64>,
-                x_size: &Vec<f64>, y_start: &Vec<f64>, y_size: &Vec<f64>,
-                colour: &Vec<f64>, hollow: bool,spot: bool) {
-    let x_size_len = x_size.len();
-    let y_start_len = y_start.len();
-    let y_size_len = y_size.len();
-    let col_len = colour.len();
-    for i in 0..x_start.len() {
-        let x_start_v = x_start[i];
-        let prop_start = leaf.prop(x_start_v);
-        if prop_start > 1. { continue; }
-        let x_size_v = x_size[i%x_size_len];
-        let prop_end = leaf.prop(x_start_v+x_size_v);
-        if prop_end < 0. { continue; }
-        let y_start_v = y_start[i%y_start_len];
-        let y_size_v = y_size[i%y_size_len];
-        let area = &area(cleaf(prop_start,y_start_v as i32),
-                         cleaf(prop_end,(y_start_v+y_size_v) as i32));
-        let col = Colour(colour[(i*3)%col_len] as u32,
-                         colour[(i*3+1)%col_len] as u32,
-                         colour[(i*3+2)%col_len] as u32);
-        let shape = {
-            let srts = StretchRectTypeSpec { spot, hollow };
-            srts.new_shape(&ShapeInstanceData {
-                pos_x: prop_start,
-                pos_y: y_start_v as i32,
-                aux_x: prop_end-prop_start,
-                aux_y: y_size_v as i32,
-                facade: Facade::Colour(col)
-            })
-        };
-        lc.add_shape(shape);        
-    }
-}
-
-fn draw_pinrects(leaf: &mut Leaf, lc: &mut SourceResponse, x_start: &Vec<f64>,
-                x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
-                colour: &Vec<f64>, spot: bool) {
-    let mut ci = colour_iter2(colour);
-    let prts = PinRectTypeSpec {
-        sea_x: None,
-        sea_y: None,
-        ship_x: (Some(AxisSense::Min),0),
-        ship_y: (Some(AxisSense::Min),0),
-        under: None,
-        spot
-    };
-    let mut y_start_iter = y_start.iter().cycle();
-    let mut x_size_iter = x_aux.iter().cycle();
-    let mut y_size_iter = y_aux.iter().cycle();
-    for x_start in x_start.iter() {
-        lc.add_shape(prts.new_shape(&ShapeInstanceData {
-            pos_x: *x_start as f32,
-            pos_y: *y_start_iter.next().unwrap() as i32,
-            aux_x: *x_size_iter.next().unwrap() as f32,
-            aux_y: *y_size_iter.next().unwrap() as i32,
-            facade: Facade::Colour(ci.next().unwrap())
-        }));
-    }
-}
-
-fn draw_pintexture(leaf: &mut Leaf, lc: &mut SourceResponse, 
-                   tx: &Vec<DrawingSpec>,
-                   x_start: &Vec<f64>, x_aux: &Vec<f64>,
-                   y_start: &Vec<f64>, y_aux: &Vec<f64>,
-                   colour: &Vec<f64>) {
-    let mut tx_iter = colour.iter().cycle();
-    let mut y_start_iter = y_start.iter().cycle();
-    for x_start in x_start.iter() {
-        let tts = TextureTypeSpec {
-            sea_x: None,
-            sea_y: None,
-            ship_x: (None,0),
-            ship_y: (None,0),
-            under: None,
-            scale_x: 1., scale_y: 1.
-        };
-        lc.add_shape(tts.new_shape(&ShapeInstanceData {
-            pos_x: leaf.prop(*x_start),
-            pos_y: *y_start_iter.next().unwrap() as i32,
-            aux_x: 0.,
-            aux_y: 0,
-            facade: Facade::Drawing(tx[*tx_iter.next().unwrap() as usize].clone())
-        }));
-    }
-}
-
-fn draw_fixtexture(leaf: &mut Leaf, lc: &mut SourceResponse, 
-                   tx: &Vec<DrawingSpec>,
-                   x_start: &Vec<f64>, x_aux: &Vec<f64>,
-                   y_start: &Vec<f64>, y_aux: &Vec<f64>,
-                   colour: &Vec<f64>) {
-    let mut tx_iter = colour.iter().cycle();
-    let mut y_start_iter = y_start.iter().cycle();
-    let mut x_aux_iter = x_aux.iter().cycle();
-    let mut y_aux_iter = y_aux.iter().cycle();
-    for x_start in x_start.iter() {
-        let tts = TextureTypeSpec {
-            sea_x: Some(AxisSense::Max),
-            sea_y: Some(AxisSense::Max),
-            ship_x: (Some(AxisSense::Min),0),
-            ship_y: (None,0),
-            under: None,
-            scale_x: 1., scale_y: 1.
-        };
-        lc.add_shape(tts.new_shape(&ShapeInstanceData {
-            pos_x: *x_start as f32,
-            pos_y: *y_start_iter.next().unwrap() as i32,
-            aux_x: *x_aux_iter.next().unwrap() as f32,
-            aux_y: *y_aux_iter.next().unwrap() as i32,
-            facade: Facade::Drawing(tx[*tx_iter.next().unwrap() as usize].clone())
-        }));
-    }
-}
-
 fn do_scale(spec: &Box<TypeToShape>, leaf: &Leaf, x_start: f64, x_aux: f64) -> Option<(f32,f32)> {
     let needs_scale = spec.needs_scale();
     let x_pos_v = if needs_scale.0 {
         let p = leaf.prop(x_start);
-        if p < 1. { Some(p) } else { None }
+        if p <= 1. { Some(p) } else { None }
     } else {
         Some(x_start as f32)
     };
     
     let x_aux_v = if needs_scale.1 {
         let p =leaf.prop(x_start+x_aux)-leaf.prop(x_start);
-        if p > 0. { Some(p) } else { None }
+        if p >= 0. { Some(p) } else { None }
     } else {
         Some(x_aux as f32)
     };
@@ -247,48 +48,37 @@ fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut SourceResponse,
     let mut y_start_iter = y_start.iter().cycle();
     let mut x_aux_iter = x_aux.iter().cycle();
     let mut y_aux_iter = y_aux.iter().cycle();
-    let mut col_iter = colour.iter().cycle();
     if let Some(spec) = build_meta(&mut meta_iter) {
-        for x_start in x_start.iter() {
-        // TODO only multiple metas
-            let facade = match spec.get_facade_type() {
-                FacadeType::Colour => {
-                    let r = *col_iter.next().unwrap() as u32;
-                    let g = *col_iter.next().unwrap() as u32;
-                    let b = *col_iter.next().unwrap() as u32;
-                    Facade::Colour(Colour(r,g,b))
-                },
-                FacadeType::Drawing => {
-                    let idx = col_iter.next().unwrap();
-                    Facade::Drawing(tx[*idx as usize].clone())
-                }
-            };
-            let x_aux_v = *x_aux_iter.next().unwrap();
-            if let Some((x_pos_v,x_aux_v)) = do_scale(&spec,leaf,*x_start,x_aux_v) {
+        let y_start_len = y_start.len();
+        let x_aux_len = x_aux.len();
+        let y_aux_len = y_aux.len();
+        let col_len = colour.len();
+        for i in 0..x_start.len() {
+            if let Some((x_pos_v,x_aux_v)) = 
+                    do_scale(&spec,leaf,x_start[i],x_aux[i%x_aux_len]) {
+                let facade = match spec.get_facade_type() {
+                    FacadeType::Colour => {
+                        let r = colour[(i*3)%col_len] as u32;
+                        let g = colour[(i*3+1)%col_len] as u32;
+                        let b = colour[(i*3+2)%col_len] as u32;
+                        Facade::Colour(Colour(r,g,b))
+                    },
+                    FacadeType::Drawing => {
+                        let idx = colour[i%col_len];
+                        Facade::Drawing(tx[idx as usize].clone())
+                    }
+                };
                 let data = ShapeInstanceData {
                     pos_x: x_pos_v,
-                    pos_y: *y_start_iter.next().unwrap() as i32,
+                    pos_y: y_start[i%y_start_len] as i32,
                     aux_x: x_aux_v,
-                    aux_y: *y_aux_iter.next().unwrap() as i32,
+                    aux_y: y_aux[i%y_aux_len] as i32,
                     facade
                 };
                 lc.add_shape(spec.new_shape(&data));
             }
         }
-    }
-    
-                    /*
-    let kind = if meta.len() > 0 { meta[0] as i64 } else { 0 };
-    let spot = if meta.len() > 1 { meta[1] != 0. } else { false };
-    match kind {
-        0 => draw_strects(leaf,lc,x_start,x_size,y_start,y_size,colour,false,spot),
-        1 => draw_strects(leaf,lc,x_start,x_size,y_start,y_size,colour,true,spot),
-        2 => draw_pinrects(leaf,lc,x_start,x_size,y_start,y_size,colour,spot),
-        3 => draw_pintexture(leaf,lc,tx,x_start,x_size,y_start,y_size,colour),
-        4 => draw_fixtexture(leaf,lc,tx,x_start,x_size,y_start,y_size,colour),
-        _ => ()
-    }
-    */
+    }    
 }
 
 // strect #meta, #x-start, #x-size, #y-start, #y-size, #colour

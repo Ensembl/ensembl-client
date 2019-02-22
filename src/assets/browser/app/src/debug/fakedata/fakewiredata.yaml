@@ -274,10 +274,8 @@ code:
         const #6, [192,192,192,128,128,128]
         const #7, [3]
         pick #6, #3, #6, #7
-        const #10, [1,0]
+        const #10, [1,1]
         shape #10, #1, #2, #4, #5, #6
-        cprint #1
-        cprint #2
 
     contig-empty-box: |
         ; #1 = start box frag
@@ -361,13 +359,67 @@ code:
         const #11, [2]
         text #12, #20, #21, #10, #11
         ; *** bp top ***
-        const #5, [3,0,1,1,1,1,1,0,1,0,0]
+        const #5, [3,0,1,1,1,1,2,0,1,0,0]
         const #6, [34]
         const #7, [10]
         const #8, [0]
         get #8, #12, #8
+        const #18, [0]
+        shape #5, #6, #18, #7, #18, #8
+        ; *** bp bottom ***
+        const #5, [3,0,1,1,2,1,2,0,1,0,0]
         shape #5, #6, #8, #7, #8, #8
-
+        ; *** horiz lines top ***
+        const #5, [0,1,1,2,1,1,2,0,2,0,0]
+        const #6, [0,0]
+        const #7, [0,0]
+        const #8, [17,0]
+        const #9, [1,1]
+        const #10, [199,208,213]
+        shape #5, #6, #7, #8, #9, #10
+        ; *** horiz lines bottom ***
+        const #5, [0,1,1,2,2,2,0,0,0,0,0]
+        shape #5, #6, #7, #8, #9, #10
+        ; *** left/right blanking ***
+        const #5, [0,1,1,1,1,2,2,0,2,0,1]
+        const #6, [0]
+        const #7, [36]
+        const #8, [16]
+        const #9, [0]
+        const #10, [255,255,255]
+        shape #5, #6, #7, #8, #9, #10
+        const #5, [0,1,2,2,1,2,2,0,2,0,1]
+        shape #5, #6, #7, #8, #9, #10
+        ; *** top/bottom blanking ***
+        const #5, [0,1,1,2,1,1,2,0,2,0,2]
+        const #6, [0]
+        const #7, [0]
+        const #8, [0]
+        const #9, [17]
+        const #10, [255,255,255]
+        shape #5, #6, #7, #8, #9, #10
+        const #5, [0,1,1,2,2,2,2,0,2,0,2]
+        shape #5, #6, #7, #8, #9, #10
+        ; *** corner blanking ***
+        const #5, [0,1,1,1,1,1,2,0,2,0,0]
+        const #6, [0]
+        const #7, [36]
+        const #8, [1]
+        const #9, [15]
+        const #10, [255,255,255]
+        shape #5, #6, #7, #8, #9, #10
+        const #5, [0,1,1,1,2,2,2,0,2,0,0]
+        shape #5, #6, #7, #8, #9, #10
+        ; *** bp corner mark borrom ***
+        const #6, [36]
+        const #7, [1]
+        const #8, [1]
+        const #9, [16]
+        const #10, [199,208,213]
+        shape #5, #6, #7, #8, #9, #10
+        ; *** and top ***
+        const #5, [0,1,1,1,1,1,2,0,2,0,0]
+        shape #5, #6, #7, #8, #9, #10
 requests:
     tácode:
         zzz-framework:

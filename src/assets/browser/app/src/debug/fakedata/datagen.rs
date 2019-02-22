@@ -10,7 +10,7 @@ use composit::Leaf;
 use tánaiste::Value;
 use super::fakedata::FakeDataGenerator;
 
-const RNG_BLOCK_SIZE : i32 = 1000000;
+const RNG_BLOCK_SIZE : i32 = 100000;
 
 fn burst_u32(data: u32) -> [u8;4] {
     [
