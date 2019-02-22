@@ -1,6 +1,8 @@
 import React, { FunctionComponent, useState } from 'react';
 import classNames from 'classnames';
 
+import CloseButton from 'src/shared/close-button/CloseButton';
+
 import styles from './SelectedSpecies.scss';
 
 type Props = {
@@ -47,6 +49,9 @@ const SelectedSpeciesOverlay: FunctionComponent<Props> = (props) => {
   return (
     <div className={styles.selectedSpeciesOverlay} onClick={handleClick}>
       <span className={styles.overlayText}>{text}</span>
+      <div className={styles.closeButton}>
+        <CloseButton inverted onClick={removeSpecies} />
+      </div>
     </div>
   );
 };
