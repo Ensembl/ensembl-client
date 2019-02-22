@@ -4,7 +4,6 @@ use tánaiste::{
     Argument, Command, DataState, Instruction, ProcState, Signature
 };
 
-#[derive(Debug)]
 //                      reg   console=t/debug=f
 pub struct ConsolePrint(usize,bool);
 

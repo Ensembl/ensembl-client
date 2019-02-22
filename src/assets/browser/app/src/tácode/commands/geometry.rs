@@ -58,8 +58,8 @@ impl Command for Extent {
         self.0.with_task(pid,|task| {
             if let TáTask::MakeShapes(leaf,lc,_,_) = task {
                 regs.set(self.1,Value::new_from_float(vec! {
-                    leaf.get_start(),
-                    leaf.get_end()
+                    leaf.get_start().floor(),
+                    leaf.get_end().ceil()
                 }));
             }
         });
