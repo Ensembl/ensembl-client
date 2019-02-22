@@ -166,8 +166,7 @@ impl TypeToShape for TextureTypeSpec {
             (false,false) => Some(self.new_pin(td)),
             (false,true) => Some(self.new_tape(td)),
             (true,false) => Some(self.new_page(td)),
-            (true,true) => Some(self.new_fix(td)),
-            _ => None
+            (true,true) => Some(self.new_fix(td))
         }.unwrap()
     }
     
