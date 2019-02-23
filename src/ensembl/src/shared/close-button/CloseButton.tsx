@@ -7,7 +7,7 @@ import styles from './CloseButton.scss';
 
 type Props = {
   inverted: boolean;
-  onClick: Function;
+  onClick: () => void;
 };
 
 const CloseButton = (props: Props) => {

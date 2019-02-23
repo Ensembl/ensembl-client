@@ -6,7 +6,7 @@ import styles from './PopularSpeciesButton.scss';
 type Props = {
   isSelected: boolean;
   species: string;
-  onClick: Function;
+  onClick: () => void;
 };
 
 const PopularSpeciesButton: FunctionComponent<Props> = (props) => {
