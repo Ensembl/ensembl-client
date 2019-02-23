@@ -9,13 +9,15 @@ type Props = {
   name: string;
   assembly: string;
   isEnabled: boolean;
-  onEnable: Function;
-  onDisable: Function;
-  onRemove: Function;
+  onEnable: () => void;
+  onDisable: () => void;
+  onRemove: () => void;
 };
 
 const SelectedSpecies: FunctionComponent<Props> = (props) => {
   const [hovered, setHovered] = useState(false);
+  const setHoveredState = () => setHovered(true);
+  const setUnhoveredState = () => setHovered(false);
 
   const className = classNames(styles.selectedSpecies, {
     [styles.selectedSpeciesDisabled]: !props.isEnabled
@@ -24,8 +26,8 @@ const SelectedSpecies: FunctionComponent<Props> = (props) => {
   return (
     <div
       className={className}
-      onMouseOver={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseOver={setHoveredState}
+      onMouseLeave={setUnhoveredState}
     >
       <span className={styles.name}>{props.name}</span>
       <span className={styles.assembly}>{props.assembly}</span>
@@ -44,7 +46,7 @@ const SelectedSpeciesOverlay: FunctionComponent<Props> = (props) => {
       props.onEnable();
     }
   };
-  const removeSpecies = (e: Event) => {
+  const removeSpecies = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     props.onRemove();
