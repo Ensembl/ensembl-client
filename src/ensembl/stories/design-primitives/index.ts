@@ -1,1 +1,1 @@
-import './colors/Colors';
+import './colors/Colors.stories';

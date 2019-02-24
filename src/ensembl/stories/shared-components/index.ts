@@ -1,1 +1,1 @@
-import './CloseButton';
+import './CloseButton.stories';

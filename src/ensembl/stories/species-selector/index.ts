@@ -1,2 +1,2 @@
-import './PopularSpeciesButton';
-import './SelectedSpecies';
+import './PopularSpeciesButton.stories';
+import './SelectedSpecies.stories';
