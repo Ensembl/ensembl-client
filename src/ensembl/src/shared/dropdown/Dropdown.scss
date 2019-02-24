@@ -1,0 +1,15 @@
+@import 'src/styles/common';
+
+.dropdown {
+  position: absolute;
+  background: $ens-light-grey;
+  padding: 14px 18px 18px;
+  box-shadow: 2px 2px 5px $ens-grey;
+}
+
+.dropdownTooltip {
+  position: absolute;
+  top: 0;
+  width: 18px;
+  fill: $ens-light-grey;
+}
