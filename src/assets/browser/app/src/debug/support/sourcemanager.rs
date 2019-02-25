@@ -1,7 +1,9 @@
 use std::collections::HashMap;
 
 use composit::{ SourceManager, ActiveSource, AllLandscapes };
-use debug::support::{ debug_activesource_type, DebugXferClerk };
+use data::HttpManager;
+use debug::fakedata::FakeData;
+use debug::support::{ debug_activesource_type };
 use tácode::Tácode;
 
 #[derive(PartialEq,Eq,Hash,Clone,Debug)]
@@ -101,16 +103,16 @@ impl DebugSourceType {
 
 pub struct DebugSourceManager {
     tc: Tácode,
-    xfc: DebugXferClerk,
+    http_manager: HttpManager,
     als: AllLandscapes
 }
 
 impl DebugSourceManager {
-    pub fn new(tc: &Tácode, als: &AllLandscapes) -> DebugSourceManager {
+    pub fn new(tc: &Tácode, http_manager: &HttpManager, als: &AllLandscapes) -> DebugSourceManager {
         DebugSourceManager {
             tc: tc.clone(),
-            xfc: DebugXferClerk::new(),
-            als: als.clone()
+            als: als.clone(),
+            http_manager: http_manager.clone()
         }
     }
 }
@@ -118,7 +120,7 @@ impl DebugSourceManager {
 impl SourceManager for DebugSourceManager {
     fn get_component(&mut self, name: &str) -> Option<ActiveSource> {
         DebugSourceType::from_name(name).map(|type_|
-            debug_activesource_type(&self.tc,&mut self.als,&self.xfc,&type_)
+            debug_activesource_type(&self.tc,&mut self.als,FakeData::new(&self.http_manager),&type_)
         )
     }
 }

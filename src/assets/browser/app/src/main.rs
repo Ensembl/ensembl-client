@@ -1,5 +1,6 @@
 #![feature(non_ascii_idents)] // (help put the E into EMBL)
 #![feature(linkage)]
+#![feature(drain_filter)]
 
 #[macro_use]
 extern crate stdweb;
