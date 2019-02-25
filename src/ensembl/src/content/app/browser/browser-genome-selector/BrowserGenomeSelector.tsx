@@ -1,14 +1,12 @@
 import React, {
   FunctionComponent,
   useState,
-  Fragment,
   ChangeEvent,
   FormEvent,
   useEffect
 } from 'react';
 
 import { ChrLocation } from '../browserState';
-import { chrOptions } from '../browserConfig';
 
 import applyIcon from 'static/img/shared/apply.svg';
 import clearIcon from 'static/img/shared/clear.svg';
@@ -26,97 +24,73 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
   props: BrowserGenomeSelectorProps
 ) => {
   const [chrCode, chrStart, chrEnd] = props.chrLocation;
+  const chrLocationStr = `${chrCode}:${chrStart}-${chrEnd}`;
   const [showInputs, setShowInputs] = useState(false);
 
-  const [chrCodeInput, setChrCodeInput] = useState(chrCode);
-  const [chrStartInput, setChrStartInput] = useState(chrStart);
-  const [chrEndInput, setChrEndInput] = useState(chrEnd);
+  const [chrLocationInput, setChrLocationInput] = useState(chrLocationStr);
 
   useEffect(() => {
-    setChrCodeInput(chrCode);
-    setChrStartInput(chrStart);
-    setChrEndInput(chrEnd);
-  }, [chrCode, chrStart, chrEnd]);
+    setChrLocationInput(chrLocationStr);
+  }, []);
 
   const activateForm = () => setShowInputs(true);
 
-  const closeForm = () => {
-    setChrCodeInput(chrCode);
-    setChrStartInput(chrStart);
-    setChrEndInput(chrEnd);
+  const changeChrLocationInput = (event: ChangeEvent<HTMLInputElement>) =>
+    setChrLocationInput(event.target.value);
 
+  const closeForm = () => {
+    setChrLocationInput(chrLocationStr);
     setShowInputs(false);
   };
-
-  const changeChrCode = (event: ChangeEvent<HTMLSelectElement>) => {
-    setChrCodeInput(event.target.value);
-    setShowInputs(true);
-  };
-
-  const changeChrStart = (event: ChangeEvent<HTMLInputElement>) =>
-    setChrStartInput(+event.target.value);
-
-  const changeChrEnd = (event: ChangeEvent<HTMLInputElement>) =>
-    setChrEndInput(+event.target.value);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (chrStartInput > chrEndInput) {
+    const [chrCodeInput, chrRegionInput] = chrLocationInput.split(':');
+    const [chrStartInput, chrEndInput] = chrRegionInput.split('-');
+
+    if (chrCodeInput && +chrStartInput < +chrEndInput) {
+      const currChrLocation: ChrLocation = [
+        chrCodeInput,
+        +chrStartInput,
+        +chrEndInput
+      ];
+
+      setShowInputs(false);
+      sendLocationToBrowser(currChrLocation, props.browserImageEl);
+
+      props.updateDefaultChrLocation(currChrLocation);
+    } else {
       return;
     }
-
-    props.updateDefaultChrLocation([chrCodeInput, chrStartInput, chrEndInput]);
-    setShowInputs(false);
-
-    sendLocationToBrowser(props.chrLocation, props.browserImageEl);
   };
 
   return props.browserActivated ? (
     <dd className={styles.browserGenomeSelector}>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="chromosome" className="show-for-large">
-          Chromosome
-        </label>
-        <select id="chromosome" onChange={changeChrCode} value={chrCodeInput}>
-          {chrOptions.map((chr) => (
-            <option key={chr} value={chr}>
-              {chr}
-            </option>
-          ))}
-        </select>
-        {showInputs ? (
-          <Fragment>
-            <label htmlFor="chromosome-start" className="show-for-sr" />
-            <input
-              type="text"
-              id="chromosome-start"
-              value={chrStartInput}
-              onChange={changeChrStart}
-            />
-            <span> - </span>
-            <label htmlFor="chromosome-end" className="show-for-sr" />
-            <input
-              type="text"
-              id="chromosome-end"
-              value={chrEndInput}
-              onChange={changeChrEnd}
-            />
-            <button>
-              <img src={applyIcon} alt="Apply changes" />
-            </button>
-            <button onClick={closeForm}>
-              <img src={clearIcon} alt="Clear changes" />
-            </button>
-          </Fragment>
-        ) : (
+      {showInputs ? (
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            value={chrLocationInput}
+            onChange={changeChrLocationInput}
+          />
+          <button>
+            <img src={applyIcon} alt="Apply changes" />
+          </button>
+          <button onClick={closeForm}>
+            <img src={clearIcon} alt="Clear changes" />
+          </button>
+        </form>
+      ) : (
+        <div className={styles.chrLocationView} onClick={activateForm}>
+          <div className={styles.chrCode}>{chrCode}</div>
           <div className={styles.chrRegion}>
-            <span onClick={activateForm}>{chrStart}</span>
+            <span>{chrStart}</span>
             <span className={styles.chrSeparator}> - </span>
-            <span onClick={activateForm}>{chrEnd}</span>
+            <span>{chrEnd}</span>
           </div>
-        )}
-      </form>
+        </div>
+      )}
     </dd>
   ) : null;
 };
