@@ -1,32 +1,20 @@
-import React, { FunctionComponent, RefObject, useEffect } from 'react';
-import { connect } from 'react-redux';
-
-import {
-  updateBrowserNavStates,
-  updateChrLocation,
-  updateBrowserActivated
-} from '../browserActions';
-import { BrowserNavStates, ChrLocation } from '../browserState';
-import { getBrowserNavOpened } from '../browserSelectors';
-import { RootState } from 'src/rootReducer';
+import React, {
+  FunctionComponent,
+  RefObject,
+  useEffect,
+  useCallback
+} from 'react';
 
 import styles from './BrowserImage.scss';
+import { ChrLocation, BrowserNavStates } from '../browserState';
 
-type StateProps = {
+type BrowserImageProps = {
+  browserRef: RefObject<HTMLDivElement>;
   browserNavOpened: boolean;
-};
-
-type DispatchProps = {
-  updateBrowserActivated: (browserActivated: boolean) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateChrLocation: (chrLocation: ChrLocation) => void;
+  updateBrowserActivated: (browserActivated: boolean) => void;
 };
-
-type OwnProps = {
-  browserRef: RefObject<HTMLDivElement>;
-};
-
-type BrowserImageProps = StateProps & DispatchProps & OwnProps;
 
 type BpaneOutEvent = Event & {
   detail: {
@@ -38,7 +26,7 @@ type BpaneOutEvent = Event & {
 export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   props: BrowserImageProps
 ) => {
-  const listenBpaneOut = (event: Event) => {
+  const listenBpaneOut = useCallback((event: Event) => {
     const bpaneOutEvent = event as BpaneOutEvent;
     const navIconStates = bpaneOutEvent.detail.bumper as BrowserNavStates;
     const chrLocation = bpaneOutEvent.detail.location as ChrLocation;
@@ -50,7 +38,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
     if (chrLocation) {
       props.updateChrLocation(chrLocation);
     }
-  };
+  }, []);
 
   useEffect(() => {
     const currentEl: HTMLDivElement = props.browserRef
@@ -137,17 +125,4 @@ function getBrowserImageClasses(browserNavOpened: boolean): string {
   return classes;
 }
 
-const mapStateToProps = (state: RootState): StateProps => ({
-  browserNavOpened: getBrowserNavOpened(state)
-});
-
-const mapDispatchToProps: DispatchProps = {
-  updateBrowserActivated,
-  updateBrowserNavStates,
-  updateChrLocation
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(BrowserImage);
+export default BrowserImage;
