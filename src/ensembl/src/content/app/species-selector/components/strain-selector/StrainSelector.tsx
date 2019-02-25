@@ -42,8 +42,11 @@ const StrainSelector = (props: StrainSelectorProps) => {
   );
   const totalNumberOfStrains = props.strains.length;
 
-  const toggleDropdownVisibility = () =>
-    setDropdownVisibility(!isDropdownVisible);
+  const toggleDropdownVisibility = (e: React.MouseEvent) => {
+    if (e.target === element) {
+      setDropdownVisibility(!isDropdownVisible);
+    }
+  };
 
   return (
     <div
