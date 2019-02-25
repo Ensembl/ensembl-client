@@ -6,29 +6,29 @@
     width: 18px;
   }
 
-  select {
-    appearance: none;
-    background: $ens-blue;
-    border: none;
-    border-radius: 0;
-    color: $ens-white;
-    display: inline-block;
-    font-weight: $bold;
-    margin: 0 10px;
-    padding: 3px 2px;
-    text-align: center;
-    text-align-last: center;
-    width: auto;
-  }
-
   input {
-    padding: 2px 6px;
-    width: 90px;
+    padding: 3px 6px;
+    width: 200px;
   }
 
   button {
     margin-left: 10px;
   }
+}
+
+.chrCode {
+  appearance: none;
+  background: $ens-blue;
+  border: none;
+  border-radius: 0;
+  color: $ens-white;
+  display: inline-block;
+  font-weight: $bold;
+  margin: 0 10px;
+  padding: 3px 6px;
+  text-align: center;
+  text-align-last: center;
+  width: auto;
 }
 
 .chrRegion {
