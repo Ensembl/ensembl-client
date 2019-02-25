@@ -58,7 +58,7 @@ const SelectedSpeciesOverlay: FunctionComponent<Props> = (props) => {
         {text}
       </span>
       <div className={styles.closeButton} onClick={removeSpecies}>
-        <CloseButton inverted onClick={removeSpecies} />
+        <CloseButton inverted={true} onClick={removeSpecies} />
       </div>
     </div>
   );

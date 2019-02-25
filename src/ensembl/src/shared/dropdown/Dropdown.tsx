@@ -23,8 +23,8 @@ const Dropdown = (props: Props) => {
   // so that its tip points to the center of the parent
   const x = parentWidth / 2 - TIP_HORIZONTAL_OFFSET - TIP_WIDTH / 2;
   const inlineStyles = {
-    left: `${x}px`,
-    bottom: -(BOTTOM_OFFSET + props.verticalOffset)
+    bottom: -(BOTTOM_OFFSET + props.verticalOffset),
+    left: `${x}px`
   };
   return (
     <div className={styles.dropdown} style={inlineStyles}>
@@ -35,10 +35,10 @@ const Dropdown = (props: Props) => {
 };
 
 Dropdown.defaultProps = {
+  autoAdjust: false,
   expandDirection: 'down',
   tipPosition: 'left',
-  verticalOffset: 0,
-  autoAdjust: false
+  verticalOffset: 0
 };
 
 const DropdownTip = () => {

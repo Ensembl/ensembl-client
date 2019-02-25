@@ -7,7 +7,7 @@ import styles from './CloseButton.scss';
 
 type Props = {
   inverted: boolean;
-  onClick: () => void;
+  onClick: (e: React.MouseEvent) => void;
 };
 
 const CloseButton = (props: Props) => {
