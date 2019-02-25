@@ -12,6 +12,7 @@ use controller::input::{
     Timers, Timer
 };
 use controller::output::{ Projector, Report };
+use data::HttpManager;
 use debug::debug_stick_manager;
 use dom::Bling;
 use dom::event::EventControl;
@@ -31,7 +32,8 @@ struct AppRunnerImpl {
     tc: Tácode,
     csl: SourceManagerList,
     sticks: Box<StickManager>,
-    als: AllLandscapes
+    als: AllLandscapes,
+    http_manager: HttpManager
 }
 
 #[derive(Clone)]
@@ -56,7 +58,8 @@ impl AppRunner {
             tc: tc.clone(),
             csl: SourceManagerList::new(),
             sticks: Box::new(debug_stick_manager()),
-            als: AllLandscapes::new()
+            als: AllLandscapes::new(),
+            http_manager: HttpManager::new()
         })));
         {
             let imp = out.0.lock().unwrap();
@@ -71,7 +74,7 @@ impl AppRunner {
             app.lock().unwrap().set_report(report);
             let el = imp.el.clone();
             imp.bling.activate(&app,&el);
-            let dsm = DebugSourceManager::new(&tc,&imp.als);
+            let dsm = DebugSourceManager::new(&tc,&imp.http_manager,&imp.als);
             imp.csl.add_compsource(Box::new(dsm));
         }
         out
@@ -108,7 +111,7 @@ impl AppRunner {
             let app = imp.app.clone();
             app.lock().unwrap().set_report(report);
             imp.bling.activate(&app,&el);
-            let dsm = DebugSourceManager::new(&imp.tc,&imp.als);
+            let dsm = DebugSourceManager::new(&imp.tc,&imp.http_manager,&imp.als);
             imp.csl.add_compsource(Box::new(dsm));
         }
     }
@@ -160,7 +163,13 @@ impl AppRunner {
                 tc.step();
             },None);
         }
-
+        /* run http timer */
+        {
+            let hm = self.0.lock().unwrap().http_manager.clone();
+            self.add_timer(move |app,_| {
+                hm.tick()
+            },None);
+        }
     }
     
     pub fn draw(&mut self) {

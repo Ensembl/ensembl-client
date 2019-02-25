@@ -6,8 +6,13 @@ use yaml_rust::YamlLoader;
 use tánaiste::Value;
 
 use composit::{ Leaf, Scale };
-use data::{ XferRequest, XferResponse };
-use super::datagen::{ RngContig, RngGene };
+use data::{ XferRequest, XferResponse, XferClerk, XferConsumer, HttpManager };
+use util::{
+    hash_key_bool, hash_key_float, hash_key_string, hash_key_yaml,
+    to_float, to_string
+};
+use super::datagen::{ RngContig, RngGene, RngRemote };
+use super::FakeDataReceiver;
 
 lazy_static! {
     static ref FAKEDATA : &'static str = include_str!("fakewiredata.yaml");
@@ -16,7 +21,8 @@ lazy_static! {
 const PREFIX: &str = "internal:debug:";
 
 pub trait FakeDataGenerator {
-    fn generate(&self, leaf: &Leaf) -> Vec<Value>;
+    fn generate(&self, leaf: &Leaf, fdr: &mut FakeDataReceiver,
+                http_manager: &HttpManager);
 }
 
 enum FakeValue {
@@ -30,79 +36,9 @@ struct FakeResponse {
 }
 
 pub struct FakeData {
+    http_manager: HttpManager,
     data: HashMap<String,HashMap<String,FakeResponse>>,
     code: HashMap<String,String>
-}
-
-fn to_string(val: &Yaml) -> Option<String> {
-    match val {
-        Yaml::String(ref v) => {
-            return Some(v.clone())
-        },
-        _ => ()
-    }
-    None
-}
-
-fn to_float(val: &Yaml) -> Option<f64> {
-    match val {
-        Yaml::Integer(ref v) => {
-            return Some(*v as f64)
-        },
-        Yaml::Real(_) => {
-            return val.as_f64()
-        },
-        Yaml::String(_) => {
-            return val.as_f64()
-        },
-        _ => ()
-    }
-    None
-}
-
-fn hash_key_yaml<'a>(yaml: &'a Yaml, key: &str) -> Option<&'a Yaml> {
-    if let Yaml::Hash(ref d) = yaml {
-        d.get(&Yaml::String(key.to_string()))
-    } else {
-        None
-    }
-}
-
-fn hash_key_string(yaml: &Yaml, key: &str) -> Option<String> {
-    if let Yaml::Hash(ref d) = yaml {
-        let val = d.get(&Yaml::String(key.to_string()));
-        val.and_then(|v| to_string(v))
-    } else {
-        None
-    }
-}
-
-fn hash_key_float(yaml: &Yaml, key: &str) -> Option<f64> {
-    if let Yaml::Hash(ref d) = yaml {
-        let val = d.get(&Yaml::String(key.to_string()));
-        val.and_then(|v| to_float(v))
-    } else {
-        None
-    }
-}
-
-fn to_bool(val: &Yaml) -> bool {
-    match val {
-        Yaml::Integer(v) => *v != 0,
-        Yaml::Real(_) => val.as_f64().unwrap() != 0.,
-        Yaml::String(v) => v != "",
-        Yaml::Boolean(v) => *v,
-        _ => false
-    }
-}
-
-fn hash_key_bool(yaml: &Yaml, key: &str) -> bool {
-    if let Yaml::Hash(ref d) = yaml {
-        let val = d.get(&Yaml::String(key.to_string()));
-        val.map(|v| to_bool(v)).unwrap_or(false)
-    } else {
-        false
-    }
 }
 
 fn contig(v: &Yaml) -> Box<FakeDataGenerator> {
@@ -125,6 +61,12 @@ fn gene(v: &Yaml) -> Box<FakeDataGenerator> {
     let parts = hash_key_float(v,"parts").unwrap() as i32;
     let seq = hash_key_bool(v,"seq");
     Box::new(RngGene::new(seed,pad,sep,size,parts as u32,seq))
+}
+
+fn remote(v: &Yaml) -> Box<FakeDataGenerator> {
+    let url = hash_key_string(v,"url").unwrap();
+    let size = hash_key_float(v,"size").unwrap() as usize;
+    Box::new(RngRemote::new(&url,size))
 }
 
 fn make_data(out: &mut Vec<FakeValue>, e: &Yaml) {
@@ -158,6 +100,9 @@ fn make_data(out: &mut Vec<FakeValue>, e: &Yaml) {
                         "gene" => {
                             out.push(FakeValue::Delayed(gene(v)));
                         },
+                        "remote" => {
+                            out.push(FakeValue::Delayed(remote(v)));
+                        },
                         _ => ()
                     }
                 }
@@ -180,7 +125,7 @@ fn hash_entries(in_: &Yaml) -> HashMap<String,Yaml> {
 }
 
 impl FakeData {
-    pub fn new() -> FakeData {
+    pub fn new(http_manager: &HttpManager) -> FakeData {
         let mut code = HashMap::<String,String>::new();
         let mut yaml_data = HashMap::<String,HashMap<String,FakeResponse>>::new();
         let docs = YamlLoader::load_from_str(&FAKEDATA).unwrap();
@@ -215,7 +160,7 @@ impl FakeData {
                 _ => ()
             };
         }
-        FakeData { code, data: yaml_data }
+        FakeData { code, data: yaml_data, http_manager: http_manager.clone() }
     }
         
     fn get_response(&self, leaf: &Leaf, source: &str) -> Option<&FakeResponse> {
@@ -240,30 +185,34 @@ impl FakeData {
         }
         None
     }
+}
     
-    pub fn satisfy(&self, request: XferRequest) -> Option<XferResponse> {
+impl XferClerk for FakeData {
+    fn satisfy(&mut self, request: XferRequest, mut consumer: Box<XferConsumer>) {        
         let card = request.get_leaf().get_stick().get_name();
         let source = request.get_source_name().to_string();
         if source.starts_with(PREFIX) {
             let source = &source[PREFIX.len()..];
             if let Some(ref fr) = self.get_response(request.get_leaf(),source) {
-                let mut data = Vec::<Value>::new();
+                let code = self.code[&fr.code].clone();
+                let leaf = request.get_leaf().clone();
+                let mut fdr = FakeDataReceiver::new(request,&code,consumer);
                 for e in &fr.data {
                     match e {
                         FakeValue::Immediate(ref e) => {
-                            data.push(e.clone());
+                            let idx = fdr.allocate();
+                            fdr.set(idx,e.clone());
                         },
                         FakeValue::Delayed(ref g) => {
-                            for v in g.generate(request.get_leaf()) {                           
-                                data.push(v);
-                            }
+                            g.generate(&leaf,&mut fdr,&self.http_manager);
                         },
                     }
                 }
-                let code = self.code[&fr.code].clone();
-                return Some(XferResponse::new(request,code,data));
+                fdr.ready();
+                return;
             }
         }
-        None
+        consumer.abandon();
     }
 }
+

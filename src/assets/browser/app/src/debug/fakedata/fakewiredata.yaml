@@ -723,11 +723,14 @@ requests:
         contig--JO:
             code: contig-normal
             data:
-                - contig:
-                    seed: 8
-                    len: 10000
-                    prop: 0.9
-                    pad: 20000
+                - remote:
+                    url: http://localhost:4000/browser/data/contig-normal
+                    size: 3
+                #- contig:
+                #    seed: 8
+                #    len: 10000
+                #    prop: 0.9
+                #    pad: 20000
 
         # boxes without letters in
         contig--PP:
