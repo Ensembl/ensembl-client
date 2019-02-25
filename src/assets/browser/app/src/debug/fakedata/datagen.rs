@@ -277,7 +277,7 @@ impl RngGene {
 }
 
 impl FakeDataGenerator for RngGene {
-    fn generate(&self, leaf: &Leaf, fdr: &mut FakeDataReceiver, http_manager: &HttpManager) {
+    fn generate(&self, leaf: &Leaf, fdr: &mut FakeDataReceiver) {
         if self.parts != 0 {
             self.generate_parts(leaf,fdr)
         } else {
@@ -302,7 +302,7 @@ impl RngContig {
 }
 
 impl FakeDataGenerator for RngContig {
-    fn generate(&self, leaf: &Leaf, fdr: &mut FakeDataReceiver, http_manager: &HttpManager) {
+    fn generate(&self, leaf: &Leaf, fdr: &mut FakeDataReceiver) {
         let start = leaf.get_start() as i32;
         let end = leaf.get_end() as i32;
         let out = rng_contig(self.kind,start-self.pad,end+self.pad,self.rnd_size,self.prop_fill);
@@ -400,49 +400,4 @@ fn shimmer(in_: &Vec<(i32,i32,bool)>, leaf: &Leaf) -> Vec<(i32,i32,bool)> {
         }
     }
     out
-}
-
-struct RngRemoteRequest {
-    fdr: FakeDataReceiver,
-    idx: Vec<usize>
-}
-
-impl HttpResponseConsumer for RngRemoteRequest {
-    fn consume(&self,req: XmlHttpRequest) {
-        let value : ArrayBuffer = req.raw_response().try_into().ok().unwrap();
-        let value : TypedArray<u8> = value.into();
-        let mut data = xfer_marshal(value.to_vec());
-        for (i,data) in data.drain(..).enumerate() {
-            self.fdr.set(self.idx[i],data);
-        }
-    }
-}
-
-pub struct RngRemote {
-    url: String,
-    size: usize
-}
-
-impl RngRemote {
-    pub fn new(url: &str, size: usize) -> RngRemote {
-        RngRemote { url: url.to_string(), size }
-    }
-}
-
-impl FakeDataGenerator for RngRemote {
-    fn generate(&self, leaf: &Leaf, fdr: &mut FakeDataReceiver, http_manager: &HttpManager) {
-        let url = format!("{}/{}:{}-{}",self.url,leaf.get_stick().get_name(),leaf.get_start(),leaf.get_end());
-        let mut idxx = Vec::<usize>::new();
-        for _ in 0..self.size {
-            idxx.push(fdr.allocate());
-        }
-        let rrr = RngRemoteRequest {
-            fdr: fdr.clone(),
-            idx: idxx
-        };
-        let xhr = XmlHttpRequest::new();
-        xhr.set_response_type(XhrResponseType::ArrayBuffer);
-        xhr.open("GET",&url);
-        http_manager.add_request(xhr,None,Box::new(rrr));
-    }
 }

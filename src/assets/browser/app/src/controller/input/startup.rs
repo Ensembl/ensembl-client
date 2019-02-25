@@ -33,7 +33,11 @@ impl EventListener<()> for StartupEventListener {
                     "bpane-activate" => {
                         let key = aed.get_simple_str("key",Some("only")).unwrap();
                         console!("Activate browser {} on {:?}",key,cx.target());
-                        g.register_app(&key,&cx.target().try_into().unwrap(),false);
+                        let config_url = aed.get_simple_str("config-url",None);
+                        if config_url.is_none() {
+                            console!("BROWSER APP REFUSING TO START UP! No config-url supplied");
+                        }
+                        g.register_app(&key,&cx.target().try_into().unwrap(),false,&config_url.unwrap());
                     },
                     _ => ()
                 }

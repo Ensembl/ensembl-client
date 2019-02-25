@@ -6,12 +6,15 @@ use yaml_rust::YamlLoader;
 use tánaiste::Value;
 
 use composit::{ Leaf, Scale };
-use data::{ XferRequest, XferResponse, XferClerk, XferConsumer, HttpManager };
+use data::{
+    XferRequest, XferResponse, XferClerk, XferConsumer, HttpManager, 
+    HttpXferClerk
+};
 use util::{
     hash_key_bool, hash_key_float, hash_key_string, hash_key_yaml,
     to_float, to_string
 };
-use super::datagen::{ RngContig, RngGene, RngRemote };
+use super::datagen::{ RngContig, RngGene };
 use super::FakeDataReceiver;
 
 lazy_static! {
@@ -21,8 +24,7 @@ lazy_static! {
 const PREFIX: &str = "internal:debug:";
 
 pub trait FakeDataGenerator {
-    fn generate(&self, leaf: &Leaf, fdr: &mut FakeDataReceiver,
-                http_manager: &HttpManager);
+    fn generate(&self, leaf: &Leaf, fdr: &mut FakeDataReceiver);
 }
 
 enum FakeValue {
@@ -32,11 +34,12 @@ enum FakeValue {
 
 struct FakeResponse {
     code: String,
+    url: bool,
     data: Vec<FakeValue>
 }
 
 pub struct FakeData {
-    http_manager: HttpManager,
+    http_clerk: HttpXferClerk,
     data: HashMap<String,HashMap<String,FakeResponse>>,
     code: HashMap<String,String>
 }
@@ -61,12 +64,6 @@ fn gene(v: &Yaml) -> Box<FakeDataGenerator> {
     let parts = hash_key_float(v,"parts").unwrap() as i32;
     let seq = hash_key_bool(v,"seq");
     Box::new(RngGene::new(seed,pad,sep,size,parts as u32,seq))
-}
-
-fn remote(v: &Yaml) -> Box<FakeDataGenerator> {
-    let url = hash_key_string(v,"url").unwrap();
-    let size = hash_key_float(v,"size").unwrap() as usize;
-    Box::new(RngRemote::new(&url,size))
 }
 
 fn make_data(out: &mut Vec<FakeValue>, e: &Yaml) {
@@ -100,9 +97,6 @@ fn make_data(out: &mut Vec<FakeValue>, e: &Yaml) {
                         "gene" => {
                             out.push(FakeValue::Delayed(gene(v)));
                         },
-                        "remote" => {
-                            out.push(FakeValue::Delayed(remote(v)));
-                        },
                         _ => ()
                     }
                 }
@@ -125,27 +119,38 @@ fn hash_entries(in_: &Yaml) -> HashMap<String,Yaml> {
 }
 
 impl FakeData {
-    pub fn new(http_manager: &HttpManager) -> FakeData {
+    pub fn new(http_clerk: &HttpXferClerk) -> FakeData {
         let mut code = HashMap::<String,String>::new();
         let mut yaml_data = HashMap::<String,HashMap<String,FakeResponse>>::new();
         let docs = YamlLoader::load_from_str(&FAKEDATA).unwrap();
+        console!("C");
         for (key,v) in hash_entries(&docs[0]) {
             match key.as_str() {
                 "requests" => {        
                     for (card,v) in hash_entries(&v) {
                         for (source,v) in hash_entries(&v) {
-                            let code = hash_key_string(&v,"code").unwrap();
-                            let data = hash_key_yaml(&v,"data").unwrap();
-                            let mut data_out = Vec::<FakeValue>::new();
-                            if let Yaml::Array(ref v) = data {
-                                for e in v {
-                                    make_data(&mut data_out,e);
+                            console!("A");
+                            let fr = if let Some(data) = hash_key_yaml(&v,"data") {
+                                let code = hash_key_string(&v,"code").unwrap();
+                                let mut data_out = Vec::<FakeValue>::new();
+                                if let Yaml::Array(ref v) = data {
+                                    for e in v {
+                                        make_data(&mut data_out,e);
+                                    }
                                 }
-                            }
-                            let fr = FakeResponse {
-                                code: code.to_string(),
-                                data: data_out
+                                FakeResponse {
+                                    code: code.to_string(),
+                                    url: false,
+                                    data: data_out
+                                }
+                            } else {
+                                FakeResponse {
+                                    code: "".to_string(),
+                                    url: hash_key_bool(&v,"url"),
+                                    data: vec!{}
+                                }
                             };
+                            console!("B");
                             yaml_data.entry(card.clone()).or_insert_with(||
                                 HashMap::<String,FakeResponse>::new()
                             ).insert(source,fr);
@@ -160,7 +165,8 @@ impl FakeData {
                 _ => ()
             };
         }
-        FakeData { code, data: yaml_data, http_manager: http_manager.clone() }
+        console!("D");
+        FakeData { code, data: yaml_data, http_clerk: http_clerk.clone() }
     }
         
     fn get_response(&self, leaf: &Leaf, source: &str) -> Option<&FakeResponse> {
@@ -186,29 +192,34 @@ impl FakeData {
         None
     }
 }
-    
+
 impl XferClerk for FakeData {
     fn satisfy(&mut self, request: XferRequest, mut consumer: Box<XferConsumer>) {        
         let card = request.get_leaf().get_stick().get_name();
         let source = request.get_source_name().to_string();
         if source.starts_with(PREFIX) {
             let source = &source[PREFIX.len()..];
+            let mut http_clerk = self.http_clerk.clone();
             if let Some(ref fr) = self.get_response(request.get_leaf(),source) {
-                let code = self.code[&fr.code].clone();
-                let leaf = request.get_leaf().clone();
-                let mut fdr = FakeDataReceiver::new(request,&code,consumer);
-                for e in &fr.data {
-                    match e {
-                        FakeValue::Immediate(ref e) => {
-                            let idx = fdr.allocate();
-                            fdr.set(idx,e.clone());
-                        },
-                        FakeValue::Delayed(ref g) => {
-                            g.generate(&leaf,&mut fdr,&self.http_manager);
-                        },
+                if fr.url {
+                    http_clerk.satisfy(request,consumer);
+                } else {
+                    let code = self.code[&fr.code].clone();
+                    let leaf = request.get_leaf().clone();
+                    let mut fdr = FakeDataReceiver::new(request,&code,consumer);
+                    for e in &fr.data {
+                        match e {
+                            FakeValue::Immediate(ref e) => {
+                                let idx = fdr.allocate();
+                                fdr.set(idx,e.clone());
+                            },
+                            FakeValue::Delayed(ref g) => {
+                                g.generate(&leaf,&mut fdr);
+                            },
+                        }
                     }
+                    fdr.ready();
                 }
-                fdr.ready();
                 return;
             }
         }

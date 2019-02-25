@@ -70,14 +70,14 @@ impl Global {
         self.0.borrow_mut().unregister_app(key);
     }
 
-    pub fn register_app(&mut self, key: &str, el: &HtmlElement, debug: bool) {
+    pub fn register_app(&mut self, key: &str, el: &HtmlElement, debug: bool, config_url: &str) {
         self.unregister_app(key);
         let bling : Box<Bling> = if debug {
             Box::new(DebugBling::new(create_interactors()))
         } else { 
             Box::new(MiniBling::new())
         };
-        let ar = AppRunner::new(&GlobalWeak::new(&self),&el,bling);
+        let ar = AppRunner::new(&GlobalWeak::new(&self),&el,bling,config_url);
         {
             self.0.borrow_mut().register_app(key,ar);
         }

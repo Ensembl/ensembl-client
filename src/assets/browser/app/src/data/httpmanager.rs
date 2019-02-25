@@ -4,7 +4,7 @@ use std::rc::Rc;
 use stdweb::web::{ XmlHttpRequest, XhrReadyState };
 
 pub trait HttpResponseConsumer {
-    fn consume(&self,req: XmlHttpRequest);
+    fn consume(&mut self,req: XmlHttpRequest);
 }
 
 pub struct HttpManagerImpl {
@@ -50,7 +50,8 @@ impl HttpManager {
     }
     
     pub fn tick(&self) {
-        for (req,cons) in self.0.borrow_mut().get_done() {
+        let done = self.0.borrow_mut().get_done();
+        for (req,mut cons) in done {
             cons.consume(req);
         }
     }

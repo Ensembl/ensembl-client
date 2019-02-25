@@ -12,7 +12,7 @@ use controller::input::{
     Timers, Timer
 };
 use controller::output::{ Projector, Report };
-use data::HttpManager;
+use data::{ HttpManager, HttpXferClerk };
 use debug::debug_stick_manager;
 use dom::Bling;
 use dom::event::EventControl;
@@ -33,7 +33,8 @@ struct AppRunnerImpl {
     csl: SourceManagerList,
     sticks: Box<StickManager>,
     als: AllLandscapes,
-    http_manager: HttpManager
+    http_manager: HttpManager,
+    http_clerk: HttpXferClerk
 }
 
 #[derive(Clone)]
@@ -43,10 +44,13 @@ pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
 impl AppRunner {
-    pub fn new(g: &GlobalWeak, el: &HtmlElement, bling: Box<Bling>) -> AppRunner {
+    pub fn new(g: &GlobalWeak, el: &HtmlElement, bling: Box<Bling>, config_url: &str) -> AppRunner {
+        console!("AR {}",config_url);
         let browser_el : HtmlElement = bling.apply_bling(&el);
         let st = App::new(&browser_el);
         let tc = Tácode::new();
+        let http_manager = HttpManager::new();
+        let mut http_clerk = HttpXferClerk::new(http_manager.clone(),config_url);
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
             g: g.clone(),
             el: el.clone(),
@@ -59,7 +63,8 @@ impl AppRunner {
             csl: SourceManagerList::new(),
             sticks: Box::new(debug_stick_manager()),
             als: AllLandscapes::new(),
-            http_manager: HttpManager::new()
+            http_manager: http_manager.clone(),
+            http_clerk: http_clerk.clone()
         })));
         {
             let imp = out.0.lock().unwrap();
@@ -74,7 +79,7 @@ impl AppRunner {
             app.lock().unwrap().set_report(report);
             let el = imp.el.clone();
             imp.bling.activate(&app,&el);
-            let dsm = DebugSourceManager::new(&tc,&imp.http_manager,&imp.als);
+            let dsm = DebugSourceManager::new(&tc,&imp.http_clerk,&imp.als);
             imp.csl.add_compsource(Box::new(dsm));
         }
         out
@@ -111,7 +116,7 @@ impl AppRunner {
             let app = imp.app.clone();
             app.lock().unwrap().set_report(report);
             imp.bling.activate(&app,&el);
-            let dsm = DebugSourceManager::new(&imp.tc,&imp.http_manager,&imp.als);
+            let dsm = DebugSourceManager::new(&imp.tc,&imp.http_clerk,&imp.als);
             imp.csl.add_compsource(Box::new(dsm));
         }
     }
