@@ -721,16 +721,7 @@ requests:
 
         # actual contigs
         contig--JO:
-            code: contig-normal
-            data:
-                - remote:
-                    url: http://ec2-34-204-108-251.compute-1.amazonaws.com:8060/browser/data/contig-normal
-                    size: 3
-                #- contig:
-                #    seed: 8
-                #    len: 10000
-                #    prop: 0.9
-                #    pad: 20000
+            url: true
 
         # boxes without letters in
         contig--PP:

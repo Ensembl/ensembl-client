@@ -26,7 +26,8 @@
                     mutation.target.dispatchEvent(
                         new CustomEvent("bpane-activate",{
                             detail: {
-                                key: 'main'
+                                key: 'main',
+                                'config-url': 'http://localhost:4000/browser/config'
                             },
                             bubbles: true
                         })
