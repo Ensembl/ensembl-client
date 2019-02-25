@@ -15,15 +15,18 @@ const TIP_WIDTH = 18;
 const TIP_HEIGHT = 10;
 const TIP_HORIZONTAL_OFFSET = 20; // distance from the side of the dropdown to the beginning of tip
 
-const BOTTOM_OFFSET = 62; // FIXME, assumes that the dropdown is always below the element
-
 const Dropdown = (props: Props) => {
-  const { width: parentWidth } = props.parent.getBoundingClientRect();
+  const {
+    width: parentWidth,
+    y: parentY,
+    height: parentHeight
+  } = props.parent.getBoundingClientRect();
   // calculate the x-coordinate of the dropdown,
   // so that its tip points to the center of the parent
   const x = parentWidth / 2 - TIP_HORIZONTAL_OFFSET - TIP_WIDTH / 2;
   const inlineStyles = {
-    bottom: -(BOTTOM_OFFSET + props.verticalOffset),
+    // bottom: `${-(BOTTOM_OFFSET + props.verticalOffset)}px`,
+    top: `${parentHeight + TIP_HEIGHT + props.verticalOffset}px`,
     left: `${x}px`
   };
   return (
