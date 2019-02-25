@@ -724,7 +724,7 @@ requests:
             code: contig-normal
             data:
                 - remote:
-                    url: http://localhost:4000/browser/data/contig-normal
+                    url: http://ec2-34-204-108-251.compute-1.amazonaws.com:8060/browser/data/contig-normal
                     size: 3
                 #- contig:
                 #    seed: 8
