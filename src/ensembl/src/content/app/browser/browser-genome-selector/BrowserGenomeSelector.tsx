@@ -27,19 +27,23 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
   const chrLocationStr = `${chrCode}:${chrStart}-${chrEnd}`;
   const [showInputs, setShowInputs] = useState(false);
 
-  const [chrLocationInput, setChrLocationInput] = useState(chrLocationStr);
+  const [chrLocationPlaceholder, setChrLocationPlaceholder] = useState('');
+  const [chrLocationInput, setChrLocationInput] = useState('');
 
   useEffect(() => {
-    setChrLocationInput(chrLocationStr);
+    setChrLocationPlaceholder(chrLocationStr);
   }, []);
 
-  const activateForm = () => setShowInputs(true);
+  const activateForm = () => {
+    setChrLocationPlaceholder(chrLocationStr);
+    setShowInputs(true);
+  };
 
   const changeChrLocationInput = (event: ChangeEvent<HTMLInputElement>) =>
     setChrLocationInput(event.target.value);
 
   const closeForm = () => {
-    setChrLocationInput(chrLocationStr);
+    setChrLocationInput('');
     setShowInputs(false);
   };
 
@@ -56,7 +60,7 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
         +chrEndInput
       ];
 
-      setShowInputs(false);
+      closeForm();
       sendLocationToBrowser(currChrLocation, props.browserImageEl);
 
       props.updateDefaultChrLocation(currChrLocation);
@@ -71,6 +75,7 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
         <form onSubmit={handleSubmit}>
           <input
             type="text"
+            placeholder={chrLocationPlaceholder}
             value={chrLocationInput}
             onChange={changeChrLocationInput}
           />
