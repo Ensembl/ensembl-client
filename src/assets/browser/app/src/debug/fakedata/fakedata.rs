@@ -14,7 +14,7 @@ use util::{
     hash_key_bool, hash_key_float, hash_key_string, hash_key_yaml,
     to_float, to_string
 };
-use super::datagen::{ RngContig, RngGene };
+use super::datagen::{ RngContig };
 use super::FakeDataReceiver;
 
 lazy_static! {
@@ -55,17 +55,6 @@ fn contig(v: &Yaml) -> Box<FakeDataGenerator> {
     Box::new(RngContig::new(seed,pad,len,prop,seq,shimmer))
 }
 
-fn gene(v: &Yaml) -> Box<FakeDataGenerator> {
-    let seed = hash_key_float(v,"seed").unwrap() as u8;
-    let seed = [seed,0,0,0,0,0,0,0];
-    let pad = hash_key_float(v,"pad").unwrap() as i32;
-    let sep = hash_key_float(v,"sep").unwrap() as i32;
-    let size = hash_key_float(v,"size").unwrap() as i32;
-    let parts = hash_key_float(v,"parts").unwrap() as i32;
-    let seq = hash_key_bool(v,"seq");
-    Box::new(RngGene::new(seed,pad,sep,size,parts as u32,seq))
-}
-
 fn make_data(out: &mut Vec<FakeValue>, e: &Yaml) {
     match e {
         Yaml::Array(ref v) => {
@@ -93,9 +82,6 @@ fn make_data(out: &mut Vec<FakeValue>, e: &Yaml) {
                         },
                         "contig" => {
                             out.push(FakeValue::Delayed(contig(v)));
-                        },
-                        "gene" => {
-                            out.push(FakeValue::Delayed(gene(v)));
                         },
                         _ => ()
                     }
