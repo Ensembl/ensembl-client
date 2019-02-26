@@ -47,6 +47,10 @@ impl Position {
         self.zoom.get_screen_in_bp()
     }
     
+    pub fn set_screen_in_bp(&mut self, zoom: f64) {
+        self.zoom.set_screen_in_bp(zoom);
+    }
+    
     pub fn set_zoom(&mut self, z: f64) {
         self.zoom.set_zoom(z);
     }

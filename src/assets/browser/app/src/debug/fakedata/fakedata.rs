@@ -123,7 +123,6 @@ impl FakeData {
         let mut code = HashMap::<String,String>::new();
         let mut yaml_data = HashMap::<String,HashMap<String,FakeResponse>>::new();
         let docs = YamlLoader::load_from_str(&FAKEDATA).unwrap();
-        console!("C");
         for (key,v) in hash_entries(&docs[0]) {
             match key.as_str() {
                 "requests" => {        
@@ -163,7 +162,6 @@ impl FakeData {
                 _ => ()
             };
         }
-        console!("D");
         FakeData { code, data: yaml_data, http_clerk: http_clerk.clone() }
     }
         

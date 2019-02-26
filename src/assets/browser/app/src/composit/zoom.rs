@@ -49,6 +49,10 @@ impl Zoom {
         self.linzoom
     }
     
+    pub fn set_screen_in_bp(&mut self, val: f64) {
+        self.set_zoom(-val.log10());
+    }
+    
     pub fn get_zoom(&self) -> f64 {
         self.zoom
     }

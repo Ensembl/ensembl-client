@@ -79,7 +79,6 @@ impl BackendConfig {
         let data : SerdeValue = serde_json::from_str(in_).ok().unwrap();
         let endpoints = BackendConfig::endpoints_from_json(&data["endpoints"]);
         let tracks = BackendConfig::tracks_from_json(&data["tracks"]);
-        console!("W {:?}",BackendConfig { endpoints, tracks });
         let endpoints = BackendConfig::endpoints_from_json(&data["endpoints"]);
         let tracks = BackendConfig::tracks_from_json(&data["tracks"]);
         Ok(BackendConfig { endpoints, tracks })
