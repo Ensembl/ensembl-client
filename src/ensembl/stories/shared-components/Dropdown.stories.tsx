@@ -3,18 +3,8 @@ import { storiesOf } from '@storybook/react';
 
 import Dropdown from 'src/shared/dropdown/Dropdown';
 
-type DropdownParentElementState = HTMLElement | null;
-
 const DropdownParent = () => {
-  const [element, setElement] = useState<DropdownParentElementState>(null);
   const [isVisible, setVisible] = useState(false);
-  const parentRef: React.RefObject<HTMLDivElement> = useRef(null);
-
-  useEffect(() => {
-    if (parentRef.current) {
-      setElement(parentRef.current);
-    }
-  }, []);
 
   const toggleDropdown = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -36,10 +26,10 @@ const DropdownParent = () => {
   };
 
   return (
-    <div ref={parentRef} style={styles} onClick={toggleDropdown}>
+    <div style={styles} onClick={toggleDropdown}>
       Click me
-      {element && isVisible && (
-        <Dropdown parent={element} verticalOffset={-5}>
+      {isVisible && (
+        <Dropdown verticalOffset={-5}>
           <DropdownContent />
         </Dropdown>
       )}
