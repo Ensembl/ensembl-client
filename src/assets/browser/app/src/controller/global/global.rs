@@ -6,6 +6,7 @@ use std::sync::{ Arc, Mutex };
 
 use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element, IHtmlElement };
+use url::Url;
 
 use controller::input::{
     register_startup_events, initial_actions, actions_run
@@ -70,7 +71,7 @@ impl Global {
         self.0.borrow_mut().unregister_app(key);
     }
 
-    pub fn register_app(&mut self, key: &str, el: &HtmlElement, debug: bool, config_url: &str) {
+    pub fn register_app(&mut self, key: &str, el: &HtmlElement, debug: bool, config_url: &Url) {
         self.unregister_app(key);
         let bling : Box<Bling> = if debug {
             Box::new(DebugBling::new(create_interactors()))

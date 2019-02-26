@@ -4,6 +4,7 @@ use std::rc::Rc;
 
 use stdweb::unstable::TryInto;
 use stdweb::web::{ ArrayBuffer, TypedArray, XmlHttpRequest, XhrResponseType };
+use url::Url;
 
 use super::{ 
     XferClerk, XferConsumer, XferRequest, XferResponse, 
@@ -40,16 +41,16 @@ impl HttpResponseConsumer for HttpXferConfigConsumer {
 pub struct HttpXferClerkImpl {
     http_manager: HttpManager,
     remote_backend_config: Option<BackendConfig>,
-    base: String,
+    base: Url,
     paused: Vec<(XferRequest,Box<XferConsumer>)>
     
 }
 
 impl HttpXferClerkImpl {
-    pub fn new(http_manager: HttpManager, base: &str) -> HttpXferClerkImpl {
+    pub fn new(http_manager: HttpManager, base: &Url) -> HttpXferClerkImpl {
         HttpXferClerkImpl {
             http_manager: http_manager,
-            base: base.to_string(),
+            base: base.clone(),
             remote_backend_config: None,
             paused: Vec::<(XferRequest,Box<XferConsumer>)>::new()
         }
@@ -58,7 +59,7 @@ impl HttpXferClerkImpl {
     fn get_config(&mut self, hxcc: HttpXferConfigConsumer) {
         let xhr = XmlHttpRequest::new();
         xhr.set_response_type(XhrResponseType::Text);
-        xhr.open("GET",&self.base);
+        xhr.open("GET",&self.base.as_str());
         self.http_manager.add_request(xhr,None,Box::new(hxcc));
     }
 
@@ -89,7 +90,15 @@ impl HttpXferClerkImpl {
         };
         let leaf = request.get_leaf().clone();
         if let Some(ref url) = url {
-            let url = format!("{}/{}/{}:{}-{}",self.base,url,leaf.get_stick().get_name(),leaf.get_start(),leaf.get_end());
+            console!("base={} url={}",self.base,url);
+            let mut url = self.base.join(url).ok().unwrap();
+            {
+                let mut path = url.path_segments_mut().ok().unwrap();
+                let leaf_url = format!("{}:{}-{}",leaf.get_stick().get_name(),leaf.get_start(),leaf.get_end());
+                path.push(&leaf_url);
+            }
+            console!("url={}",url);
+            //let url = format!("{}:{}-{}",leaf.get_stick().get_name(),leaf.get_start(),leaf.get_end());
             let pdr = PendingDataRequest {
                 code: code.to_string(),
                 request: Some(request),
@@ -97,7 +106,7 @@ impl HttpXferClerkImpl {
             };
             let xhr = XmlHttpRequest::new();
             xhr.set_response_type(XhrResponseType::ArrayBuffer);
-            xhr.open("GET",&url);
+            xhr.open("GET",&url.as_str());
             self.http_manager.add_request(xhr,None,Box::new(pdr));
         } else {
             let xrr = XferResponse::new(request,code.to_string(),vec!{});
@@ -105,7 +114,7 @@ impl HttpXferClerkImpl {
         }
     }
     
-    pub fn get_base(&self) -> &str { &self.base }
+    pub fn get_base(&self) -> &Url { &self.base }
 }
 
 impl XferClerk for HttpXferClerkImpl {
@@ -122,7 +131,7 @@ impl XferClerk for HttpXferClerkImpl {
 pub struct HttpXferClerk(Rc<RefCell<HttpXferClerkImpl>>);
 
 impl HttpXferClerk {
-    pub fn new(http_manager: HttpManager, base: &str) -> HttpXferClerk {
+    pub fn new(http_manager: HttpManager, base: &Url) -> HttpXferClerk {
         let mut out = HttpXferClerk(Rc::new(RefCell::new(HttpXferClerkImpl::new(http_manager,base))));
         out.get_config();
         out

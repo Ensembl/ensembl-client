@@ -1,6 +1,7 @@
 use std::sync::{ Arc, Mutex };
 
 use stdweb::unstable::TryInto;
+use url::Url;
 
 use composit::StateValue;
 use controller::global::Global;
@@ -37,7 +38,8 @@ impl EventListener<()> for StartupEventListener {
                         if config_url.is_none() {
                             console!("BROWSER APP REFUSING TO START UP! No config-url supplied");
                         }
-                        g.register_app(&key,&cx.target().try_into().unwrap(),false,&config_url.unwrap());
+                        let config_url = Url::parse(&config_url.unwrap()).ok().unwrap();
+                        g.register_app(&key,&cx.target().try_into().unwrap(),false,&config_url);
                     },
                     _ => ()
                 }
