@@ -306,10 +306,39 @@ impl FakeDataGenerator for RngContig {
         let start = leaf.get_start() as i32;
         let end = leaf.get_end() as i32;
         let out = rng_contig(self.kind,start-self.pad,end+self.pad,self.rnd_size,self.prop_fill);
-        if self.shimmer {
-            let out = shimmer(&out,leaf);
-            let starts : Vec<f64> = out.iter().map(|x| x.0 as f64).collect();
-            let lens : Vec<f64> = out.iter().map(|x| x.1 as f64).collect();
+        let starts : Vec<f64> = out.iter().map(|x| x.0 as f64).collect();
+        let lens : Vec<f64> = out.iter().map(|x| x.1 as f64).collect();
+        if self.seq {
+            let mut starts_out = Vec::<f64>::new();
+            let mut lens_out = Vec::<f64>::new();
+            let out_seq = {
+                let seq = rng_seq(self.kind,start,end,2);
+                let mut out_seq = String::new();
+                let mut len_iter = lens.iter();
+                for s in &starts {
+                    let mut part_start = *s as i32-start;
+                    let mut part_len = *len_iter.next().unwrap() as i32;
+                    if part_start < 0 {
+                        part_len += part_start;
+                        part_start = 0;
+                    }
+                    let part_len = part_len.min(seq.len() as i32-part_start);
+                    if part_len > 0 {
+                        let (a,b) = (part_start as usize,part_len as usize);                
+                        out_seq.push_str(&seq[a..a+b]);
+                        starts_out.push((start+part_start) as f64);
+                        lens_out.push(b as f64);
+                    }
+                }
+                out_seq
+            };
+            let idx = fdr.allocate();
+            fdr.set(idx,Value::new_from_string(out_seq));
+            let idx = fdr.allocate();
+            fdr.set(idx,Value::new_from_float(starts_out));
+            let idx = fdr.allocate();
+            fdr.set(idx,Value::new_from_float(lens_out));
+        } else {
             let senses = out.iter().map(|x| floatify(x.2)).collect();
             let idx = fdr.allocate();
             fdr.set(idx,Value::new_from_float(starts));
@@ -317,87 +346,6 @@ impl FakeDataGenerator for RngContig {
             fdr.set(idx,Value::new_from_float(lens));
             let idx = fdr.allocate();
             fdr.set(idx,Value::new_from_float(senses));
-        } else {
-            let starts : Vec<f64> = out.iter().map(|x| x.0 as f64).collect();
-            let lens : Vec<f64> = out.iter().map(|x| x.1 as f64).collect();
-            if self.seq {
-                let mut starts_out = Vec::<f64>::new();
-                let mut lens_out = Vec::<f64>::new();
-                let out_seq = {
-                    let seq = rng_seq(self.kind,start,end,2);
-                    let mut out_seq = String::new();
-                    let mut len_iter = lens.iter();
-                    for s in &starts {
-                        let mut part_start = *s as i32-start;
-                        let mut part_len = *len_iter.next().unwrap() as i32;
-                        if part_start < 0 {
-                            part_len += part_start;
-                            part_start = 0;
-                        }
-                        let part_len = part_len.min(seq.len() as i32-part_start);
-                        if part_len > 0 {
-                            let (a,b) = (part_start as usize,part_len as usize);                
-                            out_seq.push_str(&seq[a..a+b]);
-                            starts_out.push((start+part_start) as f64);
-                            lens_out.push(b as f64);
-                        }
-                    }
-                    out_seq
-                };
-                let idx = fdr.allocate();
-                fdr.set(idx,Value::new_from_string(out_seq));
-                let idx = fdr.allocate();
-                fdr.set(idx,Value::new_from_float(starts_out));
-                let idx = fdr.allocate();
-                fdr.set(idx,Value::new_from_float(lens_out));
-            } else {
-                let senses = out.iter().map(|x| floatify(x.2)).collect();
-                let idx = fdr.allocate();
-                fdr.set(idx,Value::new_from_float(starts));
-                let idx = fdr.allocate();
-                fdr.set(idx,Value::new_from_float(lens));
-                let idx = fdr.allocate();
-                fdr.set(idx,Value::new_from_float(senses));
-            }
         }
     }
-}
-
-const STEPS : usize = 1000;
-
-fn shimmer(in_: &Vec<(i32,i32,bool)>, leaf: &Leaf) -> Vec<(i32,i32,bool)> {
-    let mut out = Vec::<(i32,i32,bool)>::new();
-    let step_bp = leaf.total_bp() / STEPS as f64;
-    /* make buckets */
-    let mut buckets_end : Vec<bool> = repeat(false).take(STEPS).collect();
-    let mut buckets_num : Vec<usize> = repeat(0).take(STEPS).collect();
-    /* populate buckets */
-    for (pos,len,sense) in in_.iter() {
-        let b_start = (leaf.prop(*pos as f64) * STEPS as f32).floor().max(0.) as usize;
-        let b_end = (leaf.prop((*pos+len) as f64) * STEPS as f32).ceil().min(STEPS as f32-1.) as usize;
-        for b in b_start..b_end {
-            buckets_end[b] = *sense;
-            buckets_num[b] += 1;
-        }
-    }
-    /* turn into shimmer track */
-    let leaf_start = leaf.get_start();
-    for b in 0..STEPS {
-        /* calc blocks neeed in step */
-        let sense = buckets_end[b];
-        let ops = if buckets_num[b] > 1 {
-            vec! { (0.,0.5,!sense),(0.5,1.,sense) }
-        } else if buckets_num[b] == 1 {
-            vec! { (0.,1.,sense) }
-        } else {
-            vec! {}
-        };
-        /* set down those blocks */
-        for (start_p,end_p,sense) in ops.iter() {
-            let b_start = leaf_start + ((b as f64+start_p)*step_bp);
-            let b_len = (end_p-start_p) * step_bp;
-            out.push((b_start as i32,b_len as i32,*sense));
-        }
-    }
-    out
 }
