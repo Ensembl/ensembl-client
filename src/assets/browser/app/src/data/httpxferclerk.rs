@@ -88,16 +88,21 @@ impl HttpXferClerkImpl {
             (endpoint.get_url(),endpoint.get_code())
         };
         let leaf = request.get_leaf().clone();
-        let url = format!("{}/{}/{}:{}-{}",self.base,url,leaf.get_stick().get_name(),leaf.get_start(),leaf.get_end());
-        let pdr = PendingDataRequest {
-            code: code.to_string(),
-            request: Some(request),
-            consumer: consumer
-        };
-        let xhr = XmlHttpRequest::new();
-        xhr.set_response_type(XhrResponseType::ArrayBuffer);
-        xhr.open("GET",&url);
-        self.http_manager.add_request(xhr,None,Box::new(pdr));
+        if let Some(ref url) = url {
+            let url = format!("{}/{}/{}:{}-{}",self.base,url,leaf.get_stick().get_name(),leaf.get_start(),leaf.get_end());
+            let pdr = PendingDataRequest {
+                code: code.to_string(),
+                request: Some(request),
+                consumer: consumer
+            };
+            let xhr = XmlHttpRequest::new();
+            xhr.set_response_type(XhrResponseType::ArrayBuffer);
+            xhr.open("GET",&url);
+            self.http_manager.add_request(xhr,None,Box::new(pdr));
+        } else {
+            let xrr = XferResponse::new(request,code.to_string(),vec!{});
+            consumer.consume(xrr);
+        }
     }
     
     pub fn get_base(&self) -> &str { &self.base }
