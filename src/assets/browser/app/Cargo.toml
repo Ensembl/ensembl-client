@@ -13,10 +13,10 @@ serde_json = "*"
 serde_yaml = "*"
 lazy_static = "*"
 rand="*"
-separator = "*"
 itertools = "*"
 hsl = "*"
 yaml-rust="*"
+url="*"
 
 "t\u00e1naiste" = { version="0.1.1", path="../t\u00e1naiste" }
 

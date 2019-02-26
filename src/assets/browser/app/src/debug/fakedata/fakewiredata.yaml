@@ -15,88 +15,6 @@ code:
         const #5, [6]
         shape #10, #1, #2, #60, #5, #15
 
-    gene-transcript: |
-        plot #62, #0
-        const #63, [1]
-        get #61, #62, #63
-        const #60, [0.5]
-        mul #61, #61, #60
-        const #63, [0]
-        get #60, #62, #63
-        add #60, #60, #61
-        const #62, [0]
-        add #60, #60, #62
-        ; y-position
-        ; split transport format into parts
-        ; IN:   #1 = gene-starts
-        ;       #2 = gene-parts
-        ;       #3 = part-type
-        ;       #4 = UTR lengths
-        ;       #5 = exon lengths
-        ;       #6 = intron lengths
-        ; OUT: #14 = part start
-        ;      #11 = part len
-        ;       #3 = part type
-        ; TMP: #10, #12, #13
-        runsof #10, #2, #1
-        merge #11, #3, #4, #5, #6
-        accn #12, #11, #2
-        add #13, #10, #12
-        const #14, [-1]
-        mul #14, #11, #14
-        add #14, #13, #14
-        ; extract + draw
-        ; IN:  #14 = part start
-        ;      #11 = part len
-        ;       #3 = part type
-        ; USE: #10 = shape type
-        ;      #12 = y-pos
-        ;      #13 = height
-        ;      #15 = colour
-        ;      #16 = this type / elision array
-        ; TMP:  #7 = elided starts
-        ;       #8 = elided lens
-        ;      #17 misc
-        ; *** utr ***
-        const #10, [2,1]
-        move #12, #60
-        const #17, [-3]
-        add #12, #12, #17
-        const #13, [6]
-        const #15, [75,168,252]
-        const #16, [0]
-        eq #16, #3, #16
-        move #7, #14
-        const #17, [1]
-        elide #7, #16, #17
-        move #8, #11
-        elide #8, #16, #17
-        shape #10, #7, #8, #12, #13, #15
-        ; *** exon ***
-        const #10, [1,1]
-        const #16, [1]
-        eq #16, #3, #16
-        move #7, #14
-        const #17, [1]
-        elide #7, #16, #17
-        move #8, #11
-        elide #8, #16, #17
-        shape #10, #7, #8, #12, #13, #15
-        ; *** intron ***
-        const #10, [1,1]
-        const #16, [2]
-        move #12, #60
-        const #17, [-1]
-        add #12, #12, #17
-        const #13, [2]
-        eq #16, #3, #16
-        move #7, #14
-        const #17, [1]
-        elide #7, #16, #17
-        move #8, #11
-        elide #8, #16, #17
-        shape #10, #7, #8, #12, #13, #15
-
     gene-empty-box: |
         plot #62, #0
         const #63, [1]
@@ -424,14 +342,7 @@ requests:
                     parts: 0
 
         gene-pc-fwd--IO:
-            code: gene-transcript
-            data:
-                - gene:
-                    seed: 1
-                    pad: 250000
-                    sep: 54000
-                    size: 54000
-                    parts: 12
+            url: true
 
         gene-pc-fwd--PP:
             code: gene-empty-box
@@ -465,14 +376,7 @@ requests:
                     parts: 0
 
         gene-pc-rev--IO:
-            code: gene-transcript
-            data:
-                - gene:
-                    seed: 2
-                    pad: 250000
-                    sep: 54000
-                    size: 54000
-                    parts: 12
+            url: true
 
         gene-pc-rev--PP:
             code: gene-empty-box
@@ -506,14 +410,7 @@ requests:
                     parts: 0
 
         gene-other-fwd--IO:
-            code: gene-transcript
-            data:
-                - gene:
-                    seed: 3
-                    pad: 250000
-                    sep: 54000
-                    size: 54000
-                    parts: 12
+            url: true
 
         gene-other-fwd--PP:
             code: gene-empty-box
@@ -547,14 +444,7 @@ requests:
                     parts: 0
 
         gene-other-rev--IO:
-            code: gene-transcript
-            data:
-                - gene:
-                    seed: 4
-                    pad: 250000
-                    sep: 54000
-                    size: 54000
-                    parts: 12
+            url: true
 
         gene-other-rev--PP:
             code: gene-empty-box
