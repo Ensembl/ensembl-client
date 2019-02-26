@@ -6,12 +6,12 @@ use composit::{ Leaf, Scale };
 
 #[derive(Debug)]
 pub struct BackendEndpoint {
-    url: String,
+    url: Option<String>,
     code: String
 }
 
 impl BackendEndpoint {
-    pub fn get_url(&self) -> &str { &self.url }
+    pub fn get_url(&self) -> Option<&str> { self.url.as_ref().map(|x| &x[..]) }
     pub fn get_code(&self) -> &str { &self.code }
 }
 
@@ -35,7 +35,7 @@ impl BackendConfig {
             return Err(format!("No such track {}",compo));
         }
         for (min,max,ep_name) in track.unwrap().endpoints.iter() {
-            if scale >= *min && scale < *max {
+            if scale >= *min && scale <= *max {
                 if let Some(ref ep) = self.endpoints.get(ep_name) {
                     return Ok(ep);
                 } else {
@@ -49,8 +49,9 @@ impl BackendConfig {
     fn endpoints_from_json(ep: &SerdeValue) -> HashMap<String,BackendEndpoint> {
         let mut out = HashMap::<String,BackendEndpoint>::new();
         for (k,v) in ep.as_object().unwrap().iter() {
+            
             let ep = BackendEndpoint {
-                url: v["endpoint"].as_str().unwrap().to_string(),
+                url: v.get("endpoint").map(|x| x.as_str().unwrap().to_string()),
                 code: v["bytecode"].as_str().unwrap().to_string()
             };
             out.insert(k.to_string(),ep);

@@ -129,7 +129,6 @@ impl FakeData {
                 "requests" => {        
                     for (card,v) in hash_entries(&v) {
                         for (source,v) in hash_entries(&v) {
-                            console!("A");
                             let fr = if let Some(data) = hash_key_yaml(&v,"data") {
                                 let code = hash_key_string(&v,"code").unwrap();
                                 let mut data_out = Vec::<FakeValue>::new();
@@ -150,7 +149,6 @@ impl FakeData {
                                     data: vec!{}
                                 }
                             };
-                            console!("B");
                             yaml_data.entry(card.clone()).or_insert_with(||
                                 HashMap::<String,FakeResponse>::new()
                             ).insert(source,fr);
