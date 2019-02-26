@@ -16,6 +16,7 @@ extern crate yaml_rust;
 extern crate rand;
 extern crate itertools;
 extern crate hsl;
+extern crate url;
 
 extern crate tánaiste;
 

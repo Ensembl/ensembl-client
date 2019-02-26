@@ -1,6 +1,7 @@
 use std::sync::{ Arc, Mutex, Weak };
 
 use stdweb::web::HtmlElement;
+use url::Url;
 
 use composit::{
     register_compositor_ticks, AllLandscapes,
@@ -44,8 +45,7 @@ pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
 impl AppRunner {
-    pub fn new(g: &GlobalWeak, el: &HtmlElement, bling: Box<Bling>, config_url: &str) -> AppRunner {
-        console!("AR {}",config_url);
+    pub fn new(g: &GlobalWeak, el: &HtmlElement, bling: Box<Bling>, config_url: &Url) -> AppRunner {
         let browser_el : HtmlElement = bling.apply_bling(&el);
         let st = App::new(&browser_el);
         let tc = Tácode::new();

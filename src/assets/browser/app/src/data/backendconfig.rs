@@ -1,18 +1,31 @@
 use std::collections::HashMap;
+use std::rc::Rc;
+use std::string::ToString;
 
 use serde_json::Value as SerdeValue;
 
 use composit::{ Leaf, Scale };
 
 #[derive(Debug)]
+pub struct BackendBytecode {
+    code: String
+}
+
+impl ToString for BackendBytecode {
+    fn to_string(&self) -> String {
+        self.code.clone()
+    }
+}
+
+#[derive(Debug)]
 pub struct BackendEndpoint {
     url: Option<String>,
-    code: String
+    code: Rc<BackendBytecode>
 }
 
 impl BackendEndpoint {
     pub fn get_url(&self) -> Option<&str> { self.url.as_ref().map(|x| &x[..]) }
-    pub fn get_code(&self) -> &str { &self.code }
+    pub fn get_code(&self) -> &BackendBytecode { &self.code }
 }
 
 #[derive(Debug)]
@@ -46,13 +59,13 @@ impl BackendConfig {
         return Err(format!("No endpoint for scale {} for {}",scale,compo));
     }
 
-    fn endpoints_from_json(ep: &SerdeValue) -> HashMap<String,BackendEndpoint> {
+    fn endpoints_from_json(ep: &SerdeValue, bytecodes: HashMap<String,Rc<BackendBytecode>>) -> HashMap<String,BackendEndpoint> {
         let mut out = HashMap::<String,BackendEndpoint>::new();
         for (k,v) in ep.as_object().unwrap().iter() {
             
             let ep = BackendEndpoint {
                 url: v.get("endpoint").map(|x| x.as_str().unwrap().to_string()),
-                code: v["bytecode"].as_str().unwrap().to_string()
+                code: bytecodes[v["bytecode"].as_str().unwrap()].clone()
             };
             out.insert(k.to_string(),ep);
         }
@@ -74,12 +87,22 @@ impl BackendConfig {
         out
     }
 
+    fn bytecodes_from_json(ep: &SerdeValue) -> HashMap<String,Rc<BackendBytecode>> {
+        let mut out = HashMap::<String,Rc<BackendBytecode>>::new();
+        for (k,v) in ep.as_object().unwrap().iter() {
+            let ep = BackendBytecode {
+                code: v.as_str().unwrap().to_string()
+            };
+            out.insert(k.to_string(),Rc::new(ep));
+        }
+        out
+    }
+
     // TODO errors
     pub fn from_json_string(in_: &str) -> Result<BackendConfig,String> {
         let data : SerdeValue = serde_json::from_str(in_).ok().unwrap();
-        let endpoints = BackendConfig::endpoints_from_json(&data["endpoints"]);
-        let tracks = BackendConfig::tracks_from_json(&data["tracks"]);
-        let endpoints = BackendConfig::endpoints_from_json(&data["endpoints"]);
+        let bytecodes = BackendConfig::bytecodes_from_json(&data["bytecodes"]);
+        let endpoints = BackendConfig::endpoints_from_json(&data["endpoints"],bytecodes);
         let tracks = BackendConfig::tracks_from_json(&data["tracks"]);
         Ok(BackendConfig { endpoints, tracks })
     }
