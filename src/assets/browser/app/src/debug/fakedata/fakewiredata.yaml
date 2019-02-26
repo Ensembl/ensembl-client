@@ -1,204 +1,4 @@
 code:
-    gene-gene: |
-        plot #62, #0
-        const #63, [1]
-        get #61, #62, #63
-        const #60, [0.5]
-        mul #61, #61, #60
-        const #63, [0]
-        get #60, #62, #63
-        add #60, #60, #61
-        const #62, [-3]
-        add #60, #60, #62
-        const #10, [1,1]
-        const #15, [75,168,252]
-        const #5, [6]
-        shape #10, #1, #2, #60, #5, #15
-
-    gene-empty-box: |
-        plot #62, #0
-        const #63, [1]
-        get #61, #62, #63
-        const #60, [0.5]
-        mul #61, #61, #60
-        const #63, [0]
-        get #60, #62, #63
-        add #60, #60, #61
-        const #62, [-3]
-        add #60, #60, #62
-        ; y-position
-        ;plot #7, #0
-        ;const #8, [0]
-        ;get #60, #7, #8
-        ; see previous scale for details in comments.
-        ; register usage essentially same.
-        ; We also use #9, as tmp and reuse #1,#2 as tmp.
-        runsof #10, #2, #1
-        merge #11, #3, #4, #5, #6
-        accn #12, #11, #2
-        add #13, #10, #12
-        const #14, [-1]
-        mul #14, #11, #14
-        add #14, #13, #14
-        ; *** utrs and introns ***
-        const #15, [205,231,254]
-        const #10, [2,1]
-        move #12, #60
-        const #13, [6]
-        const #16, [0]
-        eq #9, #3, #16
-        const #16, [2]
-        eq #16, #3, #16
-        or #16, #16, #9
-        move #7, #14
-        const #17, [1]
-        elide #7, #16, #17
-        move #8, #11
-        elide #8, #16, #17
-        runs #9, #7, #8
-        const #1, [-0.45]
-        add #9, #9, #1
-        const #2, [0.9]
-        shape #10, #9, #2, #12, #13, #15
-        ; *** exons ***
-        const #15, [75,168,252]
-        const #10, [1,1]
-        const #16, [1]
-        eq #16, #3, #16
-        move #7, #14
-        const #17, [1]
-        elide #7, #16, #17
-        move #8, #11
-        elide #8, #16, #17
-        runs #9, #7, #8
-        const #1, [-0.45]
-        add #9, #9, #1
-        const #2, [0.9]
-        shape #10, #9, #2, #12, #13, #15
-
-    gene-letterbox: |
-        const #17, [
-             12, 24, 24, 24, 24, 24, 24, 24, 24, 24
-        ]
-        scale #18
-        const #19, [-16]
-        add #18, #18, #19
-        get #13, #17, #18
-        plot #62, #0
-        const #63, [1]
-        get #61, #62, #63
-        const #60, [0.5]
-        mul #61, #61, #60
-        const #63, [0]
-        get #60, #62, #63
-        add #60, #60, #61
-        const #12, [-0.5]
-        mul #62, #13, #12
-        add #12, #60, #62
-        ;
-        ; y-position
-        ;plot #61, #0
-        ;const #62, [0]
-        ;get #60, #61, #62
-        ; see previous two scales for details in comments.
-        ; register usage essentially same except we need to move
-        ; #7 -> #18; #8 -> #19; #9 -> #20 for extra seq data
-        ; *** scale (for size) ***
-        ;scale #18
-        ;const #19, [-16]
-        ;add #18, #18, #19
-        ;get #13, #17, #18
-        ;const #12, [-0.5]
-        ;mul #12, #13, #12
-        ;add #12, #12, #60
-        ; decode necklaces
-        runsof #10, #2, #1
-        merge #11, #3, #4, #5, #6
-        accn #14, #11, #2
-        add #20, #10, #14
-        const #14, [-1]
-        mul #14, #11, #14
-        add #14, #20, #14
-        ; *** utrs and introns ***
-        const #15, [205,231,254]
-        const #10, [2,1]
-        const #16, [0]
-        eq #20, #3, #16
-        const #16, [2]
-        eq #16, #3, #16
-        or #16, #16, #20
-        move #18, #14
-        const #17, [1]
-        elide #18, #16, #17
-        move #19, #11
-        elide #19, #16, #17
-        runs #20, #18, #19
-        const #1, [-0.45]
-        add #20, #20, #1
-        move #36, #20
-        const #2, [0.9]
-        shape #10, #20, #2, #12, #13, #15
-        ; *** exons ***
-        const #15, [75,168,252]
-        const #10, [1,1]
-        const #16, [1]
-        eq #16, #3, #16
-        move #18, #14
-        const #17, [1]
-        elide #18, #16, #17
-        move #19, #11
-        elide #19, #16, #17
-        runs #20, #18, #19
-        const #1, [-0.45]
-        add #20, #20, #1
-        move #35, #20
-        const #2, [0.9]
-        shape #10, #20, #2, #12, #13, #15
-        ; *** exon text ***
-        const #27, "ACGT"
-        const #28, [1,1,1,1]
-        const #40, "Lato"
-        const #41, [12,1,255,255,255,75,168,252]
-        text #29, #40, #41, #27, #28
-        index #57, #7, #27
-        const #30, [1]
-        pick #29, #57, #29, #30
-        const #31, [3,0,0,1,0,1,1,0,1,0,0]
-        runs #27, #8, #9
-        member #34, #27, #35
-        elide #27, #34, #30
-        elide #29, #34, #30
-        move #33, #12
-        const #50, [0.5]
-        mul #63, #13, #50
-        const #50, [2]
-        add #63, #63, #50
-        add #33, #33, #63
-        const #64, [0]
-        shape #31, #27, #64, #33, #64, #29
-        ; *** intron text ***
-        const #27, "ACGT"
-        const #28, [1,1,1,1]
-        const #40, "Lato"
-        const #41, [12,0,75,168,252,255,255,255]
-        text #29, #40, #41, #27, #28
-        index #57, #7, #27
-        const #30, [1]
-        pick #29, #57, #29, #30
-        const #31, [3,0,0,1,0,1,1,0,1,0,0]
-        runs #27, #8, #9
-        member #34, #27, #36
-        elide #27, #34, #30
-        elide #29, #34, #30
-        move #33, #12
-        const #50, [0.5]
-        mul #63, #13, #50
-        const #50, [2]
-        add #63, #63, #50
-        add #33, #33, #63
-        const #64, [0]
-        shape #31, #27, #64, #33, #64, #29
-
     contig-heatmap: |
         plot #62, #0
         const #63, [1]
@@ -332,140 +132,52 @@ requests:
             url: true
     
         gene-pc-fwd--AH:
-            code: gene-gene
-            data:
-                - gene:
-                    seed: 1
-                    pad: 250000
-                    sep: 54000
-                    size: 54000
-                    parts: 0
+            url: true
 
         gene-pc-fwd--IO:
             url: true
 
         gene-pc-fwd--PP:
-            code: gene-empty-box
-            data:
-                - gene:
-                    seed: 1
-                    pad: 250000
-                    sep: 54000
-                    size: 54000
-                    parts: 12
+            url: true
 
         gene-pc-fwd--QS:
-            code: gene-letterbox
-            data:
-                - gene:
-                    seed: 1
-                    pad: 10
-                    sep: 54000
-                    size: 54000
-                    parts: 12
-                    seq: true
+            url: true
 
         gene-pc-rev--AH:
-            code: gene-gene
-            data:
-                - gene:
-                    seed: 2
-                    pad: 250000
-                    sep: 54000
-                    size: 54000
-                    parts: 0
+            url: true
 
         gene-pc-rev--IO:
             url: true
 
         gene-pc-rev--PP:
-            code: gene-empty-box
-            data:
-                - gene:
-                    seed: 2
-                    pad: 250000
-                    sep: 54000
-                    size: 54000
-                    parts: 12
+            url: true
 
         gene-pc-rev--QS:
-            code: gene-letterbox
-            data:
-                - gene:
-                    seed: 2
-                    pad: 10
-                    sep: 54000
-                    size: 54000
-                    parts: 12
-                    seq: true
+            url: true
 
         gene-other-fwd--AH:
-            code: gene-gene
-            data:
-                - gene:
-                    seed: 3
-                    pad: 250000
-                    sep: 54000
-                    size: 54000
-                    parts: 0
+            url: true
 
         gene-other-fwd--IO:
             url: true
 
         gene-other-fwd--PP:
-            code: gene-empty-box
-            data:
-                - gene:
-                    seed: 3
-                    pad: 250000
-                    sep: 54000
-                    size: 54000
-                    parts: 12
+            url: true
 
         gene-other-fwd--QS:
-            code: gene-letterbox
-            data:
-                - gene:
-                    seed: 3
-                    pad: 10
-                    sep: 54000
-                    size: 54000
-                    parts: 12
-                    seq: true
+            url: true
 
         gene-other-rev--AH:
-            code: gene-gene
-            data:
-                - gene:
-                    seed: 4
-                    pad: 250000
-                    sep: 54000
-                    size: 54000
-                    parts: 0
+            url: true
 
         gene-other-rev--IO:
             url: true
 
         gene-other-rev--PP:
-            code: gene-empty-box
-            data:
-                - gene:
-                    seed: 4
-                    pad: 250000
-                    sep: 54000
-                    size: 54000
-                    parts: 12
+            url: true
 
         gene-other-rev--QS:
-            code: gene-letterbox
-            data:
-                - gene:
-                    seed: 4
-                    pad: 10
-                    sep: 54000
-                    size: 54000
-                    parts: 12
-                    seq: true
+            url: true
 
 
         ################

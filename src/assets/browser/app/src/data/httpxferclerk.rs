@@ -90,15 +90,12 @@ impl HttpXferClerkImpl {
         };
         let leaf = request.get_leaf().clone();
         if let Some(ref url) = url {
-            console!("base={} url={}",self.base,url);
             let mut url = self.base.join(url).ok().unwrap();
             {
                 let mut path = url.path_segments_mut().ok().unwrap();
                 let leaf_url = format!("{}:{}-{}",leaf.get_stick().get_name(),leaf.get_start(),leaf.get_end());
                 path.push(&leaf_url);
             }
-            console!("url={}",url);
-            //let url = format!("{}:{}-{}",leaf.get_stick().get_name(),leaf.get_start(),leaf.get_end());
             let pdr = PendingDataRequest {
                 code: code.to_string(),
                 request: Some(request),
