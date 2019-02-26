@@ -6,12 +6,13 @@ use composit::{
     StateAtom, AllLandscapes
 };
 
+use data::HttpXferClerk;
+
 #[cfg(not(deploy))]
 use debug::testcards::{
     leafcard_source, text_source,
     polar_source, bs_source_main, bs_source_sub
 };
-use debug::fakedata::FakeData;
 use debug::support::{
     DebugSourceType
 };
@@ -66,17 +67,17 @@ fn extra_source_type(s: &mut DebugSource, type_: &DebugSourceType) {
     s.add_stick("polar",Box::new(polar_source(type_)));
 }
 
-fn debug_source_type(tc: &Tácode, als: &mut AllLandscapes, xf: FakeData, type_: &DebugSourceType, lid: usize) -> impl Source {
+fn debug_source_type(tc: &Tácode, als: &mut AllLandscapes, xf: &HttpXferClerk, type_: &DebugSourceType, lid: usize) -> impl Source {
     let mut s = DebugSource::new();
     extra_source_type(&mut s,type_);
     let plot = Plot::new(type_.get_pos()*PITCH+TOP,PITCH,type_.get_letter());
     als.with(lid, |ls| ls.set_plot(plot) );
-    let src = TáSource::new(tc,Box::new(xf),type_.get_name(),lid);
+    let src = TáSource::new(tc,Box::new(xf.clone()),type_.get_name(),lid);
     s.add_stick("march",Box::new(src));
     s
 }
 
-pub fn debug_activesource_type(tc: &Tácode, als: &mut AllLandscapes, xf: FakeData, type_: &DebugSourceType) -> ActiveSource {
+pub fn debug_activesource_type(tc: &Tácode, als: &mut AllLandscapes, xf: &HttpXferClerk, type_: &DebugSourceType) -> ActiveSource {
     let lid = als.allocate();
     let src = debug_source_type(tc,als,xf,type_,lid);
     let state = Rc::new(StateAtom::new(type_.get_name()));
