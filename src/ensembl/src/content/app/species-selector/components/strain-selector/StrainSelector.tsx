@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import classNames from 'classnames';
 
 import Dropdown from 'src/shared/dropdown/Dropdown';
@@ -21,18 +21,9 @@ type StrainProps = Strain & {
   onSelect: OnSelect;
 };
 
-type ElementState = HTMLElement | null;
-
 const StrainSelector = (props: StrainSelectorProps) => {
   const [isDropdownVisible, setDropdownVisibility] = useState(false);
-  const [element, setElement] = useState<ElementState>(null);
   const elementRef: React.RefObject<HTMLDivElement> = useRef(null);
-
-  useEffect(() => {
-    if (elementRef.current) {
-      setElement(elementRef.current);
-    }
-  }, []);
 
   const numberOfSelectedStrains = props.strains.reduce(
     (sum, { isSelected }) => {
@@ -42,11 +33,10 @@ const StrainSelector = (props: StrainSelectorProps) => {
   );
   const totalNumberOfStrains = props.strains.length;
 
-  const toggleDropdownVisibility = (e: React.MouseEvent) => {
-    if (e.target === element) {
-      setDropdownVisibility(!isDropdownVisible);
-    }
+  const toggleDropdownVisibility = () => {
+    setDropdownVisibility(!isDropdownVisible);
   };
+  const hideDropdown = () => setDropdownVisibility(false);
 
   return (
     <div
@@ -55,8 +45,8 @@ const StrainSelector = (props: StrainSelectorProps) => {
       ref={elementRef}
     >
       {numberOfSelectedStrains} / {totalNumberOfStrains}
-      {element && isDropdownVisible && (
-        <Dropdown parent={element} verticalOffset={-5}>
+      {isDropdownVisible && (
+        <Dropdown onClose={hideDropdown} verticalOffset={-5}>
           <StrainsList {...props} />
         </Dropdown>
       )}
