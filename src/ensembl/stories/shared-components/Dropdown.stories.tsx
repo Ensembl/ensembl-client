@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 
 import Dropdown from 'src/shared/dropdown/Dropdown';
@@ -10,6 +10,8 @@ const DropdownParent = () => {
     e.stopPropagation();
     setVisible(!isVisible);
   };
+
+  const hideDropdown = () => setVisible(false);
 
   const styles = {
     display: 'inline-flex',
@@ -29,7 +31,7 @@ const DropdownParent = () => {
     <div style={styles} onClick={toggleDropdown}>
       Click me
       {isVisible && (
-        <Dropdown verticalOffset={-5}>
+        <Dropdown onClose={hideDropdown} verticalOffset={-5}>
           <DropdownContent />
         </Dropdown>
       )}
