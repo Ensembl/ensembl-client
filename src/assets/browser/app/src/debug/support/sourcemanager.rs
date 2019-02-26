@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use composit::{ SourceManager, ActiveSource, AllLandscapes };
 use data::{ HttpManager, HttpXferClerk };
-use debug::fakedata::FakeData;
 use debug::support::{ debug_activesource_type };
 use tácode::Tácode;
 
@@ -120,7 +119,7 @@ impl DebugSourceManager {
 impl SourceManager for DebugSourceManager {
     fn get_component(&mut self, name: &str) -> Option<ActiveSource> {
         DebugSourceType::from_name(name).map(|type_|
-            debug_activesource_type(&self.tc,&mut self.als,FakeData::new(&self.http_clerk),&type_)
+            debug_activesource_type(&self.tc,&mut self.als,&self.http_clerk,&type_)
         )
     }
 }
