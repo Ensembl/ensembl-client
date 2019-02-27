@@ -4,9 +4,9 @@ use std::string::ToString;
 
 use serde_json::Value as SerdeValue;
 
-use composit::{ Leaf, Scale };
+use composit::{ Leaf, Scale, Stick };
 
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct BackendBytecode {
     code: String
 }
@@ -17,7 +17,7 @@ impl ToString for BackendBytecode {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct BackendEndpoint {
     url: Option<String>,
     code: Rc<BackendBytecode>
@@ -28,15 +28,16 @@ impl BackendEndpoint {
     pub fn get_code(&self) -> &BackendBytecode { &self.code }
 }
 
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct BackendTrack {
     endpoints: Vec<(i32,i32,String)>
 }
 
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct BackendConfig {
     endpoints: HashMap<String,BackendEndpoint>,
     tracks: HashMap<String,BackendTrack>,
+    sticks: HashMap<String,Stick>
 }
 
 // TODO simplify with serde; error handling
@@ -58,6 +59,8 @@ impl BackendConfig {
         }
         return Err(format!("No endpoint for scale {} for {}",scale,compo));
     }
+    
+    pub fn get_sticks(&self) -> &HashMap<String,Stick> { &self.sticks }
 
     fn endpoints_from_json(ep: &SerdeValue, bytecodes: HashMap<String,Rc<BackendBytecode>>) -> HashMap<String,BackendEndpoint> {
         let mut out = HashMap::<String,BackendEndpoint>::new();
@@ -97,6 +100,15 @@ impl BackendConfig {
         }
         out
     }
+    
+    fn sticks_from_json(ep: &SerdeValue) -> HashMap<String,Stick> {
+        let mut out = HashMap::<String,Stick>::new();
+        for (k,v) in ep.as_object().unwrap().iter() {
+            let len : u64 = v.as_str().unwrap().to_string().parse().ok().unwrap();
+            out.insert(k.to_string(),Stick::new(k,len,false));
+        }
+        out
+    }
 
     // TODO errors
     pub fn from_json_string(in_: &str) -> Result<BackendConfig,String> {
@@ -104,6 +116,7 @@ impl BackendConfig {
         let bytecodes = BackendConfig::bytecodes_from_json(&data["bytecodes"]);
         let endpoints = BackendConfig::endpoints_from_json(&data["endpoints"],bytecodes);
         let tracks = BackendConfig::tracks_from_json(&data["tracks"]);
-        Ok(BackendConfig { endpoints, tracks })
+        let sticks = BackendConfig::sticks_from_json(&data["sticks"]);
+        Ok(BackendConfig { endpoints, tracks, sticks })
     }
 }

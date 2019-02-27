@@ -13,7 +13,7 @@ use controller::input::{
     Timers, Timer
 };
 use controller::output::{ Projector, Report };
-use data::{ HttpManager, HttpXferClerk };
+use data::{ HttpManager, HttpXferClerk, BackendConfigBootstrap };
 use debug::debug_stick_manager;
 use dom::Bling;
 use dom::event::EventControl;
@@ -32,7 +32,6 @@ struct AppRunnerImpl {
     timers: Timers,
     tc: Tácode,
     csl: SourceManagerList,
-    sticks: Box<StickManager>,
     als: AllLandscapes,
     http_manager: HttpManager,
     http_clerk: HttpXferClerk
@@ -50,7 +49,8 @@ impl AppRunner {
         let st = App::new(&browser_el);
         let tc = Tácode::new();
         let http_manager = HttpManager::new();
-        let mut http_clerk = HttpXferClerk::new(http_manager.clone(),config_url);
+        let mut bcb = BackendConfigBootstrap::new(&http_manager,config_url);
+        let mut http_clerk = HttpXferClerk::new(&http_manager,&mut bcb);
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
             g: g.clone(),
             el: el.clone(),
@@ -61,7 +61,6 @@ impl AppRunner {
             timers: Timers::new(),
             tc: tc.clone(),
             csl: SourceManagerList::new(),
-            sticks: Box::new(debug_stick_manager()),
             als: AllLandscapes::new(),
             http_manager: http_manager.clone(),
             http_clerk: http_clerk.clone()
@@ -87,10 +86,6 @@ impl AppRunner {
 
     pub fn get_component(&mut self, name: &str) -> Option<ActiveSource> {
         self.0.lock().unwrap().csl.get_component(name)
-    }
-
-    pub fn get_stick(&mut self, name: &str) -> Option<Stick> {
-        self.0.lock().unwrap().sticks.get_stick(name)
     }
 
     pub fn reset(&mut self, bling: Box<Bling>) {
