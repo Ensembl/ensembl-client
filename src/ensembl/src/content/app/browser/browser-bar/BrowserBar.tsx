@@ -1,13 +1,18 @@
-import React, { FunctionComponent, RefObject } from 'react';
+import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 
 import { browserInfoConfig } from '../browserConfig';
-import { toggleBrowserNav, updateDefaultChrLocation } from '../browserActions';
+import {
+  toggleBrowserNav,
+  updateDefaultChrLocation,
+  updateChrLocation
+} from '../browserActions';
 import { ChrLocation } from '../browserState';
 import {
   getBrowserNavOpened,
   getChrLocation,
-  getBrowserActivated
+  getBrowserActivated,
+  getDefaultChrLocation
 } from '../browserSelectors';
 import { RootState } from 'src/rootReducer';
 
@@ -20,15 +25,17 @@ type StateProps = {
   browserActivated: boolean;
   browserNavOpened: boolean;
   chrLocation: ChrLocation;
+  defaultChrLocation: ChrLocation;
 };
 
 type DispatchProps = {
   toggleBrowserNav: () => void;
+  updateChrLocation: (chrLocation: ChrLocation) => void;
   updateDefaultChrLocation: (chrLocation: ChrLocation) => void;
 };
 
 type OwnProps = {
-  browserRef: RefObject<HTMLDivElement>;
+  changeBrowserLocation: () => void;
 };
 
 type BrowserBarProps = StateProps & DispatchProps & OwnProps;
@@ -37,13 +44,18 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   props: BrowserBarProps
 ) => {
   const { navigator, reset } = browserInfoConfig;
-  const browserImageEl = props.browserRef.current as HTMLDivElement;
 
   return (
     <div className={styles.browserBar}>
       <div className={styles.browserInfo}>
         <dl className={styles.browserInfoLeft}>
-          <BrowserReset browserImageEl={browserImageEl} details={reset} />
+          <BrowserReset
+            changeBrowserLocation={props.changeBrowserLocation}
+            details={reset}
+            chrLocation={props.chrLocation}
+            defaultChrLocation={props.defaultChrLocation}
+            updateChrLocation={props.updateChrLocation}
+          />
           <dd className={styles.geneSymbol}>
             <label>Gene</label>
             <span className={styles.value}>BRAC2</span>
@@ -63,8 +75,8 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
         <dl className={styles.browserInfoRight}>
           <BrowserGenomeSelector
             browserActivated={props.browserActivated}
-            browserImageEl={browserImageEl}
-            chrLocation={props.chrLocation}
+            changeBrowserLocation={props.changeBrowserLocation}
+            defaultChrLocation={props.defaultChrLocation}
             updateDefaultChrLocation={props.updateDefaultChrLocation}
           />
           <dd className={styles.navigator}>
@@ -102,11 +114,13 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
 const mapStateToProps = (state: RootState): StateProps => ({
   browserActivated: getBrowserActivated(state),
   browserNavOpened: getBrowserNavOpened(state),
-  chrLocation: getChrLocation(state)
+  chrLocation: getChrLocation(state),
+  defaultChrLocation: getDefaultChrLocation(state)
 });
 
 const mapDispatchToProps: DispatchProps = {
   toggleBrowserNav,
+  updateChrLocation,
   updateDefaultChrLocation
 };
 
