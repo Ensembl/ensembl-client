@@ -1,7 +1,11 @@
 @import 'src/styles/common';
 
 .strainSelector {
-  position: relative;
+  position: absolute;
+  top: 22px;
+  left: 100%;
+  transform: translateX(-60%);
+  white-space: nowrap;
   display: inline-block;
   color: $ens-white;
   font-size: 12px; // FIXME
