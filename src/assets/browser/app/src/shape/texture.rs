@@ -161,13 +161,13 @@ impl TextureTypeSpec {
 }
 
 impl TypeToShape for TextureTypeSpec {
-    fn new_shape(&self, td: &ShapeInstanceData) -> ShapeSpec {
-        match (self.sea_x.is_some(),self.sea_y.is_some()) {
+    fn new_shape(&self, td: &ShapeInstanceData) -> Option<ShapeSpec> {
+        Some(match (self.sea_x.is_some(),self.sea_y.is_some()) {
             (false,false) => Some(self.new_pin(td)),
             (false,true) => Some(self.new_tape(td)),
             (true,false) => Some(self.new_page(td)),
             (true,true) => Some(self.new_fix(td))
-        }.unwrap()
+        }.unwrap())
     }
     
     fn get_facade_type(&self) -> FacadeType { FacadeType::Drawing }

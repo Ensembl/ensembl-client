@@ -32,6 +32,11 @@ impl Source for ClosureSource {
     }
 }
 
+pub fn closure_add_opt(lcb: &mut SourceResponse, s: &Option<ShapeSpec>) {
+    if let Some(s) = s {
+        closure_add(lcb,s);
+    }
+}
 pub fn closure_add(lcb: &mut SourceResponse, s: &ShapeSpec) {
     lcb.add_shape(s.clone());
 }

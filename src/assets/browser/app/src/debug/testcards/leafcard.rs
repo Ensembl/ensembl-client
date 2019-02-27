@@ -1,5 +1,5 @@
 use util::RulerGenerator;
-use debug::support::closuresource::{ ClosureSource, closure_add, closure_done };
+use debug::support::closuresource::{ ClosureSource, closure_add, closure_done, closure_add_opt };
 use composit::Source;
 use drawing::{ FCFont, FontVariety, text_texture };
 use shape::{ ColourSpec, PinRectTypeSpec, StretchRectTypeSpec, TextureTypeSpec, TypeToShape, ShapeInstanceData, Facade };
@@ -36,7 +36,7 @@ pub fn leafcard_source(leaf_marks: bool) -> impl Source {
                     under: None,
                     scale_x: 1., scale_y: 1.
                 };
-                closure_add(lc,&tts.new_shape(&ShapeInstanceData {
+                closure_add_opt(lc,&tts.new_shape(&ShapeInstanceData {
                     pos_x: offset,
                     pos_y: 41,
                     aux_x: 0.,
@@ -44,7 +44,7 @@ pub fn leafcard_source(leaf_marks: bool) -> impl Source {
                     facade: Facade::Drawing(tx)
                 }));
             }
-            closure_add(lc,&prts.new_shape(&ShapeInstanceData {
+            closure_add_opt(lc,&prts.new_shape(&ShapeInstanceData {
                 pos_x: offset,
                 pos_y: 10,
                 aux_x: 1.,
@@ -60,7 +60,7 @@ pub fn leafcard_source(leaf_marks: bool) -> impl Source {
         };
         if leaf_marks {
             let srts = StretchRectTypeSpec { spot: false, hollow: false };
-            closure_add(lc,&srts.new_shape(&ShapeInstanceData {
+            closure_add_opt(lc,&srts.new_shape(&ShapeInstanceData {
                 pos_x: 0.,
                 pos_y: 70,
                 aux_x: 1.,

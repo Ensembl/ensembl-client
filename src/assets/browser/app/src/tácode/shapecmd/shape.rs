@@ -75,7 +75,9 @@ fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut SourceResponse,
                     aux_y: y_aux[i%y_aux_len] as i32,
                     facade
                 };
-                lc.add_shape(spec.new_shape(&data));
+                if let Some(shape) = spec.new_shape(&data) {
+                    lc.add_shape(shape);
+                }
             }
         }
     }    
