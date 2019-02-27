@@ -5,7 +5,7 @@ import Dropdown from 'src/shared/dropdown/Dropdown';
 
 import styles from './StrainSelector.scss';
 
-type Strain = {
+export type Strain = {
   name: string;
   isSelected: boolean;
 };

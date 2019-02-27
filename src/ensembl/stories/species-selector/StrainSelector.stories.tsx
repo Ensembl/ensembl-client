@@ -3,7 +3,7 @@ import { storiesOf } from '@storybook/react';
 
 import StrainSelector from 'src/content/app/species-selector/components/strain-selector/StrainSelector';
 
-const strains = [
+export const strains = [
   {
     name: 'Mouse GRCm38.6',
     isSelected: true
