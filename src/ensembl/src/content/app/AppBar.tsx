@@ -4,10 +4,14 @@ import chevronRightIcon from 'static/img/shared/chevron-right-grey.svg';
 
 import styles from './AppBar.scss';
 
-const AppBar: FunctionComponent = memo(() => (
+type AppBarProps = {
+  currentApp: string;
+};
+
+const AppBar: FunctionComponent<AppBarProps> = memo((props: AppBarProps) => (
   <section className={styles.appBar}>
     <div className={styles.top}>
-      <div>Example App</div>
+      <div>{props.currentApp}</div>
     </div>
     <div>
       <dl className={styles.selectedSpecies}>
