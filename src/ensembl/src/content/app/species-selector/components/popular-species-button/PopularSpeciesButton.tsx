@@ -20,6 +20,7 @@ const PopularSpeciesButton = (props: Props) => {
   const {
     ReactComponent: Icon
   } = require(`src/content/app/species-selector/assets/icons/${species}.svg`);
+
   const className = classNames(styles.popularSpeciesButton, {
     [styles.popularSpeciesButtonActive]: isSelected
   });

@@ -1,6 +1,7 @@
 module.exports = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   moduleNameMapper: {
+    '\\.svg': '<rootDir>/tests/svgrMock.js',
     '(src/.*)$': '<rootDir>/$1',
     '(static/.*)$': '<rootDir>/$1',
     '(static/browser/.*)$': '<rootDir>/$1.stub.js',
