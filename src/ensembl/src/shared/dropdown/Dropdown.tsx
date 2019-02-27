@@ -28,17 +28,17 @@ const Dropdown = (props: Props) => {
     e.stopPropagation();
   };
 
-  const handleClickOutside = (e: React.MouseEvent | React.TouchEvent) => {
+  const handleClickOutside = (e: Event) => {
     if (!parent) return;
 
     let target;
-    if (e.type === 'touchend' && e.touches) {
-      target = e.touches[0];
+    if (e.type === 'touchend' && (e as TouchEvent).touches) {
+      target = (e as TouchEvent).touches[0];
     } else {
       target = e.target;
     }
 
-    if (!parent.contains(target)) {
+    if (target instanceof HTMLElement && !parent.contains(target)) {
       props.onClose();
     }
   };
