@@ -14,7 +14,7 @@ use composit::{
     SourceResponse, Stick
 };
 
-use debug::support::closuresource::{ ClosureSource, closure_add, closure_done };
+use debug::support::closuresource::{ ClosureSource, closure_add, closure_add_opt, closure_done };
 use debug::testcards::common::{
      wiggly, rng_prob, rng_pos, rng_colour, start_rng,
     rng_subdivide, bio_mark, rng_tracks, prop
@@ -63,7 +63,7 @@ fn measure(lc: &mut SourceResponse, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSp
             under: None,
             spot: false
         };
-        closure_add(lc,&prts.new_shape(&ShapeInstanceData {
+        closure_add_opt(lc,&prts.new_shape(&ShapeInstanceData {
             pos_x: x as f32/10.,
             pos_y: 0,
             aux_x: 20.,
@@ -84,7 +84,7 @@ fn measure(lc: &mut SourceResponse, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSp
             under: None,
             scale_x: 10., scale_y: 10.
         };
-        closure_add(lc,&tts.new_shape(&ShapeInstanceData {
+        closure_add_opt(lc,&tts.new_shape(&ShapeInstanceData {
             pos_x: x as f32/10.+0.05,
             pos_y: 0,
             aux_x: 0.,
@@ -145,7 +145,7 @@ fn source_odd() -> ClosureSource {
                     debug!("bug","A");
                     let start_prop = prop(leaf,0);
                     let srts = StretchRectTypeSpec { spot: true, hollow: false };
-                    closure_add(lc,&srts.new_shape(&ShapeInstanceData {
+                    closure_add_opt(lc,&srts.new_shape(&ShapeInstanceData {
                         pos_x: start_prop,
                         pos_y: y-20,
                         aux_x: 10000./mul as f32,
@@ -225,7 +225,7 @@ fn source_even() -> ClosureSource {
                 if start_leaf < 100000 && end_leaf > 0 {
                     let start_prop = prop(leaf,0);      
                     let srts = StretchRectTypeSpec { spot: true, hollow: false };
-                    closure_add(lc,&srts.new_shape(&ShapeInstanceData {
+                    closure_add_opt(lc,&srts.new_shape(&ShapeInstanceData {
                         pos_x: start_prop,
                         pos_y: y-15,
                         aux_x: 10000./mul as f32,
@@ -332,7 +332,7 @@ pub fn bs_source_main() -> ClosureSource {
                 under: None,
                 scale_x: 1., scale_y: 1.
             };
-            closure_add(lc,&tts.new_shape(&ShapeInstanceData {
+            closure_add_opt(lc,&tts.new_shape(&ShapeInstanceData {
                 pos_x: 12 as f32,
                 pos_y: y+18,
                 aux_x: 0.,
@@ -355,7 +355,7 @@ pub fn bs_source_main() -> ClosureSource {
                         under: None,
                         spot: false
                     };
-                    closure_add(lc,&prts.new_shape(&ShapeInstanceData {
+                    closure_add_opt(lc,&prts.new_shape(&ShapeInstanceData {
                         pos_x: prop(leaf,0),
                         pos_y: y-10,
                         aux_x: 20.,
@@ -390,7 +390,7 @@ pub fn bs_source_main() -> ClosureSource {
                         under: None,
                         scale_x: 10., scale_y: 10.
                     };
-                    closure_add(lc,&tts.new_shape(&ShapeInstanceData {
+                    closure_add_opt(lc,&tts.new_shape(&ShapeInstanceData {
                         pos_x: start_prop,
                         pos_y: y-25,
                         aux_x: 0.,
@@ -421,7 +421,7 @@ pub fn bs_source_main() -> ClosureSource {
                         let start_prop = prop(leaf,p[0]);
                         let end_prop = prop(leaf,p[1]);
                         let srts = StretchRectTypeSpec { spot: false, hollow: false };
-                        closure_add(lc,&srts.new_shape(&ShapeInstanceData {
+                        closure_add_opt(lc,&srts.new_shape(&ShapeInstanceData {
                             pos_x: start_prop,
                             pos_y: y-h,
                             aux_x: end_prop-start_prop,
@@ -448,7 +448,7 @@ pub fn bs_source_main() -> ClosureSource {
                                 under: None,
                                 scale_x: 1., scale_y: 1.
                             };
-                            closure_add(lc,&tts.new_shape(&ShapeInstanceData {
+                            closure_add_opt(lc,&tts.new_shape(&ShapeInstanceData {
                                 pos_x: start_prop,
                                 pos_y: y-12,
                                 aux_x: 0.,
@@ -471,14 +471,14 @@ pub fn bs_source_main() -> ClosureSource {
             spot: true
         };
 
-        closure_add(lc,&prts.new_shape(&ShapeInstanceData {
+        closure_add_opt(lc,&prts.new_shape(&ShapeInstanceData {
             pos_x: SW as f32/2.,
             pos_y: 0,
             aux_x: 1.,
             aux_y: SH,
             facade: Facade::Colour(Colour(0,0,0))
         }));
-        closure_add(lc,&prts.new_shape(&ShapeInstanceData {
+        closure_add_opt(lc,&prts.new_shape(&ShapeInstanceData {
             pos_x: SW as f32/2.+5.,
             pos_y: 0,
             aux_x: 3.,
@@ -498,7 +498,7 @@ pub fn bs_source_main() -> ClosureSource {
             under: None,
             scale_x: 1., scale_y: SH as f32
         };
-        closure_add(lc,&tts.new_shape(&ShapeInstanceData {
+        closure_add_opt(lc,&tts.new_shape(&ShapeInstanceData {
             pos_x: SW as f32/2.-5.,
             pos_y: 0,
             aux_x: 0.,
@@ -516,7 +516,7 @@ pub fn bs_source_main() -> ClosureSource {
                     under: None,
                     scale_x: 10., scale_y: 10.
                 };
-                closure_add(lc,&tts.new_shape(&ShapeInstanceData {
+                closure_add_opt(lc,&tts.new_shape(&ShapeInstanceData {
                     pos_x: 0.,
                     pos_y: 0,
                     aux_x: 0.,

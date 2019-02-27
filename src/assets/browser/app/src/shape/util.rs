@@ -29,7 +29,7 @@ pub struct ShapeInstanceData {
 
 
 pub trait TypeToShape {
-    fn new_shape(&self, sid: &ShapeInstanceData) -> ShapeSpec;
+    fn new_shape(&self, sid: &ShapeInstanceData) -> Option<ShapeSpec>;
     fn get_facade_type(&self) -> FacadeType;
     fn needs_scale(&self) -> (bool,bool);
 }

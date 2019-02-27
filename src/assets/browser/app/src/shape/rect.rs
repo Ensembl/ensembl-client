@@ -105,22 +105,26 @@ impl StretchRectTypeSpec {
 
 
 impl TypeToShape for StretchRectTypeSpec {
-    fn new_shape(&self, rd: &ShapeInstanceData) -> ShapeSpec {
+    fn new_shape(&self, rd: &ShapeInstanceData) -> Option<ShapeSpec> {
         let colspec = self.new_colspec(rd);
         let offset = area_size(cleaf(rd.pos_x,rd.pos_y),
                                cleaf(rd.aux_x,rd.aux_y));
-        if self.hollow {
-            ShapeSpec::PinBox(BoxSpec {
-                offset,
-                width: 1,
-                colspec
-            })
+        if rd.pos_x <= 1. && rd.pos_x+rd.aux_x >= 0. {
+            if self.hollow {
+                Some(ShapeSpec::PinBox(BoxSpec {
+                    offset,
+                    width: 1,
+                    colspec
+                }))
+            } else {
+                Some(ShapeSpec::PinRect(RectSpec {
+                    pt: PTGeom::Stretch,
+                    offset: RectPosition::Stretch(offset),
+                    colspec
+                }))
+            }
         } else {
-            ShapeSpec::PinRect(RectSpec {
-                pt: PTGeom::Stretch,
-                offset: RectPosition::Stretch(offset),
-                colspec
-            })
+            None
         }
     }
     
@@ -166,42 +170,42 @@ impl PinRectTypeSpec {
         area_size(cpixel(-delta_x,-delta_y),size)
     }
     
-    fn new_pin(&self, rd: &ShapeInstanceData) -> ShapeSpec {
+    fn new_pin(&self, rd: &ShapeInstanceData) -> Option<ShapeSpec> {
         let offset = self.new_pin_offset(rd);
         let colspec = self.new_colspec(rd);
-        ShapeSpec::PinRect(RectSpec {
+        Some(ShapeSpec::PinRect(RectSpec {
             pt: PTGeom::Pin,
             offset: RectPosition::Pin(cleaf(rd.pos_x,rd.pos_y),offset),
             colspec: colspec.unwrap()
-        })        
+        }))     
     }
     
-    fn new_tape(&self, rd: &ShapeInstanceData) -> ShapeSpec {
+    fn new_tape(&self, rd: &ShapeInstanceData) -> Option<ShapeSpec> {
         let offset = self.new_pin_offset(rd)
                         .y_edge(self.sea_y.unwrap().0,
                                 self.sea_y.unwrap().1);
         let colspec = self.new_colspec(rd);
-        ShapeSpec::PinRect(RectSpec {
+        Some(ShapeSpec::PinRect(RectSpec {
             pt: PTGeom::Tape,
             offset: RectPosition::Tape(cleaf(rd.pos_x,rd.pos_y),offset),
             colspec: colspec.unwrap()
-        })        
+        }))     
     }
 
-    fn new_page(&self, rd: &ShapeInstanceData) -> ShapeSpec {
+    fn new_page(&self, rd: &ShapeInstanceData) -> Option<ShapeSpec> {
         let pos =  (cpixel(rd.pos_x as i32,rd.pos_y) +
                     self.new_pin_offset(rd))
                         .x_edge(self.sea_x.unwrap().0,
                                 self.sea_x.unwrap().1);
         let colspec = self.new_colspec(rd);
-        ShapeSpec::PinRect(RectSpec {
+        Some(ShapeSpec::PinRect(RectSpec {
             pt: PTGeom::Page,
             offset: RectPosition::Page(pos),
             colspec: colspec.unwrap()
-        })        
+        }))     
     }
 
-    fn new_fix(&self, rd: &ShapeInstanceData) -> ShapeSpec {
+    fn new_fix(&self, rd: &ShapeInstanceData) -> Option<ShapeSpec> {
         let pos =  (cpixel(rd.pos_x as i32,rd.pos_y) +
                     self.new_pin_offset(rd))
                         .x_edge(self.sea_x.unwrap().0,
@@ -214,16 +218,16 @@ impl PinRectTypeSpec {
             Some(false) => PTGeom::FixUnderTape,
             None => PTGeom::Fix,
         };
-        ShapeSpec::PinRect(RectSpec {
+        Some(ShapeSpec::PinRect(RectSpec {
             pt,
             offset: RectPosition::Fix(pos),
             colspec: colspec.unwrap()
-        })        
+        }))     
     }    
 }
 
 impl TypeToShape for PinRectTypeSpec {
-    fn new_shape(&self, sid: &ShapeInstanceData) -> ShapeSpec {
+    fn new_shape(&self, sid: &ShapeInstanceData) -> Option<ShapeSpec> {
         match (self.sea_x.is_some(),self.sea_y.is_some()) {
             (false,false) =>self.new_pin(sid),
             (false,true) => self.new_tape(sid),
