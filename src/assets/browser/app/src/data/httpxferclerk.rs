@@ -8,7 +8,8 @@ use url::Url;
 
 use super::{ 
     XferClerk, XferConsumer, XferRequest, XferResponse, 
-    HttpResponseConsumer, xfer_marshal, HttpManager, BackendConfig
+    HttpResponseConsumer, xfer_marshal, HttpManager, BackendConfig,
+    BackendConfigBootstrap
 };
 
 struct PendingDataRequest {
@@ -27,17 +28,6 @@ impl HttpResponseConsumer for PendingDataRequest {
     }
 }
 
-struct HttpXferConfigConsumer {
-    clerk: HttpXferClerk
-}
-
-impl HttpResponseConsumer for HttpXferConfigConsumer {
-    fn consume(&mut self,req: XmlHttpRequest) {
-        let value = req.response_text().ok().unwrap().unwrap();
-        self.clerk.set_config(BackendConfig::from_json_string(&value).expect("couldn't get remote config"));
-    }
-}
-
 pub struct HttpXferClerkImpl {
     http_manager: HttpManager,
     remote_backend_config: Option<BackendConfig>,
@@ -47,21 +37,14 @@ pub struct HttpXferClerkImpl {
 }
 
 impl HttpXferClerkImpl {
-    pub fn new(http_manager: HttpManager, base: &Url) -> HttpXferClerkImpl {
+    pub fn new(http_manager: &HttpManager, base: &Url) -> HttpXferClerkImpl {
         HttpXferClerkImpl {
-            http_manager: http_manager,
-            base: base.clone(),
+            http_manager: http_manager.clone(),
             remote_backend_config: None,
+            base: base.clone(),
             paused: Vec::<(XferRequest,Box<XferConsumer>)>::new()
         }
     }    
-
-    fn get_config(&mut self, hxcc: HttpXferConfigConsumer) {
-        let xhr = XmlHttpRequest::new();
-        xhr.set_response_type(XhrResponseType::Text);
-        xhr.open("GET",&self.base.as_str());
-        self.http_manager.add_request(xhr,None,Box::new(hxcc));
-    }
 
     pub fn set_config(&mut self, bc: BackendConfig) {
         console!("setting BackendConfig");
@@ -128,19 +111,19 @@ impl XferClerk for HttpXferClerkImpl {
 pub struct HttpXferClerk(Rc<RefCell<HttpXferClerkImpl>>);
 
 impl HttpXferClerk {
-    pub fn new(http_manager: HttpManager, base: &Url) -> HttpXferClerk {
-        let mut out = HttpXferClerk(Rc::new(RefCell::new(HttpXferClerkImpl::new(http_manager,base))));
-        out.get_config();
+    pub fn new(http_manager: &HttpManager, bcb: &mut BackendConfigBootstrap) -> HttpXferClerk {
+        let base = bcb.get_base().clone();
+        let out = HttpXferClerk(Rc::new(RefCell::new(
+            HttpXferClerkImpl::new(http_manager,&base))));
+        bcb.add_callback(Box::new(enclose! { (out) move |config| {
+            let mut imp = out.0.borrow_mut();
+            imp.set_config(config.clone());
+        }}));
         out
     }
 
     pub fn set_config(&mut self, bc: BackendConfig) {
         self.0.borrow_mut().set_config(bc);
-    }
-
-    fn get_config(&mut self) {
-        let hxcc = HttpXferConfigConsumer { clerk: self.clone() };
-        self.0.borrow_mut().get_config(hxcc);        
     }
 }
 

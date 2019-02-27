@@ -4,10 +4,11 @@ use stdweb::web::HtmlElement;
 use stdweb::unstable::TryInto;
 use serde_json::Value as JSONValue;
 
-use composit::{ Compositor, StateManager, Stage };
+use composit::{ Compositor, StateManager, Stage, StickManager };
 use controller::input::{ Action, actions_run, startup_actions };
 use controller::global::{ AppRunnerWeak, AppRunner };
 use controller::output::Report;
+use debug::debug_stick_manager;
 use dom::domutil;
 use print::Printer;
 
@@ -21,6 +22,7 @@ pub struct App {
     pub stage: Arc<Mutex<Stage>>,
     pub state: Arc<Mutex<StateManager>>,
     pub compo: Arc<Mutex<Compositor>>,
+    sticks: Box<StickManager>,
     report: Option<Report>
 }
 
@@ -37,10 +39,16 @@ impl App {
             stage:  Arc::new(Mutex::new(Stage::new())),
             compo: Arc::new(Mutex::new(Compositor::new())),
             state: Arc::new(Mutex::new(StateManager::new())),
+            sticks: Box::new(debug_stick_manager()),
             report: None
         };
         out.run_actions(&startup_actions());
         out
+    }
+    
+    pub fn with_stick_manager<F,G>(&mut self, cb: F) -> G
+            where F: FnOnce(&mut Box<StickManager>) -> G {
+        cb(&mut self.sticks)
     }
     
     pub fn set_runner(&mut self, ar: &AppRunnerWeak) {

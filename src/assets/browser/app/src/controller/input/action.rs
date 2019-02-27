@@ -1,5 +1,5 @@
 use types::{ Move, Units, Axis, Dot, cdfraction, LEFT, RIGHT };
-use composit::StateValue;
+use composit::{ StateValue, StickManager };
 use controller::global::App;
 
 #[derive(Debug,Clone)]
@@ -80,7 +80,7 @@ fn exe_component_add(a: &mut App, name: &str) {
 }
 
 fn exe_set_stick(a: &mut App, name: &str) {
-    if let Some(Some(stick)) = a.with_apprunner(|g| g.get_stick(name)) {
+    if let Some(stick) = a.with_stick_manager(|sm| sm.get_stick(name)) {
         a.with_compo(|co| co.set_stick(&stick));
         a.with_stage(|s| {
             s.set_limit(&LEFT,0.);
