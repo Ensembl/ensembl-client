@@ -7,10 +7,10 @@ import styles from './PopularSpeciesButton.scss';
 
 const onClick = jest.fn;
 const onStrainSelect = jest.fn;
-const strains = [...new Array(4)].map((item, index) => ({
-  name: `strain-${index}`,
-  isSelected: Boolean(index % 2)
-}));
+// const strains = [...new Array(4)].map((item, index) => ({
+//   name: `strain-${index}`,
+//   isSelected: Boolean(index % 2)
+// }));
 const species = 'mouse';
 
 const commonProps = {
@@ -26,7 +26,8 @@ describe('<PopularSpeciesButton />', () => {
         <PopularSpeciesButton {...commonProps} isSelected={false} />
       );
       const component = mount(renderedButton);
-      console.log('component', component);
+      console.log('component', component.at(0).html());
+      console.log('styles', styles);
     });
   });
 });
