@@ -6,7 +6,8 @@ use url::Url;
 use composit::StateValue;
 use controller::global::Global;
 use controller::input::Action;
-use debug::DebugSourceType;
+use debug::DEMO_SOURCES;
+
 use dom::domutil;
 use dom::event::{ EventListener, EventType, EventData, EventControl, Target };
 use dom::AppEventData;
@@ -58,9 +59,11 @@ pub fn register_startup_events(g: &Arc<Mutex<Global>>) {
 
 pub fn initial_actions() -> Vec<Action> {
     let mut out = Vec::<Action>::new();
-    for type_ in DebugSourceType::all() {
-        out.push(Action::AddComponent(type_.get_name().to_string()));
-        out.push(Action::SetState(type_.get_name().to_string(),StateValue::On()));
+    
+    /* Default tracks */
+    for name in &DEMO_SOURCES {
+        out.push(Action::AddComponent(name.to_string()));
+        out.push(Action::SetState(name.to_string(),StateValue::On()));
     }
     out.extend(vec! {
         Action::SetStick("2".to_string()),

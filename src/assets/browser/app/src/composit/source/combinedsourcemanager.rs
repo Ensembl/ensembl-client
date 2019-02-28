@@ -6,7 +6,6 @@ use std::collections::HashMap;
 
 use composit::{ ActiveSource, AllLandscapes, SourceManager };
 use data::{ BackendConfig, HttpXferClerk };
-use debug::DebugSourceType;
 use tácode::{ Tácode, TáSource };
 use super::build_combined_source;
 
