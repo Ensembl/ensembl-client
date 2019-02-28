@@ -1,11 +1,13 @@
 import React, { FunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 
+import styles from './Home.scss';
+
 type HomeProps = {};
 
 const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
   return (
-    <section>
+    <section class={styles.home}>
       <h2>Previously viewed</h2>
       <dl>
         <dd>
