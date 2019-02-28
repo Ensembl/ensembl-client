@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use composit::{ SourceManager, ActiveSource, AllLandscapes };
-use data::{ HttpManager, HttpXferClerk };
+use data::{ HttpManager, HttpXferClerk, BackendConfig };
 use debug::support::{ debug_activesource_type };
 use tácode::Tácode;
 
@@ -103,15 +103,17 @@ impl DebugSourceType {
 pub struct DebugSourceManager {
     tc: Tácode,
     http_clerk: HttpXferClerk,
-    als: AllLandscapes
+    als: AllLandscapes,
+    config: BackendConfig
 }
 
 impl DebugSourceManager {
-    pub fn new(tc: &Tácode, http_clerk: &HttpXferClerk, als: &AllLandscapes) -> DebugSourceManager {
+    pub fn new(tc: &Tácode, config: &BackendConfig, http_clerk: &HttpXferClerk, als: &AllLandscapes) -> DebugSourceManager {
         DebugSourceManager {
             tc: tc.clone(),
             als: als.clone(),
-            http_clerk: http_clerk.clone()
+            http_clerk: http_clerk.clone(),
+            config: config.clone()
         }
     }
 }
@@ -119,7 +121,7 @@ impl DebugSourceManager {
 impl SourceManager for DebugSourceManager {
     fn get_component(&mut self, name: &str) -> Option<ActiveSource> {
         DebugSourceType::from_name(name).map(|type_|
-            debug_activesource_type(&self.tc,&mut self.als,&self.http_clerk,&type_)
+            debug_activesource_type(&self.tc,&self.config,&mut self.als,&self.http_clerk,&type_)
         )
     }
 }

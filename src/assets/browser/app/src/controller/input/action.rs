@@ -81,6 +81,7 @@ fn exe_component_add(a: &mut App, name: &str) {
 
 fn exe_set_stick(a: &mut App, name: &str) {
     if let Some(stick) = a.with_stick_manager(|sm| sm.get_stick(name)) {
+        console!("B {:?}",stick);
         a.with_compo(|co| co.set_stick(&stick));
         a.with_stage(|s| {
             s.set_limit(&LEFT,0.);

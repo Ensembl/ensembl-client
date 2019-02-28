@@ -13,7 +13,7 @@ use controller::input::{
     Timers, Timer
 };
 use controller::output::{ Projector, Report };
-use data::{ HttpManager, HttpXferClerk, BackendConfigBootstrap };
+use data::{ HttpManager, HttpXferClerk, BackendConfigBootstrap, BackendConfig };
 use debug::debug_stick_manager;
 use dom::Bling;
 use dom::event::EventControl;
@@ -34,7 +34,8 @@ struct AppRunnerImpl {
     csl: SourceManagerList,
     als: AllLandscapes,
     http_manager: HttpManager,
-    http_clerk: HttpXferClerk
+    http_clerk: HttpXferClerk,
+    config: BackendConfig
 }
 
 #[derive(Clone)]
@@ -44,13 +45,11 @@ pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
 impl AppRunner {
-    pub fn new(g: &GlobalWeak, el: &HtmlElement, bling: Box<Bling>, config_url: &Url) -> AppRunner {
+    pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<Bling>, config_url: &Url, config: &BackendConfig) -> AppRunner {
         let browser_el : HtmlElement = bling.apply_bling(&el);
-        let st = App::new(&browser_el);
+        let st = App::new(config,&browser_el);
         let tc = Tácode::new();
-        let http_manager = HttpManager::new();
-        let mut bcb = BackendConfigBootstrap::new(&http_manager,config_url);
-        let mut http_clerk = HttpXferClerk::new(&http_manager,&mut bcb);
+        let mut http_clerk = HttpXferClerk::new(&http_manager,config,config_url);
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
             g: g.clone(),
             el: el.clone(),
@@ -63,7 +62,8 @@ impl AppRunner {
             csl: SourceManagerList::new(),
             als: AllLandscapes::new(),
             http_manager: http_manager.clone(),
-            http_clerk: http_clerk.clone()
+            http_clerk: http_clerk.clone(),
+            config: config.clone()
         })));
         {
             let imp = out.0.lock().unwrap();
@@ -78,7 +78,7 @@ impl AppRunner {
             app.lock().unwrap().set_report(report);
             let el = imp.el.clone();
             imp.bling.activate(&app,&el);
-            let dsm = DebugSourceManager::new(&tc,&imp.http_clerk,&imp.als);
+            let dsm = DebugSourceManager::new(&tc,&imp.config,&imp.http_clerk,&imp.als);
             imp.csl.add_compsource(Box::new(dsm));
         }
         out
@@ -94,7 +94,7 @@ impl AppRunner {
             let mut imp = self.0.lock().unwrap();
             imp.bling = bling;
             let browser_el : HtmlElement = imp.bling.apply_bling(&imp.el);
-            imp.app = Arc::new(Mutex::new(App::new(&browser_el)));
+            imp.app = Arc::new(Mutex::new(App::new(&imp.config,&browser_el)));
             let weak = AppRunnerWeak::new(&self);
             imp.app.lock().unwrap().set_runner(&weak);
             imp.timers = Timers::new();
@@ -111,7 +111,7 @@ impl AppRunner {
             let app = imp.app.clone();
             app.lock().unwrap().set_report(report);
             imp.bling.activate(&app,&el);
-            let dsm = DebugSourceManager::new(&imp.tc,&imp.http_clerk,&imp.als);
+            let dsm = DebugSourceManager::new(&imp.tc,&imp.config,&imp.http_clerk,&imp.als);
             imp.csl.add_compsource(Box::new(dsm));
         }
     }
@@ -161,13 +161,6 @@ impl AppRunner {
             let tc = self.0.lock().unwrap().tc.clone();
             self.add_timer(move |app,_| {
                 tc.step();
-            },None);
-        }
-        /* run http timer */
-        {
-            let hm = self.0.lock().unwrap().http_manager.clone();
-            self.add_timer(move |app,_| {
-                hm.tick()
             },None);
         }
     }
