@@ -2,5 +2,5 @@
 
 .trackPanel {
   @include flex;
-  border-left: 1px solid $ens-medium-grey;
+  position: relative;
 }
