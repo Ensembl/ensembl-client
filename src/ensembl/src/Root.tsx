@@ -1,10 +1,17 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, {
+  FunctionComponent,
+  useEffect,
+  useState,
+  useCallback
+} from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { withCookies, ReactCookieProps, Cookies } from 'react-cookie';
 import useResizeObserver from 'use-resize-observer';
 
 import Header from './header/Header';
 import Content from './content/Content';
+import PrivacyBanner from './shared/privacy-banner/PrivacyBanner';
 
 import { updateBreakpointWidth } from './globalActions';
 import { getBreakpointWidth } from './globalSelectors';
@@ -21,7 +28,7 @@ type DispatchProps = {
 
 type OwnProps = {};
 
-type RootProps = StateProps & DispatchProps & OwnProps;
+type RootProps = StateProps & DispatchProps & ReactCookieProps & OwnProps;
 
 const Root: FunctionComponent<RootProps> = (props: RootProps) => {
   const [ref, width] = useResizeObserver();
@@ -31,11 +38,30 @@ const Root: FunctionComponent<RootProps> = (props: RootProps) => {
     props.updateBreakpointWidth(currentBreakpoint);
   }, [props.updateBreakpointWidth, currentBreakpoint]);
 
+  const [showPrivacyBanner, setShowPrivacyBanner] = useState(true);
+  const cookies = props.cookies as Cookies;
+
+  useEffect(() => {
+    if (cookies.get('ENSEMBL_PRIVACY_POLICY') === 'true') {
+      setShowPrivacyBanner(false);
+    }
+  }, [cookies]);
+
+  const closeBanner = useCallback(() => {
+    cookies.set('ENSEMBL_PRIVACY_POLICY', 'true');
+    setShowPrivacyBanner(false);
+  }, [cookies]);
+
   return (
     <BrowserRouter>
       <div ref={ref as React.RefObject<HTMLDivElement>}>
         <Header />
         <Content />
+        {showPrivacyBanner ? (
+          <PrivacyBanner closeBanner={closeBanner} />
+        ) : (
+          false
+        )}
       </div>
     </BrowserRouter>
   );
@@ -47,7 +73,9 @@ const mapStateToProps = (state: RootState): StateProps => ({
 
 const mapDispatchToProps: DispatchProps = { updateBreakpointWidth };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Root);
+export default withCookies(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(Root)
+);
