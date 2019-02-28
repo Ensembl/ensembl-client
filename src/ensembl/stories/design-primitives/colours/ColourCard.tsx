@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 
-import styles from './ColorCard.scss';
+import styles from './ColourCard.scss';
 
 type Props = {
   name: string;
@@ -8,15 +8,15 @@ type Props = {
   value: string;
 };
 
-const ColorCard: FunctionComponent<Props> = (props) => {
+const ColourCard: FunctionComponent<Props> = (props) => {
   return (
-    <div className={styles.colorCard}>
+    <div className={styles.colourCard}>
       <div
-        className={styles.colorArea}
+        className={styles.colourArea}
         style={{ backgroundColor: props.value }}
       />
-      <div className={styles.colorInfo}>
-        <div className={styles.colorName}>{props.name}</div>
+      <div className={styles.colourInfo}>
+        <div className={styles.colourName}>{props.name}</div>
         <div>{props.variableName}</div>
         <div>{props.value}</div>
       </div>
@@ -24,4 +24,4 @@ const ColorCard: FunctionComponent<Props> = (props) => {
   );
 };
 
-export default ColorCard;
+export default ColourCard;
