@@ -30,6 +30,6 @@ _Caveat:_ we have not carefully considered Storybook alternatives.
 
 ## Risks
 
-- Storybook behaves as a separate application with its own config files (much like Create React App). If a major development dependency (such as babel or webpack) gets updated, there may be a period until Storybook developers catch up with these changes, when it will be hard/impossible for us to update our dependencies. As an example, see [this issue](https://github.com/storybooks/storybook/issues/3805).
+- Storybook behaves as a separate application with its own config files (much like Create React App). If a major development dependency (such as babel or webpack) gets updated, there may be a period until Storybook developers catch up with these changes, when it will be hard/impossible for us to update our dependencies. As an example, see [this issue](https://github.com/storybooks/storybook/issues/3805). However Storybook is not absolutely required for development of the application to continue; we are not tied into it and could switch to an alternative technology at any point if necessary.
 
 - Use of Storybook could slow development initially, as it will take time to integrate it into our workflow and create the necessary stories. However this should be offset in the medium to long term by encouraging us to reuse components.
