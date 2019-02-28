@@ -39,7 +39,6 @@ impl CombinedSource {
 impl Source for CombinedSource {
     fn populate(&self, acs: &ActiveSource, lc: &mut SourceResponse, leaf: &Leaf) {
         let stick_name = leaf.get_stick().get_name();
-        console!("stick {:?}",stick_name);
         if let Some(source) = self.per_stick_sources.get(&stick_name) {
             source.populate(acs,lc,leaf);
         } else {
