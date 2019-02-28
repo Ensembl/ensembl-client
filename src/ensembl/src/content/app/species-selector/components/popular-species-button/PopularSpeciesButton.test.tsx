@@ -1,16 +1,17 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { mount, render } from 'enzyme';
 
 import PopularSpeciesButton from './PopularSpeciesButton';
 
 import styles from './PopularSpeciesButton.scss';
+import strainSelectorStyles from ',,/strain-selector/StrainSelector.scss';
 
 const onClick = jest.fn;
 const onStrainSelect = jest.fn;
-// const strains = [...new Array(4)].map((item, index) => ({
-//   name: `strain-${index}`,
-//   isSelected: Boolean(index % 2)
-// }));
+const strains = [...new Array(4)].map((_, index) => ({
+  name: `strain-${index}`,
+  isSelected: Boolean(index % 2)
+}));
 const species = 'mouse';
 
 const commonProps = {
@@ -19,15 +20,58 @@ const commonProps = {
   onStrainSelect
 };
 
+const strainSelectorClassName = `.${strainSelectorStyles.strainSelector}`;
+
 describe('<PopularSpeciesButton />', () => {
   describe('not selected', () => {
     test('has appropriate class', () => {
-      const renderedButton = (
+      const renderedButton = render(
         <PopularSpeciesButton {...commonProps} isSelected={false} />
       );
-      const component = mount(renderedButton);
-      console.log('component', component.at(0).html());
-      console.log('styles', styles);
+      expect(renderedButton.hasClass(styles.popularSpeciesButton)).toBe(true);
+      expect(renderedButton.hasClass(styles.popularSpeciesButtonActive)).toBe(
+        false
+      );
+    });
+
+    test('does not render strain selector even if provided with a list of strains', () => {
+      const renderedButton = mount(
+        <PopularSpeciesButton
+          {...commonProps}
+          isSelected={false}
+          strains={strains}
+        />
+      );
+      expect(renderedButton.find(strainSelectorClassName).length).toBe(0);
+    });
+  });
+
+  describe('selected', () => {
+    test('has appropriate class', () => {
+      const renderedButton = render(
+        <PopularSpeciesButton {...commonProps} isSelected={true} />
+      );
+      expect(renderedButton.hasClass(styles.popularSpeciesButtonActive)).toBe(
+        true
+      );
+    });
+
+    test('does not render strain selector if none are available', () => {
+      const renderedButton = mount(
+        <PopularSpeciesButton {...commonProps} isSelected={true} />
+      );
+      expect(renderedButton.find(strainSelectorClassName).length).toBe(0);
+    });
+
+    test('renders strain selector if a list of strains is provided', () => {
+      const renderedButton = mount(
+        <PopularSpeciesButton
+          {...commonProps}
+          isSelected={true}
+          strains={strains}
+        />
+      );
+      expect(renderedButton.find(strainSelectorClassName).length).toBe(1);
     });
   });
 });
