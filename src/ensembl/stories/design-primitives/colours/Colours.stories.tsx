@@ -42,10 +42,16 @@ const colours = [
   }
 ];
 
-storiesOf('Design Primitives|Colours', module).add('colour palette', () => (
-  <>
-    {colours.map((colourData) => (
-      <ColourCard {...colourData} />
-    ))}
-  </>
-));
+storiesOf('Design Primitives|Colours', module).add(
+  'colour palette',
+  () => (
+    <>
+      {colours.map((colourData) => (
+        <ColourCard {...colourData} />
+      ))}
+    </>
+  ),
+  {
+    notes: "Basic Ensembl palette as per Andrea's design mockups"
+  }
+);

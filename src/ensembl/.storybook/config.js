@@ -1,5 +1,6 @@
 import { configure, addDecorator } from '@storybook/react';
 import { withOptions } from '@storybook/addon-options';
+import { withNotes } from '@storybook/addon-notes';
 
 function loadStories() {
   require('../stories/index.tsx');
@@ -12,5 +13,7 @@ addDecorator(
     hierarchySeparator: /\//
   })
 )
+
+addDecorator(withNotes);
 
 configure(loadStories, module);
