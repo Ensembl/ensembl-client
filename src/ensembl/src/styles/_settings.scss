@@ -111,6 +111,16 @@ $ens-dark-grey: #6f8190;
 
 $ens-white: #fff;
 
+:export {
+  ens-blue: $ens-blue;
+  ens-black: $ens-black;
+  ens-dark-grey: $ens-dark-grey;
+  ens-grey: $ens-grey;
+  ens-medium-grey: $ens-medium-grey;
+  ens-light-grey: $ens-light-grey;
+  ens-white: $ens-white;
+}
+
 $img-base-url: '/static/img';
 
 // font weights
