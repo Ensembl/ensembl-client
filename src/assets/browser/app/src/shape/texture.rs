@@ -49,32 +49,42 @@ impl Shape for TextureSpec {
             let mut pos = cfraction(0.,0.);
             let mut offset = self.offset.as_fraction();
             match self.origin {
-                TexturePosition::Pin(origin) => {
-                    multi_gl(b,geom,"aOrigin",&origin,4);
-                },
+                TexturePosition::Pin(origin) => {},
                 TexturePosition::Tape(origin) => {
                     let origin = origin.x_edge(AxisSense::Max);
                     ap = ap.flip_d(origin);
                     mp = mp.flip_d(origin);
                     offset = offset.flip(&origin.corner());
                     anchor = anchor.flip(&origin.corner());
-                    multi_gl(b,geom,"aOrigin",&origin.quantity(),4);
-                    multi_gl(b,geom,"aVertexSign",&origin.corner(),4);
                 },
                 TexturePosition::Fix(origin) => {
                     ap = ap.flip_d(origin);
                     mp = mp.flip_d(origin);
                     anchor = anchor.flip(&origin.corner());
                     pos = origin.quantity().as_fraction();
-                    multi_gl(b,geom,"aVertexSign",&origin.corner(),4);
                 }
             }
             let p = area_centred(pos,
                                  (art.size * self.scale).as_fraction());
             let p = anchor.to_middle(p) + p + offset;
-            rectangle_t(b,geom,"aTextureCoord",&ap);
-            rectangle_t(b,geom,"aMaskCoord",&mp);
-            rectangle_t(b,geom,"aVertexPosition",&p);
+            if p.offset().0 <= 1. && p.far_offset().0 >= 0. {
+                rectangle_t(b,geom,"aTextureCoord",&ap);
+                rectangle_t(b,geom,"aMaskCoord",&mp);
+                rectangle_t(b,geom,"aVertexPosition",&p);
+                match self.origin {
+                    TexturePosition::Pin(origin) => {
+                        multi_gl(b,geom,"aOrigin",&origin,4);
+                    },
+                    TexturePosition::Tape(origin) => {
+                        let origin = origin.x_edge(AxisSense::Max);
+                        multi_gl(b,geom,"aOrigin",&origin.quantity(),4);
+                        multi_gl(b,geom,"aVertexSign",&origin.corner(),4);
+                    },
+                    TexturePosition::Fix(origin) => {
+                        multi_gl(b,geom,"aVertexSign",&origin.corner(),4);
+                    }
+                }
+            }
         }
     }
 
@@ -143,12 +153,16 @@ impl TextureTypeSpec {
         texture(&td.facade,&TexturePosition::Fix(origin),&scale,&offset,PTGeom::Page)
     }
     
-    fn new_pin(&self, td: &ShapeInstanceData) -> ShapeSpec {
+    fn new_pin(&self, td: &ShapeInstanceData) -> Option<ShapeSpec> {
         let origin = cleaf(td.pos_x,td.pos_y);
         let scale = cpixel(self.scale_x as i32,self.scale_y as i32).anchor(self.anchor_pt());
         let offset = cpixel(td.aux_x as i32-self.ship_x.1,
                             td.aux_y as i32-self.ship_y.1);
-        texture(&td.facade,&TexturePosition::Pin(origin),&scale,&offset,PTGeom::Pin)
+        if origin.0 <= 1. {
+            Some(texture(&td.facade,&TexturePosition::Pin(origin),&scale,&offset,PTGeom::Pin))
+        } else {
+            None
+        }
     }
     
     fn new_tape(&self, td: &ShapeInstanceData) -> ShapeSpec {
@@ -163,7 +177,7 @@ impl TextureTypeSpec {
 impl TypeToShape for TextureTypeSpec {
     fn new_shape(&self, td: &ShapeInstanceData) -> Option<ShapeSpec> {
         Some(match (self.sea_x.is_some(),self.sea_y.is_some()) {
-            (false,false) => Some(self.new_pin(td)),
+            (false,false) => self.new_pin(td),
             (false,true) => Some(self.new_tape(td)),
             (true,false) => Some(self.new_page(td)),
             (true,true) => Some(self.new_fix(td))
