@@ -29,6 +29,8 @@ export type BrowserState = Readonly<{
   defaultChrLocation: ChrLocation;
   drawerOpened: boolean;
   drawerSections: DrawerSection[];
+  trackPanelModalOpened: boolean;
+  trackPanelModalView: string;
   trackPanelOpened: boolean;
 }>;
 
@@ -43,6 +45,8 @@ export const defaultState: BrowserState = {
   defaultChrLocation: ['13', 0, 0],
   drawerOpened: false,
   drawerSections: [],
+  trackPanelModalOpened: false,
+  trackPanelModalView: '',
   trackPanelOpened: true
 };
 

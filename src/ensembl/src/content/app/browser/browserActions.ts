@@ -57,3 +57,14 @@ export const updateDefaultChrLocation = createAction(
     return (chrLocation: ChrLocation) => resolve(chrLocation);
   }
 );
+
+export const openTrackPanelModal = createAction(
+  'browser/open-track-panel-modal',
+  (resolve) => {
+    return (trackPanelModalView: string) => resolve(trackPanelModalView);
+  }
+);
+
+export const closeTrackPanelModal = createAction(
+  'browser/close-track-panel-modal'
+);

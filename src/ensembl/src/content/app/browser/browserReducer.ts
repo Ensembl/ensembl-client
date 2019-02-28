@@ -42,6 +42,18 @@ export default (
         chrLocation: action.payload,
         defaultChrLocation: action.payload
       };
+    case getType(browser.openTrackPanelModal):
+      return {
+        ...state,
+        trackPanelModalOpened: true,
+        trackPanelModalView: action.payload
+      };
+    case getType(browser.closeTrackPanelModal):
+      return {
+        ...state,
+        trackPanelModalOpened: false,
+        trackPanelModalView: ''
+      };
     default:
       return state;
   }
