@@ -10,11 +10,14 @@ import chevronRightIcon from 'static/img/shared/chevron-right.svg';
 import styles from './TrackPanelBar.scss';
 
 type TrackPanelBarProps = {
-  toggleDrawer: (drawerOpened: boolean) => void;
+  closeTrackPanelModal: () => void;
   drawerOpened: boolean;
   launchbarExpanded: boolean;
-  trackPanelOpened: boolean;
+  openTrackPanelModal: (trackPanelModalView: string) => void;
+  toggleDrawer: (drawerOpened: boolean) => void;
   toggleTrackPanel: (trackPanelOpened?: boolean) => void;
+  trackPanelModalView: string;
+  trackPanelOpened: boolean;
 };
 
 const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
@@ -49,7 +52,13 @@ const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
           </button>
         </dt>
         {trackPanelBarConfig.map((item: TrackPanelBarItem) => (
-          <TrackPanelBarIcon key={item.name} iconConfig={item} />
+          <TrackPanelBarIcon
+            key={item.name}
+            iconConfig={item}
+            closeTrackPanelModal={props.closeTrackPanelModal}
+            openTrackPanelModal={props.openTrackPanelModal}
+            trackPanelModalView={props.trackPanelModalView}
+          />
         ))}
       </dl>
     </div>
