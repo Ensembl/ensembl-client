@@ -5,6 +5,6 @@ mod sources;
 mod stickmanager;
 
 pub use self::debugxferresponder::DebugXferResponder;
-pub use self::sourcemanager::{ DebugSourceManager, DebugSourceType };
-pub use self::sources::debug_activesource_type;
-pub use self::stickmanager::{ debug_stick_manager };
+pub use self::sourcemanager::{ DebugSourceType };
+pub use self::sources::add_debug_sources;
+pub use self::stickmanager::{ add_debug_sticks };

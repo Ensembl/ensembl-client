@@ -14,8 +14,8 @@ use controller::input::{
 };
 use controller::global::AppRunner;
 use data::{ BackendConfigBootstrap, HttpManager, BackendConfig };
-use debug::{ DebugBling, MiniBling, create_interactors };
-use dom::{ domutil, Bling };
+use debug::{ DebugBling, create_interactors };
+use dom::{ domutil, Bling, NoBling };
 
 pub struct GlobalImpl {
     apps: HashMap<String,AppRunner>,
@@ -39,7 +39,7 @@ impl Booting {
         let bling : Box<Bling> = if self.debug {
             Box::new(DebugBling::new(create_interactors()))
         } else { 
-            Box::new(MiniBling::new())
+            Box::new(NoBling::new())
         };
         let ar = AppRunner::new(
             &GlobalWeak::new(&global),&self.http_manager,

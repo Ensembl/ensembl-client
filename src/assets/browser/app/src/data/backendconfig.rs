@@ -30,7 +30,14 @@ impl BackendEndpoint {
 
 #[derive(Debug,Clone)]
 pub struct BackendTrack {
-    endpoints: Vec<(i32,i32,String)>
+    endpoints: Vec<(i32,i32,String)>,
+    letter: String,
+    position: i32
+}
+
+impl BackendTrack {
+    pub fn get_letter(&self) -> &str { &self.letter }
+    pub fn get_position(&self) -> i32 { self.position }
 }
 
 #[derive(Debug,Clone)]
@@ -60,6 +67,10 @@ impl BackendConfig {
         return Err(format!("No endpoint for scale {} for {}",scale,compo));
     }
     
+    pub fn get_track(&self, name: &str) -> Option<&BackendTrack> {
+        self.tracks.get(name)
+    }
+    
     pub fn get_sticks(&self) -> &HashMap<String,Stick> { &self.sticks }
 
     fn endpoints_from_json(ep: &SerdeValue, bytecodes: HashMap<String,Rc<BackendBytecode>>) -> HashMap<String,BackendEndpoint> {
@@ -79,13 +90,17 @@ impl BackendConfig {
         let mut out = HashMap::<String,BackendTrack>::new();
         for (track_name,v) in ep.as_object().unwrap().iter() {
             let mut endpoints = Vec::<(i32,i32,String)>::new();
-            for (scales,track) in v.as_object().unwrap().iter() {
+            for (scales,track) in v["endpoints"].as_object().unwrap().iter() {
                 let scales :Vec<char> = scales.chars().collect();
                 let min = Scale::new_from_letter(scales[0]).get_index();
                 let max = Scale::new_from_letter(scales[1]).get_index();
                 endpoints.push((min,max,track["endpoint"].as_str().unwrap().to_string()));
             }
-            out.insert(track_name.to_string(),BackendTrack { endpoints });
+            out.insert(track_name.to_string(),BackendTrack { 
+                letter: v.get("letter").and_then(|x| x.as_str()).unwrap_or("").to_string(),
+                position: v.get("position").and_then(|x| x.as_i64()).unwrap_or(-1) as i32,
+                endpoints
+            });
         }
         out
     }

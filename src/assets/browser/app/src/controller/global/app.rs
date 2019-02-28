@@ -4,12 +4,12 @@ use stdweb::web::HtmlElement;
 use stdweb::unstable::TryInto;
 use serde_json::Value as JSONValue;
 
-use composit::{ Compositor, StateManager, Stage, StickManager };
+use composit::{ Compositor, StateManager, Stage, StickManager, CombinedStickManager };
 use controller::input::{ Action, actions_run, startup_actions };
 use controller::global::{ AppRunnerWeak, AppRunner };
 use controller::output::Report;
 use data::{ BackendConfig, BackendStickManager };
-use debug::debug_stick_manager;
+use debug::add_debug_sticks;
 use dom::domutil;
 use print::Printer;
 
@@ -32,6 +32,9 @@ impl App {
         let browser_el = browser_el.clone();
         domutil::inner_html(&browser_el.clone().into(),CANVAS);
         let canv_el : HtmlElement = domutil::query_selector(&browser_el.clone().into(),"canvas").try_into().unwrap();
+        let bsm = BackendStickManager::new(config);
+        let mut csm = CombinedStickManager::new(bsm);
+        add_debug_sticks(&mut csm);
         let mut out = App {
             ar: AppRunnerWeak::none(),
             browser_el: browser_el.clone(),
@@ -40,7 +43,7 @@ impl App {
             stage:  Arc::new(Mutex::new(Stage::new())),
             compo: Arc::new(Mutex::new(Compositor::new())),
             state: Arc::new(Mutex::new(StateManager::new())),
-            sticks: Box::new(BackendStickManager::new(config)),
+            sticks: Box::new(csm),
             report: None
         };
         out.run_actions(&startup_actions());

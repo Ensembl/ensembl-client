@@ -11,8 +11,7 @@ use controller::input::EggDetector;
 use controller::global::App;
 use super::super::testcards::select_testcard;
 use debug::DebugConsole;
-use debug::pane::MiniBling;
-use dom::Bling;
+use dom::{ Bling, NoBling };
 use dom::domutil;
 use dom::event::{
     EventListener, EventControl, EventType, EventData, Target,
@@ -262,14 +261,14 @@ impl DebugInteractor for ButtonDebugInteractor {
 }
 
 pub struct DebugBling {
-    mb: MiniBling,
+    mb: NoBling,
     dii: Vec<Box<DebugInteractor>>
 }
 
 impl DebugBling {
     pub fn new(dii: Vec<Box<DebugInteractor>>) -> DebugBling {
         DebugBling { 
-            mb: MiniBling::new(),
+            mb: NoBling::new(),
             dii
         }
     }

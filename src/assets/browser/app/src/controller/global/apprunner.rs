@@ -4,7 +4,7 @@ use stdweb::web::HtmlElement;
 use url::Url;
 
 use composit::{
-    register_compositor_ticks, AllLandscapes,
+    register_compositor_ticks, AllLandscapes, CombinedSourceManager,
     SourceManager, SourceManagerList, StickManager, ActiveSource, Stick
 };
 use controller::global::{ App, GlobalWeak };
@@ -14,10 +14,9 @@ use controller::input::{
 };
 use controller::output::{ Projector, Report };
 use data::{ HttpManager, HttpXferClerk, BackendConfigBootstrap, BackendConfig };
-use debug::debug_stick_manager;
 use dom::Bling;
 use dom::event::EventControl;
-use debug::{ DebugBling, create_interactors, DebugSourceManager };
+use debug::{ DebugBling, create_interactors, add_debug_sticks };
 use tácode::Tácode;
 
 const SIZE_CHECK_INTERVAL_MS: f64 = 500.;
@@ -78,7 +77,7 @@ impl AppRunner {
             app.lock().unwrap().set_report(report);
             let el = imp.el.clone();
             imp.bling.activate(&app,&el);
-            let dsm = DebugSourceManager::new(&tc,&imp.config,&imp.http_clerk,&imp.als);
+            let dsm = CombinedSourceManager::new(&tc,&imp.config,&imp.als,&imp.http_clerk);
             imp.csl.add_compsource(Box::new(dsm));
         }
         out
@@ -111,7 +110,7 @@ impl AppRunner {
             let app = imp.app.clone();
             app.lock().unwrap().set_report(report);
             imp.bling.activate(&app,&el);
-            let dsm = DebugSourceManager::new(&imp.tc,&imp.config,&imp.http_clerk,&imp.als);
+            let dsm = CombinedSourceManager::new(&imp.tc,&imp.config,&imp.als,&imp.http_clerk);
             imp.csl.add_compsource(Box::new(dsm));
         }
     }
