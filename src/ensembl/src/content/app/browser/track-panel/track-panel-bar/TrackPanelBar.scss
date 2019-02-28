@@ -2,6 +2,8 @@
 
 .trackPanelBar {
   background: $ens-light-grey;
+  border-left: 1px solid $ens-medium-grey;
+  border-right: 1px solid $ens-medium-grey;
   width: 36px;
 
   &.shorter {
