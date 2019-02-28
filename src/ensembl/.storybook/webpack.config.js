@@ -22,6 +22,13 @@ module.exports = (baseConfig, env, defaultConfig) => {
     ]
   });
   defaultConfig.module.rules.push({
+    test: /\.json?$/,
+    loader: require.resolve('json-loader'),
+    include: [
+      path.resolve(__dirname, '../src/data/json')
+    ]
+  });
+  defaultConfig.module.rules.push({
     test: /.scss$/,
     include: [
       path.resolve(__dirname, '../src'),
