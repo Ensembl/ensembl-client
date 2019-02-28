@@ -5,24 +5,63 @@ use std::rc::{ Rc, Weak };
 use std::sync::{ Arc, Mutex };
 
 use stdweb::unstable::TryInto;
-use stdweb::web::{ HtmlElement, Element, IHtmlElement };
+use stdweb::web::{ HtmlElement, Element, IHtmlElement, window };
 use url::Url;
 
 use controller::input::{
-    register_startup_events, initial_actions, actions_run
+    register_startup_events, initial_actions, actions_run,
+    Timers
 };
 use controller::global::AppRunner;
+use data::{ BackendConfigBootstrap, HttpManager, BackendConfig };
 use debug::{ DebugBling, MiniBling, create_interactors };
 use dom::{ domutil, Bling };
 
 pub struct GlobalImpl {
-    apps: HashMap<String,AppRunner>
+    apps: HashMap<String,AppRunner>,
+    http_manager: HttpManager,
+    timers: Timers
+}
+
+pub struct Booting {
+    global: Global,
+    http_manager: HttpManager,
+    config_url: Url,
+    el: HtmlElement,
+    key: String,
+    debug: bool
+}
+
+impl Booting {
+    fn boot(&self, config: &BackendConfig) {
+        console!("bootstrapping");
+        let global = self.global.clone();
+        let bling : Box<Bling> = if self.debug {
+            Box::new(DebugBling::new(create_interactors()))
+        } else { 
+            Box::new(MiniBling::new())
+        };
+        let ar = AppRunner::new(
+            &GlobalWeak::new(&global),&self.http_manager,
+            &self.el,bling,&self.config_url,config
+        );
+        {
+            global.0.borrow_mut().register_app(&self.key,ar);
+        }
+        let ar = global.0.borrow_mut().get_apprunner(&self.key);
+        if let Some(ar) = ar {
+            let app = ar.clone().state();
+            actions_run(&mut app.lock().unwrap(),&initial_actions());
+        }
+    }
 }
 
 impl GlobalImpl {
     pub fn new() -> GlobalImpl {
         GlobalImpl {
             apps: HashMap::<String,AppRunner>::new(),
+            http_manager: HttpManager::new(),
+            timers: Timers::new()
         }
     }
 
@@ -64,7 +103,18 @@ pub struct GlobalWeak(Weak<RefCell<GlobalImpl>>);
 
 impl Global {
     pub fn new() -> Global {
-        Global(Rc::new(RefCell::new(GlobalImpl::new())))
+        let mut out = Global(Rc::new(RefCell::new(GlobalImpl::new())));
+        out.tick();
+        out
+    }
+    
+    pub fn tick(&mut self) {
+        let http_manager = self.0.borrow().http_manager.clone();
+        http_manager.tick();
+        let mut out = self.clone();
+        window().request_animation_frame(
+            move |t| out.tick()
+        );
     }
     
     pub fn unregister_app(&mut self, key: &str) {
@@ -73,20 +123,19 @@ impl Global {
 
     pub fn register_app(&mut self, key: &str, el: &HtmlElement, debug: bool, config_url: &Url) {
         self.unregister_app(key);
-        let bling : Box<Bling> = if debug {
-            Box::new(DebugBling::new(create_interactors()))
-        } else { 
-            Box::new(MiniBling::new())
+        let http_manager = &self.0.borrow().http_manager;
+        let mut bcb = BackendConfigBootstrap::new(&http_manager.clone(),config_url);
+        let booting = Booting {
+            global: self.clone(),
+            http_manager: http_manager.clone(),
+            config_url: config_url.clone(),
+            el: el.clone(),
+            key: key.to_string(),
+            debug
         };
-        let ar = AppRunner::new(&GlobalWeak::new(&self),&el,bling,config_url);
-        {
-            self.0.borrow_mut().register_app(key,ar);
-        }
-        let ar = self.0.borrow_mut().get_apprunner(key);
-        if let Some(ar) = ar {
-            let app = ar.clone().state();
-            actions_run(&mut app.lock().unwrap(),&initial_actions());
-        }
+        bcb.add_callback(Box::new(move |config| {
+            booting.boot(config);
+        }));
     }
         
     #[allow(unused,dead_code)]

@@ -111,14 +111,10 @@ impl XferClerk for HttpXferClerkImpl {
 pub struct HttpXferClerk(Rc<RefCell<HttpXferClerkImpl>>);
 
 impl HttpXferClerk {
-    pub fn new(http_manager: &HttpManager, bcb: &mut BackendConfigBootstrap) -> HttpXferClerk {
-        let base = bcb.get_base().clone();
-        let out = HttpXferClerk(Rc::new(RefCell::new(
+    pub fn new(http_manager: &HttpManager, config: &BackendConfig, base: &Url) -> HttpXferClerk {
+        let mut out = HttpXferClerk(Rc::new(RefCell::new(
             HttpXferClerkImpl::new(http_manager,&base))));
-        bcb.add_callback(Box::new(enclose! { (out) move |config| {
-            let mut imp = out.0.borrow_mut();
-            imp.set_config(config.clone());
-        }}));
+        out.set_config(config.clone());
         out
     }
 

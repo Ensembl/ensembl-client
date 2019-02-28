@@ -8,6 +8,7 @@ use composit::{ Compositor, StateManager, Stage, StickManager };
 use controller::input::{ Action, actions_run, startup_actions };
 use controller::global::{ AppRunnerWeak, AppRunner };
 use controller::output::Report;
+use data::{ BackendConfig, BackendStickManager };
 use debug::debug_stick_manager;
 use dom::domutil;
 use print::Printer;
@@ -27,7 +28,7 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(browser_el: &HtmlElement) -> App {
+    pub fn new(config: &BackendConfig, browser_el: &HtmlElement) -> App {
         let browser_el = browser_el.clone();
         domutil::inner_html(&browser_el.clone().into(),CANVAS);
         let canv_el : HtmlElement = domutil::query_selector(&browser_el.clone().into(),"canvas").try_into().unwrap();
@@ -39,7 +40,7 @@ impl App {
             stage:  Arc::new(Mutex::new(Stage::new())),
             compo: Arc::new(Mutex::new(Compositor::new())),
             state: Arc::new(Mutex::new(StateManager::new())),
-            sticks: Box::new(debug_stick_manager()),
+            sticks: Box::new(BackendStickManager::new(config)),
             report: None
         };
         out.run_actions(&startup_actions());

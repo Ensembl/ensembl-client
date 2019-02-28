@@ -52,6 +52,7 @@ impl HttpManager {
     pub fn tick(&self) {
         let done = self.0.borrow_mut().get_done();
         for (req,mut cons) in done {
+            console!("done");
             cons.consume(req);
         }
     }
