@@ -1,8 +1,8 @@
 @import 'src/styles/common';
 
 .launchbar {
-  border-bottom: 1px solid $ens-medium-grey;
-  border-top: 1px solid $ens-medium-grey;
+  border-bottom: 1px solid $ens-grey;
+  border-top: 1px solid $ens-grey;
   padding: 8px 6px;
   @include flex;
 
@@ -11,7 +11,7 @@
     padding: 0 15px;
 
     &.border {
-      border-right: 1px solid $ens-medium-grey;
+      border-right: 1px solid $ens-grey;
     }
 
     &:first-child {
