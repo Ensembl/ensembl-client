@@ -2,7 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 
 import ColorCard from './ColorCard';
-import variables from '../../../src/styles/_settings.scss';
+import variables from 'src/styles/_settings.scss';
 
 const colors = [
   {
