@@ -21,7 +21,7 @@ type TrackPanelListItemProps = {
 };
 
 // delete this when there is a better place to put this
-const trackPrefix = 'internal:debug';
+const trackPrefix = '';
 
 const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   props: TrackPanelListItemProps
