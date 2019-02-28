@@ -10,7 +10,7 @@ module.exports = {
   preset: 'ts-jest',
   roots: ['<rootDir>/src'],
   setupFiles: ['<rootDir>/setup-jest.ts'],
-  setupTestFrameworkScriptFile: '<rootDir>/setup-enzyme.ts',
+  setupFilesAfterEnv: ['<rootDir>/setup-enzyme.ts'],
   snapshotSerializers: ['enzyme-to-json/serializer'],
   testEnvironment: 'jsdom',
   transform: {
