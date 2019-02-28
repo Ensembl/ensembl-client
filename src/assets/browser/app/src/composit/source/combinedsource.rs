@@ -6,7 +6,7 @@ use composit::{
     StateAtom, AllLandscapes
 };
 use data::{ BackendConfig, HttpXferClerk };
-use debug::{ add_debug_sources, DebugSourceType };
+use debug::{ add_debug_sources };
 use tácode::{ Tácode, TáSource };
 
 const TOP : i32 = 50;

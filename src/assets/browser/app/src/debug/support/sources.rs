@@ -12,10 +12,38 @@ use data::{ BackendConfig, HttpXferClerk };
 use debug::testcards::{
     leafcard_source, text_source, bs_source_main, bs_source_sub
 };
-use debug::support::{
-    DebugSourceType
-};
 use tácode::{ Tácode, TáSource };
+
+#[cfg(deploy)]
+pub const DEBUG_SOURCES : [&str;0] = [];
+
+#[cfg(not(deploy))]
+pub const DEBUG_SOURCES : [&str;8] = [
+    "internal:debug:gene-pc-fwd",
+    "internal:debug:gene-other-fwd",
+    "internal:debug:gene-pc-rev",
+    "internal:debug:gene-other-rev",
+    "internal:debug:variant",
+    "internal:debug:contig",
+    "internal:debug:gc",
+    "internal:debug:zzz-framework"
+];
+
+#[cfg(deploy)]
+pub const DEMO_SOURCES : [&str;0] = [];
+
+#[cfg(not(deploy))]
+pub const DEMO_SOURCES : [&str;8] = [
+    "gene-pc-fwd",
+    "gene-other-fwd",
+    "gene-pc-rev",
+    "gene-other-rev",
+    "variant",
+    "contig",
+    "gc",
+    "zzz-framework"
+];
+
 
 #[cfg(deploy)]
 pub fn add_debug_sources(s: &mut CombinedSource, name: &str) {}
