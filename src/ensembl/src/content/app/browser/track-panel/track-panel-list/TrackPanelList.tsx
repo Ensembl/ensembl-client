@@ -27,7 +27,7 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
     toggleDrawer(true);
   };
 
-  const getTrackPanelClasses = () => {
+  const getTrackPanelListClasses = () => {
     const heightClass: string = props.launchbarExpanded
       ? styles.shorter
       : styles.taller;
@@ -63,7 +63,7 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   );
 
   return (
-    <div className={getTrackPanelClasses()}>
+    <div className={getTrackPanelListClasses()}>
       <section>
         <dl>{getTrackListItem(trackPanelConfig.main)}</dl>
       </section>
