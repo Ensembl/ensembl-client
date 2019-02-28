@@ -99,12 +99,16 @@ $global-button-cursor: auto;
 $global-color-pick-contrast-tolerance: 0;
 $print-transparent-backgrounds: true;
 
-$ens-black: #162f45;
-$ens-blue: #3894fb;
-$ens-dark-grey: #999;
-$ens-grey: #bdc5cd;
-$ens-medium-grey: #d5dadf;
-$ens-light-grey: #f1f3f5;
+$ens-black: #2c343a;
+
+$ens-light-blue: #e5f5ff; // text highlight
+$ens-blue: #33adff; // blue on black
+$ens-dark-blue: #0099ff; // blue on white
+
+$ens-light-grey: #f1f2f4;
+$ens-grey: #b7c0c8;
+$ens-dark-grey: #6f8190;
+
 $ens-white: #fff;
 
 $img-base-url: '/static/img';
