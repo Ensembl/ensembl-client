@@ -154,7 +154,7 @@ pub fn create_interactors() -> Vec<Box<DebugInteractor>> {
     event_button(&mut dii,"even on",None,json!({ "on": "even" }));
     event_button(&mut dii,"even off",None,json!({ "off": "even" }));
     event_button(&mut dii,"zero",None,json!({ "goto": "1000000-2000000" }));
-    event_button(&mut dii,"polar",None,json!({ "stick": "polar" }));
+    event_button(&mut dii,"ruler",None,json!({ "stick": "ruler" }));
     dii
 }
 

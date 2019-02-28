@@ -118,11 +118,6 @@ pub struct UserEventListenerBody {
 impl UserEventListenerBody {
     pub fn new(app_runner: &AppRunner, mouse: &Arc<Mutex<MousePhysics>>) -> UserEventListenerBody {
         let event_eggs = hashmap! {
-            "@polar#" => [
-                Action::AddComponent("internal:debug-main".to_string()),
-                Action::SetStick("polar".to_string()),
-                Action::ZoomTo(-5.)
-            ].to_vec()
         };
         UserEventListenerBody {
             mouse: mouse.clone(),

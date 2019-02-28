@@ -48,16 +48,15 @@ impl Source for CombinedSource {
     }
 }
 
-pub fn build_combined_source(tc: &Tácode, config: &BackendConfig, als: &mut AllLandscapes, xf: &HttpXferClerk, type_: &DebugSourceType) -> Option<ActiveSource> {
+pub fn build_combined_source(tc: &Tácode, config: &BackendConfig, als: &mut AllLandscapes, xf: &HttpXferClerk, type_name: &str) -> Option<ActiveSource> {
     let lid = als.allocate();
-    let type_name = type_.get_name();
     let y_pos = config.get_track(type_name).map(|t| t.get_position()).unwrap_or(-1);
     let letter = config.get_track(type_name).map(|t| t.get_letter()).unwrap_or("");
     let plot = Plot::new(y_pos*PITCH+TOP,PITCH,letter.to_string());
     als.with(lid, |ls| ls.set_plot(plot) );
-    let backend = TáSource::new(tc,Box::new(xf.clone()),type_.get_name(),lid);
+    let backend = TáSource::new(tc,Box::new(xf.clone()),type_name,lid);
     let mut combined = CombinedSource::new(Box::new(backend));
-    add_debug_sources(&mut combined,type_);
-    let state = Rc::new(StateAtom::new(type_.get_name()));
-    Some(ActiveSource::new(type_.get_name(),Rc::new(combined),state,als,lid))
+    add_debug_sources(&mut combined,type_name);
+    let state = Rc::new(StateAtom::new(type_name));
+    Some(ActiveSource::new(type_name,Rc::new(combined),state,als,lid))
 }

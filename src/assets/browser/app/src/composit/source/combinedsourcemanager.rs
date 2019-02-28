@@ -35,9 +35,7 @@ impl SourceManager for CombinedSourceManager {
     fn get_component(&mut self, name: &str) -> Option<ActiveSource> {
         if !self.sources.contains_key(name) {
             let tc = self.tc.clone();
-            let source = DebugSourceType::from_name(name).as_ref().and_then(|type_|
-                build_combined_source(&tc,&self.config,&mut self.als, &self.xf, type_)
-            );
+            let source = build_combined_source(&tc,&self.config,&mut self.als,&self.xf,name);
             self.sources.insert(name.to_string(),source);
         }
         self.sources[name].clone()
