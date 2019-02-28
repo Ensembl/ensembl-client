@@ -38,3 +38,9 @@ export const getChrLocation = (state: RootState): ChrLocation =>
 
 export const getDefaultChrLocation = (state: RootState): ChrLocation =>
   state.browser.defaultChrLocation;
+
+export const getTrackPanelModalOpened = (state: RootState): boolean =>
+  state.browser.trackPanelModalOpened;
+
+export const getTrackPanelModalView = (state: RootState): string =>
+  state.browser.trackPanelModalView;
