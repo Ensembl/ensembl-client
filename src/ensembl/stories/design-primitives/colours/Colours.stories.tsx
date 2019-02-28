@@ -1,10 +1,10 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 
-import ColorCard from './ColorCard';
+import ColourCard from './ColourCard';
 import variables from 'src/styles/_settings.scss';
 
-const colors = [
+const colours = [
   {
     name: 'Ensembl blue',
     variableName: '$ens-blue',
@@ -42,10 +42,10 @@ const colors = [
   }
 ];
 
-storiesOf('Design Primitives|Colors', module).add('color palette', () => (
+storiesOf('Design Primitives|Colours', module).add('colour palette', () => (
   <>
-    {colors.map((colorData) => (
-      <ColorCard {...colorData} />
+    {colours.map((colourData) => (
+      <ColourCard {...colourData} />
     ))}
   </>
 ));
