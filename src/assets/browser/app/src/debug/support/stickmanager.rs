@@ -2,38 +2,14 @@
 
 use std::collections::HashMap;
 
-use composit::{ Stick, StickManager };
+use composit::{ CombinedStickManager, Stick, StickManager };
 
-struct DebugStickManager {
-    sticks: HashMap<String,Stick>
-}
-
-impl DebugStickManager {
-    fn new() -> DebugStickManager {
-        DebugStickManager {
-            sticks: HashMap::<String,Stick>::new()
-        }
-    }
-    
-    fn add_stick(&mut self, name: &str, size: u64, circular: bool) {
-        self.sticks.insert(name.to_string(),Stick::new(&name,size,circular));
-    }    
-}
-
-impl StickManager for DebugStickManager {
-    fn get_stick(&mut self, name: &str) -> Option<Stick> {
-        self.sticks.get(name).map(|x| x.clone())
-    }    
-}
-
-pub fn debug_stick_manager() -> impl StickManager {
-    let mut s = DebugStickManager::new();
-    s.add_stick("polar",17000000,false);
-    s.add_stick("march",170000000,false);
-    s.add_stick("text", 17000000,false);
-    s.add_stick("leaf", 17000000,false);
-    s.add_stick("ruler",17000000,false);
-    s.add_stick("button",17000000,false);
-    s.add_stick("tácode",170000000,false);
-    s
+pub fn add_debug_sticks(csm: &mut CombinedStickManager) {
+    csm.add_internal_stick("polar",Stick::new("polar",17000000,false));
+    csm.add_internal_stick("march",Stick::new("march",17000000,false));
+    csm.add_internal_stick("text",Stick::new("text",17000000,false));
+    csm.add_internal_stick("leaf",Stick::new("leaf",17000000,false));
+    csm.add_internal_stick("ruler",Stick::new("ruler",17000000,false));
+    csm.add_internal_stick("button",Stick::new("button",17000000,false));
+    csm.add_internal_stick("tácode",Stick::new("tácode",17000000,false));
 }
