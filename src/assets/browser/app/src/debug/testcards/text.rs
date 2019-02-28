@@ -1,5 +1,5 @@
 use composit::Source;
-use debug::support::closuresource::{ ClosureSource, closure_add, closure_done };
+use debug::support::closuresource::{ ClosureSource, closure_add, closure_add_opt, closure_done };
 use drawing::{ FCFont, FontVariety, text_texture };
 use shape::{ ColourSpec, Facade, PinRectTypeSpec, TextureTypeSpec, TypeToShape, ShapeInstanceData };
 use types::{ Colour, cleaf, cpixel, area_size, AxisSense, A_TOPLEFT };
@@ -17,7 +17,7 @@ pub fn text_source() -> impl Source {
             under: None,
             spot: true
         };
-        closure_add(lc,&prts.new_shape(&ShapeInstanceData {
+        closure_add_opt(lc,&prts.new_shape(&ShapeInstanceData {
             pos_x: 0.,
             pos_y: 0,
             aux_x: 400.,
@@ -34,7 +34,7 @@ pub fn text_source() -> impl Source {
             scale_x: 1., scale_y: 1.,
             under: None,
         };
-        closure_add(lc,&tts.new_shape(&ShapeInstanceData {
+        closure_add_opt(lc,&tts.new_shape(&ShapeInstanceData {
             pos_x: 0.,
             pos_y: 100,
             aux_x: 0.,

@@ -12,23 +12,25 @@ import applyIcon from 'static/img/shared/apply.svg';
 import clearIcon from 'static/img/shared/clear.svg';
 
 import styles from './BrowserGenomeSelector.scss';
+import { getChrLocationStr } from '../browserHelper';
 
 type BrowserGenomeSelectorProps = {
   browserActivated: boolean;
-  browserImageEl: HTMLDivElement;
-  chrLocation: ChrLocation;
+  changeBrowserLocation: () => void;
+  defaultChrLocation: ChrLocation;
   updateDefaultChrLocation: (chrLocation: ChrLocation) => void;
 };
 
 const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
   props: BrowserGenomeSelectorProps
 ) => {
-  const [chrCode, chrStart, chrEnd] = props.chrLocation;
-  const chrLocationStr = `${chrCode}:${chrStart}-${chrEnd}`;
+  const chrLocationStr = getChrLocationStr(props.defaultChrLocation);
   const [showInputs, setShowInputs] = useState(false);
 
   const [chrLocationPlaceholder, setChrLocationPlaceholder] = useState('');
   const [chrLocationInput, setChrLocationInput] = useState('');
+
+  const [chrCode, chrStart, chrEnd] = props.defaultChrLocation;
 
   useEffect(() => {
     setChrLocationPlaceholder(chrLocationStr);
@@ -61,9 +63,9 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
       ];
 
       closeForm();
-      sendLocationToBrowser(currChrLocation, props.browserImageEl);
 
       props.updateDefaultChrLocation(currChrLocation);
+      props.changeBrowserLocation();
     } else {
       return;
     }
@@ -99,23 +101,5 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
     </dd>
   ) : null;
 };
-
-function sendLocationToBrowser(
-  chrLocation: ChrLocation,
-  browserImageEl: HTMLDivElement
-) {
-  const [chrCode, startBp, endBp] = chrLocation;
-  const midChrLocation = startBp + (endBp - startBp) / 2;
-
-  const genomeSelectorEvent = new CustomEvent('bpane', {
-    bubbles: true,
-    detail: {
-      move_to_bp: Math.round(midChrLocation),
-      stick: chrCode
-    }
-  });
-
-  browserImageEl.dispatchEvent(genomeSelectorEvent);
-}
 
 export default BrowserGenomeSelector;

@@ -53,28 +53,28 @@ export const trackPanelConfig: TrackPanelConfig = {
           color: TrackItemColour.DARK_GREY,
           id: 1,
           label: 'Protein coding genes',
-          name: 'gene-pc'
+          name: 'gene-pc-fwd'
         },
         {
           additionalInfo: 'Forward strand',
           color: TrackItemColour.GREY,
           id: 2,
           label: 'Other genes',
-          name: 'gene-other'
+          name: 'gene-other-fwd'
         },
         {
           additionalInfo: 'Reverse strand',
           color: TrackItemColour.DARK_GREY,
           id: 3,
           label: 'Protein coding genes',
-          name: 'gene-pc-reverse'
+          name: 'gene-pc-rev'
         },
         {
           additionalInfo: 'Reverse strand',
           color: TrackItemColour.GREY,
           id: 4,
           label: 'Other genes',
-          name: 'gene-other-reverse'
+          name: 'gene-other-rev'
         }
       ]
     },

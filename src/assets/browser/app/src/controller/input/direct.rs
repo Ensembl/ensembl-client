@@ -33,6 +33,29 @@ fn custom_movement_event(dir: &str, unit: &str, v: &JSONValue) -> Action {
     }
 }
 
+fn custom_goto_event(v: &JSONValue) -> Action {
+    if let JSONValue::String(ref v) = v {
+        let parts : Vec<&str> = v.split("-").collect();
+        if parts.len() == 2 {
+            let start : Result<i64,_> = parts[0].parse();
+            let end : Result<i64,_> = parts[1].parse();
+            if start.is_ok() && end.is_ok() {
+                return Action::PosRange(start.ok().unwrap() as f64,
+                                 end.ok().unwrap() as f64,0.);
+            }
+        }
+    }
+    Action::Noop
+}
+
+fn custom_stick_event(v: &JSONValue) -> Action {
+    if let JSONValue::String(v) = v {
+        Action::SetStick(v.to_string())
+    } else {
+        Action::Noop
+    }
+}
+
 fn custom_zoom_event(kind: &str, v: &JSONValue) -> Action {
     if let JSONValue::Number(quant) = v {
         let quant = quant.as_f64().unwrap();
@@ -62,6 +85,8 @@ fn custom_make_one_event(k: &String, v: &JSONValue) -> Action {
             "on" => custom_state_event(v,StateValue::On()),
             "standby" => custom_state_event(v,StateValue::OffWarm()),
             "off" => custom_state_event(v,StateValue::OffCold()),
+            "goto" => custom_goto_event(v),
+            "stick" => custom_stick_event(v),
             _ => Action::Noop
         },
         2 => return match parts[0] {

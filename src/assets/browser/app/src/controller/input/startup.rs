@@ -1,6 +1,7 @@
 use std::sync::{ Arc, Mutex };
 
 use stdweb::unstable::TryInto;
+use url::Url;
 
 use composit::StateValue;
 use controller::global::Global;
@@ -33,7 +34,12 @@ impl EventListener<()> for StartupEventListener {
                     "bpane-activate" => {
                         let key = aed.get_simple_str("key",Some("only")).unwrap();
                         console!("Activate browser {} on {:?}",key,cx.target());
-                        g.register_app(&key,&cx.target().try_into().unwrap(),false);
+                        let config_url = aed.get_simple_str("config-url",None);
+                        if config_url.is_none() {
+                            console!("BROWSER APP REFUSING TO START UP! No config-url supplied");
+                        }
+                        let config_url = Url::parse(&config_url.unwrap()).ok().unwrap();
+                        g.register_app(&key,&cx.target().try_into().unwrap(),false,&config_url);
                     },
                     _ => ()
                 }
@@ -57,9 +63,9 @@ pub fn initial_actions() -> Vec<Action> {
         out.push(Action::SetState(type_.get_name().to_string(),StateValue::On()));
     }
     out.extend(vec! {
-        Action::SetStick("march".to_string()),
+        Action::SetStick("2".to_string()),
         Action::Pos(Dot(0_f64,0_f64),None),
-        Action::ZoomTo(-5.)
+        Action::ZoomTo(-9.)
     });
     out
 }

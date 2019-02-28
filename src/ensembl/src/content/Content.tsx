@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { RootState } from '../rootReducer';
 import { getLaunchbarExpanded } from '../header/headerSelectors';
 
+import Home from './home/Home';
 import App from './app/App';
 
 import styles from './Content.scss';
@@ -29,6 +30,7 @@ export const Content: FunctionComponent<ContentProps> = (
     <main
       className={`${styles.content} ${getHeightClass(props.launchbarExpanded)}`}
     >
+      <Route path="/" component={Home} exact={true} />
       <Route path="/app" component={App} />
     </main>
   );

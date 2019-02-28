@@ -10,16 +10,20 @@ pub fn xfer_marshal(data: Vec<u8>) -> Vec<Value> {
     let mut out = Vec::<Value>::new();
     for val in data["data"].as_array().unwrap() {
         let mut row = Vec::<f64>::new();
-        for cell in val.as_array().unwrap() {
-            if cell.is_f64() {
-                row.push(cell.as_f64().unwrap());
-            } else if cell.is_i64() {
-                row.push(cell.as_i64().unwrap() as f64);
-            } else if cell.is_boolean() {
-                row.push(if cell.as_bool().unwrap() { 1. } else { 0. } );
+        if val.is_array() {
+            for cell in val.as_array().unwrap() {
+                if cell.is_f64() {
+                    row.push(cell.as_f64().unwrap());
+                } else if cell.is_i64() {
+                    row.push(cell.as_i64().unwrap() as f64);
+                } else if cell.is_boolean() {
+                    row.push(if cell.as_bool().unwrap() { 1. } else { 0. } );
+                }
             }
+            out.push(Value::new_from_float(row));
+        } else if val.is_string() {
+            out.push(Value::new_from_string(val.as_str().unwrap().to_string()));
         }
-        out.push(Value::new_from_float(row));
     }
     out
 }

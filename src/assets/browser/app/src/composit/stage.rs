@@ -55,6 +55,11 @@ impl Stage {
         self.mouse_pos = *c;
     }
     
+    pub fn set_screen_in_bp(&mut self, zoom: f64) {
+        self.pos.set_screen_in_bp(zoom);
+    }
+
+    
     pub fn settle(&mut self) { self.pos.settle(); }
     
     pub fn get_mouse_pos_prop(&self) -> f64 {
