@@ -18,6 +18,10 @@ html {
   box-sizing: inherit;
 }
 
+*:focus {
+  outline: none;
+}
+
 a {
   color: $ens-blue;
   text-decoration: none;
