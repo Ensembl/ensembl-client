@@ -1,4 +1,4 @@
-.colorCard {
+.colourCard {
   display: inline-block;
   width: 200px;
   height: 300px;
@@ -9,16 +9,16 @@
   margin-bottom: 0.5rem;
   box-shadow: 0 1px 0 0 darken(#eaeced, 20%);
 
-  .colorArea {
+  .colourArea {
     height: 50%;
     border-bottom: 1px solid #eaeced;
   }
 
-  .colorInfo {
+  .colourInfo {
     padding: 0.5rem;
   }
 
-  .colorName {
+  .colourName {
     font-weight: 700;
   }
 }
