@@ -11,14 +11,14 @@ import {
 
 import { DrawerSection } from './drawerSectionConfig';
 
-// import {
-//   trackPanelConfig,
-//   TrackPanelItem
-// } from '../track-panel/trackPanelConfig';
+import DrawerGene from './drawer-views/DrawerGene';
+import DrawerTranscript from './drawer-views/DrawerTranscript';
+import ProteinCodingGenes from './drawer-views/ProteinCodingGenes';
+import OtherGenes from './drawer-views/OtherGenes';
+import DrawerContigs from './drawer-views/DrawerContigs';
+import DrawerGC from './drawer-views/DrawerGC';
 
-import DrawerBar from './DrawerBar';
-// import TrackOne from './tracks/TrackOne';
-// import TrackTwo from './tracks/TrackTwo';
+import closeIcon from 'static/img/track-panel/close.svg';
 
 import styles from './Drawer.scss';
 
@@ -38,51 +38,37 @@ type OwnProps = {};
 type DrawerProps = StateProps & DispatchProps & OwnProps;
 
 const Drawer: FunctionComponent<DrawerProps> = (props: DrawerProps) => {
-  // const TrackComponent = this.getCurrentTrackComponent();
+  const getDrawerView = () => {
+    switch (props.currentTrack) {
+      case 'gene':
+        return <DrawerGene />;
+      case 'transcript':
+        return <DrawerTranscript />;
+      case 'gene-pc-fwd':
+        return <ProteinCodingGenes forwardStrand={true} />;
+      case 'gene-other-fwd':
+        return <OtherGenes forwardStrand={true} />;
+      case 'gene-pc-rev':
+        return <ProteinCodingGenes forwardStrand={false} />;
+      case 'gene-other-rev':
+        return <OtherGenes forwardStrand={false} />;
+      case 'contig':
+        return <DrawerContigs />;
+      case 'gc':
+        return <DrawerGC />;
+    }
+  };
+
+  const closeDrawer = () => props.toggleDrawer(false);
 
   return (
     <section className={styles.drawer}>
-      <DrawerBar
-        changeCurrentDrawerSection={props.changeCurrentDrawerSection}
-        toggleDrawer={props.toggleDrawer}
-        currentTrack={props.currentTrack}
-        drawerSections={props.drawerSections}
-      />
-      {/* <div className="track-canvas">{TrackComponent}</div> */}
+      <button className={styles.closeButton} onClick={closeDrawer}>
+        <img src={closeIcon} alt="close drawer" />
+      </button>
+      <div className={styles.drawerView}>{getDrawerView()}</div>
     </section>
   );
-
-  // private getCurrentTrackComponent(): ReactNode {
-  //   const { currentDrawerSection, currentTrack, drawerSections } = this.props;
-
-  //   const currentTrackConfig: TrackPanelItem = trackPanelConfig.filter(
-  //     (track: TrackPanelItem) => currentTrack === track.name
-  //   )[0];
-
-  //   switch (currentTrackConfig.name) {
-  //     case 'track-one':
-  //       return (
-  //         <TrackOne
-  //           currentDrawerSection={currentDrawerSection}
-  //           drawerSections={drawerSections}
-  //         />
-  //       );
-  //     case 'track-two':
-  //       return (
-  //         <TrackTwo
-  //           currentDrawerSection={currentDrawerSection}
-  //           drawerSections={drawerSections}
-  //         />
-  //       );
-  //     default:
-  //       return (
-  //         <TrackOne
-  //           currentDrawerSection={currentDrawerSection}
-  //           drawerSections={drawerSections}
-  //         />
-  //       );
-  //   }
-  // }
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
