@@ -2,22 +2,57 @@
 
 .drawer {
   border-left: 1px solid $ens-black;
-  width: calc(75% - 41px);
+  height: calc(100vh - 176px);
+  width: calc(100vw - 397px);
+}
 
-  .trackCanvas {
-    height: calc(100vh - 181px);
-    overflow: scroll;
+.drawerView {
+  margin-top: 20px;
+  overflow: scroll;
 
-    h2 {
-      @include flex;
-      @include flex-align(center, middle);
-      text-align: center;
-    }
+  h2 {
+    @include flex;
+    @include flex-align(center, middle);
+    text-align: center;
+  }
 
-    section {
-      height: calc(100vh - 181px);
-      width: 100%;
-      padding: 20px;
-    }
+  dd {
+    width: 600px;
+  }
+
+  label {
+    float: left;
+    font-weight: $light;
+    text-align: right;
+    width: 150px;
+  }
+
+  p {
+    margin: 0 0 20px 0;
+  }
+
+  .details {
+    float: right;
+    text-align: left;
+    width: 400px;
+  }
+
+  .mainDetail {
+    bottom: 3px;
+    font-size: 16px;
+    font-weight: $bold;
+    position: relative;
+  }
+}
+
+.closeButton {
+  float: right;
+  position: relative;
+  right: 10px;
+  top: 10px;
+
+  img {
+    height: 18px;
+    width: 18px;
   }
 }
