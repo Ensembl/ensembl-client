@@ -14,8 +14,23 @@ export const PrivacyBanner: FunctionComponent<PrivacyBannerProps> = (
       <p>
         This website requires cookies, and the limited processing of your
         personal data in order to function. By using the site you are agreeing
-        to this as outlined in our <a href="">Privacy Policy</a> and
-        <a href="">Terms of Use</a>.
+        to this as outlined in our{' '}
+        <a
+          href="https://www.ebi.ac.uk/data-protection/ensembl/privacy-notice"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Privacy Policy
+        </a>{' '}
+        and
+        <a
+          href="https://www.ebi.ac.uk/about/terms-of-use"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Terms of Use
+        </a>
+        .
         <button className={styles.agreeButton} onClick={props.closeBanner}>
           I agree
         </button>
