@@ -7,8 +7,9 @@ use tánaiste::Value;
 pub fn xfer_marshal(data: Vec<u8>) -> Vec<Value> {
     let data = String::from_utf8(data).ok().unwrap();
     let data : SerdeValue = serde_json::from_str(&data).ok().unwrap();
+    let first_resp = &data.as_array().unwrap()[0];
     let mut out = Vec::<Value>::new();
-    for val in data["data"].as_array().unwrap() {
+    for val in first_resp[2].as_array().unwrap() {
         let mut row = Vec::<f64>::new();
         if val.is_array() {
             for cell in val.as_array().unwrap() {
