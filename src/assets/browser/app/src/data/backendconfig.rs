@@ -3,6 +3,7 @@ use std::rc::Rc;
 use std::string::ToString;
 
 use serde_json::Value as SerdeValue;
+use url::Url;
 
 use composit::{ Leaf, Scale, Stick };
 
@@ -42,6 +43,7 @@ impl BackendTrack {
 
 #[derive(Debug,Clone)]
 pub struct BackendConfig {
+    data_url: String,
     endpoints: HashMap<String,BackendEndpoint>,
     tracks: HashMap<String,BackendTrack>,
     sticks: HashMap<String,Stick>
@@ -72,6 +74,8 @@ impl BackendConfig {
     }
     
     pub fn get_sticks(&self) -> &HashMap<String,Stick> { &self.sticks }
+
+    pub fn get_data_url(&self) -> &str { &self.data_url }
 
     fn endpoints_from_json(ep: &SerdeValue, bytecodes: HashMap<String,Rc<BackendBytecode>>) -> HashMap<String,BackendEndpoint> {
         let mut out = HashMap::<String,BackendEndpoint>::new();
@@ -132,6 +136,7 @@ impl BackendConfig {
         let endpoints = BackendConfig::endpoints_from_json(&data["endpoints"],bytecodes);
         let tracks = BackendConfig::tracks_from_json(&data["tracks"]);
         let sticks = BackendConfig::sticks_from_json(&data["sticks"]);
-        Ok(BackendConfig { endpoints, tracks, sticks })
+        let data_url = data["data-url"].as_str().unwrap().to_string();
+        Ok(BackendConfig { endpoints, tracks, sticks, data_url })
     }
 }

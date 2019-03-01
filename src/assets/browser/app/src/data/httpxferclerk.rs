@@ -57,7 +57,8 @@ impl HttpXferClerkImpl {
     }
     
     pub fn run_request(&mut self, request: XferRequest, mut consumer: Box<XferConsumer>) {
-        let (url,code) = {
+        let leaf = request.get_leaf().clone();
+        let (name,code) = {
             let compo = request.get_source_name();
             let leaf = request.get_leaf().clone();
             let endpoint = self.remote_backend_config.as_ref().unwrap().endpoint_for(compo,&leaf);
@@ -71,13 +72,13 @@ impl HttpXferClerkImpl {
             let endpoint = endpoint.unwrap();
             (endpoint.get_url(),endpoint.get_code())
         };
-        let leaf = request.get_leaf().clone();
-        if let Some(ref url) = url {
-            let mut url = self.base.join(url).ok().unwrap();
+        let bc = self.remote_backend_config.as_ref().unwrap();
+        if let Some(name) = name {
+            let mut url = self.base.join(bc.get_data_url()).ok().unwrap();
             {
-                let mut path = url.path_segments_mut().ok().unwrap();
-                let leaf_url = format!("{}:{}-{}",leaf.get_stick().get_name(),leaf.get_start(),leaf.get_end());
-                path.push(&leaf_url);
+                let mut qp = url.query_pairs_mut();
+                let part = format!("{}/{}:{}-{}",name,leaf.get_stick().get_name(),leaf.get_start(),leaf.get_end());
+                qp.append_pair("parts",&part);
             }
             let pdr = PendingDataRequest {
                 code: code.to_string(),

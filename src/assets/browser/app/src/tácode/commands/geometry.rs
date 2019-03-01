@@ -98,7 +98,6 @@ impl Command for Plot {
                         plot.get_height() as f64,
                     }));
                     regs.set(self.2,Value::new_from_string(plot.get_letter().to_string()));
-                    console!("regs #{}={:?}",self.2,regs.get(self.2));
                 });
             }
         });        
