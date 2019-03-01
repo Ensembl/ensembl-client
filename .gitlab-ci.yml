@@ -1,0 +1,6 @@
+before_script:
+  - docker info
+
+test_job:
+  script:
+    - docker build -t my-docker-image src/ensembl
