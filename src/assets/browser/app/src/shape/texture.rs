@@ -42,14 +42,16 @@ impl Shape for TextureSpec {
                     artwork: Option<Artwork>, e: &mut PrintEdition) {
         if let Some(art) = artwork {
             let group = e.canvas().get_group(geom,&art.weave);
-            let b = vertices_rect(geom,Some(group));
             let mut mp = art.mask_pos;
             let mut ap = art.pos;
             let mut anchor = self.anchor;
             let mut pos = cfraction(0.,0.);
             let mut offset = self.offset.as_fraction();
+            let mut bounds_check = false;
             match self.origin {
-                TexturePosition::Pin(origin) => {},
+                TexturePosition::Pin(origin) => {
+                    bounds_check = true;
+                },
                 TexturePosition::Tape(origin) => {
                     let origin = origin.x_edge(AxisSense::Max);
                     ap = ap.flip_d(origin);
@@ -67,7 +69,8 @@ impl Shape for TextureSpec {
             let p = area_centred(pos,
                                  (art.size * self.scale).as_fraction());
             let p = anchor.to_middle(p) + p + offset;
-            if p.offset().0 <= 1. && p.far_offset().0 >= 0. {
+            if !bounds_check || p.offset().0 <= 1. && p.far_offset().0 >= 0. {
+                let b = vertices_rect(geom,Some(group));
                 rectangle_t(b,geom,"aTextureCoord",&ap);
                 rectangle_t(b,geom,"aMaskCoord",&mp);
                 rectangle_t(b,geom,"aVertexPosition",&p);
