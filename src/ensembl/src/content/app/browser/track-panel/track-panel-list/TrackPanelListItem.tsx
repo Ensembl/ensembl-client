@@ -17,7 +17,7 @@ type TrackPanelListItemProps = {
   children?: ReactNode[];
   className: string;
   track: TrackPanelItem;
-  changeTrack: (name: string) => void;
+  updateDrawerView: (drawerView: string) => void;
 };
 
 // delete this when there is a better place to put this
@@ -33,8 +33,8 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   const { ellipsis, eye } = trackPanelIconConfig;
   const listItemClass = styles[className] || '';
 
-  const changeTrackHandler = () => {
-    props.changeTrack(props.track.name);
+  const changeDrawerViewHandler = () => {
+    props.updateDrawerView(props.track.name);
   };
 
   const toggleExpand = () => {
@@ -83,7 +83,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
             </button>
           )}
         </label>
-        <button onClick={changeTrackHandler}>
+        <button onClick={changeDrawerViewHandler}>
           <img src={ellipsis.icon.on} alt={`Go to ${track.label}`} />
         </button>
         <button onClick={toggleTrack}>

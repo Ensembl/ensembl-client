@@ -15,23 +15,16 @@ export const toggleTrackPanel = createAction(
   }
 );
 
-export const changeCurrentTrack = createAction(
-  'browser/change-current-track',
+export const changeDrawerView = createAction(
+  'browser/change-drawer-view',
   (resolve) => {
-    return (currentTrack: string) => resolve(currentTrack);
+    return (drawerView: string) => resolve(drawerView);
   }
 );
 
 export const toggleDrawer = createAction('browser/toggle-drawer', (resolve) => {
   return (drawerOpened?: boolean) => resolve(drawerOpened);
 });
-
-export const changeCurrentDrawerSection = createAction(
-  'browser/change-current-drawer-section',
-  (resolve) => {
-    return (currentDrawerSection: string) => resolve(currentDrawerSection);
-  }
-);
 
 export const toggleBrowserNav = createAction(
   'browser/toggle-browser-navigation'

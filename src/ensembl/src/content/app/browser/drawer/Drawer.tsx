@@ -2,14 +2,8 @@ import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 
 import { RootState } from 'src/rootReducer';
-import { changeCurrentDrawerSection, toggleDrawer } from '../browserActions';
-import {
-  getCurrentDrawerSection,
-  getCurrentTrack,
-  getDrawerSections
-} from '../browserSelectors';
-
-import { DrawerSection } from './drawerSectionConfig';
+import { toggleDrawer } from '../browserActions';
+import { getDrawerView } from '../browserSelectors';
 
 import DrawerGene from './drawer-views/DrawerGene';
 import DrawerTranscript from './drawer-views/DrawerTranscript';
@@ -23,13 +17,10 @@ import closeIcon from 'static/img/track-panel/close.svg';
 import styles from './Drawer.scss';
 
 type StateProps = {
-  currentDrawerSection: string;
-  currentTrack: string;
-  drawerSections: DrawerSection[];
+  drawerView: string;
 };
 
 type DispatchProps = {
-  changeCurrentDrawerSection: (currentDrawerSection: string) => void;
   toggleDrawer: (drawerOpened?: boolean) => void;
 };
 
@@ -38,8 +29,8 @@ type OwnProps = {};
 type DrawerProps = StateProps & DispatchProps & OwnProps;
 
 const Drawer: FunctionComponent<DrawerProps> = (props: DrawerProps) => {
-  const getDrawerView = () => {
-    switch (props.currentTrack) {
+  const getDrawerViewComponent = () => {
+    switch (props.drawerView) {
       case 'gene':
         return <DrawerGene />;
       case 'transcript':
@@ -66,19 +57,16 @@ const Drawer: FunctionComponent<DrawerProps> = (props: DrawerProps) => {
       <button className={styles.closeButton} onClick={closeDrawer}>
         <img src={closeIcon} alt="close drawer" />
       </button>
-      <div className={styles.drawerView}>{getDrawerView()}</div>
+      <div className={styles.drawerView}>{getDrawerViewComponent()}</div>
     </section>
   );
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  currentDrawerSection: getCurrentDrawerSection(state),
-  currentTrack: getCurrentTrack(state),
-  drawerSections: getDrawerSections(state)
+  drawerView: getDrawerView(state)
 });
 
 const mapDispatchToProps: DispatchProps = {
-  changeCurrentDrawerSection,
   toggleDrawer
 };
 
