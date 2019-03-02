@@ -14,13 +14,13 @@ import { RootState } from 'src/rootReducer';
 import {
   toggleDrawer,
   toggleTrackPanel,
-  changeCurrentTrack,
+  changeDrawerView,
   closeTrackPanelModal,
   openTrackPanelModal
 } from '../browserActions';
 
 import {
-  getCurrentTrack,
+  getDrawerView,
   getDrawerOpened,
   getTrackPanelOpened,
   getBrowserActivated,
@@ -37,8 +37,8 @@ import TrackPanelModal from './track-panel-modal/TrackPanelModal';
 
 type StateProps = {
   browserActivated: boolean;
-  currentTrack: string;
   drawerOpened: boolean;
+  drawerView: string;
   breakpointWidth: BreakpointWidth;
   launchbarExpanded: boolean;
   trackPanelModalOpened: boolean;
@@ -47,7 +47,7 @@ type StateProps = {
 };
 
 type DispatchProps = {
-  changeCurrentTrack: (currentTrack: string) => void;
+  changeDrawerView: (drawerView: string) => void;
   closeTrackPanelModal: () => void;
   openTrackPanelModal: (trackPanelModalView: string) => void;
   toggleDrawer: (drawerOpened: boolean) => void;
@@ -89,10 +89,10 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
             <Fragment>
               <TrackPanelList
                 browserRef={props.browserRef}
-                currentTrack={props.currentTrack}
+                drawerView={props.drawerView}
                 launchbarExpanded={props.launchbarExpanded}
                 toggleDrawer={props.toggleDrawer}
-                updateTrack={props.changeCurrentTrack}
+                updateDrawerView={props.changeDrawerView}
               />
               {props.trackPanelModalOpened ? (
                 <TrackPanelModal
@@ -112,8 +112,8 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
 const mapStateToProps = (state: RootState): StateProps => ({
   breakpointWidth: getBreakpointWidth(state),
   browserActivated: getBrowserActivated(state),
-  currentTrack: getCurrentTrack(state),
   drawerOpened: getDrawerOpened(state),
+  drawerView: getDrawerView(state),
   launchbarExpanded: getLaunchbarExpanded(state),
   trackPanelModalOpened: getTrackPanelModalOpened(state),
   trackPanelModalView: getTrackPanelModalView(state),
@@ -121,7 +121,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
 });
 
 const mapDispatchToProps: DispatchProps = {
-  changeCurrentTrack,
+  changeDrawerView,
   closeTrackPanelModal,
   openTrackPanelModal,
   toggleDrawer,

@@ -1,5 +1,3 @@
-import { DrawerSection } from './drawer/drawerSectionConfig';
-
 export enum BrowserOpenState {
   EXPANDED = 'expanded',
   SEMI_EXPANDED = 'semiExpanded',
@@ -24,11 +22,9 @@ export type BrowserState = Readonly<{
   browserNavStates: BrowserNavStates;
   browserOpenState: BrowserOpenState;
   chrLocation: ChrLocation;
-  currentDrawerSection: string;
-  currentTrack: string;
   defaultChrLocation: ChrLocation;
   drawerOpened: boolean;
-  drawerSections: DrawerSection[];
+  drawerView: string;
   trackPanelModalOpened: boolean;
   trackPanelModalView: string;
   trackPanelOpened: boolean;
@@ -40,11 +36,9 @@ export const defaultState: BrowserState = {
   browserNavStates: [true, true, true, true, true, true],
   browserOpenState: BrowserOpenState.SEMI_EXPANDED,
   chrLocation: ['13', 0, 0],
-  currentDrawerSection: '',
-  currentTrack: '',
   defaultChrLocation: ['13', 0, 0],
   drawerOpened: false,
-  drawerSections: [],
+  drawerView: '',
   trackPanelModalOpened: false,
   trackPanelModalView: '',
   trackPanelOpened: true
@@ -77,7 +71,10 @@ export const drawerState = (
     };
   } else {
     return {
-      ...defaultState
+      ...state,
+      browserOpenState: BrowserOpenState.SEMI_EXPANDED,
+      drawerOpened,
+      drawerView: ''
     };
   }
 };

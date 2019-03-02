@@ -11,20 +11,23 @@ import styles from './TrackPanelList.scss';
 
 type TrackPanelListProps = {
   browserRef: RefObject<HTMLDivElement>;
-  currentTrack: string;
+  drawerView: string;
   launchbarExpanded: boolean;
   toggleDrawer: (drawerOpened: boolean) => void;
-  updateTrack: (currentTrack: string) => void;
+  updateDrawerView: (drawerView: string) => void;
 };
 
 const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   props: TrackPanelListProps
 ) => {
-  const changeTrack = (currentTrack: string) => {
-    const { toggleDrawer, updateTrack } = props;
+  const changeDrawerView = (currentTrack: string) => {
+    const { drawerView, toggleDrawer, updateDrawerView } = props;
 
-    updateTrack(currentTrack);
-    toggleDrawer(true);
+    updateDrawerView(currentTrack);
+
+    if (!drawerView) {
+      toggleDrawer(true);
+    }
   };
 
   const getTrackPanelListClasses = () => {
@@ -35,13 +38,13 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
     return `${styles.trackPanelList} ${heightClass}`;
   };
 
-  const getTrackClass = (trackName: string): string => {
+  const getDrawerViewClass = (trackName: string): string => {
     if (trackName === 'gene') {
       return 'gene';
     }
 
-    if (props.currentTrack === trackName) {
-      return 'currentTrack';
+    if (props.drawerView === trackName) {
+      return styles.currentDrawerView;
     }
 
     return '';
@@ -50,8 +53,8 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   const getTrackListItem = (track: TrackPanelItem) => (
     <TrackPanelListItem
       browserRef={props.browserRef}
-      className={getTrackClass(track.name)}
-      changeTrack={changeTrack}
+      className={getDrawerViewClass(track.name)}
+      updateDrawerView={changeDrawerView}
       key={track.id}
       track={track}
     >
