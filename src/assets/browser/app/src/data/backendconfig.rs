@@ -9,7 +9,7 @@ use composit::{ Leaf, Scale, Stick };
 
 #[derive(Debug,Clone)]
 pub struct BackendBytecode {
-    code: String
+    pub code: String
 }
 
 impl ToString for BackendBytecode {

@@ -14,6 +14,8 @@ use super::{
     BackendConfigBootstrap
 };
 
+use super::backendconfig::BackendBytecode;
+
 struct PendingXferRequest {
     code: String,
     consumer: Box<XferConsumer>
@@ -26,13 +28,15 @@ impl PendingXferRequest {
 }
 
 struct PendingXferBatch {
-    requests: HashMap<(String,String),Vec<PendingXferRequest>>
+    requests: HashMap<(String,String),Vec<PendingXferRequest>>,
+    base: Url
 }
 
 impl PendingXferBatch {
-    pub fn new() -> PendingXferBatch {
+    pub fn new(base: &Url) -> PendingXferBatch {
         PendingXferBatch {
-            requests: HashMap::<(String,String),Vec<PendingXferRequest>>::new()
+            requests: HashMap::<(String,String),Vec<PendingXferRequest>>::new(),
+            base: base.clone()
         }
     }
     
@@ -46,6 +50,19 @@ impl PendingXferBatch {
             consumer
         });
     }    
+
+    pub fn fire(self, http_manager: &mut HttpManager) {
+        let mut url = self.base.clone();
+        for (name,leaf_spec) in self.requests.keys() {
+            let mut qp = url.query_pairs_mut();
+            let part = format!("{}/{}",name,leaf_spec);
+            qp.append_pair("parts",&part);
+        }        
+        let xhr = XmlHttpRequest::new();
+        xhr.set_response_type(XhrResponseType::ArrayBuffer);
+        xhr.open("GET",&url.as_str());
+        http_manager.add_request(xhr,None,Box::new(self));
+    }
 
     fn marshal(&mut self, data: &SerdeValue) -> Vec<Value> {
         let mut out = Vec::<Value>::new();
@@ -97,22 +114,37 @@ pub struct HttpXferClerkImpl {
     http_manager: HttpManager,
     remote_backend_config: Option<BackendConfig>,
     base: Url,
-    paused: Vec<(XferRequest,Box<XferConsumer>)>
+    paused: Vec<(XferRequest,Box<XferConsumer>)>,
+    batch_in_prep: Option<PendingXferBatch>
 }
 
 impl HttpXferClerkImpl {
     pub fn new(http_manager: &HttpManager, base: &Url) -> HttpXferClerkImpl {
-        HttpXferClerkImpl {
+        let mut out = HttpXferClerkImpl {
             http_manager: http_manager.clone(),
             remote_backend_config: None,
             base: base.clone(),
-            paused: Vec::<(XferRequest,Box<XferConsumer>)>::new()
-        }
-    }    
+            paused: Vec::<(XferRequest,Box<XferConsumer>)>::new(),
+            batch_in_prep: None
+        };
+        out
+    }
+
+    fn set_batch(&mut self) {
+        let bc = self.remote_backend_config.as_ref().unwrap();
+        let mut url = self.base.join(bc.get_data_url()).ok().unwrap();
+        self.batch_in_prep = Some(PendingXferBatch::new(&url));
+    }
+
+    pub fn tick(&mut self) {
+        self.batch_in_prep.take().unwrap().fire(&mut self.http_manager);
+        self.set_batch();
+    }
 
     pub fn set_config(&mut self, bc: BackendConfig) {
         console!("setting BackendConfig");
         self.remote_backend_config = Some(bc);
+        self.set_batch();
         let paused : Vec<(XferRequest,Box<XferConsumer>)> = self.paused.drain(..).collect();
         for (request,consumer) in paused {
             console!("running delayed");
@@ -125,7 +157,8 @@ impl HttpXferClerkImpl {
         let (name,code) = {
             let compo = request.get_source_name();
             let leaf = request.get_leaf().clone();
-            let endpoint = self.remote_backend_config.as_ref().unwrap().endpoint_for(compo,&leaf);
+            let cfg =  self.remote_backend_config.as_ref().unwrap().clone();
+            let endpoint = cfg.endpoint_for(compo,&leaf).clone();
             if endpoint.is_err() {
                 console!("No data for {:?}: {}",
                             request.get_leaf().clone(),
@@ -133,10 +166,10 @@ impl HttpXferClerkImpl {
                 consumer.abandon();
                 return;
             }
-            let endpoint = endpoint.unwrap();
-            (endpoint.get_url(),endpoint.get_code())
+            let endpoint = endpoint.as_ref().unwrap();
+            (endpoint.get_url().map(|x| x.to_string().clone()),endpoint.get_code().clone())
         };
-        let bc = self.remote_backend_config.as_ref().unwrap();
+        let bc = self.remote_backend_config.as_ref().unwrap().clone();
         if let Some(name) = name {
             let mut url = self.base.join(bc.get_data_url()).ok().unwrap();
             {
@@ -144,12 +177,8 @@ impl HttpXferClerkImpl {
                 let part = format!("{}/{}",name,leaf.get_spec());
                 qp.append_pair("parts",&part);
             }
-            let mut pxb = PendingXferBatch::new();
-            pxb.add_request(name,&leaf.get_spec(),&code.to_string(),consumer);
-            let xhr = XmlHttpRequest::new();
-            xhr.set_response_type(XhrResponseType::ArrayBuffer);
-            xhr.open("GET",&url.as_str());
-            self.http_manager.add_request(xhr,None,Box::new(pxb));
+            self.batch_in_prep.as_mut().unwrap().add_request(&name,&leaf.get_spec(),&code.to_string(),consumer);
+            self.tick();
         } else {
             consumer.consume(code.to_string(),vec!{});
         }
@@ -181,6 +210,10 @@ impl HttpXferClerk {
 
     pub fn set_config(&mut self, bc: BackendConfig) {
         self.0.borrow_mut().set_config(bc);
+    }
+    
+    pub fn tick(&mut self) {
+        self.0.borrow_mut().tick();
     }
 }
 
