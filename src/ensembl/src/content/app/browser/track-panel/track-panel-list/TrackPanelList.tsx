@@ -1,4 +1,4 @@
-import React, { FunctionComponent, RefObject } from 'react';
+import React, { FunctionComponent, RefObject, useCallback } from 'react';
 
 import TrackPanelListItem from './TrackPanelListItem';
 import {
@@ -20,15 +20,18 @@ type TrackPanelListProps = {
 const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   props: TrackPanelListProps
 ) => {
-  const changeDrawerView = (currentTrack: string) => {
-    const { drawerView, toggleDrawer, updateDrawerView } = props;
+  const changeDrawerView = useCallback(
+    (currentTrack: string) => {
+      const { drawerView, toggleDrawer, updateDrawerView } = props;
 
-    updateDrawerView(currentTrack);
+      updateDrawerView(currentTrack);
 
-    if (!drawerView) {
-      toggleDrawer(true);
-    }
-  };
+      if (!drawerView) {
+        toggleDrawer(true);
+      }
+    },
+    [props.drawerView]
+  );
 
   const getTrackPanelListClasses = () => {
     const heightClass: string = props.launchbarExpanded
@@ -38,22 +41,10 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
     return `${styles.trackPanelList} ${heightClass}`;
   };
 
-  const getDrawerViewClass = (trackName: string): string => {
-    if (trackName === 'gene') {
-      return 'gene';
-    }
-
-    if (props.drawerView === trackName) {
-      return styles.currentDrawerView;
-    }
-
-    return '';
-  };
-
   const getTrackListItem = (track: TrackPanelItem) => (
     <TrackPanelListItem
       browserRef={props.browserRef}
-      className={getDrawerViewClass(track.name)}
+      drawerView={props.drawerView}
       updateDrawerView={changeDrawerView}
       key={track.id}
       track={track}

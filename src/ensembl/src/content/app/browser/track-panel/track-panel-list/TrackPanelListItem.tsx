@@ -3,7 +3,8 @@ import React, {
   Fragment,
   ReactNode,
   RefObject,
-  useState
+  useState,
+  useCallback
 } from 'react';
 import { TrackPanelItem, trackPanelIconConfig } from '../trackPanelConfig';
 
@@ -15,7 +16,7 @@ import styles from './TrackPanelListItem.scss';
 type TrackPanelListItemProps = {
   browserRef: RefObject<HTMLDivElement>;
   children?: ReactNode[];
-  className: string;
+  drawerView: string;
   track: TrackPanelItem;
   updateDrawerView: (drawerView: string) => void;
 };
@@ -29,9 +30,22 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   const [expanded, setExpanded] = useState(false);
   const [trackStatus, setTrackStatus] = useState('on');
 
-  const { browserRef, className, track } = props;
+  const { browserRef, drawerView, track } = props;
   const { ellipsis, eye } = trackPanelIconConfig;
-  const listItemClass = styles[className] || '';
+
+  const getListItemClasses = useCallback((): string => {
+    let classNames: string = styles.listItem;
+
+    if (track.name === 'gene') {
+      classNames += ` ${styles.main}`;
+    }
+
+    if (drawerView === track.name) {
+      classNames += ` ${styles.currentDrawerView}`;
+    }
+
+    return classNames;
+  }, [drawerView]);
 
   const changeDrawerViewHandler = () => {
     props.updateDrawerView(props.track.name);
@@ -60,7 +74,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
 
   return (
     <Fragment>
-      <dd className={`${styles.listItem} ${listItemClass}`}>
+      <dd className={getListItemClasses()}>
         <label>
           {track.color && (
             <span className={`${styles.box} ${styles[track.color]}`} />
