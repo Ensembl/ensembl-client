@@ -1,8 +1,10 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
+use tánaiste::Value;
+
 use composit::{ Landscape, Leaf, Source, SourceResponse, ActiveSource };
-use data::{ XferClerk, XferRequest, XferResponse, XferConsumer };
+use data::{ XferClerk, XferRequest, XferConsumer };
 use drawing::DrawingSpec;
 use tácode::{ Tácode, TáTask };
 
@@ -57,8 +59,8 @@ impl TáXferConsumer {
 }
 
 impl XferConsumer for TáXferConsumer {
-    fn consume(&mut self, mut xf: XferResponse) {
-        match self.tc.assemble(&xf.get_code()) {
+    fn consume(&mut self, code: String, mut data: Vec<Value>) {
+        match self.tc.assemble(&code) {
             Ok(code) => {
                 match self.tc.run(&code) {
                     Ok(pid) => {
@@ -66,9 +68,8 @@ impl XferConsumer for TáXferConsumer {
                             self.acs.clone(),
                             self.leaf.clone(),self.lc.clone(),
                             Vec::<DrawingSpec>::new(),self.lid));
-                        let len = xf.len();
-                        for reg in 0..len {
-                            self.tc.set_reg(pid,reg+1,xf.take_data(reg));
+                        for (i,reg) in data.drain(..).enumerate() {
+                            self.tc.set_reg(pid,i+1,reg);
                         }
                         self.tc.start(pid);         
                     },

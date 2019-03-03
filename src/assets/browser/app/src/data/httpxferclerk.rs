@@ -2,29 +2,94 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
+use serde_json::Value as SerdeValue;
 use stdweb::unstable::TryInto;
 use stdweb::web::{ ArrayBuffer, TypedArray, XmlHttpRequest, XhrResponseType };
+use tánaiste::Value;
 use url::Url;
 
 use super::{ 
-    XferClerk, XferConsumer, XferRequest, XferResponse, 
-    HttpResponseConsumer, xfer_marshal, HttpManager, BackendConfig,
+    XferClerk, XferConsumer, XferRequest,
+    HttpResponseConsumer, HttpManager, BackendConfig,
     BackendConfigBootstrap
 };
 
-struct PendingDataRequest {
+struct PendingXferRequest {
     code: String,
-    request: Option<XferRequest>,
     consumer: Box<XferConsumer>
 }
 
-impl HttpResponseConsumer for PendingDataRequest {
+impl PendingXferRequest {
+    fn go(&mut self, recv: Vec<Value>) {
+        self.consumer.consume(self.code.clone(),recv);
+    }
+}
+
+struct PendingXferBatch {
+    requests: HashMap<(String,String),Vec<PendingXferRequest>>
+}
+
+impl PendingXferBatch {
+    pub fn new() -> PendingXferBatch {
+        PendingXferBatch {
+            requests: HashMap::<(String,String),Vec<PendingXferRequest>>::new()
+        }
+    }
+    
+    pub fn add_request(&mut self, name: &str, leaf_spec: &str,
+                       code: &str, consumer: Box<XferConsumer>) {
+        let key = (name.to_string(),leaf_spec.to_string());
+        self.requests.entry(key).or_insert_with(|| {
+            Vec::<PendingXferRequest>::new()
+        }).push(PendingXferRequest {
+            code: code.to_string(),
+            consumer
+        });
+    }    
+
+    fn marshal(&mut self, data: &SerdeValue) -> Vec<Value> {
+        let mut out = Vec::<Value>::new();
+        for val in data.as_array().unwrap() {
+            let mut row = Vec::<f64>::new();
+            if val.is_array() {
+                for cell in val.as_array().unwrap() {
+                    if cell.is_f64() {
+                        row.push(cell.as_f64().unwrap());
+                    } else if cell.is_i64() {
+                        row.push(cell.as_i64().unwrap() as f64);
+                    } else if cell.is_boolean() {
+                        row.push(if cell.as_bool().unwrap() { 1. } else { 0. } );
+                    }
+                }
+                out.push(Value::new_from_float(row));
+            } else if val.is_string() {
+                out.push(Value::new_from_string(val.as_str().unwrap().to_string()));
+            }            
+        }
+        out
+    }
+}
+
+impl HttpResponseConsumer for PendingXferBatch {
     fn consume(&mut self, req: XmlHttpRequest) {
         let value : ArrayBuffer = req.raw_response().try_into().ok().unwrap();
         let value : TypedArray<u8> = value.into();
-        let mut data = xfer_marshal(value.to_vec());
-        let xfrr = XferResponse::new(self.request.take().unwrap(),self.code.clone(),data);
-        self.consumer.consume(xfrr);
+        let data = String::from_utf8(value.to_vec()).ok().unwrap();
+        let data : SerdeValue = serde_json::from_str(&data).ok().unwrap();
+        for resp in data.as_array().unwrap() {
+            let key = (resp[0].as_str().unwrap().to_string(),
+                       resp[1].as_str().unwrap().to_string());
+            if let Some(mut requests) = self.requests.remove(&key) {
+                let mut recv = self.marshal(&resp[2]);
+                if requests.len() > 1 {
+                    for mut req in requests.drain(..) {
+                        req.go(recv.clone());
+                    }
+                } else {
+                    requests.remove(0).go(recv);
+                }
+            }
+        }
     }
 }
 
@@ -33,7 +98,6 @@ pub struct HttpXferClerkImpl {
     remote_backend_config: Option<BackendConfig>,
     base: Url,
     paused: Vec<(XferRequest,Box<XferConsumer>)>
-    
 }
 
 impl HttpXferClerkImpl {
@@ -77,21 +141,17 @@ impl HttpXferClerkImpl {
             let mut url = self.base.join(bc.get_data_url()).ok().unwrap();
             {
                 let mut qp = url.query_pairs_mut();
-                let part = format!("{}/{}:{}-{}",name,leaf.get_stick().get_name(),leaf.get_start(),leaf.get_end());
+                let part = format!("{}/{}",name,leaf.get_spec());
                 qp.append_pair("parts",&part);
             }
-            let pdr = PendingDataRequest {
-                code: code.to_string(),
-                request: Some(request),
-                consumer: consumer
-            };
+            let mut pxb = PendingXferBatch::new();
+            pxb.add_request(name,&leaf.get_spec(),&code.to_string(),consumer);
             let xhr = XmlHttpRequest::new();
             xhr.set_response_type(XhrResponseType::ArrayBuffer);
             xhr.open("GET",&url.as_str());
-            self.http_manager.add_request(xhr,None,Box::new(pdr));
+            self.http_manager.add_request(xhr,None,Box::new(pxb));
         } else {
-            let xrr = XferResponse::new(request,code.to_string(),vec!{});
-            consumer.consume(xrr);
+            consumer.consume(code.to_string(),vec!{});
         }
     }
     
