@@ -74,7 +74,8 @@ fn exe_resize(cg: &App, sz: Dot<i32,i32>) {
 }
 
 fn exe_component_add(a: &mut App, name: &str) {
-    if let Some(Some(c)) = a.with_apprunner(|g| g.get_component(name)) {
+    console!("X");
+    if let Some(c) = a.get_component(name) {
         a.with_compo(|co| co.add_component(c));
     }
 }
