@@ -52,6 +52,7 @@ impl PendingXferBatch {
     }    
 
     pub fn fire(self, http_manager: &mut HttpManager) {
+        if self.requests.len() == 0 { return; }
         let mut url = self.base.clone();
         for (name,leaf_spec) in self.requests.keys() {
             let mut qp = url.query_pairs_mut();
@@ -178,7 +179,6 @@ impl HttpXferClerkImpl {
                 qp.append_pair("parts",&part);
             }
             self.batch_in_prep.as_mut().unwrap().add_request(&name,&leaf.get_spec(),&code.to_string(),consumer);
-            self.tick();
         } else {
             consumer.consume(code.to_string(),vec!{});
         }
