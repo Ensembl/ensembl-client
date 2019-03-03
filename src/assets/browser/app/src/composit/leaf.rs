@@ -39,6 +39,10 @@ impl Leaf {
         let start_leaf = (self.hindex as f64 * mul) as f64;
         px as f64*mul + start_leaf
     }
+    
+    pub fn get_spec(&self) -> String {
+        format!("{}:{}-{}",self.get_stick().get_name(),self.get_start(),self.get_end())
+    }
 }
 
 impl fmt::Debug for Leaf {
