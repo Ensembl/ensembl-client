@@ -19,6 +19,7 @@ There are several script commands that have been baked into the NPM configuratio
 9. `npm run coverage` - Updates the `jest` coverage of the React.js code, and shows the test coverage.
 10. `npm run shanpshot` - Updates the `jest` snapshots. You will sometimes need to run this after a change is made to the React.js code. However, first check whether the unit tests are passing after updating them. If you get any errors related to `jest` snapshots, you will then need to run this script.
 11. `npm run storybook` - Starts the Storybook application
+12. `npm run deploy-storybook` — Builds the Storybook application and deploys it to Github Pages ([link](https://ensembl.github.io/ensembl-client))
 12. `npm run check-types` – Runs typescript compiler to check for type correctness
 
 ### IDE Setup
