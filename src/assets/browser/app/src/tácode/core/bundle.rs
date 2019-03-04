@@ -32,6 +32,8 @@ pub fn instruction_bundle_app(tc: &TáContext) -> InstructionBundle {
         Box::new(BinOpI(BinOpType::Div)),
         Box::new(BinOpI(BinOpType::Eq)),
         Box::new(BinOpI(BinOpType::Or)),
+        Box::new(BinOpI(BinOpType::Max)),
+        Box::new(BinOpI(BinOpType::Min)),
         Box::new(TextI(tc.clone())),
         Box::new(AppGetI(tc.clone())),
         Box::new(ShapeI(tc.clone())),
