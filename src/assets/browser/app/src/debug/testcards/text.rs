@@ -1,7 +1,7 @@
 use composit::Source;
 use debug::support::closuresource::{ ClosureSource, closure_add, closure_add_opt, closure_done };
 use drawing::{ FCFont, FontVariety, text_texture };
-use shape::{ ColourSpec, Facade, PinRectTypeSpec, TextureTypeSpec, TypeToShape, ShapeInstanceData };
+use shape::{ ColourSpec, Facade, PinRectTypeSpec, TextureTypeSpec, TypeToShape, ShapeInstanceData, ShapeShortInstanceData };
 use types::{ Colour, cleaf, cpixel, area_size, AxisSense, A_TOPLEFT };
 
 pub fn text_source() -> impl Source {
@@ -17,13 +17,12 @@ pub fn text_source() -> impl Source {
             under: None,
             spot: true
         };
-        closure_add_opt(lc,&prts.new_shape(&ShapeInstanceData {
+        closure_add_opt(lc,&prts.new_short_shape(&ShapeShortInstanceData {
             pos_x: 0.,
             pos_y: 0,
             aux_x: 400.,
             aux_y: 400,
             facade: Facade::Colour(Colour(150,0,0))
-
         }));
         
         let tts = TextureTypeSpec {
@@ -34,7 +33,7 @@ pub fn text_source() -> impl Source {
             scale_x: 1., scale_y: 1.,
             under: None,
         };
-        closure_add_opt(lc,&tts.new_shape(&ShapeInstanceData {
+        closure_add_opt(lc,&tts.new_short_shape(&ShapeShortInstanceData {
             pos_x: 0.,
             pos_y: 100,
             aux_x: 0.,

@@ -12,6 +12,7 @@ use composit::{ Leaf, SourceResponse };
 pub enum BinOpType {
     Add,
     Mul,
+    Div,
     Eq,
     Or
 }
@@ -21,6 +22,7 @@ impl BinOpType {
         match self {
             BinOpType::Add => a+b,
             BinOpType::Mul => a*b,
+            BinOpType::Div => a/b,
             BinOpType::Eq  => if a==b { 1. } else { 0. },
             BinOpType::Or => if a != 0. || b != 0. { 1. } else { 0. }
         }
@@ -29,6 +31,7 @@ impl BinOpType {
         match self {
             BinOpType::Add => "add",
             BinOpType::Mul => "mul",
+            BinOpType::Div => "div",
             BinOpType::Eq  => "eq",
             BinOpType::Or => "or"
         }

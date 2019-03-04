@@ -29,6 +29,7 @@ pub fn instruction_bundle_app(tc: &TáContext) -> InstructionBundle {
         Box::new(LengthI()),
         Box::new(BinOpI(BinOpType::Add)),
         Box::new(BinOpI(BinOpType::Mul)),
+        Box::new(BinOpI(BinOpType::Div)),
         Box::new(BinOpI(BinOpType::Eq)),
         Box::new(BinOpI(BinOpType::Or)),
         Box::new(TextI(tc.clone())),

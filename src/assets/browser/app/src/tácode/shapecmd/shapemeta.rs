@@ -6,6 +6,7 @@
  *   1 = stretchtangle (no anchor points)
  *   2 = hollow stretchtangle (no anchor points)
  *   3 = texture (one-anchor points)
+ *   4 = wiggle (no anchor points)
  * 
  * Two anchor shapes are anchored at two places and can grow to suit
  * whether that's to the screen or genome zoom. Note that you may decide
@@ -54,7 +55,8 @@
  */
 
 use shape::{
-    PinRectTypeSpec, StretchRectTypeSpec, TextureTypeSpec, TypeToShape
+    PinRectTypeSpec, StretchRectTypeSpec, StretchWiggleTypeSpec,
+    TextureTypeSpec, TypeToShape
 };
 use types::AxisSense;
 
@@ -123,11 +125,16 @@ fn make_texture(meta: &Vec<f64>) -> Option<Box<TypeToShape>> {
     }))
 }
 
+fn make_wiggle(meta: &Vec<f64>) -> Option<Box<TypeToShape>> {
+    Some(Box::new(StretchWiggleTypeSpec{}))
+}
+
 fn make_meta(meta: &Vec<f64>) -> Option<Box<TypeToShape>> {
     match meta[0] as i32 {
         0 => make_rectangle(meta),
         1|2 => make_stretchtangle(meta),
         3 => make_texture(meta),
+        4 => make_wiggle(meta),
         _ => None
     }
 }
@@ -136,7 +143,7 @@ pub fn build_meta(meta_iter: &mut Iterator<Item=&f64>) -> Option<Box<TypeToShape
     let mut meta = Vec::<f64>::new();
     let first = *meta_iter.next().unwrap();
     meta.push(first);
-    let len = if first == 1. || first == 2. { 1 } else { 10 };
+    let len = if first == 1. || first == 2. || first == 4. { 1 } else { 10 };
     for _ in 0..len {
         meta.push(*meta_iter.next().unwrap());
     }
