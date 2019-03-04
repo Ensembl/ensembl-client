@@ -30,11 +30,9 @@ struct AppRunnerImpl {
     controls: Vec<Box<EventControl<()>>>,
     timers: Timers,
     tc: Tácode,
-    csl: SourceManagerList,
-    als: AllLandscapes,
     http_manager: HttpManager,
-    http_clerk: HttpXferClerk,
-    config: BackendConfig
+    config: BackendConfig,
+    config_url: Url
 }
 
 #[derive(Clone)]
@@ -46,9 +44,8 @@ pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 impl AppRunner {
     pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<Bling>, config_url: &Url, config: &BackendConfig) -> AppRunner {
         let browser_el : HtmlElement = bling.apply_bling(&el);
-        let st = App::new(config,&browser_el);
         let tc = Tácode::new();
-        let mut http_clerk = HttpXferClerk::new(&http_manager,config,config_url);
+        let st = App::new(&tc,config,&http_manager,&browser_el,&config_url);
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
             g: g.clone(),
             el: el.clone(),
@@ -58,11 +55,9 @@ impl AppRunner {
             controls: Vec::<Box<EventControl<()>>>::new(),
             timers: Timers::new(),
             tc: tc.clone(),
-            csl: SourceManagerList::new(),
-            als: AllLandscapes::new(),
             http_manager: http_manager.clone(),
-            http_clerk: http_clerk.clone(),
-            config: config.clone()
+            config: config.clone(),
+            config_url: config_url.clone()
         })));
         {
             let imp = out.0.lock().unwrap();
@@ -77,14 +72,8 @@ impl AppRunner {
             app.lock().unwrap().set_report(report);
             let el = imp.el.clone();
             imp.bling.activate(&app,&el);
-            let dsm = CombinedSourceManager::new(&tc,&imp.config,&imp.als,&imp.http_clerk);
-            imp.csl.add_compsource(Box::new(dsm));
         }
         out
-    }
-
-    pub fn get_component(&mut self, name: &str) -> Option<ActiveSource> {
-        self.0.lock().unwrap().csl.get_component(name)
     }
 
     pub fn reset(&mut self, bling: Box<Bling>) {
@@ -93,14 +82,12 @@ impl AppRunner {
             let mut imp = self.0.lock().unwrap();
             imp.bling = bling;
             let browser_el : HtmlElement = imp.bling.apply_bling(&imp.el);
-            imp.app = Arc::new(Mutex::new(App::new(&imp.config,&browser_el)));
+            imp.app = Arc::new(Mutex::new(App::new(&imp.tc,&imp.config,&imp.http_manager,&browser_el,&imp.config_url)));
             let weak = AppRunnerWeak::new(&self);
             imp.app.lock().unwrap().set_runner(&weak);
             imp.timers = Timers::new();
             imp.projector = None;
             imp.controls = Vec::<Box<EventControl<()>>>::new();
-            imp.als = AllLandscapes::new();
-            imp.csl = SourceManagerList::new();
         }
         self.init();
         let report = Report::new(self);
@@ -110,8 +97,6 @@ impl AppRunner {
             let app = imp.app.clone();
             app.lock().unwrap().set_report(report);
             imp.bling.activate(&app,&el);
-            let dsm = CombinedSourceManager::new(&imp.tc,&imp.config,&imp.als,&imp.http_clerk);
-            imp.csl.add_compsource(Box::new(dsm));
         }
     }
 
@@ -162,6 +147,13 @@ impl AppRunner {
                 tc.step();
             },None);
         }
+        
+        /* run xfer */
+        {
+            self.add_timer(move |app,_| {
+                app.tick();
+            },None);
+        }        
     }
     
     pub fn draw(&mut self) {
