@@ -1,0 +1,14 @@
+@import 'src/styles/common';
+
+.speciesSearchField {
+  width: 100%;
+  max-width: 505px;
+  background: $ens-white;
+  border: 1px solid $ens-medium-grey;
+}
+
+.speciesSearchFieldInput {
+  width: calc(100% - 20px);
+  padding: 14px 22px;
+  border: none;
+}
