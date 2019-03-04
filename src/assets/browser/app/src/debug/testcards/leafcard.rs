@@ -2,7 +2,7 @@ use util::RulerGenerator;
 use debug::support::closuresource::{ ClosureSource, closure_add, closure_done, closure_add_opt };
 use composit::Source;
 use drawing::{ FCFont, FontVariety, text_texture };
-use shape::{ ColourSpec, PinRectTypeSpec, StretchRectTypeSpec, TextureTypeSpec, TypeToShape, ShapeInstanceData, Facade };
+use shape::{ ColourSpec, PinRectTypeSpec, StretchRectTypeSpec, TextureTypeSpec, TypeToShape, ShapeInstanceData, Facade, ShapeShortInstanceData };
 use types::{ Colour, cleaf, cpixel, A_TOP, area, area_size, AxisSense };
 
 const TARGET: i32 = 10;
@@ -20,7 +20,7 @@ pub fn leafcard_source(leaf_marks: bool) -> impl Source {
             sea_y: None,
             ship_x: (Some(AxisSense::Min),0),
             ship_y: (Some(AxisSense::Min),0),
-            under: None,
+            under: 0,
             spot: false
         };
         
@@ -33,10 +33,10 @@ pub fn leafcard_source(leaf_marks: bool) -> impl Source {
                     sea_y: None,
                     ship_x: (None,0),
                     ship_y: (Some(AxisSense::Max),0),
-                    under: None,
+                    under: 0,
                     scale_x: 1., scale_y: 1.
                 };
-                closure_add_opt(lc,&tts.new_shape(&ShapeInstanceData {
+                closure_add_opt(lc,&tts.new_short_shape(&ShapeShortInstanceData {
                     pos_x: offset,
                     pos_y: 41,
                     aux_x: 0.,
@@ -44,7 +44,7 @@ pub fn leafcard_source(leaf_marks: bool) -> impl Source {
                     facade: Facade::Drawing(tx)
                 }));
             }
-            closure_add_opt(lc,&prts.new_shape(&ShapeInstanceData {
+            closure_add_opt(lc,&prts.new_short_shape(&ShapeShortInstanceData {
                 pos_x: offset,
                 pos_y: 10,
                 aux_x: 1.,
@@ -60,7 +60,7 @@ pub fn leafcard_source(leaf_marks: bool) -> impl Source {
         };
         if leaf_marks {
             let srts = StretchRectTypeSpec { spot: false, hollow: false };
-            closure_add_opt(lc,&srts.new_shape(&ShapeInstanceData {
+            closure_add_opt(lc,&srts.new_short_shape(&ShapeShortInstanceData {
                 pos_x: 0.,
                 pos_y: 70,
                 aux_x: 1.,
