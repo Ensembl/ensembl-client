@@ -61,3 +61,10 @@ export const openTrackPanelModal = createAction(
 export const closeTrackPanelModal = createAction(
   'browser/close-track-panel-modal'
 );
+
+export const toggleGenomeSelector = createAction(
+  'toggle-genome-selector',
+  (resolve) => {
+    return (genomeSelectorActive: boolean) => resolve(genomeSelectorActive);
+  }
+);
