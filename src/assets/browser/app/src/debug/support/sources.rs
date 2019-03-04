@@ -29,10 +29,6 @@ pub const DEBUG_SOURCES : [&str;8] = [
     "internal:debug:zzz-framework"
 ];
 
-#[cfg(deploy)]
-pub const DEMO_SOURCES : [&str;0] = [];
-
-#[cfg(not(deploy))]
 pub const DEMO_SOURCES : [&str;8] = [
     "gene-pc-fwd",
     "gene-other-fwd",
@@ -43,7 +39,6 @@ pub const DEMO_SOURCES : [&str;8] = [
     "gc",
     "zzz-framework"
 ];
-
 
 #[cfg(deploy)]
 pub fn add_debug_sources(s: &mut CombinedSource, name: &str) {}
