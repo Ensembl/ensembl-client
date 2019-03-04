@@ -39,11 +39,15 @@ type AppProps = RouteComponentProps & StateProps & DispatchProps & OwnProps;
 
 export const App: FunctionComponent<AppProps> = (props: AppProps) => {
   useEffect(() => {
-    // remove /app/ first e.g. /app/browser/human/BRCA2 -> browser/human/BRCA2
-    // then remove the part of the url that follows after the first / (forward slash) e.g. browser/human/BRCA2 -> browser
-    const appName = props.location.pathname
-      .replace('/app/', '')
-      .replace(/\/(?<=\/).*$/, '');
+    // remove /app/ from url to get app name
+    let appName = props.location.pathname.replace('/app/', '');
+
+    // check if app name still has forward slash (/) to be sure the app name is extracted
+    // if it isn't then remove rest of the URL and extract the app name
+    if (appName.indexOf('/') > -1) {
+      const matches = appName.match(/^[^\/]*/);
+      appName = matches ? matches[0] : '';
+    }
 
     props.changeCurrentApp(appName);
 
