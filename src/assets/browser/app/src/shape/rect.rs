@@ -223,7 +223,6 @@ impl PinRectTypeSpec {
             3 => PTGeom::PageUnderAll,
             _ => PTGeom::Fix,
         };
-        console!("pt {:?}",pt);
         Some(ShapeSpec::PinRect(RectSpec {
             pt,
             offset: RectPosition::Fix(pos),
