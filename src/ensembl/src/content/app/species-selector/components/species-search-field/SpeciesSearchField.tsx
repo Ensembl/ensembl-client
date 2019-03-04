@@ -14,6 +14,7 @@ const SpeciesSearchField = (props: Props) => {
   return (
     <div className={styles.speciesSearchField}>
       <Input
+        placeholder="Common or scientific name..."
         className={styles.speciesSearchFieldInput}
         onChange={handleSearchChange}
       />
