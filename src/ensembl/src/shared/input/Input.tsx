@@ -1,4 +1,4 @@
-import React, { ReactNode, useRef, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 
 import styles from './Input.scss';
@@ -39,6 +39,8 @@ const Input = (props: Props) => {
     }
   };
 
+  const className = classNames(styles.input, props.className);
+
   return (
     <input
       id={props.id}
@@ -46,6 +48,7 @@ const Input = (props: Props) => {
       type={props.type || 'text'}
       autoFocus={props.autoFocus}
       placeholder={props.placeholder}
+      className={className}
       value={value}
       onChange={updateValue}
     />
