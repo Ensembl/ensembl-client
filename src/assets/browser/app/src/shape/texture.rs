@@ -7,7 +7,7 @@ use types::{
     CLeaf, area_centred, Anchors, cfraction, Anchor, cpixel, cleaf
 };
 
-use shape::{ Shape, ShapeSpec, ShapeInstanceData, Facade, TypeToShape, FacadeType };
+use shape::{ Shape, ShapeSpec, ShapeInstanceData, ShapeShortInstanceData, Facade, TypeToShape, FacadeType, ShapeInstanceDataType };
 use shape::util::{ rectangle_t, multi_gl, vertices_rect };
 
 use drawing::{ Artist, Artwork, DrawingSpec };
@@ -131,7 +131,7 @@ impl TextureTypeSpec {
         Dot(Anchor(self.ship_x.0),Anchor(self.ship_y.0))
     }
 
-    fn new_fix(&self, td: &ShapeInstanceData) -> ShapeSpec {
+    fn new_fix(&self, td: &ShapeShortInstanceData) -> ShapeSpec {
         let origin = cpixel(td.pos_x as i32,td.pos_y)
                         .x_edge(self.sea_x.unwrap())
                         .y_edge(self.sea_y.unwrap());
@@ -146,7 +146,7 @@ impl TextureTypeSpec {
         texture(&td.facade,&TexturePosition::Fix(origin),&scale,&offset,pt)
     }
 
-    fn new_page(&self, td: &ShapeInstanceData) -> ShapeSpec {
+    fn new_page(&self, td: &ShapeShortInstanceData) -> ShapeSpec {
         let origin = cpixel(td.pos_x as i32,td.pos_y)
                         .x_edge(self.sea_x.unwrap())
                         .y_edge(AxisSense::Max);
@@ -156,7 +156,7 @@ impl TextureTypeSpec {
         texture(&td.facade,&TexturePosition::Fix(origin),&scale,&offset,PTGeom::Page)
     }
     
-    fn new_pin(&self, td: &ShapeInstanceData) -> Option<ShapeSpec> {
+    fn new_pin(&self, td: &ShapeShortInstanceData) -> Option<ShapeSpec> {
         let origin = cleaf(td.pos_x,td.pos_y);
         let scale = cpixel(self.scale_x as i32,self.scale_y as i32).anchor(self.anchor_pt());
         let offset = cpixel(td.aux_x as i32-self.ship_x.1,
@@ -168,7 +168,7 @@ impl TextureTypeSpec {
         }
     }
     
-    fn new_tape(&self, td: &ShapeInstanceData) -> ShapeSpec {
+    fn new_tape(&self, td: &ShapeShortInstanceData) -> ShapeSpec {
         let origin = cleaf(td.pos_x,td.pos_y).y_edge(self.sea_y.unwrap());
         let scale = cpixel(self.scale_x as i32,self.scale_y as i32).anchor(self.anchor_pt());
         let offset = cpixel(td.aux_x as i32-self.ship_x.1,
@@ -178,7 +178,7 @@ impl TextureTypeSpec {
 }
 
 impl TypeToShape for TextureTypeSpec {
-    fn new_shape(&self, td: &ShapeInstanceData) -> Option<ShapeSpec> {
+    fn new_short_shape(&self, td: &ShapeShortInstanceData) -> Option<ShapeSpec> {
         Some(match (self.sea_x.is_some(),self.sea_y.is_some()) {
             (false,false) => self.new_pin(td),
             (false,true) => Some(self.new_tape(td)),
@@ -187,7 +187,7 @@ impl TypeToShape for TextureTypeSpec {
         }.unwrap())
     }
     
+    fn sid_type(&self) -> ShapeInstanceDataType { ShapeInstanceDataType::Short }
     fn get_facade_type(&self) -> FacadeType { FacadeType::Drawing }
-    
     fn needs_scale(&self) -> (bool,bool) { (self.sea_x.is_none(),false) }
 }
