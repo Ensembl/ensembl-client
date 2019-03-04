@@ -6,6 +6,7 @@
  *   1 = stretchtangle (no anchor points)
  *   2 = hollow stretchtangle (no anchor points)
  *   3 = texture (one-anchor points)
+ *   4 = wiggle (no anchor points)
  * 
  * Two anchor shapes are anchored at two places and can grow to suit
  * whether that's to the screen or genome zoom. Note that you may decide
@@ -23,7 +24,9 @@
  * There then follow two pairs representing the ship-end of the anchors.
  * [x-type,x-delta,y-type,y-delta]. -types have one of three values,
  * 0 = left/top; 1 = middle; 2 = right/bottom. deltas are in pixels.
- * Then the (temporary) under integer is given: 0=normal, 1=page, 2=tape.
+ * Then the (temporary) under integer is given: 0=normal, 
+ * 1=fix under page, 2=fix under tape, 3=page under pin
+ * 
  * 
  * For example [0,1,1,2,0,0,2,0,1,0,0] represents, entry by entry
  * 0. a rectangle 
@@ -54,18 +57,10 @@
  */
 
 use shape::{
-    PinRectTypeSpec, StretchRectTypeSpec, TextureTypeSpec, TypeToShape
+    PinRectTypeSpec, StretchRectTypeSpec, StretchWiggleTypeSpec,
+    TextureTypeSpec, TypeToShape
 };
 use types::AxisSense;
-
-fn make_under(meta: &Vec<f64>) -> Option<bool> {
-    match meta[10] as i32 {
-        0 => None,
-        1 => Some(true),
-        2 => Some(false),
-        _ => None
-    }
-}
 
 fn sea_option(meta: &Vec<f64>, idx: usize) -> Option<AxisSense> {
     match meta[idx] as i32 {
@@ -99,7 +94,7 @@ fn make_rectangle(meta: &Vec<f64>) -> Option<Box<TypeToShape>> {
         sea_y: sea(meta,4),
         ship_x: ship(meta,6),
         ship_y: ship(meta,8),
-        under: make_under(meta),
+        under: meta[10] as i32,
         spot: meta[1]!=0.
     }))
 }
@@ -117,10 +112,14 @@ fn make_texture(meta: &Vec<f64>) -> Option<Box<TypeToShape>> {
         sea_y: sea_option(meta,4),
         ship_x: ship(meta,6),
         ship_y: ship(meta,8),
-        under: make_under(meta),
+        under: meta[10] as i32,
         scale_x: meta[3] as f32,
         scale_y: meta[5] as f32
     }))
+}
+
+fn make_wiggle(meta: &Vec<f64>) -> Option<Box<TypeToShape>> {
+    Some(Box::new(StretchWiggleTypeSpec{}))
 }
 
 fn make_meta(meta: &Vec<f64>) -> Option<Box<TypeToShape>> {
@@ -128,6 +127,7 @@ fn make_meta(meta: &Vec<f64>) -> Option<Box<TypeToShape>> {
         0 => make_rectangle(meta),
         1|2 => make_stretchtangle(meta),
         3 => make_texture(meta),
+        4 => make_wiggle(meta),
         _ => None
     }
 }
@@ -136,7 +136,7 @@ pub fn build_meta(meta_iter: &mut Iterator<Item=&f64>) -> Option<Box<TypeToShape
     let mut meta = Vec::<f64>::new();
     let first = *meta_iter.next().unwrap();
     meta.push(first);
-    let len = if first == 1. || first == 2. { 1 } else { 10 };
+    let len = if first == 1. || first == 2. || first == 4. { 1 } else { 10 };
     for _ in 0..len {
         meta.push(*meta_iter.next().unwrap());
     }

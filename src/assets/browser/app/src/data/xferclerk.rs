@@ -1,7 +1,9 @@
-use data::{ XferRequest, XferResponse };
+use tánaiste::Value;
+
+use data::{ XferRequest };
 
 pub trait XferConsumer {
-    fn consume(&mut self, response: XferResponse);
+    fn consume(&mut self, code: String, data: Vec<Value>);
     fn abandon(&mut self);
 }
 
