@@ -10,7 +10,7 @@ use program::{
 use program::gpuspec::GPUSpec;
 
 #[derive(Clone,Copy,Debug,PartialEq,Eq,Hash)]
-pub enum PTGeom { Pin, Stretch, Fix, FixUnderTape, FixUnderPage, Tape, Page }
+pub enum PTGeom { Pin, Stretch, Fix, FixUnderTape, FixUnderPage, Tape, Page, PageUnderAll }
 
 #[derive(Clone,Copy,Debug,PartialEq,Eq,Hash)]
 pub enum PTMethod { Triangle, Strip }
@@ -75,7 +75,7 @@ impl PTGeom {
                                        (1.0 - aVertexPosition.y / uSize.y) * aVertexSign.y,
                                        0.0, 1.0)")
             },
-            PTGeom::Page => vec! {
+            PTGeom::Page | PTGeom::PageUnderAll => vec! {
                 Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
                 Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageVpos"),
                 Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
@@ -133,8 +133,8 @@ impl PTSkin {
     }
 }
 
-const GEOM_ORDER : [PTGeom;7] = [
-    PTGeom::Stretch, PTGeom::Pin, 
+const GEOM_ORDER : [PTGeom;8] = [
+    PTGeom::PageUnderAll, PTGeom::Stretch, PTGeom::Pin,
     PTGeom::FixUnderPage, PTGeom::Page,
     PTGeom::FixUnderTape, PTGeom::Tape, PTGeom::Fix, 
 ];
