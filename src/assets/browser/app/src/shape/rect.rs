@@ -138,7 +138,7 @@ pub struct PinRectTypeSpec {
     pub sea_y: Option<(AxisSense,AxisSense)>,
     pub ship_x: (Option<AxisSense>,i32),
     pub ship_y: (Option<AxisSense>,i32),
-    pub under: Option<bool>, // page = true, tape = false
+    pub under: i32, // page = true, tape = false
     pub spot: bool
 }
 
@@ -177,7 +177,7 @@ impl PinRectTypeSpec {
             pt: PTGeom::Pin,
             offset: RectPosition::Pin(cleaf(rd.pos_x,rd.pos_y),offset),
             colspec: colspec.unwrap()
-        }))     
+        }))
     }
     
     fn new_tape(&self, rd: &ShapeShortInstanceData) -> Option<ShapeSpec> {
@@ -198,8 +198,12 @@ impl PinRectTypeSpec {
                         .x_edge(self.sea_x.unwrap().0,
                                 self.sea_x.unwrap().1);
         let colspec = self.new_colspec(rd);
+        let pt = match self.under {
+            3 => PTGeom::PageUnderAll,
+            _ => PTGeom::Page
+        };
         Some(ShapeSpec::PinRect(RectSpec {
-            pt: PTGeom::Page,
+            pt,
             offset: RectPosition::Page(pos),
             colspec: colspec.unwrap()
         }))     
@@ -214,10 +218,12 @@ impl PinRectTypeSpec {
                                 self.sea_y.unwrap().1);
         let colspec = self.new_colspec(rd);
         let pt = match self.under {
-            Some(true) => PTGeom::FixUnderPage,
-            Some(false) => PTGeom::FixUnderTape,
-            None => PTGeom::Fix,
+            1 => PTGeom::FixUnderPage,
+            2 => PTGeom::FixUnderTape,
+            3 => PTGeom::PageUnderAll,
+            _ => PTGeom::Fix,
         };
+        console!("pt {:?}",pt);
         Some(ShapeSpec::PinRect(RectSpec {
             pt,
             offset: RectPosition::Fix(pos),

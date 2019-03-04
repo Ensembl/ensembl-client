@@ -60,7 +60,7 @@ fn measure(lc: &mut SourceResponse, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSp
             sea_y: Some((AxisSense::Max,AxisSense::Max)),
             ship_x: (Some(AxisSense::Min),0),
             ship_y: (Some(AxisSense::Min),0),
-            under: None,
+            under: 0,
             spot: false
         };
         closure_add_opt(lc,&prts.new_short_shape(&ShapeShortInstanceData {
@@ -81,7 +81,7 @@ fn measure(lc: &mut SourceResponse, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSp
             sea_y: Some(AxisSense::Max),
             ship_x: (None,0),
             ship_y: (Some(AxisSense::Max),0),
-            under: None,
+            under: 0,
             scale_x: 10., scale_y: 10.
         };
         closure_add_opt(lc,&tts.new_short_shape(&ShapeShortInstanceData {
@@ -329,7 +329,7 @@ pub fn bs_source_main() -> ClosureSource {
                 sea_y: None,
                 ship_x: (Some(AxisSense::Max),0),
                 ship_y: (Some(AxisSense::Max),0),
-                under: None,
+                under: 0,
                 scale_x: 1., scale_y: 1.
             };
             closure_add_opt(lc,&tts.new_short_shape(&ShapeShortInstanceData {
@@ -352,7 +352,7 @@ pub fn bs_source_main() -> ClosureSource {
                         sea_y: None,
                         ship_x: (Some(AxisSense::Min),0),
                         ship_y: (None,0),
-                        under: None,
+                        under: 0,
                         spot: false
                     };
                     closure_add_opt(lc,&prts.new_short_shape(&ShapeShortInstanceData {
@@ -387,7 +387,7 @@ pub fn bs_source_main() -> ClosureSource {
                         sea_y: None,
                         ship_x: (None,0),
                         ship_y: (None,0),
-                        under: None,
+                        under: 0,
                         scale_x: 10., scale_y: 10.
                     };
                     closure_add_opt(lc,&tts.new_short_shape(&ShapeShortInstanceData {
@@ -445,7 +445,7 @@ pub fn bs_source_main() -> ClosureSource {
                                 sea_y: None,
                                 ship_x: (None,0),
                                 ship_y: (None,0),
-                                under: None,
+                                under: 0,
                                 scale_x: 1., scale_y: 1.
                             };
                             closure_add_opt(lc,&tts.new_short_shape(&ShapeShortInstanceData {
@@ -466,7 +466,7 @@ pub fn bs_source_main() -> ClosureSource {
             sea_y: Some((AxisSense::Max,AxisSense::Max)),
             ship_x: (Some(AxisSense::Min),0),
             ship_y: (Some(AxisSense::Min),0),
-            under: None,
+            under: 0,
             spot: true
         };
 
@@ -494,7 +494,7 @@ pub fn bs_source_main() -> ClosureSource {
             sea_y: Some(AxisSense::Max),
             ship_x: (Some(AxisSense::Max),0),
             ship_y: (Some(AxisSense::Max),0),
-            under: None,
+            under: 0,
             scale_x: 1., scale_y: SH as f32
         };
         closure_add_opt(lc,&tts.new_short_shape(&ShapeShortInstanceData {
@@ -511,7 +511,7 @@ pub fn bs_source_main() -> ClosureSource {
                     sea_y: Some(*v),
                     ship_x: (Some(*h),0),
                     ship_y: (Some(*v),0),
-                    under: None,
+                    under: 0,
                     scale_x: 10., scale_y: 10.
                 };
                 closure_add_opt(lc,&tts.new_short_shape(&ShapeShortInstanceData {

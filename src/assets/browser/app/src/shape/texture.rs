@@ -121,7 +121,7 @@ pub struct TextureTypeSpec {
     pub sea_y: Option<AxisSense>,
     pub ship_x: (Option<AxisSense>,i32),
     pub ship_y: (Option<AxisSense>,i32),
-    pub under: Option<bool>, // page = true, tape = false
+    pub under: i32,
     pub scale_x: f32,
     pub scale_y: f32
 }
@@ -139,9 +139,9 @@ impl TextureTypeSpec {
         let offset = cpixel(td.aux_x as i32-self.ship_x.1,
                             td.aux_y as i32-self.ship_y.1);
         let pt = match self.under {
-            Some(true) => PTGeom::FixUnderPage,
-            Some(false) => PTGeom::FixUnderTape,
-            None => PTGeom::Fix,
+            1 => PTGeom::FixUnderPage,
+            2 => PTGeom::FixUnderTape,
+            _ => PTGeom::Fix,
         };
         texture(&td.facade,&TexturePosition::Fix(origin),&scale,&offset,pt)
     }
@@ -153,7 +153,11 @@ impl TextureTypeSpec {
         let scale = cpixel(self.scale_x as i32,self.scale_y as i32).anchor(self.anchor_pt());
         let offset = cpixel(td.aux_x as i32-self.ship_x.1,
                             td.aux_y as i32-self.ship_y.1);
-        texture(&td.facade,&TexturePosition::Fix(origin),&scale,&offset,PTGeom::Page)
+        let pt = match self.under {
+            3 => PTGeom::PageUnderAll,
+            _ => PTGeom::Page
+        };
+        texture(&td.facade,&TexturePosition::Fix(origin),&scale,&offset,pt)
     }
     
     fn new_pin(&self, td: &ShapeShortInstanceData) -> Option<ShapeSpec> {
