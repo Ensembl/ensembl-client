@@ -34,7 +34,7 @@ fn exe_pos_range_event(app: &App, x_start: f64, x_end: f64, y: f64) {
     });
     app.with_compo(|co| {
         co.set_zoom(zoom);
-        co.set_position(middle.0);
+        co.set_position(pos.0);
     });
 }
 
