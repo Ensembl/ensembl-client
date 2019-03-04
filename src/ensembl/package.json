@@ -43,6 +43,8 @@
     }
   },
   "dependencies": {
+    "@storybook/addon-actions": "^4.1.13",
+    "@types/storybook__addon-actions": "^3.4.2",
     "classnames": "2.2.6",
     "foundation-sites": "6.5.3",
     "react": "16.8.1",
