@@ -21,6 +21,7 @@ type Props = {
   type?: string;
   autoFocus?: boolean;
   placeholder?: string;
+  className?: string; // to customize input styling when using CSS modules
 } & OnChangeProps;
 
 const Input = (props: Props) => {
@@ -44,6 +45,7 @@ const Input = (props: Props) => {
       name={props.name}
       type={props.type || 'text'}
       autoFocus={props.autoFocus}
+      placeholder={props.placeholder}
       value={value}
       onChange={updateValue}
     />
