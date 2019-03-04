@@ -71,8 +71,8 @@ export const Browser: FunctionComponent<BrowserProps> = (
 ) => {
   const browserRef: React.RefObject<HTMLDivElement> = useRef(null);
 
-  const changeBrowserLocation = () => {
-    const [chrCode, startBp, endBp] = props.chrLocation;
+  const changeBrowserLocation = (location?: Array<string | number>) => {
+    const [chrCode, startBp, endBp] = location || props.chrLocation;
 
     const stickEvent = new CustomEvent('bpane', {
       bubbles: true,
