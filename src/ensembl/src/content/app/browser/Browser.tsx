@@ -30,7 +30,8 @@ import {
   getBrowserOpenState,
   getDrawerOpened,
   getBrowserNavOpened,
-  getChrLocation
+  getChrLocation,
+  getGenomeSelectorActive
 } from './browserSelectors';
 
 import styles from './Browser.scss';
@@ -43,6 +44,7 @@ type StateProps = {
   browserOpenState: BrowserOpenState;
   chrLocation: ChrLocation;
   drawerOpened: boolean;
+  genomeSelectorActive: boolean;
 };
 
 type DispatchProps = {
@@ -124,6 +126,9 @@ export const Browser: FunctionComponent<BrowserProps> = (
   return (
     <section className={styles.browser}>
       <BrowserBar changeBrowserLocation={changeBrowserLocation} />
+      {props.genomeSelectorActive ? (
+        <div className={styles.browserOverlay} />
+      ) : null}
       <div className={styles.browserInnerWrapper}>
         <div
           className={`${styles.browserImageWrapper} ${
@@ -151,7 +156,8 @@ const mapStateToProps = (state: RootState): StateProps => ({
   browserNavOpened: getBrowserNavOpened(state),
   browserOpenState: getBrowserOpenState(state),
   chrLocation: getChrLocation(state),
-  drawerOpened: getDrawerOpened(state)
+  drawerOpened: getDrawerOpened(state),
+  genomeSelectorActive: getGenomeSelectorActive(state)
 });
 
 const mapDispatchToProps: DispatchProps = {

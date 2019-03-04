@@ -18,6 +18,8 @@ type BrowserGenomeSelectorProps = {
   browserActivated: boolean;
   changeBrowserLocation: () => void;
   defaultChrLocation: ChrLocation;
+  genomeSelectorActive: boolean;
+  toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
   updateDefaultChrLocation: (chrLocation: ChrLocation) => void;
 };
 
@@ -25,7 +27,6 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
   props: BrowserGenomeSelectorProps
 ) => {
   const chrLocationStr = getChrLocationStr(props.defaultChrLocation);
-  const [showInputs, setShowInputs] = useState(false);
 
   const [chrLocationPlaceholder, setChrLocationPlaceholder] = useState('');
   const [chrLocationInput, setChrLocationInput] = useState('');
@@ -38,7 +39,7 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
 
   const activateForm = () => {
     setChrLocationPlaceholder(chrLocationStr);
-    setShowInputs(true);
+    props.toggleGenomeSelector(true);
   };
 
   const changeChrLocationInput = (event: ChangeEvent<HTMLInputElement>) =>
@@ -46,7 +47,7 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
 
   const closeForm = () => {
     setChrLocationInput('');
-    setShowInputs(false);
+    props.toggleGenomeSelector(false);
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -73,7 +74,7 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
 
   return props.browserActivated ? (
     <dd className={styles.browserGenomeSelector}>
-      {showInputs ? (
+      {props.genomeSelectorActive ? (
         <form onSubmit={handleSubmit}>
           <input
             type="text"

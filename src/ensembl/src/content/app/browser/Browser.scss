@@ -11,11 +11,11 @@
 
 .browserImageWrapper {
   &.semiExpanded {
-    width: calc(100vw - 357px);
+    width: calc(100vw - 356px);
   }
 
   &.expanded {
-    width: calc(100vw - 37px);
+    width: calc(100vw - 36px);
   }
 
   &.collapsed {
@@ -25,4 +25,13 @@
       display: none;
     }
   }
+}
+
+.browserOverlay {
+  background: $ens-white;
+  height: 100%;
+  opacity: 0.7;
+  position: absolute;
+  width: 100vw;
+  z-index: 150;
 }

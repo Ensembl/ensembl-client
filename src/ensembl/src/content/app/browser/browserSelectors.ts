@@ -37,3 +37,6 @@ export const getTrackPanelModalOpened = (state: RootState): boolean =>
 
 export const getTrackPanelModalView = (state: RootState): string =>
   state.browser.trackPanelModalView;
+
+export const getGenomeSelectorActive = (state: RootState): boolean =>
+  state.browser.genomeSelectorActive;

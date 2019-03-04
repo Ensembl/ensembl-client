@@ -48,6 +48,8 @@ export default (
         trackPanelModalOpened: false,
         trackPanelModalView: ''
       };
+    case getType(browser.toggleGenomeSelector):
+      return { ...state, genomeSelectorActive: action.payload };
     default:
       return state;
   }

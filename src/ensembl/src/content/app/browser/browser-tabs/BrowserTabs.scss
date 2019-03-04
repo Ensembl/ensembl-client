@@ -1,0 +1,37 @@
+@import 'src/styles/common';
+
+.browserTabs {
+  @include flex;
+  font-size: 13px;
+  justify-content: space-between;
+  margin-left: 44px;
+  padding-right: 5px;
+  width: 312px;
+}
+
+.browserTab {
+  color: $ens-blue;
+}
+
+.browserTabActive {
+  color: inherit;
+}
+
+.browserTabArrow {
+  position: relative;
+
+  &::after {
+    border: 6px solid $ens-grey;
+    border-color: transparent transparent $ens-light-grey $ens-light-grey;
+    box-shadow: -2px 2px 2px 0 $ens-grey;
+    box-sizing: border-box;
+    content: '';
+    height: 0;
+    position: absolute;
+    right: calc(60% - 6px);
+    transform-origin: 0 0;
+    transform: rotate(-45deg);
+    top: 21px;
+    width: 0;
+  }
+}
