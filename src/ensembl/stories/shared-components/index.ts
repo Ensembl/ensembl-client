@@ -1,3 +1,3 @@
-import './CloseButton.stories';
-import './Dropdown.stories';
-import './Input.stories';
+import './close-button/CloseButton.stories';
+import './dropdown/Dropdown.stories';
+import './input/Input.stories';
