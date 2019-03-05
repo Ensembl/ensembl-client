@@ -45,7 +45,7 @@ impl AppRunner {
     pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<Bling>, config_url: &Url, config: &BackendConfig) -> AppRunner {
         let browser_el : HtmlElement = bling.apply_bling(&el);
         let tc = Tácode::new();
-        let st = App::new(&tc,config,&http_manager,&browser_el,&config_url);
+        let st = App::new(&tc,config,&http_manager,&browser_el,&config_url,&el);
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
             g: g.clone(),
             el: el.clone(),
@@ -82,7 +82,7 @@ impl AppRunner {
             let mut imp = self.0.lock().unwrap();
             imp.bling = bling;
             let browser_el : HtmlElement = imp.bling.apply_bling(&imp.el);
-            imp.app = Arc::new(Mutex::new(App::new(&imp.tc,&imp.config,&imp.http_manager,&browser_el,&imp.config_url)));
+            imp.app = Arc::new(Mutex::new(App::new(&imp.tc,&imp.config,&imp.http_manager,&browser_el,&imp.config_url,&imp.el)));
             let weak = AppRunnerWeak::new(&self);
             imp.app.lock().unwrap().set_runner(&weak);
             imp.timers = Timers::new();

@@ -19,7 +19,7 @@ type BrowserGenomeSelectorProps = {
   changeBrowserLocation: () => void;
   defaultChrLocation: ChrLocation;
   chrLocation: ChrLocation;
-  updateDefaultChrLocation: (chrLocation: ChrLocation) => void;
+  updateDefaultChrLocation: (chrLocation?: ChrLocation) => void;
   updateChrLocation: (chrLocation: ChrLocation) => void;
 };
 
@@ -55,7 +55,7 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
     event.preventDefault();
 
     const [chrCodeInput, chrRegionInput] = chrLocationInput.split(':');
-    let [chrStartInput, chrEndInput] = [0, 1000000000];
+    let [chrStartInput, chrEndInput] = ['0', '1000000000'];
     if (chrRegionInput) {
       [chrStartInput, chrEndInput] = chrRegionInput.split('-');
     }

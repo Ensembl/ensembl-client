@@ -57,11 +57,17 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
     };
   }, [props.browserRef]);
 
+  let hidden_style = { display: 'block' };
+
   return (
     <div
       className={getBrowserImageClasses(props.browserNavOpened)}
       ref={props.browserRef}
-    />
+    >
+      <div className="bottle" style={hidden_style}>
+        <div className="mosquito-cog" />
+      </div>
+    </div>
   );
 };
 
