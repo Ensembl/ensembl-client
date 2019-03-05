@@ -16,6 +16,8 @@ export type BrowserNavStates = [
 
 export type ChrLocation = [string, number, number];
 
+export type CogList = number;
+
 export type BrowserState = Readonly<{
   browserActivated: boolean;
   browserNavOpened: boolean;
@@ -28,6 +30,7 @@ export type BrowserState = Readonly<{
   trackPanelModalOpened: boolean;
   trackPanelModalView: string;
   trackPanelOpened: boolean;
+  browserCogList: CogList;
 }>;
 
 export const defaultState: BrowserState = {
@@ -41,7 +44,8 @@ export const defaultState: BrowserState = {
   drawerView: '',
   trackPanelModalOpened: false,
   trackPanelModalView: '',
-  trackPanelOpened: true
+  trackPanelOpened: true,
+  browserCogList: []
 };
 
 export const trackPanelState = (
