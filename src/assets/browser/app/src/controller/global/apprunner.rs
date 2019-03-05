@@ -12,7 +12,7 @@ use controller::input::{
     register_direct_events, register_user_events, register_dom_events,
     Timers, Timer
 };
-use controller::output::{ Projector, Report };
+use controller::output::{ Projector, Report, ViewportReport };
 use data::{ HttpManager, HttpXferClerk, BackendConfigBootstrap, BackendConfig };
 use dom::Bling;
 use dom::event::EventControl;
@@ -66,10 +66,12 @@ impl AppRunner {
         }
         out.init();
         let report = Report::new(&mut out);
+        let viewport_report = ViewportReport::new(&mut out);
         {
             let mut imp = out.0.lock().unwrap();
             let app = imp.app.clone();
             app.lock().unwrap().set_report(report);
+            app.lock().unwrap().set_viewport_report(viewport_report);
             let el = imp.el.clone();
             imp.bling.activate(&app,&el);
         }
@@ -91,11 +93,13 @@ impl AppRunner {
         }
         self.init();
         let report = Report::new(self);
+        let viewport_report = ViewportReport::new(self);
         {
             let mut imp = self.0.lock().unwrap();
             let el = imp.el.clone();
             let app = imp.app.clone();
             app.lock().unwrap().set_report(report);
+            app.lock().unwrap().set_viewport_report(viewport_report);
             imp.bling.activate(&app,&el);
         }
     }

@@ -40,6 +40,7 @@ const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
   props: BrowserCogListProps
 ) => {
   const listenBpaneScroll = useCallback((event: Event) => {
+    console.log('got');
     const bpaneScrollEvent = event as BpaneScrollEvent;
     props.updateCogList(bpaneScrollEvent.detail.delta_y);
   }, []);
