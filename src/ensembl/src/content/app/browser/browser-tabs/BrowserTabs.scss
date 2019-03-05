@@ -10,11 +10,15 @@
 }
 
 .browserTab {
-  color: $ens-blue;
+  button {
+    color: $ens-blue;
+  }
 }
 
 .browserTabActive {
-  color: inherit;
+  button {
+    color: inherit;
+  }
 }
 
 .browserTabArrow {
@@ -31,7 +35,7 @@
     right: calc(60% - 6px);
     transform-origin: 0 0;
     transform: rotate(-45deg);
-    top: 21px;
+    top: 24px;
     width: 0;
   }
 }
