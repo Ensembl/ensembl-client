@@ -11,6 +11,8 @@ const SpeciesSearchField = (props: Props) => {
   const handleSearchChange = (search: string) => {
     console.log('search', search);
   };
+  const onQuestionButtonHover = () =>
+    console.log('hovering over question button');
 
   return (
     <div className={styles.speciesSearchField}>
@@ -20,7 +22,7 @@ const SpeciesSearchField = (props: Props) => {
         onChange={handleSearchChange}
       />
       <div className={styles.speciesSearchFieldRightCorner}>
-        <QuestionButton />
+        <QuestionButton onHover={onQuestionButtonHover} />
       </div>
     </div>
   );
