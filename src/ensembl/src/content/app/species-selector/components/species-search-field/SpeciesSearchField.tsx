@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import Input from 'src/shared/input/Input';
+import QuestionButton from 'src/shared/question-button/QuestionButton';
 
 import styles from './SpeciesSearchField.scss';
 
@@ -18,6 +19,9 @@ const SpeciesSearchField = (props: Props) => {
         className={styles.speciesSearchFieldInput}
         onChange={handleSearchChange}
       />
+      <div className={styles.speciesSearchFieldRightCorner}>
+        <QuestionButton />
+      </div>
     </div>
   );
 };
