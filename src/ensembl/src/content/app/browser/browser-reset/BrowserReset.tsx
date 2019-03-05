@@ -11,19 +11,20 @@ type BrowserResetProps = {
   chrLocation: ChrLocation;
   defaultChrLocation: ChrLocation;
   details: BrowserInfoItem;
+  drawerOpened: boolean;
   updateChrLocation: (chrLocation: ChrLocation) => void;
 };
 
 export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   props: BrowserResetProps
 ) => {
-  const { chrLocation, defaultChrLocation, details } = props;
+  const { chrLocation, defaultChrLocation, details, drawerOpened } = props;
 
   const getResetIcon = (): string => {
     const chrLocationStr = getChrLocationStr(chrLocation);
     const defaultChrLocationStr = getChrLocationStr(defaultChrLocation);
 
-    if (chrLocationStr === defaultChrLocationStr) {
+    if (chrLocationStr === defaultChrLocationStr || drawerOpened === true) {
       return details.icon.grey as string;
     }
 
@@ -31,9 +32,13 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   };
 
   const resetBrowser = useCallback(() => {
+    if (drawerOpened === true) {
+      return;
+    }
+
     props.updateChrLocation(props.defaultChrLocation);
     props.changeBrowserLocation();
-  }, [chrLocation]);
+  }, [chrLocation, drawerOpened]);
 
   return (
     <dd className={styles.resetButton} onClick={resetBrowser}>
