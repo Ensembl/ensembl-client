@@ -31,7 +31,7 @@ const SelectedSpecies: FunctionComponent<Props> = (props) => {
     >
       <span className={styles.name}>{props.name}</span>
       <span className={styles.assembly}>{props.assembly}</span>
-      {!hovered && <SelectedSpeciesOverlay {...props} />}
+      {hovered && <SelectedSpeciesOverlay {...props} />}
     </div>
   );
 };

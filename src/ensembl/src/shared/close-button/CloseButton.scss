@@ -1,7 +1,9 @@
 @import 'src/styles/common';
 
 .closeButton {
-  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 18px;
   height: 18px;
   border: 2px solid $ens-blue;
@@ -13,10 +15,6 @@
   }
 
   svg {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     width: 66%;
     height: 66%;
     fill: $ens-blue;
@@ -24,16 +22,12 @@
 }
 
 .closeButtonInverted {
-  box-sizing: content-box;
   background-color: $ens-blue;
   border: none;
 
   svg {
-    top: 50%;
-    left: 50%;
     width: 56%;
     height: 56%;
-    transform: translate(-50%, -50%);
     fill: $ens-white;
   }
 }
