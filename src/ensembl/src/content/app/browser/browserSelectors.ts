@@ -41,3 +41,7 @@ export const getTrackPanelModalView = (state: RootState): string =>
 export const getBrowserCogList = (state: RootState): CogList => {
   return state.browser.browserCogList;
 };
+
+export const getBrowserSelectedCog = (state: RootState): number | null => {
+  return state.browser.selectedCog;
+};
