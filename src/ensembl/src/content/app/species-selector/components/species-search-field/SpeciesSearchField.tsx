@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 
+import SpeciesAutosuggestionPanel from '../species-autosuggestion-panel/SpeciesAutosuggestionPanel';
+
 import Input from 'src/shared/input/Input';
 import QuestionButton from 'src/shared/question-button/QuestionButton';
 
+import { SearchMatches } from 'src/content/app/species-selector/types/species-search';
+
 import styles from './SpeciesSearchField.scss';
 
-type Props = {};
+type Props = {
+  matches?: SearchMatches;
+};
 
 const SpeciesSearchField = (props: Props) => {
   const handleSearchChange = (search: string) => {
@@ -24,6 +30,9 @@ const SpeciesSearchField = (props: Props) => {
       <div className={styles.speciesSearchFieldRightCorner}>
         <QuestionButton onHover={onQuestionButtonHover} />
       </div>
+      {props.matches && props.matches.length && (
+        <SpeciesAutosuggestionPanel matches={props.matches} />
+      )}
     </div>
   );
 };
