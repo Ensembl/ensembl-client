@@ -1,14 +1,42 @@
 @import 'src/styles/common';
 
+$rightCornerWidth: 40px;
+
 .speciesSearchField {
+  position: relative;
+  display: flex;
+  align-items: center;
   width: 100%;
-  max-width: 505px;
+  max-width: 485px;
+  height: 40px;
   background: $ens-white;
-  padding: 14px 22px;
+  padding-left: 22px;
   box-shadow: inset 2px 2px 4px -2px $ens-dark-grey;
 }
 
 .speciesSearchFieldInput {
-  width: calc(100% - 20px);
+  width: calc(100% - #{$rightCornerWidth});
   border: none;
+
+  &::placeholder {
+    color: $ens-grey;
+  }
+
+  &:focus {
+    &::placeholder {
+      color: white;
+    }
+  }
+}
+
+.speciesSearchFieldRightCorner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: $rightCornerWidth;
+  height: 100%;
+  padding-top: 1px;
 }
