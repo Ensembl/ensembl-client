@@ -31,6 +31,7 @@ export type BrowserState = Readonly<{
   trackPanelModalView: string;
   trackPanelOpened: boolean;
   browserCogList: CogList;
+  selectedCog: number | null;
 }>;
 
 export const defaultState: BrowserState = {
@@ -45,7 +46,8 @@ export const defaultState: BrowserState = {
   trackPanelModalOpened: false,
   trackPanelModalView: '',
   trackPanelOpened: true,
-  browserCogList: []
+  browserCogList: [],
+  selectedCog: null
 };
 
 export const trackPanelState = (

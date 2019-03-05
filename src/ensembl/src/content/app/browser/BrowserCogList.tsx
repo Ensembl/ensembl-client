@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import { connect } from 'react-redux';
 
-import { getBrowserCogList } from './browserSelectors';
+import { getBrowserCogList, getBrowserSelectedCog } from './browserSelectors';
 import BrowserCog from './BrowserCog';
 
 import { updateCogList } from './browserActions';
@@ -27,6 +27,7 @@ type BrowserCogListProps = {
   cogListRef: RefObject<HTMLDivElement>;
   browserRef: RefObject<HTMLDivElement>;
   browserCogList: BrowserCogList;
+  selectedCog: number | null;
   updateCogList: (val: number) => void;
 };
 
@@ -53,7 +54,7 @@ const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
   let inline = { transform: 'translate(0,' + props.browserCogList + 'px)' };
   let xs = [...Array(10)].map((_, index) => (
     <div key={index}>
-      <BrowserCog />
+      <BrowserCog cogActivated={props.selectedCog == index} index={index} />
     </div>
   ));
 
@@ -76,7 +77,8 @@ const mapDispatchToProps: DispatchProps = {
 
 const mapStateToProps = (state: RootState): StateProps => ({
   browserActivated: getBrowserActivated(state),
-  browserCogList: getBrowserCogList(state)
+  browserCogList: getBrowserCogList(state),
+  selectedCog: getBrowserSelectedCog(state)
 });
 
 export default connect(

@@ -66,8 +66,16 @@ export const updateCogList = createAction(
   'browser/update-cog-list',
   (resolve) => {
     return (cogList: CogList) => {
-      //console.log("ucl");
       return resolve(cogList);
+    };
+  }
+);
+
+export const updateSelectedCog = createAction(
+  'browser/update-selected-cog',
+  (resolve) => {
+    return (index: number) => {
+      return resolve(index);
     };
   }
 );

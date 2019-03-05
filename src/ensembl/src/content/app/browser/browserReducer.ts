@@ -32,6 +32,8 @@ export default (
       return { ...state, chrLocation: action.payload };
     case getType(browser.updateCogList):
       return { ...state, browserCogList: action.payload };
+    case getType(browser.updateSelectedCog):
+      return { ...state, selectedCog: action.payload };
     case getType(browser.updateDefaultChrLocation):
       return {
         ...state,
