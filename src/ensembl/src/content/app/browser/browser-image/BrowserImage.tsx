@@ -7,6 +7,7 @@ import React, {
 
 import styles from './BrowserImage.scss';
 import { ChrLocation, BrowserNavStates } from '../browserState';
+import BrowserCogList from '../BrowserCogList';
 
 type BrowserImageProps = {
   browserRef: RefObject<HTMLDivElement>;
@@ -57,16 +58,13 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
     };
   }, [props.browserRef]);
 
-  let hidden_style = { display: 'block' };
-
   return (
-    <div
-      className={getBrowserImageClasses(props.browserNavOpened)}
-      ref={props.browserRef}
-    >
-      <div className="bottle" style={hidden_style}>
-        <div className="mosquito-cog" />
-      </div>
+    <div className={styles.browserImagePlus}>
+      <div
+        className={getBrowserImageClasses(props.browserNavOpened)}
+        ref={props.browserRef}
+      />
+      <BrowserCogList browserRef={props.browserRef} />
     </div>
   );
 };

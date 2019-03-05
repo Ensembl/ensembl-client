@@ -37,3 +37,7 @@ export const getTrackPanelModalOpened = (state: RootState): boolean =>
 
 export const getTrackPanelModalView = (state: RootState): string =>
   state.browser.trackPanelModalView;
+
+export const getBrowserCogList = (state: RootState): CogList => {
+  return state.browser.browserCogList;
+};

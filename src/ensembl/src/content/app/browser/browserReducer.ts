@@ -30,6 +30,8 @@ export default (
       return { ...state, browserNavStates: action.payload };
     case getType(browser.updateChrLocation):
       return { ...state, chrLocation: action.payload };
+    case getType(browser.updateCogList):
+      return { ...state, browserCogList: action.payload };
     case getType(browser.updateDefaultChrLocation):
       return {
         ...state,

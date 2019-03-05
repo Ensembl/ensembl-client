@@ -1,5 +1,5 @@
 import { createAction } from 'typesafe-actions';
-import { BrowserNavStates, ChrLocation } from './browserState';
+import { BrowserNavStates, ChrLocation, CogList } from './browserState';
 
 export const updateBrowserActivated = createAction(
   'browser/update-browser-activated',
@@ -60,4 +60,14 @@ export const openTrackPanelModal = createAction(
 
 export const closeTrackPanelModal = createAction(
   'browser/close-track-panel-modal'
+);
+
+export const updateCogList = createAction(
+  'browser/update-cog-list',
+  (resolve) => {
+    return (cogList: CogList) => {
+      //console.log("ucl");
+      return resolve(cogList);
+    };
+  }
 );
