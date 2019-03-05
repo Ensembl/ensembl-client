@@ -1,13 +1,11 @@
 @import 'src/styles/common';
 
 .closeButton {
+  position: relative;
   width: 18px;
   height: 18px;
-  border: 1px solid $ens-blue;
+  border: 2px solid $ens-blue;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 
   &:active,
   &:focus {
@@ -15,16 +13,27 @@
   }
 
   svg {
-    width: 70%;
-    height: 70%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 66%;
+    height: 66%;
     fill: $ens-blue;
   }
 }
 
 .closeButtonInverted {
+  box-sizing: content-box;
   background-color: $ens-blue;
+  border: none;
 
   svg {
+    top: 50%;
+    left: 50%;
+    width: 56%;
+    height: 56%;
+    transform: translate(-50%, -50%);
     fill: $ens-white;
   }
 }

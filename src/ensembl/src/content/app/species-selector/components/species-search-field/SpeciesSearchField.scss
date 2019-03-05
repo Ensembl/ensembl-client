@@ -4,11 +4,11 @@
   width: 100%;
   max-width: 505px;
   background: $ens-white;
-  border: 1px solid $ens-grey;
+  padding: 14px 22px;
+  box-shadow: inset 2px 2px 4px -2px $ens-dark-grey;
 }
 
 .speciesSearchFieldInput {
   width: calc(100% - 20px);
-  padding: 14px 22px;
   border: none;
 }
