@@ -1,23 +1,67 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+
+import { TrackType } from '../track-panel/trackPanelConfig';
 
 import styles from './BrowserTabs.scss';
 
-type BrowserTabsProps = {};
+type BrowserTabsProps = {
+  drawerOpened: boolean;
+  genomeSelectorActive: boolean;
+  selectBrowserTab: (selectedBrowserTab: TrackType) => void;
+  selectedBrowserTab: TrackType;
+};
+
+type ClickHandlers = {
+  [key: string]: () => void;
+};
 
 const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
   props: BrowserTabsProps
 ) => {
+  const initClickHandlers: ClickHandlers = {};
+  const [clickHandlers, setClickHandlers] = useState(initClickHandlers);
+
+  const getBrowserTabClasses = (trackType: TrackType) => {
+    let classNames = styles.browserTab;
+
+    if (props.selectedBrowserTab === trackType) {
+      classNames += ` ${styles.browserTabActive}`;
+
+      if (props.drawerOpened === false) {
+        classNames += ` ${styles.browserTabArrow}`;
+      }
+    }
+
+    return classNames;
+  };
+
+  useEffect(() => {
+    const callbacks: ClickHandlers = {};
+
+    Object.values(TrackType).forEach((value: TrackType) => {
+      callbacks[value] = () => {
+        if (props.genomeSelectorActive === true) {
+          return;
+        }
+
+        props.selectBrowserTab(value);
+      };
+    });
+
+    setClickHandlers(callbacks);
+  }, [props.genomeSelectorActive]);
+
   return (
     <dl className={`${styles.browserTabs} show-for-large`}>
-      <dd>
-        <button className={styles.browserTabActive}>Genomic</button>
-      </dd>
-      <dd>
-        <button>Variation</button>
-      </dd>
-      <dd>
-        <button>Expression</button>
-      </dd>
+      {Object.values(TrackType).map((value: TrackType) => (
+        <dd
+          className={getBrowserTabClasses(value)}
+          key={value}
+          onClick={clickHandlers[value]}
+        >
+          <button>{value}</button>
+        </dd>
+      ))}
     </dl>
   );
 };

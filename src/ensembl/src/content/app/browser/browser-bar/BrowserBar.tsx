@@ -2,11 +2,14 @@ import React, { FunctionComponent, Fragment } from 'react';
 import { connect } from 'react-redux';
 
 import { browserInfoConfig } from '../browserConfig';
+import { TrackType } from '../track-panel/trackPanelConfig';
+
 import {
   toggleBrowserNav,
   updateDefaultChrLocation,
   updateChrLocation,
-  toggleGenomeSelector
+  toggleGenomeSelector,
+  selectBrowserTab
 } from '../browserActions';
 import { ChrLocation } from '../browserState';
 import {
@@ -15,7 +18,8 @@ import {
   getBrowserActivated,
   getDefaultChrLocation,
   getGenomeSelectorActive,
-  getDrawerOpened
+  getDrawerOpened,
+  getSelectedBrowserTab
 } from '../browserSelectors';
 import { RootState } from 'src/rootReducer';
 
@@ -32,9 +36,11 @@ type StateProps = {
   defaultChrLocation: ChrLocation;
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
+  selectedBrowserTab: TrackType;
 };
 
 type DispatchProps = {
+  selectBrowserTab: (selectedBrowserTab: TrackType) => void;
   toggleBrowserNav: () => void;
   toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
   updateChrLocation: (chrLocation: ChrLocation) => void;
@@ -65,9 +71,19 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   const getBrowserNavIcon = () => {
     if (props.browserNavOpened === true) {
       return navigator.icon.selected;
+    } else if (props.drawerOpened === true) {
+      return navigator.icon.grey;
     } else {
       return navigator.icon.default;
     }
+  };
+
+  const toggleNavigator = () => {
+    if (props.drawerOpened === true) {
+      return;
+    }
+
+    props.toggleBrowserNav();
   };
 
   return (
@@ -118,17 +134,19 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
           />
           {props.genomeSelectorActive ? null : (
             <dd className={styles.navigator}>
-              <button
-                title={navigator.description}
-                onClick={props.toggleBrowserNav}
-              >
+              <button title={navigator.description} onClick={toggleNavigator}>
                 <img src={getBrowserNavIcon()} alt={navigator.description} />
               </button>
             </dd>
           )}
         </dl>
       </div>
-      <BrowserTabs />
+      <BrowserTabs
+        drawerOpened={props.drawerOpened}
+        genomeSelectorActive={props.genomeSelectorActive}
+        selectBrowserTab={props.selectBrowserTab}
+        selectedBrowserTab={props.selectedBrowserTab}
+      />
     </div>
   );
 };
@@ -139,10 +157,12 @@ const mapStateToProps = (state: RootState): StateProps => ({
   chrLocation: getChrLocation(state),
   defaultChrLocation: getDefaultChrLocation(state),
   drawerOpened: getDrawerOpened(state),
-  genomeSelectorActive: getGenomeSelectorActive(state)
+  genomeSelectorActive: getGenomeSelectorActive(state),
+  selectedBrowserTab: getSelectedBrowserTab(state)
 });
 
 const mapDispatchToProps: DispatchProps = {
+  selectBrowserTab,
   toggleBrowserNav,
   toggleGenomeSelector,
   updateChrLocation,

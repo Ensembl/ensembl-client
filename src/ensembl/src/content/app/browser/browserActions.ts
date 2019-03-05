@@ -1,5 +1,6 @@
 import { createAction } from 'typesafe-actions';
 import { BrowserNavStates, ChrLocation } from './browserState';
+import { TrackType } from './track-panel/trackPanelConfig';
 
 export const updateBrowserActivated = createAction(
   'browser/update-browser-activated',
@@ -66,5 +67,12 @@ export const toggleGenomeSelector = createAction(
   'toggle-genome-selector',
   (resolve) => {
     return (genomeSelectorActive: boolean) => resolve(genomeSelectorActive);
+  }
+);
+
+export const selectBrowserTab = createAction(
+  'select-browser-tab',
+  (resolve) => {
+    return (selectedBrowserTab: TrackType) => resolve(selectedBrowserTab);
   }
 );
