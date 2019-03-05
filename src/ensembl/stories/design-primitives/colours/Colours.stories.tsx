@@ -6,19 +6,24 @@ import variables from 'src/styles/_settings.scss';
 
 const colours = [
   {
-    name: 'Ensembl blue',
-    variableName: '$ens-blue',
-    value: variables['ens-blue']
-  },
-  {
     name: 'Ensembl black',
     variableName: '$ens-black',
     value: variables['ens-black']
   },
   {
-    name: 'Ensembl dark grey',
-    variableName: '$ens-dark-grey',
-    value: variables['ens-dark-grey']
+    name: 'Ensembl blue',
+    variableName: '$ens-blue',
+    value: variables['ens-blue']
+  },
+  {
+    name: 'Ensembl dark blue',
+    variableName: '$ens-dark-blue',
+    value: variables['ens-dark-blue']
+  },
+  {
+    name: 'Ensembl light blue',
+    variableName: '$ens-light-blue',
+    value: variables['ens-light-blue']
   },
   {
     name: 'Ensembl grey',
@@ -26,9 +31,9 @@ const colours = [
     value: variables['ens-grey']
   },
   {
-    name: 'Ensembl medium grey',
-    variableName: '$ens-medium-grey',
-    value: variables['ens-medium-grey']
+    name: 'Ensembl dark grey',
+    variableName: '$ens-dark-grey',
+    value: variables['ens-dark-grey']
   },
   {
     name: 'Ensembl light grey',
