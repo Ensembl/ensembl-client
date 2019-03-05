@@ -9,7 +9,8 @@ import {
   updateDefaultChrLocation,
   updateChrLocation,
   toggleGenomeSelector,
-  selectBrowserTab
+  selectBrowserTab,
+  toggleDrawer
 } from '../browserActions';
 import { ChrLocation } from '../browserState';
 import {
@@ -42,6 +43,7 @@ type StateProps = {
 type DispatchProps = {
   selectBrowserTab: (selectedBrowserTab: TrackType) => void;
   toggleBrowserNav: () => void;
+  toggleDrawer: (drawerOpened: boolean) => void;
   toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
   updateChrLocation: (chrLocation: ChrLocation) => void;
   updateDefaultChrLocation: (chrLocation: ChrLocation) => void;
@@ -146,6 +148,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
         genomeSelectorActive={props.genomeSelectorActive}
         selectBrowserTab={props.selectBrowserTab}
         selectedBrowserTab={props.selectedBrowserTab}
+        toggleDrawer={props.toggleDrawer}
       />
     </div>
   );
@@ -164,6 +167,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
 const mapDispatchToProps: DispatchProps = {
   selectBrowserTab,
   toggleBrowserNav,
+  toggleDrawer,
   toggleGenomeSelector,
   updateChrLocation,
   updateDefaultChrLocation
