@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use composit::{ Leaf, Position, Wrapping };
-use controller::output::Report;
+use controller::output::{ Report, ViewportReport };
 use program::UniformValue;
 use types::{
     CPixel, cpixel, Move, Dot, Direction, 
@@ -44,6 +44,10 @@ impl Stage {
         report.set_status_bool("bumper-bottom",self.bumped(&DOWN));
         report.set_status_bool("bumper-in",self.bumped(&IN));
         report.set_status_bool("bumper-out",self.bumped(&OUT));
+    }
+
+    pub fn update_viewport_report(&self, report: &ViewportReport) {
+        report.set_delta_y(-self.pos.get_edge(&UP) as i32);
     }
 
     pub fn set_wrapping(&mut self, w: &Wrapping) {

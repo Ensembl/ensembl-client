@@ -1,5 +1,7 @@
 #[macro_use]
 mod macros;
+
+mod changedetect;
 mod cache;
 mod rulergenerator;
 mod smallest;
@@ -9,6 +11,7 @@ mod valuestore;
 mod yaml;
 
 pub use self::cache::Cache;
+pub use self::changedetect::ChangeDetect;
 pub use self::rulergenerator::RulerGenerator;
 pub use self::smallest::Smallest;
 pub use self::text::truncate;

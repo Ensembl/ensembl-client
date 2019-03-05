@@ -136,7 +136,7 @@ impl Position {
         /* minima always "win" when in conflict => max fn's called first */
         pos.0 = pos.0.min(self.get_limit_of_middle(&RIGHT));
         pos.0 = pos.0.max(self.get_limit_of_middle(&LEFT));
-        pos.1 = pos.1.min(self.get_limit_of_middle(&DOWN));
+        //pos.1 = pos.1.min(self.get_limit_of_middle(&DOWN));
         pos.1 = pos.1.max(self.get_limit_of_middle(&UP));
     }
     

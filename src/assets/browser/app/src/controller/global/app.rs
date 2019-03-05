@@ -12,7 +12,7 @@ use composit::{
 };
 use controller::input::{ Action, actions_run, startup_actions };
 use controller::global::{ AppRunnerWeak, AppRunner };
-use controller::output::Report;
+use controller::output::{ Report, ViewportReport };
 use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk };
 use debug::add_debug_sticks;
 use dom::domutil;
@@ -32,6 +32,7 @@ pub struct App {
     pub compo: Arc<Mutex<Compositor>>,
     sticks: Box<StickManager>,
     report: Option<Report>,
+    viewport: Option<ViewportReport>,
     csl: SourceManagerList,
     http_clerk: HttpXferClerk,
     als: AllLandscapes,
@@ -60,6 +61,7 @@ impl App {
             state: Arc::new(Mutex::new(StateManager::new())),
             sticks: Box::new(csm),
             report: None,
+            viewport: None,
             csl: SourceManagerList::new(),
             http_clerk: HttpXferClerk::new(http_manager,config,config_url),
             als: AllLandscapes::new()
@@ -97,11 +99,19 @@ impl App {
     pub fn send_report(&self, value: &JSONValue) {
         domutil::send_custom_event(&self.browser_el.clone().into(),"bpane-out",value);
     }
+
+    pub fn send_viewport_report(&self, value: &JSONValue) {
+        domutil::send_custom_event(&self.browser_el.clone().into(),"bpane-scroll",value);
+    }
     
     pub fn get_report(&self) -> &Report { &self.report.as_ref().unwrap() }
         
     pub fn set_report(&mut self, report: Report) {
         self.report = Some(report);
+    }
+    
+    pub fn set_viewport_report(&mut self, report: ViewportReport) {
+        self.viewport = Some(report);
     }
     
     pub fn with_apprunner<F,G>(&mut self, cb:F) -> Option<G>
@@ -130,6 +140,9 @@ impl App {
         if let Some(ref report) = self.report {
             s.update_report(report);
         }
+        if let Some(ref report) = self.viewport {
+            s.update_viewport_report(report);
+        }        
         out
     }
 
