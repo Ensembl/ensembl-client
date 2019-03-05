@@ -4,7 +4,7 @@ use serde_json::Value as JSONValue;
 use stdweb::web::html_element::SelectElement;
 use stdweb::traits::IEvent;
 use stdweb::unstable::TryInto;
-use stdweb::web::{ Element, IEventTarget, HtmlElement };
+use stdweb::web::{ Element, IEventTarget, HtmlElement, INode };
 use stdweb::web::event::{ ChangeEvent, ClickEvent };
 
 use controller::input::EggDetector;
@@ -41,6 +41,7 @@ pub const DEBUGSTAGE : &str = r##"
         <div class="events-out"></div>
         <div class="buttons"></div>
         <div class="managedcanvasholder"></div>
+        <div class="swarm"></div>
     </div>
 </div>
 "##;
@@ -276,6 +277,7 @@ impl DebugBling {
 impl Bling for DebugBling {
     fn apply_bling(&self, el: &HtmlElement) -> HtmlElement {
         let el : Element = el.clone().into();
+        let bottle = domutil::query_selector2(&el,".bottle");
         if let Some(old) = domutil::query_selector_new("#bpane-css") {
             domutil::remove(&old);
         }
@@ -283,6 +285,9 @@ impl Bling for DebugBling {
         domutil::inner_html(&css,DEBUGSTAGE_CSS);
         domutil::add_attr(&css,"id","bpane-css");
         domutil::inner_html(&el.clone().into(),DEBUGSTAGE);
+        if let Some(bottle) = bottle {
+            el.append_child(&bottle);
+        }
         domutil::query_selector(&el.clone().into(),".bpane-canv").clone().try_into().unwrap()
     }
     

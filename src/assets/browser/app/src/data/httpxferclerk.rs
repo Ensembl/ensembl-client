@@ -161,9 +161,9 @@ impl HttpXferClerkImpl {
             let cfg =  self.remote_backend_config.as_ref().unwrap().clone();
             let endpoint = cfg.endpoint_for(compo,&leaf).clone();
             if endpoint.is_err() {
-                console!("No data for {:?}: {}",
-                            request.get_leaf().clone(),
-                            endpoint.unwrap_err());
+                //console!("No data for {:?}: {}",
+                //            request.get_leaf().clone(),
+                //            endpoint.unwrap_err());
                 consumer.abandon();
                 return;
             }

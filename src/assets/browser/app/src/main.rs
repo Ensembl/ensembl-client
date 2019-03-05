@@ -29,6 +29,7 @@ mod data;
 mod debug;
 mod dom;
 mod drawing;
+mod mosquito;
 mod print;
 mod program;
 mod shape;

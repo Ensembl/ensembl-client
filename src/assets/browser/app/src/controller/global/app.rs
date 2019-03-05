@@ -16,6 +16,7 @@ use controller::output::Report;
 use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk };
 use debug::add_debug_sticks;
 use dom::domutil;
+use mosquito::Bottle;
 use print::Printer;
 use tácode::Tácode;
 
@@ -37,8 +38,12 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(tc: &Tácode, config: &BackendConfig, http_manager: &HttpManager, browser_el: &HtmlElement, config_url: &Url) -> App {
+    pub fn new(tc: &Tácode, config: &BackendConfig, http_manager: &HttpManager, browser_el: &HtmlElement, config_url: &Url, outer_el: &HtmlElement) -> App {
         let browser_el = browser_el.clone();
+        let bottle_el = domutil::query_selector2(&outer_el.clone().into(),".bottle");
+        let swarm_el = domutil::query_selector2(&outer_el.clone().into(),".swarm");
+        console!("browser {:?} : {:?}",browser_el,bottle_el);
+        let mut bottle = Bottle::new(bottle_el,swarm_el.unwrap());
         domutil::inner_html(&browser_el.clone().into(),CANVAS);
         let canv_el : HtmlElement = domutil::query_selector(&browser_el.clone().into(),"canvas").try_into().unwrap();
         let bsm = BackendStickManager::new(config);
@@ -61,8 +66,10 @@ impl App {
         };
         let dsm = CombinedSourceManager::new(&tc,config,&out.als,&out.http_clerk);
         out.csl.add_compsource(Box::new(dsm));
-        console!("S");
         out.run_actions(&startup_actions());
+        /* XXX */
+        bottle.make("mosquito-cog");
+        
         out
     }
     
