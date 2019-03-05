@@ -89,6 +89,7 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
 
   return props.browserActivated ? (
     <dd className={getGenomeSelectorClasses()}>
+      <label className="show-for-large">Chromosome</label>
       {props.genomeSelectorActive ? (
         <form onSubmit={handleSubmit}>
           <input
