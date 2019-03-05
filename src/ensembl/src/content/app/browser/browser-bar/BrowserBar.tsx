@@ -14,7 +14,8 @@ import {
   getChrLocation,
   getBrowserActivated,
   getDefaultChrLocation,
-  getGenomeSelectorActive
+  getGenomeSelectorActive,
+  getDrawerOpened
 } from '../browserSelectors';
 import { RootState } from 'src/rootReducer';
 
@@ -29,6 +30,7 @@ type StateProps = {
   browserNavOpened: boolean;
   chrLocation: ChrLocation;
   defaultChrLocation: ChrLocation;
+  drawerOpened: boolean;
   genomeSelectorActive: boolean;
 };
 
@@ -50,15 +52,34 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
 ) => {
   const { navigator, reset } = browserInfoConfig;
 
+  const getBrowserInfoClasses = () => {
+    let classNames = styles.browserInfo;
+
+    if (props.drawerOpened === true) {
+      classNames += ` ${styles.browserInfoGreyed}`;
+    }
+
+    return classNames;
+  };
+
+  const getBrowserNavIcon = () => {
+    if (props.browserNavOpened === true) {
+      return navigator.icon.selected;
+    } else {
+      return navigator.icon.default;
+    }
+  };
+
   return (
     <div className={styles.browserBar}>
-      <div className={styles.browserInfo}>
+      <div className={getBrowserInfoClasses()}>
         <dl className={styles.browserInfoLeft}>
           <BrowserReset
             changeBrowserLocation={props.changeBrowserLocation}
-            details={reset}
             chrLocation={props.chrLocation}
             defaultChrLocation={props.defaultChrLocation}
+            details={reset}
+            drawerOpened={props.drawerOpened}
             updateChrLocation={props.updateChrLocation}
           />
           {props.genomeSelectorActive ? null : (
@@ -76,8 +97,12 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
                 <span className={styles.value}>84,793</span>
                 <label>bp</label>
               </dd>
-              <dd className="show-for-large">protein coding</dd>
-              <dd className="show-for-large">forward strand</dd>
+              <dd className={`show-for-large ${styles.nonLabelValue}`}>
+                protein coding
+              </dd>
+              <dd className={`show-for-large ${styles.nonLabelValue}`}>
+                forward strand
+              </dd>
             </Fragment>
           )}
         </dl>
@@ -86,6 +111,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
             browserActivated={props.browserActivated}
             changeBrowserLocation={props.changeBrowserLocation}
             defaultChrLocation={props.defaultChrLocation}
+            drawerOpened={props.drawerOpened}
             genomeSelectorActive={props.genomeSelectorActive}
             toggleGenomeSelector={props.toggleGenomeSelector}
             updateDefaultChrLocation={props.updateDefaultChrLocation}
@@ -96,14 +122,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
                 title={navigator.description}
                 onClick={props.toggleBrowserNav}
               >
-                <img
-                  src={
-                    props.browserNavOpened
-                      ? navigator.icon.selected
-                      : navigator.icon.default
-                  }
-                  alt={navigator.description}
-                />
+                <img src={getBrowserNavIcon()} alt={navigator.description} />
               </button>
             </dd>
           )}
@@ -119,6 +138,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
   browserNavOpened: getBrowserNavOpened(state),
   chrLocation: getChrLocation(state),
   defaultChrLocation: getDefaultChrLocation(state),
+  drawerOpened: getDrawerOpened(state),
   genomeSelectorActive: getGenomeSelectorActive(state)
 });
 

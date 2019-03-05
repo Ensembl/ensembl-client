@@ -35,3 +35,13 @@
   color: $ens-blue;
   display: inline-block;
 }
+
+.browserGenomeSelectorDisabled {
+  .chrCode {
+    background: $ens-dark-grey;
+  }
+
+  .chrRegion {
+    color: $ens-dark-grey;
+  }
+}
