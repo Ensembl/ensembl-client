@@ -9,6 +9,7 @@ type BrowserTabsProps = {
   genomeSelectorActive: boolean;
   selectBrowserTab: (selectedBrowserTab: TrackType) => void;
   selectedBrowserTab: TrackType;
+  toggleDrawer: (drawerOpened: boolean) => void;
 };
 
 type ClickHandlers = {
@@ -44,12 +45,16 @@ const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
           return;
         }
 
+        if (props.drawerOpened === true) {
+          props.toggleDrawer(false);
+        }
+
         props.selectBrowserTab(value);
       };
     });
 
     setClickHandlers(callbacks);
-  }, [props.genomeSelectorActive]);
+  }, [props.drawerOpened, props.genomeSelectorActive]);
 
   return (
     <dl className={`${styles.browserTabs} show-for-large`}>
