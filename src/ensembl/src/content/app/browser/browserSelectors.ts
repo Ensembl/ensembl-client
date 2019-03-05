@@ -4,7 +4,6 @@ import {
   BrowserNavStates,
   ChrLocation
 } from './browserState';
-import { DrawerSection } from './drawer/drawerSectionConfig';
 
 export const getBrowserActivated = (state: RootState): boolean =>
   state.browser.browserActivated;
@@ -12,17 +11,11 @@ export const getBrowserActivated = (state: RootState): boolean =>
 export const getBrowserOpenState = (state: RootState): BrowserOpenState =>
   state.browser.browserOpenState;
 
-export const getCurrentDrawerSection = (state: RootState): string =>
-  state.browser.currentDrawerSection;
-
-export const getCurrentTrack = (state: RootState): string =>
-  state.browser.currentTrack;
+export const getDrawerView = (state: RootState): string =>
+  state.browser.drawerView;
 
 export const getDrawerOpened = (state: RootState): boolean =>
   state.browser.drawerOpened;
-
-export const getDrawerSections = (state: RootState): DrawerSection[] =>
-  state.browser.drawerSections;
 
 export const getTrackPanelOpened = (state: RootState): boolean =>
   state.browser.trackPanelOpened;
@@ -38,3 +31,12 @@ export const getChrLocation = (state: RootState): ChrLocation =>
 
 export const getDefaultChrLocation = (state: RootState): ChrLocation =>
   state.browser.defaultChrLocation;
+
+export const getTrackPanelModalOpened = (state: RootState): boolean =>
+  state.browser.trackPanelModalOpened;
+
+export const getTrackPanelModalView = (state: RootState): string =>
+  state.browser.trackPanelModalView;
+
+export const getGenomeSelectorActive = (state: RootState): boolean =>
+  state.browser.genomeSelectorActive;

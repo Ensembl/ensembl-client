@@ -18,6 +18,10 @@ html {
   box-sizing: inherit;
 }
 
+*:focus {
+  outline: none;
+}
+
 a {
   color: $ens-blue;
   text-decoration: none;
@@ -41,4 +45,10 @@ button {
 
 img {
   max-width: initial;
+}
+
+.clearfix:after {
+  content: '';
+  display: table;
+  clear: both;
 }

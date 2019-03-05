@@ -1,0 +1,67 @@
+@import 'src/styles/common';
+
+.home {
+  h2 {
+    color: $ens-grey;
+    font-size: 16px;
+    font-weight: $normal;
+  }
+}
+
+.search {
+  background: $ens-light-grey;
+  box-shadow: 0 3px 10px $ens-grey;
+  margin-top: 100px;
+  padding: 15px 60px;
+
+  h2 {
+    margin-left: 20px;
+  }
+
+  input[type='text'] {
+    border: none;
+    box-shadow: inset 3px 3px 10px $ens-grey;
+    color: $ens-dark-grey;
+    font-size: 16px;
+    padding: 12px 20px;
+    min-width: 300px;
+    width: 30%;
+  }
+
+  button {
+    border: 1px solid $ens-grey;
+    border-radius: 5px;
+    margin-left: 15px;
+    padding: 8px 24px;
+    text-transform: uppercase;
+  }
+
+  .filter {
+    margin-top: 100px;
+  }
+}
+
+.previouslyViewed {
+  line-height: 2.5;
+  padding: 15px 80px;
+
+  a {
+    font-weight: $bold;
+  }
+}
+
+.siteMessage {
+  margin-left: 120px;
+  margin-top: 200px;
+
+  h4 {
+    color: $ens-grey;
+    font-size: 13px;
+    font-weight: $normal;
+    margin-bottom: 30px;
+  }
+
+  p {
+    font-size: 13px;
+  }
+}

@@ -8,8 +8,8 @@ use composit::{ Leaf, SourceResponse };
 use drawing::{ DrawingSpec };
 use shape::{
     ColourSpec, Facade, FacadeType, ShapeInstanceData, TypeToShape,
-    PinRectTypeSpec, StretchRectTypeSpec,
-    TextureTypeSpec
+    PinRectTypeSpec, StretchRectTypeSpec, ShapeShortInstanceData,
+    TextureTypeSpec, ShapeInstanceDataType, ShapeLongInstanceData
 };
 use tácode::core::{ TáContext, TáTask };
 use super::super::shapecmd::{ build_meta };
@@ -40,47 +40,92 @@ fn do_scale(spec: &Box<TypeToShape>, leaf: &Leaf, x_start: f64, x_aux: f64) -> O
     }
 }
 
+fn make_facade(spec: &Box<TypeToShape>, colour: &Vec<f64>, tx: &Vec<DrawingSpec>, i: usize) -> Facade {
+    let col_len = colour.len();
+    match spec.get_facade_type() {
+        FacadeType::Colour => {
+            let r = colour[(i*3)%col_len] as u32;
+            let g = colour[(i*3+1)%col_len] as u32;
+            let b = colour[(i*3+2)%col_len] as u32;
+            Facade::Colour(Colour(r,g,b))
+        },
+        FacadeType::Drawing => {
+            let idx = colour[i%col_len];
+            Facade::Drawing(tx[idx as usize].clone())
+        }
+    }
+}
+
+fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceResponse, 
+                tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
+                x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
+                colour: &Vec<f64>) {
+    let facade = make_facade(&spec,colour,tx,0);
+    let mut x_start_scaled = Vec::<f64>::new();
+    let mut x_aux_scaled = Vec::<f64>::new();
+    let mut x_aux_iter = x_aux.iter().cycle();
+    for x in x_start {
+        if let Some((x_start_v,x_pos_v)) = do_scale(&spec,leaf,*x,*x_aux_iter.next().unwrap()) {
+            x_start_scaled.push(x_start_v as f64);
+            x_aux_scaled.push(x_pos_v as f64);
+        }
+    }
+    let data = ShapeLongInstanceData {
+        pos_x: x_start_scaled,
+        pos_y: y_start.clone(),
+        aux_x: x_aux_scaled,
+        aux_y: y_aux.clone(),
+        facade
+    };
+    if let Some(shape) = spec.new_long_shape(&data) {
+        lc.add_shape(shape);
+    }    
+}
+
+fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceResponse, 
+                tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
+                x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
+                colour: &Vec<f64>) {
+    let mut y_start_iter = y_start.iter().cycle();
+    let mut x_aux_iter = x_aux.iter().cycle();
+    let mut y_aux_iter = y_aux.iter().cycle();
+    let y_start_len = y_start.len();
+    let x_aux_len = x_aux.len();
+    let y_aux_len = y_aux.len();
+    let col_len = colour.len();
+    for i in 0..x_start.len() {
+        if let Some((x_pos_v,x_aux_v)) = 
+                do_scale(&spec,leaf,x_start[i],x_aux[i%x_aux_len]) {
+            let facade = make_facade(&spec,colour,tx,i);
+            let data = ShapeShortInstanceData {
+                pos_x: x_pos_v,
+                pos_y: y_start[i%y_start_len] as i32,
+                aux_x: x_aux_v,
+                aux_y: y_aux[i%y_aux_len] as i32,
+                facade
+            };
+            if let Some(shape) = spec.new_short_shape(&data) {
+                lc.add_shape(shape);
+            }
+        }
+    }
+}
+
 fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut SourceResponse, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Vec<f64>) {
     let mut meta_iter = meta.iter().cycle();
-    let mut y_start_iter = y_start.iter().cycle();
-    let mut x_aux_iter = x_aux.iter().cycle();
-    let mut y_aux_iter = y_aux.iter().cycle();
     if let Some(spec) = build_meta(&mut meta_iter) {
-        let y_start_len = y_start.len();
-        let x_aux_len = x_aux.len();
-        let y_aux_len = y_aux.len();
-        let col_len = colour.len();
-        for i in 0..x_start.len() {
-            if let Some((x_pos_v,x_aux_v)) = 
-                    do_scale(&spec,leaf,x_start[i],x_aux[i%x_aux_len]) {
-                let facade = match spec.get_facade_type() {
-                    FacadeType::Colour => {
-                        let r = colour[(i*3)%col_len] as u32;
-                        let g = colour[(i*3+1)%col_len] as u32;
-                        let b = colour[(i*3+2)%col_len] as u32;
-                        Facade::Colour(Colour(r,g,b))
-                    },
-                    FacadeType::Drawing => {
-                        let idx = colour[i%col_len];
-                        Facade::Drawing(tx[idx as usize].clone())
-                    }
-                };
-                let data = ShapeInstanceData {
-                    pos_x: x_pos_v,
-                    pos_y: y_start[i%y_start_len] as i32,
-                    aux_x: x_aux_v,
-                    aux_y: y_aux[i%y_aux_len] as i32,
-                    facade
-                };
-                if let Some(shape) = spec.new_shape(&data) {
-                    lc.add_shape(shape);
-                }
-            }
+        match spec.sid_type() {
+            ShapeInstanceDataType::Short => 
+                draw_short_shapes(spec,leaf,lc,tx,x_start,x_aux,
+                                  y_start,y_aux,colour),
+            ShapeInstanceDataType::Long => 
+                draw_long_shapes(spec,leaf,lc,tx,x_start,x_aux,
+                                  y_start,y_aux,colour),
         }
-    }    
+    }
 }
 
 // strect #meta, #x-start, #x-size, #y-start, #y-size, #colour

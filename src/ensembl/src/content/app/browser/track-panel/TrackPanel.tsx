@@ -14,14 +14,18 @@ import { RootState } from 'src/rootReducer';
 import {
   toggleDrawer,
   toggleTrackPanel,
-  changeCurrentTrack
+  changeDrawerView,
+  closeTrackPanelModal,
+  openTrackPanelModal
 } from '../browserActions';
 
 import {
-  getCurrentTrack,
+  getDrawerView,
   getDrawerOpened,
   getTrackPanelOpened,
-  getBrowserActivated
+  getBrowserActivated,
+  getTrackPanelModalOpened,
+  getTrackPanelModalView
 } from '../browserSelectors';
 
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
@@ -29,18 +33,23 @@ import { getBreakpointWidth } from 'src/globalSelectors';
 import { BreakpointWidth } from 'src/globalConfig';
 
 import styles from './TrackPanel.scss';
+import TrackPanelModal from './track-panel-modal/TrackPanelModal';
 
 type StateProps = {
   browserActivated: boolean;
-  currentTrack: string;
   drawerOpened: boolean;
+  drawerView: string;
   breakpointWidth: BreakpointWidth;
   launchbarExpanded: boolean;
+  trackPanelModalOpened: boolean;
+  trackPanelModalView: string;
   trackPanelOpened: boolean;
 };
 
 type DispatchProps = {
-  changeCurrentTrack: (currentTrack: string) => void;
+  changeDrawerView: (drawerView: string) => void;
+  closeTrackPanelModal: () => void;
+  openTrackPanelModal: (trackPanelModalView: string) => void;
   toggleDrawer: (drawerOpened: boolean) => void;
   toggleTrackPanel: (trackPanelOpened?: boolean) => void;
 };
@@ -67,20 +76,32 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
       {props.browserActivated && (
         <Fragment>
           <TrackPanelBar
+            closeTrackPanelModal={props.closeTrackPanelModal}
             drawerOpened={props.drawerOpened}
             launchbarExpanded={props.launchbarExpanded}
+            openTrackPanelModal={props.openTrackPanelModal}
             toggleDrawer={props.toggleDrawer}
             toggleTrackPanel={props.toggleTrackPanel}
+            trackPanelModalView={props.trackPanelModalView}
             trackPanelOpened={props.trackPanelOpened}
           />
           {props.trackPanelOpened ? (
-            <TrackPanelList
-              browserRef={props.browserRef}
-              currentTrack={props.currentTrack}
-              launchbarExpanded={props.launchbarExpanded}
-              toggleDrawer={props.toggleDrawer}
-              updateTrack={props.changeCurrentTrack}
-            />
+            <Fragment>
+              <TrackPanelList
+                browserRef={props.browserRef}
+                drawerView={props.drawerView}
+                launchbarExpanded={props.launchbarExpanded}
+                toggleDrawer={props.toggleDrawer}
+                updateDrawerView={props.changeDrawerView}
+              />
+              {props.trackPanelModalOpened ? (
+                <TrackPanelModal
+                  closeTrackPanelModal={props.closeTrackPanelModal}
+                  launchbarExpanded={props.launchbarExpanded}
+                  trackPanelModalView={props.trackPanelModalView}
+                />
+              ) : null}
+            </Fragment>
           ) : null}
         </Fragment>
       )}
@@ -91,14 +112,18 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
 const mapStateToProps = (state: RootState): StateProps => ({
   breakpointWidth: getBreakpointWidth(state),
   browserActivated: getBrowserActivated(state),
-  currentTrack: getCurrentTrack(state),
   drawerOpened: getDrawerOpened(state),
+  drawerView: getDrawerView(state),
   launchbarExpanded: getLaunchbarExpanded(state),
+  trackPanelModalOpened: getTrackPanelModalOpened(state),
+  trackPanelModalView: getTrackPanelModalView(state),
   trackPanelOpened: getTrackPanelOpened(state)
 });
 
 const mapDispatchToProps: DispatchProps = {
-  changeCurrentTrack,
+  changeDrawerView,
+  closeTrackPanelModal,
+  openTrackPanelModal,
   toggleDrawer,
   toggleTrackPanel
 };

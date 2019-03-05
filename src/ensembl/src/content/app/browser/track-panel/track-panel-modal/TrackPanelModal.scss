@@ -1,0 +1,50 @@
+@import 'src/styles/common';
+
+.trackPanelModal {
+  background: $ens-white;
+  font-weight: $light;
+  left: 36px;
+  padding: 10px 20px;
+  position: absolute;
+  width: 320px;
+  z-index: 100;
+
+  &.shorter {
+    height: calc(100vh - 177px);
+  }
+
+  &.taller {
+    height: calc(100vh - 129px);
+  }
+
+  h3 {
+    font-size: 14px;
+  }
+
+  p {
+    margin-bottom: 30px;
+  }
+}
+
+.closeButton {
+  position: absolute;
+  right: 20px;
+  top: 10px;
+
+  img {
+    height: 15px;
+    width: 15px;
+  }
+}
+
+.previouslyViewed {
+  margin-top: 60px;
+
+  dt {
+    font-size: 12px;
+  }
+
+  dd {
+    margin: 15px 0 0 15px;
+  }
+}

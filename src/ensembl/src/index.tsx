@@ -1,6 +1,7 @@
 import React, { StrictMode } from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
+import { CookiesProvider } from 'react-cookie';
 
 import store from './store';
 import Root from './Root';
@@ -11,9 +12,11 @@ import './styles/main';
 
 render(
   <StrictMode>
-    <Provider store={store}>
-      <Root />
-    </Provider>
+    <CookiesProvider>
+      <Provider store={store}>
+        <Root />
+      </Provider>
+    </CookiesProvider>
   </StrictMode>,
   document.getElementById('ens-app')
 );

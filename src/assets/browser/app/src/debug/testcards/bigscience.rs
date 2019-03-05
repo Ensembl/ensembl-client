@@ -26,7 +26,7 @@ use shape::{
     stretch_texture, stretch_wiggle,
     ColourSpec, MathsShape, fix_mathsshape, page_mathsshape,
     PinRectTypeSpec, StretchRectTypeSpec, TextureTypeSpec,
-    ShapeInstanceData, TypeToShape, Facade
+    ShapeInstanceData, TypeToShape, Facade, ShapeShortInstanceData
 };
 
 use controller::global::App;
@@ -60,10 +60,10 @@ fn measure(lc: &mut SourceResponse, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSp
             sea_y: Some((AxisSense::Max,AxisSense::Max)),
             ship_x: (Some(AxisSense::Min),0),
             ship_y: (Some(AxisSense::Min),0),
-            under: None,
+            under: 0,
             spot: false
         };
-        closure_add_opt(lc,&prts.new_shape(&ShapeInstanceData {
+        closure_add_opt(lc,&prts.new_short_shape(&ShapeShortInstanceData {
             pos_x: x as f32/10.,
             pos_y: 0,
             aux_x: 20.,
@@ -81,10 +81,10 @@ fn measure(lc: &mut SourceResponse, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSp
             sea_y: Some(AxisSense::Max),
             ship_x: (None,0),
             ship_y: (Some(AxisSense::Max),0),
-            under: None,
+            under: 0,
             scale_x: 10., scale_y: 10.
         };
-        closure_add_opt(lc,&tts.new_shape(&ShapeInstanceData {
+        closure_add_opt(lc,&tts.new_short_shape(&ShapeShortInstanceData {
             pos_x: x as f32/10.+0.05,
             pos_y: 0,
             aux_x: 0.,
@@ -145,13 +145,13 @@ fn source_odd() -> ClosureSource {
                     debug!("bug","A");
                     let start_prop = prop(leaf,0);
                     let srts = StretchRectTypeSpec { spot: true, hollow: false };
-                    closure_add_opt(lc,&srts.new_shape(&ShapeInstanceData {
+                    closure_add_opt(lc,&srts.new_short_shape(&ShapeShortInstanceData {
                         pos_x: start_prop,
                         pos_y: y-20,
                         aux_x: 10000./mul as f32,
                         aux_y: 5,
                         facade: Facade::Colour(Colour(255,100,50))
-                    }));                    
+                    }));
                     closure_add(lc,&pin_mathsshape(
                         &cleaf(start_prop,y-15),
                         A_RIGHT,
@@ -225,7 +225,7 @@ fn source_even() -> ClosureSource {
                 if start_leaf < 100000 && end_leaf > 0 {
                     let start_prop = prop(leaf,0);      
                     let srts = StretchRectTypeSpec { spot: true, hollow: false };
-                    closure_add_opt(lc,&srts.new_shape(&ShapeInstanceData {
+                    closure_add_opt(lc,&srts.new_short_shape(&ShapeShortInstanceData {
                         pos_x: start_prop,
                         pos_y: y-15,
                         aux_x: 10000./mul as f32,
@@ -329,10 +329,10 @@ pub fn bs_source_main() -> ClosureSource {
                 sea_y: None,
                 ship_x: (Some(AxisSense::Max),0),
                 ship_y: (Some(AxisSense::Max),0),
-                under: None,
+                under: 0,
                 scale_x: 1., scale_y: 1.
             };
-            closure_add_opt(lc,&tts.new_shape(&ShapeInstanceData {
+            closure_add_opt(lc,&tts.new_short_shape(&ShapeShortInstanceData {
                 pos_x: 12 as f32,
                 pos_y: y+18,
                 aux_x: 0.,
@@ -352,10 +352,10 @@ pub fn bs_source_main() -> ClosureSource {
                         sea_y: None,
                         ship_x: (Some(AxisSense::Min),0),
                         ship_y: (None,0),
-                        under: None,
+                        under: 0,
                         spot: false
                     };
-                    closure_add_opt(lc,&prts.new_shape(&ShapeInstanceData {
+                    closure_add_opt(lc,&prts.new_short_shape(&ShapeShortInstanceData {
                         pos_x: prop(leaf,0),
                         pos_y: y-10,
                         aux_x: 20.,
@@ -387,16 +387,16 @@ pub fn bs_source_main() -> ClosureSource {
                         sea_y: None,
                         ship_x: (None,0),
                         ship_y: (None,0),
-                        under: None,
+                        under: 0,
                         scale_x: 10., scale_y: 10.
                     };
-                    closure_add_opt(lc,&tts.new_shape(&ShapeInstanceData {
+                    closure_add_opt(lc,&tts.new_short_shape(&ShapeShortInstanceData {
                         pos_x: start_prop,
                         pos_y: y-25,
                         aux_x: 0.,
                         aux_y: 0,
                         facade: Facade::Drawing(tx),
-                    }));                    
+                    }));
                 }
             } else if yidx == pal.middle-2 {
                 let tx = bs_collage();
@@ -421,13 +421,13 @@ pub fn bs_source_main() -> ClosureSource {
                         let start_prop = prop(leaf,p[0]);
                         let end_prop = prop(leaf,p[1]);
                         let srts = StretchRectTypeSpec { spot: false, hollow: false };
-                        closure_add_opt(lc,&srts.new_shape(&ShapeInstanceData {
+                        closure_add_opt(lc,&srts.new_short_shape(&ShapeShortInstanceData {
                             pos_x: start_prop,
                             pos_y: y-h,
                             aux_x: end_prop-start_prop,
                             aux_y: 2*h,
                             facade: Facade::Colour(colour)
-                        }));                    
+                        }));
                         if rng_prob([yidx as u8,j as u8,0,0,0,0,0,5],start,0.2) {
                             let tri_col = rng_colour([yidx as u8,i as u8,j as u8,0,0,0,0,3],start);
                             closure_add(lc,&pin_mathsshape(
@@ -445,18 +445,17 @@ pub fn bs_source_main() -> ClosureSource {
                                 sea_y: None,
                                 ship_x: (None,0),
                                 ship_y: (None,0),
-                                under: None,
+                                under: 0,
                                 scale_x: 1., scale_y: 1.
                             };
-                            closure_add_opt(lc,&tts.new_shape(&ShapeInstanceData {
+                            closure_add_opt(lc,&tts.new_short_shape(&ShapeShortInstanceData {
                                 pos_x: start_prop,
                                 pos_y: y-12,
                                 aux_x: 0.,
                                 aux_y: 0,
                                 facade: Facade::Drawing(tx)
-                            }));                    
-                        }                    
-
+                            }));
+                        }
                     }
                 }
             }
@@ -467,18 +466,18 @@ pub fn bs_source_main() -> ClosureSource {
             sea_y: Some((AxisSense::Max,AxisSense::Max)),
             ship_x: (Some(AxisSense::Min),0),
             ship_y: (Some(AxisSense::Min),0),
-            under: None,
+            under: 0,
             spot: true
         };
 
-        closure_add_opt(lc,&prts.new_shape(&ShapeInstanceData {
+        closure_add_opt(lc,&prts.new_short_shape(&ShapeShortInstanceData {
             pos_x: SW as f32/2.,
             pos_y: 0,
             aux_x: 1.,
             aux_y: SH,
             facade: Facade::Colour(Colour(0,0,0))
         }));
-        closure_add_opt(lc,&prts.new_shape(&ShapeInstanceData {
+        closure_add_opt(lc,&prts.new_short_shape(&ShapeShortInstanceData {
             pos_x: SW as f32/2.+5.,
             pos_y: 0,
             aux_x: 3.,
@@ -495,17 +494,16 @@ pub fn bs_source_main() -> ClosureSource {
             sea_y: Some(AxisSense::Max),
             ship_x: (Some(AxisSense::Max),0),
             ship_y: (Some(AxisSense::Max),0),
-            under: None,
+            under: 0,
             scale_x: 1., scale_y: SH as f32
         };
-        closure_add_opt(lc,&tts.new_shape(&ShapeInstanceData {
+        closure_add_opt(lc,&tts.new_short_shape(&ShapeShortInstanceData {
             pos_x: SW as f32/2.-5.,
             pos_y: 0,
             aux_x: 0.,
             aux_y: 0,
             facade: Facade::Drawing(tx)
         }));
-
         for h in &[AxisSense::Min,AxisSense::Max] {
             for v in &[AxisSense::Min,AxisSense::Max] {
                 let tts = TextureTypeSpec {
@@ -513,10 +511,10 @@ pub fn bs_source_main() -> ClosureSource {
                     sea_y: Some(*v),
                     ship_x: (Some(*h),0),
                     ship_y: (Some(*v),0),
-                    under: None,
+                    under: 0,
                     scale_x: 10., scale_y: 10.
                 };
-                closure_add_opt(lc,&tts.new_shape(&ShapeInstanceData {
+                closure_add_opt(lc,&tts.new_short_shape(&ShapeShortInstanceData {
                     pos_x: 0.,
                     pos_y: 0,
                     aux_x: 0.,

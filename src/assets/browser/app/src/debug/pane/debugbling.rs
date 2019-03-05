@@ -11,8 +11,7 @@ use controller::input::EggDetector;
 use controller::global::App;
 use super::super::testcards::select_testcard;
 use debug::DebugConsole;
-use debug::pane::MiniBling;
-use dom::Bling;
+use dom::{ Bling, NoBling };
 use dom::domutil;
 use dom::event::{
     EventListener, EventControl, EventType, EventData, Target,
@@ -29,8 +28,7 @@ pub const DEBUGSTAGE : &str = r##"
         <div class="console">
             <select class="testcard">
                 <option value="">- testcards -</option>
-                <option value="polar">Polar Testcard</option>
-                <option value="march">March Testcard</option>
+                <option value="live">Live Testcard</option>
                 <option value="button">Button Testcard</option>
                 <option value="text">Text Testcard</option>
                 <option value="ruler">Ruler Testcard</option>
@@ -155,7 +153,7 @@ pub fn create_interactors() -> Vec<Box<DebugInteractor>> {
     event_button(&mut dii,"even on",None,json!({ "on": "even" }));
     event_button(&mut dii,"even off",None,json!({ "off": "even" }));
     event_button(&mut dii,"zero",None,json!({ "goto": "1000000-2000000" }));
-    event_button(&mut dii,"polar",None,json!({ "stick": "polar" }));
+    event_button(&mut dii,"ruler",None,json!({ "stick": "ruler" }));
     dii
 }
 
@@ -262,14 +260,14 @@ impl DebugInteractor for ButtonDebugInteractor {
 }
 
 pub struct DebugBling {
-    mb: MiniBling,
+    mb: NoBling,
     dii: Vec<Box<DebugInteractor>>
 }
 
 impl DebugBling {
     pub fn new(dii: Vec<Box<DebugInteractor>>) -> DebugBling {
         DebugBling { 
-            mb: MiniBling::new(),
+            mb: NoBling::new(),
             dii
         }
     }

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, RefObject } from 'react';
+import React, { FunctionComponent, RefObject, useCallback } from 'react';
 
 import TrackPanelListItem from './TrackPanelListItem';
 import {
@@ -11,23 +11,29 @@ import styles from './TrackPanelList.scss';
 
 type TrackPanelListProps = {
   browserRef: RefObject<HTMLDivElement>;
-  currentTrack: string;
+  drawerView: string;
   launchbarExpanded: boolean;
   toggleDrawer: (drawerOpened: boolean) => void;
-  updateTrack: (currentTrack: string) => void;
+  updateDrawerView: (drawerView: string) => void;
 };
 
 const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   props: TrackPanelListProps
 ) => {
-  const changeTrack = (currentTrack: string) => {
-    const { toggleDrawer, updateTrack } = props;
+  const changeDrawerView = useCallback(
+    (currentTrack: string) => {
+      const { drawerView, toggleDrawer, updateDrawerView } = props;
 
-    updateTrack(currentTrack);
-    toggleDrawer(true);
-  };
+      updateDrawerView(currentTrack);
 
-  const getTrackPanelClasses = () => {
+      if (!drawerView) {
+        toggleDrawer(true);
+      }
+    },
+    [props.drawerView]
+  );
+
+  const getTrackPanelListClasses = () => {
     const heightClass: string = props.launchbarExpanded
       ? styles.shorter
       : styles.taller;
@@ -35,23 +41,11 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
     return `${styles.trackPanelList} ${heightClass}`;
   };
 
-  const getTrackClass = (trackName: string): string => {
-    if (trackName === 'gene') {
-      return 'gene';
-    }
-
-    if (props.currentTrack === trackName) {
-      return 'currentTrack';
-    }
-
-    return '';
-  };
-
   const getTrackListItem = (track: TrackPanelItem) => (
     <TrackPanelListItem
       browserRef={props.browserRef}
-      className={getTrackClass(track.name)}
-      changeTrack={changeTrack}
+      drawerView={props.drawerView}
+      updateDrawerView={changeDrawerView}
       key={track.id}
       track={track}
     >
@@ -63,7 +57,7 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   );
 
   return (
-    <div className={getTrackPanelClasses()}>
+    <div className={getTrackPanelListClasses()}>
       <section>
         <dl>{getTrackListItem(trackPanelConfig.main)}</dl>
       </section>

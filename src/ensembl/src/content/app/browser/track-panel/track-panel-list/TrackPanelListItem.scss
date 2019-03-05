@@ -25,8 +25,8 @@
   }
 
   &:hover,
-  &.currentTrack {
-    background: lighten($ens-blue, 40%);
+  &.currentDrawerView {
+    background: $ens-light-blue;
   }
 
   &.main {

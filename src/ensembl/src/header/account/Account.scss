@@ -1,7 +1,7 @@
 @import 'src/styles/common';
 
 .account {
-  border-bottom: 1px solid $ens-medium-grey;
+  border-bottom: 1px solid $ens-grey;
   height: 300px;
   @include flex;
   @include flex-align(center, middle);

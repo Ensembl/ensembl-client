@@ -34,7 +34,7 @@ fn exe_pos_range_event(app: &App, x_start: f64, x_end: f64, y: f64) {
     });
     app.with_compo(|co| {
         co.set_zoom(zoom);
-        co.set_position(middle.0);
+        co.set_position(pos.0);
     });
 }
 
@@ -74,12 +74,14 @@ fn exe_resize(cg: &App, sz: Dot<i32,i32>) {
 }
 
 fn exe_component_add(a: &mut App, name: &str) {
-    if let Some(Some(c)) = a.with_apprunner(|g| g.get_component(name)) {
+    console!("X");
+    if let Some(c) = a.get_component(name) {
         a.with_compo(|co| co.add_component(c));
     }
 }
 
 fn exe_set_stick(a: &mut App, name: &str) {
+    console!("C {:?}",name);
     if let Some(stick) = a.with_stick_manager(|sm| sm.get_stick(name)) {
         console!("B {:?}",stick);
         a.with_compo(|co| co.set_stick(&stick));

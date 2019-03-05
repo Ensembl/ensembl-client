@@ -7,8 +7,8 @@ import downloadSelectedIcon from 'static/img/track-panel/download-selected.svg';
 import searchIcon from 'static/img/track-panel/search.svg';
 import searchSelectedIcon from 'static/img/track-panel/search-selected.svg';
 
-import ownDataIcon from 'static/img/track-panel/own-data.svg';
-import ownDataSelectedIcon from 'static/img/track-panel/own-data-selected.svg';
+import personalDataIcon from 'static/img/track-panel/own-data.svg';
+import personalDataSelectedIcon from 'static/img/track-panel/own-data-selected.svg';
 
 import shareIcon from 'static/img/track-panel/share.svg';
 import shareSelectedIcon from 'static/img/track-panel/share-selected.svg';
@@ -27,20 +27,12 @@ export type TrackPanelBarItem = {
 
 export const trackPanelBarConfig: TrackPanelBarItem[] = [
   {
-    description: 'Search',
+    description: 'Track search',
     icon: {
       default: searchIcon,
       selected: searchSelectedIcon
     },
     name: 'search'
-  },
-  {
-    description: 'Bookmark',
-    icon: {
-      default: bookmarkIcon,
-      selected: bookmarkSelectedIcon
-    },
-    name: 'bookmark'
   },
   {
     description: 'Tracks manager',
@@ -51,12 +43,20 @@ export const trackPanelBarConfig: TrackPanelBarItem[] = [
     name: 'tracks-manager'
   },
   {
-    description: 'own data',
+    description: 'Bookmarks',
     icon: {
-      default: ownDataIcon,
-      selected: ownDataSelectedIcon
+      default: bookmarkIcon,
+      selected: bookmarkSelectedIcon
     },
-    name: 'own-data'
+    name: 'bookmarks'
+  },
+  {
+    description: 'Personal data',
+    icon: {
+      default: personalDataIcon,
+      selected: personalDataSelectedIcon
+    },
+    name: 'personal-data'
   },
   {
     description: 'Share',
@@ -67,11 +67,11 @@ export const trackPanelBarConfig: TrackPanelBarItem[] = [
     name: 'share'
   },
   {
-    description: 'Download',
+    description: 'Downloads',
     icon: {
       default: downloadIcon,
       selected: downloadSelectedIcon
     },
-    name: 'download'
+    name: 'downloads'
   }
 ];

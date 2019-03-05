@@ -2,34 +2,25 @@ import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 
 import { RootState } from 'src/rootReducer';
-import { changeCurrentDrawerSection, toggleDrawer } from '../browserActions';
-import {
-  getCurrentDrawerSection,
-  getCurrentTrack,
-  getDrawerSections
-} from '../browserSelectors';
+import { toggleDrawer } from '../browserActions';
+import { getDrawerView } from '../browserSelectors';
 
-import { DrawerSection } from './drawerSectionConfig';
+import DrawerGene from './drawer-views/DrawerGene';
+import DrawerTranscript from './drawer-views/DrawerTranscript';
+import ProteinCodingGenes from './drawer-views/ProteinCodingGenes';
+import OtherGenes from './drawer-views/OtherGenes';
+import DrawerContigs from './drawer-views/DrawerContigs';
+import DrawerGC from './drawer-views/DrawerGC';
 
-// import {
-//   trackPanelConfig,
-//   TrackPanelItem
-// } from '../track-panel/trackPanelConfig';
-
-import DrawerBar from './DrawerBar';
-// import TrackOne from './tracks/TrackOne';
-// import TrackTwo from './tracks/TrackTwo';
+import closeIcon from 'static/img/track-panel/close.svg';
 
 import styles from './Drawer.scss';
 
 type StateProps = {
-  currentDrawerSection: string;
-  currentTrack: string;
-  drawerSections: DrawerSection[];
+  drawerView: string;
 };
 
 type DispatchProps = {
-  changeCurrentDrawerSection: (currentDrawerSection: string) => void;
   toggleDrawer: (drawerOpened?: boolean) => void;
 };
 
@@ -38,61 +29,44 @@ type OwnProps = {};
 type DrawerProps = StateProps & DispatchProps & OwnProps;
 
 const Drawer: FunctionComponent<DrawerProps> = (props: DrawerProps) => {
-  // const TrackComponent = this.getCurrentTrackComponent();
+  const getDrawerViewComponent = () => {
+    switch (props.drawerView) {
+      case 'gene':
+        return <DrawerGene />;
+      case 'transcript':
+        return <DrawerTranscript />;
+      case 'gene-pc-fwd':
+        return <ProteinCodingGenes forwardStrand={true} />;
+      case 'gene-other-fwd':
+        return <OtherGenes forwardStrand={true} />;
+      case 'gene-pc-rev':
+        return <ProteinCodingGenes forwardStrand={false} />;
+      case 'gene-other-rev':
+        return <OtherGenes forwardStrand={false} />;
+      case 'contig':
+        return <DrawerContigs />;
+      case 'gc':
+        return <DrawerGC />;
+    }
+  };
+
+  const closeDrawer = () => props.toggleDrawer(false);
 
   return (
     <section className={styles.drawer}>
-      <DrawerBar
-        changeCurrentDrawerSection={props.changeCurrentDrawerSection}
-        toggleDrawer={props.toggleDrawer}
-        currentTrack={props.currentTrack}
-        drawerSections={props.drawerSections}
-      />
-      {/* <div className="track-canvas">{TrackComponent}</div> */}
+      <button className={styles.closeButton} onClick={closeDrawer}>
+        <img src={closeIcon} alt="close drawer" />
+      </button>
+      <div className={styles.drawerView}>{getDrawerViewComponent()}</div>
     </section>
   );
-
-  // private getCurrentTrackComponent(): ReactNode {
-  //   const { currentDrawerSection, currentTrack, drawerSections } = this.props;
-
-  //   const currentTrackConfig: TrackPanelItem = trackPanelConfig.filter(
-  //     (track: TrackPanelItem) => currentTrack === track.name
-  //   )[0];
-
-  //   switch (currentTrackConfig.name) {
-  //     case 'track-one':
-  //       return (
-  //         <TrackOne
-  //           currentDrawerSection={currentDrawerSection}
-  //           drawerSections={drawerSections}
-  //         />
-  //       );
-  //     case 'track-two':
-  //       return (
-  //         <TrackTwo
-  //           currentDrawerSection={currentDrawerSection}
-  //           drawerSections={drawerSections}
-  //         />
-  //       );
-  //     default:
-  //       return (
-  //         <TrackOne
-  //           currentDrawerSection={currentDrawerSection}
-  //           drawerSections={drawerSections}
-  //         />
-  //       );
-  //   }
-  // }
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  currentDrawerSection: getCurrentDrawerSection(state),
-  currentTrack: getCurrentTrack(state),
-  drawerSections: getDrawerSections(state)
+  drawerView: getDrawerView(state)
 });
 
 const mapDispatchToProps: DispatchProps = {
-  changeCurrentDrawerSection,
   toggleDrawer
 };
 

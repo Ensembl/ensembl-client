@@ -8,8 +8,6 @@ import {
   drawerState
 } from './browserState';
 
-import { drawerSectionConfig } from './drawer/drawerSectionConfig';
-
 export default (
   state: BrowserState = defaultState,
   action: ActionType<typeof browser>
@@ -19,17 +17,13 @@ export default (
       return { ...state, browserActivated: action.payload };
     case getType(browser.toggleTrackPanel):
       return trackPanelState(state, action.payload);
-    case getType(browser.changeCurrentTrack):
+    case getType(browser.changeDrawerView):
       return {
         ...state,
-        currentDrawerSection: '',
-        currentTrack: action.payload,
-        drawerSections: drawerSectionConfig[action.payload]
+        drawerView: action.payload
       };
     case getType(browser.toggleDrawer):
       return drawerState(state, action.payload);
-    case getType(browser.changeCurrentDrawerSection):
-      return { ...state, currentDrawerSection: action.payload };
     case getType(browser.toggleBrowserNav):
       return { ...state, browserNavOpened: !state.browserNavOpened };
     case getType(browser.updateBrowserNavStates):
@@ -42,6 +36,20 @@ export default (
         chrLocation: action.payload,
         defaultChrLocation: action.payload
       };
+    case getType(browser.openTrackPanelModal):
+      return {
+        ...state,
+        trackPanelModalOpened: true,
+        trackPanelModalView: action.payload
+      };
+    case getType(browser.closeTrackPanelModal):
+      return {
+        ...state,
+        trackPanelModalOpened: false,
+        trackPanelModalView: ''
+      };
+    case getType(browser.toggleGenomeSelector):
+      return { ...state, genomeSelectorActive: action.payload };
     default:
       return state;
   }
