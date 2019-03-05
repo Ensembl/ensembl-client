@@ -55,6 +55,7 @@ module.exports = (baseConfig, env, defaultConfig) => {
   defaultConfig.resolve.extensions.push('.ts', '.tsx');
   defaultConfig.resolve.alias = {
     src: path.join(__dirname, '../src'),
+    tests: path.join(__dirname, '../tests'),
     static: path.join(__dirname, '../static')
   };
 
