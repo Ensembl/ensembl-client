@@ -150,6 +150,7 @@ module.exports = (isDev, moduleRules, plugins) => ({
     extensions: ['.tsx', '.ts', '.js', '.scss'],
     alias: {
       src: path.join(__dirname, '../src'),
+      tests: path.join(__dirname, '../tests'),
       static: path.join(__dirname, '../static')
     }
   }
