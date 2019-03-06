@@ -4,6 +4,7 @@ import {
   BrowserNavStates,
   ChrLocation
 } from './browserState';
+import { TrackType } from './track-panel/trackPanelConfig';
 
 export const getBrowserActivated = (state: RootState): boolean =>
   state.browser.browserActivated;
@@ -37,3 +38,9 @@ export const getTrackPanelModalOpened = (state: RootState): boolean =>
 
 export const getTrackPanelModalView = (state: RootState): string =>
   state.browser.trackPanelModalView;
+
+export const getGenomeSelectorActive = (state: RootState): boolean =>
+  state.browser.genomeSelectorActive;
+
+export const getSelectedBrowserTab = (state: RootState): TrackType =>
+  state.browser.selectedBrowserTab;

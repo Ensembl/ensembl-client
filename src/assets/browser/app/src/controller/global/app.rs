@@ -3,15 +3,21 @@ use std::sync::{ Arc, Mutex };
 use stdweb::web::HtmlElement;
 use stdweb::unstable::TryInto;
 use serde_json::Value as JSONValue;
+use url::Url;
 
-use composit::{ Compositor, StateManager, Stage, StickManager, CombinedStickManager };
+use composit::{
+    Compositor, StateManager, Stage, StickManager, SourceManager,
+    CombinedStickManager, SourceManagerList, ActiveSource,
+    CombinedSourceManager, AllLandscapes
+};
 use controller::input::{ Action, actions_run, startup_actions };
 use controller::global::{ AppRunnerWeak, AppRunner };
 use controller::output::Report;
-use data::{ BackendConfig, BackendStickManager };
+use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk };
 use debug::add_debug_sticks;
 use dom::domutil;
 use print::Printer;
+use tácode::Tácode;
 
 const CANVAS : &str = r##"<canvas></canvas>"##;
 
@@ -24,17 +30,21 @@ pub struct App {
     pub state: Arc<Mutex<StateManager>>,
     pub compo: Arc<Mutex<Compositor>>,
     sticks: Box<StickManager>,
-    report: Option<Report>
+    report: Option<Report>,
+    csl: SourceManagerList,
+    http_clerk: HttpXferClerk,
+    als: AllLandscapes,
 }
 
 impl App {
-    pub fn new(config: &BackendConfig, browser_el: &HtmlElement) -> App {
+    pub fn new(tc: &Tácode, config: &BackendConfig, http_manager: &HttpManager, browser_el: &HtmlElement, config_url: &Url) -> App {
         let browser_el = browser_el.clone();
         domutil::inner_html(&browser_el.clone().into(),CANVAS);
         let canv_el : HtmlElement = domutil::query_selector(&browser_el.clone().into(),"canvas").try_into().unwrap();
         let bsm = BackendStickManager::new(config);
         let mut csm = CombinedStickManager::new(bsm);
         add_debug_sticks(&mut csm);
+        let mut http_clerk = HttpXferClerk::new(&http_manager,config,config_url);
         let mut out = App {
             ar: AppRunnerWeak::none(),
             browser_el: browser_el.clone(),
@@ -44,10 +54,28 @@ impl App {
             compo: Arc::new(Mutex::new(Compositor::new())),
             state: Arc::new(Mutex::new(StateManager::new())),
             sticks: Box::new(csm),
-            report: None
+            report: None,
+            csl: SourceManagerList::new(),
+            http_clerk: HttpXferClerk::new(http_manager,config,config_url),
+            als: AllLandscapes::new()
         };
+        let dsm = CombinedSourceManager::new(&tc,config,&out.als,&out.http_clerk);
+        out.csl.add_compsource(Box::new(dsm));
+        console!("S");
         out.run_actions(&startup_actions());
         out
+    }
+    
+    pub fn tick(&mut self) {
+        self.http_clerk.tick();
+    }
+    
+    pub fn get_component(&mut self, name: &str) -> Option<ActiveSource> {
+        self.csl.get_component(name)
+    }
+    
+    pub fn add_compsource(&mut self, cs: Box<SourceManager>) {
+        self.csl.add_compsource(cs);
     }
     
     pub fn with_stick_manager<F,G>(&mut self, cb: F) -> G
@@ -113,6 +141,7 @@ impl App {
     }
     
     pub fn run_actions(self: &mut App, evs: &Vec<Action>) {
+        console!("D");
         actions_run(self,evs);
     }
         

@@ -1,3 +1,5 @@
+import { TrackType } from './track-panel/trackPanelConfig';
+
 export enum BrowserOpenState {
   EXPANDED = 'expanded',
   SEMI_EXPANDED = 'semiExpanded',
@@ -25,6 +27,8 @@ export type BrowserState = Readonly<{
   defaultChrLocation: ChrLocation;
   drawerOpened: boolean;
   drawerView: string;
+  genomeSelectorActive: boolean;
+  selectedBrowserTab: TrackType;
   trackPanelModalOpened: boolean;
   trackPanelModalView: string;
   trackPanelOpened: boolean;
@@ -39,6 +43,8 @@ export const defaultState: BrowserState = {
   defaultChrLocation: ['13', 0, 0],
   drawerOpened: false,
   drawerView: '',
+  genomeSelectorActive: false,
+  selectedBrowserTab: TrackType.GENOMIC,
   trackPanelModalOpened: false,
   trackPanelModalView: '',
   trackPanelOpened: true

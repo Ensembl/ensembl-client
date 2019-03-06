@@ -19,6 +19,9 @@ pub use self::shapeimpl::{
 pub use self::util::{
     TypeToShape,
     ShapeInstanceData,
+    ShapeInstanceDataType,
+    ShapeShortInstanceData,
+    ShapeLongInstanceData,
     Facade, FacadeType
 };
 
@@ -45,7 +48,8 @@ pub use shape::poly::{
 
 pub use shape::wiggle::{
     stretch_wiggle,
-    StretchWiggle
+    StretchWiggle,
+    StretchWiggleTypeSpec
 };
 
 pub use self::stretch::{
