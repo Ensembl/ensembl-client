@@ -1,6 +1,7 @@
 module.exports = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   moduleNameMapper: {
+    '\\.svg': '<rootDir>/tests/svgrMock.js',
     '(src/.*)$': '<rootDir>/$1',
     '(static/.*)$': '<rootDir>/$1',
     '(static/browser/.*)$': '<rootDir>/$1.stub.js',
@@ -9,7 +10,7 @@ module.exports = {
   preset: 'ts-jest',
   roots: ['<rootDir>/src'],
   setupFiles: ['<rootDir>/setup-jest.ts'],
-  setupTestFrameworkScriptFile: '<rootDir>/setup-enzyme.ts',
+  setupFilesAfterEnv: ['<rootDir>/setup-enzyme.ts'],
   snapshotSerializers: ['enzyme-to-json/serializer'],
   testEnvironment: 'jsdom',
   transform: {

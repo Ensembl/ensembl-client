@@ -1,0 +1,37 @@
+@import 'src/styles/common';
+
+.strainSelector {
+  position: absolute;
+  top: 22px;
+  left: 100%;
+  transform: translateX(-60%);
+  white-space: nowrap;
+  display: inline-block;
+  color: $ens-white;
+  font-size: 12px; // FIXME
+  font-weight: 700;
+  padding: 4px 6px;
+  background-color: $ens-blue;
+  border-radius: 4px;
+  box-shadow: 2px 2px 5px $ens-grey;
+  cursor: pointer;
+  user-select: none;
+}
+
+.strainsList {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  min-width: 200px;
+}
+
+.strain {
+  display: inline-block;
+  color: $ens-blue;
+  cursor: pointer;
+}
+
+.strainSelected {
+  color: $ens-grey;
+  cursor: default;
+}
