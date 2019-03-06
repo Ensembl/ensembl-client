@@ -52,6 +52,32 @@ export const updateDefaultChrLocation = createAction(
   }
 );
 
+export const changeBrowserLocation = (
+  chrLocation: ChrLocation,
+  browserEl: HTMLDivElement
+) => {
+  const [chrCode, startBp, endBp] = chrLocation;
+
+  const stickEvent = new CustomEvent('bpane', {
+    bubbles: true,
+    detail: {
+      stick: chrCode
+    }
+  });
+
+  const gotoEvent = new CustomEvent('bpane', {
+    bubbles: true,
+    detail: {
+      goto: `${startBp}-${endBp}`
+    }
+  });
+
+  browserEl.dispatchEvent(stickEvent);
+  browserEl.dispatchEvent(gotoEvent);
+
+  return updateDefaultChrLocation(chrLocation);
+};
+
 export const openTrackPanelModal = createAction(
   'browser/open-track-panel-modal',
   (resolve) => {

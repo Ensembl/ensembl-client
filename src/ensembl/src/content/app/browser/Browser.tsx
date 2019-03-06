@@ -20,11 +20,11 @@ import {
   ChrLocation
 } from './browserState';
 import {
+  changeBrowserLocation,
   toggleDrawer,
   updateChrLocation,
   updateBrowserNavStates,
-  updateBrowserActivated,
-  updateDefaultChrLocation
+  updateBrowserActivated
 } from './browserActions';
 import {
   getBrowserOpenState,
@@ -48,11 +48,14 @@ type StateProps = {
 };
 
 type DispatchProps = {
+  changeBrowserLocation: (
+    chrLocation: ChrLocation,
+    browserEl: HTMLDivElement
+  ) => void;
   toggleDrawer: (drawerOpened: boolean) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateChrLocation: (chrLocation: ChrLocation) => void;
-  updateDefaultChrLocation: (chrLocation: ChrLocation) => void;
 };
 
 type OwnProps = {};
@@ -73,26 +76,9 @@ export const Browser: FunctionComponent<BrowserProps> = (
 ) => {
   const browserRef: React.RefObject<HTMLDivElement> = useRef(null);
 
-  const changeBrowserLocation = () => {
-    const [chrCode, startBp, endBp] = props.chrLocation;
-
-    const stickEvent = new CustomEvent('bpane', {
-      bubbles: true,
-      detail: {
-        stick: chrCode
-      }
-    });
-
-    const gotoEvent = new CustomEvent('bpane', {
-      bubbles: true,
-      detail: {
-        goto: `${startBp}-${endBp}`
-      }
-    });
-
+  const dispatchBrowserLocation = (chrLocation: ChrLocation) => {
     if (browserRef.current) {
-      browserRef.current.dispatchEvent(stickEvent);
-      browserRef.current.dispatchEvent(gotoEvent);
+      props.changeBrowserLocation(chrLocation, browserRef.current);
     }
   };
 
@@ -100,8 +86,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
     const { location } = props.match.params;
     const chrLocation = getChrLocationFromStr(location);
 
-    props.updateDefaultChrLocation(chrLocation);
-    changeBrowserLocation();
+    dispatchBrowserLocation(chrLocation);
   }, []);
 
   useEffect(() => {
@@ -125,7 +110,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   return (
     <section className={styles.browser}>
-      <BrowserBar changeBrowserLocation={changeBrowserLocation} />
+      <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
       {props.genomeSelectorActive ? (
         <div className={styles.browserOverlay} />
       ) : null}
@@ -161,11 +146,11 @@ const mapStateToProps = (state: RootState): StateProps => ({
 });
 
 const mapDispatchToProps: DispatchProps = {
+  changeBrowserLocation,
   toggleDrawer,
   updateBrowserActivated,
   updateBrowserNavStates,
-  updateChrLocation,
-  updateDefaultChrLocation
+  updateChrLocation
 };
 
 export default withRouter(

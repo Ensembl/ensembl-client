@@ -7,10 +7,10 @@ import styles from './BrowserReset.scss';
 import { getChrLocationStr } from '../browserHelper';
 
 type BrowserResetProps = {
-  changeBrowserLocation: () => void;
   chrLocation: ChrLocation;
   defaultChrLocation: ChrLocation;
   details: BrowserInfoItem;
+  dispatchBrowserLocation: (chrLocation: ChrLocation) => void;
   drawerOpened: boolean;
   updateChrLocation: (chrLocation: ChrLocation) => void;
 };
@@ -36,8 +36,7 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
       return;
     }
 
-    props.updateChrLocation(props.defaultChrLocation);
-    props.changeBrowserLocation();
+    props.dispatchBrowserLocation(props.defaultChrLocation);
   }, [chrLocation, drawerOpened]);
 
   return (
