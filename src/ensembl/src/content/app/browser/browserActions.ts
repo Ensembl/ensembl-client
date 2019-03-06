@@ -46,7 +46,7 @@ export const toggleDrawer = createAction('browser/toggle-drawer', (resolve) => {
   return (drawerOpened?: boolean) =>
     resolve(drawerOpened, {
       ga: {
-        category1: 'Drawer',
+        category: 'Drawer',
         label: 'User Interaction'
       }
     });
