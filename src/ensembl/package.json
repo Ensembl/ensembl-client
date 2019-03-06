@@ -44,7 +44,7 @@
     "react": "16.8.1",
     "react-cookie": "^3.0.8",
     "react-dom": "16.8.1",
-    "react-ga": "^2.5.7",
+    "react-ga": "2.5.7",
     "react-redux": "6.0.0",
     "react-router": "4.3.1",
     "react-router-dom": "4.3.1",
