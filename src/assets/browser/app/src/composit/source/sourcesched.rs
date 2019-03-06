@@ -48,17 +48,20 @@ impl SourceSched {
     }
         
     pub fn populate_carriage(&mut self, c: &mut Carriage) {
-        let key = (c.get_source().clone(),c.get_leaf().clone());
-        let resp = if let Some(resp) = self.cache.get(&key) {
-            debug!("sources","cache {:?} [{}]",c,resp.size());
-            resp
-        } else {
-            let mut resp = SourceResponse::new(c.get_source().get_name());
-            debug!("sources","queue {:?}",c);
-            self.queued.push((c.get_source().clone(),c.get_leaf().clone(),resp.clone()));
-            self.run_queue();
-            self.cache.put(&key,resp.clone());
-            resp
+        let resp = {
+            let source = c.get_source();
+            let key = (source.clone(),c.get_leaf().clone());
+            if let Some(resp) = self.cache.get(&key) {
+                debug!("sources","cache {:?} [{}]",c,resp.size());
+                resp
+            } else {
+                let mut resp = SourceResponse::new(source.get_name(),&source.list_parts());
+                debug!("sources","queue {:?}",c);
+                self.queued.push((source.clone(),c.get_leaf().clone(),resp.clone()));
+                self.run_queue();
+                self.cache.put(&key,resp.clone());
+                resp
+            }
         };
         c.set_response(resp.clone());
     }

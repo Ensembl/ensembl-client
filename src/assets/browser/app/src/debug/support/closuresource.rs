@@ -38,7 +38,7 @@ pub fn closure_add_opt(lcb: &mut SourceResponse, s: &Option<ShapeSpec>) {
     }
 }
 pub fn closure_add(lcb: &mut SourceResponse, s: &ShapeSpec) {
-    lcb.add_shape(s.clone());
+    lcb.add_shape(&None,s.clone());
 }
 
 pub fn closure_done(lcb: &mut SourceResponse, max_y: i32) {

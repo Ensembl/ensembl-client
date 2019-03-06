@@ -7,13 +7,13 @@ use drawing::DrawingSpec;
 
 #[derive(Clone)]
 pub enum TáTask {
-    MakeShapes(ActiveSource,Leaf,SourceResponse,Vec<DrawingSpec>,usize)
+    MakeShapes(ActiveSource,Leaf,SourceResponse,Vec<DrawingSpec>,usize,Option<String>)
 }
 
 impl TáTask {
     pub fn finished(&mut self) {
         match self {
-            TáTask::MakeShapes(_,_leaf,sr,_,_) => {
+            TáTask::MakeShapes(_,_leaf,sr,_,_,_) => {
                 //console!("{:?} for {} added {} shapes",leaf,sr.get_source_name(),sr.size());
                 sr.done(200); // XXX not 200
             },

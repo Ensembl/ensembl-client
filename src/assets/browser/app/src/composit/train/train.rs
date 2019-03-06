@@ -71,7 +71,7 @@ impl Train {
     /* add component to leaf */
     pub fn add_component(&mut self, cm: &mut ComponentManager, c: &ActiveSource) {
         for leaf in self.leafs() {
-            let lcomps = vec! { cm.make_carriage(c,&leaf) };
+            let lcomps = cm.make_comp_carriages(c,&leaf);
             self.add_carriages_to_leaf(leaf,lcomps);
         }
         self.stale.all_stale();
@@ -135,7 +135,7 @@ impl Train {
         if !self.active { return; }
         self.remove_unused_leafs();
         for leaf in self.get_missing_leafs() {
-            let cc = cm.make_carriages(leaf.clone());
+            let cc = cm.make_leaf_carriages(leaf.clone());
             self.add_carriages_to_leaf(leaf,cc);
         }
     }

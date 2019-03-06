@@ -1,48 +1,61 @@
 use std::cmp::{ Eq, PartialEq };
+use std::collections::HashMap;
 use std::fmt;
 use std::hash::{ Hash, Hasher };
 use std::rc::Rc;
 
 use composit::state::StateExpr;
 use composit::{
-    AllLandscapes, Landscape,
-    Source, Carriage, Leaf, SourceSched, SourceResponse, StateManager,
+    AllLandscapes, Landscape, Source,
+    Carriage, Leaf, SourceSched, SourceResponse, StateManager,
     StateValue
 };
+
+use super::SourcePart;
 
 #[derive(Clone)]
 pub struct ActiveSource {
     als: AllLandscapes,
     lid: usize,
     name: String,
-    ooe: Rc<StateExpr>,
+    parts: HashMap<Option<String>,SourcePart>,
     source: Rc<Source>
 }
 
 impl ActiveSource {
-    pub fn new(name: &str, source: Rc<Source>, ooe: Rc<StateExpr>, als: &AllLandscapes, lid: usize) -> ActiveSource {
-        ActiveSource {
-            ooe, source, lid,
+    pub fn new(name: &str, source: Rc<Source>, als: &AllLandscapes, lid: usize) -> ActiveSource {
+        let mut out = ActiveSource {
+            source, lid,
             name: name.to_string(),
-            als: als.clone()
-        }
+            als: als.clone(),
+            parts: HashMap::<Option<String>,SourcePart>::new()
+        };
+        out
     }
     
-    pub fn make_carriage(&self, sf: &mut SourceSched, leaf: &Leaf) -> Carriage {
-        let mut out = Carriage::new(self.clone(),leaf);
+    pub fn new_part(&mut self, part: Option<&str>, ooe: Rc<StateExpr>) {
+        self.parts.insert(part.map(|x| x.to_string()),SourcePart::new(part,&ooe));
+    }
+    
+    pub fn list_parts(&self) -> Vec<String> {
+        self.parts.keys().filter(|x| x.is_some()).map(|x| x.as_ref().unwrap().clone()).collect()
+    }
+    
+    pub fn make_carriage(&self, sf: &mut SourceSched, part: &Option<String>, leaf: &Leaf) -> Carriage {
+        let mut out = Carriage::new(self.clone(),part,leaf);
         sf.populate_carriage(&mut out);
         out
     }
     
     pub fn populate(&mut self, resp: &mut SourceResponse, leaf: &Leaf) {
         let twin = self.source.clone();
-        twin.populate(self,resp,leaf);        
+        twin.populate(self,resp,leaf);
     }
     
     pub fn get_name(&self) -> &str { &self.name }  
     
-    pub fn is_on(&self, m: &StateManager) -> StateValue {
-        self.ooe.is_on(m)
+    pub fn is_on(&self, m: &StateManager, part: &Option<String>) -> StateValue {
+        self.parts.get(&part).unwrap().is_on(m)
     }
     
     pub fn with_landscape<F,G>(&mut self, lid: usize, cb: F) -> Option<G>

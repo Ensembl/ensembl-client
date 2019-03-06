@@ -67,7 +67,7 @@ impl XferConsumer for TáXferConsumer {
                         self.tc.context().set_task(pid,TáTask::MakeShapes(
                             self.acs.clone(),
                             self.leaf.clone(),self.lc.clone(),
-                            Vec::<DrawingSpec>::new(),self.lid));
+                            Vec::<DrawingSpec>::new(),self.lid,None));
                         for (i,reg) in data.drain(..).enumerate() {
                             self.tc.set_reg(pid,i+1,reg);
                         }

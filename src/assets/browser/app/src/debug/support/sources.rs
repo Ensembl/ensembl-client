@@ -29,15 +29,16 @@ pub const DEBUG_SOURCES : [&str;8] = [
     "internal:debug:zzz-framework"
 ];
 
-pub const DEMO_SOURCES : [&str;8] = [
-    "gene-pc-fwd",
-    "gene-other-fwd",
-    "gene-pc-rev",
-    "gene-other-rev",
-    "variant",
-    "contig",
-    "gc",
-    "zzz-framework"
+pub const DEMO_SOURCES : [&str;9] = [
+    "track:gene-pc-fwd",
+    "track:gene-other-fwd",
+    "track:gene-pc-rev",
+    "track:gene-other-rev",
+    "track:variant",
+    "track:contig",
+    "track:gc",
+    "track:zzz-framework",
+    "track:zzz-framework:lhs"
 ];
 
 #[cfg(deploy)]
