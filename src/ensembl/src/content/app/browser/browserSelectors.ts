@@ -49,3 +49,11 @@ export const getBrowserCogTrackList = (state: RootState): Array<number> => {
 export const getBrowserSelectedCog = (state: RootState): number | null => {
   return state.browser.selectedCog;
 };
+
+export const getTrackConfigNames = (state: RootState): Any => {
+  return state.browser.trackConfigNames;
+};
+
+export const getTrackConfigLabel = (state: RootState): Any => {
+  return state.browser.trackConfigLabel;
+};

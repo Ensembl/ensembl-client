@@ -36,6 +36,20 @@ export default (
       return { ...state, browserCogTrackList: action.payload };
     case getType(browser.updateSelectedCog):
       return { ...state, selectedCog: action.payload };
+    case getType(browser.updateTrackConfigNames):
+      return {
+        ...state,
+        trackConfigNames: {
+          [action.payload[0]]: action.payload[1]
+        }
+      };
+    case getType(browser.updateTrackConfigLabel):
+      return {
+        ...state,
+        trackConfigLabel: {
+          [action.payload[0]]: action.payload[1]
+        }
+      };
     case getType(browser.updateDefaultChrLocation):
       return {
         ...state,

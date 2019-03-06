@@ -51,6 +51,11 @@ impl ViewportReportImpl {
         for item in items {
             item.to_json(&mut out);
         }
+        let mut ty = Vec::<JSONValue>::new();
+        for i in 0..10 {
+            ty.push(JSONValue::Number(JSONNumber::from_f64((i*50) as f64).unwrap()));
+        }
+        out.insert("track_y".to_string(),JSONValue::Array(ty));
         JSONValue::Object(out)
     }
     
