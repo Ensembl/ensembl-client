@@ -5,15 +5,15 @@
 const path = require('path');
 const postcssPresetEnv = require('postcss-preset-env');
 
-module.exports = (baseConfig, env, defaultConfig) => {
+module.exports = ({ config }) => {
 
   // a bit of a hack to remove svg handling from Storybook's default webpack config:
   // find the rule that matches svg files and replace its regex with Storybook's default,
   // but without svg
-  const defaultSvgRule = defaultConfig.module.rules.find(rule => rule.test.test('.svg'));
+  const defaultSvgRule = config.module.rules.find(rule => rule.test.test('.svg'));
   defaultSvgRule.test = /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|cur|ani)(\?.*)?$/;
 
-  defaultConfig.module.rules.push({
+  config.module.rules.push({
     test: /\.tsx?$/,
     loader: require.resolve('babel-loader'),
     include: [
@@ -21,7 +21,7 @@ module.exports = (baseConfig, env, defaultConfig) => {
       path.resolve(__dirname, '../stories'),
     ]
   });
-  defaultConfig.module.rules.push({
+  config.module.rules.push({
     test: /.scss$/,
     include: [
       path.resolve(__dirname, '../src'),
@@ -47,17 +47,17 @@ module.exports = (baseConfig, env, defaultConfig) => {
       'sass-loader'
     ]
   });
-  defaultConfig.module.rules.push({
+  config.module.rules.push({
     test: /\.svg$/,
     use: ['@svgr/webpack', 'file-loader'],
   });
 
-  defaultConfig.resolve.extensions.push('.ts', '.tsx');
-  defaultConfig.resolve.alias = {
+  config.resolve.extensions.push('.ts', '.tsx');
+  config.resolve.alias = {
     src: path.join(__dirname, '../src'),
     tests: path.join(__dirname, '../tests'),
     static: path.join(__dirname, '../static')
   };
 
-  return defaultConfig;
+  return config;
 };
