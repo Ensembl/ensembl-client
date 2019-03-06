@@ -16,8 +16,8 @@ import { getChrLocationStr } from '../browserHelper';
 
 type BrowserGenomeSelectorProps = {
   browserActivated: boolean;
-  changeBrowserLocation: () => void;
   defaultChrLocation: ChrLocation;
+  dispatchBrowserLocation: (chrLocation: ChrLocation) => void;
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
   toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
@@ -80,8 +80,7 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
 
       closeForm();
 
-      props.updateDefaultChrLocation(currChrLocation);
-      props.changeBrowserLocation();
+      props.dispatchBrowserLocation(currChrLocation);
     } else {
       return;
     }

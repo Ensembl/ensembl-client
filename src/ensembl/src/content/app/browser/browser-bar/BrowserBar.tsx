@@ -50,7 +50,7 @@ type DispatchProps = {
 };
 
 type OwnProps = {
-  changeBrowserLocation: () => void;
+  dispatchBrowserLocation: (chrLocation: ChrLocation) => void;
 };
 
 type BrowserBarProps = StateProps & DispatchProps & OwnProps;
@@ -93,7 +93,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
       <div className={getBrowserInfoClasses()}>
         <dl className={styles.browserInfoLeft}>
           <BrowserReset
-            changeBrowserLocation={props.changeBrowserLocation}
+            dispatchBrowserLocation={props.dispatchBrowserLocation}
             chrLocation={props.chrLocation}
             defaultChrLocation={props.defaultChrLocation}
             details={reset}
@@ -127,7 +127,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
         <dl className={styles.browserInfoRight}>
           <BrowserGenomeSelector
             browserActivated={props.browserActivated}
-            changeBrowserLocation={props.changeBrowserLocation}
+            dispatchBrowserLocation={props.dispatchBrowserLocation}
             defaultChrLocation={props.defaultChrLocation}
             drawerOpened={props.drawerOpened}
             genomeSelectorActive={props.genomeSelectorActive}
