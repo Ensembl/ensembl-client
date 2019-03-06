@@ -20,7 +20,7 @@ const googleAnalyticsMiddleWare = (store: any) => (next: any) => (
     if (!action.meta.ga.disable_tracking && action.meta.ga.category.length) {
       // The action and category fields are mandatory
       ReactGA.event({
-        action: action.type,
+        action: action.meta.ga.action ? action.meta.ga.action : action.type,
         category: action.meta.ga.category,
         label: action.meta.ga.label,
         value: action.meta.ga.value,
