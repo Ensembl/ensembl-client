@@ -6,8 +6,6 @@ import { TrackType } from '../track-panel/trackPanelConfig';
 
 import {
   toggleBrowserNav,
-  updateDefaultChrLocation,
-  updateChrLocation,
   toggleGenomeSelector,
   selectBrowserTab,
   toggleDrawer
@@ -45,8 +43,6 @@ type DispatchProps = {
   toggleBrowserNav: () => void;
   toggleDrawer: (drawerOpened: boolean) => void;
   toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
-  updateChrLocation: (chrLocation: ChrLocation) => void;
-  updateDefaultChrLocation: (chrLocation: ChrLocation) => void;
 };
 
 type OwnProps = {
@@ -98,7 +94,6 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
             defaultChrLocation={props.defaultChrLocation}
             details={reset}
             drawerOpened={props.drawerOpened}
-            updateChrLocation={props.updateChrLocation}
           />
           {props.genomeSelectorActive ? null : (
             <Fragment>
@@ -132,7 +127,6 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
             drawerOpened={props.drawerOpened}
             genomeSelectorActive={props.genomeSelectorActive}
             toggleGenomeSelector={props.toggleGenomeSelector}
-            updateDefaultChrLocation={props.updateDefaultChrLocation}
           />
           {props.genomeSelectorActive ? null : (
             <dd className={styles.navigator}>
@@ -168,9 +162,7 @@ const mapDispatchToProps: DispatchProps = {
   selectBrowserTab,
   toggleBrowserNav,
   toggleDrawer,
-  toggleGenomeSelector,
-  updateChrLocation,
-  updateDefaultChrLocation
+  toggleGenomeSelector
 };
 
 export default connect(
