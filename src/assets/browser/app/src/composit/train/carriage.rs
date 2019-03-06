@@ -31,6 +31,7 @@ impl Carriage {
     pub fn update_state(&mut self, m: &StateManager) -> ComponentRedo {
         self.prev_value = self.cur_value;
         self.cur_value = self.comp.is_on(m,&self.part);
+        
         if self.prev_value == self.cur_value {
             ComponentRedo::None // no change => Noop
         } else if self.prev_value.on() && self.cur_value.on() {

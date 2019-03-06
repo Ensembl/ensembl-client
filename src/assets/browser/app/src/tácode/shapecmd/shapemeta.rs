@@ -46,7 +46,7 @@
  * object relative top the top-left of the screen referenced to its own
  * top left, using spot colours not in an under layer.
  * 
- * For one anchor shapes the same structure is used but x2-asis and
+ * For one anchor shapes the same structure is used but x2-axis and
  * y2-axis are replaced by x-scale and y-scale which are auxilliary
  * values used by
  * 

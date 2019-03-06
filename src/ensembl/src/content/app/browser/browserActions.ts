@@ -106,3 +106,12 @@ export const updateTrackConfigLabel = createAction(
     };
   }
 );
+
+export const updateApplyToAll = createAction(
+  'browser/update-apply-to-all',
+  (resolve) => {
+    return (yn: number) => {
+      return resolve(yn);
+    };
+  }
+);

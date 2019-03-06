@@ -69,17 +69,17 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
       let ons = [];
       let offs = [];
 
+      /* what the frontend and backend call labels and names is flipped */
       Object.keys(props.browserCogTrackList).map((name) => {
-        console.log('considering', name);
         if (props.trackConfigNames[name]) {
-          ons.push('track:' + name + ':names');
+          ons.push(name + ':label');
         } else {
-          offs.push('track:' + name + ':names');
+          offs.push(name + ':label');
         }
         if (props.trackConfigLabel[name]) {
-          ons.push('track:' + name + ':label');
+          ons.push(name + ':names');
         } else {
-          offs.push('track:' + name + ':label');
+          offs.push(name + ':names');
         }
       });
       const stateEvent = new CustomEvent('bpane', {
@@ -153,8 +153,7 @@ function dispatchActivateEvents(
   const activateEvent = new CustomEvent('bpane-activate', {
     bubbles: true,
     detail: {
-      'config-url':
-        'http://ec2-34-204-108-251.compute-1.amazonaws.com:8060/browser/config',
+      'config-url': 'http://localhost:4000/browser/config',
       key: 'main'
     }
   });

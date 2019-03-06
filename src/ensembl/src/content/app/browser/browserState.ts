@@ -35,6 +35,7 @@ export type BrowserState = Readonly<{
   browserCogTrackList: Array<number>;
   trackConfigNames: Any;
   trackConfigLabel: Any;
+  applyToAll: boolean;
 }>;
 
 export const defaultState: BrowserState = {
@@ -53,7 +54,8 @@ export const defaultState: BrowserState = {
   selectedCog: null,
   browserCogTrackList: [],
   trackConfigNames: {},
-  trackConfigLabel: {}
+  trackConfigLabel: {},
+  applyToAll: false
 };
 
 export const trackPanelState = (
