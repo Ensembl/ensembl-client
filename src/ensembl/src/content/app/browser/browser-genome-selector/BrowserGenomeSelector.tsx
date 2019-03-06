@@ -21,7 +21,6 @@ type BrowserGenomeSelectorProps = {
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
   toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
-  updateDefaultChrLocation: (chrLocation: ChrLocation) => void;
 };
 
 const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (

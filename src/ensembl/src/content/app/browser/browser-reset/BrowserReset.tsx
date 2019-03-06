@@ -12,7 +12,6 @@ type BrowserResetProps = {
   details: BrowserInfoItem;
   dispatchBrowserLocation: (chrLocation: ChrLocation) => void;
   drawerOpened: boolean;
-  updateChrLocation: (chrLocation: ChrLocation) => void;
 };
 
 export const BrowserReset: FunctionComponent<BrowserResetProps> = (
