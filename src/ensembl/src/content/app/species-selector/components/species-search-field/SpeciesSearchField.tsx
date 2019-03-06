@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import SpeciesAutosuggestionPanel from '../species-autosuggestion-panel/SpeciesAutosuggestionPanel';
 
