@@ -41,7 +41,7 @@ const BrowserCog: FunctionComponent<BrowserCogProps> = (
     }
   }, [cogActivated]);
 
-  let inline = {};
+  let inline = { position: 'relative' };
   let img_inline = {
     height: '24px',
     width: '24px'

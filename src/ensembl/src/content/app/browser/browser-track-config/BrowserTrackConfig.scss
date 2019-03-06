@@ -1,0 +1,95 @@
+.trackConfig {
+  box-sizing: border-box;
+  background: #f1f2f4;
+  box-shadow: 1px 1px 10px #6f8190;
+  display: inline-block;
+  font: 13px Lato, helvetica, Arial, sans-serif;
+  font-weight: 100;
+
+  img {
+    height: 100%;
+    width: 100%;
+  }
+
+  dl {
+    display: inline-block;
+    margin: 10px 0;
+    padding: 0 20px;
+  }
+
+  dl:not(:first-child) {
+    border-left: 1px solid #b7c0c8;
+  }
+
+  dl:last-child {
+    padding-right: 0;
+  }
+
+  dd {
+    display: inline-block;
+    margin: 0 15px;
+    vertical-align: middle;
+  }
+
+  dd.disabled {
+    opacity: 0.45;
+  }
+
+  label {
+    position: relative;
+    vertical-align: middle;
+  }
+
+  button {
+    background-color: transparent;
+    background-repeat: no-repeat;
+    border: none;
+    height: 22px;
+    width: 22px;
+  }
+
+  button:focus {
+    outline: none;
+  }
+
+  input[type='checkbox'] {
+    border: 1px solid #b7c0c8;
+    display: inline-block;
+    height: 15px;
+    margin: 0 5px 0 0;
+    position: relative;
+    width: 15px;
+  }
+
+  /* individual track config item (button container) styling */
+
+  .allTracks {
+    /* color: #b7c0c8; */
+    position: relative;
+    height: 22px;
+  }
+
+  .heightSwitcher {
+    margin-left: 20px;
+  }
+
+  /* button styling */
+
+  .trackConfigSlider {
+    height: 22px;
+    margin-left: 10px;
+    position: relative;
+    width: 22px;
+  }
+
+  .trackHeightBtn {
+    height: 33px;
+    position: relative;
+    width: 66px;
+  }
+
+  .trackMoveBtn {
+    height: 33px;
+    width: 33px;
+  }
+}

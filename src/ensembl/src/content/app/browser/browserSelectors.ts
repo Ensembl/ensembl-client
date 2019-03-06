@@ -42,6 +42,10 @@ export const getBrowserCogList = (state: RootState): CogList => {
   return state.browser.browserCogList;
 };
 
+export const getBrowserCogTrackList = (state: RootState): Array<number> => {
+  return state.browser.browserCogTrackList;
+};
+
 export const getBrowserSelectedCog = (state: RootState): number | null => {
   return state.browser.selectedCog;
 };
