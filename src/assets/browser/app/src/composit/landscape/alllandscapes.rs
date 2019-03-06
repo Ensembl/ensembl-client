@@ -17,8 +17,8 @@ impl AllLandscapesImpl {
         }
     }
     
-    fn allocate(&mut self) -> usize {
-        let out = self.vs.store(Landscape::new());
+    fn allocate(&mut self, name: &str) -> usize {
+        let out = self.vs.store(Landscape::new(name));
         out
     }
     
@@ -46,8 +46,8 @@ impl AllLandscapes {
         AllLandscapes(Rc::new(RefCell::new(AllLandscapesImpl::new())))
     }
     
-    pub fn allocate(&mut self) -> usize {
-        let lid = self.0.borrow_mut().allocate();
+    pub fn allocate(&mut self, name: &str) -> usize {
+        let lid = self.0.borrow_mut().allocate(name);
         self.with(lid,|ls| ls.set_lid(lid));
         lid
     }
