@@ -71,6 +71,15 @@ export const updateCogList = createAction(
   }
 );
 
+export const updateCogTrackList = createAction(
+  'browser/update-cog-track-list',
+  (resolve) => {
+    return (track_y: Array<number>) => {
+      return resolve(track_y);
+    };
+  }
+);
+
 export const updateSelectedCog = createAction(
   'browser/update-selected-cog',
   (resolve) => {
