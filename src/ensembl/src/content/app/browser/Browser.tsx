@@ -30,7 +30,8 @@ import {
   getBrowserOpenState,
   getDrawerOpened,
   getBrowserNavOpened,
-  getChrLocation
+  getChrLocation,
+  getTrackConfigNames
 } from './browserSelectors';
 
 import styles from './Browser.scss';

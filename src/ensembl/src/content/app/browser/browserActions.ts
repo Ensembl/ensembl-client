@@ -88,3 +88,21 @@ export const updateSelectedCog = createAction(
     };
   }
 );
+
+export const updateTrackConfigNames = createAction(
+  'browser/update-track-config-names',
+  (resolve) => {
+    return (selectedCog: number, sense: boolean) => {
+      return resolve([selectedCog, sense]);
+    };
+  }
+);
+
+export const updateTrackConfigLabel = createAction(
+  'browser/update-track-config-label',
+  (resolve) => {
+    return (selectedCog: number, sense: boolean) => {
+      return resolve([selectedCog, sense]);
+    };
+  }
+);
