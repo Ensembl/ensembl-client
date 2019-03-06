@@ -4,6 +4,7 @@
     "baseUrl": ".",
     "declaration": false,
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "jsx": "react",
     "module": "esnext",
     "moduleResolution": "node",

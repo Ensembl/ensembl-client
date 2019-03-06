@@ -10,7 +10,7 @@ type Props = {
 
 const QuestionButton = (props: Props) => {
   return (
-    <div className={styles.questionButton}>
+    <div className={styles.questionButton} onMouseOver={props.onHover}>
       <QuestionIcon />
     </div>
   );
