@@ -1,3 +1,15 @@
+@import 'src/styles/common';
+
 .speciesSearchMatch {
-  font-weight: bold;
+  color: $ens-grey;
+}
+
+.speciesSearchMatchMatched {
+  font-weight: 900;
+}
+
+.speciesSearchMatchScientificName {
+  font-style: italic;
+  font-size: 11px; // FIXME
+  margin-left: 1rem;
 }

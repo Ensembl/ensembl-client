@@ -1,6 +1,7 @@
 import React from 'react';
+import classNames from 'classnames';
 import zip from 'lodash/zip';
-import last from 'lodash/last';
+import sortBy from 'lodash/sortBy';
 
 import {
   SearchMatch,
@@ -18,30 +19,87 @@ type SplitterProps = {
   matchedSubsctrings: MatchedSubstring[];
 };
 
+type FormatStringProps = {
+  string: string;
+  substrings: SplitSubstring[];
+};
+
+type SplitSubstring = {
+  start: number;
+  end: number;
+  isMatch: boolean;
+};
+
+type NumberTuple = [number, number];
+
 const SpeciesSearchMatch = ({ match }: Props) => {
-  const commonName = <CommonName match={match} />;
   return (
     <div className={styles.speciesSearchMatch}>
-      {match.description}
-      {commonName}
+      <CommonName match={match} />
+      <ScientificName match={match} />
     </div>
   );
 };
 
 const CommonName = ({ match }: Props) => {
   const { description, matched_substrings } = match;
-  console.log(
-    splitMatch({ string: description, matchedSubsctrings: matched_substrings })
+
+  const descriptionMatches = matched_substrings.filter(
+    ({ match }) => match === 'description'
   );
-  return <p />;
+
+  const substrings = sortBy(
+    splitMatch({ string: description, matchedSubsctrings: descriptionMatches }),
+    ({ start }) => start
+  );
+
+  return <span>{formatString({ string: description, substrings })}</span>;
 };
+
+const ScientificName = ({ match }: Props) => {
+  const { scientific_name, matched_substrings } = match;
+  if (!scientific_name) return null;
+
+  const scientificNameMatches = matched_substrings.filter(
+    ({ match }) => match === 'scientific_name'
+  );
+
+  const substrings = sortBy(
+    splitMatch({
+      string: scientific_name,
+      matchedSubsctrings: scientificNameMatches
+    }),
+    ({ start }) => start
+  );
+
+  return (
+    <span className={styles.speciesSearchMatchScientificName}>
+      {formatString({ string: scientific_name, substrings })}
+    </span>
+  );
+};
+
+const formatString = ({ string, substrings }: FormatStringProps) =>
+  substrings.length
+    ? substrings.map(({ start, end, isMatch }) => (
+        <span
+          className={classNames({
+            [styles.speciesSearchMatchMatched]: isMatch
+          })}
+          key={`${start}-${end}`}
+        >
+          {string.substring(start, end)}
+        </span>
+      ))
+    : string;
 
 const splitMatch = ({ string, matchedSubsctrings }: SplitterProps) => {
   const matchStartIndices = matchedSubsctrings.map(({ offset }) => offset);
   const matchEndIndices = matchedSubsctrings.map(
     ({ offset, length }) => offset + length
   );
-  const matchIndices = zip(matchStartIndices, matchEndIndices);
+  const matchIndices = zip(matchStartIndices, matchEndIndices) as NumberTuple[];
+  const accumulator: SplitSubstring[] = [];
   return matchIndices.reduce((result, current, index, array) => {
     if (index === 0 && current[0] > 0) {
       result = [
@@ -72,7 +130,7 @@ const splitMatch = ({ string, matchedSubsctrings }: SplitterProps) => {
       ];
     }
     return result;
-  }, []);
+  }, accumulator);
 };
 
 export default SpeciesSearchMatch;
