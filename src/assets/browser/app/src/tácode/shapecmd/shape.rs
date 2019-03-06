@@ -59,7 +59,7 @@ fn make_facade(spec: &Box<TypeToShape>, colour: &Vec<f64>, tx: &Vec<DrawingSpec>
 fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceResponse, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
-                colour: &Vec<f64>) {
+                colour: &Vec<f64>, part: &Option<String>) {
     let facade = make_facade(&spec,colour,tx,0);
     let mut x_start_scaled = Vec::<f64>::new();
     let mut x_aux_scaled = Vec::<f64>::new();
@@ -78,14 +78,14 @@ fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceResp
         facade
     };
     if let Some(shape) = spec.new_long_shape(&data) {
-        lc.add_shape(shape);
+        lc.add_shape(part,shape);
     }    
 }
 
 fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceResponse, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
-                colour: &Vec<f64>) {
+                colour: &Vec<f64>, part: &Option<String>) {
     let mut y_start_iter = y_start.iter().cycle();
     let mut x_aux_iter = x_aux.iter().cycle();
     let mut y_aux_iter = y_aux.iter().cycle();
@@ -105,7 +105,7 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceRes
                 facade
             };
             if let Some(shape) = spec.new_short_shape(&data) {
-                lc.add_shape(shape);
+                lc.add_shape(part,shape);
             }
         }
     }
@@ -114,16 +114,16 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceRes
 fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut SourceResponse, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
-                colour: &Vec<f64>) {
+                colour: &Vec<f64>, part: &Option<String>) {
     let mut meta_iter = meta.iter().cycle();
     if let Some(spec) = build_meta(&mut meta_iter) {
         match spec.sid_type() {
             ShapeInstanceDataType::Short => 
                 draw_short_shapes(spec,leaf,lc,tx,x_start,x_aux,
-                                  y_start,y_aux,colour),
+                                  y_start,y_aux,colour,part),
             ShapeInstanceDataType::Long => 
                 draw_long_shapes(spec,leaf,lc,tx,x_start,x_aux,
-                                  y_start,y_aux,colour),
+                                  y_start,y_aux,colour,part),
         }
     }
 }
@@ -135,7 +135,7 @@ impl Command for Shape {
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,leaf,lc,ref tx,_) = task {
+            if let TáTask::MakeShapes(_,leaf,lc,ref tx,_,part) = task {
                 let regs = rt.registers();
                 regs.get(self.1).as_floats(|meta| {                
                     regs.get(self.2).as_floats(|x_start| {
@@ -144,7 +144,7 @@ impl Command for Shape {
                                 regs.get(self.5).as_floats(|y_size| {
                                     regs.get(self.6).as_floats(|colour| {
                                         draw_shapes(meta,leaf,lc,tx,x_start,x_size,
-                                                y_start,y_size,colour);
+                                                y_start,y_size,colour,part);
                                     });
                                 });
                             });

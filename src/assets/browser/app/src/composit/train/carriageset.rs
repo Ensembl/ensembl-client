@@ -1,22 +1,24 @@
 use std::collections::HashMap;
 use composit::{ Carriage, Leaf, ActiveSource };
 
+#[derive(Debug)]
 pub struct CarriageSet {
-    carriages: HashMap<Leaf,HashMap<ActiveSource,Carriage>>
+    carriages: HashMap<Leaf,HashMap<(ActiveSource,Option<String>),Carriage>>
 }
 
 impl CarriageSet {
     pub fn new() -> CarriageSet {
         CarriageSet {
-            carriages: HashMap::<Leaf,HashMap<ActiveSource,Carriage>>::new()
+            carriages: HashMap::<Leaf,HashMap<(ActiveSource,Option<String>),Carriage>>::new()
         }
     }
     
     pub fn add_carriage(&mut self, leaf: &Leaf, carriage: Carriage) {
         let lcc = self.carriages.entry(leaf.clone()).or_insert_with(||
-            HashMap::<ActiveSource,Carriage>::new()
+            HashMap::<(ActiveSource,Option<String>),Carriage>::new()
         );
-        lcc.insert(carriage.get_source().clone(),carriage);
+        lcc.insert((carriage.get_source().clone(),
+                    carriage.get_part().clone()),carriage);
     }
     
     pub fn remove_leaf(&mut self, leaf: &Leaf) {

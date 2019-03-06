@@ -1,20 +1,25 @@
 use composit::SourceResponse;
+use composit::Source;
 use shape::DrawnShape;
 
 pub struct DrawnResponse {
     shapes: Option<Vec<DrawnShape>>,
-    sr: SourceResponse
+    sr: SourceResponse,
+    part: Option<String>
 }
 
 impl DrawnResponse {
-    pub fn new(sr: SourceResponse) -> DrawnResponse {
-        DrawnResponse { sr, shapes: None }
+    pub fn new(sr: SourceResponse, part: &Option<String>) -> DrawnResponse {
+        DrawnResponse { sr, shapes: None, part: part.clone() }
     }
 
     fn populate(&mut self) {
-        self.shapes = Some(self.sr.get_shapes().iter().map(|spec|
-            DrawnShape::new(spec.create())
-        ).collect());
+        let mut shapes = Vec::<DrawnShape>::new();
+        let specs = self.sr.get_shapes(&self.part);
+        for spec in specs {
+            shapes.push(DrawnShape::new(spec.create())
+        }
+        self.shapes = Some(shapes);
     }
     
     #[allow(unused)]

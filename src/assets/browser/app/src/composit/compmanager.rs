@@ -36,16 +36,22 @@ impl ComponentManager {
         self.components.remove(k);
     }
     
-    pub fn make_carriage(&mut self, c: &ActiveSource, leaf: &Leaf) -> Carriage {
-        c.make_carriage(&mut self.source_factory,&leaf)
+    pub fn make_comp_carriages(&mut self, c: &ActiveSource, leaf: &Leaf) -> Vec<Carriage> {
+        let mut lcomps = Vec::<Carriage>::new();
+        lcomps.push(c.make_carriage(&mut self.source_factory,&None,&leaf));
+        for part in c.list_parts() {            
+            debug!("redraw","make_carriages {:?} for {}",leaf,part);
+            lcomps.push(c.make_carriage(&mut self.source_factory,&Some(part),&leaf));
+        }
+        lcomps
     }
     
-    pub fn make_carriages(&mut self, leaf: Leaf) -> Vec<Carriage> {
+    pub fn make_leaf_carriages(&mut self, leaf: Leaf) -> Vec<Carriage> {
         let mut lcomps = Vec::<Carriage>::new();
         debug!("redraw","make_carriages {:?}",leaf);
-        for (k,c) in &self.components {
-            debug!("redraw","make_carriages {:?} for {}",leaf,k);
-            lcomps.push(c.make_carriage(&mut self.source_factory,&leaf));
+        let comps : Vec<ActiveSource> = self.components.values().cloned().collect();
+        for c in &comps {
+            lcomps.append(&mut self.make_comp_carriages(c,&leaf));
         }
         lcomps
     }    

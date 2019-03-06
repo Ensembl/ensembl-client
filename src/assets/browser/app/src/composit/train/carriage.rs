@@ -10,16 +10,18 @@ pub struct Carriage {
     prev_value: StateValue,
     cur_value: StateValue,
     response: Option<DrawnResponse>,
+    part: Option<String>,
     leaf: Leaf
 }
 
 impl Carriage {
-    pub fn new(comp: ActiveSource, leaf: &Leaf) -> Carriage {
+    pub fn new(comp: ActiveSource, part: &Option<String>, leaf: &Leaf) -> Carriage {
         Carriage {
             response: None,
             prev_value: StateValue::OffCold(),
             cur_value: StateValue::OffCold(),
             leaf: leaf.clone(),
+            part: part.clone(),
             comp
         }
     }
@@ -28,7 +30,7 @@ impl Carriage {
     
     pub fn update_state(&mut self, m: &StateManager) -> ComponentRedo {
         self.prev_value = self.cur_value;
-        self.cur_value = self.comp.is_on(m);
+        self.cur_value = self.comp.is_on(m,&self.part);
         if self.prev_value == self.cur_value {
             ComponentRedo::None // no change => Noop
         } else if self.prev_value.on() && self.cur_value.on() {
@@ -64,14 +66,15 @@ impl Carriage {
     
     pub fn get_leaf(&self) -> &Leaf { &self.leaf }
     pub fn get_source(&self) -> &ActiveSource { &self.comp }
+    pub fn get_part(&self) -> &Option<String> { &self.part }
     
     pub fn set_response(&mut self, r: SourceResponse) {
-        self.response = Some(DrawnResponse::new(r));
+        self.response = Some(DrawnResponse::new(r,&self.part));
     }
 }
 
 impl fmt::Debug for Carriage {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f,"{:?}:{:?}",self.comp,self.leaf)
+        write!(f,"{:?}:{:?}({:?})",self.comp,self.leaf,self.part)
     }
 }

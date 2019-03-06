@@ -33,12 +33,14 @@ impl BackendEndpoint {
 pub struct BackendTrack {
     endpoints: Vec<(i32,i32,String)>,
     letter: String,
-    position: i32
+    position: i32,
+    parts: Vec<String>
 }
 
 impl BackendTrack {
     pub fn get_letter(&self) -> &str { &self.letter }
     pub fn get_position(&self) -> i32 { self.position }
+    pub fn get_parts(&self) -> &Vec<String> { &self.parts }
 }
 
 #[derive(Debug,Clone)]
@@ -100,10 +102,15 @@ impl BackendConfig {
                 let max = Scale::new_from_letter(scales[1]).get_index();
                 endpoints.push((min,max,track["endpoint"].as_str().unwrap().to_string()));
             }
-            out.insert(track_name.to_string(),BackendTrack { 
+            let mut parts = Vec::<String>::new();
+            for part in v["parts"].as_array().unwrap_or(&vec!{}).iter() {
+                parts.push(part.as_str().unwrap().to_string());
+            }
+            let track_name = format!("track:{}",track_name);
+            out.insert(track_name,BackendTrack { 
                 letter: v.get("letter").and_then(|x| x.as_str()).unwrap_or("").to_string(),
                 position: v.get("position").and_then(|x| x.as_i64()).unwrap_or(-1) as i32,
-                endpoints
+                endpoints, parts
             });
         }
         out
