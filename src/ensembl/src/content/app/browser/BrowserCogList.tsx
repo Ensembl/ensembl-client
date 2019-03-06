@@ -58,6 +58,7 @@ const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
       props.updateCogList(bpaneScrollEvent.detail.delta_y);
     }
     if (bpaneScrollEvent.detail.track_y) {
+      console.log('incoming', bpaneScrollEvent.detail.track_y);
       props.updateCogTrackList(bpaneScrollEvent.detail.track_y);
     }
   }, []);
@@ -68,11 +69,12 @@ const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
     currentEl.addEventListener('bpane-scroll', listenBpaneScroll);
   }, [props.cogListRef]);
   let inline = { transform: 'translate(0,' + props.browserCogList + 'px)' };
-  let cogs = browserCogTrackList.map((pos, index) => {
+
+  let cogs = Object.entries(browserCogTrackList).map(([name, pos]) => {
     let inline = { top: pos + 'px' };
     return (
-      <div key={index} className={styles.browserCogOuter} style={inline}>
-        <BrowserCog cogActivated={props.selectedCog == index} index={index} />
+      <div key={name} className={styles.browserCogOuter} style={inline}>
+        <BrowserCog cogActivated={props.selectedCog == name} index={name} />
       </div>
     );
   });

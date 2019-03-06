@@ -48,7 +48,7 @@ impl Source for CombinedSource {
 }
 
 pub fn build_combined_source(tc: &Tácode, config: &BackendConfig, als: &mut AllLandscapes, xf: &HttpXferClerk, type_name: &str) -> Option<ActiveSource> {
-    let lid = als.allocate();
+    let lid = als.allocate(type_name);
     let y_pos = config.get_track(type_name).map(|t| t.get_position()).unwrap_or(-1);
     let letter = config.get_track(type_name).map(|t| t.get_letter()).unwrap_or("");
     let plot = Plot::new(y_pos*PITCH+TOP,PITCH,letter.to_string(),y_pos!=-1);

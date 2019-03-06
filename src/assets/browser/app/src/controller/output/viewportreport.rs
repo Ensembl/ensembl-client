@@ -11,7 +11,7 @@ use util::ChangeDetect;
 #[derive(Debug)]
 enum ViewportReportItem {
     DeltaY(i32),
-    TrackY(Vec<i32>)
+    TrackY(Vec<(String,i32)>)
 }
 
 impl ViewportReportItem {
@@ -22,11 +22,11 @@ impl ViewportReportItem {
                 map.insert("delta_y".to_string(),v);
             },
             ViewportReportItem::TrackY(yy) => {
-                let mut json_y = Vec::<JSONValue>::new();
+                let mut json_y = JSONMap::<String,JSONValue>::new();
                 for y in yy {
-                    json_y.push(JSONValue::Number(JSONNumber::from_f64(*y as f64).unwrap()));
+                    json_y.insert(y.0.clone(),JSONValue::Number(JSONNumber::from_f64(y.1 as f64).unwrap()));
                 }
-                map.insert("track_y".to_string(),JSONValue::Array(json_y));
+                map.insert("track_y".to_string(),JSONValue::Object(json_y));
             }
         }
     }
@@ -34,14 +34,14 @@ impl ViewportReportItem {
 
 pub struct ViewportReportImpl {
     delta_y: ChangeDetect<i32>,
-    track_y: ChangeDetect<Vec<i32>>
+    track_y: ChangeDetect<Vec<(String,i32)>>
 }
 
 impl ViewportReportImpl {
     pub fn new() -> ViewportReportImpl {
         ViewportReportImpl {
             delta_y: ChangeDetect::<i32>::new(),
-            track_y: ChangeDetect::<Vec<i32>>::new()
+            track_y: ChangeDetect::<Vec<(String,i32)>>::new()
         }
     }
     
@@ -54,11 +54,11 @@ impl ViewportReportImpl {
         if let Some(dy) = self.delta_y.report() {
             out.push(ViewportReportItem::DeltaY(dy));
         }        
-        let mut all_pos = Vec::<i32>::new();
+        let mut all_pos = Vec::<(String,i32)>::new();
         app.get_all_landscapes().every(|lid,ls| {
             let plot = ls.get_plot();
             if plot.has_cog() {
-                all_pos.push(plot.get_base());
+                all_pos.push((ls.get_name().to_string(),plot.get_base()));
             }
         });
         self.track_y.set(all_pos);

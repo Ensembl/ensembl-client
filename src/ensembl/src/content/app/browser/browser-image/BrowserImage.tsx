@@ -4,10 +4,16 @@ import React, {
   useEffect,
   useCallback
 } from 'react';
+import { connect } from 'react-redux';
 
 import styles from './BrowserImage.scss';
 import { ChrLocation, BrowserNavStates } from '../browserState';
 import BrowserCogList from '../BrowserCogList';
+import {
+  getTrackConfigNames,
+  getTrackConfigLabel,
+  getBrowserCogTrackList
+} from '../browserSelectors';
 
 type BrowserImageProps = {
   browserRef: RefObject<HTMLDivElement>;
@@ -57,6 +63,42 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
       }
     };
   }, [props.browserRef]);
+
+  useEffect(() => {
+    if (props.browserCogTrackList) {
+      let ons = [];
+      let offs = [];
+
+      Object.keys(props.browserCogTrackList).map((name) => {
+        console.log('considering', name);
+        if (props.trackConfigNames[name]) {
+          ons.push('track:' + name + ':names');
+        } else {
+          offs.push('track:' + name + ':names');
+        }
+        if (props.trackConfigLabel[name]) {
+          ons.push('track:' + name + ':label');
+        } else {
+          offs.push('track:' + name + ':label');
+        }
+      });
+      const stateEvent = new CustomEvent('bpane', {
+        bubbles: true,
+        detail: {
+          on: ons,
+          off: offs
+        }
+      });
+      if (props.browserRef.current) {
+        props.browserRef.current.dispatchEvent(stateEvent);
+      }
+    }
+  }, [
+    props.trackConfigNames,
+    props.trackConfigLabel,
+    props.browserRef,
+    props.browserCogTrackList
+  ]);
 
   return (
     <div className={styles.browserImagePlus}>
@@ -131,4 +173,15 @@ function getBrowserImageClasses(browserNavOpened: boolean): string {
   return classes;
 }
 
-export default BrowserImage;
+const mapStateToProps = (state: RootState): StateProps => ({
+  trackConfigNames: getTrackConfigNames(state),
+  trackConfigLabel: getTrackConfigLabel(state),
+  browserCogTrackList: getBrowserCogTrackList(state)
+});
+
+const mapDispatchToProps: DispatchProps = {};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(BrowserImage);
