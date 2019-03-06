@@ -10,10 +10,16 @@ import { connect } from 'react-redux';
 
 import {
   updateTrackConfigNames,
-  updateTrackConfigLabel
+  updateTrackConfigLabel,
+  updateApplyToAll
 } from '../browserActions';
 
-import { getTrackConfigNames, getTrackConfigLabel } from '../browserSelectors';
+import {
+  getTrackConfigNames,
+  getTrackConfigLabel,
+  getApplyToAll,
+  getBrowserCogTrackList
+} from '../browserSelectors';
 
 import styles from './BrowserTrackConfig.scss';
 
@@ -44,8 +50,11 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
     selectedCog,
     updateTrackConfigNames,
     updateTrackConfigLabel,
+    updateApplyToAll,
     trackConfigNames,
-    trackConfigLabel
+    trackConfigLabel,
+    applyToAll,
+    browserCogTrackList
   } = props;
 
   let trackOurConfigName = trackConfigNames[selectedCog];
@@ -57,19 +66,51 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
     : tracksSliderOffIcon;
 
   const toggleName = useCallback(() => {
-    updateTrackConfigNames(selectedCog, !trackOurConfigName);
-  }, [selectedCog, updateTrackConfigNames, trackOurConfigName]);
+    if (applyToAll) {
+      Object.keys(browserCogTrackList).map((name) => {
+        updateTrackConfigNames(name, !trackOurConfigName);
+      });
+    } else {
+      updateTrackConfigNames(selectedCog, !trackOurConfigName);
+    }
+  }, [
+    selectedCog,
+    updateTrackConfigNames,
+    trackOurConfigName,
+    applyToAll,
+    browserCogTrackList
+  ]);
 
   const toggleLabel = useCallback(() => {
-    updateTrackConfigLabel(selectedCog, !trackOurConfigLabel);
-  }, [selectedCog, updateTrackConfigLabel, trackOurConfigLabel]);
+    if (applyToAll) {
+      Object.keys(browserCogTrackList).map((name) => {
+        updateTrackConfigNames(name, !trackOurConfigName);
+      });
+    } else {
+      updateTrackConfigNames(selectedCog, !trackOurConfigLabel);
+    }
+  }, [
+    selectedCog,
+    updateTrackConfigLabel,
+    trackOurConfigLabel,
+    applyToAll,
+    browserCogTrackList
+  ]);
+
+  const applyToAllToggle = useCallback(() => {
+    updateApplyToAll(!applyToAll);
+  }, [applyToAll, updateApplyToAll]);
 
   return (
     <div style={inline}>
       <section className={styles.trackConfig}>
         <dl className="category">
           <dd className={styles.allTracks}>
-            <input type="checkbox" disabled />
+            <input
+              type="checkbox"
+              defaultChecked={applyToAll}
+              onChange={applyToAllToggle}
+            />
             <label htmlFor="">All tracks</label>
           </dd>
         </dl>
@@ -116,12 +157,15 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
 
 const mapDispatchToProps: DispatchProps = {
   updateTrackConfigNames,
-  updateTrackConfigLabel
+  updateTrackConfigLabel,
+  updateApplyToAll
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
   trackConfigNames: getTrackConfigNames(state),
-  trackConfigLabel: getTrackConfigLabel(state)
+  trackConfigLabel: getTrackConfigLabel(state),
+  applyToAll: getApplyToAll(state),
+  browserCogTrackList: getBrowserCogTrackList(state)
 });
 
 export default connect(

@@ -53,28 +53,28 @@ export const trackPanelConfig: TrackPanelConfig = {
           color: TrackItemColour.DARK_GREY,
           id: 1,
           label: 'Protein coding genes',
-          name: 'gene-pc-fwd'
+          name: 'track:gene-pc-fwd'
         },
         {
           additionalInfo: 'Forward strand',
           color: TrackItemColour.GREY,
           id: 2,
           label: 'Other genes',
-          name: 'gene-other-fwd'
+          name: 'track:gene-other-fwd'
         },
         {
           additionalInfo: 'Reverse strand',
           color: TrackItemColour.DARK_GREY,
           id: 3,
           label: 'Protein coding genes',
-          name: 'gene-pc-rev'
+          name: 'track:gene-pc-rev'
         },
         {
           additionalInfo: 'Reverse strand',
           color: TrackItemColour.GREY,
           id: 4,
           label: 'Other genes',
-          name: 'gene-other-rev'
+          name: 'track:gene-other-rev'
         }
       ]
     },
@@ -84,12 +84,12 @@ export const trackPanelConfig: TrackPanelConfig = {
         {
           id: 101,
           label: 'Contigs',
-          name: 'contig'
+          name: 'track:contig'
         },
         {
           id: 102,
           label: '%GC',
-          name: 'gc'
+          name: 'track:gc'
         }
       ]
     },

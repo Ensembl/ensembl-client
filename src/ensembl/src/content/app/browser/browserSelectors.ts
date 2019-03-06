@@ -57,3 +57,7 @@ export const getTrackConfigNames = (state: RootState): Any => {
 export const getTrackConfigLabel = (state: RootState): Any => {
   return state.browser.trackConfigLabel;
 };
+
+export const getApplyToAll = (state: RootState): boolean => {
+  return state.browser.applyToAll;
+};

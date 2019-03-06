@@ -147,6 +147,6 @@ impl StateManager {
        self.changed = true;
     }
     
-    pub fn has_changed(&self) -> bool { self.changed }
-    pub fn reset_changed(&mut self) { self.changed = false; }
+    fn has_changed(&self) -> bool { self.changed }
+    fn reset_changed(&mut self) { self.changed = false; }
 }

@@ -61,7 +61,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     const trackEvent = new CustomEvent('bpane', {
       bubbles: true,
       detail: {
-        [currentTrackStatus]: `${trackPrefix}:${track.name}`
+        [currentTrackStatus]: `${trackPrefix}${track.name}`
       }
     });
 
