@@ -1,18 +1,17 @@
-import { configure, addDecorator } from '@storybook/react';
-import { withOptions } from '@storybook/addon-options';
+import { configure, addParameters, addDecorator } from '@storybook/react';
 import { withNotes } from '@storybook/addon-notes';
 
 function loadStories() {
   require('../stories/index.tsx');
 }
 
-addDecorator(
-  withOptions({
+addParameters({
+  options: {
     name: 'ENSEMBL',
     hierarchyRootSeparator: /\|/,
     hierarchySeparator: /\//
-  })
-)
+  },
+});
 
 addDecorator(withNotes);
 
