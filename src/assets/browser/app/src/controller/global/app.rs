@@ -75,6 +75,10 @@ impl App {
         out
     }
     
+    pub fn get_all_landscapes(&mut self) -> &mut AllLandscapes {
+        &mut self.als
+    }
+    
     pub fn tick(&mut self) {
         self.http_clerk.tick();
     }
@@ -161,7 +165,6 @@ impl App {
     }
     
     pub fn run_actions(self: &mut App, evs: &Vec<Action>) {
-        console!("D");
         actions_run(self,evs);
     }
         

@@ -34,12 +34,12 @@ type BrowserTrackConfigProps = {
 const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
   props: BrowserTrackConfigProps
 ) => {
+  /* TODO: not inline */
   let inline = {
-    top: props.ypos - 3 + 'px',
+    top: props.ypos + 'px',
     right: '40px',
     position: 'absolute'
   };
-  console.log('rerender');
   let {
     selectedCog,
     updateTrackConfigNames,

@@ -8,8 +8,10 @@ use serde_json::Number as JSONNumber;
 use controller::global::{ App, AppRunner };
 use util::ChangeDetect;
 
+#[derive(Debug)]
 enum ViewportReportItem {
-    DeltaY(i32)
+    DeltaY(i32),
+    TrackY(Vec<i32>)
 }
 
 impl ViewportReportItem {
@@ -18,19 +20,28 @@ impl ViewportReportItem {
             ViewportReportItem::DeltaY(dy) => {
                 let v = JSONValue::Number(JSONNumber::from_f64(*dy as f64).unwrap());
                 map.insert("delta_y".to_string(),v);
+            },
+            ViewportReportItem::TrackY(yy) => {
+                let mut json_y = Vec::<JSONValue>::new();
+                for y in yy {
+                    json_y.push(JSONValue::Number(JSONNumber::from_f64(*y as f64).unwrap()));
+                }
+                map.insert("track_y".to_string(),JSONValue::Array(json_y));
             }
         }
     }
 }
 
 pub struct ViewportReportImpl {
-    delta_y: ChangeDetect<i32>
+    delta_y: ChangeDetect<i32>,
+    track_y: ChangeDetect<Vec<i32>>
 }
 
 impl ViewportReportImpl {
     pub fn new() -> ViewportReportImpl {
         ViewportReportImpl {
-            delta_y: ChangeDetect::<i32>::new()
+            delta_y: ChangeDetect::<i32>::new(),
+            track_y: ChangeDetect::<Vec<i32>>::new()
         }
     }
     
@@ -38,11 +49,22 @@ impl ViewportReportImpl {
         self.delta_y.set(y);
     }
     
-    fn get_items(&mut self) -> Vec<ViewportReportItem> {
+    fn get_items(&mut self, app: &mut App) -> Vec<ViewportReportItem> {
         let mut out = Vec::<ViewportReportItem>::new();
         if let Some(dy) = self.delta_y.report() {
             out.push(ViewportReportItem::DeltaY(dy));
-        }
+        }        
+        let mut all_pos = Vec::<i32>::new();
+        app.get_all_landscapes().every(|lid,ls| {
+            let plot = ls.get_plot();
+            if plot.has_cog() {
+                all_pos.push(plot.get_base());
+            }
+        });
+        self.track_y.set(all_pos);
+        if let Some(dy) = self.track_y.report() {
+            out.push(ViewportReportItem::TrackY(dy));
+        }        
         out
     }
     
@@ -52,15 +74,11 @@ impl ViewportReportImpl {
             item.to_json(&mut out);
         }
         let mut ty = Vec::<JSONValue>::new();
-        for i in 0..10 {
-            ty.push(JSONValue::Number(JSONNumber::from_f64((i*50) as f64).unwrap()));
-        }
-        out.insert("track_y".to_string(),JSONValue::Array(ty));
         JSONValue::Object(out)
     }
     
     fn tick(&mut self, app: &mut App) {
-        let items = self.get_items();
+        let items = self.get_items(app);
         if items.len() > 0 {
             let val = self.build_value(items);
             app.send_viewport_report(&val);

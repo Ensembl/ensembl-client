@@ -19,7 +19,6 @@ impl AllLandscapesImpl {
     
     fn allocate(&mut self) -> usize {
         let out = self.vs.store(Landscape::new());
-        console!("allocat up to {}",self.vs.len());
         out
     }
     
@@ -28,8 +27,8 @@ impl AllLandscapesImpl {
         self.vs.get_mut(lid).map(|ls| cb(ls))
     }
 
-    pub fn every<F,G>(&mut self, cb: F) -> Vec<Option<G>>
-            where F: Fn(usize, &mut Landscape) -> G {
+    pub fn every<F,G>(&mut self, mut cb: F) -> Vec<Option<G>>
+            where F: FnMut(usize, &mut Landscape) -> G {
         let mut out = Vec::<Option<G>>::new();
         let lids : Vec<usize> = self.vs.every().collect();
         for lid in lids {
@@ -58,8 +57,8 @@ impl AllLandscapes {
         self.0.borrow_mut().with(lid,cb)
     }
     
-    pub fn every<F,G>(&mut self, cb: F) -> Vec<Option<G>>
-            where F: Fn(usize, &mut Landscape) -> G {
+    pub fn every<F,G>(&mut self, mut cb: F) -> Vec<Option<G>>
+            where F: FnMut(usize, &mut Landscape) -> G {
         self.0.borrow_mut().every(cb)
     }
 }

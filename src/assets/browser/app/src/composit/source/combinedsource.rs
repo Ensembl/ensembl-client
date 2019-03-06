@@ -51,8 +51,7 @@ pub fn build_combined_source(tc: &Tácode, config: &BackendConfig, als: &mut All
     let lid = als.allocate();
     let y_pos = config.get_track(type_name).map(|t| t.get_position()).unwrap_or(-1);
     let letter = config.get_track(type_name).map(|t| t.get_letter()).unwrap_or("");
-    console!("letter{:?}",letter);
-    let plot = Plot::new(y_pos*PITCH+TOP,PITCH,letter.to_string());
+    let plot = Plot::new(y_pos*PITCH+TOP,PITCH,letter.to_string(),y_pos!=-1);
     als.with(lid, |ls| ls.set_plot(plot) );
     let backend = TáSource::new(tc,Box::new(xf.clone()),type_name,lid);
     let mut combined = CombinedSource::new(Box::new(backend));
