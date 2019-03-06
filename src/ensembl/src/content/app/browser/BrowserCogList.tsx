@@ -51,7 +51,10 @@ const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
   let { selectedCog, browserCogTrackList } = props;
   const listenBpaneScroll = useCallback((event: Event) => {
     const bpaneScrollEvent = event as BpaneScrollEvent;
-    if (bpaneScrollEvent.detail.delta_y) {
+    if (
+      bpaneScrollEvent.detail.delta_y ||
+      bpaneScrollEvent.detail.delta_y === 0
+    ) {
       props.updateCogList(bpaneScrollEvent.detail.delta_y);
     }
     if (bpaneScrollEvent.detail.track_y) {

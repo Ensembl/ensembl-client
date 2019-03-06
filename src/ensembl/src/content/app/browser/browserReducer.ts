@@ -40,6 +40,7 @@ export default (
       return {
         ...state,
         trackConfigNames: {
+          ...state.trackConfigNames,
           [action.payload[0]]: action.payload[1]
         }
       };
@@ -47,6 +48,7 @@ export default (
       return {
         ...state,
         trackConfigLabel: {
+          ...state.trackConfigLabel,
           [action.payload[0]]: action.payload[1]
         }
       };
