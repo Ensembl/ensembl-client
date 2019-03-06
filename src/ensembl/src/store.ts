@@ -29,7 +29,7 @@ const googleAnalyticsMiddleWare = (store: any) => (next: any) => (
     }
   } catch {
     console.warn(
-      `Google Analytics meta data not correctly defined for the action: ${
+      `Google Analytics meta data is not correctly defined for the action: ${
         action.type
       }. \n Please define the meta data or pass 'meta.ga.disable_tracking = true' to disable tracking.`
     );
