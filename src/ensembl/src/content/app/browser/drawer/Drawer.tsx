@@ -15,6 +15,7 @@ import DrawerGC from './drawer-views/DrawerGC';
 import closeIcon from 'static/img/track-panel/close.svg';
 
 import styles from './Drawer.scss';
+import SnpIndels from './drawer-views/SNPIndels';
 
 type StateProps = {
   drawerView: string;
@@ -47,6 +48,8 @@ const Drawer: FunctionComponent<DrawerProps> = (props: DrawerProps) => {
         return <DrawerContigs />;
       case 'gc':
         return <DrawerGC />;
+      case 'snps-and-indels':
+        return <SnpIndels />;
     }
   };
 
