@@ -1,7 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 
-import styles from 'src/styles/main.scss';
 import storyStyles from '../../common.scss';
 import dummyText from '../../../tests/data/json/LoremIpsum.json';
 
