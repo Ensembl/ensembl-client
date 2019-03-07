@@ -15,5 +15,6 @@ built-storybook/
 package-lock.json
 bundle-report.html
 
+.env
 localhost.crt
 localhost.key

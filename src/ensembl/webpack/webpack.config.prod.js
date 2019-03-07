@@ -11,6 +11,13 @@ const WorkboxPlugin = require('workbox-webpack-plugin');
 const RobotstxtPlugin = require('robotstxt-webpack-plugin').default;
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
+// copy from the environment the same variables that are declared in .env.example
+// NOTE: if no environment variable with corresponding key is present, the value from .env.example will be used
+const dotenv = require('dotenv').config({ path: path.resolve(__dirname, '../.env.example') });
+const getEnvironmentVariables = () => Object.keys(dotenv.parsed).reduce((result, key) => ({
+  [`process.env.${key}`]: JSON.stringify(process.env[key])
+}));
+
 // loaders specific to prod
 const moduleRules = [
   // loader for images
@@ -43,6 +50,11 @@ const moduleRules = [
 
 // plugins specific to prod
 const plugins = [
+  // make environment variables available on the client-side
+  new webpack.DefinePlugin({
+    ...getEnvironmentVariables()
+  }),
+
   // plugin to extract css from the webpack javascript build files
   new MiniCssExtractPlugin({
     filename: '[name].[contenthash].css',
