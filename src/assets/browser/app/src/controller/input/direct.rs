@@ -116,7 +116,14 @@ fn custom_make_events(j: &JSONValue) -> Vec<Action> {
             out.append(&mut custom_make_one_event_key(k,v));
         }
     }
+    console!("receive {:?}",out);
     out
+}
+
+pub fn run_direct_events(app: &mut App, j: &JSONValue) {
+    let evs = custom_make_events(&j);
+    console!("receive {:?}",evs);
+    actions_run(app,&evs);
 }
 
 pub struct DirectEventListener {
@@ -131,13 +138,10 @@ impl DirectEventListener {
 
 impl EventListener<()> for DirectEventListener {    
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
-        let evs = match e {
-            EventData::CustomEvent(_,_,_,c) =>
-                custom_make_events(&c.details().unwrap()),
-            _ => Vec::<Action>::new()
-        };
-        console!("receive {:?}",evs);
-        actions_run(&mut self.cg.lock().unwrap(),&evs);
+        if let EventData::CustomEvent(_,_,_,c) = e {
+            run_direct_events(&mut self.cg.lock().unwrap(),
+                              &c.details().unwrap());
+        }
     }
 }
 

@@ -15,7 +15,7 @@ import DrawerGC from './drawer-views/DrawerGC';
 import closeIcon from 'static/img/track-panel/close.svg';
 
 import styles from './Drawer.scss';
-import SnpIndels from './drawer-views/SNPIndels';
+import SnpIndels from './drawer-views/SnpIndels';
 
 type StateProps = {
   drawerView: string;
