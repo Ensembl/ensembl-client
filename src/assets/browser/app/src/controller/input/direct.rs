@@ -136,7 +136,7 @@ impl EventListener<()> for DirectEventListener {
                 custom_make_events(&c.details().unwrap()),
             _ => Vec::<Action>::new()
         };
-        console!("receive");
+        console!("receive {:?}",evs);
         actions_run(&mut self.cg.lock().unwrap(),&evs);
     }
 }

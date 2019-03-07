@@ -12,7 +12,7 @@ use composit::{
 };
 use controller::input::{ Action, actions_run, startup_actions };
 use controller::global::{ AppRunnerWeak, AppRunner };
-use controller::output::{ Report, ViewportReport };
+use controller::output::{ OutputAction, Report, ViewportReport };
 use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk };
 use debug::add_debug_sticks;
 use dom::domutil;
@@ -36,6 +36,7 @@ pub struct App {
     csl: SourceManagerList,
     http_clerk: HttpXferClerk,
     als: AllLandscapes,
+    pending_oas: Vec<OutputAction>
 }
 
 impl App {
@@ -64,7 +65,8 @@ impl App {
             viewport: None,
             csl: SourceManagerList::new(),
             http_clerk: HttpXferClerk::new(http_manager,config,config_url),
-            als: AllLandscapes::new()
+            als: AllLandscapes::new(),
+            pending_oas: Vec::<OutputAction>::new()
         };
         let dsm = CombinedSourceManager::new(&tc,config,&out.als,&out.http_clerk);
         out.csl.add_compsource(Box::new(dsm));
@@ -100,12 +102,17 @@ impl App {
         self.ar = ar.clone();
     }
     
-    pub fn send_report(&self, value: &JSONValue) {
-        domutil::send_custom_event(&self.browser_el.clone().into(),"bpane-out",value);
+    pub fn send_report(&mut self, value: JSONValue) {
+        self.pending_oas.push(OutputAction::SendCustomEvent("bpane-out".to_string(),value));        
     }
 
-    pub fn send_viewport_report(&self, value: &JSONValue) {
-        domutil::send_custom_event(&self.browser_el.clone().into(),"bpane-scroll",value);
+    pub fn send_viewport_report(&mut self, value: JSONValue) {
+        self.pending_oas.push(OutputAction::SendCustomEvent("bpane-scroll".to_string(),value));
+    }
+    
+    pub fn drain_pending_oas(&mut self) -> Vec<OutputAction> {
+        let out : Vec<OutputAction> = self.pending_oas.drain(..).collect();
+        out
     }
     
     pub fn get_report(&self) -> &Report { &self.report.as_ref().unwrap() }

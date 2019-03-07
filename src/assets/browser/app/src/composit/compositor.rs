@@ -103,5 +103,6 @@ pub fn register_compositor_ticks(ar: &mut AppRunner) {
             co.get_max_y()
         });
         cs.with_stage(|s| s.set_limit(&DOWN,max_y as f64));
+        vec!{}
     },None);
 }

@@ -75,6 +75,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
   const changeBrowserLocation = (location?: Array<string | number>) => {
     const [chrCode, startBp, endBp] = location || props.chrLocation;
 
+    console.log('changeBrowserLocation', chrCode, startBp, endBp);
     const stickEvent = new CustomEvent('bpane', {
       bubbles: true,
       detail: {
