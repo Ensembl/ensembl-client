@@ -3,6 +3,7 @@ import resetGreyIcon from 'static/img/browser/reset-grey.svg';
 
 import navigatorIcon from 'static/img/browser/navigator.svg';
 import navigatorSelectedIcon from 'static/img/browser/navigator-selected.svg';
+import navigatorGreyIcon from 'static/img/browser/navigator-grey.svg';
 
 import navigateUpIcon from 'static/img/browser/navigate-up.svg';
 import navigateUpOffIcon from 'static/img/browser/navigate-up-off.svg';
@@ -53,6 +54,7 @@ export const browserInfoConfig: BrowserInfoType = {
     description: 'toggle browser navigation',
     icon: {
       default: navigatorIcon,
+      grey: navigatorGreyIcon,
       selected: navigatorSelectedIcon
     },
     name: 'navigator'

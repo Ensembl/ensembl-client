@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 
 import TrackPanelBar from './track-panel-bar/TrackPanelBar';
 import TrackPanelList from './track-panel-list/TrackPanelList';
+import TrackPanelModal from './track-panel-modal/TrackPanelModal';
 
 import { RootState } from 'src/rootReducer';
 
@@ -25,15 +26,16 @@ import {
   getTrackPanelOpened,
   getBrowserActivated,
   getTrackPanelModalOpened,
-  getTrackPanelModalView
+  getTrackPanelModalView,
+  getSelectedBrowserTab
 } from '../browserSelectors';
 
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import { getBreakpointWidth } from 'src/globalSelectors';
 import { BreakpointWidth } from 'src/globalConfig';
+import { TrackType } from './trackPanelConfig';
 
 import styles from './TrackPanel.scss';
-import TrackPanelModal from './track-panel-modal/TrackPanelModal';
 
 type StateProps = {
   browserActivated: boolean;
@@ -41,6 +43,7 @@ type StateProps = {
   drawerView: string;
   breakpointWidth: BreakpointWidth;
   launchbarExpanded: boolean;
+  selectedBrowserTab: TrackType;
   trackPanelModalOpened: boolean;
   trackPanelModalView: string;
   trackPanelOpened: boolean;
@@ -91,6 +94,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
                 browserRef={props.browserRef}
                 drawerView={props.drawerView}
                 launchbarExpanded={props.launchbarExpanded}
+                selectedBrowserTab={props.selectedBrowserTab}
                 toggleDrawer={props.toggleDrawer}
                 updateDrawerView={props.changeDrawerView}
               />
@@ -115,6 +119,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
   drawerOpened: getDrawerOpened(state),
   drawerView: getDrawerView(state),
   launchbarExpanded: getLaunchbarExpanded(state),
+  selectedBrowserTab: getSelectedBrowserTab(state),
   trackPanelModalOpened: getTrackPanelModalOpened(state),
   trackPanelModalView: getTrackPanelModalView(state),
   trackPanelOpened: getTrackPanelOpened(state)

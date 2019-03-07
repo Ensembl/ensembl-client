@@ -4,6 +4,7 @@
   @include flex;
   background: $ens-light-grey;
   box-shadow: 0 2px 3px $ens-grey;
+  height: 32px;
   padding: 7px 0 3px 0;
   position: relative;
   z-index: 200;
@@ -32,13 +33,20 @@
   }
 
   label {
-    color: #555;
+    color: $ens-dark-grey;
     font-weight: $light;
   }
 
   .value {
     color: $ens-black;
     margin: 0 3px;
+  }
+
+  &.browserInfoGreyed {
+    .value,
+    .nonLabelValue {
+      color: $ens-dark-grey;
+    }
   }
 
   dd {
@@ -76,39 +84,6 @@
     img {
       height: 22px;
       width: 22px;
-    }
-  }
-}
-
-.browserTabs {
-  @include flex;
-  font-size: 13px;
-  justify-content: space-between;
-  margin-left: 44px;
-  padding-right: 5px;
-  width: 312px;
-
-  button {
-    color: $ens-blue;
-
-    &.active {
-      color: inherit;
-      position: relative;
-
-      &::after {
-        border: 6px solid $ens-grey;
-        border-color: transparent transparent $ens-light-grey $ens-light-grey;
-        box-shadow: -2px 2px 2px 0 $ens-grey;
-        box-sizing: border-box;
-        content: '';
-        height: 0;
-        position: absolute;
-        right: calc(60% - 6px);
-        transform-origin: 0 0;
-        transform: rotate(-45deg);
-        top: 21px;
-        width: 0;
-      }
     }
   }
 }

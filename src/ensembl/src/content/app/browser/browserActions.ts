@@ -1,5 +1,6 @@
 import { createAction } from 'typesafe-actions';
 import { BrowserNavStates, ChrLocation, CogList } from './browserState';
+import { TrackType } from './track-panel/trackPanelConfig';
 
 export const updateBrowserActivated = createAction(
   'browser/update-browser-activated',
@@ -51,6 +52,32 @@ export const updateDefaultChrLocation = createAction(
   }
 );
 
+export const changeBrowserLocation = (
+  chrLocation: ChrLocation,
+  browserEl: HTMLDivElement
+) => {
+  const [chrCode, startBp, endBp] = chrLocation;
+
+  const stickEvent = new CustomEvent('bpane', {
+    bubbles: true,
+    detail: {
+      stick: chrCode
+    }
+  });
+
+  const gotoEvent = new CustomEvent('bpane', {
+    bubbles: true,
+    detail: {
+      goto: `${startBp}-${endBp}`
+    }
+  });
+
+  browserEl.dispatchEvent(stickEvent);
+  browserEl.dispatchEvent(gotoEvent);
+
+  return updateDefaultChrLocation(chrLocation);
+};
+
 export const openTrackPanelModal = createAction(
   'browser/open-track-panel-modal',
   (resolve) => {
@@ -62,6 +89,7 @@ export const closeTrackPanelModal = createAction(
   'browser/close-track-panel-modal'
 );
 
+<<<<<<< HEAD
 export const updateCogList = createAction(
   'browser/update-cog-list',
   (resolve) => {
@@ -113,5 +141,18 @@ export const updateApplyToAll = createAction(
     return (yn: number) => {
       return resolve(yn);
     };
+=======
+export const toggleGenomeSelector = createAction(
+  'toggle-genome-selector',
+  (resolve) => {
+    return (genomeSelectorActive: boolean) => resolve(genomeSelectorActive);
+  }
+);
+
+export const selectBrowserTab = createAction(
+  'select-browser-tab',
+  (resolve) => {
+    return (selectedBrowserTab: TrackType) => resolve(selectedBrowserTab);
+>>>>>>> master
   }
 );
