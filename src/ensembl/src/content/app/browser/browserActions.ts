@@ -89,7 +89,6 @@ export const closeTrackPanelModal = createAction(
   'browser/close-track-panel-modal'
 );
 
-<<<<<<< HEAD
 export const updateCogList = createAction(
   'browser/update-cog-list',
   (resolve) => {
@@ -141,7 +140,7 @@ export const updateApplyToAll = createAction(
     return (yn: number) => {
       return resolve(yn);
     };
-=======
+
 export const toggleGenomeSelector = createAction(
   'toggle-genome-selector',
   (resolve) => {
@@ -153,6 +152,5 @@ export const selectBrowserTab = createAction(
   'select-browser-tab',
   (resolve) => {
     return (selectedBrowserTab: TrackType) => resolve(selectedBrowserTab);
->>>>>>> master
   }
 );
