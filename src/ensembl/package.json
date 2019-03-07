@@ -40,6 +40,7 @@
     }
   },
   "dependencies": {
+    "connected-react-router": "6.3.1",
     "foundation-sites": "6.5.3",
     "react": "16.8.1",
     "react-cookie": "^3.0.8",

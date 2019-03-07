@@ -53,7 +53,7 @@ const Root: FunctionComponent<RootProps> = (props: RootProps) => {
   }, [cookies]);
 
   return (
-    <BrowserRouter>
+    <React.Fragment>
       <div ref={ref as React.RefObject<HTMLDivElement>}>
         <Header />
         <Content />
@@ -63,7 +63,7 @@ const Root: FunctionComponent<RootProps> = (props: RootProps) => {
           false
         )}
       </div>
-    </BrowserRouter>
+    </React.Fragment>
   );
 };
 
