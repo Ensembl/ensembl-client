@@ -50,7 +50,7 @@ impl Optical {
     pub fn new(ru: &mut AppRunner) -> Optical {
         let out = Optical(Arc::new(Mutex::new(OpticalImpl::new())));
         let c = out.clone();
-        ru.add_timer(move |cg,t| c.clone().tick(cg,t),None);
+        ru.add_timer(move |cg,t| { c.clone().tick(cg,t); vec!{} },None);
         out
     }
 

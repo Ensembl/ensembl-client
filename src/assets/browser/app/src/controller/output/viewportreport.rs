@@ -81,7 +81,7 @@ impl ViewportReportImpl {
         let items = self.get_items(app);
         if items.len() > 0 {
             let val = self.build_value(items);
-            app.send_viewport_report(&val);
+            app.send_viewport_report(val);
         }
     }
 }
@@ -93,7 +93,8 @@ impl ViewportReport {
     pub fn new(ar: &mut AppRunner) -> ViewportReport {
         let out = ViewportReport(Arc::new(Mutex::new(ViewportReportImpl::new())));
         ar.add_timer(enclose! { (out) move |app,t| {
-            out.clone().tick(app)
+            out.clone().tick(app);
+            vec!{}
         }},None);
         out
     }

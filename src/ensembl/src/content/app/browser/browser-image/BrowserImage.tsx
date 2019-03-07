@@ -12,7 +12,8 @@ import BrowserCogList from '../BrowserCogList';
 import {
   getTrackConfigNames,
   getTrackConfigLabel,
-  getBrowserCogTrackList
+  getBrowserCogTrackList,
+  getChrLocation
 } from '../browserSelectors';
 
 type BrowserImageProps = {
@@ -150,6 +151,7 @@ function dispatchActivateEvents(
   currentEl: HTMLDivElement,
   props: BrowserImageProps
 ) {
+  console.log('props', props);
   const activateEvent = new CustomEvent('bpane-activate', {
     bubbles: true,
     detail: {
@@ -175,7 +177,8 @@ function getBrowserImageClasses(browserNavOpened: boolean): string {
 const mapStateToProps = (state: RootState): StateProps => ({
   trackConfigNames: getTrackConfigNames(state),
   trackConfigLabel: getTrackConfigLabel(state),
-  browserCogTrackList: getBrowserCogTrackList(state)
+  browserCogTrackList: getBrowserCogTrackList(state),
+  chrLocation: getChrLocation(state)
 });
 
 const mapDispatchToProps: DispatchProps = {};

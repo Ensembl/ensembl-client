@@ -67,9 +67,9 @@ pub fn initial_actions() -> Vec<Action> {
         out.push(Action::SetState(name.to_string(),StateValue::On()));
     }
     out.extend(vec! {
-        Action::SetStick("16".to_string()),
-        Action::Pos(Dot(0_f64,0_f64),None),
-        Action::ZoomTo(-9.)
+        //Action::SetStick("16".to_string()),
+        //Action::Pos(Dot(0_f64,0_f64),None),
+        //Action::ZoomTo(-9.)
     });
     out
 }
