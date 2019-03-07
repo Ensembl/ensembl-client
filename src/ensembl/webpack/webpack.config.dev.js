@@ -1,3 +1,5 @@
+const dotenv = require('dotenv').config();
+
 const webpack = require('webpack');
 const path = require('path');
 const StylelintWebpackPlugin = require('stylelint-webpack-plugin');
@@ -25,6 +27,11 @@ const plugins = [
   new StylelintWebpackPlugin({
     context: path.join(__dirname, '../src'),
     files: '**/*.scss'
+  }),
+
+  // make environment variables available on the client-side
+  new webpack.DefinePlugin({
+    'process.env': JSON.stringify(dotenv.parsed)
   })
 ];
 
