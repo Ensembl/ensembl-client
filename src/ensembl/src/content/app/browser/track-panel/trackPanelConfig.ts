@@ -21,9 +21,16 @@ export type TrackPanelItem = {
   selectedInfo?: string;
 };
 
+export enum TrackType {
+  GENOMIC = 'Genomic',
+  VARIATION = 'Variation',
+  EXPRESSION = 'Expression'
+}
+
 export type TrackPanelCategory = {
   name: string;
   trackList: TrackPanelItem[];
+  types: TrackType[];
 };
 
 export type TrackPanelIcon = {
@@ -76,7 +83,8 @@ export const trackPanelConfig: TrackPanelConfig = {
           label: 'Other genes',
           name: 'track:gene-other-rev'
         }
-      ]
+      ],
+      types: [TrackType.GENOMIC]
     },
     {
       name: 'Assembly',
@@ -91,19 +99,59 @@ export const trackPanelConfig: TrackPanelConfig = {
           label: '%GC',
           name: 'track:gc'
         }
-      ]
+      ],
+      types: [TrackType.GENOMIC]
     },
     {
       name: 'Comparative genomics',
-      trackList: []
+      trackList: [],
+      types: [TrackType.GENOMIC]
+    },
+    {
+      name: 'Short variants',
+      trackList: [
+        {
+          id: 201,
+          label: '1000 Genomes all SNPs & indels',
+          name: 'snps-and-indels'
+        }
+      ],
+      types: [TrackType.VARIATION]
+    },
+    {
+      name: 'Somatic variants',
+      trackList: [],
+      types: [TrackType.VARIATION]
+    },
+    {
+      name: 'Structural variants',
+      trackList: [],
+      types: [TrackType.VARIATION]
     },
     {
       name: 'Experiment design',
-      trackList: []
+      trackList: [],
+      types: [TrackType.EXPRESSION, TrackType.GENOMIC, TrackType.VARIATION]
     },
     {
       name: 'References & evidence',
-      trackList: []
+      trackList: [],
+      types: [TrackType.GENOMIC]
+    },
+    {
+      name: 'Regulatory features',
+      trackList: [],
+      types: [TrackType.EXPRESSION]
+    },
+    {
+      name: 'Gene expression correlations',
+      trackList: [],
+      types: [TrackType.EXPRESSION]
+    },
+    {
+      name: 'Other regulatory regions',
+      trackList: [],
+      types: [TrackType.EXPRESSION]
     }
   ],
   main: {
