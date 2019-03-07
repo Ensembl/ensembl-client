@@ -82,24 +82,43 @@ export const changeBrowserLocation = (
   };
 };
 
-export const fetchObjectInfo = createAsyncAction(
-  'FETCH_OBJECT_INFO_REQUEST',
-  'FETCH_OBJECT_INFO_SUCCESS',
-  'FETCH_OBJECT_INFO_FAILURE'
+export const fetchObject = createAsyncAction(
+  'FETCH_OBJECT_REQUEST',
+  'FETCH_OBJECT_SUCCESS',
+  'FETCH_OBJECT_FAILURE'
 )<string, {}, Error>();
 
-export function getObjectInfo(objectId: string) {
+export const fetchObjectData = (objectId: string) => {
   return (dispatch: Dispatch) => {
-    dispatch(fetchObjectInfo.request(objectId));
+    dispatch(fetchObject.request(objectId));
 
     return fetch(`http://127.0.0.1:4000/browser/get_object_info/${objectId}`)
       .then(
         (response) => response.json(),
-        (error) => console.log('An error occurred.', error)
+        (error) => dispatch(fetchObject.failure(error))
       )
-      .then((json) => dispatch(fetchObjectInfo.success(json)));
+      .then((json) => dispatch(fetchObject.success(json)));
   };
-}
+};
+
+export const fetchExampleObjects = createAsyncAction(
+  'FETCH_EXAMPLE_OBJECTS_REQUEST',
+  'FETCH_EXAMPLE_OBJECTS_SUCCESS',
+  'FETCH_EXAMPLE_OBJECTS_FAILURE'
+)<null, {}, Error>();
+
+export const fetchExampleObjectsData = () => {
+  return (dispatch: Dispatch) => {
+    dispatch(fetchExampleObjects.request(null));
+
+    return fetch('http://127.0.0.1:4000/browser/example_objects')
+      .then(
+        (response) => response.json(),
+        (error) => dispatch(fetchExampleObjects.failure(error))
+      )
+      .then((json) => dispatch(fetchExampleObjects.success(json)));
+  };
+};
 
 export const openTrackPanelModal = createAction(
   'browser/open-track-panel-modal',

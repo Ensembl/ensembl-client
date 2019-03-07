@@ -50,16 +50,30 @@ export const defaultBrowserState: BrowserState = {
   trackPanelOpened: true
 };
 
-export type ObjectInfoState = Readonly<{
-  browserInfoFetchFailed: boolean;
-  browserInfoFetching: boolean;
+export type ExampleObjects = Readonly<{
+  exampleObjectsFetchFailed: boolean;
+  exampleObjectsFetching: boolean;
+  examples: {
+    [key: string]: {};
+  };
+}>;
+
+export const defaultExampleObjects: ExampleObjects = {
+  exampleObjectsFetchFailed: false,
+  exampleObjectsFetching: false,
+  examples: {}
+};
+
+export type ObjectState = Readonly<{
+  objectFetchFailed: boolean;
+  objectFetching: boolean;
   objectInfo: object;
   trackCategories: [];
 }>;
 
-export const defaultObjectInfoState: ObjectInfoState = {
-  browserInfoFetchFailed: false,
-  browserInfoFetching: false,
+export const defaultObjectState: ObjectState = {
+  objectFetchFailed: false,
+  objectFetching: false,
   objectInfo: {},
   trackCategories: []
 };

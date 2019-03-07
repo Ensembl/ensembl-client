@@ -27,7 +27,9 @@ import {
   getBrowserActivated,
   getTrackPanelModalOpened,
   getTrackPanelModalView,
-  getSelectedBrowserTab
+  getSelectedBrowserTab,
+  getTrackCategories,
+  getObjectInfo
 } from '../browserSelectors';
 
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
@@ -43,7 +45,9 @@ type StateProps = {
   drawerView: string;
   breakpointWidth: BreakpointWidth;
   launchbarExpanded: boolean;
+  objectInfo: any;
   selectedBrowserTab: TrackType;
+  trackCategories: [];
   trackPanelModalOpened: boolean;
   trackPanelModalView: string;
   trackPanelOpened: boolean;
@@ -94,8 +98,10 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
                 browserRef={props.browserRef}
                 drawerView={props.drawerView}
                 launchbarExpanded={props.launchbarExpanded}
+                objectInfo={props.objectInfo}
                 selectedBrowserTab={props.selectedBrowserTab}
                 toggleDrawer={props.toggleDrawer}
+                trackCategories={props.trackCategories}
                 updateDrawerView={props.changeDrawerView}
               />
               {props.trackPanelModalOpened ? (
@@ -119,7 +125,9 @@ const mapStateToProps = (state: RootState): StateProps => ({
   drawerOpened: getDrawerOpened(state),
   drawerView: getDrawerView(state),
   launchbarExpanded: getLaunchbarExpanded(state),
+  objectInfo: getObjectInfo(state),
   selectedBrowserTab: getSelectedBrowserTab(state),
+  trackCategories: getTrackCategories(state),
   trackPanelModalOpened: getTrackPanelModalOpened(state),
   trackPanelModalView: getTrackPanelModalView(state),
   trackPanelOpened: getTrackPanelOpened(state)
