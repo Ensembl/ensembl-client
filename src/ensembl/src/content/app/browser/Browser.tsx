@@ -32,7 +32,8 @@ import {
   getBrowserNavOpened,
   getChrLocation,
   getTrackConfigNames,
-  getGenomeSelectorActive
+  getGenomeSelectorActive,
+  getBrowserActivated
 } from './browserSelectors';
 
 import styles from './Browser.scss';
@@ -91,6 +92,22 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, []);
 
   useEffect(() => {
+    if (props.chrLocation[2]) {
+      let chrLocation = [
+        props.chrLocation[0],
+        props.chrLocation[1] + 1,
+        props.chrLocation[2]
+      ];
+      props.updateChrLocation(chrLocation);
+      props.changeBrowserLocation(chrLocation, browserRef.current);
+    }
+  }, [
+    props.browserActivated,
+    props.updateChrLocation,
+    props.changeBrowserLocation
+  ]);
+
+  useEffect(() => {
     const { path, params } = props.match;
     const newChrLocationStr = getChrLocationStr(props.chrLocation);
     const newUrl = path
@@ -143,7 +160,8 @@ const mapStateToProps = (state: RootState): StateProps => ({
   browserOpenState: getBrowserOpenState(state),
   chrLocation: getChrLocation(state),
   drawerOpened: getDrawerOpened(state),
-  genomeSelectorActive: getGenomeSelectorActive(state)
+  genomeSelectorActive: getGenomeSelectorActive(state),
+  browserActivated: getBrowserActivated(state)
 });
 
 const mapDispatchToProps: DispatchProps = {
