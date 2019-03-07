@@ -2,8 +2,8 @@ import { applyMiddleware, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { createBrowserHistory } from 'history';
-import { routerMiddleware } from 'connected-react-router';
-import reducers from './rootReducer';
+import { routerMiddleware, LOCATION_CHANGE } from 'connected-react-router';
+import rootReducer from './rootReducer';
 
 import GoogleAnalyticsTracking from './services/analytics-service';
 
@@ -19,13 +19,14 @@ const googleAnalyticsMiddleWare = (store: any) => (next: any) => (
   if (action.meta && action.meta.ga && action.meta.ga.category) {
     // The action and category fields are mandatory
     GoogleAnalyticsTracking.trackEvent(action);
-  } else if (action.type.indexOf('LOCATION_CHANGE') != -1) {
+  } else if (action.type === LOCATION_CHANGE) {
     // If the location history has been changed, track it as a pageview
     GoogleAnalyticsTracking.trackPageView(
       action.payload.location.pathname +
         action.payload.location.search +
         action.payload.location.hash
     );
+    return false;
   }
 
   next(action);
@@ -33,7 +34,7 @@ const googleAnalyticsMiddleWare = (store: any) => (next: any) => (
 
 export default function configureStore(preloadedState?: any) {
   const store = createStore(
-    reducers(history), // root reducer with router state
+    rootReducer(history), // root reducer with router state
     preloadedState,
     composeEnhancers(
       applyMiddleware(
