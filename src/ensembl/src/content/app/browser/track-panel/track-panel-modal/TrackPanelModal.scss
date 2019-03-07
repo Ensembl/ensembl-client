@@ -22,6 +22,7 @@
   }
 
   p {
+    font-size: 13px;
     margin-bottom: 30px;
   }
 }
@@ -40,7 +41,12 @@
 .previouslyViewed {
   margin-top: 60px;
 
+  a {
+    font-weight: $normal;
+  }
+
   dt {
+    color: $ens-dark-grey;
     font-size: 12px;
   }
 

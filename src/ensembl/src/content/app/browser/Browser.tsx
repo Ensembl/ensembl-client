@@ -101,7 +101,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
     });
 
     props.fetchObjectData(objectStableId);
-  }, []);
+  }, [props.match.params.objSymbol]);
 
   useEffect(() => {
     const { path, params } = props.match;
@@ -135,7 +135,9 @@ export const Browser: FunctionComponent<BrowserProps> = (
           }`}
           onClick={closeTrack}
         >
-          {props.browserNavOpened && <BrowserNavBar browserRef={browserRef} />}
+          {props.browserNavOpened && !props.drawerOpened ? (
+            <BrowserNavBar browserRef={browserRef} />
+          ) : null}
           <BrowserImage
             browserRef={browserRef}
             browserNavOpened={props.browserNavOpened}

@@ -19,7 +19,8 @@ import {
   getGenomeSelectorActive,
   getDrawerOpened,
   getSelectedBrowserTab,
-  getObjectInfo
+  getObjectInfo,
+  getTrackPanelModalOpened
 } from '../browserSelectors';
 import { RootState } from 'src/rootReducer';
 
@@ -38,6 +39,7 @@ type StateProps = {
   genomeSelectorActive: boolean;
   objectInfo: any;
   selectedBrowserTab: TrackType;
+  trackPanelModalOpened: boolean;
 };
 
 type DispatchProps = {
@@ -70,10 +72,10 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   };
 
   const getBrowserNavIcon = () => {
-    if (props.browserNavOpened === true) {
-      return navigator.icon.selected;
-    } else if (props.drawerOpened === true) {
+    if (props.drawerOpened === true) {
       return navigator.icon.grey;
+    } else if (props.browserNavOpened === true) {
+      return navigator.icon.selected;
     } else {
       return navigator.icon.default;
     }
@@ -148,6 +150,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
         selectBrowserTab={props.selectBrowserTab}
         selectedBrowserTab={props.selectedBrowserTab}
         toggleDrawer={props.toggleDrawer}
+        trackPanelModalOpened={props.trackPanelModalOpened}
       />
     </div>
   );
@@ -161,7 +164,8 @@ const mapStateToProps = (state: RootState): StateProps => ({
   drawerOpened: getDrawerOpened(state),
   genomeSelectorActive: getGenomeSelectorActive(state),
   objectInfo: getObjectInfo(state),
-  selectedBrowserTab: getSelectedBrowserTab(state)
+  selectedBrowserTab: getSelectedBrowserTab(state),
+  trackPanelModalOpened: getTrackPanelModalOpened(state)
 });
 
 const mapDispatchToProps: DispatchProps = {
