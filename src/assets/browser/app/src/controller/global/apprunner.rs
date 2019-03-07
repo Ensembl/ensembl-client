@@ -172,15 +172,7 @@ impl AppRunner {
                 app.tick();
                 vec!{}
             },None);
-        }
-        
-        /* drain oas */
-        {
-            self.add_timer(move |app,_| {
-                app.tick();
-                vec!{}
-            },None);
-        }
+        }        
     }
     
     pub fn draw(&mut self) {

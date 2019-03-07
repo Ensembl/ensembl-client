@@ -36,7 +36,6 @@ pub struct App {
     csl: SourceManagerList,
     http_clerk: HttpXferClerk,
     als: AllLandscapes,
-    pending_oas: Vec<OutputAction>
 }
 
 impl App {
@@ -65,8 +64,7 @@ impl App {
             viewport: None,
             csl: SourceManagerList::new(),
             http_clerk: HttpXferClerk::new(http_manager,config,config_url),
-            als: AllLandscapes::new(),
-            pending_oas: Vec::<OutputAction>::new()
+            als: AllLandscapes::new()
         };
         let dsm = CombinedSourceManager::new(&tc,config,&out.als,&out.http_clerk);
         out.csl.add_compsource(Box::new(dsm));
@@ -101,20 +99,7 @@ impl App {
     pub fn set_runner(&mut self, ar: &AppRunnerWeak) {
         self.ar = ar.clone();
     }
-    
-    pub fn send_report(&mut self, value: JSONValue) {
-        self.pending_oas.push(OutputAction::SendCustomEvent("bpane-out".to_string(),value));        
-    }
-
-    pub fn send_viewport_report(&mut self, value: JSONValue) {
-        self.pending_oas.push(OutputAction::SendCustomEvent("bpane-scroll".to_string(),value));
-    }
-    
-    pub fn drain_pending_oas(&mut self) -> Vec<OutputAction> {
-        let out : Vec<OutputAction> = self.pending_oas.drain(..).collect();
-        out
-    }
-    
+            
     pub fn get_report(&self) -> &Report { &self.report.as_ref().unwrap() }
         
     pub fn set_report(&mut self, report: Report) {
