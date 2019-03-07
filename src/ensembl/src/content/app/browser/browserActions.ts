@@ -58,6 +58,7 @@ export const changeBrowserLocation = (
 ) => {
   const [chrCode, startBp, endBp] = chrLocation;
 
+  console.log('cbl', chrLocation);
   const stickEvent = new CustomEvent('bpane', {
     bubbles: true,
     detail: {
