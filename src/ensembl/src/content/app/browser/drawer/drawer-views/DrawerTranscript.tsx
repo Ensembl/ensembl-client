@@ -6,7 +6,9 @@ type DrawerTranscriptProps = {
   objectInfo: any;
 };
 
-const DrawerTranscript: FunctionComponent = (props: DrawerTranscriptProps) => {
+const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
+  props: DrawerTranscriptProps
+) => {
   const { objectInfo } = props;
 
   let transcriptStableId = objectInfo.associated_object.stable_id;
