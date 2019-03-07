@@ -20,7 +20,6 @@ export const toggleTrackPanel = createAction(
   (resolve) => {
     return (trackPanelOpened?: boolean) =>
       resolve(trackPanelOpened, {
-        disable_tracking: true,
         ga: {
           category: 'Track Panel',
           label: 'User Interaction'
@@ -81,8 +80,7 @@ export const updateBrowserNavStates = createAction(
 export const updateChrLocation = createAction(
   'browser/update-chromosome-location',
   (resolve) => {
-    return (chrLocation: ChrLocation) =>
-      resolve(chrLocation, { ga: { disable_tracking: true } });
+    return (chrLocation: ChrLocation) => resolve(chrLocation);
   }
 );
 

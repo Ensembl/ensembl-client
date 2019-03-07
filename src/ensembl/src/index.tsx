@@ -10,6 +10,12 @@ import { registerSW } from './registerServiceWorker';
 
 import './styles/main';
 
+import ReactGA from 'react-ga';
+
+ReactGA.initialize('UA-58710484-17');
+// Track the landing page
+ReactGA.pageview(window.location.pathname + window.location.search);
+
 render(
   <StrictMode>
     <CookiesProvider>
