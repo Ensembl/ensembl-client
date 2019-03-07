@@ -140,6 +140,7 @@ export const updateApplyToAll = createAction(
     return (yn: number) => {
       return resolve(yn);
     };
+);
 
 export const toggleGenomeSelector = createAction(
   'toggle-genome-selector',
