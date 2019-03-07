@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::sync::{ Arc, Mutex };
 
 use controller::global::{ App, AppRunner };
+use controller::output::OutputAction;
 
 use serde_json::Map as JSONMap;
 use serde_json::Value as JSONValue;
@@ -56,13 +57,11 @@ impl StatusOutput {
 lazy_static! {
     static ref REPORT_CONFIG:
         Vec<(&'static str,StatusJigsaw,Option<f64>)> = vec!{
-            /*
         ("location",StatusJigsaw::Array(vec!{
             StatusJigsaw::Atom("stick".to_string(),StatusJigsawType::String),
             StatusJigsaw::Atom("start".to_string(),StatusJigsawType::Number),
             StatusJigsaw::Atom("end".to_string(),StatusJigsawType::Number),
         }),Some(500.)),
-        */
         ("bumper",StatusJigsaw::Array(vec!{
             StatusJigsaw::Atom("bumper-top".to_string(),StatusJigsawType::Boolean),
             StatusJigsaw::Atom("bumper-bottom".to_string(),StatusJigsawType::Boolean),
@@ -183,14 +182,7 @@ impl ReportImpl {
         } else {
             None
         }
-    }
-        
-    pub fn tick(&mut self, app: &mut App, t: f64) {
-        if let Some(out) = self.new_report(t) {
-            app.send_report(out);
-            //debug!("status","{}",out.to_string());
-        }
-    }
+    }        
 }
 
 #[derive(Clone)]
@@ -207,8 +199,11 @@ impl Report {
             out.set_interval(k,*v);
         }
         ar.add_timer(enclose! { (out) move |app,t| {
-            out.clone().tick(app,t);
-            vec!{}
+            if let Some(report) = out.new_report(t) {
+                vec!{
+                    OutputAction::SendCustomEvent("bpane-out".to_string(),report)
+                }
+            } else { vec!{} }
         }},None);
         out
     }
@@ -227,7 +222,7 @@ impl Report {
         imp.set_interval(key,interval);
     }
     
-    pub fn tick(&mut self, app: &mut App, t: f64) {
-        self.0.lock().unwrap().tick(app,t);
+    pub fn new_report(&self, t: f64) -> Option<JSONValue> {
+        self.0.lock().unwrap().new_report(t)
     }
 }

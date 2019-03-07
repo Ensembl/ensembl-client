@@ -6,6 +6,7 @@ use serde_json::Number as JSONNumber;
 
 
 use controller::global::{ App, AppRunner };
+use controller::output::OutputAction;
 use util::ChangeDetect;
 
 #[derive(Debug)]
@@ -77,11 +78,12 @@ impl ViewportReportImpl {
         JSONValue::Object(out)
     }
     
-    fn tick(&mut self, app: &mut App) {
+    fn make_report(&mut self, app: &mut App) -> Option<JSONValue> {
         let items = self.get_items(app);
         if items.len() > 0 {
-            let val = self.build_value(items);
-            app.send_viewport_report(val);
+            Some(self.build_value(items))
+        } else {
+            None
         }
     }
 }
@@ -93,8 +95,13 @@ impl ViewportReport {
     pub fn new(ar: &mut AppRunner) -> ViewportReport {
         let out = ViewportReport(Arc::new(Mutex::new(ViewportReportImpl::new())));
         ar.add_timer(enclose! { (out) move |app,t| {
-            out.clone().tick(app);
-            vec!{}
+            if let Some(report) = out.clone().make_report(app) {
+                vec!{
+                    OutputAction::SendCustomEvent("bpane-scroll".to_string(),report)
+                }
+            } else {
+                vec!{}
+            }
         }},None);
         out
     }
@@ -103,7 +110,7 @@ impl ViewportReport {
         self.0.lock().unwrap().set_delta_y(y);
     }
     
-    pub fn tick(&self, app: &mut App) {
-        self.0.lock().unwrap().tick(app);
+    pub fn make_report(&self, app: &mut App) -> Option<JSONValue> {
+        self.0.lock().unwrap().make_report(app)
     }
 }
