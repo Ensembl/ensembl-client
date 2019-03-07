@@ -44,3 +44,18 @@ export const getGenomeSelectorActive = (state: RootState): boolean =>
 
 export const getSelectedBrowserTab = (state: RootState): TrackType =>
   state.browser.browserInfo.selectedBrowserTab;
+
+export const getObjectFetchFailed = (state: RootState) =>
+  state.browser.object.objectFetchFailed;
+
+export const getObjectFetching = (state: RootState) =>
+  state.browser.object.objectFetching;
+
+export const getObjectInfo = (state: RootState) =>
+  state.browser.object.objectInfo;
+
+export const getTrackCategories = (state: RootState): [] =>
+  state.browser.object.trackCategories;
+
+export const getExampleObjects = (state: RootState) =>
+  state.browser.exampleObjects.examples;

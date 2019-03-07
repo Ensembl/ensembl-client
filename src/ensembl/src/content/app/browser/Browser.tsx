@@ -21,6 +21,7 @@ import {
 } from './browserState';
 import {
   changeBrowserLocation,
+  fetchObjectData,
   toggleDrawer,
   updateChrLocation,
   updateBrowserNavStates,
@@ -31,7 +32,8 @@ import {
   getDrawerOpened,
   getBrowserNavOpened,
   getChrLocation,
-  getGenomeSelectorActive
+  getGenomeSelectorActive,
+  getExampleObjects
 } from './browserSelectors';
 
 import styles from './Browser.scss';
@@ -44,6 +46,7 @@ type StateProps = {
   browserOpenState: BrowserOpenState;
   chrLocation: ChrLocation;
   drawerOpened: boolean;
+  exampleObjects: {};
   genomeSelectorActive: boolean;
 };
 
@@ -52,6 +55,7 @@ type DispatchProps = {
     chrLocation: ChrLocation,
     browserEl: HTMLDivElement
   ) => void;
+  fetchObjectData: (objSymbol: string) => void;
   toggleDrawer: (drawerOpened: boolean) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
@@ -83,10 +87,20 @@ export const Browser: FunctionComponent<BrowserProps> = (
   };
 
   useEffect(() => {
-    const { location } = props.match.params;
+    const { location, objSymbol } = props.match.params;
     const chrLocation = getChrLocationFromStr(location);
 
     dispatchBrowserLocation(chrLocation);
+
+    let objectStableId = '';
+
+    Object.values(props.exampleObjects).forEach((exampleObject: any) => {
+      if (exampleObject.display_name === objSymbol) {
+        objectStableId = exampleObject.stable_id;
+      }
+    });
+
+    props.fetchObjectData(objectStableId);
   }, []);
 
   useEffect(() => {
@@ -142,11 +156,13 @@ const mapStateToProps = (state: RootState): StateProps => ({
   browserOpenState: getBrowserOpenState(state),
   chrLocation: getChrLocation(state),
   drawerOpened: getDrawerOpened(state),
+  exampleObjects: getExampleObjects(state),
   genomeSelectorActive: getGenomeSelectorActive(state)
 });
 
 const mapDispatchToProps: DispatchProps = {
   changeBrowserLocation,
+  fetchObjectData,
   toggleDrawer,
   updateBrowserActivated,
   updateBrowserNavStates,

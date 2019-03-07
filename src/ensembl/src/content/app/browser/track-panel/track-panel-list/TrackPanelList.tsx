@@ -8,6 +8,7 @@ import React, {
 
 import TrackPanelListItem from './TrackPanelListItem';
 import {
+  TrackItemColour,
   TrackPanelCategory,
   TrackPanelItem,
   trackPanelConfig,
@@ -20,25 +21,27 @@ type TrackPanelListProps = {
   browserRef: RefObject<HTMLDivElement>;
   drawerView: string;
   launchbarExpanded: boolean;
+  objectInfo: any;
   selectedBrowserTab: TrackType;
   toggleDrawer: (drawerOpened: boolean) => void;
+  trackCategories: [];
   updateDrawerView: (drawerView: string) => void;
 };
 
 const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   props: TrackPanelListProps
 ) => {
-  const [trackCategories, setTrackCategories] = useState(
-    trackPanelConfig.categories
-  );
+  const [currentTrackCategories, setCurrentTrackCategories] = useState([]);
 
   useEffect(() => {
-    setTrackCategories(
-      trackPanelConfig.categories.filter(
-        (category: TrackPanelCategory) =>
-          category.types.indexOf(props.selectedBrowserTab) > -1
-      )
-    );
+    if (props.trackCategories.length > 0) {
+      setCurrentTrackCategories(
+        props.trackCategories.filter(
+          (category: TrackPanelCategory) =>
+            category.types.indexOf(props.selectedBrowserTab) > -1
+        )
+      );
+    }
   }, [props.selectedBrowserTab]);
 
   const changeDrawerView = useCallback(
@@ -62,6 +65,35 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
     return `${styles.trackPanelList} ${heightClass}`;
   };
 
+  const getMainTracks = () => {
+    const { objectInfo } = props;
+
+    let geneLabel = objectInfo.obj_symbol;
+    let transcriptLabel = objectInfo.associated_object.stable_id;
+
+    if (objectInfo.obj_type === 'transcript') {
+      geneLabel = objectInfo.associated_object.obj_symbol;
+      transcriptLabel = objectInfo.stable_id;
+    }
+
+    return {
+      additionalInfo: objectInfo.bio_type,
+      childTrackList: [
+        {
+          additionalInfo: objectInfo.bio_type,
+          color: 'BLUE',
+          id: 0.1,
+          label: transcriptLabel,
+          name: 'transcript',
+          selectedInfo: objectInfo.associated_object.selected_info
+        }
+      ],
+      id: 0,
+      label: geneLabel,
+      name: 'gene'
+    };
+  };
+
   const getTrackListItem = (track: TrackPanelItem) => (
     <TrackPanelListItem
       browserRef={props.browserRef}
@@ -80,9 +112,9 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   return (
     <div className={getTrackPanelListClasses()}>
       <section>
-        <dl>{getTrackListItem(trackPanelConfig.main)}</dl>
+        <dl>{getTrackListItem(getMainTracks())}</dl>
       </section>
-      {trackCategories.map((category: TrackPanelCategory) => (
+      {currentTrackCategories.map((category: TrackPanelCategory) => (
         <section key={category.name}>
           <h4>{category.name}</h4>
           <dl>

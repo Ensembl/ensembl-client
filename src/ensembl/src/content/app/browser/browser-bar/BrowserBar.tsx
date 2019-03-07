@@ -18,7 +18,8 @@ import {
   getDefaultChrLocation,
   getGenomeSelectorActive,
   getDrawerOpened,
-  getSelectedBrowserTab
+  getSelectedBrowserTab,
+  getObjectInfo
 } from '../browserSelectors';
 import { RootState } from 'src/rootReducer';
 
@@ -35,6 +36,7 @@ type StateProps = {
   defaultChrLocation: ChrLocation;
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
+  objectInfo: any;
   selectedBrowserTab: TrackType;
 };
 
@@ -55,6 +57,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   props: BrowserBarProps
 ) => {
   const { navigator, reset } = browserInfoConfig;
+  const { objectInfo } = props;
 
   const getBrowserInfoClasses = () => {
     let classNames = styles.browserInfo;
@@ -99,22 +102,24 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
             <Fragment>
               <dd className={styles.geneSymbol}>
                 <label>Gene</label>
-                <span className={styles.value}>BRAC2</span>
+                <span className={styles.value}>{objectInfo.obj_symbol}</span>
               </dd>
               <dd>
                 <label>Stable ID</label>
-                <span className={styles.value}>ENSG00000139618</span>
+                <span className={styles.value}>{objectInfo.stable_id}</span>
               </dd>
               <dd className="show-for-large">
                 <label>Spliced mRNA length</label>
-                <span className={styles.value}>84,793</span>
+                <span className={styles.value}>
+                  {objectInfo.spliced_length}
+                </span>
                 <label>bp</label>
               </dd>
               <dd className={`show-for-large ${styles.nonLabelValue}`}>
-                protein coding
+                {objectInfo.bio_type}
               </dd>
               <dd className={`show-for-large ${styles.nonLabelValue}`}>
-                forward strand
+                {objectInfo.strand} strand
               </dd>
             </Fragment>
           )}
@@ -155,6 +160,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
   defaultChrLocation: getDefaultChrLocation(state),
   drawerOpened: getDrawerOpened(state),
   genomeSelectorActive: getGenomeSelectorActive(state),
+  objectInfo: getObjectInfo(state),
   selectedBrowserTab: getSelectedBrowserTab(state)
 });
 

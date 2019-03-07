@@ -7,8 +7,10 @@ import {
   defaultBrowserState,
   trackPanelState,
   drawerState,
-  ObjectInfoState,
-  defaultObjectInfoState
+  ExampleObjects,
+  defaultExampleObjects,
+  ObjectState,
+  defaultObjectState
 } from './browserState';
 
 function browserInfo(
@@ -60,31 +62,62 @@ function browserInfo(
   }
 }
 
-function objectInfo(
-  state: ObjectInfoState = defaultObjectInfoState,
+function exampleObjects(
+  state: ExampleObjects = defaultExampleObjects,
   action: ActionType<typeof browserActions>
-): ObjectInfoState {
+): ExampleObjects {
   switch (action.type) {
-    case getType(browserActions.fetchObjectInfo.failure):
-      return { ...state, browserInfoFetchFailed: true };
-    case getType(browserActions.fetchObjectInfo.request):
+    case getType(browserActions.fetchExampleObjects.failure):
+      return { ...state, exampleObjectsFetchFailed: true };
+    case getType(browserActions.fetchExampleObjects.request):
       return {
         ...state,
-        browserInfoFetchFailed: false,
-        browserInfoFetching: true
+        exampleObjectsFetchFailed: false,
+        exampleObjectsFetching: true
       };
-    case getType(browserActions.fetchObjectInfo.success):
-      type BrowserInfo = {
+    case getType(browserActions.fetchExampleObjects.success):
+      type Payload = {
+        examples: {};
+      };
+
+      const json = action.payload as Payload;
+
+      return {
+        ...state,
+        exampleObjectsFetchFailed: false,
+        exampleObjectsFetching: false,
+        examples: json.examples
+      };
+    default:
+      return state;
+  }
+}
+
+function object(
+  state: ObjectState = defaultObjectState,
+  action: ActionType<typeof browserActions>
+): ObjectState {
+  switch (action.type) {
+    case getType(browserActions.fetchObject.failure):
+      return { ...state, objectFetchFailed: true };
+    case getType(browserActions.fetchObject.request):
+      return {
+        ...state,
+        objectFetchFailed: false,
+        objectFetching: true
+      };
+    case getType(browserActions.fetchObject.success):
+      type Payload = {
         object_info: {};
         track_categories: [];
       };
 
-      const json = action.payload as BrowserInfo;
+      const json = action.payload as Payload;
 
       return {
         ...state,
-        browserInfoFetchFailed: false,
-        browserInfoFetching: false,
+        objectFetchFailed: false,
+        objectFetching: false,
         objectInfo: json.object_info,
         trackCategories: json.track_categories
       };
@@ -95,5 +128,6 @@ function objectInfo(
 
 export default combineReducers({
   browserInfo,
-  objectInfo
+  exampleObjects,
+  object
 });
