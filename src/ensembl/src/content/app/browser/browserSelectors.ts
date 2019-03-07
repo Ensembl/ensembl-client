@@ -7,40 +7,40 @@ import {
 import { TrackType } from './track-panel/trackPanelConfig';
 
 export const getBrowserActivated = (state: RootState): boolean =>
-  state.browser.browserActivated;
+  state.browser.browserInfo.browserActivated;
 
 export const getBrowserOpenState = (state: RootState): BrowserOpenState =>
-  state.browser.browserOpenState;
+  state.browser.browserInfo.browserOpenState;
 
 export const getDrawerView = (state: RootState): string =>
-  state.browser.drawerView;
+  state.browser.browserInfo.drawerView;
 
 export const getDrawerOpened = (state: RootState): boolean =>
-  state.browser.drawerOpened;
+  state.browser.browserInfo.drawerOpened;
 
 export const getTrackPanelOpened = (state: RootState): boolean =>
-  state.browser.trackPanelOpened;
+  state.browser.browserInfo.trackPanelOpened;
 
 export const getBrowserNavOpened = (state: RootState): boolean =>
-  state.browser.browserNavOpened;
+  state.browser.browserInfo.browserNavOpened;
 
 export const getBrowserNavStates = (state: RootState): BrowserNavStates =>
-  state.browser.browserNavStates;
+  state.browser.browserInfo.browserNavStates;
 
 export const getChrLocation = (state: RootState): ChrLocation =>
-  state.browser.chrLocation;
+  state.browser.browserInfo.chrLocation;
 
 export const getDefaultChrLocation = (state: RootState): ChrLocation =>
-  state.browser.defaultChrLocation;
+  state.browser.browserInfo.defaultChrLocation;
 
 export const getTrackPanelModalOpened = (state: RootState): boolean =>
-  state.browser.trackPanelModalOpened;
+  state.browser.browserInfo.trackPanelModalOpened;
 
 export const getTrackPanelModalView = (state: RootState): string =>
-  state.browser.trackPanelModalView;
+  state.browser.browserInfo.trackPanelModalView;
 
 export const getGenomeSelectorActive = (state: RootState): boolean =>
-  state.browser.genomeSelectorActive;
+  state.browser.browserInfo.genomeSelectorActive;
 
 export const getSelectedBrowserTab = (state: RootState): TrackType =>
-  state.browser.selectedBrowserTab;
+  state.browser.browserInfo.selectedBrowserTab;

@@ -34,7 +34,7 @@ export type BrowserState = Readonly<{
   trackPanelOpened: boolean;
 }>;
 
-export const defaultState: BrowserState = {
+export const defaultBrowserState: BrowserState = {
   browserActivated: false,
   browserNavOpened: false,
   browserNavStates: [true, true, true, true, true, true],
@@ -48,6 +48,20 @@ export const defaultState: BrowserState = {
   trackPanelModalOpened: false,
   trackPanelModalView: '',
   trackPanelOpened: true
+};
+
+export type ObjectInfoState = Readonly<{
+  browserInfoFetchFailed: boolean;
+  browserInfoFetching: boolean;
+  objectInfo: object;
+  trackCategories: [];
+}>;
+
+export const defaultObjectInfoState: ObjectInfoState = {
+  browserInfoFetchFailed: false,
+  browserInfoFetching: false,
+  objectInfo: {},
+  trackCategories: []
 };
 
 export const trackPanelState = (
