@@ -1,4 +1,6 @@
-import { createAction } from 'typesafe-actions';
+import { createAction, createAsyncAction } from 'typesafe-actions';
+import { Dispatch } from 'redux';
+
 import { BrowserNavStates, ChrLocation } from './browserState';
 import { TrackType } from './track-panel/trackPanelConfig';
 
@@ -56,27 +58,48 @@ export const changeBrowserLocation = (
   chrLocation: ChrLocation,
   browserEl: HTMLDivElement
 ) => {
-  const [chrCode, startBp, endBp] = chrLocation;
+  return (dispatch: Dispatch) => {
+    const [chrCode, startBp, endBp] = chrLocation;
 
-  const stickEvent = new CustomEvent('bpane', {
-    bubbles: true,
-    detail: {
-      stick: chrCode
-    }
-  });
+    const stickEvent = new CustomEvent('bpane', {
+      bubbles: true,
+      detail: {
+        stick: chrCode
+      }
+    });
 
-  const gotoEvent = new CustomEvent('bpane', {
-    bubbles: true,
-    detail: {
-      goto: `${startBp}-${endBp}`
-    }
-  });
+    const gotoEvent = new CustomEvent('bpane', {
+      bubbles: true,
+      detail: {
+        goto: `${startBp}-${endBp}`
+      }
+    });
 
-  browserEl.dispatchEvent(stickEvent);
-  browserEl.dispatchEvent(gotoEvent);
+    browserEl.dispatchEvent(stickEvent);
+    browserEl.dispatchEvent(gotoEvent);
 
-  return updateDefaultChrLocation(chrLocation);
+    dispatch(updateDefaultChrLocation(chrLocation));
+  };
 };
+
+export const fetchObjectInfo = createAsyncAction(
+  'FETCH_OBJECT_INFO_REQUEST',
+  'FETCH_OBJECT_INFO_SUCCESS',
+  'FETCH_OBJECT_INFO_FAILURE'
+)<string, {}, Error>();
+
+export function getObjectInfo(objectId: string) {
+  return (dispatch: Dispatch) => {
+    dispatch(fetchObjectInfo.request(objectId));
+
+    return fetch(`http://127.0.0.1:4000/browser/get_object_info/${objectId}`)
+      .then(
+        (response) => response.json(),
+        (error) => console.log('An error occurred.', error)
+      )
+      .then((json) => dispatch(fetchObjectInfo.success(json)));
+  };
+}
 
 export const openTrackPanelModal = createAction(
   'browser/open-track-panel-modal',
