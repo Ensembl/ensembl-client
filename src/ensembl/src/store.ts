@@ -5,7 +5,7 @@ import { createBrowserHistory } from 'history';
 import { routerMiddleware } from 'connected-react-router';
 import reducers from './rootReducer';
 
-import GoogleAnalyticsTracking from './services/AnalyticsService';
+import GoogleAnalyticsTracking from './services/analytics-service';
 
 export const history = createBrowserHistory();
 
