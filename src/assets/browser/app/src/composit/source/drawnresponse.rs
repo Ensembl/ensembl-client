@@ -17,7 +17,7 @@ impl DrawnResponse {
         let mut shapes = Vec::<DrawnShape>::new();
         let specs = self.sr.get_shapes(&self.part);
         for spec in specs {
-            shapes.push(DrawnShape::new(spec.create())
+            shapes.push(DrawnShape::new(spec.create()));
         }
         self.shapes = Some(shapes);
     }

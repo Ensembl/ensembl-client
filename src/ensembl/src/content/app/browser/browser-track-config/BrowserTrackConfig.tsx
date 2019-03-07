@@ -84,10 +84,10 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
   const toggleLabel = useCallback(() => {
     if (applyToAll) {
       Object.keys(browserCogTrackList).map((name) => {
-        updateTrackConfigNames(name, !trackOurConfigName);
+        updateTrackConfigLabel(name, !trackOurConfigName);
       });
     } else {
-      updateTrackConfigNames(selectedCog, !trackOurConfigLabel);
+      updateTrackConfigLabel(selectedCog, !trackOurConfigLabel);
     }
   }, [
     selectedCog,
