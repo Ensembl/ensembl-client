@@ -18,9 +18,7 @@ type BrowserGenomeSelectorProps = {
   browserActivated: boolean;
   changeBrowserLocation: () => void;
   defaultChrLocation: ChrLocation;
-  chrLocation: ChrLocation;
-  updateDefaultChrLocation: (chrLocation?: ChrLocation) => void;
-  updateChrLocation: (chrLocation: ChrLocation) => void;
+  updateDefaultChrLocation: (chrLocation: ChrLocation) => void;
 };
 
 const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
@@ -55,10 +53,7 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
     event.preventDefault();
 
     const [chrCodeInput, chrRegionInput] = chrLocationInput.split(':');
-    let [chrStartInput, chrEndInput] = ['0', '1000000000'];
-    if (chrRegionInput) {
-      [chrStartInput, chrEndInput] = chrRegionInput.split('-');
-    }
+    const [chrStartInput, chrEndInput] = chrRegionInput.split('-');
 
     if (chrCodeInput && +chrStartInput < +chrEndInput) {
       const currChrLocation: ChrLocation = [
@@ -70,7 +65,7 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
       closeForm();
 
       props.updateDefaultChrLocation(currChrLocation);
-      props.changeBrowserLocation(currChrLocation);
+      props.changeBrowserLocation();
     } else {
       return;
     }
