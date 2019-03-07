@@ -37,7 +37,11 @@ fn pick(source: &Vec<f64>, palette: &Vec<f64>, stride: &Vec<f64>) -> Vec<f64> {
     let stride = stride[0] as usize;
     for s in source.iter() {
         for i in 0..stride {
-            out.push(palette[*s as usize*stride+i]);
+            let offset = *s as usize*stride+i;
+            if offset >= palette.len() {
+                console!("ERROR IN PICK source={:?} palette={:?} stride={:?} offset={:?}",source,palette,stride,offset);
+            }
+            out.push(palette[offset]);
         }
     }
     out

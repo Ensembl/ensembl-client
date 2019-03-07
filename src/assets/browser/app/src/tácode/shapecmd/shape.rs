@@ -60,6 +60,7 @@ fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceResp
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Vec<f64>, part: &Option<String>) {
+    if colour.len() == 0 { return; }
     let facade = make_facade(&spec,colour,tx,0);
     let mut x_start_scaled = Vec::<f64>::new();
     let mut x_aux_scaled = Vec::<f64>::new();
@@ -86,6 +87,7 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceRes
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Vec<f64>, part: &Option<String>) {
+    if colour.len() == 0 { return; }
     let mut y_start_iter = y_start.iter().cycle();
     let mut x_aux_iter = x_aux.iter().cycle();
     let mut y_aux_iter = y_aux.iter().cycle();
