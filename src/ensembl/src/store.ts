@@ -7,10 +7,6 @@ import rootReducer from './rootReducer';
 
 import GoogleAnalyticsTracking from './services/analytics-service';
 
-export const history = createBrowserHistory();
-
-const composeEnhancers = composeWithDevTools({});
-
 const googleAnalyticsMiddleWare = (store: any) => (next: any) => (
   action: any
 ) => {
@@ -26,11 +22,13 @@ const googleAnalyticsMiddleWare = (store: any) => (next: any) => (
         action.payload.location.search +
         action.payload.location.hash
     );
-    return false;
   }
 
   next(action);
 };
+
+export const history = createBrowserHistory();
+const composeEnhancers = composeWithDevTools({});
 
 export default function configureStore(preloadedState?: any) {
   const store = createStore(
