@@ -80,7 +80,12 @@ function browserInfo(
     case getType(browserActions.toggleGenomeSelector):
       return { ...state, genomeSelectorActive: action.payload };
     case getType(browserActions.selectBrowserTab):
-      return { ...state, selectedBrowserTab: action.payload };
+      return {
+        ...state,
+        selectedBrowserTab: action.payload,
+        trackPanelModalOpened: false,
+        trackPanelModalView: ''
+      };
     default:
       return state;
   }

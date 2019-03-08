@@ -91,6 +91,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
             openTrackPanelModal={props.openTrackPanelModal}
             toggleDrawer={props.toggleDrawer}
             toggleTrackPanel={props.toggleTrackPanel}
+            trackPanelModalOpened={props.trackPanelModalOpened}
             trackPanelModalView={props.trackPanelModalView}
             trackPanelOpened={props.trackPanelOpened}
           />

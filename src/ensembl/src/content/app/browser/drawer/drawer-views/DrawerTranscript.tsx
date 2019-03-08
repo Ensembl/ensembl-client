@@ -30,7 +30,7 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
         <div className={styles.details}>
           <p>
             <span className={styles.mainDetail}>{transcriptStableId}</span>
-            <span className={styles.secondaryInfo}>{selectedInfo}</span>
+            <span className={styles.secondaryDetail}>{selectedInfo}</span>
           </p>
         </div>
       </dd>
@@ -40,7 +40,7 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
         <div className={styles.details}>
           <p>
             <span>{geneSymbol}</span>
-            <span className={styles.secondaryInfo}>{geneStableId}</span>
+            <span className={styles.secondaryDetail}>{geneStableId}</span>
           </p>
         </div>
       </dd>
