@@ -38,10 +38,13 @@
   }
 
   .mainDetail {
-    bottom: 3px;
     font-size: 16px;
     font-weight: $bold;
-    position: relative;
+  }
+
+  .secondaryDetail {
+    font-weight: $light;
+    margin-left: 10px;
   }
 }
 

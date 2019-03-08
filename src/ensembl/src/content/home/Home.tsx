@@ -55,7 +55,7 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
         <h2>Find</h2>
         <p>
           <input type="text" placeholder="Name, symbol or ID" />
-          <button disabled={true}>Go</button>
+          {/* <button disabled={true}>Go</button> */}
         </p>
         <div className={styles.filter}>
           <h2>Refine results</h2>
