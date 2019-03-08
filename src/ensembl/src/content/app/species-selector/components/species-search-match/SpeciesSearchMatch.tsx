@@ -101,29 +101,52 @@ const splitMatch = ({ string, matchedSubsctrings }: SplitterProps) => {
   const matchIndices = zip(matchStartIndices, matchEndIndices) as NumberTuple[];
   const accumulator: SplitSubstring[] = [];
   return matchIndices.reduce((result, current, index, array) => {
+    // if there is an unmatched part of the string before the first match,
+    // add it as the first item in the list of substrings
+    const [currentStartIndex, currentEndIndex] = current;
+    let nextStartIndex = index < array.length - 1 ? array[index + 1][0] : null;
+
     if (index === 0 && current[0] > 0) {
       result = [
         ...result,
         {
           start: 0,
-          end: current[0],
+          end: currentStartIndex,
           isMatch: false
         }
       ];
     }
+
+    // add the matched substring
     result = [
       ...result,
       {
-        start: current[0],
-        end: current[1],
+        start: currentStartIndex,
+        end: currentEndIndex,
         isMatch: true
       }
     ];
-    if (index === array.length - 1) {
+
+    if (nextStartIndex) {
+      // if there is another match in the same string, add the unmatched portion between
+      // the current and the next match
       result = [
         ...result,
         {
-          start: current[1],
+          start: currentEndIndex,
+          end: nextStartIndex,
+          isMatch: false
+        }
+      ];
+    } else if (
+      index === array.length - 1 &&
+      currentEndIndex < string.length - 1
+    ) {
+      // if there is unmatched trailing portion of the string, add it to the list of substrings
+      result = [
+        ...result,
+        {
+          start: currentEndIndex,
           end: string.length - 1,
           isMatch: false
         }
