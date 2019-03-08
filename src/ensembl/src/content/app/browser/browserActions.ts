@@ -68,24 +68,27 @@ export const changeBrowserLocation = (
       }
     });
 
-    const gotoEvent = new CustomEvent('bpane', {
-      bubbles: true,
-      detail: {
-        goto: `${startBp}-${endBp}`
-      }
-    });
-
     browserEl.dispatchEvent(stickEvent);
-    browserEl.dispatchEvent(gotoEvent);
+
+    if (startBp > 0 && endBp > 0) {
+      const gotoEvent = new CustomEvent('bpane', {
+        bubbles: true,
+        detail: {
+          goto: `${startBp}-${endBp}`
+        }
+      });
+
+      browserEl.dispatchEvent(gotoEvent);
+    }
 
     dispatch(updateDefaultChrLocation(chrLocation));
   };
 };
 
 export const fetchObject = createAsyncAction(
-  'FETCH_OBJECT_REQUEST',
-  'FETCH_OBJECT_SUCCESS',
-  'FETCH_OBJECT_FAILURE'
+  'browser/fetch_object_request',
+  'browser/fetch_object_success',
+  'browser/fetch_object_failure'
 )<string, {}, Error>();
 
 export const fetchObjectData = (objectId: string) => {
@@ -102,9 +105,9 @@ export const fetchObjectData = (objectId: string) => {
 };
 
 export const fetchExampleObjects = createAsyncAction(
-  'FETCH_EXAMPLE_OBJECTS_REQUEST',
-  'FETCH_EXAMPLE_OBJECTS_SUCCESS',
-  'FETCH_EXAMPLE_OBJECTS_FAILURE'
+  'browser/fetch_example_objects_request',
+  'browser/fetch_example_objects_success',
+  'browser/fetch_example_objects_failure'
 )<null, {}, Error>();
 
 export const fetchExampleObjectsData = () => {
