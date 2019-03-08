@@ -5,7 +5,7 @@ use controller::global::AppRunner;
 use controller::output::Report;
 use types::DOWN;
 
-const MS_PER_UPDATE : f64 = 250.;
+const MS_PER_UPDATE : f64 = 0.;
 
 pub struct Compositor {
     train_manager: TrainManager,
@@ -41,7 +41,7 @@ impl Compositor {
                 if t-prev_t < MS_PER_UPDATE { return; }
             }
             let comps = &mut self.components;
-            self.train_manager.each_train(|sc| sc.manage_leafs(comps));            
+            self.train_manager.best_train(|sc| sc.manage_leafs(comps));            
             self.updated = false;
             self.last_updated = Some(t);
         }

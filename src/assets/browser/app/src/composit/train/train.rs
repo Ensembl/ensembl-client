@@ -107,7 +107,7 @@ impl Train {
             let hindex = self.middle_leaf + idx as i64;
             let leaf = Leaf::new(&self.stick,hindex,&self.scale);
             if !self.carriages.contains_leaf(&leaf) {
-                debug!("trains","adding {}",hindex);
+                //debug!("trains","adding {}",hindex);
                 out.push(leaf);
             }
         }
