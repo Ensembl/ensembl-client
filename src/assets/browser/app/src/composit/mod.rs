@@ -2,6 +2,7 @@ mod state;
 mod scale;
 mod compositor;
 mod combinedstickmanager;
+mod componentset;
 mod landscape;
 mod train;
 mod leaf;
@@ -19,6 +20,7 @@ pub use self::source::{
     DrawnResponse, SourceManager, SourceManagerList, CombinedSourceManager
 };
 pub use self::combinedstickmanager::CombinedStickManager;
+pub use self::componentset::ComponentSet;
 pub use self::compositor::{ Compositor, register_compositor_ticks };
 pub use self::compmanager::{ ComponentManager };
 pub use self::train::{ Train, TrainManager, Carriage, CarriageSet, StaleCarriages };

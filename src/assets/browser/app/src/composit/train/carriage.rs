@@ -28,7 +28,7 @@ impl Carriage {
     
     pub fn is_on(&self) -> bool { self.cur_value.on() }
     
-    pub fn update_state(&mut self, m: &StateManager) -> ComponentRedo {
+    pub(in super) fn update_state(&mut self, m: &StateManager) -> ComponentRedo {
         self.prev_value = self.cur_value;
         self.cur_value = self.comp.is_on(m,&self.part);
         
@@ -43,11 +43,11 @@ impl Carriage {
         }
     }
          
-    pub fn is_done(&self) -> bool { 
+    pub(in super) fn is_done(&self) -> bool { 
         self.response.as_ref().map(|x| x.get_response().is_done()).unwrap_or(false)
     }
     
-    pub fn get_max_y(&self) -> i32 {
+    pub(in super) fn get_max_y(&self) -> i32 {
         self.response.as_ref().map(|x| x.get_response().get_max_y()).unwrap_or(0)
     }
         
@@ -67,7 +67,7 @@ impl Carriage {
     
     pub fn get_leaf(&self) -> &Leaf { &self.leaf }
     pub fn get_source(&self) -> &ActiveSource { &self.comp }
-    pub fn get_part(&self) -> &Option<String> { &self.part }
+    pub(in super) fn get_part(&self) -> &Option<String> { &self.part }
     
     pub fn set_response(&mut self, r: SourceResponse) {
         self.response = Some(DrawnResponse::new(r,&self.part));

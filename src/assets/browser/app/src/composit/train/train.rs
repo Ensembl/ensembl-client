@@ -40,27 +40,27 @@ impl Train {
      */
     
     /* are we active (ie should we scan around as the user does?) */
-    pub fn set_active(&mut self, yn: bool) {
+    pub(in super) fn set_active(&mut self, yn: bool) {
         self.active = yn;
         if yn { console!("{:?} is active",self.scale); } else { console!("{:?} is inactive",self.scale); }
     }
     
     /* which scale are we (ie which train)? */
-    pub fn get_scale(&self) -> &Scale { &self.scale }
+    pub(in super) fn get_scale(&self) -> &Scale { &self.scale }
     
     /* called when position changes, to update carriages */
-    pub fn set_position(&mut self, position_bp: f64) {
+    pub(in super) fn set_position(&mut self, position_bp: f64) {
         self.middle_leaf = (position_bp / self.scale.total_bp()).floor() as i64;
         self.position_bp = Some(position_bp);
     }
     
     /* called when no-longer preload, so flanks should be expanded */
-    pub fn enter_service(&mut self) {
+    pub(in super) fn enter_service(&mut self) {
         self.preload = false;
     }
     
     /* called when zoom changes, to update flank */
-    pub fn set_zoom(&mut self, bp_per_screen: f64) {
+    pub(in super) fn set_zoom(&mut self, bp_per_screen: f64) {
         self.ideal_flank = (bp_per_screen / self.scale.total_bp()) as i32;
         /* reset middle leaf after zoom */
         if let Some(pos) = self.position_bp {
@@ -157,7 +157,7 @@ impl Train {
     }
     
     /* Are all the carriages done? */
-    pub fn is_done(&mut self) -> bool {
+    pub(in super) fn is_done(&mut self) -> bool {
         for c in self.carriages.all_carriages() {
             if !c.is_done() { return false; }
         }
@@ -171,7 +171,7 @@ impl Train {
     }
     
     /* Maximum y of all carriages (for y endstop) */
-    pub fn get_max_y(&self) -> i32 {
+    pub(in super) fn get_max_y(&self) -> i32 {
         let mut max = 0;
         for c in self.carriages.all_carriages() {
             let y = c.get_max_y();

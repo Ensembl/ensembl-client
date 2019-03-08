@@ -9,8 +9,10 @@ use stdweb::web::{ ArrayBuffer, TypedArray, XmlHttpRequest, XhrResponseType };
 use tánaiste::Value;
 use url::Url;
 
+use composit::Leaf;
+use util::Cache;
 use super::{ 
-    XferClerk, XferConsumer, XferRequest,
+    XferClerk, XferConsumer, XferRequest, XferCache,
     HttpResponseConsumer, HttpManager, BackendConfig,
     BackendConfigBootstrap
 };
@@ -32,16 +34,13 @@ impl XferPaceManagerImpl {
     pub fn preflight(&mut self) -> bool {
         if self.underway < self.limit {
             self.underway += 1;
-            console!("take-off");
             true
         } else {
-            console!("queue");
             false
         }
     }
     
     pub fn land(&mut self) {
-        console!("land");
         self.underway -= 1;
     }
 }
@@ -75,23 +74,25 @@ impl PendingXferRequest {
 }
 
 struct PendingXferBatch {
-    requests: HashMap<(String,String),Vec<PendingXferRequest>>,
+    requests: HashMap<(String,String,String),Vec<PendingXferRequest>>,
     pace: XferPaceManager,
-    base: Url
+    base: Url,
+    cache: XferCache
 }
 
 impl PendingXferBatch {
-    pub fn new(base: &Url, pace: &XferPaceManager) -> PendingXferBatch {
+    pub fn new(base: &Url, pace: &XferPaceManager, cache: &XferCache) -> PendingXferBatch {
         PendingXferBatch {
-            requests: HashMap::<(String,String),Vec<PendingXferRequest>>::new(),
+            requests: HashMap::<(String,String,String),Vec<PendingXferRequest>>::new(),
             pace: pace.clone(),
-            base: base.clone()
+            base: base.clone(),
+            cache: cache.clone()
         }
     }
     
     pub fn add_request(&mut self, name: &str, leaf_spec: &str,
-                       code: &str, consumer: Box<XferConsumer>) {
-        let key = (name.to_string(),leaf_spec.to_string());
+                       code: &str, compo: &str, consumer: Box<XferConsumer>) {
+        let key = (name.to_string(),leaf_spec.to_string(),compo.to_string());
         self.requests.entry(key).or_insert_with(|| {
             Vec::<PendingXferRequest>::new()
         }).push(PendingXferRequest {
@@ -104,9 +105,9 @@ impl PendingXferBatch {
 
     pub fn fire(self, http_manager: &mut HttpManager) {
         let mut url = self.base.clone();
-        for (name,leaf_spec) in self.requests.keys() {
+        for (name,leaf_spec,compo) in self.requests.keys() {
             let mut qp = url.query_pairs_mut();
-            let part = format!("{}/{}",name,leaf_spec);
+            let part = format!("{}/{}/{}",name,leaf_spec,compo);
             qp.append_pair("parts",&part);
         }
         let xhr = XmlHttpRequest::new();
@@ -146,15 +147,13 @@ impl HttpResponseConsumer for PendingXferBatch {
         let data : SerdeValue = serde_json::from_str(&data).ok().unwrap();
         for resp in data.as_array().unwrap() {
             let key = (resp[0].as_str().unwrap().to_string(),
-                       resp[1].as_str().unwrap().to_string());
+                       resp[1].as_str().unwrap().to_string(),
+                       resp[2].as_str().unwrap().to_string());
             if let Some(mut requests) = self.requests.remove(&key) {
-                let mut recv = self.marshal(&resp[2]);
-                if requests.len() > 1 {
-                    for mut req in requests.drain(..) {
-                        req.go(recv.clone());
-                    }
-                } else {
-                    requests.remove(0).go(recv);
+                let mut recv = self.marshal(&resp[3]);
+                for mut req in requests.drain(..) {
+                    self.cache.put(&key.2,&key.1,recv.clone());
+                    req.go(recv.clone());
                 }
             }
         }
@@ -168,18 +167,20 @@ pub struct HttpXferClerkImpl {
     base: Url,
     paused: Vec<(XferRequest,Box<XferConsumer>)>,
     batch_in_prep: Option<PendingXferBatch>,
-    pace: XferPaceManager
+    pace: XferPaceManager,
+    cache: XferCache
 }
 
 impl HttpXferClerkImpl {
-    pub fn new(http_manager: &HttpManager, base: &Url) -> HttpXferClerkImpl {
+    pub fn new(http_manager: &HttpManager, base: &Url, xfercache: &XferCache) -> HttpXferClerkImpl {
         let mut out = HttpXferClerkImpl {
             http_manager: http_manager.clone(),
             remote_backend_config: None,
             base: base.clone(),
             paused: Vec::<(XferRequest,Box<XferConsumer>)>::new(),
             batch_in_prep: None,
-            pace: XferPaceManager::new(3)
+            pace: XferPaceManager::new(3),
+            cache: xfercache.clone()
         };
         out
     }
@@ -187,7 +188,7 @@ impl HttpXferClerkImpl {
     fn set_batch(&mut self) {
         let bc = self.remote_backend_config.as_ref().unwrap();
         let mut url = self.base.join(bc.get_data_url()).ok().unwrap();
-        self.batch_in_prep = Some(PendingXferBatch::new(&url,&self.pace));
+        self.batch_in_prep = Some(PendingXferBatch::new(&url,&self.pace,&self.cache));
     }
 
     pub fn tick(&mut self) {
@@ -211,7 +212,7 @@ impl HttpXferClerkImpl {
     
     pub fn run_request(&mut self, request: XferRequest, mut consumer: Box<XferConsumer>) {
         let leaf = request.get_leaf().clone();
-        let (name,code) = {
+        let (name,code,compo) = {
             let compo = request.get_source_name();
             let leaf = request.get_leaf().clone();
             let cfg =  self.remote_backend_config.as_ref().unwrap().clone();
@@ -224,17 +225,16 @@ impl HttpXferClerkImpl {
                 return;
             }
             let endpoint = endpoint.as_ref().unwrap();
-            (endpoint.get_url().map(|x| x.to_string().clone()),endpoint.get_code().clone())
+            (endpoint.get_url().map(|x| x.to_string().clone()),endpoint.get_code().clone(),compo)
         };
         let bc = self.remote_backend_config.as_ref().unwrap().clone();
         if let Some(name) = name {
-            let mut url = self.base.join(bc.get_data_url()).ok().unwrap();
-            {
-                let mut qp = url.query_pairs_mut();
-                let part = format!("{}/{}",name,leaf.get_spec());
-                qp.append_pair("parts",&part);
+            if let Some(recv) = self.cache.get(&compo,&leaf.get_spec()) {
+                consumer.consume(code.to_string(),recv);
+            } else {
+                let mut url = self.base.join(bc.get_data_url()).ok().unwrap();
+                self.batch_in_prep.as_mut().unwrap().add_request(&name,&leaf.get_spec(),&code.to_string(),compo,consumer);
             }
-            self.batch_in_prep.as_mut().unwrap().add_request(&name,&leaf.get_spec(),&code.to_string(),consumer);
         } else {
             consumer.consume(code.to_string(),vec!{});
         }
@@ -257,9 +257,9 @@ impl XferClerk for HttpXferClerkImpl {
 pub struct HttpXferClerk(Rc<RefCell<HttpXferClerkImpl>>);
 
 impl HttpXferClerk {
-    pub fn new(http_manager: &HttpManager, config: &BackendConfig, base: &Url) -> HttpXferClerk {
+    pub fn new(http_manager: &HttpManager, config: &BackendConfig, base: &Url, xfercache: &XferCache) -> HttpXferClerk {
         let mut out = HttpXferClerk(Rc::new(RefCell::new(
-            HttpXferClerkImpl::new(http_manager,&base))));
+            HttpXferClerkImpl::new(http_manager,&base,xfercache))));
         out.set_config(config.clone());
         out
     }
