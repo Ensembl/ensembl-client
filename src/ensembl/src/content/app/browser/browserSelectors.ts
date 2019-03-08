@@ -2,7 +2,8 @@ import { RootState } from 'src/rootReducer';
 import {
   BrowserOpenState,
   BrowserNavStates,
-  ChrLocation
+  ChrLocation,
+  CogList
 } from './browserState';
 import { TrackType } from './track-panel/trackPanelConfig';
 
@@ -39,29 +40,23 @@ export const getTrackPanelModalOpened = (state: RootState): boolean =>
 export const getTrackPanelModalView = (state: RootState): string =>
   state.browser.browserInfo.trackPanelModalView;
 
-export const getBrowserCogList = (state: RootState): CogList => {
-  return state.browser.browserCogList;
-};
+export const getBrowserCogList = (state: RootState): number =>
+  state.browser.browserInfo.browserCogList;
 
-export const getBrowserCogTrackList = (state: RootState): Array<number> => {
-  return state.browser.browserCogTrackList;
-};
+export const getBrowserCogTrackList = (state: RootState): CogList =>
+  state.browser.browserInfo.browserCogTrackList;
 
-export const getBrowserSelectedCog = (state: RootState): number | null => {
-  return state.browser.selectedCog;
-};
+export const getBrowserSelectedCog = (state: RootState): number | null =>
+  state.browser.browserInfo.selectedCog;
 
-export const getTrackConfigNames = (state: RootState): Any => {
-  return state.browser.trackConfigNames;
-};
+export const getTrackConfigNames = (state: RootState): any =>
+  state.browser.browserInfo.trackConfigNames;
 
-export const getTrackConfigLabel = (state: RootState): Any => {
-  return state.browser.trackConfigLabel;
-};
+export const getTrackConfigLabel = (state: RootState): any =>
+  state.browser.browserInfo.trackConfigLabel;
 
-export const getApplyToAll = (state: RootState): boolean => {
-  return state.browser.applyToAll;
-};
+export const getApplyToAll = (state: RootState): boolean =>
+  state.browser.browserInfo.applyToAll;
 
 export const getGenomeSelectorActive = (state: RootState): boolean =>
   state.browser.browserInfo.genomeSelectorActive;

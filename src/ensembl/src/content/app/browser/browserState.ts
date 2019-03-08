@@ -18,10 +18,15 @@ export type BrowserNavStates = [
 
 export type ChrLocation = [string, number, number];
 
-export type CogList = number;
+export type CogList = {
+  [key: string]: number;
+};
 
 export type BrowserState = Readonly<{
+  applyToAll: boolean;
   browserActivated: boolean;
+  browserCogList: number;
+  browserCogTrackList: CogList;
   browserNavOpened: boolean;
   browserNavStates: BrowserNavStates;
   browserOpenState: BrowserOpenState;
@@ -31,19 +36,19 @@ export type BrowserState = Readonly<{
   drawerView: string;
   genomeSelectorActive: boolean;
   selectedBrowserTab: TrackType;
+  selectedCog: number | null;
+  trackConfigNames: any;
+  trackConfigLabel: any;
   trackPanelModalOpened: boolean;
   trackPanelModalView: string;
   trackPanelOpened: boolean;
-  browserCogList: CogList;
-  selectedCog: number | null;
-  browserCogTrackList: Array<number>;
-  trackConfigNames: Any;
-  trackConfigLabel: Any;
-  applyToAll: boolean;
 }>;
 
 export const defaultBrowserState: BrowserState = {
+  applyToAll: false,
   browserActivated: false,
+  browserCogList: 0,
+  browserCogTrackList: {},
   browserNavOpened: false,
   browserNavStates: [true, true, true, true, true, true],
   browserOpenState: BrowserOpenState.SEMI_EXPANDED,
@@ -53,15 +58,12 @@ export const defaultBrowserState: BrowserState = {
   drawerView: '',
   genomeSelectorActive: false,
   selectedBrowserTab: TrackType.GENOMIC,
+  selectedCog: null,
+  trackConfigLabel: {},
+  trackConfigNames: {},
   trackPanelModalOpened: false,
   trackPanelModalView: '',
-  trackPanelOpened: true,
-  browserCogList: [],
-  selectedCog: null,
-  browserCogTrackList: [],
-  trackConfigNames: {},
-  trackConfigLabel: {},
-  applyToAll: false
+  trackPanelOpened: true
 };
 
 export type ExampleObjects = Readonly<{

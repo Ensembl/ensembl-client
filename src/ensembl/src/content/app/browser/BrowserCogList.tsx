@@ -1,54 +1,60 @@
 import React, {
   FunctionComponent,
-  useState,
-  ChangeEvent,
-  FormEvent,
+  RefObject,
   useEffect,
   useCallback
 } from 'react';
 import { connect } from 'react-redux';
 
+import BrowserCog from './BrowserCog';
+
+import BrowserTrackConfig from './browser-track-config/BrowserTrackConfig';
 import {
+  updateCogList,
+  updateCogTrackList,
+  updateSelectedCog
+} from './browserActions';
+import { RootState } from 'src/rootReducer';
+import { CogList } from './browserState';
+import {
+  getBrowserActivated,
   getBrowserCogList,
   getBrowserCogTrackList,
   getBrowserSelectedCog
 } from './browserSelectors';
-import BrowserCog from './BrowserCog';
-import BrowserTrackConfig from './browser-track-config/BrowserTrackConfig';
-
-import { updateCogList, updateCogTrackList } from './browserActions';
 
 import styles from './BrowserCogList.scss';
 
-import {
-  getBrowserNavOpened,
-  getChrLocation,
-  getBrowserActivated,
-  getDefaultChrLocation
-} from './browserSelectors';
-
-type BrowserCogListProps = {
+type StateProps = {
   browserActivated: boolean;
-  cogListRef: RefObject<HTMLDivElement>;
-  browserRef: RefObject<HTMLDivElement>;
-  browserCogList: BrowserCogList;
-  browserCogTrackList: Array<number>;
-  selectedCog: number | null;
-  updateCogList: (val: number) => void;
-  updateCogTrackList: (val: Array<number>) => void;
+  browserCogList: number;
+  browserCogTrackList: CogList;
+  selectedCog: any;
 };
+
+type DispatchProps = {
+  updateCogList: (cogList: number) => void;
+  updateCogTrackList: (track_y: CogList) => void;
+  updateSelectedCog: (index: number | null) => void;
+};
+
+type OwnProps = {
+  browserRef: RefObject<HTMLDivElement>;
+};
+
+type BrowserCogListProps = StateProps & DispatchProps & OwnProps;
 
 type BpaneScrollEvent = Event & {
   detail: {
     delta_y?: number;
-    track_y?: Array<number>;
+    track_y?: CogList;
   };
 };
 
 const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
   props: BrowserCogListProps
 ) => {
-  let { selectedCog, browserCogTrackList } = props;
+  const { selectedCog, browserCogTrackList } = props;
   const listenBpaneScroll = useCallback((event: Event) => {
     const bpaneScrollEvent = event as BpaneScrollEvent;
     if (
@@ -58,7 +64,6 @@ const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
       props.updateCogList(bpaneScrollEvent.detail.delta_y);
     }
     if (bpaneScrollEvent.detail.track_y) {
-      console.log('incoming', bpaneScrollEvent.detail.track_y);
       props.updateCogTrackList(bpaneScrollEvent.detail.track_y);
     }
   }, []);
@@ -67,42 +72,38 @@ const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
     const currentEl: HTMLDivElement = props.browserRef
       .current as HTMLDivElement;
     currentEl.addEventListener('bpane-scroll', listenBpaneScroll);
-  }, [props.cogListRef]);
-  let inline = { transform: 'translate(0,' + props.browserCogList + 'px)' };
+  }, []);
 
-  let cogs = Object.entries(browserCogTrackList).map(([name, pos]) => {
-    let inline = { top: pos + 'px' };
+  const cogs = Object.entries(browserCogTrackList).map(([name, pos]) => {
+    const posStyle = { top: pos + 'px' };
+
     return (
-      <div key={name} className={styles.browserCogOuter} style={inline}>
-        <BrowserCog cogActivated={props.selectedCog == name} index={name} />
+      <div key={name} className={styles.browserCogOuter} style={posStyle}>
+        <BrowserCog
+          cogActivated={props.selectedCog === +name}
+          index={+name}
+          updateSelectedCog={props.updateSelectedCog}
+        />
       </div>
     );
   });
 
+  const transformStyle = {
+    transform: 'translate(0,' + props.browserCogList + 'px)'
+  };
+
   return props.browserActivated ? (
     <div className={styles.browserTrackConfigOuter}>
       {selectedCog !== null && (
-        <BrowserTrackConfig
-          selectedCog={selectedCog}
-          ypos={browserCogTrackList[selectedCog]}
-        />
+        <BrowserTrackConfig ypos={browserCogTrackList[selectedCog]} />
       )}
       <div className={styles.browserCogListOuter}>
-        <div
-          className={styles.browserCogListInner}
-          style={inline}
-          ref={props.cogListRef}
-        >
+        <div className={styles.browserCogListInner} style={transformStyle}>
           {cogs}
         </div>
       </div>
     </div>
   ) : null;
-};
-
-const mapDispatchToProps: DispatchProps = {
-  updateCogList,
-  updateCogTrackList
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
@@ -111,6 +112,12 @@ const mapStateToProps = (state: RootState): StateProps => ({
   browserCogTrackList: getBrowserCogTrackList(state),
   selectedCog: getBrowserSelectedCog(state)
 });
+
+const mapDispatchToProps: DispatchProps = {
+  updateCogList,
+  updateCogTrackList,
+  updateSelectedCog
+};
 
 export default connect(
   mapStateToProps,
