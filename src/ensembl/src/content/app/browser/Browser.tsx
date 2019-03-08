@@ -109,7 +109,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
     const newChrLocationStr = getChrLocationStr(props.chrLocation);
     const newUrl =
       path
-        .substring(0, path.length - 1)
         .replace(':species', params.species)
         .replace(':objSymbol', params.objSymbol) +
       '?region=' +
