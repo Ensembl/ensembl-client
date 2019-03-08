@@ -8,10 +8,8 @@ import React, {
 
 import TrackPanelListItem from './TrackPanelListItem';
 import {
-  TrackItemColour,
   TrackPanelCategory,
   TrackPanelItem,
-  trackPanelConfig,
   TrackType
 } from '../trackPanelConfig';
 
