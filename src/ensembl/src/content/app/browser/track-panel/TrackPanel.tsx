@@ -27,7 +27,10 @@ import {
   getBrowserActivated,
   getTrackPanelModalOpened,
   getTrackPanelModalView,
-  getSelectedBrowserTab
+  getSelectedBrowserTab,
+  getTrackCategories,
+  getObjectInfo,
+  getExampleObjects
 } from '../browserSelectors';
 
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
@@ -38,12 +41,15 @@ import { TrackType } from './trackPanelConfig';
 import styles from './TrackPanel.scss';
 
 type StateProps = {
+  breakpointWidth: BreakpointWidth;
   browserActivated: boolean;
   drawerOpened: boolean;
   drawerView: string;
-  breakpointWidth: BreakpointWidth;
+  exampleObjects: any;
   launchbarExpanded: boolean;
+  objectInfo: any;
   selectedBrowserTab: TrackType;
+  trackCategories: [];
   trackPanelModalOpened: boolean;
   trackPanelModalView: string;
   trackPanelOpened: boolean;
@@ -94,13 +100,16 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
                 browserRef={props.browserRef}
                 drawerView={props.drawerView}
                 launchbarExpanded={props.launchbarExpanded}
+                objectInfo={props.objectInfo}
                 selectedBrowserTab={props.selectedBrowserTab}
                 toggleDrawer={props.toggleDrawer}
+                trackCategories={props.trackCategories}
                 updateDrawerView={props.changeDrawerView}
               />
               {props.trackPanelModalOpened ? (
                 <TrackPanelModal
                   closeTrackPanelModal={props.closeTrackPanelModal}
+                  exampleObjects={props.exampleObjects}
                   launchbarExpanded={props.launchbarExpanded}
                   trackPanelModalView={props.trackPanelModalView}
                 />
@@ -118,8 +127,11 @@ const mapStateToProps = (state: RootState): StateProps => ({
   browserActivated: getBrowserActivated(state),
   drawerOpened: getDrawerOpened(state),
   drawerView: getDrawerView(state),
+  exampleObjects: getExampleObjects(state),
   launchbarExpanded: getLaunchbarExpanded(state),
+  objectInfo: getObjectInfo(state),
   selectedBrowserTab: getSelectedBrowserTab(state),
+  trackCategories: getTrackCategories(state),
   trackPanelModalOpened: getTrackPanelModalOpened(state),
   trackPanelModalView: getTrackPanelModalView(state),
   trackPanelOpened: getTrackPanelOpened(state)

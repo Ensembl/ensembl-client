@@ -6,7 +6,11 @@ import React, {
   useState,
   useCallback
 } from 'react';
-import { TrackPanelItem, trackPanelIconConfig } from '../trackPanelConfig';
+import {
+  TrackItemColour,
+  TrackPanelItem,
+  trackPanelIconConfig
+} from '../trackPanelConfig';
 
 import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
@@ -27,7 +31,7 @@ const trackPrefix = '';
 const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   props: TrackPanelListItemProps
 ) => {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
   const [trackStatus, setTrackStatus] = useState('on');
 
   const { browserRef, drawerView, track } = props;
@@ -46,6 +50,17 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
 
     return classNames;
   }, [drawerView]);
+
+  const getBoxClasses = (colour: any) => {
+    let classNames = styles.box;
+
+    if (colour) {
+      const colourValue = TrackItemColour[colour];
+      classNames += ` ${styles[colourValue]}`;
+    }
+
+    return classNames;
+  };
 
   const changeDrawerViewHandler = () => {
     props.updateDrawerView(props.track.name);
@@ -76,9 +91,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     <Fragment>
       <dd className={getListItemClasses()}>
         <label>
-          {track.color && (
-            <span className={`${styles.box} ${styles[track.color]}`} />
-          )}
+          {track.color && <span className={getBoxClasses(track.color)} />}
           <span className={styles.mainText}>{track.label}</span>
           {track.selectedInfo && (
             <span className={styles.selectedInfo}>{track.selectedInfo}</span>

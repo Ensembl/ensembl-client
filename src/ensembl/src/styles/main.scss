@@ -23,11 +23,11 @@ html {
 }
 
 a {
-  color: $ens-blue;
+  color: $ens-dark-blue;
   text-decoration: none;
 
   &.inactive {
-    color: #666;
+    color: $ens-dark-grey;
   }
 }
 

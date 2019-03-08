@@ -2,14 +2,30 @@ import React, { FunctionComponent } from 'react';
 
 import styles from '../Drawer.scss';
 
-const DrawerGene: FunctionComponent = () => {
+type DrawerGeneProps = {
+  objectInfo: any;
+};
+
+const DrawerGene: FunctionComponent<DrawerGeneProps> = (
+  props: DrawerGeneProps
+) => {
+  const { objectInfo } = props;
+
+  let geneSymbol = objectInfo.obj_symbol;
+  let geneStableId = objectInfo.stable_id;
+
+  if (objectInfo.obj_type === 'transcript') {
+    geneSymbol = objectInfo.associated_object.obj_symbol;
+    geneStableId = objectInfo.associated_object.stable_id;
+  }
+
   return (
     <dl className={styles.drawerView}>
       <dd className="clearfix">
         <label htmlFor="">Gene</label>
         <div className={styles.details}>
           <p>
-            <span className={styles.mainDetail}>BRCA2</span>
+            <span className={styles.mainDetail}>{geneSymbol}</span>
           </p>
         </div>
       </dd>
@@ -17,7 +33,7 @@ const DrawerGene: FunctionComponent = () => {
       <dd className="clearfix">
         <label htmlFor="">Stable ID</label>
         <div className={styles.details}>
-          <p>ENSG00000139618</p>
+          <p>{geneStableId}</p>
         </div>
       </dd>
 

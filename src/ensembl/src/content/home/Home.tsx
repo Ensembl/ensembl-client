@@ -1,11 +1,54 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import styles from './Home.scss';
+import { fetchExampleObjectsData } from '../app/browser/browserActions';
+import { getExampleObjects } from '../app/browser/browserSelectors';
+import { RootState } from 'src/rootReducer';
 
-type HomeProps = {};
+type StateProps = {
+  exampleObjects: {};
+};
+
+type DispatchProps = {
+  fetchExampleObjectsData: () => void;
+};
+
+type OwnProps = {};
+
+type HomeProps = StateProps & DispatchProps & OwnProps;
 
 const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
+  useEffect(() => {
+    props.fetchExampleObjectsData();
+  }, []);
+
+  const exampleObjectsTotal = Object.keys(props.exampleObjects).length;
+
+  const getExampleObjectNode = (exampleObject: any) => {
+    const {
+      assembly,
+      chromosome,
+      display_name,
+      location,
+      object_type,
+      species,
+      stable_id
+    } = exampleObject;
+    const assemblyStr = `${assembly.name}_demo`;
+    const regionStr = `${chromosome}:${location.start}-${location.end}`;
+    const path = `/app/browser/${assemblyStr}/${display_name}/${regionStr}`;
+
+    return (
+      <dd key={stable_id}>
+        <Link to={path}>
+          {species} {object_type} {display_name}
+        </Link>
+      </dd>
+    );
+  };
+
   return (
     <div className={styles.home}>
       <section className={styles.search}>
@@ -18,21 +61,16 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
           <h2>Refine results</h2>
         </div>
       </section>
-      <section className={styles.previouslyViewed}>
-        <h2>Previously viewed</h2>
-        <dl>
-          <dd>
-            <Link to="/app/browser/human/BRCA2/13:32315474-32400266">
-              Human gene BRCA2
-            </Link>
-          </dd>
-          <dd>
-            <Link to="/app/browser/human/TTN/2:178525989-178830802">
-              Human transcript TTN
-            </Link>
-          </dd>
-        </dl>
-      </section>
+      {exampleObjectsTotal ? (
+        <section className={styles.previouslyViewed}>
+          <h2>Previously viewed</h2>
+          <dl>
+            {Object.values(props.exampleObjects).map((exampleObject) =>
+              getExampleObjectNode(exampleObject)
+            )}
+          </dl>
+        </section>
+      ) : null}
       <section className={styles.siteMessage}>
         <h4>Using the site</h4>
         <p>
@@ -52,4 +90,15 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
   );
 };
 
-export default Home;
+const mapStateToProps = (state: RootState) => ({
+  exampleObjects: getExampleObjects(state)
+});
+
+const mapDispatchToProps = {
+  fetchExampleObjectsData
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Home);

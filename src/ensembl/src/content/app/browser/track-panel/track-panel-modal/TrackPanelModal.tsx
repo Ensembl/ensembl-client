@@ -13,6 +13,7 @@ import styles from './TrackPanelModal.scss';
 
 type TrackPanelModalProps = {
   closeTrackPanelModal: () => void;
+  exampleObjects: any;
   launchbarExpanded: boolean;
   trackPanelModalView: string;
 };
@@ -35,7 +36,7 @@ const TrackPanelModal: FunctionComponent<TrackPanelModalProps> = (
       case 'tracks-manager':
         return <TracksManager />;
       case 'bookmarks':
-        return <TrackPanelBookmarks />;
+        return <TrackPanelBookmarks exampleObjects={props.exampleObjects} />;
       case 'personal-data':
         return <PersonalData />;
       case 'share':

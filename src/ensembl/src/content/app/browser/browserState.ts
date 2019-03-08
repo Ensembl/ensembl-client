@@ -42,7 +42,7 @@ export type BrowserState = Readonly<{
   applyToAll: boolean;
 }>;
 
-export const defaultState: BrowserState = {
+export const defaultBrowserState: BrowserState = {
   browserActivated: false,
   browserNavOpened: false,
   browserNavStates: [true, true, true, true, true, true],
@@ -62,6 +62,34 @@ export const defaultState: BrowserState = {
   trackConfigNames: {},
   trackConfigLabel: {},
   applyToAll: false
+};
+
+export type ExampleObjects = Readonly<{
+  exampleObjectsFetchFailed: boolean;
+  exampleObjectsFetching: boolean;
+  examples: {
+    [key: string]: {};
+  };
+}>;
+
+export const defaultExampleObjects: ExampleObjects = {
+  exampleObjectsFetchFailed: false,
+  exampleObjectsFetching: false,
+  examples: {}
+};
+
+export type ObjectState = Readonly<{
+  objectFetchFailed: boolean;
+  objectFetching: boolean;
+  objectInfo: object;
+  trackCategories: [];
+}>;
+
+export const defaultObjectState: ObjectState = {
+  objectFetchFailed: false,
+  objectFetching: false,
+  objectInfo: {},
+  trackCategories: []
 };
 
 export const trackPanelState = (

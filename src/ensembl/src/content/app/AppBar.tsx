@@ -11,15 +11,15 @@ type AppBarProps = {
 const AppBar: FunctionComponent<AppBarProps> = memo((props: AppBarProps) => (
   <section className={styles.appBar}>
     <div className={styles.top}>
-      <div>{props.currentApp}</div>
+      <div>Genome browser</div>
     </div>
     <div>
       <dl className={styles.selectedSpecies}>
         <dd>
-          <strong>Human</strong> GRCh38.p10
+          <strong>Human</strong> GRCh38.p12
         </dd>
         <dd>
-          <a className={`${styles.addSpecies} inactive`}>Change</a>
+          {/* <a className={`${styles.addSpecies} inactive`}>Change</a> */}
         </dd>
       </dl>
       <div className={styles.helpLink}>

@@ -10,6 +10,7 @@ type BrowserTabsProps = {
   selectBrowserTab: (selectedBrowserTab: TrackType) => void;
   selectedBrowserTab: TrackType;
   toggleDrawer: (drawerOpened: boolean) => void;
+  trackPanelModalOpened: boolean;
 };
 
 type ClickHandlers = {
@@ -25,12 +26,12 @@ const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
   const getBrowserTabClasses = (trackType: TrackType) => {
     let classNames = styles.browserTab;
 
-    if (props.selectedBrowserTab === trackType) {
-      classNames += ` ${styles.browserTabActive}`;
-
-      if (props.drawerOpened === false) {
-        classNames += ` ${styles.browserTabArrow}`;
-      }
+    if (
+      props.selectedBrowserTab === trackType &&
+      props.drawerOpened === false &&
+      props.trackPanelModalOpened === false
+    ) {
+      classNames += ` ${styles.browserTabActive} ${styles.browserTabArrow}`;
     }
 
     return classNames;
