@@ -42,6 +42,10 @@
     margin: 0 3px;
   }
 
+  .nonLabelValue {
+    text-transform: lowercase;
+  }
+
   &.browserInfoGreyed {
     .value,
     .nonLabelValue {

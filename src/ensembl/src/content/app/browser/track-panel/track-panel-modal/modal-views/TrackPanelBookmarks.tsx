@@ -3,25 +3,51 @@ import { Link } from 'react-router-dom';
 
 import styles from '../TrackPanelModal.scss';
 
-const TrackPanelBookmarks: FunctionComponent = () => {
+type TrackPanelBookmarksProps = {
+  exampleObjects: any;
+};
+
+const TrackPanelBookmarks: FunctionComponent<TrackPanelBookmarksProps> = (
+  props: TrackPanelBookmarksProps
+) => {
+  const exampleObjectsTotal = Object.keys(props.exampleObjects).length;
+
+  const getExampleObjectNode = (exampleObject: any) => {
+    const {
+      assembly,
+      chromosome,
+      display_name,
+      location,
+      object_type,
+      species,
+      stable_id
+    } = exampleObject;
+    const assemblyStr = `${assembly.name}_demo`;
+    const regionStr = `${chromosome}:${location.start}-${location.end}`;
+    const path = `/app/browser/${assemblyStr}/${display_name}/${regionStr}`;
+
+    return (
+      <dd key={stable_id}>
+        <Link to={path}>
+          {species} {object_type} {display_name}
+        </Link>
+      </dd>
+    );
+  };
+
   return (
     <section className="trackPanelBookmarks">
       <h3>Bookmarks</h3>
       <p>Save multiple browser configurations</p>
       <p>Not ready yet &hellip;</p>
-      <dl className={styles.previouslyViewed}>
-        <dt>Previously viewed</dt>
-        <dd>
-          <Link to="/app/browser/human/BRCA2/13:32315474-32400266">
-            Human gene BRCA2
-          </Link>
-        </dd>
-        <dd>
-          <Link to="/app/browser/human/TTN/2:178525989-178830802">
-            Human transcript TTN
-          </Link>
-        </dd>
-      </dl>
+      {exampleObjectsTotal ? (
+        <dl className={styles.previouslyViewed}>
+          <dt>Previously viewed</dt>
+          {Object.values(props.exampleObjects).map((exampleObject) =>
+            getExampleObjectNode(exampleObject)
+          )}
+        </dl>
+      ) : null}
     </section>
   );
 };

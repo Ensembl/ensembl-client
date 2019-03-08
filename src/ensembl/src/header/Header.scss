@@ -8,13 +8,21 @@
   padding: 2px 20px;
 }
 
-.companyText {
+.homeLink {
   display: inline-block;
   font-size: 14px;
   font-weight: $global-weight-bold;
 
   a {
     color: $ens-white;
+  }
+
+  img {
+    bottom: 2px;
+    height: 16px;
+    margin-right: 2px;
+    position: relative;
+    width: 16px;
   }
 }
 
