@@ -1,6 +1,7 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
+use std::sync::{ Arc, Mutex };
 
 use serde_json::Value as SerdeValue;
 use stdweb::unstable::TryInto;
@@ -16,6 +17,52 @@ use super::{
 
 use super::backendconfig::BackendBytecode;
 
+struct XferPaceManagerImpl {
+    limit: i32,
+    underway: i32
+}
+
+impl XferPaceManagerImpl {
+    pub fn new(limit: i32) -> XferPaceManagerImpl {
+        XferPaceManagerImpl {
+            limit, underway: 0
+        }
+    }
+    
+    pub fn preflight(&mut self) -> bool {
+        if self.underway < self.limit {
+            self.underway += 1;
+            console!("take-off");
+            true
+        } else {
+            console!("queue");
+            false
+        }
+    }
+    
+    pub fn land(&mut self) {
+        console!("land");
+        self.underway -= 1;
+    }
+}
+
+#[derive(Clone)]
+struct XferPaceManager(Arc<Mutex<XferPaceManagerImpl>>);
+
+impl XferPaceManager {
+    pub fn new(limit: i32) -> XferPaceManager {
+        XferPaceManager(Arc::new(Mutex::new(XferPaceManagerImpl::new(limit))))
+    }
+    
+    pub fn preflight(&self) -> bool {
+        self.0.lock().unwrap().preflight()
+    }
+    
+    pub fn land(&mut self) {
+        self.0.lock().unwrap().land();
+    }
+}
+
 struct PendingXferRequest {
     code: String,
     consumer: Box<XferConsumer>
@@ -29,13 +76,15 @@ impl PendingXferRequest {
 
 struct PendingXferBatch {
     requests: HashMap<(String,String),Vec<PendingXferRequest>>,
+    pace: XferPaceManager,
     base: Url
 }
 
 impl PendingXferBatch {
-    pub fn new(base: &Url) -> PendingXferBatch {
+    pub fn new(base: &Url, pace: &XferPaceManager) -> PendingXferBatch {
         PendingXferBatch {
             requests: HashMap::<(String,String),Vec<PendingXferRequest>>::new(),
+            pace: pace.clone(),
             base: base.clone()
         }
     }
@@ -51,14 +100,15 @@ impl PendingXferBatch {
         });
     }    
 
+    pub fn empty(&self) -> bool { self.requests.len() == 0 }
+
     pub fn fire(self, http_manager: &mut HttpManager) {
-        if self.requests.len() == 0 { return; }
         let mut url = self.base.clone();
         for (name,leaf_spec) in self.requests.keys() {
             let mut qp = url.query_pairs_mut();
             let part = format!("{}/{}",name,leaf_spec);
             qp.append_pair("parts",&part);
-        }        
+        }
         let xhr = XmlHttpRequest::new();
         xhr.set_response_type(XhrResponseType::ArrayBuffer);
         xhr.open("GET",&url.as_str());
@@ -108,6 +158,7 @@ impl HttpResponseConsumer for PendingXferBatch {
                 }
             }
         }
+        self.pace.land();
     }
 }
 
@@ -116,7 +167,8 @@ pub struct HttpXferClerkImpl {
     remote_backend_config: Option<BackendConfig>,
     base: Url,
     paused: Vec<(XferRequest,Box<XferConsumer>)>,
-    batch_in_prep: Option<PendingXferBatch>
+    batch_in_prep: Option<PendingXferBatch>,
+    pace: XferPaceManager
 }
 
 impl HttpXferClerkImpl {
@@ -126,7 +178,8 @@ impl HttpXferClerkImpl {
             remote_backend_config: None,
             base: base.clone(),
             paused: Vec::<(XferRequest,Box<XferConsumer>)>::new(),
-            batch_in_prep: None
+            batch_in_prep: None,
+            pace: XferPaceManager::new(3)
         };
         out
     }
@@ -134,12 +187,15 @@ impl HttpXferClerkImpl {
     fn set_batch(&mut self) {
         let bc = self.remote_backend_config.as_ref().unwrap();
         let mut url = self.base.join(bc.get_data_url()).ok().unwrap();
-        self.batch_in_prep = Some(PendingXferBatch::new(&url));
+        self.batch_in_prep = Some(PendingXferBatch::new(&url,&self.pace));
     }
 
     pub fn tick(&mut self) {
-        self.batch_in_prep.take().unwrap().fire(&mut self.http_manager);
-        self.set_batch();
+        if !self.batch_in_prep.as_ref().unwrap().empty() && self.pace.preflight() {
+            let batch = self.batch_in_prep.take().unwrap();
+            batch.fire(&mut self.http_manager);
+            self.set_batch();
+        }
     }
 
     pub fn set_config(&mut self, bc: BackendConfig) {
@@ -222,3 +278,4 @@ impl XferClerk for HttpXferClerk {
         self.0.borrow_mut().satisfy(request,consumer);
     }
 }
+

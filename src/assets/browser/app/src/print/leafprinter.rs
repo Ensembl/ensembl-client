@@ -44,7 +44,9 @@ impl LeafPrinter {
                           e: &mut PrintEdition) {
         for c in comps.iter_mut() {
             if c.is_on() {
+                let old_len = self.progs.size();
                 c.into_objects(&mut self.progs,&mut self.ds,e);
+                console!("{:?} has {} objects",c,self.progs.size()-old_len);
             }
         }
     }
