@@ -14,6 +14,11 @@ impl Leaf {
         Leaf { hindex, scale: scale.clone(), stick: stick.clone() }
     }
     
+    pub fn containing(stick: &Stick, pos: f64, scale: &Scale) -> Leaf {
+        let hindex = (pos / scale.total_bp()).floor() as i64;
+        Leaf::new(stick,hindex,scale)
+    }
+    
     pub fn get_stick(&self) -> &Stick { &self.stick }
     pub fn get_index(&self) -> i64 { self.hindex }
     pub fn get_scale(&self) -> &Scale { &self.scale }    

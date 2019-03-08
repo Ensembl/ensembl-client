@@ -164,11 +164,6 @@ impl TrainManager {
         }
     }
 
-    
-    pub fn add_component(&mut self, cm: &mut ComponentManager, c: &ActiveSource) {
-        self.each_train(|tr| tr.add_component(cm,&c));
-    }
-    
     /* used by COMPOSITOR to determine y-limit for viewport scrolling */
     pub fn get_max_y(&self) -> i32 {
         let mut max = 0;

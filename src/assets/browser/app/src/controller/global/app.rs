@@ -13,7 +13,7 @@ use composit::{
 use controller::input::{ Action, actions_run, startup_actions };
 use controller::global::{ AppRunnerWeak, AppRunner };
 use controller::output::{ OutputAction, Report, ViewportReport };
-use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk };
+use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, XferCache, XferClerk };
 use debug::add_debug_sticks;
 use dom::domutil;
 use mosquito::Bottle;
@@ -43,27 +43,27 @@ impl App {
         let browser_el = browser_el.clone();
         let bottle_el = domutil::query_selector2(&outer_el.clone().into(),".bottle");
         let swarm_el = domutil::query_selector2(&outer_el.clone().into(),".swarm");
-        console!("browser {:?} : {:?}",browser_el,bottle_el);
         let mut bottle = Bottle::new(bottle_el,swarm_el.unwrap());
         domutil::inner_html(&browser_el.clone().into(),CANVAS);
         let canv_el : HtmlElement = domutil::query_selector(&browser_el.clone().into(),"canvas").try_into().unwrap();
         let bsm = BackendStickManager::new(config);
         let mut csm = CombinedStickManager::new(bsm);
         add_debug_sticks(&mut csm);
-        let mut http_clerk = HttpXferClerk::new(&http_manager,config,config_url);
+        let cache = XferCache::new(5000);
+        let clerk = HttpXferClerk::new(http_manager,config,config_url,&cache);
         let mut out = App {
             ar: AppRunnerWeak::none(),
             browser_el: browser_el.clone(),
             canv_el: canv_el.clone(),
             printer: Arc::new(Mutex::new(Printer::new(&canv_el))),
             stage:  Arc::new(Mutex::new(Stage::new())),
-            compo: Arc::new(Mutex::new(Compositor::new())),
+            compo: Arc::new(Mutex::new(Compositor::new(&cache,Box::new(clerk.clone())))),
             state: Arc::new(Mutex::new(StateManager::new())),
             sticks: Box::new(csm),
             report: None,
             viewport: None,
             csl: SourceManagerList::new(),
-            http_clerk: HttpXferClerk::new(http_manager,config,config_url),
+            http_clerk: clerk,
             als: AllLandscapes::new()
         };
         let dsm = CombinedSourceManager::new(&tc,config,&out.als,&out.http_clerk);

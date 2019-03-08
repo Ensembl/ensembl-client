@@ -1,36 +1,80 @@
 use composit::{
-    ActiveSource, Leaf, Train, ComponentManager, Stick, TrainManager
+    ActiveSource, Leaf, Train, ComponentManager, Stick, TrainManager,
+    Scale, ComponentSet
 };
 use controller::global::AppRunner;
 use controller::output::Report;
+use data::{ Psychic, PsychicPacer, XferCache, XferRequest, XferClerk };
 use types::DOWN;
 
-const MS_PER_UPDATE : f64 = 0.;
+const MS_PER_UPDATE : f64 = 300.;
+const MS_PRIME_DELAY: f64 = 2000.;
 
 pub struct Compositor {
     train_manager: TrainManager,
     bp_per_screen: f64,
     updated: bool,
+    prime_delay: Option<f64>,
     last_updated: Option<f64>,
-    components: ComponentManager
+    components: ComponentManager,
+    wanted_componentset: ComponentSet,
+    current_componentset: ComponentSet,
+    psychic: Psychic,
+    pacer: PsychicPacer,
+    xfercache: XferCache,
+    xferclerk: Box<XferClerk>
 }
 
 impl Compositor {
-    pub fn new() -> Compositor {
+    pub fn new(xfercache: &XferCache, xferclerk: Box<XferClerk>) -> Compositor {
         let mut out = Compositor {
             train_manager: TrainManager::new(),
             components: ComponentManager::new(),
             bp_per_screen: 1.,
             updated: true,
-            last_updated: None
+            last_updated: None,
+            wanted_componentset: ComponentSet::new(),
+            current_componentset: ComponentSet::new(),
+            psychic: Psychic::new(),
+            prime_delay: None,
+            pacer: PsychicPacer::new(30000.),
+            xfercache: xfercache.clone(),
+            xferclerk: xferclerk
         };
-        out.set_zoom(1.); // XXX
         out
     }
 
     pub fn get_prop_trans(&self) -> f32 { self.train_manager.get_prop_trans() }
 
+    fn prime_cache(&mut self, t: f64) {
+        if self.prime_delay.is_none() {
+            self.prime_delay = Some(t);
+        }
+        if t - self.prime_delay.unwrap() > MS_PRIME_DELAY {
+            if let Some(leafs) = self.psychic.get_leafs() {
+                let leafs = self.pacer.filter_leafs(leafs,t);
+                for leaf in leafs.iter() {
+                    for comp in self.wanted_componentset.list_names() {
+                        self.xfercache.prime(&mut self.xferclerk,&comp,&leaf);
+                    }
+                }
+            }
+        } else {
+            console!("too soon!");
+        }
+    }
+
     pub fn tick(&mut self, t: f64) {
+        /* Manage components */
+        for added in self.wanted_componentset.not_in(&self.current_componentset).iter() {
+            self.add_component(added.clone());
+        }
+        for removed in self.current_componentset.not_in(&self.wanted_componentset).iter() {
+            self.components.remove(removed.clone().get_name());
+        }
+        self.current_componentset = self.wanted_componentset.clone();
+        /* Warm up xfercache */
+        self.prime_cache(t);
         /* Kick off requests */
         self.components.tick(t);
         /* Move into future */
@@ -52,18 +96,23 @@ impl Compositor {
     }
 
     pub fn set_stick(&mut self, st: &Stick) {
+        self.prime_delay = None; // Force priming delay as screen is completely invalid
         self.train_manager.set_stick(st,self.bp_per_screen);
+        self.psychic.set_stick(st);
         self.updated = true;
     }
 
     pub fn set_position(&mut self, position_bp: f64) {
         self.train_manager.set_position(position_bp);
+        self.psychic.set_middle(position_bp as i64);
         self.updated = true;
     }
     
     pub fn set_zoom(&mut self, bp_per_screen: f64) {
         self.bp_per_screen = bp_per_screen;
         self.train_manager.set_zoom(&mut self.components, bp_per_screen);
+        self.psychic.set_scale(&Scale::best_for_screen(bp_per_screen));
+        self.psychic.set_width(bp_per_screen as i32);
         self.updated = true;
     }
 
@@ -75,7 +124,11 @@ impl Compositor {
         self.train_manager.get_transition_train()
     }
     
-    pub fn add_component(&mut self, c: ActiveSource) {
+    pub fn get_component_set(&mut self) -> &mut ComponentSet {
+        &mut self.wanted_componentset
+    }
+    
+    fn add_component(&mut self, c: ActiveSource) {
         {
             let cc = &mut self.components;
             self.train_manager.each_train(|sc|
@@ -86,10 +139,6 @@ impl Compositor {
     }
 
     fn get_max_y(&self) -> i32 { self.train_manager.get_max_y() }
-
-    pub fn remove(&mut self, name: &str) {
-        self.components.remove(name);
-    }
     
     pub fn all_printing_leafs(&self) -> Vec<Leaf> {
         self.train_manager.all_printing_leafs()
