@@ -97,7 +97,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
   };
 
   useEffect(() => {
-    const { location } = props.match.params;
+    const location = props.history.location.search;
     const chrLocation = getChrLocationFromStr(location);
 
     props.updateDefaultChrLocation(chrLocation);
@@ -107,10 +107,13 @@ export const Browser: FunctionComponent<BrowserProps> = (
   useEffect(() => {
     const { path, params } = props.match;
     const newChrLocationStr = getChrLocationStr(props.chrLocation);
-    const newUrl = path
-      .replace(':species', params.species)
-      .replace(':objSymbol', params.objSymbol)
-      .replace(':location', newChrLocationStr);
+    const newUrl =
+      path
+        .substring(0, path.length - 1)
+        .replace(':species', params.species)
+        .replace(':objSymbol', params.objSymbol) +
+      '?region=' +
+      newChrLocationStr;
 
     props.history.replace(newUrl);
   }, [props.chrLocation]);

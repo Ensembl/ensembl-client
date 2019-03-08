@@ -66,7 +66,8 @@ export const App: FunctionComponent<AppProps> = (props: AppProps) => {
           <Route path={`${url}/global-search`} component={GlobalSearch} />
           <Route path={`${url}/species-selector`} component={SpeciesSelector} />
           <Route
-            path={`${url}/browser/:species/:objSymbol/:location`}
+            // Using '*' here as query string is not supported in the Route
+            path={`${url}/browser/:species/:objSymbol/*`}
             component={Browser}
           />
         </Switch>

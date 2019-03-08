@@ -15,7 +15,10 @@ const googleAnalyticsMiddleWare = (store: any) => (next: any) => (
   if (action.meta && action.meta.ga && action.meta.ga.category) {
     // The action and category fields are mandatory
     GoogleAnalyticsTracking.trackEvent(action);
-  } else if (action.type === LOCATION_CHANGE) {
+  } else if (
+    action.type === LOCATION_CHANGE &&
+    action.payload.action !== 'REPLACE'
+  ) {
     // If the location history has been changed, track it as a pageview
     GoogleAnalyticsTracking.trackPageView(
       action.payload.location.pathname +
