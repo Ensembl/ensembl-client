@@ -104,7 +104,8 @@ const splitMatch = ({ string, matchedSubsctrings }: SplitterProps) => {
     // if there is an unmatched part of the string before the first match,
     // add it as the first item in the list of substrings
     const [currentStartIndex, currentEndIndex] = current;
-    let nextStartIndex = index < array.length - 1 ? array[index + 1][0] : null;
+    const nextStartIndex =
+      index < array.length - 1 ? array[index + 1][0] : null;
 
     if (index === 0 && current[0] > 0) {
       result = [
