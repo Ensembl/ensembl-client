@@ -12,6 +12,7 @@ import styles from './SpeciesSearchMatch.scss';
 
 type Props = {
   match: SearchMatch;
+  onClick: (match: SearchMatch) => void;
 };
 
 type SplitterProps = {
@@ -41,7 +42,7 @@ const SpeciesSearchMatch = ({ match }: Props) => {
   );
 };
 
-const CommonName = ({ match }: Props) => {
+const CommonName = ({ match }: { match: SearchMatch }) => {
   const { description, matched_substrings } = match;
 
   const descriptionMatches = matched_substrings.filter(
@@ -56,7 +57,7 @@ const CommonName = ({ match }: Props) => {
   return <span>{formatString({ string: description, substrings })}</span>;
 };
 
-const ScientificName = ({ match }: Props) => {
+const ScientificName = ({ match }: { match: SearchMatch }) => {
   const { scientific_name, matched_substrings } = match;
   if (!scientific_name) return null;
 
