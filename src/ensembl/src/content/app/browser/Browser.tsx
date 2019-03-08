@@ -159,13 +159,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
           {props.browserNavOpened && !props.drawerOpened ? (
             <BrowserNavBar browserRef={browserRef} />
           ) : null}
-          <BrowserImage
-            browserRef={browserRef}
-            browserNavOpened={props.browserNavOpened}
-            updateBrowserActivated={props.updateBrowserActivated}
-            updateBrowserNavStates={props.updateBrowserNavStates}
-            updateChrLocation={props.updateChrLocation}
-          />
+          <BrowserImage browserRef={browserRef} />
         </div>
         <TrackPanel browserRef={browserRef} />
         {props.drawerOpened && <Drawer />}

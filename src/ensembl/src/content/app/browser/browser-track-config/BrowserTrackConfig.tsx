@@ -1,11 +1,4 @@
-import React, {
-  FunctionComponent,
-  useState,
-  ChangeEvent,
-  FormEvent,
-  useCallback,
-  useEffect
-} from 'react';
+import React, { FunctionComponent, useCallback, CSSProperties } from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -18,7 +11,8 @@ import {
   getTrackConfigNames,
   getTrackConfigLabel,
   getApplyToAll,
-  getBrowserCogTrackList
+  getBrowserCogTrackList,
+  getBrowserSelectedCog
 } from '../browserSelectors';
 
 import styles from './BrowserTrackConfig.scss';
@@ -29,39 +23,54 @@ import trackHeightBtn from 'static/img/browser/icon_tracks_height_grey.svg';
 import trackLockBtn from 'static/img/browser/icon_tracks_lock_open_grey.svg';
 import trackHighlightBtn from 'static/img/browser/icon_tracks_highlight_grey.svg';
 import trackMoveBtn from 'static/img/browser/icon_tracks_move_grey.svg';
+import { RootState } from 'src/rootReducer';
+import { CogList } from '../browserState';
 
-type BrowserTrackConfigProps = {
-  selectedCog: number | null;
-  ypos: number;
-  trackConfigName: boolean;
-  trackConfigLabel: boolean;
+type StateProps = {
+  applyToAll: boolean;
+  browserCogTrackList: CogList;
+  selectedCog: any;
+  trackConfigLabel: any;
+  trackConfigNames: any;
 };
+
+type DispatchProps = {
+  updateApplyToAll: (yn: boolean) => void;
+  updateTrackConfigLabel: (selectedCog: any, sense: boolean) => void;
+  updateTrackConfigNames: (selectedCog: any, sense: boolean) => void;
+};
+
+type OwnProps = {
+  ypos: number;
+};
+
+type BrowserTrackConfigProps = StateProps & DispatchProps & OwnProps;
 
 const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
   props: BrowserTrackConfigProps
 ) => {
   /* TODO: not inline */
-  let inline = {
-    top: props.ypos + 'px',
+  const inline: CSSProperties = {
+    position: 'absolute',
     right: '40px',
-    position: 'absolute'
+    top: props.ypos + 'px'
   };
-  let {
-    selectedCog,
-    updateTrackConfigNames,
-    updateTrackConfigLabel,
-    updateApplyToAll,
-    trackConfigNames,
-    trackConfigLabel,
+
+  const {
     applyToAll,
-    browserCogTrackList
+    browserCogTrackList,
+    selectedCog,
+    trackConfigNames,
+    trackConfigLabel
   } = props;
 
-  let trackOurConfigName = trackConfigNames[selectedCog];
-  let trackOurConfigLabel = trackConfigLabel[selectedCog];
+  const trackOurConfigName = trackConfigNames[selectedCog];
+  const trackOurConfigLabel = trackConfigLabel[selectedCog];
 
-  let nameIcon = trackOurConfigName ? tracksSliderOnIcon : tracksSliderOffIcon;
-  let labelIcon = trackOurConfigLabel
+  const nameIcon = trackOurConfigName
+    ? tracksSliderOnIcon
+    : tracksSliderOffIcon;
+  const labelIcon = trackOurConfigLabel
     ? tracksSliderOnIcon
     : tracksSliderOffIcon;
 
@@ -71,11 +80,11 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
         updateTrackConfigNames(name, !trackOurConfigName);
       });
     } else {
-      updateTrackConfigNames(selectedCog, !trackOurConfigName);
+      props.updateTrackConfigNames(selectedCog, !trackOurConfigName);
     }
   }, [
     selectedCog,
-    updateTrackConfigNames,
+    props.updateTrackConfigNames,
     trackOurConfigName,
     applyToAll,
     browserCogTrackList
@@ -84,10 +93,10 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
   const toggleLabel = useCallback(() => {
     if (applyToAll) {
       Object.keys(browserCogTrackList).map((name) => {
-        updateTrackConfigLabel(name, !trackOurConfigName);
+        props.updateTrackConfigLabel(name, !trackOurConfigName);
       });
     } else {
-      updateTrackConfigLabel(selectedCog, !trackOurConfigLabel);
+      props.updateTrackConfigLabel(selectedCog, !trackOurConfigLabel);
     }
   }, [
     selectedCog,
@@ -98,7 +107,7 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
   ]);
 
   const applyToAllToggle = useCallback(() => {
-    updateApplyToAll(!applyToAll);
+    props.updateApplyToAll(!applyToAll);
   }, [applyToAll, updateApplyToAll]);
 
   return (
@@ -155,18 +164,19 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
   );
 };
 
-const mapDispatchToProps: DispatchProps = {
-  updateTrackConfigNames,
-  updateTrackConfigLabel,
-  updateApplyToAll
-};
-
 const mapStateToProps = (state: RootState): StateProps => ({
-  trackConfigNames: getTrackConfigNames(state),
-  trackConfigLabel: getTrackConfigLabel(state),
   applyToAll: getApplyToAll(state),
-  browserCogTrackList: getBrowserCogTrackList(state)
+  browserCogTrackList: getBrowserCogTrackList(state),
+  selectedCog: getBrowserSelectedCog(state),
+  trackConfigLabel: getTrackConfigLabel(state),
+  trackConfigNames: getTrackConfigNames(state)
 });
+
+const mapDispatchToProps: DispatchProps = {
+  updateApplyToAll,
+  updateTrackConfigLabel,
+  updateTrackConfigNames
+};
 
 export default connect(
   mapStateToProps,
