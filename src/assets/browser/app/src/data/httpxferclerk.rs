@@ -161,13 +161,55 @@ impl HttpResponseConsumer for PendingXferBatch {
     }
 }
 
+struct XferBatchScheduler {
+    http_manager: HttpManager,
+    cache: XferCache,
+    url: Url,
+    batch: Option<PendingXferBatch>,
+    prime_batch: Option<PendingXferBatch>,
+    pace: XferPaceManager    
+}
+
+impl XferBatchScheduler {
+    pub fn new(http_manager: &HttpManager, cache: &XferCache, 
+               url: &Url, pace: i32) -> XferBatchScheduler {
+        XferBatchScheduler {
+            http_manager: http_manager.clone(),
+            cache: cache.clone(),
+            url: url.clone(),
+            batch: None,
+            prime_batch: None,
+            pace: XferPaceManager::new(pace),
+        }
+    }
+    
+    fn set_batch(&mut self) {
+        self.batch = Some(PendingXferBatch::new(&self.url,&self.pace,&self.cache));
+    }
+    
+    pub fn tick(&mut self) {
+        if !self.batch.as_ref().unwrap().empty() && self.pace.preflight() {
+            let batch = self.batch.take().unwrap();
+            batch.fire(&mut self.http_manager);
+            self.set_batch();
+        }        
+    }
+    
+    pub fn add_request(&mut self, name: &str, leaf_spec: &str,
+                       code: &str, compo: &str, consumer: Box<XferConsumer>) {
+        if let Some(ref mut batch) = self.batch {
+            batch.add_request(name,leaf_spec,code,compo,consumer);
+        }
+    }
+}
+
 pub struct HttpXferClerkImpl {
     http_manager: HttpManager,
-    remote_backend_config: Option<BackendConfig>,
+    config: Option<BackendConfig>,
     base: Url,
     paused: Vec<(XferRequest,Box<XferConsumer>)>,
-    batch_in_prep: Option<PendingXferBatch>,
-    pace: XferPaceManager,
+    batch: Option<XferBatchScheduler>,
+    prime_batch: Option<XferBatchScheduler>,
     cache: XferCache
 }
 
@@ -175,47 +217,45 @@ impl HttpXferClerkImpl {
     pub fn new(http_manager: &HttpManager, base: &Url, xfercache: &XferCache) -> HttpXferClerkImpl {
         let mut out = HttpXferClerkImpl {
             http_manager: http_manager.clone(),
-            remote_backend_config: None,
+            config: None,
             base: base.clone(),
             paused: Vec::<(XferRequest,Box<XferConsumer>)>::new(),
-            batch_in_prep: None,
-            pace: XferPaceManager::new(3),
+            batch: None,
+            prime_batch: None,
             cache: xfercache.clone()
         };
         out
     }
 
-    fn set_batch(&mut self) {
-        let bc = self.remote_backend_config.as_ref().unwrap();
-        let mut url = self.base.join(bc.get_data_url()).ok().unwrap();
-        self.batch_in_prep = Some(PendingXferBatch::new(&url,&self.pace,&self.cache));
-    }
-
     pub fn tick(&mut self) {
-        if !self.batch_in_prep.as_ref().unwrap().empty() && self.pace.preflight() {
-            let batch = self.batch_in_prep.take().unwrap();
-            batch.fire(&mut self.http_manager);
-            self.set_batch();
+        if let Some(ref mut batch) = self.batch {
+            batch.tick();
+        }
+        if let Some(ref mut batch) = self.prime_batch {
+            batch.tick();
         }
     }
 
     pub fn set_config(&mut self, bc: BackendConfig) {
-        console!("setting BackendConfig");
-        self.remote_backend_config = Some(bc);
-        self.set_batch();
+        let mut url = self.base.join(bc.get_data_url()).ok().unwrap();        
+        self.config = Some(bc.clone());
+        self.batch = Some(XferBatchScheduler::new(&self.http_manager,&self.cache,&url,5));
+        self.prime_batch = Some(XferBatchScheduler::new(&self.http_manager,&self.cache,&url,1));
+        self.batch.as_mut().unwrap().set_batch();
+        self.prime_batch.as_mut().unwrap().set_batch();
+        /* run requests accumulated during startup */
         let paused : Vec<(XferRequest,Box<XferConsumer>)> = self.paused.drain(..).collect();
         for (request,consumer) in paused {
-            console!("running delayed");
-            self.run_request(request,consumer);
+            self.run_request(request,consumer,false);
         }
     }
     
-    pub fn run_request(&mut self, request: XferRequest, mut consumer: Box<XferConsumer>) {
+    pub fn run_request(&mut self, request: XferRequest, mut consumer: Box<XferConsumer>, prime: bool) {
         let leaf = request.get_leaf().clone();
         let (name,code,compo) = {
             let compo = request.get_source_name();
             let leaf = request.get_leaf().clone();
-            let cfg =  self.remote_backend_config.as_ref().unwrap().clone();
+            let cfg =  self.config.as_ref().unwrap().clone();
             let endpoint = cfg.endpoint_for(compo,&leaf).clone();
             if endpoint.is_err() {
                 //console!("No data for {:?}: {}",
@@ -227,13 +267,14 @@ impl HttpXferClerkImpl {
             let endpoint = endpoint.as_ref().unwrap();
             (endpoint.get_url().map(|x| x.to_string().clone()),endpoint.get_code().clone(),compo)
         };
-        let bc = self.remote_backend_config.as_ref().unwrap().clone();
         if let Some(name) = name {
             if let Some(recv) = self.cache.get(&compo,&leaf.get_spec()) {
                 consumer.consume(code.to_string(),recv);
             } else {
-                let mut url = self.base.join(bc.get_data_url()).ok().unwrap();
-                self.batch_in_prep.as_mut().unwrap().add_request(&name,&leaf.get_spec(),&code.to_string(),compo,consumer);
+                let mut batch = if prime { &mut self.prime_batch } else { &mut self.batch };
+                if let Some(ref mut batch) = batch {
+                    batch.add_request(&name,&leaf.get_spec(),&code.to_string(),&compo,consumer);
+                }
             }
         } else {
             consumer.consume(code.to_string(),vec!{});
@@ -245,8 +286,9 @@ impl HttpXferClerkImpl {
 
 impl XferClerk for HttpXferClerkImpl {
     fn satisfy(&mut self, request: XferRequest, mut consumer: Box<XferConsumer>) {
-        if self.remote_backend_config.is_some() {
-            self.run_request(request,consumer);
+        if self.batch.is_some() {
+            let prime = request.get_prime();
+            self.run_request(request,consumer,prime);
         } else {
             self.paused.push((request,consumer));
         }

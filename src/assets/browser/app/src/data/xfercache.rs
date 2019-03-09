@@ -54,11 +54,12 @@ impl XferCache {
     
     pub fn prime(&mut self, xferclerk: &mut Box<XferClerk>, compo: &str, leaf: &Leaf) {
         if self.get(compo,&leaf.get_spec()).is_none() {
-            xferclerk.satisfy(XferRequest::new(compo,leaf),Box::new(XferPrimeConsumer(
-                compo.to_string(),
-                leaf.get_spec(),
-                self.clone()
-            )));
+            xferclerk.satisfy(XferRequest::new(compo,leaf,true),
+                Box::new(XferPrimeConsumer(
+                    compo.to_string(),
+                    leaf.get_spec(),
+                    self.clone()
+                )));
         }
     }
 }
