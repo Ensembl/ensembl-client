@@ -20,6 +20,7 @@ import styles from './TrackPanelListItem.scss';
 type TrackPanelListItemProps = {
   browserRef: RefObject<HTMLDivElement>;
   children?: ReactNode[];
+  drawerOpened: boolean;
   drawerView: string;
   track: TrackPanelItem;
   updateDrawerView: (drawerView: string) => void;
@@ -62,7 +63,17 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     return classNames;
   };
 
-  const changeDrawerViewHandler = () => {
+  const drawerViewListHandler = (event: MouseEvent) => {
+    event.preventDefault();
+
+    if (props.drawerOpened === false) {
+      return;
+    }
+
+    props.updateDrawerView(props.track.name);
+  };
+
+  const drawerViewButtonHandler = () => {
     props.updateDrawerView(props.track.name);
   };
 
@@ -89,7 +100,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
 
   return (
     <Fragment>
-      <dd className={getListItemClasses()}>
+      <dd className={getListItemClasses()} onClick={drawerViewListHandler}>
         <label>
           {track.color && <span className={getBoxClasses(track.color)} />}
           <span className={styles.mainText}>{track.label}</span>
@@ -110,7 +121,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
             </button>
           )}
         </label>
-        <button onClick={changeDrawerViewHandler}>
+        <button onClick={drawerViewButtonHandler}>
           <img src={ellipsis.icon.on} alt={`Go to ${track.label}`} />
         </button>
         <button onClick={toggleTrack}>

@@ -99,6 +99,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
             <Fragment>
               <TrackPanelList
                 browserRef={props.browserRef}
+                drawerOpened={props.drawerOpened}
                 drawerView={props.drawerView}
                 launchbarExpanded={props.launchbarExpanded}
                 objectInfo={props.objectInfo}

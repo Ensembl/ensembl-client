@@ -17,6 +17,7 @@ import styles from './TrackPanelList.scss';
 
 type TrackPanelListProps = {
   browserRef: RefObject<HTMLDivElement>;
+  drawerOpened: boolean;
   drawerView: string;
   launchbarExpanded: boolean;
   objectInfo: any;
@@ -95,10 +96,11 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   const getTrackListItem = (track: TrackPanelItem) => (
     <TrackPanelListItem
       browserRef={props.browserRef}
+      drawerOpened={props.drawerOpened}
       drawerView={props.drawerView}
-      updateDrawerView={changeDrawerView}
       key={track.id}
       track={track}
+      updateDrawerView={changeDrawerView}
     >
       {track.childTrackList &&
         track.childTrackList.map((childTrack: TrackPanelItem) =>
