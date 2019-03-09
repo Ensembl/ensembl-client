@@ -30,7 +30,7 @@ impl TáSource {
 
 impl Source for TáSource {
     fn populate(&self, acs: &ActiveSource, lc: &mut SourceResponse, leaf: &Leaf) {
-        let xfer_req = XferRequest::new(&self.0.borrow_mut().name,leaf);
+        let xfer_req = XferRequest::new(&self.0.borrow_mut().name,leaf,false);
         let tc = self.0.borrow_mut().tc.clone();
         let lid = self.0.borrow_mut().lid;
         let xcons = TáXferConsumer::new(&tc,acs,leaf,lc,lid);

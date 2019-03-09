@@ -59,8 +59,6 @@ impl Compositor {
                     }
                 }
             }
-        } else {
-            console!("too soon!");
         }
     }
 
