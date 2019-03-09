@@ -30,9 +30,10 @@ import {
   getSelectedBrowserTab,
   getTrackCategories,
   getObjectInfo,
-  getExampleObjects
+  getExampleObjects,
+  getDefaultChrLocation
 } from '../browserSelectors';
-
+import { ChrLocation } from '../browserState';
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import { getBreakpointWidth } from 'src/globalSelectors';
 import { BreakpointWidth } from 'src/globalConfig';
@@ -43,6 +44,7 @@ import styles from './TrackPanel.scss';
 type StateProps = {
   breakpointWidth: BreakpointWidth;
   browserActivated: boolean;
+  defaultChrLocation: ChrLocation;
   drawerOpened: boolean;
   drawerView: string;
   exampleObjects: any;
@@ -99,6 +101,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
             <Fragment>
               <TrackPanelList
                 browserRef={props.browserRef}
+                defaultChrLocation={props.defaultChrLocation}
                 drawerOpened={props.drawerOpened}
                 drawerView={props.drawerView}
                 launchbarExpanded={props.launchbarExpanded}
@@ -127,6 +130,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
 const mapStateToProps = (state: RootState): StateProps => ({
   breakpointWidth: getBreakpointWidth(state),
   browserActivated: getBrowserActivated(state),
+  defaultChrLocation: getDefaultChrLocation(state),
   drawerOpened: getDrawerOpened(state),
   drawerView: getDrawerView(state),
   exampleObjects: getExampleObjects(state),
