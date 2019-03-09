@@ -12,7 +12,7 @@ import styles from './SpeciesSearchMatch.scss';
 
 type Props = {
   match: SearchMatch;
-  onClick: (match: SearchMatch) => void;
+  onClick: () => void;
 };
 
 type SplitterProps = {
@@ -33,9 +33,9 @@ type SplitSubstring = {
 
 type NumberTuple = [number, number];
 
-const SpeciesSearchMatch = ({ match }: Props) => {
+const SpeciesSearchMatch = ({ match, onClick }: Props) => {
   return (
-    <div className={styles.speciesSearchMatch}>
+    <div className={styles.speciesSearchMatch} onClick={onClick}>
       <CommonName match={match} />
       <ScientificName match={match} />
     </div>
@@ -102,15 +102,14 @@ const splitMatch = ({ string, matchedSubsctrings }: SplitterProps) => {
   const matchIndices = zip(matchStartIndices, matchEndIndices) as NumberTuple[];
   const accumulator: SplitSubstring[] = [];
   return matchIndices.reduce((result, current, index, array) => {
-    // if there is an unmatched part of the string before the first match,
-    // add it as the first item in the list of substrings
-    const [currentStartIndex, currentEndIndex] = current;
+    const [currentStartIndex, currentEndIndex] = current; // notice, currentEndIndex is exclusive
     const nextStartIndex =
       index < array.length - 1 ? array[index + 1][0] : null;
 
     if (index === 0 && current[0] > 0) {
+      // if there is an unmatched part of the string before the first match,
+      // add it as the first item in the list of substrings
       result = [
-        ...result,
         {
           start: 0,
           end: currentStartIndex,
@@ -149,7 +148,7 @@ const splitMatch = ({ string, matchedSubsctrings }: SplitterProps) => {
         ...result,
         {
           start: currentEndIndex,
-          end: string.length - 1,
+          end: string.length,
           isMatch: false
         }
       ];
