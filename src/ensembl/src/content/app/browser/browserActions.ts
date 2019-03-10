@@ -1,4 +1,6 @@
-import { createAction } from 'typesafe-actions';
+import { createAction, createAsyncAction } from 'typesafe-actions';
+import { Dispatch } from 'redux';
+
 import { BrowserNavStates, ChrLocation, CogList } from './browserState';
 import { TrackType } from './track-panel/trackPanelConfig';
 
@@ -56,27 +58,69 @@ export const changeBrowserLocation = (
   chrLocation: ChrLocation,
   browserEl: HTMLDivElement
 ) => {
-  const [chrCode, startBp, endBp] = chrLocation;
+  return (dispatch: Dispatch) => {
+    const [chrCode, startBp, endBp] = chrLocation;
 
-  console.log('cbl', chrLocation);
-  const stickEvent = new CustomEvent('bpane', {
-    bubbles: true,
-    detail: {
-      stick: chrCode
+    const stickEvent = new CustomEvent('bpane', {
+      bubbles: true,
+      detail: {
+        stick: chrCode
+      }
+    });
+
+    browserEl.dispatchEvent(stickEvent);
+
+    if (startBp > 0 && endBp > 0) {
+      const gotoEvent = new CustomEvent('bpane', {
+        bubbles: true,
+        detail: {
+          goto: `${startBp}-${endBp}`
+        }
+      });
+
+      browserEl.dispatchEvent(gotoEvent);
     }
-  });
 
-  const gotoEvent = new CustomEvent('bpane', {
-    bubbles: true,
-    detail: {
-      goto: `${startBp}-${endBp}`
-    }
-  });
+    dispatch(updateDefaultChrLocation(chrLocation));
+  };
+};
 
-  browserEl.dispatchEvent(stickEvent);
-  browserEl.dispatchEvent(gotoEvent);
+export const fetchObject = createAsyncAction(
+  'browser/fetch_object_request',
+  'browser/fetch_object_success',
+  'browser/fetch_object_failure'
+)<string, {}, Error>();
 
-  return updateDefaultChrLocation(chrLocation);
+export const fetchObjectData = (objectId: string) => {
+  return (dispatch: Dispatch) => {
+    dispatch(fetchObject.request(objectId));
+
+    return fetch(`http://127.0.0.1:4000/browser/get_object_info/${objectId}`)
+      .then(
+        (response) => response.json(),
+        (error) => dispatch(fetchObject.failure(error))
+      )
+      .then((json) => dispatch(fetchObject.success(json)));
+  };
+};
+
+export const fetchExampleObjects = createAsyncAction(
+  'browser/fetch_example_objects_request',
+  'browser/fetch_example_objects_success',
+  'browser/fetch_example_objects_failure'
+)<null, {}, Error>();
+
+export const fetchExampleObjectsData = () => {
+  return (dispatch: Dispatch) => {
+    dispatch(fetchExampleObjects.request(null));
+
+    return fetch('http://127.0.0.1:4000/browser/example_objects')
+      .then(
+        (response) => response.json(),
+        (error) => dispatch(fetchExampleObjects.failure(error))
+      )
+      .then((json) => dispatch(fetchExampleObjects.success(json)));
+  };
 };
 
 export const openTrackPanelModal = createAction(
@@ -93,7 +137,7 @@ export const closeTrackPanelModal = createAction(
 export const updateCogList = createAction(
   'browser/update-cog-list',
   (resolve) => {
-    return (cogList: CogList) => {
+    return (cogList: number) => {
       return resolve(cogList);
     };
   }
@@ -102,7 +146,7 @@ export const updateCogList = createAction(
 export const updateCogTrackList = createAction(
   'browser/update-cog-track-list',
   (resolve) => {
-    return (track_y: Array<number>) => {
+    return (track_y: CogList) => {
       return resolve(track_y);
     };
   }
@@ -111,7 +155,7 @@ export const updateCogTrackList = createAction(
 export const updateSelectedCog = createAction(
   'browser/update-selected-cog',
   (resolve) => {
-    return (index: number) => {
+    return (index: number | null) => {
       return resolve(index);
     };
   }
@@ -120,7 +164,7 @@ export const updateSelectedCog = createAction(
 export const updateTrackConfigNames = createAction(
   'browser/update-track-config-names',
   (resolve) => {
-    return (selectedCog: number, sense: boolean) => {
+    return (selectedCog: any, sense: boolean) => {
       return resolve([selectedCog, sense]);
     };
   }
@@ -129,7 +173,7 @@ export const updateTrackConfigNames = createAction(
 export const updateTrackConfigLabel = createAction(
   'browser/update-track-config-label',
   (resolve) => {
-    return (selectedCog: number, sense: boolean) => {
+    return (selectedCog: any, sense: boolean) => {
       return resolve([selectedCog, sense]);
     };
   }
@@ -138,7 +182,7 @@ export const updateTrackConfigLabel = createAction(
 export const updateApplyToAll = createAction(
   'browser/update-apply-to-all',
   (resolve) => {
-    return (yn: number) => {
+    return (yn: boolean) => {
       return resolve(yn);
     };
   }

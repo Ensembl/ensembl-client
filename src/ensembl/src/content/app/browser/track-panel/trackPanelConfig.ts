@@ -4,7 +4,7 @@ import eyeOffIcon from 'static/img/track-panel/eye-off.svg';
 import ellipsisOnIcon from 'static/img/track-panel/ellipsis-on.svg';
 import ellipsisOffIcon from 'static/img/track-panel/ellipsis-off.svg';
 
-enum TrackItemColour {
+export enum TrackItemColour {
   BLUE = 'blue',
   DARK_GREY = 'darkGrey',
   GREY = 'grey',

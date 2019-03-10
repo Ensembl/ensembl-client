@@ -32,6 +32,7 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
   const [chrLocationInput, setChrLocationInput] = useState('');
 
   const [chrCode, chrStart, chrEnd] = props.defaultChrLocation;
+  const displayChrRegion = chrStart === 0 && chrEnd === 0 ? false : true;
 
   useEffect(() => {
     setChrLocationPlaceholder(chrLocationStr);
@@ -67,21 +68,31 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const [chrCodeInput, chrRegionInput] = chrLocationInput.split(':');
-    const [chrStartInput, chrEndInput] = chrRegionInput.split('-');
-
-    if (chrCodeInput && +chrStartInput < +chrEndInput) {
-      const currChrLocation: ChrLocation = [
-        chrCodeInput,
-        +chrStartInput,
-        +chrEndInput
-      ];
-
+    if (
+      chrLocationInput &&
+      chrLocationInput.indexOf(':') === -1 &&
+      chrLocationInput.indexOf('-') === -1
+    ) {
       closeForm();
 
-      props.dispatchBrowserLocation(currChrLocation);
+      props.dispatchBrowserLocation([chrLocationInput, 0, 0]);
     } else {
-      return;
+      const [chrCodeInput, chrRegionInput] = chrLocationInput.split(':');
+      const [chrStartInput, chrEndInput] = chrRegionInput.split('-');
+
+      if (chrCodeInput && +chrStartInput <= +chrEndInput) {
+        const currChrLocation: ChrLocation = [
+          chrCodeInput,
+          +chrStartInput,
+          +chrEndInput
+        ];
+
+        closeForm();
+
+        props.dispatchBrowserLocation(currChrLocation);
+      } else {
+        return;
+      }
     }
   };
 
@@ -106,11 +117,13 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
       ) : (
         <div className={styles.chrLocationView} onClick={activateForm}>
           <div className={styles.chrCode}>{chrCode}</div>
-          <div className={styles.chrRegion}>
-            <span>{chrStart}</span>
-            <span className={styles.chrSeparator}> - </span>
-            <span>{chrEnd}</span>
-          </div>
+          {displayChrRegion ? (
+            <div className={styles.chrRegion}>
+              <span>{chrStart}</span>
+              <span className={styles.chrSeparator}> - </span>
+              <span>{chrEnd}</span>
+            </div>
+          ) : null}
         </div>
       )}
     </dd>

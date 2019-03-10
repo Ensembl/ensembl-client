@@ -18,6 +18,8 @@ import { getBreakpointWidth } from './globalSelectors';
 import { RootState } from './rootReducer';
 import { BreakpointWidth, getBreakpoint } from './globalConfig';
 
+import styles from './Root.scss';
+
 type StateProps = {
   breakpointWidth: BreakpointWidth;
 };
@@ -54,7 +56,7 @@ const Root: FunctionComponent<RootProps> = (props: RootProps) => {
 
   return (
     <BrowserRouter>
-      <div ref={ref as React.RefObject<HTMLDivElement>}>
+      <div ref={ref as React.RefObject<HTMLDivElement>} className={styles.root}>
         <Header />
         <Content />
         {showPrivacyBanner ? (

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { RootState } from 'src/rootReducer';
 import { toggleDrawer } from '../browserActions';
-import { getDrawerView } from '../browserSelectors';
+import { getDrawerView, getObjectInfo } from '../browserSelectors';
 
 import DrawerGene from './drawer-views/DrawerGene';
 import DrawerTranscript from './drawer-views/DrawerTranscript';
@@ -19,6 +19,7 @@ import SnpIndels from './drawer-views/SnpIndels';
 
 type StateProps = {
   drawerView: string;
+  objectInfo: any;
 };
 
 type DispatchProps = {
@@ -33,9 +34,9 @@ const Drawer: FunctionComponent<DrawerProps> = (props: DrawerProps) => {
   const getDrawerViewComponent = () => {
     switch (props.drawerView) {
       case 'gene':
-        return <DrawerGene />;
+        return <DrawerGene objectInfo={props.objectInfo} />;
       case 'transcript':
-        return <DrawerTranscript />;
+        return <DrawerTranscript objectInfo={props.objectInfo} />;
       case 'gene-pc-fwd':
         return <ProteinCodingGenes forwardStrand={true} />;
       case 'gene-other-fwd':
@@ -66,7 +67,8 @@ const Drawer: FunctionComponent<DrawerProps> = (props: DrawerProps) => {
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  drawerView: getDrawerView(state)
+  drawerView: getDrawerView(state),
+  objectInfo: getObjectInfo(state)
 });
 
 const mapDispatchToProps: DispatchProps = {
