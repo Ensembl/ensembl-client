@@ -7,7 +7,7 @@ use controller::output::Report;
 use data::{ Psychic, PsychicPacer, XferCache, XferRequest, XferClerk };
 use types::DOWN;
 
-const MS_PER_UPDATE : f64 = 300.;
+const MS_PER_UPDATE : f64 = 0.;
 const MS_PRIME_DELAY: f64 = 2000.;
 
 pub struct Compositor {
