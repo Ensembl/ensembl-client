@@ -10,6 +10,7 @@ pub struct PsychicPosition {
     leafs: HashSet<Leaf>
 }
 
+const PANE: i64 = 2;
 const MINSCALE: i32 = -12;
 const MAXSCALE: i32 = 7;
 
@@ -23,7 +24,11 @@ impl PsychicPosition {
         };
         for leaf_index in out.min_leaf_index..(out.max_leaf_index+1) {
             out.build_out(leaf_index,&scale.clone());
-            out.build_in(leaf_index,&scale.clone(),2);
+            out.build_in(leaf_index,&scale.clone(),1,true);
+        }
+        for leaf_index in out.min_leaf_index-PANE..(out.max_leaf_index+PANE+1) {
+            let leaf = Leaf::new(&out.stick,leaf_index,&scale);
+            out.leafs.insert(leaf);
         }
         out
     }
@@ -43,9 +48,9 @@ impl PsychicPosition {
         }
     }
     
-    fn build_in(&mut self, hindex: i64, scale: &Scale, width: i64) {
+    fn build_in(&mut self, hindex: i64, scale: &Scale, width: i64, first: bool) {
         let leaf = Leaf::new(&self.stick,hindex,scale);
-        if self.leafs.contains(&leaf) { return; }
+        if self.leafs.contains(&leaf) && !first { return; }
         self.leafs.insert(leaf.clone());
         if scale.get_index() == MAXSCALE { return; }
         let new_scale = scale.next_scale(1);
@@ -53,7 +58,7 @@ impl PsychicPosition {
         let max_new = Leaf::containing(&self.stick,leaf.get_end(),&new_scale);
         let avg_new = (max_new.get_index()-min_new.get_index()+1)/2;
         for leaf_index in (avg_new-width)..(avg_new+width+1) {
-            self.build_in(leaf_index,&new_scale,(width-1).max(0));
+            self.build_in(leaf_index,&new_scale,(width-1).max(0),false);
         }
     }
     
