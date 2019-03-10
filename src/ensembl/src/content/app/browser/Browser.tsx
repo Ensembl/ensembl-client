@@ -21,6 +21,7 @@ import {
 } from './browserState';
 import {
   changeBrowserLocation,
+  fetchObjectData,
   toggleDrawer,
   updateChrLocation,
   updateBrowserNavStates,
@@ -31,9 +32,9 @@ import {
   getDrawerOpened,
   getBrowserNavOpened,
   getChrLocation,
-  getTrackConfigNames,
   getGenomeSelectorActive,
-  getBrowserActivated
+  getBrowserActivated,
+  getExampleObjects
 } from './browserSelectors';
 
 import styles from './Browser.scss';
@@ -42,10 +43,12 @@ import 'static/browser/browser.js';
 import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 
 type StateProps = {
+  browserActivated: boolean;
   browserNavOpened: boolean;
   browserOpenState: BrowserOpenState;
   chrLocation: ChrLocation;
   drawerOpened: boolean;
+  exampleObjects: {};
   genomeSelectorActive: boolean;
 };
 
@@ -54,6 +57,7 @@ type DispatchProps = {
     chrLocation: ChrLocation,
     browserEl: HTMLDivElement
   ) => void;
+  fetchObjectData: (objSymbol: string) => void;
   toggleDrawer: (drawerOpened: boolean) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
@@ -85,21 +89,34 @@ export const Browser: FunctionComponent<BrowserProps> = (
   };
 
   useEffect(() => {
-    const { location } = props.match.params;
+    const { location, objSymbol } = props.match.params;
     const chrLocation = getChrLocationFromStr(location);
 
     dispatchBrowserLocation(chrLocation);
-  }, []);
+
+    let objectStableId = '';
+
+    Object.values(props.exampleObjects).forEach((exampleObject: any) => {
+      if (exampleObject.display_name === objSymbol) {
+        objectStableId = exampleObject.stable_id;
+      }
+    });
+
+    props.fetchObjectData(objectStableId);
+  }, [props.match.params.objSymbol]);
 
   useEffect(() => {
     if (props.chrLocation[2]) {
-      let chrLocation = [
+      const chrLocation: ChrLocation = [
         props.chrLocation[0],
         props.chrLocation[1] + 1,
         props.chrLocation[2]
       ];
       props.updateChrLocation(chrLocation);
-      props.changeBrowserLocation(chrLocation, browserRef.current);
+
+      if (browserRef.current) {
+        props.changeBrowserLocation(chrLocation, browserRef.current);
+      }
     }
   }, [
     props.browserActivated,
@@ -139,14 +156,10 @@ export const Browser: FunctionComponent<BrowserProps> = (
           }`}
           onClick={closeTrack}
         >
-          {props.browserNavOpened && <BrowserNavBar browserRef={browserRef} />}
-          <BrowserImage
-            browserRef={browserRef}
-            browserNavOpened={props.browserNavOpened}
-            updateBrowserActivated={props.updateBrowserActivated}
-            updateBrowserNavStates={props.updateBrowserNavStates}
-            updateChrLocation={props.updateChrLocation}
-          />
+          {props.browserNavOpened && !props.drawerOpened ? (
+            <BrowserNavBar browserRef={browserRef} />
+          ) : null}
+          <BrowserImage browserRef={browserRef} />
         </div>
         <TrackPanel browserRef={browserRef} />
         {props.drawerOpened && <Drawer />}
@@ -156,16 +169,18 @@ export const Browser: FunctionComponent<BrowserProps> = (
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
+  browserActivated: getBrowserActivated(state),
   browserNavOpened: getBrowserNavOpened(state),
   browserOpenState: getBrowserOpenState(state),
   chrLocation: getChrLocation(state),
   drawerOpened: getDrawerOpened(state),
-  genomeSelectorActive: getGenomeSelectorActive(state),
-  browserActivated: getBrowserActivated(state)
+  exampleObjects: getExampleObjects(state),
+  genomeSelectorActive: getGenomeSelectorActive(state)
 });
 
 const mapDispatchToProps: DispatchProps = {
   changeBrowserLocation,
+  fetchObjectData,
   toggleDrawer,
   updateBrowserActivated,
   updateBrowserNavStates,

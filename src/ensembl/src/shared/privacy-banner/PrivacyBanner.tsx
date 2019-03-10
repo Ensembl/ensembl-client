@@ -28,6 +28,7 @@ export const PrivacyBanner: FunctionComponent<PrivacyBannerProps> = (
           target="_blank"
           rel="noreferrer"
         >
+          {' '}
           Terms of Use
         </a>
         .

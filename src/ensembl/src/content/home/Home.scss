@@ -6,12 +6,13 @@
     font-size: 16px;
     font-weight: $normal;
   }
+
+  padding-top: 2%;
 }
 
 .search {
   background: $ens-light-grey;
   box-shadow: 0 3px 10px $ens-grey;
-  margin-top: 100px;
   padding: 15px 60px;
 
   h2 {
@@ -37,22 +38,18 @@
   }
 
   .filter {
-    margin-top: 100px;
+    padding-top: 2%;
   }
 }
 
 .previouslyViewed {
   line-height: 2.5;
   padding: 15px 80px;
-
-  a {
-    font-weight: $bold;
-  }
 }
 
 .siteMessage {
   margin-left: 120px;
-  margin-top: 200px;
+  padding-top: 2%;
 
   h4 {
     color: $ens-grey;

@@ -7,22 +7,41 @@ import React, {
 import { connect } from 'react-redux';
 
 import styles from './BrowserImage.scss';
-import { ChrLocation, BrowserNavStates } from '../browserState';
+import { ChrLocation, BrowserNavStates, CogList } from '../browserState';
 import BrowserCogList from '../BrowserCogList';
 import {
   getTrackConfigNames,
   getTrackConfigLabel,
   getBrowserCogTrackList,
-  getChrLocation
+  getChrLocation,
+  getBrowserNavOpened
 } from '../browserSelectors';
+import {
+  updateBrowserNavStates,
+  updateChrLocation,
+  updateBrowserActivated
+} from '../browserActions';
+import { RootState } from 'src/rootReducer';
 
-type BrowserImageProps = {
-  browserRef: RefObject<HTMLDivElement>;
+type StateProps = {
+  browserCogTrackList: CogList;
   browserNavOpened: boolean;
+  chrLocation: ChrLocation;
+  trackConfigNames: any;
+  trackConfigLabel: any;
+};
+
+type DispatchProps = {
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateChrLocation: (chrLocation: ChrLocation) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
 };
+
+type OwnProps = {
+  browserRef: RefObject<HTMLDivElement>;
+};
+
+type BrowserImageProps = StateProps & DispatchProps & OwnProps;
 
 type BpaneOutEvent = Event & {
   detail: {
@@ -67,8 +86,8 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
 
   useEffect(() => {
     if (props.browserCogTrackList) {
-      let ons = [];
-      let offs = [];
+      const ons: string[] = [];
+      const offs: string[] = [];
 
       /* what the frontend and backend call labels and names is flipped */
       Object.keys(props.browserCogTrackList).map((name) => {
@@ -86,8 +105,8 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
       const stateEvent = new CustomEvent('bpane', {
         bubbles: true,
         detail: {
-          on: ons,
-          off: offs
+          off: offs,
+          on: ons
         }
       });
       if (props.browserRef.current) {
@@ -151,7 +170,6 @@ function dispatchActivateEvents(
   currentEl: HTMLDivElement,
   props: BrowserImageProps
 ) {
-  console.log('props', props);
   const activateEvent = new CustomEvent('bpane-activate', {
     bubbles: true,
     detail: {
@@ -176,13 +194,18 @@ function getBrowserImageClasses(browserNavOpened: boolean): string {
 }
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  trackConfigNames: getTrackConfigNames(state),
-  trackConfigLabel: getTrackConfigLabel(state),
   browserCogTrackList: getBrowserCogTrackList(state),
-  chrLocation: getChrLocation(state)
+  browserNavOpened: getBrowserNavOpened(state),
+  chrLocation: getChrLocation(state),
+  trackConfigLabel: getTrackConfigLabel(state),
+  trackConfigNames: getTrackConfigNames(state)
 });
 
-const mapDispatchToProps: DispatchProps = {};
+const mapDispatchToProps: DispatchProps = {
+  updateBrowserActivated,
+  updateBrowserNavStates,
+  updateChrLocation
+};
 
 export default connect(
   mapStateToProps,

@@ -1,44 +1,49 @@
+import { combineReducers } from 'redux';
 import { ActionType, getType } from 'typesafe-actions';
 
-import * as browser from './browserActions';
+import * as browserActions from './browserActions';
 import {
   BrowserState,
-  defaultState,
+  defaultBrowserState,
   trackPanelState,
-  drawerState
+  drawerState,
+  ExampleObjects,
+  defaultExampleObjects,
+  ObjectState,
+  defaultObjectState
 } from './browserState';
 
-export default (
-  state: BrowserState = defaultState,
-  action: ActionType<typeof browser>
-): BrowserState => {
+function browserInfo(
+  state: BrowserState = defaultBrowserState,
+  action: ActionType<typeof browserActions>
+): BrowserState {
   switch (action.type) {
-    case getType(browser.updateBrowserActivated):
+    case getType(browserActions.updateBrowserActivated):
       return { ...state, browserActivated: action.payload };
-    case getType(browser.toggleTrackPanel):
+    case getType(browserActions.toggleTrackPanel):
       return trackPanelState(state, action.payload);
-    case getType(browser.changeDrawerView):
+    case getType(browserActions.changeDrawerView):
       return {
         ...state,
         drawerView: action.payload
       };
-    case getType(browser.toggleDrawer):
+    case getType(browserActions.toggleDrawer):
       return drawerState(state, action.payload);
-    case getType(browser.toggleBrowserNav):
+    case getType(browserActions.toggleBrowserNav):
       return { ...state, browserNavOpened: !state.browserNavOpened };
-    case getType(browser.updateBrowserNavStates):
+    case getType(browserActions.updateBrowserNavStates):
       return { ...state, browserNavStates: action.payload };
-    case getType(browser.updateChrLocation):
+    case getType(browserActions.updateChrLocation):
       return { ...state, chrLocation: action.payload };
-    case getType(browser.updateCogList):
+    case getType(browserActions.updateCogList):
       return { ...state, browserCogList: action.payload };
-    case getType(browser.updateCogTrackList):
+    case getType(browserActions.updateCogTrackList):
       return { ...state, browserCogTrackList: action.payload };
-    case getType(browser.updateSelectedCog):
+    case getType(browserActions.updateSelectedCog):
       return { ...state, selectedCog: action.payload };
-    case getType(browser.updateApplyToAll):
+    case getType(browserActions.updateApplyToAll):
       return { ...state, applyToAll: action.payload };
-    case getType(browser.updateTrackConfigNames):
+    case getType(browserActions.updateTrackConfigNames):
       return {
         ...state,
         trackConfigNames: {
@@ -46,7 +51,7 @@ export default (
           [action.payload[0]]: action.payload[1]
         }
       };
-    case getType(browser.updateTrackConfigLabel):
+    case getType(browserActions.updateTrackConfigLabel):
       return {
         ...state,
         trackConfigLabel: {
@@ -54,29 +59,104 @@ export default (
           [action.payload[0]]: action.payload[1]
         }
       };
-    case getType(browser.updateDefaultChrLocation):
+    case getType(browserActions.updateDefaultChrLocation):
       return {
         ...state,
         chrLocation: action.payload,
         defaultChrLocation: action.payload
       };
-    case getType(browser.openTrackPanelModal):
+    case getType(browserActions.openTrackPanelModal):
       return {
         ...state,
         trackPanelModalOpened: true,
         trackPanelModalView: action.payload
       };
-    case getType(browser.closeTrackPanelModal):
+    case getType(browserActions.closeTrackPanelModal):
       return {
         ...state,
         trackPanelModalOpened: false,
         trackPanelModalView: ''
       };
-    case getType(browser.toggleGenomeSelector):
+    case getType(browserActions.toggleGenomeSelector):
       return { ...state, genomeSelectorActive: action.payload };
-    case getType(browser.selectBrowserTab):
-      return { ...state, selectedBrowserTab: action.payload };
+    case getType(browserActions.selectBrowserTab):
+      return {
+        ...state,
+        selectedBrowserTab: action.payload,
+        trackPanelModalOpened: false,
+        trackPanelModalView: ''
+      };
     default:
       return state;
   }
-};
+}
+
+function exampleObjects(
+  state: ExampleObjects = defaultExampleObjects,
+  action: ActionType<typeof browserActions>
+): ExampleObjects {
+  switch (action.type) {
+    case getType(browserActions.fetchExampleObjects.failure):
+      return { ...state, exampleObjectsFetchFailed: true };
+    case getType(browserActions.fetchExampleObjects.request):
+      return {
+        ...state,
+        exampleObjectsFetchFailed: false,
+        exampleObjectsFetching: true
+      };
+    case getType(browserActions.fetchExampleObjects.success):
+      type Payload = {
+        examples: {};
+      };
+
+      const json = action.payload as Payload;
+
+      return {
+        ...state,
+        exampleObjectsFetchFailed: false,
+        exampleObjectsFetching: false,
+        examples: json.examples
+      };
+    default:
+      return state;
+  }
+}
+
+function object(
+  state: ObjectState = defaultObjectState,
+  action: ActionType<typeof browserActions>
+): ObjectState {
+  switch (action.type) {
+    case getType(browserActions.fetchObject.failure):
+      return { ...state, objectFetchFailed: true };
+    case getType(browserActions.fetchObject.request):
+      return {
+        ...state,
+        objectFetchFailed: false,
+        objectFetching: true
+      };
+    case getType(browserActions.fetchObject.success):
+      type Payload = {
+        object_info: {};
+        track_categories: [];
+      };
+
+      const json = action.payload as Payload;
+
+      return {
+        ...state,
+        objectFetchFailed: false,
+        objectFetching: false,
+        objectInfo: json.object_info,
+        trackCategories: json.track_categories
+      };
+    default:
+      return state;
+  }
+}
+
+export default combineReducers({
+  browserInfo,
+  exampleObjects,
+  object
+});

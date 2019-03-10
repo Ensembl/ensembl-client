@@ -1,4 +1,10 @@
-import React, { FunctionComponent, memo, useState, useCallback } from 'react';
+import React, {
+  FunctionComponent,
+  memo,
+  useState,
+  useCallback,
+  useEffect
+} from 'react';
 import { TrackPanelBarItem } from './trackPanelBarConfig';
 
 import styles from './TrackPanelBarIcon.scss';
@@ -7,12 +13,19 @@ type TrackPanelBarIconProps = {
   closeTrackPanelModal: () => void;
   iconConfig: TrackPanelBarItem;
   openTrackPanelModal: (trackPanelModalView: string) => void;
+  trackPanelModalOpened: boolean;
   trackPanelModalView: string;
 };
 
 const TrackPanelBarIcon: FunctionComponent<TrackPanelBarIconProps> = memo(
   (props: TrackPanelBarIconProps) => {
     const [toggleState, setToggleState] = useState(false);
+
+    useEffect(() => {
+      if (props.trackPanelModalOpened === false) {
+        setToggleState(false);
+      }
+    }, [props.trackPanelModalOpened]);
 
     const toggleModalView = useCallback(() => {
       const newToggleState: boolean = !toggleState;
