@@ -33,6 +33,7 @@ impl BackendEndpoint {
 pub struct BackendTrack {
     endpoints: Vec<(i32,i32,String)>,
     letter: String,
+    wire: Option<String>,
     position: i32,
     parts: Vec<String>
 }
@@ -41,6 +42,7 @@ impl BackendTrack {
     pub fn get_letter(&self) -> &str { &self.letter }
     pub fn get_position(&self) -> i32 { self.position }
     pub fn get_parts(&self) -> &Vec<String> { &self.parts }
+    pub fn get_wire(&self) -> &Option<String> { &self.wire }
 }
 
 #[derive(Debug,Clone)]
@@ -110,6 +112,7 @@ impl BackendConfig {
             out.insert(track_name,BackendTrack { 
                 letter: v.get("letter").and_then(|x| x.as_str()).unwrap_or("").to_string(),
                 position: v.get("position").and_then(|x| x.as_i64()).unwrap_or(-1) as i32,
+                wire: v.get("wire").and_then(|x| x.as_str()).map(|x| x.to_string()),
                 endpoints, parts
             });
         }

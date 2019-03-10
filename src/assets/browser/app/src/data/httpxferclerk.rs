@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
+use itertools::Itertools;
 use serde_json::Value as SerdeValue;
 use stdweb::unstable::TryInto;
 use stdweb::web::{ ArrayBuffer, TypedArray, XmlHttpRequest, XhrResponseType };
@@ -90,9 +91,9 @@ impl PendingXferBatch {
         }
     }
     
-    pub fn add_request(&mut self, name: &str, leaf_spec: &str,
+    pub fn add_request(&mut self, short_stick: &str, short_pane: &str,
                        code: &str, compo: &str, consumer: Box<XferConsumer>) {
-        let key = (name.to_string(),leaf_spec.to_string(),compo.to_string());
+        let key = (short_stick.to_string(),short_pane.to_string(),compo.to_string());
         self.requests.entry(key).or_insert_with(|| {
             Vec::<PendingXferRequest>::new()
         }).push(PendingXferRequest {
@@ -105,10 +106,15 @@ impl PendingXferBatch {
 
     pub fn fire(self, http_manager: &mut HttpManager) {
         let mut url = self.base.clone();
-        for (name,leaf_spec,compo) in self.requests.keys() {
-            let mut qp = url.query_pairs_mut();
-            let part = format!("{}/{}/{}",name,leaf_spec,compo);
-            qp.append_pair("parts",&part);
+        let mut url_builder = XferUrlBuilder::new();
+        for (short_stick,short_pane,compo) in self.requests.keys() {
+            let part = format!("{}^{}/{}",short_stick,short_pane,compo);
+            url_builder.add(compo,short_stick,short_pane);
+        }
+        console!("url: {:?}",url_builder.emit());
+        {
+            let mut path = url.path_segments_mut().unwrap();
+            path.push(&url_builder.emit());
         }
         let xhr = XmlHttpRequest::new();
         xhr.set_response_type(XhrResponseType::ArrayBuffer);
@@ -152,7 +158,7 @@ impl HttpResponseConsumer for PendingXferBatch {
             if let Some(mut requests) = self.requests.remove(&key) {
                 let mut recv = self.marshal(&resp[3]);
                 for mut req in requests.drain(..) {
-                    self.cache.put(&key.2,&key.1,recv.clone());
+                    self.cache.put(&key.2,&key.0,&key.1,recv.clone());
                     req.go(recv.clone());
                 }
             }
@@ -195,11 +201,49 @@ impl XferBatchScheduler {
         }        
     }
     
-    pub fn add_request(&mut self, name: &str, leaf_spec: &str,
+    pub fn add_request(&mut self, short_stick: &str, short_pane: &str,
                        code: &str, compo: &str, consumer: Box<XferConsumer>) {
         if let Some(ref mut batch) = self.batch {
-            batch.add_request(name,leaf_spec,code,compo,consumer);
+            batch.add_request(short_stick,short_pane,code,compo,consumer);
         }
+    }
+}
+
+pub struct XferUrlBuilder {
+    data: HashMap<String,Vec<(String,String)>>
+}
+
+impl XferUrlBuilder {
+    pub fn new() -> XferUrlBuilder {
+        XferUrlBuilder {
+            data: HashMap::<String,Vec<(String,String)>>::new()
+        }
+    }
+    
+    pub fn add(&mut self, wire: &str, chrom: &str, leaf: &str) {
+        let set = self.data.entry(chrom.to_string()).or_insert_with(||
+            Vec::<(String,String)>::new()
+        );
+        set.push((wire.to_string(),leaf.to_string()));
+    }
+    
+    fn emit_chrom(&self, values: &Vec<(String,String)>) -> String {
+        let mut data = values.clone();
+        data.sort();
+        data.iter().map(|(wire,leaf)| format!("{}{}",wire,leaf)).join("")
+    }
+    
+    pub fn emit(&self) -> String {
+        let mut chroms = Vec::<(String,String)>::new();
+        for (chrom,v) in &self.data {
+            chroms.push((chrom.to_string(),self.emit_chrom(v)));
+        }
+        chroms.sort();
+        let chroms : Vec<String> = chroms
+                .iter()
+                .map(|(chrom,value)| format!("{}:{}",chrom,value))
+                .collect();
+        chroms.iter().join(",")
     }
 }
 
@@ -252,11 +296,12 @@ impl HttpXferClerkImpl {
     
     pub fn run_request(&mut self, request: XferRequest, mut consumer: Box<XferConsumer>, prime: bool) {
         let leaf = request.get_leaf().clone();
-        let (name,code,compo) = {
+        let (wire,code,compo) = {
             let compo = request.get_source_name();
             let leaf = request.get_leaf().clone();
             let cfg =  self.config.as_ref().unwrap().clone();
             let endpoint = cfg.endpoint_for(compo,&leaf).clone();
+            let track = cfg.get_track(compo).clone();
             if endpoint.is_err() {
                 //console!("No data for {:?}: {}",
                 //            request.get_leaf().clone(),
@@ -265,15 +310,16 @@ impl HttpXferClerkImpl {
                 return;
             }
             let endpoint = endpoint.as_ref().unwrap();
-            (endpoint.get_url().map(|x| x.to_string().clone()),endpoint.get_code().clone(),compo)
+            (track.and_then(|x| x.get_wire().clone()),endpoint.get_code().clone(),compo.clone())
         };
-        if let Some(name) = name {
-            if let Some(recv) = self.cache.get(&compo,&leaf.get_spec()) {
+        if let Some(wire) = wire {
+            let (short_stick,short_pane) = leaf.get_short_spec();
+            if let Some(recv) = self.cache.get(&wire,&short_stick,&short_pane) {
                 consumer.consume(code.to_string(),recv);
             } else {
                 let mut batch = if prime { &mut self.prime_batch } else { &mut self.batch };
                 if let Some(ref mut batch) = batch {
-                    batch.add_request(&name,&leaf.get_spec(),&code.to_string(),&compo,consumer);
+                    batch.add_request(&short_stick,&short_pane,&code.to_string(),&wire,consumer);
                 }
             }
         } else {

@@ -49,7 +49,7 @@ impl App {
         let bsm = BackendStickManager::new(config);
         let mut csm = CombinedStickManager::new(bsm);
         add_debug_sticks(&mut csm);
-        let cache = XferCache::new(5000);
+        let cache = XferCache::new(5000,config);
         let clerk = HttpXferClerk::new(http_manager,config,config_url,&cache);
         let mut out = App {
             ar: AppRunnerWeak::none(),
