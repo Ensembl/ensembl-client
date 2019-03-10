@@ -39,6 +39,8 @@ import styles from './Browser.scss';
 import 'static/browser/browser.js';
 import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 
+import { replace } from 'connected-react-router';
+
 type StateProps = {
   browserNavOpened: boolean;
   browserOpenState: BrowserOpenState;
@@ -105,16 +107,13 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, []);
 
   useEffect(() => {
-    const { path, params } = props.match;
+    const { params } = props.match;
     const newChrLocationStr = getChrLocationStr(props.chrLocation);
-    const newUrl =
-      path
-        .replace(':species', params.species)
-        .replace(':objSymbol', params.objSymbol) +
-      '?region=' +
-      newChrLocationStr;
+    const newUrl = `/app/browser/${params.species}/${
+      params.objSymbol
+    }?region=${newChrLocationStr}`;
 
-    props.history.replace(newUrl);
+    replace(newUrl);
   }, [props.chrLocation]);
 
   const closeTrack = useCallback(() => {

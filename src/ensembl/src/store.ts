@@ -17,7 +17,8 @@ const googleAnalyticsMiddleWare = (store: any) => (next: any) => (
     GoogleAnalyticsTracking.trackEvent(action);
   } else if (
     action.type === LOCATION_CHANGE &&
-    action.payload.action !== 'REPLACE'
+    action.payload.location.pathname !==
+      store.getState().router.location.pathname
   ) {
     // If the location history has been changed, track it as a pageview
     GoogleAnalyticsTracking.trackPageView(
