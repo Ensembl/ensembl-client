@@ -4,8 +4,10 @@ import ReactGA from 'react-ga';
 const googleTrackingID = 'UA-58710484-17';
 
 class AnalyticsTracking {
+  reactGA: typeof ReactGA;
+
   constructor() {
-    this.reactGA = ReactGA.initialize(googleTrackingID);
+    ReactGA.initialize(googleTrackingID);
     this.reactGA = ReactGA;
   }
 
