@@ -6,6 +6,7 @@ use types::CDFraction;
 pub struct OpticalImpl {
     missing: f64,
     pos: Option<(CDFraction,f64)>,
+    settled: bool
 }
 
 const LETHARGY : f64 = 0.2;
@@ -15,7 +16,8 @@ impl OpticalImpl {
     pub fn new() -> OpticalImpl {
         OpticalImpl {
             missing: 0.,
-            pos: None
+            pos: None,
+            settled: false
         }
     }
 
@@ -33,6 +35,10 @@ impl OpticalImpl {
             let this_time = self.missing * LETHARGY;
             self.missing -= this_time;
             self.send_delta(app,this_time);
+            self.settled = false;
+        } else if !self.settled {
+            app.with_stage(|s| s.settle());
+            self.settled = true;
         }
     }
         

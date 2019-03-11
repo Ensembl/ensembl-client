@@ -185,6 +185,7 @@ impl PinRectTypeSpec {
                         .y_edge(self.sea_y.unwrap().0,
                                 self.sea_y.unwrap().1);
         let colspec = self.new_colspec(rd);
+        console!("tape {:?} offset={:?}",cleaf(rd.pos_x,rd.pos_y),offset);
         Some(ShapeSpec::PinRect(RectSpec {
             pt: PTGeom::Tape,
             offset: RectPosition::Tape(cleaf(rd.pos_x,rd.pos_y),offset),
