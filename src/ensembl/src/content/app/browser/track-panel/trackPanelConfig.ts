@@ -179,12 +179,5 @@ export const trackPanelIconConfig: TrackPanelIcons = {
       off: ellipsisOffIcon,
       on: ellipsisOnIcon
     }
-  },
-  eye: {
-    description: 'enable/disable track',
-    icon: {
-      off: eyeOffIcon,
-      on: eyeOnIcon
-    }
   }
 };

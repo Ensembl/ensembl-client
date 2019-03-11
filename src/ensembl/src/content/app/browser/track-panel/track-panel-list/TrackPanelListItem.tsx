@@ -17,6 +17,8 @@ import chevronUpIcon from 'static/img/shared/chevron-up.svg';
 
 import styles from './TrackPanelListItem.scss';
 
+import EyeToggleIcon from 'src/shared/eye-toggle-icon/EyeToggleIcon';
+
 type TrackPanelListItemProps = {
   browserRef: RefObject<HTMLDivElement>;
   children?: ReactNode[];
@@ -113,12 +115,11 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
         <button onClick={changeDrawerViewHandler}>
           <img src={ellipsis.icon.on} alt={`Go to ${track.label}`} />
         </button>
-        <button onClick={toggleTrack}>
-          <img
-            src={trackStatus === 'on' ? eye.icon.on : eye.icon.off}
-            alt={eye.description}
-          />
-        </button>
+        <EyeToggleIcon
+          iconStatus={trackStatus}
+          description={'enable/disable track'}
+          callbackFunction={toggleTrack}
+        />
       </dd>
       {expanded && props.children}
     </Fragment>
