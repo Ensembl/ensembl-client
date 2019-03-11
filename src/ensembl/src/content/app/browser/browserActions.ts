@@ -155,7 +155,7 @@ export const updateCogTrackList = createAction(
 export const updateSelectedCog = createAction(
   'browser/update-selected-cog',
   (resolve) => {
-    return (index: number | null) => {
+    return (index: string) => {
       return resolve(index);
     };
   }

@@ -36,7 +36,7 @@ export type BrowserState = Readonly<{
   drawerView: string;
   genomeSelectorActive: boolean;
   selectedBrowserTab: TrackType;
-  selectedCog: number | null;
+  selectedCog: string;
   trackConfigNames: any;
   trackConfigLabel: any;
   trackPanelModalOpened: boolean;
@@ -58,7 +58,7 @@ export const defaultBrowserState: BrowserState = {
   drawerView: '',
   genomeSelectorActive: false,
   selectedBrowserTab: TrackType.GENOMIC,
-  selectedCog: null,
+  selectedCog: '',
   trackConfigLabel: {},
   trackConfigNames: {},
   trackPanelModalOpened: false,
