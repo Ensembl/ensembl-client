@@ -1,4 +1,4 @@
-import React, { FunctionComponent, Fragment } from 'react';
+import React, { FunctionComponent, Fragment, useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import { browserInfoConfig } from '../browserConfig';
@@ -60,6 +60,28 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
 ) => {
   const { navigator, reset } = browserInfoConfig;
   const { objectInfo } = props;
+  const [showBrowserInfo, toggleShowBrowserInfo] = useState(true);
+
+  const changeBrowserInfoToggle = () => {
+    const [, chrStart, chrEnd] = props.defaultChrLocation;
+
+    if (
+      props.genomeSelectorActive === true ||
+      (chrStart === 0 && chrEnd === 0)
+    ) {
+      toggleShowBrowserInfo(false);
+    } else {
+      toggleShowBrowserInfo(true);
+    }
+  };
+
+  useEffect(() => {
+    changeBrowserInfoToggle();
+  }, [props.defaultChrLocation]);
+
+  useEffect(() => {
+    changeBrowserInfoToggle();
+  }, [props.genomeSelectorActive]);
 
   const getBrowserInfoClasses = () => {
     let classNames = styles.browserInfo;
@@ -100,7 +122,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
             details={reset}
             drawerOpened={props.drawerOpened}
           />
-          {props.genomeSelectorActive ? null : (
+          {showBrowserInfo ? (
             <Fragment>
               <dd className={styles.geneSymbol}>
                 <label>Gene</label>
@@ -124,7 +146,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
                 {objectInfo.strand} strand
               </dd>
             </Fragment>
-          )}
+          ) : null}
         </dl>
         <dl className={styles.browserInfoRight}>
           <BrowserGenomeSelector
