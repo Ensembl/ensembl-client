@@ -111,6 +111,7 @@ $ens-dark-grey: #6f8190;
 
 $ens-white: #fff;
 
+/* stylelint-disable */
 :export {
   ens-black: $ens-black;
   ens-blue: $ens-blue;
@@ -121,6 +122,7 @@ $ens-white: #fff;
   ens-light-grey: $ens-light-grey;
   ens-white: $ens-white;
 }
+/* stylelint-enable */
 
 $img-base-url: '/static/img';
 
