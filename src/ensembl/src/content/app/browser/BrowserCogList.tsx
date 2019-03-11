@@ -80,8 +80,8 @@ const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
     return (
       <div key={name} className={styles.browserCogOuter} style={posStyle}>
         <BrowserCog
-          cogActivated={props.selectedCog === +name}
-          index={+name}
+          cogActivated={props.selectedCog == name}
+          index={name}
           updateSelectedCog={props.updateSelectedCog}
         />
       </div>
