@@ -29,7 +29,8 @@ pub const DEBUG_SOURCES : [&str;8] = [
     "internal:debug:zzz-framework"
 ];
 
-pub const DEMO_SOURCES : [&str;9] = [
+pub const DEMO_SOURCES : [&str;10] = [
+    "track:gene-feat",
     "track:gene-pc-fwd",
     "track:gene-other-fwd",
     "track:gene-pc-rev",
