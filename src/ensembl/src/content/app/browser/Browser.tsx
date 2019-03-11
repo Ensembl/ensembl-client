@@ -55,6 +55,7 @@ type DispatchProps = {
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateChrLocation: (chrLocation: ChrLocation) => void;
   updateDefaultChrLocation: (chrLocation: ChrLocation) => void;
+  replace: (path: string) => void;
 };
 
 type OwnProps = {};
@@ -113,7 +114,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
       params.objSymbol
     }?region=${newChrLocationStr}`;
 
-    replace(newUrl);
+    props.replace(newUrl);
   }, [props.chrLocation]);
 
   const closeTrack = useCallback(() => {
@@ -166,7 +167,8 @@ const mapDispatchToProps: DispatchProps = {
   updateBrowserActivated,
   updateBrowserNavStates,
   updateChrLocation,
-  updateDefaultChrLocation
+  updateDefaultChrLocation,
+  replace
 };
 
 export default withRouter(

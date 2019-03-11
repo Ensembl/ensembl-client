@@ -22,12 +22,12 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
         <h2>Previously viewed</h2>
         <dl>
           <dd>
-            <Link to="/app/browser/human/BRCA2/?region=13:32315474-32400266">
+            <Link to="/app/browser/human/BRCA2?region=13:32315474-32400266">
               Human gene BRCA2
             </Link>
           </dd>
           <dd>
-            <Link to="/app/browser/human/TTN/?region=2:178525989-178830802">
+            <Link to="/app/browser/human/TTN?region=2:178525989-178830802">
               Human transcript TTN
             </Link>
           </dd>
