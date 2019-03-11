@@ -77,8 +77,6 @@ const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
   const cogs = Object.entries(browserCogTrackList).map(([name, pos]) => {
     const posStyle = { top: pos + 'px' };
 
-    console.log(name);
-
     return (
       <div key={name} className={styles.browserCogOuter} style={posStyle}>
         <BrowserCog
@@ -96,9 +94,7 @@ const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
 
   return props.browserActivated ? (
     <div className={styles.browserTrackConfigOuter}>
-      {selectedCog !== null && (
-        <BrowserTrackConfig ypos={browserCogTrackList[selectedCog]} />
-      )}
+      <BrowserTrackConfig ypos={props.browserCogTrackList[selectedCog]} />
       <div className={styles.browserCogListOuter}>
         <div className={styles.browserCogListInner} style={transformStyle}>
           {cogs}

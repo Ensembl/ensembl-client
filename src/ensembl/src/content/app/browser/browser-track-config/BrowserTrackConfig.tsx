@@ -32,6 +32,7 @@ type StateProps = {
   selectedCog: any;
   trackConfigLabel: any;
   trackConfigNames: any;
+  ypos: number;
 };
 
 type DispatchProps = {
@@ -40,11 +41,7 @@ type DispatchProps = {
   updateTrackConfigNames: (selectedCog: any, sense: boolean) => void;
 };
 
-type OwnProps = {
-  ypos: number;
-};
-
-type BrowserTrackConfigProps = StateProps & DispatchProps & OwnProps;
+type BrowserTrackConfigProps = StateProps & DispatchProps;
 
 const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
   props: BrowserTrackConfigProps
@@ -110,7 +107,7 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
     props.updateApplyToAll(!applyToAll);
   }, [applyToAll, updateApplyToAll]);
 
-  return (
+  return selectedCog ? (
     <div style={inline}>
       <section className={styles.trackConfig}>
         <dl className="category">
@@ -161,7 +158,7 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
         </dl>
       </section>
     </div>
-  );
+  ) : null;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
