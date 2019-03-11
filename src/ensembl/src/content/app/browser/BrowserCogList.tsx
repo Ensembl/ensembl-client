@@ -35,7 +35,7 @@ type StateProps = {
 type DispatchProps = {
   updateCogList: (cogList: number) => void;
   updateCogTrackList: (track_y: CogList) => void;
-  updateSelectedCog: (index: number | null) => void;
+  updateSelectedCog: (index: string) => void;
 };
 
 type OwnProps = {
@@ -77,10 +77,12 @@ const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
   const cogs = Object.entries(browserCogTrackList).map(([name, pos]) => {
     const posStyle = { top: pos + 'px' };
 
+    console.log(name);
+
     return (
       <div key={name} className={styles.browserCogOuter} style={posStyle}>
         <BrowserCog
-          cogActivated={props.selectedCog == name}
+          cogActivated={props.selectedCog === name}
           index={name}
           updateSelectedCog={props.updateSelectedCog}
         />

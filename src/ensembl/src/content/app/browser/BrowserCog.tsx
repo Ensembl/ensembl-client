@@ -5,8 +5,8 @@ import cogOffIcon from 'static/img/shared/cog.svg';
 
 type BrowserCogProps = {
   cogActivated: boolean;
-  index: number;
-  updateSelectedCog: (index: number | null) => void;
+  index: string;
+  updateSelectedCog: (index: string) => void;
 };
 
 const BrowserCog: FunctionComponent<BrowserCogProps> = (
@@ -18,7 +18,7 @@ const BrowserCog: FunctionComponent<BrowserCogProps> = (
     if (cogActivated === false) {
       updateSelectedCog(index);
     } else {
-      updateSelectedCog(null);
+      updateSelectedCog('');
     }
   }, [cogActivated]);
 

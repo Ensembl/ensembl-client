@@ -46,7 +46,7 @@ export const getBrowserCogList = (state: RootState): number =>
 export const getBrowserCogTrackList = (state: RootState): CogList =>
   state.browser.browserInfo.browserCogTrackList;
 
-export const getBrowserSelectedCog = (state: RootState): number | null =>
+export const getBrowserSelectedCog = (state: RootState): string =>
   state.browser.browserInfo.selectedCog;
 
 export const getTrackConfigNames = (state: RootState): any =>

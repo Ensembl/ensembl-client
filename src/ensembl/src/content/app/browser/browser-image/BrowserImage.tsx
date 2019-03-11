@@ -126,10 +126,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
         className={getBrowserImageClasses(props.browserNavOpened)}
         ref={props.browserRef}
       />
-      <BrowserCogList
-        browserRef={props.browserRef}
-        selectedCog={props.selectedCog}
-      />
+      <BrowserCogList browserRef={props.browserRef} />
     </div>
   );
 };
@@ -176,7 +173,8 @@ function dispatchActivateEvents(
   const activateEvent = new CustomEvent('bpane-activate', {
     bubbles: true,
     detail: {
-      'config-url': 'http://localhost:4000/browser/config',
+      'config-url':
+        'http://ec2-34-204-108-251.compute-1.amazonaws.com:8060/browser/config',
       key: 'main'
     }
   });
