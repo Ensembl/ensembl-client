@@ -89,12 +89,14 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
         {
           additionalInfo: objectInfo.bio_type,
           color: 'BLUE',
+          drawerView: 'transcript',
           id: 0.1,
           label: transcriptLabel,
           name: 'gene-feat',
           selectedInfo: objectInfo.associated_object.selected_info
         }
       ],
+      drawerView: 'gene',
       id: 0,
       label: geneLabel,
       name: 'gene-feat'

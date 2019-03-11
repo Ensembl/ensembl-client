@@ -15,6 +15,7 @@ export type TrackPanelItem = {
   additionalInfo?: string;
   childTrackList?: TrackPanelItem[];
   color?: string;
+  drawerView?: string;
   id: number;
   label: string;
   name: string;
