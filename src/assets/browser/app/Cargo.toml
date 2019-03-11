@@ -17,6 +17,7 @@ itertools = "*"
 hsl = "*"
 yaml-rust="*"
 url="*"
+base64="*"
 
 "t\u00e1naiste" = { version="0.1.1", path="../t\u00e1naiste" }
 

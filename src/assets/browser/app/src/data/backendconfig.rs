@@ -1,8 +1,10 @@
 use std::collections::HashMap;
+use std::fmt;
 use std::rc::Rc;
 use std::string::ToString;
 
 use serde_json::Value as SerdeValue;
+use tánaiste::Value;
 use url::Url;
 
 use composit::{ Leaf, Scale, Stick };
@@ -45,9 +47,27 @@ impl BackendTrack {
     pub fn get_wire(&self) -> &Option<String> { &self.wire }
 }
 
+#[derive(Debug)]
+pub struct BackendAsset {
+    data: Vec<Value>
+}
+
+impl BackendAsset {
+    pub fn get_stream(&self, index: usize) -> &Value {
+        &self.data[index]
+    }
+}
+
+/*impl fmt::Debug for BackendAsset {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "BackendAsset {{ {:?} }}",self)
+    }
+}*/
+
 #[derive(Debug,Clone)]
 pub struct BackendConfig {
     data_url: String,
+    assets: HashMap<String,Rc<BackendAsset>>,
     endpoints: HashMap<String,BackendEndpoint>,
     tracks: HashMap<String,BackendTrack>,
     sticks: HashMap<String,Stick>
@@ -75,6 +95,10 @@ impl BackendConfig {
     
     pub fn get_track(&self, name: &str) -> Option<&BackendTrack> {
         self.tracks.get(name)
+    }
+    
+    pub fn get_asset(&self, name: &str) -> Option<&Rc<BackendAsset>> {
+        self.assets.get(name)
     }
     
     pub fn get_sticks(&self) -> &HashMap<String,Stick> { &self.sticks }
@@ -130,6 +154,30 @@ impl BackendConfig {
         out
     }
     
+    fn one_asset_from_json(name: &str, data_in: &SerdeValue) -> Rc<BackendAsset> {
+        let mut data = Vec::<Value>::new();
+        for v in data_in[name].as_array().unwrap_or(&vec!{}).iter() {
+            if v.is_string() {
+                data.push(Value::new_from_string(v.as_str().unwrap().to_string()));
+            } else {
+                let mut array = Vec::<f64>::new();
+                for x in v.as_array().unwrap_or(&vec!{}).iter() {
+                    array.push(x.as_f64().unwrap());
+                }
+                data.push(Value::new_from_float(array));
+            }
+        }
+        Rc::new(BackendAsset { data })
+    }
+    
+    fn assets_from_json(assets: &SerdeValue, data: &SerdeValue) -> HashMap<String,Rc<BackendAsset>> {
+        let mut out = HashMap::<String,Rc<BackendAsset>>::new();
+        for (name,v) in assets.as_object().unwrap().iter() {
+            out.insert(name.to_string(),BackendConfig::one_asset_from_json(name,data));
+        }
+        out
+    }
+    
     fn sticks_from_json(ep: &SerdeValue) -> HashMap<String,Stick> {
         let mut out = HashMap::<String,Stick>::new();
         for (k,v) in ep.as_object().unwrap().iter() {
@@ -142,11 +190,12 @@ impl BackendConfig {
     // TODO errors
     pub fn from_json_string(in_: &str) -> Result<BackendConfig,String> {
         let data : SerdeValue = serde_json::from_str(in_).ok().unwrap();
+        let assets = BackendConfig::assets_from_json(&data["assets"],&data["data"]);
         let bytecodes = BackendConfig::bytecodes_from_json(&data["bytecodes"]);
         let endpoints = BackendConfig::endpoints_from_json(&data["endpoints"],bytecodes);
         let tracks = BackendConfig::tracks_from_json(&data["tracks"]);
         let sticks = BackendConfig::sticks_from_json(&data["sticks"]);
         let data_url = data["data-url"].as_str().unwrap().to_string();
-        Ok(BackendConfig { endpoints, tracks, sticks, data_url })
+        Ok(BackendConfig { assets, endpoints, tracks, sticks, data_url })
     }
 }
