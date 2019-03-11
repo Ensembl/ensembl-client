@@ -77,7 +77,7 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
   const toggleName = useCallback(() => {
     if (applyToAll) {
       Object.keys(browserCogTrackList).map((name) => {
-        updateTrackConfigNames(name, !trackOurConfigName);
+        props.updateTrackConfigNames(name, !trackOurConfigName);
       });
     } else {
       props.updateTrackConfigNames(selectedCog, !trackOurConfigName);
@@ -93,7 +93,7 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
   const toggleLabel = useCallback(() => {
     if (applyToAll) {
       Object.keys(browserCogTrackList).map((name) => {
-        props.updateTrackConfigLabel(name, !trackOurConfigName);
+        props.updateTrackConfigLabel(name, !trackOurConfigLabel);
       });
     } else {
       props.updateTrackConfigLabel(selectedCog, !trackOurConfigLabel);

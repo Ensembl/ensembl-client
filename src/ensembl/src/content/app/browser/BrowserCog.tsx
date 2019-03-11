@@ -24,8 +24,8 @@ const BrowserCog: FunctionComponent<BrowserCogProps> = (
 
   const inline: CSSProperties = { position: 'relative' };
   const imgInline: CSSProperties = {
-    height: '24px',
-    width: '24px'
+    height: '18px',
+    width: '18px'
   };
 
   const cogIcon = props.cogActivated ? cogOnIcon : cogOffIcon;
