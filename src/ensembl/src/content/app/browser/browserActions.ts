@@ -95,7 +95,9 @@ export const fetchObjectData = (objectId: string) => {
   return (dispatch: Dispatch) => {
     dispatch(fetchObject.request(objectId));
 
-    return fetch(`http://127.0.0.1:4000/browser/get_object_info/${objectId}`)
+    return fetch(
+      `http://ec2-34-204-108-251.compute-1.amazonaws.com:4000/browser/get_object_info/${objectId}`
+    )
       .then(
         (response) => response.json(),
         (error) => dispatch(fetchObject.failure(error))
@@ -114,7 +116,9 @@ export const fetchExampleObjectsData = () => {
   return (dispatch: Dispatch) => {
     dispatch(fetchExampleObjects.request(null));
 
-    return fetch('http://127.0.0.1:4000/browser/example_objects')
+    return fetch(
+      'http://ec2-34-204-108-251.compute-1.amazonaws.com:8060/browser/example_objects'
+    )
       .then(
         (response) => response.json(),
         (error) => dispatch(fetchExampleObjects.failure(error))
