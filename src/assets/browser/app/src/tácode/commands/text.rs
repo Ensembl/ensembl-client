@@ -49,7 +49,7 @@ impl Command for Text {
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,_,ref mut tx,_,_) = task {
+            if let TáTask::MakeShapes(_,_,_,ref mut tx,_,_,_) = task {
                 let regs = rt.registers();
                 regs.get(self.2).as_string(|font_name| {
                     regs.get(self.3).as_floats(|meta| {

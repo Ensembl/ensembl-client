@@ -96,7 +96,6 @@ fn exe_set_stick(a: &mut App, name: &str) {
 }
 
 fn exe_set_state(a: &mut App, name: &str, on: StateValue) {
-    console!("set_state {:?} {:?}",name,on);
     a.with_state(|s| {
         s.set_atom_state(name,on);
     });

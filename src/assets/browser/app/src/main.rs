@@ -17,6 +17,7 @@ extern crate rand;
 extern crate itertools;
 extern crate hsl;
 extern crate url;
+extern crate base64;
 
 extern crate tánaiste;
 
