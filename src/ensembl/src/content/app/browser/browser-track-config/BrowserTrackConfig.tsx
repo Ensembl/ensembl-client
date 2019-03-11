@@ -32,7 +32,6 @@ type StateProps = {
   selectedCog: any;
   trackConfigLabel: any;
   trackConfigNames: any;
-  ypos: number;
 };
 
 type DispatchProps = {
@@ -41,7 +40,11 @@ type DispatchProps = {
   updateTrackConfigNames: (selectedCog: any, sense: boolean) => void;
 };
 
-type BrowserTrackConfigProps = StateProps & DispatchProps;
+type OwnProps = {
+  ypos: number;
+};
+
+type BrowserTrackConfigProps = StateProps & DispatchProps & OwnProps;
 
 const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
   props: BrowserTrackConfigProps
