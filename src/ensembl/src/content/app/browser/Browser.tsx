@@ -62,7 +62,7 @@ type DispatchProps = {
     browserEl: HTMLDivElement
   ) => void;
   fetchExampleObjectsData: () => void;
-  fetchObjectData: (objSymbol: string) => void;
+  fetchObjectData: (stableId: string) => void;
   toggleDrawer: (drawerOpened: boolean) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
@@ -74,7 +74,7 @@ type OwnProps = {};
 
 type MatchParams = {
   location: string;
-  objSymbol: string;
+  stableId: string;
   species: string;
 };
 
@@ -105,21 +105,13 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, [props.exampleObjects]);
 
   useEffect(() => {
-    const { location, objSymbol } = props.match.params;
+    const { location, stableId } = props.match.params;
     const chrLocation = getChrLocationFromStr(location);
 
     dispatchBrowserLocation(chrLocation);
 
-    let objectStableId = '';
-
-    Object.values(props.exampleObjects).forEach((exampleObject: any) => {
-      if (exampleObject.display_name === objSymbol) {
-        objectStableId = exampleObject.stable_id;
-      }
-    });
-
-    props.fetchObjectData(objectStableId);
-  }, [props.match.params.objSymbol]);
+    props.fetchObjectData(stableId);
+  }, [props.match.params.stableId]);
 
   useEffect(() => {
     const [, chrStart, chrEnd] = props.chrLocation;
@@ -134,7 +126,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
     const newChrLocationStr = getChrLocationStr(props.chrLocation);
     const newUrl = path
       .replace(':species', params.species)
-      .replace(':objSymbol', params.objSymbol)
+      .replace(':stableId', params.stableId)
       .replace(':location', newChrLocationStr);
 
     props.history.replace(newUrl);

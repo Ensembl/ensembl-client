@@ -66,7 +66,7 @@ export const App: FunctionComponent<AppProps> = (props: AppProps) => {
           <Route path={`${url}/global-search`} component={GlobalSearch} />
           <Route path={`${url}/species-selector`} component={SpeciesSelector} />
           <Route
-            path={`${url}/browser/:species/:objSymbol/:location`}
+            path={`${url}/browser/:species/:stableId/:location`}
             component={Browser}
           />
         </Switch>
