@@ -28,7 +28,7 @@ type TrackPanelListItemProps = {
 };
 
 // delete this when there is a better place to put this
-const trackPrefix = '';
+const trackPrefix = 'track:';
 
 const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   props: TrackPanelListItemProps

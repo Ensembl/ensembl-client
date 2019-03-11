@@ -91,13 +91,13 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
           color: 'BLUE',
           id: 0.1,
           label: transcriptLabel,
-          name: 'transcript',
+          name: 'gene-feat',
           selectedInfo: objectInfo.associated_object.selected_info
         }
       ],
       id: 0,
       label: geneLabel,
-      name: 'gene'
+      name: 'gene-feat'
     };
   };
 
