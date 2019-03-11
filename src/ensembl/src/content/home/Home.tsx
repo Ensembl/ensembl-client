@@ -38,7 +38,7 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
     } = exampleObject;
     const assemblyStr = `${assembly.name}_demo`;
     const regionStr = `${chromosome}:${location.start}-${location.end}`;
-    const path = `/app/browser/${assemblyStr}/${display_name}/${regionStr}`;
+    const path = `/app/browser/${assemblyStr}/${stable_id}/${regionStr}`;
 
     return (
       <dd key={stable_id}>
