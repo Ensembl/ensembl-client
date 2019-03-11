@@ -46,7 +46,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
       classNames += ` ${styles.main}`;
     }
 
-    if (drawerView === track.name) {
+    if (drawerView === track.name || drawerView === track.drawerView) {
       classNames += ` ${styles.currentDrawerView}`;
     }
 
@@ -71,11 +71,15 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
       return;
     }
 
-    props.updateDrawerView(props.track.name);
+    const viewName = track.drawerView || track.name;
+
+    props.updateDrawerView(viewName);
   };
 
   const drawerViewButtonHandler = () => {
-    props.updateDrawerView(props.track.name);
+    const viewName = track.drawerView || track.name;
+
+    props.updateDrawerView(viewName);
   };
 
   const toggleExpand = () => {
