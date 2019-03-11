@@ -89,6 +89,27 @@ export const Browser: FunctionComponent<BrowserProps> = (
   };
 
   useEffect(() => {
+    const { path, params } = props.match;
+
+    if (!params.species) {
+      const defaultObject: any = Object.values(props.exampleObjects).filter(
+        (exampleObject: any) => exampleObject.display_name === 'BRCA2'
+      )[0];
+
+      const chrLocationStr = `${defaultObject.chromosome}:${
+        defaultObject.location.start
+      }-${defaultObject.location.end}`;
+
+      const newUrl = path
+        .replace(':species', 'human')
+        .replace(':objSymbol', 'BRCA2')
+        .replace(':location', chrLocationStr);
+
+      props.history.push(newUrl);
+    }
+  }, []);
+
+  useEffect(() => {
     const { location, objSymbol } = props.match.params;
     const chrLocation = getChrLocationFromStr(location);
 
