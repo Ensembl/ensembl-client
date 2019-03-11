@@ -1,4 +1,6 @@
-import { createAction } from 'typesafe-actions';
+import { createAction, createAsyncAction } from 'typesafe-actions';
+import { Dispatch } from 'redux';
+
 import { BrowserNavStates, ChrLocation } from './browserState';
 import { TrackType } from './track-panel/trackPanelConfig';
 
@@ -96,6 +98,75 @@ export const updateDefaultChrLocation = createAction(
       });
   }
 );
+
+export const changeBrowserLocation = (
+  chrLocation: ChrLocation,
+  browserEl: HTMLDivElement
+) => {
+  return (dispatch: Dispatch) => {
+    const [chrCode, startBp, endBp] = chrLocation;
+
+    const stickEvent = new CustomEvent('bpane', {
+      bubbles: true,
+      detail: {
+        stick: chrCode
+      }
+    });
+
+    browserEl.dispatchEvent(stickEvent);
+
+    if (startBp > 0 && endBp > 0) {
+      const gotoEvent = new CustomEvent('bpane', {
+        bubbles: true,
+        detail: {
+          goto: `${startBp}-${endBp}`
+        }
+      });
+
+      browserEl.dispatchEvent(gotoEvent);
+    }
+
+    dispatch(updateDefaultChrLocation(chrLocation));
+  };
+};
+
+export const fetchObject = createAsyncAction(
+  'browser/fetch_object_request',
+  'browser/fetch_object_success',
+  'browser/fetch_object_failure'
+)<string, {}, Error>();
+
+export const fetchObjectData = (objectId: string) => {
+  return (dispatch: Dispatch) => {
+    dispatch(fetchObject.request(objectId));
+
+    return fetch(`http://127.0.0.1:4000/browser/get_object_info/${objectId}`)
+      .then(
+        (response) => response.json(),
+        (error) => dispatch(fetchObject.failure(error))
+      )
+      .then((json) => dispatch(fetchObject.success(json)));
+  };
+};
+
+export const fetchExampleObjects = createAsyncAction(
+  'browser/fetch_example_objects_request',
+  'browser/fetch_example_objects_success',
+  'browser/fetch_example_objects_failure'
+)<null, {}, Error>();
+
+export const fetchExampleObjectsData = () => {
+  return (dispatch: Dispatch) => {
+    dispatch(fetchExampleObjects.request(null));
+
+    return fetch('http://127.0.0.1:4000/browser/example_objects')
+      .then(
+        (response) => response.json(),
+        (error) => dispatch(fetchExampleObjects.failure(error))
+      )
+      .then((json) => dispatch(fetchExampleObjects.success(json)));
+  };
+};
 
 export const openTrackPanelModal = createAction(
   'browser/open-track-panel-modal',

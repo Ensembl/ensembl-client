@@ -2,11 +2,15 @@
 
 .privacyBanner {
   background: $ens-black;
+  bottom: 0;
   color: white;
-  font-size: 12px;
+  font-size: 14px;
+  height: 104px;
   line-height: 2;
   padding: 10px;
+  position: absolute;
   text-align: center;
+  width: 100%;
 
   button {
     background: $ens-blue;

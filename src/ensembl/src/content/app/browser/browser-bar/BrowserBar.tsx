@@ -6,8 +6,6 @@ import { TrackType } from '../track-panel/trackPanelConfig';
 
 import {
   toggleBrowserNav,
-  updateDefaultChrLocation,
-  updateChrLocation,
   toggleGenomeSelector,
   selectBrowserTab,
   toggleDrawer
@@ -20,7 +18,9 @@ import {
   getDefaultChrLocation,
   getGenomeSelectorActive,
   getDrawerOpened,
-  getSelectedBrowserTab
+  getSelectedBrowserTab,
+  getObjectInfo,
+  getTrackPanelModalOpened
 } from '../browserSelectors';
 import { RootState } from 'src/rootReducer';
 
@@ -37,7 +37,9 @@ type StateProps = {
   defaultChrLocation: ChrLocation;
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
+  objectInfo: any;
   selectedBrowserTab: TrackType;
+  trackPanelModalOpened: boolean;
 };
 
 type DispatchProps = {
@@ -45,12 +47,10 @@ type DispatchProps = {
   toggleBrowserNav: () => void;
   toggleDrawer: (drawerOpened: boolean) => void;
   toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
-  updateChrLocation: (chrLocation: ChrLocation) => void;
-  updateDefaultChrLocation: (chrLocation: ChrLocation) => void;
 };
 
 type OwnProps = {
-  changeBrowserLocation: () => void;
+  dispatchBrowserLocation: (chrLocation: ChrLocation) => void;
 };
 
 type BrowserBarProps = StateProps & DispatchProps & OwnProps;
@@ -59,6 +59,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   props: BrowserBarProps
 ) => {
   const { navigator, reset } = browserInfoConfig;
+  const { objectInfo } = props;
 
   const getBrowserInfoClasses = () => {
     let classNames = styles.browserInfo;
@@ -71,10 +72,10 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   };
 
   const getBrowserNavIcon = () => {
-    if (props.browserNavOpened === true) {
-      return navigator.icon.selected;
-    } else if (props.drawerOpened === true) {
+    if (props.drawerOpened === true) {
       return navigator.icon.grey;
+    } else if (props.browserNavOpened === true) {
+      return navigator.icon.selected;
     } else {
       return navigator.icon.default;
     }
@@ -93,33 +94,34 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
       <div className={getBrowserInfoClasses()}>
         <dl className={styles.browserInfoLeft}>
           <BrowserReset
-            changeBrowserLocation={props.changeBrowserLocation}
+            dispatchBrowserLocation={props.dispatchBrowserLocation}
             chrLocation={props.chrLocation}
             defaultChrLocation={props.defaultChrLocation}
             details={reset}
             drawerOpened={props.drawerOpened}
-            updateChrLocation={props.updateChrLocation}
           />
           {props.genomeSelectorActive ? null : (
             <Fragment>
               <dd className={styles.geneSymbol}>
                 <label>Gene</label>
-                <span className={styles.value}>BRAC2</span>
+                <span className={styles.value}>{objectInfo.obj_symbol}</span>
               </dd>
               <dd>
                 <label>Stable ID</label>
-                <span className={styles.value}>ENSG00000139618</span>
+                <span className={styles.value}>{objectInfo.stable_id}</span>
               </dd>
               <dd className="show-for-large">
                 <label>Spliced mRNA length</label>
-                <span className={styles.value}>84,793</span>
+                <span className={styles.value}>
+                  {objectInfo.spliced_length}
+                </span>
                 <label>bp</label>
               </dd>
               <dd className={`show-for-large ${styles.nonLabelValue}`}>
-                protein coding
+                {objectInfo.bio_type}
               </dd>
               <dd className={`show-for-large ${styles.nonLabelValue}`}>
-                forward strand
+                {objectInfo.strand} strand
               </dd>
             </Fragment>
           )}
@@ -127,12 +129,11 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
         <dl className={styles.browserInfoRight}>
           <BrowserGenomeSelector
             browserActivated={props.browserActivated}
-            changeBrowserLocation={props.changeBrowserLocation}
+            dispatchBrowserLocation={props.dispatchBrowserLocation}
             defaultChrLocation={props.defaultChrLocation}
             drawerOpened={props.drawerOpened}
             genomeSelectorActive={props.genomeSelectorActive}
             toggleGenomeSelector={props.toggleGenomeSelector}
-            updateDefaultChrLocation={props.updateDefaultChrLocation}
           />
           {props.genomeSelectorActive ? null : (
             <dd className={styles.navigator}>
@@ -149,6 +150,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
         selectBrowserTab={props.selectBrowserTab}
         selectedBrowserTab={props.selectedBrowserTab}
         toggleDrawer={props.toggleDrawer}
+        trackPanelModalOpened={props.trackPanelModalOpened}
       />
     </div>
   );
@@ -161,16 +163,16 @@ const mapStateToProps = (state: RootState): StateProps => ({
   defaultChrLocation: getDefaultChrLocation(state),
   drawerOpened: getDrawerOpened(state),
   genomeSelectorActive: getGenomeSelectorActive(state),
-  selectedBrowserTab: getSelectedBrowserTab(state)
+  objectInfo: getObjectInfo(state),
+  selectedBrowserTab: getSelectedBrowserTab(state),
+  trackPanelModalOpened: getTrackPanelModalOpened(state)
 });
 
 const mapDispatchToProps: DispatchProps = {
   selectBrowserTab,
   toggleBrowserNav,
   toggleDrawer,
-  toggleGenomeSelector,
-  updateChrLocation,
-  updateDefaultChrLocation
+  toggleGenomeSelector
 };
 
 export default connect(

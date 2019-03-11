@@ -20,18 +20,20 @@ import {
   ChrLocation
 } from './browserState';
 import {
+  changeBrowserLocation,
+  fetchObjectData,
   toggleDrawer,
   updateChrLocation,
   updateBrowserNavStates,
-  updateBrowserActivated,
-  updateDefaultChrLocation
+  updateBrowserActivated
 } from './browserActions';
 import {
   getBrowserOpenState,
   getDrawerOpened,
   getBrowserNavOpened,
   getChrLocation,
-  getGenomeSelectorActive
+  getGenomeSelectorActive,
+  getExampleObjects
 } from './browserSelectors';
 
 import styles from './Browser.scss';
@@ -46,15 +48,20 @@ type StateProps = {
   browserOpenState: BrowserOpenState;
   chrLocation: ChrLocation;
   drawerOpened: boolean;
+  exampleObjects: {};
   genomeSelectorActive: boolean;
 };
 
 type DispatchProps = {
+  changeBrowserLocation: (
+    chrLocation: ChrLocation,
+    browserEl: HTMLDivElement
+  ) => void;
+  fetchObjectData: (objSymbol: string) => void;
   toggleDrawer: (drawerOpened: boolean) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateChrLocation: (chrLocation: ChrLocation) => void;
-  updateDefaultChrLocation: (chrLocation: ChrLocation) => void;
   replace: (path: string) => void;
 };
 
@@ -76,36 +83,29 @@ export const Browser: FunctionComponent<BrowserProps> = (
 ) => {
   const browserRef: React.RefObject<HTMLDivElement> = useRef(null);
 
-  const changeBrowserLocation = () => {
-    const [chrCode, startBp, endBp] = props.chrLocation;
-
-    const stickEvent = new CustomEvent('bpane', {
-      bubbles: true,
-      detail: {
-        stick: chrCode
-      }
-    });
-
-    const gotoEvent = new CustomEvent('bpane', {
-      bubbles: true,
-      detail: {
-        goto: `${startBp}-${endBp}`
-      }
-    });
-
+  const dispatchBrowserLocation = (chrLocation: ChrLocation) => {
     if (browserRef.current) {
-      browserRef.current.dispatchEvent(stickEvent);
-      browserRef.current.dispatchEvent(gotoEvent);
+      props.changeBrowserLocation(chrLocation, browserRef.current);
     }
   };
 
   useEffect(() => {
     const location = props.history.location.search;
+    const { objSymbol } = props.match.params;
     const chrLocation = getChrLocationFromStr(location);
 
-    props.updateDefaultChrLocation(chrLocation);
-    changeBrowserLocation();
-  }, []);
+    dispatchBrowserLocation(chrLocation);
+
+    let objectStableId = '';
+
+    Object.values(props.exampleObjects).forEach((exampleObject: any) => {
+      if (exampleObject.display_name === objSymbol) {
+        objectStableId = exampleObject.stable_id;
+      }
+    });
+
+    props.fetchObjectData(objectStableId);
+  }, [props.match.params.objSymbol]);
 
   useEffect(() => {
     const { params } = props.match;
@@ -127,7 +127,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   return (
     <section className={styles.browser}>
-      <BrowserBar changeBrowserLocation={changeBrowserLocation} />
+      <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
       {props.genomeSelectorActive ? (
         <div className={styles.browserOverlay} />
       ) : null}
@@ -138,7 +138,9 @@ export const Browser: FunctionComponent<BrowserProps> = (
           }`}
           onClick={closeTrack}
         >
-          {props.browserNavOpened && <BrowserNavBar browserRef={browserRef} />}
+          {props.browserNavOpened && !props.drawerOpened ? (
+            <BrowserNavBar browserRef={browserRef} />
+          ) : null}
           <BrowserImage
             browserRef={browserRef}
             browserNavOpened={props.browserNavOpened}
@@ -159,15 +161,17 @@ const mapStateToProps = (state: RootState): StateProps => ({
   browserOpenState: getBrowserOpenState(state),
   chrLocation: getChrLocation(state),
   drawerOpened: getDrawerOpened(state),
+  exampleObjects: getExampleObjects(state),
   genomeSelectorActive: getGenomeSelectorActive(state)
 });
 
 const mapDispatchToProps: DispatchProps = {
+  changeBrowserLocation,
+  fetchObjectData,
   toggleDrawer,
   updateBrowserActivated,
   updateBrowserNavStates,
   updateChrLocation,
-  updateDefaultChrLocation,
   replace
 };
 
