@@ -15,7 +15,11 @@ const SnpIndels: FunctionComponent = () => {
       <dd className="clearfix">
         <label htmlFor="">Description</label>
         <div className={styles.details}>
-          <p>Shows all SNPs and indels in 1000 Genomes</p>
+          <p>
+            The 1000 Genomes Project has found the most genetic variants (SNPs,
+            CNVs, indels) with frequencies of at least 1% in the human
+            populations studied.
+          </p>
         </div>
       </dd>
     </dl>
