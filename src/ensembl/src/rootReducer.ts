@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
 import { connectRouter } from 'connected-react-router';
-import { StateType } from 'typesafe-actions';
 
 import global from './globalReducer';
 import header from './header/headerReducer';
@@ -13,7 +12,5 @@ const rootReducer = (history: any) =>
     header,
     router: connectRouter(history)
   });
-
-export type RootState = StateType<typeof rootReducer>;
 
 export default rootReducer;
