@@ -91,12 +91,14 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
 
       /* what the frontend and backend call labels and names is flipped */
       Object.keys(props.browserCogTrackList).map((name) => {
+        /* undefined means not seen means on for names */
         if (props.trackConfigNames[name]) {
           ons.push(name + ':label');
         } else {
           offs.push(name + ':label');
         }
-        if (props.trackConfigLabel[name]) {
+        /* undefined means not seen means off for labels */
+        if (props.trackConfigLabel[name] !== false) {
           ons.push(name + ':names');
         } else {
           offs.push(name + ':names');
