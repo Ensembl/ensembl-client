@@ -16,7 +16,7 @@ import BrowserNavBar from './browser-nav/BrowserNavBar';
 import TrackPanel from './track-panel/TrackPanel';
 import Drawer from './drawer/Drawer';
 
-import { RootState } from 'src/rootReducer';
+import { RootState } from 'src/store';
 import {
   BrowserOpenState,
   BrowserNavStates,

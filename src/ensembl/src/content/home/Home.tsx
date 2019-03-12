@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import styles from './Home.scss';
 import { fetchExampleObjectsData } from '../app/browser/browserActions';
 import { getExampleObjects } from '../app/browser/browserSelectors';
-import { RootState } from 'src/rootReducer';
+import { RootState } from 'src/store';
 
 type StateProps = {
   exampleObjects: {};

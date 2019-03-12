@@ -3,7 +3,9 @@ import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { createBrowserHistory } from 'history';
 import { routerMiddleware, LOCATION_CHANGE } from 'connected-react-router';
-import rootReducer from './rootReducer';
+import { StateType } from 'typesafe-actions';
+
+import createRootReducer from './rootReducer';
 
 import GoogleAnalyticsTracking from './services/analytics-service';
 
@@ -34,9 +36,13 @@ const googleAnalyticsMiddleWare = (store: any) => (next: any) => (
 export const history = createBrowserHistory();
 const composeEnhancers = composeWithDevTools({});
 
+const rootReducer = createRootReducer(history);
+
+export type RootState = StateType<typeof rootReducer>;
+
 export default function configureStore(preloadedState?: any) {
   const store = createStore(
-    rootReducer(history), // root reducer with router state
+    rootReducer,
     preloadedState,
     composeEnhancers(
       applyMiddleware(

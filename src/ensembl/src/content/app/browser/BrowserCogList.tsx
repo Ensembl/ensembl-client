@@ -14,7 +14,7 @@ import {
   updateCogTrackList,
   updateSelectedCog
 } from './browserActions';
-import { RootState } from 'src/rootReducer';
+import { RootState } from 'src/store';
 import { CogList } from './browserState';
 import {
   getBrowserActivated,

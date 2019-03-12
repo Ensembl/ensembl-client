@@ -1,4 +1,4 @@
-import { RootState } from 'src/rootReducer';
+import { RootState } from 'src/store';
 import {
   BrowserOpenState,
   BrowserNavStates,
