@@ -2,19 +2,23 @@ import React, { StrictMode } from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { CookiesProvider } from 'react-cookie';
-
-import store from './store';
+import { ConnectedRouter } from 'connected-react-router';
+import configureStore, { history } from './store';
 import Root from './Root';
 
 import { registerSW } from './registerServiceWorker';
 
 import './styles/main';
 
+const store = configureStore();
+
 render(
   <StrictMode>
     <CookiesProvider>
       <Provider store={store}>
-        <Root />
+        <ConnectedRouter history={history}>
+          <Root />
+        </ConnectedRouter>
       </Provider>
     </CookiesProvider>
   </StrictMode>,

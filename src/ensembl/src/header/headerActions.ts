@@ -6,6 +6,12 @@ export const toggleLaunchbar = createAction('header/toggle-launchbar');
 export const changeCurrentApp = createAction(
   'header/change-current-app',
   (resolve) => {
-    return (currentApp: string) => resolve(currentApp);
+    return (currentApp: string) =>
+      resolve(currentApp, {
+        ga: {
+          category: 'Header',
+          label: 'Navigation'
+        }
+      });
   }
 );

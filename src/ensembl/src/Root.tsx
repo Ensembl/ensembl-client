@@ -4,7 +4,6 @@ import React, {
   useState,
   useCallback
 } from 'react';
-import { BrowserRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { withCookies, ReactCookieProps, Cookies } from 'react-cookie';
 import useResizeObserver from 'use-resize-observer';
@@ -55,7 +54,7 @@ const Root: FunctionComponent<RootProps> = (props: RootProps) => {
   }, [cookies]);
 
   return (
-    <BrowserRouter>
+    <>
       <div ref={ref as React.RefObject<HTMLDivElement>} className={styles.root}>
         <Header />
         <Content />
@@ -65,7 +64,7 @@ const Root: FunctionComponent<RootProps> = (props: RootProps) => {
           false
         )}
       </div>
-    </BrowserRouter>
+    </>
   );
 };
 

@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { replace, Replace } from 'connected-react-router';
 
 import BrowserBar from './browser-bar/BrowserBar';
 import BrowserImage from './browser-image/BrowserImage';
@@ -28,8 +29,7 @@ import {
   toggleDrawer,
   updateChrLocation,
   updateBrowserNavStates,
-  updateBrowserActivated,
-  updateDefaultChrLocation
+  updateBrowserActivated
 } from './browserActions';
 import {
   getBrowserOpenState,
@@ -63,11 +63,11 @@ type DispatchProps = {
   ) => void;
   fetchExampleObjectsData: () => void;
   fetchObjectData: (stableId: string) => void;
+  replace: Replace;
   toggleDrawer: (drawerOpened: boolean) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateChrLocation: (chrLocation: ChrLocation) => void;
-  updateDefaultChrLocation: (chrLocation: ChrLocation) => void;
 };
 
 type OwnProps = {};
@@ -96,6 +96,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
   };
 
   useEffect(() => {
+    console.log(props.exampleObjects);
     if (Object.values(props.exampleObjects).length > 0) {
       toggleShowBrowser(true);
     } else {
@@ -105,7 +106,8 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, [props.exampleObjects]);
 
   useEffect(() => {
-    const { location, stableId } = props.match.params;
+    const { stableId } = props.match.params;
+    const location = props.history.location.search;
     const chrLocation = getChrLocationFromStr(location);
 
     dispatchBrowserLocation(chrLocation);
@@ -122,14 +124,13 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, [props.browserActivated]);
 
   useEffect(() => {
-    const { path, params } = props.match;
+    const { params } = props.match;
     const newChrLocationStr = getChrLocationStr(props.chrLocation);
-    const newUrl = path
-      .replace(':species', params.species)
-      .replace(':stableId', params.stableId)
-      .replace(':location', newChrLocationStr);
+    const newUrl = `/app/browser/${params.species}/${
+      params.stableId
+    }?region=${newChrLocationStr}`;
 
-    props.history.replace(newUrl);
+    props.replace(newUrl);
   }, [props.chrLocation]);
 
   const closeTrack = useCallback(() => {
@@ -183,11 +184,11 @@ const mapDispatchToProps: DispatchProps = {
   changeBrowserLocation,
   fetchExampleObjectsData,
   fetchObjectData,
+  replace,
   toggleDrawer,
   updateBrowserActivated,
   updateBrowserNavStates,
-  updateChrLocation,
-  updateDefaultChrLocation
+  updateChrLocation
 };
 
 export default withRouter(
