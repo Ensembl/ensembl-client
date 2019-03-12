@@ -23,7 +23,7 @@ import trackHeightBtn from 'static/img/browser/icon_tracks_height_grey.svg';
 import trackLockBtn from 'static/img/browser/icon_tracks_lock_open_grey.svg';
 import trackHighlightBtn from 'static/img/browser/icon_tracks_highlight_grey.svg';
 import trackMoveBtn from 'static/img/browser/icon_tracks_move_grey.svg';
-import { RootState } from 'src/rootReducer';
+import { RootState } from 'src/store';
 import { CogList } from '../browserState';
 
 type StateProps = {

@@ -3,7 +3,7 @@ import { Route, withRouter } from 'react-router-dom';
 import { RouteComponentProps } from 'react-router';
 import { connect } from 'react-redux';
 
-import { RootState } from '../rootReducer';
+import { RootState } from '../store';
 import { getLaunchbarExpanded } from '../header/headerSelectors';
 
 import Home from './home/Home';

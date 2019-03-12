@@ -21,7 +21,7 @@ import {
   updateChrLocation,
   updateBrowserActivated
 } from '../browserActions';
-import { RootState } from 'src/rootReducer';
+import { RootState } from 'src/store';
 
 type StateProps = {
   browserCogTrackList: CogList;

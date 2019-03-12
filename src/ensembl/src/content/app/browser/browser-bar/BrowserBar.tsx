@@ -22,7 +22,7 @@ import {
   getObjectInfo,
   getTrackPanelModalOpened
 } from '../browserSelectors';
-import { RootState } from 'src/rootReducer';
+import { RootState } from 'src/store';
 
 import BrowserReset from '../browser-reset/BrowserReset';
 import BrowserGenomeSelector from '../browser-genome-selector/BrowserGenomeSelector';

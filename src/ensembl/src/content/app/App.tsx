@@ -15,7 +15,7 @@ import { connect } from 'react-redux';
 
 import { changeCurrentApp } from 'src/header/headerActions';
 import { getCurrentApp } from 'src/header/headerSelectors';
-import { RootState } from 'src/rootReducer';
+import { RootState } from 'src/store';
 
 import AppBar from './AppBar';
 
