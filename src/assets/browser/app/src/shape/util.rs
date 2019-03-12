@@ -14,6 +14,7 @@ pub enum FacadeType {
     Colour
 }
 
+#[derive(Clone)]
 pub enum Facade {
     Drawing(DrawingSpec),
     Colour(Colour)

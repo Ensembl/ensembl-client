@@ -54,9 +54,23 @@ fn binop(type_: &BinOpType, a: &Vec<f64>, b: &Vec<f64>) -> Vec<f64> {
     out
 }
 
-fn member(a: &Vec<f64>, b: &Vec<f64>) -> Vec<f64> {
-    let b : HashSet<i64> = b.iter().map(|x| x.round() as i64).collect();
-    a.iter().map(|x| if b.contains(&(*x as i64)) {1.} else {0.}).collect()
+fn member(av: &Vec<f64>, bv: &Vec<f64>) -> Vec<f64> {
+    let mut cv : Vec<f64> = Vec::<f64>::new();
+    let mut ai = av.iter().map(|x| x.round() as i64);
+    let mut bi = bv.iter().map(|x| x.round() as i64);
+    let mut b = bi.next();
+    for a in ai {
+        while b < Some(a) && b.is_some() {
+            b = bi.next();
+        }
+        if b.is_none() { break; }
+        if b > Some(a) {
+            cv.push(0.);
+        } else if b == Some(a) {
+            cv.push(1.);
+        }
+    }
+    cv
 }
 
 // add Add #a+b, #a, #b

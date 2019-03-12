@@ -9,7 +9,7 @@ use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
 use print::PrintEdition;
 use drawing::{ Artist, Artwork, DrawingSpec };
 
-#[derive(Clone,Debug)]
+#[derive(Clone)]
 pub struct StretchTextureSpec {
     pos: RLeaf,
     aspec: DrawingSpec

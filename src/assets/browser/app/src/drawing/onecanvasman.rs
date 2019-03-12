@@ -9,6 +9,7 @@ use drawing::alloc::{ Ticket, Allocator };
 use drawing::{ FlatCanvas, Drawing, Artist,  AllCanvasAllocator };
 use program::CanvasWeave;
 
+#[derive(Clone)]
 pub struct DrawingHash(u64);
 
 impl DrawingHash {
@@ -61,13 +62,15 @@ pub struct OneCanvasManager {
     drawings: Vec<Drawing>,
     allocator: Allocator,
     index: u32,
+    ds_idx: u32,
     weave: CanvasWeave
 }
 
 impl OneCanvasManager {
-    pub fn new(canv_idx: u32, weave: CanvasWeave, standin: &FlatCanvas) -> OneCanvasManager {
+    pub fn new(ds_idx: u32, canv_idx: u32, weave: CanvasWeave, standin: &FlatCanvas) -> OneCanvasManager {
         OneCanvasManager {
             canvas: None,
+            ds_idx,
             index: canv_idx,
             standin: standin.clone(),
             cache: DrawingMemory::new(),
@@ -109,6 +112,8 @@ impl OneCanvasManager {
             tr.draw(self);
         }
     }
+    
+    pub fn get_full_idx(&self) -> (u32,u32) { (self.ds_idx,self.index) }
     
     pub fn allocate(&mut self) -> CPixel {
         self.allocator.allocate()

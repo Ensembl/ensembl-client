@@ -1,9 +1,12 @@
+mod canvascache;
 mod data;
 mod execute;
 mod objects;
 mod source;
 mod gpuspec;
 mod impls;
+
+pub use self::canvascache::CanvasCache;
 
 pub use program::execute::{
     Program,
