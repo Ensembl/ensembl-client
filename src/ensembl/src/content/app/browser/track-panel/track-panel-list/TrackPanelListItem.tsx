@@ -17,7 +17,7 @@ import chevronUpIcon from 'static/img/shared/chevron-up.svg';
 
 import styles from './TrackPanelListItem.scss';
 
-import EyeToggleIcon from 'src/shared/eye-toggle-icon/EyeToggleIcon';
+import EyeToggleButton from 'src/shared/eye-toggle-button/EyeToggleButton';
 
 type TrackPanelListItemProps = {
   browserRef: RefObject<HTMLDivElement>;
@@ -34,7 +34,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   props: TrackPanelListItemProps
 ) => {
   const [expanded, setExpanded] = useState(true);
-  const [trackStatus, setTrackStatus] = useState('on');
+  const [trackStatus, setTrackStatus] = useState(true);
 
   const { browserRef, drawerView, track } = props;
   const { ellipsis, eye } = trackPanelIconConfig;
@@ -73,7 +73,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   };
 
   const toggleTrack = () => {
-    const currentTrackStatus = trackStatus === 'on' ? 'off' : 'on';
+    const currentTrackStatus = trackStatus ? 'off' : 'on';
 
     const trackEvent = new CustomEvent('bpane', {
       bubbles: true,
@@ -86,7 +86,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
       browserRef.current.dispatchEvent(trackEvent);
     }
 
-    setTrackStatus(currentTrackStatus);
+    setTrackStatus(!trackStatus);
   };
 
   return (
@@ -115,10 +115,10 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
         <button onClick={changeDrawerViewHandler}>
           <img src={ellipsis.icon.on} alt={`Go to ${track.label}`} />
         </button>
-        <EyeToggleIcon
+        <EyeToggleButton
           iconStatus={trackStatus}
           description={'enable/disable track'}
-          callbackFunction={toggleTrack}
+          onClick={toggleTrack}
         />
       </dd>
       {expanded && props.children}
