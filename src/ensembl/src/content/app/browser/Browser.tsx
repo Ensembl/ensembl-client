@@ -96,7 +96,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
   };
 
   useEffect(() => {
-    console.log(props.exampleObjects);
     if (Object.values(props.exampleObjects).length > 0) {
       toggleShowBrowser(true);
     } else {
@@ -107,7 +106,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   useEffect(() => {
     const { stableId } = props.match.params;
-    const location = props.history.location.search;
+    const location = props.location.search;
     const chrLocation = getChrLocationFromStr(location);
 
     dispatchBrowserLocation(chrLocation);
@@ -131,7 +130,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
     }?region=${newChrLocationStr}`;
 
     props.replace(newUrl);
-  }, [props.chrLocation]);
+  }, [props.chrLocation, props.location.search]);
 
   const closeTrack = useCallback(() => {
     if (props.drawerOpened === false) {
