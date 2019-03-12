@@ -56,6 +56,32 @@ fn make_facade(spec: &Box<TypeToShape>, colour: &Vec<f64>, tx: &Vec<DrawingSpec>
     }
 }
 
+fn make_facades(spec: &Box<TypeToShape>, colour: &Vec<f64>, tx: &Vec<DrawingSpec>) -> Vec<Facade> {
+    let mut out = Vec::<Facade>::new();
+    let col_len = colour.len();
+    let type_ = spec.get_facade_type();
+    let num_items = match type_ {
+        FacadeType::Colour => col_len/3,
+        FacadeType::Drawing => col_len
+    };
+    for i in 0..num_items {
+        out.push(match type_ {
+            FacadeType::Colour => {
+                let r = colour[i*3] as u32;
+                let g = colour[i*3+1] as u32;
+                let b = colour[i*3+2] as u32;
+                Facade::Colour(Colour(r,g,b))
+            },
+            FacadeType::Drawing => {
+                let idx = colour[i];
+                Facade::Drawing(tx[idx as usize].clone())
+            }
+        });
+    }
+    out
+}
+
+/* TODO switch long to use make_facades. Can do it, but no time */
 fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceResponse, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
@@ -91,6 +117,8 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceRes
     let mut y_start_iter = y_start.iter().cycle();
     let mut x_aux_iter = x_aux.iter().cycle();
     let mut y_aux_iter = y_aux.iter().cycle();
+    let facades = make_facades(&spec,colour,tx);
+    let mut f_iter = facades.iter().cycle();
     let y_start_len = y_start.len();
     let x_aux_len = x_aux.len();
     let y_aux_len = y_aux.len();
@@ -98,13 +126,14 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceRes
     for i in 0..x_start.len() {
         if let Some((x_pos_v,x_aux_v)) = 
                 do_scale(&spec,leaf,x_start[i],x_aux[i%x_aux_len]) {
-            let facade = make_facade(&spec,colour,tx,i);
+            //let facade = make_facade(&spec,colour,tx,i);
+            let facade = f_iter.next();
             let data = ShapeShortInstanceData {
                 pos_x: x_pos_v,
                 pos_y: y_start[i%y_start_len] as i32,
                 aux_x: x_aux_v,
                 aux_y: y_aux[i%y_aux_len] as i32,
-                facade
+                facade: facade.cloned().unwrap()
             };
             if let Some(shape) = spec.new_short_shape(&data) {
                 lc.add_shape(part,shape);

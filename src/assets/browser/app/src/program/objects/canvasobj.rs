@@ -77,11 +77,14 @@ impl Object for ObjectCanvasTexture {
     fn obj_final(&mut self, _batch: &DataBatch, ctx: &glctx, ds: &DrawingSession) {
         let canvs = ds.all_ocm();
         for c in canvs {
-            self.textures.insert(
-                c.index(),
-                canvas_texture(ctx,&c.canvas.as_ref().unwrap().element(),
-                                &c.canvas.as_ref().unwrap().weave())
-            );
+            let cc = ds.get_canvas_cache();
+            let texture = cc.find_texture(c).unwrap_or_else(|| {
+                let t = canvas_texture(ctx,&c.canvas.as_ref().unwrap().element(),
+                                &c.canvas.as_ref().unwrap().weave());
+                cc.set_texture(c,&t);
+                t
+            });
+            self.textures.insert(c.index(),texture);
         }
     }
 

@@ -3,22 +3,28 @@ use std::collections::hash_map::Entry;
 
 use composit::Carriage;
 use drawing::{ OneCanvasManager, FlatCanvas, AllCanvasAllocator };
-use program::{ CanvasWeave };
+use program::{ CanvasCache, CanvasWeave };
 
 pub struct DrawingSession {
+    ds_idx: u32,
     next_canv_idx: u32,
     canvases: HashMap<CanvasWeave,OneCanvasManager>,
     standin: FlatCanvas,
+    canvascache: CanvasCache
 }
 
 impl DrawingSession {
-    pub fn new(aca: &mut AllCanvasAllocator) -> DrawingSession {
+    pub fn new(aca: &mut AllCanvasAllocator, ds_idx: u32) -> DrawingSession {
         DrawingSession {
+            ds_idx: ds_idx,
             next_canv_idx: 0,
             canvases: HashMap::<CanvasWeave,OneCanvasManager>::new(),
-            standin: aca.get_standin().clone()
+            standin: aca.get_standin().clone(),
+            canvascache: aca.get_canvas_cache().clone()
         }
     }
+
+    pub fn get_ds_idx(&self) -> u32 { self.ds_idx }
 
     pub fn indices(&self) -> HashMap<CanvasWeave,u32> {
         let mut out = HashMap::<CanvasWeave,u32>::new();
@@ -38,9 +44,13 @@ impl DrawingSession {
             Entry::Occupied(e) => e.into_mut(),
             Entry::Vacant(e) => {
                 self.next_canv_idx += 1;
-                e.insert(OneCanvasManager::new(self.next_canv_idx-1,weave,&standin))
+                e.insert(OneCanvasManager::new(self.ds_idx,self.next_canv_idx-1,weave,&standin))
             }
         }
+    }
+
+    pub fn get_canvas_cache(&self) -> &CanvasCache {
+        &self.canvascache
     }
 
     pub fn redraw_component(&mut self, c: &mut Carriage) {

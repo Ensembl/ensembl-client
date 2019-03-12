@@ -33,7 +33,7 @@ impl LeafPrinter {
         
     fn redraw_drawings(&mut self, alloc: &mut AllCanvasAllocator, comps: &mut Vec<&mut Carriage>) {
         self.ds.finish(alloc);
-        self.ds = DrawingSession::new(alloc);
+        self.ds = alloc.make_drawing_session();
         for mut c in comps.iter_mut() {
             self.ds.redraw_component(*c);
         }

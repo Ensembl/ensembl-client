@@ -40,14 +40,16 @@ macro_rules! vec_s {
 #[allow(unused_macros)]
 macro_rules! console {
     ($($arg:tt)*) => {{
-        let s = format!($($arg)*);
-        js! { console.log(@{s}); };
+        if true {
+            let s = format!($($arg)*);
+            js! { console.log(@{s}); };
+        }
     }}
 }
 
 macro_rules! debug {
     ($k: expr, $($arg:tt)*) => {{
-        if true {
+        if false {
             let s = format!($($arg)*);
             ::debug::debug_panel_entry_add($k,&s);
         }

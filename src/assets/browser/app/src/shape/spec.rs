@@ -3,7 +3,7 @@ use shape::{
     StretchWiggle, BoxSpec
 };
 
-#[derive(Clone,Debug)]
+#[derive(Clone)]
 pub enum ShapeSpec {
     PinPoly(PinPolySpec),
     PinRect(RectSpec),

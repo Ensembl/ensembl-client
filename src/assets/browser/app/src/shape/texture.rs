@@ -20,7 +20,7 @@ pub enum TexturePosition<T: Clone+Copy+Debug> {
     Fix(EPixel),
 }
 
-#[derive(Clone,Debug)]
+#[derive(Clone)]
 pub struct TextureSpec {
     origin: TexturePosition<f32>,
     offset: CPixel,

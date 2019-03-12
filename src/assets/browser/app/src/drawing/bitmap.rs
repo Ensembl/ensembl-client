@@ -1,19 +1,20 @@
 use std::cmp::{ min, max };
 
-use drawing::{ FlatCanvas, Artist, DrawingSession, OneCanvasManager, DrawingSpec };
+use drawing::{ DrawingHash, FlatCanvas, Artist, DrawingSession, OneCanvasManager, DrawingSpec };
 use program::CanvasWeave;
 use types::{ CPixel, area_size, cpixel };
 
-#[derive(Clone,Debug)]
+#[derive(Clone)]
 pub struct BitmapArtist {
     data: Vec<u8>,
     size: CPixel,
-    blur: bool
+    blur: bool,
+    hash: Option<DrawingHash>
 }
 
 impl BitmapArtist {
-    fn new(data: Vec<u8>, size: CPixel, blur: bool) -> BitmapArtist {
-        BitmapArtist { data, size, blur }
+    fn new(data: Vec<u8>, size: CPixel, blur: bool, hash: Option<DrawingHash>) -> BitmapArtist {
+        BitmapArtist { data, size, blur, hash }
     }
 }
 
@@ -46,6 +47,8 @@ impl Artist for BitmapArtist {
         }
     }
     
+    fn memoize_key(&self) -> Option<DrawingHash> { self.hash.clone() }
+    
     fn measure(&self, _canvas: &FlatCanvas) -> CPixel {
         self.size
     }
@@ -61,6 +64,6 @@ impl Artist for BitmapArtist {
     }
 }
 
-pub fn bitmap_texture(data: Vec<u8>, size: CPixel, blur: bool) -> DrawingSpec {
-    DrawingSpec::Bitmap(BitmapArtist::new(data,size,blur))
+pub fn bitmap_texture(data: Vec<u8>, size: CPixel, blur: bool, hash: Option<DrawingHash>) -> DrawingSpec {
+    DrawingSpec::Bitmap(BitmapArtist::new(data,size,blur,hash))
 }

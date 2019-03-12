@@ -20,6 +20,7 @@ use debug::testcards::common::{
     rng_subdivide, bio_mark, rng_tracks, prop
 };
 
+use drawing::DrawingHash;
 use shape::{
     tape_mathsshape,
     pin_mathsshape,
@@ -50,7 +51,7 @@ fn battenberg() -> DrawingSpec {
     bitmap_texture(vec! { 0,0,255,255,
                           255,0,0,255,
                           0,255,0,255,
-                          255,255,0,255 },cpixel(2,2),false)
+                          255,255,0,255 },cpixel(2,2),false,None)
 }
 
 fn measure(lc: &mut SourceResponse, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSpec) {
@@ -366,7 +367,7 @@ pub fn bs_source_main() -> ClosureSource {
             }
             if yidx == pal.middle {
                 let tx = bitmap_texture(tinsel(),
-                                        cpixel(tinsel().len() as i32/4,1),true);
+                                        cpixel(tinsel().len() as i32/4,1),true,None);
                 let mut tinsel_start = round_down(start_leaf,TINSEL_LENGTH);
                 while tinsel_start < end_leaf {
                     let pos_start = prop(leaf,tinsel_start);
@@ -380,7 +381,7 @@ pub fn bs_source_main() -> ClosureSource {
                                         vec! { 0,0,255,255,
                                                  255,0,0,255,
                                                  0,255,0,255,
-                                                 255,255,0,255 },cpixel(2,2),false);
+                                                 255,255,0,255 },cpixel(2,2),false,None);
                     let start_prop = prop(leaf,p[0]);
                     let tts = TextureTypeSpec {
                         sea_x: None,
@@ -488,7 +489,7 @@ pub fn bs_source_main() -> ClosureSource {
         let tx = bitmap_texture(vec! { 0,0,255,255,
                                      255,0,0,255,
                                      0,255,0,255,
-                                     255,255,0,255 },cpixel(1,4),false);
+                                     255,255,0,255 },cpixel(1,4),false,None);
         let tts = TextureTypeSpec {
             sea_x: Some(AxisSense::Max),
             sea_y: Some(AxisSense::Max),

@@ -6,7 +6,7 @@ use stdweb::unstable::TryInto;
 
 use dom::domutil;
 use drawing::{  DrawingSession, FlatCanvas };
-use program::CanvasWeave;
+use program::{ CanvasCache, CanvasWeave };
 use types::Dot;
 
 #[derive(Debug)]
@@ -35,7 +35,8 @@ pub struct AllCanvasAllocator {
     idx: u32,
     canvases: HashMap<u32,FlatCanvas>,
     standin: FlatCanvas,
-    standin_el: CanvasElement
+    standin_el: CanvasElement,
+    canvascache: CanvasCache
 }
 
 impl AllCanvasAllocator {
@@ -49,7 +50,12 @@ impl AllCanvasAllocator {
             canvases: HashMap::<u32,FlatCanvas>::new(),
             standin, root, standin_el,
             idx: 0,
+            canvascache: CanvasCache::new()
         }
+    }
+    
+    pub fn get_canvas_cache(&mut self) -> &CanvasCache {
+        &mut self.canvascache
     }
     
     pub fn finish(&mut self) {
@@ -74,6 +80,8 @@ impl AllCanvasAllocator {
     }
     
     pub fn make_drawing_session(&mut self) -> DrawingSession {
-        DrawingSession::new(self)
+        self.idx += 1;
+        let idx = self.idx;
+        DrawingSession::new(self,idx)
     }    
 }
