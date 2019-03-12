@@ -10,7 +10,7 @@ import TrackPanelBar from './track-panel-bar/TrackPanelBar';
 import TrackPanelList from './track-panel-list/TrackPanelList';
 import TrackPanelModal from './track-panel-modal/TrackPanelModal';
 
-import { RootState } from 'src/rootReducer';
+import { RootState } from 'src/store';
 
 import {
   toggleDrawer,
