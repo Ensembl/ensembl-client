@@ -70,9 +70,8 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
   const nameIcon = trackOurConfigName
     ? tracksSliderOnIcon
     : tracksSliderOffIcon;
-  const labelIcon = trackOurConfigLabel
-    ? tracksSliderOnIcon
-    : tracksSliderOffIcon;
+  const labelIcon =
+    trackOurConfigLabel !== false ? tracksSliderOnIcon : tracksSliderOffIcon;
 
   const toggleName = useCallback(() => {
     if (applyToAll) {
