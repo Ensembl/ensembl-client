@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -20,11 +20,19 @@ type OwnProps = {};
 type HomeProps = StateProps & DispatchProps & OwnProps;
 
 const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
-  useEffect(() => {
-    props.fetchExampleObjectsData();
-  }, []);
+  const [showPreviouslyViewed, toggleShowPreviouslyViewed] = useState(true);
 
-  const exampleObjectsTotal = Object.keys(props.exampleObjects).length;
+  useEffect(() => {
+    if (Object.values(props.exampleObjects).length > 0) {
+      toggleShowPreviouslyViewed(true);
+    } else {
+      toggleShowPreviouslyViewed(false);
+
+      props.fetchExampleObjectsData();
+    }
+  }, [props.exampleObjects]);
+
+  console.log('hello');
 
   const getExampleObjectNode = (exampleObject: any) => {
     const {
@@ -61,7 +69,7 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
           <h2>Refine results</h2>
         </div>
       </section>
-      {exampleObjectsTotal ? (
+      {showPreviouslyViewed ? (
         <section className={styles.previouslyViewed}>
           <h2>Previously viewed</h2>
           <dl>
@@ -85,6 +93,10 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
           Grey icons indicate apps &amp; functionality that is planned, but not
           available yet.
         </p>
+        <p className={styles.convoMessage}>
+          It&rsquo;s very early days, but why not join the conversation:
+        </p>
+        <p>helpdesk@ensembl.org</p>
       </section>
     </div>
   );
