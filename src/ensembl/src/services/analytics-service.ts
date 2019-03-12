@@ -1,10 +1,11 @@
 import ReactGA from 'react-ga';
 
-// TODO this needs to be loaded from the config
-const googleTrackingID = 'UA-58710484-17';
+const googleTrackingID = process.env.GOOGLE_ANALYTICS_KEY
+  ? process.env.GOOGLE_ANALYTICS_KEY
+  : '';
 
 class AnalyticsTracking {
-  reactGA: typeof ReactGA;
+  private reactGA: typeof ReactGA;
 
   constructor() {
     ReactGA.initialize(googleTrackingID);
@@ -12,12 +13,12 @@ class AnalyticsTracking {
   }
 
   // Track a pageview
-  trackPageView(pathToTrack: string) {
+  public trackPageView(pathToTrack: string) {
     this.reactGA.pageview(pathToTrack);
   }
 
   // Track an event
-  trackEvent(action: any) {
+  public trackEvent(action: any) {
     this.reactGA.event({
       action: action.meta.ga.action ? action.meta.ga.action : action.type,
       category: action.meta.ga.category,
