@@ -17,6 +17,23 @@ export const updateBrowserActivated = createAction(
   }
 );
 
+export const activateBrowser = (browserEl: HTMLDivElement) => {
+  return (dispatch: Dispatch) => {
+    const activateEvent = new CustomEvent('bpane-activate', {
+      bubbles: true,
+      detail: {
+        'config-url':
+          'http://ec2-34-204-108-251.compute-1.amazonaws.com:8060/browser/config',
+        key: 'main'
+      }
+    });
+
+    browserEl.dispatchEvent(activateEvent);
+
+    dispatch(updateBrowserActivated(true));
+  };
+};
+
 export const toggleTrackPanel = createAction(
   'browser/toggle-track-panel',
   (resolve) => {
