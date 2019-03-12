@@ -1,7 +1,7 @@
 import { ChrLocation } from './browserState';
 
 export function getChrLocationFromStr(chrLocationStr: string): ChrLocation {
-  const [chrCode, chrRegion] = chrLocationStr.split(':');
+  const [chrCode, chrRegion] = chrLocationStr.split('=')[1].split(':');
   const [startBp, endBp] = chrRegion.split('-');
 
   return [chrCode, +startBp, +endBp];
