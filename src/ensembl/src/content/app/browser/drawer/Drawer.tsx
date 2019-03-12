@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 
-import { RootState } from 'src/rootReducer';
+import { RootState } from 'src/store';
 import { toggleDrawer } from '../browserActions';
 import { getDrawerView, getObjectInfo } from '../browserSelectors';
 

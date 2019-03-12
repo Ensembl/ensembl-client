@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { browserNavConfig, BrowserNavItem } from '../browserConfig';
 
-import { RootState } from 'src/rootReducer';
+import { RootState } from 'src/store';
 import { getBrowserNavStates } from '../browserSelectors';
 import { BrowserNavStates } from '../browserState';
 
