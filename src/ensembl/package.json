@@ -13,8 +13,9 @@
   "author": "EMBL-EBI",
   "license": "MIT",
   "scripts": {
-    "start": "npm run serve:dev",
-    "serve:dev": "webpack-dev-server --config ./webpack/webpack.config.dev.js",
+    "copy-dotenv": "test ! -f .env && (cp .env.example .env; echo '.env file created') || true",
+    "start": "npm install --no-save && npm run serve:dev",
+    "serve:dev": "npm run copy-dotenv && webpack-dev-server --config ./webpack/webpack.config.dev.js",
     "serve:prod": "node ./server.js",
     "build": "rimraf ./dist && webpack --config ./webpack/webpack.config.prod.js",
     "deploy": "node deploy",
@@ -45,6 +46,7 @@
   "dependencies": {
     "connected-react-router": "6.3.1",
     "classnames": "2.2.6",
+    "dotenv": "6.2.0",
     "foundation-sites": "6.5.3",
     "react": "16.8.1",
     "react-cookie": "^3.0.8",
