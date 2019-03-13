@@ -3,7 +3,6 @@ import React, {
   useCallback,
   useRef,
   useEffect,
-  useState,
   Fragment
 } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
@@ -28,8 +27,7 @@ import {
   fetchObjectData,
   toggleDrawer,
   updateChrLocation,
-  updateBrowserNavStates,
-  updateBrowserActivated
+  updateBrowserNavStates
 } from './browserActions';
 import {
   getBrowserOpenState,
@@ -65,7 +63,6 @@ type DispatchProps = {
   fetchObjectData: (stableId: string) => void;
   replace: Replace;
   toggleDrawer: (drawerOpened: boolean) => void;
-  updateBrowserActivated: (browserActivated: boolean) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateChrLocation: (chrLocation: ChrLocation) => void;
 };
@@ -87,22 +84,12 @@ export const Browser: FunctionComponent<BrowserProps> = (
   props: BrowserProps
 ) => {
   const browserRef: React.RefObject<HTMLDivElement> = useRef(null);
-  const [showBrowser, toggleShowBrowser] = useState(true);
 
   const dispatchBrowserLocation = (chrLocation: ChrLocation) => {
     if (browserRef.current) {
       props.changeBrowserLocation(chrLocation, browserRef.current);
     }
   };
-
-  useEffect(() => {
-    if (Object.values(props.exampleObjects).length > 0) {
-      toggleShowBrowser(true);
-    } else {
-      props.fetchExampleObjectsData();
-      toggleShowBrowser(false);
-    }
-  }, [props.exampleObjects]);
 
   useEffect(() => {
     const { stableId } = props.match.params;
@@ -142,29 +129,27 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   return (
     <section className={styles.browser}>
-      {showBrowser ? (
-        <Fragment>
-          <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
-          {props.genomeSelectorActive ? (
-            <div className={styles.browserOverlay} />
-          ) : null}
-          <div className={styles.browserInnerWrapper}>
-            <div
-              className={`${styles.browserImageWrapper} ${
-                styles[props.browserOpenState]
-              }`}
-              onClick={closeTrack}
-            >
-              {props.browserNavOpened && !props.drawerOpened ? (
-                <BrowserNavBar browserRef={browserRef} />
-              ) : null}
-              <BrowserImage browserRef={browserRef} />
-            </div>
-            <TrackPanel browserRef={browserRef} />
-            {props.drawerOpened && <Drawer />}
+      <Fragment>
+        <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
+        {props.genomeSelectorActive ? (
+          <div className={styles.browserOverlay} />
+        ) : null}
+        <div className={styles.browserInnerWrapper}>
+          <div
+            className={`${styles.browserImageWrapper} ${
+              styles[props.browserOpenState]
+            }`}
+            onClick={closeTrack}
+          >
+            {props.browserNavOpened && !props.drawerOpened ? (
+              <BrowserNavBar browserRef={browserRef} />
+            ) : null}
+            <BrowserImage browserRef={browserRef} />
           </div>
-        </Fragment>
-      ) : null}
+          <TrackPanel browserRef={browserRef} />
+          {props.drawerOpened && <Drawer />}
+        </div>
+      </Fragment>
     </section>
   );
 };
@@ -185,7 +170,6 @@ const mapDispatchToProps: DispatchProps = {
   fetchObjectData,
   replace,
   toggleDrawer,
-  updateBrowserActivated,
   updateBrowserNavStates,
   updateChrLocation
 };
