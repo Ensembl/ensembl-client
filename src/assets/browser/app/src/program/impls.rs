@@ -29,7 +29,7 @@ impl PTGeom {
                 Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageVpos"),
                 Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageZoom"),
                 Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
-                Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
+                Attribute::new(&PR_LOW,Arity::Vec2,"aVertexPosition"),
                 Statement::new_vert("
                     gl_Position = vec4(
                         (aVertexPosition.x - uStageHpos) * uStageZoom,
@@ -41,8 +41,8 @@ impl PTGeom {
                 Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageVpos"),
                 Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageZoom"),
                 Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
-                Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
-                Attribute::new(&PR_DEF,Arity::Vec2,"aOrigin"),
+                Attribute::new(&PR_LOW,Arity::Vec2,"aVertexPosition"),
+                Attribute::new(&PR_LOW,Arity::Vec2,"aOrigin"),
                 Statement::new_vert("
                     gl_Position = vec4(
                         (aOrigin.x -uStageHpos) * uStageZoom + 
@@ -55,9 +55,9 @@ impl PTGeom {
                 Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageHpos"),
                 Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageZoom"),
                 Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
-                Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
-                Attribute::new(&PR_DEF,Arity::Vec2,"aVertexSign"),
-                Attribute::new(&PR_DEF,Arity::Vec2,"aOrigin"),
+                Attribute::new(&PR_LOW,Arity::Vec2,"aVertexPosition"),
+                Attribute::new(&PR_LOW,Arity::Vec2,"aVertexSign"),
+                Attribute::new(&PR_LOW,Arity::Vec2,"aOrigin"),
                 Statement::new_vert("
                     gl_Position = vec4(
                         (aOrigin.x -uStageHpos) * uStageZoom + 
@@ -68,8 +68,8 @@ impl PTGeom {
             },
             PTGeom::Fix | PTGeom::FixUnderPage | PTGeom::FixUnderTape => vec! {
                 Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
-                Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
-                Attribute::new(&PR_DEF,Arity::Vec2,"aVertexSign"),
+                Attribute::new(&PR_LOW,Arity::Vec2,"aVertexPosition"),
+                Attribute::new(&PR_LOW,Arity::Vec2,"aVertexSign"),
                 Statement::new_vert("
                     gl_Position = vec4((aVertexPosition.x / uSize.x - 1.0) * aVertexSign.x,
                                        (1.0 - aVertexPosition.y / uSize.y) * aVertexSign.y,
@@ -78,8 +78,8 @@ impl PTGeom {
             PTGeom::Page | PTGeom::PageUnderAll => vec! {
                 Uniform::new_vert(&PR_DEF,Arity::Vec2,"uSize"),
                 Uniform::new_vert(&PR_DEF,Arity::Scalar,"uStageVpos"),
-                Attribute::new(&PR_DEF,Arity::Vec2,"aVertexPosition"),
-                Attribute::new(&PR_DEF,Arity::Vec2,"aVertexSign"),
+                Attribute::new(&PR_LOW,Arity::Vec2,"aVertexPosition"),
+                Attribute::new(&PR_LOW,Arity::Vec2,"aVertexSign"),
                 Statement::new_vert("
                     gl_Position = vec4((aVertexPosition.x / uSize.x - 1.0) * aVertexSign.x,
                                        (- (aVertexPosition.y - uStageVpos) / uSize.y) * aVertexSign.y, 
@@ -117,8 +117,8 @@ impl PTSkin {
                 Canvas::new(),
                 Uniform::new_frag(&PR_LOW,Arity::Scalar,"uOpacity"),
                 Uniform::new_frag(&PR_DEF,Arity::Sampler2D,"uSampler"),
-                Attribute::new(&PR_DEF,Arity::Vec2,"aTextureCoord"),
-                Attribute::new(&PR_DEF,Arity::Vec2,"aMaskCoord"),
+                Attribute::new(&PR_LOW,Arity::Vec2,"aTextureCoord"),
+                Attribute::new(&PR_LOW,Arity::Vec2,"aMaskCoord"),
                 Varying::new(&PR_DEF,Arity::Vec2,"vTextureCoord"),
                 Varying::new(&PR_DEF,Arity::Vec2,"vMaskCoord"),
                 Statement::new_vert("vTextureCoord = aTextureCoord"),

@@ -57,7 +57,7 @@ impl Object for ObjectAttrib {
             if let Some(buf) = self.buffer(batch) {
                 ctx.bind_buffer(glctx::ARRAY_BUFFER,Some(&buf));
                 let data = TypedArray::<f32>::from(&(data[..])).buffer();
-                //debug!("bug3","len {:?} {:?}",self.name,data.len());
+                //console!("len {:?} {:?}",self.name,data.len());
                 ctx.buffer_data_1(glctx::ARRAY_BUFFER,Some(&data),glctx::STATIC_DRAW);
             }
         }
@@ -91,7 +91,10 @@ impl Object for ObjectAttrib {
         Some(out)
     }
     
-    fn clear(&mut self) {
+    fn clear(&mut self, ctx: &glctx) {
+        for b in self.buf.values() {
+            ctx.delete_buffer(Some(&b));
+        }
         self.vec.clear();
     }
     
