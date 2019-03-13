@@ -60,7 +60,7 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
       <section className={styles.search}>
         <h2>Find</h2>
         <p>
-          <input type="text" placeholder="Name, symbol or ID" />
+          <input type="text" placeholder="Name, symbol or ID" disabled={true} />
           {/* <button disabled={true}>Go</button> */}
         </p>
         <div className={styles.filter}>
