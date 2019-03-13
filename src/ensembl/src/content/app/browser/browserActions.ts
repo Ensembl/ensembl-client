@@ -23,7 +23,7 @@ export const activateBrowser = (browserEl: HTMLDivElement) => {
       bubbles: true,
       detail: {
         'config-url':
-          'http://ec2-184-73-228-242.compute-1.amazonaws.com:8060/browser/config',
+          'http://ec2-184-73-228-242.compute-1.amazonaws.com:8080/browser/config',
         key: 'main'
       }
     });
@@ -158,7 +158,7 @@ export const fetchObjectData = (objectId: string) => {
     dispatch(fetchObject.request(objectId));
 
     return fetch(
-      `http://ec2-184-73-228-242.compute-1.amazonaws.com:8060/browser/get_object_info/${objectId}`
+      `http://ec2-184-73-228-242.compute-1.amazonaws.com:8080/browser/get_object_info/${objectId}`
     )
       .then(
         (response) => response.json(),
@@ -179,7 +179,7 @@ export const fetchExampleObjectsData = () => {
     dispatch(fetchExampleObjects.request(null));
 
     return fetch(
-      'http://ec2-184-73-228-242.compute-1.amazonaws.com:8060/browser/example_objects'
+      'http://ec2-184-73-228-242.compute-1.amazonaws.com:8080/browser/example_objects'
     )
       .then(
         (response) => response.json(),
