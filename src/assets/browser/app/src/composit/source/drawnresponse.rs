@@ -16,6 +16,7 @@ impl DrawnResponse {
     fn populate(&mut self) {
         let mut shapes = Vec::<DrawnShape>::new();
         let specs = self.sr.get_shapes(&self.part);
+        shapes.reserve(specs.len());
         for spec in specs {
             shapes.push(DrawnShape::new(spec.create()));
         }

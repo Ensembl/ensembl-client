@@ -14,7 +14,7 @@ pub enum ShapeSpec {
 }
 
 impl ShapeSpec {
-    pub fn create(&self) -> Box<Shape> {
+    pub fn create(self) -> Box<Shape> {
         match self {
             ShapeSpec::PinPoly(pp) => pp.create(),
             ShapeSpec::PinRect(pr) => pr.create(),

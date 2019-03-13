@@ -74,7 +74,7 @@ impl ViewportReportImpl {
         for item in items {
             item.to_json(&mut out);
         }
-        let mut ty = Vec::<JSONValue>::new();
+        let ty = Vec::<JSONValue>::new();
         JSONValue::Object(out)
     }
     

@@ -170,16 +170,6 @@ impl Train {
         Some(self.carriages.leaf_carriages(leaf))
     }
     
-    /* Maximum y of all carriages (for y endstop) */
-    pub(in super) fn get_max_y(&self) -> i32 {
-        let mut max = 0;
-        for c in self.carriages.all_carriages() {
-            let y = c.get_max_y();
-            if y > max { max = y; }
-        }
-        max
-    }
-
     /* how much redrawing is needed? */
     pub fn calc_level(&mut self, leaf: &Leaf, oom: &StateManager) -> ComponentRedo {
         /* Any change due to component changes? */

@@ -114,15 +114,12 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceRes
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Vec<f64>, part: &Option<String>) {
     if colour.len() == 0 { return; }
-    let mut y_start_iter = y_start.iter().cycle();
-    let mut x_aux_iter = x_aux.iter().cycle();
-    let mut y_aux_iter = y_aux.iter().cycle();
     let facades = make_facades(&spec,colour,tx);
     let mut f_iter = facades.iter().cycle();
     let y_start_len = y_start.len();
     let x_aux_len = x_aux.len();
     let y_aux_len = y_aux.len();
-    let col_len = colour.len();
+    lc.expect(x_start.len());
     for i in 0..x_start.len() {
         if let Some((x_pos_v,x_aux_v)) = 
                 do_scale(&spec,leaf,x_start[i],x_aux[i%x_aux_len]) {
@@ -140,6 +137,7 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceRes
             }
         }
     }
+    lc.expect(0);
 }
 
 fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut SourceResponse, 
