@@ -1,3 +1,4 @@
+import config from 'config';
 import { createAction, createAsyncAction } from 'typesafe-actions';
 import { Dispatch } from 'redux';
 
@@ -22,8 +23,7 @@ export const activateBrowser = (browserEl: HTMLDivElement) => {
     const activateEvent = new CustomEvent('bpane-activate', {
       bubbles: true,
       detail: {
-        'config-url':
-          'http://ec2-184-73-228-242.compute-1.amazonaws.com:80/browser/config',
+        'config-url': `http://${config.apiHost}/browser/config`,
         key: 'main'
       }
     });
@@ -157,9 +157,7 @@ export const fetchObjectData = (objectId: string) => {
   return (dispatch: Dispatch) => {
     dispatch(fetchObject.request(objectId));
 
-    return fetch(
-      `http://ec2-184-73-228-242.compute-1.amazonaws.com:80/browser/get_object_info/${objectId}`
-    )
+    return fetch(`http://${config.apiHost}/browser/get_object_info/${objectId}`)
       .then(
         (response) => response.json(),
         (error) => dispatch(fetchObject.failure(error))
@@ -175,12 +173,11 @@ export const fetchExampleObjects = createAsyncAction(
 )<null, {}, Error>();
 
 export const fetchExampleObjectsData = () => {
+  console.log('AAA');
   return (dispatch: Dispatch) => {
     dispatch(fetchExampleObjects.request(null));
-
-    return fetch(
-      'http://ec2-184-73-228-242.compute-1.amazonaws.com:80/browser/example_objects'
-    )
+    console.log('BBB', config);
+    return fetch(`http://${config.apiHost}/browser/example_objects`)
       .then(
         (response) => response.json(),
         (error) => dispatch(fetchExampleObjects.failure(error))

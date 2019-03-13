@@ -31,4 +31,8 @@ impl Landscape {
     pub fn set_plot(&mut self, plot: Plot) {
         self.plot = Some(plot);
     }
+    
+    pub fn get_low_watermark(&self) -> Option<i32> {
+        self.plot.as_ref().map(|x| x.get_low_watermark())
+    }
 }

@@ -36,6 +36,17 @@ impl AllLandscapesImpl {
         }
         out
     }
+    
+    pub fn get_low_watermark(&self) -> i32 {
+        let mut max = 0;
+        for lid in self.vs.every() {
+            if let Some(ls) = self.vs.get(lid) {
+                let wm = ls.get_low_watermark().unwrap_or(0);
+                max = max.min(wm)
+            }
+        }
+        max
+    }
 }
 
 #[derive(Clone)]
@@ -57,8 +68,12 @@ impl AllLandscapes {
         self.0.borrow_mut().with(lid,cb)
     }
     
-    pub fn every<F,G>(&mut self, mut cb: F) -> Vec<Option<G>>
+    pub fn every<F,G>(&mut self, cb: F) -> Vec<Option<G>>
             where F: FnMut(usize, &mut Landscape) -> G {
         self.0.borrow_mut().every(cb)
+    }
+    
+    pub fn get_low_watermark(&self) -> i32 {
+        self.0.borrow().get_low_watermark()
     }
 }

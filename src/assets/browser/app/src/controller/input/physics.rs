@@ -15,8 +15,8 @@ pub struct MousePhysicsImpl {
 #[derive(Clone)]
 pub struct MousePhysics(Arc<Mutex<MousePhysicsImpl>>);
 
-const LETHARGY : f64 = 3500.;
-const BOING : f64 = 1.00;
+const LETHARGY : f64 = 2500.;
+const BOING : f64 = 4.00;
 const EPS : f64 = 0.01;
 const MUL: i32 = 20;
 const MAXPERIOD : f64 = 100.;

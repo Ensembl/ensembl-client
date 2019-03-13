@@ -26,6 +26,12 @@ impl SourceResponseImpl {
         out
     }
 
+    pub fn expect(&mut self, amt: usize) {
+        for (k,v) in &mut self.shapes {
+            v.reserve(amt);
+        }
+    }
+
     pub fn get_source_name(&self) -> &str { &self.source_name }
     
     fn add_shape(&mut self, part: &Option<String>, item: ShapeSpec) {
@@ -58,6 +64,10 @@ pub struct SourceResponse(Rc<RefCell<SourceResponseImpl>>);
 impl SourceResponse {
     pub fn new(source_name: &str, parts: &[String]) -> SourceResponse {
         SourceResponse(Rc::new(RefCell::new(SourceResponseImpl::new(source_name,parts))))
+    }
+    
+    pub fn expect(&self, amt: usize) {
+        self.0.borrow_mut().expect(amt);
     }
     
     pub fn add_shape(&mut self, part: &Option<String>, item: ShapeSpec) {

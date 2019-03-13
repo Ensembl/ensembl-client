@@ -163,19 +163,6 @@ impl TrainManager {
             cb(current_train);
         }
     }
-
-    /* used by COMPOSITOR to determine y-limit for viewport scrolling */
-    pub fn get_max_y(&self) -> i32 {
-        let mut max = 0;
-        if let Some(ref current_train) = self.current_train {
-            max = current_train.get_max_y();
-        }
-        if let Some(ref transition_train) = self.transition_train {
-            let y = transition_train.get_max_y();
-            if y > max { max = y; }
-        }
-        max
-    }
     
     /* ***********************************************************
      * Methods used to manage future creation/destruction based on

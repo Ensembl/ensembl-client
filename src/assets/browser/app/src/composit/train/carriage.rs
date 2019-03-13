@@ -46,11 +46,7 @@ impl Carriage {
     pub(in super) fn is_done(&self) -> bool { 
         self.response.as_ref().map(|x| x.get_response().is_done()).unwrap_or(false)
     }
-    
-    pub(in super) fn get_max_y(&self) -> i32 {
-        self.response.as_ref().map(|x| x.get_response().get_max_y()).unwrap_or(0)
-    }
-        
+            
     pub fn draw_drawings(&mut self, ds: &mut DrawingSession) {
         if let Some(ref mut response) = self.response {
             response.each_shape(|s| s.redraw(ds));

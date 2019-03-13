@@ -32,8 +32,8 @@ pub struct TextureSpec {
 }
 
 impl TextureSpec {
-    pub fn create(&self) -> Box<Shape> {
-        Box::new(self.clone())
+    pub fn create(self) -> Box<Shape> {
+        Box::new(self)
     }
 }
 

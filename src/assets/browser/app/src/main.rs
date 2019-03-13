@@ -12,7 +12,6 @@ extern crate stdweb_derive;
 extern crate lazy_static;
 #[macro_use]
 extern crate serde_json;
-extern crate yaml_rust;
 extern crate rand;
 extern crate itertools;
 extern crate hsl;
@@ -30,7 +29,6 @@ mod data;
 mod debug;
 mod dom;
 mod drawing;
-mod mosquito;
 mod print;
 mod program;
 mod shape;

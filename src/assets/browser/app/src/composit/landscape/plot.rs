@@ -15,4 +15,8 @@ impl Plot {
     pub fn get_height(&self) -> i32 { self.y_height }
     pub fn get_letter(&self) -> &str { &self.letter }
     pub fn has_cog(&self) -> bool { self.cog }
+    
+    pub fn get_low_watermark(&self) -> i32 {
+        self.y_base + self.y_height
+    }
 }

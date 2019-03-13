@@ -27,7 +27,7 @@ pub struct Compositor {
 
 impl Compositor {
     pub fn new(xfercache: &XferCache, xferclerk: Box<XferClerk>) -> Compositor {
-        let mut out = Compositor {
+        Compositor {
             train_manager: TrainManager::new(),
             components: ComponentManager::new(),
             bp_per_screen: 1.,
@@ -40,8 +40,7 @@ impl Compositor {
             pacer: PsychicPacer::new(30000.),
             xfercache: xfercache.clone(),
             xferclerk: xferclerk
-        };
-        out
+        }
     }
 
     pub fn get_prop_trans(&self) -> f32 { self.train_manager.get_prop_trans() }
@@ -135,8 +134,6 @@ impl Compositor {
         }
         self.components.add(c);
     }
-
-    fn get_max_y(&self) -> i32 { self.train_manager.get_max_y() }
     
     pub fn all_printing_leafs(&self) -> Vec<Leaf> {
         self.train_manager.all_printing_leafs()
@@ -145,10 +142,8 @@ impl Compositor {
 
 pub fn register_compositor_ticks(ar: &mut AppRunner) {
     ar.add_timer(|cs,t| {
-        let max_y = cs.with_compo(|co| {
-            co.tick(t);
-            co.get_max_y()
-        });
+        cs.with_compo(|co| co.tick(t) );
+        let max_y = cs.get_all_landscapes().get_low_watermark();
         cs.with_stage(|s| s.set_limit(&DOWN,max_y as f64));
         vec!{}
     },None);

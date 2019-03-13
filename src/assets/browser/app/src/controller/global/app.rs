@@ -16,7 +16,6 @@ use controller::output::{ OutputAction, Report, ViewportReport };
 use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, XferCache, XferClerk };
 use debug::add_debug_sticks;
 use dom::domutil;
-use mosquito::Bottle;
 use print::Printer;
 use tácode::Tácode;
 
@@ -43,7 +42,6 @@ impl App {
         let browser_el = browser_el.clone();
         let bottle_el = domutil::query_selector2(&outer_el.clone().into(),".bottle");
         let swarm_el = domutil::query_selector2(&outer_el.clone().into(),".swarm");
-        let mut bottle = Bottle::new(bottle_el,swarm_el.unwrap());
         domutil::inner_html(&browser_el.clone().into(),CANVAS);
         let canv_el : HtmlElement = domutil::query_selector(&browser_el.clone().into(),"canvas").try_into().unwrap();
         let bsm = BackendStickManager::new(config);
@@ -68,10 +66,7 @@ impl App {
         };
         let dsm = CombinedSourceManager::new(&tc,config,&out.als,&out.http_clerk);
         out.csl.add_compsource(Box::new(dsm));
-        out.run_actions(&startup_actions());
-        /* XXX */
-        bottle.make("mosquito-cog");
-        
+        out.run_actions(&startup_actions());        
         out
     }
     
