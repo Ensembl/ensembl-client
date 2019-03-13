@@ -5,6 +5,7 @@ export type SearchMatches = SearchMatch[];
 export type SearchMatch = {
   description: string;
   scientific_name: string | null;
+  assembly_name: string | null;
   matched_substrings: MatchedSubstring[];
   genome: string;
 };

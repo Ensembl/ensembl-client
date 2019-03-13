@@ -65,8 +65,10 @@
     "react-slidedown": "2.0.7",
     "redux": "4.0.1",
     "redux-devtools-extension": "2.13.8",
+    "redux-observable": "1.0.0",
     "redux-thunk": "2.3.0",
     "typesafe-actions": "4.0.0",
+    "rxjs": "6.4.0",
     "use-resize-observer": "3.1.0",
     "what-input": "5.2.1"
   },

@@ -1,4 +1,12 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
+import { connect } from 'react-redux';
+
+import { fetchSpeciesSearchResults } from 'src/content/app/species-selector/state/speciesSelectorActions';
+
+import SpeciesAutosuggestionPanel from '../species-autosuggestion-panel/SpeciesAutosuggestionPanel';
+
+import Input from 'src/shared/input/Input';
+import QuestionButton from 'src/shared/question-button/QuestionButton';
 
 import { SearchMatch } from 'src/content/app/species-selector/types/species-search';
 
@@ -11,10 +19,10 @@ type Props = {
 
 const SpeciesSearchField = (props: Props) => {
   const handleSearchChange = (search: string) => {
+    search = search.trim();
     if (search.length >= 3) {
       props.onSearchChange(search);
     }
-    console.log('search', search);
   };
   const onQuestionButtonHover = () =>
     console.log('hovering over question button');
@@ -41,4 +49,11 @@ const SpeciesSearchField = (props: Props) => {
   );
 };
 
-export default SpeciesSearchField;
+const mapDispatchToProps = {
+  onSearchChange: fetchSpeciesSearchResults.request
+};
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(SpeciesSearchField);
