@@ -84,7 +84,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
 
   return (
     <section className={`${styles.trackPanel} reactSlideDrawer`}>
-      {props.browserActivated && (
+      {props.browserActivated && props.objectInfo.associated_object ? (
         <Fragment>
           <TrackPanelBar
             closeTrackPanelModal={props.closeTrackPanelModal}
@@ -122,7 +122,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
             </Fragment>
           ) : null}
         </Fragment>
-      )}
+      ) : null}
     </section>
   );
 };
