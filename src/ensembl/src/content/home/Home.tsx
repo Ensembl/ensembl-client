@@ -32,8 +32,6 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
     }
   }, [props.exampleObjects]);
 
-  console.log('hello');
-
   const getExampleObjectNode = (exampleObject: any) => {
     const {
       assembly,
