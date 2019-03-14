@@ -1,5 +1,5 @@
 import React from 'react';
-import dafaultStyles from './ToggleImageButton.scss';
+import defaultStyles from './ToggleImageButton.scss';
 import ImageHolder from './ImageHolder';
 
 export enum ImageButtonStatus {
@@ -10,9 +10,9 @@ export enum ImageButtonStatus {
 
 type Props = {
   buttonStatus: ImageButtonStatus;
-  description?: string;
+  description: string;
   image: any;
-  imageStyles?: any;
+  classNames?: any;
   onClick: () => void;
 };
 
@@ -31,7 +31,7 @@ const ToggleImageButton = (props: Props) => {
         buttonStatus={props.buttonStatus}
         description={props.description}
         image={props.image}
-        imageStyles={props.imageStyles ? props.imageStyles : dafaultStyles}
+        classNames={props.classNames ? props.classNames : defaultStyles}
       />
     </div>
   );

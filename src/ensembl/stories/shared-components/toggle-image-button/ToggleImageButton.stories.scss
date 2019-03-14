@@ -1,0 +1,50 @@
+@import 'src/styles/common';
+
+.default {
+  position: relative;
+  svg {
+    width: 25px;
+    height: 25px;
+    fill: $ens-blue;
+    cursor: pointer;
+    transition: opacity 0.4s;
+    -webkit-transition: opacity 0.4s;
+  }
+}
+
+.inactive {
+  svg {
+    fill: $ens-grey;
+  }
+  svg:hover {
+    opacity: 0.8;
+  }
+}
+
+.active {
+  svg {
+    fill: $ens-blue;
+  }
+  svg:hover {
+    opacity: 0.8;
+  }
+}
+
+.disabled {
+  svg {
+    fill: $ens-dark-grey;
+    cursor: not-allowed;
+    opacity: 1;
+  }
+  &:before {
+    position: absolute;
+    content: '';
+    left: -7px;
+    top: 50%;
+    right: -6px;
+    border-top: 1px solid;
+    border-color: red;
+    -webkit-transform: rotate(-5deg);
+    transform: rotate(-45deg);
+  }
+}

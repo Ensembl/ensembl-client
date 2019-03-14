@@ -6,20 +6,20 @@ import { ImageButtonStatus } from 'src/shared/toggle-image-button/ToggleImageBut
 type Props = {
   buttonStatus: ImageButtonStatus;
   image: any;
-  imageStyles: any;
+  classNames: any;
   description: string;
 };
 
 const ImageHolder = (props: Props) => {
   const className = classNames(
-    props.imageStyles.default,
-    props.imageStyles[props.buttonStatus]
+    props.classNames.default,
+    props.classNames[props.buttonStatus]
   );
 
   return (
-    <div className={className}>
+    <button className={className}>
       {props.image ? <props.image /> : props.description}
-    </div>
+    </button>
   );
 };
 

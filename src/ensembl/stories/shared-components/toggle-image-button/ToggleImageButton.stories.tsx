@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 
 import { ReactComponent as Eye } from 'static/img/track-panel/eye.svg';
-import styles from 'src/shared/toggle-image-button/ToggleImageButton.scss';
+import styles from './ToggleImageButton.stories.scss';
 import ToggleImageButton, {
   ImageButtonStatus
 } from 'src/shared/toggle-image-button/ToggleImageButton';
@@ -33,7 +33,7 @@ const ToggleImageButtonParent = (props: Props) => {
         buttonStatus={buttonStatus}
         description={'enable/disable'}
         image={Eye}
-        imageStyles={styles}
+        classNames={styles}
         onClick={toggleImage}
       />
     </div>
