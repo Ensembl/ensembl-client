@@ -1,0 +1,29 @@
+@import 'src/styles/common';
+
+.default {
+  svg {
+    width: 25px;
+    height: 25px;
+    fill: $ens-blue;
+    cursor: pointer;
+  }
+}
+
+.inactive {
+  svg {
+    fill: $ens-grey;
+  }
+}
+
+.active {
+  svg {
+    fill: $ens-blue;
+  }
+}
+
+.disabled {
+  svg {
+    fill: $ens-dark-grey;
+    cursor: default;
+  }
+}

@@ -14,10 +14,13 @@ import {
 
 import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
+import { ReactComponent as Eye } from 'static/img/track-panel/eye.svg';
 
 import styles from './TrackPanelListItem.scss';
 
-import EyeToggleButton from 'src/shared/eye-toggle-button/EyeToggleButton';
+import ToggleImageButton, {
+  ImageButtonStatus
+} from 'src/shared/toggle-image-button/ToggleImageButton';
 
 type TrackPanelListItemProps = {
   browserRef: RefObject<HTMLDivElement>;
@@ -34,7 +37,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   props: TrackPanelListItemProps
 ) => {
   const [expanded, setExpanded] = useState(true);
-  const [trackStatus, setTrackStatus] = useState(true);
+  const [trackStatus, setTrackStatus] = useState(ImageButtonStatus.ACTIVE);
 
   const { browserRef, drawerView, track } = props;
   const { ellipsis, eye } = trackPanelIconConfig;
@@ -73,7 +76,8 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   };
 
   const toggleTrack = () => {
-    const currentTrackStatus = trackStatus ? 'off' : 'on';
+    const currentTrackStatus =
+      trackStatus === ImageButtonStatus.ACTIVE ? 'off' : 'on';
 
     const trackEvent = new CustomEvent('bpane', {
       bubbles: true,
@@ -86,7 +90,10 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
       browserRef.current.dispatchEvent(trackEvent);
     }
 
-    setTrackStatus(!trackStatus);
+    if (trackStatus === ImageButtonStatus.ACTIVE) {
+      setTrackStatus(ImageButtonStatus.INACTIVE);
+    }
+    setTrackStatus(ImageButtonStatus.ACTIVE);
   };
 
   return (
@@ -115,10 +122,11 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
         <button onClick={changeDrawerViewHandler}>
           <img src={ellipsis.icon.on} alt={`Go to ${track.label}`} />
         </button>
-        <EyeToggleButton
-          iconStatus={trackStatus}
+        <ToggleImageButton
+          buttonStatus={trackStatus}
           description={'enable/disable track'}
           onClick={toggleTrack}
+          imageFile={Eye}
         />
       </dd>
       {expanded && props.children}
