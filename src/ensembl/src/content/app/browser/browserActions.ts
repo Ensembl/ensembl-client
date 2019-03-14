@@ -173,10 +173,8 @@ export const fetchExampleObjects = createAsyncAction(
 )<null, {}, Error>();
 
 export const fetchExampleObjectsData = () => {
-  console.log('AAA');
   return (dispatch: Dispatch) => {
     dispatch(fetchExampleObjects.request(null));
-    console.log('BBB', config);
     return fetch(`http://${config.apiHost}/browser/example_objects`)
       .then(
         (response) => response.json(),
@@ -224,8 +222,8 @@ export const updateCogList = createAction(
 export const updateCogTrackList = createAction(
   'browser/update-cog-track-list',
   (resolve) => {
-    return (track_y: CogList) => {
-      return resolve(track_y);
+    return (trackY: CogList) => {
+      return resolve(trackY);
     };
   }
 );
