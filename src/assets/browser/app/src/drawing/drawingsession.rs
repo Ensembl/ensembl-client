@@ -52,10 +52,6 @@ impl DrawingSession {
     pub fn get_canvas_cache(&self) -> &CanvasCache {
         &self.canvascache
     }
-
-    pub fn redraw_component(&mut self, c: &mut Carriage) {
-        c.draw_drawings(self);
-    }
     
     pub fn finalise(&mut self, aca: &mut AllCanvasAllocator) {
         for (ref weave,ref mut ocm) in &mut self.canvases {                    
