@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use composit::{ 
-    ActiveSource, Landscape, Leaf, Plot, Source, SourceResponse,
+    ActiveSource, Landscape, Leaf, Plot, Source, AllSourceResponseBuilder,
     StateAtom, AllLandscapes, StateExpr
 };
 use data::{ BackendConfig, HttpXferClerk };
@@ -37,7 +37,7 @@ impl CombinedSource {
 }
 
 impl Source for CombinedSource {
-    fn populate(&self, acs: &ActiveSource, lc: &mut SourceResponse, leaf: &Leaf) {
+    fn populate(&self, acs: &ActiveSource, lc: AllSourceResponseBuilder, leaf: &Leaf) {
         let stick_name = leaf.get_stick().get_name();
         if let Some(source) = self.per_stick_sources.get(&stick_name) {
             source.populate(acs,lc,leaf);

@@ -1,7 +1,10 @@
 use std::fmt;
 
 use print::{ Programs, PrintEdition };
-use composit::{ SourceResponse, Leaf, ActiveSource, DrawnResponse };
+use composit::{
+    SourceResponseBuilder, Leaf, ActiveSource, DrawnResponse,
+    SourceResponseResult
+};
 use composit::state::{ StateManager, StateValue, ComponentRedo };
 use drawing::DrawingSession;
 
@@ -9,20 +12,21 @@ pub struct Carriage {
     comp: ActiveSource,
     prev_value: StateValue,
     cur_value: StateValue,
+    srr: SourceResponseResult,
     response: Option<DrawnResponse>,
     part: Option<String>,
     leaf: Leaf
 }
 
 impl Carriage {
-    pub fn new(comp: ActiveSource, part: &Option<String>, leaf: &Leaf) -> Carriage {
+    pub fn new(comp: ActiveSource, part: &Option<String>, leaf: &Leaf, srr: SourceResponseResult) -> Carriage {
         Carriage {
             response: None,
             prev_value: StateValue::OffCold(),
             cur_value: StateValue::OffCold(),
             leaf: leaf.clone(),
             part: part.clone(),
-            comp
+            comp, srr
         }
     }
     
@@ -42,12 +46,20 @@ impl Carriage {
             ComponentRedo::Minor // was/is off-warm, is/was on => Minor
         }
     }
-         
+    
     pub(in super) fn is_done(&self) -> bool { 
-        self.response.as_ref().map(|x| x.is_done()).unwrap_or(false)
+        if self.srr.check() { return true; }
+        return self.response.is_some();
     }
-            
+    
+    fn promote(&mut self) {
+        if self.response.is_none() {
+            self.response = Some(self.srr.take().unwrap());
+        }
+    }
+    
     pub fn draw_drawings(&mut self, ds: &mut DrawingSession) {
+        self.promote();
         if let Some(ref mut response) = self.response {
             response.redraw(ds);
         }
@@ -56,6 +68,7 @@ impl Carriage {
     pub fn into_objects(&mut self, 
                         progs: &mut Programs,
                         ds: &mut DrawingSession, e: &mut PrintEdition) {
+        self.promote();
         if let Some(ref mut response) = self.response {
             response.into_objects(progs,ds,e);
         }
@@ -65,8 +78,8 @@ impl Carriage {
     pub fn get_source(&self) -> &ActiveSource { &self.comp }
     pub(in super) fn get_part(&self) -> &Option<String> { &self.part }
     
-    pub fn set_response(&mut self, r: SourceResponse) {
-        self.response = Some(DrawnResponse::new(r,&self.part));
+    pub fn set_response(&mut self, r: SourceResponseBuilder) {
+        self.response = Some(DrawnResponse::new(r));
     }
 }
 

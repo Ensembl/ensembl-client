@@ -4,7 +4,7 @@ use tánaiste::{
     Argument, Command, DataState, Instruction, ProcState, Signature
 };
 
-use composit::{ Leaf, SourceResponse };
+use composit::{ Leaf, AllSourceResponseBuilder };
 use drawing::{ DrawingSpec };
 use shape::{
     ColourSpec, Facade, FacadeType, ShapeInstanceData, TypeToShape,
@@ -82,7 +82,7 @@ fn make_facades(spec: &Box<TypeToShape>, colour: &Vec<f64>, tx: &Vec<DrawingSpec
 }
 
 /* TODO switch long to use make_facades. Can do it, but no time */
-fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceResponse, 
+fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut AllSourceResponseBuilder, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Vec<f64>, part: &Option<String>) {
@@ -105,11 +105,13 @@ fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceResp
         facade
     };
     if let Some(shape) = spec.new_long_shape(&data) {
-        lc.add_shape(part,shape);
+        if let Some(lc) = lc.get_mut(part) {
+            lc.add_shape(shape);
+        }
     }    
 }
 
-fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceResponse, 
+fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut AllSourceResponseBuilder, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Vec<f64>, part: &Option<String>) {
@@ -119,7 +121,9 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceRes
     let y_start_len = y_start.len();
     let x_aux_len = x_aux.len();
     let y_aux_len = y_aux.len();
-    lc.expect(x_start.len());
+    if let Some(lc) = lc.get_mut(part) {
+        lc.expect(x_start.len());
+    }
     for i in 0..x_start.len() {
         if let Some((x_pos_v,x_aux_v)) = 
                 do_scale(&spec,leaf,x_start[i],x_aux[i%x_aux_len]) {
@@ -133,14 +137,18 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceRes
                 facade: facade.cloned().unwrap()
             };
             if let Some(shape) = spec.new_short_shape(&data) {
-                lc.add_shape(part,shape);
+                if let Some(lc) = lc.get_mut(part) {
+                    lc.add_shape(shape);
+                }
             }
         }
     }
-    lc.expect(0);
+    if let Some(lc) = lc.get_mut(part) {
+        lc.expect(0);
+    }
 }
 
-fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut SourceResponse, 
+fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut AllSourceResponseBuilder, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Vec<f64>, part: &Option<String>) {

@@ -40,6 +40,6 @@ pub fn text_source() -> impl Source {
             aux_y: 0,
             facade: Facade::Drawing(tx)
         }));
-        closure_done(lc,200);
+        closure_done(lc);
     })
 }
