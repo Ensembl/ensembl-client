@@ -5,7 +5,7 @@ import { ImageButtonStatus } from 'src/shared/toggle-image-button/ToggleImageBut
 
 type Props = {
   buttonStatus: ImageButtonStatus;
-  imageFile: any;
+  image: any;
   imageStyles: any;
   description: string;
 };
@@ -18,7 +18,7 @@ const ImageHolder = (props: Props) => {
 
   return (
     <div className={className}>
-      {props.imageFile ? <props.imageFile /> : props.description}
+      {props.image ? <props.image /> : props.description}
     </div>
   );
 };

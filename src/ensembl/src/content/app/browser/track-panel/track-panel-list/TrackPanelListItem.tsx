@@ -126,7 +126,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
           buttonStatus={trackStatus}
           description={'enable/disable track'}
           onClick={toggleTrack}
-          imageFile={Eye}
+          image={Eye}
         />
       </dd>
       {expanded && props.children}

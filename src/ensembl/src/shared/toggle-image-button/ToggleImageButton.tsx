@@ -11,7 +11,7 @@ export enum ImageButtonStatus {
 type Props = {
   buttonStatus: ImageButtonStatus;
   description?: string;
-  imageFile: any;
+  image: any;
   imageStyles?: any;
   onClick: () => void;
 };
@@ -30,7 +30,7 @@ const ToggleImageButton = (props: Props) => {
       <ImageHolder
         buttonStatus={props.buttonStatus}
         description={props.description}
-        imageFile={props.imageFile}
+        image={props.image}
         imageStyles={props.imageStyles ? props.imageStyles : dafaultStyles}
       />
     </div>

@@ -32,7 +32,7 @@ const ToggleImageButtonParent = (props: Props) => {
       <ToggleImageButton
         buttonStatus={buttonStatus}
         description={'enable/disable'}
-        imageFile={Eye}
+        image={Eye}
         imageStyles={styles}
         onClick={toggleImage}
       />
