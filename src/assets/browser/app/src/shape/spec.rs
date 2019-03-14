@@ -14,14 +14,14 @@ pub enum ShapeSpec {
 }
 
 impl ShapeSpec {
-    pub fn create(self) -> Box<Shape> {
+    pub fn to_shape(self) -> Box<Shape> {
         match self {
-            ShapeSpec::PinPoly(pp) => pp.create(),
-            ShapeSpec::PinRect(pr) => pr.create(),
-            ShapeSpec::PinTexture(pt) => pt.create(),
-            ShapeSpec::StretchTexture(st) => st.create(),
-            ShapeSpec::Wiggle(w) => w.create(),
-            ShapeSpec::PinBox(pb) => pb.create(),
+            ShapeSpec::PinPoly(pp) => Box::new(pp),
+            ShapeSpec::PinRect(pr) => Box::new(pr),
+            ShapeSpec::PinTexture(pt) => Box::new(pt),
+            ShapeSpec::StretchTexture(st) => Box::new(st),
+            ShapeSpec::Wiggle(w) => Box::new(w),
+            ShapeSpec::PinBox(pb) => Box::new(pb),
         }
-    }
+    }    
 }

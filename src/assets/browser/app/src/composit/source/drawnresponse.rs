@@ -18,7 +18,7 @@ impl DrawnResponse {
         let specs = self.sr.get_shapes(&self.part);
         shapes.reserve(specs.len());
         for spec in specs {
-            shapes.push(DrawnShape::new(spec.create()));
+            shapes.push(DrawnShape::new(spec.to_shape()));
         }
         self.shapes = Some(shapes);
     }
