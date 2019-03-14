@@ -72,8 +72,6 @@ impl Compositor {
         self.current_componentset = self.wanted_componentset.clone();
         /* Warm up xfercache */
         self.prime_cache(t);
-        /* Kick off requests */
-        self.components.tick(t);
         /* Move into future */
         self.train_manager.tick(t,&mut self.components);
         /* Manage useful leafs */

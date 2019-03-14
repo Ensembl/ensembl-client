@@ -7,7 +7,7 @@ use std::rc::Rc;
 use composit::state::StateExpr;
 use composit::{
     AllLandscapes, Landscape, Source,
-    Carriage, Leaf, SourceSched, SourceResponse, StateManager,
+    Carriage, Leaf, SourceResponse, StateManager,
     StateValue
 };
 
@@ -41,10 +41,13 @@ impl ActiveSource {
         self.parts.keys().filter(|x| x.is_some()).map(|x| x.as_ref().unwrap().clone()).collect()
     }
     
-    pub fn make_carriage(&self, sf: &mut SourceSched, part: &Option<String>, leaf: &Leaf) -> Carriage {
-        let mut out = Carriage::new(self.clone(),part,leaf);
-        sf.populate_carriage(&mut out);
-        out
+    pub fn make_carriage(&self, part: &Option<String>, leaf: &Leaf) -> Carriage {
+        let mut c = Carriage::new(self.clone(),part,leaf);
+        let mut source = c.get_source().clone();
+        let mut resp = SourceResponse::new(source.get_name(),&source.list_parts());
+        source.populate(&mut resp,c.get_leaf());
+        c.set_response(resp);
+        c
     }
     
     pub fn populate(&mut self, resp: &mut SourceResponse, leaf: &Leaf) {

@@ -5,26 +5,20 @@ const MAX_PENDING : i32 = 0;
 const CACHE_SIZE : usize = 10;
 
 use composit::{
-    ActiveSource, Leaf, Carriage, SourceSched
+    ActiveSource, Leaf, Carriage
 };
 
 pub struct ComponentManager {
-    components: HashMap<String,ActiveSource>,
-    source_factory: SourceSched
+    components: HashMap<String,ActiveSource>
 }
 
 impl ComponentManager {
     pub fn new() -> ComponentManager {
         ComponentManager {
-            components: HashMap::<String,ActiveSource>::new(),
-            source_factory: SourceSched::new(MAX_PENDING,CACHE_SIZE)
+            components: HashMap::<String,ActiveSource>::new()
         }
     }
-    
-    pub fn tick(&mut self, t: f64) {
-        self.source_factory.tick(t);
-    }
-    
+        
     pub fn add(&mut self, c: ActiveSource) {
         let name = c.get_name().to_string();
         if let Entry::Vacant(e) = self.components.entry(name) {
@@ -38,10 +32,10 @@ impl ComponentManager {
     
     pub fn make_comp_carriages(&mut self, c: &ActiveSource, leaf: &Leaf) -> Vec<Carriage> {
         let mut lcomps = Vec::<Carriage>::new();
-        lcomps.push(c.make_carriage(&mut self.source_factory,&None,&leaf));
+        lcomps.push(c.make_carriage(&None,&leaf));
         for part in c.list_parts() {            
             debug!("redraw","make_carriages {:?} for {}",leaf,part);
-            lcomps.push(c.make_carriage(&mut self.source_factory,&Some(part),&leaf));
+            lcomps.push(c.make_carriage(&Some(part),&leaf));
         }
         lcomps
     }
