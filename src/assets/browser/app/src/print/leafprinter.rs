@@ -35,7 +35,7 @@ impl LeafPrinter {
         self.ds.finish(alloc);
         self.ds = alloc.make_drawing_session();
         for mut c in comps.iter_mut() {
-            self.ds.redraw_component(*c);
+            c.draw_drawings(&mut self.ds);
         }
         self.ds.finalise(alloc);
     }
@@ -59,6 +59,16 @@ impl LeafPrinter {
         self.progs.finalize_objects(&self.ctx,&mut self.ds);
         e.go(&mut self.progs);
     }
+
+    fn redraw_carriages(&mut self, comps: &mut Vec<&mut Carriage>, aca: &mut AllCanvasAllocator, do_drawings: bool) {
+        self.init();
+        let mut e = self.new_edition();
+        if do_drawings {
+            self.redraw_drawings(aca,comps);
+        }
+        self.redraw_objects(comps,&mut e);
+        self.fini(&mut e);
+    }
     
     pub fn into_objects(&mut self, leaf: &Leaf,
                         sc: &mut Train,
@@ -67,14 +77,7 @@ impl LeafPrinter {
         if level == ComponentRedo::None { return; }
         if let Some(ref mut comps) = sc.get_carriages(leaf) {
             if comps.len() > 0 {
-                self.init();
-                if level == ComponentRedo::Major {
-                    self.redraw_drawings(aca,comps);
-                }
-                let mut e = self.new_edition();
-                self.redraw_objects(comps,&mut e);
-                /* Useful for debugging performance */
-                self.fini(&mut e);
+                self.redraw_carriages(comps,aca,level == ComponentRedo::Major);
             }
         }
     }

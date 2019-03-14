@@ -44,12 +44,12 @@ impl Carriage {
     }
          
     pub(in super) fn is_done(&self) -> bool { 
-        self.response.as_ref().map(|x| x.get_response().is_done()).unwrap_or(false)
+        self.response.as_ref().map(|x| x.is_done()).unwrap_or(false)
     }
             
     pub fn draw_drawings(&mut self, ds: &mut DrawingSession) {
         if let Some(ref mut response) = self.response {
-            response.each_shape(|s| s.redraw(ds));
+            response.redraw(ds);
         }
     }
 
@@ -57,7 +57,7 @@ impl Carriage {
                         progs: &mut Programs,
                         ds: &mut DrawingSession, e: &mut PrintEdition) {
         if let Some(ref mut response) = self.response {
-            response.each_shape(|s| s.into_objects(progs,ds,e));
+            response.into_objects(progs,ds,e);
         }
     }
     

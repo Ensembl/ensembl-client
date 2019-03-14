@@ -11,7 +11,7 @@ mod texture;
 mod boxshape;
 
 pub use self::shapeimpl::{
-    Shape, DrawnShape,
+    Shape,
     ColourSpec,
     MathsShape,
 };
