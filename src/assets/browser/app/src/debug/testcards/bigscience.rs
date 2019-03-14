@@ -11,7 +11,7 @@ use rand::SeedableRng;
 
 use composit::{
     StateFixed, StateValue, StateAtom, Leaf, Carriage,
-    SourceResponse, Stick
+    AllSourceResponseBuilder, Stick
 };
 
 use debug::support::closuresource::{ ClosureSource, closure_add, closure_add_opt, closure_done };
@@ -54,7 +54,7 @@ fn battenberg() -> DrawingSpec {
                           255,255,0,255 },cpixel(2,2),false,None)
 }
 
-fn measure(lc: &mut SourceResponse, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSpec) {
+fn measure(lc: &mut AllSourceResponseBuilder, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSpec) {
     for x in -10..10 {
         let prts = PinRectTypeSpec {
             sea_x: None,
@@ -182,7 +182,7 @@ fn source_odd() -> ClosureSource {
                 }
             }
         }
-        closure_done(lc,1200);
+        closure_done(lc);
     }})
 }
 
@@ -258,7 +258,7 @@ fn source_even() -> ClosureSource {
                 }
             }
         }
-        closure_done(lc,1200);
+        closure_done(lc);
     }})
 }
 
@@ -540,7 +540,7 @@ pub fn bs_source_main() -> ClosureSource {
                                    A_BOTTOMRIGHT,
                                    20.,None,MathsShape::Polygon(5,0.),
                                    &pal.red));
-        closure_done(lc,1200);
+        closure_done(lc);
     }})
 }
 
