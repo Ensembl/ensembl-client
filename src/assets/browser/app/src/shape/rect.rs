@@ -15,7 +15,7 @@ use shape::util::{
 };
 use print::PrintEdition;
 use drawing::{ Artwork };
-use super::boxshape::{ BoxSpec, PinBox };
+use super::boxshape::{ BoxSpec };
 
 #[derive(Clone,Copy,Debug)]
 enum RectPosition<T: Clone+Copy+Debug> {
@@ -33,24 +33,7 @@ pub struct RectSpec {
     colspec: ColourSpec
 }
 
-impl RectSpec {
-    pub fn create(&self) -> Box<Shape> {
-        let g = despot(self.pt,PTMethod::Triangle,&self.colspec);        
-        Box::new(PinRect {
-            offset: self.offset,
-            colspec: self.colspec.clone(),
-            geom: g
-        })
-    }
-}
-
-pub struct PinRect {
-    offset: RectPosition<i32>,
-    colspec: ColourSpec,
-    geom: ProgramType
-}
-
-impl Shape for PinRect {
+impl Shape for RectSpec {
     fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut PrintEdition) {
         let group = self.colspec.to_group(geom,e);
         let b = vertices_rect(geom,group);
@@ -82,7 +65,9 @@ impl Shape for PinRect {
         }
     }
     
-    fn get_geometry(&self) -> ProgramType { self.geom }
+    fn get_geometry(&self) -> ProgramType {
+        despot(self.pt,PTMethod::Triangle,&self.colspec)
+    }    
 }
 
 /* new, cleaner API */
