@@ -1,7 +1,7 @@
 import { Epic } from 'redux-observable';
 import { of } from 'rxjs';
 import {
-  mapTo,
+  map,
   tap,
   switchMap,
   delay,
@@ -32,9 +32,10 @@ export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
     ),
     switchMap((action) => of(action).pipe(delay(600))),
     tap((action) => console.log('get action', action)),
-    mapTo(
-      speciesSelectorActions.fetchSpeciesSearchResults.success(
-        values(mockSearchResults)
-      )
+    map((action) =>
+      speciesSelectorActions.fetchSpeciesSearchResults.success({
+        text: action.payload,
+        results: values(mockSearchResults)
+      })
     )
   );

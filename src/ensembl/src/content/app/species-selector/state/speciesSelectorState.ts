@@ -3,9 +3,9 @@ import { SearchMatch } from 'src/content/app/species-selector/types/species-sear
 
 export type SpeciesSelectorState = {
   loadingStates: {
-    autosuggestion: LoadingState;
+    search: LoadingState;
   };
-  autosuggestion: {
+  search: {
     text: string;
     results: SearchMatch[];
   };
@@ -13,9 +13,9 @@ export type SpeciesSelectorState = {
 
 const initialState: SpeciesSelectorState = {
   loadingStates: {
-    autosuggestion: LoadingState.NOT_REQUESTED
+    search: LoadingState.NOT_REQUESTED
   },
-  autosuggestion: {
+  search: {
     text: '',
     results: []
   }

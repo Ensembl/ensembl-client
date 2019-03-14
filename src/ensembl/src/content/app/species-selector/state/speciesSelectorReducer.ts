@@ -1,8 +1,20 @@
+import { getType, ActionType } from 'typesafe-actions';
+
+import * as speciesSelectorActions from './speciesSelectorActions';
+
 import initialState, { SpeciesSelectorState } from './speciesSelectorState';
 
 export default function speciesSelectorReducer(
   state: SpeciesSelectorState = initialState,
-  action: any // FIXME
+  action: ActionType<typeof speciesSelectorActions>
 ): SpeciesSelectorState {
-  return state;
+  switch (action.type) {
+    case getType(speciesSelectorActions.fetchSpeciesSearchResults.success):
+      return {
+        ...state,
+        search: action.payload
+      };
+    default:
+      return state;
+  }
 }
