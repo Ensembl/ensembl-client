@@ -17,7 +17,7 @@ import * as mockSearchResults from 'tests/data/species-selector/species-search';
 
 import { RootState } from 'src/store';
 
-type Action = ActionType<typeof import('./rootAction').default>;
+type Action = ActionType<typeof speciesSelectorActions>;
 
 // FIXME: this is a mock implementation of the fetcher
 export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
