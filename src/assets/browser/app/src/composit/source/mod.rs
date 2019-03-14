@@ -6,14 +6,12 @@ mod source;
 mod sourcemanager;
 mod sourcemanagerlist;
 mod sourcepart;
-mod sourcesched;
 mod sourceresponse;
 
 pub use self::activesource::ActiveSource;
 pub use self::combinedsource::{ CombinedSource, build_combined_source };
 pub use self::combinedsourcemanager::CombinedSourceManager;
 pub use self::source::Source;
-pub use self::sourcesched::SourceSched;
 pub use self::sourcemanager::SourceManager;
 pub use self::sourcemanagerlist::SourceManagerList;
 pub use self::sourcepart::SourcePart;
