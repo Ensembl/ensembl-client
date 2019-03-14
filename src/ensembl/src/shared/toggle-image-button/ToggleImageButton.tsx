@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ComponentClass } from 'react';
 import defaultStyles from './ToggleImageButton.scss';
 import ImageHolder from './ImageHolder';
 
@@ -11,7 +11,7 @@ export enum ImageButtonStatus {
 type Props = {
   buttonStatus: ImageButtonStatus;
   description: string;
-  image: any;
+  image: ComponentClass | string;
   classNames?: any;
   onClick: () => void;
 };
@@ -35,11 +35,6 @@ const ToggleImageButton = (props: Props) => {
       />
     </div>
   );
-};
-
-ToggleImageButton.defaultProps = {
-  buttonStatus: ImageButtonStatus.ACTIVE,
-  description: ''
 };
 
 export default ToggleImageButton;

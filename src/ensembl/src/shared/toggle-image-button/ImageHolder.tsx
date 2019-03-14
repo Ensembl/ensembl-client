@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { ComponentClass } from 'react';
 import classNames from 'classnames';
 
 import { ImageButtonStatus } from 'src/shared/toggle-image-button/ToggleImageButton';
 
 type Props = {
   buttonStatus: ImageButtonStatus;
-  image: any;
+  image: ComponentClass | string;
   classNames: any;
   description: string;
 };
@@ -18,7 +18,11 @@ const ImageHolder = (props: Props) => {
 
   return (
     <button className={className}>
-      {props.image ? <props.image /> : props.description}
+      {typeof props.image === 'string' ? (
+        <img src={props.image} />
+      ) : (
+        <props.image />
+      )}
     </button>
   );
 };
