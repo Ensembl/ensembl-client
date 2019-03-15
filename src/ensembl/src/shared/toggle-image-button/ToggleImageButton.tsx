@@ -17,16 +17,13 @@ type Props = {
 };
 
 const ToggleImageButton = (props: Props) => {
+  const buttonProps =
+    props.buttonStatus === ImageButtonStatus.DISABLED
+      ? {}
+      : { onClick: props.onClick };
+
   return (
-    <div
-      onClick={
-        props.buttonStatus === ImageButtonStatus.DISABLED
-          ? () => {
-              return;
-            }
-          : () => props.onClick()
-      }
-    >
+    <div {...buttonProps}>
       <ImageHolder
         buttonStatus={props.buttonStatus}
         description={props.description}
