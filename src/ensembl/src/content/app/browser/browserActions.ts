@@ -23,7 +23,7 @@ export const activateBrowser = (browserEl: HTMLDivElement) => {
     const activateEvent = new CustomEvent('bpane-activate', {
       bubbles: true,
       detail: {
-        'config-url': `http://${config.apiHost}/browser/config`,
+        'config-url': `${config.apiHost}/browser/config`,
         key: 'main'
       }
     });
@@ -157,7 +157,7 @@ export const fetchObjectData = (objectId: string) => {
   return (dispatch: Dispatch) => {
     dispatch(fetchObject.request(objectId));
 
-    return fetch(`http://${config.apiHost}/browser/get_object_info/${objectId}`)
+    return fetch(`${config.apiHost}/browser/get_object_info/${objectId}`)
       .then(
         (response) => response.json(),
         (error) => dispatch(fetchObject.failure(error))
@@ -175,7 +175,8 @@ export const fetchExampleObjects = createAsyncAction(
 export const fetchExampleObjectsData = () => {
   return (dispatch: Dispatch) => {
     dispatch(fetchExampleObjects.request(null));
-    return fetch(`http://${config.apiHost}/browser/example_objects`)
+
+    return fetch(`${config.apiHost}/browser/example_objects`)
       .then(
         (response) => response.json(),
         (error) => dispatch(fetchExampleObjects.failure(error))
