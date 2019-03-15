@@ -36,7 +36,7 @@ const TrackPanelModal: FunctionComponent<TrackPanelModalProps> = (
       case 'tracks-manager':
         return <TracksManager />;
       case 'bookmarks':
-        return <TrackPanelBookmarks exampleObjects={props.exampleObjects} />;
+        return <TrackPanelBookmarks />;
       case 'personal-data':
         return <PersonalData />;
       case 'share':
