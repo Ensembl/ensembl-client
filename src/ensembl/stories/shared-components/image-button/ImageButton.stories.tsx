@@ -2,16 +2,16 @@ import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 
 import { ReactComponent as Eye } from 'static/img/track-panel/eye.svg';
-import styles from './ToggleImageButton.stories.scss';
-import ToggleImageButton, {
+import styles from './ImageButton.stories.scss';
+import ImageButton, {
   ImageButtonStatus
-} from 'src/shared/toggle-image-button/ToggleImageButton';
+} from 'src/shared/image-button/ImageButton';
 
 type Props = {
   buttonStatus: ImageButtonStatus;
 };
 
-const ToggleImageButtonParent = (props: Props) => {
+const ImageButtonParent = (props: Props) => {
   const [buttonStatus, setVisible] = useState(props.buttonStatus);
 
   const toggleImage = () => {
@@ -29,7 +29,7 @@ const ToggleImageButtonParent = (props: Props) => {
 
   return (
     <div style={containerStyles}>
-      <ToggleImageButton
+      <ImageButton
         buttonStatus={buttonStatus}
         description={'enable/disable'}
         image={Eye}
@@ -40,12 +40,10 @@ const ToggleImageButtonParent = (props: Props) => {
   );
 };
 
-storiesOf('Components|Shared Components/ToggleImageButton', module)
+storiesOf('Components|Shared Components/ImageButton', module)
   .add('default', () => {
-    return <ToggleImageButtonParent buttonStatus={ImageButtonStatus.ACTIVE} />;
+    return <ImageButtonParent buttonStatus={ImageButtonStatus.ACTIVE} />;
   })
   .add('disabled', () => {
-    return (
-      <ToggleImageButtonParent buttonStatus={ImageButtonStatus.DISABLED} />
-    );
+    return <ImageButtonParent buttonStatus={ImageButtonStatus.DISABLED} />;
   });

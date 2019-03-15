@@ -1,5 +1,5 @@
 import React, { ComponentClass } from 'react';
-import defaultStyles from './ToggleImageButton.scss';
+import defaultStyles from './ImageButton.scss';
 import ImageHolder from './ImageHolder';
 
 export enum ImageButtonStatus {
@@ -11,12 +11,12 @@ export enum ImageButtonStatus {
 type Props = {
   buttonStatus: ImageButtonStatus;
   description: string;
-  image: ComponentClass | string;
+  image: React.FunctionComponent<React.SVGProps<SVGSVGElement>> | string;
   classNames?: any;
   onClick: () => void;
 };
 
-const ToggleImageButton = (props: Props) => {
+const ImageButton = (props: Props) => {
   const buttonProps =
     props.buttonStatus === ImageButtonStatus.DISABLED
       ? {}
@@ -34,4 +34,4 @@ const ToggleImageButton = (props: Props) => {
   );
 };
 
-export default ToggleImageButton;
+export default ImageButton;

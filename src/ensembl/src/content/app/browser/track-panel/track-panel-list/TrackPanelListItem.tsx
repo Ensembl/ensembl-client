@@ -18,9 +18,9 @@ import { ReactComponent as Eye } from 'static/img/track-panel/eye.svg';
 
 import styles from './TrackPanelListItem.scss';
 
-import ToggleImageButton, {
+import ImageButton, {
   ImageButtonStatus
-} from 'src/shared/toggle-image-button/ToggleImageButton';
+} from 'src/shared/image-button/ImageButton';
 
 type TrackPanelListItemProps = {
   browserRef: RefObject<HTMLDivElement>;
@@ -122,7 +122,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
         <button onClick={changeDrawerViewHandler}>
           <img src={ellipsis.icon.on} alt={`Go to ${track.label}`} />
         </button>
-        <ToggleImageButton
+        <ImageButton
           buttonStatus={trackStatus}
           description={'enable/disable track'}
           onClick={toggleTrack}
