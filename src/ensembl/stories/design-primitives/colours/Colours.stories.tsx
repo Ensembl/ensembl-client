@@ -56,6 +56,11 @@ const colours = [
     value: variables['ens-light-grey']
   },
   {
+    name: 'Ensembl green',
+    variableName: '$ens-green',
+    value: variables['ens-green']
+  },
+  {
     name: 'Ensembl white',
     variableName: '$ens-white',
     value: variables['ens-white']

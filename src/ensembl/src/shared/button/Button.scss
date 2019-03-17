@@ -1,0 +1,12 @@
+@import 'src/styles/common';
+
+.button {
+  background-color: $ens-green;
+  color: $ens-white;
+  padding: 8px 18px;
+
+  &:active,
+  &:focus {
+    outline: none;
+  }
+}
