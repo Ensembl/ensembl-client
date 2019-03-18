@@ -23,61 +23,77 @@ export type CogList = {
 };
 
 export type BrowserState = Readonly<{
-  applyToAll: boolean;
   browserActivated: boolean;
-  browserCogList: number;
-  browserCogTrackList: CogList;
+  browserOpenState: BrowserOpenState;
+}>;
+
+export const defaultBrowserState: BrowserState = {
+  browserActivated: false,
+  browserOpenState: BrowserOpenState.SEMI_EXPANDED
+};
+
+export type BrowserNavState = Readonly<{
   browserNavOpened: boolean;
   browserNavStates: BrowserNavStates;
-  browserOpenState: BrowserOpenState;
+}>;
+
+export const defaultBrowserNavState: BrowserNavState = {
+  browserNavOpened: false,
+  browserNavStates: [true, true, true, true, true, true]
+};
+
+export type BrowserLocationState = Readonly<{
   chrLocation: ChrLocation;
   defaultChrLocation: ChrLocation;
-  drawerOpened: boolean;
-  drawerView: string;
   genomeSelectorActive: boolean;
-  selectedBrowserTab: TrackType;
+}>;
+
+export const defaultBrowserLocationState: BrowserLocationState = {
+  chrLocation: ['13', 0, 0],
+  defaultChrLocation: ['13', 0, 0],
+  genomeSelectorActive: false
+};
+
+export type TrackConfigState = Readonly<{
+  applyToAll: boolean;
+  browserCogList: number;
+  browserCogTrackList: CogList;
   selectedCog: string;
   trackConfigNames: any;
   trackConfigLabel: any;
+}>;
+
+export const defaultTrackConfigState: TrackConfigState = {
+  applyToAll: false,
+  browserCogList: 0,
+  browserCogTrackList: {},
+  selectedCog: '',
+  trackConfigLabel: {},
+  trackConfigNames: {}
+};
+
+export type TrackPanelState = Readonly<{
+  selectedBrowserTab: TrackType;
   trackPanelModalOpened: boolean;
   trackPanelModalView: string;
   trackPanelOpened: boolean;
 }>;
 
-export const defaultBrowserState: BrowserState = {
-  applyToAll: false,
-  browserActivated: false,
-  browserCogList: 0,
-  browserCogTrackList: {},
-  browserNavOpened: false,
-  browserNavStates: [true, true, true, true, true, true],
-  browserOpenState: BrowserOpenState.SEMI_EXPANDED,
-  chrLocation: ['13', 0, 0],
-  defaultChrLocation: ['13', 0, 0],
-  drawerOpened: false,
-  drawerView: '',
-  genomeSelectorActive: false,
+export const defaultTrackPanelState: TrackPanelState = {
   selectedBrowserTab: TrackType.GENOMIC,
-  selectedCog: '',
-  trackConfigLabel: {},
-  trackConfigNames: {},
   trackPanelModalOpened: false,
   trackPanelModalView: '',
   trackPanelOpened: true
 };
 
-export type ExampleObjects = Readonly<{
-  exampleObjectsFetchFailed: boolean;
-  exampleObjectsFetching: boolean;
-  examples: {
-    [key: string]: {};
-  };
+export type DrawerState = Readonly<{
+  drawerOpened: boolean;
+  drawerView: string;
 }>;
 
-export const defaultExampleObjects: ExampleObjects = {
-  exampleObjectsFetchFailed: false,
-  exampleObjectsFetching: false,
-  examples: {}
+export const defaultDrawerState = {
+  drawerOpened: false,
+  drawerView: ''
 };
 
 export type ObjectState = Readonly<{
@@ -94,37 +110,16 @@ export const defaultObjectState: ObjectState = {
   trackCategories: []
 };
 
-export const trackPanelState = (
-  state: BrowserState,
-  trackPanelOpened: boolean = !state.trackPanelOpened
-) => {
-  const browserOpenState: BrowserOpenState = trackPanelOpened
-    ? BrowserOpenState.SEMI_EXPANDED
-    : BrowserOpenState.EXPANDED;
-
-  return {
-    ...state,
-    browserOpenState,
-    trackPanelOpened
+export type ExampleObjectState = Readonly<{
+  exampleObjectsFetchFailed: boolean;
+  exampleObjectsFetching: boolean;
+  examples: {
+    [key: string]: {};
   };
-};
+}>;
 
-export const drawerState = (
-  state: BrowserState,
-  drawerOpened: boolean = !state.drawerOpened
-) => {
-  if (drawerOpened === true) {
-    return {
-      ...state,
-      browserOpenState: BrowserOpenState.COLLAPSED,
-      drawerOpened
-    };
-  } else {
-    return {
-      ...state,
-      browserOpenState: BrowserOpenState.SEMI_EXPANDED,
-      drawerOpened,
-      drawerView: ''
-    };
-  }
+export const defaultExampleObjectState: ExampleObjectState = {
+  exampleObjectsFetchFailed: false,
+  exampleObjectsFetching: false,
+  examples: {}
 };
