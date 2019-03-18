@@ -46,7 +46,7 @@ impl LeafPrinter {
             if c.is_on() {
                 let old_len = self.progs.size();
                 c.into_objects(&mut self.progs,&mut self.ds,e);
-                console!("{:?} has {} objects",c,self.progs.size()-old_len);
+                //console!("{:?} has {} objects",c,self.progs.size()-old_len);
             }
         }
     }
@@ -96,7 +96,6 @@ impl LeafPrinter {
     
     pub fn execute(&mut self, pt: &ProgramType) {
         let prog = self.progs.map.get_mut(pt).unwrap();
-        //console!("pt {:?}",pt);
         prog.execute(&self.ctx);
     }
 }
