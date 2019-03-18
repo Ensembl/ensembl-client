@@ -1,4 +1,4 @@
-import React, { ComponentClass } from 'react';
+import React from 'react';
 import defaultStyles from './ImageButton.scss';
 import ImageHolder from './ImageHolder';
 
