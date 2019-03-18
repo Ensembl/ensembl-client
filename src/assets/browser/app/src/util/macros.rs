@@ -37,12 +37,17 @@ macro_rules! vec_s {
     }}
 }
 
-#[allow(unused_macros)]
+macro_rules! console_force {
+    ($($arg:tt)*) => {{
+        let s = format!($($arg)*);
+        js! { console.log(@{s}); };
+    }}
+}
+
 macro_rules! console {
     ($($arg:tt)*) => {{
-        if true {
-            let s = format!($($arg)*);
-            js! { console.log(@{s}); };
+        if !cfg!(deploy) || cfg!(console) {
+            console_force!($($arg)*);
         }
     }}
 }

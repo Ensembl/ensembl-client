@@ -42,6 +42,6 @@ fn main() {
     stdweb::initialize();
     global::setup_global();
     debug!("global","{}",build_summary());
-    console!("{}",build_summary());
+    console_force!("{}",build_summary());
     stdweb::event_loop();
 }
