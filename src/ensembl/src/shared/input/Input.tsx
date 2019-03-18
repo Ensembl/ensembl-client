@@ -1,21 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
+import noop from 'lodash/noop';
 
 import styles from './Input.scss';
 
 type PropsForRespondingWithEvents = {
-  onChange: (e: React.ChangeEvent<any>) => void;
+  onChange: (e: React.SyntheticEvent<HTMLInputElement>) => void;
+  onFocus: (e: React.SyntheticEvent<HTMLInputElement>) => void;
+  onBlur: (e: React.SyntheticEvent<HTMLInputElement>) => void;
   callbackWithEvent: true;
 };
 
 type PropsForRespondingWithData = {
   onChange: (value: string) => void;
+  onFocus: (value?: string) => void;
+  onBlur: (value?: string) => void;
   callbackWithEvent: false;
 };
 
 type OnChangeProps = PropsForRespondingWithEvents | PropsForRespondingWithData;
 
 type Props = {
+  value: string | number;
   id?: string;
   name?: string;
   type?: string;
@@ -25,17 +31,17 @@ type Props = {
 } & OnChangeProps;
 
 const Input = (props: Props) => {
-  // FIXME: Should we use initial value from props?
-  // Should the value be completely controllable via props?
-  const [value, setValue] = useState('');
-
-  const updateValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const eventHandler = (eventName: string) => (
+    e: React.ChangeEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>
+  ) => {
     const value = e.target.value;
-    setValue(value);
-    if (props.callbackWithEvent) {
-      props.onChange(e);
-    } else {
-      props.onChange(value);
+
+    if (eventName === 'change') {
+      props.callbackWithEvent ? props.onChange(e) : props.onChange(value);
+    } else if (eventName === 'focus') {
+      props.callbackWithEvent ? props.onFocus(e) : props.onFocus(value);
+    } else if (eventName === 'blur') {
+      props.callbackWithEvent ? props.onBlur(e) : props.onBlur(value);
     }
   };
 
@@ -49,14 +55,18 @@ const Input = (props: Props) => {
       autoFocus={props.autoFocus}
       placeholder={props.placeholder}
       className={className}
-      value={value}
-      onChange={updateValue}
+      value={props.value}
+      onChange={eventHandler('change')}
+      onFocus={eventHandler('focus')}
+      onBlur={eventHandler('blur')}
     />
   );
 };
 
 Input.defaultProps = {
-  callbackWithEvent: false
+  callbackWithEvent: false,
+  onFocus: noop,
+  onBlur: noop
 };
 
 export default Input;
