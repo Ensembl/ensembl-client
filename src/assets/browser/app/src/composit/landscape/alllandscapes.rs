@@ -42,7 +42,7 @@ impl AllLandscapesImpl {
         for lid in self.vs.every() {
             if let Some(ls) = self.vs.get(lid) {
                 let wm = ls.get_low_watermark().unwrap_or(0);
-                max = max.min(wm)
+                max = max.max(wm)
             }
         }
         max
