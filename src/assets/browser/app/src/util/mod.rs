@@ -16,4 +16,3 @@ pub use self::smallest::Smallest;
 pub use self::text::truncate;
 pub use self::thisbuild::build_summary;
 pub use self::valuestore::ValueStore;
-
