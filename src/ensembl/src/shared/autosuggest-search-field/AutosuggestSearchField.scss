@@ -1,0 +1,11 @@
+@import 'src/styles/common';
+
+.autosuggestionPlate {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  padding: 18px 24px;
+  background: white;
+  border: 1px solid $ens-grey;
+  box-shadow: 2px 2px 6px 0 $ens-grey;
+}

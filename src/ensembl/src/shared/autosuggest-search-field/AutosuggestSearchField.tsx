@@ -1,9 +1,9 @@
 import React, { ReactNode } from 'react';
 import classNames from 'classnames';
 
-import styles from './SearchField.scss';
+import styles from './AutosuggestSearchField.scss';
 
-import Input from 'src/shared/input/Input';
+import SearchField from 'src/shared/search-field/SearchField';
 
 type Props = {
   search: string;
@@ -15,24 +15,19 @@ type Props = {
   className?: string;
 };
 
-const SearchField = (props: Props) => {
-  const { rightCorner } = props;
+const AutosuggestSearchField = (props: Props) => {
   const className = classNames(styles.searchField, props.className);
 
   return (
     <div className={className}>
-      <Input
-        value={props.search}
+      <SearchField
+        search={props.search}
+        rightCorner={props.rightCorner}
         onChange={props.onChange}
-        onFocus={props.onFocus}
-        onBlur={props.onBlur}
         className={styles.searchFieldInput}
       />
-      {rightCorner && (
-        <div className={styles.searchFieldRightCorner}>{rightCorner}</div>
-      )}
     </div>
   );
 };
 
-export default SearchField;
+export default AutosuggestSearchField;
