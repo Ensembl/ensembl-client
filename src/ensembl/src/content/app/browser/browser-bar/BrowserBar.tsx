@@ -20,7 +20,8 @@ import {
   getDrawerOpened,
   getSelectedBrowserTab,
   getObjectInfo,
-  getTrackPanelModalOpened
+  getTrackPanelModalOpened,
+  getTrackPanelOpened
 } from '../browserSelectors';
 import { RootState } from 'src/store';
 
@@ -40,6 +41,7 @@ type StateProps = {
   objectInfo: any;
   selectedBrowserTab: TrackType;
   trackPanelModalOpened: boolean;
+  trackPanelOpened: boolean;
 };
 
 type DispatchProps = {
@@ -85,6 +87,10 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
 
   const getBrowserInfoClasses = () => {
     let classNames = styles.browserInfo;
+
+    if (props.trackPanelOpened === false) {
+      classNames += ` ${styles.browserInfoExpanded}`;
+    }
 
     if (props.drawerOpened === true) {
       classNames += ` ${styles.browserInfoGreyed}`;
@@ -166,14 +172,16 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
           )}
         </dl>
       </div>
-      <BrowserTabs
-        drawerOpened={props.drawerOpened}
-        genomeSelectorActive={props.genomeSelectorActive}
-        selectBrowserTab={props.selectBrowserTab}
-        selectedBrowserTab={props.selectedBrowserTab}
-        toggleDrawer={props.toggleDrawer}
-        trackPanelModalOpened={props.trackPanelModalOpened}
-      />
+      {props.trackPanelOpened ? (
+        <BrowserTabs
+          drawerOpened={props.drawerOpened}
+          genomeSelectorActive={props.genomeSelectorActive}
+          selectBrowserTab={props.selectBrowserTab}
+          selectedBrowserTab={props.selectedBrowserTab}
+          toggleDrawer={props.toggleDrawer}
+          trackPanelModalOpened={props.trackPanelModalOpened}
+        />
+      ) : null}
     </div>
   );
 };
@@ -187,7 +195,8 @@ const mapStateToProps = (state: RootState): StateProps => ({
   genomeSelectorActive: getGenomeSelectorActive(state),
   objectInfo: getObjectInfo(state),
   selectedBrowserTab: getSelectedBrowserTab(state),
-  trackPanelModalOpened: getTrackPanelModalOpened(state)
+  trackPanelModalOpened: getTrackPanelModalOpened(state),
+  trackPanelOpened: getTrackPanelOpened(state)
 });
 
 const mapDispatchToProps: DispatchProps = {
