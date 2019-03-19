@@ -7,6 +7,7 @@ import React, {
   useState,
   useCallback
 } from 'react';
+
 import { TrackItemColour, TrackPanelItem } from '../trackPanelConfig';
 
 import chevronDownIcon from 'static/img/shared/chevron-down.svg';
@@ -104,6 +105,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
 
     if (trackStatus === ImageButtonStatus.ACTIVE) {
       setTrackStatus(ImageButtonStatus.INACTIVE);
+      return;
     }
     setTrackStatus(ImageButtonStatus.ACTIVE);
   };
@@ -131,18 +133,22 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
             </button>
           )}
         </label>
-        <ImageButton
-          buttonStatus={ImageButtonStatus.ACTIVE}
-          description={`Go to ${track.label}`}
-          onClick={drawerViewButtonHandler}
-          image={Ellipsis}
-        />
-        <ImageButton
-          buttonStatus={trackStatus}
-          description={'enable/disable track'}
-          onClick={toggleTrack}
-          image={Eye}
-        />
+        <div className={styles.ellipsisHolder}>
+          <ImageButton
+            buttonStatus={ImageButtonStatus.ACTIVE}
+            description={`Go to ${track.label}`}
+            onClick={drawerViewButtonHandler}
+            image={Ellipsis}
+          />
+        </div>
+        <div className={styles.eyeHolder}>
+          <ImageButton
+            buttonStatus={trackStatus}
+            description={'enable/disable track'}
+            onClick={toggleTrack}
+            image={Eye}
+          />
+        </div>
       </dd>
       {expanded && props.children}
     </Fragment>
