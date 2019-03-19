@@ -20,7 +20,9 @@ export const updateBrowserActivated = createAction(
 
 export const activateBrowser = (browserEl: HTMLDivElement) => {
   return (dispatch: Dispatch) => {
-    const { protocol } = window.location;
+    // protocol string to prepend apiHost url in case it isn't defined
+    const protocol =
+      config.apiHost.indexOf('http') === -1 ? window.location.protocol : '';
     const activateEvent = new CustomEvent('bpane-activate', {
       bubbles: true,
       detail: {
@@ -176,6 +178,8 @@ export const fetchExampleObjects = createAsyncAction(
 export const fetchExampleObjectsData = () => {
   return (dispatch: Dispatch) => {
     dispatch(fetchExampleObjects.request(null));
+
+    console.log(config.apiHost);
 
     return fetch(`${config.apiHost}/browser/example_objects`)
       .then(
