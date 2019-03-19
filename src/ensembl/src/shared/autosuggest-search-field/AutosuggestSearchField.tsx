@@ -1,9 +1,12 @@
-import React, { ReactNode } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react';
 import classNames from 'classnames';
 
-import styles from './AutosuggestSearchField.scss';
-
 import SearchField from 'src/shared/search-field/SearchField';
+import AutosuggestionPanel, {
+  GroupOfMatchesProps
+} from './AutosuggestionPanel';
+
+import styles from './AutosuggestSearchField.scss';
 
 type Props = {
   search: string;
@@ -13,10 +16,20 @@ type Props = {
   onBlur?: () => void;
   rightCorner?: ReactNode;
   className?: string;
+  matchGroups: GroupOfMatchesProps[];
 };
 
 const AutosuggestSearchField = (props: Props) => {
-  const className = classNames(styles.searchField, props.className);
+  const [isSelected, setIsSelected] = useState(false);
+
+  useEffect(() => {
+    setIsSelected(false);
+  }, [props.search]);
+
+  const className = classNames(
+    styles.autosuggestionSearchField,
+    props.className
+  );
 
   return (
     <div className={className}>
@@ -26,8 +39,15 @@ const AutosuggestSearchField = (props: Props) => {
         onChange={props.onChange}
         className={styles.searchFieldInput}
       />
+      {Boolean(props.matchGroups.length) && !isSelected && (
+        <AutosuggestionPanel matchGroups={props.matchGroups} />
+      )}
     </div>
   );
+};
+
+AutosuggestSearchField.defaultProps = {
+  matchGroups: []
 };
 
 export default AutosuggestSearchField;
