@@ -8,7 +8,7 @@ use composit::{
 use composit::state::{ StateManager, StateValue, ComponentRedo };
 use drawing::DrawingSession;
 
-pub struct Carriage {
+pub struct Traveller {
     comp: ActiveSource,
     prev_value: StateValue,
     cur_value: StateValue,
@@ -18,9 +18,9 @@ pub struct Carriage {
     leaf: Leaf
 }
 
-impl Carriage {
-    pub fn new(comp: ActiveSource, part: &Option<String>, leaf: &Leaf, srr: SourceResponseResult) -> Carriage {
-        Carriage {
+impl Traveller {
+    pub fn new(comp: ActiveSource, part: &Option<String>, leaf: &Leaf, srr: SourceResponseResult) -> Traveller {
+        Traveller {
             response: None,
             prev_value: StateValue::OffCold(),
             cur_value: StateValue::OffCold(),
@@ -83,7 +83,7 @@ impl Carriage {
     }
 }
 
-impl fmt::Debug for Carriage {
+impl fmt::Debug for Traveller {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f,"{:?}:{:?}({:?})",self.comp,self.leaf,self.part)
     }

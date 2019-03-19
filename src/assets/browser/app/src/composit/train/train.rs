@@ -1,16 +1,16 @@
 use std::collections::HashSet;
 
 use composit::{
-    Leaf, Carriage, StateManager, Scale,
-    ComponentManager, ActiveSource, Stick, CarriageSet, StaleCarriages
+    Leaf, Traveller, StateManager, Scale,
+    ComponentManager, ActiveSource, Stick, TravellerSet, OldTravellers
 };
 use composit::state::ComponentRedo;
 
 const MAX_FLANK : i32 = 3;
 
 pub struct Train {
-    carriages: CarriageSet,
-    stale: StaleCarriages,
+    carriages: TravellerSet,
+    stale: OldTravellers,
     stick: Stick,
     scale: Scale,
     ideal_flank: i32,
@@ -27,8 +27,8 @@ impl Train {
             scale, preload: true,
             ideal_flank: 0,
             middle_leaf: 0,
-            carriages: CarriageSet::new(),
-            stale: StaleCarriages::new(),
+            carriages: TravellerSet::new(),
+            stale: OldTravellers::new(),
             position_bp: None,
             active: true
         }
@@ -74,7 +74,7 @@ impl Train {
             let lcomps = cm.make_comp_carriages(c,&leaf);
             self.add_carriages_to_leaf(leaf,lcomps);
         }
-        self.stale.all_stale();
+        self.stale.all_old();
     }
 
     /* *****************************************************************
@@ -93,7 +93,7 @@ impl Train {
     }
 
     /* add leafs created below */
-    fn add_carriages_to_leaf(&mut self, leaf: Leaf, mut cc: Vec<Carriage>) {
+    fn add_carriages_to_leaf(&mut self, leaf: Leaf, mut cc: Vec<Traveller>) {
         for lc in cc.drain(..) {
             self.carriages.add_carriage(&leaf,lc);
         }
@@ -126,7 +126,7 @@ impl Train {
         for d in doomed {
             debug!("trains","removing {}",d.get_index());
             self.carriages.remove_leaf(&d);
-            self.stale.set_stale(&d);
+            self.stale.set_old(&d);
         }
     }
 
@@ -165,7 +165,7 @@ impl Train {
     }
     
     /* used in LEAFPRINTER to get actual data to print from components */
-    pub fn get_carriages(&mut self, leaf: &Leaf) -> Option<Vec<&mut Carriage>> {
+    pub fn get_carriages(&mut self, leaf: &Leaf) -> Option<Vec<&mut Traveller>> {
         if !self.is_done() { return None; }
         Some(self.carriages.leaf_carriages(leaf))
     }
@@ -178,15 +178,15 @@ impl Train {
             redo = redo | c.update_state(oom);
         }
         if redo == ComponentRedo::Major && self.is_done() {
-            self.stale.not_stale(&leaf);
+            self.stale.not_old(&leaf);
         }
         if redo != ComponentRedo::None {
             debug!("redraw","{:?} {:?}",leaf,redo);
         }
         /* Any change due to availability? */
-        if self.stale.is_stale(&leaf) {
+        if self.stale.is_old(&leaf) {
             if self.is_done() {
-                self.stale.not_stale(&leaf);
+                self.stale.not_old(&leaf);
                 debug!("redraw","stale {:?}",leaf);
                 return ComponentRedo::Major;
             }

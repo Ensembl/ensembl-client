@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use print::{ Programs, PrintEdition };
 use program::ProgramType;
-use composit::{ Carriage, Leaf, Stage, ComponentRedo, Train };
+use composit::{ Traveller, Leaf, Stage, ComponentRedo, Train };
 use drawing::{ DrawingSession, AllCanvasAllocator };
 use dom::webgl::WebGLRenderingContext as glctx;
 
@@ -31,7 +31,7 @@ impl LeafPrinter {
         PrintEdition::new(&mut self.ds)
     }
         
-    fn redraw_drawings(&mut self, alloc: &mut AllCanvasAllocator, comps: &mut Vec<&mut Carriage>) {
+    fn redraw_drawings(&mut self, alloc: &mut AllCanvasAllocator, comps: &mut Vec<&mut Traveller>) {
         self.ds.finish(alloc);
         self.ds = alloc.make_drawing_session();
         for mut c in comps.iter_mut() {
@@ -40,7 +40,7 @@ impl LeafPrinter {
         self.ds.finalise(alloc);
     }
     
-    fn redraw_objects(&mut self, comps: &mut Vec<&mut Carriage>,
+    fn redraw_objects(&mut self, comps: &mut Vec<&mut Traveller>,
                           e: &mut PrintEdition) {
         for c in comps.iter_mut() {
             if c.is_on() {
@@ -60,7 +60,7 @@ impl LeafPrinter {
         e.go(&mut self.progs);
     }
 
-    fn redraw_carriages(&mut self, comps: &mut Vec<&mut Carriage>, aca: &mut AllCanvasAllocator, do_drawings: bool) {
+    fn redraw_carriages(&mut self, comps: &mut Vec<&mut Traveller>, aca: &mut AllCanvasAllocator, do_drawings: bool) {
         self.init();
         let mut e = self.new_edition();
         if do_drawings {
