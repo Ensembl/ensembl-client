@@ -20,10 +20,11 @@ export const updateBrowserActivated = createAction(
 
 export const activateBrowser = (browserEl: HTMLDivElement) => {
   return (dispatch: Dispatch) => {
+    const { protocol } = window.location;
     const activateEvent = new CustomEvent('bpane-activate', {
       bubbles: true,
       detail: {
-        'config-url': `${config.apiHost}/browser/config`,
+        'config-url': `${protocol}${config.apiHost}/browser/config`,
         key: 'main'
       }
     });
