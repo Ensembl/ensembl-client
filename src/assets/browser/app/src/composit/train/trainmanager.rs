@@ -15,7 +15,7 @@ use composit::{ Leaf, Train, ComponentManager, ActiveSource, Stick, Scale };
 use controller::output::Report;
 
 const MS_FADE : f64 = 100.;
-const OUTER_TRAINS : usize = 2;
+const OUTER_TRAINS : usize = 0;
 
 pub struct TrainManager {
     /* the trains themselves */

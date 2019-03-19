@@ -1,16 +1,15 @@
-use std::collections::HashSet;
+use std::collections::{ HashMap, HashSet };
 
 use composit::{
     Leaf, Traveller, StateManager, Scale,
-    ComponentManager, ActiveSource, Stick, TravellerSet, OldTravellers
+    ComponentManager, ActiveSource, Stick, Carriage
 };
 use composit::state::ComponentRedo;
 
 const MAX_FLANK : i32 = 3;
 
 pub struct Train {
-    carriages: TravellerSet,
-    stale: OldTravellers,
+    carriages: HashMap<Leaf,Carriage>,
     stick: Stick,
     scale: Scale,
     ideal_flank: i32,
@@ -27,8 +26,7 @@ impl Train {
             scale, preload: true,
             ideal_flank: 0,
             middle_leaf: 0,
-            carriages: TravellerSet::new(),
-            stale: OldTravellers::new(),
+            carriages: HashMap::<Leaf,Carriage>::new(),
             position_bp: None,
             active: true
         }
@@ -74,7 +72,9 @@ impl Train {
             let lcomps = cm.make_comp_carriages(c,&leaf);
             self.add_carriages_to_leaf(leaf,lcomps);
         }
-        self.stale.all_old();
+        for c in self.carriages.values_mut() {
+            c.set_needs_rebuild();
+        }
     }
 
     /* *****************************************************************
@@ -94,8 +94,12 @@ impl Train {
 
     /* add leafs created below */
     fn add_carriages_to_leaf(&mut self, leaf: Leaf, mut cc: Vec<Traveller>) {
+        if !self.carriages.contains_key(&leaf) {
+            self.carriages.insert(leaf.clone(),Carriage::new());
+        }
+        let mut ts = self.carriages.get_mut(&leaf).unwrap();
         for lc in cc.drain(..) {
-            self.carriages.add_carriage(&leaf,lc);
+            ts.add_traveller(lc);
         }
     }
     
@@ -106,7 +110,7 @@ impl Train {
         for idx in -flank..flank+1 {
             let hindex = self.middle_leaf + idx as i64;
             let leaf = Leaf::new(&self.stick,hindex,&self.scale);
-            if !self.carriages.contains_leaf(&leaf) {
+            if !self.carriages.contains_key(&leaf) {
                 //debug!("trains","adding {}",hindex);
                 out.push(leaf);
             }
@@ -118,15 +122,14 @@ impl Train {
     fn remove_unused_leafs(&mut self) {
         let mut doomed = HashSet::new();
         let flank = self.true_flank();
-        for leaf in self.carriages.all_leafs() {
+        for leaf in self.carriages.keys() {
             if (leaf.get_index()-self.middle_leaf).abs() > flank as i64 {
                 doomed.insert(leaf.clone());
             }
         }
         for d in doomed {
             debug!("trains","removing {}",d.get_index());
-            self.carriages.remove_leaf(&d);
-            self.stale.set_old(&d);
+            self.carriages.remove(&d);
         }
     }
 
@@ -144,13 +147,13 @@ impl Train {
      * Aggregate information about our carriages for TRAINMANAGER.
      * ***********************************************************
      */
-    
+        
     /* used by TRAINMANAGER to generate all_printing_leafs for printer,
      * and by PRINTER to work out what needs preparing.
      */
     pub fn leafs(&self) -> Vec<Leaf> {
         let mut out = Vec::<Leaf>::new();
-        for leaf in self.carriages.all_leafs() {
+        for leaf in self.carriages.keys() {
             out.push(leaf.clone());
         }
         out
@@ -158,37 +161,41 @@ impl Train {
     
     /* Are all the carriages done? */
     pub(in super) fn is_done(&mut self) -> bool {
-        for c in self.carriages.all_carriages() {
+        for c in self.carriages.values_mut() {
             if !c.is_done() { return false; }
         }
         return true;
     }
     
     /* used in LEAFPRINTER to get actual data to print from components */
-    pub fn get_carriages(&mut self, leaf: &Leaf) -> Option<Vec<&mut Traveller>> {
+    pub fn get_travellers(&mut self, leaf: &Leaf) -> Option<Vec<&mut Traveller>> {
         if !self.is_done() { return None; }
-        Some(self.carriages.leaf_carriages(leaf))
+        self.carriages.get_mut(leaf).map(|x| x.all_travellers_mut())
     }
     
     /* how much redrawing is needed? */
     pub fn calc_level(&mut self, leaf: &Leaf, oom: &StateManager) -> ComponentRedo {
         /* Any change due to component changes? */
         let mut redo = ComponentRedo::None;
-        for c in self.carriages.leaf_carriages(leaf) {
-            redo = redo | c.update_state(oom);
+        for t in &mut self.get_travellers(leaf).unwrap_or(vec!{}).iter_mut() {
+            redo = redo | t.update_state(oom);
         }
         if redo == ComponentRedo::Major && self.is_done() {
-            self.stale.not_old(&leaf);
+            if let Some(c) = self.carriages.get_mut(&leaf) {
+                c.set_rebuild_pending();
+            }
         }
         if redo != ComponentRedo::None {
-            debug!("redraw","{:?} {:?}",leaf,redo);
+            console!("redo {:?}",redo);
         }
         /* Any change due to availability? */
-        if self.stale.is_old(&leaf) {
-            if self.is_done() {
-                self.stale.not_old(&leaf);
-                debug!("redraw","stale {:?}",leaf);
-                return ComponentRedo::Major;
+        if self.is_done() {
+            if let Some(c) = self.carriages.get_mut(&leaf) {
+                if c.needs_rebuild() {
+                    c.set_rebuild_pending();
+                    debug!("redraw","stale {:?}",leaf);
+                    return ComponentRedo::Major;
+                }
             }
         }
         redo

@@ -60,13 +60,13 @@ impl LeafPrinter {
         e.go(&mut self.progs);
     }
 
-    fn redraw_carriages(&mut self, comps: &mut Vec<&mut Traveller>, aca: &mut AllCanvasAllocator, do_drawings: bool) {
+    fn redraw_travellers(&mut self, travs: &mut Vec<&mut Traveller>, aca: &mut AllCanvasAllocator, do_drawings: bool) {
         self.init();
         let mut e = self.new_edition();
         if do_drawings {
-            self.redraw_drawings(aca,comps);
+            self.redraw_drawings(aca,travs);
         }
-        self.redraw_objects(comps,&mut e);
+        self.redraw_objects(travs,&mut e);
         self.fini(&mut e);
     }
     
@@ -75,9 +75,9 @@ impl LeafPrinter {
                         aca: &mut AllCanvasAllocator,
                         level: ComponentRedo) {
         if level == ComponentRedo::None { return; }
-        if let Some(ref mut comps) = sc.get_carriages(leaf) {
-            if comps.len() > 0 {
-                self.redraw_carriages(comps,aca,level == ComponentRedo::Major);
+        if let Some(ref mut travs) = sc.get_travellers(leaf) {
+            if travs.len() > 0 {
+                self.redraw_travellers(travs,aca,level == ComponentRedo::Major);
             }
         }
     }

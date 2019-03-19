@@ -24,7 +24,7 @@ pub use self::combinedstickmanager::CombinedStickManager;
 pub use self::componentset::ComponentSet;
 pub use self::compositor::{ Compositor, register_compositor_ticks };
 pub use self::compmanager::{ ComponentManager };
-pub use self::train::{ Train, TrainManager, Traveller, TravellerSet, OldTravellers };
+pub use self::train::{ Train, TrainManager, Traveller, Carriage };
 pub use self::stage::{ Stage };
 pub use self::stick::Stick;
 pub use self::stickmanager::StickManager;
