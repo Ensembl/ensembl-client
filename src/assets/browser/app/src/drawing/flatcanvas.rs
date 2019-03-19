@@ -11,6 +11,7 @@ use stdweb::web::TypedArray;
 use drawing::{ CanvasRemover, AllCanvasAllocator };
 use program::CanvasWeave;
 use types::{ Colour, CPixel, RPixel, cpixel, Dot };
+use util::ChangeDetect;
 
 #[derive(Clone,Copy,Debug)]
 pub enum FontVariety {
@@ -53,7 +54,9 @@ pub struct FlatCanvasImpl {
     width: i32,
     height: i32,
     weave: CanvasWeave,
-    rm: CanvasRemover
+    rm: CanvasRemover,
+    font_cd: ChangeDetect<FCFont>,
+    strokestyle_cd: ChangeDetect<Colour>
 }
 
 impl FlatCanvasImpl {    
@@ -65,7 +68,9 @@ impl FlatCanvasImpl {
         let context : CanvasRenderingContext2d = canvas.get_context().unwrap();
         context.set_fill_style_color("black");
         FlatCanvasImpl {
-            canvas, context, height, width,  weave, rm
+            canvas, context, height, width,  weave, rm,
+            font_cd: ChangeDetect::<FCFont>::new(),
+            strokestyle_cd: ChangeDetect::<Colour>::new()
         }
     }
     
@@ -73,8 +78,10 @@ impl FlatCanvasImpl {
         self.rm.remove(aca);
     }
     
-    fn text(&self,text : &str, pos: CPixel, font: &FCFont, col: &Colour, bg: &Colour) -> (i32,i32) {
-        font.setup(&self.context);
+    fn text(&mut self,text : &str, pos: CPixel, font: &FCFont, col: &Colour, bg: &Colour) -> (i32,i32) {
+        if let Some(font) = self.font_cd.update(font.clone()) {
+            font.setup(&self.context);
+        }
         let m = self.context.measure_text(text);
         let width_px = m.unwrap().get_width().ceil() as i32;
         let height_px = font.height;
@@ -86,7 +93,9 @@ impl FlatCanvasImpl {
                                fullheight_px as f64);
         self.context.set_text_baseline(TextBaseline::Top);
         self.context.set_fill_style_color(&col.to_css()[..]);
-        self.context.set_stroke_style_color(&col.to_css()[..]);
+        if let Some(ref col) = self.strokestyle_cd.update(*col) {
+            self.context.set_stroke_style_color(&col.to_css()[..]);
+        }
         self.context.fill_text(text,(pos.0+font.xpad).into(),(pos.1+font.ypadtop).into(),None);
         (fullwidth_px,fullheight_px)
     }
@@ -145,7 +154,7 @@ impl FlatCanvas {
     }
     
     pub fn text(&self,text : &str, pos: CPixel, font: &FCFont, col: &Colour, bg: &Colour) -> (i32,i32) {
-        self.0.borrow().text(text,pos,font,col,bg)
+        self.0.borrow_mut().text(text,pos,font,col,bg)
     }
     
     pub fn bitmap(&self, data: &Vec<u8>, coords: RPixel) {
