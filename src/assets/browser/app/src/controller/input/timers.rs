@@ -1,9 +1,10 @@
 use std::collections::HashMap;
 
 use controller::global::App;
+use controller::output::OutputAction;
 
 struct TimerImpl {
-    cb: Box<FnMut(&mut App, f64) + 'static>,
+    cb: Box<FnMut(&mut App, f64) -> Vec<OutputAction> + 'static>,
     min_interval: Option<f64>,
     last_run: Option<f64>
 }
@@ -36,7 +37,8 @@ impl Timers {
         }
     }
     
-    pub fn add<F>(&mut self, cb: F, min_interval: Option<f64>) -> Timer where F: FnMut(&mut App, f64) + 'static {
+    pub fn add<F>(&mut self, cb: F, min_interval: Option<f64>) -> Timer 
+        where F: FnMut(&mut App, f64) -> Vec<OutputAction> + 'static {
         let idx = self.next;
         self.next += 1;
         self.timers.insert(idx,TimerImpl {
@@ -52,11 +54,13 @@ impl Timers {
         self.timers.remove(&t.0);
     }
     
-    pub fn run(&mut self, cg: &mut App, time: f64) {
+    pub fn run(&mut self, cg: &mut App, time: f64) -> Vec<OutputAction> {
+        let mut out = Vec::<OutputAction>::new();
         for t in self.timers.values_mut() {
             if t.is_ready(time) {
-                (t.cb)(cg,time);
+                out.append(&mut (t.cb)(cg,time));
             }
         }
+        out
     }
 }

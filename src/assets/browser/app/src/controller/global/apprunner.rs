@@ -12,7 +12,7 @@ use controller::input::{
     register_direct_events, register_user_events, register_dom_events,
     Timers, Timer
 };
-use controller::output::{ Projector, Report };
+use controller::output::{ OutputAction, Projector, Report, ViewportReport };
 use data::{ HttpManager, HttpXferClerk, BackendConfigBootstrap, BackendConfig };
 use dom::Bling;
 use dom::event::EventControl;
@@ -32,7 +32,8 @@ struct AppRunnerImpl {
     tc: Tácode,
     http_manager: HttpManager,
     config: BackendConfig,
-    config_url: Url
+    config_url: Url,
+    browser_el: HtmlElement
 }
 
 #[derive(Clone)]
@@ -45,7 +46,7 @@ impl AppRunner {
     pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<Bling>, config_url: &Url, config: &BackendConfig) -> AppRunner {
         let browser_el : HtmlElement = bling.apply_bling(&el);
         let tc = Tácode::new();
-        let st = App::new(&tc,config,&http_manager,&browser_el,&config_url);
+        let st = App::new(&tc,config,&http_manager,&browser_el,&config_url,&el);
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
             g: g.clone(),
             el: el.clone(),
@@ -57,7 +58,8 @@ impl AppRunner {
             tc: tc.clone(),
             http_manager: http_manager.clone(),
             config: config.clone(),
-            config_url: config_url.clone()
+            config_url: config_url.clone(),
+            browser_el: browser_el.clone()
         })));
         {
             let imp = out.0.lock().unwrap();
@@ -66,10 +68,12 @@ impl AppRunner {
         }
         out.init();
         let report = Report::new(&mut out);
+        let viewport_report = ViewportReport::new(&mut out);
         {
             let mut imp = out.0.lock().unwrap();
             let app = imp.app.clone();
             app.lock().unwrap().set_report(report);
+            app.lock().unwrap().set_viewport_report(viewport_report);
             let el = imp.el.clone();
             imp.bling.activate(&app,&el);
         }
@@ -82,7 +86,7 @@ impl AppRunner {
             let mut imp = self.0.lock().unwrap();
             imp.bling = bling;
             let browser_el : HtmlElement = imp.bling.apply_bling(&imp.el);
-            imp.app = Arc::new(Mutex::new(App::new(&imp.tc,&imp.config,&imp.http_manager,&browser_el,&imp.config_url)));
+            imp.app = Arc::new(Mutex::new(App::new(&imp.tc,&imp.config,&imp.http_manager,&browser_el,&imp.config_url,&imp.el)));
             let weak = AppRunnerWeak::new(&self);
             imp.app.lock().unwrap().set_runner(&weak);
             imp.timers = Timers::new();
@@ -91,24 +95,36 @@ impl AppRunner {
         }
         self.init();
         let report = Report::new(self);
+        let viewport_report = ViewportReport::new(self);
         {
             let mut imp = self.0.lock().unwrap();
             let el = imp.el.clone();
             let app = imp.app.clone();
             app.lock().unwrap().set_report(report);
+            app.lock().unwrap().set_viewport_report(viewport_report);
             imp.bling.activate(&app,&el);
         }
     }
 
+    pub fn get_browser_el(&mut self) -> HtmlElement {
+        self.0.lock().unwrap().browser_el.clone()
+    }
+
     pub fn add_timer<F>(&mut self, cb: F, min_interval: Option<f64>) -> Timer 
-                            where F: FnMut(&mut App, f64) + 'static {
+                            where F: FnMut(&mut App, f64) -> Vec<OutputAction> + 'static {
         self.0.lock().unwrap().timers.add(cb, min_interval)
     }
 
     pub fn run_timers(&mut self, time: f64) {
-        let mut imp = self.0.lock().unwrap();
-        let state = &mut imp.app.clone();
-        imp.timers.run(&mut state.lock().unwrap(), time);
+        let oas = {
+            let mut imp = self.0.lock().unwrap();
+            let app = imp.app.clone();
+            let out = imp.timers.run(&mut app.lock().unwrap(), time);
+            out
+        };
+        for oa in oas {
+            oa.run(self);
+        }
     }
         
     pub fn init(&mut self) {
@@ -137,6 +153,7 @@ impl AppRunner {
         {
             self.add_timer(|app,_| {
                 app.check_size();
+                vec!{}
             },Some(SIZE_CHECK_INTERVAL_MS));
         }
         
@@ -145,6 +162,7 @@ impl AppRunner {
             let tc = self.0.lock().unwrap().tc.clone();
             self.add_timer(move |app,_| {
                 tc.step();
+                vec!{}
             },None);
         }
         
@@ -152,6 +170,7 @@ impl AppRunner {
         {
             self.add_timer(move |app,_| {
                 app.tick();
+                vec!{}
             },None);
         }        
     }
@@ -182,7 +201,7 @@ impl AppRunner {
         }
         self.0.lock().unwrap().projector = None;
         let r = self.state();
-        r.lock().unwrap().finish();        
+        r.lock().unwrap().finish();
     }
     
     pub fn activate_debug(&mut self) {

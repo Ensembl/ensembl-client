@@ -4,17 +4,46 @@ import React, {
   useEffect,
   useCallback
 } from 'react';
+import { connect } from 'react-redux';
 
 import styles from './BrowserImage.scss';
-import { ChrLocation, BrowserNavStates } from '../browserState';
+import { ChrLocation, BrowserNavStates, CogList } from '../browserState';
+import BrowserCogList from '../BrowserCogList';
+import {
+  getTrackConfigNames,
+  getTrackConfigLabel,
+  getBrowserCogTrackList,
+  getChrLocation,
+  getBrowserNavOpened
+} from '../browserSelectors';
+import {
+  activateBrowser,
+  updateBrowserActivated,
+  updateBrowserNavStates,
+  updateChrLocation
+} from '../browserActions';
+import { RootState } from 'src/store';
 
-type BrowserImageProps = {
-  browserRef: RefObject<HTMLDivElement>;
+type StateProps = {
+  browserCogTrackList: CogList;
   browserNavOpened: boolean;
+  chrLocation: ChrLocation;
+  trackConfigNames: any;
+  trackConfigLabel: any;
+};
+
+type DispatchProps = {
+  activateBrowser: (browserEl: HTMLDivElement) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateChrLocation: (chrLocation: ChrLocation) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
 };
+
+type OwnProps = {
+  browserRef: RefObject<HTMLDivElement>;
+};
+
+type BrowserImageProps = StateProps & DispatchProps & OwnProps;
 
 type BpaneOutEvent = Event & {
   detail: {
@@ -44,7 +73,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
     const currentEl: HTMLDivElement = props.browserRef
       .current as HTMLDivElement;
 
-    activateBrowser(currentEl, props);
+    bootstrapBrowser(currentEl, props);
 
     currentEl.addEventListener('bpane-out', listenBpaneOut);
 
@@ -57,21 +86,62 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
     };
   }, [props.browserRef]);
 
+  useEffect(() => {
+    if (props.browserCogTrackList) {
+      const ons: string[] = [];
+      const offs: string[] = [];
+
+      /* what the frontend and backend call labels and names is flipped */
+      Object.keys(props.browserCogTrackList).map((name) => {
+        /* undefined means not seen means on for names */
+        if (props.trackConfigNames[name]) {
+          ons.push(name + ':label');
+        } else {
+          offs.push(name + ':label');
+        }
+        /* undefined means not seen means off for labels */
+        if (props.trackConfigLabel[name] !== false) {
+          ons.push(name + ':names');
+        } else {
+          offs.push(name + ':names');
+        }
+      });
+      const stateEvent = new CustomEvent('bpane', {
+        bubbles: true,
+        detail: {
+          off: offs,
+          on: ons
+        }
+      });
+      if (props.browserRef.current) {
+        props.browserRef.current.dispatchEvent(stateEvent);
+      }
+    }
+  }, [
+    props.trackConfigNames,
+    props.trackConfigLabel,
+    props.browserRef,
+    props.browserCogTrackList
+  ]);
+
   return (
-    <div
-      className={getBrowserImageClasses(props.browserNavOpened)}
-      ref={props.browserRef}
-    />
+    <div className={styles.browserImagePlus}>
+      <div
+        className={getBrowserImageClasses(props.browserNavOpened)}
+        ref={props.browserRef}
+      />
+      <BrowserCogList browserRef={props.browserRef} />
+    </div>
   );
 };
 
-function activateBrowser(currentEl: HTMLDivElement, props: BrowserImageProps) {
+function bootstrapBrowser(currentEl: HTMLDivElement, props: BrowserImageProps) {
   if (currentEl && currentEl.ownerDocument) {
     const bodyEl = currentEl.ownerDocument.body as HTMLBodyElement;
 
     // no need to check for DOM mutations if the browser class is already set in body
     if (bodyEl.classList.contains('browser-app-ready')) {
-      dispatchActivateEvents(currentEl, props);
+      props.activateBrowser(currentEl);
       return;
     }
 
@@ -86,7 +156,7 @@ function activateBrowser(currentEl: HTMLDivElement, props: BrowserImageProps) {
         const mutationNode = mutation.target as HTMLElement;
 
         if (mutationNode.classList.contains('browser-app-ready')) {
-          dispatchActivateEvents(currentEl, props);
+          props.activateBrowser(currentEl);
 
           observer.disconnect();
           break;
@@ -100,23 +170,6 @@ function activateBrowser(currentEl: HTMLDivElement, props: BrowserImageProps) {
   }
 }
 
-function dispatchActivateEvents(
-  currentEl: HTMLDivElement,
-  props: BrowserImageProps
-) {
-  const activateEvent = new CustomEvent('bpane-activate', {
-    bubbles: true,
-    detail: {
-      'config-url':
-        'http://ec2-34-204-108-251.compute-1.amazonaws.com:8060/browser/config',
-      key: 'main'
-    }
-  });
-
-  currentEl.dispatchEvent(activateEvent);
-  props.updateBrowserActivated(true);
-}
-
 function getBrowserImageClasses(browserNavOpened: boolean): string {
   let classes = styles.browserStage;
 
@@ -127,4 +180,22 @@ function getBrowserImageClasses(browserNavOpened: boolean): string {
   return classes;
 }
 
-export default BrowserImage;
+const mapStateToProps = (state: RootState): StateProps => ({
+  browserCogTrackList: getBrowserCogTrackList(state),
+  browserNavOpened: getBrowserNavOpened(state),
+  chrLocation: getChrLocation(state),
+  trackConfigLabel: getTrackConfigLabel(state),
+  trackConfigNames: getTrackConfigNames(state)
+});
+
+const mapDispatchToProps: DispatchProps = {
+  activateBrowser,
+  updateBrowserActivated,
+  updateBrowserNavStates,
+  updateChrLocation
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(BrowserImage);

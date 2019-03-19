@@ -1,16 +1,16 @@
 use std::collections::HashSet;
 
 use composit::{
-    Leaf, Carriage, StateManager, Scale,
-    ComponentManager, ActiveSource, Stick, CarriageSet, StaleCarriages
+    Leaf, Traveller, StateManager, Scale,
+    ComponentManager, ActiveSource, Stick, TravellerSet, OldTravellers
 };
 use composit::state::ComponentRedo;
 
 const MAX_FLANK : i32 = 3;
 
 pub struct Train {
-    carriages: CarriageSet,
-    stale: StaleCarriages,
+    carriages: TravellerSet,
+    stale: OldTravellers,
     stick: Stick,
     scale: Scale,
     ideal_flank: i32,
@@ -27,8 +27,8 @@ impl Train {
             scale, preload: true,
             ideal_flank: 0,
             middle_leaf: 0,
-            carriages: CarriageSet::new(),
-            stale: StaleCarriages::new(),
+            carriages: TravellerSet::new(),
+            stale: OldTravellers::new(),
             position_bp: None,
             active: true
         }
@@ -40,27 +40,27 @@ impl Train {
      */
     
     /* are we active (ie should we scan around as the user does?) */
-    pub fn set_active(&mut self, yn: bool) {
+    pub(in super) fn set_active(&mut self, yn: bool) {
         self.active = yn;
         if yn { console!("{:?} is active",self.scale); } else { console!("{:?} is inactive",self.scale); }
     }
     
     /* which scale are we (ie which train)? */
-    pub fn get_scale(&self) -> &Scale { &self.scale }
+    pub(in super) fn get_scale(&self) -> &Scale { &self.scale }
     
     /* called when position changes, to update carriages */
-    pub fn set_position(&mut self, position_bp: f64) {
+    pub(in super) fn set_position(&mut self, position_bp: f64) {
         self.middle_leaf = (position_bp / self.scale.total_bp()).floor() as i64;
         self.position_bp = Some(position_bp);
     }
     
     /* called when no-longer preload, so flanks should be expanded */
-    pub fn enter_service(&mut self) {
+    pub(in super) fn enter_service(&mut self) {
         self.preload = false;
     }
     
     /* called when zoom changes, to update flank */
-    pub fn set_zoom(&mut self, bp_per_screen: f64) {
+    pub(in super) fn set_zoom(&mut self, bp_per_screen: f64) {
         self.ideal_flank = (bp_per_screen / self.scale.total_bp()) as i32;
         /* reset middle leaf after zoom */
         if let Some(pos) = self.position_bp {
@@ -71,10 +71,10 @@ impl Train {
     /* add component to leaf */
     pub fn add_component(&mut self, cm: &mut ComponentManager, c: &ActiveSource) {
         for leaf in self.leafs() {
-            let lcomps = vec! { cm.make_carriage(c,&leaf) };
+            let lcomps = cm.make_comp_carriages(c,&leaf);
             self.add_carriages_to_leaf(leaf,lcomps);
         }
-        self.stale.all_stale();
+        self.stale.all_old();
     }
 
     /* *****************************************************************
@@ -93,7 +93,7 @@ impl Train {
     }
 
     /* add leafs created below */
-    fn add_carriages_to_leaf(&mut self, leaf: Leaf, mut cc: Vec<Carriage>) {
+    fn add_carriages_to_leaf(&mut self, leaf: Leaf, mut cc: Vec<Traveller>) {
         for lc in cc.drain(..) {
             self.carriages.add_carriage(&leaf,lc);
         }
@@ -107,7 +107,7 @@ impl Train {
             let hindex = self.middle_leaf + idx as i64;
             let leaf = Leaf::new(&self.stick,hindex,&self.scale);
             if !self.carriages.contains_leaf(&leaf) {
-                debug!("trains","adding {}",hindex);
+                //debug!("trains","adding {}",hindex);
                 out.push(leaf);
             }
         }
@@ -126,7 +126,7 @@ impl Train {
         for d in doomed {
             debug!("trains","removing {}",d.get_index());
             self.carriages.remove_leaf(&d);
-            self.stale.set_stale(&d);
+            self.stale.set_old(&d);
         }
     }
 
@@ -135,7 +135,7 @@ impl Train {
         if !self.active { return; }
         self.remove_unused_leafs();
         for leaf in self.get_missing_leafs() {
-            let cc = cm.make_carriages(leaf.clone());
+            let cc = cm.make_leaf_carriages(leaf.clone());
             self.add_carriages_to_leaf(leaf,cc);
         }
     }
@@ -157,7 +157,7 @@ impl Train {
     }
     
     /* Are all the carriages done? */
-    pub fn is_done(&mut self) -> bool {
+    pub(in super) fn is_done(&mut self) -> bool {
         for c in self.carriages.all_carriages() {
             if !c.is_done() { return false; }
         }
@@ -165,21 +165,11 @@ impl Train {
     }
     
     /* used in LEAFPRINTER to get actual data to print from components */
-    pub fn get_carriages(&mut self, leaf: &Leaf) -> Option<Vec<&mut Carriage>> {
+    pub fn get_carriages(&mut self, leaf: &Leaf) -> Option<Vec<&mut Traveller>> {
         if !self.is_done() { return None; }
         Some(self.carriages.leaf_carriages(leaf))
     }
     
-    /* Maximum y of all carriages (for y endstop) */
-    pub fn get_max_y(&self) -> i32 {
-        let mut max = 0;
-        for c in self.carriages.all_carriages() {
-            let y = c.get_max_y();
-            if y > max { max = y; }
-        }
-        max
-    }
-
     /* how much redrawing is needed? */
     pub fn calc_level(&mut self, leaf: &Leaf, oom: &StateManager) -> ComponentRedo {
         /* Any change due to component changes? */
@@ -188,15 +178,15 @@ impl Train {
             redo = redo | c.update_state(oom);
         }
         if redo == ComponentRedo::Major && self.is_done() {
-            self.stale.not_stale(&leaf);
+            self.stale.not_old(&leaf);
         }
         if redo != ComponentRedo::None {
             debug!("redraw","{:?} {:?}",leaf,redo);
         }
         /* Any change due to availability? */
-        if self.stale.is_stale(&leaf) {
+        if self.stale.is_old(&leaf) {
             if self.is_done() {
-                self.stale.not_stale(&leaf);
+                self.stale.not_old(&leaf);
                 debug!("redraw","stale {:?}",leaf);
                 return ComponentRedo::Major;
             }

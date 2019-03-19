@@ -11,6 +11,7 @@
   position: absolute;
   text-align: center;
   width: 100%;
+  z-index: 10000;
 
   button {
     background: $ens-blue;
@@ -19,5 +20,9 @@
     font-weight: $bold;
     margin-left: 30px;
     padding: 6px 18px;
+  }
+
+  a {
+    font-weight: $bold;
   }
 }

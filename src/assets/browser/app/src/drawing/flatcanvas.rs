@@ -57,7 +57,7 @@ pub struct FlatCanvasImpl {
 }
 
 impl FlatCanvasImpl {    
-    pub fn create(canvas: CanvasElement,
+    fn create(canvas: CanvasElement,
                   width: i32, height: i32, weave: CanvasWeave,
                   rm: CanvasRemover) -> FlatCanvasImpl {
         canvas.set_width(width as u32);
@@ -69,11 +69,11 @@ impl FlatCanvasImpl {
         }
     }
     
-    pub fn remove(&self, aca: &mut AllCanvasAllocator) {
+    fn remove(&self, aca: &mut AllCanvasAllocator) {
         self.rm.remove(aca);
     }
     
-    pub fn text(&self,text : &str, pos: CPixel, font: &FCFont, col: &Colour, bg: &Colour) -> (i32,i32) {
+    fn text(&self,text : &str, pos: CPixel, font: &FCFont, col: &Colour, bg: &Colour) -> (i32,i32) {
         font.setup(&self.context);
         let m = self.context.measure_text(text);
         let width_px = m.unwrap().get_width().ceil() as i32;
@@ -91,7 +91,7 @@ impl FlatCanvasImpl {
         (fullwidth_px,fullheight_px)
     }
     
-    pub fn bitmap(&self, data: &Vec<u8>, coords: RPixel) {
+    fn bitmap(&self, data: &Vec<u8>, coords: RPixel) {
         let pixels: TypedArray<u8> = data[..].into();
         let Dot(x,y) = coords.offset();
         let Dot(w,h) = coords.area();
@@ -102,14 +102,14 @@ impl FlatCanvasImpl {
         };
     }
     
-    pub fn rectangle(&self, coords: RPixel, col: &Colour) {
+    fn rectangle(&self, coords: RPixel, col: &Colour) {
         let Dot(x,y) = coords.offset();
         let Dot(w,h) = coords.area();
         self.context.set_fill_style_color(&col.to_css()[..]);
         self.context.fill_rect(x as f64,y as f64,w as f64,h as f64);
     }
 
-    pub fn measure(&self,text : &str, font: &FCFont) -> CPixel {
+    fn measure(&self,text : &str, font: &FCFont) -> CPixel {
         font.setup(&self.context);
         let m = self.context.measure_text(text);
         let width_px = m.unwrap().get_width().ceil() as i32;
@@ -117,15 +117,15 @@ impl FlatCanvasImpl {
         cpixel(width_px+2*font.xpad,height_px+font.ypadtop+font.ypadbot)
     }
     
-    pub fn element(&self) -> &CanvasElement {
+    fn element(&self) -> &CanvasElement {
         &self.canvas
     }
     
-    pub fn size(&self) -> CPixel {
+    fn size(&self) -> CPixel {
         cpixel(self.width,self.height)
     }
     
-    pub fn weave(&self) -> &CanvasWeave { &self.weave }
+    fn weave(&self) -> &CanvasWeave { &self.weave }
 }
 
 #[derive(Clone)]

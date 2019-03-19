@@ -1,4 +1,4 @@
-import { RootState } from '../rootReducer';
+import { RootState } from '../store';
 
 export const getAccountExpanded = (state: RootState): boolean =>
   state.header.accountExpanded;

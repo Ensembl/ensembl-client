@@ -2,7 +2,7 @@ import React, { FunctionComponent, ReactNode } from 'react';
 import SlideDown from 'react-slidedown';
 import { connect } from 'react-redux';
 
-import { RootState } from 'src/rootReducer';
+import { RootState } from 'src/store';
 import { getAccountExpanded } from '../headerSelectors';
 
 import styles from './Account.scss';

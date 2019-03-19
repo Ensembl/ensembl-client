@@ -7,16 +7,20 @@ import React, {
 } from 'react';
 
 import TrackPanelListItem from './TrackPanelListItem';
+
 import {
   TrackPanelCategory,
   TrackPanelItem,
   TrackType
 } from '../trackPanelConfig';
+import { ChrLocation } from '../../browserState';
 
 import styles from './TrackPanelList.scss';
 
 type TrackPanelListProps = {
   browserRef: RefObject<HTMLDivElement>;
+  defaultChrLocation: ChrLocation;
+  drawerOpened: boolean;
   drawerView: string;
   launchbarExpanded: boolean;
   objectInfo: any;
@@ -63,8 +67,13 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
     return `${styles.trackPanelList} ${heightClass}`;
   };
 
-  const getMainTracks = () => {
-    const { objectInfo } = props;
+  const getMainTracks = (): TrackPanelItem | null => {
+    const { defaultChrLocation, objectInfo } = props;
+    const [, chrStart, chrEnd] = defaultChrLocation;
+
+    if (chrStart === 0 && chrEnd === 0) {
+      return null;
+    }
 
     let geneLabel = objectInfo.obj_symbol;
     let transcriptLabel = objectInfo.associated_object.stable_id;
@@ -80,32 +89,41 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
         {
           additionalInfo: objectInfo.bio_type,
           color: 'BLUE',
+          drawerView: 'transcript',
           id: 0.1,
           label: transcriptLabel,
-          name: 'transcript',
+          name: 'gene-feat',
           selectedInfo: objectInfo.associated_object.selected_info
         }
       ],
+      drawerView: 'gene',
       id: 0,
       label: geneLabel,
-      name: 'gene'
+      name: 'gene-feat'
     };
   };
 
-  const getTrackListItem = (track: TrackPanelItem) => (
-    <TrackPanelListItem
-      browserRef={props.browserRef}
-      drawerView={props.drawerView}
-      updateDrawerView={changeDrawerView}
-      key={track.id}
-      track={track}
-    >
-      {track.childTrackList &&
-        track.childTrackList.map((childTrack: TrackPanelItem) =>
-          getTrackListItem(childTrack)
-        )}
-    </TrackPanelListItem>
-  );
+  const getTrackListItem = (track: TrackPanelItem | null) => {
+    if (!track) {
+      return;
+    }
+
+    return (
+      <TrackPanelListItem
+        browserRef={props.browserRef}
+        drawerOpened={props.drawerOpened}
+        drawerView={props.drawerView}
+        key={track.id}
+        track={track}
+        updateDrawerView={changeDrawerView}
+      >
+        {track.childTrackList &&
+          track.childTrackList.map((childTrack: TrackPanelItem) =>
+            getTrackListItem(childTrack)
+          )}
+      </TrackPanelListItem>
+    );
+  };
 
   return (
     <div className={getTrackPanelListClasses()}>

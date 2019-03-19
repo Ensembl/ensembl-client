@@ -67,9 +67,9 @@ pub fn leafcard_source(leaf_marks: bool) -> impl Source {
                 aux_y: 10,
                 facade: Facade::Colour(colour)
             }));
-            closure_done(lc,80);
+            closure_done(lc);
         } else {
-            closure_done(lc,60);
+            closure_done(lc);
         }
     })  
 }

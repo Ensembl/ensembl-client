@@ -71,7 +71,7 @@ impl Object for ObjectUniform {
         }
     }
     
-    fn clear(&mut self) {
+    fn clear(&mut self, _ctx: &glctx) {
         self.val.clear();
     }
 }

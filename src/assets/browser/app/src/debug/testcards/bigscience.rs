@@ -10,8 +10,8 @@ use rand::rngs::SmallRng;
 use rand::SeedableRng;
 
 use composit::{
-    StateFixed, StateValue, StateAtom, Leaf, Carriage,
-    SourceResponse, Stick
+    StateFixed, StateValue, StateAtom, Leaf, Traveller,
+    AllSourceResponseBuilder, Stick
 };
 
 use debug::support::closuresource::{ ClosureSource, closure_add, closure_add_opt, closure_done };
@@ -20,6 +20,7 @@ use debug::testcards::common::{
     rng_subdivide, bio_mark, rng_tracks, prop
 };
 
+use drawing::DrawingHash;
 use shape::{
     tape_mathsshape,
     pin_mathsshape,
@@ -50,10 +51,10 @@ fn battenberg() -> DrawingSpec {
     bitmap_texture(vec! { 0,0,255,255,
                           255,0,0,255,
                           0,255,0,255,
-                          255,255,0,255 },cpixel(2,2),false)
+                          255,255,0,255 },cpixel(2,2),false,None)
 }
 
-fn measure(lc: &mut SourceResponse, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSpec) {
+fn measure(lc: &mut AllSourceResponseBuilder, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSpec) {
     for x in -10..10 {
         let prts = PinRectTypeSpec {
             sea_x: None,
@@ -181,7 +182,7 @@ fn source_odd() -> ClosureSource {
                 }
             }
         }
-        closure_done(lc,1200);
+        closure_done(lc);
     }})
 }
 
@@ -257,7 +258,7 @@ fn source_even() -> ClosureSource {
                 }
             }
         }
-        closure_done(lc,1200);
+        closure_done(lc);
     }})
 }
 
@@ -366,7 +367,7 @@ pub fn bs_source_main() -> ClosureSource {
             }
             if yidx == pal.middle {
                 let tx = bitmap_texture(tinsel(),
-                                        cpixel(tinsel().len() as i32/4,1),true);
+                                        cpixel(tinsel().len() as i32/4,1),true,None);
                 let mut tinsel_start = round_down(start_leaf,TINSEL_LENGTH);
                 while tinsel_start < end_leaf {
                     let pos_start = prop(leaf,tinsel_start);
@@ -380,7 +381,7 @@ pub fn bs_source_main() -> ClosureSource {
                                         vec! { 0,0,255,255,
                                                  255,0,0,255,
                                                  0,255,0,255,
-                                                 255,255,0,255 },cpixel(2,2),false);
+                                                 255,255,0,255 },cpixel(2,2),false,None);
                     let start_prop = prop(leaf,p[0]);
                     let tts = TextureTypeSpec {
                         sea_x: None,
@@ -488,7 +489,7 @@ pub fn bs_source_main() -> ClosureSource {
         let tx = bitmap_texture(vec! { 0,0,255,255,
                                      255,0,0,255,
                                      0,255,0,255,
-                                     255,255,0,255 },cpixel(1,4),false);
+                                     255,255,0,255 },cpixel(1,4),false,None);
         let tts = TextureTypeSpec {
             sea_x: Some(AxisSense::Max),
             sea_y: Some(AxisSense::Max),
@@ -539,7 +540,7 @@ pub fn bs_source_main() -> ClosureSource {
                                    A_BOTTOMRIGHT,
                                    20.,None,MathsShape::Polygon(5,0.),
                                    &pal.red));
-        closure_done(lc,1200);
+        closure_done(lc);
     }})
 }
 

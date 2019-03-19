@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use drawing::{ TextArtist, BitmapArtist, CollageArtist, Artist };
 
-#[derive(Clone,Debug)]
+#[derive(Clone)]
 pub enum DrawingSpec {
     Text(TextArtist),
     Bitmap(BitmapArtist),

@@ -37,8 +37,15 @@ pub struct PinPolySpec {
     colspec: ColourSpec
 }
 
-impl PinPolySpec {
-    pub fn create(&self) -> Box<Shape> {
+const CIRC_TOL : f32 = 1.; // max px undercut
+
+fn circle_points(r: f32) -> u16 {
+    // 2*sqrt(pi*r) via 2nd order cos approx to max pixel undercut
+    (3.54 * (r/CIRC_TOL).sqrt()) as u16
+}
+
+impl Shape for PinPolySpec {    
+    fn into_objects(&self, geom_a: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut PrintEdition) {
         /* Convert circles to polygons */
         let (points, offset) = match self.ms {
             MathsShape::Circle => (circle_points(self.size),0.),
@@ -49,16 +56,25 @@ impl PinPolySpec {
             Some(width) => (PTMethod::Strip,width,true),
             None        => (PTMethod::Triangle,0.,false)
         };
-        /* Do it! */
         let geom = despot(self.pt,mt,&self.colspec);
-        Box::new(PinPoly {
+        let ppd = PinPolyDraw {
             origin: self.origin, 
             size: self.size, 
             colspec: self.colspec.clone(),
             geom: geom,
             anchor: self.anchor,
-            points, offset, width, hollow,
-        })
+            points, offset, width, hollow            
+        };
+        ppd.draw(geom_a, _art, e);
+    }
+
+    fn get_geometry(&self) -> ProgramType {
+        let mt = if self.width.is_some() {
+            PTMethod::Strip
+        } else {
+            PTMethod::Triangle
+        };
+        despot(self.pt,mt,&self.colspec)
     }
 }
 
@@ -66,7 +82,7 @@ impl PinPolySpec {
  * PinPoly
  */
 
-pub struct PinPoly {
+struct PinPolyDraw {
     origin: PolyPosition<f32>,
     anchor: Anchors,
     size: f32,
@@ -78,7 +94,7 @@ pub struct PinPoly {
     geom: ProgramType
 }
 
-impl PinPoly {
+impl PinPolyDraw {
     fn add(&self, b: DataBatch, geom: &mut ProgramAttribs, 
            v: Vec<CFraction>, nump: u16) {
         let bbox = self.bounding_box(&v);
@@ -159,10 +175,8 @@ impl PinPoly {
         for p in pts { b.add(*p); }
         b.get().unwrap()
     }    
-}
 
-impl Shape for PinPoly {
-    fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut PrintEdition) {
+    fn draw(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut PrintEdition) {
         let group = self.colspec.to_group(geom,e);
         if self.hollow {
             let b = vertices_hollowpoly(geom,self.points,group);
@@ -176,13 +190,6 @@ impl Shape for PinPoly {
     }
 
     fn get_geometry(&self) -> ProgramType { self.geom }
-}
-
-const CIRC_TOL : f32 = 1.; // max px undercut
-
-fn circle_points(r: f32) -> u16 {
-    // 2*sqrt(pi*r) via 2nd order cos approx to max pixel undercut
-    (3.54 * (r/CIRC_TOL).sqrt()) as u16
 }
 
 pub fn pin_mathsshape(origin: &Dot<f32,i32>,

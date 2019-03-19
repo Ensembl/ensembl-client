@@ -8,7 +8,16 @@
 	<body style="height: 100vh; padding: 0; margin: 0;">
         <div style="display: none; font: 'Lato';">preload</div>
         <main id="main" style="height: 100vh;">
-            <div id="stage"></div>
+            <div id="stage" style="height: 100vh;">
+              <div class="swarm"></div>
+              <div class="bottle" style="display: none">
+                <div class="mosquito-cog">
+                    <button style="border-style: none; padding: 0; background: transparent;">
+                        <img src="cog.svg" style="height: 22px; width: 22px;"/>
+                    </button>
+                </div>
+              </div>
+            </div>
         </main>
 		<script src="hellostdweb.js"></script>
         <script>
@@ -22,8 +31,9 @@
                     }
                 }
                 if(ready) {
-                    console.log("activate",mutation.target);
-                    mutation.target.dispatchEvent(
+                    var browser = document.getElementById("stage");
+                    console.log("activate",browser);
+                    browser.dispatchEvent(
                         new CustomEvent("bpane-activate",{
                             detail: {
                                 key: 'main',
@@ -36,7 +46,8 @@
             }
             
             var observer = new MutationObserver(startup_mutate);
-            observer.observe(document.getElementsByTagName("body")[0],{ attributes: true });
+            observer.observe(document.getElementsByTagName("body")[0],
+                                { attributes: true });
         </script>
 	</body>
 </html>

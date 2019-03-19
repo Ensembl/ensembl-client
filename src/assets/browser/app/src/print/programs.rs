@@ -31,10 +31,10 @@ impl Programs {
         size
     }
     
-    pub fn clear_objects(&mut self) {
+    pub fn clear_objects(&mut self, ctx: &glctx) {
         for k in &self.order {
             let geom = self.map.get_mut(k).unwrap();
-            geom.clear();
+            geom.clear(ctx);
         }        
     }
 

@@ -12,8 +12,8 @@ use composit::{
 };
 use controller::input::{ Action, actions_run, startup_actions };
 use controller::global::{ AppRunnerWeak, AppRunner };
-use controller::output::Report;
-use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk };
+use controller::output::{ OutputAction, Report, ViewportReport };
+use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, XferCache, XferClerk };
 use debug::add_debug_sticks;
 use dom::domutil;
 use print::Printer;
@@ -31,39 +31,47 @@ pub struct App {
     pub compo: Arc<Mutex<Compositor>>,
     sticks: Box<StickManager>,
     report: Option<Report>,
+    viewport: Option<ViewportReport>,
     csl: SourceManagerList,
     http_clerk: HttpXferClerk,
     als: AllLandscapes,
 }
 
 impl App {
-    pub fn new(tc: &Tácode, config: &BackendConfig, http_manager: &HttpManager, browser_el: &HtmlElement, config_url: &Url) -> App {
+    pub fn new(tc: &Tácode, config: &BackendConfig, http_manager: &HttpManager, browser_el: &HtmlElement, config_url: &Url, outer_el: &HtmlElement) -> App {
         let browser_el = browser_el.clone();
+        let bottle_el = domutil::query_selector2(&outer_el.clone().into(),".bottle");
+        let swarm_el = domutil::query_selector2(&outer_el.clone().into(),".swarm");
         domutil::inner_html(&browser_el.clone().into(),CANVAS);
         let canv_el : HtmlElement = domutil::query_selector(&browser_el.clone().into(),"canvas").try_into().unwrap();
         let bsm = BackendStickManager::new(config);
         let mut csm = CombinedStickManager::new(bsm);
         add_debug_sticks(&mut csm);
-        let mut http_clerk = HttpXferClerk::new(&http_manager,config,config_url);
+        let cache = XferCache::new(5000,config);
+        let clerk = HttpXferClerk::new(http_manager,config,config_url,&cache);
         let mut out = App {
             ar: AppRunnerWeak::none(),
             browser_el: browser_el.clone(),
             canv_el: canv_el.clone(),
             printer: Arc::new(Mutex::new(Printer::new(&canv_el))),
             stage:  Arc::new(Mutex::new(Stage::new())),
-            compo: Arc::new(Mutex::new(Compositor::new())),
+            compo: Arc::new(Mutex::new(Compositor::new(&cache,Box::new(clerk.clone())))),
             state: Arc::new(Mutex::new(StateManager::new())),
             sticks: Box::new(csm),
             report: None,
+            viewport: None,
             csl: SourceManagerList::new(),
-            http_clerk: HttpXferClerk::new(http_manager,config,config_url),
+            http_clerk: clerk,
             als: AllLandscapes::new()
         };
         let dsm = CombinedSourceManager::new(&tc,config,&out.als,&out.http_clerk);
         out.csl.add_compsource(Box::new(dsm));
-        console!("S");
-        out.run_actions(&startup_actions());
+        out.run_actions(&startup_actions());        
         out
+    }
+    
+    pub fn get_all_landscapes(&mut self) -> &mut AllLandscapes {
+        &mut self.als
     }
     
     pub fn tick(&mut self) {
@@ -86,15 +94,15 @@ impl App {
     pub fn set_runner(&mut self, ar: &AppRunnerWeak) {
         self.ar = ar.clone();
     }
-    
-    pub fn send_report(&self, value: &JSONValue) {
-        domutil::send_custom_event(&self.browser_el.clone().into(),"bpane-out",value);
-    }
-    
+            
     pub fn get_report(&self) -> &Report { &self.report.as_ref().unwrap() }
         
     pub fn set_report(&mut self, report: Report) {
         self.report = Some(report);
+    }
+    
+    pub fn set_viewport_report(&mut self, report: ViewportReport) {
+        self.viewport = Some(report);
     }
     
     pub fn with_apprunner<F,G>(&mut self, cb:F) -> Option<G>
@@ -123,6 +131,9 @@ impl App {
         if let Some(ref report) = self.report {
             s.update_report(report);
         }
+        if let Some(ref report) = self.viewport {
+            s.update_viewport_report(report);
+        }        
         out
     }
 
@@ -141,7 +152,6 @@ impl App {
     }
     
     pub fn run_actions(self: &mut App, evs: &Vec<Action>) {
-        console!("D");
         actions_run(self,evs);
     }
         

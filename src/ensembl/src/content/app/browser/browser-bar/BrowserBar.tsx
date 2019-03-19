@@ -1,4 +1,4 @@
-import React, { FunctionComponent, Fragment } from 'react';
+import React, { FunctionComponent, Fragment, useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import { browserInfoConfig } from '../browserConfig';
@@ -20,9 +20,10 @@ import {
   getDrawerOpened,
   getSelectedBrowserTab,
   getObjectInfo,
-  getTrackPanelModalOpened
+  getTrackPanelModalOpened,
+  getTrackPanelOpened
 } from '../browserSelectors';
-import { RootState } from 'src/rootReducer';
+import { RootState } from 'src/store';
 
 import BrowserReset from '../browser-reset/BrowserReset';
 import BrowserGenomeSelector from '../browser-genome-selector/BrowserGenomeSelector';
@@ -40,6 +41,7 @@ type StateProps = {
   objectInfo: any;
   selectedBrowserTab: TrackType;
   trackPanelModalOpened: boolean;
+  trackPanelOpened: boolean;
 };
 
 type DispatchProps = {
@@ -60,9 +62,35 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
 ) => {
   const { navigator, reset } = browserInfoConfig;
   const { objectInfo } = props;
+  const [showBrowserInfo, toggleShowBrowserInfo] = useState(true);
+
+  const changeBrowserInfoToggle = () => {
+    const [, chrStart, chrEnd] = props.defaultChrLocation;
+
+    if (
+      props.genomeSelectorActive === true ||
+      (chrStart === 0 && chrEnd === 0)
+    ) {
+      toggleShowBrowserInfo(false);
+    } else {
+      toggleShowBrowserInfo(true);
+    }
+  };
+
+  useEffect(() => {
+    changeBrowserInfoToggle();
+  }, [props.defaultChrLocation]);
+
+  useEffect(() => {
+    changeBrowserInfoToggle();
+  }, [props.genomeSelectorActive]);
 
   const getBrowserInfoClasses = () => {
     let classNames = styles.browserInfo;
+
+    if (props.trackPanelOpened === false) {
+      classNames += ` ${styles.browserInfoExpanded}`;
+    }
 
     if (props.drawerOpened === true) {
       classNames += ` ${styles.browserInfoGreyed}`;
@@ -100,7 +128,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
             details={reset}
             drawerOpened={props.drawerOpened}
           />
-          {props.genomeSelectorActive ? null : (
+          {showBrowserInfo ? (
             <Fragment>
               <dd className={styles.geneSymbol}>
                 <label>Gene</label>
@@ -124,7 +152,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
                 {objectInfo.strand} strand
               </dd>
             </Fragment>
-          )}
+          ) : null}
         </dl>
         <dl className={styles.browserInfoRight}>
           <BrowserGenomeSelector
@@ -144,14 +172,16 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
           )}
         </dl>
       </div>
-      <BrowserTabs
-        drawerOpened={props.drawerOpened}
-        genomeSelectorActive={props.genomeSelectorActive}
-        selectBrowserTab={props.selectBrowserTab}
-        selectedBrowserTab={props.selectedBrowserTab}
-        toggleDrawer={props.toggleDrawer}
-        trackPanelModalOpened={props.trackPanelModalOpened}
-      />
+      {props.trackPanelOpened ? (
+        <BrowserTabs
+          drawerOpened={props.drawerOpened}
+          genomeSelectorActive={props.genomeSelectorActive}
+          selectBrowserTab={props.selectBrowserTab}
+          selectedBrowserTab={props.selectedBrowserTab}
+          toggleDrawer={props.toggleDrawer}
+          trackPanelModalOpened={props.trackPanelModalOpened}
+        />
+      ) : null}
     </div>
   );
 };
@@ -165,7 +195,8 @@ const mapStateToProps = (state: RootState): StateProps => ({
   genomeSelectorActive: getGenomeSelectorActive(state),
   objectInfo: getObjectInfo(state),
   selectedBrowserTab: getSelectedBrowserTab(state),
-  trackPanelModalOpened: getTrackPanelModalOpened(state)
+  trackPanelModalOpened: getTrackPanelModalOpened(state),
+  trackPanelOpened: getTrackPanelOpened(state)
 });
 
 const mapDispatchToProps: DispatchProps = {

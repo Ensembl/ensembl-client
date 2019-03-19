@@ -1,7 +1,8 @@
+import config from 'config';
 import { createAction, createAsyncAction } from 'typesafe-actions';
 import { Dispatch } from 'redux';
 
-import { BrowserNavStates, ChrLocation } from './browserState';
+import { BrowserNavStates, ChrLocation, CogList } from './browserState';
 import { TrackType } from './track-panel/trackPanelConfig';
 
 export const updateBrowserActivated = createAction(
@@ -16,6 +17,25 @@ export const updateBrowserActivated = createAction(
       });
   }
 );
+
+export const activateBrowser = (browserEl: HTMLDivElement) => {
+  return (dispatch: Dispatch) => {
+    // protocol string to prepend apiHost url in case it isn't defined
+    const protocol =
+      config.apiHost.indexOf('http') === -1 ? window.location.protocol : '';
+    const activateEvent = new CustomEvent('bpane-activate', {
+      bubbles: true,
+      detail: {
+        'config-url': `${protocol}${config.apiHost}/browser/config`,
+        key: 'main'
+      }
+    });
+
+    browserEl.dispatchEvent(activateEvent);
+
+    dispatch(updateBrowserActivated(true));
+  };
+};
 
 export const toggleTrackPanel = createAction(
   'browser/toggle-track-panel',
@@ -140,7 +160,7 @@ export const fetchObjectData = (objectId: string) => {
   return (dispatch: Dispatch) => {
     dispatch(fetchObject.request(objectId));
 
-    return fetch(`http://127.0.0.1:4000/browser/get_object_info/${objectId}`)
+    return fetch(`${config.apiHost}/browser/get_object_info/${objectId}`)
       .then(
         (response) => response.json(),
         (error) => dispatch(fetchObject.failure(error))
@@ -159,7 +179,7 @@ export const fetchExampleObjectsData = () => {
   return (dispatch: Dispatch) => {
     dispatch(fetchExampleObjects.request(null));
 
-    return fetch('http://127.0.0.1:4000/browser/example_objects')
+    return fetch(`${config.apiHost}/browser/example_objects`)
       .then(
         (response) => response.json(),
         (error) => dispatch(fetchExampleObjects.failure(error))
@@ -191,6 +211,60 @@ export const closeTrackPanelModal = createAction(
           label: 'Navigation'
         }
       });
+  }
+);
+
+export const updateCogList = createAction(
+  'browser/update-cog-list',
+  (resolve) => {
+    return (cogList: number) => {
+      return resolve(cogList);
+    };
+  }
+);
+
+export const updateCogTrackList = createAction(
+  'browser/update-cog-track-list',
+  (resolve) => {
+    return (trackY: CogList) => {
+      return resolve(trackY);
+    };
+  }
+);
+
+export const updateSelectedCog = createAction(
+  'browser/update-selected-cog',
+  (resolve) => {
+    return (index: string) => {
+      return resolve(index);
+    };
+  }
+);
+
+export const updateTrackConfigNames = createAction(
+  'browser/update-track-config-names',
+  (resolve) => {
+    return (selectedCog: any, sense: boolean) => {
+      return resolve([selectedCog, sense]);
+    };
+  }
+);
+
+export const updateTrackConfigLabel = createAction(
+  'browser/update-track-config-label',
+  (resolve) => {
+    return (selectedCog: any, sense: boolean) => {
+      return resolve([selectedCog, sense]);
+    };
+  }
+);
+
+export const updateApplyToAll = createAction(
+  'browser/update-apply-to-all',
+  (resolve) => {
+    return (yn: boolean) => {
+      return resolve(yn);
+    };
   }
 );
 

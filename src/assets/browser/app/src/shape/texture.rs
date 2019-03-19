@@ -20,7 +20,7 @@ pub enum TexturePosition<T: Clone+Copy+Debug> {
     Fix(EPixel),
 }
 
-#[derive(Clone,Debug)]
+#[derive(Clone)]
 pub struct TextureSpec {
     origin: TexturePosition<f32>,
     offset: CPixel,
@@ -32,8 +32,8 @@ pub struct TextureSpec {
 }
 
 impl TextureSpec {
-    pub fn create(&self) -> Box<Shape> {
-        Box::new(self.clone())
+    pub fn create(self) -> Box<Shape> {
+        Box::new(self)
     }
 }
 

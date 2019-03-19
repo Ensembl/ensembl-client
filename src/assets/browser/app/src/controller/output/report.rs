@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::sync::{ Arc, Mutex };
 
 use controller::global::{ App, AppRunner };
+use controller::output::OutputAction;
 
 use serde_json::Map as JSONMap;
 use serde_json::Value as JSONValue;
@@ -122,36 +123,44 @@ impl ReportImpl {
             .unwrap_or(JSONValue::Null)
     }
 
-    fn make_atom(&self, key: &str, type_: &StatusJigsawType) -> JSONValue {
+    fn make_atom(&self, key: &str, type_: &StatusJigsawType) -> Option<JSONValue> {
         let v = self.pieces.get(key);
         if let Some(ref v) = v {
-            match type_ {
+            Some(match type_ {
                 StatusJigsawType::Number => self.make_number(v),
                 StatusJigsawType::String => JSONValue::String(v.to_string()),
                 StatusJigsawType::Boolean => self.make_bool(v)
-            }
+            })
         } else {
-            JSONValue::Null
+            None
         }
     }
 
-    fn make_array(&self, values: &Vec<StatusJigsaw>) -> JSONValue {
+    fn make_array(&self, values: &Vec<StatusJigsaw>) -> Option<JSONValue> {
         let mut out = Vec::<JSONValue>::new();
         for v in values {
-            out.push(self.make_value(v));
+            if let Some(value) = self.make_value(v) {            
+                out.push(value);
+            } else {
+                return None;
+            }
         }
-        JSONValue::Array(out)
+        Some(JSONValue::Array(out))
     }
 
-    fn make_object(&self, values: &HashMap<String,StatusJigsaw>) -> JSONValue {
+    fn make_object(&self, values: &HashMap<String,StatusJigsaw>) -> Option<JSONValue> {
         let mut out = JSONMap::<String,JSONValue>::new();
         for (k,v) in values {
-            out.insert(k.to_string(),self.make_value(v));
+            if let Some(value) = self.make_value(v) {
+                out.insert(k.to_string(),value);
+            } else {
+                return None;
+            }
         }
-        JSONValue::Object(out)
+        Some(JSONValue::Object(out))
     }
 
-    fn make_value(&self, j: &StatusJigsaw) -> JSONValue {
+    fn make_value(&self, j: &StatusJigsaw) -> Option<JSONValue> {
         match j {
             StatusJigsaw::Atom(key,type_) => self.make_atom(key,type_),
             StatusJigsaw::Array(values) => self.make_array(values),
@@ -162,12 +171,13 @@ impl ReportImpl {
     fn new_report(&mut self, t: f64) -> Option<JSONValue> {
         let mut out = JSONMap::<String,JSONValue>::new();
         for (k,s) in &self.outputs {
-            let value = self.make_value(&s.jigsaw);
-            if let Some(ref last_value) = s.last_value {
-                if last_value == &value { continue; }
-            }
-            if s.is_send_now(t) {
-                out.insert(k.to_string(),value.clone());
+            if let Some(value) = self.make_value(&s.jigsaw) {
+                if let Some(ref last_value) = s.last_value {
+                    if last_value == &value { continue; }
+                }
+                if s.is_send_now(t) {
+                    out.insert(k.to_string(),value.clone());
+                }
             }
         }
         for (k,v) in &out {
@@ -181,14 +191,7 @@ impl ReportImpl {
         } else {
             None
         }
-    }
-        
-    pub fn tick(&mut self, app: &App, t: f64) {
-        if let Some(out) = self.new_report(t) {
-            app.send_report(&out);
-            //debug!("status","{}",out.to_string());
-        }
-    }
+    }        
 }
 
 #[derive(Clone)]
@@ -205,7 +208,11 @@ impl Report {
             out.set_interval(k,*v);
         }
         ar.add_timer(enclose! { (out) move |app,t| {
-            out.clone().tick(app,t)
+            if let Some(report) = out.new_report(t) {
+                vec!{
+                    OutputAction::SendCustomEvent("bpane-out".to_string(),report)
+                }
+            } else { vec!{} }
         }},None);
         out
     }
@@ -224,7 +231,7 @@ impl Report {
         imp.set_interval(key,interval);
     }
     
-    pub fn tick(&mut self, app: &mut App, t: f64) {
-        self.0.lock().unwrap().tick(app,t);
+    pub fn new_report(&self, t: f64) -> Option<JSONValue> {
+        self.0.lock().unwrap().new_report(t)
     }
 }

@@ -1,16 +1,13 @@
 import React, {
   FunctionComponent,
   Fragment,
+  MouseEvent,
   ReactNode,
   RefObject,
   useState,
   useCallback
 } from 'react';
-import {
-  TrackItemColour,
-  TrackPanelItem,
-  trackPanelIconConfig
-} from '../trackPanelConfig';
+import { TrackItemColour, TrackPanelItem } from '../trackPanelConfig';
 
 import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
@@ -26,13 +23,14 @@ import ImageButton, {
 type TrackPanelListItemProps = {
   browserRef: RefObject<HTMLDivElement>;
   children?: ReactNode[];
+  drawerOpened: boolean;
   drawerView: string;
   track: TrackPanelItem;
   updateDrawerView: (drawerView: string) => void;
 };
 
 // delete this when there is a better place to put this
-const trackPrefix = '';
+const trackPrefix = 'track:';
 
 const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   props: TrackPanelListItemProps
@@ -41,7 +39,6 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   const [trackStatus, setTrackStatus] = useState(ImageButtonStatus.ACTIVE);
 
   const { browserRef, drawerView, track } = props;
-  const { ellipsis } = trackPanelIconConfig;
 
   const getListItemClasses = useCallback((): string => {
     let classNames: string = styles.listItem;
@@ -50,7 +47,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
       classNames += ` ${styles.main}`;
     }
 
-    if (drawerView === track.name) {
+    if (drawerView === track.name || drawerView === track.drawerView) {
       classNames += ` ${styles.currentDrawerView}`;
     }
 
@@ -68,8 +65,22 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     return classNames;
   };
 
-  const changeDrawerViewHandler = () => {
-    props.updateDrawerView(props.track.name);
+  const drawerViewListHandler = (event: MouseEvent) => {
+    event.preventDefault();
+
+    if (props.drawerOpened === false) {
+      return;
+    }
+
+    const viewName = track.drawerView || track.name;
+
+    props.updateDrawerView(viewName);
+  };
+
+  const drawerViewButtonHandler = () => {
+    const viewName = track.drawerView || track.name;
+
+    props.updateDrawerView(viewName);
   };
 
   const toggleExpand = () => {
@@ -83,7 +94,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     const trackEvent = new CustomEvent('bpane', {
       bubbles: true,
       detail: {
-        [currentTrackStatus]: `${trackPrefix}:${track.name}`
+        [currentTrackStatus]: `${trackPrefix}${track.name}`
       }
     });
 
@@ -99,7 +110,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
 
   return (
     <Fragment>
-      <dd className={getListItemClasses()}>
+      <dd className={getListItemClasses()} onClick={drawerViewListHandler}>
         <label>
           {track.color && <span className={getBoxClasses(track.color)} />}
           <span className={styles.mainText}>{track.label}</span>
@@ -123,7 +134,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
         <ImageButton
           buttonStatus={ImageButtonStatus.ACTIVE}
           description={`Go to ${track.label}`}
-          onClick={changeDrawerViewHandler}
+          onClick={drawerViewButtonHandler}
           image={Ellipsis}
         />
         <ImageButton

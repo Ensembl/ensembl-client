@@ -6,6 +6,7 @@ import React, {
   useEffect
 } from 'react';
 import {
+  Redirect,
   Route,
   RouteComponentProps,
   Switch,
@@ -15,7 +16,7 @@ import { connect } from 'react-redux';
 
 import { changeCurrentApp } from 'src/header/headerActions';
 import { getCurrentApp } from 'src/header/headerSelectors';
-import { RootState } from 'src/rootReducer';
+import { RootState } from 'src/store';
 
 import AppBar from './AppBar';
 
@@ -66,8 +67,16 @@ export const App: FunctionComponent<AppProps> = (props: AppProps) => {
           <Route path={`${url}/global-search`} component={GlobalSearch} />
           <Route path={`${url}/species-selector`} component={SpeciesSelector} />
           <Route
-            path={`${url}/browser/:species/:objSymbol/`}
+            path={`${url}/browser/:species/:stableId/`}
             component={Browser}
+          />
+          <Redirect
+            exact={true}
+            from={`${url}/browser`}
+            to={{
+              pathname: `${url}/browser/GRCh38_demo/ENSG00000139618`,
+              search: '?region=13:32271473-32437359'
+            }}
           />
         </Switch>
       </Suspense>

@@ -30,8 +30,9 @@ impl CanvasIdx {
             if let Some(obj) = geom.get_object("uSampler") {
                 if let Some(m) = self.group.get(&geom_name) {
                     for (w,g) in m {
-                        let idx = self.glindexes[w] as i32;
-                        obj.set_uniform(Some(*g),UniformValue::Int(idx));
+                        if let Some(idx) = self.glindexes.get(w) {
+                            obj.set_uniform(Some(*g),UniformValue::Int(*idx as i32));
+                        }
                     }
                 }
             }

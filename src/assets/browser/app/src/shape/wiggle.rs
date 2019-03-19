@@ -20,8 +20,8 @@ impl StretchWiggle {
         StretchWiggle { points, group, y }
     }
 
-    pub fn create(&self) -> Box<Shape> {
-        Box::new(self.clone())
+    pub fn create(self) -> Box<Shape> {
+        Box::new(self)
     }
 }
 
