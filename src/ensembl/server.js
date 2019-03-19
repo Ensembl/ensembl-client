@@ -12,14 +12,16 @@ const app = new Koa();
 app.use(convert(history()));
 app.use(serve(path.join(__dirname, 'dist'), { br: true, gzip: false }));
 
-const server = https.createServer(
-  {
-    key: fs.readFileSync('localhost.key'),
-    cert: fs.readFileSync('localhost.crt')
-  },
-  app.callback()
-);
+// const server = https.createServer(
+//   {
+//     key: fs.readFileSync('localhost.key'),
+//     cert: fs.readFileSync('localhost.crt')
+//   },
+//   app.callback()
+// );
 
-server.listen(3000);
+// server.listen(3000);
+
+app.listen(3000);
 
 console.log('Running on https://localhost:3000');
