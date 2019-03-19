@@ -122,9 +122,12 @@ export function trackPanel(
 ): TrackPanelState {
   switch (action.type) {
     case getType(browserActions.toggleTrackPanel):
+      const trackPanelOpened =
+        action.payload === undefined ? !state.trackPanelOpened : action.payload;
+
       return {
         ...state,
-        trackPanelOpened: action.payload
+        trackPanelOpened
       };
     case getType(browserActions.openTrackPanelModal):
       return {
