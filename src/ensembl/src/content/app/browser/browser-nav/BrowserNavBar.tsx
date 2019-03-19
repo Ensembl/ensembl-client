@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { browserNavConfig, BrowserNavItem } from '../browserConfig';
 
 import { RootState } from 'src/store';
-import { getBrowserNavStates } from '../browserSelectors';
+import { getBrowserNavStates, getTrackPanelOpened } from '../browserSelectors';
 import { BrowserNavStates } from '../browserState';
 
 import BrowserNavIcon from './BrowserNavIcon';
@@ -13,6 +13,7 @@ import styles from './BrowserNavBar.scss';
 
 type StateProps = {
   browserNavStates: BrowserNavStates;
+  trackPanelOpened: boolean;
 };
 
 type DispatchProps = {};
@@ -28,8 +29,18 @@ export const BrowserNavBar: FunctionComponent<BrowserNavBarProps> = (
 ) => {
   const browserImageEl = props.browserRef.current as HTMLDivElement;
 
+  const getClassNames = () => {
+    let classNames = styles.browserNavBar;
+
+    if (props.trackPanelOpened === false) {
+      classNames += ` ${styles.browserNavBarExpanded}`;
+    }
+
+    return classNames;
+  };
+
   return (
-    <div className={styles.browserNavBar}>
+    <div className={getClassNames()}>
       <dl>
         {browserNavConfig.map((item: BrowserNavItem, index: number) => (
           <BrowserNavIcon
@@ -45,7 +56,8 @@ export const BrowserNavBar: FunctionComponent<BrowserNavBarProps> = (
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  browserNavStates: getBrowserNavStates(state)
+  browserNavStates: getBrowserNavStates(state),
+  trackPanelOpened: getTrackPanelOpened(state)
 });
 
 const mapDispatchToProps: DispatchProps = {};
