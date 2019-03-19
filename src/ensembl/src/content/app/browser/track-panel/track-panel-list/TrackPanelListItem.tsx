@@ -13,7 +13,7 @@ import { TrackItemColour, TrackPanelItem } from '../trackPanelConfig';
 import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
 import { ReactComponent as Eye } from 'static/img/track-panel/eye.svg';
-import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis-on.svg';
+import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg';
 
 import styles from './TrackPanelListItem.scss';
 

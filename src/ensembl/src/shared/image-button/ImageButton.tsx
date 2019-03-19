@@ -6,8 +6,7 @@ export enum ImageButtonStatus {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
   DISABLED = 'disabled',
-  DEFAULT = 'default',
-  GREYSCALE = 'greyscale'
+  DEFAULT = 'default'
 }
 
 type Props = {
@@ -24,14 +23,14 @@ const ImageButton = (props: Props) => {
       ? {}
       : { onClick: props.onClick };
 
-  Object.assign(defaultStyles, props.classNames);
+  const styles = { ...defaultStyles, ...props.classNames };
   return (
     <div {...buttonProps}>
       <ImageHolder
         buttonStatus={props.buttonStatus}
         description={props.description}
         image={props.image}
-        classNames={defaultStyles}
+        classNames={styles}
       />
     </div>
   );
