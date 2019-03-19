@@ -60,3 +60,10 @@ macro_rules! debug {
         }
     }}
 }
+
+macro_rules! expect {
+    ($x: expr) => {{
+        let s = format!("ENSEMBL ERROR LOCATION {}/{}/{}",file!(),line!(),column!());
+        $x.expect(&s)
+    }}
+}

@@ -27,20 +27,20 @@ impl StartupEventListener {
 
 impl EventListener<()> for StartupEventListener {
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
-        let mut g = self.g.lock().unwrap();
+        let mut g = expect!(self.g.lock());
         match e {
             EventData::CustomEvent(_,cx,name,data) => {
                 let aed = AppEventData::new(data);
                 match name.as_ref() {
                     "bpane-activate" => {
-                        let key = aed.get_simple_str("key",Some("only")).unwrap();
+                        let key = expect!(aed.get_simple_str("key",Some("only")));
                         console!("Activate browser {} on {:?}",key,cx.target());
                         let config_url = aed.get_simple_str("config-url",None);
                         if config_url.is_none() {
                             console!("BROWSER APP REFUSING TO START UP! No config-url supplied");
                         }
-                        let config_url = Url::parse(&config_url.unwrap()).ok().unwrap();
-                        g.register_app(&key,&cx.target().try_into().unwrap(),false,&config_url);
+                        let config_url = expect!(Url::parse(&expect!(config_url)).ok());
+                        g.register_app(&key,&expect!(cx.target().try_into()),false,&config_url);
                     },
                     _ => ()
                 }
