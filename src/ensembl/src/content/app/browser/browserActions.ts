@@ -179,8 +179,6 @@ export const fetchExampleObjectsData = () => {
   return (dispatch: Dispatch) => {
     dispatch(fetchExampleObjects.request(null));
 
-    console.log(config.apiHost);
-
     return fetch(`${config.apiHost}/browser/example_objects`)
       .then(
         (response) => response.json(),
