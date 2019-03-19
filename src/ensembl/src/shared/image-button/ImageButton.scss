@@ -1,17 +1,23 @@
 @import 'src/styles/common';
 
 .default {
+  position: relative;
   svg {
     width: 100%;
     height: 100%;
     fill: $ens-blue;
     cursor: pointer;
+    transition: opacity 0.4s;
+    -webkit-transition: opacity 0.4s;
   }
 }
 
 .inactive {
   svg {
-    fill: $ens-grey;
+    fill: $ens-dark-grey;
+  }
+  svg:hover {
+    opacity: 0.8;
   }
 }
 
@@ -19,11 +25,35 @@
   svg {
     fill: $ens-blue;
   }
+  svg:hover {
+    opacity: 0.8;
+  }
 }
 
 .disabled {
   svg {
-    fill: $ens-dark-grey;
-    cursor: default;
+    fill: $ens-grey;
+    cursor: not-allowed;
+    opacity: 1;
+  }
+  &:before {
+    position: absolute;
+    content: '';
+    top: 50%;
+    border-color: #2c343a;
+    border-top: 2px solid red;
+    -webkit-transform: rotate(-5deg);
+    transform: rotate(-45deg);
+    width: 100%;
+  }
+  &:after {
+    position: absolute;
+    content: '';
+    left: 0px;
+    border-color: #2c343a;
+    border: 2px solid red;
+    border-radius: 50%;
+    height: 100%;
+    width: 100%;
   }
 }

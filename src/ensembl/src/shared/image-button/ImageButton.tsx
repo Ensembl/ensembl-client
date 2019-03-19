@@ -5,7 +5,9 @@ import ImageHolder from './ImageHolder';
 export enum ImageButtonStatus {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
-  DISABLED = 'disabled'
+  DISABLED = 'disabled',
+  DEFAULT = 'default',
+  GREYSCALE = 'greyscale'
 }
 
 type Props = {
@@ -13,7 +15,7 @@ type Props = {
   description: string;
   image: React.FunctionComponent<React.SVGProps<SVGSVGElement>> | string;
   classNames?: any;
-  onClick: () => void;
+  onClick?: () => void;
 };
 
 const ImageButton = (props: Props) => {
@@ -22,13 +24,14 @@ const ImageButton = (props: Props) => {
       ? {}
       : { onClick: props.onClick };
 
+  Object.assign(defaultStyles, props.classNames);
   return (
     <div {...buttonProps}>
       <ImageHolder
         buttonStatus={props.buttonStatus}
         description={props.description}
         image={props.image}
-        classNames={props.classNames ? props.classNames : defaultStyles}
+        classNames={defaultStyles}
       />
     </div>
   );

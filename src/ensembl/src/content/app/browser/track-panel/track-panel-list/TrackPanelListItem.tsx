@@ -15,6 +15,7 @@ import {
 import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
 import { ReactComponent as Eye } from 'static/img/track-panel/eye.svg';
+import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis-on.svg';
 
 import styles from './TrackPanelListItem.scss';
 
@@ -40,7 +41,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   const [trackStatus, setTrackStatus] = useState(ImageButtonStatus.ACTIVE);
 
   const { browserRef, drawerView, track } = props;
-  const { ellipsis, eye } = trackPanelIconConfig;
+  const { ellipsis } = trackPanelIconConfig;
 
   const getListItemClasses = useCallback((): string => {
     let classNames: string = styles.listItem;
@@ -119,9 +120,12 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
             </button>
           )}
         </label>
-        <button onClick={changeDrawerViewHandler}>
-          <img src={ellipsis.icon.on} alt={`Go to ${track.label}`} />
-        </button>
+        <ImageButton
+          buttonStatus={ImageButtonStatus.ACTIVE}
+          description={`Go to ${track.label}`}
+          onClick={changeDrawerViewHandler}
+          image={Ellipsis}
+        />
         <ImageButton
           buttonStatus={trackStatus}
           description={'enable/disable track'}
