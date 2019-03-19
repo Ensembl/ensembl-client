@@ -1,17 +1,26 @@
 import React, { useReducer, useEffect, ReactNode } from 'react';
+import classNames from 'classnames';
 
 import * as keyCodes from 'src/shared/constants/keyCodes';
 
 import styles from './AutosuggestSearchField.scss';
 
-type MatchProps = {
+type MatchType = {
   data: any;
   element: ReactNode;
 };
 
-export type GroupOfMatchesProps = {
+type MatchProps = MatchType & {
+  isHighlighted: boolean;
+};
+
+export type GroupOfMatchesType = {
   title?: string;
-  matches: MatchProps[];
+  matches: MatchType[];
+};
+
+type GroupOfMatchesProps = GroupOfMatchesType & {
+  highlightedItemIndex?: number;
 };
 
 type MatchIndex = [number, number]; // first number is index of the group; second number is index of item within this group
@@ -19,14 +28,14 @@ type MatchIndex = [number, number]; // first number is index of the group; secon
 type Props = {
   title?: string;
   highlightedItemIndex: MatchIndex;
-  matchGroups: GroupOfMatchesProps[];
+  matchGroups: GroupOfMatchesType[];
   onNext: () => void;
   onPrevious: () => void;
   onSelect: (match: any) => void;
 };
 
 function getNextItemIndex(
-  matchGroups: GroupOfMatchesProps[],
+  matchGroups: GroupOfMatchesType[],
   currentItemIndex: MatchIndex
 ) {
   const [groupIndex, itemIndex] = currentItemIndex;
@@ -42,7 +51,7 @@ function getNextItemIndex(
 }
 
 function getPreviousItemIndex(
-  matchGroups: GroupOfMatchesProps[],
+  matchGroups: GroupOfMatchesType[],
   currentItemIndex: MatchIndex
 ) {
   const [groupIndex, itemIndex] = currentItemIndex;
@@ -72,33 +81,51 @@ const AutosuggestSearchField = (props: Props) => {
     }
   }
 
+  const handleKeypress = (event: KeyboardEvent) => {
+    if (event.keyCode === keyCodes.UP) {
+      dispatch({ type: 'previous' });
+    } else if (event.keyCode === keyCodes.DOWN) {
+      dispatch({ type: 'next' });
+    }
+  };
+
   useEffect(() => {
-    window.addEventListener('keyup', (event: KeyboardEvent) => {
-      if (event.keyCode === keyCodes.UP) {
-        dispatch({ type: 'previous' });
-      } else if (event.keyCode === keyCodes.DOWN) {
-        dispatch({ type: 'next' });
-      }
-    });
+    window.addEventListener('keyup', handleKeypress);
+    return () => window.removeEventListener('keyup', handleKeypress);
   }, []);
 
-  const groupsOfMatches = props.matchGroups.map((group, index) => (
-    <GroupOfMatches key={index} {...group} />
-  ));
+  const groupsOfMatches = props.matchGroups.map((group, index) => {
+    const highlightProps =
+      index === highlightedItemIndex[0]
+        ? { highlightedItemIndex: highlightedItemIndex[1] }
+        : {};
+
+    return <GroupOfMatches key={index} {...group} {...highlightProps} />;
+  });
 
   return <div className={styles.autosuggestionPlate}>{groupsOfMatches}</div>;
 };
 
 const GroupOfMatches = (props: GroupOfMatchesProps) => {
-  const matches = props.matches.map((match: MatchProps, index: number) => (
-    <Match key={index} {...match} />
-  ));
+  const matches = props.matches.map((match: MatchType, index: number) => {
+    return (
+      <Match
+        key={index}
+        isHighlighted={index === props.highlightedItemIndex}
+        {...match}
+      />
+    );
+  });
 
-  return <div>{matches}</div>;
+  return <div className={styles.autosuggestionPlateMatchGroup}>{matches}</div>;
 };
 
 const Match = (props: MatchProps) => {
-  return <div>{props.element}</div>;
+  const className = classNames({
+    [styles.autosuggestionPlateHighlightedItem]: props.isHighlighted
+  });
+
+  return <div className={className}>{props.element}</div>;
 };
 
 export default AutosuggestSearchField;

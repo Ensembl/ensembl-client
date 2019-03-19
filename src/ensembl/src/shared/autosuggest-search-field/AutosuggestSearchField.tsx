@@ -2,9 +2,7 @@ import React, { useState, useEffect, ReactNode } from 'react';
 import classNames from 'classnames';
 
 import SearchField from 'src/shared/search-field/SearchField';
-import AutosuggestionPanel, {
-  GroupOfMatchesProps
-} from './AutosuggestionPanel';
+import AutosuggestionPanel, { GroupOfMatchesType } from './AutosuggestionPanel';
 
 import styles from './AutosuggestSearchField.scss';
 
@@ -16,7 +14,7 @@ type Props = {
   onBlur?: () => void;
   rightCorner?: ReactNode;
   className?: string;
-  matchGroups: GroupOfMatchesProps[];
+  matchGroups: GroupOfMatchesType[];
 };
 
 const AutosuggestSearchField = (props: Props) => {

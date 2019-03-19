@@ -14,3 +14,13 @@
   border: 1px solid $ens-grey;
   box-shadow: 2px 2px 6px 0 $ens-grey;
 }
+
+.autosuggestionPlateMatchGroup {
+  &:not(:first-child) {
+    margin-top: 1em;
+  }
+}
+
+.autosuggestionPlateHighlightedItem {
+  background-color: $ens-light-blue;
+}
