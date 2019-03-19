@@ -44,6 +44,8 @@ import styles from './Browser.scss';
 import 'static/browser/browser.js';
 import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 
+import { replace } from 'connected-react-router';
+
 type StateProps = {
   browserActivated: boolean;
   browserNavOpened: boolean;
@@ -65,6 +67,7 @@ type DispatchProps = {
   toggleDrawer: (drawerOpened: boolean) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateChrLocation: (chrLocation: ChrLocation) => void;
+  replace: (path: string) => void;
 };
 
 type OwnProps = {};
@@ -171,7 +174,8 @@ const mapDispatchToProps: DispatchProps = {
   replace,
   toggleDrawer,
   updateBrowserNavStates,
-  updateChrLocation
+  updateChrLocation,
+  replace
 };
 
 export default withRouter(
