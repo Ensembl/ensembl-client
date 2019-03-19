@@ -37,19 +37,51 @@ macro_rules! vec_s {
     }}
 }
 
-#[allow(unused_macros)]
-macro_rules! console {
+macro_rules! console_error {
+    ($($arg:tt)*) => {{
+        let s = format!($($arg)*);
+        js! { console.error(@{s}); };
+    }}
+}
+
+macro_rules! console_force {
     ($($arg:tt)*) => {{
         let s = format!($($arg)*);
         js! { console.log(@{s}); };
     }}
 }
 
+macro_rules! console {
+    ($($arg:tt)*) => {{
+        if !cfg!(deploy) || cfg!(console) {
+            console_force!($($arg)*);
+        }
+    }}
+}
+
 macro_rules! debug {
     ($k: expr, $($arg:tt)*) => {{
-        if true {
+        if false {
             let s = format!($($arg)*);
             ::debug::debug_panel_entry_add($k,&s);
         }
+    }}
+}
+
+macro_rules! expect {
+    ($x: expr) => {{
+        let s = format!("ENSEMBL ERROR LOCATION {}/{}/{}",file!(),line!(),column!());
+        $x.expect(&s)
+    }}
+}
+
+macro_rules! expectok {
+    ($x: expr) => {{
+        let s = format!("ENSEMBL ERROR LOCATION {}/{}/{}",file!(),line!(),column!());
+        let x = $x;
+        if let Err(ref msg) = x {
+            console_error!("OK Failed: {}",&msg);
+        }
+        x.expect(&s)
     }}
 }

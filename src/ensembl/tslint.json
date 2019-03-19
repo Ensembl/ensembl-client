@@ -13,7 +13,7 @@
     "no-console": [true, "log", "error"],
     "no-implicit-dependencies": [
       true,
-      "src",
+      ["src", "config"],
       ["enzyme", "enzyme-adapter-react-16", "jest-fetch-mock", "src", "static"]
     ],
     "no-namespace": false,

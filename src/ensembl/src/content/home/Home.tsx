@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -20,11 +20,17 @@ type OwnProps = {};
 type HomeProps = StateProps & DispatchProps & OwnProps;
 
 const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
-  useEffect(() => {
-    props.fetchExampleObjectsData();
-  }, []);
+  const [showPreviouslyViewed, toggleShowPreviouslyViewed] = useState(true);
 
-  const exampleObjectsTotal = Object.keys(props.exampleObjects).length;
+  useEffect(() => {
+    if (Object.values(props.exampleObjects).length > 0) {
+      toggleShowPreviouslyViewed(true);
+    } else {
+      toggleShowPreviouslyViewed(false);
+
+      props.fetchExampleObjectsData();
+    }
+  }, [props.exampleObjects]);
 
   const getExampleObjectNode = (exampleObject: any) => {
     const {
@@ -38,7 +44,7 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
     } = exampleObject;
     const assemblyStr = `${assembly.name}_demo`;
     const regionStr = `${chromosome}:${location.start}-${location.end}`;
-    const path = `/app/browser/${assemblyStr}/${display_name}/${regionStr}`;
+    const path = `/app/browser/${assemblyStr}/${stable_id}?region=${regionStr}`;
 
     return (
       <dd key={stable_id}>
@@ -54,14 +60,14 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
       <section className={styles.search}>
         <h2>Find</h2>
         <p>
-          <input type="text" placeholder="Name, symbol or ID" />
-          <button disabled={true}>Go</button>
+          <input type="text" placeholder="Name, symbol or ID" disabled={true} />
+          {/* <button disabled={true}>Go</button> */}
         </p>
         <div className={styles.filter}>
           <h2>Refine results</h2>
         </div>
       </section>
-      {exampleObjectsTotal ? (
+      {showPreviouslyViewed ? (
         <section className={styles.previouslyViewed}>
           <h2>Previously viewed</h2>
           <dl>
@@ -85,6 +91,10 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
           Grey icons indicate apps &amp; functionality that is planned, but not
           available yet.
         </p>
+        <p className={styles.convoMessage}>
+          It&rsquo;s very early days, but why not join the conversation:
+        </p>
+        <p>helpdesk@ensembl.org</p>
       </section>
     </div>
   );

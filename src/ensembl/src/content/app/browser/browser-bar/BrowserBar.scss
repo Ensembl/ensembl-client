@@ -46,6 +46,10 @@
     text-transform: lowercase;
   }
 
+  &.browserInfoExpanded {
+    width: calc(100vw - 36px);
+  }
+
   &.browserInfoGreyed {
     .value,
     .nonLabelValue {

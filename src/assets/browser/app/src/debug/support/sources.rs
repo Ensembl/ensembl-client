@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use composit::{ 
-    ActiveSource, Landscape, Leaf, Plot, Source, SourceResponse,
+    ActiveSource, Landscape, Leaf, Plot, Source, SourceResponseBuilder,
     StateAtom, AllLandscapes, CombinedSource
 };
 
@@ -29,15 +29,17 @@ pub const DEBUG_SOURCES : [&str;8] = [
     "internal:debug:zzz-framework"
 ];
 
-pub const DEMO_SOURCES : [&str;8] = [
-    "gene-pc-fwd",
-    "gene-other-fwd",
-    "gene-pc-rev",
-    "gene-other-rev",
-    "variant",
-    "contig",
-    "gc",
-    "zzz-framework"
+pub const DEMO_SOURCES : [&str;10] = [
+    "track:gene-feat",
+    "track:gene-pc-fwd",
+    "track:gene-other-fwd",
+    "track:gene-pc-rev",
+    "track:gene-other-rev",
+    "track:variant",
+    "track:contig",
+    "track:gc",
+    "track:zzz-framework",
+    "track:zzz-framework:lhs"
 ];
 
 #[cfg(deploy)]

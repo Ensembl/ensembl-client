@@ -1,16 +1,33 @@
-import React, { FunctionComponent } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+
+import { RootState } from 'src/store';
+import { getExampleObjects } from 'src/content/app/browser/browserSelectors';
+import { fetchExampleObjectsData } from 'src/content/app/browser/browserActions';
 
 import styles from '../TrackPanelModal.scss';
 
-type TrackPanelBookmarksProps = {
+type StateProps = {
   exampleObjects: any;
 };
 
-const TrackPanelBookmarks: FunctionComponent<TrackPanelBookmarksProps> = (
-  props: TrackPanelBookmarksProps
-) => {
+type DispatchProps = {
+  fetchExampleObjectsData: () => void;
+};
+
+type OwnProps = {};
+
+type TrackPanelBookmarksProps = StateProps & DispatchProps & OwnProps;
+
+export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
   const exampleObjectsTotal = Object.keys(props.exampleObjects).length;
+
+  useEffect(() => {
+    if (exampleObjectsTotal === 0) {
+      props.fetchExampleObjectsData();
+    }
+  }, [props.exampleObjects]);
 
   const getExampleObjectNode = (exampleObject: any) => {
     const {
@@ -24,7 +41,7 @@ const TrackPanelBookmarks: FunctionComponent<TrackPanelBookmarksProps> = (
     } = exampleObject;
     const assemblyStr = `${assembly.name}_demo`;
     const regionStr = `${chromosome}:${location.start}-${location.end}`;
-    const path = `/app/browser/${assemblyStr}/${display_name}/${regionStr}`;
+    const path = `/app/browser/${assemblyStr}/${stable_id}?region=${regionStr}`;
 
     return (
       <dd key={stable_id}>
@@ -52,4 +69,15 @@ const TrackPanelBookmarks: FunctionComponent<TrackPanelBookmarksProps> = (
   );
 };
 
-export default TrackPanelBookmarks;
+const mapStateToProps = (state: RootState) => ({
+  exampleObjects: getExampleObjects(state)
+});
+
+const mapDispatchToProps = {
+  fetchExampleObjectsData
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TrackPanelBookmarks);

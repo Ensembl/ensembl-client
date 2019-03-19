@@ -4,7 +4,7 @@ use tánaiste::{
     Argument, Command, DataState, Instruction, ProcState, Signature
 };
 
-use composit::{ Leaf, SourceResponse };
+use composit::{ Leaf, AllSourceResponseBuilder };
 use drawing::{ DrawingSpec };
 use shape::{
     ColourSpec, Facade, FacadeType, ShapeInstanceData, TypeToShape,
@@ -56,10 +56,37 @@ fn make_facade(spec: &Box<TypeToShape>, colour: &Vec<f64>, tx: &Vec<DrawingSpec>
     }
 }
 
-fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceResponse, 
+fn make_facades(spec: &Box<TypeToShape>, colour: &Vec<f64>, tx: &Vec<DrawingSpec>) -> Vec<Facade> {
+    let mut out = Vec::<Facade>::new();
+    let col_len = colour.len();
+    let type_ = spec.get_facade_type();
+    let num_items = match type_ {
+        FacadeType::Colour => col_len/3,
+        FacadeType::Drawing => col_len
+    };
+    for i in 0..num_items {
+        out.push(match type_ {
+            FacadeType::Colour => {
+                let r = colour[i*3] as u32;
+                let g = colour[i*3+1] as u32;
+                let b = colour[i*3+2] as u32;
+                Facade::Colour(Colour(r,g,b))
+            },
+            FacadeType::Drawing => {
+                let idx = colour[i];
+                Facade::Drawing(tx[idx as usize].clone())
+            }
+        });
+    }
+    out
+}
+
+/* TODO switch long to use make_facades. Can do it, but no time */
+fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut AllSourceResponseBuilder, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
-                colour: &Vec<f64>) {
+                colour: &Vec<f64>, part: &Option<String>) {
+    if colour.len() == 0 { return; }
     let facade = make_facade(&spec,colour,tx,0);
     let mut x_start_scaled = Vec::<f64>::new();
     let mut x_aux_scaled = Vec::<f64>::new();
@@ -78,52 +105,62 @@ fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceResp
         facade
     };
     if let Some(shape) = spec.new_long_shape(&data) {
-        lc.add_shape(shape);
+        if let Some(lc) = lc.get_mut(part) {
+            lc.add_shape(shape);
+        }
     }    
 }
 
-fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceResponse, 
+fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut AllSourceResponseBuilder, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
-                colour: &Vec<f64>) {
-    let mut y_start_iter = y_start.iter().cycle();
-    let mut x_aux_iter = x_aux.iter().cycle();
-    let mut y_aux_iter = y_aux.iter().cycle();
+                colour: &Vec<f64>, part: &Option<String>) {
+    if colour.len() == 0 { return; }
+    let facades = make_facades(&spec,colour,tx);
+    let mut f_iter = facades.iter().cycle();
     let y_start_len = y_start.len();
     let x_aux_len = x_aux.len();
     let y_aux_len = y_aux.len();
-    let col_len = colour.len();
+    if let Some(lc) = lc.get_mut(part) {
+        lc.expect(x_start.len());
+    }
     for i in 0..x_start.len() {
         if let Some((x_pos_v,x_aux_v)) = 
                 do_scale(&spec,leaf,x_start[i],x_aux[i%x_aux_len]) {
-            let facade = make_facade(&spec,colour,tx,i);
+            //let facade = make_facade(&spec,colour,tx,i);
+            let facade = f_iter.next();
             let data = ShapeShortInstanceData {
                 pos_x: x_pos_v,
                 pos_y: y_start[i%y_start_len] as i32,
                 aux_x: x_aux_v,
                 aux_y: y_aux[i%y_aux_len] as i32,
-                facade
+                facade: facade.cloned().unwrap()
             };
             if let Some(shape) = spec.new_short_shape(&data) {
-                lc.add_shape(shape);
+                if let Some(lc) = lc.get_mut(part) {
+                    lc.add_shape(shape);
+                }
             }
         }
     }
+    if let Some(lc) = lc.get_mut(part) {
+        lc.expect(0);
+    }
 }
 
-fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut SourceResponse, 
+fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut AllSourceResponseBuilder, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
-                colour: &Vec<f64>) {
+                colour: &Vec<f64>, part: &Option<String>) {
     let mut meta_iter = meta.iter().cycle();
     if let Some(spec) = build_meta(&mut meta_iter) {
         match spec.sid_type() {
             ShapeInstanceDataType::Short => 
                 draw_short_shapes(spec,leaf,lc,tx,x_start,x_aux,
-                                  y_start,y_aux,colour),
+                                  y_start,y_aux,colour,part),
             ShapeInstanceDataType::Long => 
                 draw_long_shapes(spec,leaf,lc,tx,x_start,x_aux,
-                                  y_start,y_aux,colour),
+                                  y_start,y_aux,colour,part),
         }
     }
 }
@@ -135,7 +172,7 @@ impl Command for Shape {
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,leaf,lc,ref tx,_) = task {
+            if let TáTask::MakeShapes(_,leaf,lc,ref tx,_,part,_) = task {
                 let regs = rt.registers();
                 regs.get(self.1).as_floats(|meta| {                
                     regs.get(self.2).as_floats(|x_start| {
@@ -144,7 +181,7 @@ impl Command for Shape {
                                 regs.get(self.5).as_floats(|y_size| {
                                     regs.get(self.6).as_floats(|colour| {
                                         draw_shapes(meta,leaf,lc,tx,x_start,x_size,
-                                                y_start,y_size,colour);
+                                                y_start,y_size,colour,part);
                                     });
                                 });
                             });

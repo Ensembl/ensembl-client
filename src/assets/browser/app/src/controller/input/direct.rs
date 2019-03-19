@@ -78,38 +78,52 @@ fn custom_state_event(v: &JSONValue, sv: StateValue) -> Action {
     }
 }
 
-fn custom_make_one_event(k: &String, v: &JSONValue) -> Action {
+fn every<F>(v: &JSONValue, cb: F) -> Vec<Action> where F: Fn(&JSONValue) -> Action {
+    if let JSONValue::Array(vv) = v {
+        vv.iter().map(|x| cb(x)).collect()
+    } else {
+        vec! {cb(v) }
+    }
+}
+
+fn custom_make_one_event_key(k: &String, v: &JSONValue) -> Vec<Action> {
     let parts : Vec<&str> = k.split("_").collect();
     match parts.len() {
         1 => return match parts[0] {
-            "on" => custom_state_event(v,StateValue::On()),
-            "standby" => custom_state_event(v,StateValue::OffWarm()),
-            "off" => custom_state_event(v,StateValue::OffCold()),
-            "goto" => custom_goto_event(v),
-            "stick" => custom_stick_event(v),
-            _ => Action::Noop
+            "on" => every(v,|v| custom_state_event(v,StateValue::On())),
+            "standby" => every(v,|v| custom_state_event(v,StateValue::OffWarm())),
+            "off" => every(v,|v| custom_state_event(v,StateValue::OffCold())),
+            "goto" => every(v,|v| custom_goto_event(v)),
+            "stick" => every(v,|v| custom_stick_event(v)),
+            _ => vec!{}
         },
         2 => return match parts[0] {
-            "zoom" => custom_zoom_event(parts[1],v),
-            _ => Action::Noop
+            "zoom" => every(v,|v| custom_zoom_event(parts[1],v)),
+            _ => vec!{}
         },
         3 => return match parts[0] {
-            "move" => custom_movement_event(parts[1],parts[2],v),
-            _ => Action::Noop
+            "move" => every(v,|v| custom_movement_event(parts[1],parts[2],v)),
+            _ => vec!{}
         },
-        _ => ()
+        _ => vec!{}
     }
-    Action::Noop
 }
 
 fn custom_make_events(j: &JSONValue) -> Vec<Action> {
     let mut out = Vec::<Action>::new();
     if let JSONValue::Object(map) = j {
         for (k,v) in map {
-            out.push(custom_make_one_event(k,v));
+            out.append(&mut custom_make_one_event_key(k,v));
         }
     }
+    console!("receive {:?}",out);
     out
+}
+
+pub fn run_direct_events(app: &mut App, j: &JSONValue) {
+    let evs = custom_make_events(&j);
+    console!("receive {:?}",evs);
+    actions_run(app,&evs);
 }
 
 pub struct DirectEventListener {
@@ -124,13 +138,10 @@ impl DirectEventListener {
 
 impl EventListener<()> for DirectEventListener {    
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
-        let evs = match e {
-            EventData::CustomEvent(_,_,_,c) =>
-                custom_make_events(&c.details().unwrap()),
-            _ => Vec::<Action>::new()
-        };
-        console!("receive");
-        actions_run(&mut self.cg.lock().unwrap(),&evs);
+        if let EventData::CustomEvent(_,_,_,c) = e {
+            run_direct_events(&mut self.cg.lock().unwrap(),
+                              &c.details().unwrap());
+        }
     }
 }
 

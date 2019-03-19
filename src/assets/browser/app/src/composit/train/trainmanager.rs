@@ -14,8 +14,8 @@
 use composit::{ Leaf, Train, ComponentManager, ActiveSource, Stick, Scale };
 use controller::output::Report;
 
-const MS_FADE : f64 = 300.;
-const OUTER_TRAINS : usize = 3;
+const MS_FADE : f64 = 100.;
+const OUTER_TRAINS : usize = 2;
 
 pub struct TrainManager {
     /* the trains themselves */
@@ -123,7 +123,7 @@ impl TrainManager {
             let scale = self.transition_train.as_ref().unwrap().get_scale().clone();
             console!("transition to {:?}",scale);
             for i in 0..OUTER_TRAINS {
-                let out_scale = scale.next_scale(0-i as i32);
+                let out_scale = scale.next_scale(-1-i as i32);
                 self.outer_train[i] = self.make_train(cm,out_scale,true);
             }
         }
@@ -153,22 +153,15 @@ impl TrainManager {
             }
         }
     }
-    
-    pub fn add_component(&mut self, cm: &mut ComponentManager, c: &ActiveSource) {
-        self.each_train(|tr| tr.add_component(cm,&c));
-    }
-    
-    /* used by COMPOSITOR to determine y-limit for viewport scrolling */
-    pub fn get_max_y(&self) -> i32 {
-        let mut max = 0;
-        if let Some(ref current_train) = self.current_train {
-            max = current_train.get_max_y();
+    pub fn best_train<F>(&mut self, mut cb: F)
+                                  where F: FnMut(&mut Train) {
+        if let Some(ref mut future_train) = self.future_train {
+            cb(future_train);
+        } else if let Some(ref mut transition_train) = self.transition_train {
+            cb(transition_train);
+        } else if let Some(ref mut current_train) = self.current_train {
+            cb(current_train);
         }
-        if let Some(ref transition_train) = self.transition_train {
-            let y = transition_train.get_max_y();
-            if y > max { max = y; }
-        }
-        max
     }
     
     /* ***********************************************************

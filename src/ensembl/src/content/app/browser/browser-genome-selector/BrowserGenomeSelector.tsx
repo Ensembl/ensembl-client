@@ -32,6 +32,7 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
   const [chrLocationInput, setChrLocationInput] = useState('');
 
   const [chrCode, chrStart, chrEnd] = props.defaultChrLocation;
+  const displayChrRegion = chrStart === 0 && chrEnd === 0 ? false : true;
 
   useEffect(() => {
     setChrLocationPlaceholder(chrLocationStr);
@@ -116,11 +117,13 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
       ) : (
         <div className={styles.chrLocationView} onClick={activateForm}>
           <div className={styles.chrCode}>{chrCode}</div>
-          <div className={styles.chrRegion}>
-            <span>{chrStart}</span>
-            <span className={styles.chrSeparator}> - </span>
-            <span>{chrEnd}</span>
-          </div>
+          {displayChrRegion ? (
+            <div className={styles.chrRegion}>
+              <span>{chrStart}</span>
+              <span className={styles.chrSeparator}> - </span>
+              <span>{chrEnd}</span>
+            </div>
+          ) : null}
         </div>
       )}
     </dd>

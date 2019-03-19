@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::rc::Rc;
 use stdweb::web::html_element::CanvasElement;
 use dom::webgl::{
     WebGLRenderingContext as glctx,
@@ -62,13 +63,13 @@ fn canvas_texture(ctx: &glctx, cnv : &CanvasElement, w: &CanvasWeave) -> gltex {
 
 /* ObjectCanvasTexture = Object for canvas-origin textures */
 pub struct ObjectCanvasTexture {
-    textures: HashMap<u32,gltex>,
+    textures: HashMap<u32,Rc<gltex>>,
 }
 
 impl ObjectCanvasTexture {
     pub fn new() -> ObjectCanvasTexture {
         ObjectCanvasTexture {
-            textures: HashMap::<u32,gltex>::new()
+            textures: HashMap::<u32,Rc<gltex>>::new()
         }
     }
 }
@@ -77,11 +78,14 @@ impl Object for ObjectCanvasTexture {
     fn obj_final(&mut self, _batch: &DataBatch, ctx: &glctx, ds: &DrawingSession) {
         let canvs = ds.all_ocm();
         for c in canvs {
-            self.textures.insert(
-                c.index(),
-                canvas_texture(ctx,&c.canvas.as_ref().unwrap().element(),
-                                &c.canvas.as_ref().unwrap().weave())
-            );
+            let cc = ds.get_canvas_cache();
+            let texture = cc.find_texture(c).unwrap_or_else(|| {
+                let t = canvas_texture(ctx,&c.canvas.as_ref().unwrap().element(),
+                                &c.canvas.as_ref().unwrap().weave());
+                cc.set_texture(c,&t);
+                t
+            });
+            self.textures.insert(c.index(),Rc::new(texture));
         }
     }
 

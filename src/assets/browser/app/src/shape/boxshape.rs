@@ -12,20 +12,18 @@ pub struct BoxSpec {
     pub colspec: ColourSpec
 }
 
-pub struct PinBox {
-    offset: RLeaf,
-    colspec: ColourSpec,
-    width: i32,
-    geom: ProgramType
-}
-
 const DELTA_X: &[f32] = &[0.,1.,0.,1.,0.,-1.,0.,-1.];
 const DELTA_Y: &[i32] = &[0, 1, 0,-1, 0, -1, 0,  1];
 
 const END_X: &[f32] = &[0.,0.,0.,0.,1.,1.,1.,1.];
 const END_Y: &[i32] = &[0, 0, 1, 1, 1, 1, 0, 0];
 
-impl PinBox {
+impl BoxSpec {
+    pub fn create(self) -> Box<Shape> {
+        let g = despot(PTGeom::Pin,PTMethod::Strip,&self.colspec);        
+        Box::new(self)
+    }
+
     fn origins(&self) -> Vec<CLeaf> {
         let mut v = Vec::<CLeaf>::new();
         let near = self.offset.offset();
@@ -46,7 +44,7 @@ impl PinBox {
     }
 }
 
-impl Shape for PinBox {    
+impl Shape for BoxSpec {
     fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut PrintEdition) {
         let group = self.colspec.to_group(geom,e);
         let b = vertices_hollowpoly(geom,4,group);
@@ -61,18 +59,7 @@ impl Shape for PinBox {
         }
     }
     
-    fn get_geometry(&self) -> ProgramType { self.geom }
-}
-
-
-impl BoxSpec {
-    pub fn create(&self) -> Box<Shape> {
-        let g = despot(PTGeom::Pin,PTMethod::Strip,&self.colspec);        
-        Box::new(PinBox {
-            geom: g,
-            offset: self.offset,
-            colspec: self.colspec.clone(),
-            width: self.width
-        })
+    fn get_geometry(&self) -> ProgramType {
+        despot(PTGeom::Pin,PTMethod::Strip,&self.colspec)
     }
 }

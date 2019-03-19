@@ -5,7 +5,7 @@ use super::super::commands::{
     AppGetI, CPrintI, DPrintI, AbuttI, ElideI, NotI, PickI,
     ExtentI, AllI, BinOpI, BinOpType, TextI, IndexI, RunsI, RunsOfI,
     GetI, ScaleI, MergeI, AccNI, MemberI, PlotI, RulerI, AllPlotsI,
-    LengthI
+    LengthI, SetPartI, ImageI, AssetI
 };
 use super::super::shapecmd::ShapeI;
 
@@ -34,14 +34,17 @@ pub fn instruction_bundle_app(tc: &TáContext) -> InstructionBundle {
         Box::new(BinOpI(BinOpType::Or)),
         Box::new(BinOpI(BinOpType::Max)),
         Box::new(BinOpI(BinOpType::Min)),
+        Box::new(ImageI(tc.clone())),
         Box::new(TextI(tc.clone())),
+        Box::new(AssetI(tc.clone())),
         Box::new(AppGetI(tc.clone())),
         Box::new(ShapeI(tc.clone())),
         Box::new(ExtentI(tc.clone())),
         Box::new(ScaleI(tc.clone())),
         Box::new(PlotI(tc.clone())),
         Box::new(RulerI(tc.clone())),
-        Box::new(AllPlotsI(tc.clone()))
+        Box::new(AllPlotsI(tc.clone())),
+        Box::new(SetPartI(tc.clone())),
     });
     ib
 }

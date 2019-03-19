@@ -9,7 +9,7 @@ pub struct Zoom {
     max_bp: f64
 }
 
-const MAX_LIMIT_BP : f64 = 25.;
+const MAX_LIMIT_BP : f64 = 50.;
 
 impl Zoom {
     pub fn new(z: f64) -> Zoom {

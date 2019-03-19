@@ -16,6 +16,7 @@ type TrackPanelBarProps = {
   openTrackPanelModal: (trackPanelModalView: string) => void;
   toggleDrawer: (drawerOpened: boolean) => void;
   toggleTrackPanel: (trackPanelOpened?: boolean) => void;
+  trackPanelModalOpened: boolean;
   trackPanelModalView: string;
   trackPanelOpened: boolean;
 };
@@ -57,6 +58,7 @@ const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
             iconConfig={item}
             closeTrackPanelModal={props.closeTrackPanelModal}
             openTrackPanelModal={props.openTrackPanelModal}
+            trackPanelModalOpened={props.trackPanelModalOpened}
             trackPanelModalView={props.trackPanelModalView}
           />
         ))}

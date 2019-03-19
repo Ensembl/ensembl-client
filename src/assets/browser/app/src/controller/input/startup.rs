@@ -27,20 +27,20 @@ impl StartupEventListener {
 
 impl EventListener<()> for StartupEventListener {
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
-        let mut g = self.g.lock().unwrap();
+        let mut g = expect!(self.g.lock());
         match e {
             EventData::CustomEvent(_,cx,name,data) => {
                 let aed = AppEventData::new(data);
                 match name.as_ref() {
                     "bpane-activate" => {
-                        let key = aed.get_simple_str("key",Some("only")).unwrap();
+                        let key = expect!(aed.get_simple_str("key",Some("only")));
                         console!("Activate browser {} on {:?}",key,cx.target());
                         let config_url = aed.get_simple_str("config-url",None);
                         if config_url.is_none() {
                             console!("BROWSER APP REFUSING TO START UP! No config-url supplied");
                         }
-                        let config_url = Url::parse(&config_url.unwrap()).ok().unwrap();
-                        g.register_app(&key,&cx.target().try_into().unwrap(),false,&config_url);
+                        let config_url = expectok!(Url::parse(&expect!(config_url)));
+                        g.register_app(&key,&expect!(cx.target().try_into()),false,&config_url);
                     },
                     _ => ()
                 }
@@ -62,13 +62,14 @@ pub fn initial_actions() -> Vec<Action> {
     
     /* Default tracks */
     for name in &DEMO_SOURCES {
+        console!("activating {}",name);
         out.push(Action::AddComponent(name.to_string()));
         out.push(Action::SetState(name.to_string(),StateValue::On()));
     }
     out.extend(vec! {
-        Action::SetStick("16".to_string()),
-        Action::Pos(Dot(0_f64,0_f64),None),
-        Action::ZoomTo(-9.)
+        //Action::SetStick("16".to_string()),
+        //Action::Pos(Dot(0_f64,0_f64),None),
+        //Action::ZoomTo(-9.)
     });
     out
 }

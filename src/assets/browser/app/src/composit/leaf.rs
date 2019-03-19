@@ -14,6 +14,11 @@ impl Leaf {
         Leaf { hindex, scale: scale.clone(), stick: stick.clone() }
     }
     
+    pub fn containing(stick: &Stick, pos: f64, scale: &Scale) -> Leaf {
+        let hindex = (pos / scale.total_bp()).floor() as i64;
+        Leaf::new(stick,hindex,scale)
+    }
+    
     pub fn get_stick(&self) -> &Stick { &self.stick }
     pub fn get_index(&self) -> i64 { self.hindex }
     pub fn get_scale(&self) -> &Scale { &self.scale }    
@@ -42,6 +47,11 @@ impl Leaf {
     
     pub fn get_spec(&self) -> String {
         format!("{}:{}-{}",self.get_stick().get_name(),self.get_start(),self.get_end())
+    }
+    
+    pub fn get_short_spec(&self) -> (String,String) {
+        (self.get_stick().get_name(),
+         format!("{}{}",self.scale.letter(),self.hindex))
     }
 }
 

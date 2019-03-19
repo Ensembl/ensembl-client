@@ -75,9 +75,9 @@ impl ProgramAttribs {
         size
     }
 
-    fn clear(&mut self) {
+    fn clear(&mut self, ctx: &glctx) {
         for a in &mut self.objects.iter_mut() {
-            a.clear();
+            a.clear(ctx);
         }
         self.default_group = self.bman.new_group();
     }
@@ -131,10 +131,10 @@ impl Program {
         self.data.size()
     }
 
-    pub fn clear(&mut self) {
+    pub fn clear(&mut self, ctx: &glctx) {
         /* Must be in this order */
         self.data.bman.reset();
-        self.data.clear();
+        self.data.clear(ctx);
     }
 
     pub fn use_program(&self, ctx: &glctx) {

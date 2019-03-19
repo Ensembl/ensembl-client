@@ -80,7 +80,10 @@ impl Object for ObjectMain {
         }
     }
 
-    fn clear(&mut self) {
+    fn clear(&mut self, ctx: &glctx) {
+        for b in self.buf.values() {
+            ctx.delete_buffer(Some(&b));
+        }
         self.vec.clear();
         self.buf.clear();
         self.num.clear();

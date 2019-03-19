@@ -113,7 +113,6 @@ impl Printer {
 
     pub fn go(&mut self, stage: &Stage, oom: &StateManager, compo: &mut Compositor) {
         self.manage_leafs(compo);
-        self.prepare_all();
         let prop = compo.get_prop_trans();
         if let Some(current_train) = compo.get_current_train() {
             self.prepare_scale(stage,oom,current_train,1.-prop);
@@ -121,6 +120,7 @@ impl Printer {
         if let Some(transition_train) = compo.get_transition_train() {
             self.prepare_scale(stage,oom,transition_train,prop);
         }
+        self.prepare_all();
         self.execute(compo);
     }
         

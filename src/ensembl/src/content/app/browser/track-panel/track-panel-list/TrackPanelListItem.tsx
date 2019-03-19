@@ -1,6 +1,7 @@
 import React, {
   FunctionComponent,
   Fragment,
+  MouseEvent,
   ReactNode,
   RefObject,
   useState,
@@ -20,13 +21,14 @@ import styles from './TrackPanelListItem.scss';
 type TrackPanelListItemProps = {
   browserRef: RefObject<HTMLDivElement>;
   children?: ReactNode[];
+  drawerOpened: boolean;
   drawerView: string;
   track: TrackPanelItem;
   updateDrawerView: (drawerView: string) => void;
 };
 
 // delete this when there is a better place to put this
-const trackPrefix = '';
+const trackPrefix = 'track:';
 
 const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   props: TrackPanelListItemProps
@@ -44,7 +46,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
       classNames += ` ${styles.main}`;
     }
 
-    if (drawerView === track.name) {
+    if (drawerView === track.name || drawerView === track.drawerView) {
       classNames += ` ${styles.currentDrawerView}`;
     }
 
@@ -62,8 +64,22 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     return classNames;
   };
 
-  const changeDrawerViewHandler = () => {
-    props.updateDrawerView(props.track.name);
+  const drawerViewListHandler = (event: MouseEvent) => {
+    event.preventDefault();
+
+    if (props.drawerOpened === false) {
+      return;
+    }
+
+    const viewName = track.drawerView || track.name;
+
+    props.updateDrawerView(viewName);
+  };
+
+  const drawerViewButtonHandler = () => {
+    const viewName = track.drawerView || track.name;
+
+    props.updateDrawerView(viewName);
   };
 
   const toggleExpand = () => {
@@ -76,7 +92,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     const trackEvent = new CustomEvent('bpane', {
       bubbles: true,
       detail: {
-        [currentTrackStatus]: `${trackPrefix}:${track.name}`
+        [currentTrackStatus]: `${trackPrefix}${track.name}`
       }
     });
 
@@ -89,7 +105,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
 
   return (
     <Fragment>
-      <dd className={getListItemClasses()}>
+      <dd className={getListItemClasses()} onClick={drawerViewListHandler}>
         <label>
           {track.color && <span className={getBoxClasses(track.color)} />}
           <span className={styles.mainText}>{track.label}</span>
@@ -110,7 +126,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
             </button>
           )}
         </label>
-        <button onClick={changeDrawerViewHandler}>
+        <button onClick={drawerViewButtonHandler}>
           <img src={ellipsis.icon.on} alt={`Go to ${track.label}`} />
         </button>
         <button onClick={toggleTrack}>

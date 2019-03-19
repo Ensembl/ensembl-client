@@ -72,10 +72,10 @@ export type LaunchbarDetails = {
 export const launchbarConfig: LaunchbarDetails = {
   about: {
     description: 'About Ensembl',
-    enabled: true,
+    enabled: false,
     icon: {
-      default: ensemblIcon,
-      grey: '',
+      default: '',
+      grey: ensemblIcon,
       selected: ''
     },
     name: 'about'
