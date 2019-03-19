@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 
-use composit::Carriage;
+use composit::Traveller;
 use drawing::{ OneCanvasManager, FlatCanvas, AllCanvasAllocator };
 use program::{ CanvasCache, CanvasWeave };
 

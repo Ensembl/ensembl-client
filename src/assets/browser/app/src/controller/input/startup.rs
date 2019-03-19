@@ -39,7 +39,7 @@ impl EventListener<()> for StartupEventListener {
                         if config_url.is_none() {
                             console!("BROWSER APP REFUSING TO START UP! No config-url supplied");
                         }
-                        let config_url = expect!(Url::parse(&expect!(config_url)).ok());
+                        let config_url = expectok!(Url::parse(&expect!(config_url)));
                         g.register_app(&key,&expect!(cx.target().try_into()),false,&config_url);
                     },
                     _ => ()

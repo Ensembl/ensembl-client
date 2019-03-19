@@ -5,7 +5,7 @@ const MAX_PENDING : i32 = 0;
 const CACHE_SIZE : usize = 10;
 
 use composit::{
-    ActiveSource, Leaf, Carriage, AllSourceResponseBuilder
+    ActiveSource, Leaf, Traveller, AllSourceResponseBuilder
 };
 
 pub struct ComponentManager {
@@ -30,8 +30,8 @@ impl ComponentManager {
         self.components.remove(k);
     }
     
-    pub fn make_comp_carriages(&mut self, c: &ActiveSource, leaf: &Leaf) -> Vec<Carriage> {
-        let mut lcomps = Vec::<Carriage>::new();
+    pub fn make_comp_carriages(&mut self, c: &ActiveSource, leaf: &Leaf) -> Vec<Traveller> {
+        let mut lcomps = Vec::<Traveller>::new();
         let asrb = AllSourceResponseBuilder::new(&c.list_parts());
         let mut source = c.get_source().clone();
         lcomps.push(c.make_carriage(&asrb,&None,&leaf));
@@ -43,8 +43,8 @@ impl ComponentManager {
         lcomps
     }
     
-    pub fn make_leaf_carriages(&mut self, leaf: Leaf) -> Vec<Carriage> {
-        let mut lcomps = Vec::<Carriage>::new();
+    pub fn make_leaf_carriages(&mut self, leaf: Leaf) -> Vec<Traveller> {
+        let mut lcomps = Vec::<Traveller>::new();
         debug!("redraw","make_carriages {:?}",leaf);
         let comps : Vec<ActiveSource> = self.components.values().cloned().collect();
         for c in &comps {

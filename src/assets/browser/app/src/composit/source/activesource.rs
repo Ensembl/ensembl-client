@@ -7,7 +7,7 @@ use std::rc::Rc;
 use composit::state::StateExpr;
 use composit::{
     AllLandscapes, Landscape, Source,
-    Carriage, Leaf, AllSourceResponseBuilder, StateManager,
+    Traveller, Leaf, AllSourceResponseBuilder, StateManager,
     StateValue
 };
 
@@ -43,9 +43,9 @@ impl ActiveSource {
         self.parts.keys().filter(|x| x.is_some()).map(|x| x.as_ref().unwrap().clone()).collect()
     }
     
-    pub fn make_carriage(&self, asrb: &AllSourceResponseBuilder, part: &Option<String>, leaf: &Leaf) -> Carriage {
+    pub fn make_carriage(&self, asrb: &AllSourceResponseBuilder, part: &Option<String>, leaf: &Leaf) -> Traveller {
         let srr = asrb.get_srr(part);
-        Carriage::new(self.clone(),part,leaf,srr)
+        Traveller::new(self.clone(),part,leaf,srr)
     }
     
     pub fn populate(&mut self, resp: AllSourceResponseBuilder, leaf: &Leaf) {

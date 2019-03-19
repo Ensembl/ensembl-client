@@ -10,7 +10,7 @@ use rand::rngs::SmallRng;
 use rand::SeedableRng;
 
 use composit::{
-    StateFixed, StateValue, StateAtom, Leaf, Carriage,
+    StateFixed, StateValue, StateAtom, Leaf, Traveller,
     AllSourceResponseBuilder, Stick
 };
 

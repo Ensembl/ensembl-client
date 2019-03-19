@@ -37,6 +37,13 @@ macro_rules! vec_s {
     }}
 }
 
+macro_rules! console_error {
+    ($($arg:tt)*) => {{
+        let s = format!($($arg)*);
+        js! { console.error(@{s}); };
+    }}
+}
+
 macro_rules! console_force {
     ($($arg:tt)*) => {{
         let s = format!($($arg)*);
@@ -65,5 +72,16 @@ macro_rules! expect {
     ($x: expr) => {{
         let s = format!("ENSEMBL ERROR LOCATION {}/{}/{}",file!(),line!(),column!());
         $x.expect(&s)
+    }}
+}
+
+macro_rules! expectok {
+    ($x: expr) => {{
+        let s = format!("ENSEMBL ERROR LOCATION {}/{}/{}",file!(),line!(),column!());
+        let x = $x;
+        if let Err(ref msg) = x {
+            console_error!("OK Failed: {}",&msg);
+        }
+        x.expect(&s)
     }}
 }
