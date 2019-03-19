@@ -44,8 +44,6 @@ import styles from './Browser.scss';
 import 'static/browser/browser.js';
 import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 
-import { replace } from 'connected-react-router';
-
 type StateProps = {
   browserActivated: boolean;
   browserNavOpened: boolean;
