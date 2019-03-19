@@ -65,7 +65,6 @@ type DispatchProps = {
   toggleDrawer: (drawerOpened: boolean) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateChrLocation: (chrLocation: ChrLocation) => void;
-  replace: (path: string) => void;
 };
 
 type OwnProps = {};
@@ -172,8 +171,7 @@ const mapDispatchToProps: DispatchProps = {
   replace,
   toggleDrawer,
   updateBrowserNavStates,
-  updateChrLocation,
-  replace
+  updateChrLocation
 };
 
 export default withRouter(
