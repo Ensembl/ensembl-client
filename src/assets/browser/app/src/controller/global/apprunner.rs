@@ -201,7 +201,7 @@ impl AppRunner {
         }
         self.0.lock().unwrap().projector = None;
         let r = self.state();
-        r.lock().unwrap().finish();
+        r.lock().unwrap().destroy();
     }
     
     pub fn activate_debug(&mut self) {

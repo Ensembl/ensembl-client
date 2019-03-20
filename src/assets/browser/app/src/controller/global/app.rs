@@ -16,7 +16,8 @@ use controller::output::{ OutputAction, Report, ViewportReport };
 use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, XferCache, XferClerk };
 use debug::add_debug_sticks;
 use dom::domutil;
-use drivers::webgl::Printer;
+use drivers::webgl::WebGLPrinter;
+use model::driver::Printer;
 use tácode::Tácode;
 
 const CANVAS : &str = r##"<canvas></canvas>"##;
@@ -53,7 +54,7 @@ impl App {
             ar: AppRunnerWeak::none(),
             browser_el: browser_el.clone(),
             canv_el: canv_el.clone(),
-            printer: Arc::new(Mutex::new(Printer::new(&canv_el))),
+            printer: Arc::new(Mutex::new(WebGLPrinter::new(&canv_el))),
             stage:  Arc::new(Mutex::new(Stage::new())),
             compo: Arc::new(Mutex::new(Compositor::new(&cache,Box::new(clerk.clone())))),
             state: Arc::new(Mutex::new(StateManager::new())),
@@ -114,15 +115,15 @@ impl App {
     
     pub fn get_canvas_element(&self) -> &HtmlElement { &self.canv_el }
     
-    pub fn finish(&mut self) {
-        self.printer.lock().unwrap().finish();
+    pub fn destroy(&mut self) {
+        self.printer.lock().unwrap().destroy();
     }
     
     pub fn draw(&mut self) {
         let stage = self.stage.lock().unwrap();
         let oom = self.state.lock().unwrap();
         let mut compo = self.compo.lock().unwrap();
-        self.printer.lock().unwrap().go(&stage,&oom,&mut compo);
+        self.printer.lock().unwrap().print(&stage,&oom,&mut compo);
     }
     
     pub fn with_stage<F,G>(&self, cb: F) -> G where F: FnOnce(&mut Stage) -> G {
@@ -154,11 +155,9 @@ impl App {
     pub fn run_actions(self: &mut App, evs: &Vec<Action>) {
         actions_run(self,evs);
     }
-        
+    
     pub fn check_size(self: &mut App) {
         let mut sz = self.printer.lock().unwrap().get_available_size();
-        sz.0 = ((sz.0+3)/4)*4;
-        sz.1 = ((sz.1+3)/4)*4;
         actions_run(self,&vec! { Action::Resize(sz) });
     }
  

@@ -1,3 +1,3 @@
 mod core;
 
-pub use self::core::{ Programs, Printer, PrintEdition, LeafPrinter };
+pub use self::core::{ Programs, WebGLPrinter, PrintEdition, LeafPrinter };

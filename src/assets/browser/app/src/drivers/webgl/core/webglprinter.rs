@@ -6,6 +6,7 @@ use stdweb::web::{ HtmlElement, Element, INode, IElement };
 
 use super::{ Programs, LeafPrinter };
 use composit::{ Compositor, StateManager, Leaf, Stage };
+use model::driver::Printer;
 use model::train::Train;
 use drawing::{ AllCanvasAllocator };
 use dom::domutil;
@@ -16,7 +17,7 @@ use stdweb::web::html_element::{
     CanvasElement
 };
 
-pub struct Printer {
+pub struct WebGLPrinter {
     canv_el: HtmlElement,
     ctx: Rc<glctx>,
     base_progs: Programs,
@@ -24,8 +25,8 @@ pub struct Printer {
     lp: HashMap<Leaf,LeafPrinter>
 }
 
-impl Printer {
-    pub fn new(canv_el: &HtmlElement) -> Printer {
+impl WebGLPrinter {
+    pub fn new(canv_el: &HtmlElement) -> WebGLPrinter {
         let canvas = canv_el.clone().try_into().unwrap();
         let ctx: glctx = domutil::get_context(&canvas);
         ctx.clear_color(1.0,1.0,1.0,1.0);
@@ -33,19 +34,12 @@ impl Printer {
         let ctx_rc = Rc::new(ctx);
         let progs = Programs::new(&ctx_rc);
         let acm = AllCanvasAllocator::new(".bpane-container .managedcanvasholder");
-        Printer {
+        WebGLPrinter {
             canv_el: canv_el.clone(),
             acm, ctx: ctx_rc,
             base_progs: progs,
             lp: HashMap::<Leaf,LeafPrinter>::new()
         }
-    }
-
-    pub fn finish(&mut self) {
-        for (_i,mut lp) in &mut self.lp {
-            lp.finish(&mut self.acm);
-        }
-        self.acm.finish();
     }
 
     fn create_new_leafs(&mut self, leafs: &Vec<Leaf>) {
@@ -110,9 +104,11 @@ impl Printer {
                 lp.execute(&pt);
             }
         }
-    }
+    }        
+}
 
-    pub fn go(&mut self, stage: &Stage, oom: &StateManager, compo: &mut Compositor) {
+impl Printer for WebGLPrinter {
+    fn print(&mut self, stage: &Stage, oom: &StateManager, compo: &mut Compositor) {
         self.manage_leafs(compo);
         let prop = compo.get_prop_trans();
         if let Some(current_train) = compo.get_current_train() {
@@ -124,8 +120,15 @@ impl Printer {
         self.prepare_all();
         self.execute(compo);
     }
-        
-    pub fn set_size(&mut self, s: Dot<i32,i32>) {
+
+    fn destroy(&mut self) {
+        for (_i,mut lp) in &mut self.lp {
+            lp.finish(&mut self.acm);
+        }
+        self.acm.finish();
+    }
+
+    fn set_size(&mut self, s: Dot<i32,i32>) {
         let elel: Element =  self.canv_el.clone().into();
         let elc : CanvasElement = elel.clone().try_into().unwrap();
         elc.set_width(s.0 as u32);
@@ -134,7 +137,7 @@ impl Printer {
         elel.set_attribute("style",&format!("width: {}px; height: {}px",s.0,s.1)).ok();
     }
     
-    pub fn get_available_size(&self) -> Dot<i32,i32> {
+    fn get_available_size(&self) -> Dot<i32,i32> {
         let ws = domutil::window_space(&self.canv_el.parent_node().unwrap().try_into().unwrap());
         let mut size = domutil::size(&self.canv_el.parent_node().unwrap().try_into().unwrap());
         // TODO left/top/right
@@ -143,6 +146,9 @@ impl Printer {
             // off the bottom, fix
             size.1 += rb.1
         }
+        /* Rendering can go fuzzy if available size not multiple of 4 */
+        size.0 = ((size.0+3)/4)*4;
+        size.1 = ((size.1+3)/4)*4;
         size
     }
 }
