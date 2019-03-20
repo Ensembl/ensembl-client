@@ -45,8 +45,8 @@ const TrackPanelBarIcon: FunctionComponent<TrackPanelBarIconProps> = memo(
       const { iconConfig, trackPanelModalView } = props;
 
       return iconConfig.name === trackPanelModalView
-        ? ImageButtonStatus.ACTIVE
-        : ImageButtonStatus.DEFAULT;
+        ? ImageButtonStatus.HIGHLIGHTED
+        : ImageButtonStatus.ACTIVE;
     };
 
     return (
@@ -56,7 +56,6 @@ const TrackPanelBarIcon: FunctionComponent<TrackPanelBarIconProps> = memo(
           description={props.iconConfig.description}
           onClick={toggleModalView}
           image={props.iconConfig.icon}
-          classNames={styles}
         />
       </dt>
     );

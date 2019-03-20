@@ -6,7 +6,8 @@ export enum ImageButtonStatus {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
   DISABLED = 'disabled',
-  DEFAULT = 'default'
+  DEFAULT = 'default',
+  HIGHLIGHTED = 'highlighted'
 }
 
 type Props = {

@@ -10,37 +10,18 @@ import { ReactComponent as PersonalDataIcon } from 'static/img/track-panel/own-d
 import { ReactComponent as ShareIcon } from 'static/img/track-panel/share.svg';
 import { ReactComponent as TracksManagerIcon } from 'static/img/track-panel/tracks-manager.svg';
 
-import trackPanelBarIconStyles from 'src/content/app/browser/track-panel/track-panel-bar/TrackPanelBarIcon.scss';
-
 import ImageButtonParent from './ImageButtonParent.stories';
 
 const trackPanelButtons: any = {
-  BookmarkIcon: [
-    BookmarkIcon,
-    'static/img/track-panel/bookmark.svg',
-    trackPanelBarIconStyles
-  ],
-  DownloadIcon: [
-    DownloadIcon,
-    'static/img/track-panel/download.svg',
-    trackPanelBarIconStyles
-  ],
+  BookmarkIcon: [BookmarkIcon, 'static/img/track-panel/bookmark.svg'],
+  DownloadIcon: [DownloadIcon, 'static/img/track-panel/download.svg'],
   EllipsisIcon: [EllipsisIcon, 'static/img/track-panel/ellipsis.svg'],
-  PersonalDataIcon: [
-    PersonalDataIcon,
-    'static/img/track-panel/own-data.svg',
-    trackPanelBarIconStyles
-  ],
+  PersonalDataIcon: [PersonalDataIcon, 'static/img/track-panel/own-data.svg'],
   SearchIcon: [SearchIcon, 'static/img/track-panel/search.svg'],
-  ShareIcon: [
-    ShareIcon,
-    'static/img/track-panel/share.svg',
-    trackPanelBarIconStyles
-  ],
+  ShareIcon: [ShareIcon, 'static/img/track-panel/share.svg'],
   TracksManagerIcon: [
     TracksManagerIcon,
-    'static/img/track-panel/tracks-manager.svg',
-    trackPanelBarIconStyles
+    'static/img/track-panel/tracks-manager.svg'
   ],
   VisibilityIcon: [VisibilityIcon, 'static/img/track-panel/eye.svg']
 };

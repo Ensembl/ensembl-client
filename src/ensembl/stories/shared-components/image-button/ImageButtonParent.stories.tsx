@@ -22,6 +22,8 @@ const ImageButtonParent = (props: Props) => {
         return setVisible(ImageButtonStatus.ACTIVE);
       case ImageButtonStatus.ACTIVE:
         return setVisible(ImageButtonStatus.INACTIVE);
+      case ImageButtonStatus.INACTIVE:
+        return setVisible(ImageButtonStatus.HIGHLIGHTED);
       default:
         return setVisible(ImageButtonStatus.DEFAULT);
     }
@@ -90,6 +92,20 @@ const ImageButtonParent = (props: Props) => {
           </div>
           <div className={classNames(styles.imageDescription)}>
             {ImageButtonStatus.INACTIVE}
+          </div>
+        </div>
+
+        <div className={classNames(styles.imageCard)}>
+          <div className={classNames(styles.imageHolder)}>
+            <ImageButton
+              buttonStatus={ImageButtonStatus.HIGHLIGHTED}
+              description={'enable/disable'}
+              image={props.image}
+              classNames={computedStyles}
+            />
+          </div>
+          <div className={classNames(styles.imageDescription)}>
+            {ImageButtonStatus.HIGHLIGHTED}
           </div>
         </div>
 
