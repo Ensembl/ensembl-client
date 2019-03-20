@@ -6,11 +6,3 @@ export enum BreakpointWidth {
   MEDIUM = 900,
   LARGE = 1400
 }
-
-export enum AnalyticsCategory {
-  GLOBAL = 'Global'
-}
-
-export enum AnalyticsLabel {
-  DEFAULT = 'Default Action'
-}

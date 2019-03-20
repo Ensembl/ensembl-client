@@ -9,8 +9,3 @@ export const getBreakpoint = (width: number): BreakpointWidth => {
     return BreakpointWidth.SMALL;
   }
 };
-
-export const getAnalyticsFactory = (category: string) => (label: string) => ({
-  category,
-  label
-});

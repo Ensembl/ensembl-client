@@ -1,17 +1,14 @@
 import { createAction } from 'typesafe-actions';
-import {
-  BreakpointWidth,
-  AnalyticsCategory,
-  AnalyticsLabel
-} from './globalConfig';
-import { getAnalyticsFactory } from './globalHelper';
-
-const getAnalyticsObject = getAnalyticsFactory(AnalyticsCategory.GLOBAL);
+import { BreakpointWidth } from './globalConfig';
+import { getGlobalAnalyticsObject } from './analyticsHelper';
 
 export const updateBreakpointWidth = createAction(
   'browser/update-breakpoint-width',
   (resolve) => {
     return (breakpointWidth: BreakpointWidth) =>
-      resolve(breakpointWidth, getAnalyticsObject(AnalyticsLabel.DEFAULT));
+      resolve(
+        breakpointWidth,
+        getGlobalAnalyticsObject({ label: 'Default Action' })
+      );
   }
 );
