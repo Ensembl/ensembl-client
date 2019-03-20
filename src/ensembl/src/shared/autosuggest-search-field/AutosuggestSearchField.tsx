@@ -8,14 +8,14 @@ import styles from './AutosuggestSearchField.scss';
 
 type Props = {
   search: string;
-  onSelect: (match: any) => void;
-  placeholder?: string;
   onChange: (value: string) => void;
+  onSelect: (match: any) => void;
+  matchGroups: GroupOfMatchesType[];
+  placeholder?: string;
   onFocus?: () => void;
   onBlur?: () => void;
   rightCorner?: ReactNode;
   className?: string;
-  matchGroups: GroupOfMatchesType[];
 };
 
 const AutosuggestSearchField = (props: Props) => {
@@ -43,8 +43,11 @@ const AutosuggestSearchField = (props: Props) => {
         onChange={props.onChange}
         className={styles.searchFieldInput}
       />
-      {Boolean(props.matchGroups.length) && !isSelected && (
-        <AutosuggestionPanel matchGroups={props.matchGroups} />
+      {props.search && Boolean(props.matchGroups.length) && !isSelected && (
+        <AutosuggestionPanel
+          matchGroups={props.matchGroups}
+          onSelect={handleSelect}
+        />
       )}
     </div>
   );

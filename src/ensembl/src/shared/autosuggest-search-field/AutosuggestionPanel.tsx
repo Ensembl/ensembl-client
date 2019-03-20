@@ -34,7 +34,6 @@ type MatchIndex = [number, number]; // first number is index of the group; secon
 
 type Props = {
   title?: string;
-  highlightedItemIndex: MatchIndex;
   matchGroups: GroupOfMatchesType[];
   onSelect: (match: any) => void;
 };

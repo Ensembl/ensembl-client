@@ -41,8 +41,9 @@ const Wrapper = (props: any) => {
   return (
     <div className={styles.autosuggestSearchFieldWrapper}>
       <AutosuggestSearchField
-        value={value}
+        search={value}
         onChange={setValue}
+        onSelect={action('autosuggest-search-match-selected')}
         {...otherProps}
       />
     </div>
