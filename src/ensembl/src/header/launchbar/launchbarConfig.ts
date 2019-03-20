@@ -189,14 +189,16 @@ export const launchbarConfig: LaunchbarDetails = {
         //   },
         //   name: 'bulk-download'
         // },
-        // {
-        //   description: 'custom download',
-        //   icon: {
-        //     default: customDownloadIcon,
-        //     selected: customDownloadSelectedIcon
-        //   },
-        //   name: 'custom-download'
-        // }
+        {
+          description: 'custom download',
+          enabled: true,
+          icon: {
+            default: customDownloadIcon,
+            grey: '',
+            selected: customDownloadSelectedIcon
+          },
+          name: 'custom-download'
+        },
         {
           description: 'Downloads',
           enabled: false,

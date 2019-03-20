@@ -24,6 +24,7 @@ const GlobalSearch = lazy(() => import('./global-search/GlobalSearch'));
 const SpeciesSelector = lazy(() =>
   import('./species-selector/SpeciesSelector')
 );
+const CustomDownload = lazy(() => import('./custom-download/CustomDownload'));
 const Browser = lazy(() => import('./browser/Browser'));
 
 type StateProps = {
@@ -66,6 +67,7 @@ export const App: FunctionComponent<AppProps> = (props: AppProps) => {
         <Switch>
           <Route path={`${url}/global-search`} component={GlobalSearch} />
           <Route path={`${url}/species-selector`} component={SpeciesSelector} />
+          <Route path={`${url}/custom-download`} component={CustomDownload} />
           <Route
             path={`${url}/browser/:species/:stableId/`}
             component={Browser}

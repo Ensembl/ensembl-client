@@ -1,0 +1,12 @@
+@import 'src/styles/common';
+
+.preFilterPanel {
+  background-color: $ens-light-grey;
+  height: 300px;
+}
+
+.panelTitle {
+  margin-left: 45px;
+  color: $ens-dark-grey;
+  padding-top: 10px;
+}
