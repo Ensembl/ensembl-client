@@ -1,11 +1,13 @@
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 
+use model::train::Traveller;
+
 const MAX_PENDING : i32 = 0;
 const CACHE_SIZE : usize = 10;
 
 use composit::{
-    ActiveSource, Leaf, Traveller, AllSourceResponseBuilder
+    ActiveSource, Leaf, AllSourceResponseBuilder
 };
 
 pub struct ComponentManager {

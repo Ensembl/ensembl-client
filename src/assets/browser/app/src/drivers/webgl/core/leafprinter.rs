@@ -1,8 +1,9 @@
 use std::rc::Rc;
 
-use print::{ Programs, PrintEdition };
+use super::{ Programs, PrintEdition };
 use program::ProgramType;
-use composit::{ Traveller, Leaf, Stage, ComponentRedo, Train };
+use model::train::{ Train, Traveller };
+use composit::{ Leaf, Stage, ComponentRedo };
 use drawing::{ DrawingSession, AllCanvasAllocator };
 use dom::webgl::WebGLRenderingContext as glctx;
 

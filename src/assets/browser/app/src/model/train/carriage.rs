@@ -1,5 +1,6 @@
 use std::collections::HashMap;
-use composit::{ Traveller, Leaf, ActiveSource };
+use composit::{ Leaf, ActiveSource };
+use super::Traveller;
 
 #[derive(Debug)]
 pub struct Carriage {

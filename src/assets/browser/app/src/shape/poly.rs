@@ -15,7 +15,7 @@ use shape::{ Shape, ColourSpec, MathsShape, ShapeSpec };
 use shape::util::{
     multi_gl, poly_p, vertices_poly, vertices_hollowpoly, despot,
 };
-use print::PrintEdition;
+use drivers::webgl::PrintEdition;
 use drawing::{ Artwork };
 
 #[derive(Clone,Copy,Debug)]

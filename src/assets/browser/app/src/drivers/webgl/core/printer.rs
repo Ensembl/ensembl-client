@@ -4,8 +4,9 @@ use std::rc::Rc;
 use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element, INode, IElement };
 
-use print::{ Programs, LeafPrinter };
-use composit::{ Compositor, Train, StateManager, Leaf, Stage };
+use super::{ Programs, LeafPrinter };
+use composit::{ Compositor, StateManager, Leaf, Stage };
+use model::train::Train;
 use drawing::{ AllCanvasAllocator };
 use dom::domutil;
 use types::{ Dot };

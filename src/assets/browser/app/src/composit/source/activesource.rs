@@ -6,10 +6,11 @@ use std::rc::Rc;
 
 use composit::state::StateExpr;
 use composit::{
-    AllLandscapes, Landscape, Source,
-    Traveller, Leaf, AllSourceResponseBuilder, StateManager,
-    StateValue
+    AllLandscapes, Landscape, Source, Leaf, AllSourceResponseBuilder,
+    StateManager, StateValue
 };
+
+use model::train::{ Traveller };
 
 use super::SourcePart;
 

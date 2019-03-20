@@ -11,7 +11,7 @@ use shape::{ Shape, ShapeSpec, ShapeInstanceData, ShapeShortInstanceData, Facade
 use shape::util::{ rectangle_t, multi_gl, vertices_rect };
 
 use drawing::{ Artist, Artwork, DrawingSpec };
-use print::PrintEdition;
+use drivers::webgl::PrintEdition;
 
 #[derive(Clone,Copy,Debug)]
 pub enum TexturePosition<T: Clone+Copy+Debug> {

@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use program::{ ProgramAttribs, DataGroupIndex, ProgramType };
 use types::{ Colour };
-use print::{ Programs, PrintEdition };
+use drivers::webgl::{ Programs, PrintEdition };
 use drawing::{ Artist, Artwork, Drawing, DrawingSession };
 
 pub trait Shape {

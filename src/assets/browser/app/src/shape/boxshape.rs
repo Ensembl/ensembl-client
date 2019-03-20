@@ -1,5 +1,5 @@
 use drawing::Artwork;
-use print::PrintEdition;
+use drivers::webgl::PrintEdition;
 use program::{ PTGeom, PTMethod, ProgramType, ProgramAttribs, Input };
 use shape::{ ColourSpec, Shape, ShapeSpec };
 use shape::util::{ despot, vertices_hollowpoly, poly_p, multi_gl };

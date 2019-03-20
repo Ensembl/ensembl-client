@@ -16,7 +16,7 @@ use controller::output::{ OutputAction, Report, ViewportReport };
 use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, XferCache, XferClerk };
 use debug::add_debug_sticks;
 use dom::domutil;
-use print::Printer;
+use drivers::webgl::Printer;
 use tácode::Tácode;
 
 const CANVAS : &str = r##"<canvas></canvas>"##;

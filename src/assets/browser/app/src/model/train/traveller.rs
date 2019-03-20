@@ -1,11 +1,11 @@
 use std::fmt;
 
-use print::{ Programs, PrintEdition };
+use drivers::webgl::{ Programs, PrintEdition };
 use composit::{
     SourceResponseBuilder, Leaf, ActiveSource, DrawnResponse,
     SourceResponseResult
 };
-use composit::state::{ StateManager, StateValue, ComponentRedo };
+use composit::{ StateManager, StateValue, ComponentRedo };
 use drawing::DrawingSession;
 
 pub struct Traveller {

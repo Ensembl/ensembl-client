@@ -11,8 +11,9 @@
  * render.
  */
 
-use composit::{ Leaf, Train, ComponentManager, ActiveSource, Stick, Scale };
+use composit::{ Leaf, ComponentManager, ActiveSource, Stick, Scale };
 use controller::output::Report;
+use super::Train;
 
 const MS_FADE : f64 = 100.;
 const OUTER_TRAINS : usize = 0;

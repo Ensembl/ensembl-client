@@ -1,5 +1,5 @@
 use shape::{ Spot, CanvasIdx };
-use print::Programs;
+use super::Programs;
 use drawing::DrawingSession;
 
 pub struct PrintEdition {

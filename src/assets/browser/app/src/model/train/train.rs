@@ -1,10 +1,10 @@
 use std::collections::{ HashMap, HashSet };
 
 use composit::{
-    Leaf, Traveller, StateManager, Scale,
-    ComponentManager, ActiveSource, Stick, Carriage
+    Leaf, StateManager, Scale, ComponentRedo,
+    ComponentManager, ActiveSource, Stick,
 };
-use composit::state::ComponentRedo;
+use super::{ Carriage, Traveller };
 
 const MAX_FLANK : i32 = 3;
 

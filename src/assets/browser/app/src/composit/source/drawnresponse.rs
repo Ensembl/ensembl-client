@@ -2,8 +2,8 @@ use composit::SourceResponseBuilder;
 use composit::Source;
 use drawing::Drawing;
 use drawing::DrawingSession;
-use print::PrintEdition;
-use print::Programs;
+use drivers::webgl::PrintEdition;
+use drivers::webgl::Programs;
 use shape::{ ShapeSpec, Shape };
 
 pub struct DrawnResponse {

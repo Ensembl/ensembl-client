@@ -1,7 +1,9 @@
 use composit::{
-    ActiveSource, Leaf, Train, ComponentManager, Stick, TrainManager,
-    Scale, ComponentSet
+    ActiveSource, Leaf, ComponentManager, Stick, Scale, ComponentSet
 };
+
+use model::train::{ Train, TrainManager };
+
 use controller::global::AppRunner;
 use controller::output::Report;
 use data::{ Psychic, PsychicPacer, XferCache, XferRequest, XferClerk };

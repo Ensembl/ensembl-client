@@ -6,7 +6,7 @@ use shape::{ Shape, ShapeSpec };
 use shape::util::{ rectangle_g, rectangle_t, vertices_rect };
 
 use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
-use print::PrintEdition;
+use drivers::webgl::PrintEdition;
 use drawing::{ Artist, Artwork, DrawingSpec };
 
 #[derive(Clone)]
