@@ -15,7 +15,8 @@ import PrivacyBanner from './shared/privacy-banner/PrivacyBanner';
 import { updateBreakpointWidth } from './globalActions';
 import { getBreakpointWidth } from './globalSelectors';
 import { RootState } from './store';
-import { BreakpointWidth, getBreakpoint } from './globalConfig';
+import { BreakpointWidth } from './globalConfig';
+import { getBreakpoint } from './globalHelper';
 
 import styles from './Root.scss';
 
