@@ -1,10 +1,11 @@
+use std::cell::RefCell;
 use std::collections::{ HashMap, HashSet };
 use std::rc::Rc;
 
 use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element, INode, IElement };
 
-use super::{ Programs, LeafPrinter };
+use super::{ Programs, CarriagePrinter };
 use composit::{ Compositor, StateManager, Leaf, Stage };
 use model::driver::Printer;
 use model::train::Train;
@@ -17,16 +18,45 @@ use stdweb::web::html_element::{
     CanvasElement
 };
 
-pub struct WebGLPrinter {
+pub struct WebGLTrainPrinter{}
+
+impl WebGLTrainPrinter {
+    pub fn new() -> WebGLTrainPrinter {
+        WebGLTrainPrinter {}
+    }
+    
+    fn execute(&mut self, printer: &mut WebGLPrinterBase, t: &mut Train) {
+        let leafs = t.leafs();
+        for pt in &printer.base_progs.order {
+            for ref leaf in &leafs {
+                let lp = &mut expect!(printer.lp.get_mut(&leaf)); 
+                lp.execute(&pt);
+            }
+        }
+    }
+    
+    fn prepare(&mut self, printer: &mut WebGLPrinterBase, stage: &Stage, oom: &StateManager,
+                     train: &mut Train, opacity: f32) {
+        for carriage in train.get_carriages() {
+            let leaf = carriage.get_leaf().clone();
+            if let Some(lp) = &mut printer.lp.get_mut(&leaf) {
+                let redo = carriage.calc_level(oom);
+                lp.prepare(carriage,&mut printer.acm,redo,stage,opacity);
+            }
+        }
+    }
+}
+
+pub struct WebGLPrinterBase {
     canv_el: HtmlElement,
     ctx: Rc<glctx>,
     base_progs: Programs,
     acm: AllCanvasAllocator,
-    lp: HashMap<Leaf,LeafPrinter>
+    lp: HashMap<Leaf,CarriagePrinter>
 }
 
-impl WebGLPrinter {
-    pub fn new(canv_el: &HtmlElement) -> WebGLPrinter {
+impl WebGLPrinterBase {
+    pub fn new(canv_el: &HtmlElement) -> WebGLPrinterBase {
         let canvas = canv_el.clone().try_into().unwrap();
         let ctx: glctx = domutil::get_context(&canvas);
         ctx.clear_color(1.0,1.0,1.0,1.0);
@@ -34,11 +64,11 @@ impl WebGLPrinter {
         let ctx_rc = Rc::new(ctx);
         let progs = Programs::new(&ctx_rc);
         let acm = AllCanvasAllocator::new(".bpane-container .managedcanvasholder");
-        WebGLPrinter {
+        WebGLPrinterBase {
             canv_el: canv_el.clone(),
             acm, ctx: ctx_rc,
             base_progs: progs,
-            lp: HashMap::<Leaf,LeafPrinter>::new()
+            lp: HashMap::<Leaf,CarriagePrinter>::new()
         }
     }
 
@@ -46,7 +76,7 @@ impl WebGLPrinter {
         for leaf in leafs.iter() {
             if !self.lp.contains_key(leaf) {
                 let progs = self.base_progs.clean_instance();
-                self.lp.insert(leaf.clone(),LeafPrinter::new(&mut self.acm,leaf,&progs,&self.ctx));
+                self.lp.insert(leaf.clone(),CarriagePrinter::new(&mut self.acm,&leaf,&progs,&self.ctx));
             }
         }
     }
@@ -66,10 +96,17 @@ impl WebGLPrinter {
         }
     }
 
-    fn manage_leafs(&mut self, c: &mut Compositor) {
-        let leafs = c.all_printing_leafs();
-        self.create_new_leafs(&leafs);
-        self.remove_old_leafs(&leafs);        
+    fn manage_leafs(&mut self, c: &mut Compositor) {        
+        if let Some(ref train) = c.get_transition_train(false) {
+            let leafs = train.leafs();
+            self.create_new_leafs(&leafs);
+            //self.remove_old_leafs(&leafs);        
+        }
+        if let Some(ref train) = c.get_current_train(false) {
+            let leafs = train.leafs();
+            self.create_new_leafs(&leafs);
+            //self.remove_old_leafs(&leafs);        
+        }
     }
 
     fn prepare_all(&mut self) {
@@ -83,51 +120,7 @@ impl WebGLPrinter {
         self.ctx.depth_mask(false);
         self.ctx.clear(glctx::COLOR_BUFFER_BIT | glctx::DEPTH_BUFFER_BIT);
     }
-
-    fn prepare_scale(&mut self, stage: &Stage, oom: &StateManager, 
-                     sc: &mut Train, opacity: f32) {
-        let leafs = sc.leafs();
-        for ref leaf in &leafs {
-            if let Some(lp) = &mut self.lp.get_mut(&leaf) {
-                let redo = sc.calc_level(leaf,oom);
-                lp.into_objects(&leaf,sc,&mut self.acm,redo);
-                lp.take_snap(stage,opacity);
-            }
-        }
-    }
-        
-    fn execute(&mut self, c: &mut Compositor) {
-        let leafs = c.all_printing_leafs();
-        for pt in &self.base_progs.order {
-            for ref leaf in &leafs {
-                let lp = &mut self.lp.get_mut(&leaf).unwrap();
-                lp.execute(&pt);
-            }
-        }
-    }        
-}
-
-impl Printer for WebGLPrinter {
-    fn print(&mut self, stage: &Stage, oom: &StateManager, compo: &mut Compositor) {
-        self.manage_leafs(compo);
-        let prop = compo.get_prop_trans();
-        if let Some(current_train) = compo.get_current_train() {
-            self.prepare_scale(stage,oom,current_train,1.-prop);
-        }
-        if let Some(transition_train) = compo.get_transition_train() {
-            self.prepare_scale(stage,oom,transition_train,prop);
-        }
-        self.prepare_all();
-        self.execute(compo);
-    }
-
-    fn destroy(&mut self) {
-        for (_i,mut lp) in &mut self.lp {
-            lp.finish(&mut self.acm);
-        }
-        self.acm.finish();
-    }
-
+    
     fn set_size(&mut self, s: Dot<i32,i32>) {
         let elel: Element =  self.canv_el.clone().into();
         let elc : CanvasElement = elel.clone().try_into().unwrap();
@@ -150,5 +143,60 @@ impl Printer for WebGLPrinter {
         size.0 = ((size.0+3)/4)*4;
         size.1 = ((size.1+3)/4)*4;
         size
+    }
+
+    fn destroy(&mut self) {
+        for (_i,mut lp) in &mut self.lp {
+            lp.finish(&mut self.acm);
+        }
+        self.acm.finish();
+    }
+}
+
+pub struct WebGLPrinter {
+    base: Rc<RefCell<WebGLPrinterBase>>
+}
+
+impl WebGLPrinter {
+    pub fn new(canv_el: &HtmlElement) -> WebGLPrinter {
+        WebGLPrinter {
+            base: Rc::new(RefCell::new(WebGLPrinterBase::new(canv_el)))
+        }
+    }
+}
+
+impl Printer for WebGLPrinter {
+    fn print(&mut self, stage: &Stage, oom: &StateManager, compo: &mut Compositor) {
+        self.base.borrow_mut().manage_leafs(compo);
+        let prop = compo.get_prop_trans();
+        if let Some(train) = compo.get_current_train(true) {
+            let mut tp = WebGLTrainPrinter::new();
+            tp.prepare(&mut self.base.borrow_mut(),stage,oom,train,1.-prop);
+        }
+        if let Some(train) = compo.get_transition_train(true) {
+            let mut tp = WebGLTrainPrinter::new();
+            tp.prepare(&mut self.base.borrow_mut(),stage,oom,train,prop);
+        }
+        self.base.borrow_mut().prepare_all();
+        if let Some(train) = compo.get_transition_train(true) {
+            let mut tp = WebGLTrainPrinter::new();
+            tp.execute(&mut self.base.borrow_mut(),train);
+        }
+        if let Some(train) = compo.get_current_train(true) {
+            let mut tp = WebGLTrainPrinter::new();
+            tp.execute(&mut self.base.borrow_mut(),train);
+        }
+    }
+
+    fn destroy(&mut self) {
+        self.base.borrow_mut().destroy();
+    }
+
+    fn set_size(&mut self, s: Dot<i32,i32>) {
+        self.base.borrow_mut().set_size(s);
+    }
+    
+    fn get_available_size(&self) -> Dot<i32,i32> {
+        self.base.borrow().get_available_size()
     }
 }

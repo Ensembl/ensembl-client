@@ -1,20 +1,25 @@
 use std::collections::HashMap;
 use composit::{ Leaf, ActiveSource };
+use composit::{ ComponentRedo, StateManager };
 use super::Traveller;
 
 #[derive(Debug)]
 pub struct Carriage {
     travellers: HashMap<(ActiveSource,Option<String>),Traveller>,
-    needs_rebuild: bool
+    needs_rebuild: bool,
+    leaf: Leaf
 }
 
 impl Carriage {
-    pub(in super) fn new() -> Carriage {
+    pub(in super) fn new(leaf: &Leaf) -> Carriage {
         Carriage {
             travellers: HashMap::<(ActiveSource,Option<String>),Traveller>::new(),
-            needs_rebuild: false
+            needs_rebuild: false,
+            leaf: leaf.clone()
         }
     }
+    
+    pub fn get_leaf(&self) -> &Leaf { &self.leaf }
     
     pub(in super) fn set_needs_rebuild(&mut self) {
         self.needs_rebuild = true;
@@ -33,11 +38,11 @@ impl Carriage {
                                traveller.get_part().clone()),traveller);
     }
         
-    pub(in super) fn all_travellers(&self) -> Vec<&Traveller> {
+    pub fn all_travellers(&self) -> Vec<&Traveller> {
         self.travellers.values().collect()
     }
 
-    pub(in super) fn all_travellers_mut(&mut self) -> Vec<&mut Traveller> {
+    pub fn all_travellers_mut(&mut self) -> Vec<&mut Traveller> {
         self.travellers.values_mut().collect()
     }
     
@@ -47,4 +52,28 @@ impl Carriage {
         }
         return true;
     }
+    
+    pub fn calc_level(&mut self, oom: &StateManager) -> ComponentRedo {
+        /* Any change due to component changes? */
+        let mut redo = ComponentRedo::None;
+        for t in &mut self.all_travellers_mut() {
+            redo = redo | t.update_state(oom);
+        }
+        if redo == ComponentRedo::Major && self.is_done() {
+            self.needs_rebuild = false;
+        }
+        if redo != ComponentRedo::None {
+            console!("redo {:?}",redo);
+        }
+        /* Any change due to availability? */
+        if self.is_done() {
+            if self.needs_rebuild {
+                self.needs_rebuild = false;
+                debug!("redraw","stale {:?}",self.leaf);
+                return ComponentRedo::Major;
+            }
+        }
+        redo
+    }
+
 }

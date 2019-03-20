@@ -113,12 +113,12 @@ impl Compositor {
         self.updated = true;
     }
 
-    pub fn get_current_train(&mut self) -> Option<&mut Train> {
-        self.train_manager.get_current_train()
+    pub fn get_current_train(&mut self, if_printable: bool) -> Option<&mut Train> {
+        self.train_manager.get_current_train(if_printable)
     }
 
-    pub fn get_transition_train(&mut self) -> Option<&mut Train> {
-        self.train_manager.get_transition_train()
+    pub fn get_transition_train(&mut self, if_printable: bool) -> Option<&mut Train> {
+        self.train_manager.get_transition_train(if_printable)
     }
     
     pub fn get_component_set(&mut self) -> &mut ComponentSet {
@@ -133,11 +133,7 @@ impl Compositor {
             );
         }
         self.components.add(c);
-    }
-    
-    pub fn all_printing_leafs(&self) -> Vec<Leaf> {
-        self.train_manager.all_printing_leafs()
-    }
+    }    
 }
 
 pub fn register_compositor_ticks(ar: &mut AppRunner) {

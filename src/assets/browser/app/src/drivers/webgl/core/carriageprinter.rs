@@ -2,21 +2,21 @@ use std::rc::Rc;
 
 use super::{ Programs, PrintEdition };
 use program::ProgramType;
-use model::train::{ Train, Traveller };
+use model::train::{ Train, Traveller, Carriage };
 use composit::{ Leaf, Stage, ComponentRedo };
 use drawing::{ DrawingSession, AllCanvasAllocator };
 use dom::webgl::WebGLRenderingContext as glctx;
 
-pub struct LeafPrinter {
+pub struct CarriagePrinter {
     ds: DrawingSession,
     leaf: Leaf,
     progs: Programs,
     ctx: Rc<glctx>
 }
 
-impl LeafPrinter {
-    pub fn new(acm: &mut AllCanvasAllocator, leaf: &Leaf, progs: &Programs, ctx: &Rc<glctx>) -> LeafPrinter {
-        LeafPrinter {
+impl CarriagePrinter {
+    pub fn new(acm: &mut AllCanvasAllocator, leaf: &Leaf, progs: &Programs, ctx: &Rc<glctx>) -> CarriagePrinter {
+        CarriagePrinter {
             ds: acm.make_drawing_session(),
             leaf: leaf.clone(),
             progs: progs.clean_instance(),
@@ -71,19 +71,16 @@ impl LeafPrinter {
         self.fini(&mut e);
     }
     
-    pub fn into_objects(&mut self, leaf: &Leaf,
-                        sc: &mut Train,
+    pub fn prepare(&mut self,
+                        carriage: &mut Carriage,
                         aca: &mut AllCanvasAllocator,
-                        level: ComponentRedo) {
-        if level == ComponentRedo::None { return; }
-        if let Some(ref mut travs) = sc.get_travellers(leaf) {
+                        level: ComponentRedo,stage: &Stage, opacity: f32) {
+        if level != ComponentRedo::None {
+            let mut travs = carriage.all_travellers_mut();
             if travs.len() > 0 {
-                self.redraw_travellers(travs,aca,level == ComponentRedo::Major);
+                self.redraw_travellers(&mut travs,aca,level == ComponentRedo::Major);
             }
         }
-    }
-
-    pub fn take_snap(&mut self, stage: &Stage, opacity: f32) {        
         for k in &self.progs.order {
             let prog = self.progs.map.get_mut(k).unwrap();
             let u = stage.get_uniforms(&self.leaf, opacity);

@@ -4,6 +4,7 @@ use composit::{
     Leaf, StateManager, Scale, ComponentRedo,
     ComponentManager, ActiveSource, Stick,
 };
+use drivers::webgl::WebGLTrainPrinter;
 use super::{ Carriage, Traveller };
 
 const MAX_FLANK : i32 = 3;
@@ -95,7 +96,7 @@ impl Train {
     /* add leafs created below */
     fn add_carriages_to_leaf(&mut self, leaf: Leaf, mut cc: Vec<Traveller>) {
         if !self.carriages.contains_key(&leaf) {
-            self.carriages.insert(leaf.clone(),Carriage::new());
+            self.carriages.insert(leaf.clone(),Carriage::new(&leaf));
         }
         let mut ts = self.carriages.get_mut(&leaf).unwrap();
         for lc in cc.drain(..) {
@@ -171,6 +172,10 @@ impl Train {
     pub fn get_travellers(&mut self, leaf: &Leaf) -> Option<Vec<&mut Traveller>> {
         if !self.is_done() { return None; }
         self.carriages.get_mut(leaf).map(|x| x.all_travellers_mut())
+    }
+    
+    pub fn get_carriages(&mut self) -> Vec<&mut Carriage> {
+        self.carriages.values_mut().collect()
     }
     
     /* how much redrawing is needed? */
