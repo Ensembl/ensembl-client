@@ -11,7 +11,11 @@ type MatchType = {
 };
 
 type MatchProps = MatchType & {
+  groupIndex: number;
+  itemIndex: number;
   isHighlighted: boolean;
+  onHover: (itemIndex: MatchIndex) => void;
+  onClick: (itemIndex: MatchIndex) => void;
 };
 
 export type GroupOfMatchesType = {
@@ -20,7 +24,10 @@ export type GroupOfMatchesType = {
 };
 
 type GroupOfMatchesProps = GroupOfMatchesType & {
-  highlightedItemIndex?: number;
+  groupIndex: number;
+  highlightedItemIndex: number | null;
+  onItemHover: (itemIndex: MatchIndex) => void;
+  onItemClick: (itemIndex: MatchIndex) => void;
 };
 
 type MatchIndex = [number, number]; // first number is index of the group; second number is index of item within this group
@@ -29,8 +36,6 @@ type Props = {
   title?: string;
   highlightedItemIndex: MatchIndex;
   matchGroups: GroupOfMatchesType[];
-  onNext: () => void;
-  onPrevious: () => void;
   onSelect: (match: any) => void;
 };
 
@@ -70,37 +75,69 @@ function getPreviousItemIndex(
 }
 
 const AutosuggestSearchField = (props: Props) => {
-  const [highlightedItemIndex, dispatch] = useReducer(reducer, [0, 0]);
-
   function reducer(highlightedItemIndex: MatchIndex, action: any) {
     switch (action.type) {
       case 'next':
         return getNextItemIndex(props.matchGroups, highlightedItemIndex);
       case 'previous':
         return getPreviousItemIndex(props.matchGroups, highlightedItemIndex);
+      case 'set':
+        return action.payload;
     }
   }
 
-  const handleKeypress = (event: KeyboardEvent) => {
-    if (event.keyCode === keyCodes.UP) {
-      dispatch({ type: 'previous' });
-    } else if (event.keyCode === keyCodes.DOWN) {
-      dispatch({ type: 'next' });
-    }
-  };
+  const [highlightedItemIndex, dispatch] = useReducer(reducer, [0, 0]);
 
   useEffect(() => {
     window.addEventListener('keyup', handleKeypress);
     return () => window.removeEventListener('keyup', handleKeypress);
   }, []);
 
-  const groupsOfMatches = props.matchGroups.map((group, index) => {
-    const highlightProps =
-      index === highlightedItemIndex[0]
-        ? { highlightedItemIndex: highlightedItemIndex[1] }
-        : {};
+  const handleKeypress = (event: KeyboardEvent) => {
+    if (event.keyCode === keyCodes.UP) {
+      dispatch({ type: 'previous' });
+    } else if (event.keyCode === keyCodes.DOWN) {
+      dispatch({ type: 'next' });
+    } else if (event.keyCode === keyCodes.ENTER) {
+      handleEnter();
+    }
+  };
 
-    return <GroupOfMatches key={index} {...group} {...highlightProps} />;
+  const handleItemHover = (itemIndex: MatchIndex) => {
+    dispatch({ type: 'set', payload: itemIndex });
+  };
+
+  const handleItemClick = (itemIndex: MatchIndex) => {
+    props.onSelect(getMatchData(itemIndex));
+  };
+
+  const handleEnter = () => {
+    props.onSelect(getMatchData(highlightedItemIndex));
+  };
+
+  const getMatchData = (itemIndex: MatchIndex) => {
+    const [groupIndex, matchIndex] = itemIndex;
+    return props.matchGroups[groupIndex].matches[matchIndex].data;
+  };
+
+  const groupsOfMatches = props.matchGroups.map((group, index) => {
+    const isGroupWithHighlightedItem = index === highlightedItemIndex[0];
+    const groupProps = {
+      groupIndex: index,
+      highlightedItemIndex: isGroupWithHighlightedItem
+        ? highlightedItemIndex[1]
+        : null
+    };
+
+    return (
+      <GroupOfMatches
+        key={index}
+        onItemHover={handleItemHover}
+        onItemClick={handleItemClick}
+        {...group}
+        {...groupProps}
+      />
+    );
   });
 
   return <div className={styles.autosuggestionPlate}>{groupsOfMatches}</div>;
@@ -111,7 +148,11 @@ const GroupOfMatches = (props: GroupOfMatchesProps) => {
     return (
       <Match
         key={index}
+        groupIndex={props.groupIndex}
+        itemIndex={index}
         isHighlighted={index === props.highlightedItemIndex}
+        onHover={props.onItemHover}
+        onClick={props.onItemClick}
         {...match}
       />
     );
@@ -121,11 +162,27 @@ const GroupOfMatches = (props: GroupOfMatchesProps) => {
 };
 
 const Match = (props: MatchProps) => {
-  const className = classNames({
+  const index: MatchIndex = [props.groupIndex, props.itemIndex];
+
+  const className = classNames(styles.autosuggestionPlateItem, {
     [styles.autosuggestionPlateHighlightedItem]: props.isHighlighted
   });
 
-  return <div className={className}>{props.element}</div>;
+  const handleHover = () => {
+    if (!props.isHighlighted) {
+      props.onHover(index);
+    }
+  };
+
+  const handleClick = () => {
+    props.onClick(index);
+  };
+
+  return (
+    <div className={className} onMouseOver={handleHover} onClick={handleClick}>
+      {props.element}
+    </div>
+  );
 };
 
 export default AutosuggestSearchField;

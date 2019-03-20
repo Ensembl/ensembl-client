@@ -8,6 +8,7 @@ import styles from './AutosuggestSearchField.scss';
 
 type Props = {
   search: string;
+  onSelect: (match: any) => void;
   placeholder?: string;
   onChange: (value: string) => void;
   onFocus?: () => void;
@@ -23,6 +24,11 @@ const AutosuggestSearchField = (props: Props) => {
   useEffect(() => {
     setIsSelected(false);
   }, [props.search]);
+
+  const handleSelect = (match: any) => {
+    setIsSelected(true);
+    props.onSelect(match);
+  };
 
   const className = classNames(
     styles.autosuggestionSearchField,

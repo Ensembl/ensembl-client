@@ -21,6 +21,10 @@
   }
 }
 
+.autosuggestionPlateItem {
+  cursor: pointer;
+}
+
 .autosuggestionPlateHighlightedItem {
   background-color: $ens-light-blue;
 }
