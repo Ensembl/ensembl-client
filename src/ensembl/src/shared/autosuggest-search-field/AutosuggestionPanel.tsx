@@ -93,6 +93,8 @@ const AutosuggestSearchField = (props: Props) => {
   }, []);
 
   const handleKeypress = (event: KeyboardEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
     if (event.keyCode === keyCodes.UP) {
       dispatch({ type: 'previous' });
     } else if (event.keyCode === keyCodes.DOWN) {

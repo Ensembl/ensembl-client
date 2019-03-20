@@ -5,6 +5,8 @@ import { action } from '@storybook/addon-actions';
 import AutosuggestSearchField from 'src/shared/autosuggest-search-field/AutosuggestSearchField';
 import QuestionButton from 'src/shared/question-button/QuestionButton';
 
+import notes from './autosuggestSearchField.md';
+
 import * as matches from 'tests/data/species-selector/species-search';
 
 import styles from './AutosuggestSearchField.stories.scss';
@@ -43,7 +45,7 @@ const Wrapper = (props: any) => {
       <AutosuggestSearchField
         search={value}
         onChange={setValue}
-        onSelect={action('autosuggest-search-match-selected')}
+        onSelect={(match: any) => setValue(match.description)}
         {...otherProps}
       />
     </div>
@@ -59,5 +61,6 @@ storiesOf('Components|Shared Components/AutosuggestSearchField', module).add(
       matchGroups={groupedMatches}
       rightCorner={<QuestionButton onHover={action('question-button-hover')} />}
     />
-  )
+  ),
+  { notes }
 );
