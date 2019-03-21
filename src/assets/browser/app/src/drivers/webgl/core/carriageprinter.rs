@@ -3,12 +3,12 @@ use std::rc::Rc;
 use super::{ Programs, PrintEdition };
 use program::ProgramType;
 use model::train::{ Train, Traveller, Carriage };
-use composit::{ Leaf, Stage, ComponentRedo };
-use drawing::{ DrawingSession, AllCanvasAllocator };
+use composit::{ Leaf, Stage, ComponentRedo, StateManager };
+use drawing::{ CarriageCanvases, AllCanvasAllocator };
 use dom::webgl::WebGLRenderingContext as glctx;
 
 pub struct CarriagePrinter {
-    ds: DrawingSession,
+    prev_cc: Option<CarriageCanvases>,
     leaf: Leaf,
     progs: Programs,
     ctx: Rc<glctx>
@@ -17,64 +17,64 @@ pub struct CarriagePrinter {
 impl CarriagePrinter {
     pub fn new(acm: &mut AllCanvasAllocator, leaf: &Leaf, progs: &Programs, ctx: &Rc<glctx>) -> CarriagePrinter {
         CarriagePrinter {
-            ds: acm.make_drawing_session(),
+            prev_cc: None,
             leaf: leaf.clone(),
             progs: progs.clean_instance(),
             ctx: ctx.clone()
         }
     }
 
-    pub fn finish(&mut self, alloc: &mut AllCanvasAllocator) {
-        self.ds.finish(alloc);
+    pub fn destroy(&mut self, alloc: &mut AllCanvasAllocator) {
+        if let Some(cc) = self.prev_cc.take() {
+            cc.destroy(alloc);
+        }
     }
 
-    fn new_edition(&mut self) -> PrintEdition {
-        PrintEdition::new(&mut self.ds)
+    fn new_edition(&mut self, cc: CarriageCanvases) -> PrintEdition {
+        PrintEdition::new(cc)
     }
         
-    fn redraw_drawings(&mut self, alloc: &mut AllCanvasAllocator, comps: &mut Vec<&mut Traveller>) {
-        self.ds.finish(alloc);
-        self.ds = alloc.make_drawing_session();
+    fn redraw_drawings(&mut self, alloc: &mut AllCanvasAllocator, comps: &mut Vec<&mut Traveller>) -> CarriageCanvases {
+        let mut cc = alloc.make_carriage_canvases();
         for mut c in comps.iter_mut() {
-            c.draw_drawings(&mut self.ds);
+            c.draw_drawings(&mut cc);
         }
-        self.ds.finalise(alloc);
+        cc.finalise(alloc);
+        cc
     }
     
-    fn redraw_objects(&mut self, comps: &mut Vec<&mut Traveller>,
+    fn redraw_objects(&mut self, travs: &mut Vec<&mut Traveller>,
                           e: &mut PrintEdition) {
-        for c in comps.iter_mut() {
-            if c.is_on() {
-                let old_len = self.progs.size();
-                c.into_objects(&mut self.progs,&mut self.ds,e);
-                //console!("{:?} has {} objects",c,self.progs.size()-old_len);
+        for t in travs.iter_mut() {
+            if t.is_on() {
+                t.into_objects(&mut self.progs,e);
             }
         }
     }
 
-    fn init(&mut self) {
-        self.progs.clear_objects(&self.ctx);
-    }
-    
-    fn fini(&mut self, e: &mut PrintEdition) {
-        self.progs.finalize_objects(&self.ctx,&mut self.ds);
-        e.go(&mut self.progs);
-    }
-
     fn redraw_travellers(&mut self, travs: &mut Vec<&mut Traveller>, aca: &mut AllCanvasAllocator, do_drawings: bool) {
-        self.init();
-        let mut e = self.new_edition();
-        if do_drawings {
-            self.redraw_drawings(aca,travs);
-        }
+        self.progs.clear_objects(&self.ctx);
+        let cc = if self.prev_cc.is_some() && !do_drawings {
+            self.prev_cc.take().unwrap() // Use previous
+        } else {
+            if let Some(prev_cc) = self.prev_cc.take() {
+                prev_cc.destroy(aca);
+            }
+            self.redraw_drawings(aca,travs)
+        };
+        let mut e = self.new_edition(cc);
         self.redraw_objects(travs,&mut e);
-        self.fini(&mut e);
+        self.progs.finalize_objects(&self.ctx,&mut e);
+        e.go(&mut self.progs);
+        self.prev_cc = Some(e.destroy());
     }
     
     pub fn prepare(&mut self,
+                        oom: &StateManager,
                         carriage: &mut Carriage,
                         aca: &mut AllCanvasAllocator,
-                        level: ComponentRedo,stage: &Stage, opacity: f32) {
+                        stage: &Stage, opacity: f32) {
+        let level = carriage.update_state(oom);
         if level != ComponentRedo::None {
             let mut travs = carriage.all_travellers_mut();
             if travs.len() > 0 {

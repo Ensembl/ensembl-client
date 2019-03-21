@@ -5,7 +5,7 @@ use stdweb::web::html_element::CanvasElement;
 use stdweb::unstable::TryInto;
 
 use dom::domutil;
-use drawing::{  DrawingSession, FlatCanvas };
+use drawing::{  CarriageCanvases, FlatCanvas };
 use program::{ CanvasCache, CanvasWeave };
 use types::Dot;
 
@@ -79,9 +79,9 @@ impl AllCanvasAllocator {
         canvas
     }
     
-    pub fn make_drawing_session(&mut self) -> DrawingSession {
+    pub fn make_carriage_canvases(&mut self) -> CarriageCanvases {
         self.idx += 1;
         let idx = self.idx;
-        DrawingSession::new(self,idx)
+        CarriageCanvases::new(self,idx)
     }    
 }

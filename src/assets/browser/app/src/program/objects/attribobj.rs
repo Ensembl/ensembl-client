@@ -8,8 +8,9 @@ use dom::webgl::{
     WebGLProgram as glprog,
 };
 
-use drawing::DrawingSession;
+use drawing::CarriageCanvases;
 use program::data::{ DataBatch, Input };
+use drivers::webgl::PrintEdition;
 
 use program::objects::Object;
 
@@ -51,7 +52,7 @@ impl ObjectAttrib {
 }
 
 impl Object for ObjectAttrib {
-    fn obj_final(&mut self, batch: &DataBatch, ctx: &glctx, _acm: &DrawingSession) {
+    fn obj_final(&mut self, batch: &DataBatch, ctx: &glctx, _acm: &mut PrintEdition) {
         self.buf.entry(batch.id()).or_insert_with(|| ctx.create_buffer().unwrap());
         if let Some(data) = self.data(batch) {
             if let Some(buf) = self.buffer(batch) {

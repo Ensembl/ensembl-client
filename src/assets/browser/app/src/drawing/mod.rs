@@ -7,13 +7,13 @@ mod flatcanvas;
 mod drawing;
 mod artist;
 mod canvasalloc;
-mod drawingsession;
+mod carriagecanvases;
 mod spec;
 
 pub use self::artist::Artist;
 
 pub use self::drawing::{ Drawing, Artwork };
-pub use self::drawingsession::DrawingSession;
+pub use self::carriagecanvases::CarriageCanvases;
 pub use self::canvasalloc::{ CanvasRemover, AllCanvasAllocator };
 
 pub use self::onecanvasman::{

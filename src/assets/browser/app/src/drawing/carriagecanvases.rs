@@ -5,7 +5,7 @@ use model::train::Traveller;
 use drawing::{ OneCanvasManager, FlatCanvas, AllCanvasAllocator };
 use program::{ CanvasCache, CanvasWeave };
 
-pub struct DrawingSession {
+pub struct CarriageCanvases {
     ds_idx: u32,
     next_canv_idx: u32,
     canvases: HashMap<CanvasWeave,OneCanvasManager>,
@@ -13,9 +13,9 @@ pub struct DrawingSession {
     canvascache: CanvasCache
 }
 
-impl DrawingSession {
-    pub fn new(aca: &mut AllCanvasAllocator, ds_idx: u32) -> DrawingSession {
-        DrawingSession {
+impl CarriageCanvases {
+    pub fn new(aca: &mut AllCanvasAllocator, ds_idx: u32) -> CarriageCanvases {
+        CarriageCanvases {
             ds_idx: ds_idx,
             next_canv_idx: 0,
             canvases: HashMap::<CanvasWeave,OneCanvasManager>::new(),
@@ -23,8 +23,6 @@ impl DrawingSession {
             canvascache: aca.get_canvas_cache().clone()
         }
     }
-
-    pub fn get_ds_idx(&self) -> u32 { self.ds_idx }
 
     pub fn indices(&self) -> HashMap<CanvasWeave,u32> {
         let mut out = HashMap::<CanvasWeave,u32>::new();
@@ -61,10 +59,10 @@ impl DrawingSession {
         }
     }
     
-    pub fn finish(&self, aca: &mut AllCanvasAllocator) {
+    pub fn destroy(&self, aca: &mut AllCanvasAllocator) {
         //self.standin.remove(aca); // XXX standin global now but should be freed on unload
         for ocm in self.canvases.values() {
-            ocm.finish(aca);
+            ocm.destroy(aca);
         }
     }
 }

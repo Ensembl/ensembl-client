@@ -129,7 +129,7 @@ impl OneCanvasManager {
         area_size(pos,size)
     } 
     
-    pub fn finish(&self, aca: &mut AllCanvasAllocator) {
+    pub fn destroy(&self, aca: &mut AllCanvasAllocator) {
         if let Some(ref fc) = self.canvas {
             fc.remove(aca);
         }

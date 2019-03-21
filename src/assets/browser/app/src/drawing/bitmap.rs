@@ -1,6 +1,7 @@
 use std::cmp::{ min, max };
 
-use drawing::{ DrawingHash, FlatCanvas, Artist, DrawingSession, OneCanvasManager, DrawingSpec };
+use drawing::{ DrawingHash, FlatCanvas, Artist, CarriageCanvases, OneCanvasManager, DrawingSpec };
+use drivers::webgl::PrintEdition;
 use program::CanvasWeave;
 use types::{ CPixel, area_size, cpixel };
 
@@ -53,8 +54,8 @@ impl Artist for BitmapArtist {
         self.size
     }
     
-    fn select_canvas<'a>(&self, ds: &'a mut DrawingSession) -> &'a mut OneCanvasManager { 
-        ds.get_ocm(if self.blur { CanvasWeave::Blur } else { CanvasWeave::Pixelate })
+    fn select_canvas<'a>(&self, e: &'a mut CarriageCanvases) -> &'a mut OneCanvasManager { 
+        e.get_ocm(if self.blur { CanvasWeave::Blur } else { CanvasWeave::Pixelate })
     }
 
     fn margin(&self) -> CPixel { cpixel(1,1) }

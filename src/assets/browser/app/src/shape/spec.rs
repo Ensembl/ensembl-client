@@ -8,7 +8,7 @@ use shape::{
 use program::{ ProgramAttribs, DataGroupIndex, ProgramType };
 use types::{ Colour };
 use drivers::webgl::{ Programs, PrintEdition };
-use drawing::{ Artist, Artwork, Drawing, DrawingSession };
+use drawing::{ Artist, Artwork, Drawing, CarriageCanvases };
 
 
 #[derive(Clone)]

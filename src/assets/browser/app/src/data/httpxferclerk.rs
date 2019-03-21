@@ -111,7 +111,7 @@ impl PendingXferBatch {
             let part = format!("{}^{}/{}",short_stick,short_pane,compo);
             url_builder.add(compo,short_stick,short_pane);
         }
-        console!("url: {:?}",url_builder.emit());
+        //console!("url: {:?}",url_builder.emit());
         {
             let mut path = url.path_segments_mut().unwrap();
             path.push(&url_builder.emit());

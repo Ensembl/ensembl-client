@@ -2,7 +2,9 @@ use std::collections::HashMap;
 
 use dom::webgl::WebGLRenderingContext as glctx;
 
-use drawing::DrawingSession;
+use drivers::webgl::PrintEdition;
+
+use drawing::CarriageCanvases;
 use program::{ Program, GPUSpec, ProgramType };
 
 pub struct Programs {
@@ -38,10 +40,10 @@ impl Programs {
         }        
     }
 
-    pub fn finalize_objects(&mut self, ctx: &glctx, ds: &mut DrawingSession) {
+    pub fn finalize_objects(&mut self, ctx: &glctx, e: &mut PrintEdition) {
         for k in &self.order {
             let geom = self.map.get_mut(k).unwrap();
-            geom.data.objects_final(ctx,ds);
+            geom.data.objects_final(ctx,e);
         }
     }
     

@@ -3,8 +3,9 @@ use std::rc::Rc;
 use types::{ CPixel, RPixel, RFraction, cpixel, area };
 use drawing::alloc::Ticket;
 use drawing::{ Artist, OneCanvasManager };
-use drawing::DrawingSession;
+use drawing::CarriageCanvases;
 use program::CanvasWeave;
+use drivers::webgl::PrintEdition;
 
 pub struct Artwork {
     pub pos: RFraction,
@@ -44,8 +45,8 @@ impl Drawing {
         self.0.gen.draw_mask(&mut src.canvas.as_ref().unwrap(),mask_pos + cpixel(1,1));
     }
 
-    pub fn artwork(&self, ds: &mut DrawingSession) -> Artwork {
-        let src = self.0.gen.select_canvas(ds);
+    pub fn artwork(&self, e: &mut PrintEdition) -> Artwork {
+        let src = self.0.gen.select_canvas(e.get_canvases_mut());
         let canvas = src.canvas.as_ref().unwrap();
         let cs = canvas.size().as_fraction();
         let inset = self.0.margin + self.0.padding;

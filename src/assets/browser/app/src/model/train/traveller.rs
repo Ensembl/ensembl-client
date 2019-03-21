@@ -6,7 +6,7 @@ use composit::{
     SourceResponseResult
 };
 use composit::{ StateManager, StateValue, ComponentRedo };
-use drawing::DrawingSession;
+use drawing::CarriageCanvases;
 
 pub struct Traveller {
     comp: ActiveSource,
@@ -58,7 +58,7 @@ impl Traveller {
         }
     }
     
-    pub fn draw_drawings(&mut self, ds: &mut DrawingSession) {
+    pub fn draw_drawings(&mut self, ds: &mut CarriageCanvases) {
         self.promote();
         if let Some(ref mut response) = self.response {
             response.redraw(ds);
@@ -67,10 +67,10 @@ impl Traveller {
 
     pub fn into_objects(&mut self, 
                         progs: &mut Programs,
-                        ds: &mut DrawingSession, e: &mut PrintEdition) {
+                        e: &mut PrintEdition) {
         self.promote();
         if let Some(ref mut response) = self.response {
-            response.into_objects(progs,ds,e);
+            response.into_objects(progs,e);
         }
     }
     

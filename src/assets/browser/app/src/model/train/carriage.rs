@@ -25,14 +25,6 @@ impl Carriage {
         self.needs_rebuild = true;
     }
     
-    pub(in super) fn set_rebuild_pending(&mut self) {
-        self.needs_rebuild = false;
-    }
-    
-    pub(in super) fn needs_rebuild(&self) -> bool {
-        self.needs_rebuild
-    }
-    
     pub(in super) fn add_traveller(&mut self, traveller: Traveller) {
         self.travellers.insert((traveller.get_source().clone(),
                                traveller.get_part().clone()),traveller);
@@ -53,27 +45,20 @@ impl Carriage {
         return true;
     }
     
-    pub fn calc_level(&mut self, oom: &StateManager) -> ComponentRedo {
+    pub fn update_state(&mut self, oom: &StateManager) -> ComponentRedo {
         /* Any change due to component changes? */
         let mut redo = ComponentRedo::None;
         for t in &mut self.all_travellers_mut() {
             redo = redo | t.update_state(oom);
         }
-        if redo == ComponentRedo::Major && self.is_done() {
-            self.needs_rebuild = false;
-        }
-        if redo != ComponentRedo::None {
-            console!("redo {:?}",redo);
-        }
         /* Any change due to availability? */
         if self.is_done() {
             if self.needs_rebuild {
                 self.needs_rebuild = false;
-                debug!("redraw","stale {:?}",self.leaf);
+                console!("redraw {:?}",self.leaf.get_short_spec());
                 return ComponentRedo::Major;
             }
         }
         redo
     }
-
 }

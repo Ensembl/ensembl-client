@@ -39,8 +39,7 @@ impl WebGLTrainPrinter {
         for carriage in train.get_carriages() {
             let leaf = carriage.get_leaf().clone();
             if let Some(lp) = &mut printer.lp.get_mut(&leaf) {
-                let redo = carriage.calc_level(oom);
-                lp.prepare(carriage,&mut printer.acm,redo,stage,opacity);
+                lp.prepare(oom,carriage,&mut printer.acm,stage,opacity);
             }
         }
     }
@@ -80,7 +79,7 @@ impl WebGLPrinterBase {
     
     pub fn remove_leaf(&mut self, leaf: &Leaf) {
         if let Some(mut lp) = self.lp.remove(&leaf) {
-            lp.finish(&mut self.acm);
+            lp.destroy(&mut self.acm);
         }
         self.current.remove(leaf);
     }
@@ -127,7 +126,7 @@ impl WebGLPrinterBase {
 
     fn destroy(&mut self) {
         for (_i,mut lp) in &mut self.lp {
-            lp.finish(&mut self.acm);
+            lp.destroy(&mut self.acm);
         }
         self.acm.finish();
     }    

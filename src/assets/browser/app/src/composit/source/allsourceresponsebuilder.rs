@@ -37,7 +37,6 @@ impl AllSourceResponseBuilder {
     }
     
     pub fn done(&mut self) {
-        console!("DONE");
         self.done = true;
         for (_,(srb,mut srr)) in self.parts.drain() {
             srr.set(srb);
