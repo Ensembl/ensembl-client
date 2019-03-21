@@ -2,10 +2,18 @@ export enum AnalyticsCategory {
   GLOBAL = 'Global'
 }
 
+export enum AnalyticsTransport {
+  BEACON = 'beacon',
+  IMAGE = 'image',
+  XHR = 'xhr'
+}
+
 export type AnalyticsOptions = {
   action?: string;
   label: string;
-  value?: string;
+  nonInteraction?: boolean;
+  transport?: AnalyticsTransport;
+  value?: number;
 };
 
 export type AnalyticsType = {

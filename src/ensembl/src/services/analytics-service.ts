@@ -1,4 +1,5 @@
 import ReactGA from 'react-ga';
+import { AnalyticsType } from 'src/analyticsHelper';
 
 const googleTrackingID = process.env.GOOGLE_ANALYTICS_KEY
   ? process.env.GOOGLE_ANALYTICS_KEY
@@ -19,12 +20,14 @@ class AnalyticsTracking {
 
   // Track an event
   public trackEvent(action: any) {
+    const { ga } = action.meta as AnalyticsType;
+
     this.reactGA.event({
-      action: action.meta.ga.action ? action.meta.ga.action : action.type,
-      category: action.meta.ga.category,
-      label: action.meta.ga.label,
-      value: action.meta.ga.value,
-      nonInteraction: action.meta.ga.nonInteraction
+      action: ga.action ? ga.action : action.type,
+      category: ga.category,
+      label: ga.label,
+      nonInteraction: ga.nonInteraction,
+      value: ga.value
     });
   }
 }
