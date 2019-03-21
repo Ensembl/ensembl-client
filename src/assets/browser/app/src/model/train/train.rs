@@ -19,7 +19,8 @@ pub struct Train {
     middle_leaf: i64,
     preload: bool,
     position_bp: Option<f64>,
-    active: bool
+    active: bool,
+    current: bool
 }
 
 impl Train {
@@ -32,7 +33,8 @@ impl Train {
             middle_leaf: 0,
             carriages: HashMap::<Leaf,Carriage>::new(),
             position_bp: None,
-            active: true
+            active: true,
+            current: false
         }
     }
         
@@ -40,6 +42,14 @@ impl Train {
      * Methods for TRAINMANAGER to call when the user changes something.
      * *****************************************************************
      */
+    
+    /* we are now the current train */
+    pub(in super) fn set_current(&mut self) {
+        self.current = true;
+        for leaf in self.carriages.keys() {
+            self.pm.set_current(leaf);
+        }
+    }
     
     /* are we active (ie should we scan around as the user does?) */
     pub(in super) fn set_active(&mut self, yn: bool) {
@@ -99,7 +109,9 @@ impl Train {
     /* add leafs created below */
     fn add_carriages_to_leaf(&mut self, leaf: Leaf, mut cc: Vec<Traveller>) {
         if !self.carriages.contains_key(&leaf) {
-            self.carriages.insert(leaf.clone(),Carriage::new(&leaf));
+            let mut c = Carriage::new(&leaf);
+            self.pm.set_current(&leaf);
+            self.carriages.insert(leaf.clone(),c);
             self.pm.add_leaf(&leaf);
         }
         let mut ts = self.carriages.get_mut(&leaf).unwrap();

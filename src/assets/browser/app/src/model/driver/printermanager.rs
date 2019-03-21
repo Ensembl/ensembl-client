@@ -59,4 +59,8 @@ impl Printer for PrinterManager {
     fn remove_leaf(&mut self, leaf: &Leaf) {
         self.0.borrow_mut().printer.remove_leaf(leaf);
     }
+    
+    fn set_current(&mut self, leaf: &Leaf) {
+        self.0.borrow_mut().printer.set_current(leaf);
+    }    
 }

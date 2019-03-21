@@ -17,7 +17,7 @@ impl Carriage {
             needs_rebuild: false,
             leaf: leaf.clone()
         }
-    }
+    }    
     
     pub fn get_leaf(&self) -> &Leaf { &self.leaf }
     

@@ -25,10 +25,9 @@ impl WebGLTrainPrinter {
         WebGLTrainPrinter {}
     }
     
-    fn execute(&mut self, printer: &mut WebGLPrinterBase, t: &mut Train) {
-        let leafs = t.leafs();
+    fn execute(&mut self, printer: &mut WebGLPrinterBase, leafs: &Vec<Leaf>) {
         for pt in &printer.base_progs.order {
-            for ref leaf in &leafs {
+            for leaf in leafs.iter() {
                 let lp = &mut expect!(printer.lp.get_mut(&leaf)); 
                 lp.execute(&pt);
             }
@@ -52,7 +51,8 @@ pub struct WebGLPrinterBase {
     ctx: Rc<glctx>,
     base_progs: Programs,
     acm: AllCanvasAllocator,
-    lp: HashMap<Leaf,CarriagePrinter>
+    lp: HashMap<Leaf,CarriagePrinter>,
+    current: HashSet<Leaf>
 }
 
 impl WebGLPrinterBase {
@@ -68,7 +68,8 @@ impl WebGLPrinterBase {
             canv_el: canv_el.clone(),
             acm, ctx: ctx_rc,
             base_progs: progs,
-            lp: HashMap::<Leaf,CarriagePrinter>::new()
+            lp: HashMap::<Leaf,CarriagePrinter>::new(),
+            current: HashSet::<Leaf>::new()
         }
     }
 
@@ -81,6 +82,11 @@ impl WebGLPrinterBase {
         if let Some(mut lp) = self.lp.remove(&leaf) {
             lp.finish(&mut self.acm);
         }
+        self.current.remove(leaf);
+    }
+    
+    fn set_current(&mut self, leaf: &Leaf) {
+        self.current.insert(leaf.clone());
     }
 
     fn prepare_all(&mut self) {
@@ -124,7 +130,7 @@ impl WebGLPrinterBase {
             lp.finish(&mut self.acm);
         }
         self.acm.finish();
-    }
+    }    
 }
 
 #[derive(Clone)]
@@ -154,11 +160,11 @@ impl Printer for WebGLPrinter {
         self.base.borrow_mut().prepare_all();
         if let Some(train) = compo.get_transition_train(true) {
             let mut tp = WebGLTrainPrinter::new();
-            tp.execute(&mut self.base.borrow_mut(),train);
+            tp.execute(&mut self.base.borrow_mut(),&train.leafs());
         }
         if let Some(train) = compo.get_current_train(true) {
             let mut tp = WebGLTrainPrinter::new();
-            tp.execute(&mut self.base.borrow_mut(),train);
+            tp.execute(&mut self.base.borrow_mut(),&train.leafs());
         }
     }
 
@@ -180,5 +186,9 @@ impl Printer for WebGLPrinter {
     
     fn remove_leaf(&mut self, leaf: &Leaf) {
         self.base.borrow_mut().remove_leaf(leaf);
+    }
+    
+    fn set_current(&mut self, leaf: &Leaf) {
+        self.base.borrow_mut().set_current(leaf);
     }
 }

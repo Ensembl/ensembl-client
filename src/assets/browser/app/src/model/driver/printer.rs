@@ -20,4 +20,5 @@ pub trait Printer {
     
     fn add_leaf(&mut self, leaf: &Leaf);
     fn remove_leaf(&mut self, leaf: &Leaf);
+    fn set_current(&mut self, leaf: &Leaf);
 }
