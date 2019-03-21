@@ -9,6 +9,7 @@ type Props = {
   search: string;
   placeholder?: string;
   onChange: (value: string) => void;
+  onSubmit?: (value: string) => void;
   onFocus?: () => void;
   onBlur?: () => void;
   rightCorner?: ReactNode;
@@ -19,8 +20,14 @@ const SearchField = (props: Props) => {
   const { rightCorner } = props;
   const className = classNames(styles.searchField, props.className);
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    props.onSubmit && props.onSubmit(props.search);
+  };
+
   return (
-    <div className={className}>
+    <form className={className} onSubmit={handleSubmit}>
       <Input
         value={props.search}
         onChange={props.onChange}
@@ -31,7 +38,7 @@ const SearchField = (props: Props) => {
       {rightCorner && (
         <div className={styles.searchFieldRightCorner}>{rightCorner}</div>
       )}
-    </div>
+    </form>
   );
 };
 

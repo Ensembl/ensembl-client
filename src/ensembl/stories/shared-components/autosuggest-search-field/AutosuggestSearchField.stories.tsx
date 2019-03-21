@@ -45,22 +45,44 @@ const Wrapper = (props: any) => {
       <AutosuggestSearchField
         search={value}
         onChange={setValue}
-        onSelect={(match: any) => setValue(match.description)}
+        onSelect={(match: any) => {
+          setValue(match.description);
+          action('autosuggest-search-field-select')(match);
+        }}
         {...otherProps}
       />
     </div>
   );
 };
 
-storiesOf('Components|Shared Components/AutosuggestSearchField', module).add(
-  'default',
-  () => (
-    <Wrapper
-      searchField={AutosuggestSearchField}
-      className={styles.autosuggestSearchField}
-      matchGroups={groupedMatches}
-      rightCorner={<QuestionButton onHover={action('question-button-hover')} />}
-    />
-  ),
-  { notes }
-);
+storiesOf('Components|Shared Components/AutosuggestSearchField', module)
+  .add(
+    'default',
+    () => (
+      <Wrapper
+        searchField={AutosuggestSearchField}
+        className={styles.autosuggestSearchField}
+        matchGroups={groupedMatches}
+        rightCorner={
+          <QuestionButton onHover={action('question-button-hover')} />
+        }
+      />
+    ),
+    { notes }
+  )
+  .add(
+    'allowing raw search submission',
+    () => (
+      <Wrapper
+        searchField={AutosuggestSearchField}
+        className={styles.autosuggestSearchField}
+        matchGroups={groupedMatches}
+        allowRawInputSubmission={true}
+        onSubmit={action('autosuggest-search-field-submit')}
+        rightCorner={
+          <QuestionButton onHover={action('question-button-hover')} />
+        }
+      />
+    ),
+    { notes }
+  );

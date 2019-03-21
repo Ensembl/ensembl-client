@@ -1,4 +1,10 @@
-import React, { useReducer, useEffect, ReactNode } from 'react';
+import React, {
+  forwardRef,
+  useReducer,
+  useEffect,
+  useImperativeHandle,
+  ReactNode
+} from 'react';
 import classNames from 'classnames';
 
 import * as keyCodes from 'src/shared/constants/keyCodes';
@@ -32,117 +38,141 @@ type GroupOfMatchesProps = GroupOfMatchesType & {
 
 type MatchIndex = [number, number]; // first number is index of the group; second number is index of item within this group
 
+export type AutosuggestionPanelRef = {
+  getIndexOfHighlightedItem: () => MatchIndex | null;
+};
+
 type Props = {
   title?: string;
   matchGroups: GroupOfMatchesType[];
   onSelect: (match: any) => void;
+  allowRawInputSubmission: boolean;
 };
 
-function getNextItemIndex(
-  matchGroups: GroupOfMatchesType[],
-  currentItemIndex: MatchIndex
-) {
-  const [groupIndex, itemIndex] = currentItemIndex;
-  const currentGroup = matchGroups[groupIndex];
-  if (itemIndex < currentGroup.matches.length - 1) {
+function getNextItemIndex(props: Props, currentItemIndex: MatchIndex | null) {
+  const { matchGroups, allowRawInputSubmission } = props;
+  const [groupIndex, itemIndex] = currentItemIndex || [null, null];
+  const currentGroup = groupIndex && matchGroups[groupIndex];
+  const firstItemIndex = [0, 0];
+
+  if (itemIndex === null) {
+    return firstItemIndex;
+  } else if (currentGroup && itemIndex < currentGroup.matches.length - 1) {
     return [groupIndex, itemIndex + 1];
   } else if (groupIndex === matchGroups.length - 1) {
-    // if this is the last item, cycle back to the first
-    return [0, 0];
-  } else {
+    // this is the last item; either return null if submitting raw input is allowed, or
+    // cycle back to the first item in the list
+    return allowRawInputSubmission ? null : firstItemIndex;
+  } else if (typeof groupIndex === 'number') {
     return [groupIndex + 1, 0];
   }
 }
 
 function getPreviousItemIndex(
-  matchGroups: GroupOfMatchesType[],
-  currentItemIndex: MatchIndex
+  props: Props,
+  currentItemIndex: MatchIndex | null
 ) {
-  const [groupIndex, itemIndex] = currentItemIndex;
-  if (itemIndex > 0) {
+  const { matchGroups, allowRawInputSubmission } = props;
+  const [groupIndex, itemIndex] = currentItemIndex || [null, null];
+  const lastGroupIndex = matchGroups.length - 1;
+  const lastGroupItemIndex = matchGroups[lastGroupIndex].matches.length - 1;
+  const lastItemIndex = [lastGroupIndex, lastGroupItemIndex];
+  if (itemIndex === null) {
+    return lastItemIndex;
+  } else if (itemIndex > 0) {
     return [groupIndex, itemIndex - 1];
   } else if (groupIndex === 0) {
-    // if this is the first item, cycle back to the last
-    const lastGroupIndex = matchGroups.length - 1;
-    const lastGroupItemIndex = matchGroups[lastGroupIndex].matches.length - 1;
-    return [lastGroupIndex, lastGroupItemIndex];
-  } else {
+    // this is the first item; either return null if submitting raw input is allowed, or
+    // cycle back to the last item in the list
+    return allowRawInputSubmission ? null : lastItemIndex;
+  } else if (typeof groupIndex === 'number') {
     const previousGroupIndex = groupIndex - 1;
     const lastItemIndex = matchGroups[previousGroupIndex].matches.length - 1;
     return [previousGroupIndex, lastItemIndex];
   }
 }
 
-const AutosuggestSearchField = (props: Props) => {
-  function reducer(highlightedItemIndex: MatchIndex, action: any) {
-    switch (action.type) {
-      case 'next':
-        return getNextItemIndex(props.matchGroups, highlightedItemIndex);
-      case 'previous':
-        return getPreviousItemIndex(props.matchGroups, highlightedItemIndex);
-      case 'set':
-        return action.payload;
+const AutosuggestSearchField = forwardRef<AutosuggestionPanelRef, Props>(
+  (props, ref) => {
+    function reducer(highlightedItemIndex: MatchIndex | null, action: any) {
+      switch (action.type) {
+        case 'next':
+          return getNextItemIndex(props, highlightedItemIndex);
+        case 'previous':
+          return getPreviousItemIndex(props, highlightedItemIndex);
+        case 'set':
+          return action.payload;
+      }
     }
-  }
+    const initialHighlightedItemIndex = props.allowRawInputSubmission
+      ? null
+      : [0, 0];
 
-  const [highlightedItemIndex, dispatch] = useReducer(reducer, [0, 0]);
+    const [highlightedItemIndex, dispatch] = useReducer(
+      reducer,
+      initialHighlightedItemIndex
+    );
 
-  useEffect(() => {
-    window.addEventListener('keyup', handleKeypress);
-    return () => window.removeEventListener('keyup', handleKeypress);
-  }, []);
+    useEffect(() => {
+      window.addEventListener('keyup', handleKeypress);
+      return () => window.removeEventListener('keyup', handleKeypress);
+    }, []);
 
-  const handleKeypress = (event: KeyboardEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-    if (event.keyCode === keyCodes.UP) {
-      dispatch({ type: 'previous' });
-    } else if (event.keyCode === keyCodes.DOWN) {
-      dispatch({ type: 'next' });
-    } else if (event.keyCode === keyCodes.ENTER) {
-      handleEnter();
-    }
-  };
+    useImperativeHandle(
+      ref,
+      () => ({
+        getIndexOfHighlightedItem: () => highlightedItemIndex
+      }),
+      [highlightedItemIndex]
+    );
 
-  const handleItemHover = (itemIndex: MatchIndex) => {
-    dispatch({ type: 'set', payload: itemIndex });
-  };
-
-  const handleItemClick = (itemIndex: MatchIndex) => {
-    props.onSelect(getMatchData(itemIndex));
-  };
-
-  const handleEnter = () => {
-    props.onSelect(getMatchData(highlightedItemIndex));
-  };
-
-  const getMatchData = (itemIndex: MatchIndex) => {
-    const [groupIndex, matchIndex] = itemIndex;
-    return props.matchGroups[groupIndex].matches[matchIndex].data;
-  };
-
-  const groupsOfMatches = props.matchGroups.map((group, index) => {
-    const isGroupWithHighlightedItem = index === highlightedItemIndex[0];
-    const groupProps = {
-      groupIndex: index,
-      highlightedItemIndex: isGroupWithHighlightedItem
-        ? highlightedItemIndex[1]
-        : null
+    const handleKeypress = (event: KeyboardEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.keyCode === keyCodes.UP) {
+        dispatch({ type: 'previous' });
+      } else if (event.keyCode === keyCodes.DOWN) {
+        dispatch({ type: 'next' });
+      }
     };
 
-    return (
-      <GroupOfMatches
-        key={index}
-        onItemHover={handleItemHover}
-        onItemClick={handleItemClick}
-        {...group}
-        {...groupProps}
-      />
-    );
-  });
+    const handleItemHover = (itemIndex: MatchIndex) => {
+      dispatch({ type: 'set', payload: itemIndex });
+    };
 
-  return <div className={styles.autosuggestionPlate}>{groupsOfMatches}</div>;
-};
+    const handleItemClick = (itemIndex: MatchIndex) => {
+      props.onSelect(getMatchData(itemIndex));
+    };
+
+    const getMatchData = (itemIndex: MatchIndex) => {
+      const [groupIndex, matchIndex] = itemIndex;
+      return props.matchGroups[groupIndex].matches[matchIndex].data;
+    };
+
+    const groupsOfMatches = props.matchGroups.map((group, index) => {
+      const isGroupWithHighlightedItem =
+        Boolean(highlightedItemIndex) && index === highlightedItemIndex[0];
+      const groupProps = {
+        groupIndex: index,
+        highlightedItemIndex: isGroupWithHighlightedItem
+          ? highlightedItemIndex[1]
+          : null
+      };
+
+      return (
+        <GroupOfMatches
+          key={index}
+          onItemHover={handleItemHover}
+          onItemClick={handleItemClick}
+          {...group}
+          {...groupProps}
+        />
+      );
+    });
+
+    return <div className={styles.autosuggestionPlate}>{groupsOfMatches}</div>;
+  }
+);
 
 const GroupOfMatches = (props: GroupOfMatchesProps) => {
   const matches = props.matches.map((match: MatchType, index: number) => {
