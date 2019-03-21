@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
@@ -38,18 +38,29 @@ const groupedMatches = [
 
 const Wrapper = (props: any) => {
   const [value, setValue] = useState('');
+  const [isSelected, setIsSelected] = useState(false);
   const { searchField: AutosuggestSearchField, ...otherProps } = props;
+
+  useEffect(() => {
+    setIsSelected(false);
+  }, [value]);
 
   return (
     <div className={styles.autosuggestSearchFieldWrapper}>
       <AutosuggestSearchField
         search={value}
         onChange={setValue}
+        onSubmit={() => {
+          setIsSelected(true);
+          action('autosuggest-search-field-submit');
+        }}
         onSelect={(match: any) => {
           const { description } = match;
           setValue(description);
+          setIsSelected(true);
           action('autosuggest-search-field-select')(description);
         }}
+        canShowSuggestions={!isSelected}
         {...otherProps}
       />
     </div>
@@ -79,7 +90,6 @@ storiesOf('Components|Shared Components/AutosuggestSearchField', module)
         className={styles.autosuggestSearchField}
         matchGroups={groupedMatches}
         allowRawInputSubmission={true}
-        onSubmit={action('autosuggest-search-field-submit')}
         rightCorner={
           <QuestionButton onHover={action('question-button-hover')} />
         }
