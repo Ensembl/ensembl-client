@@ -94,9 +94,9 @@ const AutosuggestSearchField = (props: Props) => {
     } else if (higlightedItemIndex) {
       const [groupIndex, itemIndex] = higlightedItemIndex;
       const match = props.matchGroups[groupIndex].matches[itemIndex];
-      console.log('match', match);
       props.onSelect(match.data);
     }
+    setIsSelected(true);
   };
 
   const shouldShowSuggestions =

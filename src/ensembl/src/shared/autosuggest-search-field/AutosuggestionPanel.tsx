@@ -52,7 +52,8 @@ type Props = {
 function getNextItemIndex(props: Props, currentItemIndex: MatchIndex | null) {
   const { matchGroups, allowRawInputSubmission } = props;
   const [groupIndex, itemIndex] = currentItemIndex || [null, null];
-  const currentGroup = groupIndex && matchGroups[groupIndex];
+  const currentGroup =
+    typeof groupIndex === 'number' ? matchGroups[groupIndex] : null;
   const firstItemIndex = [0, 0];
 
   if (itemIndex === null) {

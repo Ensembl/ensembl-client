@@ -46,8 +46,9 @@ const Wrapper = (props: any) => {
         search={value}
         onChange={setValue}
         onSelect={(match: any) => {
-          setValue(match.description);
-          action('autosuggest-search-field-select')(match);
+          const { description } = match;
+          setValue(description);
+          action('autosuggest-search-field-select')(description);
         }}
         {...otherProps}
       />
