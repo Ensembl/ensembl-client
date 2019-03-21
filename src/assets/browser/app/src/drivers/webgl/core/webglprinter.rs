@@ -72,40 +72,14 @@ impl WebGLPrinterBase {
         }
     }
 
-    fn create_new_leafs(&mut self, leafs: &Vec<Leaf>) {
-        for leaf in leafs.iter() {
-            if !self.lp.contains_key(leaf) {
-                let progs = self.base_progs.clean_instance();
-                self.lp.insert(leaf.clone(),CarriagePrinter::new(&mut self.acm,&leaf,&progs,&self.ctx));
-            }
-        }
+    pub fn add_leaf(&mut self, leaf: &Leaf) {
+        let progs = self.base_progs.clean_instance();
+        self.lp.insert(leaf.clone(),CarriagePrinter::new(&mut self.acm,&leaf,&progs,&self.ctx));
     }
-
-    fn remove_old_leafs(&mut self, leafs: &Vec<Leaf>) {
-        let mut ls = HashSet::new();
-        for leaf in leafs {
-            ls.insert(leaf);
-        }
-        let keys : Vec<Leaf> = self.lp.keys().map(|s| s.clone()).collect();
-        for leaf in keys {
-            if !ls.contains(&leaf) {
-                if let Some(mut lp) = self.lp.remove(&leaf) {
-                    lp.finish(&mut self.acm);
-                }
-            }
-        }
-    }
-
-    fn manage_leafs(&mut self, c: &mut Compositor) {        
-        if let Some(ref train) = c.get_transition_train(false) {
-            let leafs = train.leafs();
-            self.create_new_leafs(&leafs);
-            //self.remove_old_leafs(&leafs);        
-        }
-        if let Some(ref train) = c.get_current_train(false) {
-            let leafs = train.leafs();
-            self.create_new_leafs(&leafs);
-            //self.remove_old_leafs(&leafs);        
+    
+    pub fn remove_leaf(&mut self, leaf: &Leaf) {
+        if let Some(mut lp) = self.lp.remove(&leaf) {
+            lp.finish(&mut self.acm);
         }
     }
 
@@ -153,6 +127,7 @@ impl WebGLPrinterBase {
     }
 }
 
+#[derive(Clone)]
 pub struct WebGLPrinter {
     base: Rc<RefCell<WebGLPrinterBase>>
 }
@@ -167,7 +142,6 @@ impl WebGLPrinter {
 
 impl Printer for WebGLPrinter {
     fn print(&mut self, stage: &Stage, oom: &StateManager, compo: &mut Compositor) {
-        self.base.borrow_mut().manage_leafs(compo);
         let prop = compo.get_prop_trans();
         if let Some(train) = compo.get_current_train(true) {
             let mut tp = WebGLTrainPrinter::new();
@@ -198,5 +172,13 @@ impl Printer for WebGLPrinter {
     
     fn get_available_size(&self) -> Dot<i32,i32> {
         self.base.borrow().get_available_size()
+    }
+
+    fn add_leaf(&mut self, leaf: &Leaf) {
+        self.base.borrow_mut().add_leaf(leaf);
+    }
+    
+    fn remove_leaf(&mut self, leaf: &Leaf) {
+        self.base.borrow_mut().remove_leaf(leaf);
     }
 }

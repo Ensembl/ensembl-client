@@ -1,4 +1,4 @@
-use composit::{ Compositor, Stage, StateManager };
+use composit::{ Compositor, Stage, StateManager, Leaf };
 use types::Dot;
 
 pub trait Printer {
@@ -17,4 +17,7 @@ pub trait Printer {
      * requested to do so?
      */
     fn get_available_size(&self) -> Dot<i32,i32>;
+    
+    fn add_leaf(&mut self, leaf: &Leaf);
+    fn remove_leaf(&mut self, leaf: &Leaf);
 }

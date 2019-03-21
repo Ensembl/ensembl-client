@@ -1,15 +1,17 @@
 use std::collections::{ HashMap, HashSet };
+use std::ops::Drop;
 
 use composit::{
     Leaf, StateManager, Scale, ComponentRedo,
     ComponentManager, ActiveSource, Stick,
 };
-use drivers::webgl::WebGLTrainPrinter;
+use model::driver::{ Printer, PrinterManager };
 use super::{ Carriage, Traveller };
 
 const MAX_FLANK : i32 = 3;
 
 pub struct Train {
+    pm: PrinterManager,
     carriages: HashMap<Leaf,Carriage>,
     stick: Stick,
     scale: Scale,
@@ -21,8 +23,9 @@ pub struct Train {
 }
 
 impl Train {
-    pub fn new(stick: &Stick, scale: Scale) -> Train {
+    pub fn new(pm: &PrinterManager, stick: &Stick, scale: Scale) -> Train {
         Train {
+            pm: pm.clone(),
             stick: stick.clone(),
             scale, preload: true,
             ideal_flank: 0,
@@ -97,6 +100,7 @@ impl Train {
     fn add_carriages_to_leaf(&mut self, leaf: Leaf, mut cc: Vec<Traveller>) {
         if !self.carriages.contains_key(&leaf) {
             self.carriages.insert(leaf.clone(),Carriage::new(&leaf));
+            self.pm.add_leaf(&leaf);
         }
         let mut ts = self.carriages.get_mut(&leaf).unwrap();
         for lc in cc.drain(..) {
@@ -129,8 +133,9 @@ impl Train {
             }
         }
         for d in doomed {
-            debug!("trains","removing {}",d.get_index());
+            //debug!("trains","removing {}",d.get_index());
             self.carriages.remove(&d);
+            self.pm.remove_leaf(&d);
         }
     }
 
@@ -177,32 +182,13 @@ impl Train {
     pub fn get_carriages(&mut self) -> Vec<&mut Carriage> {
         self.carriages.values_mut().collect()
     }
-    
-    /* how much redrawing is needed? */
-    pub fn calc_level(&mut self, leaf: &Leaf, oom: &StateManager) -> ComponentRedo {
-        /* Any change due to component changes? */
-        let mut redo = ComponentRedo::None;
-        for t in &mut self.get_travellers(leaf).unwrap_or(vec!{}).iter_mut() {
-            redo = redo | t.update_state(oom);
+}
+
+impl Drop for Train {
+    fn drop(&mut self) {
+        for leaf in self.carriages.keys() {
+            self.pm.remove_leaf(leaf);
         }
-        if redo == ComponentRedo::Major && self.is_done() {
-            if let Some(c) = self.carriages.get_mut(&leaf) {
-                c.set_rebuild_pending();
-            }
-        }
-        if redo != ComponentRedo::None {
-            console!("redo {:?}",redo);
-        }
-        /* Any change due to availability? */
-        if self.is_done() {
-            if let Some(c) = self.carriages.get_mut(&leaf) {
-                if c.needs_rebuild() {
-                    c.set_rebuild_pending();
-                    debug!("redraw","stale {:?}",leaf);
-                    return ComponentRedo::Major;
-                }
-            }
-        }
-        redo
     }
 }
+

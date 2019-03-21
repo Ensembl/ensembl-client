@@ -13,12 +13,14 @@
 
 use composit::{ Leaf, ComponentManager, ActiveSource, Stick, Scale };
 use controller::output::Report;
+use model::driver::PrinterManager;
 use super::Train;
 
 const MS_FADE : f64 = 100.;
 const OUTER_TRAINS : usize = 0;
 
 pub struct TrainManager {
+    printer: PrinterManager,
     /* the trains themselves */
     current_train: Option<Train>,
     future_train: Option<Train>,
@@ -34,8 +36,9 @@ pub struct TrainManager {
 }
 
 impl TrainManager {
-    pub fn new() -> TrainManager {
+    pub fn new(printer: PrinterManager) -> TrainManager {
         let mut out = TrainManager {
+            printer,
             current_train: None,
             outer_train: Vec::<Option<Train>>::new(),
             future_train: None,
@@ -63,7 +66,7 @@ impl TrainManager {
     /* utility: makes new train at given scale */
     fn make_train(&mut self, cm: &mut ComponentManager, scale: Scale, preload: bool) -> Option<Train> {
         if let Some(ref stick) = self.stick {
-            let mut f = Train::new(&stick,scale);
+            let mut f = Train::new(&self.printer,&stick,scale);
             f.set_position(self.position_bp);
             f.set_zoom(self.bp_per_screen);
             f.manage_leafs(cm);
@@ -81,7 +84,7 @@ impl TrainManager {
         self.bp_per_screen = bp_per_screen;
         let scale = Scale::best_for_screen(bp_per_screen);
         self.each_train(|x| x.set_active(false));
-        self.current_train = Some(Train::new(st,scale));
+        self.current_train = Some(Train::new(&self.printer,st,scale));
         self.current_train.as_mut().unwrap().set_zoom(bp_per_screen);
         self.transition_train = None;
         self.future_train = None;

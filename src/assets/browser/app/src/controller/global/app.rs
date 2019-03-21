@@ -17,7 +17,7 @@ use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, Xfer
 use debug::add_debug_sticks;
 use dom::domutil;
 use drivers::webgl::WebGLPrinter;
-use model::driver::Printer;
+use model::driver::{ Printer, PrinterManager };
 use tácode::Tácode;
 
 const CANVAS : &str = r##"<canvas></canvas>"##;
@@ -26,7 +26,7 @@ pub struct App {
     ar: AppRunnerWeak,
     browser_el: HtmlElement,
     canv_el: HtmlElement,
-    pub printer: Arc<Mutex<Printer>>,
+    pub printer: Arc<Mutex<PrinterManager>>,
     pub stage: Arc<Mutex<Stage>>,
     pub state: Arc<Mutex<StateManager>>,
     pub compo: Arc<Mutex<Compositor>>,
@@ -50,13 +50,14 @@ impl App {
         add_debug_sticks(&mut csm);
         let cache = XferCache::new(5000,config);
         let clerk = HttpXferClerk::new(http_manager,config,config_url,&cache);
+        let printer = PrinterManager::new(Box::new(WebGLPrinter::new(&canv_el)));
         let mut out = App {
             ar: AppRunnerWeak::none(),
             browser_el: browser_el.clone(),
             canv_el: canv_el.clone(),
-            printer: Arc::new(Mutex::new(WebGLPrinter::new(&canv_el))),
+            printer: Arc::new(Mutex::new(printer.clone())),
             stage:  Arc::new(Mutex::new(Stage::new())),
-            compo: Arc::new(Mutex::new(Compositor::new(&cache,Box::new(clerk.clone())))),
+            compo: Arc::new(Mutex::new(Compositor::new(printer,&cache,Box::new(clerk.clone())))),
             state: Arc::new(Mutex::new(StateManager::new())),
             sticks: Box::new(csm),
             report: None,

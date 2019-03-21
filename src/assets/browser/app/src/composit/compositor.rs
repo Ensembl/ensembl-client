@@ -2,6 +2,7 @@ use composit::{
     ActiveSource, Leaf, ComponentManager, Stick, Scale, ComponentSet
 };
 
+use model::driver::PrinterManager;
 use model::train::{ Train, TrainManager };
 
 use controller::global::AppRunner;
@@ -28,9 +29,9 @@ pub struct Compositor {
 }
 
 impl Compositor {
-    pub fn new(xfercache: &XferCache, xferclerk: Box<XferClerk>) -> Compositor {
+    pub fn new(printer: PrinterManager, xfercache: &XferCache, xferclerk: Box<XferClerk>) -> Compositor {
         Compositor {
-            train_manager: TrainManager::new(),
+            train_manager: TrainManager::new(printer),
             components: ComponentManager::new(),
             bp_per_screen: 1.,
             updated: true,
