@@ -20,6 +20,7 @@ type CommonProps = {
   onBlur?: () => void;
   rightCorner?: ReactNode;
   className?: string;
+  searchFieldClassName?: string;
 };
 
 // allow the user to submit precise content of the search field (not only a suggested match)
@@ -54,7 +55,7 @@ const AutosuggestSearchField = (props: Props) => {
 
       if (
         event.target !== currentElement &&
-        !currentElement.contains(event.target)
+        !currentElement.contains(event.target as HTMLElement)
       ) {
         setCanShowSuggestions(false);
       }
@@ -110,6 +111,10 @@ const AutosuggestSearchField = (props: Props) => {
     styles.autosuggestionSearchField,
     props.className
   );
+  const searchFieldClassName = classNames(
+    styles.searchFieldInput,
+    props.searchFieldClassName
+  );
 
   return (
     <div ref={element} className={className}>
@@ -120,7 +125,7 @@ const AutosuggestSearchField = (props: Props) => {
         onFocus={handleFocus}
         onBlur={handleBlur}
         onSubmit={handleSubmit}
-        className={styles.searchFieldInput}
+        className={searchFieldClassName}
       />
       {shouldShowSuggestions && (
         <AutosuggestionPanel

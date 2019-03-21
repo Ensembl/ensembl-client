@@ -50,9 +50,9 @@ const Wrapper = (props: any) => {
       <AutosuggestSearchField
         search={value}
         onChange={setValue}
-        onSubmit={() => {
+        onSubmit={(value: string) => {
           setIsSelected(true);
-          action('autosuggest-search-field-submit');
+          action('autosuggest-search-field-submit')(value);
         }}
         onSelect={(match: any) => {
           const { description } = match;
@@ -62,11 +62,17 @@ const Wrapper = (props: any) => {
           action('autosuggest-search-field-select')(description);
         }}
         canShowSuggestions={!isSelected}
+        className={styles.autosuggestSearchField}
+        searchFieldClassName={styles.autosuggestSearchFieldInput}
         {...otherProps}
       />
     </div>
   );
 };
+
+const RightCorner = () => (
+  <QuestionButton onHover={action('question-button-hover')} />
+);
 
 storiesOf('Components|Shared Components/AutosuggestSearchField', module)
   .add(
@@ -74,11 +80,8 @@ storiesOf('Components|Shared Components/AutosuggestSearchField', module)
     () => (
       <Wrapper
         searchField={AutosuggestSearchField}
-        className={styles.autosuggestSearchField}
         matchGroups={groupedMatches}
-        rightCorner={
-          <QuestionButton onHover={action('question-button-hover')} />
-        }
+        rightCorner={<RightCorner />}
       />
     ),
     { notes }
@@ -88,12 +91,9 @@ storiesOf('Components|Shared Components/AutosuggestSearchField', module)
     () => (
       <Wrapper
         searchField={AutosuggestSearchField}
-        className={styles.autosuggestSearchField}
         matchGroups={groupedMatches}
         allowRawInputSubmission={true}
-        rightCorner={
-          <QuestionButton onHover={action('question-button-hover')} />
-        }
+        rightCorner={<RightCorner />}
       />
     ),
     { notes }
