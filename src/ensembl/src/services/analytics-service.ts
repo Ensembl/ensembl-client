@@ -27,7 +27,7 @@ class AnalyticsTracking {
       category: ga.category,
       label: ga.label,
       nonInteraction: ga.nonInteraction,
-      transport: ga.transport,
+      transport: 'image',
       value: ga.value
     });
   }
