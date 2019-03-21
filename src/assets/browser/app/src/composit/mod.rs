@@ -15,9 +15,9 @@ mod position;
 mod wrapping;
 
 pub use self::source::{
-    CombinedSource, Source, SourceResponseBuilder, ActiveSource, 
-    DrawnResponse, SourceManager, SourceManagerList, CombinedSourceManager,
-    AllSourceResponseBuilder, SourceResponseResult
+    CombinedSource, Source, SourceResponse, ActiveSource, 
+    SourceManager, SourceManagerList, CombinedSourceManager,
+    AllSourceResponseBuilder
 };
 pub use self::combinedstickmanager::CombinedStickManager;
 pub use self::componentset::ComponentSet;

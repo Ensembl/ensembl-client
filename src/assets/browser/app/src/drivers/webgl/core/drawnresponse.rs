@@ -1,4 +1,4 @@
-use composit::SourceResponseBuilder;
+use composit::SourceResponse;
 use composit::Source;
 use drawing::Drawing;
 use drawing::CarriageCanvases;
@@ -8,11 +8,11 @@ use shape::{ ShapeSpec, Shape };
 
 pub struct DrawnResponse {
     drawings: Vec<Option<Drawing>>,
-    sr: SourceResponseBuilder,
+    sr: SourceResponse,
 }
 
 impl DrawnResponse {
-    pub fn new(sr: SourceResponseBuilder) -> DrawnResponse {
+    pub fn new(sr: SourceResponse) -> DrawnResponse {
         DrawnResponse { 
             sr, 
             drawings: Vec::<Option<Drawing>>::new(),

@@ -1,20 +1,21 @@
 use std::collections::HashMap;
 
-use super::{ SourceResponseBuilder, SourceResponseResult };
+use drivers::webgl::GLSourceResponse;
+use super::SourceResponse;
 
 pub struct AllSourceResponseBuilder {
-    parts: HashMap<Option<String>,(SourceResponseBuilder,SourceResponseResult)>,
+    parts: HashMap<Option<String>,(SourceResponse,GLSourceResponse)>,
     done: bool
 }
 
-fn new_entry() -> (SourceResponseBuilder,SourceResponseResult) {
-    (SourceResponseBuilder::new(),SourceResponseResult::new())
+fn new_entry() -> (SourceResponse,GLSourceResponse) {
+    (SourceResponse::new(),GLSourceResponse::new())
 }
 
 impl AllSourceResponseBuilder {    
     pub fn new(parts: &Vec<String>) -> AllSourceResponseBuilder {
         let mut out = AllSourceResponseBuilder {
-            parts: HashMap::<Option<String>,(SourceResponseBuilder,SourceResponseResult)>::new(),
+            parts: HashMap::<Option<String>,(SourceResponse,GLSourceResponse)>::new(),
             done: false
         };
         for p in parts {
@@ -24,15 +25,15 @@ impl AllSourceResponseBuilder {
         out
     }
     
-    pub fn get_srr(&self, part: &Option<String>) -> SourceResponseResult {
+    pub fn get_srr(&self, part: &Option<String>) -> GLSourceResponse {
         self.parts.get(part).map(|x| x.1.clone()).unwrap()
     }
     
-    pub fn get_mut(&mut self, part: &Option<String>) -> Option<&mut SourceResponseBuilder> {
+    pub fn get_mut(&mut self, part: &Option<String>) -> Option<&mut SourceResponse> {
         self.parts.get_mut(part).map(|x| &mut x.0)
     }
     
-    pub fn remove(&mut self, part: &Option<String>) -> Option<SourceResponseBuilder> {
+    pub fn remove(&mut self, part: &Option<String>) -> Option<SourceResponse> {
         self.parts.remove(part).map(|x| x.0)
     }
     

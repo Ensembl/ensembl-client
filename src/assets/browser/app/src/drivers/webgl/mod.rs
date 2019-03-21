@@ -1,3 +1,3 @@
 mod core;
 
-pub use self::core::{ Programs, WebGLPrinter, WebGLTrainPrinter, PrintEdition, PrintEditionAll, CarriagePrinter };
+pub use self::core::{ GLSourceResponse, DrawnResponse, Programs, WebGLPrinter, WebGLTrainPrinter, PrintEdition, PrintEditionAll, CarriagePrinter };

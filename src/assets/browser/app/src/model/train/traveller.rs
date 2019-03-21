@@ -1,25 +1,24 @@
 use std::fmt;
 
-use drivers::webgl::{ Programs, PrintEditionAll };
 use composit::{
-    SourceResponseBuilder, Leaf, ActiveSource, DrawnResponse,
-    SourceResponseResult
+    SourceResponse, Leaf, ActiveSource,
 };
 use composit::{ StateManager, StateValue, ComponentRedo };
 use drawing::CarriageCanvases;
+use drivers::webgl::{ DrawnResponse, GLSourceResponse };
 
 pub struct Traveller {
     comp: ActiveSource,
     prev_value: StateValue,
     cur_value: StateValue,
-    srr: SourceResponseResult,
+    srr: GLSourceResponse,
     response: Option<DrawnResponse>,
     part: Option<String>,
     leaf: Leaf
 }
 
 impl Traveller {
-    pub fn new(comp: ActiveSource, part: &Option<String>, leaf: &Leaf, srr: SourceResponseResult) -> Traveller {
+    pub fn new(comp: ActiveSource, part: &Option<String>, leaf: &Leaf, srr: GLSourceResponse) -> Traveller {
         Traveller {
             response: None,
             prev_value: StateValue::OffCold(),
@@ -58,27 +57,14 @@ impl Traveller {
         }
     }
     
-    pub fn draw_drawings(&mut self, ds: &mut CarriageCanvases) {
+    pub fn get_response(&mut self) -> Option<&mut DrawnResponse> {
         self.promote();
-        if let Some(ref mut response) = self.response {
-            response.redraw(ds);
-        }
+        return self.response.as_mut()
     }
-
-    pub fn into_objects(&mut self, e: &mut PrintEditionAll) {
-        self.promote();
-        if let Some(ref mut response) = self.response {
-            response.into_objects(e);
-        }
-    }
-    
+        
     pub fn get_leaf(&self) -> &Leaf { &self.leaf }
     pub fn get_source(&self) -> &ActiveSource { &self.comp }
     pub(in super) fn get_part(&self) -> &Option<String> { &self.part }
-    
-    pub fn set_response(&mut self, r: SourceResponseBuilder) {
-        self.response = Some(DrawnResponse::new(r));
-    }
 }
 
 impl fmt::Debug for Traveller {
