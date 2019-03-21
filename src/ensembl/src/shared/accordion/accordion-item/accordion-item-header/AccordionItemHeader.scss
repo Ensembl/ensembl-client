@@ -1,0 +1,38 @@
+@import 'src/styles/common';
+
+.accordionItemHeader {
+  height: 50px;
+  width: 100%;
+  border-bottom: 1px solid #ccc;
+  position: relative;
+}
+
+.accordionItemTitle {
+  position: absolute;
+  top: 20px;
+  position: absolute;
+  top: 50%;
+  margin-top: -9px;
+  left: 20px;
+  color: $ens-dark-grey;
+  font-size: 12px;
+}
+
+.accordionItemToggle {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  margin-top: -9px;
+  transition: rotateY 0.3s linear;
+  svg {
+    height: 18px;
+    width: 18px;
+    fill: $ens-dark-blue;
+    cursor: pointer;
+  }
+
+  &.expanded {
+    transform: rotateX(180deg);
+    transition: rotateX 0.3s linear;
+  }
+}
