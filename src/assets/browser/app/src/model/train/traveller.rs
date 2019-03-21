@@ -1,6 +1,6 @@
 use std::fmt;
 
-use drivers::webgl::{ Programs, PrintEdition };
+use drivers::webgl::{ Programs, PrintEditionAll };
 use composit::{
     SourceResponseBuilder, Leaf, ActiveSource, DrawnResponse,
     SourceResponseResult
@@ -65,12 +65,10 @@ impl Traveller {
         }
     }
 
-    pub fn into_objects(&mut self, 
-                        progs: &mut Programs,
-                        e: &mut PrintEdition) {
+    pub fn into_objects(&mut self, e: &mut PrintEditionAll) {
         self.promote();
         if let Some(ref mut response) = self.response {
-            response.into_objects(progs,e);
+            response.into_objects(e);
         }
     }
     

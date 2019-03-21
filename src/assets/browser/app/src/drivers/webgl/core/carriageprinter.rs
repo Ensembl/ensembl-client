@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use super::{ Programs, PrintEdition };
+use super::{ Programs, PrintEdition, PrintEditionAll };
 use program::ProgramType;
 use model::train::{ Train, Traveller, Carriage };
 use composit::{ Leaf, Stage, ComponentRedo, StateManager };
@@ -10,7 +10,7 @@ use dom::webgl::WebGLRenderingContext as glctx;
 pub struct CarriagePrinter {
     prev_cc: Option<CarriageCanvases>,
     leaf: Leaf,
-    progs: Programs,
+    progs: Option<Programs>,
     ctx: Rc<glctx>
 }
 
@@ -19,7 +19,7 @@ impl CarriagePrinter {
         CarriagePrinter {
             prev_cc: None,
             leaf: leaf.clone(),
-            progs: progs.clean_instance(),
+            progs: Some(progs.clean_instance()),
             ctx: ctx.clone()
         }
     }
@@ -28,10 +28,6 @@ impl CarriagePrinter {
         if let Some(cc) = self.prev_cc.take() {
             cc.destroy(alloc);
         }
-    }
-
-    fn new_edition(&mut self, cc: CarriageCanvases) -> PrintEdition {
-        PrintEdition::new(cc)
     }
         
     fn redraw_drawings(&mut self, alloc: &mut AllCanvasAllocator, comps: &mut Vec<&mut Traveller>) -> CarriageCanvases {
@@ -44,16 +40,15 @@ impl CarriagePrinter {
     }
     
     fn redraw_objects(&mut self, travs: &mut Vec<&mut Traveller>,
-                          e: &mut PrintEdition) {
+                          e: &mut PrintEditionAll) {
         for t in travs.iter_mut() {
             if t.is_on() {
-                t.into_objects(&mut self.progs,e);
+                t.into_objects(e);
             }
         }
     }
 
     fn redraw_travellers(&mut self, travs: &mut Vec<&mut Traveller>, aca: &mut AllCanvasAllocator, do_drawings: bool) {
-        self.progs.clear_objects(&self.ctx);
         let cc = if self.prev_cc.is_some() && !do_drawings {
             self.prev_cc.take().unwrap() // Use previous
         } else {
@@ -62,11 +57,13 @@ impl CarriagePrinter {
             }
             self.redraw_drawings(aca,travs)
         };
-        let mut e = self.new_edition(cc);
+        let mut e = PrintEditionAll::new(cc,self.progs.take().unwrap(),&self.ctx);
         self.redraw_objects(travs,&mut e);
-        self.progs.finalize_objects(&self.ctx,&mut e);
-        e.go(&mut self.progs);
-        self.prev_cc = Some(e.destroy());
+        e.finalize_objects(&self.ctx);
+        e.go();
+        let (prev_cc,progs) = e.destroy();
+        self.prev_cc = Some(prev_cc);
+        self.progs = Some(progs);
     }
     
     pub fn prepare(&mut self,
@@ -81,8 +78,9 @@ impl CarriagePrinter {
                 self.redraw_travellers(&mut travs,aca,level == ComponentRedo::Major);
             }
         }
-        for k in &self.progs.order {
-            let prog = self.progs.map.get_mut(k).unwrap();
+        let mut progs = self.progs.as_mut().unwrap();
+        for k in &progs.order {
+            let prog = progs.map.get_mut(k).unwrap();
             let u = stage.get_uniforms(&self.leaf, opacity);
             for (key, value) in &u {
                 if let Some(obj) = prog.get_object(key) {
@@ -93,7 +91,7 @@ impl CarriagePrinter {
     }
     
     pub fn execute(&mut self, pt: &ProgramType) {
-        let prog = self.progs.map.get_mut(pt).unwrap();
+        let prog = self.progs.as_mut().unwrap().map.get_mut(pt).unwrap();
         prog.execute(&self.ctx);
     }
 }
