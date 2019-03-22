@@ -1,13 +1,5 @@
-import React, {
-  forwardRef,
-  useReducer,
-  useEffect,
-  useImperativeHandle,
-  ReactNode
-} from 'react';
+import React, { ReactNode } from 'react';
 import classNames from 'classnames';
-
-import * as keyCodes from 'src/shared/constants/keyCodes';
 
 import styles from './AutosuggestSearchField.scss';
 
@@ -36,144 +28,50 @@ type GroupOfMatchesProps = GroupOfMatchesType & {
   onItemClick: (itemIndex: MatchIndex) => void;
 };
 
-type MatchIndex = [number, number]; // first number is index of the group; second number is index of item within this group
-
-export type AutosuggestionPanelRef = {
-  getIndexOfHighlightedItem: () => MatchIndex | null;
-};
+export type MatchIndex = [number, number] | null; // first number is index of the group; second number is index of item within this group
 
 type Props = {
   title?: string;
+  highlightedItemIndex: MatchIndex;
   matchGroups: GroupOfMatchesType[];
+  onItemHover: (itemIndex: MatchIndex) => void;
   onSelect: (match: any) => void;
   allowRawInputSubmission: boolean;
 };
 
-function getNextItemIndex(props: Props, currentItemIndex: MatchIndex | null) {
-  const { matchGroups, allowRawInputSubmission } = props;
-  const [groupIndex, itemIndex] = currentItemIndex || [null, null];
-  const currentGroup =
-    typeof groupIndex === 'number' ? matchGroups[groupIndex] : null;
-  const firstItemIndex = [0, 0];
+const AutosuggestSearchField = (props: Props) => {
+  const handleItemClick = (itemIndex: MatchIndex) => {
+    props.onSelect(getMatchData(itemIndex));
+  };
 
-  if (itemIndex === null) {
-    return firstItemIndex;
-  } else if (currentGroup && itemIndex < currentGroup.matches.length - 1) {
-    return [groupIndex, itemIndex + 1];
-  } else if (groupIndex === matchGroups.length - 1) {
-    // this is the last item; either return null if submitting raw input is allowed, or
-    // cycle back to the first item in the list
-    return allowRawInputSubmission ? null : firstItemIndex;
-  } else if (typeof groupIndex === 'number') {
-    return [groupIndex + 1, 0];
-  }
-}
+  const getMatchData = (itemIndex: MatchIndex) => {
+    if (!itemIndex) return;
+    const [groupIndex, matchIndex] = itemIndex;
+    return props.matchGroups[groupIndex].matches[matchIndex].data;
+  };
 
-function getPreviousItemIndex(
-  props: Props,
-  currentItemIndex: MatchIndex | null
-) {
-  const { matchGroups, allowRawInputSubmission } = props;
-  const [groupIndex, itemIndex] = currentItemIndex || [null, null];
-  const lastGroupIndex = matchGroups.length - 1;
-  const lastGroupItemIndex = matchGroups[lastGroupIndex].matches.length - 1;
-  const lastItemIndex = [lastGroupIndex, lastGroupItemIndex];
-  if (itemIndex === null) {
-    return lastItemIndex;
-  } else if (itemIndex > 0) {
-    return [groupIndex, itemIndex - 1];
-  } else if (groupIndex === 0) {
-    // this is the first item; either return null if submitting raw input is allowed, or
-    // cycle back to the last item in the list
-    return allowRawInputSubmission ? null : lastItemIndex;
-  } else if (typeof groupIndex === 'number') {
-    const previousGroupIndex = groupIndex - 1;
-    const lastItemIndex = matchGroups[previousGroupIndex].matches.length - 1;
-    return [previousGroupIndex, lastItemIndex];
-  }
-}
+  const groupsOfMatches = props.matchGroups.map((group, index) => {
+    const { highlightedItemIndex } = props;
+    const [groupIndex, itemIndex] = highlightedItemIndex || [null, null];
+    const isGroupWithHighlightedItem = index === groupIndex;
+    const groupProps = {
+      groupIndex: index,
+      highlightedItemIndex: isGroupWithHighlightedItem ? itemIndex : null
+    };
 
-const AutosuggestSearchField = forwardRef<AutosuggestionPanelRef, Props>(
-  (props, ref) => {
-    function reducer(highlightedItemIndex: MatchIndex | null, action: any) {
-      switch (action.type) {
-        case 'next':
-          return getNextItemIndex(props, highlightedItemIndex);
-        case 'previous':
-          return getPreviousItemIndex(props, highlightedItemIndex);
-        case 'set':
-          return action.payload;
-      }
-    }
-    const initialHighlightedItemIndex = props.allowRawInputSubmission
-      ? null
-      : [0, 0];
-
-    const [highlightedItemIndex, dispatch] = useReducer(
-      reducer,
-      initialHighlightedItemIndex
+    return (
+      <GroupOfMatches
+        key={index}
+        onItemHover={props.onItemHover}
+        onItemClick={handleItemClick}
+        {...group}
+        {...groupProps}
+      />
     );
+  });
 
-    useEffect(() => {
-      window.addEventListener('keyup', handleKeypress);
-      return () => window.removeEventListener('keyup', handleKeypress);
-    }, []);
-
-    useImperativeHandle(
-      ref,
-      () => ({
-        getIndexOfHighlightedItem: () => highlightedItemIndex
-      }),
-      [highlightedItemIndex]
-    );
-
-    const handleKeypress = (event: KeyboardEvent) => {
-      event.preventDefault();
-      event.stopPropagation();
-      if (event.keyCode === keyCodes.UP) {
-        dispatch({ type: 'previous' });
-      } else if (event.keyCode === keyCodes.DOWN) {
-        dispatch({ type: 'next' });
-      }
-    };
-
-    const handleItemHover = (itemIndex: MatchIndex) => {
-      dispatch({ type: 'set', payload: itemIndex });
-    };
-
-    const handleItemClick = (itemIndex: MatchIndex) => {
-      props.onSelect(getMatchData(itemIndex));
-    };
-
-    const getMatchData = (itemIndex: MatchIndex) => {
-      const [groupIndex, matchIndex] = itemIndex;
-      return props.matchGroups[groupIndex].matches[matchIndex].data;
-    };
-
-    const groupsOfMatches = props.matchGroups.map((group, index) => {
-      const isGroupWithHighlightedItem =
-        Boolean(highlightedItemIndex) && index === highlightedItemIndex[0];
-      const groupProps = {
-        groupIndex: index,
-        highlightedItemIndex: isGroupWithHighlightedItem
-          ? highlightedItemIndex[1]
-          : null
-      };
-
-      return (
-        <GroupOfMatches
-          key={index}
-          onItemHover={handleItemHover}
-          onItemClick={handleItemClick}
-          {...group}
-          {...groupProps}
-        />
-      );
-    });
-
-    return <div className={styles.autosuggestionPlate}>{groupsOfMatches}</div>;
-  }
-);
+  return <div className={styles.autosuggestionPlate}>{groupsOfMatches}</div>;
+};
 
 const GroupOfMatches = (props: GroupOfMatchesProps) => {
   const matches = props.matches.map((match: MatchType, index: number) => {

@@ -28,9 +28,9 @@ type Props = {
   autoFocus?: boolean;
   placeholder?: string;
   className?: string; // to customize input styling when using CSS modules
-  onKeyUp: (e: React.SyntheticEvent<HTMLInputElement>) => void;
-  onKeyDown: (e: React.SyntheticEvent<HTMLInputElement>) => void;
-  onKeyPress: (e: React.SyntheticEvent<HTMLInputElement>) => void;
+  onKeyUp: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 } & OnChangeProps;
 
 const Input = (props: Props) => {
@@ -62,6 +62,9 @@ const Input = (props: Props) => {
       onChange={eventHandler('change')}
       onFocus={eventHandler('focus')}
       onBlur={eventHandler('blur')}
+      onKeyUp={props.onKeyUp}
+      onKeyDown={props.onKeyDown}
+      onKeyPress={props.onKeyPress}
     />
   );
 };

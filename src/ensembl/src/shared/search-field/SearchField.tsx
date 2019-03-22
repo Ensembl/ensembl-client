@@ -12,9 +12,9 @@ type Props = {
   onSubmit?: (value: string) => void;
   onFocus?: () => void;
   onBlur?: () => void;
-  onKeyUp?: (e: React.SyntheticEvent<HTMLInputElement>) => void;
-  onKeyDown?: (e: React.SyntheticEvent<HTMLInputElement>) => void;
-  onKeyPress?: (e: React.SyntheticEvent<HTMLInputElement>) => void;
+  onKeyUp?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onKeyPress?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   rightCorner?: ReactNode;
   className?: string;
 };
