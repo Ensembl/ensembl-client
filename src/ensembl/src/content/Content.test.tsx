@@ -1,64 +1,40 @@
 import React from 'react';
-import {
-  withRouter,
-  RouteComponentProps,
-  MemoryRouter
-} from 'react-router-dom';
 import { mount, render } from 'enzyme';
-import toJson from 'enzyme-to-json';
 
-import { Content, getExpandClass } from './Content';
+import { Content, withInnerContent } from './Content';
+import styles from './Content.scss';
 
 describe('<Content />', () => {
-  let WrappedComponent: any;
+  let contentComponent: any;
 
   beforeEach(() => {
-    WrappedComponent = withRouter((props: RouteComponentProps) => (
-      <Content launchbarExpanded={true} {...props} />
-    ));
+    contentComponent = <Content launchbarExpanded={true}>foo</Content>;
+  });
+
+  test('renders without error', () => {
+    expect(() => render(contentComponent)).not.toThrow();
   });
 
   describe('<main> element', () => {
-    let wrapper: any;
-
-    beforeEach(() => {});
-
     test('collapses correctly', () => {
-      wrapper = mount(
-        <MemoryRouter>
-          <WrappedComponent />
-        </MemoryRouter>
-      );
-
-      expect(
-        getExpandClass(wrapper.find(Content).prop('launchbarExpanded'))
-      ).toBe('');
+      const wrapper = render(contentComponent);
+      expect(wrapper.has(`.${styles.shorter}`)).toBeTruthy();
     });
 
     test('expands correctly', () => {
-      WrappedComponent = withRouter((props: RouteComponentProps) => (
-        <Content launchbarExpanded={false} {...props} />
-      ));
-
-      wrapper = mount(
-        <MemoryRouter>
-          <WrappedComponent />
-        </MemoryRouter>
-      );
-
-      expect(getExpandClass(wrapper.prop('launchbarExpanded'))).toBe(
-        'expanded'
-      );
+      const wrapper = render(<Content launchbarExpanded={false}>foo</Content>);
+      expect(wrapper.has(`.${styles.taller}`)).toBeTruthy();
     });
   });
 
-  test('renders correctly', () => {
-    const wrapper = render(
-      <MemoryRouter>
-        <WrappedComponent />
-      </MemoryRouter>
-    );
+  describe('withInnerContent', () => {
+    test('injects content into the Content component', () => {
+      const text = 'I am inner content';
+      const InnerContent = () => <div>{text}</div>;
+      const WithInnerContent = withInnerContent(<InnerContent />);
+      const wrapper = render(<WithInnerContent launchbarExpanded={false} />);
 
-    expect(toJson(wrapper)).toMatchSnapshot();
+      expect(wrapper.text()).toBe(text);
+    });
   });
 });
