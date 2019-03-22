@@ -49,7 +49,8 @@ impl Traveller {
             ComponentRedo::Minor // was/is off-warm, is/was on => Minor
         }
     }
-    
+
+    /* train/carriage */
     pub(in super) fn is_done(&self) -> bool { 
         if self.srr.as_ref().unwrap().check() { return true; }
         return self.response.is_some();
@@ -61,6 +62,7 @@ impl Traveller {
         }
     }
     
+    /* webgl/carriageprinter (x2) */
     pub fn get_response(&mut self) -> Option<&mut DrawnResponse> {
         self.promote();
         return self.response.as_mut()

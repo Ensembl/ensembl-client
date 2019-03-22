@@ -2,8 +2,7 @@ use composit::SourceResponse;
 use composit::Source;
 use drawing::Drawing;
 use drawing::CarriageCanvases;
-use drivers::webgl::PrintEditionAll;
-use drivers::webgl::Programs;
+use super::{ PrintEditionAll, Programs };
 use shape::{ ShapeSpec, Shape };
 
 pub struct DrawnResponse {

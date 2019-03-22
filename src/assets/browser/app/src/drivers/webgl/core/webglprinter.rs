@@ -46,6 +46,7 @@ impl WebGLTrainPrinter {
 }
 
 pub struct WebGLPrinterBase {
+    sridx: usize,
     canv_el: HtmlElement,
     ctx: Rc<glctx>,
     base_progs: Programs,
@@ -64,6 +65,7 @@ impl WebGLPrinterBase {
         let progs = Programs::new(&ctx_rc);
         let acm = AllCanvasAllocator::new(".bpane-container .managedcanvasholder");
         WebGLPrinterBase {
+            sridx: 0,
             canv_el: canv_el.clone(),
             acm, ctx: ctx_rc,
             base_progs: progs,
@@ -130,6 +132,23 @@ impl WebGLPrinterBase {
         }
         self.acm.finish();
     }    
+
+    fn make_partial(&mut self, leaf: &Leaf) -> GLSourceResponse {
+        let idx = self.sridx;
+        self.sridx += 1;
+        let sr = GLSourceResponse::new(idx,leaf);
+        if let Some(cp) = self.lp.get_mut(leaf) {
+            cp.new_sr(&sr);
+        }
+        sr
+    }
+    
+    fn destroy_partial(&mut self, sr: GLSourceResponse) {
+        let leaf = sr.get_leaf().clone();
+        if let Some(cp) = self.lp.get_mut(&leaf) {
+            cp.remove_sr(sr);
+        }        
+    }
 }
 
 #[derive(Clone)]
@@ -192,9 +211,10 @@ impl Printer for WebGLPrinter {
     }
     
     fn make_partial(&mut self, leaf: &Leaf) -> GLSourceResponse {
-        GLSourceResponse::new()
+        self.base.borrow_mut().make_partial(leaf)
     }
     
     fn destroy_partial(&mut self, sr: GLSourceResponse) {
+        self.base.borrow_mut().destroy_partial(sr);
     }
 }

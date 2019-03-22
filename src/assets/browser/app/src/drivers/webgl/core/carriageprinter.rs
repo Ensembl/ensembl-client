@@ -1,6 +1,7 @@
+use std::collections::HashSet;
 use std::rc::Rc;
 
-use super::{ Programs, PrintEdition, PrintEditionAll };
+use super::{ GLSourceResponse, Programs, PrintEdition, PrintEditionAll };
 use program::ProgramType;
 use model::train::{ Train, Traveller, Carriage };
 use composit::{ Leaf, Stage, ComponentRedo, StateManager };
@@ -8,6 +9,7 @@ use drawing::{ CarriageCanvases, AllCanvasAllocator };
 use dom::webgl::WebGLRenderingContext as glctx;
 
 pub struct CarriagePrinter {
+    srr: HashSet<GLSourceResponse>,
     prev_cc: Option<CarriageCanvases>,
     leaf: Leaf,
     progs: Option<Programs>,
@@ -17,6 +19,7 @@ pub struct CarriagePrinter {
 impl CarriagePrinter {
     pub fn new(acm: &mut AllCanvasAllocator, leaf: &Leaf, progs: &Programs, ctx: &Rc<glctx>) -> CarriagePrinter {
         CarriagePrinter {
+            srr: HashSet::<GLSourceResponse>::new(),
             prev_cc: None,
             leaf: leaf.clone(),
             progs: Some(progs.clean_instance()),
@@ -24,6 +27,14 @@ impl CarriagePrinter {
         }
     }
 
+    pub fn new_sr(&mut self, sr: &GLSourceResponse) {
+        self.srr.insert(sr.clone());
+    }
+
+    pub fn remove_sr(&mut self, sr: GLSourceResponse) {
+        self.srr.remove(&sr);
+    }
+    
     pub fn destroy(&mut self, alloc: &mut AllCanvasAllocator) {
         if let Some(cc) = self.prev_cc.take() {
             cc.destroy(alloc);
@@ -43,6 +54,7 @@ impl CarriagePrinter {
     
     fn redraw_objects(&mut self, travs: &mut Vec<&mut Traveller>,
                           e: &mut PrintEditionAll) {
+        console!("redraw_objects({:?})",self.srr);
         for t in travs.iter_mut() {
             if t.is_on() {
                 if let Some(response) = t.get_response() {

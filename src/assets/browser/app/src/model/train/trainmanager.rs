@@ -86,6 +86,7 @@ impl TrainManager {
         self.each_train(|x| x.set_active(false));
         self.current_train = Some(Train::new(&self.printer,st,scale));
         self.current_train.as_mut().unwrap().set_zoom(bp_per_screen);
+        self.current_train.as_mut().unwrap().set_current();
         self.transition_train = None;
         self.future_train = None;
         self.current_train.as_mut().unwrap().set_active(true);
@@ -104,6 +105,7 @@ impl TrainManager {
                 self.transition_prop = Some((t-start)/MS_FADE);
             } else {
                 self.current_train = self.transition_train.take();
+                self.current_train.as_mut().unwrap().set_current();
                 self.transition_start = None;
                 self.transition_prop = None;
             }

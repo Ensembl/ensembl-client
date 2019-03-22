@@ -81,10 +81,12 @@ impl Train {
     }
     
     /* add component to leaf */
-    pub fn add_component(&mut self, cm: &mut TravellerCreator, c: &ActiveSource) {
+    pub fn add_component(&mut self, cm: &mut TravellerCreator, s: &ActiveSource) {
         for leaf in self.leafs() {
-            let lcomps = cm.make_party(c,&leaf);
-            self.add_carriages_to_leaf(leaf,lcomps);
+            let c = self.get_carriage(&leaf);
+            for trav in cm.make_party(s,&leaf) {
+                c.add_traveller(trav);
+            }
         }
         for c in self.carriages.values_mut() {
             c.set_needs_rebuild();
@@ -106,19 +108,14 @@ impl Train {
         f
     }
 
-    /* add leafs created below */
-    fn add_carriages_to_leaf(&mut self, leaf: Leaf, mut cc: Vec<Traveller>) {
+    fn get_carriage(&mut self, leaf: &Leaf) -> &mut Carriage {
         if !self.carriages.contains_key(&leaf) {
             let mut c = Carriage::new(&mut self.pm,&leaf);
-            self.pm.set_current(&leaf);
             self.carriages.insert(leaf.clone(),c);
         }
-        let mut ts = self.carriages.get_mut(&leaf).unwrap();
-        for lc in cc.drain(..) {
-            ts.add_traveller(lc);
-        }
+        self.carriages.get_mut(leaf).unwrap()
     }
-    
+
     /* make leafs to be added */
     fn get_missing_leafs(&mut self) -> Vec<Leaf> {
         let mut out = Vec::<Leaf>::new();
@@ -127,7 +124,6 @@ impl Train {
             let hindex = self.middle_leaf + idx as i64;
             let leaf = Leaf::new(&self.stick,hindex,&self.scale);
             if !self.carriages.contains_key(&leaf) {
-                //debug!("trains","adding {}",hindex);
                 out.push(leaf);
             }
         }
@@ -144,7 +140,6 @@ impl Train {
             }
         }
         for d in doomed {
-            //debug!("trains","removing {}",d.get_index());
             self.carriages.remove(&d);
         }
     }
@@ -154,8 +149,10 @@ impl Train {
         if !self.active { return; }
         self.remove_unused_leafs();
         for leaf in self.get_missing_leafs() {
-            let cc = cm.make_leaf_parties(leaf.clone());
-            self.add_carriages_to_leaf(leaf,cc);
+            let c = self.get_carriage(&leaf);
+            for trav in cm.make_leaf_parties(leaf.clone()) {
+                c.add_traveller(trav);
+            }
         }
     }
 

@@ -68,6 +68,7 @@ impl Carriage {
 
 impl Drop for Carriage {
     fn drop(&mut self) {
+        self.travellers.clear(); // Triggers drop which informs printer
         self.pm.remove_leaf(&self.leaf);
     }
 }
