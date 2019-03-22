@@ -10,8 +10,7 @@ use rand::rngs::SmallRng;
 use rand::SeedableRng;
 
 use composit::{
-    StateFixed, StateValue, StateAtom, Leaf,
-    AllSourceResponseBuilder, Stick
+    StateFixed, StateValue, StateAtom, Leaf, Stick
 };
 
 use debug::support::closuresource::{ ClosureSource, closure_add, closure_add_opt, closure_done };
@@ -21,6 +20,7 @@ use debug::testcards::common::{
 };
 
 use drawing::DrawingHash;
+use model::train::PartyResponses;
 use shape::{
     tape_mathsshape,
     pin_mathsshape,
@@ -54,7 +54,7 @@ fn battenberg() -> DrawingSpec {
                           255,255,0,255 },cpixel(2,2),false,None)
 }
 
-fn measure(lc: &mut AllSourceResponseBuilder, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSpec) {
+fn measure(lc: &mut PartyResponses, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSpec) {
     for x in -10..10 {
         let prts = PinRectTypeSpec {
             sea_x: None,

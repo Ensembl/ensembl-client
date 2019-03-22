@@ -7,7 +7,6 @@ mod landscape;
 mod leaf;
 mod source;
 mod stage;
-mod compmanager;
 mod stick;
 mod stickmanager;
 mod zoom;
@@ -16,13 +15,11 @@ mod wrapping;
 
 pub use self::source::{
     CombinedSource, Source, SourceResponse, ActiveSource, 
-    SourceManager, SourceManagerList, CombinedSourceManager,
-    AllSourceResponseBuilder
+    SourceManager, SourceManagerList, CombinedSourceManager
 };
 pub use self::combinedstickmanager::CombinedStickManager;
 pub use self::componentset::ComponentSet;
 pub use self::compositor::{ Compositor, register_compositor_ticks };
-pub use self::compmanager::{ ComponentManager };
 pub use self::stage::{ Stage };
 pub use self::stick::Stick;
 pub use self::stickmanager::StickManager;

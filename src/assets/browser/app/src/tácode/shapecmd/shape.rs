@@ -4,13 +4,14 @@ use tánaiste::{
     Argument, Command, DataState, Instruction, ProcState, Signature
 };
 
-use composit::{ Leaf, AllSourceResponseBuilder };
+use composit::{ Leaf };
 use drawing::{ DrawingSpec };
 use shape::{
     ColourSpec, Facade, FacadeType, ShapeInstanceData, TypeToShape,
     PinRectTypeSpec, StretchRectTypeSpec, ShapeShortInstanceData,
     TextureTypeSpec, ShapeInstanceDataType, ShapeLongInstanceData
 };
+use model::train::PartyResponses;
 use tácode::core::{ TáContext, TáTask };
 use super::super::shapecmd::{ build_meta };
 use types::{
@@ -82,7 +83,7 @@ fn make_facades(spec: &Box<TypeToShape>, colour: &Vec<f64>, tx: &Vec<DrawingSpec
 }
 
 /* TODO switch long to use make_facades. Can do it, but no time */
-fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut AllSourceResponseBuilder, 
+fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut PartyResponses, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Vec<f64>, part: &Option<String>) {
@@ -111,7 +112,7 @@ fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut AllSourceR
     }    
 }
 
-fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut AllSourceResponseBuilder, 
+fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut PartyResponses, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Vec<f64>, part: &Option<String>) {
@@ -148,7 +149,7 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut AllSource
     }
 }
 
-fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut AllSourceResponseBuilder, 
+fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut PartyResponses, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Vec<f64>, part: &Option<String>) {

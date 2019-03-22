@@ -1,22 +1,26 @@
 use std::collections::HashMap;
 use composit::{ Leaf, ActiveSource };
 use composit::{ ComponentRedo, StateManager };
+use model::driver::{ Printer, PrinterManager };
 use super::Traveller;
 
-#[derive(Debug)]
 pub struct Carriage {
-    travellers: HashMap<(ActiveSource,Option<String>),Traveller>,
+    pm: PrinterManager,
+    travellers: Vec<Traveller>,
     needs_rebuild: bool,
     leaf: Leaf
 }
 
 impl Carriage {
-    pub(in super) fn new(leaf: &Leaf) -> Carriage {
-        Carriage {
-            travellers: HashMap::<(ActiveSource,Option<String>),Traveller>::new(),
+    pub(in super) fn new(pm: &PrinterManager,leaf: &Leaf) -> Carriage {
+        let mut out = Carriage {
+            pm: pm.clone(),
+            travellers: Vec::<Traveller>::new(),
             needs_rebuild: false,
             leaf: leaf.clone()
-        }
+        };
+        out.pm.add_leaf(leaf);
+        out
     }    
     
     pub fn get_leaf(&self) -> &Leaf { &self.leaf }
@@ -26,20 +30,19 @@ impl Carriage {
     }
     
     pub(in super) fn add_traveller(&mut self, traveller: Traveller) {
-        self.travellers.insert((traveller.get_source().clone(),
-                               traveller.get_part().clone()),traveller);
+        self.travellers.push(traveller);
     }
         
     pub fn all_travellers(&self) -> Vec<&Traveller> {
-        self.travellers.values().collect()
+        self.travellers.iter().collect()
     }
 
     pub fn all_travellers_mut(&mut self) -> Vec<&mut Traveller> {
-        self.travellers.values_mut().collect()
+        self.travellers.iter_mut().collect()
     }
     
     pub(in super) fn is_done(&mut self) -> bool {
-        for c in self.travellers.values() {
+        for c in &self.travellers {
             if !c.is_done() { return false; }
         }
         return true;
@@ -60,5 +63,11 @@ impl Carriage {
             }
         }
         redo
+    }
+}
+
+impl Drop for Carriage {
+    fn drop(&mut self) {
+        self.pm.remove_leaf(&self.leaf);
     }
 }

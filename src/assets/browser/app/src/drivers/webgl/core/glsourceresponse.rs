@@ -10,18 +10,22 @@ use composit::SourceResponse;
 pub struct GLSourceResponse(Rc<RefCell<Option<DrawnResponse>>>);
 
 impl GLSourceResponse {
-    pub fn new() -> GLSourceResponse {
+    /* source/allsourceresponsebuilder */
+    pub(in super) fn new() -> GLSourceResponse {
         GLSourceResponse(Rc::new(RefCell::new(None)))
     }
     
+    /* source/allsourceresponsebuilder */
     pub fn set(&mut self, result: SourceResponse) {
         *self.0.borrow_mut() = Some(DrawnResponse::new(result));
     }
     
+    /* train/traveller */
     pub fn take(&mut self) -> Option<DrawnResponse> {
         self.0.borrow_mut().take()
     }
     
+    /* train/traveller */
     pub fn check(&self) -> bool {
         self.0.borrow().is_some()
     }

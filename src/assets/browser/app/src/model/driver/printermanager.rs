@@ -4,6 +4,7 @@ use std::rc::Rc;
 use composit::{ Leaf, Stage, StateManager, Compositor };
 use types::Dot;
 use super::Printer;
+use drivers::webgl::GLSourceResponse;
 
 struct PrinterManagerImpl {
     printer: Box<Printer>
@@ -62,5 +63,13 @@ impl Printer for PrinterManager {
     
     fn set_current(&mut self, leaf: &Leaf) {
         self.0.borrow_mut().printer.set_current(leaf);
-    }    
+    }
+    
+    fn make_partial(&mut self, leaf: &Leaf) -> GLSourceResponse {
+        self.0.borrow_mut().printer.make_partial(leaf)
+    }
+    
+    fn destroy_partial(&mut self, sr: GLSourceResponse) {
+        self.0.borrow_mut().printer.destroy_partial(sr);
+    }
 }

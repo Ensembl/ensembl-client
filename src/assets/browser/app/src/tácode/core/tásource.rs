@@ -3,9 +3,10 @@ use std::rc::Rc;
 
 use tánaiste::Value;
 
-use composit::{ Landscape, Leaf, Source, AllSourceResponseBuilder, ActiveSource };
+use composit::{ Landscape, Leaf, Source, ActiveSource };
 use data::{ XferClerk, XferRequest, XferConsumer, BackendConfig };
 use drawing::DrawingSpec;
+use model::train::PartyResponses;
 use tácode::{ Tácode, TáTask };
 
 pub struct TáSourceImpl {
@@ -31,7 +32,7 @@ impl TáSource {
 }
 
 impl Source for TáSource {
-    fn populate(&self, acs: &ActiveSource, lc: AllSourceResponseBuilder, leaf: &Leaf) {
+    fn populate(&self, acs: &ActiveSource, lc: PartyResponses, leaf: &Leaf) {
         let xfer_req = XferRequest::new(&self.0.borrow_mut().name,leaf,false);
         let tc = self.0.borrow_mut().tc.clone();
         let lid = self.0.borrow_mut().lid;
@@ -42,7 +43,7 @@ impl Source for TáSource {
 }
 
 struct TáXferConsumer {
-    lc: Option<AllSourceResponseBuilder>,
+    lc: Option<PartyResponses>,
     tc: Tácode,
     lid: usize,
     leaf: Leaf,
@@ -51,7 +52,7 @@ struct TáXferConsumer {
 }
 
 impl TáXferConsumer {
-    fn new(tc: &Tácode, acs: &ActiveSource, leaf: &Leaf, lc: AllSourceResponseBuilder, lid: usize, config: &BackendConfig) -> TáXferConsumer {
+    fn new(tc: &Tácode, acs: &ActiveSource, leaf: &Leaf, lc: PartyResponses, lid: usize, config: &BackendConfig) -> TáXferConsumer {
         TáXferConsumer {
             lc: Some(lc),
             lid,

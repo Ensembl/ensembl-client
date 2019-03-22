@@ -3,10 +3,10 @@ use std::ops::Drop;
 
 use composit::{
     Leaf, StateManager, Scale, ComponentRedo,
-    ComponentManager, ActiveSource, Stick,
+    ActiveSource, Stick,
 };
 use model::driver::{ Printer, PrinterManager };
-use super::{ Carriage, Traveller };
+use super::{ Carriage, Traveller, TravellerCreator };
 
 const MAX_FLANK : i32 = 3;
 
@@ -81,9 +81,9 @@ impl Train {
     }
     
     /* add component to leaf */
-    pub fn add_component(&mut self, cm: &mut ComponentManager, c: &ActiveSource) {
+    pub fn add_component(&mut self, cm: &mut TravellerCreator, c: &ActiveSource) {
         for leaf in self.leafs() {
-            let lcomps = cm.make_comp_carriages(c,&leaf);
+            let lcomps = cm.make_party(c,&leaf);
             self.add_carriages_to_leaf(leaf,lcomps);
         }
         for c in self.carriages.values_mut() {
@@ -109,10 +109,9 @@ impl Train {
     /* add leafs created below */
     fn add_carriages_to_leaf(&mut self, leaf: Leaf, mut cc: Vec<Traveller>) {
         if !self.carriages.contains_key(&leaf) {
-            let mut c = Carriage::new(&leaf);
+            let mut c = Carriage::new(&mut self.pm,&leaf);
             self.pm.set_current(&leaf);
             self.carriages.insert(leaf.clone(),c);
-            self.pm.add_leaf(&leaf);
         }
         let mut ts = self.carriages.get_mut(&leaf).unwrap();
         for lc in cc.drain(..) {
@@ -147,16 +146,15 @@ impl Train {
         for d in doomed {
             //debug!("trains","removing {}",d.get_index());
             self.carriages.remove(&d);
-            self.pm.remove_leaf(&d);
         }
     }
 
     /* manage_leafs entry point */
-    pub fn manage_leafs(&mut self, cm: &mut ComponentManager) {
+    pub fn manage_leafs(&mut self, cm: &mut TravellerCreator) {
         if !self.active { return; }
         self.remove_unused_leafs();
         for leaf in self.get_missing_leafs() {
-            let cc = cm.make_leaf_carriages(leaf.clone());
+            let cc = cm.make_leaf_parties(leaf.clone());
             self.add_carriages_to_leaf(leaf,cc);
         }
     }
@@ -195,12 +193,3 @@ impl Train {
         self.carriages.values_mut().collect()
     }
 }
-
-impl Drop for Train {
-    fn drop(&mut self) {
-        for leaf in self.carriages.keys() {
-            self.pm.remove_leaf(leaf);
-        }
-    }
-}
-

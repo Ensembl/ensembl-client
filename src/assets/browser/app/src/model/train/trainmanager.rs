@@ -11,10 +11,10 @@
  * render.
  */
 
-use composit::{ Leaf, ComponentManager, ActiveSource, Stick, Scale };
+use composit::{ Leaf, ActiveSource, Stick, Scale };
 use controller::output::Report;
 use model::driver::PrinterManager;
-use super::Train;
+use super::{ Train, TravellerCreator };
 
 const MS_FADE : f64 = 100.;
 const OUTER_TRAINS : usize = 0;
@@ -36,9 +36,9 @@ pub struct TrainManager {
 }
 
 impl TrainManager {
-    pub fn new(printer: PrinterManager) -> TrainManager {
+    pub fn new(printer: &PrinterManager) -> TrainManager {
         let mut out = TrainManager {
-            printer,
+            printer: printer.clone(),
             current_train: None,
             outer_train: Vec::<Option<Train>>::new(),
             future_train: None,
@@ -64,7 +64,7 @@ impl TrainManager {
     }
     
     /* utility: makes new train at given scale */
-    fn make_train(&mut self, cm: &mut ComponentManager, scale: Scale, preload: bool) -> Option<Train> {
+    fn make_train(&mut self, cm: &mut TravellerCreator, scale: Scale, preload: bool) -> Option<Train> {
         if let Some(ref stick) = self.stick {
             let mut f = Train::new(&self.printer,&stick,scale);
             f.set_position(self.position_bp);
@@ -111,7 +111,7 @@ impl TrainManager {
     }
         
     /* if there is a future train and it is done, move to transition */
-    fn future_ready(&mut self, cm: &mut ComponentManager, t: f64) {
+    fn future_ready(&mut self, cm: &mut TravellerCreator, t: f64) {
         /* is it ready? */
         let mut ready = false;
         if let Some(ref mut future_train) = self.future_train {
@@ -134,7 +134,7 @@ impl TrainManager {
     }
     
     /* called regularly by compositor to let us perform transitions */
-    pub fn tick(&mut self, t: f64, cm: &mut ComponentManager) {
+    pub fn tick(&mut self, t: f64, cm: &mut TravellerCreator) {
         self.transition_maybe_done(t);
         self.future_ready(cm,t);
     }
@@ -186,7 +186,7 @@ impl TrainManager {
     }
 
     /* Create future train */
-    fn new_future(&mut self, cm: &mut ComponentManager, scale: Scale) {
+    fn new_future(&mut self, cm: &mut TravellerCreator, scale: Scale) {
         if let Some(ref mut t) = self.future_train {
             t.set_active(false);
         }
@@ -203,7 +203,7 @@ impl TrainManager {
     }
 
     /* scale may have changed significantly to change trains */
-    fn maybe_change_trains(&mut self, cm: &mut ComponentManager, bp_per_screen: f64) {
+    fn maybe_change_trains(&mut self, cm: &mut TravellerCreator, bp_per_screen: f64) {
         if let Some(printing_vscale) = self.printing_vscale() {
             let best = Scale::best_for_screen(bp_per_screen);
             let mut end_future = false;
@@ -232,7 +232,7 @@ impl TrainManager {
     }
 
     /* compositor notifies of bp/screen update (change trains?) */
-    pub fn set_zoom(&mut self, cm: &mut ComponentManager, bp_per_screen: f64) {
+    pub fn set_zoom(&mut self, cm: &mut TravellerCreator, bp_per_screen: f64) {
         self.bp_per_screen = bp_per_screen;
         self.maybe_change_trains(cm,bp_per_screen);
         self.each_train(|t| t.set_zoom(bp_per_screen));

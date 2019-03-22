@@ -2,12 +2,13 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use composit::{ ActiveSource, Landscape, Leaf, AllSourceResponseBuilder };
+use composit::{ ActiveSource, Landscape, Leaf };
 use data::BackendConfig;
 use drawing::DrawingSpec;
+use model::train::PartyResponses;
 
 pub enum TáTask {
-    MakeShapes(ActiveSource,Leaf,AllSourceResponseBuilder,Vec<DrawingSpec>,usize,Option<String>,Rc<BackendConfig>)
+    MakeShapes(ActiveSource,Leaf,PartyResponses,Vec<DrawingSpec>,usize,Option<String>,Rc<BackendConfig>)
 }
 
 impl TáTask {

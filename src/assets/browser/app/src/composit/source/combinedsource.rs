@@ -2,11 +2,12 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use composit::{ 
-    ActiveSource, Landscape, Leaf, Plot, Source, AllSourceResponseBuilder,
+    ActiveSource, Landscape, Leaf, Plot, Source,
     StateAtom, AllLandscapes, StateExpr
 };
 use data::{ BackendConfig, HttpXferClerk };
 use debug::{ add_debug_sources };
+use model::train::PartyResponses;
 use tácode::{ Tácode, TáSource };
 
 const TOP : i32 = 50;
@@ -37,7 +38,7 @@ impl CombinedSource {
 }
 
 impl Source for CombinedSource {
-    fn populate(&self, acs: &ActiveSource, lc: AllSourceResponseBuilder, leaf: &Leaf) {
+    fn populate(&self, acs: &ActiveSource, lc: PartyResponses, leaf: &Leaf) {
         let stick_name = leaf.get_stick().get_name();
         if let Some(source) = self.per_stick_sources.get(&stick_name) {
             source.populate(acs,lc,leaf);

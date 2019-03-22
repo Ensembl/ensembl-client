@@ -6,11 +6,12 @@ use std::rc::Rc;
 
 use composit::state::StateExpr;
 use composit::{
-    AllLandscapes, Landscape, Source, Leaf, AllSourceResponseBuilder,
+    AllLandscapes, Landscape, Source, Leaf,
     StateManager, StateValue
 };
 
-use model::train::{ Traveller };
+use model::driver::PrinterManager;
+use model::train::{ Traveller, PartyResponses };
 
 use super::SourcePart;
 
@@ -44,12 +45,22 @@ impl ActiveSource {
         self.parts.keys().filter(|x| x.is_some()).map(|x| x.as_ref().unwrap().clone()).collect()
     }
     
-    pub fn make_carriage(&self, asrb: &AllSourceResponseBuilder, part: &Option<String>, leaf: &Leaf) -> Traveller {
-        let srr = asrb.get_srr(part);
-        Traveller::new(self.clone(),part,leaf,srr)
+    fn make_traveller(&self, pm: &PrinterManager, party: &PartyResponses, part: &Option<String>, leaf: &Leaf) -> Traveller {
+        let srr = party.get_srr(part);
+        Traveller::new(pm,self.clone(),part,leaf,srr)
     }
     
-    pub fn populate(&mut self, resp: AllSourceResponseBuilder, leaf: &Leaf) {
+    pub fn make_party(&self, pm: &PrinterManager, party: &PartyResponses, leaf: &Leaf) -> Vec<Traveller> {
+        let mut out = Vec::<Traveller>::new();
+        out.push(self.make_traveller(pm,&party,&None,&leaf));
+        for part in self.list_parts() {            
+            debug!("redraw","make_carriages {:?} for {}",leaf,part);
+            out.push(self.make_traveller(pm,&party,&Some(part),&leaf));
+        }
+        out
+    }
+
+    pub fn populate(&mut self, resp: PartyResponses, leaf: &Leaf) {
         let twin = self.source.clone();
         twin.populate(self,resp,leaf);
     }

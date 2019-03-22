@@ -5,7 +5,7 @@ use std::rc::Rc;
 use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element, INode, IElement };
 
-use super::{ Programs, CarriagePrinter };
+use super::{ Programs, CarriagePrinter, GLSourceResponse };
 use composit::{ Compositor, StateManager, Leaf, Stage };
 use model::driver::Printer;
 use model::train::Train;
@@ -189,5 +189,12 @@ impl Printer for WebGLPrinter {
     
     fn set_current(&mut self, leaf: &Leaf) {
         self.base.borrow_mut().set_current(leaf);
+    }
+    
+    fn make_partial(&mut self, leaf: &Leaf) -> GLSourceResponse {
+        GLSourceResponse::new()
+    }
+    
+    fn destroy_partial(&mut self, sr: GLSourceResponse) {
     }
 }

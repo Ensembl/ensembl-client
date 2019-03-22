@@ -1,5 +1,4 @@
 mod activesource;
-mod allsourceresponsebuilder;
 mod combinedsource;
 mod combinedsourcemanager;
 mod source;
@@ -9,7 +8,6 @@ mod sourcepart;
 mod sourceresponse;
 
 pub use self::activesource::ActiveSource;
-pub use self::allsourceresponsebuilder::AllSourceResponseBuilder;
 pub use self::combinedsource::{ CombinedSource, build_combined_source };
 pub use self::combinedsourcemanager::CombinedSourceManager;
 pub use self::source::Source;
