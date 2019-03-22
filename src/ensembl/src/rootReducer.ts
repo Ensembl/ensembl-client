@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import { connectRouter } from 'connected-react-router';
 
-import global from './globalReducer';
+import global from './global/globalReducer';
 import header from './header/headerReducer';
 import browser from './content/app/browser/browserReducer';
 

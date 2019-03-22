@@ -35,8 +35,8 @@ import {
 } from '../browserSelectors';
 import { ChrLocation } from '../browserState';
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
-import { getBreakpointWidth } from 'src/globalSelectors';
-import { BreakpointWidth } from 'src/globalConfig';
+import { getBreakpointWidth } from 'src/global/globalSelectors';
+import { BreakpointWidth } from 'src/global/globalConfig';
 import { TrackType } from './trackPanelConfig';
 
 import styles from './TrackPanel.scss';
