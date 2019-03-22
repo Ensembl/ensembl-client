@@ -269,18 +269,12 @@ impl TrainManager {
     }
 
     /* used by printer for actual printing */
-    pub fn get_current_train(&mut self, if_printable: bool) -> Option<&mut Train> {
-        if if_printable && !self.current_train.as_mut().map(|x| x.is_done()).unwrap_or(false) {
-            return None;
-        }
+    pub fn get_current_train(&mut self) -> Option<&mut Train> {
         self.current_train.as_mut()
     }
 
     /* used by printer for actual printing */
-    pub fn get_transition_train(&mut self, if_printable: bool) -> Option<&mut Train> {
-        if if_printable && !self.transition_train.as_mut().map(|x| x.is_done()).unwrap_or(false) {
-            return None;
-        }
+    pub fn get_transition_train(&mut self) -> Option<&mut Train> {
         self.transition_train.as_mut()
     }
 }

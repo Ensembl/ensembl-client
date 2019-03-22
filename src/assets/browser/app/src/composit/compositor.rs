@@ -114,12 +114,12 @@ impl Compositor {
         self.updated = true;
     }
 
-    pub fn get_current_train(&mut self, if_printable: bool) -> Option<&mut Train> {
-        self.train_manager.get_current_train(if_printable)
+    pub fn get_current_train(&mut self) -> Option<&mut Train> {
+        self.train_manager.get_current_train()
     }
 
-    pub fn get_transition_train(&mut self, if_printable: bool) -> Option<&mut Train> {
-        self.train_manager.get_transition_train(if_printable)
+    pub fn get_transition_train(&mut self) -> Option<&mut Train> {
+        self.train_manager.get_transition_train()
     }
     
     pub fn get_component_set(&mut self) -> &mut ComponentSet {

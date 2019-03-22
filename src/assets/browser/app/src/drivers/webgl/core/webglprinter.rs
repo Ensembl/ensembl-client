@@ -167,20 +167,20 @@ impl WebGLPrinter {
 impl Printer for WebGLPrinter {
     fn print(&mut self, stage: &Stage, oom: &StateManager, compo: &mut Compositor) {
         let prop = compo.get_prop_trans();
-        if let Some(train) = compo.get_current_train(true) {
+        if let Some(train) = compo.get_current_train() {
             let mut tp = WebGLTrainPrinter::new();
             tp.prepare(&mut self.base.borrow_mut(),stage,oom,train,1.-prop);
         }
-        if let Some(train) = compo.get_transition_train(true) {
+        if let Some(train) = compo.get_transition_train() {
             let mut tp = WebGLTrainPrinter::new();
             tp.prepare(&mut self.base.borrow_mut(),stage,oom,train,prop);
         }
         self.base.borrow_mut().prepare_all();
-        if let Some(train) = compo.get_transition_train(true) {
+        if let Some(train) = compo.get_transition_train() {
             let mut tp = WebGLTrainPrinter::new();
             tp.execute(&mut self.base.borrow_mut(),&train.leafs());
         }
-        if let Some(train) = compo.get_current_train(true) {
+        if let Some(train) = compo.get_current_train() {
             let mut tp = WebGLTrainPrinter::new();
             tp.execute(&mut self.base.borrow_mut(),&train.leafs());
         }

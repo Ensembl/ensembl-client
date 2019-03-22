@@ -24,5 +24,6 @@ webgl_generator = "*"
 cargo-web="*"
 regex = "*"
 
-[profile.release]
-lto = true
+#[profile.release]
+#lto = true
+
