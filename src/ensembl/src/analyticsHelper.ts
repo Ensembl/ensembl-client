@@ -1,5 +1,6 @@
 export enum AnalyticsCategory {
-  GLOBAL = 'Global'
+  GLOBAL = 'Global',
+  HEADER = 'Header'
 }
 
 export type AnalyticsOptions = {
@@ -30,4 +31,8 @@ export const buildAnalyticsObject = (category: AnalyticsCategory) => (
 
 export const getGlobalAnalyticsObject = buildAnalyticsObject(
   AnalyticsCategory.GLOBAL
+);
+
+export const getHeaderAnalyticsObject = buildAnalyticsObject(
+  AnalyticsCategory.HEADER
 );
