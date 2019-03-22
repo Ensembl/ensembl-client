@@ -5,7 +5,7 @@ import { createBrowserHistory } from 'history';
 import { routerMiddleware } from 'connected-react-router';
 import { StateType } from 'typesafe-actions';
 
-import createRootReducer from './rootReducer';
+import createRootReducer from './root/rootReducer';
 import { analyticsMiddleWare } from './analyticsMiddleware';
 
 export const history = createBrowserHistory();
