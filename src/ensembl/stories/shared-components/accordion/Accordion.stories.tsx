@@ -1,10 +1,12 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 
-import Accordion from 'src/shared/accordion/Accordion';
-
-import AccordionItem from 'src/shared/accordion/accordion-item/AccordionItem';
-import AccordionItemHeader from 'src/shared/accordion/accordion-item/accordion-item-header/AccordionItemHeader';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionItemTitle,
+  AccordionItemBody
+} from 'src/shared/accordion/';
 import styles from './Accordion.stories.scss';
 
 storiesOf('Components|Shared Components/Accordion', module).add(
@@ -14,11 +16,21 @@ storiesOf('Components|Shared Components/Accordion', module).add(
       <div className={styles.accordionContainer}>
         <Accordion>
           <AccordionItem>
-            <AccordionItemHeader title="Item 1" />
+            <AccordionItemTitle>
+              <span>Simple title</span>
+            </AccordionItemTitle>
+            <AccordionItemBody>
+              <p>Body content</p>
+            </AccordionItemBody>
           </AccordionItem>
-
           <AccordionItem>
-            <AccordionItemHeader title="Item 2" />
+            <AccordionItemTitle>
+              <h3>Complex title</h3>
+              <div>With a bit of description</div>
+            </AccordionItemTitle>
+            <AccordionItemBody>
+              <p>Body content</p>
+            </AccordionItemBody>
           </AccordionItem>
         </Accordion>
       </div>
