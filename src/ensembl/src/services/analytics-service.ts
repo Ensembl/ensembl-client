@@ -31,6 +31,18 @@ class AnalyticsTracking {
       value: ga.value
     });
   }
+
+  public trackRequest({ ga }: AnalyticsType) {
+    const action = ga.action as string;
+
+    this.reactGA.event({
+      action,
+      category: ga.category,
+      label: ga.label,
+      transport: 'xhr',
+      value: ga.value
+    });
+  }
 }
 
 const GoogleAnalyticsTracking = new AnalyticsTracking();
