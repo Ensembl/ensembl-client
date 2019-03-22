@@ -12,6 +12,9 @@ type Props = {
   onSubmit?: (value: string) => void;
   onFocus?: () => void;
   onBlur?: () => void;
+  onKeyUp?: (e: React.SyntheticEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: React.SyntheticEvent<HTMLInputElement>) => void;
+  onKeyPress?: (e: React.SyntheticEvent<HTMLInputElement>) => void;
   rightCorner?: ReactNode;
   className?: string;
 };
@@ -33,6 +36,9 @@ const SearchField = (props: Props) => {
         onChange={props.onChange}
         onFocus={props.onFocus}
         onBlur={props.onBlur}
+        onKeyUp={props.onKeyUp}
+        onKeyDown={props.onKeyDown}
+        onKeyPress={props.onKeyPress}
         className={styles.searchFieldInput}
       />
       {rightCorner && (
