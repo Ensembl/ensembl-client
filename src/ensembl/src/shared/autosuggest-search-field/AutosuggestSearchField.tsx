@@ -25,13 +25,15 @@ type CommonProps = {
   searchFieldClassName?: string;
 };
 
-// allow the user to submit precise content of the search field (not only a suggested match)
+// with this set of props user can submit raw content of the search field
+// (not just one of suggested matches)
 type PropsAllowingRawDataSubmission = {
   allowRawInputSubmission: true;
   onSubmit: (value: string) => void;
 };
 
-// notice no onSubmit prop on this one
+// with this set of props user can submit only one of suggested matches
+// (notice no onSubmit prop; typescript is smart enough to know it won't be available)
 type PropsDisallowingRawDataSubmission = {
   allowRawInputSubmission: false;
 };
@@ -53,12 +55,15 @@ function getNextItemIndex(
   if (itemIndex === null) {
     return firstItemIndex;
   } else if (currentGroup && itemIndex < currentGroup.matches.length - 1) {
+    // move to the next item in the group
     return [groupIndex, itemIndex + 1] as MatchIndex;
   } else if (groupIndex === matchGroups.length - 1) {
-    // this is the last item; either return null if submitting raw input is allowed, or
+    // this is the last item in the last group;
+    // either return null if submitting raw input is allowed, or
     // cycle back to the first item in the list
     return allowRawInputSubmission ? null : firstItemIndex;
   } else if (typeof groupIndex === 'number') {
+    // move to the next group in the list
     return [groupIndex + 1, 0];
   } else {
     return null; // should never happen, but makes Typescript happy
@@ -77,12 +82,15 @@ function getPreviousItemIndex(
   if (itemIndex === null) {
     return lastItemIndex;
   } else if (itemIndex > 0) {
+    // move to the previous item
     return [groupIndex, itemIndex - 1] as MatchIndex;
   } else if (groupIndex === 0) {
-    // this is the first item; either return null if submitting raw input is allowed, or
-    // cycle back to the last item in the list
+    // this is the first item in the first group;
+    // either return null if submitting raw input is allowed,
+    // or cycle back to the very last item in the list
     return allowRawInputSubmission ? null : lastItemIndex;
   } else if (typeof groupIndex === 'number') {
+    // move to the last item in the previous group
     const previousGroupIndex = groupIndex - 1;
     const lastItemIndex = matchGroups[previousGroupIndex].matches.length - 1;
     return [previousGroupIndex, lastItemIndex];

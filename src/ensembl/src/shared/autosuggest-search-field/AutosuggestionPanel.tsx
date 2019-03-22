@@ -54,18 +54,15 @@ const AutosuggestSearchField = (props: Props) => {
     const { highlightedItemIndex } = props;
     const [groupIndex, itemIndex] = highlightedItemIndex || [null, null];
     const isGroupWithHighlightedItem = index === groupIndex;
-    const groupProps = {
-      groupIndex: index,
-      highlightedItemIndex: isGroupWithHighlightedItem ? itemIndex : null
-    };
 
     return (
       <GroupOfMatches
         key={index}
         onItemHover={props.onItemHover}
         onItemClick={handleItemClick}
+        groupIndex={index}
+        highlightedItemIndex={isGroupWithHighlightedItem ? itemIndex : null}
         {...group}
-        {...groupProps}
       />
     );
   });
