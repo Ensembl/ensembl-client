@@ -46,7 +46,7 @@ const Wrapper = (props: any) => {
   }, [value]);
 
   return (
-    <div className={styles.autosuggestSearchFieldWrapper}>
+    <div>
       <AutosuggestSearchField
         search={value}
         onChange={setValue}
@@ -76,25 +76,65 @@ const RightCorner = () => (
 
 storiesOf('Components|Shared Components/AutosuggestSearchField', module)
   .add(
-    'default',
+    'allowing only submission of matches',
     () => (
-      <Wrapper
-        searchField={AutosuggestSearchField}
-        matchGroups={groupedMatches}
-        rightCorner={<RightCorner />}
-      />
+      <div className={styles.container}>
+        <p>For description of the component's behaviour, see the Notes tab.</p>
+        <div className={styles.example}>
+          <p>
+            Notice how the first match is immediately selected. Check the
+            Actions panel to see what gets submitted.
+          </p>
+          <Wrapper
+            searchField={AutosuggestSearchField}
+            matchGroups={groupedMatches}
+            rightCorner={<RightCorner />}
+          />
+        </div>
+        <div className={styles.example}>
+          <p>
+            If no matches were found, pressing Enter will not submit the raw
+            search string.
+          </p>
+          <Wrapper
+            searchField={AutosuggestSearchField}
+            rightCorner={<RightCorner />}
+          />
+        </div>
+      </div>
     ),
     { notes }
   )
   .add(
     'allowing raw search submission',
     () => (
-      <Wrapper
-        searchField={AutosuggestSearchField}
-        matchGroups={groupedMatches}
-        allowRawInputSubmission={true}
-        rightCorner={<RightCorner />}
-      />
+      <div className={styles.container}>
+        <div className={styles.example}>
+          <p>
+            Notice that, as opposed to the other variant, first suggestion is
+            not automatically pre-selected. Pressing enter when no suggestion is
+            selected will submit current content of the search field (see the
+            Actions panel).
+          </p>
+          <Wrapper
+            searchField={AutosuggestSearchField}
+            matchGroups={groupedMatches}
+            allowRawInputSubmission={true}
+            rightCorner={<RightCorner />}
+          />
+        </div>
+        <div className={styles.example}>
+          <p>
+            When no matches are available, pressing enter will submit the
+            current content of the field.
+          </p>
+          <Wrapper
+            searchField={AutosuggestSearchField}
+            allowRawInputSubmission={true}
+            rightCorner={<RightCorner />}
+          />
+        </div>
+      </div>
     ),
     { notes }
   );
