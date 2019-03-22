@@ -43,10 +43,8 @@ impl CarriagePrinter {
         
     fn redraw_drawings(&mut self, alloc: &mut AllCanvasAllocator, travs: &mut Vec<&mut Traveller>) -> CarriageCanvases {
         let mut cc = alloc.make_carriage_canvases();
-        for mut t in travs.iter_mut() {
-            if let Some(response) = t.get_response() {
-                response.redraw(&mut cc);
-            }
+        for sr in self.srr.iter() {
+            sr.redraw_drawings(&mut cc);
         }
         cc.finalise(alloc);
         cc
@@ -54,13 +52,8 @@ impl CarriagePrinter {
     
     fn redraw_objects(&mut self, travs: &mut Vec<&mut Traveller>,
                           e: &mut PrintEditionAll) {
-        console!("redraw_objects({:?})",self.srr);
-        for t in travs.iter_mut() {
-            if t.is_on() {
-                if let Some(response) = t.get_response() {
-                    response.into_objects(e);
-                }
-            }
+        for sr in self.srr.iter() {
+            sr.redraw_objects(e);
         }
     }
 

@@ -11,6 +11,7 @@ pub struct DrawnResponse {
 }
 
 impl DrawnResponse {
+    /* glsourceresponse */
     pub fn new(sr: SourceResponse) -> DrawnResponse {
         DrawnResponse { 
             sr, 
@@ -21,6 +22,7 @@ impl DrawnResponse {
     #[allow(unused)]
     pub fn size(&self) -> usize { self.sr.get_shapes().len() }
     
+    /* carriageprinter */
     pub fn redraw(&mut self, ds: &mut CarriageCanvases) {
         self.drawings.clear();
         for mut s in self.sr.get_shapes() {
@@ -33,6 +35,7 @@ impl DrawnResponse {
         }
     }
 
+    /* carriageprinter */
     pub fn into_objects(&mut self, e: &mut PrintEditionAll) {
         let mut di = self.drawings.iter();
         for mut s in self.sr.get_shapes().iter() {

@@ -45,5 +45,5 @@ impl PartyResponses {
         for (_,(srb,mut srr)) in self.parts.drain() {
             srr.set(srb);
         }
-    }    
+    }
 }

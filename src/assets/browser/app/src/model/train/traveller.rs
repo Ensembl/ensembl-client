@@ -33,11 +33,12 @@ impl Traveller {
         }
     }
     
-    pub fn is_on(&self) -> bool { self.cur_value.on() }
-    
     pub(in super) fn update_state(&mut self, m: &StateManager) -> ComponentRedo {
         self.prev_value = self.cur_value;
         self.cur_value = self.comp.is_on(m,&self.part);
+        if self.prev_value != self.cur_value {
+            self.srr.as_mut().unwrap().set_state(self.cur_value);
+        }
         
         if self.prev_value == self.cur_value {
             ComponentRedo::None // no change => Noop
@@ -50,22 +51,8 @@ impl Traveller {
         }
     }
 
-    /* train/carriage */
     pub(in super) fn is_done(&self) -> bool { 
-        if self.srr.as_ref().unwrap().check() { return true; }
-        return self.response.is_some();
-    }
-    
-    fn promote(&mut self) {
-        if self.response.is_none() {
-            self.response = Some(self.srr.as_mut().unwrap().take().unwrap());
-        }
-    }
-    
-    /* webgl/carriageprinter (x2) */
-    pub fn get_response(&mut self) -> Option<&mut DrawnResponse> {
-        self.promote();
-        return self.response.as_mut()
+        return self.srr.as_ref().unwrap().check();
     }
     
     pub fn get_leaf(&self) -> &Leaf { &self.leaf }

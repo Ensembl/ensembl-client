@@ -4,14 +4,16 @@ use std::fmt;
 use std::hash::{ Hash, Hasher };
 use std::rc::Rc;
 
-use super::DrawnResponse;
+use super::{ DrawnResponse, PrintEditionAll };
+use drawing::CarriageCanvases;
 use shape::ShapeSpec;
-use composit::{ Leaf, SourceResponse };
+use composit::{ Leaf, SourceResponse, StateValue };
 
 #[derive(Clone)]
 pub struct GLSourceResponse {
     idx: usize,
     dr: Rc<RefCell<Option<DrawnResponse>>>,
+    state: Rc<RefCell<StateValue>>,
     leaf: Leaf
 }
 
@@ -29,16 +31,21 @@ impl Hash for GLSourceResponse {
 }
 
 impl GLSourceResponse {    
-    /* source/allsourceresponsebuilder */
+    /* train/partyresponses */
     pub(in super) fn new(idx: usize, leaf: &Leaf) -> GLSourceResponse {
         GLSourceResponse {
             idx,
             dr: Rc::new(RefCell::new(None)),
+            state: Rc::new(RefCell::new(StateValue::OffCold())),
             leaf: leaf.clone()
         }
     }
     
-    /* source/allsourceresponsebuilder */
+    pub fn set_state(&mut self, state: StateValue) {
+        *self.state.borrow_mut() = state;
+    }
+    
+    /* train/partyresponses */
     pub fn set(&mut self, result: SourceResponse) {
         *self.dr.borrow_mut() = Some(DrawnResponse::new(result));
     }
@@ -54,6 +61,28 @@ impl GLSourceResponse {
     }
     
     pub fn get_leaf(&self) -> &Leaf { &self.leaf }
+    pub fn get_state(&self) -> StateValue {
+        self.state.borrow().clone()
+    }
+    
+    pub fn redraw_drawings(&self, cc: &mut CarriageCanvases) {
+        //console!("drawings {:?}",self.leaf);
+        let mut dr = self.dr.borrow_mut();
+        if dr.is_some() {
+            dr.as_mut().unwrap().redraw(cc);
+        }
+    }
+
+    
+    pub fn redraw_objects(&self, e: &mut PrintEditionAll) {
+        //console!("objects {:?}",self.leaf);
+        if self.get_state().on() {
+            let mut dr = self.dr.borrow_mut();
+            if dr.is_some() {
+                dr.as_mut().unwrap().into_objects(e);
+            }
+        }
+    }
 }
 
 impl fmt::Debug for GLSourceResponse {
