@@ -24,6 +24,5 @@ describe('<BrowserNavIcon />', () => {
 
     renderedNavIcon.find('button').simulate('click');
     expect(mockCallback).toHaveBeenCalledTimes(1);
-    // expect(mockCallback).toHaveBeenCalledWith('Foo');
   });
 });
