@@ -10,6 +10,8 @@ import {
   LaunchbarApp
 } from './launchbarConfig';
 
+import styles from './Launchbar.scss';
+
 describe('<Launchbar />', () => {
   let wrapper: any;
 
@@ -31,7 +33,7 @@ describe('<Launchbar />', () => {
     describe('icons for', () => {
       test('about app', () => {
         const appProp: LaunchbarApp = wrapper
-          .find('.aboutIcon')
+          .find(`.${styles.about}`)
           .find(LaunchbarIcon)
           .prop('app');
 
