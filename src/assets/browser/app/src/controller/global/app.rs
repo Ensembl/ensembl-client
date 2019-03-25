@@ -16,7 +16,7 @@ use controller::output::{ OutputAction, Report, ViewportReport };
 use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, XferCache, XferClerk };
 use debug::add_debug_sticks;
 use dom::domutil;
-use drivers::webgl::WebGLPrinter;
+use drivers::webgl::GLPrinter;
 use model::driver::{ Printer, PrinterManager };
 use tácode::Tácode;
 
@@ -50,7 +50,7 @@ impl App {
         add_debug_sticks(&mut csm);
         let cache = XferCache::new(5000,config);
         let clerk = HttpXferClerk::new(http_manager,config,config_url,&cache);
-        let printer = PrinterManager::new(Box::new(WebGLPrinter::new(&canv_el)));
+        let printer = PrinterManager::new(Box::new(GLPrinter::new(&canv_el)));
         let mut out = App {
             ar: AppRunnerWeak::none(),
             browser_el: browser_el.clone(),

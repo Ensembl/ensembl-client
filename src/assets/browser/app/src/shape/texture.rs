@@ -10,7 +10,7 @@ use types::{
 use shape::{ Shape, ShapeSpec, ShapeInstanceData, ShapeShortInstanceData, Facade, TypeToShape, FacadeType, ShapeInstanceDataType };
 use shape::util::{ rectangle_t, multi_gl, vertices_rect };
 
-use drivers::webgl::{ PrintEdition, Artist, Artwork, DrawingSpec };
+use drivers::webgl::{ GLProgData, Artist, Artwork, DrawingSpec };
 
 #[derive(Clone,Copy,Debug)]
 pub enum TexturePosition<T: Clone+Copy+Debug> {
@@ -38,7 +38,7 @@ impl TextureSpec {
 
 impl Shape for TextureSpec {
     fn into_objects(&self, geom: &mut ProgramAttribs, 
-                    artwork: Option<Artwork>, e: &mut PrintEdition) {
+                    artwork: Option<Artwork>, e: &mut GLProgData) {
         if let Some(art) = artwork {
             let group = e.canvas().get_group(geom,&art.weave);
             let mut mp = art.mask_pos;

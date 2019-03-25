@@ -7,7 +7,7 @@ use shape::{
 
 use program::{ ProgramAttribs, DataGroupIndex, ProgramType };
 use types::{ Colour };
-use drivers::webgl::{ Programs, PrintEdition, Artist, Artwork, Drawing, CarriageCanvases };
+use drivers::webgl::{ GLProgs, GLProgData, Artist, Artwork, Drawing, CarriageCanvases };
 
 #[derive(Clone)]
 pub enum ShapeSpec {
@@ -37,7 +37,7 @@ impl Shape for ShapeSpec {
         self.as_shape().get_artist()
     }
         
-    fn into_objects(&self, geom: &mut ProgramAttribs, art: Option<Artwork>,e: &mut PrintEdition) {
+    fn into_objects(&self, geom: &mut ProgramAttribs, art: Option<Artwork>,e: &mut GLProgData) {
         self.as_shape().into_objects(geom,art,e)
     }
     

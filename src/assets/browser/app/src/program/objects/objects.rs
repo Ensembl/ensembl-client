@@ -3,7 +3,7 @@ use dom::webgl::{
 };
 
 use drivers::webgl::Drawing;
-use drivers::webgl::PrintEdition;
+use drivers::webgl::GLProgData;
 use program::data::{ DataBatch, DataGroupIndex, Input };
 use program::objects::UniformValue;
 
@@ -27,7 +27,7 @@ pub trait Object {
     fn is_main(&self) -> bool { false }
     fn add_index(&mut self, _batch: &DataBatch, _indexes: &[u16], _points: u16) {}
 
-    fn obj_final(&mut self, _batch: &DataBatch, _ctx: &glctx, _ds: &mut PrintEdition) {}
+    fn obj_final(&mut self, _batch: &DataBatch, _ctx: &glctx, _ds: &mut GLProgData) {}
     fn execute(&mut self, _ctx: &glctx, _batch: &DataBatch) {}
     fn clear(&mut self, ctx: &glctx) {}
     

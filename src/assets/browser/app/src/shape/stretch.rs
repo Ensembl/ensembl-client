@@ -6,7 +6,7 @@ use shape::{ Shape, ShapeSpec };
 use shape::util::{ rectangle_g, rectangle_t, vertices_rect };
 
 use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
-use drivers::webgl::PrintEdition;
+use drivers::webgl::GLProgData;
 use drivers::webgl::{ Artist, Artwork, DrawingSpec };
 
 #[derive(Clone)]
@@ -32,7 +32,7 @@ impl StretchTextureSpec {
 const CHUNK_SIZE : f32 = 10.;
 
 impl Shape for StretchTextureSpec {
-    fn into_objects(&self, geom: &mut ProgramAttribs, artwork: Option<Artwork>, e: &mut PrintEdition) {
+    fn into_objects(&self, geom: &mut ProgramAttribs, artwork: Option<Artwork>, e: &mut GLProgData) {
         if let Some(art) = artwork {
             /* some cards baulk at very large textured areas, so split */
             let mut chunks = ((self.pos.area()).0.abs() / CHUNK_SIZE) as i32;

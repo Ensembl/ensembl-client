@@ -10,7 +10,7 @@ use dom::webgl::{
 
 use drivers::webgl::CarriageCanvases;
 use program::data::{ DataBatch, Input };
-use drivers::webgl::PrintEdition;
+use drivers::webgl::GLProgData;
 
 use program::objects::Object;
 
@@ -52,7 +52,7 @@ impl ObjectAttrib {
 }
 
 impl Object for ObjectAttrib {
-    fn obj_final(&mut self, batch: &DataBatch, ctx: &glctx, _acm: &mut PrintEdition) {
+    fn obj_final(&mut self, batch: &DataBatch, ctx: &glctx, _acm: &mut GLProgData) {
         if self.data(batch).unwrap_or(&vec!{}).len() > 0 {
             self.buf.entry(batch.id()).or_insert_with(|| ctx.create_buffer().unwrap());
         }

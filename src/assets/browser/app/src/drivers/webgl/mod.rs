@@ -2,7 +2,7 @@ mod core;
 mod drawing;
 
 pub use self::core::{ 
-    DrawnResponse, Programs, WebGLPrinter, PrintEdition
+    GLDrawing, GLProgs, GLPrinter, GLProgData
 };
 pub use self::drawing::{
     Drawing, CarriageCanvases, Artist, Artwork, DrawingSpec, 

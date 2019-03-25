@@ -1,7 +1,7 @@
 use std::cmp::{ min, max };
 
 use super::{ DrawingHash, FlatCanvas, Artist, CarriageCanvases, OneCanvasManager, DrawingSpec };
-use drivers::webgl::PrintEdition;
+use drivers::webgl::GLProgData;
 use program::CanvasWeave;
 use types::{ CPixel, area_size, cpixel };
 

@@ -4,7 +4,7 @@ use std::fmt;
 use std::hash::{ Hash, Hasher };
 use std::rc::Rc;
 
-use super::{ DrawnResponse, PrintEditionAll, WebGLPrinter };
+use super::{ GLDrawing, GLProgInstances, GLPrinter };
 use super::super::drawing::CarriageCanvases;
 use shape::ShapeSpec;
 use composit::{ Leaf, SourceResponseData, StateValue };
@@ -12,9 +12,9 @@ use model::driver::SourceResponse;
 
 #[derive(Clone)]
 pub struct GLSourceResponse {
-    printer: WebGLPrinter,
+    printer: GLPrinter,
     idx: usize,
-    dr: Rc<RefCell<Option<DrawnResponse>>>,
+    dr: Rc<RefCell<Option<GLDrawing>>>,
     state: Rc<RefCell<StateValue>>,
     leaf: Leaf
 }
@@ -34,7 +34,7 @@ impl Hash for GLSourceResponse {
 
 impl GLSourceResponse {    
     /* train/partyresponses */
-    pub(in super) fn new(printer: &WebGLPrinter, idx: usize, leaf: &Leaf) -> GLSourceResponse {
+    pub(in super) fn new(printer: &GLPrinter, idx: usize, leaf: &Leaf) -> GLSourceResponse {
         GLSourceResponse {
             printer: printer.clone(),
             idx,
@@ -45,7 +45,7 @@ impl GLSourceResponse {
     }
 
     /* train/traveller */
-    pub fn take(&mut self) -> Option<DrawnResponse> {
+    pub fn take(&mut self) -> Option<GLDrawing> {
         self.dr.borrow_mut().take()
     }
         
@@ -62,7 +62,7 @@ impl GLSourceResponse {
         }
     }
     
-    pub fn redraw_objects(&self, e: &mut PrintEditionAll) {
+    pub fn redraw_objects(&self, e: &mut GLProgInstances) {
         console!("objects {:?}",self.leaf);
         if self.get_state().on() {
             let mut dr = self.dr.borrow_mut();
@@ -81,7 +81,7 @@ impl SourceResponse for GLSourceResponse {
 
     /* train/partyresponses */
     fn set(&mut self, result: SourceResponseData) {
-        *self.dr.borrow_mut() = Some(DrawnResponse::new(result));
+        *self.dr.borrow_mut() = Some(GLDrawing::new(result));
     }
 
     fn set_state(&mut self, state: StateValue) {

@@ -1,18 +1,18 @@
 use composit::SourceResponseData;
 use composit::Source;
 use super::super::drawing::{ Drawing, CarriageCanvases };
-use super::{ PrintEditionAll, Programs };
+use super::{ GLProgInstances, GLProgs };
 use shape::{ ShapeSpec, Shape };
 
-pub struct DrawnResponse {
+pub struct GLDrawing {
     drawings: Vec<Option<Drawing>>,
     sr: SourceResponseData,
 }
 
-impl DrawnResponse {
+impl GLDrawing {
     /* glsourceresponse */
-    pub fn new(sr: SourceResponseData) -> DrawnResponse {
-        DrawnResponse { 
+    pub fn new(sr: SourceResponseData) -> GLDrawing {
+        GLDrawing { 
             sr, 
             drawings: Vec::<Option<Drawing>>::new(),
         }
@@ -35,7 +35,7 @@ impl DrawnResponse {
     }
 
     /* carriageprinter */
-    pub fn into_objects(&mut self, e: &mut PrintEditionAll) {
+    pub fn into_objects(&mut self, e: &mut GLProgInstances) {
         let mut di = self.drawings.iter();
         for mut s in self.sr.get_shapes().iter() {
             let d = di.next();

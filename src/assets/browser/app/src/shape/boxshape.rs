@@ -1,4 +1,4 @@
-use drivers::webgl::{ Artwork, PrintEdition };
+use drivers::webgl::{ Artwork, GLProgData };
 use program::{ PTGeom, PTMethod, ProgramType, ProgramAttribs, Input };
 use shape::{ ColourSpec, Shape, ShapeSpec };
 use shape::util::{ despot, vertices_hollowpoly, poly_p, multi_gl };
@@ -44,7 +44,7 @@ impl BoxSpec {
 }
 
 impl Shape for BoxSpec {
-    fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut PrintEdition) {
+    fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut GLProgData) {
         let group = self.colspec.to_group(geom,e);
         let b = vertices_hollowpoly(geom,4,group);
         let origins = self.origins();

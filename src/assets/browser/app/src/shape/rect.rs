@@ -13,7 +13,7 @@ use shape::util::{
     despot, colour, ShapeInstanceData, ShapeShortInstanceData, 
     TypeToShape, Facade, FacadeType, ShapeInstanceDataType
 };
-use drivers::webgl::{ PrintEdition, Artwork };
+use drivers::webgl::{ GLProgData, Artwork };
 use super::boxshape::{ BoxSpec };
 
 #[derive(Clone,Copy,Debug)]
@@ -33,7 +33,7 @@ pub struct RectSpec {
 }
 
 impl Shape for RectSpec {
-    fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut PrintEdition) {
+    fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut GLProgData) {
         let group = self.colspec.to_group(geom,e);
         let b = vertices_rect(geom,group);
         match self.offset {

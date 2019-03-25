@@ -2,12 +2,12 @@ use std::rc::Rc;
 
 use program::{ ProgramAttribs, DataGroupIndex, ProgramType };
 use types::{ Colour };
-use drivers::webgl::{ Programs, PrintEdition };
+use drivers::webgl::{ GLProgs, GLProgData };
 use drivers::webgl::{ Artist, Artwork, Drawing, CarriageCanvases };
 
 pub trait Shape {
     fn get_artist(&self) -> Option<Rc<Artist>> { None }
-    fn into_objects(&self, geom: &mut ProgramAttribs, art: Option<Artwork>,e: &mut PrintEdition);
+    fn into_objects(&self, geom: &mut ProgramAttribs, art: Option<Artwork>,e: &mut GLProgData);
     fn get_geometry(&self) -> ProgramType;
 }
 
@@ -18,7 +18,7 @@ pub enum ColourSpec {
 }
 
 impl ColourSpec {
-    pub fn to_group(&self, g: &mut ProgramAttribs, e: &mut PrintEdition) -> Option<DataGroupIndex> {
+    pub fn to_group(&self, g: &mut ProgramAttribs, e: &mut GLProgData) -> Option<DataGroupIndex> {
         match self {
             ColourSpec::Spot(c) => Some(e.spot().get_group(g,c)),
             ColourSpec::Colour(_) => None

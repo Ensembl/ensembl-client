@@ -4,7 +4,7 @@ use shape::{ Shape, ColourSpec, ShapeSpec };
 use shape::util::{ Facade, FacadeType, points_g, ShapeLongInstanceData, ShapeInstanceData, TypeToShape, vertices_strip, ShapeInstanceDataType };
 
 use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
-use drivers::webgl::{ PrintEdition, Artwork };
+use drivers::webgl::{ GLProgData, Artwork };
 
 #[derive(Clone,Debug)]
 pub struct StretchWiggle {
@@ -24,7 +24,7 @@ impl StretchWiggle {
 }
 
 impl Shape for StretchWiggle {
-    fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut PrintEdition) {
+    fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut GLProgData) {
         let dg = ColourSpec::Spot(self.group).to_group(geom,e);
         let b = vertices_strip(geom,self.points.len() as u16*2,dg);
         points_g(b,geom,"aVertexPosition",&self.points,self.y);

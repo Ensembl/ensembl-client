@@ -15,7 +15,7 @@ use shape::{ Shape, ColourSpec, MathsShape, ShapeSpec };
 use shape::util::{
     multi_gl, poly_p, vertices_poly, vertices_hollowpoly, despot,
 };
-use drivers::webgl::{ PrintEdition, Artwork };
+use drivers::webgl::{ GLProgData, Artwork };
 
 #[derive(Clone,Copy,Debug)]
 enum PolyPosition<T: Clone+Copy+Debug> {
@@ -44,7 +44,7 @@ fn circle_points(r: f32) -> u16 {
 }
 
 impl Shape for PinPolySpec {    
-    fn into_objects(&self, geom_a: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut PrintEdition) {
+    fn into_objects(&self, geom_a: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut GLProgData) {
         /* Convert circles to polygons */
         let (points, offset) = match self.ms {
             MathsShape::Circle => (circle_points(self.size),0.),
@@ -175,7 +175,7 @@ impl PinPolyDraw {
         b.get().unwrap()
     }    
 
-    fn draw(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut PrintEdition) {
+    fn draw(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut GLProgData) {
         let group = self.colspec.to_group(geom,e);
         if self.hollow {
             let b = vertices_hollowpoly(geom,self.points,group);

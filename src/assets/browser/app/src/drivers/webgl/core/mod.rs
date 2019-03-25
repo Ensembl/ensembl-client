@@ -1,13 +1,15 @@
-mod drawnresponse;
-mod programs;
-mod webglprinter;
-mod printedition;
-mod carriageprinter;
+mod gldrawing;
+mod glproginstances;
+mod glprogs;
+mod glprinter;
+mod glprogdata;
+mod glcarriageprinter;
 mod glsourceresponse;
 
-pub use self::drawnresponse::DrawnResponse;
-pub use self::programs::Programs;
-pub use self::webglprinter::{ WebGLPrinter, WebGLTrainPrinter };
-pub use self::printedition::{ PrintEdition, PrintEditionAll };
-pub use self::carriageprinter::CarriagePrinter;
+pub use self::gldrawing::GLDrawing;
+pub use self::glprogs::GLProgs;
+pub use self::glprinter::GLPrinter;
+pub use self::glprogdata::GLProgData;
+pub use self::glcarriageprinter::GLCarriagePrinter;
 pub use self::glsourceresponse::GLSourceResponse;
+pub use self::glproginstances::GLProgInstances;

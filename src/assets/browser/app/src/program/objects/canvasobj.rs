@@ -7,7 +7,7 @@ use dom::webgl::{
     GLint, GLenum,
 };
 
-use drivers::webgl::PrintEdition;
+use drivers::webgl::GLProgData;
 use program::data::DataBatch;
 use program::objects::Object;
 
@@ -75,7 +75,7 @@ impl ObjectCanvasTexture {
 }
 
 impl Object for ObjectCanvasTexture {
-    fn obj_final(&mut self, _batch: &DataBatch, ctx: &glctx, e: &mut PrintEdition) {
+    fn obj_final(&mut self, _batch: &DataBatch, ctx: &glctx, e: &mut GLProgData) {
         let canvs = e.get_canvases().all_ocm();
         let cc = e.get_canvas_cache();
         for c in canvs {

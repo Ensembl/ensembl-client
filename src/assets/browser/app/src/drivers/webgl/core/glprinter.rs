@@ -5,7 +5,7 @@ use std::rc::Rc;
 use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element, INode, IElement };
 
-use super::{ Programs, CarriagePrinter, GLSourceResponse };
+use super::{ GLProgs, GLCarriagePrinter, GLSourceResponse };
 use composit::{ Compositor, StateManager, Leaf, Stage };
 use model::driver::{ Printer, SourceResponse };
 use model::train::Train;
@@ -25,7 +25,7 @@ impl WebGLTrainPrinter {
         WebGLTrainPrinter {}
     }
     
-    fn execute(&mut self, printer: &mut WebGLPrinterBase, leafs: &Vec<Leaf>) {
+    fn execute(&mut self, printer: &mut GLPrinterBase, leafs: &Vec<Leaf>) {
         for pt in &printer.base_progs.order {
             for leaf in leafs.iter() {
                 let lp = &mut expect!(printer.lp.get_mut(&leaf)); 
@@ -34,7 +34,7 @@ impl WebGLTrainPrinter {
         }
     }
     
-    fn prepare(&mut self, printer: &mut WebGLPrinterBase, stage: &Stage, oom: &StateManager,
+    fn prepare(&mut self, printer: &mut GLPrinterBase, stage: &Stage, oom: &StateManager,
                      train: &mut Train, opacity: f32) {
         for carriage in train.get_carriages() {
             let leaf = carriage.get_leaf().clone();
@@ -45,37 +45,37 @@ impl WebGLTrainPrinter {
     }
 }
 
-pub struct WebGLPrinterBase {
+pub struct GLPrinterBase {
     sridx: usize,
     canv_el: HtmlElement,
     ctx: Rc<glctx>,
-    base_progs: Programs,
+    base_progs: GLProgs,
     acm: AllCanvasAllocator,
-    lp: HashMap<Leaf,CarriagePrinter>,
+    lp: HashMap<Leaf,GLCarriagePrinter>,
     current: HashSet<Leaf>
 }
 
-impl WebGLPrinterBase {
-    pub fn new(canv_el: &HtmlElement) -> WebGLPrinterBase {
+impl GLPrinterBase {
+    pub fn new(canv_el: &HtmlElement) -> GLPrinterBase {
         let canvas = canv_el.clone().try_into().unwrap();
         let ctx: glctx = domutil::get_context(&canvas);
         ctx.clear_color(1.0,1.0,1.0,1.0);
         ctx.clear(glctx::COLOR_BUFFER_BIT  | glctx::DEPTH_BUFFER_BIT);
         let ctx_rc = Rc::new(ctx);
-        let progs = Programs::new(&ctx_rc);
+        let progs = GLProgs::new(&ctx_rc);
         let acm = AllCanvasAllocator::new(".bpane-container .managedcanvasholder");
-        WebGLPrinterBase {
+        GLPrinterBase {
             sridx: 0,
             canv_el: canv_el.clone(),
             acm, ctx: ctx_rc,
             base_progs: progs,
-            lp: HashMap::<Leaf,CarriagePrinter>::new(),
+            lp: HashMap::<Leaf,GLCarriagePrinter>::new(),
             current: HashSet::<Leaf>::new()
         }
     }
 
     pub fn add_leaf(&mut self, leaf: &Leaf) {
-        self.lp.insert(leaf.clone(),CarriagePrinter::new(&mut self.acm,&leaf,&self.base_progs,&self.ctx));
+        self.lp.insert(leaf.clone(),GLCarriagePrinter::new(&mut self.acm,&leaf,&self.base_progs,&self.ctx));
     }
     
     pub fn remove_leaf(&mut self, leaf: &Leaf) {
@@ -132,7 +132,7 @@ impl WebGLPrinterBase {
         self.acm.finish();
     }    
 
-    fn make_partial(&mut self, pref: &WebGLPrinter, leaf: &Leaf) -> Box<SourceResponse> {
+    fn make_partial(&mut self, pref: &GLPrinter, leaf: &Leaf) -> Box<SourceResponse> {
         let idx = self.sridx;
         self.sridx += 1;
         let sr = GLSourceResponse::new(pref,idx,leaf);
@@ -151,14 +151,14 @@ impl WebGLPrinterBase {
 }
 
 #[derive(Clone)]
-pub struct WebGLPrinter {
-    base: Rc<RefCell<WebGLPrinterBase>>
+pub struct GLPrinter {
+    base: Rc<RefCell<GLPrinterBase>>
 }
 
-impl WebGLPrinter {
-    pub fn new(canv_el: &HtmlElement) -> WebGLPrinter {
-        WebGLPrinter {
-            base: Rc::new(RefCell::new(WebGLPrinterBase::new(canv_el)))
+impl GLPrinter {
+    pub fn new(canv_el: &HtmlElement) -> GLPrinter {
+        GLPrinter {
+            base: Rc::new(RefCell::new(GLPrinterBase::new(canv_el)))
         }
     }
     
@@ -167,7 +167,7 @@ impl WebGLPrinter {
     }
 }
 
-impl Printer for WebGLPrinter {
+impl Printer for GLPrinter {
     fn print(&mut self, stage: &Stage, oom: &StateManager, compo: &mut Compositor) {
         let prop = compo.get_prop_trans();
         if let Some(train) = compo.get_current_train() {

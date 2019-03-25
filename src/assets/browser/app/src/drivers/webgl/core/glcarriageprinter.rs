@@ -1,24 +1,24 @@
 use std::collections::HashSet;
 use std::rc::Rc;
 
-use super::{ GLSourceResponse, Programs, PrintEdition, PrintEditionAll };
+use super::{ GLSourceResponse, GLProgs, GLProgData, GLProgInstances };
 use program::ProgramType;
 use model::train::{ Train, Traveller, Carriage };
 use composit::{ Leaf, Stage, ComponentRedo, StateManager };
 use super::super::drawing::{ CarriageCanvases, AllCanvasAllocator };
 use dom::webgl::WebGLRenderingContext as glctx;
 
-pub struct CarriagePrinter {
+pub struct GLCarriagePrinter {
     srr: HashSet<GLSourceResponse>,
     prev_cc: Option<CarriageCanvases>,
     leaf: Leaf,
-    progs: Option<Programs>,
+    progs: Option<GLProgs>,
     ctx: Rc<glctx>
 }
 
-impl CarriagePrinter {
-    pub fn new(acm: &mut AllCanvasAllocator, leaf: &Leaf, progs: &Programs, ctx: &Rc<glctx>) -> CarriagePrinter {
-        CarriagePrinter {
+impl GLCarriagePrinter {
+    pub fn new(acm: &mut AllCanvasAllocator, leaf: &Leaf, progs: &GLProgs, ctx: &Rc<glctx>) -> GLCarriagePrinter {
+        GLCarriagePrinter {
             srr: HashSet::<GLSourceResponse>::new(),
             prev_cc: None,
             leaf: leaf.clone(),
@@ -51,7 +51,7 @@ impl CarriagePrinter {
     }
     
     fn redraw_objects(&mut self, travs: &mut Vec<&mut Traveller>,
-                          e: &mut PrintEditionAll) {
+                          e: &mut GLProgInstances) {
         for sr in self.srr.iter() {
             sr.redraw_objects(e);
         }
@@ -66,7 +66,7 @@ impl CarriagePrinter {
             }
             self.redraw_drawings(aca,travs)
         };
-        let mut e = PrintEditionAll::new(cc,self.progs.take().unwrap(),&self.ctx);
+        let mut e = GLProgInstances::new(cc,self.progs.take().unwrap(),&self.ctx);
         self.redraw_objects(travs,&mut e);
         e.finalize_objects(&self.ctx);
         e.go();

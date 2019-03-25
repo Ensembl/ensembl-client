@@ -4,7 +4,7 @@ use types::{ CPixel, RPixel, RFraction, cpixel, area };
 use super::alloc::Ticket;
 use super::{ Artist, OneCanvasManager, CarriageCanvases };
 use program::CanvasWeave;
-use drivers::webgl::PrintEdition;
+use drivers::webgl::GLProgData;
 
 pub struct Artwork {
     pub pos: RFraction,
@@ -44,7 +44,7 @@ impl Drawing {
         self.0.gen.draw_mask(&mut src.canvas.as_ref().unwrap(),mask_pos + cpixel(1,1));
     }
 
-    pub fn artwork(&self, e: &mut PrintEdition) -> Artwork {
+    pub fn artwork(&self, e: &mut GLProgData) -> Artwork {
         let src = self.0.gen.select_canvas(e.get_canvases_mut());
         let canvas = src.canvas.as_ref().unwrap();
         let cs = canvas.size().as_fraction();
