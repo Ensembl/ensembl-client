@@ -75,8 +75,7 @@ impl WebGLPrinterBase {
     }
 
     pub fn add_leaf(&mut self, leaf: &Leaf) {
-        let progs = self.base_progs.clean_instance();
-        self.lp.insert(leaf.clone(),CarriagePrinter::new(&mut self.acm,&leaf,&progs,&self.ctx));
+        self.lp.insert(leaf.clone(),CarriagePrinter::new(&mut self.acm,&leaf,&self.base_progs,&self.ctx));
     }
     
     pub fn remove_leaf(&mut self, leaf: &Leaf) {

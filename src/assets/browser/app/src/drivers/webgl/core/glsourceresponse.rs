@@ -75,7 +75,7 @@ impl GLSourceResponse {
 
     
     pub fn redraw_objects(&self, e: &mut PrintEditionAll) {
-        //console!("objects {:?}",self.leaf);
+        console!("objects {:?}",self.leaf);
         if self.get_state().on() {
             let mut dr = self.dr.borrow_mut();
             if dr.is_some() {

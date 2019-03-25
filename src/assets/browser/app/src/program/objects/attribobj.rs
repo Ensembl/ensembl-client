@@ -53,7 +53,9 @@ impl ObjectAttrib {
 
 impl Object for ObjectAttrib {
     fn obj_final(&mut self, batch: &DataBatch, ctx: &glctx, _acm: &mut PrintEdition) {
-        self.buf.entry(batch.id()).or_insert_with(|| ctx.create_buffer().unwrap());
+        if self.data(batch).unwrap_or(&vec!{}).len() > 0 {
+            self.buf.entry(batch.id()).or_insert_with(|| ctx.create_buffer().unwrap());
+        }
         if let Some(data) = self.data(batch) {
             if let Some(buf) = self.buffer(batch) {
                 ctx.bind_buffer(glctx::ARRAY_BUFFER,Some(&buf));
