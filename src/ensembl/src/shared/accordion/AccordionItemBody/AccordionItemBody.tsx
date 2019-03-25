@@ -7,7 +7,7 @@ type AccordionItemBodyProps = React.HTMLAttributes<HTMLDivElement> & {
   uuid: UUID;
   expanded?: boolean;
   disabled?: boolean;
-  accordion: boolean;
+  allowMultiple: boolean;
 };
 
 const AccordionItemBody = (props: AccordionItemBodyProps): JSX.Element => {
@@ -17,11 +17,11 @@ const AccordionItemBody = (props: AccordionItemBodyProps): JSX.Element => {
     uuid,
     expanded,
     disabled,
-    accordion,
+    allowMultiple,
     ...rest
   } = props;
 
-  const role = accordion ? 'region' : undefined;
+  const role = allowMultiple ? 'region' : undefined;
 
   return (
     <div

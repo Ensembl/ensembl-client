@@ -62,11 +62,15 @@ export default class AccordionItemBodyWrapper extends React.Component<
     }
 
     const { uuid } = itemStore;
-    const { items, accordion } = accordionStore;
+    const { items, allowMultiple } = accordionStore;
     const item = items.filter((stateItem: Item) => stateItem.uuid === uuid)[0];
 
     return item ? (
-      <AccordionItemBody {...this.props} {...item} accordion={accordion} />
+      <AccordionItemBody
+        {...this.props}
+        {...item}
+        allowMultiple={allowMultiple}
+      />
     ) : (
       <></>
     );

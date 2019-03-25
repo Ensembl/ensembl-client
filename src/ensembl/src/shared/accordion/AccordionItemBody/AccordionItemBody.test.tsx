@@ -16,7 +16,7 @@ describe('AccordionItemBody', () => {
     };
 
     return mount(
-      <AccordionProvider accordion={true} items={[item]}>
+      <AccordionProvider allowMultiple={true} items={[item]}>
         <ItemProvider uuid={item.uuid}>{children}</ItemProvider>
       </AccordionProvider>
     );
@@ -66,7 +66,7 @@ describe('AccordionItemBody', () => {
 
   it('does not render if no itemStore found in context', () => {
     const wrapper = mount(
-      <AccordionProvider accordion={true} items={[]}>
+      <AccordionProvider allowMultiple={true} items={[]}>
         <AccordionItemBody>
           <div data-enzyme={true}>Hello World</div>
         </AccordionItemBody>

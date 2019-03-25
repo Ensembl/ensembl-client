@@ -39,7 +39,7 @@ describe('AccordionItemTitle', () => {
     item: Item = DEFAULT_ITEM
   ): ReactWrapper {
     return mount(
-      <AccordionProvider accordion={false} items={[item]}>
+      <AccordionProvider allowMultiple={false} items={[item]}>
         <ItemProvider uuid={item.uuid}>{node}</ItemProvider>
       </AccordionProvider>
     );
@@ -153,7 +153,7 @@ describe('AccordionItemTitle', () => {
   it('doesn’t toggle state when clicking but disabled & accordion === true', async () => {
     const wrapper = mount(
       <AccordionProvider
-        accordion={true}
+        allowMultiple={true}
         items={[
           {
             ...DEFAULT_ITEM,

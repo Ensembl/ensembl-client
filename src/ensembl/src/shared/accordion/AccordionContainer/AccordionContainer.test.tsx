@@ -46,7 +46,7 @@ describe('Accordion', () => {
     const mock = jest.fn(() => null);
 
     mount(
-      <Provider accordion={true}>
+      <Provider allowMultiple={true}>
         <Consumer>{mock}</Consumer>
       </Provider>
     );
@@ -124,7 +124,7 @@ describe('Accordion', () => {
     const mock = jest.fn(() => null);
     const instance = mount(
       <Provider
-        accordion={true}
+        allowMultiple={true}
         items={[{ ...DEFAULT_ITEM, uuid: 'foo', expanded: true }]}
       >
         <Consumer>{mock}</Consumer>
@@ -212,7 +212,7 @@ describe('Accordion', () => {
     };
 
     const instance = mount(
-      <Provider accordion={true} items={[fooItem, barItem]}>
+      <Provider allowMultiple={true} items={[fooItem, barItem]}>
         <Consumer>{mock}</Consumer>
       </Provider>
     ).instance() as Provider;
@@ -386,7 +386,7 @@ describe('Accordion', () => {
     };
 
     const instance = mount(
-      <Provider accordion={true} items={[item]} onChange={onChange} />
+      <Provider allowMultiple={true} items={[item]} onChange={onChange} />
     ).instance() as Provider;
 
     instance.setExpanded(item.uuid, true);

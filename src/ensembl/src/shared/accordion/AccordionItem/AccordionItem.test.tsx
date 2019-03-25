@@ -22,7 +22,7 @@ describe('AccordionItem', () => {
 
   it('renders correctly with accordion true', () => {
     const wrapper = mount(
-      <AccordionProvider accordion={true}>
+      <AccordionProvider allowMultiple={true}>
         <AccordionItem className="accordion__item">
           <AccordionItemTitle className="accordion__title">
             <div>Fake title</div>

@@ -15,7 +15,7 @@ describe('Accordion', () => {
     expect(wrapper.find('div').props().className).toEqual('testCSSClass');
   });
 
-  describe('<Accordion accordion="true" />', () => {
+  describe('<Accordion allowMultiple="true" />', () => {
     const [FooTitle, BarTitle] = [
       (): JSX.Element => <AccordionItemTitle>Foo</AccordionItemTitle>,
       (): JSX.Element => <AccordionItemTitle>Bar</AccordionItemTitle>
@@ -23,7 +23,7 @@ describe('Accordion', () => {
 
     function mountAccordion(): ReactWrapper {
       return mount(
-        <Accordion accordion={true}>
+        <Accordion allowMultiple={true}>
           <AccordionItem>
             <FooTitle />
           </AccordionItem>
@@ -77,7 +77,7 @@ describe('Accordion', () => {
     });
   });
 
-  describe('<Accordion accordion="false" /> (‘tabpanel’)', () => {
+  describe('<Accordion allowMultiple="false" /> (‘tabpanel’)', () => {
     const [FooTitle, BarTitle] = [
       (): JSX.Element => <AccordionItemTitle>Foo</AccordionItemTitle>,
       (): JSX.Element => <AccordionItemTitle>Bar</AccordionItemTitle>
@@ -85,7 +85,7 @@ describe('Accordion', () => {
 
     function mountTabpanel(): ReactWrapper {
       return mount(
-        <Accordion accordion={false}>
+        <Accordion allowMultiple={false}>
           <AccordionItem>
             <FooTitle />
           </AccordionItem>
@@ -140,7 +140,7 @@ describe('Accordion', () => {
 
   it('does not expanded disabled items on click', () => {
     const wrapper = mount(
-      <Accordion accordion={false}>
+      <Accordion allowMultiple={false}>
         <AccordionItem disabled={true}>
           <AccordionItemTitle className="foo">Foo Title</AccordionItemTitle>
         </AccordionItem>
@@ -176,7 +176,7 @@ describe('Accordion', () => {
   it('works with multiple pre expanded accordion. Extra expands are just ignored.', () => {
     const hideBodyClassName = 'HIDE';
     const wrapper = mount(
-      <Accordion accordion={true}>
+      <Accordion allowMultiple={true}>
         <AccordionItem expanded={true} hideBodyClassName={hideBodyClassName}>
           Fake Child
         </AccordionItem>
@@ -200,7 +200,7 @@ describe('Accordion', () => {
 
   it('pre expanded accordion when accordion is false', () => {
     const wrapper = mount(
-      <Accordion accordion={false}>
+      <Accordion allowMultiple={false}>
         <AccordionItem expanded={true}>Fake Child</AccordionItem>
         <AccordionItem expanded={true}>Fake Child</AccordionItem>
       </Accordion>
