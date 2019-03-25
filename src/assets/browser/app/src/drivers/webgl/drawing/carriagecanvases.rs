@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 
 use model::train::Traveller;
-use drawing::{ OneCanvasManager, FlatCanvas, AllCanvasAllocator };
+use super::{ OneCanvasManager, FlatCanvas, AllCanvasAllocator };
 use program::{ CanvasCache, CanvasWeave };
 
 pub struct CarriageCanvases {

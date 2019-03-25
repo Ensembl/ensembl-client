@@ -1,6 +1,6 @@
 use std::iter;
 use composit::Leaf;
-use drawing::DrawingSpec;
+use drivers::webgl::DrawingSpec;
 use program::{
     ProgramAttribs, DataBatch, DataGroupIndex, ProgramType, PTMethod, 
     PTGeom, PTSkin

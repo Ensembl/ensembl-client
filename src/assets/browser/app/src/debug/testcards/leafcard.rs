@@ -1,7 +1,7 @@
 use util::RulerGenerator;
 use debug::support::closuresource::{ ClosureSource, closure_add, closure_done, closure_add_opt };
 use composit::Source;
-use drawing::{ FCFont, FontVariety, text_texture };
+use drivers::webgl::{ FCFont, FontVariety, text_texture };
 use shape::{ ColourSpec, PinRectTypeSpec, StretchRectTypeSpec, TextureTypeSpec, TypeToShape, ShapeInstanceData, Facade, ShapeShortInstanceData };
 use types::{ Colour, cleaf, cpixel, A_TOP, area, area_size, AxisSense };
 

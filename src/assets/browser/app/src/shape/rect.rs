@@ -13,8 +13,7 @@ use shape::util::{
     despot, colour, ShapeInstanceData, ShapeShortInstanceData, 
     TypeToShape, Facade, FacadeType, ShapeInstanceDataType
 };
-use drivers::webgl::PrintEdition;
-use drawing::{ Artwork };
+use drivers::webgl::{ PrintEdition, Artwork };
 use super::boxshape::{ BoxSpec };
 
 #[derive(Clone,Copy,Debug)]

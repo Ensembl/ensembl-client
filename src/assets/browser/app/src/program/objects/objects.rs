@@ -2,7 +2,7 @@ use dom::webgl::{
     WebGLRenderingContext as glctx,
 };
 
-use drawing::Drawing;
+use drivers::webgl::Drawing;
 use drivers::webgl::PrintEdition;
 use program::data::{ DataBatch, DataGroupIndex, Input };
 use program::objects::UniformValue;

@@ -5,8 +5,8 @@ use std::hash::Hasher;
 use std::collections::hash_map::DefaultHasher;
 
 use types::{ CPixel, RPixel, area_size, cpixel };
-use drawing::alloc::{ Ticket, Allocator };
-use drawing::{ FlatCanvas, Drawing, Artist,  AllCanvasAllocator };
+use super::alloc::{ Ticket, Allocator };
+use super::{ FlatCanvas, Drawing, Artist,  AllCanvasAllocator };
 use program::CanvasWeave;
 
 #[derive(Clone)]

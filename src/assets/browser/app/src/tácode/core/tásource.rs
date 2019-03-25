@@ -5,7 +5,7 @@ use tánaiste::Value;
 
 use composit::{ Landscape, Leaf, Source, ActiveSource };
 use data::{ XferClerk, XferRequest, XferConsumer, BackendConfig };
-use drawing::DrawingSpec;
+use drivers::webgl::DrawingSpec;
 use model::train::PartyResponses;
 use tácode::{ Tácode, TáTask };
 

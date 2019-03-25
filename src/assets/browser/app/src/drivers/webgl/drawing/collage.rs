@@ -1,5 +1,5 @@
 use types::{ CPixel, RPixel, Colour };
-use drawing::{ FlatCanvas, Artist, DrawingSpec };
+use super::{ FlatCanvas, Artist, DrawingSpec };
 
 pub trait Mark : Artist {
     fn get_offset(&self) -> CPixel;

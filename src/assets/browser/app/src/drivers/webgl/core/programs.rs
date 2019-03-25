@@ -4,7 +4,7 @@ use dom::webgl::WebGLRenderingContext as glctx;
 
 use drivers::webgl::PrintEdition;
 
-use drawing::CarriageCanvases;
+use super::super::drawing::CarriageCanvases;
 use program::{ Program, GPUSpec, ProgramType };
 
 pub struct Programs {

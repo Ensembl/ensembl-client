@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use drawing::{ TextArtist, BitmapArtist, CollageArtist, Artist };
+use super::{ TextArtist, BitmapArtist, CollageArtist, Artist };
 
 #[derive(Clone)]
 pub enum DrawingSpec {

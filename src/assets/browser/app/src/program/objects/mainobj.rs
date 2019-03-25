@@ -9,7 +9,7 @@ use dom::webgl::{
 
 use program::data::{ DataBatch };
 use program::objects::Object;
-use drawing::CarriageCanvases;
+use drivers::webgl::CarriageCanvases;
 use drivers::webgl::PrintEdition;
 
 pub struct ObjectMain {

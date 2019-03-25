@@ -7,7 +7,7 @@ use shape::util::{ rectangle_g, rectangle_t, vertices_rect };
 
 use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
 use drivers::webgl::PrintEdition;
-use drawing::{ Artist, Artwork, DrawingSpec };
+use drivers::webgl::{ Artist, Artwork, DrawingSpec };
 
 #[derive(Clone)]
 pub struct StretchTextureSpec {

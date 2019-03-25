@@ -5,7 +5,7 @@ use std::hash::{ Hash, Hasher };
 use std::rc::Rc;
 
 use super::{ DrawnResponse, PrintEditionAll, WebGLPrinter };
-use drawing::CarriageCanvases;
+use super::super::drawing::CarriageCanvases;
 use shape::ShapeSpec;
 use composit::{ Leaf, SourceResponseData, StateValue };
 use model::driver::SourceResponse;

@@ -10,8 +10,7 @@ use types::{
 use shape::{ Shape, ShapeSpec, ShapeInstanceData, ShapeShortInstanceData, Facade, TypeToShape, FacadeType, ShapeInstanceDataType };
 use shape::util::{ rectangle_t, multi_gl, vertices_rect };
 
-use drawing::{ Artist, Artwork, DrawingSpec };
-use drivers::webgl::PrintEdition;
+use drivers::webgl::{ PrintEdition, Artist, Artwork, DrawingSpec };
 
 #[derive(Clone,Copy,Debug)]
 pub enum TexturePosition<T: Clone+Copy+Debug> {

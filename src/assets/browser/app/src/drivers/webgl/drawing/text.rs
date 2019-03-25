@@ -1,4 +1,4 @@
-use drawing::{ FCFont, Artist, FlatCanvas, DrawingHash, DrawingSpec };
+use super::{ FCFont, Artist, FlatCanvas, DrawingHash, DrawingSpec };
 use types::{ Colour, CPixel };
 
 /* TextArtist - A Artist which can draw text */

@@ -1,6 +1,6 @@
 use std::cmp::{ min, max };
 
-use drawing::{ DrawingHash, FlatCanvas, Artist, CarriageCanvases, OneCanvasManager, DrawingSpec };
+use super::{ DrawingHash, FlatCanvas, Artist, CarriageCanvases, OneCanvasManager, DrawingSpec };
 use drivers::webgl::PrintEdition;
 use program::CanvasWeave;
 use types::{ CPixel, area_size, cpixel };

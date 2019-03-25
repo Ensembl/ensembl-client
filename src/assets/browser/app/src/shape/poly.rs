@@ -15,8 +15,7 @@ use shape::{ Shape, ColourSpec, MathsShape, ShapeSpec };
 use shape::util::{
     multi_gl, poly_p, vertices_poly, vertices_hollowpoly, despot,
 };
-use drivers::webgl::PrintEdition;
-use drawing::{ Artwork };
+use drivers::webgl::{ PrintEdition, Artwork };
 
 #[derive(Clone,Copy,Debug)]
 enum PolyPosition<T: Clone+Copy+Debug> {

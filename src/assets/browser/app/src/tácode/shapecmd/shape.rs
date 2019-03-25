@@ -5,7 +5,7 @@ use tánaiste::{
 };
 
 use composit::{ Leaf };
-use drawing::{ DrawingSpec };
+use drivers::webgl::{ DrawingSpec };
 use shape::{
     ColourSpec, Facade, FacadeType, ShapeInstanceData, TypeToShape,
     PinRectTypeSpec, StretchRectTypeSpec, ShapeShortInstanceData,

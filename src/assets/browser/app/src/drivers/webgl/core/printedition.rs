@@ -1,6 +1,6 @@
 use shape::{ Spot, CanvasIdx };
 use super::Programs;
-use drawing::{ CarriageCanvases, OneCanvasManager };
+use super::super::drawing::{ CarriageCanvases, OneCanvasManager };
 use program::{ CanvasCache, CanvasWeave };
 
 use dom::webgl::WebGLRenderingContext as glctx;

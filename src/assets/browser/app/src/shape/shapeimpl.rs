@@ -3,7 +3,7 @@ use std::rc::Rc;
 use program::{ ProgramAttribs, DataGroupIndex, ProgramType };
 use types::{ Colour };
 use drivers::webgl::{ Programs, PrintEdition };
-use drawing::{ Artist, Artwork, Drawing, CarriageCanvases };
+use drivers::webgl::{ Artist, Artwork, Drawing, CarriageCanvases };
 
 pub trait Shape {
     fn get_artist(&self) -> Option<Rc<Artist>> { None }

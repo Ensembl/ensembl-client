@@ -5,7 +5,7 @@ use super::{ GLSourceResponse, Programs, PrintEdition, PrintEditionAll };
 use program::ProgramType;
 use model::train::{ Train, Traveller, Carriage };
 use composit::{ Leaf, Stage, ComponentRedo, StateManager };
-use drawing::{ CarriageCanvases, AllCanvasAllocator };
+use super::super::drawing::{ CarriageCanvases, AllCanvasAllocator };
 use dom::webgl::WebGLRenderingContext as glctx;
 
 pub struct CarriagePrinter {

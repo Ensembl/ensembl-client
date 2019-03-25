@@ -4,7 +4,6 @@ use composit::{
     SourceResponseData, Leaf, ActiveSource,
 };
 use composit::{ StateManager, StateValue, ComponentRedo };
-use drawing::CarriageCanvases;
 use model::driver::{ Printer, PrinterManager, SourceResponse };
 
 pub struct Traveller {

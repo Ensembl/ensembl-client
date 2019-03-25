@@ -8,7 +8,7 @@ use dom::webgl::{
     WebGLProgram as glprog,
 };
 
-use drawing::CarriageCanvases;
+use drivers::webgl::CarriageCanvases;
 use program::data::{ DataBatch, Input };
 use drivers::webgl::PrintEdition;
 

@@ -9,7 +9,7 @@ use super::{ Programs, CarriagePrinter, GLSourceResponse };
 use composit::{ Compositor, StateManager, Leaf, Stage };
 use model::driver::{ Printer, SourceResponse };
 use model::train::Train;
-use drawing::{ AllCanvasAllocator };
+use super::super::drawing::{ AllCanvasAllocator };
 use dom::domutil;
 use types::{ Dot };
 

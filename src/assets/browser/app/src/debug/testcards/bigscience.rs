@@ -19,7 +19,6 @@ use debug::testcards::common::{
     rng_subdivide, bio_mark, rng_tracks, prop
 };
 
-use drawing::DrawingHash;
 use model::train::PartyResponses;
 use shape::{
     tape_mathsshape,
@@ -39,7 +38,7 @@ use types::{
     A_RIGHT, A_LEFT
 };
 
-use drawing::{
+use drivers::webgl::{
     text_texture, bitmap_texture, collage, FCFont,
     mark_rectangle, FontVariety, MarkSpec, DrawingSpec
 };

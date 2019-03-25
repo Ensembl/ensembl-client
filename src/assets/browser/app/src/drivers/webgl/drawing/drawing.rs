@@ -1,9 +1,8 @@
 use std::rc::Rc;
 
 use types::{ CPixel, RPixel, RFraction, cpixel, area };
-use drawing::alloc::Ticket;
-use drawing::{ Artist, OneCanvasManager };
-use drawing::CarriageCanvases;
+use super::alloc::Ticket;
+use super::{ Artist, OneCanvasManager, CarriageCanvases };
 use program::CanvasWeave;
 use drivers::webgl::PrintEdition;
 

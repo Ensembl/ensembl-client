@@ -1,6 +1,6 @@
 use composit::Source;
 use debug::support::closuresource::{ ClosureSource, closure_add, closure_add_opt, closure_done };
-use drawing::{ FCFont, FontVariety, text_texture };
+use drivers::webgl::{ FCFont, FontVariety, text_texture };
 use shape::{ ColourSpec, Facade, PinRectTypeSpec, TextureTypeSpec, TypeToShape, ShapeInstanceData, ShapeShortInstanceData };
 use types::{ Colour, cleaf, cpixel, area_size, AxisSense, A_TOPLEFT };
 

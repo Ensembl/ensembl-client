@@ -5,7 +5,7 @@ use stdweb::web::html_element::CanvasElement;
 use stdweb::unstable::TryInto;
 
 use dom::domutil;
-use drawing::{  CarriageCanvases, FlatCanvas };
+use super::{  CarriageCanvases, FlatCanvas };
 use program::{ CanvasCache, CanvasWeave };
 use types::Dot;
 

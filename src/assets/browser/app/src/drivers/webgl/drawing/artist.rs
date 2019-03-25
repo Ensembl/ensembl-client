@@ -1,5 +1,5 @@
 use types::{ CPixel, area_size, cpixel };
-use drawing::{ FlatCanvas, DrawingHash, CarriageCanvases, OneCanvasManager };
+use super::{ FlatCanvas, DrawingHash, CarriageCanvases, OneCanvasManager };
 use program::CanvasWeave;
 use drivers::webgl::PrintEdition;
 

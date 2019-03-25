@@ -7,9 +7,7 @@ use shape::{
 
 use program::{ ProgramAttribs, DataGroupIndex, ProgramType };
 use types::{ Colour };
-use drivers::webgl::{ Programs, PrintEdition };
-use drawing::{ Artist, Artwork, Drawing, CarriageCanvases };
-
+use drivers::webgl::{ Programs, PrintEdition, Artist, Artwork, Drawing, CarriageCanvases };
 
 #[derive(Clone)]
 pub enum ShapeSpec {

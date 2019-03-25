@@ -8,7 +8,7 @@ use stdweb::web::{
 use stdweb::web::html_element::CanvasElement;
 use stdweb::web::TypedArray;
 
-use drawing::{ CanvasRemover, AllCanvasAllocator };
+use super::{ CanvasRemover, AllCanvasAllocator };
 use program::CanvasWeave;
 use types::{ Colour, CPixel, RPixel, cpixel, Dot };
 use util::ChangeDetect;

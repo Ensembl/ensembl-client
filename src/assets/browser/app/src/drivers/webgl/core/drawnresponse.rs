@@ -1,7 +1,6 @@
 use composit::SourceResponseData;
 use composit::Source;
-use drawing::Drawing;
-use drawing::CarriageCanvases;
+use super::super::drawing::{ Drawing, CarriageCanvases };
 use super::{ PrintEditionAll, Programs };
 use shape::{ ShapeSpec, Shape };
 
