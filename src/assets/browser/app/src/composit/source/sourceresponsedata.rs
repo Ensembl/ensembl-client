@@ -4,13 +4,13 @@ use std::rc::Rc;
 
 use shape::ShapeSpec;
 
-pub struct SourceResponse {
+pub struct SourceResponseData {
     shapes: Vec<ShapeSpec>
 }
 
-impl SourceResponse {
-    pub fn new() -> SourceResponse {
-        SourceResponse {
+impl SourceResponseData {
+    pub fn new() -> SourceResponseData {
+        SourceResponseData {
             shapes: Vec::<ShapeSpec>::new()
         }
     }

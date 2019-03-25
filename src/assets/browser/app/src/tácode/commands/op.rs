@@ -6,7 +6,7 @@ use tánaiste::{
     Value
 };
 
-use composit::{ Leaf, SourceResponse };
+use composit::{ Leaf };
 
 #[derive(Clone)]
 pub enum BinOpType {

@@ -1,29 +1,26 @@
 use std::fmt;
 
 use composit::{
-    SourceResponse, Leaf, ActiveSource,
+    SourceResponseData, Leaf, ActiveSource,
 };
 use composit::{ StateManager, StateValue, ComponentRedo };
 use drawing::CarriageCanvases;
-use drivers::webgl::{ DrawnResponse, GLSourceResponse };
-use model::driver::{ Printer, PrinterManager };
+use model::driver::{ Printer, PrinterManager, SourceResponse };
 
 pub struct Traveller {
     pm: PrinterManager,
     comp: ActiveSource,
     prev_value: StateValue,
     cur_value: StateValue,
-    srr: Option<GLSourceResponse>,
-    response: Option<DrawnResponse>,
+    srr: Option<Box<SourceResponse>>,
     part: Option<String>,
     leaf: Leaf
 }
 
 impl Traveller {
-    pub fn new(pm: &PrinterManager, comp: ActiveSource, part: &Option<String>, leaf: &Leaf, srr: GLSourceResponse) -> Traveller {
+    pub fn new(pm: &PrinterManager, comp: ActiveSource, part: &Option<String>, leaf: &Leaf, srr: Box<SourceResponse>) -> Traveller {
         Traveller {
             pm: pm.clone(),
-            response: None,
             prev_value: StateValue::OffCold(),
             cur_value: StateValue::OffCold(),
             leaf: leaf.clone(),
@@ -60,7 +57,7 @@ impl Traveller {
 
 impl Drop for Traveller {
     fn drop(&mut self) {
-        self.pm.destroy_partial(self.srr.take().unwrap());
+        self.srr.take().unwrap().destroy();
     }
 }
 

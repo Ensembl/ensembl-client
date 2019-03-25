@@ -5,7 +5,7 @@ mod source;
 mod sourcemanager;
 mod sourcemanagerlist;
 mod sourcepart;
-mod sourceresponse;
+mod sourceresponsedata;
 
 pub use self::activesource::ActiveSource;
 pub use self::combinedsource::{ CombinedSource, build_combined_source };
@@ -14,4 +14,4 @@ pub use self::source::Source;
 pub use self::sourcemanager::SourceManager;
 pub use self::sourcemanagerlist::SourceManagerList;
 pub use self::sourcepart::SourcePart;
-pub use self::sourceresponse::SourceResponse;
+pub use self::sourceresponsedata::SourceResponseData;

@@ -31,8 +31,8 @@ impl CarriagePrinter {
         self.srr.insert(sr.clone());
     }
 
-    pub fn remove_sr(&mut self, sr: GLSourceResponse) {
-        self.srr.remove(&sr);
+    pub fn remove_sr(&mut self, sr: &mut GLSourceResponse) {
+        self.srr.remove(sr);
     }
     
     pub fn destroy(&mut self, alloc: &mut AllCanvasAllocator) {

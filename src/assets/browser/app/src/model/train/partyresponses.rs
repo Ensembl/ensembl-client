@@ -2,23 +2,23 @@ use std::collections::HashMap;
 
 use drivers::webgl::GLSourceResponse;
 use model::driver::{ Printer, PrinterManager };
-use composit::{ Leaf, SourceResponse };
+use composit::{ Leaf, SourceResponseData };
 
 pub struct PartyResponses {
     pm: PrinterManager,
-    parts: HashMap<Option<String>,(SourceResponse,GLSourceResponse)>,
+    parts: HashMap<Option<String>,(SourceResponseData,GLSourceResponse)>,
     done: bool
 }
 
-fn new_entry(pm: &mut PrinterManager, leaf: &Leaf) -> (SourceResponse,GLSourceResponse) {
-    (SourceResponse::new(),pm.make_partial(leaf))
+fn new_entry(pm: &mut PrinterManager, leaf: &Leaf) -> (SourceResponseData,GLSourceResponse) {
+    (SourceResponseData::new(),pm.make_partial(leaf))
 }
 
 impl PartyResponses {
     /* travellercreator */
     pub fn new(pm: &PrinterManager, parts: &Vec<String>, leaf: &Leaf) -> PartyResponses {
         let mut out = PartyResponses {
-            parts: HashMap::<Option<String>,(SourceResponse,GLSourceResponse)>::new(),
+            parts: HashMap::<Option<String>,(SourceResponseData,GLSourceResponse)>::new(),
             done: false,
             pm: pm.clone()
         };
@@ -35,7 +35,7 @@ impl PartyResponses {
     }
     
     /* shapecmd/shape (x4), support/closure_source */
-    pub fn get_mut(&mut self, part: &Option<String>) -> Option<&mut SourceResponse> {
+    pub fn get_mut(&mut self, part: &Option<String>) -> Option<&mut SourceResponseData> {
         self.parts.get_mut(part).map(|x| &mut x.0)
     }
         

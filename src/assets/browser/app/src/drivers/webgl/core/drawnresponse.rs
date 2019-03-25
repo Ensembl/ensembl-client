@@ -1,4 +1,4 @@
-use composit::SourceResponse;
+use composit::SourceResponseData;
 use composit::Source;
 use drawing::Drawing;
 use drawing::CarriageCanvases;
@@ -7,12 +7,12 @@ use shape::{ ShapeSpec, Shape };
 
 pub struct DrawnResponse {
     drawings: Vec<Option<Drawing>>,
-    sr: SourceResponse,
+    sr: SourceResponseData,
 }
 
 impl DrawnResponse {
     /* glsourceresponse */
-    pub fn new(sr: SourceResponse) -> DrawnResponse {
+    pub fn new(sr: SourceResponseData) -> DrawnResponse {
         DrawnResponse { 
             sr, 
             drawings: Vec::<Option<Drawing>>::new(),

@@ -24,5 +24,4 @@ pub trait Printer {
     fn remove_leaf(&mut self, leaf: &Leaf);
     fn set_current(&mut self, leaf: &Leaf);
     fn make_partial(&mut self, leaf: &Leaf) -> GLSourceResponse;
-    fn destroy_partial(&mut self, sr: GLSourceResponse);
 }

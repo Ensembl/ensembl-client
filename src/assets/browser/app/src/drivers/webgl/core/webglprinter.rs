@@ -132,17 +132,17 @@ impl WebGLPrinterBase {
         self.acm.finish();
     }    
 
-    fn make_partial(&mut self, leaf: &Leaf) -> GLSourceResponse {
+    fn make_partial(&mut self, pref: &WebGLPrinter, leaf: &Leaf) -> GLSourceResponse {
         let idx = self.sridx;
         self.sridx += 1;
-        let sr = GLSourceResponse::new(idx,leaf);
+        let sr = GLSourceResponse::new(pref,idx,leaf);
         if let Some(cp) = self.lp.get_mut(leaf) {
             cp.new_sr(&sr);
         }
         sr
     }
     
-    fn destroy_partial(&mut self, sr: GLSourceResponse) {
+    fn destroy_partial(&mut self, sr: &mut GLSourceResponse) {
         let leaf = sr.get_leaf().clone();
         if let Some(cp) = self.lp.get_mut(&leaf) {
             cp.remove_sr(sr);
@@ -160,6 +160,10 @@ impl WebGLPrinter {
         WebGLPrinter {
             base: Rc::new(RefCell::new(WebGLPrinterBase::new(canv_el)))
         }
+    }
+    
+    pub(in super) fn destroy_partial(&mut self, sr: &mut GLSourceResponse) {
+        self.base.borrow_mut().destroy_partial(sr);
     }
 }
 
@@ -210,10 +214,7 @@ impl Printer for WebGLPrinter {
     }
     
     fn make_partial(&mut self, leaf: &Leaf) -> GLSourceResponse {
-        self.base.borrow_mut().make_partial(leaf)
-    }
-    
-    fn destroy_partial(&mut self, sr: GLSourceResponse) {
-        self.base.borrow_mut().destroy_partial(sr);
-    }
+        let twin = self.clone();
+        self.base.borrow_mut().make_partial(&twin,leaf)
+    }    
 }

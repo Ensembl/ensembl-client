@@ -67,9 +67,5 @@ impl Printer for PrinterManager {
     
     fn make_partial(&mut self, leaf: &Leaf) -> GLSourceResponse {
         self.0.borrow_mut().printer.make_partial(leaf)
-    }
-    
-    fn destroy_partial(&mut self, sr: GLSourceResponse) {
-        self.0.borrow_mut().printer.destroy_partial(sr);
-    }
+    }    
 }

@@ -3,10 +3,7 @@ use std::sync::{ Arc, Mutex, Weak };
 use stdweb::web::HtmlElement;
 use url::Url;
 
-use composit::{
-    register_compositor_ticks, AllLandscapes, CombinedSourceManager,
-    SourceManager, SourceManagerList, StickManager, ActiveSource, Stick
-};
+use composit::register_compositor_ticks;
 use controller::global::{ App, GlobalWeak };
 use controller::input::{
     register_direct_events, register_user_events, register_dom_events,

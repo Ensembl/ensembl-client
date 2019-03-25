@@ -47,7 +47,7 @@ impl ActiveSource {
     
     fn make_traveller(&self, pm: &PrinterManager, party: &PartyResponses, part: &Option<String>, leaf: &Leaf) -> Traveller {
         let srr = party.get_srr(part);
-        Traveller::new(pm,self.clone(),part,leaf,srr)
+        Traveller::new(pm,self.clone(),part,leaf,Box::new(srr))
     }
     
     pub fn make_party(&self, pm: &PrinterManager, party: &PartyResponses, leaf: &Leaf) -> Vec<Traveller> {

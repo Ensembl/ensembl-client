@@ -7,7 +7,7 @@ use tánaiste::{
     Value
 };
 
-use composit::SourceResponse;
+use composit::SourceResponseData;
 use data::BackendConfig;
 use drawing::{ DrawingSpec, FCFont, FontVariety, bitmap_texture, DrawingHash };
 use tácode::{ TáContext, TáTask };
