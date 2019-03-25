@@ -7,7 +7,6 @@ import Input from 'src/shared/input/Input';
 
 type Props = {
   search: string;
-  placeholder?: string;
   onChange: (value: string) => void;
   onSubmit?: (value: string) => void;
   onFocus?: () => void;
@@ -16,6 +15,7 @@ type Props = {
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   onKeyPress?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   rightCorner?: ReactNode;
+  placeholder?: string;
   className?: string;
 };
 
