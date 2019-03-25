@@ -43,12 +43,7 @@ impl GLSourceResponse {
             leaf: leaf.clone()
         }
     }
-        
-    /* train/partyresponses */
-    pub fn set(&mut self, result: SourceResponseData) {
-        *self.dr.borrow_mut() = Some(DrawnResponse::new(result));
-    }
-    
+
     /* train/traveller */
     pub fn take(&mut self) -> Option<DrawnResponse> {
         self.dr.borrow_mut().take()
@@ -84,6 +79,11 @@ impl SourceResponse for GLSourceResponse {
         self.dr.borrow().is_some()
     }
 
+    /* train/partyresponses */
+    fn set(&mut self, result: SourceResponseData) {
+        *self.dr.borrow_mut() = Some(DrawnResponse::new(result));
+    }
+
     fn set_state(&mut self, state: StateValue) {
         *self.state.borrow_mut() = state;
     }
@@ -91,6 +91,10 @@ impl SourceResponse for GLSourceResponse {
     fn destroy(&mut self) {
         let mut p = self.printer.clone();
         p.destroy_partial(self);
+    }
+    
+    fn source_response_clone(&self) -> Box<SourceResponse> {
+        Box::new(self.clone())
     }
 }
 

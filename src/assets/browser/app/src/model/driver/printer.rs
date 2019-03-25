@@ -1,7 +1,7 @@
 use composit::{ Compositor, Stage, StateManager, Leaf };
 use types::Dot;
 
-use drivers::webgl::GLSourceResponse;
+use model::driver::SourceResponse;
 
 pub trait Printer {
     /* Print one run of objects from compositor with given stage and
@@ -23,5 +23,5 @@ pub trait Printer {
     fn add_leaf(&mut self, leaf: &Leaf);
     fn remove_leaf(&mut self, leaf: &Leaf);
     fn set_current(&mut self, leaf: &Leaf);
-    fn make_partial(&mut self, leaf: &Leaf) -> GLSourceResponse;
+    fn make_partial(&mut self, leaf: &Leaf) -> Box<SourceResponse>;
 }

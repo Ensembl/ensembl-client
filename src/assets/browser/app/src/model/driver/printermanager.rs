@@ -2,9 +2,9 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use composit::{ Leaf, Stage, StateManager, Compositor };
+use model::driver::SourceResponse;
 use types::Dot;
 use super::Printer;
-use drivers::webgl::GLSourceResponse;
 
 struct PrinterManagerImpl {
     printer: Box<Printer>
@@ -65,7 +65,7 @@ impl Printer for PrinterManager {
         self.0.borrow_mut().printer.set_current(leaf);
     }
     
-    fn make_partial(&mut self, leaf: &Leaf) -> GLSourceResponse {
+    fn make_partial(&mut self, leaf: &Leaf) -> Box<SourceResponse> {
         self.0.borrow_mut().printer.make_partial(leaf)
     }    
 }

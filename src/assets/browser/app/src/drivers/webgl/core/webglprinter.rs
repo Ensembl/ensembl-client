@@ -7,7 +7,7 @@ use stdweb::web::{ HtmlElement, Element, INode, IElement };
 
 use super::{ Programs, CarriagePrinter, GLSourceResponse };
 use composit::{ Compositor, StateManager, Leaf, Stage };
-use model::driver::Printer;
+use model::driver::{ Printer, SourceResponse };
 use model::train::Train;
 use drawing::{ AllCanvasAllocator };
 use dom::domutil;
@@ -132,14 +132,14 @@ impl WebGLPrinterBase {
         self.acm.finish();
     }    
 
-    fn make_partial(&mut self, pref: &WebGLPrinter, leaf: &Leaf) -> GLSourceResponse {
+    fn make_partial(&mut self, pref: &WebGLPrinter, leaf: &Leaf) -> Box<SourceResponse> {
         let idx = self.sridx;
         self.sridx += 1;
         let sr = GLSourceResponse::new(pref,idx,leaf);
         if let Some(cp) = self.lp.get_mut(leaf) {
             cp.new_sr(&sr);
         }
-        sr
+        Box::new(sr)
     }
     
     fn destroy_partial(&mut self, sr: &mut GLSourceResponse) {
@@ -213,7 +213,7 @@ impl Printer for WebGLPrinter {
         self.base.borrow_mut().set_current(leaf);
     }
     
-    fn make_partial(&mut self, leaf: &Leaf) -> GLSourceResponse {
+    fn make_partial(&mut self, leaf: &Leaf) -> Box<SourceResponse> {
         let twin = self.clone();
         self.base.borrow_mut().make_partial(&twin,leaf)
     }    

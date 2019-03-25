@@ -1,16 +1,15 @@
 use std::collections::HashMap;
 
-use drivers::webgl::GLSourceResponse;
-use model::driver::{ Printer, PrinterManager };
+use model::driver::{ Printer, PrinterManager, SourceResponse };
 use composit::{ Leaf, SourceResponseData };
 
 pub struct PartyResponses {
     pm: PrinterManager,
-    parts: HashMap<Option<String>,(SourceResponseData,GLSourceResponse)>,
+    parts: HashMap<Option<String>,(SourceResponseData,Box<SourceResponse>)>,
     done: bool
 }
 
-fn new_entry(pm: &mut PrinterManager, leaf: &Leaf) -> (SourceResponseData,GLSourceResponse) {
+fn new_entry(pm: &mut PrinterManager, leaf: &Leaf) -> (SourceResponseData,Box<SourceResponse>) {
     (SourceResponseData::new(),pm.make_partial(leaf))
 }
 
@@ -18,7 +17,7 @@ impl PartyResponses {
     /* travellercreator */
     pub fn new(pm: &PrinterManager, parts: &Vec<String>, leaf: &Leaf) -> PartyResponses {
         let mut out = PartyResponses {
-            parts: HashMap::<Option<String>,(SourceResponseData,GLSourceResponse)>::new(),
+            parts: HashMap::<Option<String>,(SourceResponseData,Box<SourceResponse>)>::new(),
             done: false,
             pm: pm.clone()
         };
@@ -30,8 +29,8 @@ impl PartyResponses {
     }
     
     /* activesource */
-    pub fn get_srr(&self, part: &Option<String>) -> GLSourceResponse {
-        self.parts.get(part).map(|x| x.1.clone()).unwrap()
+    pub fn get_srr(&self, part: &Option<String>) -> Box<SourceResponse> {
+        self.parts.get(part).map(|x| x.1.source_response_clone()).unwrap()
     }
     
     /* shapecmd/shape (x4), support/closure_source */
