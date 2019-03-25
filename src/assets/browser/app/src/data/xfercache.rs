@@ -31,7 +31,7 @@ impl XferCacheImpl {
     }
     
     pub fn get(&mut self, compo: &str, short_stick: &str, short_pane: &str) -> Option<Vec<Value>> {
-        self.cache.get(&(compo.to_string(),short_stick.to_string(),short_pane.to_string()))
+        self.cache.get(&(compo.to_string(),short_stick.to_string(),short_pane.to_string())).cloned()
     }    
 }
 

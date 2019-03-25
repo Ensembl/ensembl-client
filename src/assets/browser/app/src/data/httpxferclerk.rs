@@ -11,7 +11,6 @@ use tánaiste::Value;
 use url::Url;
 
 use composit::Leaf;
-use util::Cache;
 use super::{ 
     XferClerk, XferConsumer, XferRequest, XferCache,
     HttpResponseConsumer, HttpManager, BackendConfig,
