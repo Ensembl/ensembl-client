@@ -1,14 +1,14 @@
 import { mount, ReactWrapper } from 'enzyme';
-import * as React from 'react';
+import React from 'react';
 import {
   Item,
   Provider as AccordionProvider
 } from '../AccordionContainer/AccordionContainer';
-import { default as AccordionItemBody } from '../AccordionItemBody/AccordionItemBody.wrapper';
-import { default as AccordionItemTitle } from '../AccordionItemTitle/AccordionItemTitle.wrapper';
+import AccordionItemTitle from '../AccordionItemTitle/AccordionItemTitle.wrapper';
+import AccordionItemBody from '../AccordionItemBody/AccordionItemBody.wrapper';
 import { resetNextUuid } from '../helpers/uuid';
 import { Provider as ItemProvider } from '../ItemContainer/ItemContainer';
-import { default as AccordionItem } from './AccordionItem.wrapper';
+import AccordionItem from './AccordionItem.wrapper';
 
 describe('AccordionItem', () => {
   beforeEach(() => {

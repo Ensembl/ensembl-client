@@ -1,6 +1,6 @@
 // tslint:disable:max-classes-per-file
 
-import * as React from 'react';
+import React from 'react';
 import { UUID } from '../ItemContainer/ItemContainer';
 
 // Arbitrary, but ought to be unique to avoid context namespace clashes.

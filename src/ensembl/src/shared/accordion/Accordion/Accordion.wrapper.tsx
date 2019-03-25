@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { UUID } from '../ItemContainer/ItemContainer';
 
 import { Consumer, Provider } from '../AccordionContainer/AccordionContainer';

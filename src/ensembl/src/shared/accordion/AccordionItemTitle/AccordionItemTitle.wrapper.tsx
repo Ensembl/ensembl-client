@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import {
   CONTEXT_KEY as ACCORDION_CONTEXT_KEY,
   getAccordionStore,
@@ -8,7 +8,7 @@ import {
   CONTEXT_KEY as ITEM_CONTEXT_KEY,
   getItemStore
 } from '../ItemContainer/ItemContainer';
-import { default as AccordionItemTitle } from './AccordionItemTitle';
+import AccordionItemTitle from './AccordionItemTitle';
 import accordionStyles from '../styles/Accordion.scss';
 
 type AccordionItemTitleWrapperProps = React.HTMLAttributes<HTMLDivElement> & {
