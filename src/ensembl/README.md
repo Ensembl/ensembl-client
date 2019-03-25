@@ -11,7 +11,8 @@ There are several script commands that have been baked into the NPM configuratio
 - `npm run copy-dotenv` - Makes a copy of `.env.example` file named as `.env` in case it doesn't exist. This command will always run before `serve:dev`.
 - `npm start` - This should start the development server via `webpack`. There is no need to do any compilation manually, as `webpack` will take care of it.
 - `npm run serve:dev` - This does the same as `npm start`. The latter is actually an alias to this script.
-- `npm run serve:prod` - This runs the built production site locally.
+- `npm run serve:prod` - This runs the built production site locally using `http`.
+- `npm run serve:prod:secure` - Runs the build production site locally securely using `https`. You will need to run `certify` before running this, in case you already haven't generated an SSL certificate.
 - `npm run build` - Runs the production build. It will initially delete the existing local production build and replace it with the new one.
 - `npm run deploy` - Runs `deploy.js` file to deploy the production build into the master machine (`ves-hx2-70`). You will need to pass the full address of the machine name along with your username as an argument. 
 - `npm run certify` - Runs `setup-ssl.js` to create a local SSL certificate to run the production build on `HTTPS`. There are two files that are created for this: `localhost.crt` and `localhost.key`.
