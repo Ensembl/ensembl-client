@@ -46,7 +46,7 @@ storiesOf('Components|Shared Components/Accordion', module)
   .add('Allow multiple', () => {
     return (
       <div className={styles.accordionContainer}>
-        <Accordion accordion={false}>
+        <Accordion allowMultiple={true}>
           <AccordionItem>
             <AccordionItemTitle>
               <div className={styles.accordion_title}>

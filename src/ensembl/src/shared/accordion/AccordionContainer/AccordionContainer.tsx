@@ -79,7 +79,7 @@ export class Provider extends React.Component<ProviderProps, ProviderState> {
           }". Uuid property must be unique.`
         );
       }
-      if (this.props.allowMultiple && newItem.expanded) {
+      if (!this.props.allowMultiple && newItem.expanded) {
         // If this is a true accordion and the new item is expanded, then the others must be closed.
         items = [
           ...state.items.map((item: Item) => ({
@@ -114,7 +114,7 @@ export class Provider extends React.Component<ProviderProps, ProviderState> {
               expanded
             };
           }
-          if (this.props.allowMultiple && expanded) {
+          if (!this.props.allowMultiple && expanded) {
             // If this is an accordion, we might need to collapse the other expanded item.
             return {
               ...item,
@@ -128,7 +128,7 @@ export class Provider extends React.Component<ProviderProps, ProviderState> {
       () => {
         if (this.props.onChange) {
           this.props.onChange(
-            this.props.allowMultiple
+            !this.props.allowMultiple
               ? key
               : this.state.items
                   .filter((item: Item) => item.expanded)

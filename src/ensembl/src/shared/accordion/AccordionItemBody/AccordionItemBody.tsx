@@ -21,7 +21,7 @@ const AccordionItemBody = (props: AccordionItemBodyProps): JSX.Element => {
     ...rest
   } = props;
 
-  const role = allowMultiple ? 'region' : undefined;
+  const role = !allowMultiple ? 'region' : undefined;
 
   return (
     <div

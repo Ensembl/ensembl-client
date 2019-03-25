@@ -17,10 +17,10 @@ describe('AccordionItem', () => {
 
   it('renders null outside the context of an accordion', () => {
     const wrapper = mount(<AccordionItem />);
-    expect(wrapper.html()).toBeNull();
+    expect(wrapper.html()).toBe(<></>);
   });
 
-  it('renders correctly with accordion true', () => {
+  it('renders correctly with allowMultiple true', () => {
     const wrapper = mount(
       <AccordionProvider allowMultiple={true}>
         <AccordionItem className="accordion__item">
@@ -37,7 +37,7 @@ describe('AccordionItem', () => {
     expect(wrapper).toMatchSnapshot();
   });
 
-  it('renders correctly with accordion false', () => {
+  it('renders correctly with allowMultiple false', () => {
     const wrapper = mount(
       <AccordionProvider>
         <AccordionItem className="accordion__item">

@@ -34,7 +34,7 @@ describe('Accordion', () => {
     );
 
     expect(mock).toHaveBeenCalledWith({
-      accordion: false,
+      allowMultiple: false,
       items: [],
       addItem: expect.anything(),
       removeItem: expect.anything(),
@@ -42,7 +42,7 @@ describe('Accordion', () => {
     });
   });
 
-  it('respects the `accordion` prop', () => {
+  it('respects the `allowMultiple` prop', () => {
     const mock = jest.fn(() => null);
 
     mount(
@@ -53,7 +53,7 @@ describe('Accordion', () => {
 
     expect(mock).toHaveBeenCalledWith(
       expect.objectContaining({
-        accordion: true
+        allowMultiple: true
       })
     );
   });
@@ -120,7 +120,7 @@ describe('Accordion', () => {
     );
   });
 
-  it('adding an expanded item to a strict-accordion closes other items', () => {
+  it('closes other items after adding an expanded item to a strict-accordion', () => {
     const mock = jest.fn(() => null);
     const instance = mount(
       <Provider
@@ -147,7 +147,7 @@ describe('Accordion', () => {
     );
   });
 
-  it("adding an expanded item to a non-strict-accordion doesn't close other items", () => {
+  it("doesn't close other items adding an expanded item to a non-strict-accordion", () => {
     const mock = jest.fn(() => null);
     const instance = mount(
       <Provider items={[{ ...DEFAULT_ITEM, uuid: 'foo', expanded: true }]}>
@@ -198,7 +198,7 @@ describe('Accordion', () => {
     );
   });
 
-  it('setting the expanded property to true in a strict accordion closes all other items', () => {
+  it('closes all other items after setting the expanded property to true in a strict accordion', () => {
     const mock = jest.fn(() => null);
     const fooItem = {
       ...DEFAULT_ITEM,
@@ -229,7 +229,7 @@ describe('Accordion', () => {
     );
   });
 
-  it('setting the expanded property to true in a non-strict accordion does not close all other items', () => {
+  it('does not close all other items after setting the expanded property to true in a non-strict accordion', () => {
     const mock = jest.fn(() => null);
     const fooItem = {
       ...DEFAULT_ITEM,
@@ -378,7 +378,7 @@ describe('Accordion', () => {
     expect(console.error).toBeCalled();
   });
 
-  it('triggers "onChange" with uuid when a true accordion', () => {
+  it('triggers "onChange" with uuid when allowMultiple is false', () => {
     const onChange = jest.fn();
     const item = {
       ...DEFAULT_ITEM,
@@ -394,7 +394,7 @@ describe('Accordion', () => {
     expect(onChange).toHaveBeenCalledWith(item.uuid);
   });
 
-  it('triggers "onChange" with array of expanded uuids when not a true accordion', () => {
+  it('triggers "onChange" with array of expanded uuids when allowMultiple is false', () => {
     const onChange = jest.fn();
     const item = {
       ...DEFAULT_ITEM,

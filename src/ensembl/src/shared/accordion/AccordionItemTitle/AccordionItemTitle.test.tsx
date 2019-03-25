@@ -14,24 +14,24 @@ describe('AccordionItemTitle', () => {
     disabled: false
   };
 
-  it('renders null outside the context of an ‘Accordion’', () => {
+  it('renders <></> outside the context of an ‘Accordion’', () => {
     const wrapper = mount(
       <ItemProvider uuid="foo">
         <AccordionItemTitle />
       </ItemProvider>
     );
 
-    expect(wrapper.html()).toBeNull();
+    expect(wrapper.html()).toBe(<></>);
   });
 
-  it('renders null outside the context of an ‘AccordionItem’', () => {
+  it('renders <></> outside the context of an ‘AccordionItem’', () => {
     const wrapper = mount(
       <AccordionProvider items={[DEFAULT_ITEM]}>
         <AccordionItemTitle />
       </AccordionProvider>
     );
 
-    expect(wrapper.html()).toBeNull();
+    expect(wrapper.html()).toBe(<></>);
   });
 
   function mountItem(
@@ -109,36 +109,6 @@ describe('AccordionItemTitle', () => {
     expect(isExpanded(wrapper, DEFAULT_ITEM.uuid)).toBeFalsy();
   });
 
-  it('toggles state when pressing enter', async () => {
-    const wrapper = mountItem(
-      <AccordionItemTitle>Fake Title</AccordionItemTitle>
-    );
-
-    expect(isExpanded(wrapper, DEFAULT_ITEM.uuid)).toBeFalsy();
-    wrapper.find('div').simulate('keypress', { charCode: 13 });
-    expect(isExpanded(wrapper, DEFAULT_ITEM.uuid)).toBeTruthy();
-  });
-
-  it('toggles state when pressing space', async () => {
-    const wrapper = mountItem(
-      <AccordionItemTitle>Fake Title</AccordionItemTitle>
-    );
-
-    expect(isExpanded(wrapper, DEFAULT_ITEM.uuid)).toBeFalsy();
-    wrapper.find('div').simulate('keypress', { charCode: 32 });
-    expect(isExpanded(wrapper, DEFAULT_ITEM.uuid)).toBeTruthy();
-  });
-
-  it('doesn’t toggle state when pressing another key', async () => {
-    const wrapper = mountItem(
-      <AccordionItemTitle>Fake Title</AccordionItemTitle>
-    );
-
-    expect(isExpanded(wrapper, DEFAULT_ITEM.uuid)).toBeFalsy();
-    wrapper.find('div').simulate('keypress', { charCode: 35 });
-    expect(isExpanded(wrapper, DEFAULT_ITEM.uuid)).toBeFalsy();
-  });
-
   it('respects arbitrary user-defined props', () => {
     const wrapper = mountItem(
       <AccordionItemTitle lang="en">Fake Title</AccordionItemTitle>
@@ -150,10 +120,10 @@ describe('AccordionItemTitle', () => {
   });
 
   // edge case to cover branch
-  it('doesn’t toggle state when clicking but disabled & accordion === true', async () => {
+  it('doesn’t toggle state when clicking but disabled & allowMultiple === false', async () => {
     const wrapper = mount(
       <AccordionProvider
-        allowMultiple={true}
+        allowMultiple={false}
         items={[
           {
             ...DEFAULT_ITEM,
