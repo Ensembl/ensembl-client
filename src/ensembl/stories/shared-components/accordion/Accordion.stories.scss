@@ -3,4 +3,15 @@
 .accordionContainer {
   width: 50%;
   margin: 10px;
+  border: 1px solid $ens-light-grey;
+  border-radius: 2px;
+}
+
+.accordion_title {
+  padding: 20px;
+}
+
+.accordion_body {
+  background: #eee;
+  padding: 20px;
 }

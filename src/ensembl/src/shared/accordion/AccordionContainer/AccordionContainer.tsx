@@ -1,7 +1,6 @@
 // tslint:disable:max-classes-per-file
 
 import * as React from 'react';
-import * as propTypes from '../helpers/propTypes';
 import { UUID } from '../ItemContainer/ItemContainer';
 
 // Arbitrary, but ought to be unique to avoid context namespace clashes.
@@ -46,7 +45,7 @@ type ConsumerContext = {
 
 export class Provider extends React.Component<ProviderProps, ProviderState> {
   public static childContextTypes: { [CONTEXT_KEY](): null } = {
-    [CONTEXT_KEY]: propTypes.wildcard
+    [CONTEXT_KEY]: (): null => null
   };
 
   public state: ProviderState = {
@@ -151,11 +150,7 @@ export class Consumer extends React.Component<
   ConsumerContext
 > {
   public static contextTypes: ConsumerContext = {
-    [CONTEXT_KEY]: propTypes.wildcard
-  };
-
-  public context: {
-    [CONTEXT_KEY]: AccordionContainer;
+    [CONTEXT_KEY]: (): null => null
   };
 
   public render(): React.ReactNode {

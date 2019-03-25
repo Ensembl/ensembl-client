@@ -4,7 +4,6 @@ import {
   CONTEXT_KEY,
   getAccordionStore
 } from '../AccordionContainer/AccordionContainer';
-import * as propTypes from '../helpers/propTypes';
 import { nextUuid } from '../helpers/uuid';
 import { Provider as ItemProvider } from '../ItemContainer/ItemContainer';
 import AccordionItem from './AccordionItem';
@@ -29,7 +28,7 @@ export default class AccordionItemWrapper extends React.Component<
   AccordionItemWrapperContext
 > {
   public static contextTypes: AccordionItemWrapperContext = {
-    [CONTEXT_KEY]: propTypes.wildcard
+    [CONTEXT_KEY]: (): null => null
   };
 
   public static defaultProps: AccordionItemWrapperProps = {

@@ -1,7 +1,6 @@
 // tslint:disable:max-classes-per-file
 
 import * as React from 'react';
-import * as propTypes from '../helpers/propTypes';
 
 export type UUID = string | number;
 
@@ -19,7 +18,7 @@ export const CONTEXT_KEY = 'ItemContainer';
 
 export class Provider extends React.Component<ProviderProps> {
   public static childContextTypes: { [CONTEXT_KEY](): null } = {
-    [CONTEXT_KEY]: propTypes.wildcard
+    [CONTEXT_KEY]: (): null => null
   };
 
   public getChildContext(): { [CONTEXT_KEY]: ItemContainer } {
@@ -54,11 +53,7 @@ export class Consumer extends React.Component<
   ConsumerContext
 > {
   public static contextTypes: ConsumerContext = {
-    [CONTEXT_KEY]: propTypes.wildcard
-  };
-
-  context: {
-    [CONTEXT_KEY]: ItemContainer;
+    [CONTEXT_KEY]: (): null => null
   };
 
   public render(): React.ReactNode {

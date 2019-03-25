@@ -4,7 +4,6 @@ import {
   getAccordionStore,
   Item
 } from '../AccordionContainer/AccordionContainer';
-import * as propTypes from '../helpers/propTypes';
 import {
   CONTEXT_KEY as ITEM_CONTEXT_KEY,
   getItemStore
@@ -25,8 +24,8 @@ export default class AccordionItemTitleWrapper extends React.Component<
   AccordionItemTitleWrapperProps
 > {
   public static contextTypes: AccordionItemTitleWrapperContext = {
-    [ACCORDION_CONTEXT_KEY]: propTypes.wildcard,
-    [ITEM_CONTEXT_KEY]: propTypes.wildcard
+    [ACCORDION_CONTEXT_KEY]: (): null => null,
+    [ITEM_CONTEXT_KEY]: (): null => null
   };
 
   public static defaultProps: AccordionItemTitleWrapperProps = {

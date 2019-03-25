@@ -28,11 +28,11 @@
 .accordion__title {
   color: #444;
   cursor: pointer;
-  padding: 18px;
   width: 100%;
   text-align: left;
   border: none;
   position: relative;
+  user-select: none;
 
   &[aria-expanded='true'] .accordion__arrow::before {
     transform: rotate(-45deg);
@@ -44,7 +44,6 @@
 }
 
 .accordion__body {
-  padding: 20px;
   display: block;
   animation: fadein 0.35s ease-in;
   border-top: 1px solid $ens-light-grey;

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as propTypes from '../helpers/propTypes';
 import accordionStyles from '../styles/Accordion.scss';
 
 import {
@@ -30,8 +29,8 @@ export default class AccordionItemBodyWrapper extends React.Component<
   AccordionItemBodyWrapperContext
 > {
   public static contextTypes: AccordionItemBodyWrapperContext = {
-    [ACCORDION_CONTEXT_KEY]: propTypes.wildcard,
-    [ITEM_CONTEXT_KEY]: propTypes.wildcard
+    [ACCORDION_CONTEXT_KEY]: (): null => null,
+    [ITEM_CONTEXT_KEY]: (): null => null
   };
 
   public static defaultProps: AccordionItemBodyWrapperProps = {

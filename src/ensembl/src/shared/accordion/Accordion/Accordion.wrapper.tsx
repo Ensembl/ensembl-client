@@ -20,7 +20,6 @@ export default class AccordionWrapper extends React.Component<
 > {
   public static defaultProps: AccordionWrapperProps = {
     accordion: true,
-    children: undefined,
     className: accordionStyles.accordion,
     onChange: (): void => {
       //
