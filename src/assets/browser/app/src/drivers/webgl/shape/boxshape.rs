@@ -1,7 +1,6 @@
-use drivers::webgl::{ Artwork, GLProgData };
+use drivers::webgl::{ Artwork, GLProgData, ColourSpec, Shape };
 use program::{ PTGeom, PTMethod, ProgramType, ProgramAttribs, Input };
-use shape::{ ColourSpec, Shape, ShapeSpec };
-use shape::util::{ despot, vertices_hollowpoly, poly_p, multi_gl };
+use super::util::{ despot, vertices_hollowpoly, poly_p, multi_gl };
 use types::{ RLeaf, CFraction, CLeaf, cfraction, cleaf };
 
 #[derive(Clone,Copy,Debug)]

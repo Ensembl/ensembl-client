@@ -1,4 +1,4 @@
-use shape::{ Spot, CanvasIdx };
+use super::super::shape::{ Spot, CanvasIdx };
 use super::{ GLProgs, GLProgData };
 use super::super::drawing::{ CarriageCanvases, OneCanvasManager };
 use program::{ CanvasCache, CanvasWeave };

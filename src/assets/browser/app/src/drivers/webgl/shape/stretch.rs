@@ -1,9 +1,8 @@
 use std::rc::Rc;
 
 use types::{ RLeaf, cfraction, cleaf, area_size };
-
-use shape::{ Shape, ShapeSpec };
-use shape::util::{ rectangle_g, rectangle_t, vertices_rect };
+use super::{ Shape, ShapeSpec };
+use super::util::{ rectangle_g, rectangle_t, vertices_rect };
 
 use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
 use drivers::webgl::GLProgData;

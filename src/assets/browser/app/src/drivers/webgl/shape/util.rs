@@ -6,7 +6,7 @@ use program::{
     PTGeom, PTSkin
 };
 use types::{ RFraction, CLeaf, RPixel, RLeaf, cleaf, Rect, Edge, Colour };
-use shape::{ ShapeSpec, ColourSpec };
+use super::{ ShapeSpec, ColourSpec };
 use program::Input;
 
 pub enum FacadeType {

@@ -7,8 +7,8 @@ use types::{
     area_size, cleaf, cpixel
 };
 
-use shape::{ Shape, ColourSpec, ShapeSpec };
-use shape::util::{
+use super::{ Shape, ColourSpec, ShapeSpec };
+use super::util::{
     rectangle_p, rectangle_c, rectangle_g, multi_gl, vertices_rect,
     despot, colour, ShapeInstanceData, ShapeShortInstanceData, 
     TypeToShape, Facade, FacadeType, ShapeInstanceDataType

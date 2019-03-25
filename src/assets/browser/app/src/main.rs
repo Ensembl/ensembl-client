@@ -31,7 +31,6 @@ mod dom;
 mod drivers;
 mod model;
 mod program;
-mod shape;
 mod tácode;
 mod types;
 

@@ -56,7 +56,7 @@
  * the first two arguments are used.
  */
 
-use shape::{
+use drivers::webgl::{
     PinRectTypeSpec, StretchRectTypeSpec, StretchWiggleTypeSpec,
     TextureTypeSpec, TypeToShape
 };

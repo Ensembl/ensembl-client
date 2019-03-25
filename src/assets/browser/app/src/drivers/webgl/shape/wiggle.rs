@@ -1,7 +1,7 @@
 use types::{ CLeaf, Colour, cleaf };
 
-use shape::{ Shape, ColourSpec, ShapeSpec };
-use shape::util::{ Facade, FacadeType, points_g, ShapeLongInstanceData, ShapeInstanceData, TypeToShape, vertices_strip, ShapeInstanceDataType };
+use super::{ Shape, ColourSpec, ShapeSpec };
+use super::util::{ Facade, FacadeType, points_g, ShapeLongInstanceData, ShapeInstanceData, TypeToShape, vertices_strip, ShapeInstanceDataType };
 
 use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
 use drivers::webgl::{ GLProgData, Artwork };

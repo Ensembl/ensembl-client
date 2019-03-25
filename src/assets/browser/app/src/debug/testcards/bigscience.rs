@@ -20,7 +20,7 @@ use debug::testcards::common::{
 };
 
 use model::train::PartyResponses;
-use shape::{
+use drivers::webgl::{
     tape_mathsshape,
     pin_mathsshape,
     stretch_texture, stretch_wiggle,

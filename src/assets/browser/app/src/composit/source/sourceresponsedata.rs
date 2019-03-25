@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use shape::ShapeSpec;
+use drivers::webgl::ShapeSpec;
 
 pub struct SourceResponseData {
     shapes: Vec<ShapeSpec>

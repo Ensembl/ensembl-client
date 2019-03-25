@@ -7,8 +7,8 @@ use types::{
     CLeaf, area_centred, Anchors, cfraction, Anchor, cpixel, cleaf
 };
 
-use shape::{ Shape, ShapeSpec, ShapeInstanceData, ShapeShortInstanceData, Facade, TypeToShape, FacadeType, ShapeInstanceDataType };
-use shape::util::{ rectangle_t, multi_gl, vertices_rect };
+use super::{ Shape, ShapeSpec, ShapeInstanceData, ShapeShortInstanceData, Facade, TypeToShape, FacadeType, ShapeInstanceDataType };
+use super::util::{ rectangle_t, multi_gl, vertices_rect };
 
 use drivers::webgl::{ GLProgData, Artist, Artwork, DrawingSpec };
 

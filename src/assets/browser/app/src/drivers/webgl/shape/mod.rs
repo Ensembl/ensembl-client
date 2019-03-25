@@ -22,7 +22,8 @@ pub use self::util::{
     ShapeInstanceDataType,
     ShapeShortInstanceData,
     ShapeLongInstanceData,
-    Facade, FacadeType
+    Facade, FacadeType,
+    rectangle_g, rectangle_t, vertices_rect
 };
 
 pub use self::canvasidx::CanvasIdx;
@@ -38,7 +39,7 @@ pub use self::rect::{
     StretchRectTypeSpec,
 };
 
-pub use shape::poly::{
+pub use self::poly::{
     pin_mathsshape,
     tape_mathsshape,
     fix_mathsshape,
@@ -46,7 +47,7 @@ pub use shape::poly::{
     PinPolySpec,
 };
 
-pub use shape::wiggle::{
+pub use self::wiggle::{
     stretch_wiggle,
     StretchWiggle,
     StretchWiggleTypeSpec

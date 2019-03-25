@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use shape::{
+use super::{
     PinPolySpec, RectSpec, Shape, TextureSpec, StretchTextureSpec, 
     StretchWiggle, BoxSpec
 };

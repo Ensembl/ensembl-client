@@ -11,8 +11,8 @@ use types::{
     RFraction, TOPLEFT
 };
 
-use shape::{ Shape, ColourSpec, MathsShape, ShapeSpec };
-use shape::util::{
+use super::{ Shape, ColourSpec, MathsShape, ShapeSpec };
+use super::util::{
     multi_gl, poly_p, vertices_poly, vertices_hollowpoly, despot,
 };
 use drivers::webgl::{ GLProgData, Artwork };
