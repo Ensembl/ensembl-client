@@ -5,9 +5,10 @@ import {
   getAccordionStore
 } from '../AccordionContainer/AccordionContainer';
 import { nextUuid } from '../helpers/uuid';
-import { Provider as ItemProvider } from '../ItemContainer/ItemContainer';
+import { ItemContext } from '../ItemContainer/ItemContainer';
 import AccordionItem from './AccordionItem';
 import accordionStyles from '../styles/Accordion.scss';
+import { isDebuggerStatement } from '@babel/types';
 
 type AccordionItemWrapperProps = React.HTMLAttributes<HTMLDivElement> & {
   hideBodyClassName?: string;
@@ -52,16 +53,19 @@ export default class AccordionItemWrapper extends React.Component<
       return <></>;
     }
     const { uuid, ...rest } = this.props;
+
     const itemUuid = uuid !== undefined ? uuid : this.id;
 
     return (
-      <ItemProvider uuid={itemUuid}>
-        <AccordionItem
-          {...rest}
-          uuid={itemUuid}
-          accordionStore={accordionStore}
-        />
-      </ItemProvider>
+      <ItemContext.Consumer>
+        {(uuid) => (
+          <AccordionItem
+            {...rest}
+            uuid={uuid}
+            accordionStore={accordionStore}
+          />
+        )}
+      </ItemContext.Consumer>
     );
   }
 }

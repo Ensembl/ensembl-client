@@ -15,6 +15,7 @@ export type ItemContainer = {
 
 // Arbitrary, but ought to be unique to avoid context namespace clashes.
 export const CONTEXT_KEY = 'ItemContainer';
+export const ItemContext = React.createContext({});
 
 export class Provider extends React.Component<ProviderProps> {
   public static childContextTypes: { [CONTEXT_KEY](): null } = {
@@ -33,33 +34,39 @@ export class Provider extends React.Component<ProviderProps> {
   }
 
   public render(): React.ReactNode {
-    return this.props.children || null;
+    return (
+      <ItemContext.Provider value={this.props.uuid}>
+        {this.props.children || null}
+      </ItemContext.Provider>
+    );
   }
 }
 
-type ConsumerProps = {
-  children(container: ItemContainer): React.ReactNode;
-};
+// type ConsumerProps = {
+//   children(container: ItemContainer): React.ReactNode;
+// };
 
-type ConsumerState = {};
+// type ConsumerState = {};
 
-type ConsumerContext = {
-  [CONTEXT_KEY](): null;
-};
+// type ConsumerContext = {
+//   [CONTEXT_KEY](): null;
+// };
 
-export class Consumer extends React.Component<
-  ConsumerProps,
-  ConsumerState,
-  ConsumerContext
-> {
-  public static contextTypes: ConsumerContext = {
-    [CONTEXT_KEY]: (): null => null
-  };
+// export class Consumer extends React.Component<
+//   ConsumerProps,
+//   ConsumerState,
+//   ConsumerContext
+// > {
 
-  public render(): React.ReactNode {
-    return this.props.children(this.context[CONTEXT_KEY]);
-  }
-}
+//   public render(): React.ReactNode {
+//     return (
+//       <></>
+//       // <ItemContext.Consumer>
+//       //   {/* {( uuid) => this.props.children(uuid)} */}
+//       // </ItemContext.Consumer>
+//     )
+//   }
+// }
 
 export const getItemStore = <T extends { [CONTEXT_KEY]: ItemContainer }>(
   context: T

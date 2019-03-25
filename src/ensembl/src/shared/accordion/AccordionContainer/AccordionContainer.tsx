@@ -39,9 +39,7 @@ export type ConsumerProps = {
 
 type ConsumerState = {};
 
-type ConsumerContext = {
-  [CONTEXT_KEY](): null;
-};
+const AccordionContext = React.createContext({});
 
 export class Provider extends React.Component<ProviderProps, ProviderState> {
   public static childContextTypes: { [CONTEXT_KEY](): null } = {
@@ -140,21 +138,21 @@ export class Provider extends React.Component<ProviderProps, ProviderState> {
   };
 
   public render(): React.ReactNode {
-    return this.props.children || null;
+    return (
+      <AccordionContext.Provider value={this.getChildContext()}>
+        {this.props.children || null}
+      </AccordionContext.Provider>
+    );
   }
 }
 
-export class Consumer extends React.Component<
-  ConsumerProps,
-  ConsumerState,
-  ConsumerContext
-> {
-  public static contextTypes: ConsumerContext = {
-    [CONTEXT_KEY]: (): null => null
-  };
-
+export class Consumer extends React.Component<ConsumerProps, ConsumerState> {
   public render(): React.ReactNode {
-    return this.props.children(this.context[CONTEXT_KEY]);
+    return (
+      <AccordionContext.Consumer>
+        {(context) => this.props.children(context)}
+      </AccordionContext.Consumer>
+    );
   }
 }
 
