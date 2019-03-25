@@ -4,25 +4,24 @@ import { connect } from 'react-redux';
 import { browserInfoConfig } from '../browserConfig';
 import { TrackType } from '../track-panel/trackPanelConfig';
 
-import {
-  toggleBrowserNav,
-  toggleGenomeSelector,
-  selectBrowserTab,
-  toggleDrawer
-} from '../browserActions';
+import { toggleBrowserNav, toggleGenomeSelector } from '../browserActions';
 import { ChrLocation } from '../browserState';
 import {
   getBrowserNavOpened,
   getChrLocation,
   getBrowserActivated,
   getDefaultChrLocation,
-  getGenomeSelectorActive,
-  getDrawerOpened,
+  getGenomeSelectorActive
+} from '../browserSelectors';
+import { getDrawerOpened } from '../drawer/drawerSelectors';
+import { getObjectInfo } from 'src/object/objectSelectors';
+import {
   getSelectedBrowserTab,
-  getObjectInfo,
   getTrackPanelModalOpened,
   getTrackPanelOpened
-} from '../browserSelectors';
+} from '../track-panel/trackPanelSelectors';
+import { selectBrowserTab } from '../track-panel/trackPanelActions';
+import { toggleDrawer } from '../drawer/drawerActions';
 import { RootState } from 'src/store';
 
 import BrowserReset from '../browser-reset/BrowserReset';

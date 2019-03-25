@@ -23,26 +23,28 @@ import {
 } from './browserState';
 import {
   changeBrowserLocation,
-  fetchExampleObjectsData,
-  fetchObjectData,
-  toggleDrawer,
   updateChrLocation,
   updateBrowserNavStates
 } from './browserActions';
 import {
   getBrowserOpenState,
-  getDrawerOpened,
   getBrowserNavOpened,
   getChrLocation,
   getGenomeSelectorActive,
-  getBrowserActivated,
-  getExampleObjects
+  getBrowserActivated
 } from './browserSelectors';
+import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
+import { getDrawerOpened } from './drawer/drawerSelectors';
+import { getExampleObjects } from 'src/object/objectSelectors';
+import {
+  fetchExampleObjectsData,
+  fetchObjectData
+} from 'src/object/objectActions';
+import { toggleDrawer } from './drawer/drawerActions';
 
 import styles from './Browser.scss';
 
 import 'static/browser/browser.js';
-import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 
 type StateProps = {
   browserActivated: boolean;

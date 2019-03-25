@@ -13,29 +13,30 @@ import TrackPanelModal from './track-panel-modal/TrackPanelModal';
 import { RootState } from 'src/store';
 
 import {
-  toggleDrawer,
   toggleTrackPanel,
-  changeDrawerView,
   closeTrackPanelModal,
   openTrackPanelModal
-} from '../browserActions';
-
+} from './trackPanelActions';
+import { toggleDrawer, changeDrawerView } from '../drawer/drawerActions';
 import {
-  getDrawerView,
-  getDrawerOpened,
   getTrackPanelOpened,
-  getBrowserActivated,
   getTrackPanelModalOpened,
   getTrackPanelModalView,
-  getSelectedBrowserTab,
-  getTrackCategories,
-  getObjectInfo,
-  getExampleObjects,
+  getSelectedBrowserTab
+} from './trackPanelSelectors';
+import { getDrawerView, getDrawerOpened } from '../drawer/drawerSelectors';
+import {
+  getBrowserActivated,
   getDefaultChrLocation
 } from '../browserSelectors';
-import { ChrLocation } from '../browserState';
+import {
+  getExampleObjects,
+  getObjectInfo,
+  getTrackCategories
+} from 'src/object/objectSelectors';
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
+import { ChrLocation } from '../browserState';
 import { BreakpointWidth } from 'src/global/globalConfig';
 import { TrackType } from './trackPanelConfig';
 

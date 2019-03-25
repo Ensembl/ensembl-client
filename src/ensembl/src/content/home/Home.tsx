@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import styles from './Home.scss';
-import { fetchExampleObjectsData } from '../app/browser/browserActions';
-import { getExampleObjects } from '../app/browser/browserSelectors';
+import { fetchExampleObjectsData } from 'src/object/objectActions';
+import { getExampleObjects } from 'src/object/objectSelectors';
 import { RootState } from 'src/store';
 
 type StateProps = {

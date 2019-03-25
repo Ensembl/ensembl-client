@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { RootState } from 'src/store';
-import { getExampleObjects } from 'src/content/app/browser/browserSelectors';
-import { fetchExampleObjectsData } from 'src/content/app/browser/browserActions';
+import { getExampleObjects } from 'src/object/objectSelectors';
+import { fetchExampleObjectsData } from 'src/object/objectActions';
 
 import styles from '../TrackPanelModal.scss';
 

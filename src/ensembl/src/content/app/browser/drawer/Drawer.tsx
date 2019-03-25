@@ -2,8 +2,9 @@ import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 
 import { RootState } from 'src/store';
-import { toggleDrawer } from '../browserActions';
-import { getDrawerView, getObjectInfo } from '../browserSelectors';
+import { toggleDrawer } from './drawerActions';
+import { getDrawerView } from './drawerSelectors';
+import { getObjectInfo } from 'src/object/objectSelectors';
 
 import DrawerGene from './drawer-views/DrawerGene';
 import DrawerTranscript from './drawer-views/DrawerTranscript';

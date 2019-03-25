@@ -1,19 +1,14 @@
 import { combineReducers } from 'redux';
 import { ActionType, getType } from 'typesafe-actions';
 
+import { RootAction } from 'src/objects';
 import * as browserActions from './browserActions';
+import * as drawerActions from './drawer/drawerActions';
+import * as trackPanelActions from './track-panel/trackPanelActions';
 import {
   BrowserState,
   defaultBrowserState,
-  ExampleObjectState,
-  defaultExampleObjectState,
-  ObjectState,
-  defaultObjectState,
   BrowserOpenState,
-  TrackPanelState,
-  defaultTrackPanelState,
-  DrawerState,
-  defaultDrawerState,
   BrowserLocationState,
   defaultBrowserLocationState,
   BrowserNavState,
@@ -24,19 +19,19 @@ import {
 
 function browserInfo(
   state: BrowserState = defaultBrowserState,
-  action: ActionType<typeof browserActions>
+  action: ActionType<RootAction>
 ): BrowserState {
   switch (action.type) {
     case getType(browserActions.updateBrowserActivated):
       return { ...state, browserActivated: action.payload };
-    case getType(browserActions.toggleTrackPanel):
+    case getType(trackPanelActions.toggleTrackPanel):
       return {
         ...state,
         browserOpenState: action.payload
           ? BrowserOpenState.SEMI_EXPANDED
           : BrowserOpenState.EXPANDED
       };
-    case getType(browserActions.toggleDrawer):
+    case getType(drawerActions.toggleDrawer):
       return {
         ...state,
         browserOpenState: action.payload
@@ -116,135 +111,9 @@ export function trackConfig(
   }
 }
 
-export function trackPanel(
-  state: TrackPanelState = defaultTrackPanelState,
-  action: ActionType<typeof browserActions>
-): TrackPanelState {
-  switch (action.type) {
-    case getType(browserActions.toggleTrackPanel):
-      const trackPanelOpened =
-        action.payload === undefined ? !state.trackPanelOpened : action.payload;
-
-      return {
-        ...state,
-        trackPanelOpened
-      };
-    case getType(browserActions.openTrackPanelModal):
-      return {
-        ...state,
-        trackPanelModalOpened: true,
-        trackPanelModalView: action.payload
-      };
-    case getType(browserActions.closeTrackPanelModal):
-      return {
-        ...state,
-        trackPanelModalOpened: false,
-        trackPanelModalView: ''
-      };
-    case getType(browserActions.selectBrowserTab):
-      return {
-        ...state,
-        selectedBrowserTab: action.payload,
-        trackPanelModalOpened: false,
-        trackPanelModalView: ''
-      };
-    default:
-      return state;
-  }
-}
-
-export function drawer(
-  state: DrawerState = defaultDrawerState,
-  action: ActionType<typeof browserActions>
-): DrawerState {
-  switch (action.type) {
-    case getType(browserActions.changeDrawerView):
-      return {
-        ...state,
-        drawerView: action.payload
-      };
-    case getType(browserActions.toggleDrawer):
-      return {
-        ...state,
-        drawerOpened: action.payload,
-        drawerView: action.payload ? state.drawerView : ''
-      };
-    default:
-      return state;
-  }
-}
-
-function object(
-  state: ObjectState = defaultObjectState,
-  action: ActionType<typeof browserActions>
-): ObjectState {
-  switch (action.type) {
-    case getType(browserActions.fetchObject.failure):
-      return { ...state, objectFetchFailed: true };
-    case getType(browserActions.fetchObject.request):
-      return {
-        ...state,
-        objectFetchFailed: false,
-        objectFetching: true
-      };
-    case getType(browserActions.fetchObject.success):
-      type Payload = {
-        object_info: {};
-        track_categories: [];
-      };
-
-      const json = action.payload as Payload;
-
-      return {
-        ...state,
-        objectFetchFailed: false,
-        objectFetching: false,
-        objectInfo: json.object_info,
-        trackCategories: json.track_categories
-      };
-    default:
-      return state;
-  }
-}
-
-function exampleObjects(
-  state: ExampleObjectState = defaultExampleObjectState,
-  action: ActionType<typeof browserActions>
-): ExampleObjectState {
-  switch (action.type) {
-    case getType(browserActions.fetchExampleObjects.failure):
-      return { ...state, exampleObjectsFetchFailed: true };
-    case getType(browserActions.fetchExampleObjects.request):
-      return {
-        ...state,
-        exampleObjectsFetchFailed: false,
-        exampleObjectsFetching: true
-      };
-    case getType(browserActions.fetchExampleObjects.success):
-      type Payload = {
-        examples: {};
-      };
-
-      const json = action.payload as Payload;
-
-      return {
-        ...state,
-        exampleObjectsFetchFailed: false,
-        exampleObjectsFetching: false,
-        examples: json.examples
-      };
-    default:
-      return state;
-  }
-}
-
 export default combineReducers({
   browserInfo,
   browserLocation,
   browserNav,
-  drawer,
-  exampleObjects,
-  object,
-  trackConfig,
-  trackPanel
+  trackConfig
 });
