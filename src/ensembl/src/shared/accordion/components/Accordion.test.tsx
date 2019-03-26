@@ -33,44 +33,118 @@ describe('Accordion', () => {
   });
 
   describe('expanding and collapsing: ', () => {
-    describe('allowMultipleExpanded prop', () => {
-      it('permits multiple items to be expanded when explicitly true', () => {
-        const [FooHeader, BarHeader] = [
-          (): JSX.Element => <AccordionItemButton data-testid={UUIDS.FOO} />,
-          (): JSX.Element => <AccordionItemButton data-testid={UUIDS.BAR} />
-        ];
+    it('permits multiple items to be expanded when allowMultipleExpanded is true', () => {
+      const [FooHeader, BarHeader] = [
+        (): JSX.Element => <AccordionItemButton data-testid={UUIDS.FOO} />,
+        (): JSX.Element => <AccordionItemButton data-testid={UUIDS.BAR} />
+      ];
 
-        const wrapper = mount(
-          <Accordion allowMultipleExpanded={true}>
-            <AccordionItem>
-              <AccordionItemHeading>
-                <FooHeader />
-              </AccordionItemHeading>
-            </AccordionItem>
-            <AccordionItem>
-              <AccordionItemHeading>
-                <BarHeader />
-              </AccordionItemHeading>
-            </AccordionItem>
-          </Accordion>
-        );
+      const wrapper = mount(
+        <Accordion allowMultipleExpanded={true}>
+          <AccordionItem>
+            <AccordionItemHeading>
+              <FooHeader />
+            </AccordionItemHeading>
+          </AccordionItem>
+          <AccordionItem>
+            <AccordionItemHeading>
+              <BarHeader />
+            </AccordionItemHeading>
+          </AccordionItem>
+        </Accordion>
+      );
 
-        wrapper.find(FooHeader).simulate('click');
-        wrapper.find(BarHeader).simulate('click');
+      wrapper.find(FooHeader).simulate('click');
+      wrapper.find(BarHeader).simulate('click');
 
-        expect(
-          wrapper
-            .find(FooHeader)
-            .find('div')
-            .props()['aria-expanded']
-        ).toBe(true);
-        expect(
-          wrapper
-            .find(BarHeader)
-            .find('div')
-            .props()['aria-expanded']
-        ).toBe(true);
-      });
+      expect(
+        wrapper
+          .find(FooHeader)
+          .find('div')
+          .props()['aria-expanded']
+      ).toBe(true);
+      expect(
+        wrapper
+          .find(BarHeader)
+          .find('div')
+          .props()['aria-expanded']
+      ).toBe(true);
+    });
+
+    it('does not permit multiple items to be expanded when allowMultipleExpanded is false', () => {
+      const [FooHeader, BarHeader] = [
+        (): JSX.Element => <AccordionItemButton data-testid={UUIDS.FOO} />,
+        (): JSX.Element => <AccordionItemButton data-testid={UUIDS.BAR} />
+      ];
+
+      const wrapper = mount(
+        <Accordion>
+          <AccordionItem>
+            <AccordionItemHeading>
+              <FooHeader />
+            </AccordionItemHeading>
+          </AccordionItem>
+          <AccordionItem>
+            <AccordionItemHeading>
+              <BarHeader />
+            </AccordionItemHeading>
+          </AccordionItem>
+        </Accordion>
+      );
+
+      wrapper.find(FooHeader).simulate('click');
+      wrapper.find(BarHeader).simulate('click');
+
+      expect(
+        wrapper
+          .find(FooHeader)
+          .find('div')
+          .props()['aria-expanded']
+      ).toBe(false);
+      expect(
+        wrapper
+          .find(BarHeader)
+          .find('div')
+          .props()['aria-expanded']
+      ).toBe(true);
+    });
+
+    it('does not permit expanding an item that is disabled', () => {
+      const [FooHeader, BarHeader] = [
+        (): JSX.Element => <AccordionItemButton data-testid={UUIDS.FOO} />,
+        (): JSX.Element => <AccordionItemButton data-testid={UUIDS.BAR} />
+      ];
+
+      const wrapper = mount(
+        <Accordion>
+          <AccordionItem>
+            <AccordionItemHeading>
+              <FooHeader />
+            </AccordionItemHeading>
+          </AccordionItem>
+          <AccordionItem>
+            <AccordionItemHeading>
+              <BarHeader />
+            </AccordionItemHeading>
+          </AccordionItem>
+        </Accordion>
+      );
+
+      wrapper.find(FooHeader).simulate('click');
+      wrapper.find(BarHeader).simulate('click');
+
+      expect(
+        wrapper
+          .find(FooHeader)
+          .find('div')
+          .props()['aria-expanded']
+      ).toBe(false);
+      expect(
+        wrapper
+          .find(BarHeader)
+          .find('div')
+          .props()['aria-expanded']
+      ).toBe(true);
     });
   });
 });
