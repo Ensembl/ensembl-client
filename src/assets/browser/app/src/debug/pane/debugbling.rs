@@ -30,6 +30,7 @@ pub const DEBUGSTAGE : &str = r##"
                 <option value="live">Live Testcard</option>
                 <option value="button">Button Testcard</option>
                 <option value="text">Text Testcard</option>
+                <option value="text2">Text2 Testcard</option>
                 <option value="ruler">Ruler Testcard</option>
                 <option value="leaf">Leaf Testcard</option>
             </select>

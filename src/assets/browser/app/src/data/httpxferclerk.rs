@@ -68,8 +68,8 @@ struct PendingXferRequest {
 }
 
 impl PendingXferRequest {
-    fn go(&mut self, recv: Vec<Value>) {
-        self.consumer.consume(self.code.clone(),recv);
+    fn go(&mut self, recv: (String,Vec<Value>)) {
+        self.consumer.consume(self.code.clone(),recv.1);
     }
 }
 
@@ -121,7 +121,7 @@ impl PendingXferBatch {
         http_manager.add_request(xhr,None,Box::new(self));
     }
 
-    fn marshal(&mut self, data: &SerdeValue) -> Vec<Value> {
+    fn marshal(&mut self, bytecode: &SerdeValue, data: &SerdeValue) -> (String,Vec<Value>) {
         let mut out = Vec::<Value>::new();
         for val in data.as_array().unwrap() {
             let mut row = Vec::<f64>::new();
@@ -140,7 +140,7 @@ impl PendingXferBatch {
                 out.push(Value::new_from_string(val.as_str().unwrap().to_string()));
             }            
         }
-        out
+        ("".to_string(),out)
     }
 }
 
@@ -155,9 +155,9 @@ impl HttpResponseConsumer for PendingXferBatch {
                        resp[1].as_str().unwrap().to_string(),
                        resp[2].as_str().unwrap().to_string());
             if let Some(mut requests) = self.requests.remove(&key) {
-                let mut recv = self.marshal(&resp[3]);
+                let mut recv = self.marshal(&resp[3],&resp[4]);
+                self.cache.put(&key.2,&key.0,&key.1,recv.clone());
                 for mut req in requests.drain(..) {
-                    self.cache.put(&key.2,&key.0,&key.1,recv.clone());
                     req.go(recv.clone());
                 }
             }
@@ -314,7 +314,7 @@ impl HttpXferClerkImpl {
         if let Some(wire) = wire {
             let (short_stick,short_pane) = leaf.get_short_spec();
             if let Some(recv) = self.cache.get(&wire,&short_stick,&short_pane) {
-                consumer.consume(code.to_string(),recv);
+                consumer.consume(code.to_string(),recv.1);
             } else {
                 let mut batch = if prime { &mut self.prime_batch } else { &mut self.batch };
                 if let Some(ref mut batch) = batch {
