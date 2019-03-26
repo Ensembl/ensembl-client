@@ -1,7 +1,7 @@
 import { createAsyncAction } from 'typesafe-actions';
+import { Dispatch } from 'redux';
 
-import { getDataThunk } from '../dataThunk';
-import { AnalyticsCategory } from '../analyticsHelper';
+import apiService from 'src/services/api-service';
 
 export const fetchEnsObject = createAsyncAction(
   'ens-object/fetch_ens_object_request',
@@ -9,15 +9,18 @@ export const fetchEnsObject = createAsyncAction(
   'ens-object/fetch_ens_object_failure'
 )<string, {}, Error>();
 
-export const fetchEnsObjectData = (ensObjectId: string) => {
-  const url = `/browser/get_ensembl_object_info/${ensObjectId}`;
+export const fetchEnsObjectData = (ensObjectId: string) => async (
+  dispatch: Dispatch
+) => {
+  try {
+    dispatch(fetchEnsObject.request(ensObjectId));
 
-  return getDataThunk(
-    url,
-    fetchEnsObject,
-    AnalyticsCategory.ENS_OBJECT,
-    ensObjectId
-  );
+    const url = `/browser/get_ensembl_object_info/${ensObjectId}`;
+    const response = await apiService.fetch(url);
+    dispatch(fetchEnsObject.success(response));
+  } catch (error) {
+    dispatch(fetchEnsObject.failure(error));
+  }
 };
 
 export const fetchExampleEnsObjects = createAsyncAction(
@@ -26,12 +29,14 @@ export const fetchExampleEnsObjects = createAsyncAction(
   'ens-object/fetch_example_ens_objects_failure'
 )<null, {}, Error>();
 
-export const fetchExampleEnsObjectsData = () => {
-  const url = '/browser/example_ens_objects';
+export const fetchExampleEnsObjectsData = () => async (dispatch: Dispatch) => {
+  try {
+    dispatch(fetchExampleEnsObjects.request(null));
 
-  return getDataThunk(
-    url,
-    fetchExampleEnsObjects,
-    AnalyticsCategory.ENS_OBJECT
-  );
+    const url = '/browser/example_ens_objects';
+    const response = await apiService.fetch(url);
+    dispatch(fetchExampleEnsObjects.success(response));
+  } catch (error) {
+    dispatch(fetchExampleEnsObjects.failure(error));
+  }
 };
