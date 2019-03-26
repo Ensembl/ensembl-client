@@ -63,17 +63,17 @@ impl XferPaceManager {
 }
 
 struct PendingXferRequest {
-    code: String,
     consumer: Box<XferConsumer>
 }
 
 impl PendingXferRequest {
-    fn go(&mut self, recv: (String,Vec<Value>)) {
-        self.consumer.consume(self.code.clone(),recv.1);
+    fn go(&mut self, bytecode: Rc<BackendBytecode>, data: Vec<Value>) {
+        self.consumer.consume(bytecode,data);
     }
 }
 
 struct PendingXferBatch {
+    config: BackendConfig,
     requests: HashMap<(String,String,String),Vec<PendingXferRequest>>,
     pace: XferPaceManager,
     base: Url,
@@ -81,8 +81,9 @@ struct PendingXferBatch {
 }
 
 impl PendingXferBatch {
-    pub fn new(base: &Url, pace: &XferPaceManager, cache: &XferCache) -> PendingXferBatch {
+    pub fn new(config: &BackendConfig, base: &Url, pace: &XferPaceManager, cache: &XferCache) -> PendingXferBatch {
         PendingXferBatch {
+            config: config.clone(),
             requests: HashMap::<(String,String,String),Vec<PendingXferRequest>>::new(),
             pace: pace.clone(),
             base: base.clone(),
@@ -91,15 +92,14 @@ impl PendingXferBatch {
     }
     
     pub fn add_request(&mut self, short_stick: &str, short_pane: &str,
-                       code: &str, compo: &str, consumer: Box<XferConsumer>) {
+                       compo: &str, consumer: Box<XferConsumer>) {
         let key = (short_stick.to_string(),short_pane.to_string(),compo.to_string());
         self.requests.entry(key).or_insert_with(|| {
             Vec::<PendingXferRequest>::new()
         }).push(PendingXferRequest {
-            code: code.to_string(),
             consumer
         });
-    }    
+    }
 
     pub fn empty(&self) -> bool { self.requests.len() == 0 }
 
@@ -121,12 +121,12 @@ impl PendingXferBatch {
         http_manager.add_request(xhr,None,Box::new(self));
     }
 
-    fn marshal(&mut self, bytecode: &SerdeValue, data: &SerdeValue) -> (String,Vec<Value>) {
+    fn marshal(&mut self, data: &SerdeValue) -> Vec<Value> {
         let mut out = Vec::<Value>::new();
-        for val in data.as_array().unwrap() {
+        for val in expect!(data.as_array()) {
             let mut row = Vec::<f64>::new();
             if val.is_array() {
-                for cell in val.as_array().unwrap() {
+                for cell in expect!(val.as_array()) {
                     if cell.is_f64() {
                         row.push(cell.as_f64().unwrap());
                     } else if cell.is_i64() {
@@ -140,7 +140,7 @@ impl PendingXferBatch {
                 out.push(Value::new_from_string(val.as_str().unwrap().to_string()));
             }            
         }
-        ("".to_string(),out)
+        out
     }
 }
 
@@ -155,10 +155,12 @@ impl HttpResponseConsumer for PendingXferBatch {
                        resp[1].as_str().unwrap().to_string(),
                        resp[2].as_str().unwrap().to_string());
             if let Some(mut requests) = self.requests.remove(&key) {
-                let mut recv = self.marshal(&resp[3],&resp[4]);
+                let codename = resp[3].as_str().unwrap().to_string();
+                let bytecode = expectok!(self.config.get_bytecode(&codename)).clone();
+                let mut recv = (codename,self.marshal(&resp[4]));
                 self.cache.put(&key.2,&key.0,&key.1,recv.clone());
                 for mut req in requests.drain(..) {
-                    req.go(recv.clone());
+                    req.go(bytecode.clone(),recv.1.clone());
                 }
             }
         }
@@ -167,6 +169,7 @@ impl HttpResponseConsumer for PendingXferBatch {
 }
 
 struct XferBatchScheduler {
+    config: BackendConfig,
     http_manager: HttpManager,
     cache: XferCache,
     url: Url,
@@ -176,9 +179,10 @@ struct XferBatchScheduler {
 }
 
 impl XferBatchScheduler {
-    pub fn new(http_manager: &HttpManager, cache: &XferCache, 
+    pub fn new(config: &BackendConfig, http_manager: &HttpManager, cache: &XferCache, 
                url: &Url, pace: i32) -> XferBatchScheduler {
         XferBatchScheduler {
+            config: config.clone(),
             http_manager: http_manager.clone(),
             cache: cache.clone(),
             url: url.clone(),
@@ -189,7 +193,7 @@ impl XferBatchScheduler {
     }
     
     fn set_batch(&mut self) {
-        self.batch = Some(PendingXferBatch::new(&self.url,&self.pace,&self.cache));
+        self.batch = Some(PendingXferBatch::new(&self.config,&self.url,&self.pace,&self.cache));
     }
     
     pub fn tick(&mut self) {
@@ -201,9 +205,9 @@ impl XferBatchScheduler {
     }
     
     pub fn add_request(&mut self, short_stick: &str, short_pane: &str,
-                       code: &str, compo: &str, consumer: Box<XferConsumer>) {
+                       compo: &str, consumer: Box<XferConsumer>) {
         if let Some(ref mut batch) = self.batch {
-            batch.add_request(short_stick,short_pane,code,compo,consumer);
+            batch.add_request(short_stick,short_pane,compo,consumer);
         }
     }
 }
@@ -282,8 +286,8 @@ impl HttpXferClerkImpl {
     pub fn set_config(&mut self, bc: BackendConfig) {
         let mut url = self.base.join(bc.get_data_url()).ok().unwrap();        
         self.config = Some(bc.clone());
-        self.batch = Some(XferBatchScheduler::new(&self.http_manager,&self.cache,&url,5));
-        self.prime_batch = Some(XferBatchScheduler::new(&self.http_manager,&self.cache,&url,1));
+        self.batch = Some(XferBatchScheduler::new(&bc,&self.http_manager,&self.cache,&url,5));
+        self.prime_batch = Some(XferBatchScheduler::new(&bc,&self.http_manager,&self.cache,&url,1));
         self.batch.as_mut().unwrap().set_batch();
         self.prime_batch.as_mut().unwrap().set_batch();
         /* run requests accumulated during startup */
@@ -295,34 +299,29 @@ impl HttpXferClerkImpl {
     
     pub fn run_request(&mut self, request: XferRequest, mut consumer: Box<XferConsumer>, prime: bool) {
         let leaf = request.get_leaf().clone();
-        let (wire,code,compo) = {
+        let (wire,compo) = {
             let compo = request.get_source_name();
             let leaf = request.get_leaf().clone();
             let cfg =  self.config.as_ref().unwrap().clone();
-            let endpoint = cfg.endpoint_for(compo,&leaf).clone();
             let track = cfg.get_track(compo).clone();
-            if endpoint.is_err() {
-                //console!("No data for {:?}: {}",
-                //            request.get_leaf().clone(),
-                //            endpoint.unwrap_err());
-                consumer.abandon();
-                return;
-            }
-            let endpoint = endpoint.as_ref().unwrap();
-            (track.and_then(|x| x.get_wire().clone()),endpoint.get_code().clone(),compo.clone())
+            (track.and_then(|x| x.get_wire().clone()),compo.clone())
         };
         if let Some(wire) = wire {
             let (short_stick,short_pane) = leaf.get_short_spec();
             if let Some(recv) = self.cache.get(&wire,&short_stick,&short_pane) {
-                consumer.consume(code.to_string(),recv.1);
+                let bytecode = {
+                    let cfg = self.config.as_ref().unwrap().clone();
+                    expectok!(cfg.get_bytecode(&recv.0)).clone()
+                };
+                consumer.consume(bytecode,recv.1);
             } else {
                 let mut batch = if prime { &mut self.prime_batch } else { &mut self.batch };
                 if let Some(ref mut batch) = batch {
-                    batch.add_request(&short_stick,&short_pane,&code.to_string(),&wire,consumer);
+                    batch.add_request(&short_stick,&short_pane,&wire,consumer);
                 }
             }
         } else {
-            consumer.consume(code.to_string(),vec!{});
+            consumer.consume(Rc::new(BackendBytecode::noop()),vec!{});
         }
     }
     

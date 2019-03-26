@@ -4,14 +4,12 @@ use std::cell::RefCell;
 use tánaiste::Value;
 
 use composit::Leaf;
-use data::{ BackendConfig, XferClerk, XferConsumer, XferRequest };
+use data::{ BackendConfig, BackendBytecode, XferClerk, XferConsumer, XferRequest };
 use util::Cache;
 
 struct XferPrimeConsumer(String,String,String,XferCache);
 impl XferConsumer for XferPrimeConsumer {
-    fn consume(&mut self, code: String, data: Vec<Value>) {
-        self.3.put(&self.0,&self.1,&self.2,(code,data));
-    }
+    fn consume(&mut self, code: Rc<BackendBytecode>, data: Vec<Value>) {}
     fn abandon(&mut self) {}
 }
 
@@ -44,12 +42,10 @@ impl XferCache {
     }
 
     pub fn put(&mut self, compo: &str, short_stick: &str, short_pane: &str, values: (String,Vec<Value>)) {
-        //console!("put compo={:?} stick={:?} pane={:?}",compo,short_stick,short_pane);
         self.0.borrow_mut().put(compo,short_stick,short_pane,values);
     }
     
     pub fn get(&mut self, compo: &str, short_stick: &str, short_pane: &str) -> Option<(String,Vec<Value>)> {
-        //console!("get compo={:?} stick={:?} pane={:?}",compo,short_stick,short_pane);
         self.0.borrow_mut().get(compo,short_stick,short_pane)
     }
     

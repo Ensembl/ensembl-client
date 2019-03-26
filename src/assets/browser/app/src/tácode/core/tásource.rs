@@ -4,7 +4,7 @@ use std::rc::Rc;
 use tánaiste::Value;
 
 use composit::{ Landscape, Leaf, Source, ActiveSource };
-use data::{ XferClerk, XferRequest, XferConsumer, BackendConfig };
+use data::{ XferClerk, XferRequest, XferConsumer, BackendConfig, BackendBytecode };
 use drivers::webgl::DrawingSpec;
 use model::train::PartyResponses;
 use tácode::{ Tácode, TáTask };
@@ -65,8 +65,8 @@ impl TáXferConsumer {
 }
 
 impl XferConsumer for TáXferConsumer {
-    fn consume(&mut self, code: String, mut data: Vec<Value>) {
-        match self.tc.assemble(&code) {
+    fn consume(&mut self, code: Rc<BackendBytecode>, mut data: Vec<Value>) {
+        match self.tc.assemble(&code.get_source()) {
             Ok(code) => {
                 match self.tc.run(&code) {
                     Ok(pid) => {
