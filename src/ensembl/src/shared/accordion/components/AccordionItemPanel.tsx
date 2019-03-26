@@ -2,11 +2,12 @@ import React from 'react';
 import DisplayName from '../helpers/DisplayName';
 import { DivAttributes } from '../helpers/types';
 import { Consumer as ItemConsumer, ItemContext } from './ItemContext';
+import styles from '../css/Accordion.scss';
 
 type Props = DivAttributes;
 
 const defaultProps = {
-  className: 'accordion__panel'
+  className: styles.accordionPanel
 };
 
 export default class AccordionItemPanel extends React.Component<Props> {

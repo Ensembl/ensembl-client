@@ -1,3 +1,3 @@
-import * as React from 'react';
+import React from 'react';
 
 export type DivAttributes = React.HTMLAttributes<HTMLDivElement>;

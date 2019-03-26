@@ -10,7 +10,7 @@ type Props = DivAttributes & {
 };
 
 const defaultProps = {
-  className: styles.accordion__item
+  className: styles.accordionItem
 };
 
 export default class AccordionItem extends React.Component<Props> {

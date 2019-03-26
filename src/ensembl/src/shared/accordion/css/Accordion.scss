@@ -5,11 +5,11 @@
   border-radius: 2px;
 }
 
-.accordion__item + .accordion__item {
+.accordionItem + .accordionItem {
   border-top: 1px solid $ens-light-grey;
 }
 
-.accordion__button {
+.accordionButton {
   color: #444;
   cursor: pointer;
   padding: 18px;
@@ -19,7 +19,7 @@
   position: relative;
 }
 
-.accordion__button:after {
+.accordionButton:after {
   display: inline-block;
   position: absolute;
   right: 20px;
@@ -35,15 +35,14 @@
   transition: transform 0.2s linear;
 }
 
-.accordion__button[aria-expanded='true']::after,
-.accordion__button[aria-selected='true']::after {
+.accordionButton[aria-expanded='true']::after,
+.accordionButton[aria-selected='true']::after {
   transform: rotate(-135deg);
   transition: transform 0.2s linear;
 }
 
-.accordion__panel {
-  padding: 20px;
-  animation: fadein 0.35s ease-in;
+.accordionPanel {
+  animation: fadein 0.2s ease-in;
 }
 
 /* -------------------------------------------------- */

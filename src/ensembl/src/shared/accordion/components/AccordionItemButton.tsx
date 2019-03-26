@@ -12,7 +12,7 @@ type Props = DivAttributes & {
 };
 
 const defaultProps = {
-  className: styles.accordion__button
+  className: styles.accordionButton
 };
 
 export class AccordionItemButton extends React.PureComponent<Props> {

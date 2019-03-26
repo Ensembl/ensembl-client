@@ -10,8 +10,8 @@ type AccordionProps = Pick<
   Exclude<keyof DivAttributes, 'onChange'>
 > & {
   preExpanded?: UUID[];
-  allowMultipleExpanded?: boolean;
-  allowZeroExpanded?: boolean;
+  allowMultipleExpanded: boolean;
+  allowZeroExpanded: boolean;
   onChange?(args: UUID[]): void;
 };
 
