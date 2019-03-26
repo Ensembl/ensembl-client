@@ -12,7 +12,7 @@ type StateProps = {
 };
 
 type DispatchProps = {
-  fetchExampleObjectsData: () => void;
+  fetchExampleEnsObjectsData: () => void;
 };
 
 type OwnProps = {};
@@ -28,7 +28,7 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
     } else {
       toggleShowPreviouslyViewed(false);
 
-      props.fetchExampleObjectsData();
+      props.fetchExampleEnsObjectsData();
     }
   }, [props.exampleEnsObjects]);
 
