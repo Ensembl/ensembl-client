@@ -82,6 +82,7 @@ impl GLCarriagePrinter {
                         stage: &Stage, opacity: f32) {
         let level = carriage.update_state(oom);
         if level != ComponentRedo::None {
+            console!("redraw");
             let mut travs = carriage.all_travellers_mut();
             if travs.len() > 0 {
                 self.redraw_travellers(&mut travs,aca,level == ComponentRedo::Major);

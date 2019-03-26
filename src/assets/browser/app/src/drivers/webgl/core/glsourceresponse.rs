@@ -46,6 +46,7 @@ impl GLSourceResponse {
 
     /* train/traveller */
     pub fn take(&mut self) -> Option<GLDrawing> {
+        console!("take");
         self.dr.borrow_mut().take()
     }
         
@@ -65,8 +66,10 @@ impl GLSourceResponse {
     pub fn redraw_objects(&self, e: &mut GLProgInstances) {
         console!("objects {:?}",self.leaf);
         if self.get_state().on() {
+            console!("on");
             let mut dr = self.dr.borrow_mut();
             if dr.is_some() {
+                console!("yes");
                 dr.as_mut().unwrap().into_objects(e);
             }
         }
@@ -81,10 +84,12 @@ impl SourceResponse for GLSourceResponse {
 
     /* train/partyresponses */
     fn set(&mut self, result: SourceResponseData) {
+        console!("set!");
         *self.dr.borrow_mut() = Some(GLDrawing::new(result));
     }
 
     fn set_state(&mut self, state: StateValue) {
+        console!("state updated");
         *self.state.borrow_mut() = state;
     }
     

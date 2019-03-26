@@ -60,6 +60,7 @@ impl GLPrinterBase {
     pub fn new(canv_el: &HtmlElement) -> GLPrinterBase {
         let canvas = canv_el.clone().try_into().unwrap();
         let ctx: glctx = domutil::get_context(&canvas);
+        console!("tag {:?} context {:?}",canv_el,ctx);
         ctx.clear_color(1.0,1.0,1.0,1.0);
         ctx.clear(glctx::COLOR_BUFFER_BIT  | glctx::DEPTH_BUFFER_BIT);
         let ctx_rc = Rc::new(ctx);
@@ -131,6 +132,7 @@ impl GLPrinterBase {
             lp.destroy(&mut self.acm);
         }
         self.acm.finish();
+        return;
         let gl : Option<glctx> = expectok!(
             js! { return @{self.canv_el.as_ref()}.getContext("webgl"); }.try_into()
         );
