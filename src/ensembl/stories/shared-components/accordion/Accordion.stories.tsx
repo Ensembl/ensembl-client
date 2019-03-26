@@ -4,8 +4,9 @@ import { storiesOf } from '@storybook/react';
 import {
   Accordion,
   AccordionItem,
-  AccordionItemTitle,
-  AccordionItemBody
+  AccordionItemHeading,
+  AccordionItemPanel,
+  AccordionItemButton
 } from 'src/shared/accordion/';
 import styles from './Accordion.stories.scss';
 
@@ -15,29 +16,20 @@ storiesOf('Components|Shared Components/Accordion', module)
       <div className={styles.accordionContainer}>
         <Accordion>
           <AccordionItem>
-            <AccordionItemTitle>
-              <div className={styles.accordion_title}>
-                <span>Title One</span>
-              </div>
-            </AccordionItemTitle>
-            <AccordionItemBody>
-              <div className={styles.accordion_body}>
-                <span>Body content one</span>
-              </div>
-            </AccordionItemBody>
+            <AccordionItemHeading>
+              <AccordionItemButton>Accordion Item One</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div className={styles.accordion_body}>Item One content</div>
+            </AccordionItemPanel>
           </AccordionItem>
           <AccordionItem>
-            <AccordionItemTitle>
-              <div className={styles.accordion_title}>
-                <h3>Title Two</h3>
-                <div>With a bit of description</div>
-              </div>
-            </AccordionItemTitle>
-            <AccordionItemBody>
-              <div className={styles.accordion_body}>
-                <span>Body content two</span>
-              </div>
-            </AccordionItemBody>
+            <AccordionItemHeading>
+              <AccordionItemButton>Accordion Item Two</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div className={styles.accordion_body}>Item Two content</div>
+            </AccordionItemPanel>
           </AccordionItem>
         </Accordion>
       </div>
@@ -46,31 +38,22 @@ storiesOf('Components|Shared Components/Accordion', module)
   .add('Allow multiple', () => {
     return (
       <div className={styles.accordionContainer}>
-        <Accordion allowMultiple={true}>
+        <Accordion allowMultipleExpanded={true}>
           <AccordionItem>
-            <AccordionItemTitle>
-              <div className={styles.accordion_title}>
-                <span>Title One</span>
-              </div>
-            </AccordionItemTitle>
-            <AccordionItemBody>
-              <div className={styles.accordion_body}>
-                <span>Body content one</span>
-              </div>
-            </AccordionItemBody>
+            <AccordionItemHeading>
+              <AccordionItemButton>Accordion Item One</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div className={styles.accordion_body}>Item One content</div>
+            </AccordionItemPanel>
           </AccordionItem>
           <AccordionItem>
-            <AccordionItemTitle>
-              <div className={styles.accordion_title}>
-                <h3>Title Two</h3>
-                <div>With a bit of description</div>
-              </div>
-            </AccordionItemTitle>
-            <AccordionItemBody>
-              <div className={styles.accordion_body}>
-                <span>Body content two</span>
-              </div>
-            </AccordionItemBody>
+            <AccordionItemHeading>
+              <AccordionItemButton>Accordion Item Two</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div className={styles.accordion_body}>Item Two content</div>
+            </AccordionItemPanel>
           </AccordionItem>
         </Accordion>
       </div>

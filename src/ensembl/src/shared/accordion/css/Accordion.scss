@@ -1,0 +1,61 @@
+@import 'src/styles/common';
+
+.accordion {
+  border: 1px solid $ens-light-grey;
+  border-radius: 2px;
+}
+
+.accordion__item + .accordion__item {
+  border-top: 1px solid $ens-light-grey;
+}
+
+.accordion__button {
+  color: #444;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  position: relative;
+}
+
+.accordion__button:after {
+  display: inline-block;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  margin-top: -5px;
+  content: '';
+  height: 10px;
+  width: 10px;
+  margin-right: 12px;
+  border-left: 2px solid $ens-blue;
+  border-top: 2px solid $ens-blue;
+  transform: rotate(45deg);
+  transition: transform 0.2s linear;
+}
+
+.accordion__button[aria-expanded='true']::after,
+.accordion__button[aria-selected='true']::after {
+  transform: rotate(-135deg);
+  transition: transform 0.2s linear;
+}
+
+.accordion__panel {
+  padding: 20px;
+  animation: fadein 0.35s ease-in;
+}
+
+/* -------------------------------------------------- */
+/* ---------------- Animation part ------------------ */
+/* -------------------------------------------------- */
+
+@keyframes fadein {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}

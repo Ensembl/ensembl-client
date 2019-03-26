@@ -42,31 +42,29 @@ export class Provider extends React.Component<ProviderProps> {
   }
 }
 
-// type ConsumerProps = {
-//   children(container: ItemContainer): React.ReactNode;
-// };
+type ConsumerProps = {
+  children(container: ItemContainer): React.ReactNode;
+};
 
-// type ConsumerState = {};
+type ConsumerState = {};
 
-// type ConsumerContext = {
-//   [CONTEXT_KEY](): null;
-// };
+type ConsumerContext = {
+  [CONTEXT_KEY](): null;
+};
 
-// export class Consumer extends React.Component<
-//   ConsumerProps,
-//   ConsumerState,
-//   ConsumerContext
-// > {
-
-//   public render(): React.ReactNode {
-//     return (
-//       <></>
-//       // <ItemContext.Consumer>
-//       //   {/* {( uuid) => this.props.children(uuid)} */}
-//       // </ItemContext.Consumer>
-//     )
-//   }
-// }
+export class Consumer extends React.Component<
+  ConsumerProps,
+  ConsumerState,
+  ConsumerContext
+> {
+  public render(): React.ReactNode {
+    return (
+      <ItemContext.Consumer>
+        {(uuid) => this.props.children(uuid)}
+      </ItemContext.Consumer>
+    );
+  }
+}
 
 export const getItemStore = <T extends { [CONTEXT_KEY]: ItemContainer }>(
   context: T

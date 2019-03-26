@@ -5,10 +5,9 @@ import {
   getAccordionStore
 } from '../AccordionContainer/AccordionContainer';
 import { nextUuid } from '../helpers/uuid';
-import { ItemContext } from '../ItemContainer/ItemContainer';
 import AccordionItem from './AccordionItem';
 import accordionStyles from '../styles/Accordion.scss';
-import { isDebuggerStatement } from '@babel/types';
+import { Provider, Consumer } from '../ItemContainer/ItemContainer';
 
 type AccordionItemWrapperProps = React.HTMLAttributes<HTMLDivElement> & {
   hideBodyClassName?: string;
@@ -36,13 +35,15 @@ export default class AccordionItemWrapper extends React.Component<
     className: accordionStyles.accordion__item,
     disabled: false,
     expanded: false,
-    hideBodyClassName: '',
-    uuid: undefined
+    hideBodyClassName: ''
   };
 
   public id: number = nextUuid();
 
-  public render(): JSX.Element {
+  public renderAccordionItem = (): JSX.Element => {
+    console.log(this.context);
+    console.log(this.props);
+    const { uuid, ...rest } = this.props;
     const accordionStore = getAccordionStore(this.context);
     if (!accordionStore) {
       // tslint:disable-next-line:no-console
@@ -52,20 +53,26 @@ export default class AccordionItemWrapper extends React.Component<
 
       return <></>;
     }
-    const { uuid, ...rest } = this.props;
 
     const itemUuid = uuid !== undefined ? uuid : this.id;
 
     return (
-      <ItemContext.Consumer>
-        {(uuid) => (
-          <AccordionItem
-            {...rest}
-            uuid={uuid}
-            accordionStore={accordionStore}
-          />
-        )}
-      </ItemContext.Consumer>
+      <AccordionItem
+        {...rest}
+        uuid={itemUuid}
+        accordionStore={accordionStore}
+      />
+    );
+  };
+
+  public render(): JSX.Element {
+    const { uuid } = this.props;
+    const itemUuid = uuid !== undefined ? uuid : this.id;
+
+    return (
+      <Provider uuid={itemUuid}>
+        <Consumer>{this.renderAccordionItem}</Consumer>
+      </Provider>
     );
   }
 }
