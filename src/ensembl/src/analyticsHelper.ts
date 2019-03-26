@@ -3,7 +3,7 @@ export enum AnalyticsCategory {
   DRAWER = 'Drawer',
   GLOBAL = 'Global',
   HEADER = 'Header',
-  OBJECT = 'Object',
+  ENS_OBJECT = 'Ensembl Object',
   TRACK_PANEL = 'Track Panel'
 }
 
@@ -49,8 +49,8 @@ export const getHeaderAnalyticsObject = buildAnalyticsObject(
   AnalyticsCategory.HEADER
 );
 
-export const getObjectAnalyticsObject = buildAnalyticsObject(
-  AnalyticsCategory.OBJECT
+export const getEnsObjectAnalyticsObject = buildAnalyticsObject(
+  AnalyticsCategory.ENS_OBJECT
 );
 
 export const getTrackPanelAnalyticsObject = buildAnalyticsObject(

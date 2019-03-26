@@ -3,17 +3,17 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { RootState } from 'src/store';
-import { getExampleObjects } from 'src/object/objectSelectors';
-import { fetchExampleObjectsData } from 'src/object/objectActions';
+import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
+import { fetchExampleEnsObjectsData } from 'src/ens-object/ensObjectActions';
 
 import styles from '../TrackPanelModal.scss';
 
 type StateProps = {
-  exampleObjects: any;
+  exampleEnsObjects: any;
 };
 
 type DispatchProps = {
-  fetchExampleObjectsData: () => void;
+  fetchExampleEnsObjectsData: () => void;
 };
 
 type OwnProps = {};
@@ -21,13 +21,13 @@ type OwnProps = {};
 type TrackPanelBookmarksProps = StateProps & DispatchProps & OwnProps;
 
 export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
-  const exampleObjectsTotal = Object.keys(props.exampleObjects).length;
+  const exampleObjectsTotal = Object.keys(props.exampleEnsObjects).length;
 
   useEffect(() => {
     if (exampleObjectsTotal === 0) {
-      props.fetchExampleObjectsData();
+      props.fetchExampleEnsObjectsData();
     }
-  }, [props.exampleObjects]);
+  }, [props.exampleEnsObjects]);
 
   const getExampleObjectNode = (exampleObject: any) => {
     const {
@@ -60,7 +60,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
       {exampleObjectsTotal ? (
         <dl className={styles.previouslyViewed}>
           <dt>Previously viewed</dt>
-          {Object.values(props.exampleObjects).map((exampleObject) =>
+          {Object.values(props.exampleEnsObjects).map((exampleObject) =>
             getExampleObjectNode(exampleObject)
           )}
         </dl>
@@ -70,11 +70,11 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  exampleObjects: getExampleObjects(state)
+  exampleEnsObjects: getExampleEnsObjects(state)
 });
 
 const mapDispatchToProps = {
-  fetchExampleObjectsData
+  fetchExampleEnsObjectsData
 };
 
 export default connect(

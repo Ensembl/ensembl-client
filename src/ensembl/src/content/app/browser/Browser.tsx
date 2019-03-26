@@ -35,11 +35,10 @@ import {
 } from './browserSelectors';
 import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 import { getDrawerOpened } from './drawer/drawerSelectors';
-import { getExampleObjects } from 'src/object/objectSelectors';
 import {
-  fetchExampleObjectsData,
-  fetchObjectData
-} from 'src/object/objectActions';
+  fetchExampleEnsObjectsData,
+  fetchEnsObjectData
+} from 'src/ens-object/ensObjectActions';
 import { toggleDrawer } from './drawer/drawerActions';
 
 import styles from './Browser.scss';
@@ -52,7 +51,6 @@ type StateProps = {
   browserOpenState: BrowserOpenState;
   chrLocation: ChrLocation;
   drawerOpened: boolean;
-  exampleObjects: {};
   genomeSelectorActive: boolean;
 };
 
@@ -61,8 +59,8 @@ type DispatchProps = {
     chrLocation: ChrLocation,
     browserEl: HTMLDivElement
   ) => void;
-  fetchExampleObjectsData: () => void;
-  fetchObjectData: (stableId: string) => void;
+  fetchExampleEnsObjectsData: () => void;
+  fetchEnsObjectData: (stableId: string) => void;
   replace: Replace;
   toggleDrawer: (drawerOpened: boolean) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
@@ -100,7 +98,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
     dispatchBrowserLocation(chrLocation);
 
-    props.fetchObjectData(stableId);
+    props.fetchEnsObjectData(stableId);
   }, [props.match.params.stableId]);
 
   useEffect(() => {
@@ -162,14 +160,13 @@ const mapStateToProps = (state: RootState): StateProps => ({
   browserOpenState: getBrowserOpenState(state),
   chrLocation: getChrLocation(state),
   drawerOpened: getDrawerOpened(state),
-  exampleObjects: getExampleObjects(state),
   genomeSelectorActive: getGenomeSelectorActive(state)
 });
 
 const mapDispatchToProps: DispatchProps = {
   changeBrowserLocation,
-  fetchExampleObjectsData,
-  fetchObjectData,
+  fetchEnsObjectData,
+  fetchExampleEnsObjectsData,
   replace,
   toggleDrawer,
   updateBrowserNavStates,

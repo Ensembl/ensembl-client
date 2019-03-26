@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 import { toggleDrawer } from './drawerActions';
 import { getDrawerView } from './drawerSelectors';
-import { getObjectInfo } from 'src/object/objectSelectors';
+import { getEnsObjectInfo } from 'src/ens-object/ensObjectSelectors';
 
 import DrawerGene from './drawer-views/DrawerGene';
 import DrawerTranscript from './drawer-views/DrawerTranscript';
@@ -20,7 +20,7 @@ import SnpIndels from './drawer-views/SnpIndels';
 
 type StateProps = {
   drawerView: string;
-  objectInfo: any;
+  ensObjectInfo: any;
 };
 
 type DispatchProps = {
@@ -35,9 +35,9 @@ const Drawer: FunctionComponent<DrawerProps> = (props: DrawerProps) => {
   const getDrawerViewComponent = () => {
     switch (props.drawerView) {
       case 'gene':
-        return <DrawerGene objectInfo={props.objectInfo} />;
+        return <DrawerGene ensObjectInfo={props.ensObjectInfo} />;
       case 'transcript':
-        return <DrawerTranscript objectInfo={props.objectInfo} />;
+        return <DrawerTranscript ensObjectInfo={props.ensObjectInfo} />;
       case 'gene-pc-fwd':
         return <ProteinCodingGenes forwardStrand={true} />;
       case 'gene-other-fwd':
@@ -69,7 +69,7 @@ const Drawer: FunctionComponent<DrawerProps> = (props: DrawerProps) => {
 
 const mapStateToProps = (state: RootState): StateProps => ({
   drawerView: getDrawerView(state),
-  objectInfo: getObjectInfo(state)
+  ensObjectInfo: getEnsObjectInfo(state)
 });
 
 const mapDispatchToProps: DispatchProps = {

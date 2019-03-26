@@ -3,12 +3,12 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import styles from './Home.scss';
-import { fetchExampleObjectsData } from 'src/object/objectActions';
-import { getExampleObjects } from 'src/object/objectSelectors';
+import { fetchExampleEnsObjectsData } from 'src/ens-object/ensObjectActions';
+import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import { RootState } from 'src/store';
 
 type StateProps = {
-  exampleObjects: {};
+  exampleEnsObjects: {};
 };
 
 type DispatchProps = {
@@ -23,14 +23,14 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
   const [showPreviouslyViewed, toggleShowPreviouslyViewed] = useState(true);
 
   useEffect(() => {
-    if (Object.values(props.exampleObjects).length > 0) {
+    if (Object.values(props.exampleEnsObjects).length > 0) {
       toggleShowPreviouslyViewed(true);
     } else {
       toggleShowPreviouslyViewed(false);
 
       props.fetchExampleObjectsData();
     }
-  }, [props.exampleObjects]);
+  }, [props.exampleEnsObjects]);
 
   const getExampleObjectNode = (exampleObject: any) => {
     const {
@@ -71,7 +71,7 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
         <section className={styles.previouslyViewed}>
           <h2>Previously viewed</h2>
           <dl>
-            {Object.values(props.exampleObjects).map((exampleObject) =>
+            {Object.values(props.exampleEnsObjects).map((exampleObject) =>
               getExampleObjectNode(exampleObject)
             )}
           </dl>
@@ -101,11 +101,11 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  exampleObjects: getExampleObjects(state)
+  exampleEnsObjects: getExampleEnsObjects(state)
 });
 
 const mapDispatchToProps = {
-  fetchExampleObjectsData
+  fetchExampleEnsObjectsData
 };
 
 export default connect(

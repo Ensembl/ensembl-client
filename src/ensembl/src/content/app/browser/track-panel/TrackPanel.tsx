@@ -30,10 +30,10 @@ import {
   getDefaultChrLocation
 } from '../browserSelectors';
 import {
-  getExampleObjects,
-  getObjectInfo,
+  getExampleEnsObjects,
+  getEnsObjectInfo,
   getTrackCategories
-} from 'src/object/objectSelectors';
+} from 'src/ens-object/ensObjectSelectors';
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 import { ChrLocation } from '../browserState';
@@ -48,9 +48,9 @@ type StateProps = {
   defaultChrLocation: ChrLocation;
   drawerOpened: boolean;
   drawerView: string;
-  exampleObjects: any;
+  ensObjectInfo: any;
+  exampleEnsObjects: any;
   launchbarExpanded: boolean;
-  objectInfo: any;
   selectedBrowserTab: TrackType;
   trackCategories: [];
   trackPanelModalOpened: boolean;
@@ -85,7 +85,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
 
   return (
     <section className={`${styles.trackPanel} reactSlideDrawer`}>
-      {props.browserActivated && props.objectInfo.associated_object ? (
+      {props.browserActivated && props.ensObjectInfo.associated_object ? (
         <Fragment>
           <TrackPanelBar
             closeTrackPanelModal={props.closeTrackPanelModal}
@@ -106,7 +106,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
                 drawerOpened={props.drawerOpened}
                 drawerView={props.drawerView}
                 launchbarExpanded={props.launchbarExpanded}
-                objectInfo={props.objectInfo}
+                ensObjectInfo={props.ensObjectInfo}
                 selectedBrowserTab={props.selectedBrowserTab}
                 toggleDrawer={props.toggleDrawer}
                 trackCategories={props.trackCategories}
@@ -115,7 +115,6 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
               {props.trackPanelModalOpened ? (
                 <TrackPanelModal
                   closeTrackPanelModal={props.closeTrackPanelModal}
-                  exampleObjects={props.exampleObjects}
                   launchbarExpanded={props.launchbarExpanded}
                   trackPanelModalView={props.trackPanelModalView}
                 />
@@ -134,9 +133,9 @@ const mapStateToProps = (state: RootState): StateProps => ({
   defaultChrLocation: getDefaultChrLocation(state),
   drawerOpened: getDrawerOpened(state),
   drawerView: getDrawerView(state),
-  exampleObjects: getExampleObjects(state),
+  ensObjectInfo: getEnsObjectInfo(state),
+  exampleEnsObjects: getExampleEnsObjects(state),
   launchbarExpanded: getLaunchbarExpanded(state),
-  objectInfo: getObjectInfo(state),
   selectedBrowserTab: getSelectedBrowserTab(state),
   trackCategories: getTrackCategories(state),
   trackPanelModalOpened: getTrackPanelModalOpened(state),
