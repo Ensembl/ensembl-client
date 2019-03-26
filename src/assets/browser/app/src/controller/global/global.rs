@@ -12,7 +12,7 @@ use url::Url;
 
 use controller::input::{
     register_startup_events, initial_actions, actions_run,
-    run_direct_events,
+    run_direct_events, register_shutdown_events,
     Timers
 };
 use controller::global::{ AppRunner, App, Booting };
@@ -33,6 +33,12 @@ impl GlobalImpl {
             apps: HashMap::<String,AppRunner>::new(),
             http_manager: HttpManager::new(),
             timers: Timers::new()
+        }
+    }
+
+    pub fn destroy(&mut self) {
+        for app in self.apps.values_mut() {
+            app.unregister();
         }
     }
 
@@ -86,6 +92,10 @@ impl Global {
         window().request_animation_frame(
             move |t| out.tick()
         );
+    }
+    
+    pub fn destroy(&mut self) {
+        self.0.borrow_mut().destroy();
     }
     
     pub fn unregister_app(&mut self, key: &str) {
@@ -144,6 +154,7 @@ fn find_main_element() -> Option<HtmlElement> {
 pub fn setup_global() {
     let g = Arc::new(Mutex::new(Global::new()));
     register_startup_events(&g);
+    register_shutdown_events(&g);
     if let Some(h) = find_main_element() {
         h.focus();
         domutil::add_attr(&h.clone().into(),"class","browser-app-ready");

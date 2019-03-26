@@ -16,11 +16,16 @@ use controller::output::{ OutputAction, Report, ViewportReport };
 use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, XferCache, XferClerk };
 use debug::add_debug_sticks;
 use dom::domutil;
+use dom::domutil::query_selector_ok;
 use drivers::webgl::GLPrinter;
 use model::driver::{ Printer, PrinterManager };
 use tácode::Tácode;
 
-const CANVAS : &str = r##"<canvas></canvas>"##;
+use dom::webgl::{
+    WebGLRenderingContext as glctx,
+};
+
+const CANVAS : &str = r##"<canvas id="canvas"></canvas>"##;
 
 pub struct App {
     ar: AppRunnerWeak,

@@ -11,6 +11,7 @@ use model::driver::{ Printer, SourceResponse };
 use model::train::Train;
 use super::super::drawing::{ AllCanvasAllocator };
 use dom::domutil;
+use dom::domutil::query_selector_ok;
 use types::{ Dot };
 
 use dom::webgl::WebGLRenderingContext as glctx;
@@ -130,6 +131,15 @@ impl GLPrinterBase {
             lp.destroy(&mut self.acm);
         }
         self.acm.finish();
+        let gl : Option<glctx> = expectok!(
+            js! { return @{self.canv_el.as_ref()}.getContext("webgl"); }.try_into()
+        );
+        if let Some(gl) = gl {
+            js! {
+                var x = @{gl.as_ref()}.getExtension("WEBGL_lose_context");
+                if(x) x.loseContext();
+            }
+        }
     }    
 
     fn make_partial(&mut self, pref: &GLPrinter, leaf: &Leaf) -> Box<SourceResponse> {

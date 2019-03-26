@@ -638,6 +638,9 @@ Module.STDWEB_PRIVATE.acquire_tmp = function( dummy ) {
             "__cargo_web_snippet_390d44bd6793341c99c71af5a0e69fad8dc61bef": function($0, $1) {
                 $0 = Module.STDWEB_PRIVATE.to_js($0);$1 = Module.STDWEB_PRIVATE.to_js($1);($0).depthMask(($1));
             },
+            "__cargo_web_snippet_398f2df97744c39cd8226489b28fb34c46537cb8": function($0) {
+                Module.STDWEB_PRIVATE.from_js($0, (function(){const canvas=document.getElementById("canvas");const gl=canvas.getContext("webgl");console.log("gl",gl);gl.getExtension("WEBGL_lose_context").loseContext();})());
+            },
             "__cargo_web_snippet_3e0f0762f590afbb4c73b0046d2db7956524fadd": function($0, $1) {
                 $1 = Module.STDWEB_PRIVATE.to_js($1);Module.STDWEB_PRIVATE.from_js($0, (function(){return($1).deltaY;})());
             },

@@ -17,6 +17,11 @@ use dom::webgl::{
 
 use types::{ CPixel, cpixel, RPixel, area };
 
+pub fn query_selector_ok(root: &HtmlElement, sel: &str, message: &str) -> Element {
+    let x : Option<Element> = expectok!(root.query_selector(sel));
+    expectok!(x.ok_or_else(|| message.to_string()))
+}
+
 pub fn query_selector_new(sel: &str) -> Option<Element> {
     if let Some(Some(el)) = document().query_selector(sel).ok() {
         Some(el)
@@ -33,6 +38,8 @@ pub fn query_selector2(root: &Element, sel: &str) -> Option<Element> {
     }
 }
 
+
+#[deprecated(note="use query_selector_ok instead")]
 pub fn query_selector(el: &Element, sel: &str) -> Element {
     el.query_selector(sel).unwrap().unwrap()
 }
