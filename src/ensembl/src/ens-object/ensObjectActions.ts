@@ -15,7 +15,7 @@ export const fetchEnsObjectData = (ensObjectId: string) => async (
   try {
     dispatch(fetchEnsObject.request(ensObjectId));
 
-    const url = `/browser/get_ensembl_object_info/${ensObjectId}`;
+    const url = `/browser/get_object_info/${ensObjectId}`;
     const response = await apiService.fetch(url);
     dispatch(fetchEnsObject.success(response));
   } catch (error) {
@@ -33,7 +33,7 @@ export const fetchExampleEnsObjectsData = () => async (dispatch: Dispatch) => {
   try {
     dispatch(fetchExampleEnsObjects.request(null));
 
-    const url = '/browser/example_ens_objects';
+    const url = '/browser/example_objects';
     const response = await apiService.fetch(url);
     dispatch(fetchExampleEnsObjects.success(response));
   } catch (error) {
