@@ -56,8 +56,8 @@ storiesOf('Design Primitives|Colours', module).add(
   'colour palette',
   () => (
     <>
-      {colours.map((colourData) => (
-        <ColourCard {...colourData} />
+      {colours.map((colourData, index) => (
+        <ColourCard key={index} {...colourData} />
       ))}
     </>
   ),
