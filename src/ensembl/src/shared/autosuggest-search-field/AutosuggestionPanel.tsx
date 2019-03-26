@@ -39,7 +39,7 @@ type Props = {
   allowRawInputSubmission: boolean;
 };
 
-const AutosuggestSearchField = (props: Props) => {
+const AutosuggestionPanel = (props: Props) => {
   const handleItemClick = (itemIndex: MatchIndex) => {
     props.onSelect(getMatchData(itemIndex));
   };
@@ -112,4 +112,4 @@ const Match = (props: MatchProps) => {
   );
 };
 
-export default AutosuggestSearchField;
+export default AutosuggestionPanel;
