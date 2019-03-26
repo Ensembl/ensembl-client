@@ -4,3 +4,4 @@ import './dropdown/Dropdown.stories';
 import './input/Input.stories';
 import './search-field/SearchField.stories';
 import './autosuggest-search-field/AutosuggestSearchField.stories';
+import './loader/Loader.stories';
