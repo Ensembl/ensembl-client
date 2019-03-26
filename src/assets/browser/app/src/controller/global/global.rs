@@ -15,7 +15,7 @@ use controller::input::{
     run_direct_events,
     Timers
 };
-use controller::global::{ AppRunner, App };
+use controller::global::{ AppRunner, App, Booting };
 use data::{ BackendConfigBootstrap, HttpManager, BackendConfig };
 use debug::{ DebugBling, create_interactors };
 use dom::{ domutil, Bling, NoBling };
@@ -25,107 +25,6 @@ pub struct GlobalImpl {
     apps: HashMap<String,AppRunner>,
     http_manager: HttpManager,
     timers: Timers
-}
-
-#[derive(Clone)]
-struct BootingMissed(Arc<Mutex<Vec<(String,JSONValue)>>>);
-
-struct BootingEventListener {
-    missed: BootingMissed
-}
-
-impl BootingMissed {
-    fn new() -> BootingMissed {
-        BootingMissed(Arc::new(Mutex::new(Vec::<(String,JSONValue)>::new())))
-    }
-    
-    fn add(&mut self, name: &str, details: JSONValue) {
-        let mut v = self.0.lock().unwrap();
-        v.push((name.to_string(),details));
-    }
-    
-    fn run_missed(&mut self, app: &mut App) {
-        let mut v = self.0.lock().unwrap();
-        for (event,details) in v.drain(..) {
-            match &event[..] {
-                "bpane" => run_direct_events(app,&details),
-                _ => ()
-            };
-        }
-    }
-}
-
-impl BootingEventListener {
-    fn new(missed: &BootingMissed) -> BootingEventListener {
-        BootingEventListener {
-            missed: missed.clone()
-        }
-    }
-}
-
-impl EventListener<()> for BootingEventListener {        
-    fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
-        if let EventData::CustomEvent(_,_,_,c) = e {
-            self.missed.add(&c.event_type(),c.details().unwrap());
-        }
-    }    
-}
-
-pub struct Booting {
-    global: Global,
-    http_manager: HttpManager,
-    config_url: Url,
-    el: HtmlElement,
-    key: String,
-    debug: bool,
-    missed: BootingMissed,
-    ec: EventControl<()>
-}
-
-impl Booting {
-    fn new(g: &mut Global, http_manager: &HttpManager, config_url: &Url,
-            el: &HtmlElement, key: &str, debug: bool) -> Booting {
-        let missed = BootingMissed::new();
-        let bel = BootingEventListener::new(&missed);
-        let mut out = Booting {
-            global: g.clone(),
-            http_manager: http_manager.clone(),
-            config_url: config_url.clone(),
-            el: el.clone(),
-            key: key.to_string(),
-            debug,
-            missed: missed.clone(),
-            ec: EventControl::new(Box::new(bel),())
-        };
-        out.ec.add_event(EventType::CustomEvent("bpane".to_string()));
-        out.ec.add_element(&el.clone().into(),());
-        out
-    }
-    
-    fn boot(&mut self, config: &BackendConfig) {
-        console!("bootstrapping");
-        let global = self.global.clone();
-        let bling : Box<Bling> = if self.debug {
-            Box::new(DebugBling::new(create_interactors()))
-        } else { 
-            Box::new(NoBling::new())
-        };
-        let ar = AppRunner::new(
-            &GlobalWeak::new(&global),&self.http_manager,
-            &self.el,bling,&self.config_url,config
-        );
-        {
-            global.0.borrow_mut().register_app(&self.key,ar);
-        }
-        let ar = global.0.borrow_mut().get_apprunner(&self.key);
-        if let Some(ar) = ar {
-            let app = ar.clone().state();
-            actions_run(&mut app.lock().unwrap(),&initial_actions());
-            console!("fire retro");
-            self.ec.reset();
-            self.missed.run_missed(&mut app.lock().unwrap());
-        }
-    }
 }
 
 impl GlobalImpl {
@@ -207,12 +106,16 @@ impl Global {
             b.borrow_mut().boot(config);
         }));
     }
-        
+    
+    pub fn register_app_now(&mut self, key: &str, ar: AppRunner) {
+        self.0.borrow_mut().register_app(key,ar);
+    }
+    
     #[allow(unused,dead_code)]
     pub fn with_apprunner<F,G>(&mut self, key: &str, cb:F) -> Option<G>
             where F: FnOnce(&mut AppRunner) -> G {
         self.0.borrow_mut().with_apprunner(key,cb)
-    }    
+    }
 }
 
 impl GlobalWeak {

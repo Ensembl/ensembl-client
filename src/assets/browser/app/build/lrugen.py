@@ -17,12 +17,13 @@ def bitmap(A):
         pos[v] = i
     mask = 1
     v = 0
-    for (i,(a,b)) in enumerate(crit):
+    for (a,b) in crit:
         v <<= 1
         if pos[a]<pos[b]:
             v |= 1
     decision[v] = A[3]
 
+# Heap's algorithm for permutations
 def generate(k,A):
     if k == 1:
       bitmap(A)
