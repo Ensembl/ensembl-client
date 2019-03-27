@@ -117,7 +117,7 @@ impl TrainManager {
         /* is it ready? */
         let mut ready = false;
         if let Some(ref mut future_train) = self.future_train {
-            if future_train.is_done() {
+            if future_train.check_done() {
                 ready = true;
             }
         }
@@ -137,6 +137,7 @@ impl TrainManager {
     
     /* called regularly by compositor to let us perform transitions */
     pub fn tick(&mut self, t: f64, cm: &mut TravellerCreator) {
+        self.each_train(|t| { t.check_done(); });
         self.transition_maybe_done(t);
         self.future_ready(cm,t);
     }

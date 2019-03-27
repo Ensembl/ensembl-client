@@ -75,7 +75,6 @@ impl GLCarriagePrinter {
                         aca: &mut AllCanvasAllocator,
                         stage: &Stage, opacity: f32) {
         if carriage.needs_refresh() {
-            console!("redraw");
             carriage.reset_needs_refresh();
             self.redraw_travellers(aca);
         }

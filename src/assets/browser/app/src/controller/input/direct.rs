@@ -114,13 +114,13 @@ fn custom_make_events(j: &JSONValue) -> Vec<Action> {
             out.append(&mut custom_make_one_event_key(k,v));
         }
     }
-    console!("receive {:?}",out);
+    console!("receive/A {:?}",out);
     out
 }
 
 pub fn run_direct_events(app: &mut App, j: &JSONValue) {
     let evs = custom_make_events(&j);
-    console!("receive {:?}",evs);
+    console!("receive/B {:?}",evs);
     actions_run(app,&evs);
 }
 

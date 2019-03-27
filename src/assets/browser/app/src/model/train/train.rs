@@ -173,7 +173,7 @@ impl Train {
     }
     
     /* Are all the carriages done? */
-    pub(in super) fn is_done(&mut self) -> bool {
+    pub(in super) fn check_done(&mut self) -> bool {
         for c in self.carriages.values_mut() {
             if !c.is_done() { return false; }
         }
@@ -182,7 +182,7 @@ impl Train {
     
     /* used in LEAFPRINTER to get actual data to print from components */
     pub fn get_travellers(&mut self, leaf: &Leaf) -> Option<Vec<&mut Traveller>> {
-        if !self.is_done() { return None; }
+        if !self.check_done() { return None; }
         self.carriages.get_mut(leaf).map(|x| x.all_travellers_mut())
     }
     

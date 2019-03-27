@@ -14,7 +14,6 @@ pub struct Carriage {
 
 impl Carriage {
     pub(in super) fn new(pm: &PrinterManager,leaf: &Leaf) -> Carriage {
-        console!("new carriage");
         let mut out = Carriage {
             pm: pm.clone(),
             travellers: Vec::<Traveller>::new(),

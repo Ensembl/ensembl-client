@@ -132,7 +132,6 @@ impl GLPrinterBase {
             lp.destroy(&mut self.acm);
         }
         self.acm.finish();
-        return;
         let gl : Option<glctx> = expectok!(
             js! { return @{self.canv_el.as_ref()}.getContext("webgl"); }.try_into()
         );
