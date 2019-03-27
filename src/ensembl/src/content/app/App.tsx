@@ -1,22 +1,5 @@
-import React, {
-  FunctionComponent,
-  Fragment,
-  lazy,
-  Suspense,
-  useEffect
-} from 'react';
-import {
-  Redirect,
-  Route,
-  RouteComponentProps,
-  Switch,
-  withRouter
-} from 'react-router-dom';
-import { connect } from 'react-redux';
-
-import { changeCurrentApp } from 'src/header/headerActions';
-import { getCurrentApp } from 'src/header/headerSelectors';
-import { RootState } from 'src/store';
+import React, { FunctionComponent, Fragment, lazy, Suspense } from 'react';
+import { Redirect, Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import AppBar from './AppBar';
 
@@ -26,75 +9,58 @@ const SpeciesSelector = lazy(() =>
 );
 const Browser = lazy(() => import('./browser/Browser'));
 
-type StateProps = {
-  currentApp: string;
-};
+type StateProps = {};
 
-type DispatchProps = {
-  changeCurrentApp: (name: string) => void;
-};
+type DispatchProps = {};
 
 type OwnProps = {};
 
 type AppProps = RouteComponentProps & StateProps & DispatchProps & OwnProps;
 
-export const App: FunctionComponent<AppProps> = (props: AppProps) => {
-  useEffect(() => {
-    // remove /app/ from url to get app name
-    let appName = props.location.pathname.replace('/app/', '');
+type AppShellProps = {
+  children: React.ReactNode;
+};
 
-    // check if app name still has forward slash (/) to be sure the app name is extracted
-    // if it isn't then remove rest of the URL and extract the app name
-    if (appName.indexOf('/') > -1) {
-      const matches = appName.match(/^[^\/]*/);
-      appName = matches ? matches[0] : '';
-    }
-
-    props.changeCurrentApp(appName);
-
-    return function unsetApp() {
-      props.changeCurrentApp('');
-    };
-  }, [props.match.path]);
-
-  const { url } = props.match;
-
+export const AppShell = (props: AppShellProps) => {
   return (
     <Fragment>
-      <AppBar currentApp={props.currentApp} />
-      <Suspense fallback={<div>Loading...</div>}>
-        <Switch>
-          <Route path={`${url}/global-search`} component={GlobalSearch} />
-          <Route path={`${url}/species-selector`} component={SpeciesSelector} />
-          <Route
-            path={`${url}/browser/:species/:stableId/`}
-            component={Browser}
-          />
-          <Redirect
-            exact={true}
-            from={`${url}/browser`}
-            to={{
-              pathname: `${url}/browser/GRCh38_demo/ENSG00000139618`,
-              search: '?region=13:32271473-32437359'
-            }}
-          />
-        </Switch>
-      </Suspense>
+      <AppBar />
+      {props.children}
     </Fragment>
   );
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
-  currentApp: getCurrentApp(state)
-});
+const AppInner = (props: AppProps) => {
+  const { url } = props.match;
 
-const mapDispatchToProps: DispatchProps = {
-  changeCurrentApp
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Switch>
+        <Route path={`${url}/global-search`} component={GlobalSearch} />
+        <Route path={`${url}/species-selector`} component={SpeciesSelector} />
+        <Route
+          path={`${url}/browser/:species/:stableId/`}
+          component={Browser}
+        />
+        <Redirect
+          exact={true}
+          from={`${url}/browser`}
+          to={{
+            pathname: `${url}/browser/GRCh38_demo/ENSG00000139618`,
+            search: '?region=13:32271473-32437359'
+          }}
+        />
+      </Switch>
+    </Suspense>
+  );
 };
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(App)
-);
+export const App: FunctionComponent<AppProps> = (props: AppProps) => {
+  return (
+    <AppShell>
+      <AppInner {...props} />
+    </AppShell>
+  );
+};
+
+export default App;

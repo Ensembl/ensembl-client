@@ -13,8 +13,6 @@ export default (
       return { ...state, accountExpanded: !state.accountExpanded };
     case getType(header.toggleLaunchbar):
       return { ...state, launchbarExpanded: !state.launchbarExpanded };
-    case getType(header.changeCurrentApp):
-      return { ...state, currentApp: action.payload };
     default:
       return state;
   }

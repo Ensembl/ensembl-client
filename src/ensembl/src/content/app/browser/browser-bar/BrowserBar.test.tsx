@@ -1,6 +1,5 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import toJson from 'enzyme-to-json';
 
 import { BrowserBar } from './BrowserBar';
 
@@ -25,9 +24,5 @@ describe('<BrowserBar />', () => {
 
   test('has a right bar', () => {
     expect(wrapper.find('.browserInfoRight')).toHaveLength(1);
-  });
-
-  test('renders correctly', () => {
-    expect(toJson(wrapper)).toMatchSnapshot();
   });
 });

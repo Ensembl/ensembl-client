@@ -8,6 +8,13 @@ import {
   getBrowserNavOpened
 } from './browserSelectors';
 
+import {
+  defaultBrowserState,
+  defaultBrowserNavState,
+  defaultBrowserLocationState,
+  defaultTrackConfigState
+} from 'src/content/app/browser/browserState';
+
 import store from '../../../store';
 import { BrowserState, BrowserOpenState } from './browserState';
 
