@@ -36,9 +36,19 @@ const colours = [
     value: variables['ens-grey']
   },
   {
+    name: 'Ensembl medium dark grey',
+    variableName: '$ens-medium-dark-grey',
+    value: variables['ens-medium-dark-grey']
+  },
+  {
     name: 'Ensembl dark grey',
     variableName: '$ens-dark-grey',
     value: variables['ens-dark-grey']
+  },
+  {
+    name: 'Ensembl medium light grey',
+    variableName: '$ens-medium-light-grey',
+    value: variables['ens-medium-light-grey']
   },
   {
     name: 'Ensembl light grey',
