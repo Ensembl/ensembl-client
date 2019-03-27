@@ -5,10 +5,6 @@ use drivers::webgl::{
     StretchWiggle, BoxSpec
 };
 
-use program::{ ProgramAttribs, DataGroupIndex, ProgramType };
-use types::{ Colour };
-use drivers::webgl::{ GLProgs, GLProgData, Artist, Artwork, Drawing, CarriageCanvases };
-
 #[derive(Clone)]
 pub enum ShapeSpec {
     PinPoly(PinPolySpec),
@@ -20,7 +16,7 @@ pub enum ShapeSpec {
 }
 
 impl ShapeSpec {
-    pub fn as_shape(&self) -> Box<&GLShape> {
+    pub fn to_shape(&self) -> Box<&GLShape> {
         match self {
             ShapeSpec::PinPoly(pp) => Box::new(pp),
             ShapeSpec::PinRect(pr) => Box::new(pr),
@@ -30,18 +26,4 @@ impl ShapeSpec {
             ShapeSpec::PinBox(pb) => Box::new(pb),
         }
     }    
-}
-
-impl GLShape for ShapeSpec {
-    fn get_artist(&self) -> Option<Rc<Artist>> {
-        self.as_shape().get_artist()
-    }
-        
-    fn into_objects(&self, geom: &mut ProgramAttribs, art: Option<Artwork>,e: &mut GLProgData) {
-        self.as_shape().into_objects(geom,art,e)
-    }
-    
-    fn get_geometry(&self) -> ProgramType {
-        self.as_shape().get_geometry()
-    }
 }
