@@ -5,7 +5,7 @@ use stdweb::web::IWindowOrWorker;
 
 use composit::{ Source, Leaf, ActiveSource };
 use model::train::PartyResponses;
-use drivers::webgl::ShapeSpec;
+use model::shape::ShapeSpec;
 
 pub struct ClosureSourceImpl {
     f: Box<Fn(&mut PartyResponses,&Leaf)>,

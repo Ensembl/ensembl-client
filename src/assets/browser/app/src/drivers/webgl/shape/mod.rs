@@ -2,7 +2,6 @@ mod stretch;
 mod shapeimpl;
 mod util;
 mod canvasidx;
-mod spec;
 mod rect;
 mod poly;
 mod wiggle;
@@ -11,7 +10,7 @@ mod texture;
 mod boxshape;
 
 pub use self::shapeimpl::{
-    Shape,
+    GLShape,
     ColourSpec,
     MathsShape,
 };
@@ -60,5 +59,4 @@ pub use self::stretch::{
 
 pub use self::boxshape::BoxSpec;
 
-pub use self::spec::ShapeSpec;
 pub use self::spot::Spot;

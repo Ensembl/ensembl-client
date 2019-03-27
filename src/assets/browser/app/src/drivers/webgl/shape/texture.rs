@@ -7,10 +7,11 @@ use types::{
     CLeaf, area_centred, Anchors, cfraction, Anchor, cpixel, cleaf
 };
 
-use super::{ Shape, ShapeSpec, ShapeInstanceData, ShapeShortInstanceData, Facade, TypeToShape, FacadeType, ShapeInstanceDataType };
+use super::{ GLShape, ShapeInstanceData, ShapeShortInstanceData, Facade, TypeToShape, FacadeType, ShapeInstanceDataType };
 use super::util::{ rectangle_t, multi_gl, vertices_rect };
 
 use drivers::webgl::{ GLProgData, Artist, Artwork, DrawingSpec };
+use model::shape::ShapeSpec;
 
 #[derive(Clone,Copy,Debug)]
 pub enum TexturePosition<T: Clone+Copy+Debug> {
@@ -31,12 +32,12 @@ pub struct TextureSpec {
 }
 
 impl TextureSpec {
-    pub fn create(self) -> Box<Shape> {
+    pub fn create(self) -> Box<GLShape> {
         Box::new(self)
     }
 }
 
-impl Shape for TextureSpec {
+impl GLShape for TextureSpec {
     fn into_objects(&self, geom: &mut ProgramAttribs, 
                     artwork: Option<Artwork>, e: &mut GLProgData) {
         if let Some(art) = artwork {

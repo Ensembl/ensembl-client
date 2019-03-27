@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
-use super::{
-    PinPolySpec, RectSpec, Shape, TextureSpec, StretchTextureSpec, 
+use drivers::webgl::{
+    PinPolySpec, RectSpec, GLShape, TextureSpec, StretchTextureSpec, 
     StretchWiggle, BoxSpec
 };
 
@@ -20,7 +20,7 @@ pub enum ShapeSpec {
 }
 
 impl ShapeSpec {
-    pub fn as_shape(&self) -> Box<&Shape> {
+    pub fn as_shape(&self) -> Box<&GLShape> {
         match self {
             ShapeSpec::PinPoly(pp) => Box::new(pp),
             ShapeSpec::PinRect(pr) => Box::new(pr),
@@ -32,7 +32,7 @@ impl ShapeSpec {
     }    
 }
 
-impl Shape for ShapeSpec {
+impl GLShape for ShapeSpec {
     fn get_artist(&self) -> Option<Rc<Artist>> {
         self.as_shape().get_artist()
     }

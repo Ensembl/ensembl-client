@@ -262,7 +262,7 @@ pub struct HttpXferClerkImpl {
 
 impl HttpXferClerkImpl {
     pub fn new(http_manager: &HttpManager, base: &Url, xfercache: &XferCache) -> HttpXferClerkImpl {
-        let mut out = HttpXferClerkImpl {
+        HttpXferClerkImpl {
             http_manager: http_manager.clone(),
             config: None,
             base: base.clone(),
@@ -270,8 +270,7 @@ impl HttpXferClerkImpl {
             batch: None,
             prime_batch: None,
             cache: xfercache.clone()
-        };
-        out
+        }
     }
 
     pub fn tick(&mut self) {
@@ -284,7 +283,7 @@ impl HttpXferClerkImpl {
     }
 
     pub fn set_config(&mut self, bc: BackendConfig) {
-        let mut url = self.base.join(bc.get_data_url()).ok().unwrap();        
+        let url = self.base.join(bc.get_data_url()).ok().unwrap();        
         self.config = Some(bc.clone());
         self.batch = Some(XferBatchScheduler::new(&bc,&self.http_manager,&self.cache,&url,5));
         self.prime_batch = Some(XferBatchScheduler::new(&bc,&self.http_manager,&self.cache,&url,1));
@@ -329,7 +328,7 @@ impl HttpXferClerkImpl {
 }
 
 impl XferClerk for HttpXferClerkImpl {
-    fn satisfy(&mut self, request: XferRequest, mut consumer: Box<XferConsumer>) {
+    fn satisfy(&mut self, request: XferRequest, consumer: Box<XferConsumer>) {
         if self.batch.is_some() {
             let prime = request.get_prime();
             self.run_request(request,consumer,prime);
@@ -360,7 +359,7 @@ impl HttpXferClerk {
 }
 
 impl XferClerk for HttpXferClerk {
-    fn satisfy(&mut self, request: XferRequest, mut consumer: Box<XferConsumer>) {
+    fn satisfy(&mut self, request: XferRequest, consumer: Box<XferConsumer>) {
         self.0.borrow_mut().satisfy(request,consumer);
     }
 }

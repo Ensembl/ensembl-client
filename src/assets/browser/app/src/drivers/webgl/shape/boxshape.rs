@@ -1,4 +1,5 @@
-use drivers::webgl::{ Artwork, GLProgData, ColourSpec, Shape };
+use drivers::webgl::{ Artwork, GLProgData, ColourSpec };
+use super::super::shape::GLShape;
 use program::{ PTGeom, PTMethod, ProgramType, ProgramAttribs, Input };
 use super::util::{ despot, vertices_hollowpoly, poly_p, multi_gl };
 use types::{ RLeaf, CFraction, CLeaf, cfraction, cleaf };
@@ -17,7 +18,7 @@ const END_X: &[f32] = &[0.,0.,0.,0.,1.,1.,1.,1.];
 const END_Y: &[i32] = &[0, 0, 1, 1, 1, 1, 0, 0];
 
 impl BoxSpec {
-    pub fn create(self) -> Box<Shape> {
+    pub fn create(self) -> Box<GLShape> {
         let g = despot(PTGeom::Pin,PTMethod::Strip,&self.colspec);        
         Box::new(self)
     }
@@ -42,7 +43,7 @@ impl BoxSpec {
     }
 }
 
-impl Shape for BoxSpec {
+impl GLShape for BoxSpec {
     fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut GLProgData) {
         let group = self.colspec.to_group(geom,e);
         let b = vertices_hollowpoly(geom,4,group);

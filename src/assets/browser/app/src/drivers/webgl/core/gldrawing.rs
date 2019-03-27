@@ -2,7 +2,8 @@ use composit::SourceResponseData;
 use composit::Source;
 use super::super::drawing::{ Drawing, CarriageCanvases };
 use super::{ GLProgInstances, GLProgs };
-use drivers::webgl::{ ShapeSpec, Shape };
+use super::super::shape::GLShape;
+use model::shape::ShapeSpec;
 
 pub struct GLDrawing {
     drawings: Vec<Option<Drawing>>,

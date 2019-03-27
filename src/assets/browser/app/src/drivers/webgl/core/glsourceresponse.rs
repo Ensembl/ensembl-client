@@ -6,9 +6,9 @@ use std::rc::Rc;
 
 use super::{ GLDrawing, GLProgInstances, GLPrinter };
 use super::super::drawing::CarriageCanvases;
-use super::super::shape::ShapeSpec;
 use composit::{ Leaf, SourceResponseData };
 use model::driver::SourceResponse;
+use model::shape::ShapeSpec;
 
 #[derive(Clone)]
 pub struct GLSourceResponse {

@@ -1,10 +1,11 @@
 use types::{ CLeaf, Colour, cleaf };
 
-use super::{ Shape, ColourSpec, ShapeSpec };
+use super::{ GLShape, ColourSpec };
 use super::util::{ Facade, FacadeType, points_g, ShapeLongInstanceData, ShapeInstanceData, TypeToShape, vertices_strip, ShapeInstanceDataType };
 
 use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
 use drivers::webgl::{ GLProgData, Artwork };
+use model::shape::ShapeSpec;
 
 #[derive(Clone,Debug)]
 pub struct StretchWiggle {
@@ -18,12 +19,12 @@ impl StretchWiggle {
         StretchWiggle { points, group, y }
     }
 
-    pub fn create(self) -> Box<Shape> {
+    pub fn create(self) -> Box<GLShape> {
         Box::new(self)
     }
 }
 
-impl Shape for StretchWiggle {
+impl GLShape for StretchWiggle {
     fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut GLProgData) {
         let dg = ColourSpec::Spot(self.group).to_group(geom,e);
         let b = vertices_strip(geom,self.points.len() as u16*2,dg);

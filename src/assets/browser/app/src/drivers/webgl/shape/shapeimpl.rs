@@ -5,7 +5,7 @@ use types::{ Colour };
 use drivers::webgl::{ GLProgs, GLProgData };
 use drivers::webgl::{ Artist, Artwork, Drawing, CarriageCanvases };
 
-pub trait Shape {
+pub trait GLShape {
     fn get_artist(&self) -> Option<Rc<Artist>> { None }
     fn into_objects(&self, geom: &mut ProgramAttribs, art: Option<Artwork>,e: &mut GLProgData);
     fn get_geometry(&self) -> ProgramType;

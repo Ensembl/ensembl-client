@@ -1,12 +1,14 @@
 use std::rc::Rc;
 
 use types::{ RLeaf, cfraction, cleaf, area_size };
-use super::{ Shape, ShapeSpec };
+use super::GLShape;
 use super::util::{ rectangle_g, rectangle_t, vertices_rect };
 
 use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
 use drivers::webgl::GLProgData;
 use drivers::webgl::{ Artist, Artwork, DrawingSpec };
+
+use model::shape::ShapeSpec;
 
 #[derive(Clone)]
 pub struct StretchTextureSpec {
@@ -23,14 +25,14 @@ impl StretchTextureSpec {
 }
 
 impl StretchTextureSpec {
-    pub fn create(&self) -> Box<Shape> {
+    pub fn create(&self) -> Box<GLShape> {
         Box::new(self.clone())
     }
 }
 
 const CHUNK_SIZE : f32 = 10.;
 
-impl Shape for StretchTextureSpec {
+impl GLShape for StretchTextureSpec {
     fn into_objects(&self, geom: &mut ProgramAttribs, artwork: Option<Artwork>, e: &mut GLProgData) {
         if let Some(art) = artwork {
             /* some cards baulk at very large textured areas, so split */

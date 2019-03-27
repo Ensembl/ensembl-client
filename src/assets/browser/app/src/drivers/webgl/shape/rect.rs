@@ -7,12 +7,13 @@ use types::{
     area_size, cleaf, cpixel
 };
 
-use super::{ Shape, ColourSpec, ShapeSpec };
+use super::{ GLShape, ColourSpec };
 use super::util::{
     rectangle_p, rectangle_c, rectangle_g, multi_gl, vertices_rect,
     despot, colour, ShapeInstanceData, ShapeShortInstanceData, 
     TypeToShape, Facade, FacadeType, ShapeInstanceDataType
 };
+use model::shape::ShapeSpec;
 use drivers::webgl::{ GLProgData, Artwork };
 use super::boxshape::{ BoxSpec };
 
@@ -32,7 +33,7 @@ pub struct RectSpec {
     colspec: ColourSpec
 }
 
-impl Shape for RectSpec {
+impl GLShape for RectSpec {
     fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut GLProgData) {
         let group = self.colspec.to_group(geom,e);
         let b = vertices_rect(geom,group);

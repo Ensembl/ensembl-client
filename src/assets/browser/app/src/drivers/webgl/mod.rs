@@ -11,7 +11,7 @@ pub use self::drawing::{
     collage, mark_rectangle, MarkSpec, OneCanvasManager
 };
 pub use self::shape::{
-    ShapeSpec, Shape, FacadeType, ShapeInstanceDataType,
+    FacadeType, ShapeInstanceDataType,
     ShapeLongInstanceData, StretchWiggleTypeSpec,
     tape_mathsshape,
     pin_mathsshape,
@@ -19,5 +19,7 @@ pub use self::shape::{
     ColourSpec, MathsShape, fix_mathsshape, page_mathsshape,
     PinRectTypeSpec, StretchRectTypeSpec, TextureTypeSpec,
     ShapeInstanceData, TypeToShape, Facade, ShapeShortInstanceData,
-    rectangle_g, rectangle_t, vertices_rect
+    rectangle_g, rectangle_t, vertices_rect,
+    PinPolySpec, RectSpec, GLShape, TextureSpec, StretchTextureSpec,
+    StretchWiggle, BoxSpec,
 };

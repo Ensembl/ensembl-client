@@ -11,11 +11,12 @@ use types::{
     RFraction, TOPLEFT
 };
 
-use super::{ Shape, ColourSpec, MathsShape, ShapeSpec };
+use super::{ GLShape, ColourSpec, MathsShape };
 use super::util::{
     multi_gl, poly_p, vertices_poly, vertices_hollowpoly, despot,
 };
 use drivers::webgl::{ GLProgData, Artwork };
+use model::shape::ShapeSpec;
 
 #[derive(Clone,Copy,Debug)]
 enum PolyPosition<T: Clone+Copy+Debug> {
@@ -43,7 +44,7 @@ fn circle_points(r: f32) -> u16 {
     (3.54 * (r/CIRC_TOL).sqrt()) as u16
 }
 
-impl Shape for PinPolySpec {    
+impl GLShape for PinPolySpec {    
     fn into_objects(&self, geom_a: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut GLProgData) {
         /* Convert circles to polygons */
         let (points, offset) = match self.ms {
