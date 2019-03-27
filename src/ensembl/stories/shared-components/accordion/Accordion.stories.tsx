@@ -6,8 +6,7 @@ import {
   AccordionItem,
   AccordionItemHeading,
   AccordionItemPanel,
-  AccordionItemButton,
-  AccordionItemState
+  AccordionItemButton
 } from 'src/shared/accordion/';
 import styles from './Accordion.stories.scss';
 
@@ -36,7 +35,7 @@ storiesOf('Components|Shared Components/Accordion', module)
       </div>
     );
   })
-  .add('Allow multiple', () => {
+  .add('allow multiple', () => {
     return (
       <div className={styles.accordionContainer}>
         <Accordion allowMultipleExpanded={true}>
@@ -60,7 +59,7 @@ storiesOf('Components|Shared Components/Accordion', module)
       </div>
     );
   })
-  .add('Pre-expanded Item', () => {
+  .add('pre-expanded Item', () => {
     return (
       <div className={styles.accordionContainer}>
         <Accordion allowMultipleExpanded={true} preExpanded={[1]}>
