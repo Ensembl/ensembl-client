@@ -35,12 +35,12 @@ impl WebGLTrainPrinter {
         }
     }
     
-    fn prepare(&mut self, printer: &mut GLPrinterBase, stage: &Stage, oom: &StateManager,
+    fn prepare(&mut self, printer: &mut GLPrinterBase, stage: &Stage,
                      train: &mut Train, opacity: f32) {
         for carriage in train.get_carriages() {
             let leaf = carriage.get_leaf().clone();
             if let Some(lp) = &mut printer.lp.get_mut(&leaf) {
-                lp.prepare(oom,carriage,&mut printer.acm,stage,opacity);
+                lp.prepare(carriage,&mut printer.acm,stage,opacity);
             }
         }
     }
@@ -180,15 +180,15 @@ impl GLPrinter {
 }
 
 impl Printer for GLPrinter {
-    fn print(&mut self, stage: &Stage, oom: &StateManager, compo: &mut Compositor) {
+    fn print(&mut self, stage: &Stage, compo: &mut Compositor) {
         let prop = compo.get_prop_trans();
         if let Some(train) = compo.get_current_train() {
             let mut tp = WebGLTrainPrinter::new();
-            tp.prepare(&mut self.base.borrow_mut(),stage,oom,train,1.-prop);
+            tp.prepare(&mut self.base.borrow_mut(),stage,train,1.-prop);
         }
         if let Some(train) = compo.get_transition_train() {
             let mut tp = WebGLTrainPrinter::new();
-            tp.prepare(&mut self.base.borrow_mut(),stage,oom,train,prop);
+            tp.prepare(&mut self.base.borrow_mut(),stage,train,prop);
         }
         self.base.borrow_mut().prepare_all();
         if let Some(train) = compo.get_transition_train() {
@@ -228,5 +228,5 @@ impl Printer for GLPrinter {
     fn make_partial(&mut self, leaf: &Leaf) -> Box<SourceResponse> {
         let twin = self.clone();
         self.base.borrow_mut().make_partial(&twin,leaf)
-    }    
+    }      
 }

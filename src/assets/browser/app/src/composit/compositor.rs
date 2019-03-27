@@ -1,5 +1,5 @@
 use composit::{
-    ActiveSource, Leaf, Stick, Scale, ComponentSet
+    ActiveSource, Leaf, Stick, Scale, ComponentSet, StateManager
 };
 
 use model::driver::PrinterManager;
@@ -134,7 +134,11 @@ impl Compositor {
             );
         }
         self.components.add_source(c);
-    }    
+    }
+    
+    pub fn update_state(&mut self, oom: &StateManager) {
+        self.train_manager.update_state(oom);
+    }
 }
 
 pub fn register_compositor_ticks(ar: &mut AppRunner) {

@@ -3,7 +3,6 @@ use std::sync::{ Arc, Mutex };
 use stdweb::unstable::TryInto;
 use url::Url;
 
-use composit::StateValue;
 use controller::global::Global;
 use controller::input::Action;
 use debug::DEMO_SOURCES;
@@ -65,7 +64,7 @@ pub fn initial_actions() -> Vec<Action> {
     for name in &DEMO_SOURCES {
         console!("activating {}",name);
         out.push(Action::AddComponent(name.to_string()));
-        out.push(Action::SetState(name.to_string(),StateValue::On()));
+        out.push(Action::SetState(name.to_string(),true));
     }
     out
 }

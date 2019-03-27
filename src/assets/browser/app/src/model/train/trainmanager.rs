@@ -11,7 +11,7 @@
  * render.
  */
 
-use composit::{ Leaf, ActiveSource, Stick, Scale };
+use composit::{ Leaf, ActiveSource, Stick, Scale, StateManager };
 use controller::output::Report;
 use model::driver::PrinterManager;
 use super::{ Train, TravellerCreator };
@@ -244,6 +244,10 @@ impl TrainManager {
     pub fn set_position(&mut self, position_bp: f64) {
         self.position_bp = position_bp;
         self.each_train(|t| t.set_position(position_bp));
+    }
+    
+    pub fn update_state(&mut self, oom: &StateManager) {
+        self.each_train(|t| t.update_state(oom));
     }
     
     /* ***************************************************************

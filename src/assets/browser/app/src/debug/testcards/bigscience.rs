@@ -10,7 +10,7 @@ use rand::rngs::SmallRng;
 use rand::SeedableRng;
 
 use composit::{
-    StateFixed, StateValue, StateAtom, Leaf, Stick
+    StateFixed, StateAtom, Leaf, Stick
 };
 
 use debug::support::closuresource::{ ClosureSource, closure_add, closure_add_opt, closure_done };

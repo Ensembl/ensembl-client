@@ -7,7 +7,7 @@ use std::rc::Rc;
 use super::{ GLDrawing, GLProgInstances, GLPrinter };
 use super::super::drawing::CarriageCanvases;
 use super::super::shape::ShapeSpec;
-use composit::{ Leaf, SourceResponseData, StateValue };
+use composit::{ Leaf, SourceResponseData };
 use model::driver::SourceResponse;
 
 #[derive(Clone)]
@@ -15,7 +15,8 @@ pub struct GLSourceResponse {
     printer: GLPrinter,
     idx: usize,
     dr: Rc<RefCell<Option<GLDrawing>>>,
-    state: Rc<RefCell<StateValue>>,
+    pending_refresh: Rc<RefCell<bool>>,
+    state: Rc<RefCell<bool>>,
     leaf: Leaf
 }
 
@@ -39,21 +40,13 @@ impl GLSourceResponse {
             printer: printer.clone(),
             idx,
             dr: Rc::new(RefCell::new(None)),
-            state: Rc::new(RefCell::new(StateValue::OffCold())),
+            pending_refresh: Rc::new(RefCell::new(false)), // XXX unused
+            state: Rc::new(RefCell::new(false)),
             leaf: leaf.clone()
         }
     }
-
-    /* train/traveller */
-    pub fn take(&mut self) -> Option<GLDrawing> {
-        console!("take");
-        self.dr.borrow_mut().take()
-    }
         
     pub fn get_leaf(&self) -> &Leaf { &self.leaf }
-    pub fn get_state(&self) -> StateValue {
-        self.state.borrow().clone()
-    }
     
     pub fn redraw_drawings(&self, cc: &mut CarriageCanvases) {
         //console!("drawings {:?}",self.leaf);
@@ -64,14 +57,10 @@ impl GLSourceResponse {
     }
     
     pub fn redraw_objects(&self, e: &mut GLProgInstances) {
-        console!("objects {:?}",self.leaf);
-        if self.get_state().on() {
-            console!("on");
-            let mut dr = self.dr.borrow_mut();
-            if dr.is_some() {
-                console!("yes");
-                dr.as_mut().unwrap().into_objects(e);
-            }
+        let mut dr = self.dr.borrow_mut();
+        if dr.is_some() && *self.state.borrow() {
+            console!("objects {:?}",self.leaf);
+            dr.as_mut().unwrap().into_objects(e);
         }
     }
 }
@@ -82,15 +71,17 @@ impl SourceResponse for GLSourceResponse {
         self.dr.borrow().is_some()
     }
 
+    fn set_state(&self, state: bool) {
+        *self.state.borrow_mut() = state;
+    }
+
     /* train/partyresponses */
     fn set(&mut self, result: SourceResponseData) {
-        console!("set!");
         *self.dr.borrow_mut() = Some(GLDrawing::new(result));
     }
 
-    fn set_state(&mut self, state: StateValue) {
-        console!("state updated");
-        *self.state.borrow_mut() = state;
+    fn refresh(&mut self) {
+        *self.pending_refresh.borrow_mut() = true;
     }
     
     fn destroy(&mut self) {

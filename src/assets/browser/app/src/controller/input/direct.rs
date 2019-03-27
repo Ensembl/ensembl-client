@@ -3,7 +3,6 @@ use std::sync::{ Arc, Mutex };
 use serde_json::Value as JSONValue;
 use stdweb::web::{ Element, HtmlElement };
 
-use composit::StateValue;
 use controller::global::{ App, AppRunner };
 use controller::input::{ actions_run, Action };
 use dom::event::{ 
@@ -70,7 +69,7 @@ fn custom_zoom_event(kind: &str, v: &JSONValue) -> Action {
     }
 }
 
-fn custom_state_event(v: &JSONValue, sv: StateValue) -> Action {
+fn custom_state_event(v: &JSONValue, sv: bool) -> Action {
     if let JSONValue::String(track) = v {
         Action::SetState(track.to_string(),sv)
     } else {
@@ -90,9 +89,8 @@ fn custom_make_one_event_key(k: &String, v: &JSONValue) -> Vec<Action> {
     let parts : Vec<&str> = k.split("_").collect();
     match parts.len() {
         1 => return match parts[0] {
-            "on" => every(v,|v| custom_state_event(v,StateValue::On())),
-            "standby" => every(v,|v| custom_state_event(v,StateValue::OffWarm())),
-            "off" => every(v,|v| custom_state_event(v,StateValue::OffCold())),
+            "on" => every(v,|v| custom_state_event(v,true)),
+            "off" => every(v,|v| custom_state_event(v,false)),
             "goto" => every(v,|v| custom_goto_event(v)),
             "stick" => every(v,|v| custom_stick_event(v)),
             _ => vec!{}

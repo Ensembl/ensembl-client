@@ -3,7 +3,6 @@ use std::sync::{ Arc, Mutex };
 use stdweb::unstable::TryInto;
 use url::Url;
 
-use composit::StateValue;
 use controller::global::Global;
 use controller::input::Action;
 use debug::DEMO_SOURCES;

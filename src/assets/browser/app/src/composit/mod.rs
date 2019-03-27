@@ -28,9 +28,7 @@ pub use self::state::{
     StateExpr,
     StateManager,
     StateFixed,
-    StateValue,
-    StateAtom,
-    ComponentRedo
+    StateAtom
 };
 
 pub use self::leaf::Leaf;

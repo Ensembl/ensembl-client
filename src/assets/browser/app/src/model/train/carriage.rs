@@ -1,21 +1,24 @@
 use std::collections::HashMap;
 use composit::{ Leaf, ActiveSource };
-use composit::{ ComponentRedo, StateManager };
+use composit::{ StateManager };
 use model::driver::{ Printer, PrinterManager };
 use super::Traveller;
 
 pub struct Carriage {
     pm: PrinterManager,
     travellers: Vec<Traveller>,
+    known_done: bool,
     needs_rebuild: bool,
     leaf: Leaf
 }
 
 impl Carriage {
     pub(in super) fn new(pm: &PrinterManager,leaf: &Leaf) -> Carriage {
+        console!("new carriage");
         let mut out = Carriage {
             pm: pm.clone(),
             travellers: Vec::<Traveller>::new(),
+            known_done: false,
             needs_rebuild: false,
             leaf: leaf.clone()
         };
@@ -25,8 +28,16 @@ impl Carriage {
     
     pub fn get_leaf(&self) -> &Leaf { &self.leaf }
     
-    pub(in super) fn set_needs_rebuild(&mut self) {
+    pub(in super) fn set_needs_refresh(&mut self) {
         self.needs_rebuild = true;
+    }
+
+    pub fn reset_needs_refresh(&mut self) {
+        self.needs_rebuild = false;
+    }
+
+    pub fn needs_refresh(&self) -> bool {
+         self.needs_rebuild
     }
     
     pub(in super) fn add_traveller(&mut self, traveller: Traveller) {
@@ -42,27 +53,25 @@ impl Carriage {
     }
     
     pub(in super) fn is_done(&mut self) -> bool {
+        if self.known_done { return true; }
         for c in &self.travellers {
             if !c.is_done() { return false; }
         }
+        self.known_done = true;
+        self.needs_rebuild = true;
         return true;
     }
     
-    pub fn update_state(&mut self, oom: &StateManager) -> ComponentRedo {
-        /* Any change due to component changes? */
-        let mut redo = ComponentRedo::None;
+    pub fn update_state(&mut self, oom: &StateManager) {
+        let mut redo = false;
         for t in &mut self.all_travellers_mut() {
-            redo = redo | t.update_state(oom);
-        }
-        /* Any change due to availability? */
-        if self.is_done() {
-            if self.needs_rebuild {
-                self.needs_rebuild = false;
-                console!("redraw {:?}",self.leaf.get_short_spec());
-                return ComponentRedo::Major;
+            if t.update_state(oom) {
+                redo = true;
             }
         }
-        redo
+        if redo {
+            self.needs_rebuild = true;
+        }
     }
 }
 

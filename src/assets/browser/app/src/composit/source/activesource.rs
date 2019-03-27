@@ -7,7 +7,7 @@ use std::rc::Rc;
 use composit::state::StateExpr;
 use composit::{
     AllLandscapes, Landscape, Source, Leaf,
-    StateManager, StateValue
+    StateManager
 };
 
 use model::driver::PrinterManager;
@@ -67,7 +67,7 @@ impl ActiveSource {
     
     pub fn get_name(&self) -> &str { &self.name }  
     
-    pub fn is_on(&self, m: &StateManager, part: &Option<String>) -> StateValue {
+    pub fn is_on(&self, m: &StateManager, part: &Option<String>) -> bool {
         self.parts.get(&part).unwrap().is_on(m)
     }
     

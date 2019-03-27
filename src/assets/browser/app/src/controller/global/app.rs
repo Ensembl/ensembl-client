@@ -129,7 +129,8 @@ impl App {
         let stage = self.stage.lock().unwrap();
         let oom = self.state.lock().unwrap();
         let mut compo = self.compo.lock().unwrap();
-        self.printer.lock().unwrap().print(&stage,&oom,&mut compo);
+        compo.update_state(&oom);
+        self.printer.lock().unwrap().print(&stage,&mut compo);
     }
     
     pub fn with_stage<F,G>(&self, cb: F) -> G where F: FnOnce(&mut Stage) -> G {
@@ -157,7 +158,7 @@ impl App {
         }
         out
     }
-    
+        
     pub fn run_actions(self: &mut App, evs: &Vec<Action>) {
         actions_run(self,evs);
     }

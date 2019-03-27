@@ -7,7 +7,7 @@ pub trait Printer {
     /* Print one run of objects from compositor with given stage and
      * state.
      */
-    fn print(&mut self, stage: &Stage, oom: &StateManager, compo: &mut Compositor);
+    fn print(&mut self, stage: &Stage, compo: &mut Compositor);
     
     /* Finished with printer */
     fn destroy(&mut self);

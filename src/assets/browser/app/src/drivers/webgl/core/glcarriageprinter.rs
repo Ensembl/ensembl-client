@@ -4,7 +4,7 @@ use std::rc::Rc;
 use super::{ GLSourceResponse, GLProgs, GLProgData, GLProgInstances };
 use program::ProgramType;
 use model::train::{ Train, Traveller, Carriage };
-use composit::{ Leaf, Stage, ComponentRedo, StateManager };
+use composit::{ Leaf, Stage, StateManager };
 use super::super::drawing::{ CarriageCanvases, AllCanvasAllocator };
 use dom::webgl::WebGLRenderingContext as glctx;
 
@@ -41,7 +41,7 @@ impl GLCarriagePrinter {
         }
     }
         
-    fn redraw_drawings(&mut self, alloc: &mut AllCanvasAllocator, travs: &mut Vec<&mut Traveller>) -> CarriageCanvases {
+    fn redraw_drawings(&mut self, alloc: &mut AllCanvasAllocator) -> CarriageCanvases {
         let mut cc = alloc.make_carriage_canvases();
         for sr in self.srr.iter() {
             sr.redraw_drawings(&mut cc);
@@ -50,24 +50,19 @@ impl GLCarriagePrinter {
         cc
     }
     
-    fn redraw_objects(&mut self, travs: &mut Vec<&mut Traveller>,
-                          e: &mut GLProgInstances) {
+    fn redraw_objects(&mut self,e: &mut GLProgInstances) {
         for sr in self.srr.iter() {
             sr.redraw_objects(e);
         }
     }
 
-    fn redraw_travellers(&mut self, travs: &mut Vec<&mut Traveller>, aca: &mut AllCanvasAllocator, do_drawings: bool) {
-        let cc = if self.prev_cc.is_some() && !do_drawings {
-            self.prev_cc.take().unwrap() // Use previous
-        } else {
-            if let Some(prev_cc) = self.prev_cc.take() {
-                prev_cc.destroy(aca);
-            }
-            self.redraw_drawings(aca,travs)
-        };
+    fn redraw_travellers(&mut self, aca: &mut AllCanvasAllocator) {
+        if let Some(prev_cc) = self.prev_cc.take() {
+            prev_cc.destroy(aca);
+        }
+        let cc = self.redraw_drawings(aca);
         let mut e = GLProgInstances::new(cc,self.progs.take().unwrap(),&self.ctx);
-        self.redraw_objects(travs,&mut e);
+        self.redraw_objects(&mut e);
         e.finalize_objects(&self.ctx);
         e.go();
         let (prev_cc,progs) = e.destroy();
@@ -76,17 +71,13 @@ impl GLCarriagePrinter {
     }
     
     pub fn prepare(&mut self,
-                        oom: &StateManager,
                         carriage: &mut Carriage,
                         aca: &mut AllCanvasAllocator,
                         stage: &Stage, opacity: f32) {
-        let level = carriage.update_state(oom);
-        if level != ComponentRedo::None {
+        if carriage.needs_refresh() {
             console!("redraw");
-            let mut travs = carriage.all_travellers_mut();
-            if travs.len() > 0 {
-                self.redraw_travellers(&mut travs,aca,level == ComponentRedo::Major);
-            }
+            carriage.reset_needs_refresh();
+            self.redraw_travellers(aca);
         }
         let mut progs = self.progs.as_mut().unwrap();
         for k in &progs.order {
@@ -103,5 +94,5 @@ impl GLCarriagePrinter {
     pub fn execute(&mut self, pt: &ProgramType) {
         let prog = self.progs.as_mut().unwrap().map.get_mut(pt).unwrap();
         prog.execute(&self.ctx);
-    }
+    }    
 }

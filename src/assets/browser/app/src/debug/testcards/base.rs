@@ -1,4 +1,3 @@
-use composit::StateValue;
 use controller::global::App;
 use controller::input::{ Action, actions_run };
 use types::Dot;
@@ -14,7 +13,7 @@ fn debug_initial_actions(name: &str) -> Vec<Action> {
         };
         for name in &DEMO_SOURCES {
             out.push(Action::AddComponent(name.to_string()));
-            out.push(Action::SetState(name.to_string(),StateValue::On()));
+            out.push(Action::SetState(name.to_string(),true));
         }
         out.extend(vec! {
             Action::SetStick(stick.to_string()),
@@ -25,7 +24,7 @@ fn debug_initial_actions(name: &str) -> Vec<Action> {
     } else {
         for name in &DEBUG_SOURCES {
             out.push(Action::AddComponent(name.to_string()));
-            out.push(Action::SetState(name.to_string(),StateValue::On()));
+            out.push(Action::SetState(name.to_string(),true));
         }
         out.extend(vec! {
             Action::SetStick(name.to_string()),

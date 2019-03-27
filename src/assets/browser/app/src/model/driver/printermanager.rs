@@ -32,8 +32,8 @@ impl Printer for PrinterManager {
     /* Print one run of objects from compositor with given stage and
      * state.
      */
-    fn print(&mut self, stage: &Stage, oom: &StateManager, compo: &mut Compositor) {
-        self.0.borrow_mut().printer.print(stage,oom,compo);
+    fn print(&mut self, stage: &Stage, compo: &mut Compositor) {
+        self.0.borrow_mut().printer.print(stage,compo);
     }
     
     /* Finished with printer */
@@ -67,5 +67,5 @@ impl Printer for PrinterManager {
     
     fn make_partial(&mut self, leaf: &Leaf) -> Box<SourceResponse> {
         self.0.borrow_mut().printer.make_partial(leaf)
-    }    
+    }   
 }

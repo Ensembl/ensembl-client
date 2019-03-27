@@ -3,14 +3,14 @@ use std::fmt;
 use composit::{
     SourceResponseData, Leaf, ActiveSource,
 };
-use composit::{ StateManager, StateValue, ComponentRedo };
+use composit::{ StateManager };
 use model::driver::{ Printer, PrinterManager, SourceResponse };
 
 pub struct Traveller {
     pm: PrinterManager,
     comp: ActiveSource,
-    prev_value: StateValue,
-    cur_value: StateValue,
+    prev_value: bool,
+    cur_value: bool,
     srr: Option<Box<SourceResponse>>,
     part: Option<String>,
     leaf: Leaf
@@ -20,8 +20,8 @@ impl Traveller {
     pub fn new(pm: &PrinterManager, comp: ActiveSource, part: &Option<String>, leaf: &Leaf, srr: Box<SourceResponse>) -> Traveller {
         Traveller {
             pm: pm.clone(),
-            prev_value: StateValue::OffCold(),
-            cur_value: StateValue::OffCold(),
+            prev_value: false,
+            cur_value: false,
             leaf: leaf.clone(),
             part: part.clone(),
             comp,
@@ -29,27 +29,18 @@ impl Traveller {
         }
     }
     
-    pub(in super) fn update_state(&mut self, m: &StateManager) -> ComponentRedo {
+    pub(in super) fn update_state(&mut self, m: &StateManager) -> bool {
         self.prev_value = self.cur_value;
         self.cur_value = self.comp.is_on(m,&self.part);
-        if self.prev_value != self.cur_value {
-            self.srr.as_mut().unwrap().set_state(self.cur_value);
-        }
-        
-        if self.prev_value == self.cur_value {
-            ComponentRedo::None // no change => Noop
-        } else if self.prev_value.on() && self.cur_value.on() {
-            ComponentRedo::None // was on, is on => Noop
-        } else if self.prev_value.offcold() || self.cur_value.offcold() {
-            ComponentRedo::Major // was/now off-cold => Major
-        } else {
-            ComponentRedo::Minor // was/is off-warm, is/was on => Minor
-        }
+        self.srr.as_ref().unwrap().set_state(self.cur_value);
+        self.prev_value != self.cur_value
     }
 
     pub(in super) fn is_done(&self) -> bool { 
         return self.srr.as_ref().unwrap().check();
     }
+    
+    pub fn is_on(&self) -> bool { self.cur_value }
     
     pub fn get_leaf(&self) -> &Leaf { &self.leaf }
 }

@@ -2,7 +2,7 @@ use std::collections::{ HashMap, HashSet };
 use std::ops::Drop;
 
 use composit::{
-    Leaf, StateManager, Scale, ComponentRedo,
+    Leaf, StateManager, Scale,
     ActiveSource, Stick,
 };
 use model::driver::{ Printer, PrinterManager };
@@ -89,7 +89,7 @@ impl Train {
             }
         }
         for c in self.carriages.values_mut() {
-            c.set_needs_rebuild();
+            c.set_needs_refresh();
         }
     }
 
@@ -188,5 +188,11 @@ impl Train {
     
     pub fn get_carriages(&mut self) -> Vec<&mut Carriage> {
         self.carriages.values_mut().collect()
+    }
+    
+    pub fn update_state(&mut self, oom: &StateManager) {
+        for c in self.carriages.values_mut() {
+            c.update_state(oom);
+        }
     }
 }
