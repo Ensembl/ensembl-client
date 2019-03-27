@@ -3,9 +3,10 @@ import config from 'config';
 
 describe('api service', () => {
   let mockFetch;
+  let mockResponse = { foo: 'foo' };
 
   beforeEach(() => {
-    const mockJsonResolver = jest.fn(() => Promise.resolve({ foo: 'foo' }));
+    const mockJsonResolver = jest.fn(() => Promise.resolve(mockResponse));
     mockFetch = jest.fn(() =>
       Promise.resolve({
         json: mockJsonResolver
@@ -20,39 +21,46 @@ describe('api service', () => {
     jest.resetAllMocks();
   });
 
-  test('calls fetch passing it the endpoint', async () => {
+  describe('.fetch', () => {
     const endpoint = '/foo';
-    await apiService.fetch(endpoint);
 
-    expect(mockFetch).toHaveBeenCalled();
+    test('calls fetch passing it the endpoint', async () => {
+      await apiService.fetch(endpoint);
 
-    const mockFetchCall: any[] = mockFetch.mock.calls[0];
-    const [url] = mockFetchCall;
+      expect(mockFetch).toHaveBeenCalled();
 
-    expect(url).toEqual(`${config.apiHost}${endpoint}`);
-  });
+      const mockFetchCall: any[] = mockFetch.mock.calls[0];
+      const [url] = mockFetchCall;
 
-  test('passes options to fetch', async () => {
-    const endpoint = '/foo';
-    const options = {
-      method: HTTPMethod.POST,
-      body: JSON.stringify({ foo: 'bar' })
-    };
-    await apiService.fetch(endpoint, options);
+      expect(url).toEqual(`${config.apiHost}${endpoint}`);
+    });
 
-    const mockFetchCall: any[] = mockFetch.mock.calls[0];
-    const [_, passedOptions] = mockFetchCall;
+    test('passes options to fetch', async () => {
+      const options = {
+        method: HTTPMethod.POST,
+        body: JSON.stringify({ foo: 'bar' })
+      };
+      await apiService.fetch(endpoint, options);
 
-    expect(passedOptions).toEqual(options);
-  });
+      const mockFetchCall: any[] = mockFetch.mock.calls[0];
+      const [_, passedOptions] = mockFetchCall;
 
-  test('uses GET by default', async () => {
-    const endpoint = '/foo';
-    await apiService.fetch(endpoint);
+      expect(passedOptions).toEqual(options);
+    });
 
-    const mockFetchCall: any[] = mockFetch.mock.calls[0];
-    const [_, options] = mockFetchCall;
+    test('uses GET by default', async () => {
+      await apiService.fetch(endpoint);
 
-    expect(options.method).toEqual(`GET`);
+      const mockFetchCall: any[] = mockFetch.mock.calls[0];
+      const [_, options] = mockFetchCall;
+
+      expect(options.method).toEqual(`GET`);
+    });
+
+    test('returns response from the api endpoint', async () => {
+      const response = await apiService.fetch(endpoint);
+
+      expect(response).toEqual(mockResponse);
+    });
   });
 });
