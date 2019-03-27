@@ -147,14 +147,15 @@ const AutosuggestSearchField = (props: Props) => {
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if ([keyCodes.UP, keyCodes.DOWN].includes(event.keyCode)) {
-      event.preventDefault();
-    }
+    if (![keyCodes.UP, keyCodes.DOWN].includes(event.keyCode)) return;
+
+    event.preventDefault();
+
     if (event.keyCode === keyCodes.UP) {
       setHighlightedItemIndex(
         getPreviousItemIndex(props, highlightedItemIndex)
       );
-    } else if (event.keyCode === keyCodes.DOWN) {
+    } else {
       setHighlightedItemIndex(getNextItemIndex(props, highlightedItemIndex));
     }
   };
