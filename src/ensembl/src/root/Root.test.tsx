@@ -1,13 +1,13 @@
 import React from 'react';
 import { mount } from 'enzyme';
 
-import Root from './Root';
+import { Root } from './Root';
 import Header from '../header/Header';
 import Content from '../content/Content';
 
-jest.mock('./header/Header', () => () => 'Header');
-jest.mock('./content/Content', () => () => 'Content');
-jest.mock('./shared/privacy-banner/PrivacyBanner', () => () => (
+jest.mock('../header/Header', () => () => 'Header');
+jest.mock('../content/Content', () => () => 'Content');
+jest.mock('../shared/privacy-banner/PrivacyBanner', () => () => (
   <div className="privacyBanner">PrivacyBanner</div>
 ));
 
@@ -16,7 +16,7 @@ const cookiesMock: any = {
 };
 const updateBreakpointWidth = jest.fn();
 
-describe.only('<Root />', () => {
+describe('<Root />', () => {
   let wrapper: any;
 
   const defaultProps = {
