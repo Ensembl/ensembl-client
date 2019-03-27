@@ -60,11 +60,11 @@ storiesOf('Components|Shared Components/Accordion', module)
       </div>
     );
   })
-  .add('Disabled Item', () => {
+  .add('Pre-expanded Item', () => {
     return (
       <div className={styles.accordionContainer}>
-        <Accordion allowMultipleExpanded={true}>
-          <AccordionItem>
+        <Accordion allowMultipleExpanded={true} preExpanded={[1]}>
+          <AccordionItem uuid={1}>
             <AccordionItemHeading>
               <AccordionItemButton>Accordion Item One</AccordionItemButton>
             </AccordionItemHeading>
@@ -72,7 +72,7 @@ storiesOf('Components|Shared Components/Accordion', module)
               <div className={styles.accordion_body}>Item One content</div>
             </AccordionItemPanel>
           </AccordionItem>
-          <AccordionItem>
+          <AccordionItem uuid={2}>
             <AccordionItemHeading>
               <AccordionItemButton>Accordion Item Two</AccordionItemButton>
             </AccordionItemHeading>

@@ -109,42 +109,130 @@ describe('Accordion', () => {
       ).toBe(true);
     });
 
-    it('does not permit expanding an item that is disabled', () => {
-      const [FooHeader, BarHeader] = [
-        (): JSX.Element => <AccordionItemButton data-testid={UUIDS.FOO} />,
-        (): JSX.Element => <AccordionItemButton data-testid={UUIDS.BAR} />
-      ];
+    describe('allowZeroExpanded prop', () => {
+      it('permits the last-expanded item to be collapsed when explicitly true', () => {
+        const wrapper = mount(
+          <Accordion allowZeroExpanded={true}>
+            <AccordionItem>
+              <AccordionItemHeading>
+                <AccordionItemButton />
+              </AccordionItemHeading>
+            </AccordionItem>
+          </Accordion>
+        );
 
-      const wrapper = mount(
-        <Accordion>
-          <AccordionItem>
-            <AccordionItemHeading>
-              <FooHeader />
-            </AccordionItemHeading>
-          </AccordionItem>
-          <AccordionItem>
-            <AccordionItemHeading>
-              <BarHeader />
-            </AccordionItemHeading>
-          </AccordionItem>
-        </Accordion>
-      );
+        wrapper.find(AccordionItemButton).simulate('click');
+        wrapper.find(AccordionItemButton).simulate('click');
 
-      wrapper.find(FooHeader).simulate('click');
-      wrapper.find(BarHeader).simulate('click');
+        expect(
+          wrapper
+            .find(AccordionItemButton)
+            .find('div')
+            .props()['aria-expanded']
+        ).toEqual(false);
+      });
 
-      expect(
-        wrapper
-          .find(FooHeader)
-          .find('div')
-          .props()['aria-expanded']
-      ).toBe(false);
-      expect(
-        wrapper
-          .find(BarHeader)
-          .find('div')
-          .props()['aria-expanded']
-      ).toBe(true);
+      it('prevents the last-expanded item being collapsed by default', () => {
+        const wrapper = mount(
+          <Accordion allowZeroExpanded={false}>
+            <AccordionItem>
+              <AccordionItemHeading>
+                <AccordionItemButton />
+              </AccordionItemHeading>
+            </AccordionItem>
+          </Accordion>
+        );
+
+        wrapper.find(AccordionItemButton).simulate('click');
+        wrapper.find(AccordionItemButton).simulate('click');
+
+        expect(
+          wrapper
+            .find(AccordionItemButton)
+            .find('div')
+            .props()['aria-expanded']
+        ).toEqual(true);
+      });
+    });
+
+    describe('preExpanded prop', () => {
+      it('expands items whose uuid props match those passed', () => {
+        const wrapper = mount(
+          <Accordion preExpanded={[UUIDS.FOO]}>
+            <AccordionItem uuid={UUIDS.FOO}>
+              <AccordionItemHeading>
+                <AccordionItemButton />
+              </AccordionItemHeading>
+            </AccordionItem>
+          </Accordion>
+        );
+
+        expect(
+          wrapper
+            .find(AccordionItemButton)
+            .find('div')
+            .props()['aria-expanded']
+        ).toEqual(true);
+      });
+
+      it('collapses items by default', () => {
+        const wrapper = mount(
+          <Accordion>
+            <AccordionItem>
+              <AccordionItemHeading>
+                <AccordionItemButton />
+              </AccordionItemHeading>
+            </AccordionItem>
+          </Accordion>
+        );
+
+        expect(
+          wrapper
+            .find(AccordionItemButton)
+            .find('div')
+            .props()['aria-expanded']
+        ).toEqual(false);
+      });
+    });
+
+    describe('onChange prop', () => {
+      it('is invoked with an array of expanded items’ uuids, if there are any', () => {
+        const onChange = jest.fn();
+        const wrapper = mount(
+          <Accordion onChange={onChange}>
+            <AccordionItem uuid={UUIDS.FOO}>
+              <AccordionItemHeading>
+                <AccordionItemButton />
+              </AccordionItemHeading>
+            </AccordionItem>
+          </Accordion>
+        );
+
+        wrapper.find(AccordionItemButton).simulate('click');
+
+        expect(onChange).toHaveBeenCalledWith([UUIDS.FOO]);
+      });
+
+      it('is invoked with an empty array, if no items are expanded', () => {
+        const onChange = jest.fn();
+        const wrapper = mount(
+          <Accordion
+            onChange={onChange}
+            preExpanded={[UUIDS.FOO]}
+            allowZeroExpanded={true}
+          >
+            <AccordionItem uuid={UUIDS.FOO}>
+              <AccordionItemHeading>
+                <AccordionItemButton />
+              </AccordionItemHeading>
+            </AccordionItem>
+          </Accordion>
+        );
+
+        wrapper.find(AccordionItemButton).simulate('click');
+
+        expect(onChange).toHaveBeenCalledWith([]);
+      });
     });
   });
 });
