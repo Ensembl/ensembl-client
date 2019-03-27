@@ -20,6 +20,8 @@ Example animations:
 The following are top three libraries available:
 
 **1) React Transition Group** - (https://github.com/reactjs/react-transition-group)
+ Works by simply changing classes on an element depending on lifecycle of a transition (entering transition, being in transition, exiting transition). Since all it does is just changing classes, the transition itself has to be written in CSS. On the plus side, this means these transitions are the most performant. On the minus side, CSS gets decoupled from JS. Also, the duration of animation is imperatively controlled in two places: by time passed to the component and by duration specified in CSS.
+
 - Minified size: 16.9 KB
 - 67 issues open and 260 closed
 - Gives more flexibility and control with increase in complexity
@@ -27,6 +29,8 @@ The following are top three libraries available:
 - Documentation seems to be a bit scattered but there are some good video tutorials
 
 **2) React Spring** - (https://www.react-spring.io/)
+ A spiritual successor of `react-motion`, sharing the general approach that `react-motion` introduced. It works entirely in javascript, by interpolating values (any values) over time using interpolation functions ("springs"). What this means is that duration of animation is controlled by parameters such as "tension" or "friction" passed to the spring function (so instead of thinking in terms of time you have to think in terms of spring metaphor: how rigid or elastic your spring is and how heavy a weight it is trying to move). This, arguably, makes the animation more "physical" (and therefore "realistic"). Also, the animation itself is done by constantly re-rendering a part of your component, feeding it with newly interpolated values and using these values for new inline styles. In terms of performance, it is almost inevitably worse than just having a CSS animation. The performance hit, however, is usually tolerable.
+
 - Minified size: 26 KB
 - 73 issues open and 315 closed
 - React-specific library
@@ -36,6 +40,7 @@ The following are top three libraries available:
 
 
 **3) Pose** - (https://popmotion.io/pose/)
+ An adaptation of the `popmotion` library for react. People who have experience with it like it for its declarative interface.
 - User friendly API library
 - Minified size: 61 KB 
 - 108 issues open and 351 closed
