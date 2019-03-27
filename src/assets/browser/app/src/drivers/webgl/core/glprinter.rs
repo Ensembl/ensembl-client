@@ -29,7 +29,7 @@ impl WebGLTrainPrinter {
     fn execute(&mut self, printer: &mut GLPrinterBase, leafs: &Vec<Leaf>) {
         for pt in &printer.base_progs.order {
             for leaf in leafs.iter() {
-                let lp = &mut expect!(printer.lp.get_mut(&leaf)); 
+                let lp = &mut unwrap!(printer.lp.get_mut(&leaf)); 
                 lp.execute(&pt);
             }
         }
@@ -132,7 +132,7 @@ impl GLPrinterBase {
             lp.destroy(&mut self.acm);
         }
         self.acm.finish();
-        let gl : Option<glctx> = expectok!(
+        let gl : Option<glctx> = ok!(
             js! { return @{self.canv_el.as_ref()}.getContext("webgl"); }.try_into()
         );
         if let Some(gl) = gl {

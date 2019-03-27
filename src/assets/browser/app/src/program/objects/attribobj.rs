@@ -95,9 +95,12 @@ impl Object for ObjectAttrib {
     }
     
     fn clear(&mut self, ctx: &glctx) {
+        let loc = self.location(ctx);
+        ctx.disable_vertex_attrib_array(loc);
         for b in self.buf.values() {
             ctx.delete_buffer(Some(&b));
         }
+        self.buf.clear();
         self.vec.clear();
     }
     

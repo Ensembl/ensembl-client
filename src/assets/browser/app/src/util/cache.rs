@@ -14,11 +14,11 @@ const cache_lru : [u8;64] = [
   2,  2,  9,  0,  1,  9,  1,  0
 ];
 
-const cache_use_keep : [u8;4] = [
+const CACHE_USE_KEEP : [u8;4] = [
   0b110100, 0b101011, 0b011111, 0b111111
 ];
 
-const cache_use_set : [u8;4] = [
+const CACHE_USE_SET : [u8;4] = [
   0b000000, 0b000001, 0b000110, 0b111000
 ];
 
@@ -62,8 +62,8 @@ impl<K,V> Cache<K,V> where K:Eq+Hash {
         } else {
             let p = cache_lru[c as usize];
             if p == 9 { console!("Bad lookup ({:?})!",c); panic!("EEK"); }
-            c &= cache_use_keep[p as usize];
-            c |= cache_use_set[p as usize];
+            c &= CACHE_USE_KEEP[p as usize];
+            c |= CACHE_USE_SET[p as usize];
             p as usize
         };
         self.lru[h] = c;
@@ -78,8 +78,8 @@ impl<K,V> Cache<K,V> where K:Eq+Hash {
             if let Some((k,ref v)) = self.values[4*h+i] {
                 if k == hash {
                     if c < 64 {
-                        c &= cache_use_keep[i as usize];
-                        c |= cache_use_set[i as usize];
+                        c &= CACHE_USE_KEEP[i as usize];
+                        c |= CACHE_USE_SET[i as usize];
                     }
                     self.lru[h] = c;
                     return Some(v)

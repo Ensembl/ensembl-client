@@ -123,10 +123,10 @@ impl PendingXferBatch {
 
     fn marshal(&mut self, data: &SerdeValue) -> Vec<Value> {
         let mut out = Vec::<Value>::new();
-        for val in expect!(data.as_array()) {
+        for val in unwrap!(data.as_array()) {
             let mut row = Vec::<f64>::new();
             if val.is_array() {
-                for cell in expect!(val.as_array()) {
+                for cell in unwrap!(val.as_array()) {
                     if cell.is_f64() {
                         row.push(cell.as_f64().unwrap());
                     } else if cell.is_i64() {
@@ -146,17 +146,17 @@ impl PendingXferBatch {
 
 impl HttpResponseConsumer for PendingXferBatch {
     fn consume(&mut self, req: XmlHttpRequest) {
-        let value : ArrayBuffer = req.raw_response().try_into().ok().unwrap();
+        let value : ArrayBuffer = ok!(req.raw_response().try_into());
         let value : TypedArray<u8> = value.into();
-        let data = String::from_utf8(value.to_vec()).ok().unwrap();
-        let data : SerdeValue = serde_json::from_str(&data).ok().unwrap();
+        let data = ok!(String::from_utf8(value.to_vec()));
+        let data : SerdeValue = ok!(serde_json::from_str(&data));
         for resp in data.as_array().unwrap() {
             let key = (resp[0].as_str().unwrap().to_string(),
                        resp[1].as_str().unwrap().to_string(),
                        resp[2].as_str().unwrap().to_string());
             if let Some(mut requests) = self.requests.remove(&key) {
                 let codename = resp[3].as_str().unwrap().to_string();
-                let bytecode = expectok!(self.config.get_bytecode(&codename)).clone();
+                let bytecode = ok!(self.config.get_bytecode(&codename)).clone();
                 let mut recv = (codename,self.marshal(&resp[4]));
                 self.cache.put(&key.2,&key.0,&key.1,recv.clone());
                 for mut req in requests.drain(..) {
@@ -310,7 +310,7 @@ impl HttpXferClerkImpl {
             if let Some(recv) = self.cache.get(&wire,&short_stick,&short_pane) {
                 let bytecode = {
                     let cfg = self.config.as_ref().unwrap().clone();
-                    expectok!(cfg.get_bytecode(&recv.0)).clone()
+                    ok!(cfg.get_bytecode(&recv.0)).clone()
                 };
                 consumer.consume(bytecode,recv.1);
             } else {

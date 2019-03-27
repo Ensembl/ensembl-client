@@ -141,8 +141,8 @@ impl BackendConfig {
     
     fn sticks_from_json(ep: &SerdeValue) -> HashMap<String,Stick> {
         let mut out = HashMap::<String,Stick>::new();
-        for (k,v) in expect!(ep.as_object()).iter() {
-            let len : u64 = expectok!(expect!(v.as_str()).to_string().parse());
+        for (k,v) in unwrap!(ep.as_object()).iter() {
+            let len : u64 = ok!(unwrap!(v.as_str()).to_string().parse());
             out.insert(k.to_string(),Stick::new(k,len,false));
         }
         out

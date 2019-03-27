@@ -18,8 +18,8 @@ use dom::webgl::{
 use types::{ CPixel, cpixel, RPixel, area };
 
 pub fn query_selector_ok(root: &HtmlElement, sel: &str, message: &str) -> Element {
-    let x : Option<Element> = expectok!(root.query_selector(sel));
-    expectok!(x.ok_or_else(|| message.to_string()))
+    let x : Option<Element> = ok!(root.query_selector(sel));
+    ok!(x.ok_or_else(|| message.to_string()))
 }
 
 pub fn query_selector_new(sel: &str) -> Option<Element> {

@@ -26,7 +26,7 @@ impl ShutdownEventListener {
 
 impl EventListener<()> for ShutdownEventListener {
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
-        let mut g = expect!(self.g.lock());
+        let mut g = unwrap!(self.g.lock());
         match e {
             EventData::GenericEvent(EventType::UnloadEvent,cx) => {
                 g.destroy();
