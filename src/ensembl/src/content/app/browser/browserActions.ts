@@ -1,20 +1,15 @@
-import config from 'config';
-import { createAction, createAsyncAction } from 'typesafe-actions';
+import { createAction } from 'typesafe-actions';
 import { Dispatch } from 'redux';
 
+import config from 'config';
 import { BrowserNavStates, ChrLocation, CogList } from './browserState';
-import { TrackType } from './track-panel/trackPanelConfig';
+import { getBrowserAnalyticsObject } from 'src/analyticsHelper';
 
 export const updateBrowserActivated = createAction(
   'browser/update-browser-activated',
   (resolve) => {
     return (browserActivated: boolean) =>
-      resolve(browserActivated, {
-        ga: {
-          category: 'Browser',
-          label: 'Default Action'
-        }
-      });
+      resolve(browserActivated, getBrowserAnalyticsObject('Default Action'));
   }
 );
 
@@ -37,52 +32,10 @@ export const activateBrowser = (browserEl: HTMLDivElement) => {
   };
 };
 
-export const toggleTrackPanel = createAction(
-  'browser/toggle-track-panel',
-  (resolve) => {
-    return (trackPanelOpened?: boolean) =>
-      resolve(trackPanelOpened, {
-        ga: {
-          category: 'Track Panel',
-          label: 'User Interaction'
-        }
-      });
-  }
-);
-
-export const changeDrawerView = createAction(
-  'browser/change-drawer-view',
-  (resolve) => {
-    return (drawerView: string) =>
-      resolve(drawerView, {
-        ga: {
-          category: 'Drawer',
-          label: 'User Interaction'
-        }
-      });
-  }
-);
-
-export const toggleDrawer = createAction('browser/toggle-drawer', (resolve) => {
-  return (drawerOpened?: boolean) =>
-    resolve(drawerOpened, {
-      ga: {
-        category: 'Drawer',
-        label: 'User Interaction'
-      }
-    });
-});
-
 export const toggleBrowserNav = createAction(
   'browser/toggle-browser-navigation',
   (resolve) => {
-    return () =>
-      resolve(undefined, {
-        ga: {
-          category: 'Browser',
-          label: 'Navigation'
-        }
-      });
+    return () => resolve(undefined, getBrowserAnalyticsObject('Navigation'));
   }
 );
 
@@ -90,12 +43,7 @@ export const updateBrowserNavStates = createAction(
   'browser/update-browser-nav-states',
   (resolve) => {
     return (browserNavStates: BrowserNavStates) =>
-      resolve(browserNavStates, {
-        ga: {
-          category: 'Browser',
-          label: 'Navigation'
-        }
-      });
+      resolve(browserNavStates, getBrowserAnalyticsObject('Navigation'));
   }
 );
 
@@ -110,12 +58,7 @@ export const updateDefaultChrLocation = createAction(
   'browser/update-default-chromosome-location',
   (resolve) => {
     return (chrLocation: ChrLocation) =>
-      resolve(chrLocation, {
-        ga: {
-          category: 'Browser',
-          label: 'User Interaction'
-        }
-      });
+      resolve(chrLocation, getBrowserAnalyticsObject('User Interaction'));
   }
 );
 
@@ -150,75 +93,11 @@ export const changeBrowserLocation = (
   };
 };
 
-export const fetchObject = createAsyncAction(
-  'browser/fetch_object_request',
-  'browser/fetch_object_success',
-  'browser/fetch_object_failure'
-)<string, {}, Error>();
-
-export const fetchObjectData = (objectId: string) => {
-  return (dispatch: Dispatch) => {
-    dispatch(fetchObject.request(objectId));
-
-    return fetch(`${config.apiHost}/browser/get_object_info/${objectId}`)
-      .then(
-        (response) => response.json(),
-        (error) => dispatch(fetchObject.failure(error))
-      )
-      .then((json) => dispatch(fetchObject.success(json)));
-  };
-};
-
-export const fetchExampleObjects = createAsyncAction(
-  'browser/fetch_example_objects_request',
-  'browser/fetch_example_objects_success',
-  'browser/fetch_example_objects_failure'
-)<null, {}, Error>();
-
-export const fetchExampleObjectsData = () => {
-  return (dispatch: Dispatch) => {
-    dispatch(fetchExampleObjects.request(null));
-
-    return fetch(`${config.apiHost}/browser/example_objects`)
-      .then(
-        (response) => response.json(),
-        (error) => dispatch(fetchExampleObjects.failure(error))
-      )
-      .then((json) => dispatch(fetchExampleObjects.success(json)));
-  };
-};
-
-export const openTrackPanelModal = createAction(
-  'browser/open-track-panel-modal',
-  (resolve) => {
-    return (trackPanelModalView: string) =>
-      resolve(trackPanelModalView, {
-        ga: {
-          category: 'Track Panel Modal',
-          label: 'User Interaction'
-        }
-      });
-  }
-);
-
-export const closeTrackPanelModal = createAction(
-  'browser/close-track-panel-modal',
-  (resolve) => {
-    return () =>
-      resolve(undefined, {
-        ga: {
-          category: 'Track Panel Modal',
-          label: 'Navigation'
-        }
-      });
-  }
-);
-
 export const updateCogList = createAction(
   'browser/update-cog-list',
   (resolve) => {
     return (cogList: number) => {
-      return resolve(cogList);
+      return resolve(cogList, getBrowserAnalyticsObject('User Interaction'));
     };
   }
 );
@@ -227,7 +106,7 @@ export const updateCogTrackList = createAction(
   'browser/update-cog-track-list',
   (resolve) => {
     return (trackY: CogList) => {
-      return resolve(trackY);
+      return resolve(trackY, getBrowserAnalyticsObject('User Interaction'));
     };
   }
 );
@@ -236,7 +115,7 @@ export const updateSelectedCog = createAction(
   'browser/update-selected-cog',
   (resolve) => {
     return (index: string) => {
-      return resolve(index);
+      return resolve(index, getBrowserAnalyticsObject('User Interaction'));
     };
   }
 );
@@ -245,7 +124,10 @@ export const updateTrackConfigNames = createAction(
   'browser/update-track-config-names',
   (resolve) => {
     return (selectedCog: any, sense: boolean) => {
-      return resolve([selectedCog, sense]);
+      return resolve(
+        [selectedCog, sense],
+        getBrowserAnalyticsObject('User Interaction')
+      );
     };
   }
 );
@@ -254,7 +136,10 @@ export const updateTrackConfigLabel = createAction(
   'browser/update-track-config-label',
   (resolve) => {
     return (selectedCog: any, sense: boolean) => {
-      return resolve([selectedCog, sense]);
+      return resolve(
+        [selectedCog, sense],
+        getBrowserAnalyticsObject('User Interaction')
+      );
     };
   }
 );
@@ -263,7 +148,7 @@ export const updateApplyToAll = createAction(
   'browser/update-apply-to-all',
   (resolve) => {
     return (yn: boolean) => {
-      return resolve(yn);
+      return resolve(yn, getBrowserAnalyticsObject('User Interaction'));
     };
   }
 );
@@ -271,13 +156,10 @@ export const updateApplyToAll = createAction(
 export const toggleGenomeSelector = createAction(
   'toggle-genome-selector',
   (resolve) => {
-    return (genomeSelectorActive: boolean) => resolve(genomeSelectorActive);
-  }
-);
-
-export const selectBrowserTab = createAction(
-  'select-browser-tab',
-  (resolve) => {
-    return (selectedBrowserTab: TrackType) => resolve(selectedBrowserTab);
+    return (genomeSelectorActive: boolean) =>
+      resolve(
+        genomeSelectorActive,
+        getBrowserAnalyticsObject('User Interaction')
+      );
   }
 );

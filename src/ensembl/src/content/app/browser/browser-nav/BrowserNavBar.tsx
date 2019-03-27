@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 import { browserNavConfig, BrowserNavItem } from '../browserConfig';
 
 import { RootState } from 'src/store';
-import { getBrowserNavStates, getTrackPanelOpened } from '../browserSelectors';
+import { getBrowserNavStates } from '../browserSelectors';
+import { getTrackPanelOpened } from '../track-panel/trackPanelSelectors';
 import { BrowserNavStates } from '../browserState';
 
 import BrowserNavIcon from './BrowserNavIcon';

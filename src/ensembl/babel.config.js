@@ -5,6 +5,7 @@ module.exports = {
     [
       '@babel/env',
       {
+        useBuiltIns: "usage",
         modules: false
       }
     ]

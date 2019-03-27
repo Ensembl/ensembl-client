@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { CookiesProvider } from 'react-cookie';
 import { ConnectedRouter } from 'connected-react-router';
 import configureStore, { history } from './store';
-import Root from './Root';
+import Root from './root/Root';
 
 import { registerSW } from './registerServiceWorker';
 

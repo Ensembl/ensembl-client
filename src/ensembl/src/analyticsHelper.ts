@@ -1,5 +1,10 @@
 export enum AnalyticsCategory {
-  GLOBAL = 'Global'
+  BROWSER = 'Browser',
+  DRAWER = 'Drawer',
+  GLOBAL = 'Global',
+  HEADER = 'Header',
+  ENS_OBJECT = 'Ensembl Object',
+  TRACK_PANEL = 'Track Panel'
 }
 
 export type AnalyticsOptions = {
@@ -28,6 +33,26 @@ export const buildAnalyticsObject = (category: AnalyticsCategory) => (
   };
 };
 
+export const getBrowserAnalyticsObject = buildAnalyticsObject(
+  AnalyticsCategory.BROWSER
+);
+
+export const getDrawerAnalyticsObject = buildAnalyticsObject(
+  AnalyticsCategory.DRAWER
+);
+
 export const getGlobalAnalyticsObject = buildAnalyticsObject(
   AnalyticsCategory.GLOBAL
+);
+
+export const getHeaderAnalyticsObject = buildAnalyticsObject(
+  AnalyticsCategory.HEADER
+);
+
+export const getEnsObjectAnalyticsObject = buildAnalyticsObject(
+  AnalyticsCategory.ENS_OBJECT
+);
+
+export const getTrackPanelAnalyticsObject = buildAnalyticsObject(
+  AnalyticsCategory.TRACK_PANEL
 );

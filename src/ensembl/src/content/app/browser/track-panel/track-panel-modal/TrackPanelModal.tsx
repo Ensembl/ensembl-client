@@ -13,7 +13,6 @@ import styles from './TrackPanelModal.scss';
 
 type TrackPanelModalProps = {
   closeTrackPanelModal: () => void;
-  exampleObjects: any;
   launchbarExpanded: boolean;
   trackPanelModalView: string;
 };

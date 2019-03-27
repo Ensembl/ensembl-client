@@ -8,15 +8,15 @@ import { connect } from 'react-redux';
 import { withCookies, ReactCookieProps, Cookies } from 'react-cookie';
 import useResizeObserver from 'use-resize-observer';
 
-import Header from './header/Header';
-import Content from './content/Content';
-import PrivacyBanner from './shared/privacy-banner/PrivacyBanner';
+import Header from '../header/Header';
+import Content from '../content/Content';
+import PrivacyBanner from '../shared/privacy-banner/PrivacyBanner';
 
-import { updateBreakpointWidth } from './globalActions';
-import { getBreakpointWidth } from './globalSelectors';
-import { RootState } from './store';
-import { BreakpointWidth } from './globalConfig';
-import { getBreakpoint } from './globalHelper';
+import { updateBreakpointWidth } from '../global/globalActions';
+import { getBreakpointWidth } from '../global/globalSelectors';
+import { RootState } from '../store';
+import { BreakpointWidth } from '../global/globalConfig';
+import { getBreakpoint } from '../global/globalHelper';
 
 import styles from './Root.scss';
 
