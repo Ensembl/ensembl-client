@@ -2,11 +2,12 @@
 
 .browser {
   width: 100%;
+  height: calc(100% - 32px);
 }
 
 .browserInnerWrapper {
   @include flex;
-  height: calc(100% - 32px);
+  height: calc(100vh - 177px);
 }
 
 .browserImageWrapper {

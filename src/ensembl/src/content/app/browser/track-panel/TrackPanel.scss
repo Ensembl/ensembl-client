@@ -1,5 +1,11 @@
 @import 'src/styles/common';
 
+.trackPanelWrapper {
+  @include flex;
+  position: absolute;
+  right: 0px;
+}
+
 .trackPanel {
   @include flex;
   position: relative;

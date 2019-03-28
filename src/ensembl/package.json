@@ -45,8 +45,8 @@
     }
   },
   "dependencies": {
-    "connected-react-router": "6.3.1",
     "classnames": "2.2.6",
+    "connected-react-router": "6.3.1",
     "dotenv": "6.2.0",
     "foundation-sites": "6.5.3",
     "lodash": "4.17.11",
@@ -58,6 +58,7 @@
     "react-router": "4.3.1",
     "react-router-dom": "4.3.1",
     "react-slidedown": "2.0.7",
+    "react-spring": "8.0.18",
     "redux": "4.0.1",
     "redux-devtools-extension": "2.13.8",
     "redux-thunk": "2.3.0",
