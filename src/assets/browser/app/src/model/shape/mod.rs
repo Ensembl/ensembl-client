@@ -1,3 +1,3 @@
 mod shapespec;
 
-pub use self::shapespec::ShapeSpec;
+pub use self::shapespec::{ ColourSpec, ShapeSpec, MathsShape };

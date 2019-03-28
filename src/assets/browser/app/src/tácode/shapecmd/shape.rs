@@ -7,10 +7,11 @@ use tánaiste::{
 use composit::{ Leaf };
 use drivers::webgl::{ DrawingSpec };
 use drivers::webgl::{
-    ColourSpec, Facade, FacadeType, ShapeInstanceData, TypeToShape,
+    Facade, FacadeType, ShapeInstanceData, TypeToShape,
     PinRectTypeSpec, StretchRectTypeSpec, ShapeShortInstanceData,
     TextureTypeSpec, ShapeInstanceDataType, ShapeLongInstanceData
 };
+use model::shape::ColourSpec;
 use model::train::PartyResponses;
 use tácode::core::{ TáContext, TáTask };
 use super::super::shapecmd::{ build_meta };

@@ -11,12 +11,13 @@ use types::{
     RFraction, TOPLEFT
 };
 
-use super::{ GLShape, ColourSpec, MathsShape };
+use super::GLShape;
 use super::util::{
     multi_gl, poly_p, vertices_poly, vertices_hollowpoly, despot,
+    colourspec_to_group
 };
 use drivers::webgl::{ GLProgData, Artwork };
-use model::shape::ShapeSpec;
+use model::shape::{ ColourSpec, ShapeSpec, MathsShape };
 
 #[derive(Clone,Copy,Debug)]
 enum PolyPosition<T: Clone+Copy+Debug> {
@@ -177,7 +178,7 @@ impl PinPolyDraw {
     }    
 
     fn draw(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut GLProgData) {
-        let group = self.colspec.to_group(geom,e);
+        let group = colourspec_to_group(&self.colspec,geom,e);
         if self.hollow {
             let b = vertices_hollowpoly(geom,self.points,group);
             let v = self.build_points(true);

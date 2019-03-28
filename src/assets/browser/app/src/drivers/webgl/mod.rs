@@ -16,7 +16,7 @@ pub use self::shape::{
     tape_mathsshape,
     pin_mathsshape,
     stretch_texture, stretch_wiggle,
-    ColourSpec, MathsShape, fix_mathsshape, page_mathsshape,
+    fix_mathsshape, page_mathsshape,
     PinRectTypeSpec, StretchRectTypeSpec, TextureTypeSpec,
     ShapeInstanceData, TypeToShape, Facade, ShapeShortInstanceData,
     rectangle_g, rectangle_t, vertices_rect,

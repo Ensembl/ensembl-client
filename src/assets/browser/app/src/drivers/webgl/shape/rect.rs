@@ -7,13 +7,14 @@ use types::{
     area_size, cleaf, cpixel
 };
 
-use super::{ GLShape, ColourSpec };
+use super::GLShape;
 use super::util::{
     rectangle_p, rectangle_c, rectangle_g, multi_gl, vertices_rect,
     despot, colour, ShapeInstanceData, ShapeShortInstanceData, 
-    TypeToShape, Facade, FacadeType, ShapeInstanceDataType
+    TypeToShape, Facade, FacadeType, ShapeInstanceDataType,
+    colourspec_to_group
 };
-use model::shape::ShapeSpec;
+use model::shape::{ ColourSpec, ShapeSpec };
 use drivers::webgl::{ GLProgData, Artwork };
 use super::boxshape::{ BoxSpec };
 
@@ -35,7 +36,7 @@ pub struct RectSpec {
 
 impl GLShape for RectSpec {
     fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut GLProgData) {
-        let group = self.colspec.to_group(geom,e);
+        let group = colourspec_to_group(&self.colspec,geom,e);
         let b = vertices_rect(geom,group);
         match self.offset {
             RectPosition::Pin(origin,offset) => {

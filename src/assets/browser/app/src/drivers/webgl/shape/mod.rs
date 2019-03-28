@@ -10,9 +10,7 @@ mod texture;
 mod boxshape;
 
 pub use self::shapeimpl::{
-    GLShape,
-    ColourSpec,
-    MathsShape,
+    GLShape
 };
 
 pub use self::util::{
@@ -22,7 +20,8 @@ pub use self::util::{
     ShapeShortInstanceData,
     ShapeLongInstanceData,
     Facade, FacadeType,
-    rectangle_g, rectangle_t, vertices_rect
+    rectangle_g, rectangle_t, vertices_rect,
+    colourspec_to_group
 };
 
 pub use self::canvasidx::CanvasIdx;

@@ -1,8 +1,11 @@
-use drivers::webgl::{ Artwork, GLProgData, ColourSpec };
+use drivers::webgl::{ Artwork, GLProgData };
 use super::super::shape::GLShape;
 use program::{ PTGeom, PTMethod, ProgramType, ProgramAttribs, Input };
-use super::util::{ despot, vertices_hollowpoly, poly_p, multi_gl };
+use super::util::{
+    despot, vertices_hollowpoly, poly_p, multi_gl, colourspec_to_group 
+};
 use types::{ RLeaf, CFraction, CLeaf, cfraction, cleaf };
+use model::shape::ColourSpec;
 
 #[derive(Clone,Copy,Debug)]
 pub struct BoxSpec {
@@ -45,7 +48,7 @@ impl BoxSpec {
 
 impl GLShape for BoxSpec {
     fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut GLProgData) {
-        let group = self.colspec.to_group(geom,e);
+        let group = colourspec_to_group(&self.colspec,geom,e);
         let b = vertices_hollowpoly(geom,4,group);
         let origins = self.origins();
         let origins : Vec<&Input> = origins.iter().map(|s| s as &Input).collect();

@@ -4,6 +4,7 @@ use drivers::webgl::{
     PinPolySpec, RectSpec, GLShape, TextureSpec, StretchTextureSpec, 
     StretchWiggle, BoxSpec
 };
+use types::Colour;
 
 #[derive(Clone)]
 pub enum ShapeSpec {
@@ -26,4 +27,18 @@ impl ShapeSpec {
             ShapeSpec::PinBox(pb) => Box::new(pb),
         }
     }    
+}
+
+
+#[derive(Clone,Copy,Debug)]
+pub enum ColourSpec {
+    Colour(Colour),
+    Spot(Colour),
+}
+
+
+#[derive(Clone,Copy,Debug)]
+pub enum MathsShape {
+    Polygon(u16,f32), // (points,offset/rev)
+    Circle
 }

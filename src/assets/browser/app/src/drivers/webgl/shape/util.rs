@@ -6,9 +6,12 @@ use program::{
     PTGeom, PTSkin
 };
 use types::{ RFraction, CLeaf, RPixel, RLeaf, cleaf, Rect, Edge, Colour };
-use super::ColourSpec;
-use model::shape::ShapeSpec;
+use model::shape::{ ColourSpec, ShapeSpec };
 use program::Input;
+use std::rc::Rc;
+
+use drivers::webgl::{ GLProgs, GLProgData };
+use drivers::webgl::{ Artist, Artwork, Drawing, CarriageCanvases };
 
 pub enum FacadeType {
     Drawing,
@@ -185,4 +188,11 @@ pub fn despot(gt: PTGeom, mt: PTMethod, spec: &ColourSpec) -> ProgramType {
         PTSkin::Colour
     };
     ProgramType(gt,mt,st)
+}
+
+pub fn colourspec_to_group(cs: &ColourSpec, g: &mut ProgramAttribs, e: &mut GLProgData) -> Option<DataGroupIndex> {
+    match cs {
+        ColourSpec::Spot(c) => Some(e.spot().get_group(g,c)),
+        ColourSpec::Colour(_) => None
+    }
 }
