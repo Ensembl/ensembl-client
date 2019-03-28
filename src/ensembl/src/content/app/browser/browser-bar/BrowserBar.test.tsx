@@ -69,7 +69,7 @@ describe('<BrowserBar />', () => {
   );
 
   describe('general', () => {
-    let renderedBrowserBar;
+    let renderedBrowserBar: any;
 
     beforeEach(() => {
       renderedBrowserBar = mount(renderBrowserBar());
@@ -126,6 +126,18 @@ describe('<BrowserBar />', () => {
         renderBrowserBar({ genomeSelectorActive: true })
       );
       expect(renderedBrowserBar.find(BrowserNavigatorButton).length).toBe(0);
+    });
+
+    test('shows BrowserTabs if TrackPanel is open', () => {
+      const renderedBrowserBar = mount(
+        renderBrowserBar({ trackPanelOpened: true })
+      );
+      expect(renderedBrowserBar.find(BrowserTabs).length).toBe(1);
+    });
+
+    test('hides BrowserTabs if TrackPanel is closed', () => {
+      const renderedBrowserBar = mount(renderBrowserBar());
+      expect(renderedBrowserBar.find(BrowserTabs).length).toBe(0);
     });
   });
 });
