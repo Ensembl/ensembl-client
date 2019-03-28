@@ -2,9 +2,9 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import toJson from 'enzyme-to-json';
 
-import Root from './Root';
-import Header from './header/Header';
-import Content from './content/Content';
+import Root from '../Root';
+import Header from '../header/Header';
+import Content from '../content/Content';
 
 describe('<Root />', () => {
   let wrapper: any;

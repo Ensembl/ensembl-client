@@ -4,25 +4,24 @@ import { connect } from 'react-redux';
 import { browserInfoConfig } from '../browserConfig';
 import { TrackType } from '../track-panel/trackPanelConfig';
 
-import {
-  toggleBrowserNav,
-  toggleGenomeSelector,
-  selectBrowserTab,
-  toggleDrawer
-} from '../browserActions';
+import { toggleBrowserNav, toggleGenomeSelector } from '../browserActions';
 import { ChrLocation } from '../browserState';
 import {
   getBrowserNavOpened,
   getChrLocation,
   getBrowserActivated,
   getDefaultChrLocation,
-  getGenomeSelectorActive,
-  getDrawerOpened,
+  getGenomeSelectorActive
+} from '../browserSelectors';
+import { getDrawerOpened } from '../drawer/drawerSelectors';
+import { getEnsObjectInfo } from 'src/ens-object/ensObjectSelectors';
+import {
   getSelectedBrowserTab,
-  getObjectInfo,
   getTrackPanelModalOpened,
   getTrackPanelOpened
-} from '../browserSelectors';
+} from '../track-panel/trackPanelSelectors';
+import { selectBrowserTab } from '../track-panel/trackPanelActions';
+import { toggleDrawer } from '../drawer/drawerActions';
 import { RootState } from 'src/store';
 
 import BrowserReset from '../browser-reset/BrowserReset';
@@ -38,7 +37,7 @@ type StateProps = {
   defaultChrLocation: ChrLocation;
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
-  objectInfo: any;
+  ensObjectInfo: any;
   selectedBrowserTab: TrackType;
   trackPanelModalOpened: boolean;
   trackPanelOpened: boolean;
@@ -61,7 +60,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   props: BrowserBarProps
 ) => {
   const { navigator, reset } = browserInfoConfig;
-  const { objectInfo } = props;
+  const { ensObjectInfo } = props;
   const [showBrowserInfo, toggleShowBrowserInfo] = useState(true);
 
   const changeBrowserInfoToggle = () => {
@@ -132,24 +131,24 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
             <Fragment>
               <dd className={styles.geneSymbol}>
                 <label>Gene</label>
-                <span className={styles.value}>{objectInfo.obj_symbol}</span>
+                <span className={styles.value}>{ensObjectInfo.obj_symbol}</span>
               </dd>
               <dd>
                 <label>Stable ID</label>
-                <span className={styles.value}>{objectInfo.stable_id}</span>
+                <span className={styles.value}>{ensObjectInfo.stable_id}</span>
               </dd>
               <dd className="show-for-large">
                 <label>Spliced mRNA length</label>
                 <span className={styles.value}>
-                  {objectInfo.spliced_length}
+                  {ensObjectInfo.spliced_length}
                 </span>
                 <label>bp</label>
               </dd>
               <dd className={`show-for-large ${styles.nonLabelValue}`}>
-                {objectInfo.bio_type}
+                {ensObjectInfo.bio_type}
               </dd>
               <dd className={`show-for-large ${styles.nonLabelValue}`}>
-                {objectInfo.strand} strand
+                {ensObjectInfo.strand} strand
               </dd>
             </Fragment>
           ) : null}
@@ -192,8 +191,8 @@ const mapStateToProps = (state: RootState): StateProps => ({
   chrLocation: getChrLocation(state),
   defaultChrLocation: getDefaultChrLocation(state),
   drawerOpened: getDrawerOpened(state),
+  ensObjectInfo: getEnsObjectInfo(state),
   genomeSelectorActive: getGenomeSelectorActive(state),
-  objectInfo: getObjectInfo(state),
   selectedBrowserTab: getSelectedBrowserTab(state),
   trackPanelModalOpened: getTrackPanelModalOpened(state),
   trackPanelOpened: getTrackPanelOpened(state)

@@ -106,8 +106,12 @@ $ens-blue: #33adff; // blue on black
 $ens-dark-blue: #0099ff; // blue on white
 
 $ens-light-grey: #f1f2f4;
+$ens-medium-light-grey: #d4d9de;
 $ens-grey: #b7c0c8;
+$ens-medium-dark-grey: #9aa7b1;
 $ens-dark-grey: #6f8190;
+
+$ens-red: #d90000;
 
 $ens-white: #fff;
 
@@ -117,8 +121,11 @@ $ens-white: #fff;
   ens-blue: $ens-blue;
   ens-light-blue: $ens-light-blue;
   ens-dark-blue: $ens-dark-blue;
+  ens-red: $ens-red;
   ens-dark-grey: $ens-dark-grey;
+  ens-medium-dark-grey: $ens-medium-dark-grey;
   ens-grey: $ens-grey;
+  ens-medium-light-grey: $ens-medium-light-grey;
   ens-light-grey: $ens-light-grey;
   ens-white: $ens-white;
 }
