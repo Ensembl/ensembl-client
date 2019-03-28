@@ -24,7 +24,7 @@ const getHeightClass = (launchbarExpanded: boolean): string => {
   return launchbarExpanded ? styles.shorter : styles.taller;
 };
 
-const InnerContent = () => (
+const ContentRoutes = () => (
   <>
     <Route path="/" component={Home} exact={true} />
     <Route path="/app" component={App} />
@@ -52,4 +52,4 @@ const mapStateToProps = (state: RootState): StateProps => ({
   launchbarExpanded: getLaunchbarExpanded(state)
 });
 
-export default connect(mapStateToProps)(withInnerContent(<InnerContent />));
+export default connect(mapStateToProps)(withInnerContent(<ContentRoutes />));
