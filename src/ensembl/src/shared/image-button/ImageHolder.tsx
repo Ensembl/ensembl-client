@@ -17,13 +17,15 @@ const ImageHolder = (props: Props) => {
   );
 
   return (
-    <button className={className}>
-      {typeof props.image === 'string' ? (
-        <img src={props.image} alt={props.description} />
-      ) : (
-        <props.image />
-      )}
-    </button>
+    <div className={className}>
+      <button>
+        {typeof props.image === 'string' ? (
+          <img src={props.image} alt={props.description} />
+        ) : (
+          <props.image />
+        )}
+      </button>
+    </div>
   );
 };
 

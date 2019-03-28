@@ -12,9 +12,9 @@
 }
 
 .disabled {
+  cursor: not-allowed;
   svg {
     fill: $ens-grey;
-    cursor: not-allowed;
     opacity: 1;
   }
   &:before {
