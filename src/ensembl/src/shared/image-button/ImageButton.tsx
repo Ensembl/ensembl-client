@@ -24,17 +24,20 @@ const ImageButton = (props: Props) => {
       ? {}
       : { onClick: props.onClick };
 
+  const { classNames, ...rest } = props;
+
   const styles = { ...defaultStyles, ...props.classNames };
   return (
     <div {...buttonProps}>
-      <ImageHolder
-        buttonStatus={props.buttonStatus}
-        description={props.description}
-        image={props.image}
-        classNames={styles}
-      />
+      <ImageHolder {...rest} classNames={styles} />
     </div>
   );
+};
+
+ImageButton.defaultProps = {
+  buttonStatus: ImageButtonStatus.DEFAULT,
+  description: '',
+  image: ''
 };
 
 export default ImageButton;

@@ -19,16 +19,12 @@ const ImageHolder = (props: Props) => {
   return (
     <button className={className}>
       {typeof props.image === 'string' ? (
-        <img src={props.image} />
+        <img src={props.image} alt={props.description} />
       ) : (
         <props.image />
       )}
     </button>
   );
-};
-
-ImageHolder.defaultProps = {
-  description: ''
 };
 
 export default ImageHolder;
