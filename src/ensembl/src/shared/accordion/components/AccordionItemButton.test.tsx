@@ -28,7 +28,7 @@ describe('AccordionItemButton', () => {
         wrapper
           .find(AccordionItemButton)
           .find('div')
-          .props()['className']
+          .prop('className')
       ).toEqual('accordionButton');
     });
 
@@ -47,7 +47,7 @@ describe('AccordionItemButton', () => {
         wrapper
           .find(AccordionItemButton)
           .find('div')
-          .props()['className']
+          .prop('className')
       ).toEqual('foo');
     });
   });

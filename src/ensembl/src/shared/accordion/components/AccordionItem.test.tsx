@@ -17,7 +17,7 @@ describe('AccordionItem', () => {
           <AccordionItem uuid={'FOO'} />
         </Accordion>
       );
-      expect(wrapper.find(AccordionItem).props()['className']).toEqual(
+      expect(wrapper.find(AccordionItem).prop('className')).toEqual(
         'accordionItem'
       );
     });
@@ -28,7 +28,7 @@ describe('AccordionItem', () => {
           <AccordionItem uuid={'FOO'} className="foo" />
         </Accordion>
       );
-      expect(wrapper.find(AccordionItem).props()['className']).toEqual('foo');
+      expect(wrapper.find(AccordionItem).prop('className')).toEqual('foo');
     });
   });
 

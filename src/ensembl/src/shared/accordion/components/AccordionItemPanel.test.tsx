@@ -26,7 +26,7 @@ describe('AccordionItemPanel', () => {
         </Accordion>
       );
 
-      expect(wrapper.find(AccordionItemPanel).props()['className']).toEqual(
+      expect(wrapper.find(AccordionItemPanel).prop('className')).toEqual(
         'accordionPanel'
       );
     });
@@ -40,9 +40,7 @@ describe('AccordionItemPanel', () => {
         </Accordion>
       );
 
-      expect(wrapper.find(AccordionItemPanel).props()['className']).toEqual(
-        'foo'
-      );
+      expect(wrapper.find(AccordionItemPanel).prop('className')).toEqual('foo');
     });
   });
 

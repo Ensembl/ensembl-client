@@ -54,7 +54,7 @@ describe('AccordionItemHeading', () => {
           .find(AccordionItemHeading)
           .find('div')
           .first()
-          .props().className
+          .prop('className')
       ).toEqual('foo');
     });
   });
@@ -88,7 +88,7 @@ describe('AccordionItemHeading', () => {
       console.error = originalError;
     });
 
-    it('permits a single AccordionItemButton as a child - variation #1', () => {
+    it('permits a single AccordionItemButton as a child', () => {
       expect(() =>
         mount(
           <Accordion>
@@ -102,7 +102,7 @@ describe('AccordionItemHeading', () => {
       ).not.toThrowError(SPEC_ERROR);
     });
 
-    it('permits a single AccordionItemButton as a child - variation #2', () => {
+    it('permits a single AccordionItemButton as a child within an array', () => {
       expect(() =>
         mount(
           <Accordion>
@@ -116,6 +116,23 @@ describe('AccordionItemHeading', () => {
           </Accordion>
         )
       ).not.toThrowError(SPEC_ERROR);
+    });
+
+    it('does not permit multiple AccordionItemButton as children within an array', () => {
+      expect(() =>
+        mount(
+          <Accordion>
+            <AccordionItem>
+              <AccordionItemHeading>
+                [
+                <AccordionItemButton key="foo">Hello World</AccordionItemButton>
+                <AccordionItemButton key="bar">Hello World</AccordionItemButton>
+                ]
+              </AccordionItemHeading>
+            </AccordionItem>
+          </Accordion>
+        )
+      ).toThrowError(SPEC_ERROR);
     });
 
     it('throws an error if you don’t nest an AccordionItemButton', () => {

@@ -13,7 +13,7 @@ const defaultProps = {
 };
 
 export const SPEC_ERROR = `AccordionItemButton may contain only one child element, which must be an instance of AccordionItemButton.
-
+From the WAI-ARIA spec (https://www.w3.org/TR/wai-aria-practices-1.1/#accordion):
 “The button element is the only element inside the heading element. 
 That is, if there are other visually persistent elements, they are not included inside the heading element.”
 `;
