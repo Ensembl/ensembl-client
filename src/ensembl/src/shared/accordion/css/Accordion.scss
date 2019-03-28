@@ -1,12 +1,12 @@
 @import 'src/styles/common';
 
 .accordion {
-  border: 1px solid $ens-light-grey;
+  border: 2px solid $ens-grey;
   border-radius: 2px;
 }
 
 .accordionItem + .accordionItem {
-  border-top: 1px solid $ens-light-grey;
+  border-top: 2px solid $ens-grey;
 }
 
 .accordionButton {
