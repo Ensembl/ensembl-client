@@ -8,7 +8,7 @@ import { createEpicMiddleware } from 'redux-observable';
 
 import createRootReducer from './root/rootReducer';
 import { analyticsMiddleWare } from './analyticsMiddleware';
-import rootEpic from './rootEpic';
+import rootEpic from './root/rootEpic';
 
 export const history = createBrowserHistory();
 
