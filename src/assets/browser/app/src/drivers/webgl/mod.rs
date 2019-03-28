@@ -6,16 +6,15 @@ pub use self::core::{
     GLDrawing, GLProgs, GLPrinter, GLProgData
 };
 pub use self::drawing::{
-    Drawing, CarriageCanvases, Artist, Artwork, DrawingSpec, 
-    bitmap_texture, DrawingHash, FCFont, FontVariety, text_texture,
-    collage, mark_rectangle, MarkSpec, OneCanvasManager
+    Drawing, CarriageCanvases, Artist, Artwork,
+    FCFont, FontVariety, Mark,
+    collage, mark_rectangle, OneCanvasManager
 };
 pub use self::shape::{
     FacadeType, ShapeInstanceDataType,
     ShapeLongInstanceData,
     stretch_texture,
-    TextureTypeSpec,
     ShapeInstanceData, TypeToShape, Facade, ShapeShortInstanceData,
     rectangle_g, rectangle_t, vertices_rect,
-    GLShape, TextureSpec, StretchTextureSpec,
+    GLShape, StretchTextureSpec,
 };

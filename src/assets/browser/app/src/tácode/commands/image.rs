@@ -9,7 +9,7 @@ use tánaiste::{
 
 use composit::SourceResponseData;
 use data::BackendConfig;
-use drivers::webgl::{ DrawingSpec, bitmap_texture, DrawingHash };
+use model::shape::{ DrawingSpec, DrawingHash, bitmap_texture };
 use tácode::{ TáContext, TáTask };
 use types::{ Colour, cpixel };
 

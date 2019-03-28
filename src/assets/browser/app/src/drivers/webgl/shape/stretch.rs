@@ -6,9 +6,9 @@ use super::util::{ rectangle_g, rectangle_t, vertices_rect };
 
 use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
 use drivers::webgl::GLProgData;
-use drivers::webgl::{ Artist, Artwork, DrawingSpec };
+use drivers::webgl::{ Artist, Artwork };
 
-use model::shape::ShapeSpec;
+use model::shape::{ DrawingSpec, ShapeSpec };
 
 #[derive(Clone)]
 pub struct StretchTextureSpec {

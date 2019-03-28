@@ -1,12 +1,11 @@
 use std::iter;
 use composit::Leaf;
-use drivers::webgl::DrawingSpec;
 use program::{
     ProgramAttribs, DataBatch, DataGroupIndex, ProgramType, PTMethod, 
     PTGeom, PTSkin
 };
 use types::{ RFraction, CLeaf, RPixel, RLeaf, cleaf, Rect, Edge, Colour };
-use model::shape::{ ColourSpec, ShapeSpec };
+use model::shape::{ ColourSpec, DrawingSpec, ShapeSpec };
 use program::Input;
 use std::rc::Rc;
 

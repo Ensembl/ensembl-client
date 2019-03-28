@@ -1,26 +1,6 @@
-use super::{ FCFont, Artist, FlatCanvas, DrawingHash, DrawingSpec };
+use model::shape::{ DrawingSpec, TextArtist, DrawingHash };
+use super::{ FCFont, Artist, FlatCanvas };
 use types::{ Colour, CPixel };
-
-/* TextArtist - A Artist which can draw text */
-
-#[derive(Clone,Debug)]
-pub struct TextArtist {
-    chars: String,
-    font: FCFont,
-    colour: Colour,
-    background: Colour
-}
-
-impl TextArtist {
-    fn new(chars: &str, font: &FCFont, colour: &Colour, background: &Colour) -> TextArtist {
-        TextArtist {
-            chars: chars.to_string(),
-            font: font.clone(),
-            colour: colour.clone(),
-            background: background.clone()
-        }
-    }
-}
 
 impl Artist for TextArtist {
     fn draw(&self, canvs: &FlatCanvas, pos: CPixel) {
@@ -42,8 +22,4 @@ impl Artist for TextArtist {
     fn measure_mask(&self, canvas: &FlatCanvas) -> CPixel {
         self.measure(canvas)
     }
-}
-
-pub fn text_texture(chars: &str,font: &FCFont, col: &Colour, bg: &Colour) -> DrawingSpec {
-    DrawingSpec::Text(TextArtist::new(chars,font,col,bg))
 }

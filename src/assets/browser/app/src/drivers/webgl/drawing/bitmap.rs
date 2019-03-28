@@ -1,23 +1,10 @@
 use std::cmp::{ min, max };
 
-use super::{ DrawingHash, FlatCanvas, Artist, CarriageCanvases, OneCanvasManager, DrawingSpec };
+use super::{ FlatCanvas, Artist, CarriageCanvases, OneCanvasManager };
 use drivers::webgl::GLProgData;
 use program::CanvasWeave;
+use model::shape::{ BitmapArtist, DrawingHash, DrawingSpec };
 use types::{ CPixel, area_size, cpixel };
-
-#[derive(Clone)]
-pub struct BitmapArtist {
-    data: Vec<u8>,
-    size: CPixel,
-    blur: bool,
-    hash: Option<DrawingHash>
-}
-
-impl BitmapArtist {
-    fn new(data: Vec<u8>, size: CPixel, blur: bool, hash: Option<DrawingHash>) -> BitmapArtist {
-        BitmapArtist { data, size, blur, hash }
-    }
-}
 
 fn copy_data(out: &mut Vec<u8>, in_: &Vec<u8>, size: CPixel,
              row: i32, col: Option<i32>) {
@@ -63,8 +50,4 @@ impl Artist for BitmapArtist {
         let v = if self.blur {1} else {0};
         cpixel(v,v)
     }
-}
-
-pub fn bitmap_texture(data: Vec<u8>, size: CPixel, blur: bool, hash: Option<DrawingHash>) -> DrawingSpec {
-    DrawingSpec::Bitmap(BitmapArtist::new(data,size,blur,hash))
 }

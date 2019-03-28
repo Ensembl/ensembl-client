@@ -4,7 +4,7 @@ use std::rc::Rc;
 
 use composit::{ ActiveSource, Landscape, Leaf };
 use data::BackendConfig;
-use drivers::webgl::DrawingSpec;
+use model::shape::DrawingSpec;
 use model::train::PartyResponses;
 
 pub enum TáTask {

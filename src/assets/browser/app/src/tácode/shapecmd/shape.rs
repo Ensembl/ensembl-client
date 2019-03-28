@@ -5,13 +5,15 @@ use tánaiste::{
 };
 
 use composit::{ Leaf };
-use drivers::webgl::{ DrawingSpec };
 use drivers::webgl::{
     Facade, FacadeType, ShapeInstanceData, TypeToShape,
     ShapeShortInstanceData,
-    TextureTypeSpec, ShapeInstanceDataType, ShapeLongInstanceData
+    ShapeInstanceDataType, ShapeLongInstanceData
 };
-use model::shape::{ ColourSpec, PinRectTypeSpec, StretchRectTypeSpec };
+use model::shape::{ 
+    ColourSpec, DrawingSpec, PinRectTypeSpec, StretchRectTypeSpec,
+    TextureTypeSpec
+};
 use model::train::PartyResponses;
 use tácode::core::{ TáContext, TáTask };
 use super::super::shapecmd::{ build_meta };

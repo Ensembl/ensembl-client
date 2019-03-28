@@ -1,15 +1,14 @@
+mod bitmap;
+mod collage;
 mod poly;
 mod rect;
 mod shapespec;
+mod text;
+mod texture;
 mod wiggle;
 
-pub use self::shapespec::{ ColourSpec, ShapeSpec, MathsShape };
-
-pub use self::wiggle::{
-    stretch_wiggle,
-    StretchWiggle,
-    StretchWiggleTypeSpec
-};
+pub use self::bitmap::{ BitmapArtist, bitmap_texture };
+pub use self::collage::{ MarkSpec, CollageArtist, RectMark };
 
 pub use self::poly::{
     pin_mathsshape,
@@ -26,4 +25,25 @@ pub use self::rect::{
     RectSpec,
     PinRectTypeSpec,
     StretchRectTypeSpec,
+};
+
+pub use self::shapespec::{ 
+    ColourSpec, DrawingSpec, ShapeSpec, MathsShape, DrawingHash
+};
+
+pub use self::text::{
+    TextArtist,
+    text_texture
+};
+
+pub use self::texture::{
+    TexturePosition,
+    TextureSpec,
+    TextureTypeSpec,
+};
+
+pub use self::wiggle::{
+    stretch_wiggle,
+    StretchWiggle,
+    StretchWiggleTypeSpec
 };

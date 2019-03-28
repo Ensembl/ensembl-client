@@ -24,12 +24,14 @@ use model::shape::{
     PinRectTypeSpec, StretchRectTypeSpec, 
     tape_mathsshape,
     pin_mathsshape,
-    fix_mathsshape, page_mathsshape    
+    fix_mathsshape, page_mathsshape,
+    text_texture,   bitmap_texture,
+    MarkSpec, DrawingSpec,
+    TextureTypeSpec,
 };
 use model::train::PartyResponses;
 
 use drivers::webgl::{
-    TextureTypeSpec,
     ShapeInstanceData, TypeToShape, Facade, ShapeShortInstanceData,
     stretch_texture
 };
@@ -44,8 +46,8 @@ use types::{
 };
 
 use drivers::webgl::{
-    text_texture, bitmap_texture, collage, FCFont,
-    mark_rectangle, FontVariety, MarkSpec, DrawingSpec
+    collage, FCFont,
+    mark_rectangle, FontVariety,
 };
 
 const SW : i32 = 1000;

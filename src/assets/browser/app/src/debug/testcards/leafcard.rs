@@ -2,12 +2,13 @@ use util::RulerGenerator;
 use debug::support::closuresource::{ ClosureSource, closure_add, closure_done, closure_add_opt };
 use composit::Source;
 use drivers::webgl::{
-    FCFont, FontVariety, text_texture,
-    TextureTypeSpec, TypeToShape, 
+    FCFont, FontVariety,
+    TypeToShape, 
     ShapeInstanceData, Facade, ShapeShortInstanceData
 };
 use model::shape::{
-    PinRectTypeSpec, StretchRectTypeSpec, 
+    PinRectTypeSpec, StretchRectTypeSpec, text_texture,
+    TextureTypeSpec, 
 };
 use types::{ Colour, cleaf, cpixel, A_TOP, area, area_size, AxisSense };
 

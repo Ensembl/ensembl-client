@@ -56,8 +56,11 @@
  * the first two arguments are used.
  */
 
-use drivers::webgl::{ TextureTypeSpec, TypeToShape };
-use model::shape::{ StretchWiggleTypeSpec, PinRectTypeSpec, StretchRectTypeSpec };
+use drivers::webgl::{ TypeToShape };
+use model::shape::{
+    StretchWiggleTypeSpec, PinRectTypeSpec, StretchRectTypeSpec, 
+    TextureTypeSpec
+};
 use types::AxisSense;
 
 fn sea_option(meta: &Vec<f64>, idx: usize) -> Option<AxisSense> {

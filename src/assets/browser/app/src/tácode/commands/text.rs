@@ -5,7 +5,9 @@ use tánaiste::{
     Value
 };
 
-use drivers::webgl::{ DrawingSpec, FCFont, FontVariety, text_texture };
+use model::shape::{ text_texture, DrawingSpec };
+use drivers::webgl::{ FCFont, FontVariety
+     };
 use tácode::{ TáContext, TáTask };
 use types::{ Colour };
 

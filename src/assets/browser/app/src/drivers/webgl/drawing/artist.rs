@@ -1,5 +1,6 @@
 use types::{ CPixel, area_size, cpixel };
-use super::{ FlatCanvas, DrawingHash, CarriageCanvases, OneCanvasManager };
+use super::{ FlatCanvas, CarriageCanvases, OneCanvasManager };
+use model::shape::DrawingHash;
 use program::CanvasWeave;
 use drivers::webgl::GLProgData;
 
@@ -25,4 +26,8 @@ pub trait Artist {
     }
     fn margin(&self) -> CPixel { cpixel(0,0) }
     fn padding(&self) -> CPixel { cpixel(0,0) }
+}
+
+pub trait Mark : Artist {
+    fn get_offset(&self) -> CPixel;
 }

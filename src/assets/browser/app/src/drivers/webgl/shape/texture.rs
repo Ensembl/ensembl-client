@@ -7,35 +7,14 @@ use types::{
     CLeaf, area_centred, Anchors, cfraction, Anchor, cpixel, cleaf
 };
 
-use super::{ GLShape, ShapeInstanceData, ShapeShortInstanceData, Facade, TypeToShape, FacadeType, ShapeInstanceDataType };
+use drivers::webgl::{ 
+    GLShape, ShapeInstanceData, ShapeShortInstanceData, Facade, 
+    TypeToShape, FacadeType, ShapeInstanceDataType
+};
 use super::util::{ rectangle_t, multi_gl, vertices_rect };
 
-use drivers::webgl::{ GLProgData, Artist, Artwork, DrawingSpec };
-use model::shape::ShapeSpec;
-
-#[derive(Clone,Copy,Debug)]
-pub enum TexturePosition<T: Clone+Copy+Debug> {
-    Pin(Dot<T,i32>),
-    Tape(Dot<T,Edge<i32>>),
-    Fix(EPixel),
-}
-
-#[derive(Clone)]
-pub struct TextureSpec {
-    origin: TexturePosition<f32>,
-    offset: CPixel,
-    
-    anchor: Anchors,
-    scale: CPixel,
-    geom: ProgramType,
-    aspec: DrawingSpec
-}
-
-impl TextureSpec {
-    pub fn create(self) -> Box<GLShape> {
-        Box::new(self)
-    }
-}
+use drivers::webgl::{ GLProgData, Artist, Artwork };
+use model::shape::{ DrawingSpec, ShapeSpec, TexturePosition, TextureSpec };
 
 impl GLShape for TextureSpec {
     fn into_objects(&self, geom: &mut ProgramAttribs, 
@@ -59,7 +38,11 @@ impl GLShape for TextureSpec {
                     offset = offset.flip(&origin.corner());
                     anchor = anchor.flip(&origin.corner());
                 },
-                TexturePosition::Fix(origin) => {
+                TexturePosition::Fix(origin) |
+                TexturePosition::FixUnderPage(origin) |
+                TexturePosition::FixUnderTape(origin) |
+                TexturePosition::Page(origin) |
+                TexturePosition::PageUnderAll(origin) => {
                     ap = ap.flip_d(origin);
                     mp = mp.flip_d(origin);
                     anchor = anchor.flip(&origin.corner());
@@ -83,7 +66,11 @@ impl GLShape for TextureSpec {
                         multi_gl(b,geom,"aOrigin",&origin.quantity(),4);
                         multi_gl(b,geom,"aVertexSign",&origin.corner(),4);
                     },
-                    TexturePosition::Fix(origin) => {
+                    TexturePosition::Fix(origin) |
+                    TexturePosition::FixUnderPage(origin) |
+                    TexturePosition::FixUnderTape(origin) |
+                    TexturePosition::Page(origin) |
+                    TexturePosition::PageUnderAll(origin) => {
                         multi_gl(b,geom,"aVertexSign",&origin.corner(),4);
                     }
                 }
@@ -91,7 +78,18 @@ impl GLShape for TextureSpec {
         }
     }
 
-    fn get_geometry(&self) -> ProgramType { self.geom }
+    fn get_geometry(&self) -> ProgramType {
+        let gt = match self.origin {
+            TexturePosition::Pin(_) => PTGeom::Pin,
+            TexturePosition::Tape(_) => PTGeom::Tape,
+            TexturePosition::Fix(_) => PTGeom::Fix,
+            TexturePosition::FixUnderPage(_) => PTGeom::FixUnderPage,
+            TexturePosition::FixUnderTape(_) => PTGeom::FixUnderTape,
+            TexturePosition::Page(_) => PTGeom::Page,
+            TexturePosition::PageUnderAll(_) => PTGeom::PageUnderAll,
+        };
+        ProgramType(gt,PTMethod::Triangle,PTSkin::Texture)
+    }
 
     fn get_artist(&self) -> Option<Rc<Artist>> { 
         Some(self.aspec.to_artist())
@@ -99,99 +97,12 @@ impl GLShape for TextureSpec {
 }
 
 impl TextureSpec {
-    fn new(geom: ProgramType, aspec: DrawingSpec, origin: &TexturePosition<f32>, 
+    pub fn new(aspec: DrawingSpec, origin: &TexturePosition<f32>, 
            offset: &CPixel, scale: &APixel) -> TextureSpec {
         TextureSpec {
-            geom, aspec, origin: *origin, offset: *offset, 
+            aspec, origin: *origin, offset: *offset, 
             scale: scale.quantity(),
             anchor: scale.corner()
         }
     }        
-}
-
-fn texture(f: &Facade, origin: &TexturePosition<f32>, scale: &APixel, offset: &CPixel, gt: PTGeom) -> ShapeSpec {
-    if let Facade::Drawing(d) = f {
-        let pt = ProgramType(gt,PTMethod::Triangle,PTSkin::Texture);
-        Some(ShapeSpec::PinTexture(TextureSpec::new(pt,d.clone(),origin,offset,scale)))
-    } else { None }.unwrap()
-}
-
-pub struct TextureTypeSpec {
-    pub sea_x: Option<AxisSense>,
-    pub sea_y: Option<AxisSense>,
-    pub ship_x: (Option<AxisSense>,i32),
-    pub ship_y: (Option<AxisSense>,i32),
-    pub under: i32,
-    pub scale_x: f32,
-    pub scale_y: f32
-}
-
-impl TextureTypeSpec {
-    fn anchor_pt(&self) -> Anchors {
-        Dot(Anchor(self.ship_x.0),Anchor(self.ship_y.0))
-    }
-
-    fn new_fix(&self, td: &ShapeShortInstanceData) -> ShapeSpec {
-        let origin = cpixel(td.pos_x as i32,td.pos_y)
-                        .x_edge(self.sea_x.unwrap())
-                        .y_edge(self.sea_y.unwrap());
-        let scale = cpixel(self.scale_x as i32,self.scale_y as i32).anchor(self.anchor_pt());
-        let offset = cpixel(td.aux_x as i32-self.ship_x.1,
-                            td.aux_y as i32-self.ship_y.1);
-        let pt = match self.under {
-            1 => PTGeom::FixUnderPage,
-            2 => PTGeom::FixUnderTape,
-            _ => PTGeom::Fix,
-        };
-        texture(&td.facade,&TexturePosition::Fix(origin),&scale,&offset,pt)
-    }
-
-    fn new_page(&self, td: &ShapeShortInstanceData) -> ShapeSpec {
-        let origin = cpixel(td.pos_x as i32,td.pos_y)
-                        .x_edge(self.sea_x.unwrap())
-                        .y_edge(AxisSense::Max);
-        let scale = cpixel(self.scale_x as i32,self.scale_y as i32).anchor(self.anchor_pt());
-        let offset = cpixel(td.aux_x as i32-self.ship_x.1,
-                            td.aux_y as i32-self.ship_y.1);
-        let pt = match self.under {
-            3 => PTGeom::PageUnderAll,
-            _ => PTGeom::Page
-        };
-        texture(&td.facade,&TexturePosition::Fix(origin),&scale,&offset,pt)
-    }
-    
-    fn new_pin(&self, td: &ShapeShortInstanceData) -> Option<ShapeSpec> {
-        let origin = cleaf(td.pos_x,td.pos_y);
-        let scale = cpixel(self.scale_x as i32,self.scale_y as i32).anchor(self.anchor_pt());
-        let offset = cpixel(td.aux_x as i32-self.ship_x.1,
-                            td.aux_y as i32-self.ship_y.1);
-        if origin.0 <= 1. {
-            Some(texture(&td.facade,&TexturePosition::Pin(origin),&scale,&offset,PTGeom::Pin))
-        } else {
-            None
-        }
-    }
-    
-    fn new_tape(&self, td: &ShapeShortInstanceData) -> ShapeSpec {
-        let origin = cleaf(td.pos_x,td.pos_y).y_edge(self.sea_y.unwrap());
-        let scale = cpixel(self.scale_x as i32,self.scale_y as i32).anchor(self.anchor_pt());
-        let offset = cpixel(td.aux_x as i32-self.ship_x.1,
-                            td.aux_y as i32-self.ship_y.1);
-        texture(&td.facade,&TexturePosition::Tape(origin),&scale,&offset,PTGeom::Tape)
-    }
-}
-
-impl TypeToShape for TextureTypeSpec {
-    fn new_short_shape(&self, td: &ShapeShortInstanceData) -> Option<ShapeSpec> {
-        match (self.sea_x.is_some(),self.sea_y.is_some()) {
-            (false,false) => self.new_pin(td),
-            (false,true) => Some(self.new_tape(td)),
-            (true,false) => Some(self.new_page(td)),
-            (true,true) => Some(self.new_fix(td))
-        }
-    }
-    
-    fn sid_type(&self) -> ShapeInstanceDataType { ShapeInstanceDataType::Short }
-    fn get_facade_type(&self) -> FacadeType { FacadeType::Drawing }
-    fn needs_scale(&self) -> (bool,bool) { (self.sea_x.is_none(),false) }
 }

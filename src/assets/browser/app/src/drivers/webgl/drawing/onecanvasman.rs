@@ -8,17 +8,7 @@ use types::{ CPixel, RPixel, area_size, cpixel };
 use super::alloc::{ Ticket, Allocator };
 use super::{ FlatCanvas, Drawing, Artist,  AllCanvasAllocator };
 use program::CanvasWeave;
-
-#[derive(Clone)]
-pub struct DrawingHash(u64);
-
-impl DrawingHash {
-    pub fn new<K>(val: K) -> DrawingHash where K : Hash + Eq {
-        let mut hasher = DefaultHasher::new();
-        val.hash(&mut hasher);
-        DrawingHash(hasher.finish())
-    }
-}
+use model::shape::DrawingHash;
 
 struct DrawingMemory {
     cache: HashMap<u64,Drawing>
@@ -32,13 +22,13 @@ impl DrawingMemory {
     }
 
     fn insert(&mut self, key: &DrawingHash, val: Drawing) {
-        self.cache.insert(key.0,val);
+        self.cache.insert(key.get(),val);
     }
     
     fn lookup(&self, a: &Rc<Artist>) -> (Option<DrawingHash>,Option<Drawing>) {
         let tdrk = a.memoize_key();
         if let Some(tdrk) = tdrk {
-            if let Some(obj) = self.cache.get(&tdrk.0) {
+            if let Some(obj) = self.cache.get(&tdrk.get()) {
                 // can cache, is cached
                 (Some(tdrk),Some(obj.clone()))
             } else {

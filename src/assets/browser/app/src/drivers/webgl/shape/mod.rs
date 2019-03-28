@@ -24,11 +24,6 @@ pub use self::util::{
 
 pub use self::canvasidx::CanvasIdx;
 
-pub use self::texture::{
-    TextureSpec,
-    TextureTypeSpec
-};
-
 pub use self::stretch::{
     stretch_texture,
     StretchTextureSpec
