@@ -1,0 +1,12 @@
+site_name: e2020 Browser App Field Manual
+nav:
+    - Home: index.md
+    - Description:
+        - Source Code Structure: desc-source.md
+        - Build System: desc-build.md
+        - Documentation: desc-docs.md
+theme: readthedocs
+extra_javascript:
+    - fileurl.js
+extra_css:
+    - extra.css
