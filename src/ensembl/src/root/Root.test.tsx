@@ -52,11 +52,14 @@ describe('<Root />', () => {
     expect(wrapper.find('.privacyBanner').length).toBe(1);
   });
 
-  test('does not show privacy banner if privacy cookie is set', () => {
+  test('does not show privacy banner if privacy cookie is set', async () => {
     cookiesMock.get = jest.fn(() => 'true');
     const wrapper = mount(getRenderedRoot(defaultProps));
 
-    // useEffect will be run asynchronously; so simulate asynchrony here
-    setTimeout(() => expect(wrapper.find('.privacyBanner').length).toBe(0), 0);
+    // ugly hack: fall back to the end of event queue, giving priority to useEffect and useState
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    wrapper.update();
+
+    expect(wrapper.find('.privacyBanner').length).toBe(0);
   });
 });

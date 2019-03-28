@@ -44,7 +44,7 @@ export const Root: FunctionComponent<RootProps> = (props: RootProps) => {
   const cookies = props.cookies as Cookies;
 
   useEffect(() => {
-    if (cookies.get('ENSEMBL_PRIVACY_POLICY') === 'true') {
+    if (showPrivacyBanner && cookies.get('ENSEMBL_PRIVACY_POLICY') === 'true') {
       setShowPrivacyBanner(false);
     }
   }, [cookies]);
