@@ -1,7 +1,19 @@
-import React, { FunctionComponent, Fragment, lazy, Suspense } from 'react';
+import React, {
+  useEffect,
+  FunctionComponent,
+  Fragment,
+  lazy,
+  Suspense
+} from 'react';
 import { Redirect, Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { connect } from 'react-redux';
+
+import { changeCurrentApp } from 'src/header/headerActions';
+import { getCurrentApp } from 'src/header/headerSelectors';
 
 import AppBar from './AppBar';
+
+import { RootState } from 'src/store';
 
 const GlobalSearch = lazy(() => import('./global-search/GlobalSearch'));
 const SpeciesSelector = lazy(() =>
@@ -9,9 +21,13 @@ const SpeciesSelector = lazy(() =>
 );
 const Browser = lazy(() => import('./browser/Browser'));
 
-type StateProps = {};
+type StateProps = {
+  currentApp: string;
+};
 
-type DispatchProps = {};
+type DispatchProps = {
+  changeCurrentApp: (name: string) => void;
+};
 
 type OwnProps = {};
 
@@ -32,6 +48,24 @@ export const AppShell = (props: AppShellProps) => {
 
 const AppInner = (props: AppProps) => {
   const { url } = props.match;
+
+  useEffect(() => {
+    // remove /app/ from url to get app name
+    let appName = props.location.pathname.replace('/app/', '');
+
+    // check if app name still has forward slash (/) to be sure the app name is extracted
+    // if it isn't then remove rest of the URL and extract the app name
+    if (appName.indexOf('/') > -1) {
+      const matches = appName.match(/^[^\/]*/);
+      appName = matches ? matches[0] : '';
+    }
+
+    props.changeCurrentApp(appName);
+
+    return function unsetApp() {
+      props.changeCurrentApp('');
+    };
+  }, [props.match.path]);
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -63,4 +97,15 @@ export const App: FunctionComponent<AppProps> = (props: AppProps) => {
   );
 };
 
-export default App;
+const mapStateToProps = (state: RootState): StateProps => ({
+  currentApp: getCurrentApp(state)
+});
+
+const mapDispatchToProps: DispatchProps = {
+  changeCurrentApp
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);

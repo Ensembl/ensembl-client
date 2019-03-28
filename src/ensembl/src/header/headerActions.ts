@@ -15,3 +15,11 @@ export const toggleLaunchbar = createAction(
     return () => resolve(undefined, getHeaderAnalyticsObject('Navigation'));
   }
 );
+
+export const changeCurrentApp = createAction(
+  'header/change-current-app',
+  (resolve) => {
+    return (currentApp: string) =>
+      resolve(currentApp, getHeaderAnalyticsObject('Navigation'));
+  }
+);
