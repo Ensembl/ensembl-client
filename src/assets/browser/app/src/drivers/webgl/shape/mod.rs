@@ -3,7 +3,7 @@ mod glshape;
 mod util;
 mod canvasidx;
 mod rect;
-mod poly;
+mod glpoly;
 mod spot;
 mod texture;
 mod glshapebox;
@@ -33,14 +33,6 @@ pub use self::rect::{
     RectSpec,
     PinRectTypeSpec,
     StretchRectTypeSpec,
-};
-
-pub use self::poly::{
-    pin_mathsshape,
-    tape_mathsshape,
-    fix_mathsshape,
-    page_mathsshape,
-    PinPolySpec,
 };
 
 pub use self::stretch::{

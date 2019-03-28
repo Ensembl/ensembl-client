@@ -17,32 +17,22 @@ use super::util::{
     colourspec_to_group
 };
 use drivers::webgl::{ GLProgData, Artwork };
-use model::shape::{ ColourSpec, ShapeSpec, MathsShape };
-
-#[derive(Clone,Copy,Debug)]
-enum PolyPosition<T: Clone+Copy+Debug> {
-    Pin(Dot<T,i32>),
-    Tape(Dot<T,Edge<i32>>),
-    Fix(Dot<Edge<i32>,Edge<i32>>),
-    Page(Dot<Edge<i32>,i32>)
-}
-
-#[derive(Clone,Copy,Debug)]
-pub struct PinPolySpec {
-    pt: PTGeom,
-    origin: PolyPosition<f32>,
-    anchor: Anchors,
-    size: f32,
-    width: Option<f32>,
-    ms: MathsShape,
-    colspec: ColourSpec
-}
+use model::shape::{ ColourSpec, ShapeSpec, MathsShape, PolyPosition, PinPolySpec };
 
 const CIRC_TOL : f32 = 1.; // max px undercut
 
 fn circle_points(r: f32) -> u16 {
     // 2*sqrt(pi*r) via 2nd order cos approx to max pixel undercut
     (3.54 * (r/CIRC_TOL).sqrt()) as u16
+}
+
+fn program_type(spec: &PinPolySpec) -> PTGeom {
+    match spec.origin {
+        PolyPosition::Fix(_) => PTGeom::Fix,
+        PolyPosition::Page(_) => PTGeom::Page,
+        PolyPosition::Pin(_) => PTGeom::Pin,
+        PolyPosition::Tape(_) => PTGeom::Tape
+    }
 }
 
 impl GLShape for PinPolySpec {    
@@ -57,7 +47,7 @@ impl GLShape for PinPolySpec {
             Some(width) => (PTMethod::Strip,width,true),
             None        => (PTMethod::Triangle,0.,false)
         };
-        let geom = despot(self.pt,mt,&self.colspec);
+        let geom = despot(program_type(&self),mt,&self.colspec);
         let ppd = PinPolyDraw {
             origin: self.origin, 
             size: self.size, 
@@ -75,7 +65,7 @@ impl GLShape for PinPolySpec {
         } else {
             PTMethod::Triangle
         };
-        despot(self.pt,mt,&self.colspec)
+        despot(program_type(&self),mt,&self.colspec)
     }
 }
 
@@ -191,52 +181,4 @@ impl PinPolyDraw {
     }
 
     fn get_geometry(&self) -> ProgramType { self.geom }
-}
-
-pub fn pin_mathsshape(origin: &Dot<f32,i32>,
-                      anchor: Anchors,
-                      size: f32, width: Option<f32>, ms: MathsShape,
-                      colspec: &ColourSpec) -> ShapeSpec {
-    ShapeSpec::PinPoly(PinPolySpec {
-        pt: PTGeom::Pin,
-        origin: PolyPosition::Pin(*origin),
-        colspec: colspec.clone(),
-        anchor, size, width, ms
-    })
-}
-
-pub fn fix_mathsshape(origin: &Dot<Edge<i32>,Edge<i32>>,
-                       anchor: Anchors,
-                       size: f32, width: Option<f32>, ms: MathsShape,
-                       colspec: &ColourSpec) -> ShapeSpec {
-    ShapeSpec::PinPoly(PinPolySpec {
-        pt: PTGeom::Fix,
-        origin: PolyPosition::Fix(*origin),
-        colspec: colspec.clone(),
-        anchor, size, width, ms
-    })
-}
-
-pub fn page_mathsshape(origin: &Dot<Edge<i32>,i32>,
-                       anchor: Anchors,
-                       size: f32, width: Option<f32>, ms: MathsShape,
-                       colspec: &ColourSpec) -> ShapeSpec {
-    ShapeSpec::PinPoly(PinPolySpec {
-        pt: PTGeom::Page,
-        origin: PolyPosition::Page(*origin),
-        colspec: colspec.clone(),
-        anchor, size, width, ms
-    })
-}
-
-pub fn tape_mathsshape(origin: &Dot<f32,Edge<i32>>,
-                       anchor: Anchors,
-                       size: f32, width: Option<f32>, ms: MathsShape,
-                       colspec: &ColourSpec) -> ShapeSpec {
-    ShapeSpec::PinPoly(PinPolySpec {
-        pt: PTGeom::Tape,
-        origin: PolyPosition::Tape(*origin),
-        colspec: colspec.clone(),
-        anchor, size, width, ms
-    })
 }

@@ -15,19 +15,22 @@ use composit::{
 
 use debug::support::closuresource::{ ClosureSource, closure_add, closure_add_opt, closure_done };
 use debug::testcards::common::{
-     wiggly, rng_prob, rng_pos, rng_colour, start_rng,
+    wiggly, rng_prob, rng_pos, rng_colour, start_rng,
     rng_subdivide, bio_mark, rng_tracks, prop
 };
 
-use model::shape::{ ColourSpec, MathsShape, stretch_wiggle };
-use model::train::PartyResponses;
-use drivers::webgl::{
+use model::shape::{
+    ColourSpec, MathsShape, stretch_wiggle,
     tape_mathsshape,
     pin_mathsshape,
-    stretch_texture,
-    fix_mathsshape, page_mathsshape,
+    fix_mathsshape, page_mathsshape    
+};
+use model::train::PartyResponses;
+
+use drivers::webgl::{
     PinRectTypeSpec, StretchRectTypeSpec, TextureTypeSpec,
-    ShapeInstanceData, TypeToShape, Facade, ShapeShortInstanceData
+    ShapeInstanceData, TypeToShape, Facade, ShapeShortInstanceData,
+    stretch_texture
 };
 
 use controller::global::App;

@@ -1,11 +1,11 @@
 use std::rc::Rc;
 
 use drivers::webgl::{
-    PinPolySpec, RectSpec, GLShape, TextureSpec, StretchTextureSpec, 
+    RectSpec, GLShape, TextureSpec, StretchTextureSpec, 
 };
 use types::{ Colour, RLeaf };
 use program::{ ProgramAttribs, DataGroupIndex, ProgramType };
-use super::StretchWiggle;
+use super::{ PinPolySpec, StretchWiggle };
 
 #[derive(Clone,Copy,Debug)]
 pub struct BoxSpec {

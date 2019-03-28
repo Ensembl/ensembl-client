@@ -13,12 +13,9 @@ pub use self::drawing::{
 pub use self::shape::{
     FacadeType, ShapeInstanceDataType,
     ShapeLongInstanceData,
-    tape_mathsshape,
-    pin_mathsshape,
     stretch_texture,
-    fix_mathsshape, page_mathsshape,
     PinRectTypeSpec, StretchRectTypeSpec, TextureTypeSpec,
     ShapeInstanceData, TypeToShape, Facade, ShapeShortInstanceData,
     rectangle_g, rectangle_t, vertices_rect,
-    PinPolySpec, RectSpec, GLShape, TextureSpec, StretchTextureSpec,
+    RectSpec, GLShape, TextureSpec, StretchTextureSpec,
 };
