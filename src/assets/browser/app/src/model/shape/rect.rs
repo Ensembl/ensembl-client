@@ -1,7 +1,6 @@
 use std::fmt::Debug;
 
 use composit::Leaf;
-use program::{ ProgramAttribs, PTGeom, PTMethod, ProgramType };
 use types::{ 
     CLeaf, AxisSense, Rect, Edge, RLeaf, Anchor, Anchored, Colour,
     area_size, cleaf, cpixel
@@ -16,14 +15,16 @@ use drivers::webgl::{
 pub enum RectPosition<T: Clone+Copy+Debug> {
     Pin(CLeaf,Rect<T,i32>),
     Page(Rect<Edge<i32>,i32>),
+    PageUnderAll(Rect<Edge<i32>,i32>),
     Tape(CLeaf,Rect<T,Edge<i32>>),
     Fix(Rect<Edge<i32>,Edge<i32>>),
+    FixUnderPage(Rect<Edge<i32>,Edge<i32>>),
+    FixUnderTape(Rect<Edge<i32>,Edge<i32>>),
     Stretch(RLeaf)
 }
 
 #[derive(Clone,Copy,Debug)]
 pub struct RectSpec {
-    pub pt: PTGeom,
     pub offset: RectPosition<i32>,
     pub colspec: ColourSpec
 }
@@ -75,7 +76,6 @@ impl TypeToShape for StretchRectTypeSpec {
                 }))
             } else {
                 Some(ShapeSpec::PinRect(RectSpec {
-                    pt: PTGeom::Stretch,
                     offset: RectPosition::Stretch(offset),
                     colspec
                 }))
@@ -122,7 +122,6 @@ impl PinRectTypeSpec {
         let offset = self.new_pin_offset(rd);
         let colspec = self.new_colspec(rd);
         Some(ShapeSpec::PinRect(RectSpec {
-            pt: PTGeom::Pin,
             offset: RectPosition::Pin(cleaf(rd.pos_x,rd.pos_y),offset),
             colspec: colspec.unwrap()
         }))
@@ -134,7 +133,6 @@ impl PinRectTypeSpec {
                                 self.sea_y.unwrap().1);
         let colspec = self.new_colspec(rd);
         Some(ShapeSpec::PinRect(RectSpec {
-            pt: PTGeom::Tape,
             offset: RectPosition::Tape(cleaf(rd.pos_x,rd.pos_y),offset),
             colspec: colspec.unwrap()
         }))     
@@ -146,13 +144,12 @@ impl PinRectTypeSpec {
                         .x_edge(self.sea_x.unwrap().0,
                                 self.sea_x.unwrap().1);
         let colspec = self.new_colspec(rd);
-        let pt = match self.under {
-            3 => PTGeom::PageUnderAll,
-            _ => PTGeom::Page
+        let offset = match self.under {
+            3 => RectPosition::PageUnderAll(pos),
+            _ => RectPosition::Page(pos),
         };
         Some(ShapeSpec::PinRect(RectSpec {
-            pt,
-            offset: RectPosition::Page(pos),
+            offset,
             colspec: colspec.unwrap()
         }))     
     }
@@ -165,15 +162,13 @@ impl PinRectTypeSpec {
                         .y_edge(self.sea_y.unwrap().0,
                                 self.sea_y.unwrap().1);
         let colspec = self.new_colspec(rd);
-        let pt = match self.under {
-            1 => PTGeom::FixUnderPage,
-            2 => PTGeom::FixUnderTape,
-            3 => PTGeom::PageUnderAll,
-            _ => PTGeom::Fix,
+        let offset = match self.under {
+            1 => RectPosition::FixUnderPage(pos),
+            2 => RectPosition::FixUnderTape(pos),
+            _ => RectPosition::Fix(pos),
         };
         Some(ShapeSpec::PinRect(RectSpec {
-            pt,
-            offset: RectPosition::Fix(pos),
+            offset,
             colspec: colspec.unwrap()
         }))     
     }    

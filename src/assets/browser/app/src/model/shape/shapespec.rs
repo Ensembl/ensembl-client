@@ -29,3 +29,10 @@ pub enum MathsShape {
     Polygon(u16,f32), // (points,offset/rev)
     Circle
 }
+
+pub enum ShapeUnder {
+    None,
+    Page,
+    Tape,
+    All
+}

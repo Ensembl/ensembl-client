@@ -17,6 +17,19 @@ use super::util::{
 use model::shape::{ BoxSpec, ColourSpec, ShapeSpec, RectPosition, RectSpec };
 use drivers::webgl::{ GLProgData, Artwork };
 
+fn program_type(spec: &RectSpec) -> PTGeom {
+    match spec.offset {
+        RectPosition::Pin(_,_)        => PTGeom::Pin,
+        RectPosition::Page(_)         => PTGeom::Page,
+        RectPosition::PageUnderAll(_) => PTGeom::PageUnderAll,
+        RectPosition::Tape(_,_)       => PTGeom::Tape,
+        RectPosition::Fix(_)          => PTGeom::Fix,
+        RectPosition::FixUnderPage(_) => PTGeom::FixUnderPage,
+        RectPosition::FixUnderTape(_) => PTGeom::FixUnderTape,
+        RectPosition::Stretch(_)      => PTGeom::Stretch
+    }
+}
+
 impl GLShape for RectSpec {
     fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut GLProgData) {
         let group = colourspec_to_group(&self.colspec,geom,e);
@@ -26,7 +39,8 @@ impl GLShape for RectSpec {
                 rectangle_p(b,geom,"aVertexPosition",&offset);
                 multi_gl(b,geom,"aOrigin",&origin,4);
             },
-            RectPosition::Page(offset) => {
+            RectPosition::Page(offset) | 
+            RectPosition::PageUnderAll(offset) => {
                 let offset = offset.y_edge(AxisSense::Max,AxisSense::Max);
                 rectangle_c(b,geom,"aVertexPosition","aVertexSign",&offset);
             },
@@ -35,7 +49,9 @@ impl GLShape for RectSpec {
                 rectangle_c(b,geom,"aVertexPosition","aVertexSign",&offset);
                 multi_gl(b,geom,"aOrigin",&origin,4);
             },
-            RectPosition::Fix(offset) => {
+            RectPosition::Fix(offset) |
+            RectPosition::FixUnderPage(offset) |
+            RectPosition::FixUnderTape(offset) => {
                 rectangle_c(b,geom,"aVertexPosition","aVertexSign",&offset);
             },
             RectPosition::Stretch(offset) => {
@@ -50,6 +66,6 @@ impl GLShape for RectSpec {
     }
     
     fn get_geometry(&self) -> ProgramType {
-        despot(self.pt,PTMethod::Triangle,&self.colspec)
+        despot(program_type(self),PTMethod::Triangle,&self.colspec)
     }    
 }
