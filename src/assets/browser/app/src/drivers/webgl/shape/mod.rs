@@ -2,7 +2,7 @@ mod stretch;
 mod glshape;
 mod util;
 mod canvasidx;
-mod rect;
+mod glrect;
 mod glpoly;
 mod spot;
 mod texture;
@@ -27,12 +27,6 @@ pub use self::canvasidx::CanvasIdx;
 pub use self::texture::{
     TextureSpec,
     TextureTypeSpec
-};
-
-pub use self::rect::{
-    RectSpec,
-    PinRectTypeSpec,
-    StretchRectTypeSpec,
 };
 
 pub use self::stretch::{

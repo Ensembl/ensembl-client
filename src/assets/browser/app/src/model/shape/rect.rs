@@ -6,19 +6,14 @@ use types::{
     CLeaf, AxisSense, Rect, Edge, RLeaf, Anchor, Anchored, Colour,
     area_size, cleaf, cpixel
 };
-
-use super::GLShape;
-use super::util::{
-    rectangle_p, rectangle_c, rectangle_g, multi_gl, vertices_rect,
-    despot, colour, ShapeInstanceData, ShapeShortInstanceData, 
-    TypeToShape, Facade, FacadeType, ShapeInstanceDataType,
-    colourspec_to_group
+use model::shape::{ ColourSpec, ShapeSpec };
+use drivers::webgl::{
+    Facade, FacadeType, ShapeInstanceDataType, ShapeShortInstanceData,
+    TypeToShape,
 };
-use model::shape::{ BoxSpec, ColourSpec, ShapeSpec };
-use drivers::webgl::{ GLProgData, Artwork };
 
 #[derive(Clone,Copy,Debug)]
-enum RectPosition<T: Clone+Copy+Debug> {
+pub enum RectPosition<T: Clone+Copy+Debug> {
     Pin(CLeaf,Rect<T,i32>),
     Page(Rect<Edge<i32>,i32>),
     Tape(CLeaf,Rect<T,Edge<i32>>),
@@ -28,49 +23,26 @@ enum RectPosition<T: Clone+Copy+Debug> {
 
 #[derive(Clone,Copy,Debug)]
 pub struct RectSpec {
-    pt: PTGeom,
-    offset: RectPosition<i32>,
-    colspec: ColourSpec
+    pub pt: PTGeom,
+    pub offset: RectPosition<i32>,
+    pub colspec: ColourSpec
 }
 
-impl GLShape for RectSpec {
-    fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut GLProgData) {
-        let group = colourspec_to_group(&self.colspec,geom,e);
-        let b = vertices_rect(geom,group);
-        match self.offset {
-            RectPosition::Pin(origin,offset) => {
-                rectangle_p(b,geom,"aVertexPosition",&offset);
-                multi_gl(b,geom,"aOrigin",&origin,4);
-            },
-            RectPosition::Page(offset) => {
-                let offset = offset.y_edge(AxisSense::Max,AxisSense::Max);
-                rectangle_c(b,geom,"aVertexPosition","aVertexSign",&offset);
-            },
-            RectPosition::Tape(origin,offset) => {
-                let offset = offset.x_edge(AxisSense::Max,AxisSense::Max);
-                rectangle_c(b,geom,"aVertexPosition","aVertexSign",&offset);
-                multi_gl(b,geom,"aOrigin",&origin,4);
-            },
-            RectPosition::Fix(offset) => {
-                rectangle_c(b,geom,"aVertexPosition","aVertexSign",&offset);
-            },
-            RectPosition::Stretch(offset) => {
-                rectangle_g(b,geom,"aVertexPosition",&offset);
-            },
-        };
-        if let ColourSpec::Colour(c) = self.colspec {
-            for _ in 0..4 {
-                colour(b,geom,"aVertexColour",&c);
-            }
-        }
-    }
-    
-    fn get_geometry(&self) -> ProgramType {
-        despot(self.pt,PTMethod::Triangle,&self.colspec)
-    }    
+#[derive(Clone,Copy,Debug)]
+pub struct BoxSpec {
+    pub offset: RLeaf,
+    pub width: i32,
+    pub colspec: ColourSpec
 }
 
-/* new, cleaner API */
+pub struct PinRectTypeSpec {
+    pub sea_x: Option<(AxisSense,AxisSense)>,
+    pub sea_y: Option<(AxisSense,AxisSense)>,
+    pub ship_x: (Option<AxisSense>,i32),
+    pub ship_y: (Option<AxisSense>,i32),
+    pub under: i32, // page = true, tape = false
+    pub spot: bool
+}
 
 pub struct StretchRectTypeSpec {
     pub spot: bool,
@@ -116,15 +88,6 @@ impl TypeToShape for StretchRectTypeSpec {
     fn get_facade_type(&self) -> FacadeType { FacadeType::Colour }
     fn needs_scale(&self) -> (bool,bool) { (true,true) }
     fn sid_type(&self) -> ShapeInstanceDataType { ShapeInstanceDataType::Short }
-}
-
-pub struct PinRectTypeSpec {
-    pub sea_x: Option<(AxisSense,AxisSense)>,
-    pub sea_y: Option<(AxisSense,AxisSense)>,
-    pub ship_x: (Option<AxisSense>,i32),
-    pub ship_y: (Option<AxisSense>,i32),
-    pub under: i32, // page = true, tape = false
-    pub spot: bool
 }
 
 impl PinRectTypeSpec {

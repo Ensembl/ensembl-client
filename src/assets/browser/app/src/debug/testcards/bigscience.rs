@@ -21,6 +21,7 @@ use debug::testcards::common::{
 
 use model::shape::{
     ColourSpec, MathsShape, stretch_wiggle,
+    PinRectTypeSpec, StretchRectTypeSpec, 
     tape_mathsshape,
     pin_mathsshape,
     fix_mathsshape, page_mathsshape    
@@ -28,7 +29,7 @@ use model::shape::{
 use model::train::PartyResponses;
 
 use drivers::webgl::{
-    PinRectTypeSpec, StretchRectTypeSpec, TextureTypeSpec,
+    TextureTypeSpec,
     ShapeInstanceData, TypeToShape, Facade, ShapeShortInstanceData,
     stretch_texture
 };

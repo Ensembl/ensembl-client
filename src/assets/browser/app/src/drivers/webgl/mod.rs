@@ -14,8 +14,8 @@ pub use self::shape::{
     FacadeType, ShapeInstanceDataType,
     ShapeLongInstanceData,
     stretch_texture,
-    PinRectTypeSpec, StretchRectTypeSpec, TextureTypeSpec,
+    TextureTypeSpec,
     ShapeInstanceData, TypeToShape, Facade, ShapeShortInstanceData,
     rectangle_g, rectangle_t, vertices_rect,
-    RectSpec, GLShape, TextureSpec, StretchTextureSpec,
+    GLShape, TextureSpec, StretchTextureSpec,
 };

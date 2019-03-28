@@ -8,10 +8,10 @@ use composit::{ Leaf };
 use drivers::webgl::{ DrawingSpec };
 use drivers::webgl::{
     Facade, FacadeType, ShapeInstanceData, TypeToShape,
-    PinRectTypeSpec, StretchRectTypeSpec, ShapeShortInstanceData,
+    ShapeShortInstanceData,
     TextureTypeSpec, ShapeInstanceDataType, ShapeLongInstanceData
 };
-use model::shape::ColourSpec;
+use model::shape::{ ColourSpec, PinRectTypeSpec, StretchRectTypeSpec };
 use model::train::PartyResponses;
 use tácode::core::{ TáContext, TáTask };
 use super::super::shapecmd::{ build_meta };

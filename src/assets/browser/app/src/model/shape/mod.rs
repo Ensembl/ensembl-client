@@ -1,8 +1,9 @@
 mod poly;
+mod rect;
 mod shapespec;
 mod wiggle;
 
-pub use self::shapespec::{ BoxSpec, ColourSpec, ShapeSpec, MathsShape };
+pub use self::shapespec::{ ColourSpec, ShapeSpec, MathsShape };
 
 pub use self::wiggle::{
     stretch_wiggle,
@@ -17,4 +18,12 @@ pub use self::poly::{
     page_mathsshape,
     PinPolySpec,
     PolyPosition
+};
+
+pub use self::rect::{
+    BoxSpec,
+    RectPosition,
+    RectSpec,
+    PinRectTypeSpec,
+    StretchRectTypeSpec,
 };

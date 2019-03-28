@@ -1,7 +1,14 @@
 use util::RulerGenerator;
 use debug::support::closuresource::{ ClosureSource, closure_add, closure_done, closure_add_opt };
 use composit::Source;
-use drivers::webgl::{ FCFont, FontVariety, text_texture, PinRectTypeSpec, StretchRectTypeSpec, TextureTypeSpec, TypeToShape, ShapeInstanceData, Facade, ShapeShortInstanceData };
+use drivers::webgl::{
+    FCFont, FontVariety, text_texture,
+    TextureTypeSpec, TypeToShape, 
+    ShapeInstanceData, Facade, ShapeShortInstanceData
+};
+use model::shape::{
+    PinRectTypeSpec, StretchRectTypeSpec, 
+};
 use types::{ Colour, cleaf, cpixel, A_TOP, area, area_size, AxisSense };
 
 const TARGET: i32 = 10;

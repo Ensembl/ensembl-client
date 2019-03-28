@@ -1,18 +1,11 @@
 use std::rc::Rc;
 
 use drivers::webgl::{
-    RectSpec, GLShape, TextureSpec, StretchTextureSpec, 
+    GLShape, TextureSpec, StretchTextureSpec, 
 };
 use types::{ Colour, RLeaf };
 use program::{ ProgramAttribs, DataGroupIndex, ProgramType };
-use super::{ PinPolySpec, StretchWiggle };
-
-#[derive(Clone,Copy,Debug)]
-pub struct BoxSpec {
-    pub offset: RLeaf,
-    pub width: i32,
-    pub colspec: ColourSpec
-}
+use super::{ PinPolySpec, StretchWiggle, RectSpec, BoxSpec };
 
 #[derive(Clone)]
 pub enum ShapeSpec {
