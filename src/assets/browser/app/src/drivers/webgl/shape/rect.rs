@@ -14,9 +14,8 @@ use super::util::{
     TypeToShape, Facade, FacadeType, ShapeInstanceDataType,
     colourspec_to_group
 };
-use model::shape::{ ColourSpec, ShapeSpec };
+use model::shape::{ BoxSpec, ColourSpec, ShapeSpec };
 use drivers::webgl::{ GLProgData, Artwork };
-use super::boxshape::{ BoxSpec };
 
 #[derive(Clone,Copy,Debug)]
 enum RectPosition<T: Clone+Copy+Debug> {

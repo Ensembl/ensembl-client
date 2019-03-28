@@ -1,17 +1,15 @@
 mod stretch;
-mod shapeimpl;
+mod glshape;
 mod util;
 mod canvasidx;
 mod rect;
 mod poly;
-mod wiggle;
 mod spot;
 mod texture;
-mod boxshape;
+mod glshapebox;
+mod glwiggle;
 
-pub use self::shapeimpl::{
-    GLShape
-};
+pub use self::glshape::GLShape;
 
 pub use self::util::{
     TypeToShape,
@@ -45,17 +43,9 @@ pub use self::poly::{
     PinPolySpec,
 };
 
-pub use self::wiggle::{
-    stretch_wiggle,
-    StretchWiggle,
-    StretchWiggleTypeSpec
-};
-
 pub use self::stretch::{
     stretch_texture,
     StretchTextureSpec
 };
-
-pub use self::boxshape::BoxSpec;
 
 pub use self::spot::Spot;

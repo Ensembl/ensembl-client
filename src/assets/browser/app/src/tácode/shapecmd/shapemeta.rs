@@ -57,9 +57,10 @@
  */
 
 use drivers::webgl::{
-    PinRectTypeSpec, StretchRectTypeSpec, StretchWiggleTypeSpec,
+    PinRectTypeSpec, StretchRectTypeSpec,
     TextureTypeSpec, TypeToShape
 };
+use model::shape::StretchWiggleTypeSpec;
 use types::AxisSense;
 
 fn sea_option(meta: &Vec<f64>, idx: usize) -> Option<AxisSense> {

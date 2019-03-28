@@ -19,12 +19,12 @@ use debug::testcards::common::{
     rng_subdivide, bio_mark, rng_tracks, prop
 };
 
-use model::shape::{ ColourSpec, MathsShape };
+use model::shape::{ ColourSpec, MathsShape, stretch_wiggle };
 use model::train::PartyResponses;
 use drivers::webgl::{
     tape_mathsshape,
     pin_mathsshape,
-    stretch_texture, stretch_wiggle,
+    stretch_texture,
     fix_mathsshape, page_mathsshape,
     PinRectTypeSpec, StretchRectTypeSpec, TextureTypeSpec,
     ShapeInstanceData, TypeToShape, Facade, ShapeShortInstanceData
