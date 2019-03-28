@@ -84,7 +84,9 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
 
   const setBrowserInfoVisibility = () => {
     const shouldToggleVisibility = showBrowserInfo !== shouldShowBrowserInfo();
-    shouldToggleVisibility && toggleShowBrowserInfo(!showBrowserInfo);
+    if (shouldToggleVisibility) {
+      toggleShowBrowserInfo(!showBrowserInfo);
+    }
   };
 
   useEffect(() => {
