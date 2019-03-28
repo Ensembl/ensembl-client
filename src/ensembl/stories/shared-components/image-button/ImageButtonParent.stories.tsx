@@ -58,9 +58,8 @@ const ImageButtonParent = (props: Props) => {
           <br />
           {`
               <ImageButton buttonStatus={ImageButtonStatus.${buttonStatus.toUpperCase()}} 
-                description={'enable/disable track'} 
-                onClick={onClick} 
-                image={VisibilityButton}
+                description={'enable/disable'} 
+                image={${props.imageName}}
               />
             `}
         </div>
