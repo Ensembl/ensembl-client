@@ -1,5 +1,5 @@
 import React from 'react';
-import { mount, render } from 'enzyme';
+import { render } from 'enzyme';
 
 import { Content, withInnerContent } from './Content';
 import styles from './Content.scss';
