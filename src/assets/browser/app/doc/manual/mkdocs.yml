@@ -4,7 +4,16 @@ nav:
     - Description:
         - Source Code Structure: desc-source.md
         - Build System: desc-build.md
-        - Documentation: desc-docs.md
+        - Integration: desc-integration.md
+    - Architecture Decision Records:
+        - 0001 Use WebGL: arch/0001-webgl.md
+        - 0002 Wrap WebGL: arch/0002-wrap-webgl.md
+        - 0003 Use WASM: arch/0003-use-wasm.md
+        - 0004 Use Rust: arch/0004-use-rust.md
+        - 0005 Scale breakpoints: arch/0005-breakpoints.md
+        - 0006 Use a bytecode: arch/0006-bytecode.md
+    - Standards:
+        - Rust Coding Standards: standard-rust.md
 theme: readthedocs
 extra_javascript:
     - fileurl.js
