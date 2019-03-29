@@ -5,7 +5,6 @@ import {
   ChrLocation,
   CogList
 } from './browserState';
-import { TrackType } from './track-panel/trackPanelConfig';
 
 export const getBrowserActivated = (state: RootState): boolean =>
   state.browser.browserInfo.browserActivated;
@@ -45,42 +44,3 @@ export const getTrackConfigLabel = (state: RootState): any =>
 
 export const getApplyToAll = (state: RootState): boolean =>
   state.browser.trackConfig.applyToAll;
-
-export const getTrackPanelModalOpened = (state: RootState): boolean =>
-  state.browser.trackPanel.trackPanelModalOpened;
-
-export const getTrackPanelModalView = (state: RootState): string =>
-  state.browser.trackPanel.trackPanelModalView;
-
-export const getSelectedBrowserTab = (state: RootState): TrackType =>
-  state.browser.trackPanel.selectedBrowserTab;
-
-export const getTrackPanelOpened = (state: RootState): boolean =>
-  state.browser.trackPanel.trackPanelOpened;
-
-export const getDrawerView = (state: RootState): string =>
-  state.browser.drawer.drawerView;
-
-export const getDrawerOpened = (state: RootState): boolean =>
-  state.browser.drawer.drawerOpened;
-
-export const getObjectFetchFailed = (state: RootState) =>
-  state.browser.object.objectFetchFailed;
-
-export const getObjectFetching = (state: RootState) =>
-  state.browser.object.objectFetching;
-
-export const getObjectInfo = (state: RootState) =>
-  state.browser.object.objectInfo;
-
-export const getTrackCategories = (state: RootState): [] =>
-  state.browser.object.trackCategories;
-
-export const getExampleObjectsFetchFailed = (state: RootState) =>
-  state.browser.exampleObjects.exampleObjectsFetchFailed;
-
-export const getExampleObjectsFetching = (state: RootState) =>
-  state.browser.exampleObjects.exampleObjectsFetching;
-
-export const getExampleObjects = (state: RootState) =>
-  state.browser.exampleObjects.examples;

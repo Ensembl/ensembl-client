@@ -3,24 +3,24 @@ import React, { FunctionComponent, Fragment } from 'react';
 import styles from '../Drawer.scss';
 
 type DrawerTranscriptProps = {
-  objectInfo: any;
+  ensObjectInfo: any;
 };
 
 const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
   props: DrawerTranscriptProps
 ) => {
-  const { objectInfo } = props;
+  const { ensObjectInfo } = props;
 
-  let transcriptStableId = objectInfo.associated_object.stable_id;
-  let selectedInfo = objectInfo.associated_object.selected_info;
-  let geneSymbol = objectInfo.obj_symbol;
-  let geneStableId = objectInfo.stable_id;
+  let transcriptStableId = ensObjectInfo.associated_object.stable_id;
+  let selectedInfo = ensObjectInfo.associated_object.selected_info;
+  let geneSymbol = ensObjectInfo.obj_symbol;
+  let geneStableId = ensObjectInfo.stable_id;
 
-  if (objectInfo.obj_type === 'transcript') {
-    transcriptStableId = objectInfo.stable_id;
-    selectedInfo = objectInfo.selected_info;
-    geneSymbol = objectInfo.associated_object.obj_symbol;
-    geneStableId = objectInfo.associated_object.stable_id;
+  if (ensObjectInfo.obj_type === 'transcript') {
+    transcriptStableId = ensObjectInfo.stable_id;
+    selectedInfo = ensObjectInfo.selected_info;
+    geneSymbol = ensObjectInfo.associated_object.obj_symbol;
+    geneStableId = ensObjectInfo.associated_object.stable_id;
   }
 
   return (

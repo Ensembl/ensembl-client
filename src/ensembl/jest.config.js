@@ -1,7 +1,14 @@
 module.exports = {
+  globals: {
+    'ts-jest': {
+      diagnostics: false
+    }
+  },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   moduleNameMapper: {
     '\\.svg': '<rootDir>/tests/svgrMock.js',
+    '^config$': '<rootDir>/config.ts',
+    '(tests/.*)$$': '<rootDir>/$1',
     '(src/.*)$': '<rootDir>/$1',
     '(static/.*)$': '<rootDir>/$1',
     '(static/browser/.*)$': '<rootDir>/$1.stub.js',
