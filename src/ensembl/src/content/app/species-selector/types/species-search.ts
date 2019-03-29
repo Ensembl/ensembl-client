@@ -7,7 +7,12 @@ export type SearchMatch = {
   scientific_name: string | null;
   assembly_name: string | null;
   matched_substrings: MatchedSubstring[];
-  genome: string;
+  // genome: string;
+};
+
+export type SearchMatchGroup = {
+  title?: string;
+  matches: SearchMatch[];
 };
 
 export type MatchedSubstring = {

@@ -12,7 +12,7 @@ import styles from './SpeciesSearchMatch.scss';
 
 type Props = {
   match: SearchMatch;
-  onClick: () => void;
+  onClick: (match: SearchMatch) => void;
 };
 
 type SplitterProps = {

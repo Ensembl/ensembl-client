@@ -1,6 +1,7 @@
 import { LoadingState } from 'src/content/app/species-selector/types/loading-state';
 import {
   SearchMatch,
+  SearchMatches,
   Strain,
   Assembly,
   CommittedItem
@@ -18,7 +19,7 @@ export type SpeciesSelectorState = {
   };
   search: {
     text: string;
-    results: SearchMatch[];
+    results: SearchMatches[];
   };
   currentItem: CurrentItem | null;
   committedItems: CommittedItem[];
