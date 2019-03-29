@@ -45,8 +45,8 @@
     }
   },
   "dependencies": {
-    "connected-react-router": "6.3.1",
     "classnames": "2.2.6",
+    "connected-react-router": "6.3.1",
     "dotenv": "6.2.0",
     "foundation-sites": "6.5.3",
     "lodash": "4.17.11",
