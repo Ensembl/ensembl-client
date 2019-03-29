@@ -39,13 +39,14 @@ describe('<ImageButton />', () => {
       expect(wrapper.prop('image')).toEqual('');
     });
 
-    it('renders and img tag if a path to an image file is passed', () => {
+    it('renders an img tag if a path to an image file is passed', () => {
       const wrapper = mount(<ImageButton image={'foo.png'} />);
 
+      expect(typeof wrapper.find(ImageHolder).prop('image')).toBe('string');
       expect(wrapper.find(ImageHolder).find('img')).toHaveLength(1);
     });
 
-    it('renders and img tag if a path to an image file is passed', () => {
+    it('renders the svg file passed in', () => {
       const mockSVG = () => {
         return <svg />;
       };
