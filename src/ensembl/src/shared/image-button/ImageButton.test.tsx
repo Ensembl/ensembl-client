@@ -1,6 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import ImageButton, { ImageButtonStatus } from './ImageButton';
+import ImageHolder from './ImageHolder';
 
 describe('<ImageButton />', () => {
   it('renders without error', () => {
@@ -13,15 +14,7 @@ describe('<ImageButton />', () => {
     it('has a buttonStatus set by default', () => {
       const wrapper = mount(<ImageButton />);
 
-      expect(wrapper.props().buttonStatus).toEqual(ImageButtonStatus.DEFAULT);
-    });
-
-    it('respects the buttonStatus prop', () => {
-      const wrapper = mount(
-        <ImageButton buttonStatus={ImageButtonStatus.ACTIVE} />
-      );
-
-      expect(wrapper.props().buttonStatus).toEqual(ImageButtonStatus.ACTIVE);
+      expect(wrapper.prop('buttonStatus')).toEqual(ImageButtonStatus.DEFAULT);
     });
   });
 
@@ -29,46 +22,80 @@ describe('<ImageButton />', () => {
     it('has a description set by default', () => {
       const wrapper = mount(<ImageButton />);
 
-      expect(wrapper.props().description).toEqual('');
+      expect(wrapper.prop('description')).toEqual('');
     });
 
     it('respects the description prop', () => {
       const wrapper = mount(<ImageButton description={'foo'} />);
 
-      expect(wrapper.props().description).toEqual('foo');
+      expect(wrapper.prop('description')).toEqual('foo');
     });
   });
 
   describe('prop image', () => {
-    it('has a image set by default', () => {
+    it('has an image set by default', () => {
       const wrapper = mount(<ImageButton />);
 
-      expect(wrapper.props().image).toEqual('');
+      expect(wrapper.prop('image')).toEqual('');
     });
 
-    it('respects the image prop', () => {
-      const wrapper = mount(<ImageButton image={'foo.svg'} />);
+    it('renders and img tag if a path to an image file is passed', () => {
+      const wrapper = mount(<ImageButton image={'foo.png'} />);
 
-      expect(wrapper.props().image).toEqual('foo.svg');
+      expect(wrapper.find(ImageHolder).find('img')).toHaveLength(1);
+    });
+
+    it('renders and img tag if a path to an image file is passed', () => {
+      const mockSVG = () => {
+        return <svg />;
+      };
+      const wrapper = mount(<ImageButton image={mockSVG} />);
+      expect(wrapper.find(ImageHolder).find(mockSVG)).toHaveLength(1);
     });
   });
 
   describe('prop classNames', () => {
-    it('respects the classNames prop', () => {
-      const wrapper = mount(<ImageButton classNames={'foo'} />);
+    it('always has the default className applied', () => {
+      const wrapper = mount(
+        <ImageButton buttonStatus={ImageButtonStatus.ACTIVE} />
+      );
 
-      expect(wrapper.props().classNames).toEqual('foo');
+      expect(wrapper.find(ImageHolder).find('div.default')).toHaveLength(1);
+    });
+
+    it('applies the respective className depending on the button status', () => {
+      const wrapper = mount(
+        <ImageButton buttonStatus={ImageButtonStatus.ACTIVE} />
+      );
+
+      expect(wrapper.find(ImageHolder).find('div.active')).toHaveLength(1);
     });
   });
 
   describe('prop onClick', () => {
     const onClick = jest.fn();
-    it('respects the onClick prop', () => {
+    afterEach(() => {
+      jest.resetAllMocks();
+    });
+    it('calls the onClick prop when clicked', () => {
       const wrapper = mount(<ImageButton onClick={onClick} />);
 
       wrapper.simulate('click');
 
       expect(onClick).toBeCalled();
+    });
+
+    it('does not call the onClick prop when clicked if the status is disabled', () => {
+      const wrapper = mount(
+        <ImageButton
+          onClick={onClick}
+          buttonStatus={ImageButtonStatus.DISABLED}
+        />
+      );
+
+      wrapper.simulate('click');
+
+      expect(onClick).not.toBeCalled();
     });
   });
 });

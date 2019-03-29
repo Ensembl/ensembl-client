@@ -14,7 +14,7 @@ type Props = {
   buttonStatus: ImageButtonStatus;
   description: string;
   image: React.FunctionComponent<React.SVGProps<SVGSVGElement>> | string;
-  classNames?: any;
+  classNames?: { [key in ImageButtonStatus]?: string };
   onClick?: () => void;
 };
 
@@ -26,7 +26,10 @@ const ImageButton = (props: Props) => {
 
   const { classNames, ...rest } = props;
 
-  const styles = { ...defaultStyles, ...props.classNames };
+  const styles = classNames
+    ? { ...defaultStyles, ...props.classNames }
+    : defaultStyles;
+
   return (
     <div {...buttonProps}>
       <ImageHolder {...rest} classNames={styles} />

@@ -6,7 +6,7 @@ import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
 type Props = {
   buttonStatus: ImageButtonStatus;
   image: React.FunctionComponent<React.SVGProps<SVGSVGElement>> | string;
-  classNames: any;
+  classNames: { [key in ImageButtonStatus]?: string };
   description: string;
 };
 
