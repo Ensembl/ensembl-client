@@ -25,7 +25,7 @@
     "lint:scripts": "tslint -c tslint.json 'src/**/*.{ts,tsx}' -t codeFrame --force",
     "lint:styles": "stylelint 'src/styles/**/*.scss'",
     "storybook": "start-storybook -p 9001 -c .storybook",
-    "deploy-storybook": "build-storybook -o built-storybook && gh-pages -d built-storybook",
+    "deploy-docs": "./deploy-docs.sh",
     "check-types": "tsc",
     "jest": "jest",
     "test": "jest --verbose",
