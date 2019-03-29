@@ -9,6 +9,7 @@
 .browserInnerWrapper {
   height: calc(100vh - 177px);
   position: absolute;
+  @include flex;
 }
 
 .browserImageWrapper {
