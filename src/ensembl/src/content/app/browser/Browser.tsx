@@ -121,43 +121,54 @@ export const Browser: FunctionComponent<BrowserProps> = (
     props.replace(newUrl);
   }, [props.chrLocation, props.location.search]);
 
+  const getbrowserWidth = (): string => {
+    if (props.drawerOpened) {
+      return '41px';
+    }
+    return props.trackPanelOpened
+      ? 'calc(100vw - 356px)'
+      : 'calc(100vw - 36px)';
+  };
+
   const closeTrack = useCallback(() => {
     if (props.drawerOpened === false) {
       return;
     }
-
     props.toggleDrawer(false);
   }, [props.drawerOpened]);
 
   const [trackAnimation, setTrackAnimation] = useSpring(() => ({
+    float: 'left',
+    height: '100%',
     width: 'calc(100vw - 36px)'
   }));
 
-  setTrackAnimation({
-    width: props.trackPanelOpened ? 'calc(100vw - 356px)' : 'calc(100vw - 36px)'
-  });
+  useEffect(() => {
+    setTrackAnimation({
+      width: getbrowserWidth()
+    });
+  }, [props.drawerOpened, props.trackPanelOpened]);
 
   return (
     <section className={styles.browser}>
       <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
 
-      {props.genomeSelectorActive ? (
-        <div className={styles.browserOverlay} />
-      ) : null}
+      {props.genomeSelectorActive && <div className={styles.browserOverlay} />}
       <div className={styles.browserInnerWrapper}>
-        <div
-          className={`${styles.browserImageWrapper} ${
-            styles[props.browserOpenState]
-          }`}
-          onClick={closeTrack}
-        >
-          {props.browserNavOpened && !props.drawerOpened ? (
-            <BrowserNavBar browserRef={browserRef} />
-          ) : null}
-          <animated.div style={trackAnimation}>
+        <animated.div style={trackAnimation}>
+          <div
+            className={`${styles.browserImageWrapper} ${
+              styles[props.browserOpenState]
+            }`}
+            onClick={closeTrack}
+          >
+            {props.browserNavOpened && !props.drawerOpened && (
+              <BrowserNavBar browserRef={browserRef} />
+            )}
+
             <BrowserImage browserRef={browserRef} />
-          </animated.div>
-        </div>
+          </div>
+        </animated.div>
         <TrackPanel browserRef={browserRef} />
         {props.drawerOpened && <Drawer />}
       </div>

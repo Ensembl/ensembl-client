@@ -3,20 +3,22 @@
 .browser {
   width: 100%;
   height: calc(100% - 32px);
+  position: relative;
 }
 
 .browserInnerWrapper {
-  @include flex;
   height: calc(100vh - 177px);
+  position: absolute;
 }
 
 .browserImageWrapper {
+  height: 100%;
   &.semiExpanded {
-    width: calc(100vw - 356px);
+    width: 100%;
   }
 
   &.expanded {
-    width: calc(100vw - 36px);
+    width: 100%;
   }
 
   &.collapsed {
