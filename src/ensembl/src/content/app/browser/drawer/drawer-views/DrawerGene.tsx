@@ -3,20 +3,20 @@ import React, { FunctionComponent } from 'react';
 import styles from '../Drawer.scss';
 
 type DrawerGeneProps = {
-  objectInfo: any;
+  ensObjectInfo: any;
 };
 
 const DrawerGene: FunctionComponent<DrawerGeneProps> = (
   props: DrawerGeneProps
 ) => {
-  const { objectInfo } = props;
+  const { ensObjectInfo } = props;
 
-  let geneSymbol = objectInfo.obj_symbol;
-  let geneStableId = objectInfo.stable_id;
+  let geneSymbol = ensObjectInfo.obj_symbol;
+  let geneStableId = ensObjectInfo.stable_id;
 
-  if (objectInfo.obj_type === 'transcript') {
-    geneSymbol = objectInfo.associated_object.obj_symbol;
-    geneStableId = objectInfo.associated_object.stable_id;
+  if (ensObjectInfo.obj_type === 'transcript') {
+    geneSymbol = ensObjectInfo.associated_object.obj_symbol;
+    geneStableId = ensObjectInfo.associated_object.stable_id;
   }
 
   return (
