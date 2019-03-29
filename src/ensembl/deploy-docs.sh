@@ -9,7 +9,7 @@ mkdir -p "$BUILD_DIR" "$BUILD_DIR/storybook" "$BUILD_DIR/genome-browser"
 build-storybook -o "$BUILD_DIR/storybook"
 
 # copy pre-built docs for genome browser in respective folder
-cp -r ../assets/browser/app/doc/manual/site/ "$BUILD_DIR/genome-browser"
+cp -a ../assets/browser/app/doc/manual/site/. "$BUILD_DIR/genome-browser"
 
 # copy landing page to the root docs build folder
 cp static/html/docs-main.html "$BUILD_DIR/index.html"
