@@ -6,7 +6,7 @@ use stdweb::web::{ Element, HtmlElement, IHtmlElement };
 use stdweb::traits::IEvent;
 
 use controller::global::{ App, AppRunner };
-use controller::input::{ Action, actions_run, EggDetector };
+use controller::input::{ Action, actions_run };
 use controller::input::physics::MousePhysics;
 use controller::input::optical::Optical;
 use types::Dot;
@@ -84,46 +84,16 @@ impl EventListener<()> for UserEventListener {
     }
 }
 
-struct EventEggs {
-    patterns: Vec<(EggDetector,Vec<Action>)>
-}
-
-impl EventEggs {
-    pub fn new(actions: HashMap<&str,Vec<Action>>) -> EventEggs {
-        EventEggs {
-            patterns: actions.iter().map(|(k,v)| {
-                (EggDetector::new(Some(k)),v.clone())
-            }).collect()
-        }
-    }
-    
-    pub fn key(&mut self, app: &Arc<Mutex<App>>, key: &str) {
-        for (pattern,actions) in &mut self.patterns {
-            pattern.new_char(key);
-            if pattern.is_active() {
-                pattern.reset();
-                actions_run(&mut app.lock().unwrap(),actions);
-            }
-        }
-    }
-}
-
 pub struct UserEventListenerBody {
     app_runner: AppRunner,
     mouse: Arc<Mutex<MousePhysics>>,
-    event_eggs: EventEggs,
-    egg: EggDetector
 }
 
 impl UserEventListenerBody {
     pub fn new(app_runner: &AppRunner, mouse: &Arc<Mutex<MousePhysics>>) -> UserEventListenerBody {
-        let event_eggs = hashmap! {
-        };
         UserEventListenerBody {
             mouse: mouse.clone(),
             app_runner: app_runner.clone(),
-            event_eggs: EventEggs::new(event_eggs),
-            egg: EggDetector::new(Some("@gander#"))
         }
     }
 }
@@ -135,14 +105,7 @@ impl EventListener<()> for UserEventListenerBody {
                 self.mouse.lock().unwrap().up();
             },
             EventData::KeyboardEvent(EventType::KeyPressEvent,_,e) => {
-                if !self.egg.is_active() {
-                    self.egg.new_char(&e.key_char());
-                    if self.egg.is_active() {
-                        self.app_runner.activate_debug();
-                    }
-                }
                 self.app_runner.bling_key(&e.key_char());
-                self.event_eggs.key(&self.app_runner.state(),&e.key_char());
             },
             _ => ()
         }

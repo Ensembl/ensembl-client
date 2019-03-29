@@ -9,7 +9,8 @@ use dom::webgl::{
 
 use program::data::{ DataBatch };
 use program::objects::Object;
-use drawing::DrawingSession;
+use drivers::webgl::CarriageCanvases;
+use drivers::webgl::GLProgData;
 
 pub struct ObjectMain {
     method: u32,
@@ -59,7 +60,7 @@ impl Object for ObjectMain {
         }
     }
 
-    fn obj_final(&mut self, batch: &DataBatch, ctx: &glctx, _acm: &DrawingSession) {
+    fn obj_final(&mut self, batch: &DataBatch, ctx: &glctx, _acm: &mut GLProgData) {
         self.buf.entry(batch.id()).or_insert_with(|| ctx.create_buffer().unwrap());
         if let Some(data) = self.data(batch) {
             if let Some(buf) = self.buffer(batch) {

@@ -7,7 +7,6 @@ use stdweb::unstable::TryInto;
 use stdweb::web::{ Element, IEventTarget, HtmlElement, INode };
 use stdweb::web::event::{ ChangeEvent, ClickEvent };
 
-use controller::input::EggDetector;
 use controller::global::App;
 use super::super::testcards::select_testcard;
 use debug::DebugConsole;
@@ -31,6 +30,7 @@ pub const DEBUGSTAGE : &str = r##"
                 <option value="live">Live Testcard</option>
                 <option value="button">Button Testcard</option>
                 <option value="text">Text Testcard</option>
+                <option value="text2">Text2 Testcard</option>
                 <option value="ruler">Ruler Testcard</option>
                 <option value="leaf">Leaf Testcard</option>
             </select>
@@ -222,7 +222,6 @@ impl<F> EventListener<Option<Arc<Mutex<App>>>> for ButtonEventListener<F> where 
 pub struct ButtonDebugInteractor {
     name: String,
     ec: EventControl<Option<Arc<Mutex<App>>>>,
-    egg: EggDetector,
     cb: Rc<Fn(&Arc<Mutex<App>>)>
 }
 
@@ -232,7 +231,6 @@ impl ButtonDebugInteractor {
         let mut out = Box::new(ButtonDebugInteractor {
             ec: EventControl::new(Box::new(ButtonEventListener::new(cb.clone())),None),
             name: name.to_string(),
-            egg: EggDetector::new(egg),
             cb
         });
         out.ec.add_event(EventType::MouseClickEvent);
@@ -249,15 +247,7 @@ impl DebugInteractor for ButtonDebugInteractor {
             domutil::text_content(&button_el,&self.name);
             self.ec.add_element(&button_el,Some(ar.clone()));
         }
-    }
-    
-    fn key(&mut self, app: &Arc<Mutex<App>>, key: &str) {
-        self.egg.new_char(key);
-        if self.egg.is_active() {
-            self.egg.reset();
-            (self.cb)(app);
-        }
-    }
+    }    
 }
 
 pub struct DebugBling {

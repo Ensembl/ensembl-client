@@ -10,24 +10,30 @@ use rand::rngs::SmallRng;
 use rand::SeedableRng;
 
 use composit::{
-    StateFixed, StateValue, StateAtom, Leaf, Traveller,
-    AllSourceResponseBuilder, Stick
+    StateFixed, StateAtom, Leaf, Stick
 };
 
 use debug::support::closuresource::{ ClosureSource, closure_add, closure_add_opt, closure_done };
 use debug::testcards::common::{
-     wiggly, rng_prob, rng_pos, rng_colour, start_rng,
+    wiggly, rng_prob, rng_pos, rng_colour, start_rng,
     rng_subdivide, bio_mark, rng_tracks, prop
 };
 
-use drawing::DrawingHash;
-use shape::{
+use model::shape::{
+    ColourSpec, MathsShape, stretch_wiggle,
+    PinRectTypeSpec, StretchRectTypeSpec, 
     tape_mathsshape,
     pin_mathsshape,
-    stretch_texture, stretch_wiggle,
-    ColourSpec, MathsShape, fix_mathsshape, page_mathsshape,
-    PinRectTypeSpec, StretchRectTypeSpec, TextureTypeSpec,
-    ShapeInstanceData, TypeToShape, Facade, ShapeShortInstanceData
+    fix_mathsshape, page_mathsshape,
+    text_texture,   bitmap_texture,
+    MarkSpec, DrawingSpec,
+    TextureTypeSpec,
+};
+use model::train::PartyResponses;
+
+use drivers::webgl::{
+    ShapeInstanceData, TypeToShape, Facade, ShapeShortInstanceData,
+    stretch_texture
 };
 
 use controller::global::App;
@@ -39,9 +45,9 @@ use types::{
     A_RIGHT, A_LEFT
 };
 
-use drawing::{
-    text_texture, bitmap_texture, collage, FCFont,
-    mark_rectangle, FontVariety, MarkSpec, DrawingSpec
+use drivers::webgl::{
+    collage, FCFont,
+    mark_rectangle, FontVariety,
 };
 
 const SW : i32 = 1000;
@@ -54,7 +60,7 @@ fn battenberg() -> DrawingSpec {
                           255,255,0,255 },cpixel(2,2),false,None)
 }
 
-fn measure(lc: &mut AllSourceResponseBuilder, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSpec) {
+fn measure(lc: &mut PartyResponses, leaf: &Leaf, cs: &ColourSpec, cs2: &ColourSpec) {
     for x in -10..10 {
         let prts = PinRectTypeSpec {
             sea_x: None,
