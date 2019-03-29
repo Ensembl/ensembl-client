@@ -43,7 +43,9 @@ describe('<ImageButton />', () => {
       const wrapper = mount(<ImageButton image={'foo.png'} />);
 
       expect(typeof wrapper.find(ImageHolder).prop('image')).toBe('string');
-      expect(wrapper.find(ImageHolder).find('img')).toHaveLength(1);
+      expect(wrapper.find(ImageHolder).find('img[src="foo.png"]')).toHaveLength(
+        1
+      );
     });
 
     it('renders the svg file passed in', () => {
