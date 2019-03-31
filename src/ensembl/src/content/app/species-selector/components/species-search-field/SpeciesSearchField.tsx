@@ -20,6 +20,7 @@ import styles from './SpeciesSearchField.scss';
 
 type Props = {
   onSearchChange: (search: string) => void;
+  onMatchSelected: (match: SearchMatch) => void;
   matches: SearchMatches[];
 };
 
@@ -35,8 +36,7 @@ export const SpeciesSearchField = (props: Props) => {
     }
   };
 
-  const onMatchSelected = (match: SearchMatch) =>
-    console.log('match selected', match);
+  const onMatchSelected = (match: SearchMatch) => props.onMatchSelected(match);
 
   return (
     <div className={styles.speciesSearchField}>
