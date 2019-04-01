@@ -20,7 +20,13 @@
       ],
       "stories/*": [
         "stories/*"
-      ]
+      ],
+      "tests/*": [
+        "tests/*"
+      ],
+      "config": [
+        "config.ts"
+      ],
     },
     "removeComments": true,
     "skipLibCheck": true,
@@ -28,10 +34,6 @@
     "strict": true,
     "target": "esnext"
   },
-  "exclude": [
-    "./src/**/*.test.ts",
-    "./src/**/*.test.tsx"
-  ],
   "include": [
     "./src/**/*",
     "./static/**/*",

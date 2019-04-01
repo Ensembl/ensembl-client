@@ -2,7 +2,6 @@ import React, { FunctionComponent, memo } from 'react';
 import { connect } from 'react-redux';
 
 import { RootState } from 'src/store';
-import { changeCurrentApp } from '../headerActions';
 import Launchbar from './Launchbar';
 import { getCurrentApp, getLaunchbarExpanded } from '../headerSelectors';
 
@@ -11,13 +10,9 @@ type StateProps = {
   launchbarExpanded: boolean;
 };
 
-type DispatchProps = {
-  changeCurrentApp: (currentApp: string) => void;
-};
-
 type OwnProps = {};
 
-type LaunchbarContainerProps = StateProps & DispatchProps & OwnProps;
+type LaunchbarContainerProps = StateProps & OwnProps;
 
 export const LaunchbarContainer: FunctionComponent<
   LaunchbarContainerProps
@@ -28,11 +23,4 @@ const mapStateToProps = (state: RootState): StateProps => ({
   launchbarExpanded: getLaunchbarExpanded(state)
 });
 
-const mapDispatchToProps: DispatchProps = {
-  changeCurrentApp
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(LaunchbarContainer);
+export default connect(mapStateToProps)(LaunchbarContainer);
