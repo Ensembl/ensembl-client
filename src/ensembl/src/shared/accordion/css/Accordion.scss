@@ -1,12 +1,12 @@
 @import 'src/styles/common';
 
 .accordion {
-  border: 2px solid $ens-grey;
+  border: 2px solid $ens-medium-light-grey;
   border-radius: 2px;
 }
 
 .accordionItem + .accordionItem {
-  border-top: 2px solid $ens-grey;
+  border-top: 2px solid $ens-medium-light-grey;
 }
 
 .accordionButton {
@@ -19,26 +19,41 @@
   position: relative;
 }
 
-.accordionButton:after {
+.accordionButton:after,
+.accordionButton:before {
   display: inline-block;
   position: absolute;
-  right: 20px;
-  top: 50%;
-  margin-top: -5px;
+  margin-top: 10px;
   content: '';
-  height: 10px;
+  height: 2px;
   width: 10px;
   margin-right: 12px;
-  border-left: 2px solid $ens-blue;
-  border-top: 2px solid $ens-blue;
+  transition: transform 0.2s linear, top 0.2s linear;
+  background-color: $ens-blue;
+}
+
+.accordionButton:before {
+  right: 21px;
+  top: 20px;
   transform: rotate(45deg);
-  transition: transform 0.2s linear;
+}
+
+.accordionButton:after {
+  right: 15px;
+  top: 20px;
+  transform: rotate(-45deg);
+}
+
+.accordionButton[aria-expanded='true']::before,
+.accordionButton[aria-selected='true']::before {
+  top: 15px;
+  transform: rotate(-45deg);
 }
 
 .accordionButton[aria-expanded='true']::after,
 .accordionButton[aria-selected='true']::after {
-  transform: rotate(-135deg);
-  transition: transform 0.2s linear;
+  top: 15px;
+  transform: rotate(45deg);
 }
 
 .accordionPanel {
