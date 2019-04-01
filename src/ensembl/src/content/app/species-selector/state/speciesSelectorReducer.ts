@@ -14,6 +14,15 @@ export default function speciesSelectorReducer(
         ...state,
         search: action.payload
       };
+    case getType(speciesSelectorActions.setSelectedSearchResult):
+      return {
+        ...state,
+        currentItem: {
+          searchMatch: action.payload,
+          selectedStrain: null,
+          selectedAssembly: null
+        }
+      };
     default:
       return state;
   }

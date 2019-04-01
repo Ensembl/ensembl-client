@@ -12,7 +12,6 @@ import styles from './SpeciesSearchMatch.scss';
 
 type Props = {
   match: SearchMatch;
-  onClick: (match: SearchMatch) => void;
 };
 
 type SplitterProps = {
@@ -33,9 +32,9 @@ type SplitSubstring = {
 
 type NumberTuple = [number, number];
 
-const SpeciesSearchMatch = ({ match, onClick }: Props) => {
+const SpeciesSearchMatch = ({ match }: Props) => {
   return (
-    <div className={styles.speciesSearchMatch} onClick={onClick}>
+    <div className={styles.speciesSearchMatch}>
       <CommonName match={match} />
       <ScientificName match={match} />
     </div>

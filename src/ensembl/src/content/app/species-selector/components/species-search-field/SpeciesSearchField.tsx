@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 
-import { fetchSpeciesSearchResults } from 'src/content/app/species-selector/state/speciesSelectorActions';
+import {
+  fetchSpeciesSearchResults,
+  setSelectedSearchResult
+} from 'src/content/app/species-selector/state/speciesSelectorActions';
 import { getSearchResults } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import SpeciesAutosuggestionPanel from '../species-autosuggestion-panel/SpeciesAutosuggestionPanel';
 import SpeciesSearchMatch from '../species-search-match/SpeciesSearchMatch';
 
 import AutosuggestSearchField from 'src/shared/autosuggest-search-field/AutosuggestSearchField';
@@ -36,7 +38,9 @@ export const SpeciesSearchField = (props: Props) => {
     }
   };
 
-  const onMatchSelected = (match: SearchMatch) => props.onMatchSelected(match);
+  const onMatchSelected = (match: SearchMatch) => {
+    props.onMatchSelected(match);
+  };
 
   return (
     <div>
@@ -47,7 +51,7 @@ export const SpeciesSearchField = (props: Props) => {
         onChange={handleSearchChange}
         onSelect={onMatchSelected}
         rightCorner={<RightCorner />}
-        matchGroups={buildMatchGroups(props.matches, onMatchSelected)}
+        matchGroups={buildMatchGroups(props.matches)}
         searchFieldClassName={styles.speciesSearchField}
       />
     </div>
@@ -61,15 +65,10 @@ const RightCorner = () => {
   return <QuestionButton onHover={onQuestionButtonHover} />;
 };
 
-const buildMatchGroups = (
-  groups: SearchMatches[],
-  onSelect: (match: SearchMatch) => void
-) => {
+const buildMatchGroups = (groups: SearchMatches[]) => {
   return groups.map((group) => {
     const matches = group.map((match) => {
-      const renderedMatch = (
-        <SpeciesSearchMatch match={match} onClick={onSelect} />
-      );
+      const renderedMatch = <SpeciesSearchMatch match={match} />;
       return {
         data: match,
         element: renderedMatch
@@ -84,7 +83,8 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  onSearchChange: fetchSpeciesSearchResults.request
+  onSearchChange: fetchSpeciesSearchResults.request,
+  onMatchSelected: setSelectedSearchResult
 };
 
 export default connect(
