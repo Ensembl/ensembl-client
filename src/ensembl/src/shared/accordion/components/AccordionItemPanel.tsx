@@ -6,10 +6,6 @@ import styles from '../css/Accordion.scss';
 
 type Props = DivAttributes;
 
-const defaultProps = {
-  className: styles.accordionPanel
-};
-
 const AccordionItemPanel = (props: Props) => {
   const renderChildren = ({ panelAttributes }: ItemContext): JSX.Element => {
     return (
@@ -22,6 +18,10 @@ const AccordionItemPanel = (props: Props) => {
   };
 
   return <ItemConsumer>{renderChildren}</ItemConsumer>;
+};
+
+AccordionItemPanel.defaultProps = {
+  className: styles.accordionPanel
 };
 
 AccordionItemPanel.displayName = DisplayName.AccordionItemPanel;

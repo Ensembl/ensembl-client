@@ -1,6 +1,4 @@
-// tslint:disable:max-classes-per-file
-
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import AccordionStore, {
   InjectedButtonAttributes,
   InjectedHeadingAttributes,
@@ -31,74 +29,66 @@ export interface AccordionContext {
 
 const Context = React.createContext(null as AccordionContext | null);
 
-export class Provider extends React.PureComponent<
-  ProviderProps,
-  ProviderState
-> {
-  public static defaultProps: ProviderProps = {
-    allowMultipleExpanded: false,
-    allowZeroExpanded: false
+export const Provider = (props: ProviderProps) => {
+  const [store, setStore] = useState(
+    new AccordionStore({
+      allowMultipleExpanded: props.allowMultipleExpanded,
+      allowZeroExpanded: props.allowZeroExpanded,
+      expanded: props.preExpanded
+    })
+  );
+
+  const toggleExpanded = (key: UUID): void => {
+    setStore(store.toggleExpanded(key));
+    if (props.onChange) {
+      props.onChange(store.expanded);
+    }
   };
 
-  public state: ProviderState = new AccordionStore({
-    allowMultipleExpanded: this.props.allowMultipleExpanded,
-    allowZeroExpanded: this.props.allowZeroExpanded,
-    expanded: this.props.preExpanded
-  });
-
-  public toggleExpanded = (key: UUID): void => {
-    this.setState(
-      (state: Readonly<ProviderState>) => state.toggleExpanded(key),
-      () => {
-        if (this.props.onChange) {
-          this.props.onChange(this.state.expanded);
-        }
-      }
-    );
+  const isItemDisabled = (key: UUID): boolean => {
+    return store.isItemDisabled(key);
   };
 
-  public isItemDisabled = (key: UUID): boolean => {
-    return this.state.isItemDisabled(key);
+  const isItemExpanded = (key: UUID): boolean => {
+    return store.isItemExpanded(key);
   };
 
-  public isItemExpanded = (key: UUID): boolean => {
-    return this.state.isItemExpanded(key);
+  const getPanelAttributes = (key: UUID): InjectedPanelAttributes => {
+    return store.getPanelAttributes(key);
   };
 
-  public getPanelAttributes = (key: UUID): InjectedPanelAttributes => {
-    return this.state.getPanelAttributes(key);
+  const getHeadingAttributes = (): InjectedHeadingAttributes => {
+    return store.getHeadingAttributes();
   };
 
-  public getHeadingAttributes = (): InjectedHeadingAttributes => {
-    return this.state.getHeadingAttributes();
+  const getButtonAttributes = (key: UUID): InjectedButtonAttributes => {
+    return store.getButtonAttributes(key);
   };
 
-  public getButtonAttributes = (key: UUID): InjectedButtonAttributes => {
-    return this.state.getButtonAttributes(key);
-  };
+  const { allowZeroExpanded, allowMultipleExpanded } = store;
 
-  public render(): JSX.Element {
-    const { allowZeroExpanded, allowMultipleExpanded } = this.state;
+  return (
+    <Context.Provider
+      value={{
+        allowMultipleExpanded,
+        allowZeroExpanded,
+        getButtonAttributes: getButtonAttributes,
+        getHeadingAttributes: getHeadingAttributes,
+        getPanelAttributes: getPanelAttributes,
+        isItemDisabled: isItemDisabled,
+        isItemExpanded: isItemExpanded,
+        toggleExpanded: toggleExpanded
+      }}
+    >
+      {props.children || null}
+    </Context.Provider>
+  );
+};
 
-    return (
-      <Context.Provider
-        value={{
-          allowMultipleExpanded,
-          allowZeroExpanded,
-          getButtonAttributes: this.getButtonAttributes,
-          getHeadingAttributes: this.getHeadingAttributes,
-          getPanelAttributes: this.getPanelAttributes,
-          isItemDisabled: this.isItemDisabled,
-          isItemExpanded: this.isItemExpanded,
-          toggleExpanded: this.toggleExpanded
-        }}
-      >
-        {this.props.children || null}
-      </Context.Provider>
-    );
-  }
-}
-
+Provider.defaultProps = {
+  allowMultipleExpanded: false,
+  allowZeroExpanded: false
+};
 export class Consumer extends React.PureComponent<{
   children(container: AccordionContext): React.ReactNode;
 }> {
