@@ -20,7 +20,7 @@ There are several script commands that have been baked into the NPM configuratio
 - `npm run lint:scripts` - Runs TSLint to check code errors in TypeScript and React. Also, suggests improvements to the code.
 - `npm run lint:styles` - Does the same as above through `stylelint` for the SASS code.
 - `npm run storybook` - Starts the Storybook application
-- `npm run deploy-storybook` — Builds the Storybook application and deploys it to Github Pages ([link](https://ensembl.github.io/ensembl-client))
+- `npm run deploy-docs` — Builds the Storybook application and deploys it, along with the docs on Genome browser, to Github Pages ([link](https://ensembl.github.io/ensembl-client))
 - `npm run check-types` – Runs typescript compiler to check for type correctness
 - `npm jest` - Runs `jest`in non-verbose mode.
 - `npm test` - Runs `jest` to check whether the unit tests pass in verbose mode.
