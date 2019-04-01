@@ -6,7 +6,7 @@ export const human38Match = {
     {
       length: 3,
       offset: 0,
-      match: 'description' as 'description'
+      match: 'description'
     }
   ],
   genome: 'GRCh38_demo'
@@ -20,7 +20,7 @@ export const human37Match = {
     {
       length: 3,
       offset: 0,
-      match: 'description' as 'description'
+      match: 'description'
     }
   ],
   self: 'http://whatever.com/GRCh37_demo',
@@ -35,7 +35,7 @@ export const azospirillumMatch = {
     {
       length: 3,
       offset: 13,
-      match: 'description' as 'description'
+      match: 'description'
     }
   ],
   genome: 'SgZ-5T'

@@ -39,15 +39,16 @@ export const SpeciesSearchField = (props: Props) => {
   const onMatchSelected = (match: SearchMatch) => props.onMatchSelected(match);
 
   return (
-    <div className={styles.speciesSearchField}>
+    <div>
       <AutosuggestSearchField
         search={search}
         placeholder="Common or scientific name..."
-        className={styles.speciesSearchFieldInput}
+        className={styles.speciesSearchFieldWrapper}
         onChange={handleSearchChange}
         onSelect={onMatchSelected}
         rightCorner={<RightCorner />}
         matchGroups={buildMatchGroups(props.matches, onMatchSelected)}
+        searchFieldClassName={styles.speciesSearchField}
       />
     </div>
   );

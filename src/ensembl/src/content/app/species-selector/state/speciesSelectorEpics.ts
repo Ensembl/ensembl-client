@@ -35,7 +35,7 @@ export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
     map((action) =>
       speciesSelectorActions.fetchSpeciesSearchResults.success({
         text: action.payload,
-        results: values(mockSearchResults)
+        results: [values(mockSearchResults)]
       })
     )
   );
