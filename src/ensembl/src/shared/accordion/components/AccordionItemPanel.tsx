@@ -10,23 +10,20 @@ const defaultProps = {
   className: styles.accordionPanel
 };
 
-export default class AccordionItemPanel extends React.Component<Props> {
-  public static defaultProps: typeof defaultProps = defaultProps;
-
-  public static displayName: DisplayName.AccordionItemPanel =
-    DisplayName.AccordionItemPanel;
-
-  public renderChildren = ({ panelAttributes }: ItemContext): JSX.Element => {
+const AccordionItemPanel = (props: Props) => {
+  const renderChildren = ({ panelAttributes }: ItemContext): JSX.Element => {
     return (
       <div
         data-accordion-component="AccordionItemPanel"
-        {...this.props}
+        {...props}
         {...panelAttributes}
       />
     );
   };
 
-  public render(): JSX.Element {
-    return <ItemConsumer>{this.renderChildren}</ItemConsumer>;
-  }
-}
+  return <ItemConsumer>{renderChildren}</ItemConsumer>;
+};
+
+AccordionItemPanel.displayName = DisplayName.AccordionItemPanel;
+
+export default AccordionItemPanel;

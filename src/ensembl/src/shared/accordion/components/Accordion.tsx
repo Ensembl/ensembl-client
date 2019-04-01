@@ -15,37 +15,36 @@ type AccordionProps = Pick<
   onChange?(args: UUID[]): void;
 };
 
-export default class Accordion extends React.Component<AccordionProps> {
-  public static defaultProps: AccordionProps = {
-    allowMultipleExpanded: false,
-    allowZeroExpanded: true,
-    className: styles.accordion
-  };
-
-  public static displayName: DisplayName.Accordion = DisplayName.Accordion;
-
-  public renderAccordion = (): JSX.Element => {
+const Accordion = (props: AccordionProps) => {
+  const renderAccordion = (): JSX.Element => {
     const {
       preExpanded,
       allowMultipleExpanded,
       allowZeroExpanded,
       onChange,
       ...rest
-    } = this.props;
+    } = props;
 
     return <div data-accordion-component="Accordion" {...rest} />;
   };
 
-  public render(): JSX.Element {
-    return (
-      <Provider
-        preExpanded={this.props.preExpanded}
-        allowMultipleExpanded={this.props.allowMultipleExpanded}
-        allowZeroExpanded={this.props.allowZeroExpanded}
-        onChange={this.props.onChange}
-      >
-        <Consumer>{this.renderAccordion}</Consumer>
-      </Provider>
-    );
-  }
-}
+  return (
+    <Provider
+      preExpanded={props.preExpanded}
+      allowMultipleExpanded={props.allowMultipleExpanded}
+      allowZeroExpanded={props.allowZeroExpanded}
+      onChange={props.onChange}
+    >
+      <Consumer>{renderAccordion}</Consumer>
+    </Provider>
+  );
+};
+
+Accordion.diplayName = DisplayName.Accordion;
+Accordion.defaultProps = {
+  allowMultipleExpanded: false,
+  allowZeroExpanded: true,
+  className: styles.accordion
+};
+
+export default Accordion;

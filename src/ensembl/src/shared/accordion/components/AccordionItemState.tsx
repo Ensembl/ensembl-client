@@ -8,14 +8,14 @@ type Props = Pick<DivAttributes, Exclude<keyof DivAttributes, 'children'>> & {
   ): React.ReactNode;
 };
 
-export default class AccordionItemState extends React.Component<Props> {
-  public renderChildren = (itemContext: ItemContext): JSX.Element => {
+const AccordionItemState = (props: Props) => {
+  const renderChildren = (itemContext: ItemContext): JSX.Element => {
     const { expanded, disabled } = itemContext;
 
-    return <>{this.props.children({ expanded, disabled })}</>;
+    return <>{props.children({ expanded, disabled })}</>;
   };
 
-  public render(): JSX.Element {
-    return <ItemConsumer>{this.renderChildren}</ItemConsumer>;
-  }
-}
+  return <ItemConsumer>{renderChildren}</ItemConsumer>;
+};
+
+export default AccordionItemState;

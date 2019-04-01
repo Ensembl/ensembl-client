@@ -11,25 +11,21 @@ type Props = DivAttributes & {
   toggleExpanded(): void;
 };
 
-const defaultProps = {
-  className: styles.accordionButton
+export const AccordionItemButton = (props: Props) => {
+  const { toggleExpanded, ...rest } = props;
+
+  return (
+    <div
+      {...rest}
+      onClick={toggleExpanded}
+      data-accordion-component="AccordionItemButton"
+    />
+  );
 };
 
-export class AccordionItemButton extends React.PureComponent<Props> {
-  public static defaultProps: typeof defaultProps = defaultProps;
-
-  public render(): JSX.Element {
-    const { toggleExpanded, ...rest } = this.props;
-
-    return (
-      <div
-        {...rest}
-        onClick={toggleExpanded}
-        data-accordion-component="AccordionItemButton"
-      />
-    );
-  }
-}
+AccordionItemButton.defaultProps = {
+  className: styles.accordionButton
+};
 
 type WrapperProps = Pick<
   DivAttributes,
