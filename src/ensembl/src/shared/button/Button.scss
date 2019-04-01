@@ -1,10 +1,24 @@
 @import 'src/styles/common';
 
-.button {
+.primaryButton {
   background-color: $ens-green;
   color: $ens-white;
   padding: 8px 18px;
+}
 
+.primaryButtonDisabled {
+  background-color: $ens-light-grey;
+  color: $ens-grey;
+  border: 1px solid $ens-grey;
+}
+
+.secondaryButton {
+  background-color: $ens-blue;
+  color: $ens-white;
+}
+
+.button {
+  padding: 8px 18px;
   &:active,
   &:focus {
     outline: none;

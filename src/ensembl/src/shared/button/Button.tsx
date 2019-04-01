@@ -1,15 +1,37 @@
 import React, { ReactNode } from 'react';
+import classNames from 'classnames';
 
 import styles from './Button.scss';
 
 type Props = {
   onClick: () => void;
+  isDisabled?: boolean;
+  className?: string;
   children: ReactNode;
 };
 
+export const PrimaryButton = (props: Props) => {
+  const className = classNames(
+    styles.primaryButton,
+    { [styles.primaryButtonDisabled]: props.isDisabled },
+    props.className
+  );
+  return <Button {...props} className={className} />;
+};
+
+export const SecondaryButton = (props: Props) => (
+  <Button
+    {...props}
+    className={classNames(styles.secondaryButton, props.className)}
+  />
+);
+
 const Button = (props: Props) => {
   return (
-    <button className={styles.button} onClick={props.onClick}>
+    <button
+      className={classNames(styles.button, props.className)}
+      onClick={props.onClick}
+    >
       {props.children}
     </button>
   );
