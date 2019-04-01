@@ -7,14 +7,24 @@ import { PrimaryButton, SecondaryButton } from 'src/shared/button/Button';
 const onClick = action('button-click');
 
 storiesOf('Components|Shared Components/Button/PrimaryButton', module)
-  .add('default', () => <PrimaryButton onClick={onClick}>Add</PrimaryButton>)
+  .add('default', () => (
+    <div style={{ padding: '40px' }}>
+      <PrimaryButton onClick={onClick}>Primary button</PrimaryButton>
+    </div>
+  ))
   .add('disabled', () => (
-    <PrimaryButton onClick={onClick} isDisabled={true}>
-      Add
-    </PrimaryButton>
+    <div style={{ padding: '40px' }}>
+      <PrimaryButton onClick={onClick} isDisabled={true}>
+        Primary button
+      </PrimaryButton>
+    </div>
   ));
 
 storiesOf('Components|Shared Components/Button/SecondaryButton', module).add(
   'default',
-  () => <SecondaryButton onClick={onClick}>Add</SecondaryButton>
+  () => (
+    <div style={{ padding: '40px' }}>
+      <SecondaryButton onClick={onClick}>Secondary button</SecondaryButton>
+    </div>
+  )
 );

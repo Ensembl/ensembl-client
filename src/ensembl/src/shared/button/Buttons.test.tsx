@@ -63,6 +63,16 @@ describe('PrimaryButton', () => {
     wrapper.simulate('click');
     expect(onClick).toHaveBeenCalled();
   });
+
+  test('does not call onClick if disabled', () => {
+    const wrapper = renderButton(PrimaryButton, {
+      ...defaultProps,
+      children: buttonChildren,
+      isDisabled: true
+    });
+    wrapper.simulate('click');
+    expect(onClick).not.toHaveBeenCalled();
+  });
 });
 
 describe('SecondaryButton', () => {

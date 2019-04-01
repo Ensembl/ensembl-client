@@ -27,10 +27,16 @@ export const SecondaryButton = (props: Props) => (
 );
 
 const Button = (props: Props) => {
+  const handleClick = () => {
+    if (!props.isDisabled) {
+      props.onClick();
+    }
+  };
+
   return (
     <button
       className={classNames(styles.button, props.className)}
-      onClick={props.onClick}
+      onClick={handleClick}
     >
       {props.children}
     </button>
