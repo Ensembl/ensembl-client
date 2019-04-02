@@ -45,7 +45,7 @@ storiesOf('Components|Shared Components/Button/PrimaryButton', module)
 storiesOf('Components|Shared Components/Button/SecondaryButton', module).add(
   'default',
   () => (
-    <div style={{ padding: '40px' }}>
+    <div className={styles.wrapper}>
       <SecondaryButton onClick={onClick}>Secondary button</SecondaryButton>
     </div>
   ),
