@@ -28,11 +28,11 @@ describe('AccordionItemButton', () => {
         wrapper
           .find(AccordionItemButton)
           .find('div')
-          .prop('className')
-      ).toEqual('accordionButton');
+          .hasClass('accordionButtonDefault')
+      ).toBe(true);
     });
 
-    it('can be overridden', () => {
+    it('can be extended', () => {
       const wrapper = mount(
         <Accordion>
           <AccordionItem uuid={'FOO'}>
@@ -47,8 +47,15 @@ describe('AccordionItemButton', () => {
         wrapper
           .find(AccordionItemButton)
           .find('div')
-          .prop('className')
-      ).toEqual('foo');
+          .hasClass('accordionButtonDefault')
+      ).toBe(true);
+
+      expect(
+        wrapper
+          .find(AccordionItemButton)
+          .find('div')
+          .hasClass('foo')
+      ).toBe(true);
     });
   });
 

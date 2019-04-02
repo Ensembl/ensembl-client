@@ -21,7 +21,7 @@ describe('Accordion', () => {
   describe('className', () => {
     it('is “accordionDefault” by default', () => {
       const wrapper = mount(<Accordion data-testid={UUIDS.FOO} />);
-      expect(wrapper.find('div').props().className).toEqual('accordionDefault');
+      expect(wrapper.find('div').hasClass('accordionDefault')).toBe(true);
     });
 
     it('can be extended', () => {
@@ -34,11 +34,11 @@ describe('Accordion', () => {
       );
     });
 
-    it('can also be overridden by using extendStyles === false', () => {
+    it('can also be overridden by using extendDefaultStyles === false', () => {
       const wrapper = mount(
         <Accordion
           className="foo"
-          extendStyles={false}
+          extendDefaultStyles={false}
           data-testid={UUIDS.FOO}
         />
       );
@@ -210,7 +210,7 @@ describe('Accordion', () => {
     });
 
     describe('onChange prop', () => {
-      it('is invoked with an array of expanded items’ uuids, if there are any', () => {
+      it('is invoked with an array of expanded items’ uuids, if there are any', async () => {
         const onChange = jest.fn();
         const wrapper = mount(
           <Accordion onChange={onChange}>
@@ -224,10 +224,13 @@ describe('Accordion', () => {
 
         wrapper.find(AccordionItemButton).simulate('click');
 
+        // ugly hack: fall back to the end of event queue, giving priority to useEffect and useState
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
         expect(onChange).toHaveBeenCalledWith([UUIDS.FOO]);
       });
 
-      it('is invoked with an empty array, if no items are expanded', () => {
+      it('is invoked with an empty array, if no items are expanded', async () => {
         const onChange = jest.fn();
         const wrapper = mount(
           <Accordion
@@ -244,6 +247,9 @@ describe('Accordion', () => {
         );
 
         wrapper.find(AccordionItemButton).simulate('click');
+
+        // ugly hack: fall back to the end of event queue, giving priority to useEffect and useState
+        await new Promise((resolve) => setTimeout(resolve, 0));
 
         expect(onChange).toHaveBeenCalledWith([]);
       });

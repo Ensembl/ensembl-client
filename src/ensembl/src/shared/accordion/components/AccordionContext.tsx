@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AccordionStore, {
   InjectedButtonAttributes,
   InjectedHeadingAttributes,
@@ -13,8 +13,6 @@ export interface ProviderProps {
   children?: React.ReactNode;
   onChange?(args: UUID[]): void;
 }
-
-type ProviderState = AccordionStore;
 
 export interface AccordionContext {
   allowMultipleExpanded: boolean;
@@ -38,11 +36,14 @@ export const Provider = (props: ProviderProps) => {
     })
   );
 
-  const toggleExpanded = (key: UUID): void => {
-    setStore(store.toggleExpanded(key));
+  useEffect(() => {
     if (props.onChange) {
       props.onChange(store.expanded);
     }
+  }, [store]);
+
+  const toggleExpanded = (key: UUID): void => {
+    setStore(store.toggleExpanded(key));
   };
 
   const isItemDisabled = (key: UUID): boolean => {

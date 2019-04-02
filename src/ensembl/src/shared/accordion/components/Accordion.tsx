@@ -14,7 +14,7 @@ type AccordionProps = Pick<
   allowMultipleExpanded: boolean;
   allowZeroExpanded: boolean;
   className?: any;
-  extendStyles: boolean;
+  extendDefaultStyles: boolean;
   onChange?(args: UUID[]): void;
 };
 
@@ -24,7 +24,7 @@ const Accordion = (props: AccordionProps) => {
     allowMultipleExpanded,
     allowZeroExpanded,
     className,
-    extendStyles,
+    extendDefaultStyles,
     onChange,
     ...rest
   } = props;
@@ -32,7 +32,7 @@ const Accordion = (props: AccordionProps) => {
   const renderAccordion = (): JSX.Element => {
     let styles = className;
 
-    if (extendStyles) {
+    if (extendDefaultStyles) {
       styles = classNames(defaultStyles.accordionDefault, className);
     }
 
@@ -57,7 +57,7 @@ Accordion.diplayName = DisplayName.Accordion;
 Accordion.defaultProps = {
   allowMultipleExpanded: false,
   allowZeroExpanded: true,
-  extendStyles: true
+  extendDefaultStyles: true
 };
 
 export default Accordion;

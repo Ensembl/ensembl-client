@@ -17,7 +17,7 @@ describe('AccordionItemPanel', () => {
   });
 
   describe('className prop', () => {
-    it('is "accordionPanel" by default', () => {
+    it('is "accordionPanelDefault" by default', () => {
       const wrapper = mount(
         <Accordion>
           <AccordionItem uuid={UUIDS.FOO}>
@@ -26,12 +26,15 @@ describe('AccordionItemPanel', () => {
         </Accordion>
       );
 
-      expect(wrapper.find(AccordionItemPanel).prop('className')).toEqual(
-        'accordionPanel'
-      );
+      expect(
+        wrapper
+          .find(AccordionItemPanel)
+          .find('div')
+          .hasClass('accordionPanelDefault')
+      ).toBe(true);
     });
 
-    it('can be overridden', () => {
+    it('can be extended', () => {
       const wrapper = mount(
         <Accordion>
           <AccordionItem uuid={UUIDS.FOO}>
@@ -40,7 +43,18 @@ describe('AccordionItemPanel', () => {
         </Accordion>
       );
 
-      expect(wrapper.find(AccordionItemPanel).prop('className')).toEqual('foo');
+      expect(
+        wrapper
+          .find(AccordionItemPanel)
+          .find('div')
+          .hasClass('accordionPanelDefault')
+      ).toBe(true);
+      expect(
+        wrapper
+          .find(AccordionItemPanel)
+          .find('div')
+          .hasClass('foo')
+      ).toBe(true);
     });
   });
 

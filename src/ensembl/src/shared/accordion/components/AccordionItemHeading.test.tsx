@@ -17,48 +17,6 @@ describe('AccordionItemHeading', () => {
     }).not.toThrow();
   });
 
-  describe('className prop', () => {
-    it('is "accordionHeading” by default', () => {
-      const wrapper = mount(
-        <Accordion>
-          <AccordionItem uuid={UUIDS.FOO}>
-            <AccordionItemHeading>
-              <AccordionItemButton />
-            </AccordionItemHeading>
-          </AccordionItem>
-        </Accordion>
-      );
-
-      expect(
-        wrapper
-          .find(AccordionItemHeading)
-          .find('div')
-          .first()
-          .props().className
-      ).toEqual('accordionHeading');
-    });
-
-    it('can be overridden', () => {
-      const wrapper = mount(
-        <Accordion>
-          <AccordionItem uuid={UUIDS.FOO}>
-            <AccordionItemHeading className="foo">
-              <AccordionItemButton />
-            </AccordionItemHeading>
-          </AccordionItem>
-        </Accordion>
-      );
-
-      expect(
-        wrapper
-          .find(AccordionItemHeading)
-          .find('div')
-          .first()
-          .prop('className')
-      ).toEqual('foo');
-    });
-  });
-
   describe('children prop', () => {
     it('is respected', () => {
       const wrapper = mount(

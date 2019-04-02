@@ -11,24 +11,39 @@ describe('AccordionItem', () => {
   });
 
   describe('className prop', () => {
-    it('is “accordionItem by default', () => {
+    it('is "accordionItemDefault" by default', () => {
       const wrapper = mount(
         <Accordion>
           <AccordionItem uuid={'FOO'} />
         </Accordion>
       );
-      expect(wrapper.find(AccordionItem).prop('className')).toEqual(
-        'accordionItem'
-      );
+      expect(
+        wrapper
+          .find(AccordionItem)
+          .find('div')
+          .hasClass('accordionItemDefault')
+      ).toBe(true);
     });
 
-    it('can be overridden', () => {
+    it('can be extended', () => {
       const wrapper = mount(
         <Accordion>
           <AccordionItem uuid={'FOO'} className="foo" />
         </Accordion>
       );
-      expect(wrapper.find(AccordionItem).prop('className')).toEqual('foo');
+
+      expect(
+        wrapper
+          .find(AccordionItem)
+          .find('div')
+          .hasClass('accordionItemDefault')
+      ).toBe(true);
+      expect(
+        wrapper
+          .find(AccordionItem)
+          .find('div')
+          .hasClass('foo')
+      ).toBe(true);
     });
   });
 

@@ -6,16 +6,16 @@ import defaultStyles from '../css/Accordion.scss';
 import classNames from 'classnames';
 
 type Props = DivAttributes & {
-  extendStyles: boolean;
+  extendDefaultStyles: boolean;
 };
 
 const AccordionItemPanel = (props: Props) => {
   const renderChildren = ({ panelAttributes }: ItemContext): JSX.Element => {
-    const { className, extendStyles, ...rest } = props;
+    const { className, extendDefaultStyles, ...rest } = props;
 
     let styles = className;
 
-    if (extendStyles) {
+    if (extendDefaultStyles) {
       styles = classNames(defaultStyles.accordionPanelDefault, className);
     }
     return (
@@ -32,7 +32,7 @@ const AccordionItemPanel = (props: Props) => {
 };
 
 AccordionItemPanel.defaultProps = {
-  extendStyles: true
+  extendDefaultStyles: true
 };
 
 AccordionItemPanel.displayName = DisplayName.AccordionItemPanel;

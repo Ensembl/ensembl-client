@@ -8,16 +8,16 @@ import { Consumer as ItemConsumer, ItemContext } from './ItemContext';
 import defaultStyles from '../css/Accordion.scss';
 
 type Props = DivAttributes & {
-  extendStyles: boolean;
+  extendDefaultStyles: boolean;
   toggleExpanded(): void;
 };
 
 export const AccordionItemButton = (props: Props) => {
-  const { className, extendStyles, toggleExpanded, ...rest } = props;
+  const { className, extendDefaultStyles, toggleExpanded, ...rest } = props;
 
   let styles = className;
 
-  if (extendStyles) {
+  if (extendDefaultStyles) {
     styles = classNames(defaultStyles.accordionButtonDefault, className);
   }
 
@@ -32,7 +32,7 @@ export const AccordionItemButton = (props: Props) => {
 };
 
 AccordionItemButton.defaultProps = {
-  extendStyles: true
+  extendDefaultStyles: true
 };
 
 type WrapperProps = Pick<
