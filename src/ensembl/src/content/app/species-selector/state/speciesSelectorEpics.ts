@@ -31,7 +31,6 @@ export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
       (action1, action2) => action1.payload === action2.payload
     ),
     switchMap((action) => of(action).pipe(delay(600))),
-    tap((action) => console.log('get action', action)),
     map((action) =>
       speciesSelectorActions.fetchSpeciesSearchResults.success({
         text: action.payload,
