@@ -20,14 +20,12 @@ describe('Accordion', () => {
 
   describe('className', () => {
     it('is “accordionDefault” by default', () => {
-      const wrapper = mount(<Accordion data-testid={UUIDS.FOO} />);
+      const wrapper = mount(<Accordion />);
       expect(wrapper.find('div').hasClass('accordionDefault')).toBe(true);
     });
 
     it('can be extended', () => {
-      const wrapper = mount(
-        <Accordion className="foo" data-testid={UUIDS.FOO} />
-      );
+      const wrapper = mount(<Accordion className="foo" />);
 
       expect(wrapper.find('div').props().className).toEqual(
         'accordionDefault foo'
@@ -36,11 +34,7 @@ describe('Accordion', () => {
 
     it('can also be overridden by using extendDefaultStyles === false', () => {
       const wrapper = mount(
-        <Accordion
-          className="foo"
-          extendDefaultStyles={false}
-          data-testid={UUIDS.FOO}
-        />
+        <Accordion className="foo" extendDefaultStyles={false} />
       );
       expect(wrapper.find('div').props().className).toEqual('foo');
     });
@@ -49,8 +43,8 @@ describe('Accordion', () => {
   describe('expanding and collapsing: ', () => {
     it('permits multiple items to be expanded when allowMultipleExpanded is true', () => {
       const [FooHeader, BarHeader] = [
-        (): JSX.Element => <AccordionItemButton data-testid={UUIDS.FOO} />,
-        (): JSX.Element => <AccordionItemButton data-testid={UUIDS.BAR} />
+        (): JSX.Element => <AccordionItemButton />,
+        (): JSX.Element => <AccordionItemButton />
       ];
 
       const wrapper = mount(
@@ -87,8 +81,8 @@ describe('Accordion', () => {
 
     it('does not permit multiple items to be expanded when allowMultipleExpanded is false', () => {
       const [FooHeader, BarHeader] = [
-        (): JSX.Element => <AccordionItemButton data-testid={UUIDS.FOO} />,
-        (): JSX.Element => <AccordionItemButton data-testid={UUIDS.BAR} />
+        (): JSX.Element => <AccordionItemButton />,
+        (): JSX.Element => <AccordionItemButton />
       ];
 
       const wrapper = mount(

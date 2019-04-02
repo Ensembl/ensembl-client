@@ -13,7 +13,6 @@ type AccordionProps = Pick<
   preExpanded?: UUID[];
   allowMultipleExpanded: boolean;
   allowZeroExpanded: boolean;
-  className?: any;
   extendDefaultStyles: boolean;
   onChange?(args: UUID[]): void;
 };
