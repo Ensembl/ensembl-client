@@ -4,10 +4,11 @@
   background-color: $ens-green;
   color: $ens-white;
   padding: 8px 18px;
+  font-weight: $bold;
 }
 
 .primaryButtonDisabled {
-  background-color: $ens-light-grey;
+  background-color: transparent;
   color: $ens-grey;
   border: 1px solid $ens-grey;
   cursor: default;
@@ -16,10 +17,12 @@
 .secondaryButton {
   background-color: $ens-blue;
   color: $ens-white;
+  font-weight: $bold;
 }
 
 .button {
   padding: 8px 18px;
+  border-radius: 4px;
   &:active,
   &:focus {
     outline: none;
