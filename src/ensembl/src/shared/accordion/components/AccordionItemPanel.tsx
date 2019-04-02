@@ -1,5 +1,4 @@
 import React from 'react';
-import DisplayName from '../helpers/DisplayName';
 import { DivAttributes } from '../helpers/types';
 import { Consumer as ItemConsumer, ItemContext } from './ItemContext';
 import defaultStyles from '../css/Accordion.scss';
@@ -34,7 +33,5 @@ const AccordionItemPanel = (props: Props) => {
 AccordionItemPanel.defaultProps = {
   extendDefaultStyles: true
 };
-
-AccordionItemPanel.displayName = DisplayName.AccordionItemPanel;
 
 export default AccordionItemPanel;

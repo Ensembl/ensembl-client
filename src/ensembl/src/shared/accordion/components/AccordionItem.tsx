@@ -1,5 +1,4 @@
 import React from 'react';
-import DisplayName from '../helpers/DisplayName';
 import { DivAttributes } from '../helpers/types';
 import { nextUuid } from '../helpers/uuid';
 import { Provider as ItemProvider, UUID } from './ItemContext';
@@ -38,7 +37,6 @@ const AccordionItem = (props: Props) => {
   );
 };
 
-AccordionItem.displayName = DisplayName.AccordionItem;
 AccordionItem.defaultProps = {
   extendDefaultStyles: true
 };

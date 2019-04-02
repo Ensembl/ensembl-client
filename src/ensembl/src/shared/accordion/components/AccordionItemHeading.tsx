@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { InjectedHeadingAttributes } from '../helpers/AccordionStore';
-import DisplayName from '../helpers/DisplayName';
 import { DivAttributes } from '../helpers/types';
 import { Consumer as ItemConsumer, ItemContext } from './ItemContext';
 
@@ -69,6 +68,6 @@ const AccordionItemHeadingWrapper: React.SFC<DivAttributes> = (
   </ItemConsumer>
 );
 
-AccordionItemHeadingWrapper.displayName = DisplayName.AccordionItemHeading;
+AccordionItemHeadingWrapper.displayName = 'AccordionItemHeading';
 
 export default AccordionItemHeadingWrapper;

@@ -1,6 +1,5 @@
 import React from 'react';
 import { InjectedButtonAttributes } from '../helpers/AccordionStore';
-import DisplayName from '../helpers/DisplayName';
 import { DivAttributes } from '../helpers/types';
 import classNames from 'classnames';
 import { Consumer as ItemConsumer, ItemContext } from './ItemContext';
@@ -58,6 +57,6 @@ const AccordionItemButtonWrapper: React.SFC<WrapperProps> = (
   </ItemConsumer>
 );
 
-AccordionItemButtonWrapper.displayName = DisplayName.AccordionItemButton;
+AccordionItemButtonWrapper.displayName = 'AccordionItemButton';
 
 export default AccordionItemButtonWrapper;

@@ -1,5 +1,4 @@
 import React from 'react';
-import DisplayName from '../helpers/DisplayName';
 import { DivAttributes } from '../helpers/types';
 import { Consumer, Provider } from './AccordionContext';
 import { UUID } from './ItemContext';
@@ -52,7 +51,6 @@ const Accordion = (props: AccordionProps) => {
   );
 };
 
-Accordion.diplayName = DisplayName.Accordion;
 Accordion.defaultProps = {
   allowMultipleExpanded: false,
   allowZeroExpanded: true,
