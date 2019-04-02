@@ -103,7 +103,6 @@ describe('SecondaryButton', () => {
 
   test('extends own class with external classname', () => {
     const externalClass = faker.lorem.word();
-    const buttonChildren = faker.lorem.words();
     const wrapper = renderButton(SecondaryButton, {
       ...defaultProps,
       children: buttonChildren,
