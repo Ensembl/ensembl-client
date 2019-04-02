@@ -1,6 +1,5 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import toJson from 'enzyme-to-json';
 
 import { Header } from './Header';
 import Account from './account/Account';
@@ -12,18 +11,6 @@ describe('<Header />', () => {
 
   beforeEach(() => {
     wrapper = shallow(<Header />);
-  });
-
-  describe('displays', () => {
-    test('Ensembl', () => {
-      expect(wrapper.find('.companyText').text()).toBe('Ensembl');
-    });
-
-    test('strapline', () => {
-      expect(wrapper.find('.strapline').text()).toBe(
-        'Pre-release - March 2019'
-      );
-    });
   });
 
   describe('contains', () => {
@@ -38,9 +25,5 @@ describe('<Header />', () => {
     test('HeaderButtons', () => {
       expect(wrapper.contains(<HeaderButtons />)).toBe(true);
     });
-  });
-
-  test('renders correctly', () => {
-    expect(toJson(wrapper)).toMatchSnapshot();
   });
 });

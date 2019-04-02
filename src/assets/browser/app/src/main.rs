@@ -28,10 +28,9 @@ mod composit;
 mod data;
 mod debug;
 mod dom;
-mod drawing;
-mod print;
+mod drivers;
+mod model;
 mod program;
-mod shape;
 mod tácode;
 mod types;
 

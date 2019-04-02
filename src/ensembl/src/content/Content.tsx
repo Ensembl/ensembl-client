@@ -1,6 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import { Route, withRouter } from 'react-router-dom';
-import { RouteComponentProps } from 'react-router';
+import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { RootState } from '../store';
@@ -15,13 +14,22 @@ type StateProps = {
   launchbarExpanded: boolean;
 };
 
-type OwnProps = {};
+type OwnProps = {
+  children: React.ReactNode;
+};
 
-type ContentProps = RouteComponentProps & StateProps & OwnProps;
+type ContentProps = StateProps & OwnProps;
 
-export const getHeightClass = (launchbarExpanded: boolean): string => {
+const getHeightClass = (launchbarExpanded: boolean): string => {
   return launchbarExpanded ? styles.shorter : styles.taller;
 };
+
+const ContentRoutes = () => (
+  <>
+    <Route path="/" component={Home} exact={true} />
+    <Route path="/app" component={App} />
+  </>
+);
 
 export const Content: FunctionComponent<ContentProps> = (
   props: ContentProps
@@ -30,14 +38,18 @@ export const Content: FunctionComponent<ContentProps> = (
     <main
       className={`${styles.content} ${getHeightClass(props.launchbarExpanded)}`}
     >
-      <Route path="/" component={Home} exact={true} />
-      <Route path="/app" component={App} />
+      {props.children}
     </main>
   );
 };
+
+// helper for making the Content component testable (no need to render the whole component tree nested in Content)
+export const withInnerContent = (innerContent: React.ReactNode) => (
+  props: StateProps
+) => <Content {...props}>{innerContent}</Content>;
 
 const mapStateToProps = (state: RootState): StateProps => ({
   launchbarExpanded: getLaunchbarExpanded(state)
 });
 
-export default withRouter(connect(mapStateToProps)(Content));
+export default connect(mapStateToProps)(withInnerContent(<ContentRoutes />));

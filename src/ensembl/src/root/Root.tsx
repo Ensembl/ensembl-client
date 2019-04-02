@@ -32,7 +32,7 @@ type OwnProps = {};
 
 type RootProps = StateProps & DispatchProps & ReactCookieProps & OwnProps;
 
-const Root: FunctionComponent<RootProps> = (props: RootProps) => {
+export const Root: FunctionComponent<RootProps> = (props: RootProps) => {
   const [ref, width] = useResizeObserver();
   const currentBreakpoint: BreakpointWidth = getBreakpoint(width);
 
@@ -44,7 +44,7 @@ const Root: FunctionComponent<RootProps> = (props: RootProps) => {
   const cookies = props.cookies as Cookies;
 
   useEffect(() => {
-    if (cookies.get('ENSEMBL_PRIVACY_POLICY') === 'true') {
+    if (showPrivacyBanner && cookies.get('ENSEMBL_PRIVACY_POLICY') === 'true') {
       setShowPrivacyBanner(false);
     }
   }, [cookies]);
@@ -55,17 +55,11 @@ const Root: FunctionComponent<RootProps> = (props: RootProps) => {
   }, [cookies]);
 
   return (
-    <>
-      <div ref={ref as React.RefObject<HTMLDivElement>} className={styles.root}>
-        <Header />
-        <Content />
-        {showPrivacyBanner ? (
-          <PrivacyBanner closeBanner={closeBanner} />
-        ) : (
-          false
-        )}
-      </div>
-    </>
+    <div ref={ref as React.RefObject<HTMLDivElement>} className={styles.root}>
+      <Header />
+      <Content />
+      {showPrivacyBanner && <PrivacyBanner closeBanner={closeBanner} />}
+    </div>
   );
 };
 

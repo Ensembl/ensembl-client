@@ -2,7 +2,7 @@ import apiService, { HTTPMethod } from '../api-service';
 import config from 'config';
 
 describe('api service', () => {
-  let mockFetch;
+  let mockFetch: any;
   let mockResponse = { foo: 'foo' };
 
   beforeEach(() => {
@@ -43,7 +43,7 @@ describe('api service', () => {
       await apiService.fetch(endpoint, options);
 
       const mockFetchCall: any[] = mockFetch.mock.calls[0];
-      const [_, passedOptions] = mockFetchCall;
+      const [, passedOptions] = mockFetchCall;
 
       expect(passedOptions).toEqual(options);
     });
@@ -52,7 +52,7 @@ describe('api service', () => {
       await apiService.fetch(endpoint);
 
       const mockFetchCall: any[] = mockFetch.mock.calls[0];
-      const [_, options] = mockFetchCall;
+      const [, options] = mockFetchCall;
 
       expect(options.method).toEqual(`GET`);
     });

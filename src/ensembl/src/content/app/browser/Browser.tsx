@@ -141,8 +141,10 @@ export const Browser: FunctionComponent<BrowserProps> = (
             }`}
             onClick={closeTrack}
           >
-            {props.browserNavOpened && !props.drawerOpened ? (
-              <BrowserNavBar browserRef={browserRef} />
+            {props.browserNavOpened &&
+            !props.drawerOpened &&
+            browserRef.current ? (
+              <BrowserNavBar browserElement={browserRef.current} />
             ) : null}
             <BrowserImage browserRef={browserRef} />
           </div>

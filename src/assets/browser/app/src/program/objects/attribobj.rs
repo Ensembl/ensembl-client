@@ -8,8 +8,9 @@ use dom::webgl::{
     WebGLProgram as glprog,
 };
 
-use drawing::DrawingSession;
+use drivers::webgl::CarriageCanvases;
 use program::data::{ DataBatch, Input };
+use drivers::webgl::GLProgData;
 
 use program::objects::Object;
 
@@ -51,8 +52,10 @@ impl ObjectAttrib {
 }
 
 impl Object for ObjectAttrib {
-    fn obj_final(&mut self, batch: &DataBatch, ctx: &glctx, _acm: &DrawingSession) {
-        self.buf.entry(batch.id()).or_insert_with(|| ctx.create_buffer().unwrap());
+    fn obj_final(&mut self, batch: &DataBatch, ctx: &glctx, _acm: &mut GLProgData) {
+        if self.data(batch).unwrap_or(&vec!{}).len() > 0 {
+            self.buf.entry(batch.id()).or_insert_with(|| ctx.create_buffer().unwrap());
+        }
         if let Some(data) = self.data(batch) {
             if let Some(buf) = self.buffer(batch) {
                 ctx.bind_buffer(glctx::ARRAY_BUFFER,Some(&buf));
@@ -92,9 +95,12 @@ impl Object for ObjectAttrib {
     }
     
     fn clear(&mut self, ctx: &glctx) {
+        let loc = self.location(ctx);
+        ctx.disable_vertex_attrib_array(loc);
         for b in self.buf.values() {
             ctx.delete_buffer(Some(&b));
         }
+        self.buf.clear();
         self.vec.clear();
     }
     

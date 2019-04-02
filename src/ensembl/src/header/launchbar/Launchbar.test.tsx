@@ -1,6 +1,5 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import toJson from 'enzyme-to-json';
 
 import Launchbar, { getCategoryClass } from './Launchbar';
 import LaunchbarIcon from './LaunchbarIcon';
@@ -10,6 +9,8 @@ import {
   LaunchbarCategory,
   LaunchbarApp
 } from './launchbarConfig';
+
+import styles from './Launchbar.scss';
 
 describe('<Launchbar />', () => {
   let wrapper: any;
@@ -32,7 +33,7 @@ describe('<Launchbar />', () => {
     describe('icons for', () => {
       test('about app', () => {
         const appProp: LaunchbarApp = wrapper
-          .find('.aboutIcon')
+          .find(`.${styles.about}`)
           .find(LaunchbarIcon)
           .prop('app');
 
@@ -56,10 +57,6 @@ describe('<Launchbar />', () => {
     test('about icon separate of other categories', () => {
       expect(wrapper.find('.launchbar > .categoriesWrapper')).toHaveLength(1);
       expect(wrapper.find('.launchbar > .about')).toHaveLength(1);
-    });
-
-    test('correctly', () => {
-      expect(toJson(wrapper)).toMatchSnapshot();
     });
   });
 

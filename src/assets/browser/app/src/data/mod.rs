@@ -8,7 +8,7 @@ mod xfercache;
 mod xferclerk;
 mod xferrequest;
 
-pub use self::backendconfig::{ BackendConfig };
+pub use self::backendconfig::{ BackendConfig, BackendBytecode };
 pub use self::backendconfigbootstrap::{ BackendConfigBootstrap };
 pub use self::backendstickmanager::BackendStickManager;
 pub use self::httpmanager::{ HttpManager, HttpResponseConsumer };

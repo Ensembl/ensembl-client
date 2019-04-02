@@ -22,4 +22,9 @@ impl<T> ChangeDetect<T> where T: Clone + PartialEq {
     pub fn report(&mut self) -> Option<T> {
         self.pending.take()
     }
+    
+    pub fn update(&mut self, value: T) -> Option<T> {
+        self.set(value);
+        self.report()
+    }
 }

@@ -8,7 +8,7 @@ const ManifestPlugin = require('webpack-manifest-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 const BrotliPlugin = require('brotli-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
-const RobotstxtPlugin = require('robotstxt-webpack-plugin').default;
+const RobotstxtPlugin = require('robotstxt-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 // copy from the environment the same variables that are declared in .env.example

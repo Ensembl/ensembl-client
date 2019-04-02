@@ -8,7 +8,7 @@ use dom::webgl::{
     GLint, GLenum,
 };
 
-use drawing::OneCanvasManager;
+use drivers::webgl::OneCanvasManager;
 
 pub struct CanvasCacheImpl {
     cache: HashMap<(u32,u32),gltex>

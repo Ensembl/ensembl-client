@@ -56,9 +56,10 @@
  * the first two arguments are used.
  */
 
-use shape::{
-    PinRectTypeSpec, StretchRectTypeSpec, StretchWiggleTypeSpec,
-    TextureTypeSpec, TypeToShape
+use drivers::webgl::{ TypeToShape };
+use model::shape::{
+    StretchWiggleTypeSpec, PinRectTypeSpec, StretchRectTypeSpec, 
+    TextureTypeSpec
 };
 use types::AxisSense;
 

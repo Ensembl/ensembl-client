@@ -7,16 +7,19 @@ import React, {
   useState,
   useCallback
 } from 'react';
-import {
-  TrackItemColour,
-  TrackPanelItem,
-  trackPanelIconConfig
-} from '../trackPanelConfig';
+
+import { TrackItemColour, TrackPanelItem } from '../trackPanelConfig';
 
 import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
+import { ReactComponent as Eye } from 'static/img/track-panel/eye.svg';
+import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg';
 
 import styles from './TrackPanelListItem.scss';
+
+import ImageButton, {
+  ImageButtonStatus
+} from 'src/shared/image-button/ImageButton';
 
 type TrackPanelListItemProps = {
   browserRef: RefObject<HTMLDivElement>;
@@ -34,10 +37,9 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   props: TrackPanelListItemProps
 ) => {
   const [expanded, setExpanded] = useState(true);
-  const [trackStatus, setTrackStatus] = useState('on');
+  const [trackStatus, setTrackStatus] = useState(ImageButtonStatus.ACTIVE);
 
   const { browserRef, drawerView, track } = props;
-  const { ellipsis, eye } = trackPanelIconConfig;
 
   const getListItemClasses = useCallback((): string => {
     let classNames: string = styles.listItem;
@@ -87,7 +89,8 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   };
 
   const toggleTrack = () => {
-    const currentTrackStatus = trackStatus === 'on' ? 'off' : 'on';
+    const currentTrackStatus =
+      trackStatus === ImageButtonStatus.ACTIVE ? 'off' : 'on';
 
     const trackEvent = new CustomEvent('bpane', {
       bubbles: true,
@@ -100,7 +103,11 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
       browserRef.current.dispatchEvent(trackEvent);
     }
 
-    setTrackStatus(currentTrackStatus);
+    if (trackStatus === ImageButtonStatus.ACTIVE) {
+      setTrackStatus(ImageButtonStatus.INACTIVE);
+      return;
+    }
+    setTrackStatus(ImageButtonStatus.ACTIVE);
   };
 
   return (
@@ -126,15 +133,22 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
             </button>
           )}
         </label>
-        <button onClick={drawerViewButtonHandler}>
-          <img src={ellipsis.icon.on} alt={`Go to ${track.label}`} />
-        </button>
-        <button onClick={toggleTrack}>
-          <img
-            src={trackStatus === 'on' ? eye.icon.on : eye.icon.off}
-            alt={eye.description}
+        <div className={styles.ellipsisHolder}>
+          <ImageButton
+            buttonStatus={ImageButtonStatus.ACTIVE}
+            description={`Go to ${track.label}`}
+            onClick={drawerViewButtonHandler}
+            image={Ellipsis}
           />
-        </button>
+        </div>
+        <div className={styles.eyeHolder}>
+          <ImageButton
+            buttonStatus={trackStatus}
+            description={'enable/disable track'}
+            onClick={toggleTrack}
+            image={Eye}
+          />
+        </div>
       </dd>
       {expanded && props.children}
     </Fragment>

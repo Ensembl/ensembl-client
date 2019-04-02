@@ -1,7 +1,10 @@
 use composit::{
-    ActiveSource, Leaf, Train, ComponentManager, Stick, TrainManager,
-    Scale, ComponentSet
+    ActiveSource, Leaf, Stick, Scale, ComponentSet, StateManager
 };
+
+use model::driver::PrinterManager;
+use model::train::{ Train, TrainManager, TravellerCreator };
+
 use controller::global::AppRunner;
 use controller::output::Report;
 use data::{ Psychic, PsychicPacer, XferCache, XferRequest, XferClerk };
@@ -16,7 +19,7 @@ pub struct Compositor {
     updated: bool,
     prime_delay: Option<f64>,
     last_updated: Option<f64>,
-    components: ComponentManager,
+    components: TravellerCreator,
     wanted_componentset: ComponentSet,
     current_componentset: ComponentSet,
     psychic: Psychic,
@@ -26,10 +29,10 @@ pub struct Compositor {
 }
 
 impl Compositor {
-    pub fn new(xfercache: &XferCache, xferclerk: Box<XferClerk>) -> Compositor {
+    pub fn new(printer: PrinterManager, xfercache: &XferCache, xferclerk: Box<XferClerk>) -> Compositor {
         Compositor {
-            train_manager: TrainManager::new(),
-            components: ComponentManager::new(),
+            train_manager: TrainManager::new(&printer),
+            components: TravellerCreator::new(&printer),
             bp_per_screen: 1.,
             updated: true,
             last_updated: None,
@@ -67,7 +70,7 @@ impl Compositor {
             self.add_component(added.clone());
         }
         for removed in self.current_componentset.not_in(&self.wanted_componentset).iter() {
-            self.components.remove(removed.clone().get_name());
+            self.components.remove_source(removed.clone().get_name());
         }
         self.current_componentset = self.wanted_componentset.clone();
         /* Warm up xfercache */
@@ -130,11 +133,11 @@ impl Compositor {
                 sc.add_component(cc,&c)
             );
         }
-        self.components.add(c);
+        self.components.add_source(c);
     }
     
-    pub fn all_printing_leafs(&self) -> Vec<Leaf> {
-        self.train_manager.all_printing_leafs()
+    pub fn update_state(&mut self, oom: &StateManager) {
+        self.train_manager.update_state(oom);
     }
 }
 

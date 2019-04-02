@@ -58,7 +58,6 @@ module.exports = (isDev, moduleRules, plugins) => ({
             loader: 'css-loader',
             options: {
               sourceMap: true,
-              minimize: true,
               modules: true,
               localIdentName: '[local]__[name]__[hash:base64:5]'
             }
