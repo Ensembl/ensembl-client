@@ -23,7 +23,7 @@ const AccordionItem = (props: Props) => {
 
 AccordionItem.displayName = DisplayName.AccordionItem;
 AccordionItem.defaultProps = {
-  className: styles.accordionItem
+  className: styles.accordionItemDefault
 };
 
 export default AccordionItem;

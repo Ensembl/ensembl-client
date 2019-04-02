@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { InjectedHeadingAttributes } from '../helpers/AccordionStore';
 import DisplayName from '../helpers/DisplayName';
 import { DivAttributes } from '../helpers/types';
-
 import { Consumer as ItemConsumer, ItemContext } from './ItemContext';
 
 type Props = DivAttributes;
@@ -50,8 +49,7 @@ export const AccordionItemHeading = (props: Props) => {
 };
 
 AccordionItemHeading.defaultProps = {
-  'aria-level': 3,
-  className: 'accordionHeading'
+  'aria-level': 3
 };
 
 type WrapperProps = Pick<

@@ -3,7 +3,8 @@ import DisplayName from '../helpers/DisplayName';
 import { DivAttributes } from '../helpers/types';
 import { Consumer, Provider } from './AccordionContext';
 import { UUID } from './ItemContext';
-import styles from '../css/Accordion.scss';
+import defaultStyles from '../css/Accordion.scss';
+import classNames from 'classnames';
 
 type AccordionProps = Pick<
   DivAttributes,
@@ -12,28 +13,40 @@ type AccordionProps = Pick<
   preExpanded?: UUID[];
   allowMultipleExpanded: boolean;
   allowZeroExpanded: boolean;
+  className?: any;
+  extendStyles: boolean;
   onChange?(args: UUID[]): void;
 };
 
 const Accordion = (props: AccordionProps) => {
-  const renderAccordion = (): JSX.Element => {
-    const {
-      preExpanded,
-      allowMultipleExpanded,
-      allowZeroExpanded,
-      onChange,
-      ...rest
-    } = props;
+  const {
+    preExpanded,
+    allowMultipleExpanded,
+    allowZeroExpanded,
+    className,
+    extendStyles,
+    onChange,
+    ...rest
+  } = props;
 
-    return <div data-accordion-component="Accordion" {...rest} />;
+  const renderAccordion = (): JSX.Element => {
+    let styles = className;
+
+    if (extendStyles) {
+      styles = classNames(defaultStyles.accordionDefault, className);
+    }
+
+    return (
+      <div data-accordion-component="Accordion" className={styles} {...rest} />
+    );
   };
 
   return (
     <Provider
-      preExpanded={props.preExpanded}
-      allowMultipleExpanded={props.allowMultipleExpanded}
-      allowZeroExpanded={props.allowZeroExpanded}
-      onChange={props.onChange}
+      preExpanded={preExpanded}
+      allowMultipleExpanded={allowMultipleExpanded}
+      allowZeroExpanded={allowZeroExpanded}
+      onChange={onChange}
     >
       <Consumer>{renderAccordion}</Consumer>
     </Provider>
@@ -44,7 +57,7 @@ Accordion.diplayName = DisplayName.Accordion;
 Accordion.defaultProps = {
   allowMultipleExpanded: false,
   allowZeroExpanded: true,
-  className: styles.accordion
+  extendStyles: true
 };
 
 export default Accordion;

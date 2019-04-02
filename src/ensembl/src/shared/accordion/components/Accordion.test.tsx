@@ -19,14 +19,28 @@ describe('Accordion', () => {
   });
 
   describe('className', () => {
-    it('is “accordion” by default', () => {
+    it('is “accordionDefault” by default', () => {
       const wrapper = mount(<Accordion data-testid={UUIDS.FOO} />);
-      expect(wrapper.find('div').props().className).toEqual('accordion');
+      expect(wrapper.find('div').props().className).toEqual('accordionDefault');
     });
 
-    it('can be overridden', () => {
+    it('can be extended', () => {
       const wrapper = mount(
         <Accordion className="foo" data-testid={UUIDS.FOO} />
+      );
+
+      expect(wrapper.find('div').props().className).toEqual(
+        'accordionDefault foo'
+      );
+    });
+
+    it('can also be overridden by using extendStyles === false', () => {
+      const wrapper = mount(
+        <Accordion
+          className="foo"
+          extendStyles={false}
+          data-testid={UUIDS.FOO}
+        />
       );
       expect(wrapper.find('div').props().className).toEqual('foo');
     });

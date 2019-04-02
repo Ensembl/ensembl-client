@@ -1,15 +1,15 @@
 @import 'src/styles/common';
 
-.accordion {
+.accordionDefault {
   border: 2px solid $ens-medium-light-grey;
   border-radius: 2px;
 }
 
-.accordionItem + .accordionItem {
+.accordionItemDefault + .accordionItemDefault {
   border-top: 2px solid $ens-medium-light-grey;
 }
 
-.accordionButton {
+.accordionButtonDefault {
   color: #444;
   cursor: pointer;
   padding: 18px;
@@ -19,8 +19,8 @@
   position: relative;
 }
 
-.accordionButton:after,
-.accordionButton:before {
+.accordionButtonDefault:after,
+.accordionButtonDefault:before {
   display: inline-block;
   position: absolute;
   margin-top: 10px;
@@ -32,31 +32,33 @@
   background-color: $ens-blue;
 }
 
-.accordionButton:before {
+.accordionButtonDefault:before {
   right: 21px;
   top: 20px;
   transform: rotate(45deg);
 }
 
-.accordionButton:after {
+.accordionButtonDefault:after {
   right: 15px;
   top: 20px;
   transform: rotate(-45deg);
 }
 
-.accordionButton[aria-expanded='true']::before,
-.accordionButton[aria-selected='true']::before {
+.accordionButtonDefault[aria-expanded='true']::before,
+.accordionButtonDefault[aria-selected='true']::before {
   top: 15px;
   transform: rotate(-45deg);
 }
 
-.accordionButton[aria-expanded='true']::after,
-.accordionButton[aria-selected='true']::after {
+.accordionButtonDefault[aria-expanded='true']::after,
+.accordionButtonDefault[aria-selected='true']::after {
   top: 15px;
   transform: rotate(45deg);
 }
 
-.accordionPanel {
+.accordionPanelDefault {
+  background: $ens-light-grey;
+  padding: 20px;
   animation: fadein 0.2s ease-in;
 }
 

@@ -2,21 +2,29 @@ import React from 'react';
 import { InjectedButtonAttributes } from '../helpers/AccordionStore';
 import DisplayName from '../helpers/DisplayName';
 import { DivAttributes } from '../helpers/types';
-
+import classNames from 'classnames';
 import { Consumer as ItemConsumer, ItemContext } from './ItemContext';
 
-import styles from '../css/Accordion.scss';
+import defaultStyles from '../css/Accordion.scss';
 
 type Props = DivAttributes & {
+  extendStyles: boolean;
   toggleExpanded(): void;
 };
 
 export const AccordionItemButton = (props: Props) => {
-  const { toggleExpanded, ...rest } = props;
+  const { className, extendStyles, toggleExpanded, ...rest } = props;
+
+  let styles = className;
+
+  if (extendStyles) {
+    styles = classNames(defaultStyles.accordionButtonDefault, className);
+  }
 
   return (
     <div
       {...rest}
+      className={styles}
       onClick={toggleExpanded}
       data-accordion-component="AccordionItemButton"
     />
@@ -24,7 +32,7 @@ export const AccordionItemButton = (props: Props) => {
 };
 
 AccordionItemButton.defaultProps = {
-  className: styles.accordionButton
+  extendStyles: true
 };
 
 type WrapperProps = Pick<
