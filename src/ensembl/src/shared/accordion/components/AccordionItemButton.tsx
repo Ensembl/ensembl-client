@@ -57,6 +57,6 @@ const AccordionItemButtonWrapper: React.SFC<WrapperProps> = (
   </ItemConsumer>
 );
 
-AccordionItemButtonWrapper.displayName = 'AccordionItemButton';
+// AccordionItemButtonWrapper.displayName = 'AccordionItemButton';
 
 export default AccordionItemButtonWrapper;

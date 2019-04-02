@@ -68,6 +68,4 @@ const AccordionItemHeadingWrapper: React.SFC<DivAttributes> = (
   </ItemConsumer>
 );
 
-AccordionItemHeadingWrapper.displayName = 'AccordionItemHeading';
-
 export default AccordionItemHeadingWrapper;
