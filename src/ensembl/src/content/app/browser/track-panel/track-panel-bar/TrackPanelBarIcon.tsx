@@ -6,7 +6,9 @@ import React, {
   useEffect
 } from 'react';
 import { TrackPanelBarItem } from './trackPanelBarConfig';
-
+import ImageButton, {
+  ImageButtonStatus
+} from 'src/shared/image-button/ImageButton';
 import styles from './TrackPanelBarIcon.scss';
 
 type TrackPanelBarIconProps = {
@@ -39,19 +41,22 @@ const TrackPanelBarIcon: FunctionComponent<TrackPanelBarIconProps> = memo(
       setToggleState(newToggleState);
     }, [props.iconConfig.name, toggleState]);
 
-    const getViewIcon = () => {
+    const getViewIconStatus = () => {
       const { iconConfig, trackPanelModalView } = props;
 
       return iconConfig.name === trackPanelModalView
-        ? iconConfig.icon.selected
-        : iconConfig.icon.default;
+        ? ImageButtonStatus.HIGHLIGHTED
+        : ImageButtonStatus.ACTIVE;
     };
 
     return (
       <dt className={styles.barIcon}>
-        <button onClick={toggleModalView}>
-          <img src={getViewIcon()} alt={props.iconConfig.description} />
-        </button>
+        <ImageButton
+          buttonStatus={getViewIconStatus()}
+          description={props.iconConfig.description}
+          onClick={toggleModalView}
+          image={props.iconConfig.icon}
+        />
       </dt>
     );
   }

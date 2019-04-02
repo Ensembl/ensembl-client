@@ -68,14 +68,14 @@ macro_rules! debug {
     }}
 }
 
-macro_rules! expect {
+macro_rules! unwrap {
     ($x: expr) => {{
         let s = format!("ENSEMBL ERROR LOCATION {}/{}/{}",file!(),line!(),column!());
         $x.expect(&s)
     }}
 }
 
-macro_rules! expectok {
+macro_rules! ok {
     ($x: expr) => {{
         let s = format!("ENSEMBL ERROR LOCATION {}/{}/{}",file!(),line!(),column!());
         let x = $x;

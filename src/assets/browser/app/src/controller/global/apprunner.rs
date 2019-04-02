@@ -3,10 +3,7 @@ use std::sync::{ Arc, Mutex, Weak };
 use stdweb::web::HtmlElement;
 use url::Url;
 
-use composit::{
-    register_compositor_ticks, AllLandscapes, CombinedSourceManager,
-    SourceManager, SourceManagerList, StickManager, ActiveSource, Stick
-};
+use composit::register_compositor_ticks;
 use controller::global::{ App, GlobalWeak };
 use controller::input::{
     register_direct_events, register_user_events, register_dom_events,
@@ -78,32 +75,6 @@ impl AppRunner {
             imp.bling.activate(&app,&el);
         }
         out
-    }
-
-    pub fn reset(&mut self, bling: Box<Bling>) {
-        self.unregister();
-        {
-            let mut imp = self.0.lock().unwrap();
-            imp.bling = bling;
-            let browser_el : HtmlElement = imp.bling.apply_bling(&imp.el);
-            imp.app = Arc::new(Mutex::new(App::new(&imp.tc,&imp.config,&imp.http_manager,&browser_el,&imp.config_url,&imp.el)));
-            let weak = AppRunnerWeak::new(&self);
-            imp.app.lock().unwrap().set_runner(&weak);
-            imp.timers = Timers::new();
-            imp.projector = None;
-            imp.controls = Vec::<Box<EventControl<()>>>::new();
-        }
-        self.init();
-        let report = Report::new(self);
-        let viewport_report = ViewportReport::new(self);
-        {
-            let mut imp = self.0.lock().unwrap();
-            let el = imp.el.clone();
-            let app = imp.app.clone();
-            app.lock().unwrap().set_report(report);
-            app.lock().unwrap().set_viewport_report(viewport_report);
-            imp.bling.activate(&app,&el);
-        }
     }
 
     pub fn get_browser_el(&mut self) -> HtmlElement {
@@ -201,14 +172,9 @@ impl AppRunner {
         }
         self.0.lock().unwrap().projector = None;
         let r = self.state();
-        r.lock().unwrap().finish();
+        r.lock().unwrap().destroy();
     }
-    
-    pub fn activate_debug(&mut self) {
-        console!("activate_debug");
-        self.reset(Box::new(DebugBling::new(create_interactors())));
-    }
-    
+        
     pub fn bling_key(&mut self, key: &str) {
         let mut imp = self.0.lock().unwrap();   
         let app = imp.app.clone();     

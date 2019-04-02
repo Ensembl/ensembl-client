@@ -1,77 +1,50 @@
-import bookmarkIcon from 'static/img/track-panel/bookmark.svg';
-import bookmarkSelectedIcon from 'static/img/track-panel/bookmark-selected.svg';
+import { ReactComponent as bookmarkIcon } from 'static/img/track-panel/bookmark.svg';
 
-import downloadIcon from 'static/img/track-panel/download.svg';
-import downloadSelectedIcon from 'static/img/track-panel/download-selected.svg';
+import { ReactComponent as downloadIcon } from 'static/img/track-panel/download.svg';
 
-import searchIcon from 'static/img/track-panel/search.svg';
-import searchSelectedIcon from 'static/img/track-panel/search-selected.svg';
+import { ReactComponent as searchIcon } from 'static/img/track-panel/search.svg';
 
-import personalDataIcon from 'static/img/track-panel/own-data.svg';
-import personalDataSelectedIcon from 'static/img/track-panel/own-data-selected.svg';
+import { ReactComponent as personalDataIcon } from 'static/img/track-panel/own-data.svg';
 
-import shareIcon from 'static/img/track-panel/share.svg';
-import shareSelectedIcon from 'static/img/track-panel/share-selected.svg';
+import { ReactComponent as shareIcon } from 'static/img/track-panel/share.svg';
 
-import tracksManagerIcon from 'static/img/track-panel/tracks-manager.svg';
-import tracksManagerSelectedIcon from 'static/img/track-panel/tracks-manager-selected.svg';
+import { ReactComponent as tracksManagerIcon } from 'static/img/track-panel/tracks-manager.svg';
 
 export type TrackPanelBarItem = {
   description: string;
-  icon: {
-    default: string;
-    selected: string;
-  };
+  icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
   name: string;
 };
 
 export const trackPanelBarConfig: TrackPanelBarItem[] = [
   {
     description: 'Track search',
-    icon: {
-      default: searchIcon,
-      selected: searchSelectedIcon
-    },
+    icon: searchIcon,
     name: 'search'
   },
   {
     description: 'Tracks manager',
-    icon: {
-      default: tracksManagerIcon,
-      selected: tracksManagerSelectedIcon
-    },
+    icon: tracksManagerIcon,
     name: 'tracks-manager'
   },
   {
     description: 'Bookmarks',
-    icon: {
-      default: bookmarkIcon,
-      selected: bookmarkSelectedIcon
-    },
+    icon: bookmarkIcon,
     name: 'bookmarks'
   },
   {
     description: 'Personal data',
-    icon: {
-      default: personalDataIcon,
-      selected: personalDataSelectedIcon
-    },
+    icon: personalDataIcon,
     name: 'personal-data'
   },
   {
     description: 'Share',
-    icon: {
-      default: shareIcon,
-      selected: shareSelectedIcon
-    },
+    icon: shareIcon,
     name: 'share'
   },
   {
     description: 'Downloads',
-    icon: {
-      default: downloadIcon,
-      selected: downloadSelectedIcon
-    },
+    icon: downloadIcon,
     name: 'downloads'
   }
 ];

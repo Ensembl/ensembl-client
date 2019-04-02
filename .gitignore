@@ -6,7 +6,7 @@
 node_modules/
 dist/
 coverage/
-built-storybook/
+built-docs/
 
 *.log
 .DS_Store

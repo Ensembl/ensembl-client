@@ -1,5 +1,5 @@
 use types::{ Move, Units, Axis, Dot, cdfraction, LEFT, RIGHT };
-use composit::{ StateValue, StickManager };
+use composit::StickManager;
 use controller::global::App;
 
 #[derive(Debug,Clone)]
@@ -13,7 +13,7 @@ pub enum Action {
     Resize(Dot<i32,i32>),
     AddComponent(String),
     SetStick(String),
-    SetState(String,StateValue)
+    SetState(String,bool)
 }
 
 fn exe_pos_event(app: &App, v: Dot<f64,f64>, prop: Option<f64>) {
@@ -95,7 +95,7 @@ fn exe_set_stick(a: &mut App, name: &str) {
     }
 }
 
-fn exe_set_state(a: &mut App, name: &str, on: StateValue) {
+fn exe_set_state(a: &mut App, name: &str, on: bool) {
     a.with_state(|s| {
         s.set_atom_state(name,on);
     });
@@ -122,6 +122,5 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>) {
 pub fn startup_actions() -> Vec<Action> {
     vec! {
         Action::Pos(Dot(0_f64,0_f64),None),
-        //Action::Zoom(-3.)
     }
 }

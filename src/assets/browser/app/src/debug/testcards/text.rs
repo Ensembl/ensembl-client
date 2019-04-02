@@ -1,7 +1,8 @@
 use composit::Source;
 use debug::support::closuresource::{ ClosureSource, closure_add, closure_add_opt, closure_done };
-use drawing::{ FCFont, FontVariety, text_texture };
-use shape::{ ColourSpec, Facade, PinRectTypeSpec, TextureTypeSpec, TypeToShape, ShapeInstanceData, ShapeShortInstanceData };
+use drivers::webgl::{ FCFont, FontVariety };
+use model::shape::{ PinRectTypeSpec, text_texture, TextureTypeSpec };
+use drivers::webgl::{ Facade, TypeToShape, ShapeInstanceData, ShapeShortInstanceData };
 use types::{ Colour, cleaf, cpixel, area_size, AxisSense, A_TOPLEFT };
 
 pub fn text_source() -> impl Source {

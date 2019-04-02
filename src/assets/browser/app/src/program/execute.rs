@@ -11,7 +11,7 @@ use program::objects::Object;
 use program::data::{ DataBatch, DataGroupIndex, BatchManager };
 use program::gpuspec::GPUSpec;
 use program::impls::ProgramType;
-use drawing::DrawingSession;
+use drivers::webgl::GLProgData;
 
 pub struct ProgramAttribs {
     pt: ProgramType,
@@ -82,10 +82,10 @@ impl ProgramAttribs {
         self.default_group = self.bman.new_group();
     }
 
-    pub fn objects_final(&mut self, ctx: &glctx, ds: &DrawingSession) {
+    pub fn objects_final(&mut self, ctx: &glctx, e: &mut GLProgData) {
         for b in self.bman.batches() {
             for a in &mut self.objects.iter_mut() {
-                a.obj_final(&b,ctx,ds);
+                a.obj_final(&b,ctx,e);
             }
         }
     }
