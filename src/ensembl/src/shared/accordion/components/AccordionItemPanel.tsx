@@ -9,25 +9,28 @@ type Props = DivAttributes & {
 };
 
 const AccordionItemPanel = (props: Props) => {
-  const renderChildren = ({ panelAttributes }: ItemContext): JSX.Element => {
-    const { className, extendDefaultStyles, ...rest } = props;
+  const { className, extendDefaultStyles, ...rest } = props;
 
-    let styles = className;
+  let styles = className;
 
-    if (extendDefaultStyles) {
-      styles = classNames(defaultStyles.accordionPanelDefault, className);
-    }
-    return (
-      <div
-        data-accordion-component="AccordionItemPanel"
-        {...rest}
-        className={styles}
-        {...panelAttributes}
-      />
-    );
-  };
+  if (extendDefaultStyles) {
+    styles = classNames(defaultStyles.accordionPanelDefault, className);
+  }
 
-  return <ItemConsumer>{renderChildren}</ItemConsumer>;
+  return (
+    <ItemConsumer>
+      {({ panelAttributes }: ItemContext): JSX.Element => {
+        return (
+          <div
+            data-accordion-component="AccordionItemPanel"
+            {...rest}
+            className={styles}
+            {...panelAttributes}
+          />
+        );
+      }}
+    </ItemConsumer>
+  );
 };
 
 AccordionItemPanel.defaultProps = {

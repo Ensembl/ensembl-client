@@ -9,13 +9,14 @@ type Props = Pick<DivAttributes, Exclude<keyof DivAttributes, 'children'>> & {
 };
 
 const AccordionItemState = (props: Props) => {
-  const renderChildren = (itemContext: ItemContext): JSX.Element => {
-    const { expanded, disabled } = itemContext;
-
-    return <>{props.children({ expanded, disabled })}</>;
-  };
-
-  return <ItemConsumer>{renderChildren}</ItemConsumer>;
+  return (
+    <ItemConsumer>
+      {(itemContext: ItemContext): JSX.Element => {
+        const { expanded, disabled } = itemContext;
+        return <>{props.children({ expanded, disabled })}</>;
+      }}
+    </ItemConsumer>
+  );
 };
 
 export default AccordionItemState;

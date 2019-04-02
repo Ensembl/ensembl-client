@@ -73,12 +73,12 @@ export const Provider = (props: ProviderProps) => {
       value={{
         allowMultipleExpanded,
         allowZeroExpanded,
-        getButtonAttributes: getButtonAttributes,
-        getHeadingAttributes: getHeadingAttributes,
-        getPanelAttributes: getPanelAttributes,
-        isItemDisabled: isItemDisabled,
-        isItemExpanded: isItemExpanded,
-        toggleExpanded: toggleExpanded
+        getButtonAttributes,
+        getHeadingAttributes,
+        getPanelAttributes,
+        isItemDisabled,
+        isItemExpanded,
+        toggleExpanded
       }}
     >
       {props.children || null}

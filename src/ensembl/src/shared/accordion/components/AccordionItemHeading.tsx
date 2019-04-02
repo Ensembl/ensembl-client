@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { InjectedHeadingAttributes } from '../helpers/AccordionStore';
 import { DivAttributes } from '../helpers/types';
 import { Consumer as ItemConsumer, ItemContext } from './ItemContext';
@@ -12,10 +12,10 @@ That is, if there are other visually persistent elements, they are not included 
 `;
 
 export const AccordionItemHeading = (props: Props) => {
-  let ref: HTMLDivElement | undefined;
+  const ref = useRef<HTMLDivElement>(null);
 
-  const VALIDATE = (reference: HTMLDivElement | undefined): void | never => {
-    if (reference === undefined) {
+  const VALIDATE = (reference: HTMLDivElement | null): void | never => {
+    if (reference === null) {
       throw new Error('reference is undefined');
     }
     if (
@@ -31,19 +31,11 @@ export const AccordionItemHeading = (props: Props) => {
   };
 
   useEffect(() => {
-    VALIDATE(ref);
+    VALIDATE(ref.current);
   });
 
-  const setRef = (reference: HTMLDivElement): void => {
-    ref = reference;
-  };
-
   return (
-    <div
-      data-accordion-component="AccordionItemHeading"
-      {...props}
-      ref={setRef}
-    />
+    <div data-accordion-component="AccordionItemHeading" {...props} ref={ref} />
   );
 };
 
