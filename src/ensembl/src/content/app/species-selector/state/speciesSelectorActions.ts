@@ -1,4 +1,4 @@
-import { createAction, createAsyncAction } from 'typesafe-actions';
+import { action, createAction, createAsyncAction } from 'typesafe-actions';
 
 import {
   SearchMatch,
@@ -14,4 +14,8 @@ export const fetchSpeciesSearchResults = createAsyncAction(
 export const setSelectedSearchResult = createAction(
   'species_selector/species_selected',
   (action) => (result: SearchMatch) => action(result)
+);
+
+export const clearSelectedSearchResult = createAction(
+  'species_selector/clear_search_result'
 );

@@ -23,6 +23,11 @@ export default function speciesSelectorReducer(
           selectedAssembly: null
         }
       };
+    case getType(speciesSelectorActions.clearSelectedSearchResult):
+      return {
+        ...state,
+        currentItem: null
+      };
     default:
       return state;
   }

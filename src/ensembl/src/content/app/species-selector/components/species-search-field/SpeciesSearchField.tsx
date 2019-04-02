@@ -3,9 +3,14 @@ import { connect } from 'react-redux';
 
 import {
   fetchSpeciesSearchResults,
-  setSelectedSearchResult
+  setSelectedSearchResult,
+  clearSelectedSearchResult
 } from 'src/content/app/species-selector/state/speciesSelectorActions';
-import { getSearchResults } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+
+import {
+  getSearchResults,
+  getSelectedItemText
+} from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import SpeciesSearchMatch from '../species-search-match/SpeciesSearchMatch';
 
@@ -23,7 +28,9 @@ import styles from './SpeciesSearchField.scss';
 type Props = {
   onSearchChange: (search: string) => void;
   onMatchSelected: (match: SearchMatch) => void;
+  clearSelectedSearchResult: () => void;
   matches: SearchMatches[];
+  selectedItemText: string | null;
 };
 
 export const SpeciesSearchField = (props: Props) => {
@@ -31,6 +38,9 @@ export const SpeciesSearchField = (props: Props) => {
 
   const handleSearchChange = (search: string) => {
     setSearch(search);
+    if (props.selectedItemText) {
+      props.clearSelectedSearchResult();
+    }
 
     search = search.trim();
     if (search.length >= 3) {
@@ -45,7 +55,7 @@ export const SpeciesSearchField = (props: Props) => {
   return (
     <div>
       <AutosuggestSearchField
-        search={search}
+        search={props.selectedItemText || search}
         placeholder="Common or scientific name..."
         className={styles.speciesSearchFieldWrapper}
         onChange={handleSearchChange}
@@ -53,6 +63,7 @@ export const SpeciesSearchField = (props: Props) => {
         rightCorner={<RightCorner />}
         matchGroups={buildMatchGroups(props.matches)}
         searchFieldClassName={styles.speciesSearchField}
+        canShowSuggestions={!Boolean(props.selectedItemText)}
       />
     </div>
   );
@@ -79,12 +90,14 @@ const buildMatchGroups = (groups: SearchMatches[]) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  matches: getSearchResults(state)
+  matches: getSearchResults(state),
+  selectedItemText: getSelectedItemText(state)
 });
 
 const mapDispatchToProps = {
   onSearchChange: fetchSpeciesSearchResults.request,
-  onMatchSelected: setSelectedSearchResult
+  onMatchSelected: setSelectedSearchResult,
+  clearSelectedSearchResult
 };
 
 export default connect(

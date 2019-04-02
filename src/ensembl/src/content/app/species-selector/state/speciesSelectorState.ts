@@ -7,6 +7,8 @@ import {
   CommittedItem
 } from 'src/content/app/species-selector/types/species-search';
 
+// FIXME: current item is not always the selected search result;
+// it can also be a popular species; so these two entities should have shared fields
 type CurrentItem = {
   searchMatch: SearchMatch;
   selectedStrain: Strain | null; // or should it be strain id?
