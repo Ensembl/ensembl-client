@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactNode } from 'react';
+import React from 'react';
 import SlideDown from 'react-slidedown';
 
 import ensemblIcon from 'static/img/launchbar/ensembl-logo.png'; // <-- note it's a png
@@ -6,15 +6,9 @@ import ensemblIcon from 'static/img/launchbar/ensembl-logo.png'; // <-- note it'
 import { ReactComponent as SearchIcon } from 'static/img/launchbar/search.svg';
 import { ReactComponent as SpeciesSelectorIcon } from 'static/img/launchbar/species-selector.svg';
 import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg';
-import { ReactComponent as VEPIcon } from 'static/img/launchbar/vep.svg';
+// import { ReactComponent as VEPIcon } from 'static/img/launchbar/vep.svg';
 import { ReactComponent as CustomDownloadIcon } from 'static/img/launchbar/custom-download.svg';
 import { ReactComponent as HelpIcon } from 'static/img/launchbar/help.svg';
-
-import {
-  LaunchbarCategory,
-  launchbarConfig,
-  LaunchbarApp
-} from './launchbarConfig';
 
 import LaunchbarIcon from './LaunchbarIcon';
 
@@ -29,20 +23,7 @@ export const getCategoryClass = (separator: boolean): string => {
   return separator ? 'border' : '';
 };
 
-// {launchbarConfig.categories.map((category: LaunchbarCategory) => (
-//   <dl
-//     className={styles[getCategoryClass(category.separator)]}
-//     key={category.name}
-//   >
-//     {category.apps.map((app: LaunchbarApp) => (
-//       <dd key={app.name} className={`${app.name}Icon`}>
-//         <LaunchbarIcon app={app} currentApp={props.currentApp} />
-//       </dd>
-//     ))}
-//   </dl>
-// ))}
-
-const LaunchbarContent = (props: LaunchbarProps) => (
+const LaunchbarContent = () => (
   <div className={styles.launchbar}>
     <div className={styles.categoriesWrapper}>
       <div className={styles.categories}>
@@ -68,14 +49,16 @@ const LaunchbarContent = (props: LaunchbarProps) => (
             enabled={true}
           />
         </div>
-        <div className={styles.category}>
-          <LaunchbarIcon
-            app="tools"
-            description="Tools"
-            icon={VEPIcon}
-            enabled={false}
-          />
-        </div>
+        {/*
+          <div className={styles.category}>
+            <LaunchbarIcon
+              app="tools"
+              description="Tools"
+              icon={VEPIcon}
+              enabled={false}
+            />
+          </div>
+        */}
         <div className={styles.category}>
           <LaunchbarIcon
             app="downloads"
@@ -107,41 +90,9 @@ const LaunchbarContent = (props: LaunchbarProps) => (
 );
 
 const Launchbar = (props: LaunchbarProps) => {
-  const LaunchbarChildren: ReactNode = (
-    <div className={styles.launchbar}>
-      <div className={styles.categoriesWrapper}>
-        <div className={styles.categories}>
-          {launchbarConfig.categories.map((category: LaunchbarCategory) => (
-            <dl
-              className={styles[getCategoryClass(category.separator)]}
-              key={category.name}
-            >
-              {category.apps.map((app: LaunchbarApp) => (
-                <dd key={app.name} className={`${app.name}Icon`}>
-                  <LaunchbarIcon app={app} currentApp={props.currentApp} />
-                </dd>
-              ))}
-            </dl>
-          ))}
-        </div>
-      </div>
-      <div className={styles.about}>
-        <h2>Genome research database</h2>
-        <dl>
-          <dd className={styles.about}>
-            <LaunchbarIcon
-              app={launchbarConfig.about}
-              currentApp={props.currentApp}
-            />
-          </dd>
-        </dl>
-      </div>
-    </div>
-  );
-
   return (
     <SlideDown transitionOnAppear={false}>
-      {props.launchbarExpanded ? LaunchbarChildren : null}
+      {props.launchbarExpanded ? <LaunchbarContent /> : null}
     </SlideDown>
   );
 };

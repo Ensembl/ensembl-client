@@ -38,7 +38,17 @@
 }
 
 .categories {
+  display: flex;
   flex: 0 0 auto;
+}
+
+.category {
+  display: flex;
+}
+
+.launchbarButton {
+  height: 30px;
+  width: 30px;
 }
 
 .about {

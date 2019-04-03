@@ -1,9 +1,7 @@
 import React, { FunctionComponent, memo, Props } from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
-import { LaunchbarApp } from './launchbarConfig';
-
-import styles from './LaunchbarIcon.scss';
+import styles from './Launchbar.scss';
 
 type LaunchbarIconProps = {
   app: string;
@@ -26,7 +24,11 @@ export const LaunchbarIcon: FunctionComponent<LaunchbarIconProps> = (
       <props.icon />
     );
 
-  return <div>{icon}</div>;
+  return (
+    <NavLink className={styles.launchbarButton} to={`/app/${props.app}`}>
+      {icon}
+    </NavLink>
+  );
 };
 
 export default memo(LaunchbarIcon);
