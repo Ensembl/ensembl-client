@@ -1,10 +1,10 @@
 @import 'src/styles/common';
 
 .launchbar {
+  display: flex;
   border-bottom: 1px solid $ens-grey;
   border-top: 1px solid $ens-grey;
   padding: 8px 6px;
-  @include flex;
 
   dl {
     display: inline-block;

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, memo } from 'react';
+import React, { FunctionComponent, memo, Props } from 'react';
 import { Link } from 'react-router-dom';
 
 import { LaunchbarApp } from './launchbarConfig';
@@ -6,37 +6,27 @@ import { LaunchbarApp } from './launchbarConfig';
 import styles from './LaunchbarIcon.scss';
 
 type LaunchbarIconProps = {
-  app: LaunchbarApp;
-  currentApp: string;
+  app: string;
+  description: string;
+  icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>> | string;
+  enabled: boolean;
 };
 
 export const LaunchbarIcon: FunctionComponent<LaunchbarIconProps> = (
   props: LaunchbarIconProps
 ) => {
-  const iconImage = (
-    <img
-      className={styles.launchbarIcon}
-      src={getAppIcon(props)}
-      alt={props.app.description}
-      title={props.app.description}
-    />
-  );
+  const icon =
+    typeof props.icon === 'string' ? (
+      <img
+        src={props.icon}
+        className={styles.launchbarIcon}
+        alt={props.description}
+      />
+    ) : (
+      <props.icon />
+    );
 
-  if (props.app.icon.grey) {
-    return iconImage;
-  } else {
-    return <Link to={`/app/${props.app.name}`}>{iconImage}</Link>;
-  }
+  return <div>{icon}</div>;
 };
-
-export function getAppIcon(props: LaunchbarIconProps): string {
-  const { app, currentApp } = props;
-
-  if (app.enabled === false) {
-    return app.icon.grey;
-  } else {
-    return currentApp === app.name ? app.icon.selected : app.icon.default;
-  }
-}
 
 export default memo(LaunchbarIcon);
