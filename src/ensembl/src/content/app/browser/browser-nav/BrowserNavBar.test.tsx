@@ -1,17 +1,36 @@
 import React from 'react';
-import { shallow } from 'enzyme';
-import toJson from 'enzyme-to-json';
+import { shallow, mount } from 'enzyme';
 
-import BrowserNavBar from './BrowserNavBar';
+import { BrowserNavBar } from './BrowserNavBar';
+
+import { BrowserNavStates } from '../browserState';
+
+import styles from './BrowserNavBar.scss';
+
+const browserStates = [...Array(6)].map(() => false);
 
 describe('<BrowserNavBar />', () => {
-  let wrapper: any;
+  test('renders with appropriate classes', () => {
+    const domNode = mount(<div />).getDOMNode() as HTMLDivElement;
 
-  beforeEach(() => {
-    wrapper = shallow(<BrowserNavBar />);
-  });
+    expect(
+      shallow(
+        <BrowserNavBar
+          browserElement={domNode}
+          browserNavStates={browserStates as BrowserNavStates}
+          trackPanelOpened={true}
+        />
+      ).hasClass(styles.browserNavBarExpanded)
+    ).toBe(false);
 
-  test('renders correctly', () => {
-    expect(toJson(wrapper)).toMatchSnapshot();
+    expect(
+      shallow(
+        <BrowserNavBar
+          browserElement={domNode}
+          browserNavStates={browserStates as BrowserNavStates}
+          trackPanelOpened={false}
+        />
+      ).hasClass(styles.browserNavBarExpanded)
+    ).toBe(true);
   });
 });

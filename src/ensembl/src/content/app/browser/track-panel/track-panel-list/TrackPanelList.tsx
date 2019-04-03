@@ -23,7 +23,7 @@ type TrackPanelListProps = {
   drawerOpened: boolean;
   drawerView: string;
   launchbarExpanded: boolean;
-  objectInfo: any;
+  ensObjectInfo: any;
   selectedBrowserTab: TrackType;
   toggleDrawer: (drawerOpened: boolean) => void;
   trackCategories: [];
@@ -68,32 +68,32 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   };
 
   const getMainTracks = (): TrackPanelItem | null => {
-    const { defaultChrLocation, objectInfo } = props;
+    const { defaultChrLocation, ensObjectInfo } = props;
     const [, chrStart, chrEnd] = defaultChrLocation;
 
     if (chrStart === 0 && chrEnd === 0) {
       return null;
     }
 
-    let geneLabel = objectInfo.obj_symbol;
-    let transcriptLabel = objectInfo.associated_object.stable_id;
+    let geneLabel = ensObjectInfo.obj_symbol;
+    let transcriptLabel = ensObjectInfo.associated_object.stable_id;
 
-    if (objectInfo.obj_type === 'transcript') {
-      geneLabel = objectInfo.associated_object.obj_symbol;
-      transcriptLabel = objectInfo.stable_id;
+    if (ensObjectInfo.obj_type === 'transcript') {
+      geneLabel = ensObjectInfo.associated_object.obj_symbol;
+      transcriptLabel = ensObjectInfo.stable_id;
     }
 
     return {
-      additionalInfo: objectInfo.bio_type,
+      additionalInfo: ensObjectInfo.bio_type,
       childTrackList: [
         {
-          additionalInfo: objectInfo.bio_type,
+          additionalInfo: ensObjectInfo.bio_type,
           color: 'BLUE',
           drawerView: 'transcript',
           id: 0.1,
           label: transcriptLabel,
           name: 'gene-feat',
-          selectedInfo: objectInfo.associated_object.selected_info
+          selectedInfo: ensObjectInfo.associated_object.selected_info
         }
       ],
       drawerView: 'gene',

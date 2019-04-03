@@ -26,9 +26,19 @@ const colours = [
     value: variables['ens-light-blue']
   },
   {
+    name: 'Ensembl red',
+    variableName: '$ens-red',
+    value: variables['ens-red']
+  },
+  {
     name: 'Ensembl grey',
     variableName: '$ens-grey',
     value: variables['ens-grey']
+  },
+  {
+    name: 'Ensembl medium dark grey',
+    variableName: '$ens-medium-dark-grey',
+    value: variables['ens-medium-dark-grey']
   },
   {
     name: 'Ensembl dark grey',
@@ -36,9 +46,19 @@ const colours = [
     value: variables['ens-dark-grey']
   },
   {
+    name: 'Ensembl medium light grey',
+    variableName: '$ens-medium-light-grey',
+    value: variables['ens-medium-light-grey']
+  },
+  {
     name: 'Ensembl light grey',
     variableName: '$ens-light-grey',
     value: variables['ens-light-grey']
+  },
+  {
+    name: 'Ensembl green',
+    variableName: '$ens-green',
+    value: variables['ens-green']
   },
   {
     name: 'Ensembl white',
@@ -51,8 +71,8 @@ storiesOf('Design Primitives|Colours', module).add(
   'colour palette',
   () => (
     <>
-      {colours.map((colourData) => (
-        <ColourCard {...colourData} />
+      {colours.map((colourData, index) => (
+        <ColourCard key={index} {...colourData} />
       ))}
     </>
   ),

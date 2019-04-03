@@ -6,10 +6,6 @@
   margin-left: 0;
   padding: 4px 10px;
 
-  button {
-    margin-left: 15px;
-  }
-
   img {
     height: 16px;
     width: 16px;
@@ -87,4 +83,15 @@
       background: $white;
     }
   }
+}
+
+.ellipsisHolder {
+  height: 16px;
+  width: 16px;
+}
+
+.eyeHolder {
+  height: 16px;
+  width: 16px;
+  margin-left: 15px;
 }

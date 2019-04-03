@@ -1,0 +1,33 @@
+@import 'src/styles/common';
+
+.autosuggestionSearchField {
+  display: inline-block;
+  position: relative;
+}
+
+.autosuggestionPlate {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+  padding: 18px 24px;
+  background: white;
+  border: 1px solid $ens-grey;
+  box-shadow: 2px 2px 6px 0 $ens-grey;
+}
+
+.autosuggestionPlateMatchGroup {
+  &:not(:first-child) {
+    margin-top: 1em;
+  }
+}
+
+.autosuggestionPlateItem {
+  padding: 2px 24px;
+  margin: 0 -23px;
+  cursor: pointer;
+}
+
+.autosuggestionPlateHighlightedItem {
+  background-color: $ens-light-blue;
+}

@@ -16,16 +16,22 @@ use controller::output::{ OutputAction, Report, ViewportReport };
 use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, XferCache, XferClerk };
 use debug::add_debug_sticks;
 use dom::domutil;
-use print::Printer;
+use dom::domutil::query_selector_ok;
+use drivers::webgl::GLPrinter;
+use model::driver::{ Printer, PrinterManager };
 use tácode::Tácode;
 
-const CANVAS : &str = r##"<canvas></canvas>"##;
+use dom::webgl::{
+    WebGLRenderingContext as glctx,
+};
+
+const CANVAS : &str = r##"<canvas id="canvas"></canvas>"##;
 
 pub struct App {
     ar: AppRunnerWeak,
     browser_el: HtmlElement,
     canv_el: HtmlElement,
-    pub printer: Arc<Mutex<Printer>>,
+    pub printer: Arc<Mutex<PrinterManager>>,
     pub stage: Arc<Mutex<Stage>>,
     pub state: Arc<Mutex<StateManager>>,
     pub compo: Arc<Mutex<Compositor>>,
@@ -49,13 +55,14 @@ impl App {
         add_debug_sticks(&mut csm);
         let cache = XferCache::new(5000,config);
         let clerk = HttpXferClerk::new(http_manager,config,config_url,&cache);
+        let printer = PrinterManager::new(Box::new(GLPrinter::new(&canv_el)));
         let mut out = App {
             ar: AppRunnerWeak::none(),
             browser_el: browser_el.clone(),
             canv_el: canv_el.clone(),
-            printer: Arc::new(Mutex::new(Printer::new(&canv_el))),
+            printer: Arc::new(Mutex::new(printer.clone())),
             stage:  Arc::new(Mutex::new(Stage::new())),
-            compo: Arc::new(Mutex::new(Compositor::new(&cache,Box::new(clerk.clone())))),
+            compo: Arc::new(Mutex::new(Compositor::new(printer,&cache,Box::new(clerk.clone())))),
             state: Arc::new(Mutex::new(StateManager::new())),
             sticks: Box::new(csm),
             report: None,
@@ -114,15 +121,16 @@ impl App {
     
     pub fn get_canvas_element(&self) -> &HtmlElement { &self.canv_el }
     
-    pub fn finish(&mut self) {
-        self.printer.lock().unwrap().finish();
+    pub fn destroy(&mut self) {
+        self.printer.lock().unwrap().destroy();
     }
     
     pub fn draw(&mut self) {
         let stage = self.stage.lock().unwrap();
         let oom = self.state.lock().unwrap();
         let mut compo = self.compo.lock().unwrap();
-        self.printer.lock().unwrap().go(&stage,&oom,&mut compo);
+        compo.update_state(&oom);
+        self.printer.lock().unwrap().print(&stage,&mut compo);
     }
     
     pub fn with_stage<F,G>(&self, cb: F) -> G where F: FnOnce(&mut Stage) -> G {
@@ -150,15 +158,13 @@ impl App {
         }
         out
     }
-    
+        
     pub fn run_actions(self: &mut App, evs: &Vec<Action>) {
         actions_run(self,evs);
     }
-        
+    
     pub fn check_size(self: &mut App) {
         let mut sz = self.printer.lock().unwrap().get_available_size();
-        sz.0 = ((sz.0+3)/4)*4;
-        sz.1 = ((sz.1+3)/4)*4;
         actions_run(self,&vec! { Action::Resize(sz) });
     }
  

@@ -4,11 +4,9 @@ import chevronRightIcon from 'static/img/shared/chevron-right-grey.svg';
 
 import styles from './AppBar.scss';
 
-type AppBarProps = {
-  currentApp: string;
-};
+type AppBarProps = {};
 
-const AppBar: FunctionComponent<AppBarProps> = memo((props: AppBarProps) => (
+const AppBar: FunctionComponent<AppBarProps> = memo(() => (
   <section className={styles.appBar}>
     <div className={styles.top}>
       <div>Genome browser</div>

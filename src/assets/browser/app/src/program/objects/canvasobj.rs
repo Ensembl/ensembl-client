@@ -7,7 +7,7 @@ use dom::webgl::{
     GLint, GLenum,
 };
 
-use drawing::DrawingSession;
+use drivers::webgl::GLProgData;
 use program::data::DataBatch;
 use program::objects::Object;
 
@@ -75,10 +75,10 @@ impl ObjectCanvasTexture {
 }
 
 impl Object for ObjectCanvasTexture {
-    fn obj_final(&mut self, _batch: &DataBatch, ctx: &glctx, ds: &DrawingSession) {
-        let canvs = ds.all_ocm();
+    fn obj_final(&mut self, _batch: &DataBatch, ctx: &glctx, e: &mut GLProgData) {
+        let canvs = e.get_canvases().all_ocm();
+        let cc = e.get_canvas_cache();
         for c in canvs {
-            let cc = ds.get_canvas_cache();
             let texture = cc.find_texture(c).unwrap_or_else(|| {
                 let t = canvas_texture(ctx,&c.canvas.as_ref().unwrap().element(),
                                 &c.canvas.as_ref().unwrap().weave());

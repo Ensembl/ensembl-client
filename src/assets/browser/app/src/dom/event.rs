@@ -65,12 +65,14 @@ pub enum EventType {
     KeyPressEvent,
     ResizeEvent,
     CustomEvent(String),
-    ContextMenuEvent
+    ContextMenuEvent,
+    UnloadEvent
 }
 
 fn window_event(et: &EventType) -> bool {
     match et {
         EventType::ResizeEvent => true,
+        EventType::UnloadEvent => true,
         _ => false
     }
 }
@@ -129,6 +131,7 @@ impl EventData {
                 EventData::CustomEvent(et.clone(),ec,n.clone(),CustomData(e)),
                 
             EventType::ResizeEvent |
+            EventType::UnloadEvent |
             EventType::ContextMenuEvent =>
                 EventData::GenericEvent(et.clone(),ec)
         }
@@ -156,6 +159,7 @@ impl EventType {
             EventType::MouseWheelEvent => "wheel",
             EventType::ResizeEvent => "resize",
             EventType::ContextMenuEvent => "contextmenu",
+            EventType::UnloadEvent => "unload",
             EventType::CustomEvent(n) => &n
         }
     }

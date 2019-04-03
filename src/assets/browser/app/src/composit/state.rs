@@ -2,81 +2,14 @@ use std::rc::Rc;
 use std::collections::HashMap;
 use std::ops::{ BitAnd, BitOr, Not };
 
-#[derive(PartialEq,Debug)]
-pub enum ComponentRedo {
-    Major,
-    Minor,
-    None
-}
-
-impl BitOr for ComponentRedo {
-    type Output = Self;
-    
-    fn bitor(self, other: Self) -> Self {
-        if self == ComponentRedo::Major || other == ComponentRedo::Major {
-            ComponentRedo::Major
-        } else if self == ComponentRedo::Minor || other == ComponentRedo::Minor {
-            ComponentRedo::Minor
-        } else {
-            ComponentRedo::None
-        }
-    }
-}
-
-// (on/off,permanentish?)
-#[derive(Clone,Copy,PartialEq,Debug)]
-pub struct StateValue(bool,bool);
-
-impl BitAnd for StateValue {
-    type Output = Self;
-    
-    fn bitand(self, other: Self) -> Self {
-        StateValue(self.0 && other.0, 
-                   (!self.1 && !other.1) || // A tmp, B tmp => tmp
-                   ( self.0 && !other.1) || // A on, B tmp  => tmp
-                   (other.0 && !self.1))    // B on, A tmp  => tmp
-    }
-}
-
-impl BitOr for StateValue {
-    type Output = Self;
-    
-    fn bitor(self, other: Self) -> Self {
-        StateValue(self.0 || other.0,
-                   (!self.1  && !other.1) || // A tmp, B tmp => tmp
-                   (!other.0 && !self.1) ||  // B off, A tmp => tmp
-                   (!self.0  && !other.1))   // A off, B tmp => tmp
-    }
-}
-
-impl Not for StateValue {
-    type Output = Self;
-    
-    fn not(self) -> Self {
-        StateValue(!self.0,self.1)
-    }
-}
-
-#[allow(unused,non_snake_case)]
-impl StateValue {
-    pub fn OffCold() -> StateValue { StateValue(false,true) }
-    pub fn OffWarm() -> StateValue { StateValue(false,false) }
-    pub fn On() -> StateValue { StateValue(true,true) }
-    pub fn OnTemp() -> StateValue { StateValue(true,false) }
-
-    
-    pub fn on(self) -> bool { self.0 }
-    pub fn offcold(self) -> bool { !self.0 && self.1 }
-}
-
 pub trait StateExpr {
-    fn is_on(&self, _m: &StateManager) -> StateValue { StateValue::OffCold() }
+    fn is_on(&self, _m: &StateManager) -> bool { false }
 }
 
-pub struct StateFixed(pub StateValue);
+pub struct StateFixed(bool);
 
 impl StateExpr for StateFixed {
-    fn is_on(&self, _m: &StateManager) -> StateValue { self.0 }
+    fn is_on(&self, _m: &StateManager) -> bool { self.0 }
 }
 
 pub struct StateAtom {
@@ -92,7 +25,7 @@ impl StateAtom {
 }
 
 impl StateExpr for StateAtom {
-    fn is_on(&self, m: &StateManager) -> StateValue {
+    fn is_on(&self, m: &StateManager) -> bool {
         m.get_atom_state(&self.name)
     }
 }
@@ -105,7 +38,7 @@ pub enum StateOp {
 }
 
 impl StateExpr for StateOp {
-    fn is_on(&self, m: &StateManager) -> StateValue {
+    fn is_on(&self, m: &StateManager) -> bool {
         match self {
         StateOp::And(a,b) =>
             a.is_on(m) & b.is_on(m),
@@ -119,7 +52,7 @@ impl StateExpr for StateOp {
 
 #[allow(unused,dead_code)]
 pub struct StateManager {
-    atoms: HashMap<String,StateValue>,
+    atoms: HashMap<String,bool>,
     exprs: HashMap<String,Rc<StateExpr>>,
     changed: bool
 }
@@ -128,7 +61,7 @@ pub struct StateManager {
 impl StateManager {
     pub fn new() -> StateManager {
         StateManager {
-            atoms: HashMap::<String,StateValue>::new(),
+            atoms: HashMap::<String,bool>::new(),
             exprs: HashMap::<String,Rc<StateExpr>>::new(),
             changed: false
         }
@@ -138,11 +71,11 @@ impl StateManager {
         StateAtom::new(name)
     }
     
-    fn get_atom_state(&self, name: &str) -> StateValue {
-        *self.atoms.get(name).unwrap_or(&StateValue::OffCold())
+    fn get_atom_state(&self, name: &str) -> bool {
+        *self.atoms.get(name).unwrap_or(&false)
     }
     
-    pub fn set_atom_state(&mut self, name: &str, val: StateValue) {
+    pub fn set_atom_state(&mut self, name: &str, val: bool) {
        self.atoms.insert(name.to_string(),val); 
        self.changed = true;
     }

@@ -1,5 +1,3 @@
-import { TrackType } from './track-panel/trackPanelConfig';
-
 export enum BrowserOpenState {
   EXPANDED = 'expanded',
   SEMI_EXPANDED = 'semiExpanded',
@@ -70,56 +68,4 @@ export const defaultTrackConfigState: TrackConfigState = {
   selectedCog: '',
   trackConfigLabel: {},
   trackConfigNames: {}
-};
-
-export type TrackPanelState = Readonly<{
-  selectedBrowserTab: TrackType;
-  trackPanelModalOpened: boolean;
-  trackPanelModalView: string;
-  trackPanelOpened: boolean;
-}>;
-
-export const defaultTrackPanelState: TrackPanelState = {
-  selectedBrowserTab: TrackType.GENOMIC,
-  trackPanelModalOpened: false,
-  trackPanelModalView: '',
-  trackPanelOpened: true
-};
-
-export type DrawerState = Readonly<{
-  drawerOpened: boolean;
-  drawerView: string;
-}>;
-
-export const defaultDrawerState = {
-  drawerOpened: false,
-  drawerView: ''
-};
-
-export type ObjectState = Readonly<{
-  objectFetchFailed: boolean;
-  objectFetching: boolean;
-  objectInfo: object;
-  trackCategories: [];
-}>;
-
-export const defaultObjectState: ObjectState = {
-  objectFetchFailed: false,
-  objectFetching: false,
-  objectInfo: {},
-  trackCategories: []
-};
-
-export type ExampleObjectState = Readonly<{
-  exampleObjectsFetchFailed: boolean;
-  exampleObjectsFetching: boolean;
-  examples: {
-    [key: string]: {};
-  };
-}>;
-
-export const defaultExampleObjectState: ExampleObjectState = {
-  exampleObjectsFetchFailed: false,
-  exampleObjectsFetching: false,
-  examples: {}
 };

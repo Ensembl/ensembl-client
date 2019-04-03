@@ -1,10 +1,12 @@
-import React, { FunctionComponent, RefObject } from 'react';
+import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
+import classNames from 'classnames';
 
 import { browserNavConfig, BrowserNavItem } from '../browserConfig';
 
 import { RootState } from 'src/store';
-import { getBrowserNavStates, getTrackPanelOpened } from '../browserSelectors';
+import { getBrowserNavStates } from '../browserSelectors';
+import { getTrackPanelOpened } from '../track-panel/trackPanelSelectors';
 import { BrowserNavStates } from '../browserState';
 
 import BrowserNavIcon from './BrowserNavIcon';
@@ -19,7 +21,7 @@ type StateProps = {
 type DispatchProps = {};
 
 type OwnProps = {
-  browserRef: RefObject<HTMLDivElement>;
+  browserElement: HTMLDivElement;
 };
 
 type BrowserNavBarProps = StateProps & DispatchProps & OwnProps;
@@ -27,26 +29,18 @@ type BrowserNavBarProps = StateProps & DispatchProps & OwnProps;
 export const BrowserNavBar: FunctionComponent<BrowserNavBarProps> = (
   props: BrowserNavBarProps
 ) => {
-  const browserImageEl = props.browserRef.current as HTMLDivElement;
-
-  const getClassNames = () => {
-    let classNames = styles.browserNavBar;
-
-    if (props.trackPanelOpened === false) {
-      classNames += ` ${styles.browserNavBarExpanded}`;
-    }
-
-    return classNames;
-  };
+  const className = classNames(styles.browserNavBar, {
+    [styles.browserNavBarExpanded]: !props.trackPanelOpened
+  });
 
   return (
-    <div className={getClassNames()}>
+    <div className={className}>
       <dl>
         {browserNavConfig.map((item: BrowserNavItem, index: number) => (
           <BrowserNavIcon
             key={item.name}
             browserNavItem={item}
-            browserImageEl={browserImageEl}
+            browserImageEl={props.browserElement}
             maxState={props.browserNavStates[index]}
           />
         ))}

@@ -58,7 +58,6 @@ module.exports = (isDev, moduleRules, plugins) => ({
             loader: 'css-loader',
             options: {
               sourceMap: true,
-              minimize: true,
               modules: true,
               localIdentName: '[local]__[name]__[hash:base64:5]'
             }
@@ -149,7 +148,7 @@ module.exports = (isDev, moduleRules, plugins) => ({
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.scss'],
     alias: {
-      config: path.resolve(__dirname, '../config.js'),
+      config: path.resolve(__dirname, '../config.ts'),
       src: path.join(__dirname, '../src'),
       tests: path.join(__dirname, '../tests'),
       static: path.join(__dirname, '../static')

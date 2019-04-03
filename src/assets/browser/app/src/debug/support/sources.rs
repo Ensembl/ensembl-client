@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use composit::{ 
-    ActiveSource, Landscape, Leaf, Plot, Source, SourceResponseBuilder,
+    ActiveSource, Landscape, Leaf, Plot, Source,
     StateAtom, AllLandscapes, CombinedSource
 };
 
