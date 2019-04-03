@@ -42,7 +42,7 @@ import {
 import { toggleDrawer } from './drawer/drawerActions';
 
 import styles from './Browser.scss';
-import { useSpring, animated, config } from 'react-spring';
+import { useSpring, animated } from 'react-spring';
 
 import 'static/browser/browser.js';
 
@@ -129,19 +129,18 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, [props.drawerOpened]);
 
   const [trackAnimation, setTrackAnimation] = useSpring(() => ({
-    config: config.stiff,
+    config: { tension: 280, friction: 45 },
     height: '100%',
-    width: 'calc(100vw - 36px)'
+    width: 'calc(-36px + 100vw )'
   }));
 
   const getbrowserWidth = (): string => {
     if (props.drawerOpened) {
-      // Using 'calc(0vw + 41px)' on the live below doesn't seem to work
-      return 'calc(0vw - -41px)';
+      return 'calc(41px + 0vw)';
     }
     return props.trackPanelOpened
-      ? 'calc(100vw - 356px)'
-      : 'calc(100vw - 36px)';
+      ? 'calc(-356px + 100vw)'
+      : 'calc(-36px + 100vw)';
   };
 
   useEffect(() => {
