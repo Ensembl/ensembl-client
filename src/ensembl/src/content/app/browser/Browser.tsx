@@ -2,8 +2,7 @@ import React, {
   FunctionComponent,
   useCallback,
   useRef,
-  useEffect,
-  Fragment
+  useEffect
 } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -33,6 +32,7 @@ import {
   getGenomeSelectorActive,
   getBrowserActivated
 } from './browserSelectors';
+import { getTrackPanelOpened } from './track-panel/trackPanelSelectors';
 import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 import { getDrawerOpened } from './drawer/drawerSelectors';
 import {
@@ -42,6 +42,7 @@ import {
 import { toggleDrawer } from './drawer/drawerActions';
 
 import styles from './Browser.scss';
+import { useSpring, animated } from 'react-spring';
 
 import 'static/browser/browser.js';
 
@@ -52,6 +53,7 @@ type StateProps = {
   chrLocation: ChrLocation;
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
+  trackPanelOpened: boolean;
 };
 
 type DispatchProps = {
@@ -123,18 +125,37 @@ export const Browser: FunctionComponent<BrowserProps> = (
     if (props.drawerOpened === false) {
       return;
     }
-
     props.toggleDrawer(false);
   }, [props.drawerOpened]);
 
+  const [trackAnimation, setTrackAnimation] = useSpring(() => ({
+    config: { tension: 280, friction: 45 },
+    height: '100%',
+    width: 'calc(-36px + 100vw )'
+  }));
+
+  const getbrowserWidth = (): string => {
+    if (props.drawerOpened) {
+      return 'calc(41px + 0vw)';
+    }
+    return props.trackPanelOpened
+      ? 'calc(-356px + 100vw)'
+      : 'calc(-36px + 100vw)';
+  };
+
+  useEffect(() => {
+    setTrackAnimation({
+      width: getbrowserWidth()
+    });
+  }, [props.drawerOpened, props.trackPanelOpened]);
+
   return (
     <section className={styles.browser}>
-      <Fragment>
-        <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
-        {props.genomeSelectorActive ? (
-          <div className={styles.browserOverlay} />
-        ) : null}
-        <div className={styles.browserInnerWrapper}>
+      <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
+
+      {props.genomeSelectorActive && <div className={styles.browserOverlay} />}
+      <div className={styles.browserInnerWrapper}>
+        <animated.div style={trackAnimation}>
           <div
             className={`${styles.browserImageWrapper} ${
               styles[props.browserOpenState]
@@ -148,10 +169,10 @@ export const Browser: FunctionComponent<BrowserProps> = (
             ) : null}
             <BrowserImage browserRef={browserRef} />
           </div>
-          <TrackPanel browserRef={browserRef} />
-          {props.drawerOpened && <Drawer />}
-        </div>
-      </Fragment>
+        </animated.div>
+        <TrackPanel browserRef={browserRef} />
+        {props.drawerOpened && <Drawer />}
+      </div>
     </section>
   );
 };
@@ -162,7 +183,8 @@ const mapStateToProps = (state: RootState): StateProps => ({
   browserOpenState: getBrowserOpenState(state),
   chrLocation: getChrLocation(state),
   drawerOpened: getDrawerOpened(state),
-  genomeSelectorActive: getGenomeSelectorActive(state)
+  genomeSelectorActive: getGenomeSelectorActive(state),
+  trackPanelOpened: getTrackPanelOpened(state)
 });
 
 const mapDispatchToProps: DispatchProps = {

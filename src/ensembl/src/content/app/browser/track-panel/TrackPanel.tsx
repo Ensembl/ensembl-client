@@ -1,9 +1,4 @@
-import React, {
-  FunctionComponent,
-  RefObject,
-  useEffect,
-  Fragment
-} from 'react';
+import React, { FunctionComponent, RefObject, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import TrackPanelBar from './track-panel-bar/TrackPanelBar';
@@ -84,9 +79,9 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
   }, [props.breakpointWidth, props.toggleTrackPanel]);
 
   return (
-    <section className={`${styles.trackPanel} reactSlideDrawer`}>
+    <section className={`${styles.trackPanelWrapper} reactSlideDrawer`}>
       {props.browserActivated && props.ensObjectInfo.associated_object ? (
-        <Fragment>
+        <div className={styles.trackPanel}>
           <TrackPanelBar
             closeTrackPanelModal={props.closeTrackPanelModal}
             drawerOpened={props.drawerOpened}
@@ -98,30 +93,28 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
             trackPanelModalView={props.trackPanelModalView}
             trackPanelOpened={props.trackPanelOpened}
           />
-          {props.trackPanelOpened ? (
-            <Fragment>
-              <TrackPanelList
-                browserRef={props.browserRef}
-                defaultChrLocation={props.defaultChrLocation}
-                drawerOpened={props.drawerOpened}
-                drawerView={props.drawerView}
-                launchbarExpanded={props.launchbarExpanded}
-                ensObjectInfo={props.ensObjectInfo}
-                selectedBrowserTab={props.selectedBrowserTab}
-                toggleDrawer={props.toggleDrawer}
-                trackCategories={props.trackCategories}
-                updateDrawerView={props.changeDrawerView}
-              />
-              {props.trackPanelModalOpened ? (
-                <TrackPanelModal
-                  closeTrackPanelModal={props.closeTrackPanelModal}
-                  launchbarExpanded={props.launchbarExpanded}
-                  trackPanelModalView={props.trackPanelModalView}
-                />
-              ) : null}
-            </Fragment>
+
+          <TrackPanelList
+            browserRef={props.browserRef}
+            defaultChrLocation={props.defaultChrLocation}
+            drawerOpened={props.drawerOpened}
+            drawerView={props.drawerView}
+            launchbarExpanded={props.launchbarExpanded}
+            ensObjectInfo={props.ensObjectInfo}
+            selectedBrowserTab={props.selectedBrowserTab}
+            toggleDrawer={props.toggleDrawer}
+            trackCategories={props.trackCategories}
+            updateDrawerView={props.changeDrawerView}
+          />
+
+          {props.trackPanelModalOpened ? (
+            <TrackPanelModal
+              closeTrackPanelModal={props.closeTrackPanelModal}
+              launchbarExpanded={props.launchbarExpanded}
+              trackPanelModalView={props.trackPanelModalView}
+            />
           ) : null}
-        </Fragment>
+        </div>
       ) : null}
     </section>
   );

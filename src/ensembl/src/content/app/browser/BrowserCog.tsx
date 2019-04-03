@@ -1,12 +1,21 @@
-import React, { FunctionComponent, useCallback, CSSProperties } from 'react';
+import React, {
+  FunctionComponent,
+  useCallback,
+  CSSProperties,
+  useState,
+  useEffect
+} from 'react';
 
 import cogOnIcon from 'static/img/shared/cog-on.svg';
 import cogOffIcon from 'static/img/shared/cog.svg';
+import BrowserTrackConfig from './browser-track-config/BrowserTrackConfig';
+import { useTransition, animated } from 'react-spring';
 
 type BrowserCogProps = {
   cogActivated: boolean;
   index: string;
   updateSelectedCog: (index: string) => void;
+  ypos: number;
 };
 
 const BrowserCog: FunctionComponent<BrowserCogProps> = (
@@ -30,12 +39,41 @@ const BrowserCog: FunctionComponent<BrowserCogProps> = (
 
   const cogIcon = props.cogActivated ? cogOnIcon : cogOffIcon;
 
+  const [showTrackConfig, setTrackConfigAnimation] = useState(cogActivated);
+  useEffect(() => {
+    if (cogActivated) {
+      setTrackConfigAnimation(true);
+      return;
+    }
+    setTrackConfigAnimation(false);
+  }, [cogActivated]);
+
+  const transitions = useTransition(showTrackConfig, null, {
+    config: { duration: 100 },
+    enter: { opacity: 1 },
+    from: { opacity: 0 },
+    leave: { opacity: 0 }
+  });
+
   return (
-    <div style={inline}>
-      <button onClick={toggleCog}>
-        <img src={cogIcon} style={imgInline} alt="Configure track" />
-      </button>
-    </div>
+    <>
+      <div style={inline}>
+        <button onClick={toggleCog}>
+          <img src={cogIcon} style={imgInline} alt="Configure track" />
+        </button>
+      </div>
+      {cogActivated && <BrowserTrackConfig ypos={props.ypos} />}
+
+      {transitions.map(({ item, key, props: style }) => {
+        return (
+          item && (
+            <animated.div key={key} style={style}>
+              {<BrowserTrackConfig ypos={props.ypos} />}
+            </animated.div>
+          )
+        );
+      })}
+    </>
   );
 };
 
