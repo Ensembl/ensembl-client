@@ -25,7 +25,11 @@ export const LaunchbarIcon: FunctionComponent<LaunchbarIconProps> = (
     );
 
   return (
-    <NavLink className={styles.launchbarButton} to={`/app/${props.app}`}>
+    <NavLink
+      className={styles.launchbarButton}
+      to={`/app/${props.app}`}
+      activeClassName={styles.launchbarButtonActive}
+    >
       {icon}
     </NavLink>
   );
