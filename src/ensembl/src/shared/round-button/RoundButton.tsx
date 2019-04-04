@@ -24,10 +24,11 @@ const RoundButton = (props: Props) => {
     }
   };
 
-  const className = classNames(
-    defaultStyles.default,
-    defaultStyles[props.buttonStatus]
-  );
+  const styles = classNames
+    ? { ...defaultStyles, ...props.classNames }
+    : defaultStyles;
+
+  const className = classNames(styles.default, styles[props.buttonStatus]);
 
   return (
     <button className={className} onClick={handleClick}>

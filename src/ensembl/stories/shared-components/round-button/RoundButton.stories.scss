@@ -3,3 +3,9 @@
 .wrapper {
   padding: 40px;
 }
+
+.active {
+  border: none;
+  background-color: $ens-dark-grey;
+  color: $ens-white;
+}

@@ -38,6 +38,17 @@ storiesOf('Components|Shared Components/RoundButton', module)
       </Roundbutton>
     </div>
   ))
+  .add('custom', () => (
+    <div className={styles.wrapper}>
+      <Roundbutton
+        classNames={styles}
+        buttonStatus={RoundButtonStatus.ACTIVE}
+        onClick={onClick}
+      >
+        I have a badge
+      </Roundbutton>
+    </div>
+  ))
   .add('badged', () => (
     <div className={styles.wrapper}>
       <BadgedButton badge={':)'}>
