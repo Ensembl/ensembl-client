@@ -6,7 +6,7 @@ import ensemblIcon from 'static/img/launchbar/ensembl-logo.png'; // <-- note it'
 import { ReactComponent as SearchIcon } from 'static/img/launchbar/search.svg';
 import { ReactComponent as SpeciesSelectorIcon } from 'static/img/launchbar/species-selector.svg';
 import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg';
-// import { ReactComponent as VEPIcon } from 'static/img/launchbar/vep.svg';
+import { ReactComponent as VEPIcon } from 'static/img/launchbar/vep.svg';
 import { ReactComponent as CustomDownloadIcon } from 'static/img/launchbar/custom-download.svg';
 import { ReactComponent as HelpIcon } from 'static/img/launchbar/help.svg';
 
@@ -49,16 +49,14 @@ const LaunchbarContent = () => (
             enabled={true}
           />
         </div>
-        {/*
-          <div className={styles.category}>
-            <LaunchbarIcon
-              app="tools"
-              description="Tools"
-              icon={VEPIcon}
-              enabled={false}
-            />
-          </div>
-        */}
+        <div className={styles.category}>
+          <LaunchbarIcon
+            app="tools"
+            description="Tools"
+            icon={VEPIcon}
+            enabled={false}
+          />
+        </div>
         <div className={styles.category}>
           <LaunchbarIcon
             app="downloads"
@@ -78,7 +76,7 @@ const LaunchbarContent = () => (
       </div>
     </div>
     <div className={styles.about}>
-      <span>Genome research database</span>
+      <span className={styles.aboutText}>Genome research database</span>
       <LaunchbarIcon
         app="about"
         description="About Ensembl"
