@@ -3,21 +3,21 @@ import { NavLink } from 'react-router-dom';
 
 import styles from './Launchbar.scss';
 
-type LaunchbarIconProps = {
+type LaunchbarButtonProps = {
   app: string;
   description: string;
   icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>> | string;
   enabled: boolean;
 };
 
-export const LaunchbarIcon: FunctionComponent<LaunchbarIconProps> = (
-  props: LaunchbarIconProps
+export const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
+  props: LaunchbarButtonProps
 ) => {
   const icon =
     typeof props.icon === 'string' ? (
       <img
         src={props.icon}
-        className={styles.launchbarIcon}
+        className={styles.LaunchbarButton}
         alt={props.description}
       />
     ) : (
@@ -41,4 +41,4 @@ export const LaunchbarIcon: FunctionComponent<LaunchbarIconProps> = (
   );
 };
 
-export default memo(LaunchbarIcon);
+export default memo(LaunchbarButton);

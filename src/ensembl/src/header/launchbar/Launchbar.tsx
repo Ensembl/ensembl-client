@@ -10,12 +10,11 @@ import { ReactComponent as VEPIcon } from 'static/img/launchbar/vep.svg';
 import { ReactComponent as CustomDownloadIcon } from 'static/img/launchbar/custom-download.svg';
 import { ReactComponent as HelpIcon } from 'static/img/launchbar/help.svg';
 
-import LaunchbarIcon from './LaunchbarIcon';
+import LaunchbarButton from './LaunchbarButton';
 
 import styles from './Launchbar.scss';
 
 type LaunchbarProps = {
-  currentApp: string;
   launchbarExpanded: boolean;
 };
 
@@ -28,13 +27,13 @@ const LaunchbarContent = () => (
     <div className={styles.categoriesWrapper}>
       <div className={styles.categories}>
         <div className={styles.category}>
-          <LaunchbarIcon
+          <LaunchbarButton
             app="global-search"
             description="Global search"
             icon={SearchIcon}
             enabled={false}
           />
-          <LaunchbarIcon
+          <LaunchbarButton
             app="species-selector"
             description="Species selector"
             icon={SpeciesSelectorIcon}
@@ -42,7 +41,7 @@ const LaunchbarContent = () => (
           />
         </div>
         <div className={styles.category}>
-          <LaunchbarIcon
+          <LaunchbarButton
             app="browser"
             description="Genome browser"
             icon={BrowserIcon}
@@ -50,7 +49,7 @@ const LaunchbarContent = () => (
           />
         </div>
         <div className={styles.category}>
-          <LaunchbarIcon
+          <LaunchbarButton
             app="tools"
             description="Tools"
             icon={VEPIcon}
@@ -58,7 +57,7 @@ const LaunchbarContent = () => (
           />
         </div>
         <div className={styles.category}>
-          <LaunchbarIcon
+          <LaunchbarButton
             app="downloads"
             description="Downloads"
             icon={CustomDownloadIcon}
@@ -66,7 +65,7 @@ const LaunchbarContent = () => (
           />
         </div>
         <div className={styles.category}>
-          <LaunchbarIcon
+          <LaunchbarButton
             app="help-docs"
             description="Help & documentation"
             icon={HelpIcon}
@@ -77,7 +76,7 @@ const LaunchbarContent = () => (
     </div>
     <div className={styles.about}>
       <span className={styles.aboutText}>Genome research database</span>
-      <LaunchbarIcon
+      <LaunchbarButton
         app="about"
         description="About Ensembl"
         icon={ensemblIcon}
