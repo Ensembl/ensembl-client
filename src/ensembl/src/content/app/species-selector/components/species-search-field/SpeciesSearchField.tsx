@@ -1,9 +1,4 @@
-import React from 'react';
-
-import SpeciesAutosuggestionPanel from '../species-autosuggestion-panel/SpeciesAutosuggestionPanel';
-
-import Input from 'src/shared/input/Input';
-import QuestionButton from 'src/shared/question-button/QuestionButton';
+import React, { FunctionComponent } from 'react';
 
 import { SearchMatches } from 'src/content/app/species-selector/types/species-search';
 
@@ -13,26 +8,11 @@ type Props = {
   matches?: SearchMatches;
 };
 
-const SpeciesSearchField = (props: Props) => {
-  const handleSearchChange = (search: string) => {
-    console.log('search', search);
-  };
-  const onQuestionButtonHover = () =>
-    console.log('hovering over question button');
-
+const SpeciesSearchField: FunctionComponent<Props> = () => {
   return (
     <div className={styles.speciesSearchField}>
-      <Input
-        placeholder="Common or scientific name..."
-        className={styles.speciesSearchFieldInput}
-        onChange={handleSearchChange}
-      />
-      <div className={styles.speciesSearchFieldRightCorner}>
-        <QuestionButton onHover={onQuestionButtonHover} />
-      </div>
-      {props.matches && props.matches.length && (
-        <SpeciesAutosuggestionPanel matches={props.matches} />
-      )}
+      It's a stub. See the feature/species-selector-screen branch for
+      implementation
     </div>
   );
 };
