@@ -1,0 +1,36 @@
+@import 'src/styles/common';
+
+$optionsPanelTopPadding: 12px;
+$optionsPanelLeftPadding: 14px;
+
+.select {
+  position: relative;
+  display: inline-block;
+}
+
+.selectArrowhead {
+  margin-left: 0.8em;
+  height: 8px;
+  width: 8px;
+  fill: $ens-blue;
+}
+
+.selectClosed {
+  cursor: pointer;
+}
+
+.optionsPanel {
+  position: absolute;
+  left: -$optionsPanelLeftPadding;
+  top: -$optionsPanelTopPadding;
+  display: inline-block;
+  min-width: 100%;
+  padding: $optionsPanelTopPadding 22px 34px $optionsPanelLeftPadding;
+  box-shadow: 2px 2px 6px 0 $ens-grey;
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+}
