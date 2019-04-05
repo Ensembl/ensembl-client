@@ -1,5 +1,9 @@
 @import 'src/styles/common';
 
+.checkboxHolder {
+  position: relative;
+}
+
 .unchecked {
   cursor: pointer;
   height: 20px;
@@ -7,6 +11,7 @@
   border: 1px solid $ens-grey;
   background-color: $ens-white;
   transition: background-color 0.2s ease-in-out;
+  display: inline-block;
 }
 
 .checked {
@@ -18,4 +23,14 @@
   background-color: $ens-light-grey;
   cursor: default;
   transition: background-color 0.2s ease-in-out;
+}
+
+.label {
+  color: $ens-dark-grey;
+  display: inline-block;
+  line-height: 15px;
+  position: absolute;
+  font-size: 16px;
+  top: 3px;
+  left: 40px;
 }
