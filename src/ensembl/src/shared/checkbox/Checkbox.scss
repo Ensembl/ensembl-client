@@ -1,0 +1,21 @@
+@import 'src/styles/common';
+
+.unchecked {
+  cursor: pointer;
+  height: 20px;
+  width: 20px;
+  border: 1px solid $ens-grey;
+  background-color: $ens-white;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.checked {
+  background-color: $ens-green;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.disabled {
+  background-color: $ens-light-grey;
+  cursor: default;
+  transition: background-color 0.2s ease-in-out;
+}
