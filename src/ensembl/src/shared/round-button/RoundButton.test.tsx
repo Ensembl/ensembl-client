@@ -40,11 +40,11 @@ describe('RoundButton', () => {
     expect(renderedButton.hasClass('default')).toBe(true);
   });
 
-  test('applies additional classes depending on the buttonStatus', () => {
+  test('applies additional classes depending on the status', () => {
     const wrapper = renderButton(RoundButton, {
       ...defaultProps,
       children: buttonChildren,
-      buttonStatus: RoundButtonStatus.ACTIVE
+      status: RoundButtonStatus.ACTIVE
     });
     const renderedButton = wrapper.find('button');
 
@@ -66,7 +66,7 @@ describe('RoundButton', () => {
     const wrapper = renderButton(RoundButton, {
       ...defaultProps,
       children: buttonChildren,
-      buttonStatus: RoundButtonStatus.DISABLED
+      status: RoundButtonStatus.DISABLED
     });
     wrapper.simulate('click');
     expect(onClick).not.toHaveBeenCalled();

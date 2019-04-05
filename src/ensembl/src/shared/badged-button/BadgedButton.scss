@@ -2,19 +2,19 @@
 
 .badgedButton {
   position: relative;
-  display: inline-flex;
+  display: inline-block;
 }
 
 .badgeDefault {
   position: absolute;
   background-color: $ens-green;
   height: 26px;
-  width: 26px;
+  min-width: 26px;
   top: -13px;
   right: -13px;
   padding: 2px 0 0 0;
   color: $ens-white;
-  border-radius: 100%;
+  border-radius: 13px;
   text-align: center;
   cursor: pointer;
 }

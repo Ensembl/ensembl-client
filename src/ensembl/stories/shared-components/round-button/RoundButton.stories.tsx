@@ -19,21 +19,21 @@ storiesOf('Components|Shared Components/RoundButton', module)
   ))
   .add('active', () => (
     <div className={styles.wrapper}>
-      <Roundbutton buttonStatus={RoundButtonStatus.ACTIVE} onClick={onClick}>
+      <Roundbutton status={RoundButtonStatus.ACTIVE} onClick={onClick}>
         I am active
       </Roundbutton>
     </div>
   ))
   .add('inactive', () => (
     <div className={styles.wrapper}>
-      <Roundbutton buttonStatus={RoundButtonStatus.INACTIVE} onClick={onClick}>
+      <Roundbutton status={RoundButtonStatus.INACTIVE} onClick={onClick}>
         I am inactive
       </Roundbutton>
     </div>
   ))
   .add('disabled', () => (
     <div className={styles.wrapper}>
-      <Roundbutton buttonStatus={RoundButtonStatus.DISABLED} onClick={onClick}>
+      <Roundbutton status={RoundButtonStatus.DISABLED} onClick={onClick}>
         I am disabled
       </Roundbutton>
     </div>
@@ -42,7 +42,7 @@ storiesOf('Components|Shared Components/RoundButton', module)
     <div className={styles.wrapper}>
       <Roundbutton
         classNames={styles}
-        buttonStatus={RoundButtonStatus.ACTIVE}
+        status={RoundButtonStatus.ACTIVE}
         onClick={onClick}
       >
         Custom Active
@@ -52,7 +52,7 @@ storiesOf('Components|Shared Components/RoundButton', module)
   .add('badged', () => (
     <div className={styles.wrapper}>
       <BadgedButton badge={':)'}>
-        <Roundbutton buttonStatus={RoundButtonStatus.ACTIVE} onClick={onClick}>
+        <Roundbutton status={RoundButtonStatus.ACTIVE} onClick={onClick}>
           I have a badge
         </Roundbutton>
       </BadgedButton>

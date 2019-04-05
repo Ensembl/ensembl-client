@@ -17,7 +17,7 @@ storiesOf('Components|Shared Components/BadgedButton', module)
   .add('badged Button', () => (
     <div className={styles.wrapper}>
       <BadgedButton badge={':)'}>
-        <SecondaryButton onClick={onClick}>Primary button</SecondaryButton>
+        <SecondaryButton onClick={onClick}>Secondary button</SecondaryButton>
       </BadgedButton>
     </div>
   ))
