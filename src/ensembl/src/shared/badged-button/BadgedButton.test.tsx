@@ -50,4 +50,26 @@ describe('BadgedButton', () => {
 
     expect(renderedBadge.hasClass(fakeClassName)).toBe(true);
   });
+
+  it('trims the longer strings to three characters', () => {
+    const wrapper = renderButton(BadgedButton, {
+      badgeContent: 'abcd',
+      children: <Button onClick={onClick}>{faker.lorem.words()}</Button>
+    });
+
+    const renderedBadge = wrapper.find('div.badgeDefault');
+
+    expect(renderedBadge.text()).toBe('abc');
+  });
+
+  it('formats number greater than 99 to "99+"', () => {
+    const wrapper = renderButton(BadgedButton, {
+      badgeContent: 100,
+      children: <Button onClick={onClick}>{faker.lorem.words()}</Button>
+    });
+
+    const renderedBadge = wrapper.find('div.badgeDefault');
+
+    expect(renderedBadge.text()).toBe('99+');
+  });
 });
