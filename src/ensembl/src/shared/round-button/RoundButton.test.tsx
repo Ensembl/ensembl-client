@@ -66,7 +66,7 @@ describe('RoundButton', () => {
     const wrapper = renderButton(RoundButton, {
       ...defaultProps,
       children: buttonChildren,
-      isDisabled: true
+      buttonStatus: RoundButtonStatus.DISABLED
     });
     wrapper.simulate('click');
     expect(onClick).not.toHaveBeenCalled();

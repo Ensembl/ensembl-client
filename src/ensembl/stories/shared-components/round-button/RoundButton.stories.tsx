@@ -45,7 +45,7 @@ storiesOf('Components|Shared Components/RoundButton', module)
         buttonStatus={RoundButtonStatus.ACTIVE}
         onClick={onClick}
       >
-        I have a badge
+        Custom Active
       </Roundbutton>
     </div>
   ))

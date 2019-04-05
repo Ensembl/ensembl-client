@@ -24,7 +24,7 @@ const RoundButton = (props: Props) => {
     }
   };
 
-  const styles = classNames
+  const styles = props.classNames
     ? { ...defaultStyles, ...props.classNames }
     : defaultStyles;
 

@@ -5,7 +5,7 @@
   display: inline-flex;
 }
 
-.badge {
+.badgeDefault {
   position: absolute;
   background-color: $ens-green;
   height: 26px;
@@ -16,4 +16,5 @@
   color: $ens-white;
   border-radius: 100%;
   text-align: center;
+  cursor: pointer;
 }
