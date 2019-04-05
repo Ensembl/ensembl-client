@@ -5,11 +5,6 @@ import AccordionItem from './AccordionItem';
 import AccordionItemButton from './AccordionItemButton';
 import AccordionItemHeading, { SPEC_ERROR } from './AccordionItemHeading';
 
-enum UUIDS {
-  FOO = 'FOO',
-  BAR = 'BAR'
-}
-
 describe('AccordionItemHeading', () => {
   it('renders without erroring', () => {
     expect(() => {
