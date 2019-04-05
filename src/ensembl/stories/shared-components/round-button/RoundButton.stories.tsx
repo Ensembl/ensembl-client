@@ -51,7 +51,7 @@ storiesOf('Components|Shared Components/RoundButton', module)
   ))
   .add('badged', () => (
     <div className={styles.wrapper}>
-      <BadgedButton badge={':)'}>
+      <BadgedButton badgeContent={'10'}>
         <Roundbutton status={RoundButtonStatus.ACTIVE} onClick={onClick}>
           I have a badge
         </Roundbutton>

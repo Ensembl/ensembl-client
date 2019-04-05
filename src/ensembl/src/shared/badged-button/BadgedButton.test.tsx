@@ -7,7 +7,7 @@ import Button from '../button/Button';
 const onClick = jest.fn();
 
 const defaultProps = {
-  badge: faker.lorem.words()
+  badgeContent: faker.lorem.words()
 };
 
 const renderButton = (

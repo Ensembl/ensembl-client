@@ -16,21 +16,21 @@ const onClick = action('button-click');
 storiesOf('Components|Shared Components/BadgedButton', module)
   .add('badged Button', () => (
     <div className={styles.wrapper}>
-      <BadgedButton badge={':)'}>
+      <BadgedButton badgeContent={':)'}>
         <SecondaryButton onClick={onClick}>Secondary button</SecondaryButton>
       </BadgedButton>
     </div>
   ))
   .add('badged RoundButton', () => (
     <div className={styles.wrapper}>
-      <BadgedButton badge={':)'}>
+      <BadgedButton badgeContent={':)'}>
         <Roundbutton onClick={onClick}>Badged RoundButton</Roundbutton>
       </BadgedButton>
     </div>
   ))
   .add('badged ImageButton', () => (
     <div className={styles.imageButtonWrapper}>
-      <BadgedButton badge={':)'}>
+      <BadgedButton badgeContent={':)'}>
         <ImageButton
           buttonStatus={ImageButtonStatus.HIGHLIGHTED}
           description={'enable/disable'}
@@ -42,7 +42,7 @@ storiesOf('Components|Shared Components/BadgedButton', module)
   ))
   .add('custom styling', () => (
     <div className={styles.imageButtonWrapper}>
-      <BadgedButton badge={':)'} className={styles.badge}>
+      <BadgedButton badgeContent={':)'} className={styles.badge}>
         <ImageButton
           buttonStatus={ImageButtonStatus.HIGHLIGHTED}
           description={'enable/disable'}

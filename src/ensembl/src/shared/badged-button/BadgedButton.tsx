@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 type Props = {
   children: React.ReactChild;
-  badge?: string | number | undefined;
+  badgeContent?: string | number | undefined;
   className?: string;
 };
 
@@ -14,7 +14,9 @@ const BadgedButton = (props: Props) => {
   return (
     <div className={defaultStyles.badgedButton}>
       {props.children}
-      {props.badge && <div className={className}>{props.badge}</div>}
+      {!!props.badgeContent && (
+        <div className={className}>{props.badgeContent}</div>
+      )}
     </div>
   );
 };
