@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 import times from 'lodash/times';
 // import { action } from '@storybook/addon-actions';
@@ -13,26 +13,38 @@ const createSimpleOption = (number: number) => ({
   isSelected: false
 });
 
-const crreateSimpleOptions = (number: number) => {
+const createSimpleOptions = (number: number) => {
   const options = times(number, (time) => createSimpleOption(time + 1));
   return {
     options
   };
 };
 
-// const Wrapper = (props: any) => {
-//   const [value, setValue] = useState('');
-//   const { searchField: SearchField, ...otherProps } = props;
+const Wrapper = (props: any) => {
+  const [options, setOptions] = useState(createSimpleOptions(5));
 
-//   return (
-//     <div className={styles.searchFieldWrapper}>
-//       <SearchField value={value} onChange={setValue} {...otherProps} />
-//     </div>
-//   );
-// };
+  const onSelect = (selectedValue: number) => {
+    const updatedOptions = options.options.map((option) =>
+      option.value === selectedValue
+        ? {
+            ...option,
+            isSelected: true
+          }
+        : option
+    );
+    setOptions({
+      ...options,
+      options: updatedOptions
+    });
+  };
+
+  return (
+    <div className={styles.defaultWrapper}>
+      <Select optionGroups={[options]} onSelect={onSelect} />
+    </div>
+  );
+};
 
 storiesOf('Components|Shared Components/Select', module).add('default', () => (
-  <div className={styles.defaultWrapper}>
-    <Select optionGroups={[crreateSimpleOptions(5)]} />
-  </div>
+  <Wrapper />
 ));

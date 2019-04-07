@@ -27,6 +27,7 @@ $optionsPanelLeftPadding: 14px;
   min-width: 100%;
   padding: $optionsPanelTopPadding 22px 34px $optionsPanelLeftPadding;
   box-shadow: 2px 2px 6px 0 $ens-grey;
+  white-space: nowrap;
 
   ul {
     margin: 0;

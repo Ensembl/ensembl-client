@@ -28,7 +28,7 @@ type ClosedSelectProps = {
 
 type Props = {
   optionGroups: OptionGroup[];
-  selectedIndex?: OptionIndex;
+  onSelect: (value: any) => void;
 };
 
 const arrowHead = (
