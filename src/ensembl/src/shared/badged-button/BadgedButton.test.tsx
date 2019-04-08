@@ -34,7 +34,7 @@ describe('BadgedButton', () => {
   });
 
   it('assigns the "badgeDefault" class to the badge by default', () => {
-    const renderedBadge = wrapper.find('div.badgeDefault');
+    const renderedBadge = wrapper.find('.badgeDefault');
     expect(renderedBadge).toHaveLength(1);
   });
 
@@ -46,7 +46,7 @@ describe('BadgedButton', () => {
       children: <Button onClick={onClick}>{faker.lorem.words()}</Button>,
       className: fakeClassName
     });
-    const renderedBadge = wrapper.find('div.badgeDefault');
+    const renderedBadge = wrapper.find('.badgeDefault');
 
     expect(renderedBadge.hasClass(fakeClassName)).toBe(true);
   });
@@ -57,7 +57,7 @@ describe('BadgedButton', () => {
       children: <Button onClick={onClick}>{faker.lorem.words()}</Button>
     });
 
-    const renderedBadge = wrapper.find('div.badgeDefault');
+    const renderedBadge = wrapper.find('.badgeDefault');
 
     expect(renderedBadge.text()).toBe('abc');
   });
@@ -68,7 +68,7 @@ describe('BadgedButton', () => {
       children: <Button onClick={onClick}>{faker.lorem.words()}</Button>
     });
 
-    const renderedBadge = wrapper.find('div.badgeDefault');
+    const renderedBadge = wrapper.find('.badgeDefault');
 
     expect(renderedBadge.text()).toBe('99+');
   });
