@@ -14,11 +14,15 @@ When changes are made after the initial implementation of components, there is a
 
 Write unit tests using Jest and Enzyme.
 
-[Jest](https://jestjs.io/) is used as the main testing framework.
+[Jest](https://jestjs.io/) is used as the main testing framework and [`ts-jest`](https://kulshekhar.github.io/ts-jest/) is used as the TypeScrpit preprocessor to run them..
 
-[Enzyme](https://airbnb.io/enzyme/) is used as a utility of Jest to test React components. Also, `react-testing-library` was briefly discussed as an alternative. It forces the developer to test the behaviour of React components and limits what can be tested. This means certain aspects of the component cannot be tested (only shallow rendering is possible). Due to this limitation, it was decided not to use this library for testing.
+[Enzyme](https://airbnb.io/enzyme/) is used as a utility of Jest to test React components. A recent and promising alternative library for unit-testing React is react-testing-library. Its philosophy differs from Enzyme in that it offers the developer a very limited API and encourages testing of components only after they have been mounted in the DOM.
 
-Since these tests are written with TypeScript, [`ts-jest`](https://kulshekhar.github.io/ts-jest/) is used to run them.
+Enzyme's strong points are historically larger community (although `react-testing-library` is steadily getting traction in React community and even is first on the list of unit testing libraries suggested by React docs) and extensive API with numerous convenience methods. Its weakness is that it provides an extra level of abstraction over React, and therefore lags behind React in terms of supported features (as of this writing, hooks are not supported for shallow rendering; React.Suspense, React.lazy and React.memo are not supported at all). Some may argue that the extensive API is also a weakness, because it offers the developer multiple ways of doing a single thing, and thus may be confusing.
+
+The strength of `react-testing-library` is that it is a very thin wrapper over React's own test renderer, and therefore supports almost all features of modern React. It has powerful wait and waitForElement utilities that are very useful for testing of asynchronous effects. Some may argue that its minimalist API is its strength rather than its weakness, because it discourages the practice of testing implementation details rather than behaviour of a component common among Enzyme users.
+
+Despite the strengths of `react-testing-library`, we are currently sticking with Enzyme.
 
 ## Consequences
 
