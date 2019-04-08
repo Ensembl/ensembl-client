@@ -81,8 +81,8 @@ const Select = (props: SelectProps) => {
   );
 };
 
-// the sole purpose of this component is to unify props
-// and transform OptionsSpecificProps into OptionGroupsSpecificProps
+// the purpose of the adapter is to unify props
+// to be consumed by the Select component
 const SelectAdapter = (props: SelectAdapterProps) => {
   if ((props as OptionGroupssSelectProps).optionGroups) {
     return <Select {...props as OptionGroupssSelectProps} />;
