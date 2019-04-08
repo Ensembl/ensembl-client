@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
+import {
+  findSelectedIndexForOptions,
+  findSelectedIndexForOptionGroups
+} from './select-helpers';
+
 import SelectOptionsPanel from './SelectOptionsPanel';
 
 import styles from './Select.scss';
@@ -16,7 +21,7 @@ export type OptionGroup = {
   options: Option[];
 };
 
-export type OptionIndex = [
+export type GroupedOptionIndex = [
   number, // index of option group
   number // index of the option within a group
 ];
@@ -26,10 +31,25 @@ type ClosedSelectProps = {
   onClick: () => void;
 };
 
-type Props = {
+type OptionsSpecificProps = {
+  options: Option[];
+  title?: string;
+};
+
+type OptionGroupsSpecificProps = {
   optionGroups: OptionGroup[];
+};
+
+type CommonProps = {
   onSelect: (value: any) => void;
 };
+
+type OptionsSelectProps = CommonProps & OptionsSpecificProps;
+type OptionGroupssSelectProps = CommonProps & OptionGroupsSpecificProps;
+
+type SelectAdapterProps = OptionsSelectProps | OptionGroupssSelectProps;
+
+type SelectProps = OptionGroupssSelectProps;
 
 const arrowHead = (
   <svg className={styles.selectArrowhead} focusable="false" viewBox="0 0 8 8">
@@ -46,7 +66,7 @@ const ClosedSelect = (props: ClosedSelectProps) => {
   );
 };
 
-const Select = (props: Props) => {
+const Select = (props: SelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const openPanel = () => {
@@ -61,4 +81,21 @@ const Select = (props: Props) => {
   );
 };
 
-export default Select;
+// the sole purpose of this component is to unify props
+// and transform OptionsSpecificProps into OptionGroupsSpecificProps
+const SelectAdapter = (props: SelectAdapterProps) => {
+  if ((props as OptionGroupssSelectProps).optionGroups) {
+    return <Select {...props as OptionGroupssSelectProps} />;
+  } else {
+    const { options, title, ...otherProps } = props as OptionsSelectProps;
+    const optionGroups = [
+      {
+        title,
+        options
+      }
+    ];
+    return <Select optionGroups={optionGroups} {...otherProps} />;
+  }
+};
+
+export default SelectAdapter;
