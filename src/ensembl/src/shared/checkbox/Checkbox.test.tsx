@@ -16,23 +16,9 @@ describe('<Checkbox />', () => {
     }).not.toThrow();
   });
 
-  it('applies the style "unchecked" by default', () => {
+  it('applies the style "defaultCheckbox" by default', () => {
     const wrapper = mount(<Checkbox />);
-    expect(wrapper.find('.unchecked')).toHaveLength(1);
-  });
-
-  describe('prop label', () => {
-    it('does not display any lable by default', () => {
-      const wrapper = mount(<Checkbox />);
-      expect(wrapper.find('.defaultLabel')).toHaveLength(0);
-    });
-
-    it('displays the label if it is passed in', () => {
-      const label = faker.lorem.words();
-      const wrapper = mount(<Checkbox label={label} />);
-
-      expect(wrapper.find('.defaultLabel').text()).toBe(label);
-    });
+    expect(wrapper.find('.defaultCheckbox')).toHaveLength(1);
   });
 
   describe('prop label', () => {

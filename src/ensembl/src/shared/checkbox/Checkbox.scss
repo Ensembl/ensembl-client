@@ -4,25 +4,28 @@
   position: relative;
 }
 
-.unchecked {
+.defaultCheckbox {
   cursor: pointer;
   height: 15px;
   width: 15px;
   border: 1px solid $ens-grey;
   background-color: $ens-white;
-  transition: background-color 0.2s ease-in-out;
+  transition: background-color 0.1s ease-in-out;
   display: inline-block;
+}
+
+.unchecked {
+  cursor: pointer;
+  background-color: $ens-white;
 }
 
 .checked {
   background-color: $ens-green;
-  transition: background-color 0.2s ease-in-out;
 }
 
 .disabled {
   background-color: $ens-light-grey;
   cursor: default;
-  transition: background-color 0.2s ease-in-out;
 }
 
 .defaultLabel {

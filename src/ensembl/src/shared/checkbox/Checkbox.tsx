@@ -43,7 +43,7 @@ const Checkbox = (props: Props) => {
     ? { ...defaultStyles, ...props.classNames }
     : defaultStyles;
 
-  const className = classNames(styles.unchecked, styles[checkedStatus]);
+  const className = classNames(styles.defaultCheckbox, styles[checkedStatus]);
   const labelClassName = classNames(
     defaultStyles.defaultLabel,
     props.labelClassName
