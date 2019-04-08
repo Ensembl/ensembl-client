@@ -8,15 +8,23 @@ Accepted
 
 ## Context
 
-The state of data and UI will grow in the application as the development goes on. There needs to be good state management mechanism to handle this.
+The state of data and UI will grow in the application as the development goes on. There needs to be a good state management mechanism to handle this.
 
 ## Decision
 
-[Redux](https://redux.js.org/) will be used for the state management. It is a centralised state management container, that can handle the state for data and UI of the application.
+There are various ways to do state management in a React application. React itself provides two mechanisms:
 
-Using React.js state only, instead of any state management library, was considered. However, this would make it difficult to share state between sibling components and manage global state as well.
+- component local state (useful for tracking transient localised state that most parts of the application are not concerned with)
+- React context (useful for sharing state between unrelated components)
 
-Also, Mobx was discussed about. However, the magic nature of how things are done with it compared to Redux made the team decide not to go ahead with it.
+Both of these mechanisms, while useful, are generally insufficient for tracking state in a large application, which resulted in proliferation of numerous third-party libraries for state management. Of those, the two most notable are:
+
+- Redux
+- MobX
+
+These two libraries represent two different philosophies of state management (and programming in general). Redux follows the functional programming approach, in which state itself is immutable, and state changes are a series of new copies of state produced in response to message events (actions) dispatched within the store. In MobX, state is a mutable object that is changed via getters and setters (in latest implementations, proxies), which also notify subscriptions of the change.
+
+While the MobX approach is generally regarded as easier to use, we feel that it also makes this library more **magical** and therefore more difficult to debug as compared to Redux. Also, Redux's reliance on events makes it a convenient target for plugging various kinds of middleware (i.e. analytics middleware, redux-saga or redux-observable) for better encapsulation of state-dependent logic.
 
 ## Consequences
 
