@@ -16,7 +16,7 @@ Write unit tests using Jest and Enzyme.
 
 [Jest](https://jestjs.io/) is used as the main testing framework.
 
-[Enzyme](https://airbnb.io/enzyme/) is used as a utility of Jest to test React components.
+[Enzyme](https://airbnb.io/enzyme/) is used as a utility of Jest to test React components. Also, `react-testing-library` was briefly discussed as an alternative. It forces the developer to test the behaviour of React components and limits what can be tested. This means certain aspects of the component cannot be tested (only shallow rendering is possible). Due to this limitation, it was decided not to use this library for testing.
 
 Since these tests are written with TypeScript, [`ts-jest`](https://kulshekhar.github.io/ts-jest/) is used to run them.
 
