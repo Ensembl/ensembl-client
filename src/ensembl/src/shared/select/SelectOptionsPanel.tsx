@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-import { Option, OptionGroup } from './Select';
+import { Option, OptionGroup, GroupedOptionIndex } from './Select';
 
 import styles from './Select.scss';
 
 type Props = {
   optionGroups: OptionGroup[];
+  selectedOption: Option | null;
+  onSelect: (index: GroupedOptionIndex) => void;
 };
 
 const SelectOption = (props: Option) => {

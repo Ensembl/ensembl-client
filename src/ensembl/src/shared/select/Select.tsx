@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 
 import {
   findSelectedIndexForOptions,
-  findSelectedIndexForOptionGroups
-} from './select-helpers';
+  findSelectedIndexForOptionGroups,
+  splitFromSelected
+} from './helpers/select-helpers';
 
 import SelectOptionsPanel from './SelectOptionsPanel';
 
@@ -68,6 +69,7 @@ const ClosedSelect = (props: ClosedSelectProps) => {
 
 const Select = (props: SelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedOption, optionGroups] = splitFromSelected(props.optionGroups);
 
   const openPanel = () => {
     setIsOpen(true);
