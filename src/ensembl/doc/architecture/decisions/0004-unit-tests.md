@@ -12,9 +12,9 @@ When changes are made after the initial implementation of components, there is a
 
 ## Decision
 
-Write unit tests using Jest and Enzyme. Include snapshot testing too, for additional testing.
+Write unit tests using Jest and Enzyme.
 
-[Jest](https://jestjs.io/) is used as the main testing framework. Snapshot testing, which is a feature of Jest, is also used.
+[Jest](https://jestjs.io/) is used as the main testing framework.
 
 [Enzyme](https://airbnb.io/enzyme/) is used as a utility of Jest to test React components.
 
@@ -24,6 +24,6 @@ Since these tests are written with TypeScript, [`ts-jest`](https://kulshekhar.gi
 
 Unit tests can act as code documentation. Also, they can prevent code breakage. However, this would prolong development of the application and will need to be enforced to get the full benefit of testing.
 
-Jest is developed by Facebook Inc. and used by many React developers. The same can be said of Enzyme. This should help the team with finding help as there is already a community built around these tools.
+Jest is developed by Facebook Inc. and used by many React developers. The same can be said of Enzyme, which is developed by Airbnb. This should enable the team to find help easily, as there is already a community built around these tools.
 
-All unit tests are written TypeScript and this adds some complexity to the testing code. Also, setting up the code and fixing issues related to TypeScript integration with the tools can be tricky.
+All unit tests are written in TypeScript and this adds some complexity to the testing code. Also, setting up the code and fixing issues related to TypeScript integration with the tools can be tricky.
