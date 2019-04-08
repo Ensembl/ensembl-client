@@ -12,8 +12,9 @@ export enum CheckboxStatus {
 type Props = {
   onClick?: () => void;
   status: CheckboxStatus;
-  classNames?: { [key in CheckboxStatus]?: string } & { label: string };
+  classNames?: { [key in CheckboxStatus]: string };
   label?: string;
+  labelClassName?: string;
 };
 
 const Checkbox = (props: Props) => {
@@ -43,11 +44,15 @@ const Checkbox = (props: Props) => {
     : defaultStyles;
 
   const className = classNames(styles.unchecked, styles[checkedStatus]);
+  const labelClassName = classNames(
+    defaultStyles.defaultLabel,
+    props.labelClassName
+  );
 
   return (
     <div onClick={handleOnClick} className={defaultStyles.checkboxHolder}>
       <div className={className} />
-      {props.label && <div className={styles.label}>{props.label}</div>}
+      {props.label && <div className={labelClassName}>{props.label}</div>}
     </div>
   );
 };
