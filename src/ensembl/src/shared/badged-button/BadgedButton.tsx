@@ -13,10 +13,8 @@ const BadgedButton = (props: Props) => {
 
   let badgeContent = props.badgeContent;
 
-  if (typeof badgeContent === 'number') {
-    if (badgeContent > 99) {
-      badgeContent = '99+';
-    }
+  if (typeof badgeContent === 'number' && badgeContent > 99) {
+    badgeContent = '99+';
   } else if (typeof badgeContent === 'string') {
     // Limit the string to 3 characters
     badgeContent = badgeContent.substring(0, 3);
