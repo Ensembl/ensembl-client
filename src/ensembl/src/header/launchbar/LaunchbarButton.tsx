@@ -27,6 +27,7 @@ export const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
   return props.enabled ? (
     <NavLink
       className={styles.launchbarButton}
+      title={props.description}
       to={`/app/${props.app}`}
       activeClassName={styles.launchbarButtonActive}
     >
@@ -35,6 +36,7 @@ export const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
   ) : (
     <span
       className={`${styles.launchbarButton} ${styles.launchbarButtonDisabled}`}
+      title={props.description}
     >
       {icon}
     </span>
