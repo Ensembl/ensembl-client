@@ -3,39 +3,35 @@ import classNames from 'classnames';
 
 import defaultStyles from './Checkbox.scss';
 
-export enum CheckboxStatus {
-  CHECKED = 'checked',
-  DISABLED = 'disabled',
-  UNCHECKED = 'unchecked'
-}
+type WithoutLabelProps = {
+  onChange?: () => void;
+  classNames?: any;
+  disabled?: boolean;
+  checked: boolean;
+};
 
-type Props = {
-  onClick?: () => void;
-  status: CheckboxStatus;
-  classNames?: { [key in CheckboxStatus]: string };
-  label?: string;
+type WithLabelProps = WithoutLabelProps & {
+  label: string;
   labelClassName?: string;
 };
 
-const Checkbox = (props: Props) => {
-  const [checkedStatus, toggleCheckedStatus] = useState(props.status);
+type Props = WithLabelProps | WithoutLabelProps;
 
-  const handleOnClick = () => {
+const Checkbox = (props: Props) => {
+  const [checkedStatus, toggleCheckedStatus] = useState(props.checked);
+
+  const handleOnChange = () => {
     // Do nothing if it is disabled
-    if (props.status === CheckboxStatus.DISABLED) {
+    if (props.disabled) {
       return;
     }
 
     // Toggle the checked status
-    if (checkedStatus === CheckboxStatus.CHECKED) {
-      toggleCheckedStatus(CheckboxStatus.UNCHECKED);
-    } else {
-      toggleCheckedStatus(CheckboxStatus.CHECKED);
-    }
+    toggleCheckedStatus(!checkedStatus);
 
-    // Call the onClick function if we have one
-    if (props.onClick) {
-      props.onClick();
+    // Call the onChange function if we have one
+    if (props.onChange) {
+      props.onChange();
     }
   };
 
@@ -43,22 +39,37 @@ const Checkbox = (props: Props) => {
     ? { ...defaultStyles, ...props.classNames }
     : defaultStyles;
 
-  const className = classNames(styles.defaultCheckbox, styles[checkedStatus]);
+  const className = classNames(
+    styles.defaultCheckbox,
+    { [styles.checked]: checkedStatus },
+    { [styles.unchecked]: !checkedStatus },
+    { [styles.disabled]: props.disabled }
+  );
   const labelClassName = classNames(
     defaultStyles.defaultLabel,
     props.labelClassName
   );
 
   return (
-    <div onClick={handleOnClick} className={defaultStyles.checkboxHolder}>
-      <div className={className} />
-      {props.label && <div className={labelClassName}>{props.label}</div>}
+    <div className={defaultStyles.checkboxHolder}>
+      <input
+        type="checkbox"
+        className={defaultStyles.hiddenInput}
+        onChange={handleOnChange}
+        defaultChecked={checkedStatus}
+      />
+      <div onClick={handleOnChange} className={className} />
+      {props.label && (
+        <label onClick={handleOnChange} className={labelClassName}>
+          {props.label}
+        </label>
+      )}
     </div>
   );
 };
 
 Checkbox.defaultProps = {
-  status: CheckboxStatus.UNCHECKED
+  checked: false
 };
 
 export default Checkbox;

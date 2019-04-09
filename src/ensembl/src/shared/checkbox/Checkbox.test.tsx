@@ -1,9 +1,9 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import Checkbox, { CheckboxStatus } from './Checkbox';
+import Checkbox from './Checkbox';
 import faker from 'faker';
 
-const onClick = jest.fn();
+const onChange = jest.fn();
 
 describe('<Checkbox />', () => {
   afterEach(() => {
@@ -45,32 +45,30 @@ describe('<Checkbox />', () => {
     });
   });
 
-  describe('prop onClick', () => {
-    it('calls the onClick function when clicked', () => {
-      const wrapper = mount(<Checkbox onClick={onClick} />);
+  describe('prop onChange', () => {
+    it('calls the onChange function when clicked', () => {
+      const wrapper = mount(<Checkbox onChange={onChange} />);
 
       wrapper.simulate('click');
 
-      expect(onClick).toHaveBeenCalled();
+      expect(onChange).toHaveBeenCalled();
     });
 
-    it('does not call onClick function if the status is disabled', () => {
-      const wrapper = mount(
-        <Checkbox onClick={onClick} status={CheckboxStatus.DISABLED} />
-      );
+    it('does not call onChange function if the status is disabled', () => {
+      const wrapper = mount(<Checkbox onChange={onChange} disabled={true} />);
 
       wrapper.simulate('click');
 
-      expect(onClick).not.toHaveBeenCalled();
+      expect(onChange).not.toHaveBeenCalled();
     });
 
-    it('calls the onClick function if the label is clicked', () => {
+    it('calls the onChange function if the label is clicked', () => {
       const label = faker.lorem.words();
-      const wrapper = mount(<Checkbox label={label} onClick={onClick} />);
+      const wrapper = mount(<Checkbox label={label} onChange={onChange} />);
 
       wrapper.find('.defaultLabel').simulate('click');
 
-      expect(onClick).toHaveBeenCalled();
+      expect(onChange).toHaveBeenCalled();
     });
   });
 });
