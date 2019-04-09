@@ -17,6 +17,10 @@ type WithLabelProps = WithoutLabelProps & {
 
 type Props = WithLabelProps | WithoutLabelProps;
 
+const isWithLabel = (props: Props): props is WithLabelProps => {
+  return 'label' in props;
+};
+
 const Checkbox = (props: Props) => {
   const [checkedStatus, toggleCheckedStatus] = useState(props.checked);
 
@@ -45,7 +49,7 @@ const Checkbox = (props: Props) => {
   );
   const labelClassName = classNames(
     defaultStyles.defaultLabel,
-    props.labelClassName
+    isWithLabel(props) && props.labelClassName
   );
 
   return (
@@ -57,7 +61,7 @@ const Checkbox = (props: Props) => {
         defaultChecked={checkedStatus}
       />
       <div onClick={handleOnChange} className={className} />
-      {props.label && (
+      {isWithLabel(props) && (
         <label onClick={handleOnChange} className={labelClassName}>
           {props.label}
         </label>
