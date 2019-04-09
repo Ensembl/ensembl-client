@@ -12,24 +12,24 @@ describe('<Checkbox />', () => {
 
   it('renders without error', () => {
     expect(() => {
-      mount(<Checkbox />);
+      mount(<Checkbox onChange={onChange} />);
     }).not.toThrow();
   });
 
   it('applies the style "defaultCheckbox" by default', () => {
-    const wrapper = mount(<Checkbox />);
+    const wrapper = mount(<Checkbox onChange={onChange} />);
     expect(wrapper.find('.defaultCheckbox')).toHaveLength(1);
   });
 
   describe('prop label', () => {
     it('does not display any lable by default', () => {
-      const wrapper = mount(<Checkbox />);
+      const wrapper = mount(<Checkbox onChange={onChange} />);
       expect(wrapper.find('.defaultLabel')).toHaveLength(0);
     });
 
     it('displays the label if it is passed in', () => {
       const label = faker.lorem.words();
-      const wrapper = mount(<Checkbox label={label} />);
+      const wrapper = mount(<Checkbox onChange={onChange} label={label} />);
 
       expect(wrapper.find('.defaultLabel').text()).toBe(label);
     });
@@ -38,7 +38,11 @@ describe('<Checkbox />', () => {
       const label = faker.lorem.words();
       const fakeClassName = faker.lorem.word();
       const wrapper = mount(
-        <Checkbox label={label} labelClassName={fakeClassName} />
+        <Checkbox
+          onChange={onChange}
+          label={label}
+          labelClassName={fakeClassName}
+        />
       );
 
       expect(wrapper.find('.defaultLabel').hasClass(fakeClassName)).toBe(true);
@@ -49,7 +53,7 @@ describe('<Checkbox />', () => {
     it('calls the onChange function when clicked', () => {
       const wrapper = mount(<Checkbox onChange={onChange} />);
 
-      wrapper.simulate('click');
+      wrapper.find('.defaultCheckbox').simulate('click');
 
       expect(onChange).toHaveBeenCalled();
     });
@@ -57,7 +61,7 @@ describe('<Checkbox />', () => {
     it('does not call onChange function if the status is disabled', () => {
       const wrapper = mount(<Checkbox onChange={onChange} disabled={true} />);
 
-      wrapper.simulate('click');
+      wrapper.find('.defaultCheckbox').simulate('click');
 
       expect(onChange).not.toHaveBeenCalled();
     });
