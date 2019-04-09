@@ -92,7 +92,7 @@ const Select = (props: SelectProps) => {
       {isOpen && (
         <SelectOptionsPanel
           optionGroups={props.optionGroups}
-          onSelect={(thing) => console.log('thing', thing)}
+          onSelect={handleSelect}
           onClose={closePanel}
         />
       )}

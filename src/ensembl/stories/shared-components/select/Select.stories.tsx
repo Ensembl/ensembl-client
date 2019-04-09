@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 import times from 'lodash/times';
-// import { action } from '@storybook/addon-actions';
+import { action } from '@storybook/addon-actions';
 
 import Select from 'src/shared/select/Select';
 
@@ -24,6 +24,7 @@ const Wrapper = (props: any) => {
   const [options, setOptions] = useState(createSimpleOptions(5));
 
   const onSelect = (selectedValue: number) => {
+    action(`selected: ${selectedValue}`)();
     const updatedOptions = options.options.map((option) =>
       option.value === selectedValue
         ? {
