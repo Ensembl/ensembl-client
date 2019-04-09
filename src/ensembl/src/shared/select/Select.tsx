@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+import useDeepCompareEffect from 'src/shared/hooks/useDeepCompareEffect';
+
 import {
   findSelectedIndexForOptions,
   findSelectedIndexForOptionGroups,
@@ -91,7 +93,7 @@ const Select = (props: SelectProps) => {
       <ClosedSelect label="hello?" onClick={openPanel} />
       {isOpen && (
         <SelectOptionsPanel
-          optionGroups={props.optionGroups}
+          optionGroups={optionGroups}
           onSelect={handleSelect}
           onClose={closePanel}
         />

@@ -76,8 +76,6 @@ const SelectOptionsPanel = (props: Props) => {
   );
   const elementRef = useRef<HTMLDivElement | null>(null);
 
-  const getHighlightedItemIndex = () => highlightedItemIndex;
-
   const handleKeyDown = (event: KeyboardEvent) => {
     if (![keyCodes.UP, keyCodes.DOWN, keyCodes.ENTER].includes(event.keyCode)) {
       return;
@@ -124,7 +122,7 @@ const SelectOptionsPanel = (props: Props) => {
   };
 
   const handleItemClick = (index: GroupedOptionIndex) => {
-    console.log('clicked!');
+    props.onSelect(index);
   };
 
   return (
