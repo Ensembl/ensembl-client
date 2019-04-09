@@ -14,9 +14,9 @@ When changes are made after the initial implementation of components, there is a
 
 Write unit tests using Jest and Enzyme.
 
-[Jest](https://jestjs.io/) is used as the main testing framework and [`ts-jest`](https://kulshekhar.github.io/ts-jest/) is used as the TypeScrpit preprocessor to run them..
+[Jest](https://jestjs.io/) is used as the testing framework and [`ts-jest`](https://kulshekhar.github.io/ts-jest/) is used as the TypeScrpit preprocessor to run them..
 
-[Enzyme](https://airbnb.io/enzyme/) is used as a utility of Jest to test React components. A recent and promising alternative library for unit-testing React is react-testing-library. Its philosophy differs from Enzyme in that it offers the developer a very limited API and encourages testing of components only after they have been mounted in the DOM.
+[Enzyme](https://airbnb.io/enzyme/) is a testing utility used to test the output of React components. A recent and promising alternative library for unit-testing React is react-testing-library. Its philosophy differs from Enzyme in that it offers the developer a very limited API and encourages testing of components only after they have been mounted in the DOM.
 
 Enzyme's strong points are historically larger community (although `react-testing-library` is steadily getting traction in React community and even is first on the list of unit testing libraries suggested by React docs) and extensive API with numerous convenience methods. Its weakness is that it provides an extra level of abstraction over React, and therefore lags behind React in terms of supported features (as of this writing, hooks are not supported for shallow rendering; React.Suspense, React.lazy and React.memo are not supported at all). Some may argue that the extensive API is also a weakness, because it offers the developer multiple ways of doing a single thing, and thus may be confusing.
 
