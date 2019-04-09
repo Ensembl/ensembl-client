@@ -1,8 +1,44 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
+import classNames from 'classnames';
+
+import {
+  getNextItemIndex,
+  getPreviousItemIndex
+} from './helpers/select-helpers';
+
+import * as keyCodes from 'src/shared/constants/keyCodes';
 
 import { Option, OptionGroup, GroupedOptionIndex } from './Select';
 
 import styles from './Select.scss';
+
+enum HighlightActionType {
+  NEXT = 'next',
+  PREVIOUS = 'previous',
+  SET = 'set',
+  SUBMIT = 'submit'
+}
+type HighlightedItemState = GroupedOptionIndex | null;
+type HighlightAction =
+  | { type: HighlightActionType.NEXT; payload: OptionGroup[] }
+  | { type: HighlightActionType.PREVIOUS; payload: OptionGroup[] }
+  | { type: HighlightActionType.SET; payload: GroupedOptionIndex }
+  | {
+      type: HighlightActionType.SUBMIT;
+      payload: (index: GroupedOptionIndex) => void;
+    };
+
+type OptionGroupProps = OptionGroup & {
+  highlightedItemIndex?: number;
+  onItemHover: () => void;
+  onItemClick: () => void;
+};
+
+type OptionProps = Option & {
+  isHighlighed: boolean;
+  onHover: () => void;
+  onClick: () => void;
+};
 
 type Props = {
   optionGroups: OptionGroup[];
@@ -10,28 +46,117 @@ type Props = {
   onSelect: (index: GroupedOptionIndex) => void;
 };
 
-const SelectOption = (props: Option) => {
-  return <li>{props.label}</li>;
+const highlightedItemReducer = (
+  state: HighlightedItemState,
+  action: HighlightAction
+) => {
+  switch (action.type) {
+    case HighlightActionType.NEXT:
+      return getNextItemIndex(state, action.payload);
+    case HighlightActionType.PREVIOUS:
+      return getPreviousItemIndex(state, action.payload);
+    case HighlightActionType.SET:
+      return action.payload;
+    case HighlightActionType.SUBMIT:
+      // side effect! and fallthrough to default! boo!
+      state && action.payload(state);
+    default:
+      return state;
+  }
 };
 
-const SelectOptionGroup = (props: OptionGroup) => {
+const SelectOptionsPanel = (props: Props) => {
+  const [highlightedItemIndex, dispatch] = useReducer(
+    highlightedItemReducer,
+    null
+  );
+
+  const getHighlightedItemIndex = () => highlightedItemIndex;
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (![keyCodes.UP, keyCodes.DOWN, keyCodes.ENTER].includes(event.keyCode)) {
+      return;
+    }
+
+    event.preventDefault();
+
+    if (event.keyCode === keyCodes.UP) {
+      dispatch({
+        type: HighlightActionType.PREVIOUS,
+        payload: props.optionGroups
+      });
+    } else if (event.keyCode === keyCodes.DOWN) {
+      dispatch({ type: HighlightActionType.NEXT, payload: props.optionGroups });
+    } else if (event.keyCode === keyCodes.ENTER) {
+      dispatch({ type: HighlightActionType.SUBMIT, payload: props.onSelect });
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const handleItemHover = () => {
+    console.log('hovering');
+  };
+
+  const handleItemClick = () => {
+    console.log('clicked!');
+  };
+
+  return (
+    <div className={styles.optionsPanel}>
+      {props.optionGroups.map((optionGroup, index) => {
+        const [groupIndex, itemIndex] = highlightedItemIndex || [null, null];
+        const otherProps =
+          index === groupIndex
+            ? { highlightedItemIndex: itemIndex as number }
+            : {};
+
+        return (
+          <SelectOptionGroup
+            {...optionGroup}
+            onItemHover={handleItemHover}
+            onItemClick={handleItemClick}
+            {...otherProps}
+            key={index}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
+const SelectOptionGroup = (props: OptionGroupProps) => {
   return (
     <ul>
       {props.title && <div>{props.title}</div>}
       {props.options.map((option, index) => (
-        <SelectOption {...option} key={index} />
+        <SelectOption
+          {...option}
+          isHighlighed={index === props.highlightedItemIndex}
+          onHover={props.onItemHover}
+          onClick={props.onItemClick}
+          key={index}
+        />
       ))}
     </ul>
   );
 };
 
-const SelectOptionsPanel = (props: Props) => {
+const SelectOption = (props: OptionProps) => {
+  const className = classNames(styles.option, {
+    [styles.optionHighlighted]: props.isHighlighed
+  });
   return (
-    <div className={styles.optionsPanel}>
-      {props.optionGroups.map((optionGroup, index) => (
-        <SelectOptionGroup {...optionGroup} key={index} />
-      ))}
-    </div>
+    <li
+      className={className}
+      onMouseEnter={props.onHover}
+      onClick={props.onClick}
+    >
+      {props.label}
+    </li>
   );
 };
 

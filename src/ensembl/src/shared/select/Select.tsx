@@ -78,7 +78,12 @@ const Select = (props: SelectProps) => {
   return (
     <div className={styles.select}>
       <ClosedSelect label="hello?" onClick={openPanel} />
-      {isOpen && <SelectOptionsPanel optionGroups={props.optionGroups} />}
+      {isOpen && (
+        <SelectOptionsPanel
+          optionGroups={props.optionGroups}
+          onSelect={(thing) => console.log('thing', thing)}
+        />
+      )}
     </div>
   );
 };
