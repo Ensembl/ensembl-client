@@ -75,6 +75,17 @@ const Select = (props: SelectProps) => {
     setIsOpen(true);
   };
 
+  const closePanel = () => {
+    setIsOpen(false);
+  };
+
+  const handleSelect = (optionIndex: GroupedOptionIndex) => {
+    const [groupdIndex, itemIndex] = optionIndex;
+    const selectedOption = optionGroups[groupdIndex].options[itemIndex];
+    props.onSelect(selectedOption.value);
+    setIsOpen(false);
+  };
+
   return (
     <div className={styles.select}>
       <ClosedSelect label="hello?" onClick={openPanel} />
@@ -82,6 +93,7 @@ const Select = (props: SelectProps) => {
         <SelectOptionsPanel
           optionGroups={props.optionGroups}
           onSelect={(thing) => console.log('thing', thing)}
+          onClose={closePanel}
         />
       )}
     </div>

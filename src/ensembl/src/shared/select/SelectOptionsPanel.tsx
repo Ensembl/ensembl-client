@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, useRef } from 'react';
 import classNames from 'classnames';
 
 import {
@@ -31,8 +31,8 @@ type HighlightAction =
 type OptionGroupProps = OptionGroup & {
   highlightedItemIndex?: number;
   groupIndex: number;
-  onItemHover: () => void;
-  onItemClick: () => void;
+  onItemHover: (index: GroupedOptionIndex) => void;
+  onItemClick: (index: GroupedOptionIndex) => void;
 };
 
 type OptionProps = Option & {
@@ -47,6 +47,7 @@ type Props = {
   optionGroups: OptionGroup[];
   selectedOption: Option | null;
   onSelect: (index: GroupedOptionIndex) => void;
+  onClose: () => void;
 };
 
 const highlightedItemReducer = (
@@ -73,6 +74,7 @@ const SelectOptionsPanel = (props: Props) => {
     highlightedItemReducer,
     null
   );
+  const elementRef = useRef<HTMLDivElement | null>(null);
 
   const getHighlightedItemIndex = () => highlightedItemIndex;
 
@@ -95,10 +97,27 @@ const SelectOptionsPanel = (props: Props) => {
     }
   };
 
+  const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+    const { target } = event;
+    if (target !== elementRef.current) {
+      props.onClose();
+    }
+  };
+
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside);
+    document.addEventListener('touchend', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener('touchend', handleClickOutside);
+    };
+  });
 
   const handleItemHover = (index: GroupedOptionIndex) => {
     dispatch({ type: HighlightActionType.SET, payload: index });
@@ -109,7 +128,7 @@ const SelectOptionsPanel = (props: Props) => {
   };
 
   return (
-    <div className={styles.optionsPanel}>
+    <div className={styles.optionsPanel} ref={elementRef}>
       {props.optionGroups.map((optionGroup, index) => {
         const [groupIndex, itemIndex] = highlightedItemIndex || [null, null];
         const otherProps =
