@@ -58,10 +58,10 @@ const LaunchbarContent = () => (
         </div>
         <div className={styles.category}>
           <LaunchbarButton
-            app="downloads"
+            app="custom-download"
             description="Downloads"
             icon={CustomDownloadIcon}
-            enabled={false}
+            enabled={true}
           />
         </div>
         <div className={styles.category}>

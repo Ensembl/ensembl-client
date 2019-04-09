@@ -10,3 +10,32 @@
   color: $ens-dark-grey;
   padding-top: 10px;
 }
+
+.panelContent {
+  display: inline-block;
+  margin: 50px;
+  position: relative;
+  height: 125px;
+}
+
+/* RoundButton extended styles*/
+.inactive {
+  background-color: $ens-white;
+  border: 1px solid $ens-blue;
+  color: $ens-dark-blue;
+  margin-left: 30px;
+}
+
+.active {
+  background-color: $ens-medium-dark-grey;
+  color: $ens-white;
+  border: none;
+  margin-left: 30px;
+}
+
+/* PrimaryButton extended styles */
+.primaryButton {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
