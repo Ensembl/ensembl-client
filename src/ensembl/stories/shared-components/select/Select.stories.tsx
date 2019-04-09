@@ -25,14 +25,10 @@ const Wrapper = (props: any) => {
 
   const onSelect = (selectedValue: number) => {
     action(`selected: ${selectedValue}`)();
-    const updatedOptions = options.options.map((option) =>
-      option.value === selectedValue
-        ? {
-            ...option,
-            isSelected: true
-          }
-        : option
-    );
+    const updatedOptions = options.options.map((option) => ({
+      ...option,
+      isSelected: option.value === selectedValue
+    }));
     setOptions({
       ...options,
       options: updatedOptions

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 
-import useDeepCompareEffect from 'src/shared/hooks/useDeepCompareEffect';
-
 import {
   findSelectedIndexForOptions,
   findSelectedIndexForOptionGroups,
@@ -30,7 +28,8 @@ export type GroupedOptionIndex = [
 ];
 
 type ClosedSelectProps = {
-  label: React.ReactNode;
+  selectedOption: Option | null;
+  placeholder: string;
   onClick: () => void;
 };
 
@@ -45,6 +44,7 @@ type OptionGroupsSpecificProps = {
 
 type CommonProps = {
   onSelect: (value: any) => void;
+  placeholder: string;
 };
 
 type OptionsSelectProps = CommonProps & OptionsSpecificProps;
@@ -63,7 +63,7 @@ const arrowHead = (
 const ClosedSelect = (props: ClosedSelectProps) => {
   return (
     <span className={styles.selectClosed} onClick={props.onClick}>
-      {props.label}
+      {props.selectedOption ? props.selectedOption.label : props.placeholder}
       {arrowHead}
     </span>
   );
@@ -90,7 +90,11 @@ const Select = (props: SelectProps) => {
 
   return (
     <div className={styles.select}>
-      <ClosedSelect label="hello?" onClick={openPanel} />
+      <ClosedSelect
+        selectedOption={selectedOption}
+        onClick={openPanel}
+        placeholder={props.placeholder}
+      />
       {isOpen && (
         <SelectOptionsPanel
           optionGroups={optionGroups}
@@ -100,6 +104,10 @@ const Select = (props: SelectProps) => {
       )}
     </div>
   );
+};
+
+Select.defaultProps = {
+  placeholder: 'Select'
 };
 
 // the purpose of the adapter is to unify props
