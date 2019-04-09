@@ -30,14 +30,17 @@ type HighlightAction =
 
 type OptionGroupProps = OptionGroup & {
   highlightedItemIndex?: number;
+  groupIndex: number;
   onItemHover: () => void;
   onItemClick: () => void;
 };
 
 type OptionProps = Option & {
+  groupIndex: number;
+  itemIndex: number;
   isHighlighed: boolean;
-  onHover: () => void;
-  onClick: () => void;
+  onHover: (index: GroupedOptionIndex) => void;
+  onClick: (index: GroupedOptionIndex) => void;
 };
 
 type Props = {
@@ -97,11 +100,11 @@ const SelectOptionsPanel = (props: Props) => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const handleItemHover = () => {
-    console.log('hovering');
+  const handleItemHover = (index: GroupedOptionIndex) => {
+    dispatch({ type: HighlightActionType.SET, payload: index });
   };
 
-  const handleItemClick = () => {
+  const handleItemClick = (index: GroupedOptionIndex) => {
     console.log('clicked!');
   };
 
@@ -117,6 +120,7 @@ const SelectOptionsPanel = (props: Props) => {
         return (
           <SelectOptionGroup
             {...optionGroup}
+            groupIndex={index}
             onItemHover={handleItemHover}
             onItemClick={handleItemClick}
             {...otherProps}
@@ -135,6 +139,8 @@ const SelectOptionGroup = (props: OptionGroupProps) => {
       {props.options.map((option, index) => (
         <SelectOption
           {...option}
+          groupIndex={props.groupIndex}
+          itemIndex={index}
           isHighlighed={index === props.highlightedItemIndex}
           onHover={props.onItemHover}
           onClick={props.onItemClick}
@@ -149,12 +155,13 @@ const SelectOption = (props: OptionProps) => {
   const className = classNames(styles.option, {
     [styles.optionHighlighted]: props.isHighlighed
   });
+  const optionIndex = [props.groupIndex, props.itemIndex] as GroupedOptionIndex;
+
+  const onHover = () => props.onHover(optionIndex);
+  const onClick = () => props.onClick(optionIndex);
+
   return (
-    <li
-      className={className}
-      onMouseEnter={props.onHover}
-      onClick={props.onClick}
-    >
+    <li className={className} onMouseEnter={onHover} onClick={onClick}>
       {props.label}
     </li>
   );
