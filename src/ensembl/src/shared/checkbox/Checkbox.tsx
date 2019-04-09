@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import defaultStyles from './Checkbox.scss';
 
 type WithoutLabelProps = {
-  onChange?: () => void;
+  onChange: (status: boolean) => void;
   classNames?: any;
   disabled?: boolean;
   checked: boolean;
@@ -29,10 +29,8 @@ const Checkbox = (props: Props) => {
     // Toggle the checked status
     toggleCheckedStatus(!checkedStatus);
 
-    // Call the onChange function if we have one
-    if (props.onChange) {
-      props.onChange();
-    }
+    // Call the onChange function
+    props.onChange(!checkedStatus);
   };
 
   const styles = props.classNames
