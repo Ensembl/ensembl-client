@@ -28,6 +28,8 @@ export type GroupedOptionIndex = [
 ];
 
 type ClosedSelectProps = {
+  // <-- TODO: think of a better name
+  isOpen: boolean;
   selectedOption: Option | null;
   placeholder: string;
   onClick: () => void;
@@ -61,8 +63,11 @@ const arrowHead = (
 );
 
 const ClosedSelect = (props: ClosedSelectProps) => {
+  const className = props.isOpen
+    ? styles.selectClosedInvisible
+    : styles.selectClosed;
   return (
-    <span className={styles.selectClosed} onClick={props.onClick}>
+    <span className={className} onClick={props.onClick}>
       {props.selectedOption ? props.selectedOption.label : props.placeholder}
       {arrowHead}
     </span>
@@ -88,9 +93,12 @@ const Select = (props: SelectProps) => {
     setIsOpen(false);
   };
 
+  const headerText = selectedOption ? selectedOption.label : props.placeholder;
+
   return (
     <div className={styles.select}>
       <ClosedSelect
+        isOpen={isOpen}
         selectedOption={selectedOption}
         onClick={openPanel}
         placeholder={props.placeholder}
@@ -98,6 +106,7 @@ const Select = (props: SelectProps) => {
       {isOpen && (
         <SelectOptionsPanel
           optionGroups={optionGroups}
+          header={headerText}
           onSelect={handleSelect}
           onClose={closePanel}
         />

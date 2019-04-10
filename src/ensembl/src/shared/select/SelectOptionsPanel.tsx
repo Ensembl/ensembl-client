@@ -45,7 +45,7 @@ type OptionProps = Option & {
 
 type Props = {
   optionGroups: OptionGroup[];
-  selectedOption: Option | null;
+  header: React.ReactNode;
   onSelect: (index: GroupedOptionIndex) => void;
   onClose: () => void;
 };
@@ -97,7 +97,11 @@ const SelectOptionsPanel = (props: Props) => {
 
   const handleClickOutside = (event: MouseEvent | TouchEvent) => {
     const { target } = event;
-    if (target !== elementRef.current) {
+    if (
+      elementRef.current &&
+      elementRef.current !== target &&
+      !elementRef.current.contains(target as Node)
+    ) {
       props.onClose();
     }
   };
@@ -127,6 +131,7 @@ const SelectOptionsPanel = (props: Props) => {
 
   return (
     <div className={styles.optionsPanel} ref={elementRef}>
+      <div className={styles.optionsPanelHeader}>{props.header}</div>
       {props.optionGroups.map((optionGroup, index) => {
         const [groupIndex, itemIndex] = highlightedItemIndex || [null, null];
         const otherProps =

@@ -20,6 +20,10 @@ $optionsPanelLeftPadding: 14px;
   cursor: pointer;
 }
 
+.selectClosedInvisible {
+  visibility: hidden;
+}
+
 .optionsPanel {
   position: absolute;
   left: -$optionsPanelLeftPadding;
@@ -36,6 +40,11 @@ $optionsPanelLeftPadding: 14px;
     padding: 0;
     list-style-type: none;
   }
+}
+
+.optionsPanelHeader {
+  color: $ens-grey;
+  margin-bottom: 1em;
 }
 
 .option {
