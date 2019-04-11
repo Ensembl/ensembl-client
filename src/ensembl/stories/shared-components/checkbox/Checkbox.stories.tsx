@@ -24,7 +24,7 @@ storiesOf('Components|Shared Components/Checkbox', module)
     return (
       <div className={styles.wrapper}>
         <Checkbox
-          label={'I am a lable'}
+          label={'I am a label'}
           onChange={action('checkbox-toggled')}
         />
       </div>

@@ -22,7 +22,7 @@ describe('<Checkbox />', () => {
   });
 
   describe('prop label', () => {
-    it('does not display any lable by default', () => {
+    it('does not display any label by default', () => {
       const wrapper = mount(<Checkbox onChange={onChange} />);
       expect(wrapper.find('.defaultLabel')).toHaveLength(0);
     });
@@ -54,8 +54,9 @@ describe('<Checkbox />', () => {
       const wrapper = mount(<Checkbox onChange={onChange} />);
 
       wrapper.find('.defaultCheckbox').simulate('click');
-
-      expect(onChange).toHaveBeenCalled();
+      expect(onChange).toHaveBeenCalledWith(true);
+      wrapper.find('.defaultCheckbox').simulate('click');
+      expect(onChange).toHaveBeenCalledWith(false);
     });
 
     it('does not call onChange function if the status is disabled', () => {
