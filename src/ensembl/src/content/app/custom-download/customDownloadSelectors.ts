@@ -1,4 +1,4 @@
 import { RootState } from 'src/store';
 
-export const getSelectedPreFilters = (state: RootState): boolean =>
-  state.customDownload.preFilter.selectedPreFilters;
+export const getPreFilterStatuses = (state: RootState): {} =>
+  state.customDownload.preFilter.preFilterStatuses;

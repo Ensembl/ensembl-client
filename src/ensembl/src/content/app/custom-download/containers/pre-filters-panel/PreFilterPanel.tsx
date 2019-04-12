@@ -1,41 +1,38 @@
-import React, { useState, useCallback } from 'react';
-
+import React, { useCallback, FunctionComponent } from 'react';
+import { connect } from 'react-redux';
 import { RoundButton, RoundButtonStatus, PrimaryButton } from 'src/shared';
+import { getPreFilterStatuses } from '../../customDownloadSelectors';
+import { updateSelectedPreFilters } from '../../customDownloadActions';
+
+import { RootState } from 'src/store';
 
 import styles from './PreFilterPanel.scss';
 
-const SearchPanel = () => {
-  const [preFilterStatuses, setpreFilterStatuses] = useState<any>({});
+type SearchPanelProps = StateProps & DispatchProps;
 
-  const [submitButtonDisabled, setSubmitButtonDisabled] = useState<boolean>(
-    true
-  );
-
+const SearchPanel: FunctionComponent<SearchPanelProps> = (
+  props: SearchPanelProps
+) => {
   const filterOnClick = useCallback(
     (filter: string) => {
-      setpreFilterStatuses(
-        (): any => {
-          const currentStatus = { ...preFilterStatuses };
+      const currentStatus = { ...props.preFilterStatuses };
 
-          currentStatus[filter] !== RoundButtonStatus.ACTIVE
-            ? (currentStatus[filter] = RoundButtonStatus.ACTIVE)
-            : (currentStatus[filter] = RoundButtonStatus.INACTIVE);
+      currentStatus[filter] !== RoundButtonStatus.ACTIVE
+        ? (currentStatus[filter] = RoundButtonStatus.ACTIVE)
+        : (currentStatus[filter] = RoundButtonStatus.INACTIVE);
 
-          // Check if atleast one filter is selected
-          const selectedFilters = Object.keys(currentStatus).filter(
-            (key: string) => {
-              return currentStatus[key] === RoundButtonStatus.ACTIVE
-                ? true
-                : false;
-            }
-          );
-
-          setSubmitButtonDisabled(!!selectedFilters.length);
-          return currentStatus;
-        }
-      );
+      props.updateSelectedPreFilters(currentStatus);
     },
-    [preFilterStatuses]
+    [props.preFilterStatuses]
+  );
+
+  // Check if atleast one filter is selected
+  const selectedFilters = Object.keys(props.preFilterStatuses).filter(
+    (key: string) => {
+      return props.preFilterStatuses[key] === RoundButtonStatus.ACTIVE
+        ? true
+        : false;
+    }
   );
 
   const onSubmitHandler = () => {
@@ -50,7 +47,7 @@ const SearchPanel = () => {
           onClick={() => {
             filterOnClick('genes');
           }}
-          status={preFilterStatuses.genes}
+          status={props.preFilterStatuses.genes}
           classNames={styles}
         >
           Genes
@@ -59,7 +56,7 @@ const SearchPanel = () => {
           onClick={() => {
             filterOnClick('transcripts');
           }}
-          status={preFilterStatuses.transcripts}
+          status={props.preFilterStatuses.transcripts}
           classNames={styles}
         >
           Transcripts
@@ -68,7 +65,7 @@ const SearchPanel = () => {
           onClick={() => {
             filterOnClick('variation');
           }}
-          status={preFilterStatuses.variation}
+          status={props.preFilterStatuses.variation}
           classNames={styles}
         >
           Variation
@@ -77,7 +74,7 @@ const SearchPanel = () => {
           onClick={() => {
             filterOnClick('phenotypes');
           }}
-          status={preFilterStatuses.phenotypes}
+          status={props.preFilterStatuses.phenotypes}
           classNames={styles}
         >
           Phenotypes
@@ -86,7 +83,7 @@ const SearchPanel = () => {
           onClick={() => {
             filterOnClick('regulation');
           }}
-          status={preFilterStatuses.regulation}
+          status={props.preFilterStatuses.regulation}
           classNames={styles}
         >
           Regulation
@@ -95,7 +92,7 @@ const SearchPanel = () => {
         <PrimaryButton
           onClick={onSubmitHandler}
           className={styles.primaryButton}
-          isDisabled={submitButtonDisabled}
+          isDisabled={selectedFilters.length ? false : true}
         >
           Next
         </PrimaryButton>
@@ -104,4 +101,23 @@ const SearchPanel = () => {
   );
 };
 
-export default SearchPanel;
+type DispatchProps = {
+  updateSelectedPreFilters: (updateSelectedPreFilters: {}) => void;
+};
+
+const mapDispatchToProps: DispatchProps = {
+  updateSelectedPreFilters
+};
+
+type StateProps = {
+  preFilterStatuses: any;
+};
+
+const mapStateToProps = (state: RootState): StateProps => ({
+  preFilterStatuses: getPreFilterStatuses(state)
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SearchPanel);

@@ -3,5 +3,5 @@ export type CustomDownloadState = Readonly<{
 }>;
 
 export const defaultCustomDownloadState: CustomDownloadState = {
-  preFilterStatuses: false
+  preFilterStatuses: {}
 };
