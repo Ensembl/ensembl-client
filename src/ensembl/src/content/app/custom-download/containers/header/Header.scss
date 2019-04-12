@@ -1,0 +1,38 @@
+@import 'src/styles/common';
+
+.wrapper {
+  background-color: $ens-light-grey;
+  height: 60px;
+  position: relative;
+}
+
+.resultCounter {
+  position: absolute;
+  top: 50%;
+  left: 50px;
+  color: $ens-black;
+  margin-top: -10px;
+}
+
+.selectedFilters {
+  position: absolute;
+  top: 50%;
+  left: 40%;
+  margin-top: -12px;
+}
+
+.previewButton {
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  margin-top: -15px;
+}
+
+/* RoundButton extended styles*/
+.active {
+  background-color: $ens-medium-dark-grey;
+  border: 1px solid $ens-medium-dark-grey;
+  color: $ens-white;
+  border: none;
+  margin-right: 10px;
+}

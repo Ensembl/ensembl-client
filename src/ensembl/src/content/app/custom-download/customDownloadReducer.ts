@@ -8,18 +8,33 @@ import {
   defaultCustomDownloadState
 } from './customDownloadState';
 
-function preFilter(
+function preFilterPanel(
   state: CustomDownloadState = defaultCustomDownloadState,
   action: ActionType<RootAction>
 ): CustomDownloadState {
   switch (action.type) {
     case getType(customDownloadActions.updateSelectedPreFilters):
       return { ...state, preFilterStatuses: action.payload };
+    case getType(customDownloadActions.togglePreFiltersPanel):
+      return { ...state, showPreFiltersPanel: action.payload };
+    default:
+      return state;
+  }
+}
+
+function contentPanel(
+  state: CustomDownloadState = defaultCustomDownloadState,
+  action: ActionType<RootAction>
+): CustomDownloadState {
+  switch (action.type) {
+    case getType(customDownloadActions.toggleTabButton):
+      return { ...state, selectedTabButton: action.payload };
     default:
       return state;
   }
 }
 
 export default combineReducers({
-  preFilter
+  preFilterPanel,
+  contentPanel
 });

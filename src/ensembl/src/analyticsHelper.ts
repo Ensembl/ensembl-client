@@ -1,5 +1,6 @@
 export enum AnalyticsCategory {
   BROWSER = 'Browser',
+  CUSTOM_DOWNLOAD = 'Custom Download',
   DRAWER = 'Drawer',
   GLOBAL = 'Global',
   HEADER = 'Header',
@@ -35,6 +36,10 @@ export const buildAnalyticsObject = (category: AnalyticsCategory) => (
 
 export const getBrowserAnalyticsObject = buildAnalyticsObject(
   AnalyticsCategory.BROWSER
+);
+
+export const getCustomDownloadAnalyticsObject = buildAnalyticsObject(
+  AnalyticsCategory.CUSTOM_DOWNLOAD
 );
 
 export const getDrawerAnalyticsObject = buildAnalyticsObject(

@@ -2,16 +2,19 @@ import React, { useCallback, FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 import { RoundButton, RoundButtonStatus, PrimaryButton } from 'src/shared';
 import { getPreFilterStatuses } from '../../customDownloadSelectors';
-import { updateSelectedPreFilters } from '../../customDownloadActions';
+import {
+  updateSelectedPreFilters,
+  togglePreFiltersPanel
+} from '../../customDownloadActions';
 
 import { RootState } from 'src/store';
 
 import styles from './PreFilterPanel.scss';
 
-type SearchPanelProps = StateProps & DispatchProps;
+type PreFilterPanelProps = StateProps & DispatchProps;
 
-const SearchPanel: FunctionComponent<SearchPanelProps> = (
-  props: SearchPanelProps
+const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
+  props: PreFilterPanelProps
 ) => {
   const filterOnClick = useCallback(
     (filter: string) => {
@@ -36,7 +39,7 @@ const SearchPanel: FunctionComponent<SearchPanelProps> = (
   );
 
   const onSubmitHandler = () => {
-    // do something
+    props.togglePreFiltersPanel(false);
   };
 
   return (
@@ -103,10 +106,12 @@ const SearchPanel: FunctionComponent<SearchPanelProps> = (
 
 type DispatchProps = {
   updateSelectedPreFilters: (updateSelectedPreFilters: {}) => void;
+  togglePreFiltersPanel: (togglePreFiltersPanel: boolean) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
-  updateSelectedPreFilters
+  updateSelectedPreFilters,
+  togglePreFiltersPanel
 };
 
 type StateProps = {
@@ -120,4 +125,4 @@ const mapStateToProps = (state: RootState): StateProps => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(SearchPanel);
+)(PreFilterPanel);
