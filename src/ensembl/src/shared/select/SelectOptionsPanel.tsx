@@ -1,9 +1,10 @@
-import React, { useEffect, useReducer, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useReducer, useRef } from 'react';
 import classNames from 'classnames';
 
 import {
   getNextItemIndex,
-  getPreviousItemIndex
+  getPreviousItemIndex,
+  setOptionsPanelHeight
 } from './helpers/select-helpers';
 
 import * as keyCodes from 'src/shared/constants/keyCodes';
@@ -75,6 +76,7 @@ const SelectOptionsPanel = (props: Props) => {
     null
   );
   const elementRef = useRef<HTMLDivElement | null>(null);
+  const optionsListRef = useRef<HTMLDivElement | null>(null);
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (![keyCodes.UP, keyCodes.DOWN, keyCodes.ENTER].includes(event.keyCode)) {
@@ -121,6 +123,10 @@ const SelectOptionsPanel = (props: Props) => {
     };
   });
 
+  useLayoutEffect(() => {
+    setOptionsPanelHeight(elementRef);
+  });
+
   const handleItemHover = (index: GroupedOptionIndex) => {
     dispatch({ type: HighlightActionType.SET, payload: index });
   };
@@ -132,24 +138,26 @@ const SelectOptionsPanel = (props: Props) => {
   return (
     <div className={styles.optionsPanel} ref={elementRef}>
       <div className={styles.optionsPanelHeader}>{props.header}</div>
-      {props.optionGroups.map((optionGroup, index) => {
-        const [groupIndex, itemIndex] = highlightedItemIndex || [null, null];
-        const otherProps =
-          index === groupIndex
-            ? { highlightedItemIndex: itemIndex as number }
-            : {};
+      <div ref={optionsListRef}>
+        {props.optionGroups.map((optionGroup, index) => {
+          const [groupIndex, itemIndex] = highlightedItemIndex || [null, null];
+          const otherProps =
+            index === groupIndex
+              ? { highlightedItemIndex: itemIndex as number }
+              : {};
 
-        return (
-          <SelectOptionGroup
-            {...optionGroup}
-            groupIndex={index}
-            onItemHover={handleItemHover}
-            onItemClick={handleItemClick}
-            {...otherProps}
-            key={index}
-          />
-        );
-      })}
+          return (
+            <SelectOptionGroup
+              {...optionGroup}
+              groupIndex={index}
+              onItemHover={handleItemHover}
+              onItemClick={handleItemClick}
+              {...otherProps}
+              key={index}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 };

@@ -7,6 +7,18 @@ $optionsPanelLeftPadding: 14px;
 .select {
   position: relative;
   display: inline-block;
+
+  &:focus {
+    outline: auto;
+    outline-style: dotted;
+    outline-width: 2px;
+  }
+}
+
+.selectOpen {
+  &:focus {
+    outline: none;
+  }
 }
 
 .selectArrowhead {
@@ -26,6 +38,7 @@ $optionsPanelLeftPadding: 14px;
 
 .optionsPanel {
   position: absolute;
+  background-color: white;
   left: -$optionsPanelLeftPadding;
   top: -$optionsPanelTopPadding;
   display: inline-block;
@@ -34,6 +47,7 @@ $optionsPanelLeftPadding: 14px;
     $optionsPanelLeftPadding;
   box-shadow: 2px 2px 6px 0 $ens-grey;
   white-space: nowrap;
+  overflow: auto;
 
   ul {
     margin: 0;

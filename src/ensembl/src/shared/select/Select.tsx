@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import classNames from 'classnames';
 
-import {
-  findSelectedIndexForOptions,
-  findSelectedIndexForOptionGroups,
-  splitFromSelected
-} from './helpers/select-helpers';
+import { splitFromSelected } from './helpers/select-helpers';
+import * as keyCodes from 'src/shared/constants/keyCodes';
 
 import SelectOptionsPanel from './SelectOptionsPanel';
 
@@ -78,12 +76,50 @@ const Select = (props: SelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, optionGroups] = splitFromSelected(props.optionGroups);
 
+  // use ref to keep track of whether the element is focused
+  // (using ref makes this value available to the callback called from useEffect)
+  const focusRef = useRef(false);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress);
+    return () => document.removeEventListener('keyup', handleKeyPress);
+  }, []);
+
   const openPanel = () => {
     setIsOpen(true);
   };
 
   const closePanel = () => {
     setIsOpen(false);
+  };
+
+  const handleFocus = () => {
+    focusRef.current = true;
+  };
+
+  const handleBlur = () => {
+    focusRef.current = false;
+    if (isOpen) {
+      setIsOpen(false);
+    }
+  };
+
+  console.log('isOpen?', isOpen);
+  const handleKeyPress = (event: KeyboardEvent) => {
+    if (
+      !(
+        focusRef.current &&
+        [keyCodes.ENTER, keyCodes.ESC].includes(event.keyCode)
+      )
+    ) {
+      return;
+    }
+
+    if (event.keyCode === keyCodes.ENTER) {
+      setIsOpen(true);
+    } else if (event.keyCode === keyCodes.ESC) {
+      setIsOpen(false);
+    }
   };
 
   const handleSelect = (optionIndex: GroupedOptionIndex) => {
@@ -94,9 +130,15 @@ const Select = (props: SelectProps) => {
   };
 
   const headerText = selectedOption ? selectedOption.label : props.placeholder;
+  const className = classNames(styles.select, { [styles.selectOpen]: isOpen });
 
   return (
-    <div className={styles.select}>
+    <div
+      className={className}
+      tabIndex={0}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+    >
       <ClosedSelect
         isOpen={isOpen}
         selectedOption={selectedOption}

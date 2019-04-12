@@ -103,3 +103,19 @@ export const getPreviousItemIndex = (
     return null; // should never happen, but makes Typescript happy
   }
 };
+
+export const setOptionsPanelHeight = (
+  elementRef: React.MutableRefObject<HTMLDivElement | null>
+) => {
+  const panel = elementRef.current;
+  if (!panel) {
+    return;
+  }
+
+  const windowHeight = window.innerHeight;
+  const { top: panelTop, height: panelHeight } = panel.getBoundingClientRect();
+
+  if (panelTop + panelHeight > windowHeight) {
+    panel.style.height = `${windowHeight - panelTop}px`;
+  }
+};
