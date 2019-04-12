@@ -53,7 +53,7 @@ const Checkbox = (props: Props) => {
         type="checkbox"
         className={defaultStyles.hiddenInput}
         onChange={handleOnChange}
-        defaultChecked={props.checked}
+        checked={props.checked}
       />
       <div onClick={handleOnChange} className={className} />
       {isWithLabel(props) && (
