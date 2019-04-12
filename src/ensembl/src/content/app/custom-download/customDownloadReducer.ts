@@ -2,9 +2,7 @@ import { combineReducers } from 'redux';
 import { ActionType, getType } from 'typesafe-actions';
 
 import { RootAction } from 'src/objects';
-import * as browserActions from './customDownloadActions';
-import * as drawerActions from './drawer/drawerActions';
-import * as trackPanelActions from './track-panel/trackPanelActions';
+import * as customDownloadActions from './customDownloadActions';
 import {
   CustomDownloadState,
   defaultCustomDownloadState
@@ -15,22 +13,8 @@ function preFilter(
   action: ActionType<RootAction>
 ): CustomDownloadState {
   switch (action.type) {
-    case getType(browserActions.updateBrowserActivated):
-      return { ...state, browserActivated: action.payload };
-    case getType(trackPanelActions.toggleTrackPanel):
-      return {
-        ...state,
-        browserOpenState: action.payload
-          ? BrowserOpenState.SEMI_EXPANDED
-          : BrowserOpenState.EXPANDED
-      };
-    case getType(drawerActions.toggleDrawer):
-      return {
-        ...state,
-        browserOpenState: action.payload
-          ? BrowserOpenState.COLLAPSED
-          : BrowserOpenState.SEMI_EXPANDED
-      };
+    case getType(customDownloadActions.updateSelectedPreFilters):
+      return { ...state, preFilterStatuses: action.payload };
     default:
       return state;
   }
