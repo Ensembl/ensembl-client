@@ -12,24 +12,26 @@ describe('<Checkbox />', () => {
 
   it('renders without error', () => {
     expect(() => {
-      mount(<Checkbox onChange={onChange} />);
+      mount(<Checkbox checked={false} onChange={onChange} />);
     }).not.toThrow();
   });
 
   it('applies the style "defaultCheckbox" by default', () => {
-    const wrapper = mount(<Checkbox onChange={onChange} />);
+    const wrapper = mount(<Checkbox checked={false} onChange={onChange} />);
     expect(wrapper.find('.defaultCheckbox')).toHaveLength(1);
   });
 
   describe('prop label', () => {
     it('does not display any label by default', () => {
-      const wrapper = mount(<Checkbox onChange={onChange} />);
+      const wrapper = mount(<Checkbox checked={false} onChange={onChange} />);
       expect(wrapper.find('.defaultLabel')).toHaveLength(0);
     });
 
     it('displays the label if it is passed in', () => {
       const label = faker.lorem.words();
-      const wrapper = mount(<Checkbox onChange={onChange} label={label} />);
+      const wrapper = mount(
+        <Checkbox checked={false} onChange={onChange} label={label} />
+      );
 
       expect(wrapper.find('.defaultLabel').text()).toBe(label);
     });
@@ -40,6 +42,7 @@ describe('<Checkbox />', () => {
       const wrapper = mount(
         <Checkbox
           onChange={onChange}
+          checked={false}
           label={label}
           labelClassName={fakeClassName}
         />
@@ -51,16 +54,16 @@ describe('<Checkbox />', () => {
 
   describe('prop onChange', () => {
     it('calls the onChange function when clicked', () => {
-      const wrapper = mount(<Checkbox onChange={onChange} />);
+      const wrapper = mount(<Checkbox checked={false} onChange={onChange} />);
 
       wrapper.find('.defaultCheckbox').simulate('click');
       expect(onChange).toHaveBeenCalledWith(true);
-      wrapper.find('.defaultCheckbox').simulate('click');
-      expect(onChange).toHaveBeenCalledWith(false);
     });
 
     it('does not call onChange function if the status is disabled', () => {
-      const wrapper = mount(<Checkbox onChange={onChange} disabled={true} />);
+      const wrapper = mount(
+        <Checkbox checked={false} onChange={onChange} disabled={true} />
+      );
 
       wrapper.find('.defaultCheckbox').simulate('click');
 
@@ -69,7 +72,9 @@ describe('<Checkbox />', () => {
 
     it('calls the onChange function if the label is clicked', () => {
       const label = faker.lorem.words();
-      const wrapper = mount(<Checkbox label={label} onChange={onChange} />);
+      const wrapper = mount(
+        <Checkbox checked={false} label={label} onChange={onChange} />
+      );
 
       wrapper.find('.defaultLabel').simulate('click');
 

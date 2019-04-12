@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 
 import defaultStyles from './Checkbox.scss';
@@ -22,19 +22,14 @@ const isWithLabel = (props: Props): props is WithLabelProps => {
 };
 
 const Checkbox = (props: Props) => {
-  const [checkedStatus, toggleCheckedStatus] = useState(props.checked);
-
   const handleOnChange = () => {
     // Do nothing if it is disabled
     if (props.disabled) {
       return;
     }
 
-    // Toggle the checked status
-    toggleCheckedStatus(!checkedStatus);
-
     // Call the onChange function
-    props.onChange(!checkedStatus);
+    props.onChange(!props.checked);
   };
 
   const styles = props.classNames
@@ -43,8 +38,8 @@ const Checkbox = (props: Props) => {
 
   const className = classNames(
     styles.defaultCheckbox,
-    { [styles.checked]: checkedStatus },
-    { [styles.unchecked]: !checkedStatus },
+    { [styles.checked]: props.checked },
+    { [styles.unchecked]: !props.checked },
     { [styles.disabled]: props.disabled }
   );
   const labelClassName = classNames(
@@ -58,7 +53,7 @@ const Checkbox = (props: Props) => {
         type="checkbox"
         className={defaultStyles.hiddenInput}
         onChange={handleOnChange}
-        defaultChecked={checkedStatus}
+        defaultChecked={props.checked}
       />
       <div onClick={handleOnChange} className={className} />
       {isWithLabel(props) && (
@@ -68,10 +63,6 @@ const Checkbox = (props: Props) => {
       )}
     </div>
   );
-};
-
-Checkbox.defaultProps = {
-  checked: false
 };
 
 export default Checkbox;
