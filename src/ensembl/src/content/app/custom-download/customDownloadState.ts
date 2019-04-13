@@ -18,6 +18,11 @@ export const defaultCustomDownloadState: CustomDownloadState = {
           label: 'Gene symbol',
           checkedStatus: false
         },
+        test_symbol: {
+          id: 'test_symbol',
+          label: 'Test symbol',
+          checkedStatus: true
+        },
         gene_stable_id: {
           id: 'gene_stable_id',
           label: 'Gene stable ID',

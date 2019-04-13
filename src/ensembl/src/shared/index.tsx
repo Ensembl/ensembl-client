@@ -17,9 +17,12 @@ import {
   AccordionItemPermanentBlock
 } from './accordion';
 
+import Checkbox from './checkbox/Checkbox';
+
 export {
   Button,
   BadgedButton,
+  Checkbox,
   PrimaryButton,
   SecondaryButton,
   RoundButton,

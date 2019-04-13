@@ -30,8 +30,11 @@ const DataSelector = (props: Props) => {
           </AccordionItemHeading>
           <AccordionItemPanel>
             <div>
-              {' '}
-              <CheckBoxGrid gridData={props.geneDataToDownload} columns={3} />
+              <CheckBoxGrid
+                checkboxOnclick={console.log}
+                gridData={props.geneDataToDownload}
+                columns={3}
+              />
             </div>
           </AccordionItemPanel>
         </AccordionItem>

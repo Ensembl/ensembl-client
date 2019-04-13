@@ -1,50 +1,86 @@
 import React from 'react';
 import { Checkbox } from 'src/shared';
 
+import styles from './CheckBoxGrid.scss';
+
 type Props = {
   gridData: any;
   columns: number;
+  checkboxOnclick: (status: boolean, id: string) => void;
 };
 
-const renderCheckBoxList = (checkboxList: any, title?: string) => {
+const renderCheckBoxList = (
+  checkboxList: any,
+  props: Props,
+  title?: string
+) => {
   if (!Object.keys(checkboxList).length) {
     return null;
   }
 
-  // Sort the list by labels
-  const sortedList: any = {};
+  const checkboxListIDs = Object.keys(checkboxList).sort();
 
-  Object.keys(checkboxList)
-    .sort()
-    .forEach(function(key) {
-      sortedList[key] = checkboxList[key];
-    });
+  const gridMatrix = Array(props.columns).fill(0);
 
-  type listItemProp = {
-    id: string;
-    label: string;
-    status: boolean;
+  let totalCheckbox = checkboxListIDs.length;
+
+  for (let i = 0; i < checkboxListIDs.length; i++) {
+    if (totalCheckbox <= 0) {
+      break;
+    }
+    for (let j = 0; j < props.columns; j++) {
+      totalCheckbox -= 1;
+      if (checkboxListIDs[i + j]) {
+        gridMatrix[j] += 1;
+      }
+    }
+  }
+
+  const singleGridStyle = {
+    width: 100 / props.columns + '%'
   };
   return (
     <>
-      <div>{title ? title : null}</div>
-      {sortedList.map((listItem: listItemProp, key: number) => {
-        return (
-          <Checkbox
-            key={key}
-            label={listItem.label}
-            checked={listItem.status}
-          />
-        );
-      })}
+      {!!title && <div className={styles.checkboxGridTitle}>{title}</div>}
+      <div className={styles.checkboxGridContainer}>
+        {gridMatrix.map((columnLength: number, gridKey: number) => {
+          return (
+            <div key={gridKey} style={singleGridStyle}>
+              {checkboxListIDs
+                .splice(0, columnLength)
+                .map((item: string, itemKey: number) => {
+                  return (
+                    <div key={itemKey} className={styles.checkboxContainer}>
+                      <Checkbox
+                        label={checkboxList[item].label}
+                        checked={checkboxList[item].checkedStatus}
+                        onChange={(status) => {
+                          props.checkboxOnclick(status, checkboxList[item].id);
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+            </div>
+          );
+        })}
+      </div>
     </>
   );
 };
 
 const CheckBoxGrid = (props: Props) => {
-  console.log(props);
-
-  return <>{renderCheckBoxList(props.gridData.default, 'Default')}</>;
+  return (
+    <>
+      {renderCheckBoxList(props.gridData.default, props)}
+      {Object.keys(props.gridData).map((gridTitle: string) => {
+        if (gridTitle === 'default') {
+          return;
+        }
+        return renderCheckBoxList(props.gridData[gridTitle], props, gridTitle);
+      })}
+    </>
+  );
 };
 
 export default CheckBoxGrid;
