@@ -18,7 +18,7 @@ const ResultFilter = () => {
       <Accordion>
         <AccordionItem>
           <AccordionItemHeading>
-            <AccordionItemButton>Genes</AccordionItemButton>
+            <AccordionItemButton>Genes & transcripts</AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
             <div>Item One content</div>
@@ -27,7 +27,7 @@ const ResultFilter = () => {
 
         <AccordionItem>
           <AccordionItemHeading>
-            <AccordionItemButton>Transcripts</AccordionItemButton>
+            <AccordionItemButton>Regions</AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
             <div>Item One content</div>
@@ -36,34 +36,7 @@ const ResultFilter = () => {
 
         <AccordionItem>
           <AccordionItemHeading>
-            <AccordionItemButton>Exons</AccordionItemButton>
-          </AccordionItemHeading>
-          <AccordionItemPanel>
-            <div>Item One content</div>
-          </AccordionItemPanel>
-        </AccordionItem>
-
-        <AccordionItem>
-          <AccordionItemHeading>
-            <AccordionItemButton>Sequence</AccordionItemButton>
-          </AccordionItemHeading>
-          <AccordionItemPanel>
-            <div>Item One content</div>
-          </AccordionItemPanel>
-        </AccordionItem>
-
-        <AccordionItem>
-          <AccordionItemHeading>
-            <AccordionItemButton>Location</AccordionItemButton>
-          </AccordionItemHeading>
-          <AccordionItemPanel>
-            <div>Item One content</div>
-          </AccordionItemPanel>
-        </AccordionItem>
-
-        <AccordionItem>
-          <AccordionItemHeading>
-            <AccordionItemButton>Variation</AccordionItemButton>
+            <AccordionItemButton>Variants</AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
             <div>Item One content</div>
@@ -81,7 +54,9 @@ const ResultFilter = () => {
 
         <AccordionItem>
           <AccordionItemHeading>
-            <AccordionItemButton>Protein</AccordionItemButton>
+            <AccordionItemButton>
+              Protein domains & families
+            </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
             <div>Item One content</div>
@@ -90,16 +65,7 @@ const ResultFilter = () => {
 
         <AccordionItem>
           <AccordionItemHeading>
-            <AccordionItemButton>Orthologues</AccordionItemButton>
-          </AccordionItemHeading>
-          <AccordionItemPanel>
-            <div>Item One content</div>
-          </AccordionItemPanel>
-        </AccordionItem>
-
-        <AccordionItem>
-          <AccordionItemHeading>
-            <AccordionItemButton>Paralogues</AccordionItemButton>
+            <AccordionItemButton>Homologues</AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
             <div>Item One content</div>

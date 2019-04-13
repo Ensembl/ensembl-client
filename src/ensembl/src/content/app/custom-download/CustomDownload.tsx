@@ -17,8 +17,8 @@ const CustomDownload: FunctionComponent<CustomDownloadProps> = (
 ) => {
   return (
     <>
-      {props.showPreFiltersPanel && <PreFilterPanel />}
-      {!props.showPreFiltersPanel && (
+      {/* {props.showPreFiltersPanel && <PreFilterPanel />} */}
+      {props.showPreFiltersPanel && (
         <>
           <Header /> <Content />
         </>

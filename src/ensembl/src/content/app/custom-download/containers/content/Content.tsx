@@ -1,11 +1,16 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import styles from './Content.scss';
+import { getSelectedTabButton } from '../../customDownloadSelectors';
 import DataSelector from '../../components/data-selector/DataSelector';
 import ResultFilter from '../../components/result-filter/ResultFilter';
 import TabButtons from '../../components/tab-buttons/TabButtons';
 import ResultHolder from '../../components/result-holder/ResultHolder';
+import { RootState } from 'src/store';
 
-const Content = () => {
+type Props = StateProps;
+
+const Content = (props: Props) => {
   return (
     <div>
       <div className={styles.resultList}>
@@ -15,11 +20,19 @@ const Content = () => {
         <TabButtons />
       </div>
       <div className={styles.dataSelector}>
-        <DataSelector />
-        <ResultFilter />
+        {props.selectedTabButton === 'data' && <DataSelector />}
+        {props.selectedTabButton === 'filter' && <ResultFilter />}
       </div>
     </div>
   );
 };
 
-export default Content;
+type StateProps = {
+  selectedTabButton: string;
+};
+
+const mapStateToProps = (state: RootState): StateProps => ({
+  selectedTabButton: getSelectedTabButton(state)
+});
+
+export default connect(mapStateToProps)(Content);

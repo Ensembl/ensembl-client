@@ -8,3 +8,6 @@ export const getShowPreFilterPanel = (state: RootState): boolean =>
 
 export const getSelectedTabButton = (state: RootState): string =>
   state.customDownload.contentPanel.selectedTabButton;
+
+export const getSelectedGeneDataToDownload = (state: RootState): string =>
+  state.customDownload.contentPanel.dataToDownload.gene;
