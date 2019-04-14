@@ -1,13 +1,24 @@
-import React, { useEffect, useLayoutEffect, useReducer, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useReducer,
+  useRef
+} from 'react';
 import classNames from 'classnames';
 
 import {
   getNextItemIndex,
   getPreviousItemIndex,
-  setOptionsPanelHeight
+  setOptionsPanelHeight,
+  getPanelScrollStatus
 } from './helpers/select-helpers';
 
 import * as keyCodes from 'src/shared/constants/keyCodes';
+
+import SelectArrowhead, {
+  Direction as ArrowheadDirection
+} from './SelectArrowhead';
 
 import { Option, OptionGroup, GroupedOptionIndex } from './Select';
 
@@ -71,6 +82,13 @@ const highlightedItemReducer = (
 };
 
 const SelectOptionsPanel = (props: Props) => {
+  const [shouldShowTopScrollButton, setShouldShowTopScrollButton] = useState(
+    false
+  );
+  const [
+    shouldShowBottomScrollButton,
+    setShouldShowBottomScrollButton
+  ] = useState(false);
   const [highlightedItemIndex, dispatch] = useReducer(
     highlightedItemReducer,
     null
@@ -135,28 +153,62 @@ const SelectOptionsPanel = (props: Props) => {
     props.onSelect(index);
   };
 
-  return (
-    <div className={styles.optionsPanel} ref={elementRef}>
-      <div className={styles.optionsPanelHeader}>{props.header}</div>
-      <div ref={optionsListRef}>
-        {props.optionGroups.map((optionGroup, index) => {
-          const [groupIndex, itemIndex] = highlightedItemIndex || [null, null];
-          const otherProps =
-            index === groupIndex
-              ? { highlightedItemIndex: itemIndex as number }
-              : {};
+  const handleScroll = () => {
+    const { isScrolledToTop, isScrolledToBottom } = getPanelScrollStatus(
+      optionsListRef.current as HTMLDivElement
+    );
+    if (!isScrolledToTop && !shouldShowTopScrollButton) {
+      setShouldShowTopScrollButton(true);
+    } else if (isScrolledToTop && shouldShowTopScrollButton) {
+      setShouldShowTopScrollButton(false);
+    } else if (!isScrolledToBottom && !shouldShowBottomScrollButton) {
+      setShouldShowBottomScrollButton(true);
+    } else if (isScrolledToBottom && shouldShowBottomScrollButton) {
+      setShouldShowBottomScrollButton(false);
+    }
+  };
 
-          return (
-            <SelectOptionGroup
-              {...optionGroup}
-              groupIndex={index}
-              onItemHover={handleItemHover}
-              onItemClick={handleItemClick}
-              {...otherProps}
-              key={index}
-            />
-          );
-        })}
+  return (
+    <div
+      className={styles.optionsPanel}
+      ref={elementRef}
+      onScroll={handleScroll}
+    >
+      <div className={styles.optionsPanelHeader}>{props.header}</div>
+      <div className={styles.optionsListContainer}>
+        {shouldShowTopScrollButton && (
+          <div className={styles.scrollButtonTop}>
+            <SelectArrowhead direction={ArrowheadDirection.UP} />
+          </div>
+        )}
+        <div className={styles.optionsList} ref={optionsListRef}>
+          {props.optionGroups.map((optionGroup, index) => {
+            const [groupIndex, itemIndex] = highlightedItemIndex || [
+              null,
+              null
+            ];
+            const otherProps =
+              index === groupIndex
+                ? { highlightedItemIndex: itemIndex as number }
+                : {};
+
+            return (
+              <SelectOptionGroup
+                {...optionGroup}
+                groupIndex={index}
+                onItemHover={handleItemHover}
+                onItemClick={handleItemClick}
+                {...otherProps}
+                key={index}
+              />
+            );
+          })}
+        </div>
+        {shouldShowBottomScrollButton && (
+          <div className={styles.scrollButtonBottom}>
+            <SelectArrowhead />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import { splitFromSelected } from './helpers/select-helpers';
 import * as keyCodes from 'src/shared/constants/keyCodes';
 
 import SelectOptionsPanel from './SelectOptionsPanel';
+import SelectArrowhead from './SelectArrowhead';
 
 import styles from './Select.scss';
 
@@ -54,12 +55,6 @@ type SelectAdapterProps = OptionsSelectProps | OptionGroupssSelectProps;
 
 type SelectProps = OptionGroupssSelectProps;
 
-const arrowHead = (
-  <svg className={styles.selectArrowhead} focusable="false" viewBox="0 0 8 8">
-    <polygon points="0,0 8,0 4,8" />
-  </svg>
-);
-
 const ClosedSelect = (props: ClosedSelectProps) => {
   const className = props.isOpen
     ? styles.selectClosedInvisible
@@ -67,7 +62,7 @@ const ClosedSelect = (props: ClosedSelectProps) => {
   return (
     <span className={className} onClick={props.onClick}>
       {props.selectedOption ? props.selectedOption.label : props.placeholder}
-      {arrowHead}
+      <SelectArrowhead />
     </span>
   );
 };
@@ -104,7 +99,6 @@ const Select = (props: SelectProps) => {
     }
   };
 
-  console.log('isOpen?', isOpen);
   const handleKeyPress = (event: KeyboardEvent) => {
     if (
       !(
@@ -145,7 +139,7 @@ const Select = (props: SelectProps) => {
         onClick={openPanel}
         placeholder={props.placeholder}
       />
-      {isOpen && (
+      {!isOpen && (
         <SelectOptionsPanel
           optionGroups={optionGroups}
           header={headerText}

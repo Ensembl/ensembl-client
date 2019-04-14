@@ -47,13 +47,47 @@ $optionsPanelLeftPadding: 14px;
     $optionsPanelLeftPadding;
   box-shadow: 2px 2px 6px 0 $ens-grey;
   white-space: nowrap;
-  overflow: auto;
 
   ul {
     margin: 0;
     padding: 0;
     list-style-type: none;
   }
+}
+
+.optionsListContainer {
+  height: calc(100% - 35px);
+  position: relative;
+}
+
+.optionsList {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  // // hide the vertical scrollbar
+  // scrollbar-width: none; // for Firefox v64 and above; will probably become the standard
+  // &::-webkit-scrollbar {
+  //   display: none; // For Webkit-based browsers
+  // }
+  // -ms-overflow-style: none; // IE 10+
+}
+
+.scrollButtonTop,
+.scrollButtonBottom {
+  position: absolute;
+  left: 0;
+  background: $ens-white;
+  width: 100%;
+  text-align: center;
+}
+
+.scrollButtonTop {
+  top: 0;
+}
+
+.scrollButtonBottom {
+  bottom: 0;
 }
 
 .optionsPanelHeader {

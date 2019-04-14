@@ -116,6 +116,24 @@ export const setOptionsPanelHeight = (
   const { top: panelTop, height: panelHeight } = panel.getBoundingClientRect();
 
   if (panelTop + panelHeight > windowHeight) {
-    panel.style.height = `${windowHeight - panelTop}px`;
+    const bottomOffset = 10;
+    panel.style.height = `${windowHeight - panelTop - bottomOffset}px`;
   }
+};
+
+export const getPanelScrollStatus = (panel: HTMLDivElement) => {
+  console.log(
+    'panel.scrollTop',
+    panel.scrollTop,
+    'panel.scrollHeight',
+    panel.scrollHeight,
+    'panel.clientHeight',
+    panel.clientHeight,
+    panel.scrollTop === panel.scrollHeight - panel.clientHeight
+  );
+  return {
+    isScrolledToTop: panel.scrollTop === 0,
+    isScrolledToBottom:
+      panel.scrollTop === panel.scrollHeight - panel.clientHeight
+  };
 };
