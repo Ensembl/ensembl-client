@@ -11,7 +11,9 @@ import {
   getNextItemIndex,
   getPreviousItemIndex,
   setOptionsPanelHeight,
-  getPanelScrollStatus
+  getPanelScrollStatus,
+  scrollDown,
+  scrollUp
 } from './helpers/select-helpers';
 
 import * as keyCodes from 'src/shared/constants/keyCodes';
@@ -95,6 +97,7 @@ const SelectOptionsPanel = (props: Props) => {
   );
   const elementRef = useRef<HTMLDivElement | null>(null);
   const optionsListRef = useRef<HTMLDivElement | null>(null);
+  const scrollRef = useRef(0);
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (![keyCodes.UP, keyCodes.DOWN, keyCodes.ENTER].includes(event.keyCode)) {
@@ -168,6 +171,22 @@ const SelectOptionsPanel = (props: Props) => {
     }
   };
 
+  const startScrollDown = () => {
+    scrollDown(optionsListRef.current as HTMLDivElement, scrollRef);
+  };
+
+  const stopScrollDown = () => {
+    window.cancelAnimationFrame(scrollRef.current);
+  };
+
+  const startScrollUp = () => {
+    scrollUp(optionsListRef.current as HTMLDivElement, scrollRef);
+  };
+
+  const stopScrollUp = () => {
+    window.cancelAnimationFrame(scrollRef.current);
+  };
+
   return (
     <div
       className={styles.optionsPanel}
@@ -177,7 +196,13 @@ const SelectOptionsPanel = (props: Props) => {
       <div className={styles.optionsPanelHeader}>{props.header}</div>
       <div className={styles.optionsListContainer}>
         {shouldShowTopScrollButton && (
-          <div className={styles.scrollButtonTop}>
+          <div
+            className={styles.scrollButtonTop}
+            onMouseEnter={startScrollUp}
+            onTouchStart={startScrollUp}
+            onMouseLeave={stopScrollUp}
+            onTouchEnd={stopScrollUp}
+          >
             <SelectArrowhead direction={ArrowheadDirection.UP} />
           </div>
         )}
@@ -205,7 +230,13 @@ const SelectOptionsPanel = (props: Props) => {
           })}
         </div>
         {shouldShowBottomScrollButton && (
-          <div className={styles.scrollButtonBottom}>
+          <div
+            className={styles.scrollButtonBottom}
+            onMouseEnter={startScrollDown}
+            onTouchStart={startScrollDown}
+            onMouseLeave={stopScrollDown}
+            onTouchEnd={stopScrollDown}
+          >
             <SelectArrowhead />
           </div>
         )}

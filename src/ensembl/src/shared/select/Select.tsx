@@ -139,7 +139,7 @@ const Select = (props: SelectProps) => {
         onClick={openPanel}
         placeholder={props.placeholder}
       />
-      {!isOpen && (
+      {isOpen && (
         <SelectOptionsPanel
           optionGroups={optionGroups}
           header={headerText}

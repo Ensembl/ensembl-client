@@ -122,18 +122,35 @@ export const setOptionsPanelHeight = (
 };
 
 export const getPanelScrollStatus = (panel: HTMLDivElement) => {
-  console.log(
-    'panel.scrollTop',
-    panel.scrollTop,
-    'panel.scrollHeight',
-    panel.scrollHeight,
-    'panel.clientHeight',
-    panel.clientHeight,
-    panel.scrollTop === panel.scrollHeight - panel.clientHeight
-  );
   return {
     isScrolledToTop: panel.scrollTop === 0,
     isScrolledToBottom:
       panel.scrollTop === panel.scrollHeight - panel.clientHeight
   };
+};
+
+export const scrollDown = (
+  panel: HTMLDivElement,
+  ref: React.MutableRefObject<number>
+) => {
+  const scroll = () => {
+    panel.scrollTop = panel.scrollTop + 10;
+    if (panel.scrollTop + panel.clientHeight < panel.scrollHeight) {
+      ref.current = window.requestAnimationFrame(scroll);
+    }
+  };
+  window.requestAnimationFrame(scroll);
+};
+
+export const scrollUp = (
+  panel: HTMLDivElement,
+  ref: React.MutableRefObject<number>
+) => {
+  const scroll = () => {
+    panel.scrollTop = panel.scrollTop - 10;
+    if (panel.scrollTop > 0) {
+      ref.current = window.requestAnimationFrame(scroll);
+    }
+  };
+  window.requestAnimationFrame(scroll);
 };
