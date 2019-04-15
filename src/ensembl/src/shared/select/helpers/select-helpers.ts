@@ -1,4 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
+import range from 'lodash/range';
+import isEqual from 'lodash/isEqual';
 
 import { Option, OptionGroup, GroupedOptionIndex } from '../Select';
 
@@ -122,6 +124,13 @@ export const setOptionsPanelHeight = (
 };
 
 export const getPanelScrollStatus = (panel: HTMLDivElement) => {
+  console.log(
+    'panel.scrollTop === panel.scrollHeight - panel.clientHeight',
+    panel.scrollTop,
+    panel.scrollHeight,
+    panel.clientHeight,
+    panel.scrollTop === panel.scrollHeight - panel.clientHeight
+  );
   return {
     isScrolledToTop: panel.scrollTop === 0,
     isScrolledToBottom:
@@ -153,4 +162,47 @@ export const scrollUp = (
     }
   };
   window.requestAnimationFrame(scroll);
+};
+
+type ScrollOptionIntoViewArgs = {
+  container: HTMLDivElement;
+  currentIndex: GroupedOptionIndex;
+  optionGroups: OptionGroup[];
+  selector: string; // CSS selector for option elements
+};
+export const scrollOptionIntoView = ({
+  container,
+  currentIndex,
+  optionGroups,
+  selector
+}: ScrollOptionIntoViewArgs) => {
+  const lastGroupIndex = optionGroups.length - 1;
+  const lastItemIndex = [
+    lastGroupIndex,
+    optionGroups[lastGroupIndex].options.length - 1
+  ];
+  const currentOptionElement = container.querySelector(selector);
+  if (!currentOptionElement) {
+    return;
+  }
+
+  const containerRect = container.getBoundingClientRect();
+  const currentOptionElementRect = currentOptionElement.getBoundingClientRect();
+
+  if (isEqual(currentIndex, [0, 0]) && container.scrollTop !== 0) {
+    container.scrollTop = 0;
+  } else if (isEqual(currentIndex, lastItemIndex)) {
+    container.scrollTop = container.scrollHeight - container.clientHeight;
+  } else if (
+    currentOptionElementRect.bottom + currentOptionElementRect.height >
+    containerRect.bottom
+  ) {
+    container.scrollTop = container.scrollTop + currentOptionElementRect.height;
+    // container.scrollTop = currentOptionElement.offsetTop - container.scrollHeight + currentOptionElementRect.height;
+  } else if (
+    currentOptionElementRect.top <
+    containerRect.top + currentOptionElementRect.height
+  ) {
+    container.scrollTop = container.scrollTop - currentOptionElementRect.height;
+  }
 };

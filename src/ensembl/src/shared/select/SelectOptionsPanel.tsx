@@ -13,7 +13,8 @@ import {
   setOptionsPanelHeight,
   getPanelScrollStatus,
   scrollDown,
-  scrollUp
+  scrollUp,
+  scrollOptionIntoView
 } from './helpers/select-helpers';
 
 import * as keyCodes from 'src/shared/constants/keyCodes';
@@ -99,6 +100,11 @@ const SelectOptionsPanel = (props: Props) => {
   const optionsListRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef(0);
 
+  // to be able to reach the value of highlighted index
+  // from within callbacks passed to useEffect
+  const highlightedItemIndexRef = useRef(highlightedItemIndex);
+  highlightedItemIndexRef.current = highlightedItemIndex;
+
   const handleKeyDown = (event: KeyboardEvent) => {
     if (![keyCodes.UP, keyCodes.DOWN, keyCodes.ENTER].includes(event.keyCode)) {
       return;
@@ -116,6 +122,18 @@ const SelectOptionsPanel = (props: Props) => {
     } else if (event.keyCode === keyCodes.ENTER) {
       dispatch({ type: HighlightActionType.SUBMIT, payload: props.onSelect });
     }
+
+    // scroll option into view after the state gets updated
+    setTimeout(() => {
+      window.requestAnimationFrame(() => {
+        scrollOptionIntoView({
+          container: optionsListRef.current as HTMLDivElement,
+          optionGroups: props.optionGroups,
+          currentIndex: highlightedItemIndexRef.current as GroupedOptionIndex,
+          selector: `.${styles.optionHighlighted}`
+        });
+      });
+    }, 0);
   };
 
   const handleClickOutside = (event: MouseEvent | TouchEvent) => {
@@ -146,7 +164,13 @@ const SelectOptionsPanel = (props: Props) => {
 
   useLayoutEffect(() => {
     setOptionsPanelHeight(elementRef);
-  });
+    if (
+      !getPanelScrollStatus(optionsListRef.current as HTMLDivElement)
+        .isScrolledToBottom
+    ) {
+      setShouldShowBottomScrollButton(true);
+    }
+  }, []);
 
   const handleItemHover = (index: GroupedOptionIndex) => {
     dispatch({ type: HighlightActionType.SET, payload: index });
@@ -160,13 +184,23 @@ const SelectOptionsPanel = (props: Props) => {
     const { isScrolledToTop, isScrolledToBottom } = getPanelScrollStatus(
       optionsListRef.current as HTMLDivElement
     );
+    console.log(
+      'isScrolledToBottom',
+      isScrolledToBottom,
+      'shouldShowBottomScrollButton',
+      shouldShowBottomScrollButton
+    );
     if (!isScrolledToTop && !shouldShowTopScrollButton) {
       setShouldShowTopScrollButton(true);
-    } else if (isScrolledToTop && shouldShowTopScrollButton) {
+    }
+    if (isScrolledToTop && shouldShowTopScrollButton) {
       setShouldShowTopScrollButton(false);
-    } else if (!isScrolledToBottom && !shouldShowBottomScrollButton) {
+    }
+    if (!isScrolledToBottom && !shouldShowBottomScrollButton) {
       setShouldShowBottomScrollButton(true);
-    } else if (isScrolledToBottom && shouldShowBottomScrollButton) {
+    }
+    if (isScrolledToBottom && shouldShowBottomScrollButton) {
+      console.log('should be false?');
       setShouldShowBottomScrollButton(false);
     }
   };
