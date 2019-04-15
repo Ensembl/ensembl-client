@@ -125,6 +125,10 @@ const SelectOptionsPanel = (props: Props) => {
 
     // scroll option into view after the state gets updated
     setTimeout(() => {
+      if (!optionsListRef.current) {
+        // keypress has caused the options panel to close
+        return;
+      }
       window.requestAnimationFrame(() => {
         scrollOptionIntoView({
           container: optionsListRef.current as HTMLDivElement,
@@ -184,12 +188,6 @@ const SelectOptionsPanel = (props: Props) => {
     const { isScrolledToTop, isScrolledToBottom } = getPanelScrollStatus(
       optionsListRef.current as HTMLDivElement
     );
-    console.log(
-      'isScrolledToBottom',
-      isScrolledToBottom,
-      'shouldShowBottomScrollButton',
-      shouldShowBottomScrollButton
-    );
     if (!isScrolledToTop && !shouldShowTopScrollButton) {
       setShouldShowTopScrollButton(true);
     }
@@ -200,7 +198,6 @@ const SelectOptionsPanel = (props: Props) => {
       setShouldShowBottomScrollButton(true);
     }
     if (isScrolledToBottom && shouldShowBottomScrollButton) {
-      console.log('should be false?');
       setShouldShowBottomScrollButton(false);
     }
   };
