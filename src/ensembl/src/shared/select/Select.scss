@@ -65,12 +65,12 @@ $optionsPanelLeftPadding: 14px;
   overflow-y: auto;
   overflow-x: hidden;
 
-  // // hide the vertical scrollbar
-  // scrollbar-width: none; // for Firefox v64 and above; will probably become the standard
-  // &::-webkit-scrollbar {
-  //   display: none; // For Webkit-based browsers
-  // }
-  // -ms-overflow-style: none; // IE 10+
+  // hide the vertical scrollbar
+  scrollbar-width: none; // for Firefox v64 and above; will probably become the standard
+  &::-webkit-scrollbar {
+    display: none; // For Webkit-based browsers
+  }
+  -ms-overflow-style: none; // IE 10+
 }
 
 .scrollButtonTop,
