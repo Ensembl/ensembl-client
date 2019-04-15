@@ -98,7 +98,7 @@ $optionsPanelLeftPadding: 14px;
 .option {
   cursor: pointer;
   margin-left: -$optionsPanelLeftPadding;
-  margin-right: -$optionsPanelRightPadding;
+  // margin-right: -$optionsPanelRightPadding;
   padding: 0 $optionsPanelRightPadding 0 $optionsPanelLeftPadding;
 }
 
