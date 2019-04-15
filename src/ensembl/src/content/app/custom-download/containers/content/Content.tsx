@@ -2,10 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import styles from './Content.scss';
 import { getSelectedTabButton } from '../../customDownloadSelectors';
-import DataSelector from '../../components/data-selector/DataSelector';
-import ResultFilter from '../../components/result-filter/ResultFilter';
-import TabButtons from '../../components/tab-buttons/TabButtons';
-import ResultHolder from '../../components/result-holder/ResultHolder';
+import DataSelector from './data-selector/DataSelector';
+import ResultFilter from './result-filter/ResultFilter';
+import TabButtons from './tab-buttons/TabButtons';
+import ResultHolder from './result-holder/ResultHolder';
 import { RootState } from 'src/store';
 
 type Props = StateProps;

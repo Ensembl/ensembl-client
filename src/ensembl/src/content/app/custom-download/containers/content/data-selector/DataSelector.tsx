@@ -9,9 +9,9 @@ import {
   AccordionItemButton
 } from 'src/shared';
 
-import CheckBoxGrid from '../checkbox-grid/CheckboxGrid';
+import CheckBoxGrid from '../../../components/checkbox-grid/CheckboxGrid';
 
-import { getSelectedGeneDataToDownload } from '../../customDownloadSelectors';
+import { getSelectedGeneDataToDownload } from '../../../customDownloadSelectors';
 import styles from './DataSelector.scss';
 
 type Props = StateProps;
@@ -31,7 +31,7 @@ const DataSelector = (props: Props) => {
           <AccordionItemPanel>
             <div>
               <CheckBoxGrid
-                checkboxOnclick={console.log}
+                checkboxOnClick={console.log}
                 gridData={props.geneDataToDownload}
                 columns={3}
               />

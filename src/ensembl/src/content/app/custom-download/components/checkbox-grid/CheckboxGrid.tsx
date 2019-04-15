@@ -6,7 +6,7 @@ import styles from './CheckBoxGrid.scss';
 type Props = {
   gridData: any;
   columns: number;
-  checkboxOnclick: (status: boolean, id: string) => void;
+  checkboxOnClick: (status: boolean, id: string) => void;
 };
 
 const renderCheckBoxList = (
@@ -55,7 +55,7 @@ const renderCheckBoxList = (
                         label={checkboxList[item].label}
                         checked={checkboxList[item].checkedStatus}
                         onChange={(status) => {
-                          props.checkboxOnclick(status, checkboxList[item].id);
+                          props.checkboxOnClick(status, checkboxList[item].id);
                         }}
                       />
                     </div>

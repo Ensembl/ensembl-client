@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { BadgedButton, RoundButton, RoundButtonStatus } from 'src/shared';
-import { getSelectedTabButton } from '../../customDownloadSelectors';
-import { toggleTabButton } from '../../customDownloadActions';
+import { getSelectedTabButton } from '../../../customDownloadSelectors';
+import { toggleTabButton } from '../../../customDownloadActions';
 import { RootState } from 'src/store';
 
 import styles from './TabButtons.scss';
