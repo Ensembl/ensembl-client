@@ -1,6 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { RootState } from 'src/store';
 import {
   Accordion,
   AccordionItem,
@@ -9,14 +7,11 @@ import {
   AccordionItemButton
 } from 'src/shared';
 
-import CheckBoxGrid from '../../../components/checkbox-grid/CheckboxGrid';
+import { Genes, Transcripts } from './sections';
 
-import { getSelectedGeneDataToDownload } from '../../../customDownloadSelectors';
-import styles from './DataSelector.scss';
+import styles from './AttributesAccordion.scss';
 
-type Props = StateProps;
-
-const DataSelector = (props: Props) => {
+const Attributes = () => {
   return (
     <div className={styles.wrapper}>
       <div className={styles.dataSelectorHint}>
@@ -29,13 +24,7 @@ const DataSelector = (props: Props) => {
             <AccordionItemButton>Genes</AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
-            <div>
-              <CheckBoxGrid
-                checkboxOnClick={console.log}
-                gridData={props.geneDataToDownload}
-                columns={3}
-              />
-            </div>
+            <Genes />
           </AccordionItemPanel>
         </AccordionItem>
 
@@ -44,7 +33,7 @@ const DataSelector = (props: Props) => {
             <AccordionItemButton>Transcripts</AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
-            <div>Item One content</div>
+            <Transcripts />
           </AccordionItemPanel>
         </AccordionItem>
 
@@ -124,12 +113,14 @@ const DataSelector = (props: Props) => {
   );
 };
 
-type StateProps = {
-  geneDataToDownload: {};
-};
+// type StateProps = {
+//   geneDataToDownload: {};
+// };
 
-const mapStateToProps = (state: RootState): StateProps => ({
-  geneDataToDownload: getSelectedGeneDataToDownload(state)
-});
+// const mapStateToProps = (state: RootState): StateProps => ({
+//   geneDataToDownload: getSelectedGeneDataToDownload(state)
+// });
 
-export default connect(mapStateToProps)(DataSelector);
+// export default Attributesconnect(mapStateToProps)(Attributes);
+
+export default Attributes;

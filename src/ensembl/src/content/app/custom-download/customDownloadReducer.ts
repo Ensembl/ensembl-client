@@ -13,8 +13,8 @@ function preFilterPanel(
   action: ActionType<RootAction>
 ): CustomDownloadState {
   switch (action.type) {
-    case getType(customDownloadActions.updateSelectedPreFilters):
-      return { ...state, preFilterStatuses: action.payload };
+    case getType(customDownloadActions.updateSelectedPreFilter):
+      return { ...state, selectedPreFilter: action.payload };
     case getType(customDownloadActions.togglePreFiltersPanel):
       return { ...state, showPreFiltersPanel: action.payload };
     default:
@@ -29,6 +29,8 @@ function contentPanel(
   switch (action.type) {
     case getType(customDownloadActions.toggleTabButton):
       return { ...state, selectedTabButton: action.payload };
+    case getType(customDownloadActions.setAttributes):
+      return { ...state, attributes: action.payload };
     default:
       return state;
   }

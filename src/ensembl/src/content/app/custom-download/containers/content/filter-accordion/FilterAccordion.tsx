@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './ResultFilter.scss';
+import styles from './FilterAccordion.scss';
 import {
   Accordion,
   AccordionItem,

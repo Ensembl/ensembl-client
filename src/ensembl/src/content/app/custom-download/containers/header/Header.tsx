@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { RoundButton, RoundButtonStatus, SecondaryButton } from 'src/shared';
 import { RootState } from 'src/store';
 
-import { getPreFilterStatuses } from '../../customDownloadSelectors';
+import { getSelectedPreFilter } from '../../customDownloadSelectors';
 import { togglePreFiltersPanel } from '../../customDownloadActions';
 
 import styles from './Header.scss';
@@ -19,18 +19,14 @@ const Header = (props: Props) => {
     <div className={styles.wrapper}>
       <div className={styles.resultCounter}>1234 Results</div>
       <div className={styles.selectedFilters}>
-        {Object.keys(props.preFilterStatuses).map((filter, key) => {
-          return (
-            <RoundButton
-              key={key}
-              onClick={filterOnClick}
-              status={RoundButtonStatus.ACTIVE}
-              classNames={styles}
-            >
-              {filter.charAt(0).toUpperCase() + filter.slice(1)}
-            </RoundButton>
-          );
-        })}
+        <RoundButton
+          onClick={filterOnClick}
+          status={RoundButtonStatus.ACTIVE}
+          classNames={styles}
+        >
+          {props.selectedPreFilter.charAt(0).toUpperCase() +
+            props.selectedPreFilter.slice(1)}
+        </RoundButton>
       </div>
       <div className={styles.previewButton}>
         <SecondaryButton onClick={() => {}}>Preview download</SecondaryButton>
@@ -48,11 +44,11 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 type StateProps = {
-  preFilterStatuses: any;
+  selectedPreFilter: string;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  preFilterStatuses: getPreFilterStatuses(state)
+  selectedPreFilter: getSelectedPreFilter(state)
 });
 
 export default connect(

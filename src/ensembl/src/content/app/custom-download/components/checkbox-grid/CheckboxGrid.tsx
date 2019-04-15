@@ -6,7 +6,7 @@ import styles from './CheckBoxGrid.scss';
 type Props = {
   gridData: any;
   columns: number;
-  checkboxOnClick: (status: boolean, id: string) => void;
+  checkboxOnChange: (status: boolean, id: string) => void;
 };
 
 const renderCheckBoxList = (
@@ -29,6 +29,9 @@ const renderCheckBoxList = (
       break;
     }
     for (let j = 0; j < props.columns; j++) {
+      if (totalCheckbox <= 0) {
+        break;
+      }
       totalCheckbox -= 1;
       if (checkboxListIDs[i + j]) {
         gridMatrix[j] += 1;
@@ -55,7 +58,7 @@ const renderCheckBoxList = (
                         label={checkboxList[item].label}
                         checked={checkboxList[item].checkedStatus}
                         onChange={(status) => {
-                          props.checkboxOnClick(status, checkboxList[item].id);
+                          props.checkboxOnChange(status, checkboxList[item].id);
                         }}
                       />
                     </div>
@@ -73,11 +76,20 @@ const CheckBoxGrid = (props: Props) => {
   return (
     <>
       {renderCheckBoxList(props.gridData.default, props)}
-      {Object.keys(props.gridData).map((gridTitle: string) => {
+      {Object.keys(props.gridData).map((gridTitle: string, key: number) => {
         if (gridTitle === 'default') {
           return;
         }
-        return renderCheckBoxList(props.gridData[gridTitle], props, gridTitle);
+        return (
+          <div key={key}>
+            {' '}
+            {renderCheckBoxList(
+              props.gridData[gridTitle],
+              props,
+              gridTitle
+            )}{' '}
+          </div>
+        );
       })}
     </>
   );

@@ -1,9 +1,9 @@
 import React, { useCallback, FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 import { RoundButton, RoundButtonStatus, PrimaryButton } from 'src/shared';
-import { getPreFilterStatuses } from '../../customDownloadSelectors';
+import { getSelectedPreFilter } from '../../customDownloadSelectors';
 import {
-  updateSelectedPreFilters,
+  updateSelectedPreFilter,
   togglePreFiltersPanel
 } from '../../customDownloadActions';
 
@@ -18,25 +18,13 @@ const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
 ) => {
   const filterOnClick = useCallback(
     (filter: string) => {
-      const currentStatus = { ...props.preFilterStatuses };
-
-      currentStatus[filter] !== RoundButtonStatus.ACTIVE
-        ? (currentStatus[filter] = RoundButtonStatus.ACTIVE)
-        : (currentStatus[filter] = RoundButtonStatus.INACTIVE);
-
-      props.updateSelectedPreFilters(currentStatus);
+      props.updateSelectedPreFilter(filter);
     },
-    [props.preFilterStatuses]
+    [props.selectedPreFilter]
   );
 
   // Check if atleast one filter is selected
-  const selectedFilters = Object.keys(props.preFilterStatuses).filter(
-    (key: string) => {
-      return props.preFilterStatuses[key] === RoundButtonStatus.ACTIVE
-        ? true
-        : false;
-    }
-  );
+  const enableNextButton = !!Object.keys(props.selectedPreFilter).length;
 
   const onSubmitHandler = () => {
     props.togglePreFiltersPanel(false);
@@ -50,7 +38,11 @@ const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
           onClick={() => {
             filterOnClick('genes');
           }}
-          status={props.preFilterStatuses.genes}
+          status={
+            props.selectedPreFilter === 'genes'
+              ? RoundButtonStatus.ACTIVE
+              : RoundButtonStatus.INACTIVE
+          }
           classNames={styles}
         >
           Genes
@@ -59,7 +51,11 @@ const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
           onClick={() => {
             filterOnClick('transcripts');
           }}
-          status={props.preFilterStatuses.transcripts}
+          status={
+            props.selectedPreFilter === 'transcripts'
+              ? RoundButtonStatus.ACTIVE
+              : RoundButtonStatus.INACTIVE
+          }
           classNames={styles}
         >
           Transcripts
@@ -68,7 +64,11 @@ const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
           onClick={() => {
             filterOnClick('variation');
           }}
-          status={props.preFilterStatuses.variation}
+          status={
+            props.selectedPreFilter === 'variation'
+              ? RoundButtonStatus.ACTIVE
+              : RoundButtonStatus.INACTIVE
+          }
           classNames={styles}
         >
           Variation
@@ -77,7 +77,11 @@ const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
           onClick={() => {
             filterOnClick('phenotypes');
           }}
-          status={props.preFilterStatuses.phenotypes}
+          status={
+            props.selectedPreFilter === 'phenotypes'
+              ? RoundButtonStatus.ACTIVE
+              : RoundButtonStatus.INACTIVE
+          }
           classNames={styles}
         >
           Phenotypes
@@ -86,7 +90,11 @@ const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
           onClick={() => {
             filterOnClick('regulation');
           }}
-          status={props.preFilterStatuses.regulation}
+          status={
+            props.selectedPreFilter === 'regulation'
+              ? RoundButtonStatus.ACTIVE
+              : RoundButtonStatus.INACTIVE
+          }
           classNames={styles}
         >
           Regulation
@@ -95,7 +103,7 @@ const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
         <PrimaryButton
           onClick={onSubmitHandler}
           className={styles.primaryButton}
-          isDisabled={selectedFilters.length ? false : true}
+          isDisabled={enableNextButton ? false : true}
         >
           Next
         </PrimaryButton>
@@ -105,21 +113,21 @@ const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
 };
 
 type DispatchProps = {
-  updateSelectedPreFilters: (updateSelectedPreFilters: {}) => void;
+  updateSelectedPreFilter: (updateSelectedPreFilter: string) => void;
   togglePreFiltersPanel: (togglePreFiltersPanel: boolean) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
-  updateSelectedPreFilters,
+  updateSelectedPreFilter,
   togglePreFiltersPanel
 };
 
 type StateProps = {
-  preFilterStatuses: any;
+  selectedPreFilter: any;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  preFilterStatuses: getPreFilterStatuses(state)
+  selectedPreFilter: getSelectedPreFilter(state)
 });
 
 export default connect(

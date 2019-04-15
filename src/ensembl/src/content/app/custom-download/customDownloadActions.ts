@@ -3,13 +3,13 @@ import { Dispatch } from 'redux';
 
 import { getCustomDownloadAnalyticsObject } from 'src/analyticsHelper';
 
-export const updateSelectedPreFilters = createAction(
+export const updateSelectedPreFilter = createAction(
   'custom-download/update-selected-pre-filters',
   (resolve) => {
-    return (preFilterStatuses: {}) =>
+    return (selectedPreFilter: string) =>
       resolve(
-        preFilterStatuses,
-        getCustomDownloadAnalyticsObject('Pre Filters Updates')
+        selectedPreFilter,
+        getCustomDownloadAnalyticsObject('Pre Filter Updates')
       );
   }
 );
@@ -32,6 +32,25 @@ export const toggleTabButton = createAction(
       resolve(
         selectedTabButton,
         getCustomDownloadAnalyticsObject('Toggle Data/Filter Tab Button')
+      );
+  }
+);
+
+export const setAttributes = createAction(
+  'custom-download/set-attributes',
+  (resolve) => {
+    return (attributes: {}) =>
+      resolve(attributes, getCustomDownloadAnalyticsObject('Default action'));
+  }
+);
+
+export const setGeneAttributes = createAction(
+  'custom-download/set-gene-attributes',
+  (resolve) => {
+    return (geneAttributes: {}) =>
+      resolve(
+        geneAttributes,
+        getCustomDownloadAnalyticsObject('Default action')
       );
   }
 );

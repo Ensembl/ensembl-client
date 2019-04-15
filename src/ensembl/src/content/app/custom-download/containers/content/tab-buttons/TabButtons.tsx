@@ -11,7 +11,7 @@ type Props = StateProps & DispatchProps;
 
 const TabButtons = (props: Props) => {
   const dataButtonStatus =
-    props.selectedTabButton === 'data'
+    props.selectedTabButton === 'attributes'
       ? RoundButtonStatus.ACTIVE
       : RoundButtonStatus.INACTIVE;
   const filterButtonStatus =
@@ -24,7 +24,7 @@ const TabButtons = (props: Props) => {
         <BadgedButton badgeContent={3}>
           <RoundButton
             onClick={() => {
-              props.toggleTabButton('data');
+              props.toggleTabButton('attributes');
             }}
             status={dataButtonStatus}
           >
