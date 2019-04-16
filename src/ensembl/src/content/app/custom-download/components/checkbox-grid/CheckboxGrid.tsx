@@ -6,6 +6,8 @@ import styles from './CheckBoxGrid.scss';
 type Props = {
   gridData: any;
   columns: number;
+  hideUnchecked?: boolean;
+  hideTitles?: boolean;
   checkboxOnChange: (status: boolean, subSection: string, id: string) => void;
 };
 
@@ -44,7 +46,7 @@ const renderCheckBoxList = (
   };
   return (
     <>
-      {!!subSection && subSection !== 'default' && (
+      {!!subSection && subSection !== 'default' && !props.hideTitles && (
         <div className={styles.checkboxGridTitle}>
           {subSection.charAt(0).toUpperCase() + subSection.slice(1)}
         </div>
@@ -56,6 +58,13 @@ const renderCheckBoxList = (
               {checkboxListIDs
                 .splice(0, columnLength)
                 .map((item: string, itemKey: number) => {
+                  if (
+                    props.hideUnchecked &&
+                    !checkboxList[item].checkedStatus
+                  ) {
+                    return null;
+                  }
+
                   return (
                     <div key={itemKey} className={styles.checkboxContainer}>
                       <Checkbox

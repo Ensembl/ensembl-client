@@ -6,7 +6,12 @@ import { getTranscriptAttributes } from 'src/content/app/custom-download/customD
 import { setTranscriptAttributes } from 'src/content/app/custom-download/customDownloadActions';
 import CheckBoxGrid from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
-type Props = StateProps & DispatchProps;
+type OwnProps = {
+  hideUnchecked?: boolean;
+  hideTitles?: boolean;
+};
+
+type Props = OwnProps & StateProps & DispatchProps;
 
 const Transcripts = (props: Props) => {
   if (!props.transcriptAttributes) {
@@ -28,6 +33,8 @@ const Transcripts = (props: Props) => {
     <CheckBoxGrid
       checkboxOnChange={onChangeHandler}
       gridData={props.transcriptAttributes}
+      hideUnchecked={props.hideUnchecked}
+      hideTitles={props.hideTitles}
       columns={3}
     />
   );

@@ -51,7 +51,7 @@ function contentPanel(
         ...state,
         attributes: contentPanelVariationAttributes(state.attributes, action)
       };
-    case getType(customDownloadActions.setAttributesAccordionExpandedPanels):
+    case getType(customDownloadActions.setAttributesAccordionExpandedPanel):
       return {
         ...state,
         attributesAccordion: contentPanelAttributesAccordion(
@@ -77,8 +77,8 @@ function contentPanelAttributesAccordion(
   action: ActionType<RootAction>
 ): CustomDownloadState {
   switch (action.type) {
-    case getType(customDownloadActions.setAttributesAccordionExpandedPanels):
-      return { ...state, expandedPanels: action.payload };
+    case getType(customDownloadActions.setAttributesAccordionExpandedPanel):
+      return { ...state, expandedPanel: action.payload };
     case getType(customDownloadActions.setVariationAccordionExpandedPanels):
       return { ...state, expandedVariationPanels: action.payload };
     default:

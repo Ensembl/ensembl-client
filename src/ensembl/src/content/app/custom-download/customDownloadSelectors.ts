@@ -24,8 +24,8 @@ export const getGermlineVariationAttributes = (state: RootState): {} =>
 export const getSomaticVariationAttributes = (state: RootState): {} =>
   state.customDownload.contentPanel.attributes.somatic_variation;
 
-export const getAttributesAccordionExpandedPanels = (state: RootState): [] =>
-  state.customDownload.contentPanel.attributesAccordion.expandedPanels;
+export const getAttributesAccordionExpandedPanel = (state: RootState): string =>
+  state.customDownload.contentPanel.attributesAccordion.expandedPanel;
 
 export const getVariationAccordionExpandedPanels = (state: RootState): [] =>
   state.customDownload.contentPanel.attributesAccordion.expandedVariationPanels;

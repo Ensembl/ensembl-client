@@ -6,7 +6,12 @@ import { getGeneAttributes } from 'src/content/app/custom-download/customDownloa
 import { setGeneAttributes } from 'src/content/app/custom-download/customDownloadActions';
 import CheckBoxGrid from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
-type Props = StateProps & DispatchProps;
+type ownProps = {
+  hideUnchecked?: boolean;
+  hideTitles?: boolean;
+};
+
+type Props = ownProps & StateProps & DispatchProps;
 
 const Genes = (props: Props) => {
   if (!props.geneAttributes) {
@@ -28,6 +33,8 @@ const Genes = (props: Props) => {
     <CheckBoxGrid
       checkboxOnChange={onChangeHandler}
       gridData={props.geneAttributes}
+      hideUnchecked={props.hideUnchecked}
+      hideTitles={props.hideTitles}
       columns={3}
     />
   );

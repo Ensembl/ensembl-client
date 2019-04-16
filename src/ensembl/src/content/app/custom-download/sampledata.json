@@ -5,12 +5,12 @@
           "gene_symbol": {
             "id": "gene_symbol",
             "label": "Gene symbol",
-            "checkedStatus": false
+            "checkedStatus": true
           },
           "gene_stable_id": {
             "id": "gene_stable_id",
             "label": "Gene stable ID",
-            "checkedStatus": false
+            "checkedStatus": true
           },
           "gene_stable_id_version": {
             "id": "gene_stable_id_version",

@@ -13,7 +13,7 @@ export const defaultCustomDownloadState: CustomDownloadState = {
   selectedTabButton: 'attributes',
   attributes: {},
   attributesAccordion: {
-    expandedPanels: [],
+    expandedPanel: '',
     expandedVariationPanels: []
   },
   filters: {}

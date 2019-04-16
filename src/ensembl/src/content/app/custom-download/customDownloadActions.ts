@@ -90,12 +90,12 @@ export const setGermlineVariationAttributes = createAction(
   }
 );
 
-export const setAttributesAccordionExpandedPanels = createAction(
+export const setAttributesAccordionExpandedPanel = createAction(
   'custom-download/set-attributes-accordion-expanded-panels',
   (resolve) => {
-    return (expandedPanels: []) =>
+    return (expandedPanel: string) =>
       resolve(
-        expandedPanels,
+        expandedPanel,
         getCustomDownloadAnalyticsObject('Toggle attributes accordion panel')
       );
   }

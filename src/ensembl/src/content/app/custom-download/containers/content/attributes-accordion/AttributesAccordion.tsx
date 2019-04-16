@@ -7,11 +7,12 @@ import {
   AccordionItem,
   AccordionItemHeading,
   AccordionItemPanel,
-  AccordionItemButton
+  AccordionItemButton,
+  AccordionItemPermanentBlock
 } from 'src/shared';
 
-import { getAttributesAccordionExpandedPanels } from 'src/content/app/custom-download/customDownloadSelectors';
-import { setAttributesAccordionExpandedPanels } from 'src/content/app/custom-download/customDownloadActions';
+import { getAttributesAccordionExpandedPanel } from 'src/content/app/custom-download/customDownloadSelectors';
+import { setAttributesAccordionExpandedPanel } from 'src/content/app/custom-download/customDownloadActions';
 
 import { Genes, Transcripts, Variations } from './sections';
 
@@ -21,10 +22,10 @@ type Props = StateProps & DispatchProps;
 
 const Attributes = (props: Props) => {
   const accordionOnChange = useCallback(
-    (newExpandedPanels: []) => {
-      props.setAttributesAccordionExpandedPanels(newExpandedPanels);
+    (newExpandedPanels: string[]) => {
+      props.setAttributesAccordionExpandedPanel(newExpandedPanels[0]);
     },
-    [props.expandedPanels]
+    [props.expandedPanel]
   );
 
   return (
@@ -34,7 +35,7 @@ const Attributes = (props: Props) => {
         will be displayed as columns in a table
       </div>
       <Accordion
-        preExpanded={props.expandedPanels}
+        preExpanded={Array(1).fill(props.expandedPanel)}
         onChange={accordionOnChange}
       >
         <AccordionItem uuid={'genes'}>
@@ -44,6 +45,13 @@ const Attributes = (props: Props) => {
           <AccordionItemPanel>
             <Genes />
           </AccordionItemPanel>
+          <AccordionItemPermanentBlock>
+            {props.expandedPanel !== 'genes' && (
+              <div className={styles.permanentBlock}>
+                <Genes hideUnchecked={true} hideTitles={true} />
+              </div>
+            )}
+          </AccordionItemPermanentBlock>
         </AccordionItem>
 
         <AccordionItem uuid={'transcripts'}>
@@ -53,6 +61,13 @@ const Attributes = (props: Props) => {
           <AccordionItemPanel>
             <Transcripts />
           </AccordionItemPanel>
+          <AccordionItemPermanentBlock>
+            {props.expandedPanel !== 'transcripts' && (
+              <div className={styles.permanentBlock}>
+                <Transcripts hideUnchecked={true} hideTitles={true} />
+              </div>
+            )}
+          </AccordionItemPermanentBlock>
         </AccordionItem>
 
         <AccordionItem uuid={'exons'}>
@@ -132,21 +147,21 @@ const Attributes = (props: Props) => {
 };
 
 type DispatchProps = {
-  setAttributesAccordionExpandedPanels: (
-    setAttributesAccordionExpandedPanels: any
+  setAttributesAccordionExpandedPanel: (
+    setAttributesAccordionExpandedPanel: any
   ) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
-  setAttributesAccordionExpandedPanels
+  setAttributesAccordionExpandedPanel
 };
 
 type StateProps = {
-  expandedPanels: [];
+  expandedPanel: string;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  expandedPanels: getAttributesAccordionExpandedPanels(state)
+  expandedPanel: getAttributesAccordionExpandedPanel(state)
 });
 
 export default connect(
