@@ -124,13 +124,6 @@ export const setOptionsPanelHeight = (
 };
 
 export const getPanelScrollStatus = (panel: HTMLDivElement) => {
-  console.log(
-    'panel.scrollTop === panel.scrollHeight - panel.clientHeight',
-    panel.scrollTop,
-    panel.scrollHeight,
-    panel.clientHeight,
-    panel.scrollTop === panel.scrollHeight - panel.clientHeight
-  );
   return {
     isScrolledToTop: panel.scrollTop === 0,
     isScrolledToBottom:
