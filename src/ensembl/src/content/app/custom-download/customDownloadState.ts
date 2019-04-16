@@ -3,6 +3,7 @@ export type CustomDownloadState = Readonly<{
   showPreFiltersPanel: boolean;
   selectedTabButton: string;
   attributes: any;
+  attributesAccordion: any;
   filters: {};
 }>;
 
@@ -11,5 +12,9 @@ export const defaultCustomDownloadState: CustomDownloadState = {
   showPreFiltersPanel: true,
   selectedTabButton: 'attributes',
   attributes: {},
+  attributesAccordion: {
+    expandedPanels: [],
+    expandedVariationPanels: []
+  },
   filters: {}
 };

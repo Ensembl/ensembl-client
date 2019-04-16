@@ -9,8 +9,23 @@ export const getShowPreFilterPanel = (state: RootState): boolean =>
 export const getSelectedTabButton = (state: RootState): string =>
   state.customDownload.contentPanel.selectedTabButton;
 
-export const getSelectedGeneDataToDownload = (state: RootState): string =>
+export const getAttributes = (state: RootState): {} =>
+  state.customDownload.contentPanel.attributes;
+
+export const getGeneAttributes = (state: RootState): {} =>
   state.customDownload.contentPanel.attributes.gene;
 
-export const getSelectedTranscriptDataToDownload = (state: RootState): string =>
+export const getTranscriptAttributes = (state: RootState): {} =>
   state.customDownload.contentPanel.attributes.transcript;
+
+export const getGermlineVariationAttributes = (state: RootState): {} =>
+  state.customDownload.contentPanel.attributes.germline_variation;
+
+export const getSomaticVariationAttributes = (state: RootState): {} =>
+  state.customDownload.contentPanel.attributes.somatic_variation;
+
+export const getAttributesAccordionExpandedPanels = (state: RootState): [] =>
+  state.customDownload.contentPanel.attributesAccordion.expandedPanels;
+
+export const getVariationAccordionExpandedPanels = (state: RootState): [] =>
+  state.customDownload.contentPanel.attributesAccordion.expandedVariationPanels;

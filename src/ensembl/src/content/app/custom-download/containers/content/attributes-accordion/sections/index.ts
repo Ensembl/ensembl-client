@@ -1,4 +1,5 @@
 import Genes from './Genes';
 import Transcripts from './Transcripts';
+import Variations from './Variations';
 
-export { Genes, Transcripts };
+export { Genes, Transcripts, Variations };

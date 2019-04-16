@@ -158,5 +158,118 @@
         },
         "go_domain": { "id": "go_domain", "label": "GO domain", "checkedStatus": false }
       }
+  },
+  "germline_variation" : {
+    "default" : {
+      "variant_name" : {
+        "id": "variant_name",
+        "label" : "Variant name",
+        "checkedStatus": false
+      },
+      "variant_source" : {
+        "id": "variant_source",
+        "label" : "Variant source",
+        "checkedStatus": false
+      },
+      "sift_code" : {
+        "id": "sift_code",
+        "label" : "SIFT code",
+        "checkedStatus": false
+      },
+      "protein_allele" : {
+        "id": "protein_allele",
+        "label" : "Protein allele",
+        "checkedStatus": false
+      },
+      "polyphen_score" : {
+        "id": "polyphen_score",
+        "label" : "PolyPhen score",
+        "checkedStatus": false
+      }
+    },
+    "location" :{
+      "distance_to_transcript" : {
+        "id": "distance_to_transcript",
+        "label" : "Distance to transcript",
+        "checkedStatus": false
+      },
+      "cds_end" : {
+        "id": "cds_end",
+        "label" : "CDS end",
+        "checkedStatus": false
+      },
+      "chromosomescaffold_position_start_bp" : {
+        "id": "chromosomescaffold_position_start_bp",
+        "label" : "Chromosome/scaffold position start (bp)",
+        "checkedStatus": false
+      },
+      "protein_location_aa" : {
+        "id": "protein_location_aa",
+        "label" : "Protein location (aa)",
+        "checkedStatus": false
+      },
+      "cds_start" : {
+        "id": "cds_start",
+        "label" : "CDS start",
+        "checkedStatus": false
+      }
+    }
+  },
+
+  "somatic_variation" : {
+    "default" : {
+      "variant_name" : {
+        "id": "variant_name",
+        "label" : "Variant name",
+        "checkedStatus": false
+      },
+      "variant_source" : {
+        "id": "variant_source",
+        "label" : "Variant source",
+        "checkedStatus": false
+      },
+      "sift_code" : {
+        "id": "sift_code",
+        "label" : "SIFT code",
+        "checkedStatus": false
+      },
+      "protein_allele" : {
+        "id": "protein_allele",
+        "label" : "Protein allele",
+        "checkedStatus": false
+      },
+      "polyphen_score" : {
+        "id": "polyphen_score",
+        "label" : "PolyPhen score",
+        "checkedStatus": false
+      }
+    },
+    "location" :{
+      "distance_to_transcript" : {
+        "id": "distance_to_transcript",
+        "label" : "Distance to transcript",
+        "checkedStatus": false
+      },
+      "cds_end" : {
+        "id": "cds_end",
+        "label" : "CDS end",
+        "checkedStatus": false
+      },
+      "chromosomescaffold_position_start_bp" : {
+        "id": "chromosomescaffold_position_start_bp",
+        "label" : "Chromosome/scaffold position start (bp)",
+        "checkedStatus": false
+      },
+      "protein_location_aa" : {
+        "id": "protein_location_aa",
+        "label" : "Protein location (aa)",
+        "checkedStatus": false
+      },
+      "cds_start" : {
+        "id": "cds_start",
+        "label" : "CDS start",
+        "checkedStatus": false
+      }
+    }
   }
 }

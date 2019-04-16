@@ -1,7 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { BadgedButton, RoundButton, RoundButtonStatus } from 'src/shared';
-import { getSelectedTabButton } from '../../../customDownloadSelectors';
+import {
+  getAttributes,
+  getSelectedTabButton
+} from '../../../customDownloadSelectors';
 import { toggleTabButton } from '../../../customDownloadActions';
 import { RootState } from 'src/store';
 
@@ -9,7 +12,26 @@ import styles from './TabButtons.scss';
 
 type Props = StateProps & DispatchProps;
 
+const getTotalSelectedAttributes = (attributes: any) => {
+  let totalSelectedAttributes = 0;
+
+  Object.keys(attributes).forEach((section) => {
+    Object.keys(attributes[section]).forEach((subSection) => {
+      Object.keys(attributes[section][subSection]).forEach((attributeId) => {
+        if (
+          attributes[section][subSection][attributeId].checkedStatus === true
+        ) {
+          totalSelectedAttributes++;
+        }
+      });
+    });
+  });
+
+  return totalSelectedAttributes;
+};
+
 const TabButtons = (props: Props) => {
+  const totalSelectedAttributes = getTotalSelectedAttributes(props.attributes);
   const dataButtonStatus =
     props.selectedTabButton === 'attributes'
       ? RoundButtonStatus.ACTIVE
@@ -21,7 +43,7 @@ const TabButtons = (props: Props) => {
   return (
     <div className={styles.wrapper}>
       <div>
-        <BadgedButton badgeContent={3}>
+        <BadgedButton badgeContent={totalSelectedAttributes}>
           <RoundButton
             onClick={() => {
               props.toggleTabButton('attributes');
@@ -57,10 +79,12 @@ const mapDispatchToProps: DispatchProps = {
 
 type StateProps = {
   selectedTabButton: string;
+  attributes: {};
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  selectedTabButton: getSelectedTabButton(state)
+  selectedTabButton: getSelectedTabButton(state),
+  attributes: getAttributes(state)
 });
 
 export default connect(

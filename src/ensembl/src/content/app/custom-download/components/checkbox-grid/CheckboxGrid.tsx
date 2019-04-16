@@ -6,13 +6,13 @@ import styles from './CheckBoxGrid.scss';
 type Props = {
   gridData: any;
   columns: number;
-  checkboxOnChange: (status: boolean, id: string) => void;
+  checkboxOnChange: (status: boolean, subSection: string, id: string) => void;
 };
 
 const renderCheckBoxList = (
   checkboxList: any,
   props: Props,
-  title?: string
+  subSection: string
 ) => {
   if (!Object.keys(checkboxList).length) {
     return null;
@@ -44,7 +44,11 @@ const renderCheckBoxList = (
   };
   return (
     <>
-      {!!title && <div className={styles.checkboxGridTitle}>{title}</div>}
+      {!!subSection && subSection !== 'default' && (
+        <div className={styles.checkboxGridTitle}>
+          {subSection.charAt(0).toUpperCase() + subSection.slice(1)}
+        </div>
+      )}
       <div className={styles.checkboxGridContainer}>
         {gridMatrix.map((columnLength: number, gridKey: number) => {
           return (
@@ -58,7 +62,11 @@ const renderCheckBoxList = (
                         label={checkboxList[item].label}
                         checked={checkboxList[item].checkedStatus}
                         onChange={(status) => {
-                          props.checkboxOnChange(status, checkboxList[item].id);
+                          props.checkboxOnChange(
+                            status,
+                            subSection,
+                            checkboxList[item].id
+                          );
                         }}
                       />
                     </div>
@@ -75,19 +83,16 @@ const renderCheckBoxList = (
 const CheckBoxGrid = (props: Props) => {
   return (
     <>
-      {renderCheckBoxList(props.gridData.default, props)}
+      {props.gridData.hasOwnProperty('default')
+        ? renderCheckBoxList(props.gridData.default, props, 'default')
+        : null}
       {Object.keys(props.gridData).map((gridTitle: string, key: number) => {
         if (gridTitle === 'default') {
           return;
         }
         return (
           <div key={key}>
-            {' '}
-            {renderCheckBoxList(
-              props.gridData[gridTitle],
-              props,
-              gridTitle
-            )}{' '}
+            {renderCheckBoxList(props.gridData[gridTitle], props, gridTitle)}
           </div>
         );
       })}
