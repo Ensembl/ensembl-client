@@ -5,7 +5,6 @@ import times from 'lodash/times';
 import { Option, OptionGroup } from '../Select';
 
 import {
-  findSelectedIndexForOptions,
   findSelectedIndexForOptionGroups,
   splitFromSelected
 } from './select-helpers';
@@ -18,28 +17,6 @@ const buildOption = (): Option => ({
 
 const buildOptionGroup = (options: Option[]): OptionGroup => ({
   options
-});
-
-describe('findSelectedIndexForOptions', () => {
-  let numberOfOptions;
-  let options: Option[];
-  let selectedOptionIndex: number;
-
-  beforeEach(() => {
-    numberOfOptions = 10;
-    options = times(numberOfOptions, () => buildOption());
-    selectedOptionIndex = random(numberOfOptions - 1);
-  });
-
-  test('finds index of selected option in an array of options', () => {
-    options[selectedOptionIndex].isSelected = true;
-
-    expect(findSelectedIndexForOptions(options)).toBe(selectedOptionIndex);
-  });
-
-  test('returns -1 if none of the options in the array is selected', () => {
-    expect(findSelectedIndexForOptions(options)).toBe(-1);
-  });
 });
 
 describe('findSelectedIndexForOptionGroups', () => {

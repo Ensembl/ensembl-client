@@ -1,12 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep';
-import range from 'lodash/range';
 import isEqual from 'lodash/isEqual';
 
 import { Option, OptionGroup, GroupedOptionIndex } from '../Select';
-
-export const findSelectedIndexForOptions = (options: Option[]) => {
-  return options.findIndex(({ isSelected }) => isSelected);
-};
 
 export const findSelectedIndexForOptionGroups = (
   optionGroups: OptionGroup[]
@@ -196,7 +191,6 @@ export const scrollOptionIntoView = ({
     containerRect.bottom
   ) {
     container.scrollTop = container.scrollTop + currentOptionElementRect.height;
-    // container.scrollTop = currentOptionElement.offsetTop - container.scrollHeight + currentOptionElementRect.height;
   } else if (
     currentOptionElementRect.top <
     containerRect.top + currentOptionElementRect.height

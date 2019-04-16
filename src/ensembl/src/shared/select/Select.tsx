@@ -27,7 +27,6 @@ export type GroupedOptionIndex = [
 ];
 
 type ClosedSelectProps = {
-  // <-- TODO: think of a better name
   isOpen: boolean;
   selectedOption: Option | null;
   placeholder: string;
@@ -45,7 +44,7 @@ type OptionGroupsSpecificProps = {
 
 type CommonProps = {
   onSelect: (value: any) => void;
-  placeholder: string;
+  placeholder?: string;
 };
 
 type OptionsSelectProps = CommonProps & OptionsSpecificProps;
@@ -53,8 +52,9 @@ type OptionGroupssSelectProps = CommonProps & OptionGroupsSpecificProps;
 
 type SelectAdapterProps = OptionsSelectProps | OptionGroupssSelectProps;
 
-type SelectProps = OptionGroupssSelectProps;
+type SelectProps = OptionGroupssSelectProps & { placeholder: string };
 
+// TODO: think of a better name for this component?
 const ClosedSelect = (props: ClosedSelectProps) => {
   const className = props.isOpen
     ? styles.selectClosedInvisible
