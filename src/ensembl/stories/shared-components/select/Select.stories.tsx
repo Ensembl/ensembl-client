@@ -5,6 +5,8 @@ import { action } from '@storybook/addon-actions';
 
 import Select, { Option, OptionGroup } from 'src/shared/select/Select';
 
+import selectNotes from './select.md';
+
 import styles from './Select.stories.scss';
 
 const createSimpleOption = (number: number): Option => ({
@@ -62,7 +64,11 @@ const WrapperForOptionGroups = (props: any) => {
 };
 
 storiesOf('Components|Shared Components/Select', module)
-  .add('default', () => <WrapperForOptions options={createSimpleOptions(5)} />)
+  .add(
+    'default',
+    () => <WrapperForOptions options={createSimpleOptions(5)} />,
+    { notes: selectNotes }
+  )
   .add('long list of options', () => {
     const options = createSimpleOptions(50);
     const longOption = {
