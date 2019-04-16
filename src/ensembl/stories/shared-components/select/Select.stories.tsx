@@ -23,7 +23,7 @@ const WrapperForOptions = (props: any) => {
   const onSelect = (selectedValue: number) => {
     action(`selected: ${selectedValue}`)();
 
-    const updatedOptions = options.options.map((option: Option) => ({
+    const updatedOptions = options.map((option: Option) => ({
       ...option,
       isSelected: option.value === selectedValue
     }));
@@ -43,12 +43,13 @@ const WrapperForOptionGroups = (props: any) => {
   const onSelect = (selectedValue: number) => {
     action(`selected: ${selectedValue}`)();
 
-    const updatedOptionGroups = optionGroups.map((group: OptionGroup) =>
-      group.options.map((option) => ({
+    const updatedOptionGroups = optionGroups.map((group: OptionGroup) => ({
+      ...group,
+      options: group.options.map((option) => ({
         ...option,
         isSelected: option.value === selectedValue
       }))
-    );
+    }));
 
     setOptionGroups(updatedOptionGroups);
   };

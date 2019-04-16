@@ -278,7 +278,7 @@ const SelectOptionsPanel = (props: Props) => {
 
 const SelectOptionGroup = (props: OptionGroupProps) => {
   return (
-    <ul>
+    <ul className={styles.optionsGroup}>
       {props.title && <div>{props.title}</div>}
       {props.options.map((option, index) => (
         <SelectOption

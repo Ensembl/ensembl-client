@@ -48,9 +48,8 @@ $optionsPanelLeftPadding: 14px;
   white-space: nowrap;
 
   ul {
-    margin: 0;
-    padding: 0;
     list-style-type: none;
+    padding: 0;
   }
 }
 
@@ -99,6 +98,14 @@ $optionsPanelLeftPadding: 14px;
 .optionsPanelHeader {
   color: $ens-grey;
   margin-bottom: 1em;
+}
+
+.optionsGroup:first-child {
+  margin: 0;
+}
+
+.optionsGroup:not(:first-child) {
+  margin: 1em 0 0 0;
 }
 
 .option {
