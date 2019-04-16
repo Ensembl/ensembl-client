@@ -106,6 +106,8 @@ export const getPreviousItemIndex = (
   }
 };
 
+// check whether the options panel fits the allotted portion of the window,
+// and if it does not, assign a height to it
 export const setOptionsPanelHeight = (
   elementRef: React.MutableRefObject<HTMLDivElement | null>
 ) => {
@@ -118,8 +120,11 @@ export const setOptionsPanelHeight = (
   const { top: panelTop, height: panelHeight } = panel.getBoundingClientRect();
 
   if (panelTop + panelHeight > windowHeight) {
+    const minHeight = 300;
     const bottomOffset = 10;
-    panel.style.height = `${windowHeight - panelTop - bottomOffset}px`;
+    const distanceToWindowEdge = windowHeight - panelTop - bottomOffset;
+    const panelHeight = Math.max(distanceToWindowEdge, minHeight);
+    panel.style.height = `${panelHeight}px`;
   }
 };
 

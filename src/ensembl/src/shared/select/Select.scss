@@ -43,8 +43,7 @@ $optionsPanelLeftPadding: 14px;
   top: -$optionsPanelTopPadding;
   display: inline-block;
   min-width: 100%;
-  padding: $optionsPanelTopPadding $optionsPanelRightPadding 34px
-    $optionsPanelLeftPadding;
+  padding: $optionsPanelTopPadding 0 34px 0;
   box-shadow: 2px 2px 6px 0 $ens-grey;
   white-space: nowrap;
 
@@ -90,6 +89,13 @@ $optionsPanelLeftPadding: 14px;
   bottom: 0;
 }
 
+.optionsPanelHeader,
+.option {
+  margin: 0 1px 0 1px;
+  padding: 0 calc(#{$optionsPanelRightPadding} - 1px) 0
+    calc(#{$optionsPanelLeftPadding} - 1px);
+}
+
 .optionsPanelHeader {
   color: $ens-grey;
   margin-bottom: 1em;
@@ -97,9 +103,6 @@ $optionsPanelLeftPadding: 14px;
 
 .option {
   cursor: pointer;
-  margin-left: -$optionsPanelLeftPadding;
-  // margin-right: -$optionsPanelRightPadding;
-  padding: 0 $optionsPanelRightPadding 0 $optionsPanelLeftPadding;
 }
 
 .optionHighlighted {
