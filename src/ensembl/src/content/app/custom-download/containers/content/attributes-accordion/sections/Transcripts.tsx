@@ -4,7 +4,11 @@ import { RootState } from 'src/store';
 
 import { getTranscriptAttributes } from 'src/content/app/custom-download/customDownloadSelectors';
 import { setTranscriptAttributes } from 'src/content/app/custom-download/customDownloadActions';
-import CheckBoxGrid from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
+import CheckBoxGrid, {
+  filterCheckedAttributes
+} from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
+
+import styles from './Styles.scss';
 
 type OwnProps = {
   hideUnchecked?: boolean;
@@ -29,14 +33,36 @@ const Transcripts = (props: Props) => {
     [props.transcriptAttributes]
   );
 
+  if (props.hideUnchecked) {
+    const checkedAttributes = filterCheckedAttributes(
+      props.transcriptAttributes
+    );
+
+    if (Object.keys(checkedAttributes).length === 0) {
+      return null;
+    }
+
+    return (
+      <div className={styles.checkboxGridWrapper}>
+        <CheckBoxGrid
+          checkboxOnChange={onChangeHandler}
+          gridData={{ default: checkedAttributes }}
+          hideTitles={props.hideTitles}
+          columns={3}
+        />
+      </div>
+    );
+  }
+
   return (
-    <CheckBoxGrid
-      checkboxOnChange={onChangeHandler}
-      gridData={props.transcriptAttributes}
-      hideUnchecked={props.hideUnchecked}
-      hideTitles={props.hideTitles}
-      columns={3}
-    />
+    <div className={styles.checkboxGridWrapper}>
+      <CheckBoxGrid
+        checkboxOnChange={onChangeHandler}
+        gridData={props.transcriptAttributes}
+        hideTitles={props.hideTitles}
+        columns={3}
+      />
+    </div>
   );
 };
 

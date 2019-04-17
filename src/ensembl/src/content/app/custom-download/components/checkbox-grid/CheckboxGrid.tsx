@@ -11,6 +11,20 @@ type Props = {
   checkboxOnChange: (status: boolean, subSection: string, id: string) => void;
 };
 
+export const filterCheckedAttributes = (attributes: any) => {
+  const filteredAttributes: any = {};
+
+  Object.keys(attributes).forEach((section) => {
+    Object.keys(attributes[section]).forEach((attributeId) => {
+      if (attributes[section][attributeId].checkedStatus === true) {
+        filteredAttributes[attributeId] = attributes[section][attributeId];
+      }
+    });
+  });
+
+  return filteredAttributes;
+};
+
 const renderCheckBoxList = (
   checkboxList: any,
   props: Props,

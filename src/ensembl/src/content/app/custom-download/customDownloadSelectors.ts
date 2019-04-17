@@ -16,7 +16,7 @@ export const getGeneAttributes = (state: RootState): {} =>
   state.customDownload.contentPanel.attributes.gene;
 
 export const getTranscriptAttributes = (state: RootState): {} =>
-  state.customDownload.contentPanel.attributes.transcript;
+  state.customDownload.contentPanel.attributes.transcripts;
 
 export const getGermlineVariationAttributes = (state: RootState): {} =>
   state.customDownload.contentPanel.attributes.germline_variation;
@@ -29,3 +29,6 @@ export const getAttributesAccordionExpandedPanel = (state: RootState): string =>
 
 export const getVariationAccordionExpandedPanels = (state: RootState): [] =>
   state.customDownload.contentPanel.attributesAccordion.expandedVariationPanels;
+
+export const getPreviewResult = (state: RootState): string =>
+  state.customDownload.contentPanel.previewResult;

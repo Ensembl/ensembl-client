@@ -44,6 +44,17 @@ export const setAttributes = createAction(
   }
 );
 
+export const setPreviewResult = createAction(
+  'custom-download/set-preview-results',
+  (resolve) => {
+    return (previewResult: {}) =>
+      resolve(
+        previewResult,
+        getCustomDownloadAnalyticsObject('Default action')
+      );
+  }
+);
+
 export const setGeneAttributes = createAction(
   'custom-download/set-gene-attributes',
   (resolve) => {

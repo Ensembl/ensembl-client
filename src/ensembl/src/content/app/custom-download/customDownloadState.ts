@@ -5,6 +5,7 @@ export type CustomDownloadState = Readonly<{
   attributes: any;
   attributesAccordion: any;
   filters: {};
+  previewResult: any;
 }>;
 
 export const defaultCustomDownloadState: CustomDownloadState = {
@@ -16,5 +17,8 @@ export const defaultCustomDownloadState: CustomDownloadState = {
     expandedPanel: '',
     expandedVariationPanels: []
   },
-  filters: {}
+  filters: {},
+  previewResult: {
+    resultCount: 0
+  }
 };

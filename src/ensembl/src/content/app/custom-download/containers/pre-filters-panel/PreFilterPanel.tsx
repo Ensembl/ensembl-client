@@ -39,26 +39,13 @@ const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
             filterOnClick('genes');
           }}
           status={
-            props.selectedPreFilter === 'genes'
+            props.selectedPreFilter === 'Genes/Transcripts'
               ? RoundButtonStatus.ACTIVE
               : RoundButtonStatus.INACTIVE
           }
           classNames={styles}
         >
           Genes
-        </RoundButton>
-        <RoundButton
-          onClick={() => {
-            filterOnClick('transcripts');
-          }}
-          status={
-            props.selectedPreFilter === 'transcripts'
-              ? RoundButtonStatus.ACTIVE
-              : RoundButtonStatus.INACTIVE
-          }
-          classNames={styles}
-        >
-          Transcripts
         </RoundButton>
         <RoundButton
           onClick={() => {

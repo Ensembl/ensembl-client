@@ -3,12 +3,19 @@ import { connect } from 'react-redux';
 import { RoundButton, RoundButtonStatus, SecondaryButton } from 'src/shared';
 import { RootState } from 'src/store';
 
-import { getSelectedPreFilter } from '../../customDownloadSelectors';
+import {
+  getSelectedPreFilter,
+  getPreviewResult
+} from '../../customDownloadSelectors';
 import { togglePreFiltersPanel } from '../../customDownloadActions';
 
 import styles from './Header.scss';
 
 type Props = StateProps & DispatchProps;
+
+const getFormattedTotal = (total: number) => {
+  return total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};
 
 const Header = (props: Props) => {
   const filterOnClick = () => {
@@ -17,7 +24,9 @@ const Header = (props: Props) => {
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.resultCounter}>1234 Results</div>
+      <div className={styles.resultCounter}>
+        {getFormattedTotal(props.previewResult.resultCount)} results
+      </div>
       <div className={styles.selectedFilters}>
         <RoundButton
           onClick={filterOnClick}
@@ -45,10 +54,12 @@ const mapDispatchToProps: DispatchProps = {
 
 type StateProps = {
   selectedPreFilter: string;
+  previewResult: any;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  selectedPreFilter: getSelectedPreFilter(state)
+  selectedPreFilter: getSelectedPreFilter(state),
+  previewResult: getPreviewResult(state)
 });
 
 export default connect(

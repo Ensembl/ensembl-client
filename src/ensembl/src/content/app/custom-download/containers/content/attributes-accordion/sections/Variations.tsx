@@ -22,7 +22,7 @@ import {
 } from 'src/content/app/custom-download/customDownloadActions';
 import CheckBoxGrid from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
-import styles from './Variation.scss';
+import styles from './Styles.scss';
 
 type Props = StateProps & DispatchProps;
 
@@ -60,13 +60,13 @@ const Variations = (props: Props) => {
   return (
     <Accordion
       allowMultipleExpanded={true}
-      className={styles.accordion}
+      className={styles.variationAccordion}
       onChange={accordionOnChange}
       preExpanded={props.expandedPanels}
     >
       <AccordionItem uuid={'germline_variation'}>
         <AccordionItemHeading>
-          <AccordionItemButton className={styles.accordionButton}>
+          <AccordionItemButton className={styles.variationAccordionButton}>
             Germline variation
           </AccordionItemButton>
         </AccordionItemHeading>
@@ -81,7 +81,7 @@ const Variations = (props: Props) => {
 
       <AccordionItem uuid={'somatic_variation'}>
         <AccordionItemHeading>
-          <AccordionItemButton className={styles.accordionButton}>
+          <AccordionItemButton className={styles.variationAccordionButton}>
             Somatic variation
           </AccordionItemButton>
         </AccordionItemHeading>

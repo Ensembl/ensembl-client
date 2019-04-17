@@ -67,6 +67,11 @@ function contentPanel(
           action
         )
       };
+    case getType(customDownloadActions.setPreviewResult):
+      return {
+        ...state,
+        previewResult: action.payload
+      };
     default:
       return state;
   }
@@ -104,7 +109,7 @@ function contentPanelTranscriptAttributes(
 ): CustomDownloadState {
   switch (action.type) {
     case getType(customDownloadActions.setTranscriptAttributes):
-      return { ...state, transcript: action.payload };
+      return { ...state, transcripts: action.payload };
     default:
       return state;
   }

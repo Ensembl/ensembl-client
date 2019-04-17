@@ -8,13 +8,13 @@ import FilterAccordion from './filter-accordion/FilterAccordion';
 import TabButtons from './tab-buttons/TabButtons';
 import ResultHolder from './result-holder/ResultHolder';
 import { RootState } from 'src/store';
-import sampleData from '../../sampledata.json';
+import { attributes } from '../../sampledata';
 
 type Props = StateProps & DispatchProps;
 
 const Content = (props: Props) => {
   useEffect(() => {
-    props.setAttributes(sampleData);
+    props.setAttributes(attributes);
   }, []);
 
   return (

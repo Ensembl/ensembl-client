@@ -10,11 +10,18 @@
   color: $ens-dark-grey;
 }
 
-.variationAccordionItem {
+.accordionItem {
   padding: 0px;
 }
 
 .permanentBlock {
   background: $ens-light-grey;
-  padding: 20px;
+}
+
+.accordionExpandedTitle {
+  color: $ens-medium-light-grey;
+
+  > span {
+    color: $ens-black;
+  }
 }

@@ -1,27 +1,80 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { connect } from 'react-redux';
+import { RootState } from 'src/store';
+import {
+  getAttributes,
+  getPreviewResult
+} from '../../../customDownloadSelectors';
+
+import { setPreviewResult } from '../../../customDownloadActions';
+
 import styles from './ResultHolder.scss';
 
-const ResultHolder = () => {
-  const sampleData = Array(50).fill([
-    'NAME',
-    'ENST00000000000.0',
-    'Lorem ipsum dolor sit amet nemore albucius sit id'
-  ]);
+import getCustomDownloadPreviewResults from 'src/services/custom-download.ts';
 
-  sampleData[0] = [
-    'Transcript symbol',
-    'Transcript stable ID',
-    'Transcript name'
-  ];
+const fetchPreviewResults = async (props: any) => {
+  const selectedAttributes: any = [];
 
-  const headerRow = sampleData.shift();
+  Object.keys(props.attributes).forEach((section) => {
+    Object.keys(props.attributes[section]).forEach((subSection) => {
+      Object.keys(props.attributes[section][subSection]).forEach(
+        (attributeId) => {
+          if (
+            props.attributes[section][subSection][attributeId].checkedStatus ===
+            true
+          ) {
+            selectedAttributes.push([
+              section,
+              subSection,
+              attributeId,
+              props.attributes[section][subSection][attributeId].label
+            ]);
+          }
+        }
+      );
+    });
+  });
+  if (!selectedAttributes.length) {
+    return;
+  }
+  const previewResult = await getCustomDownloadPreviewResults(
+    selectedAttributes
+  );
+
+  props.setPreviewResult(previewResult);
+};
+
+const ResultHolder = (props: StateProps) => {
+  useEffect(() => {
+    fetchPreviewResults(props);
+  }, [props.attributes]);
+
+  if (
+    !props.previewResult.resultCount ||
+    props.previewResult.resultCount === 0
+  ) {
+    return null;
+  }
+
+  console.log(props.previewResult);
+
+  const headerData: string[] = [];
+
+  props.previewResult.fields.forEach((element) => {
+    let displayName = element.displayName.split('.');
+    displayName = displayName.map((element) => {
+      return element.charAt(0).toUpperCase() + element.slice(1);
+    });
+
+    headerData.push(displayName.join(' '));
+  });
 
   return (
     <div className={styles.wrapper}>
-      {sampleData.map((dataRow, resultKey) => {
+      {props.previewResult.results.map((dataRow, resultKey) => {
         return (
           <div key={resultKey} className={styles.resultCard}>
-            {headerRow.map((currentHeader: string, rowKey: number) => {
+            {headerData.map((currentHeader: string, rowKey: number) => {
               return (
                 <div key={rowKey} className={styles.resultLine}>
                   <div className={styles.lineHeader}>{currentHeader}</div>
@@ -36,4 +89,25 @@ const ResultHolder = () => {
   );
 };
 
-export default ResultHolder;
+type DispatchProps = {
+  setPreviewResult: (setPreviewResult: any) => void;
+};
+
+const mapDispatchToProps: DispatchProps = {
+  setPreviewResult
+};
+
+type StateProps = {
+  attributes: any;
+  previewResult: any;
+};
+
+const mapStateToProps = (state: RootState): StateProps => ({
+  attributes: getAttributes(state),
+  previewResult: getPreviewResult(state)
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ResultHolder);

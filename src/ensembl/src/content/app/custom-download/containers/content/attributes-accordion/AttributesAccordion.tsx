@@ -21,6 +21,21 @@ import styles from './AttributesAccordion.scss';
 type Props = StateProps & DispatchProps;
 
 const Attributes = (props: Props) => {
+  const formatAccordionTitle = (expandedPanel: string) => {
+    const title =
+      expandedPanel.charAt(0).toUpperCase() + expandedPanel.slice(1);
+
+    if (expandedPanel !== props.expandedPanel) {
+      return <span>{title}</span>;
+    }
+
+    return (
+      <span className={styles.accordionExpandedTitle}>
+        Download <span> {title} </span> information
+      </span>
+    );
+  };
+
   const accordionOnChange = useCallback(
     (newExpandedPanels: string[]) => {
       props.setAttributesAccordionExpandedPanel(newExpandedPanels[0]);
@@ -40,9 +55,11 @@ const Attributes = (props: Props) => {
       >
         <AccordionItem uuid={'genes'}>
           <AccordionItemHeading>
-            <AccordionItemButton>Genes</AccordionItemButton>
+            <AccordionItemButton>
+              {formatAccordionTitle('genes')}
+            </AccordionItemButton>
           </AccordionItemHeading>
-          <AccordionItemPanel>
+          <AccordionItemPanel className={styles.accordionItem}>
             <Genes />
           </AccordionItemPanel>
           <AccordionItemPermanentBlock>
@@ -56,9 +73,11 @@ const Attributes = (props: Props) => {
 
         <AccordionItem uuid={'transcripts'}>
           <AccordionItemHeading>
-            <AccordionItemButton>Transcripts</AccordionItemButton>
+            <AccordionItemButton>
+              {formatAccordionTitle('transcripts')}
+            </AccordionItemButton>
           </AccordionItemHeading>
-          <AccordionItemPanel>
+          <AccordionItemPanel className={styles.accordionItem}>
             <Transcripts />
           </AccordionItemPanel>
           <AccordionItemPermanentBlock>
@@ -72,7 +91,9 @@ const Attributes = (props: Props) => {
 
         <AccordionItem uuid={'exons'}>
           <AccordionItemHeading>
-            <AccordionItemButton>Exons</AccordionItemButton>
+            <AccordionItemButton>
+              {formatAccordionTitle('exons')}
+            </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
             <div>No attributes available under this section.</div>
@@ -81,7 +102,9 @@ const Attributes = (props: Props) => {
 
         <AccordionItem uuid={'sequence'}>
           <AccordionItemHeading>
-            <AccordionItemButton>Sequence</AccordionItemButton>
+            <AccordionItemButton>
+              {formatAccordionTitle('sequence')}
+            </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
             <div>No attributes available under this section.</div>
@@ -90,7 +113,9 @@ const Attributes = (props: Props) => {
 
         <AccordionItem uuid={'location'}>
           <AccordionItemHeading>
-            <AccordionItemButton>Location</AccordionItemButton>
+            <AccordionItemButton>
+              {formatAccordionTitle('location')}
+            </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
             <div>No attributes available under this section.</div>
@@ -99,16 +124,20 @@ const Attributes = (props: Props) => {
 
         <AccordionItem uuid={'variation'}>
           <AccordionItemHeading>
-            <AccordionItemButton>Variation</AccordionItemButton>
+            <AccordionItemButton>
+              {formatAccordionTitle('variation')}
+            </AccordionItemButton>
           </AccordionItemHeading>
-          <AccordionItemPanel className={styles.variationAccordionItem}>
+          <AccordionItemPanel className={styles.accordionItem}>
             <Variations />
           </AccordionItemPanel>
         </AccordionItem>
 
         <AccordionItem uuid={'phenotypes'}>
           <AccordionItemHeading>
-            <AccordionItemButton>Phenotypes</AccordionItemButton>
+            <AccordionItemButton>
+              {formatAccordionTitle('phenotypes')}
+            </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
             <div>No attributes available under this section.</div>
@@ -117,7 +146,9 @@ const Attributes = (props: Props) => {
 
         <AccordionItem uuid={'protein'}>
           <AccordionItemHeading>
-            <AccordionItemButton>Protein</AccordionItemButton>
+            <AccordionItemButton>
+              {formatAccordionTitle('protein')}
+            </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
             <div>No attributes available under this section.</div>
@@ -126,7 +157,9 @@ const Attributes = (props: Props) => {
 
         <AccordionItem uuid={'orthologues'}>
           <AccordionItemHeading>
-            <AccordionItemButton>Orthologues</AccordionItemButton>
+            <AccordionItemButton>
+              {formatAccordionTitle('orthologues')}
+            </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
             <div>No attributes available under this section.</div>
@@ -135,7 +168,9 @@ const Attributes = (props: Props) => {
 
         <AccordionItem uuid={'paralogues'}>
           <AccordionItemHeading>
-            <AccordionItemButton>Paralogues</AccordionItemButton>
+            <AccordionItemButton>
+              {formatAccordionTitle('paralogues')}
+            </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
             <div>No attributes available under this section.</div>
