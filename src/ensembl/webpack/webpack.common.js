@@ -31,7 +31,7 @@ module.exports = (isDev, moduleRules, plugins) => ({
       // babel-loader is used for typescript as it has good tree shaking support compared to tsc
       {
         test: /.tsx?$/,
-        loader: 'babel-loader',
+        use: ['babel-loader', 'eslint-loader'],
         exclude: /node_modules/
       },
 
@@ -128,10 +128,8 @@ module.exports = (isDev, moduleRules, plugins) => ({
 
   // the plugins that extends the webpack configuration
   plugins: [
-    // checks typescript types and runs tslint in a separate process
-    new ForkTsCheckerPlugin({
-      tslint: true
-    }),
+    // checks typescript types
+    new ForkTsCheckerPlugin(),
 
     // generates the index file using the provided html template
     new HtmlPlugin({
