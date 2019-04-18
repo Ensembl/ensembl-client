@@ -8,6 +8,7 @@ Shape of a popular species data object
   "scientific_name": string, // should always be present
   "assembly_name": string, // notice on mockups that every popular species has an assembly
   image: string, // link to the svg or base64-encoded svg
+  division_ids: str[] // ['model_organism', 'ensembl_plants',...]
 }
 
 */

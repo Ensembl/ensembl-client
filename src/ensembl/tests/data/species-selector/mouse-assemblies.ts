@@ -13,10 +13,13 @@ Shape of an assembly data object
 // Question: what does the endpoint look like?
 
 export default {
-  species_name: 'mus_musculus', // <-- production name of species (or strain)
+  production_name: 'mus_musculus',
   assemblies: [
     {
-      assembly_name: 'mus_musculus' // GET REAL DATA!
+      assembly_name: 'GRCh38.p12'
+    },
+    {
+      assembly_name: 'GRCh37.p13'
     }
   ]
 };
