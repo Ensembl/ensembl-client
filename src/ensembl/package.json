@@ -27,9 +27,9 @@
     "storybook": "start-storybook -p 9001 -c .storybook",
     "deploy-docs": "./deploy-docs.sh",
     "check-types": "tsc",
-    "jest": "jest",
-    "test": "jest --verbose",
-    "test:watch": "jest --watch",
+    "jest": "jest --maxWorkers=1",
+    "test": "jest --verbose --maxWorkers=1",
+    "test:watch": "jest --watch --maxWorkers=1",
     "coverage": "jest --coverage",
     "snapshot": "jest --updateSnapshot"
   },
