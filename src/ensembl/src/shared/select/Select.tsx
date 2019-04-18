@@ -48,11 +48,11 @@ type CommonProps = {
 };
 
 type OptionsSelectProps = CommonProps & OptionsSpecificProps;
-type OptionGroupssSelectProps = CommonProps & OptionGroupsSpecificProps;
+type OptionGroupsSelectProps = CommonProps & OptionGroupsSpecificProps;
 
-type SelectAdapterProps = OptionsSelectProps | OptionGroupssSelectProps;
+type SelectAdapterProps = OptionsSelectProps | OptionGroupsSelectProps;
 
-type SelectProps = OptionGroupssSelectProps & { placeholder: string };
+type SelectProps = OptionGroupsSelectProps & { placeholder: string };
 
 // TODO: think of a better name for this component?
 const ClosedSelect = (props: ClosedSelectProps) => {
@@ -158,8 +158,8 @@ Select.defaultProps = {
 // the purpose of the adapter is to unify props
 // to be consumed by the Select component
 const SelectAdapter = (props: SelectAdapterProps) => {
-  if ((props as OptionGroupssSelectProps).optionGroups) {
-    return <Select {...props as OptionGroupssSelectProps} />;
+  if ((props as OptionGroupsSelectProps).optionGroups) {
+    return <Select {...props as OptionGroupsSelectProps} />;
   } else {
     const { options, title, ...otherProps } = props as OptionsSelectProps;
     const optionGroups = [
