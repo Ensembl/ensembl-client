@@ -28,10 +28,21 @@ module.exports = (isDev, moduleRules, plugins) => ({
   // these loaders help webpack to identify and process different file formats for bundling
   module: {
     rules: [
+      // lint typescript using eslint before babel takes over
+      {
+        test: /.tsx?$/,
+        loader: 'eslint-loader',
+        exclude: /node_modules/,
+        enforce: 'pre',
+        options: {
+          emitWarning: true
+        }
+      },
+
       // babel-loader is used for typescript as it has good tree shaking support compared to tsc
       {
         test: /.tsx?$/,
-        use: ['babel-loader', 'eslint-loader'],
+        loader: 'babel-loader',
         exclude: /node_modules/
       },
 
@@ -39,7 +50,7 @@ module.exports = (isDev, moduleRules, plugins) => ({
       {
         test: /.js$/,
         exclude: /node_modules/,
-        use: ['source-map-loader'],
+        loader: 'source-map-loader',
         enforce: 'pre'
       },
 
