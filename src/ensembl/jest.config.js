@@ -16,9 +16,7 @@ module.exports = {
   },
   preset: 'ts-jest',
   roots: ['<rootDir>/src'],
-  setupFiles: ['<rootDir>/setup-jest.ts'],
   setupFilesAfterEnv: ['<rootDir>/setup-enzyme.ts'],
-  snapshotSerializers: ['enzyme-to-json/serializer'],
   testEnvironment: 'jsdom',
   transform: {
     '.+\\.(css|scss|png|jpg|svg|gif|eot|ttf|otf|woff|woff2)$':
