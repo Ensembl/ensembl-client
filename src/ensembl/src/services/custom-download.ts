@@ -1,23 +1,35 @@
-const getCustomDownloadPreviewResults = async (attributes: any) => {
-  let endpoint =
-    'http://gti-es-0.ebi.ac.uk:8080/api/genes/query?query={"genome":"homo_sapiens","biotype": "protein_coding"}&array=true&';
+const getCustomDownloadPreviewResults = async (
+  attributes: any,
+  filters: any
+) => {
+  let endpoint = 'http://gti-es-0.ebi.ac.uk:8080/api/genes/query?query=';
 
   let endpointFields = '';
   attributes.forEach((attribute: any) => {
-    if (attribute[0] === 'gene') {
-      endpointFields += attribute[2] + ',';
-    } else {
-      endpointFields += attribute[0] + '.' + attribute[2] + ',';
-    }
+    endpointFields += attribute[2] + ',';
   });
 
-  endpoint = endpoint + 'fields=' + endpointFields + '&sort=' + endpointFields;
+  const endpointFilters: any = {
+    genome: 'homo_sapiens'
+  };
+
+  Object.keys(filters).forEach((filter: string) => {
+    endpointFilters[filter] = filters[filter];
+  });
+
+  endpoint =
+    endpoint +
+    JSON.stringify(endpointFilters) +
+    '&fields=' +
+    endpointFields +
+    '&sort=id&array=true';
   try {
     console.log(endpoint);
     const response = await fetch(endpoint, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
     });
+
     return await response.json();
   } catch (error) {
     throw error;

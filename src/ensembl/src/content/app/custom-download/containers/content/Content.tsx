@@ -4,7 +4,7 @@ import styles from './Content.scss';
 import { getSelectedTabButton } from '../../customDownloadSelectors';
 import { setAttributes } from '../../customDownloadActions';
 import AttributesAccordion from './attributes-accordion/AttributesAccordion';
-import FilterAccordion from './filter-accordion/FilterAccordion';
+import FiltersAccordion from './filter-accordion/FiltersAccordion';
 import TabButtons from './tab-buttons/TabButtons';
 import ResultHolder from './result-holder/ResultHolder';
 import { RootState } from 'src/store';
@@ -27,7 +27,7 @@ const Content = (props: Props) => {
       </div>
       <div className={styles.dataSelector}>
         {props.selectedTabButton === 'attributes' && <AttributesAccordion />}
-        {props.selectedTabButton === 'filter' && <FilterAccordion />}
+        {props.selectedTabButton === 'filter' && <FiltersAccordion />}
       </div>
     </div>
   );

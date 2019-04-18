@@ -4,8 +4,10 @@ export type CustomDownloadState = Readonly<{
   selectedTabButton: string;
   attributes: any;
   attributesAccordion: any;
-  filters: {};
+  filtersAccordion: any;
+  filters: any;
   previewResult: any;
+  isLoadingResult: boolean;
 }>;
 
 export const defaultCustomDownloadState: CustomDownloadState = {
@@ -18,7 +20,12 @@ export const defaultCustomDownloadState: CustomDownloadState = {
     expandedVariationPanels: []
   },
   filters: {},
+  filtersAccordion: {
+    expandedPanel: '',
+    expandedGenePanels: []
+  },
   previewResult: {
     resultCount: 0
-  }
+  },
+  isLoadingResult: false
 };

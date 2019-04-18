@@ -85,11 +85,7 @@ const renderCheckBoxList = (
                         label={checkboxList[item].label}
                         checked={checkboxList[item].checkedStatus}
                         onChange={(status) => {
-                          props.checkboxOnChange(
-                            status,
-                            subSection,
-                            checkboxList[item].id
-                          );
+                          props.checkboxOnChange(status, subSection, item);
                         }}
                       />
                     </div>

@@ -36,7 +36,7 @@ const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
       <div className={styles.panelContent}>
         <RoundButton
           onClick={() => {
-            filterOnClick('genes');
+            filterOnClick('Genes/Transcripts');
           }}
           status={
             props.selectedPreFilter === 'Genes/Transcripts'
@@ -45,14 +45,14 @@ const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
           }
           classNames={styles}
         >
-          Genes
+          Genes/Transcripts
         </RoundButton>
         <RoundButton
           onClick={() => {
-            filterOnClick('variation');
+            filterOnClick('vVriation');
           }}
           status={
-            props.selectedPreFilter === 'variation'
+            props.selectedPreFilter === 'Variation'
               ? RoundButtonStatus.ACTIVE
               : RoundButtonStatus.INACTIVE
           }
@@ -62,10 +62,10 @@ const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
         </RoundButton>
         <RoundButton
           onClick={() => {
-            filterOnClick('phenotypes');
+            filterOnClick('Phenotypes');
           }}
           status={
-            props.selectedPreFilter === 'phenotypes'
+            props.selectedPreFilter === 'Phenotypes'
               ? RoundButtonStatus.ACTIVE
               : RoundButtonStatus.INACTIVE
           }
@@ -75,10 +75,10 @@ const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
         </RoundButton>
         <RoundButton
           onClick={() => {
-            filterOnClick('regulation');
+            filterOnClick('Regulation');
           }}
           status={
-            props.selectedPreFilter === 'regulation'
+            props.selectedPreFilter === 'Regulation'
               ? RoundButtonStatus.ACTIVE
               : RoundButtonStatus.INACTIVE
           }

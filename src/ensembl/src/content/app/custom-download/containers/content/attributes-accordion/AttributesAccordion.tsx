@@ -14,7 +14,7 @@ import {
 import { getAttributesAccordionExpandedPanel } from 'src/content/app/custom-download/customDownloadSelectors';
 import { setAttributesAccordionExpandedPanel } from 'src/content/app/custom-download/customDownloadActions';
 
-import { Genes, Transcripts, Variations } from './sections';
+import { Genes, Transcripts, Variations, Location } from './sections';
 
 import styles from './AttributesAccordion.scss';
 
@@ -118,8 +118,15 @@ const Attributes = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
-            <div>No attributes available under this section.</div>
+            <Location />
           </AccordionItemPanel>
+          <AccordionItemPermanentBlock>
+            {props.expandedPanel !== 'location' && (
+              <div className={styles.permanentBlock}>
+                <Location hideUnchecked={true} hideTitles={true} />
+              </div>
+            )}
+          </AccordionItemPermanentBlock>
         </AccordionItem>
 
         <AccordionItem uuid={'variation'}>

@@ -18,6 +18,9 @@ export const getGeneAttributes = (state: RootState): {} =>
 export const getTranscriptAttributes = (state: RootState): {} =>
   state.customDownload.contentPanel.attributes.transcripts;
 
+export const getLocationAttributes = (state: RootState): {} =>
+  state.customDownload.contentPanel.attributes.location;
+
 export const getGermlineVariationAttributes = (state: RootState): {} =>
   state.customDownload.contentPanel.attributes.germline_variation;
 
@@ -30,5 +33,26 @@ export const getAttributesAccordionExpandedPanel = (state: RootState): string =>
 export const getVariationAccordionExpandedPanels = (state: RootState): [] =>
   state.customDownload.contentPanel.attributesAccordion.expandedVariationPanels;
 
+export const getFiltersAccordionExpandedPanel = (state: RootState): string =>
+  state.customDownload.contentPanel.filtersAccordion.expandedPanel;
+
+export const getFiltersAccordionExpandedGenePanels = (state: RootState): [] =>
+  state.customDownload.contentPanel.filtersAccordion.expandedGenePanels;
+
+export const getFilters = (state: RootState): {} =>
+  state.customDownload.contentPanel.filters;
+
+export const getGeneFilters = (state: RootState): string =>
+  state.customDownload.contentPanel.filters.gene;
+
+export const getGeneTypeFilters = (state: RootState): string =>
+  state.customDownload.contentPanel.filters.gene_type;
+
+export const getTranscriptTypeFilters = (state: RootState): string =>
+  state.customDownload.contentPanel.filters.biotype;
+
 export const getPreviewResult = (state: RootState): string =>
   state.customDownload.contentPanel.previewResult;
+
+export const getIsLoadingResult = (state: RootState): boolean =>
+  state.customDownload.contentPanel.isLoadingResult;

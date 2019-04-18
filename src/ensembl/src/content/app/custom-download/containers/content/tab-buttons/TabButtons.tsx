@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { BadgedButton, RoundButton, RoundButtonStatus } from 'src/shared';
 import {
   getAttributes,
+  getFilters,
   getSelectedTabButton
 } from '../../../customDownloadSelectors';
 import { toggleTabButton } from '../../../customDownloadActions';
@@ -31,7 +32,6 @@ const getTotalSelectedAttributes = (attributes: any) => {
 };
 
 const TabButtons = (props: Props) => {
-  const totalSelectedAttributes = getTotalSelectedAttributes(props.attributes);
   const dataButtonStatus =
     props.selectedTabButton === 'attributes'
       ? RoundButtonStatus.ACTIVE
@@ -43,7 +43,9 @@ const TabButtons = (props: Props) => {
   return (
     <div className={styles.wrapper}>
       <div>
-        <BadgedButton badgeContent={totalSelectedAttributes}>
+        <BadgedButton
+          badgeContent={getTotalSelectedAttributes(props.attributes)}
+        >
           <RoundButton
             onClick={() => {
               props.toggleTabButton('attributes');
@@ -56,14 +58,16 @@ const TabButtons = (props: Props) => {
       </div>
 
       <div className={styles.buttonPadding}>
-        <RoundButton
-          onClick={() => {
-            props.toggleTabButton('filter');
-          }}
-          status={filterButtonStatus}
-        >
-          Filter results
-        </RoundButton>
+        <BadgedButton badgeContent={getTotalSelectedAttributes(props.filters)}>
+          <RoundButton
+            onClick={() => {
+              props.toggleTabButton('filter');
+            }}
+            status={filterButtonStatus}
+          >
+            Filter results
+          </RoundButton>
+        </BadgedButton>
       </div>
     </div>
   );
@@ -80,11 +84,13 @@ const mapDispatchToProps: DispatchProps = {
 type StateProps = {
   selectedTabButton: string;
   attributes: {};
+  filters: {};
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
   selectedTabButton: getSelectedTabButton(state),
-  attributes: getAttributes(state)
+  attributes: getAttributes(state),
+  filters: getFilters(state)
 });
 
 export default connect(

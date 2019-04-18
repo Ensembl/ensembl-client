@@ -55,6 +55,13 @@ export const setPreviewResult = createAction(
   }
 );
 
+export const setIsLoadingResult = createAction(
+  'custom-download/set-loading-result',
+  (resolve) => {
+    return (isLoading: boolean) => resolve(isLoading);
+  }
+);
+
 export const setGeneAttributes = createAction(
   'custom-download/set-gene-attributes',
   (resolve) => {
@@ -73,6 +80,17 @@ export const setTranscriptAttributes = createAction(
       resolve(
         transcriptAttributes,
         getCustomDownloadAnalyticsObject('Transctipt attributes updated')
+      );
+  }
+);
+
+export const setLocationAttributes = createAction(
+  'custom-download/set-location-attributes',
+  (resolve) => {
+    return (locationAttributes: {}) =>
+      resolve(
+        locationAttributes,
+        getCustomDownloadAnalyticsObject('Location attributes updated')
       );
   }
 );
@@ -121,6 +139,61 @@ export const setVariationAccordionExpandedPanels = createAction(
         getCustomDownloadAnalyticsObject(
           'Toggle variation attributes accordion panel'
         )
+      );
+  }
+);
+
+export const setFiltersAccordionExpandedPanel = createAction(
+  'custom-download/set-filters-accordion-expanded-panels',
+  (resolve) => {
+    return (expandedPanel: string) =>
+      resolve(
+        expandedPanel,
+        getCustomDownloadAnalyticsObject('Toggle filters accordion panel')
+      );
+  }
+);
+
+export const setFiltersAccordionExpandedGenePanels = createAction(
+  'custom-download/set-filters-accordion-expanded-gene-panels',
+  (resolve) => {
+    return (expandedPanels: []) =>
+      resolve(
+        expandedPanels,
+        getCustomDownloadAnalyticsObject('Toggle filters accordion gene panels')
+      );
+  }
+);
+
+export const setGeneFilters = createAction(
+  'custom-download/set-gene-filters',
+  (resolve) => {
+    return (geneFilters: {}) =>
+      resolve(
+        geneFilters,
+        getCustomDownloadAnalyticsObject('Gene filters updated')
+      );
+  }
+);
+
+export const setGeneTypeFilters = createAction(
+  'custom-download/set-gene-type-filters',
+  (resolve) => {
+    return (geneTypeFilters: {}) =>
+      resolve(
+        geneTypeFilters,
+        getCustomDownloadAnalyticsObject('Gene type filters updated')
+      );
+  }
+);
+
+export const setTranscriptTypeFilters = createAction(
+  'custom-download/set-transcript-type-filters',
+  (resolve) => {
+    return (transcriptTypeFilters: {}) =>
+      resolve(
+        transcriptTypeFilters,
+        getCustomDownloadAnalyticsObject('Transcript type filters updated')
       );
   }
 );

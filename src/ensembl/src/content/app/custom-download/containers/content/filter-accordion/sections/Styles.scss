@@ -1,0 +1,37 @@
+@import 'src/styles/common';
+
+.checkboxGridWrapper {
+  padding: 20px;
+}
+.geneAccordion {
+  border: none;
+  border-top: 2px solid $ens-medium-light-grey;
+}
+
+.geneAccordionButton {
+  position: relative;
+  display: inline-block;
+  width: auto;
+
+  &:before {
+    right: -20px;
+    width: 8px;
+    top: 17px;
+  }
+
+  &:after {
+    right: -16px;
+    width: 8px;
+    top: 17px;
+  }
+
+  &[aria-expanded='true']::before,
+  &[aria-selected='true']::before {
+    top: 21px;
+  }
+
+  &[aria-expanded='true']::after,
+  &[aria-selected='true']::after {
+    top: 21px;
+  }
+}

@@ -3,81 +3,77 @@ import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 import {
   getAttributes,
-  getPreviewResult
+  getFilters,
+  getPreviewResult,
+  getIsLoadingResult
 } from '../../../customDownloadSelectors';
 
-import { setPreviewResult } from '../../../customDownloadActions';
+import {
+  setPreviewResult,
+  setIsLoadingResult
+} from '../../../customDownloadActions';
 
 import styles from './ResultHolder.scss';
 
-import getCustomDownloadPreviewResults from 'src/services/custom-download.ts';
+import { CircleLoader } from 'src/shared/loader/Loader';
 
-const fetchPreviewResults = async (props: any) => {
-  const selectedAttributes: any = [];
+import {
+  getSelectedAttributes,
+  fetchPreviewResults,
+  formatResults,
+  getSelectedFilters
+} from './helpers';
 
-  Object.keys(props.attributes).forEach((section) => {
-    Object.keys(props.attributes[section]).forEach((subSection) => {
-      Object.keys(props.attributes[section][subSection]).forEach(
-        (attributeId) => {
-          if (
-            props.attributes[section][subSection][attributeId].checkedStatus ===
-            true
-          ) {
-            selectedAttributes.push([
-              section,
-              subSection,
-              attributeId,
-              props.attributes[section][subSection][attributeId].label
-            ]);
-          }
-        }
-      );
-    });
-  });
+type Props = StateProps & DispatchProps;
+
+const ResultHolder = (props: Props) => {
+  const selectedAttributes: any = getSelectedAttributes(props.attributes);
   if (!selectedAttributes.length) {
-    return;
-  }
-  const previewResult = await getCustomDownloadPreviewResults(
-    selectedAttributes
-  );
-
-  props.setPreviewResult(previewResult);
-};
-
-const ResultHolder = (props: StateProps) => {
-  useEffect(() => {
-    fetchPreviewResults(props);
-  }, [props.attributes]);
-
-  if (
-    !props.previewResult.resultCount ||
-    props.previewResult.resultCount === 0
-  ) {
     return null;
   }
 
-  console.log(props.previewResult);
+  useEffect(() => {
+    const selectedFilters: any = getSelectedFilters(props.filters);
+    props.setIsLoadingResult(true);
+    fetchPreviewResults(props, selectedAttributes, selectedFilters);
+  }, [props.attributes, props.filters]);
 
-  const headerData: string[] = [];
+  useEffect(() => {
+    props.setIsLoadingResult(false);
+  }, [props.previewResult]);
 
-  props.previewResult.fields.forEach((element) => {
-    let displayName = element.displayName.split('.');
-    displayName = displayName.map((element) => {
-      return element.charAt(0).toUpperCase() + element.slice(1);
-    });
+  if (props.isLoadingResult || !props.previewResult.results) {
+    return Array(10)
+      .fill(1)
+      .map((value, key: number) => {
+        return (
+          <div key={key} className={styles.wrapper}>
+            <div className={styles.resultCard}>
+              <div className={styles.loaderWrapper}>
+                <CircleLoader />
+              </div>
+            </div>
+          </div>
+        );
+      });
+  }
 
-    headerData.push(displayName.join(' '));
-  });
+  const formattedResults = formatResults(
+    props.previewResult,
+    selectedAttributes
+  );
+
+  const headerRow = formattedResults.shift();
 
   return (
     <div className={styles.wrapper}>
-      {props.previewResult.results.map((dataRow, resultKey) => {
+      {formattedResults.map((dataRow: [], resultKey: number) => {
         return (
           <div key={resultKey} className={styles.resultCard}>
-            {headerData.map((currentHeader: string, rowKey: number) => {
+            {headerRow.map((header: string, rowKey: number) => {
               return (
                 <div key={rowKey} className={styles.resultLine}>
-                  <div className={styles.lineHeader}>{currentHeader}</div>
+                  <div className={styles.lineHeader}>{header}</div>
                   <div className={styles.lineValue}>{dataRow[rowKey]}</div>
                 </div>
               );
@@ -91,20 +87,26 @@ const ResultHolder = (props: StateProps) => {
 
 type DispatchProps = {
   setPreviewResult: (setPreviewResult: any) => void;
+  setIsLoadingResult: (setIsLoadingResult: boolean) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
-  setPreviewResult
+  setPreviewResult,
+  setIsLoadingResult
 };
 
 type StateProps = {
   attributes: any;
+  filters: any;
   previewResult: any;
+  isLoadingResult: boolean;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
   attributes: getAttributes(state),
-  previewResult: getPreviewResult(state)
+  filters: getFilters(state),
+  previewResult: getPreviewResult(state),
+  isLoadingResult: getIsLoadingResult(state)
 });
 
 export default connect(

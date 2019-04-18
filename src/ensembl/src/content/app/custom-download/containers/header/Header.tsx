@@ -14,6 +14,9 @@ import styles from './Header.scss';
 type Props = StateProps & DispatchProps;
 
 const getFormattedTotal = (total: number) => {
+  if (!total) {
+    return 0;
+  }
   return total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
 
