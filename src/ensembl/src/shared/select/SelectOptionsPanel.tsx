@@ -30,18 +30,13 @@ import styles from './Select.scss';
 enum HighlightActionType {
   NEXT = 'next',
   PREVIOUS = 'previous',
-  SET = 'set',
-  SUBMIT = 'submit'
+  SET = 'set'
 }
 type HighlightedItemState = GroupedOptionIndex | null;
 type HighlightAction =
   | { type: HighlightActionType.NEXT; payload: OptionGroup[] }
   | { type: HighlightActionType.PREVIOUS; payload: OptionGroup[] }
-  | { type: HighlightActionType.SET; payload: GroupedOptionIndex }
-  | {
-      type: HighlightActionType.SUBMIT;
-      payload: (index: GroupedOptionIndex) => void;
-    };
+  | { type: HighlightActionType.SET; payload: GroupedOptionIndex };
 
 type OptionGroupProps = OptionGroup & {
   highlightedItemIndex?: number;
@@ -76,9 +71,6 @@ const highlightedItemReducer = (
       return getPreviousItemIndex(state, action.payload);
     case HighlightActionType.SET:
       return action.payload;
-    case HighlightActionType.SUBMIT:
-      // side effect! and fallthrough to default! boo!
-      state && action.payload(state);
     default:
       return state;
   }
@@ -120,7 +112,8 @@ const SelectOptionsPanel = (props: Props) => {
     } else if (event.keyCode === keyCodes.DOWN) {
       dispatch({ type: HighlightActionType.NEXT, payload: props.optionGroups });
     } else if (event.keyCode === keyCodes.ENTER) {
-      dispatch({ type: HighlightActionType.SUBMIT, payload: props.onSelect });
+      highlightedItemIndexRef.current &&
+        props.onSelect(highlightedItemIndexRef.current);
     }
 
     // scroll option into view after the state gets updated
