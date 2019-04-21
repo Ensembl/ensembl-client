@@ -5,7 +5,7 @@ module.exports = {
     [
       '@babel/env',
       {
-        useBuiltIns: "usage",
+        useBuiltIns: 'usage',
         corejs: 3,
         modules: false
       }
@@ -16,5 +16,21 @@ module.exports = {
     '@babel/plugin-proposal-object-rest-spread',
     '@babel/plugin-proposal-class-properties',
     'babel-plugin-react-css-modules-sass'
-  ]
+  ],
+  env: {
+    test: {
+      presets: [
+        [
+          '@babel/env',
+          {
+            useBuiltIns: 'usage',
+            corejs: 3,
+          }
+        ]
+      ],
+      plugins: [
+        'babel-plugin-dynamic-import-node'
+      ]
+    }
+  }
 };
