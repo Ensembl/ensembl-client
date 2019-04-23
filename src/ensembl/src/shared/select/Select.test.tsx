@@ -38,18 +38,18 @@ describe('<Select />', () => {
     });
 
     test('is closed by default', () => {
-      expect(wrapper.find('.selectClosed').length).toBe(1);
+      expect(wrapper.find('.selectControl').length).toBe(1);
       expect(wrapper.find(SelectOptionsPanel).length).toBe(0);
     });
 
     test('opens options panel on click', async () => {
-      const closedSelect = wrapper.find('.selectClosed');
-      closedSelect.simulate('click');
+      const selectControl = wrapper.find('.selectControl');
+      selectControl.simulate('click');
 
       wrapper.update();
 
       // the element visible during closed state is still there
-      expect(wrapper.find('.selectClosedInvisible').length).toBe(1);
+      expect(wrapper.find('.selectControlInvisible').length).toBe(1);
       expect(wrapper.find(SelectOptionsPanel).length).toBe(1);
     });
   });
@@ -64,8 +64,8 @@ describe('<Select />', () => {
       wrapper = mount(<Select {...defaultProps} />);
 
       // open the select
-      const closedSelect = wrapper.find('.selectClosed');
-      closedSelect.simulate('click');
+      const selectControl = wrapper.find('.selectControl');
+      selectControl.simulate('click');
       wrapper.update();
 
       const optionGroups = wrapper.find('ul');
@@ -86,8 +86,8 @@ describe('<Select />', () => {
       wrapper = mount(<Select {...defaultProps} />);
 
       // open the select
-      const closedSelect = wrapper.find('.selectClosed');
-      closedSelect.simulate('click');
+      const selectControl = wrapper.find('.selectControl');
+      selectControl.simulate('click');
       wrapper.update();
 
       const optionGroups = wrapper.find('ul');
@@ -115,8 +115,8 @@ describe('<Select />', () => {
       wrapper = mount(<Select {...defaultProps} />);
 
       // open the select
-      const closedSelect = wrapper.find('.selectClosed');
-      closedSelect.simulate('click');
+      const selectControl = wrapper.find('.selectControl');
+      selectControl.simulate('click');
       wrapper.update();
 
       // choose a random option

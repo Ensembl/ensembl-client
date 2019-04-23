@@ -26,7 +26,7 @@ export type GroupedOptionIndex = [
   number // index of the option within a group
 ];
 
-type ClosedSelectProps = {
+type SelectControlProps = {
   isOpen: boolean;
   selectedOption: Option | null;
   placeholder: string;
@@ -54,11 +54,10 @@ type SelectAdapterProps = OptionsSelectProps | OptionGroupsSelectProps;
 
 type SelectProps = OptionGroupsSelectProps & { placeholder: string };
 
-// TODO: think of a better name for this component?
-const ClosedSelect = (props: ClosedSelectProps) => {
+const SelectControl = (props: SelectControlProps) => {
   const className = props.isOpen
-    ? styles.selectClosedInvisible
-    : styles.selectClosed;
+    ? styles.selectControlInvisible
+    : styles.selectControl;
   return (
     <span className={className} onClick={props.onClick}>
       {props.selectedOption ? props.selectedOption.label : props.placeholder}
@@ -133,7 +132,7 @@ const Select = (props: SelectProps) => {
       onFocus={handleFocus}
       onBlur={handleBlur}
     >
-      <ClosedSelect
+      <SelectControl
         isOpen={isOpen}
         selectedOption={selectedOption}
         onClick={openPanel}
