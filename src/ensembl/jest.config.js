@@ -1,9 +1,4 @@
 module.exports = {
-  globals: {
-    'ts-jest': {
-      diagnostics: false
-    }
-  },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   moduleNameMapper: {
     '\\.svg': '<rootDir>/tests/svgrMock.js',
@@ -14,7 +9,6 @@ module.exports = {
     '(static/browser/.*)$': '<rootDir>/$1.stub.js',
     '\\.(css|scss)$': 'identity-obj-proxy'
   },
-  preset: 'ts-jest',
   roots: ['<rootDir>/src'],
   setupFilesAfterEnv: ['<rootDir>/setup-enzyme.ts'],
   testEnvironment: 'jsdom',
