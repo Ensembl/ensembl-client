@@ -77,13 +77,10 @@ const highlightedItemReducer = (
 };
 
 const SelectOptionsPanel = (props: Props) => {
-  const [shouldShowTopScrollButton, setShouldShowTopScrollButton] = useState(
+  const [shouldShowTopScrollButton, showTopScrollButton] = useState(false);
+  const [shouldShowBottomScrollButton, showBottomScrollButton] = useState(
     false
   );
-  const [
-    shouldShowBottomScrollButton,
-    setShouldShowBottomScrollButton
-  ] = useState(false);
   const [highlightedItemIndex, dispatch] = useReducer(
     highlightedItemReducer,
     null
@@ -165,7 +162,7 @@ const SelectOptionsPanel = (props: Props) => {
       !getPanelScrollStatus(optionsListRef.current as HTMLDivElement)
         .isScrolledToBottom
     ) {
-      setShouldShowBottomScrollButton(true);
+      showBottomScrollButton(true);
     }
   }, []);
 
@@ -182,16 +179,16 @@ const SelectOptionsPanel = (props: Props) => {
       optionsListRef.current as HTMLDivElement
     );
     if (!isScrolledToTop && !shouldShowTopScrollButton) {
-      setShouldShowTopScrollButton(true);
+      showTopScrollButton(true);
     }
     if (isScrolledToTop && shouldShowTopScrollButton) {
-      setShouldShowTopScrollButton(false);
+      showTopScrollButton(false);
     }
     if (!isScrolledToBottom && !shouldShowBottomScrollButton) {
-      setShouldShowBottomScrollButton(true);
+      showBottomScrollButton(true);
     }
     if (isScrolledToBottom && shouldShowBottomScrollButton) {
-      setShouldShowBottomScrollButton(false);
+      showBottomScrollButton(false);
     }
   };
 

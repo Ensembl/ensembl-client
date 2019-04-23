@@ -94,7 +94,7 @@ const Select = (props: SelectProps) => {
   const handleBlur = () => {
     focusRef.current = false;
     if (isOpen) {
-      setIsOpen(false);
+      closePanel();
     }
   };
 
@@ -109,17 +109,17 @@ const Select = (props: SelectProps) => {
     }
 
     if (event.keyCode === keyCodes.ENTER) {
-      setIsOpen(true);
+      openPanel();
     } else if (event.keyCode === keyCodes.ESC) {
-      setIsOpen(false);
+      closePanel();
     }
   };
 
   const handleSelect = (optionIndex: GroupedOptionIndex) => {
-    const [groupdIndex, itemIndex] = optionIndex;
-    const selectedOption = optionGroups[groupdIndex].options[itemIndex];
+    const [groupIndex, itemIndex] = optionIndex;
+    const selectedOption = optionGroups[groupIndex].options[itemIndex];
     props.onSelect(selectedOption.value);
-    setIsOpen(false);
+    closePanel();
   };
 
   const headerText = selectedOption ? selectedOption.label : props.placeholder;
@@ -159,16 +159,15 @@ Select.defaultProps = {
 const SelectAdapter = (props: SelectAdapterProps) => {
   if ((props as OptionGroupsSelectProps).optionGroups) {
     return <Select {...props as OptionGroupsSelectProps} />;
-  } else {
-    const { options, title, ...otherProps } = props as OptionsSelectProps;
-    const optionGroups = [
-      {
-        title,
-        options
-      }
-    ];
-    return <Select optionGroups={optionGroups} {...otherProps} />;
   }
+  const { options, title, ...otherProps } = props as OptionsSelectProps;
+  const optionGroups = [
+    {
+      title,
+      options
+    }
+  ];
+  return <Select optionGroups={optionGroups} {...otherProps} />;
 };
 
 export default SelectAdapter;
