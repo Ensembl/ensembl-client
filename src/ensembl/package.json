@@ -96,7 +96,6 @@
     "@types/webpack-env": "1.13.9",
     "babel-loader": "8.0.5",
     "babel-plugin-dynamic-import-node": "2.2.0",
-    "babel-plugin-react-css-modules-sass": "1.1.0",
     "brotli-webpack-plugin": "1.1.0",
     "compression-webpack-plugin": "2.0.0",
     "connect-history-api-fallback": "1.6.0",
