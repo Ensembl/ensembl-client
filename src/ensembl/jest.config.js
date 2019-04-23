@@ -13,6 +13,7 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/setup-enzyme.ts'],
   testEnvironment: 'jsdom',
   transform: {
+    '.+\\.tsx?$': 'babel-jest',
     '.+\\.(css|scss|png|jpg|svg|gif|eot|ttf|otf|woff|woff2)$':
       'jest-transform-stub'
   }

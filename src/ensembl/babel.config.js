@@ -23,7 +23,7 @@ module.exports = {
           '@babel/env',
           {
             useBuiltIns: 'usage',
-            corejs: 3,
+            corejs: 3
           }
         ]
       ]
