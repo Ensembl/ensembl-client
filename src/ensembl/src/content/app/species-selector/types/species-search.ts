@@ -3,8 +3,8 @@
 export type SearchMatches = SearchMatch[];
 
 export type SearchMatch = {
-  production_name: string; // unique identifier; not a very good field name
-  reference_species_name: string | null; // indicates whether the match is a strain of a reference species
+  genome_id: string; // unique identifier
+  reference_genome_id: string | null; // if present, indicates that the match is a strain (or some other subspecies group) of the reference species
   common_name: string | null; // not every species has a common name
   scientific_name: string; // every species has a scientific name
   subtype: string | null; // any extra information about the species (e.g. assembly name for Human)
@@ -19,7 +19,7 @@ export type SearchMatchGroup = {
 export type MatchedSubstring = {
   length: number;
   offset: number;
-  match: 'description' | 'scientific_name' | 'subtype';
+  match: 'common_name' | 'scientific_name' | 'subtype';
 };
 
 /*

@@ -36,28 +36,64 @@ const SpeciesSearchMatch = ({ match }: Props) => {
   return (
     <div className={styles.speciesSearchMatch}>
       <CommonName match={match} />
+      <Subtype match={match} />
       <ScientificName match={match} />
     </div>
   );
 };
 
+// TODO: refactor – CommonName, Subtype and ScientificName
+// can all use one and the same component (call it Substring)
+// that does the splitting and formatting
+
 const CommonName = ({ match }: { match: SearchMatch }) => {
-  const { description, matched_substrings } = match;
+  const { common_name, matched_substrings } = match;
 
-  const descriptionMatches = matched_substrings.filter(
-    ({ match }) => match === 'description'
+  const commonNameMatches = matched_substrings.filter(
+    ({ match }) => match === 'common_name'
   );
 
-  const substrings = sortBy(
-    splitMatch({ string: description, matchedSubsctrings: descriptionMatches }),
-    ({ start }) => start
+  if (common_name && commonNameMatches.length) {
+    const substrings = sortBy(
+      splitMatch({
+        string: common_name,
+        matchedSubsctrings: commonNameMatches
+      }),
+      ({ start }) => start
+    );
+
+    return <span>{formatString({ string: common_name, substrings })}</span>;
+  } else {
+    return null;
+  }
+};
+
+const Subtype = ({ match }: { match: SearchMatch }) => {
+  const { subtype, matched_substrings } = match;
+
+  const subtypeMatches = matched_substrings.filter(
+    ({ match }) => match === 'subtype'
   );
 
-  return <span>{formatString({ string: description, substrings })}</span>;
+  if (subtype && subtypeMatches) {
+    const substrings = sortBy(
+      splitMatch({ string: subtype, matchedSubsctrings: subtypeMatches }),
+      ({ start }) => start
+    );
+
+    return (
+      <span className={styles.speciesSearchMatchScientificName}>
+        {formatString({ string: subtype, substrings })}
+      </span>
+    );
+  } else {
+    return null;
+  }
 };
 
 const ScientificName = ({ match }: { match: SearchMatch }) => {
   const { scientific_name, matched_substrings } = match;
+
   if (!scientific_name) return null;
 
   const scientificNameMatches = matched_substrings.filter(

@@ -15,14 +15,16 @@ import {
 } from 'src/content/app/species-selector/types/species-search';
 
 const buildSearchMatch = (): SearchMatch => ({
-  description: faker.lorem.words(),
+  genome_id: faker.lorem.word(),
+  reference_genome_id: null,
+  common_name: faker.lorem.words(),
   scientific_name: faker.lorem.words(),
-  assembly_name: null,
+  subtype: null,
   matched_substrings: [
     {
       length: 3,
       offset: 1,
-      match: 'description'
+      match: 'common_name'
     }
   ]
 });
@@ -35,10 +37,13 @@ const buildSearchMatchGroups = (groups = 2): SearchMatches[] =>
 
 const onSearchChange = jest.fn();
 const onMatchSelected = jest.fn();
+const clearSelectedSearchResult = jest.fn();
 
 const defaultProps = {
   onSearchChange,
   onMatchSelected,
+  clearSelectedSearchResult,
+  selectedItemText: null,
   matches: []
 };
 

@@ -5,19 +5,19 @@ import SpeciesSearchMatch from './SpeciesSearchMatch';
 
 import styles from './SpeciesSearchMatch.scss';
 
-const onClick = jest.fn();
-
 const matchTemplate = {
-  description: 'Human GRCh38.p12',
+  genome_id: 'homo_sapiens_38',
+  reference_genome_id: null,
+  common_name: 'Human',
   scientific_name: 'Homo sapiens',
+  subtype: 'GRCh38.p12',
   matched_substrings: [
     {
       length: 3,
       offset: 0,
-      match: 'description' as 'description'
+      match: 'common_name' as 'common_name'
     }
-  ],
-  genome: 'GRCh38_demo'
+  ]
 };
 
 describe('<SpeciesSearchMatch />', () => {
@@ -26,9 +26,7 @@ describe('<SpeciesSearchMatch />', () => {
   });
 
   test('highlights a single match in the description field', () => {
-    const renderedMatch = render(
-      <SpeciesSearchMatch match={matchTemplate} onClick={onClick} />
-    );
+    const renderedMatch = render(<SpeciesSearchMatch match={matchTemplate} />);
     const highlightedFragments = renderedMatch.find(
       `.${styles.speciesSearchMatchMatched}`
     );
@@ -48,9 +46,7 @@ describe('<SpeciesSearchMatch />', () => {
         }
       ]
     };
-    const renderedMatch = render(
-      <SpeciesSearchMatch match={match} onClick={onClick} />
-    );
+    const renderedMatch = render(<SpeciesSearchMatch match={match} />);
     const highlightedFragments = renderedMatch.find(
       `.${styles.speciesSearchMatchScientificName}
       .${styles.speciesSearchMatchMatched}`
@@ -63,25 +59,25 @@ describe('<SpeciesSearchMatch />', () => {
   test('highlights multiple matches in the description field', () => {
     const match = {
       ...matchTemplate,
-      description: 'Bacillus subtilis',
+      common_name: null,
+      scientific_name: 'Bacillus subtilis',
+      subtype: null,
       matched_substrings: [
         {
           length: 3,
           offset: 0,
-          match: 'description' as 'description'
+          match: 'scientific_name' as 'scientific_name'
         },
         {
           length: 3,
           offset: 9,
-          match: 'description' as 'description'
+          match: 'scientific_name' as 'scientific_name'
         }
       ]
     };
-    delete match.scientific_name;
 
-    const renderedMatch = render(
-      <SpeciesSearchMatch match={match} onClick={onClick} />
-    );
+    const renderedMatch = render(<SpeciesSearchMatch match={match} />);
+
     const highlightedFragments = renderedMatch.find(
       `.${styles.speciesSearchMatchMatched}`
     );
@@ -89,13 +85,5 @@ describe('<SpeciesSearchMatch />', () => {
     // highlighting Bac in Bacillus and sub in subtilis
     expect(highlightedFragments.first().text()).toBe('Bac');
     expect(highlightedFragments.last().text()).toBe('sub');
-  });
-
-  test('calls click handler when clicked', () => {
-    const renderedMatch = mount(
-      <SpeciesSearchMatch match={matchTemplate} onClick={onClick} />
-    );
-    renderedMatch.simulate('click');
-    expect(onClick).toHaveBeenCalled();
   });
 });
