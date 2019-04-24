@@ -3,8 +3,8 @@
 REFERENCE - shape of a single match:
 
 {
-  "production_name": string, // a unique identifier (provisional field name)
-  "reference_species_name": string | null, // nullable field; present if the match is a subgroup (e.g. strain) of a species
+  "genome_id": string, // a unique identifier (provisional field name)
+  "reference_genome_id": string | null, // nullable field; present if the match is a subgroup (e.g. strain) of a species
   "common_name": string | null, // common name (if present)
   "scientific_name": string, // should always be present
   "subtype": string | null, // any extra information about the species (e.g. assembly_name for Human)
@@ -22,12 +22,12 @@ REFERENCE - shape of a single match:
 // sample response for typing "hum" in the search box
 
 export default {
+  // notice that it is an array of groups of matches
   matches: [
-    // <-- notice that it is an array of groups of matches
     [
       {
-        production_name: 'homo_sapiens38',
-        reference_species_name: null,
+        genome_id: 'homo_sapiens38',
+        reference_genome_id: null,
         common_name: 'Human',
         scientific_name: 'Homo sapiens',
         subtype: 'GRCh38',
@@ -40,8 +40,8 @@ export default {
         ]
       },
       {
-        production_name: 'homo_sapiens37',
-        reference_species_name: null,
+        genome_id: 'homo_sapiens37',
+        reference_genome_id: null,
         common_name: 'Human',
         scientific_name: 'Homo sapiens',
         subtype: 'GRCh37',
@@ -54,8 +54,8 @@ export default {
         ]
       },
       {
-        production_name: 'humibacillus_sp_dsm_29435',
-        reference_species_name: null,
+        genome_id: 'humibacillus_sp_dsm_29435',
+        reference_genome_id: null,
         common_name: null,
         scientific_name: 'Humibacillus sp. DSM 29435',
         subtype: null,
@@ -70,8 +70,8 @@ export default {
     ],
     [
       {
-        production_name: 'azospirillum_humicireducens',
-        reference_species_name: null,
+        genome_id: 'azospirillum_humicireducens',
+        reference_genome_id: null,
         common_name: null,
         scientific_name: 'Azospirillum humicireducens',
         subtype: null,
@@ -84,8 +84,8 @@ export default {
         ]
       },
       {
-        production_name: 'propionibacterium_humerusii_hl037pa3',
-        reference_species_name: null,
+        genome_id: 'propionibacterium_humerusii_hl037pa3',
+        reference_genome_id: null,
         common_name: null,
         scientific_name: 'Propionibacterium humerusii HL037PA3',
         subtype: null,
@@ -98,8 +98,8 @@ export default {
         ]
       },
       {
-        production_name: 'propionibacterium_humerusii_hl037pa2',
-        reference_species_name: null,
+        genome_id: 'propionibacterium_humerusii_hl037pa2',
+        reference_genome_id: null,
         common_name: null,
         scientific_name: 'Propionibacterium humerusii HL037PA2',
         subtype: null,
@@ -112,8 +112,8 @@ export default {
         ]
       },
       {
-        production_name: 'propionibacterium_humerusii_hl044pa1',
-        reference_species_name: null,
+        genome_id: 'propionibacterium_humerusii_hl044pa1',
+        reference_genome_id: null,
         common_name: null,
         scientific_name: 'Propionibacterium humerusii HL044PA1',
         subtype: null,
@@ -126,8 +126,8 @@ export default {
         ]
       },
       {
-        production_name: 'propionibacterium_humerusii_p08',
-        reference_species_name: null,
+        genome_id: 'propionibacterium_humerusii_p08',
+        reference_genome_id: null,
         common_name: null,
         scientific_name: 'Propionibacterium humerusii P08',
         subtype: null,
@@ -140,8 +140,8 @@ export default {
         ]
       },
       {
-        production_name: 'sinomonas_humi',
-        reference_species_name: null,
+        genome_id: 'sinomonas_humi',
+        reference_genome_id: null,
         common_name: null,
         scientific_name: 'Sinomonas humi',
         subtype: null,
@@ -154,8 +154,8 @@ export default {
         ]
       },
       {
-        production_name: 'stenotrophomonas_humi',
-        reference_species_name: null,
+        genome_id: 'stenotrophomonas_humi',
+        reference_genome_id: null,
         common_name: null,
         scientific_name: 'Stenotrophomonas humi',
         subtype: null,
@@ -168,8 +168,8 @@ export default {
         ]
       },
       {
-        production_name: 'thauera_humireducens',
-        reference_species_name: null,
+        genome_id: 'thauera_humireducens',
+        reference_genome_id: null,
         common_name: null,
         scientific_name: 'Thauera humireducens',
         subtype: null,

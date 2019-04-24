@@ -13,7 +13,7 @@ Shape of an assembly data object
 // Question: what does the endpoint look like?
 
 export default {
-  production_name: 'mus_musculus',
+  genome_id: 'mus_musculus',
   assemblies: [
     {
       assembly_name: 'GRCh38.p12'
