@@ -1,4 +1,4 @@
-import { action, createAction, createAsyncAction } from 'typesafe-actions';
+import { createAction, createAsyncAction } from 'typesafe-actions';
 
 import {
   SearchMatch,

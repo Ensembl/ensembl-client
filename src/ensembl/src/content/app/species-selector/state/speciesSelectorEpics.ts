@@ -2,7 +2,6 @@ import { Epic } from 'redux-observable';
 import { of } from 'rxjs';
 import {
   map,
-  tap,
   switchMap,
   delay,
   filter,
