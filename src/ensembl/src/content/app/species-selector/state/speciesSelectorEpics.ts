@@ -8,11 +8,11 @@ import {
   distinctUntilChanged
 } from 'rxjs/operators';
 import { isActionOf, ActionType } from 'typesafe-actions';
-import values from 'lodash/values';
 
 import * as speciesSelectorActions from 'src/content/app/species-selector/state/speciesSelectorActions';
 
-import * as mockSearchResults from 'tests/data/species-selector/species-search';
+import humanMockSearchResults from 'tests/data/species-selector/human-search';
+import mouseMockSearchResults from 'tests/data/species-selector/mouse-search';
 
 import { RootState } from 'src/store';
 
@@ -33,7 +33,9 @@ export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
     map((action) =>
       speciesSelectorActions.fetchSpeciesSearchResults.success({
         text: action.payload,
-        results: [values(mockSearchResults)]
+        results: action.payload.startsWith('h')
+          ? humanMockSearchResults.matches
+          : mouseMockSearchResults.matches
       })
     )
   );

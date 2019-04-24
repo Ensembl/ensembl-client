@@ -37,7 +37,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name'
+            match: 'common_name' as 'common_name'
           }
         ]
       },
@@ -51,7 +51,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name'
+            match: 'common_name' as 'common_name'
           }
         ]
       },
@@ -65,7 +65,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name'
+            match: 'common_name' as 'common_name'
           }
         ]
       },
@@ -79,7 +79,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name'
+            match: 'common_name' as 'common_name'
           }
         ]
       },
@@ -93,7 +93,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name'
+            match: 'common_name' as 'common_name'
           }
         ]
       },
@@ -107,7 +107,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name'
+            match: 'common_name' as 'common_name'
           }
         ]
       },
@@ -121,7 +121,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name'
+            match: 'common_name' as 'common_name'
           }
         ]
       },
@@ -135,7 +135,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name'
+            match: 'common_name' as 'common_name'
           }
         ]
       },
@@ -149,7 +149,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name'
+            match: 'common_name' as 'common_name'
           }
         ]
       },
@@ -163,7 +163,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name'
+            match: 'common_name' as 'common_name'
           }
         ]
       },
@@ -177,7 +177,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name'
+            match: 'common_name' as 'common_name'
           }
         ]
       },
@@ -191,7 +191,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name'
+            match: 'common_name' as 'common_name'
           }
         ]
       },
@@ -205,7 +205,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name'
+            match: 'common_name' as 'common_name'
           }
         ]
       },
@@ -219,7 +219,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name'
+            match: 'common_name' as 'common_name'
           }
         ]
       },
@@ -233,7 +233,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name'
+            match: 'common_name' as 'common_name'
           }
         ]
       }

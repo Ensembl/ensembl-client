@@ -53,7 +53,7 @@ const CommonName = ({ match }: { match: SearchMatch }) => {
     ({ match }) => match === 'common_name'
   );
 
-  if (common_name && commonNameMatches.length) {
+  if (common_name) {
     const substrings = sortBy(
       splitMatch({
         string: common_name,
@@ -75,14 +75,14 @@ const Subtype = ({ match }: { match: SearchMatch }) => {
     ({ match }) => match === 'subtype'
   );
 
-  if (subtype && subtypeMatches) {
+  if (subtype) {
     const substrings = sortBy(
       splitMatch({ string: subtype, matchedSubsctrings: subtypeMatches }),
       ({ start }) => start
     );
 
     return (
-      <span className={styles.speciesSearchMatchScientificName}>
+      <span className={styles.speciesSearchMatchSubtype}>
         {formatString({ string: subtype, substrings })}
       </span>
     );

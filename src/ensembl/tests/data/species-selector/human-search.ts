@@ -35,7 +35,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name'
+            match: 'common_name' as 'common_name'
           }
         ]
       },
@@ -49,7 +49,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name'
+            match: 'common_name' as 'common_name'
           }
         ]
       },
@@ -63,7 +63,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'scientific_name'
+            match: 'scientific_name' as 'scientific_name'
           }
         ]
       }
@@ -79,7 +79,7 @@ export default {
           {
             length: 3,
             offset: 13,
-            match: 'scientific_name'
+            match: 'scientific_name' as 'scientific_name'
           }
         ]
       },
@@ -93,7 +93,7 @@ export default {
           {
             length: 3,
             offset: 18,
-            match: 'scientific_name'
+            match: 'scientific_name' as 'scientific_name'
           }
         ]
       },
@@ -107,7 +107,7 @@ export default {
           {
             length: 3,
             offset: 18,
-            match: 'scientific_name'
+            match: 'scientific_name' as 'scientific_name'
           }
         ]
       },
@@ -121,7 +121,7 @@ export default {
           {
             length: 3,
             offset: 18,
-            match: 'scientific_name'
+            match: 'scientific_name' as 'scientific_name'
           }
         ]
       },
@@ -135,7 +135,7 @@ export default {
           {
             length: 3,
             offset: 18,
-            match: 'scientific_name'
+            match: 'scientific_name' as 'scientific_name'
           }
         ]
       },
@@ -149,7 +149,7 @@ export default {
           {
             length: 3,
             offset: 10,
-            match: 'scientific_name'
+            match: 'scientific_name' as 'scientific_name'
           }
         ]
       },
@@ -163,7 +163,7 @@ export default {
           {
             length: 3,
             offset: 17,
-            match: 'scientific_name'
+            match: 'scientific_name' as 'scientific_name'
           }
         ]
       },
@@ -177,7 +177,7 @@ export default {
           {
             length: 3,
             offset: 8,
-            match: 'scientific_name'
+            match: 'scientific_name' as 'scientific_name'
           }
         ]
       }

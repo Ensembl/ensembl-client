@@ -15,8 +15,19 @@
   font-weight: $dark;
 }
 
+.speciesSearchMatchSubtype {
+  font-size: 10px;
+
+  &:not(:first-of-type) {
+    margin-left: 1rem;
+  }
+}
+
 .speciesSearchMatchScientificName {
   font-style: italic;
   font-weight: $light;
-  margin-left: 1rem;
+
+  &:not(:first-of-type) {
+    margin-left: 1rem;
+  }
 }
