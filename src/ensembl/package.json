@@ -27,11 +27,9 @@
     "storybook": "start-storybook -p 9001 -c .storybook",
     "deploy-docs": "./deploy-docs.sh",
     "check-types": "tsc",
-    "jest": "jest",
-    "test": "jest --verbose",
-    "test:watch": "jest --watch",
-    "coverage": "jest --coverage",
-    "snapshot": "jest --updateSnapshot"
+    "test": "jest --verbose --maxWorkers=1",
+    "test:watch": "jest --watch --maxWorkers=1",
+    "coverage": "jest --coverage"
   },
   "lint-staged": {
     "*.{scss,ts,tsx}": [
@@ -96,9 +94,8 @@
     "@types/storybook__addon-actions": "3.4.2",
     "@types/storybook__react": "4.0.1",
     "@types/webpack-env": "1.13.9",
-    "babel-core": "7.0.0-bridge.0",
+    "babel-jest": "24.7.1",
     "babel-loader": "8.0.5",
-    "babel-plugin-react-css-modules-sass": "1.1.0",
     "brotli-webpack-plugin": "1.1.0",
     "compression-webpack-plugin": "2.0.0",
     "connect-history-api-fallback": "1.6.0",
@@ -140,7 +137,6 @@
     "stylelint-scss": "3.6.0",
     "stylelint-webpack-plugin": "0.10.5",
     "terser-webpack-plugin": "1.2.3",
-    "ts-jest": "24.0.2",
     "tslint": "5.15.0",
     "tslint-config-prettier": "1.18.0",
     "tslint-react": "4.0.0",
