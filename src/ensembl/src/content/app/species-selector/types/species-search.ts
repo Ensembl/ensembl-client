@@ -37,6 +37,7 @@ export type Strain = {
 };
 
 export type Assembly = {
+  genome_id: string;
   assembly_name: string;
 };
 

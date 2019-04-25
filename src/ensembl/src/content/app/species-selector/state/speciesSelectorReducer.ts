@@ -55,6 +55,14 @@ export default function speciesSelectorReducer(
             : null
         }
       };
+    case getType(speciesSelectorActions.fetchAssembliesAsyncActions.success):
+      return {
+        ...state,
+        currentItem: {
+          ...(state.currentItem as CurrentItem),
+          assemblies: action.payload.assemblies
+        }
+      };
     case getType(speciesSelectorActions.clearSelectedSearchResult):
       return {
         ...state,
