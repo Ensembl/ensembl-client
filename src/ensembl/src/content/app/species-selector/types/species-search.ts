@@ -48,3 +48,13 @@ export type CommittedItem = {
   assembly_name: string;
   isEnabled: boolean;
 };
+
+export type PopularSpecies = {
+  genome_id: string;
+  reference_genome_id: string | null;
+  common_name: string | null;
+  scientific_name: string;
+  assembly_name: string; // notice in mockups that every popular species has an assembly
+  image: string; // link to the svg or base64-encoded svg
+  division_ids: string[]; // e.g. ['model_organism', 'ensembl_plants',...]; a popular species can belong to several divisions
+};

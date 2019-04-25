@@ -1,18 +1,21 @@
 import { LoadingState } from 'src/content/app/species-selector/types/loading-state';
 import {
-  SearchMatch,
   SearchMatches,
   Strain,
   Assembly,
   CommittedItem
 } from 'src/content/app/species-selector/types/species-search';
 
-// FIXME: current item is not always the selected search result;
-// it can also be a popular species; so these two entities should have shared fields
-type CurrentItem = {
-  searchMatch: SearchMatch;
-  selectedStrain: Strain | null; // or should it be strain id?
-  selectedAssembly: Assembly | null; // or should it be just assembly's display name? Also, there will always be at least one assembly, right?
+export type CurrentItem = {
+  genome_id: string; // changes every time we update strain or assembly
+  reference_genome_id: string | null;
+  common_name: string | null;
+  scientific_name: string;
+  assembly_name: string | null; // name of the selected assembly
+  selectedStrainId: string | null; // genome_id of selected strain
+  selectedAssemblyId: string; // genome_id of selected assembly; initially same as the genome_id field
+  strains: Strain[];
+  assemblies: Assembly[];
 };
 
 export type SpeciesSelectorState = {
