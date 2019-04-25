@@ -174,12 +174,8 @@ const Attributes = (props: Props) => {
               {formatAccordionTitle('orthologues')}
             </AccordionItemButton>
           </AccordionItemHeading>
-          <AccordionItemPanel>
-            {props.expandedPanel !== 'orthologues' && (
-              <div className={styles.permanentBlock}>
-                <Orthologues hideUnchecked={true} hideTitles={true} />
-              </div>
-            )}
+          <AccordionItemPanel className={styles.accordionItem}>
+            <Orthologues />
           </AccordionItemPanel>
         </AccordionItem>
 

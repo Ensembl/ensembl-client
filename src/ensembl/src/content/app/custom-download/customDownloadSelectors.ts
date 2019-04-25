@@ -18,6 +18,15 @@ export const getGeneAttributes = (state: RootState): {} =>
 export const getTranscriptAttributes = (state: RootState): {} =>
   state.customDownload.attributesAccordion.attributes.transcripts;
 
+export const getOrthologueAttributes = (state: RootState): {} =>
+  state.customDownload.attributesAccordion.attributes.orthologues;
+
+export const getOrthologueSearchTerm = (state: RootState): string =>
+  state.customDownload.attributesAccordion.orthologue.searchTerm;
+
+export const getOrthologueSpecies = (state: RootState): [] =>
+  state.customDownload.attributesAccordion.orthologue.species;
+
 export const getLocationAttributes = (state: RootState): {} =>
   state.customDownload.attributesAccordion.attributes.location;
 

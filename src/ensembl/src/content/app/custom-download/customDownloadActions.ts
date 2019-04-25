@@ -83,6 +83,39 @@ export const setTranscriptAttributes = createAction(
   }
 );
 
+export const setOrthologueAttributes = createAction(
+  'custom-download/set-orthologue-attributes',
+  (resolve) => {
+    return (orthologueAttributes: {}) =>
+      resolve(
+        orthologueAttributes,
+        getCustomDownloadAnalyticsObject('Orthologue attributes updated')
+      );
+  }
+);
+
+export const setOrthologueSearchTerm = createAction(
+  'custom-download/set-orthologue-search-term',
+  (resolve) => {
+    return (searchTerm: string) =>
+      resolve(
+        searchTerm,
+        getCustomDownloadAnalyticsObject('Orthologue search term updated')
+      );
+  }
+);
+
+export const setOrthologueSpecies = createAction(
+  'custom-download/set-orthologue-species',
+  (resolve) => {
+    return (allSpecies: []) =>
+      resolve(
+        allSpecies,
+        getCustomDownloadAnalyticsObject('Orthologue species updated')
+      );
+  }
+);
+
 export const setLocationAttributes = createAction(
   'custom-download/set-location-attributes',
   (resolve) => {

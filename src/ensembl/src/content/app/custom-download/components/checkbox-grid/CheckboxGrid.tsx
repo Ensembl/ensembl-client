@@ -25,6 +25,19 @@ export const filterCheckedAttributes = (attributes: any) => {
   return filteredAttributes;
 };
 
+export const getAttributesCount = (attributes: any) => {
+  let totalAttributes: number = 0;
+
+  if (!attributes || Object.keys(attributes).length) {
+    return 0;
+  }
+  Object.keys(attributes).forEach((section) => {
+    totalAttributes += Object.keys(attributes[section]).length;
+  });
+
+  return totalAttributes;
+};
+
 const renderCheckBoxList = (
   checkboxList: any,
   props: Props,
@@ -100,6 +113,9 @@ const renderCheckBoxList = (
 };
 
 const CheckBoxGrid = (props: Props) => {
+  if (!Object.keys(props.gridData).length) {
+    return null;
+  }
   return (
     <>
       {props.gridData.hasOwnProperty('default')

@@ -50,13 +50,10 @@ export const fetchPreviewResults = async (
   selectedFilters: any
 ) => {
   props.setPreviewResult({});
-  await new Promise((resolve) => setTimeout(resolve, 2000));
   const result = await getCustomDownloadPreviewResults(
     selectedAttributes,
     selectedFilters
   );
-
-  console.log(result);
 
   props.setPreviewResult(result);
 };

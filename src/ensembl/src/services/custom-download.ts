@@ -36,4 +36,21 @@ const getCustomDownloadPreviewResults = async (
   }
 };
 
+export const getSpeciesList = async () => {
+  const endpoint =
+    'https://rest.ensembl.org/info/species?content-type=application/json';
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    const result = await response.json();
+    return result.species;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export default getCustomDownloadPreviewResults;

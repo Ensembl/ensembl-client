@@ -82,36 +82,54 @@ function customDownload(
           action
         )
       };
+    case getType(customDownloadActions.setOrthologueAttributes):
+      return {
+        ...state,
+        attributesAccordion: attributesAccordion(
+          state.attributesAccordion,
+          action
+        )
+      };
+    case getType(customDownloadActions.setOrthologueSearchTerm):
+      return {
+        ...state,
+        attributesAccordion: attributesAccordion(
+          state.attributesAccordion,
+          action
+        )
+      };
+    case getType(customDownloadActions.setOrthologueSpecies):
+      return {
+        ...state,
+        attributesAccordion: attributesAccordion(
+          state.attributesAccordion,
+          action
+        )
+      };
     case getType(customDownloadActions.setFiltersAccordionExpandedPanel):
       return {
         ...state,
-        filtersAccordion: contentPanelFiltersAccordion(
-          state.filtersAccordion,
-          action
-        )
+        filtersAccordion: FiltersAccordion(state.filtersAccordion, action)
       };
     case getType(customDownloadActions.setFiltersAccordionExpandedGenePanels):
       return {
         ...state,
-        filtersAccordion: contentPanelFiltersAccordion(
-          state.filtersAccordion,
-          action
-        )
+        filtersAccordion: FiltersAccordion(state.filtersAccordion, action)
       };
     case getType(customDownloadActions.setGeneFilters):
       return {
         ...state,
-        filters: contentPanelGeneFilters(state.filters, action)
+        filters: GeneFilters(state.filters, action)
       };
     case getType(customDownloadActions.setGeneTypeFilters):
       return {
         ...state,
-        filters: contentPanelGeneTypeFilters(state.filters, action)
+        filters: GeneTypeFilters(state.filters, action)
       };
     case getType(customDownloadActions.setTranscriptTypeFilters):
       return {
         ...state,
-        filters: contentPanelTranscriptTypeFilters(state.filters, action)
+        filters: TranscriptTypeFilters(state.filters, action)
       };
     case getType(customDownloadActions.setPreviewResult):
       return {
@@ -143,34 +161,49 @@ function attributesAccordion(
     case getType(customDownloadActions.setGeneAttributes):
       return {
         ...state,
-        attributes: contentPanelGeneAttributes(state.attributes, action)
+        attributes: GeneAttributes(state.attributes, action)
+      };
+    case getType(customDownloadActions.setOrthologueAttributes):
+      return {
+        ...state,
+        attributes: OrthologueAttributes(state.attributes, action)
       };
     case getType(customDownloadActions.setTranscriptAttributes):
       return {
         ...state,
-        attributes: contentPanelTranscriptAttributes(state.attributes, action)
+        attributes: TranscriptAttributes(state.attributes, action)
       };
     case getType(customDownloadActions.setLocationAttributes):
       return {
         ...state,
-        attributes: contentPanelLocationAttributes(state.attributes, action)
+        attributes: LocationAttributes(state.attributes, action)
       };
     case getType(customDownloadActions.setSomaticVariationAttributes):
       return {
         ...state,
-        attributes: contentPanelVariationAttributes(state.attributes, action)
+        attributes: VariationAttributes(state.attributes, action)
       };
     case getType(customDownloadActions.setGermlineVariationAttributes):
       return {
         ...state,
-        attributes: contentPanelVariationAttributes(state.attributes, action)
+        attributes: VariationAttributes(state.attributes, action)
+      };
+    case getType(customDownloadActions.setOrthologueSearchTerm):
+      return {
+        ...state,
+        orthologue: Orthologue(state.orthologue, action)
+      };
+    case getType(customDownloadActions.setOrthologueSpecies):
+      return {
+        ...state,
+        orthologue: Orthologue(state.orthologue, action)
       };
     default:
       return state;
   }
 }
 
-function contentPanelGeneAttributes(
+function GeneAttributes(
   state: any = defaultCustomDownloadState,
   action: ActionType<RootAction>
 ): CustomDownloadState {
@@ -182,7 +215,33 @@ function contentPanelGeneAttributes(
   }
 }
 
-function contentPanelTranscriptAttributes(
+function Orthologue(
+  state: any = defaultCustomDownloadState,
+  action: ActionType<RootAction>
+): CustomDownloadState {
+  switch (action.type) {
+    case getType(customDownloadActions.setOrthologueSearchTerm):
+      return { ...state, searchTerm: action.payload };
+    case getType(customDownloadActions.setOrthologueSpecies):
+      return { ...state, species: action.payload };
+    default:
+      return state;
+  }
+}
+
+function OrthologueAttributes(
+  state: any = defaultCustomDownloadState,
+  action: ActionType<RootAction>
+): CustomDownloadState {
+  switch (action.type) {
+    case getType(customDownloadActions.setOrthologueAttributes):
+      return { ...state, orthologue: action.payload };
+    default:
+      return state;
+  }
+}
+
+function TranscriptAttributes(
   state: any = defaultCustomDownloadState,
   action: ActionType<RootAction>
 ): CustomDownloadState {
@@ -194,7 +253,7 @@ function contentPanelTranscriptAttributes(
   }
 }
 
-function contentPanelLocationAttributes(
+function LocationAttributes(
   state: any = defaultCustomDownloadState,
   action: ActionType<RootAction>
 ): CustomDownloadState {
@@ -206,7 +265,7 @@ function contentPanelLocationAttributes(
   }
 }
 
-function contentPanelVariationAttributes(
+function VariationAttributes(
   state: any = defaultCustomDownloadState,
   action: ActionType<RootAction>
 ): CustomDownloadState {
@@ -220,7 +279,7 @@ function contentPanelVariationAttributes(
   }
 }
 
-function contentPanelFiltersAccordion(
+function FiltersAccordion(
   state: any = defaultCustomDownloadState,
   action: ActionType<RootAction>
 ): CustomDownloadState {
@@ -234,7 +293,7 @@ function contentPanelFiltersAccordion(
   }
 }
 
-function contentPanelGeneFilters(
+function GeneFilters(
   state: any = defaultCustomDownloadState,
   action: ActionType<RootAction>
 ): CustomDownloadState {
@@ -246,7 +305,7 @@ function contentPanelGeneFilters(
   }
 }
 
-function contentPanelGeneTypeFilters(
+function GeneTypeFilters(
   state: any = defaultCustomDownloadState,
   action: ActionType<RootAction>
 ): CustomDownloadState {
@@ -258,7 +317,7 @@ function contentPanelGeneTypeFilters(
   }
 }
 
-function contentPanelTranscriptTypeFilters(
+function TranscriptTypeFilters(
   state: any = defaultCustomDownloadState,
   action: ActionType<RootAction>
 ): CustomDownloadState {
