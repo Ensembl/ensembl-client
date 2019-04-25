@@ -19,19 +19,22 @@ import {
 
 import Checkbox from './checkbox/Checkbox';
 
+import Input from './input/Input';
+
 export {
-  Button,
-  BadgedButton,
-  Checkbox,
-  PrimaryButton,
-  SecondaryButton,
-  RoundButton,
-  RoundButtonStatus,
   Accordion,
   AccordionItem,
   AccordionItemButton,
   AccordionItemHeading,
   AccordionItemPanel,
   AccordionItemState,
-  AccordionItemPermanentBlock
+  AccordionItemPermanentBlock,
+  Button,
+  BadgedButton,
+  Checkbox,
+  Input,
+  PrimaryButton,
+  SecondaryButton,
+  RoundButton,
+  RoundButtonStatus
 };

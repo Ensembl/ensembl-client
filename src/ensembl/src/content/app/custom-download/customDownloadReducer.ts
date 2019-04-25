@@ -1,4 +1,3 @@
-import { combineReducers } from 'redux';
 import { ActionType, getType } from 'typesafe-actions';
 
 import { RootAction } from 'src/objects';
@@ -8,7 +7,7 @@ import {
   defaultCustomDownloadState
 } from './customDownloadState';
 
-function preFilterPanel(
+function customDownload(
   state: CustomDownloadState = defaultCustomDownloadState,
   action: ActionType<RootAction>
 ): CustomDownloadState {
@@ -17,49 +16,20 @@ function preFilterPanel(
       return { ...state, selectedPreFilter: action.payload };
     case getType(customDownloadActions.togglePreFiltersPanel):
       return { ...state, showPreFiltersPanel: action.payload };
-    default:
-      return state;
-  }
-}
-
-function contentPanel(
-  state: CustomDownloadState = defaultCustomDownloadState,
-  action: ActionType<RootAction>
-): CustomDownloadState {
-  switch (action.type) {
     case getType(customDownloadActions.toggleTabButton):
       return { ...state, selectedTabButton: action.payload };
     case getType(customDownloadActions.setAttributes):
-      return { ...state, attributes: action.payload };
-    case getType(customDownloadActions.setGeneAttributes):
       return {
         ...state,
-        attributes: contentPanelGeneAttributes(state.attributes, action)
-      };
-    case getType(customDownloadActions.setTranscriptAttributes):
-      return {
-        ...state,
-        attributes: contentPanelTranscriptAttributes(state.attributes, action)
-      };
-    case getType(customDownloadActions.setLocationAttributes):
-      return {
-        ...state,
-        attributes: contentPanelLocationAttributes(state.attributes, action)
-      };
-    case getType(customDownloadActions.setSomaticVariationAttributes):
-      return {
-        ...state,
-        attributes: contentPanelVariationAttributes(state.attributes, action)
-      };
-    case getType(customDownloadActions.setGermlineVariationAttributes):
-      return {
-        ...state,
-        attributes: contentPanelVariationAttributes(state.attributes, action)
+        attributesAccordion: attributesAccordion(
+          state.attributesAccordion,
+          action
+        )
       };
     case getType(customDownloadActions.setAttributesAccordionExpandedPanel):
       return {
         ...state,
-        attributesAccordion: contentPanelAttributesAccordion(
+        attributesAccordion: attributesAccordion(
           state.attributesAccordion,
           action
         )
@@ -67,7 +37,47 @@ function contentPanel(
     case getType(customDownloadActions.setVariationAccordionExpandedPanels):
       return {
         ...state,
-        attributesAccordion: contentPanelAttributesAccordion(
+        attributesAccordion: attributesAccordion(
+          state.attributesAccordion,
+          action
+        )
+      };
+    case getType(customDownloadActions.setGeneAttributes):
+      return {
+        ...state,
+        attributesAccordion: attributesAccordion(
+          state.attributesAccordion,
+          action
+        )
+      };
+    case getType(customDownloadActions.setTranscriptAttributes):
+      return {
+        ...state,
+        attributesAccordion: attributesAccordion(
+          state.attributesAccordion,
+          action
+        )
+      };
+    case getType(customDownloadActions.setLocationAttributes):
+      return {
+        ...state,
+        attributesAccordion: attributesAccordion(
+          state.attributesAccordion,
+          action
+        )
+      };
+    case getType(customDownloadActions.setSomaticVariationAttributes):
+      return {
+        ...state,
+        attributesAccordion: attributesAccordion(
+          state.attributesAccordion,
+          action
+        )
+      };
+    case getType(customDownloadActions.setGermlineVariationAttributes):
+      return {
+        ...state,
+        attributesAccordion: attributesAccordion(
           state.attributesAccordion,
           action
         )
@@ -119,7 +129,7 @@ function contentPanel(
   }
 }
 
-function contentPanelAttributesAccordion(
+function attributesAccordion(
   state: any = defaultCustomDownloadState,
   action: ActionType<RootAction>
 ): CustomDownloadState {
@@ -128,56 +138,33 @@ function contentPanelAttributesAccordion(
       return { ...state, expandedPanel: action.payload };
     case getType(customDownloadActions.setVariationAccordionExpandedPanels):
       return { ...state, expandedVariationPanels: action.payload };
-    default:
-      return state;
-  }
-}
-
-function contentPanelFiltersAccordion(
-  state: any = defaultCustomDownloadState,
-  action: ActionType<RootAction>
-): CustomDownloadState {
-  switch (action.type) {
-    case getType(customDownloadActions.setFiltersAccordionExpandedPanel):
-      return { ...state, expandedPanel: action.payload };
-    case getType(customDownloadActions.setFiltersAccordionExpandedGenePanels):
-      return { ...state, expandedGenePanels: action.payload };
-    default:
-      return state;
-  }
-}
-
-function contentPanelGeneFilters(
-  state: any = defaultCustomDownloadState,
-  action: ActionType<RootAction>
-): CustomDownloadState {
-  switch (action.type) {
-    case getType(customDownloadActions.setGeneFilters):
-      return { ...state, gene: action.payload };
-    default:
-      return state;
-  }
-}
-
-function contentPanelGeneTypeFilters(
-  state: any = defaultCustomDownloadState,
-  action: ActionType<RootAction>
-): CustomDownloadState {
-  switch (action.type) {
-    case getType(customDownloadActions.setGeneTypeFilters):
-      return { ...state, gene_type: action.payload };
-    default:
-      return state;
-  }
-}
-
-function contentPanelTranscriptTypeFilters(
-  state: any = defaultCustomDownloadState,
-  action: ActionType<RootAction>
-): CustomDownloadState {
-  switch (action.type) {
-    case getType(customDownloadActions.setTranscriptTypeFilters):
-      return { ...state, biotype: action.payload };
+    case getType(customDownloadActions.setAttributes):
+      return { ...state, attributes: action.payload };
+    case getType(customDownloadActions.setGeneAttributes):
+      return {
+        ...state,
+        attributes: contentPanelGeneAttributes(state.attributes, action)
+      };
+    case getType(customDownloadActions.setTranscriptAttributes):
+      return {
+        ...state,
+        attributes: contentPanelTranscriptAttributes(state.attributes, action)
+      };
+    case getType(customDownloadActions.setLocationAttributes):
+      return {
+        ...state,
+        attributes: contentPanelLocationAttributes(state.attributes, action)
+      };
+    case getType(customDownloadActions.setSomaticVariationAttributes):
+      return {
+        ...state,
+        attributes: contentPanelVariationAttributes(state.attributes, action)
+      };
+    case getType(customDownloadActions.setGermlineVariationAttributes):
+      return {
+        ...state,
+        attributes: contentPanelVariationAttributes(state.attributes, action)
+      };
     default:
       return state;
   }
@@ -233,7 +220,54 @@ function contentPanelVariationAttributes(
   }
 }
 
-export default combineReducers({
-  preFilterPanel,
-  contentPanel
-});
+function contentPanelFiltersAccordion(
+  state: any = defaultCustomDownloadState,
+  action: ActionType<RootAction>
+): CustomDownloadState {
+  switch (action.type) {
+    case getType(customDownloadActions.setFiltersAccordionExpandedPanel):
+      return { ...state, expandedPanel: action.payload };
+    case getType(customDownloadActions.setFiltersAccordionExpandedGenePanels):
+      return { ...state, expandedGenePanels: action.payload };
+    default:
+      return state;
+  }
+}
+
+function contentPanelGeneFilters(
+  state: any = defaultCustomDownloadState,
+  action: ActionType<RootAction>
+): CustomDownloadState {
+  switch (action.type) {
+    case getType(customDownloadActions.setGeneFilters):
+      return { ...state, gene: action.payload };
+    default:
+      return state;
+  }
+}
+
+function contentPanelGeneTypeFilters(
+  state: any = defaultCustomDownloadState,
+  action: ActionType<RootAction>
+): CustomDownloadState {
+  switch (action.type) {
+    case getType(customDownloadActions.setGeneTypeFilters):
+      return { ...state, gene_type: action.payload };
+    default:
+      return state;
+  }
+}
+
+function contentPanelTranscriptTypeFilters(
+  state: any = defaultCustomDownloadState,
+  action: ActionType<RootAction>
+): CustomDownloadState {
+  switch (action.type) {
+    case getType(customDownloadActions.setTranscriptTypeFilters):
+      return { ...state, biotype: action.payload };
+    default:
+      return state;
+  }
+}
+
+export default customDownload;

@@ -1,58 +1,58 @@
 import { RootState } from 'src/store';
 
 export const getSelectedPreFilter = (state: RootState): string =>
-  state.customDownload.preFilterPanel.selectedPreFilter;
+  state.customDownload.selectedPreFilter;
 
 export const getShowPreFilterPanel = (state: RootState): boolean =>
-  state.customDownload.preFilterPanel.showPreFiltersPanel;
+  state.customDownload.showPreFiltersPanel;
 
 export const getSelectedTabButton = (state: RootState): string =>
-  state.customDownload.contentPanel.selectedTabButton;
+  state.customDownload.selectedTabButton;
 
 export const getAttributes = (state: RootState): {} =>
-  state.customDownload.contentPanel.attributes;
+  state.customDownload.attributesAccordion.attributes;
 
 export const getGeneAttributes = (state: RootState): {} =>
-  state.customDownload.contentPanel.attributes.gene;
+  state.customDownload.attributesAccordion.attributes.gene;
 
 export const getTranscriptAttributes = (state: RootState): {} =>
-  state.customDownload.contentPanel.attributes.transcripts;
+  state.customDownload.attributesAccordion.attributes.transcripts;
 
 export const getLocationAttributes = (state: RootState): {} =>
-  state.customDownload.contentPanel.attributes.location;
+  state.customDownload.attributesAccordion.attributes.location;
 
 export const getGermlineVariationAttributes = (state: RootState): {} =>
-  state.customDownload.contentPanel.attributes.germline_variation;
+  state.customDownload.attributesAccordion.attributes.germline_variation;
 
 export const getSomaticVariationAttributes = (state: RootState): {} =>
-  state.customDownload.contentPanel.attributes.somatic_variation;
+  state.customDownload.attributesAccordion.attributes.somatic_variation;
 
 export const getAttributesAccordionExpandedPanel = (state: RootState): string =>
-  state.customDownload.contentPanel.attributesAccordion.expandedPanel;
+  state.customDownload.attributesAccordion.expandedPanel;
 
 export const getVariationAccordionExpandedPanels = (state: RootState): [] =>
-  state.customDownload.contentPanel.attributesAccordion.expandedVariationPanels;
+  state.customDownload.attributesAccordion.expandedVariationPanels;
 
 export const getFiltersAccordionExpandedPanel = (state: RootState): string =>
-  state.customDownload.contentPanel.filtersAccordion.expandedPanel;
+  state.customDownload.filtersAccordion.expandedPanel;
 
 export const getFiltersAccordionExpandedGenePanels = (state: RootState): [] =>
-  state.customDownload.contentPanel.filtersAccordion.expandedGenePanels;
+  state.customDownload.filtersAccordion.expandedGenePanels;
 
 export const getFilters = (state: RootState): {} =>
-  state.customDownload.contentPanel.filters;
+  state.customDownload.filters;
 
 export const getGeneFilters = (state: RootState): string =>
-  state.customDownload.contentPanel.filters.gene;
+  state.customDownload.filters.gene;
 
 export const getGeneTypeFilters = (state: RootState): string =>
-  state.customDownload.contentPanel.filters.gene_type;
+  state.customDownload.filters.gene_type;
 
 export const getTranscriptTypeFilters = (state: RootState): string =>
-  state.customDownload.contentPanel.filters.biotype;
+  state.customDownload.filters.biotype;
 
 export const getPreviewResult = (state: RootState): string =>
-  state.customDownload.contentPanel.previewResult;
+  state.customDownload.previewResult;
 
 export const getIsLoadingResult = (state: RootState): boolean =>
-  state.customDownload.contentPanel.isLoadingResult;
+  state.customDownload.isLoadingResult;

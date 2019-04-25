@@ -1,5 +1,4 @@
 import { createAction } from 'typesafe-actions';
-import { Dispatch } from 'redux';
 
 import { getCustomDownloadAnalyticsObject } from 'src/analyticsHelper';
 

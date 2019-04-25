@@ -49,7 +49,7 @@ const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
         </RoundButton>
         <RoundButton
           onClick={() => {
-            filterOnClick('vVriation');
+            filterOnClick('Variation');
           }}
           status={
             props.selectedPreFilter === 'Variation'

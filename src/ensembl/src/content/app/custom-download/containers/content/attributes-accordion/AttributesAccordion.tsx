@@ -14,7 +14,13 @@ import {
 import { getAttributesAccordionExpandedPanel } from 'src/content/app/custom-download/customDownloadSelectors';
 import { setAttributesAccordionExpandedPanel } from 'src/content/app/custom-download/customDownloadActions';
 
-import { Genes, Transcripts, Variations, Location } from './sections';
+import {
+  Genes,
+  Transcripts,
+  Variations,
+  Location,
+  Orthologues
+} from './sections';
 
 import styles from './AttributesAccordion.scss';
 
@@ -169,7 +175,11 @@ const Attributes = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
-            <div>No attributes available under this section.</div>
+            {props.expandedPanel !== 'orthologues' && (
+              <div className={styles.permanentBlock}>
+                <Orthologues hideUnchecked={true} hideTitles={true} />
+              </div>
+            )}
           </AccordionItemPanel>
         </AccordionItem>
 

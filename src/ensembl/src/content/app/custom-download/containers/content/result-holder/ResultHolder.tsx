@@ -43,19 +43,23 @@ const ResultHolder = (props: Props) => {
   }, [props.previewResult]);
 
   if (props.isLoadingResult || !props.previewResult.results) {
-    return Array(10)
-      .fill(1)
-      .map((value, key: number) => {
-        return (
-          <div key={key} className={styles.wrapper}>
-            <div className={styles.resultCard}>
-              <div className={styles.loaderWrapper}>
-                <CircleLoader />
+    return (
+      <>
+        {Array(10)
+          .fill(1)
+          .map((value, key: number) => {
+            return (
+              <div key={key} className={styles.wrapper}>
+                <div className={styles.resultCard}>
+                  <div className={styles.loaderWrapper}>
+                    <CircleLoader />
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        );
-      });
+            );
+          })}
+      </>
+    );
   }
 
   const formattedResults = formatResults(

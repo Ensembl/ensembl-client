@@ -35,9 +35,11 @@
   line-height: 25px;
   font-size: 16px;
   padding-left: 15px;
+  padding-right: 2px;
   float: left;
-  max-width: calc(100% - 15px);
+  max-width: calc(100% - 17px);
   margin-top: -5px;
+  word-wrap: break-word;
 }
 
 .hiddenInput {

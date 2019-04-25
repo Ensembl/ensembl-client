@@ -2,16 +2,16 @@ import faker from 'faker';
 
 export const sampleResults: any = {
   'location.genomic_coordinates': [
-    '1:1-1',
-    '2:2-2',
-    '3:3-3',
-    '4:4-4',
-    '5:5-5',
-    '6:6-6',
-    '7:7-7',
-    '8:8-8',
-    '9:9-9',
-    '10:10-10'
+    `1:${faker.random.number()}-${faker.random.number()}`,
+    `2:${faker.random.number()}-${faker.random.number()}`,
+    `3:${faker.random.number()}-${faker.random.number()}`,
+    `4:${faker.random.number()}-${faker.random.number()}`,
+    `5:${faker.random.number()}-${faker.random.number()}`,
+    `6:${faker.random.number()}-${faker.random.number()}`,
+    `7:${faker.random.number()}-${faker.random.number()}`,
+    `8:${faker.random.number()}-${faker.random.number()}`,
+    `9:${faker.random.number()}-${faker.random.number()}`,
+    `10:${faker.random.number()}-${faker.random.number()}`
   ],
   'transcripts.id': [
     faker.lorem.word(),
@@ -160,6 +160,12 @@ export const attributes = {
       source_of_name: {
         id: 'source_of_name',
         label: 'Source of gene name',
+        checkedStatus: false
+      },
+      very_long_label: {
+        id: 'very_long_label',
+        label:
+          'Very veryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryvery very very very very very very very very very very very very very very very long label',
         checkedStatus: false
       },
       xxxx: {
@@ -405,3 +411,9 @@ export const attributes = {
     }
   }
 };
+
+// Result string
+/*
+   "[["Transcript symbol","Transcript name","Transcript stable ID"],["voluptates","nostrum","molestiae"],["earum","quo","quasi"],["aut","eum","soluta"],["qui","omnis","accusantium"],["eum","consequatur","et"],["veritatis","nulla","pariatur"],["asperiores","est","facilis"],["rerum","eos","modi"],["aut","non","magni"],["eos","a","aliquam"]]"
+
+  */
