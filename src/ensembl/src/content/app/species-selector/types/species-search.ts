@@ -32,7 +32,7 @@ NOTES/QUESTIONS:
 */
 
 export type Strain = {
-  production_name: string;
+  genome_id: string;
   display_name: string;
 };
 
@@ -41,9 +41,10 @@ export type Assembly = {
 };
 
 export type CommittedItem = {
+  genome_id: string;
+  reference_genome_id: string | null; // because in Species Selector we need to keep track of how many strains of the same species are selected
   common_name: string | null;
   scientific_name: string;
   assembly_name: string;
   isEnabled: boolean;
-  reference_species_name: string; // because in Species Selector we need to keep track of how many strains have been selected
 };

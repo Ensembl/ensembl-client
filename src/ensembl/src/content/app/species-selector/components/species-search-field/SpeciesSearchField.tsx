@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import {
   fetchSpeciesSearchResults,
-  setSelectedSearchResult,
+  handleSelectedSearchResult,
   clearSelectedSearchResult
 } from 'src/content/app/species-selector/state/speciesSelectorActions';
 
@@ -96,7 +96,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = {
   onSearchChange: fetchSpeciesSearchResults.request,
-  onMatchSelected: setSelectedSearchResult,
+  onMatchSelected: handleSelectedSearchResult,
   clearSelectedSearchResult
 };
 
