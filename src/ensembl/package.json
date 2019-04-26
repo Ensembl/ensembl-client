@@ -39,7 +39,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
+      "pre-commit": "if git-branch-is master; then exit 1; else lint-staged; fi",
       "pre-push": "if git-branch-is master; then git rebase dev; fi"
     }
   },
