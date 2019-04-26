@@ -1,5 +1,6 @@
-import { RootState } from 'src/store';
 import get from 'lodash/get';
+
+import { RootState } from 'src/store';
 
 export const getSearchResults = (state: RootState) =>
   state.speciesSelector.search.results;
@@ -44,4 +45,8 @@ export const canCommitSpecies = (state: RootState) => {
     !isSelectingStrain(state) &&
     !isSelectingAssembly(state)
   );
+};
+
+export const getCommittedSpecies = (state: RootState) => {
+  return state.speciesSelector.committedItems;
 };
