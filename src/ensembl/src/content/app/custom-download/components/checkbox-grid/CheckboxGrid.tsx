@@ -28,7 +28,8 @@ export const filterCheckedAttributes = (attributes: any) => {
 export const getAttributesCount = (attributes: any) => {
   let totalAttributes: number = 0;
 
-  if (!attributes || Object.keys(attributes).length) {
+  console.log(attributes, !!attributes);
+  if (!attributes || Object.keys(attributes).length === 0) {
     return 0;
   }
   Object.keys(attributes).forEach((section) => {

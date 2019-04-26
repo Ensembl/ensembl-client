@@ -24,8 +24,17 @@ export const getOrthologueAttributes = (state: RootState): {} =>
 export const getOrthologueSearchTerm = (state: RootState): string =>
   state.customDownload.attributesAccordion.orthologue.searchTerm;
 
+export const getOrthologueShowBestMatches = (state: RootState): boolean =>
+  state.customDownload.attributesAccordion.orthologue.showBestMatches;
+
+export const getOrthologueShowAll = (state: RootState): boolean =>
+  state.customDownload.attributesAccordion.orthologue.showAll;
+
 export const getOrthologueSpecies = (state: RootState): [] =>
   state.customDownload.attributesAccordion.orthologue.species;
+
+export const getOrthologueFilteredSpecies = (state: RootState): {} =>
+  state.customDownload.attributesAccordion.orthologue.filteredSpecies;
 
 export const getLocationAttributes = (state: RootState): {} =>
   state.customDownload.attributesAccordion.attributes.location;

@@ -98,7 +98,31 @@ function customDownload(
           action
         )
       };
+    case getType(customDownloadActions.setOrthologueShowBestMatches):
+      return {
+        ...state,
+        attributesAccordion: attributesAccordion(
+          state.attributesAccordion,
+          action
+        )
+      };
+    case getType(customDownloadActions.setOrthologueShowAll):
+      return {
+        ...state,
+        attributesAccordion: attributesAccordion(
+          state.attributesAccordion,
+          action
+        )
+      };
     case getType(customDownloadActions.setOrthologueSpecies):
+      return {
+        ...state,
+        attributesAccordion: attributesAccordion(
+          state.attributesAccordion,
+          action
+        )
+      };
+    case getType(customDownloadActions.setOrthologueFilteredSpecies):
       return {
         ...state,
         attributesAccordion: attributesAccordion(
@@ -193,7 +217,22 @@ function attributesAccordion(
         ...state,
         orthologue: Orthologue(state.orthologue, action)
       };
+    case getType(customDownloadActions.setOrthologueShowBestMatches):
+      return {
+        ...state,
+        orthologue: Orthologue(state.orthologue, action)
+      };
+    case getType(customDownloadActions.setOrthologueShowAll):
+      return {
+        ...state,
+        orthologue: Orthologue(state.orthologue, action)
+      };
     case getType(customDownloadActions.setOrthologueSpecies):
+      return {
+        ...state,
+        orthologue: Orthologue(state.orthologue, action)
+      };
+    case getType(customDownloadActions.setOrthologueFilteredSpecies):
       return {
         ...state,
         orthologue: Orthologue(state.orthologue, action)
@@ -222,8 +261,14 @@ function Orthologue(
   switch (action.type) {
     case getType(customDownloadActions.setOrthologueSearchTerm):
       return { ...state, searchTerm: action.payload };
+    case getType(customDownloadActions.setOrthologueShowBestMatches):
+      return { ...state, showBestMatches: action.payload };
+    case getType(customDownloadActions.setOrthologueShowAll):
+      return { ...state, showAll: action.payload };
     case getType(customDownloadActions.setOrthologueSpecies):
       return { ...state, species: action.payload };
+    case getType(customDownloadActions.setOrthologueFilteredSpecies):
+      return { ...state, filteredSpecies: action.payload };
     default:
       return state;
   }
@@ -235,7 +280,7 @@ function OrthologueAttributes(
 ): CustomDownloadState {
   switch (action.type) {
     case getType(customDownloadActions.setOrthologueAttributes):
-      return { ...state, orthologue: action.payload };
+      return { ...state, orthologues: action.payload };
     default:
       return state;
   }

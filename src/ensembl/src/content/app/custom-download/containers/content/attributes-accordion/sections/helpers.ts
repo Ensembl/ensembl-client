@@ -9,12 +9,15 @@ export const getMatchedSpeciesList = async (searchTerm: string, props: any) => {
   } else {
     allSpecies = props.orthologueSpecies;
   }
+
   const filteredSpecies: any = {};
 
   allSpecies.forEach((species: any) => {
     if (
-      species.display_name.toLowerCase().indexOf(searchTerm.toLowerCase()) !==
-      -1
+      (species.display_name.toLowerCase().indexOf(searchTerm.toLowerCase()) !==
+        -1 &&
+        props.shouldShowBestMatches) ||
+      props.shouldShowAll
     ) {
       filteredSpecies[species.name] = {
         id: species.name,
@@ -24,20 +27,23 @@ export const getMatchedSpeciesList = async (searchTerm: string, props: any) => {
     }
   });
 
-  const newOrthologueAttributes: any = {};
+  const newOrthologueFilteredSpecies: any = {};
 
-  if (props.orthologueAttributes && props.orthologueAttributes.default) {
-    Object.keys(props.orthologueAttributes.default).forEach(
+  if (
+    props.orthologueFilteredSpecies &&
+    props.orthologueFilteredSpecies.default
+  ) {
+    Object.keys(props.orthologueFilteredSpecies.default).forEach(
       (species: string) => {
-        if (props.orthologueAttributes.default[species].checkedStatus) {
+        if (props.orthologueFilteredSpecies.default[species].checkedStatus) {
           filteredSpecies[species] =
-            props.orthologueAttributes.default[species];
+            props.orthologueFilteredSpecies.default[species];
         }
       }
     );
   }
 
-  newOrthologueAttributes.default = filteredSpecies;
+  newOrthologueFilteredSpecies.default = filteredSpecies;
 
-  props.setOrthologueAttributes(newOrthologueAttributes);
+  props.setOrthologueFilteredSpecies(newOrthologueFilteredSpecies);
 };

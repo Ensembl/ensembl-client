@@ -11,15 +11,18 @@ export type CustomDownloadState = Readonly<{
 
 export const defaultCustomDownloadState: CustomDownloadState = {
   selectedPreFilter: '',
-  showPreFiltersPanel: false,
+  showPreFiltersPanel: true,
   selectedTabButton: 'attributes',
   attributesAccordion: {
-    expandedPanel: 'orthologues',
+    expandedPanel: '',
     expandedVariationPanels: [],
     attributes: {},
     orthologue: {
       searchTerm: '',
-      species: []
+      species: [],
+      filteredSpecies: {},
+      showBestMatches: false,
+      showAll: false
     }
   },
   filters: {},

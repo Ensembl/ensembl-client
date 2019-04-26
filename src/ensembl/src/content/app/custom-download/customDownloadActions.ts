@@ -94,6 +94,41 @@ export const setOrthologueAttributes = createAction(
   }
 );
 
+export const setOrthologueFilteredSpecies = createAction(
+  'custom-download/set-orthologue-filteres-species',
+  (resolve) => {
+    return (filteredSpecies: {}) =>
+      resolve(
+        filteredSpecies,
+        getCustomDownloadAnalyticsObject('Orthologue species filtered')
+      );
+  }
+);
+
+export const setOrthologueShowBestMatches = createAction(
+  'custom-download/set-orthologue-show-best-matches',
+  (resolve) => {
+    return (showBestMatches: boolean) =>
+      resolve(
+        showBestMatches,
+        getCustomDownloadAnalyticsObject(
+          'Orthologue Show Best Matches link clicked'
+        )
+      );
+  }
+);
+
+export const setOrthologueShowAll = createAction(
+  'custom-download/set-orthologue-show-all',
+  (resolve) => {
+    return (showAll: boolean) =>
+      resolve(
+        showAll,
+        getCustomDownloadAnalyticsObject('Orthologue Show All link clicked')
+      );
+  }
+);
+
 export const setOrthologueSearchTerm = createAction(
   'custom-download/set-orthologue-search-term',
   (resolve) => {

@@ -61,6 +61,10 @@
       color: $ens-black;
     }
 
+    span:nth-of-type(2) {
+      color: $ens-medium-dark-grey;
+    }
+
     span:last-of-type {
       font-size: 12px;
       padding-left: 2px;
@@ -78,4 +82,9 @@
   .filterWrapper {
     margin-bottom: 20px;
   }
+}
+
+.speciesAttributesSectionTitle {
+  margin: 20px 0 15px 30px;
+  color: $ens-dark-grey;
 }

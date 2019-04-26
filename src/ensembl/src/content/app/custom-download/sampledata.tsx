@@ -412,6 +412,73 @@ export const attributes = {
   }
 };
 
+export const orthologueAttributes = {
+  symbol: {
+    id: 'symbol',
+    label: 'Gene symbol',
+    checkedStatus: false
+  },
+  id: {
+    id: 'id',
+    label: 'Gene stable ID',
+    checkedStatus: false
+  },
+  id_version: {
+    id: 'id_version',
+    label: 'Gene stable ID version',
+    checkedStatus: false
+  },
+  name: {
+    id: 'name',
+    label: 'Gene name',
+    checkedStatus: false
+  },
+  type: {
+    id: 'type',
+    label: 'Gene type',
+    checkedStatus: false
+  },
+  version_gene: {
+    id: 'version_gene',
+    label: 'Version (gene)',
+    checkedStatus: false
+  },
+  start: {
+    id: 'start',
+    label: 'Gene start(bp)',
+    checkedStatus: false
+  },
+  end: {
+    id: 'end',
+    label: 'Gene end (bp)',
+    checkedStatus: false
+  },
+  gc_content: {
+    id: 'gc_content',
+    label: 'Gene % GC content',
+    checkedStatus: false
+  },
+  source_gene: {
+    id: 'source_gene',
+    label: 'Source (gene)',
+    checkedStatus: false
+  },
+  EntrezGene: {
+    id: 'EntrezGene',
+    label: 'EntrezGene',
+    checkedStatus: false
+  },
+  source_of_name: {
+    id: 'source_of_name',
+    label: 'Source of gene name',
+    checkedStatus: false
+  },
+  xxxx: {
+    id: 'xxxxxx',
+    label: 'xxxxxx',
+    checkedStatus: false
+  }
+};
 // Result string
 /*
    "[["Transcript symbol","Transcript name","Transcript stable ID"],["voluptates","nostrum","molestiae"],["earum","quo","quasi"],["aut","eum","soluta"],["qui","omnis","accusantium"],["eum","consequatur","et"],["veritatis","nulla","pariatur"],["asperiores","est","facilis"],["rerum","eos","modi"],["aut","non","magni"],["eos","a","aliquam"]]"
