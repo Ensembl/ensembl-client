@@ -22,7 +22,8 @@ export const defaultCustomDownloadState: CustomDownloadState = {
       species: [],
       filteredSpecies: {},
       showBestMatches: false,
-      showAll: false
+      showAll: false,
+      applyToAllSpecies: false
     }
   },
   filters: {},

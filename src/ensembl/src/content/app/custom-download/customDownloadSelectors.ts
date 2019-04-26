@@ -30,6 +30,9 @@ export const getOrthologueShowBestMatches = (state: RootState): boolean =>
 export const getOrthologueShowAll = (state: RootState): boolean =>
   state.customDownload.attributesAccordion.orthologue.showAll;
 
+export const getOrthologueApplyToAllSpecies = (state: RootState): boolean =>
+  state.customDownload.attributesAccordion.orthologue.applyToAllSpecies;
+
 export const getOrthologueSpecies = (state: RootState): [] =>
   state.customDownload.attributesAccordion.orthologue.species;
 

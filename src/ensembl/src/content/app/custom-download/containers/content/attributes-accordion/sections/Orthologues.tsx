@@ -12,7 +12,8 @@ import {
   getOrthologueSpecies,
   getOrthologueFilteredSpecies,
   getOrthologueShowBestMatches,
-  getOrthologueShowAll
+  getOrthologueShowAll,
+  getOrthologueApplyToAllSpecies
 } from 'src/content/app/custom-download/customDownloadSelectors';
 
 import {
@@ -21,7 +22,8 @@ import {
   setOrthologueSpecies,
   setOrthologueFilteredSpecies,
   setOrthologueShowBestMatches,
-  setOrthologueShowAll
+  setOrthologueShowAll,
+  setOrthologueApplyToAllSpecies
 } from 'src/content/app/custom-download/customDownloadActions';
 
 import { getMatchedSpeciesList } from './helpers';
@@ -68,7 +70,9 @@ const Orthologue = (props: Props) => {
         props.orthologueFilteredSpecies.default[attributeId].label;
 
       if (status) {
-        newOrthologueAttributes[sectionHeader] = orthologueAttributes;
+        newOrthologueAttributes[sectionHeader] = JSON.parse(
+          JSON.stringify(orthologueAttributes)
+        );
       } else {
         delete newOrthologueAttributes[sectionHeader];
       }
@@ -100,6 +104,10 @@ const Orthologue = (props: Props) => {
   const showAll = useCallback(() => {
     props.setOrthologueShowAll(!props.shouldShowAll);
   }, [props.shouldShowAll, props.orthologueFilteredSpecies]);
+
+  const applyToAllSpecies = useCallback(() => {
+    props.setOrthologueApplyToAllSpecies(!props.shouldApplyToAllSpecies);
+  }, [props.shouldApplyToAllSpecies, props.orthologueAttributes]);
 
   const getResultCounter = () => {
     if (props.shouldShowBestMatches || props.shouldShowAll) {
@@ -164,7 +172,7 @@ const Orthologue = (props: Props) => {
             return (
               <div key={key}>
                 <div className={styles.speciesAttributesSectionTitle}>
-                  {species}
+                  <span>{species}</span>
                 </div>
                 <CheckBoxGrid
                   checkboxOnChange={attributesOnChangeHandler}
@@ -187,6 +195,9 @@ type DispatchProps = {
   setOrthologueFilteredSpecies: (setOrthologueFilteredSpecies: {}) => void;
   setOrthologueShowBestMatches: (setOrthologueShowBestMatches: boolean) => void;
   setOrthologueShowAll: (setOrthologueShowAll: boolean) => void;
+  setOrthologueApplyToAllSpecies: (
+    setOrthologueApplyToAllSpecies: boolean
+  ) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
@@ -195,7 +206,8 @@ const mapDispatchToProps: DispatchProps = {
   setOrthologueSpecies,
   setOrthologueFilteredSpecies,
   setOrthologueShowBestMatches,
-  setOrthologueShowAll
+  setOrthologueShowAll,
+  setOrthologueApplyToAllSpecies
 };
 
 type StateProps = {
@@ -205,6 +217,7 @@ type StateProps = {
   orthologueFilteredSpecies: any;
   shouldShowBestMatches: boolean;
   shouldShowAll: boolean;
+  shouldApplyToAllSpecies: boolean;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
@@ -213,7 +226,8 @@ const mapStateToProps = (state: RootState): StateProps => ({
   orthologueSpecies: getOrthologueSpecies(state),
   orthologueFilteredSpecies: getOrthologueFilteredSpecies(state),
   shouldShowBestMatches: getOrthologueShowBestMatches(state),
-  shouldShowAll: getOrthologueShowAll(state)
+  shouldShowAll: getOrthologueShowAll(state),
+  shouldApplyToAllSpecies: getOrthologueApplyToAllSpecies(state)
 });
 
 export default connect(

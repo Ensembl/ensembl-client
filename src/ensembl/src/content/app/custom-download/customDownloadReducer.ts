@@ -114,6 +114,14 @@ function customDownload(
           action
         )
       };
+    case getType(customDownloadActions.setOrthologueApplyToAllSpecies):
+      return {
+        ...state,
+        attributesAccordion: attributesAccordion(
+          state.attributesAccordion,
+          action
+        )
+      };
     case getType(customDownloadActions.setOrthologueSpecies):
       return {
         ...state,
@@ -222,6 +230,11 @@ function attributesAccordion(
         ...state,
         orthologue: Orthologue(state.orthologue, action)
       };
+    case getType(customDownloadActions.setOrthologueApplyToAllSpecies):
+      return {
+        ...state,
+        orthologue: Orthologue(state.orthologue, action)
+      };
     case getType(customDownloadActions.setOrthologueShowAll):
       return {
         ...state,
@@ -265,6 +278,8 @@ function Orthologue(
       return { ...state, showBestMatches: action.payload };
     case getType(customDownloadActions.setOrthologueShowAll):
       return { ...state, showAll: action.payload };
+    case getType(customDownloadActions.setOrthologueApplyToAllSpecies):
+      return { ...state, applyToAllSpecies: action.payload };
     case getType(customDownloadActions.setOrthologueSpecies):
       return { ...state, species: action.payload };
     case getType(customDownloadActions.setOrthologueFilteredSpecies):

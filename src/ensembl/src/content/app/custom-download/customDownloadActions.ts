@@ -129,6 +129,19 @@ export const setOrthologueShowAll = createAction(
   }
 );
 
+export const setOrthologueApplyToAllSpecies = createAction(
+  'custom-download/set-orthologue-apply-to-all-species',
+  (resolve) => {
+    return (applyToAllSpecies: boolean) =>
+      resolve(
+        applyToAllSpecies,
+        getCustomDownloadAnalyticsObject(
+          'Orthologue Apply To All Species link clicked'
+        )
+      );
+  }
+);
+
 export const setOrthologueSearchTerm = createAction(
   'custom-download/set-orthologue-search-term',
   (resolve) => {
