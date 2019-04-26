@@ -54,19 +54,17 @@ export const SpeciesSearchField = (props: Props) => {
   };
 
   return (
-    <div>
-      <AutosuggestSearchField
-        search={props.selectedItemText || search}
-        placeholder="Common or scientific name..."
-        className={styles.speciesSearchFieldWrapper}
-        onChange={handleSearchChange}
-        onSelect={onMatchSelected}
-        rightCorner={<RightCorner />}
-        matchGroups={buildMatchGroups(props.matches)}
-        searchFieldClassName={styles.speciesSearchField}
-        canShowSuggestions={!Boolean(props.selectedItemText)}
-      />
-    </div>
+    <AutosuggestSearchField
+      search={props.selectedItemText || search}
+      placeholder="Common or scientific name..."
+      className={styles.speciesSearchFieldWrapper}
+      onChange={handleSearchChange}
+      onSelect={onMatchSelected}
+      rightCorner={<RightCorner />}
+      matchGroups={buildMatchGroups(props.matches)}
+      searchFieldClassName={styles.speciesSearchField}
+      canShowSuggestions={!Boolean(props.selectedItemText)}
+    />
   );
 };
 

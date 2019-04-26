@@ -3,10 +3,10 @@
 $rightCornerWidth: 40px;
 
 .speciesSearchFieldWrapper {
+  display: inline-flex;
+  align-items: center;
   position: relative;
   padding: 4px;
-  display: flex;
-  align-items: center;
   width: 100%;
   max-width: 485px;
   height: 40px;

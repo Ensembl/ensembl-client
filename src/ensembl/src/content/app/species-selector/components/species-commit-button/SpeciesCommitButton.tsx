@@ -9,6 +9,8 @@ import { commitSelectedSpecies } from 'src/content/app/species-selector/state/sp
 
 import { PrimaryButton } from 'src/shared/button/Button';
 
+import styles from './SpeciesCommitButton.scss';
+
 import { RootState } from 'src/store';
 
 type Props = {
@@ -23,7 +25,7 @@ export const SpeciesCommitButton = (props: Props) => {
   };
 
   return props.hasCurrentSpecies ? (
-    <div>
+    <div className={styles.speciesCommitButton}>
       <PrimaryButton onClick={handleClick} isDisabled={props.disabled}>
         Add
       </PrimaryButton>

@@ -8,9 +8,11 @@ import styles from './SpeciesSearchPanel.scss';
 
 const SearchPanel = () => {
   return (
-    <section className={styles.searchPanel}>
-      <SpeciesSearchField />
-      <SpeciesCommitButton />
+    <section className={styles.speciesSearchPanel}>
+      <div className={styles.speciesSearchPanelRow}>
+        <SpeciesSearchField />
+        <SpeciesCommitButton />
+      </div>
     </section>
   );
 };
