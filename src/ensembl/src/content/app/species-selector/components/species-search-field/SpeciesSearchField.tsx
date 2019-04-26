@@ -50,6 +50,7 @@ export const SpeciesSearchField = (props: Props) => {
 
   const onMatchSelected = (match: SearchMatch) => {
     props.onMatchSelected(match);
+    setSearch('');
   };
 
   return (

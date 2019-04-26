@@ -1,4 +1,6 @@
 import { getType, ActionType } from 'typesafe-actions';
+import find from 'lodash/find';
+import get from 'lodash/get';
 
 import * as speciesSelectorActions from './speciesSelectorActions';
 
@@ -9,7 +11,8 @@ import initialState, {
 
 import {
   SearchMatch,
-  PopularSpecies
+  PopularSpecies,
+  CommittedItem
 } from 'src/content/app/species-selector/types/species-search';
 
 // NOTE: CurrentItem can be built from a search match or from a popular species
@@ -28,6 +31,18 @@ const buildCurrentItem = (data: SearchMatch | PopularSpecies): CurrentItem => {
     assemblies: []
   };
 };
+
+const buildCommittedItem = (data: CurrentItem): CommittedItem => ({
+  genome_id: data.genome_id,
+  reference_genome_id: data.reference_genome_id,
+  common_name: data.common_name,
+  scientific_name: data.scientific_name,
+  assembly_name: get(
+    find(data.assemblies, ({ genome_id }) => genome_id === data.genome_id),
+    'assembly_name'
+  ) as string,
+  isEnabled: true
+});
 
 export default function speciesSelectorReducer(
   state: SpeciesSelectorState = initialState,
@@ -62,6 +77,15 @@ export default function speciesSelectorReducer(
           ...(state.currentItem as CurrentItem),
           assemblies: action.payload.assemblies
         }
+      };
+    case getType(speciesSelectorActions.commitSelectedSpecies):
+      return {
+        ...state,
+        currentItem: null,
+        committedItems: [
+          ...state.committedItems,
+          buildCommittedItem(state.currentItem as CurrentItem)
+        ]
       };
     case getType(speciesSelectorActions.clearSelectedSearchResult):
       return {

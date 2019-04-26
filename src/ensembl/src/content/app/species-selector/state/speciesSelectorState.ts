@@ -22,6 +22,10 @@ export type SpeciesSelectorState = {
   loadingStates: {
     search: LoadingState;
   };
+  ui: {
+    isSelectingStrain: boolean;
+    isSelectingAssembly: boolean;
+  };
   search: {
     text: string;
     results: SearchMatches[];
@@ -40,8 +44,12 @@ const initialState: SpeciesSelectorState = {
   loadingStates: {
     search: LoadingState.NOT_REQUESTED
   },
+  ui: {
+    isSelectingStrain: false,
+    isSelectingAssembly: false
+  },
   search: {
-    text: '',
+    text: '', // FIXME: delete this field?
     results: []
   },
   currentItem: null,
