@@ -7,6 +7,7 @@ import {
   SpeciesSelectorAppBar,
   PlaceholderMessage
 } from './SpeciesSelectorAppBar';
+import SelectedSpecies from 'src/content/app/species-selector/components/selected-species/SelectedSpecies';
 
 const createSelectedSpecies = () => ({
   genome_id: faker.lorem.word(),
@@ -21,7 +22,7 @@ const toggleSpeciesUse = jest.fn();
 const onSpeciesDelete = jest.fn();
 
 const defaultProps = {
-  selectedSpecies: times(2, () => createSelectedSpecies()),
+  selectedSpecies: times(5, () => createSelectedSpecies()),
   toggleSpeciesUse,
   onSpeciesDelete
 };
@@ -40,5 +41,12 @@ describe('<SpeciesSelectorAppBar />', () => {
   it('does not show placeholder message if there are selected species', () => {
     const wrapper = mount(<SpeciesSelectorAppBar {...defaultProps} />);
     expect(wrapper.find(PlaceholderMessage).length).toBe(0);
+  });
+
+  it('renders the list of selected species if there are some', () => {
+    const wrapper = mount(<SpeciesSelectorAppBar {...defaultProps} />);
+    expect(wrapper.find(SelectedSpecies).length).toBe(
+      defaultProps.selectedSpecies.length
+    );
   });
 });

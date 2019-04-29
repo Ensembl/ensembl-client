@@ -9,8 +9,6 @@ import {
   Assembly
 } from 'src/content/app/species-selector/types/species-search';
 
-import { RootState } from 'src/store';
-
 import mouseStrainsResult from 'tests/data/species-selector/mouse-strains';
 import mouseAssemblies from 'tests/data/species-selector/mouse-assemblies';
 
@@ -88,3 +86,11 @@ export const handleSelectedSearchResult = (match: SearchMatch) => (
 export const commitSelectedSpecies = createStandardAction(
   'species_selector/commit_selected_species'
 )();
+
+export const toggleSpeciesUse = createStandardAction(
+  'species_selector/toggle_species_use'
+)<string>();
+
+export const deleteSpecies = createStandardAction(
+  'species_selector/delete_species'
+)<string>();

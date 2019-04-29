@@ -2,6 +2,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import {
+  toggleSpeciesUse,
+  deleteSpecies
+} from 'src/content/app/species-selector/state/speciesSelectorActions';
+
+import SelectedSpecies from 'src/content/app/species-selector/components/selected-species/SelectedSpecies';
 
 import { RootState } from 'src/store';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
@@ -10,8 +16,8 @@ import styles from './SpeciesSelectorAppBar.scss';
 
 type Props = {
   selectedSpecies: CommittedItem[];
-  toggleSpeciesUse: (species: CommittedItem) => void;
-  onSpeciesDelete: (species: CommittedItem) => void;
+  toggleSpeciesUse: (genomeId: string) => void;
+  onSpeciesDelete: (genomeId: string) => void;
 };
 
 export const PlaceholderMessage = () => (
@@ -25,8 +31,27 @@ export const SpeciesSelectorAppBar = (props: Props) => {
   return (
     <div>
       Species Selector
-      {props.selectedSpecies.length ? 'foo' : <PlaceholderMessage />}
+      {props.selectedSpecies.length > 0 ? (
+        <SelectedSpeciesList {...props} />
+      ) : (
+        <PlaceholderMessage />
+      )}
     </div>
+  );
+};
+
+const SelectedSpeciesList = (props: Props) => {
+  return (
+    <>
+      {props.selectedSpecies.map((species) => (
+        <SelectedSpecies
+          key={species.genome_id}
+          species={species}
+          onToggleUse={props.toggleSpeciesUse}
+          onRemove={props.onSpeciesDelete}
+        />
+      ))}
+    </>
   );
 };
 
@@ -34,4 +59,12 @@ const mapStateToProps = (state: RootState) => ({
   selectedSpecies: getCommittedSpecies(state)
 });
 
-export default SpeciesSelectorAppBar;
+const mapDispatchToProps = {
+  toggleSpeciesUse,
+  deleteSpecies
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SpeciesSelectorAppBar);
