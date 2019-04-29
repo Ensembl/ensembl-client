@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useState } from 'react';
 import classNames from 'classnames';
+import noop from 'lodash/noop';
 
 import CloseButton from 'src/shared/close-button/CloseButton';
 
@@ -63,8 +64,8 @@ const SelectedSpeciesOverlay: FunctionComponent<Props> = (props) => {
       <span className={styles.overlayText} onClick={handleClick}>
         {text}
       </span>
-      <div className={styles.closeButton} onClick={removeSpecies}>
-        <CloseButton inverted={true} onClick={removeSpecies} />
+      <div className={styles.closeButtonContainer} onClick={removeSpecies}>
+        <CloseButton inverted={true} onClick={noop} />
       </div>
     </div>
   );

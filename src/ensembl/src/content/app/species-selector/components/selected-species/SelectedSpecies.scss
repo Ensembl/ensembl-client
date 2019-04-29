@@ -14,6 +14,10 @@ $deleteButtonPadding: 8px 20px 8px 28px;
   cursor: pointer;
   user-select: none;
 
+  &:hover {
+    background-color: transparent;
+  }
+
   .name {
     font-size: 16px; // FIXME
     color: white;
@@ -45,7 +49,7 @@ $deleteButtonPadding: 8px 20px 8px 28px;
   cursor: default;
 
   .overlayText,
-  .closeButton {
+  .closeButtonContainer {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -58,7 +62,7 @@ $deleteButtonPadding: 8px 20px 8px 28px;
     color: $ens-blue;
   }
 
-  .closeButton {
+  .closeButtonContainer {
     display: flex;
     padding: $deleteButtonPadding;
     align-items: center;
