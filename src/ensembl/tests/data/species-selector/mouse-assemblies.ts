@@ -16,11 +16,11 @@ Shape of an assembly data object
 export default {
   alternative_assemblies: [
     {
-      assembly_name: 'GRCh38.p12',
-      genome_id: 'mus_musculus_abd'
+      assembly_name: 'GRCm38.p6',
+      genome_id: 'mus_musculus'
     },
     {
-      assembly_name: 'GRCh37.p13',
+      assembly_name: 'GRCm38.p5',
       genome_id: 'mus_musculus_bdc'
     }
   ]
