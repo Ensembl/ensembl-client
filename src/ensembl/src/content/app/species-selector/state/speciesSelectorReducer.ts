@@ -87,6 +87,27 @@ export default function speciesSelectorReducer(
           buildCommittedItem(state.currentItem as CurrentItem)
         ]
       };
+    case getType(speciesSelectorActions.toggleSpeciesUse):
+      return {
+        ...state,
+        committedItems: state.committedItems.map((item) => {
+          if (item.genome_id === action.payload) {
+            return {
+              ...item,
+              isEnabled: !item.isEnabled
+            };
+          } else {
+            return item;
+          }
+        })
+      };
+    case getType(speciesSelectorActions.deleteSpecies):
+      return {
+        ...state,
+        committedItems: state.committedItems.filter(
+          (item) => item.genome_id !== action.payload
+        )
+      };
     case getType(speciesSelectorActions.clearSelectedSearchResult):
       return {
         ...state,

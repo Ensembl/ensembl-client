@@ -64,7 +64,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = {
   toggleSpeciesUse,
-  deleteSpecies
+  onSpeciesDelete: deleteSpecies
 };
 
 export default connect(
