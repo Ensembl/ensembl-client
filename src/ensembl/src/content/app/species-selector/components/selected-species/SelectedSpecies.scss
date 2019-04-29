@@ -18,6 +18,10 @@ $deleteButtonPadding: 8px 20px 8px 28px;
     background-color: transparent;
   }
 
+  &:not(:last-child) {
+    margin-right: 1em;
+  }
+
   .name {
     font-size: 16px; // FIXME
     color: white;
