@@ -23,8 +23,7 @@ type Props = {
 
 const label = <span className={styles.assemblySelectorLabel}>Assembly</span>;
 
-const AssemblySelector = (props: Props) => {
-  console.log('props', props);
+export const AssemblySelector = (props: Props) => {
   const selectedAssembly = find(
     props.assemblies,
     (assembly) => assembly.genome_id === props.genomeId
