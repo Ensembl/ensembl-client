@@ -78,6 +78,14 @@ export default function speciesSelectorReducer(
           assemblies: action.payload.assemblies
         }
       };
+    case getType(speciesSelectorActions.changeAssembly):
+      return {
+        ...state,
+        currentItem: {
+          ...(state.currentItem as CurrentItem),
+          genome_id: action.payload
+        }
+      };
     case getType(speciesSelectorActions.commitSelectedSpecies):
       return {
         ...state,

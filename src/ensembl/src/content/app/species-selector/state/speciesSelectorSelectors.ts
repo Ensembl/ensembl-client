@@ -19,6 +19,10 @@ export const getSelectedItemText = (state: RootState): string | null => {
   return commonName || scientificName;
 };
 
+export const getCurrentSpeciesGenomeId = (state: RootState) => {
+  return get(state, 'speciesSelector.currentItem.genome_id', null);
+};
+
 export const getCurrentSpeciesStrains = (state: RootState) => {
   return get(state, 'speciesSelector.currentItem.strains', []);
 };

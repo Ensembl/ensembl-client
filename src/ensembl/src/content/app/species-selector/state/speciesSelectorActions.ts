@@ -94,3 +94,7 @@ export const toggleSpeciesUse = createStandardAction(
 export const deleteSpecies = createStandardAction(
   'species_selector/delete_species'
 )<string>();
+
+export const changeAssembly = createStandardAction(
+  'species_selector/change_assembly'
+)<string>();
