@@ -16,15 +16,16 @@ module.exports = {
   },
   // rules options: 0 = off, 1 = warn, 2 = error
   rules: {
-    'no-console': 1,
+    'no-console': [1, { allow: ['error', 'info', 'warn'] }],
+    '@typescript-eslint/camelcase': 0,
     '@typescript-eslint/interface-name-prefix': 0,
     '@typescript-eslint/prefer-interface': 0,
     '@typescript-eslint/explicit-function-return-type': 0,
+    '@typescript-eslint/no-explicit-any': 0,
     '@typescript-eslint/no-use-before-define': 0,
     'react/display-name': 0,
     'react/prop-types': 0,
     'react-hooks/rules-of-hooks': 2,
-    'react-hooks/exhaustive-deps': 1,
     'prettier/prettier': 0
   },
   settings: {
