@@ -52,8 +52,8 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
             <Fragment>
               <p>
                 MANE Select transcripts match GRCh38 and are 100% identical
-                between Ensembl-GENCODE and RefSeq for 5' UTR, CDS, splicing and
-                3' UTR.
+                between Ensembl-GENCODE and RefSeq for 5&rsquo; UTR, CDS,
+                splicing and 3&rsquo; UTR.
               </p>
               <p>
                 The MANE project (Matched Annotation from NCBI and EMBL-EBI) is
