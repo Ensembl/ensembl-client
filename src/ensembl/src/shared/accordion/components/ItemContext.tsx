@@ -59,8 +59,9 @@ const Provider = (props: ProviderProps) => {
           toggleExpanded: toggleExpanded,
           uuid
         }}
-        children={props.children}
-      />
+      >
+        {props.children}
+      </Context.Provider>
     );
   };
 
