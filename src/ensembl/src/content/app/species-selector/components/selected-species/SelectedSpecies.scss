@@ -1,7 +1,7 @@
 @import 'src/styles/common';
 
 $selectedSpeciesBorderRadius: 20px;
-$selectedSpeciesPadding: 7px 28px;
+$selectedSpeciesPadding: 6px 20px;
 $deleteButtonPadding: 8px 20px 8px 28px;
 
 .selectedSpecies {
@@ -23,14 +23,14 @@ $deleteButtonPadding: 8px 20px 8px 28px;
   }
 
   .name {
-    font-size: 16px; // FIXME
+    font-size: 14px;
     color: white;
     font-weight: $bold;
-    margin-right: 0.6rem;
+    margin-right: 0.5rem;
   }
 
   .assembly {
-    font-size: 11px; // FIXME
+    font-size: 11px;
     color: $white;
   }
 }
