@@ -17,7 +17,7 @@ type Props = {
 
 type SplitterProps = {
   string: string;
-  matchedSubsctrings: MatchedSubstring[];
+  matchedSubstrings: MatchedSubstring[];
 };
 
 type FormattedLabelProps = {
@@ -61,7 +61,7 @@ const FormattedLabel = (props: FormattedLabelProps) => {
     const substrings = sortBy(
       splitMatch({
         string: field,
-        matchedSubsctrings: matches
+        matchedSubstrings: matches
       }),
       ({ start }) => start
     );
@@ -119,9 +119,9 @@ const formatString = ({ string, substrings }: FormatStringProps) =>
       ))
     : string;
 
-const splitMatch = ({ string, matchedSubsctrings }: SplitterProps) => {
-  const matchStartIndices = matchedSubsctrings.map(({ offset }) => offset);
-  const matchEndIndices = matchedSubsctrings.map(
+const splitMatch = ({ string, matchedSubstrings }: SplitterProps) => {
+  const matchStartIndices = matchedSubstrings.map(({ offset }) => offset);
+  const matchEndIndices = matchedSubstrings.map(
     ({ offset, length }) => offset + length
   );
   const matchIndices = zip(matchStartIndices, matchEndIndices) as NumberTuple[];
