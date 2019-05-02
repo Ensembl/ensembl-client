@@ -21,6 +21,8 @@ REFERENCE - shape of a single match:
 
 // sample response for typing "hum" in the search box
 
+import { MatchedFieldName } from 'src/content/app/species-selector/types/species-search';
+
 export default {
   // notice that it is an array of groups of matches
   matches: [
@@ -35,7 +37,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name' as 'common_name'
+            match: MatchedFieldName.COMMON_NAME
           }
         ]
       },
@@ -49,7 +51,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name' as 'common_name'
+            match: MatchedFieldName.COMMON_NAME
           }
         ]
       },
@@ -63,7 +65,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'scientific_name' as 'scientific_name'
+            match: MatchedFieldName.SCIENTIFIC_NAME
           }
         ]
       }
@@ -79,7 +81,7 @@ export default {
           {
             length: 3,
             offset: 13,
-            match: 'scientific_name' as 'scientific_name'
+            match: MatchedFieldName.SCIENTIFIC_NAME
           }
         ]
       },
@@ -93,7 +95,7 @@ export default {
           {
             length: 3,
             offset: 18,
-            match: 'scientific_name' as 'scientific_name'
+            match: MatchedFieldName.SCIENTIFIC_NAME
           }
         ]
       },
@@ -107,7 +109,7 @@ export default {
           {
             length: 3,
             offset: 18,
-            match: 'scientific_name' as 'scientific_name'
+            match: MatchedFieldName.SCIENTIFIC_NAME
           }
         ]
       },
@@ -121,7 +123,7 @@ export default {
           {
             length: 3,
             offset: 18,
-            match: 'scientific_name' as 'scientific_name'
+            match: MatchedFieldName.SCIENTIFIC_NAME
           }
         ]
       },
@@ -135,7 +137,7 @@ export default {
           {
             length: 3,
             offset: 18,
-            match: 'scientific_name' as 'scientific_name'
+            match: MatchedFieldName.SCIENTIFIC_NAME
           }
         ]
       },
@@ -149,7 +151,7 @@ export default {
           {
             length: 3,
             offset: 10,
-            match: 'scientific_name' as 'scientific_name'
+            match: MatchedFieldName.SCIENTIFIC_NAME
           }
         ]
       },
@@ -163,7 +165,7 @@ export default {
           {
             length: 3,
             offset: 17,
-            match: 'scientific_name' as 'scientific_name'
+            match: MatchedFieldName.SCIENTIFIC_NAME
           }
         ]
       },
@@ -177,7 +179,7 @@ export default {
           {
             length: 3,
             offset: 8,
-            match: 'scientific_name' as 'scientific_name'
+            match: MatchedFieldName.SCIENTIFIC_NAME
           }
         ]
       }

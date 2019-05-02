@@ -21,7 +21,7 @@ REFERENCE - shape of a single match:
 
 // sample response for typing "mou" in the search box
 
-// QUESTION: what does the endpoint look like? Keep in mind that it should accept the division filter parameter
+import { MatchedFieldName } from 'src/content/app/species-selector/types/species-search';
 
 export default {
   // notice that it is an array of groups of matches
@@ -37,7 +37,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name' as 'common_name'
+            match: MatchedFieldName.COMMON_NAME
           }
         ]
       },
@@ -51,7 +51,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name' as 'common_name'
+            match: MatchedFieldName.COMMON_NAME
           }
         ]
       },
@@ -65,7 +65,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name' as 'common_name'
+            match: MatchedFieldName.COMMON_NAME
           }
         ]
       },
@@ -79,7 +79,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name' as 'common_name'
+            match: MatchedFieldName.COMMON_NAME
           }
         ]
       },
@@ -93,7 +93,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name' as 'common_name'
+            match: MatchedFieldName.COMMON_NAME
           }
         ]
       },
@@ -107,7 +107,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name' as 'common_name'
+            match: MatchedFieldName.COMMON_NAME
           }
         ]
       },
@@ -121,7 +121,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name' as 'common_name'
+            match: MatchedFieldName.COMMON_NAME
           }
         ]
       },
@@ -135,7 +135,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name' as 'common_name'
+            match: MatchedFieldName.COMMON_NAME
           }
         ]
       },
@@ -149,7 +149,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name' as 'common_name'
+            match: MatchedFieldName.COMMON_NAME
           }
         ]
       },
@@ -163,7 +163,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name' as 'common_name'
+            match: MatchedFieldName.COMMON_NAME
           }
         ]
       },
@@ -177,7 +177,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name' as 'common_name'
+            match: MatchedFieldName.COMMON_NAME
           }
         ]
       },
@@ -191,7 +191,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name' as 'common_name'
+            match: MatchedFieldName.COMMON_NAME
           }
         ]
       },
@@ -205,7 +205,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name' as 'common_name'
+            match: MatchedFieldName.COMMON_NAME
           }
         ]
       },
@@ -219,7 +219,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name' as 'common_name'
+            match: MatchedFieldName.COMMON_NAME
           }
         ]
       },
@@ -233,7 +233,7 @@ export default {
           {
             length: 3,
             offset: 0,
-            match: 'common_name' as 'common_name'
+            match: MatchedFieldName.COMMON_NAME
           }
         ]
       }

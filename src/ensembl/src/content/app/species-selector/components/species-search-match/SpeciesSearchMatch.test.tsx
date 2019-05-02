@@ -5,6 +5,8 @@ import SpeciesSearchMatch from './SpeciesSearchMatch';
 
 import styles from './SpeciesSearchMatch.scss';
 
+import { MatchedFieldName } from 'src/content/app/species-selector/types/species-search';
+
 const matchTemplate = {
   genome_id: 'homo_sapiens_38',
   reference_genome_id: null,
@@ -15,7 +17,7 @@ const matchTemplate = {
     {
       length: 3,
       offset: 0,
-      match: 'common_name' as 'common_name'
+      match: MatchedFieldName.COMMON_NAME
     }
   ]
 };
@@ -42,7 +44,7 @@ describe('<SpeciesSearchMatch />', () => {
         {
           length: 3,
           offset: 0,
-          match: 'scientific_name' as 'scientific_name'
+          match: MatchedFieldName.SCIENTIFIC_NAME
         }
       ]
     };
@@ -66,12 +68,12 @@ describe('<SpeciesSearchMatch />', () => {
         {
           length: 3,
           offset: 0,
-          match: 'scientific_name' as 'scientific_name'
+          match: MatchedFieldName.SCIENTIFIC_NAME
         },
         {
           length: 3,
           offset: 9,
-          match: 'scientific_name' as 'scientific_name'
+          match: MatchedFieldName.SCIENTIFIC_NAME
         }
       ]
     };

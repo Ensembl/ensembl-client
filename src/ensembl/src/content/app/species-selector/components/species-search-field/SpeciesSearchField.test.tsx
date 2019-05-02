@@ -11,7 +11,8 @@ import AutosuggestSearchField from 'src/shared/autosuggest-search-field/Autosugg
 
 import {
   SearchMatch,
-  SearchMatches
+  SearchMatches,
+  MatchedFieldName
 } from 'src/content/app/species-selector/types/species-search';
 
 const buildSearchMatch = (): SearchMatch => ({
@@ -24,7 +25,7 @@ const buildSearchMatch = (): SearchMatch => ({
     {
       length: 3,
       offset: 1,
-      match: 'common_name'
+      match: MatchedFieldName.COMMON_NAME
     }
   ]
 });
