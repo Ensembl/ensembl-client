@@ -1,0 +1,38 @@
+@import 'src/styles/common';
+
+$speciesTabBorderRadius: 20px;
+$speciesTabPadding: 6px 20px;
+
+.speciesTab {
+  display: inline-block;
+  padding: $speciesTabPadding;
+  border: 1px solid $ens-blue;
+  border-radius: $speciesTabBorderRadius;
+  cursor: pointer;
+
+  &:not(:last-child) {
+    margin-right: 1em;
+  }
+
+  .name {
+    font-size: 14px;
+    font-weight: $bold;
+    margin-right: 0.5rem;
+  }
+
+  .assembly {
+    font-size: 11px;
+  }
+}
+
+.speciesTabActive {
+  background-color: $ens-black;
+
+  .name,
+  .assembly {
+    color: $ens-white;
+  }
+}
+
+.speciesTabFullSize {
+}
