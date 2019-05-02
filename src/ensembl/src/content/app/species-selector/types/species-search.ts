@@ -19,8 +19,14 @@ export type SearchMatchGroup = {
 export type MatchedSubstring = {
   length: number;
   offset: number;
-  match: 'common_name' | 'scientific_name' | 'subtype';
+  match: MatchedFieldName;
 };
+
+export enum MatchedFieldName {
+  COMMON_NAME = 'common_name',
+  SCIENTIFIC_NAME = 'scientific_name',
+  SUBTYPE = 'subtype'
+}
 
 /*
 

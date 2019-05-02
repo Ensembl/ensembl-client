@@ -5,7 +5,8 @@ import sortBy from 'lodash/sortBy';
 
 import {
   SearchMatch,
-  MatchedSubstring
+  MatchedSubstring,
+  MatchedFieldName
 } from 'src/content/app/species-selector/types/species-search';
 
 import styles from './SpeciesSearchMatch.scss';
@@ -17,6 +18,12 @@ type Props = {
 type SplitterProps = {
   string: string;
   matchedSubsctrings: MatchedSubstring[];
+};
+
+type FormattedLabelProps = {
+  match: SearchMatch;
+  matchedFieldName: MatchedFieldName;
+  className?: string;
 };
 
 type FormatStringProps = {
@@ -42,48 +49,26 @@ const SpeciesSearchMatch = ({ match }: Props) => {
   );
 };
 
-// TODO: refactor – CommonName, Subtype and ScientificName
-// can all use one and the same component (call it Substring)
-// that does the splitting and formatting
+const FormattedLabel = (props: FormattedLabelProps) => {
+  const field = props.match[props.matchedFieldName];
+  const { matched_substrings } = props.match;
 
-const CommonName = ({ match }: { match: SearchMatch }) => {
-  const { common_name, matched_substrings } = match;
-
-  const commonNameMatches = matched_substrings.filter(
-    ({ match }) => match === 'common_name'
+  const matches = matched_substrings.filter(
+    ({ match }) => match === props.matchedFieldName
   );
 
-  if (common_name) {
+  if (field) {
     const substrings = sortBy(
       splitMatch({
-        string: common_name,
-        matchedSubsctrings: commonNameMatches
+        string: field,
+        matchedSubsctrings: matches
       }),
       ({ start }) => start
     );
 
-    return <span>{formatString({ string: common_name, substrings })}</span>;
-  } else {
-    return null;
-  }
-};
-
-const Subtype = ({ match }: { match: SearchMatch }) => {
-  const { subtype, matched_substrings } = match;
-
-  const subtypeMatches = matched_substrings.filter(
-    ({ match }) => match === 'subtype'
-  );
-
-  if (subtype) {
-    const substrings = sortBy(
-      splitMatch({ string: subtype, matchedSubsctrings: subtypeMatches }),
-      ({ start }) => start
-    );
-
     return (
-      <span className={styles.speciesSearchMatchSubtype}>
-        {formatString({ string: subtype, substrings })}
+      <span className={props.className}>
+        {formatString({ string: field, substrings })}
       </span>
     );
   } else {
@@ -91,27 +76,32 @@ const Subtype = ({ match }: { match: SearchMatch }) => {
   }
 };
 
-const ScientificName = ({ match }: { match: SearchMatch }) => {
-  const { scientific_name, matched_substrings } = match;
-
-  if (!scientific_name) return null;
-
-  const scientificNameMatches = matched_substrings.filter(
-    ({ match }) => match === 'scientific_name'
-  );
-
-  const substrings = sortBy(
-    splitMatch({
-      string: scientific_name,
-      matchedSubsctrings: scientificNameMatches
-    }),
-    ({ start }) => start
-  );
-
+const CommonName = (props: Props) => {
   return (
-    <span className={styles.speciesSearchMatchScientificName}>
-      {formatString({ string: scientific_name, substrings })}
-    </span>
+    <FormattedLabel
+      match={props.match}
+      matchedFieldName={MatchedFieldName.COMMON_NAME}
+    />
+  );
+};
+
+const Subtype = (props: Props) => {
+  return (
+    <FormattedLabel
+      match={props.match}
+      matchedFieldName={MatchedFieldName.SUBTYPE}
+      className={styles.speciesSearchMatchSubtype}
+    />
+  );
+};
+
+const ScientificName = (props: Props) => {
+  return (
+    <FormattedLabel
+      match={props.match}
+      matchedFieldName={MatchedFieldName.SCIENTIFIC_NAME}
+      className={styles.speciesSearchMatchScientificName}
+    />
   );
 };
 
