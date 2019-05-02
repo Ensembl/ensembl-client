@@ -90,7 +90,7 @@ const Subtype = (props: Props) => {
     <FormattedLabel
       match={props.match}
       matchedFieldName={MatchedFieldName.SUBTYPE}
-      className={styles.speciesSearchMatchSubtype}
+      className={styles.subtype}
     />
   );
 };
@@ -100,7 +100,7 @@ const ScientificName = (props: Props) => {
     <FormattedLabel
       match={props.match}
       matchedFieldName={MatchedFieldName.SCIENTIFIC_NAME}
-      className={styles.speciesSearchMatchScientificName}
+      className={styles.scientificName}
     />
   );
 };
@@ -110,7 +110,7 @@ const formatString = ({ string, substrings }: FormatStringProps) =>
     ? substrings.map(({ start, end, isMatch }) => (
         <span
           className={classNames({
-            [styles.speciesSearchMatchMatched]: isMatch
+            [styles.matched]: isMatch
           })}
           key={`${start}-${end}`}
         >

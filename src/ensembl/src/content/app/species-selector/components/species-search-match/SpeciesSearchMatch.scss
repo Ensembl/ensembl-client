@@ -11,11 +11,11 @@
   }
 }
 
-.speciesSearchMatchMatched {
+.matched {
   font-weight: $dark;
 }
 
-.speciesSearchMatchSubtype {
+.subtype {
   font-size: 10px;
 
   &:not(:first-of-type) {
@@ -23,7 +23,7 @@
   }
 }
 
-.speciesSearchMatchScientificName {
+.scientificName {
   font-style: italic;
   font-weight: $light;
 

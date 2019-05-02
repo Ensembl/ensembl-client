@@ -29,9 +29,7 @@ describe('<SpeciesSearchMatch />', () => {
 
   test('highlights a single match in the description field', () => {
     const renderedMatch = render(<SpeciesSearchMatch match={matchTemplate} />);
-    const highlightedFragments = renderedMatch.find(
-      `.${styles.speciesSearchMatchMatched}`
-    );
+    const highlightedFragments = renderedMatch.find(`.${styles.matched}`);
     expect(highlightedFragments.length).toBe(1);
     // highlighting Hum in Human
     expect(highlightedFragments.first().text()).toBe('Hum');
@@ -50,8 +48,8 @@ describe('<SpeciesSearchMatch />', () => {
     };
     const renderedMatch = render(<SpeciesSearchMatch match={match} />);
     const highlightedFragments = renderedMatch.find(
-      `.${styles.speciesSearchMatchScientificName}
-      .${styles.speciesSearchMatchMatched}`
+      `.${styles.scientificName}
+      .${styles.matched}`
     );
     expect(highlightedFragments.length).toBe(1);
     // highlighting Hom in Homo sapiens
@@ -80,9 +78,7 @@ describe('<SpeciesSearchMatch />', () => {
 
     const renderedMatch = render(<SpeciesSearchMatch match={match} />);
 
-    const highlightedFragments = renderedMatch.find(
-      `.${styles.speciesSearchMatchMatched}`
-    );
+    const highlightedFragments = renderedMatch.find(`.${styles.matched}`);
     expect(highlightedFragments.length).toBe(2);
     // highlighting Bac in Bacillus and sub in subtilis
     expect(highlightedFragments.first().text()).toBe('Bac');
