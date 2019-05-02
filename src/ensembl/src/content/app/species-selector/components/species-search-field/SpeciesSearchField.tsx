@@ -60,19 +60,11 @@ export const SpeciesSearchField = (props: Props) => {
       className={styles.speciesSearchFieldWrapper}
       onChange={handleSearchChange}
       onSelect={onMatchSelected}
-      rightCorner={<RightCorner />}
       matchGroups={buildMatchGroups(props.matches)}
       searchFieldClassName={styles.speciesSearchField}
       canShowSuggestions={!Boolean(props.selectedItemText)}
     />
   );
-};
-
-const RightCorner = () => {
-  // TODO build the right corner properly
-  const onQuestionButtonHover = () =>
-    console.log('hovering over question button');
-  return <QuestionButton onHover={onQuestionButtonHover} />;
 };
 
 const buildMatchGroups = (groups: SearchMatches[]) => {
