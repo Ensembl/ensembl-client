@@ -32,7 +32,6 @@ export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
     switchMap((action) => of(action).pipe(delay(600))),
     map((action) =>
       speciesSelectorActions.fetchSpeciesSearchResults.success({
-        text: action.payload,
         results: action.payload.startsWith('h')
           ? humanMockSearchResults.matches
           : mouseMockSearchResults.matches

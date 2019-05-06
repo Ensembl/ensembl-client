@@ -27,17 +27,10 @@ export type SpeciesSelectorState = {
     isSelectingAssembly: boolean;
   };
   search: {
-    text: string;
     results: SearchMatches[];
   };
   currentItem: CurrentItem | null;
   committedItems: CommittedItem[];
-  strains: {
-    [key: string]: Strain[]; // where key is the name of the parent/reference species
-  };
-  assemblies: {
-    [key: string]: Assembly[]; // where key is the identifier of currently selected species
-  };
 };
 
 const initialState: SpeciesSelectorState = {
@@ -49,13 +42,10 @@ const initialState: SpeciesSelectorState = {
     isSelectingAssembly: false
   },
   search: {
-    text: '', // FIXME: delete this field?
     results: []
   },
   currentItem: null,
-  committedItems: [],
-  strains: {},
-  assemblies: {}
+  committedItems: []
 };
 
 export default initialState;
