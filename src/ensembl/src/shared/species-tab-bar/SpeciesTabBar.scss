@@ -1,3 +1,6 @@
 .speciesTabBar {
-  display: block; // FIXME
+  display: flex;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow-x: hidden;
 }
