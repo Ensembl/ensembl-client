@@ -22,7 +22,7 @@ const SpeciesTab = (props: Props) => {
   } = props.species;
 
   const toggleHoverState = (newHoverState: boolean) => {
-    if (newHoverState !== isHovering && !props.isActive) {
+    if (newHoverState !== isHovering) {
       setIsHovering(newHoverState);
     }
   };

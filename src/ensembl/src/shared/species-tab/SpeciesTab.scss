@@ -10,9 +10,12 @@ $speciesTabPadding: 6px 20px;
   border-radius: $speciesTabBorderRadius;
   cursor: pointer;
   overflow: hidden;
+  line-height: 1;
   text-overflow: ellipsis;
+  flex-grow: 0;
   flex-shrink: 1;
-  flex-basis: 100%;
+  flex-basis: auto;
+  transition: flex-shrink 200ms;
 
   &:not(:last-child) {
     margin-right: 1em;

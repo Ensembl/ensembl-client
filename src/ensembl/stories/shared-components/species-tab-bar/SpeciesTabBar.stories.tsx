@@ -3,11 +3,17 @@ import { storiesOf } from '@storybook/react';
 
 import speciesData from './speciesData';
 
-import styles from './SpeciesTabBar.stories.scss';
-
 import SpeciesTabBar from 'src/shared/species-tab-bar/SpeciesTabBar';
 
-const Wrapper = () => {
+import styles from './SpeciesTabBar.stories.scss';
+
+import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+
+type WrapperProps = {
+  species: CommittedItem[];
+};
+
+const Wrapper = (props: WrapperProps) => {
   const [activeGenomeId, setActiveGenomeId] = useState(
     speciesData[0].genome_id
   );
@@ -18,7 +24,7 @@ const Wrapper = () => {
   return (
     <div className={styles.wrapper}>
       <SpeciesTabBar
-        species={speciesData}
+        species={props.species}
         activeGenomeId={activeGenomeId}
         onTabSelect={onTabSelect}
       />
@@ -26,7 +32,6 @@ const Wrapper = () => {
   );
 };
 
-storiesOf('Components|Shared Components/SpeciesTabBar', module).add(
-  'default',
-  () => <Wrapper />
-);
+storiesOf('Components|Shared Components/SpeciesTabBar', module)
+  .add('few species', () => <Wrapper species={speciesData.slice(0, 3)} />)
+  .add('multiple species', () => <Wrapper species={speciesData} />);
