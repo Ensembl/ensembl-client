@@ -9,6 +9,7 @@ import { CommittedItem } from 'src/content/app/species-selector/types/species-se
 type Props = {
   species: CommittedItem[]; // list of species
   activeGenomeId: string; // id of the species that is currently active
+  onTabSelect: (genomeId: string) => void;
 };
 
 const SpeciesTabBar = (props: Props) => {
@@ -18,6 +19,7 @@ const SpeciesTabBar = (props: Props) => {
         <SpeciesTab
           species={species}
           isActive={species.genome_id === props.activeGenomeId}
+          onActivate={props.onTabSelect}
         />
       ))}
     </div>

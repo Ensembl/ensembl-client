@@ -8,16 +8,28 @@ import { CommittedItem } from 'src/content/app/species-selector/types/species-se
 type Props = {
   species: CommittedItem;
   isActive: boolean;
+  onActivate: (genomeId: string) => void;
 };
 
 const SpeciesTab = (props: Props) => {
   const [isHovering, setIsHovering] = useState(false);
 
-  const { common_name, scientific_name, assembly_name } = props.species;
+  const {
+    genome_id,
+    common_name,
+    scientific_name,
+    assembly_name
+  } = props.species;
 
   const toggleHoverState = (newHoverState: boolean) => {
     if (newHoverState !== isHovering && !props.isActive) {
       setIsHovering(newHoverState);
+    }
+  };
+
+  const handleClick = () => {
+    if (!props.isActive) {
+      props.onActivate(genome_id);
     }
   };
 
@@ -34,6 +46,7 @@ const SpeciesTab = (props: Props) => {
       className={className}
       onMouseEnter={() => toggleHoverState(true)}
       onMouseLeave={() => toggleHoverState(false)}
+      onClick={handleClick}
     >
       <span className={styles.name}>{displayName}</span>
       <span className={styles.assembly}>{assembly_name}</span>

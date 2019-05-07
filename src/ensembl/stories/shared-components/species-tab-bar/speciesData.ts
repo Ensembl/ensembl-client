@@ -24,7 +24,7 @@ export default [
     isEnabled: true
   },
   {
-    genome_id: 'bifidobacterium_longum_subsp_longum_cect_7347',
+    genome_id: 'arabidopsis_thaliana',
     reference_genome_id: null,
     common_name: null,
     scientific_name: 'Arabidopsis thaliana',
