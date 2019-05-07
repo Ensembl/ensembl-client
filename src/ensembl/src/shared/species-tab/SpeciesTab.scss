@@ -11,6 +11,7 @@ $speciesTabPadding: 6px 20px;
   cursor: pointer;
   overflow: hidden;
   line-height: 1;
+  user-select: none;
   text-overflow: ellipsis;
   flex-grow: 0;
   flex-shrink: 1;
