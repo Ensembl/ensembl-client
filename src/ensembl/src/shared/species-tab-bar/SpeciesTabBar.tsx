@@ -17,6 +17,7 @@ const SpeciesTabBar = (props: Props) => {
     <div className={styles.speciesTabBar}>
       {props.species.map((species) => (
         <SpeciesTab
+          key={species.genome_id}
           species={species}
           isActive={species.genome_id === props.activeGenomeId}
           onActivate={props.onTabSelect}

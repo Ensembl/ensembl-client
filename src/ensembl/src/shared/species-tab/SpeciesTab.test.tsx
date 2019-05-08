@@ -7,12 +7,19 @@ import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
 import SpeciesTab from './SpeciesTab';
 
+const onActivate = jest.fn();
+
 const defaultProps = {
   species: createSelectedSpecies(),
-  isActive: true
+  isActive: true,
+  onActivate
 };
 
 describe('<SpeciesTab />', () => {
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   it('displays species’ common name (if present) and assembly name', () => {
     const commonName = faker.lorem.words();
     const props = set('species.common_name', commonName, defaultProps);
@@ -72,5 +79,21 @@ describe('<SpeciesTab />', () => {
     expect(renderedInactiveTab.render().hasClass('speciesTabFullSize')).toBe(
       false
     );
+  });
+
+  it('calls the onActivate prop when clicked if inactive', () => {
+    const props = { ...defaultProps, isActive: false };
+    const wrapper = mount(<SpeciesTab {...props} />);
+    wrapper.simulate('click');
+
+    expect(onActivate).toHaveBeenCalledWith(defaultProps.species.genome_id);
+  });
+
+  it('does not call the onActivate prop when clicked if already active', () => {
+    // with defaultProps, the tab is active
+    const wrapper = mount(<SpeciesTab {...defaultProps} />);
+    wrapper.simulate('click');
+
+    expect(onActivate).not.toHaveBeenCalled();
   });
 });
