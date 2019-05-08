@@ -77,9 +77,6 @@ const devConfig = {
     // enable hot module reloading
     hot: true,
 
-    // a port other than the default localhost port to expose to the outside world
-    port: 4000,
-
     // configuration to customise what is displayed in the console by webpack
     stats: {
       assets: false,
