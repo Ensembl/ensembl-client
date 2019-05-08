@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 
 import speciesData from './speciesData';
+import juneSpeciesData from './juneSpeciesData';
 
 import SpeciesTabBar from 'src/shared/species-tab-bar/SpeciesTabBar';
 
@@ -34,4 +35,5 @@ const Wrapper = (props: WrapperProps) => {
 
 storiesOf('Components|Shared Components/SpeciesTabBar', module)
   .add('few species', () => <Wrapper species={speciesData.slice(0, 3)} />)
+  .add('more species', () => <Wrapper species={juneSpeciesData} />)
   .add('multiple species', () => <Wrapper species={speciesData} />);
