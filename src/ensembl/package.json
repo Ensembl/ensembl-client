@@ -15,7 +15,7 @@
   "scripts": {
     "copy-dotenv": "test ! -f .env && (cp .env.example .env; echo '.env file created') || true",
     "start": "npm install --no-save && npm run serve:dev",
-    "serve:dev": "npm run copy-dotenv && webpack-dev-server --config ./webpack/webpack.config.dev.js",
+    "serve:dev": "npm run copy-dotenv && webpack-dev-server --disable-host-check --config ./webpack/webpack.config.dev.js",
     "serve:prod": "node ./server.js",
     "serve:prod:secure": "node ./server.js -p https",
     "build": "rimraf ./dist && webpack --config ./webpack/webpack.config.prod.js",

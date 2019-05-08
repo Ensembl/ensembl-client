@@ -68,8 +68,14 @@ const devConfig = {
     // this should prevent 404 errors that usually occur in SPA on reloads
     historyApiFallback: true,
 
+    // make the server accessible from other machines
+    host: '0.0.0.0',
+
     // enable hot module reloading
     hot: true,
+
+    // a port other than the default localhost port to expose to the outside world
+    port: 4000,
 
     // configuration to customise what is displayed in the console by webpack
     stats: {
