@@ -130,7 +130,6 @@
     "image-webpack-loader": "4.6.0",
     "jest": "24.8.0",
     "jest-fetch-mock": "2.1.2",
-    "jest-snapshot": "24.8.0",
     "jest-transform-stub": "2.0.0",
     "koa": "2.7.0",
     "koa-connect": "2.0.1",
