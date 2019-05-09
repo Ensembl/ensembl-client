@@ -1,13 +1,10 @@
 @import 'src/styles/common';
 
-$speciesTabBorderRadius: 20px;
-$speciesTabPadding: 6px 20px;
-
 .speciesTab {
   display: inline-block;
-  padding: $speciesTabPadding;
+  padding: 6px 20px;
   border: 1px solid $ens-blue;
-  border-radius: $speciesTabBorderRadius;
+  border-radius: 20px;
   cursor: pointer;
   overflow: hidden;
   line-height: 1;
