@@ -3,6 +3,11 @@
  * This is helpful for mocking elements of the browser API during tests.
  */
 
+export interface WindowServiceInterface {
+  getLocalStorage: () => Storage;
+  getSessionStorage: () => Storage;
+}
+
 class WindowService {
   public getLocalStorage() {
     return window.localStorage;

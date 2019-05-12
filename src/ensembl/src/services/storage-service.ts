@@ -1,18 +1,20 @@
-import windowService from 'src/services/window-service';
+import windowService, {
+  WindowServiceInterface
+} from 'src/services/window-service';
 import merge from 'lodash/merge';
 
-enum StorageType {
+export enum StorageType {
   LOCAL_STORAGE = 'localstorage',
   SESSION_STORAGE = 'sessionstorage'
 }
 
 type PrimitiveValue = string | number | boolean | null | undefined;
+type ArrayValue = PrimitiveValue[];
+type ObjectValue = {
+  [key: string]: PrimitiveValue | ArrayValue | ObjectValue;
+};
 
-type ObjectValue =
-  | PrimitiveValue[]
-  | { [key: string]: PrimitiveValue | ObjectValue };
-
-type ValueForSaving = PrimitiveValue | ObjectValue;
+type ValueForSaving = PrimitiveValue | ArrayValue | ObjectValue;
 
 type options = {
   storage: StorageType;
@@ -22,11 +24,13 @@ const defaultOptions: options = {
   storage: StorageType.LOCAL_STORAGE
 };
 
-class StorageService {
+// named export is for testing;
+// for development, use default export
+export class StorageService {
   private localStorage: Storage;
   private sessionStorage: Storage;
 
-  public constructor() {
+  public constructor(windowService: WindowServiceInterface) {
     this.localStorage = windowService.getLocalStorage();
     this.sessionStorage = windowService.getSessionStorage();
   }
@@ -49,11 +53,7 @@ class StorageService {
   }
 
   // intended only for updating part of the saved object
-  public update(
-    key: string,
-    fragment: { [key: string]: ObjectValue },
-    options = defaultOptions
-  ) {
+  public update(key: string, fragment: ObjectValue, options = defaultOptions) {
     const storedData = this.get(key, options);
     if (storedData) {
       this.save(key, merge(storedData, fragment), options);
@@ -73,4 +73,4 @@ class StorageService {
   }
 }
 
-export default new StorageService();
+export default new StorageService(windowService);
