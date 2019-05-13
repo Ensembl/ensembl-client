@@ -9,12 +9,12 @@ export enum StorageType {
 }
 
 type PrimitiveValue = string | number | boolean | null | undefined;
-type ArrayValue = PrimitiveValue[];
+type ArrayValue = PrimitiveValue[] | ObjectValue[];
 type ObjectValue = {
   [key: string]: PrimitiveValue | ArrayValue | ObjectValue;
 };
 
-type ValueForSaving = PrimitiveValue | ArrayValue | ObjectValue;
+type ValueForSaving = PrimitiveValue | ArrayValue | ArrayValue[] | ObjectValue;
 
 type options = {
   storage: StorageType;

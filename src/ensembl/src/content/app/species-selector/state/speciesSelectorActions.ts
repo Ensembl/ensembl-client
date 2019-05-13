@@ -2,6 +2,10 @@ import { createStandardAction, createAsyncAction } from 'typesafe-actions';
 
 // import apiService from 'src/services/api-service';
 
+import storageService from 'src/services/storage-service';
+
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+
 import {
   SearchMatch,
   SearchMatches,
@@ -87,6 +91,17 @@ export const commitSelectedSpecies = createStandardAction(
   'species_selector/commit_selected_species'
 )();
 
+// FIXME: try types as described here:
+// https://gist.github.com/seansean11/196c436988c1fdf4b22cde308c492fe5
+export const commitSelectedSpeciesAndSave = () => (
+  dispatch: any,
+  getState: any
+) => {
+  dispatch(commitSelectedSpecies());
+  const committedSpecies = getCommittedSpecies(getState());
+  storageService.save('speciesSelector.selectedSpecies', committedSpecies);
+};
+
 export const toggleSpeciesUse = createStandardAction(
   'species_selector/toggle_species_use'
 )<string>();
@@ -94,6 +109,17 @@ export const toggleSpeciesUse = createStandardAction(
 export const deleteSpecies = createStandardAction(
   'species_selector/delete_species'
 )<string>();
+
+// FIXME: try types as described here:
+// https://gist.github.com/seansean11/196c436988c1fdf4b22cde308c492fe5
+export const deleteSpeciesAndSave = (genomeId: string) => (
+  dispatch: any,
+  getState: any
+) => {
+  dispatch(deleteSpecies(genomeId));
+  const committedSpecies = getCommittedSpecies(getState());
+  storageService.save('speciesSelector.selectedSpecies', committedSpecies);
+};
 
 export const changeAssembly = createStandardAction(
   'species_selector/change_assembly'

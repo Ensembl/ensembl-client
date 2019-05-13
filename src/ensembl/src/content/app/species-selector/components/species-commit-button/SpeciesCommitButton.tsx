@@ -5,7 +5,7 @@ import {
   hasCurrentSpecies,
   canCommitSpecies
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import { commitSelectedSpecies } from 'src/content/app/species-selector/state/speciesSelectorActions';
+import { commitSelectedSpeciesAndSave } from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 import { PrimaryButton } from 'src/shared/button/Button';
 
@@ -39,7 +39,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  onCommit: commitSelectedSpecies
+  onCommit: commitSelectedSpeciesAndSave
 };
 
 export default connect(
