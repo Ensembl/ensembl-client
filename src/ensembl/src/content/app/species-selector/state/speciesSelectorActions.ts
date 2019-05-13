@@ -2,7 +2,7 @@ import { createStandardAction, createAsyncAction } from 'typesafe-actions';
 
 // import apiService from 'src/services/api-service';
 
-import storageService from 'src/services/storage-service';
+import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
@@ -99,7 +99,7 @@ export const commitSelectedSpeciesAndSave = () => (
 ) => {
   dispatch(commitSelectedSpecies());
   const committedSpecies = getCommittedSpecies(getState());
-  storageService.save('speciesSelector.selectedSpecies', committedSpecies);
+  speciesSelectorStorageService.saveSelectedSpecies(committedSpecies);
 };
 
 export const toggleSpeciesUse = createStandardAction(
@@ -118,7 +118,7 @@ export const deleteSpeciesAndSave = (genomeId: string) => (
 ) => {
   dispatch(deleteSpecies(genomeId));
   const committedSpecies = getCommittedSpecies(getState());
-  storageService.save('speciesSelector.selectedSpecies', committedSpecies);
+  speciesSelectorStorageService.saveSelectedSpecies(committedSpecies);
 };
 
 export const changeAssembly = createStandardAction(

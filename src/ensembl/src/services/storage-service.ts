@@ -20,13 +20,21 @@ type options = {
   storage: StorageType;
 };
 
+export interface StorageServiceInterface {
+  get: (key: string, options?: options) => any;
+  save: (key: string, value: ValueForSaving, options?: options) => void;
+  update: (key: string, fragment: ObjectValue, options?: options) => void;
+  remove: (key: string, options?: options) => void;
+  clearAll: () => void;
+}
+
 const defaultOptions: options = {
   storage: StorageType.LOCAL_STORAGE
 };
 
 // named export is for testing;
 // for development, use default export
-export class StorageService {
+export class StorageService implements StorageServiceInterface {
   private localStorage: Storage;
   private sessionStorage: Storage;
 
