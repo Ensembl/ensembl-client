@@ -1,4 +1,6 @@
 import { createStandardAction, createAsyncAction } from 'typesafe-actions';
+import { ActionCreator, Action } from 'redux';
+import { ThunkAction } from 'redux-thunk';
 
 // import apiService from 'src/services/api-service';
 
@@ -42,7 +44,9 @@ export const clearSelectedSearchResult = createStandardAction(
   'species_selector/clear_search_result'
 )();
 
-export const fetchStrains = (genomeId: string) => async (dispatch: any) => {
+export const fetchStrains: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (genomeId: string) => async (dispatch) => {
   try {
     dispatch(fetchStrainsAsyncActions.request());
 
@@ -56,7 +60,9 @@ export const fetchStrains = (genomeId: string) => async (dispatch: any) => {
   }
 };
 
-export const fetchAssemblies = (genomeId: string) => async (dispatch: any) => {
+export const fetchAssemblies: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (genomeId: string) => async (dispatch) => {
   try {
     dispatch(fetchAssembliesAsyncActions.request());
 
@@ -72,9 +78,9 @@ export const fetchAssemblies = (genomeId: string) => async (dispatch: any) => {
   }
 };
 
-export const handleSelectedSearchResult = (match: SearchMatch) => (
-  dispatch: any
-) => {
+export const handleSelectedSearchResult: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (match: SearchMatch) => (dispatch) => {
   dispatch(setSelectedSearchResult(match));
   const { genome_id, common_name } = match;
 
@@ -91,12 +97,9 @@ export const commitSelectedSpecies = createStandardAction(
   'species_selector/commit_selected_species'
 )();
 
-// FIXME: try types as described here:
-// https://gist.github.com/seansean11/196c436988c1fdf4b22cde308c492fe5
-export const commitSelectedSpeciesAndSave = () => (
-  dispatch: any,
-  getState: any
-) => {
+export const commitSelectedSpeciesAndSave: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = () => (dispatch, getState) => {
   dispatch(commitSelectedSpecies());
   const committedSpecies = getCommittedSpecies(getState());
   speciesSelectorStorageService.saveSelectedSpecies(committedSpecies);
@@ -110,12 +113,9 @@ export const deleteSpecies = createStandardAction(
   'species_selector/delete_species'
 )<string>();
 
-// FIXME: try types as described here:
-// https://gist.github.com/seansean11/196c436988c1fdf4b22cde308c492fe5
-export const deleteSpeciesAndSave = (genomeId: string) => (
-  dispatch: any,
-  getState: any
-) => {
+export const deleteSpeciesAndSave: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (genomeId: string) => (dispatch, getState) => {
   dispatch(deleteSpecies(genomeId));
   const committedSpecies = getCommittedSpecies(getState());
   speciesSelectorStorageService.saveSelectedSpecies(committedSpecies);
