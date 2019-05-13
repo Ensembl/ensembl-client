@@ -8,7 +8,7 @@ export interface WindowServiceInterface {
   getSessionStorage: () => Storage;
 }
 
-class WindowService {
+class WindowService implements WindowServiceInterface {
   public getLocalStorage() {
     return window.localStorage;
   }
