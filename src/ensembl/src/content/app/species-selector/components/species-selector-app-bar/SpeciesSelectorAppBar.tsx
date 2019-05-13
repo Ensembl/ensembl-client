@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
   toggleSpeciesUse,
-  deleteSpecies
+  deleteSpeciesAndSave
 } from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 import SelectedSpecies from 'src/content/app/species-selector/components/selected-species/SelectedSpecies';
@@ -64,7 +64,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = {
   toggleSpeciesUse,
-  onSpeciesDelete: deleteSpecies
+  onSpeciesDelete: deleteSpeciesAndSave
 };
 
 export default connect(
