@@ -22,7 +22,11 @@ export const Header: FunctionComponent<HeaderProps> = () => (
         </div>
         <div className={styles.strapline}>Pre-release - March 2019</div>
         <div className={styles.copyright}>
-          <a href="https://www.ebi.ac.uk" target="_blank">
+          <a
+            href="https://www.ebi.ac.uk"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             &copy; EMBL-EBI
           </a>
         </div>

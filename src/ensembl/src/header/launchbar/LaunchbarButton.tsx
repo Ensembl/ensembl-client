@@ -1,4 +1,4 @@
-import React, { FunctionComponent, memo, Props } from 'react';
+import React, { FunctionComponent, memo } from 'react';
 import { NavLink } from 'react-router-dom';
 
 import styles from './Launchbar.scss';

@@ -26,7 +26,7 @@ export default class AccordionStore {
   public readonly allowMultipleExpanded: boolean;
   public readonly allowZeroExpanded: boolean;
 
-  constructor({
+  public constructor({
     expanded = [],
     allowMultipleExpanded = false,
     allowZeroExpanded = false
