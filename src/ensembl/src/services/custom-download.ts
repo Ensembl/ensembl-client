@@ -46,8 +46,7 @@ export const getSpeciesList = async () => {
       headers: { 'Content-Type': 'application/json' }
     });
 
-    const result = await response.json();
-    return result.species;
+    return await response.json();
   } catch (error) {
     throw error;
   }
