@@ -9,13 +9,11 @@ Shape of a popular species data object
   "scientific_name": string, // should always be present
   "assembly_name": string, // notice on mockups that every popular species has an assembly
   image: string, // link to the svg or base64-encoded svg
-  division_ids: str[] // ['model_organism', 'ensembl_plants',...]; a popular species can belong to several divisions
+  division_ids: str[], // ['model_organism', 'ensembl_plants',...]; a popular species can belong to several divisions
+  isAvailable: boolean // indicates whether we have data fr this species and, therefore, whether it can be selected
 }
 
 */
-
-// QUESTION: should filtering of popular species (by divisions) happen on the client side or on the server side?
-// If on the client side, then there should also be something like a 'divisions' field
 
 export default [
   {
