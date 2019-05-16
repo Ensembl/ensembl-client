@@ -5,6 +5,10 @@ import { fetchPopularSpecies } from 'src/content/app/species-selector/state/spec
 
 import { getPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
+import PopularSpeciesButton from 'src/content/app/species-selector/components/popular-species-button/PopularSpeciesButton';
+
+import styles from './PopularSpeciesPanel.scss';
+
 import { RootState } from 'src/store';
 import { PopularSpecies } from 'src/content/app/species-selector/types/species-search';
 
@@ -17,8 +21,19 @@ const PopularSpeciesPanel = (props: Props) => {
   useEffect(() => {
     props.fetchPopularSpecies();
   }, []);
-  console.log('popularSpecies', props.popularSpecies);
-  return <span>Hello</span>;
+
+  const renderedPopularSpecies = props.popularSpecies.map((species) => (
+    <PopularSpeciesButton
+      key={species.genome_id}
+      species={species}
+      onClick={() => console.log('clicked')}
+    />
+  ));
+  return (
+    <section className={styles.layout}>
+      <div className={styles.popularSpeciesList}>{renderedPopularSpecies}</div>
+    </section>
+  );
 };
 
 const mapStateToProps = (state: RootState) => ({

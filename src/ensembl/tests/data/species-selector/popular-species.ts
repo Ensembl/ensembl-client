@@ -412,7 +412,7 @@ export default [
     common_name: 'Tilapia',
     scientific_name: 'Oreochromis niloticus',
     assembly_name: 'Orenil1.0',
-    image: require('./popular-species/termite_k.svg').default,
+    image: require('./popular-species/tilapia_k.svg').default,
     division_ids: [],
     isAvailable: false
   },

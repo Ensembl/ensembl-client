@@ -3,21 +3,21 @@ import { mount, render } from 'enzyme';
 
 import PopularSpeciesButton from './PopularSpeciesButton';
 
+import { createPopularSpecies } from 'tests/fixtures/popular-species';
+
 import styles from './PopularSpeciesButton.scss';
 import strainSelectorStyles from ',,/strain-selector/StrainSelector.scss';
 
 const onClick = jest.fn;
-const onStrainSelect = jest.fn;
+// const onStrainSelect = jest.fn;
 const strains = [...new Array(4)].map((_, index) => ({
   name: `strain-${index}`,
   isSelected: Boolean(index % 2)
 }));
-const species = 'mouse';
 
 const commonProps = {
-  species,
-  onClick,
-  onStrainSelect
+  species: createPopularSpecies(),
+  onClick
 };
 
 const strainSelectorClassName = `.${strainSelectorStyles.strainSelector}`;
@@ -36,11 +36,7 @@ describe('<PopularSpeciesButton />', () => {
 
     test('does not render strain selector even if provided with a list of strains', () => {
       const renderedButton = mount(
-        <PopularSpeciesButton
-          {...commonProps}
-          isSelected={false}
-          strains={strains}
-        />
+        <PopularSpeciesButton {...commonProps} isSelected={false} />
       );
       expect(renderedButton.find(strainSelectorClassName).length).toBe(0);
     });
@@ -65,11 +61,7 @@ describe('<PopularSpeciesButton />', () => {
 
     test('renders strain selector if a list of strains is provided', () => {
       const renderedButton = mount(
-        <PopularSpeciesButton
-          {...commonProps}
-          isSelected={true}
-          strains={strains}
-        />
+        <PopularSpeciesButton {...commonProps} isSelected={true} />
       );
       expect(renderedButton.find(strainSelectorClassName).length).toBe(1);
     });

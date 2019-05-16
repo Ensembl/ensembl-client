@@ -1,14 +1,26 @@
 @import 'src/styles/common';
 
+$buttonSize: 56px;
+
 .popularSpeciesButton {
   position: relative;
   box-sizing: border-box;
   display: inline-block;
-  margin-right: 1rem;
-  width: 52px;
-  height: 52px;
+  // FIXME: use margins in the fallback style rules
+  // margin-right: 1rem;
+  // margin-bottom: 1rem;
+  width: $buttonSize;
+  height: $buttonSize;
   background: $ens-blue;
+
+  padding: 3px;
   cursor: pointer;
+
+  img {
+    width: 100%;
+    height: 100%;
+    filter: invert(1);
+  }
 
   & > svg {
     width: 100%;
