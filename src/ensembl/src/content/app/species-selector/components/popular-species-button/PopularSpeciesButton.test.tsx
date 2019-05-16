@@ -23,6 +23,10 @@ const commonProps = {
 const strainSelectorClassName = `.${strainSelectorStyles.strainSelector}`;
 
 describe('<PopularSpeciesButton />', () => {
+  describe('not available', () => {
+    it('has appropriate class', () => {});
+  });
+
   describe('not selected', () => {
     test('has appropriate class', () => {
       const renderedButton = render(
