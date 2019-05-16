@@ -23,6 +23,7 @@ const PopularSpeciesButton = (props: Props) => {
   const speciesName = species.common_name || species.scientific_name;
 
   const className = classNames(styles.popularSpeciesButton, {
+    [styles.popularSpeciesButtonDisabled]: !species.isAvailable,
     [styles.popularSpeciesButtonActive]: isSelected
   });
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { mount, render } from 'enzyme';
+import set from 'lodash/fp/set';
 
 import PopularSpeciesButton from './PopularSpeciesButton';
 
@@ -24,7 +25,16 @@ const strainSelectorClassName = `.${strainSelectorStyles.strainSelector}`;
 
 describe('<PopularSpeciesButton />', () => {
   describe('not available', () => {
-    it('has appropriate class', () => {});
+    it('has appropriate class', () => {
+      const props = set('species.isAvailable', false, commonProps);
+      const renderedButton = render(
+        <PopularSpeciesButton {...props} isSelected={false} />
+      );
+      expect(renderedButton.hasClass(styles.popularSpeciesButton)).toBe(true);
+      expect(renderedButton.hasClass(styles.popularSpeciesButtonDisabled)).toBe(
+        true
+      );
+    });
   });
 
   describe('not selected', () => {
@@ -63,7 +73,7 @@ describe('<PopularSpeciesButton />', () => {
       expect(renderedButton.find(strainSelectorClassName).length).toBe(0);
     });
 
-    test('renders strain selector if a list of strains is provided', () => {
+    test.skip('renders strain selector if a list of strains is provided', () => {
       const renderedButton = mount(
         <PopularSpeciesButton {...commonProps} isSelected={true} />
       );
