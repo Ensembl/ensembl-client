@@ -10,7 +10,7 @@ Shape of a popular species data object
   "assembly_name": string, // notice on mockups that every popular species has an assembly
   image: string, // link to the svg or base64-encoded svg
   division_ids: str[], // ['model_organism', 'ensembl_plants',...]; a popular species can belong to several divisions
-  isAvailable: boolean // indicates whether we have data fr this species and, therefore, whether it can be selected
+  isAvailable: boolean // indicates whether we have data for this species and, therefore, whether it can be selected
 }
 
 */

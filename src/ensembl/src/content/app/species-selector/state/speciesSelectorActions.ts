@@ -12,11 +12,14 @@ import {
   SearchMatch,
   SearchMatches,
   Strain,
-  Assembly
+  Assembly,
+  PopularSpecies
 } from 'src/content/app/species-selector/types/species-search';
 
+// MOCK DATA; delete when we get working backend endpoints
 import mouseStrainsResult from 'tests/data/species-selector/mouse-strains';
 import mouseAssemblies from 'tests/data/species-selector/mouse-assemblies';
+import popularSpecies from 'tests/data/species-selector/popular-species';
 
 export const fetchSpeciesSearchResults = createAsyncAction(
   'species_selector/species_search_request',
@@ -29,6 +32,12 @@ export const fetchStrainsAsyncActions = createAsyncAction(
   'species_selector/strains_success',
   'species_selector/strains_failure'
 )<undefined, { strains: Strain[] }, Error>();
+
+export const fetchPopularSpeciesAsyncActions = createAsyncAction(
+  'species_selector/popular_species_request',
+  'species_selector/popular_species_success',
+  'species_selector/popular_species_failure'
+)<undefined, { popularSpecies: PopularSpecies[] }, Error>();
 
 export const fetchAssembliesAsyncActions = createAsyncAction(
   'species_selector/assemblies_request',
@@ -55,7 +64,6 @@ export const fetchStrains: ActionCreator<
       fetchStrainsAsyncActions.success({ strains: mouseStrainsResult.strains })
     );
   } catch (error) {
-    // TODO
     dispatch(fetchStrainsAsyncActions.failure(error));
   }
 };
@@ -73,8 +81,24 @@ export const fetchAssemblies: ActionCreator<
       })
     );
   } catch (error) {
-    // TODO
     dispatch(fetchAssembliesAsyncActions.failure(error));
+  }
+};
+
+export const fetchPopularSpecies: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = () => async (dispatch) => {
+  try {
+    dispatch(fetchPopularSpeciesAsyncActions.request());
+
+    // FIXME: using mock data here
+    dispatch(
+      fetchPopularSpeciesAsyncActions.success({
+        popularSpecies: popularSpecies
+      })
+    );
+  } catch (error) {
+    dispatch(fetchPopularSpeciesAsyncActions.failure(error));
   }
 };
 

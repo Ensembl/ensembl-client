@@ -86,6 +86,13 @@ export default function speciesSelectorReducer(
           genome_id: action.payload
         }
       };
+    case getType(
+      speciesSelectorActions.fetchPopularSpeciesAsyncActions.success
+    ):
+      return {
+        ...state,
+        popularSpecies: action.payload.popularSpecies
+      };
     case getType(speciesSelectorActions.commitSelectedSpecies):
       return {
         ...state,

@@ -54,3 +54,7 @@ export const canCommitSpecies = (state: RootState) => {
 export const getCommittedSpecies = (state: RootState) => {
   return state.speciesSelector.committedItems;
 };
+
+export const getPopularSpecies = (state: RootState) => {
+  return state.speciesSelector.popularSpecies;
+};
