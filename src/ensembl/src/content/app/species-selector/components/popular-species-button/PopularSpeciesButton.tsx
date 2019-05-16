@@ -1,6 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 
+import { getCurrentSpeciesGenomeId } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+
 import { PopularSpecies } from 'src/content/app/species-selector/types/species-search';
 
 // import StrainSelector, {
@@ -8,6 +10,12 @@ import { PopularSpecies } from 'src/content/app/species-selector/types/species-s
 // } from 'src/content/app/species-selector/components/strain-selector/StrainSelector';
 
 import styles from './PopularSpeciesButton.scss';
+
+import { RootState } from 'src/store';
+
+type OwnProps = {
+  species: PopularSpecies;
+};
 
 type Props = {
   species: PopularSpecies;
@@ -41,5 +49,11 @@ const PopularSpeciesButton = (props: Props) => {
 PopularSpeciesButton.defaultProps = {
   strains: []
 };
+
+const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
+  isSelected: getCurrentSpeciesGenomeId(state) === ownProps.species.genome_id
+});
+
+const mapDispatchToProps = {};
 
 export default PopularSpeciesButton;
