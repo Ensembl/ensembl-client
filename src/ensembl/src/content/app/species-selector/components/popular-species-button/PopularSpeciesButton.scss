@@ -12,7 +12,6 @@ $buttonSize: 56px;
   width: $buttonSize;
   height: $buttonSize;
   background: $ens-blue;
-
   padding: 3px;
   cursor: pointer;
 
@@ -39,6 +38,10 @@ $buttonSize: 56px;
   background: white;
   border: 1px solid $ens-blue;
 
+  img {
+    filter: invert(0);
+  }
+
   & > svg {
     fill: black;
 
@@ -52,4 +55,5 @@ $buttonSize: 56px;
 
 .popularSpeciesButtonDisabled {
   background: $ens-light-grey;
+  cursor: default;
 }

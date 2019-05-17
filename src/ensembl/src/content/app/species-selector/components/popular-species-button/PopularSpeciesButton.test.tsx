@@ -2,7 +2,7 @@ import React from 'react';
 import { mount, render } from 'enzyme';
 import set from 'lodash/fp/set';
 
-import PopularSpeciesButton from './PopularSpeciesButton';
+import { PopularSpeciesButton } from './PopularSpeciesButton';
 
 import { createPopularSpecies } from 'tests/fixtures/popular-species';
 

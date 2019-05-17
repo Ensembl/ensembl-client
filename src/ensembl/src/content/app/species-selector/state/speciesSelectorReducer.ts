@@ -54,7 +54,7 @@ export default function speciesSelectorReducer(
         ...state,
         search: action.payload
       };
-    case getType(speciesSelectorActions.setSelectedSearchResult):
+    case getType(speciesSelectorActions.setSelectedSpecies):
       return {
         ...state,
         currentItem: buildCurrentItem(action.payload)

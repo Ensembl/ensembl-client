@@ -1,6 +1,8 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import classNames from 'classnames';
 
+import { handleSelectedSpecies } from 'src/content/app/species-selector/state/speciesSelectorActions';
 import { getCurrentSpeciesGenomeId } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import { PopularSpecies } from 'src/content/app/species-selector/types/species-search';
@@ -20,13 +22,25 @@ type OwnProps = {
 type Props = {
   species: PopularSpecies;
   isSelected: boolean;
+  handleSelectedSpecies: (species: PopularSpecies) => void;
   // strains: Strain[];
-  onClick: () => void;
   // onStrainSelect: () => void;
 };
 
-const PopularSpeciesButton = (props: Props) => {
-  const { isSelected, species, onClick } = props;
+// named export is for testing purposes
+// use default export for development
+export const PopularSpeciesButton = (props: Props) => {
+  const { isSelected, species } = props;
+
+  const handleClick = () => {
+    const {
+      isSelected,
+      species: { isAvailable }
+    } = props;
+    if (isAvailable && !isSelected) {
+      props.handleSelectedSpecies(props.species);
+    }
+  };
 
   const speciesName = species.common_name || species.scientific_name;
 
@@ -40,20 +54,25 @@ const PopularSpeciesButton = (props: Props) => {
   // )}
 
   return (
-    <div className={className} onClick={onClick}>
+    <div className={className} onClick={handleClick}>
       <img src={species.image} alt={speciesName} />
     </div>
   );
 };
 
-PopularSpeciesButton.defaultProps = {
-  strains: []
-};
+// PopularSpeciesButton.defaultProps = {
+//   strains: []
+// };
 
 const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
   isSelected: getCurrentSpeciesGenomeId(state) === ownProps.species.genome_id
 });
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  handleSelectedSpecies
+};
 
-export default PopularSpeciesButton;
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PopularSpeciesButton);

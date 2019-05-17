@@ -45,9 +45,9 @@ export const fetchAssembliesAsyncActions = createAsyncAction(
   'species_selector/assemblies_failure'
 )<undefined, { assemblies: Assembly[] }, Error>();
 
-export const setSelectedSearchResult = createStandardAction(
+export const setSelectedSpecies = createStandardAction(
   'species_selector/species_selected'
-)<SearchMatch>();
+)<SearchMatch | PopularSpecies>();
 
 export const clearSelectedSearchResult = createStandardAction(
   'species_selector/clear_search_result'
@@ -102,11 +102,11 @@ export const fetchPopularSpecies: ActionCreator<
   }
 };
 
-export const handleSelectedSearchResult: ActionCreator<
+export const handleSelectedSpecies: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (match: SearchMatch) => (dispatch) => {
-  dispatch(setSelectedSearchResult(match));
-  const { genome_id, common_name } = match;
+> = (item: SearchMatch | PopularSpecies) => (dispatch) => {
+  dispatch(setSelectedSpecies(item));
+  const { genome_id, common_name } = item;
 
   // FIXME: remove test for mock
   if (!common_name || !common_name.startsWith('Mou')) {
