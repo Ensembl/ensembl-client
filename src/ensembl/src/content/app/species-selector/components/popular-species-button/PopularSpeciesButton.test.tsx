@@ -7,38 +7,42 @@ import { PopularSpeciesButton } from './PopularSpeciesButton';
 import { createPopularSpecies } from 'tests/fixtures/popular-species';
 
 import styles from './PopularSpeciesButton.scss';
-import strainSelectorStyles from ',,/strain-selector/StrainSelector.scss';
 
-const onClick = jest.fn;
-// const onStrainSelect = jest.fn;
-const strains = [...new Array(4)].map((_, index) => ({
-  name: `strain-${index}`,
-  isSelected: Boolean(index % 2)
-}));
+const handleSelectedSpecies = jest.fn();
 
 const commonProps = {
   species: createPopularSpecies(),
-  onClick
+  isSelected: false,
+  isCommitted: false,
+  handleSelectedSpecies
 };
 
-const strainSelectorClassName = `.${strainSelectorStyles.strainSelector}`;
-
 describe('<PopularSpeciesButton />', () => {
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   describe('not available', () => {
     it('has appropriate class', () => {
       const props = set('species.isAvailable', false, commonProps);
-      const renderedButton = render(
-        <PopularSpeciesButton {...props} isSelected={false} />
-      );
+      const renderedButton = render(<PopularSpeciesButton {...props} />);
       expect(renderedButton.hasClass(styles.popularSpeciesButton)).toBe(true);
       expect(renderedButton.hasClass(styles.popularSpeciesButtonDisabled)).toBe(
         true
       );
     });
+
+    it('does not call handleSelectedSpecies prop when clicked', () => {
+      const props = set('species.isAvailable', false, commonProps);
+      const wrapper = mount(<PopularSpeciesButton {...props} />);
+      wrapper.simulate('click');
+
+      expect(handleSelectedSpecies).not.toHaveBeenCalled();
+    });
   });
 
   describe('not selected', () => {
-    test('has appropriate class', () => {
+    it('has appropriate class', () => {
       const renderedButton = render(
         <PopularSpeciesButton {...commonProps} isSelected={false} />
       );
@@ -48,36 +52,24 @@ describe('<PopularSpeciesButton />', () => {
       );
     });
 
-    test('does not render strain selector even if provided with a list of strains', () => {
-      const renderedButton = mount(
-        <PopularSpeciesButton {...commonProps} isSelected={false} />
-      );
-      expect(renderedButton.find(strainSelectorClassName).length).toBe(0);
+    it('calls handleSelectedSpecies prop when clicked', () => {
+      const wrapper = mount(<PopularSpeciesButton {...commonProps} />);
+      wrapper.simulate('click');
+
+      const speciesData = commonProps.species;
+
+      expect(handleSelectedSpecies).toHaveBeenCalledWith(speciesData);
     });
   });
 
   describe('selected', () => {
-    test('has appropriate class', () => {
+    it('has appropriate class', () => {
       const renderedButton = render(
         <PopularSpeciesButton {...commonProps} isSelected={true} />
       );
       expect(renderedButton.hasClass(styles.popularSpeciesButtonActive)).toBe(
         true
       );
-    });
-
-    test('does not render strain selector if none are available', () => {
-      const renderedButton = mount(
-        <PopularSpeciesButton {...commonProps} isSelected={true} />
-      );
-      expect(renderedButton.find(strainSelectorClassName).length).toBe(0);
-    });
-
-    test.skip('renders strain selector if a list of strains is provided', () => {
-      const renderedButton = mount(
-        <PopularSpeciesButton {...commonProps} isSelected={true} />
-      );
-      expect(renderedButton.find(strainSelectorClassName).length).toBe(1);
     });
   });
 });
