@@ -1,12 +1,15 @@
-export type EnsObjectInfoState = Readonly<{
-  ensObject: object;
+import { EnsObject } from './ensObjectTypes';
+import { TrackPanelCategory } from 'src/content/app/browser/track-panel/trackPanelConfig';
+
+export type CurrentEnsObjectState = Readonly<{
+  ensObjectInfo: EnsObject | {};
   ensObjectFetchFailed: boolean;
   ensObjectFetching: boolean;
-  trackCategories: [];
+  trackCategories: TrackPanelCategory[] | [];
 }>;
 
-export const defaultEnsObjectInfoState: EnsObjectInfoState = {
-  ensObject: {},
+export const defaultCurrentEnsObjectState: CurrentEnsObjectState = {
+  ensObjectInfo: {},
   ensObjectFetchFailed: false,
   ensObjectFetching: false,
   trackCategories: []

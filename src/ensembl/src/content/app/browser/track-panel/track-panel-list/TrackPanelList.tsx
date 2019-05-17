@@ -26,14 +26,16 @@ type TrackPanelListProps = {
   ensObjectInfo: any;
   selectedBrowserTab: TrackType;
   toggleDrawer: (drawerOpened: boolean) => void;
-  trackCategories: [];
+  trackCategories: TrackPanelCategory[];
   updateDrawerView: (drawerView: string) => void;
 };
 
 const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   props: TrackPanelListProps
 ) => {
-  const [currentTrackCategories, setCurrentTrackCategories] = useState([]);
+  const [currentTrackCategories, setCurrentTrackCategories] = useState<
+    TrackPanelCategory[]
+  >([]);
 
   useEffect(() => {
     if (props.trackCategories.length > 0) {

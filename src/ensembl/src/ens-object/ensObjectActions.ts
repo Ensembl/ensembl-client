@@ -1,13 +1,14 @@
 import { createAsyncAction } from 'typesafe-actions';
 import { Dispatch } from 'redux';
 
+import { EnsObject } from './ensObjectTypes';
 import apiService from 'src/services/api-service';
 
 export const fetchEnsObject = createAsyncAction(
   'ens-object/fetch_ens_object_request',
   'ens-object/fetch_ens_object_success',
   'ens-object/fetch_ens_object_failure'
-)<string, {}, Error>();
+)<string, EnsObject, Error>();
 
 export const fetchEnsObjectData = (ensObjectId: string) => async (
   dispatch: Dispatch
@@ -16,7 +17,7 @@ export const fetchEnsObjectData = (ensObjectId: string) => async (
     dispatch(fetchEnsObject.request(ensObjectId));
 
     const url = `/browser/get_object_info/${ensObjectId}`;
-    const response = await apiService.fetch(url);
+    const response: EnsObject = await apiService.fetch(url);
     dispatch(fetchEnsObject.success(response));
   } catch (error) {
     dispatch(fetchEnsObject.failure(error));

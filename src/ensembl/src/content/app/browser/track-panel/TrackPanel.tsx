@@ -38,7 +38,7 @@ import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 import { ChrLocation } from '../browserState';
 import { BreakpointWidth } from 'src/global/globalConfig';
-import { TrackType } from './trackPanelConfig';
+import { TrackType, TrackPanelCategory } from './trackPanelConfig';
 
 import styles from './TrackPanel.scss';
 
@@ -52,7 +52,7 @@ type StateProps = {
   exampleEnsObjects: any;
   launchbarExpanded: boolean;
   selectedBrowserTab: TrackType;
-  trackCategories: [];
+  trackCategories: TrackPanelCategory[];
   trackPanelModalOpened: boolean;
   trackPanelModalView: string;
   trackPanelOpened: boolean;

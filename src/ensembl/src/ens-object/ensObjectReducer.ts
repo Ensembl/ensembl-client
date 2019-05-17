@@ -3,16 +3,16 @@ import { combineReducers } from 'redux';
 
 import * as objectActions from './ensObjectActions';
 import {
+  CurrentEnsObjectState,
+  defaultCurrentEnsObjectState,
   ExampleEnsObjectState,
-  defaultExampleEnsObjectState,
-  EnsObjectInfoState,
-  defaultEnsObjectInfoState
+  defaultExampleEnsObjectState
 } from './ensObjectState';
 
-function ensObjectInfo(
-  state: EnsObjectInfoState = defaultEnsObjectInfoState,
+function currentEnsObject(
+  state: CurrentEnsObjectState = defaultCurrentEnsObjectState,
   action: ActionType<typeof objectActions>
-): EnsObjectInfoState {
+): CurrentEnsObjectState {
   switch (action.type) {
     case getType(objectActions.fetchEnsObject.failure):
       return { ...state, ensObjectFetchFailed: true };
@@ -23,19 +23,12 @@ function ensObjectInfo(
         ensObjectFetching: true
       };
     case getType(objectActions.fetchEnsObject.success):
-      type Payload = {
-        object_info: {};
-        track_categories: [];
-      };
-
-      const json = action.payload as Payload;
-
       return {
         ...state,
-        ensObject: json.object_info,
+        ensObjectInfo: action.payload.object_info,
         ensObjectFetchFailed: false,
         ensObjectFetching: false,
-        trackCategories: json.track_categories
+        trackCategories: action.payload.track_categories
       };
     default:
       return state;
@@ -74,6 +67,6 @@ function exampleEnsObjects(
 }
 
 export default combineReducers({
-  ensObjectInfo,
+  currentEnsObject,
   exampleEnsObjects
 });
