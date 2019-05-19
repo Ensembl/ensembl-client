@@ -9,6 +9,8 @@ import {
   getCommittedSpecies
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
+import InlineSVG from 'src/shared/inline-svg/InlineSvg';
+
 import {
   CommittedItem,
   PopularSpecies
@@ -60,7 +62,7 @@ export const PopularSpeciesButton = (props: Props) => {
 
   return (
     <div className={className} onClick={handleClick}>
-      <img src={species.image} alt={speciesName} />
+      <InlineSVG src={species.image} />
     </div>
   );
 };

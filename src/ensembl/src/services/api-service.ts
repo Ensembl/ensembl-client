@@ -11,7 +11,12 @@ export enum HTTPMethod {
   DELETE = 'DELETE'
 }
 
+type ApiServiceConfig = {
+  host: string;
+};
+
 type FetchOptions = {
+  host?: string;
   method?: HTTPMethod;
   headers?: { [key: string]: string };
   body?: string; // stringified json
@@ -20,8 +25,8 @@ type FetchOptions = {
 class ApiService {
   private host: string;
 
-  public constructor() {
-    this.host = config.apiHost;
+  public constructor(config: ApiServiceConfig) {
+    this.host = config.host;
   }
 
   // temporary method, for easy testing, until we choose a library
@@ -36,16 +41,30 @@ class ApiService {
       headers: { 'Content-Type': 'application/json' }
     }
   ) {
+    const host = options.host || this.host;
     const fetch = this.getFetch();
-    const url = `${this.host}${endpoint}`;
+    const url = /^https?:\/\//.test(endpoint) ? endpoint : `${host}${endpoint}`;
 
     try {
       const response = await fetch(url, options);
-      return await response.json();
+      return await this.handleResponse(response, options);
     } catch (error) {
       throw error;
     }
   }
+
+  private async handleResponse(response: Response, options: FetchOptions) {
+    if (
+      options.headers &&
+      options.headers['Content-Type'] === 'application/json'
+    ) {
+      return await response.json();
+    } else {
+      return await response.text();
+    }
+  }
 }
 
-export default new ApiService();
+export default new ApiService({
+  host: config.apiHost
+});
