@@ -2,24 +2,28 @@ import React, { PureComponent } from 'react';
 
 import errorService from 'src/services/error-service';
 
+type FallbackComponentProps = {
+  error: Error;
+};
+
 type Props = {
-  fallback: React.ReactNode;
+  fallbackComponent: React.ComponentType<FallbackComponentProps>;
   children: React.ReactNode | React.ReactNode[];
 };
 
 type State = {
-  hasError: boolean;
+  error: Error | null;
 };
 
 class ErrorBoundary extends PureComponent<Props, State> {
   public state = {
-    hasError: false
+    error: null
   };
 
   private errorService = errorService;
 
-  public static getDerivedStateFromError() {
-    return { hasError: true };
+  public static getDerivedStateFromError(error: Error) {
+    return { error };
   }
 
   public componentDidCatch(error: Error) {
@@ -27,8 +31,11 @@ class ErrorBoundary extends PureComponent<Props, State> {
   }
 
   public render() {
-    return this.state.hasError ? (
-      this.props.fallback
+    const FallbackComponent = this.props.fallbackComponent;
+    const { error } = this.state;
+
+    return error ? (
+      <FallbackComponent error={error} />
     ) : (
       <>{this.props.children}</>
     );

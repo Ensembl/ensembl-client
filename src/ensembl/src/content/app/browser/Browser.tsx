@@ -2,8 +2,7 @@ import React, {
   FunctionComponent,
   useCallback,
   useRef,
-  useEffect,
-  Fragment
+  useEffect
 } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -14,6 +13,8 @@ import BrowserImage from './browser-image/BrowserImage';
 import BrowserNavBar from './browser-nav/BrowserNavBar';
 import TrackPanel from './track-panel/TrackPanel';
 import Drawer from './drawer/Drawer';
+import ErrorBoundary from 'src/shared/error-boundary/ErrorBoundary';
+import BrowserError from './browser-error/BrowserError';
 
 import { RootState } from 'src/store';
 import {
@@ -129,7 +130,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   return (
     <section className={styles.browser}>
-      <Fragment>
+      <ErrorBoundary fallbackComponent={BrowserError}>
         <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
         {props.genomeSelectorActive ? (
           <div className={styles.browserOverlay} />
@@ -151,7 +152,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
           <TrackPanel browserRef={browserRef} />
           {props.drawerOpened && <Drawer />}
         </div>
-      </Fragment>
+      </ErrorBoundary>
     </section>
   );
 };

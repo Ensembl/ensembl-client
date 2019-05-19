@@ -7,7 +7,9 @@ import ErrorBoundary from './ErrorBoundary';
 
 const Child = () => <span>I am a child</span>;
 
-const Fallback = () => <span>I am the fallback component</span>;
+const Fallback = ({ error }: { error: Error }) => (
+  <span>I am the fallback component that received error {error}</span>
+);
 
 jest.spyOn(errorService, 'report');
 
@@ -18,7 +20,7 @@ describe('<ErrorBoundary />', () => {
 
   it('renders children components if they render normally', () => {
     const wrapper = mount(
-      <ErrorBoundary fallback={Fallback}>
+      <ErrorBoundary fallbackComponent={Fallback}>
         <Child />
         <Child />
       </ErrorBoundary>
@@ -29,24 +31,26 @@ describe('<ErrorBoundary />', () => {
 
   it('renders the fallback component if a child fails to render', () => {
     const wrapper = mount(
-      <ErrorBoundary fallback={<Fallback />}>
+      <ErrorBoundary fallbackComponent={Fallback}>
         <Child />
         <Child />
       </ErrorBoundary>
     );
+    const error = 'oops!';
 
     wrapper
       .find(Child)
       .at(0)
-      .simulateError('oops');
+      .simulateError(error);
 
     expect(wrapper.find(Child).length).toBe(0);
     expect(wrapper.find(Fallback).length).toBe(1);
+    expect(wrapper.find(Fallback).prop('error')).toBe(error);
   });
 
   it('calls errorService.report and passes the error to it', () => {
     const wrapper = mount(
-      <ErrorBoundary fallback={<Fallback />}>
+      <ErrorBoundary fallbackComponent={Fallback}>
         <Child />
       </ErrorBoundary>
     );
