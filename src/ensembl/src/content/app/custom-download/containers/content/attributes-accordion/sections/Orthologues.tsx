@@ -14,7 +14,7 @@ import {
   getOrthologueShowBestMatches,
   getOrthologueShowAll,
   getOrthologueApplyToAllSpecies
-} from 'src/content/app/custom-download/customDownloadSelectors';
+} from '../attributesAccordionSelector';
 
 import {
   setOrthologueAttributes,
@@ -24,7 +24,7 @@ import {
   setOrthologueShowBestMatches,
   setOrthologueShowAll,
   setOrthologueApplyToAllSpecies
-} from 'src/content/app/custom-download/customDownloadActions';
+} from '../attributesAccordionActions';
 
 import { getMatchedSpeciesList } from './helpers';
 

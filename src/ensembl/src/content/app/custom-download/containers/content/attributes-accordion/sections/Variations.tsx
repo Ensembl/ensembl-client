@@ -14,12 +14,12 @@ import {
   getGermlineVariationAttributes,
   getSomaticVariationAttributes,
   getVariationAccordionExpandedPanels
-} from 'src/content/app/custom-download/customDownloadSelectors';
+} from '../attributesAccordionSelector';
 import {
   setSomaticVariationAttributes,
   setGermlineVariationAttributes,
   setVariationAccordionExpandedPanels
-} from 'src/content/app/custom-download/customDownloadActions';
+} from '../attributesAccordionActions';
 import CheckBoxGrid from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
 import styles from './Styles.scss';
@@ -27,11 +27,11 @@ import styles from './Styles.scss';
 type Props = StateProps & DispatchProps;
 
 const Variations = (props: Props) => {
-  if (!props.germlineVariationAttributes || !props.somaticVariationAttributes) {
-    return null;
-  }
   const germlineOnChangeHandler = useCallback(
     (status: boolean, subSection: string, attributeId: string) => {
+      if (!props.germlineVariationAttributes) {
+        return;
+      }
       const newGermlineAttributes = { ...props.germlineVariationAttributes };
 
       newGermlineAttributes[subSection][attributeId].checkedStatus = status;
@@ -42,6 +42,10 @@ const Variations = (props: Props) => {
 
   const somaticOnChangeHandler = useCallback(
     (status: boolean, subSection: string, attributeId: string) => {
+      if (!props.somaticVariationAttributes) {
+        return;
+      }
+
       const newSomaticAttributes = { ...props.somaticVariationAttributes };
 
       newSomaticAttributes[subSection][attributeId].checkedStatus = status;

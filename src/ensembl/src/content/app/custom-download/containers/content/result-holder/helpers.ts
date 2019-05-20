@@ -69,6 +69,7 @@ export const formatResults = (apiResult: any, selectedAttributes: any) => {
 
   const result: any = Array(apiResultData.length + 1);
   result[0] = [];
+
   selectedAttributes.forEach((attribute: string) => {
     result[0].push(attribute[3]);
 

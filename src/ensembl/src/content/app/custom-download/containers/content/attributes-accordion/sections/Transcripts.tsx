@@ -2,8 +2,8 @@ import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
-import { getTranscriptAttributes } from 'src/content/app/custom-download/customDownloadSelectors';
-import { setTranscriptAttributes } from 'src/content/app/custom-download/customDownloadActions';
+import { getTranscriptAttributes } from '../attributesAccordionSelector';
+import { setTranscriptAttributes } from '../attributesAccordionActions';
 import CheckBoxGrid, {
   filterCheckedAttributes
 } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
@@ -18,12 +18,12 @@ type OwnProps = {
 type Props = OwnProps & StateProps & DispatchProps;
 
 const Transcripts = (props: Props) => {
-  if (!props.transcriptAttributes) {
-    return null;
-  }
-
   const onChangeHandler = useCallback(
     (status: boolean, subSection: string, attributeId: string) => {
+      if (!props.transcriptAttributes) {
+        return;
+      }
+
       const newTranscriptAttributes = { ...props.transcriptAttributes };
 
       newTranscriptAttributes[subSection][attributeId].checkedStatus = status;
@@ -34,6 +34,9 @@ const Transcripts = (props: Props) => {
   );
 
   if (props.hideUnchecked) {
+    if (!props.transcriptAttributes) {
+      return null;
+    }
     const checkedAttributes = filterCheckedAttributes(
       props.transcriptAttributes
     );

@@ -2,8 +2,8 @@ import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
-import { getLocationAttributes } from 'src/content/app/custom-download/customDownloadSelectors';
-import { setLocationAttributes } from 'src/content/app/custom-download/customDownloadActions';
+import { getLocationAttributes } from '../attributesAccordionSelector';
+import { setLocationAttributes } from '../attributesAccordionActions';
 import CheckBoxGrid, {
   filterCheckedAttributes
 } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
@@ -18,12 +18,11 @@ type ownProps = {
 type Props = ownProps & StateProps & DispatchProps;
 
 const Location = (props: Props) => {
-  if (!props.locationAttributes) {
-    return null;
-  }
-
   const onChangeHandler = useCallback(
     (status: boolean, subSection: string, attributeId: string) => {
+      if (!props.locationAttributes) {
+        return;
+      }
       const newLocationAttributes = { ...props.locationAttributes };
 
       newLocationAttributes[subSection][attributeId].checkedStatus = status;
@@ -34,6 +33,9 @@ const Location = (props: Props) => {
   );
 
   if (props.hideUnchecked) {
+    if (!props.locationAttributes) {
+      return null;
+    }
     const checkedAttributes = filterCheckedAttributes(props.locationAttributes);
 
     if (Object.keys(checkedAttributes).length === 0) {

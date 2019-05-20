@@ -1,38 +1,29 @@
-export type CustomDownloadState = Readonly<{
-  selectedPreFilter: string;
-  showPreFiltersPanel: boolean;
-  selectedTabButton: string;
-  attributesAccordion: any;
-  filtersAccordion: any;
-  filters: any;
+export type ResultState = Readonly<{
   previewResult: any;
   isLoadingResult: boolean;
 }>;
 
-export const defaultCustomDownloadState: CustomDownloadState = {
-  selectedPreFilter: '',
-  showPreFiltersPanel: true,
-  selectedTabButton: 'attributes',
-  attributesAccordion: {
-    expandedPanel: '',
-    expandedVariationPanels: [],
-    attributes: {},
-    orthologue: {
-      searchTerm: '',
-      species: [],
-      filteredSpecies: {},
-      showBestMatches: false,
-      showAll: false,
-      applyToAllSpecies: false
-    }
-  },
-  filters: {},
-  filtersAccordion: {
-    expandedPanel: '',
-    expandedGenePanels: []
-  },
+export const defaultResultState: ResultState = {
   previewResult: {
     resultCount: 0
   },
   isLoadingResult: false
+};
+
+export type TabButtonState = Readonly<{
+  selectedTabButton: string;
+}>;
+
+export const defaultTabButtonState: TabButtonState = {
+  selectedTabButton: 'attributes'
+};
+
+export type PreFilterState = Readonly<{
+  selectedPreFilter: string;
+  showPreFiltersPanel: boolean;
+}>;
+
+export const defaultPreFilterState: PreFilterState = {
+  selectedPreFilter: '',
+  showPreFiltersPanel: true
 };

@@ -26,7 +26,7 @@ export const filterCheckedAttributes = (attributes: any) => {
 };
 
 export const getAttributesCount = (attributes: any) => {
-  let totalAttributes: number = 0;
+  let totalAttributes = 0;
 
   if (!attributes || Object.keys(attributes).length === 0) {
     return 0;
@@ -113,7 +113,7 @@ const renderCheckBoxList = (
 };
 
 const CheckBoxGrid = (props: Props) => {
-  if (!Object.keys(props.gridData).length) {
+  if (!props.gridData || !Object.keys(props.gridData).length) {
     return null;
   }
   return (

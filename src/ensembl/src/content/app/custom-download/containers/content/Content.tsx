@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import styles from './Content.scss';
 import { getSelectedTabButton } from '../../customDownloadSelectors';
-import { setAttributes } from '../../customDownloadActions';
+import { setAttributes } from './attributes-accordion/attributesAccordionActions';
 import AttributesAccordion from './attributes-accordion/AttributesAccordion';
 import FiltersAccordion from './filter-accordion/FiltersAccordion';
 import TabButtons from './tab-buttons/TabButtons';

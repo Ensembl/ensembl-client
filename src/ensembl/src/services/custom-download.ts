@@ -22,9 +22,8 @@ const getCustomDownloadPreviewResults = async (
     JSON.stringify(endpointFilters) +
     '&fields=' +
     endpointFields +
-    '&sort=id';
+    '&sort=id&array=true';
   try {
-    console.log(endpoint);
     const response = await fetch(endpoint, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }

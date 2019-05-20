@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { BadgedButton, RoundButton, RoundButtonStatus } from 'src/shared';
-import {
-  getAttributes,
-  getFilters,
-  getSelectedTabButton
-} from '../../../customDownloadSelectors';
+import { getSelectedTabButton } from '../../../customDownloadSelectors';
+
+import { getAttributes } from '../attributes-accordion/attributesAccordionSelector';
+import { getFilters } from '../filter-accordion/filterAccordionSelector';
+
 import { toggleTabButton } from '../../../customDownloadActions';
 import { RootState } from 'src/store';
 

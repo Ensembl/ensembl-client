@@ -11,8 +11,8 @@ import {
   AccordionItemPermanentBlock
 } from 'src/shared';
 
-import { getAttributesAccordionExpandedPanel } from 'src/content/app/custom-download/customDownloadSelectors';
-import { setAttributesAccordionExpandedPanel } from 'src/content/app/custom-download/customDownloadActions';
+import { getAttributesAccordionExpandedPanel } from './attributesAccordionSelector';
+import { setAttributesAccordionExpandedPanel } from './attributesAccordionActions';
 
 import {
   Genes,

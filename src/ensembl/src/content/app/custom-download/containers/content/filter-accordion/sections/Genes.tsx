@@ -10,18 +10,22 @@ import {
   AccordionItemButton
 } from 'src/shared';
 
+import CheckboxMultiselect from '../../../../components/checkbox-multiselect/CheckboxMultiselect';
+
 import {
   getGeneFilters,
   getGeneTypeFilters,
   getTranscriptTypeFilters,
-  getFiltersAccordionExpandedGenePanels
-} from 'src/content/app/custom-download/customDownloadSelectors';
+  getFiltersAccordionExpandedGenePanels,
+  getGeneSourceFilters
+} from '../filterAccordionSelector';
+
 import {
   setGeneTypeFilters,
   setGeneFilters,
   setTranscriptTypeFilters,
   setFiltersAccordionExpandedGenePanels
-} from 'src/content/app/custom-download/customDownloadActions';
+} from '../filterAccordionActions';
 import CheckBoxGrid from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
 import {
@@ -97,6 +101,34 @@ const Genes = (props: Props) => {
     [props.expandedPanels]
   );
 
+  const geneSourceSelectOptions = [
+    {
+      value: 'ensembl',
+      label: 'ensembl',
+      isSelected: false
+    },
+    {
+      value: 'ensembl_havana',
+      label: 'ensembl_havana',
+      isSelected: false
+    },
+    {
+      value: 'havana',
+      label: 'havana',
+      isSelected: false
+    },
+    {
+      value: 'insdc',
+      label: 'insdc',
+      isSelected: false
+    },
+    {
+      value: 'mirbase',
+      label: 'mirbase',
+      isSelected: false
+    }
+  ];
+
   return (
     <>
       <div className={styles.checkboxGridWrapper}>
@@ -104,6 +136,13 @@ const Genes = (props: Props) => {
           checkboxOnChange={geneOnChangeHandler}
           gridData={geneFiltersGrid}
           columns={1}
+        />
+        <CheckboxMultiselect
+          checked={props.geneSourceFilters.checked}
+          label={'Gene source'}
+          onChange={() => console.log()}
+          selectedOptions={props.geneSourceFilters.selectedOptions}
+          selectOptions={geneSourceSelectOptions}
         />
       </div>
       <Accordion
@@ -167,13 +206,15 @@ type StateProps = {
   geneTypeFilters: any;
   transcriptTypeFilters: any;
   expandedPanels: [];
+  geneSourceFilters: any;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
   geneFilters: getGeneFilters(state),
   geneTypeFilters: getGeneTypeFilters(state),
   transcriptTypeFilters: getTranscriptTypeFilters(state),
-  expandedPanels: getFiltersAccordionExpandedGenePanels(state)
+  expandedPanels: getFiltersAccordionExpandedGenePanels(state),
+  geneSourceFilters: getGeneSourceFilters(state)
 });
 
 export default connect(

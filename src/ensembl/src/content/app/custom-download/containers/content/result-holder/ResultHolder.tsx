@@ -2,11 +2,12 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 import {
-  getAttributes,
-  getFilters,
   getPreviewResult,
   getIsLoadingResult
 } from '../../../customDownloadSelectors';
+
+import { getAttributes } from '../attributes-accordion/attributesAccordionSelector';
+import { getFilters } from '../filter-accordion/filterAccordionSelector';
 
 import {
   setPreviewResult,
@@ -28,11 +29,11 @@ type Props = StateProps & DispatchProps;
 
 const ResultHolder = (props: Props) => {
   const selectedAttributes: any = getSelectedAttributes(props.attributes);
-  if (!selectedAttributes.length) {
-    return null;
-  }
 
   useEffect(() => {
+    if (!selectedAttributes.length) {
+      return;
+    }
     const selectedFilters: any = getSelectedFilters(props.filters);
     props.setIsLoadingResult(true);
     fetchPreviewResults(props, selectedAttributes, selectedFilters);

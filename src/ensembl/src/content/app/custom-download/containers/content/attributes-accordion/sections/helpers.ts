@@ -12,7 +12,7 @@ export const getMatchedSpeciesList = async (searchTerm: string, props: any) => {
 
   const filteredSpecies: any = {};
 
-  allSpecies.forEach((species: any) => {
+  allSpecies.species.forEach((species: any) => {
     if (
       (species.display_name.toLowerCase().indexOf(searchTerm.toLowerCase()) !==
         -1 &&
