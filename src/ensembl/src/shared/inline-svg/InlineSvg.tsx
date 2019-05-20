@@ -11,6 +11,8 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import apiService from 'src/services/api-service';
 
+import styles from './InlineSvg.scss';
+
 type Props = {
   src: string; // url of the svg
 };
@@ -39,7 +41,7 @@ const InlineSVG = (props: Props) => {
     }
   });
 
-  return <div ref={containerRef} />;
+  return <div className={styles.inlineSvgContainer} ref={containerRef} />;
 };
 
 export default InlineSVG;
