@@ -75,7 +75,6 @@ const CheckboxMultiselect = (props: Props) => {
   );
 
   let selectIndex = 1;
-  const selectedOptionsToSkip = [firstSelectedOption];
 
   return (
     <>
@@ -118,7 +117,10 @@ const CheckboxMultiselect = (props: Props) => {
           {selectedOptionsClone.map((selectedOption: any, key: number) => {
             const selectOptions = [...props.selectOptions]
               .filter((option: any) => {
-                if (selectedOptionsToSkip.indexOf(option.value) == -1) {
+                if (
+                  selectedOptionsClone.indexOf(option.value) == -1 ||
+                  selectedOption === option.value
+                ) {
                   return true;
                 }
                 return false;
@@ -127,7 +129,6 @@ const CheckboxMultiselect = (props: Props) => {
                 const optionClone = { ...option };
                 if (optionClone.value === selectedOption) {
                   optionClone.isSelected = true;
-                  selectedOptionsToSkip.push(selectedOption);
                 }
                 return optionClone;
               });
