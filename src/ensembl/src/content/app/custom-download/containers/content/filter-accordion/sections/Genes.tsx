@@ -22,14 +22,13 @@ import {
 
 import {
   setGeneTypeFilters,
-  setGeneFilters,
+  setGeneSourceFilters,
   setTranscriptTypeFilters,
   setFiltersAccordionExpandedGenePanels
 } from '../filterAccordionActions';
 import CheckBoxGrid from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
 import {
-  geneFiltersGrid,
   geneTypeFiltersGrid,
   transcriptTypeFiltersGrid
 } from 'src/content/app/custom-download/sampledata';
@@ -39,24 +38,6 @@ import styles from './Styles.scss';
 type Props = StateProps & DispatchProps;
 
 const Genes = (props: Props) => {
-  const geneOnChangeHandler = useCallback(
-    (status: boolean, subSection: string, attributeId: string) => {
-      const newGeneFilters = { ...props.geneFilters };
-      if (!newGeneFilters[subSection]) {
-        newGeneFilters[subSection] = {};
-      }
-
-      if (!newGeneFilters[subSection][attributeId]) {
-        newGeneFilters[subSection][attributeId] = {};
-      }
-
-      newGeneFilters[subSection][attributeId].checkedStatus = status;
-      geneFiltersGrid[subSection][attributeId].checkedStatus = status;
-      props.setGeneFilters(newGeneFilters);
-    },
-    [props.geneFilters, geneFiltersGrid]
-  );
-
   const geneTypeOnChangeHandler = useCallback(
     (status: boolean, subSection: string, attributeId: string) => {
       const newGeneTypeFilters = { ...props.geneTypeFilters };
@@ -129,19 +110,20 @@ const Genes = (props: Props) => {
     }
   ];
 
+  const geneSourceFilterOnChange = useCallback(
+    (selectedOptions: []) => {
+      props.setGeneSourceFilters(selectedOptions);
+    },
+    [props.geneSourceFilters]
+  );
+
   return (
     <>
       <div className={styles.checkboxGridWrapper}>
-        <CheckBoxGrid
-          checkboxOnChange={geneOnChangeHandler}
-          gridData={geneFiltersGrid}
-          columns={1}
-        />
         <CheckboxMultiselect
-          checked={props.geneSourceFilters.checked}
           label={'Gene source'}
-          onChange={() => console.log()}
-          selectedOptions={props.geneSourceFilters.selectedOptions}
+          onChange={geneSourceFilterOnChange}
+          selectedOptions={props.geneSourceFilters}
           selectOptions={geneSourceSelectOptions}
         />
       </div>
@@ -186,8 +168,8 @@ const Genes = (props: Props) => {
 };
 
 type DispatchProps = {
-  setGeneFilters: (setGeneFilters: any) => void;
   setGeneTypeFilters: (setGeneTypeFilters: any) => void;
+  setGeneSourceFilters: (setGeneSourceFilters: any) => void;
   setTranscriptTypeFilters: (setTranscriptTypeFilters: any) => void;
   setFiltersAccordionExpandedGenePanels: (
     setVariationAccordionExpandedPanels: any
@@ -195,8 +177,8 @@ type DispatchProps = {
 };
 
 const mapDispatchToProps: DispatchProps = {
-  setGeneFilters,
   setGeneTypeFilters,
+  setGeneSourceFilters,
   setTranscriptTypeFilters,
   setFiltersAccordionExpandedGenePanels
 };

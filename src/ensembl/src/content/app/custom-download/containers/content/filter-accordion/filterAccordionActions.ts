@@ -24,13 +24,13 @@ export const setFiltersAccordionExpandedGenePanels = createAction(
   }
 );
 
-export const setGeneFilters = createAction(
-  'custom-download/set-gene-filters',
+export const setGeneSourceFilters = createAction(
+  'custom-download/set-gene-sourcefilters',
   (resolve) => {
-    return (geneFilters: {}) =>
+    return (geneSource: {}) =>
       resolve(
-        geneFilters,
-        getCustomDownloadAnalyticsObject('Gene filters updated')
+        geneSource,
+        getCustomDownloadAnalyticsObject('Gene source filters updated')
       );
   }
 );

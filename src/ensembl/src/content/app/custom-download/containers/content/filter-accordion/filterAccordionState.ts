@@ -8,9 +8,6 @@ export const defaultFilterAccordionState: FilterAccordionState = {
   expandedPanel: '',
   expandedGenePanels: [],
   filters: {
-    gene_source: {
-      checked: true,
-      selectedOptions: []
-    }
+    gene_source: []
   }
 };

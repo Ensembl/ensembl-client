@@ -16,7 +16,7 @@ function filterAccordion(
       return { ...state, expandedPanel: action.payload };
     case getType(filterAccordionActions.setFiltersAccordionExpandedGenePanels):
       return { ...state, expandedGenePanels: action.payload };
-    case getType(filterAccordionActions.setGeneFilters):
+    case getType(filterAccordionActions.setGeneSourceFilters):
       return { ...state, filters: Filters(state.filters, action) };
     case getType(filterAccordionActions.setGeneTypeFilters):
       return { ...state, filters: Filters(state.filters, action) };
@@ -32,8 +32,8 @@ function Filters(
   action: ActionType<RootAction>
 ): FilterAccordionState {
   switch (action.type) {
-    case getType(filterAccordionActions.setGeneFilters):
-      return { ...state, gene: action.payload };
+    case getType(filterAccordionActions.setGeneSourceFilters):
+      return { ...state, gene_source: action.payload };
     case getType(filterAccordionActions.setGeneTypeFilters):
       return { ...state, gene_type: action.payload };
     case getType(filterAccordionActions.setTranscriptTypeFilters):

@@ -2,4 +2,15 @@
 
 .multiselectTable {
   width: 100%;
+  table-layout: fixed;
+}
+
+.iconHolder {
+  height: 25px;
+  width: 25px;
+  margin-left: -3px;
+}
+
+.selectBox {
+  width: 150px;
 }

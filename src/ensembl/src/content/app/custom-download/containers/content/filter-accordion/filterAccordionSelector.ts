@@ -12,7 +12,7 @@ export const getFilters = (state: RootState): {} =>
 export const getGeneFilters = (state: RootState): string =>
   state.customDownload.filtersAccordion.filters.gene;
 
-export const getGeneSourceFilters = (state: RootState): string =>
+export const getGeneSourceFilters = (state: RootState): {} =>
   state.customDownload.filtersAccordion.filters.gene_source;
 
 export const getGeneTypeFilters = (state: RootState): string =>

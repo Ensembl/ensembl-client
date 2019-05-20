@@ -84,21 +84,6 @@ export const geneTypeFiltersGrid: any = {
   }
 };
 
-export const geneFiltersGrid: any = {
-  default: {
-    source: {
-      id: 'source',
-      label: 'Gene source',
-      checkedStatus: false
-    },
-    GENCODE_basic_annotation: {
-      id: 'GENCODE_basic_annotation',
-      label: 'GENCODE basic annotation',
-      checkedStatus: false
-    }
-  }
-};
-
 export const attributes = {
   gene: {
     default: {

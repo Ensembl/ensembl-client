@@ -1,33 +1,81 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Checkbox } from 'src/shared';
-import Select, { Option, OptionGroup } from 'src/shared/select/Select';
+import Select, { Option } from 'src/shared/select/Select';
 import styles from './CheckboxMultiselect.scss';
+
+import ImageButton from 'src/shared/image-button/ImageButton';
+import { ReactComponent as AddIcon } from 'static/img/browser/zoom-in.svg';
+import { ReactComponent as RemoveIcon } from 'static/img/shared/clear.svg';
 
 type Props = {
   selectOptions: Option[];
-  checked: boolean;
   label: string;
   selectedOptions: [];
-  onChange: (status: boolean) => void;
+  onChange: (selectedOptions: []) => void;
 };
 
 const CheckboxMultiselect = (props: Props) => {
-  const handleOnChange = (checkedStatus: boolean) => {
-    props.onChange(checkedStatus);
-  };
+  const [checkedStatus, setCheckedStatus] = useState(false);
+  const [shouldShowExtraOption, setShowExtraOption] = useState(false);
 
-  const handleOnSelect = (a, b) => {
-    // props.onChange();
-    console.log(a, b);
-  };
-
-  const firstSelectedOption = props.selectedOptions.shift();
-  const firstSelectOptions = props.selectOptions.map((option: any) => {
-    if (option.value === firstSelectedOption) {
-      option.isSelected = true;
+  useEffect(() => {
+    if (props.selectedOptions.length > 0) {
+      setCheckedStatus(true);
+      setShowExtraOption(true);
     }
-    return option;
+  }, []);
+
+  const handleCheckboxOnChange = useCallback(
+    (checkedStatus: boolean) => {
+      setCheckedStatus(checkedStatus);
+      props.onChange([]);
+    },
+    [props.selectedOptions]
+  );
+
+  const handleOnSelect = useCallback(
+    (value: string, selectIndex: number) => {
+      const newSelectedOptions: any = [...props.selectedOptions];
+      newSelectedOptions[selectIndex] = value;
+      setShowExtraOption(false);
+      props.onChange(newSelectedOptions);
+    },
+    [props.selectedOptions]
+  );
+
+  const selectedOptionsClone: any = [...props.selectedOptions];
+
+  const newSelectOptions: any = [...props.selectOptions].filter(
+    (option: any) => {
+      if (selectedOptionsClone.indexOf(option.value) === -1) {
+        return true;
+      }
+      return false;
+    }
+  );
+
+  const firstSelectedOption = selectedOptionsClone.shift();
+  const firstSelectOptions = [...props.selectOptions].map((option: any) => {
+    const optionClone = { ...option };
+    if (optionClone.value === firstSelectedOption) {
+      optionClone.isSelected = true;
+    }
+    return optionClone;
   });
+
+  const removeSelection = useCallback(
+    (option: string | undefined) => {
+      const selectedOptions: any = [...props.selectedOptions];
+      const removeSelectionIndex = selectedOptions.indexOf(option);
+      selectedOptions.splice(removeSelectionIndex, 1);
+      setShowExtraOption(false);
+      props.onChange(selectedOptions);
+    },
+    [props.selectedOptions]
+  );
+
+  let selectIndex = 1;
+  const selectedOptionsToSkip = [firstSelectedOption];
 
   return (
     <>
@@ -36,46 +84,118 @@ const CheckboxMultiselect = (props: Props) => {
           <tr>
             <td>
               <Checkbox
-                checked={props.checked}
-                onChange={handleOnChange}
+                checked={checkedStatus}
+                onChange={handleCheckboxOnChange}
                 label={props.label}
               />
             </td>
             <td>
-              {props.checked && (
+              {checkedStatus && (
                 <div>
                   <Select
                     options={firstSelectOptions}
-                    onSelect={handleOnSelect}
+                    onSelect={(option: string) => {
+                      handleOnSelect(option, 0);
+                    }}
+                    placeholder={'select'}
                   />
                 </div>
               )}
             </td>
-            <td>{!!firstSelectedOption && <div>Remove</div>}</td>
+            <td>
+              {!!firstSelectedOption && (
+                <div className={styles.iconHolder}>
+                  <ImageButton
+                    onClick={() => removeSelection(firstSelectedOption)}
+                    description={'Remove'}
+                    image={RemoveIcon}
+                  />
+                </div>
+              )}
+            </td>
           </tr>
 
-          {props.selectedOptions.map((selectedOption: any, key: number) => {
-            const selectOptions = props.selectOptions.map((option: any) => {
-              if (option.value === selectedOption) {
-                option.isSelected = true;
-              }
-              return option;
-            });
+          {selectedOptionsClone.map((selectedOption: any, key: number) => {
+            const selectOptions = [...props.selectOptions]
+              .filter((option: any) => {
+                if (selectedOptionsToSkip.indexOf(option.value) == -1) {
+                  return true;
+                }
+                return false;
+              })
+              .map((option: any) => {
+                const optionClone = { ...option };
+                if (optionClone.value === selectedOption) {
+                  optionClone.isSelected = true;
+                  selectedOptionsToSkip.push(selectedOption);
+                }
+                return optionClone;
+              });
+
+            selectIndex += 1;
 
             return (
               <tr key={key}>
                 <td />
                 <td>
                   <div>
-                    <Select options={selectOptions} onSelect={handleOnSelect} />
+                    <Select
+                      options={selectOptions}
+                      onSelect={(option: string) => {
+                        handleOnSelect(option, selectIndex);
+                      }}
+                      placeholder={'select'}
+                    />
                   </div>
                 </td>
                 <td>
-                  <div>Remove</div>
+                  <div className={styles.iconHolder}>
+                    <ImageButton
+                      onClick={() => removeSelection(selectedOption)}
+                      description={'Remove'}
+                      image={RemoveIcon}
+                    />
+                  </div>
                 </td>
               </tr>
             );
           })}
+
+          {/* Show the Add button */}
+          {props.selectedOptions.length > 0 &&
+            !shouldShowExtraOption &&
+            newSelectOptions.length > 0 && (
+              <tr>
+                <td colSpan={2} />
+                <td>
+                  <div className={styles.iconHolder}>
+                    <ImageButton
+                      onClick={() => setShowExtraOption(true)}
+                      description={'Add'}
+                      image={AddIcon}
+                    />
+                  </div>
+                </td>
+              </tr>
+            )}
+
+          {shouldShowExtraOption && (
+            <tr>
+              <td />
+              <td>
+                <div>
+                  <Select
+                    options={newSelectOptions}
+                    onSelect={(option: string) => {
+                      handleOnSelect(option, selectIndex++);
+                    }}
+                    placeholder={'select'}
+                  />
+                </div>
+              </td>
+              <td />
+            </tr>
+          )}
         </tbody>
       </table>
     </>
