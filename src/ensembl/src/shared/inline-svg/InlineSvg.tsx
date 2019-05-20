@@ -25,7 +25,6 @@ const InlineSVG = (props: Props) => {
   useEffect(() => {
     apiService
       .fetch(props.src, {
-        host: 'http://localhost:8080', // FIXME!
         headers: {
           'Content-Type': 'text/html'
         }
