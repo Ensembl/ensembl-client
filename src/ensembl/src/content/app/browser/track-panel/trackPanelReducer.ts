@@ -28,7 +28,7 @@ export default function trackPanel(
         trackPanelModalOpened: false,
         trackPanelModalView: ''
       };
-    case getType(trackPanelActions.selectBrowserTab):
+    case getType(trackPanelActions.selectBrowserTabAndSave):
       return {
         ...state,
         selectedBrowserTab: action.payload,

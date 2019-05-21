@@ -1,11 +1,12 @@
 import storageService, {
   StorageServiceInterface
 } from 'src/services/storage-service';
-import { TrackStates } from './track-panel/trackPanelConfig';
+import { TrackStates, TrackType } from './track-panel/trackPanelConfig';
 import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
 
 export enum StorageKeys {
-  TRACK_STATES = 'browser.trackStates'
+  TRACK_STATES = 'browser.trackStates',
+  SELECTED_TAB = 'browser.selectedBrowserTab'
 }
 
 export class BrowserStorageService {
@@ -33,6 +34,16 @@ export class BrowserStorageService {
     trackStates[categoryName][trackName] = trackStatus;
 
     this.storageService.save(StorageKeys.TRACK_STATES, trackStates);
+  }
+
+  public getSelectedBrowserTab(): TrackType {
+    return (
+      this.storageService.get(StorageKeys.SELECTED_TAB) || TrackType.GENOMIC
+    );
+  }
+
+  public saveSelectedBrowserTab(selectedTab: TrackType) {
+    this.storageService.save(StorageKeys.SELECTED_TAB, selectedTab);
   }
 }
 

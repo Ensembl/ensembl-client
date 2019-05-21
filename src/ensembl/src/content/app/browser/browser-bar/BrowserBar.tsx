@@ -21,7 +21,7 @@ import {
   getTrackPanelModalOpened,
   getTrackPanelOpened
 } from '../track-panel/trackPanelSelectors';
-import { selectBrowserTab } from '../track-panel/trackPanelActions';
+import { selectBrowserTabAndSave } from '../track-panel/trackPanelActions';
 import { toggleDrawer } from '../drawer/drawerActions';
 import { RootState } from 'src/store';
 
@@ -45,7 +45,7 @@ type StateProps = {
 };
 
 type DispatchProps = {
-  selectBrowserTab: (selectedBrowserTab: TrackType) => void;
+  selectBrowserTabAndSave: (selectedBrowserTab: TrackType) => void;
   toggleBrowserNav: () => void;
   toggleDrawer: (drawerOpened: boolean) => void;
   toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
@@ -153,7 +153,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
         <BrowserTabs
           drawerOpened={props.drawerOpened}
           genomeSelectorActive={props.genomeSelectorActive}
-          selectBrowserTab={props.selectBrowserTab}
+          selectBrowserTabAndSave={props.selectBrowserTabAndSave}
           selectedBrowserTab={props.selectedBrowserTab}
           toggleDrawer={props.toggleDrawer}
           trackPanelModalOpened={props.trackPanelModalOpened}
@@ -209,7 +209,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
 });
 
 const mapDispatchToProps: DispatchProps = {
-  selectBrowserTab,
+  selectBrowserTabAndSave,
   toggleBrowserNav,
   toggleDrawer,
   toggleGenomeSelector

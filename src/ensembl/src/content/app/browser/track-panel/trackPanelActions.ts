@@ -2,6 +2,7 @@ import { createAction } from 'typesafe-actions';
 
 import { TrackType } from './trackPanelConfig';
 import { getTrackPanelAnalyticsObject } from 'src/analyticsHelper';
+import browserStorageService from '../browser-storage-service';
 
 export const toggleTrackPanel = createAction(
   'track-panel/toggle-track-panel',
@@ -14,10 +15,13 @@ export const toggleTrackPanel = createAction(
   }
 );
 
-export const selectBrowserTab = createAction(
+export const selectBrowserTabAndSave = createAction(
   'select-browser-tab',
   (resolve) => {
-    return (selectedBrowserTab: TrackType) => resolve(selectedBrowserTab);
+    return (selectedBrowserTab: TrackType) => {
+      browserStorageService.saveSelectedBrowserTab(selectedBrowserTab);
+      return resolve(selectedBrowserTab);
+    };
   }
 );
 

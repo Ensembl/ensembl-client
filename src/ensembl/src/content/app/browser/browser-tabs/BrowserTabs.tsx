@@ -7,7 +7,7 @@ import styles from './BrowserTabs.scss';
 type BrowserTabsProps = {
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
-  selectBrowserTab: (selectedBrowserTab: TrackType) => void;
+  selectBrowserTabAndSave: (selectedBrowserTab: TrackType) => void;
   selectedBrowserTab: TrackType;
   toggleDrawer: (drawerOpened: boolean) => void;
   trackPanelModalOpened: boolean;
@@ -50,7 +50,7 @@ const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
           props.toggleDrawer(false);
         }
 
-        props.selectBrowserTab(value);
+        props.selectBrowserTabAndSave(value);
       };
     });
 
