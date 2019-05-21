@@ -5,7 +5,8 @@ import React, {
   ReactNode,
   RefObject,
   useState,
-  useCallback
+  useCallback,
+  useEffect
 } from 'react';
 
 import { TrackItemColour, TrackPanelItem } from '../trackPanelConfig';
@@ -42,6 +43,14 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   const [expanded, setExpanded] = useState(true);
   const [trackStatus, setTrackStatus] = useState(props.defaultTrackStatus);
   const { browserRef, categoryName, drawerView, track } = props;
+
+  useEffect(() => {
+    const trackToggleStates = browserStorageService.getTrackToggleStates();
+
+    if (track.childTrackList && trackToggleStates[track.name] !== undefined) {
+      setExpanded(trackToggleStates[`${track.name}`]);
+    }
+  }, []);
 
   const getListItemClasses = useCallback((): string => {
     let classNames: string = styles.listItem;
@@ -88,6 +97,10 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
 
   const toggleExpand = () => {
     setExpanded(!expanded);
+
+    browserStorageService.updateTrackToggleStates({
+      [`${track.name}`]: !expanded
+    });
   };
 
   const toggleTrack = () => {

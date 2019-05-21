@@ -1,11 +1,16 @@
 import storageService, {
   StorageServiceInterface
 } from 'src/services/storage-service';
-import { TrackStates, TrackType } from './track-panel/trackPanelConfig';
+import {
+  TrackStates,
+  TrackType,
+  TrackToggleStates
+} from './track-panel/trackPanelConfig';
 import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
 
 export enum StorageKeys {
   TRACK_STATES = 'browser.trackStates',
+  TRACK_TOGGLE_STATES = 'browser.trackToggleStates',
   SELECTED_TAB = 'browser.selectedBrowserTab'
 }
 
@@ -34,6 +39,14 @@ export class BrowserStorageService {
     trackStates[categoryName][trackName] = trackStatus;
 
     this.storageService.save(StorageKeys.TRACK_STATES, trackStates);
+  }
+
+  public getTrackToggleStates(): TrackToggleStates {
+    return this.storageService.get(StorageKeys.TRACK_TOGGLE_STATES) || {};
+  }
+
+  public updateTrackToggleStates(toggleState: TrackToggleStates) {
+    this.storageService.update(StorageKeys.TRACK_TOGGLE_STATES, toggleState);
   }
 
   public getSelectedBrowserTab(): TrackType {

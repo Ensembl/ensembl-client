@@ -47,3 +47,7 @@ export type TrackStates = {
     [key: string]: ImageButtonStatus;
   };
 };
+
+export type TrackToggleStates = {
+  [key: string]: boolean;
+};
