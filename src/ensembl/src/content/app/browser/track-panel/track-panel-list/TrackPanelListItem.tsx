@@ -124,7 +124,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
         : ImageButtonStatus.ACTIVE;
 
     setTrackStatus(newImageButtonStatus);
-    browserStorageService.saveTrackState(
+    browserStorageService.saveTrackStates(
       categoryName,
       track.name,
       newImageButtonStatus

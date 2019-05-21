@@ -25,7 +25,7 @@ export class BrowserStorageService {
     return this.storageService.get(StorageKeys.TRACK_STATES) || {};
   }
 
-  public saveTrackState(
+  public saveTrackStates(
     categoryName: string,
     trackName: string,
     trackStatus: ImageButtonStatus
