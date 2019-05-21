@@ -2,7 +2,16 @@
 
 .trackPanelWrapper {
   @include flex;
-  float: left;
+  position: absolute;
+  right: 0;
+  transition: all 0.5s linear;
+}
+
+.closedTrackPanelWrapper {
+  @include flex;
+  position: absolute;
+  right: -320px;
+  transition: all 0.5s linear;
 }
 
 .trackPanel {

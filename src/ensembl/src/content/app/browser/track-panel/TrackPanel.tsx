@@ -1,5 +1,6 @@
 import React, { FunctionComponent, RefObject, useEffect } from 'react';
 import { connect } from 'react-redux';
+import classNames from 'classnames';
 
 import TrackPanelBar from './track-panel-bar/TrackPanelBar';
 import TrackPanelList from './track-panel-list/TrackPanelList';
@@ -78,8 +79,12 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
     }
   }, [props.breakpointWidth, props.toggleTrackPanel]);
 
+  const wrapperClassName = classNames(
+    { [styles.trackPanelWrapper]: props.trackPanelOpened },
+    { [styles.closedTrackPanelWrapper]: !props.trackPanelOpened }
+  );
   return (
-    <section className={`${styles.trackPanelWrapper} reactSlideDrawer`}>
+    <section className={wrapperClassName}>
       {props.browserActivated && props.ensObjectInfo.associated_object ? (
         <div className={styles.trackPanel}>
           <TrackPanelBar
