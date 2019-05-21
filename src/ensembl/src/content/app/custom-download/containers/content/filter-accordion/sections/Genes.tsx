@@ -10,19 +10,22 @@ import {
   AccordionItemButton
 } from 'src/shared';
 
-import CheckboxMultiselect from '../../../../components/checkbox-multiselect/CheckboxMultiselect';
+import CheckboxWithSelects from '../../../../components/checkbox-with-selects/CheckboxWithSelects';
+import CheckboxWithRadios from '../../../../components/checkbox-with-radios/CheckboxWithRadios';
 
 import {
   getGeneFilters,
   getGeneTypeFilters,
   getTranscriptTypeFilters,
   getFiltersAccordionExpandedGenePanels,
-  getGeneSourceFilters
+  getGeneSourceFilters,
+  getGencodeAnnotationFilters
 } from '../filterAccordionSelector';
 
 import {
   setGeneTypeFilters,
   setGeneSourceFilters,
+  setGencodeAnnotationFilters,
   setTranscriptTypeFilters,
   setFiltersAccordionExpandedGenePanels
 } from '../filterAccordionActions';
@@ -110,6 +113,17 @@ const Genes = (props: Props) => {
     }
   ];
 
+  const gencodeBasicAnnotationOptions = [
+    {
+      value: 'include',
+      label: 'Include'
+    },
+    {
+      value: 'exclude',
+      label: 'Exclude'
+    }
+  ];
+
   const geneSourceFilterOnChange = useCallback(
     (selectedOptions: []) => {
       props.setGeneSourceFilters(selectedOptions);
@@ -117,14 +131,28 @@ const Genes = (props: Props) => {
     [props.geneSourceFilters]
   );
 
+  const gencodeAnnotationFilterOnChange = useCallback(
+    (selectedOption: string) => {
+      props.setGencodeAnnotationFilters(selectedOption);
+    },
+    [props.gencodeAnnotationFilters]
+  );
+
   return (
     <>
       <div className={styles.checkboxGridWrapper}>
-        <CheckboxMultiselect
+        <CheckboxWithSelects
           label={'Gene source'}
           onChange={geneSourceFilterOnChange}
           selectedOptions={props.geneSourceFilters}
           selectOptions={geneSourceSelectOptions}
+        />
+
+        <CheckboxWithRadios
+          label={'GENCODE basic annotation'}
+          onChange={gencodeAnnotationFilterOnChange}
+          selectedOption={props.gencodeAnnotationFilters}
+          radioOptions={gencodeBasicAnnotationOptions}
         />
       </div>
       <Accordion
@@ -170,6 +198,7 @@ const Genes = (props: Props) => {
 type DispatchProps = {
   setGeneTypeFilters: (setGeneTypeFilters: any) => void;
   setGeneSourceFilters: (setGeneSourceFilters: any) => void;
+  setGencodeAnnotationFilters: (setGencodeAnnotationFilters: any) => void;
   setTranscriptTypeFilters: (setTranscriptTypeFilters: any) => void;
   setFiltersAccordionExpandedGenePanels: (
     setVariationAccordionExpandedPanels: any
@@ -179,6 +208,7 @@ type DispatchProps = {
 const mapDispatchToProps: DispatchProps = {
   setGeneTypeFilters,
   setGeneSourceFilters,
+  setGencodeAnnotationFilters,
   setTranscriptTypeFilters,
   setFiltersAccordionExpandedGenePanels
 };
@@ -189,6 +219,7 @@ type StateProps = {
   transcriptTypeFilters: any;
   expandedPanels: [];
   geneSourceFilters: any;
+  gencodeAnnotationFilters: string;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
@@ -196,7 +227,8 @@ const mapStateToProps = (state: RootState): StateProps => ({
   geneTypeFilters: getGeneTypeFilters(state),
   transcriptTypeFilters: getTranscriptTypeFilters(state),
   expandedPanels: getFiltersAccordionExpandedGenePanels(state),
-  geneSourceFilters: getGeneSourceFilters(state)
+  geneSourceFilters: getGeneSourceFilters(state),
+  gencodeAnnotationFilters: getGencodeAnnotationFilters(state)
 });
 
 export default connect(

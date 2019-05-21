@@ -24,6 +24,19 @@ export const setFiltersAccordionExpandedGenePanels = createAction(
   }
 );
 
+export const setGencodeAnnotationFilters = createAction(
+  'custom-download/set-gencode-basic-annotation-filters',
+  (resolve) => {
+    return (gencodeBasicAnnotation: string) =>
+      resolve(
+        gencodeBasicAnnotation,
+        getCustomDownloadAnalyticsObject(
+          'Gencode basic annotation filters updated'
+        )
+      );
+  }
+);
+
 export const setGeneSourceFilters = createAction(
   'custom-download/set-gene-sourcefilters',
   (resolve) => {

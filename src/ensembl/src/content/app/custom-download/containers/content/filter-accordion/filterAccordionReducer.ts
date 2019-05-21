@@ -18,6 +18,8 @@ function filterAccordion(
       return { ...state, expandedGenePanels: action.payload };
     case getType(filterAccordionActions.setGeneSourceFilters):
       return { ...state, filters: Filters(state.filters, action) };
+    case getType(filterAccordionActions.setGencodeAnnotationFilters):
+      return { ...state, filters: Filters(state.filters, action) };
     case getType(filterAccordionActions.setGeneTypeFilters):
       return { ...state, filters: Filters(state.filters, action) };
     case getType(filterAccordionActions.setTranscriptTypeFilters):
@@ -34,6 +36,8 @@ function Filters(
   switch (action.type) {
     case getType(filterAccordionActions.setGeneSourceFilters):
       return { ...state, gene_source: action.payload };
+    case getType(filterAccordionActions.setGencodeAnnotationFilters):
+      return { ...state, gencode_basic_annotation: action.payload };
     case getType(filterAccordionActions.setGeneTypeFilters):
       return { ...state, gene_type: action.payload };
     case getType(filterAccordionActions.setTranscriptTypeFilters):

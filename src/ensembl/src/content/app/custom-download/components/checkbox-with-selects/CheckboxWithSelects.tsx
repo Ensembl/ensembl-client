@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Checkbox } from 'src/shared';
 import Select, { Option } from 'src/shared/select/Select';
-import styles from './CheckboxMultiselect.scss';
+import styles from './CheckboxWithSelects.scss';
 
 import ImageButton from 'src/shared/image-button/ImageButton';
 import { ReactComponent as AddIcon } from 'static/img/browser/zoom-in.svg';
@@ -14,7 +14,7 @@ type Props = {
   onChange: (selectedOptions: []) => void;
 };
 
-const CheckboxMultiselect = (props: Props) => {
+const CheckboxWithSelects = (props: Props) => {
   const [checkedStatus, setCheckedStatus] = useState(false);
   const [shouldShowExtraOption, setShowExtraOption] = useState(false);
 
@@ -203,4 +203,4 @@ const CheckboxMultiselect = (props: Props) => {
   );
 };
 
-export default CheckboxMultiselect;
+export default CheckboxWithSelects;
