@@ -11,11 +11,13 @@ import TrackPanelListItem from './TrackPanelListItem';
 import {
   TrackPanelCategory,
   TrackPanelItem,
-  TrackType
+  TrackType,
+  TrackStates
 } from '../trackPanelConfig';
 import { ChrLocation } from '../../browserState';
 
 import styles from './TrackPanelList.scss';
+import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
 
 type TrackPanelListProps = {
   browserRef: RefObject<HTMLDivElement>;
@@ -27,6 +29,7 @@ type TrackPanelListProps = {
   selectedBrowserTab: TrackType;
   toggleDrawer: (drawerOpened: boolean) => void;
   trackCategories: TrackPanelCategory[];
+  trackStates: TrackStates;
   updateDrawerView: (drawerView: string) => void;
 };
 
@@ -105,7 +108,22 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
     };
   };
 
-  const getTrackListItem = (track: TrackPanelItem | null) => {
+  const getDefaultTrackStatus = (categoryName: string, trackName: string) => {
+    const statesOfCategory = props.trackStates[categoryName];
+
+    let defaultTrackStatus = ImageButtonStatus.ACTIVE;
+
+    if (statesOfCategory && statesOfCategory[trackName]) {
+      defaultTrackStatus = statesOfCategory[trackName];
+    }
+
+    return defaultTrackStatus;
+  };
+
+  const getTrackListItem = (
+    categoryName: string,
+    track: TrackPanelItem | null
+  ) => {
     if (!track) {
       return;
     }
@@ -113,6 +131,8 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
     return (
       <TrackPanelListItem
         browserRef={props.browserRef}
+        categoryName={categoryName}
+        defaultTrackStatus={getDefaultTrackStatus(categoryName, track.name)}
         drawerOpened={props.drawerOpened}
         drawerView={props.drawerView}
         key={track.id}
@@ -121,7 +141,7 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
       >
         {track.childTrackList &&
           track.childTrackList.map((childTrack: TrackPanelItem) =>
-            getTrackListItem(childTrack)
+            getTrackListItem(categoryName, childTrack)
           )}
       </TrackPanelListItem>
     );
@@ -130,7 +150,7 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   return (
     <div className={getTrackPanelListClasses()}>
       <section>
-        <dl>{getTrackListItem(getMainTracks())}</dl>
+        <dl>{getTrackListItem('main', getMainTracks())}</dl>
       </section>
       {currentTrackCategories.map((category: TrackPanelCategory) => (
         <section key={category.name}>
@@ -138,7 +158,7 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
           <dl>
             {category.trackList.length ? (
               category.trackList.map((track: TrackPanelItem) =>
-                getTrackListItem(track)
+                getTrackListItem(category.name, track)
               )
             ) : (
               <dd className={styles.emptyListMsg}>No data available</dd>

@@ -38,7 +38,7 @@ import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 import { ChrLocation } from '../browserState';
 import { BreakpointWidth } from 'src/global/globalConfig';
-import { TrackType, TrackPanelCategory } from './trackPanelConfig';
+import { TrackType, TrackPanelCategory, TrackStates } from './trackPanelConfig';
 
 import styles from './TrackPanel.scss';
 
@@ -68,6 +68,7 @@ type DispatchProps = {
 
 type OwnProps = {
   browserRef: RefObject<HTMLDivElement>;
+  trackStates: TrackStates;
 };
 
 type TrackPanelProps = StateProps & DispatchProps & OwnProps;
@@ -110,6 +111,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
                 selectedBrowserTab={props.selectedBrowserTab}
                 toggleDrawer={props.toggleDrawer}
                 trackCategories={props.trackCategories}
+                trackStates={props.trackStates}
                 updateDrawerView={props.changeDrawerView}
               />
               {props.trackPanelModalOpened ? (

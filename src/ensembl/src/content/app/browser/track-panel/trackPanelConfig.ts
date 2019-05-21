@@ -1,3 +1,5 @@
+import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
+
 export enum TrackItemColour {
   BLUE = 'blue',
   DARK_GREY = 'darkGrey',
@@ -38,4 +40,10 @@ export type TrackPanelIcon = {
 
 export type TrackPanelIcons = {
   [key: string]: TrackPanelIcon;
+};
+
+export type TrackStates = {
+  [key: string]: {
+    [key: string]: ImageButtonStatus;
+  };
 };

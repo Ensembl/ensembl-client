@@ -3,7 +3,8 @@ import React, {
   useCallback,
   useRef,
   useEffect,
-  Fragment
+  Fragment,
+  useState
 } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -44,6 +45,8 @@ import { toggleDrawer } from './drawer/drawerActions';
 import styles from './Browser.scss';
 
 import 'static/browser/browser.js';
+import browserStorageService from './browser-storage-service';
+import { TrackStates } from './track-panel/trackPanelConfig';
 
 type StateProps = {
   browserActivated: boolean;
@@ -84,12 +87,19 @@ export const Browser: FunctionComponent<BrowserProps> = (
   props: BrowserProps
 ) => {
   const browserRef: React.RefObject<HTMLDivElement> = useRef(null);
+  const [trackStatesFromStorage, setTrackStatesFromStorage] = useState<
+    TrackStates
+  >({});
 
   const dispatchBrowserLocation = (chrLocation: ChrLocation) => {
     if (browserRef.current) {
       props.changeBrowserLocation(chrLocation, browserRef.current);
     }
   };
+
+  useEffect(() => {
+    setTrackStatesFromStorage(browserStorageService.getTrackStates());
+  }, []);
 
   useEffect(() => {
     const { stableId } = props.match.params;
@@ -146,9 +156,15 @@ export const Browser: FunctionComponent<BrowserProps> = (
             browserRef.current ? (
               <BrowserNavBar browserElement={browserRef.current} />
             ) : null}
-            <BrowserImage browserRef={browserRef} />
+            <BrowserImage
+              browserRef={browserRef}
+              trackStates={trackStatesFromStorage}
+            />
           </div>
-          <TrackPanel browserRef={browserRef} />
+          <TrackPanel
+            browserRef={browserRef}
+            trackStates={trackStatesFromStorage}
+          />
           {props.drawerOpened && <Drawer />}
         </div>
       </Fragment>

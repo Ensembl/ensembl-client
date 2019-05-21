@@ -20,10 +20,13 @@ import styles from './TrackPanelListItem.scss';
 import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/image-button/ImageButton';
+import browserStorageService from '../../browser-storage-service';
 
 type TrackPanelListItemProps = {
   browserRef: RefObject<HTMLDivElement>;
+  categoryName: string;
   children?: ReactNode[];
+  defaultTrackStatus: ImageButtonStatus;
   drawerOpened: boolean;
   drawerView: string;
   track: TrackPanelItem;
@@ -37,9 +40,8 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   props: TrackPanelListItemProps
 ) => {
   const [expanded, setExpanded] = useState(true);
-  const [trackStatus, setTrackStatus] = useState(ImageButtonStatus.ACTIVE);
-
-  const { browserRef, drawerView, track } = props;
+  const [trackStatus, setTrackStatus] = useState(props.defaultTrackStatus);
+  const { browserRef, categoryName, drawerView, track } = props;
 
   const getListItemClasses = useCallback((): string => {
     let classNames: string = styles.listItem;
@@ -103,11 +105,17 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
       browserRef.current.dispatchEvent(trackEvent);
     }
 
-    if (trackStatus === ImageButtonStatus.ACTIVE) {
-      setTrackStatus(ImageButtonStatus.INACTIVE);
-      return;
-    }
-    setTrackStatus(ImageButtonStatus.ACTIVE);
+    const newImageButtonStatus =
+      trackStatus === ImageButtonStatus.ACTIVE
+        ? ImageButtonStatus.INACTIVE
+        : ImageButtonStatus.ACTIVE;
+
+    setTrackStatus(newImageButtonStatus);
+    browserStorageService.saveTrackState(
+      categoryName,
+      track.name,
+      newImageButtonStatus
+    );
   };
 
   return (

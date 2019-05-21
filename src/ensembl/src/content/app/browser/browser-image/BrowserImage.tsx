@@ -23,6 +23,7 @@ import {
   updateChrLocation
 } from '../browserActions';
 import { RootState } from 'src/store';
+import { TrackStates } from '../track-panel/trackPanelConfig';
 
 type StateProps = {
   browserCogTrackList: CogList;
@@ -41,6 +42,7 @@ type DispatchProps = {
 
 type OwnProps = {
   browserRef: RefObject<HTMLDivElement>;
+  trackStates: TrackStates;
 };
 
 type BrowserImageProps = StateProps & DispatchProps & OwnProps;
