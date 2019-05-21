@@ -45,7 +45,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   const { browserRef, categoryName, drawerView, track } = props;
 
   useEffect(() => {
-    const trackToggleStates = browserStorageService.getTrackToggleStates();
+    const trackToggleStates = browserStorageService.getTrackListToggleStates();
 
     if (track.childTrackList && trackToggleStates[track.name] !== undefined) {
       setExpanded(trackToggleStates[`${track.name}`]);
@@ -98,7 +98,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   const toggleExpand = () => {
     setExpanded(!expanded);
 
-    browserStorageService.updateTrackToggleStates({
+    browserStorageService.updateTrackListToggleStates({
       [`${track.name}`]: !expanded
     });
   };
