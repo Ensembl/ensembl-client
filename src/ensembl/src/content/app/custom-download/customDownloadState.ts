@@ -27,3 +27,13 @@ export const defaultPreFilterState: PreFilterState = {
   selectedPreFilter: '',
   showPreFiltersPanel: true
 };
+
+export type PreviewDownloadState = Readonly<{
+  showPreview: boolean;
+  downloadType: string;
+}>;
+
+export const defaultPreviewDownloadState: PreviewDownloadState = {
+  showPreview: false,
+  downloadType: ''
+};

@@ -57,3 +57,25 @@ export const setIsLoadingResult = createAction(
     return (isLoading: boolean) => resolve(isLoading);
   }
 );
+
+export const setShowPreview = createAction(
+  'custom-download/set-show-preview',
+  (resolve) => {
+    return (showPreview: boolean) =>
+      resolve(
+        showPreview,
+        getCustomDownloadAnalyticsObject('Show download preview')
+      );
+  }
+);
+
+export const setDownloadType = createAction(
+  'custom-download/set-download-as',
+  (resolve) => {
+    return (downloadType: string) =>
+      resolve(
+        downloadType,
+        getCustomDownloadAnalyticsObject('Download as ' + downloadType)
+      );
+  }
+);

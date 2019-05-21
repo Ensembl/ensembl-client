@@ -35,3 +35,47 @@
   color: $ens-white;
   margin-right: 10px;
 }
+
+.previewResultCounter {
+  margin-left: 20px;
+  padding-top: 12px;
+  display: inline-block;
+}
+
+.boldResultCounter {
+  font-weight: bold;
+  margin-right: 2px;
+}
+
+.resultsLabel {
+  font-size: 11px;
+  color: $ens-dark-grey;
+}
+.saveConfiguration {
+  font-size: 11px;
+  color: $ens-blue;
+}
+
+.backButton {
+  height: 30px;
+  width: 30px;
+  margin-left: 20px;
+  display: inline-block;
+}
+
+.downloadTypeSelectHolder {
+  display: inline-block;
+  margin-left: 20px;
+}
+
+.downloadTypeLabel {
+  color: $ens-dark-grey;
+}
+
+.downloadTypeSelect {
+  margin-left: 10px;
+  color: $ens-blue;
+  li {
+    color: $ens-medium-dark-grey;
+  }
+}

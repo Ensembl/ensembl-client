@@ -8,7 +8,9 @@ import {
   PreFilterState,
   defaultPreFilterState,
   TabButtonState,
-  defaultTabButtonState
+  defaultTabButtonState,
+  PreviewDownloadState,
+  defaultPreviewDownloadState
 } from './customDownloadState';
 
 import filtersAccordion from './containers/content/filter-accordion/FilterAccordionReducer';
@@ -62,10 +64,32 @@ function resultHolder(
   }
 }
 
+function previewDownload(
+  state: PreviewDownloadState = defaultPreviewDownloadState,
+  action: ActionType<RootAction>
+): PreviewDownloadState {
+  switch (action.type) {
+    case getType(customDownloadActions.setShowPreview):
+      return {
+        ...state,
+        showPreview: action.payload
+      };
+    case getType(customDownloadActions.setDownloadType):
+      return {
+        ...state,
+        downloadType: action.payload
+      };
+
+    default:
+      return state;
+  }
+}
+
 export default combineReducers({
   filtersAccordion,
   attributesAccordion,
   preFilter,
   tabButton,
-  resultHolder
+  resultHolder,
+  previewDownload
 });
