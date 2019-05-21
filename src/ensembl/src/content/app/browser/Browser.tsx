@@ -13,8 +13,6 @@ import BrowserImage from './browser-image/BrowserImage';
 import BrowserNavBar from './browser-nav/BrowserNavBar';
 import TrackPanel from './track-panel/TrackPanel';
 import Drawer from './drawer/Drawer';
-import ErrorBoundary from 'src/shared/error-boundary/ErrorBoundary';
-import BrowserError from './browser-error/BrowserError';
 
 import { RootState } from 'src/store';
 import {
@@ -130,29 +128,27 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   return (
     <section className={styles.browser}>
-      <ErrorBoundary fallbackComponent={BrowserError}>
-        <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
-        {props.genomeSelectorActive ? (
-          <div className={styles.browserOverlay} />
-        ) : null}
-        <div className={styles.browserInnerWrapper}>
-          <div
-            className={`${styles.browserImageWrapper} ${
-              styles[props.browserOpenState]
-            }`}
-            onClick={closeTrack}
-          >
-            {props.browserNavOpened &&
-            !props.drawerOpened &&
-            browserRef.current ? (
-              <BrowserNavBar browserElement={browserRef.current} />
-            ) : null}
-            <BrowserImage browserRef={browserRef} />
-          </div>
-          <TrackPanel browserRef={browserRef} />
-          {props.drawerOpened && <Drawer />}
+      <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
+      {props.genomeSelectorActive ? (
+        <div className={styles.browserOverlay} />
+      ) : null}
+      <div className={styles.browserInnerWrapper}>
+        <div
+          className={`${styles.browserImageWrapper} ${
+            styles[props.browserOpenState]
+          }`}
+          onClick={closeTrack}
+        >
+          {props.browserNavOpened &&
+          !props.drawerOpened &&
+          browserRef.current ? (
+            <BrowserNavBar browserElement={browserRef.current} />
+          ) : null}
+          <BrowserImage browserRef={browserRef} />
         </div>
-      </ErrorBoundary>
+        <TrackPanel browserRef={browserRef} />
+        {props.drawerOpened && <Drawer />}
+      </div>
     </section>
   );
 };
