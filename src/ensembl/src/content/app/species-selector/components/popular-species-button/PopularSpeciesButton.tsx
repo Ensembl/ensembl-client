@@ -9,14 +9,12 @@ import {
   getCommittedSpecies
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
+import InlineSVG from 'src/shared/inline-svg/InlineSvg';
+
 import {
   CommittedItem,
   PopularSpecies
 } from 'src/content/app/species-selector/types/species-search';
-
-// import StrainSelector, {
-//   Strain
-// } from 'src/content/app/species-selector/components/strain-selector/StrainSelector';
 
 import styles from './PopularSpeciesButton.scss';
 
@@ -31,8 +29,13 @@ type Props = {
   isSelected: boolean;
   isCommitted: boolean;
   handleSelectedSpecies: (species: PopularSpecies) => void;
-  // strains: Strain[];
-  // onStrainSelect: () => void;
+};
+
+// FIXME: this should be moved to a file with general functions
+const ensureHost = (url: string) => {
+  return /^https?/.test(url)
+    ? url
+    : `${location.protocol}//${location.host}${url}`;
 };
 
 // named export is for testing purposes
@@ -47,27 +50,17 @@ export const PopularSpeciesButton = (props: Props) => {
     }
   };
 
-  const speciesName = species.common_name || species.scientific_name;
-
   const className = classNames(styles.popularSpeciesButton, {
     [styles.popularSpeciesButtonDisabled]: !species.isAvailable,
     [styles.popularSpeciesButtonActive]: isSelected || isCommitted
   });
 
-  // {isSelected && Boolean(strains.length) && (
-  //   <StrainSelector strains={strains} onSelect={onStrainSelect} />
-  // )}
-
   return (
     <div className={className} onClick={handleClick}>
-      <img src={species.image} alt={speciesName} />
+      <InlineSVG src={ensureHost(species.image)} />
     </div>
   );
 };
-
-// PopularSpeciesButton.defaultProps = {
-//   strains: []
-// };
 
 const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
   isSelected: getCurrentSpeciesGenomeId(state) === ownProps.species.genome_id,

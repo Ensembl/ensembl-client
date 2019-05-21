@@ -15,13 +15,7 @@ $buttonSize: 56px;
   padding: 3px;
   cursor: pointer;
 
-  img {
-    width: 100%;
-    height: 100%;
-    filter: invert(1);
-  }
-
-  & > svg {
+  svg {
     width: 100%;
     height: 100%;
     fill: white;
@@ -38,11 +32,7 @@ $buttonSize: 56px;
   background: white;
   border: 1px solid $ens-blue;
 
-  img {
-    filter: invert(0);
-  }
-
-  & > svg {
+  svg {
     fill: black;
 
     // selecting by a part of the class name, because svgr apparently modifies the original value

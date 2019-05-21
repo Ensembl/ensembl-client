@@ -8,6 +8,8 @@ import { createPopularSpecies } from 'tests/fixtures/popular-species';
 
 import styles from './PopularSpeciesButton.scss';
 
+jest.mock('src/shared/inline-svg/InlineSvg', () => () => <div />);
+
 const handleSelectedSpecies = jest.fn();
 
 const commonProps = {

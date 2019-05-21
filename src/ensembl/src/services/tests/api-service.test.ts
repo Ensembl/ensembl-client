@@ -4,12 +4,15 @@ import config from 'config';
 describe('api service', () => {
   let mockFetch: any;
   let mockResponse = { foo: 'foo' };
+  let mockTextResponse = 'hello world';
 
   beforeEach(() => {
     const mockJsonResolver = jest.fn(() => Promise.resolve(mockResponse));
+    const mockTextResolver = jest.fn(() => Promise.resolve(mockTextResponse));
     mockFetch = jest.fn(() =>
       Promise.resolve({
-        json: mockJsonResolver
+        json: mockJsonResolver,
+        text: mockTextResolver
       })
     );
     jest
