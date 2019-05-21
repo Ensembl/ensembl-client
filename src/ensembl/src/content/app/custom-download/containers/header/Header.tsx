@@ -41,47 +41,47 @@ type Props = StateProps & DispatchProps;
 const downloadTypeSelectOptions = [
   {
     label: 'CSV',
-    value: 'csv',
+    value: 'text/csv',
     isSelected: false
   },
   {
     label: 'CSV.gz',
-    value: 'csv.gz',
+    value: 'text/csv',
     isSelected: false
   },
   {
     label: 'HTML',
-    value: 'html',
+    value: 'application/json',
     isSelected: false
   },
   {
     label: 'TSV',
-    value: 'TSV',
+    value: 'application/json',
     isSelected: false
   },
   {
     label: 'TSV.gz',
-    value: 'TSV.gz',
+    value: 'application/json',
     isSelected: false
   },
   {
     label: 'URL',
-    value: 'url',
+    value: 'application/json',
     isSelected: false
   },
   {
     label: 'XML',
-    value: 'xml',
+    value: 'application/xml',
     isSelected: false
   },
   {
     label: 'XLS',
-    value: 'xls',
+    value: 'application/xml',
     isSelected: false
   },
   {
     label: 'XLS.gz',
-    value: 'xls.gz',
+    value: 'application/xml',
     isSelected: false
   }
 ];
@@ -191,7 +191,11 @@ const Header = (props: Props) => {
           <PrimaryButton
             isDisabled={downloadButtonStatus}
             onClick={() => {
-              fetchCustomDownloadResults(selectedAttributes, selectedFilters);
+              fetchCustomDownloadResults(
+                props.downloadType,
+                selectedAttributes,
+                selectedFilters
+              );
             }}
           >
             Download

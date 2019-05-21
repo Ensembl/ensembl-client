@@ -51,7 +51,11 @@ export const getSpeciesList = async () => {
   }
 };
 
-export const fetchCustomDownloadResults = (attributes: any, filters: any) => {
+export const fetchCustomDownloadResults = (
+  downloadType: string,
+  attributes: any,
+  filters: any
+) => {
   let endpoint = 'http://gti-es-0.ebi.ac.uk:8080/api/genes/fetch?query=';
 
   let endpointFields = '';
@@ -72,7 +76,8 @@ export const fetchCustomDownloadResults = (attributes: any, filters: any) => {
     JSON.stringify(endpointFilters) +
     '&fields=' +
     endpointFields +
-    '&sort=id&array=true';
+    '&sort=id&array=true&accept=' +
+    downloadType;
   try {
     setTimeout(() => {
       const response = {
