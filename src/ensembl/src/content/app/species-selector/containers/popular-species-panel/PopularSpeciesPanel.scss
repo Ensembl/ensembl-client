@@ -4,7 +4,7 @@ $buttons-per-row: 14;
 $gap-width: 1.5rem; // width of the gap between the buttons
 $button-width: 56px; // width of a popular species button
 $popular-species-block-width: calc(
-  14 * #{$button-width} + #{$buttons-per-row} * #{$gap-width}
+  #{$buttons-per-row} * (#{$button-width} + #{$gap-width})
 );
 
 .layout {
