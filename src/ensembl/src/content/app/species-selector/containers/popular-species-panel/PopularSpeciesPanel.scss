@@ -1,21 +1,18 @@
-// FIXME: add fallback for gridless browsers
 // TODO: perhaps consider common variable for left margin (it will be the same for SearchPanel
 
+$buttons-per-row: 14;
 $gap-width: 1.5rem; // width of the gap between the buttons
 $button-width: 56px; // width of a popular species button
-$popular-species-block-width: calc(14 * #{$button-width} + 13 * #{$gap-width});
+$popular-species-block-width: calc(
+  14 * #{$button-width} + #{$buttons-per-row} * #{$gap-width}
+);
 
 .layout {
-  display: grid;
-  grid-template-columns: 100px $popular-species-block-width auto 3%;
-  grid-template-areas: 'left-margin main remaining right-margin';
+  padding-left: 100px;
   padding-top: $button-width; // FIXME this will have to change
 }
 
 .popularSpeciesList {
-  grid-area: main;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, $button-width);
-  grid-column-gap: $gap-width;
-  grid-row-gap: $gap-width;
+  width: 100%;
+  max-width: $popular-species-block-width;
 }
