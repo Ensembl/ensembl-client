@@ -11,7 +11,7 @@ import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
 export enum StorageKeys {
   TRACK_STATES = 'browser.trackStates',
   TRACK_LIST_TOGGLE_STATES = 'browser.trackListToggleStates',
-  SELECTED_TAB = 'browser.selectedBrowserTab'
+  SELECTED_BROWSER_TAB = 'browser.selectedBrowserTab'
 }
 
 export class BrowserStorageService {
@@ -54,12 +54,13 @@ export class BrowserStorageService {
 
   public getSelectedBrowserTab(): TrackType {
     return (
-      this.storageService.get(StorageKeys.SELECTED_TAB) || TrackType.GENOMIC
+      this.storageService.get(StorageKeys.SELECTED_BROWSER_TAB) ||
+      TrackType.GENOMIC
     );
   }
 
   public saveSelectedBrowserTab(selectedTab: TrackType) {
-    this.storageService.save(StorageKeys.SELECTED_TAB, selectedTab);
+    this.storageService.save(StorageKeys.SELECTED_BROWSER_TAB, selectedTab);
   }
 }
 
