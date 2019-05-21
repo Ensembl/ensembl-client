@@ -27,7 +27,12 @@ describe('<InlineSVG />', () => {
     const src = faker.random.image();
     const wrapper = mount(<InlineSVG src={src} />);
 
-    // FIXME wrap in act?
+    // FIXME: currently, the line below produces a warning (because of React state update)
+    // it can be fixed by wrapping it into the asynchronous act function
+    // introduced in react v.16.9.0 alpha, like so:
+    // await act(async () => {
+    //   await new Promise((resolve) => setTimeout(resolve, 0));
+    // })
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     wrapper.update();
