@@ -147,7 +147,6 @@ const Genes = (props: Props) => {
           selectedOptions={props.geneSourceFilters}
           selectOptions={geneSourceSelectOptions}
         />
-
         <CheckboxWithRadios
           label={'GENCODE basic annotation'}
           onChange={gencodeAnnotationFilterOnChange}

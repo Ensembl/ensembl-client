@@ -1,6 +1,9 @@
 .radioTable {
-  width: 100%;
   table-layout: fixed;
+  td {
+    white-space: nowrap;
+    padding: 5px;
+  }
 }
 
 .optionRadio {

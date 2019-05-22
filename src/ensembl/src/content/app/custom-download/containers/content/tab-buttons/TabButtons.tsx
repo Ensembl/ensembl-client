@@ -15,7 +15,6 @@ type Props = StateProps & DispatchProps;
 
 const getTotalSelectedAttributes = (attributes: any) => {
   let totalSelectedAttributes = 0;
-
   Object.keys(attributes).forEach((section) => {
     Object.keys(attributes[section]).forEach((subSection) => {
       Object.keys(attributes[section][subSection]).forEach((attributeId) => {
@@ -29,6 +28,22 @@ const getTotalSelectedAttributes = (attributes: any) => {
   });
 
   return totalSelectedAttributes;
+};
+
+const getTotalSelectedFilters = (filters: any) => {
+  let totalSelectedFilters = 0;
+
+  Object.keys(filters).forEach((key: string) => {
+    if (typeof filters[key] === 'string') {
+      if (filters[key] !== '') totalSelectedFilters++;
+    } else if (Array.isArray(filters[key])) {
+      if (filters[key].length > 0) totalSelectedFilters += filters[key].length;
+    } else {
+      totalSelectedFilters++;
+    }
+  });
+
+  return totalSelectedFilters;
 };
 
 const TabButtons = (props: Props) => {
@@ -58,7 +73,7 @@ const TabButtons = (props: Props) => {
       </div>
 
       <div className={styles.buttonPadding}>
-        <BadgedButton badgeContent={getTotalSelectedAttributes(props.filters)}>
+        <BadgedButton badgeContent={getTotalSelectedFilters(props.filters)}>
           <RoundButton
             onClick={() => {
               props.toggleTabButton('filter');

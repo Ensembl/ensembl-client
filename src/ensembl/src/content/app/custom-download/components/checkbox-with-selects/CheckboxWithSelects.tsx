@@ -34,9 +34,14 @@ const CheckboxWithSelects = (props: Props) => {
   );
 
   const handleOnSelect = useCallback(
-    (value: string, selectIndex: number) => {
+    (value: string, selectIndex?: number) => {
       const newSelectedOptions: any = [...props.selectedOptions];
-      newSelectedOptions[selectIndex] = value;
+      if (selectIndex) {
+        newSelectedOptions[selectIndex] = value;
+      } else {
+        newSelectedOptions.push(value);
+      }
+
       setShowExtraOption(false);
       props.onChange(newSelectedOptions);
     },
@@ -73,8 +78,6 @@ const CheckboxWithSelects = (props: Props) => {
     },
     [props.selectedOptions]
   );
-
-  let selectIndex = 1;
 
   return (
     <>
@@ -118,7 +121,8 @@ const CheckboxWithSelects = (props: Props) => {
             const selectOptions = [...props.selectOptions]
               .filter((option: any) => {
                 if (
-                  selectedOptionsClone.indexOf(option.value) == -1 ||
+                  (selectedOptionsClone.indexOf(option.value) == -1 &&
+                    firstSelectedOption !== option.value) ||
                   selectedOption === option.value
                 ) {
                   return true;
@@ -133,8 +137,6 @@ const CheckboxWithSelects = (props: Props) => {
                 return optionClone;
               });
 
-            selectIndex += 1;
-
             return (
               <tr key={key}>
                 <td />
@@ -143,13 +145,13 @@ const CheckboxWithSelects = (props: Props) => {
                     <Select
                       options={selectOptions}
                       onSelect={(option: string) => {
-                        handleOnSelect(option, selectIndex);
+                        handleOnSelect(option, key + 1);
                       }}
                       placeholder={'select'}
                     />
                   </div>
                 </td>
-                <td>
+                <td className={styles.removeIcon}>
                   <div className={styles.iconHolder}>
                     <ImageButton
                       onClick={() => removeSelection(selectedOption)}
@@ -188,7 +190,7 @@ const CheckboxWithSelects = (props: Props) => {
                   <Select
                     options={newSelectOptions}
                     onSelect={(option: string) => {
-                      handleOnSelect(option, selectIndex++);
+                      handleOnSelect(option);
                     }}
                     placeholder={'select'}
                   />
