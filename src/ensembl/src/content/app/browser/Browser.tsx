@@ -32,6 +32,7 @@ import {
   getGenomeSelectorActive,
   getBrowserActivated
 } from './browserSelectors';
+import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import { getTrackPanelOpened } from './track-panel/trackPanelSelectors';
 import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 import { getDrawerOpened } from './drawer/drawerSelectors';
@@ -54,6 +55,7 @@ type StateProps = {
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
   trackPanelOpened: boolean;
+  launchbarExpanded: boolean;
 };
 
 type DispatchProps = {
@@ -149,12 +151,20 @@ export const Browser: FunctionComponent<BrowserProps> = (
     });
   }, [props.drawerOpened, props.trackPanelOpened]);
 
+  const getHeightClass = (launchbarExpanded: boolean): string => {
+    return launchbarExpanded ? styles.shorter : styles.taller;
+  };
+
   return (
     <section className={styles.browser}>
       <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
 
       {props.genomeSelectorActive && <div className={styles.browserOverlay} />}
-      <div className={styles.browserInnerWrapper}>
+      <div
+        className={`${styles.browserInnerWrapper} ${getHeightClass(
+          props.launchbarExpanded
+        )}`}
+      >
         <animated.div style={trackAnimation}>
           <div
             className={`${styles.browserImageWrapper} ${
@@ -171,7 +181,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
           </div>
         </animated.div>
         <TrackPanel browserRef={browserRef} />
-        {props.drawerOpened && <Drawer />}
       </div>
     </section>
   );
@@ -184,7 +193,8 @@ const mapStateToProps = (state: RootState): StateProps => ({
   chrLocation: getChrLocation(state),
   drawerOpened: getDrawerOpened(state),
   genomeSelectorActive: getGenomeSelectorActive(state),
-  trackPanelOpened: getTrackPanelOpened(state)
+  trackPanelOpened: getTrackPanelOpened(state),
+  launchbarExpanded: getLaunchbarExpanded(state)
 });
 
 const mapDispatchToProps: DispatchProps = {
