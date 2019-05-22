@@ -81,7 +81,8 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
   const [trackAnimation, setTrackAnimation] = useSpring(() => ({
     config: { tension: 280, friction: 45 },
     height: '100%',
-    position: 'absolute',
+    position: 'absolute' as 'absolute',
+    display: 'block',
     left: 'calc(-356px + 100vw)'
   }));
 
