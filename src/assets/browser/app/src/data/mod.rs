@@ -1,6 +1,7 @@
 mod backendconfig;
 mod backendconfigbootstrap;
 mod backendstickmanager;
+pub mod blackbox;
 mod httpmanager;
 mod httpxferclerk;
 mod psychic;

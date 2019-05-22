@@ -68,6 +68,13 @@ macro_rules! debug {
     }}
 }
 
+macro_rules! halt {
+    () => {{
+        let s = format!("ENSEMBL ERROR LOCATION {}/{}/{}",file!(),line!(),column!());
+        panic!(s)
+    }}
+}
+
 macro_rules! unwrap {
     ($x: expr) => {{
         let s = format!("ENSEMBL ERROR LOCATION {}/{}/{}",file!(),line!(),column!());

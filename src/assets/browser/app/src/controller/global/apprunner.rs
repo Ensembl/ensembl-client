@@ -11,6 +11,7 @@ use controller::input::{
 };
 use controller::output::{ OutputAction, Projector, Report, ViewportReport };
 use data::{ HttpManager, HttpXferClerk, BackendConfigBootstrap, BackendConfig };
+use data::blackbox::BlackBox;
 use dom::Bling;
 use dom::event::EventControl;
 use debug::{ DebugBling, create_interactors, add_debug_sticks };
@@ -28,6 +29,7 @@ struct AppRunnerImpl {
     timers: Timers,
     tc: Tácode,
     http_manager: HttpManager,
+    debug_reporter: BlackBox,
     config: BackendConfig,
     config_url: Url,
     browser_el: HtmlElement
@@ -40,7 +42,7 @@ pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
 impl AppRunner {
-    pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<Bling>, config_url: &Url, config: &BackendConfig) -> AppRunner {
+    pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<Bling>, config_url: &Url, config: &BackendConfig, debug_reporter: BlackBox) -> AppRunner {
         let browser_el : HtmlElement = bling.apply_bling(&el);
         let tc = Tácode::new();
         let st = App::new(&tc,config,&http_manager,&browser_el,&config_url,&el);
@@ -54,6 +56,7 @@ impl AppRunner {
             timers: Timers::new(),
             tc: tc.clone(),
             http_manager: http_manager.clone(),
+            debug_reporter,
             config: config.clone(),
             config_url: config_url.clone(),
             browser_el: browser_el.clone()
@@ -125,7 +128,7 @@ impl AppRunner {
             self.add_timer(|app,_| {
                 app.check_size();
                 vec!{}
-            },Some(SIZE_CHECK_INTERVAL_MS));
+            },None);
         }
         
         /* run tácode */
@@ -143,7 +146,17 @@ impl AppRunner {
                 app.tick();
                 vec!{}
             },None);
-        }        
+        }
+        
+        /* run debug reporter */
+        {
+            let mut dr = self.0.lock().unwrap().debug_reporter.clone();
+            self.add_timer(move |_,t| {
+                dr.tick(t);
+                vec!{}
+            },None);
+            self.0.lock().unwrap().debug_reporter.report("",0.,"debug reporter initialised");
+        }
     }
     
     pub fn draw(&mut self) {
