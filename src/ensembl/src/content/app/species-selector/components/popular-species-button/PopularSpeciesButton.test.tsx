@@ -11,12 +11,16 @@ import styles from './PopularSpeciesButton.scss';
 jest.mock('src/shared/inline-svg/InlineSvg', () => () => <div />);
 
 const handleSelectedSpecies = jest.fn();
+const clearSelectedSpecies = jest.fn();
+const deleteCommittedSpecies = jest.fn();
 
 const commonProps = {
   species: createPopularSpecies(),
   isSelected: false,
   isCommitted: false,
-  handleSelectedSpecies
+  handleSelectedSpecies,
+  clearSelectedSpecies,
+  deleteCommittedSpecies
 };
 
 describe('<PopularSpeciesButton />', () => {
@@ -48,10 +52,8 @@ describe('<PopularSpeciesButton />', () => {
       const renderedButton = render(
         <PopularSpeciesButton {...commonProps} isSelected={false} />
       );
-      expect(renderedButton.hasClass(styles.popularSpeciesButton)).toBe(true);
-      expect(renderedButton.hasClass(styles.popularSpeciesButtonActive)).toBe(
-        false
-      );
+      expect(renderedButton.hasClass('popularSpeciesButton')).toBe(true);
+      expect(renderedButton.hasClass('popularSpeciesButtonActive')).toBe(false);
     });
 
     it('calls handleSelectedSpecies prop when clicked', () => {
@@ -69,9 +71,42 @@ describe('<PopularSpeciesButton />', () => {
       const renderedButton = render(
         <PopularSpeciesButton {...commonProps} isSelected={true} />
       );
-      expect(renderedButton.hasClass(styles.popularSpeciesButtonActive)).toBe(
+      expect(renderedButton.hasClass('popularSpeciesButtonSelected')).toBe(
         true
       );
+    });
+
+    it('clears selected species when clicked', () => {
+      const wrapper = mount(
+        <PopularSpeciesButton {...commonProps} isSelected={true} />
+      );
+      wrapper.simulate('click');
+
+      expect(clearSelectedSpecies).toHaveBeenCalled();
+      expect(handleSelectedSpecies).not.toHaveBeenCalled();
+      expect(deleteCommittedSpecies).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('committed', () => {
+    it('has appropriate class', () => {
+      const renderedButton = render(
+        <PopularSpeciesButton {...commonProps} isCommitted={true} />
+      );
+      expect(renderedButton.hasClass('popularSpeciesButtonCommitted')).toBe(
+        true
+      );
+    });
+
+    it('deletes committed species when clicked', () => {
+      const wrapper = mount(
+        <PopularSpeciesButton {...commonProps} isCommitted={true} />
+      );
+      wrapper.simulate('click');
+
+      expect(deleteCommittedSpecies).toHaveBeenCalled();
+      expect(clearSelectedSpecies).not.toHaveBeenCalled();
+      expect(handleSelectedSpecies).not.toHaveBeenCalled();
     });
   });
 });
