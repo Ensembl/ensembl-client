@@ -123,7 +123,7 @@ describe('BrowserStorageService', () => {
     });
   });
 
-  describe('.updateTrackListTogglestates()', () => {
+  describe('.updateTrackListToggleStates()', () => {
     it('updates track list toggle states via storage service', () => {
       const browserStorageService = new BrowserStorageService(
         mockStorageService
