@@ -3,7 +3,6 @@ import React, {
   useCallback,
   useRef,
   useEffect,
-  Fragment,
   useState
 } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
@@ -139,7 +138,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   return (
     <section className={styles.browser}>
-      <Fragment>
+      <>
         <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
         {props.genomeSelectorActive ? (
           <div className={styles.browserOverlay} />
@@ -167,7 +166,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
           />
           {props.drawerOpened && <Drawer />}
         </div>
-      </Fragment>
+      </>
     </section>
   );
 };

@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  FunctionComponent,
-  Fragment,
-  lazy,
-  Suspense
-} from 'react';
+import React, { useEffect, FunctionComponent, lazy, Suspense } from 'react';
 import { Redirect, Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -39,10 +33,10 @@ type AppShellProps = {
 
 export const AppShell = (props: AppShellProps) => {
   return (
-    <Fragment>
+    <>
       <AppBar />
       {props.children}
-    </Fragment>
+    </>
   );
 };
 

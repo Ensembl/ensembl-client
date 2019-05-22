@@ -1,9 +1,4 @@
-import React, {
-  FunctionComponent,
-  RefObject,
-  useEffect,
-  Fragment
-} from 'react';
+import React, { FunctionComponent, RefObject, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import TrackPanelBar from './track-panel-bar/TrackPanelBar';
@@ -87,7 +82,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
   return (
     <section className={`${styles.trackPanel} reactSlideDrawer`}>
       {props.browserActivated && props.ensObjectInfo.associated_object ? (
-        <Fragment>
+        <>
           <TrackPanelBar
             closeTrackPanelModal={props.closeTrackPanelModal}
             drawerOpened={props.drawerOpened}
@@ -100,7 +95,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
             trackPanelOpened={props.trackPanelOpened}
           />
           {props.trackPanelOpened ? (
-            <Fragment>
+            <>
               <TrackPanelList
                 browserRef={props.browserRef}
                 defaultChrLocation={props.defaultChrLocation}
@@ -121,9 +116,9 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
                   trackPanelModalView={props.trackPanelModalView}
                 />
               ) : null}
-            </Fragment>
+            </>
           ) : null}
-        </Fragment>
+        </>
       ) : null}
     </section>
   );

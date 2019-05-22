@@ -1,6 +1,5 @@
 import React, {
   FunctionComponent,
-  Fragment,
   MouseEvent,
   ReactNode,
   RefObject,
@@ -132,7 +131,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   };
 
   return (
-    <Fragment>
+    <>
       <dd className={getListItemClasses()} onClick={drawerViewListHandler}>
         <label>
           {track.color && <span className={getBoxClasses(track.color)} />}
@@ -172,7 +171,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
         </div>
       </dd>
       {expanded && props.children}
-    </Fragment>
+    </>
   );
 };
 

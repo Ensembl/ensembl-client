@@ -1,4 +1,4 @@
-import React, { FunctionComponent, Fragment, useState, useEffect } from 'react';
+import React, { FunctionComponent, useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
@@ -164,7 +164,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
 };
 
 export const BrowserInfo = ({ ensObjectInfo }: BrowserInfoProps) => (
-  <Fragment>
+  <>
     <dd className={styles.geneSymbol}>
       <label>Gene</label>
       <span className={styles.value}>{ensObjectInfo.obj_symbol}</span>
@@ -184,7 +184,7 @@ export const BrowserInfo = ({ ensObjectInfo }: BrowserInfoProps) => (
     <dd className={`show-for-large ${styles.nonLabelValue}`}>
       {ensObjectInfo.strand} strand
     </dd>
-  </Fragment>
+  </>
 );
 
 export const BrowserNavigatorButton = (props: BrowserNavigatorButtonProps) => (
