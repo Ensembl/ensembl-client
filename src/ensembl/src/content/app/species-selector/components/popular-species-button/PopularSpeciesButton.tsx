@@ -3,7 +3,11 @@ import { connect } from 'react-redux';
 import classNames from 'classnames';
 import find from 'lodash/find';
 
-import { handleSelectedSpecies } from 'src/content/app/species-selector/state/speciesSelectorActions';
+import {
+  handleSelectedSpecies,
+  clearSelectedSearchResult,
+  deleteSpeciesAndSave
+} from 'src/content/app/species-selector/state/speciesSelectorActions';
 import {
   getCurrentSpeciesGenomeId,
   getCommittedSpecies
@@ -29,6 +33,8 @@ type Props = {
   isSelected: boolean;
   isCommitted: boolean;
   handleSelectedSpecies: (species: PopularSpecies) => void;
+  clearSelectedSpecies: () => void;
+  deleteCommittedSpecies: (genome_id: string) => void;
 };
 
 // FIXME: this should be moved to a file with general functions
@@ -44,15 +50,24 @@ export const PopularSpeciesButton = (props: Props) => {
   const { isSelected, isCommitted, species } = props;
 
   const handleClick = () => {
-    const { isAvailable } = species;
-    if (isAvailable && !isSelected && !isCommitted) {
+    const { genome_id, isAvailable } = species;
+    if (!isAvailable) {
+      return;
+    } else if (isSelected) {
+      props.clearSelectedSpecies();
+    } else if (isCommitted) {
+      props.deleteCommittedSpecies(genome_id);
+    } else {
+      // the species is available, not selected and not committed;
+      // go ahead and select it
       props.handleSelectedSpecies(props.species);
     }
   };
 
   const className = classNames(styles.popularSpeciesButton, {
     [styles.popularSpeciesButtonDisabled]: !species.isAvailable,
-    [styles.popularSpeciesButtonActive]: isSelected || isCommitted
+    [styles.popularSpeciesButtonSelected]: isSelected,
+    [styles.popularSpeciesButtonCommitted]: isCommitted
   });
 
   return (
@@ -74,7 +89,9 @@ const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
 });
 
 const mapDispatchToProps = {
-  handleSelectedSpecies
+  handleSelectedSpecies,
+  clearSelectedSpecies: clearSelectedSearchResult,
+  deleteCommittedSpecies: deleteSpeciesAndSave
 };
 
 export default connect(

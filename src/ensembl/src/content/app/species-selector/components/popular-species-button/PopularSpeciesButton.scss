@@ -28,7 +28,11 @@ $buttonSize: 56px;
   }
 }
 
-.popularSpeciesButtonActive {
+.popularSpeciesButtonSelected {
+  background: $ens-dark-grey;
+}
+
+.popularSpeciesButtonCommitted {
   background: white;
   border: 1px solid $ens-blue;
 
