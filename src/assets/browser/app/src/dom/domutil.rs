@@ -150,6 +150,10 @@ pub fn get_context(canvas: &CanvasElement) -> glctx {
     }).try_into().ok().unwrap()
 }
 
+pub fn browser_time() -> f64 {
+    return  js! { return +new Date(); }.try_into().unwrap();
+}
+
 /* Not sure why this isn't implemented in stdweb */
 pub fn get_classes(el: &HtmlElement) -> Vec<String> {
     let raw = el.class_list();
