@@ -1,13 +1,13 @@
-use super::BlackBoxDriver;
+use super::BlackBoxDriverImpl;
 use url::Url;
 
-pub struct NullBlackBoxDriver {}
+pub struct NullBlackBoxDriverImpl {}
 
-impl NullBlackBoxDriver {
-    pub fn new() -> NullBlackBoxDriver {
-        NullBlackBoxDriver {}
+impl NullBlackBoxDriverImpl {
+    pub fn new() -> NullBlackBoxDriverImpl {
+        NullBlackBoxDriverImpl {}
     }
 }
 
-impl BlackBoxDriver for NullBlackBoxDriver {
+impl BlackBoxDriverImpl for NullBlackBoxDriverImpl {
 }

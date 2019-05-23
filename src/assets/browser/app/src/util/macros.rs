@@ -59,6 +59,23 @@ macro_rules! console {
     }}
 }
 
+macro_rules! bb_log {
+    ($stream:expr,$($arg:tt)*) => {{
+        if !cfg!(deploy) || cfg!(console) {
+            let s = format!($($arg)*);
+            ::data::blackbox::blackbox_report($stream,&s);
+        }
+    }}
+}
+
+macro_rules! bb_stack {
+    ($level:expr,$code:block) => {{
+        ::data::blackbox::blackbox_push($level);
+        $code
+        ::data::blackbox::blackbox_pop();
+    }}
+}
+
 macro_rules! debug {
     ($k: expr, $($arg:tt)*) => {{
         if false {

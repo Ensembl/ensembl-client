@@ -11,7 +11,10 @@ use controller::input::{
 };
 use controller::output::{ OutputAction, Projector, Report, ViewportReport };
 use data::{ HttpManager, HttpXferClerk, BackendConfigBootstrap, BackendConfig };
-use data::blackbox::BlackBox;
+use data::blackbox::{
+    BlackBoxDriver, blackbox_report, blackbox_push, blackbox_pop,
+    blackbox_tick
+};
 use dom::Bling;
 use dom::event::EventControl;
 use debug::{ DebugBling, create_interactors, add_debug_sticks };
@@ -29,7 +32,7 @@ struct AppRunnerImpl {
     timers: Timers,
     tc: Tácode,
     http_manager: HttpManager,
-    debug_reporter: BlackBox,
+    debug_reporter: BlackBoxDriver,
     config: BackendConfig,
     config_url: Url,
     browser_el: HtmlElement
@@ -42,7 +45,7 @@ pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
 impl AppRunner {
-    pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<Bling>, config_url: &Url, config: &BackendConfig, debug_reporter: BlackBox) -> AppRunner {
+    pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<Bling>, config_url: &Url, config: &BackendConfig, debug_reporter: BlackBoxDriver) -> AppRunner {
         let browser_el : HtmlElement = bling.apply_bling(&el);
         let tc = Tácode::new();
         let st = App::new(&tc,config,&http_manager,&browser_el,&config_url,&el);
@@ -148,14 +151,16 @@ impl AppRunner {
             },None);
         }
         
-        /* run debug reporter */
+        /* run blackbox */
         {
             let mut dr = self.0.lock().unwrap().debug_reporter.clone();
             self.add_timer(move |_,t| {
-                dr.tick(t);
+                blackbox_tick(&mut dr);
                 vec!{}
             },None);
-            self.0.lock().unwrap().debug_reporter.report("",0.,"debug reporter initialised");
+            bb_stack!("init",{
+                bb_log!("main","debug reporter initialised");
+            });
         }
     }
     

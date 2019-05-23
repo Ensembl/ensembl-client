@@ -17,7 +17,9 @@ use controller::input::{
 };
 use controller::global::{ AppRunner, App, GlobalWeak, Global };
 use data::{ BackendConfigBootstrap, HttpManager, BackendConfig };
-use data::blackbox::{ BlackBox, BlackBoxDriver, HttpBlackBoxDriver, NullBlackBoxDriver };
+use data::blackbox::{ 
+    BlackBoxDriver, BlackBoxDriverImpl, HttpBlackBoxDriverImpl,
+    NullBlackBoxDriverImpl };
 use debug::{ DebugBling, create_interactors };
 use dom::{ domutil, Bling, NoBling };
 use dom::event::{ EventListener, Target, EventData, EventType, EventControl, ICustomEvent };
@@ -106,17 +108,18 @@ impl Booting {
             Box::new(NoBling::new())
         };
         let debug_url = config.get_debug_url();
-        let reporter_driver : Box<BlackBoxDriver> = if debug_url.is_some() {
+        let reporter_driver : Box<BlackBoxDriverImpl> = if debug_url.is_some() {
             let debug_url = self.config_url.join(&debug_url.as_ref().unwrap()).ok().unwrap();
             console!("debug-url {:?}",debug_url);
-            Box::new(HttpBlackBoxDriver::new(&self.http_manager,&debug_url))
+            Box::new(HttpBlackBoxDriverImpl::new(&self.http_manager,&debug_url))
         } else {
-            Box::new(NullBlackBoxDriver::new())
+            Box::new(NullBlackBoxDriverImpl::new())
         };
+        let blackbox = BlackBoxDriver::new(reporter_driver);
         let ar = AppRunner::new(
             &GlobalWeak::new(&global),&self.http_manager,
             &self.el,bling,&self.config_url,config,
-            BlackBox::new(reporter_driver)
+            blackbox
         );
         {
             global.register_app_now(&self.key,ar);

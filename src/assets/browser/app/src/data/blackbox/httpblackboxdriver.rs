@@ -3,7 +3,7 @@ use stdweb::unstable::TryInto;
 use stdweb::web::{ ArrayBuffer, TypedArray, XmlHttpRequest, XhrResponseType };
 use url::Url;
 
-use super::{ BlackBoxDriver, BlackBoxState };
+use super::{ BlackBoxDriverImpl, BlackBoxState };
 use data::{ HttpManager, HttpResponseConsumer };
 
 const REPORT_INTERVAL : f64 = 5000.; // ms
@@ -42,15 +42,15 @@ impl HttpResponseConsumer for BlackBoxResponseConsumer {
     }
 }
 
-pub struct HttpBlackBoxDriver {
+pub struct HttpBlackBoxDriverImpl {
     manager: HttpManager,
     url: Url,
     last_report: Option<f64>
 }
 
-impl HttpBlackBoxDriver {
-    pub fn new(http_manager: &HttpManager, base: &Url) -> HttpBlackBoxDriver {
-        HttpBlackBoxDriver {
+impl HttpBlackBoxDriverImpl {
+    pub fn new(http_manager: &HttpManager, base: &Url) -> HttpBlackBoxDriverImpl {
+        HttpBlackBoxDriverImpl {
             manager: http_manager.clone(),
             url: base.clone(),
             last_report: None
@@ -58,7 +58,7 @@ impl HttpBlackBoxDriver {
     }
 }
 
-impl BlackBoxDriver for HttpBlackBoxDriver {
+impl BlackBoxDriverImpl for HttpBlackBoxDriverImpl {
     fn tick(&mut self, state: &mut BlackBoxState, t: f64) {
         if self.last_report == None || t-self.last_report.unwrap() > REPORT_INTERVAL {
             let report = state.make_report().to_string();
