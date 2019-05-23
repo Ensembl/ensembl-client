@@ -1,4 +1,5 @@
-// TODO: probably use Rollbar for error monitoring
+// TODO: add a real error monitoring service
+// Sentry (can be self-hosted)? Rollbar (allows unlimited users in its free plan)?
 
 interface ErrorServiceInterface {
   report: (error: Error) => void;
