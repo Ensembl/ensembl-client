@@ -26,7 +26,7 @@ export const ReleaseVersion = () => (
 export const Copyright = () => (
   <div className={styles.copyright}>
     <a href="https://www.ebi.ac.uk" target="_blank" rel="noopener noreferrer">
-      &copy; EMBL-EBI
+      © EMBL-EBI
     </a>
   </div>
 );
