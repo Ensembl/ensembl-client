@@ -23,11 +23,7 @@ const PopularSpeciesPanel = (props: Props) => {
   }, []);
 
   const renderedPopularSpecies = props.popularSpecies.map((species) => (
-    <PopularSpeciesButton
-      key={species.genome_id}
-      species={species}
-      onClick={() => console.log('clicked')}
-    />
+    <PopularSpeciesButton key={species.genome_id} species={species} />
   ));
   return (
     <section className={styles.layout}>
