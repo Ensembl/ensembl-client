@@ -12,7 +12,7 @@ import Header from '../header/Header';
 import Content from '../content/Content';
 import PrivacyBanner from '../shared/privacy-banner/PrivacyBanner';
 import ErrorBoundary from 'src/shared/error-boundary/ErrorBoundary';
-import { GeneralErrorScreen } from 'src/shared/error-screen/ErrorScreen';
+import { GeneralErrorScreen } from 'src/shared/error-screen';
 
 import { updateBreakpointWidth } from '../global/globalActions';
 import { getBreakpointWidth } from '../global/globalSelectors';

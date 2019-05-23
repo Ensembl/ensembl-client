@@ -13,7 +13,7 @@ import { getCurrentApp } from 'src/header/headerSelectors';
 
 import AppBar from './AppBar';
 import ErrorBoundary from 'src/shared/error-boundary/ErrorBoundary';
-import { NewTechError } from 'src/shared/error-screen/ErrorScreen';
+import { NewTechError } from 'src/shared/error-screen';
 
 import { RootState } from 'src/store';
 

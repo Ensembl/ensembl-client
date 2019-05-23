@@ -9,20 +9,7 @@ import generalErrorImage1 from './images/general-error-1.jpg';
 import generalErrorImage2 from './images/general-error-2.jpg';
 import generalErrorImage3 from './images/general-error-3.jpg';
 
-export const NewTechError = () => {
-  return (
-    <div className={styles.newTechErrorWrapper}>
-      <div className={styles.newTechMessage}>
-        Sorry, but it seems your browser can’t display the new site
-      </div>
-      <a href="https://www.ensembl.org" className={styles.errorLinkButton}>
-        Go to Ensembl classic
-      </a>
-    </div>
-  );
-};
-
-export const GeneralErrorScreen = () => (
+const GeneralErrorScreen = () => (
   <section className={styles.generalErrorScreen}>
     <header className={`${headerStyles.topBar} ${styles.generalErrorHeader}`}>
       <HomeLink />
@@ -45,3 +32,5 @@ export const GeneralErrorScreen = () => (
     </div>
   </section>
 );
+
+export default GeneralErrorScreen;
