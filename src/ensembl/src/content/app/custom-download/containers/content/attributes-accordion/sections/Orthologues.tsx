@@ -105,10 +105,6 @@ const Orthologue = (props: Props) => {
     props.setOrthologueShowAll(!props.shouldShowAll);
   }, [props.shouldShowAll, props.orthologueFilteredSpecies]);
 
-  const applyToAllSpecies = useCallback(() => {
-    props.setOrthologueApplyToAllSpecies(!props.shouldApplyToAllSpecies);
-  }, [props.shouldApplyToAllSpecies, props.orthologueAttributes]);
-
   const getResultCounter = () => {
     if (props.shouldShowBestMatches || props.shouldShowAll) {
       return (

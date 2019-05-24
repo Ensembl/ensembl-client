@@ -6,15 +6,16 @@
   border-collapse: collapse;
   min-width: 50%;
 
+  tr {
+    border-bottom: 2px solid $ens-light-grey;
+  }
+
   tr:first-of-type {
     border-bottom: 2px solid $ens-blue;
     border-top: 2px solid $ens-blue;
     color: $ens-blue;
   }
 
-  tr {
-    border-bottom: 2px solid $ens-light-grey;
-  }
   td {
     padding: 8px 0 8px 5px;
   }
