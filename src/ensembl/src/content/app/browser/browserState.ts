@@ -30,6 +30,16 @@ export const defaultBrowserState: BrowserState = {
   browserOpenState: BrowserOpenState.SEMI_EXPANDED
 };
 
+export type BrowserEntityState = Readonly<{
+  activeGenomeId: string;
+  activeRegion: ChrLocation;
+}>;
+
+export const defaultBrowserEntityState: BrowserEntityState = {
+  activeGenomeId: '',
+  activeRegion: ['', 0, 0]
+};
+
 export type BrowserNavState = Readonly<{
   browserNavOpened: boolean;
   browserNavStates: BrowserNavStates;

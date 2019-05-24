@@ -12,6 +12,12 @@ export const getBrowserActivated = (state: RootState): boolean =>
 export const getBrowserOpenState = (state: RootState): BrowserOpenState =>
   state.browser.browserInfo.browserOpenState;
 
+export const getBrowserActiveGenomeId = (state: RootState): string =>
+  state.browser.browserEntity.activeGenomeId;
+
+export const getBrowserActiveRegion = (state: RootState): ChrLocation =>
+  state.browser.browserEntity.activeRegion;
+
 export const getBrowserNavOpened = (state: RootState): boolean =>
   state.browser.browserNav.browserNavOpened;
 
