@@ -1,8 +1,6 @@
 import React, { FunctionComponent, memo } from 'react';
 import { NavLink } from 'react-router-dom';
-import ImageButton, {
-  ImageButtonStatus
-} from 'src/shared/image-button/ImageButton';
+import ImageButton from 'src/shared/image-button/ImageButton';
 
 import styles from './Launchbar.scss';
 
@@ -21,23 +19,15 @@ export const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
       className={styles.launchbarButton}
       title={props.description}
       to={`/app/${props.app}`}
-      activeClassName={styles.launchbarButtonHighlighted}
+      activeClassName={styles.launchbarButtonSelected}
     >
-      <ImageButton
-        buttonStatus={ImageButtonStatus.ACTIVE}
-        description={props.description}
-        image={props.icon}
-      />
+      <ImageButton description={props.description} image={props.icon} />
     </NavLink>
   ) : (
     <div
-      className={`${styles.launchbarButton} ${styles.launchbarButtonInactive}`}
+      className={`${styles.launchbarButton} ${styles.launchbarButtonDisabled}`}
     >
-      <ImageButton
-        buttonStatus={ImageButtonStatus.INACTIVE}
-        description={props.description}
-        image={props.icon}
-      />
+      <ImageButton description={props.description} image={props.icon} />
     </div>
   );
 };
