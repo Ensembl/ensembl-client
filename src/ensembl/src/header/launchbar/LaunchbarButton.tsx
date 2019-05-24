@@ -1,5 +1,8 @@
 import React, { FunctionComponent, memo } from 'react';
 import { NavLink } from 'react-router-dom';
+import ImageButton, {
+  ImageButtonStatus
+} from 'src/shared/image-button/ImageButton';
 
 import styles from './Launchbar.scss';
 
@@ -13,33 +16,29 @@ type LaunchbarButtonProps = {
 export const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
   props: LaunchbarButtonProps
 ) => {
-  const icon =
-    typeof props.icon === 'string' ? (
-      <img
-        src={props.icon}
-        className={styles.LaunchbarButton}
-        alt={props.description}
-      />
-    ) : (
-      <props.icon />
-    );
-
   return props.enabled ? (
     <NavLink
       className={styles.launchbarButton}
       title={props.description}
       to={`/app/${props.app}`}
-      activeClassName={styles.launchbarButtonActive}
+      activeClassName={styles.launchbarButtonHighlighted}
     >
-      {icon}
+      <ImageButton
+        buttonStatus={ImageButtonStatus.ACTIVE}
+        description={props.description}
+        image={props.icon}
+      />
     </NavLink>
   ) : (
-    <span
-      className={`${styles.launchbarButton} ${styles.launchbarButtonDisabled}`}
-      title={props.description}
+    <div
+      className={`${styles.launchbarButton} ${styles.launchbarButtonInactive}`}
     >
-      {icon}
-    </span>
+      <ImageButton
+        buttonStatus={ImageButtonStatus.INACTIVE}
+        description={props.description}
+        image={props.icon}
+      />
+    </div>
   );
 };
 
