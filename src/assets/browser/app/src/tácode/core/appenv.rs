@@ -1,5 +1,3 @@
-use stdweb::unstable::TryInto;
-
 use tánaiste::{ Environment, ProcessState };
 
 use tácode::TáContext;
