@@ -43,7 +43,8 @@ impl BlackBoxReport {
 pub struct BlackBoxReportStream {
     name: String,
     reports: Vec<BlackBoxReport>,
-    elapsed: Vec<f64>
+    elapsed: Vec<f64>,
+    metronome: Option<f64>
 }
 
 impl BlackBoxReportStream {
@@ -51,7 +52,8 @@ impl BlackBoxReportStream {
         BlackBoxReportStream {
             name: name.to_string(),
             reports: Vec::new(),
-            elapsed: Vec::new()
+            elapsed: Vec::new(),
+            metronome: None
         }
     }
     
@@ -73,15 +75,22 @@ impl BlackBoxReportStream {
     
     fn make_elapsed_report(&mut self, now: f64, with_dataset: bool) {
         let (num,tot,avg,high,top) = self.analyse_elapsed();
-        let mut report = BlackBoxReport::new(
-            format!("elapsed: num={} total={:.2}ms avg={:.2}ms 95%ile={:.2}ms top={:.2}ms",
-                    num,tot,avg,high,top),
-            "".to_string(),now
-        );
-        if with_dataset {
-            report.add_dataset(&self.elapsed);
+        if num > 0 {
+            let mut report = BlackBoxReport::new(
+                format!("elapsed: num={} total={:.2}ms avg={:.2}ms 95%ile={:.2}ms top={:.2}ms",
+                        num,tot,avg,high,top),
+                "".to_string(),now
+            );
+            if with_dataset {
+                report.add_dataset(&self.elapsed);
+            }
+            self.add_report(report);
         }
-        self.add_report(report);
+    }
+    
+    pub fn reset(&mut self) {
+        self.reports.clear();
+        self.elapsed.clear();
     }
     
     pub fn make_report(&mut self, with_dataset: bool) -> SerdeValue {
@@ -102,5 +111,13 @@ impl BlackBoxReportStream {
     
     pub fn add_elapsed(&mut self, elapsed: f64) {
         self.elapsed.push(elapsed);
+    }
+    
+    pub fn add_metronome(&mut self, t: f64) {
+        if self.metronome.is_some() {
+            let prev = self.metronome.unwrap();
+            self.add_elapsed(t-prev);
+        }
+        self.metronome = Some(t);
     }
 }

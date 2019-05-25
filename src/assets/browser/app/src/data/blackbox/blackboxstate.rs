@@ -60,6 +60,10 @@ impl BlackBoxStateImpl {
         self.get_stream(stream).add_elapsed(elapsed);
     }
     
+    fn add_metronome(&mut self, stream: &str, t: f64) {
+        self.get_stream(stream).add_metronome(t);
+    }
+    
     fn make_report(&mut self) -> SerdeValue {
         let mut streams = SerdeMap::<String,SerdeValue>::new();
         if self.enabled.is_some() {
@@ -68,8 +72,8 @@ impl BlackBoxStateImpl {
                     let with_dataset = self.dataset.contains(name);
                     streams.insert(name.to_string(),reports.make_report(with_dataset));
                 }
+                reports.reset();
             }
-            self.pending = HashMap::new();
         }
         json!({
             "streams": streams,
@@ -121,6 +125,10 @@ impl BlackBoxState {
     
     pub fn elapsed(&mut self, stream: &str, elapsed: f64) {
         self.0.lock().unwrap().add_elapsed(stream,elapsed);
+    }
+    
+    pub fn metronome(&mut self, stream: &str, t: f64) {
+        self.0.lock().unwrap().add_metronome(stream,t);
     }
     
     pub fn set_enabled(&mut self, streams: Vec<String>) {

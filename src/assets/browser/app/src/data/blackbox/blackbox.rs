@@ -48,6 +48,12 @@ pub fn blackbox_elapsed(stream: &str, elapsed: f64) {
     bb.elapsed(stream,elapsed);
 }
 
+pub fn blackbox_metronome(stream: &str, t: f64) {
+    let mut bb = BLACKBOX.lock().unwrap();
+    let now = browser_time();
+    bb.metronome(stream,t);
+}
+
 pub fn blackbox_push(name: &str) {
     let mut bb = BLACKBOX.lock().unwrap();
     bb.push(name);

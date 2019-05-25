@@ -93,6 +93,7 @@ impl AppRunner {
     }
 
     pub fn run_timers(&mut self, time: f64) {
+        bb_metronome!("timers");
         let oas = {
             let mut imp = self.0.lock().unwrap();
             let app = imp.app.clone();

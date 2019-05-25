@@ -68,6 +68,13 @@ macro_rules! bb_time {
     }}
 }
 
+macro_rules! bb_metronome {
+    ($stream:expr) => {{
+        let tmp_bb = ::dom::domutil::browser_time();
+        ::data::blackbox::blackbox_metronome($stream,tmp_bb);
+    }}
+}
+
 macro_rules! bb_log {
     ($stream:expr,$($arg:tt)*) => {{
         if !cfg!(deploy) || cfg!(console) {
