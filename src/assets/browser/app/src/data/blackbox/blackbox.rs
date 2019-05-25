@@ -36,6 +36,11 @@ pub fn blackbox_tick(driver: &mut BlackBoxDriver) {
     driver.tick(&mut bb,now);
 }
 
+pub fn blackbox_is_enabled(stream: &str) -> bool {
+    let mut bb = BLACKBOX.lock().unwrap();
+    bb.is_enabled(stream)
+}
+
 pub fn blackbox_report(stream: &str, report: &str) {
     let mut bb = BLACKBOX.lock().unwrap();
     let now = browser_time();

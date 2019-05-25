@@ -61,25 +61,36 @@ macro_rules! console {
 
 macro_rules! bb_time {
     ($stream:expr,$code:block) => {{
-        let tmp_bb_start = ::dom::domutil::browser_time();
+        let tmp_bb_enabled = ::data::blackbox::blackbox_is_enabled($stream);
+        let tmp_bb_start = if tmp_bb_enabled {
+             Some(::dom::domutil::browser_time())
+        } else {
+            None
+        };
         $code
-        let tmp_bb_end = ::dom::domutil::browser_time();
-        ::data::blackbox::blackbox_elapsed($stream,tmp_bb_end-tmp_bb_start);
+        if tmp_bb_enabled {
+            let tmp_bb_end = ::dom::domutil::browser_time();
+            ::data::blackbox::blackbox_elapsed($stream,tmp_bb_end-tmp_bb_start.unwrap());
+        }
     }}
 }
 
 macro_rules! bb_metronome {
     ($stream:expr) => {{
-        let tmp_bb = ::dom::domutil::browser_time();
-        ::data::blackbox::blackbox_metronome($stream,tmp_bb);
+        if ::data::blackbox::blackbox_is_enabled($stream) {
+            let tmp_bb = ::dom::domutil::browser_time();
+            ::data::blackbox::blackbox_metronome($stream,tmp_bb);
+        }
     }}
 }
 
 macro_rules! bb_log {
     ($stream:expr,$($arg:tt)*) => {{
         if !cfg!(deploy) || cfg!(console) {
-            let s = format!($($arg)*);
-            ::data::blackbox::blackbox_report($stream,&s);
+            if ::data::blackbox::blackbox_is_enabled($stream) {
+                let s = format!($($arg)*);
+                ::data::blackbox::blackbox_report($stream,&s);
+            }
         }
     }}
 }

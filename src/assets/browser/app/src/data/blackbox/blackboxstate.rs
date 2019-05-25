@@ -42,10 +42,18 @@ impl BlackBoxStateImpl {
             self.ms_offset = Some(now-t);
         }
     }
+      
+    fn is_enabled(&mut self, stream: &str) -> bool {
+        (
+            self.enabled.is_none() ||
+            self.enabled.as_ref().unwrap().contains(stream) ||
+            stream == ""
+        )
+    }
         
     fn report(&mut self, stream: &str, t: f64, reports: &str) {
         self.set_origin(t);
-        if self.enabled.is_none() || self.enabled.as_ref().unwrap().contains(stream) || stream == "" {
+        if self.is_enabled(stream) {
             let offset = self.ms_offset.unwrap();
             let report = BlackBoxReport::new(
                 reports.to_string(),
@@ -117,6 +125,10 @@ impl BlackBoxState {
     
     pub fn make_report(&mut self) -> SerdeValue {
         self.0.lock().unwrap().make_report()
+    }
+    
+    pub fn is_enabled(&mut self, stream: &str) -> bool {
+        self.0.lock().unwrap().is_enabled(stream)
     }
     
     pub fn report(&mut self, stream: &str, t: f64, report: &str) {
