@@ -155,6 +155,7 @@ pub fn browser_time() -> f64 {
 }
 
 /* Not sure why this isn't implemented in stdweb */
+#[allow(unused)]
 pub fn get_classes(el: &HtmlElement) -> Vec<String> {
     let raw = el.class_list();
     let parts : Vec<String> = js! { return Array.from(@{raw}.values()); }.try_into().ok().unwrap();
