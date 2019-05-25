@@ -59,31 +59,50 @@ macro_rules! console {
     }}
 }
 
+#[cfg(any(not(deploy),console))]
 macro_rules! bb_time {
     ($stream:expr,$code:block) => {{
-        let tmp_bb_enabled = ::data::blackbox::blackbox_is_enabled($stream);
-        let tmp_bb_start = if tmp_bb_enabled {
-             Some(::dom::domutil::browser_time())
-        } else {
-            None
-        };
-        $code
-        if tmp_bb_enabled {
-            let tmp_bb_end = ::dom::domutil::browser_time();
-            ::data::blackbox::blackbox_elapsed($stream,tmp_bb_end-tmp_bb_start.unwrap());
+        if !cfg!(deploy) || cfg!(console) {
+            let tmp_bb_enabled = ::data::blackbox::blackbox_is_enabled($stream);
+            let tmp_bb_start = if tmp_bb_enabled {
+                 Some(::dom::domutil::browser_time())
+            } else {
+                None
+            };
+            $code
+            if tmp_bb_enabled {
+                let tmp_bb_end = ::dom::domutil::browser_time();
+                ::data::blackbox::blackbox_elapsed($stream,tmp_bb_end-tmp_bb_start.unwrap());
+            }
         }
     }}
 }
 
+#[cfg(all(deploy,not(console)))]
+macro_rules! bb_time {
+    ($stream:expr,$code:block) => {{
+        $code
+    }}
+}
+
+#[cfg(any(not(deploy),console))]
 macro_rules! bb_metronome {
     ($stream:expr) => {{
-        if ::data::blackbox::blackbox_is_enabled($stream) {
-            let tmp_bb = ::dom::domutil::browser_time();
-            ::data::blackbox::blackbox_metronome($stream,tmp_bb);
+        if !cfg!(deploy) || cfg!(console) {
+            if ::data::blackbox::blackbox_is_enabled($stream) {
+                let tmp_bb = ::dom::domutil::browser_time();
+                ::data::blackbox::blackbox_metronome($stream,tmp_bb);
+            }
         }
     }}
 }
 
+#[cfg(all(deploy,not(console)))]
+macro_rules! bb_metronome {
+        ($stream:expr) => {{}}
+}
+
+#[cfg(any(not(deploy),console))]
 macro_rules! bb_log {
     ($stream:expr,$($arg:tt)*) => {{
         if !cfg!(deploy) || cfg!(console) {
@@ -95,11 +114,26 @@ macro_rules! bb_log {
     }}
 }
 
+#[cfg(all(deploy,not(console)))]
+macro_rules! bb_log {
+    ($stream:expr,$($arg:tt)*) => {{}}
+}
+
+#[cfg(any(not(deploy),console))]
 macro_rules! bb_stack {
     ($level:expr,$code:block) => {{
-        ::data::blackbox::blackbox_push($level);
+        if !cfg!(deploy) || cfg!(console) {
+            ::data::blackbox::blackbox_push($level);
+            $code
+            ::data::blackbox::blackbox_pop();
+        }
+    }}
+}
+
+#[cfg(all(deploy,not(console)))]
+macro_rules! bb_stack {
+    ($level:expr,$code:block) => {{
         $code
-        ::data::blackbox::blackbox_pop();
     }}
 }
 

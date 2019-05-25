@@ -8,26 +8,10 @@ use stdweb::unstable::TryInto;
 use dom::domutil::browser_time;
 use util::get_instance_id;
 use super::blackboxstate::BlackBoxState;
+use super::blackboxdriver::BlackBoxDriver;
 
 lazy_static! {
     static ref BLACKBOX: Mutex<BlackBoxState> = Mutex::new(BlackBoxState::new());
-}
-
-pub trait BlackBoxDriverImpl {
-    fn tick(&mut self, state: &mut BlackBoxState, t: f64) {}    
-}
-
-#[derive(Clone)]
-pub struct BlackBoxDriver(Arc<Mutex<Box<BlackBoxDriverImpl>>>);
-
-impl BlackBoxDriver {
-    pub fn new(driver: Box<BlackBoxDriverImpl>) -> BlackBoxDriver {
-        BlackBoxDriver(Arc::new(Mutex::new(driver)))
-    }
-    
-    pub fn tick(&mut self, state: &mut BlackBoxState, t: f64) {
-        self.0.lock().unwrap().tick(state,t);
-    }
 }
 
 pub fn blackbox_tick(driver: &mut BlackBoxDriver) {

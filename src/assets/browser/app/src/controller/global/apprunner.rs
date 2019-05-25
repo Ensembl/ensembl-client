@@ -11,9 +11,12 @@ use controller::input::{
 };
 use controller::output::{ OutputAction, Projector, Report, ViewportReport };
 use data::{ HttpManager, HttpXferClerk, BackendConfigBootstrap, BackendConfig };
+
+use data::blackbox::BlackBoxDriver;
+
+#[cfg(any(not(deploy),console))]
 use data::blackbox::{
-    BlackBoxDriver, blackbox_report, blackbox_push, blackbox_pop,
-    blackbox_tick
+    blackbox_report, blackbox_push, blackbox_pop, blackbox_tick
 };
 use dom::Bling;
 use dom::event::EventControl;
@@ -153,6 +156,7 @@ impl AppRunner {
         }
         
         /* run blackbox */
+        #[cfg(any(not(deploy),console))]
         {
             let mut dr = self.0.lock().unwrap().debug_reporter.clone();
             self.add_timer(move |_,t| {
