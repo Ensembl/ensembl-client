@@ -10,6 +10,12 @@ use controller::input::{
     Timers, Timer
 };
 use controller::output::{ OutputAction, Projector, Report, ViewportReport };
+
+#[cfg(any(not(deploy),console))]
+use data::blackbox::{
+    blackbox_report, blackbox_push, blackbox_pop, blackbox_tick
+};
+
 use data::{ HttpManager, BackendConfig };
 use data::blackbox::BlackBoxDriver;
 use dom::Bling;
