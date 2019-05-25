@@ -1,3 +1,5 @@
+use std::sync::{ Arc, Mutex };
+
 use serde_json::Value as SerdeValue;
 use stdweb::unstable::TryInto;
 use stdweb::web::{ ArrayBuffer, TypedArray, XmlHttpRequest, XhrResponseType };
@@ -6,21 +8,23 @@ use url::Url;
 use super::{ BlackBoxDriverImpl, BlackBoxState };
 use data::{ HttpManager, HttpResponseConsumer };
 
-const REPORT_INTERVAL : f64 = 5000.; // ms
+const DEFAULT_REPORT_INTERVAL : f64 = 600000.; // ms ie 10min
 
 pub struct BlackBoxResponseConsumer {
-    state: BlackBoxState
+    state: BlackBoxState,
+    interval: Arc<Mutex<f64>>
 }
 
 impl BlackBoxResponseConsumer {
-    pub fn new(state: &BlackBoxState) -> BlackBoxResponseConsumer {
+    pub fn new(state: &BlackBoxState, interval: Arc<Mutex<f64>>) -> BlackBoxResponseConsumer {
         BlackBoxResponseConsumer {
-            state: state.clone()
+            state: state.clone(),
+            interval
         }
     }
 }
 
-fn serde_to_vec_string(in_: &SerdeValue, key:&str) -> Option<Vec<String>> {
+fn serde_to_vec_string(in_: &SerdeValue, key: &str) -> Option<Vec<String>> {
     let mut out = None;
     if let SerdeValue::Object(map) = in_ {
         if let Some(SerdeValue::Array(enabled)) = map.get(key) {
@@ -34,6 +38,16 @@ fn serde_to_vec_string(in_: &SerdeValue, key:&str) -> Option<Vec<String>> {
         }
     }
     out
+}
+
+fn serde_to_number(in_: &SerdeValue, key: &str) -> Option<f64> {
+    let mut out = None;
+    if let SerdeValue::Object(map) = in_ {
+        if let Some(SerdeValue::Number(v)) = map.get(key) {
+            out = v.as_f64();
+        }
+    }
+    out    
 }
 
 impl HttpResponseConsumer for BlackBoxResponseConsumer {
@@ -50,12 +64,16 @@ impl HttpResponseConsumer for BlackBoxResponseConsumer {
         } else {
             self.state.set_dataset(vec![]);
         }
+        if let Some(interval) = serde_to_number(&data,"interval") {
+            *self.interval.lock().unwrap() = interval*1000.;
+        }
     }
 }
 
 pub struct HttpBlackBoxDriverImpl {
     manager: HttpManager,
     url: Url,
+    report_interval: Arc<Mutex<f64>>,
     last_report: Option<f64>
 }
 
@@ -63,6 +81,7 @@ impl HttpBlackBoxDriverImpl {
     pub fn new(http_manager: &HttpManager, base: &Url) -> HttpBlackBoxDriverImpl {
         HttpBlackBoxDriverImpl {
             manager: http_manager.clone(),
+            report_interval: Arc::new(Mutex::new(DEFAULT_REPORT_INTERVAL)),
             url: base.clone(),
             last_report: None
         }
@@ -71,14 +90,16 @@ impl HttpBlackBoxDriverImpl {
 
 impl BlackBoxDriverImpl for HttpBlackBoxDriverImpl {
     fn tick(&mut self, state: &mut BlackBoxState, t: f64) {
-        if self.last_report == None || t-self.last_report.unwrap() > REPORT_INTERVAL {
+        let interval : f64 = self.report_interval.lock().unwrap().clone();
+        if self.last_report == None || t-self.last_report.unwrap() > interval {
             let report = state.make_report().to_string();
             let xhr = XmlHttpRequest::new();
             xhr.open("POST",&self.url.as_str());
             xhr.set_request_header("Content-Type", "application/json");
             xhr.set_response_type(XhrResponseType::ArrayBuffer);
             let data = report.as_bytes();
-            self.manager.add_request(xhr,Some(data),Box::new(BlackBoxResponseConsumer::new(state)));
+            let interval = self.report_interval.clone();
+            self.manager.add_request(xhr,Some(data),Box::new(BlackBoxResponseConsumer::new(state,interval)));
             self.last_report = Some(t);
         }
     }
