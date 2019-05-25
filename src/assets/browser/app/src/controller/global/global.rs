@@ -155,7 +155,7 @@ fn find_main_element() -> Option<HtmlElement> {
 
 pub fn setup_global() {
     let inst_bytes = (browser_time() as i64).to_be_bytes();
-    let mut inst_id = base64::encode_config(&inst_bytes,base64::STANDARD_NO_PAD);
+    let mut inst_id = base64::encode_config(&inst_bytes,base64::URL_SAFE_NO_PAD);
     let len = inst_id.len();
     let inst_id = inst_id.split_off(len-6);
     set_instance_id(&inst_id);

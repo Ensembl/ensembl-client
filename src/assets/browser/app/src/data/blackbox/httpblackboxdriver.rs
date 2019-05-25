@@ -20,24 +20,35 @@ impl BlackBoxResponseConsumer {
     }
 }
 
+fn serde_to_vec_string(in_: &SerdeValue, key:&str) -> Option<Vec<String>> {
+    let mut out = None;
+    if let SerdeValue::Object(map) = in_ {
+        if let Some(SerdeValue::Array(enabled)) = map.get(key) {
+            let mut v : Vec<String> = vec![];
+            for stream in enabled {
+                if let SerdeValue::String(string) = stream {
+                    v.push(string.clone());
+                }
+            }
+            out = Some(v);
+        }
+    }
+    out
+}
+
 impl HttpResponseConsumer for BlackBoxResponseConsumer {
     fn consume(&mut self, req: XmlHttpRequest) {
         let value : ArrayBuffer = ok!(req.raw_response().try_into());
         let value : TypedArray<u8> = value.into();
         let data = ok!(String::from_utf8(value.to_vec()));
         let data : SerdeValue = ok!(serde_json::from_str(&data));
-        if let SerdeValue::Object(map) = data {
-            if let Some(SerdeValue::Array(enabled)) = map.get("enabled") {
-                let mut streams_enabled : Vec<String> = vec![];
-                for stream in enabled {
-                    if let SerdeValue::String(string) = stream {
-                        streams_enabled.push(string.clone());
-                    }
-                }
-                self.state.set_enabled(streams_enabled);
-            }
+        if let Some(enabled) = serde_to_vec_string(&data,"enabled") {
+            self.state.set_enabled(enabled);
+        }
+        if let Some(dataset) = serde_to_vec_string(&data,"dataset") {
+            self.state.set_dataset(dataset);
         } else {
-            console!("bad blackbox response: ingoring");
+            self.state.set_dataset(vec![]);
         }
     }
 }

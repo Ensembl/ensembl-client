@@ -42,6 +42,12 @@ pub fn blackbox_report(stream: &str, report: &str) {
     bb.report(stream,now,report);
 }
 
+pub fn blackbox_elapsed(stream: &str, elapsed: f64) {
+    let mut bb = BLACKBOX.lock().unwrap();
+    let now = browser_time();
+    bb.elapsed(stream,elapsed);
+}
+
 pub fn blackbox_push(name: &str) {
     let mut bb = BLACKBOX.lock().unwrap();
     bb.push(name);

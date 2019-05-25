@@ -155,7 +155,9 @@ impl AppRunner {
         {
             let mut dr = self.0.lock().unwrap().debug_reporter.clone();
             self.add_timer(move |_,t| {
-                blackbox_tick(&mut dr);
+                bb_time!("blackbox-send", {
+                    blackbox_tick(&mut dr);
+                });
                 vec!{}
             },None);
             bb_stack!("init",{

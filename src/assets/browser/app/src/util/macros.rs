@@ -59,6 +59,15 @@ macro_rules! console {
     }}
 }
 
+macro_rules! bb_time {
+    ($stream:expr,$code:block) => {{
+        let tmp_bb_start = ::dom::domutil::browser_time();
+        $code
+        let tmp_bb_end = ::dom::domutil::browser_time();
+        ::data::blackbox::blackbox_elapsed($stream,tmp_bb_end-tmp_bb_start);
+    }}
+}
+
 macro_rules! bb_log {
     ($stream:expr,$($arg:tt)*) => {{
         if !cfg!(deploy) || cfg!(console) {

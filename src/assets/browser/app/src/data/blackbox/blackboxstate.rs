@@ -7,49 +7,12 @@ use stdweb::unstable::TryInto;
 
 use dom::domutil::browser_time;
 use util::get_instance_id;
-
-struct Report {
-    text: String,
-    time: f64,
-    stack: String
-}
-
-impl Report {
-    fn new(text: String, stack: String, time: f64) -> Report {
-        Report {
-            text, time, stack
-        }
-    }
-    
-    fn to_json(&self) -> SerdeValue {
-        json!({
-            "time": self.time,
-            "stack": self.stack,
-            "text": self.text
-        })
-    }
-}
-
-struct ReportStream {
-    name: String,
-    reports: Vec<Report>
-}
-
-impl ReportStream {
-    fn make_report(&self) -> SerdeValue {
-        let mut stream = SerdeMap::<String,SerdeValue>::new();
-        let mut reports = Vec::<SerdeValue>::new();
-        for r in &self.reports {
-            reports.push(r.to_json());
-        }
-        stream.insert("reports".to_string(),SerdeValue::Array(reports));
-        SerdeValue::Object(stream)
-    }
-}
+use super::bbreportstream::{ BlackBoxReport, BlackBoxReportStream };
 
 pub struct BlackBoxStateImpl {
-    pending: HashMap<String,ReportStream>,
+    pending: HashMap<String,BlackBoxReportStream>,
     enabled: Option<HashSet<String>>,
+    dataset: HashSet<String>,
     stack: Vec<String>,
     stack_name: Option<String>,
     ms_offset: Option<f64>
@@ -60,18 +23,16 @@ impl BlackBoxStateImpl {
         BlackBoxStateImpl {
             pending: HashMap::new(),
             enabled: None,
+            dataset: HashSet::new(),
             stack: Vec::new(),
             stack_name: None,
             ms_offset: None
         }
     }
     
-    fn get_stream(&mut self, name: &str) -> &mut ReportStream {
+    fn get_stream(&mut self, name: &str) -> &mut BlackBoxReportStream {
         self.pending.entry(name.to_string()).or_insert_with(|| {
-            ReportStream {
-                name: name.to_string(),
-                reports: Vec::new()
-            }
+            BlackBoxReportStream::new(name)
         })
     }
     
@@ -86,21 +47,26 @@ impl BlackBoxStateImpl {
         self.set_origin(t);
         if self.enabled.is_none() || self.enabled.as_ref().unwrap().contains(stream) || stream == "" {
             let offset = self.ms_offset.unwrap();
-            let report = Report::new(
+            let report = BlackBoxReport::new(
                 reports.to_string(),
                 self.get_stack_name().to_string(),
                 offset+t
             );
-            self.get_stream(stream).reports.push(report);
+            self.get_stream(stream).add_report(report);
         }
+    }
+    
+    fn add_elapsed(&mut self, stream: &str, elapsed: f64) {
+        self.get_stream(stream).add_elapsed(elapsed);
     }
     
     fn make_report(&mut self) -> SerdeValue {
         let mut streams = SerdeMap::<String,SerdeValue>::new();
         if self.enabled.is_some() {
-            for (name,reports) in &self.pending {
+            for (name,reports) in &mut self.pending {
                 if self.enabled.as_ref().unwrap().contains(name) {
-                    streams.insert(name.to_string(),reports.make_report());
+                    let with_dataset = self.dataset.contains(name);
+                    streams.insert(name.to_string(),reports.make_report(with_dataset));
                 }
             }
             self.pending = HashMap::new();
@@ -112,11 +78,11 @@ impl BlackBoxStateImpl {
     }
     
     pub fn set_enabled(&mut self, streams: Vec<String>) {
-        let mut enabled = HashSet::new();
-        for s in &streams {
-            enabled.insert(s.to_string());
-        }
-        self.enabled = Some(enabled);
+        self.enabled = Some(streams.iter().cloned().collect());
+    }
+
+    pub fn set_dataset(&mut self, streams: Vec<String>) {
+        self.dataset = streams.iter().cloned().collect();
     }
 
     fn get_stack_name(&mut self) -> &str {
@@ -150,12 +116,19 @@ impl BlackBoxState {
     }
     
     pub fn report(&mut self, stream: &str, t: f64, report: &str) {
-        console!("A");
         self.0.lock().unwrap().report(stream,t,report);
+    }
+    
+    pub fn elapsed(&mut self, stream: &str, elapsed: f64) {
+        self.0.lock().unwrap().add_elapsed(stream,elapsed);
     }
     
     pub fn set_enabled(&mut self, streams: Vec<String>) {
         self.0.lock().unwrap().set_enabled(streams);
+    }
+
+    pub fn set_dataset(&mut self, streams: Vec<String>) {
+        self.0.lock().unwrap().set_dataset(streams);
     }
     
     pub fn push(&mut self, name: &str) {
