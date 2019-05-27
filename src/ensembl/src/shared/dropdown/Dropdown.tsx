@@ -50,7 +50,7 @@ const Dropdown = (props: Props) => {
       document.removeEventListener('click', handleClickOutside, true);
       document.removeEventListener('touchend', handleClickOutside, true);
     };
-  });
+  }, []);
 
   useEffect(() => {
     if (dropdownElementRef.current) {
@@ -70,6 +70,21 @@ const Dropdown = (props: Props) => {
         left: `${x}px`
       });
     }
+  }, []);
+
+  useEffect(() => {
+    const node = dropdownElementRef.current;
+    if (!node) return;
+
+    const intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        console.log(entries);
+      },
+      {
+        threshold: 1
+      }
+    );
+    intersectionObserver.observe(node);
   }, []);
 
   const className = classNames(styles.dropdown, {
