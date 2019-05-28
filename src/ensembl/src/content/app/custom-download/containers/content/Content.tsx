@@ -16,13 +16,69 @@ import ResultHolder from './result-holder/ResultHolder';
 import { RootState } from 'src/store';
 import { attributes } from '../../sampledata';
 import PreviewTable from '../../components/preview-table/PreviewTable';
+import { fetchGeneAttributes } from 'src/services/custom-download';
 
 import { getSelectedAttributes, formatResults } from './result-holder/helpers';
 
 type Props = StateProps & DispatchProps;
 
+// display: true
+// displayName: "Ashbya Genome Database"
+// facet: true
+// name: "AGD_GENE"
+// search: true
+// sort: true
+// type: "TERM"
+
+const getGeneAttributes = async (props: Props) => {
+  const allAttributes = await fetchGeneAttributes();
+
+  const attributes: any = {};
+
+  let sections = ['gene'];
+
+  allAttributes.forEach((attribute: any) => {
+    if (attribute.type === 'TERM') {
+      if (attribute.name.split('.').length > 1) {
+        sections = attribute.name.split('.');
+      }
+    }
+
+    if (!attributes[sections[0]]) {
+      attributes[sections[0]] = {};
+    }
+
+    if (
+      sections[1] &&
+      sections.length !== 2 &&
+      !attributes[sections[0]][sections[1]]
+    ) {
+      attributes[sections[0]][sections[1]] = {};
+    } else if (sections.length == 2) {
+      attributes[sections[0]][sections[1]] = {
+        id: attribute.name,
+        label: attribute.displayName,
+        checkedStatus: false
+      };
+    }
+
+    if (sections[2] && !attributes[sections[0]][sections[1]][sections[2]]) {
+      attributes[sections[0]][sections[1]][sections[2]] = {};
+    }
+
+    if (
+      sections[3] &&
+      !attributes[sections[0]][sections[1]][sections[2]][sections[3]]
+    ) {
+      attributes[sections[0]][sections[1]][sections[2]][sections[3]] = {};
+    }
+  });
+  console.log(attributes);
+};
+
 const Content = (props: Props) => {
   useEffect(() => {
+    getGeneAttributes(props);
     props.setAttributes(attributes);
   }, []);
 

@@ -90,4 +90,19 @@ export const fetchCustomDownloadResults = (
   }
 };
 
+export const fetchGeneAttributes = async () => {
+  const endpoint = 'http://gti-es-0.ebi.ac.uk:8080/api/genes/info/fields';
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
 export default getCustomDownloadPreviewResults;
