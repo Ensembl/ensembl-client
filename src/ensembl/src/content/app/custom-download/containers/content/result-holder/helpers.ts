@@ -58,39 +58,90 @@ export const fetchPreviewResults = async (
   props.setPreviewResult(result);
 };
 
-export const formatResults = (apiResult: any, selectedAttributes: any) => {
-  const apiResultFields: any = [];
+const flattenResponse = (
+  objectOrArray: any,
+  prefix = '',
+  formatter = (k: string) => k
+) => {
+  const nestedFormatter = (k: string) => '.' + k;
 
-  const apiResultData = apiResult.results;
+  const nestElement = (prev: any, value: any, key: any): any =>
+    value && typeof value === 'object'
+      ? {
+          ...prev,
+          ...flattenResponse(
+            value,
+            `${prefix}${formatter(key)}`,
+            nestedFormatter
+          )
+        }
+      : { ...prev, ...{ [`${prefix}${formatter(key)}`]: value } };
 
-  apiResult.fields.forEach((field: any) => {
-    apiResultFields.push(field.name);
+  return Array.isArray(objectOrArray)
+    ? objectOrArray.reduce(nestElement, {})
+    : Object.keys(objectOrArray).reduce(
+        (prev, element) => nestElement(prev, objectOrArray[element], element),
+        {}
+      );
+};
+
+const formatResponse = (responseData: any) => {
+  const preResult: any = [];
+
+  const responseArray = flattenResponse(responseData);
+
+  Object.keys(responseArray)
+    .sort()
+    .forEach((key) => {
+      const keySplit = key.split('.');
+
+      let innerIndex = 0;
+      if (keySplit[2]) {
+        innerIndex = Number(keySplit[2]);
+      }
+      if (!preResult[keySplit[0]]) {
+        preResult[keySplit[0]] = {};
+      }
+      if (!preResult[keySplit[0]][innerIndex]) {
+        preResult[keySplit[0]][innerIndex] = { ...preResult[keySplit[0]][0] };
+      }
+      let id = keySplit[1];
+
+      if (keySplit[3]) {
+        id = `${keySplit[1]}.${keySplit[3]}`;
+      }
+
+      preResult[keySplit[0]][innerIndex][id] = responseArray[key];
+    });
+
+  const result: any = [];
+  preResult.forEach((entry: any) => {
+    Object.values(entry).forEach((row) => {
+      result.push(row);
+    });
   });
 
-  const result: any = Array(apiResultData.length + 1);
-  result[0] = [];
+  return result;
+};
 
+export const formatResults = (apiResult: any, selectedAttributes: any) => {
+  const formattedResult = formatResponse(apiResult.results);
+
+  const result: any = [];
+  // Populate the header row
+  result[0] = [];
   selectedAttributes.forEach((attribute: string) => {
     result[0].push(attribute[3]);
+  });
 
-    const currentAttributeID = attribute[2];
+  let rowCounter = 0;
 
-    // Check if the current attribute ID is available in the fields list
-    apiResultData.forEach((resultRow: any, rowNumber: number) => {
-      if (!result[rowNumber + 1]) {
-        result[rowNumber + 1] = [];
-      }
-      if (sampleResults[currentAttributeID]) {
-        result[rowNumber + 1].push(
-          sampleResults[currentAttributeID][rowNumber]
-        );
-      } else if (apiResultFields.includes(currentAttributeID)) {
-        const dataIndex = apiResultFields.indexOf(currentAttributeID);
-        const data = resultRow[dataIndex] ? resultRow[dataIndex] : '-';
-        result[rowNumber + 1].push(data);
-      } else {
-        result[rowNumber + 1].push('-');
-      }
+  formattedResult.forEach((entry: any) => {
+    rowCounter += 1;
+    result[rowCounter] = [];
+
+    selectedAttributes.forEach((field: string[]) => {
+      result[rowCounter].push(entry[field[2]]);
     });
   });
 

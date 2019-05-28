@@ -48,7 +48,7 @@ const ResultHolder = (props: Props) => {
       <>
         {Array(10)
           .fill(1)
-          .map((key: number) => {
+          .map((value, key: number) => {
             return (
               <div key={key} className={styles.wrapper}>
                 <div className={styles.resultCard}>
