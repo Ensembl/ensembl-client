@@ -13,7 +13,7 @@ import { RootState } from 'src/store';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
 import styles from './SpeciesSelectorAppBar.scss';
-import appBarStyles from 'src/content/app/AppBar.scss';
+import appBarStyles from 'src/shared/app-bar/AppBar.scss';
 
 type Props = {
   selectedSpecies: CommittedItem[];
@@ -30,7 +30,7 @@ export const PlaceholderMessage = () => (
 
 export const SpeciesSelectorAppBar = (props: Props) => {
   return (
-    <div>
+    <div className={appBarStyles.appBar}>
       <div className={appBarStyles.top}>Species Selector</div>
       <div className={styles.main}>
         {props.selectedSpecies.length > 0 ? (

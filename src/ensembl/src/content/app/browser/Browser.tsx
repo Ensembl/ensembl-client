@@ -14,6 +14,7 @@ import BrowserImage from './browser-image/BrowserImage';
 import BrowserNavBar from './browser-nav/BrowserNavBar';
 import TrackPanel from './track-panel/TrackPanel';
 import Drawer from './drawer/Drawer';
+import AppBar from 'src/shared/app-bar/AppBar';
 
 import { RootState } from 'src/store';
 import {
@@ -31,7 +32,8 @@ import {
   getBrowserNavOpened,
   getChrLocation,
   getGenomeSelectorActive,
-  getBrowserActivated
+  getBrowserActivated,
+  getBrowserActiveGenomeId
 } from './browserSelectors';
 import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 import { getDrawerOpened } from './drawer/drawerSelectors';
@@ -41,13 +43,16 @@ import {
 } from 'src/ens-object/ensObjectActions';
 import { toggleDrawer } from './drawer/drawerActions';
 
+import browserStorageService from './browser-storage-service';
+import { TrackStates } from './track-panel/trackPanelConfig';
+import { AppName } from 'src/global/globalConfig';
+
 import styles from './Browser.scss';
 
 import 'static/browser/browser.js';
-import browserStorageService from './browser-storage-service';
-import { TrackStates } from './track-panel/trackPanelConfig';
 
 type StateProps = {
+  activeGenomeId: string;
   browserActivated: boolean;
   browserNavOpened: boolean;
   browserOpenState: BrowserOpenState;
@@ -136,42 +141,52 @@ export const Browser: FunctionComponent<BrowserProps> = (
     props.toggleDrawer(false);
   }, [props.drawerOpened]);
 
+  const changeSelectedSpecies = (genomeId: string) => {};
+
   return (
-    <section className={styles.browser}>
-      <>
-        <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
-        {props.genomeSelectorActive ? (
-          <div className={styles.browserOverlay} />
-        ) : null}
-        <div className={styles.browserInnerWrapper}>
-          <div
-            className={`${styles.browserImageWrapper} ${
-              styles[props.browserOpenState]
-            }`}
-            onClick={closeTrack}
-          >
-            {props.browserNavOpened &&
-            !props.drawerOpened &&
-            browserRef.current ? (
-              <BrowserNavBar browserElement={browserRef.current} />
-            ) : null}
-            <BrowserImage
+    <>
+      <AppBar
+        currentAppName={AppName.GENOME_BROWSER}
+        activeGenomeId={props.activeGenomeId}
+        onTabSelect={changeSelectedSpecies}
+      />
+      <section className={styles.browser}>
+        <>
+          <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
+          {props.genomeSelectorActive ? (
+            <div className={styles.browserOverlay} />
+          ) : null}
+          <div className={styles.browserInnerWrapper}>
+            <div
+              className={`${styles.browserImageWrapper} ${
+                styles[props.browserOpenState]
+              }`}
+              onClick={closeTrack}
+            >
+              {props.browserNavOpened &&
+              !props.drawerOpened &&
+              browserRef.current ? (
+                <BrowserNavBar browserElement={browserRef.current} />
+              ) : null}
+              <BrowserImage
+                browserRef={browserRef}
+                trackStates={trackStatesFromStorage}
+              />
+            </div>
+            <TrackPanel
               browserRef={browserRef}
               trackStates={trackStatesFromStorage}
             />
+            {props.drawerOpened && <Drawer />}
           </div>
-          <TrackPanel
-            browserRef={browserRef}
-            trackStates={trackStatesFromStorage}
-          />
-          {props.drawerOpened && <Drawer />}
-        </div>
-      </>
-    </section>
+        </>
+      </section>
+    </>
   );
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
+  activeGenomeId: getBrowserActiveGenomeId(state),
   browserActivated: getBrowserActivated(state),
   browserNavOpened: getBrowserNavOpened(state),
   browserOpenState: getBrowserOpenState(state),

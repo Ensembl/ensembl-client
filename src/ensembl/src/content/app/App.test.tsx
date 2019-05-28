@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { AppShell } from './App';
-import AppBar from './AppBar';
+import AppBar from 'src/shared/app-bar/AppBar';
 
 describe('<App />', () => {
   test('contains AppBar', () => {

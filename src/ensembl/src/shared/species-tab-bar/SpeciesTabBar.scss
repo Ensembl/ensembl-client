@@ -1,6 +1,11 @@
 .speciesTabBar {
-  display: flex;
-  white-space: nowrap;
-  max-width: 100%;
-  overflow-x: hidden;
+  flex: 1 1 auto;
+  margin-left: 10px;
+}
+
+.addSpeciesLink {
+  display: inline-block;
+  font-size: 11px;
+  position: relative;
+  bottom: 8px;
 }

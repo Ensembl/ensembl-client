@@ -5,8 +5,6 @@ import { connect } from 'react-redux';
 import { changeCurrentApp } from 'src/header/headerActions';
 import { getCurrentApp } from 'src/header/headerSelectors';
 
-import AppBar from './AppBar';
-
 import { RootState } from 'src/store';
 
 const GlobalSearch = lazy(() => import('./global-search/GlobalSearch'));
@@ -32,12 +30,7 @@ type AppShellProps = {
 };
 
 export const AppShell = (props: AppShellProps) => {
-  return (
-    <>
-      <AppBar />
-      {props.children}
-    </>
-  );
+  return <>{props.children}</>;
 };
 
 const AppInner = (props: AppProps) => {
