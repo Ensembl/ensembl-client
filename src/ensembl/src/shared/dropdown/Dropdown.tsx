@@ -1,22 +1,10 @@
 import React, { ReactNode, useRef, useEffect, useState } from 'react';
 import classNames from 'classnames';
 
-import styles from './Dropdown.scss';
+import { findOptimalPosition } from './dropdown-helper';
+import { Position } from './dropdown-types';
 
-export enum Position {
-  TOP_LEFT = 'top_left',
-  TOP_CENTRE = 'top_centre',
-  TOP_RIGHT = 'top_right',
-  RIGHT_TOP = 'right_top',
-  RIGHT_CENTRE = 'right_centre',
-  RIGHT_BOTTOM = 'right_bottom',
-  BOTTOM_RIGHT = 'bottom_right',
-  BOTTOM_CENTRE = 'bottom_centre',
-  BOTTOM_LEFT = 'bottom_left',
-  LEFT_BOTTOM = 'left_bottom',
-  LEFT_CENTRE = 'left_centre',
-  LEFT_TOP = 'left_top'
-}
+import styles from './Dropdown.scss';
 
 type Props = {
   expandDirection: 'up' | 'down';
@@ -68,32 +56,32 @@ const Dropdown = (props: Props) => {
   }, []);
 
   useEffect(() => {
-    if (dropdownElementRef.current) {
-      const parentElement = dropdownElementRef.current.parentElement;
-      if (!parentElement) return;
-      setParent(parentElement);
-
-      const {
-        width: parentWidth,
-        height: parentHeight
-      } = parentElement.getBoundingClientRect();
-      // calculate the x-coordinate of the dropdown,
-      // so that its tip points to the center of the parent
-      const x = parentWidth / 2 - TIP_HORIZONTAL_OFFSET - TIP_WIDTH / 2;
-      setInlineStyles({
-        top: `${parentHeight + TIP_HEIGHT + props.verticalOffset}px`,
-        left: `${x}px`
-      });
-    }
-  }, []);
-
-  useEffect(() => {
     const node = dropdownElementRef.current;
-    if (!node) return;
+    const parentElement = node && node.parentElement;
+    if (!(node && parentElement)) {
+      return;
+    }
+    setParent(parentElement);
+
+    const {
+      width: parentWidth,
+      height: parentHeight
+    } = parentElement.getBoundingClientRect();
+    // calculate the x-coordinate of the dropdown,
+    // so that its tip points to the center of the parent
+    const x = parentWidth / 2 - TIP_HORIZONTAL_OFFSET - TIP_WIDTH / 2;
+    setInlineStyles({
+      top: `${parentHeight + TIP_HEIGHT + props.verticalOffset}px`,
+      left: `${x}px`
+    });
 
     const intersectionObserver = new IntersectionObserver(
       (entries) => {
-        console.log(entries);
+        findOptimalPosition({
+          intersectionEntry: entries[0],
+          anchorBoundingRect: parentElement.getBoundingClientRect(),
+          position: props.tipPosition
+        });
       },
       {
         threshold: 1
