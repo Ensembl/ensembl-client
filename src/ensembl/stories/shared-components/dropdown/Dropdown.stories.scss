@@ -1,0 +1,20 @@
+@import 'src/styles/common';
+
+.container {
+  display: grid;
+  background: cornsilk;
+  height: 80vh;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-left: 100px;
+  width: 100px;
+  height: 100px;
+  background-color: $ens-grey;
+  user-select: 'none';
+  cursor: 'pointer';
+}

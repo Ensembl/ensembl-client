@@ -3,6 +3,8 @@ import { storiesOf } from '@storybook/react';
 
 import Dropdown from 'src/shared/dropdown/Dropdown';
 
+import styles from './Dropdown.stories.scss';
+
 const DropdownParent = () => {
   const [isVisible, setVisible] = useState(false);
 
@@ -13,22 +15,8 @@ const DropdownParent = () => {
 
   const hideDropdown = () => setVisible(false);
 
-  const styles = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative' as 'relative',
-    marginLeft: '100px',
-    width: '100px',
-    height: '100px',
-    border: '1px solid gray',
-    backgroundColor: 'lightgray',
-    userSelect: 'none' as 'none',
-    cursor: 'pointer'
-  };
-
   return (
-    <div style={styles} onClick={toggleDropdown}>
+    <div className={styles.item} onClick={toggleDropdown}>
       Click me
       {isVisible && (
         <Dropdown onClose={hideDropdown} verticalOffset={-5}>
@@ -47,7 +35,7 @@ storiesOf('Components|Shared Components/Dropdown', module).add(
   'default',
   () => {
     return (
-      <div>
+      <div className={styles.container}>
         <DropdownParent />
       </div>
     );
