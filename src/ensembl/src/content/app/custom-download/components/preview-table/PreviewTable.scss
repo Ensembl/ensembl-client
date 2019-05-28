@@ -10,7 +10,20 @@
     border-bottom: 2px solid $ens-light-grey;
   }
 
-  tr:first-of-type {
+  td {
+    padding: 8px 0 8px 5px;
+    width: 200px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+.previewTableHeader {
+  margin-top: 20px;
+  margin-left: 40px;
+  border-collapse: collapse;
+  min-width: 50%;
+  tr {
     border-bottom: 2px solid $ens-blue;
     border-top: 2px solid $ens-blue;
     color: $ens-blue;
@@ -18,5 +31,13 @@
 
   td {
     padding: 8px 0 8px 5px;
+    width: 200px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
+}
+
+.previewWrapper {
+  height: calc(100vh - 300px);
+  overflow: auto;
 }

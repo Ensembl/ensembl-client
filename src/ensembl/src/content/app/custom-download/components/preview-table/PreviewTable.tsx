@@ -13,21 +13,36 @@ type OwnProps = {
 type Props = OwnProps & StateProps;
 
 const PreviewTable = (props: Props) => {
+  const gridData = [...props.resultData];
+  const headerRow: [] = gridData[0];
+  gridData.shift();
+
   return (
     <>
-      <table className={styles.previewTable}>
+      <table className={styles.previewTableHeader}>
         <tbody>
-          {[...props.resultData].map((row: any, rowKey: number) => {
-            return (
-              <tr key={rowKey}>
-                {[...row].map((cell: any, cellKey: number) => {
-                  return <td key={cellKey}>{cell}</td>;
-                })}
-              </tr>
-            );
-          })}
+          <tr>
+            {headerRow.map((cell: any, cellKey: number) => {
+              return <td key={cellKey}>{cell}</td>;
+            })}
+          </tr>
         </tbody>
       </table>
+      <div className={styles.previewWrapper}>
+        <table className={styles.previewTable}>
+          <tbody>
+            {gridData.map((row: any, rowKey: number) => {
+              return (
+                <tr key={rowKey}>
+                  {[...row].map((cell: any, cellKey: number) => {
+                    return <td key={cellKey}>{cell}</td>;
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </>
   );
 };

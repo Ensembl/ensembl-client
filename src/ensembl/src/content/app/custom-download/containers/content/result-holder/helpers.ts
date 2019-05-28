@@ -1,4 +1,3 @@
-import { sampleResults } from 'src/content/app/custom-download/sampledata';
 import getCustomDownloadPreviewResults from 'src/services/custom-download.ts';
 
 export const getSelectedAttributes = (attributes: any) => {

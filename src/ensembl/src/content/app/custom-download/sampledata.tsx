@@ -1,59 +1,3 @@
-import faker from 'faker';
-
-export const sampleResults: any = {
-  'location.genomic_coordinates': [
-    `1:${faker.random.number()}-${faker.random.number()}`,
-    `2:${faker.random.number()}-${faker.random.number()}`,
-    `3:${faker.random.number()}-${faker.random.number()}`,
-    `4:${faker.random.number()}-${faker.random.number()}`,
-    `5:${faker.random.number()}-${faker.random.number()}`,
-    `6:${faker.random.number()}-${faker.random.number()}`,
-    `7:${faker.random.number()}-${faker.random.number()}`,
-    `8:${faker.random.number()}-${faker.random.number()}`,
-    `9:${faker.random.number()}-${faker.random.number()}`,
-    `10:${faker.random.number()}-${faker.random.number()}`
-  ],
-  'transcripts.id': [
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word()
-  ],
-  'transcripts.symbol': [
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word()
-  ],
-  'transcripts.name': [
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word(),
-    faker.lorem.word()
-  ]
-};
-
 export const transcriptTypeFiltersGrid: any = {
   default: {
     protein_coding: {
@@ -107,14 +51,14 @@ export const attributes = {
         label: 'Gene name',
         checkedStatus: false
       },
-      type: {
-        id: 'type',
-        label: 'Gene type',
+      Superfamily: {
+        id: 'Superfamily',
+        label: 'Superfamily',
         checkedStatus: false
       },
-      version_gene: {
-        id: 'version_gene',
-        label: 'Version (gene)',
+      strand: {
+        id: 'strand',
+        label: 'Strand',
         checkedStatus: false
       },
       start: {
@@ -127,9 +71,9 @@ export const attributes = {
         label: 'Gene end (bp)',
         checkedStatus: false
       },
-      gc_content: {
-        id: 'gc_content',
-        label: 'Gene % GC content',
+      UniParc: {
+        id: 'UniParc',
+        label: 'UniParc',
         checkedStatus: false
       },
       source_gene: {
@@ -137,14 +81,14 @@ export const attributes = {
         label: 'Source (gene)',
         checkedStatus: false
       },
-      EntrezGene: {
-        id: 'EntrezGene',
-        label: 'EntrezGene',
+      BioGRID: {
+        id: 'BioGRID',
+        label: 'BioGRID',
         checkedStatus: false
       },
-      source_of_name: {
-        id: 'source_of_name',
-        label: 'Source of gene name',
+      Smart: {
+        id: 'Smart',
+        label: 'Smart',
         checkedStatus: false
       },
       very_long_label: {
@@ -185,9 +129,9 @@ export const attributes = {
   },
   transcripts: {
     default: {
-      symbol: {
-        id: 'transcripts.symbol',
-        label: 'Transcript symbol',
+      biotype: {
+        id: 'transcripts.biotype',
+        label: 'Biotype',
         checkedStatus: true
       },
       name: {
@@ -200,9 +144,9 @@ export const attributes = {
         label: 'Transcript stable ID',
         checkedStatus: true
       },
-      id_version: {
-        id: 'transcripts.id_version',
-        label: 'Transcript stable ID version',
+      AGD_TRANSCRIPT: {
+        id: 'transcripts.AGD_TRANSCRIPT',
+        label: 'Ashbya Genome Database',
         checkedStatus: false
       },
       type: {
@@ -210,19 +154,44 @@ export const attributes = {
         label: 'Transcript Type',
         checkedStatus: false
       },
-      version_transcript: {
-        id: 'transcripts.version_transcript',
-        label: 'Version (Transcript)',
+      UniGene: {
+        id: 'transcripts.UniGene',
+        label: 'UniGene',
         checkedStatus: false
       },
-      '5_utr_start': {
-        id: 'transcripts.5_utr_start',
-        label: "5'UTR start",
+      Pfam: {
+        id: 'transcripts.Pfam',
+        label: 'Pfam',
         checkedStatus: false
       },
-      '3_utr_end': {
-        id: 'transcripts.3_utr_end',
-        label: "3'UTR end",
+      HGNC_trans_name: {
+        id: 'transcripts.HGNC_trans_name',
+        label: 'HGNC_trans_name',
+        checkedStatus: false
+      },
+      start: {
+        id: 'transcripts.start',
+        label: 'Start',
+        checkedStatus: false
+      },
+      end: {
+        id: 'transcripts.end',
+        label: 'End',
+        checkedStatus: false
+      },
+      Interpro: {
+        id: 'transcripts.Interpro',
+        label: 'Interpro',
+        checkedStatus: false
+      },
+      Smart: {
+        id: 'transcripts.Smart',
+        label: 'Smart',
+        checkedStatus: false
+      },
+      analysis: {
+        id: 'transcripts.analysis',
+        label: 'Analysis',
         checkedStatus: false
       }
     },
