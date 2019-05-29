@@ -16,7 +16,7 @@ import ResultHolder from './result-holder/ResultHolder';
 import { RootState } from 'src/store';
 import { attributes } from '../../sampledata';
 import PreviewTable from '../../components/preview-table/PreviewTable';
-import { fetchGeneAttributes } from 'src/services/custom-download';
+// import { fetchGeneAttributes } from 'src/services/custom-download';
 
 import { getSelectedAttributes, formatResults } from './result-holder/helpers';
 

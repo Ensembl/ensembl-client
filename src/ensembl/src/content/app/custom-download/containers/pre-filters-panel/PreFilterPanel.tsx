@@ -1,6 +1,11 @@
 import React, { useCallback, FunctionComponent } from 'react';
 import { connect } from 'react-redux';
-import { RoundButton, RoundButtonStatus, PrimaryButton } from 'src/shared';
+import RoundButton, {
+  RoundButtonStatus
+} from 'src/shared/round-button/RoundButton';
+
+import { PrimaryButton } from 'src/shared/button/Button';
+
 import { getSelectedPreFilter } from '../../customDownloadSelectors';
 import {
   updateSelectedPreFilter,

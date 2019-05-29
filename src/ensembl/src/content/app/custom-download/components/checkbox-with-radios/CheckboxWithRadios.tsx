@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Checkbox } from 'src/shared';
+import Checkbox from 'src/shared/checkbox/Checkbox';
 
 import styles from './CheckboxWithRadios.scss';
 

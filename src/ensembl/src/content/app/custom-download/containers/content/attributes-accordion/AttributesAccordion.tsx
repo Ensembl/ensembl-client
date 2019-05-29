@@ -9,7 +9,7 @@ import {
   AccordionItemPanel,
   AccordionItemButton,
   AccordionItemPermanentBlock
-} from 'src/shared';
+} from 'src/shared/accordion';
 
 import { getAttributesAccordionExpandedPanel } from './attributesAccordionSelector';
 import { setAttributesAccordionExpandedPanel } from './attributesAccordionActions';

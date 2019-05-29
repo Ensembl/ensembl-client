@@ -28,7 +28,7 @@ import {
 
 import { getMatchedSpeciesList } from './helpers';
 
-import { Input } from 'src/shared';
+import Input from 'src/shared/input/Input';
 
 import styles from './Styles.scss';
 

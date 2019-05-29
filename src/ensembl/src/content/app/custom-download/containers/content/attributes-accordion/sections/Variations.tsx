@@ -8,7 +8,7 @@ import {
   AccordionItemHeading,
   AccordionItemPanel,
   AccordionItemButton
-} from 'src/shared';
+} from 'src/shared/accordion';
 
 import {
   getGermlineVariationAttributes,

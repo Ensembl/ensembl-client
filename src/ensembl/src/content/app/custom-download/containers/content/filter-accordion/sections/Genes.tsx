@@ -8,7 +8,7 @@ import {
   AccordionItemHeading,
   AccordionItemPanel,
   AccordionItemButton
-} from 'src/shared';
+} from 'src/shared/accordion';
 
 import CheckboxWithSelects from '../../../../components/checkbox-with-selects/CheckboxWithSelects';
 import CheckboxWithRadios from '../../../../components/checkbox-with-radios/CheckboxWithRadios';

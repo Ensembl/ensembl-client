@@ -1,6 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { BadgedButton, RoundButton, RoundButtonStatus } from 'src/shared';
+import RoundButton, {
+  RoundButtonStatus
+} from 'src/shared/round-button/RoundButton';
+import BadgedButton from 'src/shared/badged-button/BadgedButton';
+
 import { getSelectedTabButton } from '../../../customDownloadSelectors';
 
 import { getAttributes } from '../attributes-accordion/attributesAccordionSelector';

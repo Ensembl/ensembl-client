@@ -1,5 +1,5 @@
 import React from 'react';
-import { Checkbox } from 'src/shared';
+import Checkbox from 'src/shared/checkbox/Checkbox';
 
 import styles from './CheckBoxGrid.scss';
 

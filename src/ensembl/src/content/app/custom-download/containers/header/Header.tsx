@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
-import {
-  RoundButton,
-  RoundButtonStatus,
-  SecondaryButton,
-  PrimaryButton
-} from 'src/shared';
+import { SecondaryButton, PrimaryButton } from 'src/shared/button/Button';
+
+import RoundButton, {
+  RoundButtonStatus
+} from 'src/shared/round-button/RoundButton';
+
 import { RootState } from 'src/store';
 import Select, { Option } from 'src/shared/select/Select';
 
