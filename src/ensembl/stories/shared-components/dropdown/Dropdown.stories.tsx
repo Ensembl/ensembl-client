@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { storiesOf } from '@storybook/react';
 
-import Dropdown from 'src/shared/dropdown/Dropdown';
+import Dropdown, { Position } from 'src/shared/dropdown/Dropdown';
 
 import styles from './Dropdown.stories.scss';
 
 const DropdownParent = () => {
   const [isVisible, setVisible] = useState(false);
+  const elementRef = useRef<HTMLDivElement>(null);
 
   const toggleDropdown = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -16,10 +17,15 @@ const DropdownParent = () => {
   const hideDropdown = () => setVisible(false);
 
   return (
-    <div className={styles.item} onClick={toggleDropdown}>
+    <div ref={elementRef} className={styles.item} onClick={toggleDropdown}>
       Click me
       {isVisible && (
-        <Dropdown onClose={hideDropdown} verticalOffset={-5}>
+        <Dropdown
+          onClose={hideDropdown}
+          container={elementRef.current && elementRef.current.parentElement}
+          verticalOffset={-5}
+          position={Position.BOTTOM_LEFT}
+        >
           <DropdownContent />
         </Dropdown>
       )}

@@ -1,4 +1,10 @@
-import React, { ReactNode, useRef, useEffect, useState } from 'react';
+import React, {
+  ReactNode,
+  useRef,
+  useEffect,
+  useState,
+  DOMElement
+} from 'react';
 import classNames from 'classnames';
 
 import { findOptimalPosition } from './dropdown-helper';
@@ -7,6 +13,8 @@ import { Position } from './dropdown-types';
 import styles from './Dropdown.scss';
 
 type Props = {
+  position: Position;
+  container?: HTMLElement | null;
   expandDirection: 'up' | 'down';
   tipPosition: 'left' | 'center' | 'right';
   verticalOffset: number; // distance (in px) between the end of the tip and the parent element
@@ -77,17 +85,23 @@ const Dropdown = (props: Props) => {
 
     const intersectionObserver = new IntersectionObserver(
       (entries) => {
-        findOptimalPosition({
+        const optimalPosition = findOptimalPosition({
           intersectionEntry: entries[0],
           anchorBoundingRect: parentElement.getBoundingClientRect(),
-          position: props.tipPosition
+          position: props.position
         });
+        console.log('optimalPosition', optimalPosition);
       },
       {
+        root: props.container,
         threshold: 1
       }
     );
     intersectionObserver.observe(node);
+
+    return () => {
+      intersectionObserver.unobserve(node);
+    };
   }, []);
 
   const className = classNames(styles.dropdown, {
@@ -134,4 +148,5 @@ const DropdownTip = () => {
   );
 };
 
+export { Position };
 export default Dropdown;
