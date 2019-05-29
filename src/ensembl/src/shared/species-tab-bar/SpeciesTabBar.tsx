@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import SpeciesTab from 'src/shared/species-tab/SpeciesTab';
@@ -31,7 +32,9 @@ export const SpeciesTabBar = (props: SpeciesTabBarProps) => {
           onActivate={props.onTabSelect}
         />
       ))}
-      <div className={styles.addSpeciesLink}>Change</div>
+      <div className={styles.addSpeciesLink}>
+        <Link to={'/app/species-selector'}>Change</Link>
+      </div>
     </div>
   );
 };
