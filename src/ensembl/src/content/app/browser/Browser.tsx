@@ -25,7 +25,8 @@ import {
 import {
   changeBrowserLocation,
   updateChrLocation,
-  updateBrowserNavStates
+  updateBrowserNavStates,
+  updateBrowserActiveGenomeId
 } from './browserActions';
 import {
   getBrowserOpenState,
@@ -72,6 +73,7 @@ type DispatchProps = {
   fetchEnsObjectData: (stableId: string) => void;
   replace: Replace;
   toggleDrawer: (drawerOpened: boolean) => void;
+  updateBrowserActiveGenomeId: (genomeId: string) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateChrLocation: (chrLocation: ChrLocation) => void;
 };
@@ -121,14 +123,17 @@ export const Browser: FunctionComponent<BrowserProps> = (
     }
   }, [props.browserActivated]);
 
-  useEffect(() => {
-    const { genomeId } = props.match.params;
+  const updateBrowserUrl = (genomeId: string = props.match.params.genomeId) => {
     const { focus } = props.browserQueryParams;
     const locationStr = getChrLocationStr(props.chrLocation);
     const newUrl = `/app/browser/${genomeId}?focus=${focus}&location=${locationStr}`;
 
     props.replace(newUrl);
-  }, [props.chrLocation, props.browserQueryParams.region]);
+  };
+
+  useEffect(() => {
+    updateBrowserUrl();
+  }, [props.chrLocation, props.browserQueryParams.location]);
 
   const closeTrack = useCallback(() => {
     if (props.drawerOpened === false) {
@@ -138,7 +143,10 @@ export const Browser: FunctionComponent<BrowserProps> = (
     props.toggleDrawer(false);
   }, [props.drawerOpened]);
 
-  const changeSelectedSpecies = (genomeId: string) => {};
+  const changeSelectedSpecies = (genomeId: string) => {
+    props.updateBrowserActiveGenomeId(genomeId);
+    updateBrowserUrl(genomeId);
+  };
 
   return (
     <>
@@ -199,6 +207,7 @@ const mapDispatchToProps: DispatchProps = {
   fetchExampleEnsObjectsData,
   replace,
   toggleDrawer,
+  updateBrowserActiveGenomeId,
   updateBrowserNavStates,
   updateChrLocation
 };
