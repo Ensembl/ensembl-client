@@ -1,14 +1,13 @@
-import React, {
-  ReactNode,
-  useRef,
-  useEffect,
-  useState,
-  DOMElement
-} from 'react';
+import React, { ReactNode, useRef, useEffect, useState } from 'react';
 import classNames from 'classnames';
 
 import { findOptimalPosition } from './dropdown-helper';
 import { Position } from './dropdown-types';
+import {
+  TIP_WIDTH,
+  TIP_HEIGHT,
+  TIP_HORIZONTAL_OFFSET
+} from './dropdown-constants';
 
 import styles from './Dropdown.scss';
 
@@ -25,10 +24,6 @@ type Props = {
 
 type DropdownParentElementState = HTMLElement | null;
 type InlineStylesState = { top?: string; left?: string };
-
-const TIP_WIDTH = 18;
-const TIP_HEIGHT = 10;
-const TIP_HORIZONTAL_OFFSET = 20; // distance from the side of the dropdown to the beginning of tip
 
 const Dropdown = (props: Props) => {
   const [parent, setParent] = useState<DropdownParentElementState>(null);
@@ -119,6 +114,139 @@ const Dropdown = (props: Props) => {
       {props.children}
     </div>
   );
+};
+
+const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
+  const {
+    width: parentWidth,
+    height: parentHeight
+  } = params.parentElement.getBoundingClientRect();
+  // calculate the x-coordinate of the dropdown,
+  // so that its tip points to the center of the parent
+
+  switch (params.position) {
+    case Position.TOP_LEFT:
+      return {
+        bodyStyles: {
+          left: `${parentWidth / 2 - TIP_HORIZONTAL_OFFSET - TIP_WIDTH / 2}px`,
+          bottom: `${parentHeight + TIP_HEIGHT}px`
+        },
+        tipStyles: {
+          transform: 'rotate(180deg)',
+          bottom: `${-TIP_HEIGHT}px`,
+          left: `${TIP_HORIZONTAL_OFFSET}px`
+        }
+      };
+    case Position.TOP_CENTRE:
+      return {
+        bodyStyles: {
+          left: `50%`,
+          transform: 'translateX(-50%)',
+          bottom: `${parentHeight + TIP_HEIGHT}px`
+        },
+        tipStyles: {
+          bottom: `${-TIP_HEIGHT}px`,
+          left: `50%`,
+          transform: 'rotate(180deg) translateX(-50%)'
+        }
+      };
+    case Position.TOP_RIGHT:
+      return {
+        bodyStyles: {
+          left: `calc(100% - 2 * ${TIP_HORIZONTAL_OFFSET}px - ${TIP_WIDTH}px)`,
+          transform: 'translateX(-50%)',
+          bottom: `${parentHeight + TIP_HEIGHT}px`
+        },
+        tipStyles: {
+          bottom: `${-TIP_HEIGHT}px`,
+          left: `100%`,
+          transform: `rotate(180deg) translateX(calc(-${TIP_HORIZONTAL_OFFSET}px -${TIP_WIDTH}px)`
+        }
+      };
+
+    case Position.BOTTOM_LEFT:
+      return {
+        bodyStyles: {
+          left: `${parentWidth / 2 - TIP_HORIZONTAL_OFFSET - TIP_WIDTH / 2}px`,
+          top: `${parentHeight + TIP_HEIGHT}px`
+        },
+        tipStyles: {
+          top: 0,
+          left: `${TIP_HORIZONTAL_OFFSET}px`
+        }
+      };
+    case Position.BOTTOM_CENTRE:
+      return {
+        bodyStyles: {
+          left: `50%`,
+          transform: 'translateX(-50%)',
+          top: `${parentHeight + TIP_HEIGHT}px`
+        },
+        tipStyles: {
+          top: 0,
+          left: `50%`,
+          transform: 'translateX(-50%)'
+        }
+      };
+    case Position.BOTTOM_RIGHT:
+      return {
+        bodyStyles: {
+          left: `calc(100% - 2* ${TIP_HORIZONTAL_OFFSET}px - ${TIP_WIDTH}px)`,
+          bottom: `${parentHeight + TIP_HEIGHT}px`
+        },
+        tipStyles: {
+          top: `${-TIP_HEIGHT}px`,
+          left: `100%`,
+          transform: `rotate(180deg) translateX(calc(-${TIP_HORIZONTAL_OFFSET}px -${TIP_WIDTH}px)`
+        }
+      };
+
+    case Position.LEFT_TOP:
+      return {
+        bodyStyles: {
+          left: 0,
+          transform: `translateX(calc(-100% - ${TIP_HEIGHT}px))`,
+          top: `${parentHeight / 2 - TIP_HORIZONTAL_OFFSET - TIP_HEIGHT / 2}px`
+        },
+        tipStyles: {
+          left: '100%',
+          top: `${TIP_HORIZONTAL_OFFSET}px`
+        }
+      };
+
+    // CONTINUE HERE
+    case Position.LEFT_CENTRE:
+      return {
+        bodyStyles: {
+          left: `50%`,
+          transform: 'translateX(-50%)',
+          top: `${parentHeight + TIP_HEIGHT}px`
+        },
+        tipStyles: {
+          top: 0,
+          left: `50%`,
+          transform: 'translateX(-50%)'
+        }
+      };
+    case Position.LEFT_BOTTOM:
+      return {
+        bodyStyles: {
+          left: `calc(100% - 2* ${TIP_HORIZONTAL_OFFSET}px - ${TIP_WIDTH}px)`,
+          bottom: `${parentHeight + TIP_HEIGHT}px`
+        },
+        tipStyles: {
+          top: `${-TIP_HEIGHT}px`,
+          left: `100%`,
+          transform: `rotate(180deg) translateX(calc(-${TIP_HORIZONTAL_OFFSET}px -${TIP_WIDTH}px)`
+        }
+      };
+  }
+
+  // const x = parentWidth / 2 - TIP_HORIZONTAL_OFFSET - TIP_WIDTH / 2;
+  // setInlineStyles({
+  //   top: `${parentHeight + TIP_HEIGHT + props.verticalOffset}px`,
+  //   left: `${x}px`
+  // });
 };
 
 Dropdown.defaultProps = {
