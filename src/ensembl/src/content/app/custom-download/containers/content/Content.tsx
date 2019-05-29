@@ -22,63 +22,96 @@ import { getSelectedAttributes, formatResults } from './result-holder/helpers';
 
 type Props = StateProps & DispatchProps;
 
-// display: true
-// displayName: "Ashbya Genome Database"
-// facet: true
-// name: "AGD_GENE"
-// search: true
-// sort: true
-// type: "TERM"
+// const getGeneAttributes = async (props: Props) => {
+//   const allAttributes = await fetchGeneAttributes();
 
-const getGeneAttributes = async (props: Props) => {
-  const allAttributes = await fetchGeneAttributes();
+//   const attributes: any = {};
 
-  const attributes: any = {};
+//   let sections = ['gene'];
 
-  let sections = ['gene'];
+//   allAttributes.forEach((attribute: any) => {
+//     sections = ['gene'];
+//     if (attribute.type === 'TERM') {
+//       if (attribute.name.split('.').length > 1) {
+//         sections = attribute.name.split('.');
+//       }
+//     }
 
-  allAttributes.forEach((attribute: any) => {
-    if (attribute.type === 'TERM') {
-      if (attribute.name.split('.').length > 1) {
-        sections = attribute.name.split('.');
-      }
-    }
+//     if (!attributes[sections[0]]) {
+//       attributes[sections[0]] = {};
+//     }
+//     if (sections[0] && sections.length !== 1 && !attributes[sections[0]]) {
+//       attributes[sections[0]] = {};
+//     } else if (sections.length == 1) {
+//       if(!attributes[sections[0]]['default']){
+//         attributes[sections[0]]['default'] = {};
+//       }
+//       attributes[sections[0]]['default'][attribute.name] = {
+//         id: attribute.name,
+//         label: attribute.displayName,
+//         checkedStatus: false
+//       };
+//     }
 
-    if (!attributes[sections[0]]) {
-      attributes[sections[0]] = {};
-    }
+//     if (
+//       sections[1] &&
+//       sections.length !== 2 &&
+//       !attributes[sections[0]][sections[1]]
+//     ) {
+//       attributes[sections[0]][sections[1]] = {};
+//     } else if (sections.length == 2) {
+//       if(!attributes[sections[0]]['default']){
+//         attributes[sections[0]]['default'] = {};
+//       }
+//       attributes[sections[0]]['default'][sections[1]] = {
+//         id: attribute.name,
+//         label: attribute.displayName,
+//         checkedStatus: false
+//       };
+//     }
 
-    if (
-      sections[1] &&
-      sections.length !== 2 &&
-      !attributes[sections[0]][sections[1]]
-    ) {
-      attributes[sections[0]][sections[1]] = {};
-    } else if (sections.length == 2) {
-      attributes[sections[0]][sections[1]] = {
-        id: attribute.name,
-        label: attribute.displayName,
-        checkedStatus: false
-      };
-    }
+//     if (
+//       sections[2] &&
+//       sections.length !== 3 &&
+//       !attributes[sections[0]][sections[1]][sections[2]]
+//     ) {
+//       attributes[sections[0]][sections[1]][sections[2]] = {};
+//     } else if (sections.length == 3) {
+//       if(!attributes[sections[0]][sections[1]]['default']){
+//         attributes[sections[0]][sections[1]]['default'] = {};
+//       }
+//       attributes[sections[0]][sections[1]]['default'][sections[2]] = {
+//         id: attribute.name,
+//         label: attribute.displayName,
+//         checkedStatus: false
+//       };
+//     }
 
-    if (sections[2] && !attributes[sections[0]][sections[1]][sections[2]]) {
-      attributes[sections[0]][sections[1]][sections[2]] = {};
-    }
+//     if (
+//       sections[3] &&
+//       sections.length !== 4 &&
+//       !attributes[sections[0]][sections[1]][sections[2]][sections[3]]
+//     ) {
+//       attributes[sections[0]][sections[1]][sections[2]][sections[3]] = {};
+//     } else if (sections.length == 4) {
 
-    if (
-      sections[3] &&
-      !attributes[sections[0]][sections[1]][sections[2]][sections[3]]
-    ) {
-      attributes[sections[0]][sections[1]][sections[2]][sections[3]] = {};
-    }
-  });
-  console.log(attributes);
-};
+//       if(!attributes[sections[0]][sections[1]][sections[2]]['default']){
+//         attributes[sections[0]][sections[1]][sections[2]]['default'] = {};
+//       }
+
+//       attributes[sections[0]][sections[1]][sections[2]]['default'][sections[3]] = {
+//         id: attribute.name,
+//         label: attribute.displayName,
+//         checkedStatus: false
+//       };
+//     }
+//   });
+//   props.setAttributes(attributes);
+// };
 
 const Content = (props: Props) => {
   useEffect(() => {
-    getGeneAttributes(props);
+    // getGeneAttributes(props);
     props.setAttributes(attributes);
   }, []);
 
