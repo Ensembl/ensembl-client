@@ -24,7 +24,7 @@ const DropdownParent = () => {
           onClose={hideDropdown}
           container={elementRef.current && elementRef.current.parentElement}
           verticalOffset={-5}
-          position={Position.BOTTOM_LEFT}
+          position={Position.RIGHT_CENTRE}
         >
           <DropdownContent />
         </Dropdown>
@@ -33,9 +33,7 @@ const DropdownParent = () => {
   );
 };
 
-const DropdownContent = () => (
-  <div style={{ width: '300px' }}>This is sample dropdown content</div>
-);
+const DropdownContent = () => <div>This is sample dropdown content</div>;
 
 storiesOf('Components|Shared Components/Dropdown', module).add(
   'default',

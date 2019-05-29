@@ -23,11 +23,17 @@ type Props = {
 };
 
 type DropdownParentElementState = HTMLElement | null;
-type InlineStylesState = { top?: string; left?: string };
+type InlineStylesState = {
+  bodyStyles: { [key: string]: string | number };
+  tipStyles: { [key: string]: string | number };
+};
 
 const Dropdown = (props: Props) => {
   const [parent, setParent] = useState<DropdownParentElementState>(null);
-  const [inlineStyles, setInlineStyles] = useState<InlineStylesState>({});
+  const [inlineStyles, setInlineStyles] = useState<InlineStylesState>({
+    bodyStyles: {},
+    tipStyles: {}
+  });
   const dropdownElementRef: React.RefObject<HTMLDivElement> = useRef(null);
 
   const handleClickInside = (e: React.MouseEvent | React.TouchEvent) => {
@@ -66,17 +72,7 @@ const Dropdown = (props: Props) => {
     }
     setParent(parentElement);
 
-    const {
-      width: parentWidth,
-      height: parentHeight
-    } = parentElement.getBoundingClientRect();
-    // calculate the x-coordinate of the dropdown,
-    // so that its tip points to the center of the parent
-    const x = parentWidth / 2 - TIP_HORIZONTAL_OFFSET - TIP_WIDTH / 2;
-    setInlineStyles({
-      top: `${parentHeight + TIP_HEIGHT + props.verticalOffset}px`,
-      left: `${x}px`
-    });
+    setInlineStyles(getInlineStyles({ ...props, parentElement }));
 
     const intersectionObserver = new IntersectionObserver(
       (entries) => {
@@ -107,22 +103,22 @@ const Dropdown = (props: Props) => {
     <div
       className={className}
       ref={dropdownElementRef}
-      style={inlineStyles}
+      style={inlineStyles.bodyStyles}
       onClick={handleClickInside}
     >
-      <DropdownTip />
+      <DropdownTip style={inlineStyles.tipStyles} />
       {props.children}
     </div>
   );
 };
 
 const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
+  // calculate styles of the tooltip
+  // considering that its tip points at the center of the parent
   const {
     width: parentWidth,
     height: parentHeight
   } = params.parentElement.getBoundingClientRect();
-  // calculate the x-coordinate of the dropdown,
-  // so that its tip points to the center of the parent
 
   switch (params.position) {
     case Position.TOP_LEFT:
@@ -171,7 +167,7 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
           top: `${parentHeight + TIP_HEIGHT}px`
         },
         tipStyles: {
-          top: 0,
+          top: `-${TIP_HEIGHT}px`,
           left: `${TIP_HORIZONTAL_OFFSET}px`
         }
       };
@@ -183,7 +179,7 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
           top: `${parentHeight + TIP_HEIGHT}px`
         },
         tipStyles: {
-          top: 0,
+          top: `-${TIP_HEIGHT}px`,
           left: `50%`,
           transform: 'translateX(-50%)'
         }
@@ -191,13 +187,15 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
     case Position.BOTTOM_RIGHT:
       return {
         bodyStyles: {
-          left: `calc(100% - 2* ${TIP_HORIZONTAL_OFFSET}px - ${TIP_WIDTH}px)`,
-          bottom: `${parentHeight + TIP_HEIGHT}px`
+          top: `${parentHeight + TIP_HEIGHT}px`,
+          left: '50%',
+          transform: `translateX(calc(-100% + ${TIP_HORIZONTAL_OFFSET}px + ${TIP_WIDTH /
+            2}px)`
         },
         tipStyles: {
           top: `${-TIP_HEIGHT}px`,
           left: `100%`,
-          transform: `rotate(180deg) translateX(calc(-${TIP_HORIZONTAL_OFFSET}px -${TIP_WIDTH}px)`
+          transform: `translateX(calc(-100% - ${TIP_HORIZONTAL_OFFSET}px))`
         }
       };
 
@@ -210,43 +208,76 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
         },
         tipStyles: {
           left: '100%',
-          top: `${TIP_HORIZONTAL_OFFSET}px`
+          top: `${TIP_HORIZONTAL_OFFSET}px`,
+          transform: 'rotate(90deg)'
         }
       };
-
-    // CONTINUE HERE
     case Position.LEFT_CENTRE:
       return {
         bodyStyles: {
-          left: `50%`,
-          transform: 'translateX(-50%)',
-          top: `${parentHeight + TIP_HEIGHT}px`
+          left: 0,
+          transform: `translate(calc(-100% - ${TIP_HEIGHT}px), -50%)`,
+          top: `50%`
         },
         tipStyles: {
-          top: 0,
-          left: `50%`,
-          transform: 'translateX(-50%)'
+          left: '100%',
+          top: '50%',
+          transform: 'rotate(90deg) translateY(-50%)'
         }
       };
     case Position.LEFT_BOTTOM:
       return {
         bodyStyles: {
-          left: `calc(100% - 2* ${TIP_HORIZONTAL_OFFSET}px - ${TIP_WIDTH}px)`,
-          bottom: `${parentHeight + TIP_HEIGHT}px`
+          left: 0,
+          top: '50%',
+          transform: `translate(calc(-100% - ${TIP_HEIGHT}px), calc(-100% + ${TIP_HORIZONTAL_OFFSET}px + ${TIP_WIDTH}px))`
         },
         tipStyles: {
-          top: `${-TIP_HEIGHT}px`,
-          left: `100%`,
-          transform: `rotate(180deg) translateX(calc(-${TIP_HORIZONTAL_OFFSET}px -${TIP_WIDTH}px)`
+          left: '100%',
+          top: '100%',
+          transform: `rotate(90deg) translateY(calc(-${TIP_HORIZONTAL_OFFSET}px - ${TIP_WIDTH}px))`
+        }
+      };
+
+    case Position.RIGHT_TOP:
+      return {
+        bodyStyles: {
+          left: `calc(100% + ${TIP_HEIGHT}px)`,
+          top: `${parentHeight / 2 - TIP_HORIZONTAL_OFFSET - TIP_HEIGHT / 2}px`
+        },
+        tipStyles: {
+          left: 0,
+          top: `${TIP_HORIZONTAL_OFFSET}px`,
+          transform: 'rotate(-90deg)'
+        }
+      };
+    case Position.RIGHT_CENTRE:
+      return {
+        bodyStyles: {
+          left: `calc(100% + ${TIP_HEIGHT}px)`,
+          top: `50%`,
+          transform: `translateY(-50%)`
+        },
+        tipStyles: {
+          left: `-${TIP_HEIGHT}px`,
+          top: '50%',
+          transform: 'rotate(-90deg) translateY(-50%)'
+        }
+      };
+    case Position.RIGHT_BOTTOM:
+      return {
+        bodyStyles: {
+          left: `calc(100% + ${TIP_HEIGHT}px)`,
+          top: '50%',
+          transform: `translateY(calc(-100% + ${TIP_HORIZONTAL_OFFSET}px + ${TIP_WIDTH}px))`
+        },
+        tipStyles: {
+          left: 0,
+          bottom: `${TIP_HORIZONTAL_OFFSET}px`,
+          transform: `rotate(-90deg)`
         }
       };
   }
-
-  // const x = parentWidth / 2 - TIP_HORIZONTAL_OFFSET - TIP_WIDTH / 2;
-  // setInlineStyles({
-  //   top: `${parentHeight + TIP_HEIGHT + props.verticalOffset}px`,
-  //   left: `${x}px`
-  // });
 };
 
 Dropdown.defaultProps = {
@@ -256,12 +287,9 @@ Dropdown.defaultProps = {
   verticalOffset: 0
 };
 
-const DropdownTip = () => {
+const DropdownTip = ({ style }) => {
   const tipEndX = TIP_WIDTH / 2;
   const polygonPoints = `0,${TIP_HEIGHT} ${TIP_WIDTH},${TIP_HEIGHT} ${tipEndX},0`;
-  const inlineStyles = {
-    top: `-${TIP_HEIGHT}px`
-  };
 
   return (
     <svg
@@ -269,7 +297,7 @@ const DropdownTip = () => {
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
       viewBox={`0 0 ${TIP_WIDTH} ${TIP_HEIGHT}`}
-      style={inlineStyles}
+      style={style}
     >
       <polygon points={polygonPoints} />
     </svg>

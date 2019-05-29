@@ -5,6 +5,7 @@
   background: $ens-light-grey;
   padding: 14px 18px 18px;
   box-shadow: 2px 2px 5px $ens-grey;
+  width: max-content; // not supported in IE or non-webkit Edge
   cursor: default;
 }
 
