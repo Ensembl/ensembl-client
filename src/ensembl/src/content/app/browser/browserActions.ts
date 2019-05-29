@@ -33,7 +33,7 @@ export const activateBrowser = (browserEl: HTMLDivElement) => {
 };
 
 export const updateBrowserActiveGenomeId = createAction(
-  'browser/active-genome-id',
+  'browser/update-active-genome-id',
   (resolve) => {
     return (activeGenomeId: string) =>
       resolve(activeGenomeId, getBrowserAnalyticsObject('Navigation'));
@@ -41,7 +41,7 @@ export const updateBrowserActiveGenomeId = createAction(
 );
 
 export const updateBrowserActiveRegion = createAction(
-  'browser/active-region',
+  'browser/update-active-region',
   (resolve) => {
     return (activeRegion: ChrLocation) =>
       resolve(activeRegion, getBrowserAnalyticsObject('Navigation'));
