@@ -59,16 +59,13 @@ const AppInner = (props: AppProps) => {
       <Switch>
         <Route path={`${url}/global-search`} component={GlobalSearch} />
         <Route path={`${url}/species-selector`} component={SpeciesSelector} />
-        <Route
-          path={`${url}/browser/:species/:stableId/`}
-          component={Browser}
-        />
+        <Route path={`${url}/browser/:genomeId`} component={Browser} />
         <Redirect
           exact={true}
           from={`${url}/browser`}
           to={{
-            pathname: `${url}/browser/GRCh38_demo/ENSG00000139618`,
-            search: '?region=13:32271473-32437359'
+            pathname: `${url}/browser/GRCh38_demo`,
+            search: '?focus=ENSG00000139618&location=13:32271473-32437359'
           }}
         />
       </Switch>

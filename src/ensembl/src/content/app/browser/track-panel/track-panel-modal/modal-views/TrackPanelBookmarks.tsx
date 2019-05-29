@@ -39,9 +39,9 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
       species,
       stable_id
     } = exampleObject;
-    const assemblyStr = `${assembly.name}_demo`;
-    const regionStr = `${chromosome}:${location.start}-${location.end}`;
-    const path = `/app/browser/${assemblyStr}/${stable_id}?region=${regionStr}`;
+    const genomeId = `${assembly.name}_demo`;
+    const locationStr = `${chromosome}:${location.start}-${location.end}`;
+    const path = `/app/browser/${genomeId}?focus=${stable_id}&location=${locationStr}`;
 
     return (
       <dd key={stable_id}>

@@ -33,7 +33,8 @@ import {
   getChrLocation,
   getGenomeSelectorActive,
   getBrowserActivated,
-  getBrowserActiveGenomeId
+  getBrowserActiveGenomeId,
+  getBrowserQueryParams
 } from './browserSelectors';
 import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 import { getDrawerOpened } from './drawer/drawerSelectors';
@@ -56,6 +57,7 @@ type StateProps = {
   browserActivated: boolean;
   browserNavOpened: boolean;
   browserOpenState: BrowserOpenState;
+  browserQueryParams: { [key: string]: string };
   chrLocation: ChrLocation;
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
@@ -77,9 +79,7 @@ type DispatchProps = {
 type OwnProps = {};
 
 type MatchParams = {
-  location: string;
-  stableId: string;
-  species: string;
+  genomeId: string;
 };
 
 type BrowserProps = RouteComponentProps<MatchParams> &
@@ -106,14 +106,12 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, []);
 
   useEffect(() => {
-    const { stableId } = props.match.params;
-    const location = props.location.search;
+    const { focus, location } = props.browserQueryParams;
     const chrLocation = getChrLocationFromStr(location);
 
     dispatchBrowserLocation(chrLocation);
-
-    props.fetchEnsObjectData(stableId);
-  }, [props.match.params.stableId]);
+    props.fetchEnsObjectData(focus);
+  }, [props.browserQueryParams.focus]);
 
   useEffect(() => {
     const [, chrStart, chrEnd] = props.chrLocation;
@@ -124,14 +122,13 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, [props.browserActivated]);
 
   useEffect(() => {
-    const { params } = props.match;
-    const newChrLocationStr = getChrLocationStr(props.chrLocation);
-    const newUrl = `/app/browser/${params.species}/${
-      params.stableId
-    }?region=${newChrLocationStr}`;
+    const { genomeId } = props.match.params;
+    const { focus } = props.browserQueryParams;
+    const locationStr = getChrLocationStr(props.chrLocation);
+    const newUrl = `/app/browser/${genomeId}?focus=${focus}&location=${locationStr}`;
 
     props.replace(newUrl);
-  }, [props.chrLocation, props.location.search]);
+  }, [props.chrLocation, props.browserQueryParams.region]);
 
   const closeTrack = useCallback(() => {
     if (props.drawerOpened === false) {
@@ -190,6 +187,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
   browserActivated: getBrowserActivated(state),
   browserNavOpened: getBrowserNavOpened(state),
   browserOpenState: getBrowserOpenState(state),
+  browserQueryParams: getBrowserQueryParams(state),
   chrLocation: getChrLocation(state),
   drawerOpened: getDrawerOpened(state),
   genomeSelectorActive: getGenomeSelectorActive(state)

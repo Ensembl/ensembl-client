@@ -5,6 +5,7 @@ import {
   ChrLocation,
   CogList
 } from './browserState';
+import { getQueryParamsMap } from 'src/global/globalHelper';
 
 export const getBrowserActivated = (state: RootState): boolean =>
   state.browser.browserInfo.browserActivated;
@@ -17,6 +18,10 @@ export const getBrowserActiveGenomeId = (state: RootState): string =>
 
 export const getBrowserActiveRegion = (state: RootState): ChrLocation =>
   state.browser.browserEntity.activeRegion;
+
+export const getBrowserQueryParams = (
+  state: RootState
+): { [key: string]: string } => getQueryParamsMap(state.router.location.search);
 
 export const getBrowserNavOpened = (state: RootState): boolean =>
   state.browser.browserNav.browserNavOpened;
