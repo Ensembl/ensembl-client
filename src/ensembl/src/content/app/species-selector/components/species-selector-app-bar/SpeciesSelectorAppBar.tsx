@@ -31,8 +31,10 @@ export const PlaceholderMessage = () => (
 export const SpeciesSelectorAppBar = (props: Props) => {
   return (
     <div className={appBarStyles.appBar}>
-      <div className={appBarStyles.top}>Species Selector</div>
-      <div className={styles.main}>
+      <div className={appBarStyles.appBarTop}>
+        <div className={appBarStyles.top}>Species Selector</div>
+      </div>
+      <div className={appBarStyles.appBarBottom}>
         {props.selectedSpecies.length > 0 ? (
           <SelectedSpeciesList {...props} />
         ) : (
