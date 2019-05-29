@@ -32,6 +32,17 @@ export const setTranscriptAttributes = createAction(
   }
 );
 
+export const setPhenotypeAttributes = createAction(
+  'custom-download/set-phenotype-attributes',
+  (resolve) => {
+    return (phenotypeAttributes: {}) =>
+      resolve(
+        phenotypeAttributes,
+        getCustomDownloadAnalyticsObject('Phenotype attributes updated')
+      );
+  }
+);
+
 export const setOrthologueAttributes = createAction(
   'custom-download/set-orthologue-attributes',
   (resolve) => {

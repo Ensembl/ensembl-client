@@ -9,6 +9,9 @@ export const getGeneAttributes = (state: RootState): {} =>
 export const getTranscriptAttributes = (state: RootState): {} =>
   state.customDownload.attributesAccordion.attributes.transcripts;
 
+export const getPhenotypeAttributes = (state: RootState): {} =>
+  state.customDownload.attributesAccordion.attributes.phenotypes;
+
 export const getOrthologueAttributes = (state: RootState): {} =>
   state.customDownload.attributesAccordion.attributes.orthologues;
 

@@ -19,7 +19,8 @@ import {
   Transcripts,
   Variations,
   Location,
-  Orthologues
+  Orthologues,
+  Phenotypes
 } from './sections';
 
 import styles from './AttributesAccordion.scss';
@@ -153,8 +154,15 @@ const Attributes = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
-            <div>No attributes available under this section.</div>
+            <Phenotypes />
           </AccordionItemPanel>
+          <AccordionItemPermanentBlock>
+            {props.expandedPanel !== 'phenotypes' && (
+              <div className={styles.permanentBlock}>
+                <Phenotypes hideUnchecked={true} hideTitles={true} />
+              </div>
+            )}
+          </AccordionItemPermanentBlock>
         </AccordionItem>
 
         <AccordionItem uuid={'protein'}>

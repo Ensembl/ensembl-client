@@ -37,6 +37,11 @@ function attributesAccordion(
         ...state,
         attributes: TranscriptAttributes(state.attributes, action)
       };
+    case getType(attributesAccordionActions.setPhenotypeAttributes):
+      return {
+        ...state,
+        attributes: PhenotypeAttributes(state.attributes, action)
+      };
     case getType(attributesAccordionActions.setLocationAttributes):
       return {
         ...state,
@@ -140,6 +145,18 @@ function TranscriptAttributes(
   switch (action.type) {
     case getType(attributesAccordionActions.setTranscriptAttributes):
       return { ...state, transcripts: action.payload };
+    default:
+      return state;
+  }
+}
+
+function PhenotypeAttributes(
+  state: any = defaultAttributesAccordionState,
+  action: ActionType<RootAction>
+): AttributesAccordionState {
+  switch (action.type) {
+    case getType(attributesAccordionActions.setPhenotypeAttributes):
+      return { ...state, phenotypes: action.payload };
     default:
       return state;
   }

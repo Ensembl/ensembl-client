@@ -35,7 +35,7 @@ const PreviewTable = (props: Props) => {
               return (
                 <tr key={rowKey}>
                   {[...row].map((cell: any, cellKey: number) => {
-                    return <td key={cellKey}>{cell}</td>;
+                    return <td key={cellKey}>{cell ? cell : '-'}</td>;
                   })}
                 </tr>
               );

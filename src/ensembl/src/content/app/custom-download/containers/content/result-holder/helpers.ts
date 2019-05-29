@@ -88,39 +88,32 @@ const formatResponse = (responseData: any) => {
   const preResult: any = [];
 
   const responseArray = flattenResponse(responseData);
-
+  console.log(responseArray);
   Object.keys(responseArray)
     .sort()
     .forEach((key) => {
-      const keySplit = key.split('.');
+      const keySplit: any = key.split('.');
 
-      let innerIndex = 0;
-      if (keySplit[2]) {
-        innerIndex = Number(keySplit[2]);
-      }
-      if (!preResult[keySplit[0]]) {
-        preResult[keySplit[0]] = {};
-      }
-      if (!preResult[keySplit[0]][innerIndex]) {
-        preResult[keySplit[0]][innerIndex] = { ...preResult[keySplit[0]][0] };
-      }
+      let topID = keySplit[0];
+      topID += keySplit[2] ? keySplit[2] : '0';
+      topID += keySplit[4] ? keySplit[4] : '0';
+
       let id = keySplit[1];
-
       if (keySplit[3]) {
         id = `${keySplit[1]}.${keySplit[3]}`;
       }
 
-      preResult[keySplit[0]][innerIndex][id] = responseArray[key];
+      if (!preResult[topID]) {
+        preResult[topID] = {
+          ...preResult[`${keySplit[0]}00`]
+        };
+      }
+      preResult[topID][id] = responseArray[key];
     });
 
-  const result: any = [];
-  preResult.forEach((entry: any) => {
-    Object.values(entry).forEach((row) => {
-      result.push(row);
-    });
-  });
+  console.log(preResult);
 
-  return result;
+  return preResult;
 };
 
 export const formatResults = (apiResult: any, selectedAttributes: any) => {

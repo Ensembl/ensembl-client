@@ -79,7 +79,9 @@ const ResultHolder = (props: Props) => {
               return (
                 <div key={rowKey} className={styles.resultLine}>
                   <div className={styles.lineHeader}>{header}</div>
-                  <div className={styles.lineValue}>{dataRow[rowKey]}</div>
+                  <div className={styles.lineValue}>
+                    {dataRow[rowKey] ? dataRow[rowKey] : '-'}
+                  </div>
                 </div>
               );
             })}
