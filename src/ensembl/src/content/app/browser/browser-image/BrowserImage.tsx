@@ -133,7 +133,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
     <div>
       {!props.browserActivated && (
         <div className={styles.loaderWrapper}>
-          <CircleLoader className={styles.loader} />
+          <CircleLoader />
         </div>
       )}
       <div className={styles.browserImagePlus}>
