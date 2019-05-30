@@ -247,12 +247,13 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
         bodyStyles: {
           left: 0,
           top: '50%',
-          transform: `translate(calc(-100% - ${TIP_HEIGHT}px), calc(-100% + ${TIP_HORIZONTAL_OFFSET}px + ${TIP_WIDTH}px))`
+          transform: `translateX(-100%) translateX(-${TIP_HEIGHT}px) translateY(-${TIP_HORIZONTAL_OFFSET}px)`
         },
         tipStyles: {
           left: '100%',
-          top: '100%',
-          transform: `rotate(90deg) translateY(calc(-${TIP_HORIZONTAL_OFFSET}px - ${TIP_WIDTH}px))`
+          top: `${TIP_HORIZONTAL_OFFSET}px`,
+          transform: `rotate(90deg) translateY(-${TIP_HEIGHT}px)`,
+          transformOrigin: 'left 0'
         }
       };
 
@@ -287,12 +288,13 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
         bodyStyles: {
           left: `calc(100% + ${TIP_HEIGHT}px)`,
           top: '50%',
-          transform: `translateY(calc(-100% + ${TIP_HORIZONTAL_OFFSET}px + ${TIP_WIDTH}px))`
+          transform: `translateY(-${TIP_HORIZONTAL_OFFSET}px)`
         },
         tipStyles: {
           left: 0,
-          bottom: `${TIP_HORIZONTAL_OFFSET}px`,
-          transform: `rotate(-90deg)`
+          top: `calc(${TIP_HORIZONTAL_OFFSET}px + ${TIP_WIDTH / 2}px)`,
+          transform: `rotate(-90deg) translateY(-${TIP_HEIGHT}px)`,
+          transformOrigin: 'left 0'
         }
       };
   }
