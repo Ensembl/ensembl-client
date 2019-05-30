@@ -17,3 +17,13 @@
 .browserInnerWrapper {
   overflow: hidden;
 }
+
+.loaderWrapper {
+  left: 50%;
+  top: 50%;
+  position: absolute;
+}
+.loader {
+  height: 100px;
+  width: 100px;
+}
