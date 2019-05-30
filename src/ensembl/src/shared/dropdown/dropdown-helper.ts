@@ -107,8 +107,6 @@ const shiftHorizontallyAlongRow = (
     return params.position;
   }
 
-  console.log('row', row, 'params', params);
-
   const currentPositionIndex = row.indexOf(params.position);
   const availablePositions =
     params.direction === Direction.RIGHT
@@ -162,7 +160,7 @@ const shiftVerticallyAlongSide = (
 const flipLeftRight = (
   params: FindOptimalPositionParams & { direction: HorizontalDirection }
 ) => {
-  const [to, from] =
+  const [from, to] =
     params.direction === Direction.RIGHT
       ? [leftSide, rightSide]
       : [rightSide, leftSide];
