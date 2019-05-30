@@ -130,7 +130,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   ]);
 
   return (
-    <div>
+    <>
       {!props.browserActivated && (
         <div className={styles.loaderWrapper}>
           <CircleLoader />
@@ -143,7 +143,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
         />
         <BrowserCogList browserRef={props.browserRef} />
       </div>
-    </div>
+    </>
   );
 };
 
