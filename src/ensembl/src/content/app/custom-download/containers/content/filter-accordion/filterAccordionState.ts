@@ -8,7 +8,7 @@ export const defaultFilterAccordionState: FilterAccordionState = {
   expandedPanel: '',
   expandedGenePanels: [],
   filters: {
-    gene_source: [],
+    source: [],
     gencode_basic_annotation: ''
   }
 };

@@ -13,7 +13,7 @@ export const getGeneFilters = (state: RootState): string =>
   state.customDownload.filtersAccordion.filters.gene;
 
 export const getGeneSourceFilters = (state: RootState): {} =>
-  state.customDownload.filtersAccordion.filters.gene_source;
+  state.customDownload.filtersAccordion.filters.source;
 
 export const getGencodeAnnotationFilters = (state: RootState): string =>
   state.customDownload.filtersAccordion.filters.gencode_basic_annotation;

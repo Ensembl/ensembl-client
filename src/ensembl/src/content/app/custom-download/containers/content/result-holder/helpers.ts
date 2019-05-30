@@ -25,20 +25,45 @@ export const getSelectedAttributes = (attributes: any) => {
 
 export const getSelectedFilters = (filters: any) => {
   const selectedFilters: any = {};
-
-  Object.keys(filters).forEach((section) => {
-    Object.keys(filters[section]).forEach((subSection) => {
-      Object.keys(filters[section][subSection]).forEach((attributeId) => {
-        if (filters[section][subSection][attributeId].checkedStatus === true) {
-          if (!selectedFilters[section]) {
-            selectedFilters[section] = [];
+  console.log(filters);
+  Object.keys(filters).forEach((section: any) => {
+    if (typeof filters[section] === 'string') {
+      if (filters[section].length > 0) {
+        selectedFilters[section] = filters[section];
+      }
+    } else if (Array.isArray(filters[section])) {
+      if (filters[section].length > 0) {
+        selectedFilters[section] = filters[section];
+      }
+    } else if (typeof filters[section] === 'object') {
+      Object.keys(filters[section]).forEach((subSection) => {
+        Object.keys(filters[section][subSection]).forEach((attributeId) => {
+          if (
+            filters[section][subSection][attributeId].checkedStatus === true
+          ) {
+            if (!selectedFilters[section]) {
+              selectedFilters[section] = [];
+            }
+            selectedFilters[section].push(attributeId);
           }
-
-          selectedFilters[section].push(attributeId);
-        }
+        });
       });
-    });
+    }
   });
+
+  // Object.keys(filters).forEach((section) => {
+  //   Object.keys(filters[section]).forEach((subSection) => {
+  //     Object.keys(filters[section][subSection]).forEach((attributeId) => {
+  //       if (filters[section][subSection][attributeId].checkedStatus === true) {
+  //         if (!selectedFilters[section]) {
+  //           selectedFilters[section] = [];
+  //         }
+
+  //         selectedFilters[section].push(attributeId);
+  //       }
+  //     });
+  //   });
+  // });
 
   return selectedFilters;
 };
@@ -88,7 +113,6 @@ const formatResponse = (responseData: any) => {
   const preResult: any = [];
 
   const responseArray = flattenResponse(responseData);
-  console.log(responseArray);
   Object.keys(responseArray)
     .sort()
     .forEach((key) => {
@@ -110,8 +134,6 @@ const formatResponse = (responseData: any) => {
       }
       preResult[topID][id] = responseArray[key];
     });
-
-  console.log(preResult);
 
   return preResult;
 };

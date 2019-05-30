@@ -76,8 +76,8 @@ export const attributes = {
         label: 'UniParc',
         checkedStatus: false
       },
-      source_gene: {
-        id: 'source_gene',
+      source: {
+        id: 'source',
         label: 'Source (gene)',
         checkedStatus: false
       },

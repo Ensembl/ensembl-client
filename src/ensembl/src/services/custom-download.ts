@@ -13,6 +13,8 @@ const getCustomDownloadPreviewResults = async (
     genome: 'homo_sapiens'
   };
 
+  console.log(filters);
+
   Object.keys(filters).forEach((filter: string) => {
     endpointFilters[filter] = filters[filter];
   });
@@ -22,8 +24,7 @@ const getCustomDownloadPreviewResults = async (
     JSON.stringify(endpointFilters) +
     '&fields=' +
     endpointFields +
-    '&sort=' +
-    endpointFields;
+    '&sort=';
   try {
     const response = await fetch(endpoint, {
       method: 'GET',
@@ -86,21 +87,6 @@ export const fetchCustomDownloadResults = (
       };
       window.open(response.file);
     }, 100);
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const fetchGeneAttributes = async () => {
-  const endpoint = 'http://gti-es-0.ebi.ac.uk:8080/api/genes/info/fields';
-
-  try {
-    const response = await fetch(endpoint, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
-    });
-
-    return await response.json();
   } catch (error) {
     throw error;
   }

@@ -35,7 +35,7 @@ function Filters(
 ): FilterAccordionState {
   switch (action.type) {
     case getType(filterAccordionActions.setGeneSourceFilters):
-      return { ...state, gene_source: action.payload };
+      return { ...state, source: action.payload };
     case getType(filterAccordionActions.setGencodeAnnotationFilters):
       return { ...state, gencode_basic_annotation: action.payload };
     case getType(filterAccordionActions.setGeneTypeFilters):
