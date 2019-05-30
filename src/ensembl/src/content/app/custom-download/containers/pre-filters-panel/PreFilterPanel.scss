@@ -19,18 +19,28 @@
 }
 
 /* RoundButton extended styles*/
-.inactive {
-  background-color: $ens-white;
-  border: 1px solid $ens-blue;
-  color: $ens-dark-blue;
-  margin-left: 30px;
-}
+.filterButtons {
+  .inactive {
+    background-color: $ens-white;
+    border: 1px solid $ens-blue;
+    color: $ens-dark-blue;
+    margin-left: 30px;
+  }
 
-.active {
-  background-color: $ens-medium-dark-grey;
-  border: 1px solid $ens-medium-dark-grey;
-  color: $ens-white;
-  margin-left: 30px;
+  .active {
+    background-color: $ens-medium-dark-grey;
+    border: 1px solid $ens-medium-dark-grey;
+    color: $ens-white;
+    margin-left: 30px;
+  }
+
+  .disabled {
+    background-color: transparent;
+    color: $ens-grey;
+    border: 1px solid $ens-grey;
+    cursor: default;
+    margin-left: 30px;
+  }
 }
 
 /* PrimaryButton extended styles */

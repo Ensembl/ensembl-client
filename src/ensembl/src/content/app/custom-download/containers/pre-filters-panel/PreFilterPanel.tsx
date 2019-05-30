@@ -39,59 +39,63 @@ const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
     <section className={styles.preFilterPanel}>
       <div className={styles.panelTitle}>Select pre-filters</div>
       <div className={styles.panelContent}>
-        <RoundButton
-          onClick={() => {
-            filterOnClick('Genes/Transcripts');
-          }}
-          status={
-            props.selectedPreFilter === 'Genes/Transcripts'
-              ? RoundButtonStatus.ACTIVE
-              : RoundButtonStatus.INACTIVE
-          }
-          classNames={styles}
-        >
-          Genes/Transcripts
-        </RoundButton>
-        <RoundButton
-          onClick={() => {
-            filterOnClick('Variation');
-          }}
-          status={
-            props.selectedPreFilter === 'Variation'
-              ? RoundButtonStatus.ACTIVE
-              : RoundButtonStatus.INACTIVE
-          }
-          classNames={styles}
-        >
-          Variation
-        </RoundButton>
-        <RoundButton
-          onClick={() => {
-            filterOnClick('Phenotypes');
-          }}
-          status={
-            props.selectedPreFilter === 'Phenotypes'
-              ? RoundButtonStatus.ACTIVE
-              : RoundButtonStatus.INACTIVE
-          }
-          classNames={styles}
-        >
-          Phenotypes
-        </RoundButton>
-        <RoundButton
-          onClick={() => {
-            filterOnClick('Regulation');
-          }}
-          status={
-            props.selectedPreFilter === 'Regulation'
-              ? RoundButtonStatus.ACTIVE
-              : RoundButtonStatus.INACTIVE
-          }
-          classNames={styles}
-        >
-          Regulation
-        </RoundButton>
-
+        <div className={styles.filterButtons}>
+          <RoundButton
+            onClick={() => {
+              filterOnClick('Genes/Transcripts');
+            }}
+            status={
+              props.selectedPreFilter === 'Genes/Transcripts'
+                ? RoundButtonStatus.ACTIVE
+                : RoundButtonStatus.INACTIVE
+            }
+            classNames={styles}
+          >
+            Genes/Transcripts
+          </RoundButton>
+          <RoundButton
+            onClick={() => {
+              filterOnClick('Variation');
+            }}
+            status={
+              RoundButtonStatus.DISABLED
+              // props.selectedPreFilter === 'Variation'
+              //   ? RoundButtonStatus.ACTIVE
+              //   : RoundButtonStatus.INACTIVE
+            }
+            classNames={styles}
+          >
+            Variation
+          </RoundButton>
+          <RoundButton
+            onClick={() => {
+              filterOnClick('Phenotypes');
+            }}
+            status={
+              RoundButtonStatus.DISABLED
+              // props.selectedPreFilter === 'Phenotypes'
+              //   ? RoundButtonStatus.ACTIVE
+              //   : RoundButtonStatus.INACTIVE
+            }
+            classNames={styles}
+          >
+            Phenotypes
+          </RoundButton>
+          <RoundButton
+            onClick={() => {
+              filterOnClick('Regulation');
+            }}
+            status={
+              RoundButtonStatus.DISABLED
+              // props.selectedPreFilter === 'Regulation'
+              //   ? RoundButtonStatus.ACTIVE
+              //   : RoundButtonStatus.INACTIVE
+            }
+            classNames={styles}
+          >
+            Regulation
+          </RoundButton>
+        </div>
         <PrimaryButton
           onClick={onSubmitHandler}
           className={styles.primaryButton}

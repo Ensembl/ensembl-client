@@ -45,45 +45,50 @@ const downloadTypeSelectOptions = [
     isSelected: false
   },
   {
-    label: 'CSV.gz',
-    value: 'text/csv',
-    isSelected: false
-  },
-  {
-    label: 'HTML',
+    label: 'JSON',
     value: 'application/json',
-    isSelected: false
-  },
-  {
-    label: 'TSV',
-    value: 'application/json',
-    isSelected: false
-  },
-  {
-    label: 'TSV.gz',
-    value: 'application/json',
-    isSelected: false
-  },
-  {
-    label: 'URL',
-    value: 'application/json',
-    isSelected: false
-  },
-  {
-    label: 'XML',
-    value: 'application/xml',
-    isSelected: false
-  },
-  {
-    label: 'XLS',
-    value: 'application/xml',
-    isSelected: false
-  },
-  {
-    label: 'XLS.gz',
-    value: 'application/xml',
     isSelected: false
   }
+  // {
+  //   label: 'CSV.gz',
+  //   value: 'text/csv',
+  //   isSelected: false
+  // },
+  // {
+  //   label: 'HTML',
+  //   value: 'application/json',
+  //   isSelected: false
+  // },
+  // {
+  //   label: 'TSV',
+  //   value: 'application/json',
+  //   isSelected: false
+  // },
+  // {
+  //   label: 'TSV.gz',
+  //   value: 'application/json',
+  //   isSelected: false
+  // },
+  // {
+  //   label: 'URL',
+  //   value: 'application/json',
+  //   isSelected: false
+  // },
+  // {
+  //   label: 'XML',
+  //   value: 'application/xml',
+  //   isSelected: false
+  // },
+  // {
+  //   label: 'XLS',
+  //   value: 'application/xml',
+  //   isSelected: false
+  // },
+  // {
+  //   label: 'XLS.gz',
+  //   value: 'application/xml',
+  //   isSelected: false
+  // }
 ];
 
 const getFormattedTotal = (total: number) => {

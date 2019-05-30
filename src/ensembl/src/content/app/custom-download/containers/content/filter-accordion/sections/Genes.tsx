@@ -88,27 +88,27 @@ const Genes = (props: Props) => {
   const geneSourceSelectOptions = [
     {
       value: 'ensembl',
-      label: 'ensembl',
+      label: 'Ensembl',
       isSelected: false
     },
     {
       value: 'ensembl_havana',
-      label: 'ensembl_havana',
+      label: 'Ensembl Havana',
       isSelected: false
     },
     {
       value: 'havana',
-      label: 'havana',
+      label: 'Havana',
       isSelected: false
     },
     {
       value: 'insdc',
-      label: 'insdc',
+      label: 'INSDC',
       isSelected: false
     },
     {
       value: 'mirbase',
-      label: 'mirbase',
+      label: 'Mirbase',
       isSelected: false
     }
   ];
