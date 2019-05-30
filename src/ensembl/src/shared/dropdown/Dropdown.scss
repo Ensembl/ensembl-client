@@ -7,6 +7,20 @@
   box-shadow: 2px 2px 5px $ens-grey;
   width: max-content; // not supported in IE or non-webkit Edge
   cursor: default;
+
+  // hack to select additional classes that are added through javascript
+  // (CSS modules don't allow to target these classes directly because of unique suffixes)
+  &[class*='left_bottom'],
+  &[class*='left_centre'],
+  &[class*='left_top'] {
+    box-shadow: -2px 2px 5px $ens-grey;
+  }
+
+  &[class*='top_left'],
+  &[class*='top_centre'],
+  &[class*='top_right'] {
+    // box-shadow: -2px -2px 5px $ens-grey;
+  }
 }
 
 .dropdownInvisible {
@@ -15,7 +29,14 @@
 
 .dropdownTooltip {
   position: absolute;
-  top: 0;
+  height: 13px;
   width: 18px;
   fill: $ens-light-grey;
+  // fill: pink;
+  font-size: 0;
+  line-height: 0;
+
+  polygon {
+    box-shadow: 2px 2px 5px $ens-grey;
+  }
 }

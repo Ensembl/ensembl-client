@@ -22,10 +22,16 @@ type Props = {
   onClose: () => void;
 };
 
+type DropdownTipProps = {
+  position: Position;
+  style: InlineStyles;
+};
+
 type DropdownParentElementState = HTMLElement | null;
+type InlineStyles = { [key: string]: string | number };
 type InlineStylesState = {
-  bodyStyles: { [key: string]: string | number };
-  tipStyles: { [key: string]: string | number };
+  bodyStyles: InlineStyles;
+  tipStyles: InlineStyles;
 };
 
 const Dropdown = (props: Props) => {
@@ -74,28 +80,28 @@ const Dropdown = (props: Props) => {
 
     setInlineStyles(getInlineStyles({ ...props, parentElement }));
 
-    const intersectionObserver = new IntersectionObserver(
-      (entries) => {
-        const optimalPosition = findOptimalPosition({
-          intersectionEntry: entries[0],
-          anchorBoundingRect: parentElement.getBoundingClientRect(),
-          position: props.position
-        });
-        console.log('optimalPosition', optimalPosition);
-      },
-      {
-        root: props.container,
-        threshold: 1
-      }
-    );
-    intersectionObserver.observe(node);
+    // const intersectionObserver = new IntersectionObserver(
+    //   (entries) => {
+    //     const optimalPosition = findOptimalPosition({
+    //       intersectionEntry: entries[0],
+    //       anchorBoundingRect: parentElement.getBoundingClientRect(),
+    //       position: props.position
+    //     });
+    //     console.log('optimalPosition', optimalPosition);
+    //   },
+    //   {
+    //     root: props.container,
+    //     threshold: 1
+    //   }
+    // );
+    // intersectionObserver.observe(node);
 
-    return () => {
-      intersectionObserver.unobserve(node);
-    };
+    // return () => {
+    //   intersectionObserver.unobserve(node);
+    // };
   }, []);
 
-  const className = classNames(styles.dropdown, {
+  const className = classNames(styles.dropdown, props.position, {
     [styles.dropdownInvisible]: !parent
   });
 
@@ -106,7 +112,7 @@ const Dropdown = (props: Props) => {
       style={inlineStyles.bodyStyles}
       onClick={handleClickInside}
     >
-      <DropdownTip style={inlineStyles.tipStyles} />
+      <DropdownTip style={inlineStyles.tipStyles} position={props.position} />
       {props.children}
     </div>
   );
@@ -115,6 +121,10 @@ const Dropdown = (props: Props) => {
 const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
   // calculate styles of the tooltip
   // considering that its tip points at the center of the parent
+
+  // NOTE: applying several consecutive translate functions in a transform
+  // is a hack to enable support of IE11 (which doesn't support calc inside of a transform)
+
   const {
     width: parentWidth,
     height: parentHeight
@@ -124,13 +134,16 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
     case Position.TOP_LEFT:
       return {
         bodyStyles: {
-          left: `${parentWidth / 2 - TIP_HORIZONTAL_OFFSET - TIP_WIDTH / 2}px`,
+          // left: `${parentWidth / 2 - TIP_HORIZONTAL_OFFSET - TIP_WIDTH / 2}px`,
+          left: '50%',
+          transform: `translateX(-100%) translateX(${TIP_HORIZONTAL_OFFSET}px) translateX(${TIP_WIDTH /
+            2}px)`,
           bottom: `${parentHeight + TIP_HEIGHT}px`
         },
         tipStyles: {
+          right: `${TIP_HORIZONTAL_OFFSET}px`,
           transform: 'rotate(180deg)',
-          bottom: `${-TIP_HEIGHT}px`,
-          left: `${TIP_HORIZONTAL_OFFSET}px`
+          bottom: `${-TIP_HEIGHT}px`
         }
       };
     case Position.TOP_CENTRE:
@@ -141,22 +154,25 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
           bottom: `${parentHeight + TIP_HEIGHT}px`
         },
         tipStyles: {
-          bottom: `${-TIP_HEIGHT}px`,
           left: `50%`,
-          transform: 'rotate(180deg) translateX(-50%)'
+          bottom: `${-TIP_HEIGHT}px`,
+          transform: `rotate(180deg) translate(-50%, -${TIP_HEIGHT}px)`,
+          transformOrigin: 'left 0'
         }
       };
     case Position.TOP_RIGHT:
       return {
         bodyStyles: {
-          left: `calc(100% - 2 * ${TIP_HORIZONTAL_OFFSET}px - ${TIP_WIDTH}px)`,
-          transform: 'translateX(-50%)',
+          left: `calc(50% - ${TIP_HORIZONTAL_OFFSET + TIP_WIDTH / 2}px)`,
+          // left: `calc(100% - 2 * ${TIP_HORIZONTAL_OFFSET}px - ${TIP_WIDTH}px)`,
+          // transform: 'translateX(-50%)',
           bottom: `${parentHeight + TIP_HEIGHT}px`
         },
         tipStyles: {
           bottom: `${-TIP_HEIGHT}px`,
-          left: `100%`,
-          transform: `rotate(180deg) translateX(calc(-${TIP_HORIZONTAL_OFFSET}px -${TIP_WIDTH}px)`
+          left: `${TIP_HORIZONTAL_OFFSET}px`,
+          transform: `rotate(180deg)`
+          // transform: `rotate(180deg) translateX(calc(-${TIP_HORIZONTAL_OFFSET}px -${TIP_WIDTH}px)`
         }
       };
 
@@ -222,7 +238,8 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
         tipStyles: {
           left: '100%',
           top: '50%',
-          transform: 'rotate(90deg) translateY(-50%)'
+          transform: 'rotate(90deg) translate(-50%, -99%)',
+          transformOrigin: 'left 0'
         }
       };
     case Position.LEFT_BOTTOM:
@@ -261,7 +278,8 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
         tipStyles: {
           left: `-${TIP_HEIGHT}px`,
           top: '50%',
-          transform: 'rotate(-90deg) translateY(-50%)'
+          transform: `rotate(-90deg) translateX(-50%)`,
+          transformOrigin: 'left 0'
         }
       };
     case Position.RIGHT_BOTTOM:
@@ -287,17 +305,56 @@ Dropdown.defaultProps = {
   verticalOffset: 0
 };
 
-const DropdownTip = ({ style }) => {
+const DropdownTip = (props: DropdownTipProps) => {
+  const { style, position } = props;
+  console.log('position', position);
   const tipEndX = TIP_WIDTH / 2;
+
+  // let polygonPoints;
+  // let viewBox;
+  // switch (position) {
+  //   // draw four tooltip shapes for different directions
+  //   // (we probably could have achieved the same with just one tooltip,
+  //   // with transform: rotate, tweaked transform-origin and transform: translate, but this seems easier)
+  //   case Position.TOP_LEFT:
+  //   case Position.TOP_CENTRE:
+  //   case Position.TOP_RIGHT:
+  //     // triangle pointing down
+  //     polygonPoints = `0,0 ${tipEndX},${TIP_HEIGHT} ${TIP_WIDTH},0`;
+  //     viewBox = `0 0 ${TIP_WIDTH} ${TIP_HEIGHT}`
+  //     break;
+  //   case Position.LEFT_TOP:
+  //   case Position.LEFT_CENTRE:
+  //   case Position.LEFT_BOTTOM:
+  //     // triangle pointing right
+  //     polygonPoints = `0,0 ${TIP_HEIGHT},${tipEndX} 0,${TIP_WIDTH}`;
+  //     viewBox= `0 0 ${TIP_HEIGHT} ${TIP_WIDTH}`
+  //     break;
+  //   case Position.RIGHT_TOP:
+  //   case Position.RIGHT_CENTRE:
+  //   case Position.RIGHT_BOTTOM:
+  //     // triangle pointing left
+  //     console.log('should be here');
+  //     polygonPoints = `0,${tipEndX} ${TIP_HEIGHT},0 ${TIP_HEIGHT},${TIP_WIDTH}`;
+  //     viewBox= `0 0 ${TIP_HEIGHT} ${TIP_WIDTH}`
+  //     break;
+  //   default:
+  //     // triangle pointing up
+  //     console.log('am i here?');
+  //     polygonPoints = `0,${TIP_HEIGHT} ${TIP_WIDTH},${TIP_HEIGHT} ${tipEndX},0`;
+  //     viewBox= `0 0 ${TIP_WIDTH} ${TIP_HEIGHT}`
+  // }
+
   const polygonPoints = `0,${TIP_HEIGHT} ${TIP_WIDTH},${TIP_HEIGHT} ${tipEndX},0`;
+  console.log('style', style);
 
   return (
     <svg
       className={styles.dropdownTooltip}
+      style={style}
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
       viewBox={`0 0 ${TIP_WIDTH} ${TIP_HEIGHT}`}
-      style={style}
     >
       <polygon points={polygonPoints} />
     </svg>
