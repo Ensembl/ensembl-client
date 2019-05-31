@@ -24,7 +24,7 @@ const DropdownParent = () => {
           onClose={hideDropdown}
           container={elementRef.current && elementRef.current.parentElement}
           verticalOffset={-5}
-          position={Position.LEFT_BOTTOM}
+          position={Position.RIGHT_TOP}
         >
           <DropdownContent />
         </Dropdown>

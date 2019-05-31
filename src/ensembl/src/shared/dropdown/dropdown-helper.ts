@@ -6,25 +6,13 @@ import {
 
 import { Position } from './dropdown-types';
 
-const topRow = [Position.TOP_LEFT, Position.TOP_CENTRE, Position.TOP_RIGHT];
+const topRow = [Position.TOP_LEFT, Position.TOP_RIGHT];
 
-const bottomRow = [
-  Position.BOTTOM_LEFT,
-  Position.BOTTOM_CENTRE,
-  Position.BOTTOM_RIGHT
-];
+const bottomRow = [Position.BOTTOM_LEFT, Position.BOTTOM_RIGHT];
 
-const leftSide = [
-  Position.LEFT_TOP,
-  Position.LEFT_CENTRE,
-  Position.LEFT_BOTTOM
-];
+const leftSide = [Position.LEFT_TOP, Position.LEFT_BOTTOM];
 
-const rightSide = [
-  Position.RIGHT_TOP,
-  Position.RIGHT_CENTRE,
-  Position.RIGHT_BOTTOM
-];
+const rightSide = [Position.RIGHT_TOP, Position.RIGHT_BOTTOM];
 
 enum Direction {
   UP,
@@ -62,15 +50,6 @@ export const findOptimalPosition = (params: FindOptimalPositionParams) => {
   const shouldShiftVertically =
     boundingClientRect.top < rootBounds.top ||
     boundingClientRect.bottom > rootBounds.bottom;
-
-  console.log(
-    'boundingClientRect',
-    boundingClientRect,
-    'rootBounds',
-    rootBounds
-  );
-  console.log('shouldShiftHorizontally?', shouldShiftHorizontally);
-  console.log('shouldShiftVertically?', shouldShiftVertically);
 
   if (shouldShiftHorizontally) {
     const direction =
@@ -117,6 +96,7 @@ const shiftHorizontallyAlongRow = (
     if (
       willStayWithinBounds({
         ...params,
+        position,
         fittingDimension: FittingDimension.WIDTH
       })
     ) {

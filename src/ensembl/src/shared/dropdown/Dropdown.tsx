@@ -14,8 +14,6 @@ import styles from './Dropdown.scss';
 type Props = {
   position: Position;
   container?: HTMLElement | null;
-  expandDirection: 'up' | 'down';
-  tipPosition: 'left' | 'center' | 'right';
   verticalOffset: number; // distance (in px) between the end of the tip and the parent element
   autoAdjust: boolean; // try to adapt position so as not to extend beyond screen bounds
   children: ReactNode;
