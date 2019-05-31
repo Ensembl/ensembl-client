@@ -13,8 +13,6 @@ const getCustomDownloadPreviewResults = async (
     genome: 'homo_sapiens'
   };
 
-  console.log(filters);
-
   Object.keys(filters).forEach((filter: string) => {
     endpointFilters[filter] = filters[filter];
   });

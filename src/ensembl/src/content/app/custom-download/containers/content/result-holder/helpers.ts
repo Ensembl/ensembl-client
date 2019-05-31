@@ -25,7 +25,7 @@ export const getSelectedAttributes = (attributes: any) => {
 
 export const getSelectedFilters = (filters: any) => {
   const selectedFilters: any = {};
-  console.log(filters);
+
   Object.keys(filters).forEach((section: any) => {
     if (typeof filters[section] === 'string') {
       if (filters[section].length > 0) {
@@ -50,20 +50,6 @@ export const getSelectedFilters = (filters: any) => {
       });
     }
   });
-
-  // Object.keys(filters).forEach((section) => {
-  //   Object.keys(filters[section]).forEach((subSection) => {
-  //     Object.keys(filters[section][subSection]).forEach((attributeId) => {
-  //       if (filters[section][subSection][attributeId].checkedStatus === true) {
-  //         if (!selectedFilters[section]) {
-  //           selectedFilters[section] = [];
-  //         }
-
-  //         selectedFilters[section].push(attributeId);
-  //       }
-  //     });
-  //   });
-  // });
 
   return selectedFilters;
 };

@@ -20,7 +20,8 @@ import {
   Variations,
   Location,
   Orthologues,
-  Phenotypes
+  Phenotypes,
+  Paralogues
 } from './sections';
 
 import styles from './AttributesAccordion.scss';
@@ -194,7 +195,7 @@ const Attributes = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
-            <div>No attributes available under this section.</div>
+            <Paralogues />
           </AccordionItemPanel>
         </AccordionItem>
       </Accordion>

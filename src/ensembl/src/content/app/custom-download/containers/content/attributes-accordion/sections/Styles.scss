@@ -88,3 +88,9 @@
   margin: 20px 0 15px 30px;
   color: $ens-dark-grey;
 }
+
+.paralogueSearchResult {
+  max-height: 200px;
+  border-bottom: 1px dashed #ccc;
+  overflow: auto;
+}
