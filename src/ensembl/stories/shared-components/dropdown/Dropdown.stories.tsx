@@ -4,6 +4,7 @@ import { storiesOf } from '@storybook/react';
 import Dropdown, { Position } from 'src/shared/dropdown/Dropdown';
 
 import VariantsStory from './variantsStory';
+import PositioningStory from './positioningStory';
 
 import styles from './Dropdown.stories.scss';
 
@@ -54,4 +55,7 @@ storiesOf('Components|Shared Components/Dropdown', module)
   })
   .add('variants', () => {
     return <VariantsStory />;
+  })
+  .add('positining', () => {
+    return <PositioningStory />;
   });
