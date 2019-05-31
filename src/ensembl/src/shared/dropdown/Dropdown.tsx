@@ -33,8 +33,8 @@ type InlineStylesState = {
 };
 
 const Dropdown = (props: Props) => {
-  const [parent, setParent] = useState<DropdownParentElementState>(null);
-  const positionRef = useRef<Position>(null);
+  const parentRef = useRef<HTMLElement | null>(null);
+  const positionRef = useRef<Position | null>(null);
   const [inlineStyles, setInlineStyles] = useState<InlineStylesState>({
     bodyStyles: {},
     tipStyles: {}
@@ -46,7 +46,7 @@ const Dropdown = (props: Props) => {
   };
 
   const handleClickOutside = (e: Event) => {
-    if (!parent) return;
+    if (!parentRef.current) return;
 
     let target;
     if (e.type === 'touchend' && (e as TouchEvent).touches) {
@@ -55,7 +55,7 @@ const Dropdown = (props: Props) => {
       target = e.target;
     }
 
-    if (target instanceof HTMLElement && !parent.contains(target)) {
+    if (target instanceof HTMLElement && !parentRef.current.contains(target)) {
       props.onClose();
     }
   };
@@ -75,9 +75,13 @@ const Dropdown = (props: Props) => {
     if (!(node && parentElement)) {
       return;
     }
-    setParent(parentElement);
+    parentRef.current = parentElement;
 
     setInlineStyles(getInlineStyles({ ...props, parentElement }));
+
+    if (!props.autoAdjust) {
+      return;
+    }
 
     const intersectionObserver = new IntersectionObserver(
       (entries) => {
@@ -112,7 +116,7 @@ const Dropdown = (props: Props) => {
   const className = classNames(
     styles.dropdown,
     positionRef.current || props.position,
-    { [styles.dropdownInvisible]: !parent }
+    { [styles.dropdownInvisible]: !parentRef.current }
   );
 
   return (
@@ -234,7 +238,7 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
         },
         tipStyles: {
           left: '100%',
-          bottom: `calc(${TIP_HEIGHT}px + ${TIP_HORIZONTAL_OFFSET}px)`,
+          bottom: `${TIP_HORIZONTAL_OFFSET + TIP_WIDTH / 2}px`,
           transform: 'rotate(90deg)',
           transformOrigin: 'left bottom'
         }
@@ -273,12 +277,12 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
       return {
         bodyStyles: {
           left: `calc(100% + ${TIP_HEIGHT}px)`,
-          top: `calc(50% + ${TIP_HORIZONTAL_OFFSET + TIP_WIDTH / 2}px)`,
+          top: `calc(50% + ${TIP_HORIZONTAL_OFFSET}px)`,
           transform: `translateY(-100%)`
         },
         tipStyles: {
           left: 0,
-          bottom: `${TIP_HORIZONTAL_OFFSET}px`,
+          bottom: `${TIP_HORIZONTAL_OFFSET - TIP_WIDTH / 2}px`,
           transform: 'rotate(-90deg)',
           transformOrigin: 'left bottom'
         }

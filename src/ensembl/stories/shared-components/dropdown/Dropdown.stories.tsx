@@ -3,6 +3,8 @@ import { storiesOf } from '@storybook/react';
 
 import Dropdown, { Position } from 'src/shared/dropdown/Dropdown';
 
+import VariantsStory from './variantsStory';
+
 import styles from './Dropdown.stories.scss';
 
 const DropdownParent = () => {
@@ -25,6 +27,7 @@ const DropdownParent = () => {
           container={elementRef.current && elementRef.current.parentElement}
           verticalOffset={-5}
           position={Position.RIGHT_TOP}
+          autoAdjust={true}
         >
           <DropdownContent />
         </Dropdown>
@@ -41,13 +44,14 @@ const DropdownContent = () => (
   </div>
 );
 
-storiesOf('Components|Shared Components/Dropdown', module).add(
-  'default',
-  () => {
+storiesOf('Components|Shared Components/Dropdown', module)
+  .add('default', () => {
     return (
       <div className={styles.container}>
         <DropdownParent />
       </div>
     );
-  }
-);
+  })
+  .add('variants', () => {
+    return <VariantsStory />;
+  });

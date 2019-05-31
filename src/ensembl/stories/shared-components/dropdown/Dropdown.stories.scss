@@ -19,3 +19,74 @@
   user-select: 'none';
   cursor: 'pointer';
 }
+
+.variantsStoryLayout {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  h1 {
+    position: absolute;
+    top: 2em;
+  }
+}
+
+.variantsStoryContainer {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.variantsStoryAnchor {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: black;
+  border-radius: 50%;
+  cursor: pointer;
+  &:hover {
+    background: green;
+  }
+}
+
+.variantsStoryTopLeft {
+  left: 10%;
+  top: 0;
+}
+
+.variantsStoryTopRight {
+  right: 10%;
+  top: 0;
+}
+
+.variantsStoryRightTop {
+  right: 0%;
+  top: 10%;
+}
+
+.variantsStoryRightBottom {
+  right: 0;
+  bottom: 10%;
+}
+
+.variantsStoryBottomLeft {
+  bottom: 0;
+  left: 10%;
+}
+
+.variantsStoryBottomRight {
+  bottom: 0;
+  right: 10%;
+}
+
+.variantsStoryLeftTop {
+  left: 0;
+  top: 10%;
+}
+
+.variantsStoryLeftBottom {
+  left: 0;
+  bottom: 10%;
+}
