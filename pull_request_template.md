@@ -1,8 +1,9 @@
+<!--
 ## Requirements
 
 - Filling out the template is required. Any pull request that does not include enough information to be efficiently reviewed may be rejected.
 - Please consider which branch this is to be submitted against. This will normally be the development branch, so please ask your reviewer if you think it needs to go somewhere else. 
-
+-->
 ## Type
 
 - [ ] Bug fix
@@ -11,7 +12,7 @@
 
 ## Related JIRA Issue(s)
 
-_Please provide the URL(s) for any JIRA issues related to this PR._
+<!--_Please provide the URL(s) for any JIRA issues related to this PR._-->
 
 ## Description
 
