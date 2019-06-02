@@ -14,26 +14,11 @@ const leftSide = [Position.LEFT_TOP, Position.LEFT_BOTTOM];
 
 const rightSide = [Position.RIGHT_TOP, Position.RIGHT_BOTTOM];
 
-enum Direction {
-  UP,
-  DOWN,
-  LEFT,
-  RIGHT
-}
-
-enum FittingDimension {
-  WIDTH,
-  HEIGHT
-}
-
 type FindOptimalPositionParams = {
   intersectionEntry: IntersectionObserverEntry;
   anchorBoundingRect: ClientRect;
   position: Position;
 };
-
-type HorizontalDirection = Direction.LEFT | Direction.RIGHT;
-type VerticalDirection = Direction.UP | Direction.DOWN;
 
 export const findOptimalPosition = (params: FindOptimalPositionParams) => {
   const {
@@ -100,72 +85,46 @@ const willStayWithinBounds = (params: FindOptimalPositionParams) => {
     predictedLeft =
       anchorCentreX - width + TIP_WIDTH / 2 + TIP_HORIZONTAL_OFFSET;
     predictedRight = predictedLeft + width;
-    predictedTop = anchorTop - TIP_HEIGHT - boundingClientRect.height;
-    predictedBottom = anchorTop;
-  } else if (position === Position.TOP_CENTRE) {
-    predictedLeft = anchorCentreX - width / 2;
-    predictedRight = predictedLeft + width;
-    predictedTop = anchorTop - TIP_HEIGHT - boundingClientRect.height;
+    predictedTop = anchorTop - TIP_HEIGHT - height;
     predictedBottom = anchorTop;
   } else if (position === Position.TOP_RIGHT) {
     predictedLeft = anchorCentreX - TIP_WIDTH / 2 - TIP_HORIZONTAL_OFFSET;
     predictedRight = predictedLeft + width;
-    predictedTop = anchorTop - TIP_HEIGHT - boundingClientRect.height;
+    predictedTop = anchorTop - TIP_HEIGHT - height;
     predictedBottom = anchorTop;
   } else if (position === Position.BOTTOM_LEFT) {
     predictedLeft =
       anchorCentreX - width + TIP_WIDTH / 2 + TIP_HORIZONTAL_OFFSET;
     predictedRight = predictedLeft + width;
     predictedTop = anchorBottom;
-    predictedBottom = anchorBottom + TIP_HEIGHT + boundingClientRect.height;
-  } else if (position === Position.BOTTOM_CENTRE) {
-    predictedLeft = anchorCentreX - width / 2;
-    predictedRight = predictedLeft + width;
-    predictedTop = anchorBottom;
-    predictedBottom = anchorBottom + TIP_HEIGHT + boundingClientRect.height;
+    predictedBottom = anchorBottom + TIP_HEIGHT + height;
   } else if (position === Position.BOTTOM_RIGHT) {
     predictedLeft = anchorCentreX - TIP_WIDTH / 2 - TIP_HORIZONTAL_OFFSET;
     predictedRight = predictedLeft + width;
     predictedTop = anchorBottom;
-    predictedBottom = anchorBottom + TIP_HEIGHT + boundingClientRect.height;
+    predictedBottom = anchorBottom + TIP_HEIGHT + height;
   } else if (position === Position.LEFT_TOP) {
     predictedLeft = anchorLeft - TIP_HEIGHT - width;
     predictedRight = anchorLeft;
     predictedTop = anchorCentreY - TIP_WIDTH / 2 - TIP_HORIZONTAL_OFFSET;
-    predictedBottom = predictedTop + boundingClientRect.height;
-  } else if (position === Position.LEFT_CENTRE) {
-    predictedLeft = anchorLeft - TIP_HEIGHT - width;
-    predictedRight = anchorLeft;
-    predictedTop = anchorCentreY - boundingClientRect.height / 2;
-    predictedBottom = predictedTop + boundingClientRect.height;
+    predictedBottom = predictedTop + height;
   } else if (position === Position.LEFT_BOTTOM) {
     predictedLeft = anchorLeft - TIP_HEIGHT - width;
     predictedRight = anchorLeft;
     predictedTop =
-      anchorCentreY -
-      boundingClientRect.height +
-      TIP_WIDTH / 2 +
-      TIP_HORIZONTAL_OFFSET;
-    predictedBottom = predictedTop + boundingClientRect.height;
+      anchorCentreY - height + TIP_WIDTH / 2 + TIP_HORIZONTAL_OFFSET;
+    predictedBottom = predictedTop + height;
   } else if (position === Position.RIGHT_TOP) {
     predictedLeft = anchorRight;
     predictedRight = anchorRight + TIP_HEIGHT + width;
     predictedTop = anchorCentreY - TIP_WIDTH / 2 - TIP_HORIZONTAL_OFFSET;
-    predictedBottom = predictedTop + boundingClientRect.height;
-  } else if (position === Position.RIGHT_CENTRE) {
-    predictedLeft = anchorRight;
-    predictedRight = anchorRight + TIP_HEIGHT + width;
-    predictedTop = anchorCentreY - boundingClientRect.height / 2;
-    predictedBottom = predictedTop + boundingClientRect.height;
+    predictedBottom = predictedTop + height;
   } else if (position === Position.RIGHT_BOTTOM) {
     predictedLeft = anchorRight;
     predictedRight = anchorRight + TIP_HEIGHT + width;
     predictedTop =
-      anchorCentreY -
-      boundingClientRect.height +
-      TIP_WIDTH / 2 +
-      TIP_HORIZONTAL_OFFSET;
-    predictedBottom = predictedTop + boundingClientRect.height;
+      anchorCentreY - height + TIP_WIDTH / 2 + TIP_HORIZONTAL_OFFSET;
+    predictedBottom = predictedTop + height;
   }
 
   return (

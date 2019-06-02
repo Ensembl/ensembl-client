@@ -1,15 +1,18 @@
 @import 'src/styles/common';
 
+$fill-color: $ens-dark-grey;
+
 .dropdown {
   position: absolute;
-  background: $ens-light-grey;
+  background: $fill-color;
   padding: 14px 18px 18px;
   box-shadow: 2px 2px 5px $ens-grey;
   width: max-content; // not supported in IE or non-webkit Edge
   cursor: default;
+  color: $ens-white;
 
   // hack to select additional classes that are added through javascript
-  // (CSS modules don't allow to target these classes directly because of unique suffixes)
+  // (CSS modules make it hard to target these classes because of unique suffixes)
   &[class*='left_bottom'],
   &[class*='left_centre'],
   &[class*='left_top'] {
@@ -35,8 +38,7 @@
   position: absolute;
   height: 13px;
   width: 18px;
-  fill: $ens-light-grey;
-  // fill: pink;
+  fill: $fill-color;
   font-size: 0;
   line-height: 0;
 
