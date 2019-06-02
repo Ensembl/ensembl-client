@@ -65,14 +65,17 @@ const Positions = (props: PositionsProps) => {
   ));
 
   return (
-    <div className={styles.positioningStorySelector}>
-      <select
-        onChange={(e) => props.onChange(e.target.value as Position)}
-        value={props.selectedPosition}
-      >
-        {positionOptions}
-      </select>
-    </div>
+    <>
+      <span>Select tooltip position: </span>
+      <div className={styles.positioningStorySelector}>
+        <select
+          onChange={(e) => props.onChange(e.target.value as Position)}
+          value={props.selectedPosition}
+        >
+          {positionOptions}
+        </select>
+      </div>
+    </>
   );
 };
 

@@ -25,7 +25,6 @@ type DropdownTipProps = {
   style: InlineStyles;
 };
 
-type DropdownParentElementState = HTMLElement | null;
 type InlineStyles = { [key: string]: string | number };
 type InlineStylesState = {
   bodyStyles: InlineStyles;
@@ -33,6 +32,7 @@ type InlineStylesState = {
 };
 
 const Dropdown = (props: Props) => {
+  const [isPositioning, setIsPositioning] = useState(props.autoAdjust);
   const parentRef = useRef<HTMLElement | null>(null);
   const positionRef = useRef<Position | null>(null);
   const [inlineStyles, setInlineStyles] = useState<InlineStylesState>({
@@ -76,7 +76,6 @@ const Dropdown = (props: Props) => {
       return;
     }
     parentRef.current = parentElement;
-    console.log('container', props.container);
 
     setInlineStyles(getInlineStyles({ ...props, parentElement }));
 
@@ -101,6 +100,7 @@ const Dropdown = (props: Props) => {
             parentElement
           })
         );
+        setIsPositioning(false);
       },
       {
         root: props.container,
@@ -117,7 +117,7 @@ const Dropdown = (props: Props) => {
   const className = classNames(
     styles.dropdown,
     positionRef.current || props.position,
-    { [styles.dropdownInvisible]: !parentRef.current }
+    { [styles.dropdownInvisible]: !parentRef.current || isPositioning }
   );
 
   return (
