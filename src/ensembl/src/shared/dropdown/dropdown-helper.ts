@@ -37,141 +37,45 @@ type VerticalDirection = Direction.UP | Direction.DOWN;
 
 export const findOptimalPosition = (params: FindOptimalPositionParams) => {
   const {
-    intersectionEntry: { boundingClientRect, rootBounds, isIntersecting }
+    intersectionEntry: { isIntersecting }
   } = params;
   let { position } = params;
 
   if (isIntersecting) {
     return position;
   }
-  const shouldShiftHorizontally =
-    boundingClientRect.left < rootBounds.left ||
-    boundingClientRect.right > rootBounds.right;
-  const shouldShiftVertically =
-    boundingClientRect.top < rootBounds.top ||
-    boundingClientRect.bottom > rootBounds.bottom;
 
-  if (shouldShiftHorizontally) {
-    const direction =
-      boundingClientRect.left < rootBounds.left
-        ? Direction.RIGHT
-        : Direction.LEFT;
-    if ([...topRow, ...bottomRow].includes(position)) {
-      position = shiftHorizontallyAlongRow({ ...params, direction });
-    } else if ([...leftSide, ...rightSide].includes(position)) {
-      position = flipLeftRight({ ...params, direction });
-    }
-  }
-
-  if (shouldShiftVertically) {
-    const direction =
-      boundingClientRect.top < rootBounds.left ? Direction.DOWN : Direction.UP;
-
-    if ([...leftSide, ...rightSide].includes(position)) {
-      position = shiftVerticallyAlongSide({ ...params, direction });
-    } else if ([...topRow, ...bottomRow].includes(position)) {
-      position = flipTopBottom({ ...params, direction });
-    }
-  }
-
-  return position;
+  return adjustPosition(params);
 };
 
-const shiftHorizontallyAlongRow = (
-  params: FindOptimalPositionParams & { direction: HorizontalDirection }
-) => {
-  const row = [topRow, bottomRow].find((row) => row.includes(params.position));
-  if (!row) {
-    // shouldn't happen
-    return params.position;
-  }
-
-  const currentPositionIndex = row.indexOf(params.position);
-  const availablePositions =
-    params.direction === Direction.RIGHT
-      ? row.slice(currentPositionIndex + 1)
-      : row.slice(0, currentPositionIndex);
-
-  for (let position of availablePositions) {
-    if (
-      willStayWithinBounds({
-        ...params,
-        position,
-        fittingDimension: FittingDimension.WIDTH
-      })
-    ) {
+const adjustPosition = (params: FindOptimalPositionParams) => {
+  const possiblePositions = getPossiblePositions(params);
+  for (let position of possiblePositions) {
+    if (willStayWithinBounds({ ...params, position })) {
       return position;
     }
   }
 
+  // if no better position was found, return original position
   return params.position;
 };
 
-const shiftVerticallyAlongSide = (
-  params: FindOptimalPositionParams & { direction: VerticalDirection }
-) => {
-  const side = [leftSide, rightSide].find((side) =>
-    side.includes(params.position)
-  );
-  if (!side) {
-    // shouldn't happen
-    return params.position;
-  }
-  const currentPositionIndex = side.indexOf(params.position);
-  const availablePositions =
-    params.direction === Direction.DOWN
-      ? side.slice(currentPositionIndex + 1)
-      : side.slice(0, currentPositionIndex);
-
-  for (let position of availablePositions) {
-    if (
-      willStayWithinBounds({
-        ...params,
-        fittingDimension: FittingDimension.HEIGHT
-      })
-    ) {
-      return position;
-    }
-  }
-
-  return params.position;
-};
-
-const flipLeftRight = (
-  params: FindOptimalPositionParams & { direction: HorizontalDirection }
-) => {
-  const [from, to] =
-    params.direction === Direction.RIGHT
-      ? [leftSide, rightSide]
-      : [rightSide, leftSide];
-  const index = from.indexOf(params.position);
-  if (index > -1) {
-    return to[index];
+const getPossiblePositions = (params: FindOptimalPositionParams) => {
+  const { position } = params;
+  if (topRow.includes(position)) {
+    return [...topRow, ...bottomRow];
+  } else if (bottomRow.includes(position)) {
+    return [...bottomRow, ...topRow];
+  } else if (leftSide.includes(position)) {
+    return [...leftSide, ...rightSide];
+  } else if (rightSide.includes(position)) {
+    return [...rightSide, ...leftSide];
   } else {
-    // shouldn't happen
-    return params.position;
+    return [];
   }
 };
 
-const flipTopBottom = (
-  params: FindOptimalPositionParams & { direction: VerticalDirection }
-) => {
-  const [to, from] =
-    params.direction === Direction.DOWN
-      ? [topRow, bottomRow]
-      : [bottomRow, topRow];
-  const index = from.indexOf(params.position);
-  if (index > -1) {
-    return to[index];
-  } else {
-    // shouldn't happen
-    return params.position;
-  }
-};
-
-const willStayWithinBounds = (
-  params: FindOptimalPositionParams & { fittingDimension: FittingDimension }
-) => {
+const willStayWithinBounds = (params: FindOptimalPositionParams) => {
   const {
     intersectionEntry: { boundingClientRect, rootBounds },
     anchorBoundingRect,
@@ -264,17 +168,11 @@ const willStayWithinBounds = (
     predictedBottom = predictedTop + boundingClientRect.height;
   }
 
-  if (params.fittingDimension === FittingDimension.WIDTH) {
-    return (
-      predictedLeft &&
-      predictedLeft > rootBounds.left &&
-      (predictedRight && predictedRight < rootBounds.right)
-    );
-  } else {
-    return (
-      predictedTop &&
-      predictedTop > rootBounds.top &&
-      (predictedBottom && predictedBottom < rootBounds.bottom)
-    );
-  }
+  return (
+    predictedLeft &&
+    predictedLeft > rootBounds.left &&
+    (predictedRight && predictedRight < rootBounds.right) &&
+    (predictedTop && predictedTop > rootBounds.top) &&
+    (predictedBottom && predictedBottom < rootBounds.bottom)
+  );
 };

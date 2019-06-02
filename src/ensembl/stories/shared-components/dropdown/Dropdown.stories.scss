@@ -96,3 +96,42 @@
   max-width: 900px;
   margin: auto;
 }
+
+.positioningStoryContainer {
+  position: relative;
+  height: 600px;
+  width: 600px;
+  background: $ens-light-grey;
+}
+
+.positioningStoryItem {
+  position: absolute;
+  padding: 1.5em;
+  background: $ens-grey;
+}
+
+.positioningStoryItemTopLeft {
+  left: 2em;
+  top: 2em;
+}
+
+.positioningStoryItemTopRight {
+  right: 2em;
+  top: 2em;
+}
+
+.positioningStoryItemBottomLeft {
+  left: 2em;
+  bottom: 2em;
+}
+
+.positioningStoryItemBottomRight {
+  right: 2em;
+  bottom: 2em;
+}
+
+.positioningStoryItemCenter {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

@@ -9,7 +9,6 @@ const VariantsStory = () => {
   const [visibleId, setVisibleId] = useState<Position | null>(null);
 
   const handleClose = () => {
-    console.log('hello?');
     setVisibleId(null);
   };
 

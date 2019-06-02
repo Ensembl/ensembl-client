@@ -76,6 +76,7 @@ const Dropdown = (props: Props) => {
       return;
     }
     parentRef.current = parentElement;
+    console.log('container', props.container);
 
     setInlineStyles(getInlineStyles({ ...props, parentElement }));
 
@@ -327,7 +328,6 @@ Dropdown.defaultProps = {
 
 const DropdownTip = (props: DropdownTipProps) => {
   const { style, position } = props;
-  console.log('position', position);
   const tipEndX = TIP_WIDTH / 2;
 
   // let polygonPoints;
@@ -366,7 +366,6 @@ const DropdownTip = (props: DropdownTipProps) => {
   // }
 
   const polygonPoints = `0,${TIP_HEIGHT} ${TIP_WIDTH},${TIP_HEIGHT} ${tipEndX},0`;
-  console.log('style', style);
 
   return (
     <svg
