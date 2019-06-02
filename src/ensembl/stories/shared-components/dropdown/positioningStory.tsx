@@ -14,6 +14,11 @@ type ItemProps = ItemsProps & {
   className: string;
 };
 
+type PositionsProps = {
+  selectedPosition: Position;
+  onChange: (position: Position) => void;
+};
+
 const Item = (props: ItemProps) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
@@ -48,15 +53,43 @@ const Items = (props: ItemsProps) => {
   );
 };
 
+const Positions = (props: PositionsProps) => {
+  const positions = [];
+  for (const position in Position) {
+    positions.push(position);
+  }
+  const positionOptions = positions.map((position: any) => (
+    <option value={Position[position]} key={position}>
+      {position}
+    </option>
+  ));
+
+  return (
+    <div className={styles.positioningStorySelector}>
+      <select
+        onChange={(e) => props.onChange(e.target.value as Position)}
+        value={props.selectedPosition}
+      >
+        {positionOptions}
+      </select>
+    </div>
+  );
+};
+
 const PositioningStory = () => {
+  const [position, setPosition] = useState(Position.BOTTOM_LEFT);
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className={styles.positioningStoryLayout}>
       <h1>Auto-positioning of the tooltip</h1>
       <div ref={containerRef} className={styles.positioningStoryContainer}>
-        <Items container={containerRef} position={Position.BOTTOM_LEFT} />
+        <Items container={containerRef} position={position} />
       </div>
+      <Positions
+        selectedPosition={position}
+        onChange={(newPosition) => setPosition(newPosition)}
+      />
     </div>
   );
 };
