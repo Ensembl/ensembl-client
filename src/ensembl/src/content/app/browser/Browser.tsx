@@ -2,8 +2,7 @@ import React, {
   FunctionComponent,
   useCallback,
   useRef,
-  useEffect,
-  Fragment
+  useEffect
 } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -129,29 +128,27 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   return (
     <section className={styles.browser}>
-      <Fragment>
-        <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
-        {props.genomeSelectorActive ? (
-          <div className={styles.browserOverlay} />
-        ) : null}
-        <div className={styles.browserInnerWrapper}>
-          <div
-            className={`${styles.browserImageWrapper} ${
-              styles[props.browserOpenState]
-            }`}
-            onClick={closeTrack}
-          >
-            {props.browserNavOpened &&
-            !props.drawerOpened &&
-            browserRef.current ? (
-              <BrowserNavBar browserElement={browserRef.current} />
-            ) : null}
-            <BrowserImage browserRef={browserRef} />
-          </div>
-          <TrackPanel browserRef={browserRef} />
-          {props.drawerOpened && <Drawer />}
+      <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
+      {props.genomeSelectorActive ? (
+        <div className={styles.browserOverlay} />
+      ) : null}
+      <div className={styles.browserInnerWrapper}>
+        <div
+          className={`${styles.browserImageWrapper} ${
+            styles[props.browserOpenState]
+          }`}
+          onClick={closeTrack}
+        >
+          {props.browserNavOpened &&
+          !props.drawerOpened &&
+          browserRef.current ? (
+            <BrowserNavBar browserElement={browserRef.current} />
+          ) : null}
+          <BrowserImage browserRef={browserRef} />
         </div>
-      </Fragment>
+        <TrackPanel browserRef={browserRef} />
+        {props.drawerOpened && <Drawer />}
+      </div>
     </section>
   );
 };

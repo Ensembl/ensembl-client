@@ -44,10 +44,11 @@
   margin: 0 12px;
 
   svg {
-    fill: $ens-blue;
     width: 100%;
     height: 100%;
     transform: scale(1.1);
+    fill: $ens-white;
+    background-color: $ens-blue;
   }
 
   img {
@@ -56,11 +57,12 @@
   }
 }
 
-.launchbarButtonActive {
-  background-color: $ens-blue;
+.launchbarButtonSelected {
+  border: 1px solid $ens-black;
 
   svg {
     fill: $ens-white;
+    background-color: $ens-black;
   }
 }
 
@@ -68,7 +70,8 @@
   border: 1px solid $ens-grey;
 
   svg {
-    fill: $ens-grey;
+    fill: $ens-white;
+    background-color: $ens-grey;
   }
 }
 
