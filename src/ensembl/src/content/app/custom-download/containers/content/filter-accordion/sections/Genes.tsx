@@ -45,16 +45,23 @@ const Genes = (props: Props) => {
     (status: boolean, subSection: string, attributeId: string) => {
       const newGeneTypeFilters = { ...props.geneTypeFilters };
 
-      if (!newGeneTypeFilters[subSection]) {
+      if (!newGeneTypeFilters[subSection] && status) {
         newGeneTypeFilters[subSection] = {};
-      }
 
-      if (!newGeneTypeFilters[subSection][attributeId]) {
-        newGeneTypeFilters[subSection][attributeId] = {};
+        if (!newGeneTypeFilters[subSection][attributeId]) {
+          newGeneTypeFilters[subSection][attributeId] = {};
+          newGeneTypeFilters[subSection][attributeId].checkedStatus = status;
+        }
+      } else if (!status) {
+        delete newGeneTypeFilters[subSection][attributeId];
+
+        // cleanup
+        if (Object.keys(newGeneTypeFilters[subSection]).length == 0) {
+          delete newGeneTypeFilters[subSection];
+        }
       }
 
       geneTypeFiltersGrid[subSection][attributeId].checkedStatus = status;
-      newGeneTypeFilters[subSection][attributeId].checkedStatus = status;
       props.setGeneTypeFilters(newGeneTypeFilters);
     },
     [props.geneTypeFilters, geneTypeFiltersGrid]
@@ -63,16 +70,25 @@ const Genes = (props: Props) => {
   const transcriptTypeOnChangeHandler = useCallback(
     (status: boolean, subSection: string, attributeId: string) => {
       const newTranscriptTypeFilters = { ...props.transcriptTypeFilters };
-
-      if (!newTranscriptTypeFilters[subSection]) {
+      debugger;
+      if (!newTranscriptTypeFilters[subSection] && status) {
         newTranscriptTypeFilters[subSection] = {};
+
+        if (!newTranscriptTypeFilters[subSection][attributeId]) {
+          newTranscriptTypeFilters[subSection][attributeId] = {};
+          newTranscriptTypeFilters[subSection][
+            attributeId
+          ].checkedStatus = status;
+        }
+      } else if (!status) {
+        delete newTranscriptTypeFilters[subSection][attributeId];
+        // cleanup
+        if (Object.keys(newTranscriptTypeFilters[subSection]).length == 0) {
+          delete newTranscriptTypeFilters[subSection];
+        }
       }
 
-      if (!newTranscriptTypeFilters[subSection][attributeId]) {
-        newTranscriptTypeFilters[subSection][attributeId] = {};
-      }
       transcriptTypeFiltersGrid[subSection][attributeId].checkedStatus = status;
-      newTranscriptTypeFilters[subSection][attributeId].checkedStatus = status;
       props.setTranscriptTypeFilters(newTranscriptTypeFilters);
     },
     [props.transcriptTypeFilters, transcriptTypeFiltersGrid]

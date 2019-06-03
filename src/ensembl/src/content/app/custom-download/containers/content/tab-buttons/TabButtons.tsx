@@ -36,14 +36,19 @@ const getTotalSelectedAttributes = (attributes: any) => {
 
 const getTotalSelectedFilters = (filters: any) => {
   let totalSelectedFilters = 0;
-
-  Object.keys(filters).forEach((key: string) => {
-    if (typeof filters[key] === 'string') {
-      if (filters[key] !== '') totalSelectedFilters++;
-    } else if (Array.isArray(filters[key])) {
-      if (filters[key].length > 0) totalSelectedFilters += filters[key].length;
-    } else {
-      totalSelectedFilters++;
+  Object.values(filters).forEach((filter: any) => {
+    if (typeof filter === 'string') {
+      if (filter !== '') totalSelectedFilters++;
+    } else if (Array.isArray(filter)) {
+      if (filter.length > 0) totalSelectedFilters += filter.length;
+    } else if (typeof filter === 'object') {
+      Object.keys(filter).forEach((subSection) => {
+        Object.keys(filter[subSection]).forEach((attributeId) => {
+          if (filter[subSection][attributeId].checkedStatus === true) {
+            totalSelectedFilters++;
+          }
+        });
+      });
     }
   });
 

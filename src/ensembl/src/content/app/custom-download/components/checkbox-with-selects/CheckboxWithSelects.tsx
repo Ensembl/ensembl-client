@@ -99,7 +99,7 @@ const CheckboxWithSelects = (props: Props) => {
                     onSelect={(option: string) => {
                       handleOnSelect(option, 0);
                     }}
-                    placeholder={'select'}
+                    placeholder={'Select'}
                   />
                 </div>
               )}

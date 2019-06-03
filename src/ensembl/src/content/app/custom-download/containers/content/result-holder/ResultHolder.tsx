@@ -31,7 +31,8 @@ const ResultHolder = (props: Props) => {
   const selectedAttributes: any = getSelectedAttributes(props.attributes);
 
   useEffect(() => {
-    if (!selectedAttributes.length) {
+    if (!selectedAttributes.length && props.previewResult.results) {
+      props.setPreviewResult([]);
       return;
     }
     const selectedFilters: any = getSelectedFilters(props.filters);
@@ -43,7 +44,7 @@ const ResultHolder = (props: Props) => {
     props.setIsLoadingResult(false);
   }, [props.previewResult]);
 
-  if (props.isLoadingResult || !props.previewResult.results) {
+  if (props.isLoadingResult) {
     return (
       <>
         {Array(10)
@@ -61,6 +62,10 @@ const ResultHolder = (props: Props) => {
           })}
       </>
     );
+  }
+
+  if (!props.previewResult.results) {
+    return null;
   }
 
   const formattedResults = formatResults(

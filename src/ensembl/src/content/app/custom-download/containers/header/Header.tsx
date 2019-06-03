@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
-import { SecondaryButton, PrimaryButton } from 'src/shared/button/Button';
+import { PrimaryButton } from 'src/shared/button/Button';
 
 import RoundButton, {
   RoundButtonStatus
@@ -132,6 +132,11 @@ const Header = (props: Props) => {
   if (props.downloadType !== '') {
     downloadButtonStatus = false;
   }
+
+  let previewButtonDisabled = true;
+  if (props.previewResult.resultCount > 0) {
+    previewButtonDisabled = false;
+  }
   const selectedAttributes: any = getSelectedAttributes(props.attributes);
   const selectedFilters: any = getSelectedFilters(props.filters);
 
@@ -188,9 +193,12 @@ const Header = (props: Props) => {
 
       <div className={styles.previewButton}>
         {!props.showPreview && (
-          <SecondaryButton onClick={previewButtonOnClick}>
+          <PrimaryButton
+            onClick={previewButtonOnClick}
+            isDisabled={previewButtonDisabled}
+          >
             Preview download
-          </SecondaryButton>
+          </PrimaryButton>
         )}
         {props.showPreview && (
           <PrimaryButton
