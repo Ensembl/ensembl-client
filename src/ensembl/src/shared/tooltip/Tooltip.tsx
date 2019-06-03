@@ -14,7 +14,6 @@ import styles from './Tooltip.scss';
 type Props = {
   position: Position;
   container?: HTMLElement | null;
-  verticalOffset: number; // distance (in px) between the end of the tip and the parent element
   autoAdjust: boolean; // try to adapt position so as not to extend beyond screen bounds
   children: ReactNode;
   onClose: () => void;
