@@ -1,15 +1,15 @@
 import React, { ReactNode, useRef, useEffect, useState } from 'react';
 import classNames from 'classnames';
 
-import { findOptimalPosition } from './dropdown-helper';
-import { Position } from './dropdown-types';
+import { findOptimalPosition } from './tooltip-helper';
+import { Position } from './tooltip-types';
 import {
   TIP_WIDTH,
   TIP_HEIGHT,
   TIP_HORIZONTAL_OFFSET
-} from './dropdown-constants';
+} from './tooltip-constants';
 
-import styles from './Dropdown.scss';
+import styles from './Tooltip.scss';
 
 type Props = {
   position: Position;
@@ -20,7 +20,7 @@ type Props = {
   onClose: () => void;
 };
 
-type DropdownTipProps = {
+type TipProps = {
   style: InlineStyles;
 };
 
@@ -30,7 +30,7 @@ type InlineStylesState = {
   tipStyles: InlineStyles;
 };
 
-const Dropdown = (props: Props) => {
+const Tooltip = (props: Props) => {
   const [isPositioning, setIsPositioning] = useState(props.autoAdjust);
   const parentRef = useRef<HTMLElement | null>(null);
   const positionRef = useRef<Position | null>(null);
@@ -38,7 +38,7 @@ const Dropdown = (props: Props) => {
     bodyStyles: {},
     tipStyles: {}
   });
-  const dropdownElementRef: React.RefObject<HTMLDivElement> = useRef(null);
+  const tooltipElementRef: React.RefObject<HTMLDivElement> = useRef(null);
 
   const handleClickInside = (e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
@@ -69,7 +69,7 @@ const Dropdown = (props: Props) => {
   }, []);
 
   useEffect(() => {
-    const node = dropdownElementRef.current;
+    const node = tooltipElementRef.current;
     const parentElement = node && node.parentElement;
     if (!(node && parentElement)) {
       return;
@@ -114,19 +114,19 @@ const Dropdown = (props: Props) => {
   }, []);
 
   const className = classNames(
-    styles.dropdown,
+    styles.tooltip,
     positionRef.current || props.position,
-    { [styles.dropdownInvisible]: !parentRef.current || isPositioning }
+    { [styles.tooltipInvisible]: !parentRef.current || isPositioning }
   );
 
   return (
     <div
       className={className}
-      ref={dropdownElementRef}
+      ref={tooltipElementRef}
       style={inlineStyles.bodyStyles}
       onClick={handleClickInside}
     >
-      <DropdownTip style={inlineStyles.tipStyles} />
+      <TooltipTip style={inlineStyles.tipStyles} />
       {props.children}
     </div>
   );
@@ -257,14 +257,12 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
   }
 };
 
-Dropdown.defaultProps = {
-  autoAdjust: false,
-  expandDirection: 'down',
-  tipPosition: 'left',
-  verticalOffset: 0
+Tooltip.defaultProps = {
+  position: Position.BOTTOM_RIGHT,
+  autoAdjust: false
 };
 
-const DropdownTip = (props: DropdownTipProps) => {
+const TooltipTip = (props: TipProps) => {
   const { style } = props;
   const tipEndX = TIP_WIDTH / 2;
 
@@ -272,7 +270,7 @@ const DropdownTip = (props: DropdownTipProps) => {
 
   return (
     <svg
-      className={styles.dropdownTooltip}
+      className={styles.tooltipTip}
       style={style}
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -284,4 +282,4 @@ const DropdownTip = (props: DropdownTipProps) => {
 };
 
 export { Position };
-export default Dropdown;
+export default Tooltip;

@@ -2,7 +2,7 @@
 
 $fill-color: $ens-dark-grey;
 
-.dropdown {
+.tooltip {
   position: absolute;
   background: $fill-color;
   padding: 14px 18px 18px;
@@ -30,11 +30,11 @@ $fill-color: $ens-dark-grey;
   }
 }
 
-.dropdownInvisible {
+.tooltipInvisible {
   visibility: hidden;
 }
 
-.dropdownTooltip {
+.tooltipTip {
   position: absolute;
   height: 13px;
   width: 18px;

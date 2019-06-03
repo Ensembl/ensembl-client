@@ -1,9 +1,9 @@
 import React, { useState, useRef } from 'react';
 import classNames from 'classnames';
 
-import Dropdown, { Position } from 'src/shared/dropdown/Dropdown';
+import Tooltip, { Position } from 'src/shared/tooltip/Tooltip';
 
-import styles from './Dropdown.stories.scss';
+import styles from './Tooltip.stories.scss';
 
 type ItemsProps = {
   container: React.RefObject<HTMLElement>;
@@ -28,14 +28,14 @@ const Item = (props: ItemProps) => {
     <div className={className} onClick={() => setShowTooltip(!showTooltip)}>
       Click me
       {showTooltip && (
-        <Dropdown
+        <Tooltip
           onClose={() => setShowTooltip(false)}
           position={props.position}
           container={props.container.current}
           autoAdjust={true}
         >
           Hello sailor!
-        </Dropdown>
+        </Tooltip>
       )}
     </div>
   );

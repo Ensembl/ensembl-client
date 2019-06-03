@@ -2,9 +2,9 @@ import {
   TIP_WIDTH,
   TIP_HEIGHT,
   TIP_HORIZONTAL_OFFSET
-} from './dropdown-constants';
+} from './tooltip-constants';
 
-import { Position } from './dropdown-types';
+import { Position } from './tooltip-types';
 
 const topRow = [Position.TOP_LEFT, Position.TOP_RIGHT];
 

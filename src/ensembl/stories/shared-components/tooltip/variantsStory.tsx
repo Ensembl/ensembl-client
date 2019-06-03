@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 
-import Dropdown, { Position } from 'src/shared/dropdown/Dropdown';
+import Tooltip, { Position } from 'src/shared/tooltip/Tooltip';
 
-import styles from './Dropdown.stories.scss';
+import styles from './Tooltip.stories.scss';
 
 const VariantsStory = () => {
   const [visibleId, setVisibleId] = useState<Position | null>(null);
@@ -24,9 +24,9 @@ const VariantsStory = () => {
           onClick={() => setVisibleId(Position.TOP_LEFT)}
         >
           {visibleId === Position.TOP_LEFT && (
-            <Dropdown onClose={handleClose} position={Position.TOP_LEFT}>
+            <Tooltip onClose={handleClose} position={Position.TOP_LEFT}>
               TOP LEFT
-            </Dropdown>
+            </Tooltip>
           )}
         </div>
         <div
@@ -37,9 +37,9 @@ const VariantsStory = () => {
           onClick={() => setVisibleId(Position.TOP_RIGHT)}
         >
           {visibleId === Position.TOP_RIGHT && (
-            <Dropdown onClose={handleClose} position={Position.TOP_RIGHT}>
+            <Tooltip onClose={handleClose} position={Position.TOP_RIGHT}>
               TOP RIGHT
-            </Dropdown>
+            </Tooltip>
           )}
         </div>
         <div
@@ -50,9 +50,9 @@ const VariantsStory = () => {
           onClick={() => setVisibleId(Position.RIGHT_TOP)}
         >
           {visibleId === Position.RIGHT_TOP && (
-            <Dropdown onClose={handleClose} position={Position.RIGHT_TOP}>
+            <Tooltip onClose={handleClose} position={Position.RIGHT_TOP}>
               RIGHT TOP
-            </Dropdown>
+            </Tooltip>
           )}
         </div>
         <div
@@ -63,9 +63,9 @@ const VariantsStory = () => {
           onClick={() => setVisibleId(Position.RIGHT_BOTTOM)}
         >
           {visibleId === Position.RIGHT_BOTTOM && (
-            <Dropdown onClose={handleClose} position={Position.RIGHT_BOTTOM}>
+            <Tooltip onClose={handleClose} position={Position.RIGHT_BOTTOM}>
               RIGHT BOTTOM
-            </Dropdown>
+            </Tooltip>
           )}
         </div>
         <div
@@ -76,9 +76,9 @@ const VariantsStory = () => {
           onClick={() => setVisibleId(Position.BOTTOM_LEFT)}
         >
           {visibleId === Position.BOTTOM_LEFT && (
-            <Dropdown onClose={handleClose} position={Position.BOTTOM_LEFT}>
+            <Tooltip onClose={handleClose} position={Position.BOTTOM_LEFT}>
               BOTTOM LEFT
-            </Dropdown>
+            </Tooltip>
           )}
         </div>
         <div
@@ -89,9 +89,9 @@ const VariantsStory = () => {
           onClick={() => setVisibleId(Position.BOTTOM_RIGHT)}
         >
           {visibleId === Position.BOTTOM_RIGHT && (
-            <Dropdown onClose={handleClose} position={Position.BOTTOM_RIGHT}>
+            <Tooltip onClose={handleClose} position={Position.BOTTOM_RIGHT}>
               BOTTOM RIGHT
-            </Dropdown>
+            </Tooltip>
           )}
         </div>
         <div
@@ -102,9 +102,9 @@ const VariantsStory = () => {
           onClick={() => setVisibleId(Position.LEFT_TOP)}
         >
           {visibleId === Position.LEFT_TOP && (
-            <Dropdown onClose={handleClose} position={Position.LEFT_TOP}>
+            <Tooltip onClose={handleClose} position={Position.LEFT_TOP}>
               LEFT TOP
-            </Dropdown>
+            </Tooltip>
           )}
         </div>
         <div
@@ -115,9 +115,9 @@ const VariantsStory = () => {
           onClick={() => setVisibleId(Position.LEFT_BOTTOM)}
         >
           {visibleId === Position.LEFT_BOTTOM && (
-            <Dropdown onClose={handleClose} position={Position.LEFT_BOTTOM}>
+            <Tooltip onClose={handleClose} position={Position.LEFT_BOTTOM}>
               LEFT BOTTOM
-            </Dropdown>
+            </Tooltip>
           )}
         </div>
       </div>
