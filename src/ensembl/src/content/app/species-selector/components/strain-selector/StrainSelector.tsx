@@ -46,7 +46,7 @@ const StrainSelector = (props: StrainSelectorProps) => {
     >
       {numberOfSelectedStrains} / {totalNumberOfStrains}
       {isTooltipVisible && (
-        <Tooltip onClose={hideTooltip} verticalOffset={-5}>
+        <Tooltip onClose={hideTooltip}>
           <StrainsList {...props} />
         </Tooltip>
       )}
