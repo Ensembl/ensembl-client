@@ -5,6 +5,10 @@ to the img element).
 
 The reason for doing so is that inline svg’s can be styled with CSS,
 whereas the svg’s added using the img element cannot
+
+Note that since this component relies on fetching the svg image
+via an Ajax request, the server of the images should either be on the same
+domain as the client, or should allow CORS requests.
 */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -19,7 +23,7 @@ type Props = {
 
 const InlineSVG = (props: Props) => {
   const [svg, setSvg] = useState<string | null>(null);
-  const [isSet, setIsSet] = useState(false);
+  const [isSvgSet, setIsSvgSet] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,10 +37,10 @@ const InlineSVG = (props: Props) => {
   }, []);
 
   useEffect(() => {
-    if (!isSet && svg && containerRef.current) {
+    if (!isSvgSet && svg && containerRef.current) {
       const container = containerRef.current;
       container.insertAdjacentHTML('afterbegin', svg);
-      setIsSet(true);
+      setIsSvgSet(true);
     }
   });
 

@@ -12,6 +12,7 @@ import {
   getCurrentSpeciesGenomeId,
   getCommittedSpecies
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { ensureAbsoluteUrl } from 'src/shared/helpers/urlHelper';
 
 import InlineSVG from 'src/shared/inline-svg/InlineSvg';
 
@@ -35,13 +36,6 @@ type Props = {
   handleSelectedSpecies: (species: PopularSpecies) => void;
   clearSelectedSpecies: () => void;
   deleteCommittedSpecies: (genome_id: string) => void;
-};
-
-// FIXME: this should be moved to a file with general functions
-const ensureHost = (url: string) => {
-  return /^https?/.test(url)
-    ? url
-    : `${location.protocol}//${location.host}${url}`;
 };
 
 // named export is for testing purposes
@@ -72,7 +66,7 @@ export const PopularSpeciesButton = (props: Props) => {
 
   return (
     <div className={className} onClick={handleClick}>
-      <InlineSVG src={ensureHost(species.image)} />
+      <InlineSVG src={ensureAbsoluteUrl(species.image)} />
     </div>
   );
 };
