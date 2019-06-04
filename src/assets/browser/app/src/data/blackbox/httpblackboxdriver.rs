@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::sync::{ Arc, Mutex };
 
 use serde_json::Value as SerdeValue;
@@ -40,6 +41,12 @@ fn serde_to_vec_string(in_: &SerdeValue, key: &str) -> Option<Vec<String>> {
     out
 }
 
+fn serde_to_set_string(in_: &SerdeValue, key: &str) -> Option<HashSet<String>> {
+    serde_to_vec_string(in_,key).and_then(|mut x| {
+        Some(x.drain(..).collect())
+    })
+}
+
 fn serde_to_number(in_: &SerdeValue, key: &str) -> Option<f64> {
     let mut out = None;
     if let SerdeValue::Object(map) = in_ {
@@ -56,14 +63,14 @@ impl HttpResponseConsumer for BlackBoxResponseConsumer {
         let value : TypedArray<u8> = value.into();
         let data = ok!(String::from_utf8(value.to_vec()));
         let data : SerdeValue = ok!(serde_json::from_str(&data));
-        if let Some(enabled) = serde_to_vec_string(&data,"enabled") {
-            self.state.set_enabled(enabled);
+        if let Some(mut enabled) = serde_to_set_string(&data,"enabled") {
+            if let Some(dataset) = serde_to_set_string(&data,"dataset") {
+                enabled = enabled.union(&dataset).cloned().collect();
+            }
+            self.state.set_enabled(enabled);            
         }
-        if let Some(dataset) = serde_to_vec_string(&data,"dataset") {
-            self.state.set_enabled(dataset.clone());
+        if let Some(dataset) = serde_to_set_string(&data,"dataset") {
             self.state.set_dataset(dataset);
-        } else {
-            self.state.set_dataset(vec![]);
         }
         if let Some(interval) = serde_to_number(&data,"interval") {
             *self.interval.lock().unwrap() = interval*1000.;

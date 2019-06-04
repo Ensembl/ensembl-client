@@ -89,11 +89,11 @@ impl BlackBoxStateImpl {
         })
     }
     
-    pub fn set_enabled(&mut self, streams: Vec<String>) {
+    pub fn set_enabled(&mut self, streams: HashSet<String>) {
         self.enabled = Some(streams.iter().cloned().collect());
     }
 
-    pub fn set_dataset(&mut self, streams: Vec<String>) {
+    pub fn set_dataset(&mut self, streams: HashSet<String>) {
         self.dataset = streams.iter().cloned().collect();
     }
 
@@ -143,11 +143,11 @@ impl BlackBoxState {
         self.0.lock().unwrap().add_metronome(stream,t);
     }
     
-    pub fn set_enabled(&mut self, streams: Vec<String>) {
+    pub fn set_enabled(&mut self, streams: HashSet<String>) {
         self.0.lock().unwrap().set_enabled(streams);
     }
 
-    pub fn set_dataset(&mut self, streams: Vec<String>) {
+    pub fn set_dataset(&mut self, streams: HashSet<String>) {
         self.0.lock().unwrap().set_dataset(streams);
     }
     
