@@ -1,8 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import SlideDown from 'react-slidedown';
-
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import ensemblIcon from 'static/img/launchbar/ensembl-logo.png'; // <-- note it's a png
 
@@ -17,7 +14,6 @@ import LaunchbarButton from './LaunchbarButton';
 
 import styles from './Launchbar.scss';
 
-import { RootState } from 'src/store';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
 type LaunchbarProps = {
@@ -101,8 +97,4 @@ const Launchbar = (props: LaunchbarProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  committedSpecies: getCommittedSpecies(state)
-});
-
-export default connect(mapStateToProps)(Launchbar);
+export default Launchbar;
