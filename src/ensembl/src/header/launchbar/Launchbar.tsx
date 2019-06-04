@@ -1,5 +1,8 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import SlideDown from 'react-slidedown';
+
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import ensemblIcon from 'static/img/launchbar/ensembl-logo.png'; // <-- note it's a png
 
@@ -14,15 +17,19 @@ import LaunchbarButton from './LaunchbarButton';
 
 import styles from './Launchbar.scss';
 
+import { RootState } from 'src/store';
+import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+
 type LaunchbarProps = {
   launchbarExpanded: boolean;
+  committedSpecies: CommittedItem[];
 };
 
 export const getCategoryClass = (separator: boolean): string => {
   return separator ? 'border' : '';
 };
 
-const LaunchbarContent = () => (
+const LaunchbarContent = (props: LaunchbarProps) => (
   <div className={styles.launchbar}>
     <div className={styles.categoriesWrapper}>
       <div className={styles.categories}>
@@ -45,7 +52,7 @@ const LaunchbarContent = () => (
             app="browser"
             description="Genome browser"
             icon={BrowserIcon}
-            enabled={true}
+            enabled={props.committedSpecies.length > 0}
           />
         </div>
         <div className={styles.category}>
@@ -89,9 +96,13 @@ const LaunchbarContent = () => (
 const Launchbar = (props: LaunchbarProps) => {
   return (
     <SlideDown transitionOnAppear={false}>
-      {props.launchbarExpanded ? <LaunchbarContent /> : null}
+      {props.launchbarExpanded ? <LaunchbarContent {...props} /> : null}
     </SlideDown>
   );
 };
 
-export default Launchbar;
+const mapStateToProps = (state: RootState) => ({
+  committedSpecies: getCommittedSpecies(state)
+});
+
+export default connect(mapStateToProps)(Launchbar);
