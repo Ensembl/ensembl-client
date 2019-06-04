@@ -60,17 +60,16 @@ impl BlackBoxReportStream {
     fn analyse_elapsed(&self) -> (usize,f64,f64,f64,f64) {
         let tot = 0.;
         let mut sorted = self.elapsed.clone();
-        sorted.sort_by(|a,b| a.partial_cmp(b).unwrap());
-        let total = sorted.iter().sum();
         let num = sorted.len();
-        let (avg,high,top) = if num > 0 {
+        if num > 0 {
+            sorted.sort_by(|a,b| a.partial_cmp(b).unwrap());
+            let total = sorted.iter().sum();
             let top = sorted.len()-1;
-            let high = (top+1)*19/20-1;
-            (total/num as f64,sorted[high],sorted[top])
+            let high = ((top+1)*19/20).max(1)-1;
+            (num,total,total/num as f64,sorted[high],sorted[top])
         } else {
-            (-1.,-1.,-1.)
-        };
-        (num,total,avg,high,top)
+            (0,0.,-1.,-1.,-1.)
+        }
     }
     
     fn make_elapsed_report(&mut self, now: f64, with_dataset: bool) {
