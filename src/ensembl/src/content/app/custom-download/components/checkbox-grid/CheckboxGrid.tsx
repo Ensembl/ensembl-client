@@ -17,7 +17,11 @@ export const filterCheckedAttributes = (attributes: any) => {
   Object.keys(attributes).forEach((section) => {
     Object.keys(attributes[section]).forEach((attributeId) => {
       if (attributes[section][attributeId].checkedStatus === true) {
-        filteredAttributes[attributeId] = attributes[section][attributeId];
+        if (!filteredAttributes[section]) {
+          filteredAttributes[section] = {};
+        }
+        filteredAttributes[section][attributeId] =
+          attributes[section][attributeId];
       }
     });
   });

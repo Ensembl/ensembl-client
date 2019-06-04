@@ -49,8 +49,7 @@ const Transcripts = (props: Props) => {
       <div className={styles.checkboxGridWrapper}>
         <CheckBoxGrid
           checkboxOnChange={onChangeHandler}
-          gridData={{ default: checkedAttributes }}
-          hideTitles={props.hideTitles}
+          gridData={checkedAttributes}
           columns={3}
         />
       </div>

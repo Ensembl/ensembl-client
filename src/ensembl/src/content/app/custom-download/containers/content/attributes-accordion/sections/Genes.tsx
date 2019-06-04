@@ -46,8 +46,8 @@ const Genes = (props: Props) => {
       <div className={styles.checkboxGridWrapper}>
         <CheckBoxGrid
           checkboxOnChange={onChangeHandler}
-          gridData={{ default: checkedAttributes }}
-          hideTitles={props.hideTitles}
+          gridData={checkedAttributes}
+          hideTitles={false}
           columns={3}
         />
       </div>
