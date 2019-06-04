@@ -85,6 +85,31 @@ macro_rules! bb_time {
 }
 
 #[cfg(any(not(deploy),console))]
+macro_rules! bb_time_if {
+    ($stream:expr,$code:block) => {{
+        let tmp_bb_enabled = ::data::blackbox::blackbox_is_enabled($stream);
+        let tmp_bb_start = if tmp_bb_enabled {
+             Some(::dom::domutil::browser_time())
+        } else {
+            None
+        };
+        let ret = (|| { $code })();
+        if tmp_bb_enabled && ret {
+            let tmp_bb_end = ::dom::domutil::browser_time();
+            ::data::blackbox::blackbox_elapsed($stream,tmp_bb_end-tmp_bb_start.unwrap());
+        }
+    }}
+}
+
+#[cfg(all(deploy,not(console)))]
+macro_rules! bb_time_if {
+    ($stream:expr,$code:block) => {{
+        $code
+    }}
+}
+
+
+#[cfg(any(not(deploy),console))]
 macro_rules! bb_metronome {
     ($stream:expr) => {{
         if !cfg!(deploy) || cfg!(console) {
