@@ -62,19 +62,18 @@ macro_rules! console {
 #[cfg(any(not(deploy),console))]
 macro_rules! bb_time {
     ($stream:expr,$code:block) => {{
-        if !cfg!(deploy) || cfg!(console) {
-            let tmp_bb_enabled = ::data::blackbox::blackbox_is_enabled($stream);
-            let tmp_bb_start = if tmp_bb_enabled {
-                 Some(::dom::domutil::browser_time())
-            } else {
-                None
-            };
-            $code
-            if tmp_bb_enabled {
-                let tmp_bb_end = ::dom::domutil::browser_time();
-                ::data::blackbox::blackbox_elapsed($stream,tmp_bb_end-tmp_bb_start.unwrap());
-            }
+        let tmp_bb_enabled = ::data::blackbox::blackbox_is_enabled($stream);
+        let tmp_bb_start = if tmp_bb_enabled {
+             Some(::dom::domutil::browser_time())
+        } else {
+            None
+        };
+        let ret = (|| { $code })();
+        if tmp_bb_enabled {
+            let tmp_bb_end = ::dom::domutil::browser_time();
+            ::data::blackbox::blackbox_elapsed($stream,tmp_bb_end-tmp_bb_start.unwrap());
         }
+        ret
     }}
 }
 
@@ -122,11 +121,10 @@ macro_rules! bb_log {
 #[cfg(any(not(deploy),console))]
 macro_rules! bb_stack {
     ($level:expr,$code:block) => {{
-        if !cfg!(deploy) || cfg!(console) {
-            ::data::blackbox::blackbox_push($level);
-            $code
-            ::data::blackbox::blackbox_pop();
-        }
+        ::data::blackbox::blackbox_push($level);
+        let ret = (|| { $code })();
+        ::data::blackbox::blackbox_pop();
+        ret
     }}
 }
 
