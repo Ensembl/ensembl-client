@@ -14,10 +14,10 @@ lazy_static! {
     static ref BLACKBOX: Mutex<BlackBoxState> = Mutex::new(BlackBoxState::new());
 }
 
-pub fn blackbox_tick(driver: &mut BlackBoxDriver) {
+pub fn blackbox_tick(driver: &mut BlackBoxDriver) -> bool {
     let mut bb = BLACKBOX.lock().unwrap();
     let now = browser_time();
-    driver.tick(&mut bb,now);
+    driver.tick(&mut bb,now)
 }
 
 pub fn blackbox_is_enabled(stream: &str) -> bool {
@@ -33,13 +33,11 @@ pub fn blackbox_report(stream: &str, report: &str) {
 
 pub fn blackbox_elapsed(stream: &str, elapsed: f64) {
     let mut bb = BLACKBOX.lock().unwrap();
-    let now = browser_time();
     bb.elapsed(stream,elapsed);
 }
 
 pub fn blackbox_metronome(stream: &str, t: f64) {
     let mut bb = BLACKBOX.lock().unwrap();
-    let now = browser_time();
     bb.metronome(stream,t);
 }
 

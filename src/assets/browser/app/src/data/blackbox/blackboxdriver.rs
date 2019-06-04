@@ -3,7 +3,7 @@ use std::sync::{ Arc, Mutex };
 use super::BlackBoxState;
 
 pub trait BlackBoxDriverImpl {
-    fn tick(&mut self, state: &mut BlackBoxState, t: f64) {}    
+    fn tick(&mut self, state: &mut BlackBoxState, t: f64) -> bool { false }    
 }
 
 #[derive(Clone)]
@@ -14,7 +14,7 @@ impl BlackBoxDriver {
         BlackBoxDriver(Arc::new(Mutex::new(driver)))
     }
     
-    pub fn tick(&mut self, state: &mut BlackBoxState, t: f64) {
-        self.0.lock().unwrap().tick(state,t);
+    pub fn tick(&mut self, state: &mut BlackBoxState, t: f64) -> bool {
+        self.0.lock().unwrap().tick(state,t)
     }
 }

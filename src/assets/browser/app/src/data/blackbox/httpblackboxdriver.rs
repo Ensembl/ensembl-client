@@ -90,7 +90,7 @@ impl HttpBlackBoxDriverImpl {
 }
 
 impl BlackBoxDriverImpl for HttpBlackBoxDriverImpl {
-    fn tick(&mut self, state: &mut BlackBoxState, t: f64) {
+    fn tick(&mut self, state: &mut BlackBoxState, t: f64) -> bool {
         let interval : f64 = self.report_interval.lock().unwrap().clone();
         if self.last_report == None || t-self.last_report.unwrap() > interval {
             let report = state.make_report().to_string();
@@ -102,6 +102,9 @@ impl BlackBoxDriverImpl for HttpBlackBoxDriverImpl {
             let interval = self.report_interval.clone();
             self.manager.add_request(xhr,Some(data),Box::new(BlackBoxResponseConsumer::new(state,interval)));
             self.last_report = Some(t);
+            true
+        } else {
+            false
         }
     }
 }
