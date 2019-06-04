@@ -10,7 +10,7 @@ import { ReactComponent as RemoveIcon } from 'static/img/shared/clear.svg';
 type Props = {
   selectOptions: Option[];
   label: string;
-  selectedOptions: [];
+  selectedOptions: string[];
   onChange: (selectedOptions: []) => void;
 };
 
@@ -21,7 +21,6 @@ const CheckboxWithSelects = (props: Props) => {
   useEffect(() => {
     if (props.selectedOptions.length > 0) {
       setCheckedStatus(true);
-      setShowExtraOption(true);
     }
   }, []);
 
@@ -106,7 +105,7 @@ const CheckboxWithSelects = (props: Props) => {
             </td>
             <td>
               {!!firstSelectedOption && (
-                <div className={styles.iconHolder}>
+                <div className={styles.removeIconHolder}>
                   <ImageButton
                     onClick={() => removeSelection(firstSelectedOption)}
                     description={'Remove'}
@@ -152,7 +151,7 @@ const CheckboxWithSelects = (props: Props) => {
                   </div>
                 </td>
                 <td className={styles.removeIcon}>
-                  <div className={styles.iconHolder}>
+                  <div className={styles.removeIconHolder}>
                     <ImageButton
                       onClick={() => removeSelection(selectedOption)}
                       description={'Remove'}
@@ -163,24 +162,6 @@ const CheckboxWithSelects = (props: Props) => {
               </tr>
             );
           })}
-
-          {/* Show the Add button */}
-          {props.selectedOptions.length > 0 &&
-            !shouldShowExtraOption &&
-            newSelectOptions.length > 0 && (
-              <tr>
-                <td colSpan={2} />
-                <td>
-                  <div className={styles.iconHolder}>
-                    <ImageButton
-                      onClick={() => setShowExtraOption(true)}
-                      description={'Add'}
-                      image={AddIcon}
-                    />
-                  </div>
-                </td>
-              </tr>
-            )}
 
           {shouldShowExtraOption && (
             <tr>
@@ -199,6 +180,24 @@ const CheckboxWithSelects = (props: Props) => {
               <td />
             </tr>
           )}
+
+          {/* Show the Add button */}
+          {props.selectedOptions.length > 0 &&
+            !shouldShowExtraOption &&
+            newSelectOptions.length > 0 && (
+              <tr>
+                <td colSpan={2} />
+                <td>
+                  <div className={styles.addIconHolder}>
+                    <ImageButton
+                      onClick={() => setShowExtraOption(true)}
+                      description={'Add'}
+                      image={AddIcon}
+                    />
+                  </div>
+                </td>
+              </tr>
+            )}
         </tbody>
       </table>
     </>

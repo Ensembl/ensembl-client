@@ -139,4 +139,8 @@ const CheckBoxGrid = (props: Props) => {
   );
 };
 
+CheckBoxGrid.defaultProps = {
+  columns: 3
+};
+
 export default CheckBoxGrid;
