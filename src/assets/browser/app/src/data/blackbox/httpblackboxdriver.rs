@@ -60,6 +60,7 @@ impl HttpResponseConsumer for BlackBoxResponseConsumer {
             self.state.set_enabled(enabled);
         }
         if let Some(dataset) = serde_to_vec_string(&data,"dataset") {
+            self.state.set_enabled(dataset.clone());
             self.state.set_dataset(dataset);
         } else {
             self.state.set_dataset(vec![]);
