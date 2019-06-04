@@ -1,5 +1,6 @@
 use std::rc::Rc;
 use std::cell::RefCell;
+use std::sync::{ Arc, Mutex };
 
 use stdweb::web::window;
 
@@ -50,11 +51,11 @@ impl ProjectorImpl {
 }
 
 #[derive(Clone)]
-pub struct Projector(Rc<RefCell<ProjectorImpl>>);
+pub struct Projector(Arc<Mutex<ProjectorImpl>>);
 
 impl Projector {
     pub fn new(cr: &AppRunnerWeak) -> Projector {
-        let mut out = Projector(Rc::new(RefCell::new(ProjectorImpl {
+        let mut out = Projector(Arc::new(Mutex::new(ProjectorImpl {
             cr: cr.clone(),
             phase: 0,
             delta: None,
@@ -67,7 +68,7 @@ impl Projector {
     }
 
     pub fn stop(&mut self) {
-        self.0.borrow_mut().stopping = true;
+        self.0.lock().unwrap().stopping = true;
     }
 
     fn another(&mut self) {
@@ -78,29 +79,28 @@ impl Projector {
     }
 
     fn should_run(&mut self, time: f64) -> bool {
-        self.0.borrow_mut().should_run(time)
+        self.0.lock().unwrap().should_run(time)
     }
     
     fn detect_deselected(&mut self) {
-        self.0.borrow_mut().detect_deselected();
+        self.0.lock().unwrap().detect_deselected();
     }
 
     fn machine_frame(&mut self, time: f64) {
-        let cr = self.0.borrow_mut().cr.upgrade();
-        if !self.0.borrow().stopping {
+        let cr = self.0.lock().unwrap().cr.upgrade();
+        if !self.0.lock().unwrap().stopping {
             if let Some(mut cr) = cr {
                 if self.should_run(time) {
-                    cr.run_timers(time);
-                    cr.draw();
+                    // run! ;-)
                 } else {
                     self.detect_deselected();
                 }
                 self.another();
             } else {
-                self.0.borrow_mut().stopping = true;
+                self.0.lock().unwrap().stopping = true;
             }
         }
-        if self.0.borrow().stopping {
+        if self.0.lock().unwrap().stopping {
             debug!("projector","stopping");
         }
     }

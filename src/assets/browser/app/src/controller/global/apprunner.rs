@@ -4,10 +4,9 @@ use stdweb::web::HtmlElement;
 use url::Url;
 
 use composit::register_compositor_ticks;
-use controller::global::{ App, GlobalWeak };
+use controller::global::{ App, GlobalWeak, Scheduler, SchedRun };
 use controller::input::{
-    register_direct_events, register_user_events, register_dom_events,
-    Timers, Timer
+    register_direct_events, register_user_events, register_dom_events
 };
 use controller::output::{ OutputAction, Projector, Report, ViewportReport };
 
@@ -20,6 +19,7 @@ use data::{ HttpManager, BackendConfig };
 use data::blackbox::BlackBoxDriver;
 use dom::Bling;
 use dom::event::EventControl;
+use dom::domutil::browser_time;
 use tácode::Tácode;
 
 const SIZE_CHECK_INTERVAL_MS: f64 = 500.;
@@ -31,7 +31,6 @@ struct AppRunnerImpl {
     app: Arc<Mutex<App>>,
     projector: Option<Projector>,
     controls: Vec<Box<EventControl<()>>>,
-    timers: Timers,
     tc: Tácode,
     http_manager: HttpManager,
     debug_reporter: BlackBoxDriver,
@@ -58,7 +57,6 @@ impl AppRunner {
             app: Arc::new(Mutex::new(st)),
             projector: None,
             controls: Vec::<Box<EventControl<()>>>::new(),
-            timers: Timers::new(),
             tc: tc.clone(),
             http_manager: http_manager.clone(),
             debug_reporter,
@@ -89,24 +87,26 @@ impl AppRunner {
         self.0.lock().unwrap().browser_el.clone()
     }
 
-    pub fn add_timer<F>(&mut self, cb: F, min_interval: Option<f64>) -> Timer 
-                            where F: FnMut(&mut App, f64) -> Vec<OutputAction> + 'static {
-        self.0.lock().unwrap().timers.add(cb, min_interval)
+    pub fn add_timer<F>(&mut self, name: &str, mut cb: F, prio: usize)
+                            where F: FnMut(&mut App, f64, &mut SchedRun) -> Vec<OutputAction> + 'static {
+        let mut ar = self.clone();
+        let g = unwrap!(unwrap!(self.0.lock()).g.upgrade()).clone();
+        let mut s = g.scheduler_clone();
+        let mut imp = self.0.lock().unwrap();
+        let app = imp.app.clone();
+        s.add(name,Box::new(move |sr| {
+            let oas = cb(&mut app.lock().unwrap(),browser_time(),sr);
+            for oa in oas {
+                oa.run(&mut ar);
+            }
+        }),prio,false);
     }
 
-    pub fn run_timers(&mut self, time: f64) {
-        bb_metronome!("timers");
-        let oas = {
-            let mut imp = self.0.lock().unwrap();
-            let app = imp.app.clone();
-            let out = imp.timers.run(&mut app.lock().unwrap(), time);
-            out
-        };
-        for oa in oas {
-            oa.run(self);
-        }
+    pub fn scheduler(&self) -> Scheduler {
+        let g = unwrap!(unwrap!(self.0.lock()).g.upgrade()).clone();
+        g.scheduler_clone()
     }
-        
+    
     pub fn init(&mut self) {
         /* register main heartbeat of compositor */
         register_compositor_ticks(self);
@@ -126,55 +126,48 @@ impl AppRunner {
             let mut imp = self.0.lock().unwrap();
             imp.projector = Some(proj);
         }
-        
-        /* size canvas, now and regularly */
-        let r = self.state();
-        r.lock().unwrap().check_size();
+                        
         {
-            self.add_timer(|app,_| {
-                app.check_size();
-                vec!{}
-            },None);
-        }
-        
-        /* run tácode */
-        {
+            let g = unwrap!(unwrap!(self.0.lock()).g.upgrade()).clone();
+            let app = self.state();
+            let mut s = g.scheduler_clone();
+            /* xfer */
+            s.add("xfer",Box::new(move |sr| {
+                if !app.lock().unwrap().tick_xfer() {
+                    sr.unproductive();
+                }
+            }),50,false);
+            /* tacode */
+            let app = self.state();
             let tc = self.0.lock().unwrap().tc.clone();
-            self.add_timer(move |app,_| {
-                tc.step();
-                vec!{}
-            },None);
+            s.add("tácode",Box::new(move |sr| {
+                tc.step(sr.available());
+            }),50,false);
+            /* blackbox */
+            #[cfg(any(not(deploy),console))]
+            {
+                let mut dr = self.0.lock().unwrap().debug_reporter.clone();
+                s.add("blackbox",Box::new(move |sr| {
+                    if !blackbox_tick(&mut dr) {
+                        sr.unproductive();
+                    }
+                }),1000,false);
+            }
+            /* resize check */
+            let app = self.state();
+            let r = self.state();
+            s.add("resizer",Box::new(move |_| {
+                app.lock().unwrap().check_size();
+            }),100,false);
+            /* draw */
+            let app = self.state();
+            s.add("draw",Box::new(move |_| {
+                app.lock().unwrap().draw();
+            }),0,true);
         }
-        
-        /* run xfer */
-        {
-            self.add_timer(move |app,_| {
-                app.tick();
-                vec!{}
-            },None);
-        }
-        
-        /* run blackbox */
-        #[cfg(any(not(deploy),console))]
-        {
-            let mut dr = self.0.lock().unwrap().debug_reporter.clone();
-            self.add_timer(move |_,t| {
-                bb_time!("blackbox-send", {
-                    blackbox_tick(&mut dr);
-                });
-                vec!{}
-            },None);
-            bb_stack!("init",{
-                bb_log!("main","debug reporter initialised");
-            });
-        }
+        bb_log!("main","debug reporter initialised");
     }
-    
-    pub fn draw(&mut self) {
-        let imp = self.0.lock().unwrap();
-        imp.app.lock().unwrap().draw();
-    }
-    
+        
     pub fn add_control(&mut self, control: Box<EventControl<()>>) {
         self.0.lock().unwrap().controls.push(control);
     }
