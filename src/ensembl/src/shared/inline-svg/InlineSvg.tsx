@@ -31,7 +31,8 @@ const InlineSVG = (props: Props) => {
       .fetch(props.src, {
         headers: {
           'Content-Type': 'text/html'
-        }
+        },
+        preserveEndpoint: true
       })
       .then((svg) => setSvg(svg));
   }, []);

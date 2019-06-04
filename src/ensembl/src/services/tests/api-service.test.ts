@@ -1,5 +1,11 @@
+import faker from 'faker';
+
 import apiService, { HTTPMethod } from '../api-service';
 import config from 'config';
+
+jest.mock('config', () => ({
+  apiHost: 'http://foo.bar'
+}));
 
 describe('api service', () => {
   let mockFetch: any;
@@ -25,7 +31,7 @@ describe('api service', () => {
   });
 
   describe('.fetch', () => {
-    const endpoint = '/foo';
+    const endpoint = `/${faker.lorem.word()}/${faker.lorem.word()}`;
 
     test('calls fetch passing it the endpoint', async () => {
       await apiService.fetch(endpoint);
@@ -36,6 +42,29 @@ describe('api service', () => {
       const [url] = mockFetchCall;
 
       expect(url).toEqual(`${config.apiHost}${endpoint}`);
+    });
+
+    test('respects an option for not modifying the endpoint', async () => {
+      await apiService.fetch(endpoint, { preserveEndpoint: true });
+
+      expect(mockFetch).toHaveBeenCalled();
+
+      const mockFetchCall: any[] = mockFetch.mock.calls[0];
+      const [url] = mockFetchCall;
+
+      expect(url).toEqual(endpoint);
+    });
+
+    test('respects the host passed in options', async () => {
+      const host = faker.internet.url();
+      await apiService.fetch(endpoint, { host });
+
+      expect(mockFetch).toHaveBeenCalled();
+
+      const mockFetchCall: any[] = mockFetch.mock.calls[0];
+      const [url] = mockFetchCall;
+
+      expect(url).toEqual(`${host}${endpoint}`);
     });
 
     test('passes options to fetch', async () => {

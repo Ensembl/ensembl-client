@@ -12,7 +12,6 @@ import {
   getCurrentSpeciesGenomeId,
   getCommittedSpecies
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import { ensureAbsoluteUrl } from 'src/shared/helpers/urlHelper';
 
 import InlineSVG from 'src/shared/inline-svg/InlineSvg';
 
@@ -66,7 +65,7 @@ export const PopularSpeciesButton = (props: Props) => {
 
   return (
     <div className={className} onClick={handleClick}>
-      <InlineSVG src={ensureAbsoluteUrl(species.image)} />
+      <InlineSVG src={species.image} />
     </div>
   );
 };

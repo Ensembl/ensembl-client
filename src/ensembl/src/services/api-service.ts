@@ -20,6 +20,7 @@ type FetchOptions = {
   method?: HTTPMethod;
   headers?: { [key: string]: string };
   body?: string; // stringified json
+  preserveEndpoint?: boolean;
 };
 
 class ApiService {
@@ -43,7 +44,7 @@ class ApiService {
   ) {
     const host = options.host || this.host;
     const fetch = this.getFetch();
-    const url = /^https?:\/\//.test(endpoint) ? endpoint : `${host}${endpoint}`;
+    const url = options.preserveEndpoint ? endpoint : `${host}${endpoint}`;
 
     try {
       const response = await fetch(url, options);
