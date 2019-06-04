@@ -16,6 +16,10 @@ class WindowService implements WindowServiceInterface {
   public getSessionStorage() {
     return window.sessionStorage;
   }
+
+  public getLocation() {
+    return window.location;
+  }
 }
 
 export default new WindowService();

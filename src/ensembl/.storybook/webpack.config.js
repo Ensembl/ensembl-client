@@ -55,6 +55,7 @@ module.exports = ({ config }) => {
 
   config.resolve.extensions.push('.ts', '.tsx');
   config.resolve.alias = {
+    config: path.join(__dirname, '../config.ts'),
     src: path.join(__dirname, '../src'),
     tests: path.join(__dirname, '../tests'),
     static: path.join(__dirname, '../static')
