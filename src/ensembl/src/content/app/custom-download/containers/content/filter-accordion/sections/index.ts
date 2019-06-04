@@ -1,3 +1,3 @@
-import Genes from './Genes';
+import Genes from './genes/Genes';
 
 export { Genes };

@@ -2,13 +2,13 @@ import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
-import { getPhenotypeAttributes } from '../attributesAccordionSelector';
-import { setPhenotypeAttributes } from '../attributesAccordionActions';
+import { getPhenotypeAttributes } from '../../attributesAccordionSelector';
+import { setPhenotypeAttributes } from '../../attributesAccordionActions';
 import CheckBoxGrid, {
   filterCheckedAttributes
 } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
-import styles from './Styles.scss';
+import styles from './Phenotypes.scss';
 
 type OwnProps = {
   hideUnchecked?: boolean;

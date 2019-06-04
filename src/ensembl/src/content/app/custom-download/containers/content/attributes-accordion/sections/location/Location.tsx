@@ -2,13 +2,13 @@ import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
-import { getLocationAttributes } from '../attributesAccordionSelector';
-import { setLocationAttributes } from '../attributesAccordionActions';
+import { getLocationAttributes } from '../../attributesAccordionSelector';
+import { setLocationAttributes } from '../../attributesAccordionActions';
 import CheckBoxGrid, {
   filterCheckedAttributes
 } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
-import styles from './Styles.scss';
+import styles from './Location.scss';
 
 type ownProps = {
   hideUnchecked?: boolean;

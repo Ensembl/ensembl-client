@@ -14,7 +14,7 @@ import {
   getOrthologueShowBestMatches,
   getOrthologueShowAll,
   getOrthologueApplyToAllSpecies
-} from '../attributesAccordionSelector';
+} from '../../attributesAccordionSelector';
 
 import {
   setOrthologueAttributes,
@@ -24,13 +24,13 @@ import {
   setOrthologueShowBestMatches,
   setOrthologueShowAll,
   setOrthologueApplyToAllSpecies
-} from '../attributesAccordionActions';
+} from '../../attributesAccordionActions';
 
-import { getMatchedSpeciesList } from './helpers';
+import { getMatchedSpeciesList } from '../helpers';
 
 import Input from 'src/shared/input/Input';
 
-import styles from './Styles.scss';
+import styles from './Orthologues.scss';
 
 import { orthologueAttributes } from 'src/content/app/custom-download/sampledata.tsx';
 

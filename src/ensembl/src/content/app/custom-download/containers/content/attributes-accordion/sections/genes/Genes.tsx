@@ -2,44 +2,41 @@ import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
-import { getTranscriptAttributes } from '../attributesAccordionSelector';
-import { setTranscriptAttributes } from '../attributesAccordionActions';
+import { getGeneAttributes } from '../../attributesAccordionSelector';
+import { setGeneAttributes } from '../../attributesAccordionActions';
 import CheckBoxGrid, {
   filterCheckedAttributes
 } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
-import styles from './Styles.scss';
+import styles from './Genes.scss';
 
-type OwnProps = {
+type ownProps = {
   hideUnchecked?: boolean;
   hideTitles?: boolean;
 };
 
-type Props = OwnProps & StateProps & DispatchProps;
+type Props = ownProps & StateProps & DispatchProps;
 
-const Transcripts = (props: Props) => {
+const Genes = (props: Props) => {
   const onChangeHandler = useCallback(
     (status: boolean, subSection: string, attributeId: string) => {
-      if (!props.transcriptAttributes) {
+      if (!props.geneAttributes) {
         return;
       }
+      const newGeneAttributes = { ...props.geneAttributes };
 
-      const newTranscriptAttributes = { ...props.transcriptAttributes };
+      newGeneAttributes[subSection][attributeId].checkedStatus = status;
 
-      newTranscriptAttributes[subSection][attributeId].checkedStatus = status;
-
-      props.setTranscriptAttributes(newTranscriptAttributes);
+      props.setGeneAttributes(newGeneAttributes);
     },
-    [props.transcriptAttributes]
+    [props.geneAttributes]
   );
 
   if (props.hideUnchecked) {
-    if (!props.transcriptAttributes) {
+    if (!props.geneAttributes) {
       return null;
     }
-    const checkedAttributes = filterCheckedAttributes(
-      props.transcriptAttributes
-    );
+    const checkedAttributes = filterCheckedAttributes(props.geneAttributes);
 
     if (Object.keys(checkedAttributes).length === 0) {
       return null;
@@ -50,6 +47,7 @@ const Transcripts = (props: Props) => {
         <CheckBoxGrid
           checkboxOnChange={onChangeHandler}
           gridData={checkedAttributes}
+          hideTitles={false}
           columns={3}
         />
       </div>
@@ -60,7 +58,7 @@ const Transcripts = (props: Props) => {
     <div className={styles.checkboxGridWrapper}>
       <CheckBoxGrid
         checkboxOnChange={onChangeHandler}
-        gridData={props.transcriptAttributes}
+        gridData={props.geneAttributes}
         hideTitles={props.hideTitles}
         columns={3}
       />
@@ -69,22 +67,22 @@ const Transcripts = (props: Props) => {
 };
 
 type DispatchProps = {
-  setTranscriptAttributes: (setTranscriptAttributes: any) => void;
+  setGeneAttributes: (setGeneAttributes: {}) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
-  setTranscriptAttributes
+  setGeneAttributes
 };
 
 type StateProps = {
-  transcriptAttributes: any;
+  geneAttributes: any;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  transcriptAttributes: getTranscriptAttributes(state)
+  geneAttributes: getGeneAttributes(state)
 });
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Transcripts);
+)(Genes);

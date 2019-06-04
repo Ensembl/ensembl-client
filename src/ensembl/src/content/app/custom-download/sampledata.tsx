@@ -90,17 +90,6 @@ export const attributes = {
         id: 'Smart',
         label: 'Smart',
         checkedStatus: false
-      },
-      very_long_label: {
-        id: 'very_long_label',
-        label:
-          'Very veryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryvery very very very very very very very very very very very very very very very long label',
-        checkedStatus: false
-      },
-      xxxx: {
-        id: 'xxxxxx',
-        label: 'xxxxxx',
-        checkedStatus: false
       }
     },
     External: {

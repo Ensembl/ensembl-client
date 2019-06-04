@@ -14,15 +14,15 @@ import {
   getGermlineVariationAttributes,
   getSomaticVariationAttributes,
   getVariationAccordionExpandedPanels
-} from '../attributesAccordionSelector';
+} from '../../attributesAccordionSelector';
 import {
   setSomaticVariationAttributes,
   setGermlineVariationAttributes,
   setVariationAccordionExpandedPanels
-} from '../attributesAccordionActions';
+} from '../../attributesAccordionActions';
 import CheckBoxGrid from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
-import styles from './Styles.scss';
+import styles from './Variations.scss';
 
 type Props = StateProps & DispatchProps;
 

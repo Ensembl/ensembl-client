@@ -10,8 +10,8 @@ import {
   AccordionItemButton
 } from 'src/shared/accordion';
 
-import CheckboxWithSelects from '../../../../components/checkbox-with-selects/CheckboxWithSelects';
-import CheckboxWithRadios from '../../../../components/checkbox-with-radios/CheckboxWithRadios';
+import CheckboxWithSelects from 'src/content/app/custom-download/components/checkbox-with-selects/CheckboxWithSelects';
+import CheckboxWithRadios from 'src/content/app/custom-download/components/checkbox-with-radios/CheckboxWithRadios';
 
 import {
   getGeneFilters,
@@ -20,7 +20,7 @@ import {
   getFiltersAccordionExpandedGenePanels,
   getGeneSourceFilters,
   getGencodeAnnotationFilters
-} from '../filterAccordionSelector';
+} from '../../filterAccordionSelector';
 
 import {
   setGeneTypeFilters,
@@ -28,7 +28,7 @@ import {
   setGencodeAnnotationFilters,
   setTranscriptTypeFilters,
   setFiltersAccordionExpandedGenePanels
-} from '../filterAccordionActions';
+} from '../../filterAccordionActions';
 import CheckBoxGrid from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
 import {
@@ -36,7 +36,7 @@ import {
   transcriptTypeFiltersGrid
 } from 'src/content/app/custom-download/sampledata';
 
-import styles from './Styles.scss';
+import styles from './Genes.scss';
 
 type Props = StateProps & DispatchProps;
 

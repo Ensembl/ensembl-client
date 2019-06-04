@@ -1,10 +1,10 @@
-import Genes from './Genes';
-import Transcripts from './Transcripts';
-import Variations from './Variations';
-import Location from './Location';
-import Orthologues from './Orthologues';
-import Phenotypes from './Phenotypes';
-import Paralogues from './Paralogues';
+import Genes from './genes/Genes';
+import Transcripts from './transcripts/Transcripts';
+import Variations from './variations/Variations';
+import Location from './location/Location';
+import Orthologues from './orthologues/Orthologues';
+import Phenotypes from './phenotypes/Phenotypes';
+import Paralogues from './paralogues/Paralogues';
 
 export {
   Genes,
