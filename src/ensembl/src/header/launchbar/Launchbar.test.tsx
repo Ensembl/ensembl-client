@@ -1,19 +1,24 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { mount } from 'enzyme';
 
-import { LaunchbarContent } from './Launchbar';
+import Launchbar from './Launchbar';
 
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
+
+jest.mock('react-slidedown', () => (props: any) => (
+  <div className="react-slidedown">{props.children}</div>
+));
+jest.mock('./LaunchbarButton', () => () => <div>Launchbar Button</div>);
 
 const defaultProps = {
   launchbarExpanded: true,
   committedSpecies: []
 };
 
-describe('<LaunchbarContent />', () => {
+describe('<Launchbar />', () => {
   it('disables Genome Browser button when there are no committed species', () => {
-    const shallowWrapper = shallow(<LaunchbarContent {...defaultProps} />);
-    const genomeBrowserButton = shallowWrapper.findWhere(
+    const wrapper = mount(<Launchbar {...defaultProps} />);
+    const genomeBrowserButton = wrapper.findWhere(
       (wrapper) => wrapper.prop('app') === 'browser'
     );
 
@@ -25,8 +30,8 @@ describe('<LaunchbarContent />', () => {
       ...defaultProps,
       committedSpecies: [createSelectedSpecies()]
     };
-    const shallowWrapper = shallow(<LaunchbarContent {...props} />);
-    const genomeBrowserButton = shallowWrapper.findWhere(
+    const wrapper = mount(<Launchbar {...props} />);
+    const genomeBrowserButton = wrapper.findWhere(
       (wrapper) => wrapper.prop('app') === 'browser'
     );
 

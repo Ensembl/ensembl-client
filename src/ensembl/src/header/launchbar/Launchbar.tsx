@@ -25,7 +25,7 @@ export const getCategoryClass = (separator: boolean): string => {
   return separator ? 'border' : '';
 };
 
-export const LaunchbarContent = (props: LaunchbarProps) => (
+const LaunchbarContent = (props: LaunchbarProps) => (
   <div className={styles.launchbar}>
     <div className={styles.categoriesWrapper}>
       <div className={styles.categories}>
