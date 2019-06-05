@@ -1,5 +1,7 @@
+import config from 'config';
+
 export const getEndpointUrl = (attributes: any) => {
-  let endpoint = 'http://gti-es-0.ebi.ac.uk:8080/api/genes/query?query=';
+  let endpoint = config.genesearchAPIEndpoint + '/genes/query?query=';
 
   let endpointFields = '';
   attributes.forEach((attribute: any) => {

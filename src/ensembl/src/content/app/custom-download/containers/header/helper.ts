@@ -1,9 +1,11 @@
+import config from 'config';
+
 export const fetchCustomDownloadResults = (
   downloadType: string,
   attributes: any,
   filters: any
 ) => {
-  let endpoint = 'http://gti-es-0.ebi.ac.uk:8080/api/genes/fetch?query=';
+  let endpoint = config.genesearchAPIEndpoint + '/genes/fetch?query=';
 
   let endpointFields = '';
   attributes.forEach((attribute: any) => {
