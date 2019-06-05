@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
-
+import apiService from 'src/services/api-service';
 import CheckBoxGrid, {
   getAttributesCount
 } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
@@ -88,6 +88,24 @@ const Orthologue = (props: Props) => {
     },
     [props.orthologueSearchTerm]
   );
+
+  useEffect(() => {
+    const endpoint =
+      'https://rest.ensembl.org/info/species?content-type=application/json';
+
+    if (!props.orthologueSpecies.length) {
+      apiService
+        .fetch(endpoint, {
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          preserveEndpoint: true
+        })
+        .then((response: any) => {
+          props.setOrthologueSpecies(response);
+        });
+    }
+  }, []);
 
   useEffect(() => {
     getMatchedSpeciesList(props.orthologueSearchTerm, props);

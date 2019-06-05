@@ -32,7 +32,7 @@ import {
   getSelectedFilters
 } from '../content/result-holder/helpers';
 
-import { fetchCustomDownloadResults } from 'src/services/custom-download';
+import { fetchCustomDownloadResults } from './helper';
 
 import styles from './Header.scss';
 

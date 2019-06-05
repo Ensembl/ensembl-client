@@ -48,7 +48,7 @@ function resultHolder(
   action: ActionType<RootAction>
 ): ResultState {
   switch (action.type) {
-    case getType(customDownloadActions.setPreviewResult):
+    case getType(customDownloadActions.setPreviewResult.success):
       return {
         ...state,
         previewResult: action.payload

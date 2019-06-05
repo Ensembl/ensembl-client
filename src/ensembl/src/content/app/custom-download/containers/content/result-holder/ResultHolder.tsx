@@ -8,6 +8,7 @@ import {
 
 import { getAttributes } from '../attributes-accordion/attributesAccordionSelector';
 import { getFilters } from '../filter-accordion/filterAccordionSelector';
+import apiService from 'src/services/api-service';
 
 import {
   setPreviewResult,
@@ -20,9 +21,8 @@ import { CircleLoader } from 'src/shared/loader/Loader';
 
 import {
   getSelectedAttributes,
-  fetchPreviewResults,
   formatResults,
-  getSelectedFilters
+  getEndpointUrl
 } from './helpers';
 
 type Props = StateProps & DispatchProps;
@@ -35,9 +35,21 @@ const ResultHolder = (props: Props) => {
       props.setPreviewResult([]);
       return;
     }
-    const selectedFilters: any = getSelectedFilters(props.filters);
     props.setIsLoadingResult(true);
-    fetchPreviewResults(props, selectedAttributes, selectedFilters);
+
+    props.setPreviewResult({});
+    const endpointURL = getEndpointUrl(selectedAttributes);
+
+    apiService
+      .fetch(endpointURL, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        preserveEndpoint: true
+      })
+      .then((response: any) => {
+        props.setPreviewResult(response);
+      });
   }, [props.attributes, props.filters]);
 
   useEffect(() => {
@@ -103,7 +115,7 @@ type DispatchProps = {
 };
 
 const mapDispatchToProps: DispatchProps = {
-  setPreviewResult,
+  setPreviewResult: setPreviewResult.success,
   setIsLoadingResult
 };
 

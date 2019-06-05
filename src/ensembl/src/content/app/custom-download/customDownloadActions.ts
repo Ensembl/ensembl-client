@@ -1,4 +1,4 @@
-import { createAction } from 'typesafe-actions';
+import { createAction, createAsyncAction } from 'typesafe-actions';
 
 import { getCustomDownloadAnalyticsObject } from 'src/analyticsHelper';
 import * as allFilterAccordionActions from './containers/content/filter-accordion/filterAccordionActions';
@@ -40,16 +40,11 @@ export const toggleTabButton = createAction(
   }
 );
 
-export const setPreviewResult = createAction(
-  'custom-download/set-preview-results',
-  (resolve) => {
-    return (previewResult: {}) =>
-      resolve(
-        previewResult,
-        getCustomDownloadAnalyticsObject('Default action')
-      );
-  }
-);
+export const setPreviewResult = createAsyncAction(
+  'custom-download/preview-results-request',
+  'custom-download/preview-results-success',
+  'custom-download/preview-results-failure'
+)<{}, { previewResult: {} }, Error>();
 
 export const setIsLoadingResult = createAction(
   'custom-download/set-loading-result',

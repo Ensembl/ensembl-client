@@ -1,4 +1,20 @@
-import getCustomDownloadPreviewResults from 'src/services/custom-download.ts';
+export const getEndpointUrl = (attributes: any) => {
+  let endpoint = 'http://gti-es-0.ebi.ac.uk:8080/api/genes/query?query=';
+
+  let endpointFields = '';
+  attributes.forEach((attribute: any) => {
+    endpointFields += attribute[2] + ',';
+  });
+
+  const endpointFilters: any = {
+    genome: 'homo_sapiens'
+  };
+
+  endpoint =
+    endpoint + JSON.stringify(endpointFilters) + '&fields=' + endpointFields;
+
+  return endpoint;
+};
 
 export const getSelectedAttributes = (attributes: any) => {
   const selectedAttributes: any = [];
@@ -52,20 +68,6 @@ export const getSelectedFilters = (filters: any) => {
   });
 
   return selectedFilters;
-};
-
-export const fetchPreviewResults = async (
-  props: any,
-  selectedAttributes: any,
-  selectedFilters: any
-) => {
-  props.setPreviewResult({});
-  const result = await getCustomDownloadPreviewResults(
-    selectedAttributes,
-    selectedFilters
-  );
-
-  props.setPreviewResult(result);
 };
 
 const flattenObject = (

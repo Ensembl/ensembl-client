@@ -1,14 +1,5 @@
-import { getSpeciesList } from 'src/services/custom-download.ts';
-
 export const getMatchedSpeciesList = async (searchTerm: string, props: any) => {
-  let allSpecies;
-
-  if (!props.orthologueSpecies.length) {
-    allSpecies = await getSpeciesList();
-    props.setOrthologueSpecies(allSpecies);
-  } else {
-    allSpecies = props.orthologueSpecies;
-  }
+  let allSpecies = props.orthologueSpecies;
 
   const filteredSpecies: any = {};
 
