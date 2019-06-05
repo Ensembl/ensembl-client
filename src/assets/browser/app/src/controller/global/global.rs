@@ -12,7 +12,7 @@ use util::set_instance_id;
 use controller::input::{
     register_startup_events, register_shutdown_events
 };
-use controller::global::{ AppRunner, Booting, Scheduler };
+use controller::global::{ AppRunner, Booting, Scheduler, SchedulerGroup };
 use data::{ BackendConfigBootstrap, HttpManager };
 use dom::domutil;
 use dom::domutil::browser_time;
@@ -22,15 +22,19 @@ const SCHEDULER_ALLOC : f64 = 12.; /* ms per raf */
 pub struct GlobalImpl {
     apps: HashMap<String,AppRunner>,
     http_manager: HttpManager,
-    scheduler: Scheduler
+    scheduler: Scheduler,
+    sched_group: SchedulerGroup
 }
 
 impl GlobalImpl {
     pub fn new() -> GlobalImpl {
+        let scheduler = Scheduler::new();
+        let sched_group = scheduler.make_group();
         let mut out = GlobalImpl {
             apps: HashMap::<String,AppRunner>::new(),
             http_manager: HttpManager::new(),
-            scheduler: Scheduler::new()
+            scheduler,
+            sched_group
         };
         out.init();
         out
@@ -39,7 +43,7 @@ impl GlobalImpl {
     fn init(&mut self) {
         self.scheduler.set_timesig(2);
         let http_manager = self.http_manager.clone();
-        self.scheduler.add("http-manager",Box::new(move |sr| {
+        self.sched_group.add("http-manager",Box::new(move |sr| {
             if !http_manager.tick() {
                 sr.unproductive();
             }

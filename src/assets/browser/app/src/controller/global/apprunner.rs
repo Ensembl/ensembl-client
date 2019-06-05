@@ -4,7 +4,7 @@ use stdweb::web::HtmlElement;
 use url::Url;
 
 use composit::register_compositor_ticks;
-use controller::global::{ App, GlobalWeak, Scheduler, SchedRun };
+use controller::global::{ App, GlobalWeak, Scheduler, SchedRun, SchedulerGroup };
 use controller::input::{
     register_direct_events, register_user_events, register_dom_events
 };
@@ -31,6 +31,7 @@ struct AppRunnerImpl {
     app: Arc<Mutex<App>>,
     projector: Option<Projector>,
     controls: Vec<Box<EventControl<()>>>,
+    sched_group: SchedulerGroup,
     tc: Tácode,
     http_manager: HttpManager,
     debug_reporter: BlackBoxDriver,
@@ -50,6 +51,10 @@ impl AppRunner {
         let browser_el : HtmlElement = bling.apply_bling(&el);
         let tc = Tácode::new();
         let st = App::new(&tc,config,&http_manager,&browser_el,&config_url,&el);
+        let sched_group = {
+            let g = unwrap!(g.clone().upgrade()).clone();
+            g.scheduler_clone().make_group()
+        };
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
             g: g.clone(),
             el: el.clone(),
@@ -57,6 +62,7 @@ impl AppRunner {
             app: Arc::new(Mutex::new(st)),
             projector: None,
             controls: Vec::<Box<EventControl<()>>>::new(),
+            sched_group,
             tc: tc.clone(),
             http_manager: http_manager.clone(),
             debug_reporter,
@@ -90,11 +96,9 @@ impl AppRunner {
     pub fn add_timer<F>(&mut self, name: &str, mut cb: F, prio: usize)
                             where F: FnMut(&mut App, f64, &mut SchedRun) -> Vec<OutputAction> + 'static {
         let mut ar = self.clone();
-        let g = unwrap!(unwrap!(self.0.lock()).g.upgrade()).clone();
-        let mut s = g.scheduler_clone();
         let mut imp = self.0.lock().unwrap();
         let app = imp.app.clone();
-        s.add(name,Box::new(move |sr| {
+        imp.sched_group.add(name,Box::new(move |sr| {
             let oas = cb(&mut app.lock().unwrap(),browser_time(),sr);
             for oa in oas {
                 oa.run(&mut ar);
@@ -128,42 +132,43 @@ impl AppRunner {
         }
                         
         {
-            let g = unwrap!(unwrap!(self.0.lock()).g.upgrade()).clone();
-            let app = self.state();
-            let mut s = g.scheduler_clone();
+            {
+                let mut imp = self.0.lock().unwrap();
+                /* tacode */
+                {
+                    let tc = imp.tc.clone();
+                    imp.sched_group.add("tácode",Box::new(move |sr| {
+                        tc.step(sr.available());
+                    }),50,false);
+                }
+                /* blackbox */
+                #[cfg(any(not(deploy),console))]
+                {
+                    let mut dr = imp.debug_reporter.clone();
+                    imp.sched_group.add("blackbox",Box::new(move |sr| {
+                        if !blackbox_tick(&mut dr) {
+                            sr.unproductive();
+                        }
+                    }),1000,false);
+                }
+                /* draw */
+                let app = imp.app.clone();
+                imp.sched_group.add("draw",Box::new(move |_| {
+                    app.lock().unwrap().draw();
+                }),0,true);
+            }
             /* xfer */
-            s.add("xfer",Box::new(move |sr| {
-                if !app.lock().unwrap().tick_xfer() {
+            self.add_timer("xfer",move |app,t,sr| {
+                if !app.tick_xfer() {
                     sr.unproductive();
                 }
-            }),50,false);
-            /* tacode */
-            let app = self.state();
-            let tc = self.0.lock().unwrap().tc.clone();
-            s.add("tácode",Box::new(move |sr| {
-                tc.step(sr.available());
-            }),50,false);
-            /* blackbox */
-            #[cfg(any(not(deploy),console))]
-            {
-                let mut dr = self.0.lock().unwrap().debug_reporter.clone();
-                s.add("blackbox",Box::new(move |sr| {
-                    if !blackbox_tick(&mut dr) {
-                        sr.unproductive();
-                    }
-                }),1000,false);
-            }
+                vec![]
+            },50);
             /* resize check */
-            let app = self.state();
-            let r = self.state();
-            s.add("resizer",Box::new(move |_| {
-                app.lock().unwrap().check_size();
-            }),100,false);
-            /* draw */
-            let app = self.state();
-            s.add("draw",Box::new(move |_| {
-                app.lock().unwrap().draw();
-            }),0,true);
+            self.add_timer("resizer",move |app,t,sr| {
+                app.check_size();
+                vec![]
+            },100);
         }
         bb_log!("main","debug reporter initialised");
     }
@@ -173,7 +178,7 @@ impl AppRunner {
     }
     
     pub fn state(&self) -> Arc<Mutex<App>> {
-        self.0.lock().unwrap().app.clone()
+        unwrap!(self.0.lock()).app.clone()
     }
     
     pub fn unregister(&mut self) {

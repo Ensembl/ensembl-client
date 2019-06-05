@@ -1,3 +1,4 @@
+use std::collections::{ HashSet };
 use std::sync::{ Arc, Mutex };
 
 use dom::domutil::browser_time;
@@ -26,12 +27,13 @@ impl SchedRun {
 
 pub struct SchedTask {
     stream: String,
-    cb: Box<FnMut(&mut SchedRun) + 'static>
+    cb: Box<FnMut(&mut SchedRun) + 'static>,
+    id: u32
 }
 
 impl SchedTask {
     fn new(name: &str, cb: Box<FnMut(&mut SchedRun) + 'static>) -> SchedTask {
-        SchedTask { stream: format!("scheduler-task-{}",name), cb }
+        SchedTask { stream: format!("scheduler-task-{}",name), cb, id: 0 }
     }
     
     fn run(&mut self, available: f64) {
@@ -40,6 +42,10 @@ impl SchedTask {
             (self.cb)(&mut sr);
             sr.productive
         });
+    }
+    
+    fn set_id(&mut self, id: u32) {
+        self.id = id;
     }
 }
 
@@ -58,6 +64,23 @@ impl SchedQueue {
     
     fn add(&mut self, task: SchedTask) {
         self.tasks.push(task);
+    }
+    
+    fn delete(&mut self, id: u32) {
+        loop {
+            let mut target = None;        
+            for (index,task) in self.tasks.iter().enumerate() {
+                if task.id == id {
+                    target = Some(index);
+                    break;
+                }
+            }
+            if let Some(index) = target {
+                self.tasks.remove(index);
+            } else {
+                break;
+            }
+        }
     }
     
     fn run(&mut self, end_at: f64) -> bool {
@@ -96,6 +119,12 @@ impl SchedQueueList {
             self.queues.push(SchedQueue::new());
         }
         self.queues[new.prio].add(new.task);
+    }
+    
+    fn delete(&mut self, id: u32) {
+        for q in &mut self.queues {
+            q.delete(id);
+        }
     }
     
     fn run(&mut self, end_at: f64) -> bool {
@@ -140,6 +169,13 @@ impl SchedulerMain {
             }
         }
     }
+    
+    fn del_tasks(&mut self, mut dels: Vec<u32>) {
+        for id in dels.drain(..) {
+            self.on_beat.delete(id);
+            self.all_beats.delete(id);
+        }
+    }
 
     fn run_beat(&mut self, allotment: f64) -> bool {
         let end_at = browser_time() + allotment;
@@ -168,8 +204,9 @@ impl SchedulerMain {
         }
     }
     
-    fn beat(&mut self, new: Vec<SchedNewTask>, allotment: f64) {
+    fn beat(&mut self, new: Vec<SchedNewTask>, dels: Vec<u32>, allotment: f64) {
         self.add_tasks(new);
+        self.del_tasks(dels);
         let busted = self.run_beat(allotment);
         self.check_tempo(busted);
     }
@@ -182,15 +219,19 @@ struct SchedNewTask {
 }
 
 struct SchedulerImpl {
+    next_id: u32,
     main: Arc<Mutex<SchedulerMain>>,
-    pending: Vec<SchedNewTask>
+    adds: Vec<SchedNewTask>,
+    dels: HashSet<u32>
 }
 
 impl SchedulerImpl {
     fn new() -> SchedulerImpl {
         SchedulerImpl {
+            next_id: 0,
             main: Arc::new(Mutex::new(SchedulerMain::new())),
-            pending: Vec::new()
+            adds: Vec::new(),
+            dels: HashSet::new()
         }
     }    
 }
@@ -211,15 +252,61 @@ impl Scheduler {
         self.main().lock().unwrap().set_timesig(sig);
     }
     
-    pub fn add(&mut self, name: &str, cb: Box<FnMut(&mut SchedRun) + 'static>, prio: usize, on_beat: bool) {
-        let task = SchedTask::new(name,cb);
-        let mut adds = &mut unwrap!(self.0.lock()).pending;
+    pub fn make_group(&self) -> SchedulerGroup {
+        SchedulerGroup::new(self.clone())
+    }
+    
+    fn next_id(&mut self) -> u32 {
+        let id = &mut unwrap!(self.0.lock()).next_id;
+        *id += 1;
+        *id
+    }
+    
+    fn add(&mut self, mut task: SchedTask, prio: usize, on_beat: bool) -> u32 {
+        let id = self.next_id();
+        task.set_id(id);
+        let mut adds = &mut unwrap!(self.0.lock()).adds;
         adds.push(SchedNewTask{task,prio,on_beat});
+        id
+    }
+    
+    fn delete(&mut self, id: u32) {
+        let mut dels = &mut unwrap!(self.0.lock()).dels;
+        dels.insert(id);
     }
     
     pub fn beat(&self, allotment: f64) {
         let main = self.main();
-        let adds = unwrap!(self.0.lock()).pending.drain(..).collect();
-        main.lock().unwrap().beat(adds,allotment);
+        let adds = unwrap!(self.0.lock()).adds.drain(..).collect();
+        let dels = unwrap!(self.0.lock()).dels.drain().collect();
+        main.lock().unwrap().beat(adds,dels,allotment);
+    }
+}
+
+pub struct SchedulerGroup {
+    scheduler: Scheduler,
+    managed: Vec<u32>
+}
+
+impl SchedulerGroup {
+    fn new(scheduler: Scheduler) -> SchedulerGroup {
+        SchedulerGroup {
+            scheduler,
+            managed: Vec::new()
+        }
+    }
+    
+    pub fn add(&mut self, name: &str, cb: Box<FnMut(&mut SchedRun) + 'static>, prio: usize, on_beat: bool) {
+        let task = SchedTask::new(name,cb);
+        let id = self.scheduler.add(task,prio,on_beat);
+        self.managed.push(id);
+    }
+}
+
+impl Drop for SchedulerGroup {
+    fn drop(&mut self) {
+        for id in &self.managed {
+            self.scheduler.delete(*id);
+        }
     }
 }
