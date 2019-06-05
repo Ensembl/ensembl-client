@@ -2,7 +2,6 @@ use std::sync::{ Arc, Mutex };
 
 use stdweb::web::HtmlElement;
 use stdweb::unstable::TryInto;
-use serde_json::Value as JSONValue;
 use url::Url;
 
 use composit::{
@@ -12,18 +11,13 @@ use composit::{
 };
 use controller::input::{ Action, actions_run, startup_actions };
 use controller::global::{ AppRunnerWeak, AppRunner };
-use controller::output::{ OutputAction, Report, ViewportReport };
-use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, XferCache, XferClerk };
+use controller::output::{ Report, ViewportReport };
+use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, XferCache };
 use debug::add_debug_sticks;
 use dom::domutil;
-use dom::domutil::query_selector_ok;
 use drivers::webgl::GLPrinter;
 use model::driver::{ Printer, PrinterManager };
 use tácode::Tácode;
-
-use dom::webgl::{
-    WebGLRenderingContext as glctx,
-};
 
 const CANVAS : &str = r##"<canvas id="canvas"></canvas>"##;
 
@@ -164,7 +158,7 @@ impl App {
     }
     
     pub fn check_size(self: &mut App) {
-        let mut sz = self.printer.lock().unwrap().get_available_size();
+        let sz = self.printer.lock().unwrap().get_available_size();
         actions_run(self,&vec! { Action::Resize(sz) });
     }
  

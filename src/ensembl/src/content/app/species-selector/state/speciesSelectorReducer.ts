@@ -54,7 +54,7 @@ export default function speciesSelectorReducer(
         ...state,
         search: action.payload
       };
-    case getType(speciesSelectorActions.setSelectedSearchResult):
+    case getType(speciesSelectorActions.setSelectedSpecies):
       return {
         ...state,
         currentItem: buildCurrentItem(action.payload)
@@ -85,6 +85,13 @@ export default function speciesSelectorReducer(
           ...(state.currentItem as CurrentItem),
           genome_id: action.payload
         }
+      };
+    case getType(
+      speciesSelectorActions.fetchPopularSpeciesAsyncActions.success
+    ):
+      return {
+        ...state,
+        popularSpecies: action.payload.popularSpecies
       };
     case getType(speciesSelectorActions.commitSelectedSpecies):
       return {

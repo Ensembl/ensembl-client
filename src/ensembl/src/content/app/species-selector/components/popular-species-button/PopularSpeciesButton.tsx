@@ -1,43 +1,93 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import classNames from 'classnames';
+import find from 'lodash/find';
 
-import StrainSelector, {
-  Strain
-} from 'src/content/app/species-selector/components/strain-selector/StrainSelector';
+import {
+  handleSelectedSpecies,
+  clearSelectedSearchResult,
+  deleteSpeciesAndSave
+} from 'src/content/app/species-selector/state/speciesSelectorActions';
+import {
+  getCurrentSpeciesGenomeId,
+  getCommittedSpecies
+} from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+
+import InlineSVG from 'src/shared/inline-svg/InlineSvg';
+
+import {
+  CommittedItem,
+  PopularSpecies
+} from 'src/content/app/species-selector/types/species-search';
 
 import styles from './PopularSpeciesButton.scss';
 
-type Props = {
-  isSelected: boolean;
-  species: string;
-  strains: Strain[];
-  onClick: () => void;
-  onStrainSelect: () => void;
+import { RootState } from 'src/store';
+
+type OwnProps = {
+  species: PopularSpecies;
 };
 
-const PopularSpeciesButton = (props: Props) => {
-  const { isSelected, species, strains, onClick, onStrainSelect } = props;
+type Props = {
+  species: PopularSpecies;
+  isSelected: boolean;
+  isCommitted: boolean;
+  handleSelectedSpecies: (species: PopularSpecies) => void;
+  clearSelectedSpecies: () => void;
+  deleteCommittedSpecies: (genome_id: string) => void;
+};
 
-  const { ReactComponent: Icon } =
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    require(`src/content/app/species-selector/assets/icons/${species}.svg`);
+// named export is for testing purposes
+// use default export for development
+export const PopularSpeciesButton = (props: Props) => {
+  const { isSelected, isCommitted, species } = props;
+
+  const handleClick = () => {
+    const { genome_id, isAvailable } = species;
+    if (!isAvailable) {
+      return;
+    } else if (isSelected) {
+      props.clearSelectedSpecies();
+    } else if (isCommitted) {
+      props.deleteCommittedSpecies(genome_id);
+    } else {
+      // the species is available, not selected and not committed;
+      // go ahead and select it
+      props.handleSelectedSpecies(props.species);
+    }
+  };
 
   const className = classNames(styles.popularSpeciesButton, {
-    [styles.popularSpeciesButtonActive]: isSelected
+    [styles.popularSpeciesButtonDisabled]: !species.isAvailable,
+    [styles.popularSpeciesButtonSelected]: isSelected,
+    [styles.popularSpeciesButtonCommitted]: isCommitted
   });
 
   return (
-    <div className={className} onClick={onClick}>
-      <Icon />
-      {isSelected && Boolean(strains.length) && (
-        <StrainSelector strains={strains} onSelect={onStrainSelect} />
-      )}
+    <div className={className} onClick={handleClick}>
+      <InlineSVG src={species.image} />
     </div>
   );
 };
 
-PopularSpeciesButton.defaultProps = {
-  strains: []
+const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
+  isSelected: getCurrentSpeciesGenomeId(state) === ownProps.species.genome_id,
+  isCommitted: Boolean(
+    find(
+      getCommittedSpecies(state),
+      (committedItem: CommittedItem) =>
+        committedItem.genome_id === ownProps.species.genome_id
+    )
+  )
+});
+
+const mapDispatchToProps = {
+  handleSelectedSpecies,
+  clearSelectedSpecies: clearSelectedSearchResult,
+  deleteCommittedSpecies: deleteSpeciesAndSave
 };
 
-export default PopularSpeciesButton;
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PopularSpeciesButton);
