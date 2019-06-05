@@ -67,7 +67,9 @@
     
         <ul>
         
-            <li><a class="toctree-l4" href="#instrumentation">Instrumentation</a></li>
+            <li><a class="toctree-l4" href="#mainloop-and-scheduling">Mainloop and Scheduling</a></li>
+        
+            <li><a class="toctree-l4" href="#instrumentation_1">Instrumentation</a></li>
         
         </ul>
     
@@ -168,7 +170,106 @@
             <div class="section">
               
                 <h1 id="major-components">Major Components</h1>
-<h2 id="instrumentation">Instrumentation</h2>
+<h2 id="mainloop-and-scheduling">Mainloop and Scheduling</h2>
+<p>As much as possible runs out of a mainloop driven by requestanimationframe
+events (hereafter "raf events"). A dedicated scheduler attempts to ensure
+that the raf hanlder returns in plenty of time.</p>
+<h3 id="jank-detection">Jank Detection</h3>
+<p>Visual smoothness benefits from regular updates of visual content even if
+that is less than the maximum available rate. Variable update rates tend
+to be noticable even if correctly timed. To this end draw events are
+scheduled at 20Hz, 30Hz, or 60Hz and no intermediate speed. Raf events
+which correspond to this (parhaps reduced rate) are called on-beats. In
+an on-beat drawing gets the top scheduler priority. The other events,
+off-beats, do not include the drawing callbacks. </p>
+<p>A jank detector updates the optimal rate for the hardware based on a 
+record of performance of earlier events. Each raf is tested to see if
+it has <em>burst</em>, that is met or exceeded its allocated time. This is a
+simple boolean. The record and timing of far bursts is the input to the
+jank detector. The output is the rate of on-requests, known as the "gear"
+or "timesig".</p>
+<p>This behaviour and fix is the result of observed behaviour, not 
+conjecture, and follows various ineffective "simpler" fixes.</p>
+<h3 id="jank-detection-algorithm">Jank Detection Algorithm</h3>
+<p>It has not proved possible to reliably tell which gear minimises raf
+bursts except by applying gears and seeing what happens. The jank-detection
+algorithm takes the raf burst flag and the current time and sets the gear.</p>
+<p>As experimentation is required and it amounts to a "bang-bang" controller
+(ie non-proportional) the best behaviour we can expect to observe is 
+slow "hunting" between an under- and over-performant state (ie a slow
+oscillation).</p>
+<p>The opposite behaviour to "hunting" here is "moving" which is a conserted
+movement through gears in one direction or another. The jank-detection
+algorithm considers to successive changes in the same direction to be moving,
+two in opposite directions to be hunting.</p>
+<p>If the period between changes during "hunting" is too long we will never
+take advantage of performance changes (such as recovery after one-off
+events). If too short, the rate becomes unstable and jank is observed.</p>
+<p>If a burst occurs, the rate is decreased immediately. Following this event,
+a grace period ensures that no opposing rate increase occurs for a fixed
+(wall-clock) time to avoid excessively-quick hunting on a stable, quiescent
+system. Once the grace period expires, the rate is increased again
+to allow potential recovery. The grace period increases exponentially 
+(fibbionacci, to a fixed limit) all the while the rate is hunting, as long as
+a hunt occured during the grace period (indicating that the higher rate is
+not stable). It decreases by the same exponential curve if the hunting period
+is longer than expected (indicating a system stable at the faster rate). This
+ensures that the rate "settles" on a stable system. When moving is detected 
+the rate is reset to allow fast accommodation of changes.</p>
+<h3 id="scheduling-algorithm">Scheduling algorithm</h3>
+<p>The scheduler accepts callbacks which are placed in an on-beat
+or off-beat queues, as requested by the caller, and of a certain priority.
+This priority should be a small, positive integer. The list of on-beat
+queues and the list of off-beat queues (each a <em>queuelist</em>) are combined
+to form the scheduler.</p>
+<p>For an on-beat, the on queuelist is run, followed by the off queuelist.
+For an off-beat only the off queuelist is run.</p>
+<p>An off-beat raf is considered to have burst if the off-beat queuelist
+bursts as it is the only queuelist run in an off-beat.</p>
+<p>An on-beat raf is only considered to have burst if the on-beat queuelist
+bursts as this is all that's "expected" to run on an on-beat. The exception
+is when running in gear one, ie 60Hz. In this case either queuelist
+bursting counts as a burst as there are no other opportunities to run
+off-beat tasks.</p>
+<p>Within a queuelist are queues. Queues are arranged in order of priority.
+Each queue is run from lowest priority to highest in round-robin. Note
+that low-priority queues never get run if high-priorirty queues consume
+all the time, so be cautious with fine-graining priorities. At present
+queues are stored in a vec so please keep priorities ultra-compact.</p>
+<h3 id="code-structure">Code Structure</h3>
+<ul>
+<li><code>controller/scheduler</code> -- the scheduler<ul>
+<li><code>schedgroup.rs</code> -- a group of tasks (which are dropped when the group is)</li>
+<li><code>schedmain.rs</code> -- main implementation of scheduler "tick"</li>
+<li><code>schedqueue.rs</code> -- a queue type in the algorithm above</li>
+<li><code>schedqueuelist.rs</code> -- the queuelist type in the algorithm above</li>
+<li><code>schedrun.rs</code> -- an object passed to the callback to help control the scheduler</li>
+<li><code>schedtask.rs</code> -- the internal datatype used to represent the callback</li>
+<li><code>scheduler.rs</code> -- main entry point to the scheduler</li>
+</ul>
+</li>
+</ul>
+<h3 id="instrumentation">Instrumentation</h3>
+<p>Each queue run and task are integrated with the blackbox via the <code>scheduler-*</code>
+event stream which capture stream performance. The <code>scheduler</code> and
+<code>scheduler-jank</code> streams provide further logging.</p>
+<h3 id="tasks">Tasks</h3>
+<p>The following tasks are currently implemented:</p>
+<ul>
+<li><code>scheduler-task-http-manager</code> -- issuing http requests</li>
+<li><code>scheduler-task-xfer</code> -- http data repsonses</li>
+<li><code>scheduler-task-tácode</code> -- tánaiste interpreter</li>
+<li><code>scheduler-task-blackbox</code> -- blackbox callback</li>
+<li><code>scheduler-task-resizer</code> -- canvas resize detection</li>
+<li><code>scheduler-task-report</code> -- state-reporting javascript events</li>
+<li><code>scheduler-task-viewport-report</code> -- position-reporting javascript events</li>
+<li><code>scheduler-task-physics</code> -- mouse movement (left/right)</li>
+<li><code>scheduler-task-optical</code> -- mouse movement (in/out)</li>
+<li><code>scheduler-task-compositor</code> -- converting shapes into WebGL primitives</li>
+<li><code>scheduler-task-draw</code> -- drawing (on-beat)</li>
+</ul>
+<p>Except for <code>scheduler-task-draw</code> all others are off-beat tasks.</p>
+<h2 id="instrumentation_1">Instrumentation</h2>
 <p>Instrumentation code exists to assist development and debugging of the browser
 app. It is generally not available in deployed builds to reduce file size and
 improve performance.</p>
