@@ -8,7 +8,7 @@ use controller::global::{ App, GlobalWeak, Scheduler, SchedRun, SchedulerGroup }
 use controller::input::{
     register_direct_events, register_user_events, register_dom_events
 };
-use controller::output::{ OutputAction, Projector, Report, ViewportReport };
+use controller::output::{ OutputAction, Report, ViewportReport };
 
 #[cfg(any(not(deploy),console))]
 use data::blackbox::{
@@ -29,7 +29,6 @@ struct AppRunnerImpl {
     el: HtmlElement,
     bling: Box<Bling>,
     app: Arc<Mutex<App>>,
-    projector: Option<Projector>,
     controls: Vec<Box<EventControl<()>>>,
     sched_group: SchedulerGroup,
     tc: Tácode,
@@ -60,7 +59,6 @@ impl AppRunner {
             el: el.clone(),
             bling,
             app: Arc::new(Mutex::new(st)),
-            projector: None,
             controls: Vec::<Box<EventControl<()>>>::new(),
             sched_group,
             tc: tc.clone(),
@@ -123,14 +121,6 @@ impl AppRunner {
             register_dom_events(self,&el);
         }
 
-        /* start projector */
-        {
-            let w = AppRunnerWeak(Arc::downgrade(&self.0.clone()));
-            let proj = Projector::new(&w);
-            let mut imp = self.0.lock().unwrap();
-            imp.projector = Some(proj);
-        }
-                        
         {
             {
                 let mut imp = self.0.lock().unwrap();
@@ -189,10 +179,6 @@ impl AppRunner {
             }
             cc.clear();
         }
-        if let Some(ref mut proj) = self.0.lock().unwrap().projector {
-            proj.stop();
-        }
-        self.0.lock().unwrap().projector = None;
         let r = self.state();
         r.lock().unwrap().destroy();
     }

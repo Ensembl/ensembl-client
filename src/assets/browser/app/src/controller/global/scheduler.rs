@@ -3,6 +3,11 @@ use std::sync::{ Arc, Mutex };
 
 use dom::domutil::browser_time;
 
+use controller::output::JankBuster;
+
+const UNBURST_TIME : f64 = 60000.; // ms
+const MAX_BURSTS : u32 = 2;
+
 pub struct SchedRun {
     productive: bool,
     available: f64
@@ -143,7 +148,8 @@ struct SchedulerMain {
     on_beat: SchedQueueList,
     all_beats: SchedQueueList,
     timesig: u32,
-    count: u32
+    count: u32,
+    jank: JankBuster
 }
 
 impl SchedulerMain {
@@ -152,7 +158,8 @@ impl SchedulerMain {
             on_beat: SchedQueueList::new("on"),
             all_beats: SchedQueueList::new("all"),
             timesig: 1,
-            count: 0
+            count: 0,
+            jank: JankBuster::new()
         }
     }
     
@@ -181,27 +188,27 @@ impl SchedulerMain {
         let end_at = browser_time() + allotment;
         let on_beat = (self.count == 0);
         self.count += 1;
-        if self.count == self.timesig { self.count = 0; }
+        if self.count >= self.timesig { self.count = 0; }
         bb_metronome!("scheduler-beat");
-        let mut busted = false;
+        let mut busrt = false;
         if on_beat {
-            let mut busted = !self.on_beat.run(end_at);
-            if !busted {
-                let tail_busted = !self.all_beats.run(end_at);
+            let mut burst = !self.on_beat.run(end_at);
+            if !burst {
+                let tail_burst = !self.all_beats.run(end_at);
                 if self.timesig == 1 {
-                    busted |= tail_busted;
+                    burst |= tail_burst;
                 }
             }
-            busted
+            burst
         } else {
             !self.all_beats.run(end_at)
         }
     }
     
-    fn check_tempo(&mut self, busted: bool) {
-        if busted {
-            bb_log!("scheduler","raf was busted");
-        }
+    fn check_tempo(&mut self, burst: bool) {
+        let now = browser_time();
+        self.jank.detect(burst,now/1000.);
+        self.set_timesig(self.jank.gear());
     }
     
     fn beat(&mut self, new: Vec<SchedNewTask>, dels: Vec<u32>, allotment: f64) {
