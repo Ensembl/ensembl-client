@@ -147,5 +147,5 @@ pub fn register_compositor_ticks(ar: &mut AppRunner) {
         let max_y = cs.get_all_landscapes().get_low_watermark();
         cs.with_stage(|s| s.set_limit(&DOWN,max_y as f64));
         vec!{}
-    },100);
+    },2);
 }

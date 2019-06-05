@@ -48,7 +48,7 @@ impl GlobalImpl {
             if !http_manager.tick() {
                 sr.unproductive();
             }
-        }),75,false);
+        }),3,false);
     }
 
     pub fn scheduler_clone(&self) -> Scheduler {

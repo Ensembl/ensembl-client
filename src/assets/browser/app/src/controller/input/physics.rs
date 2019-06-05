@@ -147,7 +147,7 @@ impl MousePhysics {
     pub fn new(ru: &mut AppRunner) -> MousePhysics {
         let out = MousePhysics(Arc::new(Mutex::new(MousePhysicsImpl::new())));
         let c = out.clone();
-        ru.add_timer("physics",move |cg,t,_| { c.clone().tick(cg,t); vec!{} },10);
+        ru.add_timer("physics",move |cg,t,_| { c.clone().tick(cg,t); vec!{} },1);
         out
     }
 

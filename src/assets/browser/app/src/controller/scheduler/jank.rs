@@ -40,22 +40,6 @@ impl JankBuster {
         self.last_down = true;
     }
 
-    pub fn disable(&mut self) {
-        if self.enabled {
-            self.enabled = false;
-            //self.gear = MAX_GEAR;
-            debug!("jank gear","lost focus");
-        }
-    }
-    
-    pub fn enable(&mut self) {
-        if !self.enabled {
-            self.enabled = true;
-            //self._reset();
-            debug!("jank gear","gained focus");
-        }
-    }
-
     pub fn detect(&mut self, burst: bool, time: f64) {
         if !self.enabled { return; }
         if burst {

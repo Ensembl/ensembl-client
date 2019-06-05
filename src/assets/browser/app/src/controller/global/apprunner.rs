@@ -130,7 +130,7 @@ impl AppRunner {
                     let tc = imp.tc.clone();
                     imp.sched_group.add("tácode",Box::new(move |sr| {
                         tc.step(sr.available());
-                    }),50,false);
+                    }),2,false);
                 }
                 /* blackbox */
                 #[cfg(any(not(deploy),console))]
@@ -140,7 +140,7 @@ impl AppRunner {
                         if !blackbox_tick(&mut dr) {
                             sr.unproductive();
                         }
-                    }),1000,false);
+                    }),5,false);
                 }
                 /* draw */
                 let app = imp.app.clone();
@@ -154,12 +154,12 @@ impl AppRunner {
                     sr.unproductive();
                 }
                 vec![]
-            },50);
+            },2);
             /* resize check */
             self.add_timer("resizer",move |app,t,sr| {
                 app.check_size();
                 vec![]
-            },100);
+            },4);
         }
         bb_log!("main","debug reporter initialised");
     }

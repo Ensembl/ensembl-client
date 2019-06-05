@@ -103,7 +103,7 @@ impl ViewportReport {
                 sr.unproductive();
                 vec!{}
             }
-        }},100);
+        }},4);
         out
     }
     

@@ -213,7 +213,7 @@ impl Report {
                     OutputAction::SendCustomEvent("bpane-out".to_string(),report)
                 }
             } else { sr.unproductive(); vec!{} }
-        }},100);
+        }},4);
         out
     }
     
