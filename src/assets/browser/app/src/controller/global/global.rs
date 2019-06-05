@@ -12,7 +12,8 @@ use util::set_instance_id;
 use controller::input::{
     register_startup_events, register_shutdown_events
 };
-use controller::global::{ AppRunner, Booting, Scheduler, SchedulerGroup };
+use controller::global::{ AppRunner, Booting };
+use controller::scheduler::{ Scheduler, SchedulerGroup };
 use data::{ BackendConfigBootstrap, HttpManager };
 use dom::domutil;
 use dom::domutil::browser_time;

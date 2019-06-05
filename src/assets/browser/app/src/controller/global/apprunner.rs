@@ -4,7 +4,8 @@ use stdweb::web::HtmlElement;
 use url::Url;
 
 use composit::register_compositor_ticks;
-use controller::global::{ App, GlobalWeak, Scheduler, SchedRun, SchedulerGroup };
+use controller::global::{ App, GlobalWeak };
+use controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup };
 use controller::input::{
     register_direct_events, register_user_events, register_dom_events
 };
