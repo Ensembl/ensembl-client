@@ -20,9 +20,10 @@
 }
 
 .accordionExpandedTitle {
-  color: $ens-grey;
+  color: $ens-dark-grey;
 
   > span {
     color: $ens-black;
+    font-weight: 700;
   }
 }

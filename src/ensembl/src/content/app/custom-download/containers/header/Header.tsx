@@ -142,9 +142,13 @@ const Header = (props: Props) => {
 
   const getFormattedResult = () => {
     if (resultCount === 0) {
-      return <span>No results found</span>;
+      return <>No results found</>;
     }
-    return <span>{resultCount} results</span>;
+    return (
+      <>
+        <span>{resultCount}</span> results
+      </>
+    );
   };
 
   return (

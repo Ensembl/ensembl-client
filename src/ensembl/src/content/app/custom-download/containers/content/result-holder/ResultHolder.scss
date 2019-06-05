@@ -20,14 +20,14 @@
     position: relative;
     .lineHeader {
       text-align: right;
-      color: $ens-grey;
+      color: $ens-dark-grey;
       width: 25%;
       max-width: 200px;
       display: inline-block;
     }
 
     .lineValue {
-      color: $ens-dark-grey;
+      color: $ens-black;
       width: 75%;
       display: inline-block;
       padding-left: 5px;
