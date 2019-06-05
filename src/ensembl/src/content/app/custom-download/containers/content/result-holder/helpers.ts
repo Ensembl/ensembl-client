@@ -68,7 +68,7 @@ export const fetchPreviewResults = async (
   props.setPreviewResult(result);
 };
 
-const flattenResponse = (
+const flattenObject = (
   objectOrArray: any,
   prefix = '',
   formatter = (k: string) => k
@@ -79,11 +79,7 @@ const flattenResponse = (
     value && typeof value === 'object'
       ? {
           ...prev,
-          ...flattenResponse(
-            value,
-            `${prefix}${formatter(key)}`,
-            nestedFormatter
-          )
+          ...flattenObject(value, `${prefix}${formatter(key)}`, nestedFormatter)
         }
       : { ...prev, ...{ [`${prefix}${formatter(key)}`]: value } };
 
@@ -95,10 +91,10 @@ const flattenResponse = (
       );
 };
 
-const formatResponse = (responseData: any) => {
+const formatResponseToArray = (responseData: any) => {
   const preResult: any = [];
 
-  const responseArray = flattenResponse(responseData);
+  const responseArray = flattenObject(responseData);
   Object.keys(responseArray)
     .sort()
     .forEach((key) => {
@@ -125,7 +121,7 @@ const formatResponse = (responseData: any) => {
 };
 
 export const formatResults = (apiResult: any, selectedAttributes: any) => {
-  const formattedResult = formatResponse(apiResult.results);
+  const formattedResult = formatResponseToArray(apiResult.results);
 
   const result: any = [];
   // Populate the header row

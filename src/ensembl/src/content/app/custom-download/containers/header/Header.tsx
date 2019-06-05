@@ -140,12 +140,17 @@ const Header = (props: Props) => {
   const selectedAttributes: any = getSelectedAttributes(props.attributes);
   const selectedFilters: any = getSelectedFilters(props.filters);
 
+  const getFormattedResult = () => {
+    if (resultCount === 0) {
+      return <span>No results found</span>;
+    }
+    return <span>{resultCount} results</span>;
+  };
+
   return (
     <div className={styles.wrapper}>
       {!props.showPreview && (
-        <div className={styles.resultCounter}>
-          <span>{resultCount} results</span>
-        </div>
+        <div className={styles.resultCounter}>{getFormattedResult()}</div>
       )}
 
       {props.showPreview && (
