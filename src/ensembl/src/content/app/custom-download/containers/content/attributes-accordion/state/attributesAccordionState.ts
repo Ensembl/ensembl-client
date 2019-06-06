@@ -11,8 +11,7 @@ export const defaultAttributesAccordionState: AttributesAccordionState = {
   attributes: {},
   orthologue: {
     searchTerm: '',
-    species: [],
-    filteredSpecies: {},
+    species: {},
     showBestMatches: false,
     showAll: false,
     applyToAllSpecies: false

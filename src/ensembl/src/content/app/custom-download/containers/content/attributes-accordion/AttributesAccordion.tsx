@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
@@ -12,7 +12,10 @@ import {
 } from 'src/shared/accordion';
 
 import { getAttributesAccordionExpandedPanel } from './state/attributesAccordionSelector';
-import { setAttributesAccordionExpandedPanel } from './state/attributesAccordionActions';
+import {
+  setAttributesAccordionExpandedPanel,
+  fetchAttributes
+} from './state/attributesAccordionActions';
 
 import {
   Genes,
@@ -29,6 +32,10 @@ import styles from './AttributesAccordion.scss';
 type Props = StateProps & DispatchProps;
 
 const Attributes = (props: Props) => {
+  useEffect(() => {
+    props.fetchAttributes();
+  }, []);
+
   const formatAccordionTitle = (expandedPanel: string) => {
     const title =
       expandedPanel.charAt(0).toUpperCase() + expandedPanel.slice(1);
@@ -207,10 +214,12 @@ type DispatchProps = {
   setAttributesAccordionExpandedPanel: (
     setAttributesAccordionExpandedPanel: any
   ) => void;
+  fetchAttributes: () => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
-  setAttributesAccordionExpandedPanel
+  setAttributesAccordionExpandedPanel,
+  fetchAttributes
 };
 
 type StateProps = {

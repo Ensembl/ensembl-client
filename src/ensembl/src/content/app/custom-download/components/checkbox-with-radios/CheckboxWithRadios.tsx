@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Checkbox from 'src/shared/checkbox/Checkbox';
+import Radio, { radioOptions } from 'src/shared/radio/Radio';
 
 import styles from './CheckboxWithRadios.scss';
 
 type Props = {
-  radioOptions: any;
+  radioOptions: radioOptions;
   label: string;
   selectedOption: string;
-  onChange: (selecteOption: string) => void;
+  onChange: (selectedOption: string) => void;
 };
 
 const CheckboxWithRadios = (props: Props) => {
@@ -28,8 +29,8 @@ const CheckboxWithRadios = (props: Props) => {
   );
 
   const handleOnChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      props.onChange(event.target.value);
+    (selectedOption: string) => {
+      props.onChange(selectedOption);
     },
     [props.selectedOption]
   );
@@ -46,26 +47,15 @@ const CheckboxWithRadios = (props: Props) => {
                 label={props.label}
               />
             </td>
-            {checkedStatus &&
-              props.radioOptions.map((option: any, key: number) => {
-                let isSelected = false;
-                if (option.value === props.selectedOption) {
-                  isSelected = true;
-                }
-                return (
-                  <td key={key}>
-                    <input
-                      className={styles.optionRadio}
-                      value={option.value}
-                      type="radio"
-                      onChange={handleOnChange}
-                      checked={isSelected}
-                      name="radio"
-                    />
-                    <span>{option.label}</span>
-                  </td>
-                );
-              })}
+            {checkedStatus && (
+              <td>
+                <Radio
+                  onChange={handleOnChange}
+                  radioOptions={props.radioOptions}
+                  selectedOption={props.selectedOption}
+                />
+              </td>
+            )}
           </tr>
         </tbody>
       </table>

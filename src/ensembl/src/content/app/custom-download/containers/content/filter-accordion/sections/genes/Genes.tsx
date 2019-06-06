@@ -12,6 +12,7 @@ import {
 
 import CheckboxWithSelects from 'src/content/app/custom-download/components/checkbox-with-selects/CheckboxWithSelects';
 import CheckboxWithRadios from 'src/content/app/custom-download/components/checkbox-with-radios/CheckboxWithRadios';
+import { radioOptions } from 'src/shared/radio/Radio';
 
 import {
   getGeneFilters,
@@ -36,7 +37,49 @@ import {
   transcriptTypeFiltersGrid
 } from 'src/content/app/custom-download/sampledata';
 
+import { Option } from 'src/shared/select/Select';
+
 import styles from './Genes.scss';
+
+// Will be fetched from the API when we have one
+const geneSourceSelectOptions: Option[] = [
+  {
+    value: 'ensembl',
+    label: 'Ensembl',
+    isSelected: false
+  },
+  {
+    value: 'ensembl_havana',
+    label: 'Ensembl Havana',
+    isSelected: false
+  },
+  {
+    value: 'havana',
+    label: 'Havana',
+    isSelected: false
+  },
+  {
+    value: 'insdc',
+    label: 'INSDC',
+    isSelected: false
+  },
+  {
+    value: 'mirbase',
+    label: 'Mirbase',
+    isSelected: false
+  }
+];
+// Will be fetched from the API when we have one
+const gencodeBasicAnnotationOptions: radioOptions = [
+  {
+    value: 'include',
+    label: 'Include'
+  },
+  {
+    value: 'exclude',
+    label: 'Exclude'
+  }
+];
 
 type Props = StateProps & DispatchProps;
 
@@ -100,45 +143,6 @@ const Genes = (props: Props) => {
     },
     [props.expandedPanels]
   );
-
-  const geneSourceSelectOptions = [
-    {
-      value: 'ensembl',
-      label: 'Ensembl',
-      isSelected: false
-    },
-    {
-      value: 'ensembl_havana',
-      label: 'Ensembl Havana',
-      isSelected: false
-    },
-    {
-      value: 'havana',
-      label: 'Havana',
-      isSelected: false
-    },
-    {
-      value: 'insdc',
-      label: 'INSDC',
-      isSelected: false
-    },
-    {
-      value: 'mirbase',
-      label: 'Mirbase',
-      isSelected: false
-    }
-  ];
-
-  const gencodeBasicAnnotationOptions = [
-    {
-      value: 'include',
-      label: 'Include'
-    },
-    {
-      value: 'exclude',
-      label: 'Exclude'
-    }
-  ];
 
   const geneSourceFilterOnChange = useCallback(
     (selectedOptions: []) => {

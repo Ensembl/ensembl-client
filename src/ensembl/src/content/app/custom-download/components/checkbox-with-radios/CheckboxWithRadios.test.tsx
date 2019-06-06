@@ -2,11 +2,11 @@ import React from 'react';
 import { mount } from 'enzyme';
 import CheckboxWithRadios from './CheckboxWithRadios';
 import Checkbox from 'src/shared/checkbox/Checkbox';
-import Select from 'src/shared/select/Select';
+import { radioOptions } from 'src/shared/radio/Radio';
 
 const onChange = jest.fn();
 
-const radioOptions = [
+const radioOptions: radioOptions = [
   {
     value: 'one',
     label: 'one'

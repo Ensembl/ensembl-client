@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
-import apiService from 'src/services/api-service';
 import CheckBoxGrid, {
   getAttributesCount
 } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
@@ -10,7 +9,6 @@ import {
   getOrthologueAttributes,
   getOrthologueSearchTerm,
   getOrthologueSpecies,
-  getOrthologueFilteredSpecies,
   getOrthologueShowBestMatches,
   getOrthologueShowAll,
   getOrthologueApplyToAllSpecies
@@ -19,14 +17,12 @@ import {
 import {
   setOrthologueAttributes,
   setOrthologueSearchTerm,
+  fetchOrthologueSpecies,
   setOrthologueSpecies,
-  setOrthologueFilteredSpecies,
   setOrthologueShowBestMatches,
   setOrthologueShowAll,
   setOrthologueApplyToAllSpecies
 } from '../../state/attributesAccordionActions';
-
-import { getMatchedSpeciesList } from '../helpers';
 
 import Input from 'src/shared/input/Input';
 
@@ -56,18 +52,17 @@ const Orthologue = (props: Props) => {
   const speciesOnChangeHandler = useCallback(
     (status: boolean, subSection: string, attributeId: string) => {
       const newOrthologueFilteredSpecies = {
-        ...props.orthologueFilteredSpecies
+        ...props.orthologueSpecies
       };
 
       newOrthologueFilteredSpecies[subSection][
         attributeId
       ].checkedStatus = status;
 
-      props.setOrthologueFilteredSpecies(newOrthologueFilteredSpecies);
+      props.setOrthologueSpecies(newOrthologueFilteredSpecies);
 
       const newOrthologueAttributes = { ...props.orthologueAttributes };
-      const sectionHeader =
-        props.orthologueFilteredSpecies.default[attributeId].label;
+      const sectionHeader = props.orthologueSpecies.default[attributeId].label;
 
       if (status) {
         newOrthologueAttributes[sectionHeader] = JSON.parse(
@@ -79,65 +74,52 @@ const Orthologue = (props: Props) => {
 
       props.setOrthologueAttributes(newOrthologueAttributes);
     },
-    [props.orthologueFilteredSpecies, props.orthologueAttributes]
+    [props.orthologueSpecies, props.orthologueAttributes]
   );
 
   const inputOnChangeHandler = useCallback(
     (searchTerm: string) => {
       props.setOrthologueSearchTerm(searchTerm);
+      props.fetchOrthologueSpecies(
+        searchTerm,
+        props.shouldShowBestMatches,
+        props.shouldShowAll,
+        props.orthologueSpecies
+      );
     },
-    [props.orthologueSearchTerm]
+    [props.orthologueSearchTerm, props.orthologueSpecies]
   );
 
-  useEffect(() => {
-    const endpoint =
-      'https://rest.ensembl.org/info/species?content-type=application/json';
+  // Waiting for new design from Andrea
+  // const showBestMatches = useCallback(() => {
+  //   props.setOrthologueShowBestMatches(!props.shouldShowBestMatches);
 
-    if (!props.orthologueSpecies.length) {
-      apiService
-        .fetch(endpoint, {
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          preserveEndpoint: true
-        })
-        .then((response: any) => {
-          props.setOrthologueSpecies(response);
-        });
-    }
-  }, []);
+  //   props.fetchOrthologueSpecies(
+  //     props.orthologueSearchTerm,
+  //     !props.shouldShowBestMatches,
+  //     props.shouldShowAll,
+  //     props.orthologueSpecies
+  //   );
 
-  useEffect(() => {
-    getMatchedSpeciesList(props.orthologueSearchTerm, props);
-  }, [
-    props.orthologueSearchTerm,
-    props.shouldShowBestMatches,
-    props.shouldShowAll
-  ]);
+  // }, [props.shouldShowBestMatches, props.orthologueSpecies]);
 
-  const showBestMatches = useCallback(() => {
-    props.setOrthologueShowBestMatches(!props.shouldShowBestMatches);
-  }, [props.shouldShowBestMatches, props.orthologueFilteredSpecies]);
+  // const showAll = useCallback(() => {
+  //   props.setOrthologueShowAll(!props.shouldShowAll);
+  //   props.fetchOrthologueSpecies(
+  //     props.orthologueSearchTerm,
+  //     props.shouldShowBestMatches,
+  //     !props.shouldShowAll,
+  //     props.orthologueSpecies
+  //   );
 
-  const showAll = useCallback(() => {
-    props.setOrthologueShowAll(!props.shouldShowAll);
-  }, [props.shouldShowAll, props.orthologueFilteredSpecies]);
+  // }, [props.shouldShowAll, props.orthologueSpecies]);
 
   const getResultCounter = () => {
-    if (props.shouldShowBestMatches || props.shouldShowAll) {
-      return (
-        <>
-          <span>{getAttributesCount(props.orthologueFilteredSpecies)}/</span>
-          <span>{props.orthologueSpecies.length}</span>
-          <span>results</span>
-        </>
-      );
-    }
-
+    const totalSpecies = getAttributesCount(props.orthologueSpecies);
     return (
       <>
-        <span>{props.orthologueSpecies.length}</span>
-        <span>results</span>
+        <span>{totalSpecies ? totalSpecies : 0}</span>
+        <span> result{totalSpecies > 1 ? 's' : ''}</span>
       </>
     );
   };
@@ -154,26 +136,26 @@ const Orthologue = (props: Props) => {
         {props.orthologueSearchTerm.length > 0 && (
           <span>
             <span className={styles.resultCounter}>{getResultCounter()}</span>
-            <span
+            {/* <span
               className={styles.bestMatchesFilter}
               onClick={showBestMatches}
             >
               {props.shouldShowBestMatches
-                ? 'Hide best matches'
+                ? 'View all'
                 : 'View best matches'}
-            </span>
-            <span className={styles.showAllFilter} onClick={showAll}>
+            </span> */}
+            {/* <span className={styles.showAllFilter} onClick={showAll}>
               {props.shouldShowAll ? 'Hide all' : 'Show all'}
-            </span>
+            </span> */}
           </span>
         )}
       </div>
 
-      {!!props.orthologueFilteredSpecies && (
+      {!!props.orthologueSpecies && (
         <div>
           <CheckBoxGrid
             checkboxOnChange={speciesOnChangeHandler}
-            gridData={props.orthologueFilteredSpecies}
+            gridData={props.orthologueSpecies}
             hideTitles={props.hideTitles}
             columns={3}
           />
@@ -205,8 +187,13 @@ const Orthologue = (props: Props) => {
 type DispatchProps = {
   setOrthologueAttributes: (setOrthologueAttributes: {}) => void;
   setOrthologueSearchTerm: (setOrthologueSearchTerm: string) => void;
-  setOrthologueSpecies: (setOrthologueSpecies: []) => void;
-  setOrthologueFilteredSpecies: (setOrthologueFilteredSpecies: {}) => void;
+  setOrthologueSpecies: (setOrthologueSpecies: any) => void;
+  fetchOrthologueSpecies: (
+    searchTerm: string,
+    shouldShowBestMatches: boolean,
+    shouldShowAll: boolean,
+    orthologueSpecies: any
+  ) => void;
   setOrthologueShowBestMatches: (setOrthologueShowBestMatches: boolean) => void;
   setOrthologueShowAll: (setOrthologueShowAll: boolean) => void;
   setOrthologueApplyToAllSpecies: (
@@ -217,8 +204,8 @@ type DispatchProps = {
 const mapDispatchToProps: DispatchProps = {
   setOrthologueAttributes,
   setOrthologueSearchTerm,
-  setOrthologueSpecies,
-  setOrthologueFilteredSpecies,
+  setOrthologueSpecies: setOrthologueSpecies.success,
+  fetchOrthologueSpecies,
   setOrthologueShowBestMatches,
   setOrthologueShowAll,
   setOrthologueApplyToAllSpecies
@@ -228,7 +215,6 @@ type StateProps = {
   orthologueAttributes: any;
   orthologueSearchTerm: string;
   orthologueSpecies: any;
-  orthologueFilteredSpecies: any;
   shouldShowBestMatches: boolean;
   shouldShowAll: boolean;
   shouldApplyToAllSpecies: boolean;
@@ -238,7 +224,6 @@ const mapStateToProps = (state: RootState): StateProps => ({
   orthologueAttributes: getOrthologueAttributes(state),
   orthologueSearchTerm: getOrthologueSearchTerm(state),
   orthologueSpecies: getOrthologueSpecies(state),
-  orthologueFilteredSpecies: getOrthologueFilteredSpecies(state),
   shouldShowBestMatches: getOrthologueShowBestMatches(state),
   shouldShowAll: getOrthologueShowAll(state),
   shouldApplyToAllSpecies: getOrthologueApplyToAllSpecies(state)

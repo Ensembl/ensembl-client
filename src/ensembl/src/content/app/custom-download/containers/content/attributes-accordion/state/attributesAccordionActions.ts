@@ -1,14 +1,29 @@
-import { createAction } from 'typesafe-actions';
-
+import { createAction, createAsyncAction } from 'typesafe-actions';
+import { ThunkAction } from 'redux-thunk';
+import { ActionCreator, Action } from 'redux';
 import { getCustomDownloadAnalyticsObject } from 'src/analyticsHelper';
+import {
+  attributes,
+  orthologueSpecies as sampleOrthologueSpecies
+} from '../../../../sampledata';
 
-export const setAttributes = createAction(
-  'custom-download/set-attributes',
-  (resolve) => {
-    return (attributes: {}) =>
-      resolve(attributes, getCustomDownloadAnalyticsObject('Default action'));
+export const setAttributes = createAsyncAction(
+  'custom-download/set-attributes-request',
+  'custom-download/set-attributes-success',
+  'custom-download/set-attributes-failure'
+)<undefined, {}, Error>();
+
+export const fetchAttributes: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = () => async (dispatch) => {
+  try {
+    dispatch(setAttributes.request());
+
+    dispatch(setAttributes.success(attributes));
+  } catch (error) {
+    dispatch(setAttributes.failure(error));
   }
-);
+};
 
 export const setGeneAttributes = createAction(
   'custom-download/set-gene-attributes',
@@ -50,17 +65,6 @@ export const setOrthologueAttributes = createAction(
       resolve(
         orthologueAttributes,
         getCustomDownloadAnalyticsObject('Orthologue attributes updated')
-      );
-  }
-);
-
-export const setOrthologueFilteredSpecies = createAction(
-  'custom-download/set-orthologue-filteres-species',
-  (resolve) => {
-    return (filteredSpecies: {}) =>
-      resolve(
-        filteredSpecies,
-        getCustomDownloadAnalyticsObject('Orthologue species filtered')
       );
   }
 );
@@ -113,16 +117,53 @@ export const setOrthologueSearchTerm = createAction(
   }
 );
 
-export const setOrthologueSpecies = createAction(
-  'custom-download/set-orthologue-species',
-  (resolve) => {
-    return (allSpecies: []) =>
-      resolve(
-        allSpecies,
-        getCustomDownloadAnalyticsObject('Orthologue species updated')
-      );
+export const setOrthologueSpecies = createAsyncAction(
+  'custom-download/set-orthologue-species-request',
+  'custom-download/set-orthologue-species-success',
+  'custom-download/set-orthologue-species-failure'
+)<{ searchTerm: string }, {}, Error>();
+
+export const fetchOrthologueSpecies: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (
+  searchTerm: string,
+  shouldShowBestMatches: boolean,
+  shouldShowAll: boolean,
+  orthologueSpecies: any
+) => async (dispatch) => {
+  dispatch(setOrthologueSpecies.request({ searchTerm: searchTerm }));
+  try {
+    // This will be fetched from the API when we have one
+    let allSpecies = sampleOrthologueSpecies.species;
+
+    let filteredSpecies: any = {};
+
+    allSpecies.forEach((species: any) => {
+      if (
+        species.display_name.toLowerCase().indexOf(searchTerm.toLowerCase()) !==
+        -1
+      ) {
+        filteredSpecies[species.name] = {
+          id: species.name,
+          label: species.display_name,
+          checkedStatus: false
+        };
+      }
+    });
+
+    if (orthologueSpecies && orthologueSpecies.default) {
+      Object.keys(orthologueSpecies.default).forEach((species: string) => {
+        if (orthologueSpecies.default[species].checkedStatus) {
+          filteredSpecies[species] = orthologueSpecies.default[species];
+        }
+      });
+    }
+
+    dispatch(setOrthologueSpecies.success({ default: filteredSpecies }));
+  } catch (error) {
+    dispatch(setOrthologueSpecies.failure(error));
   }
-);
+};
 
 export const setLocationAttributes = createAction(
   'custom-download/set-location-attributes',

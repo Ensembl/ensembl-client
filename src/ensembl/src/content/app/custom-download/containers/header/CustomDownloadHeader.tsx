@@ -148,7 +148,7 @@ const Header = (props: Props) => {
       </>
     );
   };
-  console.log(styles);
+
   return (
     <div className={styles.wrapper}>
       {!props.showPreview && (

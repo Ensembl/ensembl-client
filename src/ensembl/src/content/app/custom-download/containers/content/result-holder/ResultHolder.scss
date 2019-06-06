@@ -1,19 +1,23 @@
 @import 'src/styles/common';
 
 .wrapper {
-  padding-right: 20px;
+  padding-right: 16px;
   padding-left: 50px;
   margin-top: -15px;
   max-height: calc(100vh - 190px);
   overflow-y: auto;
+  margin-right: 4px;
+  margin-bottom: 20px;
 }
 
 .resultCard {
-  min-height: 50px;
+  min-height: 75px;
   border: 1px solid $ens-grey;
   padding: 15px 5px;
   background: $ens-white;
   margin-bottom: 5px;
+  position: relative;
+  display: block;
 
   .resultLine {
     width: 100%;
@@ -39,4 +43,16 @@
   width: 100%;
   padding: 10px;
   text-align: center;
+  position: absolute;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 1;
+  margin-top: -15px;
+  margin-left: -5px;
+
+  div {
+    top: 50%;
+    position: absolute;
+    margin-top: -20px;
+  }
 }

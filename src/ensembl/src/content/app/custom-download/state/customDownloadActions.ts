@@ -3,6 +3,9 @@ import { createAction, createAsyncAction } from 'typesafe-actions';
 import { getCustomDownloadAnalyticsObject } from 'src/analyticsHelper';
 import * as allFilterAccordionActions from '../containers/content/filter-accordion/state/filterAccordionActions';
 import * as allAttributeAccordionActions from '../containers/content/attributes-accordion/state/attributesAccordionActions';
+import { ActionCreator, Action } from 'redux';
+import { ThunkAction } from 'redux-thunk';
+import apiService from 'src/services/api-service';
 
 export const filterAccordionActions = allFilterAccordionActions;
 export const attributesAccordionActions = allAttributeAccordionActions;
@@ -44,7 +47,26 @@ export const setPreviewResult = createAsyncAction(
   'custom-download/preview-results-request',
   'custom-download/preview-results-success',
   'custom-download/preview-results-failure'
-)<{}, { previewResult: {} }, Error>();
+)<{ endpointURL: string; headers: {} }, { previewResult: {} }, Error>();
+
+export const fetchPreviewResult: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (endpointURL: string) => async (dispatch) => {
+  try {
+    apiService
+      .fetch(endpointURL, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        preserveEndpoint: true
+      })
+      .then((response: any) => {
+        dispatch(setPreviewResult.success(response));
+      });
+  } catch (error) {
+    dispatch(setPreviewResult.failure(error));
+  }
+};
 
 export const setIsLoadingResult = createAction(
   'custom-download/set-loading-result',

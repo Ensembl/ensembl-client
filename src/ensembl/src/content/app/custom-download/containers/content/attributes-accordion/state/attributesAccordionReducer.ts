@@ -20,7 +20,7 @@ function attributesAccordion(
       attributesAccordionActions.setVariationAccordionExpandedPanels
     ):
       return { ...state, expandedVariationPanels: action.payload };
-    case getType(attributesAccordionActions.setAttributes):
+    case getType(attributesAccordionActions.setAttributes.success):
       return { ...state, attributes: action.payload };
     case getType(attributesAccordionActions.setGeneAttributes):
       return {
@@ -77,12 +77,7 @@ function attributesAccordion(
         ...state,
         orthologue: Orthologue(state.orthologue, action)
       };
-    case getType(attributesAccordionActions.setOrthologueSpecies):
-      return {
-        ...state,
-        orthologue: Orthologue(state.orthologue, action)
-      };
-    case getType(attributesAccordionActions.setOrthologueFilteredSpecies):
+    case getType(attributesAccordionActions.setOrthologueSpecies.success):
       return {
         ...state,
         orthologue: Orthologue(state.orthologue, action)
@@ -117,10 +112,8 @@ function Orthologue(
       return { ...state, showAll: action.payload };
     case getType(attributesAccordionActions.setOrthologueApplyToAllSpecies):
       return { ...state, applyToAllSpecies: action.payload };
-    case getType(attributesAccordionActions.setOrthologueSpecies):
+    case getType(attributesAccordionActions.setOrthologueSpecies.success):
       return { ...state, species: action.payload };
-    case getType(attributesAccordionActions.setOrthologueFilteredSpecies):
-      return { ...state, filteredSpecies: action.payload };
     default:
       return state;
   }

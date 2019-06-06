@@ -8,11 +8,11 @@ import {
 
 import { getAttributes } from '../attributes-accordion/state/attributesAccordionSelector';
 import { getFilters } from '../filter-accordion/state/filterAccordionSelector';
-import apiService from 'src/services/api-service';
 
 import {
   setPreviewResult,
-  setIsLoadingResult
+  setIsLoadingResult,
+  fetchPreviewResult
 } from '../../../state/customDownloadActions';
 
 import styles from './ResultHolder.scss';
@@ -32,31 +32,26 @@ const ResultHolder = (props: Props) => {
 
   useEffect(() => {
     if (!selectedAttributes.length && props.previewResult.results) {
-      props.setPreviewResult([]);
+      props.clearPreviewResult([]);
       return;
     }
     props.setIsLoadingResult(true);
 
-    props.setPreviewResult({});
     const endpointURL = getEndpointUrl(selectedAttributes);
-
-    apiService
-      .fetch(endpointURL, {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        preserveEndpoint: true
-      })
-      .then((response: any) => {
-        props.setPreviewResult(response);
-      });
+    if (selectedAttributes.length) {
+      props.fetchPreviewResult(endpointURL);
+    }
   }, [props.attributes, props.filters]);
 
   useEffect(() => {
     props.setIsLoadingResult(false);
   }, [props.previewResult]);
 
-  if (props.isLoadingResult) {
+  if (
+    props.isLoadingResult &&
+    props.previewResult &&
+    !props.previewResult.results
+  ) {
     return (
       <>
         {Array(10)
@@ -92,6 +87,12 @@ const ResultHolder = (props: Props) => {
       {formattedResults.map((dataRow: [], resultKey: number) => {
         return (
           <div key={resultKey} className={styles.resultCard}>
+            {props.isLoadingResult && (
+              <div className={styles.loaderWrapper}>
+                <CircleLoader />
+              </div>
+            )}
+
             {headerRow.map((header: string, rowKey: number) => {
               return (
                 <div key={rowKey} className={styles.resultLine}>
@@ -110,12 +111,14 @@ const ResultHolder = (props: Props) => {
 };
 
 type DispatchProps = {
-  setPreviewResult: (setPreviewResult: any) => void;
+  fetchPreviewResult: (fetchPreviewResult: any) => void;
+  clearPreviewResult: (clearPreviewResult: any) => void;
   setIsLoadingResult: (setIsLoadingResult: boolean) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
-  setPreviewResult: setPreviewResult.success,
+  fetchPreviewResult: fetchPreviewResult,
+  clearPreviewResult: setPreviewResult.success,
   setIsLoadingResult
 };
 

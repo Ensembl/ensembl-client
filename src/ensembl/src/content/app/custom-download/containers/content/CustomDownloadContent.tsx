@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import styles from './CustomDownloadContent.scss';
 import {
@@ -6,7 +6,6 @@ import {
   getShowPreviewResult,
   getPreviewResult
 } from '../../state/customDownloadSelectors';
-import { setAttributes } from './attributes-accordion/state/attributesAccordionActions';
 import { getAttributes } from './attributes-accordion/state/attributesAccordionSelector';
 
 import AttributesAccordion from './attributes-accordion/AttributesAccordion';
@@ -14,18 +13,18 @@ import FiltersAccordion from './filter-accordion/FiltersAccordion';
 import TabButtons from './tab-buttons/TabButtons';
 import ResultHolder from './result-holder/ResultHolder';
 import { RootState } from 'src/store';
-import { attributes } from '../../sampledata';
 import PreviewTable from '../../components/preview-table/PreviewTable';
 
 import { getSelectedAttributes, formatResults } from './result-holder/helpers';
 
-type Props = StateProps & DispatchProps;
+type Props = {
+  selectedTabButton: string;
+  showPreview: boolean;
+  previewResult: any;
+  attributes: any;
+};
 
 const Content = (props: Props) => {
-  useEffect(() => {
-    props.setAttributes(attributes);
-  }, []);
-
   const selectedAttributes: any = getSelectedAttributes(props.attributes);
   let formatedPreviewResult = [];
   if (props.previewResult.results) {
@@ -63,29 +62,11 @@ const Content = (props: Props) => {
   );
 };
 
-type StateProps = {
-  selectedTabButton: string;
-  showPreview: boolean;
-  previewResult: any;
-  attributes: any;
-};
-
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState): Props => ({
   selectedTabButton: getSelectedTabButton(state),
   showPreview: getShowPreviewResult(state),
   previewResult: getPreviewResult(state),
   attributes: getAttributes(state)
 });
 
-type DispatchProps = {
-  setAttributes: (setAttributes: {}) => void;
-};
-
-const mapDispatchToProps: DispatchProps = {
-  setAttributes
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Content);
+export default connect(mapStateToProps)(Content);
