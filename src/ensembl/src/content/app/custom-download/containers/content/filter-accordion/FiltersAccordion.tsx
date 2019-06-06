@@ -12,8 +12,8 @@ import {
 
 import styles from './FiltersAccordion.scss';
 
-import { getFiltersAccordionExpandedPanel } from './filterAccordionSelector';
-import { setFiltersAccordionExpandedPanel } from './filterAccordionActions';
+import { getFiltersAccordionExpandedPanel } from './state/filterAccordionSelector';
+import { setFiltersAccordionExpandedPanel } from './state/filterAccordionActions';
 
 import { Genes } from './sections';
 

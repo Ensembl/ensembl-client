@@ -2,9 +2,7 @@ import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 import { PrimaryButton } from 'src/shared/button/Button';
 
-import RoundButton, {
-  RoundButtonStatus
-} from 'src/shared/round-button/RoundButton';
+import RoundButton from 'src/shared/round-button/RoundButton';
 
 import { RootState } from 'src/store';
 import Select, { Option } from 'src/shared/select/Select';
@@ -14,16 +12,16 @@ import {
   getPreviewResult,
   getShowPreviewResult,
   getDownloadType
-} from '../../customDownloadSelectors';
+} from '../../state/customDownloadSelectors';
 
-import { getFilters } from '../content/filter-accordion/filterAccordionSelector';
-import { getAttributes } from '../content/attributes-accordion/attributesAccordionSelector';
+import { getFilters } from '../content/filter-accordion/state/filterAccordionSelector';
+import { getAttributes } from '../content/attributes-accordion/state/attributesAccordionSelector';
 
 import {
   togglePreFiltersPanel,
   setShowPreview,
   setDownloadType
-} from '../../customDownloadActions';
+} from '../../state/customDownloadActions';
 import ImageButton from 'src/shared/image-button/ImageButton';
 import { ReactComponent as BackIcon } from 'static/img/shared/chevron-left.svg';
 
@@ -34,7 +32,7 @@ import {
 
 import { fetchCustomDownloadResults } from './helper';
 
-import styles from './Header.scss';
+import styles from './CustomDownloadHeader.scss';
 
 type Props = StateProps & DispatchProps;
 
@@ -150,7 +148,7 @@ const Header = (props: Props) => {
       </>
     );
   };
-
+  console.log(styles);
   return (
     <div className={styles.wrapper}>
       {!props.showPreview && (
@@ -179,8 +177,7 @@ const Header = (props: Props) => {
       <div className={styles.selectedFilters}>
         <RoundButton
           onClick={filterOnClick}
-          status={RoundButtonStatus.ACTIVE}
-          classNames={styles}
+          classNames={{ inactive: styles.roundButtonInactive }}
         >
           {props.selectedPreFilter}
         </RoundButton>

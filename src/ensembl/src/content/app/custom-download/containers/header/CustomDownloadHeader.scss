@@ -32,14 +32,6 @@
   margin-top: -15px;
 }
 
-/* RoundButton extended styles*/
-.active {
-  background-color: $ens-medium-dark-grey;
-  border: 1px solid $ens-medium-dark-grey;
-  color: $ens-white;
-  margin-right: 10px;
-}
-
 .previewResultCounter {
   margin-left: 20px;
   padding-top: 12px;
@@ -82,4 +74,9 @@
   li {
     color: $ens-medium-dark-grey;
   }
+}
+
+.roundButtonInactive {
+  background-color: $ens-white;
+  color: $ens-blue;
 }

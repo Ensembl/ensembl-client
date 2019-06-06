@@ -3,7 +3,7 @@ import { connectRouter } from 'connected-react-router';
 
 import browser from '../content/app/browser/browserReducer';
 import drawer from '../content/app/browser/drawer/drawerReducer';
-import customDownload from '../content/app/custom-download/customDownloadReducer';
+import customDownload from '../content/app/custom-download/state/customDownloadReducer';
 import global from '../global/globalReducer';
 import header from '../header/headerReducer';
 import ensObject from '../ens-object/ensObjectReducer';

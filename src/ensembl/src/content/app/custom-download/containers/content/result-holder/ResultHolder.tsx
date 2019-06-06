@@ -4,16 +4,16 @@ import { RootState } from 'src/store';
 import {
   getPreviewResult,
   getIsLoadingResult
-} from '../../../customDownloadSelectors';
+} from '../../../state/customDownloadSelectors';
 
-import { getAttributes } from '../attributes-accordion/attributesAccordionSelector';
-import { getFilters } from '../filter-accordion/filterAccordionSelector';
+import { getAttributes } from '../attributes-accordion/state/attributesAccordionSelector';
+import { getFilters } from '../filter-accordion/state/filterAccordionSelector';
 import apiService from 'src/services/api-service';
 
 import {
   setPreviewResult,
   setIsLoadingResult
-} from '../../../customDownloadActions';
+} from '../../../state/customDownloadActions';
 
 import styles from './ResultHolder.scss';
 

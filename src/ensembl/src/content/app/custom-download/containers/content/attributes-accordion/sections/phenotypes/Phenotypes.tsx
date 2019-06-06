@@ -2,8 +2,8 @@ import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
-import { getPhenotypeAttributes } from '../../attributesAccordionSelector';
-import { setPhenotypeAttributes } from '../../attributesAccordionActions';
+import { getPhenotypeAttributes } from '../../state/attributesAccordionSelector';
+import { setPhenotypeAttributes } from '../../state/attributesAccordionActions';
 import CheckBoxGrid, {
   filterCheckedAttributes
 } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';

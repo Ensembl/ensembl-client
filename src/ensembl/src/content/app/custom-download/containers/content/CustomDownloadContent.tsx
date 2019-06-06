@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import styles from './Content.scss';
+import styles from './CustomDownloadContent.scss';
 import {
   getSelectedTabButton,
   getShowPreviewResult,
   getPreviewResult
-} from '../../customDownloadSelectors';
-import { setAttributes } from './attributes-accordion/attributesAccordionActions';
-import { getAttributes } from './attributes-accordion/attributesAccordionSelector';
+} from '../../state/customDownloadSelectors';
+import { setAttributes } from './attributes-accordion/state/attributesAccordionActions';
+import { getAttributes } from './attributes-accordion/state/attributesAccordionSelector';
 
 import AttributesAccordion from './attributes-accordion/AttributesAccordion';
 import FiltersAccordion from './filter-accordion/FiltersAccordion';

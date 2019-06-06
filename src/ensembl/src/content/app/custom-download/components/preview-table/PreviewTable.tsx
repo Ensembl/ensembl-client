@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
-import { getPreviewResult } from '../../customDownloadSelectors';
+import { getPreviewResult } from '../../state/customDownloadSelectors';
 
 import styles from './PreviewTable.scss';
 

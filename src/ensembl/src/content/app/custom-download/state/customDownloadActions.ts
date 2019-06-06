@@ -1,8 +1,8 @@
 import { createAction, createAsyncAction } from 'typesafe-actions';
 
 import { getCustomDownloadAnalyticsObject } from 'src/analyticsHelper';
-import * as allFilterAccordionActions from './containers/content/filter-accordion/filterAccordionActions';
-import * as allAttributeAccordionActions from './containers/content/attributes-accordion/attributesAccordionActions';
+import * as allFilterAccordionActions from '../containers/content/filter-accordion/state/filterAccordionActions';
+import * as allAttributeAccordionActions from '../containers/content/attributes-accordion/state/attributesAccordionActions';
 
 export const filterAccordionActions = allFilterAccordionActions;
 export const attributesAccordionActions = allAttributeAccordionActions;

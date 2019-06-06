@@ -5,12 +5,12 @@ import RoundButton, {
 } from 'src/shared/round-button/RoundButton';
 import BadgedButton from 'src/shared/badged-button/BadgedButton';
 
-import { getSelectedTabButton } from '../../../customDownloadSelectors';
+import { getSelectedTabButton } from '../../../state/customDownloadSelectors';
 
-import { getAttributes } from '../attributes-accordion/attributesAccordionSelector';
-import { getFilters } from '../filter-accordion/filterAccordionSelector';
+import { getAttributes } from '../attributes-accordion/state/attributesAccordionSelector';
+import { getFilters } from '../filter-accordion/state/filterAccordionSelector';
 
-import { toggleTabButton } from '../../../customDownloadActions';
+import { toggleTabButton } from '../../../state/customDownloadActions';
 import { RootState } from 'src/store';
 
 import styles from './TabButtons.scss';
@@ -65,7 +65,7 @@ const TabButtons = (props: Props) => {
       ? RoundButtonStatus.ACTIVE
       : RoundButtonStatus.INACTIVE;
   return (
-    <div className={styles.wrapper}>
+    <div className={`${styles.wrapper}`}>
       <div>
         <BadgedButton
           badgeContent={getTotalSelectedAttributes(props.attributes)}
@@ -75,19 +75,21 @@ const TabButtons = (props: Props) => {
               props.toggleTabButton('attributes');
             }}
             status={dataButtonStatus}
+            // classNames={{inactive: styles.inactive}}
           >
             Data to download
           </RoundButton>
         </BadgedButton>
       </div>
 
-      <div className={styles.buttonPadding}>
+      <div className={`${styles.buttonPadding}`}>
         <BadgedButton badgeContent={getTotalSelectedFilters(props.filters)}>
           <RoundButton
             onClick={() => {
               props.toggleTabButton('filter');
             }}
             status={filterButtonStatus}
+            // classNames={{inactive: styles.inactive}}
           >
             Filter results
           </RoundButton>

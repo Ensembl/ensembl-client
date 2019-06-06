@@ -14,12 +14,12 @@ import {
   getGermlineVariationAttributes,
   getSomaticVariationAttributes,
   getVariationAccordionExpandedPanels
-} from '../../attributesAccordionSelector';
+} from '../../state/attributesAccordionSelector';
 import {
   setSomaticVariationAttributes,
   setGermlineVariationAttributes,
   setVariationAccordionExpandedPanels
-} from '../../attributesAccordionActions';
+} from '../../state/attributesAccordionActions';
 import CheckBoxGrid from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
 import styles from './Variations.scss';

@@ -20,7 +20,7 @@ import {
   getFiltersAccordionExpandedGenePanels,
   getGeneSourceFilters,
   getGencodeAnnotationFilters
-} from '../../filterAccordionSelector';
+} from '../../state/filterAccordionSelector';
 
 import {
   setGeneTypeFilters,
@@ -28,7 +28,7 @@ import {
   setGencodeAnnotationFilters,
   setTranscriptTypeFilters,
   setFiltersAccordionExpandedGenePanels
-} from '../../filterAccordionActions';
+} from '../../state/filterAccordionActions';
 import CheckBoxGrid from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
 import {

@@ -1,10 +1,10 @@
 import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 import PreFilterPanel from 'src/content/app/custom-download/containers/pre-filters-panel/PreFilterPanel';
-import { getShowPreFilterPanel } from './customDownloadSelectors';
+import { getShowPreFilterPanel } from './state/customDownloadSelectors';
 import { RootState } from 'src/store';
-import Header from './containers/header/Header';
-import Content from './containers/content/Content';
+import CustomDownloadHeader from './containers/header/CustomDownloadHeader';
+import CustomDownloadContent from './containers/content/CustomDownloadContent';
 
 type StateProps = {
   showPreFiltersPanel: any;
@@ -20,7 +20,7 @@ const CustomDownload: FunctionComponent<CustomDownloadProps> = (
       {props.showPreFiltersPanel && <PreFilterPanel />}
       {!props.showPreFiltersPanel && (
         <>
-          <Header /> <Content />
+          <CustomDownloadHeader /> <CustomDownloadContent />
         </>
       )}
     </>

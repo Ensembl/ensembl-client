@@ -4,13 +4,11 @@ import RoundButton, {
   RoundButtonStatus
 } from 'src/shared/round-button/RoundButton';
 
-import { PrimaryButton } from 'src/shared/button/Button';
-
-import { getSelectedPreFilter } from '../../customDownloadSelectors';
+import { getSelectedPreFilter } from '../../state/customDownloadSelectors';
 import {
   updateSelectedPreFilter,
   togglePreFiltersPanel
-} from '../../customDownloadActions';
+} from '../../state/customDownloadActions';
 
 import { RootState } from 'src/store';
 
@@ -24,16 +22,10 @@ const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
   const filterOnClick = useCallback(
     (filter: string) => {
       props.updateSelectedPreFilter(filter);
+      props.togglePreFiltersPanel(false);
     },
     [props.selectedPreFilter]
   );
-
-  // Check if atleast one filter is selected
-  const enableNextButton = !!Object.keys(props.selectedPreFilter).length;
-
-  const onSubmitHandler = () => {
-    props.togglePreFiltersPanel(false);
-  };
 
   return (
     <section className={styles.preFilterPanel}>
@@ -44,11 +36,7 @@ const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
             onClick={() => {
               filterOnClick('Genes/Transcripts');
             }}
-            status={
-              props.selectedPreFilter === 'Genes/Transcripts'
-                ? RoundButtonStatus.ACTIVE
-                : RoundButtonStatus.INACTIVE
-            }
+            status={RoundButtonStatus.INACTIVE}
             classNames={styles}
           >
             Genes/Transcripts
@@ -96,13 +84,6 @@ const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
             Regulation
           </RoundButton>
         </div>
-        <PrimaryButton
-          onClick={onSubmitHandler}
-          className={styles.primaryButton}
-          isDisabled={enableNextButton ? false : true}
-        >
-          Next
-        </PrimaryButton>
       </div>
     </section>
   );
