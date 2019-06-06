@@ -6,7 +6,7 @@ import { radioOptions } from 'src/shared/radio/Radio';
 
 const onChange = jest.fn();
 
-const radioOptions: radioOptions = [
+const options: radioOptions = [
   {
     value: 'one',
     label: 'one'
@@ -27,7 +27,7 @@ describe('<CheckboxWithRadios />', () => {
     onChange: onChange,
     label: 'foo',
     selectedOption: '',
-    radioOptions: radioOptions
+    radioOptions: options
   };
 
   it('renders without error', () => {
@@ -55,9 +55,7 @@ describe('<CheckboxWithRadios />', () => {
       .find(Checkbox)
       .find('.defaultCheckbox')
       .simulate('click');
-    expect(wrapper.find('input[type="radio"]').length).toBe(
-      radioOptions.length
-    );
+    expect(wrapper.find('input[type="radio"]').length).toBe(options.length);
   });
 
   it('calls the onChange when the radio is changed with the selected option', () => {
