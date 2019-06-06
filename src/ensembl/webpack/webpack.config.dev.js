@@ -64,6 +64,10 @@ const devConfig = {
       });
     },
 
+    proxy: {
+      '/api': 'http://localhost:3000'
+    },
+
     // disable host check only when testing on IE11 remotely
     disableHostCheck: false,
 
