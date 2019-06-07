@@ -62,6 +62,7 @@ $deleteButtonPadding: 8px 20px 8px 28px;
 
   .overlayText {
     padding: $selectedSpeciesPadding;
+    padding-left: 15px;
     left: 0;
     color: $ens-blue;
   }
@@ -69,6 +70,7 @@ $deleteButtonPadding: 8px 20px 8px 28px;
   .closeButtonContainer {
     display: flex;
     padding: $deleteButtonPadding;
+    padding-right: 15px;
     align-items: center;
     right: -0.5em;
   }
