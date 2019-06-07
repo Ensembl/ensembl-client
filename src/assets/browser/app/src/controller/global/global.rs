@@ -10,27 +10,49 @@ use url::Url;
 use util::set_instance_id;
 
 use controller::input::{
-    register_startup_events, register_shutdown_events,
-    Timers
+    register_startup_events, register_shutdown_events
 };
 use controller::global::{ AppRunner, Booting };
+use controller::scheduler::{ Scheduler, SchedulerGroup };
 use data::{ BackendConfigBootstrap, HttpManager };
 use dom::domutil;
 use dom::domutil::browser_time;
 
+const SCHEDULER_ALLOC : f64 = 12.; /* ms per raf */
+
 pub struct GlobalImpl {
     apps: HashMap<String,AppRunner>,
     http_manager: HttpManager,
-    timers: Timers
+    scheduler: Scheduler,
+    sched_group: SchedulerGroup
 }
 
 impl GlobalImpl {
     pub fn new() -> GlobalImpl {
-        GlobalImpl {
+        let scheduler = Scheduler::new();
+        let sched_group = scheduler.make_group();
+        let mut out = GlobalImpl {
             apps: HashMap::<String,AppRunner>::new(),
             http_manager: HttpManager::new(),
-            timers: Timers::new()
-        }
+            scheduler,
+            sched_group
+        };
+        out.init();
+        out
+    }
+
+    fn init(&mut self) {
+        self.scheduler.set_timesig(2);
+        let http_manager = self.http_manager.clone();
+        self.sched_group.add("http-manager",Box::new(move |sr| {
+            if !http_manager.tick() {
+                sr.unproductive();
+            }
+        }),3,false);
+    }
+
+    pub fn scheduler_clone(&self) -> Scheduler {
+        self.scheduler.clone()
     }
 
     pub fn destroy(&mut self) {
@@ -83,8 +105,8 @@ impl Global {
     }
     
     pub fn tick(&mut self) {
-        let http_manager = self.0.borrow().http_manager.clone();
-        http_manager.tick();
+        let sched = self.0.borrow_mut().scheduler_clone();
+        sched.beat(SCHEDULER_ALLOC);
         let mut out = self.clone();
         window().request_animation_frame(
             move |t| out.tick()
@@ -116,6 +138,10 @@ impl Global {
     
     pub fn register_app_now(&mut self, key: &str, ar: AppRunner) {
         self.0.borrow_mut().register_app(key,ar);
+    }
+    
+    pub fn scheduler_clone(&self) -> Scheduler {
+        self.0.borrow().scheduler_clone()
     }
     
     #[allow(unused,dead_code)]
