@@ -12,7 +12,8 @@ import initialState, {
 import {
   SearchMatch,
   PopularSpecies,
-  CommittedItem
+  CommittedItem,
+  Assembly
 } from 'src/content/app/species-selector/types/species-search';
 
 // NOTE: CurrentItem can be built from a search match or from a popular species
@@ -22,15 +23,17 @@ const buildCurrentItem = (data: SearchMatch | PopularSpecies): CurrentItem => {
     reference_genome_id: data.reference_genome_id,
     common_name: data.common_name,
     scientific_name: data.scientific_name,
-    assembly_name: (data as PopularSpecies).assembly_name
-      ? (data as PopularSpecies).assembly_name
-      : null,
+    assembly_name: data.assembly_name,
     selectedStrainId: null,
-    selectedAssemblyId: data.genome_id,
     strains: [],
-    assemblies: []
+    assemblies: [buildAssembly(data)]
   };
 };
+
+const buildAssembly = (data: SearchMatch | PopularSpecies): Assembly => ({
+  genome_id: data.genome_id,
+  assembly_name: data.assembly_name
+});
 
 const buildCommittedItem = (data: CurrentItem): CommittedItem => ({
   genome_id: data.genome_id,
@@ -83,7 +86,7 @@ export default function speciesSelectorReducer(
         ...state,
         currentItem: {
           ...(state.currentItem as CurrentItem),
-          genome_id: action.payload
+          ...action.payload
         }
       };
     case getType(

@@ -147,4 +147,4 @@ export const deleteSpeciesAndSave: ActionCreator<
 
 export const changeAssembly = createStandardAction(
   'species_selector/change_assembly'
-)<string>();
+)<Assembly>();
