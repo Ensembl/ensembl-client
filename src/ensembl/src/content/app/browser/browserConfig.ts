@@ -1,6 +1,3 @@
-import resetIcon from 'static/img/browser/reset.svg';
-import resetGreyIcon from 'static/img/browser/reset-grey.svg';
-
 import navigatorIcon from 'static/img/browser/navigator.svg';
 import navigatorSelectedIcon from 'static/img/browser/navigator-selected.svg';
 import navigatorGreyIcon from 'static/img/browser/navigator-grey.svg';
@@ -58,14 +55,6 @@ export const browserInfoConfig: BrowserInfoType = {
       selected: navigatorSelectedIcon
     },
     name: 'navigator'
-  },
-  reset: {
-    description: 'reset browser image',
-    icon: {
-      default: resetIcon,
-      grey: resetGreyIcon
-    },
-    name: 'reset'
   }
 };
 
