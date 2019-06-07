@@ -23,21 +23,6 @@
 
 .browserImageWrapper {
   height: 100%;
-  &.semiExpanded {
-    width: 100%;
-  }
-
-  &.expanded {
-    width: 100%;
-  }
-
-  &.collapsed {
-    width: 41px;
-
-    .browserImage {
-      display: none;
-    }
-  }
 }
 
 .browserOverlay {

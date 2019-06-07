@@ -166,12 +166,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
         )}`}
       >
         <animated.div style={trackAnimation}>
-          <div
-            className={`${styles.browserImageWrapper} ${
-              styles[props.browserOpenState]
-            }`}
-            onClick={closeTrack}
-          >
+          <div className={styles.browserImageWrapper} onClick={closeTrack}>
             {props.browserNavOpened &&
             !props.drawerOpened &&
             browserRef.current ? (
