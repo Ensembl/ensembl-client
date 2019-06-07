@@ -45,7 +45,7 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
       <div className={styles.imageWrapper}>
         <ImageButton
           buttonStatus={getResetIconStatus()}
-          description={'reset browser image'}
+          description={'Reset browser image'}
           image={resetIcon}
           onClick={resetBrowser}
           classNames={{ inactive: styles.imageButtonInactive }}
