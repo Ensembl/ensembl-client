@@ -10,7 +10,14 @@ use controller::input::{
     Timers, Timer
 };
 use controller::output::{ OutputAction, Projector, Report, ViewportReport };
+
+#[cfg(any(not(deploy),console))]
+use data::blackbox::{
+    blackbox_report, blackbox_push, blackbox_pop, blackbox_tick
+};
+
 use data::{ HttpManager, BackendConfig };
+use data::blackbox::BlackBoxDriver;
 use dom::Bling;
 use dom::event::EventControl;
 use tácode::Tácode;
@@ -27,6 +34,7 @@ struct AppRunnerImpl {
     timers: Timers,
     tc: Tácode,
     http_manager: HttpManager,
+    debug_reporter: BlackBoxDriver,
     config: BackendConfig,
     config_url: Url,
     browser_el: HtmlElement
@@ -39,7 +47,7 @@ pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
 impl AppRunner {
-    pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<Bling>, config_url: &Url, config: &BackendConfig) -> AppRunner {
+    pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<Bling>, config_url: &Url, config: &BackendConfig, debug_reporter: BlackBoxDriver) -> AppRunner {
         let browser_el : HtmlElement = bling.apply_bling(&el);
         let tc = Tácode::new();
         let st = App::new(&tc,config,&http_manager,&browser_el,&config_url,&el);
@@ -53,6 +61,7 @@ impl AppRunner {
             timers: Timers::new(),
             tc: tc.clone(),
             http_manager: http_manager.clone(),
+            debug_reporter,
             config: config.clone(),
             config_url: config_url.clone(),
             browser_el: browser_el.clone()
@@ -86,6 +95,7 @@ impl AppRunner {
     }
 
     pub fn run_timers(&mut self, time: f64) {
+        bb_metronome!("timers");
         let oas = {
             let mut imp = self.0.lock().unwrap();
             let app = imp.app.clone();
@@ -124,7 +134,7 @@ impl AppRunner {
             self.add_timer(|app,_| {
                 app.check_size();
                 vec!{}
-            },Some(SIZE_CHECK_INTERVAL_MS));
+            },None);
         }
         
         /* run tácode */
@@ -142,7 +152,22 @@ impl AppRunner {
                 app.tick();
                 vec!{}
             },None);
-        }        
+        }
+        
+        /* run blackbox */
+        #[cfg(any(not(deploy),console))]
+        {
+            let mut dr = self.0.lock().unwrap().debug_reporter.clone();
+            self.add_timer(move |_,t| {
+                bb_time!("blackbox-send", {
+                    blackbox_tick(&mut dr);
+                });
+                vec!{}
+            },None);
+            bb_stack!("init",{
+                bb_log!("main","debug reporter initialised");
+            });
+        }
     }
     
     pub fn draw(&mut self) {

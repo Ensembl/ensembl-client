@@ -7,6 +7,7 @@ use std::sync::{ Arc, Mutex };
 use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element, IHtmlElement, window };
 use url::Url;
+use util::set_instance_id;
 
 use controller::input::{
     register_startup_events, register_shutdown_events,
@@ -15,6 +16,7 @@ use controller::input::{
 use controller::global::{ AppRunner, Booting };
 use data::{ BackendConfigBootstrap, HttpManager };
 use dom::domutil;
+use dom::domutil::browser_time;
 
 pub struct GlobalImpl {
     apps: HashMap<String,AppRunner>,
@@ -147,6 +149,11 @@ fn find_main_element() -> Option<HtmlElement> {
 }
 
 pub fn setup_global() {
+    let inst_bytes = (browser_time() as i64).to_be_bytes();
+    let mut inst_id = base64::encode_config(&inst_bytes,base64::URL_SAFE_NO_PAD);
+    let len = inst_id.len();
+    let inst_id = inst_id.split_off(len-6);
+    set_instance_id(&inst_id);
     let g = Arc::new(Mutex::new(Global::new()));
     register_startup_events(&g);
     register_shutdown_events(&g);
