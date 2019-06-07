@@ -6,12 +6,11 @@ import styles from './Home.scss';
 import { fetchExampleEnsObjectsData } from 'src/ens-object/ensObjectActions';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 import { RootState } from 'src/store';
 
 type StateProps = {
   exampleEnsObjects: {};
-  selectedSpecies: CommittedItem[];
+  totalSelectedSpecies: number;
 };
 
 type DispatchProps = {
@@ -60,7 +59,7 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
 
   return (
     <div className={styles.home}>
-      {!props.selectedSpecies.length && (
+      {!props.totalSelectedSpecies && (
         <div className={styles.speciesSelectorBanner}>
           <Link to={'/app/species-selector'}>Select a species to begin</Link>
         </div>
@@ -109,7 +108,7 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
 
 const mapStateToProps = (state: RootState) => ({
   exampleEnsObjects: getExampleEnsObjects(state),
-  selectedSpecies: getCommittedSpecies(state)
+  totalSelectedSpecies: getCommittedSpecies(state).length
 });
 
 const mapDispatchToProps = {
