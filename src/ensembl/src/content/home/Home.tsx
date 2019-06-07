@@ -60,9 +60,11 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
 
   return (
     <div className={styles.home}>
-      <div className={styles.speciesSelectorBanner}>
-        <Link to={'/app/species-selector'}>Select a species to begin</Link>
-      </div>
+      {!props.selectedSpecies.length && (
+        <div className={styles.speciesSelectorBanner}>
+          <Link to={'/app/species-selector'}>Select a species to begin</Link>
+        </div>
+      )}
       <section className={styles.search}>
         <h2>Find</h2>
         <p>
