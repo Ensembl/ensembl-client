@@ -30,7 +30,7 @@ pub fn leafcard_source(leaf_marks: bool) -> impl Source {
             under: 0,
             spot: false
         };
-        
+                
         for (offset,height,text) in ruler {
             if let Some(text) = text {
                 let tx = text_texture(&text,&font,&Colour(199,208,213),&Colour(255,255,255));

@@ -110,7 +110,7 @@ impl Booting {
     }
     
     #[cfg(all(deploy,not(console)))]
-    fn make_blackbox(&self, debug_url: &Option<String>) -> BlackBoxDriver {
+    fn make_blackbox(&self, _debug_url: &Option<String>) -> BlackBoxDriver {
         BlackBoxDriver::new()
     }
     

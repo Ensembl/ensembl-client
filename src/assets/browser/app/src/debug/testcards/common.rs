@@ -8,7 +8,7 @@ use rand::rngs::SmallRng;
 use rand::SeedableRng;
 
 use composit::Leaf;
-use types::{ CLeaf, cleaf, Colour };
+use types::{ CLeaf, cleaf };
 
 #[cfg(not(deploy))]
 fn bytes_of_u64(v: u64) -> [u8;8] {

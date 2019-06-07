@@ -4,7 +4,7 @@ use composit::{ Leaf, Position, Wrapping };
 use controller::output::{ Report, ViewportReport };
 use program::UniformValue;
 use types::{
-    CPixel, cpixel, Move, Dot, Direction, 
+    CPixel, Move, Dot, Direction, 
     LEFT, RIGHT, UP, DOWN, IN, OUT
 };
 
@@ -137,7 +137,7 @@ impl Stage {
         let leaf_per_screen = bp_per_screen as f64 / bp_per_leaf;
         let middle_bp = self.pos.get_middle();
         let middle_leaf = middle_bp.0/bp_per_leaf; // including fraction of leaf
-        let current_leaf_left = (leaf.get_index() as f64);
+        let current_leaf_left = leaf.get_index() as f64;
         hashmap! {
             "uOpacity" => UniformValue::Float(opacity),
             "uStageHpos" => UniformValue::Float((middle_leaf - current_leaf_left) as f32),

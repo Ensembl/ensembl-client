@@ -166,6 +166,7 @@ fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut PartyResponses,
 pub struct Shape(TáContext,usize,usize,usize,usize,usize,usize);
 
 impl Command for Shape {
+    #[allow(irrefutable_let_patterns)]
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {

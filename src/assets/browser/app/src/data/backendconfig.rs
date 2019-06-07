@@ -133,7 +133,7 @@ impl BackendConfig {
     
     fn assets_from_json(assets: &SerdeValue, data: &SerdeValue) -> HashMap<String,Rc<BackendAsset>> {
         let mut out = HashMap::<String,Rc<BackendAsset>>::new();
-        for (name,v) in assets.as_object().unwrap().iter() {
+        for name in assets.as_object().unwrap().keys() {
             out.insert(name.to_string(),BackendConfig::one_asset_from_json(name,data));
         }
         out

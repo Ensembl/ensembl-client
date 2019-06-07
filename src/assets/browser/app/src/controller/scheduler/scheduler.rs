@@ -7,7 +7,6 @@ use super::schedqueuelist::SchedNewTask;
 use super::schedtask::SchedTask;
 
 const UNBURST_TIME : f64 = 60000.; // ms
-const MAX_BURSTS : u32 = 2;
 
 struct SchedulerImpl {
     next_id: u32,

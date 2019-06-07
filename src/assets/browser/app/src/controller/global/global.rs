@@ -109,7 +109,7 @@ impl Global {
         sched.beat(SCHEDULER_ALLOC);
         let mut out = self.clone();
         window().request_animation_frame(
-            move |t| out.tick()
+            move |_| out.tick()
         );
     }
     

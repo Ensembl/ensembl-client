@@ -43,10 +43,8 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(tc: &Tácode, config: &BackendConfig, http_manager: &HttpManager, browser_el: &HtmlElement, config_url: &Url, outer_el: &HtmlElement) -> App {
+    pub fn new(tc: &Tácode, config: &BackendConfig, http_manager: &HttpManager, browser_el: &HtmlElement, config_url: &Url) -> App {
         let browser_el = browser_el.clone();
-        let bottle_el = domutil::query_selector2(&outer_el.clone().into(),".bottle");
-        let swarm_el = domutil::query_selector2(&outer_el.clone().into(),".swarm");
         domutil::inner_html(&browser_el.clone().into(),CANVAS);
         let canv_el : HtmlElement = domutil::query_selector(&browser_el.clone().into(),"canvas").try_into().unwrap();
         let bsm = BackendStickManager::new(config);

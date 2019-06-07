@@ -144,6 +144,7 @@ macro_rules! bb_log {
     ($stream:expr,$($arg:tt)*) => {{}}
 }
 
+#[allow(unused_macros)]
 #[cfg(any(not(deploy),console))]
 macro_rules! bb_stack {
     ($level:expr,$code:block) => {{
@@ -154,26 +155,11 @@ macro_rules! bb_stack {
     }}
 }
 
+#[allow(unused_macros)]
 #[cfg(all(deploy,not(console)))]
 macro_rules! bb_stack {
     ($level:expr,$code:block) => {{
         $code
-    }}
-}
-
-macro_rules! debug {
-    ($k: expr, $($arg:tt)*) => {{
-        if false {
-            let s = format!($($arg)*);
-            ::debug::debug_panel_entry_add($k,&s);
-        }
-    }}
-}
-
-macro_rules! halt {
-    () => {{
-        let s = format!("ENSEMBL ERROR LOCATION {}/{}/{}",file!(),line!(),column!());
-        panic!(s)
     }}
 }
 

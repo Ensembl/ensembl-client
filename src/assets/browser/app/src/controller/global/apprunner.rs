@@ -50,7 +50,7 @@ impl AppRunner {
     pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<Bling>, config_url: &Url, config: &BackendConfig, debug_reporter: BlackBoxDriver) -> AppRunner {
         let browser_el : HtmlElement = bling.apply_bling(&el);
         let tc = Tácode::new();
-        let st = App::new(&tc,config,&http_manager,&browser_el,&config_url,&el);
+        let st = App::new(&tc,config,&http_manager,&browser_el,&config_url);
         let sched_group = {
             let g = unwrap!(g.clone().upgrade()).clone();
             g.scheduler_clone().make_group()
@@ -149,14 +149,14 @@ impl AppRunner {
                 }),0,true);
             }
             /* xfer */
-            self.add_timer("xfer",move |app,t,sr| {
+            self.add_timer("xfer",move |app,_,sr| {
                 if !app.tick_xfer() {
                     sr.unproductive();
                 }
                 vec![]
             },2);
             /* resize check */
-            self.add_timer("resizer",move |app,t,sr| {
+            self.add_timer("resizer",move |app,_,_| {
                 app.check_size();
                 vec![]
             },0);

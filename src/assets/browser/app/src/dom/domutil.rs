@@ -15,7 +15,7 @@ use dom::webgl::{
     WebGLRenderingContext as glctx,
 };
 
-use types::{ CPixel, cpixel, RPixel, area, Dot, Rect };
+use types::{ area, Dot, Rect };
 
 pub fn query_selector_ok(root: &HtmlElement, sel: &str, message: &str) -> Element {
     let x : Option<Element> = ok!(root.query_selector(sel));

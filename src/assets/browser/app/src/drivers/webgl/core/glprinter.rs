@@ -11,7 +11,6 @@ use model::driver::{ Printer, SourceResponse };
 use model::train::Train;
 use super::super::drawing::{ AllCanvasAllocator };
 use dom::domutil;
-use dom::domutil::query_selector_ok;
 use types::{ Dot };
 
 use dom::webgl::WebGLRenderingContext as glctx;

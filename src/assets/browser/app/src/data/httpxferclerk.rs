@@ -105,10 +105,8 @@ impl PendingXferBatch {
         let mut url = self.base.clone();
         let mut url_builder = XferUrlBuilder::new();
         for (short_stick,short_pane,compo) in self.requests.keys() {
-            let part = format!("{}^{}/{}",short_stick,short_pane,compo);
             url_builder.add(compo,short_stick,short_pane);
         }
-        //console!("url: {:?}",url_builder.emit());
         {
             let mut path = url.path_segments_mut().unwrap();
             path.push(&url_builder.emit());
@@ -301,12 +299,12 @@ impl HttpXferClerkImpl {
     
     pub fn run_request(&mut self, request: XferRequest, mut consumer: Box<XferConsumer>, prime: bool) {
         let leaf = request.get_leaf().clone();
-        let (wire,compo) = {
+        let wire = {
             let compo = request.get_source_name();
             let leaf = request.get_leaf().clone();
             let cfg =  self.config.as_ref().unwrap().clone();
             let track = cfg.get_track(compo).clone();
-            (track.and_then(|x| x.get_wire().clone()),compo.clone())
+            track.and_then(|x| x.get_wire().clone())
         };
         if let Some(wire) = wire {
             let (short_stick,short_pane) = leaf.get_short_spec();
