@@ -166,30 +166,19 @@ impl App {
     }
     
     pub fn check_size(self: &mut App) {
-<<<<<<< HEAD
         let sz = self.printer.lock().unwrap().get_available_size();
-<<<<<<< HEAD
-        actions_run(self,&vec! { Action::Resize(sz) });
-=======
-        let mut sz = self.printer.lock().unwrap().get_available_size();
-=======
         let now = domutil::browser_time();
->>>>>>> ee894c9... Only round pixel count on settling.
         if self.size == None || self.size.unwrap() != sz {
             self.last_resize_at = Some(now);
             actions_run(self,&vec! { Action::Resize(sz) });
             self.size = Some(sz);
         }
-<<<<<<< HEAD
->>>>>>> 9d8c418... Call resize action less often (ie only on resize).
-=======
         if let Some(last_resize_at) = self.last_resize_at {
             if now - last_resize_at > SETTLE_TIME {
                 actions_run(self,&vec! { Action::Settled });
                 self.last_resize_at = None;
             }
         }
->>>>>>> ee894c9... Only round pixel count on settling.
     }
  
     pub fn force_size(self: &mut App, sz: Dot<f64,f64>) {
