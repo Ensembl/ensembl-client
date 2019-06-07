@@ -20,7 +20,7 @@ const buildSearchMatch = (): SearchMatch => ({
   reference_genome_id: null,
   common_name: faker.lorem.words(),
   scientific_name: faker.lorem.words(),
-  subtype: null,
+  assembly_name: faker.lorem.word(),
   matched_substrings: [
     {
       length: 3,
