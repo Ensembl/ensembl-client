@@ -5,6 +5,9 @@ import { connect } from 'react-redux';
 import { changeCurrentApp } from 'src/header/headerActions';
 import { getCurrentApp } from 'src/header/headerSelectors';
 
+import ErrorBoundary from 'src/shared/error-boundary/ErrorBoundary';
+import { NewTechError } from 'src/shared/error-screen';
+
 import { RootState } from 'src/store';
 
 const GlobalSearch = lazy(() => import('./global-search/GlobalSearch'));
@@ -59,7 +62,9 @@ const AppInner = (props: AppProps) => {
       <Switch>
         <Route path={`${url}/global-search`} component={GlobalSearch} />
         <Route path={`${url}/species-selector`} component={SpeciesSelector} />
-        <Route path={`${url}/browser/:genomeId`} component={Browser} />
+        <ErrorBoundary fallbackComponent={NewTechError}>
+          <Route path={`${url}/browser/:genomeId`} component={Browser} />
+        </ErrorBoundary>
         <Redirect
           exact={true}
           from={`${url}/browser`}

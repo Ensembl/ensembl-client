@@ -14,7 +14,8 @@ import {
   getTrackConfigLabel,
   getBrowserCogTrackList,
   getChrLocation,
-  getBrowserNavOpened
+  getBrowserNavOpened,
+  getBrowserActivated
 } from '../browserSelectors';
 import {
   activateBrowser,
@@ -22,6 +23,9 @@ import {
   updateBrowserNavStates,
   updateChrLocation
 } from '../browserActions';
+
+import { CircleLoader } from 'src/shared/loader/Loader';
+
 import { RootState } from 'src/store';
 import { TrackStates } from '../track-panel/trackPanelConfig';
 
@@ -31,6 +35,7 @@ type StateProps = {
   chrLocation: ChrLocation;
   trackConfigNames: any;
   trackConfigLabel: any;
+  browserActivated: boolean;
 };
 
 type DispatchProps = {
@@ -127,13 +132,20 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   ]);
 
   return (
-    <div className={styles.browserImagePlus}>
-      <div
-        className={getBrowserImageClasses(props.browserNavOpened)}
-        ref={props.browserRef}
-      />
-      <BrowserCogList browserRef={props.browserRef} />
-    </div>
+    <>
+      {!props.browserActivated && (
+        <div className={styles.loaderWrapper}>
+          <CircleLoader />
+        </div>
+      )}
+      <div className={styles.browserImagePlus}>
+        <div
+          className={getBrowserImageClasses(props.browserNavOpened)}
+          ref={props.browserRef}
+        />
+        <BrowserCogList browserRef={props.browserRef} />
+      </div>
+    </>
   );
 };
 
@@ -187,7 +199,8 @@ const mapStateToProps = (state: RootState): StateProps => ({
   browserNavOpened: getBrowserNavOpened(state),
   chrLocation: getChrLocation(state),
   trackConfigLabel: getTrackConfigLabel(state),
-  trackConfigNames: getTrackConfigNames(state)
+  trackConfigNames: getTrackConfigNames(state),
+  browserActivated: getBrowserActivated(state)
 });
 
 const mapDispatchToProps: DispatchProps = {

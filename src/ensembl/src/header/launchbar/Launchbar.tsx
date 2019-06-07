@@ -14,15 +14,18 @@ import LaunchbarButton from './LaunchbarButton';
 
 import styles from './Launchbar.scss';
 
+import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+
 type LaunchbarProps = {
   launchbarExpanded: boolean;
+  committedSpecies: CommittedItem[];
 };
 
 export const getCategoryClass = (separator: boolean): string => {
   return separator ? 'border' : '';
 };
 
-const LaunchbarContent = () => (
+const LaunchbarContent = (props: LaunchbarProps) => (
   <div className={styles.launchbar}>
     <div className={styles.categoriesWrapper}>
       <div className={styles.categories}>
@@ -45,7 +48,7 @@ const LaunchbarContent = () => (
             app="browser"
             description="Genome browser"
             icon={BrowserIcon}
-            enabled={true}
+            enabled={props.committedSpecies.length > 0}
           />
         </div>
         <div className={styles.category}>
@@ -89,7 +92,7 @@ const LaunchbarContent = () => (
 const Launchbar = (props: LaunchbarProps) => {
   return (
     <SlideDown transitionOnAppear={false}>
-      {props.launchbarExpanded ? <LaunchbarContent /> : null}
+      {props.launchbarExpanded ? <LaunchbarContent {...props} /> : null}
     </SlideDown>
   );
 };

@@ -1,16 +1,21 @@
 @import 'src/styles/common';
 
+$buttonSize: 56px;
+
 .popularSpeciesButton {
   position: relative;
   box-sizing: border-box;
   display: inline-block;
-  margin-right: 1rem;
-  width: 52px;
-  height: 52px;
+  margin-right: 1.5rem;
+  margin-bottom: 1.5rem;
+  width: $buttonSize;
+  height: $buttonSize;
   background: $ens-blue;
+  padding: 3px;
+  overflow: hidden; // <-- solely for IE11's sake; it seems that without this rule invisible parts of svg mignt be excaping the button and messing up layout
   cursor: pointer;
 
-  & > svg {
+  svg {
     width: 100%;
     height: 100%;
     fill: white;
@@ -23,11 +28,15 @@
   }
 }
 
-.popularSpeciesButtonActive {
+.popularSpeciesButtonSelected {
+  background: $ens-dark-grey;
+}
+
+.popularSpeciesButtonCommitted {
   background: white;
   border: 1px solid $ens-blue;
 
-  & > svg {
+  svg {
     fill: black;
 
     // selecting by a part of the class name, because svgr apparently modifies the original value
@@ -36,4 +45,9 @@
       fill: white;
     }
   }
+}
+
+.popularSpeciesButtonDisabled {
+  background: $ens-light-grey;
+  cursor: default;
 }
