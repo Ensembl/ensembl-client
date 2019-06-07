@@ -18,7 +18,7 @@ impl GLProgs {
         let order = ProgramType::all();
         let mut map = HashMap::<ProgramType,Program>::new();
         for pt in &order {
-            debug!("webgl programs","=== {:?} ===",&pt);
+            bb_log!("webgl-programs","=== {:?} ===",&pt);
             map.insert(*pt,pt.to_program(&gpuspec,&ctx));
         }
         GLProgs { order, map }

@@ -9,7 +9,6 @@ use stdweb::web::event::{ ChangeEvent, ClickEvent };
 
 use controller::global::App;
 use super::super::testcards::select_testcard;
-use debug::DebugConsole;
 use dom::{ Bling, NoBling };
 use dom::domutil;
 use dom::event::{
@@ -110,7 +109,6 @@ html, body {
 
 fn setup_debug_console(el: &HtmlElement) {
     let cons_el = domutil::query_selector(&el.clone().into(),".console2");
-    DebugConsole::new(&cons_el,&el.clone().into());
     let mark_el = domutil::query_selector2(&el.clone().into(),".console .mark").unwrap();
     mark_el.add_event_listener(enclose! { (cons_el) move |_e: ClickEvent| {
         domutil::send_custom_event(&cons_el,"mark",&json!({}));
@@ -298,15 +296,5 @@ impl Bling for DebugBling {
             di.key(app,key);
         }
         self.mb.key(app,key);
-    }
-}
-
-/* for debug! macro */
-pub fn debug_panel_entry_add(name: &str, value: &str) {
-    if let Some(cel) = domutil::query_selector_new(".bpane-container .console2") {
-        domutil::send_custom_event(&cel,"add",&json!({
-            "name": name,
-            "value": value
-        }));
     }
 }

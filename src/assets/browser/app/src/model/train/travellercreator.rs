@@ -50,7 +50,6 @@ impl TravellerCreator {
     /* train/manage_leafs() */
     pub fn make_leaf_parties(&mut self, leaf: Leaf) -> Vec<Traveller> {
         let mut lcomps = Vec::<Traveller>::new();
-        debug!("redraw","make_carriages {:?}",leaf);
         let comps : Vec<ActiveSource> = self.components.values().cloned().collect();
         for c in &comps {
             lcomps.append(&mut self.make_party(c,&leaf));

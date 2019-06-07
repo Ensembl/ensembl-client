@@ -149,7 +149,6 @@ fn source_odd() -> ClosureSource {
                     }
                 }
                 if start_leaf < 100000 && end_leaf > 0 {
-                    debug!("bug","A");
                     let start_prop = prop(leaf,0);
                     let srts = StretchRectTypeSpec { spot: true, hollow: false };
                     closure_add_opt(lc,&srts.new_short_shape(&ShapeShortInstanceData {

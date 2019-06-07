@@ -51,6 +51,7 @@ macro_rules! console_force {
     }}
 }
 
+#[deprecated(note="use blackbox")]
 macro_rules! console {
     ($($arg:tt)*) => {{
         if !cfg!(deploy) || cfg!(console) {

@@ -53,7 +53,6 @@ impl ActiveSource {
         let mut out = Vec::<Traveller>::new();
         out.push(self.make_traveller(pm,&party,&None,&leaf));
         for part in self.list_parts() {            
-            debug!("redraw","make_carriages {:?} for {}",leaf,part);
             out.push(self.make_traveller(pm,&party,&Some(part),&leaf));
         }
         out
