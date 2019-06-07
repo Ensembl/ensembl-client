@@ -4,12 +4,14 @@
   background-color: $ens-light-grey;
   height: 300px;
   padding: 40px;
+  padding-left: 100px; // FIXME: should this be shared variable? it will be reused by PopularSpeciesPanel
 }
 
 .speciesSearchPanelRow {
   display: flex;
   align-items: center;
   margin-bottom: 0.5em;
+  margin-left: -22px;
 }
 
 .assemblyWrapper {

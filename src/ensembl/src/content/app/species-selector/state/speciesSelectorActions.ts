@@ -12,11 +12,14 @@ import {
   SearchMatch,
   SearchMatches,
   Strain,
-  Assembly
+  Assembly,
+  PopularSpecies
 } from 'src/content/app/species-selector/types/species-search';
 
+// MOCK DATA; delete when we get working backend endpoints
 import mouseStrainsResult from 'tests/data/species-selector/mouse-strains';
 import mouseAssemblies from 'tests/data/species-selector/mouse-assemblies';
+import popularSpecies from 'tests/data/species-selector/popular-species';
 
 export const fetchSpeciesSearchResults = createAsyncAction(
   'species_selector/species_search_request',
@@ -30,15 +33,21 @@ export const fetchStrainsAsyncActions = createAsyncAction(
   'species_selector/strains_failure'
 )<undefined, { strains: Strain[] }, Error>();
 
+export const fetchPopularSpeciesAsyncActions = createAsyncAction(
+  'species_selector/popular_species_request',
+  'species_selector/popular_species_success',
+  'species_selector/popular_species_failure'
+)<undefined, { popularSpecies: PopularSpecies[] }, Error>();
+
 export const fetchAssembliesAsyncActions = createAsyncAction(
   'species_selector/assemblies_request',
   'species_selector/assemblies_success',
   'species_selector/assemblies_failure'
 )<undefined, { assemblies: Assembly[] }, Error>();
 
-export const setSelectedSearchResult = createStandardAction(
+export const setSelectedSpecies = createStandardAction(
   'species_selector/species_selected'
-)<SearchMatch>();
+)<SearchMatch | PopularSpecies>();
 
 export const clearSelectedSearchResult = createStandardAction(
   'species_selector/clear_search_result'
@@ -55,7 +64,6 @@ export const fetchStrains: ActionCreator<
       fetchStrainsAsyncActions.success({ strains: mouseStrainsResult.strains })
     );
   } catch (error) {
-    // TODO
     dispatch(fetchStrainsAsyncActions.failure(error));
   }
 };
@@ -73,16 +81,32 @@ export const fetchAssemblies: ActionCreator<
       })
     );
   } catch (error) {
-    // TODO
     dispatch(fetchAssembliesAsyncActions.failure(error));
   }
 };
 
-export const handleSelectedSearchResult: ActionCreator<
+export const fetchPopularSpecies: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (match: SearchMatch) => (dispatch) => {
-  dispatch(setSelectedSearchResult(match));
-  const { genome_id, common_name } = match;
+> = () => async (dispatch) => {
+  try {
+    dispatch(fetchPopularSpeciesAsyncActions.request());
+
+    // FIXME: using mock data here
+    dispatch(
+      fetchPopularSpeciesAsyncActions.success({
+        popularSpecies: popularSpecies
+      })
+    );
+  } catch (error) {
+    dispatch(fetchPopularSpeciesAsyncActions.failure(error));
+  }
+};
+
+export const handleSelectedSpecies: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (item: SearchMatch | PopularSpecies) => (dispatch) => {
+  dispatch(setSelectedSpecies(item));
+  const { genome_id, common_name } = item;
 
   // FIXME: remove test for mock
   if (!common_name || !common_name.startsWith('Mou')) {

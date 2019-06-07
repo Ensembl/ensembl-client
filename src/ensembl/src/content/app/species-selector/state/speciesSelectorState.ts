@@ -5,7 +5,8 @@ import {
   SearchMatches,
   Strain,
   Assembly,
-  CommittedItem
+  CommittedItem,
+  PopularSpecies
 } from 'src/content/app/species-selector/types/species-search';
 
 export type CurrentItem = {
@@ -33,6 +34,7 @@ export type SpeciesSelectorState = {
   };
   currentItem: CurrentItem | null;
   committedItems: CommittedItem[];
+  popularSpecies: PopularSpecies[];
 };
 
 const storedSelectedSpecies = speciesSelectorStorageService.getSelectedSpecies();
@@ -49,7 +51,8 @@ const initialState: SpeciesSelectorState = {
     results: []
   },
   currentItem: null,
-  committedItems: storedSelectedSpecies || []
+  committedItems: storedSelectedSpecies || [],
+  popularSpecies: []
 };
 
 export default initialState;
