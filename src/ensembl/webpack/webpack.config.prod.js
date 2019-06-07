@@ -30,7 +30,8 @@ const moduleRules = [
         loader: 'file-loader',
         options: {
           emitFile: true,
-          name: '[path][name].[hash].[ext]'
+          name: '[name].[hash].[ext]',
+          outputPath: 'images'
         }
       },
       'image-webpack-loader'
