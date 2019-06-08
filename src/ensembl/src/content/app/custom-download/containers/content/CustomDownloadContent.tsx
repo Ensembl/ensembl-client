@@ -13,7 +13,7 @@ import FiltersAccordion from './filter-accordion/FiltersAccordion';
 import TabButtons from './tab-buttons/TabButtons';
 import ResultHolder from './result-holder/ResultHolder';
 import { RootState } from 'src/store';
-import PreviewTable from '../../components/preview-table/PreviewTable';
+import PreviewDownload from './preview-download/PreviewDownload';
 
 import { getSelectedAttributes, formatResults } from './result-holder/helpers';
 
@@ -55,7 +55,7 @@ const Content = (props: Props) => {
       {props.showPreview && (
         <div>
           {' '}
-          <PreviewTable resultData={formatedPreviewResult} />{' '}
+          <PreviewDownload resultData={formatedPreviewResult} />{' '}
         </div>
       )}
     </div>

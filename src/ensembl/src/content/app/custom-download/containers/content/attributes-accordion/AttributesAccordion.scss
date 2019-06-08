@@ -2,12 +2,12 @@
 
 .wrapper {
   padding-right: 15px;
-  max-height: calc(100vh - 205px);
+  max-height: calc(100vh - 225px);
   overflow-y: auto;
   background-color: $ens-white;
 }
 .dataSelectorHint {
-  padding: 10px 0 10px 30px;
+  padding: 10px 0 10px 15px;
   color: $ens-dark-grey;
 }
 

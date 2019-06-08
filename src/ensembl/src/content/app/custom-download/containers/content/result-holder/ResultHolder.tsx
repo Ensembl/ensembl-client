@@ -53,21 +53,19 @@ const ResultHolder = (props: Props) => {
     !props.previewResult.results
   ) {
     return (
-      <>
+      <div className={styles.wrapper}>
         {Array(10)
           .fill(1)
           .map((value, key: number) => {
             return (
-              <div key={key} className={styles.wrapper}>
-                <div className={styles.resultCard}>
-                  <div className={styles.loaderWrapper}>
-                    <CircleLoader />
-                  </div>
+              <div key={key} className={styles.resultCard}>
+                <div className={styles.loaderWrapper}>
+                  <CircleLoader />
                 </div>
               </div>
             );
           })}
-      </>
+      </div>
     );
   }
 

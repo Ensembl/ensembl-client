@@ -113,7 +113,6 @@ const Genes = (props: Props) => {
   const transcriptTypeOnChangeHandler = useCallback(
     (status: boolean, subSection: string, attributeId: string) => {
       const newTranscriptTypeFilters = { ...props.transcriptTypeFilters };
-      debugger;
       if (!newTranscriptTypeFilters[subSection] && status) {
         newTranscriptTypeFilters[subSection] = {};
 
