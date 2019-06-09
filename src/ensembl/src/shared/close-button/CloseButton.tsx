@@ -7,7 +7,7 @@ import styles from './CloseButton.scss';
 
 type Props = {
   inverted: boolean;
-  onClick: (e: React.MouseEvent) => void;
+  onClick: () => void;
 };
 
 const CloseButton = (props: Props) => {
@@ -15,8 +15,13 @@ const CloseButton = (props: Props) => {
     [styles.closeButtonInverted]: props.inverted
   });
 
+  const handleClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault();
+    props.onClick();
+  };
+
   return (
-    <button className={className}>
+    <button className={className} onClick={handleClick}>
       <CrossIcon />
     </button>
   );

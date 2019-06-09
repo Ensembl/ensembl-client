@@ -29,7 +29,7 @@ export type SpeciesSelectorState = {
     isSelectingAssembly: boolean;
   };
   search: {
-    results: SearchMatches[];
+    results: SearchMatches[] | null;
   };
   currentItem: CurrentItem | null;
   committedItems: CommittedItem[];
@@ -47,7 +47,7 @@ const initialState: SpeciesSelectorState = {
     isSelectingAssembly: false
   },
   search: {
-    results: []
+    results: null
   },
   currentItem: null,
   committedItems: storedSelectedSpecies || [],

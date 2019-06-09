@@ -49,8 +49,12 @@ export const setSelectedSpecies = createStandardAction(
   'species_selector/species_selected'
 )<SearchMatch | PopularSpecies>();
 
+export const clearSearchResults = createStandardAction(
+  'species_selector/clear_search_results'
+)();
+
 export const clearSelectedSearchResult = createStandardAction(
-  'species_selector/clear_search_result'
+  'species_selector/clear_selected_search_result'
 )();
 
 export const fetchStrains: ActionCreator<
