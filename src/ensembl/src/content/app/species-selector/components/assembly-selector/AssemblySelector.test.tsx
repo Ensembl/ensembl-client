@@ -2,6 +2,7 @@ import React from 'react';
 import { mount } from 'enzyme';
 import faker from 'faker';
 import times from 'lodash/times';
+import random from 'lodash/random';
 
 import { AssemblySelector } from './AssemblySelector';
 import Select from 'src/shared/select/Select';
@@ -49,14 +50,29 @@ describe('<AssemblySelector />', () => {
 
     const selectElement = wrapper.find(Select);
     expect(selectElement.length).toBe(1);
-    expect(selectElement.prop('onSelect')).toBe(onSelect);
 
     const options: any = selectElement.prop('options');
     const selectedOption = options.find(
       ({ isSelected }: { isSelected: boolean }) => isSelected
     );
+    const selectedOptionIndex = options.findIndex(
+      ({ isSelected }: { isSelected: boolean }) => isSelected
+    );
 
     expect(options.length).toEqual(defaultProps.assemblies.length);
-    expect(selectedOption.value).toBe(defaultProps.genomeId);
+    expect(selectedOption.value).toBe(selectedOptionIndex);
+  });
+
+  it('calls the onSelect prop passing to it the selected assembly', () => {
+    const wrapper = mount(<AssemblySelector {...defaultProps} />);
+    const selectElement = wrapper.find(Select);
+    const selectHandler = selectElement.prop('onSelect');
+
+    const assemblyIndex = random(0, assemblies.length - 1);
+    const randomAssembly = assemblies[assemblyIndex];
+
+    selectHandler(assemblyIndex);
+
+    expect(onSelect.mock.calls[0][0]).toEqual(randomAssembly);
   });
 });
