@@ -2,17 +2,17 @@ import React, { useCallback } from 'react';
 
 import defaultStyles from './Radio.scss';
 
-export type radioOption = {
+export type RadioOption = {
   value: string;
   label: string;
 };
 
-export type radioOptions = radioOption[];
+export type RadioOptions = RadioOption[];
 
 type Props = {
   onChange: (selectedOption: string) => void;
   classNames?: any;
-  radioOptions: radioOptions;
+  radioOptions: RadioOptions;
   selectedOption: string;
   disabled?: boolean;
 };

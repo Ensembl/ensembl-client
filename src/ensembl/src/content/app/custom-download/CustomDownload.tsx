@@ -7,7 +7,7 @@ import CustomDownloadHeader from './containers/header/CustomDownloadHeader';
 import CustomDownloadContent from './containers/content/CustomDownloadContent';
 
 type StateProps = {
-  showPreFiltersPanel: any;
+  showPreFiltersPanel: boolean;
 };
 
 type CustomDownloadProps = StateProps;

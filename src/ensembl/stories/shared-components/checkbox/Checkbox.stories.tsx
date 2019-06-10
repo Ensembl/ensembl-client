@@ -8,9 +8,9 @@ import { action } from '@storybook/addon-actions';
 const Wrapper = (props: any) => {
   const [checked, setChecked] = useState(false);
 
-  const handleOnchange = (checkedStatus: boolean) => {
-    setChecked(checkedStatus);
-    action('checkbox-toggled')(checkedStatus);
+  const handleOnchange = (isChecked: boolean) => {
+    setChecked(isChecked);
+    action('checkbox-toggled')(isChecked);
   };
 
   return (

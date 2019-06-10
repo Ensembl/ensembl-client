@@ -12,7 +12,7 @@ import {
 
 import CheckboxWithSelects from 'src/content/app/custom-download/components/checkbox-with-selects/CheckboxWithSelects';
 import CheckboxWithRadios from 'src/content/app/custom-download/components/checkbox-with-radios/CheckboxWithRadios';
-import { radioOptions } from 'src/shared/radio/Radio';
+import { RadioOptions } from 'src/shared/radio/Radio';
 
 import {
   getGeneFilters,
@@ -70,7 +70,7 @@ const geneSourceSelectOptions: Option[] = [
   }
 ];
 // Will be fetched from the API when we have one
-const gencodeBasicAnnotationOptions: radioOptions = [
+const gencodeBasicAnnotationOptions: RadioOptions = [
   {
     value: 'include',
     label: 'Include'
@@ -93,7 +93,7 @@ const Genes = (props: Props) => {
 
         if (!newGeneTypeFilters[subSection][attributeId]) {
           newGeneTypeFilters[subSection][attributeId] = {};
-          newGeneTypeFilters[subSection][attributeId].checkedStatus = status;
+          newGeneTypeFilters[subSection][attributeId].isChecked = status;
         }
       } else if (!status) {
         delete newGeneTypeFilters[subSection][attributeId];
@@ -104,7 +104,7 @@ const Genes = (props: Props) => {
         }
       }
 
-      geneTypeFiltersGrid[subSection][attributeId].checkedStatus = status;
+      geneTypeFiltersGrid[subSection][attributeId].isChecked = status;
       props.setGeneTypeFilters(newGeneTypeFilters);
     },
     [props.geneTypeFilters, geneTypeFiltersGrid]
@@ -118,9 +118,7 @@ const Genes = (props: Props) => {
 
         if (!newTranscriptTypeFilters[subSection][attributeId]) {
           newTranscriptTypeFilters[subSection][attributeId] = {};
-          newTranscriptTypeFilters[subSection][
-            attributeId
-          ].checkedStatus = status;
+          newTranscriptTypeFilters[subSection][attributeId].isChecked = status;
         }
       } else if (!status) {
         delete newTranscriptTypeFilters[subSection][attributeId];
@@ -130,7 +128,7 @@ const Genes = (props: Props) => {
         }
       }
 
-      transcriptTypeFiltersGrid[subSection][attributeId].checkedStatus = status;
+      transcriptTypeFiltersGrid[subSection][attributeId].isChecked = status;
       props.setTranscriptTypeFilters(newTranscriptTypeFilters);
     },
     [props.transcriptTypeFilters, transcriptTypeFiltersGrid]

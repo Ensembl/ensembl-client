@@ -26,7 +26,7 @@ const Phenotypes = (props: Props) => {
 
       const newPhenotypeAttributes = { ...props.phenotypeAttributes };
 
-      newPhenotypeAttributes[subSection][attributeId].checkedStatus = status;
+      newPhenotypeAttributes[subSection][attributeId].isChecked = status;
 
       props.setPhenotypeAttributes(newPhenotypeAttributes);
     },

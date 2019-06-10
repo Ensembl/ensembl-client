@@ -34,7 +34,7 @@ const Variations = (props: Props) => {
       }
       const newGermlineAttributes = { ...props.germlineVariationAttributes };
 
-      newGermlineAttributes[subSection][attributeId].checkedStatus = status;
+      newGermlineAttributes[subSection][attributeId].isChecked = status;
       props.setGermlineVariationAttributes(newGermlineAttributes);
     },
     [props.germlineVariationAttributes]
@@ -48,7 +48,7 @@ const Variations = (props: Props) => {
 
       const newSomaticAttributes = { ...props.somaticVariationAttributes };
 
-      newSomaticAttributes[subSection][attributeId].checkedStatus = status;
+      newSomaticAttributes[subSection][attributeId].isChecked = status;
       props.setSomaticVariationAttributes(newSomaticAttributes);
     },
     [props.somaticVariationAttributes]

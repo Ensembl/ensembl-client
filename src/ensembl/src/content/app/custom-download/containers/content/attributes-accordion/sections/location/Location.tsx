@@ -25,7 +25,7 @@ const Location = (props: Props) => {
       }
       const newLocationAttributes = { ...props.locationAttributes };
 
-      newLocationAttributes[subSection][attributeId].checkedStatus = status;
+      newLocationAttributes[subSection][attributeId].isChecked = status;
 
       props.setLocationAttributes(newLocationAttributes);
     },

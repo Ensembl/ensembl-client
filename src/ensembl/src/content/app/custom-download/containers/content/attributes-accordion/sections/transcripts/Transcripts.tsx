@@ -26,7 +26,7 @@ const Transcripts = (props: Props) => {
 
       const newTranscriptAttributes = { ...props.transcriptAttributes };
 
-      newTranscriptAttributes[subSection][attributeId].checkedStatus = status;
+      newTranscriptAttributes[subSection][attributeId].isChecked = status;
 
       props.setTranscriptAttributes(newTranscriptAttributes);
     },

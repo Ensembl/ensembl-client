@@ -22,9 +22,7 @@ const getTotalSelectedAttributes = (attributes: any) => {
   Object.keys(attributes).forEach((section) => {
     Object.keys(attributes[section]).forEach((subSection) => {
       Object.keys(attributes[section][subSection]).forEach((attributeId) => {
-        if (
-          attributes[section][subSection][attributeId].checkedStatus === true
-        ) {
+        if (attributes[section][subSection][attributeId].isChecked === true) {
           totalSelectedAttributes++;
         }
       });
@@ -44,7 +42,7 @@ const getTotalSelectedFilters = (filters: any) => {
     } else if (typeof filter === 'object') {
       Object.keys(filter).forEach((subSection) => {
         Object.keys(filter[subSection]).forEach((attributeId) => {
-          if (filter[subSection][attributeId].checkedStatus === true) {
+          if (filter[subSection][attributeId].isChecked === true) {
             totalSelectedFilters++;
           }
         });

@@ -9,61 +9,61 @@ const gridData = {
     symbol: {
       id: 'symbol',
       label: 'Symbol',
-      checkedStatus: false
+      isChecked: false
     },
     id: {
       id: 'id',
       label: 'Gene stable ID',
-      checkedStatus: true
+      isChecked: true
     },
     id_version: {
       id: 'id_version',
       label: 'Gene stable ID version',
-      checkedStatus: true
+      isChecked: true
     },
     name: {
       id: 'name',
       label: 'Gene name',
-      checkedStatus: false
+      isChecked: false
     },
     strand: {
       id: 'strand',
       label: 'Strand',
-      checkedStatus: false
+      isChecked: false
     },
     start: {
       id: 'start',
       label: 'Gene start(bp)',
-      checkedStatus: false
+      isChecked: false
     },
     end: {
       id: 'end',
       label: 'End',
-      checkedStatus: false
+      isChecked: false
     }
   },
   External: {
     gencode_basic_annotation: {
       id: 'gencode_basic_annotation',
       label: 'GENCODE basic annotation',
-      checkedStatus: false
+      isChecked: false
     },
     uniparc_id: {
       id: 'uniparc_id',
       label: 'UniParc ID',
-      checkedStatus: false
+      isChecked: false
     },
     ncbi_id: {
       id: 'ncbi_id',
       label: 'NCBI gene ID',
-      checkedStatus: false
+      isChecked: false
     },
     HGNC: {
       id: 'HGNC',
       label: 'HGNC symbol',
-      checkedStatus: false
+      isChecked: false
     },
-    go_domain: { id: 'go_domain', label: 'GO domain', checkedStatus: false }
+    go_domain: { id: 'go_domain', label: 'GO domain', isChecked: false }
   }
 };
 
@@ -74,8 +74,8 @@ describe('<CheckboxGrid />', () => {
 
   let wrapper: any;
   const defaultProps = {
-    gridData: gridData,
-    checkboxOnChange: checkboxOnChange
+    gridData,
+    checkboxOnChange
   };
 
   it('renders without error', () => {
@@ -83,23 +83,19 @@ describe('<CheckboxGrid />', () => {
     expect(wrapper.find(CheckboxGrid).length).toEqual(1);
   });
 
-  it('renders N number of checkbox based on the gridData', () => {
+  it('renders N number of checkboxes based on the gridData', () => {
     wrapper = mount(<CheckboxGrid {...defaultProps} />);
 
-    expect(wrapper.find(Checkbox).length).toEqual(12);
+    let totalCheckboxes = 0;
+
+    Object.values(gridData).forEach((section) => {
+      totalCheckboxes += Object.keys(section).length;
+    });
+
+    expect(wrapper.find(Checkbox).length).toEqual(totalCheckboxes);
   });
 
-  it('calls the checkboxOnChange when a checkbox is checked', () => {
-    wrapper = mount(<CheckboxGrid {...defaultProps} />);
-    wrapper
-      .find(Checkbox)
-      .first()
-      .find('.defaultCheckbox')
-      .simulate('click');
-    expect(checkboxOnChange).toHaveBeenCalled();
-  });
-
-  it('sorts the checkboxs alphebatically based on the label', () => {
+  it('sorts the checkboxes alphebatically based on the label', () => {
     wrapper = mount(<CheckboxGrid {...defaultProps} />);
 
     const firstGridContainer = wrapper.find('.checkboxGridContainer').first();
@@ -111,15 +107,22 @@ describe('<CheckboxGrid />', () => {
     expect(lastCheckbox.prop('label')).toEqual('Symbol');
   });
 
-  it('calls the checkboxOnChange when a checkbox is unchecked', () => {
+  it('calls the checkboxOnChange when a checkbox is checked/unchecked', () => {
     wrapper = mount(<CheckboxGrid {...defaultProps} />);
     const firstCheckbox = wrapper.find(Checkbox).first();
     firstCheckbox.find('.defaultCheckbox').simulate('click');
-
+    firstCheckbox.find('.defaultCheckbox').simulate('click');
+    /* 
+      true - current checkbox status
+      default - grid sub-section id
+      end- id of the checkbox
+    */
     expect(checkboxOnChange).toHaveBeenCalledWith(true, 'default', 'end');
+
+    expect(checkboxOnChange).toHaveBeenLastCalledWith(false, 'default', 'end');
   });
 
-  it('does not display the `Default` title', () => {
+  it('does not display the `Default` title if the sub-section is `default`', () => {
     wrapper = mount(<CheckboxGrid {...defaultProps} />);
     const firstGridTitle = wrapper.find('.checkboxGridTitle').first();
     expect(firstGridTitle.text()).not.toBe('Default');
@@ -128,7 +131,17 @@ describe('<CheckboxGrid />', () => {
   it('hides the unchecked checkboxes when hideUnchecked is true', () => {
     wrapper = mount(<CheckboxGrid {...defaultProps} hideUnchecked={true} />);
 
-    expect(wrapper.find(Checkbox).length).toBe(2);
+    let totalCheckedCheckboxes = 0;
+
+    Object.values(gridData).forEach((section) => {
+      Object.values(section).forEach((subSection) => {
+        if (subSection.isChecked) {
+          totalCheckedCheckboxes++;
+        }
+      });
+    });
+
+    expect(wrapper.find(Checkbox).length).toBe(totalCheckedCheckboxes);
   });
 
   it('hides the title when hideTitles is true', () => {
@@ -137,9 +150,15 @@ describe('<CheckboxGrid />', () => {
     expect(wrapper.find('.checkboxGridTitle').length).toBe(0);
   });
 
-  it('draws N number of columns based on the `column` parameter', () => {
+  it('draws 3 columns by default', () => {
     wrapper = mount(<CheckboxGrid {...defaultProps} />);
     const firstGridContainer = wrapper.find('.checkboxGridContainer').first();
     expect(firstGridContainer.children().length).toBe(3);
+  });
+
+  it('draws N number of columns based on the `column` parameter', () => {
+    wrapper = mount(<CheckboxGrid {...defaultProps} columns={4} />);
+    const firstGridContainer = wrapper.find('.checkboxGridContainer').first();
+    expect(firstGridContainer.children().length).toBe(4);
   });
 });

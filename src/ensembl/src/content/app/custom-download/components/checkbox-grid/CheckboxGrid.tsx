@@ -1,57 +1,68 @@
 import React from 'react';
 import Checkbox from 'src/shared/checkbox/Checkbox';
+import JSONValue from 'src/shared/types/JSON';
 
 import styles from './CheckBoxGrid.scss';
 
 type Props = {
-  gridData: any;
+  gridData: JSONValue;
   columns: number;
   hideUnchecked?: boolean;
   hideTitles?: boolean;
   checkboxOnChange: (status: boolean, subSection: string, id: string) => void;
 };
 
-export const filterCheckedAttributes = (attributes: any) => {
-  const filteredAttributes: any = {};
+export const filterCheckedAttributes = (attributes: JSONValue) => {
+  const filteredAttributes: JSONValue = {};
 
-  Object.keys(attributes).forEach((section) => {
-    Object.keys(attributes[section]).forEach((attributeId) => {
-      if (attributes[section][attributeId].checkedStatus === true) {
-        if (!filteredAttributes[section]) {
-          filteredAttributes[section] = {};
+  Object.keys(attributes).forEach((section: string) => {
+    Object.keys(attributes[section] as JSONValue).forEach(
+      (attributeId: string) => {
+        if (
+          ((attributes[section] as JSONValue)[attributeId] as JSONValue)
+            .isChecked === true
+        ) {
+          if (!filteredAttributes[section]) {
+            filteredAttributes[section] = {};
+          }
+          (filteredAttributes[section] as JSONValue)[attributeId] = (attributes[
+            section
+          ] as JSONValue)[attributeId];
         }
-        filteredAttributes[section][attributeId] =
-          attributes[section][attributeId];
       }
-    });
+    );
   });
 
   return filteredAttributes;
 };
 
-export const getAttributesCount = (attributes: any) => {
+export const getAttributesCount = (attributes: JSONValue) => {
   let totalAttributes = 0;
 
-  if (!attributes || Object.keys(attributes).length === 0) {
+  const attributeKeys = Object.keys(attributes);
+
+  if (!attributes || attributeKeys.length === 0) {
     return 0;
   }
-  Object.keys(attributes).forEach((section) => {
-    totalAttributes += Object.keys(attributes[section]).length;
+  attributeKeys.forEach((section) => {
+    totalAttributes += Object.keys(attributes[section] as JSONValue).length;
   });
 
   return totalAttributes;
 };
 
 const renderCheckBoxList = (
-  checkboxList: any,
+  checkboxList: JSONValue,
   props: Props,
   subSection: string
 ) => {
-  if (!Object.keys(checkboxList).length) {
+  const checkboxListKeys = Object.keys(checkboxList);
+
+  if (!checkboxListKeys.length) {
     return null;
   }
 
-  const checkboxListIDs = Object.keys(checkboxList).sort();
+  const checkboxListIDs = checkboxListKeys.sort();
 
   const gridMatrix = Array(props.columns).fill(0);
 
@@ -91,7 +102,7 @@ const renderCheckBoxList = (
                 .map((item: string, itemKey: number) => {
                   if (
                     props.hideUnchecked &&
-                    !checkboxList[item].checkedStatus
+                    !(checkboxList[item] as JSONValue).isChecked
                   ) {
                     return null;
                   }
@@ -99,8 +110,10 @@ const renderCheckBoxList = (
                   return (
                     <div key={itemKey} className={styles.checkboxContainer}>
                       <Checkbox
-                        label={checkboxList[item].label}
-                        checked={checkboxList[item].checkedStatus}
+                        label={(checkboxList[item] as JSONValue).label}
+                        checked={
+                          (checkboxList[item] as JSONValue).isChecked as boolean
+                        }
                         onChange={(status) => {
                           props.checkboxOnChange(status, subSection, item);
                         }}
@@ -117,21 +130,31 @@ const renderCheckBoxList = (
 };
 
 const CheckBoxGrid = (props: Props) => {
-  if (!props.gridData || !Object.keys(props.gridData).length) {
+  const gridDataKeys = Object.keys(props.gridData);
+
+  if (!props.gridData || !gridDataKeys.length) {
     return null;
   }
   return (
     <>
       {props.gridData.hasOwnProperty('default')
-        ? renderCheckBoxList(props.gridData.default, props, 'default')
+        ? renderCheckBoxList(
+            props.gridData['default'] as JSONValue,
+            props,
+            'default'
+          )
         : null}
-      {Object.keys(props.gridData).map((gridTitle: string, key: number) => {
+      {gridDataKeys.map((gridTitle: string, key: number) => {
         if (gridTitle === 'default') {
           return;
         }
         return (
           <div key={key}>
-            {renderCheckBoxList(props.gridData[gridTitle], props, gridTitle)}
+            {renderCheckBoxList(
+              props.gridData[gridTitle] as JSONValue,
+              props,
+              gridTitle
+            )}
           </div>
         );
       })}

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Checkbox from 'src/shared/checkbox/Checkbox';
-import Radio, { radioOptions } from 'src/shared/radio/Radio';
+import Radio, { RadioOptions } from 'src/shared/radio/Radio';
 
 import styles from './CheckboxWithRadios.scss';
 
 type Props = {
-  radioOptions: radioOptions;
+  radioOptions: RadioOptions;
   label: string;
   selectedOption: string;
   onChange: (selectedOption: string) => void;
