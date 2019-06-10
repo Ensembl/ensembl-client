@@ -6,8 +6,6 @@ use super::schedgroup::SchedulerGroup;
 use super::schedqueuelist::SchedNewTask;
 use super::schedtask::SchedTask;
 
-const UNBURST_TIME : f64 = 60000.; // ms
-
 struct SchedulerImpl {
     next_id: u32,
     main: Arc<Mutex<SchedulerMain>>,

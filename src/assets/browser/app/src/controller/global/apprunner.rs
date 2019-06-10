@@ -23,8 +23,6 @@ use dom::event::EventControl;
 use dom::domutil::browser_time;
 use tácode::Tácode;
 
-const SIZE_CHECK_INTERVAL_MS: f64 = 500.;
-
 struct AppRunnerImpl {
     g: GlobalWeak,
     el: HtmlElement,
@@ -33,10 +31,7 @@ struct AppRunnerImpl {
     controls: Vec<Box<EventControl<()>>>,
     sched_group: SchedulerGroup,
     tc: Tácode,
-    http_manager: HttpManager,
     debug_reporter: BlackBoxDriver,
-    config: BackendConfig,
-    config_url: Url,
     browser_el: HtmlElement
 }
 
@@ -63,10 +58,7 @@ impl AppRunner {
             controls: Vec::<Box<EventControl<()>>>::new(),
             sched_group,
             tc: tc.clone(),
-            http_manager: http_manager.clone(),
             debug_reporter,
-            config: config.clone(),
-            config_url: config_url.clone(),
             browser_el: browser_el.clone()
         })));
         {
