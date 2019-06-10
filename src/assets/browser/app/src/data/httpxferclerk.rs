@@ -153,7 +153,7 @@ impl HttpResponseConsumer for PendingXferBatch {
             if let Some(mut requests) = self.requests.remove(&key) {
                 let codename = resp[3].as_str().unwrap().to_string();
                 let bytecode = ok!(self.config.get_bytecode(&codename)).clone();
-                let mut recv = (codename,self.marshal(&resp[4]));
+                let recv = (codename,self.marshal(&resp[4]));
                 self.cache.put(&key.2,&key.0,&key.1,recv.clone());
                 for mut req in requests.drain(..) {
                     req.go(bytecode.clone(),recv.1.clone());
@@ -315,7 +315,7 @@ impl HttpXferClerkImpl {
                 };
                 consumer.consume(bytecode,recv.1);
             } else {
-                let mut batch = if prime { &mut self.prime_batch } else { &mut self.batch };
+                let batch = if prime { &mut self.prime_batch } else { &mut self.batch };
                 if let Some(ref mut batch) = batch {
                     batch.add_request(&short_stick,&short_pane,&wire,consumer);
                 }

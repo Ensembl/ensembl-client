@@ -53,13 +53,13 @@ impl Scheduler {
     pub(in super) fn add(&mut self, mut task: SchedTask, prio: usize, on_beat: bool) -> u32 {
         let id = self.next_id();
         task.set_id(id);
-        let mut adds = &mut unwrap!(self.0.lock()).adds;
+        let adds = &mut unwrap!(self.0.lock()).adds;
         adds.push(SchedNewTask{task,prio,on_beat});
         id
     }
     
     pub(in super) fn delete(&mut self, id: u32) {
-        let mut dels = &mut unwrap!(self.0.lock()).dels;
+        let dels = &mut unwrap!(self.0.lock()).dels;
         dels.insert(id);
     }
     

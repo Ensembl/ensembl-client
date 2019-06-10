@@ -23,7 +23,7 @@ impl GLShape for TextureSpec {
             let mut offset = self.offset.as_fraction();
             let mut bounds_check = false;
             match self.origin {
-                TexturePosition::Pin(origin) => {
+                TexturePosition::Pin(_) => {
                     bounds_check = true;
                 },
                 TexturePosition::Tape(origin) => {

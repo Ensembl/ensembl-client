@@ -76,7 +76,7 @@ impl Command for Scale {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,leaf,lc,_,_,_,_) = task {
+            if let TáTask::MakeShapes(_,leaf,_,_,_,_,_) = task {
                 let scale = leaf.get_scale().get_index()+13;
                 regs.set(self.1,Value::new_from_float(vec![scale as f64]));
             }
@@ -113,7 +113,7 @@ impl Command for AllPlots {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
             if let TáTask::MakeShapes(acs,_,_,_,_,_,_) = task {
-                let mut data : Vec<(i32,i32,String)> = acs.all_landscapes(|lid,ls| {
+                let mut data : Vec<(i32,i32,String)> = acs.all_landscapes(|_,ls| {
                     let p = ls.get_plot();
                     (p.get_base(),p.get_height(),p.get_letter().to_string())
                 }).iter().filter(|x| x.is_some()).map(|x| x.clone().unwrap()).collect();

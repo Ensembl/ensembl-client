@@ -20,6 +20,7 @@ pub struct PinPolySpec {
     pub colspec: ColourSpec
 }
 
+#[allow(unused)]
 pub fn pin_mathsshape(origin: &Dot<f32,i32>,
                       anchor: Anchors,
                       size: f32, width: Option<f32>, ms: MathsShape,

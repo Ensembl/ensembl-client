@@ -154,7 +154,7 @@ impl TrainManager {
         if let Some(ref mut future_train) = self.future_train {
             cb(future_train);
         }
-        for mut train in &mut self.outer_train {
+        for train in &mut self.outer_train {
             if let Some(ref mut train) = train {
                 cb(train);
             }

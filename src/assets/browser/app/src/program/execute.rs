@@ -104,7 +104,7 @@ impl ProgramAttribs {
                         indexes: &[u16], points: u16) -> DataBatch {
         let b = self.bman.get_batch(&group,points);
         if let Some(obj_idx) = self.main_idx {
-            let mut main = &mut self.objects[obj_idx];
+            let main = &mut self.objects[obj_idx];
             main.add_index(&b,indexes,points);
         }
         b

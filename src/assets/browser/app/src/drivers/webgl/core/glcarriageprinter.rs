@@ -17,7 +17,7 @@ pub struct GLCarriagePrinter {
 }
 
 impl GLCarriagePrinter {
-    pub fn new(acm: &mut AllCanvasAllocator, leaf: &Leaf, progs: &GLProgs, ctx: &Rc<glctx>) -> GLCarriagePrinter {
+    pub fn new(leaf: &Leaf, progs: &GLProgs, ctx: &Rc<glctx>) -> GLCarriagePrinter {
         GLCarriagePrinter {
             srr: HashSet::<GLSourceResponse>::new(),
             prev_cc: None,

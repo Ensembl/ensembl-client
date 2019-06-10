@@ -93,7 +93,7 @@ pub struct ViewportReport(Arc<Mutex<ViewportReportImpl>>);
 impl ViewportReport {
     pub fn new(ar: &mut AppRunner) -> ViewportReport {
         let out = ViewportReport(Arc::new(Mutex::new(ViewportReportImpl::new())));
-        ar.add_timer("viewport-report",enclose! { (out) move |app,t,sr| {
+        ar.add_timer("viewport-report",enclose! { (out) move |app,_,sr| {
             if let Some(report) = out.clone().make_report(app) {
                 vec!{
                     OutputAction::SendCustomEvent("bpane-scroll".to_string(),report)

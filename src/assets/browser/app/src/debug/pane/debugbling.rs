@@ -4,7 +4,7 @@ use serde_json::Value as JSONValue;
 use stdweb::web::html_element::SelectElement;
 use stdweb::traits::IEvent;
 use stdweb::unstable::TryInto;
-use stdweb::web::{ Element, IEventTarget, HtmlElement, INode };
+use stdweb::web::{ Element, IEventTarget, HtmlElement };
 use stdweb::web::event::{ ChangeEvent, ClickEvent };
 
 use controller::global::App;

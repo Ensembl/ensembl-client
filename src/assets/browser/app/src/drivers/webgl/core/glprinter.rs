@@ -82,7 +82,7 @@ impl GLPrinterBase {
     }
 
     pub fn add_leaf(&mut self, leaf: &Leaf) {
-        self.lp.insert(leaf.clone(),GLCarriagePrinter::new(&mut self.acm,&leaf,&self.base_progs,&self.ctx));
+        self.lp.insert(leaf.clone(),GLCarriagePrinter::new(&leaf,&self.base_progs,&self.ctx));
     }
     
     pub fn remove_leaf(&mut self, leaf: &Leaf) {
@@ -113,7 +113,7 @@ impl GLPrinterBase {
     
     fn set_size(&mut self, s: Dot<f64,f64>) {
         /* Rendering can go fuzzy if available size not multiple of 4 */
-        let mut vp_sz = Dot(s.0.round() as i32,s.1.round() as i32);
+        let vp_sz = Dot(s.0.round() as i32,s.1.round() as i32);
         let mut css = "width: 100%; height: 100%".to_string();
         if self.round_size {
             css = format!("width: {}px; height: {}px",vp_sz.0,vp_sz.1);
@@ -145,7 +145,7 @@ impl GLPrinterBase {
     }
 
     fn destroy(&mut self) {
-        for (_i,mut lp) in &mut self.lp {
+        for (_i,lp) in &mut self.lp {
             lp.destroy(&mut self.acm);
         }
         self.acm.finish();
