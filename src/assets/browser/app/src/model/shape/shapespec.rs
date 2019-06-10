@@ -57,6 +57,51 @@ impl DrawingSpec {
     }
 }
 
+pub enum FacadeType {
+    Drawing,
+    Colour
+}
+
+#[derive(Clone)]
+pub enum Facade {
+    Drawing(DrawingSpec),
+    Colour(Colour)
+}
+
+pub struct ShapeShortInstanceData {
+    pub pos_x: f32,
+    pub pos_y: i32,
+    pub aux_x: f32,
+    pub aux_y: i32,
+    pub facade: Facade
+}
+
+pub struct ShapeLongInstanceData {
+    pub pos_x: Vec<f64>,
+    pub pos_y: Vec<f64>,
+    pub aux_x: Vec<f64>,
+    pub aux_y: Vec<f64>,
+    pub facade: Facade
+}
+
+pub enum ShapeInstanceDataType {
+    Long,
+    Short
+}
+
+pub enum ShapeInstanceData {
+    Short(ShapeShortInstanceData),
+    Long(ShapeLongInstanceData)
+}
+
+pub trait TypeToShape {
+    fn new_short_shape(&self, sid: &ShapeShortInstanceData) -> Option<ShapeSpec> { None }
+    fn new_long_shape(&self, sid: &ShapeLongInstanceData) -> Option<ShapeSpec> { None }
+    fn get_facade_type(&self) -> FacadeType;
+    fn needs_scale(&self) -> (bool,bool);
+    fn sid_type(&self) -> ShapeInstanceDataType;
+}
+
 #[derive(Clone)]
 pub struct DrawingHash(u64);
 

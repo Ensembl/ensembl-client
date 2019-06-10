@@ -28,7 +28,9 @@ pub use self::rect::{
 };
 
 pub use self::shapespec::{ 
-    ColourSpec, DrawingSpec, ShapeSpec, MathsShape, DrawingHash
+    ColourSpec, DrawingSpec, ShapeSpec, MathsShape, DrawingHash,
+    Facade, FacadeType, ShapeInstanceDataType,
+    ShapeShortInstanceData, TypeToShape, ShapeLongInstanceData
 };
 
 pub use self::text::{

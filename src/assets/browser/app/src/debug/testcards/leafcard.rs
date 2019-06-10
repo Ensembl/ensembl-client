@@ -3,8 +3,7 @@ use debug::support::closuresource::{ ClosureSource, closure_add, closure_done, c
 use composit::Source;
 use drivers::webgl::{
     FCFont, FontVariety,
-    TypeToShape, 
-    ShapeInstanceData, Facade, ShapeShortInstanceData
+    Facade, ShapeShortInstanceData
 };
 use model::shape::{
     PinRectTypeSpec, StretchRectTypeSpec, text_texture,

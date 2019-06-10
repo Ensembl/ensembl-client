@@ -12,12 +12,6 @@ mod glwiggle;
 pub use self::glshape::GLShape;
 
 pub use self::util::{
-    TypeToShape,
-    ShapeInstanceData,
-    ShapeInstanceDataType,
-    ShapeShortInstanceData,
-    ShapeLongInstanceData,
-    Facade, FacadeType,
     rectangle_g, rectangle_t, vertices_rect,
     colourspec_to_group
 };

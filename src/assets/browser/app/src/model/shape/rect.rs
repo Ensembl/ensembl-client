@@ -3,10 +3,9 @@ use std::fmt::Debug;
 use types::{ 
     CLeaf, AxisSense, Rect, Edge, RLeaf, area_size, cleaf, cpixel
 };
-use model::shape::{ ColourSpec, ShapeSpec };
-use drivers::webgl::{
-    Facade, FacadeType, ShapeInstanceDataType, ShapeShortInstanceData,
-    TypeToShape,
+use model::shape::{ 
+    ColourSpec, ShapeSpec, Facade, FacadeType, ShapeInstanceDataType,
+    ShapeShortInstanceData, TypeToShape
 };
 
 #[derive(Clone,Copy,Debug)]

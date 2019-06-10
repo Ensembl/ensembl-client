@@ -31,10 +31,7 @@ use model::shape::{
 };
 use model::train::PartyResponses;
 
-use drivers::webgl::{
-    ShapeInstanceData, TypeToShape, Facade, ShapeShortInstanceData,
-    stretch_texture
-};
+use drivers::webgl::{ Facade, ShapeShortInstanceData, stretch_texture };
 
 use controller::global::App;
 

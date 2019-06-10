@@ -5,11 +5,10 @@ use tánaiste::{
 };
 
 use composit::{ Leaf };
-use drivers::webgl::{
+use model::shape::{
     Facade, FacadeType, TypeToShape, ShapeShortInstanceData,
-    ShapeInstanceDataType, ShapeLongInstanceData
+    ShapeInstanceDataType, ShapeLongInstanceData, DrawingSpec
 };
-use model::shape::DrawingSpec;
 use model::train::PartyResponses;
 use tácode::core::{ TáContext, TáTask };
 use super::super::shapecmd::{ build_meta };
