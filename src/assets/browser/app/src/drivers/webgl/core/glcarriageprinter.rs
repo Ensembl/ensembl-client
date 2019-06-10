@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use std::rc::Rc;
 
 use super::{ GLSourceResponse, GLProgs, GLProgInstances };
-use program::ProgramType;
+use super::super::program::ProgramType;
 use model::train::Carriage;
 use composit::{ Leaf, Stage };
 use super::super::drawing::{ CarriageCanvases, AllCanvasAllocator };

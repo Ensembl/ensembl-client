@@ -4,7 +4,7 @@ use types::{ RLeaf, cfraction, cleaf, area_size };
 use super::GLShape;
 use super::util::{ rectangle_g, rectangle_t, vertices_rect };
 
-use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
+use super::super::program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
 use drivers::webgl::GLProgData;
 use drivers::webgl::{ Artist, Artwork };
 

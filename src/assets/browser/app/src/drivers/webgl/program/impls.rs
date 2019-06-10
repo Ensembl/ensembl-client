@@ -2,12 +2,12 @@ use dom::webgl::{
     WebGLRenderingContext as glctx
 };
 
-use program::{
+use super::super::program::{
     ProgramSource, Program, Statement, Uniform, Attribute, Varying,
     Canvas, Main, Precision, Arity,
 };
 
-use program::gpuspec::GPUSpec;
+use super::gpuspec::GPUSpec;
 
 #[derive(Clone,Copy,Debug,PartialEq,Eq,Hash)]
 pub enum PTGeom { Pin, Stretch, Fix, FixUnderTape, FixUnderPage, Tape, Page, PageUnderAll }

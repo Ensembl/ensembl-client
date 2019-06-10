@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 
 use super::{ OneCanvasManager, FlatCanvas, AllCanvasAllocator };
-use program::{ CanvasCache, CanvasWeave };
+use super::super::program::{ CanvasCache, CanvasWeave };
 
 pub struct CarriageCanvases {
     ds_idx: u32,

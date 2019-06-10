@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use composit::{ Leaf, Position, Wrapping };
 use controller::output::{ Report, ViewportReport };
-use program::UniformValue;
+use drivers::webgl::program::UniformValue;
 use types::{
     CPixel, Move, Dot, Direction, 
     LEFT, RIGHT, UP, DOWN, IN, OUT

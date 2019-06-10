@@ -3,7 +3,7 @@ use super::util::{
     points_g, vertices_strip, colourspec_to_group
 };
 
-use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
+use super::super::program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
 use drivers::webgl::{ GLProgData, Artwork };
 use model::shape::{ ColourSpec, StretchWiggle };
 

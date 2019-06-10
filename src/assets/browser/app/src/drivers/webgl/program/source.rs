@@ -5,7 +5,7 @@ use dom::webgl::{
     WebGLProgram as glprog,
 };
 
-use program::objects::{
+use super::objects::{
     Object,
     ObjectAttrib,
     ObjectUniform,
@@ -13,7 +13,7 @@ use program::objects::{
     ObjectCanvasTexture,
 };
 
-use program::gpuspec::{ Precision, Arity, GPUSpec };
+use super::gpuspec::{ Precision, Arity, GPUSpec };
 
 #[derive(PartialEq,Clone,Eq)]
 pub enum Phase {

@@ -6,11 +6,11 @@ use dom::webgl::{
     WebGLProgram as glprog,
 };
 
-use program::source::{ Source, ProgramSource };
-use program::objects::Object;
-use program::data::{ DataBatch, DataGroupIndex, BatchManager };
-use program::gpuspec::GPUSpec;
-use program::impls::ProgramType;
+use super::source::{ Source, ProgramSource };
+use super::objects::Object;
+use super::data::{ DataBatch, DataGroupIndex, BatchManager };
+use super::gpuspec::GPUSpec;
+use super::impls::ProgramType;
 use drivers::webgl::GLProgData;
 
 pub struct ProgramAttribs {

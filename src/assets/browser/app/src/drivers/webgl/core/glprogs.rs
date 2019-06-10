@@ -4,7 +4,7 @@ use dom::webgl::WebGLRenderingContext as glctx;
 
 use drivers::webgl::GLProgData;
 
-use program::{ Program, GPUSpec, ProgramType };
+use super::super::program::{ Program, GPUSpec, ProgramType };
 
 pub struct GLProgs {
     pub order: Vec<ProgramType>,

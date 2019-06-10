@@ -8,10 +8,10 @@ use dom::webgl::{
     WebGLProgram as glprog,
 };
 
-use program::data::{ DataBatch, Input };
+use super::super::data::{ DataBatch, Input };
 use drivers::webgl::GLProgData;
 
-use program::objects::Object;
+use super::objects::Object;
 
 pub struct ObjectAttrib {
     vec : HashMap<u32,Vec<f32>>,

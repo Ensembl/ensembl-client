@@ -7,8 +7,8 @@ use dom::webgl::{
     WebGLProgram as glprog,
 };
 
-use program::data::{ DataBatch, DataGroupIndex };
-use program::objects::Object;
+use super::super::data::{ DataBatch, DataGroupIndex };
+use super::objects::Object;
 
 #[derive(Clone,Copy,Debug)]
 pub enum UniformValue {

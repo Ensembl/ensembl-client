@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use program::{ ProgramType, PTGeom, PTSkin, PTMethod, ProgramAttribs };
+use super::super::program::{ ProgramType, PTGeom, PTSkin, PTMethod, ProgramAttribs };
 use types::{
     APixel, AxisSense, CPixel, area_centred, cfraction
 };

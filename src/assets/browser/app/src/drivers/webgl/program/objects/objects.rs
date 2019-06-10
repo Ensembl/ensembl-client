@@ -4,8 +4,8 @@ use dom::webgl::{
 
 use drivers::webgl::Drawing;
 use drivers::webgl::GLProgData;
-use program::data::{ DataBatch, DataGroupIndex, Input };
-use program::objects::UniformValue;
+use super::super::data::{ DataBatch, DataGroupIndex, Input };
+use super::UniformValue;
 
 /* This is the meat of each Object implementation */
 pub trait Object {

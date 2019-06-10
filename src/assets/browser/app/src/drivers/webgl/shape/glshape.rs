@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use program::{ ProgramAttribs, ProgramType };
+use super::super::program::{ ProgramAttribs, ProgramType };
 use drivers::webgl::GLProgData;
 use drivers::webgl::{ Artist, Artwork };
 use model::shape::ShapeSpec;

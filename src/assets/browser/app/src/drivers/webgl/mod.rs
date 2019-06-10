@@ -1,5 +1,6 @@
 mod core;
 mod drawing;
+pub mod program; /* XXX only while stage has a ref to the driver */
 mod shape;
 
 pub use self::core::{ 

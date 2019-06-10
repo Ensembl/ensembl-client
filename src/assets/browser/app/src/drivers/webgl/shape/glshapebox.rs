@@ -1,6 +1,6 @@
 use drivers::webgl::{ Artwork, GLProgData };
 use super::super::shape::GLShape;
-use program::{ PTGeom, PTMethod, ProgramType, ProgramAttribs, Input };
+use super::super::program::{ PTGeom, PTMethod, ProgramType, ProgramAttribs, Input };
 use super::util::{
     despot, vertices_hollowpoly, poly_p, multi_gl, colourspec_to_group 
 };

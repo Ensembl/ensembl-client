@@ -8,8 +8,8 @@ use dom::webgl::{
 };
 
 use drivers::webgl::GLProgData;
-use program::data::DataBatch;
-use program::objects::Object;
+use super::super::data::DataBatch;
+use super::super::objects::Object;
 
 #[derive(Clone,Copy,PartialEq,Eq,Hash,Debug)]
 pub enum CanvasWeave {

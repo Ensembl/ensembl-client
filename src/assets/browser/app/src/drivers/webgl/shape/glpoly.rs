@@ -1,6 +1,6 @@
 use std::f32;
 
-use program::{
+use super::super::program::{
     ProgramAttribs, DataBatch, PTGeom, PTMethod, ProgramType,
     Input
 };

@@ -1,4 +1,4 @@
-use program::{ ProgramAttribs, PTGeom, PTMethod, ProgramType };
+use super::super::program::{ ProgramAttribs, PTGeom, PTMethod, ProgramType };
 use types::AxisSense;
 
 use super::GLShape;
