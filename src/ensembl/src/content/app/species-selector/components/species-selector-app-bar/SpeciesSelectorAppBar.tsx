@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
@@ -54,6 +55,9 @@ const SelectedSpeciesList = (props: Props) => {
           onRemove={props.onSpeciesDelete}
         />
       ))}
+      <div className={styles.genomeBrowserLinkContainer}>
+        <Link to="/app/browser">View in Genome Browser</Link>
+      </div>
     </>
   );
 };
