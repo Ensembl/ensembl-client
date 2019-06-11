@@ -15,15 +15,15 @@ const CloseButton = (props: Props) => {
     [styles.closeButtonInverted]: props.inverted
   });
 
-  const handleClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+  const handleClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
     props.onClick();
   };
 
   return (
-    <button className={className} onClick={handleClick}>
+    <div className={className} onClick={handleClick}>
       <CrossIcon />
-    </button>
+    </div>
   );
 };
 
