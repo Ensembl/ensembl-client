@@ -15,18 +15,18 @@ type Props = {
 };
 
 const CheckboxWithSelects = (props: Props) => {
-  const [checkedStatus, setCheckedStatus] = useState(false);
+  const [isChecked, setisChecked] = useState(false);
   const [shouldShowExtraOption, setShowExtraOption] = useState(false);
 
   useEffect(() => {
     if (props.selectedOptions.length > 0) {
-      setCheckedStatus(true);
+      setisChecked(true);
     }
   }, []);
 
   const handleCheckboxOnChange = useCallback(
-    (checkedStatus: boolean) => {
-      setCheckedStatus(checkedStatus);
+    (isChecked: boolean) => {
+      setisChecked(isChecked);
       props.onChange([]);
     },
     [props.selectedOptions]
@@ -85,13 +85,13 @@ const CheckboxWithSelects = (props: Props) => {
           <tr>
             <td>
               <Checkbox
-                checked={checkedStatus}
+                checked={isChecked}
                 onChange={handleCheckboxOnChange}
                 label={props.label}
               />
             </td>
             <td>
-              {checkedStatus && (
+              {isChecked && (
                 <div>
                   <Select
                     options={firstSelectOptions}

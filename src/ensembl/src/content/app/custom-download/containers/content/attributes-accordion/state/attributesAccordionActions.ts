@@ -146,14 +146,14 @@ export const fetchOrthologueSpecies: ActionCreator<
         filteredSpecies[species.name] = {
           id: species.name,
           label: species.display_name,
-          checkedStatus: false
+          isChecked: false
         };
       }
     });
 
     if (orthologueSpecies && orthologueSpecies.default) {
       Object.keys(orthologueSpecies.default).forEach((species: string) => {
-        if (orthologueSpecies.default[species].checkedStatus) {
+        if (orthologueSpecies.default[species].isChecked) {
           filteredSpecies[species] = orthologueSpecies.default[species];
         }
       });

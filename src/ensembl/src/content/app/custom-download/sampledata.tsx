@@ -3,12 +3,12 @@ export const transcriptTypeFiltersGrid: any = {
     protein_coding: {
       id: 'protein_coding',
       label: 'Protein coding',
-      checkedStatus: false
+      isChecked: false
     },
     type: {
       id: 'type',
       label: 'Type',
-      checkedStatus: false
+      isChecked: false
     }
   }
 };
@@ -18,12 +18,12 @@ export const geneTypeFiltersGrid: any = {
     source: {
       id: 'source',
       label: 'Gene source',
-      checkedStatus: false
+      isChecked: false
     },
     type: {
       id: 'type',
       label: 'Type',
-      checkedStatus: false
+      isChecked: false
     }
   }
 };
@@ -34,86 +34,86 @@ export const attributes = {
       symbol: {
         id: 'symbol',
         label: 'Gene symbol',
-        checkedStatus: false
+        isChecked: false
       },
       id: {
         id: 'id',
         label: 'Gene stable ID',
-        checkedStatus: false
+        isChecked: false
       },
       id_version: {
         id: 'id_version',
         label: 'Gene stable ID version',
-        checkedStatus: false
+        isChecked: false
       },
       name: {
         id: 'name',
         label: 'Gene name',
-        checkedStatus: false
+        isChecked: false
       },
       Superfamily: {
         id: 'Superfamily',
         label: 'Superfamily',
-        checkedStatus: false
+        isChecked: false
       },
       strand: {
         id: 'strand',
         label: 'Strand',
-        checkedStatus: false
+        isChecked: false
       },
       start: {
         id: 'start',
         label: 'Gene start(bp)',
-        checkedStatus: false
+        isChecked: false
       },
       end: {
         id: 'end',
         label: 'Gene end (bp)',
-        checkedStatus: false
+        isChecked: false
       },
       UniParc: {
         id: 'UniParc',
         label: 'UniParc',
-        checkedStatus: false
+        isChecked: false
       },
       source: {
         id: 'source',
         label: 'Source (gene)',
-        checkedStatus: false
+        isChecked: false
       },
       BioGRID: {
         id: 'BioGRID',
         label: 'BioGRID',
-        checkedStatus: false
+        isChecked: false
       },
       Smart: {
         id: 'Smart',
         label: 'Smart',
-        checkedStatus: false
+        isChecked: false
       }
     },
     External: {
       gencode_basic_annotation: {
         id: 'gencode_basic_annotation',
         label: 'GENCODE basic annotation',
-        checkedStatus: false
+        isChecked: false
       },
       uniparc_id: {
         id: 'uniparc_id',
         label: 'UniParc ID',
-        checkedStatus: false
+        isChecked: false
       },
       ncbi_id: {
         id: 'ncbi_id',
         label: 'NCBI gene ID',
-        checkedStatus: false
+        isChecked: false
       },
       HGNC: {
         id: 'HGNC',
         label: 'HGNC symbol',
-        checkedStatus: false
+        isChecked: false
       },
-      go_domain: { id: 'go_domain', label: 'GO domain', checkedStatus: false }
+      go_domain: { id: 'go_domain', label: 'GO domain', isChecked: false }
     }
   },
   transcripts: {
@@ -121,99 +121,99 @@ export const attributes = {
       biotype: {
         id: 'transcripts.biotype',
         label: 'Biotype',
-        checkedStatus: true
+        isChecked: true
       },
       name: {
         id: 'transcripts.name',
         label: 'Transcript name',
-        checkedStatus: true
+        isChecked: true
       },
       id: {
         id: 'transcripts.id',
         label: 'Transcript stable ID',
-        checkedStatus: true
+        isChecked: true
       },
       AGD_TRANSCRIPT: {
         id: 'transcripts.AGD_TRANSCRIPT',
         label: 'Ashbya Genome Database',
-        checkedStatus: false
+        isChecked: false
       },
       type: {
         id: 'transcripts.type',
         label: 'Transcript Type',
-        checkedStatus: false
+        isChecked: false
       },
       UniGene: {
         id: 'transcripts.UniGene',
         label: 'UniGene',
-        checkedStatus: false
+        isChecked: false
       },
       Pfam: {
         id: 'transcripts.Pfam',
         label: 'Pfam',
-        checkedStatus: false
+        isChecked: false
       },
       HGNC_trans_name: {
         id: 'transcripts.HGNC_trans_name',
         label: 'HGNC_trans_name',
-        checkedStatus: false
+        isChecked: false
       },
       start: {
         id: 'transcripts.start',
         label: 'Start',
-        checkedStatus: false
+        isChecked: false
       },
       end: {
         id: 'transcripts.end',
         label: 'End',
-        checkedStatus: false
+        isChecked: false
       },
       Interpro: {
         id: 'transcripts.Interpro',
         label: 'Interpro',
-        checkedStatus: false
+        isChecked: false
       },
       Smart: {
         id: 'transcripts.Smart',
         label: 'Smart',
-        checkedStatus: false
+        isChecked: false
       },
       analysis: {
         id: 'transcripts.analysis',
         label: 'Analysis',
-        checkedStatus: false
+        isChecked: false
       }
     },
     'Microarray probes/probesets': {
       affy_hc_g110_probe: {
         id: 'transcripts.affy_hc_g110_probe',
         label: 'AFFY HC G110 probe',
-        checkedStatus: false
+        isChecked: false
       },
       agilent_sureprint_g3_ge_8x60k_probe: {
         id: 'transcripts.agilent_sureprint_g3_ge_8x60k_probe',
         label: 'AGILENT SurePrint G3 GE 8x60k probe',
-        checkedStatus: false
+        isChecked: false
       },
       illumina_humanref_8_v3_probe: {
         id: 'transcripts.illumina_humanref_8_v3_probe',
         label: 'ILLUMINA HumanRef 8 V3 probe',
-        checkedStatus: false
+        isChecked: false
       },
       affy_hta_2_0_probe: {
         id: 'transcripts.affy_hta_2_0_probe',
         label: 'AFFY HTA 2 0 probe',
-        checkedStatus: false
+        isChecked: false
       },
       codelink_codelink_probe: {
         id: 'transcripts.codelink_codelink_probe',
         label: 'CODELINK CODELINK probe',
-        checkedStatus: false
+        isChecked: false
       },
       go_domain: {
         id: 'transcripts.go_domain',
         label: 'GO domain',
-        checkedStatus: false
+        isChecked: false
       }
     }
   },
@@ -222,22 +222,22 @@ export const attributes = {
       genomic_coordinates: {
         id: 'location.genomic_coordinates',
         label: 'Genomic coordinates',
-        checkedStatus: false
+        isChecked: false
       },
       strand: {
         id: 'location.strand',
         label: 'Strand',
-        checkedStatus: false
+        isChecked: false
       },
       start: {
         id: 'location.start',
         label: 'Gene start',
-        checkedStatus: false
+        isChecked: false
       },
       end: {
         id: 'location.end',
         label: 'Gene end',
-        checkedStatus: false
+        isChecked: false
       }
     }
   },
@@ -246,54 +246,54 @@ export const attributes = {
       variant_name: {
         id: 'germline_variation.variant_name',
         label: 'Variant name',
-        checkedStatus: false
+        isChecked: false
       },
       variant_source: {
         id: 'germline_variation.variant_source',
         label: 'Variant source',
-        checkedStatus: false
+        isChecked: false
       },
       sift_code: {
         id: 'germline_variation.sift_code',
         label: 'SIFT code',
-        checkedStatus: false
+        isChecked: false
       },
       protein_allele: {
         id: 'germline_variation.protein_allele',
         label: 'Protein allele',
-        checkedStatus: false
+        isChecked: false
       },
       polyphen_score: {
         id: 'germline_variation.polyphen_score',
         label: 'PolyPhen score',
-        checkedStatus: false
+        isChecked: false
       }
     },
     location: {
       distance_to_transcript: {
         id: 'germline_variation.distance_to_transcript',
         label: 'Distance to transcript',
-        checkedStatus: false
+        isChecked: false
       },
       cds_end: {
         id: 'germline_variation.cds_end',
         label: 'CDS end',
-        checkedStatus: false
+        isChecked: false
       },
       chromosomescaffold_position_start_bp: {
         id: 'germline_variation.chromosomescaffold_position_start_bp',
         label: 'Chromosome/scaffold position start (bp)',
-        checkedStatus: false
+        isChecked: false
       },
       protein_location_aa: {
         id: 'germline_variation.protein_location_aa',
         label: 'Protein location (aa)',
-        checkedStatus: false
+        isChecked: false
       },
       cds_start: {
         id: 'germline_variation.cds_start',
         label: 'CDS start',
-        checkedStatus: false
+        isChecked: false
       }
     }
   },
@@ -302,54 +302,54 @@ export const attributes = {
       variant_name: {
         id: 'somatic_variation.variant_name',
         label: 'Variant name',
-        checkedStatus: false
+        isChecked: false
       },
       variant_source: {
         id: 'somatic_variation.variant_source',
         label: 'Variant source',
-        checkedStatus: false
+        isChecked: false
       },
       sift_code: {
         id: 'somatic_variation.sift_code',
         label: 'SIFT code',
-        checkedStatus: false
+        isChecked: false
       },
       protein_allele: {
         id: 'somatic_variation.protein_allele',
         label: 'Protein allele',
-        checkedStatus: false
+        isChecked: false
       },
       polyphen_score: {
         id: 'somatic_variation.polyphen_score',
         label: 'PolyPhen score',
-        checkedStatus: false
+        isChecked: false
       }
     },
     location: {
       distance_to_transcript: {
         id: 'somatic_variation.distance_to_transcript',
         label: 'Distance to transcript',
-        checkedStatus: false
+        isChecked: false
       },
       cds_end: {
         id: 'somatic_variation.cds_end',
         label: 'CDS end',
-        checkedStatus: false
+        isChecked: false
       },
       chromosomescaffold_position_start_bp: {
         id: 'somatic_variation.chromosomescaffold_position_start_bp',
         label: 'Chromosome/scaffold position start (bp)',
-        checkedStatus: false
+        isChecked: false
       },
       protein_location_aa: {
         id: 'somatic_variation.protein_location_aa',
         label: 'Protein location (aa)',
-        checkedStatus: false
+        isChecked: false
       },
       cds_start: {
         id: 'somatic_variation.cds_start',
         label: 'CDS start',
-        checkedStatus: false
+        isChecked: false
       }
     }
   }
@@ -359,67 +359,67 @@ export const orthologueAttributes = {
   symbol: {
     id: 'symbol',
     label: 'Gene symbol',
-    checkedStatus: false
+    isChecked: false
   },
   id: {
     id: 'id',
     label: 'Gene stable ID',
-    checkedStatus: false
+    isChecked: false
   },
   id_version: {
     id: 'id_version',
     label: 'Gene stable ID version',
-    checkedStatus: false
+    isChecked: false
   },
   name: {
     id: 'name',
     label: 'Gene name',
-    checkedStatus: false
+    isChecked: false
   },
   type: {
     id: 'type',
     label: 'Gene type',
-    checkedStatus: false
+    isChecked: false
   },
   version_gene: {
     id: 'version_gene',
     label: 'Version (gene)',
-    checkedStatus: false
+    isChecked: false
   },
   start: {
     id: 'start',
     label: 'Gene start(bp)',
-    checkedStatus: false
+    isChecked: false
   },
   end: {
     id: 'end',
     label: 'Gene end (bp)',
-    checkedStatus: false
+    isChecked: false
   },
   gc_content: {
     id: 'gc_content',
     label: 'Gene % GC content',
-    checkedStatus: false
+    isChecked: false
   },
   source_gene: {
     id: 'source_gene',
     label: 'Source (gene)',
-    checkedStatus: false
+    isChecked: false
   },
   EntrezGene: {
     id: 'EntrezGene',
     label: 'EntrezGene',
-    checkedStatus: false
+    isChecked: false
   },
   source_of_name: {
     id: 'source_of_name',
     label: 'Source of gene name',
-    checkedStatus: false
+    isChecked: false
   },
   xxxx: {
     id: 'xxxxxx',
     label: 'xxxxxx',
-    checkedStatus: false
+    isChecked: false
   }
 };
 // Result string

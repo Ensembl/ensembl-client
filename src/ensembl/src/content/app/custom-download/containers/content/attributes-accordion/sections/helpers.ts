@@ -13,7 +13,7 @@ export const getMatchedSpeciesList = async (searchTerm: string, props: any) => {
       filteredSpecies[species.name] = {
         id: species.name,
         label: species.display_name,
-        checkedStatus: false
+        isChecked: false
       };
     }
   });
@@ -26,7 +26,7 @@ export const getMatchedSpeciesList = async (searchTerm: string, props: any) => {
   ) {
     Object.keys(props.orthologueFilteredSpecies.default).forEach(
       (species: string) => {
-        if (props.orthologueFilteredSpecies.default[species].checkedStatus) {
+        if (props.orthologueFilteredSpecies.default[species].isChecked) {
           filteredSpecies[species] =
             props.orthologueFilteredSpecies.default[species];
         }

@@ -42,7 +42,7 @@ const Orthologue = (props: Props) => {
     (status: boolean, subSection: string, attributeId: string) => {
       const newOrthologueAttributes = { ...props.orthologueAttributes };
 
-      newOrthologueAttributes[subSection][attributeId].checkedStatus = status;
+      newOrthologueAttributes[subSection][attributeId].isChecked = status;
 
       props.setOrthologueAttributes(newOrthologueAttributes);
     },
@@ -55,9 +55,7 @@ const Orthologue = (props: Props) => {
         ...props.orthologueSpecies
       };
 
-      newOrthologueFilteredSpecies[subSection][
-        attributeId
-      ].checkedStatus = status;
+      newOrthologueFilteredSpecies[subSection][attributeId].isChecked = status;
 
       props.setOrthologueSpecies(newOrthologueFilteredSpecies);
 

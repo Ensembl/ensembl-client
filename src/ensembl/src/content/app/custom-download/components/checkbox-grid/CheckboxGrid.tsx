@@ -130,11 +130,16 @@ const renderCheckBoxList = (
 };
 
 const CheckBoxGrid = (props: Props) => {
-  const gridDataKeys = Object.keys(props.gridData);
-
-  if (!props.gridData || !gridDataKeys.length) {
+  if (!props.gridData) {
     return null;
   }
+
+  const gridDataKeys = Object.keys(props.gridData);
+
+  if (!gridDataKeys.length) {
+    return null;
+  }
+
   return (
     <>
       {props.gridData.hasOwnProperty('default')

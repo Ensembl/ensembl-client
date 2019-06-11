@@ -157,8 +157,10 @@ describe('<CheckboxGrid />', () => {
   });
 
   it('draws N number of columns based on the `column` parameter', () => {
-    wrapper = mount(<CheckboxGrid {...defaultProps} columns={4} />);
+    const columns = 4;
+
+    wrapper = mount(<CheckboxGrid {...defaultProps} columns={columns} />);
     const firstGridContainer = wrapper.find('.checkboxGridContainer').first();
-    expect(firstGridContainer.children().length).toBe(4);
+    expect(firstGridContainer.children().length).toBe(columns);
   });
 });

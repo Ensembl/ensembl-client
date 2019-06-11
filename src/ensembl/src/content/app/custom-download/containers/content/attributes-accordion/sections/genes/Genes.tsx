@@ -25,7 +25,7 @@ const Genes = (props: Props) => {
       }
       const newGeneAttributes = { ...props.geneAttributes };
 
-      newGeneAttributes[subSection][attributeId].checkedStatus = status;
+      newGeneAttributes[subSection][attributeId].isChecked = status;
 
       props.setGeneAttributes(newGeneAttributes);
     },

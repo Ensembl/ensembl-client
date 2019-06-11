@@ -12,17 +12,17 @@ type Props = {
 };
 
 const CheckboxWithRadios = (props: Props) => {
-  const [checkedStatus, setCheckedStatus] = useState(false);
+  const [isChecked, setisChecked] = useState(false);
 
   useEffect(() => {
     if (props.selectedOption) {
-      setCheckedStatus(true);
+      setisChecked(true);
     }
   }, []);
 
   const handleCheckboxOnChange = useCallback(
-    (checkedStatus: boolean) => {
-      setCheckedStatus(checkedStatus);
+    (isChecked: boolean) => {
+      setisChecked(isChecked);
       props.onChange('');
     },
     [props.selectedOption]
@@ -42,12 +42,12 @@ const CheckboxWithRadios = (props: Props) => {
           <tr>
             <td>
               <Checkbox
-                checked={checkedStatus}
+                checked={isChecked}
                 onChange={handleCheckboxOnChange}
                 label={props.label}
               />
             </td>
-            {checkedStatus && (
+            {isChecked && (
               <td>
                 <Radio
                   onChange={handleOnChange}

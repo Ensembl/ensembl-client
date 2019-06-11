@@ -24,9 +24,7 @@ export const getSelectedAttributes = (attributes: any) => {
   Object.keys(attributes).forEach((section) => {
     Object.keys(attributes[section]).forEach((subSection) => {
       Object.keys(attributes[section][subSection]).forEach((attributeId) => {
-        if (
-          attributes[section][subSection][attributeId].checkedStatus === true
-        ) {
+        if (attributes[section][subSection][attributeId].isChecked === true) {
           selectedAttributes.push([
             section,
             subSection,
@@ -56,9 +54,7 @@ export const getSelectedFilters = (filters: any) => {
     } else if (typeof filters[section] === 'object') {
       Object.keys(filters[section]).forEach((subSection) => {
         Object.keys(filters[section][subSection]).forEach((attributeId) => {
-          if (
-            filters[section][subSection][attributeId].checkedStatus === true
-          ) {
+          if (filters[section][subSection][attributeId].isChecked === true) {
             if (!selectedFilters[section]) {
               selectedFilters[section] = [];
             }
