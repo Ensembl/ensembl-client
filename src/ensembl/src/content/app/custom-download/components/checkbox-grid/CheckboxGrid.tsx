@@ -1,9 +1,12 @@
 import React from 'react';
 import Checkbox from 'src/shared/checkbox/Checkbox';
 import AttributesSection, {
-  AttributesSubSection
+  AttributesSubSection,
+  Attribute
 } from 'src/content/app/custom-download/types/Attributes';
 import styles from './CheckboxGrid.scss';
+
+import orderBy from 'lodash/orderBy';
 
 type Props = {
   gridData: AttributesSection;
@@ -51,19 +54,17 @@ const renderCheckBoxList = (
   props: Props,
   subSection: string
 ) => {
-  const checkboxListKeys = Object.keys(checkboxList);
+  const orderedCheckboxList: Attribute[] = orderBy(checkboxList, ['label']);
 
-  if (!checkboxListKeys.length) {
+  if (!orderedCheckboxList.length) {
     return null;
   }
 
-  const checkboxListIDs = checkboxListKeys.sort();
-
   const gridMatrix = Array(props.columns).fill(0);
 
-  let totalCheckbox = checkboxListIDs.length;
+  let totalCheckbox = orderedCheckboxList.length;
 
-  for (let i = 0; i < checkboxListIDs.length; i++) {
+  for (let i = 0; i < orderedCheckboxList.length; i++) {
     if (totalCheckbox <= 0) {
       break;
     }
@@ -72,7 +73,7 @@ const renderCheckBoxList = (
         break;
       }
       totalCheckbox -= 1;
-      if (checkboxListIDs[i + j]) {
+      if (orderedCheckboxList[i + j]) {
         gridMatrix[j] += 1;
       }
     }
@@ -92,20 +93,24 @@ const renderCheckBoxList = (
         {gridMatrix.map((columnLength: number, gridKey: number) => {
           return (
             <div key={gridKey} style={singleGridStyle}>
-              {checkboxListIDs
+              {orderedCheckboxList
                 .splice(0, columnLength)
-                .map((item: string, itemKey: number) => {
-                  if (props.hideUnchecked && !checkboxList[item].isChecked) {
+                .map((attribute: Attribute, itemKey: number) => {
+                  if (props.hideUnchecked && !attribute.isChecked) {
                     return null;
                   }
 
                   return (
                     <div key={itemKey} className={styles.checkboxContainer}>
                       <Checkbox
-                        label={checkboxList[item].label}
-                        checked={checkboxList[item].isChecked}
+                        label={attribute.label}
+                        checked={attribute.isChecked}
                         onChange={(status) => {
-                          props.checkboxOnChange(status, subSection, item);
+                          props.checkboxOnChange(
+                            status,
+                            subSection,
+                            attribute.id
+                          );
                         }}
                       />
                     </div>

@@ -2,70 +2,39 @@ import React from 'react';
 import { mount } from 'enzyme';
 import CheckboxGrid from './CheckboxGrid';
 import Checkbox from 'src/shared/checkbox/Checkbox';
+import faker from 'faker';
+import times from 'lodash/times';
+import orderBy from 'lodash/orderBy';
+
+import AttributesSection from 'src/content/app/custom-download/types/Attributes';
+
+const createCheckboxData = (gridSection: any) => {
+  const id = faker.lorem.word();
+  const label = faker.lorem.word();
+  const isChecked = faker.random.boolean();
+
+  gridSection[id] = {
+    id,
+    label,
+    isChecked
+  };
+};
+
+const createGridData = (): AttributesSection => {
+  const gridData: any = {
+    default: {},
+    External: {}
+  };
+  times(10, () => createCheckboxData(gridData['default']));
+
+  times(10, () => createCheckboxData(gridData['External']));
+
+  return gridData;
+};
+
+const gridData: AttributesSection = createGridData();
 
 const checkboxOnChange = jest.fn();
-const gridData = {
-  default: {
-    symbol: {
-      id: 'symbol',
-      label: 'Symbol',
-      isChecked: false
-    },
-    id: {
-      id: 'id',
-      label: 'Gene stable ID',
-      isChecked: true
-    },
-    id_version: {
-      id: 'id_version',
-      label: 'Gene stable ID version',
-      isChecked: true
-    },
-    name: {
-      id: 'name',
-      label: 'Gene name',
-      isChecked: false
-    },
-    strand: {
-      id: 'strand',
-      label: 'Strand',
-      isChecked: false
-    },
-    start: {
-      id: 'start',
-      label: 'Gene start(bp)',
-      isChecked: false
-    },
-    end: {
-      id: 'end',
-      label: 'End',
-      isChecked: false
-    }
-  },
-  External: {
-    gencode_basic_annotation: {
-      id: 'gencode_basic_annotation',
-      label: 'GENCODE basic annotation',
-      isChecked: false
-    },
-    uniparc_id: {
-      id: 'uniparc_id',
-      label: 'UniParc ID',
-      isChecked: false
-    },
-    ncbi_id: {
-      id: 'ncbi_id',
-      label: 'NCBI gene ID',
-      isChecked: false
-    },
-    HGNC: {
-      id: 'HGNC',
-      label: 'HGNC symbol',
-      isChecked: false
-    },
-    go_domain: { id: 'go_domain', label: 'GO domain', isChecked: false }
-  }
-};
 
 describe('<CheckboxGrid />', () => {
   afterEach(() => {
@@ -100,26 +69,37 @@ describe('<CheckboxGrid />', () => {
 
     const firstGridContainer = wrapper.find('.checkboxGridContainer').first();
 
+    const labels: string[] = [];
+    Object.values(gridData.default).forEach((element) => {
+      labels.push(element.label);
+    });
+    labels.sort();
+
+    const firstLabel = labels.shift();
+    const lastLabel = labels.pop();
     const firstCheckbox = firstGridContainer.find(Checkbox).first();
-    expect(firstCheckbox.prop('label')).toEqual('End');
+    expect(firstCheckbox.prop('label')).toEqual(firstLabel);
 
     const lastCheckbox = firstGridContainer.find(Checkbox).last();
-    expect(lastCheckbox.prop('label')).toEqual('Symbol');
+    expect(lastCheckbox.prop('label')).toEqual(lastLabel);
   });
 
-  it('calls the checkboxOnChange when a checkbox is checked/unchecked', () => {
+  it('calls the checkboxOnChange when a checkbox is checked/unchecked', async () => {
     wrapper = mount(<CheckboxGrid {...defaultProps} />);
     const firstCheckbox = wrapper.find(Checkbox).first();
-    firstCheckbox.find('.defaultCheckbox').simulate('click');
-    firstCheckbox.find('.defaultCheckbox').simulate('click');
-    /* 
-      true - current checkbox status
-      default - grid sub-section id
-      end- id of the checkbox
-    */
-    expect(checkboxOnChange).toHaveBeenCalledWith(true, 'default', 'end');
 
-    expect(checkboxOnChange).toHaveBeenLastCalledWith(false, 'default', 'end');
+    firstCheckbox.find('.defaultCheckbox').simulate('click');
+
+    const checkedStatus = firstCheckbox.prop('checked');
+
+    const orderedDefaultAttributes = orderBy(gridData.default, ['label']);
+
+    const firstCheckboxID = orderedDefaultAttributes[0].id;
+    expect(checkboxOnChange).toBeCalledWith(
+      !checkedStatus,
+      'default',
+      firstCheckboxID
+    );
   });
 
   it('does not display the `Default` title if the sub-section is `default`', () => {

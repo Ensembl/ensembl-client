@@ -1,4 +1,4 @@
-export const getMatchedSpeciesList = async (searchTerm: string, props: any) => {
+export const getMatchedSpeciesList = (searchTerm: string, props: any) => {
   let allSpecies = props.orthologueSpecies;
 
   const filteredSpecies: any = {};
