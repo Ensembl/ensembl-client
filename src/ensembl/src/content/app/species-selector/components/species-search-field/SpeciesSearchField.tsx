@@ -16,7 +16,7 @@ import {
 import SpeciesSearchMatch from '../species-search-match/SpeciesSearchMatch';
 
 import AutosuggestSearchField from 'src/shared/autosuggest-search-field/AutosuggestSearchField';
-import CloseButton from 'src/shared/close-button/CloseButton';
+import ClearButton from 'src/shared/clear-button/ClearButton';
 
 import {
   SearchMatch,
@@ -107,7 +107,7 @@ export const SpeciesSearchField = (props: Props) => {
 const RightCorner = (props: RightCornerProps) => {
   switch (props.status) {
     case RightCornerStatus.CLEAR:
-      return <CloseButton onClick={props.clear} />;
+      return <ClearButton onClick={props.clear} />;
     default:
       return null;
   }

@@ -53,7 +53,7 @@ $deleteButtonPadding: 8px 20px 8px 28px;
   cursor: default;
 
   .overlayText,
-  .closeButtonContainer {
+  .clearButtonContainer {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -67,7 +67,7 @@ $deleteButtonPadding: 8px 20px 8px 28px;
     color: $ens-blue;
   }
 
-  .closeButtonContainer {
+  .clearButtonContainer {
     display: flex;
     padding: $deleteButtonPadding;
     padding-right: 15px;

@@ -3,16 +3,16 @@ import classNames from 'classnames';
 
 import { ReactComponent as CrossIcon } from './cross.svg';
 
-import styles from './CloseButton.scss';
+import styles from './ClearButton.scss';
 
 type Props = {
   inverted: boolean;
   onClick: () => void;
 };
 
-const CloseButton = (props: Props) => {
-  const className = classNames(styles.closeButton, {
-    [styles.closeButtonInverted]: props.inverted
+const ClearButton = (props: Props) => {
+  const className = classNames(styles.clearButton, {
+    [styles.clearButtonInverted]: props.inverted
   });
 
   const handleClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
@@ -27,8 +27,8 @@ const CloseButton = (props: Props) => {
   );
 };
 
-CloseButton.defaultProps = {
+ClearButton.defaultProps = {
   inverted: false
 };
 
-export default CloseButton;
+export default ClearButton;

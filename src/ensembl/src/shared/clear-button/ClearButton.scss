@@ -1,6 +1,6 @@
 @import 'src/styles/common';
 
-.closeButton {
+.clearButton {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -22,7 +22,7 @@
   }
 }
 
-.closeButtonInverted {
+.clearButtonInverted {
   background-color: $ens-blue;
   border: none;
 
