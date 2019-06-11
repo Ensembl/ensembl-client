@@ -1,15 +1,8 @@
 import { Epic } from 'redux-observable';
-import { of } from 'rxjs';
-import { fromFetch } from 'rxjs/fetch';
-import {
-  map,
-  switchMap,
-  filter,
-  distinctUntilChanged,
-  catchError
-} from 'rxjs/operators';
+import { map, switchMap, filter, distinctUntilChanged } from 'rxjs/operators';
 import { isActionOf, ActionType, PayloadAction } from 'typesafe-actions';
 
+import * as observableApiService from 'src/services/observable-api-service';
 import * as speciesSelectorActions from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 import { RootState } from 'src/store';
@@ -28,8 +21,9 @@ export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
       ])
     ),
     distinctUntilChanged(
-      // do not allow identical queries to go through;
-      // but reset this rule every time user clears search results
+      // ignore actions that have identical queries
+      // (which may happen because of white space trimming in SpeciesSearchField,
+      // but forget the previous query every time user clears search results
       (action1, action2) =>
         action1.type === action2.type &&
         (action1 as PayloadAction<
@@ -47,25 +41,18 @@ export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
     switchMap((action) => {
       const query = action.payload;
       const url = `/api/genome_search?query=${encodeURIComponent(query)}`;
-      return fromFetch(url).pipe(
-        switchMap((response) => {
-          if (response.ok) {
-            // OK return data
-            return response.json();
-          } else {
-            // Server is returning a status requiring the client to try something else.
-            return of({ error: true, message: `Error ${response.status}` });
-          }
-        }),
-        catchError((err) => {
-          // Network or other error, handle appropriately
-          return of({ error: true, message: err.message });
-        })
-      );
+      return observableApiService.fetch(url);
     }),
     map((response) => {
-      return speciesSelectorActions.fetchSpeciesSearchResults.success({
-        results: response
-      });
+      if (response.error) {
+        // TODO: develop a strategy for handling network errors
+        return speciesSelectorActions.fetchSpeciesSearchResults.failure(
+          response.message
+        );
+      } else {
+        return speciesSelectorActions.fetchSpeciesSearchResults.success({
+          results: response
+        });
+      }
     })
   );
