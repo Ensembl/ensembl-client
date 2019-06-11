@@ -13,7 +13,7 @@ import {
   getCommittedSpecies
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import Tooltip, { Position } from 'src/shared/tooltip/Tooltip';
+import Tooltip from 'src/shared/tooltip/Tooltip';
 import InlineSVG from 'src/shared/inline-svg/InlineSvg';
 
 import {

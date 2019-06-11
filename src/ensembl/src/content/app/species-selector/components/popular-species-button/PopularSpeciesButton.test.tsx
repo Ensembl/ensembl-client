@@ -31,8 +31,9 @@ describe('<PopularSpeciesButton />', () => {
   describe('not available', () => {
     it('has appropriate class', () => {
       const props = set('species.isAvailable', false, commonProps);
-      const renderedButton = render(<PopularSpeciesButton {...props} />);
-      expect(renderedButton.hasClass(styles.popularSpeciesButton)).toBe(true);
+      const renderedButton = render(<PopularSpeciesButton {...props} />).find(
+        '.popularSpeciesButton'
+      );
       expect(renderedButton.hasClass(styles.popularSpeciesButtonDisabled)).toBe(
         true
       );
@@ -40,7 +41,9 @@ describe('<PopularSpeciesButton />', () => {
 
     it('does not call handleSelectedSpecies prop when clicked', () => {
       const props = set('species.isAvailable', false, commonProps);
-      const wrapper = mount(<PopularSpeciesButton {...props} />);
+      const wrapper = mount(<PopularSpeciesButton {...props} />).find(
+        '.popularSpeciesButton'
+      );
       wrapper.simulate('click');
 
       expect(handleSelectedSpecies).not.toHaveBeenCalled();
@@ -51,13 +54,14 @@ describe('<PopularSpeciesButton />', () => {
     it('has appropriate class', () => {
       const renderedButton = render(
         <PopularSpeciesButton {...commonProps} isSelected={false} />
-      );
-      expect(renderedButton.hasClass('popularSpeciesButton')).toBe(true);
+      ).find('.popularSpeciesButton');
       expect(renderedButton.hasClass('popularSpeciesButtonActive')).toBe(false);
     });
 
     it('calls handleSelectedSpecies prop when clicked', () => {
-      const wrapper = mount(<PopularSpeciesButton {...commonProps} />);
+      const wrapper = mount(<PopularSpeciesButton {...commonProps} />).find(
+        '.popularSpeciesButton'
+      );
       wrapper.simulate('click');
 
       const speciesData = commonProps.species;
@@ -70,7 +74,7 @@ describe('<PopularSpeciesButton />', () => {
     it('has appropriate class', () => {
       const renderedButton = render(
         <PopularSpeciesButton {...commonProps} isSelected={true} />
-      );
+      ).find('.popularSpeciesButton');
       expect(renderedButton.hasClass('popularSpeciesButtonSelected')).toBe(
         true
       );
@@ -79,7 +83,7 @@ describe('<PopularSpeciesButton />', () => {
     it('clears selected species when clicked', () => {
       const wrapper = mount(
         <PopularSpeciesButton {...commonProps} isSelected={true} />
-      );
+      ).find('.popularSpeciesButton');
       wrapper.simulate('click');
 
       expect(clearSelectedSpecies).toHaveBeenCalled();
@@ -92,7 +96,7 @@ describe('<PopularSpeciesButton />', () => {
     it('has appropriate class', () => {
       const renderedButton = render(
         <PopularSpeciesButton {...commonProps} isCommitted={true} />
-      );
+      ).find('.popularSpeciesButton');
       expect(renderedButton.hasClass('popularSpeciesButtonCommitted')).toBe(
         true
       );
@@ -101,7 +105,7 @@ describe('<PopularSpeciesButton />', () => {
     it('deletes committed species when clicked', () => {
       const wrapper = mount(
         <PopularSpeciesButton {...commonProps} isCommitted={true} />
-      );
+      ).find('.popularSpeciesButton');
       wrapper.simulate('click');
 
       expect(deleteCommittedSpecies).toHaveBeenCalled();
