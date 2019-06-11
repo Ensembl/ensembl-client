@@ -98,6 +98,7 @@ export const SpeciesSearchField = (props: Props) => {
       searchFieldClassName={styles.speciesSearchField}
       canShowSuggestions={canShowSuggesions}
       notFound={Boolean(props.matches && props.matches.length === 0)}
+      notFoundText="Sorry, we have no data for this species"
       rightCorner={<RightCorner status={rightCornerStatus} clear={clear} />}
     />
   );
