@@ -100,7 +100,7 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 type StateProps = {
-  selectedPreFilter: any;
+  selectedPreFilter: string;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({

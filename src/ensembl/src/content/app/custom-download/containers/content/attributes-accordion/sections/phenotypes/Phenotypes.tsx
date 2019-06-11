@@ -4,9 +4,11 @@ import { RootState } from 'src/store';
 
 import { getPhenotypeAttributes } from '../../state/attributesAccordionSelector';
 import { setPhenotypeAttributes } from '../../state/attributesAccordionActions';
-import CheckBoxGrid, {
+import CheckboxGrid, {
   filterCheckedAttributes
 } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
+
+import AttributesSection from 'src/content/app/custom-download/types/Attributes';
 
 import styles from './Phenotypes.scss';
 
@@ -47,9 +49,9 @@ const Phenotypes = (props: Props) => {
 
     return (
       <div className={styles.checkboxGridWrapper}>
-        <CheckBoxGrid
+        <CheckboxGrid
           checkboxOnChange={onChangeHandler}
-          gridData={{ default: checkedAttributes }}
+          gridData={checkedAttributes}
           hideTitles={props.hideTitles}
           columns={3}
         />
@@ -59,7 +61,7 @@ const Phenotypes = (props: Props) => {
 
   return (
     <div className={styles.checkboxGridWrapper}>
-      <CheckBoxGrid
+      <CheckboxGrid
         checkboxOnChange={onChangeHandler}
         gridData={props.phenotypeAttributes}
         hideTitles={props.hideTitles}
@@ -70,7 +72,7 @@ const Phenotypes = (props: Props) => {
 };
 
 type DispatchProps = {
-  setPhenotypeAttributes: (setPhenotypeAttributes: any) => void;
+  setPhenotypeAttributes: (setPhenotypeAttributes: AttributesSection) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
@@ -78,7 +80,7 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 type StateProps = {
-  phenotypeAttributes: any;
+  phenotypeAttributes: AttributesSection;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({

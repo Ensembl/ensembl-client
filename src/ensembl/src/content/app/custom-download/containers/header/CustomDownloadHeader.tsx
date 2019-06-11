@@ -32,11 +32,13 @@ import {
 
 import { fetchCustomDownloadResults } from './helper';
 
+import AttributesSection from 'src/content/app/custom-download/types/Attributes';
+
 import styles from './CustomDownloadHeader.scss';
 
 type Props = StateProps & DispatchProps;
 
-const downloadTypeSelectOptions = [
+const downloadTypeoptions = [
   {
     label: 'CSV',
     value: 'text/csv',
@@ -109,7 +111,7 @@ const Header = (props: Props) => {
     props.setShowPreview(false);
   }, [props.showPreview]);
 
-  const resultCount = getFormattedTotal(props.previewResult.resultCount);
+  const resultCount = getFormattedTotal(props.preview.resultCount);
 
   const handleDownloadTypeSelect = useCallback(
     (option: string) => {
@@ -118,7 +120,7 @@ const Header = (props: Props) => {
     [props.downloadType]
   );
 
-  const selectOptions = [...downloadTypeSelectOptions].map((option: Option) => {
+  const options = [...downloadTypeoptions].map((option: Option) => {
     const optionClone = { ...option };
     if (optionClone.value === props.downloadType) {
       optionClone.isSelected = true;
@@ -132,10 +134,12 @@ const Header = (props: Props) => {
   }
 
   let previewButtonDisabled = true;
-  if (props.previewResult.resultCount > 0) {
+  if (props.preview.resultCount > 0) {
     previewButtonDisabled = false;
   }
-  const selectedAttributes: any = getSelectedAttributes(props.attributes);
+  const selectedAttributes: AttributesSection = getSelectedAttributes(
+    props.attributes
+  );
   const selectedFilters: any = getSelectedFilters(props.filters);
 
   const getFormattedResult = () => {
@@ -164,7 +168,7 @@ const Header = (props: Props) => {
               image={BackIcon}
             />
           </div>
-          <div className={styles.previewResultCounter}>
+          <div className={styles.previewCounter}>
             <div>
               <span className={styles.boldResultCounter}>{resultCount}</span>
               <span className={styles.resultsLabel}>results</span>
@@ -186,7 +190,7 @@ const Header = (props: Props) => {
             <span className={styles.downloadTypeLabel}>Download as </span>
             <span className={styles.downloadTypeSelect}>
               <Select
-                options={selectOptions}
+                options={options}
                 onSelect={(option: string) => {
                   handleDownloadTypeSelect(option);
                 }}
@@ -239,16 +243,16 @@ const mapDispatchToProps: DispatchProps = {
 
 type StateProps = {
   selectedPreFilter: string;
-  previewResult: any;
+  preview: any;
   showPreview: boolean;
   downloadType: string;
   filters: any;
-  attributes: any;
+  attributes: AttributesSection;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
   selectedPreFilter: getSelectedPreFilter(state),
-  previewResult: getPreviewResult(state),
+  preview: getPreviewResult(state),
   showPreview: getShowPreviewResult(state),
   downloadType: getDownloadType(state),
   filters: getFilters(state),

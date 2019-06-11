@@ -31,7 +31,7 @@ import styles from './AttributesAccordion.scss';
 
 type Props = StateProps & DispatchProps;
 
-const Attributes = (props: Props) => {
+const AttributesAccordion = (props: Props) => {
   useEffect(() => {
     props.fetchAttributes();
   }, []);
@@ -212,7 +212,7 @@ const Attributes = (props: Props) => {
 
 type DispatchProps = {
   setAttributesAccordionExpandedPanel: (
-    setAttributesAccordionExpandedPanel: any
+    setAttributesAccordionExpandedPanel: string
   ) => void;
   fetchAttributes: () => void;
 };
@@ -233,4 +233,4 @@ const mapStateToProps = (state: RootState): StateProps => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Attributes);
+)(AttributesAccordion);

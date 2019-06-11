@@ -4,9 +4,13 @@ import { RootState } from 'src/store';
 
 import { getLocationAttributes } from '../../state/attributesAccordionSelector';
 import { setLocationAttributes } from '../../state/attributesAccordionActions';
-import CheckBoxGrid, {
+import CheckboxGrid, {
   filterCheckedAttributes
 } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
+
+import AttributesSection, {
+  AttributesSubSection
+} from 'src/content/app/custom-download/types/Attributes';
 
 import styles from './Location.scss';
 
@@ -44,9 +48,9 @@ const Location = (props: Props) => {
 
     return (
       <div className={styles.checkboxGridWrapper}>
-        <CheckBoxGrid
+        <CheckboxGrid
           checkboxOnChange={onChangeHandler}
-          gridData={{ default: checkedAttributes }}
+          gridData={checkedAttributes}
           hideTitles={props.hideTitles}
           columns={3}
         />
@@ -56,7 +60,7 @@ const Location = (props: Props) => {
 
   return (
     <div className={styles.checkboxGridWrapper}>
-      <CheckBoxGrid
+      <CheckboxGrid
         checkboxOnChange={onChangeHandler}
         gridData={props.locationAttributes}
         hideTitles={props.hideTitles}
@@ -75,7 +79,7 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 type StateProps = {
-  locationAttributes: any;
+  locationAttributes: AttributesSection;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({

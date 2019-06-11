@@ -36,30 +36,28 @@ const CheckboxWithRadios = (props: Props) => {
   );
 
   return (
-    <>
-      <table className={styles.radioTable}>
-        <tbody>
-          <tr>
+    <table className={styles.radioTable}>
+      <tbody>
+        <tr>
+          <td>
+            <Checkbox
+              checked={isChecked}
+              onChange={handleCheckboxOnChange}
+              label={props.label}
+            />
+          </td>
+          {isChecked && (
             <td>
-              <Checkbox
-                checked={isChecked}
-                onChange={handleCheckboxOnChange}
-                label={props.label}
+              <Radio
+                onChange={handleOnChange}
+                radioOptions={props.radioOptions}
+                selectedOption={props.selectedOption}
               />
             </td>
-            {isChecked && (
-              <td>
-                <Radio
-                  onChange={handleOnChange}
-                  radioOptions={props.radioOptions}
-                  selectedOption={props.selectedOption}
-                />
-              </td>
-            )}
-          </tr>
-        </tbody>
-      </table>
-    </>
+          )}
+        </tr>
+      </tbody>
+    </table>
   );
 };
 

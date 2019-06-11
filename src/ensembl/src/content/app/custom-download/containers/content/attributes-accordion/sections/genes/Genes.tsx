@@ -2,9 +2,11 @@ import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
+import AttributesSection from 'src/content/app/custom-download/types/Attributes';
+
 import { getGeneAttributes } from '../../state/attributesAccordionSelector';
 import { setGeneAttributes } from '../../state/attributesAccordionActions';
-import CheckBoxGrid, {
+import CheckboxGrid, {
   filterCheckedAttributes
 } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
@@ -44,7 +46,7 @@ const Genes = (props: Props) => {
 
     return (
       <div className={styles.checkboxGridWrapper}>
-        <CheckBoxGrid
+        <CheckboxGrid
           checkboxOnChange={onChangeHandler}
           gridData={checkedAttributes}
           hideTitles={false}
@@ -56,7 +58,7 @@ const Genes = (props: Props) => {
 
   return (
     <div className={styles.checkboxGridWrapper}>
-      <CheckBoxGrid
+      <CheckboxGrid
         checkboxOnChange={onChangeHandler}
         gridData={props.geneAttributes}
         hideTitles={props.hideTitles}
@@ -75,7 +77,7 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 type StateProps = {
-  geneAttributes: any;
+  geneAttributes: AttributesSection;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({

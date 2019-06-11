@@ -214,7 +214,7 @@ export const setAttributesAccordionExpandedPanel = createAction(
 export const setVariationAccordionExpandedPanels = createAction(
   'custom-download/set-variation-attributes-accordion-expanded-panels',
   (resolve) => {
-    return (expandedPanels: []) =>
+    return (expandedPanels: string[]) =>
       resolve(
         expandedPanels,
         getCustomDownloadAnalyticsObject(

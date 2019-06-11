@@ -12,4 +12,10 @@ type AttributesSection = {
   [key: string]: AttributesSubSection;
 };
 
+export type CustomDownloadAttributes = {
+  [key: string]: AttributesSection;
+};
+
+export type SelectedAttribute = string[];
+
 export default AttributesSection;

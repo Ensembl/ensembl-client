@@ -30,7 +30,7 @@ import {
   setTranscriptTypeFilters,
   setFiltersAccordionExpandedGenePanels
 } from '../../state/filterAccordionActions';
-import CheckBoxGrid from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
+import CheckboxGrid from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
 import {
   geneTypeFiltersGrid,
@@ -42,7 +42,7 @@ import { Option } from 'src/shared/select/Select';
 import styles from './Genes.scss';
 
 // Will be fetched from the API when we have one
-const geneSourceSelectOptions: Option[] = [
+const geneSourceoptions: Option[] = [
   {
     value: 'ensembl',
     label: 'Ensembl',
@@ -162,7 +162,7 @@ const Genes = (props: Props) => {
           label={'Gene source'}
           onChange={geneSourceFilterOnChange}
           selectedOptions={props.geneSourceFilters}
-          selectOptions={geneSourceSelectOptions}
+          options={geneSourceoptions}
         />
         <CheckboxWithRadios
           label={'GENCODE basic annotation'}
@@ -184,7 +184,7 @@ const Genes = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
-            <CheckBoxGrid
+            <CheckboxGrid
               checkboxOnChange={geneTypeOnChangeHandler}
               gridData={geneTypeFiltersGrid}
               columns={3}
@@ -199,7 +199,7 @@ const Genes = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
-            <CheckBoxGrid
+            <CheckboxGrid
               checkboxOnChange={transcriptTypeOnChangeHandler}
               gridData={transcriptTypeFiltersGrid}
               columns={3}

@@ -3,7 +3,7 @@ import Checkbox from 'src/shared/checkbox/Checkbox';
 import AttributesSection, {
   AttributesSubSection
 } from 'src/content/app/custom-download/types/Attributes';
-import styles from './CheckBoxGrid.scss';
+import styles from './CheckboxGrid.scss';
 
 type Props = {
   gridData: AttributesSection;
@@ -119,7 +119,7 @@ const renderCheckBoxList = (
   );
 };
 
-const CheckBoxGrid = (props: Props) => {
+const CheckboxGrid = (props: Props) => {
   if (!props.gridData) {
     return null;
   }
@@ -149,8 +149,8 @@ const CheckBoxGrid = (props: Props) => {
   );
 };
 
-CheckBoxGrid.defaultProps = {
+CheckboxGrid.defaultProps = {
   columns: 3
 };
 
-export default CheckBoxGrid;
+export default CheckboxGrid;

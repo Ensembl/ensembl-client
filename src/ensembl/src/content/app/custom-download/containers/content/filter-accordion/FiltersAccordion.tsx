@@ -121,7 +121,7 @@ const Filters = (props: Props) => {
 
 type DispatchProps = {
   setFiltersAccordionExpandedPanel: (
-    setFiltersAccordionExpandedPanel: any
+    setFiltersAccordionExpandedPanel: string
   ) => void;
 };
 

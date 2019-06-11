@@ -20,7 +20,9 @@ import {
   setGermlineVariationAttributes,
   setVariationAccordionExpandedPanels
 } from '../../state/attributesAccordionActions';
-import CheckBoxGrid from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
+import CheckboxGrid from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
+
+import AttributesSection from 'src/content/app/custom-download/types/Attributes';
 
 import styles from './Variations.scss';
 
@@ -75,7 +77,7 @@ const Variations = (props: Props) => {
           </AccordionItemButton>
         </AccordionItemHeading>
         <AccordionItemPanel>
-          <CheckBoxGrid
+          <CheckboxGrid
             checkboxOnChange={germlineOnChangeHandler}
             gridData={props.germlineVariationAttributes}
             columns={3}
@@ -90,7 +92,7 @@ const Variations = (props: Props) => {
           </AccordionItemButton>
         </AccordionItemHeading>
         <AccordionItemPanel>
-          <CheckBoxGrid
+          <CheckboxGrid
             checkboxOnChange={somaticOnChangeHandler}
             gridData={props.somaticVariationAttributes}
             columns={3}
@@ -102,10 +104,14 @@ const Variations = (props: Props) => {
 };
 
 type DispatchProps = {
-  setGermlineVariationAttributes: (setGermlineVariationAttributes: any) => void;
-  setSomaticVariationAttributes: (setSomaticVariationAttributes: any) => void;
+  setGermlineVariationAttributes: (
+    setGermlineVariationAttributes: AttributesSection
+  ) => void;
+  setSomaticVariationAttributes: (
+    setSomaticVariationAttributes: AttributesSection
+  ) => void;
   setVariationAccordionExpandedPanels: (
-    setVariationAccordionExpandedPanels: any
+    setVariationAccordionExpandedPanels: string[]
   ) => void;
 };
 
@@ -116,8 +122,8 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 type StateProps = {
-  germlineVariationAttributes: any;
-  somaticVariationAttributes: any;
+  germlineVariationAttributes: AttributesSection;
+  somaticVariationAttributes: AttributesSection;
   expandedPanels: [];
 };
 

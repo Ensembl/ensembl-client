@@ -4,9 +4,11 @@ import { RootState } from 'src/store';
 
 import { getTranscriptAttributes } from '../../state/attributesAccordionSelector';
 import { setTranscriptAttributes } from '../../state/attributesAccordionActions';
-import CheckBoxGrid, {
+import CheckboxGrid, {
   filterCheckedAttributes
 } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
+
+import AttributesSection from 'src/content/app/custom-download/types/Attributes';
 
 import styles from './Transcripts.scss';
 
@@ -47,7 +49,7 @@ const Transcripts = (props: Props) => {
 
     return (
       <div className={styles.checkboxGridWrapper}>
-        <CheckBoxGrid
+        <CheckboxGrid
           checkboxOnChange={onChangeHandler}
           gridData={checkedAttributes}
           columns={3}
@@ -58,7 +60,7 @@ const Transcripts = (props: Props) => {
 
   return (
     <div className={styles.checkboxGridWrapper}>
-      <CheckBoxGrid
+      <CheckboxGrid
         checkboxOnChange={onChangeHandler}
         gridData={props.transcriptAttributes}
         hideTitles={props.hideTitles}
@@ -69,7 +71,7 @@ const Transcripts = (props: Props) => {
 };
 
 type DispatchProps = {
-  setTranscriptAttributes: (setTranscriptAttributes: any) => void;
+  setTranscriptAttributes: (setTranscriptAttributes: AttributesSection) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
@@ -77,7 +79,7 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 type StateProps = {
-  transcriptAttributes: any;
+  transcriptAttributes: AttributesSection;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({

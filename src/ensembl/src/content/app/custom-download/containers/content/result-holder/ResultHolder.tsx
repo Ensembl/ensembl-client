@@ -9,6 +9,8 @@ import {
 import { getAttributes } from '../attributes-accordion/state/attributesAccordionSelector';
 import { getFilters } from '../filter-accordion/state/filterAccordionSelector';
 
+import AttributesSection from 'src/content/app/custom-download/types/Attributes';
+
 import {
   setPreviewResult,
   setIsLoadingResult,
@@ -28,10 +30,12 @@ import {
 type Props = StateProps & DispatchProps;
 
 const ResultHolder = (props: Props) => {
-  const selectedAttributes: any = getSelectedAttributes(props.attributes);
+  const selectedAttributes: AttributesSection = getSelectedAttributes(
+    props.attributes
+  );
 
   useEffect(() => {
-    if (!selectedAttributes.length && props.previewResult.results) {
+    if (!selectedAttributes.length && props.preview.results) {
       props.clearPreviewResult([]);
       return;
     }
@@ -45,13 +49,9 @@ const ResultHolder = (props: Props) => {
 
   useEffect(() => {
     props.setIsLoadingResult(false);
-  }, [props.previewResult]);
+  }, [props.preview]);
 
-  if (
-    props.isLoadingResult &&
-    props.previewResult &&
-    !props.previewResult.results
-  ) {
+  if (props.isLoadingResult && props.preview && !props.preview.results) {
     return (
       <div className={styles.wrapper}>
         {Array(10)
@@ -69,14 +69,11 @@ const ResultHolder = (props: Props) => {
     );
   }
 
-  if (!props.previewResult.results) {
+  if (!props.preview.results) {
     return null;
   }
 
-  const formattedResults = formatResults(
-    props.previewResult,
-    selectedAttributes
-  );
+  const formattedResults = formatResults(props.preview, selectedAttributes);
 
   const headerRow = formattedResults.shift();
 
@@ -121,16 +118,16 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 type StateProps = {
-  attributes: any;
+  attributes: AttributesSection;
   filters: any;
-  previewResult: any;
+  preview: any;
   isLoadingResult: boolean;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
   attributes: getAttributes(state),
   filters: getFilters(state),
-  previewResult: getPreviewResult(state),
+  preview: getPreviewResult(state),
   isLoadingResult: getIsLoadingResult(state)
 });
 

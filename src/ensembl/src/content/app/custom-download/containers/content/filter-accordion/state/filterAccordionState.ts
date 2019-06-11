@@ -1,6 +1,6 @@
 export type FilterAccordionState = Readonly<{
   expandedPanel: string;
-  expandedGenePanels: any;
+  expandedGenePanels: string[];
   filters: any;
 }>;
 

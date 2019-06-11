@@ -33,33 +33,31 @@ const Radio = (props: Props) => {
   );
 
   return (
-    <>
-      <table className={styles.radioTable}>
-        <tbody>
-          <tr>
-            {props.radioOptions.map((option: any, key: number) => {
-              return (
-                <td key={key}>
-                  <input
-                    id={`radio_${key}`}
-                    className={styles.radioInput}
-                    value={option.value}
-                    type="radio"
-                    onChange={handleOnChange}
-                    checked={option.value === props.selectedOption}
-                    disabled={props.disabled}
-                    name="radio"
-                  />
-                  <label className={styles.radioLabel} htmlFor={`radio_${key}`}>
-                    {option.label}
-                  </label>
-                </td>
-              );
-            })}
-          </tr>
-        </tbody>
-      </table>
-    </>
+    <table className={styles.radioTable}>
+      <tbody>
+        <tr>
+          {props.radioOptions.map((option: any, key: number) => {
+            return (
+              <td key={key}>
+                <input
+                  id={`radio_${key}`}
+                  className={styles.radioInput}
+                  value={option.value}
+                  type="radio"
+                  onChange={handleOnChange}
+                  checked={option.value === props.selectedOption}
+                  disabled={props.disabled}
+                  name="radio"
+                />
+                <label className={styles.radioLabel} htmlFor={`radio_${key}`}>
+                  {option.label}
+                </label>
+              </td>
+            );
+          })}
+        </tr>
+      </tbody>
+    </table>
   );
 };
 

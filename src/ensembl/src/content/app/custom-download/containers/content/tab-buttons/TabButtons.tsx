@@ -13,11 +13,13 @@ import { getFilters } from '../filter-accordion/state/filterAccordionSelector';
 import { toggleTabButton } from '../../../state/customDownloadActions';
 import { RootState } from 'src/store';
 
+import { CustomDownloadAttributes } from 'src/content/app/custom-download/types/Attributes';
+
 import styles from './TabButtons.scss';
 
 type Props = StateProps & DispatchProps;
 
-const getTotalSelectedAttributes = (attributes: any) => {
+const getTotalSelectedAttributes = (attributes: CustomDownloadAttributes) => {
   let totalSelectedAttributes = 0;
   Object.keys(attributes).forEach((section) => {
     Object.keys(attributes[section]).forEach((subSection) => {

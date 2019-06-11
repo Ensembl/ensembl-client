@@ -7,7 +7,7 @@ import ImageButton from 'src/shared/image-button/ImageButton';
 
 const onChange = jest.fn();
 
-const selectOptions = [
+const options = [
   {
     value: 'one',
     label: 'one',
@@ -44,7 +44,7 @@ describe('<CheckboxWithSelects />', () => {
     onChange: onChange,
     label: 'foo',
     selectedOptions: [],
-    selectOptions: selectOptions
+    options: options
   };
 
   it('renders without error', () => {
@@ -75,7 +75,7 @@ describe('<CheckboxWithSelects />', () => {
     expect(wrapper.find(Select).length).toBe(1);
   });
 
-  it('automatically checks the checkbox if atleast one option is selected', () => {
+  it('automatically checks the checkbox if at least one option is selected', () => {
     wrapper = mount(
       <CheckboxWithSelects {...defaultProps} selectedOptions={['one']} />
     );
@@ -102,7 +102,7 @@ describe('<CheckboxWithSelects />', () => {
     expect(wrapper.find('.removeIconHolder').length).toBe(1);
   });
 
-  it('displays the Plus button when one option is selected', async () => {
+  it('displays the Plus button when one option is selected', () => {
     wrapper = mount(
       <CheckboxWithSelects {...defaultProps} selectedOptions={['one']} />
     );

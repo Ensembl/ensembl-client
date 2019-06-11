@@ -51,7 +51,7 @@ function resultHolder(
     case getType(customDownloadActions.setPreviewResult.success):
       return {
         ...state,
-        previewResult: action.payload
+        preview: action.payload
       };
     case getType(customDownloadActions.setIsLoadingResult):
       return {

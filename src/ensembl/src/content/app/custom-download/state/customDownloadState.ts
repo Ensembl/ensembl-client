@@ -1,10 +1,10 @@
 export type ResultState = Readonly<{
-  previewResult: any;
+  preview: any;
   isLoadingResult: boolean;
 }>;
 
 export const defaultResultState: ResultState = {
-  previewResult: {
+  preview: {
     resultCount: 0
   },
   isLoadingResult: false

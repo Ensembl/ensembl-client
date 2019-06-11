@@ -10,7 +10,7 @@ export const getSelectedTabButton = (state: RootState): string =>
   state.customDownload.tabButton.selectedTabButton;
 
 export const getPreviewResult = (state: RootState): string =>
-  state.customDownload.resultHolder.previewResult;
+  state.customDownload.resultHolder.preview;
 
 export const getIsLoadingResult = (state: RootState): boolean =>
   state.customDownload.resultHolder.isLoadingResult;
