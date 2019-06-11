@@ -11,6 +11,8 @@ $fill-color: $ens-dark-grey;
   cursor: default;
   color: $ens-white;
   border-radius: 4px;
+  font-size: 14px;
+  z-index: 1000;
 
   // hack to select additional classes that are added through javascript
   // (CSS modules make it hard to target these classes because of unique suffixes)

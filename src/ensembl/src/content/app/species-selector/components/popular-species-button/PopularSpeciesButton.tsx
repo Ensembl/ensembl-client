@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import find from 'lodash/find';
@@ -13,6 +13,7 @@ import {
   getCommittedSpecies
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
+import Tooltip, { Position } from 'src/shared/tooltip/Tooltip';
 import InlineSVG from 'src/shared/inline-svg/InlineSvg';
 
 import {
@@ -41,6 +42,7 @@ type Props = {
 // use default export for development
 export const PopularSpeciesButton = (props: Props) => {
   const { isSelected, isCommitted, species } = props;
+  const [isHovering, setIsHovering] = useState(false);
 
   const handleClick = () => {
     const { genome_id, isAvailable } = species;
@@ -57,15 +59,35 @@ export const PopularSpeciesButton = (props: Props) => {
     }
   };
 
+  const handleMouseEnter = () => {
+    setIsHovering(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+  };
+
   const className = classNames(styles.popularSpeciesButton, {
     [styles.popularSpeciesButtonDisabled]: !species.isAvailable,
     [styles.popularSpeciesButtonSelected]: isSelected,
     [styles.popularSpeciesButtonCommitted]: isCommitted
   });
 
+  const speciesDisplayName = species.common_name || species.scientific_name;
+
   return (
-    <div className={className} onClick={handleClick}>
-      <InlineSVG src={species.image} />
+    <div className={styles.popularSpeciesButtonWrapper}>
+      <div
+        className={className}
+        onClick={handleClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <InlineSVG src={species.image} />
+      </div>
+      {isHovering && species.isAvailable && (
+        <Tooltip autoAdjust={true}>{speciesDisplayName}</Tooltip>
+      )}
     </div>
   );
 };

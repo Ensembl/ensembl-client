@@ -17,6 +17,7 @@ import SpeciesSearchMatch from '../species-search-match/SpeciesSearchMatch';
 
 import AutosuggestSearchField from 'src/shared/autosuggest-search-field/AutosuggestSearchField';
 import ClearButton from 'src/shared/clear-button/ClearButton';
+import QuestionButton from 'src/shared/question-button/QuestionButton';
 
 import {
   SearchMatch,
@@ -50,6 +51,7 @@ type RightCornerProps = {
 
 export const SpeciesSearchField = (props: Props) => {
   const [search, setSearch] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleSearchChange = (search: string) => {
     setSearch(search);
@@ -83,9 +85,13 @@ export const SpeciesSearchField = (props: Props) => {
     setSearch('');
   };
 
-  const rightCornerStatus = Boolean(props.selectedItemText || search)
+  const hasText = Boolean(props.selectedItemText || search);
+
+  const rightCornerStatus = hasText
     ? RightCornerStatus.CLEAR
-    : RightCornerStatus.EMPTY;
+    : isFocused
+    ? RightCornerStatus.EMPTY
+    : RightCornerStatus.INFO;
 
   return (
     <AutosuggestSearchField
@@ -99,13 +105,24 @@ export const SpeciesSearchField = (props: Props) => {
       canShowSuggestions={canShowSuggesions}
       notFound={Boolean(props.matches && props.matches.length === 0)}
       notFoundText="Sorry, we have no data for this species"
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
       rightCorner={<RightCorner status={rightCornerStatus} clear={clear} />}
     />
   );
 };
 
+const helpText = (
+  <>
+    <p>Search for a species using a common name, scientific name or assembly</p>
+    <p>If no results are shown, please try a different spelling or attribute</p>
+  </>
+);
+
 const RightCorner = (props: RightCornerProps) => {
   switch (props.status) {
+    case RightCornerStatus.INFO:
+      return <QuestionButton helpText={helpText} />;
     case RightCornerStatus.CLEAR:
       return <ClearButton onClick={props.clear} />;
     default:
