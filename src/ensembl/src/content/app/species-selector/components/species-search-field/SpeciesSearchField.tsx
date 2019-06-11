@@ -114,8 +114,8 @@ export const SpeciesSearchField = (props: Props) => {
 
 const helpText = (
   <>
-    <p>Search for a species using a common name, scientific name or assembly</p>
-    <p>If no results are shown, please try a different spelling or attribute</p>
+    Search for a species using a common name, scientific name or assembly. If no
+    results are shown, please try a different spelling or attribute.
   </>
 );
 

@@ -5,7 +5,7 @@ $fill-color: $ens-dark-grey;
 .tooltip {
   position: absolute;
   background: $fill-color;
-  padding: 14px 18px 18px;
+  padding: 6px 18px 8px;
   box-shadow: 2px 2px 5px $ens-shadow-color;
   width: max-content; // not supported in IE or non-webkit Edge
   cursor: default;

@@ -15,4 +15,8 @@
     height: 70%;
     fill: $ens-blue;
   }
+
+  *[class*='tooltip'] {
+    max-width: 300px;
+  }
 }
