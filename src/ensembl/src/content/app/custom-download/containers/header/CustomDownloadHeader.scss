@@ -61,7 +61,9 @@
 
 .downloadTypeSelectHolder {
   display: inline-block;
-  margin-left: 20px;
+  position: absolute;
+  right: 170px;
+  top: 20px;
 }
 
 .downloadTypeLabel {

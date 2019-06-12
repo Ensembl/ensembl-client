@@ -184,21 +184,22 @@ const Header = (props: Props) => {
         >
           {props.selectedPreFilter}
         </RoundButton>
-        {props.showPreview && (
-          <div className={styles.downloadTypeSelectHolder}>
-            <span className={styles.downloadTypeLabel}>Download as </span>
-            <span className={styles.downloadTypeSelect}>
-              <Select
-                options={options}
-                onSelect={(option: string) => {
-                  handleDownloadTypeSelect(option);
-                }}
-                placeholder={'Select'}
-              />
-            </span>
-          </div>
-        )}
       </div>
+
+      {props.showPreview && (
+        <div className={styles.downloadTypeSelectHolder}>
+          <span className={styles.downloadTypeLabel}>Download as </span>
+          <span className={styles.downloadTypeSelect}>
+            <Select
+              options={options}
+              onSelect={(option: string) => {
+                handleDownloadTypeSelect(option);
+              }}
+              placeholder={'Select'}
+            />
+          </span>
+        </div>
+      )}
 
       <div className={styles.previewButton}>
         {!props.showPreview && (
