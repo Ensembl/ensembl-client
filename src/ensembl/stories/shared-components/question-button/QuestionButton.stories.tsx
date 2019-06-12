@@ -5,5 +5,5 @@ import QuestionButton from 'src/shared/question-button/QuestionButton';
 
 storiesOf('Components|Shared Components/Question button', module).add(
   'default',
-  () => <QuestionButton onHover={() => {}} />
+  () => <QuestionButton helpText="This is a hint" />
 );

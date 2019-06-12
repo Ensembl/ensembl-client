@@ -11,8 +11,8 @@ import {
 import SelectedSpecies from 'src/content/app/species-selector/components/selected-species/SelectedSpecies';
 
 jest.mock('react-router-dom', () => ({
-  Link: (props: any) => <div>props.children</div>
-}))
+  Link: (props: any) => <div>{props.children}</div>
+}));
 
 const toggleSpeciesUse = jest.fn();
 const onSpeciesDelete = jest.fn();

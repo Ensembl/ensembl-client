@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
 
 import SearchField from 'src/shared/search-field/SearchField';
 import QuestionButton from 'src/shared/question-button/QuestionButton';
@@ -24,7 +23,7 @@ storiesOf('Components|Shared Components/SearchField', module)
     <Wrapper
       searchField={SearchField}
       className={styles.searchField}
-      rightCorner={<QuestionButton onHover={action('question-button-hover')} />}
+      rightCorner={<QuestionButton helpText="This is a hint" />}
     />
   ))
   .add('with loader', () => (
