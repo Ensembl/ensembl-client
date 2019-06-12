@@ -133,7 +133,7 @@ impl PendingXferBatch {
                 }
                 out.push(Value::new_from_float(row));
             } else if val.is_string() {
-                out.push(Value::new_from_string(val.as_str().unwrap().to_string()));
+                out.push(Value::new_from_string(vec![val.as_str().unwrap().to_string()]));
             }            
         }
         out

@@ -52,7 +52,7 @@ impl Command for Ruler {
                      regs.set(self.1,Value::new_from_float(offset));
                      regs.set(self.2,Value::new_from_float(height));
                      regs.set(self.3,Value::new_from_float(text_len));
-                     regs.set(self.4,Value::new_from_string(text));
+                     regs.set(self.4,Value::new_from_string(vec![text]));
                 });
             }
         });

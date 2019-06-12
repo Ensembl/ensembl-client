@@ -98,7 +98,7 @@ impl Command for Plot {
                         plot.get_base() as f64,
                         plot.get_height() as f64,
                     }));
-                    regs.set(self.2,Value::new_from_string(plot.get_letter().to_string()));
+                    regs.set(self.2,Value::new_from_string(vec![plot.get_letter().to_string()]));
                 });
             }
         });        
@@ -131,7 +131,7 @@ impl Command for AllPlots {
                 regs.set(self.1,Value::new_from_float(offsets));
                 regs.set(self.2,Value::new_from_float(heights));
                 regs.set(self.3,Value::new_from_float(letter_lens));
-                regs.set(self.4,Value::new_from_string(letters));
+                regs.set(self.4,Value::new_from_string(vec![letters]));
             }
         });        
         return 1;
@@ -146,10 +146,10 @@ impl Command for SetPart {
         self.0.with_task(pid,|task| {
             regs.get(self.1).as_string(|new_part| {
                 if let TáTask::MakeShapes(_,_,_,_,_,part,_) = task {
-                    if new_part == "" {
+                    if new_part[0] == "" {
                         part.take();
                     } else {
-                        part.replace(new_part.clone());
+                        part.replace(new_part[0].clone());
                     }
                 }
             });

@@ -20,7 +20,7 @@ impl Argument {
     
     pub fn value(&self) -> Value {
         match self {
-            Argument::Str(s) => Value::new_from_string(s.to_string()),
+            Argument::Str(s) => Value::new_from_string(vec![s.to_string()]),
             Argument::Floats(f) => Value::new_from_float(f.to_vec()),
             _ => panic!(format!("not a value {:?}",self))            
         }

@@ -56,7 +56,7 @@ impl Command for Text {
                     regs.get(self.3).as_floats(|meta| {
                         regs.get(self.4).as_string(|strings| {
                             regs.get(self.5).as_floats(|lens| {
-                                regs.set(self.1,Value::new_from_float(texts(tx,font_name,meta,strings,lens)));
+                                regs.set(self.1,Value::new_from_float(texts(tx,&font_name[0],meta,&strings[0],lens)));
                             });
                         });
                     });

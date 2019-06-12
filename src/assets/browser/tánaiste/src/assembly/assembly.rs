@@ -37,7 +37,7 @@ mod test {
             proc.run();
             thread::sleep(time::Duration::from_millis(100));
         }
-        assert_eq!(proc.get_reg(1),"\"hello, tánaiste!\"");
+        assert_eq!(proc.get_reg(1),"[\"hello, tánaiste!\"]");
     }
 
     #[test]
