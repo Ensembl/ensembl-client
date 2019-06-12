@@ -55,5 +55,5 @@ export type PopularSpecies = {
   assembly_name: string; // notice in mockups that every popular species has an assembly
   image: string; // link to the svg or base64-encoded svg
   division_ids: string[]; // e.g. ['model_organism', 'ensembl_plants',...]; a popular species can belong to several divisions
-  isAvailable: boolean; // indicates whether we have data for this species and, therefore, whether it can be selected
+  is_available: boolean; // indicates whether we have data for this species and, therefore, whether it can be selected
 };

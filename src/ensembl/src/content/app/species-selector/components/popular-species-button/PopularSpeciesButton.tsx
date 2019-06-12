@@ -45,8 +45,8 @@ export const PopularSpeciesButton = (props: Props) => {
   const [isHovering, setIsHovering] = useState(false);
 
   const handleClick = () => {
-    const { genome_id, isAvailable } = species;
-    if (!isAvailable) {
+    const { genome_id, is_available } = species;
+    if (!is_available) {
       return;
     } else if (isSelected) {
       props.clearSelectedSpecies();
@@ -68,7 +68,7 @@ export const PopularSpeciesButton = (props: Props) => {
   };
 
   const className = classNames(styles.popularSpeciesButton, {
-    [styles.popularSpeciesButtonDisabled]: !species.isAvailable,
+    [styles.popularSpeciesButtonDisabled]: !species.is_available,
     [styles.popularSpeciesButtonSelected]: isSelected,
     [styles.popularSpeciesButtonCommitted]: isCommitted
   });
@@ -85,7 +85,7 @@ export const PopularSpeciesButton = (props: Props) => {
       >
         <InlineSVG src={species.image} />
       </div>
-      {isHovering && species.isAvailable && (
+      {isHovering && species.is_available && (
         <Tooltip autoAdjust={true}>{speciesDisplayName}</Tooltip>
       )}
     </div>

@@ -2,7 +2,7 @@ import { createStandardAction, createAsyncAction } from 'typesafe-actions';
 import { ActionCreator, Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 
-// import apiService from 'src/services/api-service';
+import apiService from 'src/services/api-service';
 
 import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
 
@@ -18,8 +18,6 @@ import {
 
 // MOCK DATA; delete when we get working backend endpoints
 import mouseStrainsResult from 'tests/data/species-selector/mouse-strains';
-import mouseAssemblies from 'tests/data/species-selector/mouse-assemblies';
-import popularSpecies from 'tests/data/species-selector/popular-species';
 
 export const fetchSpeciesSearchResults = createAsyncAction(
   'species_selector/species_search_request',
@@ -78,10 +76,12 @@ export const fetchAssemblies: ActionCreator<
   try {
     dispatch(fetchAssembliesAsyncActions.request());
 
-    // FIXME: using mock data here
+    const url = `/api/alternative_assemblies?genome_id=${genomeId}`;
+    const response = await apiService.fetch(url, { preserveEndpoint: true });
+
     dispatch(
       fetchAssembliesAsyncActions.success({
-        assemblies: mouseAssemblies.alternative_assemblies
+        assemblies: response.alternative_assemblies
       })
     );
   } catch (error) {
@@ -95,10 +95,12 @@ export const fetchPopularSpecies: ActionCreator<
   try {
     dispatch(fetchPopularSpeciesAsyncActions.request());
 
-    // FIXME: using mock data here
+    const url = '/api/popular_genomes';
+    const response = await apiService.fetch(url, { preserveEndpoint: true });
+
     dispatch(
       fetchPopularSpeciesAsyncActions.success({
-        popularSpecies: popularSpecies
+        popularSpecies: response.popular_species
       })
     );
   } catch (error) {
@@ -110,15 +112,10 @@ export const handleSelectedSpecies: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (item: SearchMatch | PopularSpecies) => (dispatch) => {
   dispatch(setSelectedSpecies(item));
-  const { genome_id, common_name } = item;
+  const { genome_id } = item;
 
-  // FIXME: remove test for mock
-  if (!common_name || !common_name.startsWith('Mou')) {
-    return;
-  } else {
-    dispatch(fetchStrains(genome_id));
-    dispatch(fetchAssemblies(genome_id));
-  }
+  // dispatch(fetchStrains(genome_id));
+  dispatch(fetchAssemblies(genome_id));
 };
 
 export const commitSelectedSpecies = createStandardAction(

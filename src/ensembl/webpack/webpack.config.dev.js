@@ -65,8 +65,9 @@ const devConfig = {
     },
 
     proxy: {
-      // '/api': 'http://localhost:3000',
-      '/api': 'http://193.62.55.91:30910'
+      '/api': 'http://localhost:3000',
+      '/static': 'http://localhost:3000',
+      // '/api': 'http://193.62.55.91:30910'
     },
 
     // disable host check only when testing on IE11 remotely

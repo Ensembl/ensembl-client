@@ -23,6 +23,9 @@ type FetchOptions = {
   preserveEndpoint?: boolean;
 };
 
+const defaultMethod = HTTPMethod.GET;
+const defaultHeaders = { 'Content-Type': 'application/json' };
+
 class ApiService {
   private host: string;
 
@@ -35,20 +38,22 @@ class ApiService {
     return fetch;
   }
 
-  public async fetch(
-    endpoint: string,
-    options: FetchOptions = {
-      method: HTTPMethod.GET,
-      headers: { 'Content-Type': 'application/json' }
-    }
-  ) {
+  private buildFetchOptions(options: FetchOptions) {
+    return {
+      method: options.method || defaultMethod,
+      headers: { ...defaultHeaders, ...options.headers }
+    };
+  }
+
+  public async fetch(endpoint: string, options: FetchOptions = {}) {
     const host = options.host || this.host;
     const fetch = this.getFetch();
     const url = options.preserveEndpoint ? endpoint : `${host}${endpoint}`;
+    const fetchOptions = this.buildFetchOptions(options);
 
     try {
-      const response = await fetch(url, options);
-      return await this.handleResponse(response, options);
+      const response = await fetch(url, fetchOptions);
+      return await this.handleResponse(response, fetchOptions);
     } catch (error) {
       throw error;
     }
