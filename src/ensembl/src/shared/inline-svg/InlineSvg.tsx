@@ -30,7 +30,7 @@ const InlineSVG = (props: Props) => {
     apiService
       .fetch(props.src, {
         headers: {
-          'Content-Type': 'text/html'
+          Accept: 'text/html'
         },
         preserveEndpoint: true
       })

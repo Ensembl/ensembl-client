@@ -24,7 +24,7 @@ type FetchOptions = {
 };
 
 const defaultMethod = HTTPMethod.GET;
-const defaultHeaders = { 'Content-Type': 'application/json' };
+const defaultHeaders = { Accept: 'application/json' };
 
 class ApiService {
   private host: string;
@@ -39,6 +39,19 @@ class ApiService {
   }
 
   private buildFetchOptions(options: FetchOptions) {
+    const headers: { [key: string]: string } = {
+      ...defaultHeaders,
+      ...options.headers
+    };
+    if (
+      options.method &&
+      [HTTPMethod.POST, HTTPMethod.PUT, HTTPMethod.PATCH].includes(
+        options.method
+      ) &&
+      !headers.hasOwnProperty('Content-Type')
+    ) {
+      headers['Content-Type'] = 'application/json';
+    }
     return {
       method: options.method || defaultMethod,
       headers: { ...defaultHeaders, ...options.headers },
@@ -61,10 +74,7 @@ class ApiService {
   }
 
   private async handleResponse(response: Response, options: FetchOptions) {
-    if (
-      options.headers &&
-      options.headers['Content-Type'] === 'application/json'
-    ) {
+    if (options.headers && options.headers['Accept'] === 'application/json') {
       return await response.json();
     } else {
       return await response.text();

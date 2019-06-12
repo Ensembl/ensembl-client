@@ -84,7 +84,10 @@ export default function speciesSelectorReducer(
         ...state,
         currentItem: {
           ...(state.currentItem as CurrentItem),
-          assemblies: action.payload.assemblies
+          assemblies: [
+            ...(state.currentItem as CurrentItem).assemblies,
+            ...action.payload.assemblies
+          ]
         }
       };
     case getType(speciesSelectorActions.changeAssembly):
