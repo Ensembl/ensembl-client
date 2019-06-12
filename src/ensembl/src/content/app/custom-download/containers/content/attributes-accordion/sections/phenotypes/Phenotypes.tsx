@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
@@ -20,20 +20,21 @@ type OwnProps = {
 type Props = OwnProps & StateProps & DispatchProps;
 
 const Phenotypes = (props: Props) => {
-  const onChangeHandler = useCallback(
-    (status: boolean, subSection: string, attributeId: string) => {
-      if (!props.phenotypeAttributes) {
-        return;
-      }
+  const onChangeHandler = (
+    status: boolean,
+    subSection: string,
+    attributeId: string
+  ) => {
+    if (!props.phenotypeAttributes) {
+      return;
+    }
 
-      const newPhenotypeAttributes = { ...props.phenotypeAttributes };
+    const newPhenotypeAttributes = { ...props.phenotypeAttributes };
 
-      newPhenotypeAttributes[subSection][attributeId].isChecked = status;
+    newPhenotypeAttributes[subSection][attributeId].isChecked = status;
 
-      props.setPhenotypeAttributes(newPhenotypeAttributes);
-    },
-    [props.phenotypeAttributes]
-  );
+    props.setPhenotypeAttributes(newPhenotypeAttributes);
+  };
 
   if (props.hideUnchecked) {
     if (!props.phenotypeAttributes) {

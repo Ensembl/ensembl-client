@@ -1,4 +1,4 @@
-import React, { useCallback, FunctionComponent } from 'react';
+import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 import RoundButton, {
   RoundButtonStatus
@@ -19,13 +19,10 @@ type PreFilterPanelProps = StateProps & DispatchProps;
 const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
   props: PreFilterPanelProps
 ) => {
-  const filterOnClick = useCallback(
-    (filter: string) => {
-      props.updateSelectedPreFilter(filter);
-      props.togglePreFiltersPanel(false);
-    },
-    [props.selectedPreFilter]
-  );
+  const filterOnClick = (filter: string) => {
+    props.updateSelectedPreFilter(filter);
+    props.togglePreFiltersPanel(false);
+  };
 
   return (
     <section className={styles.preFilterPanel}>

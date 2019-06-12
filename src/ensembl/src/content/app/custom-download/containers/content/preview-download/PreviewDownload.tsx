@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 import { Link } from 'react-router-dom';
@@ -32,10 +32,10 @@ type DispatchProps = {
 type Props = StateProps & DispatchProps;
 
 const PreviewDownload = (props: Props) => {
-  const changeView = useCallback((tab: string) => {
+  const changeView = (tab: string) => {
     props.setShowPreview(false);
     props.toggleTabButton(tab);
-  }, []);
+  };
 
   const attributesList: [] = getSelectedAttributes(props.attributes);
 

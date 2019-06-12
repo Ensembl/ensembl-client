@@ -6,6 +6,7 @@ import {
   attributes,
   orthologueSpecies as sampleOrthologueSpecies
 } from '../../../../sampledata';
+import AttributesSection from 'src/content/app/custom-download/types/Attributes';
 
 export const setAttributes = createAsyncAction(
   'custom-download/set-attributes-request',
@@ -28,7 +29,7 @@ export const fetchAttributes: ActionCreator<
 export const setGeneAttributes = createAction(
   'custom-download/set-gene-attributes',
   (resolve) => {
-    return (geneAttributes: {}) =>
+    return (geneAttributes: AttributesSection) =>
       resolve(
         geneAttributes,
         getCustomDownloadAnalyticsObject('Gene attributes updated')
@@ -39,7 +40,7 @@ export const setGeneAttributes = createAction(
 export const setTranscriptAttributes = createAction(
   'custom-download/set-transcript-attributes',
   (resolve) => {
-    return (transcriptAttributes: {}) =>
+    return (transcriptAttributes: AttributesSection) =>
       resolve(
         transcriptAttributes,
         getCustomDownloadAnalyticsObject('Transctipt attributes updated')
@@ -50,7 +51,7 @@ export const setTranscriptAttributes = createAction(
 export const setPhenotypeAttributes = createAction(
   'custom-download/set-phenotype-attributes',
   (resolve) => {
-    return (phenotypeAttributes: {}) =>
+    return (phenotypeAttributes: AttributesSection) =>
       resolve(
         phenotypeAttributes,
         getCustomDownloadAnalyticsObject('Phenotype attributes updated')
@@ -61,7 +62,7 @@ export const setPhenotypeAttributes = createAction(
 export const setOrthologueAttributes = createAction(
   'custom-download/set-orthologue-attributes',
   (resolve) => {
-    return (orthologueAttributes: {}) =>
+    return (orthologueAttributes: AttributesSection) =>
       resolve(
         orthologueAttributes,
         getCustomDownloadAnalyticsObject('Orthologue attributes updated')
@@ -168,7 +169,7 @@ export const fetchOrthologueSpecies: ActionCreator<
 export const setLocationAttributes = createAction(
   'custom-download/set-location-attributes',
   (resolve) => {
-    return (locationAttributes: {}) =>
+    return (locationAttributes: AttributesSection) =>
       resolve(
         locationAttributes,
         getCustomDownloadAnalyticsObject('Location attributes updated')
@@ -179,7 +180,7 @@ export const setLocationAttributes = createAction(
 export const setSomaticVariationAttributes = createAction(
   'custom-download/set-somatic-variation-attributes',
   (resolve) => {
-    return (variationAttributes: {}) =>
+    return (variationAttributes: AttributesSection) =>
       resolve(
         variationAttributes,
         getCustomDownloadAnalyticsObject('Somatic variation attributes updated')
@@ -190,7 +191,7 @@ export const setSomaticVariationAttributes = createAction(
 export const setGermlineVariationAttributes = createAction(
   'custom-download/set-germline-variation-attributes',
   (resolve) => {
-    return (variationAttributes: {}) =>
+    return (variationAttributes: AttributesSection) =>
       resolve(
         variationAttributes,
         getCustomDownloadAnalyticsObject(

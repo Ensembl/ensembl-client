@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
@@ -20,19 +20,20 @@ type ownProps = {
 type Props = ownProps & StateProps & DispatchProps;
 
 const Genes = (props: Props) => {
-  const onChangeHandler = useCallback(
-    (status: boolean, subSection: string, attributeId: string) => {
-      if (!props.geneAttributes) {
-        return;
-      }
-      const newGeneAttributes = { ...props.geneAttributes };
+  const onChangeHandler = (
+    status: boolean,
+    subSection: string,
+    attributeId: string
+  ) => {
+    if (!props.geneAttributes) {
+      return;
+    }
+    const newGeneAttributes = { ...props.geneAttributes };
 
-      newGeneAttributes[subSection][attributeId].isChecked = status;
+    newGeneAttributes[subSection][attributeId].isChecked = status;
 
-      props.setGeneAttributes(newGeneAttributes);
-    },
-    [props.geneAttributes]
-  );
+    props.setGeneAttributes(newGeneAttributes);
+  };
 
   if (props.hideUnchecked) {
     if (!props.geneAttributes) {

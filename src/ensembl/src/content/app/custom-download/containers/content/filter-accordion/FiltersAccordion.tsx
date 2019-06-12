@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
@@ -32,12 +32,9 @@ const Filters = (props: Props) => {
     );
   };
 
-  const accordionOnChange = useCallback(
-    (newExpandedPanels: string[]) => {
-      props.setFiltersAccordionExpandedPanel(newExpandedPanels[0]);
-    },
-    [props.expandedPanel]
-  );
+  const accordionOnChange = (newExpandedPanels: string[]) => {
+    props.setFiltersAccordionExpandedPanel(newExpandedPanels[0]);
+  };
 
   return (
     <div className={styles.wrapper}>

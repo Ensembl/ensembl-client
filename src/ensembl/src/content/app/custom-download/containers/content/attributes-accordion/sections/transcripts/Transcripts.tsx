@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
@@ -20,20 +20,21 @@ type OwnProps = {
 type Props = OwnProps & StateProps & DispatchProps;
 
 const Transcripts = (props: Props) => {
-  const onChangeHandler = useCallback(
-    (status: boolean, subSection: string, attributeId: string) => {
-      if (!props.transcriptAttributes) {
-        return;
-      }
+  const onChangeHandler = (
+    status: boolean,
+    subSection: string,
+    attributeId: string
+  ) => {
+    if (!props.transcriptAttributes) {
+      return;
+    }
 
-      const newTranscriptAttributes = { ...props.transcriptAttributes };
+    const newTranscriptAttributes = { ...props.transcriptAttributes };
 
-      newTranscriptAttributes[subSection][attributeId].isChecked = status;
+    newTranscriptAttributes[subSection][attributeId].isChecked = status;
 
-      props.setTranscriptAttributes(newTranscriptAttributes);
-    },
-    [props.transcriptAttributes]
-  );
+    props.setTranscriptAttributes(newTranscriptAttributes);
+  };
 
   if (props.hideUnchecked) {
     if (!props.transcriptAttributes) {

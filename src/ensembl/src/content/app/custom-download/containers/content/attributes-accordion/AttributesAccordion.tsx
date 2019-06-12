@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
@@ -51,12 +51,9 @@ const AttributesAccordion = (props: Props) => {
     );
   };
 
-  const accordionOnChange = useCallback(
-    (newExpandedPanels: string[]) => {
-      props.setAttributesAccordionExpandedPanel(newExpandedPanels[0]);
-    },
-    [props.expandedPanel]
-  );
+  const accordionOnChange = (newExpandedPanels: string[]) => {
+    props.setAttributesAccordionExpandedPanel(newExpandedPanels[0]);
+  };
 
   return (
     <div className={styles.wrapper}>

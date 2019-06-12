@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
@@ -8,9 +8,7 @@ import CheckboxGrid, {
   filterCheckedAttributes
 } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
-import AttributesSection, {
-  AttributesSubSection
-} from 'src/content/app/custom-download/types/Attributes';
+import AttributesSection from 'src/content/app/custom-download/types/Attributes';
 
 import styles from './Location.scss';
 
@@ -22,19 +20,20 @@ type ownProps = {
 type Props = ownProps & StateProps & DispatchProps;
 
 const Location = (props: Props) => {
-  const onChangeHandler = useCallback(
-    (status: boolean, subSection: string, attributeId: string) => {
-      if (!props.locationAttributes) {
-        return;
-      }
-      const newLocationAttributes = { ...props.locationAttributes };
+  const onChangeHandler = (
+    status: boolean,
+    subSection: string,
+    attributeId: string
+  ) => {
+    if (!props.locationAttributes) {
+      return;
+    }
+    const newLocationAttributes = { ...props.locationAttributes };
 
-      newLocationAttributes[subSection][attributeId].isChecked = status;
+    newLocationAttributes[subSection][attributeId].isChecked = status;
 
-      props.setLocationAttributes(newLocationAttributes);
-    },
-    [props.locationAttributes]
-  );
+    props.setLocationAttributes(newLocationAttributes);
+  };
 
   if (props.hideUnchecked) {
     if (!props.locationAttributes) {

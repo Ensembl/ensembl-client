@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import Checkbox from 'src/shared/checkbox/Checkbox';
 import Radio, { RadioOptions } from 'src/shared/radio/Radio';
 
@@ -20,20 +20,14 @@ const CheckboxWithRadios = (props: Props) => {
     }
   }, []);
 
-  const handleCheckboxOnChange = useCallback(
-    (isChecked: boolean) => {
-      setisChecked(isChecked);
-      props.onChange('');
-    },
-    [props.selectedOption]
-  );
+  const handleCheckboxOnChange = (isChecked: boolean) => {
+    setisChecked(isChecked);
+    props.onChange('');
+  };
 
-  const handleOnChange = useCallback(
-    (selectedOption: string) => {
-      props.onChange(selectedOption);
-    },
-    [props.selectedOption]
-  );
+  const handleOnChange = (selectedOption: string) => {
+    props.onChange(selectedOption);
+  };
 
   return (
     <table className={styles.radioTable}>

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
@@ -84,76 +84,69 @@ const gencodeBasicAnnotationOptions: RadioOptions = [
 type Props = StateProps & DispatchProps;
 
 const Genes = (props: Props) => {
-  const geneTypeOnChangeHandler = useCallback(
-    (status: boolean, subSection: string, attributeId: string) => {
-      const newGeneTypeFilters = { ...props.geneTypeFilters };
+  const geneTypeOnChangeHandler = (
+    status: boolean,
+    subSection: string,
+    attributeId: string
+  ) => {
+    const newGeneTypeFilters = { ...props.geneTypeFilters };
 
-      if (!newGeneTypeFilters[subSection] && status) {
-        newGeneTypeFilters[subSection] = {};
+    if (!newGeneTypeFilters[subSection] && status) {
+      newGeneTypeFilters[subSection] = {};
 
-        if (!newGeneTypeFilters[subSection][attributeId]) {
-          newGeneTypeFilters[subSection][attributeId] = {};
-          newGeneTypeFilters[subSection][attributeId].isChecked = status;
-        }
-      } else if (!status) {
-        delete newGeneTypeFilters[subSection][attributeId];
-
-        // cleanup
-        if (Object.keys(newGeneTypeFilters[subSection]).length == 0) {
-          delete newGeneTypeFilters[subSection];
-        }
+      if (!newGeneTypeFilters[subSection][attributeId]) {
+        newGeneTypeFilters[subSection][attributeId] = {};
+        newGeneTypeFilters[subSection][attributeId].isChecked = status;
       }
+    } else if (!status) {
+      delete newGeneTypeFilters[subSection][attributeId];
 
-      geneTypeFiltersGrid[subSection][attributeId].isChecked = status;
-      props.setGeneTypeFilters(newGeneTypeFilters);
-    },
-    [props.geneTypeFilters, geneTypeFiltersGrid]
-  );
-
-  const transcriptTypeOnChangeHandler = useCallback(
-    (status: boolean, subSection: string, attributeId: string) => {
-      const newTranscriptTypeFilters = { ...props.transcriptTypeFilters };
-      if (!newTranscriptTypeFilters[subSection] && status) {
-        newTranscriptTypeFilters[subSection] = {};
-
-        if (!newTranscriptTypeFilters[subSection][attributeId]) {
-          newTranscriptTypeFilters[subSection][attributeId] = {};
-          newTranscriptTypeFilters[subSection][attributeId].isChecked = status;
-        }
-      } else if (!status) {
-        delete newTranscriptTypeFilters[subSection][attributeId];
-        // cleanup
-        if (Object.keys(newTranscriptTypeFilters[subSection]).length == 0) {
-          delete newTranscriptTypeFilters[subSection];
-        }
+      // cleanup
+      if (Object.keys(newGeneTypeFilters[subSection]).length == 0) {
+        delete newGeneTypeFilters[subSection];
       }
+    }
 
-      transcriptTypeFiltersGrid[subSection][attributeId].isChecked = status;
-      props.setTranscriptTypeFilters(newTranscriptTypeFilters);
-    },
-    [props.transcriptTypeFilters, transcriptTypeFiltersGrid]
-  );
+    geneTypeFiltersGrid[subSection][attributeId].isChecked = status;
+    props.setGeneTypeFilters(newGeneTypeFilters);
+  };
 
-  const accordionOnChange = useCallback(
-    (newExpandedPanels: []) => {
-      props.setFiltersAccordionExpandedGenePanels(newExpandedPanels);
-    },
-    [props.expandedPanels]
-  );
+  const transcriptTypeOnChangeHandler = (
+    status: boolean,
+    subSection: string,
+    attributeId: string
+  ) => {
+    const newTranscriptTypeFilters = { ...props.transcriptTypeFilters };
+    if (!newTranscriptTypeFilters[subSection] && status) {
+      newTranscriptTypeFilters[subSection] = {};
 
-  const geneSourceFilterOnChange = useCallback(
-    (selectedOptions: []) => {
-      props.setGeneSourceFilters(selectedOptions);
-    },
-    [props.geneSourceFilters]
-  );
+      if (!newTranscriptTypeFilters[subSection][attributeId]) {
+        newTranscriptTypeFilters[subSection][attributeId] = {};
+        newTranscriptTypeFilters[subSection][attributeId].isChecked = status;
+      }
+    } else if (!status) {
+      delete newTranscriptTypeFilters[subSection][attributeId];
+      // cleanup
+      if (Object.keys(newTranscriptTypeFilters[subSection]).length == 0) {
+        delete newTranscriptTypeFilters[subSection];
+      }
+    }
 
-  const gencodeAnnotationFilterOnChange = useCallback(
-    (selectedOption: string) => {
-      props.setGencodeAnnotationFilters(selectedOption);
-    },
-    [props.gencodeAnnotationFilters]
-  );
+    transcriptTypeFiltersGrid[subSection][attributeId].isChecked = status;
+    props.setTranscriptTypeFilters(newTranscriptTypeFilters);
+  };
+
+  const accordionOnChange = (newExpandedPanels: []) => {
+    props.setFiltersAccordionExpandedGenePanels(newExpandedPanels);
+  };
+
+  const geneSourceFilterOnChange = (selectedOptions: string[]) => {
+    props.setGeneSourceFilters(selectedOptions);
+  };
+
+  const gencodeAnnotationFilterOnChange = (selectedOption: string) => {
+    props.setGencodeAnnotationFilters(selectedOption);
+  };
 
   return (
     <>

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { PrimaryButton } from 'src/shared/button/Button';
 
@@ -32,7 +32,9 @@ import {
 
 import { fetchCustomDownloadResults } from './helper';
 
-import AttributesSection from 'src/content/app/custom-download/types/Attributes';
+import AttributesSection, {
+  SelectedAttribute
+} from 'src/content/app/custom-download/types/Attributes';
 
 import styles from './CustomDownloadHeader.scss';
 
@@ -103,22 +105,19 @@ const Header = (props: Props) => {
     props.togglePreFiltersPanel(true);
   };
 
-  const previewButtonOnClick = useCallback(() => {
+  const previewButtonOnClick = () => {
     props.setShowPreview(true);
-  }, [props.showPreview]);
+  };
 
-  const showFilters = useCallback(() => {
+  const showFilters = () => {
     props.setShowPreview(false);
-  }, [props.showPreview]);
+  };
 
   const resultCount = getFormattedTotal(props.preview.resultCount);
 
-  const handleDownloadTypeSelect = useCallback(
-    (option: string) => {
-      props.setDownloadType(option);
-    },
-    [props.downloadType]
-  );
+  const handleDownloadTypeSelect = (option: string) => {
+    props.setDownloadType(option);
+  };
 
   const options = [...downloadTypeoptions].map((option: Option) => {
     const optionClone = { ...option };
@@ -137,7 +136,7 @@ const Header = (props: Props) => {
   if (props.preview.resultCount > 0) {
     previewButtonDisabled = false;
   }
-  const selectedAttributes: AttributesSection = getSelectedAttributes(
+  const selectedAttributes: SelectedAttribute[] = getSelectedAttributes(
     props.attributes
   );
   const selectedFilters: any = getSelectedFilters(props.filters);

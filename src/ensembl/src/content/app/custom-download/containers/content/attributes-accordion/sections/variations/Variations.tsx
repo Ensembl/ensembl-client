@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
@@ -29,39 +29,38 @@ import styles from './Variations.scss';
 type Props = StateProps & DispatchProps;
 
 const Variations = (props: Props) => {
-  const germlineOnChangeHandler = useCallback(
-    (status: boolean, subSection: string, attributeId: string) => {
-      if (!props.germlineVariationAttributes) {
-        return;
-      }
-      const newGermlineAttributes = { ...props.germlineVariationAttributes };
+  const germlineOnChangeHandler = (
+    status: boolean,
+    subSection: string,
+    attributeId: string
+  ) => {
+    if (!props.germlineVariationAttributes) {
+      return;
+    }
+    const newGermlineAttributes = { ...props.germlineVariationAttributes };
 
-      newGermlineAttributes[subSection][attributeId].isChecked = status;
-      props.setGermlineVariationAttributes(newGermlineAttributes);
-    },
-    [props.germlineVariationAttributes]
-  );
+    newGermlineAttributes[subSection][attributeId].isChecked = status;
+    props.setGermlineVariationAttributes(newGermlineAttributes);
+  };
 
-  const somaticOnChangeHandler = useCallback(
-    (status: boolean, subSection: string, attributeId: string) => {
-      if (!props.somaticVariationAttributes) {
-        return;
-      }
+  const somaticOnChangeHandler = (
+    status: boolean,
+    subSection: string,
+    attributeId: string
+  ) => {
+    if (!props.somaticVariationAttributes) {
+      return;
+    }
 
-      const newSomaticAttributes = { ...props.somaticVariationAttributes };
+    const newSomaticAttributes = { ...props.somaticVariationAttributes };
 
-      newSomaticAttributes[subSection][attributeId].isChecked = status;
-      props.setSomaticVariationAttributes(newSomaticAttributes);
-    },
-    [props.somaticVariationAttributes]
-  );
+    newSomaticAttributes[subSection][attributeId].isChecked = status;
+    props.setSomaticVariationAttributes(newSomaticAttributes);
+  };
 
-  const accordionOnChange = useCallback(
-    (newExpandedPanels: []) => {
-      props.setVariationAccordionExpandedPanels(newExpandedPanels);
-    },
-    [props.expandedPanels]
-  );
+  const accordionOnChange = (newExpandedPanels: []) => {
+    props.setVariationAccordionExpandedPanels(newExpandedPanels);
+  };
 
   return (
     <Accordion

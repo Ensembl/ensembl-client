@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import Checkbox from 'src/shared/checkbox/Checkbox';
 import Select, { Option } from 'src/shared/select/Select';
 import styles from './CheckboxWithSelects.scss';
@@ -53,16 +53,13 @@ const CheckboxWithSelects = (props: Props) => {
     return optionClone;
   });
 
-  const removeSelection = useCallback(
-    (option: string) => {
-      const selectedOptions: string[] = [...props.selectedOptions];
-      const removeSelectionIndex = selectedOptions.indexOf(option);
-      selectedOptions.splice(removeSelectionIndex, 1);
-      setShowExtraOption(false);
-      props.onChange(selectedOptions);
-    },
-    [props.selectedOptions]
-  );
+  const removeSelection = (option: string) => {
+    const selectedOptions: string[] = [...props.selectedOptions];
+    const removeSelectionIndex = selectedOptions.indexOf(option);
+    selectedOptions.splice(removeSelectionIndex, 1);
+    setShowExtraOption(false);
+    props.onChange(selectedOptions);
+  };
 
   return (
     <table className={styles.multiselectTable}>
