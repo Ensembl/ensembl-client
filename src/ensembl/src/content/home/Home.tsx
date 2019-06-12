@@ -2,6 +2,8 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import styles from './Home.scss';
 import { fetchExampleEnsObjectsData } from 'src/ens-object/ensObjectActions';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
@@ -66,7 +68,7 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
           </span>
           <Link
             className={styles.speciesSelectorBannerLink}
-            to={'/app/species-selector'}
+            to={urlFor.speciesSelector()}
           >
             Select a species to begin
           </Link>
