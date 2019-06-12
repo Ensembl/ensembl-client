@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Checkbox from 'src/shared/checkbox/Checkbox';
 import Radio, { RadioOptions } from 'src/shared/radio/Radio';
 
@@ -12,21 +12,11 @@ type Props = {
 };
 
 const CheckboxWithRadios = (props: Props) => {
-  const [isChecked, setisChecked] = useState(false);
-
-  useEffect(() => {
-    if (props.selectedOption) {
-      setisChecked(true);
-    }
-  }, []);
+  const [isChecked, setisChecked] = useState(Boolean(props.selectedOption));
 
   const handleCheckboxOnChange = (isChecked: boolean) => {
     setisChecked(isChecked);
     props.onChange('');
-  };
-
-  const handleOnChange = (selectedOption: string | number | boolean) => {
-    props.onChange(selectedOption);
   };
 
   return (
@@ -43,7 +33,7 @@ const CheckboxWithRadios = (props: Props) => {
           {isChecked && (
             <td>
               <Radio
-                onChange={handleOnChange}
+                onChange={props.onChange}
                 radioOptions={props.radioOptions}
                 selectedOption={props.selectedOption}
               />

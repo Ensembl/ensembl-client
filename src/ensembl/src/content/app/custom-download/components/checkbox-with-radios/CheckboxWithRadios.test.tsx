@@ -2,20 +2,16 @@ import React from 'react';
 import { mount } from 'enzyme';
 import CheckboxWithRadios from './CheckboxWithRadios';
 import Checkbox from 'src/shared/checkbox/Checkbox';
-import { radioOptions } from 'src/shared/radio/Radio';
+
+import faker from 'faker';
+import times from 'lodash/times';
 
 const onChange = jest.fn();
 
-const options: radioOptions = [
-  {
-    value: 'one',
-    label: 'one'
-  },
-  {
-    value: 'two',
-    label: 'two'
-  }
-];
+const createOption = () => ({
+  value: faker.random.uuid(),
+  label: faker.random.words(5)
+});
 
 describe('<CheckboxWithRadios />', () => {
   afterEach(() => {
@@ -27,7 +23,7 @@ describe('<CheckboxWithRadios />', () => {
     onChange: onChange,
     label: 'foo',
     selectedOption: '',
-    radioOptions: options
+    radioOptions: times(5, () => createOption())
   };
 
   it('renders without error', () => {
@@ -55,7 +51,9 @@ describe('<CheckboxWithRadios />', () => {
       .find(Checkbox)
       .find('.defaultCheckbox')
       .simulate('click');
-    expect(wrapper.find('input[type="radio"]').length).toBe(options.length);
+    expect(wrapper.find('input[type="radio"]').length).toBe(
+      defaultProps.radioOptions.length
+    );
   });
 
   it('calls the onChange when the radio is changed with the selected option', () => {
@@ -71,6 +69,6 @@ describe('<CheckboxWithRadios />', () => {
       .first()
       .simulate('change');
 
-    expect(onChange).toHaveBeenLastCalledWith('one');
+    expect(onChange).toHaveBeenCalledWith(defaultProps.radioOptions[0].value);
   });
 });
