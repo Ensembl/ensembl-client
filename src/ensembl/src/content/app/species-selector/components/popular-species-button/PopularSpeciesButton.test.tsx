@@ -30,7 +30,7 @@ describe('<PopularSpeciesButton />', () => {
 
   describe('not available', () => {
     it('has appropriate class', () => {
-      const props = set('species.isAvailable', false, commonProps);
+      const props = set('species.is_available', false, commonProps);
       const renderedButton = render(<PopularSpeciesButton {...props} />).find(
         '.popularSpeciesButton'
       );
@@ -40,7 +40,7 @@ describe('<PopularSpeciesButton />', () => {
     });
 
     it('does not call handleSelectedSpecies prop when clicked', () => {
-      const props = set('species.isAvailable', false, commonProps);
+      const props = set('species.is_available', false, commonProps);
       const wrapper = mount(<PopularSpeciesButton {...props} />).find(
         '.popularSpeciesButton'
       );

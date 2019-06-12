@@ -67,17 +67,18 @@ export default function speciesSelectorReducer(
         ...state,
         currentItem: buildCurrentItem(action.payload)
       };
-    case getType(speciesSelectorActions.fetchStrainsAsyncActions.success):
-      return {
-        ...state,
-        currentItem: {
-          ...(state.currentItem as CurrentItem),
-          strains: action.payload.strains,
-          selectedStrainId: action.payload.strains.length
-            ? (state.currentItem as CurrentItem).genome_id
-            : null
-        }
-      };
+    // TODO: wait for strains
+    // case getType(speciesSelectorActions.fetchStrainsAsyncActions.success):
+    //   return {
+    //     ...state,
+    //     currentItem: {
+    //       ...(state.currentItem as CurrentItem),
+    //       strains: action.payload.strains,
+    //       selectedStrainId: action.payload.strains.length
+    //         ? (state.currentItem as CurrentItem).genome_id
+    //         : null
+    //     }
+    //   };
     case getType(speciesSelectorActions.fetchAssembliesAsyncActions.success):
       return {
         ...state,

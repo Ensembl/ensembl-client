@@ -11,13 +11,10 @@ import { getCommittedSpecies } from 'src/content/app/species-selector/state/spec
 import {
   SearchMatch,
   SearchMatches,
-  Strain,
+  // Strain,
   Assembly,
   PopularSpecies
 } from 'src/content/app/species-selector/types/species-search';
-
-// MOCK DATA; delete when we get working backend endpoints
-import mouseStrainsResult from 'tests/data/species-selector/mouse-strains';
 
 export const fetchSpeciesSearchResults = createAsyncAction(
   'species_selector/species_search_request',
@@ -25,11 +22,12 @@ export const fetchSpeciesSearchResults = createAsyncAction(
   'species_selector/species_search_failure'
 )<string, { results: SearchMatches[] }, Error>();
 
-export const fetchStrainsAsyncActions = createAsyncAction(
-  'species_selector/strains_request',
-  'species_selector/strains_success',
-  'species_selector/strains_failure'
-)<undefined, { strains: Strain[] }, Error>();
+// TODO: wait for strains
+// export const fetchStrainsAsyncActions = createAsyncAction(
+//   'species_selector/strains_request',
+//   'species_selector/strains_success',
+//   'species_selector/strains_failure'
+// )<undefined, { strains: Strain[] }, Error>();
 
 export const fetchPopularSpeciesAsyncActions = createAsyncAction(
   'species_selector/popular_species_request',
@@ -55,20 +53,21 @@ export const clearSelectedSearchResult = createStandardAction(
   'species_selector/clear_selected_search_result'
 )();
 
-export const fetchStrains: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (genomeId: string) => async (dispatch) => {
-  try {
-    dispatch(fetchStrainsAsyncActions.request());
+// TODO: wait for strains
+// export const fetchStrains: ActionCreator<
+//   ThunkAction<void, any, null, Action<string>>
+// > = (genomeId: string) => async (dispatch) => {
+//   try {
+//     dispatch(fetchStrainsAsyncActions.request());
 
-    // FIXME: using mock data here
-    dispatch(
-      fetchStrainsAsyncActions.success({ strains: mouseStrainsResult.strains })
-    );
-  } catch (error) {
-    dispatch(fetchStrainsAsyncActions.failure(error));
-  }
-};
+//     // FIXME: using mock data here
+//     dispatch(
+//       fetchStrainsAsyncActions.success({ strains: mouseStrainsResult.strains })
+//     );
+//   } catch (error) {
+//     dispatch(fetchStrainsAsyncActions.failure(error));
+//   }
+// };
 
 export const fetchAssemblies: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
@@ -114,6 +113,7 @@ export const handleSelectedSpecies: ActionCreator<
   dispatch(setSelectedSpecies(item));
   const { genome_id } = item;
 
+  // TODO: fetch strains when they are ready
   // dispatch(fetchStrains(genome_id));
   dispatch(fetchAssemblies(genome_id));
 };

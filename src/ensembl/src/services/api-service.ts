@@ -41,7 +41,8 @@ class ApiService {
   private buildFetchOptions(options: FetchOptions) {
     return {
       method: options.method || defaultMethod,
-      headers: { ...defaultHeaders, ...options.headers }
+      headers: { ...defaultHeaders, ...options.headers },
+      body: options.body
     };
   }
 
