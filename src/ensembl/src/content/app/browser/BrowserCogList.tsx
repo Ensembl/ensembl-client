@@ -7,8 +7,6 @@ import React, {
 import { connect } from 'react-redux';
 
 import BrowserCog from './BrowserCog';
-
-import BrowserTrackConfig from './browser-track-config/BrowserTrackConfig';
 import {
   updateCogList,
   updateCogTrackList,
@@ -94,7 +92,6 @@ const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
 
   return props.browserActivated ? (
     <div className={styles.browserTrackConfigOuter}>
-      <BrowserTrackConfig ypos={props.browserCogTrackList[selectedCog]} />
       <div className={styles.browserCogListOuter}>
         <div className={styles.browserCogListInner} style={transformStyle}>
           {cogs}
