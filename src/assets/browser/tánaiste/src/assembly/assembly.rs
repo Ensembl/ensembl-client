@@ -61,6 +61,6 @@ mod test {
     #[test]
     fn inst_error_2() {
         let e = test_assemble("inst-error-2").err().unwrap();
-        assert_eq!("Incorrect arguments [Str(\"hello\")] vs [One(Reg)]",e.join("\n"));
+        assert_eq!("Incorrect arguments [Str([\"hello\"])] vs [One(Reg)]",e.join("\n"));
     }
 }
