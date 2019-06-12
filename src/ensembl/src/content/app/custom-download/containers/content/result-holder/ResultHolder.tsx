@@ -51,14 +51,12 @@ const ResultHolder = (props: Props) => {
     props.setIsLoadingResult(false);
   }, [props.preview]);
 
-  if (props.preview && !props.preview.results) {
+  if (props.preview && !props.preview.results && props.isLoadingResult) {
     return (
       <>
-        {props.isLoadingResult && (
-          <div className={styles.loaderWrapper}>
-            <CircleLoader />
-          </div>
-        )}
+        <div className={styles.loaderWrapper}>
+          <CircleLoader />
+        </div>
         <div className={styles.wrapper}>
           {Array(15)
             .fill('')
