@@ -24,13 +24,14 @@ const moduleRules = [
   // image loader should compress the images
   // then file loader takes over to copy the images into the dist folder
   {
-    test: /static\/img\/.*\.(gif|png|jpe?g)$/i,
+    test: /.*\.(gif|png|jpe?g)$/i,
     use: [
       {
         loader: 'file-loader',
         options: {
           emitFile: true,
-          name: '[path][name].[hash].[ext]'
+          name: '[name].[hash].[ext]',
+          outputPath: 'images'
         }
       },
       'image-webpack-loader'

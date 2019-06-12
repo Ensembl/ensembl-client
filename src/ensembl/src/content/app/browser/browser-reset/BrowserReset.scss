@@ -1,9 +1,23 @@
+@import 'src/styles/common';
 .resetButton {
   position: relative;
-  top: -2px;
+  width: 10px;
+  height: 10px;
+}
 
-  img {
-    height: 16px;
-    width: 16px;
+.imageWrapper {
+  height: 16px;
+  width: 16px;
+  position: absolute;
+  top: -3px;
+}
+
+.imageButtonInactive {
+  svg {
+    fill: $ens-dark-grey;
+    cursor: default;
+  }
+  button {
+    cursor: default;
   }
 }
