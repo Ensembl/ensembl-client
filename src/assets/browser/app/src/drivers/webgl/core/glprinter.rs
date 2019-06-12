@@ -53,7 +53,10 @@ pub struct GLPrinterBase {
     base_progs: GLProgs,
     acm: AllCanvasAllocator,
     lp: HashMap<Leaf,GLCarriagePrinter>,
-    current: HashSet<Leaf>
+    current: HashSet<Leaf>,
+    new_size: Option<Dot<f64,f64>>,
+    settled_size: Option<Dot<f64,f64>>,
+    round_size: bool
 }
 
 impl GLPrinterBase {
@@ -72,7 +75,10 @@ impl GLPrinterBase {
             acm, ctx: ctx_rc,
             base_progs: progs,
             lp: HashMap::<Leaf,GLCarriagePrinter>::new(),
-            current: HashSet::<Leaf>::new()
+            current: HashSet::<Leaf>::new(),
+            new_size: None,
+            settled_size: None,
+            round_size: true
         }
     }
 
@@ -92,6 +98,9 @@ impl GLPrinterBase {
     }
 
     fn prepare_all(&mut self) {
+        if let Some(new_size) = self.new_size.take() {
+            self.set_size(new_size);
+        }
         self.ctx.enable(glctx::DEPTH_TEST);
         self.ctx.enable(glctx::BLEND);
         self.ctx.blend_func_separate(
@@ -103,28 +112,37 @@ impl GLPrinterBase {
         self.ctx.clear(glctx::COLOR_BUFFER_BIT | glctx::DEPTH_BUFFER_BIT);
     }
     
-    fn set_size(&mut self, s: Dot<i32,i32>) {
+    fn set_size(&mut self, s: Dot<f64,f64>) {
+        /* Rendering can go fuzzy if available size not multiple of 4 */
+        let mut vp_sz = Dot(s.0.round() as i32,s.1.round() as i32);
+        let mut css = "width: 100%; height: 100%".to_string();
+        if self.round_size {
+            css = format!("width: {}px; height: {}px",vp_sz.0,vp_sz.1);
+        }
+        self.round_size = false;
         let elel: Element =  self.canv_el.clone().into();
         let elc : CanvasElement = elel.clone().try_into().unwrap();
-        elc.set_width(s.0 as u32);
-        elc.set_height(s.1 as u32);
-        self.ctx.viewport(0,0,s.0,s.1);
-        elel.set_attribute("style",&format!("width: {}px; height: {}px",s.0,s.1)).ok();
+        elc.set_width(vp_sz.0 as u32);
+        elc.set_height(vp_sz.1 as u32);
+        self.ctx.viewport(0,0,vp_sz.0 as i32,vp_sz.1 as i32);
+        elel.set_attribute("style",&css).ok();
     }
     
-    fn get_available_size(&self) -> Dot<i32,i32> {
+    fn get_available_size(&self) -> Dot<f64,f64> {
         let ws = domutil::window_space(&self.canv_el.parent_node().unwrap().try_into().unwrap());
         let mut size = domutil::size(&self.canv_el.parent_node().unwrap().try_into().unwrap());
         // TODO left/top/right
         let rb = ws.far_offset();
-        if rb.1 < 0 {
+        if rb.1 < 0. {
             // off the bottom, fix
             size.1 += rb.1
         }
-        /* Rendering can go fuzzy if available size not multiple of 4 */
-        size.0 = ((size.0+3)/4)*4;
-        size.1 = ((size.1+3)/4)*4;
         size
+    }
+
+    fn settle(&mut self) {
+        self.round_size = true;
+        self.set_size(self.get_available_size());
     }
 
     fn destroy(&mut self) {
@@ -204,11 +222,16 @@ impl Printer for GLPrinter {
         self.base.borrow_mut().destroy();
     }
 
-    fn set_size(&mut self, s: Dot<i32,i32>) {
-        self.base.borrow_mut().set_size(s);
+    fn set_size(&mut self, s: Dot<f64,f64>) {
+        self.base.borrow_mut().new_size = Some(s);
+        self.base.borrow_mut().settled_size = Some(s);
     }
     
-    fn get_available_size(&self) -> Dot<i32,i32> {
+    fn settle(&mut self) {
+        self.base.borrow_mut().settle();
+    }
+    
+    fn get_available_size(&self) -> Dot<f64,f64> {
         self.base.borrow().get_available_size()
     }
 

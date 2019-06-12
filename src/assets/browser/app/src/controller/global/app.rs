@@ -18,7 +18,9 @@ use dom::domutil;
 use drivers::webgl::GLPrinter;
 use model::driver::{ Printer, PrinterManager };
 use tácode::Tácode;
+use types::Dot;
 
+const SETTLE_TIME : f64 = 500.; // ms
 const CANVAS : &str = r##"<canvas id="canvas"></canvas>"##;
 
 pub struct App {
@@ -35,6 +37,9 @@ pub struct App {
     csl: SourceManagerList,
     http_clerk: HttpXferClerk,
     als: AllLandscapes,
+    size: Option<Dot<f64,f64>>,
+    last_resize_at: Option<f64>,
+    stage_resize: Option<Dot<f64,f64>>
 }
 
 impl App {
@@ -63,7 +68,10 @@ impl App {
             viewport: None,
             csl: SourceManagerList::new(),
             http_clerk: clerk,
-            als: AllLandscapes::new()
+            als: AllLandscapes::new(),
+            size: None,
+            stage_resize: None,
+            last_resize_at: None
         };
         let dsm = CombinedSourceManager::new(&tc,config,&out.als,&out.http_clerk);
         out.csl.add_compsource(Box::new(dsm));
@@ -135,7 +143,7 @@ impl App {
         }
         if let Some(ref report) = self.viewport {
             s.update_viewport_report(report);
-        }        
+        }
         out
     }
 
@@ -159,11 +167,32 @@ impl App {
     
     pub fn check_size(self: &mut App) {
         let sz = self.printer.lock().unwrap().get_available_size();
-        actions_run(self,&vec! { Action::Resize(sz) });
+        let now = domutil::browser_time();
+        if self.size == None || self.size.unwrap() != sz {
+            self.last_resize_at = Some(now);
+            actions_run(self,&vec! { Action::Resize(sz) });
+            self.size = Some(sz);
+        }
+        if let Some(last_resize_at) = self.last_resize_at {
+            if now - last_resize_at > SETTLE_TIME {
+                actions_run(self,&vec! { Action::Settled });
+                self.last_resize_at = None;
+            }
+        }
     }
  
-    pub fn force_size(self: &App) {
-        let stage = self.stage.lock().unwrap();
+    pub fn force_size(self: &mut App, sz: Dot<f64,f64>) {
+        self.stage_resize = Some(sz);
+        let mut stage = self.stage.lock().unwrap();
+        stage.set_size(&sz);
         self.printer.lock().unwrap().set_size(stage.get_size());
+    }
+    
+    pub fn settle(&mut self) {
+        if let Some(size) = self.stage_resize.take() {
+            let mut stage = self.stage.lock().unwrap();
+            stage.set_size(&size);
+        }
+        self.printer.lock().unwrap().settle();
     }
 }
