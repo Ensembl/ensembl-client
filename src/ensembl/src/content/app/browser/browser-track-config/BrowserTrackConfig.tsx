@@ -100,7 +100,7 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
 
   return (
     <section className={styles.trackConfig}>
-      <dl className="category">
+      <dl>
         <dd className={styles.allTracks}>
           <input
             type="checkbox"
@@ -110,14 +110,14 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
           <label htmlFor="">All tracks</label>
         </dd>
       </dl>
-      <dl className="category">
-        <dd className="trackName">
+      <dl>
+        <dd>
           <label htmlFor="">Track name</label>
           <button className={styles.trackConfigSlider} onClick={toggleName}>
             <img src={nameIcon} />
           </button>
         </dd>
-        <dd className="featureLabels">
+        <dd>
           <label htmlFor="">Feature labels</label>
           <button className={styles.trackConfigSlider} onClick={toggleLabel}>
             <img src={labelIcon} />
@@ -129,18 +129,18 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
           </button>
         </dd>
       </dl>
-      <dl className="category">
+      <dl>
         <dd className={styles.trackLock}>
           <button className={styles.trackLockBtn}>
             <img src={trackLockBtn} />
           </button>
         </dd>
-        <dd className="trackHighlight disabled">
+        <dd>
           <button className={styles.trackHighlightBtn}>
             <img src={trackHighlightBtn} />
           </button>
         </dd>
-        <dd className="trackMove disabled">
+        <dd>
           <button className={styles.trackMoveBtn}>
             <img src={trackMoveBtn} />
           </button>

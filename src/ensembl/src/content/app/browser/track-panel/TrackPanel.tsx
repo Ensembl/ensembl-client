@@ -86,7 +86,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
     left: 'calc(-356px + 100vw)'
   }));
 
-  const getbrowserWidth = (): string => {
+  const getBrowserWidth = (): string => {
     if (props.drawerOpened) {
       return 'calc(41px + 0vw)';
     }
@@ -97,7 +97,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
 
   useEffect(() => {
     setTrackAnimation({
-      left: getbrowserWidth()
+      left: getBrowserWidth()
     });
   }, [props.drawerOpened, props.trackPanelOpened]);
 

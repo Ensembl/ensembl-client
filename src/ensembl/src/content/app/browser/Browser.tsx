@@ -136,7 +136,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
     width: 'calc(-36px + 100vw )'
   }));
 
-  const getbrowserWidth = (): string => {
+  const getBrowserWidth = (): string => {
     if (props.drawerOpened) {
       return 'calc(41px + 0vw)';
     }
@@ -147,7 +147,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   useEffect(() => {
     setTrackAnimation({
-      width: getbrowserWidth()
+      width: getBrowserWidth()
     });
   }, [props.drawerOpened, props.trackPanelOpened]);
 
