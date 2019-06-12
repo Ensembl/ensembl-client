@@ -1,0 +1,98 @@
+enum Markup {
+  STRONG = 'strong',
+  EMPHASIS = 'emphasis',
+  FOCUS = 'focus',
+  SMALL = 'SMALL'
+}
+
+type ZmenuContentItem = {
+  text: string;
+  markup: Markup[];
+};
+
+type ZmenuContentBlock = ZmenuContentItem[];
+
+type ZmenuContentLine = ZmenuContentBlock[];
+
+type ZmenuContentSection = {
+  id: string;
+  lines: ZmenuContentLine[];
+};
+
+type ZmenuContentFeature = ZmenuContentSection[];
+
+// Sent from Genome browser to React
+type ZmenuShowEvent = {
+  action: 'show-zmenu';
+  id: string;
+  anchor_coordinates: {
+    x: number;
+    y: number;
+  };
+  content: ZmenuContentFeature[];
+};
+
+// Sent from Genome browser to React
+type ZmenuHideEvent = {
+  id: string;
+  action: 'hide-zmenu';
+};
+
+// Sent from React to Genome browser
+// (on mouseover; perhaps tap?)
+type ZmenuEnterEvent = {
+  id: string;
+  action: 'zmenu-enter';
+};
+
+// Sent from React to Genome browser
+// (on mouseleave, or on click outside)
+type ZmenuLeaveEvent = {
+  id: string;
+  action: 'zmenu-leave';
+};
+
+// EXAMPLE:
+// [
+//   {
+//     id: "transrcipt:ENST00000380152.7", // (4)
+//     lines: [
+//       [ // first line
+//         [ // "Transcript ENST....."
+//           { text: "Transcript", markup: [] },
+//           { text: "ENST00000380152.7", markup: ["strong"] }
+//         ],
+//         [ // protein coding
+//           { text: "protein coding", markup: [] }
+//         ],
+//         [ // forward strand
+//           { text: "forward strand", markup: [] }
+//         ]
+//       ],
+//       [ // second line
+//         [ // ENST....
+//           { text: "ENST00000380152.7", markup: ["focus"] },
+//           { text: "MANE select", markup: [] }
+//         ]
+//       ]
+//     ]
+//   },{
+//     id: "gene:ENSG00000139618", // (4)
+//     lines: [
+//       [
+//         [ // "Gene BRCA2"
+//           { text: "Gene", markup: [] },
+//           { text: "BRCA2", markup: ["strong"] }
+//         ],
+//         [ // DNA-repair associated
+//           { text: "DNA-repair associated", markup: [] },
+//         ]
+//       ],
+//       [ // fourth line
+//         [
+//           { text: "ENSG00000139618", markup: [] }
+//         ]
+//       ]
+//     ]
+//   }
+// ]
