@@ -16,5 +16,5 @@ pub use self::ruler::RulerI;
 pub use self::text::{ TextI, Text2I };
 pub use self::twiddle::{
     ElideI, NotI, PickI, AllI, IndexI, RunsI, RunsOfI, GetI, MergeI,
-    AccNI, LengthI
+    AccNI, LengthI, LengthsI
 };

@@ -139,8 +139,10 @@ pub struct Get(usize,usize,usize);
 pub struct Merge(usize,usize,Vec<usize>);
 // accn #out, #parts, #strides
 pub struct AccN(usize,usize,usize);
-// length #len(in), #in
+// length #len(in), #in [floats]
 pub struct Length(usize,usize);
+// lengths #len(string), #strings
+pub struct Lengths(usize,usize);
 
 impl Command for Elide {
     fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
@@ -289,6 +291,17 @@ impl Command for Length {
     }
 }
 
+impl Command for Lengths {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        regs.get(self.1).as_string(|strings| {
+            let lengths = strings.iter().map(|x| x.len() as f64).collect();
+            regs.set(self.0,Value::new_from_float(lengths));
+        });
+        return 1;
+    }
+}
+
 pub struct ElideI();
 pub struct NotI();
 pub struct PickI();
@@ -300,6 +313,7 @@ pub struct GetI();
 pub struct MergeI();
 pub struct AccNI();
 pub struct LengthI();
+pub struct LengthsI();
 
 impl Instruction for ElideI {
     fn signature(&self) -> Signature { Signature::new("elide","rrr") }
@@ -379,5 +393,12 @@ impl Instruction for LengthI {
     fn signature(&self) -> Signature { Signature::new("length","rr") }
     fn build(&self, args: &Vec<Argument>) -> Box<Command> {
         Box::new(Length(args[0].reg(),args[1].reg()))
+    }
+}
+
+impl Instruction for LengthsI {
+    fn signature(&self) -> Signature { Signature::new("lengths","rr") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(Lengths(args[0].reg(),args[1].reg()))
     }
 }
