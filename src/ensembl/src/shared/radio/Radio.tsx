@@ -1,16 +1,16 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 
 import defaultStyles from './Radio.scss';
 
 export type RadioOption = {
-  value: string;
+  value: string | number | boolean;
   label: string;
 };
 
 export type RadioOptions = RadioOption[];
 
 type Props = {
-  onChange: (selectedOption: string) => void;
+  onChange: (selectedOption: string | number | boolean) => void;
   classNames?: any;
   radioOptions: RadioOptions;
   selectedOption: string;
@@ -22,34 +22,32 @@ const Radio = (props: Props) => {
     ? { ...defaultStyles, ...props.classNames }
     : defaultStyles;
 
-  const handleOnChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (props.disabled) {
-        return;
-      }
-      props.onChange(event.target.value);
-    },
-    [props.selectedOption]
-  );
+  const handleOnChange = (index: number) => {
+    if (props.disabled) {
+      return;
+    }
+
+    props.onChange(props.radioOptions[index].value);
+  };
 
   return (
     <table className={styles.radioTable}>
       <tbody>
         <tr>
-          {props.radioOptions.map((option: any, key: number) => {
+          {props.radioOptions.map((option: any, index: number) => {
             return (
-              <td key={key}>
+              <td key={index}>
                 <input
-                  id={`radio_${key}`}
+                  id={`radio_${index}`}
                   className={styles.radioInput}
                   value={option.value}
                   type="radio"
-                  onChange={handleOnChange}
+                  onChange={() => handleOnChange(index)}
                   checked={option.value === props.selectedOption}
                   disabled={props.disabled}
                   name="radio"
                 />
-                <label className={styles.radioLabel} htmlFor={`radio_${key}`}>
+                <label className={styles.radioLabel} htmlFor={`radio_${index}`}>
                   {option.label}
                 </label>
               </td>

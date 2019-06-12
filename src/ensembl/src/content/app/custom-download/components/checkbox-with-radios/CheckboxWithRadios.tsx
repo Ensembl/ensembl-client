@@ -8,7 +8,7 @@ type Props = {
   radioOptions: RadioOptions;
   label: string;
   selectedOption: string;
-  onChange: (selectedOption: string) => void;
+  onChange: (selectedOption: string | number | boolean) => void;
 };
 
 const CheckboxWithRadios = (props: Props) => {
@@ -25,7 +25,7 @@ const CheckboxWithRadios = (props: Props) => {
     props.onChange('');
   };
 
-  const handleOnChange = (selectedOption: string) => {
+  const handleOnChange = (selectedOption: string | number | boolean) => {
     props.onChange(selectedOption);
   };
 

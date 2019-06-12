@@ -144,7 +144,9 @@ const Genes = (props: Props) => {
     props.setGeneSourceFilters(selectedOptions);
   };
 
-  const gencodeAnnotationFilterOnChange = (selectedOption: string) => {
+  const gencodeAnnotationFilterOnChange = (
+    selectedOption: string | number | boolean
+  ) => {
     props.setGencodeAnnotationFilters(selectedOption);
   };
 
