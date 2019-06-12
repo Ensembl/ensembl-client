@@ -51,21 +51,22 @@ const ResultHolder = (props: Props) => {
     props.setIsLoadingResult(false);
   }, [props.preview]);
 
-  if (props.isLoadingResult && props.preview && !props.preview.results) {
+  if (props.preview && !props.preview.results) {
     return (
-      <div className={styles.wrapper}>
-        {Array(10)
-          .fill(1)
-          .map((value, key: number) => {
-            return (
-              <div key={key} className={styles.resultCard}>
-                <div className={styles.loaderWrapper}>
-                  <CircleLoader />
-                </div>
-              </div>
-            );
-          })}
-      </div>
+      <>
+        {props.isLoadingResult && (
+          <div className={styles.loaderWrapper}>
+            <CircleLoader />
+          </div>
+        )}
+        <div className={styles.wrapper}>
+          {Array(15)
+            .fill(1)
+            .map((value, key: number) => {
+              return <div key={key} className={styles.resultCard} />;
+            })}
+        </div>
+      </>
     );
   }
 
@@ -78,30 +79,31 @@ const ResultHolder = (props: Props) => {
   const headerRow = formattedResults.shift();
 
   return (
-    <div className={styles.wrapper}>
-      {formattedResults.map((dataRow: [], resultKey: number) => {
-        return (
-          <div key={resultKey} className={styles.resultCard}>
-            {props.isLoadingResult && (
-              <div className={styles.loaderWrapper}>
-                <CircleLoader />
-              </div>
-            )}
-
-            {headerRow.map((header: string, rowKey: number) => {
-              return (
-                <div key={rowKey} className={styles.resultLine}>
-                  <div className={styles.lineHeader}>{header}</div>
-                  <div className={styles.lineValue}>
-                    {dataRow[rowKey] ? dataRow[rowKey] : '-'}
+    <>
+      {props.isLoadingResult && (
+        <div className={styles.loaderWrapper}>
+          <CircleLoader />
+        </div>
+      )}
+      <div className={styles.wrapper}>
+        {formattedResults.map((dataRow: [], resultKey: number) => {
+          return (
+            <div key={resultKey} className={styles.resultCard}>
+              {headerRow.map((header: string, rowKey: number) => {
+                return (
+                  <div key={rowKey} className={styles.resultLine}>
+                    <div className={styles.lineHeader}>{header}</div>
+                    <div className={styles.lineValue}>
+                      {dataRow[rowKey] ? dataRow[rowKey] : '-'}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        );
-      })}
-    </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+    </>
   );
 };
 
