@@ -4,8 +4,11 @@ import { RootAction } from 'src/objects';
 import * as attributesAccordionActions from './attributesAccordionActions';
 import {
   AttributesAccordionState,
-  defaultAttributesAccordionState
+  defaultAttributesAccordionState,
+  OrthologueState
 } from './attributesAccordionState';
+
+import { CustomDownloadAttributes } from 'src/content/app/custom-download/types/Attributes';
 
 function attributesAccordion(
   state: AttributesAccordionState = defaultAttributesAccordionState,
@@ -88,9 +91,9 @@ function attributesAccordion(
 }
 
 function GeneAttributes(
-  state: any = defaultAttributesAccordionState,
+  state: any = defaultAttributesAccordionState.attributes,
   action: ActionType<RootAction>
-): AttributesAccordionState {
+): CustomDownloadAttributes {
   switch (action.type) {
     case getType(attributesAccordionActions.setGeneAttributes):
       return { ...state, gene: action.payload };
@@ -100,9 +103,9 @@ function GeneAttributes(
 }
 
 function Orthologue(
-  state: any = defaultAttributesAccordionState,
+  state: any = defaultAttributesAccordionState.orthologue,
   action: ActionType<RootAction>
-): AttributesAccordionState {
+): OrthologueState {
   switch (action.type) {
     case getType(attributesAccordionActions.setOrthologueSearchTerm):
       return { ...state, searchTerm: action.payload };
@@ -120,9 +123,9 @@ function Orthologue(
 }
 
 function OrthologueAttributes(
-  state: any = defaultAttributesAccordionState,
+  state: any = defaultAttributesAccordionState.attributes,
   action: ActionType<RootAction>
-): AttributesAccordionState {
+): CustomDownloadAttributes {
   switch (action.type) {
     case getType(attributesAccordionActions.setOrthologueAttributes):
       return { ...state, orthologues: action.payload };
@@ -132,9 +135,9 @@ function OrthologueAttributes(
 }
 
 function TranscriptAttributes(
-  state: any = defaultAttributesAccordionState,
+  state: any = defaultAttributesAccordionState.attributes,
   action: ActionType<RootAction>
-): AttributesAccordionState {
+): CustomDownloadAttributes {
   switch (action.type) {
     case getType(attributesAccordionActions.setTranscriptAttributes):
       return { ...state, transcripts: action.payload };
@@ -144,9 +147,9 @@ function TranscriptAttributes(
 }
 
 function PhenotypeAttributes(
-  state: any = defaultAttributesAccordionState,
+  state: any = defaultAttributesAccordionState.attributes,
   action: ActionType<RootAction>
-): AttributesAccordionState {
+): CustomDownloadAttributes {
   switch (action.type) {
     case getType(attributesAccordionActions.setPhenotypeAttributes):
       return { ...state, phenotypes: action.payload };
@@ -156,9 +159,9 @@ function PhenotypeAttributes(
 }
 
 function LocationAttributes(
-  state: any = defaultAttributesAccordionState,
+  state: any = defaultAttributesAccordionState.attributes,
   action: ActionType<RootAction>
-): AttributesAccordionState {
+): CustomDownloadAttributes {
   switch (action.type) {
     case getType(attributesAccordionActions.setLocationAttributes):
       return { ...state, location: action.payload };
@@ -168,9 +171,9 @@ function LocationAttributes(
 }
 
 function VariationAttributes(
-  state: any = defaultAttributesAccordionState,
+  state: any = defaultAttributesAccordionState.attributes,
   action: ActionType<RootAction>
-): AttributesAccordionState {
+): CustomDownloadAttributes {
   switch (action.type) {
     case getType(attributesAccordionActions.setSomaticVariationAttributes):
       return { ...state, somatic_variation: action.payload };

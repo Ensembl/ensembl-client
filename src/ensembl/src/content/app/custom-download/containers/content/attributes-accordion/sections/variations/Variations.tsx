@@ -123,7 +123,7 @@ const mapDispatchToProps: DispatchProps = {
 type StateProps = {
   germlineVariationAttributes: AttributesSection;
   somaticVariationAttributes: AttributesSection;
-  expandedPanels: [];
+  expandedPanels: string[];
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({

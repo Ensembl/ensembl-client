@@ -1,10 +1,10 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import Radio, { radioOptions } from './Radio';
+import Radio, { RadioOptions } from './Radio';
 
 const onChange = jest.fn();
 
-const options: radioOptions = [
+const options: RadioOptions = [
   {
     value: 'one',
     label: 'one'

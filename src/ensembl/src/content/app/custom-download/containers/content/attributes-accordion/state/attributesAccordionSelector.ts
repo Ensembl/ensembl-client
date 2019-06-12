@@ -27,7 +27,7 @@ export const getOrthologueShowAll = (state: RootState): boolean =>
 export const getOrthologueApplyToAllSpecies = (state: RootState): boolean =>
   state.customDownload.attributesAccordion.orthologue.applyToAllSpecies;
 
-export const getOrthologueSpecies = (state: RootState): [] =>
+export const getOrthologueSpecies = (state: RootState): {} =>
   state.customDownload.attributesAccordion.orthologue.species;
 
 export const getLocationAttributes = (state: RootState): {} =>
@@ -42,5 +42,6 @@ export const getSomaticVariationAttributes = (state: RootState): {} =>
 export const getAttributesAccordionExpandedPanel = (state: RootState): string =>
   state.customDownload.attributesAccordion.expandedPanel;
 
-export const getVariationAccordionExpandedPanels = (state: RootState): [] =>
-  state.customDownload.attributesAccordion.expandedVariationPanels;
+export const getVariationAccordionExpandedPanels = (
+  state: RootState
+): string[] => state.customDownload.attributesAccordion.expandedVariationPanels;

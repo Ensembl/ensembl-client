@@ -61,9 +61,13 @@ const ResultHolder = (props: Props) => {
         )}
         <div className={styles.wrapper}>
           {Array(15)
-            .fill(1)
+            .fill('')
             .map((value, key: number) => {
-              return <div key={key} className={styles.resultCard} />;
+              return (
+                <div key={key} className={styles.resultCard}>
+                  {value}
+                </div>
+              );
             })}
         </div>
       </>

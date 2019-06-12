@@ -126,12 +126,7 @@ export const setOrthologueSpecies = createAsyncAction(
 
 export const fetchOrthologueSpecies: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (
-  searchTerm: string,
-  shouldShowBestMatches: boolean,
-  shouldShowAll: boolean,
-  orthologueSpecies: any
-) => async (dispatch) => {
+> = (searchTerm: string, orthologueSpecies: any) => async (dispatch) => {
   dispatch(setOrthologueSpecies.request({ searchTerm: searchTerm }));
   try {
     // This will be fetched from the API when we have one

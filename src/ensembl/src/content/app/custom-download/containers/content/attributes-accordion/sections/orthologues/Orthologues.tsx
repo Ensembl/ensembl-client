@@ -82,12 +82,7 @@ const Orthologue = (props: Props) => {
   const inputOnChangeHandler = useCallback(
     (searchTerm: string) => {
       props.setOrthologueSearchTerm(searchTerm);
-      props.fetchOrthologueSpecies(
-        searchTerm,
-        props.shouldShowBestMatches,
-        props.shouldShowAll,
-        props.orthologueSpecies
-      );
+      props.fetchOrthologueSpecies(searchTerm, props.orthologueSpecies);
     },
     [props.orthologueSearchTerm, props.orthologueSpecies]
   );
@@ -155,12 +150,7 @@ type DispatchProps = {
   setOrthologueAttributes: (setOrthologueAttributes: AttributesSection) => void;
   setOrthologueSearchTerm: (setOrthologueSearchTerm: string) => void;
   setOrthologueSpecies: (setOrthologueSpecies: any) => void;
-  fetchOrthologueSpecies: (
-    searchTerm: string,
-    shouldShowBestMatches: boolean,
-    shouldShowAll: boolean,
-    orthologueSpecies: any
-  ) => void;
+  fetchOrthologueSpecies: (searchTerm: string, orthologueSpecies: any) => void;
   setOrthologueShowBestMatches: (setOrthologueShowBestMatches: boolean) => void;
   setOrthologueShowAll: (setOrthologueShowAll: boolean) => void;
   setOrthologueApplyToAllSpecies: (

@@ -6,12 +6,6 @@ import {
   getShowPreviewResult,
   getPreviewResult
 } from '../../state/customDownloadSelectors';
-import { getAttributes } from './attributes-accordion/state/attributesAccordionSelector';
-
-import {
-  CustomDownloadAttributes,
-  SelectedAttribute
-} from 'src/content/app/custom-download/types/Attributes';
 
 import AttributesAccordion from './attributes-accordion/AttributesAccordion';
 import FiltersAccordion from './filter-accordion/FiltersAccordion';
@@ -20,24 +14,13 @@ import ResultHolder from './result-holder/ResultHolder';
 import { RootState } from 'src/store';
 import PreviewDownload from './preview-download/PreviewDownload';
 
-import { getSelectedAttributes, formatResults } from './result-holder/helpers';
-
 type Props = {
   selectedTabButton: string;
   showPreview: boolean;
   preview: any;
-  attributes: CustomDownloadAttributes;
 };
 
 const Content = (props: Props) => {
-  const selectedAttributes: SelectedAttribute[] = getSelectedAttributes(
-    props.attributes
-  );
-  let formattedPreviewResult = [];
-  if (props.preview.results) {
-    formattedPreviewResult = formatResults(props.preview, selectedAttributes);
-  }
-
   return (
     <div>
       {!props.showPreview && (
@@ -58,7 +41,7 @@ const Content = (props: Props) => {
       )}
       {props.showPreview && (
         <div>
-          <PreviewDownload resultData={formattedPreviewResult} />
+          <PreviewDownload />
         </div>
       )}
     </div>
@@ -68,8 +51,7 @@ const Content = (props: Props) => {
 const mapStateToProps = (state: RootState): Props => ({
   selectedTabButton: getSelectedTabButton(state),
   showPreview: getShowPreviewResult(state),
-  preview: getPreviewResult(state),
-  attributes: getAttributes(state)
+  preview: getPreviewResult(state)
 });
 
 export default connect(mapStateToProps)(Content);
