@@ -35,7 +35,7 @@ pub struct Abutt(usize,usize);
 pub struct Extent(TáContext,usize); 
 // scale #out
 pub struct Scale(TáContext,usize);
-// plot #offset/height/letter
+// plot #offset/height #letter
 pub struct Plot(TáContext,usize,usize);
 // allplots #offsets, #heights, #letter-lens, #letters
 pub struct AllPlots(TáContext,usize,usize,usize,usize);
