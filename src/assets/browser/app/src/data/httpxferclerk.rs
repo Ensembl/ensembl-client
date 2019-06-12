@@ -132,8 +132,6 @@ impl PendingXferBatch {
                     }
                 }
                 out.push(Value::new_from_float(row));
-            } else if val.is_string() {
-                out.push(Value::new_from_string(vec![val.as_str().unwrap().to_string()]));
             } else if val.is_object() {
                 if let Some(string) = val.as_object().unwrap().get("string") {
                     let values : Vec<String> = 
