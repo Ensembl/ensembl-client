@@ -4,36 +4,17 @@ import CheckboxWithSelects from './CheckboxWithSelects';
 import Checkbox from 'src/shared/checkbox/Checkbox';
 import Select from 'src/shared/select/Select';
 import ImageButton from 'src/shared/image-button/ImageButton';
+import faker from 'faker';
+import times from 'lodash/times';
+
+const createOption = (isSelected: boolean = false) => ({
+  value: faker.random.uuid(),
+  label: faker.random.words(5),
+  isSelected
+});
 
 const onChange = jest.fn();
 
-const options = [
-  {
-    value: 'one',
-    label: 'one',
-    isSelected: false
-  },
-  {
-    value: 'two',
-    label: 'two',
-    isSelected: false
-  },
-  {
-    value: 'three',
-    label: 'three',
-    isSelected: false
-  },
-  {
-    value: 'four',
-    label: 'four',
-    isSelected: false
-  },
-  {
-    value: 'five',
-    label: 'five',
-    isSelected: false
-  }
-];
 describe('<CheckboxWithSelects />', () => {
   afterEach(() => {
     jest.resetAllMocks();
@@ -44,7 +25,7 @@ describe('<CheckboxWithSelects />', () => {
     onChange: onChange,
     label: 'foo',
     selectedOptions: [],
-    options: options
+    options: times(5, () => createOption())
   };
 
   it('renders without error', () => {
@@ -96,7 +77,10 @@ describe('<CheckboxWithSelects />', () => {
 
   it('displays the remove button next to the Select if an option is selected', () => {
     wrapper = mount(
-      <CheckboxWithSelects {...defaultProps} selectedOptions={['one']} />
+      <CheckboxWithSelects
+        {...defaultProps}
+        selectedOptions={[defaultProps.options[0].value]}
+      />
     );
 
     expect(wrapper.find('.removeIconHolder').length).toBe(1);
@@ -104,7 +88,10 @@ describe('<CheckboxWithSelects />', () => {
 
   it('displays the Plus button when one option is selected', () => {
     wrapper = mount(
-      <CheckboxWithSelects {...defaultProps} selectedOptions={['one']} />
+      <CheckboxWithSelects
+        {...defaultProps}
+        selectedOptions={[defaultProps.options[0].value]}
+      />
     );
 
     expect(wrapper.find('.addIconHolder').length).toBe(1);
@@ -112,7 +99,28 @@ describe('<CheckboxWithSelects />', () => {
 
   it('displays another select when the plus button is clicked', () => {
     wrapper = mount(
-      <CheckboxWithSelects {...defaultProps} selectedOptions={['one']} />
+      <CheckboxWithSelects
+        {...defaultProps}
+        selectedOptions={[defaultProps.options[0].value]}
+      />
+    );
+
+    expect(wrapper.find(Select)).toHaveLength(1);
+
+    wrapper
+      .find('.addIconHolder')
+      .find(ImageButton)
+      .simulate('click');
+
+    expect(wrapper.find(Select)).toHaveLength(2);
+  });
+
+  it('hides the options that are already selected within the new Select', () => {
+    wrapper = mount(
+      <CheckboxWithSelects
+        {...defaultProps}
+        selectedOptions={[defaultProps.options[0].value]}
+      />
     );
 
     wrapper
@@ -127,24 +135,14 @@ describe('<CheckboxWithSelects />', () => {
     ).toHaveLength(4);
   });
 
-  it('hides the options that are already selected within the new Select', () => {
-    wrapper = mount(
-      <CheckboxWithSelects {...defaultProps} selectedOptions={['one']} />
-    );
-
-    wrapper
-      .find('.addIconHolder')
-      .find(ImageButton)
-      .simulate('click');
-    expect(wrapper.find(Select).length).toBe(2);
-  });
-
   it('does not display the Plus button when all the options are selected', () => {
+    const optionValues: any = [];
+    defaultProps.options.forEach((option) => {
+      optionValues.push(option.value);
+    });
+
     wrapper = mount(
-      <CheckboxWithSelects
-        {...defaultProps}
-        selectedOptions={['one', 'two', 'three', 'four', 'five']}
-      />
+      <CheckboxWithSelects {...defaultProps} selectedOptions={optionValues} />
     );
 
     expect(wrapper.find('.addIconHolder').length).toBe(0);
@@ -152,7 +150,10 @@ describe('<CheckboxWithSelects />', () => {
 
   it('calls the onChange function when an option is selected', () => {
     wrapper = mount(
-      <CheckboxWithSelects {...defaultProps} selectedOptions={['one']} />
+      <CheckboxWithSelects
+        {...defaultProps}
+        selectedOptions={[defaultProps.options[0].value]}
+      />
     );
 
     wrapper
@@ -173,12 +174,22 @@ describe('<CheckboxWithSelects />', () => {
       .first()
       .simulate('click');
 
-    expect(onChange).toHaveBeenCalledWith(['one', 'two']);
+    expect(onChange).toHaveBeenCalledWith([
+      defaultProps.options[0].value,
+      defaultProps.options[1].value
+    ]);
   });
 
   it('calls the onChange function when an option is removed', () => {
+    const selectedOptions = [
+      defaultProps.options[0].value,
+      defaultProps.options[1].value
+    ];
     wrapper = mount(
-      <CheckboxWithSelects {...defaultProps} selectedOptions={['one', 'two']} />
+      <CheckboxWithSelects
+        {...defaultProps}
+        selectedOptions={selectedOptions}
+      />
     );
     wrapper
       .find('.removeIconHolder')
@@ -186,6 +197,6 @@ describe('<CheckboxWithSelects />', () => {
       .find(ImageButton)
       .simulate('click');
 
-    expect(onChange).toHaveBeenCalledWith(['one']);
+    expect(onChange).toHaveBeenCalledWith([defaultProps.options[0].value]);
   });
 });

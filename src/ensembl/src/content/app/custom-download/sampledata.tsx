@@ -118,99 +118,99 @@ export const attributes = {
   },
   transcripts: {
     default: {
-      biotype: {
+      'transcripts.biotype': {
         id: 'transcripts.biotype',
         label: 'Biotype',
         isChecked: true
       },
-      name: {
+      'transcripts.name': {
         id: 'transcripts.name',
         label: 'Transcript name',
         isChecked: true
       },
-      id: {
+      'transcripts.id': {
         id: 'transcripts.id',
         label: 'Transcript stable ID',
         isChecked: true
       },
-      AGD_TRANSCRIPT: {
+      'transcripts.AGD_TRANSCRIPT': {
         id: 'transcripts.AGD_TRANSCRIPT',
         label: 'Ashbya Genome Database',
         isChecked: false
       },
-      type: {
+      'transcripts.type': {
         id: 'transcripts.type',
         label: 'Transcript Type',
         isChecked: false
       },
-      UniGene: {
+      'transcripts.UniGene': {
         id: 'transcripts.UniGene',
         label: 'UniGene',
         isChecked: false
       },
-      Pfam: {
+      'transcripts.Pfam': {
         id: 'transcripts.Pfam',
         label: 'Pfam',
         isChecked: false
       },
-      HGNC_trans_name: {
+      'transcripts.HGNC_trans_name': {
         id: 'transcripts.HGNC_trans_name',
         label: 'HGNC_trans_name',
         isChecked: false
       },
-      start: {
+      'transcripts.start': {
         id: 'transcripts.start',
         label: 'Start',
         isChecked: false
       },
-      end: {
+      'transcripts.end': {
         id: 'transcripts.end',
         label: 'End',
         isChecked: false
       },
-      Interpro: {
+      'transcripts.Interpro': {
         id: 'transcripts.Interpro',
         label: 'Interpro',
         isChecked: false
       },
-      Smart: {
+      'transcripts.Smart': {
         id: 'transcripts.Smart',
         label: 'Smart',
         isChecked: false
       },
-      analysis: {
+      'transcripts.analysis': {
         id: 'transcripts.analysis',
         label: 'Analysis',
         isChecked: false
       }
     },
     'Microarray probes/probesets': {
-      affy_hc_g110_probe: {
+      'transcripts.affy_hc_g110_probe': {
         id: 'transcripts.affy_hc_g110_probe',
         label: 'AFFY HC G110 probe',
         isChecked: false
       },
-      agilent_sureprint_g3_ge_8x60k_probe: {
+      'transcripts.agilent_sureprint_g3_ge_8x60k_probe': {
         id: 'transcripts.agilent_sureprint_g3_ge_8x60k_probe',
         label: 'AGILENT SurePrint G3 GE 8x60k probe',
         isChecked: false
       },
-      illumina_humanref_8_v3_probe: {
+      'transcripts.illumina_humanref_8_v3_probe': {
         id: 'transcripts.illumina_humanref_8_v3_probe',
         label: 'ILLUMINA HumanRef 8 V3 probe',
         isChecked: false
       },
-      affy_hta_2_0_probe: {
+      'transcripts.affy_hta_2_0_probe': {
         id: 'transcripts.affy_hta_2_0_probe',
         label: 'AFFY HTA 2 0 probe',
         isChecked: false
       },
-      codelink_codelink_probe: {
+      'transcripts.codelink_codelink_probe': {
         id: 'transcripts.codelink_codelink_probe',
         label: 'CODELINK CODELINK probe',
         isChecked: false
       },
-      go_domain: {
+      'transcripts.go_domain': {
         id: 'transcripts.go_domain',
         label: 'GO domain',
         isChecked: false
@@ -219,22 +219,22 @@ export const attributes = {
   },
   location: {
     default: {
-      genomic_coordinates: {
+      'location.genomic_coordinates': {
         id: 'location.genomic_coordinates',
         label: 'Genomic coordinates',
         isChecked: false
       },
-      strand: {
+      'location.strand': {
         id: 'location.strand',
         label: 'Strand',
         isChecked: false
       },
-      start: {
+      'location.start': {
         id: 'location.start',
         label: 'Gene start',
         isChecked: false
       },
-      end: {
+      'location.end': {
         id: 'location.end',
         label: 'Gene end',
         isChecked: false
@@ -243,54 +243,54 @@ export const attributes = {
   },
   germline_variation: {
     default: {
-      variant_name: {
+      'germline_variation.variant_name': {
         id: 'germline_variation.variant_name',
         label: 'Variant name',
         isChecked: false
       },
-      variant_source: {
+      'germline_variation.variant_source': {
         id: 'germline_variation.variant_source',
         label: 'Variant source',
         isChecked: false
       },
-      sift_code: {
+      'germline_variation.sift_code': {
         id: 'germline_variation.sift_code',
         label: 'SIFT code',
         isChecked: false
       },
-      protein_allele: {
+      'germline_variation.protein_allele': {
         id: 'germline_variation.protein_allele',
         label: 'Protein allele',
         isChecked: false
       },
-      polyphen_score: {
+      'germline_variation.polyphen_score': {
         id: 'germline_variation.polyphen_score',
         label: 'PolyPhen score',
         isChecked: false
       }
     },
     location: {
-      distance_to_transcript: {
+      'germline_variation.distance_to_transcript': {
         id: 'germline_variation.distance_to_transcript',
         label: 'Distance to transcript',
         isChecked: false
       },
-      cds_end: {
+      'germline_variation.cds_end': {
         id: 'germline_variation.cds_end',
         label: 'CDS end',
         isChecked: false
       },
-      chromosomescaffold_position_start_bp: {
+      'germline_variation.chromosomescaffold_position_start_bp': {
         id: 'germline_variation.chromosomescaffold_position_start_bp',
         label: 'Chromosome/scaffold position start (bp)',
         isChecked: false
       },
-      protein_location_aa: {
+      'germline_variation.protein_location_aa': {
         id: 'germline_variation.protein_location_aa',
         label: 'Protein location (aa)',
         isChecked: false
       },
-      cds_start: {
+      'germline_variation.cds_start': {
         id: 'germline_variation.cds_start',
         label: 'CDS start',
         isChecked: false
@@ -299,54 +299,54 @@ export const attributes = {
   },
   somatic_variation: {
     default: {
-      variant_name: {
+      'somatic_variation.variant_name': {
         id: 'somatic_variation.variant_name',
         label: 'Variant name',
         isChecked: false
       },
-      variant_source: {
+      'somatic_variation.variant_source': {
         id: 'somatic_variation.variant_source',
         label: 'Variant source',
         isChecked: false
       },
-      sift_code: {
+      'somatic_variation.sift_code': {
         id: 'somatic_variation.sift_code',
         label: 'SIFT code',
         isChecked: false
       },
-      protein_allele: {
+      'somatic_variation.protein_allele': {
         id: 'somatic_variation.protein_allele',
         label: 'Protein allele',
         isChecked: false
       },
-      polyphen_score: {
+      'somatic_variation.polyphen_score': {
         id: 'somatic_variation.polyphen_score',
         label: 'PolyPhen score',
         isChecked: false
       }
     },
     location: {
-      distance_to_transcript: {
+      'somatic_variation.distance_to_transcript': {
         id: 'somatic_variation.distance_to_transcript',
         label: 'Distance to transcript',
         isChecked: false
       },
-      cds_end: {
+      'somatic_variation.cds_end': {
         id: 'somatic_variation.cds_end',
         label: 'CDS end',
         isChecked: false
       },
-      chromosomescaffold_position_start_bp: {
+      'somatic_variation.chromosomescaffold_position_start_bp': {
         id: 'somatic_variation.chromosomescaffold_position_start_bp',
         label: 'Chromosome/scaffold position start (bp)',
         isChecked: false
       },
-      protein_location_aa: {
+      'somatic_variation.protein_location_aa': {
         id: 'somatic_variation.protein_location_aa',
         label: 'Protein location (aa)',
         isChecked: false
       },
-      cds_start: {
+      'somatic_variation.cds_start': {
         id: 'somatic_variation.cds_start',
         label: 'CDS start',
         isChecked: false
