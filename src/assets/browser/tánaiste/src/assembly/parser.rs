@@ -105,8 +105,6 @@ impl<'input> Parse<'input> {
                 out.push(Argument::Floats(self.parse_floats()));
             } else if let Token::Chr('{') = t {
                 out.push(Argument::Str(self.parse_strings()));                
-            } else if let Token::Str(s) = t {
-                out.push(Argument::Str(vec![s]));
             } else {
                 self.unget(t);
                 break;
@@ -172,7 +170,7 @@ mod test {
     const P1 : &str = r#"
 .hello:
     world #1,#2,[1,2,3.5]
-    earth "tánaiste","\"\303\241\n"
+    earth {"tánaiste"},{"\"\303\241\n"}
     boo {"a","b"},{"c"}
 "#;
 
