@@ -8,7 +8,7 @@ import { getFilters } from '../filter-accordion/state/filterAccordionSelector';
 import { ReactComponent as closeIcon } from 'static/img/track-panel/close.svg';
 import styles from './PreviewDownload.scss';
 
-import { getSelectedAttributes } from '../result-holder/helpers';
+import { getSelectedAttributes } from '../result-holder/resultHolderHelper';
 
 import {
   setShowPreview,

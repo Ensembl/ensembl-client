@@ -28,7 +28,7 @@ import { ReactComponent as BackIcon } from 'static/img/shared/chevron-left.svg';
 import {
   getSelectedAttributes,
   getSelectedFilters
-} from '../content/result-holder/helpers';
+} from '../content/result-holder/resultHolderHelper';
 
 import { fetchCustomDownloadResults } from './customDownloadHeaderHelper';
 

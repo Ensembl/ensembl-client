@@ -25,7 +25,7 @@ import {
   getSelectedAttributes,
   formatResults,
   getEndpointUrl
-} from './helpers';
+} from './resultHolderHelper';
 
 type Props = StateProps & DispatchProps;
 
