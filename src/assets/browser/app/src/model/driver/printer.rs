@@ -1,7 +1,7 @@
 use composit::{ Compositor, Stage, Leaf };
 use types::Dot;
 
-use model::train::TravellerResponse;
+use model::train::{ Traveller, TravellerResponse };
 use drivers::zmenu::ZMenuLeaf;
 
 pub trait Printer {
