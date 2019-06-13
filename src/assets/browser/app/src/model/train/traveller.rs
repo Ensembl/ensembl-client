@@ -15,24 +15,28 @@ pub struct TravellerImpl {
     srr: Option<Box<TravellerResponse>>,
     part: Option<String>,
     leaf: Leaf,
-    data: TravellerResponseData
+    data: Option<TravellerResponseData>
 }
 
 impl TravellerImpl {
-    fn new(comp: ActiveSource, part: &Option<String>, leaf: &Leaf, srr: Box<TravellerResponse>) -> TravellerImpl {
+    fn new(comp: ActiveSource, part: &Option<String>, leaf: &Leaf) -> TravellerImpl {
         TravellerImpl {
             prev_value: false,
             cur_value: false,
             leaf: leaf.clone(),
             part: part.clone(),
             comp,
-            srr: Some(srr),
-            data: TravellerResponseData::new()
+            srr: None,
+            data: Some(TravellerResponseData::new())
         }
     }
     
+    fn set_srr(&mut self, srr: Box<TravellerResponse>) {
+        self.srr = Some(srr);
+    }
+        
     fn update_data<F>(&mut self, cb: F) where F: FnOnce(&mut TravellerResponseData) {
-        cb(&mut self.data)
+        cb(&mut self.data.as_mut().unwrap())
     }
     
     fn update_state(&mut self, m: &StateManager) -> bool {
@@ -42,16 +46,25 @@ impl TravellerImpl {
         self.prev_value != self.cur_value
     }
 
+    fn get_part(&self) -> &Option<String> {
+        &self.part
+    }
+
     fn is_done(&self) -> bool { 
         return self.srr.as_ref().unwrap().check();
     }
+    
+    fn set_response(&mut self) {
+        self.srr.as_mut().unwrap().set_response(self.data.take().unwrap());
+    }
 }
 
+#[derive(Clone)]
 pub struct Traveller(Arc<Mutex<TravellerImpl>>);
 
 impl Traveller {
-    pub fn new(comp: ActiveSource, part: &Option<String>, leaf: &Leaf, srr: Box<TravellerResponse>) -> Traveller {
-        Traveller(Arc::new(Mutex::new(TravellerImpl::new(comp,part,leaf,srr))))
+    pub fn new(comp: ActiveSource, part: &Option<String>, leaf: &Leaf) -> Traveller {
+        Traveller(Arc::new(Mutex::new(TravellerImpl::new(comp,part,leaf))))
     }
     
     pub(in super) fn update_state(&mut self, m: &StateManager) -> bool {
@@ -62,8 +75,20 @@ impl Traveller {
         self.0.lock().unwrap().is_done()
     }
     
+    pub fn set_srr(&mut self, srr: Box<TravellerResponse>) {
+        self.0.lock().unwrap().set_srr(srr);
+    }
+        
+    pub fn get_part(&self) -> Option<String> {
+        self.0.lock().unwrap().get_part().clone()
+    }
+    
     pub fn update_data<F>(&mut self, cb: F) where F: FnOnce(&mut TravellerResponseData) {
         self.0.lock().unwrap().update_data(cb);
+    }
+    
+    pub fn set_response(&mut self) {
+        self.0.lock().unwrap().set_response();
     }
 }
 
