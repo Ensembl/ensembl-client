@@ -6,14 +6,14 @@ export const getSelectedPreFilter = (state: RootState): string =>
 export const getShowPreFilterPanel = (state: RootState): boolean =>
   state.customDownload.preFilter.showPreFiltersPanel;
 
-export const getSelectedTabButton = (state: RootState): string =>
-  state.customDownload.tabButton.selectedTabButton;
+export const getSelectedTab = (state: RootState): string =>
+  state.customDownload.tab.selectedTab;
 
 export const getPreviewResult = (state: RootState): string =>
-  state.customDownload.resultHolder.preview;
+  state.customDownload.result.preview;
 
 export const getIsLoadingResult = (state: RootState): boolean =>
-  state.customDownload.resultHolder.isLoadingResult;
+  state.customDownload.result.isLoadingResult;
 
 export const getShowPreviewResult = (state: RootState): boolean =>
   state.customDownload.previewDownload.showPreview;

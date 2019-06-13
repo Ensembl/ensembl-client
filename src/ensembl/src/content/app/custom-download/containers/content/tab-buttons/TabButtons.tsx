@@ -5,12 +5,12 @@ import RoundButton, {
 } from 'src/shared/round-button/RoundButton';
 import BadgedButton from 'src/shared/badged-button/BadgedButton';
 
-import { getSelectedTabButton } from '../../../state/customDownloadSelectors';
+import { getSelectedTab } from '../../../state/customDownloadSelectors';
 
 import { getAttributes } from '../attributes-accordion/state/attributesAccordionSelector';
 import { getFilters } from '../filter-accordion/state/filterAccordionSelector';
 
-import { toggleTabButton } from '../../../state/customDownloadActions';
+import { toggleTab } from '../../../state/customDownloadActions';
 import { RootState } from 'src/store';
 
 import { CustomDownloadAttributes } from 'src/content/app/custom-download/types/Attributes';
@@ -57,11 +57,11 @@ const getTotalSelectedFilters = (filters: any) => {
 
 const TabButtons = (props: Props) => {
   const dataButtonStatus =
-    props.selectedTabButton === 'attributes'
+    props.selectedTab === 'attributes'
       ? RoundButtonStatus.ACTIVE
       : RoundButtonStatus.INACTIVE;
   const filterButtonStatus =
-    props.selectedTabButton === 'filter'
+    props.selectedTab === 'filter'
       ? RoundButtonStatus.ACTIVE
       : RoundButtonStatus.INACTIVE;
   return (
@@ -72,7 +72,7 @@ const TabButtons = (props: Props) => {
         >
           <RoundButton
             onClick={() => {
-              props.toggleTabButton('attributes');
+              props.toggleTab('attributes');
             }}
             status={dataButtonStatus}
           >
@@ -85,7 +85,7 @@ const TabButtons = (props: Props) => {
         <BadgedButton badgeContent={getTotalSelectedFilters(props.filters)}>
           <RoundButton
             onClick={() => {
-              props.toggleTabButton('filter');
+              props.toggleTab('filter');
             }}
             status={filterButtonStatus}
           >
@@ -98,21 +98,21 @@ const TabButtons = (props: Props) => {
 };
 
 type DispatchProps = {
-  toggleTabButton: (toggleTabButton: string) => void;
+  toggleTab: (toggleTab: string) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
-  toggleTabButton
+  toggleTab
 };
 
 type StateProps = {
-  selectedTabButton: string;
+  selectedTab: string;
   attributes: {};
   filters: {};
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  selectedTabButton: getSelectedTabButton(state),
+  selectedTab: getSelectedTab(state),
   attributes: getAttributes(state),
   filters: getFilters(state)
 });

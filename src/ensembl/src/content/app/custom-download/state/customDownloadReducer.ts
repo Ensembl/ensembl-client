@@ -7,8 +7,8 @@ import {
   defaultResultState,
   PreFilterState,
   defaultPreFilterState,
-  TabButtonState,
-  defaultTabButtonState,
+  TabState,
+  defaultTabState,
   PreviewDownloadState,
   defaultPreviewDownloadState
 } from './customDownloadState';
@@ -31,19 +31,19 @@ function preFilter(
   }
 }
 
-function tabButton(
-  state: TabButtonState = defaultTabButtonState,
+function tab(
+  state: TabState = defaultTabState,
   action: ActionType<RootAction>
-): TabButtonState {
+): TabState {
   switch (action.type) {
-    case getType(customDownloadActions.toggleTabButton):
-      return { ...state, selectedTabButton: action.payload };
+    case getType(customDownloadActions.toggleTab):
+      return { ...state, selectedTab: action.payload };
     default:
       return state;
   }
 }
 
-function resultHolder(
+function result(
   state: ResultState = defaultResultState,
   action: ActionType<RootAction>
 ): ResultState {
@@ -89,7 +89,7 @@ export default combineReducers({
   filtersAccordion,
   attributesAccordion,
   preFilter,
-  tabButton,
-  resultHolder,
+  tab,
+  result,
   previewDownload
 });

@@ -34,12 +34,12 @@ export const togglePreFiltersPanel = createAction(
   }
 );
 
-export const toggleTabButton = createAction(
+export const toggleTab = createAction(
   'custom-download/toggle-data-filter-tab-button',
   (resolve) => {
-    return (selectedTabButton: string) =>
+    return (selectedTab: string) =>
       resolve(
-        selectedTabButton,
+        selectedTab,
         getCustomDownloadAnalyticsObject('Toggle Data/Filter Tab Button')
       );
   }

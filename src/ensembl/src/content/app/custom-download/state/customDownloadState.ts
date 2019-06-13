@@ -10,12 +10,12 @@ export const defaultResultState: ResultState = {
   isLoadingResult: false
 };
 
-export type TabButtonState = Readonly<{
-  selectedTabButton: string;
+export type TabState = Readonly<{
+  selectedTab: string;
 }>;
 
-export const defaultTabButtonState: TabButtonState = {
-  selectedTabButton: 'attributes'
+export const defaultTabState: TabState = {
+  selectedTab: 'attributes'
 };
 
 export type PreFilterState = Readonly<{

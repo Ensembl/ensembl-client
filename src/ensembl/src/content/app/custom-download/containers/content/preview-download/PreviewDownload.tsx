@@ -12,7 +12,7 @@ import { getSelectedAttributes } from '../result-holder/resultHolderHelper';
 
 import {
   setShowPreview,
-  toggleTabButton
+  toggleTab
 } from '../../../state/customDownloadActions';
 
 import ImageButton from 'src/shared/image-button/ImageButton';
@@ -26,7 +26,7 @@ type StateProps = {
 
 type DispatchProps = {
   setShowPreview: (setShowPreview: boolean) => void;
-  toggleTabButton: (toggleTabButton: string) => void;
+  toggleTab: (toggleTab: string) => void;
 };
 
 type Props = StateProps & DispatchProps;
@@ -34,7 +34,7 @@ type Props = StateProps & DispatchProps;
 const PreviewDownload = (props: Props) => {
   const changeView = (tab: string) => {
     props.setShowPreview(false);
-    props.toggleTabButton(tab);
+    props.toggleTab(tab);
   };
 
   const attributesList: [] = getSelectedAttributes(props.attributes);
@@ -99,7 +99,7 @@ const PreviewDownload = (props: Props) => {
 
 const mapDispatchToProps: DispatchProps = {
   setShowPreview,
-  toggleTabButton
+  toggleTab
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({

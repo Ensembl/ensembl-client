@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import styles from './CustomDownloadContent.scss';
 import {
-  getSelectedTabButton,
+  getSelectedTab,
   getShowPreviewResult,
   getPreviewResult
 } from '../../state/customDownloadSelectors';
@@ -15,7 +15,7 @@ import { RootState } from 'src/store';
 import PreviewDownload from './preview-download/PreviewDownload';
 
 type Props = {
-  selectedTabButton: string;
+  selectedTab: string;
   showPreview: boolean;
   preview: any;
 };
@@ -32,10 +32,8 @@ const Content = (props: Props) => {
             <TabButtons />
           </div>
           <div className={styles.dataSelector}>
-            {props.selectedTabButton === 'attributes' && (
-              <AttributesAccordion />
-            )}
-            {props.selectedTabButton === 'filter' && <FiltersAccordion />}
+            {props.selectedTab === 'attributes' && <AttributesAccordion />}
+            {props.selectedTab === 'filter' && <FiltersAccordion />}
           </div>
         </div>
       )}
@@ -49,7 +47,7 @@ const Content = (props: Props) => {
 };
 
 const mapStateToProps = (state: RootState): Props => ({
-  selectedTabButton: getSelectedTabButton(state),
+  selectedTab: getSelectedTab(state),
   showPreview: getShowPreviewResult(state),
   preview: getPreviewResult(state)
 });
