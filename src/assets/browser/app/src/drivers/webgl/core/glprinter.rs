@@ -5,10 +5,10 @@ use std::rc::Rc;
 use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element, INode, IElement };
 
-use super::{ GLProgs, GLCarriagePrinter, GLSourceResponse };
+use super::{ GLProgs, GLCarriagePrinter, GLTravellerResponse };
 use composit::{ Compositor, Leaf, Stage };
-use model::driver::{ Printer, SourceResponse };
-use model::train::Train;
+use model::driver::Printer;
+use model::train::{ Train, TravellerResponse };
 use super::super::drawing::{ AllCanvasAllocator };
 use dom::domutil;
 use types::{ Dot };
@@ -167,17 +167,17 @@ impl GLPrinterBase {
         }
     }    
 
-    fn make_partial(&mut self, pref: &GLPrinter, leaf: &Leaf) -> Box<SourceResponse> {
+    fn make_partial(&mut self, pref: &GLPrinter, leaf: &Leaf) -> Box<TravellerResponse> {
         let idx = self.sridx;
         self.sridx += 1;
-        let sr = GLSourceResponse::new(pref,idx,leaf);
+        let sr = GLTravellerResponse::new(pref,idx,leaf);
         if let Some(cp) = self.lp.get_mut(leaf) {
             cp.new_sr(&sr);
         }
         Box::new(sr)
     }
     
-    fn destroy_partial(&mut self, sr: &mut GLSourceResponse) {
+    fn destroy_partial(&mut self, sr: &mut GLTravellerResponse) {
         let leaf = sr.get_leaf().clone();
         if let Some(cp) = self.lp.get_mut(&leaf) {
             cp.remove_sr(sr);
@@ -197,7 +197,7 @@ impl GLPrinter {
         }
     }
     
-    pub(in super) fn destroy_partial(&mut self, sr: &mut GLSourceResponse) {
+    pub(in super) fn destroy_partial(&mut self, sr: &mut GLTravellerResponse) {
         self.base.borrow_mut().destroy_partial(sr);
     }
 }
@@ -258,7 +258,7 @@ impl Printer for GLPrinter {
         self.base.borrow_mut().set_current(leaf);
     }
     
-    fn make_partial(&mut self, leaf: &Leaf) -> Box<SourceResponse> {
+    fn make_partial(&mut self, leaf: &Leaf) -> Box<TravellerResponse> {
         let twin = self.clone();
         self.base.borrow_mut().make_partial(&twin,leaf)
     }      

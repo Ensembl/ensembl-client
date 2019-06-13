@@ -81,10 +81,10 @@ impl Train {
     }
     
     /* add component to leaf */
-    pub fn add_component(&mut self, cm: &mut TravellerCreator, s: &ActiveSource) {
+    pub fn add_component(&mut self, cm: &mut TravellerCreator, s: &mut ActiveSource) {
         for leaf in self.leafs() {
             let c = self.get_carriage(&leaf);
-            for trav in cm.make_party(s,&leaf) {
+            for trav in cm.make_travellers_for_source(s,&leaf) {
                 c.add_traveller(trav);
             }
         }
@@ -150,7 +150,7 @@ impl Train {
         self.remove_unused_leafs();
         for leaf in self.get_missing_leafs() {
             let c = self.get_carriage(&leaf);
-            for trav in cm.make_leaf_parties(leaf.clone()) {
+            for trav in cm.make_travellers_for_leaf(&leaf) {
                 c.add_traveller(trav);
             }
         }

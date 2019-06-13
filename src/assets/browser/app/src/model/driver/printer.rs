@@ -1,7 +1,7 @@
 use composit::{ Compositor, Stage, Leaf };
 use types::Dot;
 
-use model::driver::SourceResponse;
+use model::train::TravellerResponse;
 use drivers::zmenu::ZMenuLeaf;
 
 pub trait Printer {
@@ -30,5 +30,5 @@ pub trait Printer {
     fn add_leaf(&mut self, leaf: &Leaf);
     fn remove_leaf(&mut self, leaf: &Leaf);
     fn set_current(&mut self, leaf: &Leaf);
-    fn make_partial(&mut self, leaf: &Leaf) -> Box<SourceResponse>;
+    fn make_partial(&mut self, leaf: &Leaf) -> Box<TravellerResponse>;
 }

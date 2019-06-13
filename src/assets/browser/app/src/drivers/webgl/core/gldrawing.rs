@@ -1,15 +1,15 @@
-use composit::SourceResponseData;
+use model::train::TravellerResponseData;
 use super::super::drawing::{ Drawing, CarriageCanvases };
 use super::GLProgInstances;
 use super::super::shape::GLShape;
 
 pub struct GLDrawing {
     drawings: Vec<Option<Drawing>>,
-    sr: SourceResponseData,
+    sr: TravellerResponseData,
 }
 
 impl GLDrawing {
-    pub fn new(sr: SourceResponseData) -> GLDrawing {
+    pub fn new(sr: TravellerResponseData) -> GLDrawing {
         GLDrawing { 
             sr, 
             drawings: Vec::<Option<Drawing>>::new(),

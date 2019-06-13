@@ -5,10 +5,10 @@ use std::rc::Rc;
 use composit::{ ActiveSource, Leaf };
 use data::BackendConfig;
 use model::shape::DrawingSpec;
-use model::train::PartyResponses;
+use composit::source::SourceResponse;
 
 pub enum TáTask {
-    MakeShapes(ActiveSource,Leaf,PartyResponses,Vec<DrawingSpec>,usize,Option<String>,Rc<BackendConfig>)
+    MakeShapes(ActiveSource,Leaf,SourceResponse,Vec<DrawingSpec>,usize,Option<String>,Rc<BackendConfig>)
 }
 
 impl TáTask {

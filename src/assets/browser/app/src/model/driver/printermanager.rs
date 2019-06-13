@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use composit::{ Leaf, Stage, Compositor };
-use model::driver::SourceResponse;
+use model::train::TravellerResponse;
 use types::Dot;
 use super::Printer;
 use drivers::zmenu::ZMenuLeaf;
@@ -70,7 +70,7 @@ impl Printer for PrinterManager {
         self.0.borrow_mut().printer.set_current(leaf);
     }
     
-    fn make_partial(&mut self, leaf: &Leaf) -> Box<SourceResponse> {
+    fn make_partial(&mut self, leaf: &Leaf) -> Box<TravellerResponse> {
         self.0.borrow_mut().printer.make_partial(leaf)
     }
     

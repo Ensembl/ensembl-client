@@ -11,7 +11,8 @@ use composit::{
 };
 
 use model::driver::PrinterManager;
-use model::train::{ Traveller, PartyResponses };
+use model::train::Traveller;
+use composit::source::SourceResponse;
 
 use super::SourcePart;
 
@@ -44,23 +45,23 @@ impl ActiveSource {
         self.parts.keys().filter(|x| x.is_some()).map(|x| x.as_ref().unwrap().clone()).collect()
     }
     
-    fn make_traveller(&self, pm: &PrinterManager, party: &PartyResponses, part: &Option<String>, leaf: &Leaf) -> Traveller {
+    fn make_one_traveller(&self, party: &SourceResponse, part: &Option<String>, leaf: &Leaf) -> Traveller {
         let srr = party.get_srr(part);
-        Traveller::new(pm,self.clone(),part,leaf,srr)
+        Traveller::new(self.clone(),part,leaf,srr)
     }
     
-    pub fn make_party(&self, pm: &PrinterManager, party: &PartyResponses, leaf: &Leaf) -> Vec<Traveller> {
+    pub fn make_travellers(&self, party: &SourceResponse, leaf: &Leaf) -> Vec<Traveller> {
         let mut out = Vec::<Traveller>::new();
-        out.push(self.make_traveller(pm,&party,&None,&leaf));
+        out.push(self.make_one_traveller(&party,&None,&leaf));
         for part in self.list_parts() {            
-            out.push(self.make_traveller(pm,&party,&Some(part),&leaf));
+            out.push(self.make_one_traveller(&party,&Some(part),&leaf));
         }
         out
     }
 
-    pub fn populate(&mut self, resp: PartyResponses, leaf: &Leaf) {
+    pub fn request_data(&mut self, resp: SourceResponse, leaf: &Leaf) {
         let twin = self.source.clone();
-        twin.populate(self,resp,leaf);
+        twin.request_data(self,resp,leaf);
     }
     
     pub fn get_name(&self) -> &str { &self.name }  

@@ -2,22 +2,21 @@ use std::fmt;
 
 use composit::{ Leaf, ActiveSource };
 use composit::{ StateManager };
-use model::driver::{ PrinterManager, SourceResponse };
+use model::driver::PrinterManager;
+use super::TravellerResponse;
 
 pub struct Traveller {
-    pm: PrinterManager,
     comp: ActiveSource,
     prev_value: bool,
     cur_value: bool,
-    srr: Option<Box<SourceResponse>>,
+    srr: Option<Box<TravellerResponse>>,
     part: Option<String>,
     leaf: Leaf
 }
 
 impl Traveller {
-    pub fn new(pm: &PrinterManager, comp: ActiveSource, part: &Option<String>, leaf: &Leaf, srr: Box<SourceResponse>) -> Traveller {
+    pub fn new(comp: ActiveSource, part: &Option<String>, leaf: &Leaf, srr: Box<TravellerResponse>) -> Traveller {
         Traveller {
-            pm: pm.clone(),
             prev_value: false,
             cur_value: false,
             leaf: leaf.clone(),

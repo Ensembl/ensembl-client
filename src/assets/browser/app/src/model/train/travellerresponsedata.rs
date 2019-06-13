@@ -1,12 +1,12 @@
 use model::shape::ShapeSpec;
 
-pub struct SourceResponseData {
+pub struct TravellerResponseData {
     shapes: Vec<ShapeSpec>
 }
 
-impl SourceResponseData {
-    pub fn new() -> SourceResponseData {
-        SourceResponseData {
+impl TravellerResponseData {
+    pub fn new() -> TravellerResponseData {
+        TravellerResponseData {
             shapes: Vec::<ShapeSpec>::new()
         }
     }

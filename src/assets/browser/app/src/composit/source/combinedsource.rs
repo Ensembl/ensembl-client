@@ -7,7 +7,7 @@ use composit::{
 };
 use data::{ BackendConfig, HttpXferClerk };
 use debug::{ add_debug_sources };
-use model::train::PartyResponses;
+use composit::source::SourceResponse;
 use tácode::{ Tácode, TáSource };
 
 const TOP : i32 = 50;
@@ -38,12 +38,12 @@ impl CombinedSource {
 }
 
 impl Source for CombinedSource {
-    fn populate(&self, acs: &ActiveSource, lc: PartyResponses, leaf: &Leaf) {
+    fn request_data(&self, acs: &ActiveSource, lc: SourceResponse, leaf: &Leaf) {
         let stick_name = leaf.get_stick().get_name();
         if let Some(source) = self.per_stick_sources.get(&stick_name) {
-            source.populate(acs,lc,leaf);
+            source.request_data(acs,lc,leaf);
         } else {
-            self.backend_source.populate(acs,lc,leaf);
+            self.backend_source.request_data(acs,lc,leaf);
         }
     }
 }

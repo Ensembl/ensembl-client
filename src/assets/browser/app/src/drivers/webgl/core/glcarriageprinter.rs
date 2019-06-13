@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use std::rc::Rc;
 
-use super::{ GLSourceResponse, GLProgs, GLProgInstances };
+use super::{ GLTravellerResponse, GLProgs, GLProgInstances };
 use super::super::program::ProgramType;
 use model::train::Carriage;
 use composit::{ Leaf, Stage };
@@ -10,7 +10,7 @@ use dom::webgl::WebGLRenderingContext as glctx;
 use drivers::zmenu::ZMenuLeaf;
 
 pub struct GLCarriagePrinter {
-    srr: HashSet<GLSourceResponse>,
+    srr: HashSet<GLTravellerResponse>,
     prev_cc: Option<CarriageCanvases>,
     leaf: Leaf,
     progs: Option<GLProgs>,
@@ -20,7 +20,7 @@ pub struct GLCarriagePrinter {
 impl GLCarriagePrinter {
     pub fn new(leaf: &Leaf, progs: &GLProgs, ctx: &Rc<glctx>) -> GLCarriagePrinter {
         GLCarriagePrinter {
-            srr: HashSet::<GLSourceResponse>::new(),
+            srr: HashSet::<GLTravellerResponse>::new(),
             prev_cc: None,
             leaf: leaf.clone(),
             progs: Some(progs.clean_instance()),
@@ -28,11 +28,11 @@ impl GLCarriagePrinter {
         }
     }
 
-    pub fn new_sr(&mut self, sr: &GLSourceResponse) {
+    pub fn new_sr(&mut self, sr: &GLTravellerResponse) {
         self.srr.insert(sr.clone());
     }
 
-    pub fn remove_sr(&mut self, sr: &mut GLSourceResponse) {
+    pub fn remove_sr(&mut self, sr: &mut GLTravellerResponse) {
         self.srr.remove(sr);
     }
     

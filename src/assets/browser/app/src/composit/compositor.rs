@@ -140,11 +140,11 @@ impl Compositor {
         self.zmr.update(zmls);
     }
 
-    fn add_component(&mut self, c: ActiveSource) {
+    fn add_component(&mut self, mut c: ActiveSource) {
         {
             let cc = &mut self.components;
             self.train_manager.each_train(|sc|
-                sc.add_component(cc,&c)
+                sc.add_component(cc,&mut c)
             );
         }
         self.components.add_source(c);

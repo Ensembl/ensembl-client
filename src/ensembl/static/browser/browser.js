@@ -16,7 +16,7 @@ if( typeof Rust === "undefined" ) {
     return (function( module_factory ) {
         var instance = module_factory();
 
-        if( typeof process === "object" && typeof process.versions === "object" && typeof process.versions.node === "string" ) {
+        if( typeof window === "undefined" && typeof process === "object" ) {
             var fs = require( "fs" );
             var path = require( "path" );
             var wasm_path = path.join( __dirname, "/static/browser/browser.wasm" );
@@ -537,14 +537,6 @@ Module.STDWEB_PRIVATE.acquire_tmp = function( dummy ) {
         HEAPU32 = new Uint32Array( buffer );
         HEAPF32 = new Float32Array( buffer );
         HEAPF64 = new Float64Array( buffer );
-        Module.HEAP8 = HEAP8;
-        Module.HEAP16 = HEAP16;
-        Module.HEAP32 = HEAP32;
-        Module.HEAPU8 = HEAPU8;
-        Module.HEAPU16 = HEAPU16;
-        Module.HEAPU32 = HEAPU32;
-        Module.HEAPF32 = HEAPF32;
-        Module.HEAPF64 = HEAPF64;
     }
 
     return {
