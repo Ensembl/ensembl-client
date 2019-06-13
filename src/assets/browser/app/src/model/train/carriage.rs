@@ -1,6 +1,7 @@
 use composit::Leaf;
 use composit::{ StateManager };
 use model::driver::{ Printer, PrinterManager };
+use drivers::zmenu::ZMenuLeafSet;
 use super::Traveller;
 
 pub struct Carriage {
@@ -27,18 +28,7 @@ impl Carriage {
     pub fn get_leaf(&self) -> &Leaf { &self.leaf }
     
     pub(in super) fn set_needs_refresh(&mut self) {
-        bb_log!("debug","set");
         self.needs_rebuild = true;
-    }
-
-    pub fn reset_needs_refresh(&mut self) {
-        bb_log!("debug","reset");
-        self.needs_rebuild = false;
-    }
-
-    pub fn needs_refresh(&self) -> bool {
-        bb_log!("debug","check");
-        self.needs_rebuild
     }
     
     pub(in super) fn add_traveller(&mut self, traveller: Traveller) {
@@ -65,6 +55,15 @@ impl Carriage {
         if redo {
             self.needs_rebuild = true;
         }
+    }
+    
+    pub fn redraw_where_needed(&mut self, printer: &mut Printer, zmls: &mut ZMenuLeafSet) {
+        let mut zml = zmls.make_leaf(&self.leaf);
+        if self.needs_rebuild {
+            self.needs_rebuild = false;
+            printer.redraw_carriage(&self.leaf,&mut zml);
+        }
+        zmls.register_leaf(zml);
     }
 }
 

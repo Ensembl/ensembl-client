@@ -58,7 +58,6 @@ pub struct GLPrinterBase {
     new_size: Option<Dot<f64,f64>>,
     settled_size: Option<Dot<f64,f64>>,
     round_size: bool,
-    zmr: ZMenuRegistry
 }
 
 impl GLPrinterBase {
@@ -80,7 +79,6 @@ impl GLPrinterBase {
             new_size: None,
             settled_size: None,
             round_size: true,
-            zmr: ZMenuRegistry::new()
         }
     }
 
@@ -103,10 +101,6 @@ impl GLPrinterBase {
     
     fn set_current(&mut self, leaf: &Leaf) {
         self.current.insert(leaf.clone());
-    }
-
-    fn update_zmenus(&mut self, zmls: ZMenuLeafSet) {
-        self.zmr.update(zmls);
     }
 
     fn prepare_all(&mut self) {

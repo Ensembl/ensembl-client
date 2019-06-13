@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 use types::{ Dot, Edge, Anchors };
-use super::{ MathsShape, ColourSpec, ShapeSpec };
+use super::{ MathsShape, ColourSpec, ShapeSpec, GenericShape };
 
 #[derive(Clone,Copy,Debug)]
 pub enum PolyPosition<T: Clone+Copy+Debug> {
@@ -19,6 +19,8 @@ pub struct PinPolySpec {
     pub ms: MathsShape,
     pub colspec: ColourSpec
 }
+
+impl GenericShape for PinPolySpec {}
 
 #[allow(unused)]
 pub fn pin_mathsshape(origin: &Dot<f32,i32>,

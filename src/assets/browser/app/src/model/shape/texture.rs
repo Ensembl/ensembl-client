@@ -7,8 +7,10 @@ use types::{
 
 use model::shape::{
     DrawingSpec, ShapeSpec, Facade, FacadeType, ShapeInstanceDataType,
-    ShapeShortInstanceData, TypeToShape
+    ShapeShortInstanceData, TypeToShape, GenericShape
 };
+
+impl GenericShape for TextureSpec {}
 
 #[derive(Clone,Copy,Debug)]
 pub enum TexturePosition<T: Clone+Copy+Debug> {

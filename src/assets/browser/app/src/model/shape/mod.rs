@@ -30,7 +30,8 @@ pub use self::rect::{
 pub use self::shapespec::{ 
     ColourSpec, DrawingSpec, ShapeSpec, MathsShape, DrawingHash,
     Facade, FacadeType, ShapeInstanceDataType,
-    ShapeShortInstanceData, TypeToShape, ShapeLongInstanceData
+    ShapeShortInstanceData, TypeToShape, ShapeLongInstanceData,
+    GenericShape
 };
 
 pub use self::text::{

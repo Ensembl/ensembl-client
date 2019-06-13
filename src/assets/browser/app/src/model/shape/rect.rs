@@ -5,8 +5,11 @@ use types::{
 };
 use model::shape::{ 
     ColourSpec, ShapeSpec, Facade, FacadeType, ShapeInstanceDataType,
-    ShapeShortInstanceData, TypeToShape
+    ShapeShortInstanceData, TypeToShape, GenericShape
 };
+
+impl GenericShape for RectSpec {}
+impl GenericShape for BoxSpec {}
 
 #[derive(Clone,Copy,Debug)]
 pub enum RectPosition<T: Clone+Copy+Debug> {

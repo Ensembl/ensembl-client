@@ -192,13 +192,7 @@ impl Train {
     
     pub fn redraw_where_needed(&mut self, printer: &mut Printer, zmls: &mut ZMenuLeafSet) {
         for carriage in self.get_carriages() {
-            let leaf = carriage.get_leaf().clone();
-            let mut zml = zmls.make_leaf(&leaf);
-            if carriage.needs_refresh() {
-                carriage.reset_needs_refresh();
-                printer.redraw_carriage(&leaf,&mut zml);
-            }
-            zmls.register_leaf(zml);
+            carriage.redraw_where_needed(printer,zmls);
         }
     }
 
