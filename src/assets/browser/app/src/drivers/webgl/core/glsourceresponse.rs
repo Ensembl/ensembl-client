@@ -48,7 +48,6 @@ impl GLSourceResponse {
     pub fn get_leaf(&self) -> &Leaf { &self.leaf }
     
     pub fn redraw_drawings(&self, cc: &mut CarriageCanvases) {
-        //console!("drawings {:?}",self.leaf);
         let mut dr = self.dr.borrow_mut();
         if dr.is_some() {
             dr.as_mut().unwrap().redraw(cc);
@@ -58,7 +57,6 @@ impl GLSourceResponse {
     pub fn redraw_objects(&self, e: &mut GLProgInstances) {
         let mut dr = self.dr.borrow_mut();
         if dr.is_some() && *self.state.borrow() {
-            //console!("objects {:?}",self.leaf);
             dr.as_mut().unwrap().into_objects(e);
         }
     }

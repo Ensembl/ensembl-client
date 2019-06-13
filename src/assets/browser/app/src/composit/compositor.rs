@@ -2,8 +2,9 @@ use composit::{
     ActiveSource, Stick, Scale, ComponentSet, StateManager
 };
 
-use model::driver::PrinterManager;
+use model::driver::{ PrinterManager, Printer };
 use model::train::{ Train, TrainManager, TravellerCreator };
+use drivers::zmenu::{ ZMenuRegistry, ZMenuLeafSet };
 
 use controller::global::AppRunner;
 use controller::output::Report;
@@ -15,6 +16,7 @@ const MS_PRIME_DELAY: f64 = 2000.;
 
 pub struct Compositor {
     train_manager: TrainManager,
+    zmr: ZMenuRegistry,
     bp_per_screen: f64,
     updated: bool,
     prime_delay: Option<f64>,
@@ -32,6 +34,7 @@ impl Compositor {
     pub fn new(printer: PrinterManager, xfercache: &XferCache, xferclerk: Box<XferClerk>) -> Compositor {
         Compositor {
             train_manager: TrainManager::new(&printer),
+            zmr: ZMenuRegistry::new(),
             components: TravellerCreator::new(&printer),
             bp_per_screen: 1.,
             updated: true,
@@ -126,6 +129,17 @@ impl Compositor {
         &mut self.wanted_componentset
     }
     
+    pub fn redraw_where_needed(&mut self, printer: &mut Printer) {
+        let mut zmls = ZMenuLeafSet::new();
+        if let Some(train) = self.get_current_train() {
+            train.redraw_where_needed(printer,&mut zmls);
+        }
+        if let Some(train) = self.get_transition_train() {
+            train.redraw_where_needed(printer,&mut zmls);
+        }
+        self.zmr.update(zmls);
+    }
+
     fn add_component(&mut self, c: ActiveSource) {
         {
             let cc = &mut self.components;

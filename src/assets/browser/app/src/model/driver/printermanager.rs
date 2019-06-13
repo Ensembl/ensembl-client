@@ -5,6 +5,7 @@ use composit::{ Leaf, Stage, Compositor };
 use model::driver::SourceResponse;
 use types::Dot;
 use super::Printer;
+use drivers::zmenu::ZMenuLeaf;
 
 struct PrinterManagerImpl {
     printer: Box<Printer>
@@ -71,5 +72,9 @@ impl Printer for PrinterManager {
     
     fn make_partial(&mut self, leaf: &Leaf) -> Box<SourceResponse> {
         self.0.borrow_mut().printer.make_partial(leaf)
-    }   
+    }
+    
+    fn redraw_carriage(&mut self, leaf: &Leaf, zml: &mut ZMenuLeaf) {
+        self.0.borrow_mut().printer.redraw_carriage(leaf,zml);
+    }
 }

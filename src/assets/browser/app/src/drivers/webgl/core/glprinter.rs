@@ -18,7 +18,7 @@ use stdweb::web::html_element::{
     CanvasElement
 };
 
-use drivers::zmenu::{ ZMenuRegistry, ZMenuLeafSet };
+use drivers::zmenu::{ ZMenuRegistry, ZMenuLeafSet, ZMenuLeaf };
 
 pub struct WebGLTrainPrinter{}
 
@@ -36,15 +36,13 @@ impl WebGLTrainPrinter {
         }
     }
     
-    fn prepare(&mut self, printer: &mut GLPrinterBase, stage: &Stage,
-                     train: &mut Train, opacity: f32, zmls: &mut ZMenuLeafSet) {
+    fn contextualize(&mut self, printer: &mut GLPrinterBase, stage: &Stage,
+                     train: &mut Train, opacity: f32) {
         for carriage in train.get_carriages() {
-            let leaf = carriage.get_leaf().clone();
-            let mut zml = zmls.make_leaf(&leaf);
-            if let Some(lp) = &mut printer.lp.get_mut(&leaf) {
-                lp.prepare(carriage,&mut printer.acm,stage,opacity,&mut zml);
+            let leaf = carriage.get_leaf();
+            if let Some(carriage_printer) = &mut printer.lp.get_mut(&leaf) {
+                carriage_printer.set_context(stage,opacity);
             }
-            zmls.register_leaf(zml);
         }
     }
 }
@@ -67,7 +65,6 @@ impl GLPrinterBase {
     pub fn new(canv_el: &HtmlElement) -> GLPrinterBase {
         let canvas = canv_el.clone().try_into().unwrap();
         let ctx: glctx = domutil::get_context(&canvas);
-        console!("tag {:?} context {:?}",canv_el,ctx);
         ctx.clear_color(1.0,1.0,1.0,1.0);
         ctx.clear(glctx::COLOR_BUFFER_BIT  | glctx::DEPTH_BUFFER_BIT);
         let ctx_rc = Rc::new(ctx);
@@ -87,6 +84,12 @@ impl GLPrinterBase {
         }
     }
 
+    pub fn redraw_carriage(&mut self, leaf: &Leaf, zml: &mut ZMenuLeaf) {
+        if let Some(carriage_printer) = &mut self.lp.get_mut(&leaf) {
+            carriage_printer.redraw(&mut self.acm,zml);
+        }
+    }
+
     pub fn add_leaf(&mut self, leaf: &Leaf) {
         self.lp.insert(leaf.clone(),GLCarriagePrinter::new(&leaf,&self.base_progs,&self.ctx));
     }
@@ -102,8 +105,11 @@ impl GLPrinterBase {
         self.current.insert(leaf.clone());
     }
 
-    fn prepare_all(&mut self, zmls: ZMenuLeafSet) {
+    fn update_zmenus(&mut self, zmls: ZMenuLeafSet) {
         self.zmr.update(zmls);
+    }
+
+    fn prepare_all(&mut self) {
         if let Some(new_size) = self.new_size.take() {
             self.set_size(new_size);
         }
@@ -204,17 +210,17 @@ impl GLPrinter {
 
 impl Printer for GLPrinter {
     fn print(&mut self, stage: &Stage, compo: &mut Compositor) {
-        let mut zmls = ZMenuLeafSet::new();
+        compo.redraw_where_needed(self);
         let prop = compo.get_prop_trans();
         if let Some(train) = compo.get_current_train() {
             let mut tp = WebGLTrainPrinter::new();
-            tp.prepare(&mut self.base.borrow_mut(),stage,train,1.-prop,&mut zmls);
+            tp.contextualize(&mut self.base.borrow_mut(),stage,train,1.-prop);
         }
         if let Some(train) = compo.get_transition_train() {
             let mut tp = WebGLTrainPrinter::new();
-            tp.prepare(&mut self.base.borrow_mut(),stage,train,prop,&mut zmls);
+            tp.contextualize(&mut self.base.borrow_mut(),stage,train,prop);
         }
-        self.base.borrow_mut().prepare_all(zmls);
+        self.base.borrow_mut().prepare_all();
         if let Some(train) = compo.get_transition_train() {
             let mut tp = WebGLTrainPrinter::new();
             tp.execute(&mut self.base.borrow_mut(),&train.leafs());
@@ -227,6 +233,10 @@ impl Printer for GLPrinter {
 
     fn destroy(&mut self) {
         self.base.borrow_mut().destroy();
+    }
+
+    fn redraw_carriage(&mut self, leaf: &Leaf, zml: &mut ZMenuLeaf) {
+        self.base.borrow_mut().redraw_carriage(leaf,zml);
     }
 
     fn set_size(&mut self, s: Dot<f64,f64>) {

@@ -2,12 +2,16 @@ use composit::{ Compositor, Stage, Leaf };
 use types::Dot;
 
 use model::driver::SourceResponse;
+use drivers::zmenu::ZMenuLeaf;
 
 pub trait Printer {
     /* Print one run of objects from compositor with given stage and
      * state.
      */
     fn print(&mut self, stage: &Stage, compo: &mut Compositor);
+    
+    /* Redraw one carriage */
+    fn redraw_carriage(&mut self, leaf: &Leaf, zml: &mut ZMenuLeaf);
     
     /* Finished with printer */
     fn destroy(&mut self);

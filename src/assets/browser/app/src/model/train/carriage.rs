@@ -22,34 +22,29 @@ impl Carriage {
         };
         out.pm.add_leaf(leaf);
         out
-    }    
+    }
     
     pub fn get_leaf(&self) -> &Leaf { &self.leaf }
     
     pub(in super) fn set_needs_refresh(&mut self) {
+        bb_log!("debug","set");
         self.needs_rebuild = true;
     }
 
     pub fn reset_needs_refresh(&mut self) {
+        bb_log!("debug","reset");
         self.needs_rebuild = false;
     }
 
     pub fn needs_refresh(&self) -> bool {
-         self.needs_rebuild
+        bb_log!("debug","check");
+        self.needs_rebuild
     }
     
     pub(in super) fn add_traveller(&mut self, traveller: Traveller) {
         self.travellers.push(traveller);
     }
         
-    pub fn all_travellers(&self) -> Vec<&Traveller> {
-        self.travellers.iter().collect()
-    }
-
-    pub fn all_travellers_mut(&mut self) -> Vec<&mut Traveller> {
-        self.travellers.iter_mut().collect()
-    }
-    
     pub(in super) fn is_done(&mut self) -> bool {
         if self.known_done { return true; }
         for c in &self.travellers {
@@ -62,7 +57,7 @@ impl Carriage {
     
     pub fn update_state(&mut self, oom: &StateManager) {
         let mut redo = false;
-        for t in &mut self.all_travellers_mut() {
+        for t in &mut self.travellers {
             if t.update_state(oom) {
                 redo = true;
             }

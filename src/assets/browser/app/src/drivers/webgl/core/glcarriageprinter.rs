@@ -51,7 +51,7 @@ impl GLCarriagePrinter {
         cc
     }
     
-    fn redraw_objects(&mut self,e: &mut GLProgInstances) {
+    fn redraw_objects(&mut self, e: &mut GLProgInstances) {
         for sr in self.srr.iter() {
             sr.redraw_objects(e);
         }
@@ -78,15 +78,12 @@ impl GLCarriagePrinter {
         self.progs = Some(progs);
     }
     
-    pub fn prepare(&mut self,
-                        carriage: &mut Carriage,
-                        aca: &mut AllCanvasAllocator,
-                        stage: &Stage, opacity: f32, zml: &mut ZMenuLeaf) {
-        if carriage.needs_refresh() {
-            carriage.reset_needs_refresh();
-            self.redraw_travellers(aca);
-            self.register_zmenus(zml);
-        }
+    pub fn redraw(&mut self,aca: &mut AllCanvasAllocator,zml: &mut ZMenuLeaf) {
+        self.redraw_travellers(aca);
+        self.register_zmenus(zml);
+    }
+
+    pub fn set_context(&mut self,stage: &Stage, opacity: f32) {        
         let progs = self.progs.as_mut().unwrap();
         for k in &progs.order {
             let prog = progs.map.get_mut(k).unwrap();

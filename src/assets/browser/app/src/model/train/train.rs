@@ -6,6 +6,7 @@ use composit::{
 };
 use model::driver::{ Printer, PrinterManager };
 use super::{ Carriage, Traveller, TravellerCreator };
+use drivers::zmenu::ZMenuLeafSet;
 
 const MAX_FLANK : i32 = 3;
 
@@ -178,13 +179,7 @@ impl Train {
         }
         return true;
     }
-    
-    /* used in LEAFPRINTER to get actual data to print from components */
-    pub fn get_travellers(&mut self, leaf: &Leaf) -> Option<Vec<&mut Traveller>> {
-        if !self.check_done() { return None; }
-        self.carriages.get_mut(leaf).map(|x| x.all_travellers_mut())
-    }
-    
+        
     pub fn get_carriages(&mut self) -> Vec<&mut Carriage> {
         self.carriages.values_mut().collect()
     }
@@ -194,4 +189,17 @@ impl Train {
             c.update_state(oom);
         }
     }
+    
+    pub fn redraw_where_needed(&mut self, printer: &mut Printer, zmls: &mut ZMenuLeafSet) {
+        for carriage in self.get_carriages() {
+            let leaf = carriage.get_leaf().clone();
+            let mut zml = zmls.make_leaf(&leaf);
+            if carriage.needs_refresh() {
+                carriage.reset_needs_refresh();
+                printer.redraw_carriage(&leaf,&mut zml);
+            }
+            zmls.register_leaf(zml);
+        }
+    }
+
 }
