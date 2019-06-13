@@ -37,38 +37,42 @@ type ZmenuContentSection = {
 
 type ZmenuContentFeature = ZmenuContentSection[];
 
-// Sent from Genome browser to React
-type ZmenuShowEvent = {
-  action: 'show-zmenu';
+// data that is sufficient to describe an instance of Zmenu
+export type ZmenuData = {
   id: string;
-  anchor_coordinates: {
-    x: number;
-    y: number;
-  };
+  anchor_coordinates: AnchorCoordinates;
   content: ZmenuContentFeature[];
 };
 
 // Sent from Genome browser to React
-type ZmenuHideEvent = {
+export type ZmenuShowEvent = {
+  action: 'show-zmenu';
+  id: string;
+  anchor_coordinates: AnchorCoordinates;
+  content: ZmenuContentFeature[];
+};
+
+// Sent from Genome browser to React
+export type ZmenuHideEvent = {
   id: string;
   action: 'hide-zmenu';
 };
 
 // Sent from React to Genome browser
 // (on mouseover; perhaps tap?)
-type ZmenuEnterEvent = {
+export type ZmenuEnterEvent = {
   id: string;
   action: 'zmenu-enter';
 };
 
 // Sent from React to Genome browser
 // (on mouseleave, or on click outside)
-type ZmenuLeaveEvent = {
+export type ZmenuLeaveEvent = {
   id: string;
   action: 'zmenu-leave';
 };
 
-type ZmenuRepositionEvent = {
+export type ZmenuRepositionEvent = {
   id: string;
   action: 'zmenu-update-position';
   anchor_coordinates: {
