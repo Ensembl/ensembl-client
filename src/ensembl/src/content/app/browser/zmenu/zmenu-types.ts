@@ -2,7 +2,8 @@
 // a gentle hint by genome browser about where there is the most available space
 // e.g. if the reported side of a point is 'left', zmenu will position itself
 // to the right of this point
-enum Side {
+// TODO: check if this type is required
+export enum Side {
   LEFT = 'left',
   RIGHT = 'right',
   MIDDLE = 'middle'
@@ -19,6 +20,12 @@ enum Markup {
   EMPHASIS = 'emphasis',
   FOCUS = 'focus',
   SMALL = 'SMALL'
+}
+
+export enum ZmenuAction {
+  CREATE = 'create_zmenu',
+  DESTROY = 'destroy_zmenu',
+  REPOSITION = 'update_zmenu_position'
 }
 
 type ZmenuContentItem = {
@@ -44,19 +51,23 @@ export type ZmenuData = {
   content: ZmenuContentFeature[];
 };
 
-// Sent from Genome browser to React
-export type ZmenuShowEvent = {
-  action: 'show-zmenu';
+export type ZmenuCreatePayload = {
+  action: ZmenuAction.CREATE;
   id: string;
   anchor_coordinates: AnchorCoordinates;
   content: ZmenuContentFeature[];
 };
 
 // Sent from Genome browser to React
-export type ZmenuHideEvent = {
+export type ZmenuCreateEvent = Event & ZmenuCreatePayload;
+
+export type ZmenuDestroyPayload = {
   id: string;
-  action: 'hide-zmenu';
+  action: ZmenuAction.DESTROY;
 };
+
+// Sent from Genome browser to React
+export type ZmenuDestroyEvent = Event & ZmenuDestroyPayload;
 
 // Sent from React to Genome browser
 // (on mouseover; perhaps tap?)
@@ -72,14 +83,22 @@ export type ZmenuLeaveEvent = {
   action: 'zmenu-leave';
 };
 
-export type ZmenuRepositionEvent = {
+// Sent from Genome browser to React
+export type ZmenuRepositionPayload = {
   id: string;
-  action: 'zmenu-update-position';
+  action: ZmenuAction.REPOSITION;
   anchor_coordinates: {
     x: number;
     y: number;
   };
 };
+
+export type ZmenuRepositionEvent = Event & ZmenuRepositionPayload;
+
+export type ZmenuIncomingEvent =
+  | ZmenuCreateEvent
+  | ZmenuDestroyEvent
+  | ZmenuRepositionEvent;
 
 /*
 
