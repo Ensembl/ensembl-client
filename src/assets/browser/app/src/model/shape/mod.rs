@@ -21,7 +21,6 @@ pub use self::poly::{
 
 pub use self::rect::{
     BoxSpec,
-    RectPosition,
     RectSpec,
     PinRectTypeSpec,
     StretchRectTypeSpec,

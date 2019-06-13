@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 use std::ops::{ Add, Sub, Mul, Div, Neg };
 use drivers::webgl::program::Input;
-use types::{ Dot, Edge, AxisSense, Corner };
+use types::{ Dot, Edge, AxisSense, Corner, CLeaf };
 
 /***** Rect types *****/
 
@@ -217,4 +217,16 @@ impl<T: Copy+Clone+Debug + PartialOrd,
                  self.0.unwrap().1.max(&pt))
         )
     }
+}
+
+#[derive(Clone,Copy,Debug)]
+pub enum RectPosition<T: Clone+Copy+Debug> {
+    Pin(CLeaf,Rect<T,i32>),
+    Page(Rect<Edge<i32>,i32>),
+    PageUnderAll(Rect<Edge<i32>,i32>),
+    Tape(CLeaf,Rect<T,Edge<i32>>),
+    Fix(Rect<Edge<i32>,Edge<i32>>),
+    FixUnderPage(Rect<Edge<i32>,Edge<i32>>),
+    FixUnderTape(Rect<Edge<i32>,Edge<i32>>),
+    Stretch(RLeaf)
 }

@@ -1,7 +1,8 @@
 use std::fmt::Debug;
 
 use types::{ 
-    CLeaf, AxisSense, Rect, Edge, RLeaf, area_size, cleaf, cpixel
+    CLeaf, AxisSense, Rect, Edge, RLeaf, area_size, cleaf, cpixel,
+    RectPosition
 };
 use model::shape::{ 
     ColourSpec, ShapeSpec, Facade, FacadeType, ShapeInstanceDataType,
@@ -15,18 +16,6 @@ impl GenericShape for RectSpec {
 }
     
 impl GenericShape for BoxSpec {}
-
-#[derive(Clone,Copy,Debug)]
-pub enum RectPosition<T: Clone+Copy+Debug> {
-    Pin(CLeaf,Rect<T,i32>),
-    Page(Rect<Edge<i32>,i32>),
-    PageUnderAll(Rect<Edge<i32>,i32>),
-    Tape(CLeaf,Rect<T,Edge<i32>>),
-    Fix(Rect<Edge<i32>,Edge<i32>>),
-    FixUnderPage(Rect<Edge<i32>,Edge<i32>>),
-    FixUnderTape(Rect<Edge<i32>,Edge<i32>>),
-    Stretch(RLeaf)
-}
 
 #[derive(Clone,Copy,Debug)]
 pub struct RectSpec {

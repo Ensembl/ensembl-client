@@ -1,12 +1,12 @@
 use super::super::program::{ ProgramAttribs, PTGeom, PTMethod, ProgramType };
-use types::AxisSense;
+use types::{ AxisSense, RectPosition };
 
 use super::GLShape;
 use super::util::{
     rectangle_p, rectangle_c, rectangle_g, multi_gl, vertices_rect,
     despot, colour, colourspec_to_group
 };
-use model::shape::{ ColourSpec, RectPosition, RectSpec };
+use model::shape::{ ColourSpec, RectSpec };
 use drivers::webgl::{ GLProgData, Artwork };
 
 fn program_type(spec: &RectSpec) -> PTGeom {
