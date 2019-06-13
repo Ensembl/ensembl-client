@@ -40,9 +40,11 @@ import {
 import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 import { getDrawerOpened } from './drawer/drawerSelectors';
 import {
-  fetchExampleEnsObjectsData,
-  fetchEnsObjectData
+  fetchExampleEnsObjects,
+  fetchEnsObject,
+  fetchEnsObjectTracks
 } from 'src/ens-object/ensObjectActions';
+import { fetchGenomeTrackCategories } from 'src/genome/genomeActions';
 import { toggleDrawer } from './drawer/drawerActions';
 
 import browserStorageService from './browser-storage-service';
@@ -69,8 +71,10 @@ type DispatchProps = {
     chrLocation: ChrLocation,
     browserEl: HTMLDivElement
   ) => void;
-  fetchExampleEnsObjectsData: () => void;
-  fetchEnsObjectData: (stableId: string) => void;
+  fetchExampleEnsObjects: () => void;
+  fetchEnsObject: (ensObjectId: string, genomeId: string) => void;
+  fetchEnsObjectTracks: (ensObjectId: string, genomeId: string) => void;
+  fetchGenomeTrackCategories: (genomeId: string) => void;
   replace: Replace;
   toggleDrawer: (drawerOpened: boolean) => void;
   updateBrowserActiveGenomeId: (genomeId: string) => void;
@@ -108,11 +112,20 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, []);
 
   useEffect(() => {
+    const { genomeId } = props.match.params;
+
+    props.updateBrowserActiveGenomeId(genomeId);
+    props.fetchGenomeTrackCategories(genomeId);
+  }, [props.match.params.genomeId]);
+
+  useEffect(() => {
     const { focus, location } = props.browserQueryParams;
+    const { genomeId } = props.match.params;
     const chrLocation = getChrLocationFromStr(location);
 
     dispatchBrowserLocation(chrLocation);
-    props.fetchEnsObjectData(focus);
+    props.fetchEnsObject(focus, genomeId);
+    props.fetchEnsObjectTracks(focus, genomeId);
   }, [props.browserQueryParams.focus]);
 
   useEffect(() => {
@@ -203,8 +216,10 @@ const mapStateToProps = (state: RootState): StateProps => ({
 
 const mapDispatchToProps: DispatchProps = {
   changeBrowserLocation,
-  fetchEnsObjectData,
-  fetchExampleEnsObjectsData,
+  fetchEnsObject,
+  fetchEnsObjectTracks,
+  fetchExampleEnsObjects,
+  fetchGenomeTrackCategories,
   replace,
   toggleDrawer,
   updateBrowserActiveGenomeId,

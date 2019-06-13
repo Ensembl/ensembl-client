@@ -1,8 +1,12 @@
 import { createAction } from 'typesafe-actions';
+import { ThunkAction } from 'redux-thunk';
+import { Action, Dispatch, ActionCreator } from 'redux';
 
-import { TrackType } from './trackPanelConfig';
+import { RootState } from 'src/store';
 import { getTrackPanelAnalyticsObject } from 'src/analyticsHelper';
+import { TrackType } from './trackPanelConfig';
 import browserStorageService from '../browser-storage-service';
+import { getBrowserActiveGenomeId } from '../browserSelectors';
 
 export const toggleTrackPanel = createAction(
   'track-panel/toggle-track-panel',
@@ -15,15 +19,29 @@ export const toggleTrackPanel = createAction(
   }
 );
 
-export const selectBrowserTabAndSave = createAction(
-  'select-browser-tab',
+export const selectBrowserTab = createAction(
+  'track-panel/select-browser-tab',
   (resolve) => {
-    return (selectedBrowserTab: TrackType) => {
-      browserStorageService.saveSelectedBrowserTab(selectedBrowserTab);
-      return resolve(selectedBrowserTab);
+    return (selectedBrowserTabForGenome: { [genomeId: string]: TrackType }) => {
+      return resolve(selectedBrowserTabForGenome);
     };
   }
 );
+
+export const selectBrowserTabAndSave: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (selectedBrowserTab: TrackType) => (
+  dispatch: Dispatch,
+  getState: () => RootState
+) => {
+  const activeGenomeId = getBrowserActiveGenomeId(getState());
+  const selectedBrowserTabForGenome = {
+    [activeGenomeId]: selectedBrowserTab
+  };
+
+  dispatch(selectBrowserTab(selectedBrowserTabForGenome));
+  browserStorageService.saveSelectedBrowserTab(selectedBrowserTabForGenome);
+};
 
 export const openTrackPanelModal = createAction(
   'track-panel/open-track-panel-modal',

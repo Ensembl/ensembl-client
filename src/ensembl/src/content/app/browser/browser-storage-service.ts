@@ -28,7 +28,7 @@ export class BrowserStorageService {
   public saveTrackStates(
     categoryName: string,
     trackName: string,
-    trackStatus: ImageButtonStatus
+    trackStatus: { [genomeId: string]: ImageButtonStatus }
   ) {
     const trackStates = this.getTrackStates();
 
@@ -52,15 +52,17 @@ export class BrowserStorageService {
     );
   }
 
-  public getSelectedBrowserTab(): TrackType {
-    return (
-      this.storageService.get(StorageKeys.SELECTED_BROWSER_TAB) ||
-      TrackType.GENOMIC
-    );
+  public getSelectedBrowserTab() {
+    return this.storageService.get(StorageKeys.SELECTED_BROWSER_TAB) || {};
   }
 
-  public saveSelectedBrowserTab(selectedTab: TrackType) {
-    this.storageService.save(StorageKeys.SELECTED_BROWSER_TAB, selectedTab);
+  public saveSelectedBrowserTab(selectedBrowserTabForGenome: {
+    [genomeId: string]: TrackType;
+  }) {
+    this.storageService.update(
+      StorageKeys.SELECTED_BROWSER_TAB,
+      selectedBrowserTabForGenome
+    );
   }
 }
 

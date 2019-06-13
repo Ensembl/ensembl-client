@@ -1,30 +1,37 @@
-import { EnsObject } from './ensObjectTypes';
-import { TrackPanelCategory } from 'src/content/app/browser/track-panel/trackPanelConfig';
+import { EnsObject, EnsObjectTrack } from './ensObjectTypes';
 
-export type CurrentEnsObjectState = Readonly<{
-  ensObjectInfo: EnsObject | {};
-  ensObjectFetchFailed: boolean;
-  ensObjectFetching: boolean;
-  trackCategories: TrackPanelCategory[] | [];
+export type EnsObjectInfoState = Readonly<{
+  ensObjectInfoData: EnsObject | {};
+  ensObjectInfoFetchFailed: boolean;
+  ensObjectInfoFetching: boolean;
 }>;
 
-export const defaultCurrentEnsObjectState: CurrentEnsObjectState = {
-  ensObjectInfo: {},
-  ensObjectFetchFailed: false,
-  ensObjectFetching: false,
-  trackCategories: []
+export const defaultEnsObjectInfoState: EnsObjectInfoState = {
+  ensObjectInfoData: {},
+  ensObjectInfoFetchFailed: false,
+  ensObjectInfoFetching: false
 };
 
-export type ExampleEnsObjectState = Readonly<{
-  exampleEnsObjectsFetchFailed: boolean;
-  exampleEnsObjectsFetching: boolean;
-  examples: {
-    [key: string]: {};
-  };
+export type EnsObjectTracksState = Readonly<{
+  ensObjectTracksData: EnsObjectTrack | {};
+  ensObjectTracksFetchFailed: boolean;
+  ensObjectTracksFetching: boolean;
 }>;
 
-export const defaultExampleEnsObjectState: ExampleEnsObjectState = {
+export const defaultEnsObjectTracksState: EnsObjectTracksState = {
+  ensObjectTracksData: {},
+  ensObjectTracksFetchFailed: false,
+  ensObjectTracksFetching: false
+};
+
+export type ExampleEnsObjectsState = Readonly<{
+  exampleEnsObjectsData: EnsObject[];
+  exampleEnsObjectsFetchFailed: boolean;
+  exampleEnsObjectsFetching: boolean;
+}>;
+
+export const defaultExampleEnsObjectsState: ExampleEnsObjectsState = {
+  exampleEnsObjectsData: [],
   exampleEnsObjectsFetchFailed: false,
-  exampleEnsObjectsFetching: false,
-  examples: {}
+  exampleEnsObjectsFetching: false
 };

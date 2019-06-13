@@ -79,7 +79,7 @@ describe('BrowserStorageService', () => {
       browserStorageService.saveTrackStates(
         'Genes & transcripts',
         'gene-pc-fwd',
-        ImageButtonStatus.INACTIVE
+        { homo_sapiens38: ImageButtonStatus.INACTIVE }
       );
 
       expect(mockStorageService.save).toHaveBeenCalledWith(
@@ -182,7 +182,9 @@ describe('BrowserStorageService', () => {
         mockStorageService
       );
 
-      browserStorageService.saveSelectedBrowserTab(TrackType.EXPRESSION);
+      browserStorageService.saveSelectedBrowserTab({
+        homo_sapiens38: TrackType.EXPRESSION
+      });
 
       expect(mockStorageService.save).toHaveBeenCalledWith(
         StorageKeys.SELECTED_BROWSER_TAB,

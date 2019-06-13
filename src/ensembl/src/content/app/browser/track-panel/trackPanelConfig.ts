@@ -7,28 +7,11 @@ export enum TrackItemColour {
   WHITE = 'white'
 }
 
-export type TrackPanelItem = {
-  additionalInfo?: string;
-  childTrackList?: TrackPanelItem[];
-  color?: string;
-  drawerView?: string;
-  id: number;
-  label: string;
-  name: string;
-  selectedInfo?: string;
-};
-
 export enum TrackType {
   GENOMIC = 'Genomic',
   VARIATION = 'Variation',
   EXPRESSION = 'Expression'
 }
-
-export type TrackPanelCategory = {
-  name: string;
-  trackList: TrackPanelItem[];
-  types: TrackType[];
-};
 
 export type TrackPanelIcon = {
   description: string;
@@ -44,7 +27,9 @@ export type TrackPanelIcons = {
 
 export type TrackStates = {
   [key: string]: {
-    [key: string]: ImageButtonStatus;
+    [key: string]: {
+      [genomeId: string]: ImageButtonStatus;
+    };
   };
 };
 

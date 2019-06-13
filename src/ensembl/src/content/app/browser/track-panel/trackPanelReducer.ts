@@ -28,10 +28,14 @@ export default function trackPanel(
         trackPanelModalOpened: false,
         trackPanelModalView: ''
       };
-    case getType(trackPanelActions.selectBrowserTabAndSave):
+    case getType(trackPanelActions.selectBrowserTab):
       return {
         ...state,
-        selectedBrowserTab: action.payload,
+        selectedBrowserTab: Object.assign(
+          {},
+          state.selectedBrowserTab,
+          action.payload
+        ),
         trackPanelModalOpened: false,
         trackPanelModalView: ''
       };

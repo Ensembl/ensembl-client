@@ -3,6 +3,7 @@ import { connectRouter } from 'connected-react-router';
 
 import browser from '../content/app/browser/browserReducer';
 import drawer from '../content/app/browser/drawer/drawerReducer';
+import genome from '../genome/genomeReducer';
 import global from '../global/globalReducer';
 import header from '../header/headerReducer';
 import ensObject from '../ens-object/ensObjectReducer';
@@ -14,6 +15,7 @@ const rootReducer = (history: any) =>
     browser,
     drawer,
     ensObject,
+    genome,
     global,
     header,
     router: connectRouter(history),

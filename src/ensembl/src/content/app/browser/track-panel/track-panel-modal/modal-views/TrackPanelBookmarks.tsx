@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import { RootState } from 'src/store';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
-import { fetchExampleEnsObjectsData } from 'src/ens-object/ensObjectActions';
+import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
 
 import styles from '../TrackPanelModal.scss';
 
@@ -13,7 +13,7 @@ type StateProps = {
 };
 
 type DispatchProps = {
-  fetchExampleEnsObjectsData: () => void;
+  fetchExampleEnsObjects: () => void;
 };
 
 type OwnProps = {};
@@ -25,7 +25,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
 
   useEffect(() => {
     if (exampleObjectsTotal === 0) {
-      props.fetchExampleEnsObjectsData();
+      props.fetchExampleEnsObjects();
     }
   }, [props.exampleEnsObjects]);
 
@@ -74,7 +74,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  fetchExampleEnsObjectsData
+  fetchExampleEnsObjects
 };
 
 export default connect(

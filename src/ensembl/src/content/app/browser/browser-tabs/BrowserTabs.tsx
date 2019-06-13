@@ -5,10 +5,11 @@ import { TrackType } from '../track-panel/trackPanelConfig';
 import styles from './BrowserTabs.scss';
 
 type BrowserTabsProps = {
+  activeGenomeId: string;
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
   selectBrowserTabAndSave: (selectedBrowserTab: TrackType) => void;
-  selectedBrowserTab: TrackType;
+  selectedBrowserTab: { [genomeId: string]: TrackType };
   toggleDrawer: (drawerOpened: boolean) => void;
   trackPanelModalOpened: boolean;
 };
@@ -24,12 +25,18 @@ const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
   const [clickHandlers, setClickHandlers] = useState(initClickHandlers);
 
   const getBrowserTabClasses = (trackType: TrackType) => {
+    const {
+      activeGenomeId,
+      selectedBrowserTab,
+      drawerOpened,
+      trackPanelModalOpened
+    } = props;
     let classNames = styles.browserTab;
 
     if (
-      props.selectedBrowserTab === trackType &&
-      props.drawerOpened === false &&
-      props.trackPanelModalOpened === false
+      selectedBrowserTab[activeGenomeId] === trackType &&
+      drawerOpened === false &&
+      trackPanelModalOpened === false
     ) {
       classNames += ` ${styles.browserTabActive} ${styles.browserTabArrow}`;
     }

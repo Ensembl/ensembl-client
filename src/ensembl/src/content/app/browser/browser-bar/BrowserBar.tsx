@@ -12,7 +12,8 @@ import {
   getChrLocation,
   getBrowserActivated,
   getDefaultChrLocation,
-  getGenomeSelectorActive
+  getGenomeSelectorActive,
+  getBrowserActiveGenomeId
 } from '../browserSelectors';
 import { getDrawerOpened } from '../drawer/drawerSelectors';
 import { getEnsObjectInfo } from 'src/ens-object/ensObjectSelectors';
@@ -32,6 +33,7 @@ import BrowserTabs from '../browser-tabs/BrowserTabs';
 import styles from './BrowserBar.scss';
 
 type StateProps = {
+  activeGenomeId: string;
   browserActivated: boolean;
   browserNavOpened: boolean;
   chrLocation: ChrLocation;
@@ -39,7 +41,7 @@ type StateProps = {
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
   ensObjectInfo: any;
-  selectedBrowserTab: TrackType;
+  selectedBrowserTab: { [genomeId: string]: TrackType };
   trackPanelModalOpened: boolean;
   trackPanelOpened: boolean;
 };
@@ -151,6 +153,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
       </div>
       {props.trackPanelOpened && (
         <BrowserTabs
+          activeGenomeId={props.activeGenomeId}
           drawerOpened={props.drawerOpened}
           genomeSelectorActive={props.genomeSelectorActive}
           selectBrowserTabAndSave={props.selectBrowserTabAndSave}
@@ -167,7 +170,7 @@ export const BrowserInfo = ({ ensObjectInfo }: BrowserInfoProps) => (
   <>
     <dd className={styles.geneSymbol}>
       <label>Gene</label>
-      <span className={styles.value}>{ensObjectInfo.obj_symbol}</span>
+      <span className={styles.value}>{ensObjectInfo.label}</span>
     </dd>
     <dd>
       <label>Stable ID</label>
@@ -196,6 +199,7 @@ export const BrowserNavigatorButton = (props: BrowserNavigatorButtonProps) => (
 );
 
 const mapStateToProps = (state: RootState): StateProps => ({
+  activeGenomeId: getBrowserActiveGenomeId(state),
   browserActivated: getBrowserActivated(state),
   browserNavOpened: getBrowserNavOpened(state),
   chrLocation: getChrLocation(state),

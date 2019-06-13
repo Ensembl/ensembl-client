@@ -2,17 +2,22 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import styles from './Home.scss';
-import { fetchExampleEnsObjectsData } from 'src/ens-object/ensObjectActions';
-import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
+import { fetchGenomeExampleEnsObjects } from 'src/genome/genomeActions';
+import { getGenomeExampleEnsObjects } from 'src/genome/genomeSelectors';
 import { RootState } from 'src/store';
+import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import { getCommittedSpecies } from '../app/species-selector/state/speciesSelectorSelectors';
+import { CommittedItem } from '../app/species-selector/types/species-search';
+
+import styles from './Home.scss';
 
 type StateProps = {
-  exampleEnsObjects: {};
+  activeSpecies: CommittedItem[];
+  exampleEnsObjects: EnsObject[];
 };
 
 type DispatchProps = {
-  fetchExampleEnsObjectsData: () => void;
+  fetchGenomeExampleEnsObjects: () => void;
 };
 
 type OwnProps = {};
@@ -20,36 +25,35 @@ type OwnProps = {};
 type HomeProps = StateProps & DispatchProps & OwnProps;
 
 const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
-  const [showPreviouslyViewed, toggleShowPreviouslyViewed] = useState(true);
+  const [showPreviouslyViewed, toggleShowPreviouslyViewed] = useState(false);
 
   useEffect(() => {
-    if (Object.values(props.exampleEnsObjects).length > 0) {
-      toggleShowPreviouslyViewed(true);
-    } else {
-      toggleShowPreviouslyViewed(false);
+    props.fetchGenomeExampleEnsObjects();
+  }, []);
 
-      props.fetchExampleEnsObjectsData();
+  useEffect(() => {
+    if (props.exampleEnsObjects.length > 0) {
+      toggleShowPreviouslyViewed(true);
     }
   }, [props.exampleEnsObjects]);
 
-  const getExampleObjectNode = (exampleObject: any) => {
-    const {
-      assembly,
-      chromosome,
-      display_name,
-      location,
-      object_type,
-      species,
-      stable_id
-    } = exampleObject;
-    const genomeId = `${assembly.name}_demo`;
-    const locationStr = `${chromosome}:${location.start}-${location.end}`;
-    const path = `/app/browser/${genomeId}?focus=${stable_id}&location=${locationStr}`;
+  const getExampleObjectNode = (exampleObject: EnsObject) => {
+    const genomeInfo = props.activeSpecies.filter(
+      (species: CommittedItem) => species.genome_id === exampleObject.genome_id
+    )[0];
+
+    const locationStr = `${exampleObject.location.chromosome}:${
+      exampleObject.location.start
+    }-${exampleObject.location.end}`;
+
+    const path = `/app/browser/${genomeInfo.genome_id}?focus=${
+      exampleObject.ensembl_object_id
+    }&location=${locationStr}`;
 
     return (
-      <dd key={stable_id}>
+      <dd key={exampleObject.ensembl_object_id}>
         <Link to={path}>
-          {species} {object_type} {display_name}
+          {genomeInfo.common_name} {exampleObject.label}
         </Link>
       </dd>
     );
@@ -71,7 +75,7 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
         <section className={styles.previouslyViewed}>
           <h2>Previously viewed</h2>
           <dl>
-            {Object.values(props.exampleEnsObjects).map((exampleObject) =>
+            {props.exampleEnsObjects.map((exampleObject: EnsObject) =>
               getExampleObjectNode(exampleObject)
             )}
           </dl>
@@ -100,11 +104,12 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  exampleEnsObjects: getExampleEnsObjects(state)
+  activeSpecies: getCommittedSpecies(state),
+  exampleEnsObjects: getGenomeExampleEnsObjects(state)
 });
 
 const mapDispatchToProps = {
-  fetchExampleEnsObjectsData
+  fetchGenomeExampleEnsObjects
 };
 
 export default connect(
