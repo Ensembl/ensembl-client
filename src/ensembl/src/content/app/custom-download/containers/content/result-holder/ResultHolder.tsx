@@ -36,7 +36,7 @@ const ResultHolder = (props: Props) => {
 
   useEffect(() => {
     if (!selectedAttributes.length && props.preview.results) {
-      props.clearPreviewResult([]);
+      props.clearPreviewResult({});
       return;
     }
     props.setIsLoadingResult(true);

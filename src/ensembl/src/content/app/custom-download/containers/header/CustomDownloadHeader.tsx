@@ -30,7 +30,9 @@ import {
   getSelectedFilters
 } from '../content/result-holder/helpers';
 
-import { fetchCustomDownloadResults } from './helper';
+import { fetchCustomDownloadResults } from './customDownloadHeaderHelper';
+
+import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 
 import AttributesSection, {
   SelectedAttribute
@@ -93,13 +95,6 @@ const downloadTypeoptions = [
   // }
 ];
 
-const getFormattedTotal = (total: number) => {
-  if (!total) {
-    return 0;
-  }
-  return total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-};
-
 const Header = (props: Props) => {
   const filterOnClick = () => {
     props.togglePreFiltersPanel(true);
@@ -113,13 +108,13 @@ const Header = (props: Props) => {
     props.setShowPreview(false);
   };
 
-  const resultCount = getFormattedTotal(props.preview.resultCount);
+  let resultCount = getCommaSeparatedNumber(props.preview.resultCount);
 
   const handleDownloadTypeSelect = (option: string) => {
     props.setDownloadType(option);
   };
 
-  const options = [...downloadTypeoptions].map((option: Option) => {
+  const options = downloadTypeoptions.map((option: Option) => {
     const optionClone = { ...option };
     if (optionClone.value === props.downloadType) {
       optionClone.isSelected = true;
@@ -127,23 +122,18 @@ const Header = (props: Props) => {
     return optionClone;
   });
 
-  let downloadButtonStatus = true;
-  if (props.downloadType !== '') {
-    downloadButtonStatus = false;
-  }
+  let downloadButtonStatus = props.downloadType === '';
 
-  let previewButtonDisabled = true;
-  if (props.preview.resultCount > 0) {
-    previewButtonDisabled = false;
-  }
+  let disablePreviewButton = resultCount === '0';
+
   const selectedAttributes: SelectedAttribute[] = getSelectedAttributes(
     props.attributes
   );
   const selectedFilters: any = getSelectedFilters(props.filters);
 
   const getFormattedResult = () => {
-    if (resultCount === 0) {
-      return <>No results found</>;
+    if (resultCount === '0') {
+      return <span>No results found</span>;
     }
     return (
       <>
@@ -205,7 +195,7 @@ const Header = (props: Props) => {
         {!props.showPreview && (
           <PrimaryButton
             onClick={previewButtonOnClick}
-            isDisabled={previewButtonDisabled}
+            isDisabled={disablePreviewButton}
           >
             Preview download
           </PrimaryButton>

@@ -59,67 +59,36 @@ const PreviewDownload = (props: Props) => {
           </tr>
           <tr>
             <td>
-              <table>
-                <tbody>
-                  <tr>
-                    <td>Human</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <Link to={'/app/species-selector'}>Change</Link>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div>Human</div>
+              <div>
+                <Link to={'/app/species-selector'}>Change</Link>
+              </div>
             </td>
             <td>
-              <table>
-                <tbody>
-                  {attributesList.map((attribute, index) => {
-                    return (
-                      <tr key={index}>
-                        <td>{attribute[3]}</td>
-                      </tr>
-                    );
-                  })}
-                  <tr>
-                    <td>
-                      <span
-                        className={styles.changeLink}
-                        onClick={() => {
-                          changeView('attributes');
-                        }}
-                      >
-                        Change
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              {attributesList.map((attribute, index) => {
+                return <div key={index}>{attribute[3]}</div>;
+              })}
+
+              <div
+                className={styles.changeLink}
+                onClick={() => {
+                  changeView('attributes');
+                }}
+              >
+                Change
+              </div>
             </td>
             <td>
-              <table>
-                <tbody>
-                  <tr>
-                    <td>Transcripts</td>
-                  </tr>
-                  <tr>
-                    <td>Protein Coding</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <span
-                        className={styles.changeLink}
-                        onClick={() => {
-                          changeView('filter');
-                        }}
-                      >
-                        Change
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div>Transcripts</div>
+              <div>Protein Coding</div>
+              <div
+                className={styles.changeLink}
+                onClick={() => {
+                  changeView('filter');
+                }}
+              >
+                Change
+              </div>
             </td>
           </tr>
         </tbody>

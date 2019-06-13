@@ -75,7 +75,6 @@ const TabButtons = (props: Props) => {
               props.toggleTabButton('attributes');
             }}
             status={dataButtonStatus}
-            // classNames={{inactive: styles.inactive}}
           >
             Data to download
           </RoundButton>
@@ -89,7 +88,6 @@ const TabButtons = (props: Props) => {
               props.toggleTabButton('filter');
             }}
             status={filterButtonStatus}
-            // classNames={{inactive: styles.inactive}}
           >
             Filter results
           </RoundButton>

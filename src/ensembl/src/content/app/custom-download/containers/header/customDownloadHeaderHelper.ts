@@ -29,14 +29,6 @@ export const fetchCustomDownloadResults = (
     endpointFields +
     '&sort=id&array=true&accept=' +
     downloadType;
-  try {
-    setTimeout(() => {
-      const response = {
-        file: endpoint
-      };
-      window.open(response.file);
-    }, 100);
-  } catch (error) {
-    throw error;
-  }
+
+  window.open(endpoint);
 };

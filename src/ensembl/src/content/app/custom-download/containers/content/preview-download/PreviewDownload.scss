@@ -10,6 +10,10 @@
     padding: 8px 0 8px 7px;
     font-size: 14px;
     vertical-align: top;
+
+    div {
+      margin-bottom: 5px;
+    }
   }
 }
 
@@ -20,7 +24,7 @@
   color: $ens-grey;
 
   td {
-    padding: 8px 0 8px 15px;
+    padding: 8px 0 8px 8px;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
@@ -35,6 +39,7 @@
 .changeLink {
   color: $ens-blue;
   cursor: pointer;
+  margin-top: 20px;
 }
 
 .closeButton {

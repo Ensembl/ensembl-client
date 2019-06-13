@@ -7,6 +7,8 @@ import { ActionCreator, Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import apiService from 'src/services/api-service';
 
+import Preview from 'src/content/app/custom-download/types/Preview';
+
 export const filterAccordionActions = allFilterAccordionActions;
 export const attributesAccordionActions = allAttributeAccordionActions;
 
@@ -47,7 +49,7 @@ export const setPreviewResult = createAsyncAction(
   'custom-download/preview-results-request',
   'custom-download/preview-results-success',
   'custom-download/preview-results-failure'
-)<{ endpointURL: string; headers: {} }, { preview: {} }, Error>();
+)<{ endpointURL: string; headers: {} }, { preview: Preview }, Error>();
 
 export const fetchPreviewResult: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
