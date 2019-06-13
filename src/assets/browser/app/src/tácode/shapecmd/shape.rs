@@ -101,7 +101,7 @@ fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceResp
         facade
     };
     if let Some(shape) = spec.new_long_shape(&data) {
-        if let Some(lc) = lc.get_mut(part) {
+        if let Some(lc) = lc.get_data_mut(part) {
             lc.add_shape(shape);
         }
     }    
@@ -117,7 +117,7 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceRes
     let y_start_len = y_start.len();
     let x_aux_len = x_aux.len();
     let y_aux_len = y_aux.len();
-    if let Some(lc) = lc.get_mut(part) {
+    if let Some(lc) = lc.get_data_mut(part) {
         lc.expect(x_start.len());
     }
     for i in 0..x_start.len() {
@@ -133,13 +133,13 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceRes
                 facade: facade.cloned().unwrap()
             };
             if let Some(shape) = spec.new_short_shape(&data) {
-                if let Some(lc) = lc.get_mut(part) {
+                if let Some(lc) = lc.get_data_mut(part) {
                     lc.add_shape(shape);
                 }
             }
         }
     }
-    if let Some(lc) = lc.get_mut(part) {
+    if let Some(lc) = lc.get_data_mut(part) {
         lc.expect(0);
     }
 }

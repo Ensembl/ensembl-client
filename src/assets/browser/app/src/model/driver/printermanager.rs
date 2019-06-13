@@ -70,8 +70,8 @@ impl Printer for PrinterManager {
         self.0.borrow_mut().printer.set_current(leaf);
     }
     
-    fn make_partial(&mut self, leaf: &Leaf) -> Box<TravellerResponse> {
-        self.0.borrow_mut().printer.make_partial(leaf)
+    fn make_traveller_response(&mut self, leaf: &Leaf) -> Box<TravellerResponse> {
+        self.0.borrow_mut().printer.make_traveller_response(leaf)
     }
     
     fn redraw_carriage(&mut self, leaf: &Leaf, zml: &mut ZMenuLeaf) {

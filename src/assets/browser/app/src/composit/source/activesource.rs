@@ -46,22 +46,23 @@ impl ActiveSource {
     }
     
     fn make_one_traveller(&self, party: &SourceResponse, part: &Option<String>, leaf: &Leaf) -> Traveller {
-        let srr = party.get_srr(part);
+        let srr = party.make_traveller_response(part);
         Traveller::new(self.clone(),part,leaf,srr)
     }
     
-    pub fn make_travellers(&self, party: &SourceResponse, leaf: &Leaf) -> Vec<Traveller> {
+    pub fn request_data(&self, party: SourceResponse, leaf: &Leaf) -> Vec<Traveller> {
         let mut out = Vec::<Traveller>::new();
+        /* create the travellers */
         out.push(self.make_one_traveller(&party,&None,&leaf));
         for part in self.list_parts() {            
             out.push(self.make_one_traveller(&party,&Some(part),&leaf));
         }
+        /* actually request the data */
+        {
+            let twin = self.source.clone();
+            twin.request_data(self,party,leaf);
+        }
         out
-    }
-
-    pub fn request_data(&mut self, resp: SourceResponse, leaf: &Leaf) {
-        let twin = self.source.clone();
-        twin.request_data(self,resp,leaf);
     }
     
     pub fn get_name(&self) -> &str { &self.name }  

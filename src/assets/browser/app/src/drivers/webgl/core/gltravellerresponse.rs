@@ -77,7 +77,7 @@ impl TravellerResponse for GLTravellerResponse {
     }
 
     /* train/partyresponses */
-    fn set(&mut self, result: TravellerResponseData) {
+    fn set_response(&mut self, result: TravellerResponseData) {
         *self.dr.borrow_mut() = Some(GLDrawing::new(result));
     }
 

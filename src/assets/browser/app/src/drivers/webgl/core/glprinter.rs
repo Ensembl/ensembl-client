@@ -167,7 +167,7 @@ impl GLPrinterBase {
         }
     }    
 
-    fn make_partial(&mut self, pref: &GLPrinter, leaf: &Leaf) -> Box<TravellerResponse> {
+    fn make_traveller_response(&mut self, pref: &GLPrinter, leaf: &Leaf) -> Box<TravellerResponse> {
         let idx = self.sridx;
         self.sridx += 1;
         let sr = GLTravellerResponse::new(pref,idx,leaf);
@@ -258,8 +258,8 @@ impl Printer for GLPrinter {
         self.base.borrow_mut().set_current(leaf);
     }
     
-    fn make_partial(&mut self, leaf: &Leaf) -> Box<TravellerResponse> {
+    fn make_traveller_response(&mut self, leaf: &Leaf) -> Box<TravellerResponse> {
         let twin = self.clone();
-        self.base.borrow_mut().make_partial(&twin,leaf)
+        self.base.borrow_mut().make_traveller_response(&twin,leaf)
     }      
 }
