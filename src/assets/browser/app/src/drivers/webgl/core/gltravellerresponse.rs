@@ -60,10 +60,7 @@ impl GLTravellerResponse {
         if dr.is_some() && *self.state.borrow() {
             dr.as_mut().unwrap().into_objects(e);
         }
-    }
-    
-    pub fn register_zmenus(&self, zml: &mut ZMenuLeaf) {
-    }
+    }    
 }
 
 impl TravellerResponse for GLTravellerResponse {

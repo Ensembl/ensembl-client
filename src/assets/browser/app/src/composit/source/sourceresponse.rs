@@ -20,8 +20,7 @@ impl SourceResponse {
             travellers: travs
         };
         for t in tt {
-            let srr = pm.make_traveller_response(&leaf);
-            t.set_srr(srr);
+            t.set_visuals(pm.make_traveller_response(&leaf));
         }
         out
     }

@@ -8,7 +8,12 @@ use model::shape::{
     ShapeShortInstanceData, TypeToShape, GenericShape
 };
 
-impl GenericShape for RectSpec {}
+impl GenericShape for RectSpec {
+    fn zmenu_box(&self) -> Option<Rect<f64,i32>> {
+        None
+    }
+}
+    
 impl GenericShape for BoxSpec {}
 
 #[derive(Clone,Copy,Debug)]

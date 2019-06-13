@@ -57,13 +57,6 @@ impl GLCarriagePrinter {
         }
     }
 
-    fn register_zmenus(&mut self, zml: &mut ZMenuLeaf) {
-        zml.redrawn();
-        for sr in self.srr.iter() {
-            sr.register_zmenus(zml);
-        }
-    }
-
     fn redraw_travellers(&mut self, aca: &mut AllCanvasAllocator) {
         if let Some(prev_cc) = self.prev_cc.take() {
             prev_cc.destroy(aca);
@@ -78,9 +71,8 @@ impl GLCarriagePrinter {
         self.progs = Some(progs);
     }
     
-    pub fn redraw(&mut self,aca: &mut AllCanvasAllocator,zml: &mut ZMenuLeaf) {
+    pub fn redraw(&mut self,aca: &mut AllCanvasAllocator) {
         self.redraw_travellers(aca);
-        self.register_zmenus(zml);
     }
 
     pub fn set_context(&mut self,stage: &Stage, opacity: f32) {        

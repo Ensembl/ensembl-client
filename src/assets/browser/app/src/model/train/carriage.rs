@@ -1,7 +1,7 @@
 use composit::Leaf;
 use composit::{ StateManager };
 use model::driver::{ Printer, PrinterManager };
-use drivers::zmenu::ZMenuLeafSet;
+use drivers::zmenu::{ ZMenuLeaf, ZMenuLeafSet };
 use super::Traveller;
 
 pub struct Carriage {
@@ -57,13 +57,20 @@ impl Carriage {
         }
     }
     
-    pub fn redraw_where_needed(&mut self, printer: &mut Printer, zmls: &mut ZMenuLeafSet) {
-        let mut zml = zmls.make_leaf(&self.leaf);
-        if self.needs_rebuild {
-            self.needs_rebuild = false;
-            printer.redraw_carriage(&self.leaf,&mut zml);
+    fn build_zmenu(&self, zmls: &mut ZMenuLeafSet) {
+        let mut zml = ZMenuLeaf::new(&self.leaf);
+        for t in &self.travellers {
+            t.build_zmenu(&mut zml);
         }
         zmls.register_leaf(zml);
+    }
+    
+    pub fn redraw_where_needed(&mut self, printer: &mut Printer, zmls: &mut ZMenuLeafSet) {
+        if self.needs_rebuild {
+            self.needs_rebuild = false;
+            printer.redraw_carriage(&self.leaf);
+            self.build_zmenu(zmls);
+        }
     }
 }
 

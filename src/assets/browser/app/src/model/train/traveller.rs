@@ -6,16 +6,19 @@ use std::sync::{ Arc, Mutex };
 use composit::{ Leaf, ActiveSource };
 use composit::{ StateManager };
 use model::driver::PrinterManager;
+use model::shape::{ ShapeSpec, GenericShape };
+use drivers::zmenu::ZMenuLeaf;
 use super::{ TravellerResponse, TravellerResponseData };
 
 pub struct TravellerImpl {
     comp: ActiveSource,
     prev_value: bool,
     cur_value: bool,
-    srr: Option<Box<TravellerResponse>>,
+    visuals: Option<Box<TravellerResponse>>,
     part: Option<String>,
     leaf: Leaf,
-    data: Option<TravellerResponseData>
+    data: Option<TravellerResponseData>,
+    zml: ZMenuLeaf
 }
 
 impl TravellerImpl {
@@ -26,13 +29,14 @@ impl TravellerImpl {
             leaf: leaf.clone(),
             part: part.clone(),
             comp,
-            srr: None,
-            data: Some(TravellerResponseData::new())
+            visuals: None,
+            data: Some(TravellerResponseData::new()),
+            zml: ZMenuLeaf::new(leaf)
         }
     }
     
-    fn set_srr(&mut self, srr: Box<TravellerResponse>) {
-        self.srr = Some(srr);
+    fn set_visuals(&mut self, visuals: Box<TravellerResponse>) {
+        self.visuals = Some(visuals);
     }
         
     fn update_data<F>(&mut self, cb: F) where F: FnOnce(&mut TravellerResponseData) {
@@ -42,7 +46,7 @@ impl TravellerImpl {
     fn update_state(&mut self, m: &StateManager) -> bool {
         self.prev_value = self.cur_value;
         self.cur_value = self.comp.is_on(m,&self.part);
-        self.srr.as_ref().unwrap().set_state(self.cur_value);
+        self.visuals.as_ref().unwrap().set_state(self.cur_value);
         self.prev_value != self.cur_value
     }
 
@@ -50,12 +54,27 @@ impl TravellerImpl {
         &self.part
     }
 
+    fn build_zmenu(&self, zml: &mut ZMenuLeaf) {
+        if self.cur_value {
+            zml.merge(&self.zml);
+        }
+    }
+
     fn is_done(&self) -> bool { 
-        return self.srr.as_ref().unwrap().check();
+        return self.visuals.as_ref().unwrap().check();
+    }
+    
+    fn create_zmenu(&mut self) {
+        for shape in self.data.as_ref().unwrap().get_shapes() {
+            if let Some(zbox) = shape.zmenu_box() {
+                self.zml.add_box("fake-id",zbox);
+            }
+        }
     }
     
     fn set_response(&mut self) {
-        self.srr.as_mut().unwrap().set_response(self.data.take().unwrap());
+        self.create_zmenu();
+        self.visuals.as_mut().unwrap().set_response(self.data.take().unwrap());
     }
 }
 
@@ -75,12 +94,16 @@ impl Traveller {
         self.0.lock().unwrap().is_done()
     }
     
-    pub fn set_srr(&mut self, srr: Box<TravellerResponse>) {
-        self.0.lock().unwrap().set_srr(srr);
+    pub fn set_visuals(&mut self, visuals: Box<TravellerResponse>) {
+        self.0.lock().unwrap().set_visuals(visuals);
     }
         
     pub fn get_part(&self) -> Option<String> {
         self.0.lock().unwrap().get_part().clone()
+    }
+    
+    pub fn build_zmenu(&self, zml: &mut ZMenuLeaf) {
+        self.0.lock().unwrap().build_zmenu(zml);
     }
     
     pub fn update_data<F>(&mut self, cb: F) where F: FnOnce(&mut TravellerResponseData) {
@@ -94,7 +117,7 @@ impl Traveller {
 
 impl Drop for TravellerImpl {
     fn drop(&mut self) {
-        self.srr.take().unwrap().destroy();
+        self.visuals.take().unwrap().destroy();
     }
 }
 

@@ -82,9 +82,9 @@ impl GLPrinterBase {
         }
     }
 
-    pub fn redraw_carriage(&mut self, leaf: &Leaf, zml: &mut ZMenuLeaf) {
+    pub fn redraw_carriage(&mut self, leaf: &Leaf) {
         if let Some(carriage_printer) = &mut self.lp.get_mut(&leaf) {
-            carriage_printer.redraw(&mut self.acm,zml);
+            carriage_printer.redraw(&mut self.acm);
         }
     }
 
@@ -229,8 +229,8 @@ impl Printer for GLPrinter {
         self.base.borrow_mut().destroy();
     }
 
-    fn redraw_carriage(&mut self, leaf: &Leaf, zml: &mut ZMenuLeaf) {
-        self.base.borrow_mut().redraw_carriage(leaf,zml);
+    fn redraw_carriage(&mut self, leaf: &Leaf) {
+        self.base.borrow_mut().redraw_carriage(leaf);
     }
 
     fn set_size(&mut self, s: Dot<f64,f64>) {

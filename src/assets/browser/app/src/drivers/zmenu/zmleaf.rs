@@ -1,17 +1,27 @@
 use composit::Leaf;
 
+use types::Rect;
+
 pub struct ZMenuLeaf {
     leaf: Leaf,
     redrawn: bool
 }
 
 impl ZMenuLeaf {
-    fn new(leaf: &Leaf) -> ZMenuLeaf {
+    pub fn new(leaf: &Leaf) -> ZMenuLeaf {
         ZMenuLeaf { leaf: leaf.clone(), redrawn: false }
     }
     
     pub fn redrawn(&mut self) {
         self.redrawn = true;
+    }
+    
+    pub fn merge(&mut self, other: &ZMenuLeaf) {
+        self.redrawn |= other.redrawn;
+    }
+    
+    pub fn add_box(&mut self, id: &str, zbox: Rect<f64,i32>) {
+        bb_log!("zmenu","add_box({:?},{:?})",id,zbox);
     }
     
     pub(in super) fn get_leaf(&self) -> &Leaf { &self.leaf }
@@ -26,11 +36,7 @@ impl ZMenuLeafSet {
     pub fn new() -> ZMenuLeafSet {
         ZMenuLeafSet { zml: Vec::new() }
     }
- 
-    pub fn make_leaf(&mut self, leaf: &Leaf) -> ZMenuLeaf {
-        ZMenuLeaf::new(leaf)
-    }
-    
+     
     pub fn register_leaf(&mut self, zml: ZMenuLeaf) {
         self.zml.push(zml);
     }

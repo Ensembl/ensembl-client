@@ -74,7 +74,7 @@ impl Printer for PrinterManager {
         self.0.borrow_mut().printer.make_traveller_response(leaf)
     }
     
-    fn redraw_carriage(&mut self, leaf: &Leaf, zml: &mut ZMenuLeaf) {
-        self.0.borrow_mut().printer.redraw_carriage(leaf,zml);
+    fn redraw_carriage(&mut self, leaf: &Leaf) {
+        self.0.borrow_mut().printer.redraw_carriage(leaf);
     }
 }

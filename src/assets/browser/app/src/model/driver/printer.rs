@@ -11,7 +11,7 @@ pub trait Printer {
     fn print(&mut self, stage: &Stage, compo: &mut Compositor);
     
     /* Redraw one carriage */
-    fn redraw_carriage(&mut self, leaf: &Leaf, zml: &mut ZMenuLeaf);
+    fn redraw_carriage(&mut self, leaf: &Leaf);
     
     /* Finished with printer */
     fn destroy(&mut self);
