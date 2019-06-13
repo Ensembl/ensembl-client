@@ -108,7 +108,7 @@ const Header = (props: Props) => {
     props.setShowPreview(false);
   };
 
-  let resultCount = getCommaSeparatedNumber(props.preview.resultCount);
+  let resultCount = props.preview.resultCount ? props.preview.resultCount : 0;
 
   const handleDownloadTypeSelect = (option: string) => {
     props.setDownloadType(option);
@@ -124,7 +124,7 @@ const Header = (props: Props) => {
 
   let downloadButtonStatus = props.downloadType === '';
 
-  let disablePreviewButton = resultCount === '0';
+  let disablePreviewButton = resultCount === 0;
 
   const selectedAttributes: SelectedAttribute[] = getSelectedAttributes(
     props.attributes
@@ -132,12 +132,12 @@ const Header = (props: Props) => {
   const selectedFilters: any = getSelectedFilters(props.filters);
 
   const getFormattedResult = () => {
-    if (resultCount === '0') {
+    if (!resultCount) {
       return <span>No results found</span>;
     }
     return (
       <>
-        <span>{resultCount}</span> results
+        <span>{getCommaSeparatedNumber(resultCount)}</span> results
       </>
     );
   };

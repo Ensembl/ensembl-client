@@ -11,9 +11,13 @@ export type RadioOptions = RadioOption[];
 
 type Props = {
   onChange: (selectedOption: string | number | boolean) => void;
-  classNames?: any;
+  classNames?: {
+    radioInput?: string;
+    radioLabel?: string;
+    radioTable?: string;
+  };
   radioOptions: RadioOptions;
-  selectedOption: string;
+  selectedOption: string | number | boolean;
   disabled?: boolean;
 };
 
@@ -31,31 +35,27 @@ const Radio = (props: Props) => {
   };
 
   return (
-    <table className={styles.radioTable}>
-      <tbody>
-        <tr>
-          {props.radioOptions.map((option: any, index: number) => {
-            return (
-              <td key={index}>
-                <input
-                  id={`radio_${index}`}
-                  className={styles.radioInput}
-                  value={option.value}
-                  type="radio"
-                  onChange={() => handleOnChange(index)}
-                  checked={option.value === props.selectedOption}
-                  disabled={props.disabled}
-                  name="radio"
-                />
-                <label className={styles.radioLabel} htmlFor={`radio_${index}`}>
-                  {option.label}
-                </label>
-              </td>
-            );
-          })}
-        </tr>
-      </tbody>
-    </table>
+    <div className={styles.radioTable}>
+      {props.radioOptions.map((option: any, index: number) => {
+        return (
+          <span key={index}>
+            <input
+              id={`radio_${index}`}
+              className={styles.radioInput}
+              value={option.value}
+              type="radio"
+              onChange={() => handleOnChange(index)}
+              checked={option.value === props.selectedOption}
+              disabled={props.disabled}
+              name="radio"
+            />
+            <label className={styles.radioLabel} htmlFor={`radio_${index}`}>
+              {option.label}
+            </label>
+          </span>
+        );
+      })}
+    </div>
   );
 };
 

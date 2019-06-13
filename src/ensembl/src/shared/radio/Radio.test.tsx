@@ -1,19 +1,16 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import Radio, { RadioOptions } from './Radio';
+import Radio from './Radio';
+
+import faker from 'faker';
+import times from 'lodash/times';
 
 const onChange = jest.fn();
 
-const options: RadioOptions = [
-  {
-    value: 'one',
-    label: 'one'
-  },
-  {
-    value: 'two',
-    label: 'two'
-  }
-];
+const createOption = () => ({
+  value: faker.random.uuid(),
+  label: faker.random.words(5)
+});
 
 describe('<Radio />', () => {
   afterEach(() => {
@@ -23,7 +20,7 @@ describe('<Radio />', () => {
   const defaultProps = {
     selectedOption: '',
     onChange: onChange,
-    radioOptions: options
+    radioOptions: times(5, () => createOption())
   };
 
   let wrapper: any;
@@ -47,7 +44,7 @@ describe('<Radio />', () => {
       .first()
       .simulate('change');
 
-    expect(onChange).toHaveBeenCalledWith('one');
+    expect(onChange).toHaveBeenCalledWith(defaultProps.radioOptions[0].value);
   });
 
   it('does not call onChange function if the status is disabled', () => {
@@ -64,6 +61,8 @@ describe('<Radio />', () => {
   it('renders N number of radios based on the radioOptions passed', () => {
     wrapper = mount(<Radio {...defaultProps} />);
 
-    expect(wrapper.find('.radioInput').length).toBe(options.length);
+    expect(wrapper.find('.radioInput').length).toBe(
+      defaultProps.radioOptions.length
+    );
   });
 });

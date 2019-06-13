@@ -1,7 +1,7 @@
 import { getCommaSeparatedNumber } from './numberFormatter';
 
 describe('getCommaSeparatedNumber', () => {
-  it('returns 1234 for the input 1234', () => {
+  it('returns 1,234 for the input 1234', () => {
     expect(getCommaSeparatedNumber(1234)).toBe('1,234');
   });
 
@@ -19,13 +19,5 @@ describe('getCommaSeparatedNumber', () => {
 
   it('returns -1,234,567 for the input -1234567', () => {
     expect(getCommaSeparatedNumber(-1234567)).toBe('-1,234,567');
-  });
-
-  it('returns 0 if the inout is an empty string', () => {
-    expect(getCommaSeparatedNumber('')).toBe('0');
-  });
-
-  it('returns 0 if the inout is undefined', () => {
-    expect(getCommaSeparatedNumber(undefined)).toBe('0');
   });
 });
