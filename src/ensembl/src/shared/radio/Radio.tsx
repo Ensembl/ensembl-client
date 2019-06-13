@@ -14,7 +14,6 @@ type Props = {
   classNames?: {
     radioInput?: string;
     radioLabel?: string;
-    radioTable?: string;
   };
   radioOptions: RadioOptions;
   selectedOption: string | number | boolean;
@@ -35,7 +34,7 @@ const Radio = (props: Props) => {
   };
 
   return (
-    <div className={styles.radioTable}>
+    <div>
       {props.radioOptions.map((option: any, index: number) => {
         return (
           <span key={index}>
