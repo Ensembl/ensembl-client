@@ -55,7 +55,9 @@ fn float_to_string(data: &Vec<f64>) -> Vec<String> {
 }
 
 fn string_to_float(data: &Vec<String>) -> Vec<f64> {
-    data[0].chars().map(|s| s as u32 as f64).collect()
+    data.iter().map(|s|
+        s.chars().nth(0).map(|x| x as u32 as f64).unwrap_or(0.)
+    ).collect()
 }
 
 fn float_to_bytes(data: &Vec<f64>) -> Vec<u8> {

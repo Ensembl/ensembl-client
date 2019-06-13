@@ -143,6 +143,8 @@ pub struct AccN(usize,usize,usize);
 pub struct Length(usize,usize);
 // lengths #len(string), #strings
 pub struct Lengths(usize,usize);
+// burst #out-strings, #in-strings
+pub struct Burst(usize,usize);
 
 impl Command for Elide {
     fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
@@ -302,6 +304,20 @@ impl Command for Lengths {
     }
 }
 
+impl Command for Burst {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        regs.get(self.1).as_string(|strings| {
+            let burst : Vec<Vec<String>> = strings.iter().map(|x|
+                x.chars().map(|x| x.to_string()).collect()
+            ).collect();
+            let burst = burst.iter().cloned().flatten().collect();
+            regs.set(self.0,Value::new_from_string(burst));
+        });
+        return 1;
+    }
+}
+
 pub struct ElideI();
 pub struct NotI();
 pub struct PickI();
@@ -314,6 +330,7 @@ pub struct MergeI();
 pub struct AccNI();
 pub struct LengthI();
 pub struct LengthsI();
+pub struct BurstI();
 
 impl Instruction for ElideI {
     fn signature(&self) -> Signature { Signature::new("elide","rrr") }
@@ -400,5 +417,12 @@ impl Instruction for LengthsI {
     fn signature(&self) -> Signature { Signature::new("lengths","rr") }
     fn build(&self, args: &Vec<Argument>) -> Box<Command> {
         Box::new(Lengths(args[0].reg(),args[1].reg()))
+    }
+}
+
+impl Instruction for BurstI {
+    fn signature(&self) -> Signature { Signature::new("burst","rr") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(Burst(args[0].reg(),args[1].reg()))
     }
 }

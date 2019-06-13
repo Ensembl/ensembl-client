@@ -63,6 +63,7 @@ impl EventListener<()> for UserEventListener {
                 );
             },
             EventData::MouseEvent(EventType::MouseClickEvent,_,e) => {
+                console!("click");
                 e.stop_propagation();
             },
             EventData::MouseEvent(EventType::MouseDblClickEvent,_,e) => {

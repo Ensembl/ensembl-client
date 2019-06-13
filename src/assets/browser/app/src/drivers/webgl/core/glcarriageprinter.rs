@@ -7,6 +7,7 @@ use model::train::Carriage;
 use composit::{ Leaf, Stage };
 use super::super::drawing::{ CarriageCanvases, AllCanvasAllocator };
 use dom::webgl::WebGLRenderingContext as glctx;
+use drivers::zmenu::ZMenuLeaf;
 
 pub struct GLCarriagePrinter {
     srr: HashSet<GLSourceResponse>,
@@ -56,6 +57,13 @@ impl GLCarriagePrinter {
         }
     }
 
+    fn register_zmenus(&mut self, zml: &mut ZMenuLeaf) {
+        zml.redrawn();
+        for sr in self.srr.iter() {
+            sr.register_zmenus(zml);
+        }
+    }
+
     fn redraw_travellers(&mut self, aca: &mut AllCanvasAllocator) {
         if let Some(prev_cc) = self.prev_cc.take() {
             prev_cc.destroy(aca);
@@ -73,10 +81,11 @@ impl GLCarriagePrinter {
     pub fn prepare(&mut self,
                         carriage: &mut Carriage,
                         aca: &mut AllCanvasAllocator,
-                        stage: &Stage, opacity: f32) {
+                        stage: &Stage, opacity: f32, zml: &mut ZMenuLeaf) {
         if carriage.needs_refresh() {
             carriage.reset_needs_refresh();
             self.redraw_travellers(aca);
+            self.register_zmenus(zml);
         }
         let progs = self.progs.as_mut().unwrap();
         for k in &progs.order {

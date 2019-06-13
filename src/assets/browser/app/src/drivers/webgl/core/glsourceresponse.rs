@@ -7,6 +7,7 @@ use super::{ GLDrawing, GLProgInstances, GLPrinter };
 use super::super::drawing::CarriageCanvases;
 use composit::{ Leaf, SourceResponseData };
 use model::driver::SourceResponse;
+use drivers::zmenu::ZMenuLeaf;
 
 #[derive(Clone)]
 pub struct GLSourceResponse {
@@ -60,6 +61,9 @@ impl GLSourceResponse {
             //console!("objects {:?}",self.leaf);
             dr.as_mut().unwrap().into_objects(e);
         }
+    }
+    
+    pub fn register_zmenus(&self, zml: &mut ZMenuLeaf) {
     }
 }
 

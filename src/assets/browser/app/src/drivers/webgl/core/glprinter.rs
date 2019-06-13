@@ -18,6 +18,8 @@ use stdweb::web::html_element::{
     CanvasElement
 };
 
+use drivers::zmenu::{ ZMenuRegistry, ZMenuLeafSet };
+
 pub struct WebGLTrainPrinter{}
 
 impl WebGLTrainPrinter {
@@ -35,12 +37,14 @@ impl WebGLTrainPrinter {
     }
     
     fn prepare(&mut self, printer: &mut GLPrinterBase, stage: &Stage,
-                     train: &mut Train, opacity: f32) {
+                     train: &mut Train, opacity: f32, zmls: &mut ZMenuLeafSet) {
         for carriage in train.get_carriages() {
             let leaf = carriage.get_leaf().clone();
+            let mut zml = zmls.make_leaf(&leaf);
             if let Some(lp) = &mut printer.lp.get_mut(&leaf) {
-                lp.prepare(carriage,&mut printer.acm,stage,opacity);
+                lp.prepare(carriage,&mut printer.acm,stage,opacity,&mut zml);
             }
+            zmls.register_leaf(zml);
         }
     }
 }
@@ -55,7 +59,8 @@ pub struct GLPrinterBase {
     current: HashSet<Leaf>,
     new_size: Option<Dot<f64,f64>>,
     settled_size: Option<Dot<f64,f64>>,
-    round_size: bool
+    round_size: bool,
+    zmr: ZMenuRegistry
 }
 
 impl GLPrinterBase {
@@ -77,7 +82,8 @@ impl GLPrinterBase {
             current: HashSet::<Leaf>::new(),
             new_size: None,
             settled_size: None,
-            round_size: true
+            round_size: true,
+            zmr: ZMenuRegistry::new()
         }
     }
 
@@ -96,7 +102,8 @@ impl GLPrinterBase {
         self.current.insert(leaf.clone());
     }
 
-    fn prepare_all(&mut self) {
+    fn prepare_all(&mut self, zmls: ZMenuLeafSet) {
+        self.zmr.update(zmls);
         if let Some(new_size) = self.new_size.take() {
             self.set_size(new_size);
         }
@@ -197,16 +204,17 @@ impl GLPrinter {
 
 impl Printer for GLPrinter {
     fn print(&mut self, stage: &Stage, compo: &mut Compositor) {
+        let mut zmls = ZMenuLeafSet::new();
         let prop = compo.get_prop_trans();
         if let Some(train) = compo.get_current_train() {
             let mut tp = WebGLTrainPrinter::new();
-            tp.prepare(&mut self.base.borrow_mut(),stage,train,1.-prop);
+            tp.prepare(&mut self.base.borrow_mut(),stage,train,1.-prop,&mut zmls);
         }
         if let Some(train) = compo.get_transition_train() {
             let mut tp = WebGLTrainPrinter::new();
-            tp.prepare(&mut self.base.borrow_mut(),stage,train,prop);
+            tp.prepare(&mut self.base.borrow_mut(),stage,train,prop,&mut zmls);
         }
-        self.base.borrow_mut().prepare_all();
+        self.base.borrow_mut().prepare_all(zmls);
         if let Some(train) = compo.get_transition_train() {
             let mut tp = WebGLTrainPrinter::new();
             tp.execute(&mut self.base.borrow_mut(),&train.leafs());
