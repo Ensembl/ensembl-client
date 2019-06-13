@@ -51,7 +51,7 @@ export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
         );
       } else {
         return speciesSelectorActions.fetchSpeciesSearchResults.success({
-          results: response
+          results: response.genome_matches
         });
       }
     })
