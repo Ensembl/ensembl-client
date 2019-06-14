@@ -18,6 +18,8 @@ describe('getCommaSeparatedNumber', () => {
 
     // Check if the length of the second element is 3
     expect(numberSplitByComma[1].length).toBe(3);
+
+    expect(Number(numberSplitByComma.join(''))).toBe(randomNumber);
   });
 
   it('returns xx,xxx for the input number xxxxx', () => {
@@ -35,6 +37,8 @@ describe('getCommaSeparatedNumber', () => {
 
     // Check if the length of the second element is 3
     expect(numberSplitByComma[1].length).toBe(3);
+
+    expect(Number(numberSplitByComma.join(''))).toBe(randomNumber);
   });
 
   it('returns xxx,xxx for the input number xxxxxx', () => {
@@ -52,6 +56,8 @@ describe('getCommaSeparatedNumber', () => {
 
     // Check if the length of the second element is 3
     expect(numberSplitByComma[1].length).toBe(3);
+
+    expect(Number(numberSplitByComma.join(''))).toBe(randomNumber);
   });
 
   it('returns x,xxx,xxx for the input number xxxxxxx', () => {
@@ -64,7 +70,7 @@ describe('getCommaSeparatedNumber', () => {
     // Check if there are two elements in the array
     expect(numberSplitByComma.length).toBe(3);
 
-    // Check if the length of the first element is 3
+    // Check if the length of the first element is 1
     expect(numberSplitByComma[0].length).toBe(1);
 
     // Check if the length of the second element is 3
@@ -72,6 +78,8 @@ describe('getCommaSeparatedNumber', () => {
 
     // Check if the length of the second element is 3
     expect(numberSplitByComma[2].length).toBe(3);
+
+    expect(Number(numberSplitByComma.join(''))).toBe(randomNumber);
   });
 
   it('returns -x,xxx for the input number -xxxx', () => {
@@ -84,7 +92,7 @@ describe('getCommaSeparatedNumber', () => {
     // Check if there are two elements in the array
     expect(numberSplitByComma.length).toBe(2);
 
-    // Check if the length of the first element is 1
+    // Check if the length of the first element is 2
     expect(numberSplitByComma[0].length).toBe(2);
 
     // Check if the length of the second element is 3
