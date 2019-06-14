@@ -52,7 +52,7 @@ type BpaneScrollEvent = Event & {
 const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
   props: BrowserCogListProps
 ) => {
-  const { selectedCog, browserCogTrackList } = props;
+  const { browserCogTrackList } = props;
   const listenBpaneScroll = useCallback((event: Event) => {
     const bpaneScrollEvent = event as BpaneScrollEvent;
     if (

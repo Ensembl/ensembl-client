@@ -15,11 +15,11 @@ type AnchorCoordinates = {
   y: number;
 };
 
-enum Markup {
+export enum Markup {
   STRONG = 'strong',
   EMPHASIS = 'emphasis',
   FOCUS = 'focus',
-  SMALL = 'SMALL'
+  LIGHT = 'light'
 }
 
 export enum ZmenuAction {
@@ -28,7 +28,7 @@ export enum ZmenuAction {
   REPOSITION = 'update_zmenu_position'
 }
 
-type ZmenuContentItem = {
+export type ZmenuContentItem = {
   text: string;
   markup: Markup[];
 };
@@ -37,12 +37,12 @@ type ZmenuContentBlock = ZmenuContentItem[];
 
 type ZmenuContentLine = ZmenuContentBlock[];
 
-type ZmenuContentSection = {
+export type ZmenuContentSection = {
   id: string;
   lines: ZmenuContentLine[];
 };
 
-type ZmenuContentFeature = ZmenuContentSection[];
+export type ZmenuContentFeature = ZmenuContentSection[];
 
 // data that is sufficient to describe an instance of Zmenu
 export type ZmenuData = {
@@ -59,7 +59,9 @@ export type ZmenuCreatePayload = {
 };
 
 // Sent from Genome browser to React
-export type ZmenuCreateEvent = Event & ZmenuCreatePayload;
+export type ZmenuCreateEvent = Event & {
+  detail: ZmenuCreatePayload;
+};
 
 export type ZmenuDestroyPayload = {
   id: string;
@@ -67,7 +69,9 @@ export type ZmenuDestroyPayload = {
 };
 
 // Sent from Genome browser to React
-export type ZmenuDestroyEvent = Event & ZmenuDestroyPayload;
+export type ZmenuDestroyEvent = Event & {
+  detail: ZmenuDestroyPayload;
+};
 
 // Sent from React to Genome browser
 // (on mouseover; perhaps tap?)
@@ -93,7 +97,9 @@ export type ZmenuRepositionPayload = {
   };
 };
 
-export type ZmenuRepositionEvent = Event & ZmenuRepositionPayload;
+export type ZmenuRepositionEvent = Event & {
+  detail: ZmenuRepositionPayload;
+};
 
 export type ZmenuIncomingEvent =
   | ZmenuCreateEvent
