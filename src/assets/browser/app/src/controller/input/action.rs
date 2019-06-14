@@ -104,7 +104,12 @@ fn exe_set_state(a: &mut App, name: &str, on: bool) {
 }
 
 fn exe_zmenu(a: &mut App, pos: &CPixel) {
-    console!("zmenu {:?}",pos);
+    console!("click {:?}",pos);
+    a.with_compo(|co|
+        a.with_stage(|s|
+            co.intersects(s,*pos)
+        )
+    );
 }
 
 pub fn actions_run(cg: &mut App, evs: &Vec<Action>) {

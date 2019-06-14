@@ -1,5 +1,5 @@
 use composit::{
-    ActiveSource, Stick, Scale, ComponentSet, StateManager
+    ActiveSource, Stick, Scale, ComponentSet, StateManager, Stage
 };
 
 use model::driver::{ PrinterManager, Printer };
@@ -9,7 +9,7 @@ use drivers::zmenu::{ ZMenuRegistry, ZMenuLeafSet };
 use controller::global::AppRunner;
 use controller::output::Report;
 use data::{ Psychic, PsychicPacer, XferCache, XferClerk };
-use types::DOWN;
+use types::{ DOWN, Dot };
 
 const MS_PER_UPDATE : f64 = 0.;
 const MS_PRIME_DELAY: f64 = 2000.;
@@ -152,6 +152,10 @@ impl Compositor {
     
     pub fn update_state(&mut self, oom: &StateManager) {
         self.train_manager.update_state(oom);
+    }
+    
+    pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) {
+        self.zmr.intersects(stage,pos);
     }
 }
 

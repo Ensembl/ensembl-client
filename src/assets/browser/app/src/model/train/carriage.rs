@@ -57,20 +57,21 @@ impl Carriage {
         }
     }
     
-    fn build_zmenu(&self, zmls: &mut ZMenuLeafSet) {
-        let mut zml = ZMenuLeaf::new(&self.leaf);
+    fn build_zmenu(&self, zml: &mut ZMenuLeaf) {
         for t in &self.travellers {
-            t.build_zmenu(&mut zml);
+            t.build_zmenu(zml);
         }
-        zmls.register_leaf(zml);
+        zml.redrawn();
     }
     
     pub fn redraw_where_needed(&mut self, printer: &mut Printer, zmls: &mut ZMenuLeafSet) {
+        let mut zml = ZMenuLeaf::new(&self.leaf);
         if self.needs_rebuild {
             self.needs_rebuild = false;
             printer.redraw_carriage(&self.leaf);
-            self.build_zmenu(zmls);
+            self.build_zmenu(&mut zml);
         }
+        zmls.register_leaf(zml);
     }
 }
 

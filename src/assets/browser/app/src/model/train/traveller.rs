@@ -54,9 +54,9 @@ impl TravellerImpl {
         &self.part
     }
 
-    fn build_zmenu(&self, zml: &mut ZMenuLeaf) {
+    fn build_zmenu(&mut self, zml: &mut ZMenuLeaf) {
         if self.cur_value {
-            zml.merge(&self.zml);
+            zml.merge(&mut self.zml);
         }
     }
 
@@ -67,7 +67,7 @@ impl TravellerImpl {
     fn create_zmenu(&mut self) {
         for shape in self.data.as_ref().unwrap().get_shapes() {
             if let Some(zbox) = shape.zmenu_box() {
-                self.zml.add_box("fake-id",zbox);
+                self.zml.add_box("fake-id",&zbox);
             }
         }
     }

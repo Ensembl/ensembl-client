@@ -236,3 +236,19 @@ pub enum Placement {
     Placed(XPosition,YPosition),
     Stretch(RLeaf)
 }
+
+impl Placement {
+    pub fn add_bp(&self, bp: f64, bp_per_leaf: f64) -> Placement {
+        match self {
+            Placement::Placed(mut x,y) => {
+                if let XPosition::Base(b,s,e) = x {
+                    x = XPosition::Base(b*bp_per_leaf+bp,s,e)
+                };
+                Placement::Placed(x,*y)
+            },
+            Placement::Stretch(r) => {
+                Placement::Stretch(*r * Dot(bp_per_leaf as f32,1) + Dot(bp as f32,0))
+            }
+        }
+    }
+}
