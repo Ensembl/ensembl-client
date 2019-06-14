@@ -9,6 +9,8 @@ import { connect } from 'react-redux';
 import styles from './BrowserImage.scss';
 import { ChrLocation, BrowserNavStates, CogList } from '../browserState';
 import BrowserCogList from '../BrowserCogList';
+import { ZmenuController } from 'src/content/app/browser/zmenu';
+
 import {
   getTrackConfigNames,
   getTrackConfigLabel,
@@ -142,6 +144,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
           ref={props.browserRef}
         />
         <BrowserCogList browserRef={props.browserRef} />
+        <ZmenuController browserRef={props.browserRef} />
       </div>
     </>
   );
