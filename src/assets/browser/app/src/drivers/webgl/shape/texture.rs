@@ -73,7 +73,7 @@ impl GLShape for TextureSpec {
         }
     }
 
-    fn get_geometry(&self) -> ProgramType {
+    fn get_geometry(&self) -> Option<ProgramType> {
         let gt = match self.origin {
             TexturePosition::Pin(_) => PTGeom::Pin,
             TexturePosition::Tape(_) => PTGeom::Tape,
@@ -83,7 +83,7 @@ impl GLShape for TextureSpec {
             TexturePosition::Page(_) => PTGeom::Page,
             TexturePosition::PageUnderAll(_) => PTGeom::PageUnderAll,
         };
-        ProgramType(gt,PTMethod::Triangle,PTSkin::Texture)
+        Some(ProgramType(gt,PTMethod::Triangle,PTSkin::Texture))
     }
 
     fn get_artist(&self) -> Option<Rc<Artist>> { 

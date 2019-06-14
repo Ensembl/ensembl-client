@@ -59,8 +59,8 @@ impl GLShape for StretchTextureSpec {
         }
     }
     
-    fn get_geometry(&self) -> ProgramType {
-        ProgramType(PTGeom::Stretch,PTMethod::Triangle,PTSkin::Texture)
+    fn get_geometry(&self) -> Option<ProgramType> {
+        Some(ProgramType(PTGeom::Stretch,PTMethod::Triangle,PTSkin::Texture))
     }
 
     fn get_artist(&self) -> Option<Rc<Artist>> { Some(self.aspec.to_artist()) }

@@ -7,7 +7,7 @@ use types::{
 use model::shape::{ 
     ColourSpec, ShapeSpec, Facade, FacadeType, ShapeInstanceDataType,
     ShapeShortInstanceData, TypeToShape, GenericShape, PatinaSpec,
-    ZPosition, RectSpec, RectPosition
+    ZPosition, RectSpec, RectPosition, ZMenuRectSpec
 };
 
 pub struct PinRectTypeSpec {
@@ -27,6 +27,8 @@ impl PinRectTypeSpec {
                 PatinaSpec::Colour => Some(ColourSpec::Colour(c)),
                 _ => None
             }
+        } else if let Facade::ZMenu(ref c) = rd.facade {
+            Some(ColourSpec::ZMenu(c.to_string()))
         } else {
             None
         }
@@ -89,13 +91,24 @@ impl PinRectTypeSpec {
         };
         let nw = pos.offset();
         let se = pos.far_offset();
-        Some(ShapeSpec::PinRect(RectSpec {
-            offset: RectPosition(Placement::Placed(
-                        XPosition::Pixel(nw.0,se.0),
-                        YPosition::Page(nw.1,se.1)),
-                        z),
-            colspec: colspec.unwrap()
-        }))     
+        
+        if self.spot == PatinaSpec::ZMenu {
+            Some(ShapeSpec::ZMenu(ZMenuRectSpec {
+                offset: RectPosition(Placement::Placed(
+                            XPosition::Pixel(nw.0,se.0),
+                            YPosition::Page(nw.1,se.1)),
+                            z),
+                id: "FIX!".to_string()
+            }))     
+        } else {        
+            Some(ShapeSpec::PinRect(RectSpec {
+                offset: RectPosition(Placement::Placed(
+                            XPosition::Pixel(nw.0,se.0),
+                            YPosition::Page(nw.1,se.1)),
+                            z),
+                colspec: unwrap!(colspec)
+            }))     
+        }
     }
 
     fn new_fix(&self, rd: &ShapeShortInstanceData) -> Option<ShapeSpec> {
@@ -133,7 +146,13 @@ impl TypeToShape for PinRectTypeSpec {
         }
     }
     
-    fn get_facade_type(&self) -> FacadeType { FacadeType::Colour }
+    fn get_facade_type(&self) -> FacadeType { 
+        if self.spot == PatinaSpec::ZMenu {
+            FacadeType::ZMenu
+        } else {
+            FacadeType::Colour
+        }
+    }
     fn needs_scale(&self) -> (bool,bool) { (self.sea_x.is_none(),false) }
     fn sid_type(&self) -> ShapeInstanceDataType { ShapeInstanceDataType::Short }
 }

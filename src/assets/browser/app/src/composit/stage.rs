@@ -154,6 +154,7 @@ impl Stage {
         let screen_px = self.dims;
         let bp_px = screen_px.0 / screen_bp;
         let left_bp = self.pos.get_edge(&LEFT);
+        let top_px = self.pos.get_edge(&UP);
         match area {
             Placement::Stretch(r) => {
                 let pos_bp = left_bp + pos.0 as f64 * bp_px;
@@ -175,13 +176,15 @@ impl Stage {
                 };
                 let (y0,y1) = match y {
                     YPosition::Page(s,e) => {
-                        (*s as f64-screen_px.1, *e as f64-screen_px.1)
+                        (*s as f64-top_px, *e as f64-top_px)
                     }
                     YPosition::Pixel(s,e) => {
                         (s.min_dist(screen_px.1 as i32) as f64,
                          e.min_dist(screen_px.1 as i32) as f64)
                     }
                 };
+                bb_log!("zmenu","P {:?}<={:?}<={:?} {:?}<={:?}<={:?}",
+                            x0,pos.0,x1, y0,pos.1,y1);
                 x0 <= pos.0 as f64 && x1 >= pos.0 as f64 &&
                 y0 <= pos.1 as f64 && y1 >= pos.1 as f64
             }

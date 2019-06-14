@@ -8,6 +8,7 @@ mod spot;
 mod texture;
 mod glshapebox;
 mod glwiggle;
+mod zmenu;
 
 pub use self::glshape::GLShape;
 

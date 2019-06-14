@@ -5,16 +5,13 @@ use super::util::{
 
 use super::super::program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
 use drivers::webgl::{ GLProgData, Artwork };
-use model::shape::{ ColourSpec, StretchWiggle };
+use model::shape::{ ColourSpec, StretchWiggle, ZMenuRectSpec };
 
-impl GLShape for StretchWiggle {
+impl GLShape for ZMenuRectSpec {
     fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut GLProgData) {
-        let dg = colourspec_to_group(&ColourSpec::Spot(self.group),geom,e);
-        let b = vertices_strip(geom,self.points.len() as u16*2,dg);
-        points_g(b,geom,"aVertexPosition",&self.points,self.y);
     }
     
     fn get_geometry(&self) -> Option<ProgramType> { 
-        Some(ProgramType(PTGeom::Stretch,PTMethod::Strip,PTSkin::Spot))
+        None
     }
 }

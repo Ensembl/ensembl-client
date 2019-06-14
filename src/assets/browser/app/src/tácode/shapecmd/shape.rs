@@ -48,6 +48,9 @@ fn make_facade(spec: &Box<TypeToShape>, colour: &Vec<f64>, tx: &Vec<DrawingSpec>
         FacadeType::Drawing => {
             let idx = colour[i%col_len];
             Facade::Drawing(tx[idx as usize].clone())
+        },
+        FacadeType::ZMenu => {
+            Facade::ZMenu("FIX ME".to_string())
         }
     }
 }
@@ -58,7 +61,8 @@ fn make_facades(spec: &Box<TypeToShape>, colour: &Vec<f64>, tx: &Vec<DrawingSpec
     let type_ = spec.get_facade_type();
     let num_items = match type_ {
         FacadeType::Colour => col_len/3,
-        FacadeType::Drawing => col_len
+        FacadeType::Drawing => col_len,
+        FacadeType::ZMenu => 1
     };
     for i in 0..num_items {
         out.push(match type_ {
@@ -71,7 +75,10 @@ fn make_facades(spec: &Box<TypeToShape>, colour: &Vec<f64>, tx: &Vec<DrawingSpec
             FacadeType::Drawing => {
                 let idx = colour[i];
                 Facade::Drawing(tx[idx as usize].clone())
-            }
+            },
+            FacadeType::ZMenu => {
+                Facade::ZMenu("FIX ME".to_string())
+            }            
         });
     }
     out
@@ -102,7 +109,7 @@ fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceResp
     };
     if let Some(shape) = spec.new_long_shape(&data) {
         lc.update_data(part,|data| data.add_shape(shape));
-    }    
+    }
 }
 
 fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceResponse, 
@@ -125,7 +132,7 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceRes
                 pos_y: y_start[i%y_start_len] as i32,
                 aux_x: x_aux_v,
                 aux_y: y_aux[i%y_aux_len] as i32,
-                facade: facade.cloned().unwrap()
+                facade: unwrap!(facade.cloned())
             };
             if let Some(shape) = spec.new_short_shape(&data) {
                 lc.update_data(part,|data| data.add_shape(shape));

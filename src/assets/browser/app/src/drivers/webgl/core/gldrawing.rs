@@ -35,11 +35,12 @@ impl GLDrawing {
         let mut di = self.drawings.iter();
         for s in self.sr.get_shapes().iter() {
             let d = di.next();
-            let geom_name = s.get_geometry();
-            let (progs,data) = e.get_progs_data();
-            if let Some(geom) = progs.map.get_mut(&geom_name) {
-                let artwork = d.unwrap().as_ref().map(|r| r.artwork(data));
-                s.into_objects(&mut geom.data,artwork,data);
+            if let Some(geom_name) = s.get_geometry() {
+                let (progs,data) = e.get_progs_data();
+                if let Some(geom) = progs.map.get_mut(&geom_name) {
+                    let artwork = d.unwrap().as_ref().map(|r| r.artwork(data));
+                    s.into_objects(&mut geom.data,artwork,data);
+                }
             }
         }
     }

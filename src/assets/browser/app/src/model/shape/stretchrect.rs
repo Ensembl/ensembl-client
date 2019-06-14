@@ -7,12 +7,12 @@ use types::{
 use model::shape::{ 
     ColourSpec, ShapeSpec, Facade, FacadeType, ShapeInstanceDataType,
     ShapeShortInstanceData, TypeToShape, GenericShape, PatinaSpec,
-    ZPosition, RectSpec, RectPosition
+    ZPosition, RectSpec, RectPosition, ZMenuRectSpec
 };
     
 impl GenericShape for BoxSpec {}
 
-#[derive(Clone,Copy,Debug)]
+#[derive(Clone,Debug)]
 pub struct BoxSpec {
     pub offset: RLeaf,
     pub width: i32,
@@ -42,7 +42,12 @@ impl TypeToShape for StretchRectTypeSpec {
         let offset = area_size(cleaf(rd.pos_x,rd.pos_y),
                                cleaf(rd.aux_x,rd.aux_y));
         if rd.pos_x <= 1. && rd.pos_x+rd.aux_x >= 0. {
-            if self.hollow {
+            if self.spot == PatinaSpec::ZMenu {
+                Some(ShapeSpec::ZMenu(ZMenuRectSpec {
+                    offset: RectPosition(Placement::Stretch(offset),ZPosition::Normal),
+                    id: "this is a test".to_string()
+                }))
+            } else if self.hollow {
                 Some(ShapeSpec::PinBox(BoxSpec {
                     offset,
                     width: 1,

@@ -7,7 +7,7 @@ use drivers::webgl::{ StretchTextureSpec, Artist };
 use types::{ Colour, Rect, Placement };
 use super::{
     PinPolySpec, StretchWiggle, RectSpec, BoxSpec, BitmapArtist,
-    CollageArtist, TextArtist, TextureSpec
+    CollageArtist, TextArtist, TextureSpec, ZMenuRectSpec
 };
 
 pub trait GenericShape {
@@ -18,6 +18,7 @@ pub trait GenericShape {
 pub enum ShapeSpec {
     PinPoly(PinPolySpec),
     PinRect(RectSpec),
+    ZMenu(ZMenuRectSpec),
     PinBox(BoxSpec),
     PinTexture(TextureSpec),
     StretchTexture(StretchTextureSpec),
@@ -27,21 +28,19 @@ pub enum ShapeSpec {
 /* TODO: Why is StretchTextureSpec still in the webgl driver? */
 impl GenericShape for ShapeSpec {
     fn zmenu_box(&self) -> Option<Placement> {
-        match self {
-            ShapeSpec::PinPoly(s) => s.zmenu_box(),
-            ShapeSpec::PinRect(s) => s.zmenu_box(),
-            ShapeSpec::PinBox(s)  => s.zmenu_box(),
-            ShapeSpec::PinTexture(s)  => s.zmenu_box(),
-            ShapeSpec::StretchTexture(s) => None, /* TODO: Why is StretchTextureSpec still in the webgl driver? */
-            ShapeSpec::Wiggle(s) => s.zmenu_box()
+        if let ShapeSpec::ZMenu(s) = self {
+            s.zmenu_box()
+        } else {
+            None
         }
     }
 }
 
-#[derive(Clone,Copy,Debug)]
+#[derive(Clone,Debug)]
 pub enum ColourSpec {
     Colour(Colour),
     Spot(Colour),
+    ZMenu(String)
 }
 
 
@@ -77,13 +76,15 @@ impl DrawingSpec {
 
 pub enum FacadeType {
     Drawing,
-    Colour
+    Colour,
+    ZMenu
 }
 
 #[derive(Clone)]
 pub enum Facade {
     Drawing(DrawingSpec),
-    Colour(Colour)
+    Colour(Colour),
+    ZMenu(String)
 }
 
 pub struct ShapeShortInstanceData {

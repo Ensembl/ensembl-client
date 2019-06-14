@@ -22,7 +22,7 @@ pub use self::poly::{
 };
 
 pub use self::rect::{
-    RectSpec,
+    RectSpec,  ZMenuRectSpec,
     RectPosition, ZPosition, PatinaSpec
 };
 

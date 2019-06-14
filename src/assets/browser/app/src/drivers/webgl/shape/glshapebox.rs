@@ -47,7 +47,7 @@ impl GLShape for BoxSpec {
         }
     }
     
-    fn get_geometry(&self) -> ProgramType {
-        despot(PTGeom::Pin,PTMethod::Strip,&self.colspec)
+    fn get_geometry(&self) -> Option<ProgramType> {
+        Some(despot(PTGeom::Pin,PTMethod::Strip,&self.colspec))
     }
 }

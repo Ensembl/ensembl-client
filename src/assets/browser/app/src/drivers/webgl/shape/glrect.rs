@@ -64,7 +64,7 @@ impl GLShape for RectSpec {
         }
     }
     
-    fn get_geometry(&self) -> ProgramType {
-        despot(program_type(self),PTMethod::Triangle,&self.colspec)
+    fn get_geometry(&self) -> Option<ProgramType> {
+        Some(despot(program_type(self),PTMethod::Triangle,&self.colspec))
     }    
 }

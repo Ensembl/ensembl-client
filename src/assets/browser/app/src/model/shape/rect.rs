@@ -20,18 +20,27 @@ pub enum ZPosition {
 #[derive(Clone,Copy,Debug)]
 pub struct RectPosition(pub Placement,pub ZPosition);
 
-#[derive(Clone,Copy,Debug)]
+#[derive(Clone,Debug)]
 pub struct RectSpec {
     pub offset: RectPosition,
     pub colspec: ColourSpec
 }
 
-impl GenericShape for RectSpec {
+#[derive(Clone,Debug)]
+pub struct ZMenuRectSpec {
+    pub offset: RectPosition,
+    pub id: String
+}
+
+impl GenericShape for RectSpec {}
+
+impl GenericShape for ZMenuRectSpec {
     fn zmenu_box(&self) -> Option<Placement> {
         Some(self.offset.0)
     }
 }
 
+#[derive(Clone,Debug,PartialEq)]
 pub enum PatinaSpec {
     Colour,
     Spot,

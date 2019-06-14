@@ -144,6 +144,6 @@ pub fn despot(gt: PTGeom, mt: PTMethod, spec: &ColourSpec) -> ProgramType {
 pub fn colourspec_to_group(cs: &ColourSpec, g: &mut ProgramAttribs, e: &mut GLProgData) -> Option<DataGroupIndex> {
     match cs {
         ColourSpec::Spot(c) => Some(e.spot().get_group(g,c)),
-        ColourSpec::Colour(_) => None
+        _ => None
     }
 }

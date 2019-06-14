@@ -10,7 +10,7 @@ pub enum PolyPosition<T: Clone+Copy+Debug> {
     Page(Dot<Edge<i32>,i32>)
 }
 
-#[derive(Clone,Copy,Debug)]
+#[derive(Clone,Debug)]
 pub struct PinPolySpec {
     pub origin: PolyPosition<f32>,
     pub anchor: Anchors,
