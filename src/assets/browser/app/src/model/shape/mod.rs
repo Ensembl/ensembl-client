@@ -24,6 +24,7 @@ pub use self::rect::{
     RectSpec,
     PinRectTypeSpec,
     StretchRectTypeSpec,
+    RectPosition, ZPosition
 };
 
 pub use self::shapespec::{ 

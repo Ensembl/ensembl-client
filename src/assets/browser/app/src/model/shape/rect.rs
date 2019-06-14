@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use types::{ 
     CLeaf, AxisSense, Rect, Edge, RLeaf, area_size, cleaf, cpixel,
-    RectPosition
+    Position, XPosition, YPosition, Dot
 };
 use model::shape::{ 
     ColourSpec, ShapeSpec, Facade, FacadeType, ShapeInstanceDataType,
@@ -18,8 +18,19 @@ impl GenericShape for RectSpec {
 impl GenericShape for BoxSpec {}
 
 #[derive(Clone,Copy,Debug)]
+pub enum ZPosition {
+    Normal,
+    UnderPage,
+    UnderTape,
+    UnderAll
+}
+
+#[derive(Clone,Copy,Debug)]
+pub struct RectPosition(pub Position,pub ZPosition);
+
+#[derive(Clone,Copy,Debug)]
 pub struct RectSpec {
-    pub offset: RectPosition<i32>,
+    pub offset: RectPosition,
     pub colspec: ColourSpec
 }
 
@@ -35,7 +46,7 @@ pub struct PinRectTypeSpec {
     pub sea_y: Option<(AxisSense,AxisSense)>,
     pub ship_x: (Option<AxisSense>,i32),
     pub ship_y: (Option<AxisSense>,i32),
-    pub under: i32, // page = true, tape = false
+    pub under: i32,
     pub spot: bool
 }
 
@@ -70,7 +81,7 @@ impl TypeToShape for StretchRectTypeSpec {
                 }))
             } else {
                 Some(ShapeSpec::PinRect(RectSpec {
-                    offset: RectPosition::Stretch(offset),
+                    offset: RectPosition(Position::Stretch(offset),ZPosition::Normal),
                     colspec
                 }))
             }
@@ -115,19 +126,29 @@ impl PinRectTypeSpec {
     fn new_pin(&self, rd: &ShapeShortInstanceData) -> Option<ShapeSpec> {
         let offset = self.new_pin_offset(rd);
         let colspec = self.new_colspec(rd);
+        let nw = offset.offset();
+        let se = offset.far_offset();
         Some(ShapeSpec::PinRect(RectSpec {
-            offset: RectPosition::Pin(cleaf(rd.pos_x,rd.pos_y),offset),
+            offset: RectPosition(Position::Placed(
+                        XPosition::Base(rd.pos_x as f64,nw.0,se.0),
+                        YPosition::Page(rd.pos_y+nw.1,rd.pos_y+se.1)),
+                        ZPosition::Normal),
             colspec: colspec.unwrap()
         }))
     }
     
     fn new_tape(&self, rd: &ShapeShortInstanceData) -> Option<ShapeSpec> {
-        let offset = self.new_pin_offset(rd)
-                        .y_edge(self.sea_y.unwrap().0,
+        let offset = self.new_pin_offset(rd) + Dot(0,rd.pos_y);
+        let offset = offset.y_edge(self.sea_y.unwrap().0,
                                 self.sea_y.unwrap().1);
+        let nw = offset.offset();
+        let se = offset.far_offset();
         let colspec = self.new_colspec(rd);
         Some(ShapeSpec::PinRect(RectSpec {
-            offset: RectPosition::Tape(cleaf(rd.pos_x,rd.pos_y),offset),
+            offset: RectPosition(Position::Placed(
+                        XPosition::Base(rd.pos_x as f64,nw.0,se.0),
+                        YPosition::Pixel(nw.1,se.1)),
+                        ZPosition::Normal),
             colspec: colspec.unwrap()
         }))     
     }
@@ -138,12 +159,17 @@ impl PinRectTypeSpec {
                         .x_edge(self.sea_x.unwrap().0,
                                 self.sea_x.unwrap().1);
         let colspec = self.new_colspec(rd);
-        let offset = match self.under {
-            3 => RectPosition::PageUnderAll(pos),
-            _ => RectPosition::Page(pos),
+        let z = match self.under {
+            3 => ZPosition::UnderAll,
+            _ => ZPosition::Normal
         };
+        let nw = pos.offset();
+        let se = pos.far_offset();
         Some(ShapeSpec::PinRect(RectSpec {
-            offset,
+            offset: RectPosition(Position::Placed(
+                        XPosition::Pixel(nw.0,se.0),
+                        YPosition::Page(nw.1,se.1)),
+                        z),
             colspec: colspec.unwrap()
         }))     
     }
@@ -156,13 +182,18 @@ impl PinRectTypeSpec {
                         .y_edge(self.sea_y.unwrap().0,
                                 self.sea_y.unwrap().1);
         let colspec = self.new_colspec(rd);
-        let offset = match self.under {
-            1 => RectPosition::FixUnderPage(pos),
-            2 => RectPosition::FixUnderTape(pos),
-            _ => RectPosition::Fix(pos),
-        };
+        let z = match self.under {
+            1 => ZPosition::UnderPage,
+            2 => ZPosition::UnderTape,
+            _ => ZPosition::Normal
+        };    
+        let nw = pos.offset();
+        let se = pos.far_offset();
         Some(ShapeSpec::PinRect(RectSpec {
-            offset,
+            offset: RectPosition(Position::Placed(
+                        XPosition::Pixel(nw.0,se.0),
+                        YPosition::Pixel(nw.1,se.1)),
+                        z),
             colspec: colspec.unwrap()
         }))     
     }    

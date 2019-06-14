@@ -99,13 +99,13 @@ impl<T: Copy+Clone+Debug,
         }
         out
     }
+    pub fn offset(&self) -> Dot<T,U> { self.0 }
+    pub fn far_offset(&self) -> Dot<T,U> { self.1 }
 }
 
 impl<T: Copy+Clone+Debug + Sub<T,Output=T>,
      U: Copy+Clone+Debug + Sub<U,Output=U>> Rect<T,U> {
 
-    pub fn offset(&self) -> Dot<T,U> { self.0 }
-    pub fn far_offset(&self) -> Dot<T,U> { self.1 }
     pub fn size(&self) -> Dot<T,U> { self.1-self.0 }
 
     pub fn at_origin(self) -> Rect<T,U> {
@@ -220,13 +220,31 @@ impl<T: Copy+Clone+Debug + PartialOrd,
 }
 
 #[derive(Clone,Copy,Debug)]
-pub enum RectPosition<T: Clone+Copy+Debug> {
-    Pin(CLeaf,Rect<T,i32>),
-    Page(Rect<Edge<i32>,i32>),
-    PageUnderAll(Rect<Edge<i32>,i32>),
-    Tape(CLeaf,Rect<T,Edge<i32>>),
+pub enum XPosition {
+    Base(f64,i32,i32),
+    Pixel(Edge<i32>,Edge<i32>)
+}
+
+#[derive(Clone,Copy,Debug)]
+pub enum YPosition {
+    Pixel(Edge<i32>,Edge<i32>),
+    Page(i32,i32)
+}
+
+/* Pin = Base,Page
+ * Tape = Base, Pixel
+ * Fix = Pixel, Pixel
+ * Page = Pixel, Page
+ */
+
+#[derive(Clone,Copy,Debug)]
+pub enum Position {
+    Placed(XPosition,YPosition),
+    /*
+    Pin(CLeaf,Rect<i32,i32>),
+    Tape(CLeaf,Rect<i32,Edge<i32>>),
     Fix(Rect<Edge<i32>,Edge<i32>>),
-    FixUnderPage(Rect<Edge<i32>,Edge<i32>>),
-    FixUnderTape(Rect<Edge<i32>,Edge<i32>>),
+    Page(Rect<Edge<i32>,i32>),
+    */
     Stretch(RLeaf)
 }

@@ -25,5 +25,5 @@ cargo-web="*"
 regex = "*"
 
 [profile.release]
-lto = true
-incremental = false
+#lto = true
+#incremental = false
