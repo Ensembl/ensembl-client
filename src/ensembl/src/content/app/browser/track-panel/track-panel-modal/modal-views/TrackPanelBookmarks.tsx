@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import styles from '../TrackPanelModal.scss';
 
@@ -41,7 +42,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
     } = exampleObject;
     const genomeId = `${assembly.name}_demo`;
     const locationStr = `${chromosome}:${location.start}-${location.end}`;
-    const path = `/app/browser/${genomeId}?focus=${stable_id}&location=${locationStr}`;
+    const path = urlFor.browser(genomeId, stable_id, locationStr);
 
     return (
       <dd key={stable_id}>

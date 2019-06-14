@@ -53,6 +53,7 @@ import { toggleDrawer } from './drawer/drawerActions';
 import browserStorageService from './browser-storage-service';
 import { TrackStates } from './track-panel/trackPanelConfig';
 import { AppName } from 'src/global/globalConfig';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import styles from './Browser.scss';
 
@@ -144,7 +145,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
   const updateBrowserUrl = (genomeId: string = props.match.params.genomeId) => {
     const { focus } = props.browserQueryParams;
     const locationStr = getChrLocationStr(props.chrLocation);
-    const newUrl = `/app/browser/${genomeId}?focus=${focus}&location=${locationStr}`;
+    const newUrl = urlFor.browser(genomeId, focus, locationStr);
 
     props.replace(newUrl);
   };

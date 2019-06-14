@@ -46,8 +46,11 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
     )[0];
 
     const locationStr = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
-
-    const path = `/app/browser/${genomeInfo.genome_id}?focus=${exampleObject.ensembl_object_id}&location=${locationStr}`;
+    const path = urlFor.browser(
+      genomeInfo.genome_id,
+      exampleObject.ensembl_object_id,
+      locationStr
+    );
 
     return (
       <dd key={exampleObject.ensembl_object_id}>
