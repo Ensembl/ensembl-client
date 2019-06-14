@@ -4,7 +4,7 @@ use composit::{ Leaf, Position, Wrapping };
 use controller::output::{ Report, ViewportReport };
 use drivers::webgl::program::UniformValue;
 use types::{
-    CPixel, Move, Dot, Direction, 
+    CPixel, Move, Dot, Direction, FullPosition,
     LEFT, RIGHT, UP, DOWN, IN, OUT
 };
 
@@ -146,6 +146,18 @@ impl Stage {
             "uSize" => UniformValue::Vec2F(
                 self.dims.0 as f32/2.,
                 self.dims.1 as f32/2.)
+        }
+    }
+    
+    pub fn contextualize_pixels(&self, pos: Dot<i32,i32>) -> FullPosition {
+        let screen_bp = self.get_screen_in_bp();
+        let screen_px = self.dims;
+        let bp_px = screen_px.0 / screen_bp;
+        let left_bp = self.pos.get_edge(&LEFT);
+        FullPosition {
+            pixels: pos,
+            size: screen_px,
+            bp: Dot(left_bp+bp_px*pos.0 as f64,pos.1)
         }
     }
 }

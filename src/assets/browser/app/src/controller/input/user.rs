@@ -5,9 +5,10 @@ use stdweb::web::{ Element, HtmlElement, IHtmlElement };
 use stdweb::traits::IEvent;
 
 use controller::global::{ App, AppRunner };
+use controller::input::{ actions_run, Action };
 use controller::input::physics::MousePhysics;
 use controller::input::optical::Optical;
-use types::Dot;
+use types::{ Dot, CPixel, FullPosition };
 
 pub struct UserEventListener {
     canv_el: HtmlElement,
@@ -40,6 +41,16 @@ impl UserEventListener {
         let pos = Dot(pos_bp,y);
         self.optical.lock().unwrap().move_by(amt,pos,pos_prop);
     }
+    
+    fn zmenu(&mut self, pos: &CPixel) {
+        let mut app = &mut self.cs.lock().unwrap();
+        let pos = app.with_stage(|s|
+            s.contextualize_pixels(*pos)
+        );
+        actions_run(&mut app,&vec![
+            Action::ZMenu(pos)
+        ]); 
+    }
 }
 
 impl EventListener<()> for UserEventListener {    
@@ -63,7 +74,7 @@ impl EventListener<()> for UserEventListener {
                 );
             },
             EventData::MouseEvent(EventType::MouseClickEvent,_,e) => {
-                console!("click");
+                self.zmenu(&e.at());
                 e.stop_propagation();
             },
             EventData::MouseEvent(EventType::MouseDblClickEvent,_,e) => {

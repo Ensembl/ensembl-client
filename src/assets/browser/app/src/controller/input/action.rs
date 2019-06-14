@@ -1,4 +1,4 @@
-use types::{ Move, Units, Axis, Dot, cdfraction, LEFT, RIGHT };
+use types::{ Move, Units, Axis, Dot, cdfraction, LEFT, RIGHT, FullPosition };
 use controller::global::App;
 
 #[derive(Debug,Clone)]
@@ -13,7 +13,8 @@ pub enum Action {
     AddComponent(String),
     SetStick(String),
     SetState(String,bool),
-    Settled
+    Settled,
+    ZMenu(FullPosition)
 }
 
 fn exe_pos_event(app: &App, v: Dot<f64,f64>, prop: Option<f64>) {
@@ -102,6 +103,10 @@ fn exe_set_state(a: &mut App, name: &str, on: bool) {
     });
 }
 
+fn exe_zmenu(a: &mut App, pos: &FullPosition) {
+    console!("zmenu {:?}",pos);
+}
+
 pub fn actions_run(cg: &mut App, evs: &Vec<Action>) {
     for ev in evs {
         let ev = ev.clone();
@@ -116,6 +121,7 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>) {
             Action::SetStick(name) => exe_set_stick(cg,&name),
             Action::SetState(name,on) => exe_set_state(cg,&name,on),
             Action::Settled => exe_settled(cg),
+            Action::ZMenu(pos) => exe_zmenu(cg,&pos),
             Action::Noop => ()
         }
     }

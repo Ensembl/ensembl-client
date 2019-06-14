@@ -273,3 +273,10 @@ pub fn ddiv<T: Clone + Copy + Div<T, Output=T> + Into<f64>,
     Dot((a.0.into() as f64 / b.0.into() as f64) as f64,
         (a.1.into() as f64 / b.1.into() as f64) as f64)
 }
+
+#[derive(Debug,Clone,Copy)]
+pub struct FullPosition {
+    pub pixels: Dot<i32,i32>,
+    pub size: Dot<f64,f64>,
+    pub bp: Dot<f64,i32>
+}

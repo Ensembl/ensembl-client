@@ -16,7 +16,7 @@ pub use types::corners::{
 };
 
 pub use types::coord::{
-    CPixel, CLeaf, CFraction, APixel, CDFraction,
+    CPixel, CLeaf, CFraction, APixel, CDFraction, FullPosition,
     cpixel, cleaf, cfraction, cdfraction, ddiv,
     EPixel, Dot, Move, Distance, Units,
 };
