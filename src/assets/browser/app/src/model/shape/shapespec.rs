@@ -4,14 +4,14 @@ use std::hash::Hasher;
 use std::collections::hash_map::DefaultHasher;
 
 use drivers::webgl::{ StretchTextureSpec, Artist };
-use types::{ Colour, Rect };
+use types::{ Colour, Rect, Position };
 use super::{
     PinPolySpec, StretchWiggle, RectSpec, BoxSpec, BitmapArtist,
     CollageArtist, TextArtist, TextureSpec
 };
 
 pub trait GenericShape {
-    fn zmenu_box(&self) -> Option<Rect<f64,i32>> { None }
+    fn zmenu_box(&self) -> Option<Position> { None }
 }
 
 #[derive(Clone)]
@@ -26,7 +26,7 @@ pub enum ShapeSpec {
 
 /* TODO: Why is StretchTextureSpec still in the webgl driver? */
 impl GenericShape for ShapeSpec {
-    fn zmenu_box(&self) -> Option<Rect<f64,i32>> {
+    fn zmenu_box(&self) -> Option<Position> {
         match self {
             ShapeSpec::PinPoly(s) => s.zmenu_box(),
             ShapeSpec::PinRect(s) => s.zmenu_box(),

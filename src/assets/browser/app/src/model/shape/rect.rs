@@ -8,12 +8,6 @@ use model::shape::{
     ColourSpec, ShapeSpec, Facade, FacadeType, ShapeInstanceDataType,
     ShapeShortInstanceData, TypeToShape, GenericShape
 };
-
-impl GenericShape for RectSpec {
-    fn zmenu_box(&self) -> Option<Rect<f64,i32>> {
-        None
-    }
-}
     
 impl GenericShape for BoxSpec {}
 
@@ -32,6 +26,12 @@ pub struct RectPosition(pub Position,pub ZPosition);
 pub struct RectSpec {
     pub offset: RectPosition,
     pub colspec: ColourSpec
+}
+
+impl GenericShape for RectSpec {
+    fn zmenu_box(&self) -> Option<Position> {
+        Some(self.offset.0)
+    }
 }
 
 #[derive(Clone,Copy,Debug)]

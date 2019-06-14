@@ -231,20 +231,8 @@ pub enum YPosition {
     Page(i32,i32)
 }
 
-/* Pin = Base,Page
- * Tape = Base, Pixel
- * Fix = Pixel, Pixel
- * Page = Pixel, Page
- */
-
 #[derive(Clone,Copy,Debug)]
 pub enum Position {
     Placed(XPosition,YPosition),
-    /*
-    Pin(CLeaf,Rect<i32,i32>),
-    Tape(CLeaf,Rect<i32,Edge<i32>>),
-    Fix(Rect<Edge<i32>,Edge<i32>>),
-    Page(Rect<Edge<i32>,i32>),
-    */
     Stretch(RLeaf)
 }
