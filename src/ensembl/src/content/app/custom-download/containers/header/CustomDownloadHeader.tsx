@@ -132,9 +132,6 @@ const Header = (props: Props) => {
   const selectedFilters: any = getSelectedFilters(props.filters);
 
   const getFormattedResult = () => {
-    if (!resultCount) {
-      return <span>No results found</span>;
-    }
     return (
       <>
         <span>{getCommaSeparatedNumber(resultCount)}</span> results

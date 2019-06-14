@@ -39,10 +39,10 @@ const ResultHolder = (props: Props) => {
       props.clearPreviewResult({});
       return;
     }
-    props.setIsLoadingResult(true);
 
     const endpointURL = getEndpointUrl(selectedAttributes);
     if (selectedAttributes.length) {
+      props.setIsLoadingResult(true);
       props.fetchPreviewResult(endpointURL);
     }
   }, [props.attributes, props.filters]);
@@ -62,7 +62,11 @@ const ResultHolder = (props: Props) => {
   }
 
   if (!props.preview.results) {
-    return null;
+    return (
+      <div className={styles.wrapper}>
+        <div className={styles.noResult}>Sorry, no results</div>
+      </div>
+    );
   }
 
   const formattedResults = formatResults(props.preview, selectedAttributes);
