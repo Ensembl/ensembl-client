@@ -25,16 +25,13 @@ const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
   const [clickHandlers, setClickHandlers] = useState(initClickHandlers);
 
   const getBrowserTabClasses = (trackType: TrackType) => {
-    const {
-      activeGenomeId,
-      selectedBrowserTab,
-      drawerOpened,
-      trackPanelModalOpened
-    } = props;
+    const { activeGenomeId, drawerOpened, trackPanelModalOpened } = props;
+    const selectedBrowserTab =
+      props.selectedBrowserTab[activeGenomeId] || TrackType.GENOMIC;
     let classNames = styles.browserTab;
 
     if (
-      selectedBrowserTab[activeGenomeId] === trackType &&
+      selectedBrowserTab === trackType &&
       drawerOpened === false &&
       trackPanelModalOpened === false
     ) {
