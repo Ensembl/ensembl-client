@@ -9,10 +9,11 @@ pub enum Action {
     Move(Move<f64,f64>),
     Zoom(f64),
     ZoomTo(f64),
-    Resize(Dot<i32,i32>),
+    Resize(Dot<f64,f64>),
     AddComponent(String),
     SetStick(String),
-    SetState(String,bool)
+    SetState(String,bool),
+    Settled
 }
 
 fn exe_pos_event(app: &App, v: Dot<f64,f64>, prop: Option<f64>) {
@@ -65,11 +66,12 @@ fn exe_zoom_event(app: &App, z: f64, by: bool) {
     app.with_compo(|co| { co.set_zoom(z); co.set_position(middle); });
 }
 
-fn exe_resize(cg: &App, sz: Dot<i32,i32>) {
-    cg.with_stage(|s| {
-        s.set_size(&sz);
-    });
-    cg.force_size();
+fn exe_resize(cg: &mut App, sz: Dot<f64,f64>) {
+    cg.force_size(sz);
+}
+
+fn exe_settled(app: &mut App) {
+   app.settle(); 
 }
 
 fn exe_component_add(a: &mut App, name: &str) {
@@ -113,6 +115,7 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>) {
             Action::AddComponent(name) => exe_component_add(cg,&name),
             Action::SetStick(name) => exe_set_stick(cg,&name),
             Action::SetState(name,on) => exe_set_state(cg,&name,on),
+            Action::Settled => exe_settled(cg),
             Action::Noop => ()
         }
     }

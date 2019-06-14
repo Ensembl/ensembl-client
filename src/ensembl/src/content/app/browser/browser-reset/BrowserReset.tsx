@@ -1,7 +1,10 @@
 import React, { FunctionComponent, useCallback } from 'react';
 
 import { ChrLocation } from '../browserState';
-import { BrowserInfoItem } from '../browserConfig';
+import { ReactComponent as resetIcon } from 'static/img/browser/track-reset.svg';
+import ImageButton, {
+  ImageButtonStatus
+} from 'src/shared/image-button/ImageButton';
 
 import styles from './BrowserReset.scss';
 import { getChrLocationStr } from '../browserHelper';
@@ -9,7 +12,6 @@ import { getChrLocationStr } from '../browserHelper';
 type BrowserResetProps = {
   chrLocation: ChrLocation;
   defaultChrLocation: ChrLocation;
-  details: BrowserInfoItem;
   dispatchBrowserLocation: (chrLocation: ChrLocation) => void;
   drawerOpened: boolean;
 };
@@ -17,17 +19,17 @@ type BrowserResetProps = {
 export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   props: BrowserResetProps
 ) => {
-  const { chrLocation, defaultChrLocation, details, drawerOpened } = props;
+  const { chrLocation, defaultChrLocation, drawerOpened } = props;
 
-  const getResetIcon = (): string => {
+  const getResetIconStatus = (): ImageButtonStatus => {
     const chrLocationStr = getChrLocationStr(chrLocation);
     const defaultChrLocationStr = getChrLocationStr(defaultChrLocation);
 
     if (chrLocationStr === defaultChrLocationStr || drawerOpened === true) {
-      return details.icon.grey as string;
+      return ImageButtonStatus.INACTIVE;
     }
 
-    return details.icon.default;
+    return ImageButtonStatus.ACTIVE;
   };
 
   const resetBrowser = useCallback(() => {
@@ -39,10 +41,16 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   }, [chrLocation, drawerOpened]);
 
   return (
-    <dd className={styles.resetButton} onClick={resetBrowser}>
-      <button>
-        <img src={getResetIcon()} alt={details.description} />
-      </button>
+    <dd className={styles.resetButton}>
+      <div className={styles.imageWrapper}>
+        <ImageButton
+          buttonStatus={getResetIconStatus()}
+          description={'Reset browser image'}
+          image={resetIcon}
+          onClick={resetBrowser}
+          classNames={{ inactive: styles.imageButtonInactive }}
+        />
+      </div>
     </dd>
   );
 };

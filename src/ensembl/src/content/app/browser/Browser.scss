@@ -2,29 +2,27 @@
 
 .browser {
   width: 100%;
+  height: calc(100% - 32px);
+  position: relative;
 }
 
 .browserInnerWrapper {
+  position: absolute;
+  overflow: hidden;
+  width: 100vw;
   @include flex;
-  height: calc(100% - 32px);
+  transition: height 0.3s linear;
+  &.shorter {
+    height: calc(100vh - 194px);
+  }
+
+  &.taller {
+    height: calc(100vh - 146px);
+  }
 }
 
 .browserImageWrapper {
-  &.semiExpanded {
-    width: calc(100vw - 356px);
-  }
-
-  &.expanded {
-    width: calc(100vw - 36px);
-  }
-
-  &.collapsed {
-    width: 41px;
-
-    .browserImage {
-      display: none;
-    }
-  }
+  height: 100%;
 }
 
 .browserOverlay {

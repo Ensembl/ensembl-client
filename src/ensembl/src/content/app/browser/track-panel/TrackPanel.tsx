@@ -1,10 +1,10 @@
 import React, { FunctionComponent, RefObject, useEffect } from 'react';
 import { connect } from 'react-redux';
+import { useSpring, animated } from 'react-spring';
 
 import TrackPanelBar from './track-panel-bar/TrackPanelBar';
 import TrackPanelList from './track-panel-list/TrackPanelList';
 import TrackPanelModal from './track-panel-modal/TrackPanelModal';
-
 import { RootState } from 'src/store';
 
 import {
@@ -86,11 +86,33 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
     }
   }, [props.breakpointWidth, props.toggleTrackPanel]);
 
+  const [trackAnimation, setTrackAnimation] = useSpring(() => ({
+    config: { tension: 280, friction: 45 },
+    height: '100%',
+    position: 'absolute' as 'absolute',
+    display: 'block',
+    left: 'calc(-356px + 100vw)'
+  }));
+
+  const getBrowserWidth = (): string => {
+    if (props.drawerOpened) {
+      return 'calc(41px + 0vw)';
+    }
+    return props.trackPanelOpened
+      ? 'calc(-356px + 100vw)'
+      : 'calc(-36px + 100vw)';
+  };
+
+  useEffect(() => {
+    setTrackAnimation({
+      left: getBrowserWidth()
+    });
+  }, [props.drawerOpened, props.trackPanelOpened]);
+
   return (
-    <section className={`${styles.trackPanel} reactSlideDrawer`}>
-      {props.ensObjectInfo.ensembl_object_id ? (
-        // {props.browserActivated && props.ensObjectInfo.associated_object ? (
-        <>
+    <animated.div style={trackAnimation}>
+      {props.browserActivated && props.ensObjectInfo.ensembl_object_id ? (
+        <div className={styles.trackPanel}>
           <TrackPanelBar
             closeTrackPanelModal={props.closeTrackPanelModal}
             drawerOpened={props.drawerOpened}
@@ -128,9 +150,9 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
               ) : null}
             </>
           ) : null}
-        </>
+        </div>
       ) : null}
-    </section>
+    </animated.div>
   );
 };
 

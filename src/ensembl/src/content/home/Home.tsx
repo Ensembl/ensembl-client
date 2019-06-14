@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 
 import { fetchGenomeExampleEnsObjects } from 'src/genome/genomeActions';
 import { getGenomeExampleEnsObjects } from 'src/genome/genomeSelectors';
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import { RootState } from 'src/store';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 import { getCommittedSpecies } from '../app/species-selector/state/speciesSelectorSelectors';
@@ -14,6 +16,7 @@ import styles from './Home.scss';
 type StateProps = {
   activeSpecies: CommittedItem[];
   exampleEnsObjects: EnsObject[];
+  totalSelectedSpecies: number;
 };
 
 type DispatchProps = {
@@ -42,13 +45,9 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
       (species: CommittedItem) => species.genome_id === exampleObject.genome_id
     )[0];
 
-    const locationStr = `${exampleObject.location.chromosome}:${
-      exampleObject.location.start
-    }-${exampleObject.location.end}`;
+    const locationStr = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
 
-    const path = `/app/browser/${genomeInfo.genome_id}?focus=${
-      exampleObject.ensembl_object_id
-    }&location=${locationStr}`;
+    const path = `/app/browser/${genomeInfo.genome_id}?focus=${exampleObject.ensembl_object_id}&location=${locationStr}`;
 
     return (
       <dd key={exampleObject.ensembl_object_id}>
@@ -61,6 +60,19 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
 
   return (
     <div className={styles.home}>
+      {!props.totalSelectedSpecies && (
+        <>
+          <span className={styles.speciesSelectorBannerText}>
+            7 species now available
+          </span>
+          <Link
+            className={styles.speciesSelectorBannerLink}
+            to={urlFor.speciesSelector()}
+          >
+            Select a species to begin
+          </Link>
+        </>
+      )}
       <section className={styles.search}>
         <h2>Find</h2>
         <p>
@@ -105,7 +117,8 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
 
 const mapStateToProps = (state: RootState) => ({
   activeSpecies: getCommittedSpecies(state),
-  exampleEnsObjects: getGenomeExampleEnsObjects(state)
+  exampleEnsObjects: getGenomeExampleEnsObjects(state),
+  totalSelectedSpecies: getCommittedSpecies(state).length
 });
 
 const mapDispatchToProps = {

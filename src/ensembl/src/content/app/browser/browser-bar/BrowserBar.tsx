@@ -79,7 +79,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
     return !(props.genomeSelectorActive || isLocationOfWholeChromosome);
   };
 
-  const { navigator, reset } = browserInfoConfig;
+  const { navigator } = browserInfoConfig;
   const [showBrowserInfo, toggleShowBrowserInfo] = useState(
     shouldShowBrowserInfo()
   );
@@ -126,7 +126,6 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
             dispatchBrowserLocation={props.dispatchBrowserLocation}
             chrLocation={props.chrLocation}
             defaultChrLocation={props.defaultChrLocation}
-            details={reset}
             drawerOpened={props.drawerOpened}
           />
           {showBrowserInfo && (

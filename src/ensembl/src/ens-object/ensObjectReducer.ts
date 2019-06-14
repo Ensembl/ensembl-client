@@ -10,7 +10,7 @@ import {
   ExampleEnsObjectsState,
   defaultExampleEnsObjectsState
 } from './ensObjectState';
-import { EnsObject, EnsObjectResponse, EnsObjectTrack } from './ensObjectTypes';
+import { EnsObject, EnsObjectResponse } from './ensObjectTypes';
 
 function ensObjectInfo(
   state: EnsObjectInfoState = defaultEnsObjectInfoState,
