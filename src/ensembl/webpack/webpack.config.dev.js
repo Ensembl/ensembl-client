@@ -64,10 +64,13 @@ const devConfig = {
       });
     },
 
+    // rules to proxy requests to the backend server in development
     proxy: {
-      '/api': 'http://localhost:3000',
-      '/static': 'http://localhost:3000',
-      // '/api': 'http://193.62.55.91:30910'
+      '/api': {
+        target: 'https://staging-2020.ensembl.org',
+        changeOrigin: true,
+        secure: false
+      }
     },
 
     // disable host check only when testing on IE11 remotely
