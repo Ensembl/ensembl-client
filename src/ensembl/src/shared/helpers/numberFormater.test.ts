@@ -67,7 +67,7 @@ describe('getCommaSeparatedNumber', () => {
 
     const numberSplitByComma = formattedRandomNumber.split(',');
 
-    // Check if there are two elements in the array
+    // Check if there are three elements in the array
     expect(numberSplitByComma.length).toBe(3);
 
     // Check if the length of the first element is 1
@@ -76,7 +76,7 @@ describe('getCommaSeparatedNumber', () => {
     // Check if the length of the second element is 3
     expect(numberSplitByComma[1].length).toBe(3);
 
-    // Check if the length of the second element is 3
+    // Check if the length of the third element is 3
     expect(numberSplitByComma[2].length).toBe(3);
 
     expect(Number(numberSplitByComma.join(''))).toBe(randomNumber);
