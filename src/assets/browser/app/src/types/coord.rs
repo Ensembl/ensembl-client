@@ -6,7 +6,7 @@ use composit::Stage;
 use drivers::webgl::program::Input;
 use types::{
     Rect, Anchored, Axis, Edge, Corner, Anchor, Direction,
-    RIGHT, LEFT, DOWN, UP
+    RIGHT, LEFT, DOWN, UP, Placement, XPosition, YPosition
 };
 
 /***** Direction types *****/
@@ -272,11 +272,4 @@ pub fn ddiv<T: Clone + Copy + Div<T, Output=T> + Into<f64>,
         U: Clone + Copy + Div<U, Output=U> + Into<f64>>(a: Dot<T,U>, b: Dot<T,U>) -> Dot<f64,f64> {
     Dot((a.0.into() as f64 / b.0.into() as f64) as f64,
         (a.1.into() as f64 / b.1.into() as f64) as f64)
-}
-
-#[derive(Debug,Clone,Copy)]
-pub struct FullPosition {
-    pub pixels: Dot<i32,i32>,
-    pub size: Dot<f64,f64>,
-    pub bp: Dot<f64,i32>
 }

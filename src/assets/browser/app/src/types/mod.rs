@@ -16,7 +16,7 @@ pub use types::corners::{
 };
 
 pub use types::coord::{
-    CPixel, CLeaf, CFraction, APixel, CDFraction, FullPosition,
+    CPixel, CLeaf, CFraction, APixel, CDFraction,
     cpixel, cleaf, cfraction, cdfraction, ddiv,
     EPixel, Dot, Move, Distance, Units,
 };
@@ -26,7 +26,7 @@ pub use types::area::{
     RFraction,
     RPixel,
     area, Rect, area_size, area_centred,
-    Bounds, Position, XPosition, YPosition
+    Bounds, Placement, XPosition, YPosition
 };
 
 pub use types::colour::{

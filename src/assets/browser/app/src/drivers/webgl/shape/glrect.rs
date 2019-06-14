@@ -1,5 +1,5 @@
 use super::super::program::{ ProgramAttribs, PTGeom, PTMethod, ProgramType };
-use types::{ AxisSense, Position, XPosition, YPosition, area, Dot };
+use types::{ AxisSense, Placement, XPosition, YPosition, area, Dot };
 use model::shape::{ ZPosition, RectPosition };
 
 use super::GLShape;
@@ -12,20 +12,20 @@ use drivers::webgl::{ GLProgData, Artwork };
 
 fn program_type(spec: &RectSpec) -> PTGeom {
     match spec.offset {
-        RectPosition(Position::Placed(XPosition::Pixel(_,_),YPosition::Pixel(_,_)),z) =>
+        RectPosition(Placement::Placed(XPosition::Pixel(_,_),YPosition::Pixel(_,_)),z) =>
             match z {
                 ZPosition::UnderPage => PTGeom::FixUnderPage,
                 ZPosition::UnderTape => PTGeom::FixUnderTape,
                 _ => PTGeom::Fix,
             },
-        RectPosition(Position::Placed(XPosition::Pixel(_,_),YPosition::Page(_,_)),z) =>
+        RectPosition(Placement::Placed(XPosition::Pixel(_,_),YPosition::Page(_,_)),z) =>
             match z {
                 ZPosition::UnderAll => PTGeom::PageUnderAll,
                 _ => PTGeom::Page
             },
-        RectPosition(Position::Placed(XPosition::Base(_,_,_),YPosition::Page(_,_)),z) => PTGeom::Pin,
-        RectPosition(Position::Placed(XPosition::Base(_,_,_),YPosition::Pixel(_,_)),z) => PTGeom::Tape,
-        RectPosition(Position::Stretch(_),_) => PTGeom::Stretch
+        RectPosition(Placement::Placed(XPosition::Base(_,_,_),YPosition::Page(_,_)),z) => PTGeom::Pin,
+        RectPosition(Placement::Placed(XPosition::Base(_,_,_),YPosition::Pixel(_,_)),z) => PTGeom::Tape,
+        RectPosition(Placement::Stretch(_),_) => PTGeom::Stretch
     }
 }
 
@@ -34,26 +34,26 @@ impl GLShape for RectSpec {
         let group = colourspec_to_group(&self.colspec,geom,e);
         let b = vertices_rect(geom,group);
         match self.offset {
-            RectPosition(Position::Placed(XPosition::Base(bp,x0,x1),YPosition::Page(y0,y1)),_) => {
+            RectPosition(Placement::Placed(XPosition::Base(bp,x0,x1),YPosition::Page(y0,y1)),_) => {
                 rectangle_p(b,geom,"aVertexPosition",&area(Dot(x0,x1),Dot(y0,y1)));
                 multi_gl(b,geom,"aOrigin",&Dot(bp,0),4);
             },
-            RectPosition(Position::Placed(XPosition::Pixel(x0,x1),YPosition::Page(y0,y1)),_) => {
+            RectPosition(Placement::Placed(XPosition::Pixel(x0,x1),YPosition::Page(y0,y1)),_) => {
                 let offset = area(Dot(x0,y0),Dot(x1,y1));
                 let offset = offset.y_edge(AxisSense::Max,AxisSense::Max);
                 rectangle_c(b,geom,"aVertexPosition","aVertexSign",&offset);                
             },
-            RectPosition(Position::Placed(XPosition::Base(bp,x0,x1),YPosition::Pixel(y0,y1)),_) => {
+            RectPosition(Placement::Placed(XPosition::Base(bp,x0,x1),YPosition::Pixel(y0,y1)),_) => {
                 let offset = area(Dot(x0,y0),Dot(x1,y1));
                 let offset = offset.x_edge(AxisSense::Max,AxisSense::Max);
                 rectangle_c(b,geom,"aVertexPosition","aVertexSign",&offset);                
                 multi_gl(b,geom,"aOrigin",&Dot(bp,0),4);
             },
-            RectPosition(Position::Placed(XPosition::Pixel(x0,x1),YPosition::Pixel(y0,y1)),_) => {
+            RectPosition(Placement::Placed(XPosition::Pixel(x0,x1),YPosition::Pixel(y0,y1)),_) => {
                 let offset = area(Dot(x0,y0),Dot(x1,y1));
                 rectangle_c(b,geom,"aVertexPosition","aVertexSign",&offset);
             },
-            RectPosition(Position::Stretch(offset),_) => {
+            RectPosition(Placement::Stretch(offset),_) => {
                 rectangle_g(b,geom,"aVertexPosition",&offset);
             },
         };

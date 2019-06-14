@@ -8,7 +8,7 @@ use controller::global::{ App, AppRunner };
 use controller::input::{ actions_run, Action };
 use controller::input::physics::MousePhysics;
 use controller::input::optical::Optical;
-use types::{ Dot, CPixel, FullPosition };
+use types::{ Dot, CPixel };
 
 pub struct UserEventListener {
     canv_el: HtmlElement,
@@ -44,11 +44,8 @@ impl UserEventListener {
     
     fn zmenu(&mut self, pos: &CPixel) {
         let mut app = &mut self.cs.lock().unwrap();
-        let pos = app.with_stage(|s|
-            s.contextualize_pixels(*pos)
-        );
         actions_run(&mut app,&vec![
-            Action::ZMenu(pos)
+            Action::ZMenu(*pos)
         ]); 
     }
 }

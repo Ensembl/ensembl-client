@@ -232,7 +232,7 @@ pub enum YPosition {
 }
 
 #[derive(Clone,Copy,Debug)]
-pub enum Position {
+pub enum Placement {
     Placed(XPosition,YPosition),
     Stretch(RLeaf)
 }

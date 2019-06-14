@@ -1,4 +1,4 @@
-use types::{ Move, Units, Axis, Dot, cdfraction, LEFT, RIGHT, FullPosition };
+use types::{ Move, Units, Axis, Dot, cdfraction, LEFT, RIGHT, CPixel };
 use controller::global::App;
 
 #[derive(Debug,Clone)]
@@ -14,7 +14,7 @@ pub enum Action {
     SetStick(String),
     SetState(String,bool),
     Settled,
-    ZMenu(FullPosition)
+    ZMenu(CPixel)
 }
 
 fn exe_pos_event(app: &App, v: Dot<f64,f64>, prop: Option<f64>) {
@@ -103,7 +103,7 @@ fn exe_set_state(a: &mut App, name: &str, on: bool) {
     });
 }
 
-fn exe_zmenu(a: &mut App, pos: &FullPosition) {
+fn exe_zmenu(a: &mut App, pos: &CPixel) {
     console!("zmenu {:?}",pos);
 }
 

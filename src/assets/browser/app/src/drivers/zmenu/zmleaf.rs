@@ -1,6 +1,6 @@
 use composit::Leaf;
 
-use types::Position;
+use types::Placement;
 
 pub struct ZMenuLeaf {
     leaf: Leaf,
@@ -20,7 +20,7 @@ impl ZMenuLeaf {
         self.redrawn |= other.redrawn;
     }
     
-    pub fn add_box(&mut self, id: &str, zbox: Position) {
+    pub fn add_box(&mut self, id: &str, zbox: Placement) {
         bb_log!("zmenu","add_box({:?},{:?})",id,zbox);
     }
     

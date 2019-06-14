@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use types::{ 
     CLeaf, AxisSense, Rect, Edge, RLeaf, area_size, cleaf, cpixel,
-    Position, XPosition, YPosition, Dot
+    Placement, XPosition, YPosition, Dot
 };
 use model::shape::{ 
     ColourSpec, ShapeSpec, Facade, FacadeType, ShapeInstanceDataType,
@@ -20,7 +20,7 @@ pub enum ZPosition {
 }
 
 #[derive(Clone,Copy,Debug)]
-pub struct RectPosition(pub Position,pub ZPosition);
+pub struct RectPosition(pub Placement,pub ZPosition);
 
 #[derive(Clone,Copy,Debug)]
 pub struct RectSpec {
@@ -29,7 +29,7 @@ pub struct RectSpec {
 }
 
 impl GenericShape for RectSpec {
-    fn zmenu_box(&self) -> Option<Position> {
+    fn zmenu_box(&self) -> Option<Placement> {
         Some(self.offset.0)
     }
 }
@@ -81,7 +81,7 @@ impl TypeToShape for StretchRectTypeSpec {
                 }))
             } else {
                 Some(ShapeSpec::PinRect(RectSpec {
-                    offset: RectPosition(Position::Stretch(offset),ZPosition::Normal),
+                    offset: RectPosition(Placement::Stretch(offset),ZPosition::Normal),
                     colspec
                 }))
             }
@@ -129,7 +129,7 @@ impl PinRectTypeSpec {
         let nw = offset.offset();
         let se = offset.far_offset();
         Some(ShapeSpec::PinRect(RectSpec {
-            offset: RectPosition(Position::Placed(
+            offset: RectPosition(Placement::Placed(
                         XPosition::Base(rd.pos_x as f64,nw.0,se.0),
                         YPosition::Page(rd.pos_y+nw.1,rd.pos_y+se.1)),
                         ZPosition::Normal),
@@ -145,7 +145,7 @@ impl PinRectTypeSpec {
         let se = offset.far_offset();
         let colspec = self.new_colspec(rd);
         Some(ShapeSpec::PinRect(RectSpec {
-            offset: RectPosition(Position::Placed(
+            offset: RectPosition(Placement::Placed(
                         XPosition::Base(rd.pos_x as f64,nw.0,se.0),
                         YPosition::Pixel(nw.1,se.1)),
                         ZPosition::Normal),
@@ -166,7 +166,7 @@ impl PinRectTypeSpec {
         let nw = pos.offset();
         let se = pos.far_offset();
         Some(ShapeSpec::PinRect(RectSpec {
-            offset: RectPosition(Position::Placed(
+            offset: RectPosition(Placement::Placed(
                         XPosition::Pixel(nw.0,se.0),
                         YPosition::Page(nw.1,se.1)),
                         z),
@@ -190,7 +190,7 @@ impl PinRectTypeSpec {
         let nw = pos.offset();
         let se = pos.far_offset();
         Some(ShapeSpec::PinRect(RectSpec {
-            offset: RectPosition(Position::Placed(
+            offset: RectPosition(Placement::Placed(
                         XPosition::Pixel(nw.0,se.0),
                         YPosition::Pixel(nw.1,se.1)),
                         z),
