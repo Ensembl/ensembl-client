@@ -41,27 +41,33 @@ pub struct BoxSpec {
     pub colspec: ColourSpec
 }
 
+pub enum PatinaSpec {
+    Colour,
+    Spot,
+    ZMenu
+}
+
 pub struct PinRectTypeSpec {
     pub sea_x: Option<(AxisSense,AxisSense)>,
     pub sea_y: Option<(AxisSense,AxisSense)>,
     pub ship_x: (Option<AxisSense>,i32),
     pub ship_y: (Option<AxisSense>,i32),
     pub under: i32,
-    pub spot: bool
+    pub spot: PatinaSpec
 }
 
 pub struct StretchRectTypeSpec {
-    pub spot: bool,
+    pub spot: PatinaSpec,
     pub hollow: bool
 }
 
 impl StretchRectTypeSpec {
     fn new_colspec(&self, rd: &ShapeShortInstanceData) -> ColourSpec {
         if let Facade::Colour(c) = rd.facade {
-            if self.spot {
-                Some(ColourSpec::Spot(c))
-            } else {
-                Some(ColourSpec::Colour(c))
+            match self.spot {
+                PatinaSpec::Spot => Some(ColourSpec::Spot(c)),
+                PatinaSpec::Colour => Some(ColourSpec::Colour(c)),
+                _ => None
             }
         } else { None }.unwrap()
     }
@@ -98,10 +104,10 @@ impl TypeToShape for StretchRectTypeSpec {
 impl PinRectTypeSpec {
     fn new_colspec(&self, rd: &ShapeShortInstanceData) -> Option<ColourSpec> {
         if let Facade::Colour(c) = rd.facade {
-            if self.spot {
-                Some(ColourSpec::Spot(c))
-            } else {
-                Some(ColourSpec::Colour(c))
+            match self.spot {
+                PatinaSpec::Spot => Some(ColourSpec::Spot(c)),
+                PatinaSpec::Colour => Some(ColourSpec::Colour(c)),
+                _ => None
             }
         } else {
             None
