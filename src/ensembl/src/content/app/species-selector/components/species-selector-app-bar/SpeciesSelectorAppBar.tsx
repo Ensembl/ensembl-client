@@ -7,6 +7,7 @@ import {
   toggleSpeciesUse,
   deleteSpeciesAndSave
 } from 'src/content/app/species-selector/state/speciesSelectorActions';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import SelectedSpecies from 'src/content/app/species-selector/components/selected-species/SelectedSpecies';
 
@@ -56,7 +57,7 @@ const SelectedSpeciesList = (props: Props) => {
         />
       ))}
       <div className={styles.genomeBrowserLinkContainer}>
-        <Link to="/app/browser">View in Genome Browser</Link>
+        <Link to={urlFor.browser()}>View in Genome Browser</Link>
       </div>
     </>
   );
