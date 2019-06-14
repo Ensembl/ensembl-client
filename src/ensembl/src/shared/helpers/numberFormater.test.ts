@@ -100,4 +100,44 @@ describe('getCommaSeparatedNumber', () => {
 
     expect(Number(numberSplitByComma.join(''))).toBe(randomNumber);
   });
+
+  it('returns -x,xxx for the input number -xxxx', () => {
+    const randomNumber = faker.random.number({ min: -9999, max: -1000 });
+
+    const formattedRandomNumber = getCommaSeparatedNumber(randomNumber);
+
+    const numberSplitByComma = formattedRandomNumber.split(',');
+
+    // Check if there are two elements in the array
+    expect(numberSplitByComma.length).toBe(2);
+
+    // Check if the length of the first element is 2
+    expect(numberSplitByComma[0].length).toBe(2);
+
+    // Check if the length of the second element is 3
+    expect(numberSplitByComma[1].length).toBe(3);
+
+    expect(Number(numberSplitByComma.join(''))).toBe(randomNumber);
+  });
+
+  it('returns x,xxx.x for the input number xxxx.x', () => {
+    const randomNumber =
+      faker.random.number({ min: 1000, max: 9999 }) +
+      faker.random.number({ min: 1, max: 9 }) / 10;
+
+    const formattedRandomNumber = getCommaSeparatedNumber(randomNumber);
+
+    const numberSplitByComma = formattedRandomNumber.split(',');
+
+    // Check if there are two elements in the array
+    expect(numberSplitByComma.length).toBe(2);
+
+    // Check if the length of the first element is 1
+    expect(numberSplitByComma[0].length).toBe(1);
+
+    // Check if the length of the second element is 5
+    expect(numberSplitByComma[1].length).toBe(5);
+
+    expect(Number(numberSplitByComma.join(''))).toBe(randomNumber);
+  });
 });
