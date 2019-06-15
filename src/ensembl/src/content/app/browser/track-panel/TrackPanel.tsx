@@ -46,7 +46,7 @@ type StateProps = {
   activeGenomeId: string;
   breakpointWidth: BreakpointWidth;
   browserActivated: boolean;
-  defaultChrLocation: ChrLocation;
+  defaultChrLocation: { [genomeId: string]: ChrLocation };
   drawerOpened: boolean;
   drawerView: string;
   ensObjectInfo: EnsObject;

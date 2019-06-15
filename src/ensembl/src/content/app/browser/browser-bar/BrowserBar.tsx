@@ -36,8 +36,8 @@ type StateProps = {
   activeGenomeId: string;
   browserActivated: boolean;
   browserNavOpened: boolean;
-  chrLocation: ChrLocation;
-  defaultChrLocation: ChrLocation;
+  chrLocation: { [genomeId: string]: ChrLocation };
+  defaultChrLocation: { [genomeId: string]: ChrLocation };
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
   ensObjectInfo: any;
@@ -73,7 +73,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   props: BrowserBarProps
 ) => {
   const shouldShowBrowserInfo = () => {
-    const [, chrStart, chrEnd] = props.defaultChrLocation;
+    const [, chrStart, chrEnd] = props.defaultChrLocation[props.activeGenomeId];
     const isLocationOfWholeChromosome = chrStart === 0 && chrEnd === 0;
 
     return !(props.genomeSelectorActive || isLocationOfWholeChromosome);
@@ -123,6 +123,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
       <div className={className}>
         <dl className={styles.browserInfoLeft}>
           <BrowserReset
+            activeGenomeId={props.activeGenomeId}
             dispatchBrowserLocation={props.dispatchBrowserLocation}
             chrLocation={props.chrLocation}
             defaultChrLocation={props.defaultChrLocation}
@@ -134,6 +135,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
         </dl>
         <dl className={styles.browserInfoRight}>
           <BrowserGenomeSelector
+            activeGenomeId={props.activeGenomeId}
             browserActivated={props.browserActivated}
             dispatchBrowserLocation={props.dispatchBrowserLocation}
             chrLocation={props.chrLocation}

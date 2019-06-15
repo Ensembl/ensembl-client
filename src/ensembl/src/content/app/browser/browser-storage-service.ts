@@ -6,9 +6,14 @@ import {
   TrackType,
   TrackToggleStates
 } from './track-panel/trackPanelConfig';
+import { ChrLocation } from './browserState';
 import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
 
 export enum StorageKeys {
+  ACTIVE_GENOME_ID = 'browser.activeGenomeId',
+  ACTIVE_ENS_OBJECT_ID = 'browser.activeEnsObjectId',
+  CHR_LOCATION = 'browser.chrLocation',
+  DEFAULT_CHR_LOCATION = 'browser.defaultChrLocation',
   TRACK_STATES = 'browser.trackStates',
   TRACK_LIST_TOGGLE_STATES = 'browser.trackListToggleStates',
   SELECTED_BROWSER_TAB = 'browser.selectedBrowserTab'
@@ -19,6 +24,48 @@ export class BrowserStorageService {
 
   public constructor(storageService: StorageServiceInterface) {
     this.storageService = storageService;
+  }
+
+  public getActiveGenomeId(): string {
+    return this.storageService.get(StorageKeys.ACTIVE_GENOME_ID);
+  }
+
+  public saveActiveGenomeId(activeGenomeId: string) {
+    this.storageService.save(StorageKeys.ACTIVE_GENOME_ID, activeGenomeId);
+  }
+
+  public getActiveEnsObjectId() {
+    return this.storageService.get(StorageKeys.ACTIVE_ENS_OBJECT_ID) || {};
+  }
+
+  public updateActiveEnsObjectId(activeEnsObjectId: {
+    [genomeId: string]: string;
+  }) {
+    this.storageService.update(
+      StorageKeys.ACTIVE_ENS_OBJECT_ID,
+      activeEnsObjectId
+    );
+  }
+
+  public getChrLocation() {
+    return this.storageService.get(StorageKeys.CHR_LOCATION) || {};
+  }
+
+  public updateChrLocation(chrLocation: { [genomeId: string]: ChrLocation }) {
+    this.storageService.update(StorageKeys.CHR_LOCATION, chrLocation);
+  }
+
+  public getDefaultChrLocation() {
+    return this.storageService.get(StorageKeys.DEFAULT_CHR_LOCATION) || {};
+  }
+
+  public updateDefaultChrLocation(defaultChrLocation: {
+    [genomeId: string]: ChrLocation;
+  }) {
+    this.storageService.update(
+      StorageKeys.DEFAULT_CHR_LOCATION,
+      defaultChrLocation
+    );
   }
 
   public getTrackStates(): TrackStates {
@@ -41,11 +88,13 @@ export class BrowserStorageService {
     this.storageService.save(StorageKeys.TRACK_STATES, trackStates);
   }
 
-  public getTrackListToggleStates(): TrackToggleStates {
+  public getTrackListToggleStates() {
     return this.storageService.get(StorageKeys.TRACK_LIST_TOGGLE_STATES) || {};
   }
 
-  public updateTrackListToggleStates(toggleState: TrackToggleStates) {
+  public updateTrackListToggleStates(toggleState: {
+    [genomeId: string]: TrackToggleStates;
+  }) {
     this.storageService.update(
       StorageKeys.TRACK_LIST_TOGGLE_STATES,
       toggleState
@@ -56,7 +105,7 @@ export class BrowserStorageService {
     return this.storageService.get(StorageKeys.SELECTED_BROWSER_TAB) || {};
   }
 
-  public saveSelectedBrowserTab(selectedBrowserTabForGenome: {
+  public updateSelectedBrowserTab(selectedBrowserTabForGenome: {
     [genomeId: string]: TrackType;
   }) {
     this.storageService.update(

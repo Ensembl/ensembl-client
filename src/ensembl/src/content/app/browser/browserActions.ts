@@ -1,9 +1,13 @@
 import { createAction } from 'typesafe-actions';
-import { Dispatch } from 'redux';
+import { Dispatch, ActionCreator, Action } from 'redux';
+import { ThunkAction } from 'redux-thunk';
 
 import config from 'config';
 import { BrowserNavStates, ChrLocation, CogList } from './browserState';
+import { getBrowserActiveGenomeId } from './browserSelectors';
 import { getBrowserAnalyticsObject } from 'src/analyticsHelper';
+import browserStorageService from './browser-storage-service';
+import { RootState } from 'src/store';
 
 export const updateBrowserActivated = createAction(
   'browser/update-browser-activated',
@@ -40,13 +44,35 @@ export const updateBrowserActiveGenomeId = createAction(
   }
 );
 
-export const updateBrowserActiveRegion = createAction(
-  'browser/update-active-region',
+export const updateBrowserActiveGenomeIdAndSave: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (activeGenomeId: string) => (dispatch: Dispatch) => {
+  dispatch(updateBrowserActiveGenomeId(activeGenomeId));
+  browserStorageService.saveActiveGenomeId(activeGenomeId);
+};
+
+export const updateBrowserActiveEnsObjectId = createAction(
+  'browser/update-active-ens-object-id',
   (resolve) => {
-    return (activeRegion: ChrLocation) =>
-      resolve(activeRegion, getBrowserAnalyticsObject('Navigation'));
+    return (activeEnsObjectId: { [genomeId: string]: string }) =>
+      resolve(activeEnsObjectId, getBrowserAnalyticsObject('Navigation'));
   }
 );
+
+export const updateBrowserActiveEnsObjectIdAndSave: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (activeEnsObjectId: string) => (
+  dispatch: Dispatch,
+  getState: () => RootState
+) => {
+  const activeGenomeId = getBrowserActiveGenomeId(getState());
+  const activeEnsObjectIdForGenome = {
+    [activeGenomeId]: activeEnsObjectId
+  };
+
+  dispatch(updateBrowserActiveEnsObjectId(activeEnsObjectIdForGenome));
+  browserStorageService.updateActiveEnsObjectId(activeEnsObjectIdForGenome);
+};
 
 export const toggleBrowserNav = createAction(
   'browser/toggle-browser-navigation',
@@ -66,24 +92,56 @@ export const updateBrowserNavStates = createAction(
 export const updateChrLocation = createAction(
   'browser/update-chromosome-location',
   (resolve) => {
-    return (chrLocation: ChrLocation) => resolve(chrLocation);
+    return (chrLocation: { [genomeId: string]: ChrLocation }) =>
+      resolve(chrLocation);
   }
 );
+
+export const updateChrLocationAndSave: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (chrLocation: ChrLocation) => (
+  dispatch: Dispatch,
+  getState: () => RootState
+) => {
+  const activeGenomeId = getBrowserActiveGenomeId(getState());
+  const chrLocationForGenome = {
+    [activeGenomeId]: chrLocation
+  };
+
+  dispatch(updateChrLocation(chrLocationForGenome));
+  browserStorageService.updateChrLocation(chrLocationForGenome);
+};
 
 export const updateDefaultChrLocation = createAction(
   'browser/update-default-chromosome-location',
   (resolve) => {
-    return (chrLocation: ChrLocation) =>
+    return (chrLocation: { [genomeId: string]: ChrLocation }) =>
       resolve(chrLocation, getBrowserAnalyticsObject('User Interaction'));
   }
 );
 
-export const changeBrowserLocation = (
-  chrLocation: ChrLocation,
-  browserEl: HTMLDivElement
+export const updateDefaultChrLocationAndSave: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (chrLocation: ChrLocation) => (
+  dispatch: Dispatch,
+  getState: () => RootState
 ) => {
-  return (dispatch: Dispatch) => {
+  const activeGenomeId = getBrowserActiveGenomeId(getState());
+  const defaultChrLocationForGenome = {
+    [activeGenomeId]: chrLocation
+  };
+
+  dispatch(updateDefaultChrLocation(defaultChrLocationForGenome));
+  browserStorageService.updateDefaultChrLocation(defaultChrLocationForGenome);
+};
+
+export const changeBrowserLocation: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (chrLocation: ChrLocation, browserEl: HTMLDivElement) => {
+  return (dispatch: Dispatch, getState: () => RootState) => {
     const [chrCode, startBp, endBp] = chrLocation;
+    const activeGenomeId = getBrowserActiveGenomeId(getState());
+    const chrLocationForGenome = { [activeGenomeId]: chrLocation };
 
     const stickEvent = new CustomEvent('bpane', {
       bubbles: true,
@@ -105,7 +163,7 @@ export const changeBrowserLocation = (
       browserEl.dispatchEvent(gotoEvent);
     }
 
-    dispatch(updateDefaultChrLocation(chrLocation));
+    dispatch(updateDefaultChrLocation(chrLocationForGenome));
   };
 };
 

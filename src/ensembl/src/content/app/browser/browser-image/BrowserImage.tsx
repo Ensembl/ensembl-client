@@ -13,15 +13,15 @@ import {
   getTrackConfigNames,
   getTrackConfigLabel,
   getBrowserCogTrackList,
-  getChrLocation,
   getBrowserNavOpened,
-  getBrowserActivated
+  getBrowserActivated,
+  getBrowserActiveGenomeId
 } from '../browserSelectors';
 import {
   activateBrowser,
   updateBrowserActivated,
   updateBrowserNavStates,
-  updateChrLocation
+  updateChrLocationAndSave
 } from '../browserActions';
 
 import { CircleLoader } from 'src/shared/loader/Loader';
@@ -30,9 +30,9 @@ import { RootState } from 'src/store';
 import { TrackStates } from '../track-panel/trackPanelConfig';
 
 type StateProps = {
+  activeGenomeId: string;
   browserCogTrackList: CogList;
   browserNavOpened: boolean;
-  chrLocation: ChrLocation;
   trackConfigNames: any;
   trackConfigLabel: any;
   browserActivated: boolean;
@@ -41,7 +41,7 @@ type StateProps = {
 type DispatchProps = {
   activateBrowser: (browserEl: HTMLDivElement) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
-  updateChrLocation: (chrLocation: ChrLocation) => void;
+  updateChrLocationAndSave: (chrLocation: ChrLocation) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
 };
 
@@ -72,7 +72,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
     }
 
     if (chrLocation) {
-      props.updateChrLocation(chrLocation);
+      props.updateChrLocationAndSave(chrLocation);
     }
   }, []);
 
@@ -195,9 +195,9 @@ function getBrowserImageClasses(browserNavOpened: boolean): string {
 }
 
 const mapStateToProps = (state: RootState): StateProps => ({
+  activeGenomeId: getBrowserActiveGenomeId(state),
   browserCogTrackList: getBrowserCogTrackList(state),
   browserNavOpened: getBrowserNavOpened(state),
-  chrLocation: getChrLocation(state),
   trackConfigLabel: getTrackConfigLabel(state),
   trackConfigNames: getTrackConfigNames(state),
   browserActivated: getBrowserActivated(state)
@@ -207,7 +207,7 @@ const mapDispatchToProps: DispatchProps = {
   activateBrowser,
   updateBrowserActivated,
   updateBrowserNavStates,
-  updateChrLocation
+  updateChrLocationAndSave
 };
 
 export default connect(

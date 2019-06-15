@@ -1,10 +1,5 @@
 import { RootState } from 'src/store';
-import {
-  BrowserOpenState,
-  BrowserNavStates,
-  ChrLocation,
-  CogList
-} from './browserState';
+import { BrowserOpenState, BrowserNavStates, CogList } from './browserState';
 import { getQueryParamsMap } from 'src/global/globalHelper';
 
 export const getBrowserActivated = (state: RootState): boolean =>
@@ -16,8 +11,8 @@ export const getBrowserOpenState = (state: RootState): BrowserOpenState =>
 export const getBrowserActiveGenomeId = (state: RootState): string =>
   state.browser.browserEntity.activeGenomeId;
 
-export const getBrowserActiveRegion = (state: RootState): ChrLocation =>
-  state.browser.browserEntity.activeRegion;
+export const getBrowserActiveEnsObjectId = (state: RootState) =>
+  state.browser.browserEntity.activeEnsObjectId;
 
 export const getBrowserQueryParams = (
   state: RootState
@@ -29,10 +24,10 @@ export const getBrowserNavOpened = (state: RootState): boolean =>
 export const getBrowserNavStates = (state: RootState): BrowserNavStates =>
   state.browser.browserNav.browserNavStates;
 
-export const getChrLocation = (state: RootState): ChrLocation =>
+export const getChrLocation = (state: RootState) =>
   state.browser.browserLocation.chrLocation;
 
-export const getDefaultChrLocation = (state: RootState): ChrLocation =>
+export const getDefaultChrLocation = (state: RootState) =>
   state.browser.browserLocation.defaultChrLocation;
 
 export const getGenomeSelectorActive = (state: RootState): boolean =>

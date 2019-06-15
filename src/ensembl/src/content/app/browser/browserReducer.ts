@@ -52,8 +52,8 @@ export function browserEntity(
   switch (action.type) {
     case getType(browserActions.updateBrowserActiveGenomeId):
       return { ...state, activeGenomeId: action.payload };
-    case getType(browserActions.updateBrowserActiveRegion):
-      return { ...state, activeRegion: action.payload };
+    case getType(browserActions.updateBrowserActiveEnsObjectId):
+      return { ...state, activeEnsObjectId: action.payload };
     default:
       return state;
   }

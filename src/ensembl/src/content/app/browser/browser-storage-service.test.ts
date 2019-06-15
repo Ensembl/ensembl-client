@@ -133,7 +133,9 @@ describe('BrowserStorageService', () => {
         'gene-feat': true
       };
 
-      browserStorageService.updateTrackListToggleStates(toggledTrackState);
+      browserStorageService.updateTrackListToggleStates({
+        homo_sapiens38: toggledTrackState
+      });
 
       expect(mockStorageService.update).toHaveBeenCalledWith(
         StorageKeys.TRACK_LIST_TOGGLE_STATES,
@@ -176,13 +178,13 @@ describe('BrowserStorageService', () => {
     });
   });
 
-  describe('.saveSelectedBrowserTab()', () => {
+  describe('.updateSelectedBrowserTab()', () => {
     it('saves selected browser tab via storage service', () => {
       const browserStorageService = new BrowserStorageService(
         mockStorageService
       );
 
-      browserStorageService.saveSelectedBrowserTab({
+      browserStorageService.updateSelectedBrowserTab({
         homo_sapiens38: TrackType.EXPRESSION
       });
 

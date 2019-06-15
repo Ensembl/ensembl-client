@@ -40,7 +40,7 @@ export const selectBrowserTabAndSave: ActionCreator<
   };
 
   dispatch(selectBrowserTab(selectedBrowserTabForGenome));
-  browserStorageService.saveSelectedBrowserTab(selectedBrowserTabForGenome);
+  browserStorageService.updateSelectedBrowserTab(selectedBrowserTabForGenome);
 };
 
 export const openTrackPanelModal = createAction(

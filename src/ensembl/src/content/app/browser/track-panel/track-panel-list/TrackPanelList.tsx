@@ -19,7 +19,7 @@ import { EnsObjectTrack, EnsObject } from 'src/ens-object/ensObjectTypes';
 type TrackPanelListProps = {
   activeGenomeId: string;
   browserRef: RefObject<HTMLDivElement>;
-  defaultChrLocation: ChrLocation;
+  defaultChrLocation: { [genomeId: string]: ChrLocation };
   drawerOpened: boolean;
   drawerView: string;
   launchbarExpanded: boolean;
@@ -72,40 +72,6 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
 
     return `${styles.trackPanelList} ${heightClass}`;
   };
-
-  // const getMainTracks = (): EnsObjectTrack | null => {
-  //   const { defaultChrLocation, ensObjectInfo } = props;
-  //   const [, chrStart, chrEnd] = defaultChrLocation;
-
-  //   if (chrStart === 0 && chrEnd === 0) {
-  //     return null;
-  //   }
-
-  //   let geneLabel = ensObjectInfo.obj_symbol;
-  //   let transcriptLabel = ensObjectInfo.associated_object.stable_id;
-
-  //   if (ensObjectInfo.obj_type === 'transcript') {
-  //     geneLabel = ensObjectInfo.associated_object.obj_symbol;
-  //     transcriptLabel = ensObjectInfo.stable_id;
-  //   }
-
-  //   return {
-  //     additional_info: ensObjectInfo.bio_type,
-  //     child_tracks: [
-  //       {
-  //         additional_info: ensObjectInfo.bio_type,
-  //         colour: 'BLUE',
-  //         label: transcriptLabel,
-  //         track_id: 'gene-feat',
-  //         support_level: ensObjectInfo.associated_object.selected_info
-  //       }
-  //     ],
-  //     // drawerView: 'gene',
-  //     // id: 0,
-  //     label: geneLabel,
-  //     track_id: 'gene-feat'
-  //   };
-  // };
 
   const getDefaultTrackStatus = (categoryName: string, trackName: string) => {
     const statesOfCategory = props.trackStates[categoryName];

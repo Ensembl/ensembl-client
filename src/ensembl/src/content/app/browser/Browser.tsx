@@ -25,9 +25,9 @@ import {
 } from './browserState';
 import {
   changeBrowserLocation,
-  updateChrLocation,
+  updateChrLocationAndSave,
   updateBrowserNavStates,
-  updateBrowserActiveGenomeId
+  updateBrowserActiveGenomeIdAndSave
 } from './browserActions';
 import {
   getBrowserOpenState,
@@ -36,7 +36,8 @@ import {
   getGenomeSelectorActive,
   getBrowserActivated,
   getBrowserActiveGenomeId,
-  getBrowserQueryParams
+  getBrowserQueryParams,
+  getBrowserActiveEnsObjectId
 } from './browserSelectors';
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import { getTrackPanelOpened } from './track-panel/trackPanelSelectors';
@@ -61,11 +62,12 @@ import 'static/browser/browser.js';
 
 type StateProps = {
   activeGenomeId: string;
+  activeEnsObjectId: { [genomeId: string]: string };
   browserActivated: boolean;
   browserNavOpened: boolean;
   browserOpenState: BrowserOpenState;
   browserQueryParams: { [key: string]: string };
-  chrLocation: ChrLocation;
+  chrLocation: { [genomeId: string]: ChrLocation };
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
   trackPanelOpened: boolean;
@@ -83,9 +85,9 @@ type DispatchProps = {
   fetchGenomeTrackCategories: (genomeId: string) => void;
   replace: Replace;
   toggleDrawer: (drawerOpened: boolean) => void;
-  updateBrowserActiveGenomeId: (genomeId: string) => void;
+  updateBrowserActiveGenomeIdAndSave: (genomeId: string) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
-  updateChrLocation: (chrLocation: ChrLocation) => void;
+  updateChrLocationAndSave: (chrLocation: ChrLocation) => void;
 };
 
 type OwnProps = {};
@@ -114,13 +116,25 @@ export const Browser: FunctionComponent<BrowserProps> = (
   };
 
   useEffect(() => {
-    setTrackStatesFromStorage(browserStorageService.getTrackStates());
+    if (props.match.params.genomeId === undefined) {
+      const locationStr = getChrLocationStr(
+        props.chrLocation[props.activeGenomeId]
+      );
+
+      urlFor.browser(
+        props.activeGenomeId,
+        props.activeEnsObjectId[props.activeGenomeId],
+        locationStr
+      );
+    } else {
+      setTrackStatesFromStorage(browserStorageService.getTrackStates());
+    }
   }, []);
 
   useEffect(() => {
     const { genomeId } = props.match.params;
 
-    props.updateBrowserActiveGenomeId(genomeId);
+    props.updateBrowserActiveGenomeIdAndSave(genomeId);
     props.fetchGenomeTrackCategories(genomeId);
   }, [props.match.params.genomeId]);
 
@@ -135,16 +149,18 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, [props.browserQueryParams.focus]);
 
   useEffect(() => {
-    const [, chrStart, chrEnd] = props.chrLocation;
+    const chrLocationForGenome = props.chrLocation[props.activeGenomeId];
+    const [, chrStart, chrEnd] = chrLocationForGenome;
 
     if (props.browserActivated && chrStart > 0 && chrEnd > 0) {
-      dispatchBrowserLocation(props.chrLocation);
+      dispatchBrowserLocation(chrLocationForGenome);
     }
   }, [props.browserActivated]);
 
   const updateBrowserUrl = (genomeId: string = props.match.params.genomeId) => {
     const { focus } = props.browserQueryParams;
-    const locationStr = getChrLocationStr(props.chrLocation);
+    const chrLocationForGenome = props.chrLocation[props.activeGenomeId];
+    const locationStr = getChrLocationStr(chrLocationForGenome);
     const newUrl = urlFor.browser(genomeId, focus, locationStr);
 
     props.replace(newUrl);
@@ -162,7 +178,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, [props.drawerOpened]);
 
   const changeSelectedSpecies = (genomeId: string) => {
-    props.updateBrowserActiveGenomeId(genomeId);
+    props.updateBrowserActiveGenomeIdAndSave(genomeId);
     updateBrowserUrl(genomeId);
   };
 
@@ -261,6 +277,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
 const mapStateToProps = (state: RootState): StateProps => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
+  activeEnsObjectId: getBrowserActiveEnsObjectId(state),
   browserActivated: getBrowserActivated(state),
   browserNavOpened: getBrowserNavOpened(state),
   browserOpenState: getBrowserOpenState(state),
@@ -280,9 +297,9 @@ const mapDispatchToProps: DispatchProps = {
   fetchGenomeTrackCategories,
   replace,
   toggleDrawer,
-  updateBrowserActiveGenomeId,
+  updateBrowserActiveGenomeIdAndSave,
   updateBrowserNavStates,
-  updateChrLocation
+  updateChrLocationAndSave
 };
 
 export default withRouter(

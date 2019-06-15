@@ -48,8 +48,12 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   useEffect(() => {
     const trackToggleStates = browserStorageService.getTrackListToggleStates();
 
-    if (track.child_tracks && trackToggleStates[track.track_id] !== undefined) {
-      setExpanded(trackToggleStates[track.track_id]);
+    if (
+      track.child_tracks &&
+      trackToggleStates[activeGenomeId] &&
+      trackToggleStates[activeGenomeId][track.track_id] !== undefined
+    ) {
+      setExpanded(trackToggleStates[activeGenomeId][track.track_id]);
     }
   }, []);
 
@@ -100,7 +104,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     setExpanded(!expanded);
 
     browserStorageService.updateTrackListToggleStates({
-      [`${track.track_id}`]: !expanded
+      [activeGenomeId]: { [track.track_id]: !expanded }
     });
   };
 
