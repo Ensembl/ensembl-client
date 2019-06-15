@@ -25,6 +25,7 @@ import {
 import { selectBrowserTabAndSave } from '../track-panel/trackPanelActions';
 import { toggleDrawer } from '../drawer/drawerActions';
 import { RootState } from 'src/store';
+import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 import BrowserReset from '../browser-reset/BrowserReset';
 import BrowserGenomeSelector from '../browser-genome-selector/BrowserGenomeSelector';
@@ -40,7 +41,7 @@ type StateProps = {
   defaultChrLocation: { [genomeId: string]: ChrLocation };
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
-  ensObjectInfo: any;
+  ensObjectInfo: EnsObject;
   selectedBrowserTab: { [genomeId: string]: TrackType };
   trackPanelModalOpened: boolean;
   trackPanelOpened: boolean;
@@ -60,7 +61,7 @@ type OwnProps = {
 type BrowserBarProps = StateProps & DispatchProps & OwnProps;
 
 type BrowserInfoProps = {
-  ensObjectInfo: any;
+  ensObjectInfo: EnsObject;
 };
 
 type BrowserNavigatorButtonProps = {
@@ -170,25 +171,29 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
 
 export const BrowserInfo = ({ ensObjectInfo }: BrowserInfoProps) => (
   <>
-    <dd className={styles.geneSymbol}>
-      <label>Gene</label>
+    <dd className={styles.ensObjectLabel}>
+      <label>{ensObjectInfo.object_type}</label>
       <span className={styles.value}>{ensObjectInfo.label}</span>
     </dd>
-    <dd>
-      <label>Stable ID</label>
-      <span className={styles.value}>{ensObjectInfo.stable_id}</span>
-    </dd>
-    <dd className="show-for-large">
-      <label>Spliced mRNA length</label>
-      <span className={styles.value}>{ensObjectInfo.spliced_length}</span>
-      <label>bp</label>
-    </dd>
-    <dd className={`show-for-large ${styles.nonLabelValue}`}>
-      {ensObjectInfo.bio_type}
-    </dd>
-    <dd className={`show-for-large ${styles.nonLabelValue}`}>
-      {ensObjectInfo.strand} strand
-    </dd>
+    {ensObjectInfo.object_type === 'region' ? null : (
+      <>
+        <dd>
+          <label>Stable ID</label>
+          <span className={styles.value}>{ensObjectInfo.stable_id}</span>
+        </dd>
+        <dd className="show-for-large">
+          <label>Spliced mRNA length</label>
+          <span className={styles.value}>{ensObjectInfo.spliced_length}</span>
+          <label>bp</label>
+        </dd>
+        <dd className={`show-for-large ${styles.nonLabelValue}`}>
+          {ensObjectInfo.bio_type}
+        </dd>
+        <dd className={`show-for-large ${styles.nonLabelValue}`}>
+          {ensObjectInfo.strand} strand
+        </dd>
+      </>
+    )}
   </>
 );
 

@@ -115,9 +115,11 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
 
   return (
     <div className={getTrackPanelListClasses()}>
-      <section>
-        <dl>{getTrackListItem('main', props.ensObjectTracks)}</dl>
-      </section>
+      {props.ensObjectInfo.object_type === 'region' ? null : (
+        <section>
+          <dl>{getTrackListItem('main', props.ensObjectTracks)}</dl>
+        </section>
+      )}
       {currentTrackCategories.map((category: GenomeTrackCategory) => (
         <section key={category.track_category_id}>
           <h4>{category.label}</h4>
