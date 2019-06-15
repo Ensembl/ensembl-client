@@ -27,7 +27,11 @@ type BrowserGenomeSelectorProps = {
 const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
   props: BrowserGenomeSelectorProps
 ) => {
-  const chrLocationForGenome = props.chrLocation[props.activeGenomeId];
+  const chrLocationForGenome = props.chrLocation[props.activeGenomeId] || [
+    '',
+    0,
+    0
+  ];
   const chrLocationStr = getChrLocationStr(chrLocationForGenome);
 
   const [chrLocationPlaceholder, setChrLocationPlaceholder] = useState('');

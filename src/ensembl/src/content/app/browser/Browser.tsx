@@ -149,7 +149,11 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, [props.browserQueryParams.focus]);
 
   useEffect(() => {
-    const chrLocationForGenome = props.chrLocation[props.activeGenomeId];
+    const chrLocationForGenome = props.chrLocation[props.activeGenomeId] || [
+      '',
+      0,
+      0
+    ];
     const [, chrStart, chrEnd] = chrLocationForGenome;
 
     if (props.browserActivated && chrStart > 0 && chrEnd > 0) {
