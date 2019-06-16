@@ -32,6 +32,8 @@ impl StretchRectTypeSpec {
                 PatinaSpec::Colour => Some(ColourSpec::Colour(c)),
                 _ => None
             }
+        } else if let Facade::ZMenu(ref z) = rd.facade {
+            Some(ColourSpec::ZMenu(z.to_string()))
         } else { None }.unwrap()
     }
 }
@@ -43,10 +45,14 @@ impl TypeToShape for StretchRectTypeSpec {
                                cleaf(rd.aux_x,rd.aux_y));
         if rd.pos_x <= 1. && rd.pos_x+rd.aux_x >= 0. {
             if self.spot == PatinaSpec::ZMenu {
-                Some(ShapeSpec::ZMenu(ZMenuRectSpec {
-                    offset: RectPosition(Placement::Stretch(offset),ZPosition::Normal),
-                    id: "this is a test".to_string()
-                }))
+                if let ColourSpec::ZMenu(id) = colspec {
+                    Some(ShapeSpec::ZMenu(ZMenuRectSpec {
+                        offset: RectPosition(Placement::Stretch(offset),ZPosition::Normal),
+                        id: id.to_string()
+                    }))
+                } else {
+                    None
+                }
             } else if self.hollow {
                 Some(ShapeSpec::PinBox(BoxSpec {
                     offset,
@@ -64,7 +70,14 @@ impl TypeToShape for StretchRectTypeSpec {
         }
     }
     
-    fn get_facade_type(&self) -> FacadeType { FacadeType::Colour }
+    fn get_facade_type(&self) -> FacadeType { 
+        if self.spot == PatinaSpec::ZMenu {
+            FacadeType::ZMenu
+        } else {
+            FacadeType::Colour
+        }
+    }
+    
     fn needs_scale(&self) -> (bool,bool) { (true,true) }
     fn sid_type(&self) -> ShapeInstanceDataType { ShapeInstanceDataType::Short }
 }

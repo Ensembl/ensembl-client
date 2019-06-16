@@ -11,7 +11,7 @@ use super::{
 };
 
 pub trait GenericShape {
-    fn zmenu_box(&self) -> Option<Placement> { None }
+    fn zmenu_box(&self) -> Option<(String,Placement)> { None }
 }
 
 #[derive(Clone)]
@@ -27,7 +27,7 @@ pub enum ShapeSpec {
 
 /* TODO: Why is StretchTextureSpec still in the webgl driver? */
 impl GenericShape for ShapeSpec {
-    fn zmenu_box(&self) -> Option<Placement> {
+    fn zmenu_box(&self) -> Option<(String,Placement)> {
         if let ShapeSpec::ZMenu(s) = self {
             s.zmenu_box()
         } else {

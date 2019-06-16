@@ -152,7 +152,7 @@ impl Stage {
     pub fn intersects(&self, pos: Dot<i32,i32>, area: &Placement) -> bool {
         let screen_bp = self.get_screen_in_bp();
         let screen_px = self.dims;
-        let bp_px = screen_px.0 / screen_bp;
+        let bp_px = screen_bp / screen_px.0;
         let left_bp = self.pos.get_edge(&LEFT);
         let top_px = self.pos.get_edge(&UP);
         match area {
@@ -160,6 +160,9 @@ impl Stage {
                 let pos_bp = left_bp + pos.0 as f64 * bp_px;
                 let nw = r.offset();
                 let se = r.far_offset();
+                bb_log!("zmenu","Q {:?}<={:?}[{:?}+{:?}*{:?}]<={:?} {:?}<={:?}<={:?}",
+                            nw.0,pos_bp,left_bp,pos.0,bp_px,se.0,
+                            nw.1,pos.1,se.1);
                 nw.0 as f64 <= pos_bp && se.0 as f64 >= pos_bp &&
                 nw.1 <= pos.1 && se.1 >= pos.1
             },

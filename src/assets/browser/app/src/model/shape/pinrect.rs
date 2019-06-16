@@ -93,13 +93,17 @@ impl PinRectTypeSpec {
         let se = pos.far_offset();
         
         if self.spot == PatinaSpec::ZMenu {
-            Some(ShapeSpec::ZMenu(ZMenuRectSpec {
-                offset: RectPosition(Placement::Placed(
-                            XPosition::Pixel(nw.0,se.0),
-                            YPosition::Page(nw.1,se.1)),
-                            z),
-                id: "FIX!".to_string()
-            }))     
+            if let Some(ColourSpec::ZMenu(id)) = colspec {
+                Some(ShapeSpec::ZMenu(ZMenuRectSpec {
+                    offset: RectPosition(Placement::Placed(
+                                XPosition::Pixel(nw.0,se.0),
+                                YPosition::Page(nw.1,se.1)),
+                                z),
+                    id: id.to_string()
+                }))     
+            } else {
+                None
+            }
         } else {        
             Some(ShapeSpec::PinRect(RectSpec {
                 offset: RectPosition(Placement::Placed(

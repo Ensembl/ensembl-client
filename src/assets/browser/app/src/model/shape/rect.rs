@@ -35,8 +35,8 @@ pub struct ZMenuRectSpec {
 impl GenericShape for RectSpec {}
 
 impl GenericShape for ZMenuRectSpec {
-    fn zmenu_box(&self) -> Option<Placement> {
-        Some(self.offset.0)
+    fn zmenu_box(&self) -> Option<(String,Placement)> {
+        Some((self.id.to_string(),self.offset.0))
     }
 }
 
