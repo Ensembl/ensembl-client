@@ -10,7 +10,7 @@ export enum Side {
 }
 
 // coordinates of the point at which zmenu should be pointing
-type AnchorCoordinates = {
+export type AnchorCoordinates = {
   x: number;
   y: number;
 };

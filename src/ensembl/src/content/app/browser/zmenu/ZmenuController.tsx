@@ -29,7 +29,7 @@ const testMessage = (element) => {
     detail: {
       id: 'foo',
       action: ZmenuAction.CREATE,
-      anchor_coordinates: { x: 0, y: 0 },
+      anchor_coordinates: { x: 200, y: 200 },
       content: 'hello'
     }
   });

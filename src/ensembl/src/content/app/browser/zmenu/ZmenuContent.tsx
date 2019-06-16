@@ -14,7 +14,24 @@ type ZmenuContentItemProps = ZmenuContentItemType & {
   id: string;
 };
 
-const ZmenuContentFeature = (props: ZmenuContentFeatureType) => {};
+type ZmenuContentProps = {
+  content: ZmenuContentFeatureType[]
+};
+
+const ZmenuContent = (props: ZmenuContentProps) => {
+  const features = props.content;
+  return features
+    .map(feature =>
+      feature.map(section =>
+        section.lines.map(line =>
+          line.map(block => block.map(item => (
+            <ZmenuContentItem
+              key={`${section.id}-${item.text}`}
+              id={section.id}
+              {...item}
+            />
+          ))))));
+};
 
 const ZmenuContentItem = (props: ZmenuContentItemProps) => {
   const { text, markup } = props;
@@ -32,3 +49,5 @@ const ZmenuContentItem = (props: ZmenuContentItemProps) => {
   // after the browser chrome learns to support multiple genomes
   return markup.includes(Markup.FOCUS) ? <Link to="/">{item}</Link> : item;
 };
+
+export default ZmenuContent;
