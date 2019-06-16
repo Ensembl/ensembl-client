@@ -1,3 +1,15 @@
+@import 'src/styles/common';
+
+.zmenu {
+  position: absolute;
+  padding: 20px;
+  background-color: $ens-dark-grey;
+}
+
+.zmenuTip {
+  position: absolute;
+}
+
 .markupStrong {
   font-weight: $bold;
 }
