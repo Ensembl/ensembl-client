@@ -5,7 +5,6 @@ import { ThunkAction } from 'redux-thunk';
 // import apiService from 'src/services/api-service';
 
 import { RootState } from 'src/store';
-import { GenomeInfo } from 'src/genome/genomeTypes';
 import { EnsObjectResponse, EnsObjectTracksResponse } from './ensObjectTypes';
 import {
   humanGeneResponse,
@@ -18,7 +17,9 @@ import {
   mouseGeneTracksResponse,
   wheatGeneTracksResponse
 } from 'tests/data/ens-object/ens-objects';
-import { getGenomeInfo } from 'src/genome/genomeSelectors';
+
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
 type FetchEnsObjectRequestType = {
   ensObjectId: string;
@@ -117,33 +118,35 @@ export const fetchExampleEnsObjectsAsyncActions = createAsyncAction(
   'ens-object/fetch_example_ens_objects_request',
   'ens-object/fetch_example_ens_objects_success',
   'ens-object/fetch_example_ens_objects_failure'
-)<string, EnsObjectResponse[], Error>();
+)<null, EnsObjectResponse[], Error>();
 
 // TODO: switch to using APIs when available
 export const fetchExampleEnsObjects: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (genomeId: string) => (dispatch: Dispatch, getState: () => RootState) => {
+> = () => (dispatch: Dispatch, getState: () => RootState) => {
   try {
-    dispatch(fetchExampleEnsObjectsAsyncActions.request(genomeId));
+    dispatch(fetchExampleEnsObjectsAsyncActions.request(null));
 
-    const genomeInfo = getGenomeInfo(getState()) as GenomeInfo;
-    let ensObjectsResponse: EnsObjectResponse[] = [];
+    const committedSpecies = getCommittedSpecies(getState());
+    let ensObjectResponses: EnsObjectResponse[] = [];
 
-    genomeInfo.example_objects.map((ensObjectId: string) => {
-      switch (ensObjectId) {
+    committedSpecies.map((species: CommittedItem) => {
+      switch (species.genome_id) {
         case 'homo_sapiens38':
-          ensObjectsResponse.push(humanGeneResponse, humanRegionResponse);
+          ensObjectResponses.push(humanGeneResponse, humanRegionResponse);
           break;
         case 'mus_musculus_bdc':
-          ensObjectsResponse.push(mouseGeneResponse, mouseRegionResponse);
+          ensObjectResponses.push(mouseGeneResponse, mouseRegionResponse);
           break;
         case 'triticum_aestivum':
-          ensObjectsResponse.push(wheatGeneResponse, wheatRegionResponse);
+          ensObjectResponses.push(wheatGeneResponse, wheatRegionResponse);
           break;
       }
     });
 
-    dispatch(fetchExampleEnsObjectsAsyncActions.success(ensObjectsResponse));
+    dispatch(
+      fetchExampleEnsObjectsAsyncActions.success(ensObjectResponses.flat())
+    );
   } catch (error) {
     dispatch(fetchExampleEnsObjectsAsyncActions.failure(error));
   }

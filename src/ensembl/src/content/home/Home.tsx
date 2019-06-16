@@ -2,12 +2,13 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { fetchGenomeExampleEnsObjects } from 'src/genome/genomeActions';
-import { getGenomeExampleEnsObjects } from 'src/genome/genomeSelectors';
 import * as urlFor from 'src/shared/helpers/urlHelper';
-
 import { RootState } from 'src/store';
+
+import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
+
 import { getCommittedSpecies } from '../app/species-selector/state/speciesSelectorSelectors';
 import { CommittedItem } from '../app/species-selector/types/species-search';
 
@@ -20,7 +21,7 @@ type StateProps = {
 };
 
 type DispatchProps = {
-  fetchGenomeExampleEnsObjects: () => void;
+  fetchExampleEnsObjects: () => void;
 };
 
 type OwnProps = {};
@@ -31,7 +32,7 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
   const [showPreviouslyViewed, toggleShowPreviouslyViewed] = useState(false);
 
   useEffect(() => {
-    props.fetchGenomeExampleEnsObjects();
+    props.fetchExampleEnsObjects();
   }, []);
 
   useEffect(() => {
@@ -120,12 +121,12 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
 
 const mapStateToProps = (state: RootState) => ({
   activeSpecies: getCommittedSpecies(state),
-  exampleEnsObjects: getGenomeExampleEnsObjects(state),
+  exampleEnsObjects: getExampleEnsObjects(state),
   totalSelectedSpecies: getCommittedSpecies(state).length
 });
 
 const mapDispatchToProps = {
-  fetchGenomeExampleEnsObjects
+  fetchExampleEnsObjects
 };
 
 export default connect(

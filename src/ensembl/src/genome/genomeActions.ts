@@ -4,9 +4,6 @@ import { Action, ActionCreator, Dispatch } from 'redux';
 
 // import apiService from 'src/services/api-service';
 
-import { RootState } from 'src/store';
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 import {
   GenomeInfoResponse,
   GenomeTrackCategoriesResponse
@@ -72,36 +69,31 @@ export const fetchGenomeExampleEnsObjectsAsyncActions = createAsyncAction(
   'ens-object/fetch_genome_example_ens_objects_request',
   'ens-object/fetch_genome_example_ens_objects_success',
   'ens-object/fetch_genome_example_ens_objects_failure'
-)<null, EnsObjectResponse[], Error>();
+)<string, EnsObjectResponse[], Error>();
 
 // TODO: switch to using APIs when available
 export const fetchGenomeExampleEnsObjects: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = () => (dispatch: Dispatch, getState: () => RootState) => {
+> = (genomeId: string) => (dispatch: Dispatch) => {
   try {
-    dispatch(fetchGenomeExampleEnsObjectsAsyncActions.request(null));
+    dispatch(fetchGenomeExampleEnsObjectsAsyncActions.request(genomeId));
 
-    const committedSpecies = getCommittedSpecies(getState());
-    let ensObjectResponses: EnsObjectResponse[] = [];
+    let ensObjectsResponse: EnsObjectResponse[] = [];
 
-    committedSpecies.map((species: CommittedItem) => {
-      switch (species.genome_id) {
-        case 'homo_sapiens38':
-          ensObjectResponses.push(humanGeneResponse, humanRegionResponse);
-          break;
-        case 'mus_musculus_bdc':
-          ensObjectResponses.push(mouseGeneResponse, mouseRegionResponse);
-          break;
-        case 'triticum_aestivum':
-          ensObjectResponses.push(wheatGeneResponse, wheatRegionResponse);
-          break;
-      }
-    });
+    switch (genomeId) {
+      case 'homo_sapiens38':
+        ensObjectsResponse.push(humanGeneResponse, humanRegionResponse);
+        break;
+      case 'mus_musculus_bdc':
+        ensObjectsResponse.push(mouseGeneResponse, mouseRegionResponse);
+        break;
+      case 'triticum_aestivum':
+        ensObjectsResponse.push(wheatGeneResponse, wheatRegionResponse);
+        break;
+    }
 
     dispatch(
-      fetchGenomeExampleEnsObjectsAsyncActions.success(
-        ensObjectResponses.flat()
-      )
+      fetchGenomeExampleEnsObjectsAsyncActions.success(ensObjectsResponse)
     );
   } catch (error) {
     dispatch(fetchGenomeExampleEnsObjectsAsyncActions.failure(error));

@@ -44,11 +44,13 @@ import { getTrackPanelOpened } from './track-panel/trackPanelSelectors';
 import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 import { getDrawerOpened } from './drawer/drawerSelectors';
 import {
-  fetchExampleEnsObjects,
   fetchEnsObject,
   fetchEnsObjectTracks
 } from 'src/ens-object/ensObjectActions';
-import { fetchGenomeTrackCategories } from 'src/genome/genomeActions';
+import {
+  fetchGenomeInfo,
+  fetchGenomeTrackCategories
+} from 'src/genome/genomeActions';
 import { toggleDrawer } from './drawer/drawerActions';
 
 import browserStorageService from './browser-storage-service';
@@ -79,9 +81,9 @@ type DispatchProps = {
     chrLocation: ChrLocation,
     browserEl: HTMLDivElement
   ) => void;
-  fetchExampleEnsObjects: () => void;
   fetchEnsObject: (ensObjectId: string, genomeId: string) => void;
   fetchEnsObjectTracks: (ensObjectId: string, genomeId: string) => void;
+  fetchGenomeInfo: (genomeId: string) => void;
   fetchGenomeTrackCategories: (genomeId: string) => void;
   replace: Replace;
   toggleDrawer: (drawerOpened: boolean) => void;
@@ -136,6 +138,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
     props.updateBrowserActiveGenomeIdAndSave(genomeId);
     props.fetchGenomeTrackCategories(genomeId);
+    props.fetchGenomeInfo(genomeId);
   }, [props.match.params.genomeId]);
 
   useEffect(() => {
@@ -297,7 +300,7 @@ const mapDispatchToProps: DispatchProps = {
   changeBrowserLocation,
   fetchEnsObject,
   fetchEnsObjectTracks,
-  fetchExampleEnsObjects,
+  fetchGenomeInfo,
   fetchGenomeTrackCategories,
   replace,
   toggleDrawer,
