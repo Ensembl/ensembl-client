@@ -34,11 +34,11 @@ impl TáContextImpl {
         TáContextImpl { pid, task: None }
     }
 
-    pub fn set_task(&mut self, task: TáTask) {
+    fn set_task(&mut self, task: TáTask) {
         self.task = Some(task);
     }
 
-    pub fn with_task<F,G>(&mut self, cb: F) -> Option<G>
+    fn with_task<F,G>(&mut self, cb: F) -> Option<G>
         where F: FnOnce(&mut TáTask) -> G {
         if let Some(ref mut task) = self.task {
             Some(cb(task))
@@ -47,13 +47,13 @@ impl TáContextImpl {
         }
     }
 
-    pub fn finished(&mut self) {
+    fn finished(&mut self) {
         if let Some(ref mut task) = self.task {
             task.finished();
         }
     }
 
-    pub fn appget(&mut self) {
+    fn appget(&mut self) {
         console!("appget {}",self.pid);
     }
 }

@@ -137,7 +137,7 @@ impl Compositor {
         if let Some(train) = self.get_transition_train() {
             train.redraw_where_needed(printer,&mut zmls);
         }
-        self.zmr.update(zmls);
+        self.zmr.add_leafset(zmls);
     }
 
     fn add_component(&mut self, mut c: ActiveSource) {

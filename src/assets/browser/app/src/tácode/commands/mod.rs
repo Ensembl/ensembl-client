@@ -6,6 +6,7 @@ mod op;
 mod ruler;
 mod text;
 mod twiddle;
+mod zmenu;
 
 pub use self::appget::AppGetI;
 pub use self::debug::{ CPrintI, DPrintI };
@@ -18,3 +19,4 @@ pub use self::twiddle::{
     ElideI, NotI, PickI, AllI, IndexI, RunsI, RunsOfI, GetI, MergeI,
     AccNI, LengthI, LengthsI, BurstI
 };
+pub use self::zmenu::{ ZTmplSpecI };
