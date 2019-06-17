@@ -1,4 +1,4 @@
-# CICD - Reload with missing static images
+# CICD - Reload with missing static images - triticum aestivum
 stages:
   - test_build_static
   - build_docker_images
@@ -49,7 +49,6 @@ Nginx:
   - apk update && apk add git
   - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
   - git clone --depth 1 https://gitlab.ebi.ac.uk/kamal/ensembl-client-nginx.git
-  - ls ensembl-client-nginx/
   - docker build -t ${CONTAINER_IMAGE} -f ensembl-client-nginx/Dockerfile --no-cache .
   - docker images
   - echo "$GITLAB_REGISTRY_TOKEN" | docker login -u "$GITLAB_REGISTRY_USER" --password-stdin https://"$GITLAB_REGISTRY_URL"
