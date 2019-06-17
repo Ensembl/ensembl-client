@@ -37,12 +37,10 @@ type ZmenuContentBlock = ZmenuContentItem[];
 
 type ZmenuContentLine = ZmenuContentBlock[];
 
-export type ZmenuContentSection = {
+export type ZmenuContentFeature = {
   id: string;
   lines: ZmenuContentLine[];
 };
-
-export type ZmenuContentFeature = ZmenuContentSection[];
 
 // data that is sufficient to describe an instance of Zmenu
 export type ZmenuData = {
