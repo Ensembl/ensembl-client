@@ -17,14 +17,16 @@ Test & Build:
 #    API_HOST: "//ec2-18-234-147-183.compute-1.amazonaws.com"
 
   before_script:
+  - ls
   - cd src/ensembl
+  - echo "In the src/ensembl directory"
+  - ls
   - npm ci
 
   script:
   - npm run test
   - export NODE_ENV=production
-  #- export API_HOST=//ec2-18-234-147-183.compute-1.amazonaws.com
-  - export API_HOST="/"
+  - export API_HOST=''
   - npm run build
 
   only:
