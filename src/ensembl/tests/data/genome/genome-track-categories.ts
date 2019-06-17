@@ -224,7 +224,7 @@ export const mouseTrackCategoriesResponse: GenomeTrackCategoriesResponse = {
 };
 
 export const wheatTrackCategoriesResponse: GenomeTrackCategoriesResponse = {
-  genome_id: 'triticum_aestivum',
+  genome_id: 'triticum_aestivum_GCA_900519105_1',
   track_categories: [
     {
       label: 'Genes & transcripts',

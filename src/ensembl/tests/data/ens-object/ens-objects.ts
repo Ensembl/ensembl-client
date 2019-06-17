@@ -7,8 +7,8 @@ export const humanGeneResponse: EnsObjectResponse = {
   ensembl_object: {
     bio_type: 'protein coding',
     label: 'BRCA2',
-    ensembl_object_id: 'human_sapiens38:gene:ENSG00000139618',
-    genome_id: 'homo_sapiens38',
+    ensembl_object_id: 'homo_sapiens_GCA_000001405_27:gene:ENSG00000139618',
+    genome_id: 'homo_sapiens_GCA_000001405_27',
     location: {
       chromosome: '13',
       end: 32437359,
@@ -43,7 +43,7 @@ export const humanGeneTracksResponse: EnsObjectTracksResponse = {
       }
     ],
     label: 'BRCA2',
-    ensembl_object_id: 'homo_sapiens38:gene:ENSG00000139618',
+    ensembl_object_id: 'homo_sapiens_GCA_000001405_27:gene:ENSG00000139618',
     track_id: 'gene-feat'
   }
 };
@@ -53,7 +53,7 @@ export const humanRegionResponse: EnsObjectResponse = {
     bio_type: null,
     label: '17:63992802-64038237',
     ensembl_object_id: 'homo_sapiens:region:17:63992802-64038237',
-    genome_id: 'homo_sapiens38',
+    genome_id: 'homo_sapiens_GCA_000001405_27',
     location: {
       chromosome: '17',
       end: 64038237,
@@ -133,8 +133,9 @@ export const wheatGeneResponse: EnsObjectResponse = {
   ensembl_object: {
     bio_type: 'protein coding',
     label: 'TraesCS3D02G273600',
-    ensembl_object_id: 'triticum_aestivum:gene:TraesCS3D02G273600',
-    genome_id: 'triticum_aestivum',
+    ensembl_object_id:
+      'triticum_aestivum_GCA_900519105_1:gene:TraesCS3D02G273600',
+    genome_id: 'triticum_aestivum_GCA_900519105_1',
     location: {
       chromosome: '3D',
       end: 379539827,
@@ -169,7 +170,8 @@ export const wheatGeneTracksResponse: EnsObjectTracksResponse = {
       }
     ],
     label: 'TraesCS3D02G273600',
-    ensembl_object_id: 'triticum_aestivum:gene:TraesCS3D02G273600',
+    ensembl_object_id:
+      'triticum_aestivum_GCA_900519105_1:gene:TraesCS3D02G273600',
     track_id: 'gene-feat'
   }
 };
@@ -178,8 +180,9 @@ export const wheatRegionResponse: EnsObjectResponse = {
   ensembl_object: {
     bio_type: null,
     label: '3D:2585940-2634711',
-    ensembl_object_id: 'triticum_aestivum:region:3D:2585940-2634711',
-    genome_id: 'triticum_aestivum',
+    ensembl_object_id:
+      'triticum_aestivum_GCA_900519105_1:region:3D:2585940-2634711',
+    genome_id: 'triticum_aestivum_GCA_900519105_1',
     location: {
       chromosome: '3D',
       end: 2634711,

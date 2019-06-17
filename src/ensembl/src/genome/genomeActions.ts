@@ -54,7 +54,7 @@ export const fetchGenomeInfo: ActionCreator<
       case 'mus_musculus_bdc':
         genomeInfoResponse = mouseGenomeInfoResponse;
         break;
-      case 'triticum_aestivum':
+      case 'triticum_aestivum_GCA_900519105_1':
         genomeInfoResponse = wheatGenomeInfoResponse;
         break;
     }
@@ -87,7 +87,7 @@ export const fetchGenomeExampleEnsObjects: ActionCreator<
       case 'mus_musculus_bdc':
         ensObjectsResponse.push(mouseGeneResponse, mouseRegionResponse);
         break;
-      case 'triticum_aestivum':
+      case 'triticum_aestivum_GCA_900519105_1':
         ensObjectsResponse.push(wheatGeneResponse, wheatRegionResponse);
         break;
     }
@@ -125,7 +125,7 @@ export const fetchGenomeTrackCategories: ActionCreator<
       case 'mus_musculus_bdc':
         genomeTrackCategoriesResponse = mouseTrackCategoriesResponse;
         break;
-      case 'triticum_aestivum':
+      case 'triticum_aestivum_GCA_900519105_1':
         genomeTrackCategoriesResponse = wheatTrackCategoriesResponse;
         break;
     }

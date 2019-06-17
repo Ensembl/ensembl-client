@@ -71,7 +71,7 @@ export const clearSelectedSearchResult = createStandardAction(
 
 export const fetchAssemblies: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = () => async (dispatch) => {
+> = (genomeId: string) => async (dispatch) => {
   try {
     dispatch(fetchAssembliesAsyncActions.request());
 
@@ -95,7 +95,7 @@ export const fetchPopularSpecies: ActionCreator<
     dispatch(fetchPopularSpeciesAsyncActions.request());
 
     const url = '/api/popular_genomes';
-    const response = await apiService.fetch(url, { preserveEndpoint: true });
+    const response = await apiService.fetch(url);
 
     dispatch(
       fetchPopularSpeciesAsyncActions.success({

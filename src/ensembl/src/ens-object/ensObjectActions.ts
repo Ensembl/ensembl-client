@@ -44,7 +44,7 @@ export const fetchEnsObject = (ensObjectId: string, genomeId: string) => (
     };
 
     switch (genomeId) {
-      case 'homo_sapiens38':
+      case 'homo_sapiens_GCA_000001405_27':
         if (ensObjectId.includes('gene') === true) {
           ensObjectResponse = humanGeneResponse;
         } else {
@@ -58,7 +58,7 @@ export const fetchEnsObject = (ensObjectId: string, genomeId: string) => (
           ensObjectResponse = mouseRegionResponse;
         }
         break;
-      case 'triticum_aestivum':
+      case 'triticum_aestivum_GCA_900519105_1':
         if (ensObjectId.includes('gene') === true) {
           ensObjectResponse = wheatGeneResponse;
         } else {
@@ -91,7 +91,7 @@ export const fetchEnsObjectTracks = (ensObjectId: string, genomeId: string) => (
     };
 
     switch (genomeId) {
-      case 'homo_sapiens38':
+      case 'homo_sapiens_GCA_000001405_27':
         if (ensObjectId.includes('gene') === true) {
           ensObjectTracks = humanGeneTracksResponse;
         }
@@ -101,7 +101,7 @@ export const fetchEnsObjectTracks = (ensObjectId: string, genomeId: string) => (
           ensObjectTracks = mouseGeneTracksResponse;
         }
         break;
-      case 'triticum_aestivum':
+      case 'triticum_aestivum_GCA_900519105_1':
         if (ensObjectId.includes('gene') === true) {
           ensObjectTracks = wheatGeneTracksResponse;
         }
@@ -132,13 +132,13 @@ export const fetchExampleEnsObjects: ActionCreator<
 
     committedSpecies.map((species: CommittedItem) => {
       switch (species.genome_id) {
-        case 'homo_sapiens38':
+        case 'homo_sapiens_GCA_000001405_27':
           ensObjectResponses.push(humanGeneResponse, humanRegionResponse);
           break;
         case 'mus_musculus_bdc':
           ensObjectResponses.push(mouseGeneResponse, mouseRegionResponse);
           break;
-        case 'triticum_aestivum':
+        case 'triticum_aestivum_GCA_900519105_1':
           ensObjectResponses.push(wheatGeneResponse, wheatRegionResponse);
           break;
       }

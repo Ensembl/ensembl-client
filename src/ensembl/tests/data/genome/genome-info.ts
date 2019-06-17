@@ -32,7 +32,7 @@ export const mouseGenomeInfoResponse: GenomeInfoResponse = {
 export const wheatGenomeInfoResponse: GenomeInfoResponse = {
   genome_info: [
     {
-      genome_id: 'triticum_aestivum',
+      genome_id: 'triticum_aestivum_GCA_900519105_1',
       reference_genome_id: null,
       common_name: 'Wheat',
       assembly_name: 'WIGSC',

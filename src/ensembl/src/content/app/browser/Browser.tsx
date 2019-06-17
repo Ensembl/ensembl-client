@@ -100,7 +100,6 @@ type BrowserProps = RouteComponentProps<MatchParams> &
 export const Browser: FunctionComponent<BrowserProps> = (
   props: BrowserProps
 ) => {
-  debugger;
   const browserRef: React.RefObject<HTMLDivElement> = useRef(null);
   const [trackStatesFromStorage, setTrackStatesFromStorage] = useState<
     TrackStates
@@ -181,6 +180,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
   };
 
   const changeSelectedSpecies = (genomeId: string) => {
+    debugger;
     props.updateBrowserActiveGenomeIdAndSave(genomeId);
     updateBrowserUrl(genomeId);
   };
