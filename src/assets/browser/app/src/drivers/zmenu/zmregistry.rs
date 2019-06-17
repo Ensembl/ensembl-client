@@ -1,17 +1,18 @@
+use std::sync::{ Arc, Mutex };
 use std::collections::{ HashMap, HashSet };
 use composit::{ Leaf, Stage };
 use types::Dot;
 
 use super::{ ZMenuLeaf, ZMenuLeafSet, ZMenuFeatureTmpl };
 
-pub struct ZMenuRegistry {
+pub struct ZMenuRegistryImpl {
     zml: HashMap<Leaf,ZMenuLeaf>,
     tmpls: HashMap<String,ZMenuFeatureTmpl>
 }
 
-impl ZMenuRegistry {
-    pub fn new() -> ZMenuRegistry {
-        ZMenuRegistry {
+impl ZMenuRegistryImpl {
+    pub fn new() -> ZMenuRegistryImpl {
+        ZMenuRegistryImpl {
             zml: HashMap::new(),
             tmpls: HashMap::new()
         }
@@ -43,6 +44,28 @@ impl ZMenuRegistry {
     }   
     
     fn add_template(&mut self, sid: &str, tmpl: ZMenuFeatureTmpl) {
+        bb_log!("zmenu","template: {:?}",tmpl);
         self.tmpls.insert(sid.to_string(),tmpl);
+    }
+}
+
+#[derive(Clone)]
+pub struct ZMenuRegistry(Arc<Mutex<ZMenuRegistryImpl>>);
+
+impl ZMenuRegistry {
+    pub fn new() -> ZMenuRegistry {
+        ZMenuRegistry(Arc::new(Mutex::new(ZMenuRegistryImpl::new())))
+    }
+    
+    pub fn add_leafset(&mut self, mut zmls: ZMenuLeafSet) {
+        self.0.lock().unwrap().add_leafset(zmls);
+    }
+    
+    pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) {
+        self.0.lock().unwrap().intersects(stage,pos);
+    }   
+    
+    pub fn add_template(&mut self, sid: &str, spec: &str) {
+        self.0.lock().unwrap().add_template(sid,ZMenuFeatureTmpl::new(spec));
     }
 }

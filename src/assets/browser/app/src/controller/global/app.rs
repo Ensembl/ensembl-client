@@ -71,7 +71,10 @@ impl App {
             stage_resize: None,
             last_resize_at: None
         };
-        let dsm = CombinedSourceManager::new(&tc,config,&out.als,&out.http_clerk);
+        let dsm = {
+            let compo = &out.compo.lock().unwrap();
+            CombinedSourceManager::new(&tc,config,&compo.get_zmr(),&out.als,&out.http_clerk)
+        };
         out.csl.add_compsource(Box::new(dsm));
         out.run_actions(&startup_actions());        
         out

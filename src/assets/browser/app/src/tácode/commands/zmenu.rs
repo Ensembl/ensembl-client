@@ -1,5 +1,6 @@
 use std::sync::{ Arc, Mutex };
 
+use composit::source::ActiveSource;
 use tánaiste::{
     Argument, Command, DataState, Instruction, ProcState, Signature,
     Value
@@ -7,8 +8,15 @@ use tánaiste::{
 
 use tácode::core::{ TáContext, TáTask };
 
-fn tmpl_spec(sids: &Vec<String>, specs: &Vec<String>) {
-    
+fn tmpl_spec(asrc: &mut ActiveSource, sids: &Vec<String>, specs: &Vec<String>) {
+    asrc.with_zmr(|zmr| {
+        let mut specs = specs.iter().cycle();
+        for sid in sids {
+            let spec = specs.next();
+            console!("sid/spec {:?}/{:?}",sid,spec);
+            zmr.add_template(sid,spec.unwrap());
+        }
+    });
 }
 
 // ztmplspec #sids,#specs
@@ -20,10 +28,10 @@ impl Command for ZTmplSpec {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,leaf,lc,_,_,_,_) = task {
+            if let TáTask::MakeShapes(asrc,_,_,_,_,_,_) = task {
                 regs.get(self.1).as_string(|sids| {
                     regs.get(self.2).as_string(|specs| {
-                        tmpl_spec(sids,specs);
+                        tmpl_spec(asrc,sids,specs);
                     });
                 });
             }

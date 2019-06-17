@@ -2,7 +2,7 @@ use std::collections::{ HashMap, HashSet };
 use std::iter::Peekable;
 use std::str::Chars;
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 enum ZMenuText {
     Fixed(String),
     Template(String)
@@ -15,7 +15,7 @@ enum ZMenuTag {
     MarkupOff(String)
 }
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 struct ZMenuItem {
     text: ZMenuText,
     markup: Vec<String>
@@ -90,7 +90,7 @@ fn fmt_parse_block(chars: &mut Peekable<Chars>) -> Vec<ZMenuTag> {
     out
 }
 
-
+#[derive(Debug)]
 struct ZMenuBlock {
     items: Vec<ZMenuItem>
 }
@@ -123,11 +123,13 @@ impl ZMenuBlock {
     }
 }
 
+#[derive(Debug)]
 enum ZMenuSequence {
     Item(ZMenuBlock),
     LineBreak
 }
 
+#[derive(Debug)]
 pub struct ZMenuFeatureTmpl {
     items: Vec<ZMenuSequence>
 }

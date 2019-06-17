@@ -49,6 +49,8 @@ impl Compositor {
         }
     }
 
+    pub fn get_zmr(&self) -> &ZMenuRegistry { &self.zmr }
+
     pub fn get_prop_trans(&self) -> f32 { self.train_manager.get_prop_trans() }
 
     fn prime_cache(&mut self, t: f64) {

@@ -11,6 +11,7 @@ use composit::{
 };
 
 use model::driver::PrinterManager;
+use drivers::zmenu::ZMenuRegistry;
 use model::train::Traveller;
 use composit::source::SourceResponse;
 
@@ -22,16 +23,18 @@ pub struct ActiveSource {
     lid: usize,
     name: String,
     parts: HashMap<Option<String>,SourcePart>,
-    source: Rc<Source>
+    source: Rc<Source>,
+    zmr: ZMenuRegistry
 }
 
 impl ActiveSource {
-    pub fn new(name: &str, source: Rc<Source>, als: &AllLandscapes, lid: usize) -> ActiveSource {
+    pub fn new(name: &str, source: Rc<Source>, zmr: &ZMenuRegistry, als: &AllLandscapes, lid: usize) -> ActiveSource {
         ActiveSource {
             source, lid,
             name: name.to_string(),
             als: als.clone(),
-            parts: HashMap::<Option<String>,SourcePart>::new()
+            parts: HashMap::<Option<String>,SourcePart>::new(),
+            zmr: zmr.clone()
         }
     }
     
@@ -73,6 +76,11 @@ impl ActiveSource {
     pub fn with_landscape<F,G>(&mut self, lid: usize, cb: F) -> Option<G>
             where F: FnOnce(&mut Landscape) -> G {
         self.als.with(lid,cb)
+    }
+    
+    pub fn with_zmr<F,G>(&mut self, cb: F) -> G
+            where F: FnOnce(&mut ZMenuRegistry) -> G {
+        cb(&mut self.zmr)
     }
     
     pub fn all_landscapes<F,G>(&mut self, cb: F) -> Vec<Option<G>>
