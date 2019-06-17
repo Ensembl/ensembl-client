@@ -15,22 +15,24 @@ type ZmenuContentItemProps = ZmenuContentItemType & {
 };
 
 type ZmenuContentProps = {
-  content: ZmenuContentFeatureType[]
+  content: ZmenuContentFeatureType[];
 };
 
 const ZmenuContent = (props: ZmenuContentProps) => {
   const features = props.content;
-  return features
-    .map(feature =>
-      feature.map(section =>
-        section.lines.map(line =>
-          line.map(block => block.map(item => (
-            <ZmenuContentItem
-              key={`${section.id}-${item.text}`}
-              id={section.id}
-              {...item}
-            />
-          ))))));
+  return features.map((feature) =>
+    feature.lines.map((line) =>
+      line.map((block) =>
+        block.map((item) => (
+          <ZmenuContentItem
+            key={`${feature.id}-${item.text}`}
+            id={feature.id}
+            {...item}
+          />
+        ))
+      )
+    )
+  );
 };
 
 const ZmenuContentItem = (props: ZmenuContentItemProps) => {
