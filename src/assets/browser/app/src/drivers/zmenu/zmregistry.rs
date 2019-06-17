@@ -3,22 +3,27 @@ use std::collections::{ HashMap, HashSet };
 use composit::{ Leaf, Stage };
 use types::Dot;
 
-use super::{ ZMenuLeaf, ZMenuLeafSet, ZMenuFeatureTmpl };
+use super::{ ZMenuLeaf, ZMenuLeafSet, ZMenuFeatureTmpl, ZMenuData };
 
 pub struct ZMenuRegistryImpl {
     zml: HashMap<Leaf,ZMenuLeaf>,
-    tmpls: HashMap<String,ZMenuFeatureTmpl>
+    tmpls: HashMap<String,ZMenuFeatureTmpl>,
+    data: ZMenuData
 }
 
 impl ZMenuRegistryImpl {
     pub fn new() -> ZMenuRegistryImpl {
         ZMenuRegistryImpl {
             zml: HashMap::new(),
-            tmpls: HashMap::new()
+            tmpls: HashMap::new(),
+            data: ZMenuData::new()
         }
     }
     
     pub fn add_leafset(&mut self, mut zmls: ZMenuLeafSet) {
+        /* templates */
+        self.data.set_templates(zmls.get_template_map());
+        /* hotspots */
         let leafs = zmls.take_leafs();
         let seen_leafs : HashSet<Leaf> = leafs.iter().map(|x| x.get_leaf()).cloned().collect();
         for zml in leafs {
