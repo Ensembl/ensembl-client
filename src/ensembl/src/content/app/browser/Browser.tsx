@@ -1,10 +1,4 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useRef,
-  useEffect,
-  useState
-} from 'react';
+import React, { FunctionComponent, useRef, useEffect, useState } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { replace, Replace } from 'connected-react-router';
@@ -59,7 +53,6 @@ import { AppName } from 'src/global/globalConfig';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import styles from './Browser.scss';
-import { useSpring, animated } from 'react-spring';
 
 import 'static/browser/browser.js';
 
@@ -107,6 +100,7 @@ type BrowserProps = RouteComponentProps<MatchParams> &
 export const Browser: FunctionComponent<BrowserProps> = (
   props: BrowserProps
 ) => {
+  debugger;
   const browserRef: React.RefObject<HTMLDivElement> = useRef(null);
   const [trackStatesFromStorage, setTrackStatesFromStorage] = useState<
     TrackStates
@@ -124,11 +118,12 @@ export const Browser: FunctionComponent<BrowserProps> = (
         props.chrLocation[props.activeGenomeId]
       );
 
-      urlFor.browser(
+      const browserUrl = urlFor.browser(
         props.activeGenomeId,
         props.activeEnsObjectId[props.activeGenomeId],
         locationStr
       );
+      props.replace(browserUrl);
     } else {
       setTrackStatesFromStorage(browserStorageService.getTrackStates());
     }
@@ -178,12 +173,12 @@ export const Browser: FunctionComponent<BrowserProps> = (
     updateBrowserUrl();
   }, [props.chrLocation, props.browserQueryParams.location]);
 
-  const closeTrack = useCallback(() => {
+  const closeTrack = () => {
     if (props.drawerOpened === false) {
       return;
     }
     props.toggleDrawer(false);
-  }, [props.drawerOpened]);
+  };
 
   const changeSelectedSpecies = (genomeId: string) => {
     props.updateBrowserActiveGenomeIdAndSave(genomeId);

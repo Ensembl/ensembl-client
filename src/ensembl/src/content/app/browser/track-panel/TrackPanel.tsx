@@ -136,8 +136,8 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
             ensObjectTracks={props.ensObjectTracks}
             selectedBrowserTab={props.selectedBrowserTab}
             toggleDrawer={props.toggleDrawer}
+            trackStates={props.trackStates}
             genomeTrackCategories={props.genomeTrackCategories}
-            trackCategories={props.trackCategories}
             updateDrawerView={props.changeDrawerView}
           />
 
