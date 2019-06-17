@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 import {
   fetchSpeciesSearchResults,
   handleSelectedSpecies,
-  clearSelectedSearchResult
+  clearSelectedSearchResult,
+  clearSearchResults
 } from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 import {
@@ -15,6 +16,8 @@ import {
 import SpeciesSearchMatch from '../species-search-match/SpeciesSearchMatch';
 
 import AutosuggestSearchField from 'src/shared/autosuggest-search-field/AutosuggestSearchField';
+import ClearButton from 'src/shared/clear-button/ClearButton';
+import QuestionButton from 'src/shared/question-button/QuestionButton';
 
 import {
   SearchMatch,
@@ -24,16 +27,31 @@ import { RootState } from 'src/store';
 
 import styles from './SpeciesSearchField.scss';
 
+const MINIMUM_SEARCH_LENGTH = 3;
+
 type Props = {
   onSearchChange: (search: string) => void;
   onMatchSelected: (match: SearchMatch) => void;
   clearSelectedSearchResult: () => void;
-  matches: SearchMatches[];
+  clearSearchResults: () => void;
+  matches: SearchMatches[] | null;
   selectedItemText: string | null;
+};
+
+enum RightCornerStatus {
+  INFO,
+  CLEAR,
+  EMPTY
+}
+
+type RightCornerProps = {
+  status: RightCornerStatus;
+  clear: () => void;
 };
 
 export const SpeciesSearchField = (props: Props) => {
   const [search, setSearch] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleSearchChange = (search: string) => {
     setSearch(search);
@@ -42,8 +60,11 @@ export const SpeciesSearchField = (props: Props) => {
     }
 
     search = search.trim();
-    if (search.length >= 3) {
-      props.onSearchChange(search);
+    if (search.length >= MINIMUM_SEARCH_LENGTH) {
+      props.onSearchChange(search); // onSearchChange will clear search results
+    } else {
+      // clear search results if user is deleting their query
+      props.matches && props.clearSearchResults();
     }
   };
 
@@ -52,6 +73,26 @@ export const SpeciesSearchField = (props: Props) => {
     setSearch('');
   };
 
+  const canShowSuggesions =
+    props.selectedItemText === null &&
+    search.trim().length >= MINIMUM_SEARCH_LENGTH;
+
+  const matchGroups = props.matches ? buildMatchGroups(props.matches) : [];
+
+  const clear = () => {
+    props.clearSearchResults();
+    props.clearSelectedSearchResult();
+    setSearch('');
+  };
+
+  const hasText = Boolean(props.selectedItemText || search);
+
+  const rightCornerStatus = hasText
+    ? RightCornerStatus.CLEAR
+    : isFocused
+    ? RightCornerStatus.EMPTY
+    : RightCornerStatus.INFO;
+
   return (
     <AutosuggestSearchField
       search={props.selectedItemText || search}
@@ -59,11 +100,34 @@ export const SpeciesSearchField = (props: Props) => {
       className={styles.speciesSearchFieldWrapper}
       onChange={handleSearchChange}
       onSelect={onMatchSelected}
-      matchGroups={buildMatchGroups(props.matches)}
+      matchGroups={matchGroups}
       searchFieldClassName={styles.speciesSearchField}
-      canShowSuggestions={!Boolean(props.selectedItemText)}
+      canShowSuggestions={canShowSuggesions}
+      notFound={Boolean(props.matches && props.matches.length === 0)}
+      notFoundText="Sorry, we have no data for this species"
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
+      rightCorner={<RightCorner status={rightCornerStatus} clear={clear} />}
     />
   );
+};
+
+const helpText = (
+  <>
+    Search for a species using a common name, scientific name or assembly. If no
+    results are shown, please try a different spelling or attribute.
+  </>
+);
+
+const RightCorner = (props: RightCornerProps) => {
+  switch (props.status) {
+    case RightCornerStatus.INFO:
+      return <QuestionButton helpText={helpText} />;
+    case RightCornerStatus.CLEAR:
+      return <ClearButton onClick={props.clear} />;
+    default:
+      return null;
+  }
 };
 
 const buildMatchGroups = (groups: SearchMatches[]) => {
@@ -87,7 +151,8 @@ const mapStateToProps = (state: RootState) => ({
 const mapDispatchToProps = {
   onSearchChange: fetchSpeciesSearchResults.request,
   onMatchSelected: handleSelectedSpecies,
-  clearSelectedSearchResult
+  clearSelectedSearchResult,
+  clearSearchResults
 };
 
 export default connect(

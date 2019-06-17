@@ -70,9 +70,7 @@ const Wrapper = (props: any) => {
   );
 };
 
-const RightCorner = () => (
-  <QuestionButton onHover={action('question-button-hover')} />
-);
+const RightCorner = () => <QuestionButton helpText="this is a hint" />;
 
 storiesOf('Components|Shared Components/AutosuggestSearchField', module)
   .add(

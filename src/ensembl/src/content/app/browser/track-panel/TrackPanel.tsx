@@ -5,6 +5,7 @@ import { useSpring, animated } from 'react-spring';
 import TrackPanelBar from './track-panel-bar/TrackPanelBar';
 import TrackPanelList from './track-panel-list/TrackPanelList';
 import TrackPanelModal from './track-panel-modal/TrackPanelModal';
+import Drawer from '../drawer/Drawer';
 import { RootState } from 'src/store';
 
 import {
@@ -124,32 +125,30 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
             trackPanelModalView={props.trackPanelModalView}
             trackPanelOpened={props.trackPanelOpened}
           />
-          {props.trackPanelOpened ? (
-            <>
-              <TrackPanelList
-                activeGenomeId={props.activeGenomeId}
-                browserRef={props.browserRef}
-                defaultChrLocation={props.defaultChrLocation}
-                drawerOpened={props.drawerOpened}
-                drawerView={props.drawerView}
-                launchbarExpanded={props.launchbarExpanded}
-                ensObjectInfo={props.ensObjectInfo}
-                ensObjectTracks={props.ensObjectTracks}
-                selectedBrowserTab={props.selectedBrowserTab}
-                toggleDrawer={props.toggleDrawer}
-                genomeTrackCategories={props.genomeTrackCategories}
-                trackStates={props.trackStates}
-                updateDrawerView={props.changeDrawerView}
-              />
-              {props.trackPanelModalOpened ? (
-                <TrackPanelModal
-                  closeTrackPanelModal={props.closeTrackPanelModal}
-                  launchbarExpanded={props.launchbarExpanded}
-                  trackPanelModalView={props.trackPanelModalView}
-                />
-              ) : null}
-            </>
+          <TrackPanelList
+            activeGenomeId={props.activeGenomeId}
+            browserRef={props.browserRef}
+            defaultChrLocation={props.defaultChrLocation}
+            drawerOpened={props.drawerOpened}
+            drawerView={props.drawerView}
+            launchbarExpanded={props.launchbarExpanded}
+            ensObjectInfo={props.ensObjectInfo}
+            ensObjectTracks={props.ensObjectTracks}
+            selectedBrowserTab={props.selectedBrowserTab}
+            toggleDrawer={props.toggleDrawer}
+            genomeTrackCategories={props.genomeTrackCategories}
+            trackCategories={props.trackCategories}
+            updateDrawerView={props.changeDrawerView}
+          />
+
+          {props.trackPanelModalOpened ? (
+            <TrackPanelModal
+              closeTrackPanelModal={props.closeTrackPanelModal}
+              launchbarExpanded={props.launchbarExpanded}
+              trackPanelModalView={props.trackPanelModalView}
+            />
           ) : null}
+          {props.drawerOpened && <Drawer />}
         </div>
       ) : null}
     </animated.div>

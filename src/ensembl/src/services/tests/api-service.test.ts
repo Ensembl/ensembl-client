@@ -77,7 +77,11 @@ describe('api service', () => {
       const mockFetchCall: any[] = mockFetch.mock.calls[0];
       const [, passedOptions] = mockFetchCall;
 
-      expect(passedOptions).toEqual(options);
+      Object.keys(options).forEach((option) => {
+        expect(options[option as keyof typeof options]).toEqual(
+          passedOptions[option]
+        );
+      });
     });
 
     test('uses GET by default', async () => {

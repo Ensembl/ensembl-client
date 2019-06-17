@@ -23,6 +23,8 @@ type CommonProps = {
   rightCorner?: ReactNode;
   className?: string;
   searchFieldClassName?: string;
+  notFound?: boolean;
+  notFoundText: string;
 };
 
 // with this set of props user can submit raw content of the search field
@@ -183,7 +185,8 @@ const AutosuggestSearchField = (props: Props) => {
 
   const shouldShowSuggestions =
     props.search &&
-    Boolean(props.matchGroups.length) &&
+    !props.notFound &&
+    props.matchGroups.length > 0 &&
     canShowSuggesions &&
     !isSelected &&
     props.canShowSuggestions;
@@ -219,6 +222,9 @@ const AutosuggestSearchField = (props: Props) => {
           onItemHover={handleItemHover}
         />
       )}
+      {props.notFound && (
+        <div className={styles.autosuggestionPlate}>{props.notFoundText}</div>
+      )}
     </div>
   );
 };
@@ -226,7 +232,8 @@ const AutosuggestSearchField = (props: Props) => {
 AutosuggestSearchField.defaultProps = {
   matchGroups: [],
   canShowSuggestions: true,
-  allowRawInputSubmission: false
+  allowRawInputSubmission: false,
+  notFoundText: 'No results found'
 };
 
 export default AutosuggestSearchField;

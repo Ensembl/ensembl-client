@@ -67,6 +67,11 @@ const willStayWithinBounds = (params: FindOptimalPositionParams) => {
     position
   } = params;
 
+  if (!rootBounds) {
+    // shouldn't happen, but makes typescript happy
+    return position;
+  }
+
   const {
     left: anchorLeft,
     right: anchorRight,

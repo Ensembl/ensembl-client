@@ -41,7 +41,7 @@ describe('<AutosuggestSearchField />', () => {
   });
 
   describe('appearance', () => {
-    test('renders only search field if no matches have been found', () => {
+    it('renders only search field if no matches have been found', () => {
       const mountedComponent = mount(
         <AutosuggestSearchField
           search={search}
@@ -56,7 +56,7 @@ describe('<AutosuggestSearchField />', () => {
       expect(mountedComponent.find(AutosuggestionPanel).length).toBe(0);
     });
 
-    test('renders AutosuggestionPanel with matches if they are provided', () => {
+    it('renders AutosuggestionPanel with matches if they are provided', () => {
       const mountedComponent = mount(
         <AutosuggestSearchField
           search={search}
@@ -95,7 +95,7 @@ describe('<AutosuggestSearchField />', () => {
         );
       });
 
-      test('clicking on a suggested match submits its data', () => {
+      it('clicking on a suggested match submits its data', () => {
         const suggestedItems = mountedComponent.find(
           '.autosuggestionPlateItem'
         );
@@ -116,7 +116,7 @@ describe('<AutosuggestSearchField />', () => {
         expect(onSelect).toHaveBeenCalledWith(expectedItemData);
       });
 
-      test('pressing the ArrowDown button selects next item', () => {
+      it('pressing the ArrowDown button selects next item', () => {
         const searchField = mountedComponent.find('input');
         searchField.simulate('keydown', { keyCode: keyCodes.DOWN });
 
@@ -130,7 +130,7 @@ describe('<AutosuggestSearchField />', () => {
         ).toBe(true);
       });
 
-      test('pressing the ArrowUp button selects previous item', () => {
+      it('pressing the ArrowUp button selects previous item', () => {
         const searchField = mountedComponent.find('input');
         searchField.simulate('keydown', { keyCode: keyCodes.UP });
 
@@ -162,7 +162,7 @@ describe('<AutosuggestSearchField />', () => {
         );
       });
 
-      test('first match in AutosuggestionPanel is pre-selected', () => {
+      it('first match in AutosuggestionPanel is pre-selected', () => {
         const suggestedItems = mountedComponent.find(
           '.autosuggestionPlateItem'
         );
@@ -176,7 +176,7 @@ describe('<AutosuggestSearchField />', () => {
         ).toBe(true);
       });
 
-      test('triggering submit event confirms selection of a match', () => {
+      it('triggering submit event confirms selection of a match', () => {
         const searchField = mountedComponent.find(SearchField);
         searchField.simulate('submit');
 
@@ -202,7 +202,7 @@ describe('<AutosuggestSearchField />', () => {
         );
       });
 
-      test('first match in AutosuggestionPanel is not pre-selected', () => {
+      it('first match in AutosuggestionPanel is not pre-selected', () => {
         const highlightedItems = mountedComponent.find(
           '.autosuggestionPlateHighlightedItem'
         );
@@ -210,7 +210,7 @@ describe('<AutosuggestSearchField />', () => {
         expect(highlightedItems.length).toBe(0);
       });
 
-      test('triggering submit event submits current search value if no match is selected', () => {
+      it('triggering submit event submits current search value if no match is selected', () => {
         const searchField = mountedComponent.find(SearchField);
         searchField.simulate('submit');
 
@@ -218,7 +218,7 @@ describe('<AutosuggestSearchField />', () => {
         expect(onSelect).not.toHaveBeenCalled();
       });
 
-      test('triggering submit event confirms selection of a match if the match is selected', () => {
+      it('triggering submit event confirms selection of a match if the match is selected', () => {
         // highlight the first match
         const searchField = mountedComponent.find('input');
         searchField.simulate('keydown', { keyCode: keyCodes.DOWN });
@@ -229,6 +229,43 @@ describe('<AutosuggestSearchField />', () => {
 
         expect(onSubmit).not.toHaveBeenCalled();
         expect(onSelect).toHaveBeenCalledWith(firstMatchData);
+      });
+    });
+
+    describe('when no matches are found', () => {
+      it('shows a "not found" message', () => {
+        const wrapper = mount(
+          <AutosuggestSearchField
+            search={search}
+            onChange={onChange}
+            onSelect={onSelect}
+            matchGroups={[]}
+            notFound={true}
+          />
+        );
+
+        const panel = wrapper.find('.autosuggestionPlate');
+        const defaultMessage = AutosuggestSearchField.defaultProps.notFoundText;
+
+        expect(panel.text()).toBe(defaultMessage);
+      });
+
+      it('respects the notFoundText prop when displaying the message', () => {
+        const notFoundText = faker.lorem.words();
+        const wrapper = mount(
+          <AutosuggestSearchField
+            search={search}
+            onChange={onChange}
+            onSelect={onSelect}
+            matchGroups={[]}
+            notFound={true}
+            notFoundText={notFoundText}
+          />
+        );
+
+        const panel = wrapper.find('.autosuggestionPlate');
+
+        expect(panel.text()).toBe(notFoundText);
       });
     });
   });

@@ -18,7 +18,7 @@ import styles from './AssemblySelector.scss';
 type Props = {
   genomeId: string | null; // id of selected species; will correspond to genome_id field of an Assembly
   assemblies: Assembly[];
-  onSelect: (genomeId: string) => void;
+  onSelect: (assembly: Assembly) => void;
 };
 
 const label = <span className={styles.assemblySelectorLabel}>Assembly</span>;
@@ -28,6 +28,10 @@ export const AssemblySelector = (props: Props) => {
     props.assemblies,
     (assembly) => assembly.genome_id === props.genomeId
   );
+
+  const handleSelect = (index: number) => {
+    props.onSelect(props.assemblies[index]);
+  };
 
   if (!props.genomeId || !selectedAssembly) {
     // this branch covers the case when there are no items in props.assemblies
@@ -42,15 +46,15 @@ export const AssemblySelector = (props: Props) => {
     );
   } else {
     // more than one item in props.assemblies
-    const options = props.assemblies.map((assembly) => ({
-      value: assembly.genome_id,
+    const options = props.assemblies.map((assembly, index) => ({
+      value: index,
       label: assembly.assembly_name,
       isSelected: props.genomeId === assembly.genome_id
     }));
     return (
       <>
         {label}
-        <Select options={options} onSelect={props.onSelect} />
+        <Select options={options} onSelect={handleSelect} />
       </>
     );
   }

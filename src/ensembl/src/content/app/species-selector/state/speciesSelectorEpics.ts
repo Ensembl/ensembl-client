@@ -1,18 +1,9 @@
 import { Epic } from 'redux-observable';
-import { of } from 'rxjs';
-import {
-  map,
-  switchMap,
-  delay,
-  filter,
-  distinctUntilChanged
-} from 'rxjs/operators';
-import { isActionOf, ActionType } from 'typesafe-actions';
+import { map, switchMap, filter, distinctUntilChanged } from 'rxjs/operators';
+import { isActionOf, ActionType, PayloadAction } from 'typesafe-actions';
 
+import * as observableApiService from 'src/services/observable-api-service';
 import * as speciesSelectorActions from 'src/content/app/species-selector/state/speciesSelectorActions';
-
-import humanMockSearchResults from 'tests/data/species-selector/human-search';
-import mouseMockSearchResults from 'tests/data/species-selector/mouse-search';
 
 import { RootState } from 'src/store';
 
@@ -24,17 +15,44 @@ export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
 ) =>
   action$.pipe(
     filter(
-      isActionOf(speciesSelectorActions.fetchSpeciesSearchResults.request)
+      isActionOf([
+        speciesSelectorActions.fetchSpeciesSearchResults.request,
+        speciesSelectorActions.clearSearchResults
+      ])
     ),
     distinctUntilChanged(
-      (action1, action2) => action1.payload === action2.payload
+      // ignore actions that have identical queries
+      // (which may happen because of white space trimming in SpeciesSearchField,
+      // but forget the previous query every time user clears search results
+      (action1, action2) =>
+        action1.type === action2.type &&
+        (action1 as PayloadAction<
+          'species_selector/species_search_request',
+          string
+        >).payload ===
+          (action2 as PayloadAction<
+            'species_selector/species_search_request',
+            string
+          >).payload
     ),
-    switchMap((action) => of(action).pipe(delay(600))),
-    map((action) =>
-      speciesSelectorActions.fetchSpeciesSearchResults.success({
-        results: action.payload.startsWith('h')
-          ? humanMockSearchResults.matches
-          : mouseMockSearchResults.matches
-      })
-    )
+    filter(
+      isActionOf(speciesSelectorActions.fetchSpeciesSearchResults.request)
+    ),
+    switchMap((action) => {
+      const query = action.payload;
+      const url = `/api/genome_search?query=${encodeURIComponent(query)}`;
+      return observableApiService.fetch(url);
+    }),
+    map((response) => {
+      if (response.error) {
+        // TODO: develop a strategy for handling network errors
+        return speciesSelectorActions.fetchSpeciesSearchResults.failure(
+          response.message
+        );
+      } else {
+        return speciesSelectorActions.fetchSpeciesSearchResults.success({
+          results: response.genome_matches
+        });
+      }
+    })
   );

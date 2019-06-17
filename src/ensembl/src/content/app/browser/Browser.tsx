@@ -59,6 +59,7 @@ import { AppName } from 'src/global/globalConfig';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import styles from './Browser.scss';
+import { useSpring, animated } from 'react-spring';
 
 import 'static/browser/browser.js';
 
@@ -222,37 +223,10 @@ export const Browser: FunctionComponent<BrowserProps> = (
         onTabSelect={changeSelectedSpecies}
       />
       <section className={styles.browser}>
+        <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
         {props.genomeSelectorActive && (
           <div className={styles.browserOverlay} />
         )}
-        <div
-          className={`${styles.browserInnerWrapper} ${getHeightClass(
-            props.launchbarExpanded
-          )}`}
-        >
-          <animated.div style={trackAnimation}>
-            <div className={styles.browserImageWrapper} onClick={closeTrack}>
-              {props.browserNavOpened &&
-              !props.drawerOpened &&
-              browserRef.current ? (
-                <BrowserNavBar browserElement={browserRef.current} />
-              ) : null}
-              <BrowserImage
-                browserRef={browserRef}
-                trackStates={trackStatesFromStorage}
-              />
-            </div>
-          </animated.div>
-          <TrackPanel
-            browserRef={browserRef}
-            trackStates={trackStatesFromStorage}
-          />
-        </div>
-
-        <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
-        {props.genomeSelectorActive ? (
-          <div className={styles.browserOverlay} />
-        ) : null}
         <div
           className={`${styles.browserInnerWrapper} ${getHeightClass(
             props.launchbarExpanded

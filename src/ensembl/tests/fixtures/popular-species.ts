@@ -8,5 +8,5 @@ export const createPopularSpecies = () => ({
   assembly_name: faker.lorem.word(),
   image: faker.image.imageUrl(),
   division_ids: [],
-  isAvailable: true
+  is_available: true
 });

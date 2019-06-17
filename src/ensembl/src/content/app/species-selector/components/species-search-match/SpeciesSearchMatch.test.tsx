@@ -12,7 +12,7 @@ const matchTemplate = {
   reference_genome_id: null,
   common_name: 'Human',
   scientific_name: 'Homo sapiens',
-  subtype: 'GRCh38.p12',
+  assembly_name: 'GRCh38.p12',
   matched_substrings: [
     {
       length: 3,
@@ -61,7 +61,7 @@ describe('<SpeciesSearchMatch />', () => {
       ...matchTemplate,
       common_name: null,
       scientific_name: 'Bacillus subtilis',
-      subtype: null,
+      subtype: 'ASM904v1',
       matched_substrings: [
         {
           length: 3,
