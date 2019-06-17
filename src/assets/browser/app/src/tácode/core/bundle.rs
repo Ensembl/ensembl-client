@@ -5,7 +5,7 @@ use super::super::commands::{
     AppGetI, CPrintI, DPrintI, AbuttI, ElideI, NotI, PickI, ZTmplSpecI,
     ExtentI, AllI, BinOpI, BinOpType, TextI, IndexI, RunsI, RunsOfI,
     GetI, ScaleI, MergeI, AccNI, MemberI, PlotI, RulerI, AllPlotsI,
-    LengthI, SetPartI, ImageI, AssetI, Text2I, LengthsI, BurstI
+    LengthI, SetPartI, ImageI, AssetI, Text2I, LengthsI, BurstI, ZTmplI
 };
 use super::super::shapecmd::ShapeI;
 
@@ -49,6 +49,7 @@ pub fn instruction_bundle_app(tc: &TáContext) -> InstructionBundle {
         Box::new(AllPlotsI(tc.clone())),
         Box::new(SetPartI(tc.clone())),
         Box::new(ZTmplSpecI(tc.clone())),
+        Box::new(ZTmplI(tc.clone())),
     });
     ib
 }

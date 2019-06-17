@@ -8,6 +8,9 @@ use tánaiste::{
 
 use tácode::core::{ TáContext, TáTask };
 
+fn tmpl(asrc: &mut ActiveSource, ids: &Vec<String>, sids: &Vec<String>) {
+}
+
 fn tmpl_spec(asrc: &mut ActiveSource, sids: &Vec<String>, specs: &Vec<String>) {
     asrc.with_zmr(|zmr| {
         let mut specs = specs.iter().cycle();
@@ -19,8 +22,28 @@ fn tmpl_spec(asrc: &mut ActiveSource, sids: &Vec<String>, specs: &Vec<String>) {
     });
 }
 
+// ztmpl #ids,#sids
+pub struct ZTmpl(TáContext,usize,usize);
 // ztmplspec #sids,#specs
 pub struct ZTmplSpec(TáContext,usize,usize);
+
+impl Command for ZTmpl {
+    #[allow(irrefutable_let_patterns)]
+    fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        let pid = proc.lock().unwrap().get_pid().unwrap();
+        self.0.with_task(pid,|task| {
+            if let TáTask::MakeShapes(asrc,_,_,_,_,_,_) = task {
+                regs.get(self.1).as_string(|sids| {
+                    regs.get(self.2).as_string(|specs| {
+                        tmpl(asrc,sids,specs);
+                    });
+                });
+            }
+        });
+        return 1;
+    }
+}
 
 impl Command for ZTmplSpec {
     #[allow(irrefutable_let_patterns)]
@@ -31,7 +54,7 @@ impl Command for ZTmplSpec {
             if let TáTask::MakeShapes(asrc,_,_,_,_,_,_) = task {
                 regs.get(self.1).as_string(|sids| {
                     regs.get(self.2).as_string(|specs| {
-                        tmpl_spec(asrc,sids,specs);
+                        tmpl(asrc,sids,specs);
                     });
                 });
             }
@@ -46,5 +69,14 @@ impl Instruction for ZTmplSpecI {
     fn signature(&self) -> Signature { Signature::new("ztmplspec","rr") }
     fn build(&self, args: &Vec<Argument>) -> Box<Command> {
         Box::new(ZTmplSpec(self.0.clone(),args[0].reg(),args[1].reg()))
+    }
+}
+
+pub struct ZTmplI(pub TáContext);
+
+impl Instruction for ZTmplI {
+    fn signature(&self) -> Signature { Signature::new("ztmpl","rr") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(ZTmpl(self.0.clone(),args[0].reg(),args[1].reg()))
     }
 }
