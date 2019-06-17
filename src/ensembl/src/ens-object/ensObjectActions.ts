@@ -2,7 +2,7 @@ import { createAsyncAction } from 'typesafe-actions';
 import { Dispatch, ActionCreator, Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 
-// import apiService from 'src/services/api-service';
+import apiService from 'src/services/api-service';
 
 import { RootState } from 'src/store';
 import { EnsObjectResponse, EnsObjectTracksResponse } from './ensObjectTypes';
@@ -12,10 +12,7 @@ import {
   mouseGeneResponse,
   mouseRegionResponse,
   wheatGeneResponse,
-  wheatRegionResponse,
-  humanGeneTracksResponse,
-  mouseGeneTracksResponse,
-  wheatGeneTracksResponse
+  wheatRegionResponse
 } from 'tests/data/ens-object/ens-objects';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
@@ -32,42 +29,20 @@ export const fetchEnsObjectAsyncActions = createAsyncAction(
   'ens-object/fetch_ens_object_failure'
 )<FetchEnsObjectRequestType, EnsObjectResponse, Error>();
 
-// TODO: switch to using APIs when available
-export const fetchEnsObject = (ensObjectId: string, genomeId: string) => (
+export const fetchEnsObject = (ensObjectId: string, genomeId: string) => async (
   dispatch: Dispatch
 ) => {
   try {
     dispatch(fetchEnsObjectAsyncActions.request({ ensObjectId, genomeId }));
 
-    let ensObjectResponse: EnsObjectResponse = {
-      ensembl_object: {}
-    };
+    const url = `/api/genome/info?genome_id=${genomeId}`;
+    const response = await apiService.fetch(url, { preserveEndpoint: true });
 
-    switch (genomeId) {
-      case 'homo_sapiens38':
-        if (ensObjectId.includes('gene') === true) {
-          ensObjectResponse = humanGeneResponse;
-        } else {
-          ensObjectResponse = humanRegionResponse;
-        }
-        break;
-      case 'mus_musculus_bdc':
-        if (ensObjectId.includes('gene') === true) {
-          ensObjectResponse = mouseGeneResponse;
-        } else {
-          ensObjectResponse = mouseRegionResponse;
-        }
-        break;
-      case 'triticum_aestivum':
-        if (ensObjectId.includes('gene') === true) {
-          ensObjectResponse = wheatGeneResponse;
-        } else {
-          ensObjectResponse = wheatRegionResponse;
-        }
-        break;
-    }
-
-    dispatch(fetchEnsObjectAsyncActions.success(ensObjectResponse));
+    dispatch(
+      fetchEnsObjectAsyncActions.success({
+        ensembl_object: response.alternative_assemblies
+      })
+    );
   } catch (error) {
     dispatch(fetchEnsObjectAsyncActions.failure(error));
   }
@@ -79,36 +54,21 @@ export const fetchEnsObjectTracksAsyncActions = createAsyncAction(
   'ens-object/fetch_ens_object_tracks_failure'
 )<FetchEnsObjectRequestType, EnsObjectTracksResponse, Error>();
 
-// TODO: switch to using APIs when available
-export const fetchEnsObjectTracks = (ensObjectId: string, genomeId: string) => (
-  dispatch: Dispatch
-) => {
+export const fetchEnsObjectTracks = (
+  ensObjectId: string,
+  genomeId: string
+) => async (dispatch: Dispatch) => {
   try {
     dispatch(fetchEnsObjectAsyncActions.request({ ensObjectId, genomeId }));
 
-    let ensObjectTracks: EnsObjectTracksResponse = {
-      object_tracks: {}
-    };
+    const url = `/api/ensembl_object/track_list?obj_id=${ensObjectId}`;
+    const response = await apiService.fetch(url, { preserveEndpoint: true });
 
-    switch (genomeId) {
-      case 'homo_sapiens38':
-        if (ensObjectId.includes('gene') === true) {
-          ensObjectTracks = humanGeneTracksResponse;
-        }
-        break;
-      case 'mus_musculus_bdc':
-        if (ensObjectId.includes('gene') === true) {
-          ensObjectTracks = mouseGeneTracksResponse;
-        }
-        break;
-      case 'triticum_aestivum':
-        if (ensObjectId.includes('gene') === true) {
-          ensObjectTracks = wheatGeneTracksResponse;
-        }
-        break;
-    }
-
-    dispatch(fetchEnsObjectTracksAsyncActions.success(ensObjectTracks));
+    dispatch(
+      fetchEnsObjectTracksAsyncActions.success({
+        object_tracks: response.alternative_assemblies
+      })
+    );
   } catch (error) {
     dispatch(fetchEnsObjectTracksAsyncActions.failure(error));
   }
@@ -123,7 +83,7 @@ export const fetchExampleEnsObjectsAsyncActions = createAsyncAction(
 // TODO: switch to using APIs when available
 export const fetchExampleEnsObjects: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = () => (dispatch: Dispatch, getState: () => RootState) => {
+> = () => async (dispatch: Dispatch, getState: () => RootState) => {
   try {
     dispatch(fetchExampleEnsObjectsAsyncActions.request(null));
 
