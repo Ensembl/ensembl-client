@@ -1,11 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
   toggleSpeciesUse,
   deleteSpeciesAndSave
 } from 'src/content/app/species-selector/state/speciesSelectorActions';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import SelectedSpecies from 'src/content/app/species-selector/components/selected-species/SelectedSpecies';
 
@@ -54,6 +56,9 @@ const SelectedSpeciesList = (props: Props) => {
           onRemove={props.onSpeciesDelete}
         />
       ))}
+      <div className={styles.genomeBrowserLinkContainer}>
+        <Link to={urlFor.browser()}>View in Genome Browser</Link>
+      </div>
     </>
   );
 };

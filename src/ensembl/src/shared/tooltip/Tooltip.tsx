@@ -1,5 +1,6 @@
 import React, { ReactNode, useRef, useEffect, useState } from 'react';
 import classNames from 'classnames';
+import noop from 'lodash/noop';
 
 import { findOptimalPosition } from './tooltip-helper';
 import { Position } from './tooltip-types';
@@ -258,6 +259,7 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
 
 Tooltip.defaultProps = {
   position: Position.BOTTOM_RIGHT,
+  onClose: noop,
   autoAdjust: false
 };
 

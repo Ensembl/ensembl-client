@@ -1,5 +1,5 @@
 import './button/Button.stories';
-import './close-button/CloseButton.stories';
+import './clear-button/ClearButton.stories';
 import './question-button/QuestionButton.stories';
 import './select/Select.stories';
 import './tooltip/Tooltip.stories';

@@ -16,7 +16,6 @@ export type CurrentItem = {
   scientific_name: string;
   assembly_name: string | null; // name of the selected assembly
   selectedStrainId: string | null; // genome_id of selected strain
-  selectedAssemblyId: string; // genome_id of selected assembly; initially same as the genome_id field
   strains: Strain[];
   assemblies: Assembly[];
 };
@@ -30,7 +29,7 @@ export type SpeciesSelectorState = {
     isSelectingAssembly: boolean;
   };
   search: {
-    results: SearchMatches[];
+    results: SearchMatches[] | null;
   };
   currentItem: CurrentItem | null;
   committedItems: CommittedItem[];
@@ -48,7 +47,7 @@ const initialState: SpeciesSelectorState = {
     isSelectingAssembly: false
   },
   search: {
-    results: []
+    results: null
   },
   currentItem: null,
   committedItems: storedSelectedSpecies || [],
