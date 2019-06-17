@@ -1,7 +1,7 @@
 const path = require('path');
 const postcssPresetEnv = require('postcss-preset-env');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
 
 // exports an anonymous function
@@ -119,11 +119,13 @@ module.exports = (isDev, moduleRules, plugins) => ({
     // prod will have emitted files and will include the content hash, which will change every time the contents of the js file changes.
     filename: isDev ? undefined : '[name].[contenthash].js',
 
+    path: path.resolve(__dirname, '../dist/static'),
+
     // stop webpack from adding additional comments/info to generated bundles as it is a performance hit (slows down build times)
     pathinfo: false,
 
     // prepend the public path as the root path to all the files that are inserted into the index file
-    publicPath: '/'
+    publicPath: isDev ? '/' : '/static/'
   },
 
   // the plugins that extends the webpack configuration
@@ -133,7 +135,7 @@ module.exports = (isDev, moduleRules, plugins) => ({
 
     // generates the index file using the provided html template
     new HtmlPlugin({
-      filename: 'index.html',
+      filename: isDev ? 'index.html' : '../index.html', // to save in the dist folder instead of dist/static
       template: path.join(__dirname, '../static/html/template.html'),
       publicPath: '/'
     }),
