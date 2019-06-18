@@ -1,5 +1,6 @@
 use std::sync::{ Arc, Mutex };
 use std::collections::{ HashMap, HashSet };
+use controller::input::Action;
 use composit::{ Leaf, Stage };
 use types::Dot;
 
@@ -38,12 +39,16 @@ impl ZMenuRegistryImpl {
         }
     }
     
-    pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) {
+    pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> Vec<Action> {
+        let mut all = HashMap::new();
         bb_log!("zmenu","zmr: pos={:?}",pos);
         for zml in self.zml.values() {
             bb_log!("zmenu","zmr: zml");
-            zml.intersects(stage,pos);
+            for (id,payload) in zml.intersects(stage,pos) {
+                all.insert(id,payload);
+            }
         }
+        all.drain().map(|(k,v)| Action::ShowZMenu(k,pos,v)).collect()
     }       
 }
 
@@ -59,7 +64,7 @@ impl ZMenuRegistry {
         self.0.lock().unwrap().add_leafset(zmls);
     }
     
-    pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) {
-        self.0.lock().unwrap().intersects(stage,pos);
+    pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> Vec<Action> {
+        self.0.lock().unwrap().intersects(stage,pos)
     }    
 }
