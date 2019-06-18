@@ -2,7 +2,7 @@ import './button/Button.stories';
 import './close-button/CloseButton.stories';
 import './question-button/QuestionButton.stories';
 import './select/Select.stories';
-import './dropdown/Dropdown.stories';
+import './tooltip/Tooltip.stories';
 import './input/Input.stories';
 import './accordion/Accordion.stories';
 import './image-button/ImageButton.stories';

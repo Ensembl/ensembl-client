@@ -32,7 +32,7 @@ class ErrorBoundary extends PureComponent<Props, State> {
 
   public render() {
     const FallbackComponent = this.props.fallbackComponent;
-    const { error } = this.state;
+    const error: Error | null = this.state.error;
 
     return error ? (
       <FallbackComponent error={error} />

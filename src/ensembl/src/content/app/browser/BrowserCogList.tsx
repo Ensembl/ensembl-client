@@ -7,8 +7,6 @@ import React, {
 import { connect } from 'react-redux';
 
 import BrowserCog from './BrowserCog';
-
-import BrowserTrackConfig from './browser-track-config/BrowserTrackConfig';
 import {
   updateCogList,
   updateCogTrackList,
@@ -54,7 +52,7 @@ type BpaneScrollEvent = Event & {
 const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
   props: BrowserCogListProps
 ) => {
-  const { selectedCog, browserCogTrackList } = props;
+  const { browserCogTrackList } = props;
   const listenBpaneScroll = useCallback((event: Event) => {
     const bpaneScrollEvent = event as BpaneScrollEvent;
     if (
@@ -94,7 +92,6 @@ const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
 
   return props.browserActivated ? (
     <div className={styles.browserTrackConfigOuter}>
-      <BrowserTrackConfig ypos={props.browserCogTrackList[selectedCog]} />
       <div className={styles.browserCogListOuter}>
         <div className={styles.browserCogListInner} style={transformStyle}>
           {cogs}

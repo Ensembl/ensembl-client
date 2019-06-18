@@ -1,15 +1,10 @@
-import React, {
-  FunctionComponent,
-  RefObject,
-  useEffect,
-  Fragment
-} from 'react';
+import React, { FunctionComponent, RefObject, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import TrackPanelBar from './track-panel-bar/TrackPanelBar';
 import TrackPanelList from './track-panel-list/TrackPanelList';
 import TrackPanelModal from './track-panel-modal/TrackPanelModal';
-
+import Drawer from '../drawer/Drawer';
 import { RootState } from 'src/store';
 
 import {
@@ -39,7 +34,7 @@ import { getBreakpointWidth } from 'src/global/globalSelectors';
 import { ChrLocation } from '../browserState';
 import { BreakpointWidth } from 'src/global/globalConfig';
 import { TrackType } from './trackPanelConfig';
-
+import { useSpring, animated } from 'react-spring';
 import styles from './TrackPanel.scss';
 
 type StateProps = {
@@ -83,10 +78,33 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
     }
   }, [props.breakpointWidth, props.toggleTrackPanel]);
 
+  const [trackAnimation, setTrackAnimation] = useSpring(() => ({
+    config: { tension: 280, friction: 45 },
+    height: '100%',
+    position: 'absolute' as 'absolute',
+    display: 'block',
+    left: 'calc(-356px + 100vw)'
+  }));
+
+  const getBrowserWidth = (): string => {
+    if (props.drawerOpened) {
+      return 'calc(41px + 0vw)';
+    }
+    return props.trackPanelOpened
+      ? 'calc(-356px + 100vw)'
+      : 'calc(-36px + 100vw)';
+  };
+
+  useEffect(() => {
+    setTrackAnimation({
+      left: getBrowserWidth()
+    });
+  }, [props.drawerOpened, props.trackPanelOpened]);
+
   return (
-    <section className={`${styles.trackPanel} reactSlideDrawer`}>
+    <animated.div style={trackAnimation}>
       {props.browserActivated && props.ensObjectInfo.associated_object ? (
-        <Fragment>
+        <div className={styles.trackPanel}>
           <TrackPanelBar
             closeTrackPanelModal={props.closeTrackPanelModal}
             drawerOpened={props.drawerOpened}
@@ -98,32 +116,31 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
             trackPanelModalView={props.trackPanelModalView}
             trackPanelOpened={props.trackPanelOpened}
           />
-          {props.trackPanelOpened ? (
-            <Fragment>
-              <TrackPanelList
-                browserRef={props.browserRef}
-                defaultChrLocation={props.defaultChrLocation}
-                drawerOpened={props.drawerOpened}
-                drawerView={props.drawerView}
-                launchbarExpanded={props.launchbarExpanded}
-                ensObjectInfo={props.ensObjectInfo}
-                selectedBrowserTab={props.selectedBrowserTab}
-                toggleDrawer={props.toggleDrawer}
-                trackCategories={props.trackCategories}
-                updateDrawerView={props.changeDrawerView}
-              />
-              {props.trackPanelModalOpened ? (
-                <TrackPanelModal
-                  closeTrackPanelModal={props.closeTrackPanelModal}
-                  launchbarExpanded={props.launchbarExpanded}
-                  trackPanelModalView={props.trackPanelModalView}
-                />
-              ) : null}
-            </Fragment>
+
+          <TrackPanelList
+            browserRef={props.browserRef}
+            defaultChrLocation={props.defaultChrLocation}
+            drawerOpened={props.drawerOpened}
+            drawerView={props.drawerView}
+            launchbarExpanded={props.launchbarExpanded}
+            ensObjectInfo={props.ensObjectInfo}
+            selectedBrowserTab={props.selectedBrowserTab}
+            toggleDrawer={props.toggleDrawer}
+            trackCategories={props.trackCategories}
+            updateDrawerView={props.changeDrawerView}
+          />
+
+          {props.trackPanelModalOpened ? (
+            <TrackPanelModal
+              closeTrackPanelModal={props.closeTrackPanelModal}
+              launchbarExpanded={props.launchbarExpanded}
+              trackPanelModalView={props.trackPanelModalView}
+            />
           ) : null}
-        </Fragment>
+          {props.drawerOpened && <Drawer />}
+        </div>
       ) : null}
-    </section>
+    </animated.div>
   );
 };
 

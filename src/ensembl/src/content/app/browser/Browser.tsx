@@ -32,6 +32,8 @@ import {
   getGenomeSelectorActive,
   getBrowserActivated
 } from './browserSelectors';
+import { getLaunchbarExpanded } from 'src/header/headerSelectors';
+import { getTrackPanelOpened } from './track-panel/trackPanelSelectors';
 import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 import { getDrawerOpened } from './drawer/drawerSelectors';
 import {
@@ -41,6 +43,7 @@ import {
 import { toggleDrawer } from './drawer/drawerActions';
 
 import styles from './Browser.scss';
+import { useSpring, animated } from 'react-spring';
 
 import 'static/browser/browser.js';
 
@@ -51,6 +54,8 @@ type StateProps = {
   chrLocation: ChrLocation;
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
+  trackPanelOpened: boolean;
+  launchbarExpanded: boolean;
 };
 
 type DispatchProps = {
@@ -122,32 +127,55 @@ export const Browser: FunctionComponent<BrowserProps> = (
     if (props.drawerOpened === false) {
       return;
     }
-
     props.toggleDrawer(false);
   }, [props.drawerOpened]);
+
+  const [trackAnimation, setTrackAnimation] = useSpring(() => ({
+    config: { tension: 280, friction: 45 },
+    height: '100%',
+    width: 'calc(-36px + 100vw )'
+  }));
+
+  const getBrowserWidth = (): string => {
+    if (props.drawerOpened) {
+      return 'calc(41px + 0vw)';
+    }
+    return props.trackPanelOpened
+      ? 'calc(-356px + 100vw)'
+      : 'calc(-36px + 100vw)';
+  };
+
+  useEffect(() => {
+    setTrackAnimation({
+      width: getBrowserWidth()
+    });
+  }, [props.drawerOpened, props.trackPanelOpened]);
+
+  const getHeightClass = (launchbarExpanded: boolean): string => {
+    return launchbarExpanded ? styles.shorter : styles.taller;
+  };
 
   return (
     <section className={styles.browser}>
       <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
-      {props.genomeSelectorActive ? (
-        <div className={styles.browserOverlay} />
-      ) : null}
-      <div className={styles.browserInnerWrapper}>
-        <div
-          className={`${styles.browserImageWrapper} ${
-            styles[props.browserOpenState]
-          }`}
-          onClick={closeTrack}
-        >
-          {props.browserNavOpened &&
-          !props.drawerOpened &&
-          browserRef.current ? (
-            <BrowserNavBar browserElement={browserRef.current} />
-          ) : null}
-          <BrowserImage browserRef={browserRef} />
-        </div>
+
+      {props.genomeSelectorActive && <div className={styles.browserOverlay} />}
+      <div
+        className={`${styles.browserInnerWrapper} ${getHeightClass(
+          props.launchbarExpanded
+        )}`}
+      >
+        <animated.div style={trackAnimation}>
+          <div className={styles.browserImageWrapper} onClick={closeTrack}>
+            {props.browserNavOpened &&
+            !props.drawerOpened &&
+            browserRef.current ? (
+              <BrowserNavBar browserElement={browserRef.current} />
+            ) : null}
+            <BrowserImage browserRef={browserRef} />
+          </div>
+        </animated.div>
         <TrackPanel browserRef={browserRef} />
-        {props.drawerOpened && <Drawer />}
       </div>
     </section>
   );
@@ -159,7 +187,9 @@ const mapStateToProps = (state: RootState): StateProps => ({
   browserOpenState: getBrowserOpenState(state),
   chrLocation: getChrLocation(state),
   drawerOpened: getDrawerOpened(state),
-  genomeSelectorActive: getGenomeSelectorActive(state)
+  genomeSelectorActive: getGenomeSelectorActive(state),
+  trackPanelOpened: getTrackPanelOpened(state),
+  launchbarExpanded: getLaunchbarExpanded(state)
 });
 
 const mapDispatchToProps: DispatchProps = {

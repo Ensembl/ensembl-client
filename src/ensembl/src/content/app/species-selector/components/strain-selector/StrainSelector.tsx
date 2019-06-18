@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import classNames from 'classnames';
 
-import Dropdown from 'src/shared/dropdown/Dropdown';
+import Tooltip from 'src/shared/tooltip/Tooltip';
 
 import styles from './StrainSelector.scss';
 
@@ -22,7 +22,7 @@ type StrainProps = Strain & {
 };
 
 const StrainSelector = (props: StrainSelectorProps) => {
-  const [isDropdownVisible, setDropdownVisibility] = useState(false);
+  const [isTooltipVisible, setTooltipVisibility] = useState(false);
   const elementRef: React.RefObject<HTMLDivElement> = useRef(null);
 
   const numberOfSelectedStrains = props.strains.reduce(
@@ -33,22 +33,22 @@ const StrainSelector = (props: StrainSelectorProps) => {
   );
   const totalNumberOfStrains = props.strains.length;
 
-  const toggleDropdownVisibility = () => {
-    setDropdownVisibility(!isDropdownVisible);
+  const toggleTooltipVisibility = () => {
+    setTooltipVisibility(!isTooltipVisible);
   };
-  const hideDropdown = () => setDropdownVisibility(false);
+  const hideTooltip = () => setTooltipVisibility(false);
 
   return (
     <div
       className={styles.strainSelector}
-      onClick={toggleDropdownVisibility}
+      onClick={toggleTooltipVisibility}
       ref={elementRef}
     >
       {numberOfSelectedStrains} / {totalNumberOfStrains}
-      {isDropdownVisible && (
-        <Dropdown onClose={hideDropdown} verticalOffset={-5}>
+      {isTooltipVisible && (
+        <Tooltip onClose={hideTooltip}>
           <StrainsList {...props} />
-        </Dropdown>
+        </Tooltip>
       )}
     </div>
   );
