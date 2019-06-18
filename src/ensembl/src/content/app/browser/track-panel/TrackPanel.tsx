@@ -39,7 +39,11 @@ import { TrackType, TrackStates } from './trackPanelConfig';
 
 import { GenomeTrackCategory } from 'src/genome/genomeTypes';
 import { getGenomeTrackCategories } from 'src/genome/genomeSelectors';
-import { EnsObject, EnsObjectTrack } from 'src/ens-object/ensObjectTypes';
+import {
+  EnsObject,
+  EnsObjectTrack,
+  ExampleEnsObjectsData
+} from 'src/ens-object/ensObjectTypes';
 
 import styles from './TrackPanel.scss';
 
@@ -52,7 +56,7 @@ type StateProps = {
   drawerView: string;
   ensObjectInfo: EnsObject;
   ensObjectTracks: EnsObjectTrack;
-  exampleEnsObjects: EnsObject[];
+  exampleEnsObjects: ExampleEnsObjectsData;
   launchbarExpanded: boolean;
   selectedBrowserTab: { [genomeId: string]: TrackType };
   genomeTrackCategories: GenomeTrackCategory[];

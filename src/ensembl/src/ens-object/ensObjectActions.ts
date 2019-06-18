@@ -60,7 +60,7 @@ export const fetchEnsObjectTracks = (
 
     dispatch(
       fetchEnsObjectTracksAsyncActions.success({
-        object_tracks: response.alternative_assemblies
+        object_tracks: response
       })
     );
   } catch (error) {
