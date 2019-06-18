@@ -33,3 +33,7 @@ export type EnsObjectResponse = {
 export type EnsObjectTracksResponse = {
   object_tracks: EnsObjectTrack | {};
 };
+
+export type ExampleEnsObjectsData = {
+  [key: string]: EnsObject[];
+};

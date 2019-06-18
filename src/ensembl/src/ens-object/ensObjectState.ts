@@ -1,4 +1,8 @@
-import { EnsObject, EnsObjectTrack } from './ensObjectTypes';
+import {
+  EnsObject,
+  EnsObjectTrack,
+  ExampleEnsObjectsData
+} from './ensObjectTypes';
 
 export type EnsObjectInfoState = Readonly<{
   ensObjectInfoData: EnsObject | {};
@@ -25,13 +29,13 @@ export const defaultEnsObjectTracksState: EnsObjectTracksState = {
 };
 
 export type ExampleEnsObjectsState = Readonly<{
-  exampleEnsObjectsData: EnsObject[];
+  exampleEnsObjectsData: ExampleEnsObjectsData;
   exampleEnsObjectsFetchFailed: boolean;
   exampleEnsObjectsFetching: boolean;
 }>;
 
 export const defaultExampleEnsObjectsState: ExampleEnsObjectsState = {
-  exampleEnsObjectsData: [],
+  exampleEnsObjectsData: {},
   exampleEnsObjectsFetchFailed: false,
   exampleEnsObjectsFetching: false
 };

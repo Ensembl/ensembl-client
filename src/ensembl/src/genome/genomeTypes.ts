@@ -10,6 +10,10 @@ export type GenomeInfo = {
   example_objects: string[];
 };
 
+export type GenomeInfoData = {
+  [key: string]: GenomeInfo;
+};
+
 export type GenomeTrackCategory = {
   label: string;
   track_category_id: string;

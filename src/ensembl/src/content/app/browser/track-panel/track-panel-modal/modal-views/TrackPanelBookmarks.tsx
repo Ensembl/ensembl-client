@@ -7,11 +7,8 @@ import { EnsObject } from 'src/ens-object/ensObjectTypes';
 import { GenomeInfo } from 'src/genome/genomeTypes';
 
 import { getBrowserActiveGenomeId } from '../../../browserSelectors';
-import {
-  getGenomeExampleEnsObjects,
-  getGenomeInfo
-} from 'src/genome/genomeSelectors';
-import { fetchGenomeExampleEnsObjects } from 'src/genome/genomeActions';
+import { getGenomeInfo } from 'src/genome/genomeSelectors';
+import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import styles from '../TrackPanelModal.scss';
@@ -19,11 +16,10 @@ import styles from '../TrackPanelModal.scss';
 type StateProps = {
   activeGenomeId: string;
   genomeInfo: GenomeInfo;
-  genomeExampleEnsObjects: EnsObject[];
 };
 
 type DispatchProps = {
-  fetchGenomeExampleEnsObjects: (genomeId: string) => void;
+  fetchExampleEnsObjects: (objectId: string) => void;
 };
 
 type OwnProps = {};
@@ -32,18 +28,14 @@ type TrackPanelBookmarksProps = StateProps & DispatchProps & OwnProps;
 
 export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
   useEffect(() => {
-    const {
-      activeGenomeId,
-      genomeExampleEnsObjects,
-      fetchGenomeExampleEnsObjects
-    } = props;
+    const { activeGenomeId, fetchExampleEnsObjects } = props;
 
-    if (
-      genomeExampleEnsObjects.length === 0 ||
-      genomeExampleEnsObjects[0].genome_id !== activeGenomeId
-    ) {
-      fetchGenomeExampleEnsObjects(activeGenomeId);
-    }
+    // if (
+    //   genomeExampleEnsObjects.length === 0 ||
+    //   genomeExampleEnsObjects[0].genome_id !== activeGenomeId
+    // ) {
+    //   fetchExampleEnsObjects(activeGenomeId);
+    // }
   }, []);
 
   const getExampleObjectNode = (exampleObject: EnsObject) => {
@@ -83,12 +75,11 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
 
 const mapStateToProps = (state: RootState) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
-  genomeInfo: getGenomeInfo(state),
-  genomeExampleEnsObjects: getGenomeExampleEnsObjects(state)
+  genomeInfo: getGenomeInfo(state)
 });
 
 const mapDispatchToProps = {
-  fetchGenomeExampleEnsObjects
+  fetchExampleEnsObjects
 };
 
 export default connect(

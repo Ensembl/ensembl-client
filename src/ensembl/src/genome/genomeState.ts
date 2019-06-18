@@ -1,8 +1,7 @@
-import { GenomeInfo, GenomeTrackCategory } from './genomeTypes';
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import { GenomeInfoData, GenomeTrackCategory } from './genomeTypes';
 
 export type GenomeInfoState = Readonly<{
-  genomeInfoData: GenomeInfo | {};
+  genomeInfoData: GenomeInfoData;
   genomeInfoFetchFailed: boolean;
   genomeInfoFetching: boolean;
 }>;
@@ -23,16 +22,4 @@ export const defaultGenomeTrackCategoriesState: GenomeTrackCategoriesState = {
   genomeTrackCategoriesData: [],
   genomeTrackCategoriesFetchFailed: false,
   genomeTrackCategoriesFetching: false
-};
-
-export type GenomeExampleEnsObjectsState = Readonly<{
-  genomeExampleEnsObjectsData: EnsObject[];
-  genomeExampleEnsObjectsFetchFailed: boolean;
-  genomeExampleEnsObjectsFetching: boolean;
-}>;
-
-export const defaultGenomeExampleEnsObjectsState: GenomeExampleEnsObjectsState = {
-  genomeExampleEnsObjectsData: [],
-  genomeExampleEnsObjectsFetchFailed: false,
-  genomeExampleEnsObjectsFetching: false
 };

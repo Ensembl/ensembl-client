@@ -1,25 +1,17 @@
 import { createAsyncAction } from 'typesafe-actions';
-import { Dispatch, ActionCreator, Action } from 'redux';
+import { Action, ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
-
-// import apiService from 'src/services/api-service';
-
 import { RootState } from 'src/store';
-import { EnsObjectResponse, EnsObjectTracksResponse } from './ensObjectTypes';
-import {
-  humanGeneResponse,
-  humanRegionResponse,
-  mouseGeneResponse,
-  mouseRegionResponse,
-  wheatGeneResponse,
-  wheatRegionResponse,
-  humanGeneTracksResponse,
-  mouseGeneTracksResponse,
-  wheatGeneTracksResponse
-} from 'tests/data/ens-object/ens-objects';
+import apiService from 'src/services/api-service';
 
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import { GenomeInfoData, GenomeInfo } from 'src/genome/genomeTypes';
+import { getGenomeInfo } from 'src/genome/genomeSelectors';
+import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
+import {
+  EnsObjectResponse,
+  EnsObjectTracksResponse,
+  ExampleEnsObjectsData
+} from './ensObjectTypes';
 
 type FetchEnsObjectRequestType = {
   ensObjectId: string;
@@ -32,42 +24,19 @@ export const fetchEnsObjectAsyncActions = createAsyncAction(
   'ens-object/fetch_ens_object_failure'
 )<FetchEnsObjectRequestType, EnsObjectResponse, Error>();
 
-// TODO: switch to using APIs when available
-export const fetchEnsObject = (ensObjectId: string, genomeId: string) => (
-  dispatch: Dispatch
-) => {
+export const fetchEnsObject: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (ensObjectId: string, genomeId: string) => async (dispatch: Dispatch) => {
   try {
     dispatch(fetchEnsObjectAsyncActions.request({ ensObjectId, genomeId }));
 
-    let ensObjectResponse: EnsObjectResponse = {
-      ensembl_object: {}
-    };
-
-    switch (genomeId) {
-      case 'homo_sapiens_GCA_000001405_27':
-        if (ensObjectId.includes('gene') === true) {
-          ensObjectResponse = humanGeneResponse;
-        } else {
-          ensObjectResponse = humanRegionResponse;
-        }
-        break;
-      case 'mus_musculus_bdc':
-        if (ensObjectId.includes('gene') === true) {
-          ensObjectResponse = mouseGeneResponse;
-        } else {
-          ensObjectResponse = mouseRegionResponse;
-        }
-        break;
-      case 'triticum_aestivum_GCA_900519105_1':
-        if (ensObjectId.includes('gene') === true) {
-          ensObjectResponse = wheatGeneResponse;
-        } else {
-          ensObjectResponse = wheatRegionResponse;
-        }
-        break;
-    }
-
-    dispatch(fetchEnsObjectAsyncActions.success(ensObjectResponse));
+    const url = `/api/ensembl_object/info?object_id=${ensObjectId}`;
+    const response = await apiService.fetch(url);
+    dispatch(
+      fetchEnsObjectAsyncActions.success({
+        ensembl_object: response
+      })
+    );
   } catch (error) {
     dispatch(fetchEnsObjectAsyncActions.failure(error));
   }
@@ -79,36 +48,21 @@ export const fetchEnsObjectTracksAsyncActions = createAsyncAction(
   'ens-object/fetch_ens_object_tracks_failure'
 )<FetchEnsObjectRequestType, EnsObjectTracksResponse, Error>();
 
-// TODO: switch to using APIs when available
-export const fetchEnsObjectTracks = (ensObjectId: string, genomeId: string) => (
-  dispatch: Dispatch
-) => {
+export const fetchEnsObjectTracks = (
+  ensObjectId: string,
+  genomeId: string
+) => async (dispatch: Dispatch) => {
   try {
     dispatch(fetchEnsObjectAsyncActions.request({ ensObjectId, genomeId }));
 
-    let ensObjectTracks: EnsObjectTracksResponse = {
-      object_tracks: {}
-    };
+    const url = `/api/ensembl_object/track_list?object_id=${ensObjectId}`;
+    const response = await apiService.fetch(url, { preserveEndpoint: true });
 
-    switch (genomeId) {
-      case 'homo_sapiens_GCA_000001405_27':
-        if (ensObjectId.includes('gene') === true) {
-          ensObjectTracks = humanGeneTracksResponse;
-        }
-        break;
-      case 'mus_musculus_bdc':
-        if (ensObjectId.includes('gene') === true) {
-          ensObjectTracks = mouseGeneTracksResponse;
-        }
-        break;
-      case 'triticum_aestivum_GCA_900519105_1':
-        if (ensObjectId.includes('gene') === true) {
-          ensObjectTracks = wheatGeneTracksResponse;
-        }
-        break;
-    }
-
-    dispatch(fetchEnsObjectTracksAsyncActions.success(ensObjectTracks));
+    dispatch(
+      fetchEnsObjectTracksAsyncActions.success({
+        object_tracks: response.alternative_assemblies
+      })
+    );
   } catch (error) {
     dispatch(fetchEnsObjectTracksAsyncActions.failure(error));
   }
@@ -118,35 +72,37 @@ export const fetchExampleEnsObjectsAsyncActions = createAsyncAction(
   'ens-object/fetch_example_ens_objects_request',
   'ens-object/fetch_example_ens_objects_success',
   'ens-object/fetch_example_ens_objects_failure'
-)<null, EnsObjectResponse[], Error>();
+)<null, ExampleEnsObjectsData, Error>();
 
-// TODO: switch to using APIs when available
 export const fetchExampleEnsObjects: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = () => (dispatch: Dispatch, getState: () => RootState) => {
   try {
-    dispatch(fetchExampleEnsObjectsAsyncActions.request(null));
+    const genomeInfoData: GenomeInfoData = getGenomeInfo(getState());
 
-    const committedSpecies = getCommittedSpecies(getState());
-    let ensObjectResponses: EnsObjectResponse[] = [];
+    const exampleObjects: ExampleEnsObjectsData = getExampleEnsObjects(
+      getState()
+    );
 
-    committedSpecies.map((species: CommittedItem) => {
-      switch (species.genome_id) {
-        case 'homo_sapiens_GCA_000001405_27':
-          ensObjectResponses.push(humanGeneResponse, humanRegionResponse);
-          break;
-        case 'mus_musculus_bdc':
-          ensObjectResponses.push(mouseGeneResponse, mouseRegionResponse);
-          break;
-        case 'triticum_aestivum_GCA_900519105_1':
-          ensObjectResponses.push(wheatGeneResponse, wheatRegionResponse);
-          break;
+    Object.values(genomeInfoData).forEach(async (genomeInfo: GenomeInfo) => {
+      if (!exampleObjects[genomeInfo.genome_id]) {
+        dispatch(fetchExampleEnsObjectsAsyncActions.request(null));
+
+        const geneUrl = `/api/ensembl_object/info?object_id=${genomeInfo.example_objects[0]}`;
+        const geneResponse = await apiService.fetch(geneUrl);
+
+        // const regionUrl = `/api/ensembl_object/info?object_id=${genomeInfo.example_objects[1]}`;
+        // const regionResponse = await apiService.fetch(regionUrl);
+
+        // updatedExampleObjects[genomeInfo.genome_id] = [geneResponse];
+
+        dispatch(
+          fetchExampleEnsObjectsAsyncActions.success({
+            [genomeInfo.genome_id]: [geneResponse]
+          })
+        );
       }
     });
-
-    dispatch(
-      fetchExampleEnsObjectsAsyncActions.success(ensObjectResponses.flat())
-    );
   } catch (error) {
     dispatch(fetchExampleEnsObjectsAsyncActions.failure(error));
   }

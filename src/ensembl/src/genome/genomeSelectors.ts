@@ -1,8 +1,8 @@
 import { RootState } from 'src/store';
-import { GenomeInfo } from './genomeTypes';
+import { GenomeInfoData } from './genomeTypes';
 
 export const getGenomeInfo = (state: RootState) =>
-  state.genome.genomeInfo.genomeInfoData as GenomeInfo;
+  state.genome.genomeInfo.genomeInfoData as GenomeInfoData;
 
 export const getGenomeInfoFetching = (state: RootState) =>
   state.genome.genomeInfo.genomeInfoFetching;
@@ -18,12 +18,3 @@ export const getGenomeTrackCategoriesFetching = (state: RootState) =>
 
 export const getGenomeTrackCategoriesFetchFailed = (state: RootState) =>
   state.genome.genomeTrackCategories.genomeTrackCategoriesFetchFailed;
-
-export const getGenomeExampleEnsObjects = (state: RootState) =>
-  state.genome.genomeExampleEnsObjects.genomeExampleEnsObjectsData;
-
-export const getGenomeExampleEnsObjectsFetching = (state: RootState) =>
-  state.genome.genomeExampleEnsObjects.genomeExampleEnsObjectsFetching;
-
-export const getGenomeExampleEnsObjectsFetchFailed = (state: RootState) =>
-  state.genome.genomeExampleEnsObjects.genomeExampleEnsObjectsFetchFailed;

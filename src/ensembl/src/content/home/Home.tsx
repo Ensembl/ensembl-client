@@ -6,22 +6,31 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { RootState } from 'src/store';
 
 import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import {
+  EnsObject,
+  ExampleEnsObjectsData
+} from 'src/ens-object/ensObjectTypes';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
-
+import { getGenomeInfo } from 'src/genome/genomeSelectors';
 import { getCommittedSpecies } from '../app/species-selector/state/speciesSelectorSelectors';
 import { CommittedItem } from '../app/species-selector/types/species-search';
 
+import { fetchGenomeInfo } from 'src/genome/genomeActions';
+
 import styles from './Home.scss';
+
+import { GenomeInfoData } from 'src/genome/genomeTypes';
 
 type StateProps = {
   activeSpecies: CommittedItem[];
-  exampleEnsObjects: EnsObject[];
+  exampleEnsObjects: ExampleEnsObjectsData;
+  genomeInfo: GenomeInfoData;
   totalSelectedSpecies: number;
 };
 
 type DispatchProps = {
   fetchExampleEnsObjects: () => void;
+  fetchGenomeInfo: () => void;
 };
 
 type OwnProps = {};
@@ -32,34 +41,42 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
   const [showPreviouslyViewed, toggleShowPreviouslyViewed] = useState(false);
 
   useEffect(() => {
-    props.fetchExampleEnsObjects();
-  }, []);
+    props.fetchGenomeInfo();
+  }, [props.activeSpecies]);
 
   useEffect(() => {
-    if (props.exampleEnsObjects.length > 0) {
+    props.fetchExampleEnsObjects();
+  }, [props.genomeInfo]);
+
+  useEffect(() => {
+    if (Object.keys(props.exampleEnsObjects).length > 0) {
       toggleShowPreviouslyViewed(true);
     }
   }, [props.exampleEnsObjects]);
 
-  const getExampleObjectNode = (exampleObject: EnsObject) => {
-    const genomeInfo = props.activeSpecies.filter(
-      (species: CommittedItem) => species.genome_id === exampleObject.genome_id
-    )[0];
+  const getPreviouslyViewed = () => {
+    return props.activeSpecies.map((species) => {
+      if (props.exampleEnsObjects[species.genome_id]) {
+        return Object.values(props.exampleEnsObjects[species.genome_id]).map(
+          (exampleObject: EnsObject) => {
+            const locationStr = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
+            const path = urlFor.browser(
+              species.genome_id,
+              exampleObject.ensembl_object_id,
+              locationStr
+            );
 
-    const locationStr = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
-    const path = urlFor.browser(
-      genomeInfo.genome_id,
-      exampleObject.ensembl_object_id,
-      locationStr
-    );
-
-    return (
-      <dd key={exampleObject.ensembl_object_id}>
-        <Link to={path}>
-          {genomeInfo.common_name} {exampleObject.label}
-        </Link>
-      </dd>
-    );
+            return (
+              <dd key={exampleObject.ensembl_object_id}>
+                <Link to={path}>
+                  {species.common_name} {exampleObject.label}
+                </Link>
+              </dd>
+            );
+          }
+        );
+      }
+    });
   };
 
   return (
@@ -87,16 +104,12 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
           <h2>Refine results</h2>
         </div>
       </section>
-      {showPreviouslyViewed ? (
+      {showPreviouslyViewed && (
         <section className={styles.previouslyViewed}>
           <h2>Previously viewed</h2>
-          <dl>
-            {props.exampleEnsObjects.map((exampleObject: EnsObject) =>
-              getExampleObjectNode(exampleObject)
-            )}
-          </dl>
+          {getPreviouslyViewed()}
         </section>
-      ) : null}
+      )}
       <section className={styles.siteMessage}>
         <h4>Using the site</h4>
         <p>
@@ -122,11 +135,13 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
 const mapStateToProps = (state: RootState) => ({
   activeSpecies: getCommittedSpecies(state),
   exampleEnsObjects: getExampleEnsObjects(state),
-  totalSelectedSpecies: getCommittedSpecies(state).length
+  totalSelectedSpecies: getCommittedSpecies(state).length,
+  genomeInfo: getGenomeInfo(state)
 });
 
 const mapDispatchToProps = {
-  fetchExampleEnsObjects
+  fetchExampleEnsObjects,
+  fetchGenomeInfo
 };
 
 export default connect(

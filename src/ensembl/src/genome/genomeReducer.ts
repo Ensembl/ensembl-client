@@ -7,13 +7,9 @@ import {
   GenomeInfoState,
   defaultGenomeInfoState,
   GenomeTrackCategoriesState,
-  defaultGenomeTrackCategoriesState,
-  GenomeExampleEnsObjectsState,
-  defaultGenomeExampleEnsObjectsState
+  defaultGenomeTrackCategoriesState
 } from './genomeState';
-import { GenomeInfo } from './genomeTypes';
-import { EnsObject, EnsObjectResponse } from 'src/ens-object/ensObjectTypes';
-import {} from 'tests/data/genome/genome-track-categories';
+import { GenomeInfoData } from './genomeTypes';
 
 function genomeInfo(
   state: GenomeInfoState = defaultGenomeInfoState,
@@ -33,13 +29,26 @@ function genomeInfo(
         genomeInfoFetching: true
       };
     case getType(genomeActions.fetchGenomeInfoAsyncActions.success):
-      const genomeInfoData = action.payload.genome_info[0] as GenomeInfo;
-
       return {
         ...state,
-        genomeInfoData,
+        genomeInfoData: genomeInfoData(state.genomeInfoData, action),
         genomeInfoFetchFailed: false,
         genomeInfoFetching: false
+      };
+    default:
+      return state;
+  }
+}
+
+function genomeInfoData(
+  state: GenomeInfoData = {},
+  action: ActionType<typeof genomeActions>
+): GenomeInfoData {
+  switch (action.type) {
+    case getType(genomeActions.fetchGenomeInfoAsyncActions.success):
+      return {
+        ...state,
+        ...action.payload
       };
     default:
       return state;
@@ -75,45 +84,7 @@ function genomeTrackCategories(
   }
 }
 
-function genomeExampleEnsObjects(
-  state: GenomeExampleEnsObjectsState = defaultGenomeExampleEnsObjectsState,
-  action: ActionType<typeof genomeActions>
-): GenomeExampleEnsObjectsState {
-  switch (action.type) {
-    case getType(
-      genomeActions.fetchGenomeExampleEnsObjectsAsyncActions.failure
-    ):
-      return {
-        ...state,
-        genomeExampleEnsObjectsFetchFailed: true,
-        genomeExampleEnsObjectsFetching: false
-      };
-    case getType(
-      genomeActions.fetchGenomeExampleEnsObjectsAsyncActions.request
-    ):
-      return {
-        ...state,
-        genomeExampleEnsObjectsFetchFailed: false,
-        genomeExampleEnsObjectsFetching: true
-      };
-    case getType(
-      genomeActions.fetchGenomeExampleEnsObjectsAsyncActions.success
-    ):
-      return {
-        ...state,
-        genomeExampleEnsObjectsData: action.payload.map(
-          (response: EnsObjectResponse) => response.ensembl_object as EnsObject
-        ),
-        genomeExampleEnsObjectsFetchFailed: false,
-        genomeExampleEnsObjectsFetching: false
-      };
-    default:
-      return state;
-  }
-}
-
 export default combineReducers({
   genomeInfo,
-  genomeTrackCategories,
-  genomeExampleEnsObjects
+  genomeTrackCategories
 });

@@ -2,101 +2,43 @@ import { createAsyncAction } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
 import { Action, ActionCreator, Dispatch } from 'redux';
 
-// import apiService from 'src/services/api-service';
+import apiService from 'src/services/api-service';
+import { RootState } from 'src/store';
+import { GenomeInfoData, GenomeTrackCategoriesResponse } from './genomeTypes';
 
-import {
-  GenomeInfoResponse,
-  GenomeTrackCategoriesResponse
-} from './genomeTypes';
-import { EnsObjectResponse } from 'src/ens-object/ensObjectTypes';
-import {
-  humanGenomeInfoResponse,
-  mouseGenomeInfoResponse,
-  wheatGenomeInfoResponse
-} from 'tests/data/genome/genome-info';
-
-import {
-  humanTrackCategoriesResponse,
-  mouseTrackCategoriesResponse,
-  wheatTrackCategoriesResponse
-} from 'tests/data/genome/genome-track-categories';
-
-import {
-  humanGeneResponse,
-  humanRegionResponse,
-  mouseGeneResponse,
-  mouseRegionResponse,
-  wheatGeneResponse,
-  wheatRegionResponse
-} from 'tests/data/ens-object/ens-objects';
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getGenomeInfo } from 'src/genome/genomeSelectors';
 
 export const fetchGenomeInfoAsyncActions = createAsyncAction(
   'genome/fetch_genome_info_request',
   'genome/fetch_genome_info_success',
   'genome/fetch_genome_info_failure'
-)<string, GenomeInfoResponse, Error>();
+)<undefined, GenomeInfoData, Error>();
 
-// TODO: switch to using APIs when available
 export const fetchGenomeInfo: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (genomeId: string) => (dispatch: Dispatch) => {
+> = () => (dispatch: Dispatch, getState: () => RootState) => {
   try {
-    dispatch(fetchGenomeInfoAsyncActions.request(genomeId));
+    const genomeInfo: GenomeInfoData = getGenomeInfo(getState());
 
-    let genomeInfoResponse: GenomeInfoResponse = {
-      genome_info: []
-    };
+    const committedSpecies = getCommittedSpecies(getState());
 
-    switch (genomeId) {
-      case 'homo_sapiens38':
-        genomeInfoResponse = humanGenomeInfoResponse;
-        break;
-      case 'mus_musculus_bdc':
-        genomeInfoResponse = mouseGenomeInfoResponse;
-        break;
-      case 'triticum_aestivum_GCA_900519105_1':
-        genomeInfoResponse = wheatGenomeInfoResponse;
-        break;
-    }
+    committedSpecies.map(async (species) => {
+      if (!genomeInfo[species.genome_id]) {
+        dispatch(fetchGenomeInfoAsyncActions.request());
 
-    dispatch(fetchGenomeInfoAsyncActions.success(genomeInfoResponse));
+        const url = `/api/genome/info?genome_id=${species.genome_id}`;
+        const response = await apiService.fetch(url);
+
+        dispatch(
+          fetchGenomeInfoAsyncActions.success({
+            [species.genome_id]: response.genome_info[0]
+          })
+        );
+      }
+    });
   } catch (error) {
     dispatch(fetchGenomeInfoAsyncActions.failure(error));
-  }
-};
-
-export const fetchGenomeExampleEnsObjectsAsyncActions = createAsyncAction(
-  'ens-object/fetch_genome_example_ens_objects_request',
-  'ens-object/fetch_genome_example_ens_objects_success',
-  'ens-object/fetch_genome_example_ens_objects_failure'
-)<string, EnsObjectResponse[], Error>();
-
-// TODO: switch to using APIs when available
-export const fetchGenomeExampleEnsObjects: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (genomeId: string) => (dispatch: Dispatch) => {
-  try {
-    dispatch(fetchGenomeExampleEnsObjectsAsyncActions.request(genomeId));
-
-    let ensObjectsResponse: EnsObjectResponse[] = [];
-
-    switch (genomeId) {
-      case 'homo_sapiens38':
-        ensObjectsResponse.push(humanGeneResponse, humanRegionResponse);
-        break;
-      case 'mus_musculus_bdc':
-        ensObjectsResponse.push(mouseGeneResponse, mouseRegionResponse);
-        break;
-      case 'triticum_aestivum_GCA_900519105_1':
-        ensObjectsResponse.push(wheatGeneResponse, wheatRegionResponse);
-        break;
-    }
-
-    dispatch(
-      fetchGenomeExampleEnsObjectsAsyncActions.success(ensObjectsResponse)
-    );
-  } catch (error) {
-    dispatch(fetchGenomeExampleEnsObjectsAsyncActions.failure(error));
   }
 };
 
@@ -109,7 +51,7 @@ export const fetchGenomeTrackCategoriesAsyncActions = createAsyncAction(
 // TODO: switch to using APIs when available
 export const fetchGenomeTrackCategories: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (genomeId: string) => (dispatch: Dispatch) => {
+> = (genomeId: string) => async (dispatch: Dispatch) => {
   try {
     dispatch(fetchGenomeTrackCategoriesAsyncActions.request(genomeId));
 
@@ -118,22 +60,14 @@ export const fetchGenomeTrackCategories: ActionCreator<
       track_categories: []
     };
 
-    switch (genomeId) {
-      case 'homo_sapiens38':
-        genomeTrackCategoriesResponse = humanTrackCategoriesResponse;
-        break;
-      case 'mus_musculus_bdc':
-        genomeTrackCategoriesResponse = mouseTrackCategoriesResponse;
-        break;
-      case 'triticum_aestivum_GCA_900519105_1':
-        genomeTrackCategoriesResponse = wheatTrackCategoriesResponse;
-        break;
-    }
+    const url = `/api/genome/track_categories?genome_id=${genomeId}`;
+    const response = await apiService.fetch(url);
+
+    genomeTrackCategoriesResponse.track_categories = response.track_categories;
+    genomeTrackCategoriesResponse.genome_id = genomeId;
 
     dispatch(
-      fetchGenomeTrackCategoriesAsyncActions.success(
-        genomeTrackCategoriesResponse
-      )
+      fetchGenomeTrackCategoriesAsyncActions.success(response.track_categories)
     );
   } catch (error) {
     dispatch(fetchGenomeTrackCategoriesAsyncActions.failure(error));

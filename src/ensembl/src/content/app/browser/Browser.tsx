@@ -180,7 +180,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
   };
 
   const changeSelectedSpecies = (genomeId: string) => {
-    debugger;
     props.updateBrowserActiveGenomeIdAndSave(genomeId);
     updateBrowserUrl(genomeId);
   };

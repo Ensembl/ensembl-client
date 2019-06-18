@@ -10,7 +10,7 @@ import {
   ExampleEnsObjectsState,
   defaultExampleEnsObjectsState
 } from './ensObjectState';
-import { EnsObject, EnsObjectResponse } from './ensObjectTypes';
+import { ExampleEnsObjectsData } from './ensObjectTypes';
 
 function ensObjectInfo(
   state: EnsObjectInfoState = defaultEnsObjectInfoState,
@@ -90,12 +90,27 @@ function exampleEnsObjects(
     case getType(objectActions.fetchExampleEnsObjectsAsyncActions.success):
       return {
         ...state,
-        exampleEnsObjectsData: action.payload.map(
-          (ensObjectResponse: EnsObjectResponse) =>
-            ensObjectResponse.ensembl_object as EnsObject
+        exampleEnsObjectsData: exampleEnsObjectsData(
+          state.exampleEnsObjectsData,
+          action
         ),
         exampleEnsObjectsFetchFailed: false,
         exampleEnsObjectsFetching: false
+      };
+    default:
+      return state;
+  }
+}
+
+function exampleEnsObjectsData(
+  state: ExampleEnsObjectsData = {},
+  action: ActionType<typeof objectActions>
+): ExampleEnsObjectsData {
+  switch (action.type) {
+    case getType(objectActions.fetchExampleEnsObjectsAsyncActions.success):
+      return {
+        ...state,
+        ...action.payload
       };
     default:
       return state;
