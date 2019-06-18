@@ -19,6 +19,14 @@ $zmenuBackgroundColor: $ens-dark-grey;
   }
 }
 
+.zmenuContentLine {
+  margin: 0;
+
+  &:not(:last-of-type) {
+    margin: 0 0 1em;
+  }
+}
+
 .markupStrong {
   font-weight: $bold;
 }

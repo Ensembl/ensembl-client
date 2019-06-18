@@ -6,34 +6,57 @@ import styles from './Zmenu.scss';
 
 import {
   ZmenuContentFeature as ZmenuContentFeatureType,
+  ZmenuContentBlock as ZmenuContentBlockType,
   ZmenuContentItem as ZmenuContentItemType,
   Markup
 } from './zmenu-types';
-
-type ZmenuContentItemProps = ZmenuContentItemType & {
-  id: string;
-};
 
 type ZmenuContentProps = {
   content: ZmenuContentFeatureType[];
 };
 
+type ZmenuContentLineProps = {
+  blocks: ZmenuContentBlockType[];
+  id: string;
+};
+
+type ZmenuContentBlockProps = {
+  items: ZmenuContentItemType[];
+  id: string;
+};
+
+type ZmenuContentItemProps = ZmenuContentItemType & {
+  id: string;
+};
+
 const ZmenuContent = (props: ZmenuContentProps) => {
   const features = props.content;
   const renderedContent = features.map((feature) =>
-    feature.lines.map((line) =>
-      line.map((block) =>
-        block.map((item) => (
-          <ZmenuContentItem
-            key={`${feature.id}-${item.text}`}
-            id={feature.id}
-            {...item}
-          />
-        ))
-      )
-    )
+    feature.lines.map((blocks, index) => (
+      <ZmenuContentLine key={index} id={feature.id} blocks={blocks} />
+    ))
   );
   return <>{renderedContent}</>;
+};
+
+const ZmenuContentLine = (props: ZmenuContentLineProps) => {
+  return (
+    <p className={styles.zmenuContentLine}>
+      {props.blocks.map((items, index) => (
+        <ZmenuContentBlock key={index} id={props.id} items={items} />
+      ))}
+    </p>
+  );
+};
+
+const ZmenuContentBlock = (props: ZmenuContentBlockProps) => {
+  return (
+    <span>
+      {props.items.map((item, index) => (
+        <ZmenuContentItem key={index} id={props.id} {...item} />
+      ))}
+    </span>
+  );
 };
 
 const ZmenuContentItem = (props: ZmenuContentItemProps) => {
