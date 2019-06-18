@@ -243,7 +243,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
             browserRef={browserRef}
             trackStates={trackStatesFromStorage}
           />
-          {props.drawerOpened && <Drawer />}
         </div>
       </section>
     </>
