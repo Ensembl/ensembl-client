@@ -6,13 +6,13 @@ use controller::global::AppRunner;
 use controller::output::OutputAction;
 use types::Dot;
 
-struct ZMenuReportsImpl {
+struct ZMenuEventQueue {
     pending: Vec<JSONValue>
 }
 
-impl ZMenuReportsImpl {
-    pub fn new() -> ZMenuReportsImpl {
-        ZMenuReportsImpl {
+impl ZMenuEventQueue {
+    pub fn new() -> ZMenuEventQueue {
+        ZMenuEventQueue {
             pending: Vec::new()
         }
     }
@@ -23,20 +23,24 @@ impl ZMenuReportsImpl {
     
     fn get_reports(&mut self) -> Vec<JSONValue> {
         self.pending.drain(..).collect()
-    }
+    }    
 }
 
-#[derive(Clone)]
-pub struct ZMenuReports(Arc<Mutex<ZMenuReportsImpl>>);
+pub struct ZMenuReports {
+    activated: Option<String>,
+    queue: Arc<Mutex<ZMenuEventQueue>>
+}
 
 impl ZMenuReports {
     pub fn get_reports(&self) -> Vec<JSONValue> {
-        self.0.lock().unwrap().get_reports()
+        self.queue.lock().unwrap().get_reports()
     }
     
-    pub fn add_activate(&self, id: &str, pos: Dot<i32,i32>, payload: JSONValue) {
+    pub fn add_activate(&mut self, id: &str, pos: Dot<i32,i32>, payload: JSONValue) {
+        self.deactivate();
         console!("add {}",payload.to_string());
-        self.0.lock().unwrap().add_report(json!({
+        self.activated = Some(id.to_string());
+        unwrap!(self.queue.lock()).add_report(json!({
             "action": "create_zmenu",
             "id": id,
             "content": [payload],
@@ -44,11 +48,24 @@ impl ZMenuReports {
         }));
     }
     
+    pub fn deactivate(&mut self) {
+        if let Some(ref id) = self.activated {
+            unwrap!(self.queue.lock()).add_report(json!({
+                "action": "destroy_zmenu",
+                "id": id
+            }));
+            self.activated = None;
+        }
+    }
+    
     pub fn new(ar: &mut AppRunner) -> ZMenuReports {
-        let mut out = ZMenuReports(Arc::new(Mutex::new(ZMenuReportsImpl::new())));
-        let twin = out.clone();
+        let mut out = ZMenuReports{
+            queue: Arc::new(Mutex::new(ZMenuEventQueue::new())),
+            activated: None
+        };
+        let queue = out.queue.clone();
         ar.add_timer("zmenu-report", move |_app,t,sr| {
-            let mut reports = twin.get_reports();
+            let mut reports = unwrap!(queue.lock()).get_reports();
             if reports.len() != 0 {
                 reports.drain(..).map(|report| {
                     OutputAction::SendCustomEvent("bpane-zmenu".to_string(),report)
