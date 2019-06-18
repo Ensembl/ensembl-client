@@ -43,7 +43,7 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
     const selectedBrowserTab =
       props.selectedBrowserTab[props.activeGenomeId] || TrackType.GENOMIC;
 
-    if (props.genomeTrackCategories.length > 0) {
+    if (props.genomeTrackCategories && props.genomeTrackCategories.length > 0) {
       setCurrentTrackCategories(
         props.genomeTrackCategories.filter((category: GenomeTrackCategory) =>
           category.types.includes(selectedBrowserTab)

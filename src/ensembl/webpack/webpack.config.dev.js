@@ -75,6 +75,11 @@ const devConfig = {
         target: 'http://ec2-184-73-228-242.compute-1.amazonaws.com',
         changeOrigin: true,
         secure: false
+      },
+      '/browser/data': {
+        target: 'http://ec2-184-73-228-242.compute-1.amazonaws.com',
+        changeOrigin: true,
+        secure: false
       }
     },
 
