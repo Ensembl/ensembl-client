@@ -12,10 +12,6 @@ Test & Build:
   image: node:10.15.1
   stage: test_build_static
 
-#  variables:
-#    NODE_ENV: "production"
-#    API_HOST: "//ec2-18-234-147-183.compute-1.amazonaws.com"
-
   before_script:
   - cd src/ensembl
   - npm ci
@@ -25,9 +21,6 @@ Test & Build:
   - export NODE_ENV=production
   - export API_HOST=''
   - npm run build
-
-  only:
-  - cicd-test
 
   artifacts:
     name: static_assets
@@ -50,7 +43,6 @@ Nginx:
   - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
   - git clone --depth 1 https://gitlab.ebi.ac.uk/kamal/ensembl-client-nginx.git
   - docker build -t ${CONTAINER_IMAGE} -f ensembl-client-nginx/Dockerfile --no-cache .
-  - docker images
   - echo "$GITLAB_REGISTRY_TOKEN" | docker login -u "$GITLAB_REGISTRY_USER" --password-stdin https://"$GITLAB_REGISTRY_URL"
   - docker push ${CONTAINER_IMAGE}
   - docker rmi ${CONTAINER_IMAGE}
@@ -81,7 +73,6 @@ Staging:
   - cat ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - kubectl config view
   - kubectl config use-context ens-stage-ctx
-  #- kubectl apply -f ensembl-client-caas-deploy/ensembl_client_service_node.yaml
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
 
 #Live:
