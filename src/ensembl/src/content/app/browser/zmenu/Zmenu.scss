@@ -2,13 +2,15 @@
 
 $zmenuBackgroundColor: $ens-dark-grey;
 
-// .zmenuWrapper
+.zmenuWrapper {
+  position: absolute;
+  filter: drop-shadow(2px 2px 3px $ens-shadow-color);
+}
 
 .zmenu {
-  position: absolute;
+  position: relative;
   padding: 20px;
   background-color: $zmenuBackgroundColor;
-  box-shadow: 2px 2px 5px $ens-shadow-color;
 }
 
 .zmenuTip {

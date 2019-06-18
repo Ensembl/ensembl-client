@@ -37,15 +37,19 @@ type GetInlineStylesParams = {
 
 const Zmenu = (props: Props) => {
   const direction = chooseDirection(props);
-  // const direction = Direction.RIGHT; // FIXME - delete in favour of previous line
   const inlineStyles = getInlineStyles({
     direction,
     anchorCoordinates: props.anchor_coordinates
   });
 
   return (
-    <div className={styles.zmenu} style={inlineStyles.body}>
-      <ZmenuContent content={props.content} />
+    <div
+      className={styles.zmenuWrapper}
+      style={inlineStyles.body}
+    >
+      <div className={styles.zmenu}>
+        <ZmenuContent content={props.content} />
+      </div>
       <Tip
         direction={getInverseDirection(direction)}
         style={inlineStyles.tip}
@@ -77,8 +81,7 @@ const getInlineStyles = (params: GetInlineStylesParams) => {
         right: `-${TIP_HEIGHT}px`,
         top: `${TIP_OFFSET}px`,
         width: `${TIP_HEIGHT + TIP_EXTRA_HEIGHT}px`,
-        height: `${TIP_WIDTH}px`,
-        filter: `drop-shadow(1px -2px 2px ${variables['ens-shadow-color']})`
+        height: `${TIP_WIDTH}px`
       }
     };
   } else {
