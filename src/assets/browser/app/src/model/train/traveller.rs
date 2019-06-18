@@ -43,6 +43,10 @@ impl TravellerImpl {
         cb(&mut self.data.as_mut().unwrap())
     }
     
+    pub fn update_zml<F>(&mut self, cb: F) where F: FnOnce(&mut ZMenuLeaf) {
+        cb(&mut self.zml);
+    }
+    
     fn update_state(&mut self, m: &StateManager) -> bool {
         self.prev_value = self.cur_value;
         self.cur_value = self.comp.is_on(m,&self.part);
@@ -108,6 +112,10 @@ impl Traveller {
     
     pub fn update_data<F>(&mut self, cb: F) where F: FnOnce(&mut TravellerResponseData) {
         self.0.lock().unwrap().update_data(cb);
+    }
+
+    pub fn update_zml<F>(&mut self, cb: F) where F: FnOnce(&mut ZMenuLeaf) {
+        self.0.lock().unwrap().update_zml(cb);
     }
     
     pub fn set_response(&mut self) {
