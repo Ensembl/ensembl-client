@@ -7,7 +7,6 @@ use super::{ ZMenuLeaf, ZMenuLeafSet, ZMenuFeatureTmpl, ZMenuData };
 
 pub struct ZMenuRegistryImpl {
     zml: HashMap<Leaf,ZMenuLeaf>,
-    tmpls: HashMap<String,ZMenuFeatureTmpl>,
     data: ZMenuData
 }
 
@@ -15,14 +14,13 @@ impl ZMenuRegistryImpl {
     pub fn new() -> ZMenuRegistryImpl {
         ZMenuRegistryImpl {
             zml: HashMap::new(),
-            tmpls: HashMap::new(),
             data: ZMenuData::new()
         }
     }
     
     pub fn add_leafset(&mut self, mut zmls: ZMenuLeafSet) {
         /* templates */
-        self.data.set_templates(zmls.get_template_map());
+        
         /* hotspots */
         let leafs = zmls.take_leafs();
         let seen_leafs : HashSet<Leaf> = leafs.iter().map(|x| x.get_leaf()).cloned().collect();
@@ -46,12 +44,7 @@ impl ZMenuRegistryImpl {
             bb_log!("zmenu","zmr: zml");
             zml.intersects(stage,pos);
         }
-    }   
-    
-    fn add_template(&mut self, sid: &str, tmpl: ZMenuFeatureTmpl) {
-        bb_log!("zmenu","template: {:?}",tmpl);
-        self.tmpls.insert(sid.to_string(),tmpl);
-    }
+    }       
 }
 
 #[derive(Clone)]
@@ -68,9 +61,5 @@ impl ZMenuRegistry {
     
     pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) {
         self.0.lock().unwrap().intersects(stage,pos);
-    }   
-    
-    pub fn add_template(&mut self, sid: &str, spec: &str) {
-        self.0.lock().unwrap().add_template(sid,ZMenuFeatureTmpl::new(spec));
-    }
+    }    
 }

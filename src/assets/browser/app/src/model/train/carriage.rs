@@ -1,3 +1,5 @@
+use std::sync::{ Arc, Mutex };
+
 use composit::Leaf;
 use composit::{ StateManager };
 use model::driver::{ Printer, PrinterManager };

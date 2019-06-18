@@ -2,6 +2,9 @@ use std::collections::{ HashMap, HashSet };
 use std::iter::Peekable;
 use std::str::Chars;
 
+use serde_json::Map as JSONMap;
+use serde_json::Value as JSONValue;
+
 #[derive(Clone,Debug)]
 enum ZMenuText {
     Fixed(String),
@@ -24,6 +27,19 @@ struct ZMenuItem {
 impl ZMenuItem {
     fn new(text: ZMenuText, markup: Vec<String>) -> ZMenuItem {
         ZMenuItem { text, markup }
+    }
+    
+    fn apply(&self, data: &HashMap<String,String>) -> JSONValue {
+        let text = match &self.text {
+            ZMenuText::Fixed(s) => s.to_string(),
+            ZMenuText::Template(k) => data.get(k).cloned().unwrap_or("".to_string())
+        };
+        json!({
+            "text": text,
+            "markup": JSONValue::Array(self.markup.iter().map(|x|
+                            JSONValue::String(x.to_string())
+                        ).collect())
+        })
     }
 }
 
@@ -90,7 +106,7 @@ fn fmt_parse_block(chars: &mut Peekable<Chars>) -> Vec<ZMenuTag> {
     out
 }
 
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 struct ZMenuBlock {
     items: Vec<ZMenuItem>
 }
@@ -121,15 +137,19 @@ impl ZMenuBlock {
             items: ZMenuBlock::make_items(fmt_parse_block(chars))
         }
     }
+    
+    fn apply(&self, data: &HashMap<String,String>) -> JSONValue {
+        JSONValue::Array(self.items.iter().map(|x| x.apply(data)).collect())
+    }
 }
 
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 enum ZMenuSequence {
     Item(ZMenuBlock),
     LineBreak
 }
 
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct ZMenuFeatureTmpl {
     items: Vec<ZMenuSequence>
 }
@@ -153,5 +173,28 @@ impl ZMenuFeatureTmpl {
         ZMenuFeatureTmpl {
             items: fmt_parse_feature(spec)
         }
-    }    
+    }
+    
+    fn build(&self, data: &HashMap<String,String>) -> Vec<Vec<JSONValue>> {
+        let mut out = Vec::new();
+        out.push(Vec::new());
+        for item in &self.items {
+            match item {
+                ZMenuSequence::Item(block) => out.last_mut().unwrap().push(block.apply(data)),
+                ZMenuSequence::LineBreak => out.push(Vec::new())
+            }
+        }
+        out
+    }
+    
+    fn convert(&self, input: Vec<Vec<JSONValue>>) -> JSONValue {
+        JSONValue::Array(input.iter().map(|x| JSONValue::Array(x.to_vec())).collect())
+    }
+    
+    pub fn apply(&self, id: &str, data: &HashMap<String,String>) -> JSONValue {
+        json!({
+            "id": id.to_string(),
+            "lines": self.convert(self.build(data))
+        })
+    }
 }

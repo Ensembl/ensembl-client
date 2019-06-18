@@ -1,12 +1,13 @@
 use std::collections::HashMap;
 
+use drivers::zmenu::ZMenuLeaf;
 use model::driver::{ Printer, PrinterManager };
 use model::train::{ Traveller, TravellerResponse, TravellerResponseData };
 use composit::Leaf;
 
 pub struct SourceResponse {
     leaf: Leaf,
-    travellers: HashMap<Option<String>,Traveller>,
+    travellers: HashMap<Option<String>,Traveller>
 }
 
 impl SourceResponse {
@@ -23,6 +24,10 @@ impl SourceResponse {
             t.set_visuals(pm.make_traveller_response(&leaf));
         }
         out
+    }
+    
+    pub fn update_zml<F>(&mut self, part: &Option<String>, cb: F) where F: FnOnce(&mut ZMenuLeaf) {
+        self.travellers.get_mut(part).unwrap().update_zml(cb);
     }
     
     pub fn update_data<F>(&mut self,  part: &Option<String>, cb: F) where F: FnOnce(&mut TravellerResponseData) {
