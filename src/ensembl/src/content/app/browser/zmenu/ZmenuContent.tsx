@@ -20,7 +20,7 @@ type ZmenuContentProps = {
 
 const ZmenuContent = (props: ZmenuContentProps) => {
   const features = props.content;
-  return features.map((feature) =>
+  const renderedContent = features.map((feature) =>
     feature.lines.map((line) =>
       line.map((block) =>
         block.map((item) => (
@@ -33,6 +33,7 @@ const ZmenuContent = (props: ZmenuContentProps) => {
       )
     )
   );
+  return <>{renderedContent}</>;
 };
 
 const ZmenuContentItem = (props: ZmenuContentItemProps) => {

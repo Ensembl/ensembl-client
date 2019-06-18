@@ -46,7 +46,20 @@ class MockEventEmitter {
         id: newId,
         action: ZmenuAction.CREATE,
         anchor_coordinates: coordinates,
-        content: 'hello'
+        content: [
+          {
+            id: 'gcid',
+            lines: [
+              [[{ markup: [], text: '%GC' }]],
+              [
+                [
+                  { markup: ['strong'], text: 'percentage' },
+                  { markup: [], text: ' GC' }
+                ]
+              ]
+            ]
+          }
+        ]
       }
     });
 
