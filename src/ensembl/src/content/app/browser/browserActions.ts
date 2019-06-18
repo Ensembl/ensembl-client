@@ -16,12 +16,13 @@ export const updateBrowserActivated = createAction(
 export const activateBrowser = (browserEl: HTMLDivElement) => {
   return (dispatch: Dispatch) => {
     // protocol string to prepend apiHost url in case it isn't defined
-    const protocol =
-      config.apiHost.indexOf('http') === -1 ? window.location.protocol : '';
+    // const protocol =
+    //   config.apiHost.indexOf('http') === -1 ? window.location.protocol : '';
+    const { protocol, host } = location;
     const activateEvent = new CustomEvent('bpane-activate', {
       bubbles: true,
       detail: {
-        'config-url': `${protocol}${config.apiHost}/browser/config`,
+        'config-url': `${protocol}${host}/browser/config`,
         key: 'main'
       }
     });

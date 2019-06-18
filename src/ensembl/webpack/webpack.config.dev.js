@@ -70,6 +70,11 @@ const devConfig = {
         target: 'https://staging-2020.ensembl.org',
         changeOrigin: true,
         secure: false
+      },
+      '/browser': {
+        target: 'http://193.62.55.91:30479',
+        changeOrigin: true,
+        secure: false
       }
     },
 
