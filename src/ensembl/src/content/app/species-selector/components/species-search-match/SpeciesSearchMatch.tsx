@@ -43,7 +43,7 @@ const SpeciesSearchMatch = ({ match }: Props) => {
   return (
     <div className={styles.speciesSearchMatch}>
       <CommonName match={match} />
-      <Subtype match={match} />
+      <AssemblyName match={match} />
       <ScientificName match={match} />
     </div>
   );
@@ -85,12 +85,12 @@ const CommonName = (props: Props) => {
   );
 };
 
-const Subtype = (props: Props) => {
+const AssemblyName = (props: Props) => {
   return (
     <FormattedLabel
       match={props.match}
-      matchedFieldName={MatchedFieldName.SUBTYPE}
-      className={styles.subtype}
+      matchedFieldName={MatchedFieldName.ASSEMBLY_NAME}
+      className={styles.assemblyName}
     />
   );
 };

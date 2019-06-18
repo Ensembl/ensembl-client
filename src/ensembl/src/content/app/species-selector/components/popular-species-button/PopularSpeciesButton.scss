@@ -2,12 +2,21 @@
 
 $buttonSize: 56px;
 
-.popularSpeciesButton {
+.popularSpeciesButtonWrapper {
   position: relative;
-  box-sizing: border-box;
   display: inline-block;
   margin-right: 1.5rem;
   margin-bottom: 1.5rem;
+  font-size: 0;
+
+  *[class*='tooltip'] {
+    user-select: none;
+  }
+}
+
+.popularSpeciesButton {
+  position: relative;
+  display: inline-block;
   width: $buttonSize;
   height: $buttonSize;
   background: $ens-blue;

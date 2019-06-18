@@ -3,11 +3,11 @@
 export type SearchMatches = SearchMatch[];
 
 export type SearchMatch = {
-  genome_id: string; // unique identifier
+  genome_id: string; // unique identifier (down to the assembly level)
   reference_genome_id: string | null; // if present, indicates that the match is a strain (or some other subspecies group) of the reference species
   common_name: string | null; // not every species has a common name
   scientific_name: string; // every species has a scientific name
-  subtype: string | null; // any extra information about the species (e.g. assembly name for Human)
+  assembly_name: string; // display name of the assembly associated with this genome_id
   matched_substrings: MatchedSubstring[];
 };
 
@@ -25,17 +25,8 @@ export type MatchedSubstring = {
 export enum MatchedFieldName {
   COMMON_NAME = 'common_name',
   SCIENTIFIC_NAME = 'scientific_name',
-  SUBTYPE = 'subtype'
+  ASSEMBLY_NAME = 'assembly_name'
 }
-
-/*
-
-NOTES/QUESTIONS:
-
-- what data needs to be passed to the genome browser after one/more species are selected
-(current pathname in genome browser: /app/browser/GRCh38_demo/ENSG00000139618?region=13:32274159-32434627)
-
-*/
 
 export type Strain = {
   genome_id: string;
@@ -64,5 +55,5 @@ export type PopularSpecies = {
   assembly_name: string; // notice in mockups that every popular species has an assembly
   image: string; // link to the svg or base64-encoded svg
   division_ids: string[]; // e.g. ['model_organism', 'ensembl_plants',...]; a popular species can belong to several divisions
-  isAvailable: boolean; // indicates whether we have data for this species and, therefore, whether it can be selected
+  is_available: boolean; // indicates whether we have data for this species and, therefore, whether it can be selected
 };

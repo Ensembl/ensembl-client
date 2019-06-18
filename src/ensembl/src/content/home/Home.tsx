@@ -2,13 +2,17 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import styles from './Home.scss';
 import { fetchExampleEnsObjectsData } from 'src/ens-object/ensObjectActions';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { RootState } from 'src/store';
 
 type StateProps = {
   exampleEnsObjects: {};
+  totalSelectedSpecies: number;
 };
 
 type DispatchProps = {
@@ -57,6 +61,19 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
 
   return (
     <div className={styles.home}>
+      {!props.totalSelectedSpecies && (
+        <>
+          <span className={styles.speciesSelectorBannerText}>
+            7 species now available
+          </span>
+          <Link
+            className={styles.speciesSelectorBannerLink}
+            to={urlFor.speciesSelector()}
+          >
+            Select a species to begin
+          </Link>
+        </>
+      )}
       <section className={styles.search}>
         <h2>Find</h2>
         <p>
@@ -100,7 +117,8 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  exampleEnsObjects: getExampleEnsObjects(state)
+  exampleEnsObjects: getExampleEnsObjects(state),
+  totalSelectedSpecies: getCommittedSpecies(state).length
 });
 
 const mapDispatchToProps = {

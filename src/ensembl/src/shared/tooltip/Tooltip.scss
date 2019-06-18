@@ -5,12 +5,14 @@ $fill-color: $ens-dark-grey;
 .tooltip {
   position: absolute;
   background: $fill-color;
-  padding: 14px 18px 18px;
+  padding: 6px 18px 8px;
   box-shadow: 2px 2px 5px $ens-shadow-color;
   width: max-content; // not supported in IE or non-webkit Edge
   cursor: default;
   color: $ens-white;
   border-radius: 4px;
+  font-size: 14px;
+  z-index: 1000;
 
   // hack to select additional classes that are added through javascript
   // (CSS modules make it hard to target these classes because of unique suffixes)

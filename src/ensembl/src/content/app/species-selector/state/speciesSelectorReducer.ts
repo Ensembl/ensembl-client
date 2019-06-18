@@ -12,7 +12,8 @@ import initialState, {
 import {
   SearchMatch,
   PopularSpecies,
-  CommittedItem
+  CommittedItem,
+  Assembly
 } from 'src/content/app/species-selector/types/species-search';
 
 // NOTE: CurrentItem can be built from a search match or from a popular species
@@ -22,15 +23,17 @@ const buildCurrentItem = (data: SearchMatch | PopularSpecies): CurrentItem => {
     reference_genome_id: data.reference_genome_id,
     common_name: data.common_name,
     scientific_name: data.scientific_name,
-    assembly_name: (data as PopularSpecies).assembly_name
-      ? (data as PopularSpecies).assembly_name
-      : null,
+    assembly_name: data.assembly_name,
     selectedStrainId: null,
-    selectedAssemblyId: data.genome_id,
     strains: [],
-    assemblies: []
+    assemblies: [buildAssembly(data)]
   };
 };
+
+const buildAssembly = (data: SearchMatch | PopularSpecies): Assembly => ({
+  genome_id: data.genome_id,
+  assembly_name: data.assembly_name
+});
 
 const buildCommittedItem = (data: CurrentItem): CommittedItem => ({
   genome_id: data.genome_id,
@@ -49,6 +52,11 @@ export default function speciesSelectorReducer(
   action: ActionType<typeof speciesSelectorActions>
 ): SpeciesSelectorState {
   switch (action.type) {
+    case getType(speciesSelectorActions.fetchSpeciesSearchResults.request):
+      return {
+        ...state,
+        search: initialState.search
+      };
     case getType(speciesSelectorActions.fetchSpeciesSearchResults.success):
       return {
         ...state,
@@ -59,23 +67,27 @@ export default function speciesSelectorReducer(
         ...state,
         currentItem: buildCurrentItem(action.payload)
       };
-    case getType(speciesSelectorActions.fetchStrainsAsyncActions.success):
-      return {
-        ...state,
-        currentItem: {
-          ...(state.currentItem as CurrentItem),
-          strains: action.payload.strains,
-          selectedStrainId: action.payload.strains.length
-            ? (state.currentItem as CurrentItem).genome_id
-            : null
-        }
-      };
+    // TODO: wait for strains
+    // case getType(speciesSelectorActions.fetchStrainsAsyncActions.success):
+    //   return {
+    //     ...state,
+    //     currentItem: {
+    //       ...(state.currentItem as CurrentItem),
+    //       strains: action.payload.strains,
+    //       selectedStrainId: action.payload.strains.length
+    //         ? (state.currentItem as CurrentItem).genome_id
+    //         : null
+    //     }
+    //   };
     case getType(speciesSelectorActions.fetchAssembliesAsyncActions.success):
       return {
         ...state,
         currentItem: {
           ...(state.currentItem as CurrentItem),
-          assemblies: action.payload.assemblies
+          assemblies: [
+            ...(state.currentItem as CurrentItem).assemblies,
+            ...action.payload.assemblies
+          ]
         }
       };
     case getType(speciesSelectorActions.changeAssembly):
@@ -83,7 +95,7 @@ export default function speciesSelectorReducer(
         ...state,
         currentItem: {
           ...(state.currentItem as CurrentItem),
-          genome_id: action.payload
+          ...action.payload
         }
       };
     case getType(
@@ -122,6 +134,11 @@ export default function speciesSelectorReducer(
         committedItems: state.committedItems.filter(
           (item) => item.genome_id !== action.payload
         )
+      };
+    case getType(speciesSelectorActions.clearSearchResults):
+      return {
+        ...state,
+        search: initialState.search
       };
     case getType(speciesSelectorActions.clearSelectedSearchResult):
       return {

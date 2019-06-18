@@ -1,6 +1,6 @@
 @import 'src/styles/common';
 
-.closeButton {
+.clearButton {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -8,6 +8,7 @@
   height: 18px;
   border: 2px solid $ens-blue;
   border-radius: 50%;
+  cursor: pointer;
 
   &:active,
   &:focus {
@@ -21,7 +22,7 @@
   }
 }
 
-.closeButtonInverted {
+.clearButtonInverted {
   background-color: $ens-blue;
   border: none;
 

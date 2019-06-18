@@ -23,6 +23,9 @@ type FetchOptions = {
   preserveEndpoint?: boolean;
 };
 
+const defaultMethod = HTTPMethod.GET;
+const defaultHeaders = { Accept: 'application/json' };
+
 class ApiService {
   private host: string;
 
@@ -35,30 +38,43 @@ class ApiService {
     return fetch;
   }
 
-  public async fetch(
-    endpoint: string,
-    options: FetchOptions = {
-      method: HTTPMethod.GET,
-      headers: { 'Content-Type': 'application/json' }
+  private buildFetchOptions(options: FetchOptions) {
+    const headers: { [key: string]: string } = {
+      ...defaultHeaders,
+      ...options.headers
+    };
+    if (
+      options.method &&
+      [HTTPMethod.POST, HTTPMethod.PUT, HTTPMethod.PATCH].includes(
+        options.method
+      ) &&
+      !headers.hasOwnProperty('Content-Type')
+    ) {
+      headers['Content-Type'] = 'application/json';
     }
-  ) {
+    return {
+      method: options.method || defaultMethod,
+      headers: { ...defaultHeaders, ...options.headers },
+      body: options.body
+    };
+  }
+
+  public async fetch(endpoint: string, options: FetchOptions = {}) {
     const host = options.host || this.host;
     const fetch = this.getFetch();
     const url = options.preserveEndpoint ? endpoint : `${host}${endpoint}`;
+    const fetchOptions = this.buildFetchOptions(options);
 
     try {
-      const response = await fetch(url, options);
-      return await this.handleResponse(response, options);
+      const response = await fetch(url, fetchOptions);
+      return await this.handleResponse(response, fetchOptions);
     } catch (error) {
       throw error;
     }
   }
 
   private async handleResponse(response: Response, options: FetchOptions) {
-    if (
-      options.headers &&
-      options.headers['Content-Type'] === 'application/json'
-    ) {
+    if (options.headers && options.headers['Accept'] === 'application/json') {
       return await response.json();
     } else {
       return await response.text();

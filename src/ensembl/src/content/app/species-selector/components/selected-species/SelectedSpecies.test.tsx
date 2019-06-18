@@ -85,8 +85,8 @@ describe('<SelectedSpecies />', () => {
     wrapper.simulate('mouseover');
     wrapper.update();
 
-    const closeButtonContainer = wrapper.find('.closeButtonContainer');
-    closeButtonContainer.simulate('click');
+    const clearButtonContainer = wrapper.find('.clearButtonContainer');
+    clearButtonContainer.simulate('click');
 
     expect(onRemove).toHaveBeenCalledWith(props.species.genome_id);
   });
