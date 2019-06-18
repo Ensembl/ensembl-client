@@ -1,5 +1,7 @@
 import React from 'react';
 
+import ZmenuContent from './ZmenuContent';
+
 import styles from './Zmenu.scss';
 import variables from 'src/styles/_settings.scss';
 
@@ -43,7 +45,7 @@ const Zmenu = (props: Props) => {
 
   return (
     <div className={styles.zmenu} style={inlineStyles.body}>
-      I am zmenu
+      <ZmenuContent content={props.content} />
       <Tip
         direction={getInverseDirection(direction)}
         style={inlineStyles.tip}
