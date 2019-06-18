@@ -9,13 +9,19 @@ import { GenomeInfo } from 'src/genome/genomeTypes';
 import { getBrowserActiveGenomeId } from '../../../browserSelectors';
 import { getGenomeInfo } from 'src/genome/genomeSelectors';
 import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
+import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import * as urlFor from 'src/shared/helpers/urlHelper';
+
+import { ExampleEnsObjectsData } from 'src/ens-object/ensObjectTypes';
+
+import upperFirst from 'lodash/upperFirst';
 
 import styles from '../TrackPanelModal.scss';
 
 type StateProps = {
   activeGenomeId: string;
   genomeInfo: GenomeInfo;
+  exampleEnsObjects: ExampleEnsObjectsData;
 };
 
 type DispatchProps = {
@@ -28,31 +34,28 @@ type TrackPanelBookmarksProps = StateProps & DispatchProps & OwnProps;
 
 export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
   useEffect(() => {
-    const { activeGenomeId, fetchExampleEnsObjects } = props;
+    props.fetchExampleEnsObjects(props.activeGenomeId);
+  }, [props.activeGenomeId]);
 
-    // if (
-    //   genomeExampleEnsObjects.length === 0 ||
-    //   genomeExampleEnsObjects[0].genome_id !== activeGenomeId
-    // ) {
-    //   fetchExampleEnsObjects(activeGenomeId);
-    // }
-  }, []);
+  console.log(props.genomeInfo);
+  const getPreviouslyViewed = () => {
+    return Object.values(props.exampleEnsObjects[props.activeGenomeId]).map(
+      (exampleObject: EnsObject) => {
+        const locationStr = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
+        const path = urlFor.browser(
+          props.activeGenomeId,
+          exampleObject.ensembl_object_id,
+          locationStr
+        );
 
-  const getExampleObjectNode = (exampleObject: EnsObject) => {
-    const { ensembl_object_id, label, location } = exampleObject;
-    const locationStr = `${location.chromosome}:${location.start}-${location.end}`;
-    const path = urlFor.browser(
-      props.activeGenomeId,
-      ensembl_object_id,
-      locationStr
-    );
-
-    return (
-      <dd key={ensembl_object_id}>
-        <Link to={path}>
-          {props.genomeInfo.common_name} {label}
-        </Link>
-      </dd>
+        return (
+          <dd key={exampleObject.ensembl_object_id}>
+            <Link to={path}>
+              {upperFirst(exampleObject.object_type)}: {exampleObject.label}
+            </Link>
+          </dd>
+        );
+      }
     );
   };
 
@@ -60,13 +63,10 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
     <section className="trackPanelBookmarks">
       <h3>Bookmarks</h3>
       <p>Save multiple browser configurations</p>
-      <p>Not ready yet &hellip;</p>
-      {props.genomeExampleEnsObjects.length ? (
+      {props.exampleEnsObjects[props.activeGenomeId] ? (
         <dl className={styles.previouslyViewed}>
           <dt>Previously viewed</dt>
-          {props.genomeExampleEnsObjects.map((exampleObject) =>
-            getExampleObjectNode(exampleObject)
-          )}
+          {getPreviouslyViewed()}
         </dl>
       ) : null}
     </section>
@@ -75,7 +75,8 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
 
 const mapStateToProps = (state: RootState) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
-  genomeInfo: getGenomeInfo(state)
+  genomeInfo: getGenomeInfo(state),
+  exampleEnsObjects: getExampleEnsObjects(state)
 });
 
 const mapDispatchToProps = {

@@ -16,10 +16,10 @@ import { getCommittedSpecies } from '../app/species-selector/state/speciesSelect
 import { CommittedItem } from '../app/species-selector/types/species-search';
 
 import { fetchGenomeInfo } from 'src/genome/genomeActions';
-
-import styles from './Home.scss';
+import upperFirst from 'lodash/upperFirst';
 
 import { GenomeInfoData } from 'src/genome/genomeTypes';
+import styles from './Home.scss';
 
 type StateProps = {
   activeSpecies: CommittedItem[];
@@ -69,7 +69,9 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
             return (
               <dd key={exampleObject.ensembl_object_id}>
                 <Link to={path}>
-                  {species.common_name} {exampleObject.label}
+                  {`${species.common_name} ${upperFirst(
+                    exampleObject.object_type
+                  )}: ${exampleObject.label}`}
                 </Link>
               </dd>
             );

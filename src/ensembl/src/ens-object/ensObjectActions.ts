@@ -76,7 +76,10 @@ export const fetchExampleEnsObjectsAsyncActions = createAsyncAction(
 
 export const fetchExampleEnsObjects: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = () => (dispatch: Dispatch, getState: () => RootState) => {
+> = (genomeId?: string) => async (
+  dispatch: Dispatch,
+  getState: () => RootState
+) => {
   try {
     const genomeInfoData: GenomeInfoData = getGenomeInfo(getState());
 
@@ -84,25 +87,40 @@ export const fetchExampleEnsObjects: ActionCreator<
       getState()
     );
 
-    Object.values(genomeInfoData).forEach(async (genomeInfo: GenomeInfo) => {
-      if (!exampleObjects[genomeInfo.genome_id]) {
+    if (genomeId) {
+      if (!exampleObjects[genomeId]) {
         dispatch(fetchExampleEnsObjectsAsyncActions.request(null));
-
-        const geneUrl = `/api/ensembl_object/info?object_id=${genomeInfo.example_objects[0]}`;
+        const geneUrl = `/api/ensembl_object/info?object_id=${genomeInfoData[genomeId].example_objects[0]}`;
         const geneResponse = await apiService.fetch(geneUrl);
 
-        // const regionUrl = `/api/ensembl_object/info?object_id=${genomeInfo.example_objects[1]}`;
+        // const regionUrl = `/api/ensembl_object/info?object_id=${genomeInfoData[genomeId].example_objects[1]}`;
         // const regionResponse = await apiService.fetch(regionUrl);
-
-        // updatedExampleObjects[genomeInfo.genome_id] = [geneResponse];
 
         dispatch(
           fetchExampleEnsObjectsAsyncActions.success({
-            [genomeInfo.genome_id]: [geneResponse]
+            [genomeId]: [geneResponse]
           })
         );
       }
-    });
+    } else {
+      Object.values(genomeInfoData).forEach(async (genomeInfo: GenomeInfo) => {
+        if (!exampleObjects[genomeInfo.genome_id]) {
+          dispatch(fetchExampleEnsObjectsAsyncActions.request(null));
+
+          const geneUrl = `/api/ensembl_object/info?object_id=${genomeInfo.example_objects[0]}`;
+          const geneResponse = await apiService.fetch(geneUrl);
+
+          // const regionUrl = `/api/ensembl_object/info?object_id=${genomeInfo.example_objects[1]}`;
+          // const regionResponse = await apiService.fetch(regionUrl);
+
+          dispatch(
+            fetchExampleEnsObjectsAsyncActions.success({
+              [genomeInfo.genome_id]: [geneResponse]
+            })
+          );
+        }
+      });
+    }
   } catch (error) {
     dispatch(fetchExampleEnsObjectsAsyncActions.failure(error));
   }
