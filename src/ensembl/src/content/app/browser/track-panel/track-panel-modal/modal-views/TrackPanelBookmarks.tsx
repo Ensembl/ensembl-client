@@ -37,7 +37,6 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
     props.fetchExampleEnsObjects(props.activeGenomeId);
   }, [props.activeGenomeId]);
 
-  console.log(props.genomeInfo);
   const getPreviouslyViewed = () => {
     return Object.values(props.exampleEnsObjects[props.activeGenomeId]).map(
       (exampleObject: EnsObject) => {

@@ -103,7 +103,7 @@ export const fetchExampleEnsObjects: ActionCreator<
         );
       }
     } else {
-      Object.values(genomeInfoData).forEach(async (genomeInfo: GenomeInfo) => {
+      Object.values(genomeInfoData as GenomeInfo[]).map(async (genomeInfo) => {
         if (!exampleObjects[genomeInfo.genome_id]) {
           dispatch(fetchExampleEnsObjectsAsyncActions.request(null));
 

@@ -21,7 +21,7 @@ import {
   activateBrowser,
   updateBrowserActivated,
   updateBrowserNavStates,
-  updateChrLocationAndSave
+  changeBrowserLocation
 } from '../browserActions';
 
 import { CircleLoader } from 'src/shared/loader/Loader';
@@ -41,7 +41,10 @@ type StateProps = {
 type DispatchProps = {
   activateBrowser: (browserEl: HTMLDivElement) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
-  updateChrLocationAndSave: (chrLocation: ChrLocation) => void;
+  changeBrowserLocation: (
+    chrLocation: ChrLocation,
+    browserEl: HTMLDivElement | null
+  ) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
 };
 
@@ -72,7 +75,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
     }
 
     if (chrLocation) {
-      props.updateChrLocationAndSave(chrLocation);
+      props.changeBrowserLocation(chrLocation, props.browserRef.current);
     }
   }, []);
 
@@ -207,7 +210,7 @@ const mapDispatchToProps: DispatchProps = {
   activateBrowser,
   updateBrowserActivated,
   updateBrowserNavStates,
-  updateChrLocationAndSave
+  changeBrowserLocation
 };
 
 export default connect(

@@ -83,7 +83,6 @@ export function browserLocation(
     case getType(browserActions.updateDefaultChrLocation):
       return {
         ...state,
-        chrLocation: action.payload,
         defaultChrLocation: action.payload
       };
     case getType(browserActions.toggleGenomeSelector):

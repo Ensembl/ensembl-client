@@ -59,12 +59,12 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
       if (props.exampleEnsObjects[species.genome_id]) {
         return Object.values(props.exampleEnsObjects[species.genome_id]).map(
           (exampleObject: EnsObject) => {
-            const locationStr = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
-            const path = urlFor.browser(
-              species.genome_id,
-              exampleObject.ensembl_object_id,
-              locationStr
-            );
+            const location = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
+            const path = urlFor.browser({
+              genomeId: species.genome_id,
+              focus: exampleObject.ensembl_object_id,
+              location
+            });
 
             return (
               <dd key={exampleObject.ensembl_object_id}>
