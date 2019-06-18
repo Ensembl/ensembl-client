@@ -135,7 +135,8 @@ module.exports = (isDev, moduleRules, plugins) => ({
 
     // generates the index file using the provided html template
     new HtmlPlugin({
-      filename: isDev ? 'index.html' : '../index.html', // to save in the dist folder instead of dist/static
+      // in prod, path for saving static assets is dist/static/, and index.html has to be saved top-level in the dist folder
+      filename: isDev ? 'index.html' : '../index.html',
       template: path.join(__dirname, '../static/html/template.html'),
       publicPath: '/'
     }),
