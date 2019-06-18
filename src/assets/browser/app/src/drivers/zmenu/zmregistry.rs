@@ -48,7 +48,7 @@ impl ZMenuRegistryImpl {
                 all.insert(id,payload);
             }
         }
-        all.drain().map(|(k,v)| Action::ShowZMenu(v)).collect()
+        all.drain().map(|(k,v)| Action::ShowZMenu(k,pos,v)).collect()
     }       
 }
 

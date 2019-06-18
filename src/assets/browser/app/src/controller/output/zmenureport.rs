@@ -4,6 +4,7 @@ use serde_json::Value as JSONValue;
 
 use controller::global::AppRunner;
 use controller::output::OutputAction;
+use types::Dot;
 
 struct ZMenuReportsImpl {
     pending: Vec<JSONValue>
@@ -33,8 +34,14 @@ impl ZMenuReports {
         self.0.lock().unwrap().get_reports()
     }
     
-    pub fn add_report(&self, payload: JSONValue) {
-        self.0.lock().unwrap().add_report(payload);
+    pub fn add_activate(&self, id: &str, pos: Dot<i32,i32>, payload: JSONValue) {
+        console!("add {}",payload.to_string());
+        self.0.lock().unwrap().add_report(json!({
+            "action": "create_zmenu",
+            "id": id,
+            "content": [payload],
+            "anchor_coordinates": { "x": pos.0, "y": pos.1 }
+        }));
     }
     
     pub fn new(ar: &mut AppRunner) -> ZMenuReports {

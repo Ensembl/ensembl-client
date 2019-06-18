@@ -17,7 +17,7 @@ pub enum Action {
     SetState(String,bool),
     Settled,
     ZMenu(CPixel),
-    ShowZMenu(JSONValue)
+    ShowZMenu(String,Dot<i32,i32>,JSONValue)
 }
 
 fn exe_pos_event(app: &App, v: Dot<f64,f64>, prop: Option<f64>) {
@@ -116,8 +116,8 @@ fn exe_zmenu(a: &mut App, pos: &CPixel) {
     actions_run(a,&acts);
 }
 
-fn exe_zmenu_show(a: &mut App, payload: JSONValue) {
-    a.get_zmenu_reports().add_report(payload);
+fn exe_zmenu_show(a: &mut App, id: &str, pos: Dot<i32,i32>, payload: JSONValue) {
+    a.get_zmenu_reports().add_activate(id,pos,payload);
     
 }
 
@@ -136,7 +136,7 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>) {
             Action::SetState(name,on) => exe_set_state(cg,&name,on),
             Action::Settled => exe_settled(cg),
             Action::ZMenu(pos) => exe_zmenu(cg,&pos),
-            Action::ShowZMenu(payload) => exe_zmenu_show(cg,payload),
+            Action::ShowZMenu(id,pos,payload) => exe_zmenu_show(cg,&id,pos,payload),
             Action::Noop => ()
         }
     }
