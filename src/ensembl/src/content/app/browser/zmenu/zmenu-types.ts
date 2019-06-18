@@ -33,7 +33,7 @@ export type ZmenuContentItem = {
   markup: Markup[];
 };
 
-type ZmenuContentBlock = ZmenuContentItem[];
+export type ZmenuContentBlock = ZmenuContentItem[];
 
 type ZmenuContentLine = ZmenuContentBlock[];
 
