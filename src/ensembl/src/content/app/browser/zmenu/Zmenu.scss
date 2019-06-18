@@ -1,13 +1,20 @@
 @import 'src/styles/common';
 
+$zmenuBackgroundColor: $ens-dark-grey;
+
 .zmenu {
   position: absolute;
   padding: 20px;
-  background-color: $ens-dark-grey;
+  background-color: $zmenuBackgroundColor;
+  box-shadow: 2px 2px 5px $ens-shadow-color;
 }
 
 .zmenuTip {
   position: absolute;
+
+  polygon {
+    fill: $zmenuBackgroundColor;
+  }
 }
 
 .markupStrong {

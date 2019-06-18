@@ -3,6 +3,8 @@ import pickBy from 'lodash/pickBy';
 
 import Zmenu from './Zmenu';
 
+import mockEventEmitter from './mock-event-emitter';
+
 import {
   ZmenuData,
   ZmenuAction,
@@ -23,20 +25,6 @@ type StateZmenu = {
   [key: string]: ZmenuData;
 };
 
-// FIXME: remove
-const testMessage = (element) => {
-  const event = new CustomEvent('bpane-zmenu', {
-    detail: {
-      id: 'foo',
-      action: ZmenuAction.CREATE,
-      anchor_coordinates: { x: 200, y: 200 },
-      content: 'hello'
-    }
-  });
-
-  element.dispatchEvent(event);
-};
-
 const ZmenuController = (props: Props) => {
   const [zmenus, setZmenus] = useState<StateZmenu>({});
 
@@ -47,14 +35,13 @@ const ZmenuController = (props: Props) => {
 
     browserElement.addEventListener('bpane-zmenu', eventHandler);
 
-    testMessage(props.browserRef.current);
+    mockEventEmitter.start(props.browserRef.current as HTMLDivElement);
 
     return () =>
       browserElement.removeEventListener('bpane-zmenu', eventHandler);
   }, []);
 
   const handleBpaneEvent = (event: ZmenuIncomingEvent) => {
-    console.log('heard you!', event);
     if (event.detail.action === ZmenuAction.CREATE) {
       handleZmenuCreate(event as ZmenuCreateEvent);
     } else if (event.detail.action === ZmenuAction.DESTROY) {
