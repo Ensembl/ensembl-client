@@ -1,4 +1,4 @@
-# CICD - Reload with missing static images - triticum aestivum
+# CICD - Reload with /api/ensembl_object endpoint
 stages:
   - test_build_static
   - build_docker_images
