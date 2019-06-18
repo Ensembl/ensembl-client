@@ -11,7 +11,7 @@ use composit::{
 };
 use controller::input::{ Action, actions_run, startup_actions };
 use controller::global::{ AppRunnerWeak, AppRunner };
-use controller::output::{ Report, ViewportReport };
+use controller::output::{ Report, ViewportReport, ZMenuReports };
 use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, XferCache };
 use debug::add_debug_sticks;
 use dom::domutil;
@@ -34,6 +34,7 @@ pub struct App {
     sticks: Box<StickManager>,
     report: Option<Report>,
     viewport: Option<ViewportReport>,
+    zmenu_reports: Option<ZMenuReports>,
     csl: SourceManagerList,
     http_clerk: HttpXferClerk,
     als: AllLandscapes,
@@ -64,6 +65,7 @@ impl App {
             sticks: Box::new(csm),
             report: None,
             viewport: None,
+            zmenu_reports: None,
             csl: SourceManagerList::new(),
             http_clerk: clerk,
             als: AllLandscapes::new(),
@@ -113,6 +115,14 @@ impl App {
     
     pub fn set_viewport_report(&mut self, report: ViewportReport) {
         self.viewport = Some(report);
+    }
+    
+    pub fn set_zmenu_reports(&mut self, report: ZMenuReports) {
+        self.zmenu_reports = Some(report);
+    }    
+    
+    pub fn get_zmenu_reports(&mut self) -> &mut ZMenuReports {
+        self.zmenu_reports.as_mut().unwrap()
     }
     
     pub fn with_apprunner<F,G>(&mut self, cb:F) -> Option<G>

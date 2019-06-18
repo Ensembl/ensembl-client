@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 
+use serde_json::Value as JSONValue;
+
 use composit::{ Leaf, Stage };
+use controller::input::Action;
 use types::{ Placement, Dot };
 
 use super::{ ZMenuFeatureTmpl, ZMenuData };
@@ -65,7 +68,6 @@ impl ZMenuLeaf {
     }
     
     pub fn set_template(&mut self, id: &str, sid: &str) {
-        console!("set template {:?} = {:?}",id,sid);
         self.get_data(id).set_template(sid);
     }
     
@@ -76,26 +78,29 @@ impl ZMenuLeaf {
     pub(in super) fn get_leaf(&self) -> &Leaf { &self.leaf }
     pub(in super) fn was_redrawn(&self) -> bool { self.redrawn }
     
-    fn activate(&self, id: &str) {
-        console!("data: {:?}",self.data);
+    fn activate(&self, id: &str) -> Option<JSONValue> {
         if let Some(zd) = self.data.get(id) {
             if let Some(sid) = zd.get_template() {
                 if let Some(tmpl) = self.template.get(sid) {
-                    let payload = tmpl.apply(id,zd.get_values());
-                    console!("template {:?}",payload.to_string());
+                    return Some(tmpl.apply(id,zd.get_values()));
                 }
             }
         }
+        None
     }
     
-    pub(in super) fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) {
+    pub(in super) fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> Vec<(String,JSONValue)> {
+        let mut out = Vec::new();
         for item in &self.items {
             bb_log!("zmenu","zml: item pos={:?} placement={:?}",pos,&item.placement);
             if stage.intersects(pos,&item.placement) {
                 console!("intersects {:?}",item.id);
-                self.activate(&item.id);
+                if let Some(payload) = self.activate(&item.id) {
+                    out.push((item.id.clone(),payload));
+                }
             }
         }
+        out
     }
 }
 

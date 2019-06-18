@@ -1,6 +1,8 @@
 use types::{ Move, Units, Axis, Dot, cdfraction, LEFT, RIGHT, CPixel };
 use controller::global::App;
 
+use serde_json::Value as JSONValue;
+
 #[derive(Debug,Clone)]
 pub enum Action {
     Noop,
@@ -14,7 +16,8 @@ pub enum Action {
     SetStick(String),
     SetState(String,bool),
     Settled,
-    ZMenu(CPixel)
+    ZMenu(CPixel),
+    ShowZMenu(JSONValue)
 }
 
 fn exe_pos_event(app: &App, v: Dot<f64,f64>, prop: Option<f64>) {
@@ -105,11 +108,17 @@ fn exe_set_state(a: &mut App, name: &str, on: bool) {
 
 fn exe_zmenu(a: &mut App, pos: &CPixel) {
     console!("click {:?}",pos);
-    a.with_compo(|co|
+    let acts = a.with_compo(|co|
         a.with_stage(|s|
             co.intersects(s,*pos)
         )
     );
+    actions_run(a,&acts);
+}
+
+fn exe_zmenu_show(a: &mut App, payload: JSONValue) {
+    a.get_zmenu_reports().add_report(payload);
+    
 }
 
 pub fn actions_run(cg: &mut App, evs: &Vec<Action>) {
@@ -127,6 +136,7 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>) {
             Action::SetState(name,on) => exe_set_state(cg,&name,on),
             Action::Settled => exe_settled(cg),
             Action::ZMenu(pos) => exe_zmenu(cg,&pos),
+            Action::ShowZMenu(payload) => exe_zmenu_show(cg,payload),
             Action::Noop => ()
         }
     }

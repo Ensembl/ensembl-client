@@ -9,7 +9,7 @@ use controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup };
 use controller::input::{
     register_direct_events, register_user_events, register_dom_events
 };
-use controller::output::{ OutputAction, Report, ViewportReport };
+use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports };
 
 #[cfg(any(not(deploy),console))]
 use data::blackbox::{
@@ -69,11 +69,13 @@ impl AppRunner {
         out.init();
         let report = Report::new(&mut out);
         let viewport_report = ViewportReport::new(&mut out);
+        let zmenu_reports = ZMenuReports::new(&mut out);
         {
             let mut imp = out.0.lock().unwrap();
             let app = imp.app.clone();
             app.lock().unwrap().set_report(report);
             app.lock().unwrap().set_viewport_report(viewport_report);
+            app.lock().unwrap().set_zmenu_reports(zmenu_reports);
             let el = imp.el.clone();
             imp.bling.activate(&app,&el);
         }
