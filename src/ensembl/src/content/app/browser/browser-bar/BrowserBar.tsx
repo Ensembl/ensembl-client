@@ -120,7 +120,6 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
     [styles.browserInfoGreyed]: props.drawerOpened
   });
 
-  console.log(props.ensObjectInfo);
   return (
     <div className={styles.browserBar}>
       <div className={className}>
