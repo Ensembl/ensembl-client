@@ -121,8 +121,8 @@ impl App {
         self.zmenu_reports = Some(report);
     }    
     
-    pub fn get_zmenu_reports(&mut self) -> &mut ZMenuReports {
-        self.zmenu_reports.as_mut().unwrap()
+    pub fn get_zmenu_reports(&mut self) -> Option<&mut ZMenuReports> {
+        self.zmenu_reports.as_mut()
     }
     
     pub fn with_apprunner<F,G>(&mut self, cb:F) -> Option<G>

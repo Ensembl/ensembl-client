@@ -20,6 +20,15 @@ pub enum Action {
     ShowZMenu(String,Dot<i32,i32>,JSONValue)
 }
 
+impl Action {
+    fn active(&self) -> bool {
+        match self {
+            Action::Noop | Action::Settled => false,
+            _ => true
+        }
+    }
+}
+
 fn exe_pos_event(app: &App, v: Dot<f64,f64>, prop: Option<f64>) {
     let prop = prop.unwrap_or(0.5);
     let v = app.with_stage(|s|
@@ -116,14 +125,24 @@ fn exe_zmenu(a: &mut App, pos: &CPixel) {
     actions_run(a,&acts);
 }
 
+fn exe_deactivate(a: &mut App) {
+    if let Some(zr) = a.get_zmenu_reports() {
+        zr.deactivate();
+    }
+}
+
 fn exe_zmenu_show(a: &mut App, id: &str, pos: Dot<i32,i32>, payload: JSONValue) {
-    a.get_zmenu_reports().add_activate(id,pos,payload);
-    
+    if let Some(zr) = a.get_zmenu_reports() {
+        zr.add_activate(id,pos,payload);
+    }
 }
 
 pub fn actions_run(cg: &mut App, evs: &Vec<Action>) {
     for ev in evs {
         let ev = ev.clone();
+        if ev.active() {
+            exe_deactivate(cg);
+        }
         match ev {
             Action::Pos(v,prop) => exe_pos_event(cg,v,prop),
             Action::PosRange(x_start,x_end,y) => exe_pos_range_event(cg,x_start,x_end,y),
