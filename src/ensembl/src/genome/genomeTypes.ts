@@ -25,7 +25,6 @@ export type GenomeInfoResponse = {
   genome_info: GenomeInfo[];
 };
 
-export type GenomeTrackCategoriesResponse = {
-  genome_id: string;
-  track_categories: GenomeTrackCategory[];
+export type GenomeTrackCategories = {
+  [genomeId: string]: GenomeTrackCategory[];
 };

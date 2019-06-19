@@ -38,7 +38,6 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   const [currentTrackCategories, setCurrentTrackCategories] = useState<
     GenomeTrackCategory[]
   >([]);
-  console.log(props);
 
   useEffect(() => {
     const selectedBrowserTab =

@@ -171,7 +171,9 @@ const mapStateToProps = (state: RootState): StateProps => ({
   exampleEnsObjects: getExampleEnsObjects(state),
   launchbarExpanded: getLaunchbarExpanded(state),
   selectedBrowserTab: getSelectedBrowserTab(state),
-  genomeTrackCategories: getGenomeTrackCategories(state),
+  genomeTrackCategories: getGenomeTrackCategories(state)[
+    getBrowserActiveGenomeId(state)
+  ],
   trackPanelModalOpened: getTrackPanelModalOpened(state),
   trackPanelModalView: getTrackPanelModalView(state),
   trackPanelOpened: getTrackPanelOpened(state)

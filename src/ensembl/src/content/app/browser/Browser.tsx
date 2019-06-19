@@ -187,7 +187,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
     dispatchBrowserLocation(chrLocation);
     props.fetchEnsObject(focus, genomeId);
     props.fetchEnsObjectTracks(focus, genomeId);
-    props.fetchGenomeTrackCategories(genomeId);
     props.updateBrowserActiveEnsObjectIdAndSave(focus);
   }, [props.browserQueryParams.focus]);
 

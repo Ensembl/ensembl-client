@@ -75,7 +75,7 @@ function genomeTrackCategories(
     case getType(genomeActions.fetchGenomeTrackCategoriesAsyncActions.success):
       return {
         ...state,
-        genomeTrackCategoriesData: action.payload.track_categories,
+        genomeTrackCategoriesData: action.payload,
         genomeTrackCategoriesFetchFailed: false,
         genomeTrackCategoriesFetching: false
       };

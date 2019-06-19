@@ -1,7 +1,7 @@
 import { TrackType } from 'src/content/app/browser/track-panel/trackPanelConfig';
-import { GenomeTrackCategoriesResponse } from 'src/genome/genomeTypes';
+import { GenomeTrackCategories } from 'src/genome/genomeTypes';
 
-export const humanTrackCategoriesResponse: GenomeTrackCategoriesResponse = {
+export const humanTrackCategoriesResponse: GenomeTrackCategories = {
   genome_id: 'homo_sapiens38',
   track_categories: [
     {
@@ -112,7 +112,7 @@ export const humanTrackCategoriesResponse: GenomeTrackCategoriesResponse = {
   ]
 };
 
-export const mouseTrackCategoriesResponse: GenomeTrackCategoriesResponse = {
+export const mouseTrackCategoriesResponse: GenomeTrackCategories = {
   genome_id: 'mus_musculus_bdc',
   track_categories: [
     {
@@ -223,7 +223,7 @@ export const mouseTrackCategoriesResponse: GenomeTrackCategoriesResponse = {
   ]
 };
 
-export const wheatTrackCategoriesResponse: GenomeTrackCategoriesResponse = {
+export const wheatTrackCategoriesResponse: GenomeTrackCategories = {
   genome_id: 'triticum_aestivum_GCA_900519105_1',
   track_categories: [
     {
