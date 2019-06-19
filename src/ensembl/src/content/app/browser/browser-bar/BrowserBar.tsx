@@ -120,6 +120,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
     [styles.browserInfoGreyed]: props.drawerOpened
   });
 
+  console.log(props.ensObjectInfo);
   return (
     <div className={styles.browserBar}>
       <div className={className}>
@@ -171,12 +172,12 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
 
 export const BrowserInfo = ({ ensObjectInfo }: BrowserInfoProps) => (
   <>
-    <dd className={styles.ensObjectLabel}>
-      <label>{ensObjectInfo.object_type}</label>
-      <span className={styles.value}>{ensObjectInfo.label}</span>
-    </dd>
-    {ensObjectInfo.object_type === 'region' ? null : (
+    {ensObjectInfo.object_type === 'gene' && (
       <>
+        <dd className={styles.ensObjectLabel}>
+          <label>{ensObjectInfo.object_type}</label>
+          <span className={styles.value}>{ensObjectInfo.label}</span>
+        </dd>
         <dd>
           <label>Stable ID</label>
           <span className={styles.value}>{ensObjectInfo.stable_id}</span>
@@ -191,6 +192,17 @@ export const BrowserInfo = ({ ensObjectInfo }: BrowserInfoProps) => (
         </dd>
         <dd className={`show-for-large ${styles.nonLabelValue}`}>
           {ensObjectInfo.strand} strand
+        </dd>
+      </>
+    )}
+
+    {ensObjectInfo.object_type === 'region' && (
+      <>
+        <dd className={styles.ensObjectLabel}>
+          <label>Region: </label>
+          <span
+            className={styles.value}
+          >{`${ensObjectInfo.location.chromosome}:${ensObjectInfo.location.start}:${ensObjectInfo.location.end}`}</span>
         </dd>
       </>
     )}

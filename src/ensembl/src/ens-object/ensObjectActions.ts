@@ -4,7 +4,7 @@ import { ThunkAction } from 'redux-thunk';
 import { RootState } from 'src/store';
 import apiService from 'src/services/api-service';
 
-import { GenomeInfoData, GenomeInfo } from 'src/genome/genomeTypes';
+import { GenomeInfoData } from 'src/genome/genomeTypes';
 import { getGenomeInfo } from 'src/genome/genomeSelectors';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import {
@@ -27,8 +27,25 @@ export const fetchEnsObjectAsyncActions = createAsyncAction(
 export const fetchEnsObject: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (ensObjectId: string, genomeId: string) => async (dispatch: Dispatch) => {
+  const splitEnsObjectId = ensObjectId.split(':');
   // Do not send the request for regions
-  if (ensObjectId.split(':')[1] !== 'gene') {
+  if (splitEnsObjectId[1] === 'region') {
+    const regionExample = {
+      label: `${splitEnsObjectId[2]}:${splitEnsObjectId[3]}`,
+      ensembl_object_id: splitEnsObjectId,
+      genome_id: splitEnsObjectId[0],
+      location: {
+        chromosome: splitEnsObjectId[2],
+        end: splitEnsObjectId[3].split('-')[1],
+        start: splitEnsObjectId[3].split('-')[0]
+      },
+      object_type: 'region'
+    };
+    dispatch(
+      fetchEnsObjectAsyncActions.success({
+        ensembl_object: regionExample
+      })
+    );
     return;
   }
 
