@@ -59,11 +59,11 @@ const ZmenuContentFeature = (props: ZmenuContentFeatureProps) => {
 
 const ZmenuContentLine = (props: ZmenuContentLineProps) => {
   return (
-    <div className={styles.zmenuContentLine}>
+    <span className={styles.zmenuContentLine}>
       {props.blocks.map((items, index) => (
         <ZmenuContentBlock key={index} id={props.id} items={items} />
       ))}
-    </div>
+    </span>
   );
 };
 

@@ -11,7 +11,6 @@ $zmenuBackgroundColor: $ens-black;
   position: relative;
   padding: 5px 20px;
   color: $ens-white;
-  // font-weight: $light;
   background-color: $zmenuBackgroundColor;
 }
 
@@ -31,7 +30,7 @@ $zmenuBackgroundColor: $ens-black;
 }
 
 .zmenuContentLine {
-  margin: 0;
+  display: block;
   line-height: 1;
 }
 

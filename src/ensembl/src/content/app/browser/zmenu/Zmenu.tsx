@@ -10,7 +10,7 @@ const TIP_WIDTH = 18;
 const TIP_HEIGHT = 13;
 // extra height makes the tip a bit higher and is used to anchor the tip in zmenu body (goes inside the body)
 const TIP_EXTRA_HEIGHT = 2;
-const TIP_OFFSET = 20;
+const TIP_OFFSET = 10;
 
 enum Direction {
   LEFT = 'left',
