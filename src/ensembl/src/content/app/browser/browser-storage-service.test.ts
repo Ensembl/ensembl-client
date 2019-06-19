@@ -72,7 +72,7 @@ describe('BrowserStorageService', () => {
 
       const toggledTrack = {
         'Genes & transcripts': {
-          'gene-pc-fwd': 'inactive'
+          'gene-pc-fwd': { homo_sapiens38: ImageButtonStatus.INACTIVE }
         }
       };
 
@@ -129,13 +129,9 @@ describe('BrowserStorageService', () => {
         mockStorageService
       );
 
-      const toggledTrackState = {
-        'gene-feat': true
-      };
+      const toggledTrackState = { homo_sapiens38: { 'gene-feat': true } };
 
-      browserStorageService.updateTrackListToggleStates({
-        homo_sapiens38: toggledTrackState
-      });
+      browserStorageService.updateTrackListToggleStates(toggledTrackState);
 
       expect(mockStorageService.update).toHaveBeenCalledWith(
         StorageKeys.TRACK_LIST_TOGGLE_STATES,
@@ -179,7 +175,7 @@ describe('BrowserStorageService', () => {
   });
 
   describe('.updateSelectedBrowserTab()', () => {
-    it('saves selected browser tab via storage service', () => {
+    it('updates selected browser tab via storage service', () => {
       const browserStorageService = new BrowserStorageService(
         mockStorageService
       );
@@ -188,9 +184,11 @@ describe('BrowserStorageService', () => {
         homo_sapiens38: TrackType.EXPRESSION
       });
 
-      expect(mockStorageService.save).toHaveBeenCalledWith(
+      expect(mockStorageService.update).toHaveBeenCalledWith(
         StorageKeys.SELECTED_BROWSER_TAB,
-        TrackType.EXPRESSION
+        {
+          homo_sapiens38: TrackType.EXPRESSION
+        }
       );
     });
   });
