@@ -59,7 +59,11 @@ const SelectedSpeciesList = (props: Props) => {
         />
       ))}
       <div className={styles.genomeBrowserLinkContainer}>
-        <Link to={urlFor.browser()}>View in Genome Browser</Link>
+        <Link
+          to={urlFor.browser({ genomeId: props.selectedSpecies[0].genome_id })}
+        >
+          View in Genome Browser
+        </Link>
       </div>
     </>
   );

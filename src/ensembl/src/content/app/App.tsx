@@ -63,16 +63,8 @@ const AppInner = (props: AppProps) => {
         <Route path={`${url}/global-search`} component={GlobalSearch} />
         <Route path={`${url}/species-selector`} component={SpeciesSelector} />
         <ErrorBoundary fallbackComponent={NewTechError}>
-          <Route path={`${url}/browser/:genomeId`} component={Browser} />
+          <Route path={`${url}/browser/:genomeId?`} component={Browser} />
         </ErrorBoundary>
-        <Redirect
-          exact={true}
-          from={`${url}/browser`}
-          to={{
-            pathname: `${url}/browser/GRCh38_demo`,
-            search: '?focus=ENSG00000139618&location=13:32271473-32437359'
-          }}
-        />
       </Switch>
     </Suspense>
   );
