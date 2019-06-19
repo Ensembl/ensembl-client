@@ -31,11 +31,11 @@ impl Stage {
 
     fn bumped(&self, direction: &Direction) -> bool {
         let mul : f64 = direction.1.into();
-        self.pos.get_edge(direction).floor() * mul >= self.pos.get_limit_of_edge(direction).floor() * mul
+        self.pos.get_edge(direction,true).floor() * mul >= self.pos.get_limit_of_edge(direction).floor() * mul
     }
 
     pub fn update_report(&self, report: &Report) {
-        let (left,right) = (self.pos.get_edge(&LEFT),self.pos.get_edge(&RIGHT));
+        let (left,right) = (self.pos.get_edge(&LEFT,true),self.pos.get_edge(&RIGHT,true));
         report.set_status("start",&left.floor().to_string());
         report.set_status("end",&right.ceil().to_string());
         report.set_status_bool("bumper-left",self.bumped(&LEFT));
@@ -47,7 +47,7 @@ impl Stage {
     }
 
     pub fn update_viewport_report(&self, report: &ViewportReport) {
-        report.set_delta_y(-self.pos.get_edge(&UP) as i32);
+        report.set_delta_y(-self.pos.get_edge(&UP,false) as i32);
     }
 
     pub fn set_wrapping(&mut self, w: &Wrapping) {
@@ -153,8 +153,8 @@ impl Stage {
         let screen_bp = self.get_screen_in_bp();
         let screen_px = self.dims;
         let bp_px = screen_bp / screen_px.0;
-        let left_bp = self.pos.get_edge(&LEFT);
-        let top_px = self.pos.get_edge(&UP);
+        let left_bp = self.pos.get_edge(&LEFT,false);
+        let top_px = self.pos.get_edge(&UP,false);
         match area {
             Placement::Stretch(r) => {
                 let pos_bp = left_bp + pos.0 as f64 * bp_px;

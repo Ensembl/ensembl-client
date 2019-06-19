@@ -59,7 +59,7 @@ impl ZMenuLeaf {
     }
     
     pub fn add_box(&mut self, id: &str, zbox: &Placement) {
-        bb_log!("zmenu","add_box({:?},{:?})",id,zbox);
+        bb_log!("zmenu","add_box({:?},{:?})",id,self.fix_leaf_offset(zbox));
         self.items.push(ZMenuItem { id: id.to_string(), placement: self.fix_leaf_offset(zbox) });
     }
     
