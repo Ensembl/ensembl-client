@@ -114,11 +114,10 @@ export const changeBrowserLocation: ActionCreator<
   return (dispatch: Dispatch, getState: () => RootState) => {
     const [chrCode, startBp, endBp] = chrLocation;
     const activeGenomeId = getBrowserActiveGenomeId(getState());
-
     const stickEvent = new CustomEvent('bpane', {
       bubbles: true,
       detail: {
-        stick: `${activeGenomeId}${chrCode}`
+        stick: `${activeGenomeId}:${chrCode}`
       }
     });
 
