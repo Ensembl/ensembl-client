@@ -93,9 +93,11 @@ describe('<SpeciesSearchField', () => {
       };
       wrapper = mount(<SpeciesSearchField {...props} />);
       // to update get a search string into the state of SpeciesSearchField
-      wrapper
-        .find('input')
-        .simulate('change', { target: { value: faker.lorem.word() } });
+      wrapper.find('input').simulate('change', {
+        target: {
+          value: faker.lorem.words(2) // <-- 2 words to make sure the total number of characters is greater than the minimum required by SpeciesSearchField
+        }
+      });
     });
 
     test('triggers the onMatchSelected function when a match is clicked', () => {
