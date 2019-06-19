@@ -7,7 +7,7 @@ import React, {
 import { connect } from 'react-redux';
 
 import styles from './BrowserImage.scss';
-import { ChrLocation, BrowserNavStates, CogList } from '../browserState';
+import { BrowserNavStates, CogList } from '../browserState';
 import BrowserCogList from '../BrowserCogList';
 import {
   getTrackConfigNames,

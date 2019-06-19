@@ -4,11 +4,7 @@ import { Action, ActionCreator, Dispatch } from 'redux';
 
 import apiService from 'src/services/api-service';
 import { RootState } from 'src/store';
-import {
-  GenomeInfoData,
-  GenomeTrackCategories,
-  GenomeTrackCategory
-} from './genomeTypes';
+import { GenomeInfoData, GenomeTrackCategories } from './genomeTypes';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {

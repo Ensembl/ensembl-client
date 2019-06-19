@@ -228,7 +228,7 @@ type StateProps = {
   geneFilters: any;
   geneTypeFilters: any;
   transcriptTypeFilters: any;
-  expandedPanels: [];
+  expandedPanels: string[];
   geneSourceFilters: any;
   gencodeAnnotationFilters: string;
 };

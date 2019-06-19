@@ -96,15 +96,16 @@ export const updateBrowserNavStates = createAction(
 export const updateChrLocation = createAction(
   'browser/update-chromosome-location',
   (resolve) => {
-    return (chrLocation: ChrLocation) => resolve(chrLocation);
+    return (chrLocationData: { [genomeId: string]: ChrLocation }) =>
+      resolve(chrLocationData);
   }
 );
 
 export const updateDefaultChrLocation = createAction(
   'browser/update-default-chromosome-location',
   (resolve) => {
-    return (chrLocation: ChrLocation) =>
-      resolve(chrLocation, getBrowserAnalyticsObject('User Interaction'));
+    return (chrLocationData: { [genomeId: string]: ChrLocation }) =>
+      resolve(chrLocationData, getBrowserAnalyticsObject('User Interaction'));
   }
 );
 
@@ -136,7 +137,7 @@ export const changeBrowserLocation: ActionCreator<
 
     const currentChrLocation = getChrLocation(getState());
     const updatedChrLocation = { ...currentChrLocation };
-    updatedChrLocation[activeGenomeId] = [...chrLocation];
+    updatedChrLocation[activeGenomeId] = [...chrLocation] as ChrLocation;
 
     dispatch(updateChrLocation(updatedChrLocation));
     browserStorageService.updateChrLocation(updatedChrLocation);
@@ -145,7 +146,9 @@ export const changeBrowserLocation: ActionCreator<
 
     if (!currentDefaultChrLocation[activeGenomeId]) {
       const updatedDefaultChrLocation = { ...currentDefaultChrLocation };
-      updatedDefaultChrLocation[activeGenomeId] = [...chrLocation];
+      updatedDefaultChrLocation[activeGenomeId] = [
+        ...chrLocation
+      ] as ChrLocation;
       dispatch(updateDefaultChrLocation(updatedDefaultChrLocation));
       browserStorageService.updateDefaultChrLocation(updatedDefaultChrLocation);
     }

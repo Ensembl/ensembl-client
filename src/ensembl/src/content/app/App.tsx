@@ -1,5 +1,5 @@
 import React, { useEffect, FunctionComponent, lazy, Suspense } from 'react';
-import { Redirect, Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { changeCurrentApp } from 'src/header/headerActions';

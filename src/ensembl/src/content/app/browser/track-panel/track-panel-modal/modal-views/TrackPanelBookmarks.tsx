@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import { RootState } from 'src/store';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
-import { GenomeInfo } from 'src/genome/genomeTypes';
+import { GenomeInfoData } from 'src/genome/genomeTypes';
 
 import { getBrowserActiveGenomeId } from '../../../browserSelectors';
 import { getGenomeInfo } from 'src/genome/genomeSelectors';
@@ -20,7 +20,7 @@ import styles from '../TrackPanelModal.scss';
 
 type StateProps = {
   activeGenomeId: string;
-  genomeInfo: GenomeInfo;
+  genomeInfo: GenomeInfoData;
   exampleEnsObjects: ExampleEnsObjectsData;
 };
 
