@@ -20,8 +20,7 @@ import {
 import {
   activateBrowser,
   updateBrowserActivated,
-  updateBrowserNavStates,
-  changeBrowserLocation
+  updateBrowserNavStates
 } from '../browserActions';
 
 import { CircleLoader } from 'src/shared/loader/Loader';
@@ -41,10 +40,6 @@ type StateProps = {
 type DispatchProps = {
   activateBrowser: (browserEl: HTMLDivElement) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
-  changeBrowserLocation: (
-    chrLocation: ChrLocation,
-    browserEl: HTMLDivElement | null
-  ) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
 };
 
@@ -58,7 +53,6 @@ type BrowserImageProps = StateProps & DispatchProps & OwnProps;
 type BpaneOutEvent = Event & {
   detail: {
     bumper?: BrowserNavStates;
-    location?: ChrLocation;
   };
 };
 
@@ -68,14 +62,9 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   const listenBpaneOut = useCallback((event: Event) => {
     const bpaneOutEvent = event as BpaneOutEvent;
     const navIconStates = bpaneOutEvent.detail.bumper as BrowserNavStates;
-    const chrLocation = bpaneOutEvent.detail.location as ChrLocation;
 
     if (navIconStates) {
       props.updateBrowserNavStates(navIconStates);
-    }
-
-    if (chrLocation) {
-      props.changeBrowserLocation(chrLocation, props.browserRef.current);
     }
   }, []);
 
@@ -209,8 +198,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
 const mapDispatchToProps: DispatchProps = {
   activateBrowser,
   updateBrowserActivated,
-  updateBrowserNavStates,
-  changeBrowserLocation
+  updateBrowserNavStates
 };
 
 export default connect(

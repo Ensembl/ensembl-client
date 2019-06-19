@@ -138,14 +138,12 @@ export const Browser: FunctionComponent<BrowserProps> = (
         location: getChrLocationStr(chrLocationForGenome)
       };
       newUrl = urlFor.browser(params);
-      props.replace(newUrl);
-
-      dispatchBrowserLocation(chrLocationForGenome);
     } else {
       newUrl = urlFor.browser({ genomeId });
       props.fetchExampleEnsObjects(genomeId);
-      props.replace(newUrl);
     }
+    props.updateBrowserActiveGenomeIdAndSave(genomeId);
+    props.replace(newUrl);
   };
 
   useEffect(() => {
@@ -166,7 +164,8 @@ export const Browser: FunctionComponent<BrowserProps> = (
     if (!genomeId) {
       return;
     }
-    props.updateBrowserActiveGenomeIdAndSave(genomeId);
+    const chrLocationForGenome = props.chrLocation[genomeId];
+    dispatchBrowserLocation(chrLocationForGenome);
     props.fetchGenomeTrackCategories(genomeId);
     props.fetchGenomeInfo(genomeId);
   }, [props.match.params.genomeId]);
@@ -232,7 +231,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
     }
     props.toggleDrawer(false);
   };
-
   const getExampleObjectLinks = () => {
     return Object.values(props.exampleEnsObjects[props.activeGenomeId]).map(
       (exampleObject: EnsObject) => {
