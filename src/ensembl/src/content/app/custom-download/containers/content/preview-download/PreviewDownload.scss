@@ -1,0 +1,51 @@
+@import 'src/styles/common';
+
+.previewDownloadTable {
+  border-collapse: collapse;
+  width: calc(100vw - 140px);
+  table-layout: fixed;
+  margin: 10px 70px 0;
+
+  td {
+    padding: 8px 0 8px 7px;
+    font-size: 14px;
+    vertical-align: top;
+
+    div {
+      margin-bottom: 5px;
+    }
+  }
+}
+
+.previewDownloadHeader {
+  border-collapse: collapse;
+  min-width: 50%;
+  border-bottom: 2px solid $ens-grey;
+  color: $ens-grey;
+
+  td {
+    padding: 8px 0 8px 8px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+.previewDownload {
+  height: calc(100vh - 300px);
+  overflow: auto;
+  position: relative;
+}
+
+.changeLink {
+  color: $ens-blue;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.closeButton {
+  height: 15px;
+  width: 15px;
+  position: absolute;
+  right: 20px;
+  top: 20px;
+}

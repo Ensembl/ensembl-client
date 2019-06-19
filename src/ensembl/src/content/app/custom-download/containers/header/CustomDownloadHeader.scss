@@ -1,0 +1,85 @@
+@import 'src/styles/common';
+
+.wrapper {
+  background-color: $ens-light-grey;
+  height: 60px;
+  position: relative;
+}
+
+.resultCounter {
+  position: absolute;
+  top: 50%;
+  left: 50px;
+  color: $ens-black;
+  margin-top: -10px;
+
+  span {
+    font-weight: 700;
+  }
+}
+
+.selectedFilters {
+  position: absolute;
+  top: 50%;
+  left: 40%;
+  margin-top: -12px;
+}
+
+.previewButton {
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  margin-top: -15px;
+}
+
+.previewCounter {
+  margin-left: 20px;
+  padding-top: 12px;
+  display: inline-block;
+}
+
+.boldResultCounter {
+  font-weight: bold;
+  margin-right: 2px;
+}
+
+.resultsLabel {
+  font-size: 11px;
+  color: $ens-dark-grey;
+}
+.saveConfiguration {
+  font-size: 11px;
+  color: $ens-dark-grey;
+}
+
+.backButton {
+  height: 30px;
+  width: 30px;
+  margin-left: 20px;
+  display: inline-block;
+}
+
+.downloadTypeSelectHolder {
+  display: inline-block;
+  position: absolute;
+  right: 170px;
+  top: 20px;
+}
+
+.downloadTypeLabel {
+  color: $ens-dark-grey;
+}
+
+.downloadTypeSelect {
+  margin-left: 10px;
+  color: $ens-blue;
+  li {
+    color: $ens-medium-dark-grey;
+  }
+}
+
+.roundButtonInactive {
+  background-color: $ens-medium-dark-grey;
+  border-color: $ens-medium-dark-grey;
+  color: $ens-white;
+}

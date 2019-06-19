@@ -6,8 +6,7 @@ import defaultStyles from './RoundButton.scss';
 export enum RoundButtonStatus {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
-  DISABLED = 'disabled',
-  DEFAULT = 'default'
+  DISABLED = 'disabled'
 }
 
 type Props = {
@@ -28,7 +27,7 @@ const RoundButton = (props: Props) => {
     ? { ...defaultStyles, ...props.classNames }
     : defaultStyles;
 
-  const className = classNames(styles.default, styles[props.status]);
+  const className = classNames(defaultStyles.default, styles[props.status]);
 
   return (
     <button className={className} onClick={handleClick}>
@@ -38,7 +37,7 @@ const RoundButton = (props: Props) => {
 };
 
 RoundButton.defaultProps = {
-  status: RoundButtonStatus.DEFAULT
+  status: RoundButtonStatus.INACTIVE
 };
 
 export default RoundButton;

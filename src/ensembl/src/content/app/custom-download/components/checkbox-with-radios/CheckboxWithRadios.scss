@@ -1,0 +1,13 @@
+.radioTable {
+  table-layout: fixed;
+  td {
+    white-space: nowrap;
+    padding: 5px;
+  }
+}
+
+.radioInput {
+  display: inline-block;
+  margin-left: 20px;
+  margin-right: 20px;
+}
