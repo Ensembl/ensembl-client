@@ -41,11 +41,11 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
     return Object.values(props.exampleEnsObjects[props.activeGenomeId]).map(
       (exampleObject: EnsObject) => {
         const locationStr = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
-        const path = urlFor.browser(
-          props.activeGenomeId,
-          exampleObject.ensembl_object_id,
-          locationStr
-        );
+        const path = urlFor.browser({
+          genomeId: props.activeGenomeId,
+          focus: exampleObject.ensembl_object_id,
+          location: locationStr
+        });
 
         return (
           <dd key={exampleObject.ensembl_object_id}>
