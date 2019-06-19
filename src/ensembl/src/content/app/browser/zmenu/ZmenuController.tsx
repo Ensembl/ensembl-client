@@ -79,9 +79,27 @@ const ZmenuController = (props: Props) => {
     });
   };
 
-  const handleZmenuEnter = () => {};
+  const handleZmenuEnter = (id: string) => {
+    const browserElement = props.browserRef.current as HTMLDivElement;
+    const event = new CustomEvent('bpane-zmenu', {
+      detail: {
+        id,
+        action: ZmenuAction.ENTER
+      }
+    });
+    browserElement.dispatchEvent(event);
+  };
 
-  const handleZmenuLeave = () => {};
+  const handleZmenuLeave = (id: string) => {
+    const browserElement = props.browserRef.current as HTMLDivElement;
+    const event = new CustomEvent('bpane-zmenu', {
+      detail: {
+        id,
+        action: ZmenuAction.LEAVE
+      }
+    });
+    browserElement.dispatchEvent(event);
+  };
 
   const zmenuElements = Object.keys(zmenus).map((id) => (
     <Zmenu
