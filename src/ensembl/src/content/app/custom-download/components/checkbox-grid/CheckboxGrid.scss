@@ -1,0 +1,15 @@
+@import 'src/styles/common';
+
+.checkboxGridContainer {
+  width: 100%;
+  display: flex;
+}
+
+.checkboxGridTitle {
+  color: $ens-grey;
+  margin-bottom: 10px;
+}
+
+.checkboxContainer {
+  margin-bottom: 5px;
+}

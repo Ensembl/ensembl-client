@@ -2,6 +2,7 @@
 
 .checkboxHolder {
   position: relative;
+  display: flex;
 }
 
 .defaultCheckbox {
@@ -11,7 +12,8 @@
   border: 1px solid $ens-grey;
   background-color: $ens-white;
   transition: background-color 0.1s ease-in-out;
-  display: inline-block;
+  float: left;
+  margin-top: 2px;
 }
 
 .unchecked {
@@ -29,14 +31,15 @@
 }
 
 .defaultLabel {
-  color: $ens-dark-grey;
-  display: inline-block;
-  line-height: 15px;
-  position: absolute;
-  font-size: 16px;
-  top: 0px;
-  left: 15px;
+  color: $ens-black;
+  line-height: 30px;
+  font-size: 14px;
   padding-left: 15px;
+  padding-right: 2px;
+  float: left;
+  max-width: calc(100% - 17px);
+  margin-top: -5px;
+  word-wrap: break-word;
 }
 
 .hiddenInput {

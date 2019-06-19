@@ -16,13 +16,14 @@
 
 .active {
   background-color: $ens-black;
+  border: 1px solid $ens-black;
   color: $ens-white;
-  border: none;
 }
 
 .inactive {
+  background-color: $ens-blue;
   border: 1px solid $ens-blue;
-  color: $ens-dark-blue;
+  color: $ens-white;
 }
 
 .disabled {

@@ -1,0 +1,51 @@
+@import 'src/styles/common';
+
+.preFilterPanel {
+  background-color: $ens-light-grey;
+  height: 300px;
+}
+
+.panelTitle {
+  margin-left: 45px;
+  color: $ens-dark-grey;
+  padding-top: 10px;
+}
+
+.panelContent {
+  display: inline-block;
+  margin: 50px;
+  position: relative;
+  height: 125px;
+}
+
+/* RoundButton extended styles*/
+.filterButtons {
+  .inactive {
+    background-color: $ens-blue;
+    border: 1px solid $ens-blue;
+    color: $ens-white;
+    margin-left: 30px;
+  }
+
+  .active {
+    background-color: $ens-medium-dark-grey;
+    border: 1px solid $ens-medium-dark-grey;
+    color: $ens-white;
+    margin-left: 30px;
+  }
+
+  .disabled {
+    background-color: transparent;
+    color: $ens-grey;
+    border: 1px solid $ens-grey;
+    cursor: default;
+    margin-left: 30px;
+  }
+}
+
+/* PrimaryButton extended styles */
+.primaryButton {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}

@@ -11,14 +11,11 @@ import {
 } from 'src/shared/accordion/';
 import styles from './Accordion.stories.scss';
 
-const onChange = () => {
-  console.log(1);
-};
 storiesOf('Components|Shared Components/Accordion', module)
   .add('default', () => {
     return (
       <div className={styles.accordionContainer}>
-        <Accordion onChange={onChange}>
+        <Accordion>
           <AccordionItem>
             <AccordionItemHeading>
               <AccordionItemButton>Accordion Item One</AccordionItemButton>

@@ -1,0 +1,29 @@
+@import 'src/styles/common';
+
+.wrapper {
+  padding-right: 15px;
+  max-height: calc(100vh - 225px);
+  overflow-y: auto;
+  background-color: $ens-white;
+}
+.dataSelectorHint {
+  padding: 10px 0 10px 15px;
+  color: $ens-dark-grey;
+}
+
+.accordionItem {
+  padding: 0px;
+}
+
+.permanentBlock {
+  background: $ens-light-grey;
+}
+
+.accordionExpandedTitle {
+  color: $ens-dark-grey;
+
+  > span {
+    color: $ens-black;
+    font-weight: 700;
+  }
+}

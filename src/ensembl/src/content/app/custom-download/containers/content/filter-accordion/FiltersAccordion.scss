@@ -1,0 +1,27 @@
+@import 'src/styles/common';
+
+.wrapper {
+  padding-right: 15px;
+  max-height: calc(100vh - 205px);
+  overflow-y: auto;
+}
+.filterHint {
+  padding: 10px 0 10px 30px;
+  color: $ens-dark-grey;
+}
+
+.accordionItemPanel {
+  padding: 0px;
+}
+
+.accordionExpandedTitle {
+  color: $ens-grey;
+
+  > span {
+    color: $ens-black;
+  }
+}
+
+.tempPadding {
+  padding: 20px;
+}

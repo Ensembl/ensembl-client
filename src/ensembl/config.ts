@@ -5,5 +5,8 @@ export default {
   apiHost: process.env.API_HOST,
 
   // keys for services
-  googleAnalyticsKey: process.env.GOOGLE_ANALYTICS_KEY
+  googleAnalyticsKey: process.env.GOOGLE_ANALYTICS_KEY,
+
+  // Genesearch endpoint
+  genesearchAPIEndpoint: process.env.GENESEARCH_API_ENDPOINT
 };
