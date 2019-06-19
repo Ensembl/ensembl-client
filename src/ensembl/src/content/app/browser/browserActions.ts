@@ -7,7 +7,8 @@ import { BrowserNavStates, ChrLocation, CogList } from './browserState';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectId,
-  getDefaultChrLocation
+  getDefaultChrLocation,
+  getChrLocation
 } from './browserSelectors';
 import { getBrowserAnalyticsObject } from 'src/analyticsHelper';
 import browserStorageService from './browser-storage-service';
@@ -66,11 +67,10 @@ export const updateBrowserActiveEnsObjectIdAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (activeEnsObjectId: string) => {
   return (dispatch: Dispatch, getState: () => RootState) => {
-    const activeGenomeId = getBrowserActiveGenomeId(getState());
-
     const currentActiveEnsObjectId = getBrowserActiveEnsObjectId(getState());
     const updatedActiveEnsObjectId = { ...currentActiveEnsObjectId };
-    updatedActiveEnsObjectId[activeGenomeId] = activeEnsObjectId;
+    const genomeId = activeEnsObjectId.split(':')[0];
+    updatedActiveEnsObjectId[genomeId] = activeEnsObjectId;
 
     dispatch(updateBrowserActiveEnsObjectId(updatedActiveEnsObjectId));
 
@@ -135,7 +135,7 @@ export const changeBrowserLocation: ActionCreator<
       browserEl.dispatchEvent(gotoEvent);
     }
 
-    const currentChrLocation = getDefaultChrLocation(getState());
+    const currentChrLocation = getChrLocation(getState());
     const updatedChrLocation = { ...currentChrLocation };
     updatedChrLocation[activeGenomeId] = [...chrLocation];
 
@@ -144,8 +144,8 @@ export const changeBrowserLocation: ActionCreator<
 
     const currentDefaultChrLocation = getDefaultChrLocation(getState());
 
-    const updatedDefaultChrLocation = { ...currentDefaultChrLocation };
-    if (!updatedDefaultChrLocation[activeGenomeId]) {
+    if (!currentDefaultChrLocation[activeGenomeId]) {
+      const updatedDefaultChrLocation = { ...currentDefaultChrLocation };
       updatedDefaultChrLocation[activeGenomeId] = [...chrLocation];
       dispatch(updateDefaultChrLocation(updatedDefaultChrLocation));
       browserStorageService.updateDefaultChrLocation(updatedDefaultChrLocation);

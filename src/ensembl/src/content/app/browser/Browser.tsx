@@ -20,7 +20,7 @@ import {
   changeBrowserLocation,
   updateBrowserNavStates,
   updateBrowserActiveGenomeIdAndSave,
-  updateBrowserActiveEnsObjectId
+  updateBrowserActiveEnsObjectIdAndSave
 } from './browserActions';
 import {
   getBrowserOpenState,
@@ -91,7 +91,7 @@ type DispatchProps = {
   replace: Replace;
   toggleDrawer: (drawerOpened: boolean) => void;
   updateBrowserActiveGenomeIdAndSave: (genomeId: string) => void;
-  updateBrowserActiveEnsObjectId: (objectId: string) => void;
+  updateBrowserActiveEnsObjectIdAndSave: (objectId: string) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
 };
 
@@ -159,7 +159,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
     props.fetchEnsObject(focus, genomeId);
     props.fetchEnsObjectTracks(focus, genomeId);
 
-    props.updateBrowserActiveEnsObjectId(focus);
+    props.updateBrowserActiveEnsObjectIdAndSave(focus);
   }, [props.browserQueryParams.focus]);
 
   useEffect(() => {
@@ -177,7 +177,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   const updateBrowserUrl = (genomeId: string = props.match.params.genomeId) => {
     const { focus } = props.browserQueryParams;
-    const chrLocationForGenome = props.chrLocation[props.activeGenomeId];
+    const chrLocationForGenome = props.chrLocation[genomeId];
     const location = getChrLocationStr(chrLocationForGenome);
     const newUrl = urlFor.browser({ genomeId, focus, location });
 
@@ -198,7 +198,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
   const changeSelectedSpecies = (genomeId: string) => {
     props.updateBrowserActiveGenomeIdAndSave(genomeId);
 
-    const chrLocationForGenome = props.chrLocation[props.activeGenomeId];
+    const chrLocationForGenome = props.chrLocation[genomeId];
 
     let newUrl: string;
     if (chrLocationForGenome) {
@@ -213,9 +213,10 @@ export const Browser: FunctionComponent<BrowserProps> = (
     }
 
     props.replace(newUrl);
+    dispatchBrowserLocation(chrLocationForGenome);
   };
 
-  const getPreviouslyViewed = () => {
+  const getExampleObjectLinks = () => {
     return Object.values(props.exampleEnsObjects[props.activeGenomeId]).map(
       (exampleObject: EnsObject) => {
         const location = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
@@ -228,7 +229,10 @@ export const Browser: FunctionComponent<BrowserProps> = (
         return (
           <dd key={exampleObject.ensembl_object_id}>
             <Link to={path}>
-              {upperFirst(exampleObject.object_type)}: {exampleObject.label}
+              <span className={styles.objectType}>
+                {upperFirst(exampleObject.object_type)}
+              </span>
+              <span className={styles.objectLabel}>{exampleObject.label}</span>
             </Link>
           </dd>
         );
@@ -271,11 +275,9 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
       {props.browserQueryParams.focus === undefined && (
         <section className={styles.browser}>
+          <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
           {props.exampleEnsObjects[props.activeGenomeId] ? (
-            <dl className={styles.previouslyViewed}>
-              <dt>Previously viewed</dt>
-              {getPreviouslyViewed()}
-            </dl>
+            <dl className={styles.exampleLinks}>{getExampleObjectLinks()}</dl>
           ) : null}
         </section>
       )}
@@ -340,7 +342,7 @@ const mapDispatchToProps: DispatchProps = {
   toggleDrawer,
   updateBrowserActiveGenomeIdAndSave,
   updateBrowserNavStates,
-  updateBrowserActiveEnsObjectId
+  updateBrowserActiveEnsObjectIdAndSave
 };
 
 export default withRouter(
