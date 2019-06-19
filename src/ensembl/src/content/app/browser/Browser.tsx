@@ -165,6 +165,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
       return;
     }
     const chrLocationForGenome = props.chrLocation[genomeId];
+    props.updateBrowserActiveGenomeIdAndSave(genomeId);
     dispatchBrowserLocation(chrLocationForGenome);
     props.fetchGenomeTrackCategories(genomeId);
     props.fetchGenomeInfo(genomeId);

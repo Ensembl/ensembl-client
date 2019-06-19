@@ -112,8 +112,8 @@ export const fetchExampleEnsObjects: ActionCreator<
           genome_id: regionObjectId[0],
           location: {
             chromosome: regionObjectId[2],
-            end: regionObjectId[3].split('-')[0],
-            start: regionObjectId[3].split('-')[1]
+            end: regionObjectId[3].split('-')[1],
+            start: regionObjectId[3].split('-')[0]
           },
           object_type: 'region'
         };
@@ -140,8 +140,8 @@ export const fetchExampleEnsObjects: ActionCreator<
             genome_id: regionObjectId[0],
             location: {
               chromosome: regionObjectId[2],
-              end: regionObjectId[3].split('-')[0],
-              start: regionObjectId[3].split('-')[1]
+              end: regionObjectId[3].split('-')[1],
+              start: regionObjectId[3].split('-')[0]
             },
             object_type: 'region'
           };
