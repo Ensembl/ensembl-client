@@ -118,7 +118,7 @@ export const changeBrowserLocation: ActionCreator<
     const stickEvent = new CustomEvent('bpane', {
       bubbles: true,
       detail: {
-        stick: chrCode
+        stick: `${activeGenomeId}${chrCode}`
       }
     });
 
