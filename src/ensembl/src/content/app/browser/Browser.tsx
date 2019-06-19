@@ -143,13 +143,13 @@ export const Browser: FunctionComponent<BrowserProps> = (
       dispatchBrowserLocation(chrLocationForGenome);
     } else {
       newUrl = urlFor.browser({ genomeId });
+      props.fetchExampleEnsObjects(genomeId);
       props.replace(newUrl);
     }
   };
 
   useEffect(() => {
     if (props.match.params.genomeId === undefined) {
-      debugger;
       if (props.activeGenomeId) {
         changeSelectedSpecies(props.activeGenomeId);
       } else if (props.committedSpecies) {
@@ -205,8 +205,10 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, [props.browserActivated]);
 
   const updateBrowserUrl = (genomeId: string = props.match.params.genomeId) => {
-    if (!genomeId) {
+    if (!genomeId && props.activeGenomeId) {
       genomeId = props.activeGenomeId;
+    } else if (!props.activeGenomeId) {
+      return;
     }
 
     let { focus } = props.browserQueryParams;
@@ -222,7 +224,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   useEffect(() => {
     updateBrowserUrl();
-  }, [props.chrLocation]);
+  }, [props.chrLocation, props.browserQueryParams.location]);
 
   const closeTrack = () => {
     if (props.drawerOpened === false) {
