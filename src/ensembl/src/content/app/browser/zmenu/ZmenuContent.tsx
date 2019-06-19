@@ -6,6 +6,7 @@ import styles from './Zmenu.scss';
 
 import {
   ZmenuContentFeature as ZmenuContentFeatureType,
+  ZmenuContentLine as ZmenuContentLineType,
   ZmenuContentBlock as ZmenuContentBlockType,
   ZmenuContentItem as ZmenuContentItemType,
   Markup
@@ -13,6 +14,11 @@ import {
 
 type ZmenuContentProps = {
   content: ZmenuContentFeatureType[];
+};
+
+type ZmenuContentFeatureProps = {
+  id: string;
+  lines: ZmenuContentLineType[];
 };
 
 type ZmenuContentLineProps = {
@@ -31,27 +37,39 @@ type ZmenuContentItemProps = ZmenuContentItemType & {
 
 const ZmenuContent = (props: ZmenuContentProps) => {
   const features = props.content;
-  const renderedContent = features.map((feature) =>
-    feature.lines.map((blocks, index) => (
-      <ZmenuContentLine key={index} id={feature.id} blocks={blocks} />
-    ))
-  );
+  const renderedContent = features.map((feature) => (
+    <ZmenuContentFeature
+      key={feature.id}
+      id={feature.id}
+      lines={feature.lines}
+    />
+  ));
   return <>{renderedContent}</>;
 };
 
-const ZmenuContentLine = (props: ZmenuContentLineProps) => {
+const ZmenuContentFeature = (props: ZmenuContentFeatureProps) => {
   return (
-    <p className={styles.zmenuContentLine}>
-      {props.blocks.map((items, index) => (
-        <ZmenuContentBlock key={index} id={props.id} items={items} />
+    <p className={styles.zmenuContentFeature}>
+      {props.lines.map((line, index) => (
+        <ZmenuContentLine key={index} id={props.id} blocks={line} />
       ))}
     </p>
   );
 };
 
+const ZmenuContentLine = (props: ZmenuContentLineProps) => {
+  return (
+    <div className={styles.zmenuContentLine}>
+      {props.blocks.map((items, index) => (
+        <ZmenuContentBlock key={index} id={props.id} items={items} />
+      ))}
+    </div>
+  );
+};
+
 const ZmenuContentBlock = (props: ZmenuContentBlockProps) => {
   return (
-    <span>
+    <span className={styles.zmenuContentBlock}>
       {props.items.map((item, index) => (
         <ZmenuContentItem key={index} id={props.id} {...item} />
       ))}

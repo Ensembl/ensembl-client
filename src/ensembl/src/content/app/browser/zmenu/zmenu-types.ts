@@ -37,7 +37,7 @@ export type ZmenuContentItem = {
 
 export type ZmenuContentBlock = ZmenuContentItem[];
 
-type ZmenuContentLine = ZmenuContentBlock[];
+export type ZmenuContentLine = ZmenuContentBlock[];
 
 export type ZmenuContentFeature = {
   id: string;

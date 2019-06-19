@@ -23,15 +23,21 @@ $zmenuBackgroundColor: $ens-black;
   }
 }
 
-.zmenuContentLine {
-  // for a line:
-  // margin: 0;
-  // line-height: 1;
-
-  // for a paragraph:
+.zmenuContentFeature {
   margin: 0;
   &:not(:last-of-type) {
     margin: 0 0 0.5em;
+  }
+}
+
+.zmenuContentLine {
+  margin: 0;
+  line-height: 1;
+}
+
+.zmenuContentBlock {
+  &:not(:last-child) {
+    margin-right: 1em;
   }
 }
 
