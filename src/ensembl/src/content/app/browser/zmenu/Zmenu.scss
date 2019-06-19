@@ -9,7 +9,9 @@ $zmenuBackgroundColor: $ens-black;
 
 .zmenu {
   position: relative;
-  padding: 20px;
+  padding: 5px 20px;
+  color: $ens-white;
+  // font-weight: $light;
   background-color: $zmenuBackgroundColor;
 }
 
@@ -22,10 +24,14 @@ $zmenuBackgroundColor: $ens-black;
 }
 
 .zmenuContentLine {
-  margin: 0;
+  // for a line:
+  // margin: 0;
+  // line-height: 1;
 
+  // for a paragraph:
+  margin: 0;
   &:not(:last-of-type) {
-    margin: 0 0 1em;
+    margin: 0 0 0.5em;
   }
 }
 
