@@ -5,7 +5,10 @@ stages:
   - deploy
 
 variables:
-  CONTAINER_IMAGE: $GITLAB_REGISTRY_URL/$GITLAB_REGISTRY_NAMESPACE/ensembl-client:${CI_COMMIT_SHORT_SHA}
+  STAGE_IMAGE_TAG: stage-${CI_COMMIT_SHORT_SHA}
+  PROD_IMAGE_TAG: prod-${CI_COMMIT_SHORT_SHA}
+  CONTAINER_STAGE_IMAGE: $GITLAB_REGISTRY_URL/$GITLAB_REGISTRY_NAMESPACE/ensembl-client:${STAGE_IMAGE_TAG}
+  CONTAINER_PROD_IMAGE: $GITLAB_REGISTRY_URL/$GITLAB_REGISTRY_NAMESPACE/ensembl-client:${PROD_IMAGE_TAG}
   KUBECONFIG: /etc/deploy/config
 
 Test & Build:
@@ -42,10 +45,13 @@ Nginx:
   - apk update && apk add git
   - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
   - git clone --depth 1 https://gitlab.ebi.ac.uk/kamal/ensembl-client-nginx.git
-  - docker build -t ${CONTAINER_IMAGE} -f ensembl-client-nginx/Dockerfile --no-cache .
+  - docker build -t ${CONTAINER_STAGE_IMAGE} -f ensembl-client-nginx/Dockerfile --no-cache .
+  - docker build -t ${CONTAINER_PROD_IMAGE} -f ensembl-client-nginx/Dockerfile.prod --no-cache .
   - echo "$GITLAB_REGISTRY_TOKEN" | docker login -u "$GITLAB_REGISTRY_USER" --password-stdin https://"$GITLAB_REGISTRY_URL"
-  - docker push ${CONTAINER_IMAGE}
-  - docker rmi ${CONTAINER_IMAGE}
+  - docker push ${CONTAINER_STAGE_IMAGE}
+  - docker push ${CONTAINER_PROD_IMAGE}
+  - docker rmi ${CONTAINER_STAGE_IMAGE}
+  - docker rmi ${CONTAINER_PROD_IMAGE}
   - docker logout "$GITLAB_REGISTRY_URL"
 
   only:
@@ -68,7 +74,7 @@ Staging:
   - cd ensembl-client-caas-deploy
   - git checkout refactor-manifest
   - cd ..
-  - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - sed -i "s/<VERSION>/${STAGE_IMAGE_TAG}/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - sed -i "s/<DEPLOYMNET_ENV>/staging/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - cat ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - kubectl config view
@@ -92,7 +98,7 @@ Live:
   - cd ensembl-client-caas-deploy
   - git checkout refactor-manifest
   - cd ..
-  - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - sed -i "s/<VERSION>/${PROD_IMAGE_TAG}/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - sed -i "s/<DEPLOYMNET_ENV>/prod/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - cat ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - kubectl config view
