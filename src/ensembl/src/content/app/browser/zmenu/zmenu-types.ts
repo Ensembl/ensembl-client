@@ -25,7 +25,9 @@ export enum Markup {
 export enum ZmenuAction {
   CREATE = 'create_zmenu',
   DESTROY = 'destroy_zmenu',
-  REPOSITION = 'update_zmenu_position'
+  REPOSITION = 'update_zmenu_position',
+  ENTER = 'zmenu-enter',
+  LEAVE = 'zmenu-leave'
 }
 
 export type ZmenuContentItem = {
@@ -75,14 +77,14 @@ export type ZmenuDestroyEvent = Event & {
 // (on mouseover; perhaps tap?)
 export type ZmenuEnterEvent = {
   id: string;
-  action: 'zmenu-enter';
+  action: ZmenuAction.ENTER;
 };
 
 // Sent from React to Genome browser
 // (on mouseleave, or on click outside)
 export type ZmenuLeaveEvent = {
   id: string;
-  action: 'zmenu-leave';
+  action: ZmenuAction.LEAVE;
 };
 
 // Sent from Genome browser to React

@@ -3,7 +3,6 @@ import React from 'react';
 import ZmenuContent from './ZmenuContent';
 
 import styles from './Zmenu.scss';
-import variables from 'src/styles/_settings.scss';
 
 import { ZmenuData, AnchorCoordinates } from './zmenu-types';
 
@@ -20,8 +19,8 @@ enum Direction {
 
 type Props = ZmenuData & {
   browserRef: React.RefObject<HTMLDivElement>;
-  onEnter: () => void;
-  onLeave: () => void;
+  onEnter: (id: string) => void;
+  onLeave: (id: string) => void;
 };
 
 type InlineStyles = { [key: string]: string | number | undefined };
@@ -46,6 +45,8 @@ const Zmenu = (props: Props) => {
     <div
       className={styles.zmenuWrapper}
       style={inlineStyles.body}
+      onMouseEnter={() => props.onEnter(props.id)}
+      onMouseLeave={() => props.onLeave(props.id)}
     >
       <div className={styles.zmenu}>
         <ZmenuContent content={props.content} />
