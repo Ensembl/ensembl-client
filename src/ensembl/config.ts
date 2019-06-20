@@ -8,5 +8,7 @@ export default {
   googleAnalyticsKey: process.env.GOOGLE_ANALYTICS_KEY,
 
   // Genesearch endpoint
-  genesearchAPIEndpoint: process.env.GENESEARCH_API_ENDPOINT
+  genesearchAPIEndpoint: process.env.GENESEARCH_API_ENDPOINT,
+
+  buildDate: process.env.BUILD_DATE
 };

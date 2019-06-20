@@ -14,7 +14,8 @@ const RobotstxtPlugin = require('robotstxt-webpack-plugin');
 // NOTE: if no environment variable with corresponding key is present, the value from .env.example will be used
 const dotenv = require('dotenv').config({ path: path.resolve(__dirname, '../.env.example') });
 const getEnvironmentVariables = () => Object.keys(dotenv.parsed).reduce((result, key) => ({
-  [`process.env.${key}`]: JSON.stringify(process.env[key])
+  [`process.env.${key}`]: JSON.stringify(process.env[key]),
+  'process.env.BUILD_DATE': new Date()
 }));
 
 // loaders specific to prod

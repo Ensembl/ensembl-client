@@ -31,7 +31,10 @@ const plugins = [
 
   // make environment variables available on the client-side
   new webpack.DefinePlugin({
-    'process.env': JSON.stringify(dotenv.parsed)
+    'process.env': JSON.stringify({
+      ...dotenv.parsed,
+      BUILD_DATE: new Date()
+    })
   })
 ];
 

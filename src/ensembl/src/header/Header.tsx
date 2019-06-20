@@ -1,6 +1,8 @@
 import React, { memo, FunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 
+import config from 'config';
+
 import HeaderButtons from './header-buttons/HeaderButtons';
 import LaunchbarContainer from './launchbar/LaunchbarContainer';
 import Account from './account/Account';
@@ -19,9 +21,19 @@ export const HomeLink = () => (
   </div>
 );
 
-export const ReleaseVersion = () => (
-  <div className={styles.strapline}>Pre-release - March 2019</div>
-);
+export const ReleaseVersion = () => {
+  const buildDate = new Date(config.buildDate);
+  const dateOptions = {
+    month: 'long',
+    year: 'numeric',
+  };
+  const longDate = new Intl.DateTimeFormat('en-GB', dateOptions)
+    .format(buildDate);
+
+  return (
+    <div className={styles.strapline}>Pre-release – {longDate}</div>
+  );
+};
 
 export const Copyright = () => (
   <div className={styles.copyright}>
