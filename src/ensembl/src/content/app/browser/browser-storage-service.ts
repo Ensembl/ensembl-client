@@ -73,17 +73,22 @@ export class BrowserStorageService {
   }
 
   public saveTrackStates(
+    genomeId: string,
     categoryName: string,
     trackName: string,
-    trackStatus: { [genomeId: string]: ImageButtonStatus }
+    trackStatus: ImageButtonStatus
   ) {
     const trackStates = this.getTrackStates();
 
-    if (!trackStates[categoryName]) {
-      trackStates[categoryName] = {};
+    if (!trackStates[genomeId]) {
+      trackStates[genomeId] = {};
     }
 
-    trackStates[categoryName][trackName] = trackStatus;
+    if (!trackStates[genomeId][categoryName]) {
+      trackStates[genomeId][categoryName] = {};
+    }
+
+    trackStates[genomeId][categoryName][trackName] = trackStatus;
 
     this.storageService.save(StorageKeys.TRACK_STATES, trackStates);
   }

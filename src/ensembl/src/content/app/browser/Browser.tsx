@@ -155,7 +155,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
       }
     }
     setTrackStatesFromStorage(browserStorageService.getTrackStates());
-  }, []);
+  }, [props.match.params.genomeId]);
 
   useEffect(() => {
     const { genomeId } = props.match.params;
@@ -163,9 +163,9 @@ export const Browser: FunctionComponent<BrowserProps> = (
     if (!genomeId) {
       return;
     }
-    const chrLocationForGenome = props.chrLocation[genomeId];
+
     props.updateBrowserActiveGenomeIdAndSave(genomeId);
-    dispatchBrowserLocation(chrLocationForGenome);
+
     props.fetchGenomeTrackCategories(genomeId);
     props.fetchGenomeInfo(genomeId);
   }, [props.match.params.genomeId]);
@@ -175,15 +175,16 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, [props.genomeInfo]);
 
   useEffect(() => {
-    const { focus, location } = props.browserQueryParams;
+    const { focus } = props.browserQueryParams;
+    const { genomeId } = props.match.params;
+    let location = props.chrLocation[genomeId];
+    if (!location && props.browserQueryParams.location) {
+      location = getChrLocationFromStr(props.browserQueryParams.location);
+    }
     if (!location || !focus) {
       return;
     }
-    const { genomeId } = props.match.params;
-
-    const chrLocation = getChrLocationFromStr(location);
-
-    dispatchBrowserLocation(chrLocation);
+    dispatchBrowserLocation(location);
     props.fetchEnsObject(focus, genomeId);
     props.fetchEnsObjectTracks(focus, genomeId);
     props.updateBrowserActiveEnsObjectIdAndSave(focus);
@@ -213,10 +214,16 @@ export const Browser: FunctionComponent<BrowserProps> = (
     if (!focus && props.activeEnsObjectId[genomeId]) {
       focus = props.activeEnsObjectId[genomeId];
     }
-    const chrLocationForGenome = props.chrLocation[genomeId];
-    const location = getChrLocationStr(chrLocationForGenome);
-    const newUrl = urlFor.browser({ genomeId, focus, location });
+    let chrLocationForGenome = props.chrLocation[genomeId];
 
+    if (!chrLocationForGenome && props.browserQueryParams.location) {
+      chrLocationForGenome = getChrLocationFromStr(
+        props.browserQueryParams.location
+      );
+    }
+    const location = getChrLocationStr(chrLocationForGenome);
+
+    const newUrl = urlFor.browser({ genomeId, focus, location });
     props.replace(newUrl);
   };
 
