@@ -50,11 +50,12 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   // (and stored in redux store; localStorage should be used to store the relevant part of redux store between browser reloads)
   useEffect(() => {
     const trackStates = browserStorageService.getTrackStates();
-    const storedTrackStatus = get(
+    const storedTrackStatus: ImageButtonStatus = get(
       trackStates,
-      `${activeGenomeId}.${categoryName}.${track.track_id}`
-    );
-    console.log('storedTrackStatus', storedTrackStatus);
+      `${activeGenomeId}.${categoryName}.${track.track_id}`,
+      ImageButtonStatus.ACTIVE
+    ) as ImageButtonStatus;
+
     if (storedTrackStatus && storedTrackStatus !== trackStatus) {
       setTrackStatus(storedTrackStatus);
     }

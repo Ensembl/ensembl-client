@@ -26,6 +26,8 @@ import {
 } from '../browserActions';
 import browserStorageService from '../browser-storage-service';
 
+import { ChrLocation } from '../browserState';
+
 import { CircleLoader } from 'src/shared/loader/Loader';
 
 import { RootState } from 'src/store';

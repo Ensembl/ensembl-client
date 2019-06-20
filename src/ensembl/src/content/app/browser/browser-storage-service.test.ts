@@ -71,15 +71,18 @@ describe('BrowserStorageService', () => {
       );
 
       const toggledTrack = {
-        'Genes & transcripts': {
-          'gene-pc-fwd': { homo_sapiens38: ImageButtonStatus.INACTIVE }
+        homo_sapiens38: {
+          'Genes & transcripts': {
+            'gene-pc-fwd': ImageButtonStatus.INACTIVE
+          }
         }
       };
 
       browserStorageService.saveTrackStates(
+        'homo_sapiens38',
         'Genes & transcripts',
         'gene-pc-fwd',
-        { homo_sapiens38: ImageButtonStatus.INACTIVE }
+        ImageButtonStatus.INACTIVE
       );
 
       expect(mockStorageService.save).toHaveBeenCalledWith(
