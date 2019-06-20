@@ -7,6 +7,7 @@ import React, {
   useCallback,
   useEffect
 } from 'react';
+import get from 'lodash/get';
 
 import { TrackItemColour } from '../trackPanelConfig';
 
@@ -45,6 +46,20 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   const [trackStatus, setTrackStatus] = useState(props.defaultTrackStatus);
   const { activeGenomeId, browserRef, categoryName, drawerView, track } = props;
 
+  // FIXME: rather reading trackstates from localStorage (multiple times!), they should be passed as props
+  // (and stored in redux store; localStorage should be used to store the relevant part of redux store between browser reloads)
+  useEffect(() => {
+    const trackStates = browserStorageService.getTrackStates();
+    const storedTrackStatus = get(
+      trackStates,
+      `${activeGenomeId}.${categoryName}.${track.track_id}`
+    );
+    console.log('storedTrackStatus', storedTrackStatus);
+    if (storedTrackStatus && storedTrackStatus !== trackStatus) {
+      setTrackStatus(storedTrackStatus);
+    }
+  }, [props.activeGenomeId]);
+
   useEffect(() => {
     const trackToggleStates = browserStorageService.getTrackListToggleStates();
 
@@ -55,7 +70,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     ) {
       setExpanded(trackToggleStates[activeGenomeId][track.track_id]);
     }
-  }, [props.activeGenomeId]);
+  }, []);
 
   const getListItemClasses = useCallback((): string => {
     let classNames: string = styles.listItem;
