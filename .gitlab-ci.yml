@@ -1,15 +1,30 @@
 # CICD - Reload with /api/ensembl_object endpoint
 stages:
+  - test
   - test_build_static
   - build_docker_images
   - deploy
 
 variables:
-  STAGE_IMAGE_TAG: stage-${CI_COMMIT_SHORT_SHA}
-  PROD_IMAGE_TAG: prod-${CI_COMMIT_SHORT_SHA}
-  CONTAINER_STAGE_IMAGE: $GITLAB_REGISTRY_URL/$GITLAB_REGISTRY_NAMESPACE/ensembl-client:stage-${CI_COMMIT_SHORT_SHA}
-  CONTAINER_PROD_IMAGE: $GITLAB_REGISTRY_URL/$GITLAB_REGISTRY_NAMESPACE/ensembl-client:prod-${CI_COMMIT_SHORT_SHA}
+  CONTAINER_IMAGE: $GITLAB_REGISTRY_URL/$GITLAB_REGISTRY_NAMESPACE/ensembl-client:${CI_COMMIT_SHORT_SHA}
   KUBECONFIG: /etc/deploy/config
+  KUBECONTEXT: ens-dev-ctx
+  DEPLOYENV: dev
+
+Test:
+  image: node:10.15.1
+  stage: test
+
+  before_script:
+  - cd src/ensembl
+  - npm ci
+
+  script:
+  - npm run test
+
+  except:
+  - dev
+  - master
 
 Test & Build:
   image: node:10.15.1
@@ -31,7 +46,8 @@ Test & Build:
     - src/ensembl/dist/
 
   only:
-  - cicd-test
+  - dev
+  - master
 
 Nginx:
   image: docker
@@ -41,27 +57,30 @@ Nginx:
   
   stage: build_docker_images
 
+  before_script:
+  - case "${CI_COMMIT_REF_NAME}" in dev) DEPLOYENV="staging" ;; master) DEPLOYENV="prod" ;; *) DEPLOYENV="dev" ;; esac
+
   script:
   - apk update && apk add git
   - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
   - git clone --depth 1 https://gitlab.ebi.ac.uk/kamal/ensembl-client-nginx.git
-  - docker build -t ${CONTAINER_STAGE_IMAGE} -f ensembl-client-nginx/Dockerfile --no-cache .
-  - docker build -t ${CONTAINER_PROD_IMAGE} -f ensembl-client-nginx/Dockerfile.prod --no-cache .
+  - cd ensembl-client-nginx
+  - git checkout june-release
+  - cd ..
+  - sed -i "s/<DEPLOYMNET_ENV>/${DEPLOYENV}/g" ensembl-client-nginx/config/conf.d/local.conf
+  - docker build -t ${CONTAINER_IMAGE} -f ensembl-client-nginx/Dockerfile --no-cache .
   - echo "$GITLAB_REGISTRY_TOKEN" | docker login -u "$GITLAB_REGISTRY_USER" --password-stdin https://"$GITLAB_REGISTRY_URL"
-  - docker push ${CONTAINER_STAGE_IMAGE}
-  - docker push ${CONTAINER_PROD_IMAGE}
-  - docker rmi ${CONTAINER_STAGE_IMAGE}
-  - docker rmi ${CONTAINER_PROD_IMAGE}
+  - docker push ${CONTAINER_IMAGE}
+  - docker rmi ${CONTAINER_IMAGE}
   - docker logout "$GITLAB_REGISTRY_URL"
 
   only:
-  - cicd-test
+  - dev
+  - master
 
 Staging:
   stage: deploy
   image: alpine
-  only:
-  - cicd-test
   before_script:
   - mkdir -p /etc/deploy
   - echo ${EMBASSY_KUBECONFIG} | base64 -d > ${KUBECONFIG}
@@ -74,18 +93,18 @@ Staging:
   - cd ensembl-client-caas-deploy
   - git checkout refactor-manifest
   - cd ..
-  - sed -i "s/<VERSION>/${STAGE_IMAGE_TAG}/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - sed -i "s/<DEPLOYMNET_ENV>/staging/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - cat ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - kubectl config view
   - kubectl config use-context ens-stage-ctx
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  only:
+  - dev
 
 Live:
   stage: deploy
   image: alpine
-  only:
-  - cicd-test
   before_script:
   - mkdir -p /etc/deploy
   - echo ${EMBASSY_KUBECONFIG} | base64 -d > ${KUBECONFIG}
@@ -98,10 +117,11 @@ Live:
   - cd ensembl-client-caas-deploy
   - git checkout refactor-manifest
   - cd ..
-  - sed -i "s/<VERSION>/${PROD_IMAGE_TAG}/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - sed -i "s/<DEPLOYMNET_ENV>/prod/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - cat ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - kubectl config view
   - kubectl config use-context ens-prod-ctx
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  when: manual
+  only:
+  - master
