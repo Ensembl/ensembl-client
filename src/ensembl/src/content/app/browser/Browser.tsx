@@ -12,7 +12,6 @@ import BrowserBar from './browser-bar/BrowserBar';
 import BrowserImage from './browser-image/BrowserImage';
 import BrowserNavBar from './browser-nav/BrowserNavBar';
 import TrackPanel from './track-panel/TrackPanel';
-import Drawer from './drawer/Drawer';
 
 import { RootState } from 'src/store';
 import {
@@ -116,9 +115,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
   useEffect(() => {
     const { params } = props.match;
     const newChrLocationStr = getChrLocationStr(props.chrLocation);
-    const newUrl = `/app/browser/${params.species}/${
-      params.stableId
-    }?region=${newChrLocationStr}`;
+    const newUrl = `/app/browser/${params.species}/${params.stableId}?region=${newChrLocationStr}`;
 
     props.replace(newUrl);
   }, [props.chrLocation, props.location.search]);
