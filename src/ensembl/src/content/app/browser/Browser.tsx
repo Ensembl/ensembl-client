@@ -155,7 +155,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
       }
     }
     setTrackStatesFromStorage(browserStorageService.getTrackStates());
-  }, []);
+  }, [props.match.params.genomeId]);
 
   useEffect(() => {
     const { genomeId } = props.match.params;
@@ -163,6 +163,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
     if (!genomeId) {
       return;
     }
+
     props.updateBrowserActiveGenomeIdAndSave(genomeId);
 
     props.fetchGenomeTrackCategories(genomeId);

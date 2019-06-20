@@ -74,15 +74,22 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   };
 
   const getDefaultTrackStatus = (categoryName: string, trackName: string) => {
-    const statesOfCategory = props.trackStates[categoryName];
+    let trackStatus = ImageButtonStatus.ACTIVE;
 
-    let defaultTrackStatus = ImageButtonStatus.ACTIVE;
+    if (!props.trackStates[props.activeGenomeId]) {
+      return trackStatus;
+    }
+    const statesOfCategory =
+      props.trackStates[props.activeGenomeId][categoryName];
 
     if (statesOfCategory && statesOfCategory[trackName]) {
-      defaultTrackStatus = statesOfCategory[trackName][props.activeGenomeId];
+      trackStatus =
+        statesOfCategory[trackName] === 'active'
+          ? ImageButtonStatus.ACTIVE
+          : ImageButtonStatus.INACTIVE;
     }
 
-    return defaultTrackStatus;
+    return trackStatus;
   };
 
   const getTrackListItem = (

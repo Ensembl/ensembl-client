@@ -55,7 +55,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     ) {
       setExpanded(trackToggleStates[activeGenomeId][track.track_id]);
     }
-  }, []);
+  }, [props.activeGenomeId]);
 
   const getListItemClasses = useCallback((): string => {
     let classNames: string = styles.listItem;
@@ -128,10 +128,13 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
         ? ImageButtonStatus.INACTIVE
         : ImageButtonStatus.ACTIVE;
 
+    browserStorageService.saveTrackStates(
+      activeGenomeId,
+      categoryName,
+      track.track_id,
+      newImageButtonStatus
+    );
     setTrackStatus(newImageButtonStatus);
-    browserStorageService.saveTrackStates(categoryName, track.track_id, {
-      [activeGenomeId]: newImageButtonStatus
-    });
   };
 
   return (
