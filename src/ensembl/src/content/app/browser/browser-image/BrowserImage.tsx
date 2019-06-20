@@ -15,13 +15,16 @@ import {
   getBrowserCogTrackList,
   getBrowserNavOpened,
   getBrowserActivated,
-  getBrowserActiveGenomeId
+  getBrowserActiveGenomeId,
+  getChrLocation
 } from '../browserSelectors';
 import {
   activateBrowser,
   updateBrowserActivated,
-  updateBrowserNavStates
+  updateBrowserNavStates,
+  updateChrLocation
 } from '../browserActions';
+import browserStorageService from '../browser-storage-service';
 
 import { CircleLoader } from 'src/shared/loader/Loader';
 
@@ -35,12 +38,14 @@ type StateProps = {
   trackConfigNames: any;
   trackConfigLabel: any;
   browserActivated: boolean;
+  chrLocation: { [genomeId: string]: ChrLocation };
 };
 
 type DispatchProps = {
   activateBrowser: (browserEl: HTMLDivElement) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
+  updateChrLocation: (chrLocation: { [genomeId: string]: ChrLocation }) => void;
 };
 
 type OwnProps = {
@@ -53,6 +58,7 @@ type BrowserImageProps = StateProps & DispatchProps & OwnProps;
 type BpaneOutEvent = Event & {
   detail: {
     bumper?: BrowserNavStates;
+    location: string;
   };
 };
 
@@ -62,9 +68,25 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   const listenBpaneOut = useCallback((event: Event) => {
     const bpaneOutEvent = event as BpaneOutEvent;
     const navIconStates = bpaneOutEvent.detail.bumper as BrowserNavStates;
+    const location = bpaneOutEvent.detail.location;
 
     if (navIconStates) {
       props.updateBrowserNavStates(navIconStates);
+    }
+
+    if (location) {
+      const chrLocation = [
+        location[0].split(':')[1],
+        Number(location[1]),
+        Number(location[2])
+      ] as ChrLocation;
+
+      const currentChrLocation = props.chrLocation;
+      const updatedChrLocation = { ...currentChrLocation };
+      updatedChrLocation[props.activeGenomeId] = chrLocation;
+
+      props.updateChrLocation(updatedChrLocation);
+      browserStorageService.updateChrLocation(updatedChrLocation);
     }
   }, []);
 
@@ -192,12 +214,14 @@ const mapStateToProps = (state: RootState): StateProps => ({
   browserNavOpened: getBrowserNavOpened(state),
   trackConfigLabel: getTrackConfigLabel(state),
   trackConfigNames: getTrackConfigNames(state),
-  browserActivated: getBrowserActivated(state)
+  browserActivated: getBrowserActivated(state),
+  chrLocation: getChrLocation(state)
 });
 
 const mapDispatchToProps: DispatchProps = {
   activateBrowser,
   updateBrowserActivated,
+  updateChrLocation,
   updateBrowserNavStates
 };
 
