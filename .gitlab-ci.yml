@@ -1,11 +1,127 @@
-image: docker:latest
+# CICD - Reload with /api/ensembl_object endpoint
+stages:
+  - test
+  - test_build_static
+  - build_docker_images
+  - deploy
 
-services:
-  - docker:dind
+variables:
+  CONTAINER_IMAGE: $GITLAB_REGISTRY_URL/$GITLAB_REGISTRY_NAMESPACE/ensembl-client:${CI_COMMIT_SHORT_SHA}
+  KUBECONFIG: /etc/deploy/config
+  KUBECONTEXT: ens-dev-ctx
+  DEPLOYENV: dev
 
-before_script:
-  - docker info
+Test:
+  image: node:10.15.1
+  stage: test
 
-test_job:
+  before_script:
+  - cd src/ensembl
+  - npm ci
+
   script:
-    - docker build -t my-docker-image src/ensembl
+  - npm run test
+
+  except:
+  - dev
+  - master
+
+Test & Build:
+  image: node:10.15.1
+  stage: test_build_static
+
+  before_script:
+  - cd src/ensembl
+  - npm ci
+
+  script:
+  - npm run test
+  - export NODE_ENV=production
+  - export API_HOST=''
+  - npm run build
+
+  artifacts:
+    name: static_assets
+    paths:
+    - src/ensembl/dist/
+
+  only:
+  - dev
+  - master
+
+Nginx:
+  image: docker
+  
+  services:
+    - docker:dind
+  
+  stage: build_docker_images
+
+  before_script:
+  - case "${CI_COMMIT_REF_NAME}" in dev) DEPLOYENV="staging" ;; master) DEPLOYENV="prod" ;; *) DEPLOYENV="dev" ;; esac
+
+  script:
+  - apk update && apk add git
+  - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
+  - git clone --depth 1 https://gitlab.ebi.ac.uk/kamal/ensembl-client-nginx.git
+  - cd ensembl-client-nginx
+  - git checkout june-release
+  - cd ..
+  - sed -i "s/<DEPLOYMNET_ENV>/${DEPLOYENV}/g" ensembl-client-nginx/config/conf.d/local.conf
+  - docker build -t ${CONTAINER_IMAGE} -f ensembl-client-nginx/Dockerfile --no-cache .
+  - echo "$GITLAB_REGISTRY_TOKEN" | docker login -u "$GITLAB_REGISTRY_USER" --password-stdin https://"$GITLAB_REGISTRY_URL"
+  - docker push ${CONTAINER_IMAGE}
+  - docker rmi ${CONTAINER_IMAGE}
+  - docker logout "$GITLAB_REGISTRY_URL"
+
+  only:
+  - dev
+  - master
+
+Staging:
+  stage: deploy
+  image: alpine
+  before_script:
+  - mkdir -p /etc/deploy
+  - echo ${EMBASSY_KUBECONFIG} | base64 -d > ${KUBECONFIG}
+  script:
+  - apk update && apk add --no-cache curl git
+  - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+  - chmod +x ./kubectl
+  - mv ./kubectl /usr/local/bin/kubectl
+  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
+  - cd ensembl-client-caas-deploy
+  - git checkout refactor-manifest
+  - cd ..
+  - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - sed -i "s/<DEPLOYMNET_ENV>/staging/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - cat ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - kubectl config view
+  - kubectl config use-context ens-stage-ctx
+  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  only:
+  - dev
+
+Live:
+  stage: deploy
+  image: alpine
+  before_script:
+  - mkdir -p /etc/deploy
+  - echo ${EMBASSY_KUBECONFIG} | base64 -d > ${KUBECONFIG}
+  script:
+  - apk update && apk add --no-cache curl git
+  - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+  - chmod +x ./kubectl
+  - mv ./kubectl /usr/local/bin/kubectl
+  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
+  - cd ensembl-client-caas-deploy
+  - git checkout refactor-manifest
+  - cd ..
+  - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - sed -i "s/<DEPLOYMNET_ENV>/prod/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - cat ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - kubectl config view
+  - kubectl config use-context ens-prod-ctx
+  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  only:
+  - master

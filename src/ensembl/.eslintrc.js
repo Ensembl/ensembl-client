@@ -27,7 +27,8 @@ module.exports = {
     'react/prop-types': 0,
     'react/no-unescaped-entities': 0,
     'react-hooks/rules-of-hooks': 2,
-    'prettier/prettier': 0
+    'prettier/prettier': 0,
+    'no-unused-vars': ['warn', { args: 'after-used' }]
   },
   settings: {
     react: {
