@@ -83,8 +83,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
 
       const currentChrLocation = props.chrLocation;
       const updatedChrLocation = { ...currentChrLocation };
-      updatedChrLocation[props.activeGenomeId] = chrLocation;
-
+      updatedChrLocation[location[0].split(':')[0]] = chrLocation;
       props.updateChrLocation(updatedChrLocation);
       browserStorageService.updateChrLocation(updatedChrLocation);
     }
