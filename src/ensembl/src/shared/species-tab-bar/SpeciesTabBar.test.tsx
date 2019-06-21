@@ -8,6 +8,10 @@ import SpeciesTab from 'src/shared/species-tab/SpeciesTab';
 
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
+jest.mock('react-router-dom', () => ({
+  Link: (props: any) => <div>{props.children}</div>
+}));
+
 const speciesList = times(5, () => createSelectedSpecies());
 const onTabSelect = jest.fn();
 

@@ -145,7 +145,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
             genomeSelectorActive={props.genomeSelectorActive}
             toggleGenomeSelector={props.toggleGenomeSelector}
           />
-          {!props.genomeSelectorActive && (
+          {!props.genomeSelectorActive && props.ensObjectInfo.genome_id && (
             <BrowserNavigatorButton
               navigator={navigator}
               toggleNavigator={toggleNavigator}
@@ -157,6 +157,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
       {props.trackPanelOpened && (
         <BrowserTabs
           activeGenomeId={props.activeGenomeId}
+          ensObjectInfo={props.ensObjectInfo}
           drawerOpened={props.drawerOpened}
           genomeSelectorActive={props.genomeSelectorActive}
           selectBrowserTabAndSave={props.selectBrowserTabAndSave}
