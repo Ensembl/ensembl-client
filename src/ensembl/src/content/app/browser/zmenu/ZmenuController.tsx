@@ -35,8 +35,6 @@ const ZmenuController = (props: Props) => {
 
     browserElement.addEventListener('bpane-zmenu', eventHandler);
 
-    mockEventEmitter.start(props.browserRef.current as HTMLDivElement);
-
     return () =>
       browserElement.removeEventListener('bpane-zmenu', eventHandler);
   }, []);
