@@ -3,8 +3,9 @@ import { RootState } from 'src/store';
 export const getFiltersAccordionExpandedPanel = (state: RootState): string =>
   state.customDownload.filtersAccordion.expandedPanel;
 
-export const getFiltersAccordionExpandedGenePanels = (state: RootState): [] =>
-  state.customDownload.filtersAccordion.expandedGenePanels;
+export const getFiltersAccordionExpandedGenePanels = (
+  state: RootState
+): string[] => state.customDownload.filtersAccordion.expandedGenePanels;
 
 export const getFilters = (state: RootState): {} =>
   state.customDownload.filtersAccordion.filters;
