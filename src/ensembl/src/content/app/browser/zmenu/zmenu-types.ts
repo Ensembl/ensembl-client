@@ -37,7 +37,7 @@ export type ZmenuContentItem = {
 
 export type ZmenuContentBlock = ZmenuContentItem[];
 
-type ZmenuContentLine = ZmenuContentBlock[];
+export type ZmenuContentLine = ZmenuContentBlock[];
 
 export type ZmenuContentFeature = {
   id: string;
@@ -105,53 +105,3 @@ export type ZmenuIncomingEvent =
   | ZmenuCreateEvent
   | ZmenuDestroyEvent
   | ZmenuRepositionEvent;
-
-/*
-
-======= EXAMPLE OF ZMENU CONTENT ========
-
-[
-  {
-    id: "transrcipt:ENST00000380152.7", // (4)
-    lines: [
-      [ // first line
-        [ // "Transcript ENST....."
-          { text: "Transcript", markup: [] },
-          { text: "ENST00000380152.7", markup: ["strong"] }
-        ],
-        [ // protein coding
-          { text: "protein coding", markup: [] }
-        ],
-        [ // forward strand
-          { text: "forward strand", markup: [] }
-        ]
-      ],
-      [ // second line
-        [ // ENST....
-          { text: "ENST00000380152.7", markup: ["focus"] },
-          { text: "MANE select", markup: [] }
-        ]
-      ]
-    ]
-  },{
-    id: "gene:ENSG00000139618", // (4)
-    lines: [
-      [
-        [ // "Gene BRCA2"
-          { text: "Gene", markup: [] },
-          { text: "BRCA2", markup: ["strong"] }
-        ],
-        [ // DNA-repair associated
-          { text: "DNA-repair associated", markup: [] },
-        ]
-      ],
-      [ // fourth line
-        [
-          { text: "ENSG00000139618", markup: [] }
-        ]
-      ]
-    ]
-  }
-]
-
-*/

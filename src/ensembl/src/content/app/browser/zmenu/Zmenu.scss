@@ -1,6 +1,6 @@
 @import 'src/styles/common';
 
-$zmenuBackgroundColor: $ens-dark-grey;
+$zmenuBackgroundColor: $ens-black;
 
 .zmenuWrapper {
   position: absolute;
@@ -9,7 +9,8 @@ $zmenuBackgroundColor: $ens-dark-grey;
 
 .zmenu {
   position: relative;
-  padding: 20px;
+  padding: 5px 20px;
+  color: $ens-white;
   background-color: $zmenuBackgroundColor;
 }
 
@@ -21,11 +22,21 @@ $zmenuBackgroundColor: $ens-dark-grey;
   }
 }
 
-.zmenuContentLine {
+.zmenuContentFeature {
   margin: 0;
-
   &:not(:last-of-type) {
-    margin: 0 0 1em;
+    margin: 0 0 0.5em;
+  }
+}
+
+.zmenuContentLine {
+  display: block;
+  line-height: 1;
+}
+
+.zmenuContentBlock {
+  &:not(:last-child) {
+    margin-right: 1em;
   }
 }
 
@@ -35,9 +46,6 @@ $zmenuBackgroundColor: $ens-dark-grey;
 
 .markupLight {
   font-weight: $light;
-}
-
-.markupFocus {
 }
 
 .markupEmphasis {
