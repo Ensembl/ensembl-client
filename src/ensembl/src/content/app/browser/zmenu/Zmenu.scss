@@ -9,9 +9,13 @@ $zmenuBackgroundColor: $ens-black;
 
 .zmenu {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   padding: 5px 20px;
   color: $ens-white;
   background-color: $zmenuBackgroundColor;
+  min-height: 40px;
 }
 
 .zmenuTip {
