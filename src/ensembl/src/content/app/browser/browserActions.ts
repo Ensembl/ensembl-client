@@ -3,6 +3,7 @@ import { Dispatch, ActionCreator, Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 
 import config from 'config';
+
 import { BrowserNavStates, ChrLocation, CogList } from './browserState';
 import {
   getBrowserActiveGenomeId,
