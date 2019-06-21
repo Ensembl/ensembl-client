@@ -1,0 +1,45 @@
+@import 'src/styles/common';
+
+$zmenuBackgroundColor: $ens-dark-grey;
+
+.zmenuWrapper {
+  position: absolute;
+  filter: drop-shadow(2px 2px 3px $ens-shadow-color);
+}
+
+.zmenu {
+  position: relative;
+  padding: 20px;
+  background-color: $zmenuBackgroundColor;
+}
+
+.zmenuTip {
+  position: absolute;
+
+  polygon {
+    fill: $zmenuBackgroundColor;
+  }
+}
+
+.zmenuContentLine {
+  margin: 0;
+
+  &:not(:last-of-type) {
+    margin: 0 0 1em;
+  }
+}
+
+.markupStrong {
+  font-weight: $bold;
+}
+
+.markupLight {
+  font-weight: $light;
+}
+
+.markupFocus {
+}
+
+.markupEmphasis {
+  font-style: italic;
+}

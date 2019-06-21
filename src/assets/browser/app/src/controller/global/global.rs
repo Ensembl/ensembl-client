@@ -83,7 +83,7 @@ impl GlobalImpl {
 
     pub fn get_apprunner(&mut self, key: &str) -> Option<AppRunner> {
         if let Entry::Occupied(mut e) = self.apps.entry(key.to_string()) {
-            let mut ar = e.get_mut().clone();
+            let ar = e.get_mut().clone();
             Some(ar)
         } else {
             None
@@ -109,7 +109,7 @@ impl Global {
         sched.beat(SCHEDULER_ALLOC);
         let mut out = self.clone();
         window().request_animation_frame(
-            move |t| out.tick()
+            move |_| out.tick()
         );
     }
     

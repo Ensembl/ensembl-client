@@ -7,8 +7,8 @@ use dom::webgl::{
     WebGLBuffer as glbuf,
 };
 
-use program::data::{ DataBatch };
-use program::objects::Object;
+use super::super::data::{ DataBatch };
+use super::super::objects::Object;
 use drivers::webgl::GLProgData;
 
 pub struct ObjectMain {

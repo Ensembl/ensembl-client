@@ -4,8 +4,8 @@ use dom::webgl::{
 
 use drivers::webgl::Drawing;
 use drivers::webgl::GLProgData;
-use program::data::{ DataBatch, DataGroupIndex, Input };
-use program::objects::UniformValue;
+use super::super::data::{ DataBatch, DataGroupIndex, Input };
+use super::UniformValue;
 
 /* This is the meat of each Object implementation */
 pub trait Object {
@@ -29,7 +29,7 @@ pub trait Object {
 
     fn obj_final(&mut self, _batch: &DataBatch, _ctx: &glctx, _ds: &mut GLProgData) {}
     fn execute(&mut self, _ctx: &glctx, _batch: &DataBatch) {}
-    fn clear(&mut self, ctx: &glctx) {}
+    fn clear(&mut self, _ctx: &glctx) {}
     
     fn size(&self) -> usize { 0 } /* used in debugging performance */
 }

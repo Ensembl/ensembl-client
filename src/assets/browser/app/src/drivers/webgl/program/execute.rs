@@ -6,11 +6,11 @@ use dom::webgl::{
     WebGLProgram as glprog,
 };
 
-use program::source::{ Source, ProgramSource };
-use program::objects::Object;
-use program::data::{ DataBatch, DataGroupIndex, BatchManager };
-use program::gpuspec::GPUSpec;
-use program::impls::ProgramType;
+use super::source::{ Source, ProgramSource };
+use super::objects::Object;
+use super::data::{ DataBatch, DataGroupIndex, BatchManager };
+use super::gpuspec::GPUSpec;
+use super::impls::ProgramType;
 use drivers::webgl::GLProgData;
 
 pub struct ProgramAttribs {
@@ -104,7 +104,7 @@ impl ProgramAttribs {
                         indexes: &[u16], points: u16) -> DataBatch {
         let b = self.bman.get_batch(&group,points);
         if let Some(obj_idx) = self.main_idx {
-            let mut main = &mut self.objects[obj_idx];
+            let main = &mut self.objects[obj_idx];
             main.add_index(&b,indexes,points);
         }
         b

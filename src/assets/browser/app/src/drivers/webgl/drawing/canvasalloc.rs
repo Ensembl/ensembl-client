@@ -6,7 +6,7 @@ use stdweb::unstable::TryInto;
 
 use dom::domutil;
 use super::{  CarriageCanvases, FlatCanvas };
-use program::{ CanvasCache, CanvasWeave };
+use super::super::program::{ CanvasCache, CanvasWeave };
 use types::Dot;
 
 #[derive(Debug)]

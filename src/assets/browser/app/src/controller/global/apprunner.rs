@@ -9,7 +9,7 @@ use controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup };
 use controller::input::{
     register_direct_events, register_user_events, register_dom_events
 };
-use controller::output::{ OutputAction, Report, ViewportReport };
+use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports };
 
 #[cfg(any(not(deploy),console))]
 use data::blackbox::{
@@ -23,8 +23,6 @@ use dom::event::EventControl;
 use dom::domutil::browser_time;
 use tácode::Tácode;
 
-const SIZE_CHECK_INTERVAL_MS: f64 = 500.;
-
 struct AppRunnerImpl {
     g: GlobalWeak,
     el: HtmlElement,
@@ -33,10 +31,7 @@ struct AppRunnerImpl {
     controls: Vec<Box<EventControl<()>>>,
     sched_group: SchedulerGroup,
     tc: Tácode,
-    http_manager: HttpManager,
     debug_reporter: BlackBoxDriver,
-    config: BackendConfig,
-    config_url: Url,
     browser_el: HtmlElement
 }
 
@@ -50,7 +45,7 @@ impl AppRunner {
     pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<Bling>, config_url: &Url, config: &BackendConfig, debug_reporter: BlackBoxDriver) -> AppRunner {
         let browser_el : HtmlElement = bling.apply_bling(&el);
         let tc = Tácode::new();
-        let st = App::new(&tc,config,&http_manager,&browser_el,&config_url,&el);
+        let st = App::new(&tc,config,&http_manager,&browser_el,&config_url);
         let sched_group = {
             let g = unwrap!(g.clone().upgrade()).clone();
             g.scheduler_clone().make_group()
@@ -63,10 +58,7 @@ impl AppRunner {
             controls: Vec::<Box<EventControl<()>>>::new(),
             sched_group,
             tc: tc.clone(),
-            http_manager: http_manager.clone(),
             debug_reporter,
-            config: config.clone(),
-            config_url: config_url.clone(),
             browser_el: browser_el.clone()
         })));
         {
@@ -77,11 +69,13 @@ impl AppRunner {
         out.init();
         let report = Report::new(&mut out);
         let viewport_report = ViewportReport::new(&mut out);
+        let zmenu_reports = ZMenuReports::new(&mut out);
         {
             let mut imp = out.0.lock().unwrap();
             let app = imp.app.clone();
             app.lock().unwrap().set_report(report);
             app.lock().unwrap().set_viewport_report(viewport_report);
+            app.lock().unwrap().set_zmenu_reports(zmenu_reports);
             let el = imp.el.clone();
             imp.bling.activate(&app,&el);
         }
@@ -149,14 +143,14 @@ impl AppRunner {
                 }),0,true);
             }
             /* xfer */
-            self.add_timer("xfer",move |app,t,sr| {
+            self.add_timer("xfer",move |app,_,sr| {
                 if !app.tick_xfer() {
                     sr.unproductive();
                 }
                 vec![]
             },2);
             /* resize check */
-            self.add_timer("resizer",move |app,t,sr| {
+            self.add_timer("resizer",move |app,_,_| {
                 app.check_size();
                 vec![]
             },0);

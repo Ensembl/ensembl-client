@@ -119,7 +119,7 @@ impl BackendConfig {
         let mut data = Vec::<Value>::new();
         for v in data_in[name].as_array().unwrap_or(&vec!{}).iter() {
             if v.is_string() {
-                data.push(Value::new_from_string(v.as_str().unwrap().to_string()));
+                data.push(Value::new_from_string(vec![v.as_str().unwrap().to_string()]));
             } else {
                 let mut array = Vec::<f64>::new();
                 for x in v.as_array().unwrap_or(&vec!{}).iter() {
@@ -133,7 +133,7 @@ impl BackendConfig {
     
     fn assets_from_json(assets: &SerdeValue, data: &SerdeValue) -> HashMap<String,Rc<BackendAsset>> {
         let mut out = HashMap::<String,Rc<BackendAsset>>::new();
-        for (name,v) in assets.as_object().unwrap().iter() {
+        for name in assets.as_object().unwrap().keys() {
             out.insert(name.to_string(),BackendConfig::one_asset_from_json(name,data));
         }
         out

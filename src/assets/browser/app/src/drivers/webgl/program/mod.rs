@@ -8,26 +8,26 @@ mod impls;
 
 pub use self::canvascache::CanvasCache;
 
-pub use program::execute::{
+pub use self::execute::{
     Program,
     ProgramAttribs,
 };
 
-pub use program::data::{
+pub use self::data::{
     DataBatch,
     DataGroupIndex,
     Input,
     BatchManager
 };
 
-pub use program::objects::{
+pub use self::objects::{
     Object,
     ObjectAttrib,
     UniformValue,
     CanvasWeave
 };
     
-pub use program::source::{
+pub use self::source::{
     ProgramSource,
     Statement,
     Uniform,
@@ -37,7 +37,7 @@ pub use program::source::{
     Main,
 };
 
-pub use program::gpuspec::{
+pub use self::gpuspec::{
     Precision,
     Arity,
     GPUSpec,
@@ -45,7 +45,7 @@ pub use program::gpuspec::{
 };
 
 
-pub use program::impls::{
+pub use self::impls::{
     ProgramType,
     PTMethod,
     PTSkin,

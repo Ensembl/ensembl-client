@@ -105,10 +105,8 @@ impl PendingXferBatch {
         let mut url = self.base.clone();
         let mut url_builder = XferUrlBuilder::new();
         for (short_stick,short_pane,compo) in self.requests.keys() {
-            let part = format!("{}^{}/{}",short_stick,short_pane,compo);
             url_builder.add(compo,short_stick,short_pane);
         }
-        //console!("url: {:?}",url_builder.emit());
         {
             let mut path = url.path_segments_mut().unwrap();
             path.push(&url_builder.emit());
@@ -134,9 +132,15 @@ impl PendingXferBatch {
                     }
                 }
                 out.push(Value::new_from_float(row));
-            } else if val.is_string() {
-                out.push(Value::new_from_string(val.as_str().unwrap().to_string()));
-            }            
+            } else if val.is_object() {
+                if let Some(string) = val.as_object().unwrap().get("string") {
+                    let values : Vec<String> = 
+                            string.as_array().unwrap().iter()
+                            .map(|x| x.as_str().unwrap().to_string())
+                            .collect();
+                    out.push(Value::new_from_string(values));
+                }
+            }
         }
         out
     }
@@ -155,7 +159,7 @@ impl HttpResponseConsumer for PendingXferBatch {
             if let Some(mut requests) = self.requests.remove(&key) {
                 let codename = resp[3].as_str().unwrap().to_string();
                 let bytecode = ok!(self.config.get_bytecode(&codename)).clone();
-                let mut recv = (codename,self.marshal(&resp[4]));
+                let recv = (codename,self.marshal(&resp[4]));
                 self.cache.put(&key.2,&key.0,&key.1,recv.clone());
                 for mut req in requests.drain(..) {
                     req.go(bytecode.clone(),recv.1.clone());
@@ -301,12 +305,12 @@ impl HttpXferClerkImpl {
     
     pub fn run_request(&mut self, request: XferRequest, mut consumer: Box<XferConsumer>, prime: bool) {
         let leaf = request.get_leaf().clone();
-        let (wire,compo) = {
+        let wire = {
             let compo = request.get_source_name();
             let leaf = request.get_leaf().clone();
             let cfg =  self.config.as_ref().unwrap().clone();
             let track = cfg.get_track(compo).clone();
-            (track.and_then(|x| x.get_wire().clone()),compo.clone())
+            track.and_then(|x| x.get_wire().clone())
         };
         if let Some(wire) = wire {
             let (short_stick,short_pane) = leaf.get_short_spec();
@@ -317,7 +321,7 @@ impl HttpXferClerkImpl {
                 };
                 consumer.consume(bytecode,recv.1);
             } else {
-                let mut batch = if prime { &mut self.prime_batch } else { &mut self.batch };
+                let batch = if prime { &mut self.prime_batch } else { &mut self.batch };
                 if let Some(ref mut batch) = batch {
                     batch.add_request(&short_stick,&short_pane,&wire,consumer);
                 }

@@ -154,7 +154,7 @@ impl TrainManager {
         if let Some(ref mut future_train) = self.future_train {
             cb(future_train);
         }
-        for mut train in &mut self.outer_train {
+        for train in &mut self.outer_train {
             if let Some(ref mut train) = train {
                 cb(train);
             }
@@ -261,18 +261,6 @@ impl TrainManager {
         self.transition_prop.unwrap_or(0.) as f32
     }
     
-    /* used by printer to determine responsibilities */
-    pub fn all_printing_leafs(&self) -> Vec<Leaf> {
-        let mut out = Vec::<Leaf>::new();
-        if let Some(ref transition_train) = self.transition_train {
-            out.append(&mut transition_train.leafs());
-        }
-        if let Some(ref current_train) = self.current_train {
-            out.append(&mut current_train.leafs());
-        }
-        out
-    }
-
     /* used by printer for actual printing */
     pub fn get_current_train(&mut self) -> Option<&mut Train> {
         self.current_train.as_mut()
