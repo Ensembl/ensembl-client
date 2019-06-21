@@ -12,7 +12,7 @@ variables:
   DEPLOYENV: dev
 
 Test:
-  image: node:10.15.1
+  image: node:10.16.0
   stage: test
 
   before_script:
@@ -27,7 +27,7 @@ Test:
   - master
 
 Test & Build:
-  image: node:10.15.1
+  image: node:10.16.0
   stage: test_build_static
 
   before_script:
