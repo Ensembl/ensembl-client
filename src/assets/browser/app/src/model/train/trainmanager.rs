@@ -85,6 +85,7 @@ impl TrainManager {
         let scale = Scale::best_for_screen(bp_per_screen);
         self.each_train(|x| x.set_active(false));
         self.current_train = Some(Train::new(&self.printer,st,scale));
+        self.current_train.as_mut().unwrap().enter_service();
         self.current_train.as_mut().unwrap().set_zoom(bp_per_screen);
         self.current_train.as_mut().unwrap().set_current();
         self.transition_train = None;
