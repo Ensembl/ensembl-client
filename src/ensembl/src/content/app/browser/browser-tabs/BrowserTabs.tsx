@@ -1,11 +1,12 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 
 import { TrackType } from '../track-panel/trackPanelConfig';
-
+import { EnsObject } from 'src/ens-object/ensObjectTypes';
 import styles from './BrowserTabs.scss';
 
 type BrowserTabsProps = {
   activeGenomeId: string;
+  ensObjectInfo: EnsObject;
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
   selectBrowserTabAndSave: (selectedBrowserTab: TrackType) => void;
@@ -31,11 +32,14 @@ const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
     let classNames = styles.browserTab;
 
     if (
+      props.ensObjectInfo.genome_id &&
       selectedBrowserTab === trackType &&
       drawerOpened === false &&
       trackPanelModalOpened === false
     ) {
       classNames += ` ${styles.browserTabActive} ${styles.browserTabArrow}`;
+    } else if (!props.ensObjectInfo.genome_id) {
+      classNames = styles.browserTabDisabled;
     }
 
     return classNames;
@@ -46,7 +50,10 @@ const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
 
     Object.values(TrackType).forEach((value: TrackType) => {
       callbacks[value] = () => {
-        if (props.genomeSelectorActive === true) {
+        if (
+          props.genomeSelectorActive === true ||
+          !props.ensObjectInfo.genome_id
+        ) {
           return;
         }
 
