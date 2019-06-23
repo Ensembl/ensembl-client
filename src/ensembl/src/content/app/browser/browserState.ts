@@ -38,13 +38,13 @@ export const defaultBrowserState: BrowserState = {
 };
 
 export type BrowserEntityState = Readonly<{
-  activeGenomeId: string;
-  activeEnsObjectId: { [genomeId: string]: string };
+  activeGenomeId: string; // FIXME this should be nullable
+  activeEnsObjectId: { [genomeId: string]: string }; // FIXME this should be nullable
 }>;
 
 export const defaultBrowserEntityState: BrowserEntityState = {
-  activeGenomeId,
-  activeEnsObjectId
+  activeGenomeId, // FIXME this can be null
+  activeEnsObjectId // FIXME this can be null
 };
 
 export type BrowserNavState = Readonly<{

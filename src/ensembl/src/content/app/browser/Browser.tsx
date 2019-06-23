@@ -9,6 +9,7 @@ import BrowserImage from './browser-image/BrowserImage';
 import BrowserNavBar from './browser-nav/BrowserNavBar';
 import TrackPanel from './track-panel/TrackPanel';
 import AppBar from 'src/shared/app-bar/AppBar';
+import find from 'lodash/find';
 
 import { RootState } from 'src/store';
 import {
@@ -36,7 +37,7 @@ import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import { getTrackPanelOpened } from './track-panel/trackPanelSelectors';
 import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 import { getDrawerOpened } from './drawer/drawerSelectors';
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 import {
   fetchEnsObject,
@@ -147,10 +148,16 @@ export const Browser: FunctionComponent<BrowserProps> = (
   };
 
   useEffect(() => {
-    if (props.match.params.genomeId === undefined) {
-      if (props.activeGenomeId) {
-        changeSelectedSpecies(props.activeGenomeId);
-      } else if (props.committedSpecies) {
+    if (!props.match.params.genomeId) {
+      const { activeGenomeId, committedSpecies } = props;
+      if (
+        find(
+          committedSpecies,
+          ({ genome_id }: CommittedItem) => genome_id === activeGenomeId
+        )
+      ) {
+        changeSelectedSpecies(activeGenomeId);
+      } else {
         changeSelectedSpecies(props.committedSpecies[0].genome_id);
       }
     }
@@ -203,10 +210,15 @@ export const Browser: FunctionComponent<BrowserProps> = (
     }
   }, [props.browserActivated]);
 
-  const updateBrowserUrl = (genomeId: string = props.match.params.genomeId) => {
-    if (!genomeId && props.activeGenomeId) {
-      genomeId = props.activeGenomeId;
-    } else if (!props.activeGenomeId) {
+  const updateLocationInUrl = () => {
+    const {
+      match: {
+        params: { genomeId }
+      }
+    } = props;
+    if (!genomeId) {
+      // there is no sense in updating location parameters in url
+      // if we don’t yet know genome id
       return;
     }
 
@@ -228,7 +240,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
   };
 
   useEffect(() => {
-    updateBrowserUrl();
+    updateLocationInUrl();
   }, [props.chrLocation, props.browserQueryParams.location]);
 
   const closeTrack = () => {
@@ -351,7 +363,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
   trackPanelOpened: getTrackPanelOpened(state),
   launchbarExpanded: getLaunchbarExpanded(state),
   exampleEnsObjects: getExampleEnsObjects(state),
-  committedSpecies: getCommittedSpecies(state)
+  committedSpecies: getEnabledCommittedSpecies(state)
 });
 
 const mapDispatchToProps: DispatchProps = {

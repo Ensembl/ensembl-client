@@ -48,6 +48,8 @@ export const SpeciesSelectorAppBar = (props: Props) => {
 };
 
 const SelectedSpeciesList = (props: Props) => {
+  const shouldLinkToGenomeBrowser =
+    props.selectedSpecies.filter(({ isEnabled }) => isEnabled).length > 0;
   return (
     <>
       {props.selectedSpecies.map((species) => (
@@ -58,13 +60,11 @@ const SelectedSpeciesList = (props: Props) => {
           onRemove={props.onSpeciesDelete}
         />
       ))}
-      <div className={styles.genomeBrowserLinkContainer}>
-        <Link
-          to={urlFor.browser({ genomeId: props.selectedSpecies[0].genome_id })}
-        >
-          View in Genome Browser
-        </Link>
-      </div>
+      {shouldLinkToGenomeBrowser && (
+        <div className={styles.genomeBrowserLinkContainer}>
+          <Link to={urlFor.browser()}>View in Genome Browser</Link>
+        </div>
+      )}
     </>
   );
 };
