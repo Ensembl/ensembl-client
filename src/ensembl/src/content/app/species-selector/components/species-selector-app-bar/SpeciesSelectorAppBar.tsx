@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
-  toggleSpeciesUse,
+  toggleSpeciesUseAndSave,
   deleteSpeciesAndSave
 } from 'src/content/app/species-selector/state/speciesSelectorActions';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -74,7 +74,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  toggleSpeciesUse,
+  toggleSpeciesUse: toggleSpeciesUseAndSave,
   onSpeciesDelete: deleteSpeciesAndSave
 };
 
