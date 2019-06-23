@@ -27,7 +27,9 @@ fn new_canvas(root: &Element) -> CanvasElement {
 }
 
 fn free_canvas(el: &CanvasElement) {
-    el.parent_node().unwrap().remove_child(el).ok();
+    if let Some(parent) = el.parent_node() {
+        parent.remove_child(el).ok();
+    }
 }
 
 pub struct AllCanvasAllocator {

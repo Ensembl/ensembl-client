@@ -107,8 +107,8 @@ html, body {
 "##;
 
 fn setup_debug_console(el: &HtmlElement) {
-    let cons_el = domutil::query_selector(&el.clone().into(),".console2");
-    let mark_el = domutil::query_selector2(&el.clone().into(),".console .mark").unwrap();
+    let cons_el = domutil::query_selector_ok(&el.clone().into(),".console2","cannot find console");
+    let mark_el = domutil::query_selector_ok(&el.clone().into(),".console .mark","cannot find console mark");
     mark_el.add_event_listener(enclose! { (cons_el) move |_e: ClickEvent| {
         domutil::send_custom_event(&cons_el,"mark",&json!({}));
     }});
@@ -129,7 +129,7 @@ fn setup_testcard_selector(a: &Arc<Mutex<App>>, el: &HtmlElement) {
 
 fn event_button(dii: &mut Vec<Box<DebugInteractor>>, name: &str, egg: Option<&str>, json: JSONValue) {
     let bi = ButtonDebugInteractor::new(name,egg,move |a| {
-        let canv: Element = {
+        let canv: HtmlElement = {
             a.lock().unwrap().get_canvas_element().clone().into()
         };
         domutil::send_custom_event(&canv.clone(),"bpane",&json.clone());
@@ -157,7 +157,7 @@ pub fn create_interactors() -> Vec<Box<DebugInteractor>> {
 
 pub trait DebugInteractor {
     fn name(&self) -> &str;
-    fn render(&mut self, ar: &Arc<Mutex<App>>, el: &Element);
+    fn render(&mut self, ar: &Arc<Mutex<App>>, el: &HtmlElement);
     fn key(&mut self, _app: &Arc<Mutex<App>>, _key: &str) {}
 }
 
@@ -238,11 +238,11 @@ impl ButtonDebugInteractor {
 impl DebugInteractor for ButtonDebugInteractor {
     fn name(&self) -> &str { &self.name }
     
-    fn render(&mut self, ar: &Arc<Mutex<App>>, el: &Element) {
+    fn render(&mut self, ar: &Arc<Mutex<App>>, el: &HtmlElement) {
         if let Some(button_div) = domutil::query_selector2(&el,".buttons") {
             let button_el = domutil::append_element(&button_div,"button");
             domutil::text_content(&button_el,&self.name);
-            self.ec.add_element(&button_el,Some(ar.clone()));
+            self.ec.add_element(&button_el.clone().into(),Some(ar.clone()));
         }
     }    
 }
@@ -263,14 +263,13 @@ impl DebugBling {
 
 impl Bling for DebugBling {
     fn apply_bling(&self, el: &HtmlElement) -> HtmlElement {
-        let el : Element = el.clone().into();
         if let Some(old) = domutil::query_selector_new("#bpane-css") {
             domutil::remove(&old);
         }
-        let css = domutil::append_element(&domutil::query_select("head"),"style");
+        let css = domutil::append_element(&domutil::query_selector_ok_doc("head","no head element"),"style");
         domutil::inner_html(&css,DEBUGSTAGE_CSS);
         domutil::add_attr(&css,"id","bpane-css");
-        domutil::inner_html(&el.clone().into(),DEBUGSTAGE);
+        domutil::inner_html(el,DEBUGSTAGE);
         domutil::query_selector(&el.clone().into(),".bpane-canv").clone().try_into().unwrap()
     }
     
@@ -278,7 +277,6 @@ impl Bling for DebugBling {
         setup_testcard_selector(ar,el);
         setup_debug_console(el);
         if let Some(ref side) = domutil::query_selector2(&el.clone().into(),".events-out") {
-            let side : HtmlElement = side.clone().try_into().unwrap();
             setup_event_listener(el,&side);
         }
         for di in &mut self.dii {

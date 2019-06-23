@@ -35,6 +35,16 @@ struct AppRunnerImpl {
     browser_el: HtmlElement
 }
 
+impl AppRunnerImpl {
+    fn clear_controls(&mut self) {
+        let controls = &mut self.controls;
+        for control in &mut controls.iter_mut() {
+            control.reset();
+        }
+        controls.clear();
+    }
+}
+
 #[derive(Clone)]
 pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 
@@ -48,7 +58,7 @@ impl AppRunner {
         let st = App::new(&tc,config,&http_manager,&browser_el,&config_url);
         let sched_group = {
             let g = unwrap!(g.clone().upgrade()).clone();
-            g.scheduler_clone().make_group()
+            g.scheduler().make_group()
         };
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
             g: g.clone(),
@@ -101,7 +111,7 @@ impl AppRunner {
 
     pub fn scheduler(&self) -> Scheduler {
         let g = unwrap!(unwrap!(self.0.lock()).g.upgrade()).clone();
-        g.scheduler_clone()
+        g.scheduler()
     }
     
     pub fn init(&mut self) {
@@ -154,6 +164,13 @@ impl AppRunner {
                 app.check_size();
                 vec![]
             },0);
+            self.add_timer("gone-check",move |app,_,_| {
+                if app.check_gone() {
+                    vec![OutputAction::Destroy]
+                } else {
+                    vec![]
+                }
+            },0);
         }
         bb_log!("main","debug reporter initialised");
     }
@@ -166,14 +183,8 @@ impl AppRunner {
         unwrap!(self.0.lock()).app.clone()
     }
     
-    pub fn unregister(&mut self) {
-        {
-            let cc = &mut self.0.lock().unwrap().controls;
-            for c in &mut cc.iter_mut() {
-                c.reset();
-            }
-            cc.clear();
-        }
+    pub fn destroy(&mut self) {
+        self.0.lock().unwrap().clear_controls();
         let r = self.state();
         r.lock().unwrap().destroy();
     }
@@ -196,4 +207,10 @@ impl AppRunnerWeak {
     }
     
     pub fn none() -> AppRunnerWeak { AppRunnerWeak(Weak::new()) }
+}
+
+impl Drop for AppRunner {
+    fn drop(&mut self) {
+        console!("App runner dropped");
+    }
 }

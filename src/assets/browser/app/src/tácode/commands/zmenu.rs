@@ -22,7 +22,6 @@ fn tmpl(sr: &mut SourceResponse, ids: &Vec<String>, sids: &Vec<String>) {
     let mut sids = sids.iter().cycle();
     for id in ids {
         let sid = sids.next();
-        console!("sd/sid {:?}/{:?}",id,sid);
         sr.update_zml(&None,|zml| zml.set_template(id,sid.unwrap()));
     }
 }
@@ -31,7 +30,6 @@ fn tmpl_spec(sr: &mut SourceResponse, sids: &Vec<String>, specs: &Vec<String>) {
     let mut specs = specs.iter().cycle();
     for sid in sids {
         let spec = specs.next();
-        console!("sid/spec {:?}/{:?}",sid,spec);
         sr.update_zml(&None,|zml| zml.add_template(sid,spec.unwrap()));
     }
 }

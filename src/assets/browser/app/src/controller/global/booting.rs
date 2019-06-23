@@ -140,14 +140,11 @@ impl Booting {
             blackbox
         );
         {
-            global.register_app_now(&self.key,ar);
+            global.register_app_now(&self.key,ar.clone());
         }
-        let key = self.key.clone();
-        global.with_apprunner(&key,|ar| {
-            let app = ar.clone().state();
-            actions_run(&mut app.lock().unwrap(),&initial_actions());
-            self.ec.reset();
-            self.missed.run_missed(&mut app.lock().unwrap());
-        });
+        let app = ar.clone().state();
+        actions_run(&mut app.lock().unwrap(),&initial_actions());
+        self.ec.reset();
+        self.missed.run_missed(&mut app.lock().unwrap());
     }
 }

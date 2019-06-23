@@ -191,7 +191,11 @@ impl App {
             }
         }
     }
- 
+
+    pub fn check_gone(self: &mut App) -> bool {
+        !domutil::in_page(&self.canv_el)
+    }
+
     pub fn force_size(self: &mut App, sz: Dot<f64,f64>) {
         self.stage_resize = Some(sz);
         let mut stage = self.stage.lock().unwrap();

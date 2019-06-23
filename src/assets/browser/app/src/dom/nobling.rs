@@ -54,7 +54,7 @@ impl Bling for NoBling {
         if let Some(old) = domutil::query_selector2(&el,"#bpane-css") {
             domutil::remove(&old);
         }       
-        let css = domutil::append_element(&domutil::query_select("head"),"style");
+        let css = domutil::append_element(&domutil::query_selector_ok_doc("head","no head element"),"style");
         domutil::add_attr(&css,"id","bpane-css");
         domutil::inner_html(&css,PLAINSTAGE_CSS);
         domutil::query_selector(&el.clone().into(),".bpane-canv").clone().try_into().unwrap()

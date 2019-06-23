@@ -106,6 +106,8 @@ fn exe_set_stick(a: &mut App, name: &str) {
             
         });
         exe_pos_event(a,cdfraction(0.,0.),None);
+    } else {
+        console_force!("NO SUCH STICK {}",name);
     }
 }
 
