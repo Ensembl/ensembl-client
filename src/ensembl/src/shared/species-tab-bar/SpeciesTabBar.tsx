@@ -6,7 +6,7 @@ import SpeciesTab from 'src/shared/species-tab/SpeciesTab';
 
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 import { RootState } from 'src/store';
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import styles from './SpeciesTabBar.scss';
 
@@ -40,7 +40,7 @@ export const SpeciesTabBar = (props: SpeciesTabBarProps) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  species: getCommittedSpecies(state)
+  species: getEnabledCommittedSpecies(state)
 });
 
 export default connect(mapStateToProps)(SpeciesTabBar);

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
-  toggleSpeciesUse,
+  toggleSpeciesUseAndSave,
   deleteSpeciesAndSave
 } from 'src/content/app/species-selector/state/speciesSelectorActions';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -48,6 +48,8 @@ export const SpeciesSelectorAppBar = (props: Props) => {
 };
 
 const SelectedSpeciesList = (props: Props) => {
+  const shouldLinkToGenomeBrowser =
+    props.selectedSpecies.filter(({ isEnabled }) => isEnabled).length > 0;
   return (
     <>
       {props.selectedSpecies.map((species) => (
@@ -58,13 +60,11 @@ const SelectedSpeciesList = (props: Props) => {
           onRemove={props.onSpeciesDelete}
         />
       ))}
-      <div className={styles.genomeBrowserLinkContainer}>
-        <Link
-          to={urlFor.browser({ genomeId: props.selectedSpecies[0].genome_id })}
-        >
-          View in Genome Browser
-        </Link>
-      </div>
+      {shouldLinkToGenomeBrowser && (
+        <div className={styles.genomeBrowserLinkContainer}>
+          <Link to={urlFor.browser()}>View in Genome Browser</Link>
+        </div>
+      )}
     </>
   );
 };
@@ -74,7 +74,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  toggleSpeciesUse,
+  toggleSpeciesUse: toggleSpeciesUseAndSave,
   onSpeciesDelete: deleteSpeciesAndSave
 };
 
