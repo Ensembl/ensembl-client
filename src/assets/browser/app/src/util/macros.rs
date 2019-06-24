@@ -144,6 +144,23 @@ macro_rules! bb_log {
     ($stream:expr,$($arg:tt)*) => {{}}
 }
 
+#[cfg(any(not(deploy),console))]
+macro_rules! bb_if_log {
+    ($stream:expr,$code:block) => {{
+        if !cfg!(deploy) || cfg!(console) {
+            if ::data::blackbox::blackbox_is_enabled($stream) {
+                $code
+            }
+        }
+    }}
+}
+
+#[cfg(all(deploy,not(console)))]
+macro_rules! bb_if_log {
+    ($stream:expr,$code:block) => {{}}
+}
+
+
 #[allow(unused_macros)]
 #[cfg(any(not(deploy),console))]
 macro_rules! bb_stack {

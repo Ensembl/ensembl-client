@@ -146,10 +146,7 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceRes
     let y_start_len = y_start.len();
     let x_aux_len = x_aux.len();
     let y_aux_len = y_aux.len();
-    lc.update_data(part,|data| data.expect(x_start.len()));
-    if facades.len() == 0 {
-        
-    }
+    let mut drops = 0;
     for i in 0..x_start.len() {
         if let Some((x_pos_v,x_aux_v)) = 
                 do_scale(&spec,leaf,x_start[i],x_aux[i%x_aux_len]) {
@@ -163,10 +160,19 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceRes
             };
             if let Some(shape) = spec.new_short_shape(&data) {
                 lc.update_data(part,|data| data.add_shape(shape));
+            } else {
+                drops += 1;
             }
         }
     }
-    lc.update_data(part,|data| data.expect(0));
+    bb_if_log!("performance",{
+        bb_log!("performance","{:?} {} shapes",leaf.get_short_spec(),x_start.len());
+        if drops * 10 > x_start.len() {
+            bb_log!("performance","Excessive drops! {:?} {}/{}",
+                leaf.get_short_spec(),
+                drops,x_start.len());
+        }
+    });
 }
 
 fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut SourceResponse, 
