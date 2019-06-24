@@ -53,7 +53,11 @@ impl ObjectAttrib {
 impl Object for ObjectAttrib {
     fn obj_final(&mut self, batch: &DataBatch, ctx: &glctx, _acm: &mut GLProgData) {
         if self.data(batch).unwrap_or(&vec!{}).len() > 0 {
-            self.buf.entry(batch.id()).or_insert_with(|| ctx.create_buffer().unwrap());
+            if self.buf.get(&batch.id()).is_none() {
+                if let Some(buf) = ctx.create_buffer() {
+                    self.buf.insert(batch.id(),buf);
+                }
+            }
         }
         if let Some(data) = self.data(batch) {
             if let Some(buf) = self.buffer(batch) {

@@ -51,14 +51,15 @@ fn fix_tex_image2_d_cnv(ctx: &glctx,
     };
 }
 
-fn canvas_texture(ctx: &glctx, cnv : &CanvasElement, w: &CanvasWeave) -> gltex {
-    let texture = ctx.create_texture().unwrap();
-    ctx.bind_texture(glctx::TEXTURE_2D, Some(&texture));
-    fix_tex_image2_d_cnv(&ctx,
-        glctx::TEXTURE_2D,0,glctx::RGBA as i32,
-        glctx::RGBA,glctx::UNSIGNED_BYTE,cnv);
-    w.apply(ctx);
-    texture    
+fn canvas_texture(ctx: &glctx, cnv : &CanvasElement, w: &CanvasWeave) -> Option<gltex> {
+    ctx.create_texture().and_then(|texture| {
+        ctx.bind_texture(glctx::TEXTURE_2D, Some(&texture));
+        fix_tex_image2_d_cnv(&ctx,
+            glctx::TEXTURE_2D,0,glctx::RGBA as i32,
+            glctx::RGBA,glctx::UNSIGNED_BYTE,cnv);
+        w.apply(ctx);
+        Some(texture)
+    })
 }
 
 /* ObjectCanvasTexture = Object for canvas-origin textures */
@@ -79,13 +80,16 @@ impl Object for ObjectCanvasTexture {
         let canvs = e.get_canvases().all_ocm();
         let cc = e.get_canvas_cache();
         for c in canvs {
-            let texture = cc.find_texture(c).unwrap_or_else(|| {
-                let t = canvas_texture(ctx,&c.canvas.as_ref().unwrap().element(),
-                                &c.canvas.as_ref().unwrap().weave());
-                cc.set_texture(c,&t);
-                t
-            });
-            self.textures.insert(c.index(),Rc::new(texture));
+            if cc.find_texture(c).is_none() {
+                if let Some(canvas) = c.canvas.as_ref() {
+                    if let Some(t) = canvas_texture(ctx,&canvas.element(),&canvas.weave()) {
+                        cc.set_texture(c,&t);
+                    }
+                }
+            }
+            if let Some(texture) = cc.find_texture(c) {
+                self.textures.insert(c.index(),Rc::new(texture));
+            }
         }
     }
 

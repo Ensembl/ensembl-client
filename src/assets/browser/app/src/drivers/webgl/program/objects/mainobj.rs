@@ -60,12 +60,18 @@ impl Object for ObjectMain {
     }
 
     fn obj_final(&mut self, batch: &DataBatch, ctx: &glctx, _acm: &mut GLProgData) {
-        self.buf.entry(batch.id()).or_insert_with(|| ctx.create_buffer().unwrap());
-        if let Some(data) = self.data(batch) {
-            if let Some(buf) = self.buffer(batch) {
-                ctx.bind_buffer(glctx::ELEMENT_ARRAY_BUFFER,Some(&buf));
-                let data = TypedArray::<u16>::from(&(data[..])).buffer();
-                ctx.buffer_data_1(glctx::ELEMENT_ARRAY_BUFFER,Some(&data),glctx::STATIC_DRAW);
+        if self.buf.get(&batch.id()).is_none() {
+            if let Some(buf) = ctx.create_buffer() {
+                self.buf.insert(batch.id(),buf);
+            }
+        }        
+        if let Some(buf) = self.buf.get(&batch.id()) {
+            if let Some(data) = self.data(batch) {
+                if let Some(buf) = self.buffer(batch) {
+                    ctx.bind_buffer(glctx::ELEMENT_ARRAY_BUFFER,Some(&buf));
+                    let data = TypedArray::<u16>::from(&(data[..])).buffer();
+                    ctx.buffer_data_1(glctx::ELEMENT_ARRAY_BUFFER,Some(&data),glctx::STATIC_DRAW);
+                }
             }
         }
     }
