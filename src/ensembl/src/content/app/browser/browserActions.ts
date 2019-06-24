@@ -102,6 +102,20 @@ export const updateChrLocation = createAction(
   }
 );
 
+export const setChrLocation: ActionCreator<
+  ThunkAction<any, any, null, Action<string>>
+> = (chrLocation: ChrLocation) => {
+  return (dispatch: Dispatch, getState: () => RootState) => {
+    const genomeId = getBrowserActiveGenomeId(getState());
+    const currentChrLocation = getChrLocation(getState());
+    const updatedChrLocation = { ...currentChrLocation };
+    updatedChrLocation[genomeId] = chrLocation;
+
+    dispatch(updateChrLocation(updatedChrLocation));
+    browserStorageService.updateChrLocation(updatedChrLocation);
+  };
+};
+
 export const updateDefaultChrLocation = createAction(
   'browser/update-default-chromosome-location',
   (resolve) => {

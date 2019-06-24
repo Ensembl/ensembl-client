@@ -24,7 +24,7 @@ import {
   activateBrowser,
   updateBrowserActivated,
   updateBrowserNavStates,
-  updateChrLocation
+  setChrLocation
 } from '../browserActions';
 import browserStorageService from '../browser-storage-service';
 
@@ -49,7 +49,7 @@ type DispatchProps = {
   activateBrowser: (browserEl: HTMLDivElement) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
-  updateChrLocation: (chrLocation: { [genomeId: string]: ChrLocation }) => void;
+  setChrLocation: (chrLocation: ChrLocation) => void;
 };
 
 type OwnProps = {
@@ -69,6 +69,10 @@ type BpaneOutEvent = Event & {
 export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   props: BrowserImageProps
 ) => {
+  const dispatchSetChrLocation = (chrLocation: ChrLocation) => {
+    props.setChrLocation(chrLocation);
+  };
+
   const listenBpaneOut = useCallback((event: Event) => {
     const bpaneOutEvent = event as BpaneOutEvent;
     const navIconStates = bpaneOutEvent.detail.bumper as BrowserNavStates;
@@ -85,11 +89,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
         Number(location[2])
       ] as ChrLocation;
 
-      const currentChrLocation = props.chrLocation;
-      const updatedChrLocation = { ...currentChrLocation };
-      updatedChrLocation[location[0].split(':')[0]] = chrLocation;
-      props.updateChrLocation(updatedChrLocation);
-      browserStorageService.updateChrLocation(updatedChrLocation);
+      dispatchSetChrLocation(chrLocation);
     }
   }, []);
 
@@ -225,8 +225,8 @@ const mapStateToProps = (state: RootState): StateProps => ({
 const mapDispatchToProps: DispatchProps = {
   activateBrowser,
   updateBrowserActivated,
-  updateChrLocation,
-  updateBrowserNavStates
+  updateBrowserNavStates,
+  setChrLocation
 };
 
 export default connect(
