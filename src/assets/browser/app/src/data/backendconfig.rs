@@ -22,7 +22,6 @@ impl BackendBytecode {
 
 #[derive(Debug,Clone)]
 pub struct BackendTrack {
-    endpoints: Vec<(i32,i32,String)>,
     letter: String,
     wire: Option<String>,
     position: i32,
@@ -81,13 +80,6 @@ impl BackendConfig {
     fn tracks_from_json(ep: &SerdeValue) -> HashMap<String,BackendTrack> {
         let mut out = HashMap::<String,BackendTrack>::new();
         for (track_name,v) in ep.as_object().unwrap().iter() {
-            let mut endpoints = Vec::<(i32,i32,String)>::new();
-            for (scales,track) in v["endpoints"].as_object().unwrap().iter() {
-                let scales :Vec<char> = scales.chars().collect();
-                let min = Scale::new_from_letter(scales[0]).get_index();
-                let max = Scale::new_from_letter(scales[1]).get_index();
-                endpoints.push((min,max,track["endpoint"].as_str().unwrap().to_string()));
-            }
             let mut parts = Vec::<String>::new();
             for part in v["parts"].as_array().unwrap_or(&vec!{}).iter() {
                 parts.push(part.as_str().unwrap().to_string());
@@ -97,7 +89,7 @@ impl BackendConfig {
                 letter: v.get("letter").and_then(|x| x.as_str()).unwrap_or("").to_string(),
                 position: v.get("position").and_then(|x| x.as_i64()).unwrap_or(-1) as i32,
                 wire: v.get("wire").and_then(|x| x.as_str()).map(|x| x.to_string()),
-                endpoints, parts
+                parts
             });
         }
         out
