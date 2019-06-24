@@ -30,8 +30,9 @@ impl WebGLTrainPrinter {
     fn execute(&mut self, printer: &mut GLPrinterBase, leafs: &Vec<Leaf>) {
         for pt in &printer.base_progs.order {
             for leaf in leafs.iter() {
-                let lp = &mut unwrap!(printer.lp.get_mut(&leaf)); 
-                lp.execute(&pt);
+                if let Some(ref mut lp) = printer.lp.get_mut(&leaf) {
+                    lp.execute(&pt);
+                }
             }
         }
     }
