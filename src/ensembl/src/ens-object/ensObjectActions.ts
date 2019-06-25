@@ -27,33 +27,18 @@ export const fetchEnsObjectAsyncActions = createAsyncAction(
 export const fetchEnsObject: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (ensObjectId: string, genomeId: string) => async (dispatch: Dispatch) => {
-  const splitEnsObjectId = ensObjectId.split(':');
-  // Do not send the request for regions
-  if (splitEnsObjectId[1] === 'region') {
-    const regionExample = {
-      label: `${splitEnsObjectId[2]}:${splitEnsObjectId[3]}`,
-      ensembl_object_id: splitEnsObjectId,
-      genome_id: splitEnsObjectId[0],
-      location: {
-        chromosome: splitEnsObjectId[2],
-        end: splitEnsObjectId[3].split('-')[1],
-        start: splitEnsObjectId[3].split('-')[0]
-      },
-      object_type: 'region'
-    };
-    dispatch(
-      fetchEnsObjectAsyncActions.success({
-        ensembl_object: regionExample
-      })
-    );
-    return;
-  }
-
   try {
     dispatch(fetchEnsObjectAsyncActions.request({ ensObjectId, genomeId }));
+    let response;
 
-    const url = `/api/ensembl_object/info?object_id=${ensObjectId}`;
-    const response = await apiService.fetch(url);
+    // FIXME: the if-branch is temporary, until backend learns to respond with region object data
+    if (isRegionObject(ensObjectId)) {
+      response = await parseRegionObjectId(ensObjectId);
+    } else {
+      const url = `/api/ensembl_object/info?object_id=${ensObjectId}`;
+      response = await apiService.fetch(url);
+    }
+
     dispatch(
       fetchEnsObjectAsyncActions.success({
         ensembl_object: response
@@ -76,7 +61,7 @@ export const fetchEnsObjectTracks = (
 ) => async (dispatch: Dispatch) => {
   try {
     // Do not send the request for regions
-    if (ensObjectId.split(':')[1] !== 'gene') {
+    if (isRegionObject(ensObjectId)) {
       return;
     }
     dispatch(fetchEnsObjectAsyncActions.request({ ensObjectId, genomeId }));
@@ -108,70 +93,55 @@ export const fetchExampleEnsObjects: ActionCreator<
 ) => {
   try {
     const genomeInfoData: GenomeInfoData = getGenomeInfo(getState());
-
+    const genomeInfo = genomeId && genomeInfoData[genomeId];
     const exampleObjects: ExampleEnsObjectsData = getExampleEnsObjects(
       getState()
     );
 
-    if (genomeId) {
-      if (!exampleObjects[genomeId]) {
-        dispatch(fetchExampleEnsObjectsAsyncActions.request(null));
-        const geneUrl = `/api/ensembl_object/info?object_id=${genomeInfoData[genomeId].example_objects[0]}`;
-        const geneResponse = await apiService.fetch(geneUrl);
-
-        const regionObjectId = genomeInfoData[
-          genomeId
-        ].example_objects[1].split(':');
-
-        const regionExample = {
-          label: `${regionObjectId[2]}:${regionObjectId[3]}`,
-          ensembl_object_id: genomeInfoData[genomeId].example_objects[1],
-          genome_id: regionObjectId[0],
-          location: {
-            chromosome: regionObjectId[2],
-            end: regionObjectId[3].split('-')[1],
-            start: regionObjectId[3].split('-')[0]
-          },
-          object_type: 'region'
-        };
-
-        dispatch(
-          fetchExampleEnsObjectsAsyncActions.success({
-            [genomeId]: [geneResponse, regionExample]
-          })
-        );
-      }
-    } else {
-      Object.values(genomeInfoData).map(async (genomeInfo) => {
-        if (!exampleObjects[genomeInfo.genome_id]) {
-          dispatch(fetchExampleEnsObjectsAsyncActions.request(null));
-
-          const geneUrl = `/api/ensembl_object/info?object_id=${genomeInfo.example_objects[0]}`;
-          const geneResponse = await apiService.fetch(geneUrl);
-
-          const regionObjectId = genomeInfo.example_objects[1].split(':');
-
-          const regionExample = {
-            label: `${regionObjectId[2]}:${regionObjectId[3]}`,
-            ensembl_object_id: genomeInfo.example_objects[1],
-            genome_id: regionObjectId[0],
-            location: {
-              chromosome: regionObjectId[2],
-              end: regionObjectId[3].split('-')[1],
-              start: regionObjectId[3].split('-')[0]
-            },
-            object_type: 'region'
-          };
-
-          dispatch(
-            fetchExampleEnsObjectsAsyncActions.success({
-              [genomeInfo.genome_id]: [geneResponse, regionExample]
-            })
-          );
+    if (genomeId && genomeInfo && !exampleObjects[genomeId]) {
+      dispatch(fetchExampleEnsObjectsAsyncActions.request(null));
+      const requests = genomeInfo.example_objects.map((exampleObjectId) => {
+        if (isRegionObject(exampleObjectId)) {
+          return parseRegionObjectId(exampleObjectId);
+        } else {
+          const url = `/api/ensembl_object/info?object_id=${exampleObjectId}`;
+          return apiService.fetch(url);
         }
       });
+      const responses = await Promise.all(requests);
+      const exampleObjects = responses.filter((response) => !response.error);
+      dispatch(
+        fetchExampleEnsObjectsAsyncActions.success({
+          [genomeId]: exampleObjects
+        })
+      );
     }
   } catch (error) {
     dispatch(fetchExampleEnsObjectsAsyncActions.failure(error));
   }
+};
+
+// FIXME: remove when backend learns to return info about a region object
+const isRegionObject = (objectId: string) => {
+  return /:region:/.test(objectId);
+};
+
+// FIXME: the function below is horrible and should have never been written
+// Remove when backend learns to return info about a region object
+// (writing this as async function so that it has the same promise interface as apiService.fetch)
+const parseRegionObjectId = async (objectId: string) => {
+  const [genomeId, , chromosome, region] = objectId.split(':');
+  const [start, end] = region.split('-');
+
+  return {
+    label: `${chromosome}:${region}`,
+    ensembl_object_id: objectId,
+    genome_id: genomeId,
+    location: {
+      chromosome,
+      start,
+      end
+    },
+    object_type: 'region'
+  };
 };
