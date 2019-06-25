@@ -1,8 +1,10 @@
 import ReactGA from 'react-ga';
 import { AnalyticsType } from 'src/analyticsHelper';
 
-const googleTrackingID = process.env.GOOGLE_ANALYTICS_KEY
-  ? process.env.GOOGLE_ANALYTICS_KEY
+import config from 'config';
+
+const googleTrackingID = config.googleAnalyticsKey
+  ? config.googleAnalyticsKey
   : '';
 
 class AnalyticsTracking {
