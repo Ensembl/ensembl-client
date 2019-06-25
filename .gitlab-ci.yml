@@ -58,7 +58,7 @@ Nginx:
   stage: build_docker_images
 
   before_script:
-  - case "${CI_COMMIT_REF_NAME}" in dev) DEPLOYENV="staging" ;; master) DEPLOYENV="prod" ;; *) DEPLOYENV="dev" ;; esac
+  - case "${CI_COMMIT_REF_NAME}" in dev) DEPLOYENV="staging" ;; master) DEPLOYENV="prod" ;; cicd-test) DEPLOYENV="staging" ;; *) DEPLOYENV="dev" ;; esac
 
   script:
   - apk update && apk add git
@@ -127,6 +127,7 @@ Staging:
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   only:
   - dev
+  - cicd-test
 
 Live:
   stage: deploy
