@@ -113,7 +113,7 @@ Nginx(temp):
 
   before_script:
   - case "${CI_COMMIT_REF_NAME}" in dev) DEPLOYENV="staging" ;; master) DEPLOYENV="prod" ;; cicd-test) DEPLOYENV="staging" ;; *) DEPLOYENV="dev" ;; esac
-  - export ENVIRONMENT=
+
   script:
   - apk update && apk add git
   - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
@@ -138,6 +138,8 @@ Staging(temp):
   before_script:
   - mkdir -p /etc/deploy
   - echo ${EMBASSY_KUBECONFIG} | base64 -d > ${KUBECONFIG}
+  - case "${CI_COMMIT_REF_NAME}" in dev) DEPLOYENV="staging" ;; master) DEPLOYENV="prod" ;; cicd-test) DEPLOYENV="staging" ;; *) DEPLOYENV="dev" ;; esac
+
   script:
   - apk update && apk add --no-cache curl git
   - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
