@@ -13,10 +13,10 @@ const RobotstxtPlugin = require('robotstxt-webpack-plugin');
 // copy from the environment the same variables that are declared in .env.example
 // NOTE: if no environment variable with corresponding key is present, the value from .env.example will be used
 const dotenv = require('dotenv').config({ path: path.resolve(__dirname, '../.env.example') });
-const environmentVariables = {};
-Object.keys(dotenv.parsed).map((key) => (
-  environmentVariables[`process.env.${key}`] = JSON.stringify(process.env[key])
-));
+const getEnvironmentVariables = () => Object.keys(dotenv.parsed).reduce((result, key) => ({
+  ...result,
+  [`process.env.${key}`]: JSON.stringify(process.env[key])
+}));
 
 
 
@@ -55,7 +55,7 @@ const moduleRules = [
 const plugins = [
   // make environment variables available on the client-side
   new webpack.DefinePlugin({
-    ...environmentVariables
+    ...getEnvironmentVariables()
   }),
 
   // plugin to extract css from the webpack javascript build files
