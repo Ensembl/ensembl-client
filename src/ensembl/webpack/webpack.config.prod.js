@@ -16,7 +16,7 @@ const dotenv = require('dotenv').config({ path: path.resolve(__dirname, '../.env
 const getEnvironmentVariables = () => Object.keys(dotenv.parsed).reduce((result, key) => ({
   ...result,
   [`process.env.${key}`]: JSON.stringify(process.env[key])
-}));
+}), {});
 
 
 
