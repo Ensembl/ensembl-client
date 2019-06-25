@@ -2,9 +2,13 @@ export default {
   // version number
   version: '0.2.0',
 
-  // environment
+  // Node environment
   isDevelopment: process.env.NODE_ENV === 'development',
   isProduction: process.env.NODE_ENV === 'production',
+
+  // Deployment environment
+  environment: process.env.ENVIRONMENT,
+
   apiHost: process.env.API_HOST,
 
   // keys for services
