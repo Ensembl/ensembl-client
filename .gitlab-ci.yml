@@ -37,7 +37,6 @@ Test & Build:
   script:
   - npm run test
   - export NODE_ENV=production
-  - export API_HOST=''
   - npm run build
 
   artifacts:
