@@ -36,7 +36,7 @@ export const SpeciesSelectorAppBar = (props: Props) => {
       <div className={appBarStyles.appBarTop}>
         <div className={appBarStyles.top}>Species Selector</div>
       </div>
-      <div className={appBarStyles.appBarBottom}>
+      <div className={styles.main}>
         {props.selectedSpecies.length > 0 ? (
           <SelectedSpeciesList {...props} />
         ) : (
