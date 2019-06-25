@@ -11,7 +11,7 @@ use tánaiste::Value;
 use url::Url;
 
 use super::{ 
-    XferClerk, XferConsumer, XferRequest, XferCache,
+    XferClerk, XferConsumer, XferRequest, XferCache, XferUrlBuilder,
     HttpResponseConsumer, HttpManager, BackendConfig
 };
 
@@ -214,44 +214,6 @@ impl XferBatchScheduler {
         if let Some(ref mut batch) = self.batch {
             batch.add_request(short_stick,short_pane,compo,consumer);
         }
-    }
-}
-
-pub struct XferUrlBuilder {
-    data: HashMap<String,Vec<(String,String)>>
-}
-
-impl XferUrlBuilder {
-    pub fn new() -> XferUrlBuilder {
-        XferUrlBuilder {
-            data: HashMap::<String,Vec<(String,String)>>::new()
-        }
-    }
-    
-    pub fn add(&mut self, wire: &str, chrom: &str, leaf: &str) {
-        let set = self.data.entry(chrom.to_string()).or_insert_with(||
-            Vec::<(String,String)>::new()
-        );
-        set.push((wire.to_string(),leaf.to_string()));
-    }
-    
-    fn emit_chrom(&self, values: &Vec<(String,String)>) -> String {
-        let mut data = values.clone();
-        data.sort();
-        data.iter().map(|(wire,leaf)| format!("{}{}",wire,leaf)).join("")
-    }
-    
-    pub fn emit(&self) -> String {
-        let mut chroms = Vec::<(String,String)>::new();
-        for (chrom,v) in &self.data {
-            chroms.push((chrom.to_string(),self.emit_chrom(v)));
-        }
-        chroms.sort();
-        let chroms : Vec<String> = chroms
-                .iter()
-                .map(|(chrom,value)| format!("{}:{}",chrom,value))
-                .collect();
-        chroms.iter().join(",")
     }
 }
 
