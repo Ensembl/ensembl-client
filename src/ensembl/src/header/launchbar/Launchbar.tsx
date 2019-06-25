@@ -9,6 +9,10 @@ import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg'
 import { ReactComponent as VEPIcon } from 'static/img/launchbar/vep.svg';
 import { ReactComponent as CustomDownloadIcon } from 'static/img/launchbar/custom-download.svg';
 import { ReactComponent as HelpIcon } from 'static/img/launchbar/help.svg';
+import {
+  getEnvironmentAvailability,
+  Environment
+} from 'src/shared/helpers/environment';
 
 import LaunchbarButton from './LaunchbarButton';
 
@@ -64,7 +68,10 @@ const LaunchbarContent = (props: LaunchbarProps) => (
             app="custom-download"
             description="Downloads"
             icon={CustomDownloadIcon}
-            enabled={true}
+            enabled={getEnvironmentAvailability([
+              Environment.DEVELOPMENT,
+              Environment.INTERNAL
+            ])}
           />
         </div>
         <div className={styles.category}>
