@@ -3,15 +3,13 @@ import { AnalyticsType } from 'src/analyticsHelper';
 
 import config from 'config';
 
-const googleTrackingID = config.googleAnalyticsKey
-  ? config.googleAnalyticsKey
-  : '';
+const { googleAnalyticsKey = '' } = config;
 
 class AnalyticsTracking {
   private reactGA: typeof ReactGA;
 
   public constructor() {
-    ReactGA.initialize(googleTrackingID);
+    ReactGA.initialize(googleAnalyticsKey);
     this.reactGA = ReactGA;
   }
 
