@@ -6,12 +6,6 @@ export enum Environment {
   PRODUCTION = 'production'
 }
 
-export const getEnvironmentAvailability = (
-  environment: Environment | Environment[]
-): boolean => {
-  if (environment.indexOf(config.environment as Environment) !== -1) {
-    return true;
-  }
-
-  return false;
+export const isEnvironment = (environment: Environment[]): boolean => {
+  return environment.includes(config.environment as Environment);
 };

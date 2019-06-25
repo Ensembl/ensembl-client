@@ -1,28 +1,24 @@
-import { getEnvironmentAvailability, Environment } from './environment';
+import { isEnvironment, Environment } from './environment';
 import config from 'config';
 
-describe('getEnvironmentAvailability', () => {
+describe('isEnvironment', () => {
   // Set the environment to development
   config.environment = 'development';
 
   it('returns true if the envrionment matches', () => {
-    const isAvailableOnEnvironment = getEnvironmentAvailability(
-      Environment.DEVELOPMENT
-    );
+    const isAvailableOnEnvironment = isEnvironment([Environment.DEVELOPMENT]);
 
     expect(isAvailableOnEnvironment).toBe(true);
   });
 
   it('returns false if the envrionment does not match', () => {
-    const isAvailableOnEnvironment = getEnvironmentAvailability(
-      Environment.PRODUCTION
-    );
+    const isAvailableOnEnvironment = isEnvironment([Environment.PRODUCTION]);
 
     expect(isAvailableOnEnvironment).toBe(false);
   });
 
-  it('accetps array of environments as input and returns true if at least one matches', () => {
-    const isAvailableOnEnvironment = getEnvironmentAvailability([
+  it('suppoerts multiple environments as input and returns true if at least one matches', () => {
+    const isAvailableOnEnvironment = isEnvironment([
       Environment.DEVELOPMENT,
       Environment.INTERNAL
     ]);
