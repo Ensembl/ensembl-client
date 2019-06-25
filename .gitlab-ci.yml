@@ -1,4 +1,4 @@
-# CICD - Reload with /api/ensembl_object endpoint
+# CICD - Deploy - internal
 stages:
   - test
   - test_build_static
@@ -68,6 +68,7 @@ Nginx:
   - git checkout june-release
   - cd ..
   - sed -i "s/<DEPLOYMNET_ENV>/${DEPLOYENV}/g" ensembl-client-nginx/config/conf.d/local.conf
+  - cat ensembl-client-nginx/config/conf.d/local.conf
   - docker build -t ${CONTAINER_IMAGE} -f ensembl-client-nginx/Dockerfile --no-cache .
   - echo "$GITLAB_REGISTRY_TOKEN" | docker login -u "$GITLAB_REGISTRY_USER" --password-stdin https://"$GITLAB_REGISTRY_URL"
   - docker push ${CONTAINER_IMAGE}
