@@ -1,4 +1,7 @@
 export default {
+  // version number
+  version: '0.2.0',
+
   // Node environment
   isDevelopment: process.env.NODE_ENV === 'development',
   isProduction: process.env.NODE_ENV === 'production',

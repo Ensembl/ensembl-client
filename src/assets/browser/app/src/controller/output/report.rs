@@ -73,7 +73,6 @@ lazy_static! {
     };
 }
 
-
 pub struct ReportImpl {
     pieces: HashMap<String,String>,
     outputs: HashMap<String,StatusOutput>
@@ -207,7 +206,7 @@ impl Report {
             }
             out.set_interval(k,*v);
         }
-        ar.add_timer("report",enclose! { (out) move |app,t,sr| {
+        ar.add_timer("report",enclose! { (out) move |_app,t,sr| {
             if let Some(report) = out.new_report(t) {
                 vec!{
                     OutputAction::SendCustomEvent("bpane-out".to_string(),report)

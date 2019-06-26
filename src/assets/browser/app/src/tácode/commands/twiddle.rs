@@ -47,6 +47,21 @@ fn pick(source: &Vec<f64>, palette: &Vec<f64>, stride: &Vec<f64>) -> Vec<f64> {
     out
 }
 
+fn picks(source: &Vec<f64>, palette: &Vec<String>, stride: &Vec<f64>) -> Vec<String> {
+    let mut out = Vec::<String>::new();
+    let stride = stride[0] as usize;
+    for s in source.iter() {
+        for i in 0..stride {
+            let offset = *s as usize*stride+i;
+            if offset >= palette.len() {
+                console!("ERROR IN PICK source={:?} palette={:?} stride={:?} offset={:?}",source,palette,stride,offset);
+            }
+            out.push(palette[offset].clone());
+        }
+    }
+    out
+}
+
 fn index(data: &Vec<f64>, palette: &Vec<f64>) -> Vec<f64> {
     let mut out = Vec::<f64>::new();
     let len = palette.len();
@@ -125,6 +140,8 @@ pub struct Not(usize,usize);
 pub struct Elide(usize,usize,usize);
 // pick #tagret, #source, #palette, #stride
 pub struct Pick(usize,usize,usize,usize);
+// picks #tagret, #source, #palette, #stride
+pub struct Picks(usize,usize,usize,usize);
 // all #out, #start/end
 pub struct All(usize,usize);
 // index #out, #source, #palette
@@ -139,8 +156,12 @@ pub struct Get(usize,usize,usize);
 pub struct Merge(usize,usize,Vec<usize>);
 // accn #out, #parts, #strides
 pub struct AccN(usize,usize,usize);
-// length #len(in), #in
+// length #len(in), #in [floats]
 pub struct Length(usize,usize);
+// lengths #len(string), #strings
+pub struct Lengths(usize,usize);
+// burst #out-strings, #in-strings
+pub struct Burst(usize,usize);
 
 impl Command for Elide {
     fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
@@ -175,6 +196,21 @@ impl Command for Pick {
                 regs.get(self.3).as_floats(|stride| {
                     let data = pick(source,palette,stride);
                     regs.set(self.0,Value::new_from_float(data));
+                });
+            });
+        });                   
+        return 1;
+    }
+}
+
+impl Command for Picks {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        regs.get(self.1).as_floats(|source| {
+            regs.get(self.2).as_string(|palette| {
+                regs.get(self.3).as_floats(|stride| {
+                    let data = picks(source,palette,stride);
+                    regs.set(self.0,Value::new_from_string(data));
                 });
             });
         });                   
@@ -289,9 +325,35 @@ impl Command for Length {
     }
 }
 
+impl Command for Lengths {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        regs.get(self.1).as_string(|strings| {
+            let lengths = strings.iter().map(|x| x.len() as f64).collect();
+            regs.set(self.0,Value::new_from_float(lengths));
+        });
+        return 1;
+    }
+}
+
+impl Command for Burst {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        regs.get(self.1).as_string(|strings| {
+            let burst : Vec<Vec<String>> = strings.iter().map(|x|
+                x.chars().map(|x| x.to_string()).collect()
+            ).collect();
+            let burst = burst.iter().cloned().flatten().collect();
+            regs.set(self.0,Value::new_from_string(burst));
+        });
+        return 1;
+    }
+}
+
 pub struct ElideI();
 pub struct NotI();
 pub struct PickI();
+pub struct PicksI();
 pub struct AllI();
 pub struct IndexI();
 pub struct RunsI();
@@ -300,6 +362,8 @@ pub struct GetI();
 pub struct MergeI();
 pub struct AccNI();
 pub struct LengthI();
+pub struct LengthsI();
+pub struct BurstI();
 
 impl Instruction for ElideI {
     fn signature(&self) -> Signature { Signature::new("elide","rrr") }
@@ -319,6 +383,13 @@ impl Instruction for PickI {
     fn signature(&self) -> Signature { Signature::new("pick","rrrr") }
     fn build(&self, args: &Vec<Argument>) -> Box<Command> {
         Box::new(Pick(args[0].reg(),args[1].reg(),args[2].reg(),args[3].reg()))
+    }
+}
+
+impl Instruction for PicksI {
+    fn signature(&self) -> Signature { Signature::new("picks","rrrr") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(Picks(args[0].reg(),args[1].reg(),args[2].reg(),args[3].reg()))
     }
 }
 
@@ -379,5 +450,19 @@ impl Instruction for LengthI {
     fn signature(&self) -> Signature { Signature::new("length","rr") }
     fn build(&self, args: &Vec<Argument>) -> Box<Command> {
         Box::new(Length(args[0].reg(),args[1].reg()))
+    }
+}
+
+impl Instruction for LengthsI {
+    fn signature(&self) -> Signature { Signature::new("lengths","rr") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(Lengths(args[0].reg(),args[1].reg()))
+    }
+}
+
+impl Instruction for BurstI {
+    fn signature(&self) -> Signature { Signature::new("burst","rr") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(Burst(args[0].reg(),args[1].reg()))
     }
 }
