@@ -1,3 +1,4 @@
+
 stages:
   - test
   - test_build_static
@@ -130,8 +131,8 @@ Nginx:internal:
   - cat ensembl-client-nginx/config/conf.d/local.conf
   - docker build -t ${CONTAINER_INTERNAL_IMAGE} -f ensembl-client-nginx/Dockerfile --no-cache .
   - echo "$GITLAB_REGISTRY_TOKEN" | docker login -u "$GITLAB_REGISTRY_USER" --password-stdin https://"$GITLAB_REGISTRY_URL"
-  - docker push ${CONTAINER_IMAGE}
-  - docker rmi ${CONTAINER_IMAGE}
+  - docker push ${CONTAINER_IMAGE}-internal
+  - docker rmi ${CONTAINER_IMAGE}-internal
   - docker logout "$GITLAB_REGISTRY_URL"
 
   only:
