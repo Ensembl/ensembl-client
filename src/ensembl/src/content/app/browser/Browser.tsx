@@ -190,10 +190,10 @@ export const Browser: FunctionComponent<BrowserProps> = (
       return;
     }
 
+    props.updateBrowserActiveEnsObjectIdAndSave(focus);
     dispatchBrowserLocation(parsedLocation);
     props.fetchEnsObject(focus, genomeId);
     props.fetchEnsObjectTracks(focus, genomeId);
-    props.updateBrowserActiveEnsObjectIdAndSave(focus);
   }, [props.browserQueryParams.focus]);
 
   useEffect(() => {
