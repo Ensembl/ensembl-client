@@ -11,6 +11,7 @@ import { getChrLocationStr } from '../browserHelper';
 
 type BrowserResetProps = {
   activeGenomeId: string;
+  activeObjectId: string;
   chrLocation: { [genomeId: string]: ChrLocation };
   defaultChrLocation: { [genomeId: string]: ChrLocation };
   dispatchBrowserLocation: (chrLocation: ChrLocation) => void;
@@ -22,6 +23,7 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
 ) => {
   const {
     activeGenomeId,
+    activeObjectId,
     chrLocation,
     defaultChrLocation,
     drawerOpened
@@ -30,11 +32,11 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   const getResetIconStatus = (): ImageButtonStatus => {
     const chrLocationStr = getChrLocationStr(chrLocation[activeGenomeId]);
     const defaultChrLocationStr = getChrLocationStr(
-      defaultChrLocation[activeGenomeId]
+      defaultChrLocation[activeObjectId]
     );
 
     if (chrLocationStr === defaultChrLocationStr || drawerOpened === true) {
-      return ImageButtonStatus.INACTIVE;
+      return ImageButtonStatus.DISABLED;
     }
 
     return ImageButtonStatus.ACTIVE;
@@ -45,9 +47,7 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
       return;
     }
 
-    props.dispatchBrowserLocation(
-      props.defaultChrLocation[props.activeGenomeId]
-    );
+    props.dispatchBrowserLocation(props.defaultChrLocation[activeObjectId]);
   }, [chrLocation, drawerOpened]);
 
   return (
@@ -58,7 +58,7 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
           description={'Reset browser image'}
           image={resetIcon}
           onClick={resetBrowser}
-          classNames={{ inactive: styles.imageButtonInactive }}
+          classNames={{ disabled: styles.imageButtonDisabled }}
         />
       </div>
     </dd>

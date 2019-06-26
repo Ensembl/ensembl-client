@@ -130,6 +130,7 @@ export const changeBrowserLocation: ActionCreator<
   return (dispatch: Dispatch, getState: () => RootState) => {
     const [chrCode, startBp, endBp] = chrLocation;
     const genomeId = getBrowserActiveGenomeId(getState());
+    const activeObjectId = getBrowserActiveEnsObjectId(getState())[genomeId];
 
     const stickEvent = new CustomEvent('bpane', {
       bubbles: true,
@@ -160,9 +161,9 @@ export const changeBrowserLocation: ActionCreator<
 
     const currentDefaultChrLocation = getDefaultChrLocation(getState());
 
-    if (!currentDefaultChrLocation[genomeId]) {
+    if (activeObjectId && !currentDefaultChrLocation[activeObjectId]) {
       const updatedDefaultChrLocation = { ...currentDefaultChrLocation };
-      updatedDefaultChrLocation[genomeId] = chrLocation;
+      updatedDefaultChrLocation[activeObjectId] = chrLocation;
       dispatch(updateDefaultChrLocation(updatedDefaultChrLocation));
       browserStorageService.updateDefaultChrLocation(updatedDefaultChrLocation);
     }
