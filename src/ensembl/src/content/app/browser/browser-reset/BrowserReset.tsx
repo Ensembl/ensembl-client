@@ -11,6 +11,7 @@ import { getChrLocationStr } from '../browserHelper';
 
 type BrowserResetProps = {
   activeGenomeId: string;
+  activeObjectId: string;
   chrLocation: { [genomeId: string]: ChrLocation };
   defaultChrLocation: { [genomeId: string]: ChrLocation };
   dispatchBrowserLocation: (chrLocation: ChrLocation) => void;
