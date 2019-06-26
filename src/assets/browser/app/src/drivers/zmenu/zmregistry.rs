@@ -20,8 +20,6 @@ impl ZMenuRegistryImpl {
     }
     
     pub fn add_leafset(&mut self, mut zmls: ZMenuLeafSet) {
-        /* templates */
-        
         /* hotspots */
         let leafs = zmls.take_leafs();
         let seen_leafs : HashSet<Leaf> = leafs.iter().map(|x| x.get_leaf()).cloned().collect();

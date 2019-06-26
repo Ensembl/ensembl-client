@@ -19,4 +19,4 @@ pub use self::twiddle::{
     ElideI, NotI, PickI, AllI, IndexI, RunsI, RunsOfI, GetI, MergeI,
     AccNI, LengthI, LengthsI, BurstI, PicksI
 };
-pub use self::zmenu::{ ZTmplSpecI, ZTmplI, ZMenuI };
+pub use self::zmenu::{ ZTmplSpecI, ZTmplI, ZMenuI, ZAssocI };

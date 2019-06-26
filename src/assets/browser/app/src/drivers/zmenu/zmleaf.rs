@@ -74,21 +74,41 @@ impl ZMenuLeaf {
     pub fn set_value(&mut self, id: &str, key: &str, value: &str) {
         self.get_data(id).set_value(key,value);
     }
+
+    pub fn set_assoc(&mut self, to: &str, from: &str) {
+        self.get_data(from).set_assoc(to);
+    }
     
     pub(in super) fn get_leaf(&self) -> &Leaf { &self.leaf }
     pub(in super) fn was_redrawn(&self) -> bool { self.redrawn }
     
-    fn activate(&self, id: &str) -> Option<JSONValue> {
+    fn activate_self(&self, id: &str) -> Option<(JSONValue,Vec<String>)> {
         if let Some(zd) = self.data.get(id) {
             if let Some(sid) = zd.get_template() {
                 if let Some(tmpl) = self.template.get(sid) {
-                    return Some(tmpl.apply(id,zd.get_values()));
+                    let payload = tmpl.apply(id,zd.get_values());
+                    return Some((json!(payload),zd.get_assocs().iter().cloned().collect()));
                 }
             }
         }
         None
     }
     
+    fn activate(&self, id: &str) -> Option<JSONValue> {
+        if let Some((payload_self,other_ids)) = self.activate_self(id) {
+            let mut out = Vec::new();
+            out.push(payload_self);
+            for other_id in &other_ids {
+                if let Some((payload_other,_)) = self.activate_self(other_id) {
+                    out.push(payload_other);
+                }
+            }
+            Some(JSONValue::Array(out))
+        } else {
+            None
+        }
+    }
+
     pub(in super) fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> Vec<(String,JSONValue)> {
         let mut out = Vec::new();
         for item in &self.items {

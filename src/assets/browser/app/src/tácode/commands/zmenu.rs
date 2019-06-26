@@ -18,6 +18,14 @@ fn zmenu(sr: &mut SourceResponse, ids: &Vec<String>, keys: &Vec<String>, values:
     }
 }
 
+fn zmenu_assoc(sr: &mut SourceResponse, to_list: &Vec<String>, from_list: &Vec<String>) {
+    let mut froms = from_list.iter().cycle();
+    for to in to_list {
+        let from = froms.next();
+        sr.update_zml(&None,|zml| zml.set_assoc(to,unwrap!(from)));
+    }
+}
+
 fn tmpl(sr: &mut SourceResponse, ids: &Vec<String>, sids: &Vec<String>) {
     let mut sids = sids.iter().cycle();
     for id in ids {
@@ -40,6 +48,8 @@ pub struct ZTmpl(TáContext,usize,usize);
 pub struct ZTmplSpec(TáContext,usize,usize);
 // zmenu #ids,#keys,#values
 pub struct ZMenu(TáContext,usize,usize,usize);
+// zassoc #ids-to, #ids-from
+pub struct ZAssoc(TáContext,usize,usize);
 
 impl Command for ZTmpl {
     #[allow(irrefutable_let_patterns)]
@@ -97,6 +107,24 @@ impl Command for ZMenu {
     }
 }
 
+impl Command for ZAssoc {
+    #[allow(irrefutable_let_patterns)]
+    fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        let pid = proc.lock().unwrap().get_pid().unwrap();
+        self.0.with_task(pid,|task| {
+            if let TáTask::MakeShapes(_,_,sr,_,_,_,_) = task {
+                regs.get(self.1).as_string(|to| {
+                    regs.get(self.2).as_string(|from| {
+                        zmenu_assoc(sr,to,from);
+                    });
+                });
+            }
+        });
+        return 1;
+    }
+}
+
 pub struct ZTmplSpecI(pub TáContext);
 
 impl Instruction for ZTmplSpecI {
@@ -121,5 +149,14 @@ impl Instruction for ZMenuI {
     fn signature(&self) -> Signature { Signature::new("zmenu","rrr") }
     fn build(&self, args: &Vec<Argument>) -> Box<Command> {
         Box::new(ZMenu(self.0.clone(),args[0].reg(),args[1].reg(),args[2].reg()))
+    }
+}
+
+pub struct ZAssocI(pub TáContext);
+
+impl Instruction for ZAssocI {
+    fn signature(&self) -> Signature { Signature::new("zassoc","rr") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(ZAssoc(self.0.clone(),args[0].reg(),args[1].reg()))
     }
 }
