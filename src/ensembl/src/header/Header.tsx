@@ -1,6 +1,8 @@
 import React, { memo, FunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 
+import config from 'config';
+
 import HeaderButtons from './header-buttons/HeaderButtons';
 import LaunchbarContainer from './launchbar/LaunchbarContainer';
 import Account from './account/Account';
@@ -20,7 +22,7 @@ export const HomeLink = () => (
 );
 
 export const ReleaseVersion = () => (
-  <div className={styles.strapline}>Pre-release - March 2019</div>
+  <div className={styles.strapline}>Pre-release — version {config.version}</div>
 );
 
 export const Copyright = () => (
