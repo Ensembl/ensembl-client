@@ -23,6 +23,7 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
 ) => {
   const {
     activeGenomeId,
+    activeObjectId,
     chrLocation,
     defaultChrLocation,
     drawerOpened
@@ -31,7 +32,7 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   const getResetIconStatus = (): ImageButtonStatus => {
     const chrLocationStr = getChrLocationStr(chrLocation[activeGenomeId]);
     const defaultChrLocationStr = getChrLocationStr(
-      defaultChrLocation[activeGenomeId]
+      defaultChrLocation[activeObjectId]
     );
 
     if (chrLocationStr === defaultChrLocationStr || drawerOpened === true) {
@@ -46,9 +47,7 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
       return;
     }
 
-    props.dispatchBrowserLocation(
-      props.defaultChrLocation[props.activeGenomeId]
-    );
+    props.dispatchBrowserLocation(props.defaultChrLocation[activeObjectId]);
   }, [chrLocation, drawerOpened]);
 
   return (
