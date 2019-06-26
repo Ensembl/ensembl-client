@@ -220,12 +220,11 @@ export const BrowserNavigatorButton = (props: BrowserNavigatorButtonProps) => (
   </dd>
 );
 
-const mapStateToProps = (
-  state: RootState,
-  props: BrowserBarProps
-): StateProps => ({
+const mapStateToProps = (state: RootState): StateProps => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
-  activeObjectId: getBrowserActiveEnsObjectId(state)[props.activeGenomeId],
+  activeObjectId: getBrowserActiveEnsObjectId(state)[
+    getBrowserActiveGenomeId(state)
+  ],
   browserActivated: getBrowserActivated(state),
   browserNavOpened: getBrowserNavOpened(state),
   chrLocation: getChrLocation(state),

@@ -36,7 +36,7 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
     );
 
     if (chrLocationStr === defaultChrLocationStr || drawerOpened === true) {
-      return ImageButtonStatus.INACTIVE;
+      return ImageButtonStatus.DISABLED;
     }
 
     return ImageButtonStatus.ACTIVE;
@@ -58,7 +58,7 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
           description={'Reset browser image'}
           image={resetIcon}
           onClick={resetBrowser}
-          classNames={{ inactive: styles.imageButtonInactive }}
+          classNames={{ disabled: styles.imageButtonDisabled }}
         />
       </div>
     </dd>

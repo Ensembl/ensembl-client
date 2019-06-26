@@ -161,7 +161,7 @@ export const changeBrowserLocation: ActionCreator<
 
     const currentDefaultChrLocation = getDefaultChrLocation(getState());
 
-    if (!currentDefaultChrLocation[activeObjectId]) {
+    if (activeObjectId && !currentDefaultChrLocation[activeObjectId]) {
       const updatedDefaultChrLocation = { ...currentDefaultChrLocation };
       updatedDefaultChrLocation[activeObjectId] = chrLocation;
       dispatch(updateDefaultChrLocation(updatedDefaultChrLocation));
