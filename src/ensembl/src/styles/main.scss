@@ -52,3 +52,9 @@ img {
   display: table;
   clear: both;
 }
+
+@media print {
+  body {
+    color-adjust: exact;
+  }
+}
