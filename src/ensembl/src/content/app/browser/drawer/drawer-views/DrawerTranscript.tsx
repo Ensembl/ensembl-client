@@ -1,27 +1,26 @@
 import React, { FunctionComponent } from 'react';
 
+import { EnsObject, EnsObjectTrack } from 'src/ens-object/ensObjectTypes';
+
 import styles from '../Drawer.scss';
 
 type DrawerTranscriptProps = {
-  ensObjectInfo: any;
+  ensObjectInfo: EnsObject;
+  ensObjectTrack: EnsObjectTrack | undefined;
 };
 
 const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
   props: DrawerTranscriptProps
 ) => {
-  const { ensObjectInfo } = props;
+  const { ensObjectInfo, ensObjectTrack } = props;
 
-  let transcriptStableId = ensObjectInfo.associated_object.stable_id;
-  let selectedInfo = ensObjectInfo.associated_object.selected_info;
-  let geneSymbol = ensObjectInfo.obj_symbol;
-  let geneStableId = ensObjectInfo.stable_id;
-
-  if (ensObjectInfo.obj_type === 'transcript') {
-    transcriptStableId = ensObjectInfo.stable_id;
-    selectedInfo = ensObjectInfo.selected_info;
-    geneSymbol = ensObjectInfo.associated_object.obj_symbol;
-    geneStableId = ensObjectInfo.associated_object.stable_id;
+  if (!ensObjectTrack) {
+    return null;
   }
+  const transcriptStableId = ensObjectInfo.stable_id;
+  const additionalInfo = ensObjectTrack.additional_info;
+  const geneSymbol = ensObjectInfo.label;
+  const geneStableId = ensObjectInfo.stable_id;
 
   return (
     <dl className={styles.drawerView}>
@@ -30,7 +29,7 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
         <div className={styles.details}>
           <p>
             <span className={styles.mainDetail}>{transcriptStableId}</span>
-            <span className={styles.secondaryDetail}>{selectedInfo}</span>
+            <span className={styles.secondaryDetail}>{additionalInfo}</span>
           </p>
         </div>
       </dd>
@@ -48,7 +47,7 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
       <dd className="clearfix">
         <label htmlFor="">Description</label>
         <div className={styles.details}>
-          {selectedInfo === 'MANE Select' ? (
+          {additionalInfo === 'MANE Select' ? (
             <>
               <p>
                 MANE Select transcripts match GRCh38 and are 100% identical

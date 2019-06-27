@@ -11,11 +11,11 @@ const DrawerGene: FunctionComponent<DrawerGeneProps> = (
 ) => {
   const { ensObjectInfo } = props;
 
-  let geneSymbol = ensObjectInfo.obj_symbol;
+  let geneSymbol = ensObjectInfo.label;
   let geneStableId = ensObjectInfo.stable_id;
 
   if (ensObjectInfo.obj_type === 'transcript') {
-    geneSymbol = ensObjectInfo.associated_object.obj_symbol;
+    geneSymbol = ensObjectInfo.associated_object.label;
     geneStableId = ensObjectInfo.associated_object.stable_id;
   }
 
