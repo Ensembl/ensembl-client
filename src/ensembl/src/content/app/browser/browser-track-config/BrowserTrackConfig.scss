@@ -1,3 +1,5 @@
+@import 'src/styles/common';
+
 .trackConfig {
   box-sizing: border-box;
   background: #f1f2f4;
@@ -5,9 +7,9 @@
   display: inline-block;
   font: 13px Lato, helvetica, Arial, sans-serif;
   position: absolute;
-  left: -757px;
-  top: -14px;
-  height: 53px;
+  left: -750px;
+  top: -11px;
+  height: 44px;
   width: 750px;
   img {
     height: 100%;
@@ -16,8 +18,8 @@
 
   dl {
     display: inline-block;
-    margin: 10px 0;
-    padding: 0 20px;
+    margin: 6px 0;
+    padding: 0 8px;
   }
 
   dl:not(:first-child) {
@@ -55,21 +57,18 @@
     outline: none;
   }
 
-  input[type='checkbox'] {
-    border: 1px solid #b7c0c8;
-    display: inline-block;
-    height: 15px;
-    margin: 0 5px 0 0;
-    position: relative;
-    width: 15px;
-  }
-
   /* individual track config item (button container) styling */
 
   .allTracks {
-    /* color: #b7c0c8; */
     position: relative;
-    height: 22px;
+    display: flex;
+    width: 110px;
+    justify-content: center;
+    top: 3px;
+  }
+
+  .allTracksChecked {
+    background-color: $ens-dark-blue;
   }
 
   .heightSwitcher {
@@ -79,10 +78,10 @@
   /* button styling */
 
   .trackConfigSlider {
-    height: 22px;
-    margin-left: 10px;
+    height: 30px;
+    margin-left: 8px;
     position: relative;
-    width: 22px;
+    width: 30px;
   }
 
   .trackHeightBtn {

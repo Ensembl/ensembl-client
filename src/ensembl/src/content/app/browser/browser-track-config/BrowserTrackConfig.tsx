@@ -25,6 +25,7 @@ import trackHighlightBtn from 'static/img/browser/icon_tracks_highlight_grey.svg
 import trackMoveBtn from 'static/img/browser/icon_tracks_move_grey.svg';
 import { RootState } from 'src/store';
 import { CogList } from '../browserState';
+import Checkbox from 'src/shared/checkbox/Checkbox';
 
 type StateProps = {
   applyToAll: boolean;
@@ -98,28 +99,41 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
     props.updateApplyToAll(!applyToAll);
   }, [applyToAll, updateApplyToAll]);
 
+  const checkboxStyles: any = {
+    checked: styles.allTracksChecked,
+    checkboxHolder: styles.allTracks
+  };
+
   return (
     <section className={styles.trackConfig}>
       <dl>
-        <dd className={styles.allTracks}>
-          <input
-            type="checkbox"
-            defaultChecked={applyToAll}
+        <dd>
+          <Checkbox
+            classNames={checkboxStyles}
+            label={'All tracks'}
+            checked={applyToAll}
             onChange={applyToAllToggle}
           />
-          <label htmlFor="">All tracks</label>
         </dd>
       </dl>
       <dl>
         <dd>
-          <label htmlFor="">Track name</label>
-          <button className={styles.trackConfigSlider} onClick={toggleName}>
+          <label htmlFor={'trackConfig-trackName'}>Track name</label>
+          <button
+            id={'trackConfig-trackName'}
+            className={styles.trackConfigSlider}
+            onClick={toggleName}
+          >
             <img src={nameIcon} />
           </button>
         </dd>
         <dd>
-          <label htmlFor="">Feature labels</label>
-          <button className={styles.trackConfigSlider} onClick={toggleLabel}>
+          <label htmlFor={'trackConfig-featureLabels'}>Feature labels</label>
+          <button
+            id={'trackConfig-featureLabels'}
+            className={styles.trackConfigSlider}
+            onClick={toggleLabel}
+          >
             <img src={labelIcon} />
           </button>
         </dd>
