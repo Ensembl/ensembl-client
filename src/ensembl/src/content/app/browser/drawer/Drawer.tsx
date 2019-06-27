@@ -18,7 +18,7 @@ import DrawerGC from './drawer-views/DrawerGC';
 
 import closeIcon from 'static/img/track-panel/close.svg';
 
-import { find } from 'lodash';
+import find from 'lodash/find';
 import styles from './Drawer.scss';
 import SnpIndels from './drawer-views/SnpIndels';
 
