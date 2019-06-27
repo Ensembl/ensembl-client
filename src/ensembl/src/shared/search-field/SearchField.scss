@@ -3,17 +3,17 @@
 .searchField {
   border: 1px solid $ens-grey;
   display: inline-flex;
-  justify-content: space-between;
   padding: 0 0.6em;
 }
 
 .searchFieldRightCorner {
   display: flex;
   align-items: center;
-  flex-basis: 0;
+  flex: 0 0 auto;
   margin-left: 0.6em;
 }
 
 .searchFieldInput {
+  flex-grow: 1;
   border: none;
 }
