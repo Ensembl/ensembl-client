@@ -141,34 +141,6 @@ Nginx:internal:
   dependencies:
   - Test_N_Build:internal
 
-Deploy:internal:
-  stage: deploy
-  image: alpine
-  before_script:
-  - mkdir -p /etc/deploy
-  - echo ${EMBASSY_KUBECONFIG} | base64 -d > ${KUBECONFIG}
-
-  script:
-  - apk update && apk add --no-cache curl git
-  - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
-  - chmod +x ./kubectl
-  - mv ./kubectl /usr/local/bin/kubectl
-  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
-  - cd ensembl-client-caas-deploy
-  - git checkout refactor-manifest
-  - cd ..
-  - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}-internal/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - sed -i "s/<DEPLOYMNET_ENV>/internal/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - cat ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - kubectl config view
-  - kubectl config use-context ens-dev-ctx
-  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-
-  only:
-  - master
-
-  dependencies:
-  - Nginx:internal
 
 Staging:
   stage: deploy
@@ -225,3 +197,33 @@ Live:
 
   dependencies:
   - Nginx
+
+
+Deploy:internal:
+  stage: deploy
+  image: alpine
+  before_script:
+  - mkdir -p /etc/deploy
+  - echo ${EMBASSY_KUBECONFIG} | base64 -d > ${KUBECONFIG}
+
+  script:
+  - apk update && apk add --no-cache curl git
+  - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+  - chmod +x ./kubectl
+  - mv ./kubectl /usr/local/bin/kubectl
+  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
+  - cd ensembl-client-caas-deploy
+  - git checkout refactor-manifest
+  - cd ..
+  - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}-internal/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - sed -i "s/<DEPLOYMNET_ENV>/internal/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - cat ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - kubectl config view
+  - kubectl config use-context ens-dev-ctx
+  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+
+  only:
+  - master
+
+  dependencies:
+  - Nginx:internal
