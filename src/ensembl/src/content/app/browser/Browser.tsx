@@ -158,7 +158,9 @@ export const Browser: FunctionComponent<BrowserProps> = (
       ) {
         changeSelectedSpecies(activeGenomeId);
       } else {
-        changeSelectedSpecies(props.committedSpecies[0].genome_id);
+        if (props.committedSpecies[0]) {
+          changeSelectedSpecies(props.committedSpecies[0].genome_id);
+        }
       }
     }
     setTrackStatesFromStorage(browserStorageService.getTrackStates());

@@ -24,6 +24,7 @@ export type EnsObjectTrack = {
   ensembl_object_id?: string;
   support_level?: string | null;
   track_id: string;
+  description: string;
 };
 
 export type EnsObjectResponse = {
