@@ -43,7 +43,7 @@ impl ZMenuReports {
         unwrap!(self.queue.lock()).add_report(json!({
             "action": "create_zmenu",
             "id": id,
-            "content": [payload],
+            "content": payload,
             "anchor_coordinates": { "x": pos.0, "y": pos.1 }
         }));
     }

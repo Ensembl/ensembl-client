@@ -142,12 +142,12 @@ impl BackendConfig {
 
     // TODO errors
     pub fn from_json_string(in_: &str) -> Result<BackendConfig,String> {
-        let data : SerdeValue = serde_json::from_str(in_).ok().unwrap();
+        let data : SerdeValue = unwrap!(serde_json::from_str(in_).ok());
         let assets = BackendConfig::assets_from_json(&data["assets"],&data["data"]);
         let bytecodes = BackendConfig::bytecodes_from_json(&data["bytecodes"]);
         let tracks = BackendConfig::tracks_from_json(&data["tracks"]);
         let sticks = BackendConfig::sticks_from_json(&data["sticks"]);
-        let data_url = data["data-url"].as_str().unwrap().to_string();
+        let data_url = unwrap!(data["data-url"].as_str()).to_string();
         let debug_url = data.get("debug-url").and_then(|x| x.as_str()).map(|x| x.to_string());
         Ok(BackendConfig { 
             assets, tracks, sticks, data_url, bytecodes, debug_url
