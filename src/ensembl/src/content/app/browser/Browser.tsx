@@ -158,8 +158,8 @@ export const Browser: FunctionComponent<BrowserProps> = (
       ) {
         changeSelectedSpecies(activeGenomeId);
       } else {
-        if (props.committedSpecies[0]) {
-          changeSelectedSpecies(props.committedSpecies[0].genome_id);
+        if (committedSpecies[0]) {
+          changeSelectedSpecies(committedSpecies[0].genome_id);
         }
       }
     }
