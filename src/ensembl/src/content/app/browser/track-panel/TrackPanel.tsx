@@ -9,6 +9,10 @@ import Drawer from '../drawer/Drawer';
 import { RootState } from 'src/store';
 
 import {
+  updateTrackStatesAndSave,
+  UpdateTrackStatesPayload
+} from 'src/content/app/browser/browserActions';
+import {
   toggleTrackPanel,
   closeTrackPanelModal,
   openTrackPanelModal
@@ -71,6 +75,7 @@ type DispatchProps = {
   openTrackPanelModal: (trackPanelModalView: string) => void;
   toggleDrawer: (drawerOpened: boolean) => void;
   toggleTrackPanel: (trackPanelOpened?: boolean) => void;
+  updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
 };
 
 type OwnProps = {
@@ -143,6 +148,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
             trackStates={props.trackStates}
             genomeTrackCategories={props.genomeTrackCategories}
             updateDrawerView={props.changeDrawerView}
+            updateTrackStates={props.updateTrackStates}
           />
 
           {props.trackPanelModalOpened ? (
@@ -184,7 +190,8 @@ const mapDispatchToProps: DispatchProps = {
   closeTrackPanelModal,
   openTrackPanelModal,
   toggleDrawer,
-  toggleTrackPanel
+  toggleTrackPanel,
+  updateTrackStates: updateTrackStatesAndSave
 };
 
 export default connect(

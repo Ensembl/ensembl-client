@@ -72,24 +72,7 @@ export class BrowserStorageService {
     return this.storageService.get(StorageKeys.TRACK_STATES) || {};
   }
 
-  public saveTrackStates(
-    genomeId: string,
-    categoryName: string,
-    trackName: string,
-    trackStatus: ImageButtonStatus
-  ) {
-    const trackStates = this.getTrackStates();
-
-    if (!trackStates[genomeId]) {
-      trackStates[genomeId] = {};
-    }
-
-    if (!trackStates[genomeId][categoryName]) {
-      trackStates[genomeId][categoryName] = {};
-    }
-
-    trackStates[genomeId][categoryName][trackName] = trackStatus;
-
+  public saveTrackStates(trackStates: TrackStates) {
     this.storageService.save(StorageKeys.TRACK_STATES, trackStates);
   }
 

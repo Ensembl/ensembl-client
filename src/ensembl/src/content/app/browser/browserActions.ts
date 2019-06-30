@@ -1,4 +1,4 @@
-import { createAction } from 'typesafe-actions';
+import { createAction, createStandardAction } from 'typesafe-actions';
 import { Dispatch, ActionCreator, Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 
@@ -8,12 +8,22 @@ import { BrowserNavStates, ChrLocation, CogList } from './browserState';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectId,
+  getBrowserTrackStates,
   getDefaultChrLocation,
   getChrLocation
 } from './browserSelectors';
 import { getBrowserAnalyticsObject } from 'src/analyticsHelper';
 import browserStorageService from './browser-storage-service';
 import { RootState } from 'src/store';
+import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
+import { TrackStates } from './track-panel/trackPanelConfig';
+
+export type UpdateTrackStatesPayload = {
+  genomeId: string;
+  categoryName: string;
+  trackId: string;
+  status: ImageButtonStatus; // FIXME: rework this part
+};
 
 export const updateBrowserActivated = createAction(
   'browser/update-browser-activated',
@@ -77,6 +87,28 @@ export const updateBrowserActiveEnsObjectIdAndSave: ActionCreator<
 
     browserStorageService.updateActiveEnsObjectId(updatedActiveEnsObjectId);
   };
+};
+
+export const updateTrackStates = createStandardAction(
+  'browser/update-tracks-state'
+)<TrackStates>();
+
+export const updateTrackStatesAndSave: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (payload: UpdateTrackStatesPayload) => (
+  dispatch: Dispatch,
+  getState: () => RootState
+) => {
+  const stateFragment = {
+    [payload.genomeId]: {
+      [payload.categoryName]: {
+        [payload.trackId]: payload.status
+      }
+    }
+  };
+
+  dispatch(updateTrackStates(stateFragment));
+  const trackStates = getBrowserTrackStates(getState());
 };
 
 export const toggleBrowserNav = createAction(

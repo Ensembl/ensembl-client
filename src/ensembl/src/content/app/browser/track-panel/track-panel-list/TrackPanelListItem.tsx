@@ -10,6 +10,7 @@ import React, {
 import get from 'lodash/get';
 
 import { TrackItemColour } from '../trackPanelConfig';
+import { UpdateTrackStatesPayload } from 'src/content/app/browser/browserActions';
 
 import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
@@ -34,6 +35,7 @@ type TrackPanelListItemProps = {
   drawerView: string;
   track: EnsObjectTrack;
   updateDrawerView: (drawerView: string) => void;
+  updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
 };
 
 // delete this when there is a better place to put this
@@ -139,18 +141,19 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
       browserRef.current.dispatchEvent(trackEvent);
     }
 
-    const newImageButtonStatus =
+    const newStatus =
       trackStatus === ImageButtonStatus.ACTIVE
         ? ImageButtonStatus.INACTIVE
         : ImageButtonStatus.ACTIVE;
 
-    browserStorageService.saveTrackStates(
-      activeGenomeId,
+    props.updateTrackStates({
+      genomeId: activeGenomeId,
       categoryName,
-      track.track_id,
-      newImageButtonStatus
-    );
-    setTrackStatus(newImageButtonStatus);
+      trackId: track.track_id,
+      status: newStatus
+    });
+
+    setTrackStatus(newStatus);
   };
 
   return (

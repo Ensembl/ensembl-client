@@ -8,6 +8,7 @@ import React, {
 
 import TrackPanelListItem from './TrackPanelListItem';
 
+import { UpdateTrackStatesPayload } from 'src/content/app/browser/browserActions';
 import { TrackType, TrackStates } from '../trackPanelConfig';
 import { ChrLocation } from '../../browserState';
 
@@ -30,6 +31,7 @@ type TrackPanelListProps = {
   genomeTrackCategories: GenomeTrackCategory[];
   trackStates: TrackStates;
   updateDrawerView: (drawerView: string) => void;
+  updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
 };
 
 const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
@@ -111,6 +113,7 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
         key={track.track_id}
         track={track}
         updateDrawerView={changeDrawerView}
+        updateTrackStates={props.updateTrackStates}
       >
         {track.child_tracks &&
           track.child_tracks.map((childTrack: EnsObjectTrack) =>

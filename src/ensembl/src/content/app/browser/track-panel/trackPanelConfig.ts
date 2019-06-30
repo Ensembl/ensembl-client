@@ -26,9 +26,9 @@ export type TrackPanelIcons = {
 };
 
 export type TrackStates = {
-  [key: string]: {
-    [key: string]: {
-      [genomeId: string]: ImageButtonStatus;
+  [genomeId: string]: {
+    [categoryName: string]: {
+      [trackName: string]: ImageButtonStatus;
     };
   };
 };

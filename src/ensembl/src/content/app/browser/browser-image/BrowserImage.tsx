@@ -26,7 +26,6 @@ import {
   updateBrowserNavStates,
   setChrLocation
 } from '../browserActions';
-import browserStorageService from '../browser-storage-service';
 
 import { ChrLocation } from '../browserState';
 
