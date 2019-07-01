@@ -17,10 +17,6 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
   if (!ensObjectTrack) {
     return null;
   }
-  const transcriptStableId = ensObjectInfo.stable_id;
-  const additionalInfo = ensObjectTrack.additional_info;
-  const geneSymbol = ensObjectInfo.label;
-  const geneStableId = ensObjectInfo.stable_id;
 
   return (
     <dl className={styles.drawerView}>
@@ -28,8 +24,10 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
         <label htmlFor="">Transcript</label>
         <div className={styles.details}>
           <p>
-            <span className={styles.mainDetail}>{transcriptStableId}</span>
-            <span className={styles.secondaryDetail}>{additionalInfo}</span>
+            <span className={styles.mainDetail}>{ensObjectInfo.stable_id}</span>
+            <span className={styles.secondaryDetail}>
+              {ensObjectTrack.additional_info}
+            </span>
           </p>
         </div>
       </dd>
@@ -38,8 +36,10 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
         <label htmlFor="">Gene</label>
         <div className={styles.details}>
           <p>
-            <span>{geneSymbol}</span>
-            <span className={styles.secondaryDetail}>{geneStableId}</span>
+            <span>{ensObjectInfo.label}</span>
+            <span className={styles.secondaryDetail}>
+              {ensObjectInfo.stable_id}
+            </span>
           </p>
         </div>
       </dd>
@@ -47,27 +47,7 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
       <dd className="clearfix">
         <label htmlFor="">Description</label>
         <div className={styles.details}>
-          {additionalInfo === 'MANE Select' ? (
-            <>
-              <p>
-                MANE Select transcripts match GRCh38 and are 100% identical
-                between Ensembl-GENCODE and RefSeq for 5' UTR, CDS, splicing and
-                3' UTR.
-              </p>
-              <p>
-                The MANE project (Matched Annotation from NCBI and EMBL-EBI) is
-                collaboration betwen Ensembl-GENCODE and RefSeq to select a
-                default transcript per human protein coding locus that is
-                representative of biology, and is well-supported, expressed and
-                conserved.
-              </p>
-            </>
-          ) : (
-            <p>
-              The Selected transcript is defined as either the longest CDS (if
-              the gene has translated transcripts) or the longest cDNA
-            </p>
-          )}
+          {ensObjectTrack.description || '--'}
         </div>
       </dd>
     </dl>
