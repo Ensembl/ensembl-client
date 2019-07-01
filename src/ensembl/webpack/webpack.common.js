@@ -35,12 +35,11 @@ module.exports = (isDev, moduleRules, plugins) => ({
         exclude: /node_modules/
       },
 
-      // this will create source maps for the typescript code
+      // these libraries are distributed in a way that does not support IE11, and so require compilation
       {
         test: /.js$/,
-        exclude: /node_modules/,
-        loader: 'source-map-loader',
-        enforce: 'pre'
+        loader: 'babel-loader',
+        include: /react-spring/
       },
 
       // the loaders for styling
