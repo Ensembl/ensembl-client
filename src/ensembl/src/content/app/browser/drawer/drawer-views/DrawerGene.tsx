@@ -1,9 +1,11 @@
 import React, { FunctionComponent } from 'react';
 
+import { EnsObject } from 'src/ens-object/ensObjectTypes';
+
 import styles from '../Drawer.scss';
 
 type DrawerGeneProps = {
-  ensObjectInfo: any;
+  ensObjectInfo: EnsObject;
 };
 
 const DrawerGene: FunctionComponent<DrawerGeneProps> = (
@@ -31,7 +33,9 @@ const DrawerGene: FunctionComponent<DrawerGeneProps> = (
 
       <dd className="clearfix">
         <label htmlFor="">Description</label>
-        <div className={styles.details}>{ensObjectInfo.description}</div>
+        <div className={styles.details}>
+          {ensObjectInfo.description || '--'}
+        </div>
       </dd>
     </dl>
   );

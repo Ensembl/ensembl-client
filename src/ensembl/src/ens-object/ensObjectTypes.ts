@@ -14,6 +14,7 @@ export type EnsObject = {
   spliced_length: number | null;
   stable_id: string | null;
   strand: string | null;
+  description: string | null;
 };
 
 export type EnsObjectTrack = {
@@ -24,7 +25,7 @@ export type EnsObjectTrack = {
   ensembl_object_id?: string;
   support_level?: string | null;
   track_id: string;
-  description: string;
+  description: string | null;
 };
 
 export type EnsObjectResponse = {

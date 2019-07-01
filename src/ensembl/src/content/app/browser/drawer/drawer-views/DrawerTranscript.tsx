@@ -46,7 +46,9 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
 
       <dd className="clearfix">
         <label htmlFor="">Description</label>
-        <div className={styles.details}>{ensObjectTrack.description}</div>
+        <div className={styles.details}>
+          {ensObjectTrack.description || '--'}
+        </div>
       </dd>
     </dl>
   );
