@@ -66,7 +66,7 @@ const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
     });
 
     setClickHandlers(callbacks);
-  }, [props.drawerOpened, props.genomeSelectorActive]);
+  }, [props.drawerOpened, props.genomeSelectorActive, props.ensObjectInfo]);
 
   return (
     <dl className={`${styles.browserTabs} show-for-large`}>
