@@ -35,6 +35,7 @@ _List any other functionality that may be affected or which requires additional 
 
 - [ ] I have checked any requirements for Google Analytics
 - [ ] I have created any required tests
+- [ ] The PR has as its final commit a WASM/JS update commit if any Rust files were updated.
 
 ## Possible complications
 <!--
