@@ -78,12 +78,7 @@ describe('BrowserStorageService', () => {
         }
       };
 
-      browserStorageService.saveTrackStates(
-        'homo_sapiens38',
-        'Genes & transcripts',
-        'gene-pc-fwd',
-        ImageButtonStatus.INACTIVE
-      );
+      browserStorageService.saveTrackStates(toggledTrack);
 
       expect(mockStorageService.save).toHaveBeenCalledWith(
         StorageKeys.TRACK_STATES,
