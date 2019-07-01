@@ -1,14 +1,14 @@
 @import 'src/styles/common';
 
 .privacyBanner {
-  background: $ens-black;
+  position: fixed;
   bottom: 0;
+  background: $ens-black;
   color: white;
   font-size: 14px;
   height: 104px;
   line-height: 2;
   padding: 10px;
-  position: absolute;
   text-align: center;
   width: 100%;
   z-index: 10000;
