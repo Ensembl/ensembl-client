@@ -1,10 +1,5 @@
-import React, {
-  FunctionComponent,
-  RefObject,
-  useCallback,
-  useState,
-  useEffect
-} from 'react';
+import React, { FunctionComponent, RefObject } from 'react';
+import get from 'lodash/get';
 
 import TrackPanelListItem from './TrackPanelListItem';
 
@@ -37,35 +32,28 @@ type TrackPanelListProps = {
 const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   props: TrackPanelListProps
 ) => {
-  const [currentTrackCategories, setCurrentTrackCategories] = useState<
-    GenomeTrackCategory[]
-  >([]);
+  const {
+    activeGenomeId,
+    selectedBrowserTab: selectedBrowserTabs,
+    genomeTrackCategories
+  } = props;
 
-  useEffect(() => {
-    const selectedBrowserTab =
-      props.selectedBrowserTab[props.activeGenomeId] || TrackType.GENOMIC;
-
-    if (props.genomeTrackCategories && props.genomeTrackCategories.length > 0) {
-      setCurrentTrackCategories(
-        props.genomeTrackCategories.filter((category: GenomeTrackCategory) =>
-          category.types.includes(selectedBrowserTab)
-        )
-      );
-    }
-  }, [props.selectedBrowserTab]);
-
-  const changeDrawerView = useCallback(
-    (currentTrack: string) => {
-      const { drawerView, toggleDrawer, updateDrawerView } = props;
-
-      updateDrawerView(currentTrack);
-
-      if (!drawerView) {
-        toggleDrawer(true);
-      }
-    },
-    [props.drawerView]
+  const selectedBrowserTab =
+    selectedBrowserTabs[activeGenomeId] || TrackType.GENOMIC;
+  const currentTrackCategories = genomeTrackCategories.filter(
+    (category: GenomeTrackCategory) =>
+      category.types.includes(selectedBrowserTab)
   );
+
+  const changeDrawerView = (currentTrack: string) => {
+    const { drawerView, toggleDrawer, updateDrawerView } = props;
+
+    updateDrawerView(currentTrack);
+
+    if (!drawerView) {
+      toggleDrawer(true);
+    }
+  };
 
   const getTrackPanelListClasses = () => {
     const heightClass: string = props.launchbarExpanded
@@ -101,13 +89,24 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
     if (!track) {
       return;
     }
+    const { track_id } = track;
+    const defaultTrackStatus = getDefaultTrackStatus(
+      categoryName,
+      track.track_id
+    );
+
+    const trackStatus = get(
+      props.trackStates,
+      `${activeGenomeId}.${categoryName}.${track_id}`,
+      defaultTrackStatus
+    );
 
     return (
       <TrackPanelListItem
         activeGenomeId={props.activeGenomeId}
         browserRef={props.browserRef}
         categoryName={categoryName}
-        defaultTrackStatus={getDefaultTrackStatus(categoryName, track.track_id)}
+        trackStatus={trackStatus as ImageButtonStatus}
         drawerOpened={props.drawerOpened}
         drawerView={props.drawerView}
         key={track.track_id}

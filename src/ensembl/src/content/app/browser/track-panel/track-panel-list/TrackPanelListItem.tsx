@@ -30,7 +30,7 @@ type TrackPanelListItemProps = {
   browserRef: RefObject<HTMLDivElement>;
   categoryName: string;
   children?: ReactNode[];
-  defaultTrackStatus: ImageButtonStatus;
+  trackStatus: ImageButtonStatus;
   drawerOpened: boolean;
   drawerView: string;
   track: EnsObjectTrack;
@@ -45,23 +45,9 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   props: TrackPanelListItemProps
 ) => {
   const [expanded, setExpanded] = useState(true);
-  const [trackStatus, setTrackStatus] = useState(props.defaultTrackStatus);
   const { activeGenomeId, browserRef, categoryName, drawerView, track } = props;
 
-  // FIXME: rather reading trackstates from localStorage (multiple times!), they should be passed as props
-  // (and stored in redux store; localStorage should be used to store the relevant part of redux store between browser reloads)
-  useEffect(() => {
-    const trackStates = browserStorageService.getTrackStates();
-    const storedTrackStatus: ImageButtonStatus = get(
-      trackStates,
-      `${activeGenomeId}.${categoryName}.${track.track_id}`,
-      ImageButtonStatus.ACTIVE
-    ) as ImageButtonStatus;
-
-    if (storedTrackStatus && storedTrackStatus !== trackStatus) {
-      setTrackStatus(storedTrackStatus);
-    }
-  }, [props.activeGenomeId]);
+  const { trackStatus } = props;
 
   useEffect(() => {
     const trackToggleStates = browserStorageService.getTrackListToggleStates();
@@ -152,8 +138,6 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
       trackId: track.track_id,
       status: newStatus
     });
-
-    setTrackStatus(newStatus);
   };
 
   return (

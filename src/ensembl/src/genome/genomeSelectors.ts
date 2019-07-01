@@ -13,6 +13,12 @@ export const getGenomeInfoFetchFailed = (state: RootState) =>
 export const getGenomeTrackCategories = (state: RootState) =>
   state.genome.genomeTrackCategories.genomeTrackCategoriesData;
 
+export const getGenomeTrackCategoriesById = (
+  state: RootState,
+  genomeId: string
+) =>
+  state.genome.genomeTrackCategories.genomeTrackCategoriesData[genomeId] || [];
+
 export const getGenomeTrackCategoriesFetching = (state: RootState) =>
   state.genome.genomeTrackCategories.genomeTrackCategoriesFetching;
 

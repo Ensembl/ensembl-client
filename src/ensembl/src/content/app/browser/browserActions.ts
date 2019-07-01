@@ -109,6 +109,7 @@ export const updateTrackStatesAndSave: ActionCreator<
 
   dispatch(updateTrackStates(stateFragment));
   const trackStates = getBrowserTrackStates(getState());
+  browserStorageService.saveTrackStates(trackStates);
 };
 
 export const toggleBrowserNav = createAction(

@@ -28,7 +28,8 @@ import { getDrawerView, getDrawerOpened } from '../drawer/drawerSelectors';
 import {
   getBrowserActivated,
   getDefaultChrLocation,
-  getBrowserActiveGenomeId
+  getBrowserActiveGenomeId,
+  getBrowserTrackStates
 } from '../browserSelectors';
 import {
   getExampleEnsObjects,
@@ -42,7 +43,7 @@ import { BreakpointWidth } from 'src/global/globalConfig';
 import { TrackType, TrackStates } from './trackPanelConfig';
 
 import { GenomeTrackCategory } from 'src/genome/genomeTypes';
-import { getGenomeTrackCategories } from 'src/genome/genomeSelectors';
+import { getGenomeTrackCategoriesById } from 'src/genome/genomeSelectors';
 import {
   EnsObject,
   EnsObjectTrack,
@@ -67,6 +68,7 @@ type StateProps = {
   trackPanelModalOpened: boolean;
   trackPanelModalView: string;
   trackPanelOpened: boolean;
+  trackStates: TrackStates;
 };
 
 type DispatchProps = {
@@ -80,7 +82,6 @@ type DispatchProps = {
 
 type OwnProps = {
   browserRef: RefObject<HTMLDivElement>;
-  trackStates: TrackStates;
 };
 
 type TrackPanelProps = StateProps & DispatchProps & OwnProps;
@@ -165,25 +166,28 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
   );
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
-  activeGenomeId: getBrowserActiveGenomeId(state),
-  breakpointWidth: getBreakpointWidth(state),
-  browserActivated: getBrowserActivated(state),
-  defaultChrLocation: getDefaultChrLocation(state),
-  drawerOpened: getDrawerOpened(state),
-  drawerView: getDrawerView(state),
-  ensObjectInfo: getEnsObjectInfo(state),
-  ensObjectTracks: getEnsObjectTracks(state),
-  exampleEnsObjects: getExampleEnsObjects(state),
-  launchbarExpanded: getLaunchbarExpanded(state),
-  selectedBrowserTab: getSelectedBrowserTab(state),
-  genomeTrackCategories: getGenomeTrackCategories(state)[
-    getBrowserActiveGenomeId(state)
-  ],
-  trackPanelModalOpened: getTrackPanelModalOpened(state),
-  trackPanelModalView: getTrackPanelModalView(state),
-  trackPanelOpened: getTrackPanelOpened(state)
-});
+const mapStateToProps = (state: RootState): StateProps => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+
+  return {
+    activeGenomeId,
+    breakpointWidth: getBreakpointWidth(state),
+    browserActivated: getBrowserActivated(state),
+    defaultChrLocation: getDefaultChrLocation(state),
+    drawerOpened: getDrawerOpened(state),
+    drawerView: getDrawerView(state),
+    ensObjectInfo: getEnsObjectInfo(state),
+    ensObjectTracks: getEnsObjectTracks(state),
+    exampleEnsObjects: getExampleEnsObjects(state),
+    launchbarExpanded: getLaunchbarExpanded(state),
+    selectedBrowserTab: getSelectedBrowserTab(state),
+    genomeTrackCategories: getGenomeTrackCategoriesById(state, activeGenomeId),
+    trackPanelModalOpened: getTrackPanelModalOpened(state),
+    trackPanelModalView: getTrackPanelModalView(state),
+    trackPanelOpened: getTrackPanelOpened(state),
+    trackStates: getBrowserTrackStates(state)
+  };
+};
 
 const mapDispatchToProps: DispatchProps = {
   changeDrawerView,
