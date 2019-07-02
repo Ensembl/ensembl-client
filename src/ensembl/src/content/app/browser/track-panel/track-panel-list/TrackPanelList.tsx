@@ -19,7 +19,7 @@ import { EnsObjectTrack, EnsObject } from 'src/ens-object/ensObjectTypes';
 type TrackPanelListProps = {
   activeGenomeId: string;
   browserRef: RefObject<HTMLDivElement>;
-  defaultChrLocation: { [genomeId: string]: ChrLocation };
+  defaultChrLocation: { [ensObjectId: string]: ChrLocation };
   drawerOpened: boolean;
   drawerView: string;
   launchbarExpanded: boolean;

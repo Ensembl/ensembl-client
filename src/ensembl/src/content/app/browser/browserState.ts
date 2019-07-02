@@ -59,7 +59,7 @@ export const defaultBrowserNavState: BrowserNavState = {
 
 export type BrowserLocationState = Readonly<{
   chrLocation: { [genomeId: string]: ChrLocation };
-  defaultChrLocation: { [genomeId: string]: ChrLocation };
+  defaultChrLocation: { [ensObjectId: string]: ChrLocation };
   genomeSelectorActive: boolean;
 }>;
 

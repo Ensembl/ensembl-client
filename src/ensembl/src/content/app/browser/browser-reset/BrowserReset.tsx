@@ -13,7 +13,7 @@ type BrowserResetProps = {
   activeGenomeId: string;
   activeObjectId: string;
   chrLocation: { [genomeId: string]: ChrLocation };
-  defaultChrLocation: { [genomeId: string]: ChrLocation };
+  defaultChrLocation: { [ensObjectId: string]: ChrLocation };
   dispatchBrowserLocation: (chrLocation: ChrLocation) => void;
   drawerOpened: boolean;
 };

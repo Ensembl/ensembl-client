@@ -40,7 +40,7 @@ type StateProps = {
   browserActivated: boolean;
   browserNavOpened: boolean;
   chrLocation: { [genomeId: string]: ChrLocation };
-  defaultChrLocation: { [genomeId: string]: ChrLocation };
+  defaultChrLocation: { [ensObjectId: string]: ChrLocation };
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
   ensObjectInfo: EnsObject;
@@ -76,7 +76,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   props: BrowserBarProps
 ) => {
   const shouldShowBrowserInfo = () => {
-    const chrLocationForGenome = props.defaultChrLocation[props.activeGenomeId];
+    const chrLocationForGenome = props.defaultChrLocation[props.activeObjectId];
     const isLocationOfWholeChromosome =
       chrLocationForGenome === undefined ? true : false;
 
