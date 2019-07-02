@@ -80,7 +80,7 @@ const Drawer: FunctionComponent<DrawerProps> = (props: DrawerProps) => {
       <button className={styles.closeButton} onClick={closeDrawer}>
         <img src={closeIcon} alt="close drawer" />
       </button>
-      <div className={styles.drawerView}>{getDrawerViewComponent()}</div>
+      {getDrawerViewComponent()}
     </section>
   );
 };
