@@ -63,23 +63,9 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
     return `${styles.trackPanelList} ${heightClass}`;
   };
 
-  const getDefaultTrackStatus = (categoryName: string, trackName: string) => {
-    let trackStatus = ImageButtonStatus.ACTIVE;
-
-    if (!props.trackStates[props.activeGenomeId]) {
-      return trackStatus;
-    }
-    const statesOfCategory =
-      props.trackStates[props.activeGenomeId][categoryName];
-
-    if (statesOfCategory && statesOfCategory[trackName]) {
-      trackStatus =
-        statesOfCategory[trackName] === 'active'
-          ? ImageButtonStatus.ACTIVE
-          : ImageButtonStatus.INACTIVE;
-    }
-
-    return trackStatus;
+  // TODO: get default track status properly if it can ever be inactive
+  const getDefaultTrackStatus = () => {
+    return ImageButtonStatus.ACTIVE;
   };
 
   const getTrackListItem = (
@@ -90,10 +76,7 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
       return;
     }
     const { track_id } = track;
-    const defaultTrackStatus = getDefaultTrackStatus(
-      categoryName,
-      track.track_id
-    );
+    const defaultTrackStatus = getDefaultTrackStatus();
 
     const trackStatus = get(
       props.trackStates,
@@ -106,6 +89,7 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
         activeGenomeId={props.activeGenomeId}
         browserRef={props.browserRef}
         categoryName={categoryName}
+        defaultTrackStatus={defaultTrackStatus as ImageButtonStatus}
         trackStatus={trackStatus as ImageButtonStatus}
         drawerOpened={props.drawerOpened}
         drawerView={props.drawerView}

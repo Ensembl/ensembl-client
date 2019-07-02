@@ -31,6 +31,7 @@ type TrackPanelListItemProps = {
   categoryName: string;
   children?: ReactNode[];
   trackStatus: ImageButtonStatus;
+  defaultTrackStatus: ImageButtonStatus;
   drawerOpened: boolean;
   drawerView: string;
   track: EnsObjectTrack;
@@ -48,6 +49,13 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   const { activeGenomeId, browserRef, categoryName, drawerView, track } = props;
 
   const { trackStatus } = props;
+
+  useEffect(() => {
+    const { defaultTrackStatus } = props;
+    if (trackStatus !== defaultTrackStatus) {
+      updateGenomeBrowser(trackStatus);
+    }
+  }, []);
 
   useEffect(() => {
     const trackToggleStates = browserStorageService.getTrackListToggleStates();
@@ -113,8 +121,24 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   };
 
   const toggleTrack = () => {
+    const newStatus =
+      trackStatus === ImageButtonStatus.ACTIVE
+        ? ImageButtonStatus.INACTIVE
+        : ImageButtonStatus.ACTIVE;
+
+    updateGenomeBrowser(newStatus);
+
+    props.updateTrackStates({
+      genomeId: activeGenomeId,
+      categoryName,
+      trackId: track.track_id,
+      status: newStatus
+    });
+  };
+
+  const updateGenomeBrowser = (status: ImageButtonStatus) => {
     const currentTrackStatus =
-      trackStatus === ImageButtonStatus.ACTIVE ? 'off' : 'on';
+      status === ImageButtonStatus.ACTIVE ? 'on' : 'off';
 
     const trackEvent = new CustomEvent('bpane', {
       bubbles: true,
@@ -126,18 +150,6 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     if (browserRef.current) {
       browserRef.current.dispatchEvent(trackEvent);
     }
-
-    const newStatus =
-      trackStatus === ImageButtonStatus.ACTIVE
-        ? ImageButtonStatus.INACTIVE
-        : ImageButtonStatus.ACTIVE;
-
-    props.updateTrackStates({
-      genomeId: activeGenomeId,
-      categoryName,
-      trackId: track.track_id,
-      status: newStatus
-    });
   };
 
   return (
