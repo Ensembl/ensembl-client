@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
-
+import faker from 'faker';
 import { BrowserBar, BrowserInfo, BrowserNavigatorButton } from './BrowserBar';
 
 import { TrackType } from '../track-panel/trackPanelConfig';
@@ -100,10 +100,11 @@ describe('<BrowserBar />', () => {
     });
 
     test('shows BrowserInfo panel if gene location is provided', () => {
+      const sampleObjectId = faker.lorem.word();
       const renderedBrowserBar = mount(
         renderBrowserBar({
-          activeGenomeId: 'homo_sapiens_grch38',
-          defaultChrLocation: { homo_sapiens_grch38: ['13', 100, 100] }
+          activeObjectId: sampleObjectId,
+          defaultChrLocation: { [sampleObjectId]: ['13', 100, 100] }
         })
       );
       expect(renderedBrowserBar.find(BrowserInfo).length).toBe(1);
