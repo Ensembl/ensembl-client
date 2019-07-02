@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useCallback } from 'react';
 
-import { ChrLocation } from '../browserState';
+import { BrowserChrLocation, ChrLocation } from '../browserState';
 import { ReactComponent as resetIcon } from 'static/img/browser/track-reset.svg';
 import ImageButton, {
   ImageButtonStatus
@@ -12,8 +12,8 @@ import { getChrLocationStr } from '../browserHelper';
 type BrowserResetProps = {
   activeGenomeId: string;
   activeObjectId: string;
-  chrLocation: { [genomeId: string]: ChrLocation };
-  defaultChrLocation: { [ensObjectId: string]: ChrLocation };
+  chrLocation: BrowserChrLocation;
+  defaultChrLocation: BrowserChrLocation;
   dispatchBrowserLocation: (chrLocation: ChrLocation) => void;
   drawerOpened: boolean;
 };

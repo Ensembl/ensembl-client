@@ -26,9 +26,8 @@ import {
   updateBrowserNavStates,
   setChrLocation
 } from '../browserActions';
-import browserStorageService from '../browser-storage-service';
 
-import { ChrLocation } from '../browserState';
+import { BrowserChrLocation, ChrLocation } from '../browserState';
 
 import { CircleLoader } from 'src/shared/loader/Loader';
 
@@ -42,7 +41,7 @@ type StateProps = {
   trackConfigNames: any;
   trackConfigLabel: any;
   browserActivated: boolean;
-  chrLocation: { [genomeId: string]: ChrLocation };
+  chrLocation: BrowserChrLocation;
 };
 
 type DispatchProps = {

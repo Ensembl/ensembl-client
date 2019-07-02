@@ -6,7 +6,7 @@ import { browserInfoConfig, BrowserInfoItem } from '../browserConfig';
 import { TrackType } from '../track-panel/trackPanelConfig';
 
 import { toggleBrowserNav, toggleGenomeSelector } from '../browserActions';
-import { ChrLocation } from '../browserState';
+import { BrowserChrLocation, ChrLocation } from '../browserState';
 import {
   getBrowserNavOpened,
   getChrLocation,
@@ -39,8 +39,8 @@ type StateProps = {
   activeObjectId: string;
   browserActivated: boolean;
   browserNavOpened: boolean;
-  chrLocation: { [genomeId: string]: ChrLocation };
-  defaultChrLocation: { [ensObjectId: string]: ChrLocation };
+  chrLocation: BrowserChrLocation;
+  defaultChrLocation: BrowserChrLocation;
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
   ensObjectInfo: EnsObject;

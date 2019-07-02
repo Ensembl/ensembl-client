@@ -15,6 +15,7 @@ import { RootState } from 'src/store';
 import {
   BrowserOpenState,
   BrowserNavStates,
+  BrowserChrLocation,
   ChrLocation
 } from './browserState';
 import {
@@ -76,7 +77,7 @@ type StateProps = {
   browserNavOpened: boolean;
   browserOpenState: BrowserOpenState;
   browserQueryParams: { [key: string]: string };
-  chrLocation: { [genomeId: string]: ChrLocation };
+  chrLocation: BrowserChrLocation;
   drawerOpened: boolean;
   genomeInfo: GenomeInfoData;
   genomeSelectorActive: boolean;
