@@ -22,7 +22,7 @@ export type UpdateTrackStatesPayload = {
   genomeId: string;
   categoryName: string;
   trackId: string;
-  status: ImageButtonStatus; // FIXME: rework this part
+  status: ImageButtonStatus; // TODO: update types so that actions do not depend on ImageButton types
 };
 
 export const updateBrowserActivated = createAction(
