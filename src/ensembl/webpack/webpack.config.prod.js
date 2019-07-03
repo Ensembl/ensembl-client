@@ -95,6 +95,7 @@ const plugins = [
 
   // adds workbox library (from Google) support to enable service workers
   new WorkboxPlugin.GenerateSW({
+    swDest: '../service-worker.js', // save service worker in the root folder (/dist) instead of /dist/static
     clientsClaim: true,
     skipWaiting: true
   }),
