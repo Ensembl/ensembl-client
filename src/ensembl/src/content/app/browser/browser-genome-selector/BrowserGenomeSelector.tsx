@@ -16,6 +16,7 @@ import { getChrLocationStr } from '../browserHelper';
 
 type BrowserGenomeSelectorProps = {
   activeGenomeId: string;
+  activeObjectId: string;
   browserActivated: boolean;
   chrLocation: BrowserChrLocation;
   dispatchBrowserLocation: (chrLocation: ChrLocation) => void;
@@ -27,7 +28,7 @@ type BrowserGenomeSelectorProps = {
 const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
   props: BrowserGenomeSelectorProps
 ) => {
-  const chrLocationForGenome = props.chrLocation[props.activeGenomeId] || [
+  const chrLocationForGenome = props.chrLocation[props.activeObjectId] || [
     '',
     0,
     0
