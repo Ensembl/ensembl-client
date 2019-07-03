@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { RootState } from 'src/store';
 
-import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
+import { fetchAllExampleEnsObjects } from 'src/ens-object/ensObjectActions';
 import { fetchGenomeInfo, fetchAllGenomesInfo } from 'src/genome/genomeActions';
 import {
   EnsObject,
@@ -29,7 +29,7 @@ type StateProps = {
 };
 
 type DispatchProps = {
-  fetchExampleEnsObjects: () => void;
+  fetchAllExampleEnsObjects: () => void;
   fetchGenomeInfo: () => void;
   fetchAllGenomesInfo: () => void;
 };
@@ -42,12 +42,11 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
   const [showPreviouslyViewed, toggleShowPreviouslyViewed] = useState(false);
 
   useEffect(() => {
-    props.fetchGenomeInfo();
     props.fetchAllGenomesInfo();
   }, [props.activeSpecies]);
 
   useEffect(() => {
-    props.fetchExampleEnsObjects();
+    props.fetchAllExampleEnsObjects();
   }, [props.genomeInfo]);
 
   useEffect(() => {
@@ -144,7 +143,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  fetchExampleEnsObjects,
+  fetchAllExampleEnsObjects,
   fetchGenomeInfo,
   fetchAllGenomesInfo
 };

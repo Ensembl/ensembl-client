@@ -39,10 +39,7 @@ export const fetchGenomeInfo: ActionCreator<
 
 export const fetchAllGenomesInfo: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (genomeId: string) => async (
-  dispatch: Dispatch,
-  getState: () => RootState
-) => {
+> = () => async (dispatch: Dispatch, getState: () => RootState) => {
   try {
     dispatch(fetchGenomeInfoAsyncActions.request());
     const genomeIds = getCommittedSpecies(getState()).map(
@@ -52,13 +49,15 @@ export const fetchAllGenomesInfo: ActionCreator<
 
     const url = `/api/genome/info?${query}`;
     const response = await apiService.fetch(url);
-    console.log('response', response);
+    const genomeInfo = response.genome_info.reduce(
+      (result, genome) => ({
+        ...result,
+        [genome.genome_id]: genome
+      }),
+      {}
+    );
 
-    // dispatch(
-    //   fetchGenomeInfoAsyncActions.success({
-    //     [genomeId]: response.genome_info[0] // FIXME: Why the response is an array instead of an object keyed by genomeId?
-    //   })
-    // );
+    dispatch(fetchGenomeInfoAsyncActions.success(genomeInfo));
   } catch (error) {
     dispatch(fetchGenomeInfoAsyncActions.failure(error));
   }

@@ -121,6 +121,17 @@ export const fetchExampleEnsObjects: ActionCreator<
   }
 };
 
+export const fetchAllExampleEnsObjects: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = () => async (dispatch: Dispatch, getState: () => RootState) => {
+  const allGenomesInfo: GenomeInfoData = getGenomeInfo(getState());
+  const allGenomesExampleObjects = Object.keys(allGenomesInfo).forEach(
+    (genomeId) => {
+      dispatch(fetchExampleEnsObjects(genomeId));
+    }
+  );
+};
+
 // FIXME: remove when backend learns to return info about a region object
 const isRegionObject = (objectId: string) => {
   return /:region:/.test(objectId);
