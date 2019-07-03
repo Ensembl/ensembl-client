@@ -96,10 +96,10 @@ Nginx:
   - git checkout june-release
   - cd ..
   - sed -i "s/<DEPLOYMENT_ENV>/${DEPLOYENV}/g" ensembl-client-nginx/config/conf.d/local.conf
-  - docker build -t ${CONTAINER_IMAGE} -f ensembl-client-nginx/Dockerfile --no-cache .
+  - docker build -t ${CONTAINER_IMAGE}-${DEPLOYENV} -f ensembl-client-nginx/Dockerfile --no-cache .
   - echo "$GITLAB_REGISTRY_TOKEN" | docker login -u "$GITLAB_REGISTRY_USER" --password-stdin https://"$GITLAB_REGISTRY_URL"
-  - docker push ${CONTAINER_IMAGE}
-  - docker rmi ${CONTAINER_IMAGE}
+  - docker push ${CONTAINER_IMAGE}-${DEPLOYENV}
+  - docker rmi ${CONTAINER_IMAGE}-${DEPLOYENV}
   - docker logout "$GITLAB_REGISTRY_URL"
 
   only:
@@ -157,7 +157,7 @@ Staging:
   - cd ensembl-client-caas-deploy
   - git checkout refactor-manifest
   - cd ..
-  - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}-staging/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - sed -i "s/<DEPLOYMNET_ENV>/staging/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - cat ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - kubectl config view
@@ -185,7 +185,7 @@ Live:
   - cd ensembl-client-caas-deploy
   - git checkout refactor-manifest
   - cd ..
-  - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}-prod/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - sed -i "s/<DEPLOYMNET_ENV>/prod/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - cat ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - kubectl config view
