@@ -6,7 +6,7 @@ import { browserInfoConfig, BrowserInfoItem } from '../browserConfig';
 import { TrackType } from '../track-panel/trackPanelConfig';
 
 import { toggleBrowserNav, toggleGenomeSelector } from '../browserActions';
-import { ChrLocation } from '../browserState';
+import { BrowserChrLocation, ChrLocation } from '../browserState';
 import {
   getBrowserNavOpened,
   getChrLocation,
@@ -39,8 +39,8 @@ type StateProps = {
   activeObjectId: string;
   browserActivated: boolean;
   browserNavOpened: boolean;
-  chrLocation: { [genomeId: string]: ChrLocation };
-  defaultChrLocation: { [genomeId: string]: ChrLocation };
+  chrLocation: BrowserChrLocation;
+  defaultChrLocation: BrowserChrLocation;
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
   ensObjectInfo: EnsObject;
@@ -76,7 +76,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   props: BrowserBarProps
 ) => {
   const shouldShowBrowserInfo = () => {
-    const chrLocationForGenome = props.defaultChrLocation[props.activeGenomeId];
+    const chrLocationForGenome = props.defaultChrLocation[props.activeObjectId];
     const isLocationOfWholeChromosome =
       chrLocationForGenome === undefined ? true : false;
 

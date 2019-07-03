@@ -23,6 +23,8 @@ export type BrowserNavStates = [
 
 export type ChrLocation = [string, number, number];
 
+export type BrowserChrLocation = { [ensObjectId: string]: ChrLocation };
+
 export type CogList = {
   [key: string]: number;
 };
@@ -58,8 +60,8 @@ export const defaultBrowserNavState: BrowserNavState = {
 };
 
 export type BrowserLocationState = Readonly<{
-  chrLocation: { [genomeId: string]: ChrLocation };
-  defaultChrLocation: { [genomeId: string]: ChrLocation };
+  chrLocation: BrowserChrLocation;
+  defaultChrLocation: BrowserChrLocation;
   genomeSelectorActive: boolean;
 }>;
 

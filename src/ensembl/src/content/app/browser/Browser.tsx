@@ -15,6 +15,7 @@ import { RootState } from 'src/store';
 import {
   BrowserOpenState,
   BrowserNavStates,
+  BrowserChrLocation,
   ChrLocation
 } from './browserState';
 import {
@@ -76,7 +77,7 @@ type StateProps = {
   browserNavOpened: boolean;
   browserOpenState: BrowserOpenState;
   browserQueryParams: { [key: string]: string };
-  chrLocation: { [genomeId: string]: ChrLocation };
+  chrLocation: BrowserChrLocation;
   drawerOpened: boolean;
   genomeInfo: GenomeInfoData;
   genomeSelectorActive: boolean;
@@ -129,7 +130,8 @@ export const Browser: FunctionComponent<BrowserProps> = (
   };
 
   const changeSelectedSpecies = (genomeId: string) => {
-    const chrLocationForGenome = props.chrLocation[genomeId];
+    const chrLocationForGenome =
+      props.chrLocation[props.activeEnsObjectId[genomeId]];
 
     let newUrl: string;
     if (chrLocationForGenome) {
@@ -199,11 +201,9 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, [props.browserQueryParams.focus]);
 
   useEffect(() => {
-    const chrLocationForGenome = props.chrLocation[props.activeGenomeId] || [
-      '',
-      0,
-      0
-    ];
+    const chrLocationForGenome = props.chrLocation[
+      props.activeEnsObjectId[props.activeGenomeId]
+    ] || ['', 0, 0];
     const [, chrStart, chrEnd] = chrLocationForGenome;
 
     if (props.browserActivated && chrStart > 0 && chrEnd > 0) {

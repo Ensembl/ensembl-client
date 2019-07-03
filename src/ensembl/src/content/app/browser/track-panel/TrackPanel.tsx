@@ -33,7 +33,7 @@ import {
 } from 'src/ens-object/ensObjectSelectors';
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
-import { ChrLocation } from '../browserState';
+import { BrowserChrLocation } from '../browserState';
 import { BreakpointWidth } from 'src/global/globalConfig';
 import { TrackType, TrackStates } from './trackPanelConfig';
 
@@ -51,7 +51,7 @@ type StateProps = {
   activeGenomeId: string;
   breakpointWidth: BreakpointWidth;
   browserActivated: boolean;
-  defaultChrLocation: { [genomeId: string]: ChrLocation };
+  defaultChrLocation: BrowserChrLocation;
   drawerOpened: boolean;
   drawerView: string;
   ensObjectInfo: EnsObject;
