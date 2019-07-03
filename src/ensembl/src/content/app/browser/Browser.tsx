@@ -227,7 +227,8 @@ export const Browser: FunctionComponent<BrowserProps> = (
     if (!focus && props.activeEnsObjectId[genomeId]) {
       focus = props.activeEnsObjectId[genomeId];
     }
-    let chrLocationForGenome = props.chrLocation[genomeId];
+    let chrLocationForGenome =
+      props.chrLocation[props.activeEnsObjectId[genomeId]];
 
     if (!chrLocationForGenome && props.browserQueryParams.location) {
       chrLocationForGenome = getChrLocationFromStr(
