@@ -139,10 +139,14 @@ export const setChrLocation: ActionCreator<
   ThunkAction<any, any, null, Action<string>>
 > = (chrLocation: ChrLocation) => {
   return (dispatch: Dispatch, getState: () => RootState) => {
-    const genomeId = getBrowserActiveGenomeId(getState());
-    const currentChrLocation = getChrLocation(getState());
-    const updatedChrLocation = { ...currentChrLocation };
-    updatedChrLocation[genomeId] = chrLocation;
+    const state = getState();
+    const genomeId = getBrowserActiveGenomeId(state);
+    const activeObjectId = getBrowserActiveEnsObjectId(state)[genomeId];
+    const currentChrLocation = getChrLocation(state);
+    const updatedChrLocation = {
+      ...currentChrLocation,
+      [activeObjectId]: chrLocation
+    };
 
     dispatch(updateChrLocation(updatedChrLocation));
     browserStorageService.updateChrLocation(updatedChrLocation);
@@ -186,8 +190,10 @@ export const changeBrowserLocation: ActionCreator<
     }
 
     const currentChrLocation = getChrLocation(getState());
-    const updatedChrLocation = { ...currentChrLocation };
-    updatedChrLocation[genomeId] = chrLocation;
+    const updatedChrLocation = {
+      ...currentChrLocation,
+      [activeObjectId]: chrLocation
+    };
 
     dispatch(updateChrLocation(updatedChrLocation));
     browserStorageService.updateChrLocation(updatedChrLocation);
