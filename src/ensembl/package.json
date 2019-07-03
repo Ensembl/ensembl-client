@@ -55,6 +55,7 @@
     "dotenv": "8.0.0",
     "foundation-sites": "6.5.3",
     "lodash": "4.17.11",
+    "query-string": "6.8.1",
     "react": "16.8.6",
     "react-cookie": "4.0.0",
     "react-dom": "16.8.6",

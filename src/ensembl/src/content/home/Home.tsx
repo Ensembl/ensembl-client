@@ -6,6 +6,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { RootState } from 'src/store';
 
 import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
+import { fetchGenomeInfo, fetchAllGenomesInfo } from 'src/genome/genomeActions';
 import {
   EnsObject,
   ExampleEnsObjectsData
@@ -15,7 +16,6 @@ import { getGenomeInfo } from 'src/genome/genomeSelectors';
 import { getCommittedSpecies } from '../app/species-selector/state/speciesSelectorSelectors';
 import { CommittedItem } from '../app/species-selector/types/species-search';
 
-import { fetchGenomeInfo } from 'src/genome/genomeActions';
 import upperFirst from 'lodash/upperFirst';
 
 import { GenomeInfoData } from 'src/genome/genomeTypes';
@@ -31,6 +31,7 @@ type StateProps = {
 type DispatchProps = {
   fetchExampleEnsObjects: () => void;
   fetchGenomeInfo: () => void;
+  fetchAllGenomesInfo: () => void;
 };
 
 type OwnProps = {};
@@ -42,6 +43,7 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
 
   useEffect(() => {
     props.fetchGenomeInfo();
+    props.fetchAllGenomesInfo();
   }, [props.activeSpecies]);
 
   useEffect(() => {
@@ -143,7 +145,8 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = {
   fetchExampleEnsObjects,
-  fetchGenomeInfo
+  fetchGenomeInfo,
+  fetchAllGenomesInfo
 };
 
 export default connect(

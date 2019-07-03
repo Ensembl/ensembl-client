@@ -7,7 +7,6 @@ import React, {
   useCallback,
   useEffect
 } from 'react';
-import get from 'lodash/get';
 
 import { TrackItemColour } from '../trackPanelConfig';
 import { UpdateTrackStatesPayload } from 'src/content/app/browser/browserActions';
