@@ -10,6 +10,7 @@ import React, {
 import get from 'lodash/get';
 
 import { TrackItemColour } from '../trackPanelConfig';
+import { UpdateTrackStatesPayload } from 'src/content/app/browser/browserActions';
 
 import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
@@ -29,11 +30,13 @@ type TrackPanelListItemProps = {
   browserRef: RefObject<HTMLDivElement>;
   categoryName: string;
   children?: ReactNode[];
+  trackStatus: ImageButtonStatus;
   defaultTrackStatus: ImageButtonStatus;
   drawerOpened: boolean;
   drawerView: string;
   track: EnsObjectTrack;
   updateDrawerView: (drawerView: string) => void;
+  updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
 };
 
 // delete this when there is a better place to put this
@@ -43,23 +46,16 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   props: TrackPanelListItemProps
 ) => {
   const [expanded, setExpanded] = useState(true);
-  const [trackStatus, setTrackStatus] = useState(props.defaultTrackStatus);
   const { activeGenomeId, browserRef, categoryName, drawerView, track } = props;
 
-  // FIXME: rather reading trackstates from localStorage (multiple times!), they should be passed as props
-  // (and stored in redux store; localStorage should be used to store the relevant part of redux store between browser reloads)
-  useEffect(() => {
-    const trackStates = browserStorageService.getTrackStates();
-    const storedTrackStatus: ImageButtonStatus = get(
-      trackStates,
-      `${activeGenomeId}.${categoryName}.${track.track_id}`,
-      ImageButtonStatus.ACTIVE
-    ) as ImageButtonStatus;
+  const { trackStatus } = props;
 
-    if (storedTrackStatus && storedTrackStatus !== trackStatus) {
-      setTrackStatus(storedTrackStatus);
+  useEffect(() => {
+    const { defaultTrackStatus } = props;
+    if (trackStatus !== defaultTrackStatus) {
+      updateGenomeBrowser(trackStatus);
     }
-  }, [props.activeGenomeId]);
+  }, []);
 
   useEffect(() => {
     const trackToggleStates = browserStorageService.getTrackListToggleStates();
@@ -125,8 +121,24 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   };
 
   const toggleTrack = () => {
+    const newStatus =
+      trackStatus === ImageButtonStatus.ACTIVE
+        ? ImageButtonStatus.INACTIVE
+        : ImageButtonStatus.ACTIVE;
+
+    updateGenomeBrowser(newStatus);
+
+    props.updateTrackStates({
+      genomeId: activeGenomeId,
+      categoryName,
+      trackId: track.track_id,
+      status: newStatus
+    });
+  };
+
+  const updateGenomeBrowser = (status: ImageButtonStatus) => {
     const currentTrackStatus =
-      trackStatus === ImageButtonStatus.ACTIVE ? 'off' : 'on';
+      status === ImageButtonStatus.ACTIVE ? 'on' : 'off';
 
     const trackEvent = new CustomEvent('bpane', {
       bubbles: true,
@@ -138,19 +150,6 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     if (browserRef.current) {
       browserRef.current.dispatchEvent(trackEvent);
     }
-
-    const newImageButtonStatus =
-      trackStatus === ImageButtonStatus.ACTIVE
-        ? ImageButtonStatus.INACTIVE
-        : ImageButtonStatus.ACTIVE;
-
-    browserStorageService.saveTrackStates(
-      activeGenomeId,
-      categoryName,
-      track.track_id,
-      newImageButtonStatus
-    );
-    setTrackStatus(newImageButtonStatus);
   };
 
   return (

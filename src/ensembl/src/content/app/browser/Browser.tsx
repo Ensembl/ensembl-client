@@ -339,10 +339,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
                 />
               </div>
             </animated.div>
-            <TrackPanel
-              browserRef={browserRef}
-              trackStates={trackStatesFromStorage}
-            />
+            <TrackPanel browserRef={browserRef} />
           </div>
         </section>
       )}

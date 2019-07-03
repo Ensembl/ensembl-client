@@ -1,7 +1,10 @@
 import browserStorageService from './browser-storage-service';
 
+import { TrackStates } from './track-panel/trackPanelConfig';
+
 const activeGenomeId = browserStorageService.getActiveGenomeId();
 const activeEnsObjectId = browserStorageService.getActiveEnsObjectId();
+const trackStates = browserStorageService.getTrackStates();
 const chrLocation = browserStorageService.getChrLocation();
 const defaultChrLocation = browserStorageService.getDefaultChrLocation();
 
@@ -42,11 +45,13 @@ export const defaultBrowserState: BrowserState = {
 export type BrowserEntityState = Readonly<{
   activeGenomeId: string; // FIXME this should be nullable
   activeEnsObjectId: { [genomeId: string]: string }; // FIXME this should be nullable
+  trackStates: TrackStates;
 }>;
 
 export const defaultBrowserEntityState: BrowserEntityState = {
   activeGenomeId, // FIXME this can be null
-  activeEnsObjectId // FIXME this can be null
+  activeEnsObjectId, // FIXME this can be null
+  trackStates
 };
 
 export type BrowserNavState = Readonly<{

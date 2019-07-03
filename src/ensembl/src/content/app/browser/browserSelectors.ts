@@ -14,6 +14,9 @@ export const getBrowserActiveGenomeId = (state: RootState): string =>
 export const getBrowserActiveEnsObjectId = (state: RootState) =>
   state.browser.browserEntity.activeEnsObjectId;
 
+export const getBrowserTrackStates = (state: RootState) =>
+  state.browser.browserEntity.trackStates;
+
 export const getBrowserQueryParams = (
   state: RootState
 ): { [key: string]: string } => getQueryParamsMap(state.router.location.search);

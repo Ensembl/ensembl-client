@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import { ActionType, getType } from 'typesafe-actions';
+import merge from 'lodash/merge';
 
 import { RootAction } from 'src/objects';
 import * as browserActions from './browserActions';
@@ -54,6 +55,11 @@ export function browserEntity(
       return { ...state, activeGenomeId: action.payload };
     case getType(browserActions.updateBrowserActiveEnsObjectId):
       return { ...state, activeEnsObjectId: action.payload };
+    case getType(browserActions.updateTrackStates):
+      return {
+        ...state,
+        trackStates: merge({}, state.trackStates, action.payload)
+      };
     default:
       return state;
   }

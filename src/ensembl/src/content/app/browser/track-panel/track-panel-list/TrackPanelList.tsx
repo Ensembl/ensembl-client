@@ -1,13 +1,9 @@
-import React, {
-  FunctionComponent,
-  RefObject,
-  useCallback,
-  useState,
-  useEffect
-} from 'react';
+import React, { FunctionComponent, RefObject } from 'react';
+import get from 'lodash/get';
 
 import TrackPanelListItem from './TrackPanelListItem';
 
+import { UpdateTrackStatesPayload } from 'src/content/app/browser/browserActions';
 import { TrackType, TrackStates } from '../trackPanelConfig';
 import { BrowserChrLocation } from '../../browserState';
 
@@ -30,40 +26,34 @@ type TrackPanelListProps = {
   genomeTrackCategories: GenomeTrackCategory[];
   trackStates: TrackStates;
   updateDrawerView: (drawerView: string) => void;
+  updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
 };
 
 const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   props: TrackPanelListProps
 ) => {
-  const [currentTrackCategories, setCurrentTrackCategories] = useState<
-    GenomeTrackCategory[]
-  >([]);
+  const {
+    activeGenomeId,
+    selectedBrowserTab: selectedBrowserTabs,
+    genomeTrackCategories
+  } = props;
 
-  useEffect(() => {
-    const selectedBrowserTab =
-      props.selectedBrowserTab[props.activeGenomeId] || TrackType.GENOMIC;
-
-    if (props.genomeTrackCategories && props.genomeTrackCategories.length > 0) {
-      setCurrentTrackCategories(
-        props.genomeTrackCategories.filter((category: GenomeTrackCategory) =>
-          category.types.includes(selectedBrowserTab)
-        )
-      );
-    }
-  }, [props.selectedBrowserTab]);
-
-  const changeDrawerView = useCallback(
-    (currentTrack: string) => {
-      const { drawerView, toggleDrawer, updateDrawerView } = props;
-
-      updateDrawerView(currentTrack);
-
-      if (!drawerView) {
-        toggleDrawer(true);
-      }
-    },
-    [props.drawerView]
+  const selectedBrowserTab =
+    selectedBrowserTabs[activeGenomeId] || TrackType.GENOMIC;
+  const currentTrackCategories = genomeTrackCategories.filter(
+    (category: GenomeTrackCategory) =>
+      category.types.includes(selectedBrowserTab)
   );
+
+  const changeDrawerView = (currentTrack: string) => {
+    const { drawerView, toggleDrawer, updateDrawerView } = props;
+
+    updateDrawerView(currentTrack);
+
+    if (!drawerView) {
+      toggleDrawer(true);
+    }
+  };
 
   const getTrackPanelListClasses = () => {
     const heightClass: string = props.launchbarExpanded
@@ -73,23 +63,9 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
     return `${styles.trackPanelList} ${heightClass}`;
   };
 
-  const getDefaultTrackStatus = (categoryName: string, trackName: string) => {
-    let trackStatus = ImageButtonStatus.ACTIVE;
-
-    if (!props.trackStates[props.activeGenomeId]) {
-      return trackStatus;
-    }
-    const statesOfCategory =
-      props.trackStates[props.activeGenomeId][categoryName];
-
-    if (statesOfCategory && statesOfCategory[trackName]) {
-      trackStatus =
-        statesOfCategory[trackName] === 'active'
-          ? ImageButtonStatus.ACTIVE
-          : ImageButtonStatus.INACTIVE;
-    }
-
-    return trackStatus;
+  // TODO: get default track status properly if it can ever be inactive
+  const getDefaultTrackStatus = () => {
+    return ImageButtonStatus.ACTIVE;
   };
 
   const getTrackListItem = (
@@ -99,18 +75,28 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
     if (!track) {
       return;
     }
+    const { track_id } = track;
+    const defaultTrackStatus = getDefaultTrackStatus();
+
+    const trackStatus = get(
+      props.trackStates,
+      `${activeGenomeId}.${categoryName}.${track_id}`,
+      defaultTrackStatus
+    );
 
     return (
       <TrackPanelListItem
         activeGenomeId={props.activeGenomeId}
         browserRef={props.browserRef}
         categoryName={categoryName}
-        defaultTrackStatus={getDefaultTrackStatus(categoryName, track.track_id)}
+        defaultTrackStatus={defaultTrackStatus as ImageButtonStatus}
+        trackStatus={trackStatus as ImageButtonStatus}
         drawerOpened={props.drawerOpened}
         drawerView={props.drawerView}
         key={track.track_id}
         track={track}
         updateDrawerView={changeDrawerView}
+        updateTrackStates={props.updateTrackStates}
       >
         {track.child_tracks &&
           track.child_tracks.map((childTrack: EnsObjectTrack) =>
