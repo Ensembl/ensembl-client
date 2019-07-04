@@ -4,12 +4,14 @@ import { connect } from 'react-redux';
 import { replace, Replace } from 'connected-react-router';
 import { useSpring, animated } from 'react-spring';
 import { Link } from 'react-router-dom';
+import find from 'lodash/find';
+
 import BrowserBar from './browser-bar/BrowserBar';
 import BrowserImage from './browser-image/BrowserImage';
 import BrowserNavBar from './browser-nav/BrowserNavBar';
 import TrackPanel from './track-panel/TrackPanel';
 import AppBar from 'src/shared/app-bar/AppBar';
-import find from 'lodash/find';
+import upperFirst from 'lodash/upperFirst';
 
 import { RootState } from 'src/store';
 import {
@@ -61,7 +63,6 @@ import { toggleDrawer } from './drawer/drawerActions';
 import browserStorageService from './browser-storage-service';
 import { TrackStates } from './track-panel/trackPanelConfig';
 import { AppName } from 'src/global/globalConfig';
-import upperFirst from 'lodash/upperFirst';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -76,7 +77,7 @@ type StateProps = {
   browserNavOpened: boolean;
   browserOpenState: BrowserOpenState;
   browserQueryParams: { [key: string]: string };
-  chrLocation: ChrLocation;
+  chrLocation: ChrLocation | null;
   drawerOpened: boolean;
   genomeInfo: GenomeInfoData;
   genomeSelectorActive: boolean;
@@ -201,11 +202,10 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, [props.browserQueryParams.focus]);
 
   useEffect(() => {
-    const { chrLocation = [] } = props;
-    const [, chrStart, chrEnd] = chrLocation;
+    const { chrLocation } = props;
 
-    if (props.browserActivated && chrStart && chrEnd) {
-      dispatchBrowserLocation(chrLocation as ChrLocation);
+    if (props.browserActivated && chrLocation) {
+      dispatchBrowserLocation(chrLocation);
     }
   }, [props.browserActivated]);
 
@@ -229,9 +229,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
       focus = activeEnsObjectId;
     }
 
-    const location =
-      (chrLocation && getChrLocationStr(chrLocation)) ||
-      browserQueryParams.location;
+    const location = (chrLocation && getChrLocationStr(chrLocation)) || null;
 
     const newUrl = urlFor.browser({ genomeId, focus, location });
     props.replace(newUrl);

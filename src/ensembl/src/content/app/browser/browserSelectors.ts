@@ -1,5 +1,10 @@
 import { RootState } from 'src/store';
-import { BrowserOpenState, BrowserNavStates, CogList } from './browserState';
+import {
+  BrowserOpenState,
+  BrowserNavStates,
+  CogList,
+  ChrLocation
+} from './browserState';
 import { getQueryParamsMap } from 'src/global/globalHelper';
 
 export const getBrowserActivated = (state: RootState): boolean =>
@@ -33,10 +38,10 @@ export const getBrowserNavOpened = (state: RootState): boolean =>
 export const getBrowserNavStates = (state: RootState): BrowserNavStates =>
   state.browser.browserNav.browserNavStates;
 
-export const getChrLocation = (state: RootState) => {
+export const getChrLocation = (state: RootState): ChrLocation | null => {
   const chrLocations = state.browser.browserLocation.chrLocations;
   const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
-  return chrLocations[activeEnsObjectId];
+  return chrLocations[activeEnsObjectId] || null;
 };
 
 export const getDefaultChrLocation = (state: RootState) => {

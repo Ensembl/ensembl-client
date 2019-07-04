@@ -81,10 +81,13 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
     }
 
     if (location) {
+      // FIXME: is there any reason to receive genome and chromosome in the same string?
+      const [genomeAndChromosome, start, end] = location;
+      const [, chromosome] = genomeAndChromosome.split(':');
       const chrLocation = [
-        location[0].split(':')[1],
-        Number(location[1]),
-        Number(location[2])
+        chromosome,
+        Number(start),
+        Number(end)
       ] as ChrLocation;
 
       dispatchSetChrLocation(chrLocation);

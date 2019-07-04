@@ -145,7 +145,6 @@ export const setChrLocation: ActionCreator<
   return (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const activeObjectId = getBrowserActiveEnsObjectId(state);
-    const chrLocation = getChrLocation(state);
     const payload = {
       [activeObjectId]: chrLocation
     };

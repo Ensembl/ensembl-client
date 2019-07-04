@@ -39,7 +39,7 @@ type StateProps = {
   activeObjectId: string;
   browserActivated: boolean;
   browserNavOpened: boolean;
-  chrLocation: ChrLocation;
+  chrLocation: ChrLocation | null;
   defaultChrLocation: ChrLocation;
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
@@ -120,6 +120,10 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
     [styles.browserInfoExpanded]: !props.trackPanelOpened,
     [styles.browserInfoGreyed]: props.drawerOpened
   });
+
+  if (!props.chrLocation) {
+    return null;
+  }
 
   return (
     <div className={styles.browserBar}>
