@@ -68,8 +68,8 @@ const plugins = [
   // this is only temporarily until a better solution is found
   new CopyWebpackPlugin([
     {
-      from: path.join(__dirname, '../static/browser/browser.wasm'),
-      to: path.join(__dirname, '../dist/static/browser/browser.wasm')
+      from: path.join(__dirname, '../static/browser/browser*.wasm'),
+      to: path.join(__dirname, '../dist/static/browser/')
     }
   ]),
 
@@ -95,6 +95,7 @@ const plugins = [
 
   // adds workbox library (from Google) support to enable service workers
   new WorkboxPlugin.GenerateSW({
+    swDest: '../service-worker.js', // save service worker in the root folder (/dist) instead of /dist/static
     clientsClaim: true,
     skipWaiting: true
   }),
