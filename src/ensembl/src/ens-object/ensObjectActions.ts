@@ -26,7 +26,7 @@ export const fetchEnsObjectAsyncActions = createAsyncAction(
 
 export const fetchEnsObject: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (ensObjectId: string, genomeId: string) => async (dispatch: Dispatch) => {
+> = (ensObjectId: string, genomeId: string) => async (dispatch) => {
   try {
     dispatch(fetchEnsObjectAsyncActions.request({ ensObjectId, genomeId }));
     let response;
@@ -87,10 +87,7 @@ export const fetchExampleEnsObjectsAsyncActions = createAsyncAction(
 
 export const fetchExampleEnsObjects: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (genomeId?: string) => async (
-  dispatch: Dispatch,
-  getState: () => RootState
-) => {
+> = (genomeId?: string) => async (dispatch, getState: () => RootState) => {
   try {
     const genomeInfoData: GenomeInfoData = getGenomeInfo(getState());
     const genomeInfo = genomeId && genomeInfoData[genomeId];
@@ -123,13 +120,11 @@ export const fetchExampleEnsObjects: ActionCreator<
 
 export const fetchAllExampleEnsObjects: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = () => async (dispatch: Dispatch, getState: () => RootState) => {
+> = () => async (dispatch, getState: () => RootState) => {
   const allGenomesInfo: GenomeInfoData = getGenomeInfo(getState());
-  const allGenomesExampleObjects = Object.keys(allGenomesInfo).forEach(
-    (genomeId) => {
-      dispatch(fetchExampleEnsObjects(genomeId));
-    }
-  );
+  Object.keys(allGenomesInfo).forEach((genomeId) => {
+    dispatch(fetchExampleEnsObjects(genomeId));
+  });
 };
 
 // FIXME: remove when backend learns to return info about a region object

@@ -5,7 +5,11 @@ import queryString from 'query-string';
 
 import apiService from 'src/services/api-service';
 import { RootState } from 'src/store';
-import { GenomeInfoData, GenomeTrackCategories } from './genomeTypes';
+import {
+  GenomeInfoData,
+  GenomeInfo,
+  GenomeTrackCategories
+} from './genomeTypes';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
@@ -50,7 +54,7 @@ export const fetchAllGenomesInfo: ActionCreator<
     const url = `/api/genome/info?${query}`;
     const response = await apiService.fetch(url);
     const genomeInfo = response.genome_info.reduce(
-      (result, genome) => ({
+      (result: GenomeInfoData, genome: GenomeInfo) => ({
         ...result,
         [genome.genome_id]: genome
       }),
