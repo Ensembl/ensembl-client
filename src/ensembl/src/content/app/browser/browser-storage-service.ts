@@ -6,7 +6,7 @@ import {
   TrackType,
   TrackToggleStates
 } from './track-panel/trackPanelConfig';
-import { BrowserChrLocation } from './browserState';
+import { ChrLocations } from './browserState';
 import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
 
 export enum StorageKeys {
@@ -51,7 +51,7 @@ export class BrowserStorageService {
     return this.storageService.get(StorageKeys.CHR_LOCATION) || {};
   }
 
-  public updateChrLocation(chrLocation: BrowserChrLocation) {
+  public updateChrLocation(chrLocation: ChrLocations) {
     this.storageService.update(StorageKeys.CHR_LOCATION, chrLocation);
   }
 
@@ -59,7 +59,7 @@ export class BrowserStorageService {
     return this.storageService.get(StorageKeys.DEFAULT_CHR_LOCATION) || {};
   }
 
-  public updateDefaultChrLocation(defaultChrLocation: BrowserChrLocation) {
+  public updateDefaultChrLocation(defaultChrLocation: ChrLocations) {
     this.storageService.update(
       StorageKeys.DEFAULT_CHR_LOCATION,
       defaultChrLocation

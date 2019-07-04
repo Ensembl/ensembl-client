@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useCallback } from 'react';
 
-import { BrowserChrLocation, ChrLocation } from '../browserState';
+import { ChrLocation } from '../browserState';
 import { ReactComponent as resetIcon } from 'static/img/browser/track-reset.svg';
 import ImageButton, {
   ImageButtonStatus
@@ -10,10 +10,8 @@ import styles from './BrowserReset.scss';
 import { getChrLocationStr } from '../browserHelper';
 
 type BrowserResetProps = {
-  activeGenomeId: string;
-  activeObjectId: string;
-  chrLocation: BrowserChrLocation;
-  defaultChrLocation: BrowserChrLocation;
+  chrLocation: ChrLocation;
+  defaultChrLocation: ChrLocation;
   dispatchBrowserLocation: (chrLocation: ChrLocation) => void;
   drawerOpened: boolean;
 };
@@ -21,19 +19,11 @@ type BrowserResetProps = {
 export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   props: BrowserResetProps
 ) => {
-  const {
-    activeGenomeId,
-    activeObjectId,
-    chrLocation,
-    defaultChrLocation,
-    drawerOpened
-  } = props;
+  const { chrLocation, defaultChrLocation, drawerOpened } = props;
 
   const getResetIconStatus = (): ImageButtonStatus => {
-    const chrLocationStr = getChrLocationStr(chrLocation[activeGenomeId]);
-    const defaultChrLocationStr = getChrLocationStr(
-      defaultChrLocation[activeObjectId]
-    );
+    const chrLocationStr = getChrLocationStr(chrLocation);
+    const defaultChrLocationStr = getChrLocationStr(defaultChrLocation);
 
     if (chrLocationStr === defaultChrLocationStr || drawerOpened === true) {
       return ImageButtonStatus.DISABLED;
@@ -42,13 +32,13 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
     return ImageButtonStatus.ACTIVE;
   };
 
-  const resetBrowser = useCallback(() => {
+  const resetBrowser = () => {
     if (drawerOpened === true) {
       return;
     }
 
-    props.dispatchBrowserLocation(props.defaultChrLocation[activeObjectId]);
-  }, [chrLocation, drawerOpened]);
+    props.dispatchBrowserLocation(defaultChrLocation);
+  };
 
   return (
     <dd className={styles.resetButton}>

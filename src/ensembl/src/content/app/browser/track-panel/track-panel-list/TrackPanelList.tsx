@@ -5,7 +5,6 @@ import TrackPanelListItem from './TrackPanelListItem';
 
 import { UpdateTrackStatesPayload } from 'src/content/app/browser/browserActions';
 import { TrackType, TrackStates } from '../trackPanelConfig';
-import { BrowserChrLocation } from '../../browserState';
 
 import styles from './TrackPanelList.scss';
 import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
@@ -15,7 +14,6 @@ import { EnsObjectTrack, EnsObject } from 'src/ens-object/ensObjectTypes';
 type TrackPanelListProps = {
   activeGenomeId: string;
   browserRef: RefObject<HTMLDivElement>;
-  defaultChrLocation: BrowserChrLocation;
   drawerOpened: boolean;
   drawerView: string;
   launchbarExpanded: boolean;

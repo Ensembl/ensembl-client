@@ -6,7 +6,7 @@ import React, {
   useEffect
 } from 'react';
 
-import { BrowserChrLocation, ChrLocation } from '../browserState';
+import { ChrLocation } from '../browserState';
 
 import applyIcon from 'static/img/shared/apply.svg';
 import clearIcon from 'static/img/shared/clear.svg';
@@ -15,10 +15,8 @@ import styles from './BrowserGenomeSelector.scss';
 import { getChrLocationStr } from '../browserHelper';
 
 type BrowserGenomeSelectorProps = {
-  activeGenomeId: string;
-  activeObjectId: string;
   browserActivated: boolean;
-  chrLocation: BrowserChrLocation;
+  chrLocation: ChrLocation;
   dispatchBrowserLocation: (chrLocation: ChrLocation) => void;
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
@@ -28,18 +26,14 @@ type BrowserGenomeSelectorProps = {
 const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
   props: BrowserGenomeSelectorProps
 ) => {
-  const chrLocationForGenome = props.chrLocation[props.activeObjectId] || [
-    '',
-    0,
-    0
-  ];
-  const chrLocationStr = getChrLocationStr(chrLocationForGenome);
+  const { chrLocation } = props;
+  const chrLocationStr = getChrLocationStr(chrLocation);
 
   const [chrLocationPlaceholder, setChrLocationPlaceholder] = useState('');
   const [chrLocationInput, setChrLocationInput] = useState('');
 
-  const [chrCode, chrStart, chrEnd] = chrLocationForGenome;
-  const displayChrRegion = chrStart === 0 && chrEnd === 0 ? false : true;
+  const [chrCode, chrStart, chrEnd] = chrLocation;
+  const displayChrRegion = !(chrStart === 0 && chrEnd === 0);
 
   useEffect(() => {
     setChrLocationPlaceholder(chrLocationStr);

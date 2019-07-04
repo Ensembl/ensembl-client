@@ -8,6 +8,7 @@ import { BrowserNavStates, ChrLocation, CogList } from './browserState';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectId,
+  getBrowserActiveEnsObjectIds,
   getBrowserTrackStates,
   getDefaultChrLocation,
   getChrLocation
@@ -66,24 +67,27 @@ export const updateBrowserActiveGenomeIdAndSave: ActionCreator<
   browserStorageService.saveActiveGenomeId(activeGenomeId);
 };
 
-export const updateBrowserActiveEnsObjectId = createAction(
-  'browser/update-active-ens-object-id',
+export const updateBrowserActiveEnsObjectIds = createAction(
+  'browser/update-active-ens-object-ids',
   (resolve) => {
     return (activeEnsObjectId: { [objectId: string]: string }) =>
       resolve(activeEnsObjectId, getBrowserAnalyticsObject('Navigation'));
   }
 );
 
-export const updateBrowserActiveEnsObjectIdAndSave: ActionCreator<
+export const updateBrowserActiveEnsObjectIdsAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (activeEnsObjectId: string) => {
   return (dispatch: Dispatch, getState: () => RootState) => {
-    const currentActiveEnsObjectId = getBrowserActiveEnsObjectId(getState());
-    const updatedActiveEnsObjectId = { ...currentActiveEnsObjectId };
-    const genomeId = activeEnsObjectId.split(':')[0];
-    updatedActiveEnsObjectId[genomeId] = activeEnsObjectId;
+    const state = getState();
+    const activeGenomeId = getBrowserActiveGenomeId(state);
+    const currentActiveEnsObjectIds = getBrowserActiveEnsObjectIds(state);
+    const updatedActiveEnsObjectId = {
+      ...currentActiveEnsObjectIds,
+      [activeGenomeId]: activeEnsObjectId
+    };
 
-    dispatch(updateBrowserActiveEnsObjectId(updatedActiveEnsObjectId));
+    dispatch(updateBrowserActiveEnsObjectIds(updatedActiveEnsObjectId));
 
     browserStorageService.updateActiveEnsObjectId(updatedActiveEnsObjectId);
   };
@@ -140,16 +144,14 @@ export const setChrLocation: ActionCreator<
 > = (chrLocation: ChrLocation) => {
   return (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
-    const genomeId = getBrowserActiveGenomeId(state);
-    const activeObjectId = getBrowserActiveEnsObjectId(state)[genomeId];
-    const currentChrLocation = getChrLocation(state);
-    const updatedChrLocation = {
-      ...currentChrLocation,
+    const activeObjectId = getBrowserActiveEnsObjectId(state);
+    const chrLocation = getChrLocation(state);
+    const payload = {
       [activeObjectId]: chrLocation
     };
 
-    dispatch(updateChrLocation(updatedChrLocation));
-    browserStorageService.updateChrLocation(updatedChrLocation);
+    dispatch(updateChrLocation(payload));
+    browserStorageService.updateChrLocation(payload);
   };
 };
 
@@ -165,9 +167,10 @@ export const changeBrowserLocation: ActionCreator<
   ThunkAction<any, any, null, Action<string>>
 > = (chrLocation: ChrLocation, browserEl: HTMLDivElement) => {
   return (dispatch: Dispatch, getState: () => RootState) => {
+    const state = getState();
     const [chrCode, startBp, endBp] = chrLocation;
-    const genomeId = getBrowserActiveGenomeId(getState());
-    const activeObjectId = getBrowserActiveEnsObjectId(getState())[genomeId];
+    const genomeId = getBrowserActiveGenomeId(state);
+    const activeObjectId = getBrowserActiveEnsObjectId(state);
 
     const stickEvent = new CustomEvent('bpane', {
       bubbles: true,
@@ -189,22 +192,18 @@ export const changeBrowserLocation: ActionCreator<
       browserEl.dispatchEvent(gotoEvent);
     }
 
-    const currentChrLocation = getChrLocation(getState());
-    const updatedChrLocation = {
-      ...currentChrLocation,
+    const chrLocationPayload = {
       [activeObjectId]: chrLocation
     };
 
-    dispatch(updateChrLocation(updatedChrLocation));
-    browserStorageService.updateChrLocation(updatedChrLocation);
+    dispatch(updateChrLocation(chrLocationPayload));
+    browserStorageService.updateChrLocation(chrLocationPayload);
 
-    const currentDefaultChrLocation = getDefaultChrLocation(getState());
+    const defaultChrLocation = getDefaultChrLocation(state);
 
-    if (activeObjectId && !currentDefaultChrLocation[activeObjectId]) {
-      const updatedDefaultChrLocation = { ...currentDefaultChrLocation };
-      updatedDefaultChrLocation[activeObjectId] = chrLocation;
-      dispatch(updateDefaultChrLocation(updatedDefaultChrLocation));
-      browserStorageService.updateDefaultChrLocation(updatedDefaultChrLocation);
+    if (activeObjectId && !defaultChrLocation) {
+      dispatch(updateDefaultChrLocation(chrLocationPayload));
+      browserStorageService.updateDefaultChrLocation(chrLocationPayload);
     }
   };
 };

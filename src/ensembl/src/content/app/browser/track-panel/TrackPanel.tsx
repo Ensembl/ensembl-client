@@ -27,7 +27,6 @@ import {
 import { getDrawerView, getDrawerOpened } from '../drawer/drawerSelectors';
 import {
   getBrowserActivated,
-  getDefaultChrLocation,
   getBrowserActiveGenomeId,
   getBrowserTrackStates
 } from '../browserSelectors';
@@ -38,7 +37,7 @@ import {
 } from 'src/ens-object/ensObjectSelectors';
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
-import { BrowserChrLocation } from '../browserState';
+import { ChrLocation } from '../browserState';
 import { BreakpointWidth } from 'src/global/globalConfig';
 import { TrackType, TrackStates } from './trackPanelConfig';
 
@@ -56,7 +55,6 @@ type StateProps = {
   activeGenomeId: string;
   breakpointWidth: BreakpointWidth;
   browserActivated: boolean;
-  defaultChrLocation: BrowserChrLocation;
   drawerOpened: boolean;
   drawerView: string;
   ensObjectInfo: EnsObject;
@@ -138,7 +136,6 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
           <TrackPanelList
             activeGenomeId={props.activeGenomeId}
             browserRef={props.browserRef}
-            defaultChrLocation={props.defaultChrLocation}
             drawerOpened={props.drawerOpened}
             drawerView={props.drawerView}
             launchbarExpanded={props.launchbarExpanded}
@@ -173,7 +170,6 @@ const mapStateToProps = (state: RootState): StateProps => {
     activeGenomeId,
     breakpointWidth: getBreakpointWidth(state),
     browserActivated: getBrowserActivated(state),
-    defaultChrLocation: getDefaultChrLocation(state),
     drawerOpened: getDrawerOpened(state),
     drawerView: getDrawerView(state),
     ensObjectInfo: getEnsObjectInfo(state),

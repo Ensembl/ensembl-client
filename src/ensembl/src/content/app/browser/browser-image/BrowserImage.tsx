@@ -27,7 +27,7 @@ import {
   setChrLocation
 } from '../browserActions';
 
-import { BrowserChrLocation, ChrLocation } from '../browserState';
+import { ChrLocation } from '../browserState';
 
 import { CircleLoader } from 'src/shared/loader/Loader';
 
@@ -41,7 +41,6 @@ type StateProps = {
   trackConfigNames: any;
   trackConfigLabel: any;
   browserActivated: boolean;
-  chrLocation: BrowserChrLocation;
 };
 
 type DispatchProps = {
@@ -217,8 +216,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
   browserNavOpened: getBrowserNavOpened(state),
   trackConfigLabel: getTrackConfigLabel(state),
   trackConfigNames: getTrackConfigNames(state),
-  browserActivated: getBrowserActivated(state),
-  chrLocation: getChrLocation(state)
+  browserActivated: getBrowserActivated(state)
 });
 
 const mapDispatchToProps: DispatchProps = {

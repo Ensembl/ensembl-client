@@ -53,8 +53,8 @@ export function browserEntity(
   switch (action.type) {
     case getType(browserActions.updateBrowserActiveGenomeId):
       return { ...state, activeGenomeId: action.payload };
-    case getType(browserActions.updateBrowserActiveEnsObjectId):
-      return { ...state, activeEnsObjectId: action.payload };
+    case getType(browserActions.updateBrowserActiveEnsObjectIds):
+      return { ...state, activeEnsObjectIds: action.payload };
     case getType(browserActions.updateTrackStates):
       return {
         ...state,
@@ -85,11 +85,20 @@ export function browserLocation(
 ) {
   switch (action.type) {
     case getType(browserActions.updateChrLocation):
-      return { ...state, chrLocation: action.payload };
+      return {
+        ...state,
+        chrLocations: {
+          ...state.chrLocations,
+          ...action.payload
+        }
+      };
     case getType(browserActions.updateDefaultChrLocation):
       return {
         ...state,
-        defaultChrLocation: action.payload
+        defaultChrLocations: {
+          ...state.defaultChrLocations,
+          ...action.payload
+        }
       };
     case getType(browserActions.toggleGenomeSelector):
       return { ...state, genomeSelectorActive: action.payload };
