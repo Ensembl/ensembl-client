@@ -69,7 +69,8 @@ const plugins = [
   new CopyWebpackPlugin([
     {
       from: path.join(__dirname, '../static/browser/browser*.wasm'),
-      to: path.join(__dirname, '../dist/static/browser/')
+      to: path.join(__dirname, '../dist/static/browser/'),
+      flatten: true
     }
   ]),
 
