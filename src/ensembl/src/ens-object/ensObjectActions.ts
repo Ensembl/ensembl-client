@@ -8,28 +8,23 @@ import { GenomeInfoData } from 'src/genome/genomeTypes';
 import { getGenomeInfo } from 'src/genome/genomeSelectors';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import {
+  EnsObject,
   EnsObjectResponse,
-  EnsObjectTracksResponse,
-  ExampleEnsObjectsData
+  EnsObjectTracksResponse
 } from './ensObjectTypes';
-
-type FetchEnsObjectRequestType = {
-  ensObjectId: string;
-  genomeId: string;
-};
 
 export const fetchEnsObjectAsyncActions = createAsyncAction(
   'ens-object/fetch_ens_object_request',
   'ens-object/fetch_ens_object_success',
   'ens-object/fetch_ens_object_failure'
-)<FetchEnsObjectRequestType, EnsObjectResponse, Error>();
+)<string, { [id: string]: EnsObject }, Error>();
 
 export const fetchEnsObject: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (ensObjectId: string, genomeId: string) => async (dispatch: Dispatch) => {
+> = (ensObjectId: string) => async (dispatch) => {
   try {
-    dispatch(fetchEnsObjectAsyncActions.request({ ensObjectId, genomeId }));
-    let response;
+    dispatch(fetchEnsObjectAsyncActions.request());
+    let response: EnsObjectResponse;
 
     // FIXME: the if-branch is temporary, until backend learns to respond with region object data
     if (isRegionObject(ensObjectId)) {
@@ -37,11 +32,14 @@ export const fetchEnsObject: ActionCreator<
     } else {
       const url = `/api/ensembl_object/info?object_id=${ensObjectId}`;
       response = await apiService.fetch(url);
+
+      const trackUrl = `/api/ensembl_object/track_list?object_id=${ensObjectId}`;
+      response.track = await apiService.fetch(trackUrl);
     }
 
     dispatch(
       fetchEnsObjectAsyncActions.success({
-        ensembl_object: response
+        [response.ensembl_object_id]: response
       })
     );
   } catch (error) {
@@ -49,35 +47,35 @@ export const fetchEnsObject: ActionCreator<
   }
 };
 
-export const fetchEnsObjectTracksAsyncActions = createAsyncAction(
-  'ens-object/fetch_ens_object_tracks_request',
-  'ens-object/fetch_ens_object_tracks_success',
-  'ens-object/fetch_ens_object_tracks_failure'
-)<FetchEnsObjectRequestType, EnsObjectTracksResponse, Error>();
+// export const fetchEnsObjectTracksAsyncActions = createAsyncAction(
+//   'ens-object/fetch_ens_object_tracks_request',
+//   'ens-object/fetch_ens_object_tracks_success',
+//   'ens-object/fetch_ens_object_tracks_failure'
+// )<FetchEnsObjectRequestType, EnsObjectTracksResponse, Error>();
 
-export const fetchEnsObjectTracks = (
-  ensObjectId: string,
-  genomeId: string
-) => async (dispatch: Dispatch) => {
-  try {
-    // Do not send the request for regions
-    if (isRegionObject(ensObjectId)) {
-      return;
-    }
-    dispatch(fetchEnsObjectAsyncActions.request({ ensObjectId, genomeId }));
+// export const fetchEnsObjectTracks = (
+//   ensObjectId: string,
+//   genomeId: string
+// ) => async (dispatch: Dispatch) => {
+//   try {
+//     // Do not send the request for regions
+//     if (isRegionObject(ensObjectId)) {
+//       return;
+//     }
+//     dispatch(fetchEnsObjectAsyncActions.request());
 
-    const url = `/api/ensembl_object/track_list?object_id=${ensObjectId}`;
-    const response = await apiService.fetch(url, { preserveEndpoint: true });
+//     const url = `/api/ensembl_object/track_list?object_id=${ensObjectId}`;
+//     const response = await apiService.fetch(url, { preserveEndpoint: true });
 
-    dispatch(
-      fetchEnsObjectTracksAsyncActions.success({
-        object_tracks: response
-      })
-    );
-  } catch (error) {
-    dispatch(fetchEnsObjectTracksAsyncActions.failure(error));
-  }
-};
+//     dispatch(
+//       fetchEnsObjectTracksAsyncActions.success({
+//         object_tracks: response
+//       })
+//     );
+//   } catch (error) {
+//     dispatch(fetchEnsObjectTracksAsyncActions.failure(error));
+//   }
+// };
 
 export const fetchExampleEnsObjectsAsyncActions = createAsyncAction(
   'ens-object/fetch_example_ens_objects_request',
@@ -87,10 +85,7 @@ export const fetchExampleEnsObjectsAsyncActions = createAsyncAction(
 
 export const fetchExampleEnsObjects: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (genomeId?: string) => async (
-  dispatch: Dispatch,
-  getState: () => RootState
-) => {
+> = (genomeId?: string) => async (dispatch, getState: () => RootState) => {
   try {
     const genomeInfoData: GenomeInfoData = getGenomeInfo(getState());
     const genomeInfo = genomeId && genomeInfoData[genomeId];
@@ -100,21 +95,9 @@ export const fetchExampleEnsObjects: ActionCreator<
 
     if (genomeId && genomeInfo && !exampleObjects[genomeId]) {
       dispatch(fetchExampleEnsObjectsAsyncActions.request(null));
-      const requests = genomeInfo.example_objects.map((exampleObjectId) => {
-        if (isRegionObject(exampleObjectId)) {
-          return parseRegionObjectId(exampleObjectId);
-        } else {
-          const url = `/api/ensembl_object/info?object_id=${exampleObjectId}`;
-          return apiService.fetch(url);
-        }
+      genomeInfo.example_objects.forEach((exampleObjectId) => {
+        dispatch(fetchEnsObject(exampleObjectId));
       });
-      const responses = await Promise.all(requests);
-      const exampleObjects = responses.filter((response) => !response.error);
-      dispatch(
-        fetchExampleEnsObjectsAsyncActions.success({
-          [genomeId]: exampleObjects
-        })
-      );
     }
   } catch (error) {
     dispatch(fetchExampleEnsObjectsAsyncActions.failure(error));
@@ -131,17 +114,23 @@ const isRegionObject = (objectId: string) => {
 // (writing this as async function so that it has the same promise interface as apiService.fetch)
 const parseRegionObjectId = async (objectId: string) => {
   const [genomeId, , chromosome, region] = objectId.split(':');
-  const [start, end] = region.split('-');
+  const [start, end] = region.split('-').map(Number);
 
   return {
+    bio_type: null,
     label: `${chromosome}:${region}`,
     ensembl_object_id: objectId,
     genome_id: genomeId,
+    spliced_length: null,
     location: {
       chromosome,
       start,
       end
     },
-    object_type: 'region'
+    object_type: 'region',
+    stable_id: null,
+    strand: null,
+    description: null,
+    track: null
   };
 };

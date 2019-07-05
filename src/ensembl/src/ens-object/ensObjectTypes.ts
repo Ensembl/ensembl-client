@@ -15,6 +15,7 @@ export type EnsObject = {
   stable_id: string | null;
   strand: string | null;
   description: string | null;
+  track: EnsObjectTrack | null;
 };
 
 export type EnsObjectTrack = {
@@ -28,14 +29,11 @@ export type EnsObjectTrack = {
   description: string | null;
 };
 
-export type EnsObjectResponse = {
-  ensembl_object: EnsObject | {};
-};
-
-export type EnsObjectTracksResponse = {
-  object_tracks: EnsObjectTrack | {};
-};
-
-export type ExampleEnsObjectsData = {
-  [key: string]: EnsObject[];
-};
+/*
+TODO: discuss with BE whether they want to put ensObject data inside
+a root-level namespace key, so the response type becomes:
+{
+  ens_object: EnsObject
+}
+*/
+export type EnsObjectResponse = EnsObject;
