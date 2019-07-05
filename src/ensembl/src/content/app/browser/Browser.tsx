@@ -43,7 +43,6 @@ import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/sta
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 import {
   fetchEnsObject,
-  fetchEnsObjectTracks,
   fetchExampleEnsObjects
 } from 'src/ens-object/ensObjectActions';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
@@ -94,7 +93,6 @@ type DispatchProps = {
     browserEl: HTMLDivElement
   ) => void;
   fetchEnsObject: (ensObjectId: string, genomeId: string) => void;
-  fetchEnsObjectTracks: (ensObjectId: string, genomeId: string) => void;
   fetchExampleEnsObjects: (genomeId: string) => void;
   fetchGenomeData: (genomeId: string) => void;
   fetchGenomeInfo: (genomeId: string) => void;
@@ -204,7 +202,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
     props.updateBrowserActiveEnsObjectIdsAndSave(focus);
     dispatchBrowserLocation(parsedLocation);
     props.fetchEnsObject(focus, genomeId);
-    props.fetchEnsObjectTracks(focus, genomeId);
   }, [props.browserQueryParams.focus]);
 
   useEffect(() => {
@@ -370,7 +367,6 @@ const mapStateToProps = (state: RootState): StateProps => ({
 const mapDispatchToProps: DispatchProps = {
   changeBrowserLocation,
   fetchEnsObject,
-  fetchEnsObjectTracks,
   fetchExampleEnsObjects,
   fetchGenomeData,
   fetchGenomeInfo,

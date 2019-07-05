@@ -3,10 +3,9 @@ import browserStorageService from './browser-storage-service';
 import { TrackStates } from './track-panel/trackPanelConfig';
 
 const activeGenomeId = browserStorageService.getActiveGenomeId();
-const activeEnsObjectIds = browserStorageService.getActiveEnsObjectId();
+const activeEnsObjectIds = browserStorageService.getActiveEnsObjectIds();
 const trackStates = browserStorageService.getTrackStates();
 const chrLocations = browserStorageService.getChrLocation();
-const defaultChrLocations = browserStorageService.getDefaultChrLocation();
 
 export enum BrowserOpenState {
   EXPANDED = 'expanded',
@@ -26,7 +25,7 @@ export type BrowserNavStates = [
 
 export type ChrLocation = [string, number, number];
 
-export type ChrLocations = { [ensObjectId: string]: ChrLocation };
+export type ChrLocations = { [genomeId: string]: ChrLocation };
 
 export type CogList = {
   [key: string]: number;
@@ -43,14 +42,14 @@ export const defaultBrowserState: BrowserState = {
 };
 
 export type BrowserEntityState = Readonly<{
-  activeGenomeId: string; // FIXME this should be nullable
-  activeEnsObjectIds: { [genomeId: string]: string }; // FIXME this should be nullable
+  activeGenomeId: string | null;
+  activeEnsObjectIds: { [genomeId: string]: string };
   trackStates: TrackStates;
 }>;
 
 export const defaultBrowserEntityState: BrowserEntityState = {
-  activeGenomeId, // FIXME this can be null
-  activeEnsObjectIds, // FIXME this can be null
+  activeGenomeId,
+  activeEnsObjectIds,
   trackStates
 };
 
@@ -66,13 +65,11 @@ export const defaultBrowserNavState: BrowserNavState = {
 
 export type BrowserLocationState = Readonly<{
   chrLocations: ChrLocations;
-  defaultChrLocations: ChrLocations;
   genomeSelectorActive: boolean;
 }>;
 
 export const defaultBrowserLocationState: BrowserLocationState = {
   chrLocations,
-  defaultChrLocations,
   genomeSelectorActive: false
 };
 

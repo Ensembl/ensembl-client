@@ -7,17 +7,13 @@ import apiService from 'src/services/api-service';
 import { GenomeInfoData } from 'src/genome/genomeTypes';
 import { getGenomeInfo } from 'src/genome/genomeSelectors';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
-import {
-  EnsObject,
-  EnsObjectResponse,
-  EnsObjectTracksResponse
-} from './ensObjectTypes';
+import { EnsObject, EnsObjectResponse } from './ensObjectTypes';
 
 export const fetchEnsObjectAsyncActions = createAsyncAction(
   'ens-object/fetch_ens_object_request',
   'ens-object/fetch_ens_object_success',
   'ens-object/fetch_ens_object_failure'
-)<string, { [id: string]: EnsObject }, Error>();
+)<void, { [id: string]: EnsObject }, Error>();
 
 export const fetchEnsObject: ActionCreator<
   ThunkAction<void, any, null, Action<string>>

@@ -6,6 +6,7 @@ import {
   ChrLocation
 } from './browserState';
 import { getQueryParamsMap } from 'src/global/globalHelper';
+import { getGenomeInfo } from 'src/genome/genomeSelectors';
 
 export const getBrowserActivated = (state: RootState): boolean =>
   state.browser.browserInfo.browserActivated;
@@ -15,6 +16,12 @@ export const getBrowserOpenState = (state: RootState): BrowserOpenState =>
 
 export const getBrowserActiveGenomeId = (state: RootState): string =>
   state.browser.browserEntity.activeGenomeId;
+
+export const getBrowserActiveGenomeInfo = (state: RootState) => {
+  const allGenomesInfo = getGenomeInfo(state);
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  return allGenomesInfo[activeGenomeId];
+};
 
 export const getBrowserActiveEnsObjectIds = (state: RootState) =>
   state.browser.browserEntity.activeEnsObjectIds;
