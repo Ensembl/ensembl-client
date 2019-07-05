@@ -7,10 +7,10 @@
   display: inline-block;
   font: 13px Lato, helvetica, Arial, sans-serif;
   position: absolute;
-  left: -750px;
+  left: -614px;
   top: -12px;
-  height: 46px;
-  width: 750px;
+  height: 45px;
+  width: 614px;
   img {
     height: 100%;
     width: 100%;
@@ -18,12 +18,13 @@
 
   dl {
     display: inline-block;
-    margin: 6px 0;
-    padding: 0 8px;
+    margin: 6px 0px;
+    padding: 0px 12px;
   }
 
-  dl:not(:first-child) {
+  dl:nth-child(2) {
     border-left: 1px solid #b7c0c8;
+    border-right: 1px solid #b7c0c8;
   }
 
   dl:last-child {
@@ -32,7 +33,7 @@
 
   dd {
     display: inline-block;
-    margin: 0 15px;
+    margin: 0 6px;
     vertical-align: middle;
   }
 
@@ -43,15 +44,15 @@
   label {
     position: relative;
     vertical-align: middle;
-    font-size: 14px;
+    font-size: 12px;
   }
 
   button {
     background-color: transparent;
     background-repeat: no-repeat;
     border: none;
-    height: 22px;
-    width: 22px;
+    height: 18px;
+    width: 18px;
   }
 
   button:focus {
@@ -79,7 +80,7 @@
   /* button styling */
 
   .trackConfigSlider {
-    height: 30px;
+    height: 24px;
     margin-left: 8px;
     position: relative;
     width: 30px;
@@ -88,11 +89,11 @@
   .trackHeightBtn {
     height: 33px;
     position: relative;
-    width: 66px;
+    width: 50px;
   }
 
   .trackMoveBtn {
-    height: 33px;
-    width: 33px;
+    height: 26px;
+    width: 26px;
   }
 }
