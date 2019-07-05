@@ -7,14 +7,14 @@ import ImageButton from 'src/shared/image-button/ImageButton';
 import { ReactComponent as AddIcon } from 'static/img/browser/zoom-in.svg';
 import { ReactComponent as RemoveIcon } from 'static/img/shared/clear.svg';
 
-type Props = {
+export type CheckboxWithSelectsProps = {
   options: Option[];
   label: string;
   selectedOptions: string[];
   onChange: (selectedOptions: string[]) => void;
 };
 
-const CheckboxWithSelects = (props: Props) => {
+const CheckboxWithSelects = (props: CheckboxWithSelectsProps) => {
   const [isChecked, setisChecked] = useState(props.selectedOptions.length > 0);
   const [shouldShowExtraOption, setShowExtraOption] = useState(false);
 

@@ -1,18 +1,19 @@
 import React from 'react';
 import Checkbox from 'src/shared/checkbox/Checkbox';
 import AttributesSection, {
-  AttributesSubSection,
   Attribute
 } from 'src/content/app/custom-download/types/Attributes';
 import styles from './CheckboxGrid.scss';
 
 import orderBy from 'lodash/orderBy';
 
-type Props = {
-  gridData: AttributesSection;
+export type CheckboxGridProps = {
+  gridData: Attribute[];
   columns: number;
   hideUnchecked?: boolean;
+  // TODO: Change to Label
   hideTitles?: boolean;
+  label: string;
   checkboxOnChange: (status: boolean, subSection: string, id: string) => void;
 };
 
@@ -49,12 +50,8 @@ export const getAttributesCount = (attributes: AttributesSection) => {
   return totalAttributes;
 };
 
-const renderCheckBoxList = (
-  checkboxList: AttributesSubSection,
-  props: Props,
-  subSection: string
-) => {
-  const orderedCheckboxList: Attribute[] = orderBy(checkboxList, ['label']);
+const CheckboxGrid = (props: CheckboxGridProps) => {
+  const orderedCheckboxList: Attribute[] = orderBy(props.gridData, ['label']);
 
   if (!orderedCheckboxList.length) {
     return null;
@@ -84,10 +81,8 @@ const renderCheckBoxList = (
   };
   return (
     <>
-      {!!subSection && subSection !== 'default' && !props.hideTitles && (
-        <div className={styles.checkboxGridTitle}>
-          {subSection.charAt(0).toUpperCase() + subSection.slice(1)}
-        </div>
+      {!props.hideTitles && (
+        <div className={styles.checkboxGridTitle}>{props.label}</div>
       )}
       <div className={styles.checkboxGridContainer}>
         {gridMatrix.map((columnLength: number, gridKey: number) => {
@@ -108,7 +103,7 @@ const renderCheckBoxList = (
                         onChange={(status) => {
                           props.checkboxOnChange(
                             status,
-                            subSection,
+                            props.label,
                             attribute.id
                           );
                         }}
@@ -120,36 +115,6 @@ const renderCheckBoxList = (
           );
         })}
       </div>
-    </>
-  );
-};
-
-const CheckboxGrid = (props: Props) => {
-  if (!props.gridData) {
-    return null;
-  }
-
-  const gridDataKeys = Object.keys(props.gridData);
-
-  if (!gridDataKeys.length) {
-    return null;
-  }
-
-  return (
-    <>
-      {props.gridData.hasOwnProperty('default')
-        ? renderCheckBoxList(props.gridData['default'], props, 'default')
-        : null}
-      {gridDataKeys.map((gridTitle: string, key: number) => {
-        if (gridTitle === 'default') {
-          return;
-        }
-        return (
-          <div key={key}>
-            {renderCheckBoxList(props.gridData[gridTitle], props, gridTitle)}
-          </div>
-        );
-      })}
     </>
   );
 };

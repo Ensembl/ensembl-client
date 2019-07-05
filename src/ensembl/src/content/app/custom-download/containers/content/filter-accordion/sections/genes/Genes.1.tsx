@@ -12,7 +12,6 @@ import {
 
 import CheckboxWithSelects from 'src/content/app/custom-download/components/checkbox-with-selects/CheckboxWithSelects';
 import CheckboxWithRadios from 'src/content/app/custom-download/components/checkbox-with-radios/CheckboxWithRadios';
-import ContentBuilder from 'src/content/app/custom-download/components/content-builder/ContentBuilder';
 import { RadioOptions } from 'src/shared/radio/Radio';
 
 import {
@@ -43,6 +42,46 @@ import { Option } from 'src/shared/select/Select';
 import filters from 'src/content/app/custom-download/sample-data/filters';
 
 import styles from './Genes.scss';
+
+// Will be fetched from the API when we have one
+const geneSourceoptions: Option[] = [
+  {
+    value: 'ensembl',
+    label: 'Ensembl',
+    isSelected: false
+  },
+  {
+    value: 'ensembl_havana',
+    label: 'Ensembl Havana',
+    isSelected: false
+  },
+  {
+    value: 'havana',
+    label: 'Havana',
+    isSelected: false
+  },
+  {
+    value: 'insdc',
+    label: 'INSDC',
+    isSelected: false
+  },
+  {
+    value: 'mirbase',
+    label: 'Mirbase',
+    isSelected: false
+  }
+];
+// Will be fetched from the API when we have one
+const gencodeBasicAnnotationOptions: RadioOptions = [
+  {
+    value: 'include',
+    label: 'Include'
+  },
+  {
+    value: 'exclude',
+    label: 'Exclude'
+  }
+];
 
 type Props = StateProps & DispatchProps;
 
@@ -113,7 +152,60 @@ const Genes = (props: Props) => {
     props.setGencodeAnnotationFilters(selectedOption);
   };
 
-  return <>{ContentBuilder(filters['genes'])}</>;
+  return (
+    <>
+      <div className={styles.checkboxGridWrapper}>
+        <CheckboxWithSelects
+          label={'Gene source'}
+          onChange={geneSourceFilterOnChange}
+          selectedOptions={props.geneSourceFilters}
+          options={geneSourceoptions}
+        />
+        <CheckboxWithRadios
+          label={'GENCODE basic annotation'}
+          onChange={gencodeAnnotationFilterOnChange}
+          selectedOption={props.gencodeAnnotationFilters}
+          options={gencodeBasicAnnotationOptions}
+        />
+      </div>
+      <Accordion
+        allowMultipleExpanded={true}
+        className={styles.geneAccordion}
+        onChange={accordionOnChange}
+        preExpanded={props.expandedPanels}
+      >
+        <AccordionItem uuid={'gene_type'}>
+          <AccordionItemHeading>
+            <AccordionItemButton className={styles.geneAccordionButton}>
+              Gene type
+            </AccordionItemButton>
+          </AccordionItemHeading>
+          <AccordionItemPanel>
+            <CheckboxGrid
+              checkboxOnChange={geneTypeOnChangeHandler}
+              gridData={geneTypeFiltersGrid}
+              columns={3}
+            />
+          </AccordionItemPanel>
+        </AccordionItem>
+
+        <AccordionItem uuid={'biotype'}>
+          <AccordionItemHeading>
+            <AccordionItemButton className={styles.geneAccordionButton}>
+              Transcript type
+            </AccordionItemButton>
+          </AccordionItemHeading>
+          <AccordionItemPanel>
+            <CheckboxGrid
+              checkboxOnChange={transcriptTypeOnChangeHandler}
+              gridData={transcriptTypeFiltersGrid}
+              columns={3}
+            />
+          </AccordionItemPanel>
+        </AccordionItem>
+      </Accordion>
+    </>
+  );
 };
 
 type DispatchProps = {

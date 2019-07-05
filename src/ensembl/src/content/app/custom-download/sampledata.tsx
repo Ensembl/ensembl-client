@@ -31,8 +31,8 @@ export const geneTypeFiltersGrid: any = {
 export const attributes = {
   gene: {
     default: {
-      symbol: {
-        id: 'symbol',
+      name: {
+        id: 'name',
         label: 'Gene symbol',
         isChecked: false
       },
@@ -44,11 +44,6 @@ export const attributes = {
       id_version: {
         id: 'id_version',
         label: 'Gene stable ID version',
-        isChecked: false
-      },
-      name: {
-        id: 'name',
-        label: 'Gene name',
         isChecked: false
       },
       Superfamily: {
