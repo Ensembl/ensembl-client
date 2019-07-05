@@ -99,8 +99,7 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
     props.updateApplyToAll(!applyToAll);
   }, [applyToAll, updateApplyToAll]);
 
-  const checkboxStyles: any = {
-    checked: styles.allTracksChecked,
+  const checkboxStyles = {
     checkboxHolder: styles.allTracks
   };
 
