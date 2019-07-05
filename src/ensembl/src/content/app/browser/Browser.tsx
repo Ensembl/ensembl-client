@@ -55,6 +55,7 @@ import {
 import { getGenomeInfo } from 'src/genome/genomeSelectors';
 import { GenomeInfoData } from 'src/genome/genomeTypes';
 import {
+  fetchGenomeData,
   fetchGenomeInfo,
   fetchGenomeTrackCategories
 } from 'src/genome/genomeActions';
@@ -95,6 +96,7 @@ type DispatchProps = {
   fetchEnsObject: (ensObjectId: string, genomeId: string) => void;
   fetchEnsObjectTracks: (ensObjectId: string, genomeId: string) => void;
   fetchExampleEnsObjects: (genomeId: string) => void;
+  fetchGenomeData: (genomeId: string) => void;
   fetchGenomeInfo: (genomeId: string) => void;
   fetchGenomeTrackCategories: (genomeId: string) => void;
   replace: Replace;
@@ -130,6 +132,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
   };
 
   const changeSelectedSpecies = (genomeId: string) => {
+    props.fetchGenomeData(genomeId);
     const { chrLocation } = props;
 
     let newUrl: string;
@@ -142,7 +145,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
       newUrl = urlFor.browser(params);
     } else {
       newUrl = urlFor.browser({ genomeId });
-      props.fetchExampleEnsObjects(genomeId);
     }
     props.updateBrowserActiveGenomeIdAndSave(genomeId);
     props.replace(newUrl);
@@ -169,31 +171,35 @@ export const Browser: FunctionComponent<BrowserProps> = (
     setTrackStatesFromStorage(browserStorageService.getTrackStates());
   }, [props.match.params.genomeId]);
 
-  useEffect(() => {
-    const { genomeId } = props.match.params;
+  // useEffect(() => {
+  //   const { genomeId } = props.match.params;
 
-    if (!genomeId) {
-      return;
-    }
+  //   if (!genomeId) {
+  //     return;
+  //   }
 
-    props.updateBrowserActiveGenomeIdAndSave(genomeId);
+  //   props.updateBrowserActiveGenomeIdAndSave(genomeId);
 
-    props.fetchGenomeInfo(genomeId);
-    props.fetchGenomeTrackCategories(genomeId);
-  }, [props.match.params.genomeId]);
+  //   props.fetchGenomeInfo(genomeId);
+  //   props.fetchGenomeTrackCategories(genomeId);
+  // }, [props.match.params.genomeId]);
 
-  useEffect(() => {
-    props.fetchExampleEnsObjects(props.activeGenomeId);
-  }, [props.genomeInfo]);
+  // useEffect(() => {
+  //   props.fetchExampleEnsObjects(props.activeGenomeId);
+  // }, [props.genomeInfo]);
 
   useEffect(() => {
     const { focus, location } = props.browserQueryParams;
     const { genomeId } = props.match.params;
     const parsedLocation = location && getChrLocationFromStr(location);
 
+    console.log('before if');
+
     if (!parsedLocation || !focus) {
       return;
     }
+
+    console.log('after if', parsedLocation);
 
     props.updateBrowserActiveEnsObjectIdsAndSave(focus);
     dispatchBrowserLocation(parsedLocation);
@@ -229,7 +235,9 @@ export const Browser: FunctionComponent<BrowserProps> = (
       focus = activeEnsObjectId;
     }
 
-    const location = (chrLocation && getChrLocationStr(chrLocation)) || null;
+    const location =
+      (chrLocation && getChrLocationStr(chrLocation)) ||
+      props.browserQueryParams.location;
 
     const newUrl = urlFor.browser({ genomeId, focus, location });
     props.replace(newUrl);
@@ -302,7 +310,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
         onTabSelect={changeSelectedSpecies}
       />
 
-      {props.browserQueryParams.focus === undefined && (
+      {!props.browserQueryParams.focus && (
         <section className={styles.browser}>
           <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
           {props.exampleEnsObjects[props.activeGenomeId] ? (
@@ -310,7 +318,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
           ) : null}
         </section>
       )}
-      {props.browserQueryParams.focus !== undefined && (
+      {props.browserQueryParams.focus && props.chrLocation && (
         <section className={styles.browser}>
           <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
           {props.genomeSelectorActive && (
@@ -364,6 +372,7 @@ const mapDispatchToProps: DispatchProps = {
   fetchEnsObject,
   fetchEnsObjectTracks,
   fetchExampleEnsObjects,
+  fetchGenomeData,
   fetchGenomeInfo,
   fetchGenomeTrackCategories,
   replace,

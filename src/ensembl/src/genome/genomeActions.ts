@@ -6,6 +6,8 @@ import apiService from 'src/services/api-service';
 import { RootState } from 'src/store';
 import { GenomeInfoData, GenomeTrackCategories } from './genomeTypes';
 
+import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
+
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
   getGenomeInfo,
@@ -18,9 +20,20 @@ export const fetchGenomeInfoAsyncActions = createAsyncAction(
   'genome/fetch_genome_info_failure'
 )<undefined, GenomeInfoData, Error>();
 
+export const fetchGenomeData: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (genomeId: string) => async (dispatch) => {
+  await Promise.all([
+    dispatch(fetchGenomeInfo(genomeId)),
+    dispatch(fetchGenomeTrackCategories(genomeId))
+  ]);
+
+  dispatch(fetchExampleEnsObjects(genomeId));
+};
+
 export const fetchGenomeInfo: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (genomeId: string) => async (dispatch: Dispatch) => {
+> = (genomeId: string) => async (dispatch) => {
   try {
     dispatch(fetchGenomeInfoAsyncActions.request());
     const url = `/api/genome/info?genome_id=${genomeId}`;
@@ -45,10 +58,7 @@ export const fetchGenomeTrackCategoriesAsyncActions = createAsyncAction(
 // TODO: switch to using APIs when available
 export const fetchGenomeTrackCategories: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (genomeId: string) => async (
-  dispatch: Dispatch,
-  getState: () => RootState
-) => {
+> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
   try {
     const currentGenomeTrackCategories: GenomeTrackCategories = getGenomeTrackCategories(
       getState()
