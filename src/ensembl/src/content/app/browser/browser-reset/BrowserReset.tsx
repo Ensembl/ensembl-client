@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback } from 'react';
+import React, { FunctionComponent } from 'react';
 
 import { ChrLocation } from '../browserState';
 import { ReactComponent as resetIcon } from 'static/img/browser/track-reset.svg';
@@ -10,8 +10,8 @@ import styles from './BrowserReset.scss';
 import { getChrLocationStr } from '../browserHelper';
 
 type BrowserResetProps = {
-  chrLocation: ChrLocation;
-  defaultChrLocation: ChrLocation;
+  chrLocation: ChrLocation | null;
+  defaultChrLocation: ChrLocation | null;
   dispatchBrowserLocation: (chrLocation: ChrLocation) => void;
   drawerOpened: boolean;
 };
@@ -22,6 +22,10 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   const { chrLocation, defaultChrLocation, drawerOpened } = props;
 
   const getResetIconStatus = (): ImageButtonStatus => {
+    if (!(chrLocation && defaultChrLocation)) {
+      return ImageButtonStatus.DISABLED;
+    }
+
     const chrLocationStr = getChrLocationStr(chrLocation);
     const defaultChrLocationStr = getChrLocationStr(defaultChrLocation);
 
@@ -37,7 +41,7 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
       return;
     }
 
-    props.dispatchBrowserLocation(defaultChrLocation);
+    defaultChrLocation && props.dispatchBrowserLocation(defaultChrLocation);
   };
 
   return (

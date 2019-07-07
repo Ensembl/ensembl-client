@@ -35,12 +35,12 @@ import BrowserTabs from '../browser-tabs/BrowserTabs';
 import styles from './BrowserBar.scss';
 
 type StateProps = {
-  activeGenomeId: string;
-  activeObjectId: string;
+  activeGenomeId: string | null;
+  activeObjectId: string | null;
   browserActivated: boolean;
   browserNavOpened: boolean;
   chrLocation: ChrLocation | null;
-  defaultChrLocation: ChrLocation;
+  defaultChrLocation: ChrLocation | null;
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
   ensObjectInfo: EnsObject;
@@ -157,7 +157,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
           )}
         </dl>
       </div>
-      {props.trackPanelOpened && (
+      {props.trackPanelOpened && props.activeGenomeId && (
         <BrowserTabs
           activeGenomeId={props.activeGenomeId}
           ensObjectInfo={props.ensObjectInfo}

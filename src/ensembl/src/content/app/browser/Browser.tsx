@@ -41,15 +41,9 @@ import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 import { getDrawerOpened } from './drawer/drawerSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
-import {
-  fetchEnsObject,
-  fetchExampleEnsObjects
-} from 'src/ens-object/ensObjectActions';
+import { fetchEnsObject } from 'src/ens-object/ensObjectActions';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
-import {
-  ExampleEnsObjectsData,
-  EnsObject
-} from 'src/ens-object/ensObjectTypes';
+import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 import { getGenomeInfo } from 'src/genome/genomeSelectors';
 import { GenomeInfoData } from 'src/genome/genomeTypes';
@@ -71,8 +65,8 @@ import styles from './Browser.scss';
 import 'static/browser/browser.js';
 
 type StateProps = {
-  activeGenomeId: string;
-  activeEnsObjectId: string;
+  activeGenomeId: string | null;
+  activeEnsObjectId: string | null;
   browserActivated: boolean;
   browserNavOpened: boolean;
   browserOpenState: BrowserOpenState;
@@ -83,7 +77,7 @@ type StateProps = {
   genomeSelectorActive: boolean;
   trackPanelOpened: boolean;
   launchbarExpanded: boolean;
-  exampleEnsObjects: ExampleEnsObjectsData;
+  exampleEnsObjects: EnsObject[];
   committedSpecies: CommittedItem[];
 };
 
@@ -93,7 +87,6 @@ type DispatchProps = {
     browserEl: HTMLDivElement
   ) => void;
   fetchEnsObject: (ensObjectId: string, genomeId: string) => void;
-  fetchExampleEnsObjects: (genomeId: string) => void;
   fetchGenomeData: (genomeId: string) => void;
   fetchGenomeInfo: (genomeId: string) => void;
   fetchGenomeTrackCategories: (genomeId: string) => void;
@@ -154,6 +147,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
       // or genome id of the first selected species
       const { activeGenomeId, committedSpecies } = props;
       if (
+        activeGenomeId &&
         find(
           committedSpecies,
           ({ genome_id }: CommittedItem) => genome_id === activeGenomeId
@@ -250,29 +244,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
     }
     props.toggleDrawer(false);
   };
-  const getExampleObjectLinks = () => {
-    return Object.values(props.exampleEnsObjects[props.activeGenomeId]).map(
-      (exampleObject: EnsObject) => {
-        const location = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
-        const path = urlFor.browser({
-          genomeId: props.activeGenomeId,
-          focus: exampleObject.ensembl_object_id,
-          location
-        });
-
-        return (
-          <dd key={exampleObject.ensembl_object_id}>
-            <Link to={path}>
-              <span className={styles.objectType}>
-                {upperFirst(exampleObject.object_type)}
-              </span>
-              <span className={styles.objectLabel}>{exampleObject.label}</span>
-            </Link>
-          </dd>
-        );
-      }
-    );
-  };
 
   const [trackAnimation, setTrackAnimation] = useSpring(() => ({
     config: { tension: 280, friction: 45 },
@@ -299,7 +270,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
     return launchbarExpanded ? styles.shorter : styles.taller;
   };
 
-  return (
+  return props.activeGenomeId ? (
     <>
       <AppBar
         currentAppName={AppName.GENOME_BROWSER}
@@ -310,9 +281,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
       {!props.browserQueryParams.focus && (
         <section className={styles.browser}>
           <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
-          {props.exampleEnsObjects[props.activeGenomeId] ? (
-            <dl className={styles.exampleLinks}>{getExampleObjectLinks()}</dl>
-          ) : null}
+          <ExampleObjectLinks {...props} />
         </section>
       )}
       {props.browserQueryParams.focus && props.chrLocation && (
@@ -344,7 +313,35 @@ export const Browser: FunctionComponent<BrowserProps> = (
         </section>
       )}
     </>
-  );
+  ) : null;
+};
+
+const ExampleObjectLinks = (props: BrowserProps) => {
+  const { activeGenomeId } = props;
+  if (!activeGenomeId) {
+    return null;
+  }
+  const links = props.exampleEnsObjects.map((exampleObject: EnsObject) => {
+    const location = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
+    const path = urlFor.browser({
+      genomeId: activeGenomeId,
+      focus: exampleObject.ensembl_object_id,
+      location
+    });
+
+    return (
+      <div key={exampleObject.ensembl_object_id}>
+        <Link to={path}>
+          <span className={styles.objectType}>
+            {upperFirst(exampleObject.object_type)}
+          </span>
+          <span className={styles.objectLabel}>{exampleObject.label}</span>
+        </Link>
+      </div>
+    );
+  });
+
+  return <>{links}</>;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
@@ -367,7 +364,6 @@ const mapStateToProps = (state: RootState): StateProps => ({
 const mapDispatchToProps: DispatchProps = {
   changeBrowserLocation,
   fetchEnsObject,
-  fetchExampleEnsObjects,
   fetchGenomeData,
   fetchGenomeInfo,
   fetchGenomeTrackCategories,

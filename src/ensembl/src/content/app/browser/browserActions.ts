@@ -9,9 +9,7 @@ import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectId,
   getBrowserActiveEnsObjectIds,
-  getBrowserTrackStates,
-  getDefaultChrLocation,
-  getChrLocation
+  getBrowserTrackStates
 } from './browserSelectors';
 import { getBrowserAnalyticsObject } from 'src/analyticsHelper';
 import browserStorageService from './browser-storage-service';
@@ -81,6 +79,9 @@ export const updateBrowserActiveEnsObjectIdsAndSave: ActionCreator<
   return (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
+    if (!activeGenomeId) {
+      return;
+    }
     const currentActiveEnsObjectIds = getBrowserActiveEnsObjectIds(state);
     const updatedActiveEnsObjectId = {
       ...currentActiveEnsObjectIds,
@@ -145,6 +146,9 @@ export const setChrLocation: ActionCreator<
   return (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const activeObjectId = getBrowserActiveEnsObjectId(state);
+    if (!activeObjectId) {
+      return;
+    }
     const payload = {
       [activeObjectId]: chrLocation
     };
@@ -154,22 +158,17 @@ export const setChrLocation: ActionCreator<
   };
 };
 
-export const updateDefaultChrLocation = createAction(
-  'browser/update-default-chromosome-location',
-  (resolve) => {
-    return (chrLocationData: { [genomeId: string]: ChrLocation }) =>
-      resolve(chrLocationData, getBrowserAnalyticsObject('User Interaction'));
-  }
-);
-
 export const changeBrowserLocation: ActionCreator<
   ThunkAction<any, any, null, Action<string>>
 > = (chrLocation: ChrLocation, browserEl: HTMLDivElement) => {
-  return (dispatch: Dispatch, getState: () => RootState) => {
+  return (dispatch, getState: () => RootState) => {
     const state = getState();
     const [chrCode, startBp, endBp] = chrLocation;
     const genomeId = getBrowserActiveGenomeId(state);
     const activeObjectId = getBrowserActiveEnsObjectId(state);
+    if (!activeObjectId) {
+      return;
+    }
 
     const stickEvent = new CustomEvent('bpane', {
       bubbles: true,
@@ -197,13 +196,6 @@ export const changeBrowserLocation: ActionCreator<
 
     dispatch(updateChrLocation(chrLocationPayload));
     browserStorageService.updateChrLocation(chrLocationPayload);
-
-    const defaultChrLocation = getDefaultChrLocation(state);
-
-    if (activeObjectId && !defaultChrLocation) {
-      dispatch(updateDefaultChrLocation(chrLocationPayload));
-      browserStorageService.updateDefaultChrLocation(chrLocationPayload);
-    }
   };
 };
 

@@ -17,8 +17,7 @@ import {
   getBrowserCogTrackList,
   getBrowserNavOpened,
   getBrowserActivated,
-  getBrowserActiveGenomeId,
-  getChrLocation
+  getBrowserActiveGenomeId
 } from '../browserSelectors';
 import {
   activateBrowser,
@@ -35,7 +34,7 @@ import { RootState } from 'src/store';
 import { TrackStates } from '../track-panel/trackPanelConfig';
 
 type StateProps = {
-  activeGenomeId: string;
+  activeGenomeId: string | null;
   browserCogTrackList: CogList;
   browserNavOpened: boolean;
   trackConfigNames: any;

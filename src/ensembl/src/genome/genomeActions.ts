@@ -1,6 +1,6 @@
 import { createAsyncAction } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
-import { Action, ActionCreator, Dispatch } from 'redux';
+import { Action, ActionCreator } from 'redux';
 
 import apiService from 'src/services/api-service';
 import { RootState } from 'src/store';
@@ -8,11 +8,7 @@ import { GenomeInfoData, GenomeTrackCategories } from './genomeTypes';
 
 import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
 
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import {
-  getGenomeInfo,
-  getGenomeTrackCategories
-} from 'src/genome/genomeSelectors';
+import { getGenomeTrackCategories } from 'src/genome/genomeSelectors';
 
 export const fetchGenomeInfoAsyncActions = createAsyncAction(
   'genome/fetch_genome_info_request',

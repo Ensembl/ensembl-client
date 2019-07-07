@@ -3,12 +3,6 @@ import { getBrowserActiveGenomeInfo } from 'src/content/app/browser/browserSelec
 import { RootState } from '../store';
 import { EnsObject, EnsObjectTrack } from './ensObjectTypes';
 
-export const getEnsObjectInfoFetchFailed = (state: RootState) =>
-  state.ensObject.ensObjectInfo.ensObjectInfoFetchFailed;
-
-export const getEnsObjectInfoFetching = (state: RootState) =>
-  state.ensObject.ensObjectInfo.ensObjectInfoFetching;
-
 export const getEnsObjectInfo = (state: RootState) =>
   state.ensObject.ensObjectInfo.ensObjectInfoData as EnsObject;
 
@@ -21,15 +15,11 @@ export const getEnsObjectTracksFetching = (state: RootState) =>
 export const getEnsObjectTracks = (state: RootState) =>
   state.ensObject.ensObjectTracks.ensObjectTracksData as EnsObjectTrack;
 
-export const getExampleEnsObjectsFetchFailed = (state: RootState) =>
-  state.ensObject.exampleEnsObjects.exampleEnsObjectsFetchFailed;
-
-export const getExampleEnsObjectsFetching = (state: RootState) =>
-  state.ensObject.exampleEnsObjects.exampleEnsObjectsFetching;
-
-export const getExampleEnsObjects = (state: RootState) => {
+export const getExampleEnsObjects = (state: RootState): EnsObject[] => {
   const activeGenomeInfo = getBrowserActiveGenomeInfo(state);
-  return activeGenomeInfo.example_objects
-    .map((id) => state.ensObjects[id])
-    .filter(Boolean); // make sure there are no undefineds in the returned array
+  return activeGenomeInfo
+    ? activeGenomeInfo.example_objects
+        .map((id) => state.ensObjects[id])
+        .filter(Boolean)
+    : []; // make sure there are no undefineds in the returned array
 };

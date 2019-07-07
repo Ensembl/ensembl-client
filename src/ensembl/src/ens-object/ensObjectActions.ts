@@ -1,5 +1,5 @@
 import { createAsyncAction } from 'typesafe-actions';
-import { Action, ActionCreator, Dispatch } from 'redux';
+import { Action, ActionCreator } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import { RootState } from 'src/store';
 import apiService from 'src/services/api-service';
@@ -73,30 +73,18 @@ export const fetchEnsObject: ActionCreator<
 //   }
 // };
 
-export const fetchExampleEnsObjectsAsyncActions = createAsyncAction(
-  'ens-object/fetch_example_ens_objects_request',
-  'ens-object/fetch_example_ens_objects_success',
-  'ens-object/fetch_example_ens_objects_failure'
-)<null, ExampleEnsObjectsData, Error>();
-
 export const fetchExampleEnsObjects: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (genomeId?: string) => async (dispatch, getState: () => RootState) => {
-  try {
-    const genomeInfoData: GenomeInfoData = getGenomeInfo(getState());
-    const genomeInfo = genomeId && genomeInfoData[genomeId];
-    const exampleObjects: ExampleEnsObjectsData = getExampleEnsObjects(
-      getState()
-    );
+> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
+  const state = getState();
+  const genomeInfoData: GenomeInfoData = getGenomeInfo(state);
+  const genomeInfo = genomeInfoData[genomeId];
+  const exampleObjects = getExampleEnsObjects(state);
 
-    if (genomeId && genomeInfo && !exampleObjects[genomeId]) {
-      dispatch(fetchExampleEnsObjectsAsyncActions.request(null));
-      genomeInfo.example_objects.forEach((exampleObjectId) => {
-        dispatch(fetchEnsObject(exampleObjectId));
-      });
-    }
-  } catch (error) {
-    dispatch(fetchExampleEnsObjectsAsyncActions.failure(error));
+  if (genomeId && genomeInfo && !exampleObjects.length) {
+    genomeInfo.example_objects.forEach((exampleObjectId) => {
+      dispatch(fetchEnsObject(exampleObjectId));
+    });
   }
 };
 

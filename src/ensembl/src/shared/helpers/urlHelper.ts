@@ -2,8 +2,8 @@ export const speciesSelector = () => '/app/species-selector';
 export const customDownload = () => '/app/custom-download';
 
 type BrowserUrlParams = {
-  genomeId?: string;
-  focus?: string;
+  genomeId?: string | null;
+  focus?: string | null;
   location?: string;
 };
 

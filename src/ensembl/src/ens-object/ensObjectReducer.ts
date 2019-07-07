@@ -1,9 +1,7 @@
 import { ActionType, getType } from 'typesafe-actions';
-import { combineReducers } from 'redux';
 
 import * as ensObjectActions from './ensObjectActions';
 import { EnsObjectsState, defaultEnsObjectsState } from './ensObjectState';
-import { ExampleEnsObjectsData } from './ensObjectTypes';
 
 // function ensObjectInfo(
 //   state: EnsObjectInfoState = defaultEnsObjectInfoState,
@@ -117,7 +115,7 @@ import { ExampleEnsObjectsData } from './ensObjectTypes';
 // });
 
 export default function ensObjectsReducer(
-  state: EnsObjectsState,
+  state: EnsObjectsState = defaultEnsObjectsState,
   action: ActionType<typeof ensObjectActions>
 ) {
   switch (action.type) {
