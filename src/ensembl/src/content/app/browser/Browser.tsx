@@ -124,6 +124,11 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   const changeSelectedSpecies = (genomeId: string) => {
     props.fetchGenomeData(genomeId);
+    props.updateBrowserActiveGenomeIdAndSave(genomeId);
+  };
+
+  const onGenomeChange = (genomeId: string) => {
+    console.log('props', props);
     const { chrLocation } = props;
 
     let newUrl: string;
@@ -137,7 +142,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
     } else {
       newUrl = urlFor.browser({ genomeId });
     }
-    props.updateBrowserActiveGenomeIdAndSave(genomeId);
     props.replace(newUrl);
   };
 
@@ -146,22 +150,32 @@ export const Browser: FunctionComponent<BrowserProps> = (
       // when there is no genome id in the url, use active genome id saved in the state
       // or genome id of the first selected species
       const { activeGenomeId, committedSpecies } = props;
-      if (
-        activeGenomeId &&
-        find(
-          committedSpecies,
-          ({ genome_id }: CommittedItem) => genome_id === activeGenomeId
-        )
-      ) {
-        changeSelectedSpecies(activeGenomeId);
-      } else {
-        if (committedSpecies[0]) {
-          changeSelectedSpecies(committedSpecies[0].genome_id);
-        }
+      if (committedSpecies[0]) {
+        changeSelectedSpecies(committedSpecies[0].genome_id);
       }
+
+      // if (
+      //   activeGenomeId &&
+      //   find(
+      //     committedSpecies,
+      //     ({ genome_id }: CommittedItem) => genome_id === activeGenomeId
+      //   )
+      // ) {
+      //   changeSelectedSpecies(activeGenomeId);
+      // } else {
+      //   if (committedSpecies[0]) {
+      //     changeSelectedSpecies(committedSpecies[0].genome_id);
+      //   }
+      // }
     }
     setTrackStatesFromStorage(browserStorageService.getTrackStates());
   }, [props.match.params.genomeId]);
+
+  useEffect(() => {
+    if (props.activeGenomeId) {
+      onGenomeChange(props.activeGenomeId);
+    }
+  }, [props.activeGenomeId]);
 
   // useEffect(() => {
   //   const { genomeId } = props.match.params;
@@ -185,13 +199,9 @@ export const Browser: FunctionComponent<BrowserProps> = (
     const { genomeId } = props.match.params;
     const parsedLocation = location && getChrLocationFromStr(location);
 
-    console.log('before if');
-
     if (!parsedLocation || !focus) {
       return;
     }
-
-    console.log('after if', parsedLocation);
 
     props.updateBrowserActiveEnsObjectIdsAndSave(focus);
     dispatchBrowserLocation(parsedLocation);
@@ -236,7 +246,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   useEffect(() => {
     updateLocationInUrl();
-  }, [props.chrLocation, props.browserQueryParams.location]);
+  }, [props.chrLocation]);
 
   const closeTrack = () => {
     if (props.drawerOpened === false) {
@@ -284,7 +294,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
           <ExampleObjectLinks {...props} />
         </section>
       )}
-      {props.browserQueryParams.focus && props.chrLocation && (
+      {props.browserQueryParams.focus && (
         <section className={styles.browser}>
           <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
           {props.genomeSelectorActive && (
