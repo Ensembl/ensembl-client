@@ -4,10 +4,7 @@ import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 import { toggleDrawer } from './drawerActions';
 import { getDrawerView } from './drawerSelectors';
-import {
-  getEnsObjectInfo,
-  getEnsObjectTracks
-} from 'src/ens-object/ensObjectSelectors';
+import { getBrowserActiveEnsObject } from '../browserSelectors';
 
 import DrawerGene from './drawer-views/DrawerGene';
 import DrawerTranscript from './drawer-views/DrawerTranscript';
@@ -18,16 +15,14 @@ import DrawerGC from './drawer-views/DrawerGC';
 
 import closeIcon from 'static/img/track-panel/close.svg';
 
-import find from 'lodash/find';
 import styles from './Drawer.scss';
 import SnpIndels from './drawer-views/SnpIndels';
 
-import { EnsObject, EnsObjectTrack } from 'src/ens-object/ensObjectTypes';
+import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 type StateProps = {
   drawerView: string;
-  ensObjectInfo: EnsObject;
-  ensObjectTracks: EnsObjectTrack;
+  ensObject: EnsObject | null;
 };
 
 type DispatchProps = {
@@ -39,23 +34,17 @@ type OwnProps = {};
 type DrawerProps = StateProps & DispatchProps & OwnProps;
 
 const Drawer: FunctionComponent<DrawerProps> = (props: DrawerProps) => {
-  const getTrackDetails = () => {
-    const childTracks = props.ensObjectTracks['child_tracks'];
-
-    return find(childTracks, { track_id: props.drawerView });
-  };
+  const { ensObject } = props;
+  if (!ensObject) {
+    return null;
+  }
 
   const getDrawerViewComponent = () => {
     switch (props.drawerView) {
       case 'gene-feat':
-        return <DrawerGene ensObjectInfo={props.ensObjectInfo} />;
+        return <DrawerGene ensObject={ensObject} />;
       case 'gene-feat-1':
-        return (
-          <DrawerTranscript
-            ensObjectInfo={props.ensObjectInfo}
-            ensObjectTrack={getTrackDetails()}
-          />
-        );
+        return <DrawerTranscript ensObject={ensObject} />;
       case 'gene-pc-fwd':
         return <ProteinCodingGenes forwardStrand={true} />;
       case 'gene-other-fwd':
@@ -87,8 +76,7 @@ const Drawer: FunctionComponent<DrawerProps> = (props: DrawerProps) => {
 
 const mapStateToProps = (state: RootState): StateProps => ({
   drawerView: getDrawerView(state),
-  ensObjectInfo: getEnsObjectInfo(state),
-  ensObjectTracks: getEnsObjectTracks(state)
+  ensObject: getBrowserActiveEnsObject(state)
 });
 
 const mapDispatchToProps: DispatchProps = {

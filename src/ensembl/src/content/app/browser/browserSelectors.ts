@@ -7,6 +7,7 @@ import {
 } from './browserState';
 import { getQueryParamsMap } from 'src/global/globalHelper';
 import { getGenomeInfo } from 'src/genome/genomeSelectors';
+import { getEnsObjectById } from 'src/ens-object/ensObjectSelectors';
 
 export const getBrowserActivated = (state: RootState): boolean =>
   state.browser.browserInfo.browserActivated;
@@ -30,6 +31,14 @@ export const getBrowserActiveEnsObjectId = (state: RootState) => {
   const activeEnsObjectIds = getBrowserActiveEnsObjectIds(state);
   const activeGenomeId = getBrowserActiveGenomeId(state);
   return activeGenomeId ? activeEnsObjectIds[activeGenomeId] : null;
+};
+
+export const getBrowserActiveEnsObject = (state: RootState) => {
+  const activeObjectId = getBrowserActiveEnsObjectId(state);
+  if (!activeObjectId) {
+    return null;
+  }
+  return getEnsObjectById(state, activeObjectId);
 };
 
 export const getBrowserTrackStates = (state: RootState) =>

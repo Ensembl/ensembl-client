@@ -17,8 +17,7 @@ type TrackPanelListProps = {
   drawerOpened: boolean;
   drawerView: string;
   launchbarExpanded: boolean;
-  ensObjectInfo: EnsObject;
-  ensObjectTracks: EnsObjectTrack;
+  ensObject: EnsObject;
   selectedBrowserTab: { [genomeId: string]: TrackType };
   toggleDrawer: (drawerOpened: boolean) => void;
   genomeTrackCategories: GenomeTrackCategory[];
@@ -106,9 +105,9 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
 
   return (
     <div className={getTrackPanelListClasses()}>
-      {props.ensObjectInfo.object_type === 'region' ? null : (
+      {props.ensObject.object_type === 'region' ? null : (
         <section>
-          <dl>{getTrackListItem('main', props.ensObjectTracks)}</dl>
+          <dl>{getTrackListItem('main', props.ensObject.track)}</dl>
         </section>
       )}
       {currentTrackCategories.map((category: GenomeTrackCategory) => (
