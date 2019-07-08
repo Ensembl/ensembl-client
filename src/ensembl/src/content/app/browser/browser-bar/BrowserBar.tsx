@@ -14,7 +14,6 @@ import {
   getDefaultChrLocation,
   getGenomeSelectorActive,
   getBrowserActiveGenomeId,
-  getBrowserActiveEnsObjectId,
   getBrowserActiveEnsObject
 } from '../browserSelectors';
 import { getDrawerOpened } from '../drawer/drawerSelectors';
@@ -36,7 +35,6 @@ import styles from './BrowserBar.scss';
 
 type StateProps = {
   activeGenomeId: string | null;
-  activeObjectId: string | null;
   browserActivated: boolean;
   browserNavOpened: boolean;
   chrLocation: ChrLocation | null;
@@ -222,7 +220,6 @@ export const BrowserNavigatorButton = (props: BrowserNavigatorButtonProps) => (
 
 const mapStateToProps = (state: RootState): StateProps => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
-  activeObjectId: getBrowserActiveEnsObjectId(state),
   browserActivated: getBrowserActivated(state),
   browserNavOpened: getBrowserNavOpened(state),
   chrLocation: getChrLocation(state),

@@ -145,12 +145,12 @@ export const setChrLocation: ActionCreator<
 > = (chrLocation: ChrLocation) => {
   return (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
-    const activeObjectId = getBrowserActiveEnsObjectId(state);
-    if (!activeObjectId) {
+    const activeGenomeId = getBrowserActiveGenomeId(state);
+    if (!activeGenomeId) {
       return;
     }
     const payload = {
-      [activeObjectId]: chrLocation
+      [activeGenomeId]: chrLocation
     };
 
     dispatch(updateChrLocation(payload));

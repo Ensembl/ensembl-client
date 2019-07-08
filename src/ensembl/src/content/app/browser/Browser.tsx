@@ -123,12 +123,13 @@ export const Browser: FunctionComponent<BrowserProps> = (
   };
 
   const changeSelectedSpecies = (genomeId: string) => {
+    console.log('in changeSelectedSpecies');
     props.fetchGenomeData(genomeId);
     props.updateBrowserActiveGenomeIdAndSave(genomeId);
   };
 
   const onGenomeChange = (genomeId: string) => {
-    console.log('props', props);
+    console.log('props in onGenomeChange', props);
     const { chrLocation } = props;
 
     let newUrl: string;
