@@ -36,7 +36,9 @@ import {
   getBrowserActivated,
   getBrowserActiveGenomeId,
   getBrowserQueryParams,
-  getBrowserActiveEnsObjectId
+  getBrowserActiveEnsObjectId,
+  getBrowserActiveEnsObjectIds,
+  getAllChrLocations
 } from './browserSelectors';
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import { getTrackPanelOpened } from './track-panel/trackPanelSelectors';
@@ -70,11 +72,13 @@ import 'static/browser/browser.js';
 type StateProps = {
   activeGenomeId: string | null;
   activeEnsObjectId: string | null;
+  allActiveEnsObjectIds: { [genomeId: string]: string };
   browserActivated: boolean;
   browserNavOpened: boolean;
   browserOpenState: BrowserOpenState;
   browserQueryParams: { [key: string]: string };
   chrLocation: ChrLocation | null;
+  allChrLocations: { [genomeId: string]: ChrLocation };
   drawerOpened: boolean;
   genomeInfo: GenomeInfoData;
   genomeSelectorActive: boolean;
@@ -165,12 +169,11 @@ export const Browser: FunctionComponent<BrowserProps> = (
   };
 
   const changeSelectedSpecies = (genomeId: string) => {
-    props.updateBrowserActiveGenomeIdAndSave(genomeId);
-  };
-
-  const onGenomeChange = (genomeId: string) => {
     props.fetchGenomeData(genomeId);
-    const { chrLocation, activeEnsObjectId } = props;
+    const { allChrLocations, allActiveEnsObjectIds } = props;
+    const chrLocation = allChrLocations[genomeId];
+    const activeEnsObjectId = allActiveEnsObjectIds[genomeId];
+
     const params = {
       genomeId,
       focus: activeEnsObjectId,
@@ -178,9 +181,13 @@ export const Browser: FunctionComponent<BrowserProps> = (
     };
 
     props.replace(urlFor.browser(params));
+
+    props.updateBrowserActiveGenomeIdAndSave(genomeId);
   };
 
+  // handle url changes
   useEffect(() => {
+    // handle navigation to /app/browser
     if (!props.match.params.genomeId) {
       // select either the species that the user viewed during the previous visit,
       // of the first selected species
@@ -198,50 +205,12 @@ export const Browser: FunctionComponent<BrowserProps> = (
           changeSelectedSpecies(committedSpecies[0].genome_id);
         }
       }
+    } else {
+      // handle navigation to /app/browser/:genomeId?focus=:focus&location=:location
+      setDataFromUrl();
     }
     setTrackStatesFromStorage(browserStorageService.getTrackStates());
-  }, [props.match.params.genomeId]);
-
-  useEffect(() => {
-    if (props.activeGenomeId) {
-      onGenomeChange(props.activeGenomeId);
-    }
-  }, [props.activeGenomeId]);
-
-  useEffect(() => {
-    setDataFromUrl();
   }, [props.match.params.genomeId, props.location.search]);
-
-  // useEffect(() => {
-  //   const { genomeId } = props.match.params;
-
-  //   if (!genomeId) {
-  //     return;
-  //   }
-
-  //   props.updateBrowserActiveGenomeIdAndSave(genomeId);
-
-  //   props.fetchGenomeInfo(genomeId);
-  //   props.fetchGenomeTrackCategories(genomeId);
-  // }, [props.match.params.genomeId]);
-
-  // useEffect(() => {
-  //   props.fetchExampleEnsObjects(props.activeGenomeId);
-  // }, [props.genomeInfo]);
-
-  // useEffect(() => {
-  //   const { focus, location } = props.browserQueryParams;
-  //   const { genomeId } = props.match.params;
-  //   const parsedLocation = location && getChrLocationFromStr(location);
-
-  //   if (!parsedLocation || !focus) {
-  //     return;
-  //   }
-
-  //   props.updateBrowserActiveEnsObjectIdsAndSave(focus);
-  //   dispatchBrowserLocation(parsedLocation);
-  //   props.fetchEnsObject(focus, genomeId);
-  // }, [props.browserQueryParams.focus]);
 
   useEffect(() => {
     const { chrLocation } = props;
@@ -308,6 +277,13 @@ export const Browser: FunctionComponent<BrowserProps> = (
   const getHeightClass = (launchbarExpanded: boolean): string => {
     return launchbarExpanded ? styles.shorter : styles.taller;
   };
+
+  console.log(
+    props.activeGenomeId,
+    props,
+    'props.browserQueryParams.focus',
+    props.browserQueryParams.focus
+  );
 
   return props.activeGenomeId ? (
     <>
@@ -386,11 +362,13 @@ const ExampleObjectLinks = (props: BrowserProps) => {
 const mapStateToProps = (state: RootState): StateProps => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
   activeEnsObjectId: getBrowserActiveEnsObjectId(state),
+  allActiveEnsObjectIds: getBrowserActiveEnsObjectIds(state),
   browserActivated: getBrowserActivated(state),
   browserNavOpened: getBrowserNavOpened(state),
   browserOpenState: getBrowserOpenState(state),
   browserQueryParams: getBrowserQueryParams(state),
   chrLocation: getChrLocation(state),
+  allChrLocations: getAllChrLocations(state),
   drawerOpened: getDrawerOpened(state),
   genomeInfo: getGenomeInfo(state),
   genomeSelectorActive: getGenomeSelectorActive(state),

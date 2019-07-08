@@ -54,8 +54,13 @@ export const getBrowserNavOpened = (state: RootState): boolean =>
 export const getBrowserNavStates = (state: RootState): BrowserNavStates =>
   state.browser.browserNav.browserNavStates;
 
+export const getAllChrLocations = (
+  state: RootState
+): { [genomeId: string]: ChrLocation } =>
+  state.browser.browserLocation.chrLocations;
+
 export const getChrLocation = (state: RootState): ChrLocation | null => {
-  const chrLocations = state.browser.browserLocation.chrLocations;
+  const chrLocations = getAllChrLocations(state);
   const activeGenomeId = getBrowserActiveGenomeId(state);
   return activeGenomeId ? chrLocations[activeGenomeId] : null;
 };
