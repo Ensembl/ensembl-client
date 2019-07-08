@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import { ActionType, getType } from 'typesafe-actions';
 import merge from 'lodash/merge';
+import pickBy from 'lodash/pickBy';
 
 import { RootAction } from 'src/objects';
 import * as browserActions from './browserActions';
@@ -51,6 +52,19 @@ export function browserEntity(
   action: ActionType<typeof browserActions>
 ): BrowserEntityState {
   switch (action.type) {
+    case getType(browserActions.setDataFromUrl): {
+      const { activeGenomeId, activeEnsObjectId } = action.payload;
+      const newState = {
+        ...state,
+        activeGenomeId
+      };
+      if (!activeEnsObjectId) {
+        delete newState.activeEnsObjectIds[activeGenomeId];
+      } else {
+        newState.activeEnsObjectIds[activeGenomeId] = activeEnsObjectId;
+      }
+      return newState;
+    }
     case getType(browserActions.updateBrowserActiveGenomeId):
       return { ...state, activeGenomeId: action.payload };
     case getType(browserActions.updateBrowserActiveEnsObjectIds):
@@ -84,6 +98,26 @@ export function browserLocation(
   action: ActionType<typeof browserActions>
 ) {
   switch (action.type) {
+    case getType(browserActions.setDataFromUrl): {
+      const { activeGenomeId, chrLocation } = action.payload;
+      if (chrLocation) {
+        return {
+          ...state,
+          chrLocations: {
+            ...state.chrLocations,
+            [activeGenomeId]: chrLocation
+          }
+        };
+      } else {
+        return {
+          ...state,
+          chLocations: pickBy(
+            state.chrLocations,
+            (value, key) => key !== activeGenomeId
+          )
+        };
+      }
+    }
     case getType(browserActions.updateChrLocation):
       return {
         ...state,

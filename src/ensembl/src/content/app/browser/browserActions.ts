@@ -24,6 +24,12 @@ export type UpdateTrackStatesPayload = {
   status: ImageButtonStatus; // TODO: update types so that actions do not depend on ImageButton types
 };
 
+export type ParsedUrlPayload = {
+  activeGenomeId: string;
+  activeEnsObjectId: string | null;
+  chrLocation: ChrLocation | null;
+};
+
 export const updateBrowserActivated = createAction(
   'browser/update-browser-activated',
   (resolve) => {
@@ -50,6 +56,20 @@ export const activateBrowser = (browserEl: HTMLDivElement) => {
   };
 };
 
+export const setDataFromUrl = createAction(
+  'browser/set-data-from-url',
+  (resolve) => {
+    return (payload: ParsedUrlPayload) =>
+      resolve(payload, getBrowserAnalyticsObject('Navigation'));
+  }
+);
+
+export const setDataFromUrlAndSave: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (payload: ParsedUrlPayload) => (dispatch) => {
+  dispatch(setDataFromUrl(payload));
+};
+
 export const updateBrowserActiveGenomeId = createAction(
   'browser/update-active-genome-id',
   (resolve) => {
@@ -60,7 +80,7 @@ export const updateBrowserActiveGenomeId = createAction(
 
 export const updateBrowserActiveGenomeIdAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (activeGenomeId: string) => (dispatch: Dispatch) => {
+> = (activeGenomeId: string) => (dispatch) => {
   dispatch(updateBrowserActiveGenomeId(activeGenomeId));
   browserStorageService.saveActiveGenomeId(activeGenomeId);
 };

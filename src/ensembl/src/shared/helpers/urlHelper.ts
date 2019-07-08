@@ -4,7 +4,7 @@ export const customDownload = () => '/app/custom-download';
 type BrowserUrlParams = {
   genomeId?: string | null;
   focus?: string | null;
-  location?: string;
+  location?: string | null;
 };
 
 export const browser = (params?: BrowserUrlParams) => {
