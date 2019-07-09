@@ -58,10 +58,20 @@ lazy_static! {
     static ref REPORT_CONFIG:
         Vec<(&'static str,StatusJigsaw,Option<f64>)> = vec!{
         ("location",StatusJigsaw::Array(vec!{
-            StatusJigsaw::Atom("stick".to_string(),StatusJigsawType::String),
-            StatusJigsaw::Atom("start".to_string(),StatusJigsawType::Number),
-            StatusJigsaw::Atom("end".to_string(),StatusJigsawType::Number),
+            StatusJigsaw::Atom("a-stick".to_string(),StatusJigsawType::String),
+            StatusJigsaw::Atom("a-start".to_string(),StatusJigsawType::Number),
+            StatusJigsaw::Atom("a-end".to_string(),StatusJigsawType::Number),
         }),Some(500.)),
+        ("actual-location",StatusJigsaw::Array(vec!{
+            StatusJigsaw::Atom("a-stick".to_string(),StatusJigsawType::String),
+            StatusJigsaw::Atom("a-start".to_string(),StatusJigsawType::Number),
+            StatusJigsaw::Atom("a-end".to_string(),StatusJigsawType::Number),
+        }),Some(500.)),
+        ("intended-location",StatusJigsaw::Array(vec!{
+            StatusJigsaw::Atom("i-stick".to_string(),StatusJigsawType::String),
+            StatusJigsaw::Atom("i-start".to_string(),StatusJigsawType::Number),
+            StatusJigsaw::Atom("i-end".to_string(),StatusJigsawType::Number),
+        }),Some(2000.)),
         ("bumper",StatusJigsaw::Array(vec!{
             StatusJigsaw::Atom("bumper-top".to_string(),StatusJigsawType::Boolean),
             StatusJigsaw::Atom("bumper-bottom".to_string(),StatusJigsawType::Boolean),
@@ -186,6 +196,7 @@ impl ReportImpl {
             }
         }
         if out.len() > 0 {
+            console!("send/A {}",JSONValue::Object(out.clone()));
             Some(JSONValue::Object(out))
         } else {
             None

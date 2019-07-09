@@ -18,7 +18,7 @@ fn debug_initial_actions(name: &str) -> Vec<Action> {
         out.extend(vec! {
             Action::SetStick(stick.to_string()),
             Action::Pos(Dot(0_f64,0_f64),None),
-            Action::ZoomTo(-5.)
+            Action::ZoomTo(-5.,-5.)
         });
 
     } else {
@@ -29,7 +29,7 @@ fn debug_initial_actions(name: &str) -> Vec<Action> {
         out.extend(vec! {
             Action::SetStick(name.to_string()),
             Action::Pos(Dot(0_f64,0_f64),None),
-            Action::ZoomTo(-5.)
+            Action::ZoomTo(-5.,-5.)
         });
     }
     out

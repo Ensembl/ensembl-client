@@ -8,9 +8,9 @@ pub enum Action {
     Noop,
     Pos(Dot<f64,f64>,Option<f64>),
     PosRange(f64,f64,f64),
-    Move(Move<f64,f64>),
-    Zoom(f64),
-    ZoomTo(f64),
+    Move(Move<f64,f64>,Move<f64,f64>),
+    Zoom(f64,f64),
+    ZoomTo(f64,f64),
     Resize(Dot<f64,f64>),
     AddComponent(String),
     SetStick(String),
@@ -34,7 +34,7 @@ fn exe_pos_event(app: &App, v: Dot<f64,f64>, prop: Option<f64>) {
     let v = app.with_stage(|s|
         Dot(s.pos_prop_bp_to_origin(v.0,prop),v.1)
     );
-    let pos = app.with_stage(|s| { s.set_pos_middle(&v); s.get_pos_middle() });
+    let pos = app.with_stage(|s| { s.set_pos_middle(&v,Some(&v)); s.get_pos_middle() });
     app.with_compo(|co| { co.set_position(pos.0); });
 }
 
@@ -42,7 +42,7 @@ fn exe_pos_range_event(app: &App, x_start: f64, x_end: f64, y: f64) {
     let middle = Dot((x_start+x_end)/2.,y);
     let (pos,zoom) = app.with_stage(|s| { 
         s.set_screen_in_bp(x_end-x_start);
-        s.set_pos_middle(&middle); 
+        s.set_pos_middle(&middle,Some(&middle));
         (s.get_pos_middle(),s.get_linear_zoom())
     });
     app.with_compo(|co| {
@@ -51,14 +51,19 @@ fn exe_pos_range_event(app: &App, x_start: f64, x_end: f64, y: f64) {
     });
 }
 
-fn exe_move_event(app: &App, v: Move<f64,f64>) {
+fn exe_move_event(app: &App, va: Move<f64,f64>,vi: Move<f64,f64>) {
     let pos = app.with_stage(|s| {
-        let v = match v.direction().0 {
-            Axis::Horiz => v.convert(Units::Bases,s),
-            Axis::Vert => v.convert(Units::Pixels,s),
-            Axis::Zoom => v // TODO invalid pre-unification
+        let va = match va.direction().0 {
+            Axis::Horiz => va.convert(Units::Bases,s),
+            Axis::Vert => va.convert(Units::Pixels,s),
+            Axis::Zoom => va // TODO invalid pre-unification
         };
-        s.inc_pos(&v);
+        let vi = match vi.direction().0 {
+            Axis::Horiz => vi.convert(Units::Bases,s),
+            Axis::Vert => vi.convert(Units::Pixels,s),
+            Axis::Zoom => vi // TODO invalid pre-unification
+        };
+        s.set_pos_middle(&(s.get_pos_middle()+va),Some(&(s.get_pos_intended_middle()+vi)));
         s.get_pos_middle()
     });
     app.with_compo(|co| {
@@ -66,13 +71,16 @@ fn exe_move_event(app: &App, v: Move<f64,f64>) {
     });
 }
 
-fn exe_zoom_event(app: &App, z: f64, by: bool) {
+fn exe_zoom_event(app: &App, za: f64, zi: f64, by: bool) {
     let middle = app.with_stage(|s| s.get_pos_middle().0);
     let z = app.with_stage(|s| {
+        //console!("ze zi={:?} za={:?}",zi,za);
         if by {
-            s.inc_zoom(z);
+            let new_za = za+s.get_zoom();
+            let new_zi = zi+s.get_intended_zoom();
+            s.set_zoom(new_za,Some(new_zi));
         } else {
-            s.set_zoom(z);
+            s.set_zoom(za,Some(zi));
         }
         s.get_linear_zoom()
     });
@@ -98,13 +106,14 @@ fn exe_component_add(a: &mut App, name: &str) {
 
 fn exe_set_stick(a: &mut App, name: &str) {
     if let Some(stick) = a.with_stick_manager(|sm| sm.get_stick(name)) {
-        a.with_compo(|co| co.set_stick(&stick));
         a.with_stage(|s| {
             s.set_limit(&LEFT,0.);
             s.set_limit(&RIGHT,stick.length() as f64);
             s.set_wrapping(&stick.get_wrapping());
+            s.set_pos_intent(false);
             
         });
+        a.with_compo(|co| co.set_stick(&stick));
         exe_pos_event(a,cdfraction(0.,0.),None);
     } else {
         console_force!("NO SUCH STICK {}",name);
@@ -148,9 +157,9 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>) {
         match ev {
             Action::Pos(v,prop) => exe_pos_event(cg,v,prop),
             Action::PosRange(x_start,x_end,y) => exe_pos_range_event(cg,x_start,x_end,y),
-            Action::Move(v) => exe_move_event(cg,v),
-            Action::Zoom(z) => exe_zoom_event(cg,z,true),
-            Action::ZoomTo(z) => exe_zoom_event(cg,z,false),
+            Action::Move(va,vi) => exe_move_event(cg,va,vi),
+            Action::Zoom(za,zi) => exe_zoom_event(cg,za,zi,true),
+            Action::ZoomTo(za,zi) => exe_zoom_event(cg,za,zi,false),
             Action::Resize(sz) => exe_resize(cg,sz),
             Action::AddComponent(name) => exe_component_add(cg,&name),
             Action::SetStick(name) => exe_set_stick(cg,&name),

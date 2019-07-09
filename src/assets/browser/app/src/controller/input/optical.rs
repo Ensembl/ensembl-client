@@ -5,6 +5,7 @@ use types::CDFraction;
 
 pub struct OpticalImpl {
     missing: f64,
+    target: f64,
     pos: Option<(CDFraction,f64)>,
     settled: bool
 }
@@ -16,17 +17,19 @@ impl OpticalImpl {
     pub fn new() -> OpticalImpl {
         OpticalImpl {
             missing: 0.,
+            target: 0.,
             pos: None,
-            settled: false
+            settled: true,
         }
     }
 
     fn send_delta(&mut self, app: &mut App, amt: f64) {
         if let Some((pos,prop)) = self.pos {
             actions_run(app,&vec! {
-                Action::Zoom(amt),
+                Action::Zoom(amt,self.target),
                 Action::Pos(pos,Some(prop))
             });
+            self.target = 0.;
         }
     }
 
@@ -37,6 +40,8 @@ impl OpticalImpl {
             self.send_delta(app,this_time);
             self.settled = false;
         } else if !self.settled {
+            self.send_delta(app,self.missing);
+            self.missing = 0.;
             app.with_stage(|s| s.settle());
             self.settled = true;
         }
@@ -44,6 +49,7 @@ impl OpticalImpl {
         
     /* when mouse moves, so does the handle */
     fn shift_handle_by(&mut self, at: f64, pos: CDFraction, prop: f64) {
+        self.target += at;
         self.missing += at;
         self.pos = Some((pos,prop));
     }

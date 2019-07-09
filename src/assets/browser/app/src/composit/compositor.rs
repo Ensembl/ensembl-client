@@ -96,6 +96,9 @@ impl Compositor {
     }
 
     pub fn update_report(&self, report: &Report) {
+        if let Some(stick) = self.train_manager.get_stick() {
+            report.set_status("i-stick",&stick.get_name());
+        }
         self.train_manager.update_report(report);
     }
 

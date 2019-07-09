@@ -1,6 +1,6 @@
 use std::fmt;
 
-use composit::Zoom;
+use super::zoom::Zoom;
 use types::{ Dot, Direction, LEFT, RIGHT, UP, DOWN, IN, OUT, AxisSense };
 
 pub struct Position {
@@ -25,12 +25,12 @@ impl Position {
         }
     }
         
-    pub fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>) {
+    pub(super) fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>) {
         self.screen_size = *screen_size;
         self.check_own_limits();
     }
     
-    pub fn set_middle(&mut self, pos: &Dot<f64,f64>) {
+    pub(super) fn set_middle(&mut self, pos: &Dot<f64,f64>) {
         bb_log!("resize","set_middle");
         self.pos = *pos;
         self.check_own_limits();
@@ -48,15 +48,15 @@ impl Position {
         self.zoom.get_screen_in_bp()
     }
     
-    pub fn set_screen_in_bp(&mut self, zoom: f64) {
+    pub(super) fn set_screen_in_bp(&mut self, zoom: f64) {
         self.zoom.set_screen_in_bp(zoom);
     }
     
-    pub fn set_zoom(&mut self, z: f64) {
+    pub(super) fn set_zoom(&mut self, z: f64) {
         self.zoom.set_zoom(z);
     }
     
-    pub fn settle(&mut self) {
+    pub(super) fn settle(&mut self) {
         return; /* temporary, degrades visual output but buggy */
         bb_log!("resize","settle: screen width {}bp {}px",self.get_screen_in_bp(),self.screen_size.0);
         if self.screen_size.0 > 0. {
@@ -126,7 +126,7 @@ impl Position {
         self.zoom.set_max_bp(max_bp);
     }
 
-    pub fn set_limit(&mut self, which: &Direction, val: f64) {
+    pub(super) fn set_limit(&mut self, which: &Direction, val: f64) {
         match *which {
             LEFT => self.min_x = val,
             RIGHT => self.max_x = val,
@@ -137,7 +137,7 @@ impl Position {
         self.check_own_limits();
     }
     
-    pub fn set_bumper(&mut self, which: &Direction, val: f64) {
+    pub(super) fn set_bumper(&mut self, which: &Direction, val: f64) {
         match *which {
             LEFT => self.min_x_bumper = val,
             RIGHT => self.max_x_bumper = val,

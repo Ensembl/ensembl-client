@@ -55,7 +55,7 @@ impl TrainManager {
     
     pub fn update_report(&self, report: &Report) {
         if let Some(ref stick) = self.stick {
-            report.set_status("stick",&stick.get_name());
+            report.set_status("a-stick",&stick.get_name());
         }
     }
     
