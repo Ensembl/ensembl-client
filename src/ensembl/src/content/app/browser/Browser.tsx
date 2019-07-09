@@ -123,7 +123,15 @@ export const Browser: FunctionComponent<BrowserProps> = (
   const [trackStatesFromStorage, setTrackStatesFromStorage] = useState<
     TrackStates
   >({});
+  const isFirstRenderRef = useRef(true);
   const lastGenomeIdRef = useRef(props.activeGenomeId);
+
+  const renderCount = useRef(1);
+
+  useEffect(() => {
+    console.log(`rendered ${renderCount.current} times`);
+    renderCount.current++;
+  });
 
   const setDataFromUrl = () => {
     const { genomeId = null } = props.match.params;
@@ -163,13 +171,13 @@ export const Browser: FunctionComponent<BrowserProps> = (
   };
 
   const dispatchBrowserLocation = (chrLocation: ChrLocation) => {
+    console.log('in dispatchBrowserLocation');
     if (browserRef.current) {
       props.changeBrowserLocation(chrLocation, browserRef.current);
     }
   };
 
   const changeSelectedSpecies = (genomeId: string) => {
-    props.fetchGenomeData(genomeId);
     const { allChrLocations, allActiveEnsObjectIds } = props;
     const chrLocation = allChrLocations[genomeId];
     const activeEnsObjectId = allActiveEnsObjectIds[genomeId];
@@ -213,6 +221,11 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, [props.match.params.genomeId, props.location.search]);
 
   useEffect(() => {
+    const { activeGenomeId, fetchGenomeData } = props;
+    activeGenomeId && fetchGenomeData(activeGenomeId);
+  }, [props.activeGenomeId]);
+
+  useEffect(() => {
     const { chrLocation } = props;
 
     if (props.browserActivated && chrLocation) {
@@ -230,6 +243,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
     const chrLocationFromUrl =
       (location && getChrLocationFromStr(location)) || null;
+
     if (chrLocation === chrLocationFromUrl) {
       return;
     }
@@ -243,8 +257,16 @@ export const Browser: FunctionComponent<BrowserProps> = (
   };
 
   useEffect(() => {
-    updateLocationInUrl();
+    // during first render, we rely on other mechanisms to update url
+    if (!isFirstRenderRef.current) {
+      updateLocationInUrl();
+    }
   }, [props.chrLocation]);
+
+  // helps distinguish first render from subsequent renders
+  useEffect(() => {
+    isFirstRenderRef.current = false;
+  }, []);
 
   const closeTrack = () => {
     if (props.drawerOpened === false) {
@@ -277,13 +299,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
   const getHeightClass = (launchbarExpanded: boolean): string => {
     return launchbarExpanded ? styles.shorter : styles.taller;
   };
-
-  console.log(
-    props.activeGenomeId,
-    props,
-    'props.browserQueryParams.focus',
-    props.browserQueryParams.focus
-  );
 
   return props.activeGenomeId ? (
     <>
