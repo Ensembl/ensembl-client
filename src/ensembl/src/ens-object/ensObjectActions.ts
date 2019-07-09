@@ -43,36 +43,6 @@ export const fetchEnsObject: ActionCreator<
   }
 };
 
-// export const fetchEnsObjectTracksAsyncActions = createAsyncAction(
-//   'ens-object/fetch_ens_object_tracks_request',
-//   'ens-object/fetch_ens_object_tracks_success',
-//   'ens-object/fetch_ens_object_tracks_failure'
-// )<FetchEnsObjectRequestType, EnsObjectTracksResponse, Error>();
-
-// export const fetchEnsObjectTracks = (
-//   ensObjectId: string,
-//   genomeId: string
-// ) => async (dispatch: Dispatch) => {
-//   try {
-//     // Do not send the request for regions
-//     if (isRegionObject(ensObjectId)) {
-//       return;
-//     }
-//     dispatch(fetchEnsObjectAsyncActions.request());
-
-//     const url = `/api/ensembl_object/track_list?object_id=${ensObjectId}`;
-//     const response = await apiService.fetch(url, { preserveEndpoint: true });
-
-//     dispatch(
-//       fetchEnsObjectTracksAsyncActions.success({
-//         object_tracks: response
-//       })
-//     );
-//   } catch (error) {
-//     dispatch(fetchEnsObjectTracksAsyncActions.failure(error));
-//   }
-// };
-
 export const fetchExampleEnsObjects: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (genomeId: string) => async (dispatch, getState: () => RootState) => {

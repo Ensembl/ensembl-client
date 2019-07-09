@@ -15,9 +15,10 @@ import styles from './BrowserGenomeSelector.scss';
 import { getChrLocationStr } from '../browserHelper';
 
 type BrowserGenomeSelectorProps = {
+  activeGenomeId: string | null;
   browserActivated: boolean;
   chrLocation: ChrLocation;
-  dispatchBrowserLocation: (chrLocation: ChrLocation) => void;
+  dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
   toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
@@ -26,7 +27,7 @@ type BrowserGenomeSelectorProps = {
 const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
   props: BrowserGenomeSelectorProps
 ) => {
-  const { chrLocation } = props;
+  const { activeGenomeId, chrLocation } = props;
   const chrLocationStr = getChrLocationStr(chrLocation);
 
   const [chrLocationPlaceholder, setChrLocationPlaceholder] = useState('');
@@ -68,6 +69,9 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!activeGenomeId) {
+      return;
+    }
 
     if (
       chrLocationInput &&
@@ -76,7 +80,7 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
     ) {
       closeForm();
 
-      props.dispatchBrowserLocation([chrLocationInput, 0, 0]);
+      props.dispatchBrowserLocation(activeGenomeId, [chrLocationInput, 0, 0]);
     } else {
       const [chrCodeInput, chrRegionInput] = chrLocationInput.split(':');
       const [chrStartInput, chrEndInput] = chrRegionInput.split('-');
@@ -90,9 +94,7 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
 
         closeForm();
 
-        props.dispatchBrowserLocation(currChrLocation);
-      } else {
-        return;
+        props.dispatchBrowserLocation(activeGenomeId, currChrLocation);
       }
     }
   };

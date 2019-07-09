@@ -10,19 +10,25 @@ import styles from './BrowserReset.scss';
 import { getChrLocationStr } from '../browserHelper';
 
 type BrowserResetProps = {
+  activeGenomeId: string | null;
   chrLocation: ChrLocation | null;
   defaultChrLocation: ChrLocation | null;
-  dispatchBrowserLocation: (chrLocation: ChrLocation) => void;
+  dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
   drawerOpened: boolean;
 };
 
 export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   props: BrowserResetProps
 ) => {
-  const { chrLocation, defaultChrLocation, drawerOpened } = props;
+  const {
+    activeGenomeId,
+    chrLocation,
+    defaultChrLocation,
+    drawerOpened
+  } = props;
 
   const getResetIconStatus = (): ImageButtonStatus => {
-    if (!(chrLocation && defaultChrLocation)) {
+    if (!(activeGenomeId && chrLocation && defaultChrLocation)) {
       return ImageButtonStatus.DISABLED;
     }
 
@@ -41,7 +47,11 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
       return;
     }
 
-    defaultChrLocation && props.dispatchBrowserLocation(defaultChrLocation);
+    defaultChrLocation &&
+      props.dispatchBrowserLocation(
+        activeGenomeId as string,
+        defaultChrLocation
+      );
   };
 
   return (
