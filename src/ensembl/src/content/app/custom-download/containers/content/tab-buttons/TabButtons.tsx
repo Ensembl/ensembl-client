@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import RoundButton, {
   RoundButtonStatus
@@ -7,48 +7,68 @@ import BadgedButton from 'src/shared/badged-button/BadgedButton';
 
 import { getSelectedTab } from '../../../state/customDownloadSelectors';
 
-import { getAttributes } from '../attributes-accordion/state/attributesAccordionSelector';
-import { getFilters } from '../filter-accordion/state/filterAccordionSelector';
+import { getSelectedAttributes } from '../attributes-accordion/state/attributesAccordionSelector';
+import { getSelectedFilters } from '../filter-accordion/state/filterAccordionSelector';
 
 import { toggleTab } from '../../../state/customDownloadActions';
 import { RootState } from 'src/store';
 
-import { CustomDownloadAttributes } from 'src/content/app/custom-download/types/Attributes';
-
 import styles from './TabButtons.scss';
 
 type Props = StateProps & DispatchProps;
+type Attribute = {
+  [key: string]: boolean;
+};
+type SelectedAttributes = {
+  [key: string]: boolean | Attribute;
+};
 
-const getTotalSelectedAttributes = (attributes: CustomDownloadAttributes) => {
-  let totalSelectedAttributes = 0;
-  Object.keys(attributes).forEach((section) => {
-    Object.keys(attributes[section]).forEach((subSection) => {
-      Object.keys(attributes[section][subSection]).forEach((attributeId) => {
-        if (attributes[section][subSection][attributeId].isChecked === true) {
-          totalSelectedAttributes++;
-        }
-      });
-    });
+type Filter = {
+  [key: string]: boolean;
+};
+type SelectedFilters = {
+  [key: string]: boolean | string | string[] | Filter;
+};
+
+const getTotalSelectedAttributes = (
+  attributes: SelectedAttributes,
+  totalSelectedAttributes: number = 0
+) => {
+  Object.keys(attributes).forEach((key) => {
+    if (typeof attributes[key] === 'boolean' && attributes[key] === true) {
+      totalSelectedAttributes++;
+    } else if (typeof attributes[key] === 'object') {
+      totalSelectedAttributes = getTotalSelectedAttributes(
+        attributes[key] as SelectedAttributes,
+        totalSelectedAttributes
+      );
+    }
   });
 
   return totalSelectedAttributes;
 };
 
-const getTotalSelectedFilters = (filters: any) => {
-  let totalSelectedFilters = 0;
-  Object.values(filters).forEach((filter: any) => {
-    if (typeof filter === 'string') {
-      if (filter !== '') totalSelectedFilters++;
-    } else if (Array.isArray(filter)) {
-      if (filter.length > 0) totalSelectedFilters += filter.length;
-    } else if (typeof filter === 'object') {
-      Object.keys(filter).forEach((subSection) => {
-        Object.keys(filter[subSection]).forEach((attributeId) => {
-          if (filter[subSection][attributeId].isChecked === true) {
-            totalSelectedFilters++;
-          }
-        });
-      });
+const getTotalSelectedFilters = (
+  filters: SelectedFilters,
+  totalSelectedFilters: number = 0
+) => {
+  Object.keys(filters).forEach((key: string) => {
+    if (key === 'preExpanded') {
+      // Skip preExpanded keys
+    } else if (typeof filters[key] === 'boolean' && filters[key] === true) {
+      totalSelectedFilters++;
+    } else if (typeof filters[key] === 'string' && filters[key] !== '') {
+      totalSelectedFilters++;
+    } else if (
+      Array.isArray(filters[key]) &&
+      (filters[key] as string[]).length > 0
+    ) {
+      totalSelectedFilters++;
+    } else if (typeof filters[key] === 'object') {
+      totalSelectedFilters = getTotalSelectedFilters(
+        filters[key] as SelectedFilters,
+        totalSelectedFilters
+      );
     }
   });
 
@@ -56,6 +76,8 @@ const getTotalSelectedFilters = (filters: any) => {
 };
 
 const TabButtons = (props: Props) => {
+  useEffect(() => {}, [props.selectedAttributes]);
+
   const dataButtonStatus =
     props.selectedTab === 'attributes'
       ? RoundButtonStatus.ACTIVE
@@ -68,7 +90,7 @@ const TabButtons = (props: Props) => {
     <div className={`${styles.wrapper}`}>
       <div>
         <BadgedButton
-          badgeContent={getTotalSelectedAttributes(props.attributes)}
+          badgeContent={getTotalSelectedAttributes(props.selectedAttributes)}
         >
           <RoundButton
             onClick={() => {
@@ -82,7 +104,9 @@ const TabButtons = (props: Props) => {
       </div>
 
       <div className={`${styles.buttonPadding}`}>
-        <BadgedButton badgeContent={getTotalSelectedFilters(props.filters)}>
+        <BadgedButton
+          badgeContent={getTotalSelectedFilters(props.selectedFilters)}
+        >
           <RoundButton
             onClick={() => {
               props.toggleTab('filter');
@@ -107,14 +131,14 @@ const mapDispatchToProps: DispatchProps = {
 
 type StateProps = {
   selectedTab: string;
-  attributes: {};
-  filters: {};
+  selectedAttributes: {};
+  selectedFilters: {};
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
   selectedTab: getSelectedTab(state),
-  attributes: getAttributes(state),
-  filters: getFilters(state)
+  selectedAttributes: getSelectedAttributes(state),
+  selectedFilters: getSelectedFilters(state)
 });
 
 export default connect(

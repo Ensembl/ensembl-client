@@ -17,6 +17,7 @@ const attributes = {
       {
         type: 'checkbox_grid',
         label: '',
+        id: 'default',
         options: [
           {
             id: 'name',
@@ -78,6 +79,7 @@ const attributes = {
       {
         type: 'checkbox_grid',
         label: 'External',
+        id: 'external',
         options: [
           {
             id: 'gencode_basic_annotation',

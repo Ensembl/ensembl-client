@@ -10,6 +10,7 @@ import { updateSelectedAttributes } from '../../state/attributesAccordionActions
 import ContentBuilder from 'src/content/app/custom-download/components/content-builder/ContentBuilder';
 
 import set from 'lodash/set';
+import unset from 'lodash/unset';
 
 import allAttributes from 'src/content/app/custom-download/sample-data/attributes';
 
@@ -27,7 +28,10 @@ const Genes = (props: Props) => {
     payload: any
   ) => {
     const updatedAttributes = { ...props.selectedAttributes };
-    set(updatedAttributes, path, payload);
+    payload
+      ? set(updatedAttributes, path, payload)
+      : unset(updatedAttributes, path);
+
     props.updateSelectedAttributes(updatedAttributes);
   };
 

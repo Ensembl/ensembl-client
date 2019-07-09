@@ -34,6 +34,7 @@ type ContentBuilderProps = {
 
 const ContentBuilder = (props: ContentBuilderProps) => {
   const onChangeHandler = (type: string, path: Path, payload: any) => {
+    // TODO: Store accodrion expanded states separately from the filters to get the proper selected filters count.
     props.onChange(type, path, payload);
   };
 
@@ -137,8 +138,10 @@ const ContentBuilder = (props: ContentBuilderProps) => {
         className={styles.accordion}
         preExpanded={preExpandedPanels}
       >
-        {entry.content.map((accordionSection: any) => {
-          return buildAccordionItem(accordionSection, path);
+        {entry.content.map((accordionSection: any, key: number) => {
+          return (
+            <div key={key}>{buildAccordionItem(accordionSection, path)}</div>
+          );
         })}
       </Accordion>
     );
@@ -146,18 +149,18 @@ const ContentBuilder = (props: ContentBuilderProps) => {
 
   path = props.path ? [...props.path, props.data.id] : [props.data.id];
 
-  return props.data.content.map((entry: Filter) => {
+  return props.data.content.map((entry: Filter, key: number) => {
     switch (entry.type) {
       case 'section_group':
-        return buildAccordion(entry, path);
+        return <div key={key}>{buildAccordion(entry, path)}</div>;
       case 'section':
-        return buildAccordionItem(entry, path);
+        return <div key={key}>{buildAccordionItem(entry, path)}</div>;
       case 'checkbox_grid':
-        return buildCheckboxGrid(entry, path);
+        return <div key={key}>{buildCheckboxGrid(entry, path)}</div>;
       case 'select_multiple':
-        return buildCheckboxWithSelect(entry, path);
+        return <div key={key}>{buildCheckboxWithSelect(entry, path)}</div>;
       case 'select_one':
-        return buildCheckboxWithRadios(entry, path);
+        return <div key={key}>{buildCheckboxWithRadios(entry, path)}</div>;
     }
   });
 };
