@@ -4,13 +4,14 @@ import { RootState } from 'src/store';
 
 import AttributesSection from 'src/content/app/custom-download/types/Attributes';
 
-import { getGeneAttributes } from '../../state/attributesAccordionSelector';
-import { setGeneAttributes } from '../../state/attributesAccordionActions';
-import CheckboxGrid, {
-  filterCheckedAttributes
-} from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
+import { getSelectedAttributes } from '../../state/attributesAccordionSelector';
+import { updateSelectedAttributes } from '../../state/attributesAccordionActions';
 
-import styles from './Genes.scss';
+import ContentBuilder from 'src/content/app/custom-download/components/content-builder/ContentBuilder';
+
+import set from 'lodash/set';
+
+import allAttributes from 'src/content/app/custom-download/sample-data/attributes';
 
 type ownProps = {
   hideUnchecked?: boolean;
@@ -21,68 +22,53 @@ type Props = ownProps & StateProps & DispatchProps;
 
 const Genes = (props: Props) => {
   const onChangeHandler = (
-    status: boolean,
-    subSection: string,
-    attributeId: string
+    type: string,
+    path: (string | number)[],
+    payload: any
   ) => {
-    if (!props.geneAttributes) {
-      return;
-    }
-    const newGeneAttributes = { ...props.geneAttributes };
-
-    newGeneAttributes[subSection][attributeId].isChecked = status;
-
-    props.setGeneAttributes(newGeneAttributes);
+    const updatedAttributes = { ...props.selectedAttributes };
+    set(updatedAttributes, path, payload);
+    props.updateSelectedAttributes(updatedAttributes);
   };
 
   if (props.hideUnchecked) {
-    if (!props.geneAttributes) {
-      return null;
-    }
-    const checkedAttributes = filterCheckedAttributes(props.geneAttributes);
-
-    if (Object.keys(checkedAttributes).length === 0) {
+    if (!allAttributes['genes']) {
       return null;
     }
 
     return (
-      <div className={styles.checkboxGridWrapper}>
-        <CheckboxGrid
-          checkboxOnChange={onChangeHandler}
-          gridData={checkedAttributes}
-          hideTitles={false}
-          columns={3}
-        />
-      </div>
+      <ContentBuilder
+        data={allAttributes['genes']}
+        onChange={onChangeHandler}
+        selectedData={props.selectedAttributes}
+        contentProps={{ checkbox_grid: { hideUnchecked: true } }}
+      />
     );
   }
 
   return (
-    <div className={styles.checkboxGridWrapper}>
-      <CheckboxGrid
-        checkboxOnChange={onChangeHandler}
-        gridData={props.geneAttributes}
-        hideTitles={props.hideTitles}
-        columns={3}
-      />
-    </div>
+    <ContentBuilder
+      data={allAttributes['genes']}
+      onChange={onChangeHandler}
+      selectedData={props.selectedAttributes}
+    />
   );
 };
 
 type DispatchProps = {
-  setGeneAttributes: (setGeneAttributes: {}) => void;
+  updateSelectedAttributes: (updateSelectedAttributes: {}) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
-  setGeneAttributes
+  updateSelectedAttributes
 };
 
 type StateProps = {
-  geneAttributes: AttributesSection;
+  selectedAttributes: AttributesSection;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  geneAttributes: getGeneAttributes(state)
+  selectedAttributes: getSelectedAttributes(state)
 });
 
 export default connect(

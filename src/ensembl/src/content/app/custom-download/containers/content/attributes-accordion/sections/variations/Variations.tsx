@@ -2,137 +2,76 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
-import {
-  Accordion,
-  AccordionItem,
-  AccordionItemHeading,
-  AccordionItemPanel,
-  AccordionItemButton
-} from 'src/shared/accordion';
-
-import {
-  getGermlineVariationAttributes,
-  getSomaticVariationAttributes,
-  getVariationAccordionExpandedPanels
-} from '../../state/attributesAccordionSelector';
-import {
-  setSomaticVariationAttributes,
-  setGermlineVariationAttributes,
-  setVariationAccordionExpandedPanels
-} from '../../state/attributesAccordionActions';
-import CheckboxGrid from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
-
 import AttributesSection from 'src/content/app/custom-download/types/Attributes';
 
-import styles from './Variations.scss';
+import { getSelectedAttributes } from '../../state/attributesAccordionSelector';
+import { updateSelectedAttributes } from '../../state/attributesAccordionActions';
 
-type Props = StateProps & DispatchProps;
+import ContentBuilder from 'src/content/app/custom-download/components/content-builder/ContentBuilder';
 
-const Variations = (props: Props) => {
-  const germlineOnChangeHandler = (
-    status: boolean,
-    subSection: string,
-    attributeId: string
+import set from 'lodash/set';
+
+import allAttributes from 'src/content/app/custom-download/sample-data/attributes';
+
+type ownProps = {
+  hideUnchecked?: boolean;
+  hideTitles?: boolean;
+};
+
+type Props = ownProps & StateProps & DispatchProps;
+
+const Variation = (props: Props) => {
+  const onChangeHandler = (
+    type: string,
+    path: (string | number)[],
+    payload: any
   ) => {
-    if (!props.germlineVariationAttributes) {
-      return;
-    }
-    const newGermlineAttributes = { ...props.germlineVariationAttributes };
-
-    newGermlineAttributes[subSection][attributeId].isChecked = status;
-    props.setGermlineVariationAttributes(newGermlineAttributes);
+    const updatedAttributes = { ...props.selectedAttributes };
+    set(updatedAttributes, path, payload);
+    props.updateSelectedAttributes(updatedAttributes);
   };
 
-  const somaticOnChangeHandler = (
-    status: boolean,
-    subSection: string,
-    attributeId: string
-  ) => {
-    if (!props.somaticVariationAttributes) {
-      return;
+  if (props.hideUnchecked) {
+    if (!allAttributes['variation']) {
+      return null;
     }
 
-    const newSomaticAttributes = { ...props.somaticVariationAttributes };
-
-    newSomaticAttributes[subSection][attributeId].isChecked = status;
-    props.setSomaticVariationAttributes(newSomaticAttributes);
-  };
-
-  const accordionOnChange = (newExpandedPanels: []) => {
-    props.setVariationAccordionExpandedPanels(newExpandedPanels);
-  };
+    return (
+      <ContentBuilder
+        data={allAttributes['variation']}
+        onChange={onChangeHandler}
+        selectedData={props.selectedAttributes}
+        contentProps={{ checkbox_grid: { hideUnchecked: true } }}
+      />
+    );
+  }
 
   return (
-    <Accordion
-      allowMultipleExpanded={true}
-      className={styles.variationAccordion}
-      onChange={accordionOnChange}
-      preExpanded={props.expandedPanels}
-    >
-      <AccordionItem uuid={'germline_variation'}>
-        <AccordionItemHeading>
-          <AccordionItemButton className={styles.variationAccordionButton}>
-            Germline variation
-          </AccordionItemButton>
-        </AccordionItemHeading>
-        <AccordionItemPanel>
-          <CheckboxGrid
-            checkboxOnChange={germlineOnChangeHandler}
-            gridData={props.germlineVariationAttributes}
-            columns={3}
-          />
-        </AccordionItemPanel>
-      </AccordionItem>
-
-      <AccordionItem uuid={'somatic_variation'}>
-        <AccordionItemHeading>
-          <AccordionItemButton className={styles.variationAccordionButton}>
-            Somatic variation
-          </AccordionItemButton>
-        </AccordionItemHeading>
-        <AccordionItemPanel>
-          <CheckboxGrid
-            checkboxOnChange={somaticOnChangeHandler}
-            gridData={props.somaticVariationAttributes}
-            columns={3}
-          />
-        </AccordionItemPanel>
-      </AccordionItem>
-    </Accordion>
+    <ContentBuilder
+      data={allAttributes['variation']}
+      onChange={onChangeHandler}
+      selectedData={props.selectedAttributes}
+    />
   );
 };
 
 type DispatchProps = {
-  setGermlineVariationAttributes: (
-    setGermlineVariationAttributes: AttributesSection
-  ) => void;
-  setSomaticVariationAttributes: (
-    setSomaticVariationAttributes: AttributesSection
-  ) => void;
-  setVariationAccordionExpandedPanels: (
-    setVariationAccordionExpandedPanels: string[]
-  ) => void;
+  updateSelectedAttributes: (updateSelectedAttributes: {}) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
-  setGermlineVariationAttributes,
-  setSomaticVariationAttributes,
-  setVariationAccordionExpandedPanels
+  updateSelectedAttributes
 };
 
 type StateProps = {
-  germlineVariationAttributes: AttributesSection;
-  somaticVariationAttributes: AttributesSection;
-  expandedPanels: string[];
+  selectedAttributes: AttributesSection;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  germlineVariationAttributes: getGermlineVariationAttributes(state),
-  somaticVariationAttributes: getSomaticVariationAttributes(state),
-  expandedPanels: getVariationAccordionExpandedPanels(state)
+  selectedAttributes: getSelectedAttributes(state)
 });
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Variations);
+)(Variation);

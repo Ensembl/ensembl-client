@@ -26,12 +26,12 @@ export const fetchAttributes: ActionCreator<
   }
 };
 
-export const setGeneAttributes = createAction(
-  'custom-download/set-gene-attributes',
+export const updateSelectedAttributes = createAction(
+  'custom-download/update-selected-attributes',
   (resolve) => {
-    return (geneAttributes: AttributesSection) =>
+    return (attributes: AttributesSection) =>
       resolve(
-        geneAttributes,
+        attributes,
         getCustomDownloadAnalyticsObject('Gene attributes updated')
       );
   }

@@ -10,8 +10,9 @@ export type Attributes = {
 
 const attributes = {
   genes: {
-    type: 'accordion_section',
+    type: 'section',
     label: 'Genes',
+    id: 'genes',
     content: [
       {
         type: 'checkbox_grid',
@@ -104,12 +105,14 @@ const attributes = {
     ]
   },
   transcripts: {
-    type: 'accordion_section',
+    type: 'section',
     label: 'Transcripts',
+    id: 'transcripts',
     content: [
       {
         type: 'checkbox_grid',
         label: '',
+        id: 'default',
         options: [
           {
             id: 'transcripts.biotype',
@@ -181,6 +184,7 @@ const attributes = {
       {
         type: 'checkbox_grid',
         label: 'Microarray probes/probesets',
+        id: 'Microarray probes/probesets',
         options: [
           {
             id: 'transcripts.affy_hc_g110_probe',
@@ -217,22 +221,24 @@ const attributes = {
     ]
   },
   exons: {
-    type: 'accordion_section',
+    type: 'section',
     label: 'Transcripts',
     content: []
   },
   sequence: {
-    type: 'accordion_section',
+    type: 'section',
     label: 'Sequence',
     content: []
   },
   location: {
-    type: 'accordion_section',
+    type: 'section',
     label: 'Transcripts',
+    id: 'location',
     content: [
       {
         type: 'checkbox_grid',
         label: '',
+        id: 'default',
         options: [
           {
             id: 'location.genomic_coordinates',
@@ -259,19 +265,23 @@ const attributes = {
     ]
   },
   variation: {
-    type: 'accordion_section',
+    type: 'section',
     label: 'Variation',
+    id: 'variation',
     content: [
       {
-        type: 'accordion',
+        type: 'section_group',
+        id: 'default',
         content: [
           {
-            type: 'accordion_section',
+            type: 'section',
             label: 'Germline variation',
+            id: 'germline',
             content: [
               {
                 type: 'checkbox_grid',
                 label: '',
+                id: 'default',
                 options: [
                   {
                     id: 'germline_variation.variant_name',
@@ -303,6 +313,7 @@ const attributes = {
               {
                 type: 'checkbox_grid',
                 label: 'Location',
+                id: 'location',
                 options: [
                   {
                     id: 'germline_variation.distance_to_transcript',
@@ -335,12 +346,14 @@ const attributes = {
             ]
           },
           {
-            type: 'accordion_section',
+            type: 'section',
             label: 'Somatic variation',
+            id: 'somatic',
             content: [
               {
                 type: 'checkbox_grid',
                 label: '',
+                id: 'default',
                 options: [
                   {
                     id: 'somatic_variation.variant_name',
@@ -372,6 +385,7 @@ const attributes = {
               {
                 type: 'checkbox_grid',
                 label: 'Location',
+                id: 'location',
                 options: [
                   {
                     id: 'somatic_variation.distance_to_transcript',
@@ -408,23 +422,25 @@ const attributes = {
     ]
   },
   phenotypes: {
-    type: 'accordion_section',
+    type: 'section',
     label: 'Phenotypes',
     content: []
   },
   protein: {
-    type: 'accordion_section',
+    type: 'section',
     label: 'Protein',
     content: []
   },
   orthologues: {
-    type: 'accordion_section',
+    type: 'section',
     label: 'Orthologues',
     content: []
   },
   paralogues: {
-    type: 'accordion_section',
+    type: 'section',
     label: 'Paralogues',
     content: []
   }
 };
+
+export default attributes;

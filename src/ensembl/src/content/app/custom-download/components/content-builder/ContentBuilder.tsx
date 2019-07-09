@@ -27,6 +27,9 @@ type ContentBuilderProps = {
   selectedData: any;
   onChange: (type: string, path: Path, payload: any) => void;
   path?: Path;
+  contentProps?: {
+    [key: string]: any;
+  };
 };
 
 const ContentBuilder = (props: ContentBuilderProps) => {
@@ -85,16 +88,19 @@ const ContentBuilder = (props: ContentBuilderProps) => {
       option.isChecked = selectedOptions[option.id] ? true : false;
     });
 
+    const additionalProps = props.contentProps
+      ? props.contentProps['checkbox_grid']
+      : {};
+
     return (
-      <div className={styles.contentWrapper}>
-        <CheckboxGrid
-          onChange={(status: boolean, id: string) =>
-            onChangeHandler(entry.type, [...currentPath, id], status)
-          }
-          options={gridOptions}
-          label={entry.label}
-        />
-      </div>
+      <CheckboxGrid
+        onChange={(status: boolean, id: string) =>
+          onChangeHandler(entry.type, [...currentPath, id], status)
+        }
+        options={gridOptions}
+        label={entry.label}
+        {...additionalProps}
+      />
     );
   };
 

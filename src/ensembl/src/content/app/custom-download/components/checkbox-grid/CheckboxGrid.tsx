@@ -16,32 +16,17 @@ export type CheckboxGridProps = {
   columns: number;
   hideUnchecked?: boolean;
   // TODO: Change to Label
-  hideTitles?: boolean;
+  hideLabel?: boolean;
   label: string;
   onChange: (status: boolean, id: string) => void;
 };
 
-export const filterCheckedAttributes = (attributes: AttributesSection) => {
-  const filteredAttributes: AttributesSection = {};
-
-  Object.keys(attributes).forEach((section: string) => {
-    Object.keys(attributes[section]).forEach((attributeId: string) => {
-      if (attributes[section][attributeId].isChecked === true) {
-        if (!filteredAttributes[section]) {
-          filteredAttributes[section] = {};
-        }
-        filteredAttributes[section][attributeId] =
-          attributes[section][attributeId];
-      }
-    });
-  });
-
-  return filteredAttributes;
+export const filterCheckedAttributes = (attributes: CheckboxGridOption[]) => {
+  return attributes;
 };
 
 export const getAttributesCount = (attributes: AttributesSection) => {
   let totalAttributes = 0;
-
   const attributeKeys = Object.keys(attributes);
 
   if (!attributes || attributeKeys.length === 0) {
@@ -55,10 +40,15 @@ export const getAttributesCount = (attributes: AttributesSection) => {
 };
 
 const CheckboxGrid = (props: CheckboxGridProps) => {
-  const orderedCheckboxList: CheckboxGridOption[] = orderBy(props.options, [
+  let orderedCheckboxList: CheckboxGridOption[] = orderBy(props.options, [
     'label'
   ]);
 
+  if (props.hideUnchecked) {
+    orderedCheckboxList = orderedCheckboxList.filter((attribute) => {
+      return attribute.isChecked;
+    });
+  }
   if (!orderedCheckboxList.length) {
     return null;
   }
@@ -87,7 +77,7 @@ const CheckboxGrid = (props: CheckboxGridProps) => {
   };
   return (
     <>
-      {!props.hideTitles && (
+      {!props.hideLabel && (
         <div className={styles.checkboxGridTitle}>{props.label}</div>
       )}
       <div className={styles.checkboxGridContainer}>
@@ -97,10 +87,6 @@ const CheckboxGrid = (props: CheckboxGridProps) => {
               {orderedCheckboxList
                 .splice(0, columnLength)
                 .map((attribute: CheckboxGridOption, itemKey: number) => {
-                  if (props.hideUnchecked && !attribute.isChecked) {
-                    return null;
-                  }
-
                   return (
                     <div key={itemKey} className={styles.checkboxContainer}>
                       <Checkbox

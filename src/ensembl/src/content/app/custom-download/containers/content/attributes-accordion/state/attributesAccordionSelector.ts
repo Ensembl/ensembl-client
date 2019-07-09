@@ -3,8 +3,8 @@ import { RootState } from 'src/store';
 export const getAttributes = (state: RootState): {} =>
   state.customDownload.attributesAccordion.attributes;
 
-export const getGeneAttributes = (state: RootState): {} =>
-  state.customDownload.attributesAccordion.attributes.gene;
+export const getSelectedAttributes = (state: RootState): {} =>
+  state.customDownload.attributesAccordion.selectedAttributes;
 
 export const getTranscriptAttributes = (state: RootState): {} =>
   state.customDownload.attributesAccordion.attributes.transcripts;

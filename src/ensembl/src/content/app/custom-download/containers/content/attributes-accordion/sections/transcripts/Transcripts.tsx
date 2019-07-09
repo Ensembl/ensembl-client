@@ -2,89 +2,73 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
-import { getTranscriptAttributes } from '../../state/attributesAccordionSelector';
-import { setTranscriptAttributes } from '../../state/attributesAccordionActions';
-import CheckboxGrid, {
-  filterCheckedAttributes
-} from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
-
 import AttributesSection from 'src/content/app/custom-download/types/Attributes';
 
-import styles from './Transcripts.scss';
+import { getSelectedAttributes } from '../../state/attributesAccordionSelector';
+import { updateSelectedAttributes } from '../../state/attributesAccordionActions';
 
-type OwnProps = {
+import ContentBuilder from 'src/content/app/custom-download/components/content-builder/ContentBuilder';
+
+import set from 'lodash/set';
+
+import allAttributes from 'src/content/app/custom-download/sample-data/attributes';
+
+type ownProps = {
   hideUnchecked?: boolean;
   hideTitles?: boolean;
 };
 
-type Props = OwnProps & StateProps & DispatchProps;
+type Props = ownProps & StateProps & DispatchProps;
 
 const Transcripts = (props: Props) => {
   const onChangeHandler = (
-    status: boolean,
-    subSection: string,
-    attributeId: string
+    type: string,
+    path: (string | number)[],
+    payload: any
   ) => {
-    if (!props.transcriptAttributes) {
-      return;
-    }
-
-    const newTranscriptAttributes = { ...props.transcriptAttributes };
-
-    newTranscriptAttributes[subSection][attributeId].isChecked = status;
-
-    props.setTranscriptAttributes(newTranscriptAttributes);
+    const updatedAttributes = { ...props.selectedAttributes };
+    set(updatedAttributes, path, payload);
+    props.updateSelectedAttributes(updatedAttributes);
   };
 
   if (props.hideUnchecked) {
-    if (!props.transcriptAttributes) {
-      return null;
-    }
-    const checkedAttributes = filterCheckedAttributes(
-      props.transcriptAttributes
-    );
-
-    if (Object.keys(checkedAttributes).length === 0) {
+    if (!allAttributes['transcripts']) {
       return null;
     }
 
     return (
-      <div className={styles.checkboxGridWrapper}>
-        <CheckboxGrid
-          checkboxOnChange={onChangeHandler}
-          gridData={checkedAttributes}
-          columns={3}
-        />
-      </div>
+      <ContentBuilder
+        data={allAttributes['transcripts']}
+        onChange={onChangeHandler}
+        selectedData={props.selectedAttributes}
+        contentProps={{ checkbox_grid: { hideUnchecked: true } }}
+      />
     );
   }
 
   return (
-    <div className={styles.checkboxGridWrapper}>
-      <CheckboxGrid
-        checkboxOnChange={onChangeHandler}
-        gridData={props.transcriptAttributes}
-        hideTitles={props.hideTitles}
-        columns={3}
-      />
-    </div>
+    <ContentBuilder
+      data={allAttributes['transcripts']}
+      onChange={onChangeHandler}
+      selectedData={props.selectedAttributes}
+    />
   );
 };
 
 type DispatchProps = {
-  setTranscriptAttributes: (setTranscriptAttributes: AttributesSection) => void;
+  updateSelectedAttributes: (updateSelectedAttributes: {}) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
-  setTranscriptAttributes
+  updateSelectedAttributes
 };
 
 type StateProps = {
-  transcriptAttributes: AttributesSection;
+  selectedAttributes: AttributesSection;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  transcriptAttributes: getTranscriptAttributes(state)
+  selectedAttributes: getSelectedAttributes(state)
 });
 
 export default connect(

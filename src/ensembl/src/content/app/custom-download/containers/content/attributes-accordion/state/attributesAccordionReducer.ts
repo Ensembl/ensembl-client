@@ -25,10 +25,10 @@ function attributesAccordion(
       return { ...state, expandedVariationPanels: action.payload };
     case getType(attributesAccordionActions.setAttributes.success):
       return { ...state, attributes: action.payload };
-    case getType(attributesAccordionActions.setGeneAttributes):
+    case getType(attributesAccordionActions.updateSelectedAttributes):
       return {
         ...state,
-        attributes: GeneAttributes(state.attributes, action)
+        selectedAttributes: action.payload
       };
     case getType(attributesAccordionActions.setOrthologueAttributes):
       return {
@@ -85,18 +85,6 @@ function attributesAccordion(
         ...state,
         orthologue: Orthologue(state.orthologue, action)
       };
-    default:
-      return state;
-  }
-}
-
-function GeneAttributes(
-  state: any = defaultAttributesAccordionState.attributes,
-  action: ActionType<RootAction>
-): CustomDownloadAttributes {
-  switch (action.type) {
-    case getType(attributesAccordionActions.setGeneAttributes):
-      return { ...state, gene: action.payload };
     default:
       return state;
   }
