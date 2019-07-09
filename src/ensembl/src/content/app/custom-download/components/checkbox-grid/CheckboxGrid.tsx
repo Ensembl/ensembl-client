@@ -15,7 +15,6 @@ export type CheckboxGridProps = {
   options: CheckboxGridOption[];
   columns: number;
   hideUnchecked?: boolean;
-  // TODO: Change to Label
   hideLabel?: boolean;
   label: string;
   onChange: (status: boolean, id: string) => void;

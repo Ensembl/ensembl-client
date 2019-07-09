@@ -1,40 +1,32 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import CheckboxGrid from './CheckboxGrid';
+import CheckboxGrid, { CheckboxGridOption } from './CheckboxGrid';
 import Checkbox from 'src/shared/checkbox/Checkbox';
 import faker from 'faker';
 import times from 'lodash/times';
 import orderBy from 'lodash/orderBy';
 
-import AttributesSection from 'src/content/app/custom-download/types/Attributes';
-
-const createCheckboxData = (gridSection: any) => {
+const createCheckboxData = (options: any) => {
   const id = faker.lorem.word();
   const label = faker.lorem.word();
   const isChecked = faker.random.boolean();
 
-  gridSection[id] = {
+  options.push({
     id,
     label,
     isChecked
-  };
+  });
 };
 
-const createGridData = (): AttributesSection => {
-  const gridData: any = {
-    default: {},
-    External: {}
-  };
-  times(10, () => createCheckboxData(gridData['default']));
-
-  times(10, () => createCheckboxData(gridData['External']));
-
-  return gridData;
+const createOptions = (): CheckboxGridOption[] => {
+  const options: CheckboxGridOption[] = [];
+  times(10, () => createCheckboxData(options));
+  return options;
 };
 
-const gridData: AttributesSection = createGridData();
+const defaultOptions: CheckboxGridOption[] = createOptions();
 
-const checkboxOnChange = jest.fn();
+const onChange = jest.fn();
 
 describe('<CheckboxGrid />', () => {
   afterEach(() => {
@@ -43,8 +35,9 @@ describe('<CheckboxGrid />', () => {
 
   let wrapper: any;
   const defaultProps = {
-    gridData,
-    checkboxOnChange
+    options: defaultOptions,
+    onChange,
+    label: faker.lorem.word()
   };
 
   it('renders without error', () => {
@@ -52,16 +45,10 @@ describe('<CheckboxGrid />', () => {
     expect(wrapper.find(CheckboxGrid).length).toEqual(1);
   });
 
-  it('renders N number of checkboxes based on the gridData', () => {
+  it('renders N number of checkboxes based on the options', () => {
     wrapper = mount(<CheckboxGrid {...defaultProps} />);
 
-    let totalCheckboxes = 0;
-
-    Object.values(gridData).forEach((section) => {
-      totalCheckboxes += Object.keys(section).length;
-    });
-
-    expect(wrapper.find(Checkbox).length).toEqual(totalCheckboxes);
+    expect(wrapper.find(Checkbox).length).toEqual(defaultOptions.length);
   });
 
   it('sorts the checkboxes alphebatically based on the label', () => {
@@ -70,7 +57,7 @@ describe('<CheckboxGrid />', () => {
     const firstGridContainer = wrapper.find('.checkboxGridContainer').first();
 
     const labels: string[] = [];
-    Object.values(gridData.default).forEach((element) => {
+    defaultOptions.forEach((element) => {
       labels.push(element.label);
     });
     labels.sort();
@@ -92,20 +79,10 @@ describe('<CheckboxGrid />', () => {
 
     const checkedStatus = firstCheckbox.prop('checked');
 
-    const orderedDefaultAttributes = orderBy(gridData.default, ['label']);
+    const orderedDefaultAttributes = orderBy(defaultOptions, ['label']);
 
     const firstCheckboxID = orderedDefaultAttributes[0].id;
-    expect(checkboxOnChange).toBeCalledWith(
-      !checkedStatus,
-      'default',
-      firstCheckboxID
-    );
-  });
-
-  it('does not display the `Default` title if the sub-section is `default`', () => {
-    wrapper = mount(<CheckboxGrid {...defaultProps} />);
-    const firstGridTitle = wrapper.find('.checkboxGridTitle').first();
-    expect(firstGridTitle.text()).not.toBe('Default');
+    expect(onChange).toBeCalledWith(!checkedStatus, firstCheckboxID);
   });
 
   it('hides the unchecked checkboxes when hideUnchecked is true', () => {
@@ -113,19 +90,17 @@ describe('<CheckboxGrid />', () => {
 
     let totalCheckedCheckboxes = 0;
 
-    Object.values(gridData).forEach((section) => {
-      Object.values(section).forEach((subSection) => {
-        if (subSection.isChecked) {
-          totalCheckedCheckboxes++;
-        }
-      });
+    defaultOptions.forEach((section) => {
+      if (section.isChecked) {
+        totalCheckedCheckboxes++;
+      }
     });
 
     expect(wrapper.find(Checkbox).length).toBe(totalCheckedCheckboxes);
   });
 
   it('hides the title when hideTitles is true', () => {
-    wrapper = mount(<CheckboxGrid {...defaultProps} hideTitles={true} />);
+    wrapper = mount(<CheckboxGrid {...defaultProps} hideLabel={true} />);
 
     expect(wrapper.find('.checkboxGridTitle').length).toBe(0);
   });
