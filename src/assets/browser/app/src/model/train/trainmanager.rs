@@ -77,6 +77,8 @@ impl TrainManager {
         }
     }
     
+    pub fn get_stick(&self) -> &Option<Stick> { &self.stick }
+
     /* COMPOSITOR sets new stick. Existing trains useless */
     pub fn set_stick(&mut self, st: &Stick, bp_per_screen: f64) {
         // XXX not the right thing to do: should transition

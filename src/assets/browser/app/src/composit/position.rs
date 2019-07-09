@@ -57,10 +57,11 @@ impl Position {
     }
     
     pub fn settle(&mut self) {
+        return; /* temporary, degrades visual output but buggy */
         bb_log!("resize","settle: screen width {}bp {}px",self.get_screen_in_bp(),self.screen_size.0);
         if self.screen_size.0 > 0. {
             let screen_px = self.screen_size.0.round() as i32;
-            let x_round = self.get_screen_in_bp() / screen_px as f64;;
+            let x_round = self.get_screen_in_bp() / screen_px as f64;
             bb_log!("resize","round to {:?}bp",x_round);
             self.pos.0 = (self.pos.0 / x_round).round() * x_round;
         }

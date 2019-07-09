@@ -35,7 +35,7 @@ impl Stage {
     }
 
     pub fn update_report(&self, report: &Report) {
-        let (left,right) = (self.pos.get_edge(&LEFT,true),self.pos.get_edge(&RIGHT,true));
+        let (left,right) = (self.pos.get_edge(&LEFT,false),self.pos.get_edge(&RIGHT,false));
         report.set_status("start",&left.floor().to_string());
         report.set_status("end",&right.ceil().to_string());
         report.set_status_bool("bumper-left",self.bumped(&LEFT));

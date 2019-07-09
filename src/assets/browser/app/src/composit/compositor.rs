@@ -100,6 +100,11 @@ impl Compositor {
     }
 
     pub fn set_stick(&mut self, st: &Stick) {
+        if let Some(stick) = self.train_manager.get_stick() {
+            if stick == st {
+                return;
+            }
+        }
         self.prime_delay = None; // Force priming delay as screen is completely invalid
         self.train_manager.set_stick(st,self.bp_per_screen);
         self.psychic.set_stick(st);
