@@ -37,28 +37,6 @@ export const updateSelectedAttributes = createAction(
   }
 );
 
-export const setTranscriptAttributes = createAction(
-  'custom-download/set-transcript-attributes',
-  (resolve) => {
-    return (transcriptAttributes: AttributesSection) =>
-      resolve(
-        transcriptAttributes,
-        getCustomDownloadAnalyticsObject('Transctipt attributes updated')
-      );
-  }
-);
-
-export const setPhenotypeAttributes = createAction(
-  'custom-download/set-phenotype-attributes',
-  (resolve) => {
-    return (phenotypeAttributes: AttributesSection) =>
-      resolve(
-        phenotypeAttributes,
-        getCustomDownloadAnalyticsObject('Phenotype attributes updated')
-      );
-  }
-);
-
 export const setOrthologueAttributes = createAction(
   'custom-download/set-orthologue-attributes',
   (resolve) => {
@@ -161,41 +139,6 @@ export const fetchOrthologueSpecies: ActionCreator<
   }
 };
 
-export const setLocationAttributes = createAction(
-  'custom-download/set-location-attributes',
-  (resolve) => {
-    return (locationAttributes: AttributesSection) =>
-      resolve(
-        locationAttributes,
-        getCustomDownloadAnalyticsObject('Location attributes updated')
-      );
-  }
-);
-
-export const setSomaticVariationAttributes = createAction(
-  'custom-download/set-somatic-variation-attributes',
-  (resolve) => {
-    return (variationAttributes: AttributesSection) =>
-      resolve(
-        variationAttributes,
-        getCustomDownloadAnalyticsObject('Somatic variation attributes updated')
-      );
-  }
-);
-
-export const setGermlineVariationAttributes = createAction(
-  'custom-download/set-germline-variation-attributes',
-  (resolve) => {
-    return (variationAttributes: AttributesSection) =>
-      resolve(
-        variationAttributes,
-        getCustomDownloadAnalyticsObject(
-          'Germline variation attributes updated'
-        )
-      );
-  }
-);
-
 export const setAttributesAccordionExpandedPanel = createAction(
   'custom-download/set-attributes-accordion-expanded-panels',
   (resolve) => {
@@ -203,19 +146,6 @@ export const setAttributesAccordionExpandedPanel = createAction(
       resolve(
         expandedPanel,
         getCustomDownloadAnalyticsObject('Toggle attributes accordion panel')
-      );
-  }
-);
-
-export const setVariationAccordionExpandedPanels = createAction(
-  'custom-download/set-variation-attributes-accordion-expanded-panels',
-  (resolve) => {
-    return (expandedPanels: string[]) =>
-      resolve(
-        expandedPanels,
-        getCustomDownloadAnalyticsObject(
-          'Toggle variation attributes accordion panel'
-        )
       );
   }
 );

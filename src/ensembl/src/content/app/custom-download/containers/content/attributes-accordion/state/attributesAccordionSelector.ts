@@ -6,12 +6,6 @@ export const getAttributes = (state: RootState): {} =>
 export const getSelectedAttributes = (state: RootState): {} =>
   state.customDownload.attributesAccordion.selectedAttributes;
 
-export const getTranscriptAttributes = (state: RootState): {} =>
-  state.customDownload.attributesAccordion.attributes.transcripts;
-
-export const getPhenotypeAttributes = (state: RootState): {} =>
-  state.customDownload.attributesAccordion.attributes.phenotypes;
-
 export const getOrthologueAttributes = (state: RootState): {} =>
   state.customDownload.attributesAccordion.attributes.orthologues;
 
@@ -30,18 +24,5 @@ export const getOrthologueApplyToAllSpecies = (state: RootState): boolean =>
 export const getOrthologueSpecies = (state: RootState): {} =>
   state.customDownload.attributesAccordion.orthologue.species;
 
-export const getLocationAttributes = (state: RootState): {} =>
-  state.customDownload.attributesAccordion.attributes.location;
-
-export const getGermlineVariationAttributes = (state: RootState): {} =>
-  state.customDownload.attributesAccordion.attributes.germline_variation;
-
-export const getSomaticVariationAttributes = (state: RootState): {} =>
-  state.customDownload.attributesAccordion.attributes.somatic_variation;
-
 export const getAttributesAccordionExpandedPanel = (state: RootState): string =>
   state.customDownload.attributesAccordion.expandedPanel;
-
-export const getVariationAccordionExpandedPanels = (
-  state: RootState
-): string[] => state.customDownload.attributesAccordion.expandedVariationPanels;

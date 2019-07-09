@@ -131,23 +131,28 @@ const filters: Filters = {
   },
   regions: {
     type: 'section',
-    label: 'Regions'
+    label: 'Regions',
+    id: 'regions'
   },
   variants: {
     type: 'section',
-    label: 'Variants'
+    label: 'Variants',
+    id: 'variants'
   },
   phenotypes: {
     type: 'section',
-    label: 'Phenotypes'
+    label: 'Phenotypes',
+    id: 'phenotypes'
   },
   protein_and_domain_families: {
     type: 'section',
-    label: 'Protein domains & families'
+    label: 'Protein domains & families',
+    id: 'protein_and_domain_families'
   },
   homologues: {
     type: 'section',
-    label: 'Homologues'
+    label: 'Homologues',
+    id: 'homologues'
   }
 };
 

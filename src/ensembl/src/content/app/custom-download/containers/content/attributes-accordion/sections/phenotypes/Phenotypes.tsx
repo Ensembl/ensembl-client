@@ -2,90 +2,73 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
-import { getPhenotypeAttributes } from '../../state/attributesAccordionSelector';
-import { setPhenotypeAttributes } from '../../state/attributesAccordionActions';
-import CheckboxGrid, {
-  filterCheckedAttributes
-} from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
-
 import AttributesSection from 'src/content/app/custom-download/types/Attributes';
 
-import styles from './Phenotypes.scss';
+import { getSelectedAttributes } from '../../state/attributesAccordionSelector';
+import { updateSelectedAttributes } from '../../state/attributesAccordionActions';
 
-type OwnProps = {
+import ContentBuilder from 'src/content/app/custom-download/components/content-builder/ContentBuilder';
+
+import set from 'lodash/set';
+
+import allAttributes from 'src/content/app/custom-download/sample-data/attributes';
+
+type ownProps = {
   hideUnchecked?: boolean;
   hideTitles?: boolean;
 };
 
-type Props = OwnProps & StateProps & DispatchProps;
+type Props = ownProps & StateProps & DispatchProps;
 
 const Phenotypes = (props: Props) => {
   const onChangeHandler = (
-    status: boolean,
-    subSection: string,
-    attributeId: string
+    type: string,
+    path: (string | number)[],
+    payload: any
   ) => {
-    if (!props.phenotypeAttributes) {
-      return;
-    }
-
-    const newPhenotypeAttributes = { ...props.phenotypeAttributes };
-
-    newPhenotypeAttributes[subSection][attributeId].isChecked = status;
-
-    props.setPhenotypeAttributes(newPhenotypeAttributes);
+    const updatedAttributes = { ...props.selectedAttributes };
+    set(updatedAttributes, path, payload);
+    props.updateSelectedAttributes(updatedAttributes);
   };
 
   if (props.hideUnchecked) {
-    if (!props.phenotypeAttributes) {
-      return null;
-    }
-    const checkedAttributes = filterCheckedAttributes(
-      props.phenotypeAttributes
-    );
-
-    if (Object.keys(checkedAttributes).length === 0) {
+    if (!allAttributes['phenotypes']) {
       return null;
     }
 
     return (
-      <div className={styles.checkboxGridWrapper}>
-        <CheckboxGrid
-          checkboxOnChange={onChangeHandler}
-          gridData={checkedAttributes}
-          hideTitles={props.hideTitles}
-          columns={3}
-        />
-      </div>
+      <ContentBuilder
+        data={allAttributes['phenotypes']}
+        onChange={onChangeHandler}
+        selectedData={props.selectedAttributes}
+        contentProps={{ checkbox_grid: { hideUnchecked: true } }}
+      />
     );
   }
 
   return (
-    <div className={styles.checkboxGridWrapper}>
-      <CheckboxGrid
-        checkboxOnChange={onChangeHandler}
-        gridData={props.phenotypeAttributes}
-        hideTitles={props.hideTitles}
-        columns={3}
-      />
-    </div>
+    <ContentBuilder
+      data={allAttributes['phenotypes']}
+      onChange={onChangeHandler}
+      selectedData={props.selectedAttributes}
+    />
   );
 };
 
 type DispatchProps = {
-  setPhenotypeAttributes: (setPhenotypeAttributes: AttributesSection) => void;
+  updateSelectedAttributes: (updateSelectedAttributes: {}) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
-  setPhenotypeAttributes
+  updateSelectedAttributes
 };
 
 type StateProps = {
-  phenotypeAttributes: AttributesSection;
+  selectedAttributes: AttributesSection;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  phenotypeAttributes: getPhenotypeAttributes(state)
+  selectedAttributes: getSelectedAttributes(state)
 });
 
 export default connect(

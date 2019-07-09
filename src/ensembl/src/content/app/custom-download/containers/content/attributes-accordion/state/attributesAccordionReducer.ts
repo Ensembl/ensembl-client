@@ -19,10 +19,6 @@ function attributesAccordion(
       attributesAccordionActions.setAttributesAccordionExpandedPanel
     ):
       return { ...state, expandedPanel: action.payload };
-    case getType(
-      attributesAccordionActions.setVariationAccordionExpandedPanels
-    ):
-      return { ...state, expandedVariationPanels: action.payload };
     case getType(attributesAccordionActions.setAttributes.success):
       return { ...state, attributes: action.payload };
     case getType(attributesAccordionActions.updateSelectedAttributes):
@@ -34,31 +30,6 @@ function attributesAccordion(
       return {
         ...state,
         attributes: OrthologueAttributes(state.attributes, action)
-      };
-    case getType(attributesAccordionActions.setTranscriptAttributes):
-      return {
-        ...state,
-        attributes: TranscriptAttributes(state.attributes, action)
-      };
-    case getType(attributesAccordionActions.setPhenotypeAttributes):
-      return {
-        ...state,
-        attributes: PhenotypeAttributes(state.attributes, action)
-      };
-    case getType(attributesAccordionActions.setLocationAttributes):
-      return {
-        ...state,
-        attributes: LocationAttributes(state.attributes, action)
-      };
-    case getType(attributesAccordionActions.setSomaticVariationAttributes):
-      return {
-        ...state,
-        attributes: VariationAttributes(state.attributes, action)
-      };
-    case getType(attributesAccordionActions.setGermlineVariationAttributes):
-      return {
-        ...state,
-        attributes: VariationAttributes(state.attributes, action)
       };
     case getType(attributesAccordionActions.setOrthologueSearchTerm):
       return {
@@ -117,56 +88,6 @@ function OrthologueAttributes(
   switch (action.type) {
     case getType(attributesAccordionActions.setOrthologueAttributes):
       return { ...state, orthologues: action.payload };
-    default:
-      return state;
-  }
-}
-
-function TranscriptAttributes(
-  state: any = defaultAttributesAccordionState.attributes,
-  action: ActionType<RootAction>
-): CustomDownloadAttributes {
-  switch (action.type) {
-    case getType(attributesAccordionActions.setTranscriptAttributes):
-      return { ...state, transcripts: action.payload };
-    default:
-      return state;
-  }
-}
-
-function PhenotypeAttributes(
-  state: any = defaultAttributesAccordionState.attributes,
-  action: ActionType<RootAction>
-): CustomDownloadAttributes {
-  switch (action.type) {
-    case getType(attributesAccordionActions.setPhenotypeAttributes):
-      return { ...state, phenotypes: action.payload };
-    default:
-      return state;
-  }
-}
-
-function LocationAttributes(
-  state: any = defaultAttributesAccordionState.attributes,
-  action: ActionType<RootAction>
-): CustomDownloadAttributes {
-  switch (action.type) {
-    case getType(attributesAccordionActions.setLocationAttributes):
-      return { ...state, location: action.payload };
-    default:
-      return state;
-  }
-}
-
-function VariationAttributes(
-  state: any = defaultAttributesAccordionState.attributes,
-  action: ActionType<RootAction>
-): CustomDownloadAttributes {
-  switch (action.type) {
-    case getType(attributesAccordionActions.setSomaticVariationAttributes):
-      return { ...state, somatic_variation: action.payload };
-    case getType(attributesAccordionActions.setGermlineVariationAttributes):
-      return { ...state, germline_variation: action.payload };
     default:
       return state;
   }

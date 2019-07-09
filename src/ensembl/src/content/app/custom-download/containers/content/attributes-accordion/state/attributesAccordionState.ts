@@ -10,7 +10,6 @@ export type OrthologueState = {
 
 export type AttributesAccordionState = Readonly<{
   expandedPanel: string;
-  expandedVariationPanels: string[];
   attributes: CustomDownloadAttributes;
   selectedAttributes: CustomDownloadAttributes;
   orthologue: OrthologueState;
@@ -18,7 +17,6 @@ export type AttributesAccordionState = Readonly<{
 
 export const defaultAttributesAccordionState: AttributesAccordionState = {
   expandedPanel: '',
-  expandedVariationPanels: [],
   attributes: {},
   selectedAttributes: {},
   orthologue: {
