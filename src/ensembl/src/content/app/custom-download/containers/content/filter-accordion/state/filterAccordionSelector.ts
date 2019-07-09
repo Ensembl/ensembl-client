@@ -10,6 +10,9 @@ export const getFiltersAccordionExpandedGenePanels = (
 export const getFilters = (state: RootState): {} =>
   state.customDownload.filtersAccordion.filters;
 
+export const getSelectedFilters = (state: RootState): {} =>
+  state.customDownload.filtersAccordion.selectedFilters;
+
 export const getGeneFilters = (state: RootState): string =>
   state.customDownload.filtersAccordion.filters.gene;
 

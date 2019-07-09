@@ -37,12 +37,12 @@ export const setGencodeAnnotationFilters = createAction(
   }
 );
 
-export const setGeneSourceFilters = createAction(
-  'custom-download/set-gene-sourcefilters',
+export const updateSelectedFilters = createAction(
+  'custom-download/update-selected-filters',
   (resolve) => {
-    return (geneSource: {}) =>
+    return (filters: {}) =>
       resolve(
-        geneSource,
+        filters,
         getCustomDownloadAnalyticsObject('Gene source filters updated')
       );
   }

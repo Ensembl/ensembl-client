@@ -1,20 +1,24 @@
 import React from 'react';
 import Checkbox from 'src/shared/checkbox/Checkbox';
-import AttributesSection, {
-  Attribute
-} from 'src/content/app/custom-download/types/Attributes';
+import AttributesSection from 'src/content/app/custom-download/types/Attributes';
 import styles from './CheckboxGrid.scss';
 
 import orderBy from 'lodash/orderBy';
 
+export type CheckboxGridOption = {
+  isChecked: boolean;
+  id: string;
+  label: string;
+};
+
 export type CheckboxGridProps = {
-  gridData: Attribute[];
+  options: CheckboxGridOption[];
   columns: number;
   hideUnchecked?: boolean;
   // TODO: Change to Label
   hideTitles?: boolean;
   label: string;
-  checkboxOnChange: (status: boolean, subSection: string, id: string) => void;
+  onChange: (status: boolean, id: string) => void;
 };
 
 export const filterCheckedAttributes = (attributes: AttributesSection) => {
@@ -51,7 +55,9 @@ export const getAttributesCount = (attributes: AttributesSection) => {
 };
 
 const CheckboxGrid = (props: CheckboxGridProps) => {
-  const orderedCheckboxList: Attribute[] = orderBy(props.gridData, ['label']);
+  const orderedCheckboxList: CheckboxGridOption[] = orderBy(props.options, [
+    'label'
+  ]);
 
   if (!orderedCheckboxList.length) {
     return null;
@@ -90,7 +96,7 @@ const CheckboxGrid = (props: CheckboxGridProps) => {
             <div key={gridKey} style={singleGridStyle}>
               {orderedCheckboxList
                 .splice(0, columnLength)
-                .map((attribute: Attribute, itemKey: number) => {
+                .map((attribute: CheckboxGridOption, itemKey: number) => {
                   if (props.hideUnchecked && !attribute.isChecked) {
                     return null;
                   }
@@ -101,11 +107,7 @@ const CheckboxGrid = (props: CheckboxGridProps) => {
                         label={attribute.label}
                         checked={attribute.isChecked}
                         onChange={(status) => {
-                          props.checkboxOnChange(
-                            status,
-                            props.label,
-                            attribute.id
-                          );
+                          props.onChange(status, attribute.id);
                         }}
                       />
                     </div>

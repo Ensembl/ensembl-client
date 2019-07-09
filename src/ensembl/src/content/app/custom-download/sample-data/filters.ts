@@ -1,12 +1,15 @@
 import { RadioOptions } from 'src/shared/radio/Radio';
+import { Option } from 'src/shared/select/Select';
+import { CheckboxGridOption } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
 export type Filter = {
   type: string;
   label: string;
-  id?: string;
+  id: string;
   content?: Filter[];
-  options?: RadioOptions;
+  options?: RadioOptions | Option[] | CheckboxGridOption[];
   selectedOptions?: string[];
+  selectedOption?: string;
 };
 
 export type Filters = {
@@ -15,13 +18,14 @@ export type Filters = {
 
 const filters: Filters = {
   genes: {
-    type: 'accordion_item',
+    type: 'section',
+    id: 'genes',
     label: 'Genes & Transcripts',
     content: [
       {
-        type: 'checkbox_with_selects',
+        type: 'select_multiple',
         label: 'Gene source',
-        id: 'genes.gene_source',
+        id: 'gene_source',
         options: [
           {
             value: 'ensembl',
@@ -53,9 +57,9 @@ const filters: Filters = {
       },
 
       {
-        type: 'checkbox_with_radios',
+        type: 'select_one',
         label: 'GENCODE basic annotation',
-        id: 'genes.gencode_basic_annotation',
+        id: 'gencode_basic_annotation',
         options: [
           {
             value: 'include',
@@ -69,19 +73,20 @@ const filters: Filters = {
       },
 
       {
-        type: 'accordion',
+        type: 'section_group',
         label: '',
         preExpanded: [],
         content: [
           {
-            type: 'accordion_item',
+            type: 'section',
             label: 'Gene type',
             id: 'gene_type',
             content: [
               {
                 type: 'checkbox_grid',
                 label: '',
-                gridData: [
+                id: 'default',
+                options: [
                   {
                     id: 'source',
                     label: 'Gene source',
@@ -97,14 +102,15 @@ const filters: Filters = {
             ]
           },
           {
-            type: 'accordion_item',
+            type: 'section',
             label: 'Transcript type',
             id: 'transcript_type',
             content: [
               {
                 type: 'checkbox_grid',
                 label: '',
-                gridData: [
+                id: 'default',
+                options: [
                   {
                     id: 'protein_coding',
                     label: 'Protein coding',
@@ -124,23 +130,23 @@ const filters: Filters = {
     ]
   },
   regions: {
-    type: 'accordion_item',
+    type: 'section',
     label: 'Regions'
   },
   variants: {
-    type: 'accordion_item',
+    type: 'section',
     label: 'Variants'
   },
   phenotypes: {
-    type: 'accordion_item',
+    type: 'section',
     label: 'Phenotypes'
   },
   protein_and_domain_families: {
-    type: 'accordion_item',
+    type: 'section',
     label: 'Protein domains & families'
   },
   homologues: {
-    type: 'accordion_item',
+    type: 'section',
     label: 'Homologues'
   }
 };

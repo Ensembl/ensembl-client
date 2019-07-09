@@ -1,13 +1,11 @@
 import React from 'react';
-import CheckboxWithSelects, {
-  CheckboxWithSelectsProps
-} from 'src/content/app/custom-download/components/checkbox-with-selects/CheckboxWithSelects';
-import CheckboxWithRadios, {
-  CheckboxWithRadiosProps
-} from 'src/content/app/custom-download/components/checkbox-with-radios/CheckboxWithRadios';
+import CheckboxWithSelects from 'src/content/app/custom-download/components/checkbox-with-selects/CheckboxWithSelects';
+import CheckboxWithRadios from 'src/content/app/custom-download/components/checkbox-with-radios/CheckboxWithRadios';
 import CheckboxGrid, {
-  CheckboxGridProps
+  CheckboxGridOption
 } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
+import { RadioOptions } from 'src/shared/radio/Radio';
+import { Option } from 'src/shared/select/Select';
 import {
   Accordion,
   AccordionItem,
@@ -16,79 +14,130 @@ import {
   AccordionItemButton
 } from 'src/shared/accordion';
 
-const buildCheckboxWithSelect = (props: CheckboxWithSelectsProps) => {
-  return (
-    <CheckboxWithSelects
-      label={props.label}
-      onChange={() => console.log}
-      selectedOptions={props.selectedOptions}
-      options={props.options}
-    />
-  );
+import get from 'lodash/get';
+import { Filter } from '../../sample-data/filters';
+
+type Path = (string | number)[];
+let path: Path = [];
+
+type ContentBuilderProps = {
+  data: any;
+  selectedData: any;
+  onChange: (type: string, path: Path, payload: any) => void;
 };
 
-const buildCheckboxWithRadios = (props: CheckboxWithRadiosProps) => {
-  return (
-    <CheckboxWithRadios
-      label={props.label}
-      onChange={() => console.log}
-      selectedOption={props.selectedOption}
-      options={props.options}
-    />
-  );
-};
+const ContentBuilder = (props: ContentBuilderProps) => {
+  const onChangeHandler = (type: string, path: Path, payload: any) => {
+    props.onChange(type, path, payload);
+  };
 
-const buildCheckboxGrid = (props: CheckboxGridProps) => {
-  return (
-    <CheckboxGrid
-      checkboxOnChange={() => console.log}
-      gridData={props.gridData}
-      title={props.label}
-      columns={3}
-    />
-  );
-};
+  const buildCheckboxWithSelect = (entry: Filter, path: Path) => {
+    const currentPath = [...path, entry.id];
 
-const buildAccordionItem = (props: any) => {
-  return (
-    <AccordionItem uuid={props.id}>
-      <AccordionItemHeading>
-        <AccordionItemButton>{props.label}</AccordionItemButton>
-      </AccordionItemHeading>
-      <AccordionItemPanel>{ContentBuilder(props)}</AccordionItemPanel>
-    </AccordionItem>
-  );
-};
+    const selectedOptions = get(props.selectedData, currentPath, []);
 
-const buildAccordion = (props: any) => {
-  return (
-    <Accordion
-      allowMultipleExpanded={true}
-      onChange={() => console.log}
-      preExpanded={props.preExpanded}
-    >
-      {props.content.map((accordionSection: any) => {
-        return buildAccordionItem(accordionSection);
-      })}
-    </Accordion>
-  );
-};
+    return (
+      <CheckboxWithSelects
+        label={entry.label}
+        onChange={(selectedOptions: string[]) =>
+          onChangeHandler(entry.type, currentPath, selectedOptions)
+        }
+        selectedOptions={selectedOptions}
+        options={(entry.options as Option[]) || []}
+      />
+    );
+  };
 
-const ContentBuilder = (data: any) => {
-  return data.content.map((entry) => {
+  const buildCheckboxWithRadios = (entry: Filter, path: Path) => {
+    const currentPath = [...path, entry.id];
+
+    const selectedOption: string = get(props.selectedData, currentPath, '');
+
+    return (
+      <CheckboxWithRadios
+        label={entry.label}
+        onChange={(selectedOption: string | number | boolean) =>
+          onChangeHandler(entry.type, currentPath, selectedOption)
+        }
+        selectedOption={selectedOption}
+        options={entry.options as RadioOptions}
+      />
+    );
+  };
+
+  const buildCheckboxGrid = (entry: Filter, path: Path) => {
+    const currentPath = [...path, entry.id];
+
+    const selectedOptions = get(props.selectedData, currentPath, []);
+
+    const gridOptions = { ...entry.options };
+
+    Object.values(gridOptions as CheckboxGridOption[]).map((option) => {
+      if (selectedOptions[option.id]) {
+        option.isChecked = true;
+      }
+    });
+
+    return (
+      <CheckboxGrid
+        onChange={(status: boolean, id: string) =>
+          onChangeHandler(entry.type, [...currentPath, id], status)
+        }
+        options={(entry.options as CheckboxGridOption[]) || []}
+        label={entry.label}
+      />
+    );
+  };
+
+  const buildAccordionItem = (entry: any, path: Path) => {
+    return (
+      <AccordionItem uuid={entry.id}>
+        <AccordionItemHeading>
+          <AccordionItemButton>{entry.label}</AccordionItemButton>
+        </AccordionItemHeading>
+        <AccordionItemPanel>
+          <ContentBuilder
+            data={entry}
+            onChange={onChangeHandler}
+            selectedData={props.selectedData}
+          />
+        </AccordionItemPanel>
+      </AccordionItem>
+    );
+  };
+
+  const buildAccordion = (entry: any, path: Path) => {
+    const currentPath = [...path, entry.id];
+    const preExpandedPanels = get(props.selectedData, currentPath, []);
+
+    return (
+      <Accordion
+        allowMultipleExpanded={true}
+        onChange={(expandedPanels) =>
+          onChangeHandler(entry.type, currentPath, expandedPanels)
+        }
+        preExpanded={preExpandedPanels}
+      >
+        {entry.content.map((accordionSection: any, key: number) => {
+          return buildAccordionItem(accordionSection, [...path, key]);
+        })}
+      </Accordion>
+    );
+  };
+
+  path = [props.data.id];
+  return props.data.content.map((entry: Filter) => {
     switch (entry.type) {
-      case 'accordion':
-        return buildAccordion(entry);
-      case 'accordion_item':
-        return buildAccordionItem(entry);
+      case 'section_group':
+        return buildAccordion(entry, [...path]);
+      case 'section':
+        return buildAccordionItem(entry, [...path]);
       case 'checkbox_grid':
-        return buildCheckboxGrid(entry);
-      case 'checkbox_with_selects':
-        return buildCheckboxWithSelect(entry);
-      case 'checkbox_with_radios':
-        return buildCheckboxWithRadios(entry);
-      case 'accordion':
-        return buildCheckboxWithRadios(data);
+        return buildCheckboxGrid(entry, [...path]);
+      case 'select_multiple':
+        return buildCheckboxWithSelect(entry, [...path]);
+      case 'select_one':
+        return buildCheckboxWithRadios(entry, [...path]);
     }
   });
 };
