@@ -12,8 +12,6 @@ import set from 'lodash/set';
 
 import allFilters from 'src/content/app/custom-download/sample-data/filters';
 
-import styles from './Genes.scss';
-
 type Props = StateProps & DispatchProps;
 
 const Genes = (props: Props) => {

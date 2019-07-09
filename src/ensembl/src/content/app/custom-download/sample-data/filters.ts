@@ -75,6 +75,7 @@ const filters: Filters = {
       {
         type: 'section_group',
         label: '',
+        id: 'default',
         preExpanded: [],
         content: [
           {

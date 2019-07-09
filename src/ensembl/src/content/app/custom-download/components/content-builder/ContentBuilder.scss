@@ -1,14 +1,20 @@
 @import 'src/styles/common';
 
-.checkboxGridWrapper {
-  padding: 20px;
+.checkboxWithSelectWrapper {
+  padding-left: 20px;
+  padding-top: 10px;
 }
-.geneAccordion {
+
+.checkboxWitRadiosWrapper {
+  padding-left: 20px;
+}
+
+.accordion {
   border: none;
   border-top: 2px solid $ens-medium-light-grey;
 }
 
-.geneAccordionButton {
+.accordionButton {
   position: relative;
   display: inline-block;
   width: auto;
