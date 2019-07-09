@@ -23,6 +23,27 @@ impl BlackBoxResponseConsumer {
             interval
         }
     }
+
+    fn try_consume(&mut self, req: XmlHttpRequest) -> Result<(),String> {
+        let value : ArrayBuffer = ok!(req.raw_response().try_into());
+        let value : TypedArray<u8> = value.into();
+        let data = String::from_utf8(value.to_vec()).map_err(|s| s.to_string())?;
+        let data : SerdeValue = serde_json::from_str(&data).map_err(|s| s.to_string())?;
+        if let Some(mut enabled) = serde_to_set_string(&data,"enabled") {
+            if let Some(dataset) = serde_to_set_string(&data,"dataset") {
+                enabled = enabled.union(&dataset).cloned().collect();
+            }
+            self.state.set_enabled(enabled);            
+        }
+        if let Some(dataset) = serde_to_set_string(&data,"dataset") {
+            self.state.set_dataset(dataset);
+        }
+        if let Some(interval) = serde_to_number(&data,"interval") {
+            *self.interval.lock().unwrap() = interval*1000.;
+        }
+        Ok(())
+    }
+
 }
 
 fn serde_to_vec_string(in_: &SerdeValue, key: &str) -> Option<Vec<String>> {
@@ -59,21 +80,9 @@ fn serde_to_number(in_: &SerdeValue, key: &str) -> Option<f64> {
 
 impl HttpResponseConsumer for BlackBoxResponseConsumer {
     fn consume(&mut self, req: XmlHttpRequest) {
-        let value : ArrayBuffer = ok!(req.raw_response().try_into());
-        let value : TypedArray<u8> = value.into();
-        let data = ok!(String::from_utf8(value.to_vec()));
-        let data : SerdeValue = ok!(serde_json::from_str(&data));
-        if let Some(mut enabled) = serde_to_set_string(&data,"enabled") {
-            if let Some(dataset) = serde_to_set_string(&data,"dataset") {
-                enabled = enabled.union(&dataset).cloned().collect();
-            }
-            self.state.set_enabled(enabled);            
-        }
-        if let Some(dataset) = serde_to_set_string(&data,"dataset") {
-            self.state.set_dataset(dataset);
-        }
-        if let Some(interval) = serde_to_number(&data,"interval") {
-            *self.interval.lock().unwrap() = interval*1000.;
+        let res = self.try_consume(req);
+        if let Err(s) = res {
+            console!("bad response from debug endpoint (don't worry): {}",s);
         }
     }
 }
@@ -94,6 +103,15 @@ impl HttpBlackBoxDriverImpl {
             last_report: None
         }
     }
+
+    fn send(&mut self, data: &[u8], consumer: Box<HttpResponseConsumer>) -> Result<(),String> {
+        let xhr = XmlHttpRequest::new();
+        xhr.open("POST",&self.url.as_str()).map_err(|e| e.to_string())?;
+        xhr.set_request_header("Content-Type", "application/json").map_err(|e| e.to_string())?;
+        xhr.set_response_type(XhrResponseType::ArrayBuffer).map_err(|e| e.to_string())?;
+        self.manager.add_request(xhr,Some(data),consumer);
+        Ok(())
+    }
 }
 
 impl BlackBoxDriverImpl for HttpBlackBoxDriverImpl {
@@ -102,12 +120,13 @@ impl BlackBoxDriverImpl for HttpBlackBoxDriverImpl {
         if self.last_report == None || t-self.last_report.unwrap() > interval {
             let report = state.make_report().to_string();
             let xhr = XmlHttpRequest::new();
-            xhr.open("POST",&self.url.as_str());
-            xhr.set_request_header("Content-Type", "application/json");
-            xhr.set_response_type(XhrResponseType::ArrayBuffer);
             let data = report.as_bytes();
             let interval = self.report_interval.clone();
-            self.manager.add_request(xhr,Some(data),Box::new(BlackBoxResponseConsumer::new(state,interval)));
+            let consumer = Box::new(BlackBoxResponseConsumer::new(state,interval));
+            let res = self.send(data,consumer);
+            if let Err(s) = res {
+                console!("couldn't send debug info (don't worry): {}",s);
+            }
             self.last_report = Some(t);
             true
         } else {

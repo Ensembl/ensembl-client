@@ -74,7 +74,6 @@ fn exe_move_event(app: &App, va: Move<f64,f64>,vi: Move<f64,f64>) {
 fn exe_zoom_event(app: &App, za: f64, zi: f64, by: bool) {
     let middle = app.with_stage(|s| s.get_pos_middle().0);
     let z = app.with_stage(|s| {
-        //console!("ze zi={:?} za={:?}",zi,za);
         if by {
             let new_za = za+s.get_zoom();
             let new_zi = zi+s.get_intended_zoom();
