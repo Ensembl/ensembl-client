@@ -90,6 +90,7 @@ type StateProps = {
 
 type DispatchProps = {
   changeBrowserLocation: (
+    genomeId: string,
     chrLocation: ChrLocation,
     browserEl: HTMLDivElement
   ) => void;
@@ -126,13 +127,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
   const isFirstRenderRef = useRef(true);
   const lastGenomeIdRef = useRef(props.activeGenomeId);
 
-  const renderCount = useRef(1);
-
-  useEffect(() => {
-    console.log(`rendered ${renderCount.current} times`);
-    renderCount.current++;
-  });
-
   const setDataFromUrl = () => {
     const { genomeId = null } = props.match.params;
     const { focus = null, location = null } = props.browserQueryParams;
@@ -158,8 +152,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
       return;
     }
 
-    chrLocation && dispatchBrowserLocation(chrLocation);
-
     const payload = {
       activeGenomeId: genomeId,
       activeEnsObjectId: focus || null,
@@ -167,13 +159,17 @@ export const Browser: FunctionComponent<BrowserProps> = (
     };
 
     props.setDataFromUrlAndSave(payload);
+
+    chrLocation && dispatchBrowserLocation(genomeId, chrLocation);
     lastGenomeIdRef.current = genomeId;
   };
 
-  const dispatchBrowserLocation = (chrLocation: ChrLocation) => {
-    console.log('in dispatchBrowserLocation');
+  const dispatchBrowserLocation = (
+    genomeId: string,
+    chrLocation: ChrLocation
+  ) => {
     if (browserRef.current) {
-      props.changeBrowserLocation(chrLocation, browserRef.current);
+      props.changeBrowserLocation(genomeId, chrLocation, browserRef.current);
     }
   };
 
@@ -189,8 +185,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
     };
 
     props.replace(urlFor.browser(params));
-
-    props.updateBrowserActiveGenomeIdAndSave(genomeId);
   };
 
   // handle url changes
@@ -226,39 +220,52 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, [props.activeGenomeId]);
 
   useEffect(() => {
-    const { chrLocation } = props;
+    const {
+      match: {
+        params: { genomeId }
+      },
+      browserQueryParams: { location }
+    } = props;
+    const chrLocation = location ? getChrLocationFromStr(location) : null;
 
-    if (props.browserActivated && chrLocation) {
-      dispatchBrowserLocation(chrLocation);
+    if (props.browserActivated && genomeId && chrLocation) {
+      dispatchBrowserLocation(genomeId, chrLocation);
     }
   }, [props.browserActivated]);
 
   const updateLocationInUrl = () => {
     const {
-      activeGenomeId,
-      browserQueryParams: { location },
-      activeEnsObjectId,
+      match: {
+        params: { genomeId }
+      },
+      browserQueryParams: { focus, location },
       chrLocation
     } = props;
 
     const chrLocationFromUrl =
       (location && getChrLocationFromStr(location)) || null;
 
-    if (chrLocation === chrLocationFromUrl) {
+    if (isEqual(chrLocation, chrLocationFromUrl)) {
       return;
     }
 
     const newUrl = urlFor.browser({
-      genomeId: activeGenomeId,
-      focus: activeEnsObjectId,
+      genomeId,
+      focus,
       location: chrLocation ? getChrLocationStr(chrLocation) : null
     });
     props.replace(newUrl);
   };
 
   useEffect(() => {
-    // during first render, we rely on other mechanisms to update url
-    if (!isFirstRenderRef.current) {
+    // update url if only location is different from location in url
+    // (which means that a new location has been sent by genome browser)
+    // also, don't run this code during first render (there are other updating mechanisms in place)
+    if (
+      !isFirstRenderRef.current &&
+      props.match.params.genomeId === props.activeGenomeId &&
+      props.browserQueryParams.focus === props.activeEnsObjectId
+    ) {
       updateLocationInUrl();
     }
   }, [props.chrLocation]);

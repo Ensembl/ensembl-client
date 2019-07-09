@@ -38,12 +38,12 @@ export class BrowserStorageService {
     return this.storageService.get(StorageKeys.ACTIVE_ENS_OBJECT_ID) || {};
   }
 
-  public updateActiveEnsObjectId(activeEnsObjectId: {
+  public updateActiveEnsObjectIds(activeEnsObjectIds: {
     [genomeId: string]: string;
   }) {
     this.storageService.update(
       StorageKeys.ACTIVE_ENS_OBJECT_ID,
-      activeEnsObjectId
+      activeEnsObjectIds
     );
   }
 

@@ -68,6 +68,14 @@ export const setDataFromUrlAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (payload: ParsedUrlPayload) => (dispatch) => {
   dispatch(setDataFromUrl(payload));
+
+  const { activeGenomeId, activeEnsObjectId, chrLocation } = payload;
+
+  browserStorageService.saveActiveGenomeId(payload.activeGenomeId);
+  browserStorageService.updateChrLocation({ [activeGenomeId]: chrLocation });
+  browserStorageService.updateActiveEnsObjectIds({
+    [activeGenomeId]: activeEnsObjectId
+  });
 };
 
 export const updateBrowserActiveGenomeId = createAction(
@@ -110,7 +118,7 @@ export const updateBrowserActiveEnsObjectIdsAndSave: ActionCreator<
 
     dispatch(updateBrowserActiveEnsObjectIds(updatedActiveEnsObjectId));
 
-    browserStorageService.updateActiveEnsObjectId(updatedActiveEnsObjectId);
+    browserStorageService.updateActiveEnsObjectIds(updatedActiveEnsObjectId);
   };
 };
 
@@ -180,15 +188,9 @@ export const setChrLocation: ActionCreator<
 
 export const changeBrowserLocation: ActionCreator<
   ThunkAction<any, any, null, Action<string>>
-> = (chrLocation: ChrLocation, browserEl: HTMLDivElement) => {
-  return (dispatch, getState: () => RootState) => {
-    const state = getState();
+> = (genomeId: string, chrLocation: ChrLocation, browserEl: HTMLDivElement) => {
+  return () => {
     const [chrCode, startBp, endBp] = chrLocation;
-    const genomeId = getBrowserActiveGenomeId(state);
-    const activeObjectId = getBrowserActiveEnsObjectId(state);
-    if (!activeObjectId) {
-      return;
-    }
 
     const stickEvent = new CustomEvent('bpane', {
       bubbles: true,
@@ -210,12 +212,12 @@ export const changeBrowserLocation: ActionCreator<
       browserEl.dispatchEvent(gotoEvent);
     }
 
-    const chrLocationPayload = {
-      [activeObjectId]: chrLocation
-    };
+    // const chrLocationPayload = {
+    //   [activeObjectId]: chrLocation
+    // };
 
-    dispatch(updateChrLocation(chrLocationPayload));
-    browserStorageService.updateChrLocation(chrLocationPayload);
+    // dispatch(updateChrLocation(chrLocationPayload));
+    // browserStorageService.updateChrLocation(chrLocationPayload);
   };
 };
 
