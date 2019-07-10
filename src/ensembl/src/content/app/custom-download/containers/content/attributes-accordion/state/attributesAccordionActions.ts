@@ -2,10 +2,10 @@ import { createAction, createAsyncAction } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Action } from 'redux';
 import { getCustomDownloadAnalyticsObject } from 'src/analyticsHelper';
-import {
-  attributes,
-  orthologueSpecies as sampleOrthologueSpecies
-} from '../../../../sampledata';
+import { orthologueSpecies as sampleOrthologueSpecies } from '../../../../sample-data/orthologue';
+
+import attributes from 'src/content/app/custom-download/sample-data/attributes';
+
 import AttributesSection from 'src/content/app/custom-download/types/Attributes';
 
 export const setAttributes = createAsyncAction(

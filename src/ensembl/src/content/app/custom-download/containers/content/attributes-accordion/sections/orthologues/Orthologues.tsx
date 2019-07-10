@@ -30,7 +30,7 @@ import styles from './Orthologues.scss';
 
 import AttributesSection from 'src/content/app/custom-download/types/Attributes';
 
-import { orthologueAttributes } from 'src/content/app/custom-download/sampledata.tsx';
+import { orthologueAttributes } from 'src/content/app/custom-download/sample-data/orthologue';
 
 type ownProps = {
   hideUnchecked?: boolean;

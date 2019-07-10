@@ -24,7 +24,8 @@ import {
   Location,
   Orthologues,
   Phenotypes,
-  Paralogues
+  Paralogues,
+  Sequences
 } from './sections';
 
 import styles from './AttributesAccordion.scss';
@@ -112,15 +113,22 @@ const AttributesAccordion = (props: Props) => {
           </AccordionItemPanel>
         </AccordionItem>
 
-        <AccordionItem uuid={'sequence'}>
+        <AccordionItem uuid={'sequences'}>
           <AccordionItemHeading>
             <AccordionItemButton>
-              {formatAccordionTitle('sequence')}
+              {formatAccordionTitle('sequences')}
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
-            <div>No attributes available under this section.</div>
+            <Sequences />
           </AccordionItemPanel>
+          <AccordionItemPermanentBlock>
+            {props.expandedPanel !== 'sequences' && (
+              <div className={styles.permanentBlock}>
+                <Sequences hideUnchecked={true} hideTitles={true} />
+              </div>
+            )}
+          </AccordionItemPermanentBlock>
         </AccordionItem>
 
         <AccordionItem uuid={'location'}>

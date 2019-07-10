@@ -6,10 +6,10 @@ import {
   getIsLoadingResult
 } from '../../../state/customDownloadSelectors';
 
-import { getAttributes } from '../attributes-accordion/state/attributesAccordionSelector';
-import { getFilters } from '../filter-accordion/state/filterAccordionSelector';
+import { getSelectedAttributes } from '../attributes-accordion/state/attributesAccordionSelector';
+import { getSelectedFilters } from '../filter-accordion/state/filterAccordionSelector';
 
-import AttributesSection from 'src/content/app/custom-download/types/Attributes';
+import { keys, values, mapKeys } from 'lodash';
 
 import {
   setPreviewResult,
@@ -22,30 +22,58 @@ import styles from './ResultHolder.scss';
 import { CircleLoader } from 'src/shared/loader/Loader';
 
 import {
-  getSelectedAttributes,
   formatResults,
+  flattenObject,
   getEndpointUrl
 } from './resultHolderHelper';
 
 type Props = StateProps & DispatchProps;
 
 const ResultHolder = (props: Props) => {
-  const selectedAttributes: AttributesSection = getSelectedAttributes(
-    props.attributes
-  );
-
   useEffect(() => {
-    if (!selectedAttributes.length && props.preview.results) {
+    const selectedAttributes: { [key: string]: boolean } = flattenObject(
+      props.selectedAttributes
+    );
+
+    const totalSelectedAttributes = keys(selectedAttributes).length;
+    if (!totalSelectedAttributes && props.preview.results) {
       props.clearPreviewResult({});
+      return;
+    } else if (!totalSelectedAttributes) {
       return;
     }
 
-    const endpointURL = getEndpointUrl(selectedAttributes);
-    if (selectedAttributes.length) {
+    const processedAttributes = keys(
+      mapKeys(selectedAttributes, (value: boolean, key: string) => {
+        return key
+          .split('.default')
+          .join('')
+          .split('genes.')
+          .join('');
+      })
+    );
+
+    const selectedFilters: { [key: string]: boolean } = flattenObject(
+      props.selectedFilters
+    );
+
+    const processedFilters = mapKeys(
+      selectedFilters,
+      (value: boolean, key: string) => {
+        return key
+          .split('.default')
+          .join('')
+          .split('genes.')
+          .join('');
+      }
+    );
+
+    const endpointURL = getEndpointUrl(processedAttributes, processedFilters);
+    if (processedAttributes.length) {
       props.setIsLoadingResult(true);
       props.fetchPreviewResult(endpointURL);
     }
-  }, [props.attributes, props.filters]);
+  }, [props.selectedAttributes, props.selectedFilters]);
 
   useEffect(() => {
     props.setIsLoadingResult(false);
@@ -69,9 +97,9 @@ const ResultHolder = (props: Props) => {
     );
   }
 
-  const formattedResults = formatResults(props.preview, selectedAttributes);
+  const formattedResults = formatResults(props.preview);
 
-  const headerRow = formattedResults.shift();
+  const headerRow = formattedResults.shift() || [];
 
   return (
     <>
@@ -81,7 +109,7 @@ const ResultHolder = (props: Props) => {
         </div>
       )}
       <div className={styles.wrapper}>
-        {formattedResults.map((dataRow: [], resultKey: number) => {
+        {formattedResults.map((dataRow: string[], resultKey: number) => {
           return (
             <div key={resultKey} className={styles.resultCard}>
               {headerRow.map((header: string, rowKey: number) => {
@@ -115,15 +143,15 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 type StateProps = {
-  attributes: AttributesSection;
-  filters: any;
+  selectedAttributes: any;
+  selectedFilters: any;
   preview: any;
   isLoadingResult: boolean;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  attributes: getAttributes(state),
-  filters: getFilters(state),
+  selectedAttributes: getSelectedAttributes(state),
+  selectedFilters: getSelectedFilters(state),
   preview: getPreviewResult(state),
   isLoadingResult: getIsLoadingResult(state)
 });

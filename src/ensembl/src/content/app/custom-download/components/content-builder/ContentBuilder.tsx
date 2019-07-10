@@ -81,12 +81,20 @@ const ContentBuilder = (props: ContentBuilderProps) => {
 
     const selectedOptions = get(props.selectedData, currentPath, []);
 
-    const gridOptions: CheckboxGridOption[] = {
+    const gridOptions: CheckboxGridOption[] = [
       ...(entry.options as CheckboxGridOption[])
-    };
+    ];
+
+    const gridClone: CheckboxGridOption[] = [];
 
     Object.values(gridOptions as CheckboxGridOption[]).map((option) => {
-      option.isChecked = selectedOptions[option.id] ? true : false;
+      const optionClone = { ...option };
+      if (selectedOptions[option.id]) {
+        optionClone.isChecked = true;
+      } else if (optionClone.isChecked) {
+        onChangeHandler(entry.type, [...currentPath, optionClone.id], true);
+      }
+      gridClone.push(optionClone);
     });
 
     const additionalProps = props.contentProps
@@ -98,7 +106,7 @@ const ContentBuilder = (props: ContentBuilderProps) => {
         onChange={(status: boolean, id: string) =>
           onChangeHandler(entry.type, [...currentPath, id], status)
         }
-        options={gridOptions}
+        options={gridClone}
         label={entry.label}
         {...additionalProps}
       />

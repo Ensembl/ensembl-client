@@ -5,6 +5,7 @@ import Location from './location/Location';
 import Orthologues from './orthologues/Orthologues';
 import Phenotypes from './phenotypes/Phenotypes';
 import Paralogues from './paralogues/Paralogues';
+import Sequences from './sequences/Sequences';
 
 export {
   Genes,
@@ -13,5 +14,6 @@ export {
   Location,
   Orthologues,
   Phenotypes,
-  Paralogues
+  Paralogues,
+  Sequences
 };

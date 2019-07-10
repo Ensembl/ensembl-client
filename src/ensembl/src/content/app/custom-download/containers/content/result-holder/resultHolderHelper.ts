@@ -1,19 +1,18 @@
 import config from 'config';
 
-export const getEndpointUrl = (attributes: any) => {
+export const getEndpointUrl = (attributes: any, processedFilters: any) => {
   let endpoint = config.genesearchAPIEndpoint + '/genes/query?query=';
 
-  let endpointFields = '';
-  attributes.forEach((attribute: any) => {
-    endpointFields += attribute[2] + ',';
-  });
-
+  console.log(processedFilters);
   const endpointFilters: any = {
     genome: 'homo_sapiens'
   };
 
   endpoint =
-    endpoint + JSON.stringify(endpointFilters) + '&fields=' + endpointFields;
+    endpoint +
+    JSON.stringify(endpointFilters) +
+    '&fields=' +
+    attributes.join(',');
 
   return endpoint;
 };
@@ -68,7 +67,7 @@ export const getSelectedFilters = (filters: any) => {
   return selectedFilters;
 };
 
-const flattenObject = (
+export const flattenObject = (
   objectOrArray: any,
   prefix = '',
   formatter = (k: string) => k
@@ -120,14 +119,15 @@ const formatResponseToArray = (responseData: any) => {
   return preResult;
 };
 
-export const formatResults = (apiResult: any, selectedAttributes: any) => {
+export const formatResults = (apiResult: any) => {
   const formattedResult = formatResponseToArray(apiResult.results);
-
-  const result: any = [];
-  // Populate the header row
+  const result: string[][] = [];
   result[0] = [];
-  selectedAttributes.forEach((attribute: string) => {
-    result[0].push(attribute[3]);
+
+  const fields: string[][] = [];
+  apiResult.fields.forEach((field: any) => {
+    fields.push([field.name, field.displayName]);
+    result[0].push(field.displayName);
   });
 
   let rowCounter = 0;
@@ -136,8 +136,8 @@ export const formatResults = (apiResult: any, selectedAttributes: any) => {
     rowCounter += 1;
     result[rowCounter] = [];
 
-    selectedAttributes.forEach((field: string[]) => {
-      result[rowCounter].push(entry[field[2]]);
+    fields.forEach((field: string[]) => {
+      result[rowCounter].push(entry[field[0]]);
     });
   });
 

@@ -30,13 +30,8 @@ const attributes = {
             isChecked: false
           },
           {
-            id: 'id_version',
-            label: 'Gene stable ID version',
-            isChecked: false
-          },
-          {
-            id: 'Superfamily',
-            label: 'Superfamily',
+            id: 'version',
+            label: 'Version',
             isChecked: false
           },
           {
@@ -55,23 +50,8 @@ const attributes = {
             isChecked: false
           },
           {
-            id: 'UniParc',
-            label: 'UniParc',
-            isChecked: false
-          },
-          {
             id: 'source',
             label: 'Source (gene)',
-            isChecked: false
-          },
-          {
-            id: 'BioGRID',
-            label: 'BioGRID',
-            isChecked: false
-          },
-          {
-            id: 'Smart',
-            label: 'Smart',
             isChecked: false
           }
         ]
@@ -117,68 +97,43 @@ const attributes = {
         id: 'default',
         options: [
           {
-            id: 'transcripts.biotype',
+            id: 'biotype',
             label: 'Biotype',
             isChecked: true
           },
           {
-            id: 'transcripts.name',
+            id: 'name',
             label: 'Transcript name',
             isChecked: true
           },
           {
-            id: 'transcripts.id',
+            id: 'id',
             label: 'Transcript stable ID',
             isChecked: true
           },
           {
-            id: 'transcripts.AGD_TRANSCRIPT',
+            id: 'AGD_TRANSCRIPT',
             label: 'Ashbya Genome Database',
             isChecked: false
           },
           {
-            id: 'transcripts.type',
+            id: 'type',
             label: 'Transcript Type',
             isChecked: false
           },
           {
-            id: 'transcripts.UniGene',
-            label: 'UniGene',
-            isChecked: false
-          },
-          {
-            id: 'transcripts.Pfam',
-            label: 'Pfam',
-            isChecked: false
-          },
-          {
-            id: 'transcripts.HGNC_trans_name',
-            label: 'HGNC_trans_name',
-            isChecked: false
-          },
-          {
-            id: 'transcripts.start',
+            id: 'start',
             label: 'Start',
             isChecked: false
           },
           {
-            id: 'transcripts.end',
+            id: 'end',
             label: 'End',
             isChecked: false
           },
           {
-            id: 'transcripts.Interpro',
+            id: 'Interpro',
             label: 'Interpro',
-            isChecked: false
-          },
-          {
-            id: 'transcripts.Smart',
-            label: 'Smart',
-            isChecked: false
-          },
-          {
-            id: 'transcripts.analysis',
-            label: 'Analysis',
             isChecked: false
           }
         ]
@@ -189,32 +144,32 @@ const attributes = {
         id: 'Microarray probes/probesets',
         options: [
           {
-            id: 'transcripts.affy_hc_g110_probe',
+            id: 'affy_hc_g110_probe',
             label: 'AFFY HC G110 probe',
             isChecked: false
           },
           {
-            id: 'transcripts.agilent_sureprint_g3_ge_8x60k_probe',
+            id: 'agilent_sureprint_g3_ge_8x60k_probe',
             label: 'AGILENT SurePrint G3 GE 8x60k probe',
             isChecked: false
           },
           {
-            id: 'transcripts.illumina_humanref_8_v3_probe',
+            id: 'illumina_humanref_8_v3_probe',
             label: 'ILLUMINA HumanRef 8 V3 probe',
             isChecked: false
           },
           {
-            id: 'transcripts.affy_hta_2_0_probe',
+            id: 'affy_hta_2_0_probe',
             label: 'AFFY HTA 2 0 probe',
             isChecked: false
           },
           {
-            id: 'transcripts.codelink_codelink_probe',
+            id: 'codelink_codelink_probe',
             label: 'CODELINK CODELINK probe',
             isChecked: false
           },
           {
-            id: 'transcripts.go_domain',
+            id: 'go_domain',
             label: 'GO domain',
             isChecked: false
           }
@@ -227,10 +182,23 @@ const attributes = {
     label: 'Transcripts',
     content: []
   },
-  sequence: {
+  sequences: {
     type: 'section',
     label: 'Sequence',
-    content: []
+    content: [
+      {
+        type: 'checkbox_grid',
+        label: '',
+        id: 'default',
+        options: [
+          {
+            id: 'cdna_sequence',
+            label: 'cDNA Sequence',
+            isChecked: false
+          }
+        ]
+      }
+    ]
   },
   location: {
     type: 'section',
