@@ -6,13 +6,13 @@ import { useSpring, animated } from 'react-spring';
 import { Link } from 'react-router-dom';
 import find from 'lodash/find';
 import isEqual from 'lodash/isEqual';
+import upperFirst from 'lodash/upperFirst';
 
 import BrowserBar from './browser-bar/BrowserBar';
 import BrowserImage from './browser-image/BrowserImage';
 import BrowserNavBar from './browser-nav/BrowserNavBar';
 import TrackPanel from './track-panel/TrackPanel';
 import AppBar from 'src/shared/app-bar/AppBar';
-import upperFirst from 'lodash/upperFirst';
 
 import { RootState } from 'src/store';
 import { BrowserNavStates, ChrLocation } from './browserState';

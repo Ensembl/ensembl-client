@@ -7,7 +7,6 @@ import config from 'config';
 import { BrowserNavStates, ChrLocation, CogList } from './browserState';
 import {
   getBrowserActiveGenomeId,
-  getBrowserActiveEnsObjectId,
   getBrowserActiveEnsObjectIds,
   getBrowserTrackStates
 } from './browserSelectors';
@@ -213,13 +212,6 @@ export const changeBrowserLocation: ActionCreator<
 
       browserEl.dispatchEvent(gotoEvent);
     }
-
-    // const chrLocationPayload = {
-    //   [activeObjectId]: chrLocation
-    // };
-
-    // dispatch(updateChrLocation(chrLocationPayload));
-    // browserStorageService.updateChrLocation(chrLocationPayload);
   };
 };
 
