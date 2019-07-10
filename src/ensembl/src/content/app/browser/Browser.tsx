@@ -15,21 +15,14 @@ import AppBar from 'src/shared/app-bar/AppBar';
 import upperFirst from 'lodash/upperFirst';
 
 import { RootState } from 'src/store';
-import {
-  BrowserOpenState,
-  BrowserNavStates,
-  ChrLocation
-} from './browserState';
+import { BrowserNavStates, ChrLocation } from './browserState';
 import {
   changeBrowserLocation,
   updateBrowserNavStates,
-  updateBrowserActiveGenomeIdAndSave,
-  updateBrowserActiveEnsObjectIdsAndSave,
   setDataFromUrlAndSave,
   ParsedUrlPayload
 } from './browserActions';
 import {
-  getBrowserOpenState,
   getBrowserNavOpened,
   getChrLocation,
   getGenomeSelectorActive,
@@ -50,13 +43,7 @@ import { fetchEnsObject } from 'src/ens-object/ensObjectActions';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
-import { getGenomeInfo } from 'src/genome/genomeSelectors';
-import { GenomeInfoData } from 'src/genome/genomeTypes';
-import {
-  fetchGenomeData,
-  fetchGenomeInfo,
-  fetchGenomeTrackCategories
-} from 'src/genome/genomeActions';
+import { fetchGenomeData } from 'src/genome/genomeActions';
 import { toggleDrawer } from './drawer/drawerActions';
 
 import browserStorageService from './browser-storage-service';
@@ -75,12 +62,10 @@ type StateProps = {
   allActiveEnsObjectIds: { [genomeId: string]: string };
   browserActivated: boolean;
   browserNavOpened: boolean;
-  browserOpenState: BrowserOpenState;
   browserQueryParams: { [key: string]: string };
   chrLocation: ChrLocation | null;
   allChrLocations: { [genomeId: string]: ChrLocation };
   drawerOpened: boolean;
-  genomeInfo: GenomeInfoData;
   genomeSelectorActive: boolean;
   trackPanelOpened: boolean;
   launchbarExpanded: boolean;
@@ -96,12 +81,8 @@ type DispatchProps = {
   ) => void;
   fetchEnsObject: (ensObjectId: string, genomeId: string) => void;
   fetchGenomeData: (genomeId: string) => void;
-  fetchGenomeInfo: (genomeId: string) => void;
-  fetchGenomeTrackCategories: (genomeId: string) => void;
   replace: Replace;
   toggleDrawer: (drawerOpened: boolean) => void;
-  updateBrowserActiveGenomeIdAndSave: (genomeId: string) => void;
-  updateBrowserActiveEnsObjectIdsAndSave: (objectId: string) => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   setDataFromUrlAndSave: (payload: ParsedUrlPayload) => void;
 };
@@ -141,6 +122,11 @@ export const Browser: FunctionComponent<BrowserProps> = (
         the user is switching back to a previously viewed species;
         so check whether the genome id has changed from the previous render
         (that's the reason for lastGenomeIdRef here)
+
+      TODO: after both genome browser and browser chrome are updated so that
+      we do not update url location while moving or zooming the image; we can
+      remove the genomeId === lastGenomeId check in the if-statement below
+      and move dispatchBrowserLocation(genomeId, chrLocation) above the if-statement
     */
     if (
       !genomeId ||
@@ -258,11 +244,9 @@ export const Browser: FunctionComponent<BrowserProps> = (
   };
 
   useEffect(() => {
-    // update url if only location is different from location in url
-    // (which means that a new location has been sent by genome browser)
-    // also, don't run this code during first render (there are other updating mechanisms in place)
+    // update url if the only difference between the url and the current state
+    // is location (which means a new location was reported by genome browser)
     if (
-      !isFirstRenderRef.current &&
       props.match.params.genomeId === props.activeGenomeId &&
       props.browserQueryParams.focus === props.activeEnsObjectId
     ) {
@@ -387,12 +371,10 @@ const mapStateToProps = (state: RootState): StateProps => ({
   allActiveEnsObjectIds: getBrowserActiveEnsObjectIds(state),
   browserActivated: getBrowserActivated(state),
   browserNavOpened: getBrowserNavOpened(state),
-  browserOpenState: getBrowserOpenState(state),
   browserQueryParams: getBrowserQueryParams(state),
   chrLocation: getChrLocation(state),
   allChrLocations: getAllChrLocations(state),
   drawerOpened: getDrawerOpened(state),
-  genomeInfo: getGenomeInfo(state),
   genomeSelectorActive: getGenomeSelectorActive(state),
   trackPanelOpened: getTrackPanelOpened(state),
   launchbarExpanded: getLaunchbarExpanded(state),
@@ -402,15 +384,11 @@ const mapStateToProps = (state: RootState): StateProps => ({
 
 const mapDispatchToProps: DispatchProps = {
   changeBrowserLocation,
-  fetchEnsObject,
+  fetchEnsObject, // FIXME: handle ensObject change that requires fetching of an object
   fetchGenomeData,
-  fetchGenomeInfo, // FIXME: remove
-  fetchGenomeTrackCategories, // FIXME: remove
   replace,
   toggleDrawer,
-  updateBrowserActiveGenomeIdAndSave,
   updateBrowserNavStates,
-  updateBrowserActiveEnsObjectIdsAndSave,
   setDataFromUrlAndSave
 };
 
