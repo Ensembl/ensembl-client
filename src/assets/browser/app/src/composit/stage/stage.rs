@@ -34,6 +34,11 @@ impl Stage {
         }
     }
 
+    pub fn intend_here(&mut self) {
+        self.ipos.set_middle(&self.apos.get_middle());
+        self.ipos.set_zoom(self.apos.get_zoom());
+    }
+
     pub fn set_pos_intent(&mut self, valid: bool) {
         self.valid_pos_intent = valid;
     }
@@ -111,34 +116,20 @@ impl Stage {
         self.apos.get_middle()
     }
 
-    pub fn get_pos_intended_middle(&self) -> Dot<f64,f64> {
-        self.ipos.get_middle()
-    }
-
-    pub fn set_zoom(&mut self, v_actual: f64, v_intent: Option<f64>) {
-        self.apos.set_zoom(v_actual);
-        if let Some(v) = v_intent {
-            self.ipos.set_zoom(v);
-        }
+    pub fn set_zoom(&mut self, v: f64) {
+        self.apos.set_zoom(v);
     }
     
     pub fn get_zoom(&self) -> f64 {
         self.apos.get_zoom()
     }
 
-    pub fn get_intended_zoom(&self) -> f64 {
-        self.ipos.get_zoom()
-    }
-
     pub fn get_linear_zoom(&self) -> f64 {
         self.apos.get_linear_zoom()
     }
 
-    pub fn set_pos_middle(&mut self, pos: &Dot<f64,f64>, pos_intent: Option<&Dot<f64,f64>>) {
+    pub fn set_pos_middle(&mut self, pos: &Dot<f64,f64>) {
         self.apos.set_middle(pos);
-        if let Some(v) = pos_intent {
-            self.ipos.set_middle(v);
-        }
     }
 
     pub fn get_size(&self) -> Dot<f64,f64> {

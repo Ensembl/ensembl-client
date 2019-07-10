@@ -26,7 +26,7 @@ impl OpticalImpl {
     fn send_delta(&mut self, app: &mut App, amt: f64) {
         if let Some((pos,prop)) = self.pos {
             actions_run(app,&vec! {
-                Action::Zoom(amt,self.target),
+                Action::Zoom(amt),
                 Action::Pos(pos,Some(prop))
             });
             self.target = 0.;
@@ -42,7 +42,9 @@ impl OpticalImpl {
         } else if !self.settled {
             self.send_delta(app,self.missing);
             self.missing = 0.;
-            app.with_stage(|s| s.settle());
+            actions_run(app,&vec![
+                Action::Settled
+            ]);
             self.settled = true;
         }
     }

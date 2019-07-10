@@ -57,6 +57,7 @@ impl StatusOutput {
 lazy_static! {
     static ref REPORT_CONFIG:
         Vec<(&'static str,StatusJigsaw,Option<f64>)> = vec!{
+        ("message-counter",StatusJigsaw::Atom("message-counter".to_string(),StatusJigsawType::Number),Some(1000.)),
         ("location",StatusJigsaw::Array(vec!{
             StatusJigsaw::Atom("a-stick".to_string(),StatusJigsawType::String),
             StatusJigsaw::Atom("a-start".to_string(),StatusJigsawType::Number),
@@ -84,6 +85,7 @@ lazy_static! {
 }
 
 pub struct ReportImpl {
+    message_counter: f64,
     pieces: HashMap<String,String>,
     outputs: HashMap<String,StatusOutput>
 }
@@ -91,6 +93,7 @@ pub struct ReportImpl {
 impl ReportImpl {
     pub fn new() -> ReportImpl {
         let out = ReportImpl {
+            message_counter: 0.,
             pieces: HashMap::<String,String>::new(),
             outputs: HashMap::<String,StatusOutput>::new()
         };
@@ -111,6 +114,11 @@ impl ReportImpl {
     
     pub fn set_status(&mut self, key: &str, value: &str) {
         self.pieces.insert(key.to_string(),value.to_string());
+    }
+
+    pub fn update_counter(&mut self) {
+        self.message_counter += 1.;
+        self.pieces.insert("message-counter".to_string(),self.message_counter.to_string());
     }
 
     pub fn set_interval(&mut self, key: &str, interval: Option<f64>) {
@@ -241,6 +249,10 @@ impl Report {
         imp.set_interval(key,interval);
     }
     
+    pub fn update_counter(&mut self) {
+        self.0.lock().unwrap().update_counter();
+    }
+
     pub fn new_report(&self, t: f64) -> Option<JSONValue> {
         self.0.lock().unwrap().new_report(t)
     }

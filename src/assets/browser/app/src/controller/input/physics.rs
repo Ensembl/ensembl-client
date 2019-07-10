@@ -10,6 +10,7 @@ pub struct MousePhysicsImpl {
     mouse_pos: Option<CDFraction>,    /* spring handle */
     drive: Option<CDFraction>,        /* driving force */
     vel: CDFraction,                  /* vel */
+    settled: bool
 }
 
 #[derive(Clone)]
@@ -30,6 +31,7 @@ impl MousePhysicsImpl {
             mouse_pos: None,
             drive: None,
             vel: cdfraction(0.,0.),
+            settled: true
         }
     }
     
@@ -62,10 +64,10 @@ impl MousePhysicsImpl {
         dx.0.abs() > EPS || dx.1.abs() > EPS
     }
 
-    fn make_events(&self, cg: &mut App, dx: &CDFraction) {
+    fn make_events(&mut self, cg: &mut App, dx: &CDFraction) {
         actions_run(cg,&vec! {
-            Action::Move(Move::Left(Distance(dx.0,Units::Pixels)),Move::Left(Distance(dx.0,Units::Pixels))),
-            Action::Move(Move::Up(Distance(dx.1,Units::Pixels)),Move::Left(Distance(dx.0,Units::Pixels)))
+            Action::Move(Move::Left(Distance(dx.0,Units::Pixels))),
+            Action::Move(Move::Up(Distance(dx.1,Units::Pixels)))
         });
     }
 
@@ -84,7 +86,7 @@ impl MousePhysicsImpl {
             self.drive = None;
         }        
     }
-    
+
     /* when mouse moves, so does the handle */
     fn shift_handle_to(&mut self, e: &CPixel) {
         let at = e.as_dfraction();
@@ -128,7 +130,14 @@ impl MousePhysicsImpl {
             }
         }
         if self.force_origin.is_none() {
-            cg.with_stage(|s| s.settle());
+            if !self.settled {
+                actions_run(cg,&vec![
+                    Action::Settled
+                ]);
+            }
+            self.settled = true;
+        } else {
+            self.settled = false;
         }
     }
     

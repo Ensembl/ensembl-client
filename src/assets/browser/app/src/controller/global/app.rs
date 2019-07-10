@@ -208,6 +208,12 @@ impl App {
             let mut stage = self.stage.lock().unwrap();
             stage.set_size(&size);
         }
+        let mut stage = self.stage.lock().unwrap();
+        stage.settle();
+        stage.intend_here();
+        if let Some(ref mut report) = self.report {
+            report.update_counter();
+        }
         self.printer.lock().unwrap().settle();
     }
 }
