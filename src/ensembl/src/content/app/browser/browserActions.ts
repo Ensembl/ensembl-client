@@ -72,10 +72,12 @@ export const setDataFromUrlAndSave: ActionCreator<
   const { activeGenomeId, activeEnsObjectId, chrLocation } = payload;
 
   browserStorageService.saveActiveGenomeId(payload.activeGenomeId);
-  browserStorageService.updateChrLocation({ [activeGenomeId]: chrLocation });
-  browserStorageService.updateActiveEnsObjectIds({
-    [activeGenomeId]: activeEnsObjectId
-  });
+  chrLocation &&
+    browserStorageService.updateChrLocation({ [activeGenomeId]: chrLocation });
+  activeEnsObjectId &&
+    browserStorageService.updateActiveEnsObjectIds({
+      [activeGenomeId]: activeEnsObjectId
+    });
 };
 
 export const updateBrowserActiveGenomeId = createAction(
