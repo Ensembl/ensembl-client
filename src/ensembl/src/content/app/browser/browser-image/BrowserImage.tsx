@@ -61,7 +61,7 @@ type BrowserImageProps = StateProps & DispatchProps & OwnProps;
 type BpaneOutEvent = Event & {
   detail: {
     bumper?: BrowserNavStates;
-    messageCounter?: number;
+    'message-counter'?: number;
     location?: string;
   };
 };

@@ -74,6 +74,8 @@ export function browserEntity(
         ...state,
         trackStates: merge({}, state.trackStates, action.payload)
       };
+    case getType(browserActions.updateMessageCounter):
+      return { ...state, messageCounter: action.payload };
     default:
       return state;
   }
