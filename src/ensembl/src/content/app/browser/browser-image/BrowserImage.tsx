@@ -79,6 +79,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
     const navIconStates = bpaneOutEvent.detail.bumper as BrowserNavStates;
     const location = bpaneOutEvent.detail.location;
     const messageCount = bpaneOutEvent.detail['message-counter'];
+    console.log('event', event);
 
     if (navIconStates) {
       props.updateBrowserNavStates(navIconStates);
@@ -104,6 +105,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
 
   useEffect(() => {
     browserMessagingService.setup(props.browserRef.current as HTMLDivElement);
+    browserMessagingService.subscribe('bpane-out', listenBpaneOut);
 
     return () => browserMessagingService.onUnmount();
   }, []);
@@ -114,13 +116,9 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
 
     bootstrapBrowser(currentEl, props);
 
-    currentEl.addEventListener('bpane-out', listenBpaneOut);
-
     return function cleanup() {
       if (currentEl && currentEl.ownerDocument) {
         props.updateBrowserActivated(false);
-
-        currentEl.removeEventListener('bpane-out', listenBpaneOut);
       }
     };
   }, [props.browserRef]);
@@ -175,7 +173,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
           className={getBrowserImageClasses(props.browserNavOpened)}
           ref={props.browserRef}
         />
-        <BrowserCogList browserRef={props.browserRef} />
+        <BrowserCogList />
         <ZmenuController browserRef={props.browserRef} />
       </div>
     </>

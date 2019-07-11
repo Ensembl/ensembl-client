@@ -6,6 +6,7 @@ import React, {
 } from 'react';
 import { connect } from 'react-redux';
 
+import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import BrowserCog from './BrowserCog';
 import {
   updateCogList,
@@ -36,9 +37,7 @@ type DispatchProps = {
   updateSelectedCog: (index: string) => void;
 };
 
-type OwnProps = {
-  browserRef: RefObject<HTMLDivElement>;
-};
+type OwnProps = {};
 
 type BrowserCogListProps = StateProps & DispatchProps & OwnProps;
 
@@ -67,9 +66,7 @@ const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
   }, []);
 
   useEffect(() => {
-    const currentEl: HTMLDivElement = props.browserRef
-      .current as HTMLDivElement;
-    currentEl.addEventListener('bpane-scroll', listenBpaneScroll);
+    browserMessagingService.subscribe('bpane-scroll', listenBpaneScroll);
   }, []);
 
   const cogs = Object.entries(browserCogTrackList).map(([name, pos]) => {

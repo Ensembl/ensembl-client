@@ -20,9 +20,7 @@ type StateProps = {
 
 type DispatchProps = {};
 
-type OwnProps = {
-  browserElement: HTMLDivElement;
-};
+type OwnProps = {};
 
 type BrowserNavBarProps = StateProps & DispatchProps & OwnProps;
 
@@ -40,7 +38,6 @@ export const BrowserNavBar: FunctionComponent<BrowserNavBarProps> = (
           <BrowserNavIcon
             key={item.name}
             browserNavItem={item}
-            browserImageEl={props.browserElement}
             maxState={props.browserNavStates[index]}
           />
         ))}

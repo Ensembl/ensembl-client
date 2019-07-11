@@ -3,7 +3,7 @@ import pickBy from 'lodash/pickBy';
 
 import Zmenu from './Zmenu';
 
-import mockEventEmitter from './mock-event-emitter';
+import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 
 import {
   ZmenuData,
@@ -29,14 +29,10 @@ const ZmenuController = (props: Props) => {
   const [zmenus, setZmenus] = useState<StateZmenu>({});
 
   useEffect(() => {
-    const browserElement = props.browserRef.current as HTMLDivElement;
     const eventHandler = (event: Event) =>
       handleBpaneEvent(event as ZmenuIncomingEvent);
 
-    browserElement.addEventListener('bpane-zmenu', eventHandler);
-
-    return () =>
-      browserElement.removeEventListener('bpane-zmenu', eventHandler);
+    browserMessagingService.subscribe('bpane-zmenu', eventHandler);
   }, []);
 
   const handleBpaneEvent = (event: ZmenuIncomingEvent) => {
@@ -78,25 +74,19 @@ const ZmenuController = (props: Props) => {
   };
 
   const handleZmenuEnter = (id: string) => {
-    const browserElement = props.browserRef.current as HTMLDivElement;
-    const event = new CustomEvent('bpane-zmenu', {
-      detail: {
-        id,
-        action: ZmenuAction.ENTER
-      }
-    });
-    browserElement.dispatchEvent(event);
+    const payload = {
+      id,
+      action: ZmenuAction.ENTER
+    };
+    browserMessagingService.send('bpane-zmenu', payload);
   };
 
   const handleZmenuLeave = (id: string) => {
-    const browserElement = props.browserRef.current as HTMLDivElement;
-    const event = new CustomEvent('bpane-zmenu', {
-      detail: {
-        id,
-        action: ZmenuAction.LEAVE
-      }
-    });
-    browserElement.dispatchEvent(event);
+    const payload = {
+      id,
+      action: ZmenuAction.LEAVE
+    };
+    browserMessagingService.send('bpane-zmenu', payload);
   };
 
   const zmenuElements = Object.keys(zmenus).map((id) => (

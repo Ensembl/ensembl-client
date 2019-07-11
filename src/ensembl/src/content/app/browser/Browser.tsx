@@ -14,7 +14,6 @@ import BrowserNavBar from './browser-nav/BrowserNavBar';
 import TrackPanel from './track-panel/TrackPanel';
 import AppBar from 'src/shared/app-bar/AppBar';
 
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import { RootState } from 'src/store';
 import { BrowserNavStates, ChrLocation } from './browserState';
 import {
@@ -75,11 +74,7 @@ type StateProps = {
 };
 
 type DispatchProps = {
-  changeBrowserLocation: (
-    genomeId: string,
-    chrLocation: ChrLocation,
-    browserEl: HTMLDivElement
-  ) => void;
+  changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
   fetchEnsObject: (ensObjectId: string, genomeId: string) => void;
   fetchGenomeData: (genomeId: string) => void;
   replace: Replace;
@@ -171,12 +166,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
     props.replace(urlFor.browser(params));
   };
-
-  useEffect(() => {
-    browserMessagingService.setup(browserRef.current as HTMLDivElement);
-
-    return () => browserMessagingService.onUnmount();
-  }, []);
 
   // handle url changes
   useEffect(() => {
@@ -326,7 +315,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
                 {props.browserNavOpened &&
                 !props.drawerOpened &&
                 browserRef.current ? (
-                  <BrowserNavBar browserElement={browserRef.current} />
+                  <BrowserNavBar />
                 ) : null}
                 <BrowserImage
                   browserRef={browserRef}
@@ -334,7 +323,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
                 />
               </div>
             </animated.div>
-            <TrackPanel browserRef={browserRef} />
+            <TrackPanel />
           </div>
         </section>
       )}
