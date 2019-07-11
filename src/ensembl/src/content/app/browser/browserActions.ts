@@ -197,15 +197,24 @@ export const changeBrowserLocation: ActionCreator<
   return (dispatch, getState: () => RootState) => {
     const state = getState();
     const [chrCode, startBp, endBp] = chrLocation;
+    const messageCount = state.browser.browserEntity.messageCounter;
 
-    if (startBp > 0 && endBp > 0) {
-      const messageCount = state.browser.browserEntity.messageCounter;
+    const stickEvent = new CustomEvent('bpane', {
+      bubbles: true,
+      detail: {
+        stick: `${genomeId}:${chrCode}`,
+        'message-counter': messageCount
+      }
+    });
+
+    browserEl.dispatchEvent(stickEvent);
+
+    if (startBp >= 0 && endBp >= 0) {
       const gotoEvent = new CustomEvent('bpane', {
         bubbles: true,
         detail: {
-          stick: `${genomeId}:${chrCode}`,
           goto: `${startBp}-${endBp}`,
-          'message-count': messageCount
+          'message-counter': messageCount
         }
       });
 
