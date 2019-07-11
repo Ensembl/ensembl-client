@@ -133,12 +133,6 @@ fn extract_counter(j: &JSONValue) -> Option<f64> {
 
 pub fn run_direct_events(app: &mut App, j: &JSONValue) {
     let evs = custom_make_events(&j);
-    // XXX test harness
-    let mut j : JSONValue = serde_json::from_str(&j.to_string()).ok().unwrap();
-    if let JSONValue::Object(ref mut j) = j {
-        j.insert("message-counter".to_string(),JSONValue::Number(JSONNumber::from_f64(42e+300).unwrap()));
-    }
-    //
     console!("receive/A {}",j.to_string());
     console!("receive/B {:?}",evs);
     app.run_actions(&evs,extract_counter(&j));
