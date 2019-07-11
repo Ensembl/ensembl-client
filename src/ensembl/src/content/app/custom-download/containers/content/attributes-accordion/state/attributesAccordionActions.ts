@@ -37,6 +37,13 @@ export const updateSelectedAttributes = createAction(
   }
 );
 
+export const updateContentState = createAction(
+  'custom-download/update-content-state',
+  (resolve) => {
+    return (contentState: {}) => resolve(contentState);
+  }
+);
+
 export const setOrthologueAttributes = createAction(
   'custom-download/set-orthologue-attributes',
   (resolve) => {

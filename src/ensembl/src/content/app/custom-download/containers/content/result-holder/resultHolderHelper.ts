@@ -3,7 +3,6 @@ import config from 'config';
 export const getEndpointUrl = (attributes: any, processedFilters: any) => {
   let endpoint = config.genesearchAPIEndpoint + '/genes/query?query=';
 
-  console.log(processedFilters);
   const endpointFilters: any = {
     genome: 'homo_sapiens'
   };

@@ -365,10 +365,31 @@ const filters: Filters = {
     label: 'Phenotypes',
     id: 'phenotypes'
   },
-  protein_and_domain_families: {
+  proteins: {
     type: 'section',
     label: 'Protein domains & families',
-    id: 'protein_and_domain_families'
+    id: 'protein_and_domain_families',
+    content: [
+      {
+        type: 'section_group',
+        label: '',
+        id: 'default',
+        content: [
+          {
+            type: 'section',
+            label: 'Upload family or domain IDs',
+            id: 'family_or_domain_ids',
+            content: [
+              {
+                type: 'paste_or_upload',
+                label: 'Limit to genes',
+                id: 'limit_to_genes'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   homologues: {
     type: 'section',

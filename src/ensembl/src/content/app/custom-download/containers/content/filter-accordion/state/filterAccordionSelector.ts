@@ -8,3 +8,6 @@ export const getFilters = (state: RootState): {} =>
 
 export const getSelectedFilters = (state: RootState): {} =>
   state.customDownload.filtersAccordion.selectedFilters;
+
+export const getContentState = (state: RootState): {} =>
+  state.customDownload.filtersAccordion.contentState;

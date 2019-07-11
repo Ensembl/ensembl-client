@@ -1,6 +1,8 @@
 import React from 'react';
 import CheckboxWithSelects from 'src/content/app/custom-download/components/checkbox-with-selects/CheckboxWithSelects';
 import CheckboxWithRadios from 'src/content/app/custom-download/components/checkbox-with-radios/CheckboxWithRadios';
+import CheckboxWithTextfields from 'src/content/app/custom-download/components/checkbox-with-textfields/CheckboxWithTextfields';
+
 import CheckboxGrid, {
   CheckboxGridOption
 } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
@@ -26,6 +28,8 @@ type ContentBuilderProps = {
   data: any;
   selectedData: any;
   onChange: (type: string, path: Path, payload: any) => void;
+  contentState: any;
+  onContentStateChange: (type: string, path: Path, payload: any) => void;
   path?: Path;
   contentProps?: {
     [key: string]: any;
@@ -34,8 +38,15 @@ type ContentBuilderProps = {
 
 const ContentBuilder = (props: ContentBuilderProps) => {
   const onChangeHandler = (type: string, path: Path, payload: any) => {
-    // TODO: Store accodrion expanded states separately from the filters to get the proper selected filters count.
     props.onChange(type, path, payload);
+  };
+
+  const onContentStateChangeHandler = (
+    type: string,
+    path: Path,
+    payload: any
+  ) => {
+    props.onContentStateChange(type, path, payload);
   };
 
   const buildCheckboxWithSelect = (entry: Filter, path: Path) => {
@@ -125,7 +136,9 @@ const ContentBuilder = (props: ContentBuilderProps) => {
           <ContentBuilder
             data={entry}
             onChange={onChangeHandler}
+            onContentStateChange={onContentStateChangeHandler}
             selectedData={props.selectedData}
+            contentState={props.contentState}
             path={path}
           />
         </AccordionItemPanel>
@@ -135,13 +148,13 @@ const ContentBuilder = (props: ContentBuilderProps) => {
 
   const buildAccordion = (entry: any, path: Path) => {
     const currentPath = [...path, entry.id];
-    const preExpandedPanels = get(props.selectedData, currentPath, []);
+    const preExpandedPanels = get(props.contentState, currentPath, []);
 
     return (
       <Accordion
         allowMultipleExpanded={true}
         onChange={(expandedPanels) =>
-          onChangeHandler(entry.type, currentPath, expandedPanels)
+          onContentStateChangeHandler(entry.type, currentPath, expandedPanels)
         }
         className={styles.accordion}
         preExpanded={preExpandedPanels}
@@ -152,6 +165,24 @@ const ContentBuilder = (props: ContentBuilderProps) => {
           );
         })}
       </Accordion>
+    );
+  };
+
+  const buildCheckboxWithTextfields = (entry: Filter, path: Path) => {
+    const currentPath = [...path, entry.id];
+
+    const values: string[] = get(props.selectedData, currentPath, '');
+
+    return (
+      <div className={styles.checkboxWitRadiosWrapper}>
+        <CheckboxWithTextfields
+          label={entry.label}
+          onChange={(values: string[]) =>
+            onChangeHandler(entry.type, currentPath, values)
+          }
+          values={values || []}
+        />
+      </div>
     );
   };
 
@@ -169,6 +200,8 @@ const ContentBuilder = (props: ContentBuilderProps) => {
         return <div key={key}>{buildCheckboxWithSelect(entry, path)}</div>;
       case 'select_one':
         return <div key={key}>{buildCheckboxWithRadios(entry, path)}</div>;
+      case 'paste_or_upload':
+        return <div key={key}>{buildCheckboxWithTextfields(entry, path)}</div>;
     }
   });
 };

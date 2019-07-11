@@ -21,7 +21,7 @@ import allFilters from 'src/content/app/custom-download/sample-data/filters';
 
 type Props = StateProps & DispatchProps;
 
-const Genes = (props: Props) => {
+const Proteins = (props: Props) => {
   useEffect(() => {}, [props.selectedFilters]);
 
   const filtersOnChange = (
@@ -50,7 +50,7 @@ const Genes = (props: Props) => {
 
   return (
     <ContentBuilder
-      data={allFilters['genes']}
+      data={allFilters['proteins']}
       onChange={filtersOnChange}
       contentState={props.contentState}
       onContentStateChange={onContentStateChangeHandler}
@@ -82,4 +82,4 @@ const mapStateToProps = (state: RootState): StateProps => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Genes);
+)(Proteins);

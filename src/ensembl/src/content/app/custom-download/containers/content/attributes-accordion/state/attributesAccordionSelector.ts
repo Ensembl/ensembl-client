@@ -6,6 +6,9 @@ export const getAttributes = (state: RootState): {} =>
 export const getSelectedAttributes = (state: RootState): {} =>
   state.customDownload.attributesAccordion.selectedAttributes;
 
+export const getContentState = (state: RootState): {} =>
+  state.customDownload.attributesAccordion.contentState;
+
 export const getOrthologueAttributes = (state: RootState): {} =>
   state.customDownload.attributesAccordion.attributes.orthologues;
 

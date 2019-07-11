@@ -26,6 +26,11 @@ function attributesAccordion(
         ...state,
         selectedAttributes: action.payload
       };
+    case getType(attributesAccordionActions.updateContentState):
+      return {
+        ...state,
+        updateContentState: action.payload
+      };
     case getType(attributesAccordionActions.setOrthologueAttributes):
       return {
         ...state,

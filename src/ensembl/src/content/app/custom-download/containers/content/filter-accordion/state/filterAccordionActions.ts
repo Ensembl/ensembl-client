@@ -23,3 +23,10 @@ export const updateSelectedFilters = createAction(
       );
   }
 );
+
+export const updateContentState = createAction(
+  'custom-download/update-content-state',
+  (resolve) => {
+    return (contentState: {}) => resolve(contentState);
+  }
+);

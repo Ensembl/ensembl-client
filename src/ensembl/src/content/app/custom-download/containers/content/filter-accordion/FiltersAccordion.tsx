@@ -15,7 +15,7 @@ import styles from './FiltersAccordion.scss';
 import { getFiltersAccordionExpandedPanel } from './state/filterAccordionSelector';
 import { setFiltersAccordionExpandedPanel } from './state/filterAccordionActions';
 
-import { Genes } from './sections';
+import { Genes, Proteins } from './sections';
 
 type Props = StateProps & DispatchProps;
 
@@ -97,7 +97,7 @@ const Filters = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className={styles.accordionItemPanel}>
-            <div className={styles.tempPadding}>Protein filters</div>
+            <Proteins />
           </AccordionItemPanel>
         </AccordionItem>
 

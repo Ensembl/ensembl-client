@@ -12,6 +12,7 @@ export type AttributesAccordionState = Readonly<{
   expandedPanel: string;
   attributes: CustomDownloadAttributes;
   selectedAttributes: CustomDownloadAttributes;
+  contentState: {};
   orthologue: OrthologueState;
 }>;
 
@@ -19,6 +20,7 @@ export const defaultAttributesAccordionState: AttributesAccordionState = {
   expandedPanel: '',
   attributes: {},
   selectedAttributes: {},
+  contentState: {},
   orthologue: {
     searchTerm: '',
     species: {},
