@@ -10,7 +10,7 @@ pub struct MousePhysicsImpl {
     mouse_pos: Option<CDFraction>,    /* spring handle */
     drive: Option<CDFraction>,        /* driving force */
     vel: CDFraction,                  /* vel */
-    settled: bool
+    locked: bool
 }
 
 #[derive(Clone)]
@@ -31,7 +31,7 @@ impl MousePhysicsImpl {
             mouse_pos: None,
             drive: None,
             vel: cdfraction(0.,0.),
-            settled: true
+            locked: false
         }
     }
     
@@ -65,10 +65,10 @@ impl MousePhysicsImpl {
     }
 
     fn make_events(&mut self, cg: &mut App, dx: &CDFraction) {
-        actions_run(cg,&vec! {
+        cg.run_actions(&vec! {
             Action::Move(Move::Left(Distance(dx.0,Units::Pixels))),
             Action::Move(Move::Up(Distance(dx.1,Units::Pixels)))
-        });
+        },None);
     }
 
     /* when the canvas moves, the "attachment point" moves with it.
@@ -130,14 +130,16 @@ impl MousePhysicsImpl {
             }
         }
         if self.force_origin.is_none() {
-            if !self.settled {
-                actions_run(cg,&vec![
+            if self.locked {
+                cg.run_actions(&vec![
                     Action::Settled
-                ]);
+                ],None);
+                cg.unlock();
+                self.locked = false;
             }
-            self.settled = true;
-        } else {
-            self.settled = false;
+        } else if !self.locked {
+            cg.lock();
+            self.locked = true;
         }
     }
     

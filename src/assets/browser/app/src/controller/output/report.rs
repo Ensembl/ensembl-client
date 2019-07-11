@@ -86,6 +86,8 @@ lazy_static! {
 
 pub struct ReportImpl {
     message_counter: f64,
+    sendable_message_counter: f64,
+    locks: u32,
     pieces: HashMap<String,String>,
     outputs: HashMap<String,StatusOutput>
 }
@@ -94,6 +96,8 @@ impl ReportImpl {
     pub fn new() -> ReportImpl {
         let out = ReportImpl {
             message_counter: 0.,
+            sendable_message_counter: 0.,
+            locks: 0,
             pieces: HashMap::<String,String>::new(),
             outputs: HashMap::<String,StatusOutput>::new()
         };
@@ -116,9 +120,30 @@ impl ReportImpl {
         self.pieces.insert(key.to_string(),value.to_string());
     }
 
-    pub fn update_counter(&mut self) {
+    pub fn is_current(&mut self, value: f64) -> bool {
+        return self.message_counter <= value
+    }
+
+    pub fn prepare_counter(&mut self) -> f64 {
         self.message_counter += 1.;
-        self.pieces.insert("message-counter".to_string(),self.message_counter.to_string());
+        self.message_counter
+    }
+
+    fn try_sync_counter(&mut self) {
+        if self.locks == 0 {
+            self.sendable_message_counter = self.message_counter;
+            self.pieces.insert("message-counter".to_string(),self.sendable_message_counter.to_string());
+        }        
+    }
+
+    pub fn lock(&mut self) {
+        self.locks += 1;
+        self.message_counter += 1.;
+    }
+
+    pub fn unlock(&mut self) {
+        self.locks -= 1;
+        self.try_sync_counter();
     }
 
     pub fn set_interval(&mut self, key: &str, interval: Option<f64>) {
@@ -209,7 +234,7 @@ impl ReportImpl {
         } else {
             None
         }
-    }        
+    }
 }
 
 #[derive(Clone)]
@@ -249,11 +274,23 @@ impl Report {
         imp.set_interval(key,interval);
     }
     
-    pub fn update_counter(&mut self) {
-        self.0.lock().unwrap().update_counter();
+    pub fn prepare_counter(&mut self) -> f64 {
+        self.0.lock().unwrap().prepare_counter()
     }
 
     pub fn new_report(&self, t: f64) -> Option<JSONValue> {
         self.0.lock().unwrap().new_report(t)
+    }
+
+    pub fn is_current(&self, value: f64) -> bool {
+        self.0.lock().unwrap().is_current(value)
+    }
+
+    pub fn lock(&mut self) {
+        self.0.lock().unwrap().lock();
+    }
+
+    pub fn unlock(&mut self) {
+        self.0.lock().unwrap().unlock();
     }
 }

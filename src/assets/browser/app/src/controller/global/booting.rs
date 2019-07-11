@@ -143,7 +143,7 @@ impl Booting {
             global.register_app_now(&self.key,ar.clone());
         }
         let app = ar.clone().state();
-        actions_run(&mut app.lock().unwrap(),&initial_actions());
+        app.lock().unwrap().run_actions(&initial_actions(),None);
         self.ec.reset();
         self.missed.run_missed(&mut app.lock().unwrap());
     }

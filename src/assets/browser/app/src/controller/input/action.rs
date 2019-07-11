@@ -119,14 +119,14 @@ fn exe_set_state(a: &mut App, name: &str, on: bool) {
     });
 }
 
-fn exe_zmenu(a: &mut App, pos: &CPixel) {
+fn exe_zmenu(a: &mut App, pos: &CPixel, currency: Option<f64>) {
     console!("click {:?}",pos);
     let acts = a.with_compo(|co|
         a.with_stage(|s|
             co.intersects(s,*pos)
         )
     );
-    actions_run(a,&acts);
+    a.run_actions(&acts,currency);
 }
 
 fn exe_deactivate(a: &mut App) {
@@ -141,7 +141,8 @@ fn exe_zmenu_show(a: &mut App, id: &str, pos: Dot<i32,i32>, payload: JSONValue) 
     }
 }
 
-pub fn actions_run(cg: &mut App, evs: &Vec<Action>) {
+pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
+    cg.lock();
     for ev in evs {
         let ev = ev.clone();
         if ev.active() {
@@ -158,11 +159,12 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>) {
             Action::SetStick(name) => exe_set_stick(cg,&name),
             Action::SetState(name,on) => exe_set_state(cg,&name,on),
             Action::Settled => exe_settled(cg),
-            Action::ZMenu(pos) => exe_zmenu(cg,&pos),
+            Action::ZMenu(pos) => exe_zmenu(cg,&pos,currency),
             Action::ShowZMenu(id,pos,payload) => exe_zmenu_show(cg,&id,pos,payload),
             Action::Noop => ()
         }
     }
+    cg.unlock();
 }
 
 pub fn startup_actions() -> Vec<Action> {

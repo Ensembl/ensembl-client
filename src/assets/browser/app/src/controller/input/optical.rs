@@ -7,7 +7,7 @@ pub struct OpticalImpl {
     missing: f64,
     target: f64,
     pos: Option<(CDFraction,f64)>,
-    settled: bool
+    locked: bool
 }
 
 const LETHARGY : f64 = 0.2;
@@ -19,33 +19,37 @@ impl OpticalImpl {
             missing: 0.,
             target: 0.,
             pos: None,
-            settled: true,
+            locked: false,
         }
     }
 
     fn send_delta(&mut self, app: &mut App, amt: f64) {
         if let Some((pos,prop)) = self.pos {
-            actions_run(app,&vec! {
+            app.run_actions(&vec! {
                 Action::Zoom(amt),
                 Action::Pos(pos,Some(prop))
-            });
+            },None);
             self.target = 0.;
         }
     }
 
     fn tick(&mut self, app: &mut App, _t: f64) {
         if self.missing.abs() > EPS {
+            if !self.locked {
+                app.lock();
+                self.locked = true;
+            }
             let this_time = self.missing * LETHARGY;
             self.missing -= this_time;
             self.send_delta(app,this_time);
-            self.settled = false;
-        } else if !self.settled {
+        } else if self.locked {
             self.send_delta(app,self.missing);
             self.missing = 0.;
-            actions_run(app,&vec![
+            app.run_actions(&vec![
                 Action::Settled
-            ]);
-            self.settled = true;
+            ],None);
+            self.locked = false;
+            app.unlock();
         }
     }
         

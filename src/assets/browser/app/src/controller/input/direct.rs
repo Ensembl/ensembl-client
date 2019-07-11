@@ -1,6 +1,10 @@
+use std::convert::TryInto;
+
 use std::sync::{ Arc, Mutex };
 
+use serde_json::from_str;
 use serde_json::Value as JSONValue;
+use serde_json::Number as JSONNumber;
 use stdweb::web::{ Element, HtmlElement };
 
 use controller::global::{ App, AppRunner };
@@ -116,14 +120,28 @@ fn custom_make_events(j: &JSONValue) -> Vec<Action> {
         }
     }
     out.push(Action::Settled);
-    console!("receive/A {}",j);
     out
+}
+
+fn extract_counter(j: &JSONValue) -> Option<f64> {
+    if let JSONValue::Object(j) = j {
+        j.get("message-counter").and_then(|v| v.as_f64())
+    } else {
+        None
+    }
 }
 
 pub fn run_direct_events(app: &mut App, j: &JSONValue) {
     let evs = custom_make_events(&j);
+    // XXX test harness
+    let mut j : JSONValue = serde_json::from_str(&j.to_string()).ok().unwrap();
+    if let JSONValue::Object(ref mut j) = j {
+        j.insert("message-counter".to_string(),JSONValue::Number(JSONNumber::from_f64(42e+300).unwrap()));
+    }
+    //
+    console!("receive/A {}",j.to_string());
     console!("receive/B {:?}",evs);
-    actions_run(app,&evs);
+    app.run_actions(&evs,extract_counter(&j));
 }
 
 pub struct DirectEventListener {
