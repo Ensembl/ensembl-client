@@ -14,6 +14,7 @@ import BrowserNavBar from './browser-nav/BrowserNavBar';
 import TrackPanel from './track-panel/TrackPanel';
 import AppBar from 'src/shared/app-bar/AppBar';
 
+import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import { RootState } from 'src/store';
 import { BrowserNavStates, ChrLocation } from './browserState';
 import {
@@ -154,9 +155,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
     genomeId: string,
     chrLocation: ChrLocation
   ) => {
-    if (browserRef.current) {
-      props.changeBrowserLocation(genomeId, chrLocation, browserRef.current);
-    }
+    props.changeBrowserLocation(genomeId, chrLocation);
   };
 
   const changeSelectedSpecies = (genomeId: string) => {
@@ -172,6 +171,12 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
     props.replace(urlFor.browser(params));
   };
+
+  useEffect(() => {
+    browserMessagingService.setup(browserRef.current as HTMLDivElement);
+
+    return () => browserMessagingService.onUnmount();
+  }, []);
 
   // handle url changes
   useEffect(() => {

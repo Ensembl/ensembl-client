@@ -4,6 +4,7 @@ import { ThunkAction } from 'redux-thunk';
 
 import config from 'config';
 
+import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import { BrowserNavStates, ChrLocation, CogList } from './browserState';
 import {
   getBrowserActiveGenomeId,
@@ -193,33 +194,21 @@ export const updateMessageCounter = createStandardAction(
 
 export const changeBrowserLocation: ActionCreator<
   ThunkAction<any, any, null, Action<string>>
-> = (genomeId: string, chrLocation: ChrLocation, browserEl: HTMLDivElement) => {
+> = (genomeId: string, chrLocation: ChrLocation) => {
   return (dispatch, getState: () => RootState) => {
     const state = getState();
     const [chrCode, startBp, endBp] = chrLocation;
     const messageCount = state.browser.browserEntity.messageCounter;
 
-    const stickEvent = new CustomEvent('bpane', {
-      bubbles: true,
-      detail: {
-        stick: `${genomeId}:${chrCode}`,
-        'message-counter': messageCount
-      }
+    browserMessagingService.send('bpane', {
+      stick: `${genomeId}:${chrCode}`,
+      'message-counter': messageCount
     });
 
-    browserEl.dispatchEvent(stickEvent);
-
-    if (startBp >= 0 && endBp >= 0) {
-      const gotoEvent = new CustomEvent('bpane', {
-        bubbles: true,
-        detail: {
-          goto: `${startBp}-${endBp}`,
-          'message-counter': messageCount
-        }
-      });
-
-      browserEl.dispatchEvent(gotoEvent);
-    }
+    browserMessagingService.send('bpane', {
+      goto: `${startBp}-${endBp}`,
+      'message-counter': messageCount
+    });
   };
 };
 

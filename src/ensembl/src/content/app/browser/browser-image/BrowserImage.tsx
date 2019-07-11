@@ -11,6 +11,7 @@ import { BrowserNavStates, CogList } from '../browserState';
 import BrowserCogList from '../BrowserCogList';
 import { ZmenuController } from 'src/content/app/browser/zmenu';
 
+import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import {
   getTrackConfigNames,
   getTrackConfigLabel,
@@ -99,6 +100,12 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
     if (messageCount) {
       props.updateMessageCounter(messageCount);
     }
+  }, []);
+
+  useEffect(() => {
+    browserMessagingService.setup(props.browserRef.current as HTMLDivElement);
+
+    return () => browserMessagingService.onUnmount();
   }, []);
 
   useEffect(() => {
