@@ -18,7 +18,6 @@ import { RootState } from 'src/store';
 import { BrowserNavStates, ChrLocation } from './browserState';
 import {
   changeBrowserLocation,
-  updateBrowserNavStates,
   setDataFromUrlAndSave,
   ParsedUrlPayload
 } from './browserActions';
@@ -39,7 +38,6 @@ import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 import { getDrawerOpened } from './drawer/drawerSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
-import { fetchEnsObject } from 'src/ens-object/ensObjectActions';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
@@ -79,11 +77,9 @@ type DispatchProps = {
     chrLocation: ChrLocation,
     browserEl: HTMLDivElement
   ) => void;
-  fetchEnsObject: (ensObjectId: string, genomeId: string) => void;
   fetchGenomeData: (genomeId: string) => void;
   replace: Replace;
   toggleDrawer: (drawerOpened: boolean) => void;
-  updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   setDataFromUrlAndSave: (payload: ParsedUrlPayload) => void;
 };
 
@@ -105,7 +101,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
   const [trackStatesFromStorage, setTrackStatesFromStorage] = useState<
     TrackStates
   >({});
-  const isFirstRenderRef = useRef(true);
   const lastGenomeIdRef = useRef(props.activeGenomeId);
 
   const setDataFromUrl = () => {
@@ -197,13 +192,16 @@ export const Browser: FunctionComponent<BrowserProps> = (
       // handle navigation to /app/browser/:genomeId?focus=:focus&location=:location
       setDataFromUrl();
     }
-    setTrackStatesFromStorage(browserStorageService.getTrackStates());
   }, [props.match.params.genomeId, props.location.search]);
 
   useEffect(() => {
     const { activeGenomeId, fetchGenomeData } = props;
     activeGenomeId && fetchGenomeData(activeGenomeId);
   }, [props.activeGenomeId]);
+
+  useEffect(() => {
+    setTrackStatesFromStorage(browserStorageService.getTrackStates());
+  }, [props.activeGenomeId, props.activeEnsObjectId]);
 
   useEffect(() => {
     const {
@@ -253,11 +251,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
       updateLocationInUrl();
     }
   }, [props.chrLocation]);
-
-  // helps distinguish first render from subsequent renders
-  useEffect(() => {
-    isFirstRenderRef.current = false;
-  }, []);
 
   const closeTrack = () => {
     if (props.drawerOpened === false) {
@@ -384,11 +377,9 @@ const mapStateToProps = (state: RootState): StateProps => ({
 
 const mapDispatchToProps: DispatchProps = {
   changeBrowserLocation,
-  fetchEnsObject, // FIXME: handle ensObject change that requires fetching of an object
   fetchGenomeData,
   replace,
   toggleDrawer,
-  updateBrowserNavStates,
   setDataFromUrlAndSave
 };
 
