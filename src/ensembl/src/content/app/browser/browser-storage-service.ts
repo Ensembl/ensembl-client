@@ -55,17 +55,6 @@ export class BrowserStorageService {
     this.storageService.update(StorageKeys.CHR_LOCATION, chrLocation);
   }
 
-  // public getDefaultChrLocation() {
-  //   return this.storageService.get(StorageKeys.DEFAULT_CHR_LOCATION) || {};
-  // }
-
-  // public updateDefaultChrLocation(defaultChrLocation: ChrLocations) {
-  //   this.storageService.update(
-  //     StorageKeys.DEFAULT_CHR_LOCATION,
-  //     defaultChrLocation
-  //   );
-  // }
-
   public getTrackStates(): TrackStates {
     return this.storageService.get(StorageKeys.TRACK_STATES) || {};
   }

@@ -7,7 +7,6 @@ import config from 'config';
 import { BrowserNavStates, ChrLocation, CogList } from './browserState';
 import {
   getBrowserActiveGenomeId,
-  getBrowserActiveEnsObjectId,
   getBrowserActiveEnsObjectIds,
   getBrowserTrackStates
 } from './browserSelectors';
@@ -72,10 +71,12 @@ export const setDataFromUrlAndSave: ActionCreator<
   const { activeGenomeId, activeEnsObjectId, chrLocation } = payload;
 
   browserStorageService.saveActiveGenomeId(payload.activeGenomeId);
-  browserStorageService.updateChrLocation({ [activeGenomeId]: chrLocation });
-  browserStorageService.updateActiveEnsObjectIds({
-    [activeGenomeId]: activeEnsObjectId
-  });
+  chrLocation &&
+    browserStorageService.updateChrLocation({ [activeGenomeId]: chrLocation });
+  activeEnsObjectId &&
+    browserStorageService.updateActiveEnsObjectIds({
+      [activeGenomeId]: activeEnsObjectId
+    });
 };
 
 export const updateBrowserActiveGenomeId = createAction(
@@ -211,13 +212,6 @@ export const changeBrowserLocation: ActionCreator<
 
       browserEl.dispatchEvent(gotoEvent);
     }
-
-    // const chrLocationPayload = {
-    //   [activeObjectId]: chrLocation
-    // };
-
-    // dispatch(updateChrLocation(chrLocationPayload));
-    // browserStorageService.updateChrLocation(chrLocationPayload);
   };
 };
 
