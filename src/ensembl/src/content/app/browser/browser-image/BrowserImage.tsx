@@ -23,7 +23,8 @@ import {
   activateBrowser,
   updateBrowserActivated,
   updateBrowserNavStates,
-  setChrLocation
+  setChrLocation,
+  updateMessageCounter
 } from '../browserActions';
 
 import { ChrLocation } from '../browserState';
@@ -47,6 +48,7 @@ type DispatchProps = {
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
   setChrLocation: (chrLocation: ChrLocation) => void;
+  updateMessageCounter: (count: number) => void;
 };
 
 type OwnProps = {
@@ -59,7 +61,8 @@ type BrowserImageProps = StateProps & DispatchProps & OwnProps;
 type BpaneOutEvent = Event & {
   detail: {
     bumper?: BrowserNavStates;
-    location: string;
+    messageCounter?: number;
+    location?: string;
   };
 };
 
@@ -74,6 +77,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
     const bpaneOutEvent = event as BpaneOutEvent;
     const navIconStates = bpaneOutEvent.detail.bumper as BrowserNavStates;
     const location = bpaneOutEvent.detail.location;
+    const messageCount = bpaneOutEvent.detail['message-counter'];
 
     if (navIconStates) {
       props.updateBrowserNavStates(navIconStates);
@@ -90,6 +94,10 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
       ] as ChrLocation;
 
       dispatchSetChrLocation(chrLocation);
+    }
+
+    if (messageCount) {
+      props.updateMessageCounter(messageCount);
     }
   }, []);
 
@@ -225,7 +233,8 @@ const mapDispatchToProps: DispatchProps = {
   activateBrowser,
   updateBrowserActivated,
   updateBrowserNavStates,
-  setChrLocation
+  setChrLocation,
+  updateMessageCounter
 };
 
 export default connect(

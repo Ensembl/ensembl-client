@@ -187,26 +187,25 @@ export const setChrLocation: ActionCreator<
   };
 };
 
+export const updateMessageCounter = createStandardAction(
+  'browser/update-message-counter'
+)<number>();
+
 export const changeBrowserLocation: ActionCreator<
   ThunkAction<any, any, null, Action<string>>
 > = (genomeId: string, chrLocation: ChrLocation, browserEl: HTMLDivElement) => {
-  return () => {
+  return (dispatch, getState: () => RootState) => {
+    const state = getState();
     const [chrCode, startBp, endBp] = chrLocation;
 
-    const stickEvent = new CustomEvent('bpane', {
-      bubbles: true,
-      detail: {
-        stick: `${genomeId}:${chrCode}`
-      }
-    });
-
-    browserEl.dispatchEvent(stickEvent);
-
     if (startBp > 0 && endBp > 0) {
+      const messageCount = state.browser.browserEntity.messageCounter;
       const gotoEvent = new CustomEvent('bpane', {
         bubbles: true,
         detail: {
-          goto: `${startBp}-${endBp}`
+          stick: `${genomeId}:${chrCode}`,
+          goto: `${startBp}-${endBp}`,
+          'message-count': messageCount
         }
       });
 
