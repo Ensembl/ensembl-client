@@ -131,7 +131,7 @@ impl ReportImpl {
     }
 
     pub fn is_current(&mut self, value: f64) -> bool {
-        return self.message_counter <= value
+        return self.message_counter <= value || value == -1.
     }
 
     pub fn prepare_counter(&mut self) -> f64 {
