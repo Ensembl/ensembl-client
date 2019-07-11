@@ -109,7 +109,7 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
         <dd>
           <Checkbox
             classNames={checkboxStyles}
-            label={'All tracks'}
+            label="All tracks"
             checked={applyToAll}
             onChange={applyToAllToggle}
           />
@@ -117,9 +117,9 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
       </dl>
       <dl>
         <dd>
-          <label htmlFor={'trackConfig-trackName'}>Track name</label>
+          <label htmlFor="trackConfig-trackName">Track name</label>
           <button
-            id={'trackConfig-trackName'}
+            id="trackConfig-trackName"
             className={styles.trackConfigSlider}
             onClick={toggleName}
           >
@@ -127,9 +127,9 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
           </button>
         </dd>
         <dd>
-          <label htmlFor={'trackConfig-featureLabels'}>Feature labels</label>
+          <label htmlFor="trackConfig-featureLabels">Feature labels</label>
           <button
-            id={'trackConfig-featureLabels'}
+            id="trackConfig-featureLabels"
             className={styles.trackConfigSlider}
             onClick={toggleLabel}
           >
