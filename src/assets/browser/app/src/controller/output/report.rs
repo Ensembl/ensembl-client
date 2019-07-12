@@ -311,10 +311,6 @@ impl Report {
         self.0.lock().unwrap().set_vital(key);
     }
     
-    pub fn prepare_counter(&mut self) -> f64 {
-        self.0.lock().unwrap().prepare_counter()
-    }
-
     pub fn new_report(&self, t: f64) -> Option<JSONValue> {
         self.0.lock().unwrap().new_report(t)
     }
