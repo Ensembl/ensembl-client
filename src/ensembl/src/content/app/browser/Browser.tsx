@@ -344,7 +344,7 @@ const ExampleObjectLinks = (props: BrowserProps) => {
     });
 
     return (
-      <div key={exampleObject.ensembl_object_id}>
+      <div key={exampleObject.ensembl_object_id} className={styles.exampleLink}>
         <Link to={path}>
           <span className={styles.objectType}>
             {upperFirst(exampleObject.object_type)}
@@ -355,7 +355,7 @@ const ExampleObjectLinks = (props: BrowserProps) => {
     );
   });
 
-  return <>{links}</>;
+  return <div className={styles.exampleLinks}>{links}</div>;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
