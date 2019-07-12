@@ -52,16 +52,13 @@ const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
   props: BrowserCogListProps
 ) => {
   const { browserCogTrackList } = props;
-  const listenBpaneScroll = useCallback((event: Event) => {
-    const bpaneScrollEvent = event as BpaneScrollEvent;
-    if (
-      bpaneScrollEvent.detail.delta_y ||
-      bpaneScrollEvent.detail.delta_y === 0
-    ) {
-      props.updateCogList(bpaneScrollEvent.detail.delta_y);
+  const listenBpaneScroll = useCallback((payload: any) => {
+    // FIXME types
+    if (payload.delta_y || payload.delta_y === 0) {
+      props.updateCogList(payload.delta_y);
     }
-    if (bpaneScrollEvent.detail.track_y) {
-      props.updateCogTrackList(bpaneScrollEvent.detail.track_y);
+    if (payload.track_y) {
+      props.updateCogTrackList(payload.track_y);
     }
   }, []);
 

@@ -59,12 +59,10 @@ type OwnProps = {
 
 type BrowserImageProps = StateProps & DispatchProps & OwnProps;
 
-type BpaneOutEvent = Event & {
-  detail: {
-    bumper?: BrowserNavStates;
-    'message-counter'?: number;
-    location?: string;
-  };
+type BpaneOutPayload = {
+  bumper?: BrowserNavStates;
+  'message-counter'?: number;
+  location?: string;
 };
 
 export const BrowserImage: FunctionComponent<BrowserImageProps> = (
@@ -74,12 +72,10 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
     props.setChrLocation(chrLocation);
   };
 
-  const listenBpaneOut = useCallback((event: Event) => {
-    const bpaneOutEvent = event as BpaneOutEvent;
-    const navIconStates = bpaneOutEvent.detail.bumper as BrowserNavStates;
-    const location = bpaneOutEvent.detail.location;
-    const messageCount = bpaneOutEvent.detail['message-counter'];
-    console.log('event', event);
+  const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
+    const navIconStates = payload.bumper as BrowserNavStates;
+    const location = payload.location;
+    const messageCount = payload['message-counter'];
 
     if (navIconStates) {
       props.updateBrowserNavStates(navIconStates);
@@ -104,10 +100,11 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   }, []);
 
   useEffect(() => {
-    browserMessagingService.setup(props.browserRef.current as HTMLDivElement);
     browserMessagingService.subscribe('bpane-out', listenBpaneOut);
 
-    return () => browserMessagingService.onUnmount();
+    return () => {
+      // TODO: add unsubscribes on unmount throughout
+    };
   }, []);
 
   useEffect(() => {

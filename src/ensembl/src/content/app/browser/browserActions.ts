@@ -42,15 +42,12 @@ export const activateBrowser = (browserEl: HTMLDivElement) => {
   return (dispatch: Dispatch) => {
     const { protocol, host: currentHost } = location;
     const host = config.apiHost || currentHost;
-    const activateEvent = new CustomEvent('bpane-activate', {
-      bubbles: true,
-      detail: {
-        'config-url': `${protocol}${host}/browser/config`,
-        key: 'main'
-      }
-    });
 
-    browserEl.dispatchEvent(activateEvent);
+    const payload = {
+      'config-url': `${protocol}${host}/browser/config`,
+      key: 'main'
+    };
+    browserMessagingService.send('bpane-activate', payload);
 
     dispatch(updateBrowserActivated(true));
   };
