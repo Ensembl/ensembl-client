@@ -18,6 +18,8 @@ use data::{ BackendConfigBootstrap, HttpManager };
 use dom::domutil;
 use dom::domutil::browser_time;
 
+use super::activate::activate;
+
 const SCHEDULER_ALLOC : f64 = 12.; /* ms per raf */
 
 pub struct GlobalImpl {
@@ -146,10 +148,6 @@ impl GlobalWeak {
 }
 
 pub fn setup_global() {
-    /* setup */
     Global::new();
-    /* mark as ready */
-    let body = domutil::query_selector_ok_doc("body","Cannot find body element");
-    domutil::add_attr(&body,"class","browser-app-ready");
-    domutil::remove_attr(&body.into(),"class","browser-app-not-ready");
+    activate();
 }

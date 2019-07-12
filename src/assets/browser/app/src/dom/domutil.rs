@@ -147,6 +147,18 @@ pub fn send_custom_event(el: &HtmlElement, name: &str, data: &JSONValue) {
     };
 }
 
+pub fn send_post_message(name: &str, data: &JSONValue) {
+    let name = name.to_string();
+    let message = json! {{
+        "type": name,
+        "payload": data
+    }};
+    let message : Value = message.clone().try_into().unwrap();
+    js! {
+        window.postMessage(@{&message});
+    };
+}
+
 pub fn clear_selection() {
     js! {
         var sel = window.getSelection ? window.getSelection() : document.selection;
