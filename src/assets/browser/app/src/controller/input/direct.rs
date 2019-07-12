@@ -154,9 +154,12 @@ impl EventListener<()> for DirectEventListener {
         EventData::CustomEvent(_,_,_,c) =>
             run_direct_events(&mut self.cg.lock().unwrap(),
                               &c.details().unwrap()),
-        EventData::MessageEvent(_,_,c) =>
-            run_direct_events(&mut self.cg.lock().unwrap(),
-                              &c.data().unwrap()["payload"]),
+        EventData::MessageEvent(_,_,c) => {
+            let data = &c.data().unwrap();
+            if data["type"] == "bpane" {
+                run_direct_events(&mut self.cg.lock().unwrap(),&data["payload"]);
+            }
+        },
         _ => ()
         }
     }
