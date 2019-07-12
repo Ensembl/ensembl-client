@@ -58,9 +58,7 @@ export function browserEntity(
         ...state,
         activeGenomeId
       };
-      if (!activeEnsObjectId) {
-        delete newState.activeEnsObjectIds[activeGenomeId];
-      } else {
+      if (activeEnsObjectId) {
         newState.activeEnsObjectIds[activeGenomeId] = activeEnsObjectId;
       }
       return newState;
