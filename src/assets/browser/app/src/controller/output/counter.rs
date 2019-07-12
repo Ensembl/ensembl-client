@@ -5,7 +5,7 @@ pub struct Counter {
 }
 
 impl Counter {
-    pub(in super) fn new() -> Counter {
+    pub fn new() -> Counter {
         Counter {
             message_counter: 0.,
             locks: 0,
@@ -21,7 +21,7 @@ impl Counter {
         self.locks -= 1;
     }
 
-    pub(in super) fn is_current(&mut self, value: f64) -> bool {
+    pub fn is_current(&mut self, value: f64) -> bool {
         self.message_counter <= value || value == -1.
     }
 

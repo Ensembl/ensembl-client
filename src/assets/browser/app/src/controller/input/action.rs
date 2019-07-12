@@ -142,7 +142,7 @@ fn exe_zmenu_show(a: &mut App, id: &str, pos: Dot<i32,i32>, payload: JSONValue) 
 }
 
 pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
-    cg.lock();
+    cg.with_counter(|c| c.lock());
     for ev in evs {
         let ev = ev.clone();
         if ev.active() {
@@ -164,7 +164,7 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
             Action::Noop => ()
         }
     }
-    cg.unlock();
+    cg.with_counter(|c| c.unlock());
 }
 
 pub fn startup_actions() -> Vec<Action> {

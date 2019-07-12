@@ -134,11 +134,11 @@ impl MousePhysicsImpl {
                 cg.run_actions(&vec![
                     Action::Settled
                 ],None);
-                cg.unlock();
+                cg.with_counter(|c| c.unlock());
                 self.locked = false;
             }
         } else if !self.locked {
-            cg.lock();
+            cg.with_counter(|c| c.lock());
             self.locked = true;
         }
     }

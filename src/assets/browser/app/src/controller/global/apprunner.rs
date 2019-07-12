@@ -9,7 +9,7 @@ use controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup };
 use controller::input::{
     register_direct_events, register_user_events, register_dom_events
 };
-use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports };
+use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter };
 
 #[cfg(any(not(deploy),console))]
 use data::blackbox::{
@@ -90,6 +90,11 @@ impl AppRunner {
             imp.bling.activate(&app,&el);
         }
         out
+    }
+
+    pub fn with_counter<F,G>(&mut self, cb: F) -> G where F: FnOnce(&mut Counter) -> G {
+        let mut g = unwrap!(unwrap!(self.0.lock()).g.upgrade()).clone();
+        g.with_counter(cb)
     }
 
     pub fn get_browser_el(&mut self) -> HtmlElement {
@@ -209,8 +214,3 @@ impl AppRunnerWeak {
     pub fn none() -> AppRunnerWeak { AppRunnerWeak(Weak::new()) }
 }
 
-impl Drop for AppRunner {
-    fn drop(&mut self) {
-        console!("App runner dropped");
-    }
-}

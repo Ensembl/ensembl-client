@@ -97,7 +97,6 @@ lazy_static! {
 
 
 pub struct ReportImpl {
-    counter: Counter,
     pieces: HashMap<String,String>,
     outputs: HashMap<String,StatusOutput>
 }
@@ -105,7 +104,6 @@ pub struct ReportImpl {
 impl ReportImpl {
     pub fn new() -> ReportImpl {
         let out = ReportImpl {
-            counter: Counter::new(),
             pieces: HashMap::<String,String>::new(),
             outputs: HashMap::<String,StatusOutput>::new()
         };
@@ -126,18 +124,6 @@ impl ReportImpl {
     
     pub fn set_status(&mut self, key: &str, value: &str) {
         self.pieces.insert(key.to_string(),value.to_string());
-    }
-
-    pub fn is_current(&mut self, value: f64) -> bool {
-        self.counter.is_current(value)
-    }
-
-    pub fn lock(&mut self) {
-        self.counter.lock();
-    }
-
-    pub fn unlock(&mut self) {
-        self.counter.unlock();
     }
 
     pub fn set_interval(&mut self, key: &str, interval: Option<f64>) {
@@ -210,10 +196,10 @@ impl ReportImpl {
         }
     }
 
-    fn new_report(&mut self, t: f64) -> Option<JSONValue> {
+    fn new_report(&mut self, t: f64, counter: &mut Counter) -> Option<JSONValue> {
         let mut out = JSONMap::<String,JSONValue>::new();
         let mut vital = false;
-        let force = self.counter.force_update();
+        let force = counter.force_update();
         for (k,s) in &self.outputs {
             if let Some(value) = self.make_value(&s.jigsaw) {
                 if let Some(ref last_value) = s.last_value {
@@ -234,10 +220,10 @@ impl ReportImpl {
             }
         }
         if out.len() > 0 {
-            if let Some(mc) = self.counter.try_update_counter() {
+            if let Some(mc) = counter.try_update_counter() {
                 self.pieces.insert("message-counter".to_string(),mc.to_string());
             }
-            if !self.counter.is_delayed() {
+            if !counter.is_delayed() {
                 for (k,s) in &self.outputs {
                     if s.is_always_send() {
                         if let Some(value) = self.make_value(&s.jigsaw) {                
@@ -269,12 +255,14 @@ impl Report {
             out.set_interval(k,*v);
             if *vital { out.set_vital(k); }
         }
-        ar.add_timer("report",enclose! { (out) move |_app,t,sr| {
-            if let Some(report) = out.new_report(t) {
-                vec!{
-                    OutputAction::SendCustomEvent("bpane-out".to_string(),report)
-                }
-            } else { sr.unproductive(); vec!{} }
+        ar.add_timer("report",enclose! { (out) move |app,t,sr| {
+            app.with_counter(|counter| {
+                if let Some(report) = out.new_report(t,counter) {
+                    vec!{
+                        OutputAction::SendCustomEvent("bpane-out".to_string(),report)
+                    }
+                } else { sr.unproductive(); vec!{} }
+            })
         }},4);
         out
     }
@@ -297,19 +285,7 @@ impl Report {
         self.0.lock().unwrap().set_vital(key);
     }
     
-    pub fn new_report(&self, t: f64) -> Option<JSONValue> {
-        self.0.lock().unwrap().new_report(t)
-    }
-
-    pub fn is_current(&self, value: f64) -> bool {
-        self.0.lock().unwrap().is_current(value)
-    }
-
-    pub fn lock(&mut self) {
-        self.0.lock().unwrap().lock();
-    }
-
-    pub fn unlock(&mut self) {
-        self.0.lock().unwrap().unlock();
+    pub fn new_report(&self, t: f64, counter: &mut Counter) -> Option<JSONValue> {
+        self.0.lock().unwrap().new_report(t,counter)
     }
 }

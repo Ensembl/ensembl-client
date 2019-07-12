@@ -13,6 +13,7 @@ use controller::input::{
     register_startup_events, register_shutdown_events
 };
 use controller::global::{ AppRunner, Booting };
+use controller::output::Counter;
 use controller::scheduler::{ Scheduler, SchedulerGroup };
 use data::{ BackendConfigBootstrap, HttpManager };
 use dom::domutil;
@@ -27,7 +28,8 @@ pub struct GlobalImpl {
     app_runners: HashMap<String,AppRunner>,
     http_manager: HttpManager,
     scheduler: Scheduler,
-    sched_group: SchedulerGroup
+    sched_group: SchedulerGroup,
+    counter: Counter
 }
 
 impl GlobalImpl {
@@ -36,6 +38,7 @@ impl GlobalImpl {
         let sched_group = scheduler.make_group();
         set_instance_id();
         let mut out = GlobalImpl {
+            counter: Counter::new(),
             inst_id: get_instance_id(),
             app_runners: HashMap::<String,AppRunner>::new(),
             http_manager: HttpManager::new(),
@@ -89,6 +92,11 @@ impl Global {
         register_shutdown_events(&mut out);
         out.tick();
         out
+    }
+
+    pub fn with_counter<F,G>(&mut self, cb: F) -> G where F: FnOnce(&mut Counter) -> G {
+        let mut imp = self.0.borrow_mut();
+        cb(&mut imp.counter)
     }
 
     /* scheduler-related */    
