@@ -26,7 +26,9 @@
       color: $ens-dark-grey;
       width: 25%;
       max-width: 200px;
-      display: inline-block;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      float: left;
     }
 
     .lineValue {

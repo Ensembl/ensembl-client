@@ -21,13 +21,13 @@ const attributes = {
         options: [
           {
             id: 'name',
-            label: 'Gene symbol',
-            isChecked: false
+            label: 'Gene name',
+            isChecked: true
           },
           {
             id: 'id',
             label: 'Gene stable ID',
-            isChecked: false
+            isChecked: true
           },
           {
             id: 'version',
@@ -42,17 +42,22 @@ const attributes = {
           {
             id: 'start',
             label: 'Gene start(bp)',
-            isChecked: false
+            isChecked: true
           },
           {
             id: 'end',
             label: 'Gene end (bp)',
-            isChecked: false
+            isChecked: true
           },
           {
             id: 'source',
             label: 'Source (gene)',
             isChecked: false
+          },
+          {
+            id: 'biotype',
+            label: 'Biotype',
+            isChecked: true
           }
         ]
       },
@@ -99,7 +104,7 @@ const attributes = {
           {
             id: 'biotype',
             label: 'Biotype',
-            isChecked: true
+            isChecked: false
           },
           {
             id: 'name',

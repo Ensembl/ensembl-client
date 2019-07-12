@@ -9,6 +9,7 @@ import PasteOrUpload from '../paste-or-upload/PasteOrUpload';
 export type CheckboxWithTextfieldsProps = {
   values: string[];
   label: string;
+  allowMultiple: boolean;
   onChange: (values: string[]) => void;
 };
 
@@ -88,7 +89,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
                 })}
 
               {/* Show the Add button */}
-              {shouldShowAddButton && (
+              {shouldShowAddButton && props.allowMultiple && (
                 <div className={styles.addIconHolder}>
                   <ImageButton
                     onClick={addEntry}
@@ -105,4 +106,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
   );
 };
 
+CheckboxWithTextfields.defaultProps = {
+  allowMultiple: false
+};
 export default CheckboxWithTextfields;

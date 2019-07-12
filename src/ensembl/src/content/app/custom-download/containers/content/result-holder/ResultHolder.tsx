@@ -31,11 +31,11 @@ type Props = StateProps & DispatchProps;
 
 const ResultHolder = (props: Props) => {
   useEffect(() => {
-    const selectedAttributes: { [key: string]: boolean } = flattenObject(
+    const flatSelectedAttributes: { [key: string]: boolean } = flattenObject(
       props.selectedAttributes
     );
 
-    const totalSelectedAttributes = keys(selectedAttributes).length;
+    const totalSelectedAttributes = keys(flatSelectedAttributes).length;
     if (!totalSelectedAttributes && props.preview.results) {
       props.clearPreviewResult({});
       return;
@@ -43,33 +43,12 @@ const ResultHolder = (props: Props) => {
       return;
     }
 
-    const processedAttributes = keys(
-      mapKeys(selectedAttributes, (value: boolean, key: string) => {
-        return key
-          .split('.default')
-          .join('')
-          .split('genes.')
-          .join('');
-      })
-    );
-
-    const selectedFilters: { [key: string]: boolean } = flattenObject(
+    const endpointURL = getEndpointUrl(
+      flatSelectedAttributes,
       props.selectedFilters
     );
 
-    const processedFilters = mapKeys(
-      selectedFilters,
-      (value: boolean, key: string) => {
-        return key
-          .split('.default')
-          .join('')
-          .split('genes.')
-          .join('');
-      }
-    );
-
-    const endpointURL = getEndpointUrl(processedAttributes, processedFilters);
-    if (processedAttributes.length) {
+    if (totalSelectedAttributes) {
       props.setIsLoadingResult(true);
       props.fetchPreviewResult(endpointURL);
     }
@@ -97,10 +76,11 @@ const ResultHolder = (props: Props) => {
     );
   }
 
-  const formattedResults = formatResults(props.preview);
-
+  const formattedResults = formatResults(
+    props.preview,
+    props.selectedAttributes
+  );
   const headerRow = formattedResults.shift() || [];
-
   return (
     <>
       {props.isLoadingResult && (
@@ -115,7 +95,9 @@ const ResultHolder = (props: Props) => {
               {headerRow.map((header: string, rowKey: number) => {
                 return (
                   <div key={rowKey} className={styles.resultLine}>
-                    <div className={styles.lineHeader}>{header}</div>
+                    <div className={styles.lineHeader} title={header}>
+                      {header}
+                    </div>
                     <div className={styles.lineValue}>
                       {dataRow[rowKey] ? dataRow[rowKey] : '-'}
                     </div>

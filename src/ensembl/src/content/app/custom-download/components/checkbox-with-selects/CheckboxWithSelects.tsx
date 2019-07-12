@@ -25,7 +25,7 @@ const CheckboxWithSelects = (props: CheckboxWithSelectsProps) => {
 
   const handleOnSelect = (value: string, selectIndex?: number) => {
     const newSelectedOptions: string[] = [...props.selectedOptions];
-    if (selectIndex) {
+    if (selectIndex !== undefined) {
       newSelectedOptions[selectIndex] = value;
     } else {
       newSelectedOptions.push(value);
