@@ -1,4 +1,4 @@
-import { CustomDownloadAttributes } from 'src/content/app/custom-download/types/Attributes';
+import { Attributes } from 'src/content/app/custom-download/types/Attributes';
 
 export type OrthologueState = {
   searchTerm: string;
@@ -10,9 +10,9 @@ export type OrthologueState = {
 
 export type AttributesAccordionState = Readonly<{
   expandedPanel: string;
-  attributes: CustomDownloadAttributes;
-  selectedAttributes: CustomDownloadAttributes;
-  contentState: {};
+  attributes: Attributes;
+  selectedAttributes: Attributes;
+  contentState: any;
   orthologue: OrthologueState;
 }>;
 

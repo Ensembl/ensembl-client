@@ -1,69 +1,68 @@
 export const orthologueAttributes = {
-  symbol: {
-    id: 'symbol',
-    label: 'Gene symbol',
-    isChecked: false
-  },
-  id: {
-    id: 'id',
-    label: 'Gene stable ID',
-    isChecked: false
-  },
-  id_version: {
-    id: 'id_version',
-    label: 'Gene stable ID version',
-    isChecked: false
-  },
-  name: {
-    id: 'name',
-    label: 'Gene name',
-    isChecked: false
-  },
-  type: {
-    id: 'type',
-    label: 'Gene type',
-    isChecked: false
-  },
-  version_gene: {
-    id: 'version_gene',
-    label: 'Version (gene)',
-    isChecked: false
-  },
-  start: {
-    id: 'start',
-    label: 'Gene start(bp)',
-    isChecked: false
-  },
-  end: {
-    id: 'end',
-    label: 'Gene end (bp)',
-    isChecked: false
-  },
-  gc_content: {
-    id: 'gc_content',
-    label: 'Gene % GC content',
-    isChecked: false
-  },
-  source_gene: {
-    id: 'source_gene',
-    label: 'Source (gene)',
-    isChecked: false
-  },
-  EntrezGene: {
-    id: 'EntrezGene',
-    label: 'EntrezGene',
-    isChecked: false
-  },
-  source_of_name: {
-    id: 'source_of_name',
-    label: 'Source of gene name',
-    isChecked: false
-  },
-  xxxx: {
-    id: 'xxxxxx',
-    label: 'xxxxxx',
-    isChecked: false
-  }
+  id: 'orthologues',
+  label: '',
+  options: [
+    {
+      id: 'symbol',
+      label: 'Gene symbol',
+      isChecked: false
+    },
+    {
+      id: 'id',
+      label: 'Gene stable ID',
+      isChecked: false
+    },
+    {
+      id: 'id_version',
+      label: 'Gene stable ID version',
+      isChecked: false
+    },
+    {
+      id: 'name',
+      label: 'Gene name',
+      isChecked: false
+    },
+    {
+      id: 'type',
+      label: 'Gene type',
+      isChecked: false
+    },
+    {
+      id: 'version_gene',
+      label: 'Version (gene)',
+      isChecked: false
+    },
+    {
+      id: 'start',
+      label: 'Gene start(bp)',
+      isChecked: false
+    },
+    {
+      id: 'end',
+      label: 'Gene end (bp)',
+      isChecked: false
+    },
+    {
+      id: 'gc_content',
+      label: 'Gene % GC content',
+      isChecked: false
+    },
+    {
+      id: 'source_gene',
+      label: 'Source (gene)',
+      isChecked: false
+    },
+    {
+      id: 'EntrezGene',
+      label: 'EntrezGene',
+      isChecked: false
+    },
+    {
+      id: 'source_of_name',
+      label: 'Source of gene name',
+      isChecked: false
+    }
+  ]
 };
 
 export const orthologueSpecies = {

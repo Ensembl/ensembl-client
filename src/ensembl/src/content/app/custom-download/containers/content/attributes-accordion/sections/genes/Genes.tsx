@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
-import AttributesSection from 'src/content/app/custom-download/types/Attributes';
+import { Attributes } from 'src/content/app/custom-download/types/Attributes';
 
 import {
   getSelectedAttributes,
@@ -83,7 +83,7 @@ const Genes = (props: Props) => {
 };
 
 type DispatchProps = {
-  updateSelectedAttributes: (updateSelectedAttributes: {}) => void;
+  updateSelectedAttributes: (updateSelectedAttributes: Attributes) => void;
   updateContentState: (updateContentState: {}) => void;
 };
 
@@ -93,7 +93,7 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 type StateProps = {
-  selectedAttributes: AttributesSection;
+  selectedAttributes: Attributes;
   contentState: {};
 };
 

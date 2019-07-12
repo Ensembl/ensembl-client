@@ -1,14 +1,6 @@
-export type Attribute = {
-  isChecked: boolean;
-  id: string;
-  label: string;
-};
+import Attribute, { Attributes } from '../types/Attributes';
 
-export type Attributes = {
-  [key: string]: Attribute;
-};
-
-const attributes = {
+const attributes: Attributes = {
   genes: {
     type: 'section',
     label: 'Genes',
@@ -185,11 +177,13 @@ const attributes = {
   exons: {
     type: 'section',
     label: 'Transcripts',
+    id: 'exons',
     content: []
   },
   sequences: {
     type: 'section',
     label: 'Sequence',
+    id: 'sequences',
     content: [
       {
         type: 'checkbox_grid',
@@ -399,21 +393,25 @@ const attributes = {
   phenotypes: {
     type: 'section',
     label: 'Phenotypes',
+    id: 'phenotypes',
     content: []
   },
   protein: {
     type: 'section',
     label: 'Protein',
+    id: 'protein',
     content: []
   },
   orthologues: {
     type: 'section',
     label: 'Orthologues',
+    id: 'orthologues',
     content: []
   },
   paralogues: {
     type: 'section',
     label: 'Paralogues',
+    id: 'paralogues',
     content: []
   }
 };

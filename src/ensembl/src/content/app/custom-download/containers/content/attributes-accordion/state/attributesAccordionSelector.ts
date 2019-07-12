@@ -1,15 +1,17 @@
 import { RootState } from 'src/store';
 
-export const getAttributes = (state: RootState): {} =>
+import { Attributes } from '../../../../types/Attributes';
+
+export const getAttributes = (state: RootState): Attributes =>
   state.customDownload.attributesAccordion.attributes;
 
-export const getSelectedAttributes = (state: RootState): {} =>
+export const getSelectedAttributes = (state: RootState): Attributes =>
   state.customDownload.attributesAccordion.selectedAttributes;
 
 export const getContentState = (state: RootState): {} =>
   state.customDownload.attributesAccordion.contentState;
 
-export const getOrthologueAttributes = (state: RootState): {} =>
+export const getOrthologueAttributes = (state: RootState): Attributes =>
   state.customDownload.attributesAccordion.attributes.orthologues;
 
 export const getOrthologueSearchTerm = (state: RootState): string =>

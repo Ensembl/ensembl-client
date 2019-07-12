@@ -8,7 +8,7 @@ import {
   OrthologueState
 } from './attributesAccordionState';
 
-import { CustomDownloadAttributes } from 'src/content/app/custom-download/types/Attributes';
+import { Attributes } from 'src/content/app/custom-download/types/Attributes';
 
 function attributesAccordion(
   state: AttributesAccordionState = defaultAttributesAccordionState,
@@ -89,7 +89,7 @@ function Orthologue(
 function OrthologueAttributes(
   state: any = defaultAttributesAccordionState.attributes,
   action: ActionType<RootAction>
-): CustomDownloadAttributes {
+): Attributes {
   switch (action.type) {
     case getType(attributesAccordionActions.setOrthologueAttributes):
       return { ...state, orthologues: action.payload };

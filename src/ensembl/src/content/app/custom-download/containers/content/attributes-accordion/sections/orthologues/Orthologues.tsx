@@ -1,9 +1,7 @@
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
-import CheckboxGrid, {
-  getAttributesCount
-} from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
+import CheckboxGrid from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
 import {
   getOrthologueAttributes,
@@ -28,7 +26,7 @@ import Input from 'src/shared/input/Input';
 
 import styles from './Orthologues.scss';
 
-import AttributesSection from 'src/content/app/custom-download/types/Attributes';
+import { Attributes } from 'src/content/app/custom-download/types/Attributes';
 
 import { orthologueAttributes } from 'src/content/app/custom-download/sample-data/orthologue';
 
@@ -42,30 +40,26 @@ type Props = ownProps & StateProps & DispatchProps;
 const Orthologue = (props: Props) => {
   const attributesOnChangeHandler = (
     status: boolean,
-    subSection: string,
+    species: string,
     attributeId: string
   ) => {
-    const newOrthologueAttributes = { ...props.orthologueAttributes };
+    const newOrthologueAttributes: any = { ...props.orthologueAttributes };
 
-    newOrthologueAttributes[subSection][attributeId].isChecked = status;
+    newOrthologueAttributes[species][attributeId].isChecked = status;
 
     props.setOrthologueAttributes(newOrthologueAttributes);
   };
 
-  const speciesOnChangeHandler = (
-    status: boolean,
-    subSection: string,
-    attributeId: string
-  ) => {
+  const speciesOnChangeHandler = (status: boolean, attributeId: string) => {
     const newOrthologueFilteredSpecies = {
       ...props.orthologueSpecies
     };
 
-    newOrthologueFilteredSpecies[subSection][attributeId].isChecked = status;
+    newOrthologueFilteredSpecies[attributeId].isChecked = status;
 
     props.setOrthologueSpecies(newOrthologueFilteredSpecies);
 
-    const newOrthologueAttributes = { ...props.orthologueAttributes };
+    const newOrthologueAttributes: any = { ...props.orthologueAttributes };
     const sectionHeader = props.orthologueSpecies.default[attributeId].label;
 
     if (status) {
@@ -88,7 +82,7 @@ const Orthologue = (props: Props) => {
   );
 
   const getResultCounter = () => {
-    const totalSpecies = getAttributesCount(props.orthologueSpecies);
+    const totalSpecies = props.orthologueSpecies.species.length;
     return (
       <>
         <span>{totalSpecies ? totalSpecies : 0}</span>
@@ -116,10 +110,10 @@ const Orthologue = (props: Props) => {
       {!!props.orthologueSpecies && (
         <div>
           <CheckboxGrid
-            checkboxOnChange={speciesOnChangeHandler}
-            gridData={props.orthologueSpecies}
-            hideTitles={props.hideTitles}
-            columns={3}
+            onChange={speciesOnChangeHandler}
+            options={props.orthologueSpecies}
+            hideLabel={props.hideTitles}
+            label={''}
           />
         </div>
       )}
@@ -133,10 +127,12 @@ const Orthologue = (props: Props) => {
                   <span>{species}</span>
                 </div>
                 <CheckboxGrid
-                  checkboxOnChange={attributesOnChangeHandler}
-                  gridData={{ [species]: props.orthologueAttributes[species] }}
-                  hideTitles={true}
-                  columns={3}
+                  onChange={(status, id) =>
+                    attributesOnChangeHandler(status, species, id)
+                  }
+                  options={props.orthologueAttributes}
+                  hideLabel={true}
+                  label={''}
                 />
               </div>
             );
@@ -147,7 +143,7 @@ const Orthologue = (props: Props) => {
 };
 
 type DispatchProps = {
-  setOrthologueAttributes: (setOrthologueAttributes: AttributesSection) => void;
+  setOrthologueAttributes: (setOrthologueAttributes: Attributes) => void;
   setOrthologueSearchTerm: (setOrthologueSearchTerm: string) => void;
   setOrthologueSpecies: (setOrthologueSpecies: any) => void;
   fetchOrthologueSpecies: (searchTerm: string, orthologueSpecies: any) => void;
@@ -169,7 +165,7 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 type StateProps = {
-  orthologueAttributes: AttributesSection;
+  orthologueAttributes: Attributes;
   orthologueSearchTerm: string;
   orthologueSpecies: any;
   shouldShowBestMatches: boolean;

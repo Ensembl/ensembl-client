@@ -1,9 +1,10 @@
 import React from 'react';
 import Checkbox from 'src/shared/checkbox/Checkbox';
-import AttributesSection from 'src/content/app/custom-download/types/Attributes';
 import styles from './CheckboxGrid.scss';
 
 import orderBy from 'lodash/orderBy';
+
+import Attribute from 'src/content/app/custom-download/types/Attributes';
 
 export type CheckboxGridOption = {
   isChecked: boolean;
@@ -12,7 +13,7 @@ export type CheckboxGridOption = {
 };
 
 export type CheckboxGridProps = {
-  options: CheckboxGridOption[];
+  options: Attribute[];
   columns: number;
   hideUnchecked?: boolean;
   hideLabel?: boolean;
@@ -20,31 +21,15 @@ export type CheckboxGridProps = {
   onChange: (status: boolean, id: string) => void;
 };
 
-export const filterCheckedAttributes = (attributes: CheckboxGridOption[]) => {
+export const filterCheckedAttributes = (attributes: Attribute[]) => {
   return attributes;
 };
 
-export const getAttributesCount = (attributes: AttributesSection) => {
-  let totalAttributes = 0;
-  const attributeKeys = Object.keys(attributes);
-
-  if (!attributes || attributeKeys.length === 0) {
-    return 0;
-  }
-  attributeKeys.forEach((section) => {
-    totalAttributes += Object.keys(attributes[section]).length;
-  });
-
-  return totalAttributes;
-};
-
 const CheckboxGrid = (props: CheckboxGridProps) => {
-  let orderedCheckboxList: CheckboxGridOption[] = orderBy(props.options, [
-    'label'
-  ]);
+  let orderedCheckboxList: Attribute[] = orderBy(props.options, ['label']);
 
   if (props.hideUnchecked) {
-    orderedCheckboxList = orderedCheckboxList.filter((attribute) => {
+    orderedCheckboxList = orderedCheckboxList.filter((attribute: Attribute) => {
       return attribute.isChecked;
     });
   }
@@ -85,12 +70,12 @@ const CheckboxGrid = (props: CheckboxGridProps) => {
             <div key={gridKey} style={singleGridStyle}>
               {orderedCheckboxList
                 .splice(0, columnLength)
-                .map((attribute: CheckboxGridOption, itemKey: number) => {
+                .map((attribute: Attribute, itemKey: number) => {
                   return (
                     <div key={itemKey} className={styles.checkboxContainer}>
                       <Checkbox
                         label={attribute.label}
-                        checked={attribute.isChecked}
+                        checked={Boolean(attribute.isChecked)}
                         onChange={(status) => {
                           props.onChange(status, attribute.id);
                         }}

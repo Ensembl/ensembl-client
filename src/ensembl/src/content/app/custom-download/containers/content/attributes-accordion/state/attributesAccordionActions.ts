@@ -6,7 +6,7 @@ import { orthologueSpecies as sampleOrthologueSpecies } from '../../../../sample
 
 import attributes from 'src/content/app/custom-download/sample-data/attributes';
 
-import AttributesSection from 'src/content/app/custom-download/types/Attributes';
+import { Attributes } from 'src/content/app/custom-download/types/Attributes';
 
 export const setAttributes = createAsyncAction(
   'custom-download/set-attributes-request',
@@ -29,7 +29,7 @@ export const fetchAttributes: ActionCreator<
 export const updateSelectedAttributes = createAction(
   'custom-download/update-selected-attributes',
   (resolve) => {
-    return (attributes: AttributesSection) =>
+    return (attributes: Attributes) =>
       resolve(
         attributes,
         getCustomDownloadAnalyticsObject('Gene attributes updated')
@@ -40,14 +40,14 @@ export const updateSelectedAttributes = createAction(
 export const updateContentState = createAction(
   'custom-download/update-content-state',
   (resolve) => {
-    return (contentState: {}) => resolve(contentState);
+    return (contentState: any) => resolve(contentState);
   }
 );
 
 export const setOrthologueAttributes = createAction(
   'custom-download/set-orthologue-attributes',
   (resolve) => {
-    return (orthologueAttributes: AttributesSection) =>
+    return (orthologueAttributes: Attributes) =>
       resolve(
         orthologueAttributes,
         getCustomDownloadAnalyticsObject('Orthologue attributes updated')
@@ -117,28 +117,28 @@ export const fetchOrthologueSpecies: ActionCreator<
     // This will be fetched from the API when we have one
     let allSpecies = sampleOrthologueSpecies.species;
 
-    let filteredSpecies: any = {};
+    let filteredSpecies: any = [];
 
     allSpecies.forEach((species: any) => {
       if (
         species.display_name.toLowerCase().indexOf(searchTerm.toLowerCase()) !==
         -1
       ) {
-        filteredSpecies[species.name] = {
+        let checkedStatus = false;
+        if (
+          orthologueSpecies &&
+          orthologueSpecies.default &&
+          orthologueSpecies.default[species]
+        ) {
+          checkedStatus = true;
+        }
+        filteredSpecies.push({
           id: species.name,
           label: species.display_name,
-          isChecked: false
-        };
+          isChecked: checkedStatus
+        });
       }
     });
-
-    if (orthologueSpecies && orthologueSpecies.default) {
-      Object.keys(orthologueSpecies.default).forEach((species: string) => {
-        if (orthologueSpecies.default[species].isChecked) {
-          filteredSpecies[species] = orthologueSpecies.default[species];
-        }
-      });
-    }
 
     dispatch(setOrthologueSpecies.success({ default: filteredSpecies }));
   } catch (error) {

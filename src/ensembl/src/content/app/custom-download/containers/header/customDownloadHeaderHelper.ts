@@ -1,17 +1,19 @@
 import config from 'config';
 
-import { SelectedAttribute } from 'src/content/app/custom-download/types/Attributes';
+import Attribute, {
+  Attributes
+} from 'src/content/app/custom-download/types/Attributes';
 
 export const fetchCustomDownloadResults = (
   downloadType: string,
-  attributes: SelectedAttribute[],
+  attributes: Attribute[],
   filters: any
 ) => {
   let endpoint = config.genesearchAPIEndpoint + '/genes/fetch?query=';
 
   let endpointFields = '';
-  attributes.forEach((attribute: SelectedAttribute) => {
-    endpointFields += attribute[2] + ',';
+  attributes.forEach((attribute: Attribute) => {
+    endpointFields += attribute.id + ',';
   });
 
   const endpointFilters: any = {

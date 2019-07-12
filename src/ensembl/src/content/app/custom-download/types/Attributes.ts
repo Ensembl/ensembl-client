@@ -1,21 +1,20 @@
+import { RadioOptions } from 'src/shared/radio/Radio';
+import { Option } from 'src/shared/select/Select';
+import { CheckboxGridOption } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
+
 export type Attribute = {
-  isChecked: boolean;
-  id: string;
+  type: string;
   label: string;
+  id: string;
+  isChecked?: boolean;
+  content?: Attribute[];
+  options?: RadioOptions | Option[] | CheckboxGridOption[];
+  selectedOptions?: string[];
+  selectedOption?: string;
 };
 
-export type AttributesSubSection = {
+export type Attributes = {
   [key: string]: Attribute;
 };
 
-type AttributesSection = {
-  [key: string]: AttributesSubSection;
-};
-
-export type CustomDownloadAttributes = {
-  [key: string]: AttributesSection;
-};
-
-export type SelectedAttribute = string[];
-
-export default AttributesSection;
+export default Attribute;

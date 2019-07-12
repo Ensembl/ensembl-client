@@ -34,8 +34,8 @@ import { fetchCustomDownloadResults } from './customDownloadHeaderHelper';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 
-import AttributesSection, {
-  SelectedAttribute
+import Attribute, {
+  Attributes
 } from 'src/content/app/custom-download/types/Attributes';
 
 import styles from './CustomDownloadHeader.scss';
@@ -126,7 +126,7 @@ const Header = (props: Props) => {
 
   let disablePreviewButton = resultCount === 0;
 
-  const selectedAttributes: SelectedAttribute[] = getSelectedAttributes(
+  const selectedAttributes: Attributes = getSelectedAttributes(
     props.attributes
   );
   const selectedFilters: any = getSelectedFilters(props.filters);
@@ -234,7 +234,7 @@ type StateProps = {
   showPreview: boolean;
   downloadType: string;
   filters: any;
-  attributes: AttributesSection;
+  attributes: Attributes;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
