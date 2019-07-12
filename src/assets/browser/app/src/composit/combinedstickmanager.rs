@@ -23,7 +23,6 @@ impl CombinedStickManager {
 
 impl StickManager for CombinedStickManager {
     fn get_stick(&mut self, name: &str) -> Option<Stick> {
-        console!("csm: {:?} ({:?})",name,self.internal.get(name).is_some());
         if let Some(stick) = self.internal.get(name) {
             Some(stick).cloned()
         } else {

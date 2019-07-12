@@ -28,7 +28,8 @@ struct StatusOutput {
     last_value: Option<JSONValue>,
     jigsaw: StatusJigsaw,
     last_sent: Option<f64>,
-    send_every: Option<f64>    
+    send_every: Option<f64>,
+    vital: bool
 }
 
 impl StatusOutput {
@@ -38,8 +39,15 @@ impl StatusOutput {
             last_sent: None,
             send_every: Some(0.),
             last_value: None,
+            vital: false
         }
     }
+
+    fn is_always_send(&self) -> bool {
+        self.send_every.is_none()
+    }
+
+    fn is_vital(&self) -> bool { self.vital }
 
     fn is_send_now(&self, t: f64) -> bool {
         if let Some(interval) = self.send_every {
@@ -50,18 +58,31 @@ impl StatusOutput {
                 return true;
             }
         }
-        return false;
+        return true;
     }
 }
 
 lazy_static! {
     static ref REPORT_CONFIG:
-        Vec<(&'static str,StatusJigsaw,Option<f64>)> = vec!{
+        Vec<(&'static str,StatusJigsaw,Option<f64>,bool)> = vec!{
+        ("message-counter",
+            StatusJigsaw::Atom("message-counter".to_string(),StatusJigsawType::Number),
+        None,false),
         ("location",StatusJigsaw::Array(vec!{
-            StatusJigsaw::Atom("stick".to_string(),StatusJigsawType::String),
-            StatusJigsaw::Atom("start".to_string(),StatusJigsawType::Number),
-            StatusJigsaw::Atom("end".to_string(),StatusJigsawType::Number),
-        }),Some(500.)),
+            StatusJigsaw::Atom("i-stick".to_string(),StatusJigsawType::String),
+            StatusJigsaw::Atom("i-start".to_string(),StatusJigsawType::Number),
+            StatusJigsaw::Atom("i-end".to_string(),StatusJigsawType::Number),
+        }),Some(500.),true),
+        ("actual-location",StatusJigsaw::Array(vec!{
+            StatusJigsaw::Atom("a-stick".to_string(),StatusJigsawType::String),
+            StatusJigsaw::Atom("a-start".to_string(),StatusJigsawType::Number),
+            StatusJigsaw::Atom("a-end".to_string(),StatusJigsawType::Number),
+        }),Some(500.),false),
+        ("intended-location",StatusJigsaw::Array(vec!{
+            StatusJigsaw::Atom("i-stick".to_string(),StatusJigsawType::String),
+            StatusJigsaw::Atom("i-start".to_string(),StatusJigsawType::Number),
+            StatusJigsaw::Atom("i-end".to_string(),StatusJigsawType::Number),
+        }),Some(2000.),true),
         ("bumper",StatusJigsaw::Array(vec!{
             StatusJigsaw::Atom("bumper-top".to_string(),StatusJigsawType::Boolean),
             StatusJigsaw::Atom("bumper-bottom".to_string(),StatusJigsawType::Boolean),
@@ -69,11 +90,14 @@ lazy_static! {
             StatusJigsaw::Atom("bumper-in".to_string(),StatusJigsawType::Boolean),
             StatusJigsaw::Atom("bumper-left".to_string(),StatusJigsawType::Boolean),
             StatusJigsaw::Atom("bumper-right".to_string(),StatusJigsawType::Boolean),
-        }),Some(500.))
+        }),Some(500.),true)
     };
 }
 
 pub struct ReportImpl {
+    message_counter: f64,
+    locks: u32,
+    delayed: bool,
     pieces: HashMap<String,String>,
     outputs: HashMap<String,StatusOutput>
 }
@@ -81,6 +105,9 @@ pub struct ReportImpl {
 impl ReportImpl {
     pub fn new() -> ReportImpl {
         let out = ReportImpl {
+            message_counter: 0.,
+            locks: 0,
+            delayed: false,
             pieces: HashMap::<String,String>::new(),
             outputs: HashMap::<String,StatusOutput>::new()
         };
@@ -103,9 +130,41 @@ impl ReportImpl {
         self.pieces.insert(key.to_string(),value.to_string());
     }
 
+    pub fn is_current(&mut self, value: f64) -> bool {
+        return self.message_counter <= value || value == -1.
+    }
+
+    fn force_update(&self) -> bool {
+        self.locks == 0 && self.delayed
+    }
+
+    fn try_update_counter(&mut self) {
+        if self.locks == 0 {
+            self.message_counter += 1.;
+            self.pieces.insert("message-counter".to_string(),self.message_counter.to_string());
+            self.delayed = false;
+        } else {
+            self.delayed = true;
+        }
+    }
+
+    pub fn lock(&mut self) {
+        self.locks += 1;
+    }
+
+    pub fn unlock(&mut self) {
+        self.locks -= 1;
+    }
+
     pub fn set_interval(&mut self, key: &str, interval: Option<f64>) {
         if let Some(ref mut p) = self.get_output(key) {
             p.send_every = interval;
+        }
+    }
+
+    pub fn set_vital(&mut self, key: &str) {
+        if let Some(ref mut p) = self.get_output(key) {
+            p.vital = true;
         }
     }
 
@@ -169,12 +228,17 @@ impl ReportImpl {
 
     fn new_report(&mut self, t: f64) -> Option<JSONValue> {
         let mut out = JSONMap::<String,JSONValue>::new();
+        let mut vital = false;
+        let force = self.force_update();
         for (k,s) in &self.outputs {
             if let Some(value) = self.make_value(&s.jigsaw) {
                 if let Some(ref last_value) = s.last_value {
-                    if last_value == &value { continue; }
+                    if !force && (s.is_always_send() || last_value == &value) { 
+                        continue;
+                    }
                 }
-                if s.is_send_now(t) {
+                if s.is_send_now(t) || force {
+                    vital |= s.is_vital();
                     out.insert(k.to_string(),value.clone());
                 }
             }
@@ -186,11 +250,23 @@ impl ReportImpl {
             }
         }
         if out.len() > 0 {
-            Some(JSONValue::Object(out))
-        } else {
-            None
+            self.try_update_counter();
+            if !self.delayed {
+                for (k,s) in &self.outputs {
+                    if s.is_always_send() {
+                        if let Some(value) = self.make_value(&s.jigsaw) {                
+                            out.insert(k.to_string(),value.clone());
+                        }
+                    }
+                }
+                if vital {
+                    console!("send/A ({:?}) {}",force,JSONValue::Object(out.clone()));
+                }
+                return Some(JSONValue::Object(out));
+            }
         }
-    }        
+        None
+    }
 }
 
 #[derive(Clone)]
@@ -199,12 +275,13 @@ pub struct Report(Arc<Mutex<ReportImpl>>);
 impl Report {
     pub fn new(ar: &mut AppRunner) -> Report {
         let mut out = Report(Arc::new(Mutex::new(ReportImpl::new())));
-        for (k,j,v) in REPORT_CONFIG.iter() {
+        for (k,j,v,vital) in REPORT_CONFIG.iter() {
             {
                 let mut imp = out.0.lock().unwrap();
                 imp.add_output(k,j.clone());
             }
             out.set_interval(k,*v);
+            if *vital { out.set_vital(k); }
         }
         ar.add_timer("report",enclose! { (out) move |_app,t,sr| {
             if let Some(report) = out.new_report(t) {
@@ -229,8 +306,24 @@ impl Report {
         let mut imp = self.0.lock().unwrap();
         imp.set_interval(key,interval);
     }
+
+    pub fn set_vital(&mut self, key: &str) {
+        self.0.lock().unwrap().set_vital(key);
+    }
     
     pub fn new_report(&self, t: f64) -> Option<JSONValue> {
         self.0.lock().unwrap().new_report(t)
+    }
+
+    pub fn is_current(&self, value: f64) -> bool {
+        self.0.lock().unwrap().is_current(value)
+    }
+
+    pub fn lock(&mut self) {
+        self.0.lock().unwrap().lock();
+    }
+
+    pub fn unlock(&mut self) {
+        self.0.lock().unwrap().unlock();
     }
 }

@@ -1,8 +1,16 @@
 import { RootState } from 'src/store';
-import { GenomeInfoData } from './genomeTypes';
+import { GenomeInfo, GenomeInfoData } from './genomeTypes';
 
 export const getGenomeInfo = (state: RootState) =>
   state.genome.genomeInfo.genomeInfoData as GenomeInfoData;
+
+export const getGenomeInfoById = (
+  state: RootState,
+  genomeId: string
+): GenomeInfo | null => {
+  const allGenomesInfo = getGenomeInfo(state);
+  return allGenomesInfo[genomeId] || null;
+};
 
 export const getGenomeInfoFetching = (state: RootState) =>
   state.genome.genomeInfo.genomeInfoFetching;

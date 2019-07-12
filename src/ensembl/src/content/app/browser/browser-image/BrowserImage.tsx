@@ -17,8 +17,7 @@ import {
   getBrowserCogTrackList,
   getBrowserNavOpened,
   getBrowserActivated,
-  getBrowserActiveGenomeId,
-  getChrLocation
+  getBrowserActiveGenomeId
 } from '../browserSelectors';
 import {
   activateBrowser,
@@ -27,7 +26,7 @@ import {
   setChrLocation
 } from '../browserActions';
 
-import { BrowserChrLocation, ChrLocation } from '../browserState';
+import { ChrLocation } from '../browserState';
 
 import { CircleLoader } from 'src/shared/loader/Loader';
 
@@ -35,13 +34,12 @@ import { RootState } from 'src/store';
 import { TrackStates } from '../track-panel/trackPanelConfig';
 
 type StateProps = {
-  activeGenomeId: string;
+  activeGenomeId: string | null;
   browserCogTrackList: CogList;
   browserNavOpened: boolean;
   trackConfigNames: any;
   trackConfigLabel: any;
   browserActivated: boolean;
-  chrLocation: BrowserChrLocation;
 };
 
 type DispatchProps = {
@@ -82,10 +80,13 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
     }
 
     if (location) {
+      // FIXME: is there any reason to receive genome and chromosome in the same string?
+      const [genomeAndChromosome, start, end] = location;
+      const [, chromosome] = genomeAndChromosome.split(':');
       const chrLocation = [
-        location[0].split(':')[1],
-        Number(location[1]),
-        Number(location[2])
+        chromosome,
+        Number(start),
+        Number(end)
       ] as ChrLocation;
 
       dispatchSetChrLocation(chrLocation);
@@ -217,8 +218,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
   browserNavOpened: getBrowserNavOpened(state),
   trackConfigLabel: getTrackConfigLabel(state),
   trackConfigNames: getTrackConfigNames(state),
-  browserActivated: getBrowserActivated(state),
-  chrLocation: getChrLocation(state)
+  browserActivated: getBrowserActivated(state)
 });
 
 const mapDispatchToProps: DispatchProps = {

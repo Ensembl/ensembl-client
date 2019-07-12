@@ -42,7 +42,7 @@ fn exe_pos_range_event(app: &App, x_start: f64, x_end: f64, y: f64) {
     let middle = Dot((x_start+x_end)/2.,y);
     let (pos,zoom) = app.with_stage(|s| { 
         s.set_screen_in_bp(x_end-x_start);
-        s.set_pos_middle(&middle); 
+        s.set_pos_middle(&middle);
         (s.get_pos_middle(),s.get_linear_zoom())
     });
     app.with_compo(|co| {
@@ -58,7 +58,7 @@ fn exe_move_event(app: &App, v: Move<f64,f64>) {
             Axis::Vert => v.convert(Units::Pixels,s),
             Axis::Zoom => v // TODO invalid pre-unification
         };
-        s.inc_pos(&v);
+        s.set_pos_middle(&(s.get_pos_middle()+v));
         s.get_pos_middle()
     });
     app.with_compo(|co| {
@@ -66,13 +66,14 @@ fn exe_move_event(app: &App, v: Move<f64,f64>) {
     });
 }
 
-fn exe_zoom_event(app: &App, z: f64, by: bool) {
+fn exe_zoom_event(app: &App, za: f64, by: bool) {
     let middle = app.with_stage(|s| s.get_pos_middle().0);
     let z = app.with_stage(|s| {
         if by {
-            s.inc_zoom(z);
+            let new_za = za+s.get_zoom();
+            s.set_zoom(new_za);
         } else {
-            s.set_zoom(z);
+            s.set_zoom(za);
         }
         s.get_linear_zoom()
     });
@@ -98,13 +99,14 @@ fn exe_component_add(a: &mut App, name: &str) {
 
 fn exe_set_stick(a: &mut App, name: &str) {
     if let Some(stick) = a.with_stick_manager(|sm| sm.get_stick(name)) {
-        a.with_compo(|co| co.set_stick(&stick));
         a.with_stage(|s| {
             s.set_limit(&LEFT,0.);
             s.set_limit(&RIGHT,stick.length() as f64);
             s.set_wrapping(&stick.get_wrapping());
+            s.set_pos_intent(false);
             
         });
+        a.with_compo(|co| co.set_stick(&stick));
         exe_pos_event(a,cdfraction(0.,0.),None);
     } else {
         console_force!("NO SUCH STICK {}",name);
@@ -117,14 +119,14 @@ fn exe_set_state(a: &mut App, name: &str, on: bool) {
     });
 }
 
-fn exe_zmenu(a: &mut App, pos: &CPixel) {
+fn exe_zmenu(a: &mut App, pos: &CPixel, currency: Option<f64>) {
     console!("click {:?}",pos);
     let acts = a.with_compo(|co|
         a.with_stage(|s|
             co.intersects(s,*pos)
         )
     );
-    actions_run(a,&acts);
+    a.run_actions(&acts,currency);
 }
 
 fn exe_deactivate(a: &mut App) {
@@ -139,7 +141,8 @@ fn exe_zmenu_show(a: &mut App, id: &str, pos: Dot<i32,i32>, payload: JSONValue) 
     }
 }
 
-pub fn actions_run(cg: &mut App, evs: &Vec<Action>) {
+pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
+    cg.lock();
     for ev in evs {
         let ev = ev.clone();
         if ev.active() {
@@ -148,19 +151,20 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>) {
         match ev {
             Action::Pos(v,prop) => exe_pos_event(cg,v,prop),
             Action::PosRange(x_start,x_end,y) => exe_pos_range_event(cg,x_start,x_end,y),
-            Action::Move(v) => exe_move_event(cg,v),
-            Action::Zoom(z) => exe_zoom_event(cg,z,true),
-            Action::ZoomTo(z) => exe_zoom_event(cg,z,false),
+            Action::Move(va) => exe_move_event(cg,va),
+            Action::Zoom(za) => exe_zoom_event(cg,za,true),
+            Action::ZoomTo(za) => exe_zoom_event(cg,za,false),
             Action::Resize(sz) => exe_resize(cg,sz),
             Action::AddComponent(name) => exe_component_add(cg,&name),
             Action::SetStick(name) => exe_set_stick(cg,&name),
             Action::SetState(name,on) => exe_set_state(cg,&name,on),
             Action::Settled => exe_settled(cg),
-            Action::ZMenu(pos) => exe_zmenu(cg,&pos),
+            Action::ZMenu(pos) => exe_zmenu(cg,&pos,currency),
             Action::ShowZMenu(id,pos,payload) => exe_zmenu_show(cg,&id,pos,payload),
             Action::Noop => ()
         }
     }
+    cg.unlock();
 }
 
 pub fn startup_actions() -> Vec<Action> {

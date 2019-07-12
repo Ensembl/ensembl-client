@@ -3,6 +3,7 @@ import { mount } from 'enzyme';
 import faker from 'faker';
 import { BrowserBar, BrowserInfo, BrowserNavigatorButton } from './BrowserBar';
 
+import { ChrLocation } from '../browserState';
 import { TrackType } from '../track-panel/trackPanelConfig';
 
 import BrowserReset from 'src/content/app/browser/browser-reset/BrowserReset';
@@ -48,13 +49,14 @@ describe('<BrowserBar />', () => {
   };
 
   const defaultProps = {
+    activeGenomeId: faker.lorem.word(),
     browserActivated: true,
     browserNavOpened: false,
-    chrLocation: ['13', 32275301, 32433493] as [string, number, number],
-    defaultChrLocation: ['13', 32271473, 32437359] as [string, number, number],
+    chrLocation: ['13', 32275301, 32433493] as ChrLocation,
+    defaultChrLocation: ['13', 32271473, 32437359] as ChrLocation,
     drawerOpened: false,
     genomeSelectorActive: false,
-    ensObjectInfo: objectInfo,
+    ensObject: objectInfo,
     selectedBrowserTab: TrackType.GENOMIC,
     trackPanelModalOpened: false,
     trackPanelOpened: false,
@@ -94,25 +96,14 @@ describe('<BrowserBar />', () => {
   });
 
   describe('behaviour', () => {
-    test('does not show BrowserInfo panel by default', () => {
+    test('shows BrowserInfo panel by default', () => {
       const renderedBrowserBar = mount(renderBrowserBar());
-      expect(renderedBrowserBar.find(BrowserInfo)).toHaveLength(0);
-    });
-
-    test('shows BrowserInfo panel if gene location is provided', () => {
-      const sampleObjectId = faker.lorem.word();
-      const renderedBrowserBar = mount(
-        renderBrowserBar({
-          activeObjectId: sampleObjectId,
-          defaultChrLocation: { [sampleObjectId]: ['13', 100, 100] }
-        })
-      );
       expect(renderedBrowserBar.find(BrowserInfo).length).toBe(1);
     });
 
-    test('hides BrowserInfo panel if gene location is not provided', () => {
+    test('hides BrowserInfo panel if default location is not provided', () => {
       const renderedBrowserBar = mount(
-        renderBrowserBar({ defaultChrLocation: ['13', 0, 0] })
+        renderBrowserBar({ defaultChrLocation: null })
       );
       expect(renderedBrowserBar.find(BrowserInfo).length).toBe(0);
     });
@@ -141,7 +132,7 @@ describe('<BrowserBar />', () => {
     });
 
     test('hides BrowserNavigatorButton if there is no focus object', () => {
-      const renderedBrowserBar = mount(renderBrowserBar({ ensObjectInfo: {} }));
+      const renderedBrowserBar = mount(renderBrowserBar({ ensObject: null }));
       expect(renderedBrowserBar.find(BrowserNavigatorButton).length).toBe(0);
     });
 

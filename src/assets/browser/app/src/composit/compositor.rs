@@ -96,10 +96,18 @@ impl Compositor {
     }
 
     pub fn update_report(&self, report: &Report) {
+        if let Some(stick) = self.train_manager.get_stick() {
+            report.set_status("i-stick",&stick.get_name());
+        }
         self.train_manager.update_report(report);
     }
 
     pub fn set_stick(&mut self, st: &Stick) {
+        if let Some(stick) = self.train_manager.get_stick() {
+            if stick == st {
+                return;
+            }
+        }
         self.prime_delay = None; // Force priming delay as screen is completely invalid
         self.train_manager.set_stick(st,self.bp_per_screen);
         self.psychic.set_stick(st);

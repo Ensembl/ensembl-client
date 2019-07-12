@@ -1,6 +1,10 @@
+use std::convert::TryInto;
+
 use std::sync::{ Arc, Mutex };
 
+use serde_json::from_str;
 use serde_json::Value as JSONValue;
+use serde_json::Number as JSONNumber;
 use stdweb::web::{ Element, HtmlElement };
 
 use controller::global::{ App, AppRunner };
@@ -20,13 +24,14 @@ fn custom_movement_event(dir: &str, unit: &str, v: &JSONValue) -> Action {
             "screen"|"screens"|"sc" => Units::Screens,
             _ => { return Action::Noop; }
         };
-        Action::Move(match dir {
+        let act = match dir {
             "left" => Move::Left(Distance(quant,unit)),
             "right" => Move::Right(Distance(quant,unit)),
             "up" => Move::Up(Distance(quant,unit)),
             "down" => Move::Down(Distance(quant,unit)),
             _ => { return Action::Noop; }
-        })
+        };
+        Action::Move(act)
     } else {
         Action::Noop
     }
@@ -114,14 +119,23 @@ fn custom_make_events(j: &JSONValue) -> Vec<Action> {
             out.append(&mut custom_make_one_event_key(k,v));
         }
     }
-    console!("receive/A {}",j);
+    out.push(Action::Settled);
     out
+}
+
+fn extract_counter(j: &JSONValue) -> Option<f64> {
+    if let JSONValue::Object(j) = j {
+        j.get("message-counter").and_then(|v| v.as_f64())
+    } else {
+        None
+    }
 }
 
 pub fn run_direct_events(app: &mut App, j: &JSONValue) {
     let evs = custom_make_events(&j);
+    console!("receive/A {}",j.to_string());
     console!("receive/B {:?}",evs);
-    actions_run(app,&evs);
+    app.run_actions(&evs,extract_counter(&j));
 }
 
 pub struct DirectEventListener {

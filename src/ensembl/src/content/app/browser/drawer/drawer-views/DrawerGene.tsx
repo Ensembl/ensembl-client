@@ -5,13 +5,13 @@ import { EnsObject } from 'src/ens-object/ensObjectTypes';
 import styles from '../Drawer.scss';
 
 type DrawerGeneProps = {
-  ensObjectInfo: EnsObject;
+  ensObject: EnsObject;
 };
 
 const DrawerGene: FunctionComponent<DrawerGeneProps> = (
   props: DrawerGeneProps
 ) => {
-  const { ensObjectInfo } = props;
+  const { ensObject } = props;
 
   return (
     <dl className={styles.drawerView}>
@@ -19,7 +19,7 @@ const DrawerGene: FunctionComponent<DrawerGeneProps> = (
         <label htmlFor="">Gene</label>
         <div className={styles.details}>
           <p>
-            <span className={styles.mainDetail}>{ensObjectInfo.label}</span>
+            <span className={styles.mainDetail}>{ensObject.label}</span>
           </p>
         </div>
       </dd>
@@ -27,15 +27,13 @@ const DrawerGene: FunctionComponent<DrawerGeneProps> = (
       <dd className="clearfix">
         <label htmlFor="">Stable ID</label>
         <div className={styles.details}>
-          <p>{ensObjectInfo.stable_id}</p>
+          <p>{ensObject.stable_id}</p>
         </div>
       </dd>
 
       <dd className="clearfix">
         <label htmlFor="">Description</label>
-        <div className={styles.details}>
-          {ensObjectInfo.description || '--'}
-        </div>
+        <div className={styles.details}>{ensObject.description || '--'}</div>
       </dd>
     </dl>
   );

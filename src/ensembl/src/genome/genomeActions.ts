@@ -1,14 +1,15 @@
 import { createAsyncAction } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
-import { Action, ActionCreator, Dispatch } from 'redux';
+import { Action, ActionCreator } from 'redux';
 
 import apiService from 'src/services/api-service';
 import { RootState } from 'src/store';
 import { GenomeInfoData, GenomeTrackCategories } from './genomeTypes';
 
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
+
 import {
-  getGenomeInfo,
+  getGenomeInfoById,
   getGenomeTrackCategories
 } from 'src/genome/genomeSelectors';
 
@@ -18,9 +19,25 @@ export const fetchGenomeInfoAsyncActions = createAsyncAction(
   'genome/fetch_genome_info_failure'
 )<undefined, GenomeInfoData, Error>();
 
+export const fetchGenomeData: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (genomeId: string) => async (dispatch) => {
+  await Promise.all([
+    dispatch(fetchGenomeInfo(genomeId)),
+    dispatch(fetchGenomeTrackCategories(genomeId))
+  ]);
+
+  dispatch(fetchExampleEnsObjects(genomeId));
+};
+
 export const fetchGenomeInfo: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (genomeId: string) => async (dispatch: Dispatch) => {
+> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
+  const state = getState();
+  const genomeInfo = getGenomeInfoById(state, genomeId);
+  if (genomeInfo) {
+    return; // nothing to do
+  }
   try {
     dispatch(fetchGenomeInfoAsyncActions.request());
     const url = `/api/genome/info?genome_id=${genomeId}`;
@@ -42,13 +59,9 @@ export const fetchGenomeTrackCategoriesAsyncActions = createAsyncAction(
   'genome/fetch_genome_track_categories_failure'
 )<string, GenomeTrackCategories, Error>();
 
-// TODO: switch to using APIs when available
 export const fetchGenomeTrackCategories: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (genomeId: string) => async (
-  dispatch: Dispatch,
-  getState: () => RootState
-) => {
+> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
   try {
     const currentGenomeTrackCategories: GenomeTrackCategories = getGenomeTrackCategories(
       getState()

@@ -1,6 +1,13 @@
 import { RootState } from 'src/store';
-import { BrowserOpenState, BrowserNavStates, CogList } from './browserState';
+import {
+  BrowserOpenState,
+  BrowserNavStates,
+  CogList,
+  ChrLocation
+} from './browserState';
 import { getQueryParamsMap } from 'src/global/globalHelper';
+import { getGenomeInfo } from 'src/genome/genomeSelectors';
+import { getEnsObjectById } from 'src/ens-object/ensObjectSelectors';
 
 export const getBrowserActivated = (state: RootState): boolean =>
   state.browser.browserInfo.browserActivated;
@@ -8,11 +15,31 @@ export const getBrowserActivated = (state: RootState): boolean =>
 export const getBrowserOpenState = (state: RootState): BrowserOpenState =>
   state.browser.browserInfo.browserOpenState;
 
-export const getBrowserActiveGenomeId = (state: RootState): string =>
+export const getBrowserActiveGenomeId = (state: RootState): string | null =>
   state.browser.browserEntity.activeGenomeId;
 
-export const getBrowserActiveEnsObjectId = (state: RootState) =>
-  state.browser.browserEntity.activeEnsObjectId;
+export const getBrowserActiveGenomeInfo = (state: RootState) => {
+  const allGenomesInfo = getGenomeInfo(state);
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  return activeGenomeId ? allGenomesInfo[activeGenomeId] : null;
+};
+
+export const getBrowserActiveEnsObjectIds = (state: RootState) =>
+  state.browser.browserEntity.activeEnsObjectIds;
+
+export const getBrowserActiveEnsObjectId = (state: RootState) => {
+  const activeEnsObjectIds = getBrowserActiveEnsObjectIds(state);
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  return activeGenomeId ? activeEnsObjectIds[activeGenomeId] : null;
+};
+
+export const getBrowserActiveEnsObject = (state: RootState) => {
+  const activeObjectId = getBrowserActiveEnsObjectId(state);
+  if (!activeObjectId) {
+    return null;
+  }
+  return getEnsObjectById(state, activeObjectId);
+};
 
 export const getBrowserTrackStates = (state: RootState) =>
   state.browser.browserEntity.trackStates;
@@ -27,11 +54,29 @@ export const getBrowserNavOpened = (state: RootState): boolean =>
 export const getBrowserNavStates = (state: RootState): BrowserNavStates =>
   state.browser.browserNav.browserNavStates;
 
-export const getChrLocation = (state: RootState) =>
-  state.browser.browserLocation.chrLocation;
+export const getAllChrLocations = (
+  state: RootState
+): { [genomeId: string]: ChrLocation } =>
+  state.browser.browserLocation.chrLocations;
 
-export const getDefaultChrLocation = (state: RootState) =>
-  state.browser.browserLocation.defaultChrLocation;
+export const getChrLocation = (state: RootState): ChrLocation | null => {
+  const chrLocations = getAllChrLocations(state);
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  return activeGenomeId ? chrLocations[activeGenomeId] : null;
+};
+
+export const getDefaultChrLocation = (state: RootState): ChrLocation | null => {
+  const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
+  const activeEnsObject = activeEnsObjectId
+    ? state.ensObjects[activeEnsObjectId]
+    : null;
+  if (!activeEnsObject) {
+    return null;
+  }
+  const { chromosome, start, end } = activeEnsObject.location;
+
+  return [chromosome, start, end];
+};
 
 export const getGenomeSelectorActive = (state: RootState): boolean =>
   state.browser.browserLocation.genomeSelectorActive;

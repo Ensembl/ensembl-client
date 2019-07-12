@@ -40,7 +40,8 @@ pub struct App {
     als: AllLandscapes,
     size: Option<Dot<f64,f64>>,
     last_resize_at: Option<f64>,
-    stage_resize: Option<Dot<f64,f64>>
+    stage_resize: Option<Dot<f64,f64>>,
+    action_backlog: Vec<Action>
 }
 
 impl App {
@@ -71,14 +72,15 @@ impl App {
             als: AllLandscapes::new(),
             size: None,
             stage_resize: None,
-            last_resize_at: None
+            last_resize_at: None,
+            action_backlog: Vec::new()
         };
         let dsm = {
             let compo = &out.compo.lock().unwrap();
             CombinedSourceManager::new(&tc,config,&compo.get_zmr(),&out.als,&out.http_clerk)
         };
         out.csl.add_compsource(Box::new(dsm));
-        out.run_actions(&startup_actions());        
+        out.run_actions(&startup_actions(),None);        
         out
     }
     
@@ -172,8 +174,20 @@ impl App {
         out
     }
         
-    pub fn run_actions(self: &mut App, evs: &Vec<Action>) {
-        actions_run(self,evs);
+    pub fn run_actions(self: &mut App, evs: &Vec<Action>,currency: Option<f64>) {
+        if let Some(ref mut report) = self.report {
+            if currency.is_none() || report.is_current(currency.unwrap()) {
+                if self.action_backlog.len() > 0 {
+                    console!("running backlog");
+                    let backlog = self.action_backlog.drain(..).collect();
+                    actions_run(self,&backlog,currency);
+                }
+                actions_run(self,evs,currency);
+                return;
+            }
+        }
+        console!("backlogging");
+        self.action_backlog.extend(evs.iter().cloned());
     }
     
     pub fn check_size(self: &mut App) {
@@ -181,12 +195,12 @@ impl App {
         let now = domutil::browser_time();
         if self.size == None || self.size.unwrap() != sz {
             self.last_resize_at = Some(now);
-            actions_run(self,&vec! { Action::Resize(sz) });
+            self.run_actions(&vec! { Action::Resize(sz) },None);
             self.size = Some(sz);
         }
         if let Some(last_resize_at) = self.last_resize_at {
             if now - last_resize_at > SETTLE_TIME {
-                actions_run(self,&vec! { Action::Settled });
+                self.run_actions(&vec! { Action::Settled },None);
                 self.last_resize_at = None;
             }
         }
@@ -203,11 +217,26 @@ impl App {
         self.printer.lock().unwrap().set_size(stage.get_size());
     }
     
+    pub fn lock(&mut self) {
+        if let Some(ref mut report) = self.report {
+            report.lock();
+        }
+    }
+
+    pub fn unlock(&mut self) {
+        if let Some(ref mut report) = self.report {
+            report.unlock();
+        }
+    }
+
     pub fn settle(&mut self) {
         if let Some(size) = self.stage_resize.take() {
             let mut stage = self.stage.lock().unwrap();
             stage.set_size(&size);
         }
+        let mut stage = self.stage.lock().unwrap();
+        stage.settle();
+        stage.intend_here();
         self.printer.lock().unwrap().settle();
     }
 }

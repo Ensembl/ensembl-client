@@ -7,7 +7,7 @@ import genome from '../genome/genomeReducer';
 import customDownload from '../content/app/custom-download/state/customDownloadReducer';
 import global from '../global/globalReducer';
 import header from '../header/headerReducer';
-import ensObject from '../ens-object/ensObjectReducer';
+import ensObjects from '../ens-object/ensObjectReducer';
 import trackPanel from '../content/app/browser/track-panel/trackPanelReducer';
 import speciesSelector from '../content/app/species-selector/state/speciesSelectorReducer';
 
@@ -16,7 +16,7 @@ const rootReducer = (history: any) =>
     browser,
     drawer,
     customDownload,
-    ensObject,
+    ensObjects,
     genome,
     global,
     header,

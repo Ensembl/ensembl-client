@@ -28,7 +28,7 @@ impl EventListener<()> for DomEventListener {
             }
             _ => Vec::<Action>::new()
         };
-        actions_run(&mut self.cg.lock().unwrap(),&evs);
+        self.cg.lock().unwrap().run_actions(&evs,None);
     }
 }
 

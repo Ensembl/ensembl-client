@@ -5,8 +5,9 @@ use types::CDFraction;
 
 pub struct OpticalImpl {
     missing: f64,
+    target: f64,
     pos: Option<(CDFraction,f64)>,
-    settled: bool
+    locked: bool
 }
 
 const LETHARGY : f64 = 0.2;
@@ -16,34 +17,45 @@ impl OpticalImpl {
     pub fn new() -> OpticalImpl {
         OpticalImpl {
             missing: 0.,
+            target: 0.,
             pos: None,
-            settled: false
+            locked: false,
         }
     }
 
     fn send_delta(&mut self, app: &mut App, amt: f64) {
         if let Some((pos,prop)) = self.pos {
-            actions_run(app,&vec! {
+            app.run_actions(&vec! {
                 Action::Zoom(amt),
                 Action::Pos(pos,Some(prop))
-            });
+            },None);
+            self.target = 0.;
         }
     }
 
     fn tick(&mut self, app: &mut App, _t: f64) {
         if self.missing.abs() > EPS {
+            if !self.locked {
+                app.lock();
+                self.locked = true;
+            }
             let this_time = self.missing * LETHARGY;
             self.missing -= this_time;
             self.send_delta(app,this_time);
-            self.settled = false;
-        } else if !self.settled {
-            app.with_stage(|s| s.settle());
-            self.settled = true;
+        } else if self.locked {
+            self.send_delta(app,self.missing);
+            self.missing = 0.;
+            app.run_actions(&vec![
+                Action::Settled
+            ],None);
+            self.locked = false;
+            app.unlock();
         }
     }
         
     /* when mouse moves, so does the handle */
     fn shift_handle_by(&mut self, at: f64, pos: CDFraction, prop: f64) {
+        self.target += at;
         self.missing += at;
         self.pos = Some((pos,prop));
     }
