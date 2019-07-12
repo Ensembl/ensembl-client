@@ -120,7 +120,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   });
 
   if (!(props.chrLocation && props.ensObject)) {
-    return null;
+    return <div className={styles.browserBar} />;
   }
 
   return (

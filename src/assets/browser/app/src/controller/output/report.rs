@@ -96,8 +96,8 @@ lazy_static! {
 
 pub struct ReportImpl {
     message_counter: f64,
-    sendable_message_counter: f64,
     locks: u32,
+    delayed: bool,
     pieces: HashMap<String,String>,
     outputs: HashMap<String,StatusOutput>
 }
@@ -106,8 +106,8 @@ impl ReportImpl {
     pub fn new() -> ReportImpl {
         let out = ReportImpl {
             message_counter: 0.,
-            sendable_message_counter: 0.,
             locks: 0,
+            delayed: false,
             pieces: HashMap::<String,String>::new(),
             outputs: HashMap::<String,StatusOutput>::new()
         };
@@ -134,26 +134,26 @@ impl ReportImpl {
         return self.message_counter <= value || value == -1.
     }
 
-    pub fn prepare_counter(&mut self) -> f64 {
-        self.message_counter += 1.;
-        self.message_counter
+    fn force_update(&self) -> bool {
+        self.locks == 0 && self.delayed
     }
 
-    fn try_sync_counter(&mut self) {
+    fn try_update_counter(&mut self) {
         if self.locks == 0 {
-            self.sendable_message_counter = self.message_counter;
-            self.pieces.insert("message-counter".to_string(),self.sendable_message_counter.to_string());
-        }        
+            self.message_counter += 1.;
+            self.pieces.insert("message-counter".to_string(),self.message_counter.to_string());
+            self.delayed = false;
+        } else {
+            self.delayed = true;
+        }
     }
 
     pub fn lock(&mut self) {
         self.locks += 1;
-        self.message_counter += 1.;
     }
 
     pub fn unlock(&mut self) {
         self.locks -= 1;
-        self.try_sync_counter();
     }
 
     pub fn set_interval(&mut self, key: &str, interval: Option<f64>) {
@@ -229,12 +229,15 @@ impl ReportImpl {
     fn new_report(&mut self, t: f64) -> Option<JSONValue> {
         let mut out = JSONMap::<String,JSONValue>::new();
         let mut vital = false;
+        let force = self.force_update();
         for (k,s) in &self.outputs {
             if let Some(value) = self.make_value(&s.jigsaw) {
                 if let Some(ref last_value) = s.last_value {
-                    if s.is_always_send() || last_value == &value { continue; }
+                    if !force && (s.is_always_send() || last_value == &value) { 
+                        continue;
+                    }
                 }
-                if s.is_send_now(t) {
+                if s.is_send_now(t) || force {
                     vital |= s.is_vital();
                     out.insert(k.to_string(),value.clone());
                 }
@@ -247,20 +250,22 @@ impl ReportImpl {
             }
         }
         if out.len() > 0 {
-            for (k,s) in &self.outputs {
-                if s.is_always_send() {
-                    if let Some(value) = self.make_value(&s.jigsaw) {                
-                        out.insert(k.to_string(),value.clone());
+            self.try_update_counter();
+            if !self.delayed {
+                for (k,s) in &self.outputs {
+                    if s.is_always_send() {
+                        if let Some(value) = self.make_value(&s.jigsaw) {                
+                            out.insert(k.to_string(),value.clone());
+                        }
                     }
                 }
+                if vital {
+                    console!("send/A ({:?}) {}",force,JSONValue::Object(out.clone()));
+                }
+                return Some(JSONValue::Object(out));
             }
-            if vital {
-                console!("send/A {}",JSONValue::Object(out.clone()));
-            }
-            Some(JSONValue::Object(out))
-        } else {
-            None
         }
+        None
     }
 }
 
