@@ -11,7 +11,7 @@ pub struct Position {
     min_x: f64,
     max_x: f64,
     min_x_bumper: f64,
-    max_x_bumper: f64,
+    max_x_bumper: f64
 }
 
 impl Position {
@@ -54,6 +54,7 @@ impl Position {
     
     pub(super) fn set_zoom(&mut self, z: f64) {
         self.zoom.set_zoom(z);
+        self.check_own_limits();
     }
     
     pub(super) fn settle(&mut self) {
@@ -93,8 +94,8 @@ impl Position {
         }
     }
 
-    pub fn get_limit_of_middle(&self, which: &Direction) -> f64 {
-        self.get_limit_of_edge(which) -  self.middle_to_edge(which,true)
+    fn get_limit_of_middle(&self, which: &Direction) -> f64 {
+        self.get_limit_of_edge(which) -  self.middle_to_edge(which,false)
     }
 
     pub fn get_limit_of_edge(&self, which: &Direction) -> f64 {
@@ -147,8 +148,8 @@ impl Position {
         self.check_own_limits();
     }
     
-    fn check_limits(&self, pos: &mut Dot<f64,f64>) {
-        /* minima always "win" when in conflict => max fn's called first */
+    fn check_limits(&mut self, pos: &mut Dot<f64,f64>) {
+        /* minima always "win" when in conflict => max fn's called first */        
         pos.0 = pos.0.min(self.get_limit_of_middle(&RIGHT));
         pos.0 = pos.0.max(self.get_limit_of_middle(&LEFT));
         pos.1 = pos.1.min(self.get_limit_of_middle(&DOWN));
