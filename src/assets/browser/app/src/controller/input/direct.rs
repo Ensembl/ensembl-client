@@ -11,7 +11,7 @@ use controller::global::{ App, AppRunner };
 use controller::input::{ actions_run, Action };
 use dom::event::{ 
     EventListener, EventControl, EventType, EventData, 
-    ICustomEvent, Target
+    ICustomEvent, Target, IMessageEvent
 };
 use types::{ Move, Distance, Units };
 
@@ -150,9 +150,14 @@ impl DirectEventListener {
 
 impl EventListener<()> for DirectEventListener {    
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
-        if let EventData::CustomEvent(_,_,_,c) = e {
+        match e {
+        EventData::CustomEvent(_,_,_,c) =>
             run_direct_events(&mut self.cg.lock().unwrap(),
-                              &c.details().unwrap());
+                              &c.details().unwrap()),
+        EventData::MessageEvent(_,_,c) =>
+            run_direct_events(&mut self.cg.lock().unwrap(),
+                              &c.data().unwrap()["payload"]),
+        _ => ()
         }
     }
 }
@@ -162,6 +167,7 @@ pub fn register_direct_events(gc: &mut AppRunner, el: &HtmlElement) {
     let dlr = DirectEventListener::new(&gc.state());
     let mut ec = EventControl::new(Box::new(dlr),());
     ec.add_event(EventType::CustomEvent("bpane".to_string()));
+    ec.add_event(EventType::MessageEvent);
     ec.add_element(&elel,());
     gc.add_control(Box::new(ec));
 }

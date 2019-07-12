@@ -155,7 +155,7 @@ pub fn send_post_message(name: &str, data: &JSONValue) {
     }};
     let message : Value = message.clone().try_into().unwrap();
     js! {
-        window.postMessage(@{&message});
+        window.postMessage(@{&message},"*");
     };
 }
 

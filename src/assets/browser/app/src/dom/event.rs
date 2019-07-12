@@ -66,13 +66,15 @@ pub enum EventType {
     ResizeEvent,
     CustomEvent(String),
     ContextMenuEvent,
-    UnloadEvent
+    UnloadEvent,
+    MessageEvent
 }
 
 fn window_event(et: &EventType) -> bool {
     match et {
         EventType::ResizeEvent => true,
         EventType::UnloadEvent => true,
+        EventType::MessageEvent => true,
         _ => false
     }
 }
@@ -108,6 +110,7 @@ pub enum EventData {
     MouseEvent(EventType,EventContext,MouseData),
     KeyboardEvent(EventType,EventContext,KeyboardData),
     CustomEvent(EventType,EventContext,String,CustomData),
+    MessageEvent(EventType,EventContext,MessageData),
     GenericEvent(EventType,EventContext),
 }
 
@@ -123,13 +126,12 @@ impl EventData {
             EventType::MouseDblClickEvent |
             EventType::MouseWheelEvent =>
                 EventData::MouseEvent(et.clone(),ec,MouseData(e)),
-
             EventType::KeyPressEvent =>
                 EventData::KeyboardEvent(et.clone(),ec,KeyboardData(e)),
-                
             EventType::CustomEvent(n) =>
                 EventData::CustomEvent(et.clone(),ec,n.clone(),CustomData(e)),
-                
+            EventType::MessageEvent =>
+                EventData::MessageEvent(et.clone(),ec,MessageData(e)),
             EventType::ResizeEvent |
             EventType::UnloadEvent |
             EventType::ContextMenuEvent =>
@@ -142,6 +144,7 @@ impl EventData {
             EventData::MouseEvent(_,ec,_) => ec,
             EventData::KeyboardEvent(_,ec,_) => ec,
             EventData::CustomEvent(_,ec,_,_) => ec,
+            EventData::MessageEvent(_,ec,_) => ec,
             EventData::GenericEvent(_,ec) => ec,
         }
     }
@@ -160,7 +163,8 @@ impl EventType {
             EventType::ResizeEvent => "resize",
             EventType::ContextMenuEvent => "contextmenu",
             EventType::UnloadEvent => "unload",
-            EventType::CustomEvent(n) => &n
+            EventType::CustomEvent(n) => &n,
+            EventType::MessageEvent => "message"
         }
     }
 }
@@ -253,6 +257,32 @@ impl ICustomEvent for CustomData {
     fn details(&self) -> Option<JSONValue> {
         let js_val : Value = js! {
             return @{self.0.as_ref()}.detail;
+        }.try_into().unwrap();
+        let val : Serde<JSONValue> = js_val.try_into().ok().unwrap();
+        Some(val.0)
+    }
+}
+
+pub trait IMessageEvent {
+    fn data(&self) -> Option<JSONValue>;
+}
+
+#[derive(ReferenceType,Clone,PartialEq,Eq)]
+#[reference(instance_of = "MessageData")]
+pub struct MessageData(Reference);
+
+impl IEvent for MessageData {}
+
+impl fmt::Debug for MessageData {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "MessageData {{ {:?} }}",self.data())
+    }
+}
+
+impl IMessageEvent for MessageData {
+    fn data(&self) -> Option<JSONValue> {
+        let js_val : Value = js! {
+            return @{self.0.as_ref()}.data;
         }.try_into().unwrap();
         let val : Serde<JSONValue> = js_val.try_into().ok().unwrap();
         Some(val.0)
