@@ -1,3 +1,5 @@
+@import 'src/styles/common';
+
 .trackConfig {
   box-sizing: border-box;
   background: #f1f2f4;
@@ -5,10 +7,10 @@
   display: inline-block;
   font: 13px Lato, helvetica, Arial, sans-serif;
   position: absolute;
-  left: -757px;
-  top: -14px;
-  height: 53px;
-  width: 750px;
+  left: -614px;
+  top: -12px;
+  height: 45px;
+  width: 614px;
   img {
     height: 100%;
     width: 100%;
@@ -16,12 +18,13 @@
 
   dl {
     display: inline-block;
-    margin: 10px 0;
-    padding: 0 20px;
+    margin: 6px 0px;
+    padding: 0px 12px;
   }
 
-  dl:not(:first-child) {
+  dl:nth-child(2) {
     border-left: 1px solid #b7c0c8;
+    border-right: 1px solid #b7c0c8;
   }
 
   dl:last-child {
@@ -30,7 +33,7 @@
 
   dd {
     display: inline-block;
-    margin: 0 15px;
+    margin: 0 6px;
     vertical-align: middle;
   }
 
@@ -41,35 +44,29 @@
   label {
     position: relative;
     vertical-align: middle;
+    font-size: 12px;
   }
 
   button {
     background-color: transparent;
     background-repeat: no-repeat;
     border: none;
-    height: 22px;
-    width: 22px;
+    height: 18px;
+    width: 18px;
   }
 
   button:focus {
     outline: none;
   }
 
-  input[type='checkbox'] {
-    border: 1px solid #b7c0c8;
-    display: inline-block;
-    height: 15px;
-    margin: 0 5px 0 0;
-    position: relative;
-    width: 15px;
-  }
-
   /* individual track config item (button container) styling */
 
   .allTracks {
-    /* color: #b7c0c8; */
     position: relative;
-    height: 22px;
+    display: flex;
+    width: 110px;
+    justify-content: center;
+    top: 3px;
   }
 
   .heightSwitcher {
@@ -79,20 +76,20 @@
   /* button styling */
 
   .trackConfigSlider {
-    height: 22px;
-    margin-left: 10px;
+    height: 24px;
+    margin-left: 8px;
     position: relative;
-    width: 22px;
+    width: 30px;
   }
 
   .trackHeightBtn {
     height: 33px;
     position: relative;
-    width: 66px;
+    width: 50px;
   }
 
   .trackMoveBtn {
-    height: 33px;
-    width: 33px;
+    height: 26px;
+    width: 26px;
   }
 }
