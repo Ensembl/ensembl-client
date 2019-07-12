@@ -34,6 +34,7 @@ import { CircleLoader } from 'src/shared/loader/Loader';
 
 import { RootState } from 'src/store';
 import { TrackStates } from '../track-panel/trackPanelConfig';
+import { BROWSER_CONTAINER_ID } from '../browser-constants';
 
 type StateProps = {
   activeGenomeId: string | null;
@@ -167,6 +168,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
       )}
       <div className={styles.browserImagePlus}>
         <div
+          id={BROWSER_CONTAINER_ID}
           className={getBrowserImageClasses(props.browserNavOpened)}
           ref={props.browserRef}
         />

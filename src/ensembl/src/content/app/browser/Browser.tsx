@@ -304,11 +304,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
             )}`}
           >
             <animated.div style={trackAnimation}>
-              <div
-                id="genome-browser"
-                className={styles.browserImageWrapper}
-                onClick={closeTrack}
-              >
+              <div className={styles.browserImageWrapper} onClick={closeTrack}>
                 {props.browserNavOpened &&
                 !props.drawerOpened &&
                 browserRef.current ? (
