@@ -3,6 +3,7 @@ use std::sync::{ Arc, Mutex };
 
 use controller::global::{ AppRunner };
 use controller::output::OutputAction;
+use super::counter::Counter;
 
 use serde_json::Map as JSONMap;
 use serde_json::Value as JSONValue;
@@ -94,10 +95,9 @@ lazy_static! {
     };
 }
 
+
 pub struct ReportImpl {
-    message_counter: f64,
-    locks: u32,
-    delayed: bool,
+    counter: Counter,
     pieces: HashMap<String,String>,
     outputs: HashMap<String,StatusOutput>
 }
@@ -105,9 +105,7 @@ pub struct ReportImpl {
 impl ReportImpl {
     pub fn new() -> ReportImpl {
         let out = ReportImpl {
-            message_counter: 0.,
-            locks: 0,
-            delayed: false,
+            counter: Counter::new(),
             pieces: HashMap::<String,String>::new(),
             outputs: HashMap::<String,StatusOutput>::new()
         };
@@ -131,29 +129,15 @@ impl ReportImpl {
     }
 
     pub fn is_current(&mut self, value: f64) -> bool {
-        return self.message_counter <= value || value == -1.
-    }
-
-    fn force_update(&self) -> bool {
-        self.locks == 0 && self.delayed
-    }
-
-    fn try_update_counter(&mut self) {
-        if self.locks == 0 {
-            self.message_counter += 1.;
-            self.pieces.insert("message-counter".to_string(),self.message_counter.to_string());
-            self.delayed = false;
-        } else {
-            self.delayed = true;
-        }
+        self.counter.is_current(value)
     }
 
     pub fn lock(&mut self) {
-        self.locks += 1;
+        self.counter.lock();
     }
 
     pub fn unlock(&mut self) {
-        self.locks -= 1;
+        self.counter.unlock();
     }
 
     pub fn set_interval(&mut self, key: &str, interval: Option<f64>) {
@@ -229,7 +213,7 @@ impl ReportImpl {
     fn new_report(&mut self, t: f64) -> Option<JSONValue> {
         let mut out = JSONMap::<String,JSONValue>::new();
         let mut vital = false;
-        let force = self.force_update();
+        let force = self.counter.force_update();
         for (k,s) in &self.outputs {
             if let Some(value) = self.make_value(&s.jigsaw) {
                 if let Some(ref last_value) = s.last_value {
@@ -250,8 +234,10 @@ impl ReportImpl {
             }
         }
         if out.len() > 0 {
-            self.try_update_counter();
-            if !self.delayed {
+            if let Some(mc) = self.counter.try_update_counter() {
+                self.pieces.insert("message-counter".to_string(),mc.to_string());
+            }
+            if !self.counter.is_delayed() {
                 for (k,s) in &self.outputs {
                     if s.is_always_send() {
                         if let Some(value) = self.make_value(&s.jigsaw) {                

@@ -1,3 +1,4 @@
+mod counter;
 mod outputaction;
 mod report;
 mod viewportreport;
