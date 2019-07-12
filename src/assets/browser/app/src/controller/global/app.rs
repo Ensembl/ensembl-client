@@ -178,6 +178,7 @@ impl App {
         if let Some(ref mut report) = self.report {
             if currency.is_none() || report.is_current(currency.unwrap()) {
                 if self.action_backlog.len() > 0 {
+                    console!("running backlog");
                     let backlog = self.action_backlog.drain(..).collect();
                     actions_run(self,&backlog,currency);
                 }
@@ -185,6 +186,7 @@ impl App {
                 return;
             }
         }
+        console!("backlogging");
         self.action_backlog.extend(evs.iter().cloned());
     }
     
