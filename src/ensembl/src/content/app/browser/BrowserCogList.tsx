@@ -1,9 +1,4 @@
-import React, {
-  FunctionComponent,
-  RefObject,
-  useEffect,
-  useCallback
-} from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
@@ -41,29 +36,31 @@ type OwnProps = {};
 
 type BrowserCogListProps = StateProps & DispatchProps & OwnProps;
 
-type BpaneScrollEvent = Event & {
-  detail: {
-    delta_y?: number;
-    track_y?: CogList;
-  };
+type BpaneScrollPayload = {
+  delta_y?: number;
+  track_y?: CogList;
 };
 
 const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
   props: BrowserCogListProps
 ) => {
   const { browserCogTrackList } = props;
-  const listenBpaneScroll = useCallback((payload: any) => {
-    // FIXME types
+  const listenBpaneScroll = (payload: BpaneScrollPayload) => {
     if (payload.delta_y || payload.delta_y === 0) {
       props.updateCogList(payload.delta_y);
     }
     if (payload.track_y) {
       props.updateCogTrackList(payload.track_y);
     }
-  }, []);
+  };
 
   useEffect(() => {
-    browserMessagingService.subscribe('bpane-scroll', listenBpaneScroll);
+    const subscription = browserMessagingService.subscribe(
+      'bpane-scroll',
+      listenBpaneScroll
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const cogs = Object.entries(browserCogTrackList).map(([name, pos]) => {

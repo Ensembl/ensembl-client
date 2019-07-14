@@ -101,10 +101,13 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   }, []);
 
   useEffect(() => {
-    browserMessagingService.subscribe('bpane-out', listenBpaneOut);
+    const subscription = browserMessagingService.subscribe(
+      'bpane-out',
+      listenBpaneOut
+    );
 
     return () => {
-      // TODO: add unsubscribes on unmount throughout
+      subscription.unsubscribe();
     };
   }, []);
 

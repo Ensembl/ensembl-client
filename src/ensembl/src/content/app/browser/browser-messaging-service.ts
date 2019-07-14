@@ -1,26 +1,31 @@
+import windowService, {
+  WindowServiceInterface
+} from 'src/services/window-service';
+
 import JSONValue from 'src/shared/types/JSON';
 
 /*
   This is a service for communicating between genome browser and React wrapper.
-  It currently relies on dispatching and listening to events
 */
 
-class BrowserMessagingService {
+export class BrowserMessagingService {
+  private window: Window;
   private isRecepientReady: boolean = false;
   private subscribers: any = {};
   private outgoingMessageQueue: JSONValue[] = [];
 
-  public constructor() {
+  public constructor(windowService: WindowServiceInterface) {
+    this.window = windowService.getWindow();
     this.subscribeToMessages();
     this.subscribe('bpane-ready', this.onRecepientReady);
     this.ping();
   }
 
-  public ping() {
+  private ping() {
     this.sendPostMessage({ type: 'bpane-ready-query' });
   }
 
-  public onRecepientReady = () => {
+  private onRecepientReady = () => {
     console.log('RECEIVED PONG!!!');
     this.isRecepientReady = true;
 
@@ -31,19 +36,18 @@ class BrowserMessagingService {
 
   private sendPostMessage(message: JSONValue) {
     console.log('SENDING MESSAGE', message);
-    window.postMessage(message, '*');
+    this.window.postMessage(message, '*');
   }
 
   private subscribeToMessages() {
-    window.addEventListener('message', this.handleMessage, false);
+    this.window.addEventListener('message', this.handleMessage);
   }
 
   private addMessageToQueue(message: JSONValue) {
     this.outgoingMessageQueue.push(message);
   }
 
-  private handleMessage = (event: any) => {
-    // FIXME - type
+  private handleMessage = (event: MessageEvent) => {
     const {
       data: { type, payload }
     } = event;
@@ -56,18 +60,17 @@ class BrowserMessagingService {
     }
   };
 
-  public subscribe = (eventName: string, callback: EventListener) => {
+  public subscribe = (eventName: string, callback: Function) => {
     if (!this.subscribers[eventName]) {
       this.subscribers[eventName] = new Set();
       this.subscribers[eventName].add(callback);
     }
 
-    // TODO: when changing into proper service, return subscription object with unsubscribe method
-    // and use unsubscribe in cleanup function of useEffect
-    // return {
-    //   unsubscribe() {
-    //   }
-    // };
+    return {
+      unsubscribe: () => {
+        this.subscribers[eventName].delete(callback);
+      }
+    };
   };
 
   public send = (eventName: string, payload: JSONValue) => {
@@ -82,47 +85,6 @@ class BrowserMessagingService {
       this.sendPostMessage(message);
     }
   };
-
-  // temporary solution until we stop listening for events
-  // from the genome browser dom element directly
-  // public setup(browserElement: HTMLDivElement) {
-  //   this.browserElement = browserElement;
-
-  //   const eventNames = Object.keys(this.subscribers);
-  //   eventNames.forEach((eventName) => {
-  //     this.subscribeInternal(eventName);
-  //   });
-  // }
-
-  // temporary solution until we stop listening for events
-  // from the genome browser dom element directly
-  // public onUnmount() {
-  //   const eventNames = Object.keys(this.subscribers);
-  //   eventNames.forEach((eventName) => {
-  //     (this.browserElement as HTMLDivElement).removeEventListener(
-  //       eventName,
-  //       this.mediator
-  //     );
-  //   });
-
-  //   this.browserElement = undefined;
-  //   this.subscribers = {};
-  // }
-
-  // private subscribeInternal = (eventName: string) => {
-  //   if (!this.browserElement) {
-  //     return;
-  //   }
-  //   this.browserElement.addEventListener(eventName, this.mediator);
-  // };
-
-  // private mediator = (event: any) => {
-  //   const { type } = event;
-  //   const subscribers = this.subscribers[type];
-  //   if (subscribers) {
-  //     subscribers.forEach((subscriber: Function) => subscriber(event));
-  //   }
-  // };
 }
 
-export default new BrowserMessagingService();
+export default new BrowserMessagingService(windowService);

@@ -51,6 +51,7 @@ export type ZmenuData = {
   content: ZmenuContentFeature[];
 };
 
+// Sent from Genome browser to React
 export type ZmenuCreatePayload = {
   action: ZmenuAction.CREATE;
   id: string;
@@ -59,30 +60,21 @@ export type ZmenuCreatePayload = {
 };
 
 // Sent from Genome browser to React
-export type ZmenuCreateEvent = Event & {
-  detail: ZmenuCreatePayload;
-};
-
 export type ZmenuDestroyPayload = {
   id: string;
   action: ZmenuAction.DESTROY;
 };
 
-// Sent from Genome browser to React
-export type ZmenuDestroyEvent = Event & {
-  detail: ZmenuDestroyPayload;
-};
-
 // Sent from React to Genome browser
 // (on mouseover; perhaps tap?)
-export type ZmenuEnterEvent = {
+export type ZmenuEnterPayload = {
   id: string;
   action: ZmenuAction.ENTER;
 };
 
 // Sent from React to Genome browser
 // (on mouseleave, or on click outside)
-export type ZmenuLeaveEvent = {
+export type ZmenuLeavePayload = {
   id: string;
   action: ZmenuAction.LEAVE;
 };
@@ -97,11 +89,7 @@ export type ZmenuRepositionPayload = {
   };
 };
 
-export type ZmenuRepositionEvent = Event & {
-  detail: ZmenuRepositionPayload;
-};
-
-export type ZmenuIncomingEvent =
-  | ZmenuCreateEvent
-  | ZmenuDestroyEvent
-  | ZmenuRepositionEvent;
+export type ZmenuIncomingPayload =
+  | ZmenuCreatePayload
+  | ZmenuDestroyPayload
+  | ZmenuRepositionPayload;

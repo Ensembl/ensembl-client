@@ -8,10 +8,10 @@ import browserMessagingService from 'src/content/app/browser/browser-messaging-s
 import {
   ZmenuData,
   ZmenuAction,
-  ZmenuIncomingEvent,
-  ZmenuCreateEvent,
-  ZmenuDestroyEvent,
-  ZmenuRepositionEvent
+  ZmenuIncomingPayload,
+  ZmenuCreatePayload,
+  ZmenuDestroyPayload,
+  ZmenuRepositionPayload
 } from './zmenu-types';
 
 type Props = {
@@ -29,46 +29,49 @@ const ZmenuController = (props: Props) => {
   const [zmenus, setZmenus] = useState<StateZmenu>({});
 
   useEffect(() => {
-    const eventHandler = (event: Event) =>
-      handleBpaneEvent(event as ZmenuIncomingEvent);
+    const subscriptionHandler = (payload: ZmenuIncomingPayload) =>
+      handleBpaneEvent(payload);
 
-    browserMessagingService.subscribe('bpane-zmenu', eventHandler);
+    const subscription = browserMessagingService.subscribe(
+      'bpane-zmenu',
+      subscriptionHandler
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const handleBpaneEvent = (event: ZmenuIncomingEvent) => {
-    if (event.detail.action === ZmenuAction.CREATE) {
-      handleZmenuCreate(event as ZmenuCreateEvent);
-    } else if (event.detail.action === ZmenuAction.DESTROY) {
-      handleZmenuDestroy(event as ZmenuDestroyEvent);
-    } else if (event.detail.action === ZmenuAction.REPOSITION) {
-      handleZmenuReposition(event as ZmenuRepositionEvent);
+  const handleBpaneEvent = (payload: ZmenuIncomingPayload) => {
+    if (payload.action === ZmenuAction.CREATE) {
+      handleZmenuCreate(payload);
+    } else if (payload.action === ZmenuAction.DESTROY) {
+      handleZmenuDestroy(payload);
+    } else if (payload.action === ZmenuAction.REPOSITION) {
+      handleZmenuReposition(payload);
     }
   };
 
-  const handleZmenuCreate = (event: ZmenuCreateEvent) => {
-    const zmenuData = event.detail;
+  const handleZmenuCreate = (payload: ZmenuCreatePayload) => {
     const newZmenu = {
-      id: zmenuData.id,
-      anchor_coordinates: zmenuData.anchor_coordinates,
-      content: zmenuData.content
+      id: payload.id,
+      anchor_coordinates: payload.anchor_coordinates,
+      content: payload.content
     };
     setZmenus({
       ...zmenus,
-      [zmenuData.id]: newZmenu
+      [payload.id]: newZmenu
     });
   };
 
-  const handleZmenuDestroy = (event: ZmenuDestroyEvent) => {
-    setZmenus(pickBy(zmenus, (value, key) => key !== event.detail.id));
+  const handleZmenuDestroy = (payload: ZmenuDestroyPayload) => {
+    setZmenus(pickBy(zmenus, (value, key) => key !== payload.id));
   };
 
-  const handleZmenuReposition = (event: ZmenuRepositionEvent) => {
-    const zmenuData = event.detail;
+  const handleZmenuReposition = (payload: ZmenuRepositionPayload) => {
     setZmenus({
       ...zmenus,
-      [zmenuData.id]: {
-        ...zmenus[zmenuData.id],
-        anchor_coordinates: zmenuData.anchor_coordinates
+      [payload.id]: {
+        ...zmenus[payload.id],
+        anchor_coordinates: payload.anchor_coordinates
       }
     });
   };
