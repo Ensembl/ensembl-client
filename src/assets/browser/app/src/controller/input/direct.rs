@@ -14,6 +14,7 @@ use dom::event::{
 };
 use dom::domutil;
 use types::{ Move, Distance, Units };
+use super::eventutil::extract_element;
 
 fn custom_movement_event(dir: &str, unit: &str, v: &JSONValue) -> Action {
     if let JSONValue::Number(quant) = v {
@@ -151,12 +152,10 @@ impl DirectEventListener {
         //let evs = custom_make_events(&j);
         console!("receive/C {:?} {}",el,j.to_string());
         if let Some(mut g) = self.gw.upgrade() {
-            console!("upgraded");
             let el : Result<HtmlElement,_> = el.clone().try_into();
             let el : Option<HtmlElement> = el.ok();
             if let Some(el) = el {
                 if let Some(ar) = g.find_app(&el) {
-                    console!("running");
                     let mut app = ar.state();
                     run_direct_events(&mut app.lock().unwrap(),j);
                 }                
@@ -168,8 +167,15 @@ impl DirectEventListener {
 impl EventListener<()> for DirectEventListener {    
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
         match e {
-        EventData::CustomEvent(_,ec,_,c) =>
-            self.run_direct(&ec.target(),&c.details().unwrap()),
+        EventData::CustomEvent(_,ec,_,c) => {
+            let details = c.details().unwrap();
+            let el = extract_element(&details,Some(ec.target().clone()));
+            if let Some(el) = el {
+                self.run_direct(&el.into(),&details);
+            } else {
+                console!("bpane sent to unknown app");
+            }
+        },
         _ => ()
         }
     }

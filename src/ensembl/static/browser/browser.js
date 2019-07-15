@@ -20,20 +20,28 @@ if( typeof Rust === "undefined" ) {
             var fs = require( "fs" );
             var path = require( "path" );
 <<<<<<< HEAD
+<<<<<<< HEAD
             var wasm_path = path.join( __dirname, "/static/browser/browser-a53330cd7d334497106f03b15d1b4cb7.wasm" );
 =======
             var wasm_path = path.join( __dirname, "/static/browser/browser-65d196c823da86ff7be641017b646f70.wasm" );
 >>>>>>> dc38b0d... Move listener binding for bpane to top-level.
+=======
+            var wasm_path = path.join( __dirname, "/static/browser/browser-19ccf876ed80335858ad4c0bab126e5c.wasm" );
+>>>>>>> 5097faf... Listen to selector key on events, if present.
             var buffer = fs.readFileSync( wasm_path );
             var mod = new WebAssembly.Module( buffer );
             var wasm_instance = new WebAssembly.Instance( mod, instance.imports );
             return instance.initialize( wasm_instance );
         } else {
 <<<<<<< HEAD
+<<<<<<< HEAD
             var file = fetch( "/static/browser/browser-a53330cd7d334497106f03b15d1b4cb7.wasm", {credentials: "same-origin"} );
 =======
             var file = fetch( "/static/browser/browser-65d196c823da86ff7be641017b646f70.wasm", {credentials: "same-origin"} );
 >>>>>>> dc38b0d... Move listener binding for bpane to top-level.
+=======
+            var file = fetch( "/static/browser/browser-19ccf876ed80335858ad4c0bab126e5c.wasm", {credentials: "same-origin"} );
+>>>>>>> 5097faf... Listen to selector key on events, if present.
 
             var wasm_instance = ( typeof WebAssembly.instantiateStreaming === "function"
                 ? WebAssembly.instantiateStreaming( file, instance.imports )
