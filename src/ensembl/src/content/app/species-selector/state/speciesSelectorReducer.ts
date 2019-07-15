@@ -60,7 +60,8 @@ export default function speciesSelectorReducer(
     case getType(speciesSelectorActions.setSelectedSpecies):
       return {
         ...state,
-        currentItem: buildCurrentItem(action.payload)
+        currentItem: buildCurrentItem(action.payload),
+        search: initialState.search
       };
     // TODO: wait for strains
     // case getType(speciesSelectorActions.fetchStrainsAsyncActions.success):

@@ -129,18 +129,5 @@ describe('<SpeciesSearchField', () => {
       expect(messagePanel.length).toBe(1);
       expect(messagePanel.text()).toBe(NOT_FOUND_TEXT);
     });
-
-    test('does not show "not found" message when there are no matches but a species has been selected', () => {
-      /* example scenario:
-         - search for a non-existing species (SpeciesSearchField will receive empty array as a matches prop)
-         - select a species by clicking on a popular species button
-         - "not found" message should disappear
-      */
-      const props = { ...defaultProps, selectedItemText: faker.lorem.word() };
-      const wrapper = mount(<SpeciesSearchField {...props} />);
-      const messagePanel = wrapper.find('.autosuggestionPlate');
-
-      expect(messagePanel.length).toBe(0);
-    });
   });
 });
