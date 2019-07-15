@@ -4,7 +4,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const ManifestPlugin = require('webpack-manifest-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 const BrotliPlugin = require('brotli-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
@@ -64,12 +63,21 @@ const plugins = [
     chunkFilename: '[id].[contenthash].css'
   }),
 
-  // copy the browser assets into the production dist/ directory
-  // this is only temporarily until a better solution is found
+  // copy static assets
   new CopyWebpackPlugin([
     {
       from: path.join(__dirname, '../static/browser/browser*.wasm'),
       to: path.join(__dirname, '../dist/static/browser/'),
+      flatten: true
+    },
+    {
+      from: path.join(__dirname, '../static/favicons/*'),
+      to: path.join(__dirname, '../dist/static/favicons/'),
+      flatten: true
+    },
+    {
+      from: path.join(__dirname, '../static/manifest.json'),
+      to: path.join(__dirname, '../dist/static/'),
       flatten: true
     }
   ]),
@@ -90,9 +98,6 @@ const plugins = [
     threshold: 5120, // 5kB
     minRatio: 0.7
   }),
-
-  // generate an asset manifest file that maps real file names with their cache-ready equivalents
-  new ManifestPlugin(),
 
   // adds workbox library (from Google) support to enable service workers
   new WorkboxPlugin.GenerateSW({
