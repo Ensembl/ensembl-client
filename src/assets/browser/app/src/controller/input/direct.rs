@@ -10,7 +10,7 @@ use controller::global::{ App, AppRunner, Global, GlobalWeak };
 use controller::input::{ actions_run, Action };
 use dom::event::{ 
     EventListener, EventControl, EventType, EventData, 
-    ICustomEvent, Target //, IMessageEvent
+    ICustomEvent, Target, IMessageEvent
 };
 use dom::domutil;
 use types::{ Move, Distance, Units };
@@ -167,16 +167,25 @@ impl DirectEventListener {
 impl EventListener<()> for DirectEventListener {    
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
         match e {
-        EventData::CustomEvent(_,ec,_,c) => {
-            let details = c.details().unwrap();
-            let el = extract_element(&details,Some(ec.target().clone()));
-            if let Some(el) = el {
-                self.run_direct(&el.into(),&details);
-            } else {
-                console!("bpane sent to unknown app");
-            }
-        },
-        _ => ()
+            EventData::CustomEvent(_,ec,_,c) => {
+                let details = c.details().unwrap();
+                let el = extract_element(&details,Some(ec.target().clone()));
+                if let Some(el) = el {
+                    self.run_direct(&el.into(),&details);
+                } else {
+                    console!("bpane sent to unknown app (event)");
+                }
+            },
+            EventData::MessageEvent(_,ec,c) => {
+                let data = c.data().unwrap();
+                let el = extract_element(&data,None);
+                if let Some(el) = el {
+                    self.run_direct(&el.into(),&data);
+                } else {
+                    console!("bpane sent to unknown app (message)");
+                }
+            },
+            _ => ()
         }
     }
 }
@@ -186,6 +195,7 @@ pub fn register_direct_events(g: &Global) {
     let dlr = DirectEventListener::new(gw);
     let mut ec = EventControl::new(Box::new(dlr),());
     ec.add_event(EventType::CustomEvent("bpane".to_string()));
+    ec.add_event(EventType::MessageEvent);
     let body = domutil::query_selector_ok_doc("body","No body element!");
     ec.add_element(&body.into(),());
 }
