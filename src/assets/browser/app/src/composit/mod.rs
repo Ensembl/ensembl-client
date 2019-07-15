@@ -6,12 +6,10 @@ mod componentset;
 mod landscape;
 mod leaf;
 pub mod source;
-mod stage;
 mod stick;
 mod stickmanager;
-mod zoom;
-mod position;
 mod wrapping;
+mod stage;
 
 pub use self::source::{
     CombinedSource, Source, ActiveSource, 
@@ -33,8 +31,6 @@ pub use self::state::{
 
 pub use self::leaf::Leaf;
 pub use self::scale::Scale;
-pub use self::zoom::Zoom;
-pub use self::position::Position;
 pub use self::wrapping::Wrapping;
 
 pub use self::landscape::{ AllLandscapes, Landscape, Plot };

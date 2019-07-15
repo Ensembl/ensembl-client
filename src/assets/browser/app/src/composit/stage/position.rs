@@ -1,6 +1,6 @@
 use std::fmt;
 
-use composit::Zoom;
+use super::zoom::Zoom;
 use types::{ Dot, Direction, LEFT, RIGHT, UP, DOWN, IN, OUT, AxisSense };
 
 pub struct Position {
@@ -11,7 +11,7 @@ pub struct Position {
     min_x: f64,
     max_x: f64,
     min_x_bumper: f64,
-    max_x_bumper: f64,
+    max_x_bumper: f64
 }
 
 impl Position {
@@ -25,12 +25,12 @@ impl Position {
         }
     }
         
-    pub fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>) {
+    pub(super) fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>) {
         self.screen_size = *screen_size;
         self.check_own_limits();
     }
     
-    pub fn set_middle(&mut self, pos: &Dot<f64,f64>) {
+    pub(super) fn set_middle(&mut self, pos: &Dot<f64,f64>) {
         bb_log!("resize","set_middle");
         self.pos = *pos;
         self.check_own_limits();
@@ -48,19 +48,21 @@ impl Position {
         self.zoom.get_screen_in_bp()
     }
     
-    pub fn set_screen_in_bp(&mut self, zoom: f64) {
+    pub(super) fn set_screen_in_bp(&mut self, zoom: f64) {
         self.zoom.set_screen_in_bp(zoom);
     }
     
-    pub fn set_zoom(&mut self, z: f64) {
+    pub(super) fn set_zoom(&mut self, z: f64) {
         self.zoom.set_zoom(z);
+        self.check_own_limits();
     }
     
-    pub fn settle(&mut self) {
+    pub(super) fn settle(&mut self) {
+        return; /* temporary, degrades visual output but buggy */
         bb_log!("resize","settle: screen width {}bp {}px",self.get_screen_in_bp(),self.screen_size.0);
         if self.screen_size.0 > 0. {
             let screen_px = self.screen_size.0.round() as i32;
-            let x_round = self.get_screen_in_bp() / screen_px as f64;;
+            let x_round = self.get_screen_in_bp() / screen_px as f64;
             bb_log!("resize","round to {:?}bp",x_round);
             self.pos.0 = (self.pos.0 / x_round).round() * x_round;
         }
@@ -92,8 +94,8 @@ impl Position {
         }
     }
 
-    pub fn get_limit_of_middle(&self, which: &Direction) -> f64 {
-        self.get_limit_of_edge(which) -  self.middle_to_edge(which,true)
+    fn get_limit_of_middle(&self, which: &Direction) -> f64 {
+        self.get_limit_of_edge(which) -  self.middle_to_edge(which,false)
     }
 
     pub fn get_limit_of_edge(&self, which: &Direction) -> f64 {
@@ -125,7 +127,7 @@ impl Position {
         self.zoom.set_max_bp(max_bp);
     }
 
-    pub fn set_limit(&mut self, which: &Direction, val: f64) {
+    pub(super) fn set_limit(&mut self, which: &Direction, val: f64) {
         match *which {
             LEFT => self.min_x = val,
             RIGHT => self.max_x = val,
@@ -136,7 +138,7 @@ impl Position {
         self.check_own_limits();
     }
     
-    pub fn set_bumper(&mut self, which: &Direction, val: f64) {
+    pub(super) fn set_bumper(&mut self, which: &Direction, val: f64) {
         match *which {
             LEFT => self.min_x_bumper = val,
             RIGHT => self.max_x_bumper = val,
@@ -146,8 +148,8 @@ impl Position {
         self.check_own_limits();
     }
     
-    fn check_limits(&self, pos: &mut Dot<f64,f64>) {
-        /* minima always "win" when in conflict => max fn's called first */
+    fn check_limits(&mut self, pos: &mut Dot<f64,f64>) {
+        /* minima always "win" when in conflict => max fn's called first */        
         pos.0 = pos.0.min(self.get_limit_of_middle(&RIGHT));
         pos.0 = pos.0.max(self.get_limit_of_middle(&LEFT));
         pos.1 = pos.1.min(self.get_limit_of_middle(&DOWN));

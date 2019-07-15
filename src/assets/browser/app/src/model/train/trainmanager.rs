@@ -55,7 +55,7 @@ impl TrainManager {
     
     pub fn update_report(&self, report: &Report) {
         if let Some(ref stick) = self.stick {
-            report.set_status("stick",&stick.get_name());
+            report.set_status("a-stick",&stick.get_name());
         }
     }
     
@@ -77,6 +77,8 @@ impl TrainManager {
         }
     }
     
+    pub fn get_stick(&self) -> &Option<Stick> { &self.stick }
+
     /* COMPOSITOR sets new stick. Existing trains useless */
     pub fn set_stick(&mut self, st: &Stick, bp_per_screen: f64) {
         // XXX not the right thing to do: should transition

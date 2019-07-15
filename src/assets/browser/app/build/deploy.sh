@@ -18,6 +18,15 @@ fi
 
 cargo +nightly web build --target=wasm32-unknown-unknown --release
 cargo +nightly web deploy --target=wasm32-unknown-unknown --release
-cp $SRC/target/deploy/hellostdweb.wasm $DEST/browser.wasm
-cp $SRC/target/deploy/hellostdweb.js $DEST/browser.js
-sed -i -e 's~"hellostdweb.wasm"~"/static/browser/browser.wasm"~g' $DEST/browser.js
+
+echo "SRC=$SRC"
+echo "DEST=$DEST"
+WASMHASH=$(md5sum $SRC/target/deploy/hellostdweb.wasm | cut -f1 -d' ');
+echo "WASMHASH=$WASMHASH"
+
+WASMNAME="browser-$WASMHASH.wasm"
+JSNAME="browser.js"
+rm $DEST/*.js $DEST/*.wasm
+cp $SRC/target/deploy/hellostdweb.wasm $DEST/$WASMNAME
+cp $SRC/target/deploy/hellostdweb.js $DEST/$JSNAME
+sed -i -e "s~\"hellostdweb.wasm\"~\"/static/browser/$WASMNAME\"~g" $DEST/$JSNAME

@@ -1,20 +1,36 @@
 import React, { FunctionComponent } from 'react';
+import get from 'lodash/get';
+import find from 'lodash/find';
 
-import { EnsObject, EnsObjectTrack } from 'src/ens-object/ensObjectTypes';
+import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 import styles from '../Drawer.scss';
 
 type DrawerTranscriptProps = {
-  ensObjectInfo: EnsObject;
-  ensObjectTrack: EnsObjectTrack | undefined;
+  ensObject: EnsObject;
 };
+
+const TRANSCRIPT_GENE_NAME = 'gene-feat-1';
 
 const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
   props: DrawerTranscriptProps
 ) => {
-  const { ensObjectInfo, ensObjectTrack } = props;
+  const { ensObject } = props;
 
-  if (!ensObjectTrack) {
+  if (!ensObject.track) {
+    return null;
+  }
+
+  // FIXME: this is a temporary function; need to come up with something more robust
+  const getTranscriptTrack = () => {
+    const childTracks = get(ensObject, 'track.child_tracks', []);
+
+    return find(childTracks, { track_id: TRANSCRIPT_GENE_NAME }) || null;
+  };
+
+  const transcriptTrack = getTranscriptTrack();
+
+  if (!transcriptTrack) {
     return null;
   }
 
@@ -24,9 +40,9 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
         <label htmlFor="">Transcript</label>
         <div className={styles.details}>
           <p>
-            <span className={styles.mainDetail}>{ensObjectInfo.stable_id}</span>
+            <span className={styles.mainDetail}>{ensObject.stable_id}</span>
             <span className={styles.secondaryDetail}>
-              {ensObjectTrack.additional_info}
+              {transcriptTrack.additional_info}
             </span>
           </p>
         </div>
@@ -36,9 +52,9 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
         <label htmlFor="">Gene</label>
         <div className={styles.details}>
           <p>
-            <span>{ensObjectInfo.label}</span>
+            <span>{ensObject.label}</span>
             <span className={styles.secondaryDetail}>
-              {ensObjectInfo.stable_id}
+              {ensObject.stable_id}
             </span>
           </p>
         </div>
@@ -47,7 +63,7 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
       <dd className="clearfix">
         <label htmlFor="">Description</label>
         <div className={styles.details}>
-          {ensObjectTrack.description || '--'}
+          {transcriptTrack.description || '--'}
         </div>
       </dd>
     </dl>

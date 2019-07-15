@@ -5,7 +5,6 @@ import TrackPanelListItem from './TrackPanelListItem';
 
 import { UpdateTrackStatesPayload } from 'src/content/app/browser/browserActions';
 import { TrackType, TrackStates } from '../trackPanelConfig';
-import { BrowserChrLocation } from '../../browserState';
 
 import styles from './TrackPanelList.scss';
 import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
@@ -15,12 +14,10 @@ import { EnsObjectTrack, EnsObject } from 'src/ens-object/ensObjectTypes';
 type TrackPanelListProps = {
   activeGenomeId: string;
   browserRef: RefObject<HTMLDivElement>;
-  defaultChrLocation: BrowserChrLocation;
   drawerOpened: boolean;
   drawerView: string;
   launchbarExpanded: boolean;
-  ensObjectInfo: EnsObject;
-  ensObjectTracks: EnsObjectTrack;
+  ensObject: EnsObject;
   selectedBrowserTab: { [genomeId: string]: TrackType };
   toggleDrawer: (drawerOpened: boolean) => void;
   genomeTrackCategories: GenomeTrackCategory[];
@@ -108,9 +105,9 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
 
   return (
     <div className={getTrackPanelListClasses()}>
-      {props.ensObjectInfo.object_type === 'region' ? null : (
+      {props.ensObject.object_type === 'region' ? null : (
         <section>
-          <dl>{getTrackListItem('main', props.ensObjectTracks)}</dl>
+          <dl>{getTrackListItem('main', props.ensObject.track)}</dl>
         </section>
       )}
       {currentTrackCategories.map((category: GenomeTrackCategory) => (

@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import { ActionType, getType } from 'typesafe-actions';
 import merge from 'lodash/merge';
+import pickBy from 'lodash/pickBy';
 
 import { RootAction } from 'src/objects';
 import * as browserActions from './browserActions';
@@ -51,10 +52,21 @@ export function browserEntity(
   action: ActionType<typeof browserActions>
 ): BrowserEntityState {
   switch (action.type) {
+    case getType(browserActions.setDataFromUrl): {
+      const { activeGenomeId, activeEnsObjectId } = action.payload;
+      const newState = {
+        ...state,
+        activeGenomeId
+      };
+      if (activeEnsObjectId) {
+        newState.activeEnsObjectIds[activeGenomeId] = activeEnsObjectId;
+      }
+      return newState;
+    }
     case getType(browserActions.updateBrowserActiveGenomeId):
       return { ...state, activeGenomeId: action.payload };
-    case getType(browserActions.updateBrowserActiveEnsObjectId):
-      return { ...state, activeEnsObjectId: action.payload };
+    case getType(browserActions.updateBrowserActiveEnsObjectIds):
+      return { ...state, activeEnsObjectIds: action.payload };
     case getType(browserActions.updateTrackStates):
       return {
         ...state,
@@ -84,12 +96,33 @@ export function browserLocation(
   action: ActionType<typeof browserActions>
 ) {
   switch (action.type) {
+    case getType(browserActions.setDataFromUrl): {
+      const { activeGenomeId, chrLocation } = action.payload;
+      if (chrLocation) {
+        return {
+          ...state,
+          chrLocations: {
+            ...state.chrLocations,
+            [activeGenomeId]: chrLocation
+          }
+        };
+      } else {
+        return {
+          ...state,
+          chLocations: pickBy(
+            state.chrLocations,
+            (value, key) => key !== activeGenomeId
+          )
+        };
+      }
+    }
     case getType(browserActions.updateChrLocation):
-      return { ...state, chrLocation: action.payload };
-    case getType(browserActions.updateDefaultChrLocation):
       return {
         ...state,
-        defaultChrLocation: action.payload
+        chrLocations: {
+          ...state.chrLocations,
+          ...action.payload
+        }
       };
     case getType(browserActions.toggleGenomeSelector):
       return { ...state, genomeSelectorActive: action.payload };

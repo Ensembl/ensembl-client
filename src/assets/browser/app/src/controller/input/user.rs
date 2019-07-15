@@ -51,9 +51,9 @@ impl UserEventListener {
     
     fn zmenu(&mut self, pos: &CPixel) {
         let mut app = &mut self.cs.lock().unwrap();
-        actions_run(&mut app,&vec![
+        app.run_actions(&vec![
             Action::ZMenu(*pos)
-        ]); 
+        ],None); 
     }
 }
 

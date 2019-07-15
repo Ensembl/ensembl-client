@@ -6,10 +6,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { RootState } from 'src/store';
 
 import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
-import {
-  EnsObject,
-  ExampleEnsObjectsData
-} from 'src/ens-object/ensObjectTypes';
+import { EnsObject } from 'src/ens-object/ensObjectTypes';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import { getGenomeInfo } from 'src/genome/genomeSelectors';
 import { getCommittedSpecies } from '../app/species-selector/state/speciesSelectorSelectors';
@@ -23,7 +20,7 @@ import styles from './Home.scss';
 
 type StateProps = {
   activeSpecies: CommittedItem[];
-  exampleEnsObjects: ExampleEnsObjectsData;
+  exampleEnsObjects: EnsObject[];
   genomeInfo: GenomeInfoData;
   totalSelectedSpecies: number;
 };
@@ -56,27 +53,25 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
 
   const getPreviouslyViewed = () => {
     return props.activeSpecies.map((species) => {
-      if (props.exampleEnsObjects[species.genome_id]) {
-        return Object.values(props.exampleEnsObjects[species.genome_id]).map(
-          (exampleObject: EnsObject) => {
-            const location = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
-            const path = urlFor.browser({
-              genomeId: species.genome_id,
-              focus: exampleObject.ensembl_object_id,
-              location
-            });
+      if (props.exampleEnsObjects.length) {
+        return props.exampleEnsObjects.map((exampleObject) => {
+          const location = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
+          const path = urlFor.browser({
+            genomeId: species.genome_id,
+            focus: exampleObject.ensembl_object_id,
+            location
+          });
 
-            return (
-              <dd key={exampleObject.ensembl_object_id}>
-                <Link to={path}>
-                  {`${species.common_name} ${upperFirst(
-                    exampleObject.object_type
-                  )}: ${exampleObject.label}`}
-                </Link>
-              </dd>
-            );
-          }
-        );
+          return (
+            <dd key={exampleObject.ensembl_object_id}>
+              <Link to={path}>
+                {`${species.common_name} ${upperFirst(
+                  exampleObject.object_type
+                )}: ${exampleObject.label}`}
+              </Link>
+            </dd>
+          );
+        });
       }
     });
   };

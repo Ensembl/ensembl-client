@@ -6,7 +6,7 @@ import styles from './BrowserTabs.scss';
 
 type BrowserTabsProps = {
   activeGenomeId: string;
-  ensObjectInfo: EnsObject;
+  ensObject: EnsObject;
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
   selectBrowserTabAndSave: (selectedBrowserTab: TrackType) => void;
@@ -19,7 +19,7 @@ const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
   props: BrowserTabsProps
 ) => {
   const handleTabClick = (value: TrackType) => {
-    if (props.genomeSelectorActive || !props.ensObjectInfo.genome_id) {
+    if (props.genomeSelectorActive || !props.ensObject.genome_id) {
       return;
     }
 
@@ -37,13 +37,13 @@ const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
     let classNames = styles.browserTab;
 
     if (
-      props.ensObjectInfo.genome_id &&
+      props.ensObject.genome_id &&
       selectedBrowserTab === trackType &&
       drawerOpened === false &&
       trackPanelModalOpened === false
     ) {
       classNames += ` ${styles.browserTabActive} ${styles.browserTabArrow}`;
-    } else if (!props.ensObjectInfo.genome_id) {
+    } else if (!props.ensObject.genome_id) {
       classNames = styles.browserTabDisabled;
     }
 

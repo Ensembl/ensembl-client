@@ -35,7 +35,6 @@ const Checkbox = (props: Props) => {
   const styles = props.classNames
     ? { ...defaultStyles, ...props.classNames }
     : defaultStyles;
-
   const className = classNames(
     styles.defaultCheckbox,
     { [styles.checked]: props.checked },
@@ -43,15 +42,15 @@ const Checkbox = (props: Props) => {
     { [styles.disabled]: props.disabled }
   );
   const labelClassName = classNames(
-    defaultStyles.defaultLabel,
+    styles.defaultLabel,
     isWithLabel(props) && props.labelClassName
   );
 
   return (
-    <div className={defaultStyles.checkboxHolder}>
+    <div className={styles.checkboxHolder}>
       <input
         type="checkbox"
-        className={defaultStyles.hiddenInput}
+        className={styles.hiddenInput}
         onChange={handleOnChange}
         checked={props.checked}
       />

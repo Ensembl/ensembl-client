@@ -35,6 +35,9 @@ export const selectBrowserTabAndSave: ActionCreator<
   getState: () => RootState
 ) => {
   const activeGenomeId = getBrowserActiveGenomeId(getState());
+  if (!activeGenomeId) {
+    return;
+  }
   const selectedBrowserTabForGenome = {
     [activeGenomeId]: selectedBrowserTab
   };

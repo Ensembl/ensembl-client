@@ -7,10 +7,8 @@ import config from 'config';
 import { BrowserNavStates, ChrLocation, CogList } from './browserState';
 import {
   getBrowserActiveGenomeId,
-  getBrowserActiveEnsObjectId,
-  getBrowserTrackStates,
-  getDefaultChrLocation,
-  getChrLocation
+  getBrowserActiveEnsObjectIds,
+  getBrowserTrackStates
 } from './browserSelectors';
 import { getBrowserAnalyticsObject } from 'src/analyticsHelper';
 import browserStorageService from './browser-storage-service';
@@ -23,6 +21,12 @@ export type UpdateTrackStatesPayload = {
   categoryName: string;
   trackId: string;
   status: ImageButtonStatus; // TODO: update types so that actions do not depend on ImageButton types
+};
+
+export type ParsedUrlPayload = {
+  activeGenomeId: string;
+  activeEnsObjectId: string | null;
+  chrLocation: ChrLocation | null;
 };
 
 export const updateBrowserActivated = createAction(
@@ -51,6 +55,30 @@ export const activateBrowser = (browserEl: HTMLDivElement) => {
   };
 };
 
+export const setDataFromUrl = createAction(
+  'browser/set-data-from-url',
+  (resolve) => {
+    return (payload: ParsedUrlPayload) =>
+      resolve(payload, getBrowserAnalyticsObject('Navigation'));
+  }
+);
+
+export const setDataFromUrlAndSave: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (payload: ParsedUrlPayload) => (dispatch) => {
+  dispatch(setDataFromUrl(payload));
+
+  const { activeGenomeId, activeEnsObjectId, chrLocation } = payload;
+
+  browserStorageService.saveActiveGenomeId(payload.activeGenomeId);
+  chrLocation &&
+    browserStorageService.updateChrLocation({ [activeGenomeId]: chrLocation });
+  activeEnsObjectId &&
+    browserStorageService.updateActiveEnsObjectIds({
+      [activeGenomeId]: activeEnsObjectId
+    });
+};
+
 export const updateBrowserActiveGenomeId = createAction(
   'browser/update-active-genome-id',
   (resolve) => {
@@ -61,31 +89,37 @@ export const updateBrowserActiveGenomeId = createAction(
 
 export const updateBrowserActiveGenomeIdAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (activeGenomeId: string) => (dispatch: Dispatch) => {
+> = (activeGenomeId: string) => (dispatch) => {
   dispatch(updateBrowserActiveGenomeId(activeGenomeId));
   browserStorageService.saveActiveGenomeId(activeGenomeId);
 };
 
-export const updateBrowserActiveEnsObjectId = createAction(
-  'browser/update-active-ens-object-id',
+export const updateBrowserActiveEnsObjectIds = createAction(
+  'browser/update-active-ens-object-ids',
   (resolve) => {
     return (activeEnsObjectId: { [objectId: string]: string }) =>
       resolve(activeEnsObjectId, getBrowserAnalyticsObject('Navigation'));
   }
 );
 
-export const updateBrowserActiveEnsObjectIdAndSave: ActionCreator<
+export const updateBrowserActiveEnsObjectIdsAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (activeEnsObjectId: string) => {
   return (dispatch: Dispatch, getState: () => RootState) => {
-    const currentActiveEnsObjectId = getBrowserActiveEnsObjectId(getState());
-    const updatedActiveEnsObjectId = { ...currentActiveEnsObjectId };
-    const genomeId = activeEnsObjectId.split(':')[0];
-    updatedActiveEnsObjectId[genomeId] = activeEnsObjectId;
+    const state = getState();
+    const activeGenomeId = getBrowserActiveGenomeId(state);
+    if (!activeGenomeId) {
+      return;
+    }
+    const currentActiveEnsObjectIds = getBrowserActiveEnsObjectIds(state);
+    const updatedActiveEnsObjectId = {
+      ...currentActiveEnsObjectIds,
+      [activeGenomeId]: activeEnsObjectId
+    };
 
-    dispatch(updateBrowserActiveEnsObjectId(updatedActiveEnsObjectId));
+    dispatch(updateBrowserActiveEnsObjectIds(updatedActiveEnsObjectId));
 
-    browserStorageService.updateActiveEnsObjectId(updatedActiveEnsObjectId);
+    browserStorageService.updateActiveEnsObjectIds(updatedActiveEnsObjectId);
   };
 };
 
@@ -140,34 +174,24 @@ export const setChrLocation: ActionCreator<
 > = (chrLocation: ChrLocation) => {
   return (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
-    const genomeId = getBrowserActiveGenomeId(state);
-    const activeObjectId = getBrowserActiveEnsObjectId(state)[genomeId];
-    const currentChrLocation = getChrLocation(state);
-    const updatedChrLocation = {
-      ...currentChrLocation,
-      [activeObjectId]: chrLocation
+    const activeGenomeId = getBrowserActiveGenomeId(state);
+    if (!activeGenomeId) {
+      return;
+    }
+    const payload = {
+      [activeGenomeId]: chrLocation
     };
 
-    dispatch(updateChrLocation(updatedChrLocation));
-    browserStorageService.updateChrLocation(updatedChrLocation);
+    dispatch(updateChrLocation(payload));
+    browserStorageService.updateChrLocation(payload);
   };
 };
 
-export const updateDefaultChrLocation = createAction(
-  'browser/update-default-chromosome-location',
-  (resolve) => {
-    return (chrLocationData: { [genomeId: string]: ChrLocation }) =>
-      resolve(chrLocationData, getBrowserAnalyticsObject('User Interaction'));
-  }
-);
-
 export const changeBrowserLocation: ActionCreator<
   ThunkAction<any, any, null, Action<string>>
-> = (chrLocation: ChrLocation, browserEl: HTMLDivElement) => {
-  return (dispatch: Dispatch, getState: () => RootState) => {
+> = (genomeId: string, chrLocation: ChrLocation, browserEl: HTMLDivElement) => {
+  return () => {
     const [chrCode, startBp, endBp] = chrLocation;
-    const genomeId = getBrowserActiveGenomeId(getState());
-    const activeObjectId = getBrowserActiveEnsObjectId(getState())[genomeId];
 
     const stickEvent = new CustomEvent('bpane', {
       bubbles: true,
@@ -187,24 +211,6 @@ export const changeBrowserLocation: ActionCreator<
       });
 
       browserEl.dispatchEvent(gotoEvent);
-    }
-
-    const currentChrLocation = getChrLocation(getState());
-    const updatedChrLocation = {
-      ...currentChrLocation,
-      [activeObjectId]: chrLocation
-    };
-
-    dispatch(updateChrLocation(updatedChrLocation));
-    browserStorageService.updateChrLocation(updatedChrLocation);
-
-    const currentDefaultChrLocation = getDefaultChrLocation(getState());
-
-    if (activeObjectId && !currentDefaultChrLocation[activeObjectId]) {
-      const updatedDefaultChrLocation = { ...currentDefaultChrLocation };
-      updatedDefaultChrLocation[activeObjectId] = chrLocation;
-      dispatch(updateDefaultChrLocation(updatedDefaultChrLocation));
-      browserStorageService.updateDefaultChrLocation(updatedDefaultChrLocation);
     }
   };
 };
