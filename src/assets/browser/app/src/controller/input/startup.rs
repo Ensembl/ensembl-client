@@ -8,8 +8,9 @@ use controller::input::Action;
 use debug::DEMO_SOURCES;
 
 use dom::domutil;
-use dom::event::{ EventListener, EventType, EventData, EventControl, Target };
+use dom::event::{ EventListener, EventType, EventData, EventControl, Target, CustomData, ICustomEvent };
 use dom::AppEventData;
+use super::eventutil::extract_element;
 
 pub struct StartupEventListener {
     g: Global
@@ -38,7 +39,9 @@ impl EventListener<()> for StartupEventListener {
                             console!("BROWSER APP REFUSING TO START UP! No config-url supplied");
                         }
                         let config_url = ok!(Url::parse(&unwrap!(config_url)));
-                        self.g.trigger_app(&key,&unwrap!(cx.target().try_into()),debug,&config_url);
+                        let el = extract_element(&data.details().unwrap(),Some(cx.target()));
+                        console!("activate el {:?}",el);
+                        self.g.trigger_app(&key,&el.unwrap(),debug,&config_url);
                     },
                     _ => ()
                 }
