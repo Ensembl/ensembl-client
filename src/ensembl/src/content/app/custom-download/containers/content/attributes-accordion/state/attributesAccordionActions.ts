@@ -38,9 +38,9 @@ export const updateSelectedAttributes = createAction(
 );
 
 export const updateContentState = createAction(
-  'custom-download/update-content-state',
+  'custom-download/update-attribute-content-state',
   (resolve) => {
-    return (contentState: any) => resolve(contentState);
+    return (contentState: Attributes) => resolve(contentState);
   }
 );
 

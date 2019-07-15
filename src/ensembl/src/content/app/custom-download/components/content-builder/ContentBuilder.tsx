@@ -177,6 +177,7 @@ const ContentBuilder = (props: ContentBuilderProps) => {
       <div className={styles.checkboxWitRadiosWrapper}>
         <CheckboxWithTextfields
           label={entry.label}
+          allowMultiple={true}
           onChange={(values: string[]) =>
             onChangeHandler(entry.type, currentPath, values)
           }

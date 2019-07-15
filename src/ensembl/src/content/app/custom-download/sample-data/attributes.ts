@@ -241,6 +241,7 @@ const attributes: Attributes = {
       {
         type: 'section_group',
         id: 'default',
+        label: '',
         content: [
           {
             type: 'section',

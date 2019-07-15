@@ -22,11 +22,15 @@ import {
   setOrthologueApplyToAllSpecies
 } from '../../state/attributesAccordionActions';
 
+import { OrthologueState } from '../../state/attributesAccordionState';
+
 import Input from 'src/shared/input/Input';
 
 import styles from './Orthologues.scss';
 
-import { Attributes } from 'src/content/app/custom-download/types/Attributes';
+import Attribute, {
+  Attributes
+} from 'src/content/app/custom-download/types/Attributes';
 
 import { orthologueAttributes } from 'src/content/app/custom-download/sample-data/orthologue';
 
@@ -126,6 +130,10 @@ const Orthologue = (props: Props) => {
                 <div className={styles.speciesAttributesSectionTitle}>
                   <span>{species}</span>
                 </div>
+
+                {/* 
+                  TODO: Fix Orthologues search
+                  
                 <CheckboxGrid
                   onChange={(status, id) =>
                     attributesOnChangeHandler(status, species, id)
@@ -133,7 +141,7 @@ const Orthologue = (props: Props) => {
                   options={props.orthologueAttributes}
                   hideLabel={true}
                   label={''}
-                />
+                /> */}
               </div>
             );
           }
@@ -165,7 +173,7 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 type StateProps = {
-  orthologueAttributes: Attributes;
+  orthologueAttributes: OrthologueState;
   orthologueSearchTerm: string;
   orthologueSpecies: any;
   shouldShowBestMatches: boolean;

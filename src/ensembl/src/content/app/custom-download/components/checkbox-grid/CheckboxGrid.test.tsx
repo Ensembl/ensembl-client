@@ -60,7 +60,7 @@ describe('<CheckboxGrid />', () => {
     const firstGridContainer = wrapper.find('.checkboxGridContainer').first();
 
     const labels: string[] = [];
-    defaultOptions.forEach((element) => {
+    Object.values(defaultOptions).forEach((element) => {
       labels.push(element.label);
     });
     labels.sort();
@@ -93,7 +93,7 @@ describe('<CheckboxGrid />', () => {
 
     let totalCheckedCheckboxes = 0;
 
-    defaultOptions.forEach((section) => {
+    Object.values(defaultOptions).forEach((section) => {
       if (section.isChecked) {
         totalCheckedCheckboxes++;
       }

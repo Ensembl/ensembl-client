@@ -17,10 +17,10 @@ import {
 
 import ImageButton from 'src/shared/image-button/ImageButton';
 
-import { CustomDownloadAttributes } from 'src/content/app/custom-download/types/Attributes';
+import { Attributes } from 'src/content/app/custom-download/types/Attributes';
 
 type StateProps = {
-  attributes: CustomDownloadAttributes;
+  attributes: Attributes;
   filters: {};
 };
 

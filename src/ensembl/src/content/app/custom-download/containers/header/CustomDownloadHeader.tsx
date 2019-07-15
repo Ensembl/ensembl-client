@@ -34,9 +34,7 @@ import { fetchCustomDownloadResults } from './customDownloadHeaderHelper';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 
-import Attribute, {
-  Attributes
-} from 'src/content/app/custom-download/types/Attributes';
+import { Attributes } from 'src/content/app/custom-download/types/Attributes';
 
 import styles from './CustomDownloadHeader.scss';
 

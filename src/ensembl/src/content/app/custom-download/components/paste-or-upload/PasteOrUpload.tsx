@@ -19,6 +19,7 @@ const PasteOrUpload = (props: PasteOrUploadProps) => {
   };
 
   const onRemoveHandler = () => {
+    showInput(false);
     props.onRemove();
   };
 

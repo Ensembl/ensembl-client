@@ -1,36 +1,19 @@
-import config from 'config';
-
-import Attribute, {
-  Attributes
-} from 'src/content/app/custom-download/types/Attributes';
+import { Attributes } from 'src/content/app/custom-download/types/Attributes';
+import {
+  getEndpointUrl,
+  flattenObject
+} from 'src/content/app/custom-download/containers/content/result-holder/resultHolderHelper';
 
 export const fetchCustomDownloadResults = (
   downloadType: string,
-  attributes: Attribute[],
+  attributes: Attributes,
   filters: any
 ) => {
-  let endpoint = config.genesearchAPIEndpoint + '/genes/fetch?query=';
+  const flatSelectedAttributes: { [key: string]: boolean } = flattenObject(
+    attributes
+  );
 
-  let endpointFields = '';
-  attributes.forEach((attribute: Attribute) => {
-    endpointFields += attribute.id + ',';
-  });
-
-  const endpointFilters: any = {
-    genome: 'homo_sapiens'
-  };
-
-  Object.keys(filters).forEach((filter: string) => {
-    endpointFilters[filter] = filters[filter];
-  });
-
-  endpoint =
-    endpoint +
-    JSON.stringify(endpointFilters) +
-    '&fields=' +
-    endpointFields +
-    '&sort=id&array=true&accept=' +
-    downloadType;
+  const endpoint = getEndpointUrl(flatSelectedAttributes, filters, 'fetch');
 
   window.open(endpoint);
 };

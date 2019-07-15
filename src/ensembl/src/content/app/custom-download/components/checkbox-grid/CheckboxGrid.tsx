@@ -4,7 +4,9 @@ import styles from './CheckboxGrid.scss';
 
 import orderBy from 'lodash/orderBy';
 
-import Attribute from 'src/content/app/custom-download/types/Attributes';
+import Attribute, {
+  Attributes
+} from 'src/content/app/custom-download/types/Attributes';
 
 export type CheckboxGridOption = {
   isChecked: boolean;

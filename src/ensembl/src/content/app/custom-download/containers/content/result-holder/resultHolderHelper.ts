@@ -2,7 +2,7 @@ import config from 'config';
 
 import { keys, mapKeys, set, get, trim } from 'lodash';
 
-const getProcessedAttributes = (flatSelectedAttributes: any) => {
+export const getProcessedAttributes = (flatSelectedAttributes: any) => {
   return keys(
     mapKeys(flatSelectedAttributes, (value: boolean, key: string) => {
       return key
@@ -40,13 +40,14 @@ const getProcessedFilters = (filters: any) => {
 
 export const getEndpointUrl = (
   flatSelectedAttributes: any,
-  selectedFilters: any
+  selectedFilters: any,
+  method: string = 'query'
 ) => {
   const processedAttributes = getProcessedAttributes(flatSelectedAttributes);
 
   const processedFilters = getProcessedFilters(selectedFilters);
 
-  let endpoint = config.genesearchAPIEndpoint + '/genes/query?query=';
+  let endpoint = config.genesearchAPIEndpoint + `/genes/${method}?query=`;
 
   const endpointFilters: any = {
     genome: 'homo_sapiens'

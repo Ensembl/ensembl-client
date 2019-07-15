@@ -29,7 +29,7 @@ function attributesAccordion(
     case getType(attributesAccordionActions.updateContentState):
       return {
         ...state,
-        updateContentState: action.payload
+        contentState: action.payload
       };
     case getType(attributesAccordionActions.setOrthologueAttributes):
       return {

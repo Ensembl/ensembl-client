@@ -12,7 +12,7 @@ export type AttributesAccordionState = Readonly<{
   expandedPanel: string;
   attributes: Attributes;
   selectedAttributes: Attributes;
-  contentState: any;
+  contentState: Attributes;
   orthologue: OrthologueState;
 }>;
 

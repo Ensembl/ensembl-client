@@ -15,7 +15,9 @@ export type CheckboxWithTextfieldsProps = {
 
 const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
   const [isChecked, setisChecked] = useState(props.values.length > 0);
-  const [shouldShowAddButton, setShowAddButton] = useState(false);
+  const [shouldShowAddButton, setShowAddButton] = useState(
+    Boolean(props.values[props.values.length - 1])
+  );
 
   const handleCheckboxOnChange = (isChecked: boolean) => {
     setisChecked(isChecked);
