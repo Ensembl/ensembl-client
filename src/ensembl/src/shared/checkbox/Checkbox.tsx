@@ -45,7 +45,6 @@ const Checkbox = (props: Props) => {
     styles.defaultLabel,
     isWithLabel(props) && props.labelClassName
   );
-  console.log(className);
 
   return (
     <div className={styles.checkboxHolder}>
