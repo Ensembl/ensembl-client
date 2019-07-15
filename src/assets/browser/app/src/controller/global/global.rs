@@ -176,4 +176,6 @@ pub fn setup_global() {
     domutil::add_attr(&body,"class","browser-app-ready");
     domutil::remove_attr(&body.into(),"class","browser-app-not-ready");
     register_direct_events(&g);
+    /* setup ping/pong */
+    activate();
 }
