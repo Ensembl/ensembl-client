@@ -4,7 +4,7 @@ import faker from 'faker';
 import times from 'lodash/times';
 import flatten from 'lodash/flatten';
 
-import { SpeciesSearchField } from './SpeciesSearchField';
+import { SpeciesSearchField, NOT_FOUND_TEXT } from './SpeciesSearchField';
 import SpeciesSearchMatch from '../species-search-match/SpeciesSearchMatch';
 import ClearButton from 'src/shared/clear-button/ClearButton';
 
@@ -118,6 +118,29 @@ describe('<SpeciesSearchField', () => {
       expect(clearSearchResults).toHaveBeenCalled();
       expect(wrapper.find('input').prop('value')).toBe(''); // input content was cleared
       expect(wrapper.find(ClearButton).length).toBe(0); // clear button has disappeared
+    });
+  });
+
+  describe('no matches found', () => {
+    test('shows "not found" message', () => {
+      const wrapper = mount(<SpeciesSearchField {...defaultProps} />);
+      const messagePanel = wrapper.find('.autosuggestionPlate');
+
+      expect(messagePanel.length).toBe(1);
+      expect(messagePanel.text()).toBe(NOT_FOUND_TEXT);
+    });
+
+    test('does not show "not found" message when there are no matches but a species has been selected', () => {
+      /* example scenario:
+         - search for a non-existing species (SpeciesSearchField will receive empty array as a matches prop)
+         - select a species by clicking on a popular species button
+         - "not found" message should disappear
+      */
+      const props = { ...defaultProps, selectedItemText: faker.lorem.word() };
+      const wrapper = mount(<SpeciesSearchField {...props} />);
+      const messagePanel = wrapper.find('.autosuggestionPlate');
+
+      expect(messagePanel.length).toBe(0);
     });
   });
 });

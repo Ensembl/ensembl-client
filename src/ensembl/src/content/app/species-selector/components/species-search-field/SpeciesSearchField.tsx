@@ -28,6 +28,7 @@ import { RootState } from 'src/store';
 import styles from './SpeciesSearchField.scss';
 
 const MINIMUM_SEARCH_LENGTH = 3;
+export const NOT_FOUND_TEXT = 'Sorry, we have no data for this species';
 
 type Props = {
   onSearchChange: (search: string) => void;
@@ -108,7 +109,7 @@ export const SpeciesSearchField = (props: Props) => {
       searchFieldClassName={styles.speciesSearchField}
       canShowSuggestions={canShowSuggesions}
       notFound={isNotFound}
-      notFoundText="Sorry, we have no data for this species"
+      notFoundText={NOT_FOUND_TEXT}
       onFocus={() => setIsFocused(true)}
       onBlur={() => setIsFocused(false)}
       rightCorner={<RightCorner status={rightCornerStatus} clear={clear} />}
