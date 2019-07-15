@@ -19,13 +19,21 @@ if( typeof Rust === "undefined" ) {
         if( typeof process === "object" && typeof process.versions === "object" && typeof process.versions.node === "string" ) {
             var fs = require( "fs" );
             var path = require( "path" );
+<<<<<<< HEAD
             var wasm_path = path.join( __dirname, "/static/browser/browser-a53330cd7d334497106f03b15d1b4cb7.wasm" );
+=======
+            var wasm_path = path.join( __dirname, "/static/browser/browser-65d196c823da86ff7be641017b646f70.wasm" );
+>>>>>>> dc38b0d... Move listener binding for bpane to top-level.
             var buffer = fs.readFileSync( wasm_path );
             var mod = new WebAssembly.Module( buffer );
             var wasm_instance = new WebAssembly.Instance( mod, instance.imports );
             return instance.initialize( wasm_instance );
         } else {
+<<<<<<< HEAD
             var file = fetch( "/static/browser/browser-a53330cd7d334497106f03b15d1b4cb7.wasm", {credentials: "same-origin"} );
+=======
+            var file = fetch( "/static/browser/browser-65d196c823da86ff7be641017b646f70.wasm", {credentials: "same-origin"} );
+>>>>>>> dc38b0d... Move listener binding for bpane to top-level.
 
             var wasm_instance = ( typeof WebAssembly.instantiateStreaming === "function"
                 ? WebAssembly.instantiateStreaming( file, instance.imports )
@@ -923,6 +931,9 @@ Module.STDWEB_PRIVATE.acquire_tmp = function( dummy ) {
             },
             "__cargo_web_snippet_c7517059977e36d1f093395afdd661ef658c2ac3": function($0) {
                 var o = Module.STDWEB_PRIVATE.acquire_js_reference( $0 );return (o instanceof Object) | 0;
+            },
+            "__cargo_web_snippet_c954dd1aab8dac1357d1b982abe9869582f12683": function($0, $1) {
+                $1 = Module.STDWEB_PRIVATE.to_js($1);Module.STDWEB_PRIVATE.from_js($0, (function(){return($1).parentElement;})());
             },
             "__cargo_web_snippet_cd41a77d0178ae27c833ef2950e5f1a48a1455c1": function($0, $1, $2) {
                 $1 = Module.STDWEB_PRIVATE.to_js($1);$2 = Module.STDWEB_PRIVATE.to_js($2);Module.STDWEB_PRIVATE.from_js($0, (function(){try{return{value:function(){return($1).removeChild(($2));}(),success:true};}catch(error){return{error:error,success:false};}})());

@@ -2,7 +2,7 @@ use std::sync::{ Arc, Mutex, Weak };
 
 use stdweb::web::HtmlElement;
 use url::Url;
-
+use dom::domutil;
 use composit::register_compositor_ticks;
 use controller::global::{ App, GlobalWeak };
 use controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup };
@@ -127,7 +127,6 @@ impl AppRunner {
         {
             let el = self.0.lock().unwrap().el.clone();
             register_user_events(self,&el);
-            register_direct_events(self,&el);
             register_dom_events(self,&el);
         }
 
@@ -195,9 +194,14 @@ impl AppRunner {
     }
         
     pub fn bling_key(&mut self, key: &str) {
-        let mut imp = self.0.lock().unwrap();   
+        let mut imp = self.0.lock().unwrap();
         let app = imp.app.clone();     
         imp.bling.key(&app,key);
+    }
+
+    pub fn find_app(&mut self, el: &HtmlElement) -> bool {
+        let mut imp = self.0.lock().unwrap();
+        domutil::ancestor(el,&imp.el) || domutil::ancestor(&imp.el,el)
     }
 }
 

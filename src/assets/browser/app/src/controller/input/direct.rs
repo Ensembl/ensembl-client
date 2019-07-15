@@ -1,5 +1,4 @@
-use std::convert::TryInto;
-
+use stdweb::unstable::TryInto;
 use std::sync::{ Arc, Mutex };
 
 use serde_json::from_str;
@@ -7,12 +6,13 @@ use serde_json::Value as JSONValue;
 use serde_json::Number as JSONNumber;
 use stdweb::web::{ Element, HtmlElement };
 
-use controller::global::{ App, AppRunner };
+use controller::global::{ App, AppRunner, Global, GlobalWeak };
 use controller::input::{ actions_run, Action };
 use dom::event::{ 
     EventListener, EventControl, EventType, EventData, 
-    ICustomEvent, Target, IMessageEvent
+    ICustomEvent, Target //, IMessageEvent
 };
+use dom::domutil;
 use types::{ Move, Distance, Units };
 
 fn custom_movement_event(dir: &str, unit: &str, v: &JSONValue) -> Action {
@@ -139,38 +139,47 @@ pub fn run_direct_events(app: &mut App, j: &JSONValue) {
 }
 
 pub struct DirectEventListener {
-    cg: Arc<Mutex<App>>,
+    gw: GlobalWeak
 }
 
 impl DirectEventListener {
-    pub fn new(cg: &Arc<Mutex<App>>) -> DirectEventListener {
-        DirectEventListener { cg: cg.clone() }
+    pub fn new(gw: GlobalWeak) -> DirectEventListener {
+        DirectEventListener { gw }
     }        
+
+    pub fn run_direct(&mut self, el: &Element, j: &JSONValue) {
+        //let evs = custom_make_events(&j);
+        console!("receive/C {:?} {}",el,j.to_string());
+        if let Some(mut g) = self.gw.upgrade() {
+            console!("upgraded");
+            let el : Result<HtmlElement,_> = el.clone().try_into();
+            let el : Option<HtmlElement> = el.ok();
+            if let Some(el) = el {
+                if let Some(ar) = g.find_app(&el) {
+                    console!("running");
+                    let mut app = ar.state();
+                    run_direct_events(&mut app.lock().unwrap(),j);
+                }                
+            }
+        }
+    }
 }
 
 impl EventListener<()> for DirectEventListener {    
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
         match e {
-        EventData::CustomEvent(_,_,_,c) =>
-            run_direct_events(&mut self.cg.lock().unwrap(),
-                              &c.details().unwrap()),
-        EventData::MessageEvent(_,_,c) => {
-            let data = &c.data().unwrap();
-            if data["type"] == "bpane" {
-                run_direct_events(&mut self.cg.lock().unwrap(),&data["payload"]);
-            }
-        },
+        EventData::CustomEvent(_,ec,_,c) =>
+            self.run_direct(&ec.target(),&c.details().unwrap()),
         _ => ()
         }
     }
 }
 
-pub fn register_direct_events(gc: &mut AppRunner, el: &HtmlElement) {
-    let elel : Element = el.clone().into();
-    let dlr = DirectEventListener::new(&gc.state());
+pub fn register_direct_events(g: &Global) {
+    let gw = GlobalWeak::new(g);
+    let dlr = DirectEventListener::new(gw);
     let mut ec = EventControl::new(Box::new(dlr),());
     ec.add_event(EventType::CustomEvent("bpane".to_string()));
-    ec.add_event(EventType::MessageEvent);
-    ec.add_element(&elel,());
-    gc.add_control(Box::new(ec));
+    let body = domutil::query_selector_ok_doc("body","No body element!");
+    ec.add_element(&body.into(),());
 }

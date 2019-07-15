@@ -182,6 +182,26 @@ pub fn browser_time() -> f64 {
     return  js! { return +new Date(); }.try_into().unwrap();
 }
 
+pub fn ancestor(younger: &HtmlElement, older: &HtmlElement) -> bool {
+    let mut younger = younger.clone();
+    loop {
+        if &younger == older {
+            return true;
+        }
+        if let Some(el) = younger.parent_element() {
+            let el: Option<HtmlElement> = el.try_into().ok();
+            if let Some(el) = el {
+                younger = el;
+            } else {
+                break;
+            }
+        } else {
+            break;
+        }
+    }
+    return false;
+}
+
 /* Not sure why this isn't implemented in stdweb */
 #[allow(unused)]
 pub fn get_classes(el: &HtmlElement) -> Vec<String> {
