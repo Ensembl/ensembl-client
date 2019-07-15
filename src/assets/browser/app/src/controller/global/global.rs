@@ -10,7 +10,7 @@ use url::Url;
 use util::{ set_instance_id, get_instance_id };
 
 use controller::input::{
-    register_startup_events, register_shutdown_events
+    register_startup_events, register_shutdown_events, register_direct_events
 };
 use controller::global::{ AppRunner, Booting };
 use controller::scheduler::{ Scheduler, SchedulerGroup };
@@ -75,6 +75,15 @@ impl GlobalImpl {
     pub fn register_app(&mut self, key: &str, app_runner: AppRunner) {
         self.app_runners.insert(key.to_string(),app_runner);
     }
+
+    pub fn find_app(&mut self, el: &HtmlElement) -> Option<AppRunner> {
+        for ar in self.app_runners.values_mut() {
+            if ar.find_app(el) {
+                return Some(ar.clone())
+            }
+        }
+        return None
+    }
 }
 
 #[derive(Clone)]
@@ -106,6 +115,10 @@ impl Global {
     /* app registration */
     fn unregister_app(&mut self, key: &str) {
         self.0.borrow_mut().unregister_app(key);
+    }
+
+    pub fn find_app(&mut self, el: &HtmlElement) -> Option<AppRunner> {
+        self.0.borrow_mut().find_app(el)
     }
 
     pub fn trigger_app(&mut self, key: &str, el: &HtmlElement, debug: bool, config_url: &Url) {
@@ -147,9 +160,10 @@ impl GlobalWeak {
 
 pub fn setup_global() {
     /* setup */
-    Global::new();
+    let g = Global::new();
     /* mark as ready */
     let body = domutil::query_selector_ok_doc("body","Cannot find body element");
     domutil::add_attr(&body,"class","browser-app-ready");
     domutil::remove_attr(&body.into(),"class","browser-app-not-ready");
+    register_direct_events(&g);
 }
