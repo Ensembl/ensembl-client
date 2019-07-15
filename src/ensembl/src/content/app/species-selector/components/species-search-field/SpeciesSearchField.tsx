@@ -93,6 +93,10 @@ export const SpeciesSearchField = (props: Props) => {
     ? RightCornerStatus.EMPTY
     : RightCornerStatus.INFO;
 
+  const isNotFound = Boolean(
+    !props.selectedItemText && props.matches && props.matches.length === 0
+  );
+
   return (
     <AutosuggestSearchField
       search={props.selectedItemText || search}
@@ -103,7 +107,7 @@ export const SpeciesSearchField = (props: Props) => {
       matchGroups={matchGroups}
       searchFieldClassName={styles.speciesSearchField}
       canShowSuggestions={canShowSuggesions}
-      notFound={Boolean(props.matches && props.matches.length === 0)}
+      notFound={isNotFound}
       notFoundText="Sorry, we have no data for this species"
       onFocus={() => setIsFocused(true)}
       onBlur={() => setIsFocused(false)}
