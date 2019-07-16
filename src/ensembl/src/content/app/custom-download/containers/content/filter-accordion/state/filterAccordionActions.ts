@@ -1,6 +1,6 @@
 import { createAction } from 'typesafe-actions';
 
-import { getCustomDownloadAnalyticsObject } from 'src/analyticsHelper';
+import buildAnalyticsObject from 'src/analyticsHelper';
 
 export const setFiltersAccordionExpandedPanel = createAction(
   'custom-download/set-filters-accordion-expanded-panels',
@@ -8,7 +8,10 @@ export const setFiltersAccordionExpandedPanel = createAction(
     return (expandedPanel: string) =>
       resolve(
         expandedPanel,
-        getCustomDownloadAnalyticsObject('Toggle filters accordion panel')
+        buildAnalyticsObject({
+          category: 'Custom Downloads',
+          label: 'Toggle filters accordion panel'
+        })
       );
   }
 );
@@ -19,7 +22,10 @@ export const setFiltersAccordionExpandedGenePanels = createAction(
     return (expandedPanels: []) =>
       resolve(
         expandedPanels,
-        getCustomDownloadAnalyticsObject('Toggle filters accordion gene panels')
+        buildAnalyticsObject({
+          category: 'Custom Downloads',
+          label: 'Toggle filters accordion gene panels'
+        })
       );
   }
 );
@@ -30,9 +36,10 @@ export const setGencodeAnnotationFilters = createAction(
     return (gencodeBasicAnnotation: string) =>
       resolve(
         gencodeBasicAnnotation,
-        getCustomDownloadAnalyticsObject(
-          'Gencode basic annotation filters updated'
-        )
+        buildAnalyticsObject({
+          category: 'Custom Downloads',
+          label: 'Gencode basic annotation filters updated'
+        })
       );
   }
 );
@@ -43,7 +50,10 @@ export const setGeneSourceFilters = createAction(
     return (geneSource: {}) =>
       resolve(
         geneSource,
-        getCustomDownloadAnalyticsObject('Gene source filters updated')
+        buildAnalyticsObject({
+          category: 'Custom Downloads',
+          label: 'Gene source filters updated'
+        })
       );
   }
 );
@@ -54,7 +64,10 @@ export const setGeneTypeFilters = createAction(
     return (geneTypeFilters: {}) =>
       resolve(
         geneTypeFilters,
-        getCustomDownloadAnalyticsObject('Gene type filters updated')
+        buildAnalyticsObject({
+          category: 'Custom Downloads',
+          label: 'Gene type filters updated'
+        })
       );
   }
 );
@@ -65,7 +78,10 @@ export const setTranscriptTypeFilters = createAction(
     return (transcriptTypeFilters: {}) =>
       resolve(
         transcriptTypeFilters,
-        getCustomDownloadAnalyticsObject('Transcript type filters updated')
+        buildAnalyticsObject({
+          category: 'Custom Downloads',
+          label: 'Transcript type filters updated'
+        })
       );
   }
 );

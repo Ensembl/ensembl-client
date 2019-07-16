@@ -1,7 +1,7 @@
 import { createAction, createAsyncAction } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Action } from 'redux';
-import { getCustomDownloadAnalyticsObject } from 'src/analyticsHelper';
+import buildAnalyticsObject from 'src/analyticsHelper';
 import {
   attributes,
   orthologueSpecies as sampleOrthologueSpecies
@@ -32,7 +32,10 @@ export const setGeneAttributes = createAction(
     return (geneAttributes: AttributesSection) =>
       resolve(
         geneAttributes,
-        getCustomDownloadAnalyticsObject('Gene attributes updated')
+        buildAnalyticsObject({
+          category: 'Custom downloads',
+          label: 'Gene attributes updated'
+        })
       );
   }
 );
@@ -43,7 +46,10 @@ export const setTranscriptAttributes = createAction(
     return (transcriptAttributes: AttributesSection) =>
       resolve(
         transcriptAttributes,
-        getCustomDownloadAnalyticsObject('Transctipt attributes updated')
+        buildAnalyticsObject({
+          category: 'Custom downloads',
+          label: 'Transctipt attributes updated'
+        })
       );
   }
 );
@@ -54,7 +60,10 @@ export const setPhenotypeAttributes = createAction(
     return (phenotypeAttributes: AttributesSection) =>
       resolve(
         phenotypeAttributes,
-        getCustomDownloadAnalyticsObject('Phenotype attributes updated')
+        buildAnalyticsObject({
+          category: 'Custom downloads',
+          label: 'Phenotype attributes updated'
+        })
       );
   }
 );
@@ -65,7 +74,10 @@ export const setOrthologueAttributes = createAction(
     return (orthologueAttributes: AttributesSection) =>
       resolve(
         orthologueAttributes,
-        getCustomDownloadAnalyticsObject('Orthologue attributes updated')
+        buildAnalyticsObject({
+          category: 'Custom downloads',
+          label: 'Orthologue attributes updated'
+        })
       );
   }
 );
@@ -76,9 +88,10 @@ export const setOrthologueShowBestMatches = createAction(
     return (showBestMatches: boolean) =>
       resolve(
         showBestMatches,
-        getCustomDownloadAnalyticsObject(
-          'Orthologue Show Best Matches link clicked'
-        )
+        buildAnalyticsObject({
+          category: 'Custom downloads',
+          label: 'Orthologue Show Best Matches link clicked'
+        })
       );
   }
 );
@@ -89,7 +102,10 @@ export const setOrthologueShowAll = createAction(
     return (showAll: boolean) =>
       resolve(
         showAll,
-        getCustomDownloadAnalyticsObject('Orthologue Show All link clicked')
+        buildAnalyticsObject({
+          category: 'Custom downloads',
+          label: 'Orthologue Show All link clicked'
+        })
       );
   }
 );
@@ -100,9 +116,10 @@ export const setOrthologueApplyToAllSpecies = createAction(
     return (applyToAllSpecies: boolean) =>
       resolve(
         applyToAllSpecies,
-        getCustomDownloadAnalyticsObject(
-          'Orthologue Apply To All Species link clicked'
-        )
+        buildAnalyticsObject({
+          category: 'Custom downloads',
+          label: 'Orthologue Apply To All Species link clicked'
+        })
       );
   }
 );
@@ -113,7 +130,10 @@ export const setOrthologueSearchTerm = createAction(
     return (searchTerm: string) =>
       resolve(
         searchTerm,
-        getCustomDownloadAnalyticsObject('Orthologue search term updated')
+        buildAnalyticsObject({
+          category: 'Custom downloads',
+          label: 'Orthologue search term updated'
+        })
       );
   }
 );
@@ -167,7 +187,10 @@ export const setLocationAttributes = createAction(
     return (locationAttributes: AttributesSection) =>
       resolve(
         locationAttributes,
-        getCustomDownloadAnalyticsObject('Location attributes updated')
+        buildAnalyticsObject({
+          category: 'Custom downloads',
+          label: 'Location attributes updated'
+        })
       );
   }
 );
@@ -178,7 +201,10 @@ export const setSomaticVariationAttributes = createAction(
     return (variationAttributes: AttributesSection) =>
       resolve(
         variationAttributes,
-        getCustomDownloadAnalyticsObject('Somatic variation attributes updated')
+        buildAnalyticsObject({
+          category: 'Custom downloads',
+          label: 'Somatic variation attributes updated'
+        })
       );
   }
 );
@@ -189,9 +215,10 @@ export const setGermlineVariationAttributes = createAction(
     return (variationAttributes: AttributesSection) =>
       resolve(
         variationAttributes,
-        getCustomDownloadAnalyticsObject(
-          'Germline variation attributes updated'
-        )
+        buildAnalyticsObject({
+          category: 'Custom downloads',
+          label: 'Germline variation attributes updated'
+        })
       );
   }
 );
@@ -202,7 +229,10 @@ export const setAttributesAccordionExpandedPanel = createAction(
     return (expandedPanel: string) =>
       resolve(
         expandedPanel,
-        getCustomDownloadAnalyticsObject('Toggle attributes accordion panel')
+        buildAnalyticsObject({
+          category: 'Custom downloads',
+          label: 'Toggle attributes accordion panel'
+        })
       );
   }
 );
@@ -213,9 +243,10 @@ export const setVariationAccordionExpandedPanels = createAction(
     return (expandedPanels: string[]) =>
       resolve(
         expandedPanels,
-        getCustomDownloadAnalyticsObject(
-          'Toggle variation attributes accordion panel'
-        )
+        buildAnalyticsObject({
+          category: 'Custom downloads',
+          label: 'Toggle variation attributes accordion panel'
+        })
       );
   }
 );

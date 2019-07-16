@@ -10,7 +10,7 @@ import {
   getBrowserActiveEnsObjectIds,
   getBrowserTrackStates
 } from './browserSelectors';
-import { getBrowserAnalyticsObject } from 'src/analyticsHelper';
+import buildAnalyticsObject from 'src/analyticsHelper';
 import browserStorageService from './browser-storage-service';
 import { RootState } from 'src/store';
 import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
@@ -33,7 +33,10 @@ export const updateBrowserActivated = createAction(
   'browser/update-browser-activated',
   (resolve) => {
     return (browserActivated: boolean) =>
-      resolve(browserActivated, getBrowserAnalyticsObject('Default Action'));
+      resolve(
+        browserActivated,
+        buildAnalyticsObject({ category: 'Browser', label: 'Default Action' })
+      );
   }
 );
 
@@ -59,7 +62,10 @@ export const setDataFromUrl = createAction(
   'browser/set-data-from-url',
   (resolve) => {
     return (payload: ParsedUrlPayload) =>
-      resolve(payload, getBrowserAnalyticsObject('Navigation'));
+      resolve(
+        payload,
+        buildAnalyticsObject({ category: 'Browser', label: 'Navigation' })
+      );
   }
 );
 
@@ -83,7 +89,10 @@ export const updateBrowserActiveGenomeId = createAction(
   'browser/update-active-genome-id',
   (resolve) => {
     return (activeGenomeId: string) =>
-      resolve(activeGenomeId, getBrowserAnalyticsObject('Navigation'));
+      resolve(
+        activeGenomeId,
+        buildAnalyticsObject({ category: 'Browser', label: 'Navigation' })
+      );
   }
 );
 
@@ -98,7 +107,10 @@ export const updateBrowserActiveEnsObjectIds = createAction(
   'browser/update-active-ens-object-ids',
   (resolve) => {
     return (activeEnsObjectId: { [objectId: string]: string }) =>
-      resolve(activeEnsObjectId, getBrowserAnalyticsObject('Navigation'));
+      resolve(
+        activeEnsObjectId,
+        buildAnalyticsObject({ category: 'Browser', label: 'Navigation' })
+      );
   }
 );
 
@@ -149,7 +161,11 @@ export const updateTrackStatesAndSave: ActionCreator<
 export const toggleBrowserNav = createAction(
   'browser/toggle-browser-navigation',
   (resolve) => {
-    return () => resolve(undefined, getBrowserAnalyticsObject('Navigation'));
+    return () =>
+      resolve(
+        undefined,
+        buildAnalyticsObject({ category: 'Browser', label: 'Navigation' })
+      );
   }
 );
 
@@ -157,7 +173,10 @@ export const updateBrowserNavStates = createAction(
   'browser/update-browser-nav-states',
   (resolve) => {
     return (browserNavStates: BrowserNavStates) =>
-      resolve(browserNavStates, getBrowserAnalyticsObject('Navigation'));
+      resolve(
+        browserNavStates,
+        buildAnalyticsObject({ category: 'Browser', label: 'Navigation' })
+      );
   }
 );
 
@@ -219,7 +238,10 @@ export const updateCogList = createAction(
   'browser/update-cog-list',
   (resolve) => {
     return (cogList: number) => {
-      return resolve(cogList, getBrowserAnalyticsObject('User Interaction'));
+      return resolve(
+        cogList,
+        buildAnalyticsObject({ category: 'Browser', label: 'User Interaction' })
+      );
     };
   }
 );
@@ -228,7 +250,10 @@ export const updateCogTrackList = createAction(
   'browser/update-cog-track-list',
   (resolve) => {
     return (trackY: CogList) => {
-      return resolve(trackY, getBrowserAnalyticsObject('User Interaction'));
+      return resolve(
+        trackY,
+        buildAnalyticsObject({ category: 'Browser', label: 'User Interaction' })
+      );
     };
   }
 );
@@ -237,7 +262,10 @@ export const updateSelectedCog = createAction(
   'browser/update-selected-cog',
   (resolve) => {
     return (index: string) => {
-      return resolve(index, getBrowserAnalyticsObject('User Interaction'));
+      return resolve(
+        index,
+        buildAnalyticsObject({ category: 'Browser', label: 'User Interaction' })
+      );
     };
   }
 );
@@ -248,7 +276,7 @@ export const updateTrackConfigNames = createAction(
     return (selectedCog: any, sense: boolean) => {
       return resolve(
         [selectedCog, sense],
-        getBrowserAnalyticsObject('User Interaction')
+        buildAnalyticsObject({ category: 'Browser', label: 'User Interaction' })
       );
     };
   }
@@ -260,7 +288,7 @@ export const updateTrackConfigLabel = createAction(
     return (selectedCog: any, sense: boolean) => {
       return resolve(
         [selectedCog, sense],
-        getBrowserAnalyticsObject('User Interaction')
+        buildAnalyticsObject({ category: 'Browser', label: 'User Interaction' })
       );
     };
   }
@@ -270,7 +298,10 @@ export const updateApplyToAll = createAction(
   'browser/update-apply-to-all',
   (resolve) => {
     return (yn: boolean) => {
-      return resolve(yn, getBrowserAnalyticsObject('User Interaction'));
+      return resolve(
+        yn,
+        buildAnalyticsObject({ category: 'Browser', label: 'User Interaction' })
+      );
     };
   }
 );
@@ -281,7 +312,7 @@ export const toggleGenomeSelector = createAction(
     return (genomeSelectorActive: boolean) =>
       resolve(
         genomeSelectorActive,
-        getBrowserAnalyticsObject('User Interaction')
+        buildAnalyticsObject({ category: 'Browser', label: 'User Interaction' })
       );
   }
 );

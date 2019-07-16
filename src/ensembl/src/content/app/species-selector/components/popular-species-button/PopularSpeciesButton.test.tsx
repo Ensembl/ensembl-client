@@ -66,7 +66,10 @@ describe('<PopularSpeciesButton />', () => {
 
       const speciesData = commonProps.species;
 
-      expect(handleSelectedSpecies).toHaveBeenCalledWith(speciesData);
+      expect(handleSelectedSpecies).toHaveBeenCalledWith(
+        speciesData,
+        'popular_species'
+      );
     });
   });
 

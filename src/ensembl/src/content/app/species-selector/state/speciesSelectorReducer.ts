@@ -1,6 +1,4 @@
 import { getType, ActionType } from 'typesafe-actions';
-import find from 'lodash/find';
-import get from 'lodash/get';
 
 import * as speciesSelectorActions from './speciesSelectorActions';
 
@@ -12,7 +10,6 @@ import initialState, {
 import {
   SearchMatch,
   PopularSpecies,
-  CommittedItem,
   Assembly
 } from 'src/content/app/species-selector/types/species-search';
 
@@ -33,18 +30,6 @@ const buildCurrentItem = (data: SearchMatch | PopularSpecies): CurrentItem => {
 const buildAssembly = (data: SearchMatch | PopularSpecies): Assembly => ({
   genome_id: data.genome_id,
   assembly_name: data.assembly_name
-});
-
-const buildCommittedItem = (data: CurrentItem): CommittedItem => ({
-  genome_id: data.genome_id,
-  reference_genome_id: data.reference_genome_id,
-  common_name: data.common_name,
-  scientific_name: data.scientific_name,
-  assembly_name: get(
-    find(data.assemblies, ({ genome_id }) => genome_id === data.genome_id),
-    'assembly_name'
-  ) as string,
-  isEnabled: true
 });
 
 export default function speciesSelectorReducer(
@@ -104,31 +89,17 @@ export default function speciesSelectorReducer(
       return {
         ...state,
         currentItem: null,
-        committedItems: [
-          ...state.committedItems,
-          buildCommittedItem(state.currentItem as CurrentItem)
-        ]
+        committedItems: action.payload
       };
     case getType(speciesSelectorActions.toggleSpeciesUse):
       return {
         ...state,
-        committedItems: state.committedItems.map((item) => {
-          if (item.genome_id === action.payload) {
-            return {
-              ...item,
-              isEnabled: !item.isEnabled
-            };
-          } else {
-            return item;
-          }
-        })
+        committedItems: action.payload
       };
     case getType(speciesSelectorActions.deleteSpecies):
       return {
         ...state,
-        committedItems: state.committedItems.filter(
-          (item) => item.genome_id !== action.payload
-        )
+        committedItems: action.payload
       };
     case getType(speciesSelectorActions.clearSearchResults):
       return {

@@ -3,7 +3,7 @@ import { ThunkAction } from 'redux-thunk';
 import { Action, Dispatch, ActionCreator } from 'redux';
 
 import { RootState } from 'src/store';
-import { getTrackPanelAnalyticsObject } from 'src/analyticsHelper';
+import buildAnalyticsObject from 'src/analyticsHelper';
 import { TrackType } from './trackPanelConfig';
 import browserStorageService from '../browser-storage-service';
 import { getBrowserActiveGenomeId } from '../browserSelectors';
@@ -14,7 +14,10 @@ export const toggleTrackPanel = createAction(
     return (trackPanelOpened?: boolean) =>
       resolve(
         trackPanelOpened,
-        getTrackPanelAnalyticsObject('User Interaction')
+        buildAnalyticsObject({
+          category: 'Track panel',
+          label: 'User Interaction'
+        })
       );
   }
 );
@@ -52,7 +55,10 @@ export const openTrackPanelModal = createAction(
     return (trackPanelModalView: string) =>
       resolve(
         trackPanelModalView,
-        getTrackPanelAnalyticsObject('User Interaction')
+        buildAnalyticsObject({
+          category: 'Track panel',
+          label: 'User Interaction'
+        })
       );
   }
 );
@@ -60,6 +66,10 @@ export const openTrackPanelModal = createAction(
 export const closeTrackPanelModal = createAction(
   'track-panel/close-track-panel-modal',
   (resolve) => {
-    return () => resolve(undefined, getTrackPanelAnalyticsObject('Navigation'));
+    return () =>
+      resolve(
+        undefined,
+        buildAnalyticsObject({ category: 'Track panel', label: 'Navigation' })
+      );
   }
 );

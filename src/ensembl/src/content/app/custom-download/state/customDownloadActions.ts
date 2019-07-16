@@ -1,6 +1,6 @@
 import { createAction, createAsyncAction } from 'typesafe-actions';
 
-import { getCustomDownloadAnalyticsObject } from 'src/analyticsHelper';
+import buildAnalyticsObject from 'src/analyticsHelper';
 import * as allFilterAccordionActions from '../containers/content/filter-accordion/state/filterAccordionActions';
 import * as allAttributeAccordionActions from '../containers/content/attributes-accordion/state/attributesAccordionActions';
 import { ActionCreator, Action } from 'redux';
@@ -18,7 +18,10 @@ export const updateSelectedPreFilter = createAction(
     return (selectedPreFilter: string) =>
       resolve(
         selectedPreFilter,
-        getCustomDownloadAnalyticsObject('Pre Filter Updates')
+        buildAnalyticsObject({
+          category: 'Custom downloads',
+          label: 'Pre Filter Updates'
+        })
       );
   }
 );
@@ -29,7 +32,10 @@ export const togglePreFiltersPanel = createAction(
     return (showPreFiltersPanel: boolean) =>
       resolve(
         showPreFiltersPanel,
-        getCustomDownloadAnalyticsObject('Pre Filter Panel Toggled')
+        buildAnalyticsObject({
+          category: 'Custom downloads',
+          label: 'Pre Filter Panel Toggled'
+        })
       );
   }
 );
@@ -40,7 +46,10 @@ export const toggleTab = createAction(
     return (selectedTab: string) =>
       resolve(
         selectedTab,
-        getCustomDownloadAnalyticsObject('Toggle Data/Filter Tab Button')
+        buildAnalyticsObject({
+          category: 'Custom downloads',
+          label: 'Toggle Data/Filter Tab Button'
+        })
       );
   }
 );
@@ -83,7 +92,10 @@ export const setShowPreview = createAction(
     return (showPreview: boolean) =>
       resolve(
         showPreview,
-        getCustomDownloadAnalyticsObject('Show download preview')
+        buildAnalyticsObject({
+          category: 'Custom downloads',
+          label: 'Show download preview'
+        })
       );
   }
 );
@@ -94,7 +106,10 @@ export const setDownloadType = createAction(
     return (downloadType: string) =>
       resolve(
         downloadType,
-        getCustomDownloadAnalyticsObject('Download as ' + downloadType)
+        buildAnalyticsObject({
+          category: 'Custom downloads',
+          label: 'Download as ' + downloadType
+        })
       );
   }
 );

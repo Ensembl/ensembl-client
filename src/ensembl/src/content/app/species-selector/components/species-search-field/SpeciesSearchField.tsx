@@ -31,7 +31,7 @@ const MINIMUM_SEARCH_LENGTH = 3;
 
 type Props = {
   onSearchChange: (search: string) => void;
-  onMatchSelected: (match: SearchMatch) => void;
+  onMatchSelected: (match: SearchMatch, source: string) => void;
   clearSelectedSearchResult: () => void;
   clearSearchResults: () => void;
   matches: SearchMatches[] | null;
@@ -69,7 +69,7 @@ export const SpeciesSearchField = (props: Props) => {
   };
 
   const onMatchSelected = (match: SearchMatch) => {
-    props.onMatchSelected(match);
+    props.onMatchSelected(match, 'species_search');
     setSearch('');
   };
 
