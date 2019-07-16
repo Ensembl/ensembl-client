@@ -105,6 +105,13 @@ impl GlobalImpl {
         }
         return None
     }
+
+    pub fn any_app(&mut self) -> Option<AppRunner> {
+        for ar in self.app_runners.values_mut() {
+            return Some(ar.clone());
+        }
+        None
+    }        
 }
 
 #[derive(Clone)]
@@ -144,6 +151,10 @@ impl Global {
 
     pub fn find_app(&mut self, el: &HtmlElement) -> Option<AppRunner> {
         self.0.borrow_mut().find_app(el)
+    }
+
+    pub fn any_app(&mut self) -> Option<AppRunner> {
+        self.0.borrow_mut().any_app()
     }
 
     pub fn trigger_app(&mut self, key: &str, el: &HtmlElement, debug: bool, config_url: &Url) {

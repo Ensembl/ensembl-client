@@ -186,9 +186,16 @@ impl EventListener<()> for DirectEventListener {
                 let el = extract_element(&data,None);
                 if let Some(el) = el {
                     self.run_direct(&el.into(),&data);
-                } else {
-                    self.deq.add(data);
+                    return;
                 }
+                if let Some(mut g) = self.gw.upgrade() {
+                    if let Some(ar) = g.any_app() {
+                        let mut app = ar.state();
+                        run_direct_events(&mut app.lock().unwrap(),&data);
+                        return;
+                    }
+                }
+                self.deq.add(data);
             },
             _ => ()
         }
