@@ -105,7 +105,10 @@ describe('<SpeciesSearchField', () => {
       const firstMatchElement = wrapper.find(SpeciesSearchMatch).at(0);
       firstMatchElement.simulate('click');
 
-      expect(onMatchSelected).toHaveBeenCalledWith(firstMatchData);
+      expect(onMatchSelected).toHaveBeenCalledWith(
+        firstMatchData,
+        'species_search'
+      );
     });
 
     test('shows a button for clearing field contents in a non-empty field', () => {
