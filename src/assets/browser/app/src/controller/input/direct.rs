@@ -183,6 +183,9 @@ impl EventListener<()> for DirectEventListener {
             EventData::MessageEvent(_,ec,c) => {
                 let data = c.data().unwrap();
                 let data = data["payload"].clone();
+                if data.get("_outgoing").is_some() {
+                    return;
+                }
                 let el = extract_element(&data,None);
                 if let Some(el) = el {
                     self.run_direct(&el.into(),&data);
