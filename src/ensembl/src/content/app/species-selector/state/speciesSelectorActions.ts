@@ -6,7 +6,11 @@ import apiService from 'src/services/api-service';
 
 import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
 
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import {
+  getSelectedItem,
+  getCommittedSpecies,
+  getSearchText
+} from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import {
   SearchMatch,
@@ -15,6 +19,38 @@ import {
   Assembly,
   PopularSpecies
 } from 'src/content/app/species-selector/types/species-search';
+
+import { MINIMUM_SEARCH_LENGTH } from 'src/content/app/species-selector/constants/speciesSelectorConstants';
+
+import { RootState } from 'src/store';
+
+export const setSearchText = createStandardAction(
+  'species_selector/set_search_text'
+)<string>();
+
+export const updateSearch: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (text: string) => (dispatch, getState: () => RootState) => {
+  console.log('update');
+  const state = getState();
+  const selectedItem = getSelectedItem(state);
+  const previousText = getSearchText(state);
+  if (selectedItem) {
+    dispatch(clearSelectedSearchResult());
+  }
+
+  const trimmedText = text.trim();
+  if (text.length < previousText.length) {
+    // user is deleting their input; clear search results
+    dispatch(clearSearchResults());
+  }
+
+  if (trimmedText.length >= MINIMUM_SEARCH_LENGTH) {
+    dispatch(fetchSpeciesSearchResults.request(trimmedText));
+  }
+
+  dispatch(setSearchText(text));
+};
 
 export const fetchSpeciesSearchResults = createAsyncAction(
   'species_selector/species_search_request',
@@ -44,6 +80,10 @@ export const fetchAssembliesAsyncActions = createAsyncAction(
 export const setSelectedSpecies = createStandardAction(
   'species_selector/species_selected'
 )<SearchMatch | PopularSpecies>();
+
+export const clearSearch = createStandardAction(
+  'species_selector/clear_search'
+)();
 
 export const clearSearchResults = createStandardAction(
   'species_selector/clear_search_results'

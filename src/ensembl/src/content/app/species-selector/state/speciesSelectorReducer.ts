@@ -52,10 +52,21 @@ export default function speciesSelectorReducer(
   action: ActionType<typeof speciesSelectorActions>
 ): SpeciesSelectorState {
   switch (action.type) {
+    case getType(speciesSelectorActions.setSearchText):
+      return {
+        ...state,
+        search: {
+          ...state.search,
+          text: action.payload
+        }
+      };
     case getType(speciesSelectorActions.fetchSpeciesSearchResults.success):
       return {
         ...state,
-        search: action.payload
+        search: {
+          ...state.search,
+          ...action.payload
+        }
       };
     case getType(speciesSelectorActions.setSelectedSpecies):
       return {
@@ -131,10 +142,15 @@ export default function speciesSelectorReducer(
           (item) => item.genome_id !== action.payload
         )
       };
-    case getType(speciesSelectorActions.clearSearchResults):
+    case getType(speciesSelectorActions.clearSearch):
       return {
         ...state,
         search: initialState.search
+      };
+    case getType(speciesSelectorActions.clearSearchResults):
+      return {
+        ...state,
+        search: { ...state.search, results: initialState.search.results }
       };
     case getType(speciesSelectorActions.clearSelectedSearchResult):
       return {
