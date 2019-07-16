@@ -26,6 +26,11 @@ function attributesAccordion(
         ...state,
         selectedAttributes: action.payload
       };
+    case getType(attributesAccordionActions.resetSelectedAttributes):
+      return {
+        ...state,
+        selectedAttributes: {}
+      };
     case getType(attributesAccordionActions.updateContentState):
       return {
         ...state,

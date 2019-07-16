@@ -1,4 +1,8 @@
-import { createAction, createAsyncAction } from 'typesafe-actions';
+import {
+  createAction,
+  createStandardAction,
+  createAsyncAction
+} from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Action } from 'redux';
 import { getCustomDownloadAnalyticsObject } from 'src/analyticsHelper';
@@ -36,6 +40,10 @@ export const updateSelectedAttributes = createAction(
       );
   }
 );
+
+export const resetSelectedAttributes = createStandardAction(
+  'custom-download/reset-selected-attributes'
+)();
 
 export const updateContentState = createAction(
   'custom-download/update-attribute-content-state',

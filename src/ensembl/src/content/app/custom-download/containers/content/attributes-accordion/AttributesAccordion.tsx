@@ -14,7 +14,8 @@ import {
 import { getAttributesAccordionExpandedPanel } from './state/attributesAccordionSelector';
 import {
   setAttributesAccordionExpandedPanel,
-  fetchAttributes
+  fetchAttributes,
+  resetSelectedAttributes
 } from './state/attributesAccordionActions';
 
 import {
@@ -27,6 +28,11 @@ import {
   Paralogues,
   Sequences
 } from './sections';
+
+import ImageButton, {
+  ImageButtonStatus
+} from 'src/shared/image-button/ImageButton';
+import { ReactComponent as ResetIcon } from 'static/img/browser/reset-grey.svg';
 
 import styles from './AttributesAccordion.scss';
 
@@ -62,6 +68,16 @@ const AttributesAccordion = (props: Props) => {
         Select the information you would like to download - these attributes
         will be displayed as columns in a table
       </div>
+      <span
+        className={styles.clearAttributes}
+        onClick={props.resetSelectedAttributes}
+      >
+        <ImageButton
+          buttonStatus={ImageButtonStatus.ACTIVE}
+          description={'Reset attributes'}
+          image={ResetIcon}
+        />
+      </span>
       <Accordion
         preExpanded={Array(1).fill(props.expandedPanel)}
         onChange={accordionOnChange}
@@ -220,11 +236,13 @@ type DispatchProps = {
     setAttributesAccordionExpandedPanel: string
   ) => void;
   fetchAttributes: () => void;
+  resetSelectedAttributes: () => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
   setAttributesAccordionExpandedPanel,
-  fetchAttributes
+  fetchAttributes,
+  resetSelectedAttributes
 };
 
 type StateProps = {
