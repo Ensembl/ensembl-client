@@ -40,13 +40,14 @@ const buildSearchMatchGroups = (groups = 2): SearchMatches[] =>
 const onSearchChange = jest.fn();
 const onMatchSelected = jest.fn();
 const clearSelectedSearchResult = jest.fn();
-const clearSearchResults = jest.fn();
+const clearSearch = jest.fn();
 
 const defaultProps = {
   onSearchChange,
   onMatchSelected,
   clearSelectedSearchResult,
-  clearSearchResults,
+  clearSearch,
+  searchText: '',
   selectedItemText: null,
   matches: []
 };
@@ -63,16 +64,21 @@ describe('<SpeciesSearchField', () => {
       expect(wrapper.find(AutosuggestSearchField).length).toBe(1);
     });
 
+    test('does not show clear button for empty field', () => {
+      const props = { ...defaultProps, searchText: '' };
+      const wrapper = mount(<SpeciesSearchField {...props} />);
+
+      expect(wrapper.find(ClearButton).length).toBe(0);
+    });
+
     test('displays suggested matches', () => {
       const matches = buildSearchMatchGroups();
       const props = {
         ...defaultProps,
+        searchText: faker.lorem.word(),
         matches
       };
       const wrapper = mount(<SpeciesSearchField {...props} />);
-      // to update get a search string into the state of SpeciesSearchField
-      wrapper.find('input').simulate('change', { target: { value: 'foo' } });
-
       const expectedMatchedItemsNumber = flatten(matches).length;
 
       expect(wrapper.find(SpeciesSearchMatch).length).toBe(
@@ -89,15 +95,10 @@ describe('<SpeciesSearchField', () => {
       matches = buildSearchMatchGroups();
       const props = {
         ...defaultProps,
+        searchText: faker.lorem.word(),
         matches
       };
       wrapper = mount(<SpeciesSearchField {...props} />);
-      // to update get a search string into the state of SpeciesSearchField
-      wrapper.find('input').simulate('change', {
-        target: {
-          value: faker.lorem.words(2) // <-- 2 words to make sure the total number of characters is greater than the minimum required by SpeciesSearchField
-        }
-      });
     });
 
     test('triggers the onMatchSelected function when a match is clicked', () => {
@@ -112,12 +113,9 @@ describe('<SpeciesSearchField', () => {
       const clearButton = wrapper.find(ClearButton);
 
       clearButton.simulate('click');
-      wrapper.update();
 
       expect(clearSelectedSearchResult).toHaveBeenCalled();
-      expect(clearSearchResults).toHaveBeenCalled();
-      expect(wrapper.find('input').prop('value')).toBe(''); // input content was cleared
-      expect(wrapper.find(ClearButton).length).toBe(0); // clear button has disappeared
+      expect(clearSearch).toHaveBeenCalled();
     });
   });
 
