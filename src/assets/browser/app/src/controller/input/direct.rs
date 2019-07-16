@@ -140,12 +140,16 @@ pub fn run_direct_events(app: &mut App, j: &JSONValue) {
 }
 
 pub struct DirectEventListener {
-    gw: GlobalWeak
+    gw: GlobalWeak,
+    deq: DirectEventQueue
 }
 
 impl DirectEventListener {
-    pub fn new(gw: GlobalWeak) -> DirectEventListener {
-        DirectEventListener { gw }
+    pub fn new(gw: GlobalWeak,deq: &DirectEventQueue) -> DirectEventListener {
+        DirectEventListener { 
+            gw,
+            deq: deq.clone()
+        }
     }        
 
     pub fn run_direct(&mut self, el: &Element, j: &JSONValue) {
@@ -178,11 +182,12 @@ impl EventListener<()> for DirectEventListener {
             },
             EventData::MessageEvent(_,ec,c) => {
                 let data = c.data().unwrap();
+                let data = data["payload"].clone();
                 let el = extract_element(&data,None);
                 if let Some(el) = el {
                     self.run_direct(&el.into(),&data);
                 } else {
-                    console!("bpane sent to unknown app (message)");
+                    self.deq.add(data);
                 }
             },
             _ => ()
@@ -190,12 +195,55 @@ impl EventListener<()> for DirectEventListener {
     }
 }
 
-pub fn register_direct_events(g: &Global) {
+struct DirectEventQueueImpl {
+    queue: Vec<JSONValue>
+}
+
+impl DirectEventQueueImpl {
+    pub fn new() -> DirectEventQueueImpl {
+        DirectEventQueueImpl {
+            queue: Vec::new()
+        }
+    }
+
+    pub fn add(&mut self, v: JSONValue) {
+        self.queue.push(v);
+    }
+
+    pub fn drain_to(&mut self, ar: &AppRunner) {
+        let ar = ar.clone();
+        for q in self.queue.drain(..) {
+            let mut app = ar.state();
+            run_direct_events(&mut app.lock().unwrap(),&q);
+        }
+    }
+}
+
+#[derive(Clone)]
+pub struct DirectEventQueue(Arc<Mutex<DirectEventQueueImpl>>);
+
+impl DirectEventQueue {
+    pub fn new() -> DirectEventQueue {
+        DirectEventQueue(Arc::new(Mutex::new(DirectEventQueueImpl::new())))
+    }
+
+    pub fn add(&mut self, v: JSONValue) {
+        self.0.lock().unwrap().add(v);
+    }
+
+    pub fn drain_to(&mut self, ar: &AppRunner) {
+        self.0.lock().unwrap().drain_to(ar);
+    }
+}
+
+pub fn register_direct_events(g: &Global) -> DirectEventQueue {
     let gw = GlobalWeak::new(g);
-    let dlr = DirectEventListener::new(gw);
+    let deq = DirectEventQueue::new();
+    let dlr = DirectEventListener::new(gw,&deq);
     let mut ec = EventControl::new(Box::new(dlr),());
     ec.add_event(EventType::CustomEvent("bpane".to_string()));
     ec.add_event(EventType::MessageEvent);
     let body = domutil::query_selector_ok_doc("body","No body element!");
     ec.add_element(&body.into(),());
+    deq
 }

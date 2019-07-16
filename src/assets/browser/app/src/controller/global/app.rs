@@ -218,7 +218,7 @@ impl App {
     }
     
     pub fn with_counter<F,G>(&mut self, cb: F) -> G where F: FnOnce(&mut Counter) -> G {
-        self.ar.upgrade().unwrap().with_counter(cb)
+        unwrap!(self.ar.upgrade()).with_counter(cb)
     }
 
     pub fn settle(&mut self) {

@@ -25,6 +25,7 @@ use tácode::Tácode;
 
 struct AppRunnerImpl {
     g: GlobalWeak,
+    counter: Counter,
     el: HtmlElement,
     bling: Box<Bling>,
     app: Arc<Mutex<App>>,
@@ -60,9 +61,14 @@ impl AppRunner {
             let g = unwrap!(g.clone().upgrade()).clone();
             g.scheduler().make_group()
         };
+        let counter = {
+            let g = unwrap!(g.clone().upgrade()).clone();
+            g.counter()
+        };
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
             g: g.clone(),
             el: el.clone(),
+            counter,
             bling,
             app: Arc::new(Mutex::new(st)),
             controls: Vec::<Box<EventControl<()>>>::new(),
@@ -92,9 +98,8 @@ impl AppRunner {
         out
     }
 
-    pub fn with_counter<F,G>(&mut self, cb: F) -> G where F: FnOnce(&mut Counter) -> G {
-        let mut g = unwrap!(unwrap!(self.0.lock()).g.upgrade()).clone();
-        g.with_counter(cb)
+    pub fn with_counter<F,G>(&self, cb: F) -> G where F: FnOnce(&mut Counter) -> G {
+        cb(&mut self.0.lock().unwrap().counter)
     }
 
     pub fn get_browser_el(&mut self) -> HtmlElement {

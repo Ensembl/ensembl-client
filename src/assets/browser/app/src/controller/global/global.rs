@@ -29,7 +29,8 @@ pub struct GlobalImpl {
     http_manager: HttpManager,
     scheduler: Scheduler,
     sched_group: SchedulerGroup,
-    counter: Counter
+    counter: Counter,
+    ar_init: Vec<Box<FnMut(&AppRunner)>>
 }
 
 impl GlobalImpl {
@@ -40,10 +41,11 @@ impl GlobalImpl {
         let mut out = GlobalImpl {
             counter: Counter::new(),
             inst_id: get_instance_id(),
-            app_runners: HashMap::<String,AppRunner>::new(),
+            app_runners: HashMap::new(),
             http_manager: HttpManager::new(),
             scheduler,
-            sched_group
+            sched_group,
+            ar_init: Vec::new()
         };
         out.init();
         out
@@ -57,6 +59,10 @@ impl GlobalImpl {
                 sr.unproductive();
             }
         }),3,false);
+    }
+
+    pub fn counter(&self) -> Counter {
+        self.counter.clone()
     }
 
     pub fn get_instance_id(&self) -> &str { &self.inst_id }
@@ -77,7 +83,17 @@ impl GlobalImpl {
         }
     }
 
-    pub fn register_app(&mut self, key: &str, app_runner: AppRunner) {
+    pub fn register_ar_init(&mut self, mut cb: Box<FnMut(&AppRunner)>) {
+        for ar in self.app_runners.values_mut() {
+            cb(&ar.clone());
+        }
+        self.ar_init.push(cb);
+    }
+
+    pub fn register_app(&mut self, key: &str, mut app_runner: AppRunner) {
+        for ari in &mut self.ar_init {
+            ari(&app_runner.clone());
+        }
         self.app_runners.insert(key.to_string(),app_runner);
     }
 
@@ -103,11 +119,6 @@ impl Global {
         out
     }
 
-    pub fn with_counter<F,G>(&mut self, cb: F) -> G where F: FnOnce(&mut Counter) -> G {
-        let mut imp = self.0.borrow_mut();
-        cb(&mut imp.counter)
-    }
-
     /* scheduler-related */    
     pub fn tick(&mut self) {
         let sched = self.0.borrow_mut().scheduler();
@@ -122,6 +133,10 @@ impl Global {
         self.0.borrow().scheduler()
     }    
     
+    pub fn counter(&self) -> Counter {
+        self.0.borrow().counter()
+    }
+
     /* app registration */
     fn unregister_app(&mut self, key: &str) {
         self.0.borrow_mut().unregister_app(key);
@@ -149,6 +164,10 @@ impl Global {
         self.0.borrow_mut().register_app(key,ar);
     }
 
+    pub fn register_ar_init(&mut self, mut cb: Box<FnMut(&AppRunner)>) {
+        self.0.borrow_mut().register_ar_init(cb);
+    }
+
     /* destruction */
     pub fn destroy(&mut self) {
         self.0.borrow_mut().destroy();
@@ -170,12 +189,13 @@ impl GlobalWeak {
 
 pub fn setup_global() {
     /* setup */
-    let g = Global::new();
+    let mut g = Global::new();
     /* mark as ready */
     let body = domutil::query_selector_ok_doc("body","Cannot find body element");
     domutil::add_attr(&body,"class","browser-app-ready");
     domutil::remove_attr(&body.into(),"class","browser-app-not-ready");
-    register_direct_events(&g);
+    let mut deq = register_direct_events(&g);
+    g.register_ar_init(Box::new(move |ar| deq.drain_to(ar)));
     /* setup ping/pong */
     activate();
 }
