@@ -9,7 +9,7 @@ use serde_json::Map as JSONMap;
 use serde_json::Value as JSONValue;
 use serde_json::Number as JSONNumber;
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 #[allow(unused)]
 pub enum StatusJigsawType {
     Number,
@@ -17,7 +17,7 @@ pub enum StatusJigsawType {
     Boolean
 }
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 #[allow(unused)]
 pub enum StatusJigsaw {
     Atom(String,StatusJigsawType),
@@ -25,6 +25,7 @@ pub enum StatusJigsaw {
     Object(HashMap<String,StatusJigsaw>)
 }
 
+#[derive(Debug)]
 struct StatusOutput {
     last_value: Option<JSONValue>,
     jigsaw: StatusJigsaw,
@@ -95,7 +96,7 @@ lazy_static! {
     };
 }
 
-
+#[derive(Debug)]
 pub struct ReportImpl {
     pieces: HashMap<String,String>,
     outputs: HashMap<String,StatusOutput>
@@ -260,7 +261,8 @@ impl Report {
             app.with_counter(|counter| {
                 if let Some(report) = out.new_report(t,counter) {
                     vec!{
-                        OutputAction::SendCustomEvent("bpane-out".to_string(),report)
+                        OutputAction::SendCustomEvent("bpane-out".to_string(),report.clone()),
+                        OutputAction::SendPostMessage("bpane-out".to_string(),report)
                     }
                 } else { sr.unproductive(); vec!{} }
             })

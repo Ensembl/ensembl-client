@@ -24,7 +24,14 @@ impl CounterImpl {
     }
 
     pub fn is_current(&mut self, value: f64) -> bool {
-        self.message_counter <= value || value == -1.
+        if value == -1. || self.message_counter <= value {
+            return true;
+        }
+        if self.locks == 0 {
+            console!("lock bust");
+            self.delayed = true;
+        }
+        return false;
     }
 
     pub(in super) fn is_delayed(&self) -> bool { self.delayed }

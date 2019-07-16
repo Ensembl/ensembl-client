@@ -186,8 +186,8 @@ impl App {
                 return;
             }
         }
-        console!("backlogging");
         self.action_backlog.extend(evs.iter().cloned());
+        console!("backlogging to {:?}",self.action_backlog);
     }
     
     pub fn check_size(self: &mut App) {
