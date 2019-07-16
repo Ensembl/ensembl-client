@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Input from 'src/shared/input/Input';
 import ImageButton from 'src/shared/image-button/ImageButton';
 import { ReactComponent as RemoveIcon } from 'static/img/shared/clear.svg';
 import styles from './PasteOrUpload.scss';
 import noop from 'lodash/noop';
+import get from 'lodash/get';
 
 type PasteOrUploadProps = {
   value: string;
@@ -14,23 +15,52 @@ type PasteOrUploadProps = {
 
 const PasteOrUpload = (props: PasteOrUploadProps) => {
   const [shouldShowInput, showInput] = useState(Boolean(props.value));
+  const [shouldShowFileUpload, showFileUpload] = useState(false);
   const onChangeHandler = (value: string) => {
     props.onChange(value);
   };
 
   const onRemoveHandler = () => {
     showInput(false);
+    showFileUpload(false);
     props.onRemove();
+  };
+
+  let fileReader: FileReader;
+  const handleFileRead = () => {
+    const content: string = fileReader.result as string;
+    showInput(true);
+    showFileUpload(false);
+    onChangeHandler(content);
+  };
+
+  const handleFileChosen = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file: File | null = get(e, 'target.files.0', null);
+
+    if (!file) {
+      return;
+    }
+    fileReader = new FileReader();
+    fileReader.onloadend = handleFileRead;
+    fileReader.readAsText(file);
   };
 
   return (
     <>
-      {!shouldShowInput && (
-        <div className={styles.textWrapper}>
-          <span className={styles.pasteText} onClick={() => showInput(true)}>
-            Paste data
-          </span>{' '}
-          or <span className={styles.uploadText}>Upload file</span>
+      {!shouldShowInput && !shouldShowFileUpload && (
+        <div className={styles.fields}>
+          <div className={styles.textWrapper}>
+            <span className={styles.pasteText} onClick={() => showInput(true)}>
+              Paste data
+            </span>{' '}
+            or{' '}
+            <span
+              className={styles.uploadText}
+              onClick={() => showFileUpload(true)}
+            >
+              Upload file
+            </span>
+          </div>
         </div>
       )}
       {shouldShowInput && (
@@ -43,13 +73,27 @@ const PasteOrUpload = (props: PasteOrUploadProps) => {
               placeholder={props.placeholder}
             />
           </div>
-          <div className={styles.removeIconHolder}>
-            <ImageButton
-              onClick={onRemoveHandler}
-              description={'Remove'}
-              image={RemoveIcon}
+        </div>
+      )}
+
+      {shouldShowFileUpload && (
+        <div className={styles.fields}>
+          <div className={styles.fileUploadWrapper}>
+            <input
+              type="file"
+              className={styles.fileInput}
+              onChange={(e) => handleFileChosen(e)}
             />
           </div>
+        </div>
+      )}
+      {(shouldShowInput || shouldShowFileUpload) && (
+        <div className={styles.removeIconHolder}>
+          <ImageButton
+            onClick={onRemoveHandler}
+            description={'Remove'}
+            image={RemoveIcon}
+          />
         </div>
       )}
     </>

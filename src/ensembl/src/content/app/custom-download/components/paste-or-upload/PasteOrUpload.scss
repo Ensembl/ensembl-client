@@ -1,12 +1,13 @@
 @import 'src/styles/common';
 
-.pasteText {
+.pasteText,
+.uploadText {
   color: $ens-blue;
   cursor: pointer;
 }
 
-.uploadText {
-  color: $ens-grey;
+.fileUploadWrapper {
+  float: left;
 }
 
 .removeIconHolder {
@@ -17,15 +18,9 @@
   margin-top: 8px;
 }
 
-.inputWrapper {
+.fields {
   width: calc(100% - 75px);
   float: left;
-}
-
-.fields {
-  clear: both;
-  float: left;
-  width: 100%;
   margin-bottom: 20px;
 }
 
