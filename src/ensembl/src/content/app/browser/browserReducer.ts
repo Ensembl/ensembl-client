@@ -126,6 +126,14 @@ export function browserLocation(
           ...action.payload
         }
       };
+    case getType(browserActions.updateActualChrLocation):
+      return {
+        ...state,
+        actualChrLocations: {
+          ...state.actualChrLocations,
+          ...action.payload
+        }
+      };
     case getType(browserActions.toggleGenomeSelector):
       return { ...state, genomeSelectorActive: action.payload };
     default:

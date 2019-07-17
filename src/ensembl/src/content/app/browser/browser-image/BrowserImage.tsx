@@ -25,6 +25,7 @@ import {
   updateBrowserActivated,
   updateBrowserNavStates,
   setChrLocation,
+  setActualChrLocation,
   updateMessageCounter
 } from '../browserActions';
 
@@ -50,6 +51,7 @@ type DispatchProps = {
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
   setChrLocation: (chrLocation: ChrLocation) => void;
+  setActualChrLocation: (chrLocation: ChrLocation) => void;
   updateMessageCounter: (count: number) => void;
 };
 
@@ -63,36 +65,37 @@ type BrowserImageProps = StateProps & DispatchProps & OwnProps;
 type BpaneOutPayload = {
   bumper?: BrowserNavStates;
   'message-counter'?: number;
-  location?: string;
+  'intended-location'?: ChrLocation;
+  'actual-location'?: ChrLocation;
+};
+
+const parseLocation = (location: ChrLocation) => {
+  // FIXME: is there any reason to receive genome and chromosome in the same string?
+  const [genomeAndChromosome, start, end] = location;
+  const [, chromosome] = genomeAndChromosome.split(':');
+  return [chromosome, start, end] as ChrLocation;
 };
 
 export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   props: BrowserImageProps
 ) => {
-  const dispatchSetChrLocation = (chrLocation: ChrLocation) => {
-    props.setChrLocation(chrLocation);
-  };
-
   const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
     const navIconStates = payload.bumper as BrowserNavStates;
-    const location = payload.location;
+    const intendedLocation = payload['intended-location'];
+    const actualLocation = payload['actual-location'] || intendedLocation;
     const messageCount = payload['message-counter'];
+    console.log("payload['actual-location']", payload['actual-location']);
 
     if (navIconStates) {
       props.updateBrowserNavStates(navIconStates);
     }
 
-    if (location) {
-      // FIXME: is there any reason to receive genome and chromosome in the same string?
-      const [genomeAndChromosome, start, end] = location;
-      const [, chromosome] = genomeAndChromosome.split(':');
-      const chrLocation = [
-        chromosome,
-        Number(start),
-        Number(end)
-      ] as ChrLocation;
+    if (intendedLocation) {
+      props.setChrLocation(parseLocation(intendedLocation));
+    }
 
-      dispatchSetChrLocation(chrLocation);
+    if (actualLocation) {
+      props.setActualChrLocation(parseLocation(actualLocation));
     }
 
     if (messageCount) {
@@ -241,6 +244,7 @@ const mapDispatchToProps: DispatchProps = {
   updateBrowserActivated,
   updateBrowserNavStates,
   setChrLocation,
+  setActualChrLocation,
   updateMessageCounter
 };
 
