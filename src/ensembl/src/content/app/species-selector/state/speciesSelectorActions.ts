@@ -15,7 +15,8 @@ import buildAnalyticsObject from 'src/analyticsHelper';
 
 import {
   getCommittedSpecies,
-  getCurrentItem
+  getSelectedItem,
+  getSearchText
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import {
@@ -47,6 +48,38 @@ enum categories {
   SELECTED_SPECIES = 'selected_Species',
   ASSEMBLY_SELECTOR = 'assembly_selector'
 }
+
+import { MINIMUM_SEARCH_LENGTH } from 'src/content/app/species-selector/constants/speciesSelectorConstants';
+
+import { RootState } from 'src/store';
+
+export const setSearchText = createStandardAction(
+  'species_selector/set_search_text'
+)<string>();
+
+export const updateSearch: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (text: string) => (dispatch, getState: () => RootState) => {
+  console.log('update');
+  const state = getState();
+  const selectedItem = getSelectedItem(state);
+  const previousText = getSearchText(state);
+  if (selectedItem) {
+    dispatch(clearSelectedSearchResult());
+  }
+
+  const trimmedText = text.trim();
+  if (text.length < previousText.length) {
+    // user is deleting their input; clear search results
+    dispatch(clearSearchResults());
+  }
+
+  if (trimmedText.length >= MINIMUM_SEARCH_LENGTH) {
+    dispatch(fetchSpeciesSearchResults.request(trimmedText));
+  }
+
+  dispatch(setSearchText(text));
+};
 
 export const fetchSpeciesSearchResults = createAsyncAction(
   'species_selector/species_search_request',
@@ -90,6 +123,9 @@ export const clearSearchResults = createAction(
       );
   }
 );
+export const clearSearch = createStandardAction(
+  'species_selector/clear_search'
+)();
 
 export const clearSelectedSearchResult = createAction(
   'species_selector/clear_selected_search_result',
@@ -190,16 +226,21 @@ export const commitSelectedSpeciesAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = () => (dispatch, getState) => {
   const committedSpecies = getCommittedSpecies(getState());
-  const currentItem = getCurrentItem(getState());
+  const selectedItem = getSelectedItem(getState());
+
+  if (!selectedItem) {
+    return;
+  }
 
   const newCommittedSpecies = [
     ...committedSpecies,
-    buildCommittedItem(currentItem)
+    buildCommittedItem(selectedItem)
   ];
 
-  const currentItemName =
-    currentItem.common_name || currentItem.scientific_name;
-  dispatch(commitSelectedSpecies(currentItemName, newCommittedSpecies));
+  const selectedItemName =
+    selectedItem.common_name || selectedItem.scientific_name;
+
+  dispatch(commitSelectedSpecies(selectedItemName, newCommittedSpecies));
 
   speciesSelectorStorageService.saveSelectedSpecies(committedSpecies);
 };

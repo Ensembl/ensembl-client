@@ -2,14 +2,15 @@ import get from 'lodash/get';
 
 import { RootState } from 'src/store';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
-import { CurrentItem } from './speciesSelectorState';
+
+export const getSearchText = (state: RootState) =>
+  state.speciesSelector.search.text;
 
 export const getSearchResults = (state: RootState) =>
   state.speciesSelector.search.results;
 
-export const getCurrentItem = (state: RootState): CurrentItem => {
-  return get(state, 'speciesSelector.currentItem', {});
-};
+export const getSelectedItem = (state: RootState) =>
+  state.speciesSelector.currentItem;
 
 export const getSelectedItemText = (state: RootState): string | null => {
   const commonName = get(
