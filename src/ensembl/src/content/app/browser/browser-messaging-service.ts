@@ -63,8 +63,9 @@ export class BrowserMessagingService {
   public subscribe = (eventName: string, callback: Function) => {
     if (!this.subscribers[eventName]) {
       this.subscribers[eventName] = new Set();
-      this.subscribers[eventName].add(callback);
     }
+
+    this.subscribers[eventName].add(callback);
 
     return {
       unsubscribe: () => {
