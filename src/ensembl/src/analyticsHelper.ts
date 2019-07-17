@@ -1,15 +1,13 @@
 export type AnalyticsOptions = {
   category: string;
-  action?: string;
+  action: string;
   label?: string;
   nonInteraction?: boolean;
   value?: number;
 };
 
 export type AnalyticsType = {
-  ga: {
-    category: string;
-  } & AnalyticsOptions;
+  ga: AnalyticsOptions;
 };
 
 const buildAnalyticsObject = (data: AnalyticsOptions): AnalyticsType => {

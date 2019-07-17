@@ -1,26 +1,15 @@
-import { createAction } from 'typesafe-actions';
+import { createAction, createStandardAction } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
 import { Action, Dispatch, ActionCreator } from 'redux';
 
 import { RootState } from 'src/store';
-import buildAnalyticsObject from 'src/analyticsHelper';
 import { TrackType } from './trackPanelConfig';
 import browserStorageService from '../browser-storage-service';
 import { getBrowserActiveGenomeId } from '../browserSelectors';
 
-export const toggleTrackPanel = createAction(
-  'track-panel/toggle-track-panel',
-  (resolve) => {
-    return (trackPanelOpened?: boolean) =>
-      resolve(
-        trackPanelOpened,
-        buildAnalyticsObject({
-          category: 'Track panel',
-          label: 'User Interaction'
-        })
-      );
-  }
-);
+export const toggleTrackPanel = createStandardAction(
+  'track-panel/toggle-track-panel'
+)<boolean | undefined>();
 
 export const selectBrowserTab = createAction(
   'track-panel/select-browser-tab',
@@ -52,24 +41,10 @@ export const selectBrowserTabAndSave: ActionCreator<
 export const openTrackPanelModal = createAction(
   'track-panel/open-track-panel-modal',
   (resolve) => {
-    return (trackPanelModalView: string) =>
-      resolve(
-        trackPanelModalView,
-        buildAnalyticsObject({
-          category: 'Track panel',
-          label: 'User Interaction'
-        })
-      );
+    return (trackPanelModalView: string) => resolve(trackPanelModalView);
   }
 );
 
-export const closeTrackPanelModal = createAction(
-  'track-panel/close-track-panel-modal',
-  (resolve) => {
-    return () =>
-      resolve(
-        undefined,
-        buildAnalyticsObject({ category: 'Track panel', label: 'Navigation' })
-      );
-  }
-);
+export const closeTrackPanelModal = createStandardAction(
+  'track-panel/close-track-panel-modal'
+)();

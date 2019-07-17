@@ -1,4 +1,8 @@
-import { createAsyncAction, createAction } from 'typesafe-actions';
+import {
+  createAsyncAction,
+  createAction,
+  createStandardAction
+} from 'typesafe-actions';
 import { ActionCreator, Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import find from 'lodash/find';
@@ -62,23 +66,9 @@ export const fetchAssembliesAsyncActions = createAsyncAction(
   'species_selector/assemblies_failure'
 )<undefined, { assemblies: Assembly[] }, Error>();
 
-export const setSelectedSpecies = createAction(
-  'species_selector/species_selected',
-  (resolve) => {
-    return (selectedSpecies: SearchMatch | PopularSpecies, source?: string) => {
-      const speciesName =
-        selectedSpecies.common_name || selectedSpecies.scientific_name;
-      return resolve(
-        selectedSpecies,
-        buildAnalyticsObject({
-          category: source || 'species_selector',
-          action: 'preselect',
-          label: speciesName
-        })
-      );
-    };
-  }
-);
+export const setSelectedSpecies = createStandardAction(
+  'species_selector/species_selected'
+)<SearchMatch | PopularSpecies>();
 
 export const clearSearchResults = createAction(
   'species_selector/clear_search_results',
@@ -164,8 +154,8 @@ export const fetchPopularSpecies: ActionCreator<
 
 export const handleSelectedSpecies: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (item: SearchMatch | PopularSpecies, source: string) => (dispatch) => {
-  dispatch(setSelectedSpecies(item, source));
+> = (item: SearchMatch | PopularSpecies) => (dispatch) => {
+  dispatch(setSelectedSpecies(item));
   const { genome_id } = item;
 
   // TODO: fetch strains when they are ready

@@ -1,5 +1,5 @@
 import ReactGA from 'react-ga';
-import { AnalyticsType } from 'src/analyticsHelper';
+import { AnalyticsOptions } from 'src/analyticsHelper';
 
 import config from 'config';
 
@@ -19,11 +19,9 @@ class AnalyticsTracking {
   }
 
   // Track an event
-  public trackEvent(action: any) {
-    const { ga } = action.meta as AnalyticsType;
-
+  public trackEvent(ga: AnalyticsOptions) {
     this.reactGA.event({
-      action: ga.action ? ga.action : action.type,
+      action: ga.action,
       category: ga.category,
       label: ga.label,
       nonInteraction: ga.nonInteraction,

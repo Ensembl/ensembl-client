@@ -9,7 +9,7 @@ export const analyticsMiddleWare = (store: any) => (next: any) => (
   // We need to track this event
   if (action.meta && action.meta.ga && action.meta.ga.category) {
     // The action and category fields are mandatory
-    GoogleAnalyticsTracking.trackEvent(action);
+    GoogleAnalyticsTracking.trackEvent(action.meta.ga);
   } else if (
     action.type === LOCATION_CHANGE &&
     action.payload.location.pathname !==

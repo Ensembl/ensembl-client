@@ -33,7 +33,7 @@ type Props = {
   species: PopularSpecies;
   isSelected: boolean;
   isCommitted: boolean;
-  handleSelectedSpecies: (species: PopularSpecies, source: string) => void;
+  handleSelectedSpecies: (species: PopularSpecies) => void;
   clearSelectedSpecies: () => void;
   deleteCommittedSpecies: (genome_id: string) => void;
 };
@@ -55,7 +55,9 @@ export const PopularSpeciesButton = (props: Props) => {
     } else {
       // the species is available, not selected and not committed;
       // go ahead and select it
-      props.handleSelectedSpecies(props.species, 'popular_species');
+      props.handleSelectedSpecies(props.species);
+
+      // TODO: Send tracking here
     }
   };
 

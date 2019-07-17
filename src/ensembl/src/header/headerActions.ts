@@ -8,7 +8,11 @@ export const toggleAccount = createAction(
     return () =>
       resolve(
         undefined,
-        buildAnalyticsObject({ category: 'Header', label: 'Navigation' })
+        buildAnalyticsObject({
+          category: 'Header',
+          action: 'toggle-account',
+          label: 'Navigation'
+        })
       );
   }
 );
@@ -19,7 +23,11 @@ export const toggleLaunchbar = createAction(
     return () =>
       resolve(
         undefined,
-        buildAnalyticsObject({ category: 'Header', label: 'Navigation' })
+        buildAnalyticsObject({
+          category: 'Header',
+          action: 'toggle-launchbar',
+          label: 'Navigation'
+        })
       );
   }
 );
@@ -30,7 +38,11 @@ export const changeCurrentApp = createAction(
     return (currentApp: string) =>
       resolve(
         currentApp,
-        buildAnalyticsObject({ category: 'Header', label: 'Navigation' })
+        buildAnalyticsObject({
+          category: 'Header',
+          action: 'change-current-app',
+          label: currentApp
+        })
       );
   }
 );
