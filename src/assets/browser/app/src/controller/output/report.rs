@@ -260,9 +260,9 @@ impl Report {
         ar.add_timer("report",enclose! { (out) move |app,t,sr| {
             app.with_counter(|counter| {
                 if let Some(report) = out.new_report(t,counter) {
+                    console!("bpane out send report.rs:263");
                     vec!{
-                        OutputAction::SendCustomEvent("bpane-out".to_string(),report.clone()),
-                        OutputAction::SendPostMessage("bpane-out".to_string(),report)
+                        OutputAction::SendCustomEvent("bpane-out".to_string(),report.clone())
                     }
                 } else { sr.unproductive(); vec!{} }
             })

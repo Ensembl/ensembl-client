@@ -164,7 +164,6 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
     let mut evs = evs.to_vec();
     evs.sort_by_key(|e| e.order());
     for ev in evs {
-        console!("action {:?}",ev);
         let ev = ev.clone();
         if ev.active() {
             exe_deactivate(cg);
