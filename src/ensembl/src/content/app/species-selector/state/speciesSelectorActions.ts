@@ -41,6 +41,13 @@ const buildCommittedItem = (data: CurrentItem): CommittedItem => ({
   isEnabled: true
 });
 
+enum categories {
+  POPULAR_SPECIES = 'popular_species',
+  ADD_SPECIES = 'add_species',
+  SELECTED_SPECIES = 'selected_Species',
+  ASSEMBLY_SELECTOR = 'assembly_selector'
+}
+
 export const fetchSpeciesSearchResults = createAsyncAction(
   'species_selector/species_search_request',
   'species_selector/species_search_success',
@@ -77,7 +84,7 @@ export const clearSearchResults = createAction(
       resolve(
         undefined,
         buildAnalyticsObject({
-          category: 'popular_species',
+          category: categories.POPULAR_SPECIES,
           action: 'unselect'
         })
       );
@@ -91,7 +98,7 @@ export const clearSelectedSearchResult = createAction(
       resolve(
         undefined,
         buildAnalyticsObject({
-          category: 'popular_species',
+          category: categories.POPULAR_SPECIES,
           action: 'unpreselect'
         })
       );
@@ -170,7 +177,7 @@ export const commitSelectedSpecies = createAction(
       return resolve(
         committedSpecies,
         buildAnalyticsObject({
-          category: 'add_species',
+          category: categories.ADD_SPECIES,
           label: itemName,
           action: 'select'
         })
@@ -208,7 +215,7 @@ export const toggleSpeciesUse = createAction(
       return resolve(
         committedSpecies,
         buildAnalyticsObject({
-          category: 'selected_Species',
+          category: categories.SELECTED_SPECIES,
           label: speciesName,
           action: currentStatus
         })
@@ -244,7 +251,7 @@ export const deleteSpecies = createAction(
       return resolve(
         committedSpecies,
         buildAnalyticsObject({
-          category: 'selected_Species',
+          category: categories.SELECTED_SPECIES,
           label: speciesName,
           action: 'unselected'
         })
@@ -276,7 +283,7 @@ export const changeAssembly = createAction(
       return resolve(
         assembly,
         buildAnalyticsObject({
-          category: 'assembly_selector',
+          category: categories.ASSEMBLY_SELECTOR,
           label: assembly.assembly_name,
           action: 'select'
         })
