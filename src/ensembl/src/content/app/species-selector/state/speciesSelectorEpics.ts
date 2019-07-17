@@ -17,7 +17,9 @@ export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
     filter(
       isActionOf([
         speciesSelectorActions.fetchSpeciesSearchResults.request,
-        speciesSelectorActions.clearSearchResults
+        speciesSelectorActions.setSelectedSpecies,
+        speciesSelectorActions.clearSearchResults,
+        speciesSelectorActions.commitSelectedSpecies
       ])
     ),
     distinctUntilChanged(
