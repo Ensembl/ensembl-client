@@ -32,7 +32,7 @@ import {
 import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/image-button/ImageButton';
-import { ReactComponent as ResetIcon } from 'static/img/browser/reset-grey.svg';
+import { ReactComponent as ResetIcon } from 'static/img/shared/reset.svg';
 
 import styles from './AttributesAccordion.scss';
 
