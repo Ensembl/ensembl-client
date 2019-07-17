@@ -21,6 +21,8 @@ import {
   PopularSpecies
 } from 'src/content/app/species-selector/types/species-search';
 
+import GoogleAnalyticsTracking from 'src/services/analytics-service';
+
 import styles from './PopularSpeciesButton.scss';
 
 import { RootState } from 'src/store';
@@ -57,7 +59,13 @@ export const PopularSpeciesButton = (props: Props) => {
       // go ahead and select it
       props.handleSelectedSpecies(props.species);
 
-      // TODO: Send tracking here
+      const speciesName =
+        props.species.common_name || props.species.scientific_name;
+      GoogleAnalyticsTracking.trackEvent({
+        category: 'popular_species',
+        action: 'preselect',
+        label: speciesName
+      });
     }
   };
 

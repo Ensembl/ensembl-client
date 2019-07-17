@@ -23,6 +23,9 @@ import {
   SearchMatch,
   SearchMatches
 } from 'src/content/app/species-selector/types/species-search';
+
+import GoogleAnalyticsTracking from 'src/services/analytics-service';
+
 import { RootState } from 'src/store';
 
 import styles from './SpeciesSearchField.scss';
@@ -71,7 +74,14 @@ export const SpeciesSearchField = (props: Props) => {
   const onMatchSelected = (match: SearchMatch) => {
     props.onMatchSelected(match);
 
-    // TODO: Send tracking here
+    const speciesName = `${match.common_name || match.scientific_name} - ${
+      match.assembly_name
+    }`;
+    GoogleAnalyticsTracking.trackEvent({
+      category: 'species_search',
+      action: 'preselect',
+      label: speciesName
+    });
 
     setSearch('');
   };
