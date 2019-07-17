@@ -69,7 +69,7 @@ const AttributesAccordion = (props: Props) => {
         will be displayed as columns in a table
       </div>
       <span
-        className={styles.clearAttributes}
+        className={styles.resetIconxr}
         onClick={props.resetSelectedAttributes}
       >
         <ImageButton

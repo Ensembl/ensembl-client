@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Checkbox from 'src/shared/checkbox/Checkbox';
 import Select, { Option } from 'src/shared/select/Select';
 import styles from './CheckboxWithSelects.scss';
@@ -15,12 +15,18 @@ export type CheckboxWithSelectsProps = {
 };
 
 const CheckboxWithSelects = (props: CheckboxWithSelectsProps) => {
-  const [isChecked, setisChecked] = useState(props.selectedOptions.length > 0);
+  const [isChecked, setIsChecked] = useState(false);
   const [shouldShowExtraOption, setShowExtraOption] = useState(false);
 
+  useEffect(() => {
+    setIsChecked(props.selectedOptions.length > 0);
+  }, [props.selectedOptions]);
+
   const handleCheckboxOnChange = (isChecked: boolean) => {
-    setisChecked(isChecked);
-    props.onChange([]);
+    setIsChecked(isChecked);
+    if (!isChecked && props.selectedOptions.length > 0) {
+      props.onChange([]);
+    }
   };
 
   const handleOnSelect = (value: string, selectIndex?: number) => {

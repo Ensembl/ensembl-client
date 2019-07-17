@@ -18,6 +18,8 @@ function filterAccordion(
       return { ...state, selectedFilters: action.payload };
     case getType(filterAccordionActions.updateContentState):
       return { ...state, contentState: action.payload };
+    case getType(filterAccordionActions.resetSelectedFilters):
+      return { ...state, selectedFilters: {} };
     default:
       return state;
   }

@@ -13,9 +13,16 @@ import {
 import styles from './FiltersAccordion.scss';
 
 import { getFiltersAccordionExpandedPanel } from './state/filterAccordionSelector';
-import { setFiltersAccordionExpandedPanel } from './state/filterAccordionActions';
+import {
+  setFiltersAccordionExpandedPanel,
+  resetSelectedFilters
+} from './state/filterAccordionActions';
 
 import { Genes, Proteins } from './sections';
+import ImageButton, {
+  ImageButtonStatus
+} from 'src/shared/image-button/ImageButton';
+import { ReactComponent as ResetIcon } from 'static/img/shared/reset.svg';
 
 type Props = StateProps & DispatchProps;
 
@@ -42,6 +49,13 @@ const Filters = (props: Props) => {
         Filter the results to download only the information you need - the
         filtered content will appear as rows in a table
       </div>
+      <span className={styles.resetIcon} onClick={props.resetSelectedFilters}>
+        <ImageButton
+          buttonStatus={ImageButtonStatus.ACTIVE}
+          description={'Reset filters'}
+          image={ResetIcon}
+        />
+      </span>
       <Accordion
         preExpanded={Array(1).fill(props.expandedPanel)}
         onChange={accordionOnChange}
@@ -120,10 +134,12 @@ type DispatchProps = {
   setFiltersAccordionExpandedPanel: (
     setFiltersAccordionExpandedPanel: string
   ) => void;
+  resetSelectedFilters: () => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
-  setFiltersAccordionExpandedPanel
+  setFiltersAccordionExpandedPanel,
+  resetSelectedFilters
 };
 
 type StateProps = {

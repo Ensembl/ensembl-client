@@ -1,4 +1,4 @@
-import { createAction } from 'typesafe-actions';
+import { createAction, createStandardAction } from 'typesafe-actions';
 
 import { getCustomDownloadAnalyticsObject } from 'src/analyticsHelper';
 
@@ -30,3 +30,7 @@ export const updateContentState = createAction(
     return (contentState: {}) => resolve(contentState);
   }
 );
+
+export const resetSelectedFilters = createStandardAction(
+  'custom-download/reset-selected-filters'
+)();
