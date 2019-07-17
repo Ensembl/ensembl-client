@@ -1,17 +1,23 @@
 import { createAction, createStandardAction } from 'typesafe-actions';
 import { Dispatch, ActionCreator, Action } from 'redux';
+import { replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
+import isEqual from 'lodash/isEqual';
 
 import config from 'config';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import { BrowserNavStates, ChrLocation, CogList } from './browserState';
 import {
   getBrowserActiveGenomeId,
+  getBrowserActiveEnsObjectId,
   getBrowserActiveEnsObjectIds,
-  getBrowserTrackStates
+  getBrowserTrackStates,
+  getChrLocation
 } from './browserSelectors';
 import { getBrowserAnalyticsObject } from 'src/analyticsHelper';
+import { getChrLocationStr } from './browserHelper';
 import browserStorageService from './browser-storage-service';
 import { RootState } from 'src/store';
 import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
@@ -175,6 +181,8 @@ export const setChrLocation: ActionCreator<
   return (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
+    const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
+    const savedChrLocation = getChrLocation(state);
     if (!activeGenomeId) {
       return;
     }
@@ -184,6 +192,15 @@ export const setChrLocation: ActionCreator<
 
     dispatch(updateChrLocation(payload));
     browserStorageService.updateChrLocation(payload);
+
+    if (!isEqual(chrLocation, savedChrLocation)) {
+      const newUrl = urlFor.browser({
+        genomeId: activeGenomeId,
+        focus: activeEnsObjectId,
+        location: getChrLocationStr(chrLocation)
+      });
+      dispatch(replace(newUrl));
+    }
   };
 };
 

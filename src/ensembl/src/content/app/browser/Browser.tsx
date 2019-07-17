@@ -211,41 +211,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
     }
   }, [props.browserActivated]);
 
-  const updateLocationInUrl = () => {
-    const {
-      match: {
-        params: { genomeId }
-      },
-      browserQueryParams: { focus, location },
-      chrLocation
-    } = props;
-
-    const chrLocationFromUrl =
-      (location && getChrLocationFromStr(location)) || null;
-
-    if (isEqual(chrLocation, chrLocationFromUrl)) {
-      return;
-    }
-
-    const newUrl = urlFor.browser({
-      genomeId,
-      focus,
-      location: chrLocation ? getChrLocationStr(chrLocation) : null
-    });
-    props.replace(newUrl);
-  };
-
-  useEffect(() => {
-    // update url if the only difference between the url and the current state
-    // is location (which means a new location was reported by genome browser)
-    if (
-      props.match.params.genomeId === props.activeGenomeId &&
-      props.browserQueryParams.focus === props.activeEnsObjectId
-    ) {
-      updateLocationInUrl();
-    }
-  }, [props.chrLocation]);
-
   const closeTrack = () => {
     if (props.drawerOpened === false) {
       return;
