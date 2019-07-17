@@ -15,6 +15,7 @@ use dom::event::{
 use dom::domutil;
 use types::{ Move, Distance, Units };
 use super::eventutil::extract_element;
+use super::eventqueue::EventQueueManager;
 
 fn custom_movement_event(dir: &str, unit: &str, v: &JSONValue) -> Action {
     if let JSONValue::Number(quant) = v {
@@ -132,28 +133,24 @@ fn extract_counter(j: &JSONValue) -> Option<f64> {
     }
 }
 
-pub fn run_direct_events(app: &mut App, j: &JSONValue) {
+pub fn run_direct_events(app: &mut App, name: &str, j: &JSONValue) {
     let evs = custom_make_events(&j);
-    console!("receive/A {}",j.to_string());
+    console!("receive/A {} {}",name,j.to_string());
     console!("receive/B {:?}",evs);
     app.run_actions(&evs,extract_counter(&j));
 }
 
 pub struct DirectEventListener {
     gw: GlobalWeak,
-    deq: DirectEventQueue
+    eqm: EventQueueManager
 }
 
 impl DirectEventListener {
-    pub fn new(gw: GlobalWeak,deq: &DirectEventQueue) -> DirectEventListener {
-        DirectEventListener { 
-            gw,
-            deq: deq.clone()
-        }
+    pub fn new(gw: GlobalWeak,eqm: &EventQueueManager) -> DirectEventListener {
+        DirectEventListener { gw, eqm: eqm.clone() }
     }        
 
-    pub fn run_direct(&mut self, el: &Element, j: &JSONValue) {
-        //let evs = custom_make_events(&j);
+    pub fn run_direct(&mut self, el: &Element, name: &str, j: &JSONValue) {
         console!("receive/C {:?} {}",el,j.to_string());
         if let Some(mut g) = self.gw.upgrade() {
             let el : Result<HtmlElement,_> = el.clone().try_into();
@@ -161,7 +158,7 @@ impl DirectEventListener {
             if let Some(el) = el {
                 if let Some(ar) = g.find_app(&el) {
                     let mut app = ar.state();
-                    run_direct_events(&mut app.lock().unwrap(),j);
+                    run_direct_events(&mut app.lock().unwrap(),name,j);
                 }                
             }
         }
@@ -171,89 +168,40 @@ impl DirectEventListener {
 impl EventListener<()> for DirectEventListener {    
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
         match e {
-            EventData::CustomEvent(_,ec,_,c) => {
+            EventData::CustomEvent(_,ec,name,c) => {
                 let details = c.details().unwrap();
                 let el = extract_element(&details,Some(ec.target().clone()));
                 if let Some(el) = el {
-                    self.run_direct(&el.into(),&details);
+                    self.run_direct(&el.into(),name,&details);
                 } else {
                     console!("bpane sent to unknown app (event)");
                 }
             },
             EventData::MessageEvent(_,ec,c) => {
                 let data = c.data().unwrap();
+                let name = data["type"].as_str().unwrap();
                 let data = data["payload"].clone();
+                let sel = data.get("selector").map(|v| v.as_str().unwrap());
                 if data.get("_outgoing").is_some() {
                     return;
                 }
-                let el = extract_element(&data,None);
-                if let Some(el) = el {
-                    self.run_direct(&el.into(),&data);
-                    return;
-                }
-                if let Some(mut g) = self.gw.upgrade() {
-                    if let Some(ar) = g.any_app() {
-                        let mut app = ar.state();
-                        run_direct_events(&mut app.lock().unwrap(),&data);
-                        return;
-                    }
-                }
-                self.deq.add(data);
+                let ev = custom_make_events(&data);
+                let currency = extract_counter(&data);
+                self.eqm.add_by_selector(sel,&ev,currency);
             },
             _ => ()
         }
     }
 }
 
-struct DirectEventQueueImpl {
-    queue: Vec<JSONValue>
-}
-
-impl DirectEventQueueImpl {
-    pub fn new() -> DirectEventQueueImpl {
-        DirectEventQueueImpl {
-            queue: Vec::new()
-        }
-    }
-
-    pub fn add(&mut self, v: JSONValue) {
-        self.queue.push(v);
-    }
-
-    pub fn drain_to(&mut self, ar: &AppRunner) {
-        let ar = ar.clone();
-        for q in self.queue.drain(..) {
-            let mut app = ar.state();
-            run_direct_events(&mut app.lock().unwrap(),&q);
-        }
-    }
-}
-
-#[derive(Clone)]
-pub struct DirectEventQueue(Arc<Mutex<DirectEventQueueImpl>>);
-
-impl DirectEventQueue {
-    pub fn new() -> DirectEventQueue {
-        DirectEventQueue(Arc::new(Mutex::new(DirectEventQueueImpl::new())))
-    }
-
-    pub fn add(&mut self, v: JSONValue) {
-        self.0.lock().unwrap().add(v);
-    }
-
-    pub fn drain_to(&mut self, ar: &AppRunner) {
-        self.0.lock().unwrap().drain_to(ar);
-    }
-}
-
-pub fn register_direct_events(g: &Global) -> DirectEventQueue {
+pub fn register_direct_events(g: &Global) -> EventQueueManager {
     let gw = GlobalWeak::new(g);
-    let deq = DirectEventQueue::new();
-    let dlr = DirectEventListener::new(gw,&deq);
+    let eqm = EventQueueManager::new();
+    let dlr = DirectEventListener::new(gw,&eqm);
     let mut ec = EventControl::new(Box::new(dlr),());
     ec.add_event(EventType::CustomEvent("bpane".to_string()));
     ec.add_event(EventType::MessageEvent);
     let body = domutil::query_selector_ok_doc("body","No body element!");
     ec.add_element(&body.into(),());
-    deq
+    eqm
 }

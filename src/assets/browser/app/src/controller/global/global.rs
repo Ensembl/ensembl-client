@@ -205,8 +205,9 @@ pub fn setup_global() {
     let body = domutil::query_selector_ok_doc("body","Cannot find body element");
     domutil::add_attr(&body,"class","browser-app-ready");
     domutil::remove_attr(&body.into(),"class","browser-app-not-ready");
-    let mut deq = register_direct_events(&g);
-    g.register_ar_init(Box::new(move |ar| deq.drain_to(ar)));
+    let mut eqm = register_direct_events(&g);
+    let mut eqm2 = eqm.clone();
+    g.register_ar_init(Box::new(move |ar| eqm.register_ar(&ar)));
     /* setup ping/pong */
     activate();
 }

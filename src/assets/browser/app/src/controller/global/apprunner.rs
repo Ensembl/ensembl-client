@@ -106,6 +106,10 @@ impl AppRunner {
         self.0.lock().unwrap().browser_el.clone()
     }
 
+    pub fn get_el(&self) -> HtmlElement {
+        self.0.lock().unwrap().el.clone()
+    }
+
     pub fn add_timer<F>(&mut self, name: &str, mut cb: F, prio: usize)
                             where F: FnMut(&mut App, f64, &mut SchedRun) -> Vec<OutputAction> + 'static {
         let mut ar = self.clone();
