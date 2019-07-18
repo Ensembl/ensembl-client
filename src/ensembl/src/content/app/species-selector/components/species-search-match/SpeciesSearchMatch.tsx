@@ -166,7 +166,7 @@ const splitMatch = ({ string, matchedSubstrings }: SplitterProps) => {
       ];
     } else if (
       index === array.length - 1 &&
-      currentEndIndex < string.length - 1
+      currentEndIndex <= string.length - 1
     ) {
       // if there is unmatched trailing portion of the string, add it to the list of substrings
       result = [
