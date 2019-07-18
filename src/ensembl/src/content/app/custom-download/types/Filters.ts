@@ -7,6 +7,7 @@ export type Filter = {
   label: string;
   id: string;
   isChecked?: boolean;
+  disabled?: boolean;
   content?: Filter[];
   options?: RadioOptions | Option[] | CheckboxGridOption[];
   selectedOptions?: string[];

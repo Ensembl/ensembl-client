@@ -11,6 +11,7 @@ export type CheckboxWithSelectsProps = {
   options: Option[];
   label: string;
   selectedOptions: string[];
+  disabled?: boolean;
   onChange: (selectedOptions: string[]) => void;
 };
 
@@ -76,6 +77,7 @@ const CheckboxWithSelects = (props: CheckboxWithSelectsProps) => {
               checked={isChecked}
               onChange={handleCheckboxOnChange}
               label={props.label}
+              disabled={props.disabled}
             />
           </td>
           <td>

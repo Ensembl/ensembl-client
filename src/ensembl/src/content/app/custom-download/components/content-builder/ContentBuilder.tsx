@@ -58,6 +58,7 @@ const ContentBuilder = (props: ContentBuilderProps) => {
       <div className={styles.checkboxWithSelectWrapper}>
         <CheckboxWithSelects
           label={entry.label}
+          disabled={entry.disabled}
           onChange={(selectedOptions: string[]) =>
             onChangeHandler(entry.type, currentPath, selectedOptions)
           }
@@ -77,6 +78,7 @@ const ContentBuilder = (props: ContentBuilderProps) => {
       <div className={styles.checkboxWitRadiosWrapper}>
         <CheckboxWithRadios
           label={entry.label}
+          disabled={entry.disabled}
           onChange={(selectedOption: string | number | boolean) =>
             onChangeHandler(entry.type, currentPath, selectedOption)
           }
@@ -177,6 +179,7 @@ const ContentBuilder = (props: ContentBuilderProps) => {
       <div className={styles.checkboxWitRadiosWrapper}>
         <CheckboxWithTextfields
           label={entry.label}
+          disabled={entry.disabled}
           allowMultiple={true}
           onChange={(values: string[]) =>
             onChangeHandler(entry.type, currentPath, values)

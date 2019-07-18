@@ -7,6 +7,7 @@ export type Attribute = {
   label: string;
   id: string;
   isChecked?: boolean;
+  disabled?: boolean;
   content?: Attribute[];
   options?: RadioOptions | Option[] | CheckboxGridOption[];
   selectedOptions?: string[];

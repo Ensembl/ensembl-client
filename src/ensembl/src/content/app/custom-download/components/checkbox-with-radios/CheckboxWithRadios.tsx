@@ -8,6 +8,7 @@ export type CheckboxWithRadiosProps = {
   options: RadioOptions;
   label: string;
   selectedOption: string;
+  disabled?: boolean;
   onChange: (selectedOption: string | number | boolean) => void;
 };
 
@@ -28,6 +29,7 @@ const CheckboxWithRadios = (props: CheckboxWithRadiosProps) => {
               checked={isChecked}
               onChange={handleCheckboxOnChange}
               label={props.label}
+              disabled={props.disabled}
             />
           </td>
           {isChecked && (

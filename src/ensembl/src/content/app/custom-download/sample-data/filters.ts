@@ -10,6 +10,7 @@ const filters: Filters = {
         type: 'select_multiple',
         label: 'Gene source',
         id: 'gene_source',
+        disabled: true,
         options: [
           {
             value: 'ensembl',
@@ -44,6 +45,7 @@ const filters: Filters = {
         type: 'select_one',
         label: 'GENCODE basic annotation',
         id: 'gencode_basic_annotation',
+        disabled: true,
         options: [
           {
             value: 'include',
@@ -111,6 +113,7 @@ const filters: Filters = {
                 type: 'select_multiple',
                 label: 'Biotype',
                 id: 'biotype',
+                disabled: true,
                 options: [
                   {
                     label: 'protein_coding',

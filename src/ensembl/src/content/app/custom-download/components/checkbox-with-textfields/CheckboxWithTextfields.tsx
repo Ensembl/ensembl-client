@@ -10,6 +10,7 @@ export type CheckboxWithTextfieldsProps = {
   values: string[];
   label: string;
   allowMultiple: boolean;
+  disabled?: boolean;
   onChange: (values: string[]) => void;
 };
 
@@ -65,6 +66,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
               checked={isChecked}
               onChange={handleCheckboxOnChange}
               label={props.label}
+              disabled={props.disabled}
             />
           </td>
           <td>
