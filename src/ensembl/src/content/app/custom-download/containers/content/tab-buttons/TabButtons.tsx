@@ -54,6 +54,9 @@ const getTotalSelectedFilters = (
   filters: SelectedFilters,
   totalSelectedFilters: number = 0
 ) => {
+  if (!filters) {
+    return 0;
+  }
   Object.keys(filters).forEach((key: string) => {
     if (key === 'preExpanded') {
       // Skip preExpanded keys

@@ -27,7 +27,7 @@ export class CustomDownloadStorageService {
   }
 
   public getFilters(): Filters {
-    return this.storageService.get(StorageKeys.FILTERS);
+    return this.storageService.get(StorageKeys.FILTERS) || {};
   }
 
   public saveFilters(filters: any) {
@@ -35,7 +35,7 @@ export class CustomDownloadStorageService {
   }
 
   public getSelectedFilters(): Filters {
-    return this.storageService.get(StorageKeys.SELECTED_FILTERS);
+    return this.storageService.get(StorageKeys.SELECTED_FILTERS) || {};
   }
 
   public saveSelectedFilters(selectedFilters: any) {
@@ -43,7 +43,7 @@ export class CustomDownloadStorageService {
   }
 
   public getFiltersContentState(): Filters {
-    return this.storageService.get(StorageKeys.FILTERS_CONTENT_STATE);
+    return this.storageService.get(StorageKeys.FILTERS_CONTENT_STATE) || {};
   }
 
   public saveFiltersContentState(contentState: any) {
@@ -51,7 +51,7 @@ export class CustomDownloadStorageService {
   }
 
   public getAttributes(): Attributes {
-    return this.storageService.get(StorageKeys.ATTRIBUTES);
+    return this.storageService.get(StorageKeys.ATTRIBUTES) || {};
   }
 
   public saveAttributes(attributes: any) {
@@ -59,7 +59,7 @@ export class CustomDownloadStorageService {
   }
 
   public getSelectedAttributes(): Attributes {
-    return this.storageService.get(StorageKeys.SELECTED_ATTRIBUTES);
+    return this.storageService.get(StorageKeys.SELECTED_ATTRIBUTES) || {};
   }
 
   public saveSelectedAttributes(selectedAttributes: any) {
@@ -70,7 +70,7 @@ export class CustomDownloadStorageService {
   }
 
   public getAttributesContentState(): Attributes {
-    return this.storageService.get(StorageKeys.ATTRIBUTES_CONTENT_STATE);
+    return this.storageService.get(StorageKeys.ATTRIBUTES_CONTENT_STATE) || {};
   }
 
   public saveAttributesContentState(contentState: any) {
