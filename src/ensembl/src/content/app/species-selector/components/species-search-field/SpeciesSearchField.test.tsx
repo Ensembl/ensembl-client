@@ -7,7 +7,6 @@ import flatten from 'lodash/flatten';
 import { SpeciesSearchField, NOT_FOUND_TEXT } from './SpeciesSearchField';
 import SpeciesSearchMatch from '../species-search-match/SpeciesSearchMatch';
 import ClearButton from 'src/shared/clear-button/ClearButton';
-import GoogleAnalyticsTracking from 'src/services/analytics-service';
 import AutosuggestSearchField from 'src/shared/autosuggest-search-field/AutosuggestSearchField';
 
 import {
@@ -53,11 +52,11 @@ const defaultProps = {
 };
 
 describe('<SpeciesSearchField', () => {
-  // beforeEach(() => {
-  //   jest
-  //     .spyOn(GoogleAnalyticsTracking, 'get')
-  //     .mockImplementation(() => Promise.resolve());
-  // });
+  let searchText: string;
+
+  beforeEach(() => {
+    searchText = faker.lorem.words();
+  });
 
   afterEach(() => {
     jest.resetAllMocks();
@@ -71,8 +70,7 @@ describe('<SpeciesSearchField', () => {
     });
 
     test('does not show clear button for empty field', () => {
-      const props = { ...defaultProps, searchText: '' };
-      const wrapper = mount(<SpeciesSearchField {...props} />);
+      const wrapper = mount(<SpeciesSearchField {...defaultProps} />);
 
       expect(wrapper.find(ClearButton).length).toBe(0);
     });
@@ -81,7 +79,7 @@ describe('<SpeciesSearchField', () => {
       const matches = buildSearchMatchGroups();
       const props = {
         ...defaultProps,
-        searchText: faker.lorem.word(),
+        searchText,
         matches
       };
       const wrapper = mount(<SpeciesSearchField {...props} />);
@@ -101,7 +99,7 @@ describe('<SpeciesSearchField', () => {
       matches = buildSearchMatchGroups();
       const props = {
         ...defaultProps,
-        searchText: faker.lorem.word(),
+        searchText,
         matches
       };
       wrapper = mount(<SpeciesSearchField {...props} />);
@@ -112,10 +110,7 @@ describe('<SpeciesSearchField', () => {
       const firstMatchElement = wrapper.find(SpeciesSearchMatch).at(0);
       firstMatchElement.simulate('click');
 
-      expect(onMatchSelected).toHaveBeenCalledWith(
-        firstMatchData,
-        'species_search'
-      );
+      expect(onMatchSelected).toHaveBeenCalledWith(firstMatchData);
     });
 
     test('shows a button for clearing field contents in a non-empty field', () => {
