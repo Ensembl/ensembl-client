@@ -53,6 +53,12 @@ const defaultProps = {
 };
 
 describe('<SpeciesSearchField', () => {
+  let searchText: string;
+
+  beforeEach(() => {
+    searchText = faker.lorem.words();
+  });
+
   afterEach(() => {
     jest.resetAllMocks();
   });
@@ -65,8 +71,7 @@ describe('<SpeciesSearchField', () => {
     });
 
     test('does not show clear button for empty field', () => {
-      const props = { ...defaultProps, searchText: '' };
-      const wrapper = mount(<SpeciesSearchField {...props} />);
+      const wrapper = mount(<SpeciesSearchField {...defaultProps} />);
 
       expect(wrapper.find(ClearButton).length).toBe(0);
     });
@@ -75,7 +80,7 @@ describe('<SpeciesSearchField', () => {
       const matches = buildSearchMatchGroups();
       const props = {
         ...defaultProps,
-        searchText: faker.lorem.word(),
+        searchText,
         matches
       };
       const wrapper = mount(<SpeciesSearchField {...props} />);
@@ -95,7 +100,7 @@ describe('<SpeciesSearchField', () => {
       matches = buildSearchMatchGroups();
       const props = {
         ...defaultProps,
-        searchText: faker.lorem.word(),
+        searchText,
         matches
       };
       wrapper = mount(<SpeciesSearchField {...props} />);
