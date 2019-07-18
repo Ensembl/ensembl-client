@@ -9,6 +9,7 @@ import { getCustomDownloadAnalyticsObject } from 'src/analyticsHelper';
 import { orthologueSpecies as sampleOrthologueSpecies } from '../../../../sample-data/orthologue';
 
 import attributes from 'src/content/app/custom-download/sample-data/attributes';
+import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 
 import { Attributes } from 'src/content/app/custom-download/types/Attributes';
 
@@ -33,11 +34,13 @@ export const fetchAttributes: ActionCreator<
 export const updateSelectedAttributes = createAction(
   'custom-download/update-selected-attributes',
   (resolve) => {
-    return (attributes: Attributes) =>
-      resolve(
+    return (attributes: Attributes) => {
+      customDownloadStorageService.saveSelectedAttributes(attributes);
+      return resolve(
         attributes,
         getCustomDownloadAnalyticsObject('Gene attributes updated')
       );
+    };
   }
 );
 

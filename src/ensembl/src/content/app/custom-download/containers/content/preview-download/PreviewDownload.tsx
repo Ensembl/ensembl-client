@@ -42,7 +42,7 @@ const PreviewDownload = (props: Props) => {
   };
 
   //FIXME: Get and display the selected attributes
-  const attributesList: [] = getProcessedAttributes(
+  const attributesList: string[] = getProcessedAttributes(
     flattenObject(props.attributes)
   );
 

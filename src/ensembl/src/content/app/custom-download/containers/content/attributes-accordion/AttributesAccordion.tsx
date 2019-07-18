@@ -15,7 +15,8 @@ import { getAttributesAccordionExpandedPanel } from './state/attributesAccordion
 import {
   setAttributesAccordionExpandedPanel,
   fetchAttributes,
-  resetSelectedAttributes
+  resetSelectedAttributes,
+  updateSelectedAttributes
 } from './state/attributesAccordionActions';
 
 import {
@@ -28,12 +29,13 @@ import {
   Paralogues,
   Sequences
 } from './sections';
+import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
+import { Attributes } from 'src/content/app/custom-download/types/Attributes';
 
 import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/image-button/ImageButton';
 import { ReactComponent as ResetIcon } from 'static/img/shared/reset.svg';
-
 import styles from './AttributesAccordion.scss';
 
 type Props = StateProps & DispatchProps;
@@ -41,6 +43,9 @@ type Props = StateProps & DispatchProps;
 const AttributesAccordion = (props: Props) => {
   useEffect(() => {
     props.fetchAttributes();
+    props.updateSelectedAttributes(
+      customDownloadStorageService.getSelectedAttributes()
+    );
   }, []);
 
   const formatAccordionTitle = (expandedPanel: string) => {
@@ -62,16 +67,18 @@ const AttributesAccordion = (props: Props) => {
     props.setAttributesAccordionExpandedPanel(newExpandedPanels[0]);
   };
 
+  const onReset = () => {
+    props.resetSelectedAttributes();
+    customDownloadStorageService.saveSelectedAttributes({});
+  };
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.dataSelectorHint}>
         Select the information you would like to download - these attributes
         will be displayed as columns in a table
       </div>
-      <span
-        className={styles.resetIcon}
-        onClick={props.resetSelectedAttributes}
-      >
+      <span className={styles.resetIcon} onClick={onReset}>
         <ImageButton
           buttonStatus={ImageButtonStatus.ACTIVE}
           description={'Reset attributes'}
@@ -237,12 +244,14 @@ type DispatchProps = {
   ) => void;
   fetchAttributes: () => void;
   resetSelectedAttributes: () => void;
+  updateSelectedAttributes: (attributes: Attributes) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
   setAttributesAccordionExpandedPanel,
   fetchAttributes,
-  resetSelectedAttributes
+  resetSelectedAttributes,
+  updateSelectedAttributes
 };
 
 type StateProps = {

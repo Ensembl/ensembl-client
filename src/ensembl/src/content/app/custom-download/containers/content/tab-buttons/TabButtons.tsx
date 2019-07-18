@@ -10,7 +10,7 @@ import { getSelectedTab } from '../../../state/customDownloadSelectors';
 import { getSelectedAttributes } from '../attributes-accordion/state/attributesAccordionSelector';
 import { getSelectedFilters } from '../filter-accordion/state/filterAccordionSelector';
 
-import customDownloadStorageService from '../../../services/custom-download-storage-service';
+import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 
 import { toggleTab } from '../../../state/customDownloadActions';
 import { RootState } from 'src/store';

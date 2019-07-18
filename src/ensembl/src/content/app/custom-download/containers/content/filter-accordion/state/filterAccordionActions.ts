@@ -1,6 +1,7 @@
 import { createAction, createStandardAction } from 'typesafe-actions';
 
 import { getCustomDownloadAnalyticsObject } from 'src/analyticsHelper';
+import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 
 export const setFiltersAccordionExpandedPanel = createAction(
   'custom-download/set-filters-accordion-expanded-panels',
@@ -16,11 +17,13 @@ export const setFiltersAccordionExpandedPanel = createAction(
 export const updateSelectedFilters = createAction(
   'custom-download/update-selected-filters',
   (resolve) => {
-    return (filters: {}) =>
-      resolve(
+    return (filters: {}) => {
+      customDownloadStorageService.saveSelectedFilters(filters);
+      return resolve(
         filters,
         getCustomDownloadAnalyticsObject('Gene source filters updated')
       );
+    };
   }
 );
 

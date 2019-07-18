@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
@@ -15,8 +15,13 @@ import styles from './FiltersAccordion.scss';
 import { getFiltersAccordionExpandedPanel } from './state/filterAccordionSelector';
 import {
   setFiltersAccordionExpandedPanel,
-  resetSelectedFilters
+  resetSelectedFilters,
+  updateSelectedFilters
 } from './state/filterAccordionActions';
+
+import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
+
+import { Filters } from 'src/content/app/custom-download/types/Filters';
 
 import { Genes, Proteins } from './sections';
 import ImageButton, {
@@ -26,7 +31,13 @@ import { ReactComponent as ResetIcon } from 'static/img/shared/reset.svg';
 
 type Props = StateProps & DispatchProps;
 
-const Filters = (props: Props) => {
+const FiltersAccordion = (props: Props) => {
+  useEffect(() => {
+    props.updateSelectedFilters(
+      customDownloadStorageService.getSelectedFilters()
+    );
+  }, []);
+
   const formatAccordionTitle = (expandedPanel: string, title: string) => {
     if (expandedPanel !== props.expandedPanel) {
       return <span>{title}</span>;
@@ -43,13 +54,18 @@ const Filters = (props: Props) => {
     props.setFiltersAccordionExpandedPanel(newExpandedPanels[0]);
   };
 
+  const onReset = () => {
+    props.resetSelectedFilters();
+    customDownloadStorageService.saveSelectedFilters({});
+  };
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.filterHint}>
         Filter the results to download only the information you need - the
         filtered content will appear as rows in a table
       </div>
-      <span className={styles.resetIcon} onClick={props.resetSelectedFilters}>
+      <span className={styles.resetIcon} onClick={onReset}>
         <ImageButton
           buttonStatus={ImageButtonStatus.ACTIVE}
           description={'Reset filters'}
@@ -135,11 +151,13 @@ type DispatchProps = {
     setFiltersAccordionExpandedPanel: string
   ) => void;
   resetSelectedFilters: () => void;
+  updateSelectedFilters: (filters: Filters) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
   setFiltersAccordionExpandedPanel,
-  resetSelectedFilters
+  resetSelectedFilters,
+  updateSelectedFilters
 };
 
 type StateProps = {
@@ -153,4 +171,4 @@ const mapStateToProps = (state: RootState): StateProps => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Filters);
+)(FiltersAccordion);
