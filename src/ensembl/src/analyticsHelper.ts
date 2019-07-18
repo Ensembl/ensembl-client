@@ -12,9 +12,7 @@ export type AnalyticsType = {
 
 const buildAnalyticsObject = (data: AnalyticsOptions): AnalyticsType => {
   return {
-    ga: {
-      ...data
-    }
+    ga: data
   };
 };
 

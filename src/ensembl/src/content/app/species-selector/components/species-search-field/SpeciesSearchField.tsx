@@ -25,7 +25,7 @@ import {
   SearchMatches
 } from 'src/content/app/species-selector/types/species-search';
 
-import GoogleAnalyticsTracking from 'src/services/analytics-service';
+import analyticsTracking from 'src/services/analytics-service';
 
 import { RootState } from 'src/store';
 import { MINIMUM_SEARCH_LENGTH } from 'src/content/app/species-selector/constants/speciesSelectorConstants';
@@ -64,7 +64,7 @@ export const SpeciesSearchField = (props: Props) => {
     const speciesName = `${match.common_name || match.scientific_name} - ${
       match.assembly_name
     }`;
-    GoogleAnalyticsTracking.trackEvent({
+    analyticsTracking.trackEvent({
       category: 'species_search',
       action: 'preselect',
       label: speciesName

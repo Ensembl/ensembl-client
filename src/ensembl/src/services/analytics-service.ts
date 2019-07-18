@@ -34,6 +34,6 @@ class AnalyticsTracking {
   }
 }
 
-const GoogleAnalyticsTracking = new AnalyticsTracking();
+const analyticsTracking = new AnalyticsTracking();
 
-export default GoogleAnalyticsTracking;
+export default analyticsTracking;

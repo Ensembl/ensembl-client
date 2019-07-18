@@ -4,7 +4,12 @@ import { ThunkAction } from 'redux-thunk';
 
 import config from 'config';
 
-import { BrowserNavStates, ChrLocation, CogList } from './browserState';
+import {
+  BrowserNavStates,
+  ChrLocation,
+  CogList,
+  ChrLocations
+} from './browserState';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectIds,
@@ -70,12 +75,9 @@ export const setDataFromUrlAndSave: ActionCreator<
     });
 };
 
-export const updateBrowserActiveGenomeId = createAction(
-  'browser/update-active-genome-id',
-  (resolve) => {
-    return (activeGenomeId: string) => resolve(activeGenomeId);
-  }
-);
+export const updateBrowserActiveGenomeId = createStandardAction(
+  'browser/update-active-genome-id'
+)<string>();
 
 export const updateBrowserActiveGenomeIdAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
@@ -132,27 +134,17 @@ export const updateTrackStatesAndSave: ActionCreator<
   browserStorageService.saveTrackStates(trackStates);
 };
 
-export const toggleBrowserNav = createAction(
-  'browser/toggle-browser-navigation',
-  (resolve) => {
-    return () => resolve(undefined);
-  }
-);
+export const toggleBrowserNav = createStandardAction(
+  'browser/toggle-browser-navigation'
+)();
 
-export const updateBrowserNavStates = createAction(
-  'browser/update-browser-nav-states',
-  (resolve) => {
-    return (browserNavStates: BrowserNavStates) => resolve(browserNavStates);
-  }
-);
+export const updateBrowserNavStates = createStandardAction(
+  'browser/update-browser-nav-states'
+)<BrowserNavStates>();
 
-export const updateChrLocation = createAction(
-  'browser/update-chromosome-location',
-  (resolve) => {
-    return (chrLocationData: { [genomeId: string]: ChrLocation }) =>
-      resolve(chrLocationData);
-  }
-);
+export const updateChrLocation = createStandardAction(
+  'browser/update-chromosome-location'
+)<ChrLocations>();
 
 export const setChrLocation: ActionCreator<
   ThunkAction<any, any, null, Action<string>>
@@ -200,37 +192,22 @@ export const changeBrowserLocation: ActionCreator<
   };
 };
 
-export const updateCogList = createAction(
-  'browser/update-cog-list',
-  (resolve) => {
-    return (cogList: number) => {
-      return resolve(cogList);
-    };
-  }
-);
+export const updateCogList = createStandardAction('browser/update-cog-list')<
+  number
+>();
 
-export const updateCogTrackList = createAction(
-  'browser/update-cog-track-list',
-  (resolve) => {
-    return (trackY: CogList) => {
-      return resolve(trackY);
-    };
-  }
-);
+export const updateCogTrackList = createStandardAction(
+  'browser/update-cog-track-list'
+)<CogList>();
 
-export const updateSelectedCog = createAction(
-  'browser/update-selected-cog',
-  (resolve) => {
-    return (index: string) => {
-      return resolve(index);
-    };
-  }
-);
+export const updateSelectedCog = createStandardAction(
+  'browser/update-selected-cog'
+)<string>();
 
 export const updateTrackConfigNames = createAction(
   'browser/update-track-config-names',
   (resolve) => {
-    return (selectedCog: any, sense: boolean) => {
+    return (selectedCog: string, sense: boolean) => {
       return resolve([selectedCog, sense]);
     };
   }
@@ -239,24 +216,16 @@ export const updateTrackConfigNames = createAction(
 export const updateTrackConfigLabel = createAction(
   'browser/update-track-config-label',
   (resolve) => {
-    return (selectedCog: any, sense: boolean) => {
+    return (selectedCog: string, sense: boolean) => {
       return resolve([selectedCog, sense]);
     };
   }
 );
 
-export const updateApplyToAll = createAction(
-  'browser/update-apply-to-all',
-  (resolve) => {
-    return (yn: boolean) => {
-      return resolve(yn);
-    };
-  }
-);
+export const updateApplyToAll = createStandardAction(
+  'browser/update-apply-to-all'
+)<boolean>();
 
-export const toggleGenomeSelector = createAction(
-  'toggle-genome-selector',
-  (resolve) => {
-    return (genomeSelectorActive: boolean) => resolve(genomeSelectorActive);
-  }
-);
+export const toggleGenomeSelector = createStandardAction(
+  'toggle-genome-selector'
+)<boolean>();
