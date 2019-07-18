@@ -2,6 +2,10 @@ import React from 'react';
 import defaultStyles from './ImageButton.scss';
 import ImageHolder from './ImageHolder';
 
+import Tooltip from 'src/shared/tooltip/Tooltip';
+
+import imageButtonStyles from './ImageButton.scss';
+
 export enum ImageButtonStatus {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
@@ -30,9 +34,16 @@ const ImageButton = (props: Props) => {
     ? { ...defaultStyles, ...props.classNames }
     : defaultStyles;
 
+  const shouldShowTooltip =
+    Boolean(props.description) &&
+    props.buttonStatus !== ImageButtonStatus.DISABLED;
+
   return (
-    <div {...buttonProps}>
+    <div className={imageButtonStyles.imageButton} {...buttonProps}>
       <ImageHolder {...rest} classNames={styles} />
+      {shouldShowTooltip && (
+        <Tooltip autoAdjust={true}>{props.description}</Tooltip>
+      )}
     </div>
   );
 };
