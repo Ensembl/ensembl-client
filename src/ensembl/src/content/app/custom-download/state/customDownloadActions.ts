@@ -8,6 +8,7 @@ import { ThunkAction } from 'redux-thunk';
 import apiService from 'src/services/api-service';
 
 import Preview from 'src/content/app/custom-download/types/Preview';
+import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 
 export const filterAccordionActions = allFilterAccordionActions;
 export const attributesAccordionActions = allAttributeAccordionActions;
@@ -26,22 +27,26 @@ export const updateSelectedPreFilter = createAction(
 export const togglePreFiltersPanel = createAction(
   'custom-download/toggle-pre-filters-panel',
   (resolve) => {
-    return (showPreFiltersPanel: boolean) =>
-      resolve(
+    return (showPreFiltersPanel: boolean) => {
+      customDownloadStorageService.saveShowPreFilterPanel(showPreFiltersPanel);
+      return resolve(
         showPreFiltersPanel,
         getCustomDownloadAnalyticsObject('Pre Filter Panel Toggled')
       );
+    };
   }
 );
 
 export const toggleTab = createAction(
   'custom-download/toggle-data-filter-tab-button',
   (resolve) => {
-    return (selectedTab: string) =>
-      resolve(
+    return (selectedTab: string) => {
+      customDownloadStorageService.saveSelectedTab(selectedTab);
+      return resolve(
         selectedTab,
         getCustomDownloadAnalyticsObject('Toggle Data/Filter Tab Button')
       );
+    };
   }
 );
 

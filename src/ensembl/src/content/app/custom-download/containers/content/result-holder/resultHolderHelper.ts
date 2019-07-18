@@ -56,7 +56,7 @@ export const getEndpointUrl = (
   // FIXME: Temporarily apply the filters locally
   const gene_ids = get(
     processedFilters,
-    'protein_and_domain_families.family_or_domain_ids.limit_to_genes.0'
+    'protein_and_domain_families.family_or_domain_ids.limit_to_genes'
   );
   const gene_biotypes = get(processedFilters, 'genes.gene_type.biotype');
   const gene_source = get(processedFilters, 'genes.gene_source');

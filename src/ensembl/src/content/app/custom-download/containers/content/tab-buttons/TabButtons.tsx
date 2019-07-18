@@ -10,6 +10,8 @@ import { getSelectedTab } from '../../../state/customDownloadSelectors';
 import { getSelectedAttributes } from '../attributes-accordion/state/attributesAccordionSelector';
 import { getSelectedFilters } from '../filter-accordion/state/filterAccordionSelector';
 
+import customDownloadStorageService from '../../../services/custom-download-storage-service';
+
 import { toggleTab } from '../../../state/customDownloadActions';
 import { RootState } from 'src/store';
 
@@ -76,7 +78,12 @@ const getTotalSelectedFilters = (
 };
 
 const TabButtons = (props: Props) => {
-  useEffect(() => {}, [props.selectedAttributes]);
+  useEffect(() => {
+    const selectedTab = customDownloadStorageService.getSelectedTab();
+    if (selectedTab && props.selectedTab !== selectedTab) {
+      props.toggleTab(selectedTab);
+    }
+  }, [props.selectedAttributes]);
 
   const dataButtonStatus =
     props.selectedTab === 'attributes'

@@ -19,7 +19,7 @@ import {
 import styles from './ContentBuilder.scss';
 
 import get from 'lodash/get';
-import { Filter } from '../../sample-data/filters';
+import Filter from 'src/content/app/custom-download/types/Filters';
 
 type Path = (string | number)[];
 let path: Path = [];
