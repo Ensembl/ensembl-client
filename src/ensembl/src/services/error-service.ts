@@ -7,12 +7,14 @@ interface ErrorServiceInterface {
 }
 
 class ErrorService implements ErrorServiceInterface {
+  private isReportingServiceInitialized: boolean = false;
+
   public constructor() {
     this.initializeReportingService();
   }
 
   public report(error: Error) {
-    if (config.isProduction) {
+    if (this.isReportingServiceInitialized) {
       Sentry.captureException(error);
     } else {
       console.log(error);
@@ -20,9 +22,12 @@ class ErrorService implements ErrorServiceInterface {
   }
 
   private initializeReportingService() {
-    Sentry.init({
-      dsn: 'https://ab4205dce9c047588d30ddfaafd0655a@sentry.io/1507303'
-    });
+    if (config.isProduction) {
+      Sentry.init({
+        dsn: 'https://ab4205dce9c047588d30ddfaafd0655a@sentry.io/1507303'
+      });
+      this.isReportingServiceInitialized = true;
+    }
   }
 }
 
