@@ -140,7 +140,7 @@ const formatResponseToArray = (responseData: any): any => {
   FIXME: Field titles (displayName) returned from the genesearch API are not properly formatted.
   We need to keep this until the API is updated.
 */
-const attributeDisplayNames: { [key: string]: string } = {
+export const attributeDisplayNames: { [key: string]: string } = {
   protein_coding: 'Protein coding',
   type: 'Type',
   source: 'Gene source',

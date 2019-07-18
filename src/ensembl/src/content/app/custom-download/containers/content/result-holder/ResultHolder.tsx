@@ -9,7 +9,7 @@ import {
 import { getSelectedAttributes } from '../attributes-accordion/state/attributesAccordionSelector';
 import { getSelectedFilters } from '../filter-accordion/state/filterAccordionSelector';
 
-import { keys, values, mapKeys } from 'lodash';
+import { keys } from 'lodash';
 
 import {
   setPreviewResult,

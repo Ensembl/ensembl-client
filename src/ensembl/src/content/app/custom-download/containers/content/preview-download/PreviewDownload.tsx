@@ -8,7 +8,11 @@ import { getFilters } from '../filter-accordion/state/filterAccordionSelector';
 import { ReactComponent as closeIcon } from 'static/img/track-panel/close.svg';
 import styles from './PreviewDownload.scss';
 
-import { getSelectedAttributes } from '../result-holder/resultHolderHelper';
+import {
+  getProcessedAttributes,
+  flattenObject,
+  attributeDisplayNames
+} from '../result-holder/resultHolderHelper';
 
 import {
   setShowPreview,
@@ -37,7 +41,10 @@ const PreviewDownload = (props: Props) => {
     props.toggleTab(tab);
   };
 
-  const attributesList: [] = getSelectedAttributes(props.attributes);
+  //FIXME: Get and display the selected attributes
+  const attributesList: [] = getProcessedAttributes(
+    flattenObject(props.attributes)
+  );
 
   return (
     <div className={styles.previewDownload}>
@@ -66,7 +73,9 @@ const PreviewDownload = (props: Props) => {
             </td>
             <td>
               {attributesList.map((attribute, index) => {
-                return <div key={index}>{attribute[3]}</div>;
+                return (
+                  <div key={index}>{attributeDisplayNames[attribute]}</div>
+                );
               })}
 
               <div
