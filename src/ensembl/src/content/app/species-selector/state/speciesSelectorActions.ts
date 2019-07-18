@@ -60,7 +60,6 @@ export const setSearchText = createStandardAction(
 export const updateSearch: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (text: string) => (dispatch, getState: () => RootState) => {
-  console.log('update');
   const state = getState();
   const selectedItem = getSelectedItem(state);
   const previousText = getSearchText(state);
