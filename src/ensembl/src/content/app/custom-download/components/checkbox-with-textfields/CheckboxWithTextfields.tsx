@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Checkbox from 'src/shared/checkbox/Checkbox';
 import styles from './CheckboxWithTextfields.scss';
 
@@ -14,14 +14,20 @@ export type CheckboxWithTextfieldsProps = {
 };
 
 const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
-  const [isChecked, setisChecked] = useState(props.values.length > 0);
+  const [isChecked, setIsChecked] = useState(false);
   const [shouldShowAddButton, setShowAddButton] = useState(
     Boolean(props.values[props.values.length - 1])
   );
 
+  useEffect(() => {
+    setIsChecked(props.values.length > 0);
+  }, [props.values]);
+
   const handleCheckboxOnChange = (isChecked: boolean) => {
-    setisChecked(isChecked);
-    props.onChange([]);
+    setIsChecked(isChecked);
+    if (!isChecked && props.values.length > 0) {
+      props.onChange([]);
+    }
   };
 
   const addEntry = () => {

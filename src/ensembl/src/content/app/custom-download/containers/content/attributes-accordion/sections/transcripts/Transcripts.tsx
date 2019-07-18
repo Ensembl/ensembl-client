@@ -34,9 +34,7 @@ const Transcripts = (props: Props) => {
     payload: any
   ) => {
     const updatedAttributes = { ...props.selectedAttributes };
-    payload
-      ? set(updatedAttributes, path, payload)
-      : unset(updatedAttributes, path);
+    set(updatedAttributes, path, payload);
 
     props.updateSelectedAttributes(updatedAttributes);
   };
@@ -47,9 +45,7 @@ const Transcripts = (props: Props) => {
     payload: any
   ) => {
     const updatedContentState = { ...props.contentState };
-    payload
-      ? set(updatedContentState, path, payload)
-      : unset(updatedContentState, path);
+    set(updatedContentState, path, payload);
 
     props.updateContentState(updatedContentState);
   };

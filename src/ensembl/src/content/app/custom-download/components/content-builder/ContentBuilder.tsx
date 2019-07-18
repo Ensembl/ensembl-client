@@ -100,8 +100,8 @@ const ContentBuilder = (props: ContentBuilderProps) => {
 
     Object.values(gridOptions as CheckboxGridOption[]).map((option) => {
       const optionClone = { ...option };
-      if (selectedOptions[option.id]) {
-        optionClone.isChecked = true;
+      if (selectedOptions[option.id] !== undefined) {
+        optionClone.isChecked = selectedOptions[option.id];
       } else if (optionClone.isChecked) {
         onChangeHandler(entry.type, [...currentPath, optionClone.id], true);
       }

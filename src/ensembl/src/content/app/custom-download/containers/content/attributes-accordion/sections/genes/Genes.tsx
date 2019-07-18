@@ -34,9 +34,7 @@ const Genes = (props: Props) => {
     payload: any
   ) => {
     const updatedAttributes = { ...props.selectedAttributes };
-    payload
-      ? set(updatedAttributes, path, payload)
-      : unset(updatedAttributes, path);
+    set(updatedAttributes, path, payload);
 
     props.updateSelectedAttributes(updatedAttributes);
   };

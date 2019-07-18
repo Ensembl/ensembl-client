@@ -3,15 +3,16 @@ import config from 'config';
 import { keys, mapKeys, set, get, trim } from 'lodash';
 
 export const getProcessedAttributes = (flatSelectedAttributes: any) => {
-  return keys(
-    mapKeys(flatSelectedAttributes, (value: boolean, key: string) => {
-      return key
-        .split('.default.')
-        .join('.')
-        .split('genes.')
-        .join('');
-    })
+  const filteredAttributes = keys(flatSelectedAttributes).filter(
+    (key) => flatSelectedAttributes[key]
   );
+  return filteredAttributes.map((value: string) => {
+    return value
+      .split('.default.')
+      .join('.')
+      .split('genes.')
+      .join('');
+  });
 };
 
 const getProcessedFilters = (filters: any) => {
@@ -32,7 +33,7 @@ const getProcessedFilters = (filters: any) => {
 
   const processedFilters = {};
 
-  keys(selectedFilters).forEach((path, index) => {
+  keys(selectedFilters).forEach((path) => {
     set(processedFilters, path, selectedFilters[path]);
   });
   return processedFilters;
@@ -44,7 +45,6 @@ export const getEndpointUrl = (
   method: string = 'query'
 ) => {
   const processedAttributes = getProcessedAttributes(flatSelectedAttributes);
-
   const processedFilters = getProcessedFilters(selectedFilters);
 
   let endpoint = config.genesearchAPIEndpoint + `/genes/${method}?query=`;
@@ -62,7 +62,10 @@ export const getEndpointUrl = (
   const gene_source = get(processedFilters, 'genes.gene_source');
 
   if (gene_ids) {
-    endpointFilters.id = gene_ids.split(',').map(trim);
+    endpointFilters.id = gene_ids
+      .join(',')
+      .split(',')
+      .map(trim);
   }
 
   if (gene_biotypes) {
@@ -79,56 +82,6 @@ export const getEndpointUrl = (
     processedAttributes.join(',');
 
   return endpoint;
-};
-
-export const getSelectedAttributes = (attributes: any) => {
-  const selectedAttributes: any = [];
-
-  Object.keys(attributes).forEach((section) => {
-    Object.keys(attributes[section]).forEach((subSection) => {
-      Object.keys(attributes[section][subSection]).forEach((attributeId) => {
-        if (attributes[section][subSection][attributeId].isChecked === true) {
-          selectedAttributes.push([
-            section,
-            subSection,
-            attributes[section][subSection][attributeId].id,
-            attributes[section][subSection][attributeId].label
-          ]);
-        }
-      });
-    });
-  });
-
-  return selectedAttributes;
-};
-
-export const getSelectedFilters = (filters: any) => {
-  const selectedFilters: any = {};
-
-  Object.keys(filters).forEach((section: any) => {
-    if (typeof filters[section] === 'string') {
-      if (filters[section].length > 0) {
-        selectedFilters[section] = filters[section];
-      }
-    } else if (Array.isArray(filters[section])) {
-      if (filters[section].length > 0) {
-        selectedFilters[section] = filters[section];
-      }
-    } else if (typeof filters[section] === 'object') {
-      Object.keys(filters[section]).forEach((subSection) => {
-        Object.keys(filters[section][subSection]).forEach((attributeId) => {
-          if (filters[section][subSection][attributeId].isChecked === true) {
-            if (!selectedFilters[section]) {
-              selectedFilters[section] = [];
-            }
-            selectedFilters[section].push(attributeId);
-          }
-        });
-      });
-    }
-  });
-
-  return selectedFilters;
 };
 
 export const flattenObject = (

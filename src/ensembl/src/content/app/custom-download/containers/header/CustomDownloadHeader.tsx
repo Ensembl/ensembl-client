@@ -14,8 +14,8 @@ import {
   getDownloadType
 } from '../../state/customDownloadSelectors';
 
-import { getFilters } from '../content/filter-accordion/state/filterAccordionSelector';
-import { getAttributes } from '../content/attributes-accordion/state/attributesAccordionSelector';
+import { getSelectedFilters } from '../content/filter-accordion/state/filterAccordionSelector';
+import { getSelectedAttributes } from '../content/attributes-accordion/state/attributesAccordionSelector';
 
 import {
   togglePreFiltersPanel,
@@ -24,11 +24,6 @@ import {
 } from '../../state/customDownloadActions';
 import ImageButton from 'src/shared/image-button/ImageButton';
 import { ReactComponent as BackIcon } from 'static/img/shared/chevron-left.svg';
-
-import {
-  getSelectedAttributes,
-  getSelectedFilters
-} from '../content/result-holder/resultHolderHelper';
 
 import { fetchCustomDownloadResults } from './customDownloadHeaderHelper';
 
@@ -124,11 +119,6 @@ const Header = (props: Props) => {
 
   let disablePreviewButton = resultCount === 0;
 
-  const selectedAttributes: Attributes = getSelectedAttributes(
-    props.attributes
-  );
-  const selectedFilters: any = getSelectedFilters(props.filters);
-
   const getFormattedResult = () => {
     return (
       <>
@@ -201,8 +191,8 @@ const Header = (props: Props) => {
             onClick={() => {
               fetchCustomDownloadResults(
                 props.downloadType,
-                selectedAttributes,
-                selectedFilters
+                props.selectedAttributes,
+                props.selectedfilters
               );
             }}
           >
@@ -231,8 +221,8 @@ type StateProps = {
   preview: any;
   showPreview: boolean;
   downloadType: string;
-  filters: any;
-  attributes: Attributes;
+  selectedfilters: any;
+  selectedAttributes: Attributes;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
@@ -240,8 +230,8 @@ const mapStateToProps = (state: RootState): StateProps => ({
   preview: getPreviewResult(state),
   showPreview: getShowPreviewResult(state),
   downloadType: getDownloadType(state),
-  filters: getFilters(state),
-  attributes: getAttributes(state)
+  selectedfilters: getSelectedFilters(state),
+  selectedAttributes: getSelectedAttributes(state)
 });
 
 export default connect(
