@@ -2,7 +2,6 @@ import storageService, {
   StorageServiceInterface
 } from 'src/services/storage-service';
 
-import { PreFilterState } from '../state/customDownloadState';
 import { Attributes } from 'src/content/app/custom-download/types/Attributes';
 import { Filters } from 'src/content/app/custom-download/types/Filters';
 
