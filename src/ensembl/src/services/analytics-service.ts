@@ -9,7 +9,8 @@ class AnalyticsTracking {
   private reactGA: typeof ReactGA;
 
   public constructor() {
-    ReactGA.initialize(googleAnalyticsKey, {
+    ReactGA.initialize(googleAnalyticsKey);
+    ReactGA.set({
       titleCase: false,
       testMode: isTest
     });

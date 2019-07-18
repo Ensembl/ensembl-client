@@ -207,7 +207,7 @@ export const updateSelectedCog = createStandardAction(
 export const updateTrackConfigNames = createAction(
   'browser/update-track-config-names',
   (resolve) => {
-    return (selectedCog: string, sense: boolean) => {
+    return (selectedCog: any, sense: boolean) => {
       return resolve([selectedCog, sense]);
     };
   }
@@ -216,7 +216,7 @@ export const updateTrackConfigNames = createAction(
 export const updateTrackConfigLabel = createAction(
   'browser/update-track-config-label',
   (resolve) => {
-    return (selectedCog: string, sense: boolean) => {
+    return (selectedCog: any, sense: boolean) => {
       return resolve([selectedCog, sense]);
     };
   }
