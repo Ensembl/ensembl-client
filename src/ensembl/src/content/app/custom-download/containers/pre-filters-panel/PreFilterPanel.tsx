@@ -22,12 +22,11 @@ const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
   props: PreFilterPanelProps
 ) => {
   useEffect(() => {
-    if (props.selectedPreFilter) {
+    const preFilterFromLocalStorage = customDownloadStorageService.getSelectedPreFilter();
+    if (props.selectedPreFilter !== '' || !preFilterFromLocalStorage) {
       return;
     }
-    props.updateSelectedPreFilter(
-      customDownloadStorageService.getSelectedPreFilter()
-    );
+    props.updateSelectedPreFilter(preFilterFromLocalStorage);
     props.togglePreFiltersPanel(
       customDownloadStorageService.getShowPreFilterPanel()
     );
