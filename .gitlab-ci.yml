@@ -100,7 +100,7 @@ Test_N_Build:feature:
     - src/ensembl/dist/
 
   only:
-  - feature/custom-downloads-july
+  - /^feature\/.*$/
 
 Nginx:
   image: docker
@@ -195,7 +195,7 @@ Nginx:feature:
   - docker logout "$GITLAB_REGISTRY_URL"
 
   only:
-  - feature/custom-downloads-july
+  - /^feature\/.*$/
 
   dependencies:
   - Test_N_Build:feature
@@ -311,7 +311,7 @@ Deploy:feature:
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
 
   only:
-  - feature/custom-downloads-july
+  - /^feature\/.*$/
 
   dependencies:
   - Nginx:feature
