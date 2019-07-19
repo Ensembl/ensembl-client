@@ -48,7 +48,9 @@ export const PopularSpeciesButton = (props: Props) => {
 
   const handleClick = () => {
     const { genome_id, is_available } = species;
-    const speciesName = species.common_name || species.scientific_name;
+    const speciesName = `${species.common_name || species.scientific_name} - ${
+      species.assembly_name
+    }`;
 
     if (!is_available) {
       return;

@@ -109,19 +109,10 @@ export const setSelectedSpecies = createStandardAction(
   'species_selector/species_selected'
 )<SearchMatch | PopularSpecies>();
 
-export const clearSearchResults = createAction(
-  'species_selector/clear_search_results',
-  (resolve) => {
-    return () =>
-      resolve(
-        undefined,
-        buildAnalyticsObject({
-          category: categories.POPULAR_SPECIES,
-          action: 'unselect'
-        })
-      );
-  }
-);
+export const clearSearchResults = createStandardAction(
+  'species_selector/clear_search_results'
+)();
+
 export const clearSearch = createStandardAction(
   'species_selector/clear_search'
 )();
@@ -214,7 +205,8 @@ export const commitSelectedSpeciesAndSave: ActionCreator<
     buildCommittedItem(selectedItem)
   ];
 
-  const speciesName = selectedItem.common_name || selectedItem.scientific_name;
+  const speciesName = `${selectedItem.common_name ||
+    selectedItem.scientific_name} - ${selectedItem.assembly_name}`;
 
   analyticsTracking.trackEvent({
     category: categories.ADD_SPECIES,
@@ -236,7 +228,9 @@ export const toggleSpeciesUseAndSave: ActionCreator<
   let currentStatus = '';
   committedSpecies.map((item) => {
     if (item.genome_id === genomeId) {
-      speciesName = item.common_name || item.scientific_name;
+      speciesName = `${item.common_name || item.scientific_name} - ${
+        item.assembly_name
+      }`;
       currentStatus = item.isEnabled ? 'do_not_use' : 'use';
       return {
         ...item,
@@ -258,23 +252,27 @@ export const toggleSpeciesUseAndSave: ActionCreator<
 export const deleteSpeciesAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (genomeId: string) => (dispatch, getState) => {
-  let speciesName = '';
-  const committedSpecies = getCommittedSpecies(getState()).filter((item) => {
-    if (item.genome_id === genomeId) {
-      speciesName = item.common_name || item.scientific_name;
-      return false;
-    }
-    return true;
-  });
+  const committedSpecies = getCommittedSpecies(getState());
+  const deletedSpecies = find(
+    committedSpecies,
+    ({ genome_id }) => genome_id === genomeId
+  );
 
-  analyticsTracking.trackEvent({
-    category: categories.SELECTED_SPECIES,
-    label: speciesName,
-    action: 'unselect'
-  });
+  if (deletedSpecies) {
+    const deletedSpeciesName = `${deletedSpecies.common_name ||
+      deletedSpecies.scientific_name} - ${deletedSpecies.assembly_name}`;
+    analyticsTracking.trackEvent({
+      category: categories.SELECTED_SPECIES,
+      label: deletedSpeciesName,
+      action: 'unselect'
+    });
+  }
+  const updatedCommittedSpecies = committedSpecies.filter(
+    ({ genome_id }) => genome_id !== genomeId
+  );
 
-  dispatch(updateCommittedSpecies(committedSpecies));
-  speciesSelectorStorageService.saveSelectedSpecies(committedSpecies);
+  dispatch(updateCommittedSpecies(updatedCommittedSpecies));
+  speciesSelectorStorageService.saveSelectedSpecies(updatedCommittedSpecies);
 };
 
 export const changeAssembly = createAction(
