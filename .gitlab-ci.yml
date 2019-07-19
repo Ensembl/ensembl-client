@@ -188,7 +188,7 @@ Nginx:feature:
   - cd ..
   - sed -i "s/<DEPLOYMENT_ENV>/internal/g" ensembl-client-nginx/config/conf.d/local.conf
   - cat ensembl-client-nginx/config/conf.d/local.conf
-  - docker build -t $${CONTAINER_IMAGE}-$feature_tag -f ensembl-client-nginx/Dockerfile --no-cache .
+  - docker build -t ${CONTAINER_IMAGE}-$feature_tag -f ensembl-client-nginx/Dockerfile --no-cache .
   - echo "$GITLAB_REGISTRY_TOKEN" | docker login -u "$GITLAB_REGISTRY_USER" --password-stdin https://"$GITLAB_REGISTRY_URL"
   - docker push ${CONTAINER_IMAGE}-$feature_tag
   - docker rmi ${CONTAINER_IMAGE}-$feature_tag
@@ -304,7 +304,7 @@ Deploy:feature:
   - git checkout refactor-manifest
   - cd ..
   - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}-$feature_tag/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - sed -i "s/<DEPLOYMNET_ENV>/feature_tag/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - sed -i "s/<DEPLOYMNET_ENV>/$feature_tag/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - cat ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - kubectl config view
   - kubectl config use-context ens-dev-ctx
