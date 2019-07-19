@@ -10,7 +10,8 @@ import {
   getOrthologueSpecies,
   getOrthologueShowBestMatches,
   getOrthologueShowAll,
-  getOrthologueApplyToAllSpecies
+  getOrthologueApplyToAllSpecies,
+  getSelectedAttributes
 } from '../../state/attributesAccordionSelector';
 
 import {
@@ -20,11 +21,12 @@ import {
   setOrthologueSpecies,
   setOrthologueShowBestMatches,
   setOrthologueShowAll,
-  setOrthologueApplyToAllSpecies
+  setOrthologueApplyToAllSpecies,
+  updateSelectedAttributes
 } from '../../state/attributesAccordionActions';
 
 import Input from 'src/shared/input/Input';
-
+import set from 'lodash/set';
 import styles from './Orthologues.scss';
 
 import Attribute, {
@@ -58,6 +60,12 @@ const Orthologue = (props: Props) => {
     newOrthologueAttributes[species].options[
       modifiedSpeciesIndex
     ].isChecked = status;
+
+    const path = ['orthologues', `${attributeId}(${species})`];
+
+    const updatedAttributes = { ...props.selectedAttributes };
+    set(updatedAttributes, path, status);
+    props.updateSelectedAttributes(updatedAttributes);
 
     props.setOrthologueAttributes(newOrthologueAttributes);
   };
@@ -167,6 +175,7 @@ type DispatchProps = {
   setOrthologueApplyToAllSpecies: (
     setOrthologueApplyToAllSpecies: boolean
   ) => void;
+  updateSelectedAttributes: (updateSelectedAttributes: Attributes) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
@@ -176,7 +185,8 @@ const mapDispatchToProps: DispatchProps = {
   fetchOrthologueSpecies,
   setOrthologueShowBestMatches,
   setOrthologueShowAll,
-  setOrthologueApplyToAllSpecies
+  setOrthologueApplyToAllSpecies,
+  updateSelectedAttributes
 };
 
 type StateProps = {
@@ -186,6 +196,7 @@ type StateProps = {
   shouldShowBestMatches: boolean;
   shouldShowAll: boolean;
   shouldApplyToAllSpecies: boolean;
+  selectedAttributes: Attributes;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
@@ -194,7 +205,8 @@ const mapStateToProps = (state: RootState): StateProps => ({
   orthologueSpecies: getOrthologueSpecies(state),
   shouldShowBestMatches: getOrthologueShowBestMatches(state),
   shouldShowAll: getOrthologueShowAll(state),
-  shouldApplyToAllSpecies: getOrthologueApplyToAllSpecies(state)
+  shouldApplyToAllSpecies: getOrthologueApplyToAllSpecies(state),
+  selectedAttributes: getSelectedAttributes(state)
 });
 
 export default connect(
