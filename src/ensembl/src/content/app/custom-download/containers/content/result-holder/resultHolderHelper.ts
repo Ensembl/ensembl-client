@@ -15,7 +15,7 @@ export const getProcessedAttributes = (flatSelectedAttributes: any) => {
   });
 };
 
-const getProcessedFilters = (filters: any) => {
+export const getProcessedFilters = (filters: any) => {
   const flatSelectedFilters: { [key: string]: boolean } = flattenObject(
     filters
   );
@@ -146,6 +146,7 @@ export const attributeDisplayNames: { [key: string]: string } = {
   source: 'Gene source',
   symbol: 'Gene symbol',
   id: 'Gene stable ID',
+  biotype: 'Biotype',
   id_version: 'Gene stable ID version',
   name: 'Gene name',
   Superfamily: 'Superfamily',

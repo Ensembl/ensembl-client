@@ -16,7 +16,9 @@ export enum StorageKeys {
 
   SELECTED_PRE_FILTER = 'customDownload.preFilter.selectedPreFilter',
   SHOW_PRE_FILTER_PANEL = 'customDownload.preFilter.showPreFilterPanel',
-  SELECTED_TAB = 'customDownload.tab.selectedTab'
+  SELECTED_TAB = 'customDownload.tab.selectedTab',
+
+  SHOW_PREVIEW = 'customDownload.previewDownload.showPreview'
 }
 
 export class CustomDownloadStorageService {
@@ -105,6 +107,14 @@ export class CustomDownloadStorageService {
 
   public saveSelectedTab(selectedTab: string) {
     this.storageService.save(StorageKeys.SELECTED_TAB, selectedTab);
+  }
+
+  public getShowPreview(): boolean {
+    return this.storageService.get(StorageKeys.SHOW_PREVIEW) || false;
+  }
+
+  public saveShowPreview(shouldShowPreview: boolean) {
+    this.storageService.save(StorageKeys.SHOW_PREVIEW, shouldShowPreview);
   }
 }
 

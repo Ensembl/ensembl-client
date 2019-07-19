@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { PrimaryButton } from 'src/shared/button/Button';
 
@@ -16,7 +16,7 @@ import {
 
 import { getSelectedFilters } from '../content/filter-accordion/state/filterAccordionSelector';
 import { getSelectedAttributes } from '../content/attributes-accordion/state/attributesAccordionSelector';
-
+import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 import {
   togglePreFiltersPanel,
   setShowPreview,
@@ -89,6 +89,9 @@ const downloadTypeoptions = [
 ];
 
 const Header = (props: Props) => {
+  useEffect(() => {
+    props.setShowPreview(customDownloadStorageService.getShowPreview());
+  }, []);
   const filterOnClick = () => {
     props.togglePreFiltersPanel(true);
   };
