@@ -13,7 +13,10 @@ export const fetchCustomDownloadResults = (
     attributes
   );
 
-  const endpoint = getEndpointUrl(flatSelectedAttributes, filters, 'fetch');
+  let endpoint = getEndpointUrl(flatSelectedAttributes, filters, 'fetch');
 
+  if (downloadType) {
+    endpoint += '&accept=' + downloadType;
+  }
   window.open(endpoint);
 };
