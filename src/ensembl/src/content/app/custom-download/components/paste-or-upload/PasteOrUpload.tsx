@@ -75,7 +75,7 @@ const PasteOrUpload = (props: PasteOrUploadProps) => {
         <div className={styles.fields}>
           <div className={styles.inputWrapper}>
             <Input
-              value={value}
+              value={value || ''}
               onChange={onChangeHandler}
               className={styles.textInput}
               placeholder={props.placeholder}
