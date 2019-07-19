@@ -1,6 +1,9 @@
 import React, { FunctionComponent, memo } from 'react';
 import { NavLink } from 'react-router-dom';
-import ImageButton from 'src/shared/image-button/ImageButton';
+import { withRouter, RouteComponentProps } from 'react-router';
+import ImageButton, {
+  ImageButtonStatus
+} from 'src/shared/image-button/ImageButton';
 
 import styles from './Launchbar.scss';
 
@@ -9,27 +12,46 @@ type LaunchbarButtonProps = {
   description: string;
   icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>> | string;
   enabled: boolean;
-};
+} & RouteComponentProps;
 
-export const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
+const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
   props: LaunchbarButtonProps
 ) => {
+  const pathTo = `/app/${props.app}`;
+  const isActive = new RegExp(`^${pathTo}`).test(props.location.pathname);
+  const imageButtonStatus = !props.enabled
+    ? ImageButtonStatus.DISABLED
+    : isActive
+    ? ImageButtonStatus.ACTIVE
+    : ImageButtonStatus.DEFAULT;
+  const imageButton = (
+    <ImageButton
+      classNames={{
+        [ImageButtonStatus.DEFAULT]: styles.launchbarButtonImage,
+        [ImageButtonStatus.ACTIVE]: styles.launchbaeButtonSelectedImage,
+        [ImageButtonStatus.DISABLED]: styles.launchbarButtonDisabledImage
+      }}
+      buttonStatus={imageButtonStatus}
+      description={props.description}
+      image={props.icon}
+    />
+  );
+
   return props.enabled ? (
     <NavLink
       className={styles.launchbarButton}
-      title={props.description}
-      to={`/app/${props.app}`}
+      to={pathTo}
       activeClassName={styles.launchbarButtonSelected}
     >
-      <ImageButton description={props.description} image={props.icon} />
+      {imageButton}
     </NavLink>
   ) : (
     <div
       className={`${styles.launchbarButton} ${styles.launchbarButtonDisabled}`}
     >
-      <ImageButton description={props.description} image={props.icon} />
+      {imageButton}
     </div>
   );
 };
 
-export default memo(LaunchbarButton);
+export default withRouter(LaunchbarButton);

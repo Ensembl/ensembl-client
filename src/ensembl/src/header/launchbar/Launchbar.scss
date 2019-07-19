@@ -42,41 +42,47 @@
   border: 1px solid $ens-blue;
   margin: 0 12px;
 
-  [class*='imageHolder'] {
-    svg {
-      width: 30px;
-      height: 30px;
-      transform: scale(1.1);
-      fill: $ens-white;
-      background-color: $ens-blue;
-    }
-
-    img {
-      max-width: 30px;
-      max-height: 30px;
-    }
+  img {
+    max-width: 30px;
+    max-height: 30px;
   }
 }
 
 .launchbarButtonSelected {
   border: 1px solid $ens-black;
-
-  [class*='imageHolder'] {
-    svg {
-      fill: $ens-white;
-      background-color: $ens-black;
-    }
-  }
 }
 
 .launchbarButtonDisabled {
   border: 1px solid $ens-grey;
+}
 
-  [class*='imageHolder'] {
-    svg {
-      fill: $ens-white;
-      background-color: $ens-grey;
-    }
+.launchbarButtonImage {
+  svg {
+    width: 30px;
+    height: 30px;
+    transform: scale(1.1);
+    fill: $ens-white;
+    background-color: $ens-blue;
+  }
+}
+
+.launchbarButtonSelectedImage {
+  svg {
+    transform: scale(1.1);
+    fill: $ens-white;
+    background-color: $ens-black;
+  }
+}
+
+.launchbarButtonDisabledImage {
+  button {
+    cursor: not-allowed;
+  }
+
+  svg {
+    transform: scale(1.1);
+    fill: $ens-white;
+    background-color: $ens-grey;
   }
 }
 

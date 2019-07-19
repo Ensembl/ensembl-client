@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import defaultStyles from './ImageButton.scss';
 import ImageHolder from './ImageHolder';
 
@@ -14,6 +14,8 @@ export enum ImageButtonStatus {
   HIGHLIGHTED = 'highlighted'
 }
 
+const TOOLTIP_TIMEOUT_TIME = 800;
+
 type Props = {
   buttonStatus: ImageButtonStatus;
   description: string;
@@ -23,6 +25,21 @@ type Props = {
 };
 
 const ImageButton = (props: Props) => {
+  const [isMousedOver, setIsMousedOver] = useState(false);
+
+  let timeoutId: NodeJS.Timeout;
+
+  const handleMouseEnter = () => {
+    timeoutId = setTimeout(() => {
+      setIsMousedOver(true);
+    }, TOOLTIP_TIMEOUT_TIME);
+  };
+
+  const handleMouseLeave = () => {
+    clearTimeout(timeoutId);
+    setIsMousedOver(false);
+  };
+
   const buttonProps =
     props.buttonStatus === ImageButtonStatus.DISABLED
       ? {}
@@ -36,10 +53,16 @@ const ImageButton = (props: Props) => {
 
   const shouldShowTooltip =
     Boolean(props.description) &&
-    props.buttonStatus !== ImageButtonStatus.DISABLED;
+    props.buttonStatus !== ImageButtonStatus.DISABLED &&
+    isMousedOver;
 
   return (
-    <div className={imageButtonStyles.imageButton} {...buttonProps}>
+    <div
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className={imageButtonStyles.imageButton}
+      {...buttonProps}
+    >
       <ImageHolder {...rest} classNames={styles} />
       {shouldShowTooltip && (
         <Tooltip autoAdjust={true}>{props.description}</Tooltip>
