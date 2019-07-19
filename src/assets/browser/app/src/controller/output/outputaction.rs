@@ -13,7 +13,6 @@ impl OutputAction {
     pub fn run(&self, ar: &mut AppRunner) {
         match self {
             OutputAction::SendCustomEvent(name,details) => {
-                console!("bpane out send report 16");
                 domutil::send_custom_event(&ar.get_browser_el().into(),name,details);
                 domutil::send_post_message(name,details);
             },

@@ -60,7 +60,7 @@ impl StatusOutput {
                 return true;
             }
         }
-        return true;
+        return false;
     }
 }
 
@@ -74,17 +74,17 @@ lazy_static! {
             StatusJigsaw::Atom("i-stick".to_string(),StatusJigsawType::String),
             StatusJigsaw::Atom("i-start".to_string(),StatusJigsawType::Number),
             StatusJigsaw::Atom("i-end".to_string(),StatusJigsawType::Number),
-        }),Some(500.),true),
+        }),Some(250.),false),
         ("actual-location",StatusJigsaw::Array(vec!{
             StatusJigsaw::Atom("a-stick".to_string(),StatusJigsawType::String),
             StatusJigsaw::Atom("a-start".to_string(),StatusJigsawType::Number),
             StatusJigsaw::Atom("a-end".to_string(),StatusJigsawType::Number),
-        }),Some(500.),false),
+        }),Some(250.),false),
         ("intended-location",StatusJigsaw::Array(vec!{
             StatusJigsaw::Atom("i-stick".to_string(),StatusJigsawType::String),
             StatusJigsaw::Atom("i-start".to_string(),StatusJigsawType::Number),
             StatusJigsaw::Atom("i-end".to_string(),StatusJigsawType::Number),
-        }),Some(2000.),true),
+        }),Some(500.),true),
         ("bumper",StatusJigsaw::Array(vec!{
             StatusJigsaw::Atom("bumper-top".to_string(),StatusJigsawType::Boolean),
             StatusJigsaw::Atom("bumper-bottom".to_string(),StatusJigsawType::Boolean),
@@ -224,7 +224,7 @@ impl ReportImpl {
             if let Some(mc) = counter.try_update_counter() {
                 self.pieces.insert("message-counter".to_string(),mc.to_string());
             }
-            if !counter.is_delayed() {
+            if !counter.is_delayed() || true {
                 for (k,s) in &self.outputs {
                     if s.is_always_send() {
                         if let Some(value) = self.make_value(&s.jigsaw) {                
@@ -260,7 +260,6 @@ impl Report {
         ar.add_timer("report",enclose! { (out) move |app,t,sr| {
             app.with_counter(|counter| {
                 if let Some(report) = out.new_report(t,counter) {
-                    console!("bpane out send report.rs:263");
                     vec!{
                         OutputAction::SendCustomEvent("bpane-out".to_string(),report.clone())
                     }
