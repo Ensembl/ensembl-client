@@ -14,7 +14,7 @@ use dom::event::{
 };
 use dom::domutil;
 use types::{ Move, Distance, Units };
-use super::eventutil::extract_element;
+use super::eventutil::{ extract_element, parse_message };
 use super::eventqueue::EventQueueManager;
 
 fn custom_movement_event(dir: &str, unit: &str, v: &JSONValue) -> Action {
@@ -179,16 +179,14 @@ impl EventListener<()> for DirectEventListener {
             },
             EventData::MessageEvent(_,ec,c) => {
                 let data = c.data().unwrap();
-                let name = data["type"].as_str().unwrap();
-                if name == "bpane" {
-                    let data = data["payload"].clone();
-                    console!("receive/D {:?} {}",name,data);
-                    let sel = data.get("selector").map(|v| v.as_str().unwrap());
-                    if data.get("_outgoing").is_some() {
+                if let Some(payload) = parse_message("bpane",&data) {
+                    console!("receive/D {}",payload);
+                    let sel = payload.get("selector").map(|v| v.as_str().unwrap());
+                    if payload.get("_outgoing").is_some() {
                         return;
                     }
-                    let ev = custom_make_events(&data);
-                    let currency = extract_counter(&data);
+                    let ev = custom_make_events(&payload);
+                    let currency = extract_counter(&payload);
                     self.eqm.add_by_selector(sel,&ev,currency);
                 }
             },

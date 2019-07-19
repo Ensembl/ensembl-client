@@ -12,7 +12,7 @@ use debug::DEMO_SOURCES;
 use dom::domutil;
 use dom::event::{ EventListener, EventType, EventData, EventControl, Target, CustomData, ICustomEvent, IMessageEvent };
 use dom::AppEventData;
-use super::eventutil::extract_element;
+use super::eventutil::{ extract_element, parse_message };
 
 
 pub struct StartupEventListener {
@@ -26,21 +26,19 @@ impl StartupEventListener {
         }
     }    
 
-    fn activate(&mut self, name: &str, data: Option<JSONValue>, el: Option<HtmlElement>) {
+    fn activate(&mut self, data: Option<JSONValue>, el: Option<HtmlElement>) {
         let aed = AppEventData::new(&data);
-        if name == "bpane-activate" {
-            let key = unwrap!(aed.get_simple_str("key",Some("only")));
-            let debug = unwrap!(aed.get_simple_bool("debug",Some(false)));
-            console!("Activate browser {} on {:?}",key,el);
-            let config_url = aed.get_simple_str("config-url",None);
-            if config_url.is_none() {
-                console!("BROWSER APP REFUSING TO START UP! No config-url supplied");
-            }
-            let config_url = ok!(Url::parse(&unwrap!(config_url)));
-            let el = extract_element(&data.unwrap(),el.map(|x| x.into()));
-            console!("activate el {:?}",el);
-            self.g.trigger_app(&key,&el.unwrap(),debug,&config_url);
+        let key = unwrap!(aed.get_simple_str("key",Some("only")));
+        let debug = unwrap!(aed.get_simple_bool("debug",Some(false)));
+        console!("Activate browser {} on {:?}",key,el);
+        let config_url = aed.get_simple_str("config-url",None);
+        if config_url.is_none() {
+            console!("BROWSER APP REFUSING TO START UP! No config-url supplied");
         }
+        let config_url = ok!(Url::parse(&unwrap!(config_url)));
+        let el = extract_element(&data.unwrap(),el.map(|x| x.into()));
+        console!("activate el {:?}",el);
+        self.g.trigger_app(&key,&el.unwrap(),debug,&config_url);
     }
 }
 
@@ -48,10 +46,12 @@ impl EventListener<()> for StartupEventListener {
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
         match e {
             EventData::CustomEvent(_,cx,name,data) =>
-                self.activate(name,data.details(),Some(cx.target().try_into().unwrap())),
+                self.activate(data.details(),Some(cx.target().try_into().unwrap())),
             EventData::MessageEvent(_,cx,data) => {
-                let data = data.data().unwrap();
-                self.activate(&data["type"].as_str().unwrap(),Some(data["payload"].clone()),None);
+                let data = unwrap!(data.data());
+                if let Some(payload) = parse_message("bpane-activate",&data) {
+                    self.activate(Some(payload.clone()),None);
+                }
             }
             _ => ()
         }

@@ -124,12 +124,6 @@ impl ReportImpl {
     }
     
     pub fn set_status(&mut self, key: &str, value: &str) {
-        if let Some(x) = self.pieces.get(key) {
-            if x != value {
-                bb_log!("status","change {} {}->{}",key,x,value);
-            }
-        }
-
         self.pieces.insert(key.to_string(),value.to_string());
     }
 

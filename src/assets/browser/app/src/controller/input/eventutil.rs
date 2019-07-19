@@ -17,3 +17,12 @@ pub fn extract_element(j: &JSONValue, el: Option<Element>) -> Option<HtmlElement
     }
     None
 }
+
+pub fn parse_message<'a>(wanted: &str, data: &'a JSONValue) -> Option<&'a JSONValue> {
+    if let Some(typeval) = data.get("type").and_then(|x| x.as_str()) {
+        if typeval == wanted {
+            return data.get("payload");
+        }
+    }
+    None
+}
