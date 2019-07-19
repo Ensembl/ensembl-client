@@ -4,6 +4,7 @@ import { mount } from 'enzyme';
 import { Root } from './Root';
 import Header from '../header/Header';
 import Content from '../content/Content';
+import config from 'config';
 
 jest.mock('../header/Header', () => () => 'Header');
 jest.mock('../content/Content', () => () => 'Content');
@@ -53,7 +54,7 @@ describe('<Root />', () => {
   });
 
   test('does not show privacy banner if privacy cookie is set', async () => {
-    cookiesMock.get = jest.fn(() => 'true');
+    cookiesMock.get = jest.fn(() => config.privacy_policy_version);
     const wrapper = mount(getRenderedRoot(defaultProps));
 
     // ugly hack: fall back to the end of event queue, giving priority to useEffect and useState
