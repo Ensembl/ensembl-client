@@ -1,5 +1,6 @@
 export const orthologueAttributes = {
   id: 'orthologues',
+  type: 'checkbox_grid',
   label: '',
   options: [
     {

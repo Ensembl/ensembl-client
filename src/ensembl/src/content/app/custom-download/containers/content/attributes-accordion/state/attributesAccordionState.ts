@@ -2,7 +2,7 @@ import { Attributes } from 'src/content/app/custom-download/types/Attributes';
 
 export type OrthologueState = {
   searchTerm: string;
-  species: {};
+  species: [];
   showBestMatches: boolean;
   showAll: boolean;
   applyToAllSpecies: boolean;
@@ -23,7 +23,7 @@ export const defaultAttributesAccordionState: AttributesAccordionState = {
   contentState: {},
   orthologue: {
     searchTerm: '',
-    species: {},
+    species: [],
     showBestMatches: false,
     showAll: false,
     applyToAllSpecies: false

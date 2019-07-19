@@ -77,14 +77,14 @@ const AttributesAccordion = (props: Props) => {
       <div className={styles.dataSelectorHint}>
         Select the information you would like to download - these attributes
         will be displayed as columns in a table
+        <span className={styles.resetIcon} onClick={onReset}>
+          <ImageButton
+            buttonStatus={ImageButtonStatus.ACTIVE}
+            description={'Reset attributes'}
+            image={ResetIcon}
+          />
+        </span>
       </div>
-      <span className={styles.resetIcon} onClick={onReset}>
-        <ImageButton
-          buttonStatus={ImageButtonStatus.ACTIVE}
-          description={'Reset attributes'}
-          image={ResetIcon}
-        />
-      </span>
       <Accordion
         preExpanded={Array(1).fill(props.expandedPanel)}
         onChange={accordionOnChange}

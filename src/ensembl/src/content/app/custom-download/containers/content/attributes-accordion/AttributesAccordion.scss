@@ -7,8 +7,9 @@
   background-color: $ens-white;
 }
 .dataSelectorHint {
-  padding: 10px 0 10px 15px;
+  padding: 10px 30px 10px 15px;
   color: $ens-dark-grey;
+  position: relative;
 }
 
 .accordionItem {
@@ -33,5 +34,5 @@
   height: 30px;
   width: 30px;
   top: 8px;
-  right: 13px;
+  right: 0;
 }

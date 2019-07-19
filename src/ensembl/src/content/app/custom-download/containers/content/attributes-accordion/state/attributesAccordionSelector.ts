@@ -1,7 +1,6 @@
 import { RootState } from 'src/store';
 
 import { Attributes } from '../../../../types/Attributes';
-import { OrthologueState } from './attributesAccordionState';
 
 export const getAttributes = (state: RootState): Attributes =>
   state.customDownload.attributesAccordion.attributes;
@@ -12,8 +11,8 @@ export const getSelectedAttributes = (state: RootState): Attributes =>
 export const getContentState = (state: RootState): {} =>
   state.customDownload.attributesAccordion.contentState;
 
-export const getOrthologueAttributes = (state: RootState): OrthologueState =>
-  state.customDownload.attributesAccordion.orthologue;
+export const getOrthologueAttributes = (state: RootState): {} =>
+  state.customDownload.attributesAccordion.attributes.orthologues;
 
 export const getOrthologueSearchTerm = (state: RootState): string =>
   state.customDownload.attributesAccordion.orthologue.searchTerm;
@@ -27,7 +26,7 @@ export const getOrthologueShowAll = (state: RootState): boolean =>
 export const getOrthologueApplyToAllSpecies = (state: RootState): boolean =>
   state.customDownload.attributesAccordion.orthologue.applyToAllSpecies;
 
-export const getOrthologueSpecies = (state: RootState): {} =>
+export const getOrthologueSpecies = (state: RootState): [] =>
   state.customDownload.attributesAccordion.orthologue.species;
 
 export const getAttributesAccordionExpandedPanel = (state: RootState): string =>

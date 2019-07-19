@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 import CheckboxGrid from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
+import findIndex from 'lodash/findIndex';
 
 import {
   getOrthologueAttributes,
@@ -21,8 +22,6 @@ import {
   setOrthologueShowAll,
   setOrthologueApplyToAllSpecies
 } from '../../state/attributesAccordionActions';
-
-import { OrthologueState } from '../../state/attributesAccordionState';
 
 import Input from 'src/shared/input/Input';
 
@@ -49,29 +48,45 @@ const Orthologue = (props: Props) => {
   ) => {
     const newOrthologueAttributes: any = { ...props.orthologueAttributes };
 
-    newOrthologueAttributes[species][attributeId].isChecked = status;
+    const modifiedSpeciesIndex = findIndex(
+      newOrthologueAttributes[species].options,
+      (attribute: Attribute) => {
+        return attribute.id === attributeId;
+      }
+    );
+
+    newOrthologueAttributes[species].options[
+      modifiedSpeciesIndex
+    ].isChecked = status;
 
     props.setOrthologueAttributes(newOrthologueAttributes);
   };
 
   const speciesOnChangeHandler = (status: boolean, attributeId: string) => {
-    const newOrthologueFilteredSpecies = {
-      ...props.orthologueSpecies
-    };
+    const newOrthologueFilteredSpecies = [...props.orthologueSpecies];
 
-    newOrthologueFilteredSpecies[attributeId].isChecked = status;
+    const modifiedSpeciesIndex = findIndex(
+      newOrthologueFilteredSpecies,
+      (species) => {
+        return species.id === attributeId;
+      }
+    );
+
+    const displayName =
+      newOrthologueFilteredSpecies[modifiedSpeciesIndex].label;
+
+    newOrthologueFilteredSpecies[modifiedSpeciesIndex].isChecked = status;
 
     props.setOrthologueSpecies(newOrthologueFilteredSpecies);
 
     const newOrthologueAttributes: any = { ...props.orthologueAttributes };
-    const sectionHeader = props.orthologueSpecies.default[attributeId].label;
 
     if (status) {
-      newOrthologueAttributes[sectionHeader] = JSON.parse(
+      newOrthologueAttributes[displayName] = JSON.parse(
         JSON.stringify(orthologueAttributes)
       );
     } else {
-      delete newOrthologueAttributes[sectionHeader];
+      delete newOrthologueAttributes[displayName];
     }
 
     props.setOrthologueAttributes(newOrthologueAttributes);
@@ -86,7 +101,7 @@ const Orthologue = (props: Props) => {
   );
 
   const getResultCounter = () => {
-    const totalSpecies = props.orthologueSpecies.species.length;
+    const totalSpecies = props.orthologueSpecies.length;
     return (
       <>
         <span>{totalSpecies ? totalSpecies : 0}</span>
@@ -127,21 +142,13 @@ const Orthologue = (props: Props) => {
           (species: string, key: number) => {
             return (
               <div key={key}>
-                <div className={styles.speciesAttributesSectionTitle}>
-                  <span>{species}</span>
-                </div>
-
-                {/* 
-                  TODO: Fix Orthologues search
-                  
                 <CheckboxGrid
                   onChange={(status, id) =>
                     attributesOnChangeHandler(status, species, id)
                   }
-                  options={props.orthologueAttributes}
-                  hideLabel={true}
-                  label={''}
-                /> */}
+                  options={props.orthologueAttributes[species].options}
+                  label={species}
+                />
               </div>
             );
           }
@@ -173,7 +180,7 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 type StateProps = {
-  orthologueAttributes: OrthologueState;
+  orthologueAttributes: any;
   orthologueSearchTerm: string;
   orthologueSpecies: any;
   shouldShowBestMatches: boolean;

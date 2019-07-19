@@ -64,14 +64,15 @@ const FiltersAccordion = (props: Props) => {
       <div className={styles.filterHint}>
         Filter the results to download only the information you need - the
         filtered content will appear as rows in a table
+        <span className={styles.resetIcon} onClick={onReset}>
+          <ImageButton
+            buttonStatus={ImageButtonStatus.ACTIVE}
+            description={'Reset filters'}
+            image={ResetIcon}
+          />
+        </span>
       </div>
-      <span className={styles.resetIcon} onClick={onReset}>
-        <ImageButton
-          buttonStatus={ImageButtonStatus.ACTIVE}
-          description={'Reset filters'}
-          image={ResetIcon}
-        />
-      </span>
+
       <Accordion
         preExpanded={Array(1).fill(props.expandedPanel)}
         onChange={accordionOnChange}

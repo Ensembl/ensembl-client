@@ -403,12 +403,6 @@ const attributes: Attributes = {
     id: 'protein',
     content: []
   },
-  orthologues: {
-    type: 'section',
-    label: 'Orthologues',
-    id: 'orthologues',
-    content: []
-  },
   paralogues: {
     type: 'section',
     label: 'Paralogues',

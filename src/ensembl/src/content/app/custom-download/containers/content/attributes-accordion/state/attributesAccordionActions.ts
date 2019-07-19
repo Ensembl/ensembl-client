@@ -11,7 +11,12 @@ import { orthologueSpecies as sampleOrthologueSpecies } from '../../../../sample
 import attributes from 'src/content/app/custom-download/sample-data/attributes';
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 
-import { Attributes } from 'src/content/app/custom-download/types/Attributes';
+import findIndex from 'lodash/findIndex';
+import get from 'lodash/get';
+
+import Attribute, {
+  Attributes
+} from 'src/content/app/custom-download/types/Attributes';
 
 export const setAttributes = createAsyncAction(
   'custom-download/set-attributes-request',
@@ -128,30 +133,40 @@ export const fetchOrthologueSpecies: ActionCreator<
     // This will be fetched from the API when we have one
     let allSpecies = sampleOrthologueSpecies.species;
 
-    let filteredSpecies: any = [];
+    let filteredSpecies: any = [...orthologueSpecies].filter((species) => {
+      return species.isChecked;
+    });
 
     allSpecies.forEach((species: any) => {
       if (
+        searchTerm &&
         species.display_name.toLowerCase().indexOf(searchTerm.toLowerCase()) !==
-        -1
+          -1
       ) {
-        let checkedStatus = false;
-        if (
-          orthologueSpecies &&
-          orthologueSpecies.default &&
-          orthologueSpecies.default[species]
-        ) {
-          checkedStatus = true;
+        const speciesIndex = findIndex(
+          orthologueSpecies,
+          (entry: Attribute) => {
+            return species.name === entry.id;
+          }
+        );
+
+        const checkedStatus = get(
+          orthologueSpecies,
+          [speciesIndex, 'isChecked'],
+          false
+        );
+
+        if (speciesIndex === -1 || checkedStatus) {
+          filteredSpecies.push({
+            id: species.name,
+            label: species.display_name,
+            isChecked: checkedStatus
+          });
         }
-        filteredSpecies.push({
-          id: species.name,
-          label: species.display_name,
-          isChecked: checkedStatus
-        });
       }
     });
 
-    dispatch(setOrthologueSpecies.success({ default: filteredSpecies }));
+    dispatch(setOrthologueSpecies.success(filteredSpecies));
   } catch (error) {
     dispatch(setOrthologueSpecies.failure(error));
   }
