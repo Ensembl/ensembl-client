@@ -47,6 +47,7 @@ const PreviewDownload = (props: Props) => {
   const attributesList: string[] = getProcessedAttributes(
     flattenObject(props.selectedAttributes)
   );
+
   const processedFilters = getProcessedFilters(props.selectedFilters);
   const gene_ids = get(
     processedFilters,
@@ -83,7 +84,9 @@ const PreviewDownload = (props: Props) => {
             <td>
               {attributesList.map((attribute, index) => {
                 return (
-                  <div key={index}>{attributeDisplayNames[attribute]}</div>
+                  <div key={index}>
+                    {attributeDisplayNames[attribute] || attribute}
+                  </div>
                 );
               })}
 

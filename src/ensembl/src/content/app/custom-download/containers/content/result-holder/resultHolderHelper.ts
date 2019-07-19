@@ -146,6 +146,7 @@ export const attributeDisplayNames: { [key: string]: string } = {
   source: 'Gene source',
   symbol: 'Gene symbol',
   id: 'Gene stable ID',
+  biotype: 'Biotype',
   id_version: 'Gene stable ID version',
   name: 'Gene name',
   Superfamily: 'Superfamily',
