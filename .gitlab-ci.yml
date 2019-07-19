@@ -184,7 +184,7 @@ Nginx:feature:
   - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
   - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-nginx.git
   - cd ensembl-client-nginx
-  - git checkout july-release
+  - git checkout june-release
   - cd ..
   - sed -i "s/<DEPLOYMENT_ENV>/internal/g" ensembl-client-nginx/config/conf.d/local.conf
   - cat ensembl-client-nginx/config/conf.d/local.conf
