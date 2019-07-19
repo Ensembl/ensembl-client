@@ -270,7 +270,7 @@ export const deleteSpeciesAndSave: ActionCreator<
   analyticsTracking.trackEvent({
     category: categories.SELECTED_SPECIES,
     label: speciesName,
-    action: 'unselected'
+    action: 'unselect'
   });
 
   dispatch(updateCommittedSpecies(committedSpecies));
