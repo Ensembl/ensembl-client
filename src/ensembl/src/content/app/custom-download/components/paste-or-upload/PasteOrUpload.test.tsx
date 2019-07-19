@@ -15,7 +15,7 @@ describe('<PasteOrUpload/>', () => {
 
   let wrapper: any;
   const defaultProps = {
-    value: '',
+    value: undefined,
     onChange,
     onRemove
   };

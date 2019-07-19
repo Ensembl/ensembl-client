@@ -7,15 +7,15 @@ import noop from 'lodash/noop';
 import get from 'lodash/get';
 
 type PasteOrUploadProps = {
-  value: string;
+  value: string | undefined;
   placeholder?: string;
   onChange: (value: string) => void;
   onRemove: () => void;
 };
 
 const PasteOrUpload = (props: PasteOrUploadProps) => {
-  const [shouldShowInput, showInput] = useState(false);
-  const [value, setValue] = useState('');
+  const [shouldShowInput, showInput] = useState(props.value !== undefined);
+  const [value, setValue] = useState<string | undefined>('');
 
   useEffect(() => {
     showInput(props.value !== undefined);
@@ -29,7 +29,6 @@ const PasteOrUpload = (props: PasteOrUploadProps) => {
   };
 
   const onRemoveHandler = () => {
-    showInput(false);
     showFileUpload(false);
     props.onRemove();
   };

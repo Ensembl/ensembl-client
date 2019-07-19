@@ -5,6 +5,7 @@ import styles from './CheckboxWithTextfields.scss';
 import ImageButton from 'src/shared/image-button/ImageButton';
 import { ReactComponent as AddIcon } from 'static/img/browser/zoom-in.svg';
 import PasteOrUpload from '../paste-or-upload/PasteOrUpload';
+import cloneDeep from 'lodash/cloneDeep';
 
 export type CheckboxWithTextfieldsProps = {
   values: string[];
@@ -22,6 +23,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
 
   useEffect(() => {
     setIsChecked(props.values.length > 0);
+    setShowAddButton(Boolean(props.values[props.values.length - 1]));
   }, [props.values]);
 
   const handleCheckboxOnChange = (isChecked: boolean) => {
@@ -37,7 +39,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
   };
 
   const handleOnChange = (value: string, index: number) => {
-    const newValues: string[] = [...props.values];
+    const newValues: string[] = cloneDeep(props.values);
     newValues[index] = value;
 
     setShowAddButton(Boolean(newValues[newValues.length - 1]));
@@ -46,7 +48,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
   };
 
   const handleOnRemove = (index: number) => {
-    const newValues: string[] = [...props.values];
+    const newValues: string[] = cloneDeep(props.values);
 
     newValues.splice(index, 1);
     setShowAddButton(Boolean(newValues[newValues.length - 1]));
@@ -54,7 +56,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
     props.onChange(newValues);
   };
 
-  const valuesWithoutFirst = [...props.values];
+  const valuesWithoutFirst: string[] = cloneDeep(props.values);
   valuesWithoutFirst.shift();
 
   return (
