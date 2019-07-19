@@ -20,7 +20,6 @@ impl ActionSet {
     }
 
     fn run(&mut self, app: &mut App) {
-        console!("23 {:?}",&self.actions);
         app.run_actions(&self.actions,self.currency);
         self.actions.clear();
     }

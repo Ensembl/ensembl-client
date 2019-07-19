@@ -180,14 +180,17 @@ impl EventListener<()> for DirectEventListener {
             EventData::MessageEvent(_,ec,c) => {
                 let data = c.data().unwrap();
                 let name = data["type"].as_str().unwrap();
-                let data = data["payload"].clone();
-                let sel = data.get("selector").map(|v| v.as_str().unwrap());
-                if data.get("_outgoing").is_some() {
-                    return;
+                if name == "bpane" {
+                    let data = data["payload"].clone();
+                    console!("receive/D {:?} {}",name,data);
+                    let sel = data.get("selector").map(|v| v.as_str().unwrap());
+                    if data.get("_outgoing").is_some() {
+                        return;
+                    }
+                    let ev = custom_make_events(&data);
+                    let currency = extract_counter(&data);
+                    self.eqm.add_by_selector(sel,&ev,currency);
                 }
-                let ev = custom_make_events(&data);
-                let currency = extract_counter(&data);
-                self.eqm.add_by_selector(sel,&ev,currency);
             },
             _ => ()
         }

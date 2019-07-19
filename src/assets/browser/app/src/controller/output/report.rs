@@ -74,12 +74,12 @@ lazy_static! {
             StatusJigsaw::Atom("i-stick".to_string(),StatusJigsawType::String),
             StatusJigsaw::Atom("i-start".to_string(),StatusJigsawType::Number),
             StatusJigsaw::Atom("i-end".to_string(),StatusJigsawType::Number),
-        }),Some(250.),false),
+        }),Some(100.),false),
         ("actual-location",StatusJigsaw::Array(vec!{
             StatusJigsaw::Atom("a-stick".to_string(),StatusJigsawType::String),
             StatusJigsaw::Atom("a-start".to_string(),StatusJigsawType::Number),
             StatusJigsaw::Atom("a-end".to_string(),StatusJigsawType::Number),
-        }),Some(250.),false),
+        }),Some(100.),false),
         ("intended-location",StatusJigsaw::Array(vec!{
             StatusJigsaw::Atom("i-stick".to_string(),StatusJigsawType::String),
             StatusJigsaw::Atom("i-start".to_string(),StatusJigsawType::Number),
@@ -124,6 +124,12 @@ impl ReportImpl {
     }
     
     pub fn set_status(&mut self, key: &str, value: &str) {
+        if let Some(x) = self.pieces.get(key) {
+            if x != value {
+                bb_log!("status","change {} {}->{}",key,x,value);
+            }
+        }
+
         self.pieces.insert(key.to_string(),value.to_string());
     }
 
@@ -224,20 +230,18 @@ impl ReportImpl {
             if let Some(mc) = counter.try_update_counter() {
                 self.pieces.insert("message-counter".to_string(),mc.to_string());
             }
-            if !counter.is_delayed() || true {
-                for (k,s) in &self.outputs {
-                    if s.is_always_send() {
-                        if let Some(value) = self.make_value(&s.jigsaw) {                
-                            out.insert(k.to_string(),value.clone());
-                        }
+            for (k,s) in &self.outputs {
+                if s.is_always_send() {
+                    if let Some(value) = self.make_value(&s.jigsaw) {                
+                        out.insert(k.to_string(),value.clone());
                     }
                 }
-                if vital {
-                    console!("send/A ({:?}) {}",force,JSONValue::Object(out.clone()));
-                }
-                out.insert("_outgoing".to_string(),JSONValue::Bool(true));
-                return Some(JSONValue::Object(out));
             }
+            if vital {
+                console!("send/A ({:?}) {}",force,JSONValue::Object(out.clone()));
+            }
+            out.insert("_outgoing".to_string(),JSONValue::Bool(true));
+            return Some(JSONValue::Object(out));
         }
         None
     }
