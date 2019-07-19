@@ -1,4 +1,4 @@
-
+# DEploy feature branch
 stages:
   - test
   - test_build_static
@@ -27,6 +27,7 @@ Test:
   except:
   - dev
   - master
+  - feature/custom-downloads-july
 
 Test_N_Build:
   image: node:10.16.0
@@ -76,6 +77,30 @@ Test_N_Build:internal:
 
   only:
   - master
+
+Test_N_Build:feature:
+  image: node:10.16.0
+  stage: test_build_static
+
+  before_script:
+  - cd src/ensembl
+  - npm ci
+
+  script:
+  - npm run test
+  - export NODE_ENV=development
+  - export GOOGLE_ANALYTICS_KEY=${GA_KEY}
+  - export ENVIRONMENT=development
+  - export API_HOST=""
+  - npm run build
+
+  artifacts:
+    name: static_assets_feature
+    paths:
+    - src/ensembl/dist/
+
+  only:
+  - /^feature\/.*$/
 
 Nginx:
   image: docker
@@ -141,6 +166,39 @@ Nginx:internal:
   dependencies:
   - Test_N_Build:internal
 
+Nginx:feature:
+  image: docker
+
+  services:
+    - docker:dind
+
+  stage: build_docker_images
+
+  before_script:
+  - case "${CI_COMMIT_REF_NAME}" in dev) DEPLOYENV="staging" ;; master) DEPLOYENV="prod" ;; cicd-test) DEPLOYENV="staging" ;; *) DEPLOYENV="dev" ;; esac
+
+  script:
+  - feature_branch=${CI_COMMIT_REF_NAME}
+  - feature_tag=${feature_branch#"feature/"}
+  - apk update && apk add git
+  - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
+  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-nginx.git
+  - cd ensembl-client-nginx
+  - git checkout june-release
+  - cd ..
+  - sed -i "s/<DEPLOYMENT_ENV>/internal/g" ensembl-client-nginx/config/conf.d/local.conf
+  - cat ensembl-client-nginx/config/conf.d/local.conf
+  - docker build -t $${CONTAINER_IMAGE}-$feature_tag -f ensembl-client-nginx/Dockerfile --no-cache .
+  - echo "$GITLAB_REGISTRY_TOKEN" | docker login -u "$GITLAB_REGISTRY_USER" --password-stdin https://"$GITLAB_REGISTRY_URL"
+  - docker push ${CONTAINER_IMAGE}-$feature_tag
+  - docker rmi ${CONTAINER_IMAGE}-$feature_tag
+  - docker logout "$GITLAB_REGISTRY_URL"
+
+  only:
+  - /^feature\/.*$/
+
+  dependencies:
+  - Test_N_Build:feature
 
 Staging:
   stage: deploy
@@ -198,7 +256,6 @@ Live:
   dependencies:
   - Nginx
 
-
 Deploy:internal:
   stage: deploy
   image: alpine
@@ -227,3 +284,34 @@ Deploy:internal:
 
   dependencies:
   - Nginx:internal
+
+Deploy:feature:
+  stage: deploy
+  image: alpine
+  before_script:
+  - mkdir -p /etc/deploy
+  - echo ${EMBASSY_KUBECONFIG} | base64 -d > ${KUBECONFIG}
+
+  script:
+  - feature_branch=${CI_COMMIT_REF_NAME}
+  - feature_tag=${feature_branch#"feature/"}
+  - apk update && apk add --no-cache curl git
+  - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+  - chmod +x ./kubectl
+  - mv ./kubectl /usr/local/bin/kubectl
+  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
+  - cd ensembl-client-caas-deploy
+  - git checkout refactor-manifest
+  - cd ..
+  - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}-$feature_tag/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - sed -i "s/<DEPLOYMNET_ENV>/feature_tag/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - cat ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - kubectl config view
+  - kubectl config use-context ens-dev-ctx
+  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+
+  only:
+  - /^feature\/.*$/
+
+  dependencies:
+  - Nginx:feature
