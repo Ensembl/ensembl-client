@@ -15,7 +15,7 @@ export const getProcessedAttributes = (flatSelectedAttributes: any) => {
   });
 };
 
-const getProcessedFilters = (filters: any) => {
+export const getProcessedFilters = (filters: any) => {
   const flatSelectedFilters: { [key: string]: boolean } = flattenObject(
     filters
   );
