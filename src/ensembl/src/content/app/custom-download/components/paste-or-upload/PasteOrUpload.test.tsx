@@ -69,16 +69,6 @@ describe('<PasteOrUpload/>', () => {
     expect(wrapper.find('.removeIconHolder')).toHaveLength(1);
   });
 
-  it('hides the remove icon when it is clicked', () => {
-    wrapper = mount(
-      <PasteOrUpload {...defaultProps} value={faker.random.words()} />
-    );
-    expect(wrapper.find('.removeIconHolder')).toHaveLength(1);
-    wrapper.find(ImageButton).prop('onClick')();
-    wrapper.update();
-    expect(wrapper.find('.removeIconHolder')).toHaveLength(0);
-  });
-
   it('displays the given placeholder', () => {
     const placeholder = faker.random.words();
     wrapper = mount(
@@ -91,14 +81,15 @@ describe('<PasteOrUpload/>', () => {
     expect(wrapper.find(Input).prop('placeholder')).toBe(placeholder);
   });
 
-  it('displays the "Paste data or Upload file" when the remove icon is clicked', () => {
+  it('displays the "Paste data or Upload file" when the input is removed', () => {
     wrapper = mount(
       <PasteOrUpload {...defaultProps} value={faker.random.words()} />
     );
     expect(wrapper.find('.removeIconHolder')).toHaveLength(1);
-    wrapper.find(ImageButton).prop('onClick')();
+    wrapper.setProps({ value: undefined });
     wrapper.update();
     expect(wrapper.text()).toBe('Paste data or Upload file');
+    expect(wrapper.find('.removeIconHolder')).toHaveLength(0);
   });
 
   it('calls the onChange function with the current value when the input is changed', () => {
