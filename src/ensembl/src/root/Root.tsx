@@ -20,6 +20,7 @@ import { RootState } from '../store';
 import { BreakpointWidth } from '../global/globalConfig';
 import { getBreakpoint } from '../global/globalHelper';
 
+import config from 'config';
 import styles from './Root.scss';
 
 type StateProps = {
@@ -42,17 +43,22 @@ export const Root: FunctionComponent<RootProps> = (props: RootProps) => {
     props.updateBreakpointWidth(currentBreakpoint);
   }, [props.updateBreakpointWidth, currentBreakpoint]);
 
-  const [showPrivacyBanner, setShowPrivacyBanner] = useState(true);
+  const [showPrivacyBanner, setShowPrivacyBanner] = useState(false);
   const cookies = props.cookies as Cookies;
 
   useEffect(() => {
-    if (showPrivacyBanner && cookies.get('ENSEMBL_PRIVACY_POLICY') === 'true') {
-      setShowPrivacyBanner(false);
-    }
+    setShowPrivacyBanner(
+      cookies.get(config.privacy_policy_cookie_name) !==
+        config.privacy_policy_version
+    );
   }, [cookies]);
 
   const closeBanner = useCallback(() => {
-    cookies.set('ENSEMBL_PRIVACY_POLICY', 'true');
+    cookies.set(
+      config.privacy_policy_cookie_name,
+      config.privacy_policy_version,
+      { path: '/', expires: new Date(config.privacy_policy_cookie_expiry) }
+    );
     setShowPrivacyBanner(false);
   }, [cookies]);
 
