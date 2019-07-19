@@ -1,9 +1,9 @@
 export type DrawerState = Readonly<{
-  drawerOpened: boolean;
-  drawerView: string;
+  drawerOpened: { [genomeId: string]: boolean };
+  drawerView: { [genomeId: string]: string };
 }>;
 
 export const defaultDrawerState = {
-  drawerOpened: false,
-  drawerView: ''
+  drawerOpened: {},
+  drawerView: {}
 };

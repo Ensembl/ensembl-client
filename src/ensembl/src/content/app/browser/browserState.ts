@@ -42,7 +42,7 @@ export const defaultBrowserState: BrowserState = {
 };
 
 export type BrowserEntityState = Readonly<{
-  activeGenomeId: string | null;
+  activeGenomeId: string;
   activeEnsObjectIds: { [genomeId: string]: string };
   trackStates: TrackStates;
 }>;

@@ -43,11 +43,11 @@ import { EnsObject } from 'src/ens-object/ensObjectTypes';
 import styles from './TrackPanel.scss';
 
 type StateProps = {
-  activeGenomeId: string | null;
+  activeGenomeId: string;
   breakpointWidth: BreakpointWidth;
   browserActivated: boolean;
-  drawerOpened: boolean;
-  drawerView: string;
+  drawerOpened: { [genomeId: string]: boolean };
+  drawerView: { [genomeId: string]: string };
   ensObject: EnsObject | null;
   launchbarExpanded: boolean;
   selectedBrowserTab: { [genomeId: string]: TrackType };
@@ -76,6 +76,9 @@ type TrackPanelProps = StateProps & DispatchProps & OwnProps;
 const TrackPanel: FunctionComponent<TrackPanelProps> = (
   props: TrackPanelProps
 ) => {
+  const drawerOpenedForGenome =
+    props.drawerOpened[props.activeGenomeId as string];
+
   useEffect(() => {
     if (props.breakpointWidth !== BreakpointWidth.LARGE) {
       props.toggleTrackPanel(false);
@@ -93,7 +96,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
   }));
 
   const getBrowserWidth = (): string => {
-    if (props.drawerOpened) {
+    if (drawerOpenedForGenome === true) {
       return 'calc(41px + 0vw)';
     }
     return props.trackPanelOpened
@@ -105,13 +108,14 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
     setTrackAnimation({
       left: getBrowserWidth()
     });
-  }, [props.drawerOpened, props.trackPanelOpened]);
+  }, [drawerOpenedForGenome, props.trackPanelOpened]);
 
   return props.activeGenomeId ? (
     <animated.div style={trackAnimation}>
       {props.browserActivated && props.ensObject ? (
         <div className={styles.trackPanel}>
           <TrackPanelBar
+            activeGenomeId={props.activeGenomeId}
             closeTrackPanelModal={props.closeTrackPanelModal}
             drawerOpened={props.drawerOpened}
             launchbarExpanded={props.launchbarExpanded}
@@ -144,7 +148,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
               trackPanelModalView={props.trackPanelModalView}
             />
           ) : null}
-          {props.drawerOpened && <Drawer />}
+          {drawerOpenedForGenome && <Drawer />}
         </div>
       ) : null}
     </animated.div>

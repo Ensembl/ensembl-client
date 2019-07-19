@@ -10,8 +10,9 @@ import chevronRightIcon from 'static/img/shared/chevron-right.svg';
 import styles from './TrackPanelBar.scss';
 
 type TrackPanelBarProps = {
+  activeGenomeId: string;
   closeTrackPanelModal: () => void;
-  drawerOpened: boolean;
+  drawerOpened: { [genomeId: string]: boolean };
   launchbarExpanded: boolean;
   openTrackPanelModal: (trackPanelModalView: string) => void;
   toggleDrawer: (drawerOpened: boolean) => void;
@@ -24,13 +25,15 @@ type TrackPanelBarProps = {
 const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
   props: TrackPanelBarProps
 ) => {
+  const drawerOpenedForGenome = props.drawerOpened[props.activeGenomeId];
+
   const moveTrackPanel = useCallback(() => {
-    if (props.drawerOpened === true) {
+    if (drawerOpenedForGenome === true) {
       props.toggleDrawer(false);
     } else {
       props.toggleTrackPanel();
     }
-  }, [props.drawerOpened, props.toggleDrawer, props.toggleTrackPanel]);
+  }, [drawerOpenedForGenome, props.toggleDrawer, props.toggleTrackPanel]);
 
   const getClassNames = () => {
     const heightClass: string = props.launchbarExpanded

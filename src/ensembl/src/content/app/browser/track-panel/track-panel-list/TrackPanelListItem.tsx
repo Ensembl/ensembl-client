@@ -32,8 +32,8 @@ type TrackPanelListItemProps = {
   children?: ReactNode[];
   trackStatus: ImageButtonStatus;
   defaultTrackStatus: ImageButtonStatus;
-  drawerOpened: boolean;
-  drawerView: string;
+  drawerOpened: { [genomeId: string]: boolean };
+  drawerView: { [genomeId: string]: string };
   track: EnsObjectTrack;
   updateDrawerView: (drawerView: string) => void;
   updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
@@ -46,9 +46,18 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   props: TrackPanelListItemProps
 ) => {
   const [expanded, setExpanded] = useState(true);
-  const { activeGenomeId, browserRef, categoryName, drawerView, track } = props;
+  const {
+    activeGenomeId,
+    browserRef,
+    categoryName,
+    drawerOpened,
+    drawerView,
+    track,
+    trackStatus
+  } = props;
 
-  const { trackStatus } = props;
+  const drawerOpenedForGenome = drawerOpened[activeGenomeId];
+  const drawerViewForGenome = drawerView[activeGenomeId];
 
   useEffect(() => {
     const { defaultTrackStatus } = props;
@@ -76,12 +85,12 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
       classNames += ` ${styles.main}`;
     }
 
-    if (drawerView === track.track_id) {
+    if (drawerViewForGenome === track.track_id) {
       classNames += ` ${styles.currentDrawerView}`;
     }
 
     return classNames;
-  }, [drawerView]);
+  }, [drawerViewForGenome]);
 
   const getBoxClasses = (colour: any) => {
     let classNames = styles.box;
@@ -97,7 +106,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   const drawerViewListHandler = (event: MouseEvent) => {
     event.preventDefault();
 
-    if (props.drawerOpened === false) {
+    if (drawerOpenedForGenome === false) {
       return;
     }
 

@@ -7,24 +7,26 @@ import styles from './BrowserTabs.scss';
 type BrowserTabsProps = {
   activeGenomeId: string;
   ensObject: EnsObject;
-  drawerOpened: boolean;
+  drawerOpened: { [genomeId: string]: boolean };
   genomeSelectorActive: boolean;
   selectBrowserTabAndSave: (selectedBrowserTab: TrackType) => void;
   selectedBrowserTab: { [genomeId: string]: TrackType };
-  toggleDrawer: (drawerOpened: boolean) => void;
+  toggleDrawer: (drawerOpened: { [genomeId: string]: boolean }) => void;
   trackPanelModalOpened: boolean;
 };
 
 const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
   props: BrowserTabsProps
 ) => {
+  const drawerOpenedForGenome = props.drawerOpened[props.activeGenomeId];
+
   const handleTabClick = (value: TrackType) => {
     if (props.genomeSelectorActive || !props.ensObject.genome_id) {
       return;
     }
 
-    if (props.drawerOpened) {
-      props.toggleDrawer(false);
+    if (drawerOpenedForGenome === true) {
+      props.toggleDrawer({ [props.activeGenomeId]: false });
     }
 
     props.selectBrowserTabAndSave(value);
@@ -39,7 +41,7 @@ const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
     if (
       props.ensObject.genome_id &&
       selectedBrowserTab === trackType &&
-      drawerOpened === false &&
+      drawerOpened[activeGenomeId] === false &&
       trackPanelModalOpened === false
     ) {
       classNames += ` ${styles.browserTabActive} ${styles.browserTabArrow}`;

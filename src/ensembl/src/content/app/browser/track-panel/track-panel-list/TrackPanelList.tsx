@@ -14,8 +14,8 @@ import { EnsObjectTrack, EnsObject } from 'src/ens-object/ensObjectTypes';
 type TrackPanelListProps = {
   activeGenomeId: string;
   browserRef: RefObject<HTMLDivElement>;
-  drawerOpened: boolean;
-  drawerView: string;
+  drawerOpened: { [genomeId: string]: boolean };
+  drawerView: { [genomeId: string]: string };
   launchbarExpanded: boolean;
   ensObject: EnsObject;
   selectedBrowserTab: { [genomeId: string]: TrackType };
@@ -47,7 +47,7 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
 
     updateDrawerView(currentTrack);
 
-    if (!drawerView) {
+    if (!drawerView[activeGenomeId]) {
       toggleDrawer(true);
     }
   };

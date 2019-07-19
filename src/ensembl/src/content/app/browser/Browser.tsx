@@ -15,7 +15,7 @@ import TrackPanel from './track-panel/TrackPanel';
 import AppBar from 'src/shared/app-bar/AppBar';
 
 import { RootState } from 'src/store';
-import { BrowserNavStates, ChrLocation } from './browserState';
+import { ChrLocation } from './browserState';
 import {
   changeBrowserLocation,
   setDataFromUrlAndSave,
@@ -55,7 +55,7 @@ import styles from './Browser.scss';
 import 'static/browser/browser.js';
 
 type StateProps = {
-  activeGenomeId: string | null;
+  activeGenomeId: string;
   activeEnsObjectId: string | null;
   allActiveEnsObjectIds: { [genomeId: string]: string };
   browserActivated: boolean;
@@ -63,7 +63,7 @@ type StateProps = {
   browserQueryParams: { [key: string]: string };
   chrLocation: ChrLocation | null;
   allChrLocations: { [genomeId: string]: ChrLocation };
-  drawerOpened: boolean;
+  drawerOpened: { [genomeId: string]: boolean };
   genomeSelectorActive: boolean;
   trackPanelOpened: boolean;
   launchbarExpanded: boolean;
@@ -79,7 +79,7 @@ type DispatchProps = {
   ) => void;
   fetchGenomeData: (genomeId: string) => void;
   replace: Replace;
-  toggleDrawer: (drawerOpened: boolean) => void;
+  toggleDrawer: (drawerOpened: { [genomeId: string]: boolean }) => void;
   setDataFromUrlAndSave: (payload: ParsedUrlPayload) => void;
 };
 
@@ -102,6 +102,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
     TrackStates
   >({});
   const lastGenomeIdRef = useRef(props.activeGenomeId);
+  const drawerOpenedForGenome = props.drawerOpened[props.activeGenomeId];
 
   const setDataFromUrl = () => {
     const { genomeId = null } = props.match.params;
@@ -253,10 +254,11 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, [props.chrLocation]);
 
   const closeTrack = () => {
-    if (props.drawerOpened === false) {
+    if (drawerOpenedForGenome === false) {
       return;
     }
-    props.toggleDrawer(false);
+
+    props.toggleDrawer({ [props.activeGenomeId]: false });
   };
 
   const [trackAnimation, setTrackAnimation] = useSpring(() => ({
@@ -266,7 +268,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }));
 
   const getBrowserWidth = (): string => {
-    if (props.drawerOpened) {
+    if (drawerOpenedForGenome === true) {
       return 'calc(41px + 0vw)';
     }
     return props.trackPanelOpened
@@ -278,7 +280,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
     setTrackAnimation({
       width: getBrowserWidth()
     });
-  }, [props.drawerOpened, props.trackPanelOpened]);
+  }, [drawerOpenedForGenome, props.trackPanelOpened]);
 
   const getHeightClass = (launchbarExpanded: boolean): string => {
     return launchbarExpanded ? styles.shorter : styles.taller;
@@ -312,7 +314,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
             <animated.div style={trackAnimation}>
               <div className={styles.browserImageWrapper} onClick={closeTrack}>
                 {props.browserNavOpened &&
-                !props.drawerOpened &&
+                !drawerOpenedForGenome &&
                 browserRef.current ? (
                   <BrowserNavBar browserElement={browserRef.current} />
                 ) : null}

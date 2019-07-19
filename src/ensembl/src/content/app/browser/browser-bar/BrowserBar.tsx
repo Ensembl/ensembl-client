@@ -34,12 +34,12 @@ import BrowserTabs from '../browser-tabs/BrowserTabs';
 import styles from './BrowserBar.scss';
 
 type StateProps = {
-  activeGenomeId: string | null;
+  activeGenomeId: string;
   browserActivated: boolean;
   browserNavOpened: boolean;
   chrLocation: ChrLocation | null;
   defaultChrLocation: ChrLocation | null;
-  drawerOpened: boolean;
+  drawerOpened: { [genomeId: string]: boolean };
   genomeSelectorActive: boolean;
   ensObject: EnsObject | null;
   selectedBrowserTab: { [genomeId: string]: TrackType };
@@ -50,7 +50,7 @@ type StateProps = {
 type DispatchProps = {
   selectBrowserTabAndSave: (selectedBrowserTab: TrackType) => void;
   toggleBrowserNav: () => void;
-  toggleDrawer: (drawerOpened: boolean) => void;
+  toggleDrawer: (drawerOpened: { [genomeId: string]: boolean }) => void;
   toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
 };
 
@@ -73,6 +73,8 @@ type BrowserNavigatorButtonProps = {
 export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   props: BrowserBarProps
 ) => {
+  const drawerOpenedForGenome = props.drawerOpened[props.activeGenomeId];
+
   const shouldShowBrowserInfo = () => {
     const { defaultChrLocation } = props;
     const isLocationOfWholeChromosome = !defaultChrLocation;
@@ -97,7 +99,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   }, [props.defaultChrLocation, props.genomeSelectorActive]);
 
   const getBrowserNavIcon = () => {
-    if (props.drawerOpened) {
+    if (drawerOpenedForGenome === true) {
       return navigator.icon.grey as string;
     } else if (props.browserNavOpened) {
       return navigator.icon.selected as string;
@@ -107,7 +109,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   };
 
   const toggleNavigator = () => {
-    if (props.drawerOpened) {
+    if (drawerOpenedForGenome === true) {
       return;
     }
 
@@ -116,7 +118,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
 
   const className = classNames(styles.browserInfo, {
     [styles.browserInfoExpanded]: !props.trackPanelOpened,
-    [styles.browserInfoGreyed]: props.drawerOpened
+    [styles.browserInfoGreyed]: drawerOpenedForGenome
   });
 
   if (!(props.chrLocation && props.ensObject)) {

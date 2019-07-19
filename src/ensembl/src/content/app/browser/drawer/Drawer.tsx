@@ -4,7 +4,10 @@ import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 import { toggleDrawer } from './drawerActions';
 import { getDrawerView } from './drawerSelectors';
-import { getBrowserActiveEnsObject } from '../browserSelectors';
+import {
+  getBrowserActiveEnsObject,
+  getBrowserActiveGenomeId
+} from '../browserSelectors';
 
 import DrawerGene from './drawer-views/DrawerGene';
 import DrawerTranscript from './drawer-views/DrawerTranscript';
@@ -21,12 +24,13 @@ import SnpIndels from './drawer-views/SnpIndels';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 type StateProps = {
-  drawerView: string;
+  activeGenomeId: string;
+  drawerView: { [genomeId: string]: string };
   ensObject: EnsObject | null;
 };
 
 type DispatchProps = {
-  toggleDrawer: (drawerOpened?: boolean) => void;
+  toggleDrawer: (drawerOpened: boolean) => void;
 };
 
 type OwnProps = {};
@@ -34,13 +38,14 @@ type OwnProps = {};
 type DrawerProps = StateProps & DispatchProps & OwnProps;
 
 const Drawer: FunctionComponent<DrawerProps> = (props: DrawerProps) => {
-  const { ensObject } = props;
+  const { ensObject, drawerView, activeGenomeId } = props;
+
   if (!ensObject) {
     return null;
   }
 
   const getDrawerViewComponent = () => {
-    switch (props.drawerView) {
+    switch (drawerView[activeGenomeId]) {
       case 'gene-feat':
         return <DrawerGene ensObject={ensObject} />;
       case 'gene-feat-1':
@@ -75,6 +80,7 @@ const Drawer: FunctionComponent<DrawerProps> = (props: DrawerProps) => {
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
+  activeGenomeId: getBrowserActiveGenomeId(state),
   drawerView: getDrawerView(state),
   ensObject: getBrowserActiveEnsObject(state)
 });

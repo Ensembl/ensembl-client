@@ -7,7 +7,6 @@ import {
   TrackToggleStates
 } from './track-panel/trackPanelConfig';
 import { ChrLocations } from './browserState';
-import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
 
 export enum StorageKeys {
   ACTIVE_GENOME_ID = 'browser.activeGenomeId',

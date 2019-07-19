@@ -16,8 +16,7 @@ import {
   getTrackConfigLabel,
   getBrowserCogTrackList,
   getBrowserNavOpened,
-  getBrowserActivated,
-  getBrowserActiveGenomeId
+  getBrowserActivated
 } from '../browserSelectors';
 import {
   activateBrowser,
@@ -34,7 +33,6 @@ import { RootState } from 'src/store';
 import { TrackStates } from '../track-panel/trackPanelConfig';
 
 type StateProps = {
-  activeGenomeId: string | null;
   browserCogTrackList: CogList;
   browserNavOpened: boolean;
   trackConfigNames: any;
@@ -213,7 +211,6 @@ function getBrowserImageClasses(browserNavOpened: boolean): string {
 }
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  activeGenomeId: getBrowserActiveGenomeId(state),
   browserCogTrackList: getBrowserCogTrackList(state),
   browserNavOpened: getBrowserNavOpened(state),
   trackConfigLabel: getTrackConfigLabel(state),
