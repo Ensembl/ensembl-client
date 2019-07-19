@@ -50,7 +50,7 @@ type StateProps = {
 type DispatchProps = {
   selectBrowserTabAndSave: (selectedBrowserTab: TrackType) => void;
   toggleBrowserNav: () => void;
-  toggleDrawer: (drawerOpened: { [genomeId: string]: boolean }) => void;
+  toggleDrawer: (drawerOpened: boolean) => void;
   toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
 };
 

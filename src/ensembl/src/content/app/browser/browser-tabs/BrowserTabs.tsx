@@ -11,7 +11,7 @@ type BrowserTabsProps = {
   genomeSelectorActive: boolean;
   selectBrowserTabAndSave: (selectedBrowserTab: TrackType) => void;
   selectedBrowserTab: { [genomeId: string]: TrackType };
-  toggleDrawer: (drawerOpened: { [genomeId: string]: boolean }) => void;
+  toggleDrawer: (drawerOpened: boolean) => void;
   trackPanelModalOpened: boolean;
 };
 
@@ -26,7 +26,7 @@ const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
     }
 
     if (drawerOpenedForGenome === true) {
-      props.toggleDrawer({ [props.activeGenomeId]: false });
+      props.toggleDrawer(false);
     }
 
     props.selectBrowserTabAndSave(value);

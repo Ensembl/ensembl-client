@@ -79,7 +79,7 @@ type DispatchProps = {
   ) => void;
   fetchGenomeData: (genomeId: string) => void;
   replace: Replace;
-  toggleDrawer: (drawerOpened: { [genomeId: string]: boolean }) => void;
+  toggleDrawer: (drawerOpened: boolean) => void;
   setDataFromUrlAndSave: (payload: ParsedUrlPayload) => void;
 };
 
@@ -258,7 +258,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
       return;
     }
 
-    props.toggleDrawer({ [props.activeGenomeId]: false });
+    props.toggleDrawer(false);
   };
 
   const [trackAnimation, setTrackAnimation] = useSpring(() => ({
