@@ -48,10 +48,17 @@ export const PopularSpeciesButton = (props: Props) => {
 
   const handleClick = () => {
     const { genome_id, is_available } = species;
+    const speciesName = species.common_name || species.scientific_name;
+
     if (!is_available) {
       return;
     } else if (isSelected) {
       props.clearSelectedSpecies();
+      analyticsTracking.trackEvent({
+        category: 'popular_species',
+        action: 'unpreselect',
+        label: speciesName
+      });
     } else if (isCommitted) {
       props.deleteCommittedSpecies(genome_id);
     } else {
@@ -59,8 +66,6 @@ export const PopularSpeciesButton = (props: Props) => {
       // go ahead and select it
       props.handleSelectedSpecies(props.species);
 
-      const speciesName =
-        props.species.common_name || props.species.scientific_name;
       analyticsTracking.trackEvent({
         category: 'popular_species',
         action: 'preselect',

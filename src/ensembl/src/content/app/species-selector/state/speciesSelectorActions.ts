@@ -10,7 +10,7 @@ import get from 'lodash/get';
 import apiService from 'src/services/api-service';
 
 import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
-
+import analyticsTracking from 'src/services/analytics-service';
 import buildAnalyticsObject from 'src/analyticsHelper';
 
 import {
@@ -126,19 +126,9 @@ export const clearSearch = createStandardAction(
   'species_selector/clear_search'
 )();
 
-export const clearSelectedSearchResult = createAction(
-  'species_selector/clear_selected_search_result',
-  (resolve) => {
-    return () =>
-      resolve(
-        undefined,
-        buildAnalyticsObject({
-          category: categories.POPULAR_SPECIES,
-          action: 'unpreselect'
-        })
-      );
-  }
-);
+export const clearSelectedSearchResult = createStandardAction(
+  'species_selector/clear_selected_search_result'
+)();
 
 // TODO: wait for strains
 // export const fetchStrains: ActionCreator<
@@ -205,21 +195,9 @@ export const handleSelectedSpecies: ActionCreator<
   dispatch(fetchAssemblies(genome_id));
 };
 
-export const commitSelectedSpecies = createAction(
-  'species_selector/commit_selected_species',
-  (resolve) => {
-    return (itemName: string, committedSpecies: CommittedItem[]) => {
-      return resolve(
-        committedSpecies,
-        buildAnalyticsObject({
-          category: categories.ADD_SPECIES,
-          label: itemName,
-          action: 'select'
-        })
-      );
-    };
-  }
-);
+export const updateCommittedSpecies = createStandardAction(
+  'species_selector/toggle_species_use'
+)<CommittedItem[]>();
 
 export const commitSelectedSpeciesAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
@@ -236,33 +214,19 @@ export const commitSelectedSpeciesAndSave: ActionCreator<
     buildCommittedItem(selectedItem)
   ];
 
-  const selectedItemName =
-    selectedItem.common_name || selectedItem.scientific_name;
+  const speciesName = selectedItem.common_name || selectedItem.scientific_name;
 
-  dispatch(commitSelectedSpecies(selectedItemName, newCommittedSpecies));
+  analyticsTracking.trackEvent({
+    category: categories.ADD_SPECIES,
+    label: speciesName,
+    action: 'select'
+  });
+
+  dispatch(updateCommittedSpecies(newCommittedSpecies));
+  dispatch(clearSelectedSearchResult());
 
   speciesSelectorStorageService.saveSelectedSpecies(committedSpecies);
 };
-
-export const toggleSpeciesUse = createAction(
-  'species_selector/toggle_species_use',
-  (resolve) => {
-    return (
-      speciesName: string,
-      currentStatus: string,
-      committedSpecies: CommittedItem[]
-    ) => {
-      return resolve(
-        committedSpecies,
-        buildAnalyticsObject({
-          category: categories.SELECTED_SPECIES,
-          label: speciesName,
-          action: currentStatus
-        })
-      );
-    };
-  }
-);
 
 export const toggleSpeciesUseAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
@@ -280,25 +244,16 @@ export const toggleSpeciesUseAndSave: ActionCreator<
       };
     }
   });
-  dispatch(toggleSpeciesUse(speciesName, currentStatus, committedSpecies));
+
+  analyticsTracking.trackEvent({
+    category: categories.SELECTED_SPECIES,
+    label: speciesName,
+    action: currentStatus
+  });
+
+  dispatch(updateCommittedSpecies(committedSpecies));
   speciesSelectorStorageService.saveSelectedSpecies(committedSpecies);
 };
-
-export const deleteSpecies = createAction(
-  'species_selector/delete_species',
-  (resolve) => {
-    return (speciesName: string, committedSpecies: CommittedItem[]) => {
-      return resolve(
-        committedSpecies,
-        buildAnalyticsObject({
-          category: categories.SELECTED_SPECIES,
-          label: speciesName,
-          action: 'unselected'
-        })
-      );
-    };
-  }
-);
 
 export const deleteSpeciesAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
@@ -312,7 +267,13 @@ export const deleteSpeciesAndSave: ActionCreator<
     return true;
   });
 
-  dispatch(deleteSpecies(speciesName, committedSpecies));
+  analyticsTracking.trackEvent({
+    category: categories.SELECTED_SPECIES,
+    label: speciesName,
+    action: 'unselected'
+  });
+
+  dispatch(updateCommittedSpecies(committedSpecies));
   speciesSelectorStorageService.saveSelectedSpecies(committedSpecies);
 };
 

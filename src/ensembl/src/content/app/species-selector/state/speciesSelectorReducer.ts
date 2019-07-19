@@ -97,18 +97,7 @@ export default function speciesSelectorReducer(
         ...state,
         popularSpecies: action.payload.popularSpecies
       };
-    case getType(speciesSelectorActions.commitSelectedSpecies):
-      return {
-        ...state,
-        currentItem: null,
-        committedItems: action.payload
-      };
-    case getType(speciesSelectorActions.toggleSpeciesUse):
-      return {
-        ...state,
-        committedItems: action.payload
-      };
-    case getType(speciesSelectorActions.deleteSpecies):
+    case getType(speciesSelectorActions.updateCommittedSpecies):
       return {
         ...state,
         committedItems: action.payload
