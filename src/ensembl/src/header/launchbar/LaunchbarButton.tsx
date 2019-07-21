@@ -24,11 +24,12 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
     : isActive
     ? ImageButtonStatus.ACTIVE
     : ImageButtonStatus.DEFAULT;
+
   const imageButton = (
     <ImageButton
       classNames={{
         [ImageButtonStatus.DEFAULT]: styles.launchbarButtonImage,
-        [ImageButtonStatus.ACTIVE]: styles.launchbaeButtonSelectedImage,
+        [ImageButtonStatus.ACTIVE]: styles.launchbarButtonSelectedImage,
         [ImageButtonStatus.DISABLED]: styles.launchbarButtonDisabledImage
       }}
       buttonStatus={imageButtonStatus}
