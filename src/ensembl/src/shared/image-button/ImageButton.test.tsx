@@ -1,7 +1,17 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import ImageButton, { ImageButtonStatus } from './ImageButton';
+import { act } from 'react-dom/test-utils';
+import faker from 'faker';
+
+import ImageButton, { ImageButtonStatus, TOOLTIP_TIMEOUT } from './ImageButton';
 import ImageHolder from './ImageHolder';
+
+import Tooltip from 'src/shared/tooltip/Tooltip';
+
+jest.mock(
+  'src/shared/tooltip/Tooltip',
+  () => ({ description }: { description: string }) => <div>{description}</div>
+);
 
 describe('<ImageButton />', () => {
   it('renders without error', () => {
@@ -99,6 +109,60 @@ describe('<ImageButton />', () => {
       wrapper.simulate('click');
 
       expect(onClick).not.toBeCalled();
+    });
+  });
+
+  describe('showing tooltip on hover', () => {
+    const mockSVG = () => {
+      return <svg />;
+    };
+    const description = faker.lorem.words();
+    const props = {
+      image: mockSVG,
+      description
+    };
+
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    it('shows tooltip when moused over for enough time', () => {
+      const wrapper = mount(<ImageButton {...props} />);
+
+      expect(wrapper.find(Tooltip).length).toBe(0);
+
+      wrapper.simulate('mouseenter');
+
+      act(() => {
+        jest.advanceTimersByTime(TOOLTIP_TIMEOUT);
+      });
+
+      wrapper.update();
+      expect(wrapper.find(Tooltip).length).toBe(1);
+    });
+
+    it('does not show tooltip if disabled', () => {
+      const wrapper = mount(
+        <ImageButton {...props} buttonStatus={ImageButtonStatus.DISABLED} />
+      );
+      wrapper.simulate('mouseenter');
+      act(() => {
+        jest.advanceTimersByTime(TOOLTIP_TIMEOUT);
+      });
+      wrapper.update();
+
+      expect(wrapper.find(Tooltip).length).toBe(0);
+    });
+
+    it('does not show tooltip if description is not provided', () => {
+      const wrapper = mount(<ImageButton {...props} description="" />);
+      wrapper.simulate('mouseenter');
+      act(() => {
+        jest.advanceTimersByTime(TOOLTIP_TIMEOUT);
+      });
+      wrapper.update();
+
+      expect(wrapper.find(Tooltip).length).toBe(0);
     });
   });
 });

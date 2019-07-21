@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import defaultStyles from './ImageButton.scss';
 import ImageHolder from './ImageHolder';
 
@@ -14,7 +14,7 @@ export enum ImageButtonStatus {
   HIGHLIGHTED = 'highlighted'
 }
 
-const TOOLTIP_TIMEOUT_TIME = 800;
+export const TOOLTIP_TIMEOUT = 800;
 
 type Props = {
   buttonStatus: ImageButtonStatus;
@@ -26,18 +26,30 @@ type Props = {
 
 const ImageButton = (props: Props) => {
   const [isMousedOver, setIsMousedOver] = useState(false);
+  const isTouchedRef = useRef(false);
 
   let timeoutId: NodeJS.Timeout;
 
   const handleMouseEnter = () => {
+    if (isTouchedRef.current) {
+      return;
+    }
     timeoutId = setTimeout(() => {
       setIsMousedOver(true);
-    }, TOOLTIP_TIMEOUT_TIME);
+    }, TOOLTIP_TIMEOUT);
   };
 
   const handleMouseLeave = () => {
     clearTimeout(timeoutId);
     setIsMousedOver(false);
+  };
+
+  const handleTouchStart = () => {
+    isTouchedRef.current = true;
+  };
+
+  const handleTouchEnd = () => {
+    setTimeout(() => (isTouchedRef.current = false), 1000);
   };
 
   const buttonProps =
@@ -60,6 +72,8 @@ const ImageButton = (props: Props) => {
     <div
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       className={imageButtonStyles.imageButton}
       {...buttonProps}
     >
