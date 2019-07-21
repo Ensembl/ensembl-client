@@ -12,7 +12,6 @@ type Props = {
 
 const ImageHolder = (props: Props) => {
   const className = classNames(
-    'imageHolder',
     props.classNames.default,
     props.classNames[props.buttonStatus]
   );
