@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import defaultStyles from './ImageButton.scss';
 import ImageHolder from './ImageHolder';
 
