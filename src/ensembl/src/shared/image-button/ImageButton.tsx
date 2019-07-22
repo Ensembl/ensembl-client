@@ -14,8 +14,6 @@ export enum ImageButtonStatus {
   HIGHLIGHTED = 'highlighted'
 }
 
-export const TOOLTIP_TIMEOUT = 800;
-
 type Props = {
   buttonStatus: ImageButtonStatus;
   description: string;
@@ -26,36 +24,24 @@ type Props = {
 
 const ImageButton = (props: Props) => {
   const [isMousedOver, setIsMousedOver] = useState(false);
-  const isTouchedRef = useRef(false);
-
-  let timeoutId: NodeJS.Timeout;
 
   const handleMouseEnter = () => {
-    if (isTouchedRef.current) {
-      return;
-    }
-    timeoutId = setTimeout(() => {
-      setIsMousedOver(true);
-    }, TOOLTIP_TIMEOUT);
+    setIsMousedOver(true);
   };
 
   const handleMouseLeave = () => {
-    clearTimeout(timeoutId);
     setIsMousedOver(false);
   };
 
-  const handleTouchStart = () => {
-    isTouchedRef.current = true;
-  };
-
-  const handleTouchEnd = () => {
-    setTimeout(() => (isTouchedRef.current = false), 1000);
+  const handleClick = () => {
+    handleMouseLeave();
+    props.onClick && props.onClick();
   };
 
   const buttonProps =
     props.buttonStatus === ImageButtonStatus.DISABLED
       ? {}
-      : { onClick: props.onClick };
+      : { onClick: handleClick };
 
   const { classNames, ...rest } = props;
 
@@ -63,17 +49,12 @@ const ImageButton = (props: Props) => {
     ? { ...defaultStyles, ...props.classNames }
     : defaultStyles;
 
-  const shouldShowTooltip =
-    Boolean(props.description) &&
-    props.buttonStatus !== ImageButtonStatus.DISABLED &&
-    isMousedOver;
+  const shouldShowTooltip = Boolean(props.description) && isMousedOver;
 
   return (
     <div
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
       className={imageButtonStyles.imageButton}
       {...buttonProps}
     >

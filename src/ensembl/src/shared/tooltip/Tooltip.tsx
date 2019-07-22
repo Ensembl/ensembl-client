@@ -7,7 +7,8 @@ import { Position } from './tooltip-types';
 import {
   TIP_WIDTH,
   TIP_HEIGHT,
-  TIP_HORIZONTAL_OFFSET
+  TIP_HORIZONTAL_OFFSET,
+  TOOLTIP_TIMEOUT
 } from './tooltip-constants';
 
 import styles from './Tooltip.scss';
@@ -16,6 +17,7 @@ type Props = {
   position: Position;
   container?: HTMLElement | null;
   autoAdjust: boolean; // try to adapt position so as not to extend beyond screen bounds
+  delay: number;
   children: ReactNode;
   onClose: () => void;
 };
@@ -31,6 +33,7 @@ type InlineStylesState = {
 };
 
 const Tooltip = (props: Props) => {
+  const [isWaiting, setIsWaiting] = useState(true);
   const [isPositioning, setIsPositioning] = useState(props.autoAdjust);
   const parentRef = useRef<HTMLElement | null>(null);
   const positionRef = useRef<Position | null>(null);
@@ -39,6 +42,7 @@ const Tooltip = (props: Props) => {
     tipStyles: {}
   });
   const tooltipElementRef: React.RefObject<HTMLDivElement> = useRef(null);
+  let timeoutId: NodeJS.Timeout;
 
   const handleClickInside = (e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
@@ -58,6 +62,15 @@ const Tooltip = (props: Props) => {
       props.onClose();
     }
   };
+
+  useEffect(() => {
+    timeoutId = setTimeout(() => {
+      console.log('about to set is waiting');
+      setIsWaiting(false);
+    }, props.delay);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
 
   useEffect(() => {
     document.addEventListener('click', handleClickOutside, true);
@@ -111,7 +124,7 @@ const Tooltip = (props: Props) => {
     return () => {
       intersectionObserver.unobserve(node);
     };
-  }, []);
+  }, [isWaiting]);
 
   const className = classNames(
     styles.tooltip,
@@ -119,7 +132,7 @@ const Tooltip = (props: Props) => {
     { [styles.tooltipInvisible]: !parentRef.current || isPositioning }
   );
 
-  return (
+  return isWaiting ? null : (
     <div
       className={className}
       ref={tooltipElementRef}
@@ -258,6 +271,7 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
 };
 
 Tooltip.defaultProps = {
+  delay: TOOLTIP_TIMEOUT,
   position: Position.BOTTOM_RIGHT,
   onClose: noop,
   autoAdjust: false

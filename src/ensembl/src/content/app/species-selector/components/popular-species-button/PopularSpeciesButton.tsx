@@ -48,6 +48,7 @@ export const PopularSpeciesButton = (props: Props) => {
   const [isHovering, setIsHovering] = useState(false);
 
   const handleClick = () => {
+    handleMouseLeave();
     const { genome_id, is_available } = species;
     const speciesName = getSpeciesAnalyticsName(species);
 
@@ -101,7 +102,7 @@ export const PopularSpeciesButton = (props: Props) => {
       >
         <InlineSVG src={species.image} />
       </div>
-      {isHovering && species.is_available && (
+      {isHovering && speciesDisplayName && (
         <Tooltip autoAdjust={true}>{speciesDisplayName}</Tooltip>
       )}
     </div>

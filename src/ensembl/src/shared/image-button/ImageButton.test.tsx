@@ -3,14 +3,16 @@ import { mount } from 'enzyme';
 import { act } from 'react-dom/test-utils';
 import faker from 'faker';
 
-import ImageButton, { ImageButtonStatus, TOOLTIP_TIMEOUT } from './ImageButton';
+import ImageButton, { ImageButtonStatus } from './ImageButton';
 import ImageHolder from './ImageHolder';
 
 import Tooltip from 'src/shared/tooltip/Tooltip';
 
 jest.mock(
   'src/shared/tooltip/Tooltip',
-  () => ({ description }: { description: string }) => <div>{description}</div>
+  () => ({ children }: { children: any }) => (
+    <div className="tooltip">{children}</div>
+  )
 );
 
 describe('<ImageButton />', () => {
@@ -122,44 +124,29 @@ describe('<ImageButton />', () => {
       description
     };
 
-    beforeEach(() => {
-      jest.useFakeTimers();
-    });
-
-    it('shows tooltip when moused over for enough time', () => {
+    it('shows tooltip when moused over', () => {
       const wrapper = mount(<ImageButton {...props} />);
-
       expect(wrapper.find(Tooltip).length).toBe(0);
 
       wrapper.simulate('mouseenter');
-
-      act(() => {
-        jest.advanceTimersByTime(TOOLTIP_TIMEOUT);
-      });
-
       wrapper.update();
-      expect(wrapper.find(Tooltip).length).toBe(1);
+
+      const tooltip = wrapper.find(Tooltip);
+      expect(tooltip.length).toBe(1);
+      expect(tooltip.text()).toBe(description);
     });
 
-    it('does not show tooltip if disabled', () => {
-      const wrapper = mount(
-        <ImageButton {...props} buttonStatus={ImageButtonStatus.DISABLED} />
-      );
+    it('does not show tooltip if clicked', () => {
+      const wrapper = mount(<ImageButton {...props} />);
       wrapper.simulate('mouseenter');
-      act(() => {
-        jest.advanceTimersByTime(TOOLTIP_TIMEOUT);
-      });
+      wrapper.simulate('click');
       wrapper.update();
-
       expect(wrapper.find(Tooltip).length).toBe(0);
     });
 
     it('does not show tooltip if description is not provided', () => {
       const wrapper = mount(<ImageButton {...props} description="" />);
       wrapper.simulate('mouseenter');
-      act(() => {
-        jest.advanceTimersByTime(TOOLTIP_TIMEOUT);
-      });
       wrapper.update();
 
       expect(wrapper.find(Tooltip).length).toBe(0);
