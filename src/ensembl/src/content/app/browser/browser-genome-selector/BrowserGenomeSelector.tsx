@@ -15,11 +15,11 @@ import styles from './BrowserGenomeSelector.scss';
 import { getChrLocationStr } from '../browserHelper';
 
 type BrowserGenomeSelectorProps = {
-  activeGenomeId: string;
+  activeGenomeId: string | null;
   browserActivated: boolean;
   chrLocation: ChrLocation;
   dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
-  drawerOpened: { [genomeId: string]: boolean };
+  isDrawerOpened: boolean;
   genomeSelectorActive: boolean;
   toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
 };
@@ -27,7 +27,7 @@ type BrowserGenomeSelectorProps = {
 const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
   props: BrowserGenomeSelectorProps
 ) => {
-  const { activeGenomeId, chrLocation, drawerOpened } = props;
+  const { activeGenomeId, chrLocation, isDrawerOpened } = props;
   const chrLocationStr = getChrLocationStr(chrLocation);
 
   const [chrLocationPlaceholder, setChrLocationPlaceholder] = useState('');
@@ -36,8 +36,6 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
   const [chrCode, chrStart, chrEnd] = chrLocation;
   const displayChrRegion = !(chrStart === 0 && chrEnd === 0);
 
-  const drawerOpenedForGenome = drawerOpened[activeGenomeId];
-
   useEffect(() => {
     setChrLocationPlaceholder(chrLocationStr);
   }, []);
@@ -45,7 +43,7 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
   const getGenomeSelectorClasses = () => {
     let classNames = styles.browserGenomeSelector;
 
-    if (drawerOpenedForGenome === true) {
+    if (isDrawerOpened) {
       classNames += ` ${styles.browserGenomeSelectorDisabled}`;
     }
 
@@ -53,7 +51,7 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
   };
 
   const activateForm = () => {
-    if (drawerOpenedForGenome === true) {
+    if (isDrawerOpened) {
       return;
     }
 

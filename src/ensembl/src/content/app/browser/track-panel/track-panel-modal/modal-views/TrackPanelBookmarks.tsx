@@ -17,7 +17,7 @@ import upperFirst from 'lodash/upperFirst';
 import styles from '../TrackPanelModal.scss';
 
 type StateProps = {
-  activeGenomeId: string;
+  activeGenomeId: string | null;
   genomeInfo: GenomeInfoData;
   exampleEnsObjects: EnsObject[];
 };

@@ -15,7 +15,7 @@ export const getBrowserActivated = (state: RootState): boolean =>
 export const getBrowserOpenState = (state: RootState): BrowserOpenState =>
   state.browser.browserInfo.browserOpenState;
 
-export const getBrowserActiveGenomeId = (state: RootState): string =>
+export const getBrowserActiveGenomeId = (state: RootState) =>
   state.browser.browserEntity.activeGenomeId;
 
 export const getBrowserActiveGenomeInfo = (state: RootState) => {

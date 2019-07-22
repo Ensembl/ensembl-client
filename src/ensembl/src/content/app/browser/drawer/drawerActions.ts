@@ -26,24 +26,24 @@ export const changeDrawerView: ActionCreator<
     return;
   }
 
-  const drawerView = {
-    [activeGenomeId]: drawerViewForGenome
-  };
-
-  dispatch(changeDrawerViewForGenome(drawerView));
+  dispatch(
+    changeDrawerViewForGenome({
+      [activeGenomeId]: drawerViewForGenome
+    })
+  );
 };
 
 export const toggleDrawerForGenome = createAction(
   'drawer/toggle-drawer',
   (resolve) => {
-    return (drawerOpened: { [genomeId: string]: boolean }) =>
-      resolve(drawerOpened, getDrawerAnalyticsObject('User Interaction'));
+    return (isDrawerOpened: { [genomeId: string]: boolean }) =>
+      resolve(isDrawerOpened, getDrawerAnalyticsObject('User Interaction'));
   }
 );
 
 export const toggleDrawer: ActionCreator<
   ThunkAction<void, any, null, Action<boolean>>
-> = (drawerOpened: boolean) => (
+> = (isDrawerOpened: boolean) => (
   dispatch: Dispatch,
   getState: () => RootState
 ) => {
@@ -53,9 +53,9 @@ export const toggleDrawer: ActionCreator<
     return;
   }
 
-  const drawerOpenedForGenome = {
-    [activeGenomeId]: drawerOpened
-  };
-
-  dispatch(toggleDrawerForGenome(drawerOpenedForGenome));
+  dispatch(
+    toggleDrawerForGenome({
+      [activeGenomeId]: isDrawerOpened
+    })
+  );
 };

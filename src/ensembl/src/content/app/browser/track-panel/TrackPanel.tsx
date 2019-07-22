@@ -24,7 +24,7 @@ import {
   getTrackPanelModalView,
   getSelectedBrowserTab
 } from './trackPanelSelectors';
-import { getDrawerView, getDrawerOpened } from '../drawer/drawerSelectors';
+import { getDrawerView, getIsDrawerOpened } from '../drawer/drawerSelectors';
 import {
   getBrowserActivated,
   getBrowserActiveGenomeId,
@@ -43,14 +43,14 @@ import { EnsObject } from 'src/ens-object/ensObjectTypes';
 import styles from './TrackPanel.scss';
 
 type StateProps = {
-  activeGenomeId: string;
+  activeGenomeId: string | null;
   breakpointWidth: BreakpointWidth;
   browserActivated: boolean;
-  drawerOpened: { [genomeId: string]: boolean };
-  drawerView: { [genomeId: string]: string };
+  isDrawerOpened: boolean;
+  drawerView: string;
   ensObject: EnsObject | null;
   launchbarExpanded: boolean;
-  selectedBrowserTab: { [genomeId: string]: TrackType };
+  selectedBrowserTab: TrackType;
   genomeTrackCategories: GenomeTrackCategory[];
   trackPanelModalOpened: boolean;
   trackPanelModalView: string;
@@ -62,7 +62,7 @@ type DispatchProps = {
   changeDrawerView: (drawerView: string) => void;
   closeTrackPanelModal: () => void;
   openTrackPanelModal: (trackPanelModalView: string) => void;
-  toggleDrawer: (drawerOpened: boolean) => void;
+  toggleDrawer: (isDrawerOpened: boolean) => void;
   toggleTrackPanel: (trackPanelOpened?: boolean) => void;
   updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
 };
@@ -76,8 +76,7 @@ type TrackPanelProps = StateProps & DispatchProps & OwnProps;
 const TrackPanel: FunctionComponent<TrackPanelProps> = (
   props: TrackPanelProps
 ) => {
-  const drawerOpenedForGenome =
-    props.drawerOpened[props.activeGenomeId as string];
+  const { isDrawerOpened } = props;
 
   useEffect(() => {
     if (props.breakpointWidth !== BreakpointWidth.LARGE) {
@@ -96,7 +95,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
   }));
 
   const getBrowserWidth = (): string => {
-    if (drawerOpenedForGenome === true) {
+    if (isDrawerOpened) {
       return 'calc(41px + 0vw)';
     }
     return props.trackPanelOpened
@@ -108,7 +107,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
     setTrackAnimation({
       left: getBrowserWidth()
     });
-  }, [drawerOpenedForGenome, props.trackPanelOpened]);
+  }, [isDrawerOpened, props.trackPanelOpened]);
 
   return props.activeGenomeId ? (
     <animated.div style={trackAnimation}>
@@ -117,7 +116,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
           <TrackPanelBar
             activeGenomeId={props.activeGenomeId}
             closeTrackPanelModal={props.closeTrackPanelModal}
-            drawerOpened={props.drawerOpened}
+            isDrawerOpened={props.isDrawerOpened}
             launchbarExpanded={props.launchbarExpanded}
             openTrackPanelModal={props.openTrackPanelModal}
             toggleDrawer={props.toggleDrawer}
@@ -129,7 +128,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
           <TrackPanelList
             activeGenomeId={props.activeGenomeId}
             browserRef={props.browserRef}
-            drawerOpened={props.drawerOpened}
+            isDrawerOpened={props.isDrawerOpened}
             drawerView={props.drawerView}
             launchbarExpanded={props.launchbarExpanded}
             ensObject={props.ensObject}
@@ -148,7 +147,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
               trackPanelModalView={props.trackPanelModalView}
             />
           ) : null}
-          {drawerOpenedForGenome && <Drawer />}
+          {isDrawerOpened && <Drawer />}
         </div>
       ) : null}
     </animated.div>
@@ -162,7 +161,7 @@ const mapStateToProps = (state: RootState): StateProps => {
     activeGenomeId,
     breakpointWidth: getBreakpointWidth(state),
     browserActivated: getBrowserActivated(state),
-    drawerOpened: getDrawerOpened(state),
+    isDrawerOpened: getIsDrawerOpened(state),
     drawerView: getDrawerView(state),
     ensObject: getBrowserActiveEnsObject(state),
     launchbarExpanded: getLaunchbarExpanded(state),

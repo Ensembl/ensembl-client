@@ -14,12 +14,12 @@ import { EnsObjectTrack, EnsObject } from 'src/ens-object/ensObjectTypes';
 type TrackPanelListProps = {
   activeGenomeId: string;
   browserRef: RefObject<HTMLDivElement>;
-  drawerOpened: { [genomeId: string]: boolean };
-  drawerView: { [genomeId: string]: string };
+  isDrawerOpened: boolean;
+  drawerView: string;
   launchbarExpanded: boolean;
   ensObject: EnsObject;
-  selectedBrowserTab: { [genomeId: string]: TrackType };
-  toggleDrawer: (drawerOpened: boolean) => void;
+  selectedBrowserTab: TrackType;
+  toggleDrawer: (isDrawerOpened: boolean) => void;
   genomeTrackCategories: GenomeTrackCategory[];
   trackStates: TrackStates;
   updateDrawerView: (drawerView: string) => void;
@@ -29,14 +29,7 @@ type TrackPanelListProps = {
 const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   props: TrackPanelListProps
 ) => {
-  const {
-    activeGenomeId,
-    selectedBrowserTab: selectedBrowserTabs,
-    genomeTrackCategories
-  } = props;
-
-  const selectedBrowserTab =
-    selectedBrowserTabs[activeGenomeId] || TrackType.GENOMIC;
+  const { activeGenomeId, selectedBrowserTab, genomeTrackCategories } = props;
   const currentTrackCategories = genomeTrackCategories.filter(
     (category: GenomeTrackCategory) =>
       category.types.includes(selectedBrowserTab)
@@ -47,7 +40,7 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
 
     updateDrawerView(currentTrack);
 
-    if (!drawerView[activeGenomeId]) {
+    if (!drawerView) {
       toggleDrawer(true);
     }
   };
@@ -88,7 +81,7 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
         categoryName={categoryName}
         defaultTrackStatus={defaultTrackStatus as ImageButtonStatus}
         trackStatus={trackStatus as ImageButtonStatus}
-        drawerOpened={props.drawerOpened}
+        isDrawerOpened={props.isDrawerOpened}
         drawerView={props.drawerView}
         key={track.track_id}
         track={track}

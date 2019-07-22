@@ -35,7 +35,7 @@ import {
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import { getTrackPanelOpened } from './track-panel/trackPanelSelectors';
 import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
-import { getDrawerOpened } from './drawer/drawerSelectors';
+import { getIsDrawerOpened } from './drawer/drawerSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
@@ -55,7 +55,7 @@ import styles from './Browser.scss';
 import 'static/browser/browser.js';
 
 type StateProps = {
-  activeGenomeId: string;
+  activeGenomeId: string | null;
   activeEnsObjectId: string | null;
   allActiveEnsObjectIds: { [genomeId: string]: string };
   browserActivated: boolean;
@@ -63,7 +63,7 @@ type StateProps = {
   browserQueryParams: { [key: string]: string };
   chrLocation: ChrLocation | null;
   allChrLocations: { [genomeId: string]: ChrLocation };
-  drawerOpened: { [genomeId: string]: boolean };
+  isDrawerOpened: boolean;
   genomeSelectorActive: boolean;
   trackPanelOpened: boolean;
   launchbarExpanded: boolean;
@@ -79,7 +79,7 @@ type DispatchProps = {
   ) => void;
   fetchGenomeData: (genomeId: string) => void;
   replace: Replace;
-  toggleDrawer: (drawerOpened: boolean) => void;
+  toggleDrawer: (isDrawerOpened: boolean) => void;
   setDataFromUrlAndSave: (payload: ParsedUrlPayload) => void;
 };
 
@@ -102,7 +102,8 @@ export const Browser: FunctionComponent<BrowserProps> = (
     TrackStates
   >({});
   const lastGenomeIdRef = useRef(props.activeGenomeId);
-  const drawerOpenedForGenome = props.drawerOpened[props.activeGenomeId];
+
+  const { isDrawerOpened } = props;
 
   const setDataFromUrl = () => {
     const { genomeId = null } = props.match.params;
@@ -254,7 +255,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, [props.chrLocation]);
 
   const closeTrack = () => {
-    if (drawerOpenedForGenome === false) {
+    if (isDrawerOpened) {
       return;
     }
 
@@ -268,7 +269,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }));
 
   const getBrowserWidth = (): string => {
-    if (drawerOpenedForGenome === true) {
+    if (isDrawerOpened) {
       return 'calc(41px + 0vw)';
     }
     return props.trackPanelOpened
@@ -280,7 +281,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
     setTrackAnimation({
       width: getBrowserWidth()
     });
-  }, [drawerOpenedForGenome, props.trackPanelOpened]);
+  }, [isDrawerOpened, props.trackPanelOpened]);
 
   const getHeightClass = (launchbarExpanded: boolean): string => {
     return launchbarExpanded ? styles.shorter : styles.taller;
@@ -314,7 +315,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
             <animated.div style={trackAnimation}>
               <div className={styles.browserImageWrapper} onClick={closeTrack}>
                 {props.browserNavOpened &&
-                !drawerOpenedForGenome &&
+                !isDrawerOpened &&
                 browserRef.current ? (
                   <BrowserNavBar browserElement={browserRef.current} />
                 ) : null}
@@ -369,7 +370,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
   browserQueryParams: getBrowserQueryParams(state),
   chrLocation: getChrLocation(state),
   allChrLocations: getAllChrLocations(state),
-  drawerOpened: getDrawerOpened(state),
+  isDrawerOpened: getIsDrawerOpened(state),
   genomeSelectorActive: getGenomeSelectorActive(state),
   trackPanelOpened: getTrackPanelOpened(state),
   launchbarExpanded: getLaunchbarExpanded(state),

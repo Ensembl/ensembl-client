@@ -22,7 +22,7 @@ export default function drawer(
 
       return {
         ...state,
-        drawerOpened: { ...state.drawerOpened, ...action.payload },
+        isDrawerOpened: { ...state.isDrawerOpened, ...action.payload },
         drawerView: { ...state.drawerView, [genomeId]: drawerViewForGenome }
       };
     default:

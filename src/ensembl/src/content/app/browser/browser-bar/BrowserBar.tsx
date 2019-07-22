@@ -16,7 +16,7 @@ import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObject
 } from '../browserSelectors';
-import { getDrawerOpened } from '../drawer/drawerSelectors';
+import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 import {
   getSelectedBrowserTab,
   getTrackPanelModalOpened,
@@ -34,15 +34,15 @@ import BrowserTabs from '../browser-tabs/BrowserTabs';
 import styles from './BrowserBar.scss';
 
 type StateProps = {
-  activeGenomeId: string;
+  activeGenomeId: string | null;
   browserActivated: boolean;
   browserNavOpened: boolean;
   chrLocation: ChrLocation | null;
   defaultChrLocation: ChrLocation | null;
-  drawerOpened: { [genomeId: string]: boolean };
+  isDrawerOpened: boolean;
   genomeSelectorActive: boolean;
   ensObject: EnsObject | null;
-  selectedBrowserTab: { [genomeId: string]: TrackType };
+  selectedBrowserTab: TrackType;
   trackPanelModalOpened: boolean;
   trackPanelOpened: boolean;
 };
@@ -50,7 +50,7 @@ type StateProps = {
 type DispatchProps = {
   selectBrowserTabAndSave: (selectedBrowserTab: TrackType) => void;
   toggleBrowserNav: () => void;
-  toggleDrawer: (drawerOpened: boolean) => void;
+  toggleDrawer: (isDrawerOpened: boolean) => void;
   toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
 };
 
@@ -73,7 +73,7 @@ type BrowserNavigatorButtonProps = {
 export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   props: BrowserBarProps
 ) => {
-  const drawerOpenedForGenome = props.drawerOpened[props.activeGenomeId];
+  const { isDrawerOpened } = props;
 
   const shouldShowBrowserInfo = () => {
     const { defaultChrLocation } = props;
@@ -99,7 +99,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   }, [props.defaultChrLocation, props.genomeSelectorActive]);
 
   const getBrowserNavIcon = () => {
-    if (drawerOpenedForGenome === true) {
+    if (isDrawerOpened) {
       return navigator.icon.grey as string;
     } else if (props.browserNavOpened) {
       return navigator.icon.selected as string;
@@ -109,7 +109,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   };
 
   const toggleNavigator = () => {
-    if (drawerOpenedForGenome === true) {
+    if (isDrawerOpened) {
       return;
     }
 
@@ -118,7 +118,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
 
   const className = classNames(styles.browserInfo, {
     [styles.browserInfoExpanded]: !props.trackPanelOpened,
-    [styles.browserInfoGreyed]: drawerOpenedForGenome
+    [styles.browserInfoGreyed]: isDrawerOpened
   });
 
   if (!(props.chrLocation && props.ensObject)) {
@@ -134,7 +134,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
             dispatchBrowserLocation={props.dispatchBrowserLocation}
             chrLocation={props.chrLocation}
             defaultChrLocation={props.defaultChrLocation}
-            drawerOpened={props.drawerOpened}
+            isDrawerOpened={isDrawerOpened}
           />
           {showBrowserInfo && <BrowserInfo ensObject={props.ensObject} />}
         </dl>
@@ -144,7 +144,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
             browserActivated={props.browserActivated}
             dispatchBrowserLocation={props.dispatchBrowserLocation}
             chrLocation={props.chrLocation}
-            drawerOpened={props.drawerOpened}
+            isDrawerOpened={isDrawerOpened}
             genomeSelectorActive={props.genomeSelectorActive}
             toggleGenomeSelector={props.toggleGenomeSelector}
           />
@@ -159,9 +159,8 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
       </div>
       {props.trackPanelOpened && props.activeGenomeId && (
         <BrowserTabs
-          activeGenomeId={props.activeGenomeId}
           ensObject={props.ensObject}
-          drawerOpened={props.drawerOpened}
+          isDrawerOpened={props.isDrawerOpened}
           genomeSelectorActive={props.genomeSelectorActive}
           selectBrowserTabAndSave={props.selectBrowserTabAndSave}
           selectedBrowserTab={props.selectedBrowserTab}
@@ -228,7 +227,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
   browserNavOpened: getBrowserNavOpened(state),
   chrLocation: getChrLocation(state),
   defaultChrLocation: getDefaultChrLocation(state),
-  drawerOpened: getDrawerOpened(state),
+  isDrawerOpened: getIsDrawerOpened(state),
   ensObject: getBrowserActiveEnsObject(state),
   genomeSelectorActive: getGenomeSelectorActive(state),
   selectedBrowserTab: getSelectedBrowserTab(state),
