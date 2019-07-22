@@ -1,6 +1,5 @@
 import { createAction, createAsyncAction } from 'typesafe-actions';
 
-import { getCustomDownloadAnalyticsObject } from 'src/analyticsHelper';
 import * as allFilterAccordionActions from '../containers/content/filter-accordion/state/filterAccordionActions';
 import * as allAttributeAccordionActions from '../containers/content/attributes-accordion/state/attributesAccordionActions';
 import { ActionCreator, Action } from 'redux';
@@ -16,11 +15,7 @@ export const attributesAccordionActions = allAttributeAccordionActions;
 export const updateSelectedPreFilter = createAction(
   'custom-download/update-selected-pre-filters',
   (resolve) => {
-    return (selectedPreFilter: string) =>
-      resolve(
-        selectedPreFilter,
-        getCustomDownloadAnalyticsObject('Pre Filter Updates')
-      );
+    return (selectedPreFilter: string) => resolve(selectedPreFilter);
   }
 );
 
@@ -29,10 +24,7 @@ export const togglePreFiltersPanel = createAction(
   (resolve) => {
     return (showPreFiltersPanel: boolean) => {
       customDownloadStorageService.saveShowPreFilterPanel(showPreFiltersPanel);
-      return resolve(
-        showPreFiltersPanel,
-        getCustomDownloadAnalyticsObject('Pre Filter Panel Toggled')
-      );
+      return resolve(showPreFiltersPanel);
     };
   }
 );
@@ -42,10 +34,7 @@ export const toggleTab = createAction(
   (resolve) => {
     return (selectedTab: string) => {
       customDownloadStorageService.saveSelectedTab(selectedTab);
-      return resolve(
-        selectedTab,
-        getCustomDownloadAnalyticsObject('Toggle Data/Filter Tab Button')
-      );
+      return resolve(selectedTab);
     };
   }
 );
@@ -87,10 +76,7 @@ export const setShowPreview = createAction(
   (resolve) => {
     return (showPreview: boolean) => {
       customDownloadStorageService.saveShowPreview(showPreview);
-      return resolve(
-        showPreview,
-        getCustomDownloadAnalyticsObject('Show download preview')
-      );
+      return resolve(showPreview);
     };
   }
 );
@@ -98,10 +84,6 @@ export const setShowPreview = createAction(
 export const setDownloadType = createAction(
   'custom-download/set-download-as',
   (resolve) => {
-    return (downloadType: string) =>
-      resolve(
-        downloadType,
-        getCustomDownloadAnalyticsObject('Download as ' + downloadType)
-      );
+    return (downloadType: string) => resolve(downloadType);
   }
 );

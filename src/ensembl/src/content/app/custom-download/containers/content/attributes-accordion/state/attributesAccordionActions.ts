@@ -5,7 +5,6 @@ import {
 } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Action } from 'redux';
-import { getCustomDownloadAnalyticsObject } from 'src/analyticsHelper';
 import { orthologueSpecies as sampleOrthologueSpecies } from '../../../../sample-data/orthologue';
 
 import attributes from 'src/content/app/custom-download/sample-data/attributes';
@@ -41,10 +40,7 @@ export const updateSelectedAttributes = createAction(
   (resolve) => {
     return (attributes: Attributes) => {
       customDownloadStorageService.saveSelectedAttributes(attributes);
-      return resolve(
-        attributes,
-        getCustomDownloadAnalyticsObject('Gene attributes updated')
-      );
+      return resolve(attributes);
     };
   }
 );
@@ -53,71 +49,29 @@ export const resetSelectedAttributes = createStandardAction(
   'custom-download/reset-selected-attributes'
 )();
 
-export const updateContentState = createAction(
-  'custom-download/update-attribute-content-state',
-  (resolve) => {
-    return (contentState: Attributes) => resolve(contentState);
-  }
-);
+export const updateContentState = createStandardAction(
+  'custom-download/update-attribute-content-state'
+)<Attributes>();
 
-export const setOrthologueAttributes = createAction(
-  'custom-download/set-orthologue-attributes',
-  (resolve) => {
-    return (orthologueAttributes: Attributes) =>
-      resolve(
-        orthologueAttributes,
-        getCustomDownloadAnalyticsObject('Orthologue attributes updated')
-      );
-  }
-);
+export const setOrthologueAttributes = createStandardAction(
+  'custom-download/set-orthologue-attributes'
+)<Attributes>();
 
-export const setOrthologueShowBestMatches = createAction(
-  'custom-download/set-orthologue-show-best-matches',
-  (resolve) => {
-    return (showBestMatches: boolean) =>
-      resolve(
-        showBestMatches,
-        getCustomDownloadAnalyticsObject(
-          'Orthologue Show Best Matches link clicked'
-        )
-      );
-  }
-);
+export const setOrthologueShowBestMatches = createStandardAction(
+  'custom-download/set-orthologue-show-best-matches'
+)<boolean>();
 
-export const setOrthologueShowAll = createAction(
-  'custom-download/set-orthologue-show-all',
-  (resolve) => {
-    return (showAll: boolean) =>
-      resolve(
-        showAll,
-        getCustomDownloadAnalyticsObject('Orthologue Show All link clicked')
-      );
-  }
-);
+export const setOrthologueShowAll = createStandardAction(
+  'custom-download/set-orthologue-show-all'
+)<boolean>();
 
-export const setOrthologueApplyToAllSpecies = createAction(
-  'custom-download/set-orthologue-apply-to-all-species',
-  (resolve) => {
-    return (applyToAllSpecies: boolean) =>
-      resolve(
-        applyToAllSpecies,
-        getCustomDownloadAnalyticsObject(
-          'Orthologue Apply To All Species link clicked'
-        )
-      );
-  }
-);
+export const setOrthologueApplyToAllSpecies = createStandardAction(
+  'custom-download/set-orthologue-apply-to-all-species'
+)<boolean>();
 
-export const setOrthologueSearchTerm = createAction(
-  'custom-download/set-orthologue-search-term',
-  (resolve) => {
-    return (searchTerm: string) =>
-      resolve(
-        searchTerm,
-        getCustomDownloadAnalyticsObject('Orthologue search term updated')
-      );
-  }
-);
+export const setOrthologueSearchTerm = createStandardAction(
+  'custom-download/set-orthologue-search-term'
+)<string>();
 
 export const setOrthologueSpecies = createAsyncAction(
   'custom-download/set-orthologue-species-request',
@@ -172,13 +126,6 @@ export const fetchOrthologueSpecies: ActionCreator<
   }
 };
 
-export const setAttributesAccordionExpandedPanel = createAction(
-  'custom-download/set-attributes-accordion-expanded-panels',
-  (resolve) => {
-    return (expandedPanel: string) =>
-      resolve(
-        expandedPanel,
-        getCustomDownloadAnalyticsObject('Toggle attributes accordion panel')
-      );
-  }
-);
+export const setAttributesAccordionExpandedPanel = createStandardAction(
+  'custom-download/set-attributes-accordion-expanded-panels'
+)<string>();

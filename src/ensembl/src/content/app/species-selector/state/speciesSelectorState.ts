@@ -29,6 +29,7 @@ export type SpeciesSelectorState = {
     isSelectingAssembly: boolean;
   };
   search: {
+    text: string;
     results: SearchMatches[] | null;
   };
   currentItem: CurrentItem | null;
@@ -47,6 +48,7 @@ const initialState: SpeciesSelectorState = {
     isSelectingAssembly: false
   },
   search: {
+    text: '',
     results: null
   },
   currentItem: null,

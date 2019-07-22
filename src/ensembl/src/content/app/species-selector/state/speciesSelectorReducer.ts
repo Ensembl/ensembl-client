@@ -1,6 +1,4 @@
 import { getType, ActionType } from 'typesafe-actions';
-import find from 'lodash/find';
-import get from 'lodash/get';
 
 import * as speciesSelectorActions from './speciesSelectorActions';
 
@@ -12,7 +10,6 @@ import initialState, {
 import {
   SearchMatch,
   PopularSpecies,
-  CommittedItem,
   Assembly
 } from 'src/content/app/species-selector/types/species-search';
 
@@ -35,32 +32,32 @@ const buildAssembly = (data: SearchMatch | PopularSpecies): Assembly => ({
   assembly_name: data.assembly_name
 });
 
-const buildCommittedItem = (data: CurrentItem): CommittedItem => ({
-  genome_id: data.genome_id,
-  reference_genome_id: data.reference_genome_id,
-  common_name: data.common_name,
-  scientific_name: data.scientific_name,
-  assembly_name: get(
-    find(data.assemblies, ({ genome_id }) => genome_id === data.genome_id),
-    'assembly_name'
-  ) as string,
-  isEnabled: true
-});
-
 export default function speciesSelectorReducer(
   state: SpeciesSelectorState = initialState,
   action: ActionType<typeof speciesSelectorActions>
 ): SpeciesSelectorState {
   switch (action.type) {
+    case getType(speciesSelectorActions.setSearchText):
+      return {
+        ...state,
+        search: {
+          ...state.search,
+          text: action.payload
+        }
+      };
     case getType(speciesSelectorActions.fetchSpeciesSearchResults.success):
       return {
         ...state,
-        search: action.payload
+        search: {
+          ...state.search,
+          ...action.payload
+        }
       };
     case getType(speciesSelectorActions.setSelectedSpecies):
       return {
         ...state,
-        currentItem: buildCurrentItem(action.payload)
+        currentItem: buildCurrentItem(action.payload),
+        search: initialState.search
       };
     // TODO: wait for strains
     // case getType(speciesSelectorActions.fetchStrainsAsyncActions.success):
@@ -100,40 +97,20 @@ export default function speciesSelectorReducer(
         ...state,
         popularSpecies: action.payload.popularSpecies
       };
-    case getType(speciesSelectorActions.commitSelectedSpecies):
+    case getType(speciesSelectorActions.updateCommittedSpecies):
       return {
         ...state,
-        currentItem: null,
-        committedItems: [
-          ...state.committedItems,
-          buildCommittedItem(state.currentItem as CurrentItem)
-        ]
+        committedItems: action.payload
       };
-    case getType(speciesSelectorActions.toggleSpeciesUse):
+    case getType(speciesSelectorActions.clearSearch):
       return {
         ...state,
-        committedItems: state.committedItems.map((item) => {
-          if (item.genome_id === action.payload) {
-            return {
-              ...item,
-              isEnabled: !item.isEnabled
-            };
-          } else {
-            return item;
-          }
-        })
-      };
-    case getType(speciesSelectorActions.deleteSpecies):
-      return {
-        ...state,
-        committedItems: state.committedItems.filter(
-          (item) => item.genome_id !== action.payload
-        )
+        search: initialState.search
       };
     case getType(speciesSelectorActions.clearSearchResults):
       return {
         ...state,
-        search: initialState.search
+        search: { ...state.search, results: initialState.search.results }
       };
     case getType(speciesSelectorActions.clearSelectedSearchResult):
       return {

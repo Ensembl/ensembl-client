@@ -1,15 +1,18 @@
 import ReactGA from 'react-ga';
-import { AnalyticsType } from 'src/analyticsHelper';
+import { AnalyticsOptions } from 'src/analyticsHelper';
 
 import config from 'config';
 
-const { googleAnalyticsKey = '' } = config;
+const { googleAnalyticsKey = '', isTest } = config;
 
 class AnalyticsTracking {
   private reactGA: typeof ReactGA;
 
   public constructor() {
-    ReactGA.initialize(googleAnalyticsKey);
+    ReactGA.initialize(googleAnalyticsKey, {
+      titleCase: false,
+      testMode: isTest
+    });
     this.reactGA = ReactGA;
   }
 
@@ -19,11 +22,9 @@ class AnalyticsTracking {
   }
 
   // Track an event
-  public trackEvent(action: any) {
-    const { ga } = action.meta as AnalyticsType;
-
+  public trackEvent(ga: AnalyticsOptions) {
     this.reactGA.event({
-      action: ga.action ? ga.action : action.type,
+      action: ga.action,
       category: ga.category,
       label: ga.label,
       nonInteraction: ga.nonInteraction,
@@ -33,6 +34,6 @@ class AnalyticsTracking {
   }
 }
 
-const GoogleAnalyticsTracking = new AnalyticsTracking();
+const analyticsTracking = new AnalyticsTracking();
 
-export default GoogleAnalyticsTracking;
+export default analyticsTracking;
