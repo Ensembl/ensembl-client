@@ -11,7 +11,6 @@ import attributes from 'src/content/app/custom-download/sample-data/attributes';
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 
 import findIndex from 'lodash/findIndex';
-import get from 'lodash/get';
 
 import Attribute, {
   Attributes

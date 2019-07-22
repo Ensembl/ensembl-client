@@ -27,7 +27,7 @@ import { Genes, Proteins } from './sections';
 import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/image-button/ImageButton';
-import { ReactComponent as ResetIcon } from 'static/img/shared/reset.svg';
+import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
 
 type Props = StateProps & DispatchProps;
 

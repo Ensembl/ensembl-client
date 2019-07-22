@@ -35,7 +35,7 @@ import { Attributes } from 'src/content/app/custom-download/types/Attributes';
 import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/image-button/ImageButton';
-import { ReactComponent as ResetIcon } from 'static/img/shared/reset.svg';
+import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
 import styles from './AttributesAccordion.scss';
 
 type Props = StateProps & DispatchProps;
