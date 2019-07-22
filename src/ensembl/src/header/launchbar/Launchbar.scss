@@ -68,7 +68,6 @@
 
 .launchbarButtonSelectedImage {
   svg {
-    transform: scale(1.1);
     fill: $ens-white;
     background-color: $ens-black;
   }
@@ -76,7 +75,6 @@
 
 .launchbarButtonDisabledImage {
   svg {
-    transform: scale(1.1);
     fill: $ens-white;
     background-color: $ens-grey;
   }
