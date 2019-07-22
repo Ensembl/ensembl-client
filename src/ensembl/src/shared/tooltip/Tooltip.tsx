@@ -65,7 +65,6 @@ const Tooltip = (props: Props) => {
 
   useEffect(() => {
     timeoutId = setTimeout(() => {
-      console.log('about to set is waiting');
       setIsWaiting(false);
     }, props.delay);
 
