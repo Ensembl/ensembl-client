@@ -4,13 +4,17 @@ import { ThunkAction } from 'redux-thunk';
 
 import config from 'config';
 
-import { BrowserNavStates, ChrLocation, CogList } from './browserState';
+import {
+  BrowserNavStates,
+  ChrLocation,
+  CogList,
+  ChrLocations
+} from './browserState';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectIds,
   getBrowserTrackStates
 } from './browserSelectors';
-import { getBrowserAnalyticsObject } from 'src/analyticsHelper';
 import browserStorageService from './browser-storage-service';
 import { RootState } from 'src/store';
 import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
@@ -29,13 +33,9 @@ export type ParsedUrlPayload = {
   chrLocation: ChrLocation | null;
 };
 
-export const updateBrowserActivated = createAction(
-  'browser/update-browser-activated',
-  (resolve) => {
-    return (browserActivated: boolean) =>
-      resolve(browserActivated, getBrowserAnalyticsObject('Default Action'));
-  }
-);
+export const updateBrowserActivated = createStandardAction(
+  'browser/update-browser-activated'
+)<boolean>();
 
 export const activateBrowser = (browserEl: HTMLDivElement) => {
   return (dispatch: Dispatch) => {
@@ -55,13 +55,9 @@ export const activateBrowser = (browserEl: HTMLDivElement) => {
   };
 };
 
-export const setDataFromUrl = createAction(
-  'browser/set-data-from-url',
-  (resolve) => {
-    return (payload: ParsedUrlPayload) =>
-      resolve(payload, getBrowserAnalyticsObject('Navigation'));
-  }
-);
+export const setDataFromUrl = createStandardAction('browser/set-data-from-url')<
+  ParsedUrlPayload
+>();
 
 export const setDataFromUrlAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
@@ -79,13 +75,9 @@ export const setDataFromUrlAndSave: ActionCreator<
     });
 };
 
-export const updateBrowserActiveGenomeId = createAction(
-  'browser/update-active-genome-id',
-  (resolve) => {
-    return (activeGenomeId: string) =>
-      resolve(activeGenomeId, getBrowserAnalyticsObject('Navigation'));
-  }
-);
+export const updateBrowserActiveGenomeId = createStandardAction(
+  'browser/update-active-genome-id'
+)<string>();
 
 export const updateBrowserActiveGenomeIdAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
@@ -94,13 +86,9 @@ export const updateBrowserActiveGenomeIdAndSave: ActionCreator<
   browserStorageService.saveActiveGenomeId(activeGenomeId);
 };
 
-export const updateBrowserActiveEnsObjectIds = createAction(
-  'browser/update-active-ens-object-ids',
-  (resolve) => {
-    return (activeEnsObjectId: { [objectId: string]: string }) =>
-      resolve(activeEnsObjectId, getBrowserAnalyticsObject('Navigation'));
-  }
-);
+export const updateBrowserActiveEnsObjectIds = createStandardAction(
+  'browser/update-active-ens-object-ids'
+)<{ [objectId: string]: string }>();
 
 export const updateBrowserActiveEnsObjectIdsAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
@@ -146,28 +134,17 @@ export const updateTrackStatesAndSave: ActionCreator<
   browserStorageService.saveTrackStates(trackStates);
 };
 
-export const toggleBrowserNav = createAction(
-  'browser/toggle-browser-navigation',
-  (resolve) => {
-    return () => resolve(undefined, getBrowserAnalyticsObject('Navigation'));
-  }
-);
+export const toggleBrowserNav = createStandardAction(
+  'browser/toggle-browser-navigation'
+)();
 
-export const updateBrowserNavStates = createAction(
-  'browser/update-browser-nav-states',
-  (resolve) => {
-    return (browserNavStates: BrowserNavStates) =>
-      resolve(browserNavStates, getBrowserAnalyticsObject('Navigation'));
-  }
-);
+export const updateBrowserNavStates = createStandardAction(
+  'browser/update-browser-nav-states'
+)<BrowserNavStates>();
 
-export const updateChrLocation = createAction(
-  'browser/update-chromosome-location',
-  (resolve) => {
-    return (chrLocationData: { [genomeId: string]: ChrLocation }) =>
-      resolve(chrLocationData);
-  }
-);
+export const updateChrLocation = createStandardAction(
+  'browser/update-chromosome-location'
+)<ChrLocations>();
 
 export const setChrLocation: ActionCreator<
   ThunkAction<any, any, null, Action<string>>
@@ -215,41 +192,23 @@ export const changeBrowserLocation: ActionCreator<
   };
 };
 
-export const updateCogList = createAction(
-  'browser/update-cog-list',
-  (resolve) => {
-    return (cogList: number) => {
-      return resolve(cogList, getBrowserAnalyticsObject('User Interaction'));
-    };
-  }
-);
+export const updateCogList = createStandardAction('browser/update-cog-list')<
+  number
+>();
 
-export const updateCogTrackList = createAction(
-  'browser/update-cog-track-list',
-  (resolve) => {
-    return (trackY: CogList) => {
-      return resolve(trackY, getBrowserAnalyticsObject('User Interaction'));
-    };
-  }
-);
+export const updateCogTrackList = createStandardAction(
+  'browser/update-cog-track-list'
+)<CogList>();
 
-export const updateSelectedCog = createAction(
-  'browser/update-selected-cog',
-  (resolve) => {
-    return (index: string) => {
-      return resolve(index, getBrowserAnalyticsObject('User Interaction'));
-    };
-  }
-);
+export const updateSelectedCog = createStandardAction(
+  'browser/update-selected-cog'
+)<string>();
 
 export const updateTrackConfigNames = createAction(
   'browser/update-track-config-names',
   (resolve) => {
     return (selectedCog: any, sense: boolean) => {
-      return resolve(
-        [selectedCog, sense],
-        getBrowserAnalyticsObject('User Interaction')
-      );
+      return resolve([selectedCog, sense]);
     };
   }
 );
@@ -258,30 +217,15 @@ export const updateTrackConfigLabel = createAction(
   'browser/update-track-config-label',
   (resolve) => {
     return (selectedCog: any, sense: boolean) => {
-      return resolve(
-        [selectedCog, sense],
-        getBrowserAnalyticsObject('User Interaction')
-      );
+      return resolve([selectedCog, sense]);
     };
   }
 );
 
-export const updateApplyToAll = createAction(
-  'browser/update-apply-to-all',
-  (resolve) => {
-    return (yn: boolean) => {
-      return resolve(yn, getBrowserAnalyticsObject('User Interaction'));
-    };
-  }
-);
+export const updateApplyToAll = createStandardAction(
+  'browser/update-apply-to-all'
+)<boolean>();
 
-export const toggleGenomeSelector = createAction(
-  'toggle-genome-selector',
-  (resolve) => {
-    return (genomeSelectorActive: boolean) =>
-      resolve(
-        genomeSelectorActive,
-        getBrowserAnalyticsObject('User Interaction')
-      );
-  }
-);
+export const toggleGenomeSelector = createStandardAction(
+  'toggle-genome-selector'
+)<boolean>();

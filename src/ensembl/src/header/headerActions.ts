@@ -1,25 +1,11 @@
-import { createAction } from 'typesafe-actions';
+import { createStandardAction } from 'typesafe-actions';
 
-import { getHeaderAnalyticsObject } from 'src/analyticsHelper';
+export const toggleAccount = createStandardAction('header/toggle-account')();
 
-export const toggleAccount = createAction(
-  'header/toggle-account',
-  (resolve) => {
-    return () => resolve(undefined, getHeaderAnalyticsObject('Navigation'));
-  }
-);
+export const toggleLaunchbar = createStandardAction(
+  'header/toggle-launchbar'
+)();
 
-export const toggleLaunchbar = createAction(
-  'header/toggle-launchbar',
-  (resolve) => {
-    return () => resolve(undefined, getHeaderAnalyticsObject('Navigation'));
-  }
-);
-
-export const changeCurrentApp = createAction(
-  'header/change-current-app',
-  (resolve) => {
-    return (currentApp: string) =>
-      resolve(currentApp, getHeaderAnalyticsObject('Navigation'));
-  }
-);
+export const changeCurrentApp = createStandardAction(
+  'header/change-current-app'
+)<string>();
