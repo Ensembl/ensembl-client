@@ -97,24 +97,15 @@ export const fetchOrthologueSpecies: ActionCreator<
         species.display_name.toLowerCase().indexOf(searchTerm.toLowerCase()) !==
           -1
       ) {
-        const speciesIndex = findIndex(
-          orthologueSpecies,
-          (entry: Attribute) => {
-            return species.name === entry.id;
-          }
-        );
+        const speciesIndex = findIndex(filteredSpecies, (entry: Attribute) => {
+          return species.name === entry.id;
+        });
 
-        const checkedStatus = get(
-          orthologueSpecies,
-          [speciesIndex, 'isChecked'],
-          false
-        );
-
-        if (speciesIndex === -1 || checkedStatus) {
+        if (speciesIndex === -1) {
           filteredSpecies.push({
             id: species.name,
             label: species.display_name,
-            isChecked: checkedStatus
+            isChecked: false
           });
         }
       }
