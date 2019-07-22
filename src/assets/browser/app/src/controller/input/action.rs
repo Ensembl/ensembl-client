@@ -17,7 +17,8 @@ pub enum Action {
     SetState(String,bool),
     Settled,
     ZMenu(CPixel),
-    ShowZMenu(String,Dot<i32,i32>,JSONValue)
+    ShowZMenu(String,Dot<i32,i32>,JSONValue),
+    SetFocus(String,bool)
 }
 
 impl Action {
@@ -42,6 +43,7 @@ impl Action {
             Action::Zoom(_) => 10,
             Action::ZMenu(_) => 25,
             Action::ShowZMenu(_,_,_) => 25,
+            Action::SetFocus(_,_) => 20,
             Action::Settled => 30,
         }
     }
@@ -159,6 +161,10 @@ fn exe_zmenu_show(a: &mut App, id: &str, pos: Dot<i32,i32>, payload: JSONValue) 
     }
 }
 
+fn exe_set_focus(a: &mut App, id: &str, jump: bool) {
+    console!("set focus object to id {}, also jump = {:?}",id,jump);
+}
+
 pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
     cg.with_counter(|c| c.lock());
     let mut evs = evs.to_vec();
@@ -178,6 +184,7 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
             Action::AddComponent(name) => exe_component_add(cg,&name),
             Action::SetStick(name) => exe_set_stick(cg,&name),
             Action::SetState(name,on) => exe_set_state(cg,&name,on),
+            Action::SetFocus(id,jump) => exe_set_focus(cg,&id,jump),
             Action::Settled => exe_settled(cg),
             Action::ZMenu(pos) => exe_zmenu(cg,&pos,currency),
             Action::ShowZMenu(id,pos,payload) => exe_zmenu_show(cg,&id,pos,payload),
