@@ -19,6 +19,7 @@ import {
   getSearchText
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
+import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
 import {
   SearchMatch,
   SearchMatches,
@@ -205,8 +206,7 @@ export const commitSelectedSpeciesAndSave: ActionCreator<
     buildCommittedItem(selectedItem)
   ];
 
-  const speciesName = `${selectedItem.common_name ||
-    selectedItem.scientific_name} - ${selectedItem.assembly_name}`;
+  const speciesName = getSpeciesAnalyticsName(selectedItem);
 
   analyticsTracking.trackEvent({
     category: categories.ADD_SPECIES,
@@ -228,9 +228,7 @@ export const toggleSpeciesUseAndSave: ActionCreator<
   let currentStatus = '';
   committedSpecies.map((item) => {
     if (item.genome_id === genomeId) {
-      speciesName = `${item.common_name || item.scientific_name} - ${
-        item.assembly_name
-      }`;
+      speciesName = getSpeciesAnalyticsName(item);
       currentStatus = item.isEnabled ? 'do_not_use' : 'use';
       return {
         ...item,
@@ -259,8 +257,7 @@ export const deleteSpeciesAndSave: ActionCreator<
   );
 
   if (deletedSpecies) {
-    const deletedSpeciesName = `${deletedSpecies.common_name ||
-      deletedSpecies.scientific_name} - ${deletedSpecies.assembly_name}`;
+    const deletedSpeciesName = getSpeciesAnalyticsName(deletedSpecies);
     analyticsTracking.trackEvent({
       category: categories.SELECTED_SPECIES,
       label: deletedSpeciesName,

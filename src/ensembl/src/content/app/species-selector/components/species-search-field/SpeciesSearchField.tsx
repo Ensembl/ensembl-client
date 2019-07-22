@@ -26,6 +26,7 @@ import {
 } from 'src/content/app/species-selector/types/species-search';
 
 import analyticsTracking from 'src/services/analytics-service';
+import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
 
 import { RootState } from 'src/store';
 import { MINIMUM_SEARCH_LENGTH } from 'src/content/app/species-selector/constants/speciesSelectorConstants';
@@ -61,9 +62,8 @@ export const SpeciesSearchField = (props: Props) => {
   const onMatchSelected = (match: SearchMatch) => {
     props.onMatchSelected(match);
 
-    const speciesName = `${match.common_name || match.scientific_name} - ${
-      match.assembly_name
-    }`;
+    const speciesName = getSpeciesAnalyticsName(match);
+
     analyticsTracking.trackEvent({
       category: 'species_search',
       action: 'preselect',

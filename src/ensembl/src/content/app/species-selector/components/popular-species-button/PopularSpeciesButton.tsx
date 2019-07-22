@@ -22,6 +22,7 @@ import {
 } from 'src/content/app/species-selector/types/species-search';
 
 import analyticsTracking from 'src/services/analytics-service';
+import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
 
 import styles from './PopularSpeciesButton.scss';
 
@@ -48,9 +49,7 @@ export const PopularSpeciesButton = (props: Props) => {
 
   const handleClick = () => {
     const { genome_id, is_available } = species;
-    const speciesName = `${species.common_name || species.scientific_name} - ${
-      species.assembly_name
-    }`;
+    const speciesName = getSpeciesAnalyticsName(species);
 
     if (!is_available) {
       return;
