@@ -45,14 +45,14 @@ export const updateBrowserActivated = createAction(
   }
 );
 
-export const activateBrowser = (browserEl: HTMLDivElement) => {
+export const activateBrowser = () => {
   return (dispatch: Dispatch) => {
     const { protocol, host: currentHost } = location;
     const host = config.apiHost || currentHost;
 
     const payload = {
       'config-url': `${protocol}${host}/browser/config`,
-      key: 'main',
+      key: 'main', // TODO: remove this field after we confirmed that it is redundant
       selector: `#${BROWSER_CONTAINER_ID}`
     };
     browserMessagingService.send('bpane-activate', payload);

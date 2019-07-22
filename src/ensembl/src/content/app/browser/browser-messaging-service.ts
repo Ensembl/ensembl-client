@@ -17,7 +17,7 @@ export class BrowserMessagingService {
   public constructor(windowService: WindowServiceInterface) {
     this.window = windowService.getWindow();
     this.subscribeToMessages();
-    this.subscribe('bpane-ready', this.onRecepientReady);
+    this.subscribe('bpane-ready', this.onRecipientReady);
     this.ping();
   }
 
@@ -25,8 +25,7 @@ export class BrowserMessagingService {
     this.sendPostMessage({ type: 'bpane-ready-query' });
   }
 
-  private onRecepientReady = () => {
-    console.log('RECEIVED PONG!!!');
+  private onRecipientReady = () => {
     this.isRecepientReady = true;
 
     this.outgoingMessageQueue.forEach((message) =>
@@ -35,7 +34,6 @@ export class BrowserMessagingService {
   };
 
   private sendPostMessage(message: JSONValue) {
-    console.log('SENDING MESSAGE', message);
     this.window.postMessage(message, '*');
   }
 

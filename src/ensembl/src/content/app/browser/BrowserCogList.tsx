@@ -46,11 +46,12 @@ const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
 ) => {
   const { browserCogTrackList } = props;
   const listenBpaneScroll = (payload: BpaneScrollPayload) => {
-    if (payload.delta_y || payload.delta_y === 0) {
-      props.updateCogList(payload.delta_y);
+    const { delta_y, track_y } = payload;
+    if (typeof delta_y === 'number') {
+      props.updateCogList(delta_y);
     }
-    if (payload.track_y) {
-      props.updateCogTrackList(payload.track_y);
+    if (track_y) {
+      props.updateCogTrackList(track_y);
     }
   };
 
