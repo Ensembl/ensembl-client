@@ -20,6 +20,10 @@ impl FocusObjectImpl {
     pub fn get_focus(&mut self) -> &Option<String> {
         &self.id
     }
+
+    pub fn state(&mut self) -> &Option<String> {
+        &self.id
+    }
 }
 
 #[derive(Clone)]
@@ -30,15 +34,19 @@ impl FocusObject {
         FocusObject(Arc::new(Mutex::new(FocusObjectImpl::new())))
     }
 
-    pub fn set_focus(&mut self, id: &str) {
+    pub fn set_focus(&self, id: &str) {
         self.0.lock().unwrap().set_focus(id);
     }
 
-    pub fn reset_focus(&mut self) {
+    pub fn reset_focus(&self) {
         self.0.lock().unwrap().reset_focus();
     }
 
-    pub fn get_focus(&mut self) -> Option<String> {
+    pub fn get_focus(&self) -> Option<String> {
         self.0.lock().unwrap().get_focus().clone()
+    }
+
+    pub fn state(&self) -> Option<String> {
+        self.0.lock().unwrap().state().clone()
     }
 }

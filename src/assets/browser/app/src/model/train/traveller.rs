@@ -35,6 +35,19 @@ impl TravellerImpl {
         }
     }
     
+    pub fn replace(&mut self) -> TravellerImpl {
+        TravellerImpl {
+            comp: self.comp.clone(),
+            prev_value: self.prev_value,
+            cur_value: self.cur_value,
+            visuals: None,
+            part: self.part.clone(),
+            leaf: self.leaf.clone(),
+            data: Some(TravellerResponseData::new()),
+            zml: ZMenuLeaf::new(&self.leaf)
+        }
+    }
+
     fn set_visuals(&mut self, visuals: Box<TravellerResponse>) {
         self.visuals = Some(visuals);
     }
@@ -50,7 +63,7 @@ impl TravellerImpl {
     fn update_state(&mut self, m: &StateManager) -> bool {
         self.prev_value = self.cur_value;
         self.cur_value = self.comp.is_on(m,&self.part);
-        self.visuals.as_ref().unwrap().set_state(self.cur_value);
+        unwrap!(self.visuals.as_ref()).set_state(self.cur_value);
         self.prev_value != self.cur_value
     }
 
@@ -65,7 +78,7 @@ impl TravellerImpl {
     }
 
     fn is_done(&self) -> bool { 
-        return self.visuals.as_ref().unwrap().check();
+        return unwrap!(self.visuals.as_ref()).check();
     }
     
     fn create_zmenu(&mut self) {
@@ -79,7 +92,7 @@ impl TravellerImpl {
     fn set_response(&mut self) {
         self.create_zmenu();
         self.visuals.as_mut().unwrap().set_response(self.data.take().unwrap());
-    }
+    }    
 }
 
 #[derive(Clone)]
@@ -120,6 +133,10 @@ impl Traveller {
     
     pub fn set_response(&mut self) {
         self.0.lock().unwrap().set_response();
+    }
+
+    pub fn replace(&self) -> Traveller {
+        Traveller(Arc::new(Mutex::new(self.0.lock().unwrap().replace())))
     }
 }
 

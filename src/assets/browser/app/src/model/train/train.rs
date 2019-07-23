@@ -189,7 +189,15 @@ impl Train {
             c.update_state(oom);
         }
     }
-    
+
+    pub fn change_focus(&mut self, cm: &mut TravellerCreator) {
+        let mut new_cars : HashMap<Leaf,Carriage> = HashMap::new();
+        for (k,c) in self.carriages.drain() {
+            new_cars.insert(k.clone(),c.replacement(cm));
+        }
+        self.carriages = new_cars;
+    }
+
     pub fn redraw_where_needed(&mut self, printer: &mut Printer, zmls: &mut ZMenuLeafSet) {
         for carriage in self.get_carriages() {
             carriage.redraw_where_needed(printer,zmls);

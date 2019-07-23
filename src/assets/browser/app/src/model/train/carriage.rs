@@ -1,10 +1,11 @@
 use std::sync::{ Arc, Mutex };
 
-use composit::Leaf;
+use composit::{ Leaf, ActiveSource };
 use composit::{ StateManager };
 use model::driver::{ Printer, PrinterManager };
 use drivers::zmenu::{ ZMenuLeaf, ZMenuLeafSet };
 use super::Traveller;
+use super::travellercreator::TravellerCreator;
 
 pub struct Carriage {
     pm: PrinterManager,
@@ -28,7 +29,13 @@ impl Carriage {
     }
     
     pub fn get_leaf(&self) -> &Leaf { &self.leaf }
-    
+
+    pub fn replacement(&self, tc: &mut TravellerCreator) -> Carriage {
+        let mut c = Carriage::new(&self.pm,&self.leaf);
+        c.travellers = tc.make_travellers_for_leaf(&self.leaf);
+        c
+    }
+
     pub(in super) fn set_needs_refresh(&mut self) {
         self.needs_rebuild = true;
     }

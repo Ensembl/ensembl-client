@@ -165,6 +165,10 @@ impl Compositor {
         self.train_manager.update_state(oom);
     }
     
+    pub fn change_focus(&mut self) {
+        self.train_manager.change_focus(&mut self.components);
+    }
+
     pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> Vec<Action> {
         self.zmr.intersects(stage,pos)
     }

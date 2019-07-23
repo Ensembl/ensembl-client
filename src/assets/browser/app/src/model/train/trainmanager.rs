@@ -253,6 +253,10 @@ impl TrainManager {
     pub fn update_state(&mut self, oom: &StateManager) {
         self.each_train(|t| t.update_state(oom));
     }
+
+    pub fn change_focus(&mut self, cm: &mut TravellerCreator) {
+        self.each_train(|t| t.change_focus(cm));
+    }
     
     /* ***************************************************************
      * Methods used by PRINTER to actually retrieve data for printing.

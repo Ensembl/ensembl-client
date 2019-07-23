@@ -31,7 +31,7 @@ impl SourceResponse {
     }
     
     pub fn update_data<F>(&mut self,  part: &Option<String>, cb: F) where F: FnOnce(&mut TravellerResponseData) {
-        self.travellers.get_mut(part).unwrap().update_data(cb);
+        unwrap!(self.travellers.get_mut(part)).update_data(cb);
     }
         
     pub fn done(&mut self) {

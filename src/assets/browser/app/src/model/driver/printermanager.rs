@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
 
 use composit::{ Leaf, Stage, Compositor };
@@ -8,13 +9,15 @@ use super::Printer;
 use drivers::zmenu::ZMenuLeaf;
 
 struct PrinterManagerImpl {
-    printer: Box<Printer>
+    printer: Box<Printer>,
+    leaf_count: HashMap<Leaf,u32>
 }
 
 impl PrinterManagerImpl {
     fn new(printer: Box<Printer>) -> PrinterManagerImpl {
         PrinterManagerImpl {
-            printer
+            printer,
+            leaf_count: HashMap::new()
         }
     }
 }
@@ -59,11 +62,17 @@ impl Printer for PrinterManager {
     }
     
     fn add_leaf(&mut self, leaf: &Leaf) {
-        self.0.borrow_mut().printer.add_leaf(leaf);
+        let mut imp = self.0.borrow_mut();
+        if *imp.leaf_count.entry(leaf.clone()).and_modify(|v| *v += 1).or_insert(1) == 1 {
+            imp.printer.add_leaf(leaf);
+        }
     }
     
     fn remove_leaf(&mut self, leaf: &Leaf) {
-        self.0.borrow_mut().printer.remove_leaf(leaf);
+        let mut imp = self.0.borrow_mut();
+        if *imp.leaf_count.entry(leaf.clone()).and_modify(|v| *v -= 1).or_insert(0) == 0 {
+            imp.printer.remove_leaf(leaf);
+        }
     }
     
     fn set_current(&mut self, leaf: &Leaf) {

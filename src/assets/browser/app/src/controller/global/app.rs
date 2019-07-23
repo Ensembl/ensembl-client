@@ -110,7 +110,13 @@ impl App {
     
     pub fn with_focus_object<F,G>(&mut self, cb: F) -> G
             where F: FnOnce(&mut FocusObject) -> G {
-        cb(&mut self.focus)
+        let old_status = self.focus.state();
+        let out = cb(&mut self.focus);
+        let new_status = self.focus.state();
+        if old_status != new_status {
+            self.compo.lock().unwrap().change_focus();
+        }
+        out
     }
 
     pub fn set_runner(&mut self, ar: &AppRunnerWeak) {

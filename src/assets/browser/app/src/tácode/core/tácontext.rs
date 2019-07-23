@@ -17,7 +17,6 @@ impl TáTask {
         #[allow(unreachable_patterns)]
         match self {
             TáTask::MakeShapes(_,_leaf,sr,_,_,_,_,_) => {
-                //console!("{:?} for {} added {} shapes",leaf,sr.get_source_name(),sr.size());
                 sr.done();
             },
             _ => ()
