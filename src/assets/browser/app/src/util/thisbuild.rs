@@ -15,8 +15,8 @@ deploy={} console={} instance_id={} API_VERSION={}
             VERSION_USER,VERSION_DIR,VERSION_HOSTNAME,VERSION_DATE,
             VERSION_GIT,VERSION_CHANGES,
             cfg!(deploy),cfg!(console),
-            API_VERSION,
             get_instance_id(),
+            API_VERSION,
             VERSION_POM
             )
 }
