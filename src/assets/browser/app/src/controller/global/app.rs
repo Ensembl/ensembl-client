@@ -17,6 +17,7 @@ use debug::add_debug_sticks;
 use dom::domutil;
 use drivers::webgl::GLPrinter;
 use model::driver::{ Printer, PrinterManager };
+use model::focus::FocusObject;
 use tácode::Tácode;
 use types::Dot;
 
@@ -41,7 +42,8 @@ pub struct App {
     size: Option<Dot<f64,f64>>,
     last_resize_at: Option<f64>,
     stage_resize: Option<Dot<f64,f64>>,
-    action_backlog: Vec<Action>
+    action_backlog: Vec<Action>,
+    focus: FocusObject
 }
 
 impl App {
@@ -73,11 +75,12 @@ impl App {
             size: None,
             stage_resize: None,
             last_resize_at: None,
-            action_backlog: Vec::new()
+            action_backlog: Vec::new(),
+            focus: FocusObject::new()
         };
         let dsm = {
             let compo = &out.compo.lock().unwrap();
-            CombinedSourceManager::new(&tc,config,&compo.get_zmr(),&out.als,&out.http_clerk)
+            CombinedSourceManager::new(&tc,config,&compo.get_zmr(),&out.als,&out.http_clerk,&out.focus)
         };
         out.csl.add_compsource(Box::new(dsm));
         out.run_actions(&startup_actions(),None);        
@@ -105,6 +108,11 @@ impl App {
         cb(&mut self.sticks)
     }
     
+    pub fn with_focus_object<F,G>(&mut self, cb: F) -> G
+            where F: FnOnce(&mut FocusObject) -> G {
+        cb(&mut self.focus)
+    }
+
     pub fn set_runner(&mut self, ar: &AppRunnerWeak) {
         self.ar = ar.clone();
     }

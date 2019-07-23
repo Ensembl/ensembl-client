@@ -5,17 +5,18 @@ use std::rc::Rc;
 use composit::{ ActiveSource, Leaf };
 use data::BackendConfig;
 use model::shape::DrawingSpec;
+use model::focus::FocusObject;
 use composit::source::SourceResponse;
 
 pub enum TáTask {
-    MakeShapes(ActiveSource,Leaf,SourceResponse,Vec<DrawingSpec>,usize,Option<String>,Rc<BackendConfig>)
+    MakeShapes(ActiveSource,Leaf,SourceResponse,Vec<DrawingSpec>,usize,Option<String>,Rc<BackendConfig>,FocusObject)
 }
 
 impl TáTask {
     pub fn finished(&mut self) {
         #[allow(unreachable_patterns)]
         match self {
-            TáTask::MakeShapes(_,_leaf,sr,_,_,_,_) => {
+            TáTask::MakeShapes(_,_leaf,sr,_,_,_,_,_) => {
                 //console!("{:?} for {} added {} shapes",leaf,sr.get_source_name(),sr.size());
                 sr.done();
             },

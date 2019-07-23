@@ -163,6 +163,7 @@ fn exe_zmenu_show(a: &mut App, id: &str, pos: Dot<i32,i32>, payload: JSONValue) 
 
 fn exe_set_focus(a: &mut App, id: &str, jump: bool) {
     console!("set focus object to id {}, also jump = {:?}",id,jump);
+    a.with_focus_object(|f| f.set_focus(id));
 }
 
 pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {

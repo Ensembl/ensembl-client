@@ -38,7 +38,7 @@ impl Command for Asset {
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,_,_,_,_,cfg) = task {
+            if let TáTask::MakeShapes(_,_,_,_,_,_,cfg,_) = task {
                 let regs = rt.registers();
                 regs.get(self.2).as_string(|name| {
                     regs.get(self.3).as_floats(|index| {
@@ -56,7 +56,7 @@ impl Command for Image {
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,_,ref mut tx,_,_,_) = task {
+            if let TáTask::MakeShapes(_,_,_,ref mut tx,_,_,_,_) = task {
                 let regs = rt.registers();
                 regs.get(self.2).as_floats(|dims| {
                     regs.get(self.3).as_string(|data| {

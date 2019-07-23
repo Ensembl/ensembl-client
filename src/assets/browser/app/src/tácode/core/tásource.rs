@@ -5,6 +5,7 @@ use tánaiste::Value;
 
 use composit::{ Leaf, Source, ActiveSource };
 use data::{ XferClerk, XferRequest, XferConsumer, BackendConfig, BackendBytecode };
+use model::focus::FocusObject;
 use model::shape::DrawingSpec;
 use composit::source::SourceResponse;
 use tácode::{ Tácode, TáTask };
@@ -14,19 +15,21 @@ pub struct TáSourceImpl {
     xf: Box<XferClerk>,
     lid: usize,
     name: String,
-    config: BackendConfig
+    config: BackendConfig,
+    focus: FocusObject
 }
 
 #[derive(Clone)]
 pub struct TáSource(Rc<RefCell<TáSourceImpl>>);
 
 impl TáSource {
-    pub fn new(tc: &Tácode, xf: Box<XferClerk>, name: &str, lid: usize, config: &BackendConfig) -> TáSource {
+    pub fn new(tc: &Tácode, xf: Box<XferClerk>, name: &str, lid: usize, config: &BackendConfig, focus: &FocusObject) -> TáSource {
         TáSource(Rc::new(RefCell::new(TáSourceImpl{
             tc: tc.clone(),
             xf, lid,
             name: name.to_string(),
-            config: config.clone()
+            config: config.clone(),
+            focus: focus.clone()
         })))
     }
 }
@@ -37,7 +40,7 @@ impl Source for TáSource {
         let tc = self.0.borrow_mut().tc.clone();
         let lid = self.0.borrow_mut().lid;
         let config = &self.0.borrow().config.clone();
-        let xcons = TáXferConsumer::new(&tc,acs,leaf,lc,lid,config);
+        let xcons = TáXferConsumer::new(&tc,acs,leaf,lc,lid,config,&self.0.borrow_mut().focus);
         self.0.borrow_mut().xf.satisfy(xfer_req,Box::new(xcons));
     }
 }
@@ -48,18 +51,20 @@ struct TáXferConsumer {
     lid: usize,
     leaf: Leaf,
     acs: ActiveSource,
-    config: Rc<BackendConfig>
+    config: Rc<BackendConfig>,
+    focus: FocusObject
 }
 
 impl TáXferConsumer {
-    fn new(tc: &Tácode, acs: &ActiveSource, leaf: &Leaf, lc: SourceResponse, lid: usize, config: &BackendConfig) -> TáXferConsumer {
+    fn new(tc: &Tácode, acs: &ActiveSource, leaf: &Leaf, lc: SourceResponse, lid: usize, config: &BackendConfig, focus: &FocusObject) -> TáXferConsumer {
         TáXferConsumer {
             lc: Some(lc),
             lid,
             tc: tc.clone(),
             leaf: leaf.clone(),
             acs: acs.clone(),
-            config: Rc::new(config.clone())
+            config: Rc::new(config.clone()),
+            focus: focus.clone()
         }
     }
 }
@@ -75,7 +80,8 @@ impl XferConsumer for TáXferConsumer {
                                 self.acs.clone(),
                                 self.leaf.clone(),asrb,
                                 Vec::<DrawingSpec>::new(),self.lid,None,
-                                self.config.clone()));
+                                self.config.clone(),
+                                self.focus.clone()));
                             for (i,reg) in data.drain(..).enumerate() {
                                 self.tc.set_reg(pid,i+1,reg);
                             }

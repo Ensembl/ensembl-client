@@ -57,7 +57,7 @@ impl Command for ZTmpl {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,sr,_,_,_,_) = task {
+            if let TáTask::MakeShapes(_,_,sr,_,_,_,_,_) = task {
                 regs.get(self.1).as_string(|sids| {
                     regs.get(self.2).as_string(|specs| {
                         tmpl(sr,sids,specs);
@@ -75,7 +75,7 @@ impl Command for ZTmplSpec {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,sr,_,_,_,_) = task {
+            if let TáTask::MakeShapes(_,_,sr,_,_,_,_,_) = task {
                 regs.get(self.1).as_string(|sids| {
                     regs.get(self.2).as_string(|specs| {
                         tmpl_spec(sr,sids,specs);
@@ -93,7 +93,7 @@ impl Command for ZMenu {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,sr,_,_,_,_) = task {
+            if let TáTask::MakeShapes(_,_,sr,_,_,_,_,_) = task {
                 regs.get(self.1).as_string(|ids| {
                     regs.get(self.2).as_string(|keys| {
                         regs.get(self.3).as_string(|values| {
@@ -113,7 +113,7 @@ impl Command for ZAssoc {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,sr,_,_,_,_) = task {
+            if let TáTask::MakeShapes(_,_,sr,_,_,_,_,_) = task {
                 regs.get(self.1).as_string(|to| {
                     regs.get(self.2).as_string(|from| {
                         zmenu_assoc(sr,to,from);

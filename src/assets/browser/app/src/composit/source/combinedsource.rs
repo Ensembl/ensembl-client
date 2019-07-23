@@ -10,6 +10,7 @@ use debug::{ add_debug_sources };
 use drivers::zmenu::ZMenuRegistry;
 use composit::source::SourceResponse;
 use tácode::{ Tácode, TáSource };
+use model::focus::FocusObject;
 
 const TOP : i32 = 50;
 const PITCH : i32 = 63;
@@ -49,14 +50,14 @@ impl Source for CombinedSource {
     }
 }
 
-pub fn build_combined_source(tc: &Tácode, config: &BackendConfig, zmr: &ZMenuRegistry, als: &mut AllLandscapes, xf: &HttpXferClerk, type_name: &str) -> Option<ActiveSource> {
+pub fn build_combined_source(tc: &Tácode, config: &BackendConfig, zmr: &ZMenuRegistry, als: &mut AllLandscapes, xf: &HttpXferClerk, type_name: &str, focus: &FocusObject) -> Option<ActiveSource> {
     let lid = als.allocate(type_name);
     let cfg_track = config.get_track(type_name);
     let y_pos = cfg_track.map(|t| t.get_position()).unwrap_or(-1);
     let letter = cfg_track.map(|t| t.get_letter()).unwrap_or("");
     let plot = Plot::new(y_pos*PITCH+TOP,PITCH,letter.to_string(),y_pos!=-1);
     als.with(lid, |ls| ls.set_plot(plot) );
-    let backend = TáSource::new(tc,Box::new(xf.clone()),type_name,lid,config);
+    let backend = TáSource::new(tc,Box::new(xf.clone()),type_name,lid,config,focus);
     let mut combined = CombinedSource::new(Box::new(backend));
     add_debug_sources(&mut combined,type_name);
     let mut act = ActiveSource::new(type_name,Rc::new(combined),zmr,als,lid);

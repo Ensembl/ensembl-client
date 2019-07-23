@@ -40,6 +40,8 @@ pub struct Plot(TáContext,usize,usize);
 // allplots #offsets, #heights, #letter-lens, #letters
 pub struct AllPlots(TáContext,usize,usize,usize,usize);
 pub struct SetPart(TáContext,usize);
+// getfocus #out
+pub struct GetFocus(TáContext,usize);
 
 impl Command for Abutt {
     fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
@@ -59,7 +61,7 @@ impl Command for Extent {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,leaf,lc,_,_,_,_) = task {
+            if let TáTask::MakeShapes(_,leaf,lc,_,_,_,_,_) = task {
                 regs.set(self.1,Value::new_from_float(vec! {
                     leaf.get_start().floor(),
                     leaf.get_end().ceil()
@@ -76,7 +78,7 @@ impl Command for Scale {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,leaf,_,_,_,_,_) = task {
+            if let TáTask::MakeShapes(_,leaf,_,_,_,_,_,_) = task {
                 let scale = leaf.get_scale().get_index()+13;
                 regs.set(self.1,Value::new_from_float(vec![scale as f64]));
             }
@@ -91,7 +93,7 @@ impl Command for Plot {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(acs,_,_,_,lid,_,_) = task {
+            if let TáTask::MakeShapes(acs,_,_,_,lid,_,_,_) = task {
                 acs.with_landscape(*lid,|ls| {
                     let plot = ls.get_plot();
                     regs.set(self.1,Value::new_from_float(vec!{
@@ -112,7 +114,7 @@ impl Command for AllPlots {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(acs,_,_,_,_,_,_) = task {
+            if let TáTask::MakeShapes(acs,_,_,_,_,_,_,_) = task {
                 let mut data : Vec<(i32,i32,String)> = acs.all_landscapes(|_,ls| {
                     let p = ls.get_plot();
                     (p.get_base(),p.get_height(),p.get_letter().to_string())
@@ -145,7 +147,7 @@ impl Command for SetPart {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
             regs.get(self.1).as_string(|new_part| {
-                if let TáTask::MakeShapes(_,_,_,_,_,part,_) = task {
+                if let TáTask::MakeShapes(_,_,_,_,_,part,_,_) = task {
                     if new_part[0] == "" {
                         part.take();
                     } else {
@@ -158,12 +160,31 @@ impl Command for SetPart {
     }
 }
 
+impl Command for GetFocus {
+    #[allow(irrefutable_let_patterns)]
+    fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        let pid = proc.lock().unwrap().get_pid().unwrap();
+        self.0.with_task(pid,|task| {
+            if let TáTask::MakeShapes(acs,_,_,_,_,_,_,f) = task {
+                if let Some(id) = f.get_focus() {
+                    regs.set(self.1,Value::new_from_string(vec![id]));
+                } else {
+                    regs.set(self.1,Value::new_from_string(vec![]));
+                }
+            }
+        });
+        return 1;
+    }
+}
+
 pub struct AbuttI();
 pub struct ExtentI(pub TáContext);
 pub struct ScaleI(pub TáContext);
 pub struct PlotI(pub TáContext);
 pub struct AllPlotsI(pub TáContext);
 pub struct SetPartI(pub TáContext);
+pub struct GetFocusI(pub TáContext);
 
 impl Instruction for AbuttI {
     fn signature(&self) -> Signature { Signature::new("abutt","rr") }
@@ -205,5 +226,12 @@ impl Instruction for SetPartI {
     fn signature(&self) -> Signature { Signature::new("setpart","r") }
     fn build(&self, args: &Vec<Argument>) -> Box<Command> {
         Box::new(SetPart(self.0.clone(),args[0].reg()))
+    }
+}
+
+impl Instruction for GetFocusI {
+    fn signature(&self) -> Signature { Signature::new("getfocus","r") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(GetFocus(self.0.clone(),args[0].reg()))
     }
 }

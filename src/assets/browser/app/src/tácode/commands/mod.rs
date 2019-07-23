@@ -10,7 +10,7 @@ mod zmenu;
 
 pub use self::appget::AppGetI;
 pub use self::debug::{ CPrintI, DPrintI };
-pub use self::geometry::{ AbuttI, AllPlotsI, ExtentI, PlotI, ScaleI, SetPartI };
+pub use self::geometry::{ AbuttI, AllPlotsI, ExtentI, PlotI, ScaleI, SetPartI, GetFocusI };
 pub use self::image::{ ImageI, AssetI };
 pub use self::op::{ BinOpI, BinOpType, MemberI };
 pub use self::ruler::RulerI;
