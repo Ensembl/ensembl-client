@@ -261,7 +261,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
   };
 
   const closeTrack = () => {
-    if (isDrawerOpened) {
+    if (!isDrawerOpened) {
       return;
     }
 
