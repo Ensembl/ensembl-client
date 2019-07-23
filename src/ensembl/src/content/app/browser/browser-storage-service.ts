@@ -76,10 +76,7 @@ export class BrowserStorageService {
   }
 
   public getSelectedBrowserTab() {
-    return (
-      this.storageService.get(StorageKeys.SELECTED_BROWSER_TAB) ||
-      TrackType.GENOMIC
-    );
+    return this.storageService.get(StorageKeys.SELECTED_BROWSER_TAB) || {};
   }
 
   public updateSelectedBrowserTab(selectedBrowserTabForGenome: {
