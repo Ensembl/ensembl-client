@@ -1,6 +1,6 @@
 import { createAction } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
-import { Action, Dispatch, ActionCreator } from 'redux';
+import { Action, ActionCreator } from 'redux';
 
 import { RootState } from 'src/store';
 import { getTrackPanelAnalyticsObject } from 'src/analyticsHelper';
@@ -31,13 +31,15 @@ export const selectBrowserTab = createAction(
 export const selectBrowserTabAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (selectedBrowserTab: TrackType) => (
-  dispatch: Dispatch,
+  dispatch,
   getState: () => RootState
 ) => {
   const activeGenomeId = getBrowserActiveGenomeId(getState());
+
   if (!activeGenomeId) {
     return;
   }
+
   const selectedBrowserTabForGenome = {
     [activeGenomeId]: selectedBrowserTab
   };
