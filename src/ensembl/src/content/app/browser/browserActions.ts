@@ -14,7 +14,8 @@ import {
   getBrowserActiveEnsObjectId,
   getBrowserActiveEnsObjectIds,
   getBrowserTrackStates,
-  getChrLocation
+  getChrLocation,
+  getBrowserMessageCount
 } from './browserSelectors';
 import { getBrowserAnalyticsObject } from 'src/analyticsHelper';
 import { getChrLocationStr } from './browserHelper';
@@ -235,7 +236,7 @@ export const changeBrowserLocation: ActionCreator<
   return (dispatch, getState: () => RootState) => {
     const state = getState();
     const [chrCode, startBp, endBp] = chrLocation;
-    const messageCount = state.browser.browserEntity.messageCounter;
+    const messageCount = getBrowserMessageCount(state);
 
     browserMessagingService.send('bpane', {
       stick: `${genomeId}:${chrCode}`,
@@ -244,6 +245,21 @@ export const changeBrowserLocation: ActionCreator<
 
     browserMessagingService.send('bpane', {
       goto: `${startBp}-${endBp}`,
+      'message-counter': messageCount
+    });
+  };
+};
+
+export const changeFocusObject: ActionCreator<
+  ThunkAction<any, any, null, Action<string>>
+> = (objectId) => {
+  return (dispatch, getState: () => RootState) => {
+    console.log('in changeFocusObject');
+    const state = getState();
+    const messageCount = getBrowserMessageCount(state);
+
+    browserMessagingService.send('bpane', {
+      focus: objectId,
       'message-counter': messageCount
     });
   };

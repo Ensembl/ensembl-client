@@ -84,6 +84,10 @@ export const getDefaultChrLocation = (state: RootState): ChrLocation | null => {
   return [chromosome, start, end];
 };
 
+export const getBrowserMessageCount = (state: RootState): number => {
+  return state.browser.browserEntity.messageCounter;
+};
+
 export const getGenomeSelectorActive = (state: RootState): boolean =>
   state.browser.browserLocation.genomeSelectorActive;
 
