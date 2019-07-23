@@ -5,6 +5,7 @@ import React, {
   FormEvent,
   useEffect
 } from 'react';
+import classNames from 'classnames';
 
 import { ChrLocation } from '../browserState';
 
@@ -39,16 +40,6 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
   useEffect(() => {
     setChrLocationPlaceholder(chrLocationStr);
   }, []);
-
-  const getGenomeSelectorClasses = () => {
-    let classNames = styles.browserGenomeSelector;
-
-    if (isDrawerOpened) {
-      classNames += ` ${styles.browserGenomeSelectorDisabled}`;
-    }
-
-    return classNames;
-  };
 
   const activateForm = () => {
     if (isDrawerOpened) {
@@ -99,8 +90,12 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
     }
   };
 
+  const className = classNames(styles.browserGenomeSelector, {
+    [styles.browserGenomeSelectorDisabled]: isDrawerOpened
+  });
+
   return props.browserActivated ? (
-    <dd className={getGenomeSelectorClasses()}>
+    <dd className={className}>
       <label className="show-for-large">Chromosome</label>
       {props.genomeSelectorActive ? (
         <form onSubmit={handleSubmit}>

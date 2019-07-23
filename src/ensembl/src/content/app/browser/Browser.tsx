@@ -33,7 +33,7 @@ import {
   getAllChrLocations
 } from './browserSelectors';
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
-import { getTrackPanelOpened } from './track-panel/trackPanelSelectors';
+import { getIsTrackPanelOpened } from './track-panel/trackPanelSelectors';
 import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 import { getIsDrawerOpened } from './drawer/drawerSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
@@ -58,14 +58,14 @@ type StateProps = {
   activeGenomeId: string | null;
   activeEnsObjectId: string | null;
   allActiveEnsObjectIds: { [genomeId: string]: string };
+  allChrLocations: { [genomeId: string]: ChrLocation };
   browserActivated: boolean;
   browserNavOpened: boolean;
   browserQueryParams: { [key: string]: string };
   chrLocation: ChrLocation | null;
-  allChrLocations: { [genomeId: string]: ChrLocation };
-  isDrawerOpened: boolean;
   genomeSelectorActive: boolean;
-  trackPanelOpened: boolean;
+  isDrawerOpened: boolean;
+  isTrackPanelOpened: boolean;
   launchbarExpanded: boolean;
   exampleEnsObjects: EnsObject[];
   committedSpecies: CommittedItem[];
@@ -278,7 +278,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
     if (isDrawerOpened) {
       return 'calc(41px + 0vw)';
     }
-    return props.trackPanelOpened
+    return props.isTrackPanelOpened
       ? 'calc(-356px + 100vw)'
       : 'calc(-36px + 100vw)';
   };
@@ -287,7 +287,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
     setTrackAnimation({
       width: getBrowserWidth()
     });
-  }, [isDrawerOpened, props.trackPanelOpened]);
+  }, [isDrawerOpened, props.isTrackPanelOpened]);
 
   const getHeightClass = (launchbarExpanded: boolean): string => {
     return launchbarExpanded ? styles.shorter : styles.taller;
@@ -378,14 +378,14 @@ const mapStateToProps = (state: RootState): StateProps => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
   activeEnsObjectId: getBrowserActiveEnsObjectId(state),
   allActiveEnsObjectIds: getBrowserActiveEnsObjectIds(state),
+  allChrLocations: getAllChrLocations(state),
   browserActivated: getBrowserActivated(state),
   browserNavOpened: getBrowserNavOpened(state),
   browserQueryParams: getBrowserQueryParams(state),
   chrLocation: getChrLocation(state),
-  allChrLocations: getAllChrLocations(state),
-  isDrawerOpened: getIsDrawerOpened(state),
   genomeSelectorActive: getGenomeSelectorActive(state),
-  trackPanelOpened: getTrackPanelOpened(state),
+  isDrawerOpened: getIsDrawerOpened(state),
+  isTrackPanelOpened: getIsTrackPanelOpened(state),
   launchbarExpanded: getLaunchbarExpanded(state),
   exampleEnsObjects: getExampleEnsObjects(state),
   committedSpecies: getEnabledCommittedSpecies(state)

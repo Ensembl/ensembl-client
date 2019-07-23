@@ -14,12 +14,12 @@ type TrackPanelBarProps = {
   closeDrawer: () => void;
   closeTrackPanelModal: () => void;
   isDrawerOpened: boolean;
+  isTrackPanelModalOpened: boolean;
+  isTrackPanelOpened: boolean;
   launchbarExpanded: boolean;
   openTrackPanelModal: (trackPanelModalView: string) => void;
-  toggleTrackPanel: (trackPanelOpened?: boolean) => void;
-  trackPanelModalOpened: boolean;
+  toggleTrackPanel: (isTrackPanelOpened?: boolean) => void;
   trackPanelModalView: string;
-  trackPanelOpened: boolean;
 };
 
 const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
@@ -46,7 +46,7 @@ const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
       <dl>
         <dt className={styles.sliderButton}>
           <button onClick={moveTrackPanel}>
-            {props.trackPanelOpened ? (
+            {props.isTrackPanelOpened ? (
               <img src={chevronRightIcon} alt="collapse" />
             ) : (
               <img src={chevronLeftIcon} alt="expand" />
@@ -59,7 +59,7 @@ const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
             iconConfig={item}
             closeTrackPanelModal={props.closeTrackPanelModal}
             openTrackPanelModal={props.openTrackPanelModal}
-            trackPanelModalOpened={props.trackPanelModalOpened}
+            isTrackPanelModalOpened={props.isTrackPanelModalOpened}
             trackPanelModalView={props.trackPanelModalView}
           />
         ))}

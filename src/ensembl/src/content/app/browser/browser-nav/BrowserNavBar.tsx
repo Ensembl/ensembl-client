@@ -6,7 +6,7 @@ import { browserNavConfig, BrowserNavItem } from '../browserConfig';
 
 import { RootState } from 'src/store';
 import { getBrowserNavStates } from '../browserSelectors';
-import { getTrackPanelOpened } from '../track-panel/trackPanelSelectors';
+import { getIsTrackPanelOpened } from '../track-panel/trackPanelSelectors';
 import { BrowserNavStates } from '../browserState';
 
 import BrowserNavIcon from './BrowserNavIcon';
@@ -15,7 +15,7 @@ import styles from './BrowserNavBar.scss';
 
 type StateProps = {
   browserNavStates: BrowserNavStates;
-  trackPanelOpened: boolean;
+  isTrackPanelOpened: boolean;
 };
 
 type DispatchProps = {};
@@ -30,7 +30,7 @@ export const BrowserNavBar: FunctionComponent<BrowserNavBarProps> = (
   props: BrowserNavBarProps
 ) => {
   const className = classNames(styles.browserNavBar, {
-    [styles.browserNavBarExpanded]: !props.trackPanelOpened
+    [styles.browserNavBarExpanded]: !props.isTrackPanelOpened
   });
 
   return (
@@ -51,7 +51,7 @@ export const BrowserNavBar: FunctionComponent<BrowserNavBarProps> = (
 
 const mapStateToProps = (state: RootState): StateProps => ({
   browserNavStates: getBrowserNavStates(state),
-  trackPanelOpened: getTrackPanelOpened(state)
+  isTrackPanelOpened: getIsTrackPanelOpened(state)
 });
 
 const mapDispatchToProps: DispatchProps = {};

@@ -19,8 +19,8 @@ import {
 } from './trackPanelActions';
 import { toggleDrawer, changeDrawerView } from '../drawer/drawerActions';
 import {
-  getTrackPanelOpened,
-  getTrackPanelModalOpened,
+  getIsTrackPanelOpened,
+  getIsTrackPanelModalOpened,
   getTrackPanelModalView,
   getSelectedBrowserTab
 } from './trackPanelSelectors';
@@ -49,12 +49,12 @@ type StateProps = {
   isDrawerOpened: boolean;
   drawerView: string;
   ensObject: EnsObject | null;
+  isTrackPanelModalOpened: boolean;
+  isTrackPanelOpened: boolean;
   launchbarExpanded: boolean;
   selectedBrowserTab: TrackType;
   genomeTrackCategories: GenomeTrackCategory[];
-  trackPanelModalOpened: boolean;
   trackPanelModalView: string;
-  trackPanelOpened: boolean;
   trackStates: TrackStates;
 };
 
@@ -63,7 +63,7 @@ type DispatchProps = {
   closeTrackPanelModal: () => void;
   openTrackPanelModal: (trackPanelModalView: string) => void;
   toggleDrawer: (isDrawerOpened: boolean) => void;
-  toggleTrackPanel: (trackPanelOpened?: boolean) => void;
+  toggleTrackPanel: (isTrackPanelOpened?: boolean) => void;
   updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
 };
 
@@ -99,7 +99,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
     if (isDrawerOpened) {
       return 'calc(41px + 0vw)';
     }
-    return props.trackPanelOpened
+    return props.isTrackPanelOpened
       ? 'calc(-356px + 100vw)'
       : 'calc(-36px + 100vw)';
   };
@@ -108,7 +108,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
     setTrackAnimation({
       left: getBrowserWidth()
     });
-  }, [isDrawerOpened, props.trackPanelOpened]);
+  }, [isDrawerOpened, props.isTrackPanelOpened]);
 
   return props.activeGenomeId ? (
     <animated.div style={trackAnimation}>
@@ -122,9 +122,9 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
             launchbarExpanded={props.launchbarExpanded}
             openTrackPanelModal={props.openTrackPanelModal}
             toggleTrackPanel={props.toggleTrackPanel}
-            trackPanelModalOpened={props.trackPanelModalOpened}
+            isTrackPanelModalOpened={props.isTrackPanelModalOpened}
             trackPanelModalView={props.trackPanelModalView}
-            trackPanelOpened={props.trackPanelOpened}
+            isTrackPanelOpened={props.isTrackPanelOpened}
           />
           <TrackPanelList
             activeGenomeId={props.activeGenomeId}
@@ -141,7 +141,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
             updateTrackStates={props.updateTrackStates}
           />
 
-          {props.trackPanelModalOpened ? (
+          {props.isTrackPanelModalOpened ? (
             <TrackPanelModal
               closeTrackPanelModal={props.closeTrackPanelModal}
               launchbarExpanded={props.launchbarExpanded}
@@ -165,14 +165,14 @@ const mapStateToProps = (state: RootState): StateProps => {
     isDrawerOpened: getIsDrawerOpened(state),
     drawerView: getDrawerView(state),
     ensObject: getBrowserActiveEnsObject(state),
+    isTrackPanelModalOpened: getIsTrackPanelModalOpened(state),
+    trackPanelModalView: getTrackPanelModalView(state),
     launchbarExpanded: getLaunchbarExpanded(state),
     selectedBrowserTab: getSelectedBrowserTab(state),
     genomeTrackCategories: activeGenomeId
       ? getGenomeTrackCategoriesById(state, activeGenomeId)
       : [],
-    trackPanelModalOpened: getTrackPanelModalOpened(state),
-    trackPanelModalView: getTrackPanelModalView(state),
-    trackPanelOpened: getTrackPanelOpened(state),
+    isTrackPanelOpened: getIsTrackPanelOpened(state),
     trackStates: getBrowserTrackStates(state)
   };
 };

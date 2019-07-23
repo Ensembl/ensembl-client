@@ -11,9 +11,9 @@ import { getBrowserActiveGenomeId } from '../browserSelectors';
 export const toggleTrackPanel = createAction(
   'track-panel/toggle-track-panel',
   (resolve) => {
-    return (trackPanelOpened?: boolean) =>
+    return (isTrackPanelOpened?: boolean) =>
       resolve(
-        trackPanelOpened,
+        isTrackPanelOpened,
         getTrackPanelAnalyticsObject('User Interaction')
       );
   }

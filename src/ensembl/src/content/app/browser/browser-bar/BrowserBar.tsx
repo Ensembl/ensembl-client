@@ -19,8 +19,8 @@ import {
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 import {
   getSelectedBrowserTab,
-  getTrackPanelModalOpened,
-  getTrackPanelOpened
+  getIsTrackPanelModalOpened,
+  getIsTrackPanelOpened
 } from '../track-panel/trackPanelSelectors';
 import { selectBrowserTabAndSave } from '../track-panel/trackPanelActions';
 import { toggleDrawer } from '../drawer/drawerActions';
@@ -40,11 +40,11 @@ type StateProps = {
   chrLocation: ChrLocation | null;
   defaultChrLocation: ChrLocation | null;
   isDrawerOpened: boolean;
+  isTrackPanelModalOpened: boolean;
+  isTrackPanelOpened: boolean;
   genomeSelectorActive: boolean;
   ensObject: EnsObject | null;
   selectedBrowserTab: TrackType;
-  trackPanelModalOpened: boolean;
-  trackPanelOpened: boolean;
 };
 
 type DispatchProps = {
@@ -118,7 +118,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   };
 
   const className = classNames(styles.browserInfo, {
-    [styles.browserInfoExpanded]: !props.trackPanelOpened,
+    [styles.browserInfoExpanded]: !props.isTrackPanelOpened,
     [styles.browserInfoGreyed]: isDrawerOpened
   });
 
@@ -158,7 +158,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
           )}
         </dl>
       </div>
-      {props.trackPanelOpened && props.activeGenomeId && (
+      {props.isTrackPanelOpened && props.activeGenomeId && (
         <BrowserTabs
           closeDrawer={props.closeDrawer}
           ensObject={props.ensObject}
@@ -166,7 +166,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
           genomeSelectorActive={props.genomeSelectorActive}
           selectBrowserTabAndSave={props.selectBrowserTabAndSave}
           selectedBrowserTab={props.selectedBrowserTab}
-          trackPanelModalOpened={props.trackPanelModalOpened}
+          isTrackPanelModalOpened={props.isTrackPanelModalOpened}
         />
       )}
     </div>
@@ -228,12 +228,12 @@ const mapStateToProps = (state: RootState): StateProps => ({
   browserNavOpened: getBrowserNavOpened(state),
   chrLocation: getChrLocation(state),
   defaultChrLocation: getDefaultChrLocation(state),
-  isDrawerOpened: getIsDrawerOpened(state),
   ensObject: getBrowserActiveEnsObject(state),
   genomeSelectorActive: getGenomeSelectorActive(state),
-  selectedBrowserTab: getSelectedBrowserTab(state),
-  trackPanelModalOpened: getTrackPanelModalOpened(state),
-  trackPanelOpened: getTrackPanelOpened(state)
+  isDrawerOpened: getIsDrawerOpened(state),
+  isTrackPanelModalOpened: getIsTrackPanelModalOpened(state),
+  isTrackPanelOpened: getIsTrackPanelOpened(state),
+  selectedBrowserTab: getSelectedBrowserTab(state)
 });
 
 const mapDispatchToProps: DispatchProps = {

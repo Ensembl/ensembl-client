@@ -11,7 +11,7 @@ type BrowserTabsProps = {
   genomeSelectorActive: boolean;
   selectBrowserTabAndSave: (selectedBrowserTab: TrackType) => void;
   selectedBrowserTab: TrackType;
-  trackPanelModalOpened: boolean;
+  isTrackPanelModalOpened: boolean;
 };
 
 const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
@@ -30,14 +30,18 @@ const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
   };
 
   const getBrowserTabClasses = (trackType: TrackType) => {
-    const { isDrawerOpened, selectedBrowserTab, trackPanelModalOpened } = props;
+    const {
+      isDrawerOpened,
+      selectedBrowserTab,
+      isTrackPanelModalOpened
+    } = props;
     let classNames = styles.browserTab;
 
     if (
       props.ensObject.genome_id &&
       selectedBrowserTab === trackType &&
-      isDrawerOpened === false &&
-      trackPanelModalOpened === false
+      !isDrawerOpened &&
+      !isTrackPanelModalOpened
     ) {
       classNames += ` ${styles.browserTabActive} ${styles.browserTabArrow}`;
     } else if (!props.ensObject.genome_id) {

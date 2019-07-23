@@ -2,8 +2,8 @@ import { RootState } from 'src/store';
 import { getBrowserActiveEnsObjectId } from '../browserSelectors';
 import { TrackType } from './trackPanelConfig';
 
-export const getTrackPanelModalOpened = (state: RootState) =>
-  state.trackPanel.trackPanelModalOpened;
+export const getIsTrackPanelModalOpened = (state: RootState) =>
+  state.trackPanel.isTrackPanelModalOpened;
 
 export const getTrackPanelModalView = (state: RootState) =>
   state.trackPanel.trackPanelModalView;
@@ -16,5 +16,5 @@ export const getSelectedBrowserTab = (state: RootState) => {
     : TrackType.GENOMIC;
 };
 
-export const getTrackPanelOpened = (state: RootState) =>
-  state.trackPanel.trackPanelOpened;
+export const getIsTrackPanelOpened = (state: RootState) =>
+  state.trackPanel.isTrackPanelOpened;
