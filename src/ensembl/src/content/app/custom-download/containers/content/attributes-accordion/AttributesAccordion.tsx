@@ -19,24 +19,17 @@ import {
   updateSelectedAttributes
 } from './state/attributesAccordionActions';
 
-import {
-  Genes,
-  Transcripts,
-  Variations,
-  Location,
-  Orthologues,
-  Phenotypes,
-  Paralogues,
-  Sequences
-} from './sections';
+import { Orthologues } from './sections';
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
-import { Attributes } from 'src/content/app/custom-download/types/Attributes';
 
 import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/image-button/ImageButton';
 import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
 import styles from './AttributesAccordion.scss';
+
+import AttributesAccordionSection from 'src/content/app/custom-download/containers/content/attributes-accordion/sections/AttributesAccordionSection';
+import JSONValue from 'src/shared/types/JSON';
 
 type Props = StateProps & DispatchProps;
 
@@ -72,6 +65,19 @@ const AttributesAccordion = (props: Props) => {
     customDownloadStorageService.saveSelectedAttributes({});
   };
 
+  const buildSection = (
+    section: string,
+    hideTitles?: boolean,
+    hideUnchecked?: boolean
+  ) => {
+    return (
+      <AttributesAccordionSection
+        section={section}
+        hideTitles={hideTitles}
+        hideUnchecked={hideUnchecked}
+      />
+    );
+  };
   return (
     <div className={styles.wrapper}>
       <div className={styles.dataSelectorHint}>
@@ -96,12 +102,12 @@ const AttributesAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className={styles.accordionItem}>
-            <Genes />
+            {buildSection('genes')}
           </AccordionItemPanel>
           <AccordionItemPermanentBlock>
             {props.expandedPanel !== 'genes' && (
               <div className={styles.permanentBlock}>
-                <Genes hideUnchecked={true} hideTitles={true} />
+                {buildSection('genes', true, true)}
               </div>
             )}
           </AccordionItemPermanentBlock>
@@ -114,12 +120,12 @@ const AttributesAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className={styles.accordionItem}>
-            <Transcripts />
+            {buildSection('transcripts')}
           </AccordionItemPanel>
           <AccordionItemPermanentBlock>
             {props.expandedPanel !== 'transcripts' && (
               <div className={styles.permanentBlock}>
-                <Transcripts hideUnchecked={true} hideTitles={true} />
+                {buildSection('transcripts', true, true)}
               </div>
             )}
           </AccordionItemPermanentBlock>
@@ -132,7 +138,9 @@ const AttributesAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
-            <div>No attributes available under this section.</div>
+            <div className={styles.defaultContent}>
+              No attributes available under this section.
+            </div>
           </AccordionItemPanel>
         </AccordionItem>
 
@@ -142,13 +150,11 @@ const AttributesAccordion = (props: Props) => {
               {formatAccordionTitle('sequences')}
             </AccordionItemButton>
           </AccordionItemHeading>
-          <AccordionItemPanel>
-            <Sequences />
-          </AccordionItemPanel>
+          <AccordionItemPanel>{buildSection('sequences')}</AccordionItemPanel>
           <AccordionItemPermanentBlock>
             {props.expandedPanel !== 'sequences' && (
               <div className={styles.permanentBlock}>
-                <Sequences hideUnchecked={true} hideTitles={true} />
+                {buildSection('sequences', true, true)}
               </div>
             )}
           </AccordionItemPermanentBlock>
@@ -160,13 +166,11 @@ const AttributesAccordion = (props: Props) => {
               {formatAccordionTitle('location')}
             </AccordionItemButton>
           </AccordionItemHeading>
-          <AccordionItemPanel>
-            <Location />
-          </AccordionItemPanel>
+          <AccordionItemPanel>{buildSection('location')}</AccordionItemPanel>
           <AccordionItemPermanentBlock>
             {props.expandedPanel !== 'location' && (
               <div className={styles.permanentBlock}>
-                <Location hideUnchecked={true} hideTitles={true} />
+                {buildSection('location', true, true)}
               </div>
             )}
           </AccordionItemPermanentBlock>
@@ -179,7 +183,7 @@ const AttributesAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className={styles.accordionItem}>
-            <Variations />
+            {buildSection('variation', true, true)}
           </AccordionItemPanel>
         </AccordionItem>
 
@@ -190,15 +194,10 @@ const AttributesAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
-            <Phenotypes />
+            <div className={styles.defaultContent}>
+              No attributes available under this section.
+            </div>
           </AccordionItemPanel>
-          <AccordionItemPermanentBlock>
-            {props.expandedPanel !== 'phenotypes' && (
-              <div className={styles.permanentBlock}>
-                <Phenotypes hideUnchecked={true} hideTitles={true} />
-              </div>
-            )}
-          </AccordionItemPermanentBlock>
         </AccordionItem>
 
         <AccordionItem uuid={'protein'}>
@@ -207,9 +206,14 @@ const AttributesAccordion = (props: Props) => {
               {formatAccordionTitle('protein')}
             </AccordionItemButton>
           </AccordionItemHeading>
-          <AccordionItemPanel>
-            <div>No attributes available under this section.</div>
-          </AccordionItemPanel>
+          <AccordionItemPanel>{buildSection('protein')}</AccordionItemPanel>
+          <AccordionItemPermanentBlock>
+            {props.expandedPanel !== 'protein' && (
+              <div className={styles.permanentBlock}>
+                {buildSection('protein', true, true)}
+              </div>
+            )}
+          </AccordionItemPermanentBlock>
         </AccordionItem>
 
         <AccordionItem uuid={'orthologues'}>
@@ -230,7 +234,9 @@ const AttributesAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
-            <Paralogues />
+            <div className={styles.defaultContent}>
+              No attributes available under this section.
+            </div>
           </AccordionItemPanel>
         </AccordionItem>
       </Accordion>
@@ -244,7 +250,7 @@ type DispatchProps = {
   ) => void;
   fetchAttributes: () => void;
   resetSelectedAttributes: () => void;
-  updateSelectedAttributes: (attributes: Attributes) => void;
+  updateSelectedAttributes: (attributes: JSONValue) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {

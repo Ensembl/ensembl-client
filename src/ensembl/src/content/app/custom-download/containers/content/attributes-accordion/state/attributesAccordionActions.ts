@@ -12,9 +12,8 @@ import customDownloadStorageService from 'src/content/app/custom-download/servic
 
 import findIndex from 'lodash/findIndex';
 
-import Attribute, {
-  Attributes
-} from 'src/content/app/custom-download/types/Attributes';
+import Attributes from 'src/content/app/custom-download/types/Attributes';
+import JSONValue from 'src/shared/types/JSON';
 
 export const setAttributes = createAsyncAction(
   'custom-download/set-attributes-request',
@@ -37,7 +36,7 @@ export const fetchAttributes: ActionCreator<
 export const updateSelectedAttributes = createAction(
   'custom-download/update-selected-attributes',
   (resolve) => {
-    return (attributes: Attributes) => {
+    return (attributes: JSONValue) => {
       customDownloadStorageService.saveSelectedAttributes(attributes);
       return resolve(attributes);
     };
@@ -50,7 +49,7 @@ export const resetSelectedAttributes = createStandardAction(
 
 export const updateContentState = createStandardAction(
   'custom-download/update-attribute-content-state'
-)<Attributes>();
+)<JSONValue>();
 
 export const setOrthologueAttributes = createStandardAction(
   'custom-download/set-orthologue-attributes'
@@ -96,7 +95,7 @@ export const fetchOrthologueSpecies: ActionCreator<
         species.display_name.toLowerCase().indexOf(searchTerm.toLowerCase()) !==
           -1
       ) {
-        const speciesIndex = findIndex(filteredSpecies, (entry: Attribute) => {
+        const speciesIndex = findIndex(filteredSpecies, (entry: any) => {
           return species.name === entry.id;
         });
 

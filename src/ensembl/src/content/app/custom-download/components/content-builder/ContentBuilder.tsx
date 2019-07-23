@@ -19,37 +19,50 @@ import {
 import styles from './ContentBuilder.scss';
 
 import get from 'lodash/get';
-import Filter from 'src/content/app/custom-download/types/Filters';
+import {
+  Attribute,
+  AttributeWithContent,
+  AttributeWithOptions
+} from 'src/content/app/custom-download/types/Attributes';
+import JSONValue, { PrimitiveOrArrayValue } from 'src/shared/types/JSON';
 
 type Path = (string | number)[];
 let path: Path = [];
 
 type ContentBuilderProps = {
-  data: any;
-  selectedData: any;
-  onChange: (type: string, path: Path, payload: any) => void;
-  contentState: any;
-  onContentStateChange: (type: string, path: Path, payload: any) => void;
+  data: AttributeWithContent;
+  selectedData: JSONValue;
+  onChange: (type: string, path: Path, payload: PrimitiveOrArrayValue) => void;
+  contentState: JSONValue;
+  onContentStateChange: (
+    type: string,
+    path: Path,
+    payload: PrimitiveOrArrayValue
+  ) => void;
   path?: Path;
   contentProps?: {
-    [key: string]: any;
+    [key: string]: JSONValue;
   };
 };
 
 const ContentBuilder = (props: ContentBuilderProps) => {
-  const onChangeHandler = (type: string, path: Path, payload: any) => {
+  const onChangeHandler = (
+    type: string,
+    path: Path,
+    payload: PrimitiveOrArrayValue
+  ) => {
     props.onChange(type, path, payload);
   };
 
   const onContentStateChangeHandler = (
     type: string,
     path: Path,
-    payload: any
+    payload: PrimitiveOrArrayValue
   ) => {
     props.onContentStateChange(type, path, payload);
   };
 
-  const buildCheckboxWithSelect = (entry: Filter, path: Path) => {
+  const buildCheckboxWithSelect = (entry: AttributeWithOptions, path: Path) => {
     const currentPath = [...path, entry.id];
 
     const selectedOptions = get(props.selectedData, currentPath, []);
@@ -69,7 +82,7 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     );
   };
 
-  const buildCheckboxWithRadios = (entry: Filter, path: Path) => {
+  const buildCheckboxWithRadios = (entry: AttributeWithOptions, path: Path) => {
     const currentPath = [...path, entry.id];
 
     const selectedOption: string = get(props.selectedData, currentPath, '');
@@ -89,14 +102,12 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     );
   };
 
-  const buildCheckboxGrid = (entry: Filter, path: Path) => {
+  const buildCheckboxGrid = (entry: AttributeWithOptions, path: Path) => {
     const currentPath = [...path, entry.id];
 
     const selectedOptions = get(props.selectedData, currentPath, []);
 
-    const gridOptions: CheckboxGridOption[] = [
-      ...(entry.options as CheckboxGridOption[])
-    ];
+    const gridOptions = [...entry.options];
 
     const gridClone: CheckboxGridOption[] = [];
 
@@ -126,7 +137,7 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     );
   };
 
-  const buildAccordionItem = (entry: any, path: Path) => {
+  const buildAccordionItem = (entry: AttributeWithContent, path: Path) => {
     return (
       <AccordionItem uuid={entry.id}>
         <AccordionItemHeading>
@@ -148,7 +159,7 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     );
   };
 
-  const buildAccordion = (entry: any, path: Path) => {
+  const buildAccordion = (entry: AttributeWithContent, path: Path) => {
     const currentPath = [...path, entry.id];
     const preExpandedPanels = get(props.contentState, currentPath, []);
 
@@ -161,16 +172,22 @@ const ContentBuilder = (props: ContentBuilderProps) => {
         className={styles.accordion}
         preExpanded={preExpandedPanels}
       >
-        {entry.content.map((accordionSection: any, key: number) => {
-          return (
-            <div key={key}>{buildAccordionItem(accordionSection, path)}</div>
-          );
-        })}
+        {entry.content &&
+          entry.content.map((accordionSection, key: number) => {
+            return (
+              <div key={key}>
+                {buildAccordionItem(
+                  accordionSection as AttributeWithContent,
+                  path
+                )}
+              </div>
+            );
+          })}
       </Accordion>
     );
   };
 
-  const buildCheckboxWithTextfields = (entry: Filter, path: Path) => {
+  const buildCheckboxWithTextfields = (entry: Attribute, path: Path) => {
     const currentPath = [...path, entry.id];
 
     const values: string[] = get(props.selectedData, currentPath, '');
@@ -190,24 +207,57 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     );
   };
 
-  path = props.path ? [...props.path, props.data.id] : [props.data.id];
+  path = props.path
+    ? [...props.path, (props.data as AttributeWithContent).id]
+    : [props.data.id];
 
-  return props.data.content.map((entry: Filter, key: number) => {
-    switch (entry.type) {
-      case 'section_group':
-        return <div key={key}>{buildAccordion(entry, path)}</div>;
-      case 'section':
-        return <div key={key}>{buildAccordionItem(entry, path)}</div>;
-      case 'checkbox_grid':
-        return <div key={key}>{buildCheckboxGrid(entry, path)}</div>;
-      case 'select_multiple':
-        return <div key={key}>{buildCheckboxWithSelect(entry, path)}</div>;
-      case 'select_one':
-        return <div key={key}>{buildCheckboxWithRadios(entry, path)}</div>;
-      case 'paste_or_upload':
-        return <div key={key}>{buildCheckboxWithTextfields(entry, path)}</div>;
-    }
-  });
+  return (
+    <div>
+      {props.data.content.map(
+        (
+          entry: AttributeWithContent | AttributeWithOptions | Attribute,
+          key: number
+        ) => {
+          switch (entry.type) {
+            case 'section_group':
+              return (
+                <div key={key}>
+                  {buildAccordion(entry as AttributeWithContent, path)}
+                </div>
+              );
+            case 'section':
+              return (
+                <div key={key}>
+                  {buildAccordionItem(entry as AttributeWithContent, path)}
+                </div>
+              );
+            case 'checkbox_grid':
+              return (
+                <div key={key}>
+                  {buildCheckboxGrid(entry as AttributeWithOptions, path)}
+                </div>
+              );
+            case 'select_multiple':
+              return (
+                <div key={key}>
+                  {buildCheckboxWithSelect(entry as AttributeWithOptions, path)}
+                </div>
+              );
+            case 'select_one':
+              return (
+                <div key={key}>
+                  {buildCheckboxWithRadios(entry as AttributeWithOptions, path)}
+                </div>
+              );
+            case 'paste_or_upload':
+              return (
+                <div key={key}>{buildCheckboxWithTextfields(entry, path)}</div>
+              );
+          }
+        }
+      )}
+    </div>
+  );
 };
 
 export default ContentBuilder;

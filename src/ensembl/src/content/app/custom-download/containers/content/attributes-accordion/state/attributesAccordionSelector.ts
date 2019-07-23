@@ -1,18 +1,19 @@
 import { RootState } from 'src/store';
 
-import { Attributes } from '../../../../types/Attributes';
+import Attributes from '../../../../types/Attributes';
+import JSONValue from 'src/shared/types/JSON';
 
 export const getAttributes = (state: RootState): Attributes =>
-  state.customDownload.attributesAccordion.attributes;
+  state.customDownload.attributesAccordion.content;
 
-export const getSelectedAttributes = (state: RootState): Attributes =>
+export const getSelectedAttributes = (state: RootState): JSONValue =>
   state.customDownload.attributesAccordion.selectedAttributes;
 
-export const getContentState = (state: RootState): {} =>
+export const getContentState = (state: RootState): JSONValue =>
   state.customDownload.attributesAccordion.contentState;
 
-export const getOrthologueAttributes = (state: RootState): {} =>
-  state.customDownload.attributesAccordion.attributes.orthologues;
+export const getOrthologueAttributes = (state: RootState): JSONValue =>
+  state.customDownload.attributesAccordion.content.orthologues;
 
 export const getOrthologueSearchTerm = (state: RootState): string =>
   state.customDownload.attributesAccordion.orthologue.searchTerm;

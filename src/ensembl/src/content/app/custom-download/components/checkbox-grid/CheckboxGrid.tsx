@@ -4,10 +4,6 @@ import styles from './CheckboxGrid.scss';
 
 import orderBy from 'lodash/orderBy';
 
-import Attribute, {
-  Attributes
-} from 'src/content/app/custom-download/types/Attributes';
-
 export type CheckboxGridOption = {
   isChecked: boolean;
   id: string;
@@ -15,7 +11,7 @@ export type CheckboxGridOption = {
 };
 
 export type CheckboxGridProps = {
-  options: Attribute[];
+  options: CheckboxGridOption[];
   columns: number;
   hideUnchecked?: boolean;
   hideLabel?: boolean;
@@ -23,17 +19,21 @@ export type CheckboxGridProps = {
   onChange: (status: boolean, id: string) => void;
 };
 
-export const filterCheckedAttributes = (attributes: Attribute[]) => {
+export const filterCheckedAttributes = (attributes: CheckboxGridOption[]) => {
   return attributes;
 };
 
 const CheckboxGrid = (props: CheckboxGridProps) => {
-  let orderedCheckboxList: Attribute[] = orderBy(props.options, ['label']);
+  let orderedCheckboxList: CheckboxGridOption[] = orderBy(props.options, [
+    'label'
+  ]);
 
   if (props.hideUnchecked) {
-    orderedCheckboxList = orderedCheckboxList.filter((attribute: Attribute) => {
-      return attribute.isChecked;
-    });
+    orderedCheckboxList = orderedCheckboxList.filter(
+      (attribute: CheckboxGridOption) => {
+        return attribute.isChecked;
+      }
+    );
   }
   if (!orderedCheckboxList.length) {
     return null;
@@ -72,7 +72,7 @@ const CheckboxGrid = (props: CheckboxGridProps) => {
             <div key={gridKey} style={singleGridStyle}>
               {orderedCheckboxList
                 .splice(0, columnLength)
-                .map((attribute: Attribute, itemKey: number) => {
+                .map((attribute: CheckboxGridOption, itemKey: number) => {
                   return (
                     <div key={itemKey} className={styles.checkboxContainer}>
                       <Checkbox

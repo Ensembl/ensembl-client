@@ -1,9 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 
-import Attribute from 'src/content/app/custom-download/types/Attributes';
-
-import CheckboxGrid from './CheckboxGrid';
+import CheckboxGrid, { CheckboxGridOption } from './CheckboxGrid';
 import Checkbox from 'src/shared/checkbox/Checkbox';
 import faker from 'faker';
 import times from 'lodash/times';
@@ -21,13 +19,13 @@ const createCheckboxData = (options: any) => {
   });
 };
 
-const createOptions = (): Attribute[] => {
-  const options: Attribute[] = [];
+const createOptions = (): CheckboxGridOption[] => {
+  const options: CheckboxGridOption[] = [];
   times(10, () => createCheckboxData(options));
   return options;
 };
 
-const defaultOptions: Attribute[] = createOptions();
+const defaultOptions: CheckboxGridOption[] = createOptions();
 
 const onChange = jest.fn();
 

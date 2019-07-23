@@ -1,10 +1,11 @@
-import { Filters } from 'src/content/app/custom-download/types/Filters';
+import Attributes from 'src/content/app/custom-download/types/Attributes';
+import JSONValue from 'src/shared/types/JSON';
 
 export type FilterAccordionState = Readonly<{
   expandedPanel: string;
-  filters: Filters;
-  selectedFilters: Filters;
-  contentState: Filters;
+  filters: Attributes;
+  selectedFilters: JSONValue;
+  contentState: JSONValue;
 }>;
 
 export const defaultFilterAccordionState: FilterAccordionState = {

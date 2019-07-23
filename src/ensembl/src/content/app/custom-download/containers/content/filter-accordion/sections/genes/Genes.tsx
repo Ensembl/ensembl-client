@@ -18,6 +18,8 @@ import set from 'lodash/set';
 import unset from 'lodash/unset';
 
 import allFilters from 'src/content/app/custom-download/sample-data/filters';
+import { AttributeWithContent } from 'src/content/app/custom-download/types/Attributes';
+import JSONValue, { PrimitiveOrArrayValue } from 'src/shared/types/JSON';
 
 type Props = StateProps & DispatchProps;
 
@@ -27,7 +29,7 @@ const Genes = (props: Props) => {
   const filtersOnChange = (
     type: string,
     path: (string | number)[],
-    payload: any
+    payload: PrimitiveOrArrayValue
   ) => {
     const updatedFilters = { ...props.selectedFilters };
     payload ? set(updatedFilters, path, payload) : unset(updatedFilters, path);
@@ -38,7 +40,7 @@ const Genes = (props: Props) => {
   const onContentStateChangeHandler = (
     type: string,
     path: (string | number)[],
-    payload: any
+    payload: PrimitiveOrArrayValue
   ) => {
     const updatedContentState = { ...props.contentState };
     payload
@@ -50,7 +52,7 @@ const Genes = (props: Props) => {
 
   return (
     <ContentBuilder
-      data={allFilters['genes']}
+      data={allFilters['genes'] as AttributeWithContent}
       onChange={filtersOnChange}
       contentState={props.contentState}
       onContentStateChange={onContentStateChangeHandler}
@@ -60,8 +62,8 @@ const Genes = (props: Props) => {
 };
 
 type DispatchProps = {
-  updateSelectedFilters: (filters: any) => void;
-  updateContentState: (updateContentState: {}) => void;
+  updateSelectedFilters: (filters: JSONValue) => void;
+  updateContentState: (updateContentState: JSONValue) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
@@ -70,8 +72,8 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 type StateProps = {
-  selectedFilters: any;
-  contentState: {};
+  selectedFilters: JSONValue;
+  contentState: JSONValue;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({

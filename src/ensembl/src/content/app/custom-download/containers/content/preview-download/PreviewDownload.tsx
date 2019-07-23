@@ -23,12 +23,11 @@ import {
 
 import ImageButton from 'src/shared/image-button/ImageButton';
 
-import { Attributes } from 'src/content/app/custom-download/types/Attributes';
-import { Filters } from 'src/content/app/custom-download/types/Filters';
+import JSONValue from 'src/shared/types/JSON';
 
 type StateProps = {
-  selectedAttributes: Attributes;
-  selectedFilters: Filters;
+  selectedAttributes: JSONValue;
+  selectedFilters: JSONValue;
 };
 
 type DispatchProps = {

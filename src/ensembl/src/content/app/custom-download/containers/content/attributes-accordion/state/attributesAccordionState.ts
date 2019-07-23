@@ -1,8 +1,9 @@
-import { Attributes } from 'src/content/app/custom-download/types/Attributes';
+import Attributes from 'src/content/app/custom-download/types/Attributes';
+import JSONValue, { PrimitiveOrArrayValue } from 'src/shared/types/JSON';
 
 export type OrthologueState = {
   searchTerm: string;
-  species: [];
+  species: PrimitiveOrArrayValue;
   showBestMatches: boolean;
   showAll: boolean;
   applyToAllSpecies: boolean;
@@ -10,15 +11,15 @@ export type OrthologueState = {
 
 export type AttributesAccordionState = Readonly<{
   expandedPanel: string;
-  attributes: Attributes;
-  selectedAttributes: Attributes;
-  contentState: Attributes;
+  content: Attributes;
+  selectedAttributes: JSONValue;
+  contentState: JSONValue;
   orthologue: OrthologueState;
 }>;
 
 export const defaultAttributesAccordionState: AttributesAccordionState = {
   expandedPanel: '',
-  attributes: {},
+  content: {},
   selectedAttributes: {},
   contentState: {},
   orthologue: {

@@ -2,32 +2,34 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
-import { Attributes } from 'src/content/app/custom-download/types/Attributes';
+import { AttributeWithContent } from 'src/content/app/custom-download/types/Attributes';
 
 import {
   getSelectedAttributes,
   getContentState
-} from '../../state/attributesAccordionSelector';
+} from 'src/content/app/custom-download/containers/content/attributes-accordion/state/attributesAccordionSelector';
+
 import {
   updateSelectedAttributes,
   updateContentState
-} from '../../state/attributesAccordionActions';
+} from 'src/content/app/custom-download/containers/content/attributes-accordion/state/attributesAccordionActions';
 
 import ContentBuilder from 'src/content/app/custom-download/components/content-builder/ContentBuilder';
 
 import set from 'lodash/set';
-import unset from 'lodash/unset';
 
 import allAttributes from 'src/content/app/custom-download/sample-data/attributes';
+import JSONValue from 'src/shared/types/JSON';
 
 type ownProps = {
   hideUnchecked?: boolean;
   hideTitles?: boolean;
+  section: string;
 };
 
 type Props = ownProps & StateProps & DispatchProps;
 
-const Sequences = (props: Props) => {
+const AttributesAccordionSection = (props: Props) => {
   const onChangeHandler = (
     type: string,
     path: (string | number)[],
@@ -50,37 +52,22 @@ const Sequences = (props: Props) => {
     props.updateContentState(updatedContentState);
   };
 
-  if (props.hideUnchecked) {
-    if (!allAttributes['sequences']) {
-      return null;
-    }
-
-    return (
-      <ContentBuilder
-        data={allAttributes['sequences']}
-        onChange={onChangeHandler}
-        contentState={props.contentState}
-        onContentStateChange={onContentStateChangeHandler}
-        selectedData={props.selectedAttributes}
-        contentProps={{ checkbox_grid: { hideUnchecked: true } }}
-      />
-    );
-  }
-
   return (
     <ContentBuilder
-      data={allAttributes['sequences']}
+      data={allAttributes[props.section] as AttributeWithContent}
       onChange={onChangeHandler}
       contentState={props.contentState}
       onContentStateChange={onContentStateChangeHandler}
       selectedData={props.selectedAttributes}
+      contentProps={{ checkbox_grid: { hideUnchecked: props.hideUnchecked } }}
     />
   );
+
 };
 
 type DispatchProps = {
-  updateSelectedAttributes: (updateSelectedAttributes: {}) => void;
-  updateContentState: (updateContentState: {}) => void;
+  updateSelectedAttributes: (updateSelectedAttributes: JSONValue) => void;
+  updateContentState: (updateContentState: JSONValue) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
@@ -89,8 +76,8 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 type StateProps = {
-  selectedAttributes: Attributes;
-  contentState: {};
+  selectedAttributes: JSONValue;
+  contentState: JSONValue;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
@@ -101,4 +88,4 @@ const mapStateToProps = (state: RootState): StateProps => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Sequences);
+)(AttributesAccordionSection);

@@ -1,4 +1,4 @@
-import { Attributes } from 'src/content/app/custom-download/types/Attributes';
+import JSONValue from 'src/shared/types/JSON';
 import {
   getEndpointUrl,
   flattenObject
@@ -6,8 +6,8 @@ import {
 
 export const fetchCustomDownloadResults = (
   downloadType: string,
-  attributes: Attributes,
-  filters: any
+  attributes: JSONValue,
+  filters: JSONValue
 ) => {
   const flatSelectedAttributes: { [key: string]: boolean } = flattenObject(
     attributes

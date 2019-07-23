@@ -1,7 +1,9 @@
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
-import CheckboxGrid from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
+import CheckboxGrid, {
+  CheckboxGridOption
+} from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 import findIndex from 'lodash/findIndex';
 
 import {
@@ -29,11 +31,9 @@ import Input from 'src/shared/input/Input';
 import set from 'lodash/set';
 import styles from './Orthologues.scss';
 
-import Attribute, {
-  Attributes
-} from 'src/content/app/custom-download/types/Attributes';
-
 import { orthologueAttributes } from 'src/content/app/custom-download/sample-data/orthologue';
+import JSONValue from 'src/shared/types/JSON';
+import Attributes from 'src/content/app/custom-download/types/Attributes';
 
 type ownProps = {
   hideUnchecked?: boolean;
@@ -52,7 +52,7 @@ const Orthologue = (props: Props) => {
 
     const modifiedSpeciesIndex = findIndex(
       newOrthologueAttributes[species].options,
-      (attribute: Attribute) => {
+      (attribute: CheckboxGridOption) => {
         return attribute.id === attributeId;
       }
     );
@@ -175,7 +175,7 @@ type DispatchProps = {
   setOrthologueApplyToAllSpecies: (
     setOrthologueApplyToAllSpecies: boolean
   ) => void;
-  updateSelectedAttributes: (updateSelectedAttributes: Attributes) => void;
+  updateSelectedAttributes: (updateSelectedAttributes: JSONValue) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
@@ -196,7 +196,7 @@ type StateProps = {
   shouldShowBestMatches: boolean;
   shouldShowAll: boolean;
   shouldApplyToAllSpecies: boolean;
-  selectedAttributes: Attributes;
+  selectedAttributes: JSONValue;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({

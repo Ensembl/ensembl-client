@@ -17,6 +17,7 @@ import {
 import { getSelectedFilters } from '../content/filter-accordion/state/filterAccordionSelector';
 import { getSelectedAttributes } from '../content/attributes-accordion/state/attributesAccordionSelector';
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
+import JSONValue from 'src/shared/types/JSON';
 import {
   togglePreFiltersPanel,
   setShowPreview,
@@ -28,8 +29,6 @@ import { ReactComponent as BackIcon } from 'static/img/shared/chevron-left.svg';
 import { fetchCustomDownloadResults } from './customDownloadHeaderHelper';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
-
-import { Attributes } from 'src/content/app/custom-download/types/Attributes';
 
 import styles from './CustomDownloadHeader.scss';
 
@@ -46,46 +45,6 @@ const downloadTypeoptions = [
     value: 'application/json',
     isSelected: false
   }
-  // {
-  //   label: 'CSV.gz',
-  //   value: 'text/csv',
-  //   isSelected: false
-  // },
-  // {
-  //   label: 'HTML',
-  //   value: 'application/json',
-  //   isSelected: false
-  // },
-  // {
-  //   label: 'TSV',
-  //   value: 'application/json',
-  //   isSelected: false
-  // },
-  // {
-  //   label: 'TSV.gz',
-  //   value: 'application/json',
-  //   isSelected: false
-  // },
-  // {
-  //   label: 'URL',
-  //   value: 'application/json',
-  //   isSelected: false
-  // },
-  // {
-  //   label: 'XML',
-  //   value: 'application/xml',
-  //   isSelected: false
-  // },
-  // {
-  //   label: 'XLS',
-  //   value: 'application/xml',
-  //   isSelected: false
-  // },
-  // {
-  //   label: 'XLS.gz',
-  //   value: 'application/xml',
-  //   isSelected: false
-  // }
 ];
 
 const Header = (props: Props) => {
@@ -104,7 +63,9 @@ const Header = (props: Props) => {
     props.setShowPreview(false);
   };
 
-  let resultCount = props.preview.resultCount ? props.preview.resultCount : 0;
+  let resultCount: number = props.preview.resultCount
+    ? (props.preview.resultCount as number)
+    : 0;
 
   const handleDownloadTypeSelect = (option: string) => {
     props.setDownloadType(option);
@@ -221,11 +182,11 @@ const mapDispatchToProps: DispatchProps = {
 
 type StateProps = {
   selectedPreFilter: string;
-  preview: any;
+  preview: JSONValue;
   showPreview: boolean;
   downloadType: string;
-  selectedfilters: any;
-  selectedAttributes: Attributes;
+  selectedfilters: JSONValue;
+  selectedAttributes: JSONValue;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({

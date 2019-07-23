@@ -1,6 +1,6 @@
-import { Filters } from 'src/content/app/custom-download/types/Filters';
+import Attributes from 'src/content/app/custom-download/types/Attributes';
 
-const filters: Filters = {
+const filters: Attributes = {
   genes: {
     type: 'section',
     id: 'genes',
@@ -203,7 +203,8 @@ const filters: Filters = {
   homologues: {
     type: 'section',
     label: 'Homologues',
-    id: 'homologues'
+    id: 'homologues',
+    content: []
   }
 };
 

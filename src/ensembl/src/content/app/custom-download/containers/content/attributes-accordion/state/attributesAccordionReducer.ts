@@ -8,7 +8,7 @@ import {
   OrthologueState
 } from './attributesAccordionState';
 
-import { Attributes } from 'src/content/app/custom-download/types/Attributes';
+import Attributes from 'src/content/app/custom-download/types/Attributes';
 
 function attributesAccordion(
   state: AttributesAccordionState = defaultAttributesAccordionState,
@@ -20,7 +20,7 @@ function attributesAccordion(
     ):
       return { ...state, expandedPanel: action.payload };
     case getType(attributesAccordionActions.setAttributes.success):
-      return { ...state, attributes: action.payload };
+      return { ...state, content: action.payload };
     case getType(attributesAccordionActions.updateSelectedAttributes):
       return {
         ...state,
@@ -39,7 +39,7 @@ function attributesAccordion(
     case getType(attributesAccordionActions.setOrthologueAttributes):
       return {
         ...state,
-        attributes: OrthologueAttributes(state.attributes, action)
+        content: OrthologueAttributes(state.content, action)
       };
     case getType(attributesAccordionActions.setOrthologueSearchTerm):
       return {
@@ -92,7 +92,7 @@ function Orthologue(
 }
 
 function OrthologueAttributes(
-  state: any = defaultAttributesAccordionState.attributes,
+  state: any = defaultAttributesAccordionState.content,
   action: ActionType<RootAction>
 ): Attributes {
   switch (action.type) {

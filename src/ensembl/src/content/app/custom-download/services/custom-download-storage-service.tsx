@@ -2,8 +2,7 @@ import storageService, {
   StorageServiceInterface
 } from 'src/services/storage-service';
 
-import { Attributes } from 'src/content/app/custom-download/types/Attributes';
-import { Filters } from 'src/content/app/custom-download/types/Filters';
+import JSONValue from 'src/shared/types/JSON';
 
 export enum StorageKeys {
   FILTERS = 'customDownload.filtersAccordion.filters',
@@ -28,54 +27,54 @@ export class CustomDownloadStorageService {
     this.storageService = storageService;
   }
 
-  public getFilters(): Filters {
+  public getFilters(): JSONValue {
     return this.storageService.get(StorageKeys.FILTERS) || {};
   }
 
-  public saveFilters(filters: any) {
+  public saveFilters(filters: JSONValue) {
     this.storageService.save(StorageKeys.FILTERS, filters);
   }
 
-  public getSelectedFilters(): Filters {
+  public getSelectedFilters(): JSONValue {
     return this.storageService.get(StorageKeys.SELECTED_FILTERS) || {};
   }
 
-  public saveSelectedFilters(selectedFilters: any) {
+  public saveSelectedFilters(selectedFilters: JSONValue) {
     this.storageService.save(StorageKeys.SELECTED_FILTERS, selectedFilters);
   }
 
-  public getFiltersContentState(): Filters {
+  public getFiltersContentState(): JSONValue {
     return this.storageService.get(StorageKeys.FILTERS_CONTENT_STATE) || {};
   }
 
-  public saveFiltersContentState(contentState: any) {
+  public saveFiltersContentState(contentState: JSONValue) {
     this.storageService.save(StorageKeys.FILTERS_CONTENT_STATE, contentState);
   }
 
-  public getAttributes(): Attributes {
+  public getAttributes(): JSONValue {
     return this.storageService.get(StorageKeys.ATTRIBUTES) || {};
   }
 
-  public saveAttributes(attributes: any) {
+  public saveAttributes(attributes: JSONValue) {
     this.storageService.save(StorageKeys.ATTRIBUTES, attributes);
   }
 
-  public getSelectedAttributes(): Attributes {
+  public getSelectedAttributes(): JSONValue {
     return this.storageService.get(StorageKeys.SELECTED_ATTRIBUTES) || {};
   }
 
-  public saveSelectedAttributes(selectedAttributes: any) {
+  public saveSelectedAttributes(selectedAttributes: JSONValue) {
     this.storageService.save(
       StorageKeys.SELECTED_ATTRIBUTES,
       selectedAttributes
     );
   }
 
-  public getAttributesContentState(): Attributes {
+  public getAttributesContentState(): JSONValue {
     return this.storageService.get(StorageKeys.ATTRIBUTES_CONTENT_STATE) || {};
   }
 
-  public saveAttributesContentState(contentState: any) {
+  public saveAttributesContentState(contentState: JSONValue) {
     this.storageService.save(
       StorageKeys.ATTRIBUTES_CONTENT_STATE,
       contentState

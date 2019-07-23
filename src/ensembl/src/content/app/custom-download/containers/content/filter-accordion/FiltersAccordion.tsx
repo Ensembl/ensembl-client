@@ -20,8 +20,7 @@ import {
 } from './state/filterAccordionActions';
 
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
-
-import { Filters } from 'src/content/app/custom-download/types/Filters';
+import JSONValue from 'src/shared/types/JSON';
 
 import { Genes, Proteins } from './sections';
 import ImageButton, {
@@ -152,7 +151,7 @@ type DispatchProps = {
     setFiltersAccordionExpandedPanel: string
   ) => void;
   resetSelectedFilters: () => void;
-  updateSelectedFilters: (filters: Filters) => void;
+  updateSelectedFilters: (filters: JSONValue) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
