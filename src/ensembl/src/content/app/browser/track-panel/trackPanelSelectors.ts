@@ -11,9 +11,10 @@ export const getTrackPanelModalView = (state: RootState) =>
 export const getSelectedBrowserTab = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
 
-  return activeGenomeId
-    ? state.trackPanel.selectedBrowserTab[activeGenomeId]
-    : TrackType.GENOMIC;
+  return (
+    (activeGenomeId && state.trackPanel.selectedBrowserTab[activeGenomeId]) ||
+    TrackType.GENOMIC
+  );
 };
 
 export const getIsTrackPanelOpened = (state: RootState) =>
