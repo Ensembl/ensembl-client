@@ -5,12 +5,12 @@ import { EnsObject } from 'src/ens-object/ensObjectTypes';
 import styles from './BrowserTabs.scss';
 
 type BrowserTabsProps = {
+  closeDrawer: () => void;
   ensObject: EnsObject;
   isDrawerOpened: boolean;
   genomeSelectorActive: boolean;
   selectBrowserTabAndSave: (selectedBrowserTab: TrackType) => void;
   selectedBrowserTab: TrackType;
-  toggleDrawer: (isDrawerOpened: boolean) => void;
   trackPanelModalOpened: boolean;
 };
 
@@ -23,7 +23,7 @@ const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
     }
 
     if (props.isDrawerOpened) {
-      props.toggleDrawer(false);
+      props.closeDrawer();
     }
 
     props.selectBrowserTabAndSave(value);

@@ -42,7 +42,7 @@ import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 import { fetchGenomeData } from 'src/genome/genomeActions';
-import { toggleDrawer } from './drawer/drawerActions';
+import { changeDrawerView, toggleDrawer } from './drawer/drawerActions';
 
 import browserStorageService from './browser-storage-service';
 import { TrackStates } from './track-panel/trackPanelConfig';
@@ -77,6 +77,7 @@ type DispatchProps = {
     chrLocation: ChrLocation,
     browserEl: HTMLDivElement
   ) => void;
+  changeDrawerView: (drawerView: string) => void;
   fetchGenomeData: (genomeId: string) => void;
   replace: Replace;
   toggleDrawer: (isDrawerOpened: boolean) => void;
@@ -254,12 +255,17 @@ export const Browser: FunctionComponent<BrowserProps> = (
     }
   }, [props.chrLocation]);
 
+  const closeDrawer = () => {
+    props.changeDrawerView('');
+    props.toggleDrawer(false);
+  };
+
   const closeTrack = () => {
     if (isDrawerOpened) {
       return;
     }
 
-    props.toggleDrawer(false);
+    closeDrawer();
   };
 
   const [trackAnimation, setTrackAnimation] = useSpring(() => ({
@@ -287,6 +293,13 @@ export const Browser: FunctionComponent<BrowserProps> = (
     return launchbarExpanded ? styles.shorter : styles.taller;
   };
 
+  const BrowserBarNode = (
+    <BrowserBar
+      closeDrawer={closeDrawer}
+      dispatchBrowserLocation={dispatchBrowserLocation}
+    />
+  );
+
   return props.activeGenomeId ? (
     <>
       <AppBar
@@ -297,13 +310,13 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
       {!props.browserQueryParams.focus && (
         <section className={styles.browser}>
-          <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
+          {BrowserBarNode}
           <ExampleObjectLinks {...props} />
         </section>
       )}
       {props.browserQueryParams.focus && (
         <section className={styles.browser}>
-          <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
+          {BrowserBarNode}
           {props.genomeSelectorActive && (
             <div className={styles.browserOverlay} />
           )}
@@ -325,7 +338,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
                 />
               </div>
             </animated.div>
-            <TrackPanel browserRef={browserRef} />
+            <TrackPanel browserRef={browserRef} closeDrawer={closeDrawer} />
           </div>
         </section>
       )}
@@ -380,6 +393,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
 
 const mapDispatchToProps: DispatchProps = {
   changeBrowserLocation,
+  changeDrawerView,
   fetchGenomeData,
   replace,
   toggleDrawer,

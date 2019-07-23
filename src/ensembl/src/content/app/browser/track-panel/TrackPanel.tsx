@@ -69,6 +69,7 @@ type DispatchProps = {
 
 type OwnProps = {
   browserRef: RefObject<HTMLDivElement>;
+  closeDrawer: () => void;
 };
 
 type TrackPanelProps = StateProps & DispatchProps & OwnProps;
@@ -115,11 +116,11 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
         <div className={styles.trackPanel}>
           <TrackPanelBar
             activeGenomeId={props.activeGenomeId}
+            closeDrawer={props.closeDrawer}
             closeTrackPanelModal={props.closeTrackPanelModal}
             isDrawerOpened={props.isDrawerOpened}
             launchbarExpanded={props.launchbarExpanded}
             openTrackPanelModal={props.openTrackPanelModal}
-            toggleDrawer={props.toggleDrawer}
             toggleTrackPanel={props.toggleTrackPanel}
             trackPanelModalOpened={props.trackPanelModalOpened}
             trackPanelModalView={props.trackPanelModalView}
@@ -147,7 +148,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
               trackPanelModalView={props.trackPanelModalView}
             />
           ) : null}
-          {isDrawerOpened && <Drawer />}
+          {isDrawerOpened && <Drawer closeDrawer={props.closeDrawer} />}
         </div>
       ) : null}
     </animated.div>

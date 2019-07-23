@@ -55,6 +55,7 @@ type DispatchProps = {
 };
 
 type OwnProps = {
+  closeDrawer: () => void;
   dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
 };
 
@@ -159,12 +160,12 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
       </div>
       {props.trackPanelOpened && props.activeGenomeId && (
         <BrowserTabs
+          closeDrawer={props.closeDrawer}
           ensObject={props.ensObject}
           isDrawerOpened={props.isDrawerOpened}
           genomeSelectorActive={props.genomeSelectorActive}
           selectBrowserTabAndSave={props.selectBrowserTabAndSave}
           selectedBrowserTab={props.selectedBrowserTab}
-          toggleDrawer={props.toggleDrawer}
           trackPanelModalOpened={props.trackPanelModalOpened}
         />
       )}

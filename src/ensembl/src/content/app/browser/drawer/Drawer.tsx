@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 
 import { RootState } from 'src/store';
-import { toggleDrawer } from './drawerActions';
+import { changeDrawerView, toggleDrawer } from './drawerActions';
 import { getDrawerView } from './drawerSelectors';
 import { getBrowserActiveEnsObject } from '../browserSelectors';
 
@@ -25,11 +25,11 @@ type StateProps = {
   ensObject: EnsObject | null;
 };
 
-type DispatchProps = {
-  toggleDrawer: (isDrawerOpened: boolean) => void;
-};
+type DispatchProps = {};
 
-type OwnProps = {};
+type OwnProps = {
+  closeDrawer: () => void;
+};
 
 type DrawerProps = StateProps & DispatchProps & OwnProps;
 
@@ -63,11 +63,9 @@ const Drawer: FunctionComponent<DrawerProps> = (props: DrawerProps) => {
     }
   };
 
-  const closeDrawer = () => props.toggleDrawer(false);
-
   return (
     <section className={styles.drawer}>
-      <button className={styles.closeButton} onClick={closeDrawer}>
+      <button className={styles.closeButton} onClick={props.closeDrawer}>
         <img src={closeIcon} alt="close drawer" />
       </button>
       {getDrawerViewComponent()}
@@ -80,11 +78,4 @@ const mapStateToProps = (state: RootState): StateProps => ({
   ensObject: getBrowserActiveEnsObject(state)
 });
 
-const mapDispatchToProps: DispatchProps = {
-  toggleDrawer
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Drawer);
+export default connect(mapStateToProps)(Drawer);

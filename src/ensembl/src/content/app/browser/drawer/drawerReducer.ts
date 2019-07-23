@@ -14,16 +14,9 @@ export default function drawer(
         drawerView: { ...state.drawerView, ...action.payload }
       };
     case getType(drawerActions.toggleDrawerForGenome):
-      const genomeId = Object.keys(action.payload)[0];
-      let drawerOpenedValue = Object.values(action.payload)[0];
-      let drawerViewForGenome = drawerOpenedValue
-        ? state.drawerView[genomeId]
-        : '';
-
       return {
         ...state,
-        isDrawerOpened: { ...state.isDrawerOpened, ...action.payload },
-        drawerView: { ...state.drawerView, [genomeId]: drawerViewForGenome }
+        isDrawerOpened: { ...state.isDrawerOpened, ...action.payload }
       };
     default:
       return state;

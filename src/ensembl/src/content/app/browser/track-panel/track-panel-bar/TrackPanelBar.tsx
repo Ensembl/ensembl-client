@@ -11,11 +11,11 @@ import styles from './TrackPanelBar.scss';
 
 type TrackPanelBarProps = {
   activeGenomeId: string;
+  closeDrawer: () => void;
   closeTrackPanelModal: () => void;
   isDrawerOpened: boolean;
   launchbarExpanded: boolean;
   openTrackPanelModal: (trackPanelModalView: string) => void;
-  toggleDrawer: (isDrawerOpened: boolean) => void;
   toggleTrackPanel: (trackPanelOpened?: boolean) => void;
   trackPanelModalOpened: boolean;
   trackPanelModalView: string;
@@ -27,11 +27,11 @@ const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
 ) => {
   const moveTrackPanel = useCallback(() => {
     if (props.isDrawerOpened) {
-      props.toggleDrawer(false);
+      props.closeDrawer();
     } else {
       props.toggleTrackPanel();
     }
-  }, [props.isDrawerOpened, props.toggleDrawer, props.toggleTrackPanel]);
+  }, [props.isDrawerOpened, props.closeDrawer, props.toggleTrackPanel]);
 
   const getClassNames = () => {
     const heightClass: string = props.launchbarExpanded
