@@ -236,16 +236,19 @@ export const changeBrowserLocation: ActionCreator<
   return (dispatch, getState: () => RootState) => {
     const state = getState();
     const [chrCode, startBp, endBp] = chrLocation;
+    const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
     const messageCount = getBrowserMessageCount(state);
+    const focusInstruction = activeEnsObjectId
+      ? {
+          focus: activeEnsObjectId
+        }
+      : {};
 
     browserMessagingService.send('bpane', {
       stick: `${genomeId}:${chrCode}`,
-      'message-counter': messageCount
-    });
-
-    browserMessagingService.send('bpane', {
       goto: `${startBp}-${endBp}`,
-      'message-counter': messageCount
+      'message-counter': messageCount,
+      ...focusInstruction
     });
   };
 };
@@ -254,7 +257,6 @@ export const changeFocusObject: ActionCreator<
   ThunkAction<any, any, null, Action<string>>
 > = (objectId) => {
   return (dispatch, getState: () => RootState) => {
-    console.log('in changeFocusObject');
     const state = getState();
     const messageCount = getBrowserMessageCount(state);
 
