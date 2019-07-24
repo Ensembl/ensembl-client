@@ -12,7 +12,8 @@
 
 .search {
   background: $ens-light-grey;
-  box-shadow: 0 3px 10px $ens-grey;
+  box-shadow: 0 3px 5px $ens-medium-light-grey;
+  min-height: 235px;
   padding: 15px 60px;
 
   h2 {
