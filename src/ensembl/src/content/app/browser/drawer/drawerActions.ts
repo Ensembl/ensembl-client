@@ -15,7 +15,7 @@ export const changeDrawerViewForGenome = createAction(
 
 export const changeDrawerView: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (drawerViewForGenome: string) => (dispatch, getState: () => RootState) => {
+> = (drawerView: string) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -24,7 +24,7 @@ export const changeDrawerView: ActionCreator<
 
   dispatch(
     changeDrawerViewForGenome({
-      [activeGenomeId]: drawerViewForGenome
+      [activeGenomeId]: drawerView
     })
   );
 };
