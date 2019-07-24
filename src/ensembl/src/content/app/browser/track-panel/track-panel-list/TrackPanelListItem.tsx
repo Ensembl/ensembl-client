@@ -81,7 +81,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
       classNames += ` ${styles.main}`;
     }
 
-    if (drawerView) {
+    if (track.track_id === drawerView) {
       classNames += ` ${styles.currentDrawerView}`;
     }
 
@@ -102,7 +102,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   const drawerViewListHandler = (event: MouseEvent) => {
     event.preventDefault();
 
-    if (isDrawerOpened) {
+    if (!isDrawerOpened) {
       return;
     }
 
