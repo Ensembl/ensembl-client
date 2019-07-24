@@ -1,5 +1,7 @@
+import JSONValue from 'src/shared/types/JSON';
+
 export type ResultState = Readonly<{
-  preview: any;
+  preview: JSONValue;
   isLoadingResult: boolean;
 }>;
 

@@ -13,11 +13,12 @@ import TabButtons from './tab-buttons/TabButtons';
 import ResultHolder from './result-holder/ResultHolder';
 import { RootState } from 'src/store';
 import PreviewDownload from './preview-download/PreviewDownload';
+import JSONValue from 'src/shared/types/JSON';
 
 type Props = {
   selectedTab: string;
   showPreview: boolean;
-  preview: any;
+  preview: JSONValue;
 };
 
 const Content = (props: Props) => {

@@ -19,7 +19,7 @@ import ContentBuilder from 'src/content/app/custom-download/components/content-b
 import set from 'lodash/set';
 
 import allAttributes from 'src/content/app/custom-download/sample-data/attributes';
-import JSONValue from 'src/shared/types/JSON';
+import JSONValue, { PrimitiveOrArrayValue } from 'src/shared/types/JSON';
 
 type ownProps = {
   hideUnchecked?: boolean;
@@ -33,7 +33,7 @@ const AttributesAccordionSection = (props: Props) => {
   const onChangeHandler = (
     type: string,
     path: (string | number)[],
-    payload: any
+    payload: PrimitiveOrArrayValue
   ) => {
     const updatedAttributes = { ...props.selectedAttributes };
     set(updatedAttributes, path, payload);
@@ -44,7 +44,7 @@ const AttributesAccordionSection = (props: Props) => {
   const onContentStateChangeHandler = (
     type: string,
     path: (string | number)[],
-    payload: any
+    payload: PrimitiveOrArrayValue
   ) => {
     const updatedContentState = { ...props.contentState };
     set(updatedContentState, path, payload);
@@ -62,7 +62,6 @@ const AttributesAccordionSection = (props: Props) => {
       contentProps={{ checkbox_grid: { hideUnchecked: props.hideUnchecked } }}
     />
   );
-
 };
 
 type DispatchProps = {

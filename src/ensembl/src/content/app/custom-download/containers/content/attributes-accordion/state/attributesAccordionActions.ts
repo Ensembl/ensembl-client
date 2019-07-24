@@ -14,6 +14,8 @@ import findIndex from 'lodash/findIndex';
 
 import Attributes from 'src/content/app/custom-download/types/Attributes';
 import JSONValue from 'src/shared/types/JSON';
+import { CheckboxGridOption } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
+import Species from '/Users/manojpandian/Documents/Projects/ensembl-client/src/ensembl/src/content/app/custom-download/types/Species';
 
 export const setAttributes = createAsyncAction(
   'custom-download/set-attributes-request',
@@ -22,7 +24,7 @@ export const setAttributes = createAsyncAction(
 )<undefined, {}, Error>();
 
 export const fetchAttributes: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, Attributes, null, Action<string>>
 > = () => async (dispatch) => {
   try {
     dispatch(setAttributes.request());
@@ -75,29 +77,36 @@ export const setOrthologueSpecies = createAsyncAction(
   'custom-download/set-orthologue-species-request',
   'custom-download/set-orthologue-species-success',
   'custom-download/set-orthologue-species-failure'
-)<{ searchTerm: string }, {}, Error>();
+)<{ searchTerm: string }, CheckboxGridOption[], Error>();
 
 export const fetchOrthologueSpecies: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (searchTerm: string, orthologueSpecies: any) => async (dispatch) => {
+  ThunkAction<void, CheckboxGridOption[], null, Action<string>>
+> = (searchTerm: string, orthologueSpecies: CheckboxGridOption[]) => async (
+  dispatch
+) => {
   dispatch(setOrthologueSpecies.request({ searchTerm: searchTerm }));
   try {
     // This will be fetched from the API when we have one
-    let allSpecies = sampleOrthologueSpecies.species;
+    let allSpecies = sampleOrthologueSpecies.species as Species[];
 
-    let filteredSpecies: any = [...orthologueSpecies].filter((species) => {
-      return species.isChecked;
-    });
+    let filteredSpecies: CheckboxGridOption[] = [...orthologueSpecies].filter(
+      (species: CheckboxGridOption) => {
+        return species.isChecked;
+      }
+    );
 
-    allSpecies.forEach((species: any) => {
+    allSpecies.forEach((species: Species) => {
       if (
         searchTerm &&
         species.display_name.toLowerCase().indexOf(searchTerm.toLowerCase()) !==
           -1
       ) {
-        const speciesIndex = findIndex(filteredSpecies, (entry: any) => {
-          return species.name === entry.id;
-        });
+        const speciesIndex = findIndex(
+          filteredSpecies,
+          (entry: CheckboxGridOption) => {
+            return species.name === entry.id;
+          }
+        );
 
         if (speciesIndex === -1) {
           filteredSpecies.push({

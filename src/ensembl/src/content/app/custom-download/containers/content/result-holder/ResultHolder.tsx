@@ -20,6 +20,7 @@ import {
 import styles from './ResultHolder.scss';
 
 import { CircleLoader } from 'src/shared/loader/Loader';
+import JSONValue from 'src/shared/types/JSON';
 
 import {
   formatResults,
@@ -113,8 +114,8 @@ const ResultHolder = (props: Props) => {
 };
 
 type DispatchProps = {
-  fetchPreviewResult: (fetchPreviewResult: any) => void;
-  clearPreviewResult: (clearPreviewResult: any) => void;
+  fetchPreviewResult: (fetchPreviewResult: string) => void;
+  clearPreviewResult: (clearPreviewResult: JSONValue) => void;
   setIsLoadingResult: (setIsLoadingResult: boolean) => void;
 };
 
@@ -125,9 +126,9 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 type StateProps = {
-  selectedAttributes: any;
-  selectedFilters: any;
-  preview: any;
+  selectedAttributes: JSONValue;
+  selectedFilters: JSONValue;
+  preview: JSONValue;
   isLoadingResult: boolean;
 };
 

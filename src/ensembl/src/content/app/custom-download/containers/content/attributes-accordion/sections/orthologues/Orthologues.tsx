@@ -33,7 +33,9 @@ import styles from './Orthologues.scss';
 
 import { orthologueAttributes } from 'src/content/app/custom-download/sample-data/orthologue';
 import JSONValue from 'src/shared/types/JSON';
-import Attributes from 'src/content/app/custom-download/types/Attributes';
+import Attributes, {
+  AttributeWithOptions
+} from 'src/content/app/custom-download/types/Attributes';
 
 type ownProps = {
   hideUnchecked?: boolean;
@@ -154,7 +156,11 @@ const Orthologue = (props: Props) => {
                   onChange={(status, id) =>
                     attributesOnChangeHandler(status, species, id)
                   }
-                  options={props.orthologueAttributes[species].options}
+                  options={
+                    (props.orthologueAttributes[
+                      species
+                    ] as AttributeWithOptions).options as CheckboxGridOption[]
+                  }
                   label={species}
                 />
               </div>
@@ -168,8 +174,11 @@ const Orthologue = (props: Props) => {
 type DispatchProps = {
   setOrthologueAttributes: (setOrthologueAttributes: Attributes) => void;
   setOrthologueSearchTerm: (setOrthologueSearchTerm: string) => void;
-  setOrthologueSpecies: (setOrthologueSpecies: any) => void;
-  fetchOrthologueSpecies: (searchTerm: string, orthologueSpecies: any) => void;
+  setOrthologueSpecies: (setOrthologueSpecies: CheckboxGridOption[]) => void;
+  fetchOrthologueSpecies: (
+    searchTerm: string,
+    orthologueSpecies: CheckboxGridOption[]
+  ) => void;
   setOrthologueShowBestMatches: (setOrthologueShowBestMatches: boolean) => void;
   setOrthologueShowAll: (setOrthologueShowAll: boolean) => void;
   setOrthologueApplyToAllSpecies: (
@@ -190,9 +199,9 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 type StateProps = {
-  orthologueAttributes: any;
+  orthologueAttributes: Attributes;
   orthologueSearchTerm: string;
-  orthologueSpecies: any;
+  orthologueSpecies: CheckboxGridOption[];
   shouldShowBestMatches: boolean;
   shouldShowAll: boolean;
   shouldApplyToAllSpecies: boolean;

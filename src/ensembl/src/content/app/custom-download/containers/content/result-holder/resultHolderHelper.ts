@@ -1,8 +1,9 @@
 import config from 'config';
 
 import { keys, mapKeys, set, get, trim } from 'lodash';
+import JSONValue from 'src/shared/types/JSON';
 
-export const getProcessedAttributes = (flatSelectedAttributes: any) => {
+export const getProcessedAttributes = (flatSelectedAttributes: JSONValue) => {
   const filteredAttributes = keys(flatSelectedAttributes).filter(
     (key) => flatSelectedAttributes[key]
   );
@@ -15,7 +16,7 @@ export const getProcessedAttributes = (flatSelectedAttributes: any) => {
   });
 };
 
-export const getProcessedFilters = (filters: any) => {
+export const getProcessedFilters = (filters: JSONValue) => {
   const flatSelectedFilters: { [key: string]: boolean } = flattenObject(
     filters
   );
@@ -40,8 +41,8 @@ export const getProcessedFilters = (filters: any) => {
 };
 
 export const getEndpointUrl = (
-  flatSelectedAttributes: any,
-  selectedFilters: any,
+  flatSelectedAttributes: JSONValue,
+  selectedFilters: JSONValue,
   method: string = 'query'
 ) => {
   const processedAttributes = getProcessedAttributes(flatSelectedAttributes);
@@ -49,7 +50,7 @@ export const getEndpointUrl = (
 
   let endpoint = config.genesearchAPIEndpoint + `/genes/${method}?query=`;
 
-  const endpointFilters: any = {
+  const endpointFilters: JSONValue = {
     genome: 'homo_sapiens'
   };
 
@@ -85,13 +86,13 @@ export const getEndpointUrl = (
 };
 
 export const flattenObject = (
-  objectOrArray: any,
+  objectOrArray: JSONValue,
   prefix = '',
   formatter = (k: string) => k
 ) => {
   const nestedFormatter = (k: string) => '.' + k;
 
-  const nestElement = (prev: any, value: any, key: any): any =>
+  const nestElement = (prev: any, value: any, key: any): JSONValue =>
     value && typeof value === 'object'
       ? {
           ...prev,
@@ -114,7 +115,7 @@ const formatResponseToArray = (responseData: any): any => {
   Object.keys(responseArray)
     .sort()
     .forEach((key) => {
-      const keySplit: any = key.split('.');
+      const keySplit: string[] = key.split('.');
 
       let topID = keySplit[0];
       topID += keySplit[2] ? keySplit[2] : '0';

@@ -1,9 +1,12 @@
-import Attributes from 'src/content/app/custom-download/types/Attributes';
-import JSONValue, { PrimitiveOrArrayValue } from 'src/shared/types/JSON';
+import Attributes, {
+  AttributeWithOptions
+} from 'src/content/app/custom-download/types/Attributes';
+import JSONValue from 'src/shared/types/JSON';
+import { CheckboxGridOption } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
 export type OrthologueState = {
   searchTerm: string;
-  species: PrimitiveOrArrayValue;
+  species: CheckboxGridOption[];
   showBestMatches: boolean;
   showAll: boolean;
   applyToAllSpecies: boolean;
@@ -11,7 +14,11 @@ export type OrthologueState = {
 
 export type AttributesAccordionState = Readonly<{
   expandedPanel: string;
-  content: Attributes;
+  content: {
+    [key: string]:
+      | AttributeWithOptions
+      | { [key: string]: AttributeWithOptions };
+  };
   selectedAttributes: JSONValue;
   contentState: JSONValue;
   orthologue: OrthologueState;
