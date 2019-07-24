@@ -3,10 +3,12 @@ import { getBrowserActiveGenomeId } from '../browserSelectors';
 
 export const getDrawerView = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
-  return activeGenomeId ? state.drawer.drawerView[activeGenomeId] : '';
+  return (activeGenomeId && state.drawer.drawerView[activeGenomeId]) || '';
 };
 
 export const getIsDrawerOpened = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
-  return activeGenomeId ? state.drawer.isDrawerOpened[activeGenomeId] : false;
+  return (
+    (activeGenomeId && state.drawer.isDrawerOpened[activeGenomeId]) || false
+  );
 };
