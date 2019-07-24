@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
+
+import useHover from 'src/shared/hooks/useHover';
+
 import defaultStyles from './ImageButton.scss';
 import ImageHolder from './ImageHolder';
-
 import Tooltip from 'src/shared/tooltip/Tooltip';
 
 import imageButtonStyles from './ImageButton.scss';
@@ -23,18 +25,9 @@ type Props = {
 };
 
 const ImageButton = (props: Props) => {
-  const [isMousedOver, setIsMousedOver] = useState(false);
-
-  const handleMouseEnter = () => {
-    setIsMousedOver(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsMousedOver(false);
-  };
+  const [hoverRef, isHovered] = useHover();
 
   const handleClick = () => {
-    handleMouseLeave();
     props.onClick && props.onClick();
   };
 
@@ -49,12 +42,11 @@ const ImageButton = (props: Props) => {
     ? { ...defaultStyles, ...props.classNames }
     : defaultStyles;
 
-  const shouldShowTooltip = Boolean(props.description) && isMousedOver;
+  const shouldShowTooltip = Boolean(props.description) && isHovered;
 
   return (
     <div
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      ref={hoverRef}
       className={imageButtonStyles.imageButton}
       {...buttonProps}
     >
