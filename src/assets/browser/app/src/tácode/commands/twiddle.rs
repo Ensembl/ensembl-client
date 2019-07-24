@@ -14,9 +14,9 @@ fn not(data: &Vec<f64>) -> Vec<f64> {
     out
 }
 
-fn elide(data: &Vec<f64>, bools: &Vec<f64>, stride: &Vec<f64>) -> Vec<f64> {
+fn elide<T: Clone>(data: &Vec<T>, bools: &Vec<f64>, stride: &Vec<f64>) -> Vec<T> {
     if bools.len() == 0 { return vec!{}; }
-    let mut out = Vec::<f64>::new();
+    let mut out = Vec::<T>::new();
     let mut data_iter = data.iter();
     let mut bool_iter = bools.iter().cycle();
     let mut term = false;
@@ -24,7 +24,7 @@ fn elide(data: &Vec<f64>, bools: &Vec<f64>, stride: &Vec<f64>) -> Vec<f64> {
         let b = *bool_iter.next().unwrap() != 0.;
         for _ in 0..stride[0] as usize {
             match data_iter.next() {
-                Some(v) => { if b { out.push(*v); } }
+                Some(v) => { if b { out.push(v.clone()); } }
                 None => { term = true; break; }
             }
         }
@@ -138,6 +138,7 @@ fn accn(data: &Vec<f64>, strides: &Vec<f64>) -> Vec<f64> {
 pub struct Not(usize,usize);
 // elide #target, #bools, #stride
 pub struct Elide(usize,usize,usize);
+pub struct ElideStr(usize,usize,usize);
 // pick #tagret, #source, #palette, #stride
 pub struct Pick(usize,usize,usize,usize);
 // picks #tagret, #source, #palette, #stride
@@ -171,6 +172,21 @@ impl Command for Elide {
                 regs.get(self.2).as_floats(|stride| {
                     let data = elide(data,bools,stride);
                     regs.set(self.0,Value::new_from_float(data));
+                });
+            });
+        });                   
+        return 1;
+    }
+}
+
+impl Command for ElideStr {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        regs.get(self.0).as_string(|data| {
+            regs.get(self.1).as_floats(|bools| {
+                regs.get(self.2).as_floats(|stride| {
+                    let data = elide(data,bools,stride);
+                    regs.set(self.0,Value::new_from_string(data));
                 });
             });
         });                   
@@ -351,6 +367,7 @@ impl Command for Burst {
 }
 
 pub struct ElideI();
+pub struct ElideStrI();
 pub struct NotI();
 pub struct PickI();
 pub struct PicksI();
@@ -369,6 +386,13 @@ impl Instruction for ElideI {
     fn signature(&self) -> Signature { Signature::new("elide","rrr") }
     fn build(&self, args: &Vec<Argument>) -> Box<Command> {
         Box::new(Elide(args[0].reg(),args[1].reg(),args[2].reg()))
+    }
+}
+
+impl Instruction for ElideStrI {
+    fn signature(&self) -> Signature { Signature::new("elidestr","rrr") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(ElideStr(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
 

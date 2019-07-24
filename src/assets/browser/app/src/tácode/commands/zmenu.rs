@@ -13,7 +13,9 @@ fn zmenu(sr: &mut SourceResponse, ids: &Vec<String>, keys: &Vec<String>, values:
     for id in ids {
         let value = values.next();
         for key in keys {
-            sr.update_zml(&None,|zml| zml.set_value(id,key,value.unwrap()));
+            if let Some(value) = value {
+                sr.update_zml(&None,|zml| zml.set_value(id,key,value));
+            }
         }
     }
 }
@@ -22,7 +24,9 @@ fn zmenu_assoc(sr: &mut SourceResponse, to_list: &Vec<String>, from_list: &Vec<S
     let mut froms = from_list.iter().cycle();
     for to in to_list {
         let from = froms.next();
-        sr.update_zml(&None,|zml| zml.set_assoc(to,unwrap!(from)));
+        if let Some(from) = from {
+            sr.update_zml(&None,|zml| zml.set_assoc(to,from));
+        }
     }
 }
 
