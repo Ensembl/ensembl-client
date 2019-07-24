@@ -154,7 +154,7 @@ export const updateChrLocation = createStandardAction(
 
 export const updateActualChrLocation = createStandardAction(
   'browser/update-actual-chromosome-location'
-)<{ [genomeId: string]: ChrLocation }>();
+)<ChrLocations>();
 
 export const setActualChrLocation: ActionCreator<
   ThunkAction<any, any, null, Action<string>>
