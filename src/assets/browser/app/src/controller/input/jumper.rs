@@ -6,6 +6,7 @@ use serde_json::Value as JSONValue;
 use controller::global::AppRunner;
 use controller::input::Action;
 use data::{ HttpManager, HttpResponseConsumer, BackendConfig };
+use data::parse_jsonxferresponse;
 
 pub struct Jumper {
     ar: AppRunner,
@@ -43,6 +44,11 @@ impl JumperConsumer {
                         Action::Settled
                     ],None);
                     console!("got result! {:?}/{:?}/{:?}",stick,start,end);
+                }
+                if let Some(ref payload) = obj.get("payload") {
+                    for resp in parse_jsonxferresponse(payload) {
+                        console!("got payload {:?}",payload);
+                    }
                 }
             }
         }

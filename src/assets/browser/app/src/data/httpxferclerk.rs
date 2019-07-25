@@ -14,6 +14,7 @@ use super::{
     XferClerk, XferConsumer, XferRequest, XferCache, XferUrlBuilder,
     HttpResponseConsumer, HttpManager, BackendConfig
 };
+use super::jsonxferresponse::parse_jsonxferresponse_str;
 
 use super::backendconfig::BackendBytecode;
 
@@ -116,34 +117,6 @@ impl PendingXferBatch {
         xhr.open("GET",&url.as_str());
         http_manager.add_request(xhr,None,Box::new(self));
     }
-
-    fn marshal(&mut self, data: &SerdeValue) -> Vec<Value> {
-        let mut out = Vec::<Value>::new();
-        for val in unwrap!(data.as_array()) {
-            let mut row = Vec::<f64>::new();
-            if val.is_array() {
-                for cell in unwrap!(val.as_array()) {
-                    if cell.is_f64() {
-                        row.push(unwrap!(cell.as_f64()));
-                    } else if cell.is_i64() {
-                        row.push(unwrap!(cell.as_i64()) as f64);
-                    } else if cell.is_boolean() {
-                        row.push(if unwrap!(cell.as_bool()) { 1. } else { 0. } );
-                    }
-                }
-                out.push(Value::new_from_float(row));
-            } else if val.is_object() {
-                if let Some(string) = unwrap!(val.as_object()).get("string") {
-                    let values : Vec<String> = 
-                            unwrap!(string.as_array()).iter()
-                            .map(|x| unwrap!(x.as_str()).to_string())
-                            .collect();
-                    out.push(Value::new_from_string(values));
-                }
-            }
-        }
-        out
-    }
 }
 
 impl HttpResponseConsumer for PendingXferBatch {
@@ -151,16 +124,11 @@ impl HttpResponseConsumer for PendingXferBatch {
         let value : ArrayBuffer = ok!(req.raw_response().try_into());
         let value : TypedArray<u8> = value.into();
         let data = ok!(String::from_utf8(value.to_vec()));
-        let data : SerdeValue = ok!(serde_json::from_str(&data));
-        for resp in unwrap!(data.as_array()) {
-            let key = (unwrap!(resp[0].as_str()).to_string(),
-                       unwrap!(resp[1].as_str()).to_string(),
-                       unwrap!(resp[2].as_str()).to_string());
-            if let Some(mut requests) = self.requests.remove(&key) {
-                let codename = unwrap!(resp[3].as_str()).to_string();
-                let bytecode = ok!(self.config.get_bytecode(&codename)).clone();
-                let recv = (codename,self.marshal(&resp[4]));
-                self.cache.put(&key.2,&key.0,&key.1,recv.clone());
+        for resp in parse_jsonxferresponse_str(&data) {
+            if let Some(mut requests) = self.requests.remove(&resp.key) {
+                let bytecode = ok!(self.config.get_bytecode(&resp.codename)).clone();
+                let recv = (resp.codename,resp.values);
+                self.cache.put(&resp.key.2,&resp.key.0,&resp.key.1,recv.clone());
                 for mut req in requests.drain(..) {
                     req.go(bytecode.clone(),recv.1.clone());
                 }
