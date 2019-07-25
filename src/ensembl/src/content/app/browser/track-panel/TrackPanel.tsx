@@ -17,7 +17,11 @@ import {
   closeTrackPanelModal,
   openTrackPanelModal
 } from './trackPanelActions';
-import { toggleDrawer, changeDrawerView } from '../drawer/drawerActions';
+import {
+  toggleDrawer,
+  changeDrawerView,
+  closeDrawer
+} from '../drawer/drawerActions';
 import {
   getIsTrackPanelOpened,
   getIsTrackPanelModalOpened,
@@ -60,6 +64,7 @@ type StateProps = {
 
 type DispatchProps = {
   changeDrawerView: (drawerView: string) => void;
+  closeDrawer: () => void;
   closeTrackPanelModal: () => void;
   openTrackPanelModal: (trackPanelModalView: string) => void;
   toggleDrawer: (isDrawerOpened: boolean) => void;
@@ -67,9 +72,7 @@ type DispatchProps = {
   updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
 };
 
-type OwnProps = {
-  closeDrawer: () => void;
-};
+type OwnProps = {};
 
 type TrackPanelProps = StateProps & DispatchProps & OwnProps;
 
@@ -146,7 +149,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
               trackPanelModalView={props.trackPanelModalView}
             />
           ) : null}
-          {isDrawerOpened && <Drawer closeDrawer={props.closeDrawer} />}
+          {isDrawerOpened && <Drawer />}
         </div>
       ) : null}
     </animated.div>
@@ -177,6 +180,7 @@ const mapStateToProps = (state: RootState): StateProps => {
 
 const mapDispatchToProps: DispatchProps = {
   changeDrawerView,
+  closeDrawer,
   closeTrackPanelModal,
   openTrackPanelModal,
   toggleDrawer,

@@ -42,7 +42,11 @@ import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 import { fetchGenomeData } from 'src/genome/genomeActions';
-import { changeDrawerView, toggleDrawer } from './drawer/drawerActions';
+import {
+  changeDrawerView,
+  closeDrawer,
+  toggleDrawer
+} from './drawer/drawerActions';
 
 import browserStorageService from './browser-storage-service';
 import { TrackStates } from './track-panel/trackPanelConfig';
@@ -74,6 +78,7 @@ type StateProps = {
 type DispatchProps = {
   changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
   changeDrawerView: (drawerView: string) => void;
+  closeDrawer: () => void;
   fetchGenomeData: (genomeId: string) => void;
   replace: Replace;
   toggleDrawer: (isDrawerOpened: boolean) => void;
@@ -100,7 +105,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
   >({});
   const lastGenomeIdRef = useRef(props.activeGenomeId);
 
-  const { isDrawerOpened } = props;
+  const { isDrawerOpened, closeDrawer } = props;
 
   const setDataFromUrl = () => {
     const { genomeId = null } = props.match.params;
@@ -214,11 +219,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
     }
   }, [props.browserActivated]);
 
-  const closeDrawer = () => {
-    props.changeDrawerView('');
-    props.toggleDrawer(false);
-  };
-
   const closeTrack = () => {
     if (!isDrawerOpened) {
       return;
@@ -253,10 +253,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
   };
 
   const BrowserBarNode = (
-    <BrowserBar
-      closeDrawer={closeDrawer}
-      dispatchBrowserLocation={dispatchBrowserLocation}
-    />
+    <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
   );
 
   return props.activeGenomeId ? (
@@ -297,7 +294,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
                 />
               </div>
             </animated.div>
-            <TrackPanel closeDrawer={closeDrawer} />
+            <TrackPanel />
           </div>
         </section>
       )}
@@ -353,6 +350,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
 const mapDispatchToProps: DispatchProps = {
   changeBrowserLocation,
   changeDrawerView,
+  closeDrawer,
   fetchGenomeData,
   replace,
   toggleDrawer,

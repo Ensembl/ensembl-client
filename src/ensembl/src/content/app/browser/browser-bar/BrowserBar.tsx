@@ -24,7 +24,7 @@ import {
   getIsTrackPanelOpened
 } from '../track-panel/trackPanelSelectors';
 import { selectBrowserTabAndSave } from '../track-panel/trackPanelActions';
-import { toggleDrawer } from '../drawer/drawerActions';
+import { closeDrawer, toggleDrawer } from '../drawer/drawerActions';
 import { RootState } from 'src/store';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
@@ -50,6 +50,7 @@ type StateProps = {
 };
 
 type DispatchProps = {
+  closeDrawer: () => void;
   selectBrowserTabAndSave: (selectedBrowserTab: TrackType) => void;
   toggleBrowserNav: () => void;
   toggleDrawer: (isDrawerOpened: boolean) => void;
@@ -57,7 +58,6 @@ type DispatchProps = {
 };
 
 type OwnProps = {
-  closeDrawer: () => void;
   dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
 };
 
@@ -240,6 +240,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
 });
 
 const mapDispatchToProps: DispatchProps = {
+  closeDrawer,
   selectBrowserTabAndSave,
   toggleBrowserNav,
   toggleDrawer,

@@ -51,3 +51,25 @@ export const toggleDrawer: ActionCreator<
     })
   );
 };
+
+export const closeDrawer: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = () => (dispatch, getState: () => RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(getState());
+
+  if (!activeGenomeId) {
+    return;
+  }
+
+  dispatch(
+    toggleDrawerForGenome({
+      [activeGenomeId]: false
+    })
+  );
+
+  dispatch(
+    changeDrawerViewForGenome({
+      [activeGenomeId]: ''
+    })
+  );
+};

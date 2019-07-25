@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 
 import { RootState } from 'src/store';
-import { changeDrawerView, toggleDrawer } from './drawerActions';
+import { closeDrawer } from './drawerActions';
 import { getDrawerView } from './drawerSelectors';
 import { getBrowserActiveEnsObject } from '../browserSelectors';
 
@@ -25,11 +25,11 @@ type StateProps = {
   ensObject: EnsObject | null;
 };
 
-type DispatchProps = {};
-
-type OwnProps = {
+type DispatchProps = {
   closeDrawer: () => void;
 };
+
+type OwnProps = {};
 
 type DrawerProps = StateProps & DispatchProps & OwnProps;
 
@@ -78,4 +78,11 @@ const mapStateToProps = (state: RootState): StateProps => ({
   ensObject: getBrowserActiveEnsObject(state)
 });
 
-export default connect(mapStateToProps)(Drawer);
+const mapDispatchToProps = {
+  closeDrawer
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Drawer);
