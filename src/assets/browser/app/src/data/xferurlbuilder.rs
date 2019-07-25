@@ -1,6 +1,8 @@
 use std::collections::{ HashMap, HashSet };
 use itertools::Itertools;
 
+use super::xferrequest::XferRequestKey;
+
 struct ChromBuilder {
     input: HashSet<(String,String)>,
     output: Vec<String>
@@ -62,11 +64,11 @@ impl XferUrlBuilder {
         }
     }
     
-    pub fn add(&mut self, wire: &str, chrom: &str, leaf: &str) {
-        let set = self.data.entry(chrom.to_string()).or_insert_with(||
+    pub fn add(&mut self, key: &XferRequestKey) {
+        let set = self.data.entry(key.stick.clone()).or_insert_with(||
             Vec::<(String,String)>::new()
         );
-        set.push((wire.to_string(),leaf.to_string()));
+        set.push((key.track.clone(),key.leaf.clone()));
     }
     
     fn emit_chrom(&self, values: &Vec<(String,String)>) -> String {

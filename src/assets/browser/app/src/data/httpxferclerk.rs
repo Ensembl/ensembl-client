@@ -15,6 +15,7 @@ use super::{
     HttpResponseConsumer, HttpManager, BackendConfig
 };
 use super::jsonxferresponse::parse_jsonxferresponse_str;
+use super::xferrequest::XferRequestKey;
 
 use super::backendconfig::BackendBytecode;
 
@@ -73,7 +74,7 @@ impl PendingXferRequest {
 
 struct PendingXferBatch {
     config: BackendConfig,
-    requests: HashMap<(String,String,String),Vec<PendingXferRequest>>,
+    requests: HashMap<XferRequestKey,Vec<PendingXferRequest>>,
     pace: XferPaceManager,
     base: Url,
     cache: XferCache
@@ -83,7 +84,7 @@ impl PendingXferBatch {
     pub fn new(config: &BackendConfig, base: &Url, pace: &XferPaceManager, cache: &XferCache) -> PendingXferBatch {
         PendingXferBatch {
             config: config.clone(),
-            requests: HashMap::<(String,String,String),Vec<PendingXferRequest>>::new(),
+            requests: HashMap::new(),
             pace: pace.clone(),
             base: base.clone(),
             cache: cache.clone()
@@ -92,7 +93,7 @@ impl PendingXferBatch {
     
     pub fn add_request(&mut self, short_stick: &str, short_pane: &str,
                        compo: &str, consumer: Box<XferConsumer>) {
-        let key = (short_stick.to_string(),short_pane.to_string(),compo.to_string());
+        let key = XferRequestKey::new(compo,short_stick,short_pane);
         self.requests.entry(key).or_insert_with(|| {
             Vec::<PendingXferRequest>::new()
         }).push(PendingXferRequest {
@@ -105,8 +106,8 @@ impl PendingXferBatch {
     pub fn fire(self, http_manager: &mut HttpManager) {
         let mut url = self.base.clone();
         let mut url_builder = XferUrlBuilder::new();
-        for (short_stick,short_pane,compo) in self.requests.keys() {
-            url_builder.add(compo,short_stick,short_pane);
+        for key in self.requests.keys() {
+            url_builder.add(key);
         }
         {
             let mut path = url.path_segments_mut().unwrap();
@@ -128,7 +129,7 @@ impl HttpResponseConsumer for PendingXferBatch {
             if let Some(mut requests) = self.requests.remove(&resp.key) {
                 let bytecode = ok!(self.config.get_bytecode(&resp.codename)).clone();
                 let recv = (resp.codename,resp.values);
-                self.cache.put(&resp.key.2,&resp.key.0,&resp.key.1,recv.clone());
+                self.cache.put(&resp.key,recv.clone());
                 for mut req in requests.drain(..) {
                     req.go(bytecode.clone(),recv.1.clone());
                 }
@@ -244,7 +245,8 @@ impl HttpXferClerkImpl {
         };
         if let Some(wire) = wire {
             let (short_stick,short_pane) = leaf.get_short_spec();
-            if let Some(recv) = self.cache.get(&wire,&short_stick,&short_pane) {
+            let key = XferRequestKey::new(&wire,&short_stick,&short_pane);
+            if let Some(recv) = self.cache.get(&key) {
                 let bytecode = {
                     let cfg = self.config.as_ref().unwrap().clone();
                     ok!(cfg.get_bytecode(&recv.0)).clone()

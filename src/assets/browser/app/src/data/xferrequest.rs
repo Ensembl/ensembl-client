@@ -21,3 +21,17 @@ impl XferRequest {
     pub fn get_leaf(&self) -> &Leaf { &self.leaf }
     pub fn get_prime(&self) -> bool { self.prime }
 }
+
+
+#[derive(Clone,PartialEq,Eq,Hash)]
+pub struct XferRequestKey {
+    pub track: String,
+    pub stick: String,
+    pub leaf: String    
+}
+
+impl XferRequestKey {
+    pub fn new(track: &str, stick: &str, leaf: &str) -> XferRequestKey {
+        XferRequestKey { track: track.to_string(), stick: stick.to_string(), leaf: leaf.to_string() }
+    }
+}

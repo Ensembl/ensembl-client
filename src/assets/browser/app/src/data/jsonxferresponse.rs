@@ -1,9 +1,11 @@
 use serde_json::Value as SerdeValue;
 use tánaiste::Value;
 
+use super::xferrequest::XferRequestKey;
+
 pub struct JSONXferResponse {
     pub codename: String,
-    pub key: (String,String,String),
+    pub key: XferRequestKey,
     pub values: Vec<Value>
 }
 
@@ -38,9 +40,9 @@ fn marshal(data: &SerdeValue) -> Vec<Value> {
 pub fn parse_jsonxferresponse(data: &SerdeValue) -> Vec<JSONXferResponse> {
     let mut out = Vec::new();
     for resp in unwrap!(data.as_array()) {
-        let key = (unwrap!(resp[0].as_str()).to_string(),
-                    unwrap!(resp[1].as_str()).to_string(),
-                    unwrap!(resp[2].as_str()).to_string());
+        let key = XferRequestKey::new(unwrap!(resp[2].as_str()),
+                                       unwrap!(resp[0].as_str()),
+                                       unwrap!(resp[1].as_str()));
         out.push(JSONXferResponse {
             codename: unwrap!(resp[3].as_str()).to_string(),
             key,
