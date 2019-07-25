@@ -81,7 +81,7 @@ const CheckboxWithSelects = (props: CheckboxWithSelectsProps) => {
             />
           </td>
           <td>
-            {isChecked && (
+            {!props.disabled && (
               <div>
                 <Select
                   options={firstoptions}
