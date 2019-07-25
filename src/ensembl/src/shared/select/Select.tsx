@@ -14,6 +14,7 @@ export type Option = {
   label: React.ReactNode;
   isSelected: boolean;
   isDisabled?: boolean;
+  order?: number;
 };
 
 export type OptionGroup = {
@@ -158,7 +159,7 @@ Select.defaultProps = {
 // to be consumed by the Select component
 const SelectAdapter = (props: SelectAdapterProps) => {
   if ((props as OptionGroupsSelectProps).optionGroups) {
-    return <Select {...props as OptionGroupsSelectProps} />;
+    return <Select {...(props as OptionGroupsSelectProps)} />;
   }
   const { options, title, ...otherProps } = props as OptionsSelectProps;
   const optionGroups = [

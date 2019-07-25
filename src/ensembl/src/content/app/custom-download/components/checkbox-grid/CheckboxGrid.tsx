@@ -8,6 +8,7 @@ export type CheckboxGridOption = {
   isChecked: boolean;
   id: string;
   label: string;
+  order?: number;
 };
 
 export type CheckboxGridProps = {
@@ -21,6 +22,7 @@ export type CheckboxGridProps = {
 
 const CheckboxGrid = (props: CheckboxGridProps) => {
   let orderedCheckboxList: CheckboxGridOption[] = orderBy(props.options, [
+    'order',
     'label'
   ]);
 

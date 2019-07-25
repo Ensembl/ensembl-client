@@ -14,49 +14,56 @@ const attributes: Attributes = {
           {
             id: 'name',
             label: 'Gene name',
-            isChecked: true
+            isChecked: true,
+            order: 1
           },
           {
             id: 'id',
             label: 'Gene stable ID',
-            isChecked: true
+            isChecked: true,
+            order: 2
           },
           {
             id: 'version',
             label: 'Version',
-            isChecked: false
+            isChecked: false,
+            order: 3
           },
           {
             id: 'source',
             label: 'Source (gene)',
-            isChecked: false
+            isChecked: false,
+            order: 9
           },
           {
             id: 'biotype',
-            label: 'Biotype',
-            isChecked: true
-          }
-        ]
-      },
-      {
-        type: 'checkbox_grid',
-        label: 'Location',
-        id: 'default',
-        options: [
+            label: 'Gene Biotype',
+            isChecked: true,
+            order: 5
+          },
           {
             id: 'strand',
             label: 'Strand',
-            isChecked: false
+            isChecked: false,
+            order: 8
           },
           {
             id: 'start',
             label: 'Gene Start',
-            isChecked: true
+            isChecked: true,
+            order: 6
           },
           {
             id: 'end',
             label: 'Gene End',
-            isChecked: true
+            isChecked: true,
+            order: 7
+          },
+          {
+            id: 'chromosome',
+            label: 'Gene chromosome',
+            isChecked: true,
+            order: 5
           }
         ]
       },
@@ -69,17 +76,20 @@ const attributes: Attributes = {
           {
             id: 'uniparc_id',
             label: 'UniParc ID',
-            isChecked: false
+            isChecked: false,
+            order: 1
           },
           {
             id: 'ncbi_id',
             label: 'NCBI gene ID',
-            isChecked: false
+            isChecked: false,
+            order: 1
           },
           {
             id: 'HGNC',
             label: 'HGNC symbol',
-            isChecked: false
+            isChecked: false,
+            order: 1
           }
         ]
       }
@@ -97,46 +107,52 @@ const attributes: Attributes = {
         options: [
           {
             id: 'biotype',
-            label: 'Biotype',
-            isChecked: false
+            label: 'Transcript Biotype',
+            isChecked: false,
+            order: 3
           },
-          { id: 'go_domain', label: 'GO domain', isChecked: false },
+          { id: 'go_domain', label: 'GO domain', isChecked: false, order: 10 },
           {
             id: 'gencode_basic_annotation',
             label: 'GENCODE basic annotation',
-            isChecked: false
+            isChecked: false,
+            order: 9
           },
           {
             id: 'name',
             label: 'Transcript name',
-            isChecked: true
+            isChecked: true,
+            order: 1
+          },
+          {
+            id: 'transcripts.chromosome',
+            label: 'Transcript chromosome',
+            isChecked: true,
+            order: 5
           },
           {
             id: 'id',
             label: 'Transcript stable ID',
-            isChecked: true
+            isChecked: true,
+            order: 2
           },
           {
             id: 'Interpro',
             label: 'Interpro Domain ID',
-            isChecked: false
-          }
-        ]
-      },
-      {
-        type: 'checkbox_grid',
-        label: 'Location',
-        id: 'default',
-        options: [
+            isChecked: false,
+            order: 8
+          },
           {
             id: 'start',
             label: 'Transcript Start',
-            isChecked: false
+            isChecked: false,
+            order: 6
           },
           {
             id: 'end',
             label: 'Transcript End',
-            isChecked: false
+            isChecked: false,
+            order: 7
           }
         ]
       }
@@ -161,7 +177,8 @@ const attributes: Attributes = {
           {
             id: 'cdna_sequence',
             label: 'cDNA Sequence',
-            isChecked: false
+            isChecked: false,
+            order: 1
           }
         ]
       }

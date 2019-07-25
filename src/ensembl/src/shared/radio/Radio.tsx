@@ -5,6 +5,7 @@ import defaultStyles from './Radio.scss';
 export type RadioOption = {
   value: string | number | boolean;
   label: string;
+  order?: number;
 };
 
 export type RadioOptions = RadioOption[];

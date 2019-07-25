@@ -192,14 +192,11 @@ const AttributesAccordion = (props: Props) => {
               {formatAccordionTitle('protein')}
             </AccordionItemButton>
           </AccordionItemHeading>
-          <AccordionItemPanel>{buildSection('protein')}</AccordionItemPanel>
-          <AccordionItemPermanentBlock>
-            {props.expandedPanel !== 'protein' && (
-              <div className={styles.permanentBlock}>
-                {buildSection('protein', true, true)}
-              </div>
-            )}
-          </AccordionItemPermanentBlock>
+          <AccordionItemPanel>
+            <div className={styles.defaultContent}>
+              No attributes available under this section.
+            </div>
+          </AccordionItemPanel>
         </AccordionItem>
 
         <AccordionItem uuid={'orthologues'}>
