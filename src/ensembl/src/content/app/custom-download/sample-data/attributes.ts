@@ -50,12 +50,12 @@ const attributes: Attributes = {
           },
           {
             id: 'start',
-            label: 'Start',
+            label: 'Gene Start',
             isChecked: true
           },
           {
             id: 'end',
-            label: 'Start',
+            label: 'Gene End',
             isChecked: true
           }
         ]
@@ -130,12 +130,12 @@ const attributes: Attributes = {
         options: [
           {
             id: 'start',
-            label: 'Start',
+            label: 'Transcript Start',
             isChecked: false
           },
           {
             id: 'end',
-            label: 'End',
+            label: 'Transcript End',
             isChecked: false
           }
         ]
