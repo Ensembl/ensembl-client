@@ -25,7 +25,7 @@ type Props = {
 };
 
 const ImageButton = (props: Props) => {
-  const [hoverRef, isHovered] = useHover();
+  const [hoverRef, isHovered] = useHover<HTMLDivElement>();
 
   const handleClick = () => {
     props.onClick && props.onClick();

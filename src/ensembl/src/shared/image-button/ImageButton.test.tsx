@@ -1,4 +1,5 @@
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import { mount } from 'enzyme';
 import faker from 'faker';
 
@@ -113,7 +114,7 @@ describe('<ImageButton />', () => {
     });
   });
 
-  describe('showing tooltip on hover', () => {
+  describe('tooltip on hover', () => {
     const mockSVG = () => {
       return <svg />;
     };
@@ -122,12 +123,17 @@ describe('<ImageButton />', () => {
       image: mockSVG,
       description
     };
+    const mouseEnterEvent = new Event('mouseenter');
+    const clickEvent = new Event('click');
 
     it('shows tooltip when moused over', () => {
       const wrapper = mount(<ImageButton {...props} />);
       expect(wrapper.find(Tooltip).length).toBe(0);
 
-      wrapper.simulate('mouseenter');
+      act(() => {
+        wrapper.getDOMNode().dispatchEvent(mouseEnterEvent);
+      });
+
       wrapper.update();
 
       const tooltip = wrapper.find(Tooltip);
@@ -137,15 +143,23 @@ describe('<ImageButton />', () => {
 
     it('does not show tooltip if clicked', () => {
       const wrapper = mount(<ImageButton {...props} />);
-      wrapper.simulate('mouseenter');
-      wrapper.simulate('click');
+      act(() => {
+        const rootNode = wrapper.getDOMNode();
+        rootNode.dispatchEvent(mouseEnterEvent);
+        rootNode.dispatchEvent(clickEvent);
+      });
+      // wrapper.simulate('click');
       wrapper.update();
       expect(wrapper.find(Tooltip).length).toBe(0);
     });
 
     it('does not show tooltip if description is not provided', () => {
       const wrapper = mount(<ImageButton {...props} description="" />);
-      wrapper.simulate('mouseenter');
+
+      act(() => {
+        wrapper.getDOMNode().dispatchEvent(mouseEnterEvent);
+      });
+
       wrapper.update();
 
       expect(wrapper.find(Tooltip).length).toBe(0);
