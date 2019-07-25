@@ -1,12 +1,12 @@
 @import 'src/styles/common';
 
-$buttonSize: 56px;
+$buttonSize: 52px;
 
 .popularSpeciesButtonWrapper {
   position: relative;
   display: inline-block;
-  margin-right: 1.5rem;
-  margin-bottom: 1.5rem;
+  margin-right: 1.4rem;
+  margin-bottom: 1.2rem;
   font-size: 0;
 
   *[class*='tooltip'] {
