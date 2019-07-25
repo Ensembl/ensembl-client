@@ -17,7 +17,7 @@ export const getIsLoadingResult = (state: RootState): boolean =>
   state.customDownload.result.isLoadingResult;
 
 export const getShowPreviewResult = (state: RootState): boolean =>
-  state.customDownload.previewDownload.showPreview;
+  state.customDownload.previewDownload.showSummary;
 
 export const getDownloadType = (state: RootState): string =>
   state.customDownload.previewDownload.downloadType;

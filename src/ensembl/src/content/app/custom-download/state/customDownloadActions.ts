@@ -74,9 +74,9 @@ export const setIsLoadingResult = createAction(
 export const setShowPreview = createAction(
   'custom-download/set-show-preview',
   (resolve) => {
-    return (showPreview: boolean) => {
-      customDownloadStorageService.saveShowPreview(showPreview);
-      return resolve(showPreview);
+    return (showSummary: boolean) => {
+      customDownloadStorageService.saveShowPreview(showSummary);
+      return resolve(showSummary);
     };
   }
 );

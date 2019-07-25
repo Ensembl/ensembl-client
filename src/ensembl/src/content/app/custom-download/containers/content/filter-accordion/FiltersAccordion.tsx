@@ -127,7 +127,9 @@ const FiltersAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className={styles.accordionItemPanel}>
-            <Proteins />
+            <div className={styles.tempPadding}>
+              Protein domains & families filters
+            </div>
           </AccordionItemPanel>
         </AccordionItem>
 

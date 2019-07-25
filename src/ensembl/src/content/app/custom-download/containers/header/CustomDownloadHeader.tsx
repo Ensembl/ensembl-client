@@ -93,11 +93,11 @@ const Header = (props: Props) => {
 
   return (
     <div className={styles.wrapper}>
-      {!props.showPreview && (
+      {!props.showSummary && (
         <div className={styles.resultCounter}>{getFormattedResult()}</div>
       )}
 
-      {props.showPreview && (
+      {props.showSummary && (
         <>
           <div className={styles.backButton}>
             <ImageButton
@@ -125,7 +125,7 @@ const Header = (props: Props) => {
         </RoundButton>
       </div>
 
-      {props.showPreview && (
+      {props.showSummary && (
         <div className={styles.downloadTypeSelectHolder}>
           <span className={styles.downloadTypeLabel}>Download as </span>
           <span className={styles.downloadTypeSelect}>
@@ -141,15 +141,15 @@ const Header = (props: Props) => {
       )}
 
       <div className={styles.previewButton}>
-        {!props.showPreview && (
+        {!props.showSummary && (
           <PrimaryButton
             onClick={previewButtonOnClick}
             isDisabled={disablePreviewButton}
           >
-            Preview download
+            Download summary
           </PrimaryButton>
         )}
-        {props.showPreview && (
+        {props.showSummary && (
           <PrimaryButton
             isDisabled={downloadButtonStatus}
             onClick={() => {
@@ -183,7 +183,7 @@ const mapDispatchToProps: DispatchProps = {
 type StateProps = {
   selectedPreFilter: string;
   preview: JSONValue;
-  showPreview: boolean;
+  showSummary: boolean;
   downloadType: string;
   selectedfilters: JSONValue;
   selectedAttributes: JSONValue;
@@ -192,7 +192,7 @@ type StateProps = {
 const mapStateToProps = (state: RootState): StateProps => ({
   selectedPreFilter: getSelectedPreFilter(state),
   preview: getPreviewResult(state),
-  showPreview: getShowPreviewResult(state),
+  showSummary: getShowPreviewResult(state),
   downloadType: getDownloadType(state),
   selectedfilters: getSelectedFilters(state),
   selectedAttributes: getSelectedAttributes(state)

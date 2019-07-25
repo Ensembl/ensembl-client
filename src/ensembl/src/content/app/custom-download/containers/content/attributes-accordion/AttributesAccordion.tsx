@@ -160,30 +160,16 @@ const AttributesAccordion = (props: Props) => {
           </AccordionItemPermanentBlock>
         </AccordionItem>
 
-        <AccordionItem uuid={'location'}>
-          <AccordionItemHeading>
-            <AccordionItemButton>
-              {formatAccordionTitle('location')}
-            </AccordionItemButton>
-          </AccordionItemHeading>
-          <AccordionItemPanel>{buildSection('location')}</AccordionItemPanel>
-          <AccordionItemPermanentBlock>
-            {props.expandedPanel !== 'location' && (
-              <div className={styles.permanentBlock}>
-                {buildSection('location', true, true)}
-              </div>
-            )}
-          </AccordionItemPermanentBlock>
-        </AccordionItem>
-
         <AccordionItem uuid={'variation'}>
           <AccordionItemHeading>
             <AccordionItemButton>
               {formatAccordionTitle('variation')}
             </AccordionItemButton>
           </AccordionItemHeading>
-          <AccordionItemPanel className={styles.accordionItem}>
-            {buildSection('variation', true, true)}
+          <AccordionItemPanel>
+            <div className={styles.defaultContent}>
+              No attributes available under this section.
+            </div>
           </AccordionItemPanel>
         </AccordionItem>
 

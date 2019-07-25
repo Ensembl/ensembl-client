@@ -31,11 +31,11 @@ export const defaultPreFilterState: PreFilterState = {
 };
 
 export type PreviewDownloadState = Readonly<{
-  showPreview: boolean;
+  showSummary: boolean;
   downloadType: string;
 }>;
 
 export const defaultPreviewDownloadState: PreviewDownloadState = {
-  showPreview: false,
+  showSummary: false,
   downloadType: ''
 };

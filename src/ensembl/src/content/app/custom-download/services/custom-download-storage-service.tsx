@@ -17,7 +17,7 @@ export enum StorageKeys {
   SHOW_PRE_FILTER_PANEL = 'customDownload.preFilter.showPreFilterPanel',
   SELECTED_TAB = 'customDownload.tab.selectedTab',
 
-  SHOW_PREVIEW = 'customDownload.previewDownload.showPreview'
+  SHOW_PREVIEW = 'customDownload.previewDownload.showSummary'
 }
 
 export class CustomDownloadStorageService {

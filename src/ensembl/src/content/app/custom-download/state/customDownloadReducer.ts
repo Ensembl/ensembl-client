@@ -72,7 +72,7 @@ function previewDownload(
     case getType(customDownloadActions.setShowPreview):
       return {
         ...state,
-        showPreview: action.payload
+        showSummary: action.payload
       };
     case getType(customDownloadActions.setDownloadType):
       return {
