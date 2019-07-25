@@ -1,6 +1,5 @@
 import { createAction, createAsyncAction } from 'typesafe-actions';
 
-import { getCustomDownloadAnalyticsObject } from 'src/analyticsHelper';
 import * as allFilterAccordionActions from '../containers/content/filter-accordion/state/filterAccordionActions';
 import * as allAttributeAccordionActions from '../containers/content/attributes-accordion/state/attributesAccordionActions';
 import { ActionCreator, Action } from 'redux';
@@ -15,33 +14,21 @@ export const attributesAccordionActions = allAttributeAccordionActions;
 export const updateSelectedPreFilter = createAction(
   'custom-download/update-selected-pre-filters',
   (resolve) => {
-    return (selectedPreFilter: string) =>
-      resolve(
-        selectedPreFilter,
-        getCustomDownloadAnalyticsObject('Pre Filter Updates')
-      );
+    return (selectedPreFilter: string) => resolve(selectedPreFilter);
   }
 );
 
 export const togglePreFiltersPanel = createAction(
   'custom-download/toggle-pre-filters-panel',
   (resolve) => {
-    return (showPreFiltersPanel: boolean) =>
-      resolve(
-        showPreFiltersPanel,
-        getCustomDownloadAnalyticsObject('Pre Filter Panel Toggled')
-      );
+    return (showPreFiltersPanel: boolean) => resolve(showPreFiltersPanel);
   }
 );
 
 export const toggleTab = createAction(
   'custom-download/toggle-data-filter-tab-button',
   (resolve) => {
-    return (selectedTab: string) =>
-      resolve(
-        selectedTab,
-        getCustomDownloadAnalyticsObject('Toggle Data/Filter Tab Button')
-      );
+    return (selectedTab: string) => resolve(selectedTab);
   }
 );
 
@@ -80,21 +67,13 @@ export const setIsLoadingResult = createAction(
 export const setShowPreview = createAction(
   'custom-download/set-show-preview',
   (resolve) => {
-    return (showPreview: boolean) =>
-      resolve(
-        showPreview,
-        getCustomDownloadAnalyticsObject('Show download preview')
-      );
+    return (showPreview: boolean) => resolve(showPreview);
   }
 );
 
 export const setDownloadType = createAction(
   'custom-download/set-download-as',
   (resolve) => {
-    return (downloadType: string) =>
-      resolve(
-        downloadType,
-        getCustomDownloadAnalyticsObject('Download as ' + downloadType)
-      );
+    return (downloadType: string) => resolve(downloadType);
   }
 );

@@ -47,7 +47,7 @@ type StateProps = {
 };
 
 type DispatchProps = {
-  activateBrowser: (browserEl: HTMLDivElement) => void;
+  activateBrowser: () => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
   setChrLocation: (chrLocation: ChrLocation) => void;
@@ -84,7 +84,6 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
     const intendedLocation = payload['intended-location'];
     const actualLocation = payload['actual-location'] || intendedLocation;
     const messageCount = payload['message-counter'];
-    console.log("payload['actual-location']", payload['actual-location']);
 
     if (navIconStates) {
       props.updateBrowserNavStates(navIconStates);
@@ -117,8 +116,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   useEffect(() => {
     const currentEl: HTMLDivElement = props.browserRef
       .current as HTMLDivElement;
-
-    bootstrapBrowser(currentEl, props);
+    props.activateBrowser();
 
     return function cleanup() {
       if (currentEl && currentEl.ownerDocument) {
@@ -184,41 +182,6 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
     </>
   );
 };
-
-function bootstrapBrowser(currentEl: HTMLDivElement, props: BrowserImageProps) {
-  if (currentEl && currentEl.ownerDocument) {
-    const bodyEl = currentEl.ownerDocument.body as HTMLBodyElement;
-
-    // no need to check for DOM mutations if the browser class is already set in body
-    if (bodyEl.classList.contains('browser-app-ready')) {
-      props.activateBrowser(currentEl);
-      return;
-    }
-
-    const observerConfig = {
-      attributeFilter: ['class'],
-      attributes: true,
-      subtree: false
-    };
-
-    const observerCallback = (mutationsList: MutationRecord[]) => {
-      for (const mutation of mutationsList) {
-        const mutationNode = mutation.target as HTMLElement;
-
-        if (mutationNode.classList.contains('browser-app-ready')) {
-          props.activateBrowser(currentEl);
-
-          observer.disconnect();
-          break;
-        }
-      }
-    };
-
-    const observer = new MutationObserver(observerCallback);
-
-    observer.observe(bodyEl, observerConfig);
-  }
-}
 
 function getBrowserImageClasses(browserNavOpened: boolean): string {
   let classes = styles.browserStage;

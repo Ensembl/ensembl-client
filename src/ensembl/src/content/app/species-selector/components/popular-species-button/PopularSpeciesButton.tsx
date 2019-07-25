@@ -21,6 +21,9 @@ import {
   PopularSpecies
 } from 'src/content/app/species-selector/types/species-search';
 
+import analyticsTracking from 'src/services/analytics-service';
+import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
+
 import styles from './PopularSpeciesButton.scss';
 
 import { RootState } from 'src/store';
@@ -46,16 +49,29 @@ export const PopularSpeciesButton = (props: Props) => {
 
   const handleClick = () => {
     const { genome_id, is_available } = species;
+    const speciesName = getSpeciesAnalyticsName(species);
+
     if (!is_available) {
       return;
     } else if (isSelected) {
       props.clearSelectedSpecies();
+      analyticsTracking.trackEvent({
+        category: 'popular_species',
+        action: 'unpreselect',
+        label: speciesName
+      });
     } else if (isCommitted) {
       props.deleteCommittedSpecies(genome_id);
     } else {
       // the species is available, not selected and not committed;
       // go ahead and select it
       props.handleSelectedSpecies(props.species);
+
+      analyticsTracking.trackEvent({
+        category: 'popular_species',
+        action: 'preselect',
+        label: speciesName
+      });
     }
   };
 

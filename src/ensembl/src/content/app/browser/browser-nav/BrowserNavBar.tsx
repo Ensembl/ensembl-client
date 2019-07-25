@@ -18,11 +18,7 @@ type StateProps = {
   trackPanelOpened: boolean;
 };
 
-type DispatchProps = {};
-
-type OwnProps = {};
-
-type BrowserNavBarProps = StateProps & DispatchProps & OwnProps;
+type BrowserNavBarProps = StateProps;
 
 export const BrowserNavBar: FunctionComponent<BrowserNavBarProps> = (
   props: BrowserNavBarProps
@@ -51,9 +47,4 @@ const mapStateToProps = (state: RootState): StateProps => ({
   trackPanelOpened: getTrackPanelOpened(state)
 });
 
-const mapDispatchToProps: DispatchProps = {};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(BrowserNavBar);
+export default connect(mapStateToProps)(BrowserNavBar);

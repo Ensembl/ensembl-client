@@ -12,6 +12,7 @@ variables:
   KUBECONTEXT: ens-dev-ctx
   DEPLOYENV: dev
   ENVIRONMENT: production
+  DOCKER_TLS_CERTDIR: ""
 
 Test:
   image: node:10.16.0
