@@ -3,7 +3,8 @@ import {
   BrowserOpenState,
   BrowserNavStates,
   CogList,
-  ChrLocation
+  ChrLocation,
+  ChrLocations
 } from './browserState';
 import { getQueryParamsMap } from 'src/global/globalHelper';
 import { getGenomeInfo } from 'src/genome/genomeSelectors';
@@ -54,9 +55,7 @@ export const getBrowserNavOpened = (state: RootState): boolean =>
 export const getBrowserNavStates = (state: RootState): BrowserNavStates =>
   state.browser.browserNav.browserNavStates;
 
-export const getAllChrLocations = (
-  state: RootState
-): { [genomeId: string]: ChrLocation } =>
+export const getAllChrLocations = (state: RootState): ChrLocations =>
   state.browser.browserLocation.chrLocations;
 
 export const getChrLocation = (state: RootState): ChrLocation | null => {

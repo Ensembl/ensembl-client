@@ -15,7 +15,7 @@ import TrackPanel from './track-panel/TrackPanel';
 import AppBar from 'src/shared/app-bar/AppBar';
 
 import { RootState } from 'src/store';
-import { ChrLocation } from './browserState';
+import { ChrLocation, ChrLocations } from './browserState';
 import {
   changeBrowserLocation,
   setDataFromUrlAndSave,
@@ -58,7 +58,7 @@ type StateProps = {
   activeGenomeId: string | null;
   activeEnsObjectId: string | null;
   allActiveEnsObjectIds: { [genomeId: string]: string };
-  allChrLocations: { [genomeId: string]: ChrLocation };
+  allChrLocations: ChrLocations;
   browserActivated: boolean;
   browserNavOpened: boolean;
   browserQueryParams: { [key: string]: string };
