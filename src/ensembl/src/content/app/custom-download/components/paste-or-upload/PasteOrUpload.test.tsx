@@ -15,7 +15,7 @@ describe('<PasteOrUpload/>', () => {
 
   let wrapper: any;
   const defaultProps = {
-    value: undefined,
+    value: null,
     onChange,
     onRemove
   };
@@ -79,17 +79,6 @@ describe('<PasteOrUpload/>', () => {
       />
     );
     expect(wrapper.find(Input).prop('placeholder')).toBe(placeholder);
-  });
-
-  it('displays the "Paste data or Upload file" when the input is removed', () => {
-    wrapper = mount(
-      <PasteOrUpload {...defaultProps} value={faker.random.words()} />
-    );
-    expect(wrapper.find('.removeIconHolder')).toHaveLength(1);
-    wrapper.setProps({ value: undefined });
-    wrapper.update();
-    expect(wrapper.text()).toBe('Paste data or Upload file');
-    expect(wrapper.find('.removeIconHolder')).toHaveLength(0);
   });
 
   it('calls the onChange function with the current value when the input is changed', () => {

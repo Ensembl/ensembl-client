@@ -19,10 +19,6 @@ export type CheckboxGridProps = {
   onChange: (status: boolean, id: string) => void;
 };
 
-export const filterCheckedAttributes = (attributes: CheckboxGridOption[]) => {
-  return attributes;
-};
-
 const CheckboxGrid = (props: CheckboxGridProps) => {
   let orderedCheckboxList: CheckboxGridOption[] = orderBy(props.options, [
     'label'

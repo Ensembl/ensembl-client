@@ -5,7 +5,6 @@ import styles from './CheckboxWithTextfields.scss';
 import ImageButton from 'src/shared/image-button/ImageButton';
 import { ReactComponent as AddIcon } from 'static/img/browser/zoom-in.svg';
 import PasteOrUpload from '../paste-or-upload/PasteOrUpload';
-import cloneDeep from 'lodash/cloneDeep';
 
 export type CheckboxWithTextfieldsProps = {
   values: string[];
@@ -17,29 +16,32 @@ export type CheckboxWithTextfieldsProps = {
 
 const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
   const [isChecked, setIsChecked] = useState(false);
+  const [values, setValues] = useState<(string | null)[]>(props.values);
+
   const [shouldShowAddButton, setShowAddButton] = useState(
-    Boolean(props.values[props.values.length - 1])
+    Boolean(values[values.length - 1])
   );
 
   useEffect(() => {
+    setValues(props.values);
     setIsChecked(props.values.length > 0);
     setShowAddButton(Boolean(props.values[props.values.length - 1]));
   }, [props.values]);
 
   const handleCheckboxOnChange = (isChecked: boolean) => {
     setIsChecked(isChecked);
-    if (!isChecked && props.values.length > 0) {
+    if (!isChecked && values.length > 0) {
       props.onChange([]);
     }
   };
 
   const addEntry = () => {
     setShowAddButton(false);
-    props.onChange([...props.values, '']);
+    setValues([...values, null]);
   };
 
   const handleOnChange = (value: string, index: number) => {
-    const newValues: string[] = cloneDeep(props.values);
+    const newValues: string[] = [...values] as string[];
     newValues[index] = value;
 
     setShowAddButton(Boolean(newValues[newValues.length - 1]));
@@ -48,7 +50,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
   };
 
   const handleOnRemove = (index: number) => {
-    const newValues: string[] = cloneDeep(props.values);
+    const newValues: string[] = [...values] as string[];
 
     newValues.splice(index, 1);
     setShowAddButton(Boolean(newValues[newValues.length - 1]));
@@ -56,7 +58,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
     props.onChange(newValues);
   };
 
-  const valuesWithoutFirst: string[] = cloneDeep(props.values);
+  const valuesWithoutFirst: string[] = [...values] as string[];
   valuesWithoutFirst.shift();
 
   return (
@@ -76,7 +78,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
               {isChecked && (
                 <div key={0}>
                   <PasteOrUpload
-                    value={props.values[0]}
+                    value={values[0]}
                     onChange={(value) => handleOnChange(value, 0)}
                     onRemove={() => handleOnRemove(0)}
                     placeholder={'Paste data'}
