@@ -1,9 +1,13 @@
 import { createAction, createStandardAction } from 'typesafe-actions';
 import { Dispatch, ActionCreator, Action } from 'redux';
+import { replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
+import isEqual from 'lodash/isEqual';
 
 import config from 'config';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
+import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import {
   BrowserNavStates,
   ChrLocation,
@@ -12,13 +16,17 @@ import {
 } from './browserState';
 import {
   getBrowserActiveGenomeId,
+  getBrowserActiveEnsObjectId,
   getBrowserActiveEnsObjectIds,
-  getBrowserTrackStates
+  getBrowserTrackStates,
+  getChrLocation
 } from './browserSelectors';
+import { getChrLocationStr } from './browserHelper';
 import browserStorageService from './browser-storage-service';
 import { RootState } from 'src/store';
 import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
 import { TrackStates } from './track-panel/trackPanelConfig';
+import { BROWSER_CONTAINER_ID } from './browser-constants';
 
 export type UpdateTrackStatesPayload = {
   genomeId: string;
@@ -37,19 +45,17 @@ export const updateBrowserActivated = createStandardAction(
   'browser/update-browser-activated'
 )<boolean>();
 
-export const activateBrowser = (browserEl: HTMLDivElement) => {
+export const activateBrowser = () => {
   return (dispatch: Dispatch) => {
     const { protocol, host: currentHost } = location;
     const host = config.apiHost || currentHost;
-    const activateEvent = new CustomEvent('bpane-activate', {
-      bubbles: true,
-      detail: {
-        'config-url': `${protocol}${host}/browser/config`,
-        key: 'main'
-      }
-    });
 
-    browserEl.dispatchEvent(activateEvent);
+    const payload = {
+      'config-url': `${protocol}${host}/browser/config`,
+      key: 'main', // TODO: remove this field after we confirmed that it is redundant
+      selector: `#${BROWSER_CONTAINER_ID}`
+    };
+    browserMessagingService.send('bpane-activate', payload);
 
     dispatch(updateBrowserActivated(true));
   };
@@ -146,7 +152,11 @@ export const updateChrLocation = createStandardAction(
   'browser/update-chromosome-location'
 )<ChrLocations>();
 
-export const setChrLocation: ActionCreator<
+export const updateActualChrLocation = createStandardAction(
+  'browser/update-actual-chromosome-location'
+)<ChrLocations>();
+
+export const setActualChrLocation: ActionCreator<
   ThunkAction<any, any, null, Action<string>>
 > = (chrLocation: ChrLocation) => {
   return (dispatch: Dispatch, getState: () => RootState) => {
@@ -159,36 +169,60 @@ export const setChrLocation: ActionCreator<
       [activeGenomeId]: chrLocation
     };
 
-    dispatch(updateChrLocation(payload));
-    browserStorageService.updateChrLocation(payload);
+    dispatch(updateActualChrLocation(payload));
   };
 };
 
+export const setChrLocation: ActionCreator<
+  ThunkAction<any, any, null, Action<string>>
+> = (chrLocation: ChrLocation) => {
+  return (dispatch: Dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getBrowserActiveGenomeId(state);
+    const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
+    const savedChrLocation = getChrLocation(state);
+    if (!activeGenomeId) {
+      return;
+    }
+    const payload = {
+      [activeGenomeId]: chrLocation
+    };
+
+    dispatch(updateChrLocation(payload));
+    browserStorageService.updateChrLocation(payload);
+
+    if (!isEqual(chrLocation, savedChrLocation)) {
+      const newUrl = urlFor.browser({
+        genomeId: activeGenomeId,
+        focus: activeEnsObjectId,
+        location: getChrLocationStr(chrLocation)
+      });
+      dispatch(replace(newUrl));
+    }
+  };
+};
+
+export const updateMessageCounter = createStandardAction(
+  'browser/update-message-counter'
+)<number>();
+
 export const changeBrowserLocation: ActionCreator<
   ThunkAction<any, any, null, Action<string>>
-> = (genomeId: string, chrLocation: ChrLocation, browserEl: HTMLDivElement) => {
-  return () => {
+> = (genomeId: string, chrLocation: ChrLocation) => {
+  return (dispatch, getState: () => RootState) => {
+    const state = getState();
     const [chrCode, startBp, endBp] = chrLocation;
+    const messageCount = state.browser.browserEntity.messageCounter;
 
-    const stickEvent = new CustomEvent('bpane', {
-      bubbles: true,
-      detail: {
-        stick: `${genomeId}:${chrCode}`
-      }
+    browserMessagingService.send('bpane', {
+      stick: `${genomeId}:${chrCode}`,
+      'message-counter': messageCount
     });
 
-    browserEl.dispatchEvent(stickEvent);
-
-    if (startBp > 0 && endBp > 0) {
-      const gotoEvent = new CustomEvent('bpane', {
-        bubbles: true,
-        detail: {
-          goto: `${startBp}-${endBp}`
-        }
-      });
-
-      browserEl.dispatchEvent(gotoEvent);
-    }
+    browserMessagingService.send('bpane', {
+      goto: `${startBp}-${endBp}`,
+      'message-counter': messageCount
+    });
   };
 };
 

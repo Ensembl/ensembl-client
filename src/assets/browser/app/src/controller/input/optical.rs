@@ -36,7 +36,7 @@ impl OpticalImpl {
     fn tick(&mut self, app: &mut App, _t: f64) {
         if self.missing.abs() > EPS {
             if !self.locked {
-                app.lock();
+                app.with_counter(|c| c.lock());
                 self.locked = true;
             }
             let this_time = self.missing * LETHARGY;
@@ -49,7 +49,7 @@ impl OpticalImpl {
                 Action::Settled
             ],None);
             self.locked = false;
-            app.unlock();
+            app.with_counter(|c| c.unlock());
         }
     }
         

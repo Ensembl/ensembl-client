@@ -67,9 +67,7 @@ type DispatchProps = {
   updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
 };
 
-type OwnProps = {
-  browserRef: RefObject<HTMLDivElement>;
-};
+type OwnProps = {};
 
 type TrackPanelProps = StateProps & DispatchProps & OwnProps;
 
@@ -124,7 +122,6 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
           />
           <TrackPanelList
             activeGenomeId={props.activeGenomeId}
-            browserRef={props.browserRef}
             drawerOpened={props.drawerOpened}
             drawerView={props.drawerView}
             launchbarExpanded={props.launchbarExpanded}

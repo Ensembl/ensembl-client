@@ -1,5 +1,4 @@
-use std::convert::TryInto;
-
+use stdweb::unstable::TryInto;
 use std::sync::{ Arc, Mutex };
 
 use serde_json::from_str;
@@ -7,13 +6,16 @@ use serde_json::Value as JSONValue;
 use serde_json::Number as JSONNumber;
 use stdweb::web::{ Element, HtmlElement };
 
-use controller::global::{ App, AppRunner };
+use controller::global::{ App, AppRunner, Global, GlobalWeak };
 use controller::input::{ actions_run, Action };
 use dom::event::{ 
     EventListener, EventControl, EventType, EventData, 
-    ICustomEvent, Target
+    ICustomEvent, Target, IMessageEvent
 };
+use dom::domutil;
 use types::{ Move, Distance, Units };
+use super::eventutil::{ extract_element, parse_message };
+use super::eventqueue::EventQueueManager;
 
 fn custom_movement_event(dir: &str, unit: &str, v: &JSONValue) -> Action {
     if let JSONValue::Number(quant) = v {
@@ -131,37 +133,76 @@ fn extract_counter(j: &JSONValue) -> Option<f64> {
     }
 }
 
-pub fn run_direct_events(app: &mut App, j: &JSONValue) {
+pub fn run_direct_events(app: &mut App, name: &str, j: &JSONValue) {
     let evs = custom_make_events(&j);
-    console!("receive/A {}",j.to_string());
+    console!("receive/A {} {}",name,j.to_string());
     console!("receive/B {:?}",evs);
     app.run_actions(&evs,extract_counter(&j));
 }
 
 pub struct DirectEventListener {
-    cg: Arc<Mutex<App>>,
+    gw: GlobalWeak,
+    eqm: EventQueueManager
 }
 
 impl DirectEventListener {
-    pub fn new(cg: &Arc<Mutex<App>>) -> DirectEventListener {
-        DirectEventListener { cg: cg.clone() }
+    pub fn new(gw: GlobalWeak,eqm: &EventQueueManager) -> DirectEventListener {
+        DirectEventListener { gw, eqm: eqm.clone() }
     }        
-}
 
-impl EventListener<()> for DirectEventListener {    
-    fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
-        if let EventData::CustomEvent(_,_,_,c) = e {
-            run_direct_events(&mut self.cg.lock().unwrap(),
-                              &c.details().unwrap());
+    pub fn run_direct(&mut self, el: &Element, name: &str, j: &JSONValue) {
+        console!("receive/C {:?} {}",el,j.to_string());
+        if let Some(mut g) = self.gw.upgrade() {
+            let el : Result<HtmlElement,_> = el.clone().try_into();
+            let el : Option<HtmlElement> = el.ok();
+            if let Some(el) = el {
+                if let Some(ar) = g.find_app(&el) {
+                    let mut app = ar.state();
+                    run_direct_events(&mut app.lock().unwrap(),name,j);
+                }                
+            }
         }
     }
 }
 
-pub fn register_direct_events(gc: &mut AppRunner, el: &HtmlElement) {
-    let elel : Element = el.clone().into();
-    let dlr = DirectEventListener::new(&gc.state());
+impl EventListener<()> for DirectEventListener {    
+    fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
+        match e {
+            EventData::CustomEvent(_,ec,name,c) => {
+                let details = c.details().unwrap();
+                let el = extract_element(&details,Some(ec.target().clone()));
+                if let Some(el) = el {
+                    self.run_direct(&el.into(),name,&details);
+                } else {
+                    console!("bpane sent to unknown app (event)");
+                }
+            },
+            EventData::MessageEvent(_,ec,c) => {
+                let data = c.data().unwrap();
+                if let Some(payload) = parse_message("bpane",&data) {
+                    console!("receive/D {}",payload);
+                    let sel = payload.get("selector").map(|v| v.as_str().unwrap());
+                    if payload.get("_outgoing").is_some() {
+                        return;
+                    }
+                    let ev = custom_make_events(&payload);
+                    let currency = extract_counter(&payload);
+                    self.eqm.add_by_selector(sel,&ev,currency);
+                }
+            },
+            _ => ()
+        }
+    }
+}
+
+pub fn register_direct_events(g: &Global) -> EventQueueManager {
+    let gw = GlobalWeak::new(g);
+    let eqm = EventQueueManager::new();
+    let dlr = DirectEventListener::new(gw,&eqm);
     let mut ec = EventControl::new(Box::new(dlr),());
     ec.add_event(EventType::CustomEvent("bpane".to_string()));
-    ec.add_element(&elel,());
-    gc.add_control(Box::new(ec));
+    ec.add_event(EventType::MessageEvent);
+    let body = domutil::query_selector_ok_doc("body","No body element!");
+    ec.add_element(&body.into(),());
+    eqm
 }

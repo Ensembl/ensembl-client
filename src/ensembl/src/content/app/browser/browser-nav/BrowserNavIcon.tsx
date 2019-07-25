@@ -1,11 +1,11 @@
-import React, { FunctionComponent, memo, useCallback } from 'react';
+import React, { FunctionComponent, memo } from 'react';
 
+import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import { BrowserNavItem } from '../browserConfig';
 
 import iconStyles from './BrowserNavIcon.scss';
 
 type BrowserNavIconProps = {
-  browserImageEl: HTMLDivElement;
   browserNavItem: BrowserNavItem;
   maxState: boolean;
 };
@@ -13,19 +13,14 @@ type BrowserNavIconProps = {
 export const BrowserNavIcon: FunctionComponent<BrowserNavIconProps> = (
   props: BrowserNavIconProps
 ) => {
-  const { browserImageEl, browserNavItem, maxState } = props;
+  const { browserNavItem, maxState } = props;
   const { detail, icon } = browserNavItem;
 
-  const navEvent = new CustomEvent('bpane', {
-    bubbles: true,
-    detail
-  });
-
-  const navigateBrowser = useCallback(() => {
+  const navigateBrowser = () => {
     if (maxState === false) {
-      browserImageEl.dispatchEvent(navEvent);
+      browserMessagingService.send('bpane', detail);
     }
-  }, [maxState, browserImageEl]);
+  };
 
   const iconUrl = maxState ? icon.off : icon.on;
 

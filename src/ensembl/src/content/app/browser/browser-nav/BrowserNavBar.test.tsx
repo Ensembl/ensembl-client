@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow, mount } from 'enzyme';
+import { shallow } from 'enzyme';
 
 import { BrowserNavBar } from './BrowserNavBar';
 
@@ -11,12 +11,9 @@ const browserStates = [...Array(6)].map(() => false);
 
 describe('<BrowserNavBar />', () => {
   test('renders with appropriate classes', () => {
-    const domNode = mount(<div />).getDOMNode() as HTMLDivElement;
-
     expect(
       shallow(
         <BrowserNavBar
-          browserElement={domNode}
           browserNavStates={browserStates as BrowserNavStates}
           trackPanelOpened={true}
         />
@@ -26,7 +23,6 @@ describe('<BrowserNavBar />', () => {
     expect(
       shallow(
         <BrowserNavBar
-          browserElement={domNode}
           browserNavStates={browserStates as BrowserNavStates}
           trackPanelOpened={false}
         />

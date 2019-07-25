@@ -2,14 +2,14 @@ use std::sync::{ Arc, Mutex, Weak };
 
 use stdweb::web::HtmlElement;
 use url::Url;
-
+use dom::domutil;
 use composit::register_compositor_ticks;
 use controller::global::{ App, GlobalWeak };
 use controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup };
 use controller::input::{
     register_direct_events, register_user_events, register_dom_events
 };
-use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports };
+use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter };
 
 #[cfg(any(not(deploy),console))]
 use data::blackbox::{
@@ -25,6 +25,7 @@ use tácode::Tácode;
 
 struct AppRunnerImpl {
     g: GlobalWeak,
+    counter: Counter,
     el: HtmlElement,
     bling: Box<Bling>,
     app: Arc<Mutex<App>>,
@@ -60,9 +61,14 @@ impl AppRunner {
             let g = unwrap!(g.clone().upgrade()).clone();
             g.scheduler().make_group()
         };
+        let counter = {
+            let g = unwrap!(g.clone().upgrade()).clone();
+            g.counter()
+        };
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
             g: g.clone(),
             el: el.clone(),
+            counter,
             bling,
             app: Arc::new(Mutex::new(st)),
             controls: Vec::<Box<EventControl<()>>>::new(),
@@ -92,8 +98,16 @@ impl AppRunner {
         out
     }
 
+    pub fn with_counter<F,G>(&self, cb: F) -> G where F: FnOnce(&mut Counter) -> G {
+        cb(&mut self.0.lock().unwrap().counter)
+    }
+
     pub fn get_browser_el(&mut self) -> HtmlElement {
         self.0.lock().unwrap().browser_el.clone()
+    }
+
+    pub fn get_el(&self) -> HtmlElement {
+        self.0.lock().unwrap().el.clone()
     }
 
     pub fn add_timer<F>(&mut self, name: &str, mut cb: F, prio: usize)
@@ -122,7 +136,6 @@ impl AppRunner {
         {
             let el = self.0.lock().unwrap().el.clone();
             register_user_events(self,&el);
-            register_direct_events(self,&el);
             register_dom_events(self,&el);
         }
 
@@ -190,9 +203,14 @@ impl AppRunner {
     }
         
     pub fn bling_key(&mut self, key: &str) {
-        let mut imp = self.0.lock().unwrap();   
+        let mut imp = self.0.lock().unwrap();
         let app = imp.app.clone();     
         imp.bling.key(&app,key);
+    }
+
+    pub fn find_app(&mut self, el: &HtmlElement) -> bool {
+        let mut imp = self.0.lock().unwrap();
+        domutil::ancestor(el,&imp.el) || domutil::ancestor(&imp.el,el)
     }
 }
 
@@ -209,8 +227,3 @@ impl AppRunnerWeak {
     pub fn none() -> AppRunnerWeak { AppRunnerWeak(Weak::new()) }
 }
 
-impl Drop for AppRunner {
-    fn drop(&mut self) {
-        console!("App runner dropped");
-    }
-}

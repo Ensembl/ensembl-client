@@ -53,6 +53,7 @@ describe('<BrowserBar />', () => {
     browserActivated: true,
     browserNavOpened: false,
     chrLocation: ['13', 32275301, 32433493] as ChrLocation,
+    actualChrLocation: ['13', 32275301, 32433493] as ChrLocation,
     defaultChrLocation: ['13', 32271473, 32437359] as ChrLocation,
     drawerOpened: false,
     genomeSelectorActive: false,

@@ -11,7 +11,7 @@ use composit::{
 };
 use controller::input::{ Action, actions_run, startup_actions };
 use controller::global::{ AppRunnerWeak, AppRunner };
-use controller::output::{ Report, ViewportReport, ZMenuReports };
+use controller::output::{ Report, ViewportReport, ZMenuReports, Counter };
 use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, XferCache };
 use debug::add_debug_sticks;
 use dom::domutil;
@@ -176,7 +176,7 @@ impl App {
         
     pub fn run_actions(self: &mut App, evs: &Vec<Action>,currency: Option<f64>) {
         if let Some(ref mut report) = self.report {
-            if currency.is_none() || report.is_current(currency.unwrap()) {
+            if currency.is_none() || self.with_counter(|c| c.is_current(currency.unwrap())) {
                 if self.action_backlog.len() > 0 {
                     console!("running backlog");
                     let backlog = self.action_backlog.drain(..).collect();
@@ -186,8 +186,8 @@ impl App {
                 return;
             }
         }
-        console!("backlogging");
         self.action_backlog.extend(evs.iter().cloned());
+        console!("backlogging to {:?}",self.action_backlog);
     }
     
     pub fn check_size(self: &mut App) {
@@ -217,16 +217,8 @@ impl App {
         self.printer.lock().unwrap().set_size(stage.get_size());
     }
     
-    pub fn lock(&mut self) {
-        if let Some(ref mut report) = self.report {
-            report.lock();
-        }
-    }
-
-    pub fn unlock(&mut self) {
-        if let Some(ref mut report) = self.report {
-            report.unlock();
-        }
+    pub fn with_counter<F,G>(&mut self, cb: F) -> G where F: FnOnce(&mut Counter) -> G {
+        unwrap!(self.ar.upgrade()).with_counter(cb)
     }
 
     pub fn settle(&mut self) {

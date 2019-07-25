@@ -10,13 +10,16 @@ use url::Url;
 use util::{ set_instance_id, get_instance_id };
 
 use controller::input::{
-    register_startup_events, register_shutdown_events
+    register_startup_events, register_shutdown_events, register_direct_events
 };
 use controller::global::{ AppRunner, Booting };
+use controller::output::Counter;
 use controller::scheduler::{ Scheduler, SchedulerGroup };
 use data::{ BackendConfigBootstrap, HttpManager };
 use dom::domutil;
 use dom::domutil::browser_time;
+
+use super::activate::activate;
 
 const SCHEDULER_ALLOC : f64 = 12.; /* ms per raf */
 
@@ -25,7 +28,9 @@ pub struct GlobalImpl {
     app_runners: HashMap<String,AppRunner>,
     http_manager: HttpManager,
     scheduler: Scheduler,
-    sched_group: SchedulerGroup
+    sched_group: SchedulerGroup,
+    counter: Counter,
+    ar_init: Vec<Box<FnMut(&AppRunner)>>
 }
 
 impl GlobalImpl {
@@ -34,11 +39,13 @@ impl GlobalImpl {
         let sched_group = scheduler.make_group();
         set_instance_id();
         let mut out = GlobalImpl {
+            counter: Counter::new(),
             inst_id: get_instance_id(),
-            app_runners: HashMap::<String,AppRunner>::new(),
+            app_runners: HashMap::new(),
             http_manager: HttpManager::new(),
             scheduler,
-            sched_group
+            sched_group,
+            ar_init: Vec::new()
         };
         out.init();
         out
@@ -52,6 +59,10 @@ impl GlobalImpl {
                 sr.unproductive();
             }
         }),3,false);
+    }
+
+    pub fn counter(&self) -> Counter {
+        self.counter.clone()
     }
 
     pub fn get_instance_id(&self) -> &str { &self.inst_id }
@@ -72,9 +83,35 @@ impl GlobalImpl {
         }
     }
 
-    pub fn register_app(&mut self, key: &str, app_runner: AppRunner) {
+    pub fn register_ar_init(&mut self, mut cb: Box<FnMut(&AppRunner)>) {
+        for ar in self.app_runners.values_mut() {
+            cb(&ar.clone());
+        }
+        self.ar_init.push(cb);
+    }
+
+    pub fn register_app(&mut self, key: &str, mut app_runner: AppRunner) {
+        for ari in &mut self.ar_init {
+            ari(&app_runner.clone());
+        }
         self.app_runners.insert(key.to_string(),app_runner);
     }
+
+    pub fn find_app(&mut self, el: &HtmlElement) -> Option<AppRunner> {
+        for ar in self.app_runners.values_mut() {
+            if ar.find_app(el) {
+                return Some(ar.clone())
+            }
+        }
+        return None
+    }
+
+    pub fn any_app(&mut self) -> Option<AppRunner> {
+        for ar in self.app_runners.values_mut() {
+            return Some(ar.clone());
+        }
+        None
+    }        
 }
 
 #[derive(Clone)]
@@ -103,9 +140,21 @@ impl Global {
         self.0.borrow().scheduler()
     }    
     
+    pub fn counter(&self) -> Counter {
+        self.0.borrow().counter()
+    }
+
     /* app registration */
     fn unregister_app(&mut self, key: &str) {
         self.0.borrow_mut().unregister_app(key);
+    }
+
+    pub fn find_app(&mut self, el: &HtmlElement) -> Option<AppRunner> {
+        self.0.borrow_mut().find_app(el)
+    }
+
+    pub fn any_app(&mut self) -> Option<AppRunner> {
+        self.0.borrow_mut().any_app()
     }
 
     pub fn trigger_app(&mut self, key: &str, el: &HtmlElement, debug: bool, config_url: &Url) {
@@ -124,6 +173,10 @@ impl Global {
     
     pub fn register_app_now(&mut self, key: &str, ar: AppRunner) {
         self.0.borrow_mut().register_app(key,ar);
+    }
+
+    pub fn register_ar_init(&mut self, mut cb: Box<FnMut(&AppRunner)>) {
+        self.0.borrow_mut().register_ar_init(cb);
     }
 
     /* destruction */
@@ -147,9 +200,14 @@ impl GlobalWeak {
 
 pub fn setup_global() {
     /* setup */
-    Global::new();
+    let mut g = Global::new();
     /* mark as ready */
     let body = domutil::query_selector_ok_doc("body","Cannot find body element");
     domutil::add_attr(&body,"class","browser-app-ready");
     domutil::remove_attr(&body.into(),"class","browser-app-not-ready");
+    let mut eqm = register_direct_events(&g);
+    let mut eqm2 = eqm.clone();
+    g.register_ar_init(Box::new(move |ar| eqm.register_ar(&ar)));
+    /* setup ping/pong */
+    activate();
 }

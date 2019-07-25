@@ -13,7 +13,6 @@ import { EnsObjectTrack, EnsObject } from 'src/ens-object/ensObjectTypes';
 
 type TrackPanelListProps = {
   activeGenomeId: string;
-  browserRef: RefObject<HTMLDivElement>;
   drawerOpened: boolean;
   drawerView: string;
   launchbarExpanded: boolean;
@@ -84,7 +83,6 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
     return (
       <TrackPanelListItem
         activeGenomeId={props.activeGenomeId}
-        browserRef={props.browserRef}
         categoryName={categoryName}
         defaultTrackStatus={defaultTrackStatus as ImageButtonStatus}
         trackStatus={trackStatus as ImageButtonStatus}

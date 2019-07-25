@@ -10,8 +10,9 @@ import { ChrLocation } from '../browserState';
 import {
   getBrowserNavOpened,
   getChrLocation,
-  getBrowserActivated,
+  getActualChrLocation,
   getDefaultChrLocation,
+  getBrowserActivated,
   getGenomeSelectorActive,
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObject
@@ -38,6 +39,7 @@ type StateProps = {
   browserActivated: boolean;
   browserNavOpened: boolean;
   chrLocation: ChrLocation | null;
+  actualChrLocation: ChrLocation | null;
   defaultChrLocation: ChrLocation | null;
   drawerOpened: boolean;
   genomeSelectorActive: boolean;
@@ -119,7 +121,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
     [styles.browserInfoGreyed]: props.drawerOpened
   });
 
-  if (!(props.chrLocation && props.ensObject)) {
+  if (!(props.chrLocation && props.actualChrLocation && props.ensObject)) {
     return <div className={styles.browserBar} />;
   }
 
@@ -141,7 +143,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
             activeGenomeId={props.activeGenomeId}
             browserActivated={props.browserActivated}
             dispatchBrowserLocation={props.dispatchBrowserLocation}
-            chrLocation={props.chrLocation}
+            chrLocation={props.actualChrLocation}
             drawerOpened={props.drawerOpened}
             genomeSelectorActive={props.genomeSelectorActive}
             toggleGenomeSelector={props.toggleGenomeSelector}
@@ -225,6 +227,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
   browserActivated: getBrowserActivated(state),
   browserNavOpened: getBrowserNavOpened(state),
   chrLocation: getChrLocation(state),
+  actualChrLocation: getActualChrLocation(state),
   defaultChrLocation: getDefaultChrLocation(state),
   drawerOpened: getDrawerOpened(state),
   ensObject: getBrowserActiveEnsObject(state),

@@ -30,7 +30,7 @@ const TrackPanelBarIcon: FunctionComponent<TrackPanelBarIconProps> = memo(
     }, [props.trackPanelModalOpened]);
 
     const toggleModalView = useCallback(() => {
-      const newToggleState: boolean = !toggleState;
+      const newToggleState = !toggleState;
 
       if (newToggleState === true) {
         props.openTrackPanelModal(props.iconConfig.name);

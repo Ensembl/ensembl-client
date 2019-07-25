@@ -4,11 +4,17 @@
  */
 
 export interface WindowServiceInterface {
+  getWindow: () => Window;
   getLocalStorage: () => Storage;
   getSessionStorage: () => Storage;
+  getLocation: () => Location;
 }
 
 class WindowService implements WindowServiceInterface {
+  public getWindow() {
+    return window;
+  }
+
   public getLocalStorage() {
     return window.localStorage;
   }

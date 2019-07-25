@@ -15,7 +15,7 @@ import TrackPanel from './track-panel/TrackPanel';
 import AppBar from 'src/shared/app-bar/AppBar';
 
 import { RootState } from 'src/store';
-import { BrowserNavStates, ChrLocation } from './browserState';
+import { ChrLocation } from './browserState';
 import {
   changeBrowserLocation,
   setDataFromUrlAndSave,
@@ -72,11 +72,7 @@ type StateProps = {
 };
 
 type DispatchProps = {
-  changeBrowserLocation: (
-    genomeId: string,
-    chrLocation: ChrLocation,
-    browserEl: HTMLDivElement
-  ) => void;
+  changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
   fetchGenomeData: (genomeId: string) => void;
   replace: Replace;
   toggleDrawer: (drawerOpened: boolean) => void;
@@ -149,9 +145,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
     genomeId: string,
     chrLocation: ChrLocation
   ) => {
-    if (browserRef.current) {
-      props.changeBrowserLocation(genomeId, chrLocation, browserRef.current);
-    }
+    props.changeBrowserLocation(genomeId, chrLocation);
   };
 
   const changeSelectedSpecies = (genomeId: string) => {
@@ -217,41 +211,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
     }
   }, [props.browserActivated]);
 
-  const updateLocationInUrl = () => {
-    const {
-      match: {
-        params: { genomeId }
-      },
-      browserQueryParams: { focus, location },
-      chrLocation
-    } = props;
-
-    const chrLocationFromUrl =
-      (location && getChrLocationFromStr(location)) || null;
-
-    if (isEqual(chrLocation, chrLocationFromUrl)) {
-      return;
-    }
-
-    const newUrl = urlFor.browser({
-      genomeId,
-      focus,
-      location: chrLocation ? getChrLocationStr(chrLocation) : null
-    });
-    props.replace(newUrl);
-  };
-
-  useEffect(() => {
-    // update url if the only difference between the url and the current state
-    // is location (which means a new location was reported by genome browser)
-    if (
-      props.match.params.genomeId === props.activeGenomeId &&
-      props.browserQueryParams.focus === props.activeEnsObjectId
-    ) {
-      updateLocationInUrl();
-    }
-  }, [props.chrLocation]);
-
   const closeTrack = () => {
     if (props.drawerOpened === false) {
       return;
@@ -314,7 +273,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
                 {props.browserNavOpened &&
                 !props.drawerOpened &&
                 browserRef.current ? (
-                  <BrowserNavBar browserElement={browserRef.current} />
+                  <BrowserNavBar />
                 ) : null}
                 <BrowserImage
                   browserRef={browserRef}
@@ -322,7 +281,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
                 />
               </div>
             </animated.div>
-            <TrackPanel browserRef={browserRef} />
+            <TrackPanel />
           </div>
         </section>
       )}
