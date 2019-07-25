@@ -40,12 +40,12 @@ impl CombinedSource {
 }
 
 impl Source for CombinedSource {
-    fn request_data(&self, acs: &ActiveSource, lc: SourceResponse, leaf: &Leaf) {
+    fn request_data(&self, acs: &ActiveSource, lc: SourceResponse, leaf: &Leaf, focus: &Option<String>) {
         let stick_name = leaf.get_stick().get_name();
         if let Some(source) = self.per_stick_sources.get(&stick_name) {
-            source.request_data(acs,lc,leaf);
+            source.request_data(acs,lc,leaf,focus);
         } else {
-            self.backend_source.request_data(acs,lc,leaf);
+            self.backend_source.request_data(acs,lc,leaf,focus);
         }
     }
 }

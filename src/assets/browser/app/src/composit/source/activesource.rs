@@ -62,9 +62,9 @@ impl ActiveSource {
         out
     }
         
-    pub fn request_data(&self, party: SourceResponse, leaf: &Leaf) {
+    pub fn request_data(&self, party: SourceResponse, leaf: &Leaf, focus: &Option<String>) {
         let twin = self.source.clone();
-        twin.request_data(self,party,leaf);
+        twin.request_data(self,party,leaf,focus);
     }
     
     pub fn get_name(&self) -> &str { &self.name }  

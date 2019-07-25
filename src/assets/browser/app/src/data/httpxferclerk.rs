@@ -91,10 +91,8 @@ impl PendingXferBatch {
         }
     }
     
-    pub fn add_request(&mut self, short_stick: &str, short_pane: &str,
-                       compo: &str, consumer: Box<XferConsumer>) {
-        let key = XferRequestKey::new(compo,short_stick,short_pane);
-        self.requests.entry(key).or_insert_with(|| {
+    pub fn add_request(&mut self, key: &XferRequestKey, consumer: Box<XferConsumer>) {
+        self.requests.entry(key.clone()).or_insert_with(|| {
             Vec::<PendingXferRequest>::new()
         }).push(PendingXferRequest {
             consumer
@@ -178,10 +176,9 @@ impl XferBatchScheduler {
         }
     }
     
-    pub fn add_request(&mut self, short_stick: &str, short_pane: &str,
-                       compo: &str, consumer: Box<XferConsumer>) {
+    pub fn add_request(&mut self, key: &XferRequestKey, consumer: Box<XferConsumer>) {
         if let Some(ref mut batch) = self.batch {
-            batch.add_request(short_stick,short_pane,compo,consumer);
+            batch.add_request(&key,consumer);
         }
     }
 }
@@ -235,17 +232,8 @@ impl HttpXferClerkImpl {
     }
     
     pub fn run_request(&mut self, request: XferRequest, mut consumer: Box<XferConsumer>, prime: bool) {
-        let leaf = request.get_leaf().clone();
-        let wire = {
-            let compo = request.get_source_name();
-            let leaf = request.get_leaf().clone();
-            let cfg =  self.config.as_ref().unwrap().clone();
-            let track = cfg.get_track(compo).clone();
-            track.and_then(|x| x.get_wire().clone())
-        };
-        if let Some(wire) = wire {
-            let (short_stick,short_pane) = leaf.get_short_spec();
-            let key = XferRequestKey::new(&wire,&short_stick,&short_pane);
+        let key = request.make_key(&self.config.as_ref().unwrap());
+        if let Some(key) = key {
             if let Some(recv) = self.cache.get(&key) {
                 let bytecode = {
                     let cfg = self.config.as_ref().unwrap().clone();
@@ -255,7 +243,7 @@ impl HttpXferClerkImpl {
             } else {
                 let batch = if prime { &mut self.prime_batch } else { &mut self.batch };
                 if let Some(ref mut batch) = batch {
-                    batch.add_request(&short_stick,&short_pane,&wire,consumer);
+                    batch.add_request(&key,consumer);
                 }
             }
         } else {

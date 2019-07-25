@@ -9,7 +9,7 @@ use util::Cache;
 
 use super::xferrequest::XferRequestKey;
 
-struct XferPrimeConsumer(String,String,String,XferCache);
+struct XferPrimeConsumer();
 impl XferConsumer for XferPrimeConsumer {
     fn consume(&mut self, code: Rc<BackendBytecode>, data: Vec<Value>) {}
     fn abandon(&mut self) {}
@@ -52,20 +52,10 @@ impl XferCache {
     }
     
     pub fn prime(&mut self, xferclerk: &mut Box<XferClerk>, compo: &str, leaf: &Leaf) {
-        let wire = self.1.get_track(compo)
-                        .and_then(|x| x.get_wire().as_ref())
-                        .map(|x| x.to_string());
-        if let Some(wire) = wire {
-            let (short_stick,short_pane) = leaf.get_short_spec();
-            let key = XferRequestKey::new(&wire,&short_stick,&short_pane);
+        let req = XferRequest::new(compo,leaf,&None,true);
+        if let Some(key) = req.make_key(&self.1) {
             if self.get(&key).is_none() {
-                xferclerk.satisfy(XferRequest::new(compo,leaf,true),
-                    Box::new(XferPrimeConsumer(
-                        wire.to_string(),
-                        short_stick,
-                        short_pane,
-                        self.clone()
-                    )));
+                xferclerk.satisfy(req,Box::new(XferPrimeConsumer()));
             }
         }
     }

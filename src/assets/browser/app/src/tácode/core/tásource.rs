@@ -35,8 +35,8 @@ impl TáSource {
 }
 
 impl Source for TáSource {
-    fn request_data(&self, acs: &ActiveSource, lc: SourceResponse, leaf: &Leaf) {
-        let xfer_req = XferRequest::new(&self.0.borrow_mut().name,leaf,false);
+    fn request_data(&self, acs: &ActiveSource, lc: SourceResponse, leaf: &Leaf, focus: &Option<String>) {
+        let xfer_req = XferRequest::new(&self.0.borrow_mut().name,leaf,focus,false);
         let tc = self.0.borrow_mut().tc.clone();
         let lid = self.0.borrow_mut().lid;
         let config = &self.0.borrow().config.clone();

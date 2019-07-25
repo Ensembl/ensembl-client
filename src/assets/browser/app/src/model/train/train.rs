@@ -20,11 +20,12 @@ pub struct Train {
     preload: bool,
     position_bp: Option<f64>,
     active: bool,
-    current: bool
+    current: bool,
+    focus: Option<String>
 }
 
 impl Train {
-    pub fn new(pm: &PrinterManager, stick: &Stick, scale: Scale) -> Train {
+    pub fn new(pm: &PrinterManager, stick: &Stick, scale: Scale, focus: &Option<String>) -> Train {
         Train {
             pm: pm.clone(),
             stick: stick.clone(),
@@ -34,7 +35,8 @@ impl Train {
             carriages: HashMap::<Leaf,Carriage>::new(),
             position_bp: None,
             active: true,
-            current: false
+            current: false,
+            focus: None
         }
     }
         
@@ -50,7 +52,7 @@ impl Train {
             self.pm.set_current(leaf);
         }
     }
-    
+
     /* are we active (ie should we scan around as the user does?) */
     pub(in super) fn set_active(&mut self, yn: bool) {
         self.active = yn;
@@ -82,9 +84,10 @@ impl Train {
     
     /* add component to leaf */
     pub fn add_component(&mut self, cm: &mut TravellerCreator, s: &mut ActiveSource) {
+        let focus = self.focus.as_ref().map(|x| x.to_string()).clone();
         for leaf in self.leafs() {
             let c = self.get_carriage(&leaf);
-            for trav in cm.make_travellers_for_source(s,&leaf) {
+            for trav in cm.make_travellers_for_source(s,&leaf,&focus) {
                 c.add_traveller(trav);
             }
         }
@@ -147,10 +150,11 @@ impl Train {
     /* manage_leafs entry point */
     pub fn manage_leafs(&mut self, cm: &mut TravellerCreator) {
         if !self.active { return; }
+        let focus = self.focus.as_ref().map(|x| x.to_string()).clone();
         self.remove_unused_leafs();
         for leaf in self.get_missing_leafs() {
             let c = self.get_carriage(&leaf);
-            for trav in cm.make_travellers_for_leaf(&leaf) {
+            for trav in cm.make_travellers_for_leaf(&leaf,&focus) {
                 c.add_traveller(trav);
             }
         }
@@ -193,7 +197,7 @@ impl Train {
     pub fn change_focus(&mut self, cm: &mut TravellerCreator) {
         let mut new_cars : HashMap<Leaf,Carriage> = HashMap::new();
         for (k,c) in self.carriages.drain() {
-            new_cars.insert(k.clone(),c.replacement(cm));
+            new_cars.insert(k.clone(),c.replacement(cm,&self.focus));
         }
         self.carriages = new_cars;
     }

@@ -42,11 +42,12 @@ pub fn parse_jsonxferresponse(data: &SerdeValue) -> Vec<JSONXferResponse> {
     for resp in unwrap!(data.as_array()) {
         let key = XferRequestKey::new(unwrap!(resp[2].as_str()),
                                        unwrap!(resp[0].as_str()),
-                                       unwrap!(resp[1].as_str()));
+                                       unwrap!(resp[1].as_str()),
+                                       &resp[4].as_str().map(|v| v.to_string()));
         out.push(JSONXferResponse {
             codename: unwrap!(resp[3].as_str()).to_string(),
             key,
-            values: marshal(&resp[4])
+            values: marshal(&resp[5])
         });
     }
     out

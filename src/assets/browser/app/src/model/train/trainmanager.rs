@@ -32,7 +32,8 @@ pub struct TrainManager {
     /* current position/scale */
     stick: Option<Stick>,
     bp_per_screen: f64,
-    position_bp: f64
+    position_bp: f64,
+    focus: Option<String>
 }
 
 impl TrainManager {
@@ -47,7 +48,8 @@ impl TrainManager {
             transition_prop: None, 
             bp_per_screen: 1.,
             position_bp: 0.,
-            stick: None
+            stick: None,
+            focus: None
         };
         out.reset_outers();
         out
@@ -66,7 +68,7 @@ impl TrainManager {
     /* utility: makes new train at given scale */
     fn make_train(&mut self, cm: &mut TravellerCreator, scale: Scale, preload: bool) -> Option<Train> {
         if let Some(ref stick) = self.stick {
-            let mut f = Train::new(&self.printer,&stick,scale);
+            let mut f = Train::new(&self.printer,&stick,scale,&self.focus);
             f.set_position(self.position_bp);
             f.set_zoom(self.bp_per_screen);
             f.manage_leafs(cm);
@@ -86,7 +88,7 @@ impl TrainManager {
         self.bp_per_screen = bp_per_screen;
         let scale = Scale::best_for_screen(bp_per_screen);
         self.each_train(|x| x.set_active(false));
-        self.current_train = Some(Train::new(&self.printer,st,scale));
+        self.current_train = Some(Train::new(&self.printer,st,scale,&self.focus));
         self.current_train.as_mut().unwrap().enter_service();
         self.current_train.as_mut().unwrap().set_zoom(bp_per_screen);
         self.current_train.as_mut().unwrap().set_current();
@@ -254,7 +256,8 @@ impl TrainManager {
         self.each_train(|t| t.update_state(oom));
     }
 
-    pub fn change_focus(&mut self, cm: &mut TravellerCreator) {
+    pub fn change_focus(&mut self, cm: &mut TravellerCreator, id: &str) {
+        self.focus = Some(id.to_string());
         self.each_train(|t| t.change_focus(cm));
     }
     

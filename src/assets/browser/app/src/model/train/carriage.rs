@@ -30,9 +30,9 @@ impl Carriage {
     
     pub fn get_leaf(&self) -> &Leaf { &self.leaf }
 
-    pub fn replacement(&self, tc: &mut TravellerCreator) -> Carriage {
+    pub fn replacement(&self, tc: &mut TravellerCreator, focus: &Option<String>) -> Carriage {
         let mut c = Carriage::new(&self.pm,&self.leaf);
-        c.travellers = tc.make_travellers_for_leaf(&self.leaf);
+        c.travellers = tc.make_travellers_for_leaf(&self.leaf,focus);
         c
     }
 
