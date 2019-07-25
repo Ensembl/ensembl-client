@@ -50,12 +50,12 @@ const attributes: Attributes = {
           },
           {
             id: 'start',
-            label: 'Gene start(bp)',
+            label: 'Start',
             isChecked: true
           },
           {
             id: 'end',
-            label: 'Gene end (bp)',
+            label: 'Start',
             isChecked: true
           }
         ]
@@ -125,7 +125,7 @@ const attributes: Attributes = {
       },
       {
         type: 'checkbox_grid',
-        label: '',
+        label: 'Location',
         id: 'default',
         options: [
           {
