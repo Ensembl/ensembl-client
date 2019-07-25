@@ -1,4 +1,4 @@
-import React, { FunctionComponent, RefObject, useEffect } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useSpring, animated } from 'react-spring';
 
@@ -68,7 +68,6 @@ type DispatchProps = {
 };
 
 type OwnProps = {
-  browserRef: RefObject<HTMLDivElement>;
   closeDrawer: () => void;
 };
 
@@ -128,7 +127,6 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
           />
           <TrackPanelList
             activeGenomeId={props.activeGenomeId}
-            browserRef={props.browserRef}
             isDrawerOpened={props.isDrawerOpened}
             drawerView={props.drawerView}
             launchbarExpanded={props.launchbarExpanded}

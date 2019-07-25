@@ -14,6 +14,7 @@ impl OutputAction {
         match self {
             OutputAction::SendCustomEvent(name,details) => {
                 domutil::send_custom_event(&ar.get_browser_el().into(),name,details);
+                domutil::send_post_message(name,details);
             },
             OutputAction::Destroy => {
                 ar.destroy()

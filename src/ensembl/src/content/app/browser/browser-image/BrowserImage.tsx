@@ -11,6 +11,7 @@ import { BrowserNavStates, CogList } from '../browserState';
 import BrowserCogList from '../BrowserCogList';
 import { ZmenuController } from 'src/content/app/browser/zmenu';
 
+import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import {
   getTrackConfigNames,
   getTrackConfigLabel,
@@ -22,7 +23,9 @@ import {
   activateBrowser,
   updateBrowserActivated,
   updateBrowserNavStates,
-  setChrLocation
+  setChrLocation,
+  setActualChrLocation,
+  updateMessageCounter
 } from '../browserActions';
 
 import { ChrLocation } from '../browserState';
@@ -31,6 +34,7 @@ import { CircleLoader } from 'src/shared/loader/Loader';
 
 import { RootState } from 'src/store';
 import { TrackStates } from '../track-panel/trackPanelConfig';
+import { BROWSER_CONTAINER_ID } from '../browser-constants';
 
 type StateProps = {
   browserCogTrackList: CogList;
@@ -41,10 +45,12 @@ type StateProps = {
 };
 
 type DispatchProps = {
-  activateBrowser: (browserEl: HTMLDivElement) => void;
+  activateBrowser: () => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
   setChrLocation: (chrLocation: ChrLocation) => void;
+  setActualChrLocation: (chrLocation: ChrLocation) => void;
+  updateMessageCounter: (count: number) => void;
 };
 
 type OwnProps = {
@@ -54,56 +60,65 @@ type OwnProps = {
 
 type BrowserImageProps = StateProps & DispatchProps & OwnProps;
 
-type BpaneOutEvent = Event & {
-  detail: {
-    bumper?: BrowserNavStates;
-    location: string;
-  };
+type BpaneOutPayload = {
+  bumper?: BrowserNavStates;
+  'message-counter'?: number;
+  'intended-location'?: ChrLocation;
+  'actual-location'?: ChrLocation;
+};
+
+const parseLocation = (location: ChrLocation) => {
+  // FIXME: is there any reason to receive genome and chromosome in the same string?
+  const [genomeAndChromosome, start, end] = location;
+  const [, chromosome] = genomeAndChromosome.split(':');
+  return [chromosome, start, end] as ChrLocation;
 };
 
 export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   props: BrowserImageProps
 ) => {
-  const dispatchSetChrLocation = (chrLocation: ChrLocation) => {
-    props.setChrLocation(chrLocation);
-  };
-
-  const listenBpaneOut = useCallback((event: Event) => {
-    const bpaneOutEvent = event as BpaneOutEvent;
-    const navIconStates = bpaneOutEvent.detail.bumper as BrowserNavStates;
-    const location = bpaneOutEvent.detail.location;
+  const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
+    const navIconStates = payload.bumper as BrowserNavStates;
+    const intendedLocation = payload['intended-location'];
+    const actualLocation = payload['actual-location'] || intendedLocation;
+    const messageCount = payload['message-counter'];
 
     if (navIconStates) {
       props.updateBrowserNavStates(navIconStates);
     }
 
-    if (location) {
-      // FIXME: is there any reason to receive genome and chromosome in the same string?
-      const [genomeAndChromosome, start, end] = location;
-      const [, chromosome] = genomeAndChromosome.split(':');
-      const chrLocation = [
-        chromosome,
-        Number(start),
-        Number(end)
-      ] as ChrLocation;
-
-      dispatchSetChrLocation(chrLocation);
+    if (intendedLocation) {
+      props.setChrLocation(parseLocation(intendedLocation));
     }
+
+    if (actualLocation) {
+      props.setActualChrLocation(parseLocation(actualLocation));
+    }
+
+    if (messageCount) {
+      props.updateMessageCounter(messageCount);
+    }
+  }, []);
+
+  useEffect(() => {
+    const subscription = browserMessagingService.subscribe(
+      'bpane-out',
+      listenBpaneOut
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
     const currentEl: HTMLDivElement = props.browserRef
       .current as HTMLDivElement;
-
-    bootstrapBrowser(currentEl, props);
-
-    currentEl.addEventListener('bpane-out', listenBpaneOut);
+    props.activateBrowser();
 
     return function cleanup() {
       if (currentEl && currentEl.ownerDocument) {
         props.updateBrowserActivated(false);
-
-        currentEl.removeEventListener('bpane-out', listenBpaneOut);
       }
     };
   }, [props.browserRef]);
@@ -155,50 +170,16 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
       )}
       <div className={styles.browserImagePlus}>
         <div
+          id={BROWSER_CONTAINER_ID}
           className={getBrowserImageClasses(props.browserNavOpened)}
           ref={props.browserRef}
         />
-        <BrowserCogList browserRef={props.browserRef} />
+        <BrowserCogList />
         <ZmenuController browserRef={props.browserRef} />
       </div>
     </>
   );
 };
-
-function bootstrapBrowser(currentEl: HTMLDivElement, props: BrowserImageProps) {
-  if (currentEl && currentEl.ownerDocument) {
-    const bodyEl = currentEl.ownerDocument.body as HTMLBodyElement;
-
-    // no need to check for DOM mutations if the browser class is already set in body
-    if (bodyEl.classList.contains('browser-app-ready')) {
-      props.activateBrowser(currentEl);
-      return;
-    }
-
-    const observerConfig = {
-      attributeFilter: ['class'],
-      attributes: true,
-      subtree: false
-    };
-
-    const observerCallback = (mutationsList: MutationRecord[]) => {
-      for (const mutation of mutationsList) {
-        const mutationNode = mutation.target as HTMLElement;
-
-        if (mutationNode.classList.contains('browser-app-ready')) {
-          props.activateBrowser(currentEl);
-
-          observer.disconnect();
-          break;
-        }
-      }
-    };
-
-    const observer = new MutationObserver(observerCallback);
-
-    observer.observe(bodyEl, observerConfig);
-  }
-}
 
 function getBrowserImageClasses(browserNavOpened: boolean): string {
   let classes = styles.browserStage;
@@ -222,7 +203,9 @@ const mapDispatchToProps: DispatchProps = {
   activateBrowser,
   updateBrowserActivated,
   updateBrowserNavStates,
-  setChrLocation
+  setChrLocation,
+  setActualChrLocation,
+  updateMessageCounter
 };
 
 export default connect(

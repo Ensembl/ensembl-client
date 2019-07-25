@@ -18,13 +18,7 @@ type StateProps = {
   isTrackPanelOpened: boolean;
 };
 
-type DispatchProps = {};
-
-type OwnProps = {
-  browserElement: HTMLDivElement;
-};
-
-type BrowserNavBarProps = StateProps & DispatchProps & OwnProps;
+type BrowserNavBarProps = StateProps;
 
 export const BrowserNavBar: FunctionComponent<BrowserNavBarProps> = (
   props: BrowserNavBarProps
@@ -40,7 +34,6 @@ export const BrowserNavBar: FunctionComponent<BrowserNavBarProps> = (
           <BrowserNavIcon
             key={item.name}
             browserNavItem={item}
-            browserImageEl={props.browserElement}
             maxState={props.browserNavStates[index]}
           />
         ))}
@@ -54,9 +47,4 @@ const mapStateToProps = (state: RootState): StateProps => ({
   isTrackPanelOpened: getIsTrackPanelOpened(state)
 });
 
-const mapDispatchToProps: DispatchProps = {};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(BrowserNavBar);
+export default connect(mapStateToProps)(BrowserNavBar);

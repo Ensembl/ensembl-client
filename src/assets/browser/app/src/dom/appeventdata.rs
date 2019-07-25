@@ -8,9 +8,9 @@ pub struct AppEventData {
 }
 
 impl AppEventData {
-    pub fn new(cd : &CustomData) -> AppEventData {
+    pub fn new(detail: &Option<JSONValue>) -> AppEventData {
         AppEventData {
-            detail: cd.details()
+            detail: detail.clone()
         }
     }
     

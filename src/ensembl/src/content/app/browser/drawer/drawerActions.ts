@@ -1,5 +1,4 @@
 import { createAction } from 'typesafe-actions';
-
 import { ActionCreator, Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import { RootState } from 'src/store';

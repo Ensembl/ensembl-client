@@ -7,7 +7,6 @@ import flatten from 'lodash/flatten';
 import { SpeciesSearchField, NOT_FOUND_TEXT } from './SpeciesSearchField';
 import SpeciesSearchMatch from '../species-search-match/SpeciesSearchMatch';
 import ClearButton from 'src/shared/clear-button/ClearButton';
-
 import AutosuggestSearchField from 'src/shared/autosuggest-search-field/AutosuggestSearchField';
 
 import {

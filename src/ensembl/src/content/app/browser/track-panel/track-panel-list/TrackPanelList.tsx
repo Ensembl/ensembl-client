@@ -1,4 +1,4 @@
-import React, { FunctionComponent, RefObject } from 'react';
+import React, { FunctionComponent } from 'react';
 import get from 'lodash/get';
 
 import TrackPanelListItem from './TrackPanelListItem';
@@ -13,7 +13,6 @@ import { EnsObjectTrack, EnsObject } from 'src/ens-object/ensObjectTypes';
 
 type TrackPanelListProps = {
   activeGenomeId: string;
-  browserRef: RefObject<HTMLDivElement>;
   isDrawerOpened: boolean;
   drawerView: string;
   launchbarExpanded: boolean;
@@ -77,7 +76,6 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
     return (
       <TrackPanelListItem
         activeGenomeId={props.activeGenomeId}
-        browserRef={props.browserRef}
         categoryName={categoryName}
         defaultTrackStatus={defaultTrackStatus as ImageButtonStatus}
         trackStatus={trackStatus as ImageButtonStatus}

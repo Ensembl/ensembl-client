@@ -10,7 +10,8 @@ pub struct MousePhysicsImpl {
     mouse_pos: Option<CDFraction>,    /* spring handle */
     drive: Option<CDFraction>,        /* driving force */
     vel: CDFraction,                  /* vel */
-    locked: bool
+    locked: bool,
+    pending_rest: bool
 }
 
 #[derive(Clone)]
@@ -19,6 +20,7 @@ pub struct MousePhysics(Arc<Mutex<MousePhysicsImpl>>);
 const LETHARGY : f64 = 3500.;
 const BOING : f64 = 1.00;
 const EPS : f64 = 0.01;
+const REST_EPS : f64 = EPS/100.;
 const MUL: i32 = 20;
 const MAXPERIOD : f64 = 100.;
 const STICKFORCE : f64 = 75.;
@@ -31,7 +33,8 @@ impl MousePhysicsImpl {
             mouse_pos: None,
             drive: None,
             vel: cdfraction(0.,0.),
-            locked: false
+            locked: false,
+            pending_rest: true
         }
     }
     
@@ -46,6 +49,10 @@ impl MousePhysicsImpl {
     fn set_drive(&mut self, f: CDFraction) {
         let f = self.apply_stiction(&f);
         self.drive = Some(f);
+    }
+
+    fn reset_drive(&mut self) {
+        self.drive = None;
     }
         
     fn run_dynamics(&mut self, t: f64) -> Option<CDFraction> {
@@ -62,6 +69,10 @@ impl MousePhysicsImpl {
 
     fn significant_move(&self, dx: &CDFraction) -> bool {
         dx.0.abs() > EPS || dx.1.abs() > EPS
+    }
+
+    fn at_rest(&self, dx: &CDFraction) -> bool {
+        dx.0.abs() < REST_EPS && dx.1.abs() < REST_EPS
     }
 
     fn make_events(&mut self, cg: &mut App, dx: &CDFraction) {
@@ -84,7 +95,7 @@ impl MousePhysicsImpl {
             }
         } else {
             self.drive = None;
-        }        
+        }
     }
 
     /* when mouse moves, so does the handle */
@@ -97,10 +108,8 @@ impl MousePhysicsImpl {
     }
 
     fn move_by(&mut self, cg: &mut App, dx: CDFraction) {
-        if self.significant_move(&dx) {
-            self.make_events(cg,&dx);
-            self.shift_attachment_with_canvas(&dx);
-        }
+        self.make_events(cg,&dx);
+        self.shift_attachment_with_canvas(&dx);
     }
     
     fn calc_delta(&mut self, t: f64) -> Option<f64> {
@@ -114,7 +123,13 @@ impl MousePhysicsImpl {
     
     fn physics_step(&mut self, cg: &mut App, dt: f64) -> bool {
         if let Some(dx) = self.run_dynamics(dt) {
-            self.move_by(cg,dx);
+            if self.significant_move(&dx) {
+                self.pending_rest = false;
+                self.move_by(cg,dx);
+            }
+            if self.at_rest(&dx) && self.drive.is_none() && !self.pending_rest {
+                self.pending_rest = true;
+            }
         } else if self.force_origin.is_some() {
             /* Couldn't run dynamics (step too long?). Reset. */
             self.force_origin = self.mouse_pos;
@@ -129,16 +144,17 @@ impl MousePhysicsImpl {
                 if !self.physics_step(cg,dt/MUL as f64) { break; }
             }
         }
-        if self.force_origin.is_none() {
+        if self.force_origin.is_none() && self.pending_rest {
             if self.locked {
                 cg.run_actions(&vec![
                     Action::Settled
                 ],None);
-                cg.unlock();
+                cg.with_counter(|c| c.unlock());
                 self.locked = false;
+                self.pending_rest = false;
             }
         } else if !self.locked {
-            cg.lock();
+            cg.with_counter(|c| c.lock());
             self.locked = true;
         }
     }
@@ -146,11 +162,12 @@ impl MousePhysicsImpl {
     fn mouse_down(&mut self, e: CPixel) {
         self.vel = cdfraction(0.,0.);
         self.force_origin = Some(e.as_dfraction());
-        self.mouse_pos = Some(e.as_dfraction());        
+        self.mouse_pos = Some(e.as_dfraction());
     }
     
     fn mouse_up(&mut self) {
         self.force_origin = None;
+        self.reset_drive();
     }
 }
 

@@ -1,11 +1,7 @@
-import React, {
-  FunctionComponent,
-  RefObject,
-  useEffect,
-  useCallback
-} from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import { connect } from 'react-redux';
 
+import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import BrowserCog from './BrowserCog';
 import {
   updateCogList,
@@ -36,40 +32,36 @@ type DispatchProps = {
   updateSelectedCog: (index: string) => void;
 };
 
-type OwnProps = {
-  browserRef: RefObject<HTMLDivElement>;
-};
+type OwnProps = {};
 
 type BrowserCogListProps = StateProps & DispatchProps & OwnProps;
 
-type BpaneScrollEvent = Event & {
-  detail: {
-    delta_y?: number;
-    track_y?: CogList;
-  };
+type BpaneScrollPayload = {
+  delta_y?: number;
+  track_y?: CogList;
 };
 
 const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
   props: BrowserCogListProps
 ) => {
   const { browserCogTrackList } = props;
-  const listenBpaneScroll = useCallback((event: Event) => {
-    const bpaneScrollEvent = event as BpaneScrollEvent;
-    if (
-      bpaneScrollEvent.detail.delta_y ||
-      bpaneScrollEvent.detail.delta_y === 0
-    ) {
-      props.updateCogList(bpaneScrollEvent.detail.delta_y);
+  const listenBpaneScroll = (payload: BpaneScrollPayload) => {
+    const { delta_y, track_y } = payload;
+    if (delta_y !== undefined) {
+      props.updateCogList(delta_y);
     }
-    if (bpaneScrollEvent.detail.track_y) {
-      props.updateCogTrackList(bpaneScrollEvent.detail.track_y);
+    if (track_y) {
+      props.updateCogTrackList(track_y);
     }
-  }, []);
+  };
 
   useEffect(() => {
-    const currentEl: HTMLDivElement = props.browserRef
-      .current as HTMLDivElement;
-    currentEl.addEventListener('bpane-scroll', listenBpaneScroll);
+    const subscription = browserMessagingService.subscribe(
+      'bpane-scroll',
+      listenBpaneScroll
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const cogs = Object.entries(browserCogTrackList).map(([name, pos]) => {

@@ -147,6 +147,18 @@ pub fn send_custom_event(el: &HtmlElement, name: &str, data: &JSONValue) {
     };
 }
 
+pub fn send_post_message(name: &str, data: &JSONValue) {
+    let name = name.to_string();
+    let message = json! {{
+        "type": name,
+        "payload": data
+    }};
+    let message : Value = message.clone().try_into().unwrap();
+    js! {
+        window.postMessage(@{&message},"*");
+    };
+}
+
 pub fn clear_selection() {
     js! {
         var sel = window.getSelection ? window.getSelection() : document.selection;
@@ -168,6 +180,26 @@ pub fn get_context(canvas: &CanvasElement) -> glctx {
 
 pub fn browser_time() -> f64 {
     return  js! { return +new Date(); }.try_into().unwrap();
+}
+
+pub fn ancestor(younger: &HtmlElement, older: &HtmlElement) -> bool {
+    let mut younger = younger.clone();
+    loop {
+        if &younger == older {
+            return true;
+        }
+        if let Some(el) = younger.parent_element() {
+            let el: Option<HtmlElement> = el.try_into().ok();
+            if let Some(el) = el {
+                younger = el;
+            } else {
+                break;
+            }
+        } else {
+            break;
+        }
+    }
+    return false;
 }
 
 /* Not sure why this isn't implemented in stdweb */

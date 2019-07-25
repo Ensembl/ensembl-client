@@ -2,7 +2,6 @@ import React, {
   FunctionComponent,
   MouseEvent,
   ReactNode,
-  RefObject,
   useState,
   useCallback,
   useEffect
@@ -10,6 +9,7 @@ import React, {
 
 import { TrackItemColour } from '../trackPanelConfig';
 import { UpdateTrackStatesPayload } from 'src/content/app/browser/browserActions';
+import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 
 import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
@@ -26,7 +26,6 @@ import styles from './TrackPanelListItem.scss';
 
 type TrackPanelListItemProps = {
   activeGenomeId: string;
-  browserRef: RefObject<HTMLDivElement>;
   categoryName: string;
   children?: ReactNode[];
   trackStatus: ImageButtonStatus;
@@ -47,7 +46,6 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   const [expanded, setExpanded] = useState(true);
   const {
     activeGenomeId,
-    browserRef,
     categoryName,
     isDrawerOpened,
     drawerView,
@@ -145,16 +143,11 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     const currentTrackStatus =
       status === ImageButtonStatus.ACTIVE ? 'on' : 'off';
 
-    const trackEvent = new CustomEvent('bpane', {
-      bubbles: true,
-      detail: {
-        [currentTrackStatus]: `${trackPrefix}${track.track_id}`
-      }
-    });
+    const payload = {
+      [currentTrackStatus]: `${trackPrefix}${track.track_id}`
+    };
 
-    if (browserRef.current) {
-      browserRef.current.dispatchEvent(trackEvent);
-    }
+    browserMessagingService.send('bpane', payload);
   };
 
   return (
