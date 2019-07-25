@@ -133,7 +133,6 @@ describe('<ImageButton />', () => {
       act(() => {
         wrapper.getDOMNode().dispatchEvent(mouseEnterEvent);
       });
-
       wrapper.update();
 
       const tooltip = wrapper.find(Tooltip);
@@ -143,13 +142,14 @@ describe('<ImageButton />', () => {
 
     it('does not show tooltip if clicked', () => {
       const wrapper = mount(<ImageButton {...props} />);
+
       act(() => {
         const rootNode = wrapper.getDOMNode();
         rootNode.dispatchEvent(mouseEnterEvent);
         rootNode.dispatchEvent(clickEvent);
       });
-      // wrapper.simulate('click');
       wrapper.update();
+
       expect(wrapper.find(Tooltip).length).toBe(0);
     });
 
@@ -159,7 +159,6 @@ describe('<ImageButton />', () => {
       act(() => {
         wrapper.getDOMNode().dispatchEvent(mouseEnterEvent);
       });
-
       wrapper.update();
 
       expect(wrapper.find(Tooltip).length).toBe(0);
