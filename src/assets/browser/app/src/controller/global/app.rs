@@ -117,6 +117,9 @@ impl App {
         let new_status = self.focus.state();
         if old_status != new_status {
             self.compo.lock().unwrap().change_focus();
+            if let Some(id) = self.focus.get_focus() {
+                self.get_report().set_status("focus",&id);
+            }
         }
         out
     }
