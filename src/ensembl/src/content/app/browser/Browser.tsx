@@ -276,7 +276,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   const getBrowserWidth = (): string => {
     if (isDrawerOpened) {
-      return '41px';
+      return 'calc(41px + 0vw)';
     }
     return props.isTrackPanelOpened
       ? 'calc(-356px + 100vw)'
