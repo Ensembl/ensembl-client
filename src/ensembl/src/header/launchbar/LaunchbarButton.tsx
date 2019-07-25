@@ -19,11 +19,10 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
 ) => {
   const pathTo = `/app/${props.app}`;
   const isActive = new RegExp(`^${pathTo}`).test(props.location.pathname);
-  const imageButtonStatus = !props.enabled
-    ? ImageButtonStatus.DISABLED
-    : isActive
-    ? ImageButtonStatus.ACTIVE
-    : ImageButtonStatus.DEFAULT;
+  const imageButtonStatus = getImageButtonStatus({
+    isDisabled: !props.enabled,
+    isActive
+  });
 
   const imageButton = (
     <ImageButton
@@ -53,6 +52,22 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
       {imageButton}
     </div>
   );
+};
+
+const getImageButtonStatus = ({
+  isDisabled,
+  isActive
+}: {
+  isDisabled: boolean;
+  isActive: boolean;
+}): ImageButtonStatus => {
+  if (isDisabled) {
+    return ImageButtonStatus.DISABLED;
+  } else if (isActive) {
+    return ImageButtonStatus.ACTIVE;
+  } else {
+    return ImageButtonStatus.DEFAULT;
+  }
 };
 
 export default withRouter(LaunchbarButton);
