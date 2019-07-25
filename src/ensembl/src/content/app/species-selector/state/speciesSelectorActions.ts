@@ -15,6 +15,7 @@ import buildAnalyticsObject from 'src/analyticsHelper';
 
 import {
   getCommittedSpecies,
+  getCommittedSpeciesById,
   getSelectedItem,
   getSearchText
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
@@ -223,27 +224,31 @@ export const commitSelectedSpeciesAndSave: ActionCreator<
 export const toggleSpeciesUseAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (genomeId: string) => (dispatch, getState) => {
-  const committedSpecies = getCommittedSpecies(getState());
-  let speciesName = '';
-  let currentStatus = '';
-  committedSpecies.map((item) => {
-    if (item.genome_id === genomeId) {
-      speciesName = getSpeciesAnalyticsName(item);
-      currentStatus = item.isEnabled ? 'do_not_use' : 'use';
-      return {
-        ...item,
-        isEnabled: !item.isEnabled
-      };
-    }
+  const state = getState();
+  const committedSpecies = getCommittedSpecies(state);
+  const currentSpecies = getCommittedSpeciesById(state, genomeId);
+  if (!currentSpecies) {
+    return; // should never happen
+  }
+  const speciesNameForAnalytics = getSpeciesAnalyticsName(currentSpecies);
+  const updatedStatus = currentSpecies.isEnabled ? 'do_not_use' : 'use';
+
+  const updatedCommittedSpecies = committedSpecies.map((item) => {
+    return item.genome_id === genomeId
+      ? {
+          ...item,
+          isEnabled: !item.isEnabled
+        }
+      : item;
   });
 
   analyticsTracking.trackEvent({
     category: categories.SELECTED_SPECIES,
-    label: speciesName,
-    action: currentStatus
+    label: speciesNameForAnalytics,
+    action: updatedStatus
   });
 
-  dispatch(updateCommittedSpecies(committedSpecies));
+  dispatch(updateCommittedSpecies(updatedCommittedSpecies));
   speciesSelectorStorageService.saveSelectedSpecies(committedSpecies);
 };
 
