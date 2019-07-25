@@ -138,7 +138,7 @@ describe('<BrowserBar />', () => {
 
     test('shows BrowserTabs if TrackPanel is open', () => {
       const renderedBrowserBar = mount(
-        renderBrowserBar({ trackPanelOpened: true })
+        renderBrowserBar({ isTrackPanelOpened: true })
       );
       expect(renderedBrowserBar.find(BrowserTabs).length).toBe(1);
     });
