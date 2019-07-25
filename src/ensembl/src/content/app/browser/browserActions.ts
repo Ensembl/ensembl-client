@@ -174,27 +174,6 @@ export const setActualChrLocation: ActionCreator<
   };
 };
 
-export const updateActualChrLocation = createStandardAction(
-  'browser/update-actual-chromosome-location'
-)<{ [genomeId: string]: ChrLocation }>();
-
-export const setActualChrLocation: ActionCreator<
-  ThunkAction<any, any, null, Action<string>>
-> = (chrLocation: ChrLocation) => {
-  return (dispatch: Dispatch, getState: () => RootState) => {
-    const state = getState();
-    const activeGenomeId = getBrowserActiveGenomeId(state);
-    if (!activeGenomeId) {
-      return;
-    }
-    const payload = {
-      [activeGenomeId]: chrLocation
-    };
-
-    dispatch(updateActualChrLocation(payload));
-  };
-};
-
 export const setChrLocation: ActionCreator<
   ThunkAction<any, any, null, Action<string>>
 > = (chrLocation: ChrLocation) => {
