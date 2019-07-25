@@ -22,13 +22,11 @@ export const fetchEnsObject: ActionCreator<
     dispatch(fetchEnsObjectAsyncActions.request());
     let response: EnsObjectResponse;
 
-    // FIXME: the if-branch is temporary, until backend learns to respond with region object data
-    if (isRegionObject(ensObjectId)) {
-      response = await parseRegionObjectId(ensObjectId);
-    } else {
-      const url = `/api/ensembl_object/info?object_id=${ensObjectId}`;
-      response = await apiService.fetch(url);
+    const url = `/api/object/info?object_id=${ensObjectId}`;
+    response = await apiService.fetch(url);
 
+    // FIXME: the if-branch is temporary, until backend learns to respond with region object data
+    if (!isRegionObject(ensObjectId)) {
       const trackUrl = `/api/ensembl_object/track_list?object_id=${ensObjectId}`;
       response.track = await apiService.fetch(trackUrl);
     }
