@@ -8,6 +8,7 @@ mod domevents;
 mod startup;
 mod shutdown;
 mod optical;
+mod jumper;
 
 pub use self::physics::MousePhysics;
 pub use self::action::{ Action, actions_run, startup_actions };
@@ -18,3 +19,4 @@ pub use self::startup::{ register_startup_events, initial_actions };
 pub use self::shutdown::{ register_shutdown_events };
 pub use self::eventutil::extract_element;
 pub use self::eventqueue::EventQueueManager;
+pub use self::jumper::Jumper;

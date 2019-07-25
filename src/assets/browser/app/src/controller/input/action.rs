@@ -18,7 +18,8 @@ pub enum Action {
     Settled,
     ZMenu(CPixel),
     ShowZMenu(String,Dot<i32,i32>,JSONValue),
-    SetFocus(String,bool)
+    SetFocus(String),
+    Reset,
 }
 
 impl Action {
@@ -43,7 +44,8 @@ impl Action {
             Action::Zoom(_) => 10,
             Action::ZMenu(_) => 25,
             Action::ShowZMenu(_,_,_) => 25,
-            Action::SetFocus(_,_) => 20,
+            Action::SetFocus(_) => 20,
+            Action::Reset => 25,
             Action::Settled => 30,
         }
     }
@@ -161,9 +163,16 @@ fn exe_zmenu_show(a: &mut App, id: &str, pos: Dot<i32,i32>, payload: JSONValue) 
     }
 }
 
-fn exe_set_focus(a: &mut App, id: &str, jump: bool) {
-    console!("set focus object to id {}, also jump = {:?}",id,jump);
+fn exe_set_focus(a: &mut App, id: &str) {
+    console!("set focus object to id {}",id);
     a.with_focus_object(|f| f.set_focus(id));
+}
+
+fn exe_reset(a: &mut App) {
+    let id = a.with_focus_object(|f| f.get_focus());
+    if let Some(id) = id {
+        a.with_jumper(|j| j.jump(&id));
+    }
 }
 
 pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
@@ -185,10 +194,11 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
             Action::AddComponent(name) => exe_component_add(cg,&name),
             Action::SetStick(name) => exe_set_stick(cg,&name),
             Action::SetState(name,on) => exe_set_state(cg,&name,on),
-            Action::SetFocus(id,jump) => exe_set_focus(cg,&id,jump),
+            Action::SetFocus(id) => exe_set_focus(cg,&id),
             Action::Settled => exe_settled(cg),
             Action::ZMenu(pos) => exe_zmenu(cg,&pos,currency),
             Action::ShowZMenu(id,pos,payload) => exe_zmenu_show(cg,&id,pos,payload),
+            Action::Reset => exe_reset(cg),
             Action::Noop => ()
         }
     }

@@ -57,12 +57,12 @@ impl Booting {
         };
         BlackBoxDriver::new(reporter_driver)
     }
-    
+
     #[cfg(all(deploy,not(console)))]
     fn make_blackbox(&self, _debug_url: &Option<String>) -> BlackBoxDriver {
         BlackBoxDriver::new()
     }
-    
+
     #[cfg(not(deploy))]
     fn bling(&self) -> Box<Bling> {
         if self.debug {

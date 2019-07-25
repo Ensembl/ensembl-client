@@ -72,7 +72,7 @@ const devConfig = {
         secure: false
       },
       '/browser': {
-        target: 'http://172.22.68.200:4000', // FIXME: change back
+        target: 'http://localhost:4000', // FIXME: change back
         changeOrigin: true,
         secure: false
       }

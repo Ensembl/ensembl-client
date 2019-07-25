@@ -9,7 +9,7 @@ use composit::{
     CombinedStickManager, SourceManagerList, ActiveSource,
     CombinedSourceManager, AllLandscapes
 };
-use controller::input::{ Action, actions_run, startup_actions };
+use controller::input::{ Action, actions_run, startup_actions, Jumper };
 use controller::global::{ AppRunnerWeak, AppRunner };
 use controller::output::{ Report, ViewportReport, ZMenuReports, Counter };
 use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, XferCache };
@@ -43,7 +43,8 @@ pub struct App {
     last_resize_at: Option<f64>,
     stage_resize: Option<Dot<f64,f64>>,
     action_backlog: Vec<Action>,
-    focus: FocusObject
+    focus: FocusObject,
+    jumper: Option<Jumper>
 }
 
 impl App {
@@ -76,7 +77,8 @@ impl App {
             stage_resize: None,
             last_resize_at: None,
             action_backlog: Vec::new(),
-            focus: FocusObject::new()
+            focus: FocusObject::new(),
+            jumper: None
         };
         let dsm = {
             let compo = &out.compo.lock().unwrap();
@@ -132,6 +134,10 @@ impl App {
     pub fn set_viewport_report(&mut self, report: ViewportReport) {
         self.viewport = Some(report);
     }
+
+    pub fn set_jumper(&mut self, jumper: Jumper) {
+        self.jumper = Some(jumper);
+    }
     
     pub fn set_zmenu_reports(&mut self, report: ZMenuReports) {
         self.zmenu_reports = Some(report);
@@ -146,6 +152,11 @@ impl App {
         self.ar.upgrade().as_mut().map(cb)
     }
     
+    pub fn with_jumper<F,G>(&mut self, cb: F) -> Option<G>
+            where F: FnOnce(&mut Jumper) -> G {
+        self.jumper.as_mut().map(|j| cb(j))
+    }
+
     pub fn get_browser_element(&self) -> &HtmlElement { &self.browser_el }
     
     pub fn get_canvas_element(&self) -> &HtmlElement { &self.canv_el }
