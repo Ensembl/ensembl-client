@@ -231,9 +231,18 @@ impl HttpXferClerkImpl {
         }
     }
     
+    fn fix_key(&self, in_: &XferRequestKey) -> XferRequestKey {
+        let mut out = in_.clone();
+        if out.track != "ff" {
+            out.focus = None;
+        }
+        out
+    }
+
     pub fn run_request(&mut self, request: XferRequest, mut consumer: Box<XferConsumer>, prime: bool) {
         let key = request.make_key(&self.config.as_ref().unwrap());
         if let Some(key) = key {
+            let key = self.fix_key(&key);
             if let Some(recv) = self.cache.get(&key) {
                 let bytecode = {
                     let cfg = self.config.as_ref().unwrap().clone();
