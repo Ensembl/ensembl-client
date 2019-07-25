@@ -3,9 +3,9 @@ import React, {
   MouseEvent,
   ReactNode,
   useState,
-  useCallback,
   useEffect
 } from 'react';
+import classNames from 'classnames';
 
 import { TrackItemColour } from '../trackPanelConfig';
 import { UpdateTrackStatesPayload } from 'src/content/app/browser/browserActions';
@@ -72,29 +72,12 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     }
   }, []);
 
-  const getListItemClasses = useCallback((): string => {
-    let classNames: string = styles.listItem;
-
-    if (track.track_id === 'gene') {
-      classNames += ` ${styles.main}`;
-    }
-
-    if (track.track_id === drawerView) {
-      classNames += ` ${styles.currentDrawerView}`;
-    }
-
-    return classNames;
-  }, [drawerView]);
-
   const getBoxClasses = (colour: any) => {
-    let classNames = styles.box;
+    const colourValue = colour ? TrackItemColour[colour] : '';
 
-    if (colour) {
-      const colourValue = TrackItemColour[colour];
-      classNames += ` ${styles[colourValue]}`;
-    }
-
-    return classNames;
+    return classNames(styles.box, {
+      [styles[colourValue]]: !!colourValue
+    });
   };
 
   const drawerViewListHandler = (event: MouseEvent) => {
@@ -150,9 +133,14 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     browserMessagingService.send('bpane', payload);
   };
 
+  const listItemClassNames = classNames(styles.listItem, {
+    [styles.main]: track.track_id === 'gene',
+    [styles.currentDrawerView]: track.track_id === drawerView
+  });
+
   return (
     <>
-      <dd className={getListItemClasses()} onClick={drawerViewListHandler}>
+      <dd className={listItemClassNames} onClick={drawerViewListHandler}>
         <label>
           {track.colour && <span className={getBoxClasses(track.colour)} />}
           <span className={styles.mainText}>{track.label}</span>
