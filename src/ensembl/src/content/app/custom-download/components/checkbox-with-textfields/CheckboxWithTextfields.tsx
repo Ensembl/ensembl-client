@@ -23,7 +23,12 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
   );
 
   useEffect(() => {
-    setValues(props.values);
+    if (!props.values.length) {
+      setValues([null]);
+    } else {
+      setValues(props.values);
+    }
+
     setIsChecked(props.values.length > 0);
     setShowAddButton(Boolean(props.values[props.values.length - 1]));
   }, [props.values]);
