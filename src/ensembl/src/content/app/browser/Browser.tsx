@@ -235,7 +235,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   const getBrowserWidth = (): string => {
     if (isDrawerOpened) {
-      return 'calc(41px + 0vw)';
+      return 'calc(41px + 0vw)'; // this format must be used for the react-spring animation to function properly
     }
     return props.isTrackPanelOpened
       ? 'calc(-356px + 100vw)'
