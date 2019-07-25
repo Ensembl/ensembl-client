@@ -12,29 +12,25 @@ pub struct Carriage {
     travellers: Vec<Traveller>,
     known_done: bool,
     needs_rebuild: bool,
-    leaf: Leaf
+    leaf: Leaf,
+    focus: Option<String>
 }
 
 impl Carriage {
-    pub(in super) fn new(pm: &PrinterManager,leaf: &Leaf) -> Carriage {
+    pub(in super) fn new(pm: &PrinterManager,leaf: &Leaf, focus: &Option<String>) -> Carriage {
         let mut out = Carriage {
             pm: pm.clone(),
             travellers: Vec::<Traveller>::new(),
             known_done: false,
             needs_rebuild: false,
-            leaf: leaf.clone()
+            leaf: leaf.clone(),
+            focus: focus.clone()
         };
-        out.pm.add_leaf(leaf);
+        out.pm.add_leaf(leaf,&out.focus);
         out
     }
     
     pub fn get_leaf(&self) -> &Leaf { &self.leaf }
-
-    pub fn replacement(&self, tc: &mut TravellerCreator, focus: &Option<String>) -> Carriage {
-        let mut c = Carriage::new(&self.pm,&self.leaf);
-        c.travellers = tc.make_travellers_for_leaf(&self.leaf,focus);
-        c
-    }
 
     pub(in super) fn set_needs_refresh(&mut self) {
         self.needs_rebuild = true;
@@ -87,6 +83,6 @@ impl Carriage {
 impl Drop for Carriage {
     fn drop(&mut self) {
         self.travellers.clear(); // Triggers drop which informs printer
-        self.pm.remove_leaf(&self.leaf);
+        self.pm.remove_leaf(&self.leaf,&self.focus);
     }
 }

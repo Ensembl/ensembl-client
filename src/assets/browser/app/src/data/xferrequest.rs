@@ -29,7 +29,7 @@ impl XferRequest {
                         .map(|x| x.to_string());
         wire.map(|wire| {
             let (short_stick,short_pane) = self.leaf.get_short_spec();
-            XferRequestKey::new(&wire,&short_stick,&short_pane,&None)
+            XferRequestKey::new(&wire,&short_stick,&short_pane,&self.focus)
         })
     }
 }

@@ -27,8 +27,8 @@ pub trait Printer {
      */
     fn get_available_size(&self) -> Dot<f64,f64>;
     
-    fn add_leaf(&mut self, leaf: &Leaf);
-    fn remove_leaf(&mut self, leaf: &Leaf);
+    fn add_leaf(&mut self, leaf: &Leaf, focus: &Option<String>);
+    fn remove_leaf(&mut self, leaf: &Leaf, focus: &Option<String>);
     fn set_current(&mut self, leaf: &Leaf);
-    fn make_traveller_response(&mut self, leaf: &Leaf) -> Box<TravellerResponse>;
+    fn make_traveller_response(&mut self, leaf: &Leaf, focus: &Option<String>) -> Box<TravellerResponse>;
 }

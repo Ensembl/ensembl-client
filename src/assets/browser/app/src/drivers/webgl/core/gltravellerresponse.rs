@@ -17,7 +17,8 @@ pub struct GLTravellerResponse {
     dr: Rc<RefCell<Option<GLDrawing>>>,
     pending_refresh: Rc<RefCell<bool>>,
     state: Rc<RefCell<bool>>,
-    leaf: Leaf
+    leaf: Leaf,
+    focus: Option<String>
 }
 
 impl PartialEq for GLTravellerResponse {
@@ -35,18 +36,20 @@ impl Hash for GLTravellerResponse {
 
 impl GLTravellerResponse {    
     /* train/partyresponses */
-    pub(in super) fn new(printer: &GLPrinter, idx: usize, leaf: &Leaf) -> GLTravellerResponse {
+    pub(in super) fn new(printer: &GLPrinter, idx: usize, leaf: &Leaf, focus: &Option<String>) -> GLTravellerResponse {
         GLTravellerResponse {
             printer: printer.clone(),
             idx,
             dr: Rc::new(RefCell::new(None)),
             pending_refresh: Rc::new(RefCell::new(false)), // XXX unused
             state: Rc::new(RefCell::new(false)),
-            leaf: leaf.clone()
+            leaf: leaf.clone(),
+            focus: focus.clone()
         }
     }
         
     pub fn get_leaf(&self) -> &Leaf { &self.leaf }
+    pub fn get_focus(&self) -> &Option<String> { &self.focus }
     
     pub fn redraw_drawings(&self, cc: &mut CarriageCanvases) {
         let mut dr = self.dr.borrow_mut();

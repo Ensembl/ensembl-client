@@ -123,6 +123,7 @@ impl TrainManager {
         let mut ready = false;
         if let Some(ref mut future_train) = self.future_train {
             if future_train.check_done() {
+                future_train.set_needs_refresh();
                 ready = true;
             }
         }
@@ -231,7 +232,7 @@ impl TrainManager {
                 /* we're not currently showing the optimal scale */
                 if let Some(ref mut future_train) = self.future_train {
                     /* there's a future train ... */
-                    if best != *future_train.get_scale() {
+                    if best != *future_train.get_scale() || self.focus != *future_train.get_focus() {
                         /* ... and that's not optimal either */
                         end_future = true;
                         new_future = true;
@@ -269,7 +270,6 @@ impl TrainManager {
 
     pub fn change_focus(&mut self, cm: &mut TravellerCreator, id: &str) {
         self.focus = Some(id.to_string());
-        self.each_train(|t| t.change_focus(cm));
     }
     
     /* ***************************************************************

@@ -115,7 +115,7 @@ impl Train {
 
     fn get_carriage(&mut self, leaf: &Leaf) -> &mut Carriage {
         if !self.carriages.contains_key(&leaf) {
-            let c = Carriage::new(&mut self.pm,&leaf);
+            let c = Carriage::new(&mut self.pm,&leaf,&self.focus);
             self.carriages.insert(leaf.clone(),c);
         }
         self.carriages.get_mut(leaf).unwrap()
@@ -196,12 +196,10 @@ impl Train {
         }
     }
 
-    pub fn change_focus(&mut self, cm: &mut TravellerCreator) {
-        let mut new_cars : HashMap<Leaf,Carriage> = HashMap::new();
-        for (k,c) in self.carriages.drain() {
-            new_cars.insert(k.clone(),c.replacement(cm,&self.focus));
+    pub fn set_needs_refresh(&mut self) {
+        for c in self.carriages.values_mut() {
+            c.set_needs_refresh();
         }
-        self.carriages = new_cars;
     }
 
     pub fn redraw_where_needed(&mut self, printer: &mut Printer, zmls: &mut ZMenuLeafSet) {

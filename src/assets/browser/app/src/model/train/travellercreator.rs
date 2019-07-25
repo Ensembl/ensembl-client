@@ -35,7 +35,7 @@ impl TravellerCreator {
     
     pub fn make_travellers_for_source(&mut self, acs: &mut ActiveSource, leaf: &Leaf, focus: &Option<String>) -> Vec<Traveller> {
         let mut tt = acs.make_travellers(leaf);
-        let source_response = SourceResponse::new(&mut self.pm,leaf,&mut tt);
+        let source_response = SourceResponse::new(&mut self.pm,leaf,focus,&mut tt);
         acs.request_data(source_response,leaf,focus);
         tt
     }

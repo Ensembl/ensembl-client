@@ -10,7 +10,7 @@ use drivers::zmenu::ZMenuLeaf;
 
 struct PrinterManagerImpl {
     printer: Box<Printer>,
-    leaf_count: HashMap<Leaf,u32>
+    leaf_count: HashMap<(Leaf,Option<String>),u32>
 }
 
 impl PrinterManagerImpl {
@@ -29,7 +29,6 @@ impl PrinterManager {
     pub fn new(printer: Box<Printer>) -> PrinterManager {
         PrinterManager(Rc::new(RefCell::new(PrinterManagerImpl::new(printer))))
     }
-    
 }
 
 impl Printer for PrinterManager {
@@ -61,17 +60,17 @@ impl Printer for PrinterManager {
         self.0.borrow().printer.get_available_size()
     }
     
-    fn add_leaf(&mut self, leaf: &Leaf) {
+    fn add_leaf(&mut self, leaf: &Leaf, focus: &Option<String>) {
         let mut imp = self.0.borrow_mut();
-        if *imp.leaf_count.entry(leaf.clone()).and_modify(|v| *v += 1).or_insert(1) == 1 {
-            imp.printer.add_leaf(leaf);
+        if *imp.leaf_count.entry((leaf.clone(),focus.clone())).and_modify(|v| *v += 1).or_insert(1) == 1 {
+            imp.printer.add_leaf(leaf,focus);
         }
     }
     
-    fn remove_leaf(&mut self, leaf: &Leaf) {
+    fn remove_leaf(&mut self, leaf: &Leaf, focus: &Option<String>) {
         let mut imp = self.0.borrow_mut();
-        if *imp.leaf_count.entry(leaf.clone()).and_modify(|v| *v -= 1).or_insert(0) == 0 {
-            imp.printer.remove_leaf(leaf);
+        if *imp.leaf_count.entry((leaf.clone(),focus.clone())).and_modify(|v| *v -= 1).or_insert(0) == 0 {
+            imp.printer.remove_leaf(leaf,focus);
         }
     }
     
@@ -79,8 +78,8 @@ impl Printer for PrinterManager {
         self.0.borrow_mut().printer.set_current(leaf);
     }
     
-    fn make_traveller_response(&mut self, leaf: &Leaf) -> Box<TravellerResponse> {
-        self.0.borrow_mut().printer.make_traveller_response(leaf)
+    fn make_traveller_response(&mut self, leaf: &Leaf, focus: &Option<String>) -> Box<TravellerResponse> {
+        self.0.borrow_mut().printer.make_traveller_response(leaf,focus)
     }
     
     fn redraw_carriage(&mut self, leaf: &Leaf) {
