@@ -1,6 +1,8 @@
 import { createAction } from 'typesafe-actions';
+import { batch } from 'react-redux';
 import { ActionCreator, Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+
 import { RootState } from 'src/store';
 import { getBrowserActiveGenomeId } from '../browserSelectors';
 
@@ -61,15 +63,17 @@ export const closeDrawer: ActionCreator<
     return;
   }
 
-  dispatch(
-    toggleDrawerForGenome({
-      [activeGenomeId]: false
-    })
-  );
+  batch(() => {
+    dispatch(
+      toggleDrawerForGenome({
+        [activeGenomeId]: false
+      })
+    );
 
-  dispatch(
-    changeDrawerViewForGenome({
-      [activeGenomeId]: ''
-    })
-  );
+    dispatch(
+      changeDrawerViewForGenome({
+        [activeGenomeId]: ''
+      })
+    );
+  });
 };
