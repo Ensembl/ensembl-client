@@ -132,7 +132,7 @@ impl TrainManager {
             self.transition_start = Some(t);
             self.transition_prop = Some(0.);
             let scale = self.transition_train.as_ref().unwrap().get_scale().clone();
-            console!("transition to {:?}",scale);
+            console!("transition to {:?} {:?}",scale,self.transition_train.as_ref().unwrap().get_focus());
             for i in 0..OUTER_TRAINS {
                 let out_scale = scale.next_scale(-1-i as i32);
                 self.outer_train[i] = self.make_train(cm,out_scale,true);
@@ -193,6 +193,17 @@ impl TrainManager {
         }
     }
 
+    /* current (or soon and inevitable) focus object */
+    fn printing_focus(&self) -> Option<String> {
+        if let Some(ref transition_train) = self.transition_train {
+            transition_train.get_focus().clone()
+        } else if let Some(ref current_train) = self.current_train {
+            current_train.get_focus().clone()
+        } else {
+            None
+        }
+    }
+
     /* Create future train */
     fn new_future(&mut self, cm: &mut TravellerCreator, scale: Scale) {
         if let Some(ref mut t) = self.future_train {
@@ -216,7 +227,7 @@ impl TrainManager {
             let best = Scale::best_for_screen(bp_per_screen);
             let mut end_future = false;
             let mut new_future = false;
-            if best != printing_vscale {
+            if best != printing_vscale || self.printing_focus() != self.focus {
                 /* we're not currently showing the optimal scale */
                 if let Some(ref mut future_train) = self.future_train {
                     /* there's a future train ... */

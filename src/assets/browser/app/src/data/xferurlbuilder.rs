@@ -54,18 +54,19 @@ impl ChromBuilder {
 }
 
 pub struct XferUrlBuilder {
-    data: HashMap<String,Vec<(String,String)>>
+    data: HashMap<(String,Option<String>),Vec<(String,String)>>
 }
 
 impl XferUrlBuilder {
     pub fn new() -> XferUrlBuilder {
         XferUrlBuilder {
-            data: HashMap::<String,Vec<(String,String)>>::new()
+            data: HashMap::new()
         }
     }
     
     pub fn add(&mut self, key: &XferRequestKey) {
-        let set = self.data.entry(key.stick.clone()).or_insert_with(||
+        let supersection = (key.stick.clone(),key.focus.clone());
+        let set = self.data.entry(supersection).or_insert_with(||
             Vec::<(String,String)>::new()
         );
         set.push((key.track.clone(),key.leaf.clone()));
@@ -79,8 +80,13 @@ impl XferUrlBuilder {
     
     pub fn emit(&self) -> String {
         let mut chroms = Vec::<(String,String)>::new();
-        for (chrom,v) in &self.data {
-            chroms.push((chrom.to_string(),self.emit_chrom(v)));
+        for ((stick,focus),v) in &self.data {
+            let supersection = if let Some(focus) = focus {
+                format!("{}~{}",focus,stick)
+            } else {
+                stick.to_string()
+            };
+            chroms.push((supersection,self.emit_chrom(v)));
         }
         chroms.sort();
         let chroms : Vec<String> = chroms

@@ -36,7 +36,7 @@ impl Train {
             position_bp: None,
             active: true,
             current: false,
-            focus: None
+            focus: focus.clone()
         }
     }
         
@@ -52,6 +52,8 @@ impl Train {
             self.pm.set_current(leaf);
         }
     }
+
+    pub(in super) fn get_focus(&self) -> &Option<String> { &self.focus }
 
     /* are we active (ie should we scan around as the user does?) */
     pub(in super) fn set_active(&mut self, yn: bool) {

@@ -35,7 +35,7 @@ impl XferRequest {
 }
 
 
-#[derive(Clone,PartialEq,Eq,Hash)]
+#[derive(Clone,PartialEq,Eq,Hash,Debug)]
 pub struct XferRequestKey {
     pub track: String,
     pub stick: String,
