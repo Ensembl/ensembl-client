@@ -15,7 +15,7 @@ import findIndex from 'lodash/findIndex';
 import Attributes from 'src/content/app/custom-download/types/Attributes';
 import JSONValue from 'src/shared/types/JSON';
 import { CheckboxGridOption } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
-import Species from '/Users/manojpandian/Documents/Projects/ensembl-client/src/ensembl/src/content/app/custom-download/types/Species';
+import Species from 'src/content/app/custom-download/types/Species';
 
 export const setAttributes = createAsyncAction(
   'custom-download/set-attributes-request',
