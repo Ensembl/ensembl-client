@@ -15,7 +15,7 @@ import TrackPanel from './track-panel/TrackPanel';
 import AppBar from 'src/shared/app-bar/AppBar';
 
 import { RootState } from 'src/store';
-import { ChrLocation } from './browserState';
+import { ChrLocation, ChrLocations } from './browserState';
 import {
   changeBrowserLocation,
   setDataFromUrlAndSave,
@@ -33,16 +33,20 @@ import {
   getAllChrLocations
 } from './browserSelectors';
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
-import { getTrackPanelOpened } from './track-panel/trackPanelSelectors';
+import { getIsTrackPanelOpened } from './track-panel/trackPanelSelectors';
 import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
-import { getDrawerOpened } from './drawer/drawerSelectors';
+import { getIsDrawerOpened } from './drawer/drawerSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 import { fetchGenomeData } from 'src/genome/genomeActions';
-import { toggleDrawer } from './drawer/drawerActions';
+import {
+  changeDrawerView,
+  closeDrawer,
+  toggleDrawer
+} from './drawer/drawerActions';
 
 import browserStorageService from './browser-storage-service';
 import { TrackStates } from './track-panel/trackPanelConfig';
@@ -58,14 +62,14 @@ type StateProps = {
   activeGenomeId: string | null;
   activeEnsObjectId: string | null;
   allActiveEnsObjectIds: { [genomeId: string]: string };
+  allChrLocations: ChrLocations;
   browserActivated: boolean;
   browserNavOpened: boolean;
   browserQueryParams: { [key: string]: string };
   chrLocation: ChrLocation | null;
-  allChrLocations: { [genomeId: string]: ChrLocation };
-  drawerOpened: boolean;
   genomeSelectorActive: boolean;
-  trackPanelOpened: boolean;
+  isDrawerOpened: boolean;
+  isTrackPanelOpened: boolean;
   launchbarExpanded: boolean;
   exampleEnsObjects: EnsObject[];
   committedSpecies: CommittedItem[];
@@ -73,9 +77,11 @@ type StateProps = {
 
 type DispatchProps = {
   changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
+  changeDrawerView: (drawerView: string) => void;
+  closeDrawer: () => void;
   fetchGenomeData: (genomeId: string) => void;
   replace: Replace;
-  toggleDrawer: (drawerOpened: boolean) => void;
+  toggleDrawer: (isDrawerOpened: boolean) => void;
   setDataFromUrlAndSave: (payload: ParsedUrlPayload) => void;
 };
 
@@ -98,6 +104,8 @@ export const Browser: FunctionComponent<BrowserProps> = (
     TrackStates
   >({});
   const lastGenomeIdRef = useRef(props.activeGenomeId);
+
+  const { isDrawerOpened, closeDrawer } = props;
 
   const setDataFromUrl = () => {
     const { genomeId = null } = props.match.params;
@@ -212,10 +220,11 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }, [props.browserActivated]);
 
   const closeTrack = () => {
-    if (props.drawerOpened === false) {
+    if (!isDrawerOpened) {
       return;
     }
-    props.toggleDrawer(false);
+
+    closeDrawer();
   };
 
   const [trackAnimation, setTrackAnimation] = useSpring(() => ({
@@ -225,10 +234,10 @@ export const Browser: FunctionComponent<BrowserProps> = (
   }));
 
   const getBrowserWidth = (): string => {
-    if (props.drawerOpened) {
-      return 'calc(41px + 0vw)';
+    if (isDrawerOpened) {
+      return 'calc(41px + 0vw)'; // this format must be used for the react-spring animation to function properly
     }
-    return props.trackPanelOpened
+    return props.isTrackPanelOpened
       ? 'calc(-356px + 100vw)'
       : 'calc(-36px + 100vw)';
   };
@@ -237,11 +246,15 @@ export const Browser: FunctionComponent<BrowserProps> = (
     setTrackAnimation({
       width: getBrowserWidth()
     });
-  }, [props.drawerOpened, props.trackPanelOpened]);
+  }, [isDrawerOpened, props.isTrackPanelOpened]);
 
   const getHeightClass = (launchbarExpanded: boolean): string => {
     return launchbarExpanded ? styles.shorter : styles.taller;
   };
+
+  const BrowserBarNode = (
+    <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
+  );
 
   return props.activeGenomeId ? (
     <>
@@ -253,13 +266,13 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
       {!props.browserQueryParams.focus && (
         <section className={styles.browser}>
-          <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
+          {BrowserBarNode}
           <ExampleObjectLinks {...props} />
         </section>
       )}
       {props.browserQueryParams.focus && (
         <section className={styles.browser}>
-          <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
+          {BrowserBarNode}
           {props.genomeSelectorActive && (
             <div className={styles.browserOverlay} />
           )}
@@ -271,7 +284,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
             <animated.div style={trackAnimation}>
               <div className={styles.browserImageWrapper} onClick={closeTrack}>
                 {props.browserNavOpened &&
-                !props.drawerOpened &&
+                !isDrawerOpened &&
                 browserRef.current ? (
                   <BrowserNavBar />
                 ) : null}
@@ -321,14 +334,14 @@ const mapStateToProps = (state: RootState): StateProps => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
   activeEnsObjectId: getBrowserActiveEnsObjectId(state),
   allActiveEnsObjectIds: getBrowserActiveEnsObjectIds(state),
+  allChrLocations: getAllChrLocations(state),
   browserActivated: getBrowserActivated(state),
   browserNavOpened: getBrowserNavOpened(state),
   browserQueryParams: getBrowserQueryParams(state),
   chrLocation: getChrLocation(state),
-  allChrLocations: getAllChrLocations(state),
-  drawerOpened: getDrawerOpened(state),
   genomeSelectorActive: getGenomeSelectorActive(state),
-  trackPanelOpened: getTrackPanelOpened(state),
+  isDrawerOpened: getIsDrawerOpened(state),
+  isTrackPanelOpened: getIsTrackPanelOpened(state),
   launchbarExpanded: getLaunchbarExpanded(state),
   exampleEnsObjects: getExampleEnsObjects(state),
   committedSpecies: getEnabledCommittedSpecies(state)
@@ -336,6 +349,8 @@ const mapStateToProps = (state: RootState): StateProps => ({
 
 const mapDispatchToProps: DispatchProps = {
   changeBrowserLocation,
+  changeDrawerView,
+  closeDrawer,
   fetchGenomeData,
   replace,
   toggleDrawer,

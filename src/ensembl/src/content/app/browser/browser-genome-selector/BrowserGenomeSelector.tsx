@@ -5,6 +5,7 @@ import React, {
   FormEvent,
   useEffect
 } from 'react';
+import classNames from 'classnames';
 
 import { ChrLocation } from '../browserState';
 
@@ -19,7 +20,7 @@ type BrowserGenomeSelectorProps = {
   browserActivated: boolean;
   chrLocation: ChrLocation;
   dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
-  drawerOpened: boolean;
+  isDrawerOpened: boolean;
   genomeSelectorActive: boolean;
   toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
 };
@@ -27,7 +28,7 @@ type BrowserGenomeSelectorProps = {
 const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
   props: BrowserGenomeSelectorProps
 ) => {
-  const { activeGenomeId, chrLocation } = props;
+  const { activeGenomeId, chrLocation, isDrawerOpened } = props;
   const chrLocationStr = getChrLocationStr(chrLocation);
 
   const [chrLocationPlaceholder, setChrLocationPlaceholder] = useState('');
@@ -40,18 +41,8 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
     setChrLocationPlaceholder(chrLocationStr);
   }, []);
 
-  const getGenomeSelectorClasses = () => {
-    let classNames = styles.browserGenomeSelector;
-
-    if (props.drawerOpened === true) {
-      classNames += ` ${styles.browserGenomeSelectorDisabled}`;
-    }
-
-    return classNames;
-  };
-
   const activateForm = () => {
-    if (props.drawerOpened === true) {
+    if (isDrawerOpened) {
       return;
     }
 
@@ -99,8 +90,12 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
     }
   };
 
+  const className = classNames(styles.browserGenomeSelector, {
+    [styles.browserGenomeSelectorDisabled]: isDrawerOpened
+  });
+
   return props.browserActivated ? (
-    <dd className={getGenomeSelectorClasses()}>
+    <dd className={className}>
       <label className="show-for-large">Chromosome</label>
       {props.genomeSelectorActive ? (
         <form onSubmit={handleSubmit}>

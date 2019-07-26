@@ -15,7 +15,7 @@ describe('<BrowserNavBar />', () => {
       shallow(
         <BrowserNavBar
           browserNavStates={browserStates as BrowserNavStates}
-          trackPanelOpened={true}
+          isTrackPanelOpened={true}
         />
       ).hasClass(styles.browserNavBarExpanded)
     ).toBe(false);
@@ -24,7 +24,7 @@ describe('<BrowserNavBar />', () => {
       shallow(
         <BrowserNavBar
           browserNavStates={browserStates as BrowserNavStates}
-          trackPanelOpened={false}
+          isTrackPanelOpened={false}
         />
       ).hasClass(styles.browserNavBarExpanded)
     ).toBe(true);

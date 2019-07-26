@@ -5,14 +5,13 @@ import { EnsObject } from 'src/ens-object/ensObjectTypes';
 import styles from './BrowserTabs.scss';
 
 type BrowserTabsProps = {
-  activeGenomeId: string;
+  closeDrawer: () => void;
   ensObject: EnsObject;
-  drawerOpened: boolean;
+  isDrawerOpened: boolean;
   genomeSelectorActive: boolean;
   selectBrowserTabAndSave: (selectedBrowserTab: TrackType) => void;
-  selectedBrowserTab: { [genomeId: string]: TrackType };
-  toggleDrawer: (drawerOpened: boolean) => void;
-  trackPanelModalOpened: boolean;
+  selectedBrowserTab: TrackType;
+  isTrackPanelModalOpened: boolean;
 };
 
 const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
@@ -23,24 +22,26 @@ const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
       return;
     }
 
-    if (props.drawerOpened) {
-      props.toggleDrawer(false);
+    if (props.isDrawerOpened) {
+      props.closeDrawer();
     }
 
     props.selectBrowserTabAndSave(value);
   };
 
   const getBrowserTabClasses = (trackType: TrackType) => {
-    const { activeGenomeId, drawerOpened, trackPanelModalOpened } = props;
-    const selectedBrowserTab =
-      props.selectedBrowserTab[activeGenomeId] || TrackType.GENOMIC;
+    const {
+      isDrawerOpened,
+      selectedBrowserTab,
+      isTrackPanelModalOpened
+    } = props;
     let classNames = styles.browserTab;
 
     if (
       props.ensObject.genome_id &&
       selectedBrowserTab === trackType &&
-      drawerOpened === false &&
-      trackPanelModalOpened === false
+      !isDrawerOpened &&
+      !isTrackPanelModalOpened
     ) {
       classNames += ` ${styles.browserTabActive} ${styles.browserTabArrow}`;
     } else if (!props.ensObject.genome_id) {

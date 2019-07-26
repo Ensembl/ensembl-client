@@ -9,23 +9,25 @@ export default function trackPanel(
 ): TrackPanelState {
   switch (action.type) {
     case getType(trackPanelActions.toggleTrackPanel):
-      const trackPanelOpened =
-        action.payload === undefined ? !state.trackPanelOpened : action.payload;
+      const isTrackPanelOpened =
+        action.payload === undefined
+          ? !state.isTrackPanelOpened
+          : action.payload;
 
       return {
         ...state,
-        trackPanelOpened
+        isTrackPanelOpened
       };
     case getType(trackPanelActions.openTrackPanelModal):
       return {
         ...state,
-        trackPanelModalOpened: true,
+        isTrackPanelModalOpened: true,
         trackPanelModalView: action.payload
       };
     case getType(trackPanelActions.closeTrackPanelModal):
       return {
         ...state,
-        trackPanelModalOpened: false,
+        isTrackPanelModalOpened: false,
         trackPanelModalView: ''
       };
     case getType(trackPanelActions.selectBrowserTab):
@@ -36,7 +38,7 @@ export default function trackPanel(
           state.selectedBrowserTab,
           action.payload
         ),
-        trackPanelModalOpened: false,
+        isTrackPanelModalOpened: false,
         trackPanelModalView: ''
       };
     default:

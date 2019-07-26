@@ -17,14 +17,14 @@ import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObject
 } from '../browserSelectors';
-import { getDrawerOpened } from '../drawer/drawerSelectors';
+import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 import {
   getSelectedBrowserTab,
-  getTrackPanelModalOpened,
-  getTrackPanelOpened
+  getIsTrackPanelModalOpened,
+  getIsTrackPanelOpened
 } from '../track-panel/trackPanelSelectors';
 import { selectBrowserTabAndSave } from '../track-panel/trackPanelActions';
-import { toggleDrawer } from '../drawer/drawerActions';
+import { closeDrawer, toggleDrawer } from '../drawer/drawerActions';
 import { RootState } from 'src/store';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
@@ -41,18 +41,19 @@ type StateProps = {
   chrLocation: ChrLocation | null;
   actualChrLocation: ChrLocation | null;
   defaultChrLocation: ChrLocation | null;
-  drawerOpened: boolean;
+  isDrawerOpened: boolean;
+  isTrackPanelModalOpened: boolean;
+  isTrackPanelOpened: boolean;
   genomeSelectorActive: boolean;
   ensObject: EnsObject | null;
-  selectedBrowserTab: { [genomeId: string]: TrackType };
-  trackPanelModalOpened: boolean;
-  trackPanelOpened: boolean;
+  selectedBrowserTab: TrackType;
 };
 
 type DispatchProps = {
+  closeDrawer: () => void;
   selectBrowserTabAndSave: (selectedBrowserTab: TrackType) => void;
   toggleBrowserNav: () => void;
-  toggleDrawer: (drawerOpened: boolean) => void;
+  toggleDrawer: (isDrawerOpened: boolean) => void;
   toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
 };
 
@@ -75,6 +76,8 @@ type BrowserNavigatorButtonProps = {
 export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   props: BrowserBarProps
 ) => {
+  const { isDrawerOpened } = props;
+
   const shouldShowBrowserInfo = () => {
     const { defaultChrLocation } = props;
     const isLocationOfWholeChromosome = !defaultChrLocation;
@@ -99,7 +102,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   }, [props.defaultChrLocation, props.genomeSelectorActive]);
 
   const getBrowserNavIcon = () => {
-    if (props.drawerOpened) {
+    if (isDrawerOpened) {
       return navigator.icon.grey as string;
     } else if (props.browserNavOpened) {
       return navigator.icon.selected as string;
@@ -109,7 +112,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   };
 
   const toggleNavigator = () => {
-    if (props.drawerOpened) {
+    if (isDrawerOpened) {
       return;
     }
 
@@ -117,8 +120,8 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   };
 
   const className = classNames(styles.browserInfo, {
-    [styles.browserInfoExpanded]: !props.trackPanelOpened,
-    [styles.browserInfoGreyed]: props.drawerOpened
+    [styles.browserInfoExpanded]: !props.isTrackPanelOpened,
+    [styles.browserInfoGreyed]: isDrawerOpened
   });
 
   if (!(props.chrLocation && props.actualChrLocation && props.ensObject)) {
@@ -134,7 +137,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
             dispatchBrowserLocation={props.dispatchBrowserLocation}
             chrLocation={props.chrLocation}
             defaultChrLocation={props.defaultChrLocation}
-            drawerOpened={props.drawerOpened}
+            isDrawerOpened={isDrawerOpened}
           />
           {showBrowserInfo && <BrowserInfo ensObject={props.ensObject} />}
         </dl>
@@ -144,7 +147,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
             browserActivated={props.browserActivated}
             dispatchBrowserLocation={props.dispatchBrowserLocation}
             chrLocation={props.actualChrLocation}
-            drawerOpened={props.drawerOpened}
+            isDrawerOpened={isDrawerOpened}
             genomeSelectorActive={props.genomeSelectorActive}
             toggleGenomeSelector={props.toggleGenomeSelector}
           />
@@ -157,16 +160,15 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
           )}
         </dl>
       </div>
-      {props.trackPanelOpened && props.activeGenomeId && (
+      {props.isTrackPanelOpened && props.activeGenomeId && (
         <BrowserTabs
-          activeGenomeId={props.activeGenomeId}
+          closeDrawer={props.closeDrawer}
           ensObject={props.ensObject}
-          drawerOpened={props.drawerOpened}
+          isDrawerOpened={props.isDrawerOpened}
           genomeSelectorActive={props.genomeSelectorActive}
           selectBrowserTabAndSave={props.selectBrowserTabAndSave}
           selectedBrowserTab={props.selectedBrowserTab}
-          toggleDrawer={props.toggleDrawer}
-          trackPanelModalOpened={props.trackPanelModalOpened}
+          isTrackPanelModalOpened={props.isTrackPanelModalOpened}
         />
       )}
     </div>
@@ -229,15 +231,16 @@ const mapStateToProps = (state: RootState): StateProps => ({
   chrLocation: getChrLocation(state),
   actualChrLocation: getActualChrLocation(state),
   defaultChrLocation: getDefaultChrLocation(state),
-  drawerOpened: getDrawerOpened(state),
   ensObject: getBrowserActiveEnsObject(state),
   genomeSelectorActive: getGenomeSelectorActive(state),
-  selectedBrowserTab: getSelectedBrowserTab(state),
-  trackPanelModalOpened: getTrackPanelModalOpened(state),
-  trackPanelOpened: getTrackPanelOpened(state)
+  isDrawerOpened: getIsDrawerOpened(state),
+  isTrackPanelModalOpened: getIsTrackPanelModalOpened(state),
+  isTrackPanelOpened: getIsTrackPanelOpened(state),
+  selectedBrowserTab: getSelectedBrowserTab(state)
 });
 
 const mapDispatchToProps: DispatchProps = {
+  closeDrawer,
   selectBrowserTabAndSave,
   toggleBrowserNav,
   toggleDrawer,

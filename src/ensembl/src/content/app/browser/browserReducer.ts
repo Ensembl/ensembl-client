@@ -35,7 +35,7 @@ export function browserInfo(
           ? BrowserOpenState.SEMI_EXPANDED
           : BrowserOpenState.EXPANDED
       };
-    case getType(drawerActions.toggleDrawer):
+    case getType(drawerActions.toggleDrawerForGenome):
       return {
         ...state,
         browserOpenState: action.payload

@@ -8,16 +8,15 @@ export default function drawer(
   action: ActionType<typeof drawerActions>
 ): DrawerState {
   switch (action.type) {
-    case getType(drawerActions.changeDrawerView):
+    case getType(drawerActions.changeDrawerViewForGenome):
       return {
         ...state,
-        drawerView: action.payload
+        drawerView: { ...state.drawerView, ...action.payload }
       };
-    case getType(drawerActions.toggleDrawer):
+    case getType(drawerActions.toggleDrawerForGenome):
       return {
         ...state,
-        drawerOpened: action.payload,
-        drawerView: action.payload ? state.drawerView : ''
+        isDrawerOpened: { ...state.isDrawerOpened, ...action.payload }
       };
     default:
       return state;

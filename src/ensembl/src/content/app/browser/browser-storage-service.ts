@@ -7,7 +7,6 @@ import {
   TrackToggleStates
 } from './track-panel/trackPanelConfig';
 import { ChrLocations } from './browserState';
-import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
 
 export enum StorageKeys {
   ACTIVE_GENOME_ID = 'browser.activeGenomeId',
@@ -77,10 +76,7 @@ export class BrowserStorageService {
   }
 
   public getSelectedBrowserTab() {
-    return (
-      this.storageService.get(StorageKeys.SELECTED_BROWSER_TAB) ||
-      TrackType.GENOMIC
-    );
+    return this.storageService.get(StorageKeys.SELECTED_BROWSER_TAB) || {};
   }
 
   public updateSelectedBrowserTab(selectedBrowserTabForGenome: {
