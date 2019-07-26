@@ -69,7 +69,8 @@ export const getCommittedSpeciesById = (
 ): CommittedItem | null => {
   const allCommittedSpecies = getCommittedSpecies(state);
   return (
-    find(allCommittedSpecies, ({ genome_id }) => genomeId === genome_id) || null
+    find(allCommittedSpecies, (species) => genomeId === species.genome_id) ||
+    null
   );
 };
 
