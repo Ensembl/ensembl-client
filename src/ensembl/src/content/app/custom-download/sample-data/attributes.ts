@@ -125,7 +125,7 @@ const attributes: Attributes = {
             order: 1
           },
           {
-            id: 'transcripts.chromosome',
+            id: 'chromosome',
             label: 'Transcript chromosome',
             isChecked: true,
             order: 5

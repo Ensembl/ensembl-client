@@ -22,7 +22,7 @@ import {
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 import JSONValue from 'src/shared/types/JSON';
 
-import { Genes, Proteins } from './sections';
+import { Genes } from './sections';
 import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/image-button/ImageButton';
