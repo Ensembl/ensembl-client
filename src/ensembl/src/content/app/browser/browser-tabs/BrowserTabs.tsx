@@ -1,7 +1,9 @@
 import React, { FunctionComponent } from 'react';
+import classNames from 'classnames';
 
 import { TrackType } from '../track-panel/trackPanelConfig';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
+
 import styles from './BrowserTabs.scss';
 
 type BrowserTabsProps = {
@@ -11,7 +13,9 @@ type BrowserTabsProps = {
   genomeSelectorActive: boolean;
   selectBrowserTabAndSave: (selectedBrowserTab: TrackType) => void;
   selectedBrowserTab: TrackType;
+  toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
   isTrackPanelModalOpened: boolean;
+  isTrackPanelOpened: boolean;
 };
 
 const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
@@ -22,6 +26,10 @@ const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
       return;
     }
 
+    if (!props.isTrackPanelOpened) {
+      props.toggleTrackPanel(true);
+    }
+
     if (props.isDrawerOpened) {
       props.closeDrawer();
     }
@@ -29,33 +37,32 @@ const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
     props.selectBrowserTabAndSave(value);
   };
 
-  const getBrowserTabClasses = (trackType: TrackType) => {
-    const {
-      isDrawerOpened,
-      selectedBrowserTab,
-      isTrackPanelModalOpened
-    } = props;
-    let classNames = styles.browserTab;
-
+  const isBrowserTabActive = (trackType: TrackType) => {
     if (
+      props.isTrackPanelOpened &&
       props.ensObject.genome_id &&
-      selectedBrowserTab === trackType &&
-      !isDrawerOpened &&
-      !isTrackPanelModalOpened
+      props.selectedBrowserTab === trackType &&
+      !props.isDrawerOpened &&
+      !props.isTrackPanelModalOpened
     ) {
-      classNames += ` ${styles.browserTabActive} ${styles.browserTabArrow}`;
-    } else if (!props.ensObject.genome_id) {
-      classNames = styles.browserTabDisabled;
+      return true;
+    } else {
+      return false;
     }
-
-    return classNames;
   };
+
+  const getBrowserTabClassNames = (trackType: TrackType) =>
+    classNames(styles.browserTab, {
+      [styles.browserTabActive]: isBrowserTabActive(trackType),
+      [styles.browserTabArrow]: isBrowserTabActive(trackType),
+      [styles.browserTabDisabled]: !props.ensObject.genome_id
+    });
 
   return (
     <dl className={`${styles.browserTabs} show-for-large`}>
       {Object.values(TrackType).map((value: TrackType) => (
         <dd
-          className={getBrowserTabClasses(value)}
+          className={getBrowserTabClassNames(value)}
           key={value}
           onClick={() => handleTabClick(value)}
         >
