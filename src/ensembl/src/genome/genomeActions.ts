@@ -1,24 +1,17 @@
 import { createAsyncAction } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
 import { Action, ActionCreator } from 'redux';
-import find from 'lodash/find';
 import apiService from 'src/services/api-service';
 import { RootState } from 'src/store';
-import {
-  GenomeInfoData,
-  GenomeInfo,
-  GenomeTrackCategories
-} from './genomeTypes';
-import omit from 'lodash/omit';
+import { GenomeInfoData, GenomeTrackCategories } from './genomeTypes';
 
 import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
-import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+
 import {
   getGenomeInfoById,
   getGenomeTrackCategories
 } from 'src/genome/genomeSelectors';
-import { updateCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorActions';
+import { ensureSpeciesIsCommitted } from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 export const fetchGenomeInfoAsyncActions = createAsyncAction(
   'genome/fetch_genome_info_request',
@@ -28,29 +21,13 @@ export const fetchGenomeInfoAsyncActions = createAsyncAction(
 
 export const fetchGenomeData: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
+> = (genomeId: string) => async (dispatch) => {
   await Promise.all([
     dispatch(fetchGenomeInfo(genomeId)),
     dispatch(fetchGenomeTrackCategories(genomeId))
   ]);
 
-  const state = getState();
-  const committedSpecies: CommittedItem[] = getEnabledCommittedSpecies(state);
-  const genomeInfo: GenomeInfo | null = getGenomeInfoById(state, genomeId);
-  if (
-    genomeInfo &&
-    !find(
-      committedSpecies,
-      (species: CommittedItem) => species.genome_id === genomeId
-    )
-  ) {
-    const newCommittedSpecies = [
-      ...committedSpecies,
-      { ...omit(genomeInfo, ['example_objects']), isEnabled: true }
-    ];
-
-    dispatch(updateCommittedSpecies(newCommittedSpecies));
-  }
+  dispatch(ensureSpeciesIsCommitted(genomeId));
 
   dispatch(fetchExampleEnsObjects(genomeId));
 };
