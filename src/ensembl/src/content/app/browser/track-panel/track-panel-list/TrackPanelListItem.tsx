@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import classNames from 'classnames';
 
-import { TrackItemColour } from '../trackPanelConfig';
+import { TrackItemColour, TrackItemColourKey } from '../trackPanelConfig';
 import { UpdateTrackStatesPayload } from 'src/content/app/browser/browserActions';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 
@@ -72,7 +72,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     }
   }, []);
 
-  const getBoxClasses = (colour: any) => {
+  const getBoxClasses = (colour: TrackItemColourKey) => {
     const colourValue = colour ? TrackItemColour[colour] : '';
 
     return classNames(styles.box, {
@@ -142,7 +142,11 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     <>
       <dd className={listItemClassNames} onClick={drawerViewListHandler}>
         <label>
-          {track.colour && <span className={getBoxClasses(track.colour)} />}
+          {track.colour && (
+            <span
+              className={getBoxClasses(track.colour as TrackItemColourKey)}
+            />
+          )}
           <span className={styles.mainText}>{track.label}</span>
           {track.support_level && (
             <span className={styles.selectedInfo}>{track.support_level}</span>

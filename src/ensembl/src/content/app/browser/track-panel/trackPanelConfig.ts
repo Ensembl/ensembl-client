@@ -7,11 +7,15 @@ export enum TrackItemColour {
   WHITE = 'white'
 }
 
+export type TrackItemColourKey = keyof typeof TrackItemColour;
+
 export enum TrackType {
   GENOMIC = 'Genomic',
   VARIATION = 'Variation',
   EXPRESSION = 'Expression'
 }
+
+export type TrackTypeKey = keyof typeof TrackType;
 
 export type TrackPanelIcon = {
   description: string;
