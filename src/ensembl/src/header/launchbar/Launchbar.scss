@@ -42,14 +42,6 @@
   border: 1px solid $ens-blue;
   margin: 0 12px;
 
-  svg {
-    width: 30px;
-    height: 30px;
-    transform: scale(1.1);
-    fill: $ens-white;
-    background-color: $ens-blue;
-  }
-
   img {
     max-width: 30px;
     max-height: 30px;
@@ -58,16 +50,30 @@
 
 .launchbarButtonSelected {
   border: 1px solid $ens-black;
+}
 
+.launchbarButtonDisabled {
+  border: 1px solid $ens-grey;
+}
+
+.launchbarButtonImage {
+  svg {
+    width: 30px;
+    height: 30px;
+    transform: scale(1.1);
+    fill: $ens-white;
+    background-color: $ens-blue;
+  }
+}
+
+.launchbarButtonSelectedImage {
   svg {
     fill: $ens-white;
     background-color: $ens-black;
   }
 }
 
-.launchbarButtonDisabled {
-  border: 1px solid $ens-grey;
-
+.launchbarButtonDisabledImage {
   svg {
     fill: $ens-white;
     background-color: $ens-grey;

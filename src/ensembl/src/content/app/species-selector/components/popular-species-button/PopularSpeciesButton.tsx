@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import classNames from 'classnames';
 import find from 'lodash/find';
 
+import useHover from 'src/shared/hooks/useHover';
+
 import {
   handleSelectedSpecies,
   clearSelectedSearchResult,
@@ -45,7 +47,7 @@ type Props = {
 // use default export for development
 export const PopularSpeciesButton = (props: Props) => {
   const { isSelected, isCommitted, species } = props;
-  const [isHovering, setIsHovering] = useState(false);
+  const [hoverRef, isHovered] = useHover<HTMLDivElement>();
 
   const handleClick = () => {
     const { genome_id, is_available } = species;
@@ -75,14 +77,6 @@ export const PopularSpeciesButton = (props: Props) => {
     }
   };
 
-  const handleMouseEnter = () => {
-    setIsHovering(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovering(false);
-  };
-
   const className = classNames(styles.popularSpeciesButton, {
     [styles.popularSpeciesButtonDisabled]: !species.is_available,
     [styles.popularSpeciesButtonSelected]: isSelected,
@@ -93,15 +87,10 @@ export const PopularSpeciesButton = (props: Props) => {
 
   return (
     <div className={styles.popularSpeciesButtonWrapper}>
-      <div
-        className={className}
-        onClick={handleClick}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
+      <div className={className} onClick={handleClick} ref={hoverRef}>
         <InlineSVG src={species.image} />
       </div>
-      {isHovering && species.is_available && (
+      {isHovered && speciesDisplayName && (
         <Tooltip autoAdjust={true}>{speciesDisplayName}</Tooltip>
       )}
     </div>
