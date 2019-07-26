@@ -45,10 +45,7 @@ const CheckboxWithSelects = (props: CheckboxWithSelectsProps) => {
   const selectedOptionsClone: string[] = [...props.selectedOptions];
 
   const newoptions: Option[] = [...props.options].filter((option: Option) => {
-    if (selectedOptionsClone.indexOf(option.value) === -1) {
-      return true;
-    }
-    return false;
+    return !selectedOptionsClone.includes(option.value);
   });
 
   const firstSelectedOption = selectedOptionsClone.shift();
@@ -61,9 +58,12 @@ const CheckboxWithSelects = (props: CheckboxWithSelectsProps) => {
   });
 
   const removeSelection = (option: string) => {
-    const selectedOptions: string[] = [...props.selectedOptions];
-    const removeSelectionIndex = selectedOptions.indexOf(option);
-    selectedOptions.splice(removeSelectionIndex, 1);
+    const selectedOptions: string[] = [...props.selectedOptions].filter(
+      (value: string) => {
+        return value !== option;
+      }
+    );
+
     setShowExtraOption(false);
     props.onChange(selectedOptions);
   };

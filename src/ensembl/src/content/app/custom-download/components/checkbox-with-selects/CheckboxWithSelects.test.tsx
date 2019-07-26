@@ -39,7 +39,7 @@ describe('<CheckboxWithSelects />', () => {
     expect(wrapper.find(Checkbox).prop('checked')).toBe(false);
   });
 
-  it('displaya one Select when the checkbox is unchecked', () => {
+  it('displays one Select when the checkbox is unchecked', () => {
     wrapper = mount(<CheckboxWithSelects {...defaultProps} />);
 
     expect(wrapper.find(Checkbox).prop('checked')).toBe(false);

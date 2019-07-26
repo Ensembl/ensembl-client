@@ -43,8 +43,7 @@
 }
 
 .hiddenInput {
-  z-index: -999;
-  position: absolute;
+  display: none;
 
   &:focus + div {
     border: 1px solid $ens-dark-grey;

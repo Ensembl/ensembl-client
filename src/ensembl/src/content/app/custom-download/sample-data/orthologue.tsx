@@ -6,62 +6,74 @@ export const orthologueAttributes = {
     {
       id: 'symbol',
       label: 'Gene symbol',
-      isChecked: false
+      isChecked: false,
+      order: 2
     },
     {
       id: 'id',
       label: 'Gene stable ID',
-      isChecked: false
+      isChecked: false,
+      order: 3
     },
     {
       id: 'id_version',
       label: 'Gene stable ID version',
-      isChecked: false
+      isChecked: false,
+      order: 4
     },
     {
       id: 'name',
       label: 'Gene name',
-      isChecked: false
+      isChecked: false,
+      order: 1
     },
     {
       id: 'type',
       label: 'Gene type',
-      isChecked: false
+      isChecked: false,
+      order: 5
     },
     {
       id: 'version_gene',
       label: 'Version (gene)',
-      isChecked: false
+      isChecked: false,
+      order: 6
     },
     {
       id: 'start',
       label: 'Gene start(bp)',
-      isChecked: false
+      isChecked: false,
+      order: 7
     },
     {
       id: 'end',
       label: 'Gene end (bp)',
-      isChecked: false
+      isChecked: false,
+      order: 8
     },
     {
       id: 'gc_content',
       label: 'Gene % GC content',
-      isChecked: false
+      isChecked: false,
+      order: 9
     },
     {
       id: 'source_gene',
       label: 'Source (gene)',
-      isChecked: false
+      isChecked: false,
+      order: 10
     },
     {
       id: 'EntrezGene',
       label: 'EntrezGene',
-      isChecked: false
+      isChecked: false,
+      order: 11
     },
     {
       id: 'source_of_name',
       label: 'Source of gene name',
-      isChecked: false
+      isChecked: false,
+      order: 12
     }
   ]
 };
