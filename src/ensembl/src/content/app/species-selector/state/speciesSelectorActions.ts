@@ -249,7 +249,7 @@ export const toggleSpeciesUseAndSave: ActionCreator<
   });
 
   dispatch(updateCommittedSpecies(updatedCommittedSpecies));
-  speciesSelectorStorageService.saveSelectedSpecies(committedSpecies);
+  speciesSelectorStorageService.saveSelectedSpecies(updatedCommittedSpecies);
 };
 
 export const deleteSpeciesAndSave: ActionCreator<
