@@ -1,7 +1,6 @@
 import { createAsyncAction } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
 import { Action, ActionCreator } from 'redux';
-
 import apiService from 'src/services/api-service';
 import { RootState } from 'src/store';
 import { GenomeInfoData, GenomeTrackCategories } from './genomeTypes';
@@ -12,6 +11,7 @@ import {
   getGenomeInfoById,
   getGenomeTrackCategories
 } from 'src/genome/genomeSelectors';
+import { ensureSpeciesIsCommitted } from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 export const fetchGenomeInfoAsyncActions = createAsyncAction(
   'genome/fetch_genome_info_request',
@@ -26,6 +26,8 @@ export const fetchGenomeData: ActionCreator<
     dispatch(fetchGenomeInfo(genomeId)),
     dispatch(fetchGenomeTrackCategories(genomeId))
   ]);
+
+  dispatch(ensureSpeciesIsCommitted(genomeId));
 
   dispatch(fetchExampleEnsObjects(genomeId));
 };
