@@ -137,7 +137,7 @@ const filters: Attributes = {
       },
       {
         type: 'paste_or_upload',
-        label: 'Limit to genes',
+        label: 'Limit by ID list',
         id: 'limit_to_genes'
       }
     ]
