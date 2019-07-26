@@ -1,6 +1,12 @@
 import React from 'react';
+
+import useHover from 'src/shared/hooks/useHover';
+
 import defaultStyles from './ImageButton.scss';
 import ImageHolder from './ImageHolder';
+import Tooltip from 'src/shared/tooltip/Tooltip';
+
+import imageButtonStyles from './ImageButton.scss';
 
 export enum ImageButtonStatus {
   ACTIVE = 'active',
@@ -19,10 +25,16 @@ type Props = {
 };
 
 const ImageButton = (props: Props) => {
+  const [hoverRef, isHovered] = useHover<HTMLDivElement>();
+
+  const handleClick = () => {
+    props.onClick && props.onClick();
+  };
+
   const buttonProps =
     props.buttonStatus === ImageButtonStatus.DISABLED
       ? {}
-      : { onClick: props.onClick };
+      : { onClick: handleClick };
 
   const { classNames, ...rest } = props;
 
@@ -30,9 +42,18 @@ const ImageButton = (props: Props) => {
     ? { ...defaultStyles, ...props.classNames }
     : defaultStyles;
 
+  const shouldShowTooltip = Boolean(props.description) && isHovered;
+
   return (
-    <div {...buttonProps}>
+    <div
+      ref={hoverRef}
+      className={imageButtonStyles.imageButton}
+      {...buttonProps}
+    >
       <ImageHolder {...rest} classNames={styles} />
+      {shouldShowTooltip && (
+        <Tooltip autoAdjust={true}>{props.description}</Tooltip>
+      )}
     </div>
   );
 };
