@@ -92,7 +92,7 @@ const AttributesAccordion = (props: Props) => {
         </span>
       </div>
       <Accordion
-        preExpanded={Array(1).fill(props.expandedPanel)}
+        preExpanded={[props.expandedPanel]}
         onChange={accordionOnChange}
       >
         <AccordionItem uuid={'genes'}>

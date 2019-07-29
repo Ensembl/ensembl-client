@@ -12,7 +12,9 @@ import customDownloadStorageService from 'src/content/app/custom-download/servic
 
 import findIndex from 'lodash/findIndex';
 
-import Attributes from 'src/content/app/custom-download/types/Attributes';
+import Attributes, {
+  AttributeWithOptions
+} from 'src/content/app/custom-download/types/Attributes';
 import JSONValue from 'src/shared/types/JSON';
 import { CheckboxGridOption } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 import Species from 'src/content/app/custom-download/types/Species';
@@ -55,7 +57,7 @@ export const updateContentState = createStandardAction(
 
 export const setOrthologueAttributes = createStandardAction(
   'custom-download/set-orthologue-attributes'
-)<Attributes>();
+)<AttributeWithOptions>();
 
 export const setOrthologueShowBestMatches = createStandardAction(
   'custom-download/set-orthologue-show-best-matches'

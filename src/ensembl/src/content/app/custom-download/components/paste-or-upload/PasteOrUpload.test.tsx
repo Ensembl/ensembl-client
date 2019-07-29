@@ -36,7 +36,7 @@ describe('<PasteOrUpload/>', () => {
   it('does not display the text "Paste data or Upload file" when a value is passed', () => {
     wrapper = mount(<PasteOrUpload {...defaultProps} value={'foo'} />);
 
-    expect(wrapper.text()).not.toBe('Paste data or Upload file');
+    expect(wrapper.text()).toBe('');
   });
 
   it('does not display the text input by default ', () => {

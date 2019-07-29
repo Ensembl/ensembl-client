@@ -81,7 +81,7 @@ describe('<CheckboxWithTextfields />', () => {
     expect(onChange).toBeCalledWith([newValue]);
   });
 
-  it('updates the values when an inpus is removed', () => {
+  it('updates the values when an input is removed', () => {
     wrapper = mount(
       <CheckboxWithTextfields {...defaultProps} values={['foo', 'bar']} />
     );

@@ -5,10 +5,9 @@ import * as attributesAccordionActions from './attributesAccordionActions';
 import {
   AttributesAccordionState,
   defaultAttributesAccordionState,
-  OrthologueState
+  OrthologueState,
+  AttributeContentState
 } from './attributesAccordionState';
-
-import { AttributeWithOptions } from 'src/content/app/custom-download/types/Attributes';
 
 function attributesAccordion(
   state: AttributesAccordionState = defaultAttributesAccordionState,
@@ -39,39 +38,39 @@ function attributesAccordion(
     case getType(attributesAccordionActions.setOrthologueAttributes):
       return {
         ...state,
-        content: OrthologueAttributes(state.content, action)
+        content: orthologueAttributes(state.content, action)
       };
     case getType(attributesAccordionActions.setOrthologueSearchTerm):
       return {
         ...state,
-        orthologue: Orthologue(state.orthologue, action)
+        orthologue: orthologue(state.orthologue, action)
       };
     case getType(attributesAccordionActions.setOrthologueShowBestMatches):
       return {
         ...state,
-        orthologue: Orthologue(state.orthologue, action)
+        orthologue: orthologue(state.orthologue, action)
       };
     case getType(attributesAccordionActions.setOrthologueApplyToAllSpecies):
       return {
         ...state,
-        orthologue: Orthologue(state.orthologue, action)
+        orthologue: orthologue(state.orthologue, action)
       };
     case getType(attributesAccordionActions.setOrthologueShowAll):
       return {
         ...state,
-        orthologue: Orthologue(state.orthologue, action)
+        orthologue: orthologue(state.orthologue, action)
       };
     case getType(attributesAccordionActions.setOrthologueSpecies.success):
       return {
         ...state,
-        orthologue: Orthologue(state.orthologue, action)
+        orthologue: orthologue(state.orthologue, action)
       };
     default:
       return state;
   }
 }
 
-function Orthologue(
+function orthologue(
   state: OrthologueState = defaultAttributesAccordionState.orthologue,
   action: ActionType<RootAction>
 ): OrthologueState {
@@ -91,10 +90,10 @@ function Orthologue(
   }
 }
 
-function OrthologueAttributes(
-  state: any = defaultAttributesAccordionState.content,
+function orthologueAttributes(
+  state: AttributeContentState = defaultAttributesAccordionState.content,
   action: ActionType<RootAction>
-): { [key: string]: AttributeWithOptions } {
+): AttributeContentState {
   switch (action.type) {
     case getType(attributesAccordionActions.setOrthologueAttributes):
       return { ...state, orthologues: action.payload };

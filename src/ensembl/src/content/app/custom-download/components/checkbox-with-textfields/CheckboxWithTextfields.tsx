@@ -63,9 +63,6 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
     props.onChange(newValues);
   };
 
-  const valuesWithoutFirst: string[] = [...values] as string[];
-  valuesWithoutFirst.shift();
-
   return (
     <table className={styles.wrapperTable}>
       <tbody>
@@ -80,27 +77,14 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
           </td>
           <td>
             <div className={styles.fieldsWrapper}>
-              {isChecked && (
-                <div key={0}>
-                  <PasteOrUpload
-                    value={values[0]}
-                    onChange={(value) => handleOnChange(value, 0)}
-                    onRemove={() => handleOnRemove(0)}
-                    placeholder={'Paste data'}
-                  />
-                </div>
-              )}
-
               {isChecked &&
-                valuesWithoutFirst.map((value: string, key: number) => {
+                values.map((value: string | null, key: number) => {
                   return (
-                    <div key={key + 1}>
+                    <div key={key}>
                       <PasteOrUpload
                         value={value}
-                        onChange={(newValue) =>
-                          handleOnChange(newValue, key + 1)
-                        }
-                        onRemove={() => handleOnRemove(key + 1)}
+                        onChange={(newValue) => handleOnChange(newValue, key)}
+                        onRemove={() => handleOnRemove(key)}
                         placeholder={'Paste data'}
                       />
                     </div>

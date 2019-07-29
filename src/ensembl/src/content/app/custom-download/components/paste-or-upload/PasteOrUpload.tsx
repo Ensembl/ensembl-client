@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Input from 'src/shared/input/Input';
 import ImageButton from 'src/shared/image-button/ImageButton';
 import { ReactComponent as RemoveIcon } from 'static/img/shared/clear.svg';
@@ -15,11 +15,6 @@ type PasteOrUploadProps = {
 
 const PasteOrUpload = (props: PasteOrUploadProps) => {
   const [shouldShowInput, showInput] = useState(props.value !== null);
-  const [value, setValue] = useState<string | null>(null);
-
-  useEffect(() => {
-    setValue(props.value);
-  }, [props.value]);
 
   const [shouldShowFileUpload, showFileUpload] = useState(false);
   const onChangeHandler = (value: string) => {
@@ -37,7 +32,6 @@ const PasteOrUpload = (props: PasteOrUploadProps) => {
     const content: string = fileReader.result as string;
     showInput(true);
     showFileUpload(false);
-    setValue(content);
     onChangeHandler(content);
   };
 
@@ -74,7 +68,7 @@ const PasteOrUpload = (props: PasteOrUploadProps) => {
         <div className={styles.fields}>
           <div className={styles.inputWrapper}>
             <Input
-              value={value || ''}
+              value={props.value || ''}
               onChange={onChangeHandler}
               className={styles.textInput}
               placeholder={props.placeholder}

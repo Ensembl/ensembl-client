@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import CheckboxWithSelects from 'src/content/app/custom-download/components/checkbox-with-selects/CheckboxWithSelects';
 import CheckboxWithRadios from 'src/content/app/custom-download/components/checkbox-with-radios/CheckboxWithRadios';
 import CheckboxWithTextfields from 'src/content/app/custom-download/components/checkbox-with-textfields/CheckboxWithTextfields';
@@ -16,6 +16,8 @@ import {
   AccordionItemButton
 } from 'src/shared/accordion';
 
+import set from 'lodash/set';
+
 import styles from './ContentBuilder.scss';
 
 import get from 'lodash/get';
@@ -32,13 +34,9 @@ let path: Path = [];
 type ContentBuilderProps = {
   data: AttributeWithContent;
   selectedData: JSONValue;
-  onChange: (type: string, path: Path, payload: PrimitiveOrArrayValue) => void;
+  onChange: (selectedData: JSONValue) => void;
   contentState: JSONValue;
-  onContentStateChange: (
-    type: string,
-    path: Path,
-    payload: PrimitiveOrArrayValue
-  ) => void;
+  onContentStateChange: (updatedContentState: JSONValue) => void;
   path?: Path;
   contentProps?: {
     [key: string]: JSONValue;
@@ -46,20 +44,28 @@ type ContentBuilderProps = {
 };
 
 const ContentBuilder = (props: ContentBuilderProps) => {
+  if (!props.data) {
+    return null;
+  }
+
   const onChangeHandler = (
-    type: string,
-    path: Path,
+    path: (string | number)[],
     payload: PrimitiveOrArrayValue
   ) => {
-    props.onChange(type, path, payload);
+    const newSelectedData = { ...props.selectedData };
+    set(newSelectedData, path, payload);
+
+    props.onChange(newSelectedData);
   };
 
   const onContentStateChangeHandler = (
-    type: string,
-    path: Path,
+    path: (string | number)[],
     payload: PrimitiveOrArrayValue
   ) => {
-    props.onContentStateChange(type, path, payload);
+    const updatedContentState = { ...props.contentState };
+    set(updatedContentState, path, payload);
+
+    props.onContentStateChange(updatedContentState);
   };
 
   const buildCheckboxWithSelect = (entry: AttributeWithOptions, path: Path) => {
@@ -73,7 +79,7 @@ const ContentBuilder = (props: ContentBuilderProps) => {
           label={entry.label}
           disabled={entry.disabled}
           onChange={(selectedOptions: string[]) =>
-            onChangeHandler(entry.type, currentPath, selectedOptions)
+            onChangeHandler(currentPath, selectedOptions)
           }
           selectedOptions={selectedOptions}
           options={(entry.options as Option[]) || []}
@@ -88,12 +94,12 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     const selectedOption: string = get(props.selectedData, currentPath, '');
 
     return (
-      <div className={styles.checkboxWitRadiosWrapper}>
+      <div className={styles.checkboxWithRadiosWrapper}>
         <CheckboxWithRadios
           label={entry.label}
           disabled={entry.disabled}
           onChange={(selectedOption: string | number | boolean) =>
-            onChangeHandler(entry.type, currentPath, selectedOption)
+            onChangeHandler(currentPath, selectedOption)
           }
           selectedOption={selectedOption}
           options={entry.options as RadioOptions}
@@ -107,18 +113,23 @@ const ContentBuilder = (props: ContentBuilderProps) => {
 
     const selectedOptions = get(props.selectedData, currentPath, []);
 
-    const gridOptions = [...entry.options];
+    const newSelectedData = { ...props.selectedData };
+    const gridOptions = [...entry.options] as CheckboxGridOption[];
+    let shouldUpdateSelectedData = false;
 
-    const gridClone: CheckboxGridOption[] = [];
-
-    Object.values(gridOptions as CheckboxGridOption[]).map((option) => {
-      const optionClone = { ...option };
-      if (selectedOptions[option.id] !== undefined) {
-        optionClone.isChecked = selectedOptions[option.id];
-      } else if (optionClone.isChecked) {
-        onChangeHandler(entry.type, [...currentPath, optionClone.id], true);
+    gridOptions.forEach((option) => {
+      if (option.isChecked && selectedOptions[option.id] === undefined) {
+        set(newSelectedData, [...currentPath, option.id], true);
+        shouldUpdateSelectedData = true;
       }
-      gridClone.push(optionClone);
+    });
+    if (shouldUpdateSelectedData) props.onChange(newSelectedData);
+
+    const gridClone = gridOptions.map((option) => {
+      return {
+        ...option,
+        isChecked: Boolean(selectedOptions[option.id])
+      };
     });
 
     const additionalProps = props.contentProps
@@ -128,7 +139,7 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     return (
       <CheckboxGrid
         onChange={(status: boolean, id: string) =>
-          onChangeHandler(entry.type, [...currentPath, id], status)
+          onChangeHandler([...currentPath, id], status)
         }
         options={gridClone}
         label={entry.label}
@@ -148,8 +159,8 @@ const ContentBuilder = (props: ContentBuilderProps) => {
         <AccordionItemPanel>
           <ContentBuilder
             data={entry}
-            onChange={onChangeHandler}
-            onContentStateChange={onContentStateChangeHandler}
+            onChange={props.onChange}
+            onContentStateChange={props.onContentStateChange}
             selectedData={props.selectedData}
             contentState={props.contentState}
             path={path}
@@ -167,7 +178,7 @@ const ContentBuilder = (props: ContentBuilderProps) => {
       <Accordion
         allowMultipleExpanded={true}
         onChange={(expandedPanels) =>
-          onContentStateChangeHandler(entry.type, currentPath, expandedPanels)
+          onContentStateChangeHandler(currentPath, expandedPanels)
         }
         className={styles.accordion}
         preExpanded={preExpandedPanels}
@@ -193,14 +204,12 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     const values: string[] = get(props.selectedData, currentPath, '');
 
     return (
-      <div className={styles.checkboxWitRadiosWrapper}>
+      <div className={styles.checkboxWithRadiosWrapper}>
         <CheckboxWithTextfields
           label={entry.label}
           disabled={entry.disabled}
           allowMultiple={true}
-          onChange={(values: string[]) =>
-            onChangeHandler(entry.type, currentPath, values)
-          }
+          onChange={(values: string[]) => onChangeHandler(currentPath, values)}
           values={values || []}
         />
       </div>

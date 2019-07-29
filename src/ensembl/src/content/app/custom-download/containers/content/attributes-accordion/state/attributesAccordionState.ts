@@ -1,6 +1,4 @@
-import Attributes, {
-  AttributeWithOptions
-} from 'src/content/app/custom-download/types/Attributes';
+import { AttributeWithOptions } from 'src/content/app/custom-download/types/Attributes';
 import JSONValue from 'src/shared/types/JSON';
 import { CheckboxGridOption } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
@@ -12,13 +10,13 @@ export type OrthologueState = {
   applyToAllSpecies: boolean;
 };
 
+export type AttributeContentState = {
+  [key: string]: AttributeWithOptions | { [key: string]: AttributeWithOptions };
+};
+
 export type AttributesAccordionState = Readonly<{
   expandedPanel: string;
-  content: {
-    [key: string]:
-      | AttributeWithOptions
-      | { [key: string]: AttributeWithOptions };
-  };
+  content: AttributeContentState;
   selectedAttributes: JSONValue;
   contentState: JSONValue;
   orthologue: OrthologueState;

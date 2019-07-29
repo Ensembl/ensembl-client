@@ -14,9 +14,7 @@ import {
   updateContentState
 } from '../../state/filterAccordionActions';
 
-import set from 'lodash/set';
-import unset from 'lodash/unset';
-import JSONValue, { PrimitiveOrArrayValue } from 'src/shared/types/JSON';
+import JSONValue from 'src/shared/types/JSON';
 import allFilters from 'src/content/app/custom-download/sample-data/filters';
 import { AttributeWithContent } from 'src/content/app/custom-download/types/Attributes';
 
@@ -25,38 +23,14 @@ type Props = StateProps & DispatchProps;
 const Proteins = (props: Props) => {
   useEffect(() => {}, [props.selectedFilters]);
 
-  const filtersOnChange = (
-    type: string,
-    path: (string | number)[],
-    payload: PrimitiveOrArrayValue
-  ) => {
-    const updatedFilters = { ...props.selectedFilters };
-    payload ? set(updatedFilters, path, payload) : unset(updatedFilters, path);
-
-    props.updateSelectedFilters(updatedFilters);
-  };
-
-  const onContentStateChangeHandler = (
-    type: string,
-    path: (string | number)[],
-    payload: PrimitiveOrArrayValue
-  ) => {
-    const updatedContentState = { ...props.contentState };
-    payload
-      ? set(updatedContentState, path, payload)
-      : unset(updatedContentState, path);
-
-    props.updateContentState(updatedContentState);
-  };
-
   const content = allFilters['proteins'] as AttributeWithContent;
   return (
     <div>
       <ContentBuilder
         data={content}
-        onChange={filtersOnChange}
+        onChange={props.updateSelectedFilters}
         contentState={props.contentState}
-        onContentStateChange={onContentStateChangeHandler}
+        onContentStateChange={props.updateContentState}
         selectedData={props.selectedFilters}
       />
     </div>
@@ -65,7 +39,7 @@ const Proteins = (props: Props) => {
 
 type DispatchProps = {
   updateSelectedFilters: (filters: JSONValue) => void;
-  updateContentState: (updateContentState: JSONValue) => void;
+  updateContentState: (contentState: JSONValue) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {

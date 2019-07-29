@@ -172,7 +172,9 @@ const Orthologue = (props: Props) => {
 };
 
 type DispatchProps = {
-  setOrthologueAttributes: (setOrthologueAttributes: Attributes) => void;
+  setOrthologueAttributes: (
+    setOrthologueAttributes: AttributeWithOptions
+  ) => void;
   setOrthologueSearchTerm: (setOrthologueSearchTerm: string) => void;
   setOrthologueSpecies: (setOrthologueSpecies: CheckboxGridOption[]) => void;
   fetchOrthologueSpecies: (

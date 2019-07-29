@@ -2,9 +2,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
-import { AttributeWithContent } from 'src/content/app/custom-download/types/Attributes';
+import Attributes, {
+  AttributeWithContent
+} from 'src/content/app/custom-download/types/Attributes';
 
 import {
+  getAttributes,
   getSelectedAttributes,
   getContentState
 } from 'src/content/app/custom-download/containers/content/attributes-accordion/state/attributesAccordionSelector';
@@ -16,10 +19,7 @@ import {
 
 import ContentBuilder from 'src/content/app/custom-download/components/content-builder/ContentBuilder';
 
-import set from 'lodash/set';
-
-import allAttributes from 'src/content/app/custom-download/sample-data/attributes';
-import JSONValue, { PrimitiveOrArrayValue } from 'src/shared/types/JSON';
+import JSONValue from 'src/shared/types/JSON';
 
 type ownProps = {
   hideUnchecked?: boolean;
@@ -30,34 +30,12 @@ type ownProps = {
 type Props = ownProps & StateProps & DispatchProps;
 
 const AttributesAccordionSection = (props: Props) => {
-  const onChangeHandler = (
-    type: string,
-    path: (string | number)[],
-    payload: PrimitiveOrArrayValue
-  ) => {
-    const updatedAttributes = { ...props.selectedAttributes };
-    set(updatedAttributes, path, payload);
-
-    props.updateSelectedAttributes(updatedAttributes);
-  };
-
-  const onContentStateChangeHandler = (
-    type: string,
-    path: (string | number)[],
-    payload: PrimitiveOrArrayValue
-  ) => {
-    const updatedContentState = { ...props.contentState };
-    set(updatedContentState, path, payload);
-
-    props.updateContentState(updatedContentState);
-  };
-
   return (
     <ContentBuilder
-      data={allAttributes[props.section] as AttributeWithContent}
-      onChange={onChangeHandler}
+      data={props.attributes[props.section] as AttributeWithContent}
+      onChange={props.updateSelectedAttributes}
       contentState={props.contentState}
-      onContentStateChange={onContentStateChangeHandler}
+      onContentStateChange={props.updateContentState}
       selectedData={props.selectedAttributes}
       contentProps={{ checkbox_grid: { hideUnchecked: props.hideUnchecked } }}
     />
@@ -77,11 +55,13 @@ const mapDispatchToProps: DispatchProps = {
 type StateProps = {
   selectedAttributes: JSONValue;
   contentState: JSONValue;
+  attributes: Attributes;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
   selectedAttributes: getSelectedAttributes(state),
-  contentState: getContentState(state)
+  contentState: getContentState(state),
+  attributes: getAttributes(state)
 });
 
 export default connect(

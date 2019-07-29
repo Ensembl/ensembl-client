@@ -1,6 +1,8 @@
 import { RootState } from 'src/store';
 
-import Attributes, { AttributeWithOptions } from '../../../../types/Attributes';
+import Attributes, {
+  AttributeWithOptions
+} from 'src/content/app/custom-download/types/Attributes';
 import JSONValue from 'src/shared/types/JSON';
 import { CheckboxGridOption } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 
