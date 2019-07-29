@@ -27,10 +27,8 @@ export const fetchEnsObject: ActionCreator<
 
     // FIXME: the if-branch is temporary, until backend learns to respond with region object data
     if (!isRegionObject(ensObjectId)) {
-      const trackUrl = `/api/ensembl_object/track_list?object_id=${ensObjectId}`;
+      const trackUrl = `/api/object/track_list?object_id=${ensObjectId}`;
       response.track = await apiService.fetch(trackUrl);
-    } else {
-      response.label = 'foo';
     }
 
     dispatch(
