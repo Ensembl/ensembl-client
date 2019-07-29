@@ -29,11 +29,13 @@ export const fetchEnsObject: ActionCreator<
     if (!isRegionObject(ensObjectId)) {
       const trackUrl = `/api/ensembl_object/track_list?object_id=${ensObjectId}`;
       response.track = await apiService.fetch(trackUrl);
+    } else {
+      response.label = 'foo';
     }
 
     dispatch(
       fetchEnsObjectAsyncActions.success({
-        [response.ensembl_object_id]: response
+        [response.object_id]: response
       })
     );
   } catch (error) {

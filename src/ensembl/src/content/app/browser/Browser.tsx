@@ -307,16 +307,17 @@ const ExampleObjectLinks = (props: BrowserProps) => {
   if (!activeGenomeId) {
     return null;
   }
+  console.log('ExampleObjectLinks', props);
   const links = props.exampleEnsObjects.map((exampleObject: EnsObject) => {
     const location = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
     const path = urlFor.browser({
       genomeId: activeGenomeId,
-      focus: exampleObject.ensembl_object_id,
+      focus: exampleObject.object_id,
       location
     });
 
     return (
-      <div key={exampleObject.ensembl_object_id} className={styles.exampleLink}>
+      <div key={exampleObject.object_id} className={styles.exampleLink}>
         <Link to={path}>
           <span className={styles.objectType}>
             {upperFirst(exampleObject.object_type)}

@@ -71,12 +71,12 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
           const location = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
           const path = urlFor.browser({
             genomeId: species.genome_id,
-            focus: exampleObject.ensembl_object_id,
+            focus: exampleObject.object_id,
             location
           });
 
           return (
-            <dd key={exampleObject.ensembl_object_id}>
+            <dd key={exampleObject.object_id}>
               <Link to={path}>
                 {`${species.common_name} ${upperFirst(
                   exampleObject.object_type

@@ -49,12 +49,12 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
       const locationStr = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
       const path = urlFor.browser({
         genomeId: props.activeGenomeId,
-        focus: exampleObject.ensembl_object_id,
+        focus: exampleObject.object_id,
         location: locationStr
       });
 
       return (
-        <dd key={exampleObject.ensembl_object_id}>
+        <dd key={exampleObject.object_id}>
           <Link to={path}>
             {upperFirst(exampleObject.object_type)}:{' '}
             {getExampleObjLabel(exampleObject)}

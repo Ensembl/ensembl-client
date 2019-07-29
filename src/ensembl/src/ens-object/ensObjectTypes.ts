@@ -7,7 +7,7 @@ export type EnsObjectLocation = {
 export type EnsObject = {
   bio_type: string | null;
   label: string;
-  ensembl_object_id: string;
+  object_id: string;
   genome_id: string;
   location: EnsObjectLocation;
   object_type: string;
