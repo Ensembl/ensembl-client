@@ -189,11 +189,6 @@ export const BrowserInfo = ({ ensObject }: BrowserInfoProps) => {
             <label>Stable ID</label>
             <span className={styles.value}>{ensObject.stable_id}</span>
           </dd>
-          <dd className="show-for-large">
-            <label>Spliced mRNA length</label>
-            <span className={styles.value}>{ensObject.spliced_length}</span>
-            <label>bp</label>
-          </dd>
           <dd className={`show-for-large ${styles.nonLabelValue}`}>
             {ensObject.bio_type}
           </dd>

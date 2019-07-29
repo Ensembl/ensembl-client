@@ -11,7 +11,6 @@ export type EnsObject = {
   genome_id: string;
   location: EnsObjectLocation;
   object_type: string;
-  spliced_length: number | null;
   stable_id: string | null;
   strand: string | null;
   description: string | null;
