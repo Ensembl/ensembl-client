@@ -59,7 +59,7 @@ const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
     });
 
   return (
-    <dl className={`${styles.browserTabs} show-for-large`}>
+    <dl className={`${styles.browserTabs}`}>
       {Object.values(TrackType).map((value: TrackType) => (
         <dd
           className={getBrowserTabClassNames(value)}
