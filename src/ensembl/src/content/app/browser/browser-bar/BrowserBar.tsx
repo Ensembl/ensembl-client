@@ -127,15 +127,11 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   };
 
   const shouldShowBrowserTabs = () => {
-    if (
+    return (
       props.activeGenomeId &&
       (props.isTrackPanelOpened ||
         props.breakpointWidth === BreakpointWidth.LARGE)
-    ) {
-      return true;
-    } else {
-      return false;
-    }
+    );
   };
 
   const className = classNames(styles.browserInfo, {

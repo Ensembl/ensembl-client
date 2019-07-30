@@ -38,17 +38,13 @@ const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
   };
 
   const isBrowserTabActive = (trackType: TrackType) => {
-    if (
+    return (
       props.isTrackPanelOpened &&
       props.ensObject.genome_id &&
       props.selectedBrowserTab === trackType &&
       !props.isDrawerOpened &&
       !props.isTrackPanelModalOpened
-    ) {
-      return true;
-    } else {
-      return false;
-    }
+    );
   };
 
   const getBrowserTabClassNames = (trackType: TrackType) =>
