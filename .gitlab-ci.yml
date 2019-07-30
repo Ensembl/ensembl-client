@@ -23,6 +23,7 @@ Test:
   - npm ci
 
   script:
+  - npm run check-types
   - npm run test
 
   except:
