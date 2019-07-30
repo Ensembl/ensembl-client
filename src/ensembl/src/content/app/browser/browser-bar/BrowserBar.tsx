@@ -62,7 +62,7 @@ type OwnProps = {
   dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
 };
 
-type BrowserBarProps = StateProps & DispatchProps & OwnProps;
+export type BrowserBarProps = StateProps & DispatchProps & OwnProps;
 
 type BrowserInfoProps = {
   ensObject: EnsObject;
