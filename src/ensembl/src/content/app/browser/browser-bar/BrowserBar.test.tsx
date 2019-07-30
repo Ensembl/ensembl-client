@@ -8,13 +8,14 @@ import {
   BrowserBarProps
 } from './BrowserBar';
 
+import { BreakpointWidth } from 'src/global/globalConfig';
+
 import BrowserReset from 'src/content/app/browser/browser-reset/BrowserReset';
 import BrowserGenomeSelector from 'src/content/app/browser/browser-genome-selector/BrowserGenomeSelector';
 import BrowserTabs from 'src/content/app/browser/browser-tabs/BrowserTabs';
 
 import { ChrLocation } from '../browserState';
 import { TrackType } from '../track-panel/trackPanelConfig';
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 import { createEnsObject } from 'tests/fixtures/ens-object';
 
@@ -38,6 +39,7 @@ describe('<BrowserBar />', () => {
 
   const defaultProps = {
     activeGenomeId: faker.lorem.word(),
+    breakpointWidth: BreakpointWidth.LARGE,
     browserActivated: true,
     browserNavOpened: false,
     chrLocation: ['13', 32275301, 32433493] as ChrLocation,
@@ -58,7 +60,8 @@ describe('<BrowserBar />', () => {
     isTrackPanelModalOpened: false,
     isTrackPanelOpened: false,
     closeDrawer: jest.fn(),
-    selectBrowserTabAndSave: jest.fn()
+    selectBrowserTabAndSave: jest.fn(),
+    toggleTrackPanel: jest.fn()
   };
 
   const renderBrowserBar = (props?: Partial<BrowserBarProps>) => (

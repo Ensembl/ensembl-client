@@ -32,7 +32,7 @@ import {
 } from '../track-panel/trackPanelActions';
 import { closeDrawer } from '../drawer/drawerActions';
 import { RootState } from 'src/store';
-import { EnsObject, EnsObjectLocation } from 'src/ens-object/ensObjectTypes';
+import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 import BrowserReset from '../browser-reset/BrowserReset';
 import BrowserGenomeSelector from '../browser-genome-selector/BrowserGenomeSelector';
