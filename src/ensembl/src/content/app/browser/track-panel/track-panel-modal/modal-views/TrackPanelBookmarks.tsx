@@ -11,7 +11,7 @@ import { getGenomeInfo } from 'src/genome/genomeSelectors';
 import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
 
 import upperFirst from 'lodash/upperFirst';
 
@@ -36,11 +36,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
     if (exampleObject.object_type === 'gene') {
       return exampleObject.label;
     } else {
-      const { chromosome, start, end } = exampleObject.location;
-
-      return `${chromosome}:${getCommaSeparatedNumber(
-        start
-      )}:${getCommaSeparatedNumber(end)}`;
+      return getFormattedLocation(exampleObject.location);
     }
   };
 
@@ -49,12 +45,12 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
       const locationStr = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
       const path = urlFor.browser({
         genomeId: props.activeGenomeId,
-        focus: exampleObject.ensembl_object_id,
+        focus: exampleObject.object_id,
         location: locationStr
       });
 
       return (
-        <dd key={exampleObject.ensembl_object_id}>
+        <dd key={exampleObject.object_id}>
           <Link to={path}>
             {upperFirst(exampleObject.object_type)}:{' '}
             {getExampleObjLabel(exampleObject)}

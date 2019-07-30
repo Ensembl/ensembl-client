@@ -5,6 +5,9 @@ import classNames from 'classnames';
 import { browserInfoConfig, BrowserInfoItem } from '../browserConfig';
 import { TrackType } from '../track-panel/trackPanelConfig';
 
+import { getDisplayStableId } from 'src/ens-object/ensObjectHelpers';
+import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
+
 import { toggleBrowserNav, toggleGenomeSelector } from '../browserActions';
 import { ChrLocation } from '../browserState';
 import {
@@ -29,8 +32,7 @@ import {
 } from '../track-panel/trackPanelActions';
 import { closeDrawer } from '../drawer/drawerActions';
 import { RootState } from 'src/store';
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
-import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+import { EnsObject, EnsObjectLocation } from 'src/ens-object/ensObjectTypes';
 
 import BrowserReset from '../browser-reset/BrowserReset';
 import BrowserGenomeSelector from '../browser-genome-selector/BrowserGenomeSelector';
@@ -69,7 +71,7 @@ type OwnProps = {
   dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
 };
 
-type BrowserBarProps = StateProps & DispatchProps & OwnProps;
+export type BrowserBarProps = StateProps & DispatchProps & OwnProps;
 
 type BrowserInfoProps = {
   ensObject: EnsObject;
@@ -201,18 +203,18 @@ export const BrowserInfo = ({ ensObject }: BrowserInfoProps) => {
           </dd>
           <dd>
             <label>Stable ID</label>
-            <span className={styles.value}>{ensObject.stable_id}</span>
-          </dd>
-          <dd className="show-for-large">
-            <label>Spliced mRNA length</label>
-            <span className={styles.value}>{ensObject.spliced_length}</span>
-            <label>bp</label>
+            <span className={styles.value}>
+              {getDisplayStableId(ensObject)}
+            </span>
           </dd>
           <dd className={`show-for-large ${styles.nonLabelValue}`}>
             {ensObject.bio_type}
           </dd>
           <dd className={`show-for-large ${styles.nonLabelValue}`}>
             {ensObject.strand} strand
+          </dd>
+          <dd className={`show-for-large ${styles.nonLabelValue}`}>
+            {getFormattedLocation(ensObject.location)}
           </dd>
         </>
       )}
@@ -222,9 +224,7 @@ export const BrowserInfo = ({ ensObject }: BrowserInfoProps) => {
           <dd className={styles.ensObjectLabel}>
             <label>Region: </label>
             <span className={styles.value}>
-              {`${ensObject.location.chromosome}:${getCommaSeparatedNumber(
-                ensObject.location.start
-              )}:${getCommaSeparatedNumber(ensObject.location.end)}`}
+              {getFormattedLocation(ensObject.location)}
             </span>
           </dd>
         </>

@@ -38,6 +38,7 @@
     "./src/**/*",
     "./static/**/*",
     "stories/**/*",
-    "./typings"
+    "./typings",
+    "./tests/**/*"
   ]
 }

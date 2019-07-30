@@ -1,14 +1,22 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import faker from 'faker';
-import { BrowserBar, BrowserInfo, BrowserNavigatorButton } from './BrowserBar';
-
-import { ChrLocation } from '../browserState';
-import { TrackType } from '../track-panel/trackPanelConfig';
+import {
+  BrowserBar,
+  BrowserInfo,
+  BrowserNavigatorButton,
+  BrowserBarProps
+} from './BrowserBar';
 
 import BrowserReset from 'src/content/app/browser/browser-reset/BrowserReset';
 import BrowserGenomeSelector from 'src/content/app/browser/browser-genome-selector/BrowserGenomeSelector';
 import BrowserTabs from 'src/content/app/browser/browser-tabs/BrowserTabs';
+
+import { ChrLocation } from '../browserState';
+import { TrackType } from '../track-panel/trackPanelConfig';
+import { EnsObject } from 'src/ens-object/ensObjectTypes';
+
+import { createEnsObject } from 'tests/fixtures/ens-object';
 
 jest.mock('src/content/app/browser/browser-reset/BrowserReset', () => () => (
   <div>BrowserReset</div>
@@ -28,26 +36,6 @@ describe('<BrowserBar />', () => {
   const toggleDrawer: any = jest.fn();
   const toggleGenomeSelector: any = jest.fn();
 
-  const objectInfo = {
-    assembly: {
-      name: 'GRCh38',
-      patch: 'p12'
-    },
-    associated_object: {
-      obj_type: 'transcript',
-      selected_info: 'MANE Select',
-      spliced_length: 84793,
-      stable_id: 'ENST00000380152.7'
-    },
-    bio_type: 'Protein coding',
-    obj_symbol: 'BRCA2',
-    obj_type: 'gene',
-    spliced_length: 84793,
-    stable_id: 'ENSG00000139618',
-    strand: 'forward',
-    genome_id: 'homo_sapiens_grch38'
-  };
-
   const defaultProps = {
     activeGenomeId: faker.lorem.word(),
     browserActivated: true,
@@ -57,7 +45,7 @@ describe('<BrowserBar />', () => {
     defaultChrLocation: ['13', 32271473, 32437359] as ChrLocation,
     drawerOpened: false,
     genomeSelectorActive: false,
-    ensObject: objectInfo,
+    ensObject: createEnsObject(),
     selectedBrowserTab: TrackType.GENOMIC,
     trackPanelModalOpened: false,
     trackPanelOpened: false,
@@ -65,10 +53,15 @@ describe('<BrowserBar />', () => {
     selectBrowserTab,
     toggleBrowserNav,
     toggleDrawer,
-    toggleGenomeSelector
+    toggleGenomeSelector,
+    isDrawerOpened: false,
+    isTrackPanelModalOpened: false,
+    isTrackPanelOpened: false,
+    closeDrawer: jest.fn(),
+    selectBrowserTabAndSave: jest.fn()
   };
 
-  const renderBrowserBar = (props?: any) => (
+  const renderBrowserBar = (props?: Partial<BrowserBarProps>) => (
     <BrowserBar {...defaultProps} {...props} />
   );
 

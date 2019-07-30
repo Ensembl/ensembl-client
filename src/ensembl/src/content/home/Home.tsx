@@ -14,7 +14,7 @@ import { getCommittedSpecies } from '../app/species-selector/state/speciesSelect
 import { CommittedItem } from '../app/species-selector/types/species-search';
 
 import { fetchGenomeInfo } from 'src/genome/genomeActions';
-import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
 import { GenomeInfoData } from 'src/genome/genomeTypes';
 
 import styles from './Home.scss';
@@ -56,11 +56,7 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
     if (exampleObject.object_type === 'gene') {
       return exampleObject.label;
     } else {
-      const { chromosome, start, end } = exampleObject.location;
-
-      return `${chromosome}:${getCommaSeparatedNumber(
-        start
-      )}:${getCommaSeparatedNumber(end)}`;
+      return getFormattedLocation(exampleObject.location);
     }
   };
 
@@ -71,12 +67,12 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
           const location = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
           const path = urlFor.browser({
             genomeId: species.genome_id,
-            focus: exampleObject.ensembl_object_id,
+            focus: exampleObject.object_id,
             location
           });
 
           return (
-            <dd key={exampleObject.ensembl_object_id}>
+            <dd key={exampleObject.object_id}>
               <Link to={path}>
                 {`${species.common_name} ${upperFirst(
                   exampleObject.object_type
