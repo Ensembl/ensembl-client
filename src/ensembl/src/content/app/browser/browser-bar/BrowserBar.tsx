@@ -126,13 +126,10 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
     props.toggleBrowserNav();
   };
 
-  const shouldShowBrowserTabs = () => {
-    return (
-      props.activeGenomeId &&
-      (props.isTrackPanelOpened ||
-        props.breakpointWidth === BreakpointWidth.LARGE)
-    );
-  };
+  const shouldShowBrowserTabs =
+    props.activeGenomeId &&
+    (props.isTrackPanelOpened ||
+      props.breakpointWidth === BreakpointWidth.LARGE);
 
   const className = classNames(styles.browserInfo, {
     [styles.browserInfoExpanded]: !props.isTrackPanelOpened,
@@ -175,7 +172,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
           )}
         </dl>
       </div>
-      {shouldShowBrowserTabs() && (
+      {shouldShowBrowserTabs && (
         <BrowserTabs
           closeDrawer={props.closeDrawer}
           ensObject={props.ensObject}

@@ -37,22 +37,20 @@ const BrowserTabs: FunctionComponent<BrowserTabsProps> = (
     props.selectBrowserTabAndSave(value);
   };
 
-  const isBrowserTabActive = (trackType: TrackType) => {
-    return (
+  const getBrowserTabClassNames = (trackType: TrackType) => {
+    const isBrowserTabActive =
       props.isTrackPanelOpened &&
       props.ensObject.genome_id &&
       props.selectedBrowserTab === trackType &&
       !props.isDrawerOpened &&
-      !props.isTrackPanelModalOpened
-    );
-  };
+      !props.isTrackPanelModalOpened;
 
-  const getBrowserTabClassNames = (trackType: TrackType) =>
-    classNames(styles.browserTab, {
-      [styles.browserTabActive]: isBrowserTabActive(trackType),
-      [styles.browserTabArrow]: isBrowserTabActive(trackType),
+    return classNames(styles.browserTab, {
+      [styles.browserTabActive]: isBrowserTabActive,
+      [styles.browserTabArrow]: isBrowserTabActive,
       [styles.browserTabDisabled]: !props.ensObject.genome_id
     });
+  };
 
   return (
     <dl className={`${styles.browserTabs}`}>
