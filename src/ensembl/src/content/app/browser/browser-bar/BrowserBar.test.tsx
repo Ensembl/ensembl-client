@@ -140,8 +140,15 @@ describe('<BrowserBar />', () => {
       expect(renderedBrowserBar.find(BrowserTabs).length).toBe(1);
     });
 
-    test('hides BrowserTabs if TrackPanel is closed', () => {
+    test('shows BrowserTabs on a wide display even if TrackPanel is closed', () => {
       const renderedBrowserBar = mount(renderBrowserBar());
+      expect(renderedBrowserBar.find(BrowserTabs).length).toBe(1);
+    });
+
+    test('hides BrowserTabs on small if TrackPanel is closed', () => {
+      const renderedBrowserBar = mount(
+        renderBrowserBar({ breakpointWidth: BreakpointWidth.MEDIUM })
+      );
       expect(renderedBrowserBar.find(BrowserTabs).length).toBe(0);
     });
   });
