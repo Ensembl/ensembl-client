@@ -27,6 +27,7 @@ import { selectBrowserTabAndSave } from '../track-panel/trackPanelActions';
 import { closeDrawer, toggleDrawer } from '../drawer/drawerActions';
 import { RootState } from 'src/store';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 
 import BrowserReset from '../browser-reset/BrowserReset';
 import BrowserGenomeSelector from '../browser-genome-selector/BrowserGenomeSelector';
@@ -207,7 +208,9 @@ export const BrowserInfo = ({ ensObject }: BrowserInfoProps) => {
           <dd className={styles.ensObjectLabel}>
             <label>Region: </label>
             <span className={styles.value}>
-              {`${ensObject.location.chromosome}:${ensObject.location.start}:${ensObject.location.end}`}
+              {`${ensObject.location.chromosome}:${getCommaSeparatedNumber(
+                ensObject.location.start
+              )}:${getCommaSeparatedNumber(ensObject.location.end)}`}
             </span>
           </dd>
         </>

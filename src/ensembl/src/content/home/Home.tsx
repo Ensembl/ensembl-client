@@ -1,6 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import upperFirst from 'lodash/upperFirst';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { RootState } from 'src/store';
@@ -13,9 +14,9 @@ import { getCommittedSpecies } from '../app/species-selector/state/speciesSelect
 import { CommittedItem } from '../app/species-selector/types/species-search';
 
 import { fetchGenomeInfo } from 'src/genome/genomeActions';
-import upperFirst from 'lodash/upperFirst';
-
+import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 import { GenomeInfoData } from 'src/genome/genomeTypes';
+
 import styles from './Home.scss';
 
 type StateProps = {
@@ -51,6 +52,18 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
     }
   }, [props.exampleEnsObjects]);
 
+  const getExampleObjLabel = (exampleObject: EnsObject) => {
+    if (exampleObject.object_type === 'gene') {
+      return exampleObject.label;
+    } else {
+      const { chromosome, start, end } = exampleObject.location;
+
+      return `${chromosome}:${getCommaSeparatedNumber(
+        start
+      )}:${getCommaSeparatedNumber(end)}`;
+    }
+  };
+
   const getPreviouslyViewed = () => {
     return props.activeSpecies.map((species) => {
       if (props.exampleEnsObjects.length) {
@@ -67,7 +80,7 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
               <Link to={path}>
                 {`${species.common_name} ${upperFirst(
                   exampleObject.object_type
-                )}: ${exampleObject.label}`}
+                )}: ${getExampleObjLabel(exampleObject)}`}
               </Link>
             </dd>
           );

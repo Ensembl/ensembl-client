@@ -8,12 +8,13 @@ import React, {
 import classNames from 'classnames';
 
 import { ChrLocation } from '../browserState';
+import { getChrLocationStr } from '../browserHelper';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 
 import applyIcon from 'static/img/shared/apply.svg';
 import clearIcon from 'static/img/shared/clear.svg';
 
 import styles from './BrowserGenomeSelector.scss';
-import { getChrLocationStr } from '../browserHelper';
 
 type BrowserGenomeSelectorProps = {
   activeGenomeId: string | null;
@@ -117,9 +118,9 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
           <div className={styles.chrCode}>{chrCode}</div>
           {displayChrRegion ? (
             <div className={styles.chrRegion}>
-              <span>{chrStart}</span>
+              <span>{getCommaSeparatedNumber(chrStart)}</span>
               <span className={styles.chrSeparator}> - </span>
-              <span>{chrEnd}</span>
+              <span>{getCommaSeparatedNumber(chrEnd)}</span>
             </div>
           ) : null}
         </div>
