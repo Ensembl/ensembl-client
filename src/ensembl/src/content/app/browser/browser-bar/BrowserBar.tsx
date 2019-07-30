@@ -5,6 +5,8 @@ import classNames from 'classnames';
 import { browserInfoConfig, BrowserInfoItem } from '../browserConfig';
 import { TrackType } from '../track-panel/trackPanelConfig';
 
+import { getDisplayStableId } from 'src/ens-object/ensObjectHelpers';
+
 import { toggleBrowserNav, toggleGenomeSelector } from '../browserActions';
 import { ChrLocation } from '../browserState';
 import {
@@ -187,7 +189,9 @@ export const BrowserInfo = ({ ensObject }: BrowserInfoProps) => {
           </dd>
           <dd>
             <label>Stable ID</label>
-            <span className={styles.value}>{ensObject.stable_id}</span>
+            <span className={styles.value}>
+              {getDisplayStableId(ensObject)}
+            </span>
           </dd>
           <dd className={`show-for-large ${styles.nonLabelValue}`}>
             {ensObject.bio_type}

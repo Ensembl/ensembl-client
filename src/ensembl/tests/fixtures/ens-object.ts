@@ -10,6 +10,7 @@ export const createEnsObject = (): EnsObject => ({
   location: createLocation(),
   object_type: 'gene',
   stable_id: faker.lorem.word(),
+  versioned_stable_id: faker.lorem.word(),
   strand: 'forward',
   description: faker.lorem.words(),
   track: createTrackInfo()

@@ -14,6 +14,7 @@ export type EnsObject = {
   stable_id: string | null;
   strand: string | null;
   description: string | null;
+  versioned_stable_id: string | null;
   track: EnsObjectTrack | null;
 };
 
