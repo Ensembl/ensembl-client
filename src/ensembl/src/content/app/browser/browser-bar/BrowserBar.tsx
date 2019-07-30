@@ -23,8 +23,11 @@ import {
   getIsTrackPanelModalOpened,
   getIsTrackPanelOpened
 } from '../track-panel/trackPanelSelectors';
-import { selectBrowserTabAndSave } from '../track-panel/trackPanelActions';
-import { closeDrawer, toggleDrawer } from '../drawer/drawerActions';
+import {
+  selectBrowserTabAndSave,
+  toggleTrackPanel
+} from '../track-panel/trackPanelActions';
+import { closeDrawer } from '../drawer/drawerActions';
 import { RootState } from 'src/store';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
@@ -33,10 +36,14 @@ import BrowserReset from '../browser-reset/BrowserReset';
 import BrowserGenomeSelector from '../browser-genome-selector/BrowserGenomeSelector';
 import BrowserTabs from '../browser-tabs/BrowserTabs';
 
+import { getBreakpointWidth } from 'src/global/globalSelectors';
+import { BreakpointWidth } from 'src/global/globalConfig';
+
 import styles from './BrowserBar.scss';
 
 type StateProps = {
   activeGenomeId: string | null;
+  breakpointWidth: BreakpointWidth;
   browserActivated: boolean;
   browserNavOpened: boolean;
   chrLocation: ChrLocation | null;
@@ -54,8 +61,8 @@ type DispatchProps = {
   closeDrawer: () => void;
   selectBrowserTabAndSave: (selectedBrowserTab: TrackType) => void;
   toggleBrowserNav: () => void;
-  toggleDrawer: (isDrawerOpened: boolean) => void;
   toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
+  toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
 };
 
 type OwnProps = {
@@ -120,6 +127,11 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
     props.toggleBrowserNav();
   };
 
+  const shouldShowBrowserTabs =
+    props.activeGenomeId &&
+    (props.isTrackPanelOpened ||
+      props.breakpointWidth === BreakpointWidth.LARGE);
+
   const className = classNames(styles.browserInfo, {
     [styles.browserInfoExpanded]: !props.isTrackPanelOpened,
     [styles.browserInfoGreyed]: isDrawerOpened
@@ -161,7 +173,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
           )}
         </dl>
       </div>
-      {props.isTrackPanelOpened && props.activeGenomeId && (
+      {shouldShowBrowserTabs && (
         <BrowserTabs
           closeDrawer={props.closeDrawer}
           ensObject={props.ensObject}
@@ -169,7 +181,9 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
           genomeSelectorActive={props.genomeSelectorActive}
           selectBrowserTabAndSave={props.selectBrowserTabAndSave}
           selectedBrowserTab={props.selectedBrowserTab}
+          toggleTrackPanel={props.toggleTrackPanel}
           isTrackPanelModalOpened={props.isTrackPanelModalOpened}
+          isTrackPanelOpened={props.isTrackPanelOpened}
         />
       )}
     </div>
@@ -229,6 +243,7 @@ export const BrowserNavigatorButton = (props: BrowserNavigatorButtonProps) => (
 
 const mapStateToProps = (state: RootState): StateProps => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
+  breakpointWidth: getBreakpointWidth(state),
   browserActivated: getBrowserActivated(state),
   browserNavOpened: getBrowserNavOpened(state),
   chrLocation: getChrLocation(state),
@@ -246,8 +261,8 @@ const mapDispatchToProps: DispatchProps = {
   closeDrawer,
   selectBrowserTabAndSave,
   toggleBrowserNav,
-  toggleDrawer,
-  toggleGenomeSelector
+  toggleGenomeSelector,
+  toggleTrackPanel
 };
 
 export default connect(
