@@ -67,7 +67,7 @@ const devConfig = {
     // rules to proxy requests to the backend server in development
     proxy: {
       '/api': {
-        target: 'http://193.62.55.91:30414',
+        target: 'https://staging-2020.ensembl.org',
         changeOrigin: true,
         secure: false
       },
