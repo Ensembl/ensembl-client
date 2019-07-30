@@ -1,13 +1,13 @@
 import { ActionType, getType } from 'typesafe-actions';
 
 import { RootAction } from 'src/objects';
-import * as attributesAccordionActions from './attributesAccordionActions';
+import * as attributesActions from './attributeActions';
 import {
   AttributesAccordionState,
   defaultAttributesAccordionState,
   OrthologueState,
   AttributeContentState
-} from './attributesAccordionState';
+} from './attributesState';
 
 function attributesAccordion(
   state: AttributesAccordionState = defaultAttributesAccordionState,
@@ -15,52 +15,52 @@ function attributesAccordion(
 ): AttributesAccordionState {
   switch (action.type) {
     case getType(
-      attributesAccordionActions.setAttributesAccordionExpandedPanel
+      attributesActions.setAttributesAccordionExpandedPanel
     ):
       return { ...state, expandedPanel: action.payload };
-    case getType(attributesAccordionActions.setAttributes.success):
+    case getType(attributesActions.setAttributes.success):
       return { ...state, content: action.payload };
-    case getType(attributesAccordionActions.updateSelectedAttributes):
+    case getType(attributesActions.updateSelectedAttributes):
       return {
         ...state,
         selectedAttributes: action.payload
       };
-    case getType(attributesAccordionActions.resetSelectedAttributes):
+    case getType(attributesActions.resetSelectedAttributes):
       return {
         ...state,
         selectedAttributes: {}
       };
-    case getType(attributesAccordionActions.updateContentState):
+    case getType(attributesActions.updateContentState):
       return {
         ...state,
         contentState: action.payload
       };
-    case getType(attributesAccordionActions.setOrthologueAttributes):
+    case getType(attributesActions.setOrthologueAttributes):
       return {
         ...state,
         content: orthologueAttributes(state.content, action)
       };
-    case getType(attributesAccordionActions.setOrthologueSearchTerm):
+    case getType(attributesActions.setOrthologueSearchTerm):
       return {
         ...state,
         orthologue: orthologue(state.orthologue, action)
       };
-    case getType(attributesAccordionActions.setOrthologueShowBestMatches):
+    case getType(attributesActions.setOrthologueShowBestMatches):
       return {
         ...state,
         orthologue: orthologue(state.orthologue, action)
       };
-    case getType(attributesAccordionActions.setOrthologueApplyToAllSpecies):
+    case getType(attributesActions.setOrthologueApplyToAllSpecies):
       return {
         ...state,
         orthologue: orthologue(state.orthologue, action)
       };
-    case getType(attributesAccordionActions.setOrthologueShowAll):
+    case getType(attributesActions.setOrthologueShowAll):
       return {
         ...state,
         orthologue: orthologue(state.orthologue, action)
       };
-    case getType(attributesAccordionActions.setOrthologueSpecies.success):
+    case getType(attributesActions.setOrthologueSpecies.success):
       return {
         ...state,
         orthologue: orthologue(state.orthologue, action)
@@ -75,15 +75,15 @@ function orthologue(
   action: ActionType<RootAction>
 ): OrthologueState {
   switch (action.type) {
-    case getType(attributesAccordionActions.setOrthologueSearchTerm):
+    case getType(attributesActions.setOrthologueSearchTerm):
       return { ...state, searchTerm: action.payload };
-    case getType(attributesAccordionActions.setOrthologueShowBestMatches):
+    case getType(attributesActions.setOrthologueShowBestMatches):
       return { ...state, showBestMatches: action.payload };
-    case getType(attributesAccordionActions.setOrthologueShowAll):
+    case getType(attributesActions.setOrthologueShowAll):
       return { ...state, showAll: action.payload };
-    case getType(attributesAccordionActions.setOrthologueApplyToAllSpecies):
+    case getType(attributesActions.setOrthologueApplyToAllSpecies):
       return { ...state, applyToAllSpecies: action.payload };
-    case getType(attributesAccordionActions.setOrthologueSpecies.success):
+    case getType(attributesActions.setOrthologueSpecies.success):
       return { ...state, species: action.payload };
     default:
       return state;
@@ -95,7 +95,7 @@ function orthologueAttributes(
   action: ActionType<RootAction>
 ): AttributeContentState {
   switch (action.type) {
-    case getType(attributesAccordionActions.setOrthologueAttributes):
+    case getType(attributesActions.setOrthologueAttributes):
       return { ...state, orthologues: action.payload };
     default:
       return state;

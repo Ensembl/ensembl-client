@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
@@ -12,12 +12,12 @@ import {
 
 import styles from './FiltersAccordion.scss';
 
-import { getFiltersAccordionExpandedPanel } from './state/filterAccordionSelector';
+import { getFiltersAccordionExpandedPanel } from '../../../state/filters/filterSelector';
 import {
   setFiltersAccordionExpandedPanel,
   resetSelectedFilters,
   updateSelectedFilters
-} from './state/filterAccordionActions';
+} from '../../../state/filters/filterActions';
 
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 import JSONValue from 'src/shared/types/JSON';
@@ -31,12 +31,6 @@ import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
 type Props = StateProps & DispatchProps;
 
 const FiltersAccordion = (props: Props) => {
-  useEffect(() => {
-    props.updateSelectedFilters(
-      customDownloadStorageService.getSelectedFilters()
-    );
-  }, []);
-
   const formatAccordionTitle = (expandedPanel: string, title: string) => {
     if (expandedPanel !== props.expandedPanel) {
       return <span>{title}</span>;

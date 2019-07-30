@@ -1,7 +1,7 @@
 import { createAction, createAsyncAction } from 'typesafe-actions';
 
-import * as allFilterAccordionActions from '../containers/content/filter-accordion/state/filterAccordionActions';
-import * as allAttributeAccordionActions from '../containers/content/attributes-accordion/state/attributesAccordionActions';
+import * as allFilterAccordionActions from './filters/filterActions';
+import * as allAttributeAccordionActions from './attributes/attributeActions';
 import { ActionCreator, Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import apiService from 'src/services/api-service';
@@ -9,8 +9,8 @@ import apiService from 'src/services/api-service';
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 import JSONValue from 'src/shared/types/JSON';
 
-export const filterAccordionActions = allFilterAccordionActions;
-export const attributesAccordionActions = allAttributeAccordionActions;
+export const filterActions = allFilterAccordionActions;
+export const attributesActions = allAttributeAccordionActions;
 
 export const updateSelectedPreFilter = createAction(
   'custom-download/update-selected-pre-filters',

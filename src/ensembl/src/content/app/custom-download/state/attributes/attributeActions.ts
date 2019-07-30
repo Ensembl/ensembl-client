@@ -5,14 +5,14 @@ import {
 } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Action } from 'redux';
-import { orthologueSpecies as sampleOrthologueSpecies } from '../../../../sample-data/orthologue';
+import { orthologueSpecies as sampleOrthologueSpecies } from 'src/content/app/custom-download/sample-data/orthologue';
 
 import attributes from 'src/content/app/custom-download/sample-data/attributes';
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 
 import findIndex from 'lodash/findIndex';
 
-import Attributes, {
+import {
   AttributeWithOptions
 } from 'src/content/app/custom-download/types/Attributes';
 import JSONValue from 'src/shared/types/JSON';
@@ -26,7 +26,7 @@ export const setAttributes = createAsyncAction(
 )<undefined, {}, Error>();
 
 export const fetchAttributes: ActionCreator<
-  ThunkAction<void, Attributes, null, Action<string>>
+  ThunkAction<void, any, null, Action<string>>
 > = () => async (dispatch) => {
   try {
     dispatch(setAttributes.request());
@@ -57,7 +57,7 @@ export const updateContentState = createStandardAction(
 
 export const setOrthologueAttributes = createStandardAction(
   'custom-download/set-orthologue-attributes'
-)<AttributeWithOptions>();
+)<{[key: string] : AttributeWithOptions}>();
 
 export const setOrthologueShowBestMatches = createStandardAction(
   'custom-download/set-orthologue-show-best-matches'
@@ -82,7 +82,7 @@ export const setOrthologueSpecies = createAsyncAction(
 )<{ searchTerm: string }, CheckboxGridOption[], Error>();
 
 export const fetchOrthologueSpecies: ActionCreator<
-  ThunkAction<void, CheckboxGridOption[], null, Action<string>>
+  ThunkAction<void, any, null, Action<string>>
 > = (searchTerm: string, orthologueSpecies: CheckboxGridOption[]) => async (
   dispatch
 ) => {
@@ -91,7 +91,7 @@ export const fetchOrthologueSpecies: ActionCreator<
     // This will be fetched from the API when we have one
     let allSpecies = sampleOrthologueSpecies.species as Species[];
 
-    let filteredSpecies: CheckboxGridOption[] = [...orthologueSpecies].filter(
+    let filteredSpecies: CheckboxGridOption[] = orthologueSpecies.filter(
       (species: CheckboxGridOption) => {
         return species.isChecked;
       }

@@ -10,12 +10,12 @@ import {
   getAttributes,
   getSelectedAttributes,
   getContentState
-} from 'src/content/app/custom-download/containers/content/attributes-accordion/state/attributesAccordionSelector';
+} from 'src/content/app/custom-download/state/attributes/attributesSelector';
 
 import {
   updateSelectedAttributes,
   updateContentState
-} from 'src/content/app/custom-download/containers/content/attributes-accordion/state/attributesAccordionActions';
+} from 'src/content/app/custom-download/state/attributes/attributeActions';
 
 import ContentBuilder from 'src/content/app/custom-download/components/content-builder/ContentBuilder';
 
@@ -43,8 +43,8 @@ const AttributesAccordionSection = (props: Props) => {
 };
 
 type DispatchProps = {
-  updateSelectedAttributes: (updateSelectedAttributes: JSONValue) => void;
-  updateContentState: (updateContentState: JSONValue) => void;
+  updateSelectedAttributes: (attributes: JSONValue) => void;
+  updateContentState: (contentState: JSONValue) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {

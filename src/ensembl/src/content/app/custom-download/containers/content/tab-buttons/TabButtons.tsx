@@ -7,8 +7,8 @@ import BadgedButton from 'src/shared/badged-button/BadgedButton';
 
 import { getSelectedTab } from '../../../state/customDownloadSelectors';
 
-import { getSelectedAttributes } from '../attributes-accordion/state/attributesAccordionSelector';
-import { getSelectedFilters } from '../filter-accordion/state/filterAccordionSelector';
+import { getSelectedAttributes } from '../../../state/attributes/attributesSelector';
+import { getSelectedFilters } from '../../../state/filters/filterSelector';
 
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 

@@ -14,7 +14,7 @@ import {
   getOrthologueShowAll,
   getOrthologueApplyToAllSpecies,
   getSelectedAttributes
-} from '../../state/attributesAccordionSelector';
+} from '../../../../../state/attributes/attributesSelector';
 
 import {
   setOrthologueAttributes,
@@ -25,7 +25,7 @@ import {
   setOrthologueShowAll,
   setOrthologueApplyToAllSpecies,
   updateSelectedAttributes
-} from '../../state/attributesAccordionActions';
+} from '../../../../../state/attributes/attributeActions';
 
 import Input from 'src/shared/input/Input';
 import set from 'lodash/set';
@@ -33,9 +33,7 @@ import styles from './Orthologues.scss';
 
 import { orthologueAttributes } from 'src/content/app/custom-download/sample-data/orthologue';
 import JSONValue from 'src/shared/types/JSON';
-import Attributes, {
-  AttributeWithOptions
-} from 'src/content/app/custom-download/types/Attributes';
+import { AttributeWithOptions } from 'src/content/app/custom-download/types/Attributes';
 
 type ownProps = {
   hideUnchecked?: boolean;
@@ -50,18 +48,20 @@ const Orthologue = (props: Props) => {
     species: string,
     attributeId: string
   ) => {
-    const newOrthologueAttributes: any = { ...props.orthologueAttributes };
+    const newOrthologueAttributes: { [key: string]: AttributeWithOptions } = {
+      ...props.orthologueAttributes
+    };
 
     const modifiedSpeciesIndex = findIndex(
-      newOrthologueAttributes[species].options,
+      newOrthologueAttributes[species].options as CheckboxGridOption[],
       (attribute: CheckboxGridOption) => {
         return attribute.id === attributeId;
       }
     );
 
-    newOrthologueAttributes[species].options[
+    (newOrthologueAttributes[species].options[
       modifiedSpeciesIndex
-    ].isChecked = status;
+    ] as CheckboxGridOption).isChecked = status;
 
     const path = ['orthologues', `${attributeId}(${species})`];
 
@@ -69,7 +69,9 @@ const Orthologue = (props: Props) => {
     set(updatedAttributes, path, status);
     props.updateSelectedAttributes(updatedAttributes);
 
-    props.setOrthologueAttributes(newOrthologueAttributes);
+    props.setOrthologueAttributes(newOrthologueAttributes as {
+      [key: string]: AttributeWithOptions;
+    });
   };
 
   const speciesOnChangeHandler = (status: boolean, attributeId: string) => {
@@ -89,7 +91,9 @@ const Orthologue = (props: Props) => {
 
     props.setOrthologueSpecies(newOrthologueFilteredSpecies);
 
-    const newOrthologueAttributes: any = { ...props.orthologueAttributes };
+    const newOrthologueAttributes: { [key: string]: AttributeWithOptions } = {
+      ...props.orthologueAttributes
+    };
 
     if (status) {
       newOrthologueAttributes[displayName] = JSON.parse(
@@ -172,9 +176,9 @@ const Orthologue = (props: Props) => {
 };
 
 type DispatchProps = {
-  setOrthologueAttributes: (
-    setOrthologueAttributes: AttributeWithOptions
-  ) => void;
+  setOrthologueAttributes: (setOrthologueAttributes: {
+    [key: string]: AttributeWithOptions;
+  }) => void;
   setOrthologueSearchTerm: (setOrthologueSearchTerm: string) => void;
   setOrthologueSpecies: (setOrthologueSpecies: CheckboxGridOption[]) => void;
   fetchOrthologueSpecies: (
@@ -201,7 +205,7 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 type StateProps = {
-  orthologueAttributes: Attributes;
+  orthologueAttributes: { [key: string]: AttributeWithOptions };
   orthologueSearchTerm: string;
   orthologueSpecies: CheckboxGridOption[];
   shouldShowBestMatches: boolean;

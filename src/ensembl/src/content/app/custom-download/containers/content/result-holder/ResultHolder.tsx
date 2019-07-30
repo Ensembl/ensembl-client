@@ -6,10 +6,8 @@ import {
   getIsLoadingResult
 } from '../../../state/customDownloadSelectors';
 
-import { getSelectedAttributes } from '../attributes-accordion/state/attributesAccordionSelector';
-import { getSelectedFilters } from '../filter-accordion/state/filterAccordionSelector';
-
-import { keys } from 'lodash';
+import { getSelectedAttributes } from '../../../state/attributes/attributesSelector';
+import { getSelectedFilters } from '../../../state/filters/filterSelector';
 
 import {
   setPreviewResult,
@@ -36,7 +34,7 @@ const ResultHolder = (props: Props) => {
       props.selectedAttributes
     );
 
-    const totalSelectedAttributes = keys(flatSelectedAttributes).length;
+    const totalSelectedAttributes = Object.keys(flatSelectedAttributes).length;
     if (!totalSelectedAttributes && props.preview.results) {
       props.clearPreviewResult({});
       return;

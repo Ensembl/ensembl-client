@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
@@ -7,12 +7,12 @@ import ContentBuilder from 'src/content/app/custom-download/components/content-b
 import {
   getSelectedFilters,
   getContentState
-} from '../../state/filterAccordionSelector';
+} from '../../../../../state/filters/filterSelector';
 
 import {
   updateSelectedFilters,
   updateContentState
-} from '../../state/filterAccordionActions';
+} from '../../../../../state/filters/filterActions';
 
 import JSONValue from 'src/shared/types/JSON';
 import allFilters from 'src/content/app/custom-download/sample-data/filters';
@@ -21,19 +21,15 @@ import { AttributeWithContent } from 'src/content/app/custom-download/types/Attr
 type Props = StateProps & DispatchProps;
 
 const Proteins = (props: Props) => {
-  useEffect(() => {}, [props.selectedFilters]);
-
   const content = allFilters['proteins'] as AttributeWithContent;
   return (
-    <div>
-      <ContentBuilder
-        data={content}
-        onChange={props.updateSelectedFilters}
-        contentState={props.contentState}
-        onContentStateChange={props.updateContentState}
-        selectedData={props.selectedFilters}
-      />
-    </div>
+    <ContentBuilder
+      data={content}
+      onChange={props.updateSelectedFilters}
+      contentState={props.contentState}
+      onContentStateChange={props.updateContentState}
+      selectedData={props.selectedFilters}
+    />
   );
 };
 

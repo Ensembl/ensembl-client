@@ -1,6 +1,7 @@
 import { AttributeWithOptions } from 'src/content/app/custom-download/types/Attributes';
 import JSONValue from 'src/shared/types/JSON';
 import { CheckboxGridOption } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
+import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 
 export type OrthologueState = {
   searchTerm: string;
@@ -25,7 +26,7 @@ export type AttributesAccordionState = Readonly<{
 export const defaultAttributesAccordionState: AttributesAccordionState = {
   expandedPanel: '',
   content: {},
-  selectedAttributes: {},
+  selectedAttributes: customDownloadStorageService.getSelectedAttributes(),
   contentState: {},
   orthologue: {
     searchTerm: '',

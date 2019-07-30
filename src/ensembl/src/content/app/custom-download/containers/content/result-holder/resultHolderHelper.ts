@@ -1,10 +1,14 @@
 import config from 'config';
 
-import { keys, mapKeys, set, get, trim } from 'lodash';
+import mapKeys from 'lodash/mapKeys';
+import set from 'lodash/set';
+import get from 'lodash/get';
+import trim from 'lodash/trim';
+
 import JSONValue from 'src/shared/types/JSON';
 
 export const getProcessedAttributes = (flatSelectedAttributes: JSONValue) => {
-  const filteredAttributes = keys(flatSelectedAttributes).filter(
+  const filteredAttributes = Object.keys(flatSelectedAttributes).filter(
     (key) => flatSelectedAttributes[key]
   );
   return filteredAttributes.map((value: string) => {
@@ -34,7 +38,7 @@ export const getProcessedFilters = (filters: JSONValue) => {
 
   const processedFilters = {};
 
-  keys(selectedFilters).forEach((path) => {
+  Object.keys(selectedFilters).forEach((path) => {
     set(processedFilters, path, selectedFilters[path]);
   });
   return processedFilters;
@@ -176,7 +180,10 @@ export const attributeDisplayNames: { [key: string]: string } = {
   source_of_name: 'Source of gene name'
 };
 
-export const formatResults = (apiResult: any, selectedAttributes: any) => {
+export const formatResults = (
+  apiResult: JSONValue,
+  selectedAttributes: JSONValue
+) => {
   const formattedResult = formatResponseToArray(apiResult.results);
 
   const flatSelectedAttributes: { [key: string]: boolean } = flattenObject(

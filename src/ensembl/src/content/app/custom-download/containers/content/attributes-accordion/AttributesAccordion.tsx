@@ -11,13 +11,13 @@ import {
   AccordionItemPermanentBlock
 } from 'src/shared/accordion';
 
-import { getAttributesAccordionExpandedPanel } from './state/attributesAccordionSelector';
+import { getAttributesAccordionExpandedPanel } from '../../../state/attributes/attributesSelector';
 import {
   setAttributesAccordionExpandedPanel,
   fetchAttributes,
   resetSelectedAttributes,
   updateSelectedAttributes
-} from './state/attributesAccordionActions';
+} from '../../../state/attributes/attributeActions';
 
 import { Orthologues } from './sections';
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
@@ -36,9 +36,6 @@ type Props = StateProps & DispatchProps;
 const AttributesAccordion = (props: Props) => {
   useEffect(() => {
     props.fetchAttributes();
-    props.updateSelectedAttributes(
-      customDownloadStorageService.getSelectedAttributes()
-    );
   }, []);
 
   const formatAccordionTitle = (expandedPanel: string) => {
@@ -65,16 +62,16 @@ const AttributesAccordion = (props: Props) => {
     customDownloadStorageService.saveSelectedAttributes({});
   };
 
-  const buildSection = (
-    section: string,
-    hideTitles?: boolean,
-    hideUnchecked?: boolean
-  ) => {
+  const buildSection = (options: {
+    section: string;
+    hideTitles?: boolean;
+    hideUnchecked?: boolean;
+  }) => {
     return (
       <AttributesAccordionSection
-        section={section}
-        hideTitles={hideTitles}
-        hideUnchecked={hideUnchecked}
+        section={options.section}
+        hideTitles={options.hideTitles}
+        hideUnchecked={options.hideUnchecked}
       />
     );
   };
@@ -102,12 +99,16 @@ const AttributesAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className={styles.accordionItem}>
-            {buildSection('genes')}
+            {buildSection({ section: 'genes' })}
           </AccordionItemPanel>
           <AccordionItemPermanentBlock>
             {props.expandedPanel !== 'genes' && (
               <div className={styles.permanentBlock}>
-                {buildSection('genes', true, true)}
+                {buildSection({
+                  section: 'genes',
+                  hideTitles: true,
+                  hideUnchecked: true
+                })}
               </div>
             )}
           </AccordionItemPermanentBlock>
@@ -120,12 +121,16 @@ const AttributesAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className={styles.accordionItem}>
-            {buildSection('transcripts')}
+            {buildSection({ section: 'transcripts' })}
           </AccordionItemPanel>
           <AccordionItemPermanentBlock>
             {props.expandedPanel !== 'transcripts' && (
               <div className={styles.permanentBlock}>
-                {buildSection('transcripts', true, true)}
+                {buildSection({
+                  section: 'transcripts',
+                  hideTitles: true,
+                  hideUnchecked: true
+                })}
               </div>
             )}
           </AccordionItemPermanentBlock>
@@ -150,11 +155,17 @@ const AttributesAccordion = (props: Props) => {
               {formatAccordionTitle('sequences')}
             </AccordionItemButton>
           </AccordionItemHeading>
-          <AccordionItemPanel>{buildSection('sequences')}</AccordionItemPanel>
+          <AccordionItemPanel>
+            {buildSection({ section: 'sequences' })}
+          </AccordionItemPanel>
           <AccordionItemPermanentBlock>
             {props.expandedPanel !== 'sequences' && (
               <div className={styles.permanentBlock}>
-                {buildSection('sequences', true, true)}
+                {buildSection({
+                  section: 'sequences',
+                  hideTitles: true,
+                  hideUnchecked: true
+                })}
               </div>
             )}
           </AccordionItemPermanentBlock>

@@ -2,8 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 import { Link } from 'react-router-dom';
-import { getSelectedAttributes } from '../attributes-accordion/state/attributesAccordionSelector';
-import { getSelectedFilters } from '../filter-accordion/state/filterAccordionSelector';
+import { getSelectedAttributes } from '../../../state/attributes/attributesSelector';
+import { getSelectedFilters } from '../../../state/filters/filterSelector';
 
 import { ReactComponent as closeIcon } from 'static/img/track-panel/close.svg';
 import styles from './PreviewDownload.scss';

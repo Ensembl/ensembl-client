@@ -14,8 +14,8 @@ import {
   getDownloadType
 } from '../../state/customDownloadSelectors';
 
-import { getSelectedFilters } from '../content/filter-accordion/state/filterAccordionSelector';
-import { getSelectedAttributes } from '../content/attributes-accordion/state/attributesAccordionSelector';
+import { getSelectedFilters } from '../../state/filters/filterSelector';
+import { getSelectedAttributes } from '../../state/attributes/attributesSelector';
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 import JSONValue from 'src/shared/types/JSON';
 import {
@@ -108,7 +108,9 @@ const Header = (props: Props) => {
           </div>
           <div className={styles.previewCounter}>
             <div>
-              <span className={styles.boldResultCounter}>{resultCount}</span>
+              <span className={styles.boldResultCounter}>
+                {getCommaSeparatedNumber(resultCount)}
+              </span>
               <span className={styles.resultsLabel}>results</span>
             </div>
             <div className={styles.saveConfiguration}>Save configuration</div>
