@@ -213,7 +213,7 @@ export const BrowserInfo = ({ ensObject }: BrowserInfoProps) => {
           <dd className={`show-for-large ${styles.nonLabelValue}`}>
             {ensObject.strand} strand
           </dd>
-          <dd className={`show-for-large ${styles.nonLabelValue}`}>
+          <dd className={`show-for-large`}>
             {getFormattedLocation(ensObject.location)}
           </dd>
         </>
