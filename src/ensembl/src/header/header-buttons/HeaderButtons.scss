@@ -1,11 +1,15 @@
-.headerButtons {
-  button {
-    bottom: 1px;
-    display: inline-block;
-    height: 17px;
-    margin-left: 20px;
-    position: relative;
-    width: 17px;
-    vertical-align: middle;
+.buttonWrapper {
+  display: inline-block;
+  bottom: 1px;
+  height: 17px;
+  margin-left: 20px;
+  position: relative;
+  width: 17px;
+  vertical-align: middle;
+}
+
+.headerButtonDisabled {
+  svg {
+    fill: #7d8e9b;
   }
 }

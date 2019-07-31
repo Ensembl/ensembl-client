@@ -3,8 +3,12 @@ import { connect } from 'react-redux';
 
 import { toggleAccount, toggleLaunchbar } from '../headerActions';
 
-import launchbarIcon from 'static/img/header/launchbar.svg';
-import userIcon from 'static/img/header/user-grey.svg';
+import ImageButton, {
+  ImageButtonStatus
+} from 'src/shared/image-button/ImageButton';
+
+import { ReactComponent as LaunchbarIcon } from 'static/img/header/launchbar.svg';
+import { ReactComponent as UserIcon } from 'static/img/header/user-grey.svg';
 
 import styles from './HeaderButtons.scss';
 
@@ -21,22 +25,29 @@ type HeaderButtonsProps = StateProps & DispatchProps & OwnProps;
 
 export const HeaderButtons: FunctionComponent<HeaderButtonsProps> = (props) => (
   <div className={styles.headerButtons}>
-    <button className="launchbarButton" onClick={props.toggleLaunchbar}>
-      <img
-        src={launchbarIcon}
-        alt="Toggle the Ensembl app launchbar"
-        title="Ensembl app launchbar"
+    <div className={styles.buttonWrapper}>
+      <ImageButton
+        image={LaunchbarIcon}
+        description="Ensembl app launchbar"
+        onClick={props.toggleLaunchbar}
       />
-    </button>
-    <button className="accountButton disabled">
-      <img
-        src={userIcon}
-        alt="Toggle the Ensembl account"
-        title="Ensembl account"
+    </div>
+    <div className={styles.buttonWrapper}>
+      <ImageButton
+        image={UserIcon}
+        description="Ensembl account"
+        buttonStatus={ImageButtonStatus.DISABLED}
+        classNames={{
+          [ImageButtonStatus.DISABLED]: styles.headerButtonDisabled
+        }}
       />
-    </button>
+    </div>
   </div>
 );
+
+// <button className="launchbarButton" >
+
+//      <button className="accountButton disabled"></button>
 
 const mapStateToProps = (): StateProps => ({});
 
