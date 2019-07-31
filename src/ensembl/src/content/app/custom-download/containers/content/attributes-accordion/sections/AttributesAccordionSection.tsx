@@ -2,7 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
-import Attributes, {
+import {
+  Attributes,
   AttributeWithContent
 } from 'src/content/app/custom-download/types/Attributes';
 

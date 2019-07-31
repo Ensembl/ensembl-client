@@ -1,4 +1,4 @@
-import Attributes from 'src/content/app/custom-download/types/Attributes';
+import { Attributes } from 'src/content/app/custom-download/types/Attributes';
 import JSONValue from 'src/shared/types/JSON';
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 

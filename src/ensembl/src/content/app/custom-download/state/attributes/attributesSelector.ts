@@ -1,6 +1,7 @@
 import { RootState } from 'src/store';
 
-import Attributes, {
+import {
+  Attributes,
   AttributeWithOptions
 } from 'src/content/app/custom-download/types/Attributes';
 

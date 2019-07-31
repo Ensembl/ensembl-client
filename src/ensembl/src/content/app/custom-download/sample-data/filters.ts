@@ -1,4 +1,4 @@
-import Attributes from 'src/content/app/custom-download/types/Attributes';
+import { Attributes } from 'src/content/app/custom-download/types/Attributes';
 
 const filters: Attributes = {
   genes: {

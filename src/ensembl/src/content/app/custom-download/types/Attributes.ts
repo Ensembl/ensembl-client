@@ -39,8 +39,6 @@ export type AttributeWithOptions = {
   disabled?: boolean;
 };
 
-type Attributes = {
+export type Attributes = {
   [key: string]: AttributeWithContent | AttributeWithOptions | Attribute;
 };
-
-export default Attributes;

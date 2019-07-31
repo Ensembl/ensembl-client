@@ -1,4 +1,4 @@
-import Attributes from '../types/Attributes';
+import { Attributes } from '../types/Attributes';
 
 const attributes: Attributes = {
   genes: {

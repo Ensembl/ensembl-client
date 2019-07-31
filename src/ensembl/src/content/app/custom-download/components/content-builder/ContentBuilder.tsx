@@ -1,4 +1,7 @@
 import React from 'react';
+import set from 'lodash/set';
+import get from 'lodash/get';
+
 import CheckboxWithSelects from 'src/content/app/custom-download/components/checkbox-with-selects/CheckboxWithSelects';
 import CheckboxWithRadios from 'src/content/app/custom-download/components/checkbox-with-radios/CheckboxWithRadios';
 import CheckboxWithTextfields from 'src/content/app/custom-download/components/checkbox-with-textfields/CheckboxWithTextfields';
@@ -15,9 +18,6 @@ import {
   AccordionItemPanel,
   AccordionItemButton
 } from 'src/shared/accordion';
-
-import set from 'lodash/set';
-import get from 'lodash/get';
 
 import {
   Attribute,
