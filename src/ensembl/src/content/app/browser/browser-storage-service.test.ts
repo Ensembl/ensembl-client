@@ -166,7 +166,7 @@ describe('BrowserStorageService', () => {
       );
       const result = browserStorageService.getSelectedBrowserTab();
 
-      expect(result).toEqual(TrackType.GENOMIC);
+      expect(result).toEqual({});
 
       mockStorageService.get.mockRestore();
     });

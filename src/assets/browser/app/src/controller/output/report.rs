@@ -3,12 +3,13 @@ use std::sync::{ Arc, Mutex };
 
 use controller::global::{ AppRunner };
 use controller::output::OutputAction;
+use super::counter::Counter;
 
 use serde_json::Map as JSONMap;
 use serde_json::Value as JSONValue;
 use serde_json::Number as JSONNumber;
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 #[allow(unused)]
 pub enum StatusJigsawType {
     Number,
@@ -16,7 +17,7 @@ pub enum StatusJigsawType {
     Boolean
 }
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 #[allow(unused)]
 pub enum StatusJigsaw {
     Atom(String,StatusJigsawType),
@@ -24,6 +25,7 @@ pub enum StatusJigsaw {
     Object(HashMap<String,StatusJigsaw>)
 }
 
+#[derive(Debug)]
 struct StatusOutput {
     last_value: Option<JSONValue>,
     jigsaw: StatusJigsaw,
@@ -58,7 +60,7 @@ impl StatusOutput {
                 return true;
             }
         }
-        return true;
+        return false;
     }
 }
 
@@ -72,17 +74,17 @@ lazy_static! {
             StatusJigsaw::Atom("i-stick".to_string(),StatusJigsawType::String),
             StatusJigsaw::Atom("i-start".to_string(),StatusJigsawType::Number),
             StatusJigsaw::Atom("i-end".to_string(),StatusJigsawType::Number),
-        }),Some(500.),true),
+        }),Some(100.),false),
         ("actual-location",StatusJigsaw::Array(vec!{
             StatusJigsaw::Atom("a-stick".to_string(),StatusJigsawType::String),
             StatusJigsaw::Atom("a-start".to_string(),StatusJigsawType::Number),
             StatusJigsaw::Atom("a-end".to_string(),StatusJigsawType::Number),
-        }),Some(500.),false),
+        }),Some(100.),false),
         ("intended-location",StatusJigsaw::Array(vec!{
             StatusJigsaw::Atom("i-stick".to_string(),StatusJigsawType::String),
             StatusJigsaw::Atom("i-start".to_string(),StatusJigsawType::Number),
             StatusJigsaw::Atom("i-end".to_string(),StatusJigsawType::Number),
-        }),Some(2000.),true),
+        }),Some(500.),true),
         ("bumper",StatusJigsaw::Array(vec!{
             StatusJigsaw::Atom("bumper-top".to_string(),StatusJigsawType::Boolean),
             StatusJigsaw::Atom("bumper-bottom".to_string(),StatusJigsawType::Boolean),
@@ -94,10 +96,8 @@ lazy_static! {
     };
 }
 
+#[derive(Debug)]
 pub struct ReportImpl {
-    message_counter: f64,
-    locks: u32,
-    delayed: bool,
     pieces: HashMap<String,String>,
     outputs: HashMap<String,StatusOutput>
 }
@@ -105,9 +105,6 @@ pub struct ReportImpl {
 impl ReportImpl {
     pub fn new() -> ReportImpl {
         let out = ReportImpl {
-            message_counter: 0.,
-            locks: 0,
-            delayed: false,
             pieces: HashMap::<String,String>::new(),
             outputs: HashMap::<String,StatusOutput>::new()
         };
@@ -128,32 +125,6 @@ impl ReportImpl {
     
     pub fn set_status(&mut self, key: &str, value: &str) {
         self.pieces.insert(key.to_string(),value.to_string());
-    }
-
-    pub fn is_current(&mut self, value: f64) -> bool {
-        return self.message_counter <= value || value == -1.
-    }
-
-    fn force_update(&self) -> bool {
-        self.locks == 0 && self.delayed
-    }
-
-    fn try_update_counter(&mut self) {
-        if self.locks == 0 {
-            self.message_counter += 1.;
-            self.pieces.insert("message-counter".to_string(),self.message_counter.to_string());
-            self.delayed = false;
-        } else {
-            self.delayed = true;
-        }
-    }
-
-    pub fn lock(&mut self) {
-        self.locks += 1;
-    }
-
-    pub fn unlock(&mut self) {
-        self.locks -= 1;
     }
 
     pub fn set_interval(&mut self, key: &str, interval: Option<f64>) {
@@ -226,10 +197,10 @@ impl ReportImpl {
         }
     }
 
-    fn new_report(&mut self, t: f64) -> Option<JSONValue> {
+    fn new_report(&mut self, t: f64, counter: &mut Counter) -> Option<JSONValue> {
         let mut out = JSONMap::<String,JSONValue>::new();
         let mut vital = false;
-        let force = self.force_update();
+        let force = counter.force_update();
         for (k,s) in &self.outputs {
             if let Some(value) = self.make_value(&s.jigsaw) {
                 if let Some(ref last_value) = s.last_value {
@@ -250,20 +221,21 @@ impl ReportImpl {
             }
         }
         if out.len() > 0 {
-            self.try_update_counter();
-            if !self.delayed {
-                for (k,s) in &self.outputs {
-                    if s.is_always_send() {
-                        if let Some(value) = self.make_value(&s.jigsaw) {                
-                            out.insert(k.to_string(),value.clone());
-                        }
+            if let Some(mc) = counter.try_update_counter() {
+                self.pieces.insert("message-counter".to_string(),mc.to_string());
+            }
+            for (k,s) in &self.outputs {
+                if s.is_always_send() {
+                    if let Some(value) = self.make_value(&s.jigsaw) {                
+                        out.insert(k.to_string(),value.clone());
                     }
                 }
-                if vital {
-                    console!("send/A ({:?}) {}",force,JSONValue::Object(out.clone()));
-                }
-                return Some(JSONValue::Object(out));
             }
+            if vital {
+                console!("send/A ({:?}) {}",force,JSONValue::Object(out.clone()));
+            }
+            out.insert("_outgoing".to_string(),JSONValue::Bool(true));
+            return Some(JSONValue::Object(out));
         }
         None
     }
@@ -283,12 +255,14 @@ impl Report {
             out.set_interval(k,*v);
             if *vital { out.set_vital(k); }
         }
-        ar.add_timer("report",enclose! { (out) move |_app,t,sr| {
-            if let Some(report) = out.new_report(t) {
-                vec!{
-                    OutputAction::SendCustomEvent("bpane-out".to_string(),report)
-                }
-            } else { sr.unproductive(); vec!{} }
+        ar.add_timer("report",enclose! { (out) move |app,t,sr| {
+            app.with_counter(|counter| {
+                if let Some(report) = out.new_report(t,counter) {
+                    vec!{
+                        OutputAction::SendCustomEvent("bpane-out".to_string(),report.clone())
+                    }
+                } else { sr.unproductive(); vec!{} }
+            })
         }},4);
         out
     }
@@ -311,19 +285,7 @@ impl Report {
         self.0.lock().unwrap().set_vital(key);
     }
     
-    pub fn new_report(&self, t: f64) -> Option<JSONValue> {
-        self.0.lock().unwrap().new_report(t)
-    }
-
-    pub fn is_current(&self, value: f64) -> bool {
-        self.0.lock().unwrap().is_current(value)
-    }
-
-    pub fn lock(&mut self) {
-        self.0.lock().unwrap().lock();
-    }
-
-    pub fn unlock(&mut self) {
-        self.0.lock().unwrap().unlock();
+    pub fn new_report(&self, t: f64, counter: &mut Counter) -> Option<JSONValue> {
+        self.0.lock().unwrap().new_report(t,counter)
     }
 }

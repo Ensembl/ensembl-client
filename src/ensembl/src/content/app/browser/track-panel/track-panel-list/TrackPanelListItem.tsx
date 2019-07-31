@@ -2,15 +2,14 @@ import React, {
   FunctionComponent,
   MouseEvent,
   ReactNode,
-  RefObject,
   useState,
-  useCallback,
   useEffect
 } from 'react';
-import get from 'lodash/get';
+import classNames from 'classnames';
 
-import { TrackItemColour } from '../trackPanelConfig';
+import { TrackItemColour, TrackItemColourKey } from '../trackPanelConfig';
 import { UpdateTrackStatesPayload } from 'src/content/app/browser/browserActions';
+import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 
 import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
@@ -27,12 +26,11 @@ import styles from './TrackPanelListItem.scss';
 
 type TrackPanelListItemProps = {
   activeGenomeId: string;
-  browserRef: RefObject<HTMLDivElement>;
   categoryName: string;
   children?: ReactNode[];
   trackStatus: ImageButtonStatus;
   defaultTrackStatus: ImageButtonStatus;
-  drawerOpened: boolean;
+  isDrawerOpened: boolean;
   drawerView: string;
   track: EnsObjectTrack;
   updateDrawerView: (drawerView: string) => void;
@@ -46,9 +44,14 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   props: TrackPanelListItemProps
 ) => {
   const [expanded, setExpanded] = useState(true);
-  const { activeGenomeId, browserRef, categoryName, drawerView, track } = props;
-
-  const { trackStatus } = props;
+  const {
+    activeGenomeId,
+    categoryName,
+    isDrawerOpened,
+    drawerView,
+    track,
+    trackStatus
+  } = props;
 
   useEffect(() => {
     const { defaultTrackStatus } = props;
@@ -69,35 +72,18 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     }
   }, []);
 
-  const getListItemClasses = useCallback((): string => {
-    let classNames: string = styles.listItem;
+  const getBoxClasses = (colour: TrackItemColourKey) => {
+    const colourValue = colour ? TrackItemColour[colour] : '';
 
-    if (track.track_id === 'gene') {
-      classNames += ` ${styles.main}`;
-    }
-
-    if (drawerView === track.track_id) {
-      classNames += ` ${styles.currentDrawerView}`;
-    }
-
-    return classNames;
-  }, [drawerView]);
-
-  const getBoxClasses = (colour: any) => {
-    let classNames = styles.box;
-
-    if (colour) {
-      const colourValue = TrackItemColour[colour];
-      classNames += ` ${styles[colourValue]}`;
-    }
-
-    return classNames;
+    return classNames(styles.box, {
+      [styles[colourValue]]: !!colourValue
+    });
   };
 
   const drawerViewListHandler = (event: MouseEvent) => {
     event.preventDefault();
 
-    if (props.drawerOpened === false) {
+    if (!isDrawerOpened) {
       return;
     }
 
@@ -140,23 +126,27 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     const currentTrackStatus =
       status === ImageButtonStatus.ACTIVE ? 'on' : 'off';
 
-    const trackEvent = new CustomEvent('bpane', {
-      bubbles: true,
-      detail: {
-        [currentTrackStatus]: `${trackPrefix}${track.track_id}`
-      }
-    });
+    const payload = {
+      [currentTrackStatus]: `${trackPrefix}${track.track_id}`
+    };
 
-    if (browserRef.current) {
-      browserRef.current.dispatchEvent(trackEvent);
-    }
+    browserMessagingService.send('bpane', payload);
   };
+
+  const listItemClassNames = classNames(styles.listItem, {
+    [styles.main]: track.track_id === 'gene',
+    [styles.currentDrawerView]: track.track_id === drawerView
+  });
 
   return (
     <>
-      <dd className={getListItemClasses()} onClick={drawerViewListHandler}>
+      <dd className={listItemClassNames} onClick={drawerViewListHandler}>
         <label>
-          {track.colour && <span className={getBoxClasses(track.colour)} />}
+          {track.colour && (
+            <span
+              className={getBoxClasses(track.colour as TrackItemColourKey)}
+            />
+          )}
           <span className={styles.mainText}>{track.label}</span>
           {track.support_level && (
             <span className={styles.selectedInfo}>{track.support_level}</span>

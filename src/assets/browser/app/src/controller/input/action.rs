@@ -27,6 +27,24 @@ impl Action {
             _ => true
         }
     }
+
+    fn order(&self) -> i32 {
+        match self {
+            Action::Noop => 0,
+            Action::AddComponent(_) => 1,
+            Action::SetState(_,_) => 2,
+            Action::SetStick(_) => 3,
+            Action::Resize(_) => 5,
+            Action::Pos(_,_) => 10,
+            Action::PosRange(_,_,_) => 10,
+            Action::ZoomTo(_) => 10,
+            Action::Move(_) => 10,
+            Action::Zoom(_) => 10,
+            Action::ZMenu(_) => 25,
+            Action::ShowZMenu(_,_,_) => 25,
+            Action::Settled => 30,
+        }
+    }
 }
 
 fn exe_pos_event(app: &App, v: Dot<f64,f64>, prop: Option<f64>) {
@@ -142,7 +160,9 @@ fn exe_zmenu_show(a: &mut App, id: &str, pos: Dot<i32,i32>, payload: JSONValue) 
 }
 
 pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
-    cg.lock();
+    cg.with_counter(|c| c.lock());
+    let mut evs = evs.to_vec();
+    evs.sort_by_key(|e| e.order());
     for ev in evs {
         let ev = ev.clone();
         if ev.active() {
@@ -164,7 +184,7 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
             Action::Noop => ()
         }
     }
-    cg.unlock();
+    cg.with_counter(|c| c.unlock());
 }
 
 pub fn startup_actions() -> Vec<Action> {

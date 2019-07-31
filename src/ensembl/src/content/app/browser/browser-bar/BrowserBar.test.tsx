@@ -1,14 +1,23 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import faker from 'faker';
-import { BrowserBar, BrowserInfo, BrowserNavigatorButton } from './BrowserBar';
+import {
+  BrowserBar,
+  BrowserInfo,
+  BrowserNavigatorButton,
+  BrowserBarProps
+} from './BrowserBar';
 
-import { ChrLocation } from '../browserState';
-import { TrackType } from '../track-panel/trackPanelConfig';
+import { BreakpointWidth } from 'src/global/globalConfig';
 
 import BrowserReset from 'src/content/app/browser/browser-reset/BrowserReset';
 import BrowserGenomeSelector from 'src/content/app/browser/browser-genome-selector/BrowserGenomeSelector';
 import BrowserTabs from 'src/content/app/browser/browser-tabs/BrowserTabs';
+
+import { ChrLocation } from '../browserState';
+import { TrackType } from '../track-panel/trackPanelConfig';
+
+import { createEnsObject } from 'tests/fixtures/ens-object';
 
 jest.mock('src/content/app/browser/browser-reset/BrowserReset', () => () => (
   <div>BrowserReset</div>
@@ -28,35 +37,17 @@ describe('<BrowserBar />', () => {
   const toggleDrawer: any = jest.fn();
   const toggleGenomeSelector: any = jest.fn();
 
-  const objectInfo = {
-    assembly: {
-      name: 'GRCh38',
-      patch: 'p12'
-    },
-    associated_object: {
-      obj_type: 'transcript',
-      selected_info: 'MANE Select',
-      spliced_length: 84793,
-      stable_id: 'ENST00000380152.7'
-    },
-    bio_type: 'Protein coding',
-    obj_symbol: 'BRCA2',
-    obj_type: 'gene',
-    spliced_length: 84793,
-    stable_id: 'ENSG00000139618',
-    strand: 'forward',
-    genome_id: 'homo_sapiens_grch38'
-  };
-
   const defaultProps = {
     activeGenomeId: faker.lorem.word(),
+    breakpointWidth: BreakpointWidth.LARGE,
     browserActivated: true,
     browserNavOpened: false,
     chrLocation: ['13', 32275301, 32433493] as ChrLocation,
+    actualChrLocation: ['13', 32275301, 32433493] as ChrLocation,
     defaultChrLocation: ['13', 32271473, 32437359] as ChrLocation,
     drawerOpened: false,
     genomeSelectorActive: false,
-    ensObject: objectInfo,
+    ensObject: createEnsObject(),
     selectedBrowserTab: TrackType.GENOMIC,
     trackPanelModalOpened: false,
     trackPanelOpened: false,
@@ -64,10 +55,16 @@ describe('<BrowserBar />', () => {
     selectBrowserTab,
     toggleBrowserNav,
     toggleDrawer,
-    toggleGenomeSelector
+    toggleGenomeSelector,
+    isDrawerOpened: false,
+    isTrackPanelModalOpened: false,
+    isTrackPanelOpened: false,
+    closeDrawer: jest.fn(),
+    selectBrowserTabAndSave: jest.fn(),
+    toggleTrackPanel: jest.fn()
   };
 
-  const renderBrowserBar = (props?: any) => (
+  const renderBrowserBar = (props?: Partial<BrowserBarProps>) => (
     <BrowserBar {...defaultProps} {...props} />
   );
 
@@ -138,13 +135,20 @@ describe('<BrowserBar />', () => {
 
     test('shows BrowserTabs if TrackPanel is open', () => {
       const renderedBrowserBar = mount(
-        renderBrowserBar({ trackPanelOpened: true })
+        renderBrowserBar({ isTrackPanelOpened: true })
       );
       expect(renderedBrowserBar.find(BrowserTabs).length).toBe(1);
     });
 
-    test('hides BrowserTabs if TrackPanel is closed', () => {
+    test('shows BrowserTabs on a wide display even if TrackPanel is closed', () => {
       const renderedBrowserBar = mount(renderBrowserBar());
+      expect(renderedBrowserBar.find(BrowserTabs).length).toBe(1);
+    });
+
+    test('hides BrowserTabs on small if TrackPanel is closed', () => {
+      const renderedBrowserBar = mount(
+        renderBrowserBar({ breakpointWidth: BreakpointWidth.MEDIUM })
+      );
       expect(renderedBrowserBar.find(BrowserTabs).length).toBe(0);
     });
   });

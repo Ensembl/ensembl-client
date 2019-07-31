@@ -7,6 +7,7 @@ import { ActionCreator, Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import find from 'lodash/find';
 import get from 'lodash/get';
+import pickBy from 'lodash/pickBy';
 import apiService from 'src/services/api-service';
 
 import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
@@ -15,6 +16,8 @@ import buildAnalyticsObject from 'src/analyticsHelper';
 
 import {
   getCommittedSpecies,
+  getCommittedSpeciesById,
+  getEnabledCommittedSpecies,
   getSelectedItem,
   getSearchText
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
@@ -28,6 +31,8 @@ import {
   PopularSpecies,
   CommittedItem
 } from 'src/content/app/species-selector/types/species-search';
+
+import { getGenomeInfoById } from 'src/genome/genomeSelectors';
 
 import { CurrentItem } from './speciesSelectorState';
 
@@ -138,6 +143,30 @@ export const clearSelectedSearchResult = createStandardAction(
 //   }
 // };
 
+export const ensureSpeciesIsCommitted: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
+  const state = getState();
+  const committedSpecies = getEnabledCommittedSpecies(state);
+  const genomeInfo = getGenomeInfoById(state, genomeId);
+  if (getCommittedSpeciesById(state, genomeId) || !genomeInfo) {
+    return;
+  }
+
+  const newCommittedSpecies = [
+    ...committedSpecies,
+    {
+      ...pickBy(genomeInfo, (value, key) => {
+        return key !== 'example_objects';
+      }),
+      isEnabled: true
+    }
+  ] as CommittedItem[];
+
+  dispatch(updateCommittedSpecies(newCommittedSpecies));
+  speciesSelectorStorageService.saveSelectedSpecies(newCommittedSpecies);
+};
+
 export const fetchAssemblies: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (genomeId: string) => async (dispatch) => {
@@ -223,28 +252,32 @@ export const commitSelectedSpeciesAndSave: ActionCreator<
 export const toggleSpeciesUseAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (genomeId: string) => (dispatch, getState) => {
-  const committedSpecies = getCommittedSpecies(getState());
-  let speciesName = '';
-  let currentStatus = '';
-  committedSpecies.map((item) => {
-    if (item.genome_id === genomeId) {
-      speciesName = getSpeciesAnalyticsName(item);
-      currentStatus = item.isEnabled ? 'do_not_use' : 'use';
-      return {
-        ...item,
-        isEnabled: !item.isEnabled
-      };
-    }
+  const state = getState();
+  const committedSpecies = getCommittedSpecies(state);
+  const currentSpecies = getCommittedSpeciesById(state, genomeId);
+  if (!currentSpecies) {
+    return; // should never happen
+  }
+  const speciesNameForAnalytics = getSpeciesAnalyticsName(currentSpecies);
+  const updatedStatus = currentSpecies.isEnabled ? 'do_not_use' : 'use';
+
+  const updatedCommittedSpecies = committedSpecies.map((item) => {
+    return item.genome_id === genomeId
+      ? {
+          ...item,
+          isEnabled: !item.isEnabled
+        }
+      : item;
   });
 
   analyticsTracking.trackEvent({
     category: categories.SELECTED_SPECIES,
-    label: speciesName,
-    action: currentStatus
+    label: speciesNameForAnalytics,
+    action: updatedStatus
   });
 
-  dispatch(updateCommittedSpecies(committedSpecies));
-  speciesSelectorStorageService.saveSelectedSpecies(committedSpecies);
+  dispatch(updateCommittedSpecies(updatedCommittedSpecies));
+  speciesSelectorStorageService.saveSelectedSpecies(updatedCommittedSpecies);
 };
 
 export const deleteSpeciesAndSave: ActionCreator<

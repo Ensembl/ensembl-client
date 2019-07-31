@@ -2,6 +2,8 @@ import React, { FunctionComponent } from 'react';
 import get from 'lodash/get';
 import find from 'lodash/find';
 
+import { getDisplayStableId } from 'src/ens-object/ensObjectHelpers';
+
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 import styles from '../Drawer.scss';
@@ -28,6 +30,13 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
     return find(childTracks, { track_id: TRANSCRIPT_GENE_NAME }) || null;
   };
 
+  // FIXME: this is a very horrible temporary function;
+  // it will break when multiple transcripts are added
+  // but by that time we'll have to do a major refactor for ensObject and ensObject tracks anyway
+  const getTranscriptStableId = () => {
+    return get(ensObject, 'track.child_tracks.0.label', '');
+  };
+
   const transcriptTrack = getTranscriptTrack();
 
   if (!transcriptTrack) {
@@ -40,7 +49,7 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
         <label htmlFor="">Transcript</label>
         <div className={styles.details}>
           <p>
-            <span className={styles.mainDetail}>{ensObject.stable_id}</span>
+            <span className={styles.mainDetail}>{getTranscriptStableId()}</span>
             <span className={styles.secondaryDetail}>
               {transcriptTrack.additional_info}
             </span>
@@ -54,7 +63,7 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
           <p>
             <span>{ensObject.label}</span>
             <span className={styles.secondaryDetail}>
-              {ensObject.stable_id}
+              {getDisplayStableId(ensObject)}
             </span>
           </p>
         </div>

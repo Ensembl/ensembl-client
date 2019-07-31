@@ -22,20 +22,18 @@ export const fetchEnsObject: ActionCreator<
     dispatch(fetchEnsObjectAsyncActions.request());
     let response: EnsObjectResponse;
 
-    // FIXME: the if-branch is temporary, until backend learns to respond with region object data
-    if (isRegionObject(ensObjectId)) {
-      response = await parseRegionObjectId(ensObjectId);
-    } else {
-      const url = `/api/ensembl_object/info?object_id=${ensObjectId}`;
-      response = await apiService.fetch(url);
+    const url = `/api/object/info?object_id=${ensObjectId}`;
+    response = await apiService.fetch(url);
 
-      const trackUrl = `/api/ensembl_object/track_list?object_id=${ensObjectId}`;
+    if (response.object_type !== 'region') {
+      // region objects don't have associated track lists
+      const trackUrl = `/api/object/track_list?object_id=${ensObjectId}`;
       response.track = await apiService.fetch(trackUrl);
     }
 
     dispatch(
       fetchEnsObjectAsyncActions.success({
-        [response.ensembl_object_id]: response
+        [response.object_id]: response
       })
     );
   } catch (error) {
@@ -56,35 +54,4 @@ export const fetchExampleEnsObjects: ActionCreator<
       dispatch(fetchEnsObject(exampleObjectId));
     });
   }
-};
-
-// FIXME: remove when backend learns to return info about a region object
-const isRegionObject = (objectId: string) => {
-  return /:region:/.test(objectId);
-};
-
-// FIXME: the function below is horrible and should have never been written
-// Remove when backend learns to return info about a region object
-// (writing this as async function so that it has the same promise interface as apiService.fetch)
-const parseRegionObjectId = async (objectId: string) => {
-  const [genomeId, , chromosome, region] = objectId.split(':');
-  const [start, end] = region.split('-').map(Number);
-
-  return {
-    bio_type: null,
-    label: `${chromosome}:${region}`,
-    ensembl_object_id: objectId,
-    genome_id: genomeId,
-    spliced_length: null,
-    location: {
-      chromosome,
-      start,
-      end
-    },
-    object_type: 'region',
-    stable_id: null,
-    strand: null,
-    description: null,
-    track: null
-  };
 };

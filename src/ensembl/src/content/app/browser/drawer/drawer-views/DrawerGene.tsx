@@ -1,5 +1,7 @@
 import React, { FunctionComponent } from 'react';
 
+import { getDisplayStableId } from 'src/ens-object/ensObjectHelpers';
+
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 import styles from '../Drawer.scss';
@@ -27,7 +29,7 @@ const DrawerGene: FunctionComponent<DrawerGeneProps> = (
       <dd className="clearfix">
         <label htmlFor="">Stable ID</label>
         <div className={styles.details}>
-          <p>{ensObject.stable_id}</p>
+          <p>{getDisplayStableId(ensObject)}</p>
         </div>
       </dd>
 

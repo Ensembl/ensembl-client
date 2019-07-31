@@ -23,50 +23,6 @@ use debug::{ DebugBling, create_interactors };
 use dom::{ Bling, NoBling };
 use dom::event::{ EventListener, Target, EventData, EventType, EventControl, ICustomEvent };
 
-#[derive(Clone)]
-struct BootingMissed(Arc<Mutex<Vec<(String,JSONValue)>>>);
-
-struct BootingEventListener {
-    missed: BootingMissed
-}
-
-impl BootingMissed {
-    fn new() -> BootingMissed {
-        BootingMissed(Arc::new(Mutex::new(Vec::<(String,JSONValue)>::new())))
-    }
-    
-    fn add(&mut self, name: &str, details: JSONValue) {
-        let mut v = self.0.lock().unwrap();
-        v.push((name.to_string(),details));
-    }
-    
-    fn run_missed(&mut self, app: &mut App) {
-        let mut v = self.0.lock().unwrap();
-        for (event,details) in v.drain(..) {
-            match &event[..] {
-                "bpane" => run_direct_events(app,&details),
-                _ => ()
-            };
-        }
-    }
-}
-
-impl BootingEventListener {
-    fn new(missed: &BootingMissed) -> BootingEventListener {
-        BootingEventListener {
-            missed: missed.clone()
-        }
-    }
-}
-
-impl EventListener<()> for BootingEventListener {        
-    fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
-        if let EventData::CustomEvent(_,_,_,c) = e {
-            self.missed.add(&c.event_type(),c.details().unwrap());
-        }
-    }    
-}
-
 pub struct Booting {
     global: Global,
     http_manager: HttpManager,
@@ -74,15 +30,11 @@ pub struct Booting {
     el: HtmlElement,
     key: String,
     debug: bool,
-    missed: BootingMissed,
-    ec: EventControl<()>
 }
 
 impl Booting {
     pub fn new(g: &mut Global, http_manager: &HttpManager, config_url: &Url,
             el: &HtmlElement, key: &str, debug: bool) -> Booting {
-        let missed = BootingMissed::new();
-        let bel = BootingEventListener::new(&missed);
         let mut out = Booting {
             global: g.clone(),
             http_manager: http_manager.clone(),
@@ -90,11 +42,7 @@ impl Booting {
             el: el.clone(),
             key: key.to_string(),
             debug,
-            missed: missed.clone(),
-            ec: EventControl::new(Box::new(bel),())
         };
-        out.ec.add_event(EventType::CustomEvent("bpane".to_string()));
-        out.ec.add_element(&el.clone().into(),());
         out
     }
     
@@ -144,7 +92,6 @@ impl Booting {
         }
         let app = ar.clone().state();
         app.lock().unwrap().run_actions(&initial_actions(),None);
-        self.ec.reset();
-        self.missed.run_missed(&mut app.lock().unwrap());
+        console!("booted");
     }
 }

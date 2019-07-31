@@ -1,3 +1,4 @@
+mod activate;
 mod booting;
 mod global;
 mod apprunner;

@@ -18,7 +18,9 @@ const mockSessionStorage: any = {
 
 const mockWindowService: WindowServiceInterface = {
   getLocalStorage: () => mockLocalStorage,
-  getSessionStorage: () => mockSessionStorage
+  getSessionStorage: () => mockSessionStorage,
+  getWindow: jest.fn(),
+  getLocation: jest.fn()
 };
 
 describe('storageService', () => {

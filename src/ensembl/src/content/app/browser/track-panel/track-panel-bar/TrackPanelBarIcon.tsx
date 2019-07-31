@@ -14,8 +14,8 @@ import styles from './TrackPanelBarIcon.scss';
 type TrackPanelBarIconProps = {
   closeTrackPanelModal: () => void;
   iconConfig: TrackPanelBarItem;
+  isTrackPanelModalOpened: boolean;
   openTrackPanelModal: (trackPanelModalView: string) => void;
-  trackPanelModalOpened: boolean;
   trackPanelModalView: string;
 };
 
@@ -24,13 +24,13 @@ const TrackPanelBarIcon: FunctionComponent<TrackPanelBarIconProps> = memo(
     const [toggleState, setToggleState] = useState(false);
 
     useEffect(() => {
-      if (props.trackPanelModalOpened === false) {
+      if (!props.isTrackPanelModalOpened) {
         setToggleState(false);
       }
-    }, [props.trackPanelModalOpened]);
+    }, [props.isTrackPanelModalOpened]);
 
     const toggleModalView = useCallback(() => {
-      const newToggleState: boolean = !toggleState;
+      const newToggleState = !toggleState;
 
       if (newToggleState === true) {
         props.openTrackPanelModal(props.iconConfig.name);

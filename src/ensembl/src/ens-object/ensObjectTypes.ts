@@ -7,14 +7,14 @@ export type EnsObjectLocation = {
 export type EnsObject = {
   bio_type: string | null;
   label: string;
-  ensembl_object_id: string;
+  object_id: string;
   genome_id: string;
   location: EnsObjectLocation;
   object_type: string;
-  spliced_length: number | null;
   stable_id: string | null;
   strand: string | null;
   description: string | null;
+  versioned_stable_id: string | null;
   track: EnsObjectTrack | null;
 };
 

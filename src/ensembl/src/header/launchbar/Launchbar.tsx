@@ -33,7 +33,7 @@ const LaunchbarContent = (props: LaunchbarProps) => (
         <div className={styles.category}>
           <LaunchbarButton
             app="global-search"
-            description="Global search"
+            description="Site search"
             icon={SearchIcon}
             enabled={false}
           />

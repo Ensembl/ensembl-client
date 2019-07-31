@@ -1,7 +1,19 @@
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import { mount } from 'enzyme';
+import faker from 'faker';
+
 import ImageButton, { ImageButtonStatus } from './ImageButton';
 import ImageHolder from './ImageHolder';
+
+import Tooltip from 'src/shared/tooltip/Tooltip';
+
+jest.mock(
+  'src/shared/tooltip/Tooltip',
+  () => ({ children }: { children: any }) => (
+    <div className="tooltip">{children}</div>
+  )
+);
 
 describe('<ImageButton />', () => {
   it('renders without error', () => {
@@ -99,6 +111,57 @@ describe('<ImageButton />', () => {
       wrapper.simulate('click');
 
       expect(onClick).not.toBeCalled();
+    });
+  });
+
+  describe('tooltip on hover', () => {
+    const mockSVG = () => {
+      return <svg />;
+    };
+    const description = faker.lorem.words();
+    const props = {
+      image: mockSVG,
+      description
+    };
+    const mouseEnterEvent = new Event('mouseenter');
+    const clickEvent = new Event('click');
+
+    it('shows tooltip when moused over', () => {
+      const wrapper = mount(<ImageButton {...props} />);
+      expect(wrapper.find(Tooltip).length).toBe(0);
+
+      act(() => {
+        wrapper.getDOMNode().dispatchEvent(mouseEnterEvent);
+      });
+      wrapper.update();
+
+      const tooltip = wrapper.find(Tooltip);
+      expect(tooltip.length).toBe(1);
+      expect(tooltip.text()).toBe(description);
+    });
+
+    it('does not show tooltip if clicked', () => {
+      const wrapper = mount(<ImageButton {...props} />);
+
+      act(() => {
+        const rootNode = wrapper.getDOMNode();
+        rootNode.dispatchEvent(mouseEnterEvent);
+        rootNode.dispatchEvent(clickEvent);
+      });
+      wrapper.update();
+
+      expect(wrapper.find(Tooltip).length).toBe(0);
+    });
+
+    it('does not show tooltip if description is not provided', () => {
+      const wrapper = mount(<ImageButton {...props} description="" />);
+
+      act(() => {
+        wrapper.getDOMNode().dispatchEvent(mouseEnterEvent);
+      });
+      wrapper.update();
+
+      expect(wrapper.find(Tooltip).length).toBe(0);
     });
   });
 });
