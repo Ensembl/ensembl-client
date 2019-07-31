@@ -79,9 +79,7 @@ describe('<CheckboxGrid />', () => {
 
     const checkedStatus = firstCheckbox.prop('checked');
 
-    const orderedDefaultAttributes = orderBy(defaultOptions, ['label']);
-
-    const firstCheckboxID = orderedDefaultAttributes[0].id;
+    const firstCheckboxID = defaultOptions[0].id;
     expect(onChange).toBeCalledWith(!checkedStatus, firstCheckboxID);
   });
 
