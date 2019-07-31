@@ -14,7 +14,6 @@ export type Option = {
   label: React.ReactNode;
   isSelected: boolean;
   isDisabled?: boolean;
-  order?: number;
 };
 
 export type OptionGroup = {

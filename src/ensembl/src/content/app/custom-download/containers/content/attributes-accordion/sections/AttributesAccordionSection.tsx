@@ -9,12 +9,12 @@ import Attributes, {
 import {
   getAttributes,
   getSelectedAttributes,
-  getContentState
+  getAttributesUi
 } from 'src/content/app/custom-download/state/attributes/attributesSelector';
 
 import {
   updateSelectedAttributes,
-  updateContentState
+  updateUi
 } from 'src/content/app/custom-download/state/attributes/attributeActions';
 
 import ContentBuilder from 'src/content/app/custom-download/components/content-builder/ContentBuilder';
@@ -34,8 +34,8 @@ const AttributesAccordionSection = (props: Props) => {
     <ContentBuilder
       data={props.attributes[props.section] as AttributeWithContent}
       onChange={props.updateSelectedAttributes}
-      contentState={props.contentState}
-      onContentStateChange={props.updateContentState}
+      uiState={props.ui}
+      onUiChange={props.updateUi}
       selectedData={props.selectedAttributes}
       contentProps={{ checkbox_grid: { hideUnchecked: props.hideUnchecked } }}
     />
@@ -44,23 +44,23 @@ const AttributesAccordionSection = (props: Props) => {
 
 type DispatchProps = {
   updateSelectedAttributes: (attributes: JSONValue) => void;
-  updateContentState: (contentState: JSONValue) => void;
+  updateUi: (ui: JSONValue) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
   updateSelectedAttributes,
-  updateContentState
+  updateUi
 };
 
 type StateProps = {
   selectedAttributes: JSONValue;
-  contentState: JSONValue;
+  ui: JSONValue;
   attributes: Attributes;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
   selectedAttributes: getSelectedAttributes(state),
-  contentState: getContentState(state),
+  ui: getAttributesUi(state),
   attributes: getAttributes(state)
 });
 

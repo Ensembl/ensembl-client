@@ -3,20 +3,18 @@ import { ActionType, getType } from 'typesafe-actions';
 import { RootAction } from 'src/objects';
 import * as attributesActions from './attributeActions';
 import {
-  AttributesAccordionState,
-  defaultAttributesAccordionState,
+  AttributesState,
+  defaultAttributesState,
   OrthologueState,
-  AttributeContentState
+  AttributeUi
 } from './attributesState';
 
 function attributesAccordion(
-  state: AttributesAccordionState = defaultAttributesAccordionState,
+  state: AttributesState = defaultAttributesState,
   action: ActionType<RootAction>
-): AttributesAccordionState {
+): AttributesState {
   switch (action.type) {
-    case getType(
-      attributesActions.setAttributesAccordionExpandedPanel
-    ):
+    case getType(attributesActions.setAttributesAccordionExpandedPanel):
       return { ...state, expandedPanel: action.payload };
     case getType(attributesActions.setAttributes.success):
       return { ...state, content: action.payload };
@@ -30,10 +28,10 @@ function attributesAccordion(
         ...state,
         selectedAttributes: {}
       };
-    case getType(attributesActions.updateContentState):
+    case getType(attributesActions.updateUi):
       return {
         ...state,
-        contentState: action.payload
+        ui: action.payload
       };
     case getType(attributesActions.setOrthologueAttributes):
       return {
@@ -71,7 +69,7 @@ function attributesAccordion(
 }
 
 function orthologue(
-  state: OrthologueState = defaultAttributesAccordionState.orthologue,
+  state: OrthologueState = defaultAttributesState.orthologue,
   action: ActionType<RootAction>
 ): OrthologueState {
   switch (action.type) {
@@ -91,9 +89,9 @@ function orthologue(
 }
 
 function orthologueAttributes(
-  state: AttributeContentState = defaultAttributesAccordionState.content,
+  state: AttributeUi = defaultAttributesState.content,
   action: ActionType<RootAction>
-): AttributeContentState {
+): AttributeUi {
   switch (action.type) {
     case getType(attributesActions.setOrthologueAttributes):
       return { ...state, orthologues: action.payload };

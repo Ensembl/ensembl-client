@@ -10,8 +10,8 @@ export const getAttributes = (state: RootState) =>
 export const getSelectedAttributes = (state: RootState) =>
   state.customDownload.attributes.selectedAttributes;
 
-export const getContentState = (state: RootState) =>
-  state.customDownload.attributes.contentState;
+export const getAttributesUi = (state: RootState) =>
+  state.customDownload.attributes.ui;
 
 export const getOrthologueAttributes = (
   state: RootState

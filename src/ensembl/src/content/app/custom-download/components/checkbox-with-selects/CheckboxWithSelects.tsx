@@ -49,13 +49,20 @@ const CheckboxWithSelects = (props: CheckboxWithSelectsProps) => {
   });
 
   const firstSelectedOption = selectedOptionsClone.shift();
-  const firstoptions = [...props.options].map((option: Option) => {
-    const optionClone = { ...option };
-    if (optionClone.value === firstSelectedOption) {
-      optionClone.isSelected = true;
-    }
-    return optionClone;
-  });
+  const firstoptions = [...props.options]
+    .filter((option: Option) => {
+      return (
+        !selectedOptionsClone.includes(option.value) ||
+        option.value === firstSelectedOption
+      );
+    })
+    .map((option: Option) => {
+      const optionClone = { ...option };
+      if (optionClone.value === firstSelectedOption) {
+        optionClone.isSelected = true;
+      }
+      return optionClone;
+    });
 
   const removeSelection = (option: string) => {
     const selectedOptions: string[] = [...props.selectedOptions].filter(

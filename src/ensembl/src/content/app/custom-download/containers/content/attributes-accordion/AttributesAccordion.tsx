@@ -15,8 +15,7 @@ import { getAttributesAccordionExpandedPanel } from '../../../state/attributes/a
 import {
   setAttributesAccordionExpandedPanel,
   fetchAttributes,
-  resetSelectedAttributes,
-  updateSelectedAttributes
+  resetSelectedAttributes
 } from '../../../state/attributes/attributeActions';
 
 import { Orthologues } from './sections';
@@ -29,7 +28,6 @@ import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
 import styles from './AttributesAccordion.scss';
 
 import AttributesAccordionSection from 'src/content/app/custom-download/containers/content/attributes-accordion/sections/AttributesAccordionSection';
-import JSONValue from 'src/shared/types/JSON';
 
 type Props = StateProps & DispatchProps;
 
@@ -244,14 +242,12 @@ type DispatchProps = {
   ) => void;
   fetchAttributes: () => void;
   resetSelectedAttributes: () => void;
-  updateSelectedAttributes: (attributes: JSONValue) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
   setAttributesAccordionExpandedPanel,
   fetchAttributes,
-  resetSelectedAttributes,
-  updateSelectedAttributes
+  resetSelectedAttributes
 };
 
 type StateProps = {

@@ -9,5 +9,5 @@ export const getFilters = (state: RootState) =>
 export const getSelectedFilters = (state: RootState) =>
   state.customDownload.filters.selectedFilters;
 
-export const getContentState = (state: RootState) =>
-  state.customDownload.filters.contentState;
+export const getFiltersUi = (state: RootState) =>
+  state.customDownload.filters.ui;

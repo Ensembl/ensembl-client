@@ -6,13 +6,13 @@ import ContentBuilder from 'src/content/app/custom-download/components/content-b
 
 import {
   getSelectedFilters,
-  getContentState
-} from '../../../../../state/filters/filterSelector';
+  getFiltersUi
+} from 'src/content/app/custom-download/state/filters/filterSelector';
 
 import {
   updateSelectedFilters,
-  updateContentState
-} from '../../../../../state/filters/filterActions';
+  updateUi
+} from 'src/content/app/custom-download/state/filters/filterActions';
 
 import JSONValue from 'src/shared/types/JSON';
 import allFilters from 'src/content/app/custom-download/sample-data/filters';
@@ -26,8 +26,8 @@ const Proteins = (props: Props) => {
     <ContentBuilder
       data={content}
       onChange={props.updateSelectedFilters}
-      contentState={props.contentState}
-      onContentStateChange={props.updateContentState}
+      uiState={props.uiState}
+      onUiChange={props.updateUi}
       selectedData={props.selectedFilters}
     />
   );
@@ -35,22 +35,22 @@ const Proteins = (props: Props) => {
 
 type DispatchProps = {
   updateSelectedFilters: (filters: JSONValue) => void;
-  updateContentState: (contentState: JSONValue) => void;
+  updateUi: (uiState: JSONValue) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
   updateSelectedFilters,
-  updateContentState
+  updateUi
 };
 
 type StateProps = {
   selectedFilters: JSONValue;
-  contentState: JSONValue;
+  uiState: JSONValue;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
   selectedFilters: getSelectedFilters(state),
-  contentState: getContentState(state)
+  uiState: getFiltersUi(state)
 });
 
 export default connect(

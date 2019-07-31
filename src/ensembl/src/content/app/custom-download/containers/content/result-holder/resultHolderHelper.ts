@@ -28,11 +28,7 @@ export const getProcessedFilters = (filters: JSONValue) => {
   const selectedFilters = mapKeys(
     flatSelectedFilters,
     (value: boolean, key: string) => {
-      return key
-        .split('.default.')
-        .join('.')
-        .split('.genes.')
-        .join('.');
+      return key.replace(/\.default\./g, '.').replace(/\.genes\./g, '.');
     }
   );
 
@@ -51,7 +47,6 @@ export const getEndpointUrl = (
 ) => {
   const processedAttributes = getProcessedAttributes(flatSelectedAttributes);
   const processedFilters = getProcessedFilters(selectedFilters);
-
   let endpoint = config.genesearchAPIEndpoint + `/genes/${method}?query=`;
 
   const endpointFilters: JSONValue = {
@@ -59,16 +54,16 @@ export const getEndpointUrl = (
   };
 
   // FIXME: Temporarily apply the filters locally
-  const gene_ids = get(processedFilters, 'genes.limit_to_genes');
+  const gene_ids = get(processedFilters, 'genes.limit_to_genes', [])
+    .join(',')
+    .split(',')
+    .map(trim)
+    .filter(Boolean);
   const gene_biotypes = get(processedFilters, 'genes.biotype');
   const gene_source = get(processedFilters, 'genes.gene_source');
 
-  if (gene_ids) {
-    endpointFilters.id = gene_ids
-      .join(',')
-      .split(',')
-      .map(trim)
-      .filter(Boolean);
+  if (gene_ids.length) {
+    endpointFilters.id = gene_ids;
   }
 
   if (gene_biotypes) {

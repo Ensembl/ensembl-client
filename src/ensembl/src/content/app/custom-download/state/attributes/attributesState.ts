@@ -11,23 +11,23 @@ export type OrthologueState = {
   applyToAllSpecies: boolean;
 };
 
-export type AttributeContentState = {
+export type AttributeUi = {
   [key: string]: AttributeWithOptions | { [key: string]: AttributeWithOptions };
 };
 
-export type AttributesAccordionState = Readonly<{
+export type AttributesState = Readonly<{
   expandedPanel: string;
-  content: AttributeContentState;
+  content: AttributeUi;
   selectedAttributes: JSONValue;
-  contentState: JSONValue;
+  ui: JSONValue;
   orthologue: OrthologueState;
 }>;
 
-export const defaultAttributesAccordionState: AttributesAccordionState = {
+export const defaultAttributesState: AttributesState = {
   expandedPanel: '',
   content: {},
   selectedAttributes: customDownloadStorageService.getSelectedAttributes(),
-  contentState: {},
+  ui: {},
   orthologue: {
     searchTerm: '',
     species: [],

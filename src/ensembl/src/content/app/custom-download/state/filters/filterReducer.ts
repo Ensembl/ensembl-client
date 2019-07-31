@@ -16,8 +16,8 @@ function filterAccordion(
       return { ...state, expandedPanel: action.payload };
     case getType(filterActions.updateSelectedFilters):
       return { ...state, selectedFilters: action.payload };
-    case getType(filterActions.updateContentState):
-      return { ...state, contentState: action.payload };
+    case getType(filterActions.updateUi):
+      return { ...state, ui: action.payload };
     case getType(filterActions.resetSelectedFilters):
       return { ...state, selectedFilters: {} };
     default:

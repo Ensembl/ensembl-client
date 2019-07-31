@@ -2,13 +2,10 @@ import React from 'react';
 import Checkbox from 'src/shared/checkbox/Checkbox';
 import styles from './CheckboxGrid.scss';
 
-import orderBy from 'lodash/orderBy';
-
 export type CheckboxGridOption = {
   isChecked: boolean;
   id: string;
   label: string;
-  order?: number;
 };
 
 export type CheckboxGridProps = {
@@ -21,27 +18,22 @@ export type CheckboxGridProps = {
 };
 
 const CheckboxGrid = (props: CheckboxGridProps) => {
-  let orderedCheckboxList: CheckboxGridOption[] = orderBy(props.options, [
-    'order',
-    'label'
-  ]);
+  let options = [...props.options];
 
   if (props.hideUnchecked) {
-    orderedCheckboxList = orderedCheckboxList.filter(
-      (attribute: CheckboxGridOption) => {
-        return attribute.isChecked;
-      }
-    );
+    options = options.filter((attribute: CheckboxGridOption) => {
+      return attribute.isChecked;
+    });
   }
-  if (!orderedCheckboxList.length) {
+  if (!options.length) {
     return null;
   }
 
   const gridMatrix = Array(props.columns).fill(0);
 
-  let totalCheckbox = orderedCheckboxList.length;
+  let totalCheckbox = options.length;
 
-  for (let i = 0; i < orderedCheckboxList.length; i++) {
+  for (let i = 0; i < options.length; i++) {
     if (totalCheckbox <= 0) {
       break;
     }
@@ -50,7 +42,7 @@ const CheckboxGrid = (props: CheckboxGridProps) => {
         break;
       }
       totalCheckbox -= 1;
-      if (orderedCheckboxList[i + j]) {
+      if (options[i + j]) {
         gridMatrix[j] += 1;
       }
     }
@@ -68,7 +60,7 @@ const CheckboxGrid = (props: CheckboxGridProps) => {
         {gridMatrix.map((columnLength: number, gridKey: number) => {
           return (
             <div key={gridKey} style={singleGridStyle}>
-              {orderedCheckboxList
+              {options
                 .splice(0, columnLength)
                 .map((attribute: CheckboxGridOption, itemKey: number) => {
                   return (

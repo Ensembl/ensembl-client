@@ -7,11 +7,11 @@ import JSONValue from 'src/shared/types/JSON';
 export enum StorageKeys {
   FILTERS = 'customDownload.filtersAccordion.filters',
   SELECTED_FILTERS = 'customDownload.filtersAccordion.selectedFilters',
-  FILTERS_CONTENT_STATE = 'customDownload.filtersAccordion.contentState',
+  FILTERS_UI = 'customDownload.filtersAccordion.uiState',
 
   ATTRIBUTES = 'customDownload.attributesAccordion.attributes',
   SELECTED_ATTRIBUTES = 'customDownload.attributesAccordion.selectedAttributes',
-  ATTRIBUTES_CONTENT_STATE = 'customDownload.attributesAccordion.contentState',
+  ATTRIBUTES_UI = 'customDownload.attributesAccordion.uiState',
 
   SELECTED_PRE_FILTER = 'customDownload.preFilter.selectedPreFilter',
   SHOW_PRE_FILTER_PANEL = 'customDownload.preFilter.showPreFilterPanel',
@@ -43,12 +43,12 @@ export class CustomDownloadStorageService {
     this.storageService.save(StorageKeys.SELECTED_FILTERS, selectedFilters);
   }
 
-  public getFiltersContentState(): JSONValue {
-    return this.storageService.get(StorageKeys.FILTERS_CONTENT_STATE) || {};
+  public getFiltersUi(): JSONValue {
+    return this.storageService.get(StorageKeys.FILTERS_UI) || {};
   }
 
-  public saveFiltersContentState(contentState: JSONValue) {
-    this.storageService.save(StorageKeys.FILTERS_CONTENT_STATE, contentState);
+  public saveFiltersUi(uiState: JSONValue) {
+    this.storageService.save(StorageKeys.FILTERS_UI, uiState);
   }
 
   public getAttributes(): JSONValue {
@@ -70,15 +70,12 @@ export class CustomDownloadStorageService {
     );
   }
 
-  public getAttributesContentState(): JSONValue {
-    return this.storageService.get(StorageKeys.ATTRIBUTES_CONTENT_STATE) || {};
+  public getAttributesUi(): JSONValue {
+    return this.storageService.get(StorageKeys.ATTRIBUTES_UI) || {};
   }
 
-  public saveAttributesContentState(contentState: JSONValue) {
-    this.storageService.save(
-      StorageKeys.ATTRIBUTES_CONTENT_STATE,
-      contentState
-    );
+  public saveAttributesUi(uiState: JSONValue) {
+    this.storageService.save(StorageKeys.ATTRIBUTES_UI, uiState);
   }
 
   public getSelectedPreFilter(): string {

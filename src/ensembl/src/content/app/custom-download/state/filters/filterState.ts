@@ -6,12 +6,12 @@ export type FilterAccordionState = Readonly<{
   expandedPanel: string;
   filters: Attributes;
   selectedFilters: JSONValue;
-  contentState: JSONValue;
+  ui: JSONValue;
 }>;
 
 export const defaultFilterAccordionState: FilterAccordionState = {
   expandedPanel: '',
   filters: {},
   selectedFilters: customDownloadStorageService.getSelectedFilters(),
-  contentState: {}
+  ui: {}
 };

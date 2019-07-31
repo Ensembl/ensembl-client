@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import CheckboxWithSelects from 'src/content/app/custom-download/components/checkbox-with-selects/CheckboxWithSelects';
 import CheckboxWithRadios from 'src/content/app/custom-download/components/checkbox-with-radios/CheckboxWithRadios';
 import CheckboxWithTextfields from 'src/content/app/custom-download/components/checkbox-with-textfields/CheckboxWithTextfields';
@@ -17,16 +17,18 @@ import {
 } from 'src/shared/accordion';
 
 import set from 'lodash/set';
-
-import styles from './ContentBuilder.scss';
-
 import get from 'lodash/get';
+
 import {
   Attribute,
   AttributeWithContent,
-  AttributeWithOptions
+  AttributeWithOptions,
+  AttributeType
 } from 'src/content/app/custom-download/types/Attributes';
+
 import JSONValue, { PrimitiveOrArrayValue } from 'src/shared/types/JSON';
+
+import styles from './ContentBuilder.scss';
 
 type Path = (string | number)[];
 let path: Path = [];
@@ -35,8 +37,8 @@ type ContentBuilderProps = {
   data: AttributeWithContent;
   selectedData: JSONValue;
   onChange: (selectedData: JSONValue) => void;
-  contentState: JSONValue;
-  onContentStateChange: (updatedContentState: JSONValue) => void;
+  uiState: JSONValue;
+  onUiChange: (updatedUi: JSONValue) => void;
   path?: Path;
   contentProps?: {
     [key: string]: JSONValue;
@@ -58,14 +60,14 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     props.onChange(newSelectedData);
   };
 
-  const onContentStateChangeHandler = (
+  const onUiChangeHandler = (
     path: (string | number)[],
     payload: PrimitiveOrArrayValue
   ) => {
-    const updatedContentState = { ...props.contentState };
-    set(updatedContentState, path, payload);
+    const updatedUi = { ...props.uiState };
+    set(updatedUi, path, payload);
 
-    props.onContentStateChange(updatedContentState);
+    props.onUiChange(updatedUi);
   };
 
   const buildCheckboxWithSelect = (entry: AttributeWithOptions, path: Path) => {
@@ -123,7 +125,9 @@ const ContentBuilder = (props: ContentBuilderProps) => {
         shouldUpdateSelectedData = true;
       }
     });
-    if (shouldUpdateSelectedData) props.onChange(newSelectedData);
+    if (shouldUpdateSelectedData) {
+      props.onChange(newSelectedData);
+    }
 
     const gridClone = gridOptions.map((option) => {
       return {
@@ -160,9 +164,9 @@ const ContentBuilder = (props: ContentBuilderProps) => {
           <ContentBuilder
             data={entry}
             onChange={props.onChange}
-            onContentStateChange={props.onContentStateChange}
+            onUiChange={props.onUiChange}
             selectedData={props.selectedData}
-            contentState={props.contentState}
+            uiState={props.uiState}
             path={path}
           />
         </AccordionItemPanel>
@@ -172,13 +176,17 @@ const ContentBuilder = (props: ContentBuilderProps) => {
 
   const buildAccordion = (entry: AttributeWithContent, path: Path) => {
     const currentPath = [...path, entry.id];
-    const preExpandedPanels = get(props.contentState, currentPath, []);
+    const preExpandedPanels = get(
+      props.uiState,
+      ['accordion', ...currentPath],
+      []
+    );
 
     return (
       <Accordion
         allowMultipleExpanded={true}
         onChange={(expandedPanels) =>
-          onContentStateChangeHandler(currentPath, expandedPanels)
+          onUiChangeHandler(currentPath, expandedPanels)
         }
         className={styles.accordion}
         preExpanded={preExpandedPanels}
@@ -228,37 +236,37 @@ const ContentBuilder = (props: ContentBuilderProps) => {
           key: number
         ) => {
           switch (entry.type) {
-            case 'section_group':
+            case AttributeType.SECTION_GROUP:
               return (
                 <div key={key}>
                   {buildAccordion(entry as AttributeWithContent, path)}
                 </div>
               );
-            case 'section':
+            case AttributeType.SECTION:
               return (
                 <div key={key}>
                   {buildAccordionItem(entry as AttributeWithContent, path)}
                 </div>
               );
-            case 'checkbox_grid':
+            case AttributeType.CHECKBOX_GRID:
               return (
                 <div key={key}>
                   {buildCheckboxGrid(entry as AttributeWithOptions, path)}
                 </div>
               );
-            case 'select_multiple':
+            case AttributeType.SELECT_MULTIPLE:
               return (
                 <div key={key}>
                   {buildCheckboxWithSelect(entry as AttributeWithOptions, path)}
                 </div>
               );
-            case 'select_one':
+            case AttributeType.SELECT_ONE:
               return (
                 <div key={key}>
                   {buildCheckboxWithRadios(entry as AttributeWithOptions, path)}
                 </div>
               );
-            case 'paste_or_upload':
+            case AttributeType.PASTE_OR_UPLOAD:
               return (
                 <div key={key}>{buildCheckboxWithTextfields(entry, path)}</div>
               );

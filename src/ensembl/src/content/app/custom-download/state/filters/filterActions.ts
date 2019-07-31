@@ -20,7 +20,7 @@ export const updateSelectedFilters = createAction(
   }
 );
 
-export const updateContentState = createStandardAction(
+export const updateUi = createStandardAction(
   'custom-download/update-filter-content-state'
 )<JSONValue>();
 
