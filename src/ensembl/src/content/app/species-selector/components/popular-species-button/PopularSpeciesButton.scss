@@ -1,11 +1,12 @@
 @import 'src/styles/common';
 
-$buttonSize: 52px;
+$button-width: 52px;
+$button-gap: 1.4rem;
 
 .popularSpeciesButtonWrapper {
   position: relative;
   display: inline-block;
-  margin-right: 1.4rem;
+  margin-right: $button-gap;
   margin-bottom: 1.2rem;
   font-size: 0;
 
@@ -17,8 +18,8 @@ $buttonSize: 52px;
 .popularSpeciesButton {
   position: relative;
   display: inline-block;
-  width: $buttonSize;
-  height: $buttonSize;
+  width: $button-width;
+  height: $button-width;
   background: $ens-blue;
   padding: 3px;
   overflow: hidden; // <-- solely for IE11's sake; it seems that without this rule invisible parts of svg mignt be excaping the button and messing up layout
