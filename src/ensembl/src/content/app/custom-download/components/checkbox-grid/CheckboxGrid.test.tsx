@@ -52,7 +52,7 @@ describe('<CheckboxGrid />', () => {
     expect(wrapper.find(Checkbox).length).toEqual(defaultOptions.length);
   });
 
-  it('sorts the checkboxes alphebatically based on the label', () => {
+  it('sorts the checkboxes based on the options array', () => {
     wrapper = mount(<CheckboxGrid {...defaultProps} />);
 
     const firstGridContainer = wrapper.find('.checkboxGridContainer').first();
@@ -61,7 +61,6 @@ describe('<CheckboxGrid />', () => {
     Object.values(defaultOptions).forEach((element) => {
       labels.push(element.label);
     });
-    labels.sort();
 
     const firstLabel = labels.shift();
     const lastLabel = labels.pop();
