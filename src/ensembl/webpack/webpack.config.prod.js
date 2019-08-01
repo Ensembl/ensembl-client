@@ -103,7 +103,12 @@ const plugins = [
   new WorkboxPlugin.GenerateSW({
     swDest: '../service-worker.js', // save service worker in the root folder (/dist) instead of /dist/static
     clientsClaim: true,
-    skipWaiting: true
+    skipWaiting: true,
+    exclude: [/index.html/],
+    runtimeCaching: [{
+      urlPattern: ({ event }) => event.request.mode === 'navigate',
+      handler: 'NetworkOnly'
+    }]
   }),
 
   new RobotstxtPlugin()
