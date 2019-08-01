@@ -35,14 +35,27 @@ export const findOptimalPosition = (params: FindOptimalPositionParams) => {
 
 const adjustPosition = (params: FindOptimalPositionParams) => {
   const possiblePositions = getPossiblePositions(params);
-  for (let position of possiblePositions) {
-    if (willStayWithinBounds({ ...params, position })) {
-      return position;
-    }
+  if (!possiblePositions.length) {
+    return params.position;
   }
 
-  // if no better position was found, return original position
-  return params.position;
+  return possiblePositions.reduce(
+    (result, position) => {
+      const outOfBoundsArea = getTooltipOutOfBoundsArea({
+        ...params,
+        position
+      });
+      if (outOfBoundsArea < result.outOfBoundsArea) {
+        return {
+          position,
+          outOfBoundsArea
+        };
+      } else {
+        return result;
+      }
+    },
+    { position: params.position, outOfBoundsArea: Infinity }
+  ).position;
 };
 
 const getPossiblePositions = (params: FindOptimalPositionParams) => {
@@ -60,7 +73,7 @@ const getPossiblePositions = (params: FindOptimalPositionParams) => {
   }
 };
 
-const willStayWithinBounds = (params: FindOptimalPositionParams) => {
+const getTooltipOutOfBoundsArea = (params: FindOptimalPositionParams) => {
   const {
     intersectionEntry: { boundingClientRect, rootBounds },
     anchorBoundingRect,
@@ -132,11 +145,63 @@ const willStayWithinBounds = (params: FindOptimalPositionParams) => {
     predictedBottom = predictedTop + height;
   }
 
-  return (
-    predictedLeft &&
-    predictedLeft > rootBounds.left &&
-    (predictedRight && predictedRight < rootBounds.right) &&
-    (predictedTop && predictedTop > rootBounds.top) &&
-    (predictedBottom && predictedBottom < rootBounds.bottom)
-  );
+  const predictedTooltipRect = {
+    left: predictedLeft,
+    right: predictedRight,
+    top: predictedTop,
+    bottom: predictedBottom,
+    width,
+    height
+  };
+
+  return calculateOverflowArea({
+    tooltip: predictedTooltipRect,
+    root: rootBounds
+  });
+};
+
+const calculateOverflowArea = (params) => {
+  const {
+    tooltip: {
+      left: tooltipLeft,
+      right: tooltipRight,
+      top: tooltipTop,
+      bottom: tooltipBottom,
+      width: tooltipWidth,
+      height: tooltipHeight
+    },
+    root: {
+      left: rootLeft,
+      right: rootRight,
+      top: rootTop,
+      bottom: rootBottom,
+      width: rootWidth,
+      height: rootHeight
+    }
+  } = params;
+
+  let deltaX = 0,
+    deltaY = 0;
+
+  if (tooltipLeft < rootLeft) {
+    deltaX = rootLeft - tooltipLeft;
+  } else if (tooltipRight > rootRight) {
+    deltaX = tooltipRight - rootRight;
+  }
+
+  if (tooltipTop < rootTop) {
+    deltaY = rootTop - tooltipTop;
+  } else if (tooltipBottom > rootBottom) {
+    deltaY = tooltipBottom - rootBottom;
+  }
+
+  if (deltaX || deltaY) {
+    return (
+      deltaX * (tooltipHeight - deltaY) +
+      deltaY * (tooltipWidth - deltaX) +
+      deltaX * deltaY
+    );
+  } else {
+    return 0;
+  }
 };
