@@ -14,6 +14,7 @@ import {
   getBrowserCogTrackList,
   getBrowserSelectedCog
 } from '../browserSelectors';
+import analyticsTracking from 'src/services/analytics-service';
 
 import styles from './BrowserTrackConfig.scss';
 
@@ -71,6 +72,12 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
     } else {
       props.updateTrackConfigNames(selectedCog, !trackOurConfigName);
     }
+
+    analyticsTracking.trackEvent({
+      category: 'track_settings',
+      label: selectedCog,
+      action: 'track_name_' + (trackOurConfigName ? 'on' : 'off')
+    });
   }, [
     selectedCog,
     props.updateTrackConfigNames,
@@ -87,6 +94,12 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
     } else {
       props.updateTrackConfigLabel(selectedCog, !trackOurConfigLabel);
     }
+
+    analyticsTracking.trackEvent({
+      category: 'track_settings',
+      label: selectedCog,
+      action: 'feature_label_' + (trackOurConfigLabel ? 'on' : 'off')
+    });
   }, [
     selectedCog,
     updateTrackConfigLabel,
@@ -97,6 +110,12 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
 
   const applyToAllToggle = useCallback(() => {
     props.updateApplyToAll(!applyToAll);
+
+    analyticsTracking.trackEvent({
+      category: 'track_settings',
+      label: selectedCog,
+      action: 'apply_to_all - ' + (applyToAll ? 'selected' : 'unselected')
+    });
   }, [applyToAll, updateApplyToAll]);
 
   const checkboxStyles = {

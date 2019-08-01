@@ -5,6 +5,7 @@ import React, {
   useState,
   useEffect
 } from 'react';
+import analyticsTracking from 'src/services/analytics-service';
 
 import cogOnIcon from 'static/img/shared/cog-on.svg';
 import cogOffIcon from 'static/img/shared/cog.svg';
@@ -25,6 +26,12 @@ const BrowserCog: FunctionComponent<BrowserCogProps> = (
   const toggleCog = useCallback(() => {
     if (cogActivated === false) {
       updateSelectedCog(index);
+
+      analyticsTracking.trackEvent({
+        category: 'track_settings',
+        label: index,
+        action: 'opened'
+      });
     } else {
       updateSelectedCog('');
     }

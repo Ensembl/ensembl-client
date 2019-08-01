@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import classNames from 'classnames';
 
+import analyticsTracking from 'src/services/analytics-service';
 import { TrackItemColour, TrackItemColourKey } from '../trackPanelConfig';
 import { UpdateTrackStatesPayload } from 'src/content/app/browser/browserActions';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
@@ -94,6 +95,14 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
 
   const drawerViewButtonHandler = () => {
     const viewName = track.track_id;
+
+    if (drawerView !== viewName) {
+      analyticsTracking.trackEvent({
+        category: 'track_drawer',
+        label: viewName,
+        action: 'opened'
+      });
+    }
 
     props.updateDrawerView(viewName);
   };

@@ -6,6 +6,7 @@ import { RootState } from 'src/store';
 import { TrackType } from './trackPanelConfig';
 import browserStorageService from '../browser-storage-service';
 import { getBrowserActiveGenomeId } from '../browserSelectors';
+import analyticsTracking from 'src/services/analytics-service';
 
 export const toggleTrackPanel = createStandardAction(
   'track-panel/toggle-track-panel'
@@ -35,6 +36,12 @@ export const selectBrowserTabAndSave: ActionCreator<
   const selectedBrowserTabForGenome = {
     [activeGenomeId]: selectedBrowserTab
   };
+
+  analyticsTracking.trackEvent({
+    category: 'track_panel_tab',
+    label: selectedBrowserTab,
+    action: 'selected'
+  });
 
   dispatch(selectBrowserTab(selectedBrowserTabForGenome));
   browserStorageService.updateSelectedBrowserTab(selectedBrowserTabForGenome);
