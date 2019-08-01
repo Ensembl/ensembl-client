@@ -113,7 +113,7 @@ const ResultHolder = (props: Props) => {
 
 type DispatchProps = {
   fetchPreviewResult: (fetchPreviewResult: string) => void;
-  clearPreviewResult: (clearPreviewResult: JSONValue) => void;
+  clearPreviewResult: () => void;
   setIsLoadingResult: (setIsLoadingResult: boolean) => void;
 };
 
