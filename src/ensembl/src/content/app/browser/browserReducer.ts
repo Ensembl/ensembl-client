@@ -28,7 +28,7 @@ export function browserInfo(
   switch (action.type) {
     case getType(browserActions.updateBrowserActivated):
       return { ...state, browserActivated: action.payload };
-    case getType(trackPanelActions.toggleTrackPanel):
+    case getType(trackPanelActions.toggleTrackPanelForGenome):
       return {
         ...state,
         browserOpenState: action.payload
