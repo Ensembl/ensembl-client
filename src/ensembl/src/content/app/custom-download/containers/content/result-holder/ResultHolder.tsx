@@ -36,7 +36,7 @@ const ResultHolder = (props: Props) => {
 
     const totalSelectedAttributes = Object.keys(flatSelectedAttributes).length;
     if (!totalSelectedAttributes && props.preview.results) {
-      props.clearPreviewResult({});
+      props.clearPreviewResult();
       return;
     } else if (!totalSelectedAttributes) {
       return;
@@ -119,7 +119,7 @@ type DispatchProps = {
 
 const mapDispatchToProps: DispatchProps = {
   fetchPreviewResult: fetchPreviewResult,
-  clearPreviewResult: setPreviewResult.success,
+  clearPreviewResult: () => setPreviewResult.success({}),
   setIsLoadingResult
 };
 

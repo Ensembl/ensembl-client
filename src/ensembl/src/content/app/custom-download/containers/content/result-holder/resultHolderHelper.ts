@@ -12,11 +12,7 @@ export const getProcessedAttributes = (flatSelectedAttributes: JSONValue) => {
     (key) => flatSelectedAttributes[key]
   );
   return filteredAttributes.map((value: string) => {
-    return value
-      .split('.default.')
-      .join('.')
-      .split('genes.')
-      .join('');
+    return value.replace(/\.default\./g, '.').replace(/genes\./g, '');
   });
 };
 
