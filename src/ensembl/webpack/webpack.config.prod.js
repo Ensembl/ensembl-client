@@ -107,7 +107,7 @@ const plugins = [
     exclude: [/index.html$/, /\.gz$/, /\.br$/, /\.js\.map$/],
     runtimeCaching: [{
       urlPattern: ({ event }) => event.request.mode === 'navigate',
-      handler: 'NetworkOnly'
+      handler: 'NetworkFirst'
     }]
   }),
 
