@@ -73,7 +73,9 @@ const getPossiblePositions = (params: FindOptimalPositionParams) => {
   }
 };
 
-const getTooltipOutOfBoundsArea = (params: FindOptimalPositionParams) => {
+const getTooltipOutOfBoundsArea = (
+  params: FindOptimalPositionParams
+): number => {
   const {
     intersectionEntry: { boundingClientRect, rootBounds },
     anchorBoundingRect,
@@ -82,7 +84,7 @@ const getTooltipOutOfBoundsArea = (params: FindOptimalPositionParams) => {
 
   if (!rootBounds) {
     // shouldn't happen, but makes typescript happy
-    return position;
+    return 0;
   }
 
   const {
@@ -98,7 +100,11 @@ const getTooltipOutOfBoundsArea = (params: FindOptimalPositionParams) => {
 
   const { width, height } = boundingClientRect;
 
-  let predictedLeft, predictedRight, predictedTop, predictedBottom;
+  let predictedLeft = 0,
+    predictedRight = 0,
+    predictedTop = 0,
+    predictedBottom = 0;
+
   if (position === Position.TOP_LEFT) {
     predictedLeft =
       anchorCentreX - width + TIP_WIDTH / 2 + TIP_HORIZONTAL_OFFSET;
@@ -160,7 +166,10 @@ const getTooltipOutOfBoundsArea = (params: FindOptimalPositionParams) => {
   });
 };
 
-const calculateOverflowArea = (params) => {
+const calculateOverflowArea = (params: {
+  tooltip: ClientRect;
+  root: ClientRect;
+}) => {
   const {
     tooltip: {
       left: tooltipLeft,
