@@ -21,7 +21,7 @@ app.use(proxy({
 }));
 
 app.use(convert(history()));
-app.use(serve(path.join(__dirname, 'dist'), { br: true, gzip: false }));
+app.use(serve(path.join(__dirname, 'dist')));
 
 let protocol = 'http';
 
