@@ -104,7 +104,7 @@ const plugins = [
     swDest: '../service-worker.js', // save service worker in the root folder (/dist) instead of /dist/static
     clientsClaim: true,
     skipWaiting: true,
-    exclude: [/index.html/],
+    exclude: [/index.html$/, /\.gz$/, /\.br$/, /\.js\.map$/],
     runtimeCaching: [{
       urlPattern: ({ event }) => event.request.mode === 'navigate',
       handler: 'NetworkOnly'
