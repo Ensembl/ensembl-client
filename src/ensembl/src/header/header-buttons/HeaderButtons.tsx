@@ -45,10 +45,6 @@ export const HeaderButtons: FunctionComponent<HeaderButtonsProps> = (props) => (
   </div>
 );
 
-// <button className="launchbarButton" >
-
-//      <button className="accountButton disabled"></button>
-
 const mapStateToProps = (): StateProps => ({});
 
 const mapDispatchToProps: DispatchProps = {

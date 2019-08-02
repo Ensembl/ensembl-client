@@ -38,9 +38,6 @@ $fill-color: $ens-dark-grey;
 // It should also not cause change body dimensions (and cause sliders to appear),
 // hence it is placed in top left corned of the screen with position: fixed
 .tooltipInvisible {
-  position: fixed;
-  left: 0;
-  top: 0;
   visibility: hidden;
 }
 

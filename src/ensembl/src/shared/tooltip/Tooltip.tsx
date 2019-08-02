@@ -81,6 +81,10 @@ const Tooltip = (props: Props) => {
   }, []);
 
   useEffect(() => {
+    if (isWaiting || !props.autoAdjust) {
+      return;
+    }
+
     const node = tooltipElementRef.current;
     const parentElement = node && node.parentElement;
     if (!(node && parentElement)) {
@@ -89,10 +93,6 @@ const Tooltip = (props: Props) => {
     parentRef.current = parentElement;
 
     setInlineStyles(getInlineStyles({ ...props, parentElement }));
-
-    if (!props.autoAdjust) {
-      return;
-    }
 
     const intersectionObserver = new IntersectionObserver(
       (entries) => {
