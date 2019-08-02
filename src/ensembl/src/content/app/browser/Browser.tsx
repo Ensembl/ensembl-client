@@ -99,7 +99,6 @@ type BrowserProps = RouteComponentProps<MatchParams> &
 export const Browser: FunctionComponent<BrowserProps> = (
   props: BrowserProps
 ) => {
-  console.log('Hello world!');
   const browserRef: React.RefObject<HTMLDivElement> = useRef(null);
   const [trackStatesFromStorage, setTrackStatesFromStorage] = useState<
     TrackStates
