@@ -61,16 +61,22 @@ const adjustPosition = (params: FindOptimalPositionParams) => {
 const getPossiblePositions = (params: FindOptimalPositionParams) => {
   const { position } = params;
   if (topRow.includes(position)) {
-    return [...topRow, ...bottomRow];
+    return [...preferredFirst(topRow, position), ...bottomRow];
   } else if (bottomRow.includes(position)) {
-    return [...bottomRow, ...topRow];
+    return [...preferredFirst(bottomRow, position), ...topRow];
   } else if (leftSide.includes(position)) {
-    return [...leftSide, ...rightSide];
+    return [...preferredFirst(leftSide, position), ...rightSide];
   } else if (rightSide.includes(position)) {
-    return [...rightSide, ...leftSide];
+    return [...preferredFirst(rightSide, position), ...leftSide];
   } else {
     return [];
   }
+};
+
+const preferredFirst = (positions: Position[], preferredPosition: Position) => {
+  return [...positions].sort((position) =>
+    position === preferredPosition ? -1 : 0
+  );
 };
 
 const getTooltipOutOfBoundsArea = (
