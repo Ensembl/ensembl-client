@@ -207,13 +207,11 @@ export const BrowserInfo = ({ ensObject }: BrowserInfoProps) => {
               {getDisplayStableId(ensObject)}
             </span>
           </dd>
-          <dd className={`show-for-large ${styles.nonLabelValue}`}>
-            {ensObject.bio_type}
+          <dd className={`show-for-large`}>
+            {ensObject.bio_type && ensObject.bio_type.toLowerCase()}
           </dd>
-          <dd className={`show-for-large ${styles.nonLabelValue}`}>
-            {ensObject.strand} strand
-          </dd>
-          <dd className={`show-for-large ${styles.nonLabelValue}`}>
+          <dd className={`show-for-large`}>{ensObject.strand} strand</dd>
+          <dd className={`show-for-large`}>
             {getFormattedLocation(ensObject.location)}
           </dd>
         </>
