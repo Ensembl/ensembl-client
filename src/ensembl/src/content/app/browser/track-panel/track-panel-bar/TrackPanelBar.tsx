@@ -65,6 +65,7 @@ const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
             closeTrackPanelModal={props.closeTrackPanelModal}
             openTrackPanelModal={props.openTrackPanelModal}
             isTrackPanelModalOpened={props.isTrackPanelModalOpened}
+            isTrackPanelOpened={props.isTrackPanelOpened}
             trackPanelModalView={props.trackPanelModalView}
           />
         ))}
