@@ -35,10 +35,12 @@ const AttributesAccordionSection = (props: Props) => {
     <ContentBuilder
       data={props.attributes[props.section] as AttributeWithContent}
       onChange={props.updateSelectedAttributes}
-      uiState={props.ui}
+      uiState={{
+        ...props.ui,
+        checkbox_grid: { hideUnchecked: props.hideUnchecked }
+      }}
       onUiChange={props.updateUi}
       selectedData={props.selectedAttributes}
-      contentProps={{ checkbox_grid: { hideUnchecked: props.hideUnchecked } }}
     />
   );
 };
