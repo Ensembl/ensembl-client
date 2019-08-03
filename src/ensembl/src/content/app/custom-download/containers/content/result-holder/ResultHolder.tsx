@@ -7,7 +7,7 @@ import {
 } from '../../../state/customDownloadSelectors';
 
 import { getSelectedAttributes } from '../../../state/attributes/attributesSelector';
-import { getSelectedFilters } from '../../../state/filters/filterSelector';
+import { getSelectedFilters } from '../../../state/filters/filtersSelector';
 
 import {
   setPreviewResult,

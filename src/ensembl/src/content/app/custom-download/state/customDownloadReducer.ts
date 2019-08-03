@@ -13,7 +13,7 @@ import {
   defaultPreviewDownloadState
 } from './customDownloadState';
 
-import filters from './filters/filterReducer';
+import filters from './filters/filtersReducer';
 import attributes from './attributes/attributesReducer';
 import { combineReducers } from 'redux';
 

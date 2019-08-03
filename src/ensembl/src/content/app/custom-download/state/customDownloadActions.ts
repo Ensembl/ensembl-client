@@ -1,7 +1,7 @@
 import { createAction, createAsyncAction } from 'typesafe-actions';
 
-import * as allFilterAccordionActions from './filters/filterActions';
-import * as allAttributeAccordionActions from './attributes/attributeActions';
+import * as allFilterAccordionActions from './filters/filtersActions';
+import * as allAttributeAccordionActions from './attributes/attributesActions';
 import { ActionCreator, Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import apiService from 'src/services/api-service';

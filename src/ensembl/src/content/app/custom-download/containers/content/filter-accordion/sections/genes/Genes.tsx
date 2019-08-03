@@ -7,12 +7,12 @@ import ContentBuilder from 'src/content/app/custom-download/components/content-b
 import {
   getSelectedFilters,
   getFiltersUi
-} from 'src/content/app/custom-download/state/filters/filterSelector';
+} from 'src/content/app/custom-download/state/filters/filtersSelector';
 
 import {
   updateSelectedFilters,
   updateUi
-} from 'src/content/app/custom-download/state/filters/filterActions';
+} from 'src/content/app/custom-download/state/filters/filtersActions';
 
 import allFilters from 'src/content/app/custom-download/sample-data/filters';
 import { AttributeWithContent } from 'src/content/app/custom-download/types/Attributes';

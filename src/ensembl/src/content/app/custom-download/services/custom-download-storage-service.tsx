@@ -9,9 +9,9 @@ export enum StorageKeys {
   SELECTED_FILTERS = 'customDownload.filtersAccordion.selectedFilters',
   FILTERS_UI = 'customDownload.filtersAccordion.uiState',
 
-  ATTRIBUTES = 'customDownload.attributesAccordion.attributes',
-  SELECTED_ATTRIBUTES = 'customDownload.attributesAccordion.selectedAttributes',
-  ATTRIBUTES_UI = 'customDownload.attributesAccordion.uiState',
+  ATTRIBUTES = 'customDownload.attributes.attributes',
+  SELECTED_ATTRIBUTES = 'customDownload.attributes.selectedAttributes',
+  ATTRIBUTES_UI = 'customDownload.attributes.uiState',
 
   SELECTED_PRE_FILTER = 'customDownload.preFilter.selectedPreFilter',
   SHOW_PRE_FILTER_PANEL = 'customDownload.preFilter.showPreFilterPanel',

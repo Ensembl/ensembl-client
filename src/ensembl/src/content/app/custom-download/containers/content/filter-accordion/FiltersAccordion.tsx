@@ -12,12 +12,12 @@ import {
 
 import styles from './FiltersAccordion.scss';
 
-import { getFiltersAccordionExpandedPanel } from '../../../state/filters/filterSelector';
+import { getFiltersAccordionExpandedPanel } from '../../../state/filters/filtersSelector';
 import {
   setFiltersAccordionExpandedPanel,
   resetSelectedFilters,
   updateSelectedFilters
-} from '../../../state/filters/filterActions';
+} from '../../../state/filters/filtersActions';
 
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 import JSONValue from 'src/shared/types/JSON';

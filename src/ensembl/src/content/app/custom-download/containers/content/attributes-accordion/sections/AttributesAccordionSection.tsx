@@ -16,7 +16,7 @@ import {
 import {
   updateSelectedAttributes,
   updateUi
-} from 'src/content/app/custom-download/state/attributes/attributeActions';
+} from 'src/content/app/custom-download/state/attributes/attributesActions';
 
 import ContentBuilder from 'src/content/app/custom-download/components/content-builder/ContentBuilder';
 
