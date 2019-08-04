@@ -2,6 +2,8 @@ import React, { ReactNode, useRef, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
 
+import windowService from 'src/services/window-service';
+
 import { findOptimalPosition } from './tooltip-helper';
 import { Position } from './tooltip-types';
 import {
@@ -81,48 +83,42 @@ const Tooltip = (props: Props) => {
   }, []);
 
   useEffect(() => {
-    if (isWaiting || !props.autoAdjust) {
-      return;
-    }
-
     const node = tooltipElementRef.current;
     const parentElement = node && node.parentElement;
     if (!(node && parentElement)) {
       return;
     }
     parentRef.current = parentElement;
-
     setInlineStyles(getInlineStyles({ ...props, parentElement }));
 
-    const intersectionObserver = new IntersectionObserver(
-      (entries) => {
-        const optimalPosition = findOptimalPosition({
-          intersectionEntry: entries[0],
-          anchorBoundingRect: parentElement.getBoundingClientRect(),
-          position: positionRef.current || props.position
-        });
-        if (optimalPosition !== positionRef.current) {
-          positionRef.current = optimalPosition;
-        }
-        setInlineStyles(
-          getInlineStyles({
-            ...props,
-            position: optimalPosition,
-            parentElement
-          })
-        );
-        setIsPositioning(false);
-      },
-      {
-        root: props.container,
-        threshold: 1
-      }
-    );
-    intersectionObserver.observe(node);
+    if (isWaiting || !props.autoAdjust) {
+      return;
+    }
 
-    return () => {
-      intersectionObserver.unobserve(node);
-    };
+    const tooltipBoundingRect = node.getBoundingClientRect();
+    const rootBoundingRect = props.container
+      ? props.container.getBoundingClientRect()
+      : windowService.getDimensions();
+    const anchorBoundingRect = parentElement.getBoundingClientRect();
+
+    const optimalPosition = findOptimalPosition({
+      tooltipBoundingRect,
+      anchorBoundingRect,
+      rootBoundingRect,
+      position: positionRef.current || props.position
+    });
+
+    if (optimalPosition !== positionRef.current) {
+      positionRef.current = optimalPosition;
+    }
+    setInlineStyles(
+      getInlineStyles({
+        ...props,
+        position: optimalPosition,
+        parentElement
+      })
+    );
+    setIsPositioning(false);
   }, [isWaiting]);
 
   const className = classNames(
