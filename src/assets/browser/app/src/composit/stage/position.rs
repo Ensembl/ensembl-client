@@ -69,6 +69,10 @@ impl Position {
         self.pos.1 = self.pos.1.round();
     }
 
+    pub(super) fn best_zoom_screen_bp(&self, bp: f64) -> f64 {
+        self.zoom.best_zoom_screen_bp(bp)
+    }
+
     pub fn middle_to_edge(&self, which: &Direction, bump: bool) -> f64 {
         let bp = self.get_screen_in_bp();
         let (bump_min,bump_max) = if bump {

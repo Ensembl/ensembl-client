@@ -37,14 +37,22 @@ impl Zoom {
         val.min(self.get_limit(&AxisSense::Max))
     }
     
+    fn check_limits(&self, mut v: f64) -> f64 {
+        v = self.check_max_limit(v);
+        self.check_min_limit(v)
+    }
+
     pub fn set_zoom(&mut self, val: f64) {
         /* min has priority over max */
-        let mut v = self.check_max_limit(val);
-        v = self.check_min_limit(v);
+        let v = self.check_limits(val);
         self.zoom = v;
         self.linzoom = 10.0_f64.powf(-v);
     }
     
+    pub fn best_zoom_screen_bp(&self,bp: f64) -> f64 {
+        self.check_limits(-bp.log10())
+    }
+
     pub fn get_screen_in_bp(&self) -> f64 {
         self.linzoom
     }

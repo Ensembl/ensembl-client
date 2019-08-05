@@ -83,6 +83,10 @@ impl Stage {
         self.ipos.set_screen_in_bp(zoom);
     }
  
+    pub fn best_zoom_screen_bp(&self, bp: f64) -> f64 {
+        self.apos.best_zoom_screen_bp(bp)
+    }
+
     pub fn settle(&mut self) { self.apos.settle(); }
     
     pub fn get_mouse_pos_prop(&self) -> f64 {
