@@ -18,7 +18,7 @@ import styles from './Tooltip.scss';
 type Props = {
   position: Position;
   container?: HTMLElement | null;
-  autoAdjust: boolean; // try to adapt position so as not to extend beyond screen bounds
+  autoAdjust: boolean; // try to adjust tooltip position so as not to extend beyond screen bounds
   delay: number;
   children: ReactNode;
   onClose: () => void;
@@ -83,19 +83,30 @@ const Tooltip = (props: Props) => {
   }, []);
 
   useEffect(() => {
-    const node = tooltipElementRef.current;
-    const parentElement = node && node.parentElement;
-    if (!(node && parentElement)) {
+    if (isWaiting) {
       return;
     }
+
+    const tooltipElement = tooltipElementRef.current;
+    const parentElement = tooltipElement && tooltipElement.parentElement;
+
+    if (!(tooltipElement && parentElement)) {
+      return;
+    }
+
     parentRef.current = parentElement;
     setInlineStyles(getInlineStyles({ ...props, parentElement }));
 
-    if (isWaiting || !props.autoAdjust) {
-      return;
+    if (props.autoAdjust) {
+      adjustPosition(tooltipElement, parentElement);
     }
+  }, [isWaiting]);
 
-    const tooltipBoundingRect = node.getBoundingClientRect();
+  const adjustPosition = (
+    tooltipElement: HTMLDivElement,
+    parentElement: HTMLElement
+  ) => {
+    const tooltipBoundingRect = tooltipElement.getBoundingClientRect();
     const rootBoundingRect = props.container
       ? props.container.getBoundingClientRect()
       : windowService.getDimensions();
@@ -119,7 +130,7 @@ const Tooltip = (props: Props) => {
       })
     );
     setIsPositioning(false);
-  }, [isWaiting]);
+  };
 
   const className = classNames(
     styles.tooltip,
