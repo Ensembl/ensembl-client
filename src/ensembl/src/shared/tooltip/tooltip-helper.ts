@@ -22,14 +22,7 @@ type FindOptimalPositionParams = {
 };
 
 export const findOptimalPosition = (params: FindOptimalPositionParams) => {
-  return adjustPosition(params);
-};
-
-const adjustPosition = (params: FindOptimalPositionParams) => {
   const possiblePositions = getPossiblePositions(params);
-  if (!possiblePositions.length) {
-    return params.position;
-  }
 
   return possiblePositions.reduce(
     (result, position) => {
@@ -66,6 +59,7 @@ const getPossiblePositions = (params: FindOptimalPositionParams) => {
 };
 
 const preferredFirst = (positions: Position[], preferredPosition: Position) => {
+  // sort the positions array in such a way that the preferred position is always the first
   return [...positions].sort((position) =>
     position === preferredPosition ? -1 : 0
   );
