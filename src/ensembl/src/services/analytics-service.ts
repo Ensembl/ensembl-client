@@ -3,15 +3,14 @@ import { AnalyticsOptions } from 'src/analyticsHelper';
 
 import config from 'config';
 
-const { googleAnalyticsKey = '', isTest } = config;
+const { googleAnalyticsKey } = config;
 
 class AnalyticsTracking {
   private reactGA: typeof ReactGA;
 
   public constructor() {
     ReactGA.initialize(googleAnalyticsKey, {
-      titleCase: false,
-      testMode: isTest
+      titleCase: false
     });
     this.reactGA = ReactGA;
   }

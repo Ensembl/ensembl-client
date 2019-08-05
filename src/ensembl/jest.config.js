@@ -10,7 +10,8 @@ module.exports = {
     '\\.(css|scss)$': 'identity-obj-proxy'
   },
   roots: ['<rootDir>/src'],
-  setupFilesAfterEnv: ['<rootDir>/setup-enzyme.ts'],
+  setupFiles: ['<rootDir>/tests/setup-jest.js'],
+  setupFilesAfterEnv: ['<rootDir>/tests/setup-enzyme.ts'],
   testEnvironment: 'jsdom',
   transform: {
     '.+\\.tsx?$': 'babel-jest',
