@@ -75,7 +75,7 @@ export class BrowserStorageService {
     );
   }
 
-  public getSelectedBrowserTab() {
+  public getSelectedBrowserTab(): { [genomeId: string]: TrackType } {
     return this.storageService.get(StorageKeys.SELECTED_BROWSER_TAB) || {};
   }
 

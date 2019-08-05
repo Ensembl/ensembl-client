@@ -2,39 +2,39 @@ import { RootState } from 'src/store';
 import { getBrowserActiveGenomeId } from '../browserSelectors';
 import { TrackType } from './trackPanelConfig';
 
-export const getIsTrackPanelModalOpened = (state: RootState) => {
+const getTrackPanelStateForGenome = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
+  const trackPanelStateForGenome = activeGenomeId
+    ? state.trackPanel[activeGenomeId]
+    : null;
 
-  return (
-    (activeGenomeId &&
-      state.trackPanel.isTrackPanelModalOpened[activeGenomeId]) ||
-    false
-  );
+  return trackPanelStateForGenome || null;
+};
+
+export const getIsTrackPanelModalOpened = (state: RootState) => {
+  const trackPanelStateForGenome = getTrackPanelStateForGenome(state);
+  return trackPanelStateForGenome
+    ? trackPanelStateForGenome['isTrackPanelModalOpened']
+    : false;
 };
 
 export const getTrackPanelModalView = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-
-  return (
-    (activeGenomeId && state.trackPanel.trackPanelModalView[activeGenomeId]) ||
-    ''
-  );
+  const trackPanelStateForGenome = getTrackPanelStateForGenome(state);
+  return trackPanelStateForGenome
+    ? trackPanelStateForGenome['trackPanelModalView']
+    : '';
 };
 
 export const getSelectedBrowserTab = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-
-  return (
-    (activeGenomeId && state.trackPanel.selectedBrowserTab[activeGenomeId]) ||
-    TrackType.GENOMIC
-  );
+  const trackPanelStateForGenome = getTrackPanelStateForGenome(state);
+  return trackPanelStateForGenome
+    ? trackPanelStateForGenome['selectedBrowserTab']
+    : TrackType.GENOMIC;
 };
 
 export const getIsTrackPanelOpened = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-
-  return (
-    (activeGenomeId && state.trackPanel.isTrackPanelOpened[activeGenomeId]) ||
-    false
-  );
+  const trackPanelStateForGenome = getTrackPanelStateForGenome(state);
+  return trackPanelStateForGenome
+    ? trackPanelStateForGenome['isTrackPanelOpened']
+    : false;
 };

@@ -11,25 +11,34 @@ export default function trackPanel(
     case getType(trackPanelActions.toggleTrackPanelForGenome):
       return {
         ...state,
-        isTrackPanelOpened: { ...state.isTrackPanelOpened, ...action.payload }
+        [action.payload.activeGenomeId]: {
+          ...state[action.payload.activeGenomeId],
+          isTrackPanelOpened: action.payload.isTrackPanelOpened
+        }
       };
     case getType(trackPanelActions.toggleTrackPanelModalForGenome):
       return {
         ...state,
-        isTrackPanelModalOpened: {
-          ...state.isTrackPanelModalOpened,
-          ...action.payload
+        [action.payload.activeGenomeId]: {
+          ...state[action.payload.activeGenomeId],
+          isTrackPanelModalOpened: action.payload.isTrackPanelModalOpened
         }
       };
     case getType(trackPanelActions.changeTrackPanelModalViewForGenome):
       return {
         ...state,
-        trackPanelModalView: { ...state.trackPanelModalView, ...action.payload }
+        [action.payload.activeGenomeId]: {
+          ...state[action.payload.activeGenomeId],
+          trackPanelModalView: action.payload.trackPanelModalView
+        }
       };
     case getType(trackPanelActions.selectBrowserTab):
       return {
         ...state,
-        selectedBrowserTab: { ...state.selectedBrowserTab, ...action.payload }
+        [action.payload.activeGenomeId]: {
+          ...state[action.payload.activeGenomeId],
+          selectedBrowserTab: action.payload.selectedBrowserTab
+        }
       };
     default:
       return state;
