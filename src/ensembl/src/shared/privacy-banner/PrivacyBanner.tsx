@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import { PrivacyConfigs } from './privacy-banner-service';
+import { PrivacyConfig } from './privacy-banner-service';
 import styles from './PrivacyBanner.scss';
 
 type PrivacyBannerProps = {
@@ -16,7 +16,7 @@ export const PrivacyBanner: FunctionComponent<PrivacyBannerProps> = (
         personal data in order to function. By using the site you are agreeing
         to this as outlined in our{' '}
         <a
-          href={PrivacyConfigs.POLICY_URL}
+          href={PrivacyConfig.policyUrl}
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -24,7 +24,7 @@ export const PrivacyBanner: FunctionComponent<PrivacyBannerProps> = (
         </a>{' '}
         and
         <a
-          href={PrivacyConfigs.TERMS_URL}
+          href={PrivacyConfig.termsUrl}
           target="_blank"
           rel="noopener noreferrer"
         >
