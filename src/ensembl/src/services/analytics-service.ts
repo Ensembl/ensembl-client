@@ -1,5 +1,5 @@
 import ReactGA from 'react-ga';
-import { AnalyticsOptions } from 'src/analyticsHelper';
+import { AnalyticsOptions, CustomDimensionOptions } from 'src/analyticsHelper';
 
 import config from 'config';
 
@@ -31,6 +31,11 @@ class AnalyticsTracking {
       transport: 'xhr',
       value: ga.value
     });
+  }
+
+  // Send a custom dimension event
+  public sendCustomDimensionEvent(ga: CustomDimensionOptions) {
+    this.reactGA.ga('set', ga.diemension, ga.value);
   }
 }
 

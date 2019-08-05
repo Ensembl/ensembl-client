@@ -12,7 +12,7 @@ import apiService from 'src/services/api-service';
 
 import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
 import analyticsTracking from 'src/services/analytics-service';
-import buildAnalyticsObject from 'src/analyticsHelper';
+import buildAnalyticsObject, { CustomDimensions } from 'src/analyticsHelper';
 
 import {
   getCommittedSpecies,
@@ -241,6 +241,11 @@ export const commitSelectedSpeciesAndSave: ActionCreator<
     category: categories.ADD_SPECIES,
     label: speciesName,
     action: 'select'
+  });
+
+  analyticsTracking.sendCustomDimensionEvent({
+    diemension: CustomDimensions.SPECIES,
+    value: selectedItem.genome_id
   });
 
   dispatch(updateCommittedSpecies(newCommittedSpecies));
