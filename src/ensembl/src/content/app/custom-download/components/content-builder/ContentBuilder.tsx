@@ -40,9 +40,6 @@ type ContentBuilderProps = {
   uiState: JSONValue;
   onUiChange: (updatedUi: JSONValue) => void;
   path?: Path;
-  contentProps?: {
-    [key: string]: JSONValue;
-  };
 };
 
 const ContentBuilder = (props: ContentBuilderProps) => {
@@ -136,9 +133,7 @@ const ContentBuilder = (props: ContentBuilderProps) => {
       };
     });
 
-    const additionalProps = props.contentProps
-      ? props.contentProps['checkbox_grid']
-      : {};
+    const additionalProps = props.uiState ? props.uiState['checkbox_grid'] : {};
 
     return (
       <CheckboxGrid

@@ -14,7 +14,7 @@ import {
   getDownloadType
 } from '../../state/customDownloadSelectors';
 
-import { getSelectedFilters } from '../../state/filters/filterSelector';
+import { getSelectedFilters } from '../../state/filters/filtersSelector';
 import { getSelectedAttributes } from '../../state/attributes/attributesSelector';
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 import JSONValue from 'src/shared/types/JSON';

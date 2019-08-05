@@ -1,7 +1,7 @@
 import { ActionType, getType } from 'typesafe-actions';
 
 import { RootAction } from 'src/objects';
-import * as attributesActions from './attributeActions';
+import * as attributesActions from './attributesActions';
 import {
   AttributesState,
   defaultAttributesState,
@@ -9,7 +9,7 @@ import {
   AttributeUi
 } from './attributesState';
 
-function attributesAccordion(
+function attributes(
   state: AttributesState = defaultAttributesState,
   action: ActionType<RootAction>
 ): AttributesState {
@@ -100,4 +100,4 @@ function orthologueAttributes(
   }
 }
 
-export default attributesAccordion;
+export default attributes;

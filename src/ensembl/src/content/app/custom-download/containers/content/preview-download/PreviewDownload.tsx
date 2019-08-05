@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 import { Link } from 'react-router-dom';
 import { getSelectedAttributes } from '../../../state/attributes/attributesSelector';
-import { getSelectedFilters } from '../../../state/filters/filterSelector';
+import { getSelectedFilters } from '../../../state/filters/filtersSelector';
 
 import { ReactComponent as closeIcon } from 'static/img/track-panel/close.svg';
 import styles from './PreviewDownload.scss';

@@ -25,7 +25,7 @@ import {
   setOrthologueShowAll,
   setOrthologueApplyToAllSpecies,
   updateSelectedAttributes
-} from '../../../../../state/attributes/attributeActions';
+} from '../../../../../state/attributes/attributesActions';
 
 import Input from 'src/shared/input/Input';
 import set from 'lodash/set';

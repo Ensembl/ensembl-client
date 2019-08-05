@@ -16,7 +16,7 @@ import {
   setAttributesAccordionExpandedPanel,
   fetchAttributes,
   resetSelectedAttributes
-} from '../../../state/attributes/attributeActions';
+} from '../../../state/attributes/attributesActions';
 
 import { Orthologues } from './sections';
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
