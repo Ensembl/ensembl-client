@@ -191,9 +191,10 @@ impl ZMenuFeatureTmpl {
         JSONValue::Array(input.iter().map(|x| JSONValue::Array(x.to_vec())).collect())
     }
     
-    pub fn apply(&self, id: &str, data: &HashMap<String,String>) -> JSONValue {
+    pub fn apply(&self, id: &str, track_id: &str, data: &HashMap<String,String>) -> JSONValue {
         json!({
             "id": id.to_string(),
+            "track_id": track_id.to_string(),
             "lines": self.convert(self.build(data))
         })
     }

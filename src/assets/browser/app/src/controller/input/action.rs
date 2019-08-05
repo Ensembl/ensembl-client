@@ -17,7 +17,7 @@ pub enum Action {
     SetState(String,bool),
     Settled,
     ZMenu(CPixel),
-    ShowZMenu(String,Dot<i32,i32>,JSONValue),
+    ShowZMenu(String,String,Dot<i32,i32>,JSONValue),
     SetFocus(String),
     Reset,
 }
@@ -43,7 +43,7 @@ impl Action {
             Action::Move(_) => 10,
             Action::Zoom(_) => 10,
             Action::ZMenu(_) => 25,
-            Action::ShowZMenu(_,_,_) => 25,
+            Action::ShowZMenu(_,_,_,_) => 25,
             Action::SetFocus(_) => 20,
             Action::Reset => 25,
             Action::Settled => 30,
@@ -157,9 +157,9 @@ fn exe_deactivate(a: &mut App) {
     }
 }
 
-fn exe_zmenu_show(a: &mut App, id: &str, pos: Dot<i32,i32>, payload: JSONValue) {
+fn exe_zmenu_show(a: &mut App, id: &str, track_id: &str, pos: Dot<i32,i32>, payload: JSONValue) {
     if let Some(zr) = a.get_zmenu_reports() {
-        zr.add_activate(id,pos,payload);
+        zr.add_activate(id,track_id,pos,payload);
     }
 }
 
@@ -197,7 +197,7 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
             Action::SetFocus(id) => exe_set_focus(cg,&id),
             Action::Settled => exe_settled(cg),
             Action::ZMenu(pos) => exe_zmenu(cg,&pos,currency),
-            Action::ShowZMenu(id,pos,payload) => exe_zmenu_show(cg,&id,pos,payload),
+            Action::ShowZMenu(id,track_id,pos,payload) => exe_zmenu_show(cg,&id,&track_id,pos,payload),
             Action::Reset => exe_reset(cg),
             Action::Noop => ()
         }

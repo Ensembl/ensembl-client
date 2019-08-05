@@ -36,13 +36,14 @@ impl ZMenuReports {
         self.queue.lock().unwrap().get_reports()
     }
     
-    pub fn add_activate(&mut self, id: &str, pos: Dot<i32,i32>, payload: JSONValue) {
+    pub fn add_activate(&mut self, id: &str, track_id: &str, pos: Dot<i32,i32>, payload: JSONValue) {
         self.deactivate();
         console!("add {}",payload.to_string());
         self.activated = Some(id.to_string());
         unwrap!(self.queue.lock()).add_report(json!({
             "action": "create_zmenu",
             "id": id,
+            "track_id": track_id,
             "content": payload,
             "anchor_coordinates": { "x": pos.0, "y": pos.1 }
         }));

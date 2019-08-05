@@ -11,7 +11,7 @@ use data::parse_jsonxferresponse;
 use dom::domutil::browser_time;
 use types::{ Dot, ddiv };
 
-const ZHOOSH_TIME : f64 = 2000.; /* ms */
+const ZHOOSH_TIME : f64 = 1750.; /* ms */
 
 pub struct JumpZhoosh {
     stick: Option<String>,

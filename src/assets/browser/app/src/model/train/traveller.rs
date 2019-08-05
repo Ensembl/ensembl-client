@@ -84,7 +84,7 @@ impl TravellerImpl {
     fn create_zmenu(&mut self) {
         for shape in self.data.as_ref().unwrap().get_shapes() {
             if let Some((id,zbox)) = shape.zmenu_box() {
-                self.zml.add_box(&id,&zbox);
+                self.zml.add_box(&id,self.comp.get_name(),&zbox);
             }
         }
     }

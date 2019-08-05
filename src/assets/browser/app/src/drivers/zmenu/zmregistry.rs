@@ -42,11 +42,11 @@ impl ZMenuRegistryImpl {
         bb_log!("zmenu","zmr: pos={:?}",pos);
         for zml in self.zml.values() {
             bb_log!("zmenu","zmr: zml");
-            for (id,payload) in zml.intersects(stage,pos) {
-                all.insert(id,payload);
+            for (id,track_id,payload) in zml.intersects(stage,pos) {
+                all.insert(id,(track_id,payload));
             }
         }
-        all.drain().map(|(k,v)| Action::ShowZMenu(k,pos,v)).collect()
+        all.drain().map(|(k,v)| Action::ShowZMenu(k,v.0,pos,v.1)).collect()
     }       
 }
 
