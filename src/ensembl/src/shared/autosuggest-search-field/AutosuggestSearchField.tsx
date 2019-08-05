@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, ReactNode } from 'react';
 import classNames from 'classnames';
+import get from 'lodash/get';
 
 import SearchField from 'src/shared/search-field/SearchField';
 import AutosuggestionPanel, {
@@ -177,7 +178,15 @@ const AutosuggestSearchField = (props: Props) => {
       props.onSubmit(value);
     } else if (highlightedItemIndex) {
       const [groupIndex, itemIndex] = highlightedItemIndex;
-      const match = props.matchGroups[groupIndex].matches[itemIndex];
+      const match = get(
+        props.matchGroups,
+        `${groupIndex}.matches.${itemIndex}`
+      );
+
+      if (!match) {
+        return;
+      }
+
       props.onSelect(match.data);
 
       setHighlightedItemIndex(initialHighlightedItemIndex);
