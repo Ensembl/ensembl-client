@@ -29,7 +29,7 @@ Test:
   except:
   - dev
   - master
-  - feature/custom-downloads-july
+  - /^feature\/.*$/
 
 Test_N_Build:
   image: node:10.16.0
