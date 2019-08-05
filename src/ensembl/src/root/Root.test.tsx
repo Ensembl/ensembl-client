@@ -15,9 +15,6 @@ jest.mock('../shared/privacy-banner/PrivacyBanner', () => () => (
   <div className="privacyBanner">PrivacyBanner</div>
 ));
 
-const storageMock: any = {
-  get: jest.fn()
-};
 const updateBreakpointWidth = jest.fn();
 
 describe('<Root />', () => {
