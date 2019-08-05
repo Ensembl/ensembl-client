@@ -4,7 +4,7 @@ use composit::{
 
 use model::driver::{ PrinterManager, Printer };
 use model::train::{ Train, TrainManager, TravellerCreator };
-use drivers::zmenu::{ ZMenuRegistry, ZMenuLeafSet };
+use model::zmenu::{ ZMenuRegistry, ZMenuLeafSet };
 
 use controller::global::AppRunner;
 use controller::input::Action;

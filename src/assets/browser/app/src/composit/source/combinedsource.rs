@@ -7,10 +7,10 @@ use composit::{
 };
 use data::{ BackendConfig, HttpXferClerk };
 use debug::{ add_debug_sources };
-use drivers::zmenu::ZMenuRegistry;
 use composit::source::SourceResponse;
 use tácode::{ Tácode, TáSource };
 use model::focus::FocusObject;
+use model::zmenu::ZMenuRegistry;
 
 const TOP : i32 = 50;
 const PITCH : i32 = 63;

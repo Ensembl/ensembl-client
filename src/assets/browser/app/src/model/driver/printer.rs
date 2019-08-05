@@ -2,7 +2,6 @@ use composit::{ Compositor, Stage, Leaf };
 use types::Dot;
 
 use model::train::{ Traveller, TravellerResponse };
-use drivers::zmenu::ZMenuLeaf;
 
 pub trait Printer {
     /* Print one run of objects from compositor with given stage and

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use drivers::zmenu::ZMenuLeaf;
+use model::zmenu::ZMenuLeaf;
 use model::driver::{ Printer, PrinterManager };
 use model::train::{ Traveller, TravellerResponse, TravellerResponseData };
 use composit::Leaf;

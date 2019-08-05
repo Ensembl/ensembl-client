@@ -6,7 +6,7 @@ use std::collections::HashMap;
 
 use composit::{ ActiveSource, AllLandscapes, SourceManager };
 use data::{ BackendConfig, HttpXferClerk };
-use drivers::zmenu::ZMenuRegistry;
+use model::zmenu::ZMenuRegistry;
 use tácode::Tácode;
 use super::build_combined_source;
 use model::focus::FocusObject;

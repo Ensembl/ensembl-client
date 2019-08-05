@@ -3,7 +3,7 @@ use std::sync::{ Arc, Mutex };
 use composit::{ Leaf, ActiveSource };
 use composit::{ StateManager };
 use model::driver::{ Printer, PrinterManager };
-use drivers::zmenu::{ ZMenuLeaf, ZMenuLeafSet };
+use model::zmenu::{ ZMenuLeaf, ZMenuLeafSet };
 use super::Traveller;
 use super::travellercreator::TravellerCreator;
 

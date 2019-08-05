@@ -7,7 +7,7 @@ use composit::{ Leaf, ActiveSource };
 use composit::{ StateManager };
 use model::driver::PrinterManager;
 use model::shape::{ ShapeSpec, GenericShape };
-use drivers::zmenu::ZMenuLeaf;
+use model::zmenu::ZMenuLeaf;
 use super::{ TravellerResponse, TravellerResponseData };
 
 pub struct TravellerImpl {

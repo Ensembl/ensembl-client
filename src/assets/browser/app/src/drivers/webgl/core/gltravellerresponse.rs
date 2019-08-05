@@ -8,7 +8,6 @@ use super::super::drawing::CarriageCanvases;
 use composit::Leaf;
 use model::train::{ TravellerResponse, TravellerResponseData };
 use composit::source::SourceResponse;
-use drivers::zmenu::ZMenuLeaf;
 
 #[derive(Clone)]
 pub struct GLTravellerResponse {

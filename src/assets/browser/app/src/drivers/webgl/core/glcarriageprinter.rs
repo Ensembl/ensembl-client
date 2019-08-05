@@ -7,7 +7,6 @@ use model::train::Carriage;
 use composit::{ Leaf, Stage };
 use super::super::drawing::{ CarriageCanvases, AllCanvasAllocator };
 use dom::webgl::WebGLRenderingContext as glctx;
-use drivers::zmenu::ZMenuLeaf;
 
 pub struct GLCarriagePrinter {
     srr: HashSet<GLTravellerResponse>,

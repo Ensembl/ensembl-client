@@ -6,7 +6,6 @@ use composit::{ Leaf, Stage, Compositor };
 use model::train::TravellerResponse;
 use types::Dot;
 use super::Printer;
-use drivers::zmenu::ZMenuLeaf;
 
 struct PrinterManagerImpl {
     printer: Box<Printer>,

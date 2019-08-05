@@ -18,8 +18,6 @@ use stdweb::web::html_element::{
     CanvasElement
 };
 
-use drivers::zmenu::{ ZMenuRegistry, ZMenuLeafSet, ZMenuLeaf };
-
 pub struct WebGLTrainPrinter{}
 
 impl WebGLTrainPrinter {

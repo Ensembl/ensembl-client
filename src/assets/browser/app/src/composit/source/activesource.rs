@@ -11,7 +11,7 @@ use composit::{
 };
 
 use model::driver::PrinterManager;
-use drivers::zmenu::ZMenuRegistry;
+use model::zmenu::ZMenuRegistry;
 use model::train::Traveller;
 use composit::source::SourceResponse;
 

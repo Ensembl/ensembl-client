@@ -6,7 +6,7 @@ use composit::{
 };
 use model::driver::{ Printer, PrinterManager };
 use super::{ Carriage, Traveller, TravellerCreator };
-use drivers::zmenu::ZMenuLeafSet;
+use model::zmenu::ZMenuLeafSet;
 
 const MAX_FLANK : i32 = 3;
 
