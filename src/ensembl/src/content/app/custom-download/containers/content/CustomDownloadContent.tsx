@@ -13,17 +13,18 @@ import TabButtons from './tab-buttons/TabButtons';
 import ResultHolder from './result-holder/ResultHolder';
 import { RootState } from 'src/store';
 import PreviewDownload from './preview-download/PreviewDownload';
+import JSONValue from 'src/shared/types/JSON';
 
 type Props = {
   selectedTab: string;
-  showPreview: boolean;
-  preview: any;
+  showSummary: boolean;
+  preview: JSONValue;
 };
 
 const Content = (props: Props) => {
   return (
     <div>
-      {!props.showPreview && (
+      {!props.showSummary && (
         <div>
           <div className={styles.resultList}>
             <ResultHolder />
@@ -37,7 +38,7 @@ const Content = (props: Props) => {
           </div>
         </div>
       )}
-      {props.showPreview && (
+      {props.showSummary && (
         <div>
           <PreviewDownload />
         </div>
@@ -48,7 +49,7 @@ const Content = (props: Props) => {
 
 const mapStateToProps = (state: RootState): Props => ({
   selectedTab: getSelectedTab(state),
-  showPreview: getShowPreviewResult(state),
+  showSummary: getShowPreviewResult(state),
   preview: getPreviewResult(state)
 });
 

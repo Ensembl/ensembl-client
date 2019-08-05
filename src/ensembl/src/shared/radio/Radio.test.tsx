@@ -20,7 +20,7 @@ describe('<Radio />', () => {
   const defaultProps = {
     selectedOption: '',
     onChange: onChange,
-    radioOptions: times(5, () => createOption())
+    options: times(5, () => createOption())
   };
 
   let wrapper: any;
@@ -44,7 +44,7 @@ describe('<Radio />', () => {
       .first()
       .simulate('change');
 
-    expect(onChange).toHaveBeenCalledWith(defaultProps.radioOptions[0].value);
+    expect(onChange).toHaveBeenCalledWith(defaultProps.options[0].value);
   });
 
   it('does not call onChange function if the status is disabled', () => {
@@ -58,11 +58,11 @@ describe('<Radio />', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  it('renders N number of radios based on the radioOptions passed', () => {
+  it('renders N number of radios based on the options passed', () => {
     wrapper = mount(<Radio {...defaultProps} />);
 
     expect(wrapper.find('.radioInput').length).toBe(
-      defaultProps.radioOptions.length
+      defaultProps.options.length
     );
   });
 });

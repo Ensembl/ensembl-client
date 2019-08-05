@@ -12,14 +12,25 @@ import {
 
 import styles from './FiltersAccordion.scss';
 
-import { getFiltersAccordionExpandedPanel } from './state/filterAccordionSelector';
-import { setFiltersAccordionExpandedPanel } from './state/filterAccordionActions';
+import { getFiltersAccordionExpandedPanel } from '../../../state/filters/filtersSelector';
+import {
+  setFiltersAccordionExpandedPanel,
+  resetSelectedFilters,
+  updateSelectedFilters
+} from '../../../state/filters/filtersActions';
+
+import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
+import JSONValue from 'src/shared/types/JSON';
 
 import { Genes } from './sections';
+import ImageButton, {
+  ImageButtonStatus
+} from 'src/shared/image-button/ImageButton';
+import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
 
 type Props = StateProps & DispatchProps;
 
-const Filters = (props: Props) => {
+const FiltersAccordion = (props: Props) => {
   const formatAccordionTitle = (expandedPanel: string, title: string) => {
     if (expandedPanel !== props.expandedPanel) {
       return <span>{title}</span>;
@@ -36,12 +47,25 @@ const Filters = (props: Props) => {
     props.setFiltersAccordionExpandedPanel(newExpandedPanels[0]);
   };
 
+  const onReset = () => {
+    props.resetSelectedFilters();
+    customDownloadStorageService.saveSelectedFilters({});
+  };
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.filterHint}>
         Filter the results to download only the information you need - the
         filtered content will appear as rows in a table
+        <span className={styles.resetIcon} onClick={onReset}>
+          <ImageButton
+            buttonStatus={ImageButtonStatus.ACTIVE}
+            description={'Reset filters'}
+            image={ResetIcon}
+          />
+        </span>
       </div>
+
       <Accordion
         preExpanded={Array(1).fill(props.expandedPanel)}
         onChange={accordionOnChange}
@@ -97,7 +121,9 @@ const Filters = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className={styles.accordionItemPanel}>
-            <div className={styles.tempPadding}>Protein filters</div>
+            <div className={styles.tempPadding}>
+              Protein domains & families filters
+            </div>
           </AccordionItemPanel>
         </AccordionItem>
 
@@ -120,10 +146,14 @@ type DispatchProps = {
   setFiltersAccordionExpandedPanel: (
     setFiltersAccordionExpandedPanel: string
   ) => void;
+  resetSelectedFilters: () => void;
+  updateSelectedFilters: (filters: JSONValue) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
-  setFiltersAccordionExpandedPanel
+  setFiltersAccordionExpandedPanel,
+  resetSelectedFilters,
+  updateSelectedFilters
 };
 
 type StateProps = {
@@ -137,4 +167,4 @@ const mapStateToProps = (state: RootState): StateProps => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Filters);
+)(FiltersAccordion);

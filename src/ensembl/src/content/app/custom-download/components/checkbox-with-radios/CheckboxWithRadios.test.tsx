@@ -23,7 +23,7 @@ describe('<CheckboxWithRadios />', () => {
     onChange: onChange,
     label: 'foo',
     selectedOption: '',
-    radioOptions: times(5, () => createOption())
+    options: times(5, () => createOption())
   };
 
   it('renders without error', () => {
@@ -52,7 +52,7 @@ describe('<CheckboxWithRadios />', () => {
       .find('.defaultCheckbox')
       .simulate('click');
     expect(wrapper.find('input[type="radio"]').length).toBe(
-      defaultProps.radioOptions.length
+      defaultProps.options.length
     );
   });
 
@@ -69,6 +69,6 @@ describe('<CheckboxWithRadios />', () => {
       .first()
       .simulate('change');
 
-    expect(onChange).toHaveBeenCalledWith(defaultProps.radioOptions[0].value);
+    expect(onChange).toHaveBeenCalledWith(defaultProps.options[0].value);
   });
 });

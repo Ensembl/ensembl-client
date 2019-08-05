@@ -4,7 +4,7 @@
   padding-right: 16px;
   padding-left: 50px;
   margin-top: -15px;
-  height: calc(100vh - 210px);
+  height: calc(100vh - 120px);
   overflow-y: auto;
   margin-right: 4px;
 }
@@ -21,12 +21,15 @@
   .resultLine {
     width: 100%;
     position: relative;
+    clear: both;
     .lineHeader {
       text-align: right;
       color: $ens-dark-grey;
       width: 25%;
       max-width: 200px;
-      display: inline-block;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      float: left;
     }
 
     .lineValue {

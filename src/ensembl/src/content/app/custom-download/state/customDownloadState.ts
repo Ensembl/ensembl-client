@@ -1,5 +1,7 @@
+import JSONValue from 'src/shared/types/JSON';
+
 export type ResultState = Readonly<{
-  preview: any;
+  preview: JSONValue;
   isLoadingResult: boolean;
 }>;
 
@@ -29,11 +31,11 @@ export const defaultPreFilterState: PreFilterState = {
 };
 
 export type PreviewDownloadState = Readonly<{
-  showPreview: boolean;
+  showSummary: boolean;
   downloadType: string;
 }>;
 
 export const defaultPreviewDownloadState: PreviewDownloadState = {
-  showPreview: false,
+  showSummary: false,
   downloadType: ''
 };
