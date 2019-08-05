@@ -6,8 +6,7 @@ use stdweb::traits::IEvent;
 
 use controller::global::{ App, AppRunner };
 use controller::input::{ actions_run, Action };
-use controller::input::physics::MousePhysics;
-use controller::input::optical::Optical;
+use controller::animate::{ MousePhysics, Optical };
 use types::{ Dot, CPixel };
 
 pub struct UserEventListener {
@@ -49,10 +48,10 @@ impl UserEventListener {
         self.optical.lock().unwrap().move_by(amt,pos,pos_prop);
     }
     
-    fn zmenu(&mut self, pos: &CPixel) {
+    fn zmenu_click_check(&mut self, pos: &CPixel) {
         let mut app = &mut self.cs.lock().unwrap();
         app.run_actions(&vec![
-            Action::ZMenu(*pos)
+            Action::ZMenuClickCheck(*pos)
         ],None); 
     }
 }
@@ -78,7 +77,7 @@ impl EventListener<()> for UserEventListener {
                 );
             },
             EventData::MouseEvent(EventType::MouseClickEvent,_,e) => {
-                self.zmenu(&self.mouse_rel_box(&e.at()));
+                self.zmenu_click_check(&self.mouse_rel_box(&e.at()));
                 e.stop_propagation();
             },
             EventData::MouseEvent(EventType::MouseDblClickEvent,_,e) => {

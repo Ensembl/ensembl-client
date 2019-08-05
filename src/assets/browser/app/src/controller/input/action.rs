@@ -16,7 +16,7 @@ pub enum Action {
     SetStick(String),
     SetState(String,bool),
     Settled,
-    ZMenu(CPixel),
+    ZMenuClickCheck(CPixel),
     ShowZMenu(String,String,Dot<i32,i32>,JSONValue),
     SetFocus(String),
     Reset,
@@ -42,7 +42,7 @@ impl Action {
             Action::ZoomTo(_) => 10,
             Action::Move(_) => 10,
             Action::Zoom(_) => 10,
-            Action::ZMenu(_) => 25,
+            Action::ZMenuClickCheck(_) => 25,
             Action::ShowZMenu(_,_,_,_) => 25,
             Action::SetFocus(_) => 20,
             Action::Reset => 25,
@@ -141,7 +141,7 @@ fn exe_set_state(a: &mut App, name: &str, on: bool) {
     });
 }
 
-fn exe_zmenu(a: &mut App, pos: &CPixel, currency: Option<f64>) {
+fn exe_zmenu_click_check(a: &mut App, pos: &CPixel, currency: Option<f64>) {
     console!("click {:?}",pos);
     let acts = a.with_compo(|co|
         a.with_stage(|s|
@@ -196,9 +196,10 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
             Action::SetState(name,on) => exe_set_state(cg,&name,on),
             Action::SetFocus(id) => exe_set_focus(cg,&id),
             Action::Settled => exe_settled(cg),
-            Action::ZMenu(pos) => exe_zmenu(cg,&pos,currency),
+            Action::ZMenuClickCheck(pos) => exe_zmenu_click_check(cg,&pos,currency),
             Action::ShowZMenu(id,track_id,pos,payload) => exe_zmenu_show(cg,&id,&track_id,pos,payload),
             Action::Reset => exe_reset(cg),
+            
             Action::Noop => ()
         }
     }
