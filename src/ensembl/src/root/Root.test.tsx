@@ -4,10 +4,7 @@ import { mount } from 'enzyme';
 import { Root } from './Root';
 import Header from '../header/Header';
 import Content from '../content/Content';
-import privacyBannerService, {
-  PrivacyBannerService,
-  PrivacyConfig
-} from '../shared/privacy-banner/privacy-banner-service';
+import privacyBannerService from '../shared/privacy-banner/privacy-banner-service';
 
 jest.mock('../header/Header', () => () => 'Header');
 jest.mock('../content/Content', () => () => 'Content');
@@ -46,7 +43,7 @@ describe('<Root />', () => {
     expect(updateBreakpointWidth).toHaveBeenCalled();
   });
 
-  test('shows privacy banner if privacy version is not set', () => {
+  test('shows privacy banner if privacy policy version is not set or if version does not match', () => {
     jest
       .spyOn(privacyBannerService, 'shouldShowBanner')
       .mockImplementation(() => true);
@@ -55,7 +52,7 @@ describe('<Root />', () => {
     (privacyBannerService.shouldShowBanner as any).mockRestore();
   });
 
-  test('does not show privacy banner if privacy version is set', () => {
+  test('does not show privacy banner if policy version is set', () => {
     jest
       .spyOn(privacyBannerService, 'shouldShowBanner')
       .mockImplementation(() => false);

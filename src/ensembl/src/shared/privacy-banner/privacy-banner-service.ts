@@ -1,13 +1,7 @@
+import * as privacyConfig from './privacyConfig';
 import storageService, {
   StorageServiceInterface
 } from 'src/services/storage-service';
-
-export const PrivacyConfig = {
-  name: 'ensembl_privacy_policy',
-  version: '2.0.0',
-  policyUrl: 'https://www.ebi.ac.uk/data-protection/ensembl/privacy-notice',
-  termsUrl: 'https://www.ebi.ac.uk/about/terms-of-use'
-};
 
 export class PrivacyBannerService {
   private storageService: StorageServiceInterface;
@@ -17,16 +11,16 @@ export class PrivacyBannerService {
   }
 
   public getPolicyVersion(): string {
-    return this.storageService.get(PrivacyConfig.name);
+    return this.storageService.get(privacyConfig.name);
   }
 
   public setPolicyVersion() {
-    this.storageService.save(PrivacyConfig.name, PrivacyConfig.version);
+    this.storageService.save(privacyConfig.name, privacyConfig.version);
   }
 
   // Returns true if versions doesn't match
   public shouldShowBanner(): boolean {
-    return this.getPolicyVersion() !== PrivacyConfig.version;
+    return this.getPolicyVersion() !== privacyConfig.version;
   }
 }
 

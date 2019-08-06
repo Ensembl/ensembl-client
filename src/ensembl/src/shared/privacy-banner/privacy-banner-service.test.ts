@@ -1,4 +1,5 @@
-import { PrivacyBannerService, PrivacyConfig } from './privacy-banner-service';
+import { PrivacyBannerService } from './privacy-banner-service';
+import * as privacyConfig from './privacyConfig';
 import faker from 'faker';
 
 const mockStorageService = {
@@ -17,13 +18,13 @@ describe('PrivacyBannerService', () => {
     it('gets privacy policy version from storage service', () => {
       jest
         .spyOn(mockStorageService, 'get')
-        .mockImplementation(() => PrivacyConfig.version);
+        .mockImplementation(() => privacyConfig.version);
 
       const privacyBannerService = new PrivacyBannerService(mockStorageService);
       const result = privacyBannerService.getPolicyVersion();
 
-      expect(mockStorageService.get).toHaveBeenCalledWith(PrivacyConfig.name);
-      expect(result).toEqual(PrivacyConfig.version);
+      expect(mockStorageService.get).toHaveBeenCalledWith(privacyConfig.name);
+      expect(result).toEqual(privacyConfig.version);
     });
   });
 
@@ -32,8 +33,8 @@ describe('PrivacyBannerService', () => {
       const privacyBannerService = new PrivacyBannerService(mockStorageService);
       privacyBannerService.setPolicyVersion();
       expect(mockStorageService.save).toHaveBeenCalledWith(
-        PrivacyConfig.name,
-        PrivacyConfig.version
+        privacyConfig.name,
+        privacyConfig.version
       );
     });
   });
@@ -45,7 +46,7 @@ describe('PrivacyBannerService', () => {
       jest
         .spyOn(privacyBannerService, 'getPolicyVersion')
         .mockImplementation(() => mockVersion);
-
+      // Returns true if versions doesn't match
       const result = privacyBannerService.shouldShowBanner();
       expect(result).toEqual(true);
     });
@@ -54,8 +55,8 @@ describe('PrivacyBannerService', () => {
       const privacyBannerService = new PrivacyBannerService(mockStorageService);
       jest
         .spyOn(privacyBannerService, 'getPolicyVersion')
-        .mockImplementation(() => PrivacyConfig.version);
-
+        .mockImplementation(() => privacyConfig.version);
+      // Returns false if versions match
       const result = privacyBannerService.shouldShowBanner();
       expect(result).toEqual(false);
     });
