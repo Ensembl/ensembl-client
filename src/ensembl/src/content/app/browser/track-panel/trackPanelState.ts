@@ -1,13 +1,15 @@
 import { TrackType } from './trackPanelConfig';
 import browserStorageService from '../browser-storage-service';
 
+export type TrackPanelStateForGenome = Readonly<{
+  isTrackPanelModalOpened: boolean;
+  isTrackPanelOpened: boolean;
+  selectedBrowserTab: TrackType;
+  trackPanelModalView: string;
+}>;
+
 export type TrackPanelState = Readonly<{
-  [genomeId: string]: {
-    isTrackPanelModalOpened: boolean;
-    isTrackPanelOpened: boolean;
-    selectedBrowserTab: TrackType;
-    trackPanelModalView: string;
-  };
+  [genomeId: string]: TrackPanelStateForGenome;
 }>;
 
 const selectedBrowserTabFromStorage = browserStorageService.getSelectedBrowserTab();

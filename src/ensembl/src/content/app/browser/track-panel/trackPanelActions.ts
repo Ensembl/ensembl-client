@@ -29,7 +29,7 @@ export const toggleTrackPanel: ActionCreator<
 
   dispatch(
     toggleTrackPanelForGenome({
-      activeGenomeId: activeGenomeId,
+      activeGenomeId,
       isTrackPanelOpened
     })
   );
@@ -70,6 +70,7 @@ export const selectBrowserTabAndSave: ActionCreator<
         selectedBrowserTab
       })
     );
+
     dispatch(closeTrackPanelModal());
   });
 };
@@ -113,7 +114,7 @@ export const openTrackPanelModal: ActionCreator<
 
     dispatch(
       changeTrackPanelModalViewForGenome({
-        activeGenomeId: activeGenomeId,
+        activeGenomeId,
         trackPanelModalView
       })
     );
