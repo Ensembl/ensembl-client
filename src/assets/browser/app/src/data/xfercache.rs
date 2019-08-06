@@ -5,7 +5,7 @@ use tánaiste::Value;
 
 use composit::Leaf;
 use composit::source::{ CatalogueCode, PurchaseOrder };
-use data::{ BackendConfig, BackendBytecode, XferClerk, XferConsumer, XferRequest };
+use data::{ BackendConfig, BackendBytecode, XferClerk, XferConsumer };
 use util::Cache;
 
 struct XferPrimeConsumer();
@@ -52,10 +52,9 @@ impl XferCache {
     
     pub fn prime(&mut self, xferclerk: &mut Box<XferClerk>, compo: &str, leaf: &Leaf) {
         let po = PurchaseOrder::new(compo,leaf,&None);
-        let req = XferRequest::new(&po,true);
-        if let Some(key) = CatalogueCode::try_new(&self.1,req.get_purchase_order()) {
+        if let Some(key) = CatalogueCode::try_new(&self.1,&po) {
             if self.get(&key).is_none() {
-                xferclerk.satisfy(req,Box::new(XferPrimeConsumer()));
+                xferclerk.satisfy(&po,true,Box::new(XferPrimeConsumer()));
             }
         }
     }

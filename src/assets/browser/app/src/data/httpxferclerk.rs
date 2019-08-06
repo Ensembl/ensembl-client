@@ -11,11 +11,11 @@ use tánaiste::Value;
 use url::Url;
 
 use super::{ 
-    XferClerk, XferConsumer, XferRequest, XferCache, XferUrlBuilder,
+    XferClerk, XferConsumer, XferCache, XferUrlBuilder,
     HttpResponseConsumer, HttpManager, BackendConfig
 };
 use super::jsonxferresponse::parse_jsonxferresponse_str;
-use composit::source::CatalogueCode;
+use composit::source::{ CatalogueCode, PurchaseOrder };
 
 use super::backendconfig::BackendBytecode;
 
@@ -187,7 +187,7 @@ pub struct HttpXferClerkImpl {
     http_manager: HttpManager,
     config: Option<BackendConfig>,
     base: Url,
-    paused: Vec<(XferRequest,Box<XferConsumer>)>,
+    paused: Vec<(PurchaseOrder,Box<XferConsumer>)>,
     batch: Option<XferBatchScheduler>,
     prime_batch: Option<XferBatchScheduler>,
     cache: XferCache
@@ -199,7 +199,7 @@ impl HttpXferClerkImpl {
             http_manager: http_manager.clone(),
             config: None,
             base: base.clone(),
-            paused: Vec::<(XferRequest,Box<XferConsumer>)>::new(),
+            paused: Vec::new(),
             batch: None,
             prime_batch: None,
             cache: xfercache.clone()
@@ -225,9 +225,9 @@ impl HttpXferClerkImpl {
         self.batch.as_mut().unwrap().set_batch();
         self.prime_batch.as_mut().unwrap().set_batch();
         /* run requests accumulated during startup */
-        let paused : Vec<(XferRequest,Box<XferConsumer>)> = self.paused.drain(..).collect();
+        let paused : Vec<(PurchaseOrder,Box<XferConsumer>)> = self.paused.drain(..).collect();
         for (request,consumer) in paused {
-            self.run_request(request,consumer,false);
+            self.run_request(&request,consumer,false);
         }
     }
     
@@ -239,8 +239,8 @@ impl HttpXferClerkImpl {
         out
     }
 
-    pub fn run_request(&mut self, request: XferRequest, mut consumer: Box<XferConsumer>, prime: bool) {
-        let key = CatalogueCode::try_new(&self.config.as_ref().unwrap(),request.get_purchase_order());
+    pub fn run_request(&mut self, po: &PurchaseOrder, mut consumer: Box<XferConsumer>, prime: bool) {
+        let key = CatalogueCode::try_new(&self.config.as_ref().unwrap(),po);
         if let Some(key) = key {
             let key = self.fix_key(&key);
             if let Some(recv) = self.cache.get(&key) {
@@ -264,12 +264,11 @@ impl HttpXferClerkImpl {
 }
 
 impl XferClerk for HttpXferClerkImpl {
-    fn satisfy(&mut self, request: XferRequest, consumer: Box<XferConsumer>) {
+    fn satisfy(&mut self, po: &PurchaseOrder, prime: bool, consumer: Box<XferConsumer>) {
         if self.batch.is_some() {
-            let prime = request.get_prime();
-            self.run_request(request,consumer,prime);
+            self.run_request(po,consumer,prime);
         } else {
-            self.paused.push((request,consumer));
+            self.paused.push((po.clone(),consumer));
         }
     }
 }
@@ -295,8 +294,8 @@ impl HttpXferClerk {
 }
 
 impl XferClerk for HttpXferClerk {
-    fn satisfy(&mut self, request: XferRequest, consumer: Box<XferConsumer>) {
-        self.0.borrow_mut().satisfy(request,consumer);
+    fn satisfy(&mut self, po: &PurchaseOrder, prime: bool, consumer: Box<XferConsumer>) {
+        self.0.borrow_mut().satisfy(po,prime,consumer);
     }
 }
 

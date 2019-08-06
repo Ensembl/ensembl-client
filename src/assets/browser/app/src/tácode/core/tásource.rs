@@ -5,7 +5,7 @@ use tánaiste::Value;
 
 use composit::{ Leaf, Source, ActiveSource };
 use composit::source::PurchaseOrder;
-use data::{ XferClerk, XferRequest, XferConsumer, BackendConfig, BackendBytecode };
+use data::{ XferClerk, XferConsumer, BackendConfig, BackendBytecode };
 use model::focus::FocusObject;
 use model::shape::DrawingSpec;
 use composit::source::SourceResponse;
@@ -35,12 +35,11 @@ impl TáSource {
 
 impl Source for TáSource {
     fn request_data(&self, acs: &ActiveSource, lc: SourceResponse, po: &PurchaseOrder) {
-        let xfer_req = XferRequest::new(po,false);
         let tc = self.0.borrow_mut().tc.clone();
         let lid = self.0.borrow_mut().lid;
         let config = &self.0.borrow().config.clone();
         let xcons = TáXferConsumer::new(&tc,acs,po.get_leaf(),lc,lid,config,&self.0.borrow_mut().focus);
-        self.0.borrow_mut().xf.satisfy(xfer_req,Box::new(xcons));
+        self.0.borrow_mut().xf.satisfy(po,false,Box::new(xcons));
     }
 }
 
