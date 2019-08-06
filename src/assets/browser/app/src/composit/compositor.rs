@@ -1,10 +1,12 @@
+use std::collections::HashSet;
+
 use composit::{
     ActiveSource, Stick, Scale, ComponentSet, StateManager, Stage
 };
 
 use model::driver::{ PrinterManager, Printer };
 use model::train::{ Train, TrainManager, TravellerCreator };
-use model::zmenu::{ ZMenuRegistry, ZMenuLeafSet };
+use model::zmenu::{ ZMenuRegistry, ZMenuLeafSet, ZMenuIntersection };
 
 use controller::global::AppRunner;
 use controller::input::Action;
@@ -169,7 +171,7 @@ impl Compositor {
         self.train_manager.change_focus(&mut self.components,id);
     }
 
-    pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> Vec<Action> {
+    pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
         self.zmr.intersects(stage,pos)
     }
 }

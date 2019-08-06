@@ -141,14 +141,14 @@ fn exe_set_state(a: &mut App, name: &str, on: bool) {
     });
 }
 
-fn exe_zmenu_click_check(a: &mut App, pos: &CPixel, currency: Option<f64>) {
+fn exe_zmenu_click_check(app: &mut App, pos: &CPixel, currency: Option<f64>) {
     console!("click {:?}",pos);
-    let acts = a.with_compo(|co|
-        a.with_stage(|s|
+    let acts = app.with_compo(|co|
+        app.with_stage(|s|
             co.intersects(s,*pos)
         )
-    );
-    a.run_actions(&acts,currency);
+    ).iter().map(|isect| isect.display_action(pos)).collect();
+    app.run_actions(&acts,currency);
 }
 
 fn exe_deactivate(a: &mut App) {

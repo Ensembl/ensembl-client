@@ -4,7 +4,7 @@ use controller::input::Action;
 use composit::{ Leaf, Stage };
 use types::Dot;
 
-use super::{ ZMenuLeaf, ZMenuLeafSet, ZMenuFeatureTmpl, ZMenuData };
+use super::{ ZMenuLeaf, ZMenuLeafSet, ZMenuFeatureTmpl, ZMenuData, ZMenuIntersection };
 
 pub struct ZMenuRegistryImpl {
     zml: HashMap<Leaf,ZMenuLeaf>,
@@ -37,16 +37,15 @@ impl ZMenuRegistryImpl {
         }
     }
     
-    pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> Vec<Action> {
-        let mut all = HashMap::new();
+    pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
+        let mut all = HashSet::new();
         bb_log!("zmenu","zmr: pos={:?}",pos);
         for zml in self.zml.values() {
-            bb_log!("zmenu","zmr: zml");
-            for (id,track_id,payload) in zml.intersects(stage,pos) {
-                all.insert(id,(track_id,payload));
+            for zmi in zml.intersects(stage,pos) {
+                all.insert(zmi);
             }
         }
-        all.drain().map(|(k,v)| Action::ShowZMenu(k,v.0,pos,v.1)).collect()
+        all
     }       
 }
 
@@ -62,7 +61,7 @@ impl ZMenuRegistry {
         self.0.lock().unwrap().add_leafset(zmls);
     }
     
-    pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> Vec<Action> {
+    pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
         self.0.lock().unwrap().intersects(stage,pos)
     }    
 }

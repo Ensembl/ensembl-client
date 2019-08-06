@@ -1,3 +1,4 @@
+use std::hash::{Hash, Hasher};
 use std::collections::HashMap;
 
 use serde_json::Value as JSONValue;
@@ -13,6 +14,33 @@ struct ZMenuItem {
     placement: Placement,
     track_id: String,
     id: String
+}
+
+pub struct ZMenuIntersection {
+    track_id: String,
+    id: String,
+    payload: JSONValue    
+}
+
+impl ZMenuIntersection {
+    pub fn display_action(&self, pos: &Dot<i32,i32>) -> Action {
+        Action::ShowZMenu(self.id.to_string(),self.track_id.to_string(),*pos,self.payload.clone())
+    }
+}
+
+impl PartialEq for ZMenuIntersection {
+    fn eq(&self, other: &Self) -> bool {
+        self.track_id == other.track_id && self.id == other.id
+    }
+}
+
+impl Eq for ZMenuIntersection {}
+
+impl Hash for ZMenuIntersection {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.id.hash(state);
+        self.track_id.hash(state);
+    }
 }
 
 pub struct ZMenuLeaf {
@@ -110,14 +138,18 @@ impl ZMenuLeaf {
         }
     }
 
-    pub(in super) fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> Vec<(String,String,JSONValue)> {
+    pub(in super) fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> Vec<ZMenuIntersection> {
         let mut out = Vec::new();
         for item in &self.items {
             bb_log!("zmenu","zml: item pos={:?} placement={:?}",pos,&item.placement);
             if stage.intersects(pos,&item.placement) {
                 console!("intersects {:?}",item.id);
                 if let Some(payload) = self.activate(&item.id,&item.track_id) {
-                    out.push((item.id.clone(),item.track_id.clone(),payload));
+                    out.push(ZMenuIntersection {
+                        id: item.id.clone(),
+                        track_id: item.track_id.clone(),
+                        payload
+                    })
                 }
             }
         }
