@@ -6,10 +6,10 @@ use composit::{ ActiveSource, Leaf };
 use data::BackendConfig;
 use model::shape::DrawingSpec;
 use model::focus::FocusObject;
-use composit::source::SourceResponse;
+use composit::source::PendingOrder;
 
 pub enum TáTask {
-    MakeShapes(ActiveSource,Leaf,SourceResponse,Vec<DrawingSpec>,usize,Option<String>,Rc<BackendConfig>,FocusObject)
+    MakeShapes(ActiveSource,Leaf,PendingOrder,Vec<DrawingSpec>,usize,Option<String>,Rc<BackendConfig>,FocusObject)
 }
 
 impl TáTask {

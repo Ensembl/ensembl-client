@@ -8,7 +8,7 @@ use composit::{
 use composit::source::PurchaseOrder;
 use data::{ BackendConfig, HttpXferClerk };
 use debug::{ add_debug_sources };
-use composit::source::SourceResponse;
+use composit::source::PendingOrder;
 use tácode::{ Tácode, TáSource };
 use model::focus::FocusObject;
 use model::zmenu::ZMenuRegistry;
@@ -41,7 +41,7 @@ impl CombinedSource {
 }
 
 impl Source for CombinedSource {
-    fn request_data(&self, acs: &ActiveSource, lc: SourceResponse, po: &PurchaseOrder) {
+    fn request_data(&self, acs: &ActiveSource, lc: PendingOrder, po: &PurchaseOrder) {
         let stick_name = po.get_leaf().get_stick().get_name();
         if let Some(source) = self.per_stick_sources.get(&stick_name) {
             source.request_data(acs,lc,po);

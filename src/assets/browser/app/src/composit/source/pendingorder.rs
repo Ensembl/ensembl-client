@@ -7,18 +7,18 @@ use composit::Leaf;
 
 use super::PurchaseOrder;
 
-pub struct SourceResponse {
+pub struct PendingOrder {
     purchase_order: PurchaseOrder,
     travellers: HashMap<Option<String>,Traveller>
 }
 
-impl SourceResponse {
-    pub fn new(pm: &mut PrinterManager, po: PurchaseOrder, tt: &mut Vec<Traveller>) -> SourceResponse {
+impl PendingOrder {
+    pub fn new(pm: &mut PrinterManager, po: PurchaseOrder, tt: &mut Vec<Traveller>) -> PendingOrder {
         let mut travs = HashMap::new();
         for t in tt.iter() {
             travs.insert(t.get_part().clone(),t.clone());
         }
-        let mut out = SourceResponse {
+        let mut out = PendingOrder {
             purchase_order: po.clone(),
             travellers: travs,
         };
@@ -28,14 +28,10 @@ impl SourceResponse {
         out
     }
     
-    pub fn update_zml<F>(&mut self, part: &Option<String>, cb: F) where F: FnOnce(&mut ZMenuLeaf) {
-        self.travellers.get_mut(part).unwrap().update_zml(cb);
+    pub fn get_traveller(&mut self, part: &Option<String>) -> &mut Traveller {
+        unwrap!(self.travellers.get_mut(part))
     }
-    
-    pub fn update_data<F>(&mut self,  part: &Option<String>, cb: F) where F: FnOnce(&mut TravellerResponseData) {
-        unwrap!(self.travellers.get_mut(part)).update_data(cb);
-    }
-        
+            
     pub fn done(&mut self) {
         for (_,t) in &mut self.travellers {
             t.set_response();

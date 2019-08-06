@@ -1,6 +1,6 @@
 use composit::{ Leaf, ActiveSource };
-use composit::source::{ PurchaseOrder, SourceResponse };
+use composit::source::{ PurchaseOrder, PendingOrder };
 
 pub trait Source {
-    fn request_data(&self, acs: &ActiveSource, lc: SourceResponse, po: &PurchaseOrder);
+    fn request_data(&self, acs: &ActiveSource, lc: PendingOrder, po: &PurchaseOrder);
 }

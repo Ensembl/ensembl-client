@@ -10,7 +10,7 @@ use model::shape::{
     Facade, FacadeType, TypeToShape, ShapeShortInstanceData,
     ShapeInstanceDataType, ShapeLongInstanceData, DrawingSpec
 };
-use composit::source::SourceResponse;
+use composit::source::PendingOrder;
 use tácode::core::{ TáContext, TáTask };
 use super::super::shapecmd::{ build_meta };
 use types::Colour;
@@ -109,7 +109,7 @@ fn make_facades(spec: &Box<TypeToShape>, colour: &Value, tx: &Vec<DrawingSpec>) 
 }
 
 /* TODO switch long to use make_facades. Can do it, but no time */
-fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceResponse, 
+fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut PendingOrder, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Value, part: &Option<String>) {
@@ -132,11 +132,11 @@ fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceResp
         facade
     };
     if let Some(shape) = spec.new_long_shape(&data) {
-        lc.update_data(part,|data| data.add_shape(shape));
+        lc.get_traveller(part).update_data(|data| data.add_shape(shape));
     }
 }
 
-fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceResponse, 
+fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut PendingOrder, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Value, part: &Option<String>) {
@@ -159,7 +159,7 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceRes
                 facade: unwrap!(facade.cloned())
             };
             if let Some(shape) = spec.new_short_shape(&data) {
-                lc.update_data(part,|data| data.add_shape(shape));
+                lc.get_traveller(part).update_data(|data| data.add_shape(shape));
             } else {
                 drops += 1;
             }
@@ -175,7 +175,7 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut SourceRes
     });
 }
 
-fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut SourceResponse, 
+fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut PendingOrder, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Value, part: &Option<String>) {

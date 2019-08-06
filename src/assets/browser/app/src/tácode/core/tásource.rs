@@ -8,7 +8,7 @@ use composit::source::PurchaseOrder;
 use data::{ XferClerk, XferConsumer, BackendConfig, BackendBytecode };
 use model::focus::FocusObject;
 use model::shape::DrawingSpec;
-use composit::source::SourceResponse;
+use composit::source::PendingOrder;
 use tácode::{ Tácode, TáTask };
 
 pub struct TáSourceImpl {
@@ -34,7 +34,7 @@ impl TáSource {
 }
 
 impl Source for TáSource {
-    fn request_data(&self, acs: &ActiveSource, lc: SourceResponse, po: &PurchaseOrder) {
+    fn request_data(&self, acs: &ActiveSource, lc: PendingOrder, po: &PurchaseOrder) {
         let tc = self.0.borrow_mut().tc.clone();
         let lid = self.0.borrow_mut().lid;
         let config = &self.0.borrow().config.clone();
@@ -44,7 +44,7 @@ impl Source for TáSource {
 }
 
 struct TáXferConsumer {
-    lc: Option<SourceResponse>,
+    lc: Option<PendingOrder>,
     tc: Tácode,
     lid: usize,
     leaf: Leaf,
@@ -54,7 +54,7 @@ struct TáXferConsumer {
 }
 
 impl TáXferConsumer {
-    fn new(tc: &Tácode, acs: &ActiveSource, leaf: &Leaf, lc: SourceResponse, lid: usize, config: &BackendConfig, focus: &FocusObject) -> TáXferConsumer {
+    fn new(tc: &Tácode, acs: &ActiveSource, leaf: &Leaf, lc: PendingOrder, lid: usize, config: &BackendConfig, focus: &FocusObject) -> TáXferConsumer {
         TáXferConsumer {
             lc: Some(lc),
             lid,

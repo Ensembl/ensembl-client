@@ -13,7 +13,7 @@ use composit::{
 use model::driver::PrinterManager;
 use model::zmenu::ZMenuRegistry;
 use model::train::Traveller;
-use composit::source::SourceResponse;
+use composit::source::PendingOrder;
 use composit::source::PurchaseOrder;
 
 use super::SourcePart;
@@ -63,7 +63,7 @@ impl ActiveSource {
         out
     }
         
-    pub fn request_data(&self, party: SourceResponse, po: &PurchaseOrder) {
+    pub fn request_data(&self, party: PendingOrder, po: &PurchaseOrder) {
         let twin = self.source.clone();
         twin.request_data(self,party,po);
     }

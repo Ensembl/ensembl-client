@@ -7,7 +7,7 @@ mod source;
 mod sourcemanager;
 mod sourcemanagerlist;
 mod sourcepart;
-mod sourceresponse;
+mod pendingorder;
 
 pub use self::activesource::ActiveSource;
 pub use self::cataloguecode::CatalogueCode;
@@ -17,5 +17,5 @@ pub use self::source::Source;
 pub use self::sourcemanager::SourceManager;
 pub use self::sourcemanagerlist::SourceManagerList;
 pub use self::sourcepart::SourcePart;
-pub use self::sourceresponse::SourceResponse;
+pub use self::pendingorder::PendingOrder;
 pub use self::purchaseorder::PurchaseOrder;

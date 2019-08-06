@@ -7,7 +7,6 @@ use super::{ GLDrawing, GLProgInstances, GLPrinter };
 use super::super::drawing::CarriageCanvases;
 use composit::Leaf;
 use model::train::{ TravellerResponse, TravellerResponseData };
-use composit::source::SourceResponse;
 
 #[derive(Clone)]
 pub struct GLTravellerResponse {
