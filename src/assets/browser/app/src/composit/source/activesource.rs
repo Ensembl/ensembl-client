@@ -14,6 +14,7 @@ use model::driver::PrinterManager;
 use model::zmenu::ZMenuRegistry;
 use model::train::Traveller;
 use composit::source::SourceResponse;
+use composit::source::PurchaseOrder;
 
 use super::SourcePart;
 
@@ -62,9 +63,9 @@ impl ActiveSource {
         out
     }
         
-    pub fn request_data(&self, party: SourceResponse, leaf: &Leaf, focus: &Option<String>) {
+    pub fn request_data(&self, party: SourceResponse, po: &PurchaseOrder) {
         let twin = self.source.clone();
-        twin.request_data(self,party,leaf,focus);
+        twin.request_data(self,party,po);
     }
     
     pub fn get_name(&self) -> &str { &self.name }  

@@ -1,4 +1,5 @@
 use composit::{ Compositor, Stage, Leaf };
+use composit::source::PurchaseOrder;
 use types::Dot;
 
 use model::train::{ Traveller, TravellerResponse };
@@ -29,5 +30,5 @@ pub trait Printer {
     fn add_leaf(&mut self, leaf: &Leaf, focus: &Option<String>);
     fn remove_leaf(&mut self, leaf: &Leaf, focus: &Option<String>);
     fn set_current(&mut self, leaf: &Leaf);
-    fn make_traveller_response(&mut self, leaf: &Leaf, focus: &Option<String>) -> Box<TravellerResponse>;
+    fn make_traveller_response(&mut self, po: &PurchaseOrder) -> Box<TravellerResponse>;
 }

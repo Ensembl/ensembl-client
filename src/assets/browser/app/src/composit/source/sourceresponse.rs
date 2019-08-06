@@ -5,25 +5,25 @@ use model::driver::{ Printer, PrinterManager };
 use model::train::{ Traveller, TravellerResponse, TravellerResponseData };
 use composit::Leaf;
 
+use super::PurchaseOrder;
+
 pub struct SourceResponse {
-    leaf: Leaf,
-    focus: Option<String>,
+    purchase_order: PurchaseOrder,
     travellers: HashMap<Option<String>,Traveller>
 }
 
 impl SourceResponse {
-    pub fn new(pm: &mut PrinterManager, leaf: &Leaf, focus: &Option<String>, tt: &mut Vec<Traveller>) -> SourceResponse {
+    pub fn new(pm: &mut PrinterManager, po: PurchaseOrder, tt: &mut Vec<Traveller>) -> SourceResponse {
         let mut travs = HashMap::new();
         for t in tt.iter() {
             travs.insert(t.get_part().clone(),t.clone());
         }
         let mut out = SourceResponse {
-            leaf: leaf.clone(),
+            purchase_order: po.clone(),
             travellers: travs,
-            focus: focus.clone()
         };
         for t in tt {
-            t.set_visuals(pm.make_traveller_response(&leaf,&focus));
+            t.set_visuals(pm.make_traveller_response(&po));
         }
         out
     }

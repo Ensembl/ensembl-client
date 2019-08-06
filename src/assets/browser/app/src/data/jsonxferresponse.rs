@@ -40,7 +40,7 @@ fn marshal(data: &SerdeValue) -> Vec<Value> {
 pub fn parse_jsonxferresponse(data: &SerdeValue) -> Vec<JSONXferResponse> {
     let mut out = Vec::new();
     for resp in unwrap!(data.as_array()) {
-        let key = XferRequestKey::new(unwrap!(resp[2].as_str()),
+        let key = XferRequestKey::new_in(unwrap!(resp[2].as_str()),
                                        unwrap!(resp[0].as_str()),
                                        unwrap!(resp[1].as_str()),
                                        &resp[4].as_str().map(|v| v.to_string()));

@@ -1,4 +1,5 @@
 use composit::Leaf;
+use composit::source::PurchaseOrder;
 
 use super::BackendConfig;
 
@@ -6,18 +7,16 @@ use super::BackendConfig;
 #[derive(Clone,Debug)]
 pub struct XferRequest {
     source_name: String,
-    leaf: Leaf,
-    focus: Option<String>,
+    po: PurchaseOrder,
     prime: bool
 }
 
 impl XferRequest {
-    pub fn new(source_name: &str, leaf: &Leaf, focus: &Option<String>, prime: bool) -> XferRequest {
+    pub fn new(source_name: &str, po: &PurchaseOrder, prime: bool) -> XferRequest {
         XferRequest {
             source_name: source_name.to_string(),
-            leaf: leaf.clone(),
-            prime,
-            focus: focus.clone()
+            po: po.clone(),
+            prime
         }
     }
     
@@ -28,23 +27,36 @@ impl XferRequest {
                         .and_then(|x| x.get_wire().as_ref())
                         .map(|x| x.to_string());
         wire.map(|wire| {
-            let (short_stick,short_pane) = self.leaf.get_short_spec();
-            XferRequestKey::new(&wire,&short_stick,&short_pane,&self.focus)
+            let (short_stick,short_pane) = self.po.get_leaf().get_short_spec();
+            XferRequestKey::new(&wire,&self.po)
         })
     }
 }
 
-
 #[derive(Clone,PartialEq,Eq,Hash,Debug)]
 pub struct XferRequestKey {
     pub track: String,
-    pub stick: String,
-    pub leaf: String,
-    pub focus: Option<String> 
+    pub short_stick: String,
+    pub short_pane: String,
+    pub focus: Option<String>
 }
 
 impl XferRequestKey {
-    pub fn new(track: &str, stick: &str, leaf: &str, focus: &Option<String>) -> XferRequestKey {
-        XferRequestKey { track: track.to_string(), stick: stick.to_string(), leaf: leaf.to_string(), focus: focus.clone() }
+    pub fn new(track: &str, po: &PurchaseOrder) -> XferRequestKey {
+        let (short_stick,short_pane) = po.get_leaf().get_short_spec();
+        XferRequestKey { 
+            track: track.to_string(), 
+            short_pane, short_stick,
+            focus: po.get_focus().clone()
+        }
+    }
+
+    pub fn new_in(track: &str, stick: &str, pane: &str, focus: &Option<String>) -> XferRequestKey {
+        XferRequestKey {
+            track: track.to_string(), 
+            short_stick: stick.to_string(), 
+            short_pane: pane.to_string(),
+            focus: focus.clone()
+        }
     }
 }

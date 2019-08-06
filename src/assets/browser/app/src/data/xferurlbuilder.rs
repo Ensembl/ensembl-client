@@ -65,11 +65,11 @@ impl XferUrlBuilder {
     }
     
     pub fn add(&mut self, key: &XferRequestKey) {
-        let supersection = (key.stick.clone(),key.focus.clone());
+        let supersection = (key.short_stick.clone(),key.focus.clone());
         let set = self.data.entry(supersection).or_insert_with(||
             Vec::<(String,String)>::new()
         );
-        set.push((key.track.clone(),key.leaf.clone()));
+        set.push((key.track.clone(),key.short_pane.clone()));
     }
     
     fn emit_chrom(&self, values: &Vec<(String,String)>) -> String {

@@ -4,6 +4,7 @@ use std::cell::RefCell;
 use tánaiste::Value;
 
 use composit::Leaf;
+use composit::source::PurchaseOrder;
 use data::{ BackendConfig, BackendBytecode, XferClerk, XferConsumer, XferRequest };
 use util::Cache;
 
@@ -52,7 +53,8 @@ impl XferCache {
     }
     
     pub fn prime(&mut self, xferclerk: &mut Box<XferClerk>, compo: &str, leaf: &Leaf) {
-        let req = XferRequest::new(compo,leaf,&None,true);
+        let po = PurchaseOrder::new(leaf,&None);
+        let req = XferRequest::new(compo,&po,true);
         if let Some(key) = req.make_key(&self.1) {
             if self.get(&key).is_none() {
                 xferclerk.satisfy(req,Box::new(XferPrimeConsumer()));

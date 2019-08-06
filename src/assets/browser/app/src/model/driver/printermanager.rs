@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use composit::{ Leaf, Stage, Compositor };
+use composit::source::PurchaseOrder;
 use model::train::TravellerResponse;
 use types::Dot;
 use super::Printer;
@@ -77,8 +78,8 @@ impl Printer for PrinterManager {
         self.0.borrow_mut().printer.set_current(leaf);
     }
     
-    fn make_traveller_response(&mut self, leaf: &Leaf, focus: &Option<String>) -> Box<TravellerResponse> {
-        self.0.borrow_mut().printer.make_traveller_response(leaf,focus)
+    fn make_traveller_response(&mut self, po: &PurchaseOrder) -> Box<TravellerResponse> {
+        self.0.borrow_mut().printer.make_traveller_response(po)
     }
     
     fn redraw_carriage(&mut self, leaf: &Leaf) {

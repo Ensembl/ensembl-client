@@ -1,6 +1,7 @@
 mod activesource;
 mod combinedsource;
 mod combinedsourcemanager;
+mod purchaseorder;
 mod source;
 mod sourcemanager;
 mod sourcemanagerlist;
@@ -15,3 +16,4 @@ pub use self::sourcemanager::SourceManager;
 pub use self::sourcemanagerlist::SourceManagerList;
 pub use self::sourcepart::SourcePart;
 pub use self::sourceresponse::SourceResponse;
+pub use self::purchaseorder::PurchaseOrder;

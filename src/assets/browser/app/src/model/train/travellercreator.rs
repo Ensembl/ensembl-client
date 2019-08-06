@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 
 use model::driver::PrinterManager;
-use composit::source::SourceResponse;
+use composit::source::{ SourceResponse, PurchaseOrder };
 use super::Traveller;
 
 use composit::{
@@ -35,8 +35,9 @@ impl TravellerCreator {
     
     pub fn make_travellers_for_source(&mut self, acs: &mut ActiveSource, leaf: &Leaf, focus: &Option<String>) -> Vec<Traveller> {
         let mut tt = acs.make_travellers(leaf);
-        let source_response = SourceResponse::new(&mut self.pm,leaf,focus,&mut tt);
-        acs.request_data(source_response,leaf,focus);
+        let po = PurchaseOrder::new(leaf,focus);
+        let source_response = SourceResponse::new(&mut self.pm,po.clone(),&mut tt);
+        acs.request_data(source_response,&po);
         tt
     }
     

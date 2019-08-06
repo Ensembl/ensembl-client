@@ -7,6 +7,7 @@ use stdweb::web::{ HtmlElement, Element, INode, IElement };
 
 use super::{ GLProgs, GLCarriagePrinter, GLTravellerResponse };
 use composit::{ Compositor, Leaf, Stage };
+use composit::source::PurchaseOrder;
 use model::driver::Printer;
 use model::train::{ Train, TravellerResponse };
 use super::super::drawing::{ AllCanvasAllocator };
@@ -184,12 +185,12 @@ impl GLPrinterBase {
         }
     }    
 
-    fn make_traveller_response(&mut self, pref: &GLPrinter, leaf: &Leaf, focus: &Option<String>) -> Box<TravellerResponse> {
+    fn make_traveller_response(&mut self, pref: &GLPrinter, po: &PurchaseOrder) -> Box<TravellerResponse> {
         let idx = self.sridx;
         self.sridx += 1;
-        let sr = GLTravellerResponse::new(pref,idx,leaf,focus);
-        if let Some(cpp) = self.lp.get_mut(leaf) {
-            if let Some(cp) = cpp.get_mut(focus) {
+        let sr = GLTravellerResponse::new(pref,idx,po.get_leaf(),po.get_focus());
+        if let Some(cpp) = self.lp.get_mut(po.get_leaf()) {
+            if let Some(cp) = cpp.get_mut(po.get_focus()) {
                 cp.new_sr(&sr);
             }
         }
@@ -280,8 +281,8 @@ impl Printer for GLPrinter {
         self.base.borrow_mut().set_current(leaf);
     }
     
-    fn make_traveller_response(&mut self, leaf: &Leaf, focus: &Option<String>) -> Box<TravellerResponse> {
+    fn make_traveller_response(&mut self, po: &PurchaseOrder) -> Box<TravellerResponse> {
         let twin = self.clone();
-        self.base.borrow_mut().make_traveller_response(&twin,leaf,focus)
+        self.base.borrow_mut().make_traveller_response(&twin,po)
     }      
 }
