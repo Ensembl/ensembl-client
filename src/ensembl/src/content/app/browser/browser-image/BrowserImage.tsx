@@ -28,6 +28,8 @@ import {
   updateMessageCounter
 } from '../browserActions';
 
+import { setHighlightedTrack } from 'src/content/app/browser/track-panel/trackPanelActions';
+
 import { ChrLocation } from '../browserState';
 
 import { CircleLoader } from 'src/shared/loader/Loader';
@@ -51,6 +53,7 @@ type DispatchProps = {
   setChrLocation: (chrLocation: ChrLocation) => void;
   setActualChrLocation: (chrLocation: ChrLocation) => void;
   updateMessageCounter: (count: number) => void;
+  setHighlightedTrack: (trackId: string) => void;
 };
 
 type OwnProps = {
@@ -175,7 +178,10 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
           ref={props.browserRef}
         />
         <BrowserCogList />
-        <ZmenuController browserRef={props.browserRef} />
+        <ZmenuController
+          browserRef={props.browserRef}
+          setHighlightedTrack={props.setHighlightedTrack}
+        />
       </div>
     </>
   );
@@ -205,7 +211,8 @@ const mapDispatchToProps: DispatchProps = {
   updateBrowserNavStates,
   setChrLocation,
   setActualChrLocation,
-  updateMessageCounter
+  updateMessageCounter,
+  setHighlightedTrack
 };
 
 export default connect(

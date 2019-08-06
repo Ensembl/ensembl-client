@@ -8,11 +8,13 @@ export type TrackPanelState = Readonly<{
   isTrackPanelOpened: boolean;
   selectedBrowserTab: { [genomeId: string]: TrackType };
   trackPanelModalView: string;
+  highlightedTrack: string;
 }>;
 
 export const defaultTrackPanelState: TrackPanelState = {
   isTrackPanelModalOpened: false,
   isTrackPanelOpened: true,
   selectedBrowserTab,
-  trackPanelModalView: ''
+  trackPanelModalView: '',
+  highlightedTrack: ''
 };

@@ -41,6 +41,11 @@ export default function trackPanel(
         isTrackPanelModalOpened: false,
         trackPanelModalView: ''
       };
+    case getType(trackPanelActions.setHighlightedTrack):
+      return {
+        ...state,
+        highlightedTrack: action.payload
+      };
     default:
       return state;
   }

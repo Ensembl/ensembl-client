@@ -19,3 +19,6 @@ export const getSelectedBrowserTab = (state: RootState) => {
 
 export const getIsTrackPanelOpened = (state: RootState) =>
   state.trackPanel.isTrackPanelOpened;
+
+export const getHighlightedTrack = (state: RootState) =>
+  state.trackPanel.highlightedTrack;

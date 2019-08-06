@@ -16,6 +16,7 @@ import {
 
 type Props = {
   browserRef: React.RefObject<HTMLDivElement>;
+  setHighlightedTrack: (trackId: string) => void;
 };
 
 // when a zmenu is created, it’s assigned an id,
@@ -56,6 +57,9 @@ const ZmenuController = (props: Props) => {
       anchor_coordinates: payload.anchor_coordinates,
       content: payload.content
     };
+
+    props.setHighlightedTrack(payload.content[0].track_id);
+
     setZmenus({
       ...zmenus,
       [payload.id]: newZmenu
@@ -63,6 +67,7 @@ const ZmenuController = (props: Props) => {
   };
 
   const handleZmenuDestroy = (payload: ZmenuDestroyPayload) => {
+    props.setHighlightedTrack('');
     setZmenus(pickBy(zmenus, (value, key) => key !== payload.id));
   };
 

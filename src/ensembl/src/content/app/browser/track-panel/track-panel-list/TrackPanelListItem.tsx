@@ -5,11 +5,14 @@ import React, {
   useState,
   useEffect
 } from 'react';
+import { connect } from 'react-redux';
+import { RootState } from 'src/store';
 import classNames from 'classnames';
 
 import { TrackItemColour, TrackItemColourKey } from '../trackPanelConfig';
 import { UpdateTrackStatesPayload } from 'src/content/app/browser/browserActions';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import { getHighlightedTrack } from 'src/content/app/browser/track-panel/trackPanelSelectors';
 
 import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
@@ -37,12 +40,16 @@ type TrackPanelListItemProps = {
   updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
 };
 
+type StateProps = {
+  highlightedTrack: string;
+};
+
+type Props = TrackPanelListItemProps & StateProps;
+
 // delete this when there is a better place to put this
 const trackPrefix = 'track:';
 
-const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
-  props: TrackPanelListItemProps
-) => {
+const TrackPanelListItem: FunctionComponent<Props> = (props: Props) => {
   const [expanded, setExpanded] = useState(true);
   const {
     activeGenomeId,
@@ -135,7 +142,8 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
 
   const listItemClassNames = classNames(styles.listItem, {
     [styles.main]: track.track_id === 'gene',
-    [styles.currentDrawerView]: track.track_id === drawerView
+    [styles.highlightTrack]:
+      track.track_id === drawerView || track.track_id === props.highlightedTrack
   });
 
   return (
@@ -187,4 +195,8 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   );
 };
 
-export default TrackPanelListItem;
+const mapStateToProps = (state: RootState): StateProps => ({
+  highlightedTrack: getHighlightedTrack(state)
+});
+
+export default connect(mapStateToProps)(TrackPanelListItem);

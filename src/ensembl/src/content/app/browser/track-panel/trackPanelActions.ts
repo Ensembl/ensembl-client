@@ -50,3 +50,7 @@ export const openTrackPanelModal = createAction(
 export const closeTrackPanelModal = createStandardAction(
   'track-panel/close-track-panel-modal'
 )();
+
+export const setHighlightedTrack = createStandardAction(
+  'track-panel/set-highlighted-track'
+)<string>();
