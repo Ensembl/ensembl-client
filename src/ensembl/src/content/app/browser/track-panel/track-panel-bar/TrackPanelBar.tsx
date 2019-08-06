@@ -1,6 +1,22 @@
 import React, { FunctionComponent, useCallback } from 'react';
+import { connect } from 'react-redux';
 
 import { trackPanelBarConfig, TrackPanelBarItem } from './trackPanelBarConfig';
+import { getBrowserActiveGenomeId } from '../../browserSelectors';
+import { getIsDrawerOpened } from '../../drawer/drawerSelectors';
+import {
+  getIsTrackPanelModalOpened,
+  getIsTrackPanelOpened,
+  getTrackPanelModalView
+} from '../trackPanelSelectors';
+import { RootState } from 'src/store';
+import { getLaunchbarExpanded } from 'src/header/headerSelectors';
+import {
+  toggleTrackPanel,
+  closeTrackPanelModal,
+  openTrackPanelModal
+} from '../trackPanelActions';
+import { closeDrawer } from '../../drawer/drawerActions';
 
 import TrackPanelBarIcon from './TrackPanelBarIcon';
 
@@ -9,18 +25,25 @@ import chevronRightIcon from 'static/img/shared/chevron-right.svg';
 
 import styles from './TrackPanelBar.scss';
 
-type TrackPanelBarProps = {
-  activeGenomeId: string;
-  closeDrawer: () => void;
-  closeTrackPanelModal: () => void;
+type StateProps = {
+  activeGenomeId: string | null;
   isDrawerOpened: boolean;
   isTrackPanelModalOpened: boolean;
   isTrackPanelOpened: boolean;
   launchbarExpanded: boolean;
-  openTrackPanelModal: (trackPanelModalView: string) => void;
-  toggleTrackPanel: (isTrackPanelOpened?: boolean) => void;
   trackPanelModalView: string;
 };
+
+type DispatchProps = {
+  closeDrawer: () => void;
+  closeTrackPanelModal: () => void;
+  openTrackPanelModal: (trackPanelModalView: string) => void;
+  toggleTrackPanel: (isTrackPanelOpened?: boolean) => void;
+};
+
+type OwnProps = {};
+
+type TrackPanelBarProps = StateProps & DispatchProps & OwnProps;
 
 const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
   props: TrackPanelBarProps
@@ -74,4 +97,23 @@ const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
   );
 };
 
-export default TrackPanelBar;
+const mapStateToProps = (state: RootState): StateProps => ({
+  activeGenomeId: getBrowserActiveGenomeId(state),
+  isDrawerOpened: getIsDrawerOpened(state),
+  isTrackPanelModalOpened: getIsTrackPanelModalOpened(state),
+  isTrackPanelOpened: getIsTrackPanelOpened(state),
+  launchbarExpanded: getLaunchbarExpanded(state),
+  trackPanelModalView: getTrackPanelModalView(state)
+});
+
+const mapDispatchToProps: DispatchProps = {
+  closeDrawer,
+  closeTrackPanelModal,
+  openTrackPanelModal,
+  toggleTrackPanel
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TrackPanelBar);

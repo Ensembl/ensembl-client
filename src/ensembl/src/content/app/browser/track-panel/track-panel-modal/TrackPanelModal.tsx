@@ -1,6 +1,5 @@
 import React, { FunctionComponent } from 'react';
-
-import closeIcon from 'static/img/track-panel/close.svg';
+import { useSelector, useDispatch } from 'react-redux';
 
 import TrackPanelSearch from './modal-views/TrackPanelSearch';
 import TracksManager from './modal-views/TracksManager';
@@ -9,19 +8,27 @@ import PersonalData from './modal-views/PersonalData';
 import TrackPanelShare from './modal-views/TrackPanelShare';
 import TrackPanelDownloads from './modal-views/TrackPanelDownloads';
 
+import { getLaunchbarExpanded } from 'src/header/headerSelectors';
+import { getTrackPanelModalView } from '../trackPanelSelectors';
+import { closeTrackPanelModal } from '../trackPanelActions';
+import { RootState } from 'src/store';
+
+import closeIcon from 'static/img/track-panel/close.svg';
+
 import styles from './TrackPanelModal.scss';
 
-type TrackPanelModalProps = {
-  closeTrackPanelModal: () => void;
-  launchbarExpanded: boolean;
-  trackPanelModalView: string;
-};
+const TrackPanelModal: FunctionComponent = () => {
+  const { launchbarExpanded, trackPanelModalView } = useSelector(
+    (state: RootState) => ({
+      launchbarExpanded: getLaunchbarExpanded(state),
+      trackPanelModalView: getTrackPanelModalView(state)
+    })
+  );
 
-const TrackPanelModal: FunctionComponent<TrackPanelModalProps> = (
-  props: TrackPanelModalProps
-) => {
+  const dispatch = useDispatch();
+
   const getTrackPanelModalClasses = () => {
-    const heightClass: string = props.launchbarExpanded
+    const heightClass: string = launchbarExpanded
       ? styles.shorter
       : styles.taller;
 
@@ -29,7 +36,7 @@ const TrackPanelModal: FunctionComponent<TrackPanelModalProps> = (
   };
 
   const getModalView = () => {
-    switch (props.trackPanelModalView) {
+    switch (trackPanelModalView) {
       case 'search':
         return <TrackPanelSearch />;
       case 'tracks-manager':
@@ -50,7 +57,7 @@ const TrackPanelModal: FunctionComponent<TrackPanelModalProps> = (
   return (
     <section className={getTrackPanelModalClasses()}>
       <button
-        onClick={props.closeTrackPanelModal}
+        onClick={() => dispatch(closeTrackPanelModal())}
         className={styles.closeButton}
       >
         <img src={closeIcon} alt="Close track panel modal" />

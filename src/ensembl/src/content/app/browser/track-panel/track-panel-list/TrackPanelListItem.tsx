@@ -5,37 +5,54 @@ import React, {
   useState,
   useEffect
 } from 'react';
+import { connect } from 'react-redux';
 import classNames from 'classnames';
 
+import ImageButton, {
+  ImageButtonStatus
+} from 'src/shared/image-button/ImageButton';
+
 import { TrackItemColour, TrackItemColourKey } from '../trackPanelConfig';
-import { UpdateTrackStatesPayload } from 'src/content/app/browser/browserActions';
+import {
+  updateTrackStatesAndSave,
+  UpdateTrackStatesPayload
+} from 'src/content/app/browser/browserActions';
+import { changeDrawerView, toggleDrawer } from '../../drawer/drawerActions';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import browserStorageService from '../../browser-storage-service';
+import { EnsObjectTrack } from 'src/ens-object/ensObjectTypes';
+import { RootState } from 'src/store';
+import { getIsDrawerOpened, getDrawerView } from '../../drawer/drawerSelectors';
+import { getBrowserActiveGenomeId } from '../../browserSelectors';
 
 import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
 import { ReactComponent as Eye } from 'static/img/track-panel/eye.svg';
 import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg';
 
-import ImageButton, {
-  ImageButtonStatus
-} from 'src/shared/image-button/ImageButton';
-import browserStorageService from '../../browser-storage-service';
-import { EnsObjectTrack } from 'src/ens-object/ensObjectTypes';
-
 import styles from './TrackPanelListItem.scss';
 
-type TrackPanelListItemProps = {
-  activeGenomeId: string;
+type StateProps = {
+  activeGenomeId: string | null;
+  isDrawerOpened: boolean;
+  drawerView: string;
+};
+
+type DispatchProps = {
+  changeDrawerView: (drawerView: string) => void;
+  toggleDrawer: (isDrawerOpened: boolean) => void;
+  updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
+};
+
+type OwnProps = {
   categoryName: string;
   children?: ReactNode[];
   trackStatus: ImageButtonStatus;
   defaultTrackStatus: ImageButtonStatus;
-  isDrawerOpened: boolean;
-  drawerView: string;
   track: EnsObjectTrack;
-  updateDrawerView: (drawerView: string) => void;
-  updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
 };
+
+type TrackPanelListItemProps = StateProps & DispatchProps & OwnProps;
 
 // delete this when there is a better place to put this
 const trackPrefix = 'track:';
@@ -64,6 +81,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     const trackToggleStates = browserStorageService.getTrackListToggleStates();
 
     if (
+      activeGenomeId &&
       track.child_tracks &&
       trackToggleStates[activeGenomeId] &&
       trackToggleStates[activeGenomeId][track.track_id] !== undefined
@@ -71,6 +89,16 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
       setExpanded(trackToggleStates[activeGenomeId][track.track_id]);
     }
   }, []);
+
+  const updateDrawerView = (currentTrack: string) => {
+    const { drawerView, toggleDrawer, changeDrawerView } = props;
+
+    changeDrawerView(currentTrack);
+
+    if (!drawerView) {
+      toggleDrawer(true);
+    }
+  };
 
   const getBoxClasses = (colour: TrackItemColourKey) => {
     const colourValue = colour ? TrackItemColour[colour] : '';
@@ -89,20 +117,20 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
 
     const viewName = track.track_id;
 
-    props.updateDrawerView(viewName);
+    updateDrawerView(viewName);
   };
 
   const drawerViewButtonHandler = () => {
     const viewName = track.track_id;
 
-    props.updateDrawerView(viewName);
+    updateDrawerView(viewName);
   };
 
   const toggleExpand = () => {
     setExpanded(!expanded);
 
     browserStorageService.updateTrackListToggleStates({
-      [activeGenomeId]: { [track.track_id]: !expanded }
+      [activeGenomeId as string]: { [track.track_id]: !expanded }
     });
   };
 
@@ -115,7 +143,7 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
     updateGenomeBrowser(newStatus);
 
     props.updateTrackStates({
-      genomeId: activeGenomeId,
+      genomeId: activeGenomeId as string,
       categoryName,
       trackId: track.track_id,
       status: newStatus
@@ -187,4 +215,19 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   );
 };
 
-export default TrackPanelListItem;
+const mapStateToProps = (state: RootState): StateProps => ({
+  activeGenomeId: getBrowserActiveGenomeId(state),
+  isDrawerOpened: getIsDrawerOpened(state),
+  drawerView: getDrawerView(state)
+});
+
+const mapDispatchToProps: DispatchProps = {
+  changeDrawerView,
+  toggleDrawer,
+  updateTrackStates: updateTrackStatesAndSave
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TrackPanelListItem);

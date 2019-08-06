@@ -8,34 +8,19 @@ import TrackPanelModal from './track-panel-modal/TrackPanelModal';
 import Drawer from '../drawer/Drawer';
 import { RootState } from 'src/store';
 
-import {
-  updateTrackStatesAndSave,
-  UpdateTrackStatesPayload
-} from 'src/content/app/browser/browserActions';
-import {
-  toggleTrackPanel,
-  closeTrackPanelModal,
-  openTrackPanelModal
-} from './trackPanelActions';
-import {
-  toggleDrawer,
-  changeDrawerView,
-  closeDrawer
-} from '../drawer/drawerActions';
+import { toggleTrackPanel } from './trackPanelActions';
 import {
   getIsTrackPanelOpened,
   getIsTrackPanelModalOpened,
-  getTrackPanelModalView,
   getSelectedBrowserTab
 } from './trackPanelSelectors';
-import { getDrawerView, getIsDrawerOpened } from '../drawer/drawerSelectors';
+import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 import {
   getBrowserActivated,
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObject,
   getBrowserTrackStates
 } from '../browserSelectors';
-import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 import { BreakpointWidth } from 'src/global/globalConfig';
 import { TrackType, TrackStates } from './trackPanelConfig';
@@ -51,25 +36,16 @@ type StateProps = {
   breakpointWidth: BreakpointWidth;
   browserActivated: boolean;
   isDrawerOpened: boolean;
-  drawerView: string;
-  ensObject: EnsObject | null;
+  activeEnsObject: EnsObject | null;
   isTrackPanelModalOpened: boolean;
   isTrackPanelOpened: boolean;
-  launchbarExpanded: boolean;
   selectedBrowserTab: TrackType;
   genomeTrackCategories: GenomeTrackCategory[];
-  trackPanelModalView: string;
   trackStates: TrackStates;
 };
 
 type DispatchProps = {
-  changeDrawerView: (drawerView: string) => void;
-  closeDrawer: () => void;
-  closeTrackPanelModal: () => void;
-  openTrackPanelModal: (trackPanelModalView: string) => void;
-  toggleDrawer: (isDrawerOpened: boolean) => void;
   toggleTrackPanel: (isTrackPanelOpened?: boolean) => void;
-  updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
 };
 
 type OwnProps = {};
@@ -114,41 +90,11 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
 
   return props.activeGenomeId ? (
     <animated.div style={trackAnimation}>
-      {props.browserActivated && props.ensObject ? (
+      {props.browserActivated && props.activeEnsObject ? (
         <div className={styles.trackPanel}>
-          <TrackPanelBar
-            activeGenomeId={props.activeGenomeId}
-            closeDrawer={props.closeDrawer}
-            closeTrackPanelModal={props.closeTrackPanelModal}
-            isDrawerOpened={props.isDrawerOpened}
-            launchbarExpanded={props.launchbarExpanded}
-            openTrackPanelModal={props.openTrackPanelModal}
-            toggleTrackPanel={props.toggleTrackPanel}
-            isTrackPanelModalOpened={props.isTrackPanelModalOpened}
-            trackPanelModalView={props.trackPanelModalView}
-            isTrackPanelOpened={props.isTrackPanelOpened}
-          />
-          <TrackPanelList
-            activeGenomeId={props.activeGenomeId}
-            isDrawerOpened={props.isDrawerOpened}
-            drawerView={props.drawerView}
-            launchbarExpanded={props.launchbarExpanded}
-            ensObject={props.ensObject}
-            selectedBrowserTab={props.selectedBrowserTab}
-            toggleDrawer={props.toggleDrawer}
-            trackStates={props.trackStates}
-            genomeTrackCategories={props.genomeTrackCategories}
-            updateDrawerView={props.changeDrawerView}
-            updateTrackStates={props.updateTrackStates}
-          />
-
-          {props.isTrackPanelModalOpened ? (
-            <TrackPanelModal
-              closeTrackPanelModal={props.closeTrackPanelModal}
-              launchbarExpanded={props.launchbarExpanded}
-              trackPanelModalView={props.trackPanelModalView}
-            />
-          ) : null}
+          <TrackPanelBar />
+          <TrackPanelList />
+          {props.isTrackPanelModalOpened ? <TrackPanelModal /> : null}
           {isDrawerOpened && <Drawer />}
         </div>
       ) : null}
@@ -164,11 +110,8 @@ const mapStateToProps = (state: RootState): StateProps => {
     breakpointWidth: getBreakpointWidth(state),
     browserActivated: getBrowserActivated(state),
     isDrawerOpened: getIsDrawerOpened(state),
-    drawerView: getDrawerView(state),
-    ensObject: getBrowserActiveEnsObject(state),
+    activeEnsObject: getBrowserActiveEnsObject(state),
     isTrackPanelModalOpened: getIsTrackPanelModalOpened(state),
-    trackPanelModalView: getTrackPanelModalView(state),
-    launchbarExpanded: getLaunchbarExpanded(state),
     selectedBrowserTab: getSelectedBrowserTab(state),
     genomeTrackCategories: activeGenomeId
       ? getGenomeTrackCategoriesById(state, activeGenomeId)
@@ -179,13 +122,7 @@ const mapStateToProps = (state: RootState): StateProps => {
 };
 
 const mapDispatchToProps: DispatchProps = {
-  changeDrawerView,
-  closeDrawer,
-  closeTrackPanelModal,
-  openTrackPanelModal,
-  toggleDrawer,
-  toggleTrackPanel,
-  updateTrackStates: updateTrackStatesAndSave
+  toggleTrackPanel
 };
 
 export default connect(
