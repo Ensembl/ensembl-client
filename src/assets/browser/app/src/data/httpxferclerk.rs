@@ -15,7 +15,7 @@ use super::{
     HttpResponseConsumer, HttpManager, BackendConfig
 };
 use super::jsonxferresponse::parse_jsonxferresponse_str;
-use super::xferrequest::XferRequestKey;
+use composit::source::CatalogueCode;
 
 use super::backendconfig::BackendBytecode;
 
@@ -74,7 +74,7 @@ impl PendingXferRequest {
 
 struct PendingXferBatch {
     config: BackendConfig,
-    requests: HashMap<XferRequestKey,Vec<PendingXferRequest>>,
+    requests: HashMap<CatalogueCode,Vec<PendingXferRequest>>,
     pace: XferPaceManager,
     base: Url,
     cache: XferCache
@@ -91,7 +91,7 @@ impl PendingXferBatch {
         }
     }
     
-    pub fn add_request(&mut self, key: &XferRequestKey, consumer: Box<XferConsumer>) {
+    pub fn add_request(&mut self, key: &CatalogueCode, consumer: Box<XferConsumer>) {
         self.requests.entry(key.clone()).or_insert_with(|| {
             Vec::<PendingXferRequest>::new()
         }).push(PendingXferRequest {
@@ -176,7 +176,7 @@ impl XferBatchScheduler {
         }
     }
     
-    pub fn add_request(&mut self, key: &XferRequestKey, consumer: Box<XferConsumer>) {
+    pub fn add_request(&mut self, key: &CatalogueCode, consumer: Box<XferConsumer>) {
         if let Some(ref mut batch) = self.batch {
             batch.add_request(&key,consumer);
         }
@@ -231,16 +231,16 @@ impl HttpXferClerkImpl {
         }
     }
     
-    fn fix_key(&self, in_: &XferRequestKey) -> XferRequestKey {
+    fn fix_key(&self, in_: &CatalogueCode) -> CatalogueCode {
         let mut out = in_.clone();
-        if out.track != "ff" {
+        if out.wire != "ff" {
             out.focus = None;
         }
         out
     }
 
     pub fn run_request(&mut self, request: XferRequest, mut consumer: Box<XferConsumer>, prime: bool) {
-        let key = request.make_key(&self.config.as_ref().unwrap());
+        let key = CatalogueCode::try_new(&self.config.as_ref().unwrap(),request.get_purchase_order());
         if let Some(key) = key {
             let key = self.fix_key(&key);
             if let Some(recv) = self.cache.get(&key) {

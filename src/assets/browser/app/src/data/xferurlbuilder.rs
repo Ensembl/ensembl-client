@@ -1,7 +1,7 @@
 use std::collections::{ HashMap, HashSet };
 use itertools::Itertools;
 
-use super::xferrequest::XferRequestKey;
+use composit::source::CatalogueCode;
 
 struct ChromBuilder {
     input: HashSet<(String,String)>,
@@ -64,12 +64,12 @@ impl XferUrlBuilder {
         }
     }
     
-    pub fn add(&mut self, key: &XferRequestKey) {
+    pub fn add(&mut self, key: &CatalogueCode) {
         let supersection = (key.short_stick.clone(),key.focus.clone());
         let set = self.data.entry(supersection).or_insert_with(||
             Vec::<(String,String)>::new()
         );
-        set.push((key.track.clone(),key.short_pane.clone()));
+        set.push((key.wire.clone(),key.short_pane.clone()));
     }
     
     fn emit_chrom(&self, values: &Vec<(String,String)>) -> String {
