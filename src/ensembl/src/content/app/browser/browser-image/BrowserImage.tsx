@@ -25,7 +25,8 @@ import {
   updateBrowserNavStates,
   setChrLocation,
   setActualChrLocation,
-  updateMessageCounter
+  updateMessageCounter,
+  updateBrowserActiveEnsObjectIdsAndSave
 } from '../browserActions';
 
 import { ChrLocation } from '../browserState';
@@ -48,6 +49,7 @@ type DispatchProps = {
   activateBrowser: () => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
+  updateBrowserActiveEnsObject: (objectId: string) => void;
   setChrLocation: (chrLocation: ChrLocation) => void;
   setActualChrLocation: (chrLocation: ChrLocation) => void;
   updateMessageCounter: (count: number) => void;
@@ -62,6 +64,7 @@ type BrowserImageProps = StateProps & DispatchProps & OwnProps;
 
 type BpaneOutPayload = {
   bumper?: BrowserNavStates;
+  focus?: string;
   'message-counter'?: number;
   'intended-location'?: ChrLocation;
   'actual-location'?: ChrLocation;
@@ -78,6 +81,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   props: BrowserImageProps
 ) => {
   const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
+    const ensObjectId = payload.focus;
     const navIconStates = payload.bumper as BrowserNavStates;
     const intendedLocation = payload['intended-location'];
     const actualLocation = payload['actual-location'] || intendedLocation;
@@ -93,6 +97,10 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
 
     if (actualLocation) {
       props.setActualChrLocation(parseLocation(actualLocation));
+    }
+
+    if (ensObjectId) {
+      props.updateBrowserActiveEnsObject(ensObjectId);
     }
 
     if (messageCount) {
@@ -203,6 +211,7 @@ const mapDispatchToProps: DispatchProps = {
   activateBrowser,
   updateBrowserActivated,
   updateBrowserNavStates,
+  updateBrowserActiveEnsObject: updateBrowserActiveEnsObjectIdsAndSave,
   setChrLocation,
   setActualChrLocation,
   updateMessageCounter

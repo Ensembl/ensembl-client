@@ -67,13 +67,25 @@ class ApiService {
 
     try {
       const response = await fetch(url, fetchOptions);
+      if (!response.ok) {
+        throw await this.handleError(response, fetchOptions);
+      }
       return await this.handleResponse(response, fetchOptions);
     } catch (error) {
       throw error;
     }
   }
 
+  private async handleError(response: Response, options: FetchOptions) {
+    const body = await this.handleResponse(response, options);
+    return {
+      status: response.status,
+      ...(typeof body === 'string' ? { message: body } : body)
+    };
+  }
+
   private async handleResponse(response: Response, options: FetchOptions) {
+    console.log('response', response);
     if (options.headers && options.headers['Accept'] === 'application/json') {
       return await response.json();
     } else {

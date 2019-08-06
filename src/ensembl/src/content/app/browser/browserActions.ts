@@ -8,6 +8,9 @@ import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+
+import { fetchEnsObject } from 'src/ens-object/ensObjectActions';
+
 import {
   BrowserNavStates,
   ChrLocation,
@@ -100,7 +103,7 @@ export const updateBrowserActiveEnsObjectIds = createStandardAction(
 export const updateBrowserActiveEnsObjectIdsAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (activeEnsObjectId: string) => {
-  return (dispatch: Dispatch, getState: () => RootState) => {
+  return (dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
     if (!activeGenomeId) {
@@ -113,6 +116,7 @@ export const updateBrowserActiveEnsObjectIdsAndSave: ActionCreator<
     };
 
     dispatch(updateBrowserActiveEnsObjectIds(updatedActiveEnsObjectId));
+    dispatch(fetchEnsObject(activeEnsObjectId));
 
     browserStorageService.updateActiveEnsObjectIds(updatedActiveEnsObjectId);
   };

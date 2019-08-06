@@ -72,9 +72,8 @@ export const getActualChrLocation = (state: RootState): ChrLocation | null => {
 
 export const getDefaultChrLocation = (state: RootState): ChrLocation | null => {
   const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
-  const activeEnsObject = activeEnsObjectId
-    ? state.ensObjects[activeEnsObjectId]
-    : null;
+  const activeEnsObject =
+    activeEnsObjectId && getEnsObjectById(state, activeEnsObjectId);
   if (!activeEnsObject) {
     return null;
   }
