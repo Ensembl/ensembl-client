@@ -19,3 +19,11 @@ export const getSelectedBrowserTab = (state: RootState) => {
 
 export const getIsTrackPanelOpened = (state: RootState) =>
   state.trackPanel.isTrackPanelOpened;
+
+export const getBookmarks = (state: RootState) => state.trackPanel.bookmarks;
+
+export const getActiveGenomeBookmarks = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+
+  return (activeGenomeId && state.trackPanel.bookmarks[activeGenomeId]) || [];
+};

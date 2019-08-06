@@ -5,7 +5,14 @@ import { Action, ActionCreator } from 'redux';
 import { RootState } from 'src/store';
 import { TrackType } from './trackPanelConfig';
 import browserStorageService from '../browser-storage-service';
-import { getBrowserActiveGenomeId } from '../browserSelectors';
+import {
+  getBrowserActiveGenomeId,
+  getBrowserActiveEnsObject,
+  getBrowserTrackStates
+} from '../browserSelectors';
+import { getBookmarks } from './trackPanelSelectors';
+
+import { Bookmark } from './trackPanelState';
 
 export const toggleTrackPanel = createStandardAction(
   'track-panel/toggle-track-panel'
@@ -50,3 +57,47 @@ export const openTrackPanelModal = createAction(
 export const closeTrackPanelModal = createStandardAction(
   'track-panel/close-track-panel-modal'
 )();
+
+export const updateBookmarks = createStandardAction(
+  'track-panel/update-bookmarks'
+)<{ [genomeId: string]: Bookmark[] }>();
+
+export const updateBookmarksAndSave: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = () => (dispatch, getState: () => RootState) => {
+  const state = getState();
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  const activeEnsObject = getBrowserActiveEnsObject(state);
+  if (!activeGenomeId || !activeEnsObject) {
+    return;
+  }
+  const trackStates = getBrowserTrackStates(state)[activeGenomeId];
+
+  const bookmarks = { ...getBookmarks(getState()) };
+
+  const activeGenomeBookmarks = bookmarks[activeGenomeId]
+    ? [...bookmarks[activeGenomeId]]
+    : [];
+
+  const existingIndex = activeGenomeBookmarks.findIndex(
+    (bookmark) => bookmark.object_id === activeEnsObject.object_id
+  );
+  if (existingIndex !== -1 && activeGenomeBookmarks.length > 1) {
+    // If it is already present, bump it to the end
+    activeGenomeBookmarks.push(activeGenomeBookmarks[existingIndex]);
+    activeGenomeBookmarks.splice(existingIndex, 1);
+  } else if (existingIndex === -1) {
+    // IF it is not present, add it to the end
+    activeGenomeBookmarks.push({
+      object_id: activeEnsObject.object_id,
+      object_type: activeEnsObject.object_type,
+      label: activeEnsObject.label,
+      location: { ...activeEnsObject.location },
+      trackStates: { ...trackStates }
+    });
+  }
+
+  bookmarks[activeGenomeId] = activeGenomeBookmarks;
+
+  dispatch(updateBookmarks(bookmarks));
+};

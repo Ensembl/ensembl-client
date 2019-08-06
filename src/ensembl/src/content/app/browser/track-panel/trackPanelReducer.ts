@@ -30,6 +30,11 @@ export default function trackPanel(
         isTrackPanelModalOpened: false,
         trackPanelModalView: ''
       };
+    case getType(trackPanelActions.updateBookmarks):
+      return {
+        ...state,
+        bookmarks: action.payload
+      };
     case getType(trackPanelActions.selectBrowserTab):
       return {
         ...state,

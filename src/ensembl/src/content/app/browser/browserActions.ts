@@ -17,10 +17,12 @@ import {
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectId,
-  getBrowserActiveEnsObjectIds,
   getBrowserTrackStates,
   getChrLocation
 } from './browserSelectors';
+
+import { updateBookmarksAndSave } from 'src/content/app/browser/track-panel/trackPanelActions';
+
 import { getChrLocationStr } from './browserHelper';
 import browserStorageService from './browser-storage-service';
 import { RootState } from 'src/store';
@@ -75,10 +77,14 @@ export const setDataFromUrlAndSave: ActionCreator<
   browserStorageService.saveActiveGenomeId(payload.activeGenomeId);
   chrLocation &&
     browserStorageService.updateChrLocation({ [activeGenomeId]: chrLocation });
-  activeEnsObjectId &&
+
+  if (activeEnsObjectId) {
     browserStorageService.updateActiveEnsObjectIds({
       [activeGenomeId]: activeEnsObjectId
     });
+
+    dispatch(updateBookmarksAndSave());
+  }
 };
 
 export const updateBrowserActiveGenomeId = createStandardAction(
@@ -90,31 +96,6 @@ export const updateBrowserActiveGenomeIdAndSave: ActionCreator<
 > = (activeGenomeId: string) => (dispatch) => {
   dispatch(updateBrowserActiveGenomeId(activeGenomeId));
   browserStorageService.saveActiveGenomeId(activeGenomeId);
-};
-
-export const updateBrowserActiveEnsObjectIds = createStandardAction(
-  'browser/update-active-ens-object-ids'
-)<{ [objectId: string]: string }>();
-
-export const updateBrowserActiveEnsObjectIdsAndSave: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (activeEnsObjectId: string) => {
-  return (dispatch: Dispatch, getState: () => RootState) => {
-    const state = getState();
-    const activeGenomeId = getBrowserActiveGenomeId(state);
-    if (!activeGenomeId) {
-      return;
-    }
-    const currentActiveEnsObjectIds = getBrowserActiveEnsObjectIds(state);
-    const updatedActiveEnsObjectId = {
-      ...currentActiveEnsObjectIds,
-      [activeGenomeId]: activeEnsObjectId
-    };
-
-    dispatch(updateBrowserActiveEnsObjectIds(updatedActiveEnsObjectId));
-
-    browserStorageService.updateActiveEnsObjectIds(updatedActiveEnsObjectId);
-  };
 };
 
 export const updateTrackStates = createStandardAction(
