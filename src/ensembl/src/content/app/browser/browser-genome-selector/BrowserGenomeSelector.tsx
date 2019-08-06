@@ -5,21 +5,23 @@ import React, {
   FormEvent,
   useEffect
 } from 'react';
+import classNames from 'classnames';
 
 import { ChrLocation } from '../browserState';
+import { getChrLocationStr } from '../browserHelper';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 
 import applyIcon from 'static/img/shared/apply.svg';
 import clearIcon from 'static/img/shared/clear.svg';
 
 import styles from './BrowserGenomeSelector.scss';
-import { getChrLocationStr } from '../browserHelper';
 
 type BrowserGenomeSelectorProps = {
   activeGenomeId: string | null;
   browserActivated: boolean;
   chrLocation: ChrLocation;
   dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
-  drawerOpened: boolean;
+  isDrawerOpened: boolean;
   genomeSelectorActive: boolean;
   toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
 };
@@ -27,7 +29,7 @@ type BrowserGenomeSelectorProps = {
 const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
   props: BrowserGenomeSelectorProps
 ) => {
-  const { activeGenomeId, chrLocation } = props;
+  const { activeGenomeId, chrLocation, isDrawerOpened } = props;
   const chrLocationStr = getChrLocationStr(chrLocation);
 
   const [chrLocationPlaceholder, setChrLocationPlaceholder] = useState('');
@@ -40,18 +42,8 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
     setChrLocationPlaceholder(chrLocationStr);
   }, []);
 
-  const getGenomeSelectorClasses = () => {
-    let classNames = styles.browserGenomeSelector;
-
-    if (props.drawerOpened === true) {
-      classNames += ` ${styles.browserGenomeSelectorDisabled}`;
-    }
-
-    return classNames;
-  };
-
   const activateForm = () => {
-    if (props.drawerOpened === true) {
+    if (isDrawerOpened) {
       return;
     }
 
@@ -99,8 +91,12 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
     }
   };
 
+  const className = classNames(styles.browserGenomeSelector, {
+    [styles.browserGenomeSelectorDisabled]: isDrawerOpened
+  });
+
   return props.browserActivated ? (
-    <dd className={getGenomeSelectorClasses()}>
+    <dd className={className}>
       <label className="show-for-large">Chromosome</label>
       {props.genomeSelectorActive ? (
         <form onSubmit={handleSubmit}>
@@ -122,9 +118,9 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
           <div className={styles.chrCode}>{chrCode}</div>
           {displayChrRegion ? (
             <div className={styles.chrRegion}>
-              <span>{chrStart}</span>
+              <span>{getCommaSeparatedNumber(chrStart)}</span>
               <span className={styles.chrSeparator}> - </span>
-              <span>{chrEnd}</span>
+              <span>{getCommaSeparatedNumber(chrEnd)}</span>
             </div>
           ) : null}
         </div>

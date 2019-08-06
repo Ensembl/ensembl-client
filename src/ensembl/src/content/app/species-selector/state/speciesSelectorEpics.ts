@@ -1,7 +1,9 @@
 import { Epic } from 'redux-observable';
 import { map, switchMap, filter, distinctUntilChanged } from 'rxjs/operators';
 import { isActionOf, ActionType, PayloadAction } from 'typesafe-actions';
+import queryString from 'query-string';
 
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import * as observableApiService from 'src/services/observable-api-service';
 import * as speciesSelectorActions from 'src/content/app/species-selector/state/speciesSelectorActions';
 
@@ -11,13 +13,15 @@ type Action = ActionType<typeof speciesSelectorActions>;
 
 // FIXME: this is a mock implementation of the fetcher
 export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
-  action$
+  action$,
+  state$
 ) =>
   action$.pipe(
     filter(
       isActionOf([
         speciesSelectorActions.fetchSpeciesSearchResults.request,
         speciesSelectorActions.setSelectedSpecies,
+        speciesSelectorActions.clearSearch,
         speciesSelectorActions.clearSearchResults
       ])
     ),
@@ -40,8 +44,15 @@ export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
       isActionOf(speciesSelectorActions.fetchSpeciesSearchResults.request)
     ),
     switchMap((action) => {
-      const query = action.payload;
-      const url = `/api/genome_search?query=${encodeURIComponent(query)}`;
+      const committedSpeciesIds = getCommittedSpecies(state$.value).map(
+        (species) => species.genome_id
+      );
+      const query = queryString.stringify({
+        query: encodeURIComponent(action.payload),
+        limit: 20,
+        exclude: committedSpeciesIds
+      });
+      const url = `/api/genome_search?${query}`;
       return observableApiService.fetch(url);
     }),
     map((response) => {

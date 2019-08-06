@@ -1,15 +1,16 @@
 import { createAction, createAsyncAction } from 'typesafe-actions';
 
-import * as allFilterAccordionActions from '../containers/content/filter-accordion/state/filterAccordionActions';
-import * as allAttributeAccordionActions from '../containers/content/attributes-accordion/state/attributesAccordionActions';
+import * as allFilterAccordionActions from './filters/filtersActions';
+import * as allAttributeAccordionActions from './attributes/attributesActions';
 import { ActionCreator, Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import apiService from 'src/services/api-service';
 
-import Preview from 'src/content/app/custom-download/types/Preview';
+import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
+import JSONValue from 'src/shared/types/JSON';
 
-export const filterAccordionActions = allFilterAccordionActions;
-export const attributesAccordionActions = allAttributeAccordionActions;
+export const filterActions = allFilterAccordionActions;
+export const attributesActions = allAttributeAccordionActions;
 
 export const updateSelectedPreFilter = createAction(
   'custom-download/update-selected-pre-filters',
@@ -21,14 +22,20 @@ export const updateSelectedPreFilter = createAction(
 export const togglePreFiltersPanel = createAction(
   'custom-download/toggle-pre-filters-panel',
   (resolve) => {
-    return (showPreFiltersPanel: boolean) => resolve(showPreFiltersPanel);
+    return (showPreFiltersPanel: boolean) => {
+      customDownloadStorageService.saveShowPreFilterPanel(showPreFiltersPanel);
+      return resolve(showPreFiltersPanel);
+    };
   }
 );
 
 export const toggleTab = createAction(
   'custom-download/toggle-data-filter-tab-button',
   (resolve) => {
-    return (selectedTab: string) => resolve(selectedTab);
+    return (selectedTab: string) => {
+      customDownloadStorageService.saveSelectedTab(selectedTab);
+      return resolve(selectedTab);
+    };
   }
 );
 
@@ -36,10 +43,10 @@ export const setPreviewResult = createAsyncAction(
   'custom-download/preview-results-request',
   'custom-download/preview-results-success',
   'custom-download/preview-results-failure'
-)<{ endpointURL: string; headers: {} }, { preview: Preview }, Error>();
+)<{ endpointURL: string; headers: {} }, JSONValue, Error>();
 
 export const fetchPreviewResult: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, string, null, Action<string>>
 > = (endpointURL: string) => async (dispatch) => {
   try {
     apiService
@@ -49,7 +56,7 @@ export const fetchPreviewResult: ActionCreator<
         },
         preserveEndpoint: true
       })
-      .then((response: any) => {
+      .then((response: JSONValue) => {
         dispatch(setPreviewResult.success(response));
       });
   } catch (error) {
@@ -67,7 +74,10 @@ export const setIsLoadingResult = createAction(
 export const setShowPreview = createAction(
   'custom-download/set-show-preview',
   (resolve) => {
-    return (showPreview: boolean) => resolve(showPreview);
+    return (showSummary: boolean) => {
+      customDownloadStorageService.saveShowPreview(showSummary);
+      return resolve(showSummary);
+    };
   }
 );
 

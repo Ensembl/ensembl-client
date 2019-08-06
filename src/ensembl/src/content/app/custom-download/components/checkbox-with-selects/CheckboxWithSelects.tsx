@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Checkbox from 'src/shared/checkbox/Checkbox';
 import Select, { Option } from 'src/shared/select/Select';
 import styles from './CheckboxWithSelects.scss';
@@ -7,25 +7,32 @@ import ImageButton from 'src/shared/image-button/ImageButton';
 import { ReactComponent as AddIcon } from 'static/img/browser/zoom-in.svg';
 import { ReactComponent as RemoveIcon } from 'static/img/shared/clear.svg';
 
-type Props = {
+export type CheckboxWithSelectsProps = {
   options: Option[];
   label: string;
   selectedOptions: string[];
+  disabled?: boolean;
   onChange: (selectedOptions: string[]) => void;
 };
 
-const CheckboxWithSelects = (props: Props) => {
-  const [isChecked, setisChecked] = useState(props.selectedOptions.length > 0);
+const CheckboxWithSelects = (props: CheckboxWithSelectsProps) => {
+  const [isChecked, setIsChecked] = useState(false);
   const [shouldShowExtraOption, setShowExtraOption] = useState(false);
 
+  useEffect(() => {
+    setIsChecked(props.selectedOptions.length > 0);
+  }, [props.selectedOptions]);
+
   const handleCheckboxOnChange = (isChecked: boolean) => {
-    setisChecked(isChecked);
-    props.onChange([]);
+    setIsChecked(isChecked);
+    if (!isChecked && props.selectedOptions.length > 0) {
+      props.onChange([]);
+    }
   };
 
   const handleOnSelect = (value: string, selectIndex?: number) => {
     const newSelectedOptions: string[] = [...props.selectedOptions];
-    if (selectIndex) {
+    if (selectIndex !== undefined) {
       newSelectedOptions[selectIndex] = value;
     } else {
       newSelectedOptions.push(value);
@@ -38,25 +45,32 @@ const CheckboxWithSelects = (props: Props) => {
   const selectedOptionsClone: string[] = [...props.selectedOptions];
 
   const newoptions: Option[] = [...props.options].filter((option: Option) => {
-    if (selectedOptionsClone.indexOf(option.value) === -1) {
-      return true;
-    }
-    return false;
+    return !selectedOptionsClone.includes(option.value);
   });
 
   const firstSelectedOption = selectedOptionsClone.shift();
-  const firstoptions = [...props.options].map((option: Option) => {
-    const optionClone = { ...option };
-    if (optionClone.value === firstSelectedOption) {
-      optionClone.isSelected = true;
-    }
-    return optionClone;
-  });
+  const firstoptions = [...props.options]
+    .filter((option: Option) => {
+      return (
+        !selectedOptionsClone.includes(option.value) ||
+        option.value === firstSelectedOption
+      );
+    })
+    .map((option: Option) => {
+      const optionClone = { ...option };
+      if (optionClone.value === firstSelectedOption) {
+        optionClone.isSelected = true;
+      }
+      return optionClone;
+    });
 
   const removeSelection = (option: string) => {
-    const selectedOptions: string[] = [...props.selectedOptions];
-    const removeSelectionIndex = selectedOptions.indexOf(option);
-    selectedOptions.splice(removeSelectionIndex, 1);
+    const selectedOptions: string[] = [...props.selectedOptions].filter(
+      (value: string) => {
+        return value !== option;
+      }
+    );
+
     setShowExtraOption(false);
     props.onChange(selectedOptions);
   };
@@ -70,10 +84,11 @@ const CheckboxWithSelects = (props: Props) => {
               checked={isChecked}
               onChange={handleCheckboxOnChange}
               label={props.label}
+              disabled={props.disabled}
             />
           </td>
           <td>
-            {isChecked && (
+            {!props.disabled && (
               <div>
                 <Select
                   options={firstoptions}

@@ -10,27 +10,28 @@ import chevronRightIcon from 'static/img/shared/chevron-right.svg';
 import styles from './TrackPanelBar.scss';
 
 type TrackPanelBarProps = {
+  activeGenomeId: string;
+  closeDrawer: () => void;
   closeTrackPanelModal: () => void;
-  drawerOpened: boolean;
+  isDrawerOpened: boolean;
+  isTrackPanelModalOpened: boolean;
+  isTrackPanelOpened: boolean;
   launchbarExpanded: boolean;
   openTrackPanelModal: (trackPanelModalView: string) => void;
-  toggleDrawer: (drawerOpened: boolean) => void;
-  toggleTrackPanel: (trackPanelOpened?: boolean) => void;
-  trackPanelModalOpened: boolean;
+  toggleTrackPanel: (isTrackPanelOpened?: boolean) => void;
   trackPanelModalView: string;
-  trackPanelOpened: boolean;
 };
 
 const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
   props: TrackPanelBarProps
 ) => {
   const moveTrackPanel = useCallback(() => {
-    if (props.drawerOpened === true) {
-      props.toggleDrawer(false);
+    if (props.isDrawerOpened) {
+      props.closeDrawer();
     } else {
       props.toggleTrackPanel();
     }
-  }, [props.drawerOpened, props.toggleDrawer, props.toggleTrackPanel]);
+  }, [props.isDrawerOpened, props.closeDrawer, props.toggleTrackPanel]);
 
   const getClassNames = () => {
     const heightClass: string = props.launchbarExpanded
@@ -45,7 +46,7 @@ const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
       <dl>
         <dt className={styles.sliderButton}>
           <button onClick={moveTrackPanel}>
-            {props.trackPanelOpened ? (
+            {props.isTrackPanelOpened ? (
               <img src={chevronRightIcon} alt="collapse" />
             ) : (
               <img src={chevronLeftIcon} alt="expand" />
@@ -58,7 +59,7 @@ const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
             iconConfig={item}
             closeTrackPanelModal={props.closeTrackPanelModal}
             openTrackPanelModal={props.openTrackPanelModal}
-            trackPanelModalOpened={props.trackPanelModalOpened}
+            isTrackPanelModalOpened={props.isTrackPanelModalOpened}
             trackPanelModalView={props.trackPanelModalView}
           />
         ))}

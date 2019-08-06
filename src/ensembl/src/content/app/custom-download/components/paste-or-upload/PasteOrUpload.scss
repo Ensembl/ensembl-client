@@ -1,0 +1,31 @@
+@import 'src/styles/common';
+
+.pasteText,
+.uploadText {
+  color: $ens-blue;
+  cursor: pointer;
+}
+
+.fileUploadWrapper {
+  float: left;
+}
+
+.removeIconHolder {
+  height: 20px;
+  width: 20px;
+  float: right;
+  margin-right: 2px;
+  margin-top: 8px;
+}
+
+.fields {
+  width: calc(100% - 75px);
+  float: left;
+  margin-bottom: 20px;
+}
+
+.textInput {
+  height: 36px;
+  padding-left: 15px;
+  border: none;
+}

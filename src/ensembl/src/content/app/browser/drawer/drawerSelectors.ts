@@ -1,7 +1,14 @@
 import { RootState } from 'src/store';
+import { getBrowserActiveGenomeId } from '../browserSelectors';
 
-export const getDrawerView = (state: RootState): string =>
-  state.drawer.drawerView;
+export const getDrawerView = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  return (activeGenomeId && state.drawer.drawerView[activeGenomeId]) || '';
+};
 
-export const getDrawerOpened = (state: RootState): boolean =>
-  state.drawer.drawerOpened;
+export const getIsDrawerOpened = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  return (
+    (activeGenomeId && state.drawer.isDrawerOpened[activeGenomeId]) || false
+  );
+};

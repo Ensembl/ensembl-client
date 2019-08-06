@@ -1,14 +1,12 @@
-// TODO: perhaps consider common variable for left margin (it will be the same for SearchPanel
+@import 'src/content/app/species-selector/components/popular-species-button/PopularSpeciesButton.scss';
 
 $buttons-per-row: 14;
-$gap-width: 1.5rem; // width of the gap between the buttons
-$button-width: 56px; // width of a popular species button
 $popular-species-block-width: calc(
-  #{$buttons-per-row} * (#{$button-width} + #{$gap-width})
+  #{$buttons-per-row} * (#{$button-width} + #{$button-gap})
 );
 
 .layout {
-  padding-left: 100px;
+  padding-left: $global-padding-left;
   padding-top: $button-width; // FIXME this will have to change
 }
 

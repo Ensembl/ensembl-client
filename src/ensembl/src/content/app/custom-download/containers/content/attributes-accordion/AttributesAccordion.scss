@@ -2,13 +2,14 @@
 
 .wrapper {
   padding-right: 15px;
-  max-height: calc(100vh - 225px);
+  max-height: calc(100vh - 135px);
   overflow-y: auto;
   background-color: $ens-white;
 }
 .dataSelectorHint {
-  padding: 10px 0 10px 15px;
+  padding: 10px 40px 10px 15px;
   color: $ens-dark-grey;
+  position: relative;
 }
 
 .accordionItem {
@@ -26,4 +27,16 @@
     color: $ens-black;
     font-weight: 700;
   }
+}
+
+.resetIcon {
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  top: 10px;
+  right: 15px;
+}
+
+.defaultContent {
+  padding: 20px;
 }

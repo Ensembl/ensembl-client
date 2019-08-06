@@ -2,13 +2,19 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 import { Link } from 'react-router-dom';
-import { getAttributes } from '../attributes-accordion/state/attributesAccordionSelector';
-import { getFilters } from '../filter-accordion/state/filterAccordionSelector';
+import { getSelectedAttributes } from '../../../state/attributes/attributesSelector';
+import { getSelectedFilters } from '../../../state/filters/filtersSelector';
 
 import { ReactComponent as closeIcon } from 'static/img/track-panel/close.svg';
 import styles from './PreviewDownload.scss';
+import get from 'lodash/get';
 
-import { getSelectedAttributes } from '../result-holder/resultHolderHelper';
+import {
+  getProcessedAttributes,
+  flattenObject,
+  attributeDisplayNames,
+  getProcessedFilters
+} from '../result-holder/resultHolderHelper';
 
 import {
   setShowPreview,
@@ -17,11 +23,11 @@ import {
 
 import ImageButton from 'src/shared/image-button/ImageButton';
 
-import { CustomDownloadAttributes } from 'src/content/app/custom-download/types/Attributes';
+import JSONValue from 'src/shared/types/JSON';
 
 type StateProps = {
-  attributes: CustomDownloadAttributes;
-  filters: {};
+  selectedAttributes: JSONValue;
+  selectedFilters: JSONValue;
 };
 
 type DispatchProps = {
@@ -37,7 +43,17 @@ const PreviewDownload = (props: Props) => {
     props.toggleTab(tab);
   };
 
-  const attributesList: [] = getSelectedAttributes(props.attributes);
+  const attributesList: string[] = getProcessedAttributes(
+    flattenObject(props.selectedAttributes)
+  );
+
+  const processedFilters = getProcessedFilters(props.selectedFilters);
+  const gene_ids = get(
+    processedFilters,
+    'protein_and_domain_families.family_or_domain_ids.limit_to_genes'
+  );
+  const gene_biotypes = get(processedFilters, 'genes.gene_type.biotype');
+  const gene_source = get(processedFilters, 'genes.gene_source');
 
   return (
     <div className={styles.previewDownload}>
@@ -66,7 +82,11 @@ const PreviewDownload = (props: Props) => {
             </td>
             <td>
               {attributesList.map((attribute, index) => {
-                return <div key={index}>{attribute[3]}</div>;
+                return (
+                  <div key={index}>
+                    {attributeDisplayNames[attribute] || attribute}
+                  </div>
+                );
               })}
 
               <div
@@ -79,8 +99,13 @@ const PreviewDownload = (props: Props) => {
               </div>
             </td>
             <td>
-              <div>Transcripts</div>
-              <div>Protein Coding</div>
+              {!!gene_ids && <div>Limit to genes: {gene_ids.join(', ')}</div>}
+              {!!gene_biotypes && (
+                <div>Gene biotype: {gene_biotypes.join(', ')}</div>
+              )}
+              {!!gene_source && (
+                <div>Gene source: {gene_source.join(', ')}</div>
+              )}
               <div
                 className={styles.changeLink}
                 onClick={() => {
@@ -103,8 +128,8 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  attributes: getAttributes(state),
-  filters: getFilters(state)
+  selectedAttributes: getSelectedAttributes(state),
+  selectedFilters: getSelectedFilters(state)
 });
 
 export default connect(

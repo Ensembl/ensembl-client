@@ -1,0 +1,23 @@
+.wrapperTable {
+  padding-bottom: 20px;
+  width: 100%;
+  td {
+    vertical-align: top;
+  }
+}
+.checkboxWrapper {
+  width: 200px;
+}
+
+.fieldsWrapper {
+  min-width: 300px;
+  max-width: calc(100% - 200px);
+}
+
+.addIconHolder {
+  height: 25px;
+  width: 25px;
+  margin-top: 25px;
+  float: right;
+  clear: right;
+}

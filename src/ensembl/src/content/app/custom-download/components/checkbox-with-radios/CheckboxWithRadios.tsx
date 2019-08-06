@@ -4,14 +4,15 @@ import Radio, { RadioOptions } from 'src/shared/radio/Radio';
 
 import styles from './CheckboxWithRadios.scss';
 
-type Props = {
-  radioOptions: RadioOptions;
+export type CheckboxWithRadiosProps = {
+  options: RadioOptions;
   label: string;
   selectedOption: string;
+  disabled?: boolean;
   onChange: (selectedOption: string | number | boolean) => void;
 };
 
-const CheckboxWithRadios = (props: Props) => {
+const CheckboxWithRadios = (props: CheckboxWithRadiosProps) => {
   const [isChecked, setisChecked] = useState(Boolean(props.selectedOption));
 
   const handleCheckboxOnChange = (isChecked: boolean) => {
@@ -28,13 +29,14 @@ const CheckboxWithRadios = (props: Props) => {
               checked={isChecked}
               onChange={handleCheckboxOnChange}
               label={props.label}
+              disabled={props.disabled}
             />
           </td>
           {isChecked && (
             <td>
               <Radio
                 onChange={props.onChange}
-                radioOptions={props.radioOptions}
+                options={props.options}
                 selectedOption={props.selectedOption}
               />
             </td>
