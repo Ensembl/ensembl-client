@@ -15,7 +15,6 @@ pub struct TáSourceImpl {
     tc: Tácode,
     xf: Box<XferClerk>,
     lid: usize,
-    name: String,
     config: BackendConfig,
     focus: FocusObject
 }
@@ -24,11 +23,10 @@ pub struct TáSourceImpl {
 pub struct TáSource(Rc<RefCell<TáSourceImpl>>);
 
 impl TáSource {
-    pub fn new(tc: &Tácode, xf: Box<XferClerk>, name: &str, lid: usize, config: &BackendConfig, focus: &FocusObject) -> TáSource {
+    pub fn new(tc: &Tácode, xf: Box<XferClerk>, lid: usize, config: &BackendConfig, focus: &FocusObject) -> TáSource {
         TáSource(Rc::new(RefCell::new(TáSourceImpl{
             tc: tc.clone(),
             xf, lid,
-            name: name.to_string(),
             config: config.clone(),
             focus: focus.clone()
         })))
@@ -37,7 +35,7 @@ impl TáSource {
 
 impl Source for TáSource {
     fn request_data(&self, acs: &ActiveSource, lc: SourceResponse, po: &PurchaseOrder) {
-        let xfer_req = XferRequest::new(&self.0.borrow_mut().name,po,false);
+        let xfer_req = XferRequest::new(po,false);
         let tc = self.0.borrow_mut().tc.clone();
         let lid = self.0.borrow_mut().lid;
         let config = &self.0.borrow().config.clone();

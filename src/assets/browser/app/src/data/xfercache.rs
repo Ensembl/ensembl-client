@@ -53,8 +53,8 @@ impl XferCache {
     }
     
     pub fn prime(&mut self, xferclerk: &mut Box<XferClerk>, compo: &str, leaf: &Leaf) {
-        let po = PurchaseOrder::new(leaf,&None);
-        let req = XferRequest::new(compo,&po,true);
+        let po = PurchaseOrder::new(compo,leaf,&None);
+        let req = XferRequest::new(&po,true);
         if let Some(key) = req.make_key(&self.1) {
             if self.get(&key).is_none() {
                 xferclerk.satisfy(req,Box::new(XferPrimeConsumer()));

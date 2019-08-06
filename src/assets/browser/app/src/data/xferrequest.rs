@@ -6,15 +6,13 @@ use super::BackendConfig;
 // XXX no clone!
 #[derive(Clone,Debug)]
 pub struct XferRequest {
-    source_name: String,
     po: PurchaseOrder,
     prime: bool
 }
 
 impl XferRequest {
-    pub fn new(source_name: &str, po: &PurchaseOrder, prime: bool) -> XferRequest {
+    pub fn new(po: &PurchaseOrder, prime: bool) -> XferRequest {
         XferRequest {
-            source_name: source_name.to_string(),
             po: po.clone(),
             prime
         }
@@ -23,7 +21,7 @@ impl XferRequest {
     pub fn get_prime(&self) -> bool { self.prime }
 
     pub fn make_key(&self, bc: &BackendConfig) -> Option<XferRequestKey> {
-        let wire = bc.get_track(&self.source_name)
+        let wire = bc.get_track(&self.po.get_source_name())
                         .and_then(|x| x.get_wire().as_ref())
                         .map(|x| x.to_string());
         wire.map(|wire| {
