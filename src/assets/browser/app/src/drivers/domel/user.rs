@@ -11,21 +11,21 @@ use types::{ Dot, CPixel };
 
 pub struct UserEventListener {
     canv_el: HtmlElement,
-    cs: Arc<Mutex<App>>,
-    mouse: Arc<Mutex<MousePhysics>>,
-    optical: Arc<Mutex<Optical>>
+    app: Arc<Mutex<App>>,
+    position: Arc<Mutex<MousePhysics>>,
+    zoom: Arc<Mutex<Optical>>
 }
 
 impl UserEventListener {
-    pub fn new(cs: &Arc<Mutex<App>>,
+    pub fn new(app: &Arc<Mutex<App>>,
                canv_el: &HtmlElement,
-               mouse: &Arc<Mutex<MousePhysics>>,
-               optical: &Arc<Mutex<Optical>>) -> UserEventListener {
+               position: &Arc<Mutex<MousePhysics>>,
+               zoom: &Arc<Mutex<Optical>>) -> UserEventListener {
         UserEventListener {
-            cs: cs.clone(),
-            mouse: mouse.clone(),
+            app: app.clone(),
+            position: position.clone(),
             canv_el: canv_el.clone(),
-            optical: optical.clone()
+            zoom: zoom.clone()
         }
     }
     
@@ -37,7 +37,7 @@ impl UserEventListener {
     }
     
     fn wheel(&mut self, amt: f64) {
-        let app = &mut self.cs.lock().unwrap();
+        let app = &mut self.app.lock().unwrap();
         let (y,pos_bp,pos_prop) = app.with_stage(|s|
             (s.get_pos_middle().1,
              s.get_mouse_pos_bp(),
@@ -45,11 +45,11 @@ impl UserEventListener {
         );
 
         let pos = Dot(pos_bp,y);
-        self.optical.lock().unwrap().move_by(amt,pos,pos_prop);
+        self.zoom.lock().unwrap().move_by(amt,pos,pos_prop);
     }
     
     fn zmenu_click_check(&mut self, pos: &CPixel) {
-        let mut app = &mut self.cs.lock().unwrap();
+        let mut app = &mut self.app.lock().unwrap();
         app.run_actions(&vec![
             Action::ZMenuClickCheck(*pos)
         ],None); 
@@ -68,12 +68,13 @@ impl EventListener<()> for UserEventListener {
                 self.canv_el.focus();
                 domutil::clear_selection();
                 e.stop_propagation();
-                self.mouse.lock().unwrap().down(self.mouse_rel_box(&e.at()));
+                self.position.lock().unwrap().down(self.mouse_rel_box(&e.at()));
             },
-            EventData::MouseEvent(EventType::MouseMoveEvent,_,e) => { 
-                self.mouse.lock().unwrap().move_to(self.mouse_rel_box(&e.at()));
-                self.cs.lock().unwrap().with_stage(|s| 
-                    s.set_mouse_pos(&e.at())
+            EventData::MouseEvent(EventType::MouseMoveEvent,_,e) => {
+                let box_mouse = self.mouse_rel_box(&e.at());
+                self.position.lock().unwrap().move_to(box_mouse);
+                self.app.lock().unwrap().with_stage(|s| 
+                    s.set_mouse_pos(&box_mouse)
                 );
             },
             EventData::MouseEvent(EventType::MouseClickEvent,_,e) => {
@@ -99,13 +100,13 @@ impl EventListener<()> for UserEventListener {
 
 pub struct UserEventListenerBody {
     app_runner: AppRunner,
-    mouse: Arc<Mutex<MousePhysics>>,
+    position: Arc<Mutex<MousePhysics>>,
 }
 
 impl UserEventListenerBody {
-    pub fn new(app_runner: &AppRunner, mouse: &Arc<Mutex<MousePhysics>>) -> UserEventListenerBody {
+    pub fn new(app_runner: &AppRunner, position: &Arc<Mutex<MousePhysics>>) -> UserEventListenerBody {
         UserEventListenerBody {
-            mouse: mouse.clone(),
+            position: position.clone(),
             app_runner: app_runner.clone(),
         }
     }
@@ -115,7 +116,7 @@ impl EventListener<()> for UserEventListenerBody {
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
         match e {
             EventData::MouseEvent(EventType::MouseUpEvent,_,_) => {
-                self.mouse.lock().unwrap().up();
+                self.position.lock().unwrap().up();
             },
             EventData::KeyboardEvent(EventType::KeyPressEvent,_,e) => {
                 self.app_runner.bling_key(&e.key_char());
