@@ -143,7 +143,7 @@ impl ZMenuLeaf {
         for item in &self.items {
             bb_log!("zmenu","zml: item pos={:?} placement={:?}",pos,&item.placement);
             if stage.intersects(pos,&item.placement) {
-                console!("intersects {:?}",item.id);
+                bb_log!("zmenu","intersects {:?}",item.id);
                 if let Some(payload) = self.activate(&item.id,&item.track_id) {
                     out.push(ZMenuIntersection {
                         id: item.id.clone(),

@@ -1,6 +1,8 @@
 // We keep these separate from the other utils partly because these imports
 // are very hairy.
 
+use std::collections::HashMap;
+
 use itertools::Itertools;
 use serde_json::Value as JSONValue;
 use stdweb::Value;
@@ -106,9 +108,35 @@ pub fn remove_attr(el: &HtmlElement,key: &str, togo: &str) {
     el.set_attribute(key,&val).ok();
 }
 
-#[allow(unused)]
-pub fn add_style(el: &HtmlElement, key: &str, value: &str) {
-    add_attr(el,"style",&format!("{}: {};",key,value));
+pub fn get_style_attr(el: &HtmlElement) -> HashMap<String,String> {
+    let mut out = HashMap::new();
+    if let Some(attr) = el.get_attribute("style") {
+        for part in attr.split(";") {
+            if let Some(colon) = part.find('.') {
+                let (k,v) = part.split_at(colon);
+                if k != "" || v != "" {
+                    out.insert(k.trim().to_string(),v.trim().to_string());
+                }
+            }
+        }
+    }
+    out
+}
+
+pub fn set_style_attr(el: &HtmlElement, val: &HashMap<String,String>) {
+    let mut attr = String::new();
+    for (k,v) in val {
+        if k != "" || v != "" {
+            attr.push_str(&format!("{}: {};",k,v));
+        }
+    }
+    el.set_attribute("style",&attr);
+}
+
+pub fn add_style(el: &HtmlElement, k: &str, v: &str) {
+    let mut style = get_style_attr(el);
+    style.insert(k.to_string(),v.to_string());
+    set_style_attr(el,&style);
 }
 
 pub fn get_inner_html(el: &Element) -> String {

@@ -13,7 +13,8 @@ pub struct UserEventListener {
     canv_el: HtmlElement,
     app: Arc<Mutex<App>>,
     position: Arc<Mutex<MousePhysics>>,
-    zoom: Arc<Mutex<Optical>>
+    zoom: Arc<Mutex<Optical>>,
+    showing_pointer: bool
 }
 
 impl UserEventListener {
@@ -25,7 +26,8 @@ impl UserEventListener {
             app: app.clone(),
             position: position.clone(),
             canv_el: canv_el.clone(),
-            zoom: zoom.clone()
+            zoom: zoom.clone(),
+            showing_pointer: false
         }
     }
     
@@ -54,6 +56,24 @@ impl UserEventListener {
             Action::ZMenuClickCheck(*pos)
         ],None); 
     }
+
+    fn check_cursor(&mut self, pos: &CPixel) {
+        let mut app = &mut self.app.lock().unwrap();
+        let zmenus = app.with_compo(|co|
+            app.with_stage(|s|
+                co.intersects(s,*pos)
+            )
+        );
+        let pointer = zmenus.len() > 0;
+        if pointer != self.showing_pointer {
+            let style = match pointer {
+                false => "auto",
+                true => "pointer"
+            };
+            domutil::add_style(&self.canv_el,"cursor",style);
+            self.showing_pointer = pointer;
+        }
+    }
 }
 
 impl EventListener<()> for UserEventListener {    
@@ -76,6 +96,7 @@ impl EventListener<()> for UserEventListener {
                 self.app.lock().unwrap().with_stage(|s| 
                     s.set_mouse_pos(&box_mouse)
                 );
+                self.check_cursor(&box_mouse);
             },
             EventData::MouseEvent(EventType::MouseClickEvent,_,e) => {
                 self.zmenu_click_check(&self.mouse_rel_box(&e.at()));
