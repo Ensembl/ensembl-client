@@ -112,8 +112,6 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
     });
   }, [isDrawerOpened, props.isTrackPanelOpened]);
 
-  console.log('trackpanelprops', props);
-
   return props.activeGenomeId ? (
     <animated.div style={trackAnimation}>
       {props.browserActivated && props.ensObject ? (

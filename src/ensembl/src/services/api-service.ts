@@ -90,7 +90,6 @@ class ApiService {
   }
 
   private async handleResponse(response: Response, options: FetchOptions) {
-    console.log('response', response);
     if (options.headers && options.headers['Accept'] === 'application/json') {
       return await response.json();
     } else {

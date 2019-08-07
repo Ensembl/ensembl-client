@@ -99,7 +99,6 @@ const ZmenuContentItem = (props: ZmenuContentItemProps) => {
 
   const handleClick = () => {
     props.changeFocusObject(id);
-    console.log('clicked!');
   };
 
   const itemProps = {
