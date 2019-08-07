@@ -40,7 +40,12 @@ export const fetchEnsObject: ActionCreator<
     if (response.object_type !== 'region') {
       // region objects don't have associated track lists
       const trackUrl = `/api/object/track_list?object_id=${ensObjectId}`;
-      response.track = await apiService.fetch(trackUrl);
+      try {
+        response.track = await apiService.fetch(trackUrl);
+      } catch {
+        // FIXME: this is a temporary solution
+        response.track = builtTrackList(response);
+      }
     }
 
     dispatch(
@@ -67,4 +72,17 @@ export const fetchExampleEnsObjects: ActionCreator<
       dispatch(fetchEnsObject(exampleObjectId));
     });
   }
+};
+
+// FIXME: this is a temporary solution, until the backend
+// fixes the api/object/track_list endpoint
+const builtTrackList = (ensObject: EnsObjectResponse) => {
+  return {
+    additional_info: ensObject.bio_type || undefined,
+    description: ensObject.description,
+    ensembl_object_id: ensObject.object_id, // we don't use this field
+    label: ensObject.label,
+    track_id: 'gene-feat',
+    child_tracks: []
+  };
 };

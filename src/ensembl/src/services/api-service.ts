@@ -77,10 +77,15 @@ class ApiService {
   }
 
   private async handleError(response: Response, options: FetchOptions) {
-    const body = await this.handleResponse(response, options);
+    let errorJson;
+    try {
+      errorJson = await response.json();
+    } catch {
+      // don't care
+    }
     return {
       status: response.status,
-      ...(typeof body === 'string' ? { message: body } : body)
+      ...errorJson
     };
   }
 
