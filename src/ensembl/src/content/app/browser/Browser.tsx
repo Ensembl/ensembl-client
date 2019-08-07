@@ -18,6 +18,7 @@ import { RootState } from 'src/store';
 import { ChrLocation, ChrLocations } from './browserState';
 import {
   changeBrowserLocation,
+  changeFocusObject,
   setDataFromUrlAndSave,
   ParsedUrlPayload
 } from './browserActions';
@@ -77,6 +78,7 @@ type StateProps = {
 
 type DispatchProps = {
   changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
+  changeFocusObject: (objectId: string) => void;
   changeDrawerView: (drawerView: string) => void;
   closeDrawer: () => void;
   fetchGenomeData: (genomeId: string) => void;
@@ -145,7 +147,11 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
     props.setDataFromUrlAndSave(payload);
 
-    chrLocation && dispatchBrowserLocation(genomeId, chrLocation);
+    if (chrLocation) {
+      dispatchBrowserLocation(genomeId, chrLocation);
+    } else if (focus) {
+      props.changeFocusObject(focus);
+    }
     lastGenomeIdRef.current = genomeId;
   };
 
@@ -308,11 +314,9 @@ const ExampleObjectLinks = (props: BrowserProps) => {
     return null;
   }
   const links = props.exampleEnsObjects.map((exampleObject: EnsObject) => {
-    const location = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
     const path = urlFor.browser({
       genomeId: activeGenomeId,
-      focus: exampleObject.object_id,
-      location
+      focus: exampleObject.object_id
     });
 
     return (
@@ -349,6 +353,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
 
 const mapDispatchToProps: DispatchProps = {
   changeBrowserLocation,
+  changeFocusObject,
   changeDrawerView,
   closeDrawer,
   fetchGenomeData,

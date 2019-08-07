@@ -42,11 +42,9 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
 
   const getPreviouslyViewed = () => {
     return props.exampleEnsObjects.map((exampleObject) => {
-      const locationStr = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
       const path = urlFor.browser({
         genomeId: props.activeGenomeId,
-        focus: exampleObject.object_id,
-        location: locationStr
+        focus: exampleObject.object_id
       });
 
       return (
