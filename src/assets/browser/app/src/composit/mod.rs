@@ -12,7 +12,7 @@ mod wrapping;
 mod stage;
 
 pub use self::source::{
-    CombinedSource, Source, ActiveSource, 
+    CombinedSource, OrderReceiver, ActiveSource, 
     SourceManager, SourceManagerList, CombinedSourceManager
 };
 pub use self::combinedstickmanager::CombinedStickManager;

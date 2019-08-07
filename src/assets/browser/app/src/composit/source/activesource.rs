@@ -6,7 +6,7 @@ use std::rc::Rc;
 
 use composit::state::StateExpr;
 use composit::{
-    AllLandscapes, Landscape, Source, Leaf,
+    AllLandscapes, Landscape, OrderReceiver, Leaf,
     StateManager
 };
 
@@ -24,12 +24,12 @@ pub struct ActiveSource {
     lid: usize,
     name: String,
     parts: HashMap<Option<String>,SourcePart>,
-    source: Rc<Source>,
+    source: Rc<OrderReceiver>,
     zmr: ZMenuRegistry
 }
 
 impl ActiveSource {
-    pub fn new(name: &str, source: Rc<Source>, zmr: &ZMenuRegistry, als: &AllLandscapes, lid: usize) -> ActiveSource {
+    pub fn new(name: &str, source: Rc<OrderReceiver>, zmr: &ZMenuRegistry, als: &AllLandscapes, lid: usize) -> ActiveSource {
         ActiveSource {
             source, lid,
             name: name.to_string(),
@@ -39,7 +39,7 @@ impl ActiveSource {
         }
     }
     
-    pub fn get_source(&self) -> &Rc<Source> { &self.source }
+    pub fn get_source(&self) -> &Rc<OrderReceiver> { &self.source }
     
     pub fn new_part(&mut self, part: Option<&str>, ooe: Rc<StateExpr>) {
         self.parts.insert(part.map(|x| x.to_string()),SourcePart::new(part,&ooe));
@@ -63,9 +63,9 @@ impl ActiveSource {
         out
     }
         
-    pub fn request_data(&self, party: PendingOrder, po: &PurchaseOrder) {
+    pub fn receive_order(&self, party: PendingOrder) {
         let twin = self.source.clone();
-        twin.request_data(self,party,po);
+        twin.receive_order(self,party);
     }
     
     pub fn get_name(&self) -> &str { &self.name }  

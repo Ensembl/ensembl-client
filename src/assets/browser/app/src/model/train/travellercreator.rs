@@ -37,7 +37,7 @@ impl TravellerCreator {
         let mut tt = acs.make_travellers(leaf);
         let po = PurchaseOrder::new(acs.get_name(),leaf,focus);
         let pending_order = PendingOrder::new(&mut self.pm,po.clone(),&mut tt);
-        acs.request_data(pending_order,&po);
+        acs.receive_order(pending_order);
         tt
     }
     

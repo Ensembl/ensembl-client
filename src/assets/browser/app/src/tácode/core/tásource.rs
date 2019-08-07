@@ -3,7 +3,7 @@ use std::rc::Rc;
 
 use tánaiste::Value;
 
-use composit::{ Leaf, Source, ActiveSource };
+use composit::{ Leaf, ActiveSource, OrderReceiver };
 use composit::source::PurchaseOrder;
 use data::{ XferClerk, XferConsumer, BackendConfig, BackendBytecode };
 use model::focus::FocusObject;
@@ -33,13 +33,15 @@ impl TáSource {
     }
 }
 
-impl Source for TáSource {
-    fn request_data(&self, acs: &ActiveSource, lc: PendingOrder, po: &PurchaseOrder) {
+impl OrderReceiver for TáSource {
+    fn receive_order(&self, acs: &ActiveSource, lc: PendingOrder) {
         let tc = self.0.borrow_mut().tc.clone();
         let lid = self.0.borrow_mut().lid;
         let config = &self.0.borrow().config.clone();
-        let xcons = TáXferConsumer::new(&tc,acs,po.get_leaf(),lc,lid,config,&self.0.borrow_mut().focus);
-        self.0.borrow_mut().xf.satisfy(po,false,Box::new(xcons));
+        let leaf = lc.get_purchase_order().get_leaf().clone();
+        let po = lc.get_purchase_order().clone();
+        let xcons = TáXferConsumer::new(&tc,acs,&leaf,lc,lid,config,&self.0.borrow_mut().focus);
+        self.0.borrow_mut().xf.satisfy(&po,false,Box::new(xcons));
     }
 }
 

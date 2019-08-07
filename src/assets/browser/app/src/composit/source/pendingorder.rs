@@ -28,6 +28,8 @@ impl PendingOrder {
         out
     }
     
+    pub fn get_purchase_order(&self) -> &PurchaseOrder { &self.purchase_order }
+
     pub fn get_traveller(&mut self, part: &Option<String>) -> &mut Traveller {
         unwrap!(self.travellers.get_mut(part))
     }

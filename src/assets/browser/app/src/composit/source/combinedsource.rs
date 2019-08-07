@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use composit::{ 
-    ActiveSource, Leaf, Plot, Source,
+    ActiveSource, Leaf, Plot, OrderReceiver,
     StateAtom, AllLandscapes
 };
 use composit::source::PurchaseOrder;
@@ -16,37 +16,32 @@ use model::zmenu::ZMenuRegistry;
 const TOP : i32 = 50;
 const PITCH : i32 = 63;
 
-/* A CombinedSource is a single *track* but it may come from multiple
- * sources depending on the stick (eg species). At the moment we only
- * support a single backend source along with local debug sources but
- * this is where any additional logic would go.
- */
 pub struct CombinedSource {
-    backend_source: Box<Source>,
-    per_stick_sources: HashMap<String,Box<Source>>,
+    backend_source: Box<OrderReceiver>,
+    per_stick_sources: HashMap<String,Box<OrderReceiver>>,
 }
 
 impl CombinedSource {
-    pub fn new(backend_source: Box<Source>) -> CombinedSource {
+    pub fn new(backend_source: Box<OrderReceiver>) -> CombinedSource {
         CombinedSource {
             backend_source,
-            per_stick_sources: HashMap::<String,Box<Source>>::new()
+            per_stick_sources: HashMap::<String,Box<OrderReceiver>>::new()
         }
     }
     
-    pub fn add_per_stick(&mut self, name: &str, source: Box<Source>) {
+    pub fn add_per_stick(&mut self, name: &str, source: Box<OrderReceiver>) {
         let name = name.to_string();
         self.per_stick_sources.insert(name.clone(),source);
     }
 }
 
-impl Source for CombinedSource {
-    fn request_data(&self, acs: &ActiveSource, lc: PendingOrder, po: &PurchaseOrder) {
-        let stick_name = po.get_leaf().get_stick().get_name();
+impl OrderReceiver for CombinedSource {
+    fn receive_order(&self, acs: &ActiveSource, lc: PendingOrder) {
+        let stick_name = lc.get_purchase_order().get_leaf().get_stick().get_name();
         if let Some(source) = self.per_stick_sources.get(&stick_name) {
-            source.request_data(acs,lc,po);
+            source.receive_order(acs,lc);
         } else {
-            self.backend_source.request_data(acs,lc,po);
+            self.backend_source.receive_order(acs,lc);
         }
     }
 }
