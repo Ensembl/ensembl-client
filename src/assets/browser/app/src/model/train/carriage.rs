@@ -1,7 +1,6 @@
 use std::sync::{ Arc, Mutex };
 
-use composit::{ Leaf, ActiveSource };
-use composit::{ StateManager };
+use composit::{ Leaf, StateManager };
 use model::driver::{ Printer, PrinterManager };
 use model::zmenu::{ ZMenuLeaf, ZMenuLeafSet };
 use super::Traveller;

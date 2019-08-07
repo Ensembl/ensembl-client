@@ -111,7 +111,7 @@ fn exe_settled(app: &mut App) {
 }
 
 fn exe_component_add(a: &mut App, name: &str) {
-    if let Some(c) = a.get_component(name) {
+    if let Some(c) = a.get_product(name) {
         a.with_compo(|co| {
             let cs = co.get_component_set();
             cs.add(c)

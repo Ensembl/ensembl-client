@@ -1,7 +1,7 @@
 use std::collections::{ HashMap, HashSet };
 use itertools::Itertools;
 
-use composit::source::CatalogueCode;
+use model::supply::CatalogueCode;
 
 struct ChromBuilder {
     input: HashSet<(String,String)>,

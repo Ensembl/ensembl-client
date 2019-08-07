@@ -5,10 +5,11 @@ use stdweb::unstable::TryInto;
 use url::Url;
 
 use composit::{
-    Compositor, StateManager, Stage, StickManager, SourceManager,
-    CombinedStickManager, SourceManagerList, ActiveSource,
-    CombinedSourceManager, AllLandscapes
+    Compositor, StateManager, Stage, StickManager,
+    CombinedStickManager,
+    AllLandscapes
 };
+use model::supply::{ Product, ProductList };
 use controller::input::{ Action, actions_run, startup_actions, Jumper };
 use controller::global::{ AppRunnerWeak, AppRunner };
 use controller::output::{ Report, ViewportReport, ZMenuReports, Counter };
@@ -20,6 +21,8 @@ use model::driver::{ Printer, PrinterManager };
 use model::focus::FocusObject;
 use tácode::Tácode;
 use types::Dot;
+
+use super::Window;
 
 const SETTLE_TIME : f64 = 500.; // ms
 const CANVAS : &str = r##"<canvas id="canvas"></canvas>"##;
@@ -36,15 +39,13 @@ pub struct App {
     report: Option<Report>,
     viewport: Option<ViewportReport>,
     zmenu_reports: Option<ZMenuReports>,
-    csl: SourceManagerList,
-    http_clerk: HttpXferClerk,
-    als: AllLandscapes,
+    csl: Option<ProductList>,
     size: Option<Dot<f64,f64>>,
     last_resize_at: Option<f64>,
     stage_resize: Option<Dot<f64,f64>>,
     action_backlog: Vec<Action>,
-    focus: FocusObject,
-    jumper: Option<Jumper>
+    jumper: Option<Jumper>,
+    window: Window
 }
 
 impl App {
@@ -70,41 +71,32 @@ impl App {
             report: None,
             viewport: None,
             zmenu_reports: None,
-            csl: SourceManagerList::new(),
-            http_clerk: clerk,
-            als: AllLandscapes::new(),
+            csl: None,
             size: None,
             stage_resize: None,
             last_resize_at: None,
             action_backlog: Vec::new(),
-            focus: FocusObject::new(),
+            window: Window::new(config,tc,clerk),
             jumper: None
         };
-        let dsm = {
+        out.csl = {
             let compo = &out.compo.lock().unwrap();
-            CombinedSourceManager::new(&tc,config,&compo.get_zmr(),&out.als,&out.http_clerk,&out.focus)
+            Some(ProductList::new(&out.window))
         };
-        out.csl.add_compsource(Box::new(dsm));
         out.run_actions(&startup_actions(),None);        
         out
     }
     
-    pub fn get_all_landscapes(&mut self) -> &mut AllLandscapes {
-        &mut self.als
-    }
+    pub fn get_window(&mut self) -> &mut Window { &mut self.window }
     
     pub fn tick_xfer(&mut self) -> bool {
-        self.http_clerk.tick()
+        self.window.get_http_clerk().tick()
     }
     
-    pub fn get_component(&mut self, name: &str) -> Option<ActiveSource> {
-        self.csl.get_component(name)
+    pub fn get_product(&mut self, name: &str) -> Option<Product> {
+        unwrap!(self.csl.as_mut()).get_product(name)
     }
-    
-    pub fn add_compsource(&mut self, cs: Box<SourceManager>) {
-        self.csl.add_compsource(cs);
-    }
-    
+        
     pub fn with_stick_manager<F,G>(&mut self, cb: F) -> G
             where F: FnOnce(&mut Box<StickManager>) -> G {
         cb(&mut self.sticks)
@@ -112,11 +104,12 @@ impl App {
     
     pub fn with_focus_object<F,G>(&mut self, cb: F) -> G
             where F: FnOnce(&mut FocusObject) -> G {
-        let old_status = self.focus.state();
-        let out = cb(&mut self.focus);
-        let new_status = self.focus.state();
+        let mut focus = self.window.get_focus();
+        let old_status = focus.state();
+        let out = cb(&mut focus);
+        let new_status = focus.state();
         if old_status != new_status {
-            if let Some(id) = self.focus.get_focus() {
+            if let Some(id) = focus.get_focus() {
                 self.compo.lock().unwrap().change_focus(&id);
                 self.get_report().set_status("focus",&id);
             }

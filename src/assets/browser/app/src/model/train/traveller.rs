@@ -3,32 +3,31 @@ use std::cmp::{ Eq, PartialEq };
 use std::hash::{ Hash, Hasher };
 use std::sync::{ Arc, Mutex };
 
-use composit::{ Leaf, ActiveSource };
+use composit::Leaf;
 use composit::{ StateManager };
+use model::supply::Subassembly;
 use model::driver::PrinterManager;
 use model::shape::{ ShapeSpec, GenericShape };
 use model::zmenu::ZMenuLeaf;
 use super::{ TravellerResponse, TravellerResponseData };
 
 pub struct TravellerImpl {
-    comp: ActiveSource,
+    sa: Subassembly,
     prev_value: bool,
     cur_value: bool,
     visuals: Option<Box<TravellerResponse>>,
-    part: Option<String>,
     leaf: Leaf,
     data: Option<TravellerResponseData>,
     zml: ZMenuLeaf
 }
 
 impl TravellerImpl {
-    fn new(comp: ActiveSource, part: &Option<String>, leaf: &Leaf) -> TravellerImpl {
+    fn new(sa: &Subassembly, leaf: &Leaf) -> TravellerImpl {
         TravellerImpl {
             prev_value: false,
             cur_value: false,
             leaf: leaf.clone(),
-            part: part.clone(),
-            comp,
+            sa: sa.clone(),
             visuals: None,
             data: Some(TravellerResponseData::new()),
             zml: ZMenuLeaf::new(leaf)
@@ -37,11 +36,10 @@ impl TravellerImpl {
     
     pub fn replace(&mut self) -> TravellerImpl {
         TravellerImpl {
-            comp: self.comp.clone(),
+            sa: self.sa.clone(),
             prev_value: self.prev_value,
             cur_value: self.cur_value,
             visuals: None,
-            part: self.part.clone(),
             leaf: self.leaf.clone(),
             data: Some(TravellerResponseData::new()),
             zml: ZMenuLeaf::new(&self.leaf)
@@ -62,13 +60,13 @@ impl TravellerImpl {
     
     fn update_state(&mut self, m: &StateManager) -> bool {
         self.prev_value = self.cur_value;
-        self.cur_value = self.comp.is_on(m,&self.part);
+        self.cur_value = self.sa.is_on(m);
         unwrap!(self.visuals.as_ref()).set_state(self.cur_value);
         self.prev_value != self.cur_value
     }
 
-    fn get_part(&self) -> &Option<String> {
-        &self.part
+    fn get_subassembly(&self) -> &Subassembly {
+        &self.sa
     }
 
     fn build_zmenu(&mut self, zml: &mut ZMenuLeaf) {
@@ -84,7 +82,7 @@ impl TravellerImpl {
     fn create_zmenu(&mut self) {
         for shape in self.data.as_ref().unwrap().get_shapes() {
             if let Some((id,zbox)) = shape.zmenu_box() {
-                self.zml.add_box(&id,self.comp.get_name(),&zbox);
+                self.zml.add_box(&id,self.sa.get_product().get_product_name(),&zbox);
             }
         }
     }
@@ -99,8 +97,8 @@ impl TravellerImpl {
 pub struct Traveller(Arc<Mutex<TravellerImpl>>);
 
 impl Traveller {
-    pub fn new(comp: ActiveSource, part: &Option<String>, leaf: &Leaf) -> Traveller {
-        Traveller(Arc::new(Mutex::new(TravellerImpl::new(comp,part,leaf))))
+    pub fn new(sa: &Subassembly, leaf: &Leaf) -> Traveller {
+        Traveller(Arc::new(Mutex::new(TravellerImpl::new(sa,leaf))))
     }
     
     pub(in super) fn update_state(&mut self, m: &StateManager) -> bool {
@@ -115,8 +113,8 @@ impl Traveller {
         self.0.lock().unwrap().set_visuals(visuals);
     }
         
-    pub fn get_part(&self) -> Option<String> {
-        self.0.lock().unwrap().get_part().clone()
+    pub fn get_subassembly(&self) -> Subassembly {
+        self.0.lock().unwrap().get_subassembly().clone()
     }
     
     pub fn build_zmenu(&self, zml: &mut ZMenuLeaf) {
@@ -150,6 +148,6 @@ impl Drop for TravellerImpl {
 impl fmt::Debug for Traveller {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let t = self.0.lock().unwrap();
-        write!(f,"{:?}:{:?}({:?})",t.comp,t.leaf,t.part)
+        write!(f,"{:?}:{:?}",t.sa,t.leaf)
     }
 }

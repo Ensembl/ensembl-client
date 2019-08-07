@@ -11,7 +11,7 @@ pub struct CatalogueCode {
 
 impl CatalogueCode {
     pub fn try_new(bc: &BackendConfig, po: &PurchaseOrder) -> Option<CatalogueCode> {
-        bc.get_track(&po.get_source_name())
+        bc.get_track(&po.get_product().get_product_name())
             .and_then(|x| x.get_wire().as_ref())
             .map(|wire| {
                 let (short_stick,short_pane) = po.get_leaf().get_short_spec();

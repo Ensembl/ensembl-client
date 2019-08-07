@@ -15,7 +15,7 @@ use super::{
     HttpResponseConsumer, HttpManager, BackendConfig
 };
 use super::jsonxferresponse::parse_jsonxferresponse_str;
-use composit::source::{ CatalogueCode, PurchaseOrder };
+use model::supply::{ CatalogueCode, PurchaseOrder };
 
 use super::backendconfig::BackendBytecode;
 

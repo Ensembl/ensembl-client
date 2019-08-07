@@ -1,5 +1,5 @@
 use composit::{ Compositor, Stage, Leaf };
-use composit::source::PurchaseOrder;
+use model::supply::PurchaseOrder;
 use types::Dot;
 
 use model::train::{ Traveller, TravellerResponse };

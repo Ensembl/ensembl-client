@@ -1,9 +1,7 @@
 use std::collections::{ HashMap, HashSet };
 
-use composit::{
-    Leaf, StateManager, Scale,
-    ActiveSource, Stick,
-};
+use composit::{ Leaf, StateManager, Scale, Stick };
+use model::supply::Product;
 use model::driver::{ Printer, PrinterManager };
 use super::{ Carriage, Traveller, TravellerCreator };
 use model::zmenu::ZMenuLeafSet;
@@ -85,7 +83,7 @@ impl Train {
     }
     
     /* add component to leaf */
-    pub fn add_component(&mut self, cm: &mut TravellerCreator, s: &mut ActiveSource) {
+    pub fn add_component(&mut self, cm: &mut TravellerCreator, s: &mut Product) {
         let focus = self.focus.as_ref().map(|x| x.to_string()).clone();
         for leaf in self.leafs() {
             let c = self.get_carriage(&leaf);

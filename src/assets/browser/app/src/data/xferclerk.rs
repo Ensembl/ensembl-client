@@ -2,7 +2,7 @@ use std::rc::Rc;
 use tánaiste::Value;
 
 use data::BackendBytecode;
-use composit::source::PurchaseOrder;
+use model::supply::PurchaseOrder;
 
 pub trait XferConsumer {
     fn consume(&mut self, code: Rc<BackendBytecode>, data: Vec<Value>);

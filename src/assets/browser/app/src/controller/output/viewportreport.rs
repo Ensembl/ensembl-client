@@ -56,7 +56,7 @@ impl ViewportReportImpl {
             out.push(ViewportReportItem::DeltaY(dy));
         }        
         let mut all_pos = Vec::<(String,i32)>::new();
-        app.get_all_landscapes().every(|_lid,ls| {
+        app.get_window().get_all_landscapes().every(|_lid,ls| {
             let plot = ls.get_plot();
             if plot.has_cog() {
                 all_pos.push((ls.get_name().to_string(),plot.get_base()));

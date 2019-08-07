@@ -1,6 +1,6 @@
 use std::sync::{ Arc, Mutex };
 
-use composit::source::{ ActiveSource, PendingOrder };
+use model::supply::PendingOrder;
 use tánaiste::{
     Argument, Command, DataState, Instruction, ProcState, Signature,
     Value
@@ -8,41 +8,41 @@ use tánaiste::{
 
 use tácode::core::{ TáContext, TáTask };
 
-fn zmenu(sr: &mut PendingOrder, ids: &Vec<String>, keys: &Vec<String>, values: &Vec<String>) {
+fn zmenu(po: &mut PendingOrder, ids: &Vec<String>, keys: &Vec<String>, values: &Vec<String>) {
     let mut values = values.iter().cycle();
     for id in ids {
         let value = values.next();
         for key in keys {
             if let Some(value) = value {
-                sr.get_traveller(&None).update_zml(|zml| zml.set_value(id,key,value));
+                po.get_purchaser(&None).update_zml(|zml| zml.set_value(id,key,value));
             }
         }
     }
 }
 
-fn zmenu_assoc(sr: &mut PendingOrder, to_list: &Vec<String>, from_list: &Vec<String>) {
+fn zmenu_assoc(po: &mut PendingOrder, to_list: &Vec<String>, from_list: &Vec<String>) {
     let mut froms = from_list.iter().cycle();
     for to in to_list {
         let from = froms.next();
         if let Some(from) = from {
-            sr.get_traveller(&None).update_zml(|zml| zml.set_assoc(to,from));
+            po.get_purchaser(&None).update_zml(|zml| zml.set_assoc(to,from));
         }
     }
 }
 
-fn tmpl(sr: &mut PendingOrder, ids: &Vec<String>, sids: &Vec<String>) {
+fn tmpl(po: &mut PendingOrder, ids: &Vec<String>, sids: &Vec<String>) {
     let mut sids = sids.iter().cycle();
     for id in ids {
         let sid = sids.next();
-        sr.get_traveller(&None).update_zml(|zml| zml.set_template(id,sid.unwrap()));
+        po.get_purchaser(&None).update_zml(|zml| zml.set_template(id,sid.unwrap()));
     }
 }
 
-fn tmpl_spec(sr: &mut PendingOrder, sids: &Vec<String>, specs: &Vec<String>) {
+fn tmpl_spec(po: &mut PendingOrder, sids: &Vec<String>, specs: &Vec<String>) {
     let mut specs = specs.iter().cycle();
     for sid in sids {
         let spec = specs.next();
-        sr.get_traveller(&None).update_zml(|zml| zml.add_template(sid,spec.unwrap()));
+        po.get_purchaser(&None).update_zml(|zml| zml.add_template(sid,spec.unwrap()));
     }
 }
 
@@ -61,7 +61,7 @@ impl Command for ZTmpl {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,sr,_,_,_,_,_) = task {
+            if let TáTask::MakeShapes(_,_,sr,_,_,_) = task {
                 regs.get(self.1).as_string(|sids| {
                     regs.get(self.2).as_string(|specs| {
                         tmpl(sr,sids,specs);
@@ -79,7 +79,7 @@ impl Command for ZTmplSpec {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,sr,_,_,_,_,_) = task {
+            if let TáTask::MakeShapes(_,_,sr,_,_,_) = task {
                 regs.get(self.1).as_string(|sids| {
                     regs.get(self.2).as_string(|specs| {
                         tmpl_spec(sr,sids,specs);
@@ -97,7 +97,7 @@ impl Command for ZMenu {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,sr,_,_,_,_,_) = task {
+            if let TáTask::MakeShapes(_,_,sr,_,_,_) = task {
                 regs.get(self.1).as_string(|ids| {
                     regs.get(self.2).as_string(|keys| {
                         regs.get(self.3).as_string(|values| {
@@ -117,7 +117,7 @@ impl Command for ZAssoc {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,sr,_,_,_,_,_) = task {
+            if let TáTask::MakeShapes(_,_,sr,_,_,_) = task {
                 regs.get(self.1).as_string(|to| {
                     regs.get(self.2).as_string(|from| {
                         zmenu_assoc(sr,to,from);

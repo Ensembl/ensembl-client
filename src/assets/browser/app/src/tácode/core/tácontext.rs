@@ -2,21 +2,22 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use composit::{ ActiveSource, Leaf };
+use controller::global::Window;
+use composit::{ AllLandscapes, Leaf };
 use data::BackendConfig;
 use model::shape::DrawingSpec;
 use model::focus::FocusObject;
-use composit::source::PendingOrder;
+use model::supply::PendingOrder;
 
 pub enum TáTask {
-    MakeShapes(ActiveSource,Leaf,PendingOrder,Vec<DrawingSpec>,usize,Option<String>,Rc<BackendConfig>,FocusObject)
+    MakeShapes(Window,Leaf,PendingOrder,Vec<DrawingSpec>,usize,Option<String>)
 }
 
 impl TáTask {
     pub fn finished(&mut self) {
         #[allow(unreachable_patterns)]
         match self {
-            TáTask::MakeShapes(_,_leaf,sr,_,_,_,_,_) => {
+            TáTask::MakeShapes(_,_leaf,sr,_,_,_) => {
                 sr.done();
             },
             _ => ()

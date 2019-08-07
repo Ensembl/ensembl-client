@@ -5,16 +5,11 @@ mod combinedstickmanager;
 mod componentset;
 mod landscape;
 mod leaf;
-pub mod source;
 mod stick;
 mod stickmanager;
 mod wrapping;
 mod stage;
 
-pub use self::source::{
-    CombinedSource, OrderReceiver, ActiveSource, 
-    SourceManager, SourceManagerList, CombinedSourceManager
-};
 pub use self::combinedstickmanager::CombinedStickManager;
 pub use self::componentset::ComponentSet;
 pub use self::compositor::{ Compositor, register_compositor_ticks };

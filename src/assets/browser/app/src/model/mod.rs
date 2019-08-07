@@ -1,5 +1,6 @@
 pub mod driver;
 pub mod focus;
 pub mod shape;
+pub mod supply;
 pub mod train;
 pub mod zmenu;

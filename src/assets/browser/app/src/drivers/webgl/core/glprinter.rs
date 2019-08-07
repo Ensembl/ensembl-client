@@ -7,8 +7,8 @@ use stdweb::web::{ HtmlElement, Element, INode, IElement };
 
 use super::{ GLProgs, GLCarriagePrinter, GLTravellerResponse };
 use composit::{ Compositor, Leaf, Stage };
-use composit::source::PurchaseOrder;
 use model::driver::Printer;
+use model::supply::PurchaseOrder;
 use model::train::{ Train, TravellerResponse };
 use super::super::drawing::{ AllCanvasAllocator };
 use dom::domutil;

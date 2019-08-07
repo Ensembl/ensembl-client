@@ -1,7 +1,7 @@
 use serde_json::Value as SerdeValue;
 use tánaiste::Value;
 
-use composit::source::CatalogueCode;
+use model::supply::CatalogueCode;
 
 pub struct JSONXferResponse {
     pub codename: String,

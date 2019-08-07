@@ -10,7 +10,7 @@ use model::shape::{
     Facade, FacadeType, TypeToShape, ShapeShortInstanceData,
     ShapeInstanceDataType, ShapeLongInstanceData, DrawingSpec
 };
-use composit::source::PendingOrder;
+use model::supply::PendingOrder;
 use tácode::core::{ TáContext, TáTask };
 use super::super::shapecmd::{ build_meta };
 use types::Colour;
@@ -132,7 +132,7 @@ fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut PendingOrd
         facade
     };
     if let Some(shape) = spec.new_long_shape(&data) {
-        lc.get_traveller(part).update_data(|data| data.add_shape(shape));
+        lc.get_purchaser(part).update_data(|data| data.add_shape(shape));
     }
 }
 
@@ -159,7 +159,7 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut PendingOr
                 facade: unwrap!(facade.cloned())
             };
             if let Some(shape) = spec.new_short_shape(&data) {
-                lc.get_traveller(part).update_data(|data| data.add_shape(shape));
+                lc.get_purchaser(part).update_data(|data| data.add_shape(shape));
             } else {
                 drops += 1;
             }
@@ -200,7 +200,7 @@ impl Command for Shape {
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,leaf,lc,ref tx,_,part,_,_) = task {
+            if let TáTask::MakeShapes(_,leaf,lc,ref tx,_,part) = task {
                 let regs = rt.registers();
                 regs.get(self.1).as_floats(|meta| {                
                     regs.get(self.2).as_floats(|x_start| {

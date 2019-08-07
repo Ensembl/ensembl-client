@@ -1,10 +1,8 @@
 use std::collections::HashSet;
 
-use composit::{
-    ActiveSource, Stick, Scale, ComponentSet, StateManager, Stage
-};
-
+use composit::{ Stick, Scale, ComponentSet, StateManager, Stage };
 use model::driver::{ PrinterManager, Printer };
+use model::supply::Product;
 use model::train::{ Train, TrainManager, TravellerCreator };
 use model::zmenu::{ ZMenuRegistry, ZMenuLeafSet, ZMenuIntersection };
 
@@ -64,8 +62,8 @@ impl Compositor {
             if let Some(leafs) = self.psychic.get_leafs() {
                 let leafs = self.pacer.filter_leafs(leafs,t);
                 for leaf in leafs.iter() {
-                    for comp in self.wanted_componentset.list_names() {
-                        self.xfercache.prime(&mut self.xferclerk,&comp,&leaf);
+                    for prod in self.wanted_componentset.get_products() {
+                        self.xfercache.prime(&mut self.xferclerk,prod,&leaf);
                     }
                 }
             }
@@ -75,10 +73,10 @@ impl Compositor {
     pub fn tick(&mut self, t: f64) {
         /* Manage components */
         for added in self.wanted_componentset.not_in(&self.current_componentset).iter() {
-            self.add_component(added.clone());
+            self.add_product(added.clone());
         }
         for removed in self.current_componentset.not_in(&self.wanted_componentset).iter() {
-            self.components.remove_source(removed.clone().get_name());
+            self.components.remove_source(removed.clone().get_product_name());
         }
         self.current_componentset = self.wanted_componentset.clone();
         /* Warm up xfercache */
@@ -153,7 +151,7 @@ impl Compositor {
         self.zmr.add_leafset(zmls);
     }
 
-    fn add_component(&mut self, mut c: ActiveSource) {
+    fn add_product(&mut self, mut c: Product) {
         {
             let cc = &mut self.components;
             self.train_manager.each_train(|sc|
@@ -177,10 +175,10 @@ impl Compositor {
 }
 
 pub fn register_compositor_ticks(ar: &mut AppRunner) {
-    ar.add_timer("compositor",|cs,t,_| {
-        cs.with_compo(|co| co.tick(t) );
-        let max_y = cs.get_all_landscapes().get_low_watermark();
-        cs.with_stage(|s| s.set_limit(&DOWN,max_y as f64));
+    ar.add_timer("compositor",|app,t,_| {
+        app.with_compo(|co| co.tick(t) );
+        let max_y = app.get_window().get_all_landscapes().get_low_watermark();
+        app.with_stage(|s| s.set_limit(&DOWN,max_y as f64));
         vec!{}
     },2);
 }

@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use composit::{ Leaf, Stage, Compositor };
-use composit::source::PurchaseOrder;
+use model::supply::PurchaseOrder;
 use model::train::TravellerResponse;
 use types::Dot;
 use super::Printer;
