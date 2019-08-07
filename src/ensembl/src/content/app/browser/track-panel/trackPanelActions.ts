@@ -13,6 +13,18 @@ import {
 import { getBookmarks } from './trackPanelSelectors';
 
 import { Bookmark } from './trackPanelState';
+import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
+
+const buildBookmarkLabel = (ensObject: EnsObject): string => {
+  if (ensObject.object_type === 'gene') {
+    return `${ensObject.label} (${ensObject.stable_id})`;
+  }
+
+  return ensObject.stable_id
+    ? ensObject.stable_id
+    : `Region: ${getFormattedLocation(ensObject.location)}`;
+};
 
 export const toggleTrackPanel = createStandardAction(
   'track-panel/toggle-track-panel'
@@ -89,9 +101,10 @@ export const updateBookmarksAndSave: ActionCreator<
   } else if (existingIndex === -1) {
     // IF it is not present, add it to the end
     activeGenomeBookmarks.push({
+      genome_id: activeEnsObject.genome_id,
       object_id: activeEnsObject.object_id,
       object_type: activeEnsObject.object_type,
-      label: activeEnsObject.label,
+      label: buildBookmarkLabel(activeEnsObject),
       location: { ...activeEnsObject.location },
       trackStates: { ...trackStates }
     });

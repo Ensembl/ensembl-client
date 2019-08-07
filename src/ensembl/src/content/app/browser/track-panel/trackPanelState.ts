@@ -5,6 +5,7 @@ import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
 const selectedBrowserTab = browserStorageService.getSelectedBrowserTab();
 
 export type Bookmark = {
+  genome_id: string;
   object_id: string;
   object_type: string;
   location: {

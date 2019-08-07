@@ -7,6 +7,8 @@ import { EnsObject } from 'src/ens-object/ensObjectTypes';
 import { GenomeInfoData } from 'src/genome/genomeTypes';
 
 import { getBrowserActiveGenomeId } from '../../../browserSelectors';
+import { updateTrackStates } from 'src/content/app/browser/browserActions';
+import { TrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { getGenomeInfo } from 'src/genome/genomeSelectors';
 import { getActiveGenomeBookmarks } from 'src/content/app/browser/track-panel/trackPanelSelectors';
 import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
@@ -28,6 +30,7 @@ type StateProps = {
 
 type DispatchProps = {
   fetchExampleEnsObjects: (objectId: string) => void;
+  updateTrackStates: (trackStates: TrackStates) => void;
 };
 
 type OwnProps = {};
@@ -74,8 +77,17 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
 
       return (
         <dd key={index}>
-          <Link to={path}>
-            {upperFirst(bookmark.object_type)}: {getExampleObjLabel(bookmark)}
+          <Link
+            to={path}
+            onClick={() => {
+              props.updateTrackStates({
+                [bookmark.genome_id]: {
+                  ...bookmark.trackStates
+                }
+              });
+            }}
+          >
+            {bookmark.label}
           </Link>
         </dd>
       );
@@ -110,7 +122,8 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  fetchExampleEnsObjects
+  fetchExampleEnsObjects,
+  updateTrackStates
 };
 
 export default connect(
