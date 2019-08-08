@@ -15,7 +15,7 @@ import BrowserGenomeSelector from 'src/content/app/browser/browser-genome-select
 import BrowserTabs from 'src/content/app/browser/browser-tabs/BrowserTabs';
 
 import { ChrLocation } from '../browserState';
-import { TrackType } from '../track-panel/trackPanelConfig';
+import { TrackSet } from '../track-panel/trackPanelConfig';
 
 import { createEnsObject } from 'tests/fixtures/ens-object';
 
@@ -48,7 +48,7 @@ describe('<BrowserBar />', () => {
     drawerOpened: false,
     genomeSelectorActive: false,
     ensObject: createEnsObject(),
-    selectedBrowserTab: TrackType.GENOMIC,
+    selectedBrowserTab: TrackSet.GENOMIC,
     trackPanelModalOpened: false,
     trackPanelOpened: false,
     dispatchBrowserLocation,

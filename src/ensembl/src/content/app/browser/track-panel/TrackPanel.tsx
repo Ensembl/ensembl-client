@@ -23,7 +23,7 @@ import {
 } from '../browserSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 import { BreakpointWidth } from 'src/global/globalConfig';
-import { TrackType, TrackStates } from './trackPanelConfig';
+import { TrackSet, TrackStates } from './trackPanelConfig';
 
 import { GenomeTrackCategory } from 'src/genome/genomeTypes';
 import { getGenomeTrackCategoriesById } from 'src/genome/genomeSelectors';
@@ -39,7 +39,7 @@ type TrackPanelProps = {
   activeEnsObject: EnsObject | null;
   isTrackPanelModalOpened: boolean;
   isTrackPanelOpened: boolean;
-  selectedBrowserTab: TrackType;
+  selectedBrowserTab: TrackSet;
   genomeTrackCategories: GenomeTrackCategory[];
   trackStates: TrackStates;
   toggleTrackPanel: (isTrackPanelOpened?: boolean) => void;

@@ -10,7 +10,7 @@ import {
   updateTrackStatesAndSave
 } from 'src/content/app/browser/browserActions';
 import { toggleDrawer, changeDrawerView } from '../../drawer/drawerActions';
-import { TrackType, TrackStates } from '../trackPanelConfig';
+import { TrackSet, TrackStates } from '../trackPanelConfig';
 import { GenomeTrackCategory } from 'src/genome/genomeTypes';
 import { EnsObjectTrack, EnsObject } from 'src/ens-object/ensObjectTypes';
 import { RootState } from 'src/store';
@@ -32,7 +32,7 @@ type TrackPanelListProps = {
   drawerView: string;
   launchbarExpanded: boolean;
   activeEnsObject: EnsObject | null;
-  selectedBrowserTab: TrackType;
+  selectedBrowserTab: TrackSet;
   genomeTrackCategories: GenomeTrackCategory[];
   trackStates: TrackStates;
   toggleDrawer: (isDrawerOpened: boolean) => void;

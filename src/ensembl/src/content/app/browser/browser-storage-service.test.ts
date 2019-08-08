@@ -1,6 +1,6 @@
 import { BrowserStorageService, StorageKeys } from './browser-storage-service';
 import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
-import { TrackType } from './track-panel/trackPanelConfig';
+import { TrackSet } from './track-panel/trackPanelConfig';
 
 const mockStorageService = {
   get: jest.fn(),
@@ -23,7 +23,7 @@ const trackListToggleStates = {
   'gene-feat': false
 };
 
-const SELECTED_BROWSER_TAB = TrackType.VARIATION;
+const SELECTED_BROWSER_TAB = TrackSet.VARIATION;
 
 describe('BrowserStorageService', () => {
   afterEach(() => {
@@ -179,13 +179,13 @@ describe('BrowserStorageService', () => {
       );
 
       browserStorageService.updateSelectedBrowserTab({
-        homo_sapiens38: TrackType.EXPRESSION
+        homo_sapiens38: TrackSet.EXPRESSION
       });
 
       expect(mockStorageService.update).toHaveBeenCalledWith(
         StorageKeys.SELECTED_BROWSER_TAB,
         {
-          homo_sapiens38: TrackType.EXPRESSION
+          homo_sapiens38: TrackSet.EXPRESSION
         }
       );
     });

@@ -3,7 +3,7 @@ import storageService, {
 } from 'src/services/storage-service';
 import {
   TrackStates,
-  TrackType,
+  TrackSet,
   TrackToggleStates
 } from './track-panel/trackPanelConfig';
 import { ChrLocations } from './browserState';
@@ -75,12 +75,12 @@ export class BrowserStorageService {
     );
   }
 
-  public getSelectedBrowserTab(): { [genomeId: string]: TrackType } {
+  public getSelectedBrowserTab(): { [genomeId: string]: TrackSet } {
     return this.storageService.get(StorageKeys.SELECTED_BROWSER_TAB) || {};
   }
 
   public updateSelectedBrowserTab(selectedBrowserTabForGenome: {
-    [genomeId: string]: TrackType;
+    [genomeId: string]: TrackSet;
   }) {
     this.storageService.update(
       StorageKeys.SELECTED_BROWSER_TAB,

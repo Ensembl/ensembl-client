@@ -3,7 +3,7 @@ import { ThunkAction } from 'redux-thunk';
 import { Action, ActionCreator } from 'redux';
 
 import { RootState } from 'src/store';
-import { TrackType } from './trackPanelConfig';
+import { TrackSet } from './trackPanelConfig';
 import browserStorageService from '../browser-storage-service';
 import { getBrowserActiveGenomeId } from '../browserSelectors';
 import { getActiveTrackPanel } from './trackPanelSelectors';
@@ -35,10 +35,7 @@ export const toggleTrackPanel: ActionCreator<
 
 export const selectBrowserTabAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (selectedBrowserTab: TrackType) => (
-  dispatch,
-  getState: () => RootState
-) => {
+> = (selectedBrowserTab: TrackSet) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(getState());
 
   if (!activeGenomeId) {

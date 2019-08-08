@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import classNames from 'classnames';
 
 import { browserInfoConfig, BrowserInfoItem } from '../browserConfig';
-import { TrackType } from '../track-panel/trackPanelConfig';
+import { TrackSet } from '../track-panel/trackPanelConfig';
 
 import { getDisplayStableId } from 'src/ens-object/ensObjectHelpers';
 import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
@@ -56,12 +56,12 @@ type StateProps = {
   isTrackPanelOpened: boolean;
   genomeSelectorActive: boolean;
   ensObject: EnsObject | null;
-  selectedBrowserTab: TrackType;
+  selectedBrowserTab: TrackSet;
 };
 
 type DispatchProps = {
   closeDrawer: () => void;
-  selectBrowserTabAndSave: (selectedBrowserTab: TrackType) => void;
+  selectBrowserTabAndSave: (selectedBrowserTab: TrackSet) => void;
   toggleBrowserNav: () => void;
   toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
   toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
