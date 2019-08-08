@@ -14,16 +14,21 @@ export type TrackPanelState = Readonly<{
 
 const selectedBrowserTabFromStorage = browserStorageService.getSelectedBrowserTab();
 
+export const defaultTrackPanelStateForGenome: TrackPanelStateForGenome = {
+  isTrackPanelModalOpened: false,
+  isTrackPanelOpened: false,
+  selectedBrowserTab: TrackType.GENOMIC,
+  trackPanelModalView: ''
+};
+
 export const defaultTrackPanelState: TrackPanelState = Object.keys(
   selectedBrowserTabFromStorage
 ).reduce(
   (state: TrackPanelState, genomeId: string) => ({
     ...state,
     [genomeId]: {
-      selectedBrowserTab: selectedBrowserTabFromStorage[genomeId],
-      isTrackPanelModalOpened: false,
-      isTrackPanelOpened: false,
-      trackPanelModalView: ''
+      ...defaultTrackPanelStateForGenome,
+      selectedBrowserTab: selectedBrowserTabFromStorage[genomeId]
     }
   }),
   {}

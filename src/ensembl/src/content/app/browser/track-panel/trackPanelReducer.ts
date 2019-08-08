@@ -7,39 +7,12 @@ export default function trackPanel(
   state: TrackPanelState = defaultTrackPanelState,
   action: ActionType<typeof trackPanelActions>
 ): TrackPanelState {
-  const activeGenomeId = action.payload && action.payload.activeGenomeId;
-
   switch (action.type) {
-    case getType(trackPanelActions.toggleTrackPanelForGenome):
+    case getType(trackPanelActions.updateTrackPanelForGenome):
       return {
         ...state,
-        [activeGenomeId]: {
-          ...state[activeGenomeId],
-          isTrackPanelOpened: action.payload.isTrackPanelOpened
-        }
-      };
-    case getType(trackPanelActions.toggleTrackPanelModalForGenome):
-      return {
-        ...state,
-        [activeGenomeId]: {
-          ...state[activeGenomeId],
-          isTrackPanelModalOpened: action.payload.isTrackPanelModalOpened
-        }
-      };
-    case getType(trackPanelActions.changeTrackPanelModalViewForGenome):
-      return {
-        ...state,
-        [activeGenomeId]: {
-          ...state[activeGenomeId],
-          trackPanelModalView: action.payload.trackPanelModalView
-        }
-      };
-    case getType(trackPanelActions.selectBrowserTab):
-      return {
-        ...state,
-        [activeGenomeId]: {
-          ...state[activeGenomeId],
-          selectedBrowserTab: action.payload.selectedBrowserTab
+        [action.payload.activeGenomeId]: {
+          ...action.payload.data
         }
       };
     default:
