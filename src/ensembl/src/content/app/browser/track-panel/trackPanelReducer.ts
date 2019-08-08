@@ -7,7 +7,6 @@ export default function trackPanel(
   state: TrackPanelState = defaultTrackPanelState,
   action: ActionType<typeof trackPanelActions>
 ): TrackPanelState {
-  // check if action payload is not undefined to assign activeGenomeId
   const activeGenomeId = action.payload && action.payload.activeGenomeId;
 
   switch (action.type) {
