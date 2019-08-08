@@ -1,6 +1,5 @@
 import { RootState } from 'src/store';
 import {
-  BrowserOpenState,
   BrowserNavStates,
   CogList,
   ChrLocation,
@@ -12,9 +11,6 @@ import { getEnsObjectById } from 'src/ens-object/ensObjectSelectors';
 
 export const getBrowserActivated = (state: RootState): boolean =>
   state.browser.browserInfo.browserActivated;
-
-export const getBrowserOpenState = (state: RootState): BrowserOpenState =>
-  state.browser.browserInfo.browserOpenState;
 
 export const getBrowserActiveGenomeId = (state: RootState) =>
   state.browser.browserEntity.activeGenomeId;

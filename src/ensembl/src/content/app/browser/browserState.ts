@@ -7,12 +7,6 @@ const activeEnsObjectIds = browserStorageService.getActiveEnsObjectIds();
 const trackStates = browserStorageService.getTrackStates();
 const chrLocations = browserStorageService.getChrLocation();
 
-export enum BrowserOpenState {
-  EXPANDED = 'expanded',
-  SEMI_EXPANDED = 'semiExpanded',
-  COLLAPSED = 'collapsed'
-}
-
 // states are top, right, bottom, left (TRBL) and minus (zoom out) and plus (zoom in)
 export type BrowserNavStates = [
   boolean,
@@ -33,12 +27,10 @@ export type CogList = {
 
 export type BrowserState = Readonly<{
   browserActivated: boolean;
-  browserOpenState: BrowserOpenState;
 }>;
 
 export const defaultBrowserState: BrowserState = {
-  browserActivated: false,
-  browserOpenState: BrowserOpenState.SEMI_EXPANDED
+  browserActivated: false
 };
 
 export type BrowserEntityState = Readonly<{

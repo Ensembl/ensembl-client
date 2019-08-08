@@ -5,12 +5,9 @@ import pickBy from 'lodash/pickBy';
 
 import { RootAction } from 'src/objects';
 import * as browserActions from './browserActions';
-import * as drawerActions from './drawer/drawerActions';
-import * as trackPanelActions from './track-panel/trackPanelActions';
 import {
   BrowserState,
   defaultBrowserState,
-  BrowserOpenState,
   BrowserLocationState,
   defaultBrowserLocationState,
   BrowserNavState,
@@ -28,20 +25,6 @@ export function browserInfo(
   switch (action.type) {
     case getType(browserActions.updateBrowserActivated):
       return { ...state, browserActivated: action.payload };
-    case getType(trackPanelActions.toggleTrackPanelForGenome):
-      return {
-        ...state,
-        browserOpenState: action.payload
-          ? BrowserOpenState.SEMI_EXPANDED
-          : BrowserOpenState.EXPANDED
-      };
-    case getType(drawerActions.toggleDrawerForGenome):
-      return {
-        ...state,
-        browserOpenState: action.payload
-          ? BrowserOpenState.COLLAPSED
-          : BrowserOpenState.SEMI_EXPANDED
-      };
     default:
       return state;
   }
