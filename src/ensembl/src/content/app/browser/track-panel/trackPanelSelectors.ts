@@ -17,8 +17,8 @@ export const getIsTrackPanelModalOpened = (state: RootState) =>
 export const getTrackPanelModalView = (state: RootState) =>
   getActiveTrackPanel(state).trackPanelModalView;
 
-export const getSelectedBrowserTab = (state: RootState) =>
-  getActiveTrackPanel(state).selectedBrowserTab;
+export const getSelectedTrackPanelTab = (state: RootState) =>
+  getActiveTrackPanel(state).selectedTrackPanelTab;
 
 export const getIsTrackPanelOpened = (state: RootState) =>
   getActiveTrackPanel(state).isTrackPanelOpened;

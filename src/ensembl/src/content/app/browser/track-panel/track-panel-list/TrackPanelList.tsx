@@ -21,7 +21,7 @@ import {
   getBrowserTrackStates,
   getBrowserActiveGenomeId
 } from '../../browserSelectors';
-import { getSelectedBrowserTab } from '../trackPanelSelectors';
+import { getSelectedTrackPanelTab } from '../trackPanelSelectors';
 import { getGenomeTrackCategoriesById } from 'src/genome/genomeSelectors';
 
 import styles from './TrackPanelList.scss';
@@ -32,7 +32,7 @@ type TrackPanelListProps = {
   drawerView: string;
   launchbarExpanded: boolean;
   activeEnsObject: EnsObject | null;
-  selectedBrowserTab: TrackSet;
+  selectedTrackPanelTab: TrackSet;
   genomeTrackCategories: GenomeTrackCategory[];
   trackStates: TrackStates;
   toggleDrawer: (isDrawerOpened: boolean) => void;
@@ -44,12 +44,12 @@ const TrackPanelList = (props: TrackPanelListProps) => {
   const {
     activeGenomeId,
     activeEnsObject,
-    selectedBrowserTab,
+    selectedTrackPanelTab,
     genomeTrackCategories
   } = props;
   const currentTrackCategories = genomeTrackCategories.filter(
     (category: GenomeTrackCategory) =>
-      category.types.includes(selectedBrowserTab)
+      category.types.includes(selectedTrackPanelTab)
   );
 
   const getTrackPanelListClasses = () => {
@@ -133,7 +133,7 @@ const mapStateToProps = (state: RootState) => {
     drawerView: getDrawerView(state),
     launchbarExpanded: getLaunchbarExpanded(state),
     activeEnsObject: getBrowserActiveEnsObject(state),
-    selectedBrowserTab: getSelectedBrowserTab(state),
+    selectedTrackPanelTab: getSelectedTrackPanelTab(state),
     genomeTrackCategories: activeGenomeId
       ? getGenomeTrackCategoriesById(state, activeGenomeId)
       : [],

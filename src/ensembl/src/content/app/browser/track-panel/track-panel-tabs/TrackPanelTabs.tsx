@@ -1,24 +1,24 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { TrackSet } from '../track-panel/trackPanelConfig';
+import { TrackSet } from '../trackPanelConfig';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
-import styles from './BrowserTabs.scss';
+import styles from './TrackPanelTabs.scss';
 
-type BrowserTabsProps = {
+type TrackPanelTabsProps = {
   closeDrawer: () => void;
   ensObject: EnsObject;
   isDrawerOpened: boolean;
   genomeSelectorActive: boolean;
-  selectBrowserTabAndSave: (selectedBrowserTab: TrackSet) => void;
-  selectedBrowserTab: TrackSet;
+  selectTrackPanelTabAndSave: (selectedTrackPanelTab: TrackSet) => void;
+  selectedTrackPanelTab: TrackSet;
   toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
   isTrackPanelModalOpened: boolean;
   isTrackPanelOpened: boolean;
 };
 
-const BrowserTabs = (props: BrowserTabsProps) => {
+const TrackPanelTabs = (props: TrackPanelTabsProps) => {
   const handleTabClick = (value: TrackSet) => {
     if (props.genomeSelectorActive || !props.ensObject.genome_id) {
       return;
@@ -32,29 +32,29 @@ const BrowserTabs = (props: BrowserTabsProps) => {
       props.closeDrawer();
     }
 
-    props.selectBrowserTabAndSave(value);
+    props.selectTrackPanelTabAndSave(value);
   };
 
-  const getBrowserTabClassNames = (trackSet: TrackSet) => {
-    const isBrowserTabActive =
+  const getTrackPanelTabClassNames = (trackSet: TrackSet) => {
+    const isTrackPanelTabActive =
       props.isTrackPanelOpened &&
       props.ensObject.genome_id &&
-      props.selectedBrowserTab === trackSet &&
+      props.selectedTrackPanelTab === trackSet &&
       !props.isDrawerOpened &&
       !props.isTrackPanelModalOpened;
 
-    return classNames(styles.browserTab, {
-      [styles.browserTabActive]: isBrowserTabActive,
-      [styles.browserTabArrow]: isBrowserTabActive,
-      [styles.browserTabDisabled]: !props.ensObject.genome_id
+    return classNames(styles.trackPanelTab, {
+      [styles.trackPanelTabActive]: isTrackPanelTabActive,
+      [styles.trackPanelTabArrow]: isTrackPanelTabActive,
+      [styles.trackPanelTabDisabled]: !props.ensObject.genome_id
     });
   };
 
   return (
-    <dl className={`${styles.browserTabs}`}>
+    <dl className={`${styles.trackPanelTabs}`}>
       {Object.values(TrackSet).map((value: TrackSet) => (
         <dd
-          className={getBrowserTabClassNames(value)}
+          className={getTrackPanelTabClassNames(value)}
           key={value}
           onClick={() => handleTabClick(value)}
         >
@@ -65,4 +65,4 @@ const BrowserTabs = (props: BrowserTabsProps) => {
   );
 };
 
-export default BrowserTabs;
+export default TrackPanelTabs;

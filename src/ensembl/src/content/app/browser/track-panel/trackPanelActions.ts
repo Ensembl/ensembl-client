@@ -33,17 +33,20 @@ export const toggleTrackPanel: ActionCreator<
   );
 };
 
-export const selectBrowserTabAndSave: ActionCreator<
+export const selectTrackPanelTabAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (selectedBrowserTab: TrackSet) => (dispatch, getState: () => RootState) => {
+> = (selectedTrackPanelTab: TrackSet) => (
+  dispatch,
+  getState: () => RootState
+) => {
   const activeGenomeId = getBrowserActiveGenomeId(getState());
 
   if (!activeGenomeId) {
     return;
   }
 
-  browserStorageService.updateSelectedBrowserTab({
-    [activeGenomeId]: selectedBrowserTab
+  browserStorageService.updateSelectedTrackPanelTab({
+    [activeGenomeId]: selectedTrackPanelTab
   });
 
   dispatch(
@@ -51,7 +54,7 @@ export const selectBrowserTabAndSave: ActionCreator<
       activeGenomeId,
       data: {
         ...getActiveTrackPanel(getState()),
-        selectedBrowserTab,
+        selectedTrackPanelTab,
         isTrackPanelModalOpened: false,
         trackPanelModalView: ''
       }

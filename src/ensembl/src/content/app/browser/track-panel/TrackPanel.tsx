@@ -12,7 +12,7 @@ import { toggleTrackPanel } from './trackPanelActions';
 import {
   getIsTrackPanelOpened,
   getIsTrackPanelModalOpened,
-  getSelectedBrowserTab
+  getSelectedTrackPanelTab
 } from './trackPanelSelectors';
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 import {
@@ -39,7 +39,7 @@ type TrackPanelProps = {
   activeEnsObject: EnsObject | null;
   isTrackPanelModalOpened: boolean;
   isTrackPanelOpened: boolean;
-  selectedBrowserTab: TrackSet;
+  selectedTrackPanelTab: TrackSet;
   genomeTrackCategories: GenomeTrackCategory[];
   trackStates: TrackStates;
   toggleTrackPanel: (isTrackPanelOpened?: boolean) => void;
@@ -103,7 +103,7 @@ const mapStateToProps = (state: RootState) => {
     isDrawerOpened: getIsDrawerOpened(state),
     activeEnsObject: getBrowserActiveEnsObject(state),
     isTrackPanelModalOpened: getIsTrackPanelModalOpened(state),
-    selectedBrowserTab: getSelectedBrowserTab(state),
+    selectedTrackPanelTab: getSelectedTrackPanelTab(state),
     genomeTrackCategories: activeGenomeId
       ? getGenomeTrackCategoriesById(state, activeGenomeId)
       : [],
