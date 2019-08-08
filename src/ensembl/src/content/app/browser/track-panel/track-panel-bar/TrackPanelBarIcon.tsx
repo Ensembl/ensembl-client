@@ -1,4 +1,4 @@
-import React, { memo, useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TrackPanelBarItem } from './trackPanelBarConfig';
 import ImageButton, {
   ImageButtonStatus
@@ -14,7 +14,7 @@ type TrackPanelBarIconProps = {
   trackPanelModalView: string;
 };
 
-const TrackPanelBarIcon = memo((props: TrackPanelBarIconProps) => {
+const TrackPanelBarIcon = (props: TrackPanelBarIconProps) => {
   const [toggleState, setToggleState] = useState(false);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ const TrackPanelBarIcon = memo((props: TrackPanelBarIconProps) => {
     }
   }, [props.isTrackPanelModalOpened]);
 
-  const toggleModalView = useCallback(() => {
+  const toggleModalView = () => {
     if (!props.isTrackPanelOpened) {
       return;
     }
@@ -37,7 +37,7 @@ const TrackPanelBarIcon = memo((props: TrackPanelBarIconProps) => {
     }
 
     setToggleState(newToggleState);
-  }, [props.iconConfig.name, props.isTrackPanelOpened, toggleState]);
+  };
 
   const getViewIconStatus = () => {
     const { iconConfig, trackPanelModalView } = props;
@@ -57,6 +57,6 @@ const TrackPanelBarIcon = memo((props: TrackPanelBarIconProps) => {
       />
     </dt>
   );
-});
+};
 
 export default TrackPanelBarIcon;
