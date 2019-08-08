@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
@@ -19,31 +19,22 @@ import {
 
 import styles from './BrowserCogList.scss';
 
-type StateProps = {
+type BrowserCogListProps = {
   browserActivated: boolean;
   browserCogList: number;
   browserCogTrackList: CogList;
   selectedCog: any;
-};
-
-type DispatchProps = {
   updateCogList: (cogList: number) => void;
   updateCogTrackList: (track_y: CogList) => void;
   updateSelectedCog: (index: string) => void;
 };
-
-type OwnProps = {};
-
-type BrowserCogListProps = StateProps & DispatchProps & OwnProps;
 
 type BpaneScrollPayload = {
   delta_y?: number;
   track_y?: CogList;
 };
 
-const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
-  props: BrowserCogListProps
-) => {
+const BrowserCogList = (props: BrowserCogListProps) => {
   const { browserCogTrackList } = props;
   const listenBpaneScroll = (payload: BpaneScrollPayload) => {
     const { delta_y, track_y } = payload;
@@ -93,14 +84,14 @@ const BrowserCogList: FunctionComponent<BrowserCogListProps> = (
   ) : null;
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState) => ({
   browserActivated: getBrowserActivated(state),
   browserCogList: getBrowserCogList(state),
   browserCogTrackList: getBrowserCogTrackList(state),
   selectedCog: getBrowserSelectedCog(state)
 });
 
-const mapDispatchToProps: DispatchProps = {
+const mapDispatchToProps = {
   updateCogList,
   updateCogTrackList,
   updateSelectedCog

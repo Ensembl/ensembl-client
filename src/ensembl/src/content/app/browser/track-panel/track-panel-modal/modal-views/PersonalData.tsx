@@ -1,6 +1,6 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 
-const PersonalData: FunctionComponent = () => {
+const PersonalData = () => {
   return (
     <section className="personaData">
       <h3>Personal Data</h3>

@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
 
@@ -26,7 +26,7 @@ import { getGenomeTrackCategoriesById } from 'src/genome/genomeSelectors';
 
 import styles from './TrackPanelList.scss';
 
-type StateProps = {
+type TrackPanelListProps = {
   activeGenomeId: string | null;
   isDrawerOpened: boolean;
   drawerView: string;
@@ -35,21 +35,12 @@ type StateProps = {
   selectedBrowserTab: TrackType;
   genomeTrackCategories: GenomeTrackCategory[];
   trackStates: TrackStates;
-};
-
-type DispatchProps = {
   toggleDrawer: (isDrawerOpened: boolean) => void;
   changeDrawerView: (drawerView: string) => void;
   updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
 };
 
-type OwnProps = {};
-
-type TrackPanelListProps = StateProps & DispatchProps & OwnProps;
-
-const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
-  props: TrackPanelListProps
-) => {
+const TrackPanelList = (props: TrackPanelListProps) => {
   const {
     activeGenomeId,
     activeEnsObject,
@@ -134,7 +125,7 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   );
 };
 
-const mapStateToProps = (state: RootState): StateProps => {
+const mapStateToProps = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
   return {
     activeGenomeId,
@@ -150,7 +141,7 @@ const mapStateToProps = (state: RootState): StateProps => {
   };
 };
 
-const mapDispatchToProps: DispatchProps = {
+const mapDispatchToProps = {
   changeDrawerView,
   toggleDrawer,
   updateTrackStates: updateTrackStatesAndSave

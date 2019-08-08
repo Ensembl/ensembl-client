@@ -17,18 +17,11 @@ import closeIcon from 'static/img/track-panel/close.svg';
 
 import styles from './TrackPanelModal.scss';
 
-type StateProps = {
+type TrackPanelModalProps = {
   launchbarExpanded: boolean;
   trackPanelModalView: string;
-};
-
-type DispatchProps = {
   closeTrackPanelModal: () => void;
 };
-
-type OwnProps = {};
-
-type TrackPanelModalProps = StateProps & DispatchProps & OwnProps;
 
 const TrackPanelModal = (props: TrackPanelModalProps) => {
   const getTrackPanelModalClasses = () => {
@@ -71,12 +64,12 @@ const TrackPanelModal = (props: TrackPanelModalProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState) => ({
   launchbarExpanded: getLaunchbarExpanded(state),
   trackPanelModalView: getTrackPanelModalView(state)
 });
 
-const mapDispatchToProps: DispatchProps = {
+const mapDispatchToProps = {
   closeTrackPanelModal
 };
 

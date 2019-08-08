@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import { RootState } from 'src/store';
@@ -20,20 +20,13 @@ import SnpIndels from './drawer-views/SnpIndels';
 
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
-type StateProps = {
+type DrawerProps = {
   drawerView: string;
   ensObject: EnsObject | null;
-};
-
-type DispatchProps = {
   closeDrawer: () => void;
 };
 
-type OwnProps = {};
-
-type DrawerProps = StateProps & DispatchProps & OwnProps;
-
-const Drawer: FunctionComponent<DrawerProps> = (props: DrawerProps) => {
+const Drawer = (props: DrawerProps) => {
   const { ensObject, drawerView } = props;
 
   if (!ensObject) {
@@ -73,7 +66,7 @@ const Drawer: FunctionComponent<DrawerProps> = (props: DrawerProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState) => ({
   drawerView: getDrawerView(state),
   ensObject: getBrowserActiveEnsObject(state)
 });

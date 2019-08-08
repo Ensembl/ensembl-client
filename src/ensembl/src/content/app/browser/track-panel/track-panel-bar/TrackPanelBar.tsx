@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 
 import { trackPanelBarConfig, TrackPanelBarItem } from './trackPanelBarConfig';
@@ -25,29 +25,20 @@ import chevronRightIcon from 'static/img/shared/chevron-right.svg';
 
 import styles from './TrackPanelBar.scss';
 
-type StateProps = {
+type TrackPanelBarProps = {
   activeGenomeId: string | null;
   isDrawerOpened: boolean;
   isTrackPanelModalOpened: boolean;
   isTrackPanelOpened: boolean;
   launchbarExpanded: boolean;
   trackPanelModalView: string;
-};
-
-type DispatchProps = {
   closeDrawer: () => void;
   closeTrackPanelModal: () => void;
   openTrackPanelModal: (trackPanelModalView: string) => void;
   toggleTrackPanel: (isTrackPanelOpened?: boolean) => void;
 };
 
-type OwnProps = {};
-
-type TrackPanelBarProps = StateProps & DispatchProps & OwnProps;
-
-const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
-  props: TrackPanelBarProps
-) => {
+const TrackPanelBar = (props: TrackPanelBarProps) => {
   const moveTrackPanel = useCallback(() => {
     if (props.isDrawerOpened) {
       props.closeDrawer();
@@ -97,7 +88,7 @@ const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
   );
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
   isDrawerOpened: getIsDrawerOpened(state),
   isTrackPanelModalOpened: getIsTrackPanelModalOpened(state),
@@ -106,7 +97,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
   trackPanelModalView: getTrackPanelModalView(state)
 });
 
-const mapDispatchToProps: DispatchProps = {
+const mapDispatchToProps = {
   closeDrawer,
   closeTrackPanelModal,
   openTrackPanelModal,

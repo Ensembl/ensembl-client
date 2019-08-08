@@ -1,10 +1,4 @@
-import React, {
-  FunctionComponent,
-  MouseEvent,
-  ReactNode,
-  useState,
-  useEffect
-} from 'react';
+import React, { MouseEvent, ReactNode, useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
@@ -32,19 +26,13 @@ import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg'
 
 import styles from './TrackPanelListItem.scss';
 
-type StateProps = {
+type TrackPanelListItemProps = {
   activeGenomeId: string | null;
   isDrawerOpened: boolean;
   drawerView: string;
-};
-
-type DispatchProps = {
   changeDrawerView: (drawerView: string) => void;
   toggleDrawer: (isDrawerOpened: boolean) => void;
   updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
-};
-
-type OwnProps = {
   categoryName: string;
   children?: ReactNode[];
   trackStatus: ImageButtonStatus;
@@ -52,14 +40,10 @@ type OwnProps = {
   track: EnsObjectTrack;
 };
 
-type TrackPanelListItemProps = StateProps & DispatchProps & OwnProps;
-
 // delete this when there is a better place to put this
 const trackPrefix = 'track:';
 
-const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
-  props: TrackPanelListItemProps
-) => {
+const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   const [expanded, setExpanded] = useState(true);
   const {
     activeGenomeId,
@@ -215,13 +199,13 @@ const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
   );
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
   isDrawerOpened: getIsDrawerOpened(state),
   drawerView: getDrawerView(state)
 });
 
-const mapDispatchToProps: DispatchProps = {
+const mapDispatchToProps = {
   changeDrawerView,
   toggleDrawer,
   updateTrackStates: updateTrackStatesAndSave

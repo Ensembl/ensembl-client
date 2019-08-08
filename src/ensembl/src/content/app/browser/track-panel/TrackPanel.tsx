@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useSpring, animated } from 'react-spring';
 
@@ -31,7 +31,7 @@ import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 import styles from './TrackPanel.scss';
 
-type StateProps = {
+type TrackPanelProps = {
   activeGenomeId: string | null;
   breakpointWidth: BreakpointWidth;
   browserActivated: boolean;
@@ -42,19 +42,10 @@ type StateProps = {
   selectedBrowserTab: TrackType;
   genomeTrackCategories: GenomeTrackCategory[];
   trackStates: TrackStates;
-};
-
-type DispatchProps = {
   toggleTrackPanel: (isTrackPanelOpened?: boolean) => void;
 };
 
-type OwnProps = {};
-
-type TrackPanelProps = StateProps & DispatchProps & OwnProps;
-
-const TrackPanel: FunctionComponent<TrackPanelProps> = (
-  props: TrackPanelProps
-) => {
+const TrackPanel = (props: TrackPanelProps) => {
   const { isDrawerOpened } = props;
 
   useEffect(() => {
@@ -102,7 +93,7 @@ const TrackPanel: FunctionComponent<TrackPanelProps> = (
   ) : null;
 };
 
-const mapStateToProps = (state: RootState): StateProps => {
+const mapStateToProps = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
 
   return {
@@ -121,7 +112,7 @@ const mapStateToProps = (state: RootState): StateProps => {
   };
 };
 
-const mapDispatchToProps: DispatchProps = {
+const mapDispatchToProps = {
   toggleTrackPanel
 };
 
