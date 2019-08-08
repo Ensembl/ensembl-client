@@ -1,5 +1,5 @@
-import React, { FunctionComponent } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React from 'react';
+import { connect } from 'react-redux';
 
 import TrackPanelSearch from './modal-views/TrackPanelSearch';
 import TracksManager from './modal-views/TracksManager';
@@ -17,18 +17,22 @@ import closeIcon from 'static/img/track-panel/close.svg';
 
 import styles from './TrackPanelModal.scss';
 
-const TrackPanelModal: FunctionComponent = () => {
-  const { launchbarExpanded, trackPanelModalView } = useSelector(
-    (state: RootState) => ({
-      launchbarExpanded: getLaunchbarExpanded(state),
-      trackPanelModalView: getTrackPanelModalView(state)
-    })
-  );
+type StateProps = {
+  launchbarExpanded: boolean;
+  trackPanelModalView: string;
+};
 
-  const dispatch = useDispatch();
+type DispatchProps = {
+  closeTrackPanelModal: () => void;
+};
 
+type OwnProps = {};
+
+type TrackPanelModalProps = StateProps & DispatchProps & OwnProps;
+
+const TrackPanelModal = (props: TrackPanelModalProps) => {
   const getTrackPanelModalClasses = () => {
-    const heightClass: string = launchbarExpanded
+    const heightClass: string = props.launchbarExpanded
       ? styles.shorter
       : styles.taller;
 
@@ -36,7 +40,7 @@ const TrackPanelModal: FunctionComponent = () => {
   };
 
   const getModalView = () => {
-    switch (trackPanelModalView) {
+    switch (props.trackPanelModalView) {
       case 'search':
         return <TrackPanelSearch />;
       case 'tracks-manager':
@@ -57,7 +61,7 @@ const TrackPanelModal: FunctionComponent = () => {
   return (
     <section className={getTrackPanelModalClasses()}>
       <button
-        onClick={() => dispatch(closeTrackPanelModal())}
+        onClick={props.closeTrackPanelModal}
         className={styles.closeButton}
       >
         <img src={closeIcon} alt="Close track panel modal" />
@@ -67,4 +71,16 @@ const TrackPanelModal: FunctionComponent = () => {
   );
 };
 
-export default TrackPanelModal;
+const mapStateToProps = (state: RootState): StateProps => ({
+  launchbarExpanded: getLaunchbarExpanded(state),
+  trackPanelModalView: getTrackPanelModalView(state)
+});
+
+const mapDispatchToProps: DispatchProps = {
+  closeTrackPanelModal
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TrackPanelModal);
