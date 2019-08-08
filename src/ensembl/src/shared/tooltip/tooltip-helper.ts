@@ -1,3 +1,5 @@
+import bringToFront from 'src/shared/utils/bringToFront';
+
 import {
   TIP_WIDTH,
   TIP_HEIGHT,
@@ -15,62 +17,60 @@ const leftSide = [Position.LEFT_TOP, Position.LEFT_BOTTOM];
 const rightSide = [Position.RIGHT_TOP, Position.RIGHT_BOTTOM];
 
 type FindOptimalPositionParams = {
-  intersectionEntry: IntersectionObserverEntry;
+  tooltipBoundingRect: ClientRect;
+  rootBoundingRect: ClientRect;
   anchorBoundingRect: ClientRect;
   position: Position;
 };
 
 export const findOptimalPosition = (params: FindOptimalPositionParams) => {
-  const {
-    intersectionEntry: { isIntersecting }
-  } = params;
-  let { position } = params;
-
-  if (isIntersecting) {
-    return position;
-  }
-
-  return adjustPosition(params);
-};
-
-const adjustPosition = (params: FindOptimalPositionParams) => {
   const possiblePositions = getPossiblePositions(params);
-  for (let position of possiblePositions) {
-    if (willStayWithinBounds({ ...params, position })) {
-      return position;
-    }
-  }
 
-  // if no better position was found, return original position
-  return params.position;
+  return possiblePositions.reduce(
+    (result, position) => {
+      const outOfBoundsArea = getTooltipOutOfBoundsArea({
+        ...params,
+        position
+      });
+      if (outOfBoundsArea < result.outOfBoundsArea) {
+        return {
+          position,
+          outOfBoundsArea
+        };
+      } else {
+        return result;
+      }
+    },
+    { position: params.position, outOfBoundsArea: Infinity }
+  ).position;
 };
 
 const getPossiblePositions = (params: FindOptimalPositionParams) => {
   const { position } = params;
   if (topRow.includes(position)) {
-    return [...topRow, ...bottomRow];
+    return [...bringToFront(topRow, position), ...bottomRow];
   } else if (bottomRow.includes(position)) {
-    return [...bottomRow, ...topRow];
+    return [...bringToFront(bottomRow, position), ...topRow];
   } else if (leftSide.includes(position)) {
-    return [...leftSide, ...rightSide];
+    return [...bringToFront(leftSide, position), ...rightSide];
   } else if (rightSide.includes(position)) {
-    return [...rightSide, ...leftSide];
+    return [...bringToFront(rightSide, position), ...leftSide];
   } else {
     return [];
   }
 };
 
-const willStayWithinBounds = (params: FindOptimalPositionParams) => {
+const getTooltipOutOfBoundsArea = (
+  params: FindOptimalPositionParams
+): number => {
   const {
-    intersectionEntry: { boundingClientRect, rootBounds },
+    tooltipBoundingRect,
+    rootBoundingRect,
     anchorBoundingRect,
     position
   } = params;
 
-  if (!rootBounds) {
-    // shouldn't happen, but makes typescript happy
-    return position;
-  }
+  const { width, height } = tooltipBoundingRect;
 
   const {
     left: anchorLeft,
@@ -83,9 +83,11 @@ const willStayWithinBounds = (params: FindOptimalPositionParams) => {
   const anchorCentreX = anchorLeft + anchorWidth / 2;
   const anchorCentreY = anchorTop + anchorHeight / 2;
 
-  const { width, height } = boundingClientRect;
+  let predictedLeft = 0,
+    predictedRight = 0,
+    predictedTop = 0,
+    predictedBottom = 0;
 
-  let predictedLeft, predictedRight, predictedTop, predictedBottom;
   if (position === Position.TOP_LEFT) {
     predictedLeft =
       anchorCentreX - width + TIP_WIDTH / 2 + TIP_HORIZONTAL_OFFSET;
@@ -132,11 +134,59 @@ const willStayWithinBounds = (params: FindOptimalPositionParams) => {
     predictedBottom = predictedTop + height;
   }
 
-  return (
-    predictedLeft &&
-    predictedLeft > rootBounds.left &&
-    (predictedRight && predictedRight < rootBounds.right) &&
-    (predictedTop && predictedTop > rootBounds.top) &&
-    (predictedBottom && predictedBottom < rootBounds.bottom)
-  );
+  const predictedTooltipRect = {
+    left: predictedLeft,
+    right: predictedRight,
+    top: predictedTop,
+    bottom: predictedBottom,
+    width,
+    height
+  };
+
+  return calculateOverflowArea({
+    tooltip: predictedTooltipRect,
+    root: rootBoundingRect
+  });
+};
+
+const calculateOverflowArea = (params: {
+  tooltip: ClientRect;
+  root: ClientRect;
+}) => {
+  const {
+    tooltip: {
+      left: tooltipLeft,
+      right: tooltipRight,
+      top: tooltipTop,
+      bottom: tooltipBottom,
+      width: tooltipWidth,
+      height: tooltipHeight
+    },
+    root: { left: rootLeft, right: rootRight, top: rootTop, bottom: rootBottom }
+  } = params;
+
+  let deltaX = 0,
+    deltaY = 0;
+
+  if (tooltipLeft < rootLeft) {
+    deltaX = rootLeft - tooltipLeft;
+  } else if (tooltipRight > rootRight) {
+    deltaX = tooltipRight - rootRight;
+  }
+
+  if (tooltipTop < rootTop) {
+    deltaY = rootTop - tooltipTop;
+  } else if (tooltipBottom > rootBottom) {
+    deltaY = tooltipBottom - rootBottom;
+  }
+
+  if (deltaX || deltaY) {
+    return (
+      deltaX * (tooltipHeight - deltaY) +
+      deltaY * (tooltipWidth - deltaX) +
+      deltaX * deltaY
+    );
+  } else {
+    return 0;
+  }
 };

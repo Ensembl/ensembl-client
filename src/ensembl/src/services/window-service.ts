@@ -26,6 +26,23 @@ class WindowService implements WindowServiceInterface {
   public getLocation() {
     return window.location;
   }
+
+  // return viewport dimensions in the ClientRect format
+  public getDimensions() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    return {
+      x: 0,
+      y: 0,
+      width,
+      height,
+      top: 0,
+      left: 0,
+      right: width,
+      bottom: height
+    };
+  }
 }
 
 export default new WindowService();
