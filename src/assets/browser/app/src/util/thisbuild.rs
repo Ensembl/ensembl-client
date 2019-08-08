@@ -1,6 +1,6 @@
 include!(concat!(env!("OUT_DIR"), "/thisbuild.rs"));
 
-pub const API_VERSION: u32 = 2;
+pub const API_VERSION: u32 = 3;
 
 use util::get_instance_id;
 

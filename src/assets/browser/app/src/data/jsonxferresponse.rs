@@ -5,7 +5,7 @@ use model::supply::CatalogueCode;
 
 pub struct JSONXferResponse {
     pub codename: String,
-    pub key: CatalogueCode,
+    pub catalogue_code: CatalogueCode,
     pub values: Vec<Value>
 }
 
@@ -40,14 +40,15 @@ fn marshal(data: &SerdeValue) -> Vec<Value> {
 pub fn parse_jsonxferresponse(data: &SerdeValue) -> Vec<JSONXferResponse> {
     let mut out = Vec::new();
     for resp in unwrap!(data.as_array()) {
-        let key = CatalogueCode::new_in(unwrap!(resp[2].as_str()),
-                                       unwrap!(resp[0].as_str()),
-                                       unwrap!(resp[1].as_str()),
-                                       &resp[4].as_str().map(|v| v.to_string()));
+        let code_data = unwrap!(resp[0].as_array());
+        let catalogue_code = CatalogueCode::new_in(unwrap!(code_data[0].as_str()),
+                                       unwrap!(code_data[1].as_str()),
+                                       unwrap!(code_data[2].as_str()),
+                                       &code_data[3].as_str().map(|v| v.to_string()));
         out.push(JSONXferResponse {
-            codename: unwrap!(resp[3].as_str()).to_string(),
-            key,
-            values: marshal(&resp[5])
+            codename: unwrap!(resp[2].as_str()).to_string(),
+            catalogue_code,
+            values: marshal(&resp[3])
         });
     }
     out

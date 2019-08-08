@@ -124,10 +124,10 @@ impl HttpResponseConsumer for PendingXferBatch {
         let value : TypedArray<u8> = value.into();
         let data = ok!(String::from_utf8(value.to_vec()));
         for resp in parse_jsonxferresponse_str(&data) {
-            if let Some(mut requests) = self.requests.remove(&resp.key) {
+            if let Some(mut requests) = self.requests.remove(&resp.catalogue_code) {
                 let bytecode = ok!(self.config.get_bytecode(&resp.codename)).clone();
                 let recv = (resp.codename,resp.values);
-                self.cache.put(&resp.key,recv.clone());
+                self.cache.put(&resp.catalogue_code,recv.clone());
                 for mut req in requests.drain(..) {
                     req.go(bytecode.clone(),recv.1.clone());
                 }
