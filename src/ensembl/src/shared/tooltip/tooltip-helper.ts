@@ -1,3 +1,5 @@
+import bringToFront from 'src/shared/utils/bringToFront';
+
 import {
   TIP_WIDTH,
   TIP_HEIGHT,
@@ -46,23 +48,16 @@ export const findOptimalPosition = (params: FindOptimalPositionParams) => {
 const getPossiblePositions = (params: FindOptimalPositionParams) => {
   const { position } = params;
   if (topRow.includes(position)) {
-    return [...preferredFirst(topRow, position), ...bottomRow];
+    return [...bringToFront(topRow, position), ...bottomRow];
   } else if (bottomRow.includes(position)) {
-    return [...preferredFirst(bottomRow, position), ...topRow];
+    return [...bringToFront(bottomRow, position), ...topRow];
   } else if (leftSide.includes(position)) {
-    return [...preferredFirst(leftSide, position), ...rightSide];
+    return [...bringToFront(leftSide, position), ...rightSide];
   } else if (rightSide.includes(position)) {
-    return [...preferredFirst(rightSide, position), ...leftSide];
+    return [...bringToFront(rightSide, position), ...leftSide];
   } else {
     return [];
   }
-};
-
-const preferredFirst = (positions: Position[], preferredPosition: Position) => {
-  // sort the positions array in such a way that the preferred position is always the first
-  return [...positions].sort((position) =>
-    position === preferredPosition ? -1 : 0
-  );
 };
 
 const getTooltipOutOfBoundsArea = (
