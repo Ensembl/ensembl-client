@@ -4,7 +4,9 @@ import { defaultTrackPanelStateForGenome } from './trackPanelState';
 
 export const getActiveTrackPanel = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
-  return activeGenomeId
+  const activeTrackPanel = activeGenomeId && state.trackPanel[activeGenomeId];
+
+  return activeGenomeId && activeTrackPanel
     ? state.trackPanel[activeGenomeId]
     : defaultTrackPanelStateForGenome;
 };
