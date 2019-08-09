@@ -1,5 +1,5 @@
 import { EnsObjectTrack } from 'src/ens-object/ensObjectTypes';
-import { TrackType } from 'src/content/app/browser/track-panel/trackPanelConfig';
+import { TrackSet } from 'src/content/app/browser/track-panel/trackPanelConfig';
 
 export type GenomeInfo = {
   genome_id: string;
@@ -18,7 +18,7 @@ export type GenomeTrackCategory = {
   label: string;
   track_category_id: string;
   track_list: EnsObjectTrack[];
-  types: TrackType[];
+  types: TrackSet[];
 };
 
 export type GenomeInfoResponse = {

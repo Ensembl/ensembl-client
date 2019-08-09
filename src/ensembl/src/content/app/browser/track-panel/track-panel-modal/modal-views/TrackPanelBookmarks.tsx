@@ -17,19 +17,12 @@ import upperFirst from 'lodash/upperFirst';
 
 import styles from '../TrackPanelModal.scss';
 
-type StateProps = {
+type TrackPanelBookmarksProps = {
   activeGenomeId: string | null;
   genomeInfo: GenomeInfoData;
   exampleEnsObjects: EnsObject[];
-};
-
-type DispatchProps = {
   fetchExampleEnsObjects: (objectId: string) => void;
 };
-
-type OwnProps = {};
-
-type TrackPanelBookmarksProps = StateProps & DispatchProps & OwnProps;
 
 export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
   const getExampleObjLabel = (exampleObject: EnsObject) => {
