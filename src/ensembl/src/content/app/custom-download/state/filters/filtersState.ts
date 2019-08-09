@@ -10,7 +10,7 @@ export type FiltersState = Readonly<{
 }>;
 
 export const defaultFiltersState: FiltersState = {
-  expandedPanel: '',
+  expandedPanel: 'genes',
   filters: {},
   selectedFilters: customDownloadStorageService.getSelectedFilters(),
   ui: {}

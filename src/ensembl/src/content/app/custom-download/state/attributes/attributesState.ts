@@ -24,7 +24,7 @@ export type AttributesState = Readonly<{
 }>;
 
 export const defaultAttributesState: AttributesState = {
-  expandedPanel: '',
+  expandedPanel: 'genes',
   content: {},
   selectedAttributes: customDownloadStorageService.getSelectedAttributes(),
   ui: {},
