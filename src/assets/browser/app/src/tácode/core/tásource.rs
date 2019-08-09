@@ -4,7 +4,7 @@ use std::rc::Rc;
 use tánaiste::Value;
 
 use composit::{ Leaf, AllLandscapes };
-use controller::global::Window;
+use controller::global::WindowState;
 use data::{ XferClerk, XferConsumer, BackendConfig, BackendBytecode };
 use model::focus::FocusObject;
 use model::shape::DrawingSpec;
@@ -12,7 +12,7 @@ use model::supply::{ PendingOrder, Supplier };
 use tácode::{ Tácode, TáTask };
 
 pub struct TáSourceImpl {
-    window: Window,
+    window: WindowState,
     lid: usize
 }
 
@@ -20,7 +20,7 @@ pub struct TáSourceImpl {
 pub struct TáSource(Rc<RefCell<TáSourceImpl>>);
 
 impl TáSource {
-    pub fn new(window: &Window, lid: usize) -> TáSource {
+    pub fn new(window: &WindowState, lid: usize) -> TáSource {
         TáSource(Rc::new(RefCell::new(TáSourceImpl {
             window: window.clone(),
             lid
@@ -41,14 +41,14 @@ impl Supplier for TáSource {
 }
 
 struct TáXferConsumer {
-    window: Window,
+    window: WindowState,
     lc: Option<PendingOrder>,
     lid: usize,
     leaf: Leaf
 }
 
 impl TáXferConsumer {
-    fn new(window: &Window, leaf: &Leaf, lc: PendingOrder, lid: usize) -> TáXferConsumer {
+    fn new(window: &WindowState, leaf: &Leaf, lc: PendingOrder, lid: usize) -> TáXferConsumer {
         TáXferConsumer {
             window: window.clone(),
             lc: Some(lc),

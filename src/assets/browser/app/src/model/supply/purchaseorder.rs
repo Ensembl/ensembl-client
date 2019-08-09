@@ -9,7 +9,11 @@ pub struct PurchaseOrder {
 }
 
 impl PurchaseOrder {
-    pub fn new(product: &Product, leaf: &Leaf, focus: &Option<String>) -> PurchaseOrder {
+    pub fn new(product: &Product, leaf: &Leaf, mut focus: &Option<String>) -> PurchaseOrder {
+        /* XXX */
+        if product.get_product_name() == "gene-feat" {
+            focus = &None;
+        }
         PurchaseOrder {
             product: product.clone(),
             leaf: leaf.clone(),

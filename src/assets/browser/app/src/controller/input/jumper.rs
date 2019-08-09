@@ -94,7 +94,9 @@ impl JumperConsumer {
                     app.with_jumper(|j| j.zhoosh_to(stick,src,dest));
                 }
                 if let Some(ref payload) = obj.get("payload") {
-                    for resp in parse_jsonxferresponse(payload) {
+                    let mut app_ref = self.ar.state();
+                    let mut app = app_ref.lock().unwrap();
+                    for resp in parse_jsonxferresponse(app.get_window(),payload) {
                         console!("got payload {:?}",payload);
                     }
                 }

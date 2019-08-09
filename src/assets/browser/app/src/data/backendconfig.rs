@@ -52,6 +52,7 @@ pub struct BackendConfig {
     data_url: String,
     assets: HashMap<String,Rc<BackendAsset>>,
     tracks: HashMap<String,BackendTrack>,
+    wire_to_track: HashMap<String,String>,
     sticks: HashMap<String,Stick>,
     bytecodes: HashMap<String,Rc<BackendBytecode>>,
     debug_url: Option<String>,
@@ -68,6 +69,10 @@ impl BackendConfig {
     pub fn get_track(&self, name: &str) -> Option<&BackendTrack> {
         self.tracks.get(name)
     }
+
+    pub fn list_tracks(&self) -> impl Iterator<Item=&str> {
+        self.tracks.keys().map(|x| &**x)
+    }
     
     pub fn get_asset(&self, name: &str) -> Option<&Rc<BackendAsset>> {
         self.assets.get(name)
@@ -79,22 +84,31 @@ impl BackendConfig {
     pub fn get_debug_url(&self) -> &Option<String> { &self.debug_url }
     pub fn get_jumper_url(&self) -> &Option<String> { &self.jumper_url }
 
-    fn tracks_from_json(ep: &SerdeValue) -> HashMap<String,BackendTrack> {
-        let mut out = HashMap::<String,BackendTrack>::new();
+    fn tracks_from_json(ep: &SerdeValue) -> (HashMap<String,BackendTrack>,HashMap<String,String>) {
+        let mut out = HashMap::new();
+        let mut wire = HashMap::new();
         for (track_name,v) in ep.as_object().unwrap().iter() {
             let mut parts = Vec::<String>::new();
             for part in v["parts"].as_array().unwrap_or(&vec!{}).iter() {
                 parts.push(part.as_str().unwrap().to_string());
             }
             let track_name = format!("track:{}",track_name);
-            out.insert(track_name,BackendTrack { 
+            let track = BackendTrack { 
                 letter: v.get("letter").and_then(|x| x.as_str()).unwrap_or("").to_string(),
                 position: v.get("position").and_then(|x| x.as_i64()).unwrap_or(-1) as i32,
                 wire: v.get("wire").and_then(|x| x.as_str()).map(|x| x.to_string()),
                 parts
-            });
+            };
+            if let Some(ref wire_name) = track.wire {
+                wire.insert(wire_name.to_string(),track_name.to_string());
+            }
+            out.insert(track_name,track);
         }
-        out
+        (out,wire)
+    }
+
+    pub fn wire_to_name(&self, name: &str) -> Option<String> {
+        self.wire_to_track.get(name).cloned()
     }
 
     fn bytecodes_from_json(ep: &SerdeValue) -> HashMap<String,Rc<BackendBytecode>> {
@@ -147,13 +161,13 @@ impl BackendConfig {
         let data : SerdeValue = unwrap!(serde_json::from_str(in_).ok());
         let assets = BackendConfig::assets_from_json(&data["assets"],&data["data"]);
         let bytecodes = BackendConfig::bytecodes_from_json(&data["bytecodes"]);
-        let tracks = BackendConfig::tracks_from_json(&data["tracks"]);
+        let (tracks,wire_to_track) = BackendConfig::tracks_from_json(&data["tracks"]);
         let sticks = BackendConfig::sticks_from_json(&data["sticks"]);
         let data_url = unwrap!(data["data-url"].as_str()).to_string();
         let jumper_url = data["jumper-url"].as_str().map(|x| x.to_string());
         let debug_url = data.get("debug-url").and_then(|x| x.as_str()).map(|x| x.to_string());
         Ok(BackendConfig { 
-            assets, tracks, sticks, data_url, bytecodes, debug_url, jumper_url
+            assets, tracks, sticks, data_url, bytecodes, debug_url, jumper_url, wire_to_track
         })
     }
 }

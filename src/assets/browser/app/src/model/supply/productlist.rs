@@ -1,3 +1,5 @@
+use std::cell::RefCell;
+use std::rc::Rc;
 use std::collections::HashMap;
 
 use composit::AllLandscapes;
@@ -7,26 +9,42 @@ use tácode::Tácode;
 use super::productbuilder::build_product;
 use super::Product;
 use model::focus::FocusObject;
-use controller::global::Window;
+use controller::global::WindowState;
 
-pub struct ProductList {
-    products: HashMap<String,Product>,
-    window: Window
+pub struct ProductListImpl {
+    products:HashMap<String,Product>
 }
 
-impl ProductList {
-    pub fn new(window: &Window) -> ProductList {
-        ProductList {
+impl ProductListImpl {
+    pub fn new() -> ProductListImpl {
+        ProductListImpl {
             products: HashMap::new(),
-            window: window.clone()
         }
     }
 
-    pub fn get_product(&mut self, name: &str) -> Option<Product> {
-        if !self.products.contains_key(name) {
-            let product = build_product(&mut self.window,name);
-            self.products.insert(name.to_string(),product);
-        }
+    pub fn add_product(&mut self, product: &Product) {
+        self.products.insert(product.get_product_name().to_string(),product.clone());
+    }
+
+    pub fn get_product(&self, name: &str) -> Option<Product> {
         self.products.get(name).cloned()
+    }
+
+}
+
+#[derive(Clone)]
+pub struct ProductList(Rc<RefCell<ProductListImpl>>);
+
+impl ProductList {
+    pub fn new() -> ProductList {
+        ProductList(Rc::new(RefCell::new(ProductListImpl::new())))
+    }
+
+    pub fn add_product(&mut self, product: &Product) {
+        self.0.borrow_mut().add_product(product);
+    }
+
+    pub fn get_product(&self, name: &str) -> Option<Product> {
+        self.0.borrow_mut().get_product(name).clone()
     }
 }

@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use controller::global::Window;
+use controller::global::WindowState;
 use composit::{ AllLandscapes, Leaf };
 use data::BackendConfig;
 use model::shape::DrawingSpec;
@@ -10,7 +10,7 @@ use model::focus::FocusObject;
 use model::supply::PendingOrder;
 
 pub enum TáTask {
-    MakeShapes(Window,Leaf,PendingOrder,Vec<DrawingSpec>,usize,Option<String>)
+    MakeShapes(WindowState,Leaf,PendingOrder,Vec<DrawingSpec>,usize,Option<String>)
 }
 
 impl TáTask {

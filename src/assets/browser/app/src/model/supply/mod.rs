@@ -1,4 +1,3 @@
-mod cataloguecode;
 mod pendingorder;
 mod product;
 mod productbuilder;
@@ -8,9 +7,9 @@ mod subassembly;
 mod supplier;
 mod supplierchooser;
 
-pub use self::cataloguecode::CatalogueCode;
 pub use self::pendingorder::PendingOrder;
 pub use self::product::Product;
+pub use self::productbuilder::build_product;
 pub use self::productlist::ProductList;
 pub use self::purchaseorder::PurchaseOrder;
 pub use self::subassembly::Subassembly;

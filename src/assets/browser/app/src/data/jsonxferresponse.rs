@@ -1,11 +1,14 @@
 use serde_json::Value as SerdeValue;
 use tánaiste::Value;
 
-use model::supply::CatalogueCode;
+use composit::{ Leaf, StickManager };
+use controller::global::WindowState;
+use data::BackendConfig;
+use model::supply::{ ProductList, PurchaseOrder };
 
 pub struct JSONXferResponse {
     pub codename: String,
-    pub catalogue_code: CatalogueCode,
+    pub purchase_order: PurchaseOrder,
     pub values: Vec<Value>
 }
 
@@ -37,23 +40,27 @@ fn marshal(data: &SerdeValue) -> Vec<Value> {
     out
 }
 
-pub fn parse_jsonxferresponse(data: &SerdeValue) -> Vec<JSONXferResponse> {
+pub fn parse_jsonxferresponse(window: &mut WindowState, data: &SerdeValue) -> Vec<JSONXferResponse> {
     let mut out = Vec::new();
     for resp in unwrap!(data.as_array()) {
         let code_data = unwrap!(resp[0].as_array());
-        let catalogue_code = CatalogueCode::new_in(unwrap!(code_data[0].as_str()),
-                                       unwrap!(code_data[1].as_str()),
-                                       unwrap!(code_data[2].as_str()),
-                                       &code_data[3].as_str().map(|v| v.to_string()));
-        out.push(JSONXferResponse {
-            codename: unwrap!(resp[2].as_str()).to_string(),
-            catalogue_code,
-            values: marshal(&resp[3])
-        });
+        let product_list = window.get_product_list().clone();
+        let product = window.get_backend_config().wire_to_name(unwrap!(code_data[0].as_str()))
+                        .as_ref().and_then(|name| product_list.get_product(name));
+        let stick = unwrap!(window.get_stick_manager().get_stick(unwrap!(code_data[1].as_str())));
+        let leaf = Leaf::from_short_spec(&stick,unwrap!(code_data[2].as_str()));
+        if let Some(product) = product {
+            let purchase_order = PurchaseOrder::new(&product,&leaf,&code_data[3].as_str().map(|v| v.to_string()));
+            out.push(JSONXferResponse {
+                codename: unwrap!(resp[2].as_str()).to_string(),
+                purchase_order,
+                values: marshal(&resp[3])
+            });
+        }
     }
     out
 }
 
-pub fn parse_jsonxferresponse_str(data: &str) -> Vec<JSONXferResponse> {
-    parse_jsonxferresponse(&ok!(serde_json::from_str(data)))
+pub fn parse_jsonxferresponse_str(window: &mut WindowState, data: &str) -> Vec<JSONXferResponse> {
+    parse_jsonxferresponse(window,&ok!(serde_json::from_str(data)))
 }

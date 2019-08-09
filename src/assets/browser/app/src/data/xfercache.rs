@@ -4,7 +4,7 @@ use std::cell::RefCell;
 use tánaiste::Value;
 
 use composit::Leaf;
-use model::supply::{ CatalogueCode, PurchaseOrder, Product };
+use model::supply::{ PurchaseOrder, Product };
 use data::{ BackendConfig, BackendBytecode, XferClerk, XferConsumer };
 use util::Cache;
 
@@ -15,7 +15,7 @@ impl XferConsumer for XferPrimeConsumer {
 }
 
 pub struct XferCacheImpl {
-    cache: Cache<CatalogueCode,(String,Vec<Value>)>
+    cache: Cache<PurchaseOrder,(String,Vec<Value>)>
 }
 
 impl XferCacheImpl {
@@ -25,11 +25,11 @@ impl XferCacheImpl {
         }
     }
     
-    pub fn put(&mut self, key: &CatalogueCode, values: (String,Vec<Value>)) {
+    pub fn put(&mut self, key: &PurchaseOrder, values: (String,Vec<Value>)) {
         self.cache.put(key,values);
     }
     
-    pub fn get(&mut self, key: &CatalogueCode) -> Option<(String,Vec<Value>)> {
+    pub fn get(&mut self, key: &PurchaseOrder) -> Option<(String,Vec<Value>)> {
         self.cache.get(key).cloned()
     }    
 }
@@ -42,20 +42,18 @@ impl XferCache {
         XferCache(Rc::new(RefCell::new(XferCacheImpl::new(size))),config.clone())
     }
 
-    pub fn put(&mut self, key: &CatalogueCode, values: (String,Vec<Value>)) {
+    pub fn put(&mut self, key: &PurchaseOrder, values: (String,Vec<Value>)) {
         self.0.borrow_mut().put(key,values);
     }
     
-    pub fn get(&mut self, key: &CatalogueCode) -> Option<(String,Vec<Value>)> {
+    pub fn get(&mut self, key: &PurchaseOrder) -> Option<(String,Vec<Value>)> {
         self.0.borrow_mut().get(key)
     }
     
     pub fn prime(&mut self, xferclerk: &mut Box<XferClerk>, product: &Product, leaf: &Leaf) {
         let po = PurchaseOrder::new(product,leaf,&None);
-        if let Some(key) = CatalogueCode::try_new(&self.1,&po) {
-            if self.get(&key).is_none() {
-                xferclerk.satisfy(&po,true,Box::new(XferPrimeConsumer()));
-            }
+        if self.get(&po).is_none() {
+            xferclerk.satisfy(&po,true,Box::new(XferPrimeConsumer()));
         }
     }
 }

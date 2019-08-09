@@ -23,7 +23,7 @@ impl<T: 'static> EventControl<T> {
         EventControl {
             handle: Arc::new(Mutex::new(handle)),
             mappings: Vec::<EventType>::new(),
-            window: ElementEvents::<T>::new(&Target::Window,p),
+            window: ElementEvents::<T>::new(&Target::WindowState,p),
             current: Vec::<ElementEvents<T>>::new()
         }
     }
@@ -297,7 +297,7 @@ struct JsEventKiller {
 #[derive(Clone,Debug)]
 pub enum Target {
     Element(Element),
-    Window
+    WindowState
 }
 
 pub struct ElementEvents<T> {
@@ -318,7 +318,7 @@ impl<T: 'static> ElementEvents<T> {
     fn as_ref(&self) -> Reference {
         match &self.el {
             Target::Element(el) => el.as_ref().clone(),
-            Target::Window => window().as_ref().clone()
+            Target::WindowState => window().as_ref().clone()
         }
     }
     

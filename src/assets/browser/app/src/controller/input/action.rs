@@ -1,5 +1,6 @@
 use types::{ Move, Units, Axis, Dot, cdfraction, LEFT, RIGHT, CPixel };
 use controller::global::App;
+use composit::StickManager;
 
 use serde_json::Value as JSONValue;
 
@@ -111,7 +112,7 @@ fn exe_settled(app: &mut App) {
 }
 
 fn exe_component_add(a: &mut App, name: &str) {
-    if let Some(c) = a.get_product(name) {
+    if let Some(c) = a.get_window().get_product_list().get_product(name) {
         a.with_compo(|co| {
             let cs = co.get_component_set();
             cs.add(c)
@@ -120,7 +121,8 @@ fn exe_component_add(a: &mut App, name: &str) {
 }
 
 fn exe_set_stick(a: &mut App, name: &str) {
-    if let Some(stick) = a.with_stick_manager(|sm| sm.get_stick(name)) {
+    let stick_manager = a.get_window().get_stick_manager();
+    if let Some(stick) = stick_manager.get_stick(name) {
         a.with_stage(|s| {
             s.set_limit(&LEFT,0.);
             s.set_limit(&RIGHT,stick.length() as f64);

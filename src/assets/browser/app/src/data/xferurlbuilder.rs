@@ -1,7 +1,8 @@
 use std::collections::{ HashMap, HashSet };
 use itertools::Itertools;
 
-use model::supply::CatalogueCode;
+use controller::global::WindowState;
+use model::supply::PurchaseOrder;
 
 struct ChromBuilder {
     input: HashSet<(String,String)>,
@@ -64,12 +65,20 @@ impl XferUrlBuilder {
         }
     }
     
-    pub fn add(&mut self, key: &CatalogueCode) {
-        let supersection = (key.short_stick.clone(),key.focus.clone());
-        let set = self.data.entry(supersection).or_insert_with(||
-            Vec::<(String,String)>::new()
-        );
-        set.push((key.wire.clone(),key.short_pane.clone()));
+    pub fn add(&mut self, window: &mut WindowState, po: &PurchaseOrder) {
+        if let Some((wire,stick,pane,mut focus)) = window.get_backend_config()
+                .get_track(&po.get_product().get_product_name())
+                .and_then(|x| x.get_wire().as_ref())
+                .map(|wire| {
+                    let (short_stick,short_pane) = po.get_leaf().get_short_spec();
+                    (wire,short_stick,short_pane,po.get_focus().clone())
+                }) {
+            let supersection = (stick.clone(),focus.clone());
+            let set = self.data.entry(supersection).or_insert_with(||
+                Vec::<(String,String)>::new()
+            );
+            set.push((wire.clone(),pane.clone()));
+        }
     }
     
     fn emit_chrom(&self, values: &Vec<(String,String)>) -> String {

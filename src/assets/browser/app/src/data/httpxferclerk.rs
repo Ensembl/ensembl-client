@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
+use controller::global::WindowState;
 use itertools::Itertools;
 use serde_json::Value as SerdeValue;
 use stdweb::unstable::TryInto;
@@ -15,7 +16,7 @@ use super::{
     HttpResponseConsumer, HttpManager, BackendConfig
 };
 use super::jsonxferresponse::parse_jsonxferresponse_str;
-use model::supply::{ CatalogueCode, PurchaseOrder };
+use model::supply::{ PurchaseOrder, ProductList };
 
 use super::backendconfig::BackendBytecode;
 
@@ -73,17 +74,17 @@ impl PendingXferRequest {
 }
 
 struct PendingXferBatch {
-    config: BackendConfig,
-    requests: HashMap<CatalogueCode,Vec<PendingXferRequest>>,
+    window: WindowState,
+    requests: HashMap<PurchaseOrder,Vec<PendingXferRequest>>,
     pace: XferPaceManager,
     base: Url,
     cache: XferCache
 }
 
 impl PendingXferBatch {
-    pub fn new(config: &BackendConfig, base: &Url, pace: &XferPaceManager, cache: &XferCache) -> PendingXferBatch {
+    pub fn new(window: &WindowState, base: &Url, pace: &XferPaceManager, cache: &XferCache) -> PendingXferBatch {
         PendingXferBatch {
-            config: config.clone(),
+            window: window.clone(),
             requests: HashMap::new(),
             pace: pace.clone(),
             base: base.clone(),
@@ -91,7 +92,7 @@ impl PendingXferBatch {
         }
     }
     
-    pub fn add_request(&mut self, key: &CatalogueCode, consumer: Box<XferConsumer>) {
+    pub fn add_request(&mut self, key: &PurchaseOrder, consumer: Box<XferConsumer>) {
         self.requests.entry(key.clone()).or_insert_with(|| {
             Vec::<PendingXferRequest>::new()
         }).push(PendingXferRequest {
@@ -101,11 +102,11 @@ impl PendingXferBatch {
 
     pub fn empty(&self) -> bool { self.requests.len() == 0 }
 
-    pub fn fire(self, http_manager: &mut HttpManager) {
+    pub fn fire(mut self, http_manager: &mut HttpManager) {
         let mut url = self.base.clone();
         let mut url_builder = XferUrlBuilder::new();
         for key in self.requests.keys() {
-            url_builder.add(key);
+            url_builder.add(&mut self.window,key);
         }
         {
             let mut path = url.path_segments_mut().unwrap();
@@ -123,11 +124,11 @@ impl HttpResponseConsumer for PendingXferBatch {
         let value : ArrayBuffer = ok!(req.raw_response().try_into());
         let value : TypedArray<u8> = value.into();
         let data = ok!(String::from_utf8(value.to_vec()));
-        for resp in parse_jsonxferresponse_str(&data) {
-            if let Some(mut requests) = self.requests.remove(&resp.catalogue_code) {
-                let bytecode = ok!(self.config.get_bytecode(&resp.codename)).clone();
+        for resp in parse_jsonxferresponse_str(&mut self.window,&data) {
+            if let Some(mut requests) = self.requests.remove(&resp.purchase_order) {
+                let bytecode = ok!(self.window.get_backend_config().get_bytecode(&resp.codename)).clone();
                 let recv = (resp.codename,resp.values);
-                self.cache.put(&resp.catalogue_code,recv.clone());
+                self.cache.put(&resp.purchase_order,recv.clone());
                 for mut req in requests.drain(..) {
                     req.go(bytecode.clone(),recv.1.clone());
                 }
@@ -138,7 +139,7 @@ impl HttpResponseConsumer for PendingXferBatch {
 }
 
 struct XferBatchScheduler {
-    config: BackendConfig,
+    window: WindowState,
     http_manager: HttpManager,
     cache: XferCache,
     url: Url,
@@ -148,10 +149,10 @@ struct XferBatchScheduler {
 }
 
 impl XferBatchScheduler {
-    pub fn new(config: &BackendConfig, http_manager: &HttpManager, cache: &XferCache, 
+    pub fn new(window: &WindowState, http_manager: &HttpManager, cache: &XferCache, 
                url: &Url, pace: i32) -> XferBatchScheduler {
         XferBatchScheduler {
-            config: config.clone(),
+            window: window.clone(),
             http_manager: http_manager.clone(),
             cache: cache.clone(),
             url: url.clone(),
@@ -162,7 +163,7 @@ impl XferBatchScheduler {
     }
     
     fn set_batch(&mut self) {
-        self.batch = Some(PendingXferBatch::new(&self.config,&self.url,&self.pace,&self.cache));
+        self.batch = Some(PendingXferBatch::new(&self.window,&self.url,&self.pace,&self.cache));
     }
     
     pub fn tick(&mut self) -> bool {
@@ -176,7 +177,7 @@ impl XferBatchScheduler {
         }
     }
     
-    pub fn add_request(&mut self, key: &CatalogueCode, consumer: Box<XferConsumer>) {
+    pub fn add_request(&mut self, key: &PurchaseOrder, consumer: Box<XferConsumer>) {
         if let Some(ref mut batch) = self.batch {
             batch.add_request(&key,consumer);
         }
@@ -217,11 +218,12 @@ impl HttpXferClerkImpl {
         any
     }
 
-    pub fn set_config(&mut self, bc: BackendConfig) {
-        let url = self.base.join(bc.get_data_url()).ok().unwrap();        
-        self.config = Some(bc.clone());
-        self.batch = Some(XferBatchScheduler::new(&bc,&self.http_manager,&self.cache,&url,5));
-        self.prime_batch = Some(XferBatchScheduler::new(&bc,&self.http_manager,&self.cache,&url,1));
+    pub fn set_window_state(&mut self, window: &mut WindowState) {
+        let config = window.get_backend_config();
+        let url = self.base.join(config.get_data_url()).ok().unwrap();        
+        self.config = Some(config.clone());
+        self.batch = Some(XferBatchScheduler::new(&window,&self.http_manager,&self.cache,&url,5));
+        self.prime_batch = Some(XferBatchScheduler::new(&window,&self.http_manager,&self.cache,&url,1));
         self.batch.as_mut().unwrap().set_batch();
         self.prime_batch.as_mut().unwrap().set_batch();
         /* run requests accumulated during startup */
@@ -231,32 +233,18 @@ impl HttpXferClerkImpl {
         }
     }
     
-    fn fix_key(&self, in_: &CatalogueCode) -> CatalogueCode {
-        let mut out = in_.clone();
-        if out.wire != "ff" {
-            out.focus = None;
-        }
-        out
-    }
-
     pub fn run_request(&mut self, po: &PurchaseOrder, mut consumer: Box<XferConsumer>, prime: bool) {
-        let key = CatalogueCode::try_new(&self.config.as_ref().unwrap(),po);
-        if let Some(key) = key {
-            let key = self.fix_key(&key);
-            if let Some(recv) = self.cache.get(&key) {
-                let bytecode = {
-                    let cfg = self.config.as_ref().unwrap().clone();
-                    ok!(cfg.get_bytecode(&recv.0)).clone()
-                };
-                consumer.consume(bytecode,recv.1);
-            } else {
-                let batch = if prime { &mut self.prime_batch } else { &mut self.batch };
-                if let Some(ref mut batch) = batch {
-                    batch.add_request(&key,consumer);
-                }
-            }
+        if let Some(recv) = self.cache.get(po) {
+            let bytecode = {
+                let cfg = self.config.as_ref().unwrap().clone();
+                ok!(cfg.get_bytecode(&recv.0)).clone()
+            };
+            consumer.consume(bytecode,recv.1);
         } else {
-            consumer.consume(Rc::new(BackendBytecode::noop()),vec!{});
+            let batch = if prime { &mut self.prime_batch } else { &mut self.batch };
+            if let Some(ref mut batch) = batch {
+                batch.add_request(po,consumer);
+            }
         }
     }
     
@@ -277,15 +265,14 @@ impl XferClerk for HttpXferClerkImpl {
 pub struct HttpXferClerk(Rc<RefCell<HttpXferClerkImpl>>);
 
 impl HttpXferClerk {
-    pub fn new(http_manager: &HttpManager, config: &BackendConfig, base: &Url, xfercache: &XferCache) -> HttpXferClerk {
+    pub fn new(http_manager: &HttpManager,base: &Url, xfercache: &XferCache) -> HttpXferClerk {
         let mut out = HttpXferClerk(Rc::new(RefCell::new(
             HttpXferClerkImpl::new(http_manager,&base,xfercache))));
-        out.set_config(config.clone());
         out
     }
 
-    pub fn set_config(&mut self, bc: BackendConfig) {
-        self.0.borrow_mut().set_config(bc);
+    pub fn set_window_state(&mut self, window: &mut WindowState) {
+        self.0.borrow_mut().set_window_state(window);
     }
     
     pub fn tick(&mut self) -> bool {

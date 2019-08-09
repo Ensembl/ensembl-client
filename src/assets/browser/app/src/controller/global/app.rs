@@ -19,10 +19,11 @@ use dom::domutil;
 use drivers::webgl::GLPrinter;
 use model::driver::{ Printer, PrinterManager };
 use model::focus::FocusObject;
+use model::supply::build_product;
 use tácode::Tácode;
 use types::Dot;
 
-use super::Window;
+use super::WindowState;
 
 const SETTLE_TIME : f64 = 500.; // ms
 const CANVAS : &str = r##"<canvas id="canvas"></canvas>"##;
@@ -35,17 +36,15 @@ pub struct App {
     pub stage: Arc<Mutex<Stage>>,
     pub state: Arc<Mutex<StateManager>>,
     pub compo: Arc<Mutex<Compositor>>,
-    sticks: Box<StickManager>,
     report: Option<Report>,
     viewport: Option<ViewportReport>,
     zmenu_reports: Option<ZMenuReports>,
-    csl: Option<ProductList>,
     size: Option<Dot<f64,f64>>,
     last_resize_at: Option<f64>,
     stage_resize: Option<Dot<f64,f64>>,
     action_backlog: Vec<Action>,
     jumper: Option<Jumper>,
-    window: Window
+    window: WindowState
 }
 
 impl App {
@@ -57,7 +56,8 @@ impl App {
         let mut csm = CombinedStickManager::new(bsm);
         add_debug_sticks(&mut csm);
         let cache = XferCache::new(5000,config);
-        let clerk = HttpXferClerk::new(http_manager,config,config_url,&cache);
+        let mut product_list = ProductList::new();
+        let mut clerk = HttpXferClerk::new(http_manager,config_url,&cache);
         let printer = PrinterManager::new(Box::new(GLPrinter::new(&canv_el)));
         let mut out = App {
             ar: AppRunnerWeak::none(),
@@ -67,41 +67,36 @@ impl App {
             stage:  Arc::new(Mutex::new(Stage::new())),
             compo: Arc::new(Mutex::new(Compositor::new(printer,&cache,Box::new(clerk.clone())))),
             state: Arc::new(Mutex::new(StateManager::new())),
-            sticks: Box::new(csm),
             report: None,
             viewport: None,
             zmenu_reports: None,
-            csl: None,
             size: None,
             stage_resize: None,
             last_resize_at: None,
             action_backlog: Vec::new(),
-            window: Window::new(config,tc,clerk),
+            window: WindowState::new(config,tc,&mut clerk,&mut product_list,&mut csm),
             jumper: None
         };
-        out.csl = {
-            let compo = &out.compo.lock().unwrap();
-            Some(ProductList::new(&out.window))
-        };
+        out.populate_products();
         out.run_actions(&startup_actions(),None);        
         out
     }
-    
-    pub fn get_window(&mut self) -> &mut Window { &mut self.window }
+
+    fn populate_products(&mut self) {    
+        let mut window = &mut self.window;
+        let track_names : Vec<String> = window.get_backend_config().list_tracks().map(|s| s.to_string()).collect();
+        for name in &track_names {
+            let product = build_product(window,name);
+            window.get_product_list().add_product(&product);
+        }
+    }
+
+    pub fn get_window(&mut self) -> &mut WindowState { &mut self.window }
     
     pub fn tick_xfer(&mut self) -> bool {
         self.window.get_http_clerk().tick()
     }
-    
-    pub fn get_product(&mut self, name: &str) -> Option<Product> {
-        unwrap!(self.csl.as_mut()).get_product(name)
-    }
         
-    pub fn with_stick_manager<F,G>(&mut self, cb: F) -> G
-            where F: FnOnce(&mut Box<StickManager>) -> G {
-        cb(&mut self.sticks)
-    }
-    
     pub fn with_focus_object<F,G>(&mut self, cb: F) -> G
             where F: FnOnce(&mut FocusObject) -> G {
         let mut focus = self.window.get_focus();
