@@ -1,7 +1,9 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import CheckboxWithTextfields from './CheckboxWithTextfields';
 import faker from 'faker';
+import { act } from 'react-dom/test-utils';
+
+import CheckboxWithTextfields from './CheckboxWithTextfields';
 import PasteOrUpload from '../paste-or-upload/PasteOrUpload';
 import Checkbox from 'src/shared/checkbox/Checkbox';
 
@@ -68,28 +70,36 @@ describe('<CheckboxWithTextfields />', () => {
     expect(wrapper.find('.addIconHolder')).toHaveLength(0);
   });
 
-  it('calls the onChange function with the new set of values when the input is changed', () => {
+  it('calls the onChange function with the new set of values when the input is changed', async () => {
     wrapper = mount(
       <CheckboxWithTextfields {...defaultProps} values={['foo']} />
     );
 
     const newValue = faker.random.words();
-    wrapper
-      .find(PasteOrUpload)
-      .last()
-      .prop('onChange')(newValue);
+
+    await act(async () => {
+      wrapper
+        .find(PasteOrUpload)
+        .last()
+        .prop('onChange')(newValue);
+    });
+
     expect(onChange).toBeCalledWith([newValue]);
   });
 
-  it('updates the values when an input is removed', () => {
+  it('updates the values when an input is removed', async () => {
     wrapper = mount(
       <CheckboxWithTextfields {...defaultProps} values={['foo', 'bar']} />
     );
-    wrapper
-      .find(PasteOrUpload)
-      .last()
-      .prop('onRemove')();
+
+    await act(async () => {
+      wrapper
+        .find(PasteOrUpload)
+        .last()
+        .prop('onRemove')();
+    });
     wrapper.update();
+
     expect(onChange).toBeCalledWith(['foo']);
   });
 
