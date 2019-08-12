@@ -19,7 +19,7 @@ pub mod index {
     pub use self::andwalker::AndWalker;
     pub use self::notwalker::NotWalker;
     pub use self::orwalker::OrWalker;
-    pub use self::walker::Walker;
+    pub use self::walker::{ Walker, NullWalker };
     pub use self::walkeriter::WalkerIter;
     pub use self::simpleindex::SimpleIndex;
 }

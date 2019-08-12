@@ -1,7 +1,8 @@
 use std::collections::{ HashMap, HashSet };
 
 use composit::{ Leaf, StateManager, Scale, Stick };
-use model::supply::Product;
+use data::XferConsumer;
+use model::supply::{ DeliveredItem, Product };
 use model::driver::{ Printer, PrinterManager };
 use super::{ Carriage, Traveller, TravellerCreator };
 use model::zmenu::ZMenuLeafSet;
@@ -15,10 +16,8 @@ pub struct Train {
     scale: Scale,
     ideal_flank: i32,
     middle_leaf: i64,
-    preload: bool,
     position_bp: Option<f64>,
     active: bool,
-    current: bool,
     focus: Option<String>
 }
 
@@ -27,13 +26,12 @@ impl Train {
         Train {
             pm: pm.clone(),
             stick: stick.clone(),
-            scale, preload: true,
+            scale,
             ideal_flank: 0,
             middle_leaf: 0,
             carriages: HashMap::<Leaf,Carriage>::new(),
             position_bp: None,
             active: true,
-            current: false,
             focus: focus.clone()
         }
     }
@@ -45,7 +43,6 @@ impl Train {
     
     /* we are now the current train */
     pub(in super) fn set_current(&mut self) {
-        self.current = true;
         for leaf in self.carriages.keys() {
             self.pm.set_current(leaf);
         }
@@ -67,12 +64,7 @@ impl Train {
         self.middle_leaf = (position_bp / self.scale.total_bp()).floor() as i64;
         self.position_bp = Some(position_bp);
     }
-    
-    /* called when no-longer preload, so flanks should be expanded */
-    pub(in super) fn enter_service(&mut self) {
-        self.preload = false;
-    }
-    
+        
     /* called when zoom changes, to update flank */
     pub(in super) fn set_zoom(&mut self, bp_per_screen: f64) {
         self.ideal_flank = (bp_per_screen / self.scale.total_bp()) as i32;
@@ -83,12 +75,12 @@ impl Train {
     }
     
     /* add component to leaf */
-    pub fn add_component(&mut self, cm: &mut TravellerCreator, s: &mut Product) {
+    pub fn add_component(&mut self, cm: &mut TravellerCreator, product: &mut Product) {
         let focus = self.focus.as_ref().map(|x| x.to_string()).clone();
         for leaf in self.leafs() {
             let c = self.get_carriage(&leaf);
-            for trav in cm.make_travellers_for_source(s,&leaf,&focus) {
-                c.add_traveller(trav);
+            for trav in cm.make_travellers_for_source(product,&leaf,&focus) {
+                c.add_traveller(trav.clone());
             }
         }
         for c in self.carriages.values_mut() {
@@ -106,9 +98,7 @@ impl Train {
 
     /* flank to use taking into account train status */
     fn true_flank(&self) -> i32 {
-        let mut f = self.ideal_flank.min(MAX_FLANK);
-        if !self.preload { f = f.max(1); }
-        f
+        self.ideal_flank.min(MAX_FLANK).max(1)
     }
 
     fn get_carriage(&mut self, leaf: &Leaf) -> &mut Carriage {
@@ -201,9 +191,17 @@ impl Train {
     }
 
     pub fn redraw_where_needed(&mut self, printer: &mut Printer, zmls: &mut ZMenuLeafSet) {
-        for carriage in self.get_carriages() {
+        for carriage in self.carriages.values_mut() {
             carriage.redraw_where_needed(printer,zmls);
         }
     }
 
+}
+
+impl XferConsumer for Train {
+    fn consume(&mut self, item: &DeliveredItem) {
+        for carriage in self.carriages.values_mut() {
+            carriage.consume(item);
+        }
+    }
 }

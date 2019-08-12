@@ -48,7 +48,7 @@ impl<K,V> Cache<K,V> where K:Eq+Hash {
         }
     }
     
-    fn set_dropper(&mut self, cb: Box<dyn FnMut(usize,V)>) {
+    pub fn set_dropper(&mut self, cb: Box<dyn FnMut(usize,V)>) {
         self.dropper = Some(cb);
     }
 

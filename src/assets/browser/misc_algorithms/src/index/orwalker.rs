@@ -40,9 +40,9 @@ mod test {
     fn index(values: &Vec<usize>) -> Box<dyn Walker> {
         let mut si = SimpleIndex::new();
         for val in values {
-            si.add(*val);
+            si.add(0,*val);
         }
-        si.walker()
+        si.walker(&0)
     }
 
     #[test]

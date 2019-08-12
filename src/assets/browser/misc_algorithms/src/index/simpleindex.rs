@@ -1,27 +1,36 @@
-use super::Walker;
+use std::collections::HashMap;
+use std::hash::Hash;
+
+use super::{ Walker, NullWalker };
 use crate::store::{ BStarTree, BStarTreeWalker };
 
-pub struct SimpleIndex {
-    data: BStarTree
+pub struct SimpleIndex<K: Eq+Hash> {
+    data: HashMap<K,BStarTree>
 }
 
-impl SimpleIndex {
-    pub fn new() -> SimpleIndex {
+impl<K> SimpleIndex<K> where K: Eq+Hash {
+    pub fn new() -> SimpleIndex<K> {
         SimpleIndex {
-            data: BStarTree::new()
+            data: HashMap::new()
         }
     }
 
-    pub fn add(&mut self, value: usize) {
-        self.data.add(value);
+    pub fn add(&mut self, key: K, value: usize) {
+        self.data.entry(key).or_insert_with(|| BStarTree::new()).add(value);
     }
 
-    pub fn remove(&mut self, value: usize) {
-        self.data.remove(value);
+    pub fn remove(&mut self, key: &K, value: usize) {
+        if let Some(tree) = self.data.get_mut(key) {
+            tree.remove(value);
+        }
     }
 
-    pub fn walker(&self) -> Box<dyn Walker> {
-        Box::new(SimpleIndexWalker(self.data.walker()))
+    pub fn walker(&self,key: &K) -> Box<dyn Walker> {
+        if let Some(tree) = self.data.get(key) {
+            Box::new(SimpleIndexWalker(tree.walker()))
+        } else {
+            Box::new(NullWalker::new())
+        }
     }
 }
 

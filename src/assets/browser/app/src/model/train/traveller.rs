@@ -5,13 +5,17 @@ use std::sync::{ Arc, Mutex };
 
 use composit::Leaf;
 use composit::{ StateManager };
-use model::supply::Subassembly;
+use controller::global::WindowState;
+use data::XferConsumer;
+use model::supply::{ DeliveredItem, Subassembly, PendingOrder };
 use model::driver::PrinterManager;
 use model::shape::{ ShapeSpec, GenericShape };
 use model::zmenu::ZMenuLeaf;
 use super::{ TravellerResponse, TravellerResponseData };
 
 pub struct TravellerImpl {
+    window: WindowState,
+    pending_order: PendingOrder,
     sa: Subassembly,
     prev_value: bool,
     cur_value: bool,
@@ -22,8 +26,9 @@ pub struct TravellerImpl {
 }
 
 impl TravellerImpl {
-    fn new(sa: &Subassembly, leaf: &Leaf) -> TravellerImpl {
+    fn new(window: &WindowState, sa: &Subassembly, leaf: &Leaf) -> TravellerImpl {
         TravellerImpl {
+            window: window.clone(),
             prev_value: false,
             cur_value: false,
             leaf: leaf.clone(),
@@ -34,18 +39,6 @@ impl TravellerImpl {
         }
     }
     
-    pub fn replace(&mut self) -> TravellerImpl {
-        TravellerImpl {
-            sa: self.sa.clone(),
-            prev_value: self.prev_value,
-            cur_value: self.cur_value,
-            visuals: None,
-            leaf: self.leaf.clone(),
-            data: Some(TravellerResponseData::new()),
-            zml: ZMenuLeaf::new(&self.leaf)
-        }
-    }
-
     fn set_visuals(&mut self, visuals: Box<TravellerResponse>) {
         self.visuals = Some(visuals);
     }
@@ -87,6 +80,13 @@ impl TravellerImpl {
         }
     }
     
+    fn consume(&mut self, item: &DeliveredItem) {
+        if item.get_leaf() == &self.leaf && self.sa.get_product() == item.get_product() {
+            // run_tánaiste_makeshapes(window: &mut WindowState, pending_order: PendingOrder, item: &DeliveredItem) {
+            console!("found leaf={:?} product={:?}",self.leaf,self.sa);
+        }
+    }
+
     fn set_response(&mut self) {
         self.create_zmenu();
         self.visuals.as_mut().unwrap().set_response(self.data.take().unwrap());
@@ -97,8 +97,8 @@ impl TravellerImpl {
 pub struct Traveller(Arc<Mutex<TravellerImpl>>);
 
 impl Traveller {
-    pub fn new(sa: &Subassembly, leaf: &Leaf) -> Traveller {
-        Traveller(Arc::new(Mutex::new(TravellerImpl::new(sa,leaf))))
+    pub fn new(window: &WindowState, pending_order: &PendingOrder, sa: &Subassembly, leaf: &Leaf) -> Traveller {
+        Traveller(Arc::new(Mutex::new(TravellerImpl::new(window,pending_order,sa,leaf))))
     }
     
     pub(in super) fn update_state(&mut self, m: &StateManager) -> bool {
@@ -132,10 +132,6 @@ impl Traveller {
     pub fn set_response(&mut self) {
         self.0.lock().unwrap().set_response();
     }
-
-    pub fn replace(&self) -> Traveller {
-        Traveller(Arc::new(Mutex::new(self.0.lock().unwrap().replace())))
-    }
 }
 
 impl Drop for TravellerImpl {
@@ -144,6 +140,11 @@ impl Drop for TravellerImpl {
     }
 }
 
+impl XferConsumer for Traveller {
+    fn consume(&mut self, item: &DeliveredItem) {
+        self.0.lock().unwrap().consume(item);
+    }
+}
 
 impl fmt::Debug for Traveller {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

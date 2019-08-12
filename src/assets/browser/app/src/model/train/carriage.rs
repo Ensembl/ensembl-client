@@ -1,7 +1,9 @@
 use std::sync::{ Arc, Mutex };
 
 use composit::{ Leaf, StateManager };
+use data::XferConsumer;
 use model::driver::{ Printer, PrinterManager };
+use model::supply::DeliveredItem;
 use model::zmenu::{ ZMenuLeaf, ZMenuLeafSet };
 use super::Traveller;
 use super::travellercreator::TravellerCreator;
@@ -83,5 +85,13 @@ impl Drop for Carriage {
     fn drop(&mut self) {
         self.travellers.clear(); // Triggers drop which informs printer
         self.pm.remove_leaf(&self.leaf,&self.focus);
+    }
+}
+
+impl XferConsumer for Carriage {
+    fn consume(&mut self, item: &DeliveredItem) {
+        for traveller in &mut self.travellers {
+            traveller.consume(item);
+        }
     }
 }

@@ -109,7 +109,7 @@ fn make_facades(spec: &Box<TypeToShape>, colour: &Value, tx: &Vec<DrawingSpec>) 
 }
 
 /* TODO switch long to use make_facades. Can do it, but no time */
-fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut PendingOrder, 
+fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &Leaf, lc: &mut PendingOrder, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Value, part: &Option<String>) {
@@ -132,11 +132,11 @@ fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut PendingOrd
         facade
     };
     if let Some(shape) = spec.new_long_shape(&data) {
-        lc.get_purchaser(part).update_data(|data| data.add_shape(shape));
+        lc.get_traveller(part).update_data(|data| data.add_shape(shape));
     }
 }
 
-fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut PendingOrder, 
+fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &Leaf, lc: &mut PendingOrder, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Value, part: &Option<String>) {
@@ -159,7 +159,7 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut PendingOr
                 facade: unwrap!(facade.cloned())
             };
             if let Some(shape) = spec.new_short_shape(&data) {
-                lc.get_purchaser(part).update_data(|data| data.add_shape(shape));
+                lc.get_traveller(part).update_data(|data| data.add_shape(shape));
             } else {
                 drops += 1;
             }
@@ -175,7 +175,7 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut PendingOr
     });
 }
 
-fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut PendingOrder, 
+fn draw_shapes(meta: &Vec<f64>,leaf: &Leaf, lc: &mut PendingOrder, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Value, part: &Option<String>) {
@@ -200,7 +200,8 @@ impl Command for Shape {
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,leaf,lc,ref tx,_,part) = task {
+            if let TáTask::MakeShapes(_,item,lc,ref tx,_,part,_,_) = task {
+                let leaf = item.get_leaf();
                 let regs = rt.registers();
                 regs.get(self.1).as_floats(|meta| {                
                     regs.get(self.2).as_floats(|x_start| {

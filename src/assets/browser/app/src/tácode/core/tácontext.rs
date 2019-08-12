@@ -7,17 +7,17 @@ use composit::{ AllLandscapes, Leaf };
 use data::BackendConfig;
 use model::shape::DrawingSpec;
 use model::focus::FocusObject;
-use model::supply::PendingOrder;
+use model::supply::{ DeliveredItem, PendingOrder };
 
 pub enum TáTask {
-    MakeShapes(WindowState,Leaf,PendingOrder,Vec<DrawingSpec>,usize,Option<String>)
+    MakeShapes(WindowState,DeliveredItem,PendingOrder,Vec<DrawingSpec>,usize,Option<String>,AllLandscapes,FocusObject)
 }
 
 impl TáTask {
     pub fn finished(&mut self) {
         #[allow(unreachable_patterns)]
         match self {
-            TáTask::MakeShapes(_,_leaf,sr,_,_,_) => {
+            TáTask::MakeShapes(_,_leaf,sr,_,_,_,_,_) => {
                 sr.done();
             },
             _ => ()

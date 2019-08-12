@@ -1,25 +1,29 @@
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 
+use composit::AllLandscapes;
+use controller::global::WindowState;
 use model::driver::PrinterManager;
-use model::supply::{ PendingOrder, Product, PurchaseOrder };
+use model::supply::{ PendingOrder, Product, PurchaseOrder, RequestedRegion };
 use super::Traveller;
 
 use composit::Leaf;
 
 pub struct TravellerCreator {
     pm: PrinterManager,
+    window: WindowState,
     components: HashMap<String,Product>
 }
 
 impl TravellerCreator {
-    pub fn new(pm: &PrinterManager) -> TravellerCreator {
+    pub fn new(pm: &PrinterManager, window: &WindowState) -> TravellerCreator {
         TravellerCreator {
             pm: pm.clone(),
+            window: window.clone(),
             components: HashMap::<String,Product>::new()
         }
     }
-       
+    
     pub fn add_source(&mut self, c: Product) {
         let name = c.get_product_name().to_string();
         if let Entry::Vacant(e) = self.components.entry(name) {
@@ -32,14 +36,15 @@ impl TravellerCreator {
     }
     
     pub fn make_travellers_for_source(&mut self, product: &mut Product, leaf: &Leaf, focus: &Option<String>) -> Vec<Traveller> {
-        let mut tt = Vec::<Traveller>::new();
-        for sa in product.list_subassemblies() {            
-            tt.push(Traveller::new(sa,&leaf));
+        let po = PurchaseOrder::new(product,&RequestedRegion::Leaf(leaf.clone()),focus);
+        let mut pending_order = PendingOrder::new(&po);
+        for sa in product.list_subassemblies() {
+            let mut traveller = Traveller::new(&self.window,&pending_order,sa,&leaf);
+            pending_order.add_traveller(&mut self.pm,&mut traveller);
         }
-        let po = PurchaseOrder::new(product,leaf,focus);
-        let pending_order = PendingOrder::new(&mut self.pm,po.clone(),&mut tt);
+        let out = pending_order.get_travellers().cloned().collect();
         product.get_supplier().supply(pending_order);
-        tt
+        out
     }
     
     pub fn make_travellers_for_leaf(&mut self, leaf: &Leaf, focus: &Option<String>) -> Vec<Traveller> {

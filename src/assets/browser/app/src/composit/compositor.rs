@@ -1,22 +1,22 @@
 use std::collections::HashSet;
 
-use composit::{ Stick, Scale, ComponentSet, StateManager, Stage };
+use composit::{ Stick, Scale, ComponentSet, StateManager, Stage, AllLandscapes };
 use model::driver::{ PrinterManager, Printer };
-use model::supply::Product;
+use model::supply::{ DeliveredItem, Product };
 use model::train::{ Train, TrainManager, TravellerCreator };
 use model::zmenu::{ ZMenuRegistry, ZMenuLeafSet, ZMenuIntersection };
 
-use controller::global::AppRunner;
+use controller::global::{ AppRunner, WindowState };
 use controller::input::Action;
 use controller::output::Report;
-use data::{ Psychic, PsychicPacer, XferCache, XferClerk };
+use data::{ Psychic, PsychicPacer, XferCache, XferClerk, XferConsumer };
 use types::{ DOWN, Dot };
 
 const MS_PER_UPDATE : f64 = 0.;
 const MS_PRIME_DELAY: f64 = 2000.;
 
 pub struct Compositor {
-    train_manager: TrainManager,
+    window: WindowState,
     zmr: ZMenuRegistry,
     bp_per_screen: f64,
     updated: bool,
@@ -27,16 +27,15 @@ pub struct Compositor {
     current_componentset: ComponentSet,
     psychic: Psychic,
     pacer: PsychicPacer,
-    xfercache: XferCache,
-    xferclerk: Box<XferClerk>
+    xfercache: XferCache
 }
 
 impl Compositor {
-    pub fn new(printer: PrinterManager, xfercache: &XferCache, xferclerk: Box<XferClerk>) -> Compositor {
+    pub fn new(window: &WindowState, printer: &PrinterManager, xfercache: &XferCache) -> Compositor {
         Compositor {
-            train_manager: TrainManager::new(&printer),
+            window: window.clone(),
             zmr: ZMenuRegistry::new(),
-            components: TravellerCreator::new(&printer),
+            components: TravellerCreator::new(&printer,&window),
             bp_per_screen: 1.,
             updated: true,
             last_updated: None,
@@ -45,14 +44,13 @@ impl Compositor {
             psychic: Psychic::new(),
             prime_delay: None,
             pacer: PsychicPacer::new(30000.),
-            xfercache: xfercache.clone(),
-            xferclerk: xferclerk
+            xfercache: xfercache.clone()
         }
     }
 
     pub fn get_zmr(&self) -> &ZMenuRegistry { &self.zmr }
 
-    pub fn get_prop_trans(&self) -> f32 { self.train_manager.get_prop_trans() }
+    pub fn get_prop_trans(&mut self) -> f32 { self.window.get_train_manager().get_prop_trans() }
 
     fn prime_cache(&mut self, t: f64) {
         if self.prime_delay.is_none() {
@@ -63,7 +61,7 @@ impl Compositor {
                 let leafs = self.pacer.filter_leafs(leafs,t);
                 for leaf in leafs.iter() {
                     for prod in self.wanted_componentset.get_products() {
-                        self.xfercache.prime(&mut self.xferclerk,prod,&leaf);
+                        self.xfercache.prime(self.window.get_http_clerk(),prod,&leaf);
                     }
                 }
             }
@@ -82,58 +80,57 @@ impl Compositor {
         /* Warm up xfercache */
         self.prime_cache(t);
         /* Move into future */
-        self.train_manager.tick(t,&mut self.components);
+        self.window.get_train_manager().tick(t,&mut self.components);
         /* Manage useful leafs */
         if self.updated {
             if let Some(prev_t) = self.last_updated {
                 if t-prev_t < MS_PER_UPDATE { return; }
             }
-            let comps = &mut self.components;
-            self.train_manager.best_train(|sc| sc.manage_leafs(comps));            
+            self.window.get_train_manager().manage_leafs(&mut self.components);        
             self.updated = false;
             self.last_updated = Some(t);
         }
     }
 
-    pub fn update_report(&self, report: &Report) {
-        if let Some(stick) = self.train_manager.get_stick() {
+    pub fn update_report(&mut self, report: &Report) {
+        if let Some(stick) = self.window.get_train_manager().get_stick() {
             report.set_status("i-stick",&stick.get_name());
         }
-        self.train_manager.update_report(report);
+        self.window.get_train_manager().update_report(report);
     }
 
     pub fn set_stick(&mut self, st: &Stick) {
-        if let Some(stick) = self.train_manager.get_stick() {
-            if stick == st {
+        if let Some(stick) = self.window.get_train_manager().get_stick() {
+            if &stick == st {
                 return;
             }
         }
         self.prime_delay = None; // Force priming delay as screen is completely invalid
-        self.train_manager.set_stick(st,self.bp_per_screen);
+        self.window.get_train_manager().set_stick(st,self.bp_per_screen);
         self.psychic.set_stick(st);
         self.updated = true;
     }
 
     pub fn set_position(&mut self, position_bp: f64) {
-        self.train_manager.set_position(position_bp);
+        self.window.get_train_manager().set_position(position_bp);
         self.psychic.set_middle(position_bp as i64);
         self.updated = true;
     }
     
     pub fn set_zoom(&mut self, bp_per_screen: f64) {
         self.bp_per_screen = bp_per_screen;
-        self.train_manager.set_zoom(&mut self.components, bp_per_screen);
+        self.window.get_train_manager().set_zoom(&mut self.components, bp_per_screen);
         self.psychic.set_scale(&Scale::best_for_screen(bp_per_screen));
         self.psychic.set_width(bp_per_screen as i32);
         self.updated = true;
     }
 
-    pub fn get_current_train(&mut self) -> Option<&mut Train> {
-        self.train_manager.get_current_train()
+    pub fn with_current_train<F>(&mut self, mut cb: F) where F: FnMut(&mut Train) {
+        self.window.get_train_manager().with_current_train(cb)
     }
 
-    pub fn get_transition_train(&mut self) -> Option<&mut Train> {
-        self.train_manager.get_transition_train()
+    pub fn with_transition_train<F>(&mut self, mut cb: F) where F: FnMut(&mut Train) {
+        self.window.get_train_manager().with_transition_train(cb)
     }
     
     pub fn get_component_set(&mut self) -> &mut ComponentSet {
@@ -142,35 +139,32 @@ impl Compositor {
     
     pub fn redraw_where_needed(&mut self, printer: &mut Printer) {
         let mut zmls = ZMenuLeafSet::new();
-        if let Some(train) = self.get_current_train() {
-            train.redraw_where_needed(printer,&mut zmls);
-        }
-        if let Some(train) = self.get_transition_train() {
-            train.redraw_where_needed(printer,&mut zmls);
-        }
+        self.with_current_train(|train| train.redraw_where_needed(printer,&mut zmls));
+        self.with_transition_train(|train| train.redraw_where_needed(printer,&mut zmls));
         self.zmr.add_leafset(zmls);
     }
 
     fn add_product(&mut self, mut c: Product) {
-        {
-            let cc = &mut self.components;
-            self.train_manager.each_train(|sc|
-                sc.add_component(cc,&mut c)
-            );
-        }
+        self.window.get_train_manager().add_component(&mut self.components,&mut c);
         self.components.add_source(c);
     }
     
     pub fn update_state(&mut self, oom: &StateManager) {
-        self.train_manager.update_state(oom);
+        self.window.get_train_manager().update_state(oom);
     }
     
     pub fn change_focus(&mut self, id: &str) {
-        self.train_manager.change_focus(&mut self.components,id);
+        self.window.get_train_manager().change_focus(&mut self.components,id);
     }
 
     pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
         self.zmr.intersects(stage,pos)
+    }
+}
+
+impl XferConsumer for Compositor {
+    fn consume(&mut self, item: &DeliveredItem) {
+        self.window.get_train_manager().consume(item);
     }
 }
 

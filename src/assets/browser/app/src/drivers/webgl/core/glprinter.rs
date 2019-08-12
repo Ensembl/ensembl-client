@@ -8,7 +8,7 @@ use stdweb::web::{ HtmlElement, Element, INode, IElement };
 use super::{ GLProgs, GLCarriagePrinter, GLTravellerResponse };
 use composit::{ Compositor, Leaf, Stage };
 use model::driver::Printer;
-use model::supply::PurchaseOrder;
+use model::supply::{ PurchaseOrder, RequestedRegion };
 use model::train::{ Train, TravellerResponse };
 use super::super::drawing::{ AllCanvasAllocator };
 use dom::domutil;
@@ -188,8 +188,11 @@ impl GLPrinterBase {
     fn make_traveller_response(&mut self, pref: &GLPrinter, po: &PurchaseOrder) -> Box<TravellerResponse> {
         let idx = self.sridx;
         self.sridx += 1;
-        let sr = GLTravellerResponse::new(pref,idx,po.get_leaf(),po.get_focus());
-        if let Some(cpp) = self.lp.get_mut(po.get_leaf()) {
+        let leaf = match po.get_region() {
+            RequestedRegion::Leaf(leaf) => leaf
+        };
+        let sr = GLTravellerResponse::new(pref,idx,&leaf,po.get_focus());
+        if let Some(cpp) = self.lp.get_mut(&leaf) {
             if let Some(cp) = cpp.get_mut(po.get_focus()) {
                 cp.new_sr(&sr);
             }
@@ -229,23 +232,23 @@ impl Printer for GLPrinter {
     fn print(&mut self, stage: &Stage, compo: &mut Compositor) {
         compo.redraw_where_needed(self);
         let prop = compo.get_prop_trans();
-        if let Some(train) = compo.get_current_train() {
+        compo.with_current_train(|train| {
             let mut tp = WebGLTrainPrinter::new();
             tp.contextualize(&mut self.base.borrow_mut(),stage,train,1.-prop);
-        }
-        if let Some(train) = compo.get_transition_train() {
+        });
+        compo.with_transition_train(|train| {
             let mut tp = WebGLTrainPrinter::new();
             tp.contextualize(&mut self.base.borrow_mut(),stage,train,prop);
-        }
+        });
         self.base.borrow_mut().prepare_all();
-        if let Some(train) = compo.get_transition_train() {
+        compo.with_current_train(|train| {
             let mut tp = WebGLTrainPrinter::new();
             tp.execute(&mut self.base.borrow_mut(),&train.leafs());
-        }
-        if let Some(train) = compo.get_current_train() {
+        });
+        compo.with_transition_train(|train| {
             let mut tp = WebGLTrainPrinter::new();
             tp.execute(&mut self.base.borrow_mut(),&train.leafs());
-        }
+        });
     }
 
     fn destroy(&mut self) {

@@ -31,11 +31,11 @@ mod test {
     #[test]
     fn walkeriter_smoke() {
         let mut si = SimpleIndex::new();
-        si.add(10);
-        si.add(11);
-        si.add(12);
-        si.remove(11);
-        let mut w = WalkerIter::new(si.walker());
+        si.add(0,10);
+        si.add(0,11);
+        si.add(0,12);
+        si.remove(&0,11);
+        let mut w = WalkerIter::new(si.walker(&0));
         assert_eq!(Some(10),w.next());
         assert_eq!(Some(12),w.next());
         assert_eq!(None,w.next());

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use super::{ Supplier, PendingOrder };
+use super::{ Supplier, PendingOrder, RequestedRegion };
 
 pub struct SupplierChooser {
     backend_source: Box<Supplier>,
@@ -23,11 +23,17 @@ impl SupplierChooser {
 
 impl Supplier for SupplierChooser {
     fn supply(&self, lc: PendingOrder) {
-        let stick_name = lc.get_purchase_order().get_leaf().get_stick().get_name();
-        if let Some(source) = self.per_stick_sources.get(&stick_name) {
-            source.supply(lc);
-        } else {
-            self.backend_source.supply(lc);
+        if let RequestedRegion::Leaf(leaf) = lc.get_purchase_order().get_region() {
+            let stick_name = leaf.get_stick().get_name();
+            if let Some(source) = self.per_stick_sources.get(&stick_name) {
+                source.supply(lc);
+                return;
+            }
         }
+        self.backend_source.supply(lc);
+    }
+
+    fn get_lid(&self) -> usize {
+        self.backend_source.get_lid()
     }
 }

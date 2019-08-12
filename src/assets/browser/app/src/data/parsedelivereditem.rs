@@ -52,13 +52,14 @@ pub fn parse_delivereditem_internal(window: &mut WindowState, data: &str) -> Res
         let stick = unwrap!(window.get_stick_manager().get_stick(json_str(&code_data[1])?));
         let leaf = Leaf::from_short_spec(&stick,json_str(&code_data[2])?);
         let focus = code_data[3].as_str().map(|v| v.to_string());
-        if let Some(product) = product_list.get_product(&product_name) {
-            let purchase_order = PurchaseOrder::new(&product,&leaf,&focus);
-            out.push(DeliveredItem::new(
-                json_str(&resp[1])?,
-                &purchase_order,
-                marshal(&resp[2])
-            ));
+        if let Ok(bytecode) = window.get_backend_config().get_bytecode(json_str(&resp[1])?) {
+            if let Some(product) = product_list.get_product(&product_name) {
+                out.push(DeliveredItem::new(
+                    bytecode.clone(),
+                    &product, &leaf, &focus,
+                    marshal(&resp[2])
+                ));
+            }
         }
     }
     Ok(out)

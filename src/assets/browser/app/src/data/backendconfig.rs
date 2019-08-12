@@ -25,6 +25,7 @@ pub struct BackendTrack {
     letter: String,
     wire: Option<String>,
     position: i32,
+    focus: bool,
     parts: Vec<String>
 }
 
@@ -33,6 +34,7 @@ impl BackendTrack {
     pub fn get_position(&self) -> i32 { self.position }
     pub fn get_parts(&self) -> &Vec<String> { &self.parts }
     pub fn get_wire(&self) -> &Option<String> { &self.wire }
+    pub fn focus_dependent(&self) -> bool { self.focus }
 }
 
 #[derive(Debug)]
@@ -97,6 +99,7 @@ impl BackendConfig {
                 letter: v.get("letter").and_then(|x| x.as_str()).unwrap_or("").to_string(),
                 position: v.get("position").and_then(|x| x.as_i64()).unwrap_or(-1) as i32,
                 wire: v.get("wire").and_then(|x| x.as_str()).map(|x| x.to_string()),
+                focus: v.get("focus").and_then(|x| x.as_bool()).unwrap_or(false),
                 parts
             };
             if let Some(ref wire_name) = track.wire {

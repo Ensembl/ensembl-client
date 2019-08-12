@@ -8,7 +8,7 @@ use controller::global::WindowState;
 use data::{ XferClerk, XferConsumer, BackendConfig, BackendBytecode };
 use model::focus::FocusObject;
 use model::shape::DrawingSpec;
-use model::supply::{ PendingOrder, Supplier };
+use model::supply::{ DeliveredItem, PendingOrder, Supplier };
 use tácode::{ Tácode, TáTask };
 
 pub struct TáSourceImpl {
@@ -25,73 +25,83 @@ impl TáSource {
             window: window.clone(),
             lid
         })))
-    }    
+    }
 }
 
 impl Supplier for TáSource {
-    fn supply(&self, lc: PendingOrder) {
-        let lid = self.0.borrow_mut().lid;
-        let leaf = lc.get_purchase_order().get_leaf().clone();
-        let po = lc.get_purchase_order().clone();
+    fn supply(&self, po: PendingOrder) {
+        let purchase_order = po.get_purchase_order().clone();
         let window = self.0.borrow().window.clone();
-        let xcons = TáXferConsumer::new(&window,&leaf,lc,lid);
         let mut xf = self.0.borrow_mut().window.get_http_clerk().clone();
-        xf.satisfy(&po,false,Box::new(xcons));
+        let xcons = TáXferConsumer::new(&window,po);
+        xf.satisfy(&purchase_order,false,Box::new(xcons));
+    }
+
+    fn get_lid(&self) -> usize {
+        self.0.borrow().lid
     }
 }
 
 struct TáXferConsumer {
     window: WindowState,
-    lc: Option<PendingOrder>,
-    lid: usize,
-    leaf: Leaf
+    pending_order: Option<PendingOrder>
 }
 
 impl TáXferConsumer {
-    fn new(window: &WindowState, leaf: &Leaf, lc: PendingOrder, lid: usize) -> TáXferConsumer {
+    fn new(window: &WindowState, po: PendingOrder) -> TáXferConsumer {
         TáXferConsumer {
             window: window.clone(),
-            lc: Some(lc),
-            lid,
-            leaf: leaf.clone()
+            pending_order: Some(po)
         }
     }
 }
 
-impl XferConsumer for TáXferConsumer {
-    fn consume(&mut self, code: Rc<BackendBytecode>, mut data: Vec<Value>) {
-        let window = self.window.clone();
-        let mut tc = self.window.get_tánaiste_interp();
-        match tc.assemble(&code.get_source()) {
-            Ok(code) => {
-                match tc.run(&code) {
-                    Ok(pid) => {
-                        if let Some(asrb) = self.lc.take() {
-                            tc.context().set_task(pid,TáTask::MakeShapes(
-                                window,
-                                self.leaf.clone(),asrb,
-                                Vec::<DrawingSpec>::new(),self.lid,None));
-                            for (i,reg) in data.drain(..).enumerate() {
-                                tc.set_reg(pid,i+1,reg);
-                            }
-                            tc.start(pid);
-                        }
-                    },
-                    Err(error) => {
-                        console!("error running: {:?}",error);
+fn run_tánaiste_makeshapes(window: &mut WindowState, pending_order: PendingOrder, item: &DeliveredItem) {
+    let lid = item.get_product().get_supplier().get_lid();
+    let mut tc = window.get_tánaiste_interp().clone();
+    let mut all_landscapes = window.get_all_landscapes().clone();
+    let mut focus_object = window.get_focus().clone();
+    let mut backend_config = window.get_backend_config().clone();
+    match tc.assemble(&item.get_bytecode().get_source()) {
+        Ok(code) => {
+            match tc.run(&code) {
+                Ok(pid) => {
+                    tc.context().set_task(pid,TáTask::MakeShapes(
+                        window.clone(),
+                        item.clone(),
+                        pending_order,
+                        Vec::<DrawingSpec>::new(),lid,None,
+                        all_landscapes,
+                        focus_object));
+                    for (i,reg) in item.get_data().iter().enumerate() {
+                        tc.set_reg(pid,i+1,reg.clone());
                     }
+                    tc.start(pid);
+                },
+                Err(error) => {
+                    console!("error running: {:?}",error);
                 }
-            },
-            Err(err) => {
-                console!("error assembling: {:?}",err);
             }
-        }        
+        },
+        Err(err) => {
+            console!("error assembling: {:?}",err);
+        }
+    }        
+}
+
+impl XferConsumer for TáXferConsumer {
+    fn consume(&mut self, item: &DeliveredItem) {
+        if let Some(pending_order) = self.pending_order.take() {
+            run_tánaiste_makeshapes(&mut self.window,pending_order,item)
+        }
     }
     
+    /*
     fn abandon(&mut self) {
-        if let Some(ref mut asrb) = self.lc {
-            asrb.done();
+        if let Some(ref mut po) = self.pending_order {
+            po.done();
         }
-        self.lc = None;
+        self.pending_order = None;
     }
+    */
 }

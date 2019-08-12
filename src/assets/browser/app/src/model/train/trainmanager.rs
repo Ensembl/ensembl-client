@@ -11,21 +11,23 @@
  * render.
  */
 
+use std::sync::{ Arc, Mutex };
+
 use composit::{ Leaf, Stick, Scale, StateManager };
 use controller::output::Report;
+use data::XferConsumer;
 use model::driver::PrinterManager;
+use model::supply::{ DeliveredItem, Product };
 use super::{ Train, TravellerCreator };
 
 const MS_FADE : f64 = 100.;
-const OUTER_TRAINS : usize = 0;
 
-pub struct TrainManager {
+pub struct TrainManagerImpl {
     printer: PrinterManager,
     /* the trains themselves */
     current_train: Option<Train>,
     future_train: Option<Train>,
     transition_train: Option<Train>,
-    outer_train: Vec<Option<Train>>,
     /* progress of transition */
     transition_start: Option<f64>,
     transition_prop: Option<f64>, 
@@ -36,12 +38,11 @@ pub struct TrainManager {
     focus: Option<String>
 }
 
-impl TrainManager {
-    pub fn new(printer: &PrinterManager) -> TrainManager {
-        let mut out = TrainManager {
+impl TrainManagerImpl {
+    pub fn new(printer: &PrinterManager) -> TrainManagerImpl {
+        TrainManagerImpl {
             printer: printer.clone(),
             current_train: None,
-            outer_train: Vec::<Option<Train>>::new(),
             future_train: None,
             transition_train: None,
             transition_start: None,
@@ -50,9 +51,7 @@ impl TrainManager {
             position_bp: 0.,
             stick: None,
             focus: None
-        };
-        out.reset_outers();
-        out
+        }
     }
     
     pub fn update_report(&self, report: &Report) {
@@ -60,19 +59,14 @@ impl TrainManager {
             report.set_status("a-stick",&stick.get_name());
         }
     }
-    
-    fn reset_outers(&mut self) {
-        for _ in 0..OUTER_TRAINS { self.outer_train.push(None); }
-    }
-    
+        
     /* utility: makes new train at given scale */
-    fn make_train(&mut self, cm: &mut TravellerCreator, scale: Scale, preload: bool) -> Option<Train> {
+    fn make_train(&mut self, cm: &mut TravellerCreator, scale: Scale) -> Option<Train> {
         if let Some(ref stick) = self.stick {
             let mut f = Train::new(&self.printer,&stick,scale,&self.focus);
             f.set_position(self.position_bp);
             f.set_zoom(self.bp_per_screen);
             f.manage_leafs(cm);
-            if !preload { f.enter_service(); }
             Some(f)
         } else {
             None
@@ -89,13 +83,11 @@ impl TrainManager {
         let scale = Scale::best_for_screen(bp_per_screen);
         self.each_train(|x| x.set_active(false));
         self.current_train = Some(Train::new(&self.printer,st,scale,&self.focus));
-        self.current_train.as_mut().unwrap().enter_service();
         self.current_train.as_mut().unwrap().set_zoom(bp_per_screen);
         self.current_train.as_mut().unwrap().set_current();
         self.transition_train = None;
         self.future_train = None;
         self.current_train.as_mut().unwrap().set_active(true);
-        self.reset_outers();
     }
     
     /* ********************************************************
@@ -134,10 +126,6 @@ impl TrainManager {
             self.transition_prop = Some(0.);
             let scale = self.transition_train.as_ref().unwrap().get_scale().clone();
             console!("transition to {:?} {:?}",scale,self.transition_train.as_ref().unwrap().get_focus());
-            for i in 0..OUTER_TRAINS {
-                let out_scale = scale.next_scale(-1-i as i32);
-                self.outer_train[i] = self.make_train(cm,out_scale,true);
-            }
         }
     }
     
@@ -148,8 +136,7 @@ impl TrainManager {
         self.future_ready(cm,t);
     }
     
-    /* used by COMPOSITOR to update trains as to manage components etc */
-    pub fn each_train<F>(&mut self, mut cb: F)
+    fn each_train<F>(&mut self, mut cb: F)
                                   where F: FnMut(&mut Train) {
         if let Some(ref mut current_train) = self.current_train {
             cb(current_train);
@@ -160,13 +147,9 @@ impl TrainManager {
         if let Some(ref mut future_train) = self.future_train {
             cb(future_train);
         }
-        for train in &mut self.outer_train {
-            if let Some(ref mut train) = train {
-                cb(train);
-            }
-        }
     }
-    pub fn best_train<F>(&mut self, mut cb: F)
+
+    fn best_train<F>(&mut self, mut cb: F)
                                   where F: FnMut(&mut Train) {
         if let Some(ref mut future_train) = self.future_train {
             cb(future_train);
@@ -177,6 +160,14 @@ impl TrainManager {
         }
     }
     
+    pub fn manage_leafs(&mut self, tc: &mut TravellerCreator) {
+        self.best_train(|train| train.manage_leafs(tc));
+    }
+
+    pub fn add_component(&mut self, cm: &mut TravellerCreator, product: &mut Product) {
+        self.each_train(|train| train.add_component(cm,product));
+    }
+
     /* ***********************************************************
      * Methods used to manage future creation/destruction based on
      * indicated current bp/screen from COMPOSITOR
@@ -210,7 +201,7 @@ impl TrainManager {
         if let Some(ref mut t) = self.future_train {
             t.set_active(false);
         }
-        self.future_train = self.make_train(cm,scale,false);
+        self.future_train = self.make_train(cm,scale);
         self.future_train.as_mut().unwrap().set_active(true);
     }
     
@@ -283,12 +274,89 @@ impl TrainManager {
     }
     
     /* used by printer for actual printing */
-    pub fn get_current_train(&mut self) -> Option<&mut Train> {
-        self.current_train.as_mut()
+    pub fn with_current_train<F>(&mut self, mut cb: F) where F: FnMut(&mut Train) {
+        if let Some(ref mut train) = self.current_train {
+            cb(train)
+        }
     }
 
     /* used by printer for actual printing */
-    pub fn get_transition_train(&mut self) -> Option<&mut Train> {
-        self.transition_train.as_mut()
+    pub fn with_transition_train<F>(&mut self, mut cb: F) where F: FnMut(&mut Train) {
+        if let Some(ref mut train) = self.transition_train {
+            cb(train)
+        }
+    }
+}
+
+impl XferConsumer for TrainManagerImpl {
+    fn consume(&mut self, item: &DeliveredItem) {
+        self.each_train(|train| train.consume(item));
+    }
+}
+
+#[derive(Clone)]
+pub struct TrainManager(Arc<Mutex<TrainManagerImpl>>);
+
+impl TrainManager {
+    pub fn new(printer: &PrinterManager) -> TrainManager {
+        TrainManager(Arc::new(Mutex::new(TrainManagerImpl::new(printer))))
+    }
+    
+    pub fn update_report(&self, report: &Report) {
+        self.0.lock().unwrap().update_report(report);
+    }
+        
+    pub fn get_stick(&self) -> Option<Stick> {
+         self.0.lock().unwrap().get_stick().clone()
+    }
+
+    pub fn set_stick(&mut self, st: &Stick, bp_per_screen: f64) {
+        self.0.lock().unwrap().set_stick(st,bp_per_screen);
+    }
+
+    pub fn tick(&mut self, t: f64, cm: &mut TravellerCreator) {
+        self.0.lock().unwrap().tick(t,cm);
+    }
+    
+    pub fn manage_leafs(&mut self, tc: &mut TravellerCreator) {
+        self.0.lock().unwrap().best_train(|train| train.manage_leafs(tc));
+    }
+
+    pub fn add_component(&mut self, cm: &mut TravellerCreator, product: &mut Product) {
+        self.0.lock().unwrap().add_component(cm,product);
+    }
+
+    pub fn set_zoom(&mut self, cm: &mut TravellerCreator, bp_per_screen: f64) {
+        self.0.lock().unwrap().set_zoom(cm,bp_per_screen);
+    }
+            
+    pub fn set_position(&mut self, position_bp: f64) {
+        self.0.lock().unwrap().set_position(position_bp);
+    }
+    
+    pub fn update_state(&mut self, oom: &StateManager) {
+        self.0.lock().unwrap().update_state(oom);
+    }
+
+    pub fn change_focus(&mut self, cm: &mut TravellerCreator, id: &str) {
+        self.0.lock().unwrap().change_focus(cm,id);
+    }
+        
+    pub fn get_prop_trans(&self) -> f32 {
+        self.0.lock().unwrap().get_prop_trans()
+    }
+    
+    pub fn with_current_train<F>(&mut self, mut cb: F) where F: FnMut(&mut Train) {
+        self.0.lock().unwrap().with_current_train(cb)
+    }
+
+    pub fn with_transition_train<F>(&mut self, mut cb: F) where F: FnMut(&mut Train) {
+        self.0.lock().unwrap().with_transition_train(cb)
+    }
+}
+
+impl XferConsumer for TrainManager {
+    fn consume(&mut self, item: &DeliveredItem) {
+        self.0.lock().unwrap().consume(item);
     }
 }

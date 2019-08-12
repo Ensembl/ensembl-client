@@ -16,7 +16,8 @@ use super::{
     HttpResponseConsumer, HttpManager, BackendConfig
 };
 use super::parsedelivereditem::parse_delivereditem;
-use model::supply::{ PurchaseOrder, ProductList };
+use model::supply::{ DeliveredItem, PurchaseOrder, ProductList };
+use model::train::TrainManager;
 
 use super::backendconfig::BackendBytecode;
 
@@ -64,12 +65,14 @@ impl XferPaceManager {
 }
 
 struct PendingXferRequest {
+    train_manager: TrainManager,
     consumer: Box<XferConsumer>
 }
 
 impl PendingXferRequest {
-    fn go(&mut self, bytecode: Rc<BackendBytecode>, data: Vec<Value>) {
-        self.consumer.consume(bytecode,data);
+    fn go(&mut self, item: &DeliveredItem) {
+        self.consumer.consume(item);
+        self.train_manager.consume(item);
     }
 }
 
@@ -96,6 +99,7 @@ impl PendingXferBatch {
         self.requests.entry(key.clone()).or_insert_with(|| {
             Vec::<PendingXferRequest>::new()
         }).push(PendingXferRequest {
+            train_manager: self.window.get_train_manager().clone(),
             consumer
         });
     }
@@ -125,12 +129,11 @@ impl HttpResponseConsumer for PendingXferBatch {
         let value : TypedArray<u8> = value.into();
         let data = ok!(String::from_utf8(value.to_vec()));
         for item in parse_delivereditem(&mut self.window,&data).drain(..) {
-            if let Some(mut requests) = self.requests.remove(&item.get_purchase_order()) {
-                let bytecode = ok!(self.window.get_backend_config().get_bytecode(&item.get_bytecode_name())).clone();
+            if let Some(mut requests) = self.requests.remove(&item.xxx_purchase_order()) {
                 for mut req in requests.drain(..) {
-                    req.go(bytecode.clone(),item.get_data().clone());
+                    req.go(&item);
                 }
-                self.cache.put(&item.get_purchase_order().clone(),item);
+                self.cache.put(&item.xxx_purchase_order().clone(),item);
             }
         }
         self.pace.land();
@@ -185,23 +188,27 @@ impl XferBatchScheduler {
 
 pub struct HttpXferClerkImpl {
     http_manager: HttpManager,
+    train_manager: TrainManager,
     config: Option<BackendConfig>,
     base: Url,
     paused: Vec<(PurchaseOrder,Box<XferConsumer>)>,
     batch: Option<XferBatchScheduler>,
     prime_batch: Option<XferBatchScheduler>,
+    cache_finds: Vec<(Box<XferConsumer>,DeliveredItem)>,
     cache: XferCache
 }
 
 impl HttpXferClerkImpl {
-    pub fn new(http_manager: &HttpManager, base: &Url, xfercache: &XferCache) -> HttpXferClerkImpl {
+    pub fn new(http_manager: &HttpManager, base: &Url, xfercache: &XferCache, train_manager: &TrainManager) -> HttpXferClerkImpl {
         HttpXferClerkImpl {
             http_manager: http_manager.clone(),
+            train_manager: train_manager.clone(),
             config: None,
             base: base.clone(),
             paused: Vec::new(),
             batch: None,
             prime_batch: None,
+            cache_finds: Vec::new(),
             cache: xfercache.clone()
         }
     }
@@ -213,6 +220,11 @@ impl HttpXferClerkImpl {
         }
         if let Some(ref mut batch) = self.prime_batch {
             any |= batch.tick();
+        }
+        for (mut consumer,item) in self.cache_finds.drain(..) {
+            consumer.consume(&item);
+            self.train_manager.consume(&item);
+            any = true;
         }
         any
     }
@@ -232,13 +244,9 @@ impl HttpXferClerkImpl {
         }
     }
     
-    pub fn run_request(&mut self, po: &PurchaseOrder, mut consumer: Box<XferConsumer>, prime: bool) {
+    fn run_request(&mut self, po: &PurchaseOrder, mut consumer: Box<XferConsumer>, prime: bool) {
         if let Some(item) = self.cache.get(po) {
-            let bytecode = {
-                let cfg = self.config.as_ref().unwrap().clone();
-                ok!(cfg.get_bytecode(&item.get_bytecode_name())).clone()
-            };
-            consumer.consume(bytecode,item.get_data().to_vec());
+            self.cache_finds.push((consumer,item.clone()));
         } else {
             let batch = if prime { &mut self.prime_batch } else { &mut self.batch };
             if let Some(ref mut batch) = batch {
@@ -264,9 +272,9 @@ impl XferClerk for HttpXferClerkImpl {
 pub struct HttpXferClerk(Rc<RefCell<HttpXferClerkImpl>>);
 
 impl HttpXferClerk {
-    pub fn new(http_manager: &HttpManager,base: &Url, xfercache: &XferCache) -> HttpXferClerk {
+    pub fn new(http_manager: &HttpManager,base: &Url, xfercache: &XferCache, train_manager: &TrainManager) -> HttpXferClerk {
         let mut out = HttpXferClerk(Rc::new(RefCell::new(
-            HttpXferClerkImpl::new(http_manager,&base,xfercache))));
+            HttpXferClerkImpl::new(http_manager,&base,xfercache,train_manager))));
         out
     }
 

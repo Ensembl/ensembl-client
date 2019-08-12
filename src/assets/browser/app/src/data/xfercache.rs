@@ -4,15 +4,14 @@ use std::cell::RefCell;
 use tánaiste::Value;
 
 use composit::Leaf;
-use model::supply::{ DeliveredItem, PurchaseOrder, Product };
+use model::supply::{ DeliveredItem, PurchaseOrder, Product, RequestedRegion };
 use data::{ BackendConfig, BackendBytecode, XferClerk, XferConsumer };
 
-use misc_algorithms::Cache;
+use misc_algorithms::store::Cache;
 
 struct XferPrimeConsumer();
 impl XferConsumer for XferPrimeConsumer {
-    fn consume(&mut self, code: Rc<BackendBytecode>, data: Vec<Value>) {}
-    fn abandon(&mut self) {}
+    fn consume(&mut self, item: &DeliveredItem) {}
 }
 
 pub struct XferCacheImpl {
@@ -51,8 +50,8 @@ impl XferCache {
         self.0.borrow_mut().get(key)
     }
     
-    pub fn prime(&mut self, xferclerk: &mut Box<XferClerk>, product: &Product, leaf: &Leaf) {
-        let po = PurchaseOrder::new(product,leaf,&None);
+    pub fn prime(&mut self, xferclerk: &mut XferClerk, product: &Product, leaf: &Leaf) {
+        let po = PurchaseOrder::new(product,&RequestedRegion::Leaf(leaf.clone()),&None);
         if self.get(&po).is_none() {
             xferclerk.satisfy(&po,true,Box::new(XferPrimeConsumer()));
         }
