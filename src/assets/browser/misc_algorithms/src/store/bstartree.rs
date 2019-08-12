@@ -126,6 +126,7 @@ impl BStarTreeWalker {
         let leaf = leaf_ref.borrow_mut();
         for (i,v) in leaf.values.iter().enumerate() {
             if v >= &start { 
+                self.leaf = leaf_ref.clone();
                 self.index = i;
                 self.value = Some(*v);
                 return;
@@ -169,30 +170,28 @@ impl Walker for BStarTreeWalker {
     fn after(&mut self, start: usize) -> Option<usize> {
         if self.validates() {
             let stored = self.value.unwrap();
-            if stored == start {
+            if stored >= start {
                 self.test_vec(1);
-                return Some(start);
-            } else if stored < start {
+                return Some(stored);
+            } else {
                 let avail = self.fast();
                 if avail.is_none() { return None; }
-                let (leaf,index) = avail.unwrap();
-                let value = leaf.borrow().values[index];
-                if value >= start {
-                    self.value = Some(value);
-                    self.leaf = leaf;
-                    self.index = index;
-                    self.test_vec(2);
-                    return self.value;
-                } else {
-                    self.test_vec(4);
+                let (leaf_ref,mut index) = avail.unwrap();
+                let leaf = leaf_ref.borrow();
+                self.test_vec(4);
+                while index < leaf.values.len() {
+                    if leaf.values[index] >= start {
+                        self.value = Some(leaf.values[index]);
+                        self.leaf = leaf_ref.clone();
+                        self.index = index;
+                        self.test_vec(2);
+                        return self.value;
+                    }
+                    index += 1;
                 }
-            } else {
-                print!("C call set value to {:?} (start={}) stored={}\n",self.value,start,stored);
-                return Some(stored);
             }
         }
         self.slow(start);
-        print!("D call set value to {:?}\n",self.value);
         self.value
     }
 }
@@ -230,16 +229,16 @@ mod test {
         let mut w = bst.walker();
         assert_eq!(w.after(0),Some(5));
         assert_eq!(w.after(6),Some(7));
-        assert_eq!(2,w.test_vec);
+        assert_eq!(6,w.test_vec);
         let mut w = bst.walker();
         assert_eq!(w.after(0),Some(5));
-        assert_eq!(w.after(7),Some(7));
-        assert_eq!(2,w.test_vec);
-        let mut w = bst.walker();
-        assert_eq!(w.after(0),Some(5));
-        assert_eq!(w.after(8),Some(11));
+        assert_eq!(w.after(87),Some(87));
         assert_eq!(4,w.test_vec);
-        assert_eq!(w.after(12),Some(15));
+        let mut w = bst.walker();
+        assert_eq!(w.after(0),Some(5));
+        assert_eq!(w.after(88),Some(91));
+        assert_eq!(4,w.test_vec);
+        assert_eq!(w.after(92),Some(95));
         assert_eq!(6,w.test_vec);
     }
 

@@ -27,7 +27,6 @@ impl Walker for AndWalker {
                 }
             }
             if let Some(common) = common {
-                print!("returnd {}\n",common);
                 return Some(common);
             }
             start = next.unwrap();
