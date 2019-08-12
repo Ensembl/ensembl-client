@@ -15,7 +15,7 @@ use super::{
     XferClerk, XferConsumer, XferCache, XferUrlBuilder,
     HttpResponseConsumer, HttpManager, BackendConfig
 };
-use super::jsonxferresponse::parse_jsonxferresponse_str;
+use super::parsedelivereditem::parse_delivereditem;
 use model::supply::{ PurchaseOrder, ProductList };
 
 use super::backendconfig::BackendBytecode;
@@ -124,14 +124,13 @@ impl HttpResponseConsumer for PendingXferBatch {
         let value : ArrayBuffer = ok!(req.raw_response().try_into());
         let value : TypedArray<u8> = value.into();
         let data = ok!(String::from_utf8(value.to_vec()));
-        for resp in parse_jsonxferresponse_str(&mut self.window,&data) {
-            if let Some(mut requests) = self.requests.remove(&resp.purchase_order) {
-                let bytecode = ok!(self.window.get_backend_config().get_bytecode(&resp.codename)).clone();
-                let recv = (resp.codename,resp.values);
-                self.cache.put(&resp.purchase_order,recv.clone());
+        for item in parse_delivereditem(&mut self.window,&data).drain(..) {
+            if let Some(mut requests) = self.requests.remove(&item.get_purchase_order()) {
+                let bytecode = ok!(self.window.get_backend_config().get_bytecode(&item.get_bytecode_name())).clone();
                 for mut req in requests.drain(..) {
-                    req.go(bytecode.clone(),recv.1.clone());
+                    req.go(bytecode.clone(),item.get_data().clone());
                 }
+                self.cache.put(&item.get_purchase_order().clone(),item);
             }
         }
         self.pace.land();
@@ -234,12 +233,12 @@ impl HttpXferClerkImpl {
     }
     
     pub fn run_request(&mut self, po: &PurchaseOrder, mut consumer: Box<XferConsumer>, prime: bool) {
-        if let Some(recv) = self.cache.get(po) {
+        if let Some(item) = self.cache.get(po) {
             let bytecode = {
                 let cfg = self.config.as_ref().unwrap().clone();
-                ok!(cfg.get_bytecode(&recv.0)).clone()
+                ok!(cfg.get_bytecode(&item.get_bytecode_name())).clone()
             };
-            consumer.consume(bytecode,recv.1);
+            consumer.consume(bytecode,item.get_data().to_vec());
         } else {
             let batch = if prime { &mut self.prime_batch } else { &mut self.batch };
             if let Some(ref mut batch) = batch {

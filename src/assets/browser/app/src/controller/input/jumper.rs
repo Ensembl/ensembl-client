@@ -7,7 +7,6 @@ use serde_json::Value as JSONValue;
 use controller::global::{ App, AppRunner };
 use controller::input::Action;
 use data::{ HttpManager, HttpResponseConsumer, BackendConfig };
-use data::parse_jsonxferresponse;
 use dom::domutil::browser_time;
 use types::{ Dot, ddiv };
 
@@ -92,13 +91,6 @@ impl JumperConsumer {
                         ((stage.get_pos_middle(),stage.get_zoom()),(dest_pos,dest_zoom))
                     });
                     app.with_jumper(|j| j.zhoosh_to(stick,src,dest));
-                }
-                if let Some(ref payload) = obj.get("payload") {
-                    let mut app_ref = self.ar.state();
-                    let mut app = app_ref.lock().unwrap();
-                    for resp in parse_jsonxferresponse(app.get_window(),payload) {
-                        console!("got payload {:?}",payload);
-                    }
                 }
             }
         }
