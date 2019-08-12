@@ -15,7 +15,6 @@ use super::{ TravellerResponse, TravellerResponseData };
 
 pub struct TravellerImpl {
     window: WindowState,
-    pending_order: PendingOrder,
     sa: Subassembly,
     prev_value: bool,
     cur_value: bool,
@@ -98,7 +97,7 @@ pub struct Traveller(Arc<Mutex<TravellerImpl>>);
 
 impl Traveller {
     pub fn new(window: &WindowState, pending_order: &PendingOrder, sa: &Subassembly, leaf: &Leaf) -> Traveller {
-        Traveller(Arc::new(Mutex::new(TravellerImpl::new(window,pending_order,sa,leaf))))
+        Traveller(Arc::new(Mutex::new(TravellerImpl::new(window,sa,leaf))))
     }
     
     pub(in super) fn update_state(&mut self, m: &StateManager) -> bool {
