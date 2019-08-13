@@ -1,35 +1,42 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
-import { browserNavConfig, BrowserNavItem } from '../browserConfig';
+import BrowserRegionField from '../browser-region-field/BrowserRegionField';
 
 import { RootState } from 'src/store';
-import { getBrowserNavStates } from '../browserSelectors';
+import { browserNavConfig, BrowserNavItem } from '../browserConfig';
+import {
+  getBrowserNavStates,
+  getChrLocation,
+  getGenomeSelectorActive
+} from '../browserSelectors';
 import { getIsTrackPanelOpened } from '../track-panel/trackPanelSelectors';
-import { BrowserNavStates } from '../browserState';
+import { BrowserNavStates, ChrLocation } from '../browserState';
 
 import BrowserNavIcon from './BrowserNavIcon';
 
 import styles from './BrowserNavBar.scss';
 
-type StateProps = {
+type BrowserNavBarProps = {
   browserNavStates: BrowserNavStates;
+  chrLocation: ChrLocation | null;
   isTrackPanelOpened: boolean;
+  genomeSelectorActive: boolean;
+  dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
 };
 
-type BrowserNavBarProps = StateProps;
-
-export const BrowserNavBar: FunctionComponent<BrowserNavBarProps> = (
-  props: BrowserNavBarProps
-) => {
+export const BrowserNavBar = (props: BrowserNavBarProps) => {
   const className = classNames(styles.browserNavBar, {
     [styles.browserNavBarExpanded]: !props.isTrackPanelOpened
   });
 
   return (
     <div className={className}>
-      <dl>
+      {props.genomeSelectorActive && (
+        <div className={styles.browserNavBarOverlay}></div>
+      )}
+      <dl className={styles.aboveOverlay}>
         {browserNavConfig.map((item: BrowserNavItem, index: number) => (
           <BrowserNavIcon
             key={item.name}
@@ -38,13 +45,22 @@ export const BrowserNavBar: FunctionComponent<BrowserNavBarProps> = (
           />
         ))}
       </dl>
+      <dl className={styles.aboveOverlay}>
+        {props.chrLocation && (
+          <BrowserRegionField
+            dispatchBrowserLocation={props.dispatchBrowserLocation}
+          />
+        )}
+      </dl>
     </div>
   );
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState) => ({
   browserNavStates: getBrowserNavStates(state),
-  isTrackPanelOpened: getIsTrackPanelOpened(state)
+  chrLocation: getChrLocation(state),
+  isTrackPanelOpened: getIsTrackPanelOpened(state),
+  genomeSelectorActive: getGenomeSelectorActive(state)
 });
 
 export default connect(mapStateToProps)(BrowserNavBar);

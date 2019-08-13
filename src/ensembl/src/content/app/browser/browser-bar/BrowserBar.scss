@@ -88,3 +88,61 @@
     }
   }
 }
+
+.browserInfoRegion {
+  form {
+    display: inline-block;
+  }
+
+  label {
+    margin-right: 5px;
+  }
+
+  input {
+    padding: 1px 6px;
+    width: 200px;
+  }
+
+  button {
+    margin-left: 10px;
+  }
+
+  span {
+    cursor: pointer;
+  }
+}
+
+.chrLocationView {
+  display: inline-block;
+}
+
+.chrCode {
+  appearance: none;
+  background: $ens-dark-blue;
+  border: none;
+  border-radius: 0;
+  color: $ens-white;
+  cursor: pointer;
+  display: inline-block;
+  font-weight: $bold;
+  margin: 0 5px;
+  padding: 1px 4px;
+  text-align: center;
+  text-align-last: center;
+  width: auto;
+}
+
+.chrRegion {
+  color: $ens-dark-blue;
+  display: inline-block;
+}
+
+.browserGenomeSelectorDisabled {
+  .chrCode {
+    background: $ens-dark-grey;
+  }
+
+  .chrRegion {
+    color: $ens-dark-grey;
+  }
+}

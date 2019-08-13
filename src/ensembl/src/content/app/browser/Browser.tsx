@@ -273,9 +273,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
       {props.browserQueryParams.focus && (
         <section className={styles.browser}>
           {BrowserBarNode}
-          {props.genomeSelectorActive && (
-            <div className={styles.browserOverlay} />
-          )}
           <div
             className={`${styles.browserInnerWrapper} ${getHeightClass(
               props.launchbarExpanded
@@ -286,7 +283,9 @@ export const Browser: FunctionComponent<BrowserProps> = (
                 {props.browserNavOpened &&
                 !isDrawerOpened &&
                 browserRef.current ? (
-                  <BrowserNavBar />
+                  <BrowserNavBar
+                    dispatchBrowserLocation={dispatchBrowserLocation}
+                  />
                 ) : null}
                 <BrowserImage
                   browserRef={browserRef}

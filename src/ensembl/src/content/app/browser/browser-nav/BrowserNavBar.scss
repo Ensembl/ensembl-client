@@ -4,6 +4,7 @@
   @include flex;
   background: $ens-light-grey;
   padding: 16px;
+  position: relative;
 
   @include breakpoint(large) {
     width: calc(100vw - 356px);
@@ -12,4 +13,18 @@
   &.browserNavBarExpanded {
     width: 100vw;
   }
+}
+
+.browserNavBarOverlay {
+  background: $ens-white;
+  height: 100%;
+  opacity: 0.7;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
+}
+
+.aboveOverlay {
+  z-index: 100;
 }
