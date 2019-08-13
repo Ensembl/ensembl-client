@@ -17,6 +17,7 @@ import {
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 
 import styles from './BrowserRegionField.scss';
+import Input from 'src/shared/input/Input';
 
 type BrowserRegionFieldProps = {
   activeGenomeId: string | null;
@@ -40,8 +41,7 @@ const BrowserRegionField = (props: BrowserRegionFieldProps) => {
     props.toggleGenomeSelector(true);
   };
 
-  const changeChrLocationInput = (event: ChangeEvent<HTMLInputElement>) =>
-    setChrLocationInput(event.target.value);
+  const changeChrLocationInput = (value: string) => setChrLocationInput(value);
 
   const closeForm = () => {
     setChrLocationInput('');
@@ -82,13 +82,13 @@ const BrowserRegionField = (props: BrowserRegionFieldProps) => {
 
   return props.browserActivated ? (
     <dd className={styles.browserRegionField}>
-      <label className="show-for-large">Region or location</label>
       <form onSubmit={handleSubmit}>
-        <input
+        <label className="show-for-large">Region or location</label>
+        <Input
           type="text"
           placeholder="0:1-1,000,000"
           value={chrLocationInput}
-          onClick={activateForm}
+          onFocus={activateForm}
           onChange={changeChrLocationInput}
         />
         {props.genomeSelectorActive && (
