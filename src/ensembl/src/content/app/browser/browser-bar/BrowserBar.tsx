@@ -119,7 +119,7 @@ export const BrowserBar = (props: BrowserBarProps) => {
   });
 
   const browserRegionClassName = classNames(styles.browserInfoRegion, {
-    [styles.browserGenomeSelectorDisabled]: isDrawerOpened
+    [styles.browserInfoHidden]: isDrawerOpened
   });
 
   if (!(props.chrLocation && props.actualChrLocation && props.ensObject)) {

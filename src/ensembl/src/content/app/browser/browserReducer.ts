@@ -117,8 +117,8 @@ export function browserLocation(
           ...action.payload
         }
       };
-    case getType(browserActions.toggleGenomeSelector):
-      return { ...state, genomeSelectorActive: action.payload };
+    case getType(browserActions.toggleBrowserRegionEditorActive):
+      return { ...state, browserRegionEditorActive: action.payload };
     default:
       return state;
   }

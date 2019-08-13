@@ -79,8 +79,8 @@ export const getDefaultChrLocation = (state: RootState): ChrLocation | null => {
   return [chromosome, start, end];
 };
 
-export const getGenomeSelectorActive = (state: RootState): boolean =>
-  state.browser.browserLocation.genomeSelectorActive;
+export const getBrowserRegionEditorActive = (state: RootState): boolean =>
+  state.browser.browserLocation.browserRegionEditorActive;
 
 export const getBrowserCogList = (state: RootState): number =>
   state.browser.trackConfig.browserCogList;

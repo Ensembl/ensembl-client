@@ -18,7 +18,7 @@ describe('<BrowserNavBar />', () => {
           browserNavStates={browserStates as BrowserNavStates}
           chrLocation={chrLocation}
           isTrackPanelOpened={true}
-          genomeSelectorActive={true}
+          browserRegionEditorActive={true}
           dispatchBrowserLocation={dispatchBrowserLocation}
         />
       ).hasClass(styles.browserNavBarExpanded)
@@ -30,7 +30,7 @@ describe('<BrowserNavBar />', () => {
           browserNavStates={browserStates as BrowserNavStates}
           chrLocation={chrLocation}
           isTrackPanelOpened={false}
-          genomeSelectorActive={true}
+          browserRegionEditorActive={true}
           dispatchBrowserLocation={dispatchBrowserLocation}
         />
       ).hasClass(styles.browserNavBarExpanded)

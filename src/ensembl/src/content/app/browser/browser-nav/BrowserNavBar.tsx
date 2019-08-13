@@ -9,7 +9,7 @@ import { browserNavConfig, BrowserNavItem } from '../browserConfig';
 import {
   getBrowserNavStates,
   getChrLocation,
-  getGenomeSelectorActive
+  getBrowserRegionEditorActive
 } from '../browserSelectors';
 import { getIsTrackPanelOpened } from '../track-panel/trackPanelSelectors';
 import { BrowserNavStates, ChrLocation } from '../browserState';
@@ -22,7 +22,7 @@ type BrowserNavBarProps = {
   browserNavStates: BrowserNavStates;
   chrLocation: ChrLocation | null;
   isTrackPanelOpened: boolean;
-  genomeSelectorActive: boolean;
+  browserRegionEditorActive: boolean;
   dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
 };
 
@@ -33,7 +33,7 @@ export const BrowserNavBar = (props: BrowserNavBarProps) => {
 
   return (
     <div className={className}>
-      {props.genomeSelectorActive && (
+      {props.browserRegionEditorActive && (
         <div className={styles.browserNavBarOverlay}></div>
       )}
       <dl className={styles.aboveOverlay}>
@@ -60,7 +60,7 @@ const mapStateToProps = (state: RootState) => ({
   browserNavStates: getBrowserNavStates(state),
   chrLocation: getChrLocation(state),
   isTrackPanelOpened: getIsTrackPanelOpened(state),
-  genomeSelectorActive: getGenomeSelectorActive(state)
+  browserRegionEditorActive: getBrowserRegionEditorActive(state)
 });
 
 export default connect(mapStateToProps)(BrowserNavBar);

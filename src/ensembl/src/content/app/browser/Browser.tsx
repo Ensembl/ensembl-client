@@ -24,7 +24,6 @@ import {
 import {
   getBrowserNavOpened,
   getChrLocation,
-  getGenomeSelectorActive,
   getBrowserActivated,
   getBrowserActiveGenomeId,
   getBrowserQueryParams,
@@ -67,7 +66,6 @@ type StateProps = {
   browserNavOpened: boolean;
   browserQueryParams: { [key: string]: string };
   chrLocation: ChrLocation | null;
-  genomeSelectorActive: boolean;
   isDrawerOpened: boolean;
   isTrackPanelOpened: boolean;
   launchbarExpanded: boolean;
@@ -338,7 +336,6 @@ const mapStateToProps = (state: RootState): StateProps => ({
   browserNavOpened: getBrowserNavOpened(state),
   browserQueryParams: getBrowserQueryParams(state),
   chrLocation: getChrLocation(state),
-  genomeSelectorActive: getGenomeSelectorActive(state),
   isDrawerOpened: getIsDrawerOpened(state),
   isTrackPanelOpened: getIsTrackPanelOpened(state),
   launchbarExpanded: getLaunchbarExpanded(state),

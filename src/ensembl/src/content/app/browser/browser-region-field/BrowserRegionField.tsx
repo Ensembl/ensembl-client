@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { connect } from 'react-redux';
 
 import { ChrLocation } from '../browserState';
@@ -7,12 +7,12 @@ import applyIcon from 'static/img/shared/apply.svg';
 import clearIcon from 'static/img/shared/clear.svg';
 
 import { RootState } from 'src/store';
-import { toggleGenomeSelector } from '../browserActions';
+import { toggleBrowserRegionEditorActive } from '../browserActions';
 import {
   getBrowserActiveGenomeId,
   getBrowserActivated,
   getChrLocation,
-  getGenomeSelectorActive
+  getBrowserRegionEditorActive
 } from '../browserSelectors';
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 
@@ -22,11 +22,11 @@ import Input from 'src/shared/input/Input';
 type BrowserRegionFieldProps = {
   activeGenomeId: string | null;
   browserActivated: boolean;
+  browserRegionEditorActive: boolean;
   chrLocation: ChrLocation;
   isDrawerOpened: boolean;
-  genomeSelectorActive: boolean;
   dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
-  toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
+  toggleBrowserRegionEditorActive: (browserRegionEditorActive: boolean) => void;
 };
 
 const BrowserRegionField = (props: BrowserRegionFieldProps) => {
@@ -34,18 +34,18 @@ const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   const [chrLocationInput, setChrLocationInput] = useState('');
 
   const activateForm = () => {
-    if (props.genomeSelectorActive || props.isDrawerOpened) {
+    if (props.browserRegionEditorActive || props.isDrawerOpened) {
       return;
     }
 
-    props.toggleGenomeSelector(true);
+    props.toggleBrowserRegionEditorActive(true);
   };
 
   const changeChrLocationInput = (value: string) => setChrLocationInput(value);
 
   const closeForm = () => {
     setChrLocationInput('');
-    props.toggleGenomeSelector(false);
+    props.toggleBrowserRegionEditorActive(false);
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -91,7 +91,7 @@ const BrowserRegionField = (props: BrowserRegionFieldProps) => {
           onFocus={activateForm}
           onChange={changeChrLocationInput}
         />
-        {props.genomeSelectorActive && (
+        {props.browserRegionEditorActive && (
           <>
             <button>
               <img src={applyIcon} alt="Apply changes" />
@@ -111,11 +111,11 @@ const mapStateToProps = (state: RootState) => ({
   browserActivated: getBrowserActivated(state),
   chrLocation: getChrLocation(state) as ChrLocation,
   isDrawerOpened: getIsDrawerOpened(state),
-  genomeSelectorActive: getGenomeSelectorActive(state)
+  browserRegionEditorActive: getBrowserRegionEditorActive(state)
 });
 
 const mapDispatchToProps = {
-  toggleGenomeSelector
+  toggleBrowserRegionEditorActive
 };
 
 export default connect(

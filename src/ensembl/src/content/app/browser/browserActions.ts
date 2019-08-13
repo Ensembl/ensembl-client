@@ -260,6 +260,6 @@ export const updateApplyToAll = createStandardAction(
   'browser/update-apply-to-all'
 )<boolean>();
 
-export const toggleGenomeSelector = createStandardAction(
-  'toggle-genome-selector'
+export const toggleBrowserRegionEditorActive = createStandardAction(
+  'toggle-browser-region-editor-active'
 )<boolean>();
