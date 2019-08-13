@@ -2,7 +2,8 @@ use composit::{ Compositor, Stage, Leaf };
 use model::supply::PurchaseOrder;
 use types::Dot;
 
-use model::train::{ Traveller, TravellerResponse };
+use super::DriverTraveller;
+use model::train::{ CarriageId, Traveller, TravellerId };
 
 pub trait Printer {
     /* Print one run of objects from compositor with given stage and
@@ -11,7 +12,7 @@ pub trait Printer {
     fn print(&mut self, stage: &Stage, compo: &mut Compositor);
     
     /* Redraw one carriage */
-    fn redraw_carriage(&mut self, leaf: &Leaf);
+    fn redraw_carriage(&mut self, leaf: &CarriageId);
     
     /* Finished with printer */
     fn destroy(&mut self);
@@ -27,8 +28,7 @@ pub trait Printer {
      */
     fn get_available_size(&self) -> Dot<f64,f64>;
     
-    fn add_leaf(&mut self, leaf: &Leaf, focus: &Option<String>);
-    fn remove_leaf(&mut self, leaf: &Leaf, focus: &Option<String>);
-    fn set_current(&mut self, leaf: &Leaf);
-    fn make_traveller_response(&mut self, po: &PurchaseOrder) -> Box<TravellerResponse>;
+    fn add_carriage(&mut self, id: &CarriageId);
+    fn remove_carriage(&mut self, id: &CarriageId);
+    fn make_driver_traveller(&mut self, ti: &TravellerId) -> Box<DriverTraveller>;
 }

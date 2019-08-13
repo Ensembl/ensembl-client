@@ -9,31 +9,21 @@ use super::Product;
 #[derive(Clone)]
 pub struct Subassembly {
     product: Product,
-    part: Option<String>,
-    ooe: Rc<StateExpr>
+    part: Option<String>
 }
 
 impl Subassembly {
-    pub fn new(product: &Product, part: &Option<String>, ooe: &Rc<StateExpr>) -> Subassembly {
+    pub fn new(product: &Product, part: &Option<String>) -> Subassembly {
         Subassembly { 
             product: product.clone(),
-            part: part.clone(), ooe: ooe.clone() 
+            part: part.clone()
         }
     }
     
-    pub fn new_matching(product: &Product, part: &Option<String>) -> Subassembly {
-        let expr : Rc<StateExpr> = Rc::new(StateFixed(false));
-        Subassembly::new(product,part,&expr)
-    }
-
     pub fn get_product(&self) -> &Product { &self.product }
 
     pub fn get_subassembly_name(&self) -> &Option<String> {
         &self.part
-    }
-
-    pub fn is_on(&self, m: &StateManager) -> bool {
-        self.ooe.is_on(m)
     }
 }
 

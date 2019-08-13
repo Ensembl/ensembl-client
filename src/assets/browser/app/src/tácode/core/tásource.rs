@@ -8,7 +8,7 @@ use controller::global::WindowState;
 use data::{ XferClerk, XferConsumer, BackendConfig, BackendBytecode };
 use model::focus::FocusObject;
 use model::shape::DrawingSpec;
-use model::supply::{ DeliveredItem, PendingOrder, Supplier };
+use model::supply::{ DeliveredItem, UnpackedItem, PurchaseOrder, Subassembly, Supplier };
 use tácode::{ Tácode, TáTask };
 
 pub struct TáSourceImpl {
@@ -29,11 +29,10 @@ impl TáSource {
 }
 
 impl Supplier for TáSource {
-    fn supply(&self, po: PendingOrder) {
-        let purchase_order = po.get_purchase_order().clone();
+    fn supply(&self, lc: UnpackedItem, purchase_order: PurchaseOrder) {
         let window = self.0.borrow().window.clone();
         let mut xf = self.0.borrow_mut().window.get_http_clerk().clone();
-        let xcons = TáXferConsumer::new(&window,po);
+        let xcons = TáXferConsumer::new(&window,lc);
         xf.satisfy(&purchase_order,false,Box::new(xcons));
     }
 
@@ -44,19 +43,19 @@ impl Supplier for TáSource {
 
 struct TáXferConsumer {
     window: WindowState,
-    pending_order: Option<PendingOrder>
+    unpacked_item: Option<UnpackedItem>
 }
 
 impl TáXferConsumer {
-    fn new(window: &WindowState, po: PendingOrder) -> TáXferConsumer {
+    fn new(window: &WindowState, ui: UnpackedItem) -> TáXferConsumer {
         TáXferConsumer {
             window: window.clone(),
-            pending_order: Some(po)
+            unpacked_item: Some(ui)
         }
     }
 }
 
-fn run_tánaiste_makeshapes(window: &mut WindowState, pending_order: PendingOrder, item: &DeliveredItem) {
+fn run_tánaiste_makeshapes(window: &mut WindowState, unpacked_item: UnpackedItem, item: &DeliveredItem) {
     let lid = item.get_product().get_supplier().get_lid();
     let mut tc = window.get_tánaiste_interp().clone();
     let mut all_landscapes = window.get_all_landscapes().clone();
@@ -69,8 +68,9 @@ fn run_tánaiste_makeshapes(window: &mut WindowState, pending_order: PendingOrde
                     tc.context().set_task(pid,TáTask::MakeShapes(
                         window.clone(),
                         item.clone(),
-                        pending_order,
-                        Vec::<DrawingSpec>::new(),lid,None,
+                        unpacked_item,
+                        Vec::<DrawingSpec>::new(),lid,
+                        Some(Subassembly::new(item.get_product(),&None)),
                         all_landscapes,
                         focus_object));
                     for (i,reg) in item.get_data().iter().enumerate() {
@@ -91,8 +91,8 @@ fn run_tánaiste_makeshapes(window: &mut WindowState, pending_order: PendingOrde
 
 impl XferConsumer for TáXferConsumer {
     fn consume(&mut self, item: &DeliveredItem) {
-        if let Some(pending_order) = self.pending_order.take() {
-            run_tánaiste_makeshapes(&mut self.window,pending_order,item)
+        if let Some(unpacked_item) = self.unpacked_item.take() {
+            run_tánaiste_makeshapes(&mut self.window,unpacked_item,item)
         }
     }
     

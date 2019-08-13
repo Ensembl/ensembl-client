@@ -4,8 +4,8 @@ use std::collections::hash_map::Entry;
 use composit::AllLandscapes;
 use controller::global::WindowState;
 use model::driver::PrinterManager;
-use model::supply::{ PendingOrder, Product, PurchaseOrder, RequestedRegion };
-use super::Traveller;
+use model::supply::{ ItemContents, Product, PurchaseOrder, RequestedRegion, UnpackedItem };
+use super::{ CarriageId, Traveller };
 
 use composit::Leaf;
 
@@ -35,23 +35,25 @@ impl TravellerCreator {
         self.components.remove(k);
     }
     
-    pub fn make_travellers_for_source(&mut self, product: &mut Product, leaf: &Leaf, focus: &Option<String>) -> Vec<Traveller> {
+    pub fn make_travellers_for_source(&mut self, product: &mut Product, leaf: &Leaf, focus: &Option<String>,carriage_id: &CarriageId) -> Vec<Traveller> {
         let po = PurchaseOrder::new(product,&RequestedRegion::Leaf(leaf.clone()),focus);
-        let mut pending_order = PendingOrder::new(&po);
+        let mut pending_order = UnpackedItem::new();
+        let mut travellers = Vec::new();
         for sa in product.list_subassemblies() {
-            let mut traveller = Traveller::new(&self.window,&pending_order,sa,&leaf);
-            pending_order.add_traveller(&mut self.pm,&mut traveller);
+            let trd = ItemContents::new(leaf);
+            let mut traveller = Traveller::new(&mut self.pm,&self.window,sa,&leaf,carriage_id);
+            travellers.push(traveller.clone());
+            pending_order.add_traveller(&mut traveller,trd);
         }
-        let out = pending_order.get_travellers().cloned().collect();
-        product.get_supplier().supply(pending_order);
-        out
+        product.get_supplier().supply(pending_order,po);
+        travellers
     }
     
-    pub fn make_travellers_for_leaf(&mut self, leaf: &Leaf, focus: &Option<String>) -> Vec<Traveller> {
+    pub fn make_travellers_for_leaf(&mut self, leaf: &Leaf, focus: &Option<String>, carriage_id: &CarriageId) -> Vec<Traveller> {
         let mut lcomps = Vec::<Traveller>::new();
         let mut comps : Vec<Product> = self.components.values().cloned().collect();
         for c in &mut comps {
-            lcomps.append(&mut self.make_travellers_for_source(c,leaf,focus));
+            lcomps.append(&mut self.make_travellers_for_source(c,leaf,focus,carriage_id));
         }
         lcomps
     }    

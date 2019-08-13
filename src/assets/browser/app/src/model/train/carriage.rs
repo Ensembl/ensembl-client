@@ -5,7 +5,7 @@ use data::XferConsumer;
 use model::driver::{ Printer, PrinterManager };
 use model::supply::DeliveredItem;
 use model::zmenu::{ ZMenuLeaf, ZMenuLeafSet };
-use super::Traveller;
+use super::{ CarriageId, TrainId, Traveller };
 use super::travellercreator::TravellerCreator;
 
 pub struct Carriage {
@@ -13,25 +13,23 @@ pub struct Carriage {
     travellers: Vec<Traveller>,
     known_done: bool,
     needs_rebuild: bool,
-    leaf: Leaf,
-    focus: Option<String>
+    id: CarriageId
 }
 
 impl Carriage {
-    pub(in super) fn new(pm: &PrinterManager,leaf: &Leaf, focus: &Option<String>) -> Carriage {
+    pub(in super) fn new(pm: &PrinterManager, leaf: &Leaf, train_id: &TrainId) -> Carriage {
         let mut out = Carriage {
             pm: pm.clone(),
             travellers: Vec::<Traveller>::new(),
             known_done: false,
             needs_rebuild: false,
-            leaf: leaf.clone(),
-            focus: focus.clone()
+            id: CarriageId::new(leaf,train_id)
         };
-        out.pm.add_leaf(leaf,&out.focus);
+        out.pm.add_carriage(&out.id);
         out
     }
     
-    pub fn get_leaf(&self) -> &Leaf { &self.leaf }
+    pub fn get_id(&self) -> &CarriageId { &self.id }
 
     pub(in super) fn set_needs_refresh(&mut self) {
         self.needs_rebuild = true;
@@ -71,10 +69,10 @@ impl Carriage {
     }
     
     pub fn redraw_where_needed(&mut self, printer: &mut Printer, zmls: &mut ZMenuLeafSet) {
-        let mut zml = ZMenuLeaf::new(&self.leaf);
+        let mut zml = ZMenuLeaf::new(&self.id.get_leaf());
         if self.needs_rebuild {
             self.needs_rebuild = false;
-            printer.redraw_carriage(&self.leaf);
+            printer.redraw_carriage(&self.id);
             self.build_zmenu(&mut zml);
         }
         zmls.register_leaf(zml);
@@ -84,7 +82,7 @@ impl Carriage {
 impl Drop for Carriage {
     fn drop(&mut self) {
         self.travellers.clear(); // Triggers drop which informs printer
-        self.pm.remove_leaf(&self.leaf,&self.focus);
+        self.pm.remove_carriage(&self.id);
     }
 }
 

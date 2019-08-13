@@ -1,3 +1,4 @@
+use std::cell::RefCell;
 use std::cmp::{ Eq, PartialEq };
 use std::collections::HashMap;
 use std::fmt;
@@ -13,7 +14,8 @@ use super::{ Subassembly, Supplier };
 pub struct Product {
     name: String,
     parts: HashMap<Option<String>,Subassembly>,
-    supplier: Rc<Supplier>
+    supplier: Rc<Supplier>,
+    sa_expr: Rc<RefCell<HashMap<Option<String>,Rc<StateExpr>>>>
 }
 
 impl Product {
@@ -21,21 +23,31 @@ impl Product {
         Product {
             supplier,
             name: name.to_string(),
-            parts: HashMap::<Option<String>,Subassembly>::new()
+            parts: HashMap::new(),
+            sa_expr: Rc::new(RefCell::new(HashMap::new()))
         }
     }
     
     pub fn get_supplier(&self) -> &Rc<Supplier> { &self.supplier }
     
-    pub fn add_subassembly(&mut self, sa: &Subassembly) {
-        self.parts.insert(sa.get_subassembly_name().as_ref().map(|x| x.to_string()),sa.clone());
+    pub fn add_subassembly(&mut self, sa: &Subassembly, expr: &Rc<StateExpr>) {
+        let sa_name = sa.get_subassembly_name().as_ref().map(|x| x.to_string());
+        self.parts.insert(sa_name.clone(),sa.clone());
+        self.sa_expr.borrow_mut().insert(sa_name,expr.clone());
     }
     
     pub fn list_subassemblies(&self) -> impl Iterator<Item=&Subassembly> {
         self.parts.values()
     }
     
-    pub fn get_product_name(&self) -> &str { &self.name }      
+    pub fn get_product_name(&self) -> &str { &self.name }
+
+    pub fn get_subassembly_state(&self, sa: &Subassembly, m: &StateManager) -> bool {
+        let sa_name = sa.get_subassembly_name().as_ref().map(|x| x.to_string());
+        //console!("product={} name={:?} exprs={:?}",self.name,sa_name,self.sa_expr.keys());
+        self.sa_expr.borrow().get(&sa_name).map(|expr| expr.is_on(m)).unwrap_or(false)
+       // sa.is_on1(m)
+    }
 }
 
 impl PartialEq for Product {

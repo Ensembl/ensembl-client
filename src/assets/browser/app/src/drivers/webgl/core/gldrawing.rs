@@ -1,17 +1,17 @@
-use model::train::TravellerResponseData;
+use model::supply::ItemContents;
 use super::super::drawing::{ Drawing, CarriageCanvases };
 use super::GLProgInstances;
 use super::super::shape::GLShape;
 
 pub struct GLDrawing {
     drawings: Vec<Option<Drawing>>,
-    sr: TravellerResponseData,
+    sr: ItemContents,
 }
 
 impl GLDrawing {
-    pub fn new(sr: TravellerResponseData) -> GLDrawing {
+    pub fn new(sr: &ItemContents) -> GLDrawing {
         GLDrawing { 
-            sr, 
+            sr: sr.clone(), 
             drawings: Vec::<Option<Drawing>>::new(),
         }
     }

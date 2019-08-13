@@ -1,11 +1,14 @@
 use std::sync::{ Arc, Mutex };
 
+use model::supply::Subassembly;
+
 use tánaiste::{
     Argument, Command, DataState, Instruction, ProcState, Signature,
     Value
 };
 
 use tácode::core::{ TáContext, TáTask };
+
 
 // TODO check ranges
 // TODO &mut-able registers
@@ -150,11 +153,12 @@ impl Command for SetPart {
         self.0.with_task(pid,|task| {
             regs.get(self.1).as_string(|new_part| {
                 if let TáTask::MakeShapes(_,_,_,_,_,part,_,_) = task {
-                    if new_part[0] == "" {
-                        part.take();
+                    let new_name = if new_part[0] == "" {
+                        None
                     } else {
-                        part.replace(new_part[0].clone());
-                    }
+                        Some(new_part[0].clone())
+                    };
+                    part.replace(Subassembly::new(part.as_ref().unwrap().get_product(),&new_name));
                 }
             });
         });

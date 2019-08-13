@@ -1,25 +1,25 @@
 use std::collections::HashSet;
 use std::rc::Rc;
 
-use super::{ GLTravellerResponse, GLProgs, GLProgInstances };
+use super::{ GLTraveller, GLProgs, GLProgInstances };
 use super::super::program::ProgramType;
 use model::train::Carriage;
 use composit::{ Leaf, Stage };
 use super::super::drawing::{ CarriageCanvases, AllCanvasAllocator };
 use dom::webgl::WebGLRenderingContext as glctx;
 
-pub struct GLCarriagePrinter {
-    srr: HashSet<GLTravellerResponse>,
+pub struct GLCarriage {
+    srr: HashSet<GLTraveller>,
     prev_cc: Option<CarriageCanvases>,
     leaf: Leaf,
     progs: Option<GLProgs>,
     ctx: Rc<glctx>
 }
 
-impl GLCarriagePrinter {
-    pub fn new(leaf: &Leaf, progs: &GLProgs, ctx: &Rc<glctx>) -> GLCarriagePrinter {
-        GLCarriagePrinter {
-            srr: HashSet::<GLTravellerResponse>::new(),
+impl GLCarriage {
+    pub fn new(leaf: &Leaf, progs: &GLProgs, ctx: &Rc<glctx>) -> GLCarriage {
+        GLCarriage {
+            srr: HashSet::<GLTraveller>::new(),
             prev_cc: None,
             leaf: leaf.clone(),
             progs: Some(progs.clean_instance()),
@@ -27,11 +27,11 @@ impl GLCarriagePrinter {
         }
     }
 
-    pub fn new_sr(&mut self, sr: &GLTravellerResponse) {
+    pub fn new_sr(&mut self, sr: &GLTraveller) {
         self.srr.insert(sr.clone());
     }
 
-    pub fn remove_sr(&mut self, sr: &mut GLTravellerResponse) {
+    pub fn remove_sr(&mut self, sr: &mut GLTraveller) {
         self.srr.remove(sr);
     }
     

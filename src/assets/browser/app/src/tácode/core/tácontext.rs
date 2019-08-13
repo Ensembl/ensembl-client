@@ -7,10 +7,10 @@ use composit::{ AllLandscapes, Leaf };
 use data::BackendConfig;
 use model::shape::DrawingSpec;
 use model::focus::FocusObject;
-use model::supply::{ DeliveredItem, PendingOrder };
+use model::supply::{ DeliveredItem, Subassembly, UnpackedItem };
 
 pub enum TáTask {
-    MakeShapes(WindowState,DeliveredItem,PendingOrder,Vec<DrawingSpec>,usize,Option<String>,AllLandscapes,FocusObject)
+    MakeShapes(WindowState,DeliveredItem,UnpackedItem,Vec<DrawingSpec>,usize,Option<Subassembly>,AllLandscapes,FocusObject)
 }
 
 impl TáTask {

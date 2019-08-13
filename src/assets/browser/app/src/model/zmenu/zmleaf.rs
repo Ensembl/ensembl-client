@@ -43,6 +43,7 @@ impl Hash for ZMenuIntersection {
     }
 }
 
+#[derive(Clone)]
 pub struct ZMenuLeaf {
     items: Vec<ZMenuItem>,
     template: HashMap<String,ZMenuFeatureTmpl>,

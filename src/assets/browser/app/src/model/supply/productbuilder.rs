@@ -16,20 +16,21 @@ fn build_supplier(window: &mut WindowState, lid: usize) -> SupplierChooser {
     SupplierChooser::new(Box::new(backend))
 }
 
-fn make_subassembly(product: &Product, name: Option<String>, atom_name: String) -> Subassembly {
+fn make_subassembly(product: &mut Product, name: Option<String>, atom_name: String) {
     let expr: Rc<StateExpr> = Rc::new(StateAtom::new(&atom_name));
-    Subassembly::new(product,&name,&expr)
+    let sa = Subassembly::new(product,&name);
+    product.add_subassembly(&sa,&expr);
 }
 
 fn build_product_main(window: &mut WindowState, type_name: &str, supplier: SupplierChooser) -> Product {
     let cfg_track = window.get_backend_config().get_track(type_name);
     let mut product = Product::new(type_name,Rc::new(supplier));
-    product.add_subassembly(&make_subassembly(&product,None,type_name.to_string()));
+    make_subassembly(&mut product,None,type_name.to_string());
     let none = vec!{};
     let parts = cfg_track.map(|t| t.get_parts()).unwrap_or(&none);
     for part in parts {
         let state_name = format!("{}:{}",type_name,part);
-        product.add_subassembly(&make_subassembly(&product,Some(part.to_string()),state_name));
+        make_subassembly(&mut product,Some(part.to_string()),state_name);
     }
     product
 }

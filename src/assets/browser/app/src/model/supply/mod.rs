@@ -1,5 +1,5 @@
 mod delivereditem;
-mod pendingorder;
+mod itemcontents;
 mod product;
 mod productbuilder;
 mod productlist;
@@ -7,9 +7,10 @@ mod purchaseorder;
 mod subassembly;
 mod supplier;
 mod supplierchooser;
+mod unpackeditem;
 
 pub use self::delivereditem::DeliveredItem;
-pub use self::pendingorder::PendingOrder;
+pub use self::itemcontents::ItemContents;
 pub use self::product::Product;
 pub use self::productbuilder::build_product;
 pub use self::productlist::ProductList;
@@ -17,3 +18,4 @@ pub use self::purchaseorder::{ PurchaseOrder, RequestedRegion };
 pub use self::subassembly::Subassembly;
 pub use self::supplier::Supplier;
 pub use self::supplierchooser::SupplierChooser;
+pub use self::unpackeditem::UnpackedItem;

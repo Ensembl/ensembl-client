@@ -4,7 +4,7 @@ use composit::{ Leaf, StateManager, Scale, Stick };
 use data::XferConsumer;
 use model::supply::{ DeliveredItem, Product };
 use model::driver::{ Printer, PrinterManager };
-use super::{ Carriage, Traveller, TravellerCreator };
+use super::{ Carriage, CarriageId, TrainId, Traveller, TravellerCreator };
 use model::zmenu::ZMenuLeafSet;
 
 const MAX_FLANK : i32 = 3;
@@ -12,27 +12,23 @@ const MAX_FLANK : i32 = 3;
 pub struct Train {
     pm: PrinterManager,
     carriages: HashMap<Leaf,Carriage>,
-    stick: Stick,
-    scale: Scale,
+    id: TrainId,
     ideal_flank: i32,
     middle_leaf: i64,
     position_bp: Option<f64>,
-    active: bool,
-    focus: Option<String>
+    active: bool
 }
 
 impl Train {
-    pub fn new(pm: &PrinterManager, stick: &Stick, scale: Scale, focus: &Option<String>) -> Train {
+    pub fn new(pm: &PrinterManager, stick: &Stick, scale: &Scale, focus: &Option<String>) -> Train {
         Train {
             pm: pm.clone(),
-            stick: stick.clone(),
-            scale,
+            id: TrainId::new(stick,scale,focus),
             ideal_flank: 0,
             middle_leaf: 0,
             carriages: HashMap::<Leaf,Carriage>::new(),
             position_bp: None,
-            active: true,
-            focus: focus.clone()
+            active: true
         }
     }
         
@@ -41,33 +37,22 @@ impl Train {
      * *****************************************************************
      */
     
-    /* we are now the current train */
-    pub(in super) fn set_current(&mut self) {
-        for leaf in self.carriages.keys() {
-            self.pm.set_current(leaf);
-        }
-    }
-
-    pub(in super) fn get_focus(&self) -> &Option<String> { &self.focus }
+    pub fn get_train_id(&self) -> &TrainId { &self.id }
 
     /* are we active (ie should we scan around as the user does?) */
     pub(in super) fn set_active(&mut self, yn: bool) {
         self.active = yn;
-        if yn { console!("{:?} is active",self.scale); } else { console!("{:?} is inactive",self.scale); }
     }
-    
-    /* which scale are we (ie which train)? */
-    pub(in super) fn get_scale(&self) -> &Scale { &self.scale }
-    
+        
     /* called when position changes, to update carriages */
     pub(in super) fn set_position(&mut self, position_bp: f64) {
-        self.middle_leaf = (position_bp / self.scale.total_bp()).floor() as i64;
+        self.middle_leaf = (position_bp / self.id.get_scale().total_bp()).floor() as i64;
         self.position_bp = Some(position_bp);
     }
         
     /* called when zoom changes, to update flank */
     pub(in super) fn set_zoom(&mut self, bp_per_screen: f64) {
-        self.ideal_flank = (bp_per_screen / self.scale.total_bp()) as i32;
+        self.ideal_flank = (bp_per_screen / self.id.get_scale().total_bp()) as i32;
         /* reset middle leaf after zoom */
         if let Some(pos) = self.position_bp {
             self.set_position(pos);
@@ -76,10 +61,11 @@ impl Train {
     
     /* add component to leaf */
     pub fn add_component(&mut self, cm: &mut TravellerCreator, product: &mut Product) {
-        let focus = self.focus.as_ref().map(|x| x.to_string()).clone();
+        let focus = self.id.get_focus().as_ref().map(|x| x.to_string()).clone();
         for leaf in self.leafs() {
+            let train_id = self.id.clone();
             let c = self.get_carriage(&leaf);
-            for trav in cm.make_travellers_for_source(product,&leaf,&focus) {
+            for trav in cm.make_travellers_for_source(product,&leaf,&focus,&c.get_id()) {
                 c.add_traveller(trav.clone());
             }
         }
@@ -103,7 +89,8 @@ impl Train {
 
     fn get_carriage(&mut self, leaf: &Leaf) -> &mut Carriage {
         if !self.carriages.contains_key(&leaf) {
-            let c = Carriage::new(&mut self.pm,&leaf,&self.focus);
+            let train_id = self.id.clone();
+            let c = Carriage::new(&mut self.pm,&leaf,&train_id);
             self.carriages.insert(leaf.clone(),c);
         }
         self.carriages.get_mut(leaf).unwrap()
@@ -115,7 +102,7 @@ impl Train {
         let flank = self.true_flank();
         for idx in -flank..flank+1 {
             let hindex = self.middle_leaf + idx as i64;
-            let leaf = Leaf::new(&self.stick,hindex,&self.scale);
+            let leaf = Leaf::new(&self.id.get_stick(),hindex,&self.id.get_scale());
             if !self.carriages.contains_key(&leaf) {
                 out.push(leaf);
             }
@@ -140,11 +127,12 @@ impl Train {
     /* manage_leafs entry point */
     pub fn manage_leafs(&mut self, cm: &mut TravellerCreator) {
         if !self.active { return; }
-        let focus = self.focus.as_ref().map(|x| x.to_string()).clone();
+        let focus = self.id.get_focus().as_ref().map(|x| x.to_string()).clone();
         self.remove_unused_leafs();
         for leaf in self.get_missing_leafs() {
+            let train_id = self.id.clone();
             let c = self.get_carriage(&leaf);
-            for trav in cm.make_travellers_for_leaf(&leaf,&focus) {
+            for trav in cm.make_travellers_for_leaf(&leaf,&focus,&c.get_id()) {
                 c.add_traveller(trav);
             }
         }
@@ -164,6 +152,10 @@ impl Train {
             out.push(leaf.clone());
         }
         out
+    }
+
+    pub fn get_carriage_ids(&self) -> impl Iterator<Item=&CarriageId> {
+        self.carriages.values().map(|x| x.get_id())
     }
     
     /* Are all the carriages done? */
