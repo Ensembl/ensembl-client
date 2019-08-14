@@ -4,6 +4,7 @@ import { mount } from 'enzyme';
 import { Root } from './Root';
 import Header from '../header/Header';
 import Content from '../content/Content';
+import privacyBannerService from '../shared/privacy-banner/privacy-banner-service';
 
 jest.mock('../header/Header', () => () => 'Header');
 jest.mock('../content/Content', () => () => 'Content');
@@ -11,16 +12,12 @@ jest.mock('../shared/privacy-banner/PrivacyBanner', () => () => (
   <div className="privacyBanner">PrivacyBanner</div>
 ));
 
-const cookiesMock: any = {
-  get: jest.fn()
-};
 const updateBreakpointWidth = jest.fn();
 
 describe('<Root />', () => {
   let wrapper: any;
 
   const defaultProps = {
-    cookies: cookiesMock,
     breakpointWidth: 0,
     updateBreakpointWidth: updateBreakpointWidth
   };
@@ -46,20 +43,21 @@ describe('<Root />', () => {
     expect(updateBreakpointWidth).toHaveBeenCalled();
   });
 
-  test('shows privacy banner if privacy cookie is not set', () => {
-    cookiesMock.get = jest.fn(() => '');
+  test('shows privacy banner if privacy policy version is not set or if version does not match', () => {
+    jest
+      .spyOn(privacyBannerService, 'shouldShowBanner')
+      .mockImplementation(() => true);
     const wrapper = mount(getRenderedRoot(defaultProps));
     expect(wrapper.find('.privacyBanner').length).toBe(1);
+    (privacyBannerService.shouldShowBanner as any).mockRestore();
   });
 
-  test('does not show privacy banner if privacy cookie is set', async () => {
-    cookiesMock.get = jest.fn(() => 'true');
+  test('does not show privacy banner if policy version is set', () => {
+    jest
+      .spyOn(privacyBannerService, 'shouldShowBanner')
+      .mockImplementation(() => false);
     const wrapper = mount(getRenderedRoot(defaultProps));
-
-    // ugly hack: fall back to the end of event queue, giving priority to useEffect and useState
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    wrapper.update();
-
     expect(wrapper.find('.privacyBanner').length).toBe(0);
+    (privacyBannerService.shouldShowBanner as any).mockRestore();
   });
 });
