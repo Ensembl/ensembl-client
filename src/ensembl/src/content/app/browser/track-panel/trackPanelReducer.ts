@@ -15,11 +15,6 @@ export default function trackPanel(
           ...action.payload.data
         }
       };
-    case getType(trackPanelActions.setHighlightedTrack):
-      return {
-        ...state,
-        highlightedTrack: action.payload
-      };
     default:
       return state;
   }
