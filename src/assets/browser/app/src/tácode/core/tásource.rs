@@ -1,78 +1,37 @@
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
 
 use tánaiste::Value;
 
 use composit::{ Leaf, AllLandscapes };
 use controller::global::WindowState;
-use data::{ XferClerk, XferConsumer, BackendConfig, BackendBytecode };
+use data::{ XferClerk, XferConsumer, BackendConfig, BackendBytecode, UnpackedProductConsumer };
 use model::focus::FocusObject;
+use model::item::{ DeliveredItem, UnpackedProduct};
 use model::shape::DrawingSpec;
-use model::supply::{ DeliveredItem, UnpackedItem, PurchaseOrder, Subassembly, Supplier };
+use model::supply::{ PurchaseOrder, Subassembly, Supplier };
+use model::train::Traveller;
 use tácode::{ Tácode, TáTask };
 
-pub struct TáSourceImpl {
-    window: WindowState,
-    lid: usize
-}
-
-#[derive(Clone)]
-pub struct TáSource(Rc<RefCell<TáSourceImpl>>);
-
-impl TáSource {
-    pub fn new(window: &WindowState, lid: usize) -> TáSource {
-        TáSource(Rc::new(RefCell::new(TáSourceImpl {
-            window: window.clone(),
-            lid
-        })))
-    }
-}
-
-impl Supplier for TáSource {
-    fn supply(&self, lc: UnpackedItem, purchase_order: PurchaseOrder) {
-        let window = self.0.borrow().window.clone();
-        let mut xf = self.0.borrow_mut().window.get_http_clerk().clone();
-        let xcons = TáXferConsumer::new(&window,lc);
-        xf.satisfy(&purchase_order,false,Box::new(xcons));
-    }
-
-    fn get_lid(&self) -> usize {
-        self.0.borrow().lid
-    }
-}
-
-struct TáXferConsumer {
-    window: WindowState,
-    unpacked_item: Option<UnpackedItem>
-}
-
-impl TáXferConsumer {
-    fn new(window: &WindowState, ui: UnpackedItem) -> TáXferConsumer {
-        TáXferConsumer {
-            window: window.clone(),
-            unpacked_item: Some(ui)
-        }
-    }
-}
-
-fn run_tánaiste_makeshapes(window: &mut WindowState, unpacked_item: UnpackedItem, item: &DeliveredItem) {
-    let lid = item.get_product().get_supplier().get_lid();
+pub fn run_tánaiste_makeshapes(window: &mut WindowState, consumer: Box<dyn UnpackedProductConsumer>, unpacked_item: &mut UnpackedProduct, item: &DeliveredItem) {
+    let lid = item.get_id().get_product().get_lid();
     let mut tc = window.get_tánaiste_interp().clone();
     let mut all_landscapes = window.get_all_landscapes().clone();
-    let mut focus_object = window.get_focus().clone();
+    let mut focus_object = window.get_focus().get_focus();
     let mut backend_config = window.get_backend_config().clone();
     match tc.assemble(&item.get_bytecode().get_source()) {
         Ok(code) => {
             match tc.run(&code) {
                 Ok(pid) => {
                     tc.context().set_task(pid,TáTask::MakeShapes(
-                        window.clone(),
-                        item.clone(),
-                        unpacked_item,
+                        backend_config,
+                        item.get_id().get_leaf().clone(),
+                        unpacked_item.clone(),
                         Vec::<DrawingSpec>::new(),lid,
-                        Some(Subassembly::new(item.get_product(),&None)),
+                        Some(Subassembly::new(item.get_id().get_product(),&None)),
                         all_landscapes,
-                        focus_object));
+                        focus_object.clone(),consumer));
                     for (i,reg) in item.get_data().iter().enumerate() {
                         tc.set_reg(pid,i+1,reg.clone());
                     }
@@ -87,21 +46,4 @@ fn run_tánaiste_makeshapes(window: &mut WindowState, unpacked_item: UnpackedIte
             console!("error assembling: {:?}",err);
         }
     }        
-}
-
-impl XferConsumer for TáXferConsumer {
-    fn consume(&mut self, item: &DeliveredItem) {
-        if let Some(unpacked_item) = self.unpacked_item.take() {
-            run_tánaiste_makeshapes(&mut self.window,unpacked_item,item)
-        }
-    }
-    
-    /*
-    fn abandon(&mut self) {
-        if let Some(ref mut po) = self.pending_order {
-            po.done();
-        }
-        self.pending_order = None;
-    }
-    */
 }

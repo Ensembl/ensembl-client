@@ -4,7 +4,8 @@ use std::collections::hash_map::Entry;
 use composit::AllLandscapes;
 use controller::global::WindowState;
 use model::driver::PrinterManager;
-use model::supply::{ ItemContents, Product, PurchaseOrder, RequestedRegion, UnpackedItem };
+use model::item::{ UnpackedSubassembly, UnpackedProduct};
+use model::supply::{ Product, PurchaseOrder, RequestedRegion };
 use super::{ CarriageId, Traveller };
 
 use composit::Leaf;
@@ -37,15 +38,13 @@ impl TravellerCreator {
     
     pub fn make_travellers_for_source(&mut self, product: &mut Product, leaf: &Leaf, focus: &Option<String>,carriage_id: &CarriageId) -> Vec<Traveller> {
         let po = PurchaseOrder::new(product,&RequestedRegion::Leaf(leaf.clone()),focus);
-        let mut pending_order = UnpackedItem::new();
         let mut travellers = Vec::new();
         for sa in product.list_subassemblies() {
-            let trd = ItemContents::new(leaf);
+            let trd = UnpackedSubassembly::new(leaf);
             let mut traveller = Traveller::new(&mut self.pm,&self.window,sa,&leaf,carriage_id);
             travellers.push(traveller.clone());
-            pending_order.add_traveller(&mut traveller,trd);
         }
-        product.get_supplier().supply(pending_order,po);
+        product.get_supplier().supply(po);
         travellers
     }
     

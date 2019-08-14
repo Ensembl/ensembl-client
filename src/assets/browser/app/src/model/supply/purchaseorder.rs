@@ -1,5 +1,6 @@
 use composit::Leaf;
 use super::Product;
+use model::item::DeliveredItemId;
 
 #[derive(Clone,Debug,PartialEq,Eq,Hash)]
 pub enum RequestedRegion {
@@ -30,4 +31,10 @@ impl PurchaseOrder {
     pub fn get_product(&self) -> &Product { &self.product }
     pub fn get_region(&self) -> &RequestedRegion { &self.region }
     pub fn get_focus(&self) -> &Option<String> { &self.focus }
+
+    pub fn xxx_make_delivered_item_id(&self) -> DeliveredItemId {
+        match &self.region {
+            RequestedRegion::Leaf(leaf) => DeliveredItemId::new(&self.product,&leaf,&self.focus)
+        }
+    }
 }

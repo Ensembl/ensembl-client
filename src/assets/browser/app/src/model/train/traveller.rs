@@ -7,10 +7,12 @@ use composit::Leaf;
 use composit::{ StateManager };
 use controller::global::WindowState;
 use data::XferConsumer;
-use model::supply::{ DeliveredItem, ItemContents, Subassembly };
+use model::item::{ DeliveredItem, UnpackedSubassembly, UnpackedSubassemblyConsumer, ItemUnpacker };
+use model::supply::Subassembly;
 use model::driver::{ DriverTraveller, Printer, PrinterManager };
 use model::shape::{ ShapeSpec, GenericShape };
 use model::zmenu::ZMenuLeaf;
+use tácode::run_tánaiste_makeshapes;
 use super::{ CarriageId, TravellerId };
 
 pub struct TravellerImpl {
@@ -55,24 +57,20 @@ impl TravellerImpl {
     }
 
     fn is_done(&self) -> bool { self.done }
-        
-    fn consume(&mut self, item: &DeliveredItem) {
-        if item.get_leaf() == self.id.get_carriage_id().get_leaf() && self.id.get_subassembly().get_product() == item.get_product() {
-            console!("found leaf={:?} product={:?}",item.get_leaf(),self.id.get_subassembly().get_product());
-        }
-    }
-
-    fn set_contents(&mut self, mut data: ItemContents) {
+    
+    fn set_contents(&mut self, mut data: UnpackedSubassembly) {
         let product = self.id.get_subassembly().get_product().clone();
         data.create_zmenu(&product);
         self.zml = data.get_zmenu_leaf().clone();
         self.visuals.as_mut().unwrap().set_contents(&data);
         self.done = true;
-    }   
+    }
 
     fn get_id(&self) -> TravellerId {
         self.id.clone()
     }
+
+    fn get_window(&mut self) -> &WindowState { &self.window }
 }
 
 #[derive(Clone)]
@@ -103,11 +101,7 @@ impl Traveller {
         
     pub fn build_zmenu(&self, zml: &mut ZMenuLeaf) {
         self.0.lock().unwrap().build_zmenu(zml);
-    }
-        
-    pub fn set_contents(&mut self, data: ItemContents) {
-        self.0.lock().unwrap().set_contents(data);
-    }
+    }        
 }
 
 impl Drop for TravellerImpl {
@@ -117,8 +111,19 @@ impl Drop for TravellerImpl {
 }
 
 impl XferConsumer for Traveller {
-    fn consume(&mut self, item: &DeliveredItem) {
-        self.0.lock().unwrap().consume(item);
+    fn consume(&mut self, item: &DeliveredItem, unpacker: &mut ItemUnpacker) {
+        let trav_id = self.0.lock().unwrap().get_id().clone();
+        let item_id = item.get_id();
+        let mut window = self.0.lock().unwrap().get_window().clone();
+        if item_id.get_leaf() == trav_id.get_carriage_id().get_leaf() && trav_id.get_subassembly().get_product() == item_id.get_product() {
+            unpacker.schedule(&trav_id,Box::new(self.clone()));
+        }
+    }
+}
+
+impl UnpackedSubassemblyConsumer for Traveller {
+    fn consume(&mut self, data: UnpackedSubassembly) {
+        self.0.lock().unwrap().set_contents(data);
     }
 }
 

@@ -64,8 +64,7 @@ impl Command for Extent {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,item,_,_,_,_,_,_) = task {
-                let leaf = item.get_leaf();
+            if let TáTask::MakeShapes(_,leaf,_,_,_,_,_,_,_) = task {
                 regs.set(self.1,Value::new_from_float(vec! {
                     leaf.get_start().floor(),
                     leaf.get_end().ceil()
@@ -82,8 +81,7 @@ impl Command for Scale {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,item,_,_,_,_,_,_) = task {
-                let leaf = item.get_leaf();
+            if let TáTask::MakeShapes(_,leaf,_,_,_,_,_,_,_) = task {
                 let scale = leaf.get_scale().get_index()+13;
                 regs.set(self.1,Value::new_from_float(vec![scale as f64]));
             }
@@ -98,7 +96,7 @@ impl Command for Plot {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,_,_,lid,_,all_landscapes,_) = task {
+            if let TáTask::MakeShapes(_,_,_,_,lid,_,all_landscapes,_,_) = task {
                 all_landscapes.with(*lid, |ls| {
                     let plot = ls.get_plot();
                     regs.set(self.1,Value::new_from_float(vec!{
@@ -119,7 +117,7 @@ impl Command for AllPlots {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,_,_,_,_,all_landscapes,_) = task {
+            if let TáTask::MakeShapes(_,_,_,_,_,_,all_landscapes,_,_) = task {
                 let mut data : Vec<(i32,i32,String)> = all_landscapes.every(|_,ls| {
                     let p = ls.get_plot();
                     (p.get_base(),p.get_height(),p.get_letter().to_string())
@@ -152,7 +150,7 @@ impl Command for SetPart {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
             regs.get(self.1).as_string(|new_part| {
-                if let TáTask::MakeShapes(_,_,_,_,_,part,_,_) = task {
+                if let TáTask::MakeShapes(_,_,_,_,_,part,_,_,_) = task {
                     let new_name = if new_part[0] == "" {
                         None
                     } else {
@@ -172,9 +170,9 @@ impl Command for GetFocus {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,item,_,_,_,_,_,focus) = task {
-                if let Some(id) = focus.get_focus() {
-                    regs.set(self.1,Value::new_from_string(vec![id.clone()]));
+            if let TáTask::MakeShapes(_,_,_,_,_,_,_,focus,_) = task {
+                if let Some(focus) = focus {
+                    regs.set(self.1,Value::new_from_string(vec![focus.clone()]));
                 } else {
                     regs.set(self.1,Value::new_from_string(vec![]));
                 }

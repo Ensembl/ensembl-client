@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::collections::{ HashMap, HashSet };
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
@@ -16,7 +16,8 @@ use super::{
     HttpResponseConsumer, HttpManager, BackendConfig
 };
 use super::parsedelivereditem::parse_delivereditem;
-use model::supply::{ DeliveredItem, PurchaseOrder, ProductList };
+use model::item::{ DeliveredItem, ItemUnpacker };
+use model::supply::{ PurchaseOrder, ProductList, Supplier };
 use model::train::TrainManager;
 
 use super::backendconfig::BackendBytecode;
@@ -64,21 +65,9 @@ impl XferPaceManager {
     }
 }
 
-struct PendingXferRequest {
-    train_manager: TrainManager,
-    consumer: Box<XferConsumer>
-}
-
-impl PendingXferRequest {
-    fn go(&mut self, item: &DeliveredItem) {
-        self.consumer.consume(item);
-        self.train_manager.consume(item);
-    }
-}
-
 struct PendingXferBatch {
     window: WindowState,
-    requests: HashMap<PurchaseOrder,Vec<PendingXferRequest>>,
+    requests: HashSet<PurchaseOrder>,
     pace: XferPaceManager,
     base: Url,
     cache: XferCache
@@ -88,20 +77,15 @@ impl PendingXferBatch {
     pub fn new(window: &WindowState, base: &Url, pace: &XferPaceManager, cache: &XferCache) -> PendingXferBatch {
         PendingXferBatch {
             window: window.clone(),
-            requests: HashMap::new(),
+            requests: HashSet::new(),
             pace: pace.clone(),
             base: base.clone(),
             cache: cache.clone()
         }
     }
     
-    pub fn add_request(&mut self, key: &PurchaseOrder, consumer: Box<XferConsumer>) {
-        self.requests.entry(key.clone()).or_insert_with(|| {
-            Vec::<PendingXferRequest>::new()
-        }).push(PendingXferRequest {
-            train_manager: self.window.get_train_manager().clone(),
-            consumer
-        });
+    pub fn add_request(&mut self, key: &PurchaseOrder) {
+        self.requests.insert(key.clone());
     }
 
     pub fn empty(&self) -> bool { self.requests.len() == 0 }
@@ -109,7 +93,7 @@ impl PendingXferBatch {
     pub fn fire(mut self, http_manager: &mut HttpManager) {
         let mut url = self.base.clone();
         let mut url_builder = XferUrlBuilder::new();
-        for key in self.requests.keys() {
+        for key in &self.requests {
             url_builder.add(&mut self.window,key);
         }
         {
@@ -128,13 +112,12 @@ impl HttpResponseConsumer for PendingXferBatch {
         let value : ArrayBuffer = ok!(req.raw_response().try_into());
         let value : TypedArray<u8> = value.into();
         let data = ok!(String::from_utf8(value.to_vec()));
+        let mut train_manager = self.window.get_train_manager().clone();
         for item in parse_delivereditem(&mut self.window,&data).drain(..) {
-            if let Some(mut requests) = self.requests.remove(&item.xxx_purchase_order()) {
-                for mut req in requests.drain(..) {
-                    req.go(&item);
-                }
-                self.cache.put(&item.xxx_purchase_order().clone(),item);
-            }
+            let mut unpacker = ItemUnpacker::new(item.clone());
+            train_manager.consume(&item,&mut unpacker);
+            unpacker.unpack(&mut self.window);
+            self.cache.put(item);
         }
         self.pace.land();
     }
@@ -179,31 +162,29 @@ impl XferBatchScheduler {
         }
     }
     
-    pub fn add_request(&mut self, key: &PurchaseOrder, consumer: Box<XferConsumer>) {
+    pub fn add_request(&mut self, key: &PurchaseOrder) {
         if let Some(ref mut batch) = self.batch {
-            batch.add_request(&key,consumer);
+            batch.add_request(key);
         }
     }
 }
 
 pub struct HttpXferClerkImpl {
+    window: Option<WindowState>,
     http_manager: HttpManager,
-    train_manager: TrainManager,
-    config: Option<BackendConfig>,
     base: Url,
     paused: Vec<(PurchaseOrder,Box<XferConsumer>)>,
     batch: Option<XferBatchScheduler>,
     prime_batch: Option<XferBatchScheduler>,
-    cache_finds: Vec<(Box<XferConsumer>,DeliveredItem)>,
+    cache_finds: Vec<DeliveredItem>,
     cache: XferCache
 }
 
 impl HttpXferClerkImpl {
     pub fn new(http_manager: &HttpManager, base: &Url, xfercache: &XferCache, train_manager: &TrainManager) -> HttpXferClerkImpl {
         HttpXferClerkImpl {
+            window: None,
             http_manager: http_manager.clone(),
-            train_manager: train_manager.clone(),
-            config: None,
             base: base.clone(),
             paused: Vec::new(),
             batch: None,
@@ -221,9 +202,11 @@ impl HttpXferClerkImpl {
         if let Some(ref mut batch) = self.prime_batch {
             any |= batch.tick();
         }
-        for (mut consumer,item) in self.cache_finds.drain(..) {
-            consumer.consume(&item);
-            self.train_manager.consume(&item);
+        let mut train_manager = self.window.as_mut().unwrap().get_train_manager().clone();
+        for item in self.cache_finds.drain(..) {
+            let mut unpacker = ItemUnpacker::new(item.clone());
+            train_manager.consume(&item,&mut unpacker);
+            unpacker.unpack(self.window.as_mut().unwrap());
             any = true;
         }
         any
@@ -231,8 +214,8 @@ impl HttpXferClerkImpl {
 
     pub fn set_window_state(&mut self, window: &mut WindowState) {
         let config = window.get_backend_config();
-        let url = self.base.join(config.get_data_url()).ok().unwrap();        
-        self.config = Some(config.clone());
+        let url = self.base.join(config.get_data_url()).ok().unwrap();
+        self.window = Some(window.clone());
         self.batch = Some(XferBatchScheduler::new(&window,&self.http_manager,&self.cache,&url,5));
         self.prime_batch = Some(XferBatchScheduler::new(&window,&self.http_manager,&self.cache,&url,1));
         self.batch.as_mut().unwrap().set_batch();
@@ -246,16 +229,21 @@ impl HttpXferClerkImpl {
     
     fn run_request(&mut self, po: &PurchaseOrder, mut consumer: Box<XferConsumer>, prime: bool) {
         if let Some(item) = self.cache.get(po) {
-            self.cache_finds.push((consumer,item.clone()));
+            self.cache_finds.push(item.clone());
         } else {
             let batch = if prime { &mut self.prime_batch } else { &mut self.batch };
             if let Some(ref mut batch) = batch {
-                batch.add_request(po,consumer);
+                batch.add_request(po);
             }
         }
     }
     
     pub fn get_base(&self) -> &Url { &self.base }
+
+    fn supply(&mut self, purchase_order: PurchaseOrder) {
+        let tm = self.window.as_mut().unwrap().get_train_manager().clone();
+        self.satisfy(&purchase_order,false,Box::new(tm));
+    }
 }
 
 impl XferClerk for HttpXferClerkImpl {
@@ -293,3 +281,8 @@ impl XferClerk for HttpXferClerk {
     }
 }
 
+impl Supplier for HttpXferClerk {
+    fn supply(&self, purchase_order: PurchaseOrder) {
+        self.0.borrow_mut().supply(purchase_order);
+    }
+}

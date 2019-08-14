@@ -4,18 +4,19 @@ use std::cell::RefCell;
 use tánaiste::Value;
 
 use composit::Leaf;
-use model::supply::{ DeliveredItem, PurchaseOrder, Product, RequestedRegion };
+use model::item::{ DeliveredItem, DeliveredItemId, ItemUnpacker };
+use model::supply::{ PurchaseOrder, Product, RequestedRegion };
 use data::{ BackendConfig, BackendBytecode, XferClerk, XferConsumer };
 
 use misc_algorithms::store::Cache;
 
 struct XferPrimeConsumer();
 impl XferConsumer for XferPrimeConsumer {
-    fn consume(&mut self, item: &DeliveredItem) {}
+    fn consume(&mut self, item: &DeliveredItem, _unpacker: &mut ItemUnpacker) {}
 }
 
 pub struct XferCacheImpl {
-    cache: Cache<PurchaseOrder,DeliveredItem>
+    cache: Cache<DeliveredItemId,DeliveredItem>
 }
 
 impl XferCacheImpl {
@@ -25,12 +26,12 @@ impl XferCacheImpl {
         }
     }
     
-    pub fn put(&mut self, key: &PurchaseOrder, values: DeliveredItem) {
-        self.cache.put(key,values);
+    pub fn put(&mut self, item: DeliveredItem) {
+        self.cache.put(&item.get_id().clone(),item);
     }
     
     pub fn get(&mut self, key: &PurchaseOrder) -> Option<DeliveredItem> {
-        self.cache.get(key).cloned()
+        self.cache.get(&key.xxx_make_delivered_item_id()).cloned()
     }    
 }
 
@@ -42,8 +43,8 @@ impl XferCache {
         XferCache(Rc::new(RefCell::new(XferCacheImpl::new(size))),config.clone())
     }
 
-    pub fn put(&mut self, key: &PurchaseOrder, values: DeliveredItem) {
-        self.0.borrow_mut().put(key,values);
+    pub fn put(&mut self, item: DeliveredItem) {
+        self.0.borrow_mut().put(item);
     }
     
     pub fn get(&mut self, key: &PurchaseOrder) -> Option<DeliveredItem> {

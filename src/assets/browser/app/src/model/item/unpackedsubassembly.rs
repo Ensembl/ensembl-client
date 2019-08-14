@@ -5,14 +5,14 @@ use model::zmenu::ZMenuLeaf;
 
 // XXX cache compressed and remove clone!
 #[derive(Clone)]
-pub struct ItemContents {
+pub struct UnpackedSubassembly {
     shapes: Vec<ShapeSpec>,
     zml: ZMenuLeaf
 }
 
-impl ItemContents {
-    pub fn new(leaf: &Leaf) -> ItemContents {
-        ItemContents {
+impl UnpackedSubassembly {
+    pub fn new(leaf: &Leaf) -> UnpackedSubassembly {
+        UnpackedSubassembly {
             shapes: Vec::<ShapeSpec>::new(),
             zml: ZMenuLeaf::new(leaf)
         }

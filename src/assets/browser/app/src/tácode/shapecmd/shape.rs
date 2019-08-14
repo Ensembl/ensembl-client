@@ -6,11 +6,12 @@ use tánaiste::{
 };
 
 use composit::{ Leaf };
+use model::item::UnpackedProduct;
 use model::shape::{
     Facade, FacadeType, TypeToShape, ShapeShortInstanceData,
     ShapeInstanceDataType, ShapeLongInstanceData, DrawingSpec
 };
-use model::supply::{ Subassembly, UnpackedItem };
+use model::supply::Subassembly;
 use tácode::core::{ TáContext, TáTask };
 use super::super::shapecmd::{ build_meta };
 use types::Colour;
@@ -109,7 +110,7 @@ fn make_facades(spec: &Box<TypeToShape>, colour: &Value, tx: &Vec<DrawingSpec>) 
 }
 
 /* TODO switch long to use make_facades. Can do it, but no time */
-fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &Leaf, lc: &mut UnpackedItem, 
+fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &Leaf, lc: &mut UnpackedProduct, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Value, part: &Subassembly) {
@@ -136,7 +137,7 @@ fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &Leaf, lc: &mut UnpackedItem,
     }
 }
 
-fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &Leaf, lc: &mut UnpackedItem, 
+fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &Leaf, lc: &mut UnpackedProduct, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Value, part: &Subassembly) {
@@ -175,7 +176,7 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &Leaf, lc: &mut UnpackedItem,
     });
 }
 
-fn draw_shapes(meta: &Vec<f64>,leaf: &Leaf, lc: &mut UnpackedItem, 
+fn draw_shapes(meta: &Vec<f64>,leaf: &Leaf, lc: &mut UnpackedProduct, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Value, part: &Subassembly) {
@@ -200,8 +201,7 @@ impl Command for Shape {
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,item,lc,ref tx,_,part,_,_) = task {
-                let leaf = item.get_leaf();
+            if let TáTask::MakeShapes(_,leaf,lc,ref tx,_,part,_,_,_) = task {
                 let regs = rt.registers();
                 regs.get(self.1).as_floats(|meta| {                
                     regs.get(self.2).as_floats(|x_start| {

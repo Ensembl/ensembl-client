@@ -3,7 +3,7 @@ use std::sync::{ Arc, Mutex };
 use composit::{ Leaf, StateManager };
 use data::XferConsumer;
 use model::driver::{ Printer, PrinterManager };
-use model::supply::DeliveredItem;
+use model::item::{ DeliveredItem, ItemUnpacker };
 use model::zmenu::{ ZMenuLeaf, ZMenuLeafSet };
 use super::{ CarriageId, TrainId, Traveller };
 use super::travellercreator::TravellerCreator;
@@ -87,9 +87,9 @@ impl Drop for Carriage {
 }
 
 impl XferConsumer for Carriage {
-    fn consume(&mut self, item: &DeliveredItem) {
+    fn consume(&mut self, item: &DeliveredItem, unpacker: &mut ItemUnpacker) {
         for traveller in &mut self.travellers {
-            traveller.consume(item);
+            traveller.consume(item,unpacker);
         }
     }
 }

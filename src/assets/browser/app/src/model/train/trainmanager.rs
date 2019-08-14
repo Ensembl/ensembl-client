@@ -17,7 +17,8 @@ use composit::{ Leaf, Stick, Scale, StateManager };
 use controller::output::Report;
 use data::XferConsumer;
 use model::driver::PrinterManager;
-use model::supply::{ DeliveredItem, Product };
+use model::item::{ DeliveredItem, ItemUnpacker };
+use model::supply::Product;
 use super::{ Train, TravellerCreator };
 
 const MS_FADE : f64 = 100.;
@@ -287,8 +288,8 @@ impl TrainManagerImpl {
 }
 
 impl XferConsumer for TrainManagerImpl {
-    fn consume(&mut self, item: &DeliveredItem) {
-        self.each_train(|train| train.consume(item));
+    fn consume(&mut self, item: &DeliveredItem, unpacker: &mut ItemUnpacker) {
+        self.each_train(|train| train.consume(item,unpacker));
     }
 }
 
@@ -354,7 +355,7 @@ impl TrainManager {
 }
 
 impl XferConsumer for TrainManager {
-    fn consume(&mut self, item: &DeliveredItem) {
-        self.0.lock().unwrap().consume(item);
+    fn consume(&mut self, item: &DeliveredItem, unpacker: &mut ItemUnpacker) {
+        self.0.lock().unwrap().consume(item,unpacker);
     }
 }

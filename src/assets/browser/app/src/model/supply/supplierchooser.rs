@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 
-use super::{ Supplier, PurchaseOrder, RequestedRegion, UnpackedItem };
+use model::item::UnpackedProduct;
+use model::train::Traveller;
+
+use super::{ Supplier, PurchaseOrder, RequestedRegion };
 
 pub struct SupplierChooser {
     backend_source: Box<Supplier>,
@@ -22,18 +25,14 @@ impl SupplierChooser {
 }
 
 impl Supplier for SupplierChooser {
-    fn supply(&self, lc: UnpackedItem, po: PurchaseOrder) {
+    fn supply(&self, po: PurchaseOrder) {
         if let RequestedRegion::Leaf(leaf) = po.get_region() {
             let stick_name = leaf.get_stick().get_name();
             if let Some(source) = self.per_stick_sources.get(&stick_name) {
-                source.supply(lc,po);
+                source.supply(po);
                 return;
             }
         }
-        self.backend_source.supply(lc,po);
-    }
-
-    fn get_lid(&self) -> usize {
-        self.backend_source.get_lid()
+        self.backend_source.supply(po);
     }
 }

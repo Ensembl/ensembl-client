@@ -7,7 +7,7 @@ use super::{ GLDrawing, GLProgInstances, GLPrinter };
 use super::super::drawing::CarriageCanvases;
 use composit::Leaf;
 use model::driver::DriverTraveller;
-use model::supply::ItemContents;
+use model::item::UnpackedSubassembly;
 use model::train::TravellerId;
 
 #[derive(Clone)]
@@ -68,7 +68,7 @@ impl DriverTraveller for GLTraveller {
         *self.state.borrow_mut() = state;
     }
 
-    fn set_contents(&mut self, result: &ItemContents) {
+    fn set_contents(&mut self, result: &UnpackedSubassembly) {
         *self.dr.borrow_mut() = Some(GLDrawing::new(result));
     }
 

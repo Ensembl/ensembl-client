@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use composit::{ Stick, Scale, ComponentSet, StateManager, Stage, AllLandscapes };
 use model::driver::{ PrinterManager, Printer };
-use model::supply::{ DeliveredItem, Product };
+use model::supply::{ Product };
 use model::train::{ Train, TrainManager, TravellerCreator };
 use model::zmenu::{ ZMenuRegistry, ZMenuLeafSet, ZMenuIntersection };
 
@@ -159,12 +159,6 @@ impl Compositor {
 
     pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
         self.zmr.intersects(stage,pos)
-    }
-}
-
-impl XferConsumer for Compositor {
-    fn consume(&mut self, item: &DeliveredItem) {
-        self.window.get_train_manager().consume(item);
     }
 }
 

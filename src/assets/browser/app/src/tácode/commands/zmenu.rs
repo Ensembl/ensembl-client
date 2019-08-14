@@ -1,6 +1,7 @@
 use std::sync::{ Arc, Mutex };
 
-use model::supply::{ Subassembly, UnpackedItem };
+use model::item::UnpackedProduct;
+use model::supply::Subassembly;
 use tánaiste::{
     Argument, Command, DataState, Instruction, ProcState, Signature,
     Value
@@ -8,7 +9,7 @@ use tánaiste::{
 
 use tácode::core::{ TáContext, TáTask };
 
-fn zmenu(po: &mut UnpackedItem, ids: &Vec<String>, keys: &Vec<String>, values: &Vec<String>, sa: &Subassembly) {
+fn zmenu(po: &mut UnpackedProduct, ids: &Vec<String>, keys: &Vec<String>, values: &Vec<String>, sa: &Subassembly) {
     let mut values = values.iter().cycle();
     for id in ids {
         let value = values.next();
@@ -20,7 +21,7 @@ fn zmenu(po: &mut UnpackedItem, ids: &Vec<String>, keys: &Vec<String>, values: &
     }
 }
 
-fn zmenu_assoc(po: &mut UnpackedItem, to_list: &Vec<String>, from_list: &Vec<String>, sa: &Subassembly) {
+fn zmenu_assoc(po: &mut UnpackedProduct, to_list: &Vec<String>, from_list: &Vec<String>, sa: &Subassembly) {
     let mut froms = from_list.iter().cycle();
     for to in to_list {
         let from = froms.next();
@@ -30,7 +31,7 @@ fn zmenu_assoc(po: &mut UnpackedItem, to_list: &Vec<String>, from_list: &Vec<Str
     }
 }
 
-fn tmpl(po: &mut UnpackedItem, ids: &Vec<String>, sids: &Vec<String>, sa: &Subassembly) {
+fn tmpl(po: &mut UnpackedProduct, ids: &Vec<String>, sids: &Vec<String>, sa: &Subassembly) {
     let mut sids = sids.iter().cycle();
     for id in ids {
         let sid = sids.next();
@@ -38,7 +39,7 @@ fn tmpl(po: &mut UnpackedItem, ids: &Vec<String>, sids: &Vec<String>, sa: &Subas
     }
 }
 
-fn tmpl_spec(po: &mut UnpackedItem, sids: &Vec<String>, specs: &Vec<String>, sa: &Subassembly) {
+fn tmpl_spec(po: &mut UnpackedProduct, sids: &Vec<String>, specs: &Vec<String>, sa: &Subassembly) {
     let mut specs = specs.iter().cycle();
     for sid in sids {
         let spec = specs.next();
@@ -61,7 +62,7 @@ impl Command for ZTmpl {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,sr,_,_,sa,_,_) = task {
+            if let TáTask::MakeShapes(_,_,sr,_,_,sa,_,_,_) = task {
                 let sa = Subassembly::new(sa.as_ref().unwrap().get_product(),&None);
                 regs.get(self.1).as_string(|sids| {
                     regs.get(self.2).as_string(|specs| {
@@ -80,7 +81,7 @@ impl Command for ZTmplSpec {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,sr,_,_,sa,_,_) = task {
+            if let TáTask::MakeShapes(_,_,sr,_,_,sa,_,_,_) = task {
                 let sa = Subassembly::new(sa.as_ref().unwrap().get_product(),&None);
                 regs.get(self.1).as_string(|sids| {
                     regs.get(self.2).as_string(|specs| {
@@ -99,7 +100,7 @@ impl Command for ZMenu {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,sr,_,_,sa,_,_) = task {
+            if let TáTask::MakeShapes(_,_,sr,_,_,sa,_,_,_) = task {
                 let sa = Subassembly::new(sa.as_ref().unwrap().get_product(),&None);
                 regs.get(self.1).as_string(|ids| {
                     regs.get(self.2).as_string(|keys| {
@@ -120,7 +121,7 @@ impl Command for ZAssoc {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,sr,_,_,sa,_,_) = task {
+            if let TáTask::MakeShapes(_,_,sr,_,_,sa,_,_,_) = task {
                 let sa = Subassembly::new(sa.as_ref().unwrap().get_product(),&None);
                 regs.get(self.1).as_string(|to| {
                     regs.get(self.2).as_string(|from| {

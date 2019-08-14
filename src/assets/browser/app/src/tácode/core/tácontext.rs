@@ -4,21 +4,22 @@ use std::rc::Rc;
 
 use controller::global::WindowState;
 use composit::{ AllLandscapes, Leaf };
-use data::BackendConfig;
+use data::{ BackendConfig, UnpackedProductConsumer };
+use model::item::{ DeliveredItem, UnpackedProduct};
 use model::shape::DrawingSpec;
 use model::focus::FocusObject;
-use model::supply::{ DeliveredItem, Subassembly, UnpackedItem };
+use model::supply::Subassembly;
 
 pub enum TáTask {
-    MakeShapes(WindowState,DeliveredItem,UnpackedItem,Vec<DrawingSpec>,usize,Option<Subassembly>,AllLandscapes,FocusObject)
+    MakeShapes(BackendConfig,Leaf,UnpackedProduct,Vec<DrawingSpec>,usize,Option<Subassembly>,AllLandscapes,Option<String>,Box<dyn UnpackedProductConsumer>)
 }
 
 impl TáTask {
     pub fn finished(&mut self) {
         #[allow(unreachable_patterns)]
         match self {
-            TáTask::MakeShapes(_,_leaf,sr,_,_,_,_,_) => {
-                sr.done();
+            TáTask::MakeShapes(_,_,sr,_,_,_,_,_,consumer) => {
+                consumer.consume(sr.clone());
             },
             _ => ()
         }

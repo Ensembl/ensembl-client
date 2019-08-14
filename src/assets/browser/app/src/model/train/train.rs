@@ -2,7 +2,8 @@ use std::collections::{ HashMap, HashSet };
 
 use composit::{ Leaf, StateManager, Scale, Stick };
 use data::XferConsumer;
-use model::supply::{ DeliveredItem, Product };
+use model::item::{ DeliveredItem, ItemUnpacker };
+use model::supply::Product;
 use model::driver::{ Printer, PrinterManager };
 use super::{ Carriage, CarriageId, TrainId, Traveller, TravellerCreator };
 use model::zmenu::ZMenuLeafSet;
@@ -191,9 +192,9 @@ impl Train {
 }
 
 impl XferConsumer for Train {
-    fn consume(&mut self, item: &DeliveredItem) {
+    fn consume(&mut self, item: &DeliveredItem, unpacker: &mut ItemUnpacker) {
         for carriage in self.carriages.values_mut() {
-            carriage.consume(item);
+            carriage.consume(item,unpacker);
         }
     }
 }

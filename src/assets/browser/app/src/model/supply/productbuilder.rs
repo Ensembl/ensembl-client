@@ -4,15 +4,14 @@ use controller::global::WindowState;
 use composit::{ Plot,StateAtom, StateExpr };
 use super::product::Product;
 use debug::add_debug_sources;
-use tácode::TáSource;
 
 use super::{ Subassembly, SupplierChooser };
 
 const TOP : i32 = 50;
 const PITCH : i32 = 63;
 
-fn build_supplier(window: &mut WindowState, lid: usize) -> SupplierChooser {
-    let backend = TáSource::new(window,lid);
+fn build_supplier(window: &mut WindowState) -> SupplierChooser {
+    let backend = window.get_http_clerk().clone();
     SupplierChooser::new(Box::new(backend))
 }
 
@@ -22,9 +21,9 @@ fn make_subassembly(product: &mut Product, name: Option<String>, atom_name: Stri
     product.add_subassembly(&sa,&expr);
 }
 
-fn build_product_main(window: &mut WindowState, type_name: &str, supplier: SupplierChooser) -> Product {
+fn build_product_main(window: &mut WindowState, type_name: &str, supplier: SupplierChooser, lid: usize) -> Product {
     let cfg_track = window.get_backend_config().get_track(type_name);
-    let mut product = Product::new(type_name,Rc::new(supplier));
+    let mut product = Product::new(type_name,Rc::new(supplier),lid);
     make_subassembly(&mut product,None,type_name.to_string());
     let none = vec!{};
     let parts = cfg_track.map(|t| t.get_parts()).unwrap_or(&none);
@@ -49,7 +48,7 @@ fn allocate_shelf_space(window: &mut WindowState, type_name: &str) -> usize {
 
 pub fn build_product(window: &mut WindowState, type_name: &str) -> Product {
     let lid = allocate_shelf_space(window,type_name);
-    let mut supplier = build_supplier(window,lid);
+    let mut supplier = build_supplier(window);
     add_debug_sources(&mut supplier,type_name);
-    build_product_main(window,type_name,supplier)
+    build_product_main(window,type_name,supplier,lid)
 }
