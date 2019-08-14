@@ -6,7 +6,7 @@ import faker from 'faker';
 import ImageButton, { ImageButtonStatus } from './ImageButton';
 import ImageHolder from './ImageHolder';
 
-import Tooltip from 'src/shared/tooltip/Tooltip';
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 jest.mock(
   'src/shared/tooltip/Tooltip',

@@ -24,7 +24,7 @@ import {
 import { getChrLocationStr } from './browserHelper';
 import browserStorageService from './browser-storage-service';
 import { RootState } from 'src/store';
-import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
+import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
 import { TrackStates } from './track-panel/trackPanelConfig';
 import { BROWSER_CONTAINER_ID } from './browser-constants';
 

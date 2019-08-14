@@ -4,7 +4,7 @@ import { mount } from 'enzyme';
 import { Root } from './Root';
 import Header from '../header/Header';
 import Content from '../content/Content';
-import privacyBannerService from '../shared/privacy-banner/privacy-banner-service';
+import privacyBannerService from '../shared/components/privacy-banner/privacy-banner-service';
 
 jest.mock('../header/Header', () => () => 'Header');
 jest.mock('../content/Content', () => () => 'Content');

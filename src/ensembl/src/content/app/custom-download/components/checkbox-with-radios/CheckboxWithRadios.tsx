@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Checkbox from 'src/shared/checkbox/Checkbox';
-import Radio, { RadioOptions } from 'src/shared/radio/Radio';
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import Radio, { RadioOptions } from 'src/shared/components/radio/Radio';
 
 import styles from './CheckboxWithRadios.scss';
 

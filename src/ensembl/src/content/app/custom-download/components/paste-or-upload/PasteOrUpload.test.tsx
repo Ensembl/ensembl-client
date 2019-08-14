@@ -2,8 +2,8 @@ import React from 'react';
 import { mount } from 'enzyme';
 import PasteOrUpload from './PasteOrUpload';
 import faker from 'faker';
-import Input from 'src/shared/input/Input';
-import ImageButton from 'src/shared/image-button/ImageButton';
+import Input from 'src/shared/components/input/Input';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 const onChange = jest.fn();
 const onRemove = jest.fn();

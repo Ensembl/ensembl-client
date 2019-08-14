@@ -2,7 +2,7 @@ import React, { FunctionComponent, useState } from 'react';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
 
-import ClearButton from 'src/shared/clear-button/ClearButton';
+import ClearButton from 'src/shared/components/clear-button/ClearButton';
 
 import styles from './SelectedSpecies.scss';
 

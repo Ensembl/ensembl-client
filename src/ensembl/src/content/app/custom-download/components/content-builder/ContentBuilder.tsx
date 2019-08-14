@@ -9,15 +9,15 @@ import CheckboxWithTextfields from 'src/content/app/custom-download/components/c
 import CheckboxGrid, {
   CheckboxGridOption
 } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
-import { RadioOptions } from 'src/shared/radio/Radio';
-import { Option } from 'src/shared/select/Select';
+import { RadioOptions } from 'src/shared/components/radio/Radio';
+import { Option } from 'src/shared/components/select/Select';
 import {
   Accordion,
   AccordionItem,
   AccordionItemHeading,
   AccordionItemPanel,
   AccordionItemButton
-} from 'src/shared/accordion';
+} from 'src/shared/components/accordion';
 
 import {
   Attribute,

@@ -4,7 +4,7 @@ import useHover from 'src/shared/hooks/useHover';
 
 import defaultStyles from './ImageButton.scss';
 import ImageHolder from './ImageHolder';
-import Tooltip from 'src/shared/tooltip/Tooltip';
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import imageButtonStyles from './ImageButton.scss';
 

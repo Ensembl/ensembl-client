@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import SpeciesTab from 'src/shared/species-tab/SpeciesTab';
+import SpeciesTab from 'src/shared/components/species-tab/SpeciesTab';
 
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 import { RootState } from 'src/store';

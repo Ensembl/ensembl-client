@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import RoundButton, {
   RoundButtonStatus
-} from 'src/shared/round-button/RoundButton';
-import BadgedButton from 'src/shared/badged-button/BadgedButton';
+} from 'src/shared/components/round-button/RoundButton';
+import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
 
 import { getSelectedTab } from '../../../state/customDownloadSelectors';
 

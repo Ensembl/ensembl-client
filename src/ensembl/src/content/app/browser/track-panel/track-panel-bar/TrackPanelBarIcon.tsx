@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TrackPanelBarItem } from './trackPanelBarConfig';
 import ImageButton, {
   ImageButtonStatus
-} from 'src/shared/image-button/ImageButton';
+} from 'src/shared/components/image-button/ImageButton';
 import styles from './TrackPanelBarIcon.scss';
 
 type TrackPanelBarIconProps = {

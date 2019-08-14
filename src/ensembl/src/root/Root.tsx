@@ -4,10 +4,10 @@ import useResizeObserver from 'use-resize-observer';
 
 import Header from '../header/Header';
 import Content from '../content/Content';
-import PrivacyBanner from '../shared/privacy-banner/PrivacyBanner';
-import privacyBannerService from '../shared/privacy-banner/privacy-banner-service';
-import ErrorBoundary from 'src/shared/error-boundary/ErrorBoundary';
-import { GeneralErrorScreen } from 'src/shared/error-screen';
+import PrivacyBanner from '../shared/components/privacy-banner/PrivacyBanner';
+import privacyBannerService from '../shared/components/privacy-banner/privacy-banner-service';
+import ErrorBoundary from 'src/shared/components/error-boundary/ErrorBoundary';
+import { GeneralErrorScreen } from 'src/shared/components/error-screen';
 
 import { updateBreakpointWidth } from '../global/globalActions';
 import { getBreakpointWidth } from '../global/globalSelectors';

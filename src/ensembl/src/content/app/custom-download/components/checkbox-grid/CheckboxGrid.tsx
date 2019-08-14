@@ -1,5 +1,5 @@
 import React from 'react';
-import Checkbox from 'src/shared/checkbox/Checkbox';
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import styles from './CheckboxGrid.scss';
 
 export type CheckboxGridOption = {
