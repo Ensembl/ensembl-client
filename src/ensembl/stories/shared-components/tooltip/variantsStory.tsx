@@ -24,7 +24,11 @@ const VariantsStory = () => {
           onClick={() => setVisibleId(Position.TOP_LEFT)}
         >
           {visibleId === Position.TOP_LEFT && (
-            <Tooltip onClose={handleClose} position={Position.TOP_LEFT}>
+            <Tooltip
+              delay={0}
+              onClose={handleClose}
+              position={Position.TOP_LEFT}
+            >
               TOP LEFT
             </Tooltip>
           )}
@@ -37,7 +41,11 @@ const VariantsStory = () => {
           onClick={() => setVisibleId(Position.TOP_RIGHT)}
         >
           {visibleId === Position.TOP_RIGHT && (
-            <Tooltip onClose={handleClose} position={Position.TOP_RIGHT}>
+            <Tooltip
+              delay={0}
+              onClose={handleClose}
+              position={Position.TOP_RIGHT}
+            >
               TOP RIGHT
             </Tooltip>
           )}
@@ -50,7 +58,11 @@ const VariantsStory = () => {
           onClick={() => setVisibleId(Position.RIGHT_TOP)}
         >
           {visibleId === Position.RIGHT_TOP && (
-            <Tooltip onClose={handleClose} position={Position.RIGHT_TOP}>
+            <Tooltip
+              delay={0}
+              onClose={handleClose}
+              position={Position.RIGHT_TOP}
+            >
               RIGHT TOP
             </Tooltip>
           )}
@@ -63,7 +75,11 @@ const VariantsStory = () => {
           onClick={() => setVisibleId(Position.RIGHT_BOTTOM)}
         >
           {visibleId === Position.RIGHT_BOTTOM && (
-            <Tooltip onClose={handleClose} position={Position.RIGHT_BOTTOM}>
+            <Tooltip
+              delay={0}
+              onClose={handleClose}
+              position={Position.RIGHT_BOTTOM}
+            >
               RIGHT BOTTOM
             </Tooltip>
           )}
@@ -76,7 +92,11 @@ const VariantsStory = () => {
           onClick={() => setVisibleId(Position.BOTTOM_LEFT)}
         >
           {visibleId === Position.BOTTOM_LEFT && (
-            <Tooltip onClose={handleClose} position={Position.BOTTOM_LEFT}>
+            <Tooltip
+              delay={0}
+              onClose={handleClose}
+              position={Position.BOTTOM_LEFT}
+            >
               BOTTOM LEFT
             </Tooltip>
           )}
@@ -89,7 +109,11 @@ const VariantsStory = () => {
           onClick={() => setVisibleId(Position.BOTTOM_RIGHT)}
         >
           {visibleId === Position.BOTTOM_RIGHT && (
-            <Tooltip onClose={handleClose} position={Position.BOTTOM_RIGHT}>
+            <Tooltip
+              delay={0}
+              onClose={handleClose}
+              position={Position.BOTTOM_RIGHT}
+            >
               BOTTOM RIGHT
             </Tooltip>
           )}
@@ -102,7 +126,11 @@ const VariantsStory = () => {
           onClick={() => setVisibleId(Position.LEFT_TOP)}
         >
           {visibleId === Position.LEFT_TOP && (
-            <Tooltip onClose={handleClose} position={Position.LEFT_TOP}>
+            <Tooltip
+              delay={0}
+              onClose={handleClose}
+              position={Position.LEFT_TOP}
+            >
               LEFT TOP
             </Tooltip>
           )}
@@ -115,7 +143,11 @@ const VariantsStory = () => {
           onClick={() => setVisibleId(Position.LEFT_BOTTOM)}
         >
           {visibleId === Position.LEFT_BOTTOM && (
-            <Tooltip onClose={handleClose} position={Position.LEFT_BOTTOM}>
+            <Tooltip
+              delay={0}
+              onClose={handleClose}
+              position={Position.LEFT_BOTTOM}
+            >
               LEFT BOTTOM
             </Tooltip>
           )}

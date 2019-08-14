@@ -1,6 +1,6 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 
-const TrackPanelDownloads: FunctionComponent = () => {
+const TrackPanelDownloads = () => {
   return (
     <section className="trackPanelDownloads">
       <h3>Downloads</h3>

@@ -1,6 +1,6 @@
 @import 'src/styles/common';
 
-.browserTabs {
+.trackPanelTabs {
   @include flex;
   font-size: 13px;
   justify-content: space-between;
@@ -9,25 +9,25 @@
   width: 312px;
 }
 
-.browserTab {
+.trackPanelTab {
   button {
     color: $ens-dark-blue;
   }
 }
 
-.browserTabActive {
+.trackPanelTabActive {
   button {
     color: inherit;
   }
 }
 
-.browserTabDisabled {
+.trackPanelTabDisabled {
   button {
     color: $ens-dark-grey;
     cursor: default;
   }
 }
-.browserTabArrow {
+.trackPanelTabArrow {
   position: relative;
 
   &::after {
