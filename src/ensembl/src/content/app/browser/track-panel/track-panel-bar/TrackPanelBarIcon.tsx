@@ -1,10 +1,4 @@
-import React, {
-  FunctionComponent,
-  memo,
-  useState,
-  useCallback,
-  useEffect
-} from 'react';
+import React, { useState, useEffect } from 'react';
 import { TrackPanelBarItem } from './trackPanelBarConfig';
 import ImageButton, {
   ImageButtonStatus
@@ -15,51 +9,54 @@ type TrackPanelBarIconProps = {
   closeTrackPanelModal: () => void;
   iconConfig: TrackPanelBarItem;
   isTrackPanelModalOpened: boolean;
+  isTrackPanelOpened: boolean;
   openTrackPanelModal: (trackPanelModalView: string) => void;
   trackPanelModalView: string;
 };
 
-const TrackPanelBarIcon: FunctionComponent<TrackPanelBarIconProps> = memo(
-  (props: TrackPanelBarIconProps) => {
-    const [toggleState, setToggleState] = useState(false);
+const TrackPanelBarIcon = (props: TrackPanelBarIconProps) => {
+  const [toggleState, setToggleState] = useState(false);
 
-    useEffect(() => {
-      if (!props.isTrackPanelModalOpened) {
-        setToggleState(false);
-      }
-    }, [props.isTrackPanelModalOpened]);
+  useEffect(() => {
+    if (!props.isTrackPanelModalOpened) {
+      setToggleState(false);
+    }
+  }, [props.isTrackPanelModalOpened]);
 
-    const toggleModalView = useCallback(() => {
-      const newToggleState = !toggleState;
+  const toggleModalView = () => {
+    if (!props.isTrackPanelOpened) {
+      return;
+    }
 
-      if (newToggleState === true) {
-        props.openTrackPanelModal(props.iconConfig.name);
-      } else {
-        props.closeTrackPanelModal();
-      }
+    const newToggleState = !toggleState;
 
-      setToggleState(newToggleState);
-    }, [props.iconConfig.name, toggleState]);
+    if (newToggleState) {
+      props.openTrackPanelModal(props.iconConfig.name);
+    } else {
+      props.closeTrackPanelModal();
+    }
 
-    const getViewIconStatus = () => {
-      const { iconConfig, trackPanelModalView } = props;
+    setToggleState(newToggleState);
+  };
 
-      return iconConfig.name === trackPanelModalView
-        ? ImageButtonStatus.HIGHLIGHTED
-        : ImageButtonStatus.ACTIVE;
-    };
+  const getViewIconStatus = () => {
+    const { iconConfig, trackPanelModalView } = props;
 
-    return (
-      <dt className={styles.barIcon}>
-        <ImageButton
-          buttonStatus={getViewIconStatus()}
-          description={props.iconConfig.description}
-          onClick={toggleModalView}
-          image={props.iconConfig.icon}
-        />
-      </dt>
-    );
-  }
-);
+    return iconConfig.name === trackPanelModalView
+      ? ImageButtonStatus.HIGHLIGHTED
+      : ImageButtonStatus.ACTIVE;
+  };
+
+  return (
+    <dt className={styles.barIcon}>
+      <ImageButton
+        buttonStatus={getViewIconStatus()}
+        description={props.iconConfig.description}
+        onClick={toggleModalView}
+        image={props.iconConfig.icon}
+      />
+    </dt>
+  );
+};
 
 export default TrackPanelBarIcon;

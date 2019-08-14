@@ -1,6 +1,5 @@
-import React, { FunctionComponent } from 'react';
-
-import closeIcon from 'static/img/track-panel/close.svg';
+import React from 'react';
+import { connect } from 'react-redux';
 
 import TrackPanelSearch from './modal-views/TrackPanelSearch';
 import TracksManager from './modal-views/TracksManager';
@@ -9,17 +8,22 @@ import PersonalData from './modal-views/PersonalData';
 import TrackPanelShare from './modal-views/TrackPanelShare';
 import TrackPanelDownloads from './modal-views/TrackPanelDownloads';
 
+import { getLaunchbarExpanded } from 'src/header/headerSelectors';
+import { getTrackPanelModalView } from '../trackPanelSelectors';
+import { closeTrackPanelModal } from '../trackPanelActions';
+import { RootState } from 'src/store';
+
+import closeIcon from 'static/img/track-panel/close.svg';
+
 import styles from './TrackPanelModal.scss';
 
 type TrackPanelModalProps = {
-  closeTrackPanelModal: () => void;
   launchbarExpanded: boolean;
   trackPanelModalView: string;
+  closeTrackPanelModal: () => void;
 };
 
-const TrackPanelModal: FunctionComponent<TrackPanelModalProps> = (
-  props: TrackPanelModalProps
-) => {
+const TrackPanelModal = (props: TrackPanelModalProps) => {
   const getTrackPanelModalClasses = () => {
     const heightClass: string = props.launchbarExpanded
       ? styles.shorter
@@ -60,4 +64,16 @@ const TrackPanelModal: FunctionComponent<TrackPanelModalProps> = (
   );
 };
 
-export default TrackPanelModal;
+const mapStateToProps = (state: RootState) => ({
+  launchbarExpanded: getLaunchbarExpanded(state),
+  trackPanelModalView: getTrackPanelModalView(state)
+});
+
+const mapDispatchToProps = {
+  closeTrackPanelModal
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TrackPanelModal);

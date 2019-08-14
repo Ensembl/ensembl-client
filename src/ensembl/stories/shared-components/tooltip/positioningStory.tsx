@@ -29,6 +29,7 @@ const Item = (props: ItemProps) => {
       Click me
       {showTooltip && (
         <Tooltip
+          delay={0}
           onClose={() => setShowTooltip(false)}
           position={props.position}
           container={props.container.current}

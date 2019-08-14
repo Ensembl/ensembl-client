@@ -2,6 +2,8 @@ import React, { ReactNode, useRef, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
 
+import windowService from 'src/services/window-service';
+
 import { findOptimalPosition } from './tooltip-helper';
 import { Position } from './tooltip-types';
 import {
@@ -16,7 +18,7 @@ import styles from './Tooltip.scss';
 type Props = {
   position: Position;
   container?: HTMLElement | null;
-  autoAdjust: boolean; // try to adapt position so as not to extend beyond screen bounds
+  autoAdjust: boolean; // try to adjust tooltip position so as not to extend beyond screen bounds
   delay: number;
   children: ReactNode;
   onClose: () => void;
@@ -81,49 +83,54 @@ const Tooltip = (props: Props) => {
   }, []);
 
   useEffect(() => {
-    const node = tooltipElementRef.current;
-    const parentElement = node && node.parentElement;
-    if (!(node && parentElement)) {
+    if (isWaiting) {
       return;
     }
-    parentRef.current = parentElement;
 
+    const tooltipElement = tooltipElementRef.current;
+    const parentElement = tooltipElement && tooltipElement.parentElement;
+
+    if (!(tooltipElement && parentElement)) {
+      return;
+    }
+
+    parentRef.current = parentElement;
     setInlineStyles(getInlineStyles({ ...props, parentElement }));
 
-    if (!props.autoAdjust) {
-      return;
+    if (props.autoAdjust) {
+      adjustPosition(tooltipElement, parentElement);
     }
-
-    const intersectionObserver = new IntersectionObserver(
-      (entries) => {
-        const optimalPosition = findOptimalPosition({
-          intersectionEntry: entries[0],
-          anchorBoundingRect: parentElement.getBoundingClientRect(),
-          position: positionRef.current || props.position
-        });
-        if (optimalPosition !== positionRef.current) {
-          positionRef.current = optimalPosition;
-        }
-        setInlineStyles(
-          getInlineStyles({
-            ...props,
-            position: optimalPosition,
-            parentElement
-          })
-        );
-        setIsPositioning(false);
-      },
-      {
-        root: props.container,
-        threshold: 1
-      }
-    );
-    intersectionObserver.observe(node);
-
-    return () => {
-      intersectionObserver.unobserve(node);
-    };
   }, [isWaiting]);
+
+  const adjustPosition = (
+    tooltipElement: HTMLDivElement,
+    parentElement: HTMLElement
+  ) => {
+    const tooltipBoundingRect = tooltipElement.getBoundingClientRect();
+    const rootBoundingRect = props.container
+      ? props.container.getBoundingClientRect()
+      : windowService.getDimensions();
+    const anchorBoundingRect = parentElement.getBoundingClientRect();
+
+    const optimalPosition = findOptimalPosition({
+      tooltipBoundingRect,
+      anchorBoundingRect,
+      rootBoundingRect,
+      position: positionRef.current || props.position
+    });
+
+    if (optimalPosition !== positionRef.current) {
+      positionRef.current = optimalPosition;
+    }
+    setInlineStyles(
+      getInlineStyles({
+        ...props,
+        position: optimalPosition,
+        parentElement
+      })
+    );
+    setIsPositioning(false);
+  };
 
   const className = classNames(
     styles.tooltip,
