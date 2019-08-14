@@ -32,8 +32,9 @@ type DispatchProps = {
   fetchExampleEnsObjects: (objectId: string) => void;
   updateTrackStates: (trackStates: TrackStates) => void;
 };
+type Props = TrackPanelBookmarksProps & DispatchProps;
 
-export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
+export const TrackPanelBookmarks = (props: Props) => {
   const getExampleObjLabel = (exampleObject: EnsObject | Bookmark) => {
     if (exampleObject.object_type === 'gene') {
       return exampleObject.label;

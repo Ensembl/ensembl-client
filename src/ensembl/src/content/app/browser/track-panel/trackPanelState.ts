@@ -24,7 +24,7 @@ export type TrackPanelStateForGenome = Readonly<{
   isTrackPanelOpened: boolean;
   selectedTrackPanelTab: TrackSet;
   trackPanelModalView: string;
-  bookmarks: { [genomeId: string]: Bookmark[] };
+  bookmarks: Bookmark[];
 }>;
 
 export type TrackPanelState = Readonly<{
@@ -35,7 +35,7 @@ const selectedTrackPanelTabFromStorage = browserStorageService.getSelectedTrackP
 
 export const defaultTrackPanelStateForGenome: TrackPanelStateForGenome = {
   isTrackPanelModalOpened: false,
-  bookmarks: {},
+  bookmarks: [],
   isTrackPanelOpened: false,
   selectedTrackPanelTab: TrackSet.GENOMIC,
   trackPanelModalView: ''
