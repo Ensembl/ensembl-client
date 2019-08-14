@@ -105,7 +105,7 @@ export const updateTrackStates = createStandardAction(
 export const updateTrackStatesAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (payload: UpdateTrackStatesPayload) => (
-  dispatch: Dispatch,
+  dispatch,
   getState: () => RootState
 ) => {
   const stateFragment = {
@@ -117,6 +117,7 @@ export const updateTrackStatesAndSave: ActionCreator<
   };
 
   dispatch(updateTrackStates(stateFragment));
+  dispatch(updateBookmarksAndSave());
   const trackStates = getBrowserTrackStates(getState());
   browserStorageService.saveTrackStates(trackStates);
 };

@@ -1,5 +1,6 @@
 import { TrackSet } from './trackPanelConfig';
 import browserStorageService from '../browser-storage-service';
+import trackPanelStorageService from './track-panel-storage-service';
 import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
 
 export type Bookmark = {
@@ -18,6 +19,10 @@ export type Bookmark = {
     };
   };
 };
+
+const bookmarks: {
+  [genomeId: string]: Bookmark[];
+} = trackPanelStorageService.getBookmarks();
 
 export type TrackPanelStateForGenome = Readonly<{
   isTrackPanelModalOpened: boolean;
@@ -48,7 +53,8 @@ export const defaultTrackPanelState: TrackPanelState = Object.keys(
     ...state,
     [genomeId]: {
       ...defaultTrackPanelStateForGenome,
-      selectedTrackPanelTab: selectedTrackPanelTabFromStorage[genomeId]
+      selectedTrackPanelTab: selectedTrackPanelTabFromStorage[genomeId],
+      bookmarks: bookmarks[genomeId]
     }
   }),
   {}

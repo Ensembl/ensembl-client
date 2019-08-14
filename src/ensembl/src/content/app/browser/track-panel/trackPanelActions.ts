@@ -4,6 +4,7 @@ import { Action, ActionCreator } from 'redux';
 
 import { RootState } from 'src/store';
 import { TrackSet } from './trackPanelConfig';
+import trackPanelStorageService from './track-panel-storage-service';
 import browserStorageService from '../browser-storage-service';
 import {
   getBrowserActiveGenomeId,
@@ -117,11 +118,7 @@ export const updateBookmarksAndSave: ActionCreator<
   const existingIndex = activeGenomeBookmarks.findIndex(
     (bookmark) => bookmark.object_id === activeEnsObject.object_id
   );
-  if (existingIndex !== -1 && activeGenomeBookmarks.length > 1) {
-    // If it is already present, bump it to the end
-    activeGenomeBookmarks.push(activeGenomeBookmarks[existingIndex]);
-    activeGenomeBookmarks.splice(existingIndex, 1);
-  } else if (existingIndex === -1) {
+  if (existingIndex === -1) {
     // IF it is not present, add it to the end
     activeGenomeBookmarks.push({
       genome_id: activeEnsObject.genome_id,
@@ -131,7 +128,18 @@ export const updateBookmarksAndSave: ActionCreator<
       location: { ...activeEnsObject.location },
       trackStates: { ...trackStates }
     });
+  } else if (existingIndex !== -1) {
+    // If it is already present, bump it to the end
+    activeGenomeBookmarks.push({
+      ...activeGenomeBookmarks[existingIndex],
+      trackStates
+    });
+    activeGenomeBookmarks.splice(existingIndex, 1);
   }
+
+  trackPanelStorageService.updateActiveGenomeBookmarks({
+    [activeGenomeId]: activeGenomeBookmarks
+  });
 
   dispatch(
     updateTrackPanelForGenome({
