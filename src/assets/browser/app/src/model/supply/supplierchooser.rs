@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use model::item::UnpackedProduct;
 use model::train::Traveller;
 
-use super::{ Supplier, PurchaseOrder, RequestedRegion };
+use super::{ Supplier, PurchaseOrder };
 
 pub struct SupplierChooser {
     backend_source: Box<Supplier>,
@@ -26,12 +26,11 @@ impl SupplierChooser {
 
 impl Supplier for SupplierChooser {
     fn supply(&self, po: PurchaseOrder) {
-        if let RequestedRegion::Leaf(leaf) = po.get_region() {
-            let stick_name = leaf.get_stick().get_name();
-            if let Some(source) = self.per_stick_sources.get(&stick_name) {
-                source.supply(po);
-                return;
-            }
+        let leaf = po.get_leaf();
+        let stick_name = leaf.get_stick().get_name();
+        if let Some(source) = self.per_stick_sources.get(&stick_name) {
+            source.supply(po);
+            return;
         }
         self.backend_source.supply(po);
     }

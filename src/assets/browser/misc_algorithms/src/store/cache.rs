@@ -94,6 +94,10 @@ impl<K,V> Cache<K,V> where K:Eq+Hash {
         }
         None
     }
+
+    pub fn get_row(&self, row: usize) -> Option<&V> {
+        self.values[row].as_ref().map(|v| &v.1)
+    }
 }
 
 #[cfg(test)]

@@ -4,7 +4,7 @@ use tánaiste::Value;
 use composit::{ Leaf, StickManager };
 use controller::global::WindowState;
 use data::BackendConfig;
-use model::item::{ DeliveredItemId, DeliveredItem };
+use model::item::{ DeliveredItemId, DeliveredItem, FocusSpecificity };
 use model::supply::{ ProductList, PurchaseOrder };
 
 fn marshal(data: &SerdeValue) -> Vec<Value> {
@@ -56,7 +56,7 @@ pub fn parse_delivereditem_internal(window: &mut WindowState, data: &str) -> Res
         if let Ok(bytecode) = window.get_backend_config().get_bytecode(json_str(&resp[1])?) {
             if let Some(product) = product_list.get_product(&product_name) {
                 out.push(DeliveredItem::new(
-                    &DeliveredItemId::new(&product,&leaf,&focus),
+                    &DeliveredItemId::new(&product,&leaf,&FocusSpecificity::Specific(focus.clone())),
                     bytecode.clone(),
                     marshal(&resp[2])
                 ));

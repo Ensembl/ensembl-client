@@ -82,14 +82,16 @@ impl BStarTree {
         if let Ok(index) = leaf.values.binary_search(&value) {
             leaf.values.remove(index);
         }
-        if leaf.values.len() < B && leaf.next.is_some() {
+        while leaf.values.len() < B && leaf.next.is_some() {
             let second_ref = leaf.next.clone().unwrap();
             let mut second = second_ref.borrow_mut();
-            let split_val = second.values[0];
-            leaf.values.append(&mut second.values);
+            if second.values.len() > 0 {
+                let split_val = second.values[0];
+                leaf.values.append(&mut second.values);
+                internal.remove(&split_val);
+            }
             leaf.next = second.next.clone();
             second.valid = false;
-            internal.remove(&split_val);
         }
     }
 

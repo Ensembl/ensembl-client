@@ -5,7 +5,7 @@ use composit::AllLandscapes;
 use controller::global::WindowState;
 use model::driver::PrinterManager;
 use model::item::{ UnpackedSubassembly, UnpackedProduct};
-use model::supply::{ Product, PurchaseOrder, RequestedRegion };
+use model::supply::{ Product, PurchaseOrder };
 use super::{ CarriageId, Traveller };
 
 use composit::Leaf;
@@ -37,7 +37,7 @@ impl TravellerCreator {
     }
     
     pub fn make_travellers_for_source(&mut self, product: &mut Product, leaf: &Leaf, focus: &Option<String>,carriage_id: &CarriageId) -> Vec<Traveller> {
-        let po = PurchaseOrder::new(product,&RequestedRegion::Leaf(leaf.clone()),focus);
+        let po = PurchaseOrder::new(product,leaf,focus);
         let mut travellers = Vec::new();
         for sa in product.list_subassemblies() {
             let trd = UnpackedSubassembly::new(leaf);

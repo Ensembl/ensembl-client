@@ -2,7 +2,7 @@ use std::collections::{ HashMap, HashSet };
 use itertools::Itertools;
 
 use controller::global::WindowState;
-use model::supply::{ PurchaseOrder, RequestedRegion };
+use model::supply::{ PurchaseOrder };
 
 struct ChromBuilder {
     input: HashSet<(String,String)>,
@@ -66,9 +66,7 @@ impl XferUrlBuilder {
     }
     
     pub fn add(&mut self, window: &mut WindowState, po: &PurchaseOrder) {
-        let (stick,pane) = match po.get_region() {
-            RequestedRegion::Leaf(leaf) => leaf.get_short_spec()
-        };
+        let (stick,pane) = po.get_leaf().get_short_spec();
         let focus = po.get_focus().clone();
         if let Some(wire) = window.get_backend_config()
                 .get_track(&po.get_product().get_product_name())

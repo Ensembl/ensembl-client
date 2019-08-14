@@ -56,7 +56,7 @@ impl App {
         let bsm = BackendStickManager::new(config);
         let mut csm = CombinedStickManager::new(bsm);
         add_debug_sticks(&mut csm);
-        let cache = XferCache::new(5000,config);
+        let cache = XferCache::new(1024,config);
         let mut product_list = ProductList::new();
         let printer = PrinterManager::new(Box::new(GLPrinter::new(&canv_el)));
         let landscapes = AllLandscapes::new();
