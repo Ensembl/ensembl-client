@@ -18,12 +18,12 @@ import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
 
 const buildBookmarkLabel = (ensObject: EnsObject): string => {
   if (ensObject.object_type === 'gene') {
-    return `${ensObject.label} (${ensObject.stable_id})`;
+    return ensObject.label;
   }
 
   return ensObject.stable_id
     ? ensObject.stable_id
-    : `Region: ${getFormattedLocation(ensObject.location)}`;
+    : getFormattedLocation(ensObject.location);
 };
 
 export const toggleTrackPanel = createStandardAction(

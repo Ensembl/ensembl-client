@@ -45,17 +45,27 @@
     font-weight: $normal;
     text-overflow: ellipsis;
     overflow: hidden;
-    width: 100%;
+    max-width: 215px;
     white-space: nowrap;
-    display: block;
+    display: inline-block;
   }
 
   dt {
     color: $ens-dark-grey;
     font-size: 12px;
+    border-bottom: 1px solid $ens-grey;
   }
 
   dd {
     margin: 15px 0 0 15px;
+    position: relative;
   }
+}
+
+.previouslyViewedType {
+  color: $ens-medium-dark-grey;
+  position: absolute;
+  margin-left: 8px;
+  font-size: 12px;
+  top: 4px;
 }

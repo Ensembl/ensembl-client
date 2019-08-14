@@ -57,10 +57,11 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
 
       return (
         <dd key={exampleObject.object_id}>
-          <Link to={path}>
-            {upperFirst(exampleObject.object_type)}:{' '}
-            {getExampleObjLabel(exampleObject)}
-          </Link>
+          <Link to={path}>{getExampleObjLabel(exampleObject)}</Link>
+          <span className={styles.previouslyViewedType}>
+            {' '}
+            {upperFirst(exampleObject.object_type)}
+          </span>
         </dd>
       );
     });
@@ -89,6 +90,10 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
           >
             {bookmark.label}
           </Link>
+          <span className={styles.previouslyViewedType}>
+            {' '}
+            {upperFirst(bookmark.object_type)}
+          </span>
         </dd>
       );
     });
@@ -106,7 +111,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
       ) : null}
       {props.bookmarks.length ? (
         <dl className={styles.previouslyViewed}>
-          <dt>Recently viewed</dt>
+          <dt>Previously viewed</dt>
           {getBookmarkedLinks()}
         </dl>
       ) : null}
