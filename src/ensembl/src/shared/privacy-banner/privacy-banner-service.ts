@@ -1,4 +1,4 @@
-import * as privacyConfig from './privacyConfig';
+import privacyConfig from './privacyConfig';
 import storageService, {
   StorageServiceInterface
 } from 'src/services/storage-service';
@@ -18,7 +18,6 @@ export class PrivacyBannerService {
     this.storageService.save(privacyConfig.name, privacyConfig.version);
   }
 
-  // Returns true if versions doesn't match
   public shouldShowBanner(): boolean {
     return this.getPolicyVersion() !== privacyConfig.version;
   }

@@ -1,5 +1,5 @@
 import { PrivacyBannerService } from './privacy-banner-service';
-import * as privacyConfig from './privacyConfig';
+import privacyConfig from './privacyConfig';
 import faker from 'faker';
 
 const mockStorageService = {
@@ -42,21 +42,20 @@ describe('PrivacyBannerService', () => {
   describe('.shouldShowBanner', () => {
     it('shows banner if privacy version in local storage is different from config version', () => {
       const privacyBannerService = new PrivacyBannerService(mockStorageService);
-      const mockVersion = faker.lorem.word();
+      const returnDifferentVersion = () => faker.lorem.word();
       jest
         .spyOn(privacyBannerService, 'getPolicyVersion')
-        .mockImplementation(() => mockVersion);
-      // Returns true if versions doesn't match
+        .mockImplementation(returnDifferentVersion);
       const result = privacyBannerService.shouldShowBanner();
       expect(result).toEqual(true);
     });
 
     it('does not show banner if privacy version in local storage is same as config version', () => {
       const privacyBannerService = new PrivacyBannerService(mockStorageService);
+      const returnSameVersion = () => privacyConfig.version;
       jest
         .spyOn(privacyBannerService, 'getPolicyVersion')
-        .mockImplementation(() => privacyConfig.version);
-      // Returns false if versions match
+        .mockImplementation(returnSameVersion);
       const result = privacyBannerService.shouldShowBanner();
       expect(result).toEqual(false);
     });
