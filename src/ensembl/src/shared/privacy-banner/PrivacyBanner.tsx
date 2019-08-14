@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import * as privacyConfig from './privacyConfig';
+import privacyConfig from './privacyConfig';
 import styles from './PrivacyBanner.scss';
 
 type PrivacyBannerProps = {
