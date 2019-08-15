@@ -29,12 +29,14 @@ export type TrackPanelIcons = {
   [key: string]: TrackPanelIcon;
 };
 
-export type TrackStates = {
-  [genomeId: string]: {
-    [categoryName: string]: {
-      [trackName: string]: ImageButtonStatus;
-    };
+export type GenomeTrackStates = {
+  [categoryName: string]: {
+    [trackName: string]: ImageButtonStatus;
   };
+};
+
+export type TrackStates = {
+  [genomeId: string]: GenomeTrackStates;
 };
 
 export type TrackToggleStates = {

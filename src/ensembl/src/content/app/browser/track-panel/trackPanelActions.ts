@@ -3,7 +3,7 @@ import { ThunkAction } from 'redux-thunk';
 import { Action, ActionCreator } from 'redux';
 
 import { RootState } from 'src/store';
-import { TrackSet } from './trackPanelConfig';
+import { TrackSet, GenomeTrackStates } from './trackPanelConfig';
 import trackPanelStorageService from './track-panel-storage-service';
 import browserStorageService from '../browser-storage-service';
 import {
@@ -17,14 +17,26 @@ import { Bookmark } from './trackPanelState';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
 
-const buildBookmarkLabel = (ensObject: EnsObject): string => {
-  if (ensObject.object_type === 'gene') {
-    return ensObject.label;
+const buildBookmark = (
+  ensObject: EnsObject,
+  trackStates: GenomeTrackStates
+): Bookmark => {
+  let bookmarkLabel = ensObject.object_type === 'gene' ? ensObject.label : '';
+
+  if (!bookmarkLabel && ensObject.stable_id) {
+    bookmarkLabel = ensObject.label;
+  } else if (!bookmarkLabel) {
+    bookmarkLabel = getFormattedLocation(ensObject.location);
   }
 
-  return ensObject.stable_id
-    ? ensObject.stable_id
-    : getFormattedLocation(ensObject.location);
+  return {
+    genome_id: ensObject.genome_id,
+    object_id: ensObject.object_id,
+    object_type: ensObject.object_type,
+    label: bookmarkLabel,
+    location: { ...ensObject.location },
+    trackStates: { ...trackStates }
+  };
 };
 
 import { getActiveTrackPanel } from './trackPanelSelectors';
@@ -120,14 +132,7 @@ export const updateBookmarksAndSave: ActionCreator<
   );
   if (existingIndex === -1) {
     // IF it is not present, add it to the end
-    activeGenomeBookmarks.push({
-      genome_id: activeEnsObject.genome_id,
-      object_id: activeEnsObject.object_id,
-      object_type: activeEnsObject.object_type,
-      label: buildBookmarkLabel(activeEnsObject),
-      location: { ...activeEnsObject.location },
-      trackStates: { ...trackStates }
-    });
+    activeGenomeBookmarks.push(buildBookmark(activeEnsObject, trackStates));
   } else if (existingIndex !== -1) {
     // If it is already present, bump it to the end
     activeGenomeBookmarks.push({

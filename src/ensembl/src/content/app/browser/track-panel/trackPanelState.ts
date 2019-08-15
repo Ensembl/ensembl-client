@@ -1,7 +1,6 @@
-import { TrackSet } from './trackPanelConfig';
+import { TrackSet, GenomeTrackStates } from './trackPanelConfig';
 import browserStorageService from '../browser-storage-service';
 import trackPanelStorageService from './track-panel-storage-service';
-import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
 
 export type Bookmark = {
   genome_id: string;
@@ -13,16 +12,14 @@ export type Bookmark = {
     end: number;
   };
   label: string;
-  trackStates: {
-    [categoryName: string]: {
-      [trackName: string]: ImageButtonStatus;
-    };
-  };
+  trackStates: GenomeTrackStates;
 };
 
-const bookmarks: {
+export type Bookmarks = {
   [genomeId: string]: Bookmark[];
-} = trackPanelStorageService.getBookmarks();
+};
+
+const bookmarksFromStorage: Bookmarks = trackPanelStorageService.getBookmarks();
 
 export type TrackPanelStateForGenome = Readonly<{
   isTrackPanelModalOpened: boolean;
@@ -46,15 +43,18 @@ export const defaultTrackPanelStateForGenome: TrackPanelStateForGenome = {
   trackPanelModalView: ''
 };
 
-export const defaultTrackPanelState: TrackPanelState = Object.keys(
-  selectedTrackPanelTabFromStorage
-).reduce(
+const availableGenomeIdsFromStorage = [
+  ...Object.keys(selectedTrackPanelTabFromStorage),
+  ...Object.keys(bookmarksFromStorage)
+];
+
+export const defaultTrackPanelState: TrackPanelState = availableGenomeIdsFromStorage.reduce(
   (state: TrackPanelState, genomeId: string) => ({
     ...state,
     [genomeId]: {
       ...defaultTrackPanelStateForGenome,
       selectedTrackPanelTab: selectedTrackPanelTabFromStorage[genomeId],
-      bookmarks: bookmarks[genomeId]
+      bookmarks: bookmarksFromStorage[genomeId]
     }
   }),
   {}
