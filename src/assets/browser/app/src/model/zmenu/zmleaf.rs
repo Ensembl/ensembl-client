@@ -9,7 +9,7 @@ use types::{ Placement, Dot };
 
 use super::{ ZMenuFeatureTmpl, ZMenuData };
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 struct ZMenuItem {
     placement: Placement,
     track_id: String,
@@ -43,7 +43,7 @@ impl Hash for ZMenuIntersection {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 pub struct ZMenuLeaf {
     items: Vec<ZMenuItem>,
     template: HashMap<String,ZMenuFeatureTmpl>,

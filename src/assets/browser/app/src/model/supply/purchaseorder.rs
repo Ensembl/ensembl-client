@@ -11,8 +11,7 @@ pub struct PurchaseOrder {
 
 impl PurchaseOrder {
     pub fn new(product: &Product, leaf: &Leaf, mut focus: &Option<String>) -> PurchaseOrder {
-        /* XXX */
-        if product.get_product_name() != "gene-feat" {
+        if !product.get_focus_dependent() {
             focus = &None;
         }
         PurchaseOrder {

@@ -4,21 +4,21 @@ use std::rc::Rc;
 
 use tánaiste::Value;
 
-use composit::{ Leaf, AllLandscapes };
+use composit::Leaf;
 use controller::global::WindowState;
-use data::{ XferClerk, XferConsumer, BackendConfig, BackendBytecode, UnpackedProductConsumer };
-use model::focus::FocusObject;
+use data::UnpackedProductConsumer;
 use model::item::{ DeliveredItem, UnpackedProduct};
 use model::shape::DrawingSpec;
-use model::supply::{ PurchaseOrder, Subassembly, Supplier };
-use model::train::Traveller;
-use tácode::{ Tácode, TáTask };
+use model::supply::Subassembly;
+use model::train::TrainContext;
+use tácode::TáTask;
 
-pub fn run_tánaiste_makeshapes(window: &mut WindowState, consumer: Box<dyn UnpackedProductConsumer>, unpacked_item: &mut UnpackedProduct, item: &DeliveredItem) {
+pub fn run_tánaiste_makeshapes(window: &mut WindowState, consumer: Box<dyn UnpackedProductConsumer>, unpacked_item: &mut UnpackedProduct, 
+                               item: &DeliveredItem, context: &TrainContext) {
     let lid = item.get_id().get_product().get_lid();
     let mut tc = window.get_tánaiste_interp().clone();
     let mut all_landscapes = window.get_all_landscapes().clone();
-    let mut focus_object = window.get_focus().get_focus();
+    let mut focus_object = context.get_focus().clone();
     let mut backend_config = window.get_backend_config().clone();
     match tc.assemble(&item.get_bytecode().get_source()) {
         Ok(code) => {
@@ -33,7 +33,7 @@ pub fn run_tánaiste_makeshapes(window: &mut WindowState, consumer: Box<dyn Unpa
                         all_landscapes,
                         focus_object.clone(),consumer));
                     for (i,reg) in item.get_data().iter().enumerate() {
-                        tc.set_reg(pid,i+1,reg.clone());
+                        tc.set_reg(pid,i+1,reg.full_copy());
                     }
                     tc.start(pid);
                 },

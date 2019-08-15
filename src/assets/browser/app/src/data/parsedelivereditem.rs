@@ -52,11 +52,15 @@ pub fn parse_delivereditem_internal(window: &mut WindowState, data: &str) -> Res
         let product_name = window.get_backend_config().wire_to_name(json_str(&code_data[0])?).ok_or(())?;
         let stick = unwrap!(window.get_stick_manager().get_stick(json_str(&code_data[1])?));
         let leaf = Leaf::from_short_spec(&stick,json_str(&code_data[2])?);
-        let focus = code_data[3].as_str().map(|v| v.to_string());
+        let focus = match code_data[4].as_bool().unwrap_or(true) {
+            false => FocusSpecificity::Agnostic,
+            true => FocusSpecificity::Specific(code_data[3].as_str().map(|v| v.to_string()))
+        };
         if let Ok(bytecode) = window.get_backend_config().get_bytecode(json_str(&resp[1])?) {
             if let Some(product) = product_list.get_product(&product_name) {
+                //console!("using {:?} for {:?} and data {:?}",json_str(&resp[1]),product, marshal(&resp[2]));
                 out.push(DeliveredItem::new(
-                    &DeliveredItemId::new(&product,&leaf,&FocusSpecificity::Specific(focus.clone())),
+                    &DeliveredItemId::new(&product,&leaf,&focus),
                     bytecode.clone(),
                     marshal(&resp[2])
                 ));

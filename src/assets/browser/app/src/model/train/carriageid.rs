@@ -15,5 +15,6 @@ impl CarriageId {
         }
     }
 
+    pub fn get_train_id(&self) -> &TrainId { &self.train_id }
     pub fn get_leaf(&self) -> &Leaf { &self.leaf }
 }

@@ -80,7 +80,6 @@ impl XferCacheImpl {
     pub fn get(&mut self, po: &PurchaseOrder) -> Option<DeliveredItem> {
         if let Some(row) = self.indexes.borrow().find(po).next() {
             if let Some(item) = self.cache.get_row(row) {
-                console!("hit {:?} with {:?}",po,item.get_id());
                 return Some(item.clone());
             }
         }

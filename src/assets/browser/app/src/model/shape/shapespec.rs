@@ -14,7 +14,7 @@ pub trait GenericShape {
     fn zmenu_box(&self) -> Option<(String,Placement)> { None }
 }
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 pub enum ShapeSpec {
     PinPoly(PinPolySpec),
     PinRect(RectSpec),
@@ -57,7 +57,7 @@ pub enum ShapeUnder {
     All
 }
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 pub enum DrawingSpec {
     Text(TextArtist),
     Bitmap(BitmapArtist),
@@ -121,7 +121,7 @@ pub trait TypeToShape {
     fn sid_type(&self) -> ShapeInstanceDataType;
 }
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 pub struct DrawingHash(u64);
 
 impl DrawingHash {

@@ -2,7 +2,7 @@ use super::{ DrawingHash, DrawingSpec };
 
 use types::CPixel;
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 pub struct BitmapArtist {
     pub data: Vec<u8>,
     pub size: CPixel,

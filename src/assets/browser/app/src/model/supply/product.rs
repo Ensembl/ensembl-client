@@ -16,17 +16,19 @@ pub struct Product {
     parts: HashMap<Option<String>,Subassembly>,
     supplier: Rc<Supplier>,
     sa_expr: Rc<RefCell<HashMap<Option<String>,Rc<StateExpr>>>>,
-    lid: usize
+    lid: usize,
+    focus_dep: bool
 }
 
 impl Product {
-    pub fn new(name: &str, supplier: Rc<Supplier>, lid: usize) -> Product {
+    pub fn new(name: &str, supplier: Rc<Supplier>, lid: usize, focus_dep: bool) -> Product {
         Product {
             supplier,
             name: name.to_string(),
             parts: HashMap::new(),
             sa_expr: Rc::new(RefCell::new(HashMap::new())),
-            lid
+            lid,
+            focus_dep
         }
     }
     
@@ -44,12 +46,11 @@ impl Product {
     
     pub fn get_product_name(&self) -> &str { &self.name }
     pub fn get_lid(&self) -> usize { self.lid }
+    pub fn get_focus_dependent(&self) -> bool { self.focus_dep }
 
     pub fn get_subassembly_state(&self, sa: &Subassembly, m: &StateManager) -> bool {
         let sa_name = sa.get_subassembly_name().as_ref().map(|x| x.to_string());
-        //console!("product={} name={:?} exprs={:?}",self.name,sa_name,self.sa_expr.keys());
         self.sa_expr.borrow().get(&sa_name).map(|expr| expr.is_on(m)).unwrap_or(false)
-       // sa.is_on1(m)
     }
 }
 

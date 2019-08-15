@@ -174,7 +174,7 @@ impl Command for GetFocus {
                 if let Some(focus) = focus {
                     regs.set(self.1,Value::new_from_string(vec![focus.clone()]));
                 } else {
-                    regs.set(self.1,Value::new_from_string(vec![]));
+                    regs.set(self.1,Value::new_from_string(vec!["".to_string()]));
                 }
             }
         });

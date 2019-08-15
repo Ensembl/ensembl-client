@@ -36,7 +36,8 @@ impl TravellerCreator {
         self.components.remove(k);
     }
     
-    pub fn make_travellers_for_source(&mut self, product: &mut Product, leaf: &Leaf, focus: &Option<String>,carriage_id: &CarriageId) -> Vec<Traveller> {
+    pub fn make_travellers_for_source(&mut self, product: &mut Product, leaf: &Leaf, carriage_id: &CarriageId) -> Vec<Traveller> {
+        let focus = carriage_id.get_train_id().get_context().get_focus();
         let po = PurchaseOrder::new(product,leaf,focus);
         let mut travellers = Vec::new();
         for sa in product.list_subassemblies() {
@@ -48,11 +49,11 @@ impl TravellerCreator {
         travellers
     }
     
-    pub fn make_travellers_for_leaf(&mut self, leaf: &Leaf, focus: &Option<String>, carriage_id: &CarriageId) -> Vec<Traveller> {
+    pub fn make_travellers_for_leaf(&mut self, leaf: &Leaf, carriage_id: &CarriageId) -> Vec<Traveller> {
         let mut lcomps = Vec::<Traveller>::new();
         let mut comps : Vec<Product> = self.components.values().cloned().collect();
         for c in &mut comps {
-            lcomps.append(&mut self.make_travellers_for_source(c,leaf,focus,carriage_id));
+            lcomps.append(&mut self.make_travellers_for_source(c,leaf,carriage_id));
         }
         lcomps
     }    

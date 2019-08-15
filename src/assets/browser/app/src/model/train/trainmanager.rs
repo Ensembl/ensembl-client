@@ -19,7 +19,7 @@ use data::XferConsumer;
 use model::driver::PrinterManager;
 use model::item::{ DeliveredItem, ItemUnpacker };
 use model::supply::Product;
-use super::{ Train, TravellerCreator };
+use super::{ Train, TrainContext, TravellerCreator };
 
 const MS_FADE : f64 = 100.;
 
@@ -64,7 +64,8 @@ impl TrainManagerImpl {
     /* utility: makes new train at given scale */
     fn make_train(&mut self, cm: &mut TravellerCreator, scale: &Scale) -> Option<Train> {
         if let Some(ref stick) = self.stick {
-            let mut f = Train::new(&self.printer,&stick,scale,&self.focus);
+            let context = TrainContext::new(&self.focus);
+            let mut f = Train::new(&self.printer,&stick,scale,&context);
             f.set_position(self.position_bp);
             f.set_zoom(self.bp_per_screen);
             f.manage_leafs(cm);
@@ -83,7 +84,8 @@ impl TrainManagerImpl {
         self.bp_per_screen = bp_per_screen;
         let scale = Scale::best_for_screen(bp_per_screen);
         self.each_train(|x| x.set_active(false));
-        self.current_train = Some(Train::new(&self.printer,st,&scale,&self.focus));
+        let context = TrainContext::new(&self.focus);
+        self.current_train = Some(Train::new(&self.printer,st,&scale,&context));
         self.current_train.as_mut().unwrap().set_zoom(bp_per_screen);
         self.transition_train = None;
         self.future_train = None;
@@ -187,9 +189,9 @@ impl TrainManagerImpl {
     /* current (or soon and inevitable) focus object */
     fn printing_focus(&self) -> Option<String> {
         if let Some(ref transition_train) = self.transition_train {
-            transition_train.get_train_id().get_focus().clone()
+            transition_train.get_train_id().get_context().get_focus().clone()
         } else if let Some(ref current_train) = self.current_train {
-            current_train.get_train_id().get_focus().clone()
+            current_train.get_train_id().get_context().get_focus().clone()
         } else {
             None
         }
@@ -222,7 +224,7 @@ impl TrainManagerImpl {
                 /* we're not currently showing the optimal scale */
                 if let Some(ref mut future_train) = self.future_train {
                     /* there's a future train ... */
-                    if best != *future_train.get_train_id().get_scale() || self.focus != *future_train.get_train_id().get_focus() {
+                    if best != *future_train.get_train_id().get_scale() || self.focus != *future_train.get_train_id().get_context().get_focus() {
                         /* ... and that's not optimal either */
                         end_future = true;
                         new_future = true;
@@ -237,7 +239,10 @@ impl TrainManagerImpl {
             }
             /* do anything that needs to be done */
             if end_future { self.end_future(); }
-            if new_future { self.new_future(cm,&best); }
+            if new_future { 
+                //console!("planning transition to {:?}",best);
+                self.new_future(cm,&best);
+            }
         }
     }
 

@@ -5,7 +5,7 @@ use data::XferConsumer;
 use model::item::{ DeliveredItem, ItemUnpacker };
 use model::supply::Product;
 use model::driver::{ Printer, PrinterManager };
-use super::{ Carriage, CarriageId, TrainId, Traveller, TravellerCreator };
+use super::{ Carriage, CarriageId, TrainContext, TrainId, Traveller, TravellerCreator };
 use model::zmenu::ZMenuLeafSet;
 
 const MAX_FLANK : i32 = 3;
@@ -21,10 +21,10 @@ pub struct Train {
 }
 
 impl Train {
-    pub fn new(pm: &PrinterManager, stick: &Stick, scale: &Scale, focus: &Option<String>) -> Train {
+    pub fn new(pm: &PrinterManager, stick: &Stick, scale: &Scale, context: &TrainContext) -> Train {
         Train {
             pm: pm.clone(),
-            id: TrainId::new(stick,scale,focus),
+            id: TrainId::new(stick,scale,context),
             ideal_flank: 0,
             middle_leaf: 0,
             carriages: HashMap::<Leaf,Carriage>::new(),
@@ -62,11 +62,10 @@ impl Train {
     
     /* add component to leaf */
     pub fn add_component(&mut self, cm: &mut TravellerCreator, product: &mut Product) {
-        let focus = self.id.get_focus().as_ref().map(|x| x.to_string()).clone();
         for leaf in self.leafs() {
             let train_id = self.id.clone();
             let c = self.get_carriage(&leaf);
-            for trav in cm.make_travellers_for_source(product,&leaf,&focus,&c.get_id()) {
+            for trav in cm.make_travellers_for_source(product,&leaf,&c.get_id()) {
                 c.add_traveller(trav.clone());
             }
         }
@@ -128,12 +127,11 @@ impl Train {
     /* manage_leafs entry point */
     pub fn manage_leafs(&mut self, cm: &mut TravellerCreator) {
         if !self.active { return; }
-        let focus = self.id.get_focus().as_ref().map(|x| x.to_string()).clone();
         self.remove_unused_leafs();
         for leaf in self.get_missing_leafs() {
             let train_id = self.id.clone();
             let c = self.get_carriage(&leaf);
-            for trav in cm.make_travellers_for_leaf(&leaf,&focus,&c.get_id()) {
+            for trav in cm.make_travellers_for_leaf(&leaf,&c.get_id()) {
                 c.add_traveller(trav);
             }
         }

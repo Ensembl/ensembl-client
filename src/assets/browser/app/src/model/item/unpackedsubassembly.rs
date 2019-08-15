@@ -4,7 +4,7 @@ use model::supply::Product;
 use model::zmenu::ZMenuLeaf;
 
 // XXX cache compressed and remove clone!
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 pub struct UnpackedSubassembly {
     shapes: Vec<ShapeSpec>,
     zml: ZMenuLeaf

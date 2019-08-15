@@ -124,24 +124,27 @@ impl BStarTree {
 impl BStarTreeWalker {
     fn slow(&mut self, start: usize) {
         let internal = &mut self.tree.0.borrow_mut().internal;
-        let leaf_ref = internal.range(..start+1).rev().next().unwrap().1.clone();
-        let leaf = leaf_ref.borrow_mut();
-        for (i,v) in leaf.values.iter().enumerate() {
-            if v >= &start { 
-                self.leaf = leaf_ref.clone();
-                self.index = i;
-                self.value = Some(*v);
+        let mut leaf_ref = internal.range(..start+1).rev().next().unwrap().1.clone();
+        loop {
+            for (i,v) in leaf_ref.borrow_mut().values.iter().enumerate() {
+                if v >= &start { 
+                    self.leaf = leaf_ref.clone();
+                    self.index = i;
+                    self.value = Some(*v);
+                    return;
+                }
+            }
+            if leaf_ref.borrow_mut().next.is_none() {
+                self.value = None;
                 return;
             }
+            leaf_ref = {
+                let leaf = leaf_ref.borrow();
+                leaf.next.as_ref().unwrap().clone()
+            };
+            self.leaf = leaf_ref.clone();
+            self.index = 0;
         }
-        if leaf.next.is_none() {
-            self.value = None;
-            return;
-        }
-        let leaf_ref = leaf.next.as_ref().unwrap().clone();
-        self.leaf = leaf_ref;
-        self.index = 0;
-        self.value = Some(self.leaf.borrow_mut().values[0]);
     }
 
     fn fast(&mut self) -> Option<(Rc<RefCell<BStarLeaf>>,usize)> {

@@ -10,7 +10,7 @@ use composit::Leaf;
 
 use super::UnpackedSubassembly;
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 pub struct UnpackedProduct{
     data: HashMap<Subassembly,Rc<RefCell<UnpackedSubassembly>>>
 }
