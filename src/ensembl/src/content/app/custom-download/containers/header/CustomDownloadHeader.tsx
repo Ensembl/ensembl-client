@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { PrimaryButton } from 'src/shared/button/Button';
 
@@ -14,9 +14,10 @@ import {
   getDownloadType
 } from '../../state/customDownloadSelectors';
 
-import { getFilters } from '../content/filter-accordion/state/filterAccordionSelector';
-import { getAttributes } from '../content/attributes-accordion/state/attributesAccordionSelector';
-
+import { getSelectedFilters } from '../../state/filters/filtersSelector';
+import { getSelectedAttributes } from '../../state/attributes/attributesSelector';
+import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
+import JSONValue from 'src/shared/types/JSON';
 import {
   togglePreFiltersPanel,
   setShowPreview,
@@ -25,18 +26,9 @@ import {
 import ImageButton from 'src/shared/image-button/ImageButton';
 import { ReactComponent as BackIcon } from 'static/img/shared/chevron-left.svg';
 
-import {
-  getSelectedAttributes,
-  getSelectedFilters
-} from '../content/result-holder/resultHolderHelper';
-
 import { fetchCustomDownloadResults } from './customDownloadHeaderHelper';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
-
-import AttributesSection, {
-  SelectedAttribute
-} from 'src/content/app/custom-download/types/Attributes';
 
 import styles from './CustomDownloadHeader.scss';
 
@@ -53,49 +45,12 @@ const downloadTypeoptions = [
     value: 'application/json',
     isSelected: false
   }
-  // {
-  //   label: 'CSV.gz',
-  //   value: 'text/csv',
-  //   isSelected: false
-  // },
-  // {
-  //   label: 'HTML',
-  //   value: 'application/json',
-  //   isSelected: false
-  // },
-  // {
-  //   label: 'TSV',
-  //   value: 'application/json',
-  //   isSelected: false
-  // },
-  // {
-  //   label: 'TSV.gz',
-  //   value: 'application/json',
-  //   isSelected: false
-  // },
-  // {
-  //   label: 'URL',
-  //   value: 'application/json',
-  //   isSelected: false
-  // },
-  // {
-  //   label: 'XML',
-  //   value: 'application/xml',
-  //   isSelected: false
-  // },
-  // {
-  //   label: 'XLS',
-  //   value: 'application/xml',
-  //   isSelected: false
-  // },
-  // {
-  //   label: 'XLS.gz',
-  //   value: 'application/xml',
-  //   isSelected: false
-  // }
 ];
 
 const Header = (props: Props) => {
+  useEffect(() => {
+    props.setShowPreview(customDownloadStorageService.getShowPreview());
+  }, []);
   const filterOnClick = () => {
     props.togglePreFiltersPanel(true);
   };
@@ -108,7 +63,9 @@ const Header = (props: Props) => {
     props.setShowPreview(false);
   };
 
-  let resultCount = props.preview.resultCount ? props.preview.resultCount : 0;
+  let resultCount: number = props.preview.resultCount
+    ? (props.preview.resultCount as number)
+    : 0;
 
   const handleDownloadTypeSelect = (option: string) => {
     props.setDownloadType(option);
@@ -126,11 +83,6 @@ const Header = (props: Props) => {
 
   let disablePreviewButton = resultCount === 0;
 
-  const selectedAttributes: SelectedAttribute[] = getSelectedAttributes(
-    props.attributes
-  );
-  const selectedFilters: any = getSelectedFilters(props.filters);
-
   const getFormattedResult = () => {
     return (
       <>
@@ -141,11 +93,11 @@ const Header = (props: Props) => {
 
   return (
     <div className={styles.wrapper}>
-      {!props.showPreview && (
+      {!props.showSummary && (
         <div className={styles.resultCounter}>{getFormattedResult()}</div>
       )}
 
-      {props.showPreview && (
+      {props.showSummary && (
         <>
           <div className={styles.backButton}>
             <ImageButton
@@ -156,7 +108,9 @@ const Header = (props: Props) => {
           </div>
           <div className={styles.previewCounter}>
             <div>
-              <span className={styles.boldResultCounter}>{resultCount}</span>
+              <span className={styles.boldResultCounter}>
+                {getCommaSeparatedNumber(resultCount)}
+              </span>
               <span className={styles.resultsLabel}>results</span>
             </div>
             <div className={styles.saveConfiguration}>Save configuration</div>
@@ -173,7 +127,7 @@ const Header = (props: Props) => {
         </RoundButton>
       </div>
 
-      {props.showPreview && (
+      {props.showSummary && (
         <div className={styles.downloadTypeSelectHolder}>
           <span className={styles.downloadTypeLabel}>Download as </span>
           <span className={styles.downloadTypeSelect}>
@@ -189,22 +143,22 @@ const Header = (props: Props) => {
       )}
 
       <div className={styles.previewButton}>
-        {!props.showPreview && (
+        {!props.showSummary && (
           <PrimaryButton
             onClick={previewButtonOnClick}
             isDisabled={disablePreviewButton}
           >
-            Preview download
+            Download summary
           </PrimaryButton>
         )}
-        {props.showPreview && (
+        {props.showSummary && (
           <PrimaryButton
             isDisabled={downloadButtonStatus}
             onClick={() => {
               fetchCustomDownloadResults(
                 props.downloadType,
-                selectedAttributes,
-                selectedFilters
+                props.selectedAttributes,
+                props.selectedfilters
               );
             }}
           >
@@ -230,20 +184,20 @@ const mapDispatchToProps: DispatchProps = {
 
 type StateProps = {
   selectedPreFilter: string;
-  preview: any;
-  showPreview: boolean;
+  preview: JSONValue;
+  showSummary: boolean;
   downloadType: string;
-  filters: any;
-  attributes: AttributesSection;
+  selectedfilters: JSONValue;
+  selectedAttributes: JSONValue;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
   selectedPreFilter: getSelectedPreFilter(state),
   preview: getPreviewResult(state),
-  showPreview: getShowPreviewResult(state),
+  showSummary: getShowPreviewResult(state),
   downloadType: getDownloadType(state),
-  filters: getFilters(state),
-  attributes: getAttributes(state)
+  selectedfilters: getSelectedFilters(state),
+  selectedAttributes: getSelectedAttributes(state)
 });
 
 export default connect(

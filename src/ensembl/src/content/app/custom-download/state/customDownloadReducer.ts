@@ -13,8 +13,8 @@ import {
   defaultPreviewDownloadState
 } from './customDownloadState';
 
-import filtersAccordion from '../containers/content/filter-accordion/state/filterAccordionReducer';
-import attributesAccordion from '../containers/content/attributes-accordion/state/attributesAccordionReducer';
+import filters from './filters/filtersReducer';
+import attributes from './attributes/attributesReducer';
 import { combineReducers } from 'redux';
 
 function preFilter(
@@ -72,7 +72,7 @@ function previewDownload(
     case getType(customDownloadActions.setShowPreview):
       return {
         ...state,
-        showPreview: action.payload
+        showSummary: action.payload
       };
     case getType(customDownloadActions.setDownloadType):
       return {
@@ -86,8 +86,8 @@ function previewDownload(
 }
 
 export default combineReducers({
-  filtersAccordion,
-  attributesAccordion,
+  filters,
+  attributes,
   preFilter,
   tab,
   result,

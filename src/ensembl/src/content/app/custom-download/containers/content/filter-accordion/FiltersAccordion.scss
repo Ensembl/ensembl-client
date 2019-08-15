@@ -2,12 +2,13 @@
 
 .wrapper {
   padding-right: 15px;
-  max-height: calc(100vh - 205px);
+  max-height: calc(100vh - 135);
   overflow-y: auto;
 }
 .filterHint {
-  padding: 10px 0 10px 30px;
+  padding: 10px 40px 10px 15px;
   color: $ens-dark-grey;
+  position: relative;
 }
 
 .accordionItemPanel {
@@ -24,4 +25,12 @@
 
 .tempPadding {
   padding: 20px;
+}
+
+.resetIcon {
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  top: 10px;
+  right: 15px;
 }

@@ -33,8 +33,15 @@ $fill-color: $ens-dark-grey;
   }
 }
 
+// Class applied to tooltip while the code is finding appropriate position for it.
+// The tooltip should be invisible, but have width and height required for calculations.
+// It should also not change body dimensions (and cause sliders to appear);
+// hence it is placed in top left corner of the screen with position: fixed
 .tooltipInvisible {
   visibility: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
 .tooltipTip {

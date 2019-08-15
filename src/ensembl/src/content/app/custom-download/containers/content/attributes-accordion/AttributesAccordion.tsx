@@ -11,23 +11,23 @@ import {
   AccordionItemPermanentBlock
 } from 'src/shared/accordion';
 
-import { getAttributesAccordionExpandedPanel } from './state/attributesAccordionSelector';
+import { getAttributesAccordionExpandedPanel } from '../../../state/attributes/attributesSelector';
 import {
   setAttributesAccordionExpandedPanel,
-  fetchAttributes
-} from './state/attributesAccordionActions';
+  fetchAttributes,
+  resetSelectedAttributes
+} from '../../../state/attributes/attributesActions';
 
-import {
-  Genes,
-  Transcripts,
-  Variations,
-  Location,
-  Orthologues,
-  Phenotypes,
-  Paralogues
-} from './sections';
+import { Orthologues } from './sections';
+import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 
+import ImageButton, {
+  ImageButtonStatus
+} from 'src/shared/image-button/ImageButton';
+import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
 import styles from './AttributesAccordion.scss';
+
+import AttributesAccordionSection from 'src/content/app/custom-download/containers/content/attributes-accordion/sections/AttributesAccordionSection';
 
 type Props = StateProps & DispatchProps;
 
@@ -55,14 +55,39 @@ const AttributesAccordion = (props: Props) => {
     props.setAttributesAccordionExpandedPanel(newExpandedPanels[0]);
   };
 
+  const onReset = () => {
+    props.resetSelectedAttributes();
+    customDownloadStorageService.saveSelectedAttributes({});
+  };
+
+  const buildSection = (options: {
+    section: string;
+    hideTitles?: boolean;
+    hideUnchecked?: boolean;
+  }) => {
+    return (
+      <AttributesAccordionSection
+        section={options.section}
+        hideTitles={options.hideTitles}
+        hideUnchecked={options.hideUnchecked}
+      />
+    );
+  };
   return (
     <div className={styles.wrapper}>
       <div className={styles.dataSelectorHint}>
         Select the information you would like to download - these attributes
         will be displayed as columns in a table
+        <span className={styles.resetIcon} onClick={onReset}>
+          <ImageButton
+            buttonStatus={ImageButtonStatus.ACTIVE}
+            description={'Reset attributes'}
+            image={ResetIcon}
+          />
+        </span>
       </div>
       <Accordion
-        preExpanded={Array(1).fill(props.expandedPanel)}
+        preExpanded={[props.expandedPanel]}
         onChange={accordionOnChange}
       >
         <AccordionItem uuid={'genes'}>
@@ -72,12 +97,16 @@ const AttributesAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className={styles.accordionItem}>
-            <Genes />
+            {buildSection({ section: 'genes' })}
           </AccordionItemPanel>
           <AccordionItemPermanentBlock>
             {props.expandedPanel !== 'genes' && (
               <div className={styles.permanentBlock}>
-                <Genes hideUnchecked={true} hideTitles={true} />
+                {buildSection({
+                  section: 'genes',
+                  hideTitles: true,
+                  hideUnchecked: true
+                })}
               </div>
             )}
           </AccordionItemPermanentBlock>
@@ -90,12 +119,16 @@ const AttributesAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className={styles.accordionItem}>
-            <Transcripts />
+            {buildSection({ section: 'transcripts' })}
           </AccordionItemPanel>
           <AccordionItemPermanentBlock>
             {props.expandedPanel !== 'transcripts' && (
               <div className={styles.permanentBlock}>
-                <Transcripts hideUnchecked={true} hideTitles={true} />
+                {buildSection({
+                  section: 'transcripts',
+                  hideTitles: true,
+                  hideUnchecked: true
+                })}
               </div>
             )}
           </AccordionItemPermanentBlock>
@@ -108,34 +141,29 @@ const AttributesAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
-            <div>No attributes available under this section.</div>
+            <div className={styles.defaultContent}>
+              No attributes available under this section.
+            </div>
           </AccordionItemPanel>
         </AccordionItem>
 
-        <AccordionItem uuid={'sequence'}>
+        <AccordionItem uuid={'sequences'}>
           <AccordionItemHeading>
             <AccordionItemButton>
-              {formatAccordionTitle('sequence')}
+              {formatAccordionTitle('sequences')}
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
-            <div>No attributes available under this section.</div>
-          </AccordionItemPanel>
-        </AccordionItem>
-
-        <AccordionItem uuid={'location'}>
-          <AccordionItemHeading>
-            <AccordionItemButton>
-              {formatAccordionTitle('location')}
-            </AccordionItemButton>
-          </AccordionItemHeading>
-          <AccordionItemPanel>
-            <Location />
+            {buildSection({ section: 'sequences' })}
           </AccordionItemPanel>
           <AccordionItemPermanentBlock>
-            {props.expandedPanel !== 'location' && (
+            {props.expandedPanel !== 'sequences' && (
               <div className={styles.permanentBlock}>
-                <Location hideUnchecked={true} hideTitles={true} />
+                {buildSection({
+                  section: 'sequences',
+                  hideTitles: true,
+                  hideUnchecked: true
+                })}
               </div>
             )}
           </AccordionItemPermanentBlock>
@@ -147,8 +175,10 @@ const AttributesAccordion = (props: Props) => {
               {formatAccordionTitle('variation')}
             </AccordionItemButton>
           </AccordionItemHeading>
-          <AccordionItemPanel className={styles.accordionItem}>
-            <Variations />
+          <AccordionItemPanel>
+            <div className={styles.defaultContent}>
+              No attributes available under this section.
+            </div>
           </AccordionItemPanel>
         </AccordionItem>
 
@@ -159,15 +189,10 @@ const AttributesAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
-            <Phenotypes />
+            <div className={styles.defaultContent}>
+              No attributes available under this section.
+            </div>
           </AccordionItemPanel>
-          <AccordionItemPermanentBlock>
-            {props.expandedPanel !== 'phenotypes' && (
-              <div className={styles.permanentBlock}>
-                <Phenotypes hideUnchecked={true} hideTitles={true} />
-              </div>
-            )}
-          </AccordionItemPermanentBlock>
         </AccordionItem>
 
         <AccordionItem uuid={'protein'}>
@@ -177,7 +202,9 @@ const AttributesAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
-            <div>No attributes available under this section.</div>
+            <div className={styles.defaultContent}>
+              No attributes available under this section.
+            </div>
           </AccordionItemPanel>
         </AccordionItem>
 
@@ -199,7 +226,9 @@ const AttributesAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel>
-            <Paralogues />
+            <div className={styles.defaultContent}>
+              No attributes available under this section.
+            </div>
           </AccordionItemPanel>
         </AccordionItem>
       </Accordion>
@@ -212,11 +241,13 @@ type DispatchProps = {
     setAttributesAccordionExpandedPanel: string
   ) => void;
   fetchAttributes: () => void;
+  resetSelectedAttributes: () => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
   setAttributesAccordionExpandedPanel,
-  fetchAttributes
+  fetchAttributes,
+  resetSelectedAttributes
 };
 
 type StateProps = {

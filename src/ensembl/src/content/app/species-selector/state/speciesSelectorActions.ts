@@ -251,7 +251,7 @@ export const commitSelectedSpeciesAndSave: ActionCreator<
   dispatch(updateCommittedSpecies(newCommittedSpecies));
   dispatch(clearSelectedSearchResult());
 
-  speciesSelectorStorageService.saveSelectedSpecies(committedSpecies);
+  speciesSelectorStorageService.saveSelectedSpecies(newCommittedSpecies);
 };
 
 export const toggleSpeciesUseAndSave: ActionCreator<

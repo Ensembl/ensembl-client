@@ -3,7 +3,7 @@
 .home {
   h2 {
     color: $ens-grey;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: $normal;
   }
   position: relative;
@@ -12,7 +12,8 @@
 
 .search {
   background: $ens-light-grey;
-  box-shadow: 0 3px 10px $ens-grey;
+  box-shadow: 0 3px 5px $ens-medium-light-grey;
+  min-height: 235px;
   padding: 15px 60px;
 
   h2 {
@@ -23,7 +24,7 @@
     border: none;
     box-shadow: inset 3px 3px 10px $ens-grey;
     color: $ens-dark-grey;
-    font-size: 16px;
+    font-size: 14px;
     padding: 12px 20px;
     min-width: 300px;
     width: 30%;

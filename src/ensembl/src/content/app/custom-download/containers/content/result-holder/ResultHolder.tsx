@@ -6,10 +6,8 @@ import {
   getIsLoadingResult
 } from '../../../state/customDownloadSelectors';
 
-import { getAttributes } from '../attributes-accordion/state/attributesAccordionSelector';
-import { getFilters } from '../filter-accordion/state/filterAccordionSelector';
-
-import AttributesSection from 'src/content/app/custom-download/types/Attributes';
+import { getSelectedAttributes } from '../../../state/attributes/attributesSelector';
+import { getSelectedFilters } from '../../../state/filters/filtersSelector';
 
 import {
   setPreviewResult,
@@ -20,32 +18,40 @@ import {
 import styles from './ResultHolder.scss';
 
 import { CircleLoader } from 'src/shared/loader/Loader';
+import JSONValue from 'src/shared/types/JSON';
 
 import {
-  getSelectedAttributes,
   formatResults,
+  flattenObject,
   getEndpointUrl
 } from './resultHolderHelper';
 
 type Props = StateProps & DispatchProps;
 
 const ResultHolder = (props: Props) => {
-  const selectedAttributes: AttributesSection = getSelectedAttributes(
-    props.attributes
-  );
-
   useEffect(() => {
-    if (!selectedAttributes.length && props.preview.results) {
-      props.clearPreviewResult({});
+    const flatSelectedAttributes: { [key: string]: boolean } = flattenObject(
+      props.selectedAttributes
+    );
+
+    const totalSelectedAttributes = Object.keys(flatSelectedAttributes).length;
+    if (!totalSelectedAttributes && props.preview.results) {
+      props.clearPreviewResult();
+      return;
+    } else if (!totalSelectedAttributes) {
       return;
     }
 
-    const endpointURL = getEndpointUrl(selectedAttributes);
-    if (selectedAttributes.length) {
+    const endpointURL = getEndpointUrl(
+      flatSelectedAttributes,
+      props.selectedFilters
+    );
+
+    if (totalSelectedAttributes) {
       props.setIsLoadingResult(true);
       props.fetchPreviewResult(endpointURL);
     }
-  }, [props.attributes, props.filters]);
+  }, [props.selectedAttributes, props.selectedFilters]);
 
   useEffect(() => {
     props.setIsLoadingResult(false);
@@ -69,10 +75,11 @@ const ResultHolder = (props: Props) => {
     );
   }
 
-  const formattedResults = formatResults(props.preview, selectedAttributes);
-
-  const headerRow = formattedResults.shift();
-
+  const formattedResults = formatResults(
+    props.preview,
+    props.selectedAttributes
+  );
+  const headerRow = formattedResults.shift() || [];
   return (
     <>
       {props.isLoadingResult && (
@@ -81,13 +88,15 @@ const ResultHolder = (props: Props) => {
         </div>
       )}
       <div className={styles.wrapper}>
-        {formattedResults.map((dataRow: [], resultKey: number) => {
+        {formattedResults.map((dataRow: string[], resultKey: number) => {
           return (
             <div key={resultKey} className={styles.resultCard}>
               {headerRow.map((header: string, rowKey: number) => {
                 return (
                   <div key={rowKey} className={styles.resultLine}>
-                    <div className={styles.lineHeader}>{header}</div>
+                    <div className={styles.lineHeader} title={header}>
+                      {header}
+                    </div>
                     <div className={styles.lineValue}>
                       {dataRow[rowKey] ? dataRow[rowKey] : '-'}
                     </div>
@@ -103,27 +112,27 @@ const ResultHolder = (props: Props) => {
 };
 
 type DispatchProps = {
-  fetchPreviewResult: (fetchPreviewResult: any) => void;
-  clearPreviewResult: (clearPreviewResult: any) => void;
+  fetchPreviewResult: (fetchPreviewResult: string) => void;
+  clearPreviewResult: () => void;
   setIsLoadingResult: (setIsLoadingResult: boolean) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
   fetchPreviewResult: fetchPreviewResult,
-  clearPreviewResult: setPreviewResult.success,
+  clearPreviewResult: () => setPreviewResult.success({}),
   setIsLoadingResult
 };
 
 type StateProps = {
-  attributes: AttributesSection;
-  filters: any;
-  preview: any;
+  selectedAttributes: JSONValue;
+  selectedFilters: JSONValue;
+  preview: JSONValue;
   isLoadingResult: boolean;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  attributes: getAttributes(state),
-  filters: getFilters(state),
+  selectedAttributes: getSelectedAttributes(state),
+  selectedFilters: getSelectedFilters(state),
   preview: getPreviewResult(state),
   isLoadingResult: getIsLoadingResult(state)
 });

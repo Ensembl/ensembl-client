@@ -34,12 +34,7 @@
   }
 
   .value {
-    color: $ens-black;
     margin: 0 3px;
-  }
-
-  .nonLabelValue {
-    text-transform: lowercase;
   }
 
   &.browserInfoExpanded {
@@ -51,10 +46,7 @@
   }
 
   &.browserInfoGreyed {
-    .value,
-    .nonLabelValue {
-      color: $ens-dark-grey;
-    }
+    color: $ens-dark-grey;
   }
 
   dd {

@@ -1,6 +1,22 @@
-import React, { FunctionComponent, useCallback } from 'react';
+import React, { useCallback } from 'react';
+import { connect } from 'react-redux';
 
 import { trackPanelBarConfig, TrackPanelBarItem } from './trackPanelBarConfig';
+import { getBrowserActiveGenomeId } from '../../browserSelectors';
+import { getIsDrawerOpened } from '../../drawer/drawerSelectors';
+import {
+  getIsTrackPanelModalOpened,
+  getIsTrackPanelOpened,
+  getTrackPanelModalView
+} from '../trackPanelSelectors';
+import { RootState } from 'src/store';
+import { getLaunchbarExpanded } from 'src/header/headerSelectors';
+import {
+  toggleTrackPanel,
+  closeTrackPanelModal,
+  openTrackPanelModal
+} from '../trackPanelActions';
+import { closeDrawer } from '../../drawer/drawerActions';
 
 import TrackPanelBarIcon from './TrackPanelBarIcon';
 
@@ -10,28 +26,31 @@ import chevronRightIcon from 'static/img/shared/chevron-right.svg';
 import styles from './TrackPanelBar.scss';
 
 type TrackPanelBarProps = {
-  activeGenomeId: string;
-  closeDrawer: () => void;
-  closeTrackPanelModal: () => void;
+  activeGenomeId: string | null;
   isDrawerOpened: boolean;
   isTrackPanelModalOpened: boolean;
   isTrackPanelOpened: boolean;
   launchbarExpanded: boolean;
+  trackPanelModalView: string;
+  closeDrawer: () => void;
+  closeTrackPanelModal: () => void;
   openTrackPanelModal: (trackPanelModalView: string) => void;
   toggleTrackPanel: (isTrackPanelOpened?: boolean) => void;
-  trackPanelModalView: string;
 };
 
-const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
-  props: TrackPanelBarProps
-) => {
+const TrackPanelBar = (props: TrackPanelBarProps) => {
   const moveTrackPanel = useCallback(() => {
     if (props.isDrawerOpened) {
       props.closeDrawer();
     } else {
-      props.toggleTrackPanel();
+      props.toggleTrackPanel(!props.isTrackPanelOpened);
     }
-  }, [props.isDrawerOpened, props.closeDrawer, props.toggleTrackPanel]);
+  }, [
+    props.isDrawerOpened,
+    props.closeDrawer,
+    props.toggleTrackPanel,
+    props.isTrackPanelOpened
+  ]);
 
   const getClassNames = () => {
     const heightClass: string = props.launchbarExpanded
@@ -60,6 +79,7 @@ const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
             closeTrackPanelModal={props.closeTrackPanelModal}
             openTrackPanelModal={props.openTrackPanelModal}
             isTrackPanelModalOpened={props.isTrackPanelModalOpened}
+            isTrackPanelOpened={props.isTrackPanelOpened}
             trackPanelModalView={props.trackPanelModalView}
           />
         ))}
@@ -68,4 +88,23 @@ const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
   );
 };
 
-export default TrackPanelBar;
+const mapStateToProps = (state: RootState) => ({
+  activeGenomeId: getBrowserActiveGenomeId(state),
+  isDrawerOpened: getIsDrawerOpened(state),
+  isTrackPanelModalOpened: getIsTrackPanelModalOpened(state),
+  isTrackPanelOpened: getIsTrackPanelOpened(state),
+  launchbarExpanded: getLaunchbarExpanded(state),
+  trackPanelModalView: getTrackPanelModalView(state)
+});
+
+const mapDispatchToProps = {
+  closeDrawer,
+  closeTrackPanelModal,
+  openTrackPanelModal,
+  toggleTrackPanel
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TrackPanelBar);
