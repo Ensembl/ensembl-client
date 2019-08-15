@@ -12,7 +12,7 @@ export const changeCurrentApp = createAction(
   'header/change-current-app',
   (resolve) => {
     return (appName: string) => {
-      analyticsTracking.sendCustomDimensionEvent({
+      analyticsTracking.setCustomDimension({
         diemension: CustomDimensions.PAGEVIEW,
         value: appName
       });

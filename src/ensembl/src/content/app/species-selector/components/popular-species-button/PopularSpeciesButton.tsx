@@ -25,6 +25,7 @@ import {
 
 import analyticsTracking from 'src/services/analytics-service';
 import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
+import { CustomDimensions } from 'src/analyticsHelper';
 
 import styles from './PopularSpeciesButton.scss';
 
@@ -55,7 +56,14 @@ export const PopularSpeciesButton = (props: Props) => {
 
     if (!is_available) {
       return;
-    } else if (isSelected) {
+    }
+
+    analyticsTracking.setCustomDimension({
+      diemension: CustomDimensions.SPECIES,
+      value: genome_id
+    });
+
+    if (isSelected) {
       props.clearSelectedSpecies();
       analyticsTracking.trackEvent({
         category: 'popular_species',

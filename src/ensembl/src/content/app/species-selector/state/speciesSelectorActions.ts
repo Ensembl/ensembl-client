@@ -237,15 +237,15 @@ export const commitSelectedSpeciesAndSave: ActionCreator<
 
   const speciesName = getSpeciesAnalyticsName(selectedItem);
 
+  analyticsTracking.setCustomDimension({
+    diemension: CustomDimensions.SPECIES,
+    value: selectedItem.genome_id
+  });
+
   analyticsTracking.trackEvent({
     category: categories.ADD_SPECIES,
     label: speciesName,
     action: 'select'
-  });
-
-  analyticsTracking.sendCustomDimensionEvent({
-    diemension: CustomDimensions.SPECIES,
-    value: selectedItem.genome_id
   });
 
   dispatch(updateCommittedSpecies(newCommittedSpecies));
@@ -296,6 +296,12 @@ export const deleteSpeciesAndSave: ActionCreator<
 
   if (deletedSpecies) {
     const deletedSpeciesName = getSpeciesAnalyticsName(deletedSpecies);
+
+    analyticsTracking.setCustomDimension({
+      diemension: CustomDimensions.SPECIES,
+      value: deletedSpecies.genome_id
+    });
+
     analyticsTracking.trackEvent({
       category: categories.SELECTED_SPECIES,
       label: deletedSpeciesName,

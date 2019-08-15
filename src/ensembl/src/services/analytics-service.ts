@@ -34,7 +34,7 @@ class AnalyticsTracking {
   }
 
   // Send a custom dimension event
-  public sendCustomDimensionEvent(ga: CustomDimensionOptions) {
+  public setCustomDimension(ga: CustomDimensionOptions) {
     this.reactGA.ga('set', ga.diemension, ga.value);
   }
 }
