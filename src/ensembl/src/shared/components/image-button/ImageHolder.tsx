@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
+import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
 
 type Props = {
   buttonStatus: ImageButtonStatus;

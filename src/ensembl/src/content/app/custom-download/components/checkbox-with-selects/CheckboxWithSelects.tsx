@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Checkbox from 'src/shared/checkbox/Checkbox';
-import Select, { Option } from 'src/shared/select/Select';
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import Select, { Option } from 'src/shared/components/select/Select';
 import styles from './CheckboxWithSelects.scss';
 
-import ImageButton from 'src/shared/image-button/ImageButton';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as AddIcon } from 'static/img/browser/zoom-in.svg';
 import { ReactComponent as RemoveIcon } from 'static/img/shared/clear.svg';
 

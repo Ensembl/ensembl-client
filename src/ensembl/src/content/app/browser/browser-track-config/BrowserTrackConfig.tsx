@@ -25,7 +25,7 @@ import trackHighlightBtn from 'static/img/browser/icon_tracks_highlight_grey.svg
 import trackMoveBtn from 'static/img/browser/icon_tracks_move_grey.svg';
 import { RootState } from 'src/store';
 import { CogList } from '../browserState';
-import Checkbox from 'src/shared/checkbox/Checkbox';
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
 type StateProps = {
   applyToAll: boolean;

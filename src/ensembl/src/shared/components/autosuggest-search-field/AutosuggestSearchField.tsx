@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, ReactNode } from 'react';
 import classNames from 'classnames';
 import get from 'lodash/get';
 
-import SearchField from 'src/shared/search-field/SearchField';
+import SearchField from 'src/shared/components/search-field/SearchField';
 import AutosuggestionPanel, {
   GroupOfMatchesType,
   MatchIndex

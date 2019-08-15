@@ -8,8 +8,8 @@ import * as keyCodes from 'src/shared/constants/keyCodes';
 
 import AutosuggestSearchField from './AutosuggestSearchField';
 import AutosuggestionPanel, { GroupOfMatchesType } from './AutosuggestionPanel';
-import SearchField from 'src/shared/search-field/SearchField';
-import Input from 'src/shared/input/Input';
+import SearchField from 'src/shared/components/search-field/SearchField';
+import Input from 'src/shared/components/input/Input';
 
 const generateMatch = () => {
   const text = faker.lorem.words();

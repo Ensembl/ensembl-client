@@ -1,4 +1,4 @@
-import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
+import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
 
 export enum TrackItemColour {
   BLUE = 'blue',

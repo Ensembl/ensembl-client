@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 import ImageButton, {
   ImageButtonStatus
-} from 'src/shared/image-button/ImageButton';
+} from 'src/shared/components/image-button/ImageButton';
 
 import { TrackItemColour, TrackItemColourKey } from '../trackPanelConfig';
 import {

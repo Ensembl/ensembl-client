@@ -9,7 +9,7 @@ import {
   AccordionItemPanel,
   AccordionItemButton,
   AccordionItemPermanentBlock
-} from 'src/shared/accordion';
+} from 'src/shared/components/accordion';
 
 import { getAttributesAccordionExpandedPanel } from '../../../state/attributes/attributesSelector';
 import {
@@ -23,7 +23,7 @@ import customDownloadStorageService from 'src/content/app/custom-download/servic
 
 import ImageButton, {
   ImageButtonStatus
-} from 'src/shared/image-button/ImageButton';
+} from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
 import styles from './AttributesAccordion.scss';
 

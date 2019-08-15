@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Input from 'src/shared/input/Input';
-import ImageButton from 'src/shared/image-button/ImageButton';
+import Input from 'src/shared/components/input/Input';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as RemoveIcon } from 'static/img/shared/clear.svg';
 import styles from './PasteOrUpload.scss';
 import noop from 'lodash/noop';
