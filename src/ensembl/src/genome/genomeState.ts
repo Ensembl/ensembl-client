@@ -1,4 +1,8 @@
-import { GenomeInfoData, GenomeTrackCategories } from './genomeTypes';
+import {
+  GenomeInfoData,
+  GenomeTrackCategories,
+  GenomeKaryotype
+} from './genomeTypes';
 
 export type GenomeInfoState = Readonly<{
   genomeInfoData: GenomeInfoData;
@@ -22,4 +26,18 @@ export const defaultGenomeTrackCategoriesState: GenomeTrackCategoriesState = {
   genomeTrackCategoriesData: {},
   genomeTrackCategoriesFetchFailed: false,
   genomeTrackCategoriesFetching: false
+};
+
+export type GenomeKaryotypesState = Readonly<{
+  genomeKaryotypesData: {
+    [genomeId: string]: GenomeKaryotype[];
+  };
+  genomeKaryotypesFetchFailed: boolean;
+  genomeKaryotypesFetching: boolean;
+}>;
+
+export const defaultGenomeKaryotypesState: GenomeKaryotypesState = {
+  genomeKaryotypesData: {},
+  genomeKaryotypesFetchFailed: false,
+  genomeKaryotypesFetching: false
 };

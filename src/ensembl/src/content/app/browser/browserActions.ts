@@ -223,6 +223,8 @@ export const changeBrowserLocation: ActionCreator<
       goto: `${startBp}-${endBp}`,
       'message-counter': messageCount
     });
+
+    dispatch(setActualChrLocation(chrLocation));
   };
 };
 
@@ -262,4 +264,8 @@ export const updateApplyToAll = createStandardAction(
 
 export const toggleBrowserRegionEditorActive = createStandardAction(
   'toggle-browser-region-editor-active'
+)<boolean>();
+
+export const toggleBrowserRegionFieldActive = createStandardAction(
+  'toggle-browser-region-field-active'
 )<boolean>();

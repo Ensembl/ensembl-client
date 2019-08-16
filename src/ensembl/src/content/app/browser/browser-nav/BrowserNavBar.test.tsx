@@ -9,6 +9,8 @@ import styles from './BrowserNavBar.scss';
 const browserStates = [...Array(6)].map(() => false);
 const chrLocation: ChrLocation = ['13', 1, 114364328];
 const dispatchBrowserLocation: any = jest.fn();
+const toggleBrowserRegionEditorActive: any = jest.fn();
+const toggleBrowserRegionFieldActive: any = jest.fn();
 
 describe('<BrowserNavBar />', () => {
   test('renders with appropriate classes', () => {
@@ -16,10 +18,14 @@ describe('<BrowserNavBar />', () => {
       shallow(
         <BrowserNavBar
           browserNavStates={browserStates as BrowserNavStates}
-          chrLocation={chrLocation}
-          isTrackPanelOpened={true}
           browserRegionEditorActive={true}
+          browserRegionFieldActive={false}
+          chrLocation={chrLocation}
+          genomeKaryotypes={[]}
+          isTrackPanelOpened={true}
           dispatchBrowserLocation={dispatchBrowserLocation}
+          toggleBrowserRegionEditorActive={toggleBrowserRegionEditorActive}
+          toggleBrowserRegionFieldActive={toggleBrowserRegionFieldActive}
         />
       ).hasClass(styles.browserNavBarExpanded)
     ).toBe(false);
@@ -28,10 +34,14 @@ describe('<BrowserNavBar />', () => {
       shallow(
         <BrowserNavBar
           browserNavStates={browserStates as BrowserNavStates}
-          chrLocation={chrLocation}
-          isTrackPanelOpened={false}
           browserRegionEditorActive={true}
+          browserRegionFieldActive={false}
+          chrLocation={chrLocation}
+          genomeKaryotypes={[]}
+          isTrackPanelOpened={false}
           dispatchBrowserLocation={dispatchBrowserLocation}
+          toggleBrowserRegionEditorActive={toggleBrowserRegionEditorActive}
+          toggleBrowserRegionFieldActive={toggleBrowserRegionFieldActive}
         />
       ).hasClass(styles.browserNavBarExpanded)
     ).toBe(true);

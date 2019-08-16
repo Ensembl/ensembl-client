@@ -82,6 +82,9 @@ export const getDefaultChrLocation = (state: RootState): ChrLocation | null => {
 export const getBrowserRegionEditorActive = (state: RootState): boolean =>
   state.browser.browserLocation.browserRegionEditorActive;
 
+export const getBrowserRegionFieldActive = (state: RootState): boolean =>
+  state.browser.browserLocation.browserRegionFieldActive;
+
 export const getBrowserCogList = (state: RootState): number =>
   state.browser.trackConfig.browserCogList;
 

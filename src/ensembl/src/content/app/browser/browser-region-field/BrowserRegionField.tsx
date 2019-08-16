@@ -1,51 +1,55 @@
 import React, { useState, FormEvent } from 'react';
 import { connect } from 'react-redux';
+import classNames from 'classnames';
+
+import Input from 'src/shared/input/Input';
 
 import { ChrLocation } from '../browserState';
-
-import applyIcon from 'static/img/shared/apply.svg';
-import clearIcon from 'static/img/shared/clear.svg';
-
 import { RootState } from 'src/store';
-import { toggleBrowserRegionEditorActive } from '../browserActions';
+import { toggleBrowserRegionFieldActive } from '../browserActions';
 import {
   getBrowserActiveGenomeId,
   getBrowserActivated,
   getChrLocation,
-  getBrowserRegionEditorActive
+  getBrowserRegionEditorActive,
+  getBrowserRegionFieldActive
 } from '../browserSelectors';
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 
+import applyIcon from 'static/img/shared/apply.svg';
+import clearIcon from 'static/img/shared/clear.svg';
+
 import styles from './BrowserRegionField.scss';
-import Input from 'src/shared/input/Input';
+import browserNavStyles from '../browser-nav/BrowserNavBar.scss';
 
 type BrowserRegionFieldProps = {
   activeGenomeId: string | null;
   browserActivated: boolean;
   browserRegionEditorActive: boolean;
+  browserRegionFieldActive: boolean;
   chrLocation: ChrLocation;
   isDrawerOpened: boolean;
   dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
-  toggleBrowserRegionEditorActive: (browserRegionEditorActive: boolean) => void;
+  toggleBrowserRegionFieldActive: (browserRegionFieldActive: boolean) => void;
 };
 
-const BrowserRegionField = (props: BrowserRegionFieldProps) => {
+export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   const { activeGenomeId } = props;
   const [chrLocationInput, setChrLocationInput] = useState('');
 
   const activateForm = () => {
-    if (props.browserRegionEditorActive || props.isDrawerOpened) {
+    if (props.browserRegionFieldActive || props.isDrawerOpened) {
       return;
     }
 
-    props.toggleBrowserRegionEditorActive(true);
+    props.toggleBrowserRegionFieldActive(true);
   };
 
   const changeChrLocationInput = (value: string) => setChrLocationInput(value);
 
   const closeForm = () => {
     setChrLocationInput('');
-    props.toggleBrowserRegionEditorActive(false);
+    props.toggleBrowserRegionFieldActive(false);
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -80,20 +84,24 @@ const BrowserRegionField = (props: BrowserRegionFieldProps) => {
     }
   };
 
+  const classList = classNames(styles.browserRegionField, {
+    [browserNavStyles.opaqueArea]: props.browserRegionEditorActive
+  });
+
   return props.browserActivated ? (
-    <dd className={styles.browserRegionField}>
+    <dd className={classList}>
       <form onSubmit={handleSubmit}>
         <label className="show-for-large">Region or location</label>
         <Input
           type="text"
           placeholder="0:1-1,000,000"
           value={chrLocationInput}
-          onFocus={activateForm}
           onChange={changeChrLocationInput}
+          onFocus={activateForm}
         />
-        {props.browserRegionEditorActive && (
+        {props.browserRegionFieldActive && (
           <>
-            <button>
+            <button type="submit">
               <img src={applyIcon} alt="Apply changes" />
             </button>
             <button onClick={closeForm}>
@@ -111,11 +119,12 @@ const mapStateToProps = (state: RootState) => ({
   browserActivated: getBrowserActivated(state),
   chrLocation: getChrLocation(state) as ChrLocation,
   isDrawerOpened: getIsDrawerOpened(state),
-  browserRegionEditorActive: getBrowserRegionEditorActive(state)
+  browserRegionEditorActive: getBrowserRegionEditorActive(state),
+  browserRegionFieldActive: getBrowserRegionFieldActive(state)
 });
 
 const mapDispatchToProps = {
-  toggleBrowserRegionEditorActive
+  toggleBrowserRegionFieldActive
 };
 
 export default connect(

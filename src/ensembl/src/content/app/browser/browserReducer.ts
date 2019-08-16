@@ -119,6 +119,8 @@ export function browserLocation(
       };
     case getType(browserActions.toggleBrowserRegionEditorActive):
       return { ...state, browserRegionEditorActive: action.payload };
+    case getType(browserActions.toggleBrowserRegionFieldActive):
+      return { ...state, browserRegionFieldActive: action.payload };
     default:
       return state;
   }

@@ -1,5 +1,6 @@
 import { RootState } from 'src/store';
 import { GenomeInfo, GenomeInfoData } from './genomeTypes';
+import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 
 export const getGenomeInfo = (state: RootState) =>
   state.genome.genomeInfo.genomeInfoData as GenomeInfoData;
@@ -32,3 +33,16 @@ export const getGenomeTrackCategoriesFetching = (state: RootState) =>
 
 export const getGenomeTrackCategoriesFetchFailed = (state: RootState) =>
   state.genome.genomeTrackCategories.genomeTrackCategoriesFetchFailed;
+
+export const getGenomeKaryotypes = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  return activeGenomeId
+    ? state.genome.genomeKaryotypes.genomeKaryotypesData[activeGenomeId]
+    : null;
+};
+
+export const getGenomeKaryotypesFetching = (state: RootState) =>
+  state.genome.genomeKaryotypes.genomeKaryotypesFetching;
+
+export const getGenomeKaryotypesFetchFailed = (state: RootState) =>
+  state.genome.genomeKaryotypes.genomeKaryotypesFetchFailed;
