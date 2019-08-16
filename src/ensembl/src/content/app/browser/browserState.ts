@@ -73,7 +73,7 @@ export type TrackConfigState = Readonly<{
   applyToAll: boolean;
   browserCogList: number;
   browserCogTrackList: CogList;
-  selectedCog: string;
+  selectedCog: string | null;
   trackConfigNames: any;
   trackConfigLabel: any;
 }>;
@@ -82,7 +82,7 @@ export const defaultTrackConfigState: TrackConfigState = {
   applyToAll: false,
   browserCogList: 0,
   browserCogTrackList: {},
-  selectedCog: '',
+  selectedCog: null,
   trackConfigLabel: {},
   trackConfigNames: {}
 };

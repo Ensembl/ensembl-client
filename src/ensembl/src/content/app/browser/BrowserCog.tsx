@@ -16,7 +16,7 @@ import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 type BrowserCogProps = {
   cogActivated: boolean;
   index: string;
-  updateSelectedCog: (index: string) => void;
+  updateSelectedCog: (index: string | null) => void;
 };
 
 const BrowserCog: FunctionComponent<BrowserCogProps> = (
@@ -25,15 +25,13 @@ const BrowserCog: FunctionComponent<BrowserCogProps> = (
   const { cogActivated, updateSelectedCog, index } = props;
 
   const ref = useRef(null);
-  useOutsideClick(ref, () => {
-    updateSelectedCog('');
-  });
+  useOutsideClick(ref, () => updateSelectedCog(null));
 
   const toggleCog = useCallback(() => {
     if (cogActivated === false) {
       updateSelectedCog(index);
     } else {
-      updateSelectedCog('');
+      updateSelectedCog(null);
     }
   }, [cogActivated]);
 

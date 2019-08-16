@@ -88,7 +88,7 @@ export const getBrowserCogList = (state: RootState): number =>
 export const getBrowserCogTrackList = (state: RootState): CogList =>
   state.browser.trackConfig.browserCogTrackList;
 
-export const getBrowserSelectedCog = (state: RootState): string =>
+export const getBrowserSelectedCog = (state: RootState): string | null =>
   state.browser.trackConfig.selectedCog;
 
 export const getTrackConfigNames = (state: RootState): any =>
