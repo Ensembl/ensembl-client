@@ -29,7 +29,8 @@ import applyIcon from 'static/img/shared/apply.svg';
 import clearIcon from 'static/img/shared/clear.svg';
 
 import styles from './BrowserRegionEditor.scss';
-import browserNavStyles from '../browser-nav/BrowserNavBar.scss';
+import browserStyles from '../Browser.scss';
+import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
 
 type BrowserRegionEditorProps = {
   activeGenomeId: string | null;
@@ -122,12 +123,23 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     }
   };
 
-  const classList = classNames(styles.browserRegionEditor, {
-    [browserNavStyles.opaqueArea]: props.browserRegionFieldActive
+  const regionEditorClassNames = classNames(styles.browserRegionEditor, {
+    [browserStyles.semiOpaque]: props.browserRegionFieldActive
   });
 
+  const buttonsClassNames = classNames(
+    browserNavBarStyles.browserNavBarButtons,
+    {
+      [browserNavBarStyles.browserNavBarButtonsVisible]:
+        props.browserRegionEditorActive
+    }
+  );
+
   return (
-    <dd className={classList}>
+    <div className={regionEditorClassNames}>
+      {props.browserRegionFieldActive ? (
+        <div className={browserStyles.browserOverlay}></div>
+      ) : null}
       <form onSubmit={handleSubmit} onFocus={handleRegionEditorFocus}>
         <label className="show-for-large">Chr</label>
         <Select
@@ -138,28 +150,24 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
         <Input
           type="text"
           onChange={updateLocationStartInput}
-          onBlur={updateLocationStartInput}
           value={locationStartInput}
         ></Input>
         <label className="show-for-large">End</label>
         <Input
           type="text"
           onChange={updateLocationEndInput}
-          onBlur={updateLocationEndInput}
           value={locationEndInput}
         ></Input>
-        {props.browserRegionEditorActive && (
-          <>
-            <button type="submit">
-              <img src={applyIcon} alt="Apply changes" />
-            </button>
-            <button onClick={closeForm}>
-              <img src={clearIcon} alt="Clear changes" />
-            </button>
-          </>
-        )}
+        <span className={buttonsClassNames}>
+          <button type="submit">
+            <img src={applyIcon} alt="Apply changes" />
+          </button>
+          <button onClick={closeForm}>
+            <img src={clearIcon} alt="Clear changes" />
+          </button>
+        </span>
       </form>
-    </dd>
+    </div>
   );
 };
 

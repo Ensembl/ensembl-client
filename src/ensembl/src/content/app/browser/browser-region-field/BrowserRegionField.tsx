@@ -9,7 +9,6 @@ import { RootState } from 'src/store';
 import { toggleBrowserRegionFieldActive } from '../browserActions';
 import {
   getBrowserActiveGenomeId,
-  getBrowserActivated,
   getChrLocation,
   getBrowserRegionEditorActive,
   getBrowserRegionFieldActive
@@ -20,11 +19,11 @@ import applyIcon from 'static/img/shared/apply.svg';
 import clearIcon from 'static/img/shared/clear.svg';
 
 import styles from './BrowserRegionField.scss';
-import browserNavStyles from '../browser-nav/BrowserNavBar.scss';
+import browserStyles from '../Browser.scss';
+import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
 
 type BrowserRegionFieldProps = {
   activeGenomeId: string | null;
-  browserActivated: boolean;
   browserRegionEditorActive: boolean;
   browserRegionFieldActive: boolean;
   chrLocation: ChrLocation;
@@ -84,12 +83,23 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
     }
   };
 
-  const classList = classNames(styles.browserRegionField, {
-    [browserNavStyles.opaqueArea]: props.browserRegionEditorActive
+  const regionFieldClassNames = classNames(styles.browserRegionField, {
+    [browserStyles.semiOpaque]: props.browserRegionEditorActive
   });
 
-  return props.browserActivated ? (
-    <dd className={classList}>
+  const buttonsClassNames = classNames(
+    browserNavBarStyles.browserNavBarButtons,
+    {
+      [browserNavBarStyles.browserNavBarButtonsVisible]:
+        props.browserRegionFieldActive
+    }
+  );
+
+  return (
+    <div className={regionFieldClassNames}>
+      {props.browserRegionEditorActive ? (
+        <div className={browserStyles.browserOverlay}></div>
+      ) : null}
       <form onSubmit={handleSubmit}>
         <label className="show-for-large">Region or location</label>
         <Input
@@ -99,24 +109,21 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
           onChange={changeChrLocationInput}
           onFocus={activateForm}
         />
-        {props.browserRegionFieldActive && (
-          <>
-            <button type="submit">
-              <img src={applyIcon} alt="Apply changes" />
-            </button>
-            <button onClick={closeForm}>
-              <img src={clearIcon} alt="Clear changes" />
-            </button>
-          </>
-        )}
+        <span className={buttonsClassNames}>
+          <button type="submit">
+            <img src={applyIcon} alt="Apply changes" />
+          </button>
+          <button onClick={closeForm}>
+            <img src={clearIcon} alt="Clear changes" />
+          </button>
+        </span>
       </form>
-    </dd>
-  ) : null;
+    </div>
+  );
 };
 
 const mapStateToProps = (state: RootState) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
-  browserActivated: getBrowserActivated(state),
   chrLocation: getChrLocation(state) as ChrLocation,
   isDrawerOpened: getIsDrawerOpened(state),
   browserRegionEditorActive: getBrowserRegionEditorActive(state),

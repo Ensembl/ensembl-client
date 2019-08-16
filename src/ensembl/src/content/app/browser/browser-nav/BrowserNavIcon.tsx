@@ -25,11 +25,13 @@ export const BrowserNavIcon: FunctionComponent<BrowserNavIconProps> = (
   const iconUrl = maxState ? icon.off : icon.on;
 
   return (
-    <dd className={iconStyles.browserNavIcon}>
-      <button title={browserNavItem.description} onClick={navigateBrowser}>
-        <img src={iconUrl} alt={browserNavItem.description} />
-      </button>
-    </dd>
+    <button
+      className={iconStyles.browserNavIcon}
+      title={browserNavItem.description}
+      onClick={navigateBrowser}
+    >
+      <img src={iconUrl} alt={browserNavItem.description} />
+    </button>
   );
 };
 

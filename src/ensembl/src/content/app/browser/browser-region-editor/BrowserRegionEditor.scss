@@ -1,23 +1,9 @@
+@import 'src/styles/common';
+
 .browserRegionEditor {
-  img {
-    height: 18px;
-    width: 18px;
-  }
-
-  form {
-    display: inline-block;
-  }
-
-  label {
-    margin-right: 5px;
-  }
+  position: relative;
 
   input {
-    padding: 1px 6px;
-    width: 200px;
-  }
-
-  button {
-    margin-left: 10px;
+    width: 120px;
   }
 }

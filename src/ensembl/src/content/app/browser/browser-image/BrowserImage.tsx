@@ -1,12 +1,7 @@
-import React, {
-  FunctionComponent,
-  RefObject,
-  useEffect,
-  useCallback
-} from 'react';
+import React, { RefObject, useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
+import classNames from 'classnames';
 
-import styles from './BrowserImage.scss';
 import { BrowserNavStates, CogList } from '../browserState';
 import BrowserCogList from '../BrowserCogList';
 import { ZmenuController } from 'src/content/app/browser/zmenu';
@@ -17,7 +12,9 @@ import {
   getTrackConfigLabel,
   getBrowserCogTrackList,
   getBrowserNavOpened,
-  getBrowserActivated
+  getBrowserActivated,
+  getBrowserRegionEditorActive,
+  getBrowserRegionFieldActive
 } from '../browserSelectors';
 import {
   activateBrowser,
@@ -36,15 +33,19 @@ import { RootState } from 'src/store';
 import { TrackStates } from '../track-panel/trackPanelConfig';
 import { BROWSER_CONTAINER_ID } from '../browser-constants';
 
-type StateProps = {
+import styles from './BrowserImage.scss';
+import browserStyles from '../Browser.scss';
+
+type BrowserImageProps = {
+  browserRef: RefObject<HTMLDivElement>;
+  trackStates: TrackStates;
   browserCogTrackList: CogList;
   browserNavOpened: boolean;
+  browserRegionEditorActive: boolean;
+  browserRegionFieldActive: boolean;
   trackConfigNames: any;
   trackConfigLabel: any;
   browserActivated: boolean;
-};
-
-type DispatchProps = {
   activateBrowser: () => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
@@ -52,13 +53,6 @@ type DispatchProps = {
   setActualChrLocation: (chrLocation: ChrLocation) => void;
   updateMessageCounter: (count: number) => void;
 };
-
-type OwnProps = {
-  browserRef: RefObject<HTMLDivElement>;
-  trackStates: TrackStates;
-};
-
-type BrowserImageProps = StateProps & DispatchProps & OwnProps;
 
 type BpaneOutPayload = {
   bumper?: BrowserNavStates;
@@ -74,9 +68,7 @@ const parseLocation = (location: ChrLocation) => {
   return [chromosome, start, end] as ChrLocation;
 };
 
-export const BrowserImage: FunctionComponent<BrowserImageProps> = (
-  props: BrowserImageProps
-) => {
+export const BrowserImage = (props: BrowserImageProps) => {
   const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
     const navIconStates = payload.bumper as BrowserNavStates;
     const intendedLocation = payload['intended-location'];
@@ -161,6 +153,11 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
     props.browserCogTrackList
   ]);
 
+  const browserImageClassNames = classNames(styles.browserImagePlus, {
+    [browserStyles.semiOpaque]:
+      props.browserRegionEditorActive || props.browserRegionFieldActive
+  });
+
   return (
     <>
       {!props.browserActivated && (
@@ -168,7 +165,10 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
           <CircleLoader />
         </div>
       )}
-      <div className={styles.browserImagePlus}>
+      <div className={browserImageClassNames}>
+        {props.browserRegionEditorActive || props.browserRegionFieldActive ? (
+          <div className={browserStyles.browserOverlay}></div>
+        ) : null}
         <div
           id={BROWSER_CONTAINER_ID}
           className={getBrowserImageClasses(props.browserNavOpened)}
@@ -191,15 +191,17 @@ function getBrowserImageClasses(browserNavOpened: boolean): string {
   return classes;
 }
 
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState) => ({
   browserCogTrackList: getBrowserCogTrackList(state),
   browserNavOpened: getBrowserNavOpened(state),
+  browserRegionEditorActive: getBrowserRegionEditorActive(state),
+  browserRegionFieldActive: getBrowserRegionFieldActive(state),
   trackConfigLabel: getTrackConfigLabel(state),
   trackConfigNames: getTrackConfigNames(state),
   browserActivated: getBrowserActivated(state)
 });
 
-const mapDispatchToProps: DispatchProps = {
+const mapDispatchToProps = {
   activateBrowser,
   updateBrowserActivated,
   updateBrowserNavStates,

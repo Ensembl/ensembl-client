@@ -52,11 +52,8 @@ export const BrowserNavBar = (props: BrowserNavBarProps) => {
   });
 
   return (
-    <div className={className}>
-      {props.browserRegionEditorActive && props.browserRegionFieldActive ? (
-        <div className={styles.browserNavBarOverlay}></div>
-      ) : null}
-      <dl className={styles.aboveOverlay}>
+    <dl className={className}>
+      <dd>
         {browserNavConfig.map((item: BrowserNavItem, index: number) => (
           <BrowserNavIcon
             key={item.name}
@@ -64,20 +61,20 @@ export const BrowserNavBar = (props: BrowserNavBarProps) => {
             maxState={props.browserNavStates[index]}
           />
         ))}
-      </dl>
-      <dl className={styles.aboveOverlay}>
+      </dd>
+      <dd>
         {props.chrLocation ? (
           <BrowserRegionField
             dispatchBrowserLocation={props.dispatchBrowserLocation}
           />
         ) : null}
-      </dl>
-      <dl>
+      </dd>
+      <dd>
         {props.chrLocation && props.genomeKaryotypes ? (
           <BrowserRegionEditor />
         ) : null}
-      </dl>
-    </div>
+      </dd>
+    </dl>
   );
 };
 

@@ -3,6 +3,7 @@
 .browserNavBar {
   @include flex;
   background: $ens-light-grey;
+  font-size: 12px;
   padding: 16px;
   position: relative;
 
@@ -13,22 +14,39 @@
   &.browserNavBarExpanded {
     width: 100vw;
   }
+
+  dd {
+    margin-left: 10px;
+  }
+
+  form {
+    display: inline-block;
+  }
+
+  label {
+    font-weight: 300;
+    margin: 0 5px 0 10px;
+  }
+
+  input {
+    padding: 3px 9px;
+  }
 }
 
-.opaqueArea {
-  opacity: 0.5;
+.browserNavBarButtons {
+  display: inline-block;
+  visibility: hidden;
+
+  button {
+    margin-left: 10px;
+  }
+
+  img {
+    height: 18px;
+    width: 18px;
+  }
 }
 
-.browserNavBarOverlay {
-  background: $ens-white;
-  height: 100%;
-  opacity: 0.7;
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 100%;
-}
-
-.aboveOverlay {
-  z-index: 100;
+.browserNavBarButtonsVisible {
+  visibility: visible;
 }
