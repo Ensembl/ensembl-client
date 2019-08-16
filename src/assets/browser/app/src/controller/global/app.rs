@@ -104,15 +104,18 @@ impl App {
     pub fn with_focus_object<F,G>(&mut self, cb: F) -> G
             where F: FnOnce(&mut FocusObject) -> G {
         let mut focus = self.window.get_focus();
-        let old_status = focus.state();
+        let old_status = focus.state().clone();
         let out = cb(&mut focus);
-        let new_status = focus.state();
+        let new_status = focus.state().clone();
+        console!("old status {:?}",old_status);
         if old_status != new_status {
             if let Some(id) = focus.get_focus() {
+                console!("status changed!");
                 self.compo.lock().unwrap().change_focus(&id);
                 self.get_report().set_status("focus",&id);
             }
         }
+        console!("new status {:?}",new_status);
         out
     }
 

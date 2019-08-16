@@ -7,6 +7,8 @@ use data::BackendConfig;
 use model::item::{ DeliveredItemId, DeliveredItem, FocusSpecificity };
 use model::supply::{ ProductList, PurchaseOrder };
 
+use misc_algorithms::marshal::{ json_str, json_array };
+
 fn marshal(data: &SerdeValue) -> Vec<Value> {
     let mut out = Vec::<Value>::new();
     for val in unwrap!(data.as_array()) {
@@ -35,28 +37,20 @@ fn marshal(data: &SerdeValue) -> Vec<Value> {
     out
 }
 
-fn json_str(v: &SerdeValue) -> Result<&str,()> {
-    v.as_str().ok_or(())
-}
-
-fn json_array(v: &SerdeValue) -> Result<&Vec<SerdeValue>,()> {
-    v.as_array().ok_or(())
-}
-
 pub fn parse_delivereditem_internal(window: &mut WindowState, data: &str) -> Result<Vec<DeliveredItem>,()> {
     let data : &SerdeValue = &ok!(serde_json::from_str(data));
     let mut out = Vec::new();
     for resp in json_array(data)? {
         let code_data = json_array(&resp[0])?;
         let product_list = window.get_product_list().clone();
-        let product_name = window.get_backend_config().wire_to_name(json_str(&code_data[0])?).ok_or(())?;
-        let stick = unwrap!(window.get_stick_manager().get_stick(json_str(&code_data[1])?));
-        let leaf = Leaf::from_short_spec(&stick,json_str(&code_data[2])?);
+        let product_name = window.get_backend_config().wire_to_name(&json_str(&code_data[0])?).ok_or(())?;
+        let stick = unwrap!(window.get_stick_manager().get_stick(&json_str(&code_data[1])?));
+        let leaf = Leaf::from_short_spec(&stick,&json_str(&code_data[2])?);
         let focus = match code_data[4].as_bool().unwrap_or(true) {
             false => FocusSpecificity::Agnostic,
             true => FocusSpecificity::Specific(code_data[3].as_str().map(|v| v.to_string()))
         };
-        if let Ok(bytecode) = window.get_backend_config().get_bytecode(json_str(&resp[1])?) {
+        if let Ok(bytecode) = window.get_backend_config().get_bytecode(&json_str(&resp[1])?) {
             if let Some(product) = product_list.get_product(&product_name) {
                 //console!("using {:?} for {:?} and data {:?}",json_str(&resp[1]),product, marshal(&resp[2]));
                 out.push(DeliveredItem::new(

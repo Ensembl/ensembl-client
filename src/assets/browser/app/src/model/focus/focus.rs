@@ -10,6 +10,7 @@ impl FocusObjectImpl {
     }
 
     pub fn set_focus(&mut self, id: &str) {
+        console!("sect_focus({})",id);
         self.id = Some(id.to_string());
     }
 

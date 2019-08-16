@@ -1,5 +1,15 @@
 #![feature(vec_remove_item)]
 
+extern crate serde_json;
+
+pub mod marshal {
+    mod json;
+
+    pub use self::json::{
+        json_str, json_array, json_obj_get, json_f64, json_bool
+    };
+}
+
 pub mod store {
     mod bstartree;
     mod cache;

@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use composit::{ Stick, Scale, ComponentSet, StateManager, Stage, AllLandscapes };
 use model::driver::{ PrinterManager, Printer };
 use model::supply::{ Product };
-use model::train::{ Train, TrainManager, TravellerCreator };
+use model::train::{ Train, TrainContext, TrainManager, TravellerCreator };
 use model::zmenu::{ ZMenuRegistry, ZMenuLeafSet, ZMenuIntersection };
 
 use controller::global::{ AppRunner, WindowState };
@@ -154,7 +154,8 @@ impl Compositor {
     }
     
     pub fn change_focus(&mut self, id: &str) {
-        self.window.get_train_manager().change_focus(&mut self.components,id);
+        let context = TrainContext::new(&Some(id.to_string()));
+        self.window.get_train_manager().set_desired_context(&mut self.components,&context);
     }
 
     pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {

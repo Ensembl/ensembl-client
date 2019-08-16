@@ -10,6 +10,8 @@ use data::{ HttpManager, HttpResponseConsumer, BackendConfig };
 use dom::domutil::browser_time;
 use types::{ Dot, ddiv };
 
+use misc_algorithms::marshal::{ json_str, json_obj_get, json_f64, json_bool };
+
 const ZHOOSH_TIME : f64 = 1750.; /* ms */
 
 pub struct JumpZhoosh {
@@ -68,31 +70,31 @@ impl JumperConsumer {
         }
     }
 
-    fn jump(&mut self, req: XmlHttpRequest) -> Result<(),String> {
-        let in_ = req.response_text().map_err(|_| "Cannot parse json".to_string())?;
-        if in_.is_none() {
-            return Err("bad response".to_string());
-        }
-        let data : JSONValue = serde_json::from_str(&unwrap!(in_)).map_err(|_| "Cannot parse json".to_string())?;
-        if let JSONValue::Object(ref obj) = data {
-            if obj.get("found").and_then(|x| x.as_bool()).unwrap_or(false) {
-                let stick = obj.get("stick").and_then(|x| x.as_str());
-                let start = obj.get("start").and_then(|x| x.as_str());
-                let end = obj.get("end").and_then(|x| x.as_str());
-                if let (Some(stick),Some(start),Some(end)) = (stick,start,end) {
-                    console!("got result! {:?}/{:?}/{:?}",stick,start,end);
-                    let mut app_ref = self.ar.state();
-                    let mut app = app_ref.lock().unwrap();
-                    let start : f64 = start.parse().unwrap();
-                    let end : f64 = end.parse().unwrap();
-                    let (src, dest) = app.with_stage(|stage| {
-                        let dest_pos = Dot((start+end)/2.,0.);
-                        let dest_zoom = stage.best_zoom_screen_bp(end-start+1.);
-                        ((stage.get_pos_middle(),stage.get_zoom()),(dest_pos,dest_zoom))
-                    });
-                    app.with_jumper(|j| j.zhoosh_to(stick,src,dest));
-                }
-            }
+    fn jump(&mut self, req: XmlHttpRequest) -> Result<(),()> {
+        let in_ = req.response_text().map_err(|_|())?;
+        let data : JSONValue = serde_json::from_str(&unwrap!(in_)).map_err(|_|())?;
+        console!("A {:?}",data);
+        let stick = json_str(json_obj_get(&data,"stick")?)?;
+        console!("B {:?}",stick);
+        let f : Result<f64,_> = json_str(json_obj_get(&data,"start")?)?.parse();
+        console!("C {:?} {:?}",json_obj_get(&data,"start"),f);
+        let start = json_f64(json_obj_get(&data,"start")?)?;
+        console!("D {:?}",start);
+        let end = json_f64(json_obj_get(&data,"end")?)?;
+        console!("E {:?}",end);
+        console!("F1 {:?}",json_obj_get(&data,"found"));
+        let found = json_bool(json_obj_get(&data,"found")?)?;
+        console!("F {:?} {:?}",json_obj_get(&data,"found"),found);
+        console!("got result! {:?}/{:?}/{:?}/{:?}",stick,start,end,found);
+        if found {
+            let mut app_ref = self.ar.state();
+            let mut app = app_ref.lock().unwrap();
+            let (src, dest) = app.with_stage(|stage| {
+                let dest_pos = Dot((start+end)/2.,0.);
+                let dest_zoom = stage.best_zoom_screen_bp(end-start+1.);
+                ((stage.get_pos_middle(),stage.get_zoom()),(dest_pos,dest_zoom))
+            });
+            app.with_jumper(|j| j.zhoosh_to(&stick,src,dest));
         }
         Ok(())
     }
@@ -103,7 +105,7 @@ impl HttpResponseConsumer for JumperConsumer {
         match self.jump(req) {
             Ok(()) => (),
             Err(s) => {
-                console!("jump error: {}",s);
+                console!("jump error");
             }
         }
     }

@@ -36,7 +36,7 @@ pub struct TrainManagerImpl {
     stick: Option<Stick>,
     bp_per_screen: f64,
     position_bp: f64,
-    focus: Option<String>
+    desired_context: TrainContext
 }
 
 impl TrainManagerImpl {
@@ -51,7 +51,7 @@ impl TrainManagerImpl {
             bp_per_screen: 1.,
             position_bp: 0.,
             stick: None,
-            focus: None
+            desired_context: TrainContext::new(&None)
         }
     }
     
@@ -64,8 +64,7 @@ impl TrainManagerImpl {
     /* utility: makes new train at given scale */
     fn make_train(&mut self, cm: &mut TravellerCreator, scale: &Scale) -> Option<Train> {
         if let Some(ref stick) = self.stick {
-            let context = TrainContext::new(&self.focus);
-            let mut f = Train::new(&self.printer,&stick,scale,&context);
+            let mut f = Train::new(&self.printer,&stick,scale,&self.desired_context);
             f.set_position(self.position_bp);
             f.set_zoom(self.bp_per_screen);
             f.manage_leafs(cm);
@@ -84,8 +83,7 @@ impl TrainManagerImpl {
         self.bp_per_screen = bp_per_screen;
         let scale = Scale::best_for_screen(bp_per_screen);
         self.each_train(|x| x.set_active(false));
-        let context = TrainContext::new(&self.focus);
-        self.current_train = Some(Train::new(&self.printer,st,&scale,&context));
+        self.current_train = Some(Train::new(&self.printer,st,&scale,&self.desired_context));
         self.current_train.as_mut().unwrap().set_zoom(bp_per_screen);
         self.transition_train = None;
         self.future_train = None;
@@ -187,13 +185,13 @@ impl TrainManagerImpl {
     }
 
     /* current (or soon and inevitable) focus object */
-    fn printing_focus(&self) -> Option<String> {
+    fn printing_context(&self) -> &TrainContext {
         if let Some(ref transition_train) = self.transition_train {
-            transition_train.get_train_id().get_context().get_focus().clone()
+            transition_train.get_train_id().get_context()
         } else if let Some(ref current_train) = self.current_train {
-            current_train.get_train_id().get_context().get_focus().clone()
+            current_train.get_train_id().get_context()
         } else {
-            None
+            &self.desired_context
         }
     }
 
@@ -220,11 +218,12 @@ impl TrainManagerImpl {
             let best = Scale::best_for_screen(bp_per_screen);
             let mut end_future = false;
             let mut new_future = false;
-            if best != printing_vscale || self.printing_focus() != self.focus {
+            if best != printing_vscale || self.printing_context() != &self.desired_context {
                 /* we're not currently showing the optimal scale */
                 if let Some(ref mut future_train) = self.future_train {
                     /* there's a future train ... */
-                    if best != *future_train.get_train_id().get_scale() || self.focus != *future_train.get_train_id().get_context().get_focus() {
+                    if best != *future_train.get_train_id().get_scale() ||
+                       self.desired_context != *future_train.get_train_id().get_context() {
                         /* ... and that's not optimal either */
                         end_future = true;
                         new_future = true;
@@ -240,7 +239,7 @@ impl TrainManagerImpl {
             /* do anything that needs to be done */
             if end_future { self.end_future(); }
             if new_future { 
-                //console!("planning transition to {:?}",best);
+                console!("planning transition to {:?} for {:?}",best,self.desired_context);
                 self.new_future(cm,&best);
             }
         }
@@ -263,8 +262,12 @@ impl TrainManagerImpl {
         self.each_train(|t| t.update_state(oom));
     }
 
-    pub fn change_focus(&mut self, cm: &mut TravellerCreator, id: &str) {
-        self.focus = Some(id.to_string());
+    pub fn get_desired_context(&self) -> &TrainContext { &self.desired_context }
+
+    pub fn set_desired_context(&mut self, cm: &mut TravellerCreator, context: &TrainContext) {
+        console!("focus change to {:?}",context);
+        self.desired_context = context.clone();
+        self.maybe_change_trains(cm,self.bp_per_screen);
     }
     
     /* ***************************************************************
@@ -342,8 +345,8 @@ impl TrainManager {
         self.0.lock().unwrap().update_state(oom);
     }
 
-    pub fn change_focus(&mut self, cm: &mut TravellerCreator, id: &str) {
-        self.0.lock().unwrap().change_focus(cm,id);
+    pub fn set_desired_context(&mut self, cm: &mut TravellerCreator, context: &TrainContext) {
+        self.0.lock().unwrap().set_desired_context(cm,context);
     }
         
     pub fn get_prop_trans(&self) -> f32 {
