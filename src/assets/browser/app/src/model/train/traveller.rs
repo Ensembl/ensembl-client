@@ -19,32 +19,29 @@ pub struct TravellerImpl {
     done: bool,
     prev_value: bool,
     cur_value: bool,
-    visuals: Option<Box<DriverTraveller>>,
+    visuals: Box<DriverTraveller>,
     zml: ZMenuLeaf,
     id: TravellerId
 }
 
 impl TravellerImpl {
-    fn new(sa: &Subassembly, leaf: &Leaf, carriage_id: &CarriageId) -> TravellerImpl {
+    fn new(pm: &mut PrinterManager, sa: &Subassembly, leaf: &Leaf, carriage_id: &CarriageId) -> TravellerImpl {
+        let id = TravellerId::new(carriage_id,sa);
+        let visuals = pm.make_driver_traveller(&id);
         TravellerImpl {
             done: false,
             prev_value: false,
             cur_value: false,
-            visuals: None,
-            zml: ZMenuLeaf::new(leaf),
-            id: TravellerId::new(carriage_id,sa)
+            visuals, id,
+            zml: ZMenuLeaf::new(leaf)
         }
     }
-    
-    fn set_driver_traveller(&mut self, visuals: Box<DriverTraveller>) {
-        self.visuals = Some(visuals);
-    }
-            
+                
     fn update_state(&mut self, m: &StateManager) -> bool {
         self.prev_value = self.cur_value;
         let sa = self.id.get_subassembly();
         self.cur_value = sa.get_product().get_subassembly_state(&sa,m);
-        unwrap!(self.visuals.as_ref()).set_state(self.cur_value);
+        self.visuals.set_state(self.cur_value);
         self.prev_value != self.cur_value
     }
 
@@ -60,7 +57,7 @@ impl TravellerImpl {
         let product = self.id.get_subassembly().get_product().clone();
         data.create_zmenu(&product);
         self.zml = data.get_zmenu_leaf().clone();
-        self.visuals.as_mut().unwrap().set_contents(&data);
+        self.visuals.set_contents(&data);
         self.done = true;
     }
 
@@ -69,7 +66,7 @@ impl TravellerImpl {
     }
 
     fn destroy(&mut self) {
-        self.visuals.take().unwrap().destroy();
+        self.visuals.destroy();
     }
 }
 
@@ -78,39 +75,33 @@ pub struct Traveller(Arc<Mutex<TravellerImpl>>);
 
 impl Traveller {
     pub fn new(pm: &mut PrinterManager, sa: &Subassembly, leaf: &Leaf, carriage_id: &CarriageId) -> Traveller {
-        let mut traveller = Traveller(Arc::new(Mutex::new(TravellerImpl::new(sa,leaf,carriage_id))));
-        traveller.set_driver_traveller(pm.make_driver_traveller(&traveller.get_id()));
-        traveller
+        Traveller(Arc::new(Mutex::new(TravellerImpl::new(pm,sa,leaf,carriage_id))))
     }
     
     pub fn get_id(&self) -> TravellerId {
-        self.0.lock().unwrap().get_id()
+        unwrap!(self.0.lock()).get_id()
     }
 
     pub(in super) fn update_state(&mut self, m: &StateManager) -> bool {
-        self.0.lock().unwrap().update_state(m)
+        unwrap!(self.0.lock()).update_state(m)
     }
     
     pub(in super) fn is_done(&self) -> bool {
-        self.0.lock().unwrap().is_done()
+        unwrap!(self.0.lock()).is_done()
     }
-    
-    fn set_driver_traveller(&mut self, visuals: Box<DriverTraveller>) {
-        self.0.lock().unwrap().set_driver_traveller(visuals);
-    }
-        
+            
     pub fn build_zmenu(&self, zml: &mut ZMenuLeaf) {
-        self.0.lock().unwrap().build_zmenu(zml);
+        unwrap!(self.0.lock()).build_zmenu(zml);
     }
 
     pub fn destroy(&mut self) {
-        self.0.lock().unwrap().destroy();
+        unwrap!(self.0.lock()).destroy();
     }
 }
 
 impl XferConsumer for Traveller {
     fn consume(&mut self, item: &DeliveredItem, unpacker: &mut ItemUnpacker) {
-        let trav_id = self.0.lock().unwrap().get_id().clone();
+        let trav_id = unwrap!(self.0.lock()).get_id().clone();
         let item_id = item.get_id();
         if item_id.get_leaf() == trav_id.get_carriage_id().get_leaf() && trav_id.get_subassembly().get_product() == item_id.get_product() {
             unpacker.schedule(&trav_id,Box::new(self.clone()));
@@ -120,7 +111,7 @@ impl XferConsumer for Traveller {
 
 impl UnpackedSubassemblyConsumer for Traveller {
     fn consume(&mut self, data: UnpackedSubassembly) {
-        self.0.lock().unwrap().set_contents(data);
+        unwrap!(self.0.lock()).set_contents(data);
     }
 }
 
