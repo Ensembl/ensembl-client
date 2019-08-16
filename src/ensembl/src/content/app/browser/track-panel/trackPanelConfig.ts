@@ -1,4 +1,4 @@
-import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
+import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
 
 export enum TrackItemColour {
   BLUE = 'blue',
@@ -9,13 +9,13 @@ export enum TrackItemColour {
 
 export type TrackItemColourKey = keyof typeof TrackItemColour;
 
-export enum TrackType {
+export enum TrackSet {
   GENOMIC = 'Genomic',
   VARIATION = 'Variation',
   EXPRESSION = 'Expression'
 }
 
-export type TrackTypeKey = keyof typeof TrackType;
+export type TrackSetKey = keyof typeof TrackSet;
 
 export type TrackPanelIcon = {
   description: string;

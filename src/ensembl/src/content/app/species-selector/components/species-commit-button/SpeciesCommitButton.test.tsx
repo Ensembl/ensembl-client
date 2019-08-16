@@ -3,7 +3,7 @@ import { mount } from 'enzyme';
 
 import { SpeciesCommitButton } from './SpeciesCommitButton';
 
-import { PrimaryButton } from 'src/shared/button/Button';
+import { PrimaryButton } from 'src/shared/components/button/Button';
 
 const onCommit = jest.fn();
 const defaultProps = {

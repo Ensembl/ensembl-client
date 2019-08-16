@@ -1,6 +1,6 @@
 import { BrowserStorageService, StorageKeys } from './browser-storage-service';
-import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
-import { TrackType } from './track-panel/trackPanelConfig';
+import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
+import { TrackSet } from './track-panel/trackPanelConfig';
 
 const mockStorageService = {
   get: jest.fn(),
@@ -23,7 +23,7 @@ const trackListToggleStates = {
   'gene-feat': false
 };
 
-const SELECTED_BROWSER_TAB = TrackType.VARIATION;
+const SELECTED_TRACK_PANEL_TAB = TrackSet.VARIATION;
 
 describe('BrowserStorageService', () => {
   afterEach(() => {
@@ -138,22 +138,22 @@ describe('BrowserStorageService', () => {
     });
   });
 
-  describe('.getSelectedBrowserTab()', () => {
+  describe('.getSelectedTrackPanelTab()', () => {
     it('gets saved selected browser tab from storage service', () => {
       jest
         .spyOn(mockStorageService, 'get')
-        .mockImplementation(() => SELECTED_BROWSER_TAB);
+        .mockImplementation(() => SELECTED_TRACK_PANEL_TAB);
 
       const browserStorageService = new BrowserStorageService(
         mockStorageService
       );
 
-      const result = browserStorageService.getSelectedBrowserTab();
+      const result = browserStorageService.getSelectedTrackPanelTab();
 
       expect(mockStorageService.get).toHaveBeenCalledWith(
-        StorageKeys.SELECTED_BROWSER_TAB
+        StorageKeys.SELECTED_TRACK_PANEL_TAB
       );
-      expect(result).toEqual(SELECTED_BROWSER_TAB);
+      expect(result).toEqual(SELECTED_TRACK_PANEL_TAB);
 
       mockStorageService.get.mockRestore();
     });
@@ -164,7 +164,7 @@ describe('BrowserStorageService', () => {
       const browserStorageService = new BrowserStorageService(
         mockStorageService
       );
-      const result = browserStorageService.getSelectedBrowserTab();
+      const result = browserStorageService.getSelectedTrackPanelTab();
 
       expect(result).toEqual({});
 
@@ -172,20 +172,20 @@ describe('BrowserStorageService', () => {
     });
   });
 
-  describe('.updateSelectedBrowserTab()', () => {
+  describe('.updateSelectedTrackPanelTab()', () => {
     it('updates selected browser tab via storage service', () => {
       const browserStorageService = new BrowserStorageService(
         mockStorageService
       );
 
-      browserStorageService.updateSelectedBrowserTab({
-        homo_sapiens38: TrackType.EXPRESSION
+      browserStorageService.updateSelectedTrackPanelTab({
+        homo_sapiens38: TrackSet.EXPRESSION
       });
 
       expect(mockStorageService.update).toHaveBeenCalledWith(
-        StorageKeys.SELECTED_BROWSER_TAB,
+        StorageKeys.SELECTED_TRACK_PANEL_TAB,
         {
-          homo_sapiens38: TrackType.EXPRESSION
+          homo_sapiens38: TrackSet.EXPRESSION
         }
       );
     });

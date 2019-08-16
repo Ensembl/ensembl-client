@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import Checkbox from 'src/shared/checkbox/Checkbox';
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import { storiesOf } from '@storybook/react';
 import styles from './Checkbox.stories.scss';
 import { action } from '@storybook/addon-actions';

@@ -22,7 +22,9 @@ export const HomeLink = () => (
 );
 
 export const ReleaseVersion = () => (
-  <div className={styles.strapline}>Pre-release — version {config.version}</div>
+  <div className={styles.strapline}>
+    Pre-release — version {config.app_version}
+  </div>
 );
 
 export const Copyright = () => (

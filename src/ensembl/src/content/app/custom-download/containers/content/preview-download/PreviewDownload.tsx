@@ -21,7 +21,7 @@ import {
   toggleTab
 } from '../../../state/customDownloadActions';
 
-import ImageButton from 'src/shared/image-button/ImageButton';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import JSONValue from 'src/shared/types/JSON';
 

@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import classNames from 'classnames';
 
-import Tooltip from 'src/shared/tooltip/Tooltip';
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import styles from './StrainSelector.scss';
 

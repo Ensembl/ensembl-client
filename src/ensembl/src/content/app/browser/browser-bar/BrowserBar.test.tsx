@@ -12,10 +12,10 @@ import { BreakpointWidth } from 'src/global/globalConfig';
 
 import BrowserReset from 'src/content/app/browser/browser-reset/BrowserReset';
 import BrowserGenomeSelector from 'src/content/app/browser/browser-genome-selector/BrowserGenomeSelector';
-import BrowserTabs from 'src/content/app/browser/browser-tabs/BrowserTabs';
+import TrackPanelTabs from '../track-panel/track-panel-tabs/TrackPanelTabs';
 
 import { ChrLocation } from '../browserState';
-import { TrackType } from '../track-panel/trackPanelConfig';
+import { TrackSet } from '../track-panel/trackPanelConfig';
 
 import { createEnsObject } from 'tests/fixtures/ens-object';
 
@@ -26,13 +26,13 @@ jest.mock(
   'src/content/app/browser/browser-genome-selector/BrowserGenomeSelector',
   () => () => <div>BrowserGenomeSelector</div>
 );
-jest.mock('src/content/app/browser/browser-tabs/BrowserTabs', () => () => (
+jest.mock('../track-panel/track-panel-tabs/TrackPanelTabs', () => () => (
   <div>BrowserReset</div>
 ));
 
 describe('<BrowserBar />', () => {
   const dispatchBrowserLocation: any = jest.fn();
-  const selectBrowserTab: any = jest.fn();
+  const selectTrackPanelTab: any = jest.fn();
   const toggleBrowserNav: any = jest.fn();
   const toggleDrawer: any = jest.fn();
   const toggleGenomeSelector: any = jest.fn();
@@ -48,11 +48,11 @@ describe('<BrowserBar />', () => {
     drawerOpened: false,
     genomeSelectorActive: false,
     ensObject: createEnsObject(),
-    selectedBrowserTab: TrackType.GENOMIC,
+    selectedTrackPanelTab: TrackSet.GENOMIC,
     trackPanelModalOpened: false,
     trackPanelOpened: false,
     dispatchBrowserLocation,
-    selectBrowserTab,
+    selectTrackPanelTab,
     toggleBrowserNav,
     toggleDrawer,
     toggleGenomeSelector,
@@ -60,7 +60,7 @@ describe('<BrowserBar />', () => {
     isTrackPanelModalOpened: false,
     isTrackPanelOpened: false,
     closeDrawer: jest.fn(),
-    selectBrowserTabAndSave: jest.fn(),
+    selectTrackPanelTabAndSave: jest.fn(),
     toggleTrackPanel: jest.fn()
   };
 
@@ -133,23 +133,23 @@ describe('<BrowserBar />', () => {
       expect(renderedBrowserBar.find(BrowserNavigatorButton).length).toBe(0);
     });
 
-    test('shows BrowserTabs if TrackPanel is open', () => {
+    test('shows TrackPanelTabs if TrackPanel is open', () => {
       const renderedBrowserBar = mount(
         renderBrowserBar({ isTrackPanelOpened: true })
       );
-      expect(renderedBrowserBar.find(BrowserTabs).length).toBe(1);
+      expect(renderedBrowserBar.find(TrackPanelTabs).length).toBe(1);
     });
 
-    test('shows BrowserTabs on a wide display even if TrackPanel is closed', () => {
+    test('shows TrackPanelTabs on a wide display even if TrackPanel is closed', () => {
       const renderedBrowserBar = mount(renderBrowserBar());
-      expect(renderedBrowserBar.find(BrowserTabs).length).toBe(1);
+      expect(renderedBrowserBar.find(TrackPanelTabs).length).toBe(1);
     });
 
-    test('hides BrowserTabs on small if TrackPanel is closed', () => {
+    test('hides TrackPanelTabs on small if TrackPanel is closed', () => {
       const renderedBrowserBar = mount(
         renderBrowserBar({ breakpointWidth: BreakpointWidth.MEDIUM })
       );
-      expect(renderedBrowserBar.find(BrowserTabs).length).toBe(0);
+      expect(renderedBrowserBar.find(TrackPanelTabs).length).toBe(0);
     });
   });
 });

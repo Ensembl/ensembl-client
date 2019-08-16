@@ -1,48 +1,56 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
+import { connect } from 'react-redux';
 import get from 'lodash/get';
 
 import TrackPanelListItem from './TrackPanelListItem';
+import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
 
-import { UpdateTrackStatesPayload } from 'src/content/app/browser/browserActions';
-import { TrackType, TrackStates } from '../trackPanelConfig';
-
-import styles from './TrackPanelList.scss';
-import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
+import {
+  UpdateTrackStatesPayload,
+  updateTrackStatesAndSave
+} from 'src/content/app/browser/browserActions';
+import { toggleDrawer, changeDrawerView } from '../../drawer/drawerActions';
+import { TrackSet, TrackStates } from '../trackPanelConfig';
 import { GenomeTrackCategory } from 'src/genome/genomeTypes';
 import { EnsObjectTrack, EnsObject } from 'src/ens-object/ensObjectTypes';
+import { RootState } from 'src/store';
+import { getDrawerView, getIsDrawerOpened } from '../../drawer/drawerSelectors';
+import { getLaunchbarExpanded } from 'src/header/headerSelectors';
+import {
+  getBrowserActiveEnsObject,
+  getBrowserTrackStates,
+  getBrowserActiveGenomeId
+} from '../../browserSelectors';
+import { getSelectedTrackPanelTab } from '../trackPanelSelectors';
+import { getGenomeTrackCategoriesById } from 'src/genome/genomeSelectors';
+
+import styles from './TrackPanelList.scss';
 
 type TrackPanelListProps = {
-  activeGenomeId: string;
+  activeGenomeId: string | null;
   isDrawerOpened: boolean;
   drawerView: string;
   launchbarExpanded: boolean;
-  ensObject: EnsObject;
-  selectedBrowserTab: TrackType;
-  toggleDrawer: (isDrawerOpened: boolean) => void;
+  activeEnsObject: EnsObject | null;
+  selectedTrackPanelTab: TrackSet;
   genomeTrackCategories: GenomeTrackCategory[];
   trackStates: TrackStates;
-  updateDrawerView: (drawerView: string) => void;
+  toggleDrawer: (isDrawerOpened: boolean) => void;
+  changeDrawerView: (drawerView: string) => void;
   updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
 };
 
-const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
-  props: TrackPanelListProps
-) => {
-  const { activeGenomeId, selectedBrowserTab, genomeTrackCategories } = props;
+const TrackPanelList = (props: TrackPanelListProps) => {
+  const {
+    activeGenomeId,
+    activeEnsObject,
+    selectedTrackPanelTab,
+    genomeTrackCategories
+  } = props;
   const currentTrackCategories = genomeTrackCategories.filter(
     (category: GenomeTrackCategory) =>
-      category.types.includes(selectedBrowserTab)
+      category.types.includes(selectedTrackPanelTab)
   );
-
-  const changeDrawerView = (currentTrack: string) => {
-    const { drawerView, toggleDrawer, updateDrawerView } = props;
-
-    updateDrawerView(currentTrack);
-
-    if (!drawerView) {
-      toggleDrawer(true);
-    }
-  };
 
   const getTrackPanelListClasses = () => {
     const heightClass: string = props.launchbarExpanded
@@ -64,6 +72,7 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
     if (!track) {
       return;
     }
+
     const { track_id } = track;
     const defaultTrackStatus = getDefaultTrackStatus();
 
@@ -75,16 +84,11 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
 
     return (
       <TrackPanelListItem
-        activeGenomeId={props.activeGenomeId}
         categoryName={categoryName}
         defaultTrackStatus={defaultTrackStatus as ImageButtonStatus}
         trackStatus={trackStatus as ImageButtonStatus}
-        isDrawerOpened={props.isDrawerOpened}
-        drawerView={props.drawerView}
         key={track.track_id}
         track={track}
-        updateDrawerView={changeDrawerView}
-        updateTrackStates={props.updateTrackStates}
       >
         {track.child_tracks &&
           track.child_tracks.map((childTrack: EnsObjectTrack) =>
@@ -96,9 +100,11 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
 
   return (
     <div className={getTrackPanelListClasses()}>
-      {props.ensObject.object_type === 'region' ? null : (
+      {activeEnsObject && activeEnsObject.object_type === 'region' ? null : (
         <section>
-          <dl>{getTrackListItem('main', props.ensObject.track)}</dl>
+          <dl>
+            {getTrackListItem('main', activeEnsObject && activeEnsObject.track)}
+          </dl>
         </section>
       )}
       {currentTrackCategories.map((category: GenomeTrackCategory) => (
@@ -119,4 +125,29 @@ const TrackPanelList: FunctionComponent<TrackPanelListProps> = (
   );
 };
 
-export default TrackPanelList;
+const mapStateToProps = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  return {
+    activeGenomeId,
+    isDrawerOpened: getIsDrawerOpened(state),
+    drawerView: getDrawerView(state),
+    launchbarExpanded: getLaunchbarExpanded(state),
+    activeEnsObject: getBrowserActiveEnsObject(state),
+    selectedTrackPanelTab: getSelectedTrackPanelTab(state),
+    genomeTrackCategories: activeGenomeId
+      ? getGenomeTrackCategoriesById(state, activeGenomeId)
+      : [],
+    trackStates: getBrowserTrackStates(state)
+  };
+};
+
+const mapDispatchToProps = {
+  changeDrawerView,
+  toggleDrawer,
+  updateTrackStates: updateTrackStatesAndSave
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TrackPanelList);

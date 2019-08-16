@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import classNames from 'classnames';
 
-import Tooltip, { Position } from 'src/shared/tooltip/Tooltip';
+import Tooltip, { Position } from 'src/shared/components/tooltip/Tooltip';
 
 import styles from './Tooltip.stories.scss';
 
@@ -29,6 +29,7 @@ const Item = (props: ItemProps) => {
       Click me
       {showTooltip && (
         <Tooltip
+          delay={0}
           onClose={() => setShowTooltip(false)}
           position={props.position}
           container={props.container.current}

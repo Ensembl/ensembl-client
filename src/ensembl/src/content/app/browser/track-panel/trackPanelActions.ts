@@ -1,28 +1,41 @@
-import { createAction, createStandardAction } from 'typesafe-actions';
+import { createStandardAction } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
 import { Action, ActionCreator } from 'redux';
 
 import { RootState } from 'src/store';
-import { TrackType } from './trackPanelConfig';
+import { TrackSet } from './trackPanelConfig';
 import browserStorageService from '../browser-storage-service';
 import { getBrowserActiveGenomeId } from '../browserSelectors';
+import { getActiveTrackPanel } from './trackPanelSelectors';
+import { TrackPanelStateForGenome } from './trackPanelState';
 
-export const toggleTrackPanel = createStandardAction(
-  'track-panel/toggle-track-panel'
-)<boolean | undefined>();
+export const updateTrackPanelForGenome = createStandardAction(
+  'track-panel/update-track-panel'
+)<{ activeGenomeId: string; data: TrackPanelStateForGenome }>();
 
-export const selectBrowserTab = createAction(
-  'track-panel/select-browser-tab',
-  (resolve) => {
-    return (selectedBrowserTabForGenome: { [genomeId: string]: TrackType }) => {
-      return resolve(selectedBrowserTabForGenome);
-    };
-  }
-);
-
-export const selectBrowserTabAndSave: ActionCreator<
+export const toggleTrackPanel: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (selectedBrowserTab: TrackType) => (
+> = (isTrackPanelOpened: boolean) => (dispatch, getState: () => RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(getState());
+
+  if (!activeGenomeId) {
+    return;
+  }
+
+  dispatch(
+    updateTrackPanelForGenome({
+      activeGenomeId,
+      data: {
+        ...getActiveTrackPanel(getState()),
+        isTrackPanelOpened
+      }
+    })
+  );
+};
+
+export const selectTrackPanelTabAndSave: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (selectedTrackPanelTab: TrackSet) => (
   dispatch,
   getState: () => RootState
 ) => {
@@ -32,21 +45,81 @@ export const selectBrowserTabAndSave: ActionCreator<
     return;
   }
 
-  const selectedBrowserTabForGenome = {
-    [activeGenomeId]: selectedBrowserTab
-  };
+  browserStorageService.updateSelectedTrackPanelTab({
+    [activeGenomeId]: selectedTrackPanelTab
+  });
 
-  dispatch(selectBrowserTab(selectedBrowserTabForGenome));
-  browserStorageService.updateSelectedBrowserTab(selectedBrowserTabForGenome);
+  dispatch(
+    updateTrackPanelForGenome({
+      activeGenomeId,
+      data: {
+        ...getActiveTrackPanel(getState()),
+        selectedTrackPanelTab,
+        isTrackPanelModalOpened: false,
+        trackPanelModalView: ''
+      }
+    })
+  );
 };
 
-export const openTrackPanelModal = createAction(
-  'track-panel/open-track-panel-modal',
-  (resolve) => {
-    return (trackPanelModalView: string) => resolve(trackPanelModalView);
-  }
-);
+export const changeTrackPanelModalViewForGenome: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (trackPanelModalView: string) => (dispatch, getState: () => RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(getState());
 
-export const closeTrackPanelModal = createStandardAction(
-  'track-panel/close-track-panel-modal'
-)();
+  if (!activeGenomeId) {
+    return;
+  }
+
+  dispatch(
+    updateTrackPanelForGenome({
+      activeGenomeId,
+      data: {
+        ...getActiveTrackPanel(getState()),
+        trackPanelModalView
+      }
+    })
+  );
+};
+
+export const openTrackPanelModal: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (trackPanelModalView: string) => (dispatch, getState: () => RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(getState());
+
+  if (!activeGenomeId) {
+    return;
+  }
+
+  dispatch(
+    updateTrackPanelForGenome({
+      activeGenomeId,
+      data: {
+        ...getActiveTrackPanel(getState()),
+        isTrackPanelModalOpened: true,
+        trackPanelModalView
+      }
+    })
+  );
+};
+
+export const closeTrackPanelModal: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = () => (dispatch, getState: () => RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(getState());
+
+  if (!activeGenomeId) {
+    return;
+  }
+
+  dispatch(
+    updateTrackPanelForGenome({
+      activeGenomeId,
+      data: {
+        ...getActiveTrackPanel(getState()),
+        isTrackPanelModalOpened: false,
+        trackPanelModalView: ''
+      }
+    })
+  );
+};

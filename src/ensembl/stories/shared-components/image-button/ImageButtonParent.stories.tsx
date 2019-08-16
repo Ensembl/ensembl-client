@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ImageButton, {
   ImageButtonStatus
-} from 'src/shared/image-button/ImageButton';
+} from 'src/shared/components/image-button/ImageButton';
 
 import classNames from 'classnames';
 type Props = {
@@ -52,9 +52,7 @@ const ImageButtonParent = (props: Props) => {
           <h3>Usage:</h3>
           {`import ImageButton, {ImageButtonStatus} from 'src/shared/image-button/ImageButton';`}
           <br />
-          {`import { ReactComponent as ${props.imageName} } from '${
-            props.imagePath
-          }';`}
+          {`import { ReactComponent as ${props.imageName} } from '${props.imagePath}';`}
           <br />
           {`
               <ImageButton buttonStatus={ImageButtonStatus.${buttonStatus.toUpperCase()}} 

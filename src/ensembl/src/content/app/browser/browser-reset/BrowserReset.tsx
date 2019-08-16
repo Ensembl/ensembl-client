@@ -4,7 +4,7 @@ import { ChrLocation } from '../browserState';
 import { ReactComponent as resetIcon } from 'static/img/browser/track-reset.svg';
 import ImageButton, {
   ImageButtonStatus
-} from 'src/shared/image-button/ImageButton';
+} from 'src/shared/components/image-button/ImageButton';
 
 import styles from './BrowserReset.scss';
 import { getChrLocationStr } from '../browserHelper';
