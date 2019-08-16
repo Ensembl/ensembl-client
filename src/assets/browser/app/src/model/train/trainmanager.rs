@@ -161,7 +161,7 @@ impl TrainManagerImpl {
     
     pub fn manage_carriages(&mut self) {
         let mut tc = self.traveller_creator.clone();
-        self.best_train(|train| train.manage_carriages(&mut tc));
+        self.each_train(|train| train.manage_carriages(&mut tc));
     }
 
     pub fn add_component(&mut self, product: &mut Product) {
@@ -226,7 +226,6 @@ impl TrainManagerImpl {
             if best_scale != *printing_train.get_scale() || 
                self.desired_stick.as_ref().unwrap() != printing_train.get_stick() ||
                self.printing_context() != &self.desired_context {
-                   bb_log!("debug","printing_context {:?} desired_context {:?}",self.printing_context(),self.desired_context);
                 /* we're not currently showing the optimal scale */
                 if let Some(ref mut future_train) = self.future_train {
                     /* there's a future train ... */

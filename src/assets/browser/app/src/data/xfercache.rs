@@ -106,7 +106,9 @@ impl XferCache {
     pub fn prime(&mut self, xferclerk: &mut XferClerk, product: &Product, leaf: &Leaf) {
         let po = PurchaseOrder::new(product,leaf,&None);
         if self.get(&po).is_none() {
-            xferclerk.satisfy(&po,true,Box::new(XferPrimeConsumer()));
+            if !po.get_product().get_focus_dependent() {
+                xferclerk.satisfy(&po,true,Box::new(XferPrimeConsumer()));
+            }
         }
     }
 }

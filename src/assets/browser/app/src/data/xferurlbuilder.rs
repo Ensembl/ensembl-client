@@ -54,6 +54,7 @@ impl ChromBuilder {
     }
 }
 
+#[derive(Debug)]
 pub struct XferUrlBuilder {
     data: HashMap<(String,Option<String>),Vec<(String,String)>>
 }

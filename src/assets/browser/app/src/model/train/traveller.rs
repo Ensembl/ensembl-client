@@ -7,7 +7,7 @@ use composit::Leaf;
 use composit::{ StateManager };
 use controller::global::WindowState;
 use data::XferConsumer;
-use model::item::{ DeliveredItem, UnpackedSubassembly, UnpackedSubassemblyConsumer, ItemUnpacker };
+use model::item::{ DeliveredItem, DeliveredItemId, FocusSpecificity, UnpackedSubassembly, UnpackedSubassemblyConsumer, ItemUnpacker };
 use model::supply::Subassembly;
 use model::driver::{ DriverTraveller, Printer, PrinterManager };
 use model::shape::{ ShapeSpec, GenericShape };
@@ -65,6 +65,15 @@ impl TravellerImpl {
         self.id.clone()
     }
 
+    fn matches_delivered_item(&self, di: &DeliveredItemId) -> bool {
+        if di.get_leaf() != self.id.get_carriage_id().get_leaf() { return false; }
+        if di.get_product() != self.id.get_subassembly().get_product() { return false; }
+        match di.get_focus_specificity() {
+            FocusSpecificity::Agnostic => true,
+            FocusSpecificity::Specific(focus) => self.id.get_carriage_id().get_train_id().get_context().get_focus() == focus
+        }
+    }
+
     fn destroy(&mut self) {
         self.visuals.destroy();
     }
@@ -97,13 +106,17 @@ impl Traveller {
     pub fn destroy(&mut self) {
         unwrap!(self.0.lock()).destroy();
     }
+
+    fn matches_delivered_item(&self, di: &DeliveredItemId) -> bool {
+        unwrap!(self.0.lock()).matches_delivered_item(di)
+    }
 }
 
 impl XferConsumer for Traveller {
     fn consume(&mut self, item: &DeliveredItem, unpacker: &mut ItemUnpacker) {
         let trav_id = unwrap!(self.0.lock()).get_id().clone();
         let item_id = item.get_id();
-        if item_id.get_leaf() == trav_id.get_carriage_id().get_leaf() && trav_id.get_subassembly().get_product() == item_id.get_product() {
+        if self.matches_delivered_item(item.get_id()) {
             unpacker.schedule(&trav_id,Box::new(self.clone()));
         }
     }

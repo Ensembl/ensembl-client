@@ -8,6 +8,7 @@ const B : usize = 16;
 
 #[derive(Debug)]
 struct BStarLeaf {
+    start: usize,
     values: Vec<usize>,
     next: Option<Rc<RefCell<BStarLeaf>>>,
     valid: bool
@@ -43,6 +44,7 @@ impl BStarTree {
             internal: BTreeMap::new()
         })));
         let leaf = BStarLeaf {
+            start: 0,
             values: Vec::new(),
             next: None,
             valid: true
@@ -63,8 +65,10 @@ impl BStarTree {
         }
         leaf.values.insert(index,value);
         if leaf.values.len() > 2*B {
+            let second_values = leaf.values.split_off(B);
             let second = BStarLeaf {
-                values: leaf.values.split_off(B),
+                start: second_values[0],
+                values: second_values,
                 next: leaf.next.clone(),
                 valid: true
             };
@@ -86,10 +90,9 @@ impl BStarTree {
             let second_ref = leaf.next.clone().unwrap();
             let mut second = second_ref.borrow_mut();
             if second.values.len() > 0 {
-                let split_val = second.values[0];
                 leaf.values.append(&mut second.values);
-                internal.remove(&split_val);
             }
+            internal.remove(&second.start);
             leaf.next = second.next.clone();
             second.valid = false;
         }

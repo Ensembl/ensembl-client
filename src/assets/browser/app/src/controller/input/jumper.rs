@@ -45,18 +45,18 @@ impl JumpZhoosh {
         }
         self.stick = None;
         let (pos_start,zoom_start) = if self.dest.1 > self.start.1 {
-            (0.25,0.75)
+            (0.2,0.4)
         } else {
-            (0.75,0.25)
+            (0.4,0.2)
         };
         if !self.done_pos {
-            let pos_prop = ((prop-pos_start)*4.).min(1.).max(0.);
+            let pos_prop = ((prop-pos_start)*2.5).min(1.).max(0.);
             let here = self.start.0 + (self.dest.0-self.start.0)*Dot(pos_prop,pos_prop);
             actions.push(Action::Pos(here,None));
             if pos_prop == 1. { self.done_pos = true; }
         }
         if !self.done_zoom {
-            let zoom_prop = ((prop-zoom_start)*4.).min(1.).max(0.);
+            let zoom_prop = ((prop-zoom_start)*2.5).min(1.).max(0.);
             let here = self.start.1 + (self.dest.1-self.start.1)*zoom_prop;
             actions.push(Action::ZoomTo(here));
             if zoom_prop == 1. { self.done_zoom = true; }
