@@ -16,7 +16,6 @@ use tácode::run_tánaiste_makeshapes;
 use super::{ CarriageId, TravellerId };
 
 pub struct TravellerImpl {
-    window: WindowState,
     done: bool,
     prev_value: bool,
     cur_value: bool,
@@ -26,9 +25,8 @@ pub struct TravellerImpl {
 }
 
 impl TravellerImpl {
-    fn new(window: &WindowState, sa: &Subassembly, leaf: &Leaf, carriage_id: &CarriageId) -> TravellerImpl {
+    fn new(sa: &Subassembly, leaf: &Leaf, carriage_id: &CarriageId) -> TravellerImpl {
         TravellerImpl {
-            window: window.clone(),
             done: false,
             prev_value: false,
             cur_value: false,
@@ -70,15 +68,17 @@ impl TravellerImpl {
         self.id.clone()
     }
 
-    fn get_window(&mut self) -> &WindowState { &self.window }
+    fn destroy(&mut self) {
+        self.visuals.take().unwrap().destroy();
+    }
 }
 
 #[derive(Clone)]
 pub struct Traveller(Arc<Mutex<TravellerImpl>>);
 
 impl Traveller {
-    pub fn new(pm: &mut PrinterManager, window: &WindowState, sa: &Subassembly, leaf: &Leaf, carriage_id: &CarriageId) -> Traveller {
-        let mut traveller = Traveller(Arc::new(Mutex::new(TravellerImpl::new(window,sa,leaf,carriage_id))));
+    pub fn new(pm: &mut PrinterManager, sa: &Subassembly, leaf: &Leaf, carriage_id: &CarriageId) -> Traveller {
+        let mut traveller = Traveller(Arc::new(Mutex::new(TravellerImpl::new(sa,leaf,carriage_id))));
         traveller.set_driver_traveller(pm.make_driver_traveller(&traveller.get_id()));
         traveller
     }
@@ -101,12 +101,10 @@ impl Traveller {
         
     pub fn build_zmenu(&self, zml: &mut ZMenuLeaf) {
         self.0.lock().unwrap().build_zmenu(zml);
-    }        
-}
+    }
 
-impl Drop for TravellerImpl {
-    fn drop(&mut self) {
-        self.visuals.take().unwrap().destroy();
+    pub fn destroy(&mut self) {
+        self.0.lock().unwrap().destroy();
     }
 }
 
@@ -114,7 +112,6 @@ impl XferConsumer for Traveller {
     fn consume(&mut self, item: &DeliveredItem, unpacker: &mut ItemUnpacker) {
         let trav_id = self.0.lock().unwrap().get_id().clone();
         let item_id = item.get_id();
-        let mut window = self.0.lock().unwrap().get_window().clone();
         if item_id.get_leaf() == trav_id.get_carriage_id().get_leaf() && trav_id.get_subassembly().get_product() == item_id.get_product() {
             unpacker.schedule(&trav_id,Box::new(self.clone()));
         }

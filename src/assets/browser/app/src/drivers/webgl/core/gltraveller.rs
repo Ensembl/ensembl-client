@@ -77,9 +77,7 @@ impl DriverTraveller for GLTraveller {
     }
     
     fn destroy(&mut self) {
-        let mut p = self.printer.clone();
-        p.remove_traveller(self);
-    }    
+    }
 }
 
 impl fmt::Debug for GLTraveller {

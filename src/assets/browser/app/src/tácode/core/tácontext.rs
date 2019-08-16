@@ -7,7 +7,6 @@ use composit::{ AllLandscapes, Leaf };
 use data::{ BackendConfig, UnpackedProductConsumer };
 use model::item::{ DeliveredItem, UnpackedProduct};
 use model::shape::DrawingSpec;
-use model::focus::FocusObject;
 use model::supply::Subassembly;
 
 pub enum TáTask {

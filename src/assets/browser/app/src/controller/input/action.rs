@@ -2,6 +2,8 @@ use types::{ Move, Units, Axis, Dot, cdfraction, LEFT, RIGHT, CPixel };
 use controller::global::App;
 use composit::StickManager;
 
+use model::train::TrainContext;
+
 use serde_json::Value as JSONValue;
 
 #[derive(Debug,Clone)]
@@ -167,12 +169,14 @@ fn exe_zmenu_show(a: &mut App, id: &str, track_id: &str, pos: Dot<i32,i32>, payl
 
 fn exe_set_focus(a: &mut App, id: &str) {
     console!("set focus object to id {}",id);
-    a.with_focus_object(|f| f.set_focus(id));
+    let context = TrainContext::new(&Some(id.to_string()));
+    a.get_window().get_train_manager().set_desired_context(&context);
+    a.get_report().set_status("focus",&id);
 }
 
 fn exe_reset(a: &mut App) {
-    let id = a.with_focus_object(|f| f.get_focus());
-    if let Some(id) = id {
+    let context = a.get_window().get_train_manager().get_desired_context();
+    if let Some(id) = context.get_focus() {
         a.with_jumper(|j| j.jump(&id));
     }
 }

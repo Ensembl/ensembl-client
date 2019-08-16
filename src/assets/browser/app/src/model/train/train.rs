@@ -90,7 +90,8 @@ impl Train {
     fn get_carriage(&mut self, leaf: &Leaf) -> &mut Carriage {
         if !self.carriages.contains_key(&leaf) {
             let train_id = self.id.clone();
-            let c = Carriage::new(&mut self.pm,&leaf,&train_id);
+            let c = Carriage::new(&leaf,&train_id);
+            self.pm.add_carriage(&c.get_id());
             self.carriages.insert(leaf.clone(),c);
         }
         self.carriages.get_mut(leaf).unwrap()
@@ -111,7 +112,7 @@ impl Train {
     }
     
     /* remove leafs out of scope */
-    fn remove_unused_leafs(&mut self) {
+    fn remove_unused_carriages(&mut self) {
         let mut doomed = HashSet::new();
         let flank = self.true_flank();
         for leaf in self.carriages.keys() {
@@ -120,14 +121,17 @@ impl Train {
             }
         }
         for d in doomed {
-            self.carriages.remove(&d);
+            if let Some(mut c) = self.carriages.remove(&d) {
+                c.remove_all_travellers();
+                self.pm.remove_carriage(c.get_id());
+            }
         }
     }
 
     /* manage_leafs entry point */
-    pub fn manage_leafs(&mut self, cm: &mut TravellerCreator) {
+    pub fn manage_carriages(&mut self, cm: &mut TravellerCreator) {
         if !self.active { return; }
-        self.remove_unused_leafs();
+        self.remove_unused_carriages();
         for leaf in self.get_missing_leafs() {
             let train_id = self.id.clone();
             let c = self.get_carriage(&leaf);

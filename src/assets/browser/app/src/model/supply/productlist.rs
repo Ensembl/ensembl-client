@@ -8,7 +8,6 @@ use model::zmenu::ZMenuRegistry;
 use tácode::Tácode;
 use super::productbuilder::build_product;
 use super::Product;
-use model::focus::FocusObject;
 use controller::global::WindowState;
 
 pub struct ProductListImpl {

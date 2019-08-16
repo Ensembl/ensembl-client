@@ -18,9 +18,8 @@ use debug::add_debug_sticks;
 use dom::domutil;
 use drivers::webgl::GLPrinter;
 use model::driver::{ Printer, PrinterManager };
-use model::focus::FocusObject;
 use model::supply::build_product;
-use model::train::TrainManager;
+use model::train::{ TrainManager, TravellerCreator };
 use tácode::Tácode;
 use types::Dot;
 
@@ -60,7 +59,8 @@ impl App {
         let mut product_list = ProductList::new();
         let printer = PrinterManager::new(Box::new(GLPrinter::new(&canv_el)));
         let landscapes = AllLandscapes::new();
-        let train_manager = TrainManager::new(&printer);
+        let traveller_creator = TravellerCreator::new(&printer);
+        let train_manager = TrainManager::new(&printer,&traveller_creator);
         let mut clerk = HttpXferClerk::new(http_manager,config_url,&cache,&train_manager);
         let window = WindowState::new(config,tc,&mut clerk,&mut product_list,&mut csm,&train_manager,&landscapes);
         let mut out = App {
@@ -69,7 +69,7 @@ impl App {
             canv_el: canv_el.clone(),
             printer: Arc::new(Mutex::new(printer.clone())),
             stage:  Arc::new(Mutex::new(Stage::new())),
-            compo: Arc::new(Mutex::new(Compositor::new(&window,&printer,&cache))),
+            compo: Arc::new(Mutex::new(Compositor::new(&window,&traveller_creator,&cache))),
             state: Arc::new(Mutex::new(StateManager::new())),
             report: None,
             viewport: None,
@@ -101,24 +101,6 @@ impl App {
         self.window.get_http_clerk().tick()
     }
     
-    pub fn with_focus_object<F,G>(&mut self, cb: F) -> G
-            where F: FnOnce(&mut FocusObject) -> G {
-        let mut focus = self.window.get_focus();
-        let old_status = focus.state().clone();
-        let out = cb(&mut focus);
-        let new_status = focus.state().clone();
-        console!("old status {:?}",old_status);
-        if old_status != new_status {
-            if let Some(id) = focus.get_focus() {
-                console!("status changed!");
-                self.compo.lock().unwrap().change_focus(&id);
-                self.get_report().set_status("focus",&id);
-            }
-        }
-        console!("new status {:?}",new_status);
-        out
-    }
-
     pub fn set_runner(&mut self, ar: &AppRunnerWeak) {
         self.ar = ar.clone();
     }

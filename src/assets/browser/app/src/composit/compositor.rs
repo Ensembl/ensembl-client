@@ -17,12 +17,12 @@ const MS_PRIME_DELAY: f64 = 2000.;
 
 pub struct Compositor {
     window: WindowState,
+    traveller_creator: TravellerCreator,
     zmr: ZMenuRegistry,
     bp_per_screen: f64,
     updated: bool,
     prime_delay: Option<f64>,
     last_updated: Option<f64>,
-    components: TravellerCreator,
     wanted_componentset: ComponentSet,
     current_componentset: ComponentSet,
     psychic: Psychic,
@@ -31,11 +31,11 @@ pub struct Compositor {
 }
 
 impl Compositor {
-    pub fn new(window: &WindowState, printer: &PrinterManager, xfercache: &XferCache) -> Compositor {
+    pub fn new(window: &WindowState, traveller_creator: &TravellerCreator, xfercache: &XferCache) -> Compositor {
         Compositor {
+            traveller_creator: traveller_creator.clone(),
             window: window.clone(),
             zmr: ZMenuRegistry::new(),
-            components: TravellerCreator::new(&printer,&window),
             bp_per_screen: 1.,
             updated: true,
             last_updated: None,
@@ -74,19 +74,19 @@ impl Compositor {
             self.add_product(added.clone());
         }
         for removed in self.current_componentset.not_in(&self.wanted_componentset).iter() {
-            self.components.remove_source(removed.clone().get_product_name());
+            self.traveller_creator.remove_source(removed.clone().get_product_name());
         }
         self.current_componentset = self.wanted_componentset.clone();
         /* Warm up xfercache */
         self.prime_cache(t);
         /* Move into future */
-        self.window.get_train_manager().tick(t,&mut self.components);
+        self.window.get_train_manager().tick(t);
         /* Manage useful leafs */
         if self.updated {
             if let Some(prev_t) = self.last_updated {
                 if t-prev_t < MS_PER_UPDATE { return; }
             }
-            self.window.get_train_manager().manage_leafs(&mut self.components);        
+            self.window.get_train_manager().manage_carriages();        
             self.updated = false;
             self.last_updated = Some(t);
         }
@@ -119,7 +119,7 @@ impl Compositor {
     
     pub fn set_zoom(&mut self, bp_per_screen: f64) {
         self.bp_per_screen = bp_per_screen;
-        self.window.get_train_manager().set_zoom(&mut self.components, bp_per_screen);
+        self.window.get_train_manager().set_zoom(bp_per_screen);
         self.psychic.set_scale(&Scale::best_for_screen(bp_per_screen));
         self.psychic.set_width(bp_per_screen as i32);
         self.updated = true;
@@ -145,19 +145,14 @@ impl Compositor {
     }
 
     fn add_product(&mut self, mut c: Product) {
-        self.window.get_train_manager().add_component(&mut self.components,&mut c);
-        self.components.add_source(c);
+        self.window.get_train_manager().add_component(&mut c);
+        self.traveller_creator.add_source(c);
     }
     
     pub fn update_state(&mut self, oom: &StateManager) {
         self.window.get_train_manager().update_state(oom);
     }
     
-    pub fn change_focus(&mut self, id: &str) {
-        let context = TrainContext::new(&Some(id.to_string()));
-        self.window.get_train_manager().set_desired_context(&mut self.components,&context);
-    }
-
     pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
         self.zmr.intersects(stage,pos)
     }

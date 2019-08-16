@@ -169,13 +169,7 @@ impl GLPrinterBase {
             carriage.new_sr(&sr);
         }
         Box::new(sr)
-    }
-    
-    fn remove_traveller(&mut self, sr: &mut GLTraveller) {
-        if let Some(carriage) = self.carriages.get_mut(&sr.get_traveller_id().get_carriage_id()) {
-            carriage.remove_sr(sr);
-        }        
-    }
+    }    
 }
 
 #[derive(Clone)]
@@ -188,11 +182,7 @@ impl GLPrinter {
         GLPrinter {
             base: Rc::new(RefCell::new(GLPrinterBase::new(canv_el)))
         }
-    }
-    
-    pub(in super) fn remove_traveller(&mut self, sr: &mut GLTraveller) {
-        self.base.borrow_mut().remove_traveller(sr);
-    }
+    }    
 }
 
 impl Printer for GLPrinter {

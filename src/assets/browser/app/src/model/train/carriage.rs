@@ -9,7 +9,6 @@ use super::{ CarriageId, TrainId, Traveller };
 use super::travellercreator::TravellerCreator;
 
 pub struct Carriage {
-    pm: PrinterManager,
     travellers: Vec<Traveller>,
     known_done: bool,
     needs_rebuild: bool,
@@ -17,15 +16,13 @@ pub struct Carriage {
 }
 
 impl Carriage {
-    pub(in super) fn new(pm: &PrinterManager, leaf: &Leaf, train_id: &TrainId) -> Carriage {
+    pub(in super) fn new(leaf: &Leaf, train_id: &TrainId) -> Carriage {
         let mut out = Carriage {
-            pm: pm.clone(),
             travellers: Vec::<Traveller>::new(),
             known_done: false,
             needs_rebuild: false,
             id: CarriageId::new(leaf,train_id)
         };
-        out.pm.add_carriage(&out.id);
         out
     }
     
@@ -37,6 +34,12 @@ impl Carriage {
     
     pub(in super) fn add_traveller(&mut self, traveller: Traveller) {
         self.travellers.push(traveller);
+    }
+
+    pub(super) fn remove_all_travellers(&mut self) {
+        for mut t in self.travellers.drain(..) {
+            t.destroy();
+        }
     }
         
     pub(in super) fn is_done(&mut self) -> bool {
@@ -76,13 +79,6 @@ impl Carriage {
             self.build_zmenu(&mut zml);
         }
         zmls.register_leaf(zml);
-    }
-}
-
-impl Drop for Carriage {
-    fn drop(&mut self) {
-        self.travellers.clear(); // Triggers drop which informs printer
-        self.pm.remove_carriage(&self.id);
     }
 }
 

@@ -3,6 +3,7 @@ use std::rc::Rc;
 
 use super::{ GLTraveller, GLProgs, GLProgInstances };
 use super::super::program::ProgramType;
+use model::driver::DriverTraveller;
 use model::train::Carriage;
 use composit::{ Leaf, Stage };
 use super::super::drawing::{ CarriageCanvases, AllCanvasAllocator };
@@ -29,10 +30,6 @@ impl GLCarriage {
 
     pub fn new_sr(&mut self, sr: &GLTraveller) {
         self.srr.insert(sr.clone());
-    }
-
-    pub fn remove_sr(&mut self, sr: &mut GLTraveller) {
-        self.srr.remove(sr);
     }
     
     pub fn destroy(&mut self, alloc: &mut AllCanvasAllocator) {

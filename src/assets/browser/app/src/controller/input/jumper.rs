@@ -73,19 +73,11 @@ impl JumperConsumer {
     fn jump(&mut self, req: XmlHttpRequest) -> Result<(),()> {
         let in_ = req.response_text().map_err(|_|())?;
         let data : JSONValue = serde_json::from_str(&unwrap!(in_)).map_err(|_|())?;
-        console!("A {:?}",data);
         let stick = json_str(json_obj_get(&data,"stick")?)?;
-        console!("B {:?}",stick);
         let f : Result<f64,_> = json_str(json_obj_get(&data,"start")?)?.parse();
-        console!("C {:?} {:?}",json_obj_get(&data,"start"),f);
         let start = json_f64(json_obj_get(&data,"start")?)?;
-        console!("D {:?}",start);
         let end = json_f64(json_obj_get(&data,"end")?)?;
-        console!("E {:?}",end);
-        console!("F1 {:?}",json_obj_get(&data,"found"));
         let found = json_bool(json_obj_get(&data,"found")?)?;
-        console!("F {:?} {:?}",json_obj_get(&data,"found"),found);
-        console!("got result! {:?}/{:?}/{:?}/{:?}",stick,start,end,found);
         if found {
             let mut app_ref = self.ar.state();
             let mut app = app_ref.lock().unwrap();
