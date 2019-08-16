@@ -19,7 +19,7 @@ use data::XferConsumer;
 use model::driver::PrinterManager;
 use model::item::{ DeliveredItem, ItemUnpacker };
 use model::supply::Product;
-use super::{ Train, TrainContext, TravellerCreator };
+use super::{ Train, TrainId, TrainContext, TravellerCreator };
 
 const MS_FADE : f64 = 100.;
 
@@ -34,7 +34,7 @@ pub struct TrainManagerImpl {
     transition_start: Option<f64>,
     transition_prop: Option<f64>, 
     /* current position/scale */
-    stick: Option<Stick>,
+    desired_stick: Option<Stick>,
     bp_per_screen: f64,
     position_bp: f64,
     desired_context: TrainContext
@@ -52,44 +52,40 @@ impl TrainManagerImpl {
             transition_prop: None, 
             bp_per_screen: 1.,
             position_bp: 0.,
-            stick: None,
+            desired_stick: None,
             desired_context: TrainContext::new(&None)
         }
     }
     
     pub fn update_report(&self, report: &Report) {
-        if let Some(ref stick) = self.stick {
+        // XXX: TOO SOON!
+        if let Some(ref stick) = self.desired_stick {
             report.set_status("a-stick",&stick.get_name());
+            report.set_status("i-stick",&stick.get_name());
         }
     }
         
     /* utility: makes new train at given scale */
     fn make_train(&mut self, scale: &Scale) -> Option<Train> {
-        if let Some(ref stick) = self.stick {
+        if let Some(ref stick) = self.desired_stick {
             let mut f = Train::new(&self.printer,&stick,scale,&self.desired_context);
+            f.set_bp_per_screen(self.bp_per_screen);
             f.set_position(self.position_bp);
-            f.set_zoom(self.bp_per_screen);
             f.manage_carriages(&mut self.traveller_creator);
             Some(f)
         } else {
             None
         }
     }
-    
-    pub fn get_stick(&self) -> &Option<Stick> { &self.stick }
 
     /* COMPOSITOR sets new stick. Existing trains useless */
-    pub fn set_stick(&mut self, st: &Stick, bp_per_screen: f64) {
-        // XXX not the right thing to do: should transition
-        self.stick = Some(st.clone());
-        self.bp_per_screen = bp_per_screen;
-        let scale = Scale::best_for_screen(bp_per_screen);
-        self.each_train(|x| x.set_active(false));
-        self.current_train = Some(Train::new(&self.printer,st,&scale,&self.desired_context));
-        self.current_train.as_mut().unwrap().set_zoom(bp_per_screen);
-        self.transition_train = None;
-        self.future_train = None;
-        self.current_train.as_mut().unwrap().set_active(true);
+    pub fn set_desired_stick(&mut self, st: &Stick) -> bool {
+        if let Some(ref old) = self.desired_stick {
+            if st == old { return false; }
+        }
+        self.desired_stick = Some(st.clone());
+        self.maybe_change_trains();
+        true
     }
     
     /* ********************************************************
@@ -103,6 +99,7 @@ impl TrainManagerImpl {
             if t-start < MS_FADE {
                 self.transition_prop = Some((t-start)/MS_FADE);
             } else {
+                bb_log!("trainmanager","transition done {:?}",self.transition_train.as_ref().map(|x| x.get_train_id().clone()));
                 self.current_train = self.transition_train.take();
                 self.transition_start = None;
                 self.transition_prop = None;
@@ -116,17 +113,18 @@ impl TrainManagerImpl {
         let mut ready = false;
         if let Some(ref mut future_train) = self.future_train {
             if future_train.check_done() {
+                bb_log!("trainmanager","future train is ready {:?}",future_train.get_train_id().clone());
                 future_train.set_needs_refresh();
                 ready = true;
             }
         }
         /* if future ready, transition empty, start one */
         if ready && self.transition_train.is_none() {
+            bb_log!("trainmanager","future train is transitioning {:?}",self.future_train.as_ref().map(|x| x.get_train_id().clone()));
             self.transition_train = self.future_train.take();
             self.transition_start = Some(t);
             self.transition_prop = Some(0.);
             let scale = self.transition_train.as_ref().unwrap().get_train_id().get_scale().clone();
-            console!("transition to {:?} {:?}",scale,self.transition_train.as_ref().unwrap().get_train_id());
         }
     }
     
@@ -177,12 +175,12 @@ impl TrainManagerImpl {
      * ***********************************************************
      */
     
-    /* current (or soon and inevitable) printing vscale. */
-    fn printing_vscale(&self) -> Option<Scale> {
+    /* current (or soon and inevitable) printing train. */
+    fn printing_train_id(&self) -> Option<&TrainId> {
         if let Some(ref transition_train) = self.transition_train {
-            Some(transition_train.get_train_id().get_scale().clone())
+            Some(transition_train.get_train_id())
         } else if let Some(ref current_train) = self.current_train {
-            Some(current_train.get_train_id().get_scale().clone())
+            Some(current_train.get_train_id())
         } else {
             None
         }
@@ -205,33 +203,40 @@ impl TrainManagerImpl {
             t.set_active(false);
         }
         self.future_train = self.make_train(scale);
+        bb_log!("trainmanager","Creating future train {:?}",self.future_train.as_ref().map(|x| x.get_train_id()));
         self.future_train.as_mut().unwrap().set_active(true);
     }
     
     /* Abandon future train */
     fn end_future(&mut self) {
         if let Some(ref mut t) = self.future_train {
+            bb_log!("trainmanager","Abandoning future train {:?}",t.get_train_id());
             t.set_active(false);
         }
         self.future_train = None;
     }
 
     /* scale may have changed significantly to change trains */
-    fn maybe_change_trains(&mut self, bp_per_screen: f64) {
-        if let Some(printing_vscale) = self.printing_vscale() {
-            let best = Scale::best_for_screen(bp_per_screen);
-            let mut end_future = false;
-            let mut new_future = false;
-            if best != printing_vscale || self.printing_context() != &self.desired_context {
+    fn maybe_change_trains(&mut self) {
+        if self.desired_stick.is_none() { return; }
+        let mut end_future = false;
+        let mut new_future = false;
+        let best_scale = Scale::best_for_screen(self.bp_per_screen);
+        if let Some(printing_train) = self.printing_train_id() {
+            if best_scale != *printing_train.get_scale() || 
+               self.desired_stick.as_ref().unwrap() != printing_train.get_stick() ||
+               self.printing_context() != &self.desired_context {
+                   bb_log!("debug","printing_context {:?} desired_context {:?}",self.printing_context(),self.desired_context);
                 /* we're not currently showing the optimal scale */
                 if let Some(ref mut future_train) = self.future_train {
                     /* there's a future train ... */
-                    if best != *future_train.get_train_id().get_scale() ||
-                       self.desired_context != *future_train.get_train_id().get_context() {
+                    if best_scale != *future_train.get_train_id().get_scale() ||
+                       self.desired_context != *future_train.get_train_id().get_context() ||
+                       self.desired_stick.as_ref().unwrap() != future_train.get_train_id().get_stick() {
                         /* ... and that's not optimal either */
                         end_future = true;
                         new_future = true;
-                    }
+                       } /* else that's optimal, so leave it to it */
                 } else {
                     /* there's no future, we need one */
                     new_future = true;
@@ -241,19 +246,20 @@ impl TrainManagerImpl {
                 end_future = true;
             }
             /* do anything that needs to be done */
-            if end_future { self.end_future(); }
-            if new_future { 
-                console!("planning transition to {:?} for {:?}",best,self.desired_context);
-                self.new_future(&best);
-            }
+        } else {
+            /* we're not pringint anything yet: let's do it */
+            end_future = true;
+            new_future = true;
         }
+        if end_future { self.end_future(); }
+        if new_future { self.new_future(&best_scale); }
     }
 
     /* compositor notifies of bp/screen update (change trains?) */
-    pub fn set_zoom(&mut self, bp_per_screen: f64) {
+    pub fn set_bp_per_screen(&mut self, bp_per_screen: f64) {
         self.bp_per_screen = bp_per_screen;
-        self.maybe_change_trains(bp_per_screen);
-        self.each_train(|t| t.set_zoom(bp_per_screen));
+        self.maybe_change_trains();
+        self.each_train(|t| t.set_bp_per_screen(bp_per_screen));
     }
             
     /* compositor notifies of position update */
@@ -271,7 +277,7 @@ impl TrainManagerImpl {
     pub fn set_desired_context(&mut self, context: &TrainContext) {
         console!("focus change to {:?}",context);
         self.desired_context = context.clone();
-        self.maybe_change_trains(self.bp_per_screen);
+        self.maybe_change_trains();
     }
     
     /* ***************************************************************
@@ -317,12 +323,8 @@ impl TrainManager {
         self.0.lock().unwrap().update_report(report);
     }
         
-    pub fn get_stick(&self) -> Option<Stick> {
-         self.0.lock().unwrap().get_stick().clone()
-    }
-
-    pub fn set_stick(&mut self, st: &Stick, bp_per_screen: f64) {
-        self.0.lock().unwrap().set_stick(st,bp_per_screen);
+    pub fn set_desired_stick(&mut self, st: &Stick) -> bool {
+        self.0.lock().unwrap().set_desired_stick(st)
     }
 
     pub fn tick(&mut self, t: f64,) {
@@ -337,8 +339,8 @@ impl TrainManager {
         self.0.lock().unwrap().add_component(product);
     }
 
-    pub fn set_zoom(&mut self, bp_per_screen: f64) {
-        self.0.lock().unwrap().set_zoom(bp_per_screen);
+    pub fn set_bp_per_screen(&mut self, bp_per_screen: f64) {
+        self.0.lock().unwrap().set_bp_per_screen(bp_per_screen);
     }
             
     pub fn set_position(&mut self, position_bp: f64) {

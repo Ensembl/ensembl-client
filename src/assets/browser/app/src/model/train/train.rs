@@ -52,7 +52,7 @@ impl Train {
     }
         
     /* called when zoom changes, to update flank */
-    pub(in super) fn set_zoom(&mut self, bp_per_screen: f64) {
+    pub(in super) fn set_bp_per_screen(&mut self, bp_per_screen: f64) {
         self.ideal_flank = (bp_per_screen / self.id.get_scale().total_bp()) as i32;
         /* reset middle leaf after zoom */
         if let Some(pos) = self.position_bp {
@@ -108,7 +108,7 @@ impl Train {
                 out.push(leaf);
             }
         }
-        return out;
+        out
     }
     
     /* remove leafs out of scope */

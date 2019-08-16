@@ -93,22 +93,15 @@ impl Compositor {
     }
 
     pub fn update_report(&mut self, report: &Report) {
-        if let Some(stick) = self.window.get_train_manager().get_stick() {
-            report.set_status("i-stick",&stick.get_name());
-        }
         self.window.get_train_manager().update_report(report);
     }
 
     pub fn set_stick(&mut self, st: &Stick) {
-        if let Some(stick) = self.window.get_train_manager().get_stick() {
-            if &stick == st {
-                return;
-            }
+        if self.window.get_train_manager().set_desired_stick(st) {
+            self.prime_delay = None; // Force priming delay as screen is completely invalid
+            self.psychic.set_stick(st);
+            self.updated = true;
         }
-        self.prime_delay = None; // Force priming delay as screen is completely invalid
-        self.window.get_train_manager().set_stick(st,self.bp_per_screen);
-        self.psychic.set_stick(st);
-        self.updated = true;
     }
 
     pub fn set_position(&mut self, position_bp: f64) {
@@ -117,9 +110,9 @@ impl Compositor {
         self.updated = true;
     }
     
-    pub fn set_zoom(&mut self, bp_per_screen: f64) {
+    pub fn set_bp_per_screen(&mut self, bp_per_screen: f64) {
         self.bp_per_screen = bp_per_screen;
-        self.window.get_train_manager().set_zoom(bp_per_screen);
+        self.window.get_train_manager().set_bp_per_screen(bp_per_screen);
         self.psychic.set_scale(&Scale::best_for_screen(bp_per_screen));
         self.psychic.set_width(bp_per_screen as i32);
         self.updated = true;

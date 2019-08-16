@@ -71,7 +71,7 @@ fn exe_pos_range_event(app: &App, x_start: f64, x_end: f64, y: f64) {
         (s.get_pos_middle(),s.get_linear_zoom())
     });
     app.with_compo(|co| {
-        co.set_zoom(zoom);
+        co.set_bp_per_screen(zoom);
         co.set_position(pos.0);
     });
 }
@@ -102,7 +102,7 @@ fn exe_zoom_event(app: &App, za: f64, by: bool) {
         }
         s.get_linear_zoom()
     });
-    app.with_compo(|co| { co.set_zoom(z); co.set_position(middle); });
+    app.with_compo(|co| { co.set_bp_per_screen(z); co.set_position(middle); });
 }
 
 fn exe_resize(cg: &mut App, sz: Dot<f64,f64>) {
