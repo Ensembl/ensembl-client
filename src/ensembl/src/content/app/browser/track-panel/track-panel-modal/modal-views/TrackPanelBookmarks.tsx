@@ -15,6 +15,7 @@ import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
+import { closeTrackPanelModal } from '../../trackPanelActions';
 
 import upperFirst from 'lodash/upperFirst';
 
@@ -31,19 +32,9 @@ type TrackPanelBookmarksProps = {
 type DispatchProps = {
   fetchExampleEnsObjects: (objectId: string) => void;
   updateTrackStates: (trackStates: TrackStates) => void;
+  closeTrackPanelModal: () => void;
 };
 type Props = TrackPanelBookmarksProps & DispatchProps;
-
-type ExampleLinksProps = {
-  activeGenomeId: string | null;
-  exampleEnsObjects: EnsObject[];
-};
-
-type PreviouslyViewedLinksProps = {
-  previouslyViewedObjects: Bookmark[];
-  updateTrackStates: (trackStates: TrackStates) => void;
-  activeGenomeId: string | null;
-};
 
 const getExampleObjLabel = (exampleObject: EnsObject | Bookmark) => {
   if (exampleObject.object_type === 'gene') {
@@ -53,6 +44,10 @@ const getExampleObjLabel = (exampleObject: EnsObject | Bookmark) => {
   }
 };
 
+type ExampleLinksProps = Pick<
+  Props,
+  'exampleEnsObjects' | 'activeGenomeId' | 'closeTrackPanelModal'
+>;
 const ExampleLinks = (props: ExampleLinksProps) => {
   return (
     <div>
@@ -64,9 +59,15 @@ const ExampleLinks = (props: ExampleLinksProps) => {
           location: locationStr
         });
 
+        const onClickHandler = () => {
+          props.closeTrackPanelModal();
+        };
+
         return (
           <dd key={exampleObject.object_id}>
-            <Link to={path}>{getExampleObjLabel(exampleObject)}</Link>
+            <Link to={path} onClick={onClickHandler}>
+              {getExampleObjLabel(exampleObject)}
+            </Link>
             <span className={styles.previouslyViewedType}>
               {' '}
               {upperFirst(exampleObject.object_type)}
@@ -78,38 +79,49 @@ const ExampleLinks = (props: ExampleLinksProps) => {
   );
 };
 
+type PreviouslyViewedLinksProps = Pick<
+  Props,
+  | 'previouslyViewedObjects'
+  | 'updateTrackStates'
+  | 'closeTrackPanelModal'
+  | 'activeGenomeId'
+>;
+
 const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
   return (
     <div>
-      {[...props.previouslyViewedObjects].reverse().map((bookmark, index) => {
-        const locationStr = `${bookmark.location.chromosome}:${bookmark.location.start}-${bookmark.location.end}`;
-        const path = urlFor.browser({
-          genomeId: props.activeGenomeId,
-          focus: bookmark.object_id,
-          location: locationStr
-        });
+      {[...props.previouslyViewedObjects]
+        .reverse()
+        .map((previouslyViewedObject, index) => {
+          const locationStr = `${previouslyViewedObject.location.chromosome}:${previouslyViewedObject.location.start}-${previouslyViewedObject.location.end}`;
+          const path = urlFor.browser({
+            genomeId: props.activeGenomeId,
+            focus: previouslyViewedObject.object_id,
+            location: locationStr
+          });
 
-        return (
-          <dd key={index}>
-            <Link
-              to={path}
-              onClick={() => {
-                props.updateTrackStates({
-                  [bookmark.genome_id]: {
-                    ...bookmark.trackStates
-                  }
-                });
-              }}
-            >
-              {bookmark.label}
-            </Link>
-            <span className={styles.previouslyViewedType}>
-              {' '}
-              {upperFirst(bookmark.object_type)}
-            </span>
-          </dd>
-        );
-      })}
+          const onClickHandler = () => {
+            props.updateTrackStates({
+              [previouslyViewedObject.genome_id]: {
+                ...previouslyViewedObject.trackStates
+              }
+            });
+
+            props.closeTrackPanelModal();
+          };
+
+          return (
+            <dd key={index}>
+              <Link to={path} onClick={onClickHandler}>
+                {previouslyViewedObject.label}
+              </Link>
+              <span className={styles.previouslyViewedType}>
+                {' '}
+                {upperFirst(previouslyViewedObject.object_type)}
+              </span>
+            </dd>
+          );
+        })}
     </div>
   );
 };
@@ -119,7 +131,8 @@ export const TrackPanelBookmarks = (props: Props) => {
     previouslyViewedObjects,
     exampleEnsObjects,
     activeGenomeId,
-    updateTrackStates
+    updateTrackStates,
+    closeTrackPanelModal
   } = props;
 
   return (
@@ -132,6 +145,7 @@ export const TrackPanelBookmarks = (props: Props) => {
           <ExampleLinks
             exampleEnsObjects={exampleEnsObjects}
             activeGenomeId={activeGenomeId}
+            closeTrackPanelModal={closeTrackPanelModal}
           />
         </dl>
       ) : null}
@@ -142,6 +156,7 @@ export const TrackPanelBookmarks = (props: Props) => {
             previouslyViewedObjects={previouslyViewedObjects}
             activeGenomeId={activeGenomeId}
             updateTrackStates={updateTrackStates}
+            closeTrackPanelModal={closeTrackPanelModal}
           />
         </dl>
       ) : null}
@@ -158,7 +173,8 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = {
   fetchExampleEnsObjects,
-  updateTrackStates
+  updateTrackStates,
+  closeTrackPanelModal
 };
 
 export default connect(
