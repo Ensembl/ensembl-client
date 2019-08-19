@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import find from 'lodash/find';
@@ -25,7 +25,6 @@ import {
 
 import analyticsTracking from 'src/services/analytics-service';
 import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
-import { CustomDimensions } from 'src/analyticsHelper';
 
 import styles from './PopularSpeciesButton.scss';
 
@@ -58,10 +57,7 @@ export const PopularSpeciesButton = (props: Props) => {
       return;
     }
 
-    analyticsTracking.setCustomDimension({
-      diemension: CustomDimensions.SPECIES,
-      value: genome_id
-    });
+    analyticsTracking.setSpeciesDimension(genome_id);
 
     if (isSelected) {
       props.clearSelectedSpecies();

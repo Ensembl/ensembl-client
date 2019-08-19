@@ -41,7 +41,6 @@ import { CommittedItem } from 'src/content/app/species-selector/types/species-se
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 import analyticsTracking from 'src/services/analytics-service';
-import { CustomDimensions } from 'src/analyticsHelper';
 
 import { fetchGenomeData } from 'src/genome/genomeActions';
 import {
@@ -204,10 +203,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
       return;
     }
     fetchGenomeData(activeGenomeId);
-    analyticsTracking.setCustomDimension({
-      diemension: CustomDimensions.SPECIES,
-      value: activeGenomeId
-    });
+    analyticsTracking.setSpeciesDimension(activeGenomeId);
   }, [props.activeGenomeId]);
 
   useEffect(() => {

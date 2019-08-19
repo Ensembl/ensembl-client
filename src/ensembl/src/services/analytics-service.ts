@@ -1,5 +1,9 @@
 import ReactGA from 'react-ga';
-import { AnalyticsOptions, CustomDimensionOptions } from 'src/analyticsHelper';
+import {
+  AnalyticsOptions,
+  CustomDimensions,
+  CustomDimensionOptions
+} from 'src/analyticsHelper';
 
 import config from 'config';
 
@@ -32,9 +36,14 @@ class AnalyticsTracking {
     });
   }
 
-  // Send a custom dimension event
-  public setCustomDimension(ga: CustomDimensionOptions) {
-    this.reactGA.ga('set', ga.diemension, ga.value);
+  // Set page custom dimension
+  public setPageDimension(page: string) {
+    this.reactGA.ga('set', CustomDimensions.PAGEVIEW, page);
+  }
+
+  // Set species custom dimension
+  public setSpeciesDimension(genomeId: string) {
+    this.reactGA.ga('set', CustomDimensions.SPECIES, genomeId);
   }
 }
 

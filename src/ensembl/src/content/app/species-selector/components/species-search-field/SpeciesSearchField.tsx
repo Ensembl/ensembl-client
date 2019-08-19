@@ -26,7 +26,6 @@ import {
 } from 'src/content/app/species-selector/types/species-search';
 
 import analyticsTracking from 'src/services/analytics-service';
-import { CustomDimensions } from 'src/analyticsHelper';
 import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
 
 import { RootState } from 'src/store';
@@ -65,10 +64,7 @@ export const SpeciesSearchField = (props: Props) => {
 
     const speciesName = getSpeciesAnalyticsName(match);
 
-    analyticsTracking.setCustomDimension({
-      diemension: CustomDimensions.SPECIES,
-      value: match.genome_id
-    });
+    analyticsTracking.setSpeciesDimension(match.genome_id);
 
     analyticsTracking.trackEvent({
       category: 'species_search',

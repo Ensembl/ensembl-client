@@ -12,7 +12,7 @@ import apiService from 'src/services/api-service';
 
 import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
 import analyticsTracking from 'src/services/analytics-service';
-import buildAnalyticsObject, { CustomDimensions } from 'src/analyticsHelper';
+import buildAnalyticsObject from 'src/analyticsHelper';
 
 import {
   getCommittedSpecies,
@@ -237,10 +237,7 @@ export const commitSelectedSpeciesAndSave: ActionCreator<
 
   const speciesName = getSpeciesAnalyticsName(selectedItem);
 
-  analyticsTracking.setCustomDimension({
-    diemension: CustomDimensions.SPECIES,
-    value: selectedItem.genome_id
-  });
+  analyticsTracking.setSpeciesDimension(selectedItem.genome_id);
 
   analyticsTracking.trackEvent({
     category: categories.ADD_SPECIES,
@@ -297,10 +294,7 @@ export const deleteSpeciesAndSave: ActionCreator<
   if (deletedSpecies) {
     const deletedSpeciesName = getSpeciesAnalyticsName(deletedSpecies);
 
-    analyticsTracking.setCustomDimension({
-      diemension: CustomDimensions.SPECIES,
-      value: deletedSpecies.genome_id
-    });
+    analyticsTracking.setSpeciesDimension(deletedSpecies.genome_id);
 
     analyticsTracking.trackEvent({
       category: categories.SELECTED_SPECIES,
