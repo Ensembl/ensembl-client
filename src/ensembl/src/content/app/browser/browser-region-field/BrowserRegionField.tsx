@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import classNames from 'classnames';
 
 import Input from 'src/shared/input/Input';
+import Tooltip from 'src/shared/tooltip/Tooltip';
 
 import { ChrLocation } from '../browserState';
 import { RootState } from 'src/store';
@@ -118,6 +119,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
           </button>
         </span>
       </form>
+      {<Tooltip autoAdjust={true}>{}</Tooltip>}
     </div>
   );
 };

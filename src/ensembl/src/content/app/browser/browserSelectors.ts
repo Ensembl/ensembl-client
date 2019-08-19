@@ -102,3 +102,17 @@ export const getTrackConfigLabel = (state: RootState): any =>
 
 export const getApplyToAll = (state: RootState): boolean =>
   state.browser.trackConfig.applyToAll;
+
+export const getBrowserRegionValidationErrors = (state: RootState) => {
+  const { validationErrors } = state.browser.browserRegionValidation;
+
+  if (validationErrors.message) {
+    return validationErrors.message.error
+      ? [validationErrors.message.error]
+      : [validationErrors.message.genomeId, validationErrors.message.region];
+  } else {
+  }
+};
+
+export const getBrowserRegionValidationLoadingStatus = (state: RootState) =>
+  state.browser.browserRegionValidation.loadingStatus;

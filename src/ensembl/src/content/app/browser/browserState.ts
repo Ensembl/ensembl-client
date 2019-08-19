@@ -1,6 +1,7 @@
 import browserStorageService from './browser-storage-service';
 
 import { TrackStates } from './track-panel/trackPanelConfig';
+import { LoadingState } from '../species-selector/types/loading-state';
 
 const activeGenomeId = browserStorageService.getActiveGenomeId();
 const activeEnsObjectIds = browserStorageService.getActiveEnsObjectIds();
@@ -23,6 +24,35 @@ export type ChrLocations = { [genomeId: string]: ChrLocation };
 
 export type CogList = {
   [key: string]: number;
+};
+
+export type BrowserRegionValidationError = {
+  error_code: string | null;
+  error_message: string | null;
+  is_valid: boolean;
+};
+
+export type BrowserRegionValidationValueError = BrowserRegionValidationError & {
+  value: string | number;
+};
+
+export type BrowserRegionValidationRegionError = BrowserRegionValidationError & {
+  region_code: string;
+  region_id: string;
+};
+
+export type BrowserRegionValidationMessage = {
+  genome_id: string;
+  region: string;
+};
+
+export type BrowserRegionValidationResponse = {
+  end?: BrowserRegionValidationValueError;
+  genome_id?: BrowserRegionValidationValueError;
+  is_parseable?: boolean;
+  region?: BrowserRegionValidationRegionError;
+  start?: BrowserRegionValidationValueError;
+  message?: BrowserRegionValidationMessage;
 };
 
 export type BrowserState = Readonly<{
@@ -69,6 +99,16 @@ export const defaultBrowserLocationState: BrowserLocationState = {
   actualChrLocations: {},
   browserRegionEditorActive: false,
   browserRegionFieldActive: false
+};
+
+export type BrowserRegionValidationState = Readonly<{
+  validationErrors: BrowserRegionValidationResponse;
+  loadingStatus: LoadingState;
+}>;
+
+export const defaultBrowserRegionValidationState: BrowserRegionValidationState = {
+  validationErrors: {},
+  loadingStatus: LoadingState.NOT_REQUESTED
 };
 
 export type TrackConfigState = Readonly<{

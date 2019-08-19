@@ -1,4 +1,8 @@
-import { createAction, createStandardAction } from 'typesafe-actions';
+import {
+  createAction,
+  createStandardAction,
+  createAsyncAction
+} from 'typesafe-actions';
 import { Dispatch, ActionCreator, Action } from 'redux';
 import { replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
@@ -27,6 +31,7 @@ import { RootState } from 'src/store';
 import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
 import { TrackStates } from './track-panel/trackPanelConfig';
 import { BROWSER_CONTAINER_ID } from './browser-constants';
+import apiService from 'src/services/api-service';
 
 export type UpdateTrackStatesPayload = {
   genomeId: string;
@@ -269,3 +274,30 @@ export const toggleBrowserRegionEditorActive = createStandardAction(
 export const toggleBrowserRegionFieldActive = createStandardAction(
   'toggle-browser-region-field-active'
 )<boolean>();
+
+export const fetchRegionValidation = createAsyncAction(
+  'browser/fetch_region_validation_request',
+  'browser/fetch_region_validation_success',
+  'browser/fetch_region_validation_error'
+)<string, any, Error>();
+
+export const fetchGenomeData: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (region: string) => async (dispatch, getState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(getState());
+
+  try {
+    dispatch(
+      fetchRegionValidation.request(
+        `genome_id=${activeGenomeId}&region=${region}`
+      )
+    );
+
+    const url = `/api/genome/region/validate?genome_id=${activeGenomeId}&region=${region}`;
+    const response = await apiService.fetch(url);
+
+    dispatch(fetchRegionValidation.success(response));
+  } catch (error) {
+    dispatch(fetchRegionValidation.failure(error));
+  }
+};

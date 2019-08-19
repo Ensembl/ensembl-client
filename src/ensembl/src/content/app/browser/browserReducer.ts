@@ -15,8 +15,11 @@ import {
   TrackConfigState,
   defaultTrackConfigState,
   BrowserEntityState,
-  defaultBrowserEntityState
+  defaultBrowserEntityState,
+  BrowserRegionValidationState,
+  defaultBrowserRegionValidationState
 } from './browserState';
+import { LoadingState } from '../species-selector/types/loading-state';
 
 export function browserInfo(
   state: BrowserState = defaultBrowserState,
@@ -126,6 +129,26 @@ export function browserLocation(
   }
 }
 
+export function browserRegionValidation(
+  state: BrowserRegionValidationState = defaultBrowserRegionValidationState,
+  action: ActionType<typeof browserActions>
+) {
+  switch (action.type) {
+    case getType(browserActions.fetchRegionValidation.request):
+      return { ...state, loadingStatus: LoadingState.LOADING };
+    case getType(browserActions.fetchRegionValidation.failure):
+      return { ...state, loadingStatus: LoadingState.ERROR };
+    case getType(browserActions.fetchRegionValidation.success):
+      return {
+        ...state,
+        loadingStatus: LoadingState.SUCCESS,
+        validationErrors: { ...action.payload }
+      };
+    default:
+      return state;
+  }
+}
+
 export function trackConfig(
   state: TrackConfigState = defaultTrackConfigState,
   action: ActionType<typeof browserActions>
@@ -165,5 +188,6 @@ export default combineReducers({
   browserEntity,
   browserLocation,
   browserNav,
+  browserRegionValidation,
   trackConfig
 });
