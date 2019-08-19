@@ -25,7 +25,7 @@ type TrackPanelBookmarksProps = {
   activeGenomeId: string | null;
   genomeInfo: GenomeInfoData;
   exampleEnsObjects: EnsObject[];
-  bookmarks: Bookmark[];
+  previouslyViewedObjects: Bookmark[];
 };
 
 type DispatchProps = {
@@ -39,8 +39,8 @@ type ExampleLinksProps = {
   exampleEnsObjects: EnsObject[];
 };
 
-type BookmarkedLinksProps = {
-  bookmarks: Bookmark[];
+type PreviouslyViewedLinksProps = {
+  previouslyViewedObjects: Bookmark[];
   updateTrackStates: (trackStates: TrackStates) => void;
   activeGenomeId: string | null;
 };
@@ -78,10 +78,10 @@ const ExampleLinks = (props: ExampleLinksProps) => {
   );
 };
 
-const BookmarkedLinks = (props: BookmarkedLinksProps) => {
+const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
   return (
     <div>
-      {[...props.bookmarks].reverse().map((bookmark, index) => {
+      {[...props.previouslyViewedObjects].reverse().map((bookmark, index) => {
         const locationStr = `${bookmark.location.chromosome}:${bookmark.location.start}-${bookmark.location.end}`;
         const path = urlFor.browser({
           genomeId: props.activeGenomeId,
@@ -116,7 +116,7 @@ const BookmarkedLinks = (props: BookmarkedLinksProps) => {
 
 export const TrackPanelBookmarks = (props: Props) => {
   const {
-    bookmarks,
+    previouslyViewedObjects,
     exampleEnsObjects,
     activeGenomeId,
     updateTrackStates
@@ -135,11 +135,11 @@ export const TrackPanelBookmarks = (props: Props) => {
           />
         </dl>
       ) : null}
-      {bookmarks.length ? (
+      {previouslyViewedObjects.length ? (
         <dl className={styles.previouslyViewed}>
           <dt>Previously viewed</dt>
-          <BookmarkedLinks
-            bookmarks={bookmarks}
+          <PreviouslyViewedLinks
+            previouslyViewedObjects={previouslyViewedObjects}
             activeGenomeId={activeGenomeId}
             updateTrackStates={updateTrackStates}
           />
@@ -153,7 +153,7 @@ const mapStateToProps = (state: RootState) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
   genomeInfo: getGenomeInfo(state),
   exampleEnsObjects: getExampleEnsObjects(state),
-  bookmarks: getActiveGenomeBookmarks(state)
+  previouslyViewedObjects: getActiveGenomeBookmarks(state)
 });
 
 const mapDispatchToProps = {

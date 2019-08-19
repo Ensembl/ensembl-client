@@ -11,7 +11,10 @@ import {
   getBrowserActiveEnsObject,
   getBrowserTrackStates
 } from '../browserSelectors';
-import { getActiveGenomeBookmarks } from './trackPanelSelectors';
+import {
+  getActiveGenomeBookmarks,
+  getActiveGenomePreviouslyViewedObjects
+} from './trackPanelSelectors';
 
 import { Bookmark } from './trackPanelState';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
@@ -114,7 +117,7 @@ export const changeTrackPanelModalViewForGenome: ActionCreator<
   );
 };
 
-export const updateBookmarksAndSave: ActionCreator<
+export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = () => (dispatch, getState: () => RootState) => {
   const state = getState();
@@ -125,25 +128,30 @@ export const updateBookmarksAndSave: ActionCreator<
   }
   const trackStates = getBrowserTrackStates(state)[activeGenomeId];
 
-  const activeGenomeBookmarks = [...getActiveGenomeBookmarks(state)];
+  const activeGenomePreviouslyViewedObjects = [
+    ...getActiveGenomePreviouslyViewedObjects(state)
+  ];
 
-  const existingIndex = activeGenomeBookmarks.findIndex(
-    (bookmark) => bookmark.object_id === activeEnsObject.object_id
+  const existingIndex = activeGenomePreviouslyViewedObjects.findIndex(
+    (previouslyViewedObject) =>
+      previouslyViewedObject.object_id === activeEnsObject.object_id
   );
   if (existingIndex === -1) {
     // IF it is not present, add it to the end
-    activeGenomeBookmarks.push(buildBookmark(activeEnsObject, trackStates));
+    activeGenomePreviouslyViewedObjects.push(
+      buildBookmark(activeEnsObject, trackStates)
+    );
   } else if (existingIndex !== -1) {
     // If it is already present, bump it to the end
-    activeGenomeBookmarks.push({
-      ...activeGenomeBookmarks[existingIndex],
+    activeGenomePreviouslyViewedObjects.push({
+      ...activeGenomePreviouslyViewedObjects[existingIndex],
       trackStates
     });
-    activeGenomeBookmarks.splice(existingIndex, 1);
+    activeGenomePreviouslyViewedObjects.splice(existingIndex, 1);
   }
 
   trackPanelStorageService.updateActiveGenomeBookmarks({
-    [activeGenomeId]: activeGenomeBookmarks
+    [activeGenomeId]: activeGenomePreviouslyViewedObjects
   });
 
   dispatch(
@@ -151,11 +159,55 @@ export const updateBookmarksAndSave: ActionCreator<
       activeGenomeId,
       data: {
         ...getActiveTrackPanel(getState()),
-        bookmarks: activeGenomeBookmarks
+        previouslyViewedObjects: activeGenomePreviouslyViewedObjects
       }
     })
   );
 };
+
+// FIXME: Wait until manual bookmarks functionality is added
+// export const updateBookmarksAndSave: ActionCreator<
+//   ThunkAction<void, any, null, Action<string>>
+// > = () => (dispatch, getState: () => RootState) => {
+//   const state = getState();
+//   const activeGenomeId = getBrowserActiveGenomeId(state);
+//   const activeEnsObject = getBrowserActiveEnsObject(state);
+//   if (!activeGenomeId || !activeEnsObject) {
+//     return;
+//   }
+//   const trackStates = getBrowserTrackStates(state)[activeGenomeId];
+
+//   const activeGenomeBookmarks = [...getActiveGenomeBookmarks(state)];
+
+//   const existingIndex = activeGenomeBookmarks.findIndex(
+//     (bookmark) => bookmark.object_id === activeEnsObject.object_id
+//   );
+//   if (existingIndex === -1) {
+//     // IF it is not present, add it to the end
+//     activeGenomeBookmarks.push(buildBookmark(activeEnsObject, trackStates));
+//   } else if (existingIndex !== -1) {
+//     // If it is already present, bump it to the end
+//     activeGenomeBookmarks.push({
+//       ...activeGenomeBookmarks[existingIndex],
+//       trackStates
+//     });
+//     activeGenomeBookmarks.splice(existingIndex, 1);
+//   }
+
+//   trackPanelStorageService.updateActiveGenomeBookmarks({
+//     [activeGenomeId]: activeGenomeBookmarks
+//   });
+
+//   dispatch(
+//     updateTrackPanelForGenome({
+//       activeGenomeId,
+//       data: {
+//         ...getActiveTrackPanel(getState()),
+//         bookmarks: activeGenomeBookmarks
+//       }
+//     })
+//   );
+// };
 
 export const openTrackPanelModal: ActionCreator<
   ThunkAction<void, any, null, Action<string>>

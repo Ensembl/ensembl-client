@@ -28,3 +28,11 @@ export const getActiveGenomeBookmarks = (state: RootState) => {
 
   return (activeGenomeId && getActiveTrackPanel(state).bookmarks) || [];
 };
+
+export const getActiveGenomePreviouslyViewedObjects = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+
+  return (
+    (activeGenomeId && getActiveTrackPanel(state).previouslyViewedObjects) || []
+  );
+};

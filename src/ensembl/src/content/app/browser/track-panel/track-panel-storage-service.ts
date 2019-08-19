@@ -4,7 +4,8 @@ import storageService, {
 import { Bookmark } from './trackPanelState';
 
 export enum StorageKeys {
-  BOOKMARKS = 'trackPanel.bookmarks'
+  BOOKMARKS = 'trackPanel.bookmarks',
+  PREVIOUSLY_VIEWED = 'trackPanel.previouslyViewedObjects'
 }
 
 export class TrackPanelStorageService {
@@ -22,6 +23,19 @@ export class TrackPanelStorageService {
     [genomeId: string]: Bookmark[];
   }) {
     this.storageService.update(StorageKeys.BOOKMARKS, activeGenomeBookmarks);
+  }
+
+  public getPreviouslyViewedObjects(): { [genomeId: string]: Bookmark[] } {
+    return this.storageService.get(StorageKeys.PREVIOUSLY_VIEWED) || {};
+  }
+
+  public updateActiveGenomePreviouslyViewedObjects(activeGenomePreviouslyViewedObjects: {
+    [genomeId: string]: Bookmark[];
+  }) {
+    this.storageService.update(
+      StorageKeys.PREVIOUSLY_VIEWED,
+      activeGenomePreviouslyViewedObjects
+    );
   }
 }
 

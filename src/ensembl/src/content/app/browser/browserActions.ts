@@ -21,7 +21,7 @@ import {
   getChrLocation
 } from './browserSelectors';
 
-import { updateBookmarksAndSave } from 'src/content/app/browser/track-panel/trackPanelActions';
+import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/browser/track-panel/trackPanelActions';
 
 import { getChrLocationStr } from './browserHelper';
 import browserStorageService from './browser-storage-service';
@@ -83,7 +83,7 @@ export const setDataFromUrlAndSave: ActionCreator<
       [activeGenomeId]: activeEnsObjectId
     });
 
-    dispatch(updateBookmarksAndSave());
+    dispatch(updatePreviouslyViewedObjectsAndSave());
   }
 };
 
@@ -117,7 +117,7 @@ export const updateTrackStatesAndSave: ActionCreator<
   };
 
   dispatch(updateTrackStates(stateFragment));
-  dispatch(updateBookmarksAndSave());
+  dispatch(updatePreviouslyViewedObjectsAndSave());
   const trackStates = getBrowserTrackStates(getState());
   browserStorageService.saveTrackStates(trackStates);
 };
