@@ -67,6 +67,8 @@ impl Stage {
         report.set_delta_y(-self.apos.get_edge(&UP,false) as i32);
     }
 
+    pub fn get_position(&self) -> &Position { &self.apos }
+
     pub fn set_wrapping(&mut self, w: &Wrapping) {
         self.apos.set_bumper(&LEFT,w.get_bumper(&LEFT));
         self.apos.set_bumper(&RIGHT,w.get_bumper(&RIGHT));

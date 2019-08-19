@@ -1,6 +1,7 @@
 use std::fmt;
 use std::cmp::{ Eq, PartialEq };
 use std::hash::{ Hash, Hasher };
+use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
 use composit::Leaf;
@@ -21,12 +22,12 @@ pub struct TravellerImpl {
     cur_value: bool,
     visuals: Box<DriverTraveller>,
     zml: ZMenuLeaf,
-    id: TravellerId
+    id: Rc<TravellerId>
 }
 
 impl TravellerImpl {
     fn new(pm: &mut PrinterManager, sa: &Subassembly, leaf: &Leaf, carriage_id: &CarriageId) -> TravellerImpl {
-        let id = TravellerId::new(carriage_id,sa);
+        let id = Rc::new(TravellerId::new(carriage_id,sa));
         let visuals = pm.make_driver_traveller(&id);
         TravellerImpl {
             done: false,
@@ -61,7 +62,7 @@ impl TravellerImpl {
         self.done = true;
     }
 
-    fn get_id(&self) -> TravellerId {
+    fn get_id(&self) -> Rc<TravellerId> {
         self.id.clone()
     }
 
@@ -87,34 +88,35 @@ impl Traveller {
         Traveller(Arc::new(Mutex::new(TravellerImpl::new(pm,sa,leaf,carriage_id))))
     }
     
-    pub fn get_id(&self) -> TravellerId {
-        unwrap!(self.0.lock()).get_id()
+    pub fn get_id(&self) -> Rc<TravellerId> {
+        ok!(self.0.lock()).get_id()
     }
 
     pub(in super) fn update_state(&mut self, m: &StateManager) -> bool {
-        unwrap!(self.0.lock()).update_state(m)
+        ok!(self.0.lock()).update_state(m)
     }
     
     pub(in super) fn is_done(&self) -> bool {
-        unwrap!(self.0.lock()).is_done()
+        ok!(self.0.lock()).is_done()
     }
             
     pub fn build_zmenu(&self, zml: &mut ZMenuLeaf) {
-        unwrap!(self.0.lock()).build_zmenu(zml);
+        ok!(self.0.lock()).build_zmenu(zml);
     }
 
     pub fn destroy(&mut self) {
-        unwrap!(self.0.lock()).destroy();
+        ok!(self.0.lock()).destroy();
     }
 
     fn matches_delivered_item(&self, di: &DeliveredItemId) -> bool {
-        unwrap!(self.0.lock()).matches_delivered_item(di)
+        ok!(self.0.lock()).matches_delivered_item(di)
     }
 }
 
 impl XferConsumer for Traveller {
     fn consume(&mut self, item: &DeliveredItem, unpacker: &mut ItemUnpacker) {
-        let trav_id = unwrap!(self.0.lock()).get_id().clone();
+        if self.is_done() { return; }
+        let trav_id = ok!(self.0.lock()).get_id().clone();
         let item_id = item.get_id();
         if self.matches_delivered_item(item.get_id()) {
             unpacker.schedule(&trav_id,Box::new(self.clone()));
@@ -124,7 +126,7 @@ impl XferConsumer for Traveller {
 
 impl UnpackedSubassemblyConsumer for Traveller {
     fn consume(&mut self, data: UnpackedSubassembly) {
-        unwrap!(self.0.lock()).set_contents(data);
+        ok!(self.0.lock()).set_contents(data);
     }
 }
 

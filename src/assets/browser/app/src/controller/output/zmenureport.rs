@@ -40,7 +40,7 @@ impl ZMenuReports {
         self.deactivate();
         console!("add {}",payload.to_string());
         self.activated = Some(id.to_string());
-        unwrap!(self.queue.lock()).add_report(json!({
+        ok!(self.queue.lock()).add_report(json!({
             "action": "create_zmenu",
             "id": id,
             "track_id": track_id,
@@ -51,7 +51,7 @@ impl ZMenuReports {
     
     pub fn deactivate(&mut self) {
         if let Some(ref id) = self.activated {
-            unwrap!(self.queue.lock()).add_report(json!({
+            ok!(self.queue.lock()).add_report(json!({
                 "action": "destroy_zmenu",
                 "id": id
             }));
@@ -66,7 +66,7 @@ impl ZMenuReports {
         };
         let queue = out.queue.clone();
         ar.add_timer("zmenu-report", move |_app,t,sr| {
-            let mut reports = unwrap!(queue.lock()).get_reports();
+            let mut reports = ok!(queue.lock()).get_reports();
             if reports.len() != 0 {
                 reports.drain(..).map(|report| {
                     OutputAction::SendCustomEvent("bpane-zmenu".to_string(),report)

@@ -12,7 +12,7 @@ use controller::output::Report;
 use data::{ Psychic, PsychicPacer, XferCache, XferClerk, XferConsumer };
 use types::{ DOWN, Dot };
 
-const MS_PER_UPDATE : f64 = 0.;
+const MS_PER_UPDATE : f64 = 100.;
 const MS_PRIME_DELAY: f64 = 2000.;
 
 pub struct Compositor {
@@ -96,11 +96,14 @@ impl Compositor {
         self.window.get_train_manager().update_report(report);
     }
 
-    pub fn set_stick(&mut self, st: &Stick) {
+    pub fn set_stick(&mut self, st: &Stick) -> bool {
         if self.window.get_train_manager().set_desired_stick(st) {
             self.prime_delay = None; // Force priming delay as screen is completely invalid
             self.psychic.set_stick(st);
             self.updated = true;
+            true
+        } else {
+            false
         }
     }
 

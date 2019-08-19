@@ -17,7 +17,7 @@ impl Leaf {
     
     pub fn from_short_spec(stick: &Stick, pane: &str) -> Leaf {
         let mut pane = pane.to_string();
-        let hindex : i64 = unwrap!(pane.split_off(1).parse());
+        let hindex : i64 = ok!(pane.split_off(1).parse());
         let scale = Scale::new_from_letter(unwrap!(pane.chars().next()));
         Leaf::new(stick,hindex,&scale)
     }

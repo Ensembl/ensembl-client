@@ -180,20 +180,25 @@ macro_rules! bb_stack {
     }}
 }
 
+/* we'd like to use expect but constructing the format each time is too heavy */
 macro_rules! unwrap {
     ($x: expr) => {{
-        let s = format!("ENSEMBL ERROR LOCATION {}/{}/{}",file!(),line!(),column!());
-        $x.expect(&s)
+        match $x {
+            Some(v) => v,
+            None => {
+                panic!("ENSEMBL ERROR LOCATION {}/{}/{}",file!(),line!(),column!());
+            }
+        }
     }}
 }
 
 macro_rules! ok {
     ($x: expr) => {{
-        let s = format!("ENSEMBL ERROR LOCATION {}/{}/{}",file!(),line!(),column!());
-        let x = $x;
-        if let Err(ref msg) = x {
-            console_error!("OK Failed: {}",&msg);
+        match $x {
+            Ok(v) => v,
+            Err(ref msg) => {
+                panic!("ENSEMBL ERROR LOCATION {}/{}/{}: {:?}",file!(),line!(),column!(),msg);
+            }
         }
-        x.expect(&s)
     }}
 }

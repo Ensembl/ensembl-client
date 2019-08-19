@@ -48,7 +48,7 @@ impl BackendConfigBootstrap {
         let xhr = XmlHttpRequest::new();
         xhr.set_response_type(XhrResponseType::Text);
         let mut base = base.clone();
-        unwrap!(base.path_segments_mut()).push(&API_VERSION.to_string());
+        ok!(base.path_segments_mut()).push(&API_VERSION.to_string());
         xhr.open("GET",&base.as_str());
         http_manager.add_request(xhr,None,Box::new(out.clone()));
         out

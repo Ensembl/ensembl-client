@@ -125,15 +125,15 @@ fn exe_component_add(a: &mut App, name: &str) {
 fn exe_set_stick(a: &mut App, name: &str) {
     let stick_manager = a.get_window().get_stick_manager();
     if let Some(stick) = stick_manager.get_stick(name) {
-        a.with_stage(|s| {
-            s.set_limit(&LEFT,0.);
-            s.set_limit(&RIGHT,stick.length() as f64);
-            s.set_wrapping(&stick.get_wrapping());
-            s.set_pos_intent(false);
-            
-        });
-        a.with_compo(|co| co.set_stick(&stick));
-        exe_pos_event(a,cdfraction(0.,0.),None);
+        let changed : bool = a.with_compo(|co| co.set_stick(&stick));
+        if changed {
+            a.with_stage(|s| {
+                s.set_limit(&LEFT,0.);
+                s.set_limit(&RIGHT,stick.length() as f64);
+                s.set_wrapping(&stick.get_wrapping());
+                s.set_pos_intent(false);
+            });
+        }
     } else {
         console_force!("NO SUCH STICK {}",name);
     }
@@ -205,7 +205,6 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
             Action::ZMenuClickCheck(pos) => exe_zmenu_click_check(cg,&pos,currency),
             Action::ShowZMenu(id,track_id,pos,payload) => exe_zmenu_show(cg,&id,&track_id,pos,payload),
             Action::Reset => exe_reset(cg),
-            
             Action::Noop => ()
         }
     }
@@ -214,6 +213,6 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
 
 pub fn startup_actions() -> Vec<Action> {
     vec! {
-        Action::Pos(Dot(0_f64,0_f64),None),
+        Action::Pos(Dot(1000000_f64,0_f64),None),
     }
 }
