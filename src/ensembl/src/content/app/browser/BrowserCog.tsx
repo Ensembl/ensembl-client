@@ -3,15 +3,13 @@ import React, {
   useCallback,
   CSSProperties,
   useState,
-  useEffect,
-  useRef
+  useEffect
 } from 'react';
 
 import cogOnIcon from 'static/img/shared/cog-on.svg';
 import cogOffIcon from 'static/img/shared/cog.svg';
 import BrowserTrackConfig from './browser-track-config/BrowserTrackConfig';
 import { useTransition, animated } from 'react-spring';
-import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 type BrowserCogProps = {
   cogActivated: boolean;
@@ -23,9 +21,6 @@ const BrowserCog: FunctionComponent<BrowserCogProps> = (
   props: BrowserCogProps
 ) => {
   const { cogActivated, updateSelectedCog, index } = props;
-
-  const ref = useRef(null);
-  useOutsideClick(ref, () => updateSelectedCog(null));
 
   const toggleCog = useCallback(() => {
     if (cogActivated === false) {
@@ -70,9 +65,9 @@ const BrowserCog: FunctionComponent<BrowserCogProps> = (
         return (
           item && (
             <animated.div key={key} style={style}>
-              <div ref={ref}>
-                <BrowserTrackConfig />
-              </div>
+              <BrowserTrackConfig
+                onClose={() => props.updateSelectedCog(null)}
+              />
             </animated.div>
           )
         );
