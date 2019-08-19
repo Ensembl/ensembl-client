@@ -1,9 +1,5 @@
 import ReactGA from 'react-ga';
-import {
-  AnalyticsOptions,
-  CustomDimensions,
-  CustomDimensionOptions
-} from 'src/analyticsHelper';
+import { AnalyticsOptions, CustomDimensions } from 'src/analyticsHelper';
 
 import config from 'config';
 

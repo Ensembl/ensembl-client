@@ -15,11 +15,6 @@ export enum CustomDimensions {
   PAGEVIEW = 'dimension2'
 }
 
-export type CustomDimensionOptions = {
-  diemension: CustomDimensions;
-  value: string;
-};
-
 export type AnalyticsType = {
   ga: AnalyticsOptions;
 };

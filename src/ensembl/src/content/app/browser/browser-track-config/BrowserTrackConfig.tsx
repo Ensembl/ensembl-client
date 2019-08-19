@@ -55,55 +55,55 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
     trackConfigLabel
   } = props;
 
-  const trackOurConfigName = trackConfigNames[selectedCog];
-  const trackOurConfigLabel = trackConfigLabel[selectedCog];
+  const shouldShowTrackName = trackConfigNames[selectedCog];
+  const shouldShowTrackLabels = trackConfigLabel[selectedCog];
 
-  const nameIcon = trackOurConfigName
+  const nameIcon = shouldShowTrackName
     ? tracksSliderOnIcon
     : tracksSliderOffIcon;
   const labelIcon =
-    trackOurConfigLabel !== false ? tracksSliderOnIcon : tracksSliderOffIcon;
+    shouldShowTrackLabels !== false ? tracksSliderOnIcon : tracksSliderOffIcon;
 
   const toggleName = useCallback(() => {
     if (applyToAll) {
-      Object.keys(browserCogTrackList).map((name) => {
-        props.updateTrackConfigNames(name, !trackOurConfigName);
+      Object.keys(browserCogTrackList).forEach((name) => {
+        props.updateTrackConfigNames(name, !shouldShowTrackName);
       });
     } else {
-      props.updateTrackConfigNames(selectedCog, !trackOurConfigName);
+      props.updateTrackConfigNames(selectedCog, !shouldShowTrackName);
     }
 
     analyticsTracking.trackEvent({
       category: 'track_settings',
       label: selectedCog,
-      action: 'track_name_' + (trackOurConfigName ? 'on' : 'off')
+      action: 'track_name_' + (shouldShowTrackName ? 'off' : 'on')
     });
   }, [
     selectedCog,
     props.updateTrackConfigNames,
-    trackOurConfigName,
+    shouldShowTrackName,
     applyToAll,
     browserCogTrackList
   ]);
 
   const toggleLabel = useCallback(() => {
     if (applyToAll) {
-      Object.keys(browserCogTrackList).map((name) => {
-        props.updateTrackConfigLabel(name, !trackOurConfigLabel);
+      Object.keys(browserCogTrackList).forEach((name) => {
+        props.updateTrackConfigLabel(name, !shouldShowTrackLabels);
       });
     } else {
-      props.updateTrackConfigLabel(selectedCog, !trackOurConfigLabel);
+      props.updateTrackConfigLabel(selectedCog, !shouldShowTrackLabels);
     }
 
     analyticsTracking.trackEvent({
       category: 'track_settings',
       label: selectedCog,
-      action: 'feature_label_' + (trackOurConfigLabel ? 'on' : 'off')
+      action: 'feature_label_' + (shouldShowTrackLabels ? 'off' : 'on')
     });
   }, [
     selectedCog,
     updateTrackConfigLabel,
-    trackOurConfigLabel,
+    shouldShowTrackLabels,
     applyToAll,
     browserCogTrackList
   ]);
@@ -114,7 +114,7 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
     analyticsTracking.trackEvent({
       category: 'track_settings',
       label: selectedCog,
-      action: 'apply_to_all - ' + (applyToAll ? 'selected' : 'unselected')
+      action: 'apply_to_all - ' + (applyToAll ? 'unselected' : 'selected')
     });
   }, [applyToAll, updateApplyToAll]);
 
