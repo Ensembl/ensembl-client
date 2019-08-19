@@ -125,7 +125,7 @@ export const updateBookmarksAndSave: ActionCreator<
   }
   const trackStates = getBrowserTrackStates(state)[activeGenomeId];
 
-  const activeGenomeBookmarks = [...getActiveGenomeBookmarks(getState())];
+  const activeGenomeBookmarks = [...getActiveGenomeBookmarks(state)];
 
   const existingIndex = activeGenomeBookmarks.findIndex(
     (bookmark) => bookmark.object_id === activeEnsObject.object_id

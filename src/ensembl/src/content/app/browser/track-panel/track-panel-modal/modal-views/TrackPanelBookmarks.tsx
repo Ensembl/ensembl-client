@@ -34,82 +34,115 @@ type DispatchProps = {
 };
 type Props = TrackPanelBookmarksProps & DispatchProps;
 
+type ExampleLinksProps = {
+  activeGenomeId: string | null;
+  exampleEnsObjects: EnsObject[];
+};
+
+type BookmarkedLinksProps = {
+  bookmarks: Bookmark[];
+  updateTrackStates: (trackStates: TrackStates) => void;
+  activeGenomeId: string | null;
+};
+
+const getExampleObjLabel = (exampleObject: EnsObject | Bookmark) => {
+  if (exampleObject.object_type === 'gene') {
+    return exampleObject.label;
+  } else {
+    return getFormattedLocation(exampleObject.location);
+  }
+};
+
+const ExampleLinks = (props: ExampleLinksProps) => {
+  return (
+    <div>
+      {props.exampleEnsObjects.map((exampleObject) => {
+        const locationStr = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
+        const path = urlFor.browser({
+          genomeId: props.activeGenomeId,
+          focus: exampleObject.object_id,
+          location: locationStr
+        });
+
+        return (
+          <dd key={exampleObject.object_id}>
+            <Link to={path}>{getExampleObjLabel(exampleObject)}</Link>
+            <span className={styles.previouslyViewedType}>
+              {' '}
+              {upperFirst(exampleObject.object_type)}
+            </span>
+          </dd>
+        );
+      })}
+    </div>
+  );
+};
+
+const BookmarkedLinks = (props: BookmarkedLinksProps) => {
+  return (
+    <div>
+      {[...props.bookmarks].reverse().map((bookmark, index) => {
+        const locationStr = `${bookmark.location.chromosome}:${bookmark.location.start}-${bookmark.location.end}`;
+        const path = urlFor.browser({
+          genomeId: props.activeGenomeId,
+          focus: bookmark.object_id,
+          location: locationStr
+        });
+
+        return (
+          <dd key={index}>
+            <Link
+              to={path}
+              onClick={() => {
+                props.updateTrackStates({
+                  [bookmark.genome_id]: {
+                    ...bookmark.trackStates
+                  }
+                });
+              }}
+            >
+              {bookmark.label}
+            </Link>
+            <span className={styles.previouslyViewedType}>
+              {' '}
+              {upperFirst(bookmark.object_type)}
+            </span>
+          </dd>
+        );
+      })}
+    </div>
+  );
+};
+
 export const TrackPanelBookmarks = (props: Props) => {
-  const getExampleObjLabel = (exampleObject: EnsObject | Bookmark) => {
-    if (exampleObject.object_type === 'gene') {
-      return exampleObject.label;
-    } else {
-      return getFormattedLocation(exampleObject.location);
-    }
-  };
-
-  const getExampleLinks = () => {
-    return props.exampleEnsObjects.map((exampleObject) => {
-      const locationStr = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
-      const path = urlFor.browser({
-        genomeId: props.activeGenomeId,
-        focus: exampleObject.object_id,
-        location: locationStr
-      });
-
-      return (
-        <dd key={exampleObject.object_id}>
-          <Link to={path}>{getExampleObjLabel(exampleObject)}</Link>
-          <span className={styles.previouslyViewedType}>
-            {' '}
-            {upperFirst(exampleObject.object_type)}
-          </span>
-        </dd>
-      );
-    });
-  };
-
-  const getBookmarkedLinks = () => {
-    return [...props.bookmarks].reverse().map((bookmark, index) => {
-      const locationStr = `${bookmark.location.chromosome}:${bookmark.location.start}-${bookmark.location.end}`;
-      const path = urlFor.browser({
-        genomeId: props.activeGenomeId,
-        focus: bookmark.object_id,
-        location: locationStr
-      });
-
-      return (
-        <dd key={index}>
-          <Link
-            to={path}
-            onClick={() => {
-              props.updateTrackStates({
-                [bookmark.genome_id]: {
-                  ...bookmark.trackStates
-                }
-              });
-            }}
-          >
-            {bookmark.label}
-          </Link>
-          <span className={styles.previouslyViewedType}>
-            {' '}
-            {upperFirst(bookmark.object_type)}
-          </span>
-        </dd>
-      );
-    });
-  };
+  const {
+    bookmarks,
+    exampleEnsObjects,
+    activeGenomeId,
+    updateTrackStates
+  } = props;
 
   return (
     <section className="trackPanelBookmarks">
       <h3>Bookmarks</h3>
       <p>Save multiple browser configurations</p>
-      {props.exampleEnsObjects.length ? (
+      {exampleEnsObjects.length ? (
         <dl className={styles.previouslyViewed}>
           <dt>Example links</dt>
-          {getExampleLinks()}
+          <ExampleLinks
+            exampleEnsObjects={exampleEnsObjects}
+            activeGenomeId={activeGenomeId}
+          />
         </dl>
       ) : null}
-      {props.bookmarks.length ? (
+      {bookmarks.length ? (
         <dl className={styles.previouslyViewed}>
           <dt>Previously viewed</dt>
-          {getBookmarkedLinks()}
+          <BookmarkedLinks
+            bookmarks={bookmarks}
+            activeGenomeId={activeGenomeId}
+            updateTrackStates={updateTrackStates}
+          />
         </dl>
       ) : null}
     </section>

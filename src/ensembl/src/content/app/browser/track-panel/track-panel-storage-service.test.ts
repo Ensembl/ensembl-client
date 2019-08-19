@@ -2,8 +2,6 @@ import {
   TrackPanelStorageService,
   StorageKeys
 } from './track-panel-storage-service';
-import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
-import { Bookmark } from './trackPanelState';
 
 const mockStorageService = {
   get: jest.fn(),
@@ -13,30 +11,7 @@ const mockStorageService = {
   clearAll: jest.fn()
 };
 
-const bookmarks = {
-  homo_sapiens_GCA_000001405_27: [
-    {
-      genome_id: 'homo_sapiens_GCA_000001405_27',
-      object_id: 'homo_sapiens_GCA_000001405_27:gene:ENSG00000139618',
-      object_type: 'gene',
-      label: 'BRCA2',
-      location: {
-        chromosome: '13',
-        end: 32400266,
-        start: 32315086
-      },
-      trackStates: {
-        'genes-transcripts': {
-          'gene-pc-fwd': ImageButtonStatus.INACTIVE
-        },
-        main: {
-          'gene-feat': ImageButtonStatus.INACTIVE,
-          'gene-feat-1': ImageButtonStatus.INACTIVE
-        }
-      }
-    }
-  ]
-};
+const bookmarks = { foo: [] };
 
 describe('TrackPanelStorageService', () => {
   afterEach(() => {
@@ -81,26 +56,7 @@ describe('TrackPanelStorageService', () => {
         mockStorageService
       );
 
-      const updatedBookmarks: { [genomeId: string]: Bookmark[] } = {
-        homo_sapiens_GCA_000001405_27: [
-          {
-            genome_id: 'homo_sapiens_GCA_000001405_27',
-            object_id: 'homo_sapiens_GCA_000001405_27:gene:ENSG00000139618',
-            object_type: 'gene',
-            label: 'BRCA2',
-            location: {
-              chromosome: '13',
-              end: 32400266,
-              start: 32315086
-            },
-            trackStates: {
-              'genes-transcripts': {
-                'gene-pc-fwd': ImageButtonStatus.INACTIVE
-              }
-            }
-          }
-        ]
-      };
+      const updatedBookmarks = { bar: [] };
 
       trackPanelStorageService.updateActiveGenomeBookmarks(updatedBookmarks);
 
