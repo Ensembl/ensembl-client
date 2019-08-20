@@ -128,7 +128,7 @@ impl AppRunner {
     }
 
     pub fn scheduler(&self) -> Scheduler {
-        let g = unwrap!(unwrap!(self.0.lock()).g.upgrade()).clone();
+        let g = unwrap!(ok!(self.0.lock()).g.upgrade()).clone();
         g.scheduler()
     }
     
@@ -203,7 +203,7 @@ impl AppRunner {
     }
     
     pub fn state(&self) -> Arc<Mutex<App>> {
-        unwrap!(self.0.lock()).app.clone()
+        ok!(self.0.lock()).app.clone()
     }
     
     pub fn destroy(&mut self) {

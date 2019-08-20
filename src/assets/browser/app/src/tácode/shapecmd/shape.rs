@@ -6,11 +6,12 @@ use tánaiste::{
 };
 
 use composit::{ Leaf };
+use model::item::UnpackedProduct;
 use model::shape::{
     Facade, FacadeType, TypeToShape, ShapeShortInstanceData,
     ShapeInstanceDataType, ShapeLongInstanceData, DrawingSpec
 };
-use composit::source::PendingOrder;
+use model::supply::Subassembly;
 use tácode::core::{ TáContext, TáTask };
 use super::super::shapecmd::{ build_meta };
 use types::Colour;
@@ -109,10 +110,10 @@ fn make_facades(spec: &Box<TypeToShape>, colour: &Value, tx: &Vec<DrawingSpec>) 
 }
 
 /* TODO switch long to use make_facades. Can do it, but no time */
-fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut PendingOrder, 
+fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &Leaf, lc: &mut UnpackedProduct, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
-                colour: &Value, part: &Option<String>) {
+                colour: &Value, part: &Subassembly) {
     if colour.len() == 0 { return; }
     let facade = make_facade(&spec,colour,tx,0);
     let mut x_start_scaled = Vec::<f64>::new();
@@ -132,14 +133,14 @@ fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut PendingOrd
         facade
     };
     if let Some(shape) = spec.new_long_shape(&data) {
-        lc.get_traveller(part).update_data(|data| data.add_shape(shape));
+        lc.update_data(part,|data| data.add_shape(shape));
     }
 }
 
-fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut PendingOrder, 
+fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &Leaf, lc: &mut UnpackedProduct, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
-                colour: &Value, part: &Option<String>) {
+                colour: &Value, part: &Subassembly) {
     if colour.len() == 0 { return; }
     let facades = make_facades(&spec,colour,tx);
     let mut f_iter = facades.iter().cycle();
@@ -159,7 +160,7 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut PendingOr
                 facade: unwrap!(facade.cloned())
             };
             if let Some(shape) = spec.new_short_shape(&data) {
-                lc.get_traveller(part).update_data(|data| data.add_shape(shape));
+                lc.update_data(part,|data| data.add_shape(shape));
             } else {
                 drops += 1;
             }
@@ -175,10 +176,10 @@ fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &mut Leaf, lc: &mut PendingOr
     });
 }
 
-fn draw_shapes(meta: &Vec<f64>,leaf: &mut Leaf, lc: &mut PendingOrder, 
+fn draw_shapes(meta: &Vec<f64>,leaf: &Leaf, lc: &mut UnpackedProduct, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
-                colour: &Value, part: &Option<String>) {
+                colour: &Value, part: &Subassembly) {
     let mut meta_iter = meta.iter().cycle();
     if let Some(spec) = build_meta(&mut meta_iter) {
         match spec.sid_type() {
@@ -200,7 +201,7 @@ impl Command for Shape {
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,leaf,lc,ref tx,_,part,_,_) = task {
+            if let TáTask::MakeShapes(_,leaf,lc,ref tx,_,part,_,_,_) = task {
                 let regs = rt.registers();
                 regs.get(self.1).as_floats(|meta| {                
                     regs.get(self.2).as_floats(|x_start| {
@@ -208,7 +209,7 @@ impl Command for Shape {
                             regs.get(self.4).as_floats(|y_start| {
                                 regs.get(self.5).as_floats(|y_size| {
                                     draw_shapes(meta,leaf,lc,tx,x_start,x_size,
-                                            y_start,y_size,&regs.get(self.6),part);
+                                            y_start,y_size,&regs.get(self.6),part.as_ref().unwrap());
                                 });
                             });
                         });

@@ -91,7 +91,7 @@ fn runs_of(lens: &Vec<f64>, values: &Vec<f64>) -> Vec<f64> {
     let mut out = Vec::<f64>::new();
     let mut val_iter = values.iter().cycle();
     for len in lens.iter() {
-        let val = val_iter.next().unwrap();
+        let val = unwrap!(val_iter.next());
         for _ in 0..*len as usize {
             out.push(*val);
         }

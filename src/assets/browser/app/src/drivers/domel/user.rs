@@ -40,14 +40,11 @@ impl UserEventListener {
     
     fn wheel(&mut self, amt: f64) {
         let app = &mut self.app.lock().unwrap();
-        let (y,pos_bp,pos_prop) = app.with_stage(|s|
-            (s.get_pos_middle().1,
-             s.get_mouse_pos_bp(),
-             s.get_mouse_pos_prop())
-        );
-
+        let mouse_prop = app.get_screen().get_mouse_pos_prop();
+        let y = app.get_position().get_middle().1;
+        let pos_bp = app.get_position().get_pos_prop_bp(mouse_prop);
         let pos = Dot(pos_bp,y);
-        self.zoom.lock().unwrap().move_by(amt,pos,pos_prop);
+        self.zoom.lock().unwrap().move_by(amt,pos,mouse_prop);
     }
     
     fn zmenu_click_check(&mut self, pos: &CPixel) {
@@ -59,10 +56,10 @@ impl UserEventListener {
 
     fn check_cursor(&mut self, pos: &CPixel) {
         let mut app = &mut self.app.lock().unwrap();
+        let screen = app.get_screen().clone();
+        let position = app.get_position().clone();
         let zmenus = app.with_compo(|co|
-            app.with_stage(|s|
-                co.intersects(s,*pos)
-            )
+            co.intersects(screen,&position,*pos)
         );
         let pointer = zmenus.len() > 0;
         if pointer != self.showing_pointer {
@@ -93,9 +90,7 @@ impl EventListener<()> for UserEventListener {
             EventData::MouseEvent(EventType::MouseMoveEvent,_,e) => {
                 let box_mouse = self.mouse_rel_box(&e.at());
                 self.position.lock().unwrap().move_to(box_mouse);
-                self.app.lock().unwrap().with_stage(|s| 
-                    s.set_mouse_pos(&box_mouse)
-                );
+                self.app.lock().unwrap().get_screen_mut().set_mouse_pos(&box_mouse);
                 self.check_cursor(&box_mouse);
             },
             EventData::MouseEvent(EventType::MouseClickEvent,_,e) => {

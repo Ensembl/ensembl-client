@@ -1,11 +1,11 @@
 use std::collections::{ HashMap, HashSet };
 
-use composit::{
-    Leaf, StateManager, Scale,
-    ActiveSource, Stick,
-};
+use composit::{ Leaf, StateManager, Scale, Stick };
+use data::XferConsumer;
+use model::item::{ DeliveredItem, ItemUnpacker };
+use model::supply::Product;
 use model::driver::{ Printer, PrinterManager };
-use super::{ Carriage, Traveller, TravellerCreator };
+use super::{ Carriage, CarriageId, TrainContext, TrainId, Traveller, TravellerCreator };
 use model::zmenu::ZMenuLeafSet;
 
 const MAX_FLANK : i32 = 3;
@@ -13,30 +13,23 @@ const MAX_FLANK : i32 = 3;
 pub struct Train {
     pm: PrinterManager,
     carriages: HashMap<Leaf,Carriage>,
-    stick: Stick,
-    scale: Scale,
+    id: TrainId,
     ideal_flank: i32,
     middle_leaf: i64,
-    preload: bool,
     position_bp: Option<f64>,
-    active: bool,
-    current: bool,
-    focus: Option<String>
+    active: bool
 }
 
 impl Train {
-    pub fn new(pm: &PrinterManager, stick: &Stick, scale: Scale, focus: &Option<String>) -> Train {
+    pub fn new(pm: &PrinterManager, stick: &Stick, scale: &Scale, context: &TrainContext) -> Train {
         Train {
             pm: pm.clone(),
-            stick: stick.clone(),
-            scale, preload: true,
+            id: TrainId::new(stick,scale,context),
             ideal_flank: 0,
             middle_leaf: 0,
             carriages: HashMap::<Leaf,Carriage>::new(),
             position_bp: None,
-            active: true,
-            current: false,
-            focus: focus.clone()
+            active: true
         }
     }
         
@@ -45,39 +38,22 @@ impl Train {
      * *****************************************************************
      */
     
-    /* we are now the current train */
-    pub(in super) fn set_current(&mut self) {
-        self.current = true;
-        for leaf in self.carriages.keys() {
-            self.pm.set_current(leaf);
-        }
-    }
-
-    pub(in super) fn get_focus(&self) -> &Option<String> { &self.focus }
+    pub fn get_train_id(&self) -> &TrainId { &self.id }
 
     /* are we active (ie should we scan around as the user does?) */
     pub(in super) fn set_active(&mut self, yn: bool) {
         self.active = yn;
-        if yn { console!("{:?} is active",self.scale); } else { console!("{:?} is inactive",self.scale); }
     }
-    
-    /* which scale are we (ie which train)? */
-    pub(in super) fn get_scale(&self) -> &Scale { &self.scale }
-    
+        
     /* called when position changes, to update carriages */
     pub(in super) fn set_position(&mut self, position_bp: f64) {
-        self.middle_leaf = (position_bp / self.scale.total_bp()).floor() as i64;
+        self.middle_leaf = (position_bp / self.id.get_scale().total_bp()).floor() as i64;
         self.position_bp = Some(position_bp);
     }
-    
-    /* called when no-longer preload, so flanks should be expanded */
-    pub(in super) fn enter_service(&mut self) {
-        self.preload = false;
-    }
-    
+        
     /* called when zoom changes, to update flank */
-    pub(in super) fn set_zoom(&mut self, bp_per_screen: f64) {
-        self.ideal_flank = (bp_per_screen / self.scale.total_bp()) as i32;
+    pub(in super) fn set_bp_per_screen(&mut self, bp_per_screen: f64) {
+        self.ideal_flank = (bp_per_screen / self.id.get_scale().total_bp()) as i32;
         /* reset middle leaf after zoom */
         if let Some(pos) = self.position_bp {
             self.set_position(pos);
@@ -85,12 +61,12 @@ impl Train {
     }
     
     /* add component to leaf */
-    pub fn add_component(&mut self, cm: &mut TravellerCreator, s: &mut ActiveSource) {
-        let focus = self.focus.as_ref().map(|x| x.to_string()).clone();
+    pub fn add_component(&mut self, cm: &mut TravellerCreator, product: &mut Product) {
         for leaf in self.leafs() {
+            let train_id = self.id.clone();
             let c = self.get_carriage(&leaf);
-            for trav in cm.make_travellers_for_source(s,&leaf,&focus) {
-                c.add_traveller(trav);
+            for trav in cm.make_travellers_for_source(product,&leaf,&c.get_id()) {
+                c.add_traveller(trav.clone());
             }
         }
         for c in self.carriages.values_mut() {
@@ -108,14 +84,14 @@ impl Train {
 
     /* flank to use taking into account train status */
     fn true_flank(&self) -> i32 {
-        let mut f = self.ideal_flank.min(MAX_FLANK);
-        if !self.preload { f = f.max(1); }
-        f
+        self.ideal_flank.min(MAX_FLANK).max(1)
     }
 
     fn get_carriage(&mut self, leaf: &Leaf) -> &mut Carriage {
         if !self.carriages.contains_key(&leaf) {
-            let c = Carriage::new(&mut self.pm,&leaf,&self.focus);
+            let train_id = self.id.clone();
+            let c = Carriage::new(&leaf,&train_id);
+            self.pm.add_carriage(&c.get_id());
             self.carriages.insert(leaf.clone(),c);
         }
         self.carriages.get_mut(leaf).unwrap()
@@ -127,16 +103,16 @@ impl Train {
         let flank = self.true_flank();
         for idx in -flank..flank+1 {
             let hindex = self.middle_leaf + idx as i64;
-            let leaf = Leaf::new(&self.stick,hindex,&self.scale);
+            let leaf = Leaf::new(&self.id.get_stick(),hindex,&self.id.get_scale());
             if !self.carriages.contains_key(&leaf) {
                 out.push(leaf);
             }
         }
-        return out;
+        out
     }
     
     /* remove leafs out of scope */
-    fn remove_unused_leafs(&mut self) {
+    fn remove_unused_carriages(&mut self) {
         let mut doomed = HashSet::new();
         let flank = self.true_flank();
         for leaf in self.carriages.keys() {
@@ -145,18 +121,21 @@ impl Train {
             }
         }
         for d in doomed {
-            self.carriages.remove(&d);
+            if let Some(mut c) = self.carriages.remove(&d) {
+                c.remove_all_travellers();
+                self.pm.remove_carriage(c.get_id());
+            }
         }
     }
 
     /* manage_leafs entry point */
-    pub fn manage_leafs(&mut self, cm: &mut TravellerCreator) {
+    pub fn manage_carriages(&mut self, cm: &mut TravellerCreator) {
         if !self.active { return; }
-        let focus = self.focus.as_ref().map(|x| x.to_string()).clone();
-        self.remove_unused_leafs();
+        self.remove_unused_carriages();
         for leaf in self.get_missing_leafs() {
+            let train_id = self.id.clone();
             let c = self.get_carriage(&leaf);
-            for trav in cm.make_travellers_for_leaf(&leaf,&focus) {
+            for trav in cm.make_travellers_for_leaf(&leaf,&c.get_id()) {
                 c.add_traveller(trav);
             }
         }
@@ -176,6 +155,10 @@ impl Train {
             out.push(leaf.clone());
         }
         out
+    }
+
+    pub fn get_carriage_ids(&self) -> impl Iterator<Item=&CarriageId> {
+        self.carriages.values().map(|x| x.get_id())
     }
     
     /* Are all the carriages done? */
@@ -203,9 +186,17 @@ impl Train {
     }
 
     pub fn redraw_where_needed(&mut self, printer: &mut Printer, zmls: &mut ZMenuLeafSet) {
-        for carriage in self.get_carriages() {
+        for carriage in self.carriages.values_mut() {
             carriage.redraw_where_needed(printer,zmls);
         }
     }
 
+}
+
+impl XferConsumer for Train {
+    fn consume(&mut self, item: &DeliveredItem, unpacker: &mut ItemUnpacker) {
+        for carriage in self.carriages.values_mut() {
+            carriage.consume(item,unpacker);
+        }
+    }
 }

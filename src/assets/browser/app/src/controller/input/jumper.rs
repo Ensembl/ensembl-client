@@ -7,51 +7,94 @@ use serde_json::Value as JSONValue;
 use controller::global::{ App, AppRunner };
 use controller::input::Action;
 use data::{ HttpManager, HttpResponseConsumer, BackendConfig };
-use data::parse_jsonxferresponse;
 use dom::domutil::browser_time;
-use types::{ Dot, ddiv };
+use types::{ Dot, ddiv, LEFT, RIGHT };
+use model::stage::bp_to_zoomfactor;
 
-const ZHOOSH_TIME : f64 = 1750.; /* ms */
+use misc_algorithms::marshal::{ json_str, json_obj_get, json_f64, json_bool };
+
+const ZHOOSH_TIME : f64 = 500.; /* ms */
 
 pub struct JumpZhoosh {
+    ar: AppRunner,
     stick: Option<String>,
-    start_time: f64,
+    phase_start_time: Option<f64>,
     start: (Dot<f64,f64>,f64),
-    dest: (Dot<f64,f64>,f64)
+    dest: (Dot<f64,f64>,f64),
+    backoff_zoom: f64,
+    phase: u32
 }
 
 impl JumpZhoosh {
-    pub fn new(stick: &str, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64)) -> JumpZhoosh {
-        JumpZhoosh {
-            stick: Some(stick.to_string()),
+    pub fn new(ar: &AppRunner, stick: &Option<String>, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64), backoff: f64) -> JumpZhoosh {
+        let out = JumpZhoosh {
+            ar: ar.clone(),
+            stick: stick.clone(),
             start, dest,
-            start_time: browser_time()
+            phase_start_time: None,
+            backoff_zoom: backoff,
+            phase: 0
+        };
+        out
+    }
+
+    fn back_off(&self, t: f64, actions: &mut Vec::<Action>) -> bool {
+        let min_backoff = self.backoff_zoom;
+        if min_backoff < self.start.1 {
+            let zoom_prop = ((t-self.phase_start_time.unwrap())/ZHOOSH_TIME).max(0.).min(1.);
+            let here = self.start.1 + (min_backoff-self.start.1)*zoom_prop;
+            actions.push(Action::ZoomTo(here));
+            if zoom_prop < 1. { return true; }
         }
+        false
+    }
+
+    fn centre(&self, t: f64, actions: &mut Vec::<Action>) -> bool {
+        let pos_prop = ((t-self.phase_start_time.unwrap())/ZHOOSH_TIME).max(0.).min(1.);
+        let here = self.start.0 + (self.dest.0-self.start.0)*Dot(pos_prop,pos_prop);
+        actions.push(Action::Pos(here,None));
+        if pos_prop < 1. { return true; }
+        false
+    }
+
+    fn zoom(&self, t: f64, actions: &mut Vec::<Action>) -> bool {
+        let min_backoff = self.backoff_zoom;
+        let zoom_prop = ((t-self.phase_start_time.unwrap())/ZHOOSH_TIME).max(0.).min(1.);
+        let here = min_backoff + (self.dest.1-min_backoff)*zoom_prop;
+        actions.push(Action::ZoomTo(here));
+        actions.push(Action::Pos(self.dest.0,None));
+        if zoom_prop < 1. { return true; }
+        false
+    }
+
+    fn stick(&mut self, t: f64, actions: &mut Vec::<Action>) -> bool {
+        if let Some(ref stick) = self.stick {
+            actions.push(Action::SetStick(stick.to_string()));
+            actions.push(Action::Pos(self.start.0,None));
+            actions.push(Action::ZoomTo(self.start.1));
+            self.stick = None;
+            return true;
+        }
+        false
     }
 
     pub fn tick(&mut self, app: &mut App, t: f64) -> bool {
-        let mut more = false;
-        let mut actions = Vec::<Action>::new();
-        let prop = ((t-self.start_time)/ZHOOSH_TIME).max(0.).min(1.);
-        /* stick */
-        if let Some(ref stick) = self.stick {
-            actions.push(Action::SetStick(stick.to_string()));
-            more = true;
+        if self.phase_start_time.is_none() {
+            self.phase_start_time = Some(browser_time());
         }
-        self.stick = None;
-        /* position */
-        let pos_prop = ((prop-0.25)*4.).min(1.).max(0.);
-        let here = self.start.0 + (self.dest.0-self.start.0)*Dot(pos_prop,pos_prop);
-        actions.push(Action::Pos(here,None));
-        /* zoom */
-        let zoom_prop = ((prop-0.75)*4.).min(1.).max(0.);
-        let here = self.start.1 + (self.dest.1-self.start.1)*zoom_prop;
-        actions.push(Action::ZoomTo(here));
-        /* do it! */
-        if prop < 1. {
-            more = true;
-        } else {
-            actions.push(Action::Settled);
+        let mut actions = Vec::new();
+        let mut more = true;
+        let phase_more = match self.phase {
+            0 => self.stick(t,&mut actions),
+            1 => self.back_off(t,&mut actions),
+            2 => self.centre(t,&mut actions),
+            3 => self.zoom(t,&mut actions),
+            _ => { actions.push(Action::Settled); more = false; true }
+        };
+        if !phase_more {
+            self.phase += 1;
+            console!("phase={}",self.phase);
+            self.phase_start_time = None;
         }
         app.run_actions(&actions,None);
         more
@@ -69,36 +112,35 @@ impl JumperConsumer {
         }
     }
 
-    fn jump(&mut self, req: XmlHttpRequest) -> Result<(),String> {
-        let in_ = req.response_text().map_err(|_| "Cannot parse json".to_string())?;
-        if in_.is_none() {
-            return Err("bad response".to_string());
-        }
-        let data : JSONValue = serde_json::from_str(&unwrap!(in_)).map_err(|_| "Cannot parse json".to_string())?;
-        if let JSONValue::Object(ref obj) = data {
-            if obj.get("found").and_then(|x| x.as_bool()).unwrap_or(false) {
-                let stick = obj.get("stick").and_then(|x| x.as_str());
-                let start = obj.get("start").and_then(|x| x.as_str());
-                let end = obj.get("end").and_then(|x| x.as_str());
-                if let (Some(stick),Some(start),Some(end)) = (stick,start,end) {
-                    console!("got result! {:?}/{:?}/{:?}",stick,start,end);
-                    let mut app_ref = self.ar.state();
-                    let mut app = app_ref.lock().unwrap();
-                    let start : f64 = start.parse().unwrap();
-                    let end : f64 = end.parse().unwrap();
-                    let (src, dest) = app.with_stage(|stage| {
-                        let dest_pos = Dot((start+end)/2.,0.);
-                        let dest_zoom = stage.best_zoom_screen_bp(end-start+1.);
-                        ((stage.get_pos_middle(),stage.get_zoom()),(dest_pos,dest_zoom))
-                    });
-                    app.with_jumper(|j| j.zhoosh_to(stick,src,dest));
-                }
-                if let Some(ref payload) = obj.get("payload") {
-                    for resp in parse_jsonxferresponse(payload) {
-                        console!("got payload {:?}",payload);
-                    }
-                }
-            }
+    fn jump(&mut self, req: XmlHttpRequest) -> Result<(),()> {
+        let in_ = req.response_text().map_err(|_|())?;
+        let data : JSONValue = serde_json::from_str(&unwrap!(in_)).map_err(|_|())?;
+        let stick = json_str(json_obj_get(&data,"stick")?)?;
+        let f : Result<f64,_> = json_str(json_obj_get(&data,"start")?)?.parse();
+        let dest_start = json_f64(json_obj_get(&data,"start")?)?;
+        let dest_end = json_f64(json_obj_get(&data,"end")?)?;
+        let found = json_bool(json_obj_get(&data,"found")?)?;
+        if found {
+            let mut app_ref = self.ar.state();
+            let mut app = app_ref.lock().unwrap();
+            let current_stick = app.get_window().get_train_manager().get_desired_stick();
+            let dest_pos = Dot((dest_start+dest_end)/2.,0.);
+            let dest_size = dest_end-dest_start+1.;
+            let dest_zoom = app.get_position().best_zoom_screen_bp(dest_size);
+            let (stick,start,start_left,start_right) = if current_stick.is_some() && stick == current_stick.unwrap().get_name() { 
+                let (src,left,right) = {
+                    let left = app.get_position().get_edge(&LEFT,false);
+                    let right = app.get_position().get_edge(&RIGHT,false);
+                    ((app.get_position().get_middle(),bp_to_zoomfactor(app.get_position().get_screen_in_bp())),left,right)
+                };
+                (None,src,left,right)
+            } else { 
+                (Some(stick),(dest_pos,dest_zoom),dest_start,dest_end)
+            };
+            let leftmost = dest_start.min(start_left);
+            let rightmost = dest_end.max(start_right);
+            let backoff = app.get_position().best_zoom_screen_bp(rightmost-leftmost+1.);
+            app.with_jumper(|j| j.zhoosh_to(&stick,start,(dest_pos,dest_zoom),backoff));
         }
         Ok(())
     }
@@ -109,7 +151,7 @@ impl HttpResponseConsumer for JumperConsumer {
         match self.jump(req) {
             Ok(()) => (),
             Err(s) => {
-                console!("jump error: {}",s);
+                console!("jump error");
             }
         }
     }
@@ -133,8 +175,8 @@ impl JumperImpl {
         }
     }
 
-    pub fn zhoosh_to(&mut self, stick: &str, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64)) {
-        self.zhoosh = Some(JumpZhoosh::new(stick,start,dest));
+    pub fn zhoosh_to(&mut self, stick: &Option<String>, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64), backoff: f64) {
+        self.zhoosh = Some(JumpZhoosh::new(&self.ar,stick,start,dest,backoff));
     }
 
     pub fn tick(&mut self, app: &mut App, t: f64) {
@@ -182,8 +224,8 @@ impl Jumper {
         self.0.lock().unwrap().tick(app,t);
     }
 
-    pub fn zhoosh_to(&mut self, stick: &str, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64)) {
-        self.0.lock().unwrap().zhoosh_to(stick,start,dest);
+    pub fn zhoosh_to(&mut self, stick: &Option<String>, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64), backoff: f64) {
+        self.0.lock().unwrap().zhoosh_to(stick,start,dest,backoff);
     }
 
     pub fn jump(&mut self, id: &str) -> Result<(),String> {

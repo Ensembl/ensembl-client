@@ -155,7 +155,7 @@ pub fn append_element(el: &HtmlElement, name: &str) -> HtmlElement {
     let doc = el.owner_document().unwrap();
     let new = doc.create_element(name).ok().unwrap();
     el.append_child(&new);
-    unwrap!(new.try_into())
+    ok!(new.try_into())
 }
 
 pub fn remove(el: &HtmlElement) {

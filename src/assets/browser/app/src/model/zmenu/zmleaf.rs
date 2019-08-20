@@ -3,13 +3,14 @@ use std::collections::HashMap;
 
 use serde_json::Value as JSONValue;
 
-use composit::{ Leaf, Stage };
+use composit::Leaf;
+use model::stage::{ Screen, Position };
 use controller::input::Action;
 use types::{ Placement, Dot };
 
 use super::{ ZMenuFeatureTmpl, ZMenuData };
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 struct ZMenuItem {
     placement: Placement,
     track_id: String,
@@ -43,6 +44,7 @@ impl Hash for ZMenuIntersection {
     }
 }
 
+#[derive(Clone,Debug)]
 pub struct ZMenuLeaf {
     items: Vec<ZMenuItem>,
     template: HashMap<String,ZMenuFeatureTmpl>,
@@ -138,11 +140,11 @@ impl ZMenuLeaf {
         }
     }
 
-    pub(in super) fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> Vec<ZMenuIntersection> {
+    pub(in super) fn intersects(&self, screen: &Screen, position: &Position, pos: Dot<i32,i32>) -> Vec<ZMenuIntersection> {
         let mut out = Vec::new();
         for item in &self.items {
-            bb_log!("zmenu","zml: item pos={:?} placement={:?}",pos,&item.placement);
-            if stage.intersects(pos,&item.placement) {
+            bb_log!("zmenu","zml: item pos={:?} placement={:?}",position,&item.placement);
+            if screen.intersects(pos,&item.placement,position) {
                 bb_log!("zmenu","intersects {:?}",item.id);
                 if let Some(payload) = self.activate(&item.id,&item.track_id) {
                     out.push(ZMenuIntersection {

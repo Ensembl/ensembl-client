@@ -1,7 +1,8 @@
 use std::sync::{ Arc, Mutex };
 use std::collections::{ HashMap, HashSet };
+use composit::Leaf;
 use controller::input::Action;
-use composit::{ Leaf, Stage };
+use model::stage::{ Screen, Position };
 use types::Dot;
 
 use super::{ ZMenuLeaf, ZMenuLeafSet, ZMenuFeatureTmpl, ZMenuData, ZMenuIntersection };
@@ -37,11 +38,11 @@ impl ZMenuRegistryImpl {
         }
     }
     
-    pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
+    pub fn intersects(&self, screen: &Screen, position: &Position, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
         let mut all = HashSet::new();
         bb_log!("zmenu","zmr: pos={:?}",pos);
         for zml in self.zml.values() {
-            for zmi in zml.intersects(stage,pos) {
+            for zmi in zml.intersects(screen,position,pos) {
                 all.insert(zmi);
             }
         }
@@ -61,7 +62,7 @@ impl ZMenuRegistry {
         self.0.lock().unwrap().add_leafset(zmls);
     }
     
-    pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
-        self.0.lock().unwrap().intersects(stage,pos)
+    pub fn intersects(&self, screen: &Screen, position: &Position, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
+        self.0.lock().unwrap().intersects(screen,position,pos)
     }    
 }

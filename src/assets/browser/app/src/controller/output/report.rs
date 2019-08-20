@@ -77,7 +77,7 @@ lazy_static! {
             StatusJigsaw::Atom("a-stick".to_string(),StatusJigsawType::String),
             StatusJigsaw::Atom("a-start".to_string(),StatusJigsawType::Number),
             StatusJigsaw::Atom("a-end".to_string(),StatusJigsawType::Number),
-        }),Some(100.),false),
+        }),Some(500.),false),
         ("intended-location",StatusJigsaw::Array(vec!{
             StatusJigsaw::Atom("i-stick".to_string(),StatusJigsawType::String),
             StatusJigsaw::Atom("i-start".to_string(),StatusJigsawType::Number),
