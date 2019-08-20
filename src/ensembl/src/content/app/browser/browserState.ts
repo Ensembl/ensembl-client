@@ -42,8 +42,10 @@ export type BrowserRegionValidationRegionError = BrowserRegionValidationError & 
 };
 
 export type BrowserRegionValidationMessage = {
-  genome_id: string;
-  region: string;
+  error?: string;
+  genome_id?: string;
+  region?: string;
+  region_code?: string;
 };
 
 export type BrowserRegionValidationResponse = {
@@ -102,12 +104,12 @@ export const defaultBrowserLocationState: BrowserLocationState = {
 };
 
 export type BrowserRegionValidationState = Readonly<{
-  validationErrors: BrowserRegionValidationResponse;
+  browserRegionValidationErrors: BrowserRegionValidationResponse | null;
   loadingStatus: LoadingState;
 }>;
 
 export const defaultBrowserRegionValidationState: BrowserRegionValidationState = {
-  validationErrors: {},
+  browserRegionValidationErrors: null,
   loadingStatus: LoadingState.NOT_REQUESTED
 };
 

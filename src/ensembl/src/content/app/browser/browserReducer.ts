@@ -134,15 +134,29 @@ export function browserRegionValidation(
   action: ActionType<typeof browserActions>
 ) {
   switch (action.type) {
-    case getType(browserActions.fetchRegionValidation.request):
-      return { ...state, loadingStatus: LoadingState.LOADING };
-    case getType(browserActions.fetchRegionValidation.failure):
-      return { ...state, loadingStatus: LoadingState.ERROR };
-    case getType(browserActions.fetchRegionValidation.success):
+    case getType(browserActions.fetchBrowserRegionValidation.request):
+      return {
+        ...state,
+        loadingStatus: LoadingState.LOADING,
+        browserRegionValidationErrors: null
+      };
+    case getType(browserActions.fetchBrowserRegionValidation.failure):
+      return {
+        ...state,
+        loadingStatus: LoadingState.ERROR,
+        browserRegionValidationErrors: null
+      };
+    case getType(browserActions.fetchBrowserRegionValidation.success):
       return {
         ...state,
         loadingStatus: LoadingState.SUCCESS,
-        validationErrors: { ...action.payload }
+        browserRegionValidationErrors: { ...action.payload }
+      };
+    case getType(browserActions.resetBrowserRegionValidaion):
+      return {
+        ...state,
+        loadingStatus: LoadingState.NOT_REQUESTED,
+        browserRegionValidationErrors: null
       };
     default:
       return state;

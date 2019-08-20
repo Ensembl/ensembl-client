@@ -16,7 +16,8 @@ import {
   BrowserNavStates,
   ChrLocation,
   CogList,
-  ChrLocations
+  ChrLocations,
+  BrowserRegionValidationResponse
 } from './browserState';
 import {
   getBrowserActiveGenomeId,
@@ -268,36 +269,43 @@ export const updateApplyToAll = createStandardAction(
 )<boolean>();
 
 export const toggleBrowserRegionEditorActive = createStandardAction(
-  'toggle-browser-region-editor-active'
+  'brorwser/toggle-browser-region-editor-active'
 )<boolean>();
 
 export const toggleBrowserRegionFieldActive = createStandardAction(
-  'toggle-browser-region-field-active'
+  'browser/toggle-browser-region-field-active'
 )<boolean>();
 
-export const fetchRegionValidation = createAsyncAction(
-  'browser/fetch_region_validation_request',
-  'browser/fetch_region_validation_success',
-  'browser/fetch_region_validation_error'
-)<string, any, Error>();
+export const fetchBrowserRegionValidation = createAsyncAction(
+  'browser/fetch_browser_region_validation_request',
+  'browser/fetch_browser_region_validation_success',
+  'browser/fetch_browser_region_validation_error'
+)<string, BrowserRegionValidationResponse, Error>();
 
-export const fetchGenomeData: ActionCreator<
+export const validateBrowserRegion: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (region: string) => async (dispatch, getState) => {
   const activeGenomeId = getBrowserActiveGenomeId(getState());
 
+  // TODO:
+  // region_code is hard coded for now since only chromosomes are supported
+  // need to change this once support for other features are added
   try {
     dispatch(
-      fetchRegionValidation.request(
-        `genome_id=${activeGenomeId}&region=${region}`
+      fetchBrowserRegionValidation.request(
+        `genome_id=${activeGenomeId}&region=${region}&region_code=chromosome`
       )
     );
 
-    const url = `/api/genome/region/validate?genome_id=${activeGenomeId}&region=${region}`;
+    const url = `/api/genome/region/validate?genome_id=${activeGenomeId}&region=${region}&region_code=chromosome`;
     const response = await apiService.fetch(url);
 
-    dispatch(fetchRegionValidation.success(response));
+    dispatch(fetchBrowserRegionValidation.success(response));
   } catch (error) {
-    dispatch(fetchRegionValidation.failure(error));
+    dispatch(fetchBrowserRegionValidation.failure(error));
   }
 };
+
+export const resetBrowserRegionValidaion = createStandardAction(
+  'browser/reset-browser-region-validation'
+)();
