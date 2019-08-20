@@ -8,12 +8,10 @@ mod leaf;
 mod stick;
 mod stickmanager;
 mod wrapping;
-mod stage;
 
 pub use self::combinedstickmanager::CombinedStickManager;
 pub use self::componentset::ComponentSet;
 pub use self::compositor::{ Compositor, register_compositor_ticks };
-pub use self::stage::{ Stage };
 pub use self::stick::Stick;
 pub use self::stickmanager::StickManager;
 

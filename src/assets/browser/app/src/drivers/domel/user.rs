@@ -40,11 +40,12 @@ impl UserEventListener {
     
     fn wheel(&mut self, amt: f64) {
         let app = &mut self.app.lock().unwrap();
-        let (y,pos_bp,pos_prop) = app.with_stage(|s|
-            (s.get_pos_middle().1,
-             s.get_mouse_pos_bp(),
-             s.get_mouse_pos_prop())
-        );
+        let (y,pos_bp,pos_prop) = app.with_stage(|s| {
+            let prop = s.get_pos_prop_bp(s.get_screen().get_mouse_pos_prop());
+            (s.get_position().get_middle().1,
+             prop,
+             s.get_screen().get_mouse_pos_prop())
+        });
 
         let pos = Dot(pos_bp,y);
         self.zoom.lock().unwrap().move_by(amt,pos,pos_prop);
@@ -94,7 +95,7 @@ impl EventListener<()> for UserEventListener {
                 let box_mouse = self.mouse_rel_box(&e.at());
                 self.position.lock().unwrap().move_to(box_mouse);
                 self.app.lock().unwrap().with_stage(|s| 
-                    s.set_mouse_pos(&box_mouse)
+                    s.get_screen_mut().set_mouse_pos(&box_mouse)
                 );
                 self.check_cursor(&box_mouse);
             },

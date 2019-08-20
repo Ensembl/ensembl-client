@@ -30,7 +30,7 @@ impl Position {
         self.check_own_limits();
     }
     
-    pub(super) fn set_middle(&mut self, pos: &Dot<f64,f64>) {
+    pub fn set_middle(&mut self, pos: &Dot<f64,f64>) {
         bb_log!("resize","set_middle");
         self.pos = *pos;
         self.check_own_limits();
@@ -48,16 +48,16 @@ impl Position {
         self.zoom.get_screen_in_bp()
     }
     
-    pub(super) fn set_screen_in_bp(&mut self, zoom: f64) {
+    pub fn set_screen_in_bp(&mut self, zoom: f64) {
         self.zoom.set_screen_in_bp(zoom);
     }
     
-    pub(super) fn set_zoom(&mut self, z: f64) {
+    pub fn set_zoom(&mut self, z: f64) {
         self.zoom.set_zoom(z);
         self.check_own_limits();
     }
     
-    pub(super) fn settle(&mut self) {
+    pub fn settle(&mut self) {
         return; /* temporary, degrades visual output but buggy */
         bb_log!("resize","settle: screen width {}bp {}px",self.get_screen_in_bp(),self.screen_size.0);
         if self.screen_size.0 > 0. {
@@ -69,7 +69,7 @@ impl Position {
         self.pos.1 = self.pos.1.round();
     }
 
-    pub(super) fn best_zoom_screen_bp(&self, bp: f64) -> f64 {
+    pub fn best_zoom_screen_bp(&self, bp: f64) -> f64 {
         self.zoom.best_zoom_screen_bp(bp)
     }
 

@@ -1,7 +1,8 @@
 use std::sync::{ Arc, Mutex };
 use std::collections::{ HashMap, HashSet };
+use composit::Leaf;
 use controller::input::Action;
-use composit::{ Leaf, Stage };
+use model::stage::Stage;
 use types::Dot;
 
 use super::{ ZMenuLeaf, ZMenuLeafSet, ZMenuFeatureTmpl, ZMenuData, ZMenuIntersection };

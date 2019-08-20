@@ -59,7 +59,11 @@ fn exe_pos_event(app: &App, v: Dot<f64,f64>, prop: Option<f64>) {
     let v = app.with_stage(|s|
         Dot(s.pos_prop_bp_to_origin(v.0,prop),v.1)
     );
-    let pos = app.with_stage(|s| { s.set_pos_middle(&v); s.get_pos_middle() });
+    let pos = app.with_stage(|s| {
+        let p = &mut s.get_position_mut();
+        p.set_middle(&v); 
+        p.get_middle()
+    });
     app.with_compo(|co| { co.set_position(pos.0); });
 }
 
@@ -67,8 +71,9 @@ fn exe_pos_range_event(app: &App, x_start: f64, x_end: f64, y: f64) {
     let middle = Dot((x_start+x_end)/2.,y);
     let (pos,zoom) = app.with_stage(|s| { 
         s.set_screen_in_bp(x_end-x_start);
-        s.set_pos_middle(&middle);
-        (s.get_pos_middle(),s.get_linear_zoom())
+        let p = &mut s.get_position_mut();
+        p.set_middle(&middle);
+        (p.get_middle(),p.get_linear_zoom())
     });
     app.with_compo(|co| {
         co.set_bp_per_screen(zoom);
@@ -83,8 +88,9 @@ fn exe_move_event(app: &App, v: Move<f64,f64>) {
             Axis::Vert => v.convert(Units::Pixels,s),
             Axis::Zoom => v // TODO invalid pre-unification
         };
-        s.set_pos_middle(&(s.get_pos_middle()+v));
-        s.get_pos_middle()
+        let p = &mut s.get_position_mut();
+        p.set_middle(&(p.get_middle()+v));
+        p.get_middle()
     });
     app.with_compo(|co| {
         co.set_position(pos.0);
@@ -92,15 +98,16 @@ fn exe_move_event(app: &App, v: Move<f64,f64>) {
 }
 
 fn exe_zoom_event(app: &App, za: f64, by: bool) {
-    let middle = app.with_stage(|s| s.get_pos_middle().0);
+    let middle = app.with_stage(|s| s.get_position().get_middle().0);
     let z = app.with_stage(|s| {
+        let p = &mut s.get_position_mut();
         if by {
-            let new_za = za+s.get_zoom();
-            s.set_zoom(new_za);
+            let new_za = za+p.get_zoom();
+            p.set_zoom(new_za);
         } else {
-            s.set_zoom(za);
+            p.set_zoom(za);
         }
-        s.get_linear_zoom()
+        p.get_linear_zoom()
     });
     app.with_compo(|co| { co.set_bp_per_screen(z); co.set_position(middle); });
 }
@@ -131,7 +138,6 @@ fn exe_set_stick(a: &mut App, name: &str) {
                 s.set_limit(&LEFT,0.);
                 s.set_limit(&RIGHT,stick.length() as f64);
                 s.set_wrapping(&stick.get_wrapping());
-                s.set_pos_intent(false);
             });
         }
     } else {

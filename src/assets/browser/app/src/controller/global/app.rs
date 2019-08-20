@@ -5,10 +5,11 @@ use stdweb::unstable::TryInto;
 use url::Url;
 
 use composit::{
-    Compositor, StateManager, Stage, StickManager,
+    Compositor, StateManager, StickManager,
     CombinedStickManager,
     AllLandscapes
 };
+use model::stage::Stage;
 use model::supply::{ Product, ProductList };
 use controller::input::{ Action, actions_run, startup_actions, Jumper };
 use controller::global::{ AppRunnerWeak, AppRunner };
@@ -21,7 +22,7 @@ use model::driver::{ Printer, PrinterManager };
 use model::supply::build_product;
 use model::train::{ TrainManager, TravellerCreator };
 use tácode::Tácode;
-use types::Dot;
+use types::{ Dot, UP };
 
 use super::WindowState;
 
@@ -160,7 +161,7 @@ impl App {
             s.update_report(report);
         }
         if let Some(ref report) = self.viewport {
-            s.update_viewport_report(report);
+            report.set_delta_y(-s.get_position().get_edge(&UP,false) as i32);
         }
         out
     }
@@ -218,8 +219,9 @@ impl App {
     pub fn force_size(self: &mut App, sz: Dot<f64,f64>) {
         self.stage_resize = Some(sz);
         let mut stage = self.stage.lock().unwrap();
-        stage.set_size(&sz);
-        self.printer.lock().unwrap().set_size(stage.get_size());
+        stage.get_screen_mut().set_size(&sz);
+        stage.inform_screen_size(&sz);
+        self.printer.lock().unwrap().set_size(stage.get_screen().get_size());
     }
     
     pub fn with_counter<F,G>(&mut self, cb: F) -> G where F: FnOnce(&mut Counter) -> G {
@@ -229,10 +231,11 @@ impl App {
     pub fn settle(&mut self) {
         if let Some(size) = self.stage_resize.take() {
             let mut stage = self.stage.lock().unwrap();
-            stage.set_size(&size);
+            stage.get_screen_mut().set_size(&size);
+            stage.inform_screen_size(&size);
         }
         let mut stage = self.stage.lock().unwrap();
-        stage.settle();
+        stage.get_position_mut().settle();
         stage.intend_here();
         self.printer.lock().unwrap().settle();
     }

@@ -4,8 +4,9 @@ use std::rc::Rc;
 use super::{ GLTraveller, GLProgs, GLProgInstances };
 use super::super::program::ProgramType;
 use model::driver::DriverTraveller;
+use model::stage::Stage;
 use model::train::Carriage;
-use composit::{ Leaf, Stage };
+use composit::Leaf;
 use super::super::drawing::{ CarriageCanvases, AllCanvasAllocator };
 use dom::webgl::WebGLRenderingContext as glctx;
 

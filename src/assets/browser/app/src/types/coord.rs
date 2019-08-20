@@ -2,8 +2,8 @@ use std::cmp::{ Ordering, PartialEq, PartialOrd };
 use std::fmt::Debug;
 use std::ops::{ Add, Sub, Mul, Div, Neg };
 
-use composit::Stage;
 use drivers::webgl::program::Input;
+use model::stage::Stage;
 use types::{
     Rect, Anchored, Axis, Edge, Corner, Anchor, Direction,
     RIGHT, LEFT, DOWN, UP, Placement, XPosition, YPosition
@@ -54,9 +54,9 @@ pub struct Distance<T : Clone + Copy + Debug>(pub T,pub Units);
 impl<T: Clone + Copy + Mul<f64,Output=T> + Div<f64,Output=T> + Debug> Distance<T> {
     pub fn convert(&self, target: Units, axis: Axis, stage: &Stage) -> Distance<T> {
         let Distance(quant,source) = self;
-        let dims = stage.get_size();
+        let dims = stage.get_screen().get_size();
         let (size,zoom) = match axis {
-            Axis::Horiz => (dims.0 as f64,stage.get_screen_in_bp() as f64),
+            Axis::Horiz => (dims.0 as f64,stage.get_position().get_screen_in_bp() as f64),
             Axis::Vert => (dims.1 as f64,1.0),
             Axis::Zoom => (1.,1.), // TODO
         };

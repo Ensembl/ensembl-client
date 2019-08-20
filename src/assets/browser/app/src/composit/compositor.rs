@@ -1,7 +1,8 @@
 use std::collections::HashSet;
 
-use composit::{ Stick, Scale, ComponentSet, StateManager, Stage, AllLandscapes };
+use composit::{ Stick, Scale, ComponentSet, StateManager, AllLandscapes };
 use model::driver::{ PrinterManager, Printer };
+use model::stage::Stage;
 use model::supply::{ Product };
 use model::train::{ Train, TrainContext, TrainManager, TravellerCreator };
 use model::zmenu::{ ZMenuRegistry, ZMenuLeafSet, ZMenuIntersection };

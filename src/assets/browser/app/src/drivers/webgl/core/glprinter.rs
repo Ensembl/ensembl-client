@@ -6,8 +6,9 @@ use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element, INode, IElement };
 
 use super::{ GLProgs, GLCarriage, GLTraveller };
-use composit::{ Compositor, Leaf, Stage };
 use model::driver::{ DriverTraveller, Printer };
+use model::stage::Stage;
+use composit::Compositor;
 use model::supply::{ PurchaseOrder };
 use model::train::{ CarriageId, Train, TravellerId };
 use super::super::drawing::{ AllCanvasAllocator };

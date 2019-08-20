@@ -1,4 +1,5 @@
-use composit::{ Compositor, Stage, Leaf };
+use composit::{ Compositor, Leaf };
+use model::stage::Stage;
 use model::supply::PurchaseOrder;
 use types::Dot;
 

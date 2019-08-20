@@ -126,14 +126,14 @@ impl JumperConsumer {
             let dest = app.with_stage(|stage| {
                 let dest_pos = Dot((dest_start+dest_end)/2.,0.);
                 let dest_size = dest_end-dest_start+1.;
-                let dest_zoom = stage.best_zoom_screen_bp(dest_size);
+                let dest_zoom = stage.get_position().best_zoom_screen_bp(dest_size);
                 (dest_pos,dest_zoom)
             });
             let (stick,start,start_left,start_right) = if current_stick.is_some() && stick == current_stick.unwrap().get_name() { 
                 let (src,left,right) = app.with_stage(|stage | {
                     let left = stage.get_position().get_edge(&LEFT,false);
                     let right = stage.get_position().get_edge(&RIGHT,false);
-                    ((stage.get_pos_middle(),stage.get_zoom()),left,right)
+                    ((stage.get_position().get_middle(),stage.get_position().get_zoom()),left,right)
                 });
                 (None,src,left,right)
             } else { 
@@ -141,7 +141,7 @@ impl JumperConsumer {
             };
             let leftmost = dest_start.min(start_left);
             let rightmost = dest_end.max(start_right);
-            let backoff = app.with_stage(|stage| stage.best_zoom_screen_bp(rightmost-leftmost+1.));
+            let backoff = app.with_stage(|stage| stage.get_position().best_zoom_screen_bp(rightmost-leftmost+1.));
             app.with_jumper(|j| j.zhoosh_to(&stick,start,dest,backoff));
         }
         Ok(())
