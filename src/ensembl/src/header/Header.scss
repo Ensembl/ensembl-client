@@ -1,11 +1,13 @@
 @import 'src/styles/common';
 
 .topBar {
-  @include top-bar-container;
-  @include top-bar-unstack;
-
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
   color: $white;
   padding: 2px 20px;
+  background-color: $topbar-background;
 }
 
 .homeLink {
@@ -28,12 +30,12 @@
 
 .strapline,
 .copyright {
-  display: none;
+  display: inline-block;
   font-size: 11px;
   margin-left: 30px;
 
-  @include breakpoint(medium) {
-    display: inline-block;
+  @media #{$breakpoint-medium} {
+    display: none;
   }
 
   a {
