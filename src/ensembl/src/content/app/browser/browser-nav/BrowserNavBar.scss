@@ -1,11 +1,11 @@
 @import 'src/styles/common';
 
 .browserNavBar {
-  @include flex;
+  display: flex;
   background: $ens-light-grey;
   padding: 16px;
 
-  @include breakpoint(large) {
+  @media #{$breakpoint-large} {
     width: calc(100vw - 356px);
   }
 

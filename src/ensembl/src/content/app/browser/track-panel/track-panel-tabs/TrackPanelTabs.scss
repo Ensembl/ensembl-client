@@ -1,7 +1,7 @@
 @import 'src/styles/common';
 
 .trackPanelTabs {
-  @include flex;
+  display: flex;
   font-size: 13px;
   justify-content: space-between;
   margin-left: 44px;

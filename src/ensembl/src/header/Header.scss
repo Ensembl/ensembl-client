@@ -7,7 +7,7 @@
   align-items: center;
   color: $white;
   padding: 2px 20px;
-  background-color: $topbar-background;
+  background-color: $ens-black;
 }
 
 .homeLink {
@@ -30,12 +30,12 @@
 
 .strapline,
 .copyright {
-  display: inline-block;
+  display: none;
   font-size: 11px;
   margin-left: 30px;
 
   @media #{$breakpoint-medium} {
-    display: none;
+    display: inline-block;
   }
 
   a {
