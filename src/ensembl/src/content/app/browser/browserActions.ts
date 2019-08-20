@@ -236,7 +236,7 @@ export const updateCogTrackList = createStandardAction(
 
 export const updateSelectedCog = createStandardAction(
   'browser/update-selected-cog'
-)<string>();
+)<string | null>();
 
 export const updateTrackConfigNames = createAction(
   'browser/update-track-config-names',
