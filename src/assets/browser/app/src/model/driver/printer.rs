@@ -1,5 +1,5 @@
 use composit::{ Compositor, Leaf };
-use model::stage::Stage;
+use model::stage::{ Screen, Position };
 use model::supply::PurchaseOrder;
 use types::Dot;
 
@@ -10,7 +10,7 @@ pub trait Printer {
     /* Print one run of objects from compositor with given stage and
      * state.
      */
-    fn print(&mut self, stage: &Stage, compo: &mut Compositor);
+    fn print(&mut self, screen: &Screen, position: &Position, compo: &mut Compositor);
     
     /* Redraw one carriage */
     fn redraw_carriage(&mut self, leaf: &CarriageId);

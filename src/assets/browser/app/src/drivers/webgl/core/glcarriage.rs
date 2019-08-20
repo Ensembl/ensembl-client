@@ -1,13 +1,14 @@
-use std::collections::HashSet;
+use std::collections::{ HashMap, HashSet };
 use std::rc::Rc;
 
 use super::{ GLTraveller, GLProgs, GLProgInstances };
-use super::super::program::ProgramType;
+use super::super::program::{ ProgramType, UniformValue };
 use model::driver::DriverTraveller;
-use model::stage::Stage;
+use model::stage::{ Position, Screen };
 use model::train::Carriage;
 use composit::Leaf;
 use super::super::drawing::{ CarriageCanvases, AllCanvasAllocator };
+
 use dom::webgl::WebGLRenderingContext as glctx;
 
 pub struct GLCarriage {
@@ -72,11 +73,30 @@ impl GLCarriage {
         self.redraw_travellers(aca);
     }
 
-    pub fn set_context(&mut self,stage: &Stage, opacity: f32) {        
+    pub fn get_uniforms(&self, leaf: &Leaf, opacity: f32, screen: &Screen, pos: &Position) -> HashMap<String,UniformValue> {
+        let bp_per_screen = pos.get_screen_in_bp();
+        let bp_per_leaf = leaf.total_bp();
+        let leaf_per_screen = bp_per_screen as f64 / bp_per_leaf;
+        let middle_bp = pos.get_middle();
+        let middle_leaf = middle_bp.0/bp_per_leaf; // including fraction of leaf
+        let current_leaf_left = leaf.get_index() as f64;
+        let screen_px = screen.get_size();
+        hashmap_s! {
+            "uOpacity" => UniformValue::Float(opacity),
+            "uStageHpos" => UniformValue::Float((middle_leaf - current_leaf_left) as f32),
+            "uStageVpos" => UniformValue::Float(middle_bp.1 as f32),
+            "uStageZoom" => UniformValue::Float((2_f64/leaf_per_screen) as f32),
+            "uSize" => UniformValue::Vec2F(
+                screen_px.0 as f32/2.,
+                screen_px.1 as f32/2.)
+        }
+    }
+
+    pub fn set_context(&mut self, screen: &Screen, position: &Position, opacity: f32) {
+        let u = self.get_uniforms(&self.leaf, opacity, screen, position);
         let progs = self.progs.as_mut().unwrap();
         for k in &progs.order {
             let prog = progs.map.get_mut(k).unwrap();
-            let u = stage.get_uniforms(&self.leaf, opacity);
             for (key, value) in &u {
                 if let Some(obj) = prog.get_object(key) {
                     obj.set_uniform(None,*value);

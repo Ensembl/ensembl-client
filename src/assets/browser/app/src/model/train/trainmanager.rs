@@ -21,7 +21,7 @@ use model::item::{ DeliveredItem, ItemUnpacker };
 use model::supply::Product;
 use super::{ Train, TrainId, TrainContext, TravellerCreator };
 
-const MS_FADE : f64 = 2000.;
+const MS_FADE : f64 = 200.;
 
 pub struct TrainManagerImpl {
     printer: PrinterManager,
@@ -84,8 +84,8 @@ impl TrainManagerImpl {
             if st == old { return false; }
         }
         self.desired_stick = Some(st.clone());
-        //self.position_bp = None;
-        //self.bp_per_screen = None;
+        self.position_bp = None;
+        self.bp_per_screen = None;
         self.maybe_change_trains();
         true
     }

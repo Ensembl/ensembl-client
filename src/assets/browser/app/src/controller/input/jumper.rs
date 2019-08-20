@@ -9,6 +9,7 @@ use controller::input::Action;
 use data::{ HttpManager, HttpResponseConsumer, BackendConfig };
 use dom::domutil::browser_time;
 use types::{ Dot, ddiv, LEFT, RIGHT };
+use model::stage::bp_to_zoomfactor;
 
 use misc_algorithms::marshal::{ json_str, json_obj_get, json_f64, json_bool };
 
@@ -123,26 +124,23 @@ impl JumperConsumer {
             let mut app_ref = self.ar.state();
             let mut app = app_ref.lock().unwrap();
             let current_stick = app.get_window().get_train_manager().get_desired_stick();
-            let dest = app.with_stage(|stage| {
-                let dest_pos = Dot((dest_start+dest_end)/2.,0.);
-                let dest_size = dest_end-dest_start+1.;
-                let dest_zoom = stage.get_position().best_zoom_screen_bp(dest_size);
-                (dest_pos,dest_zoom)
-            });
+            let dest_pos = Dot((dest_start+dest_end)/2.,0.);
+            let dest_size = dest_end-dest_start+1.;
+            let dest_zoom = app.get_position().best_zoom_screen_bp(dest_size);
             let (stick,start,start_left,start_right) = if current_stick.is_some() && stick == current_stick.unwrap().get_name() { 
-                let (src,left,right) = app.with_stage(|stage | {
-                    let left = stage.get_position().get_edge(&LEFT,false);
-                    let right = stage.get_position().get_edge(&RIGHT,false);
-                    ((stage.get_position().get_middle(),stage.get_position().get_zoom()),left,right)
-                });
+                let (src,left,right) = {
+                    let left = app.get_position().get_edge(&LEFT,false);
+                    let right = app.get_position().get_edge(&RIGHT,false);
+                    ((app.get_position().get_middle(),bp_to_zoomfactor(app.get_position().get_screen_in_bp())),left,right)
+                };
                 (None,src,left,right)
             } else { 
-                (Some(stick),dest,dest_start,dest_end)
+                (Some(stick),(dest_pos,dest_zoom),dest_start,dest_end)
             };
             let leftmost = dest_start.min(start_left);
             let rightmost = dest_end.max(start_right);
-            let backoff = app.with_stage(|stage| stage.get_position().best_zoom_screen_bp(rightmost-leftmost+1.));
-            app.with_jumper(|j| j.zhoosh_to(&stick,start,dest,backoff));
+            let backoff = app.get_position().best_zoom_screen_bp(rightmost-leftmost+1.);
+            app.with_jumper(|j| j.zhoosh_to(&stick,start,(dest_pos,dest_zoom),backoff));
         }
         Ok(())
     }

@@ -7,7 +7,7 @@ use stdweb::web::{ HtmlElement, Element, INode, IElement };
 
 use super::{ GLProgs, GLCarriage, GLTraveller };
 use model::driver::{ DriverTraveller, Printer };
-use model::stage::Stage;
+use model::stage::{ Screen, Position };
 use composit::Compositor;
 use model::supply::{ PurchaseOrder };
 use model::train::{ CarriageId, Train, TravellerId };
@@ -37,11 +37,11 @@ impl WebGLTrainPrinter {
         }
     }
     
-    fn contextualize(&mut self, printer: &mut GLPrinterBase, stage: &Stage,
+    fn contextualize(&mut self, printer: &mut GLPrinterBase, screen: &Screen, position: &Position,
                      train: &mut Train, opacity: f32) {
         for carriage_id in train.get_carriage_ids() {
             if let Some(ref mut carriage) = printer.carriages.get_mut(carriage_id) {
-                carriage.set_context(stage,opacity);
+                carriage.set_context(screen,position,opacity);
             }
         }
     }
@@ -187,16 +187,16 @@ impl GLPrinter {
 }
 
 impl Printer for GLPrinter {
-    fn print(&mut self, stage: &Stage, compo: &mut Compositor) {
+    fn print(&mut self, screen: &Screen, position: &Position, compo: &mut Compositor) {
         compo.redraw_where_needed(self);
         let prop = compo.get_prop_trans();
         compo.with_current_train(|train| {
             let mut tp = WebGLTrainPrinter::new();
-            tp.contextualize(&mut self.base.borrow_mut(),stage,train,1.-prop);
+            tp.contextualize(&mut self.base.borrow_mut(),screen,position,train,1.-prop);
         });
         compo.with_transition_train(|train| {
             let mut tp = WebGLTrainPrinter::new();
-            tp.contextualize(&mut self.base.borrow_mut(),stage,train,prop);
+            tp.contextualize(&mut self.base.borrow_mut(),screen,position,train,prop);
         });
         self.base.borrow_mut().prepare_all();
         compo.with_current_train(|train| {

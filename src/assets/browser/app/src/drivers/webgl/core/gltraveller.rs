@@ -15,7 +15,6 @@ pub struct GLTraveller {
     printer: GLPrinter,
     idx: usize,
     dr: Rc<RefCell<Option<GLDrawing>>>,
-    pending_refresh: Rc<RefCell<bool>>,
     state: Rc<RefCell<bool>>,
     traveller_id: TravellerId
 }
@@ -40,7 +39,6 @@ impl GLTraveller {
             printer: printer.clone(),
             idx,
             dr: Rc::new(RefCell::new(None)),
-            pending_refresh: Rc::new(RefCell::new(false)), // XXX unused
             state: Rc::new(RefCell::new(false)),
             traveller_id: traveller_id.clone()
         }
@@ -70,10 +68,6 @@ impl DriverTraveller for GLTraveller {
 
     fn set_contents(&mut self, result: &UnpackedSubassembly) {
         *self.dr.borrow_mut() = Some(GLDrawing::new(result));
-    }
-
-    fn refresh(&mut self) {
-        *self.pending_refresh.borrow_mut() = true;
     }
     
     fn destroy(&mut self) {

@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use composit::{ Stick, Scale, ComponentSet, StateManager, AllLandscapes };
 use model::driver::{ PrinterManager, Printer };
-use model::stage::Stage;
+use model::stage::{ Screen, Position };
 use model::supply::{ Product };
 use model::train::{ Train, TrainContext, TrainManager, TravellerCreator };
 use model::zmenu::{ ZMenuRegistry, ZMenuLeafSet, ZMenuIntersection };
@@ -150,8 +150,8 @@ impl Compositor {
         self.window.get_train_manager().update_state(oom);
     }
     
-    pub fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
-        self.zmr.intersects(stage,pos)
+    pub fn intersects(&self, screen: &Screen, position: &Position, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
+        self.zmr.intersects(screen,position,pos)
     }
 }
 
@@ -159,7 +159,10 @@ pub fn register_compositor_ticks(ar: &mut AppRunner) {
     ar.add_timer("compositor",|app,t,_| {
         app.with_compo(|co| co.tick(t) );
         let max_y = app.get_window().get_all_landscapes().get_low_watermark();
-        app.with_stage(|s| s.set_limit(&DOWN,max_y as f64));
+        app.get_position_mut().set_limit(&DOWN,max_y as f64);
+        let pos = app.get_position().clone();
+        app.update_position();
+        app.intend_here(&pos);
         vec!{}
     },2);
 }

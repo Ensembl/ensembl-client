@@ -78,5 +78,4 @@ impl Screen {
             }
         }
     }
-
 }

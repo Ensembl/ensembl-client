@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use serde_json::Value as JSONValue;
 
 use composit::Leaf;
-use model::stage::Stage;
+use model::stage::{ Screen, Position };
 use controller::input::Action;
 use types::{ Placement, Dot };
 
@@ -140,12 +140,11 @@ impl ZMenuLeaf {
         }
     }
 
-    pub(in super) fn intersects(&self, stage: &Stage, pos: Dot<i32,i32>) -> Vec<ZMenuIntersection> {
+    pub(in super) fn intersects(&self, screen: &Screen, position: &Position, pos: Dot<i32,i32>) -> Vec<ZMenuIntersection> {
         let mut out = Vec::new();
         for item in &self.items {
-            bb_log!("zmenu","zml: item pos={:?} placement={:?}",pos,&item.placement);
-            let apos = stage.get_position().clone();
-            if stage.get_screen().intersects(pos,&item.placement,apos) {
+            bb_log!("zmenu","zml: item pos={:?} placement={:?}",position,&item.placement);
+            if screen.intersects(pos,&item.placement,position) {
                 bb_log!("zmenu","intersects {:?}",item.id);
                 if let Some(payload) = self.activate(&item.id,&item.track_id) {
                     out.push(ZMenuIntersection {

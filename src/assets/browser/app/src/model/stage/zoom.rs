@@ -4,17 +4,24 @@ use types::AxisSense;
 
 #[derive(Clone,Copy)]
 pub struct Zoom {
-    zoom: f64,
     linzoom: f64, /* bp/screen */
     max_bp: f64
 }
 
 const MAX_LIMIT_BP : f64 = 50.;
 
+pub fn bp_to_zoomfactor(bp: f64) -> f64 {
+    -bp.log10()
+}
+
+pub fn zoomfactor_to_bp(zoomfactor: f64) -> f64 {
+    10.0_f64.powf(-zoomfactor)
+}
+
 impl Zoom {
-    pub fn new(z: f64) -> Zoom {
-        let mut out = Zoom { zoom: 1., linzoom: 1., max_bp: 1. };
-        out.set_zoom(z);
+    pub fn new() -> Zoom {
+        let mut out = Zoom { linzoom: 1., max_bp: 1. };
+        out.set_screen_in_bp(zoomfactor_to_bp(0.)); /* called to allow limits etc */
         out
     }
     
@@ -24,33 +31,27 @@ impl Zoom {
     
     pub fn get_limit(&self, min_max: &AxisSense) -> f64 {
         match *min_max {
-            AxisSense::Min => -self.max_bp.log10(),
-            AxisSense::Max => -MAX_LIMIT_BP.log10()
+            AxisSense::Min => bp_to_zoomfactor(self.max_bp),
+            AxisSense::Max => bp_to_zoomfactor(MAX_LIMIT_BP)
         }
     }
     
-    fn check_min_limit(&self, val: f64) -> f64 {
-        val.max(self.get_limit(&AxisSense::Min))
+    fn check_min_limit_bp(&self, bp: f64) -> f64 {
+        bp.min(zoomfactor_to_bp(self.get_limit(&AxisSense::Min)))
     }
     
-    fn check_max_limit(&self, val: f64) -> f64 {
-        val.min(self.get_limit(&AxisSense::Max))
-    }
-    
-    fn check_limits(&self, mut v: f64) -> f64 {
-        v = self.check_max_limit(v);
-        self.check_min_limit(v)
+    fn check_max_limit_bp(&self, bp: f64) -> f64 {
+        bp.max(zoomfactor_to_bp(self.get_limit(&AxisSense::Max)))
     }
 
-    pub fn set_zoom(&mut self, val: f64) {
+    fn check_limits_bp(&self, mut v: f64) -> f64 {
         /* min has priority over max */
-        let v = self.check_limits(val);
-        self.zoom = v;
-        self.linzoom = 10.0_f64.powf(-v);
+        v = self.check_max_limit_bp(v);
+        self.check_min_limit_bp(v)
     }
-    
+
     pub fn best_zoom_screen_bp(&self,bp: f64) -> f64 {
-        self.check_limits(-bp.log10())
+        bp_to_zoomfactor(self.check_limits_bp(bp))
     }
 
     pub fn get_screen_in_bp(&self) -> f64 {
@@ -58,20 +59,13 @@ impl Zoom {
     }
     
     pub fn set_screen_in_bp(&mut self, val: f64) {
-        self.set_zoom(-val.log10());
-    }
-    
-    pub fn get_zoom(&self) -> f64 {
-        self.zoom
-    }
-    
-    pub fn get_linear_zoom(&self) -> f64 {
-        self.linzoom
+        let v = self.check_limits_bp(val);
+        self.linzoom = v;
     }
 }
 
 impl fmt::Debug for Zoom {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f,"z{}",self.zoom)
+        write!(f,"z{}",self.linzoom)
     }
 }

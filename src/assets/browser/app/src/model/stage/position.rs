@@ -1,8 +1,11 @@
 use std::fmt;
 
-use super::zoom::Zoom;
+use super::zoom::{ Zoom, bp_to_zoomfactor };
+use composit::Wrapping;
+use controller::output::Report;
 use types::{ Dot, Direction, LEFT, RIGHT, UP, DOWN, IN, OUT, AxisSense };
 
+#[derive(Clone)]
 pub struct Position {
     pos: Dot<f64,f64>,
     zoom: Zoom,
@@ -15,17 +18,18 @@ pub struct Position {
 }
 
 impl Position {
-    pub fn new(pos: Dot<f64,f64>, screen_size: Dot<f64,f64>) -> Position {
+    pub fn new() -> Position {
         Position {
-            screen_size, pos,
-            zoom: Zoom::new(0.),
+            screen_size: Dot(0.,0.),
+            pos: Dot(0.,0.),
+            zoom: Zoom::new(),
             max_y: 0, min_x: 0., max_x: 0.,
             min_x_bumper: 0.,
             max_x_bumper: 0.
         }
     }
-        
-    pub(super) fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>) {
+    
+    pub fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>) {
         self.screen_size = *screen_size;
         self.check_own_limits();
     }
@@ -35,15 +39,7 @@ impl Position {
         self.pos = *pos;
         self.check_own_limits();
     }
-    
-    pub fn get_zoom(&self) -> f64 {
-        self.zoom.get_zoom()
-    }
-
-    pub fn get_linear_zoom(&self) -> f64 {
-        self.zoom.get_linear_zoom()
-    }
-    
+        
     pub fn get_screen_in_bp(&self) -> f64 {
         self.zoom.get_screen_in_bp()
     }
@@ -51,12 +47,7 @@ impl Position {
     pub fn set_screen_in_bp(&mut self, zoom: f64) {
         self.zoom.set_screen_in_bp(zoom);
     }
-    
-    pub fn set_zoom(&mut self, z: f64) {
-        self.zoom.set_zoom(z);
-        self.check_own_limits();
-    }
-    
+        
     pub fn settle(&mut self) {
         return; /* temporary, degrades visual output but buggy */
         bb_log!("resize","settle: screen width {}bp {}px",self.get_screen_in_bp(),self.screen_size.0);
@@ -94,7 +85,7 @@ impl Position {
         match *which {
             LEFT|RIGHT => self.pos.0 + delta,
             UP|DOWN    => self.pos.1 + delta,
-            IN|OUT     => self.zoom.get_zoom()
+            IN|OUT     => bp_to_zoomfactor(self.zoom.get_screen_in_bp())
         }
     }
 
@@ -131,7 +122,7 @@ impl Position {
         self.zoom.set_max_bp(max_bp);
     }
 
-    pub(super) fn set_limit(&mut self, which: &Direction, val: f64) {
+    pub fn set_limit(&mut self, which: &Direction, val: f64) {
         match *which {
             LEFT => self.min_x = val,
             RIGHT => self.max_x = val,
@@ -142,7 +133,7 @@ impl Position {
         self.check_own_limits();
     }
     
-    pub(super) fn set_bumper(&mut self, which: &Direction, val: f64) {
+    pub fn set_bumper(&mut self, which: &Direction, val: f64) {
         match *which {
             LEFT => self.min_x_bumper = val,
             RIGHT => self.max_x_bumper = val,
@@ -164,6 +155,41 @@ impl Position {
         let mut pos = self.pos;
         self.check_limits(&mut pos);
         self.pos = pos;
+    }
+
+    pub fn get_pos_prop_bp(&self, prop: f64) -> f64 {
+        let start = self.get_middle().0 - self.get_screen_in_bp() / 2.;
+        start + prop * self.get_screen_in_bp()
+    }
+
+    pub fn pos_prop_bp_to_origin(&self, pos: f64, prop: f64) -> f64 {
+        let start = pos - prop * self.get_screen_in_bp();
+        start + self.get_screen_in_bp()/2.
+    }
+
+    pub fn bumped(&self, direction: &Direction) -> bool {
+        let mul : f64 = direction.1.into();
+        self.get_edge(direction,true).floor() * mul >= self.get_limit_of_edge(direction).floor() * mul
+    }
+
+    pub fn update_bumping_report(&self, report: &Report) {
+        report.set_status_bool("bumper-left",self.bumped(&LEFT));
+        report.set_status_bool("bumper-right",self.bumped(&RIGHT));
+        report.set_status_bool("bumper-top",self.bumped(&UP));
+        report.set_status_bool("bumper-bottom",self.bumped(&DOWN));
+        report.set_status_bool("bumper-in",self.bumped(&IN));
+        report.set_status_bool("bumper-out",self.bumped(&OUT));
+    }
+
+    pub fn update_position_report(&self, report: &Report) {
+        let (aleft,aright) = (self.get_edge(&LEFT,false),self.get_edge(&RIGHT,false));
+        report.set_status("a-start",&aleft.floor().to_string());
+        report.set_status("a-end",&aright.ceil().to_string());
+    }
+
+    pub fn set_wrapping(&mut self, w: &Wrapping) {
+        self.set_bumper(&LEFT,w.get_bumper(&LEFT));
+        self.set_bumper(&RIGHT,w.get_bumper(&RIGHT));
     }
 }
 

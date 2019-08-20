@@ -9,7 +9,7 @@ use composit::{
     CombinedStickManager,
     AllLandscapes
 };
-use model::stage::Stage;
+use model::stage::{ Position, Screen };
 use model::supply::{ Product, ProductList };
 use controller::input::{ Action, actions_run, startup_actions, Jumper };
 use controller::global::{ AppRunnerWeak, AppRunner };
@@ -19,6 +19,7 @@ use debug::add_debug_sticks;
 use dom::domutil;
 use drivers::webgl::GLPrinter;
 use model::driver::{ Printer, PrinterManager };
+use model::stage::Intended;
 use model::supply::build_product;
 use model::train::{ TrainManager, TravellerCreator };
 use tácode::Tácode;
@@ -34,7 +35,6 @@ pub struct App {
     browser_el: HtmlElement,
     canv_el: HtmlElement,
     pub printer: Arc<Mutex<PrinterManager>>,
-    pub stage: Arc<Mutex<Stage>>,
     pub state: Arc<Mutex<StateManager>>,
     pub compo: Arc<Mutex<Compositor>>,
     report: Option<Report>,
@@ -45,7 +45,10 @@ pub struct App {
     stage_resize: Option<Dot<f64,f64>>,
     action_backlog: Vec<Action>,
     jumper: Option<Jumper>,
-    window: WindowState
+    window: WindowState,
+    intended: Intended,
+    position: Position,
+    screen: Screen
 }
 
 impl App {
@@ -69,7 +72,6 @@ impl App {
             browser_el: browser_el.clone(),
             canv_el: canv_el.clone(),
             printer: Arc::new(Mutex::new(printer.clone())),
-            stage:  Arc::new(Mutex::new(Stage::new())),
             compo: Arc::new(Mutex::new(Compositor::new(&window,&traveller_creator,&cache))),
             state: Arc::new(Mutex::new(StateManager::new())),
             report: None,
@@ -80,7 +82,10 @@ impl App {
             last_resize_at: None,
             action_backlog: Vec::new(),
             window: window.clone(),
-            jumper: None
+            jumper: None,
+            intended: Intended::new(),
+            screen: Screen::new(),
+            position: Position::new()
         };
         out.populate_products();
         out.run_actions(&startup_actions(),None);        
@@ -96,6 +101,10 @@ impl App {
         }
     }
 
+    pub fn get_screen(&self) -> &Screen { &self.screen }
+    pub fn get_screen_mut(&mut self) -> &mut Screen { &mut self.screen }
+    pub fn get_position(&self) -> &Position { &self.position }
+    pub fn get_position_mut(&mut self) -> &mut Position { &mut self.position }
     pub fn get_window(&mut self) -> &mut WindowState { &mut self.window }
     
     pub fn tick_xfer(&mut self) -> bool {
@@ -147,23 +156,28 @@ impl App {
     }
     
     pub fn draw(&mut self) {
-        let stage = self.stage.lock().unwrap();
-        let oom = self.state.lock().unwrap();
-        let mut compo = self.compo.lock().unwrap();
+        let oom = ok!(self.state.lock());
+        let mut compo = ok!(self.compo.lock());
         compo.update_state(&oom);
-        self.printer.lock().unwrap().print(&stage,&mut compo);
+        let pos = self.get_position().clone();
+        ok!(self.printer.lock()).print(&self.screen,&pos,&mut compo);
     }
     
-    pub fn with_stage<F,G>(&self, cb: F) -> G where F: FnOnce(&mut Stage) -> G {
-        let s = &mut self.stage.lock().unwrap();
-        let out = cb(s);
+    pub fn update_position(&mut self) {
         if let Some(ref report) = self.report {
-            s.update_report(report);
+            self.get_position().update_position_report(report);
+            self.get_position().update_bumping_report(report);
         }
         if let Some(ref report) = self.viewport {
-            report.set_delta_y(-s.get_position().get_edge(&UP,false) as i32);
+            report.set_delta_y(-self.get_position().get_edge(&UP,false) as i32);
         }
-        out
+    }
+
+    pub fn intend_here(&mut self, pos: &Position) {
+        self.intended.intend_here(pos);
+        if let Some(ref report) = self.report {
+            self.intended.update_intent_report(report);
+        }
     }
 
     pub fn with_state<F,G>(&self, cb: F) -> G where F: FnOnce(&mut StateManager) -> G {
@@ -218,10 +232,13 @@ impl App {
 
     pub fn force_size(self: &mut App, sz: Dot<f64,f64>) {
         self.stage_resize = Some(sz);
-        let mut stage = self.stage.lock().unwrap();
-        stage.get_screen_mut().set_size(&sz);
-        stage.inform_screen_size(&sz);
-        self.printer.lock().unwrap().set_size(stage.get_screen().get_size());
+        self.get_screen_mut().set_size(&sz);
+        let size = self.get_screen().get_size();
+        self.get_position_mut().inform_screen_size(&sz);
+        self.update_position();
+        let pos = self.get_position().clone();
+        self.intend_here(&pos);
+        self.printer.lock().unwrap().set_size(size);
     }
     
     pub fn with_counter<F,G>(&mut self, cb: F) -> G where F: FnOnce(&mut Counter) -> G {
@@ -230,13 +247,13 @@ impl App {
 
     pub fn settle(&mut self) {
         if let Some(size) = self.stage_resize.take() {
-            let mut stage = self.stage.lock().unwrap();
-            stage.get_screen_mut().set_size(&size);
-            stage.inform_screen_size(&size);
+            self.get_screen_mut().set_size(&size);
+            self.get_position_mut().inform_screen_size(&size);
         }
-        let mut stage = self.stage.lock().unwrap();
-        stage.get_position_mut().settle();
-        stage.intend_here();
+        self.get_position_mut().settle();
+        self.update_position();
+        let pos = self.get_position().clone();
+        self.intend_here(&pos);
         self.printer.lock().unwrap().settle();
     }
 }

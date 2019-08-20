@@ -2,6 +2,7 @@ use types::{ Move, Units, Axis, Dot, cdfraction, LEFT, RIGHT, CPixel };
 use controller::global::App;
 use composit::StickManager;
 
+use model::stage::{ bp_to_zoomfactor, zoomfactor_to_bp };
 use model::train::TrainContext;
 
 use serde_json::Value as JSONValue;
@@ -54,61 +55,65 @@ impl Action {
     }
 }
 
-fn exe_pos_event(app: &App, v: Dot<f64,f64>, prop: Option<f64>) {
+fn exe_pos_event(app: &mut App, v: Dot<f64,f64>, prop: Option<f64>) {
     let prop = prop.unwrap_or(0.5);
-    let v = app.with_stage(|s|
-        Dot(s.pos_prop_bp_to_origin(v.0,prop),v.1)
-    );
-    let pos = app.with_stage(|s| {
-        let p = &mut s.get_position_mut();
+    let v = Dot(app.get_position().pos_prop_bp_to_origin(v.0,prop),v.1);
+    let pos = {
+        let p = &mut app.get_position_mut();
         p.set_middle(&v); 
         p.get_middle()
-    });
+    };
+    app.update_position();
     app.with_compo(|co| { co.set_position(pos.0); });
 }
 
-fn exe_pos_range_event(app: &App, x_start: f64, x_end: f64, y: f64) {
+fn exe_pos_range_event(app: &mut App, x_start: f64, x_end: f64, y: f64) {
     let middle = Dot((x_start+x_end)/2.,y);
-    let (pos,zoom) = app.with_stage(|s| { 
-        s.set_screen_in_bp(x_end-x_start);
-        let p = &mut s.get_position_mut();
+    let pos = {
+        let p = &mut app.get_position_mut();
+        p.set_screen_in_bp(x_end-x_start);
         p.set_middle(&middle);
-        (p.get_middle(),p.get_linear_zoom())
-    });
+        p.clone()
+    };
+    app.update_position();
+    app.intend_here(&pos);
     app.with_compo(|co| {
-        co.set_bp_per_screen(zoom);
-        co.set_position(pos.0);
+        co.set_bp_per_screen(pos.get_screen_in_bp());
+        co.set_position(pos.get_middle().0);
     });
 }
 
-fn exe_move_event(app: &App, v: Move<f64,f64>) {
-    let pos = app.with_stage(|s| {
-        let v = match v.direction().0 {
-            Axis::Horiz => v.convert(Units::Bases,s),
-            Axis::Vert => v.convert(Units::Pixels,s),
-            Axis::Zoom => v // TODO invalid pre-unification
-        };
-        let p = &mut s.get_position_mut();
+fn exe_move_event(app: &mut App, v: Move<f64,f64>) {
+    let screen = app.get_screen().clone();
+    let position = app.get_position().clone();
+    let v = match v.direction().0 {
+        Axis::Horiz => v.convert(Units::Bases,screen,&position),
+        Axis::Vert => v.convert(Units::Pixels,screen,&position),
+        Axis::Zoom => v // TODO invalid pre-unification
+    };
+    let pos = {
+        let p = &mut app.get_position_mut();
         p.set_middle(&(p.get_middle()+v));
         p.get_middle()
-    });
+    };
+    app.update_position();
     app.with_compo(|co| {
         co.set_position(pos.0);
     });
 }
 
-fn exe_zoom_event(app: &App, za: f64, by: bool) {
-    let middle = app.with_stage(|s| s.get_position().get_middle().0);
-    let z = app.with_stage(|s| {
-        let p = &mut s.get_position_mut();
+fn exe_zoom_event(app: &mut App, za: f64, by: bool) {
+    let middle = app.get_position().get_middle().0;
+    let z = {
+        let p = &mut app.get_position_mut();
+        let mut za = za;
         if by {
-            let new_za = za+p.get_zoom();
-            p.set_zoom(new_za);
-        } else {
-            p.set_zoom(za);
+            za += bp_to_zoomfactor(p.get_screen_in_bp());
         }
-        p.get_linear_zoom()
-    });
+        p.set_screen_in_bp(zoomfactor_to_bp(za));
+        p.get_screen_in_bp()
+    };
+    app.update_position();
     app.with_compo(|co| { co.set_bp_per_screen(z); co.set_position(middle); });
 }
 
@@ -129,16 +134,20 @@ fn exe_component_add(a: &mut App, name: &str) {
     }
 }
 
-fn exe_set_stick(a: &mut App, name: &str) {
-    let stick_manager = a.get_window().get_stick_manager();
+fn exe_set_stick(app: &mut App, name: &str) {
+    let stick_manager = app.get_window().get_stick_manager();
     if let Some(stick) = stick_manager.get_stick(name) {
-        let changed : bool = a.with_compo(|co| co.set_stick(&stick));
+        let changed : bool = app.with_compo(|co| co.set_stick(&stick));
         if changed {
-            a.with_stage(|s| {
-                s.set_limit(&LEFT,0.);
-                s.set_limit(&RIGHT,stick.length() as f64);
-                s.set_wrapping(&stick.get_wrapping());
-            });
+            let pos = {
+                let p = app.get_position_mut();
+                p.set_limit(&LEFT,0.);
+                p.set_limit(&RIGHT,stick.length() as f64);
+                p.set_wrapping(&stick.get_wrapping());
+                p.clone()
+            };
+            app.update_position();
+            app.intend_here(&pos);
         }
     } else {
         console_force!("NO SUCH STICK {}",name);
@@ -153,10 +162,10 @@ fn exe_set_state(a: &mut App, name: &str, on: bool) {
 
 fn exe_zmenu_click_check(app: &mut App, pos: &CPixel, currency: Option<f64>) {
     console!("click {:?}",pos);
+    let screen = app.get_screen().clone();
+    let position = app.get_position().clone();
     let acts = app.with_compo(|co|
-        app.with_stage(|s|
-            co.intersects(s,*pos)
-        )
+            co.intersects(screen,&position,*pos)
     ).iter().map(|isect| isect.display_action(pos)).collect();
     app.run_actions(&acts,currency);
 }

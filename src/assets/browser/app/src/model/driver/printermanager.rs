@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use composit::{ Leaf, Compositor };
-use model::stage::Stage;
+use model::stage::{ Screen, Position };
 use model::supply::PurchaseOrder;
 use model::train::{ CarriageId, TravellerId };
 use types::Dot;
@@ -36,8 +36,8 @@ impl Printer for PrinterManager {
     /* Print one run of objects from compositor with given stage and
      * state.
      */
-    fn print(&mut self, stage: &Stage, compo: &mut Compositor) {
-        self.0.borrow_mut().printer.print(stage,compo);
+    fn print(&mut self, screen: &Screen, position: &Position, compo: &mut Compositor) {
+        self.0.borrow_mut().printer.print(screen,position,compo);
     }
     
     /* Finished with printer */
