@@ -8,7 +8,7 @@ import {
   getCurrentSpeciesAssemblies
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import Select from 'src/shared/select/Select';
+import Select from 'src/shared/components/select/Select';
 
 import { RootState } from 'src/store';
 import { Assembly } from 'src/content/app/species-selector/types/species-search';

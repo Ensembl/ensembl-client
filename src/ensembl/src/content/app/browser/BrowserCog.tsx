@@ -15,7 +15,7 @@ import { useTransition, animated } from 'react-spring';
 type BrowserCogProps = {
   cogActivated: boolean;
   index: string;
-  updateSelectedCog: (index: string) => void;
+  updateSelectedCog: (index: string | null) => void;
 };
 
 const BrowserCog: FunctionComponent<BrowserCogProps> = (
@@ -33,7 +33,7 @@ const BrowserCog: FunctionComponent<BrowserCogProps> = (
         action: 'opened'
       });
     } else {
-      updateSelectedCog('');
+      updateSelectedCog(null);
     }
   }, [cogActivated]);
 
@@ -72,7 +72,9 @@ const BrowserCog: FunctionComponent<BrowserCogProps> = (
         return (
           item && (
             <animated.div key={key} style={style}>
-              <BrowserTrackConfig />
+              <BrowserTrackConfig
+                onClose={() => props.updateSelectedCog(null)}
+              />
             </animated.div>
           )
         );

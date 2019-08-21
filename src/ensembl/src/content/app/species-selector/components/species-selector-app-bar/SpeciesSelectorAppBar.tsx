@@ -15,7 +15,7 @@ import { RootState } from 'src/store';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
 import styles from './SpeciesSelectorAppBar.scss';
-import appBarStyles from 'src/shared/app-bar/AppBar.scss';
+import appBarStyles from 'src/shared/components/app-bar/AppBar.scss';
 
 type Props = {
   selectedSpecies: CommittedItem[];

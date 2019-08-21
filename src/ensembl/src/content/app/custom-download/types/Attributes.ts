@@ -1,5 +1,5 @@
-import { RadioOptions } from 'src/shared/radio/Radio';
-import { Option } from 'src/shared/select/Select';
+import { RadioOptions } from 'src/shared/components/radio/Radio';
+import { Option } from 'src/shared/components/select/Select';
 import { CheckboxGridOption } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 import JSONValue from 'src/shared/types/JSON';
 

@@ -1,9 +1,9 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import CheckboxWithSelects from './CheckboxWithSelects';
-import Checkbox from 'src/shared/checkbox/Checkbox';
-import Select from 'src/shared/select/Select';
-import ImageButton from 'src/shared/image-button/ImageButton';
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import Select from 'src/shared/components/select/Select';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 import faker from 'faker';
 import times from 'lodash/times';
 

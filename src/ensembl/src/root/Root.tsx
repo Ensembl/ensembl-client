@@ -1,18 +1,13 @@
-import React, {
-  FunctionComponent,
-  useEffect,
-  useState,
-  useCallback
-} from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { withCookies, ReactCookieProps, Cookies } from 'react-cookie';
 import useResizeObserver from 'use-resize-observer';
 
 import Header from '../header/Header';
 import Content from '../content/Content';
-import PrivacyBanner from '../shared/privacy-banner/PrivacyBanner';
-import ErrorBoundary from 'src/shared/error-boundary/ErrorBoundary';
-import { GeneralErrorScreen } from 'src/shared/error-screen';
+import PrivacyBanner from '../shared/components/privacy-banner/PrivacyBanner';
+import privacyBannerService from '../shared/components/privacy-banner/privacy-banner-service';
+import ErrorBoundary from 'src/shared/components/error-boundary/ErrorBoundary';
+import { GeneralErrorScreen } from 'src/shared/components/error-screen';
 
 import { updateBreakpointWidth } from '../global/globalActions';
 import { getBreakpointWidth } from '../global/globalSelectors';
@@ -32,29 +27,25 @@ type DispatchProps = {
 
 type OwnProps = {};
 
-type RootProps = StateProps & DispatchProps & ReactCookieProps & OwnProps;
+type RootProps = StateProps & DispatchProps & OwnProps;
 
 export const Root: FunctionComponent<RootProps> = (props: RootProps) => {
   const [ref, width] = useResizeObserver();
   const currentBreakpoint: BreakpointWidth = getBreakpoint(width);
+  const [showPrivacyBanner, setShowPrivacyBanner] = useState(false);
 
   useEffect(() => {
     props.updateBreakpointWidth(currentBreakpoint);
   }, [props.updateBreakpointWidth, currentBreakpoint]);
 
-  const [showPrivacyBanner, setShowPrivacyBanner] = useState(true);
-  const cookies = props.cookies as Cookies;
-
   useEffect(() => {
-    if (showPrivacyBanner && cookies.get('ENSEMBL_PRIVACY_POLICY') === 'true') {
-      setShowPrivacyBanner(false);
-    }
-  }, [cookies]);
+    setShowPrivacyBanner(privacyBannerService.shouldShowBanner());
+  }, []);
 
-  const closeBanner = useCallback(() => {
-    cookies.set('ENSEMBL_PRIVACY_POLICY', 'true');
+  const closeBanner = () => {
+    privacyBannerService.setPolicyVersion();
     setShowPrivacyBanner(false);
-  }, [cookies]);
+  };
 
   return (
     <div ref={ref as React.RefObject<HTMLDivElement>} className={styles.root}>
@@ -73,9 +64,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
 
 const mapDispatchToProps: DispatchProps = { updateBreakpointWidth };
 
-export default withCookies(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(Root)
-);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Root);

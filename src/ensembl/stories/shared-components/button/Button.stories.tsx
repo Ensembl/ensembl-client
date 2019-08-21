@@ -2,7 +2,10 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
-import { PrimaryButton, SecondaryButton } from 'src/shared/button/Button';
+import {
+  PrimaryButton,
+  SecondaryButton
+} from 'src/shared/components/button/Button';
 
 import primaryButtonNotes from './primaryButtonNotes.md';
 import secondaryButtonNotes from './secondaryButtonNotes.md';

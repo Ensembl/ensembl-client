@@ -3,7 +3,7 @@ import { mount } from 'enzyme';
 import CheckboxWithTextfields from './CheckboxWithTextfields';
 import faker from 'faker';
 import PasteOrUpload from '../paste-or-upload/PasteOrUpload';
-import Checkbox from 'src/shared/checkbox/Checkbox';
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
 const onChange = jest.fn();
 let wrapper: any;

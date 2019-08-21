@@ -3,8 +3,8 @@ import { mount } from 'enzyme';
 import times from 'lodash/times';
 import random from 'lodash/random';
 
-import { SpeciesTabBar } from 'src/shared/species-tab-bar/SpeciesTabBar';
-import SpeciesTab from 'src/shared/species-tab/SpeciesTab';
+import { SpeciesTabBar } from 'src/shared/components/species-tab-bar/SpeciesTabBar';
+import SpeciesTab from 'src/shared/components/species-tab/SpeciesTab';
 
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 

@@ -8,7 +8,7 @@ import {
   AccordionItemHeading,
   AccordionItemPanel,
   AccordionItemButton
-} from 'src/shared/accordion';
+} from 'src/shared/components/accordion';
 
 import styles from './FiltersAccordion.scss';
 
@@ -25,7 +25,7 @@ import JSONValue from 'src/shared/types/JSON';
 import { Genes } from './sections';
 import ImageButton, {
   ImageButtonStatus
-} from 'src/shared/image-button/ImageButton';
+} from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
 
 type Props = StateProps & DispatchProps;

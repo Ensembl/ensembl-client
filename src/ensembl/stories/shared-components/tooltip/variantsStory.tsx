@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 
-import Tooltip, { Position } from 'src/shared/tooltip/Tooltip';
+import Tooltip, { Position } from 'src/shared/components/tooltip/Tooltip';
 
 import styles from './Tooltip.stories.scss';
 
