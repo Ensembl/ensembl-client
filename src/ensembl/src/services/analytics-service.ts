@@ -32,9 +32,9 @@ class AnalyticsTracking {
     });
   }
 
-  // Set page custom dimension
-  public setPageDimension(page: string) {
-    this.reactGA.ga('set', CustomDimensions.PAGEVIEW, page);
+  // Set app custom dimension
+  public setAppDimension(page: string) {
+    this.reactGA.ga('set', CustomDimensions.APP, page);
   }
 
   // Set species custom dimension

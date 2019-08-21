@@ -11,7 +11,7 @@ export const changeCurrentApp = createAction(
   'header/change-current-app',
   (resolve) => {
     return (appName: string) => {
-      analyticsTracking.setPageDimension(appName);
+      analyticsTracking.setAppDimension(appName);
       return resolve(appName);
     };
   }

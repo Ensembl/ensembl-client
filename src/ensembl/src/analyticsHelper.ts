@@ -12,7 +12,7 @@ export type AnalyticsOptions = {
 */
 export enum CustomDimensions {
   SPECIES = 'dimension1',
-  PAGEVIEW = 'dimension2'
+  APP = 'dimension2'
 }
 
 export type AnalyticsType = {
