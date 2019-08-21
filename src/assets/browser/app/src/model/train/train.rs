@@ -3,10 +3,12 @@ use std::collections::{ HashMap, HashSet };
 use composit::{ Leaf, StateManager, Scale, Stick };
 use data::XferConsumer;
 use model::item::{ DeliveredItem, ItemUnpacker };
+use model::stage::Position;
 use model::supply::Product;
 use model::driver::{ Printer, PrinterManager };
 use super::{ Carriage, CarriageId, TrainContext, TrainId, Traveller, TravellerCreator };
 use model::zmenu::ZMenuLeafSet;
+use types::Dot;
 
 const MAX_FLANK : i32 = 3;
 
@@ -14,52 +16,39 @@ pub struct Train {
     pm: PrinterManager,
     carriages: HashMap<Leaf,Carriage>,
     id: TrainId,
-    ideal_flank: i32,
-    middle_leaf: i64,
-    position_bp: Option<f64>,
+    position: Position,
     active: bool
 }
 
 impl Train {
-    pub fn new(pm: &PrinterManager, stick: &Stick, scale: &Scale, context: &TrainContext) -> Train {
+    pub fn new(pm: &PrinterManager, train_id: &TrainId, position: &Position) -> Train {
         Train {
             pm: pm.clone(),
-            id: TrainId::new(stick,scale,context),
-            ideal_flank: 0,
-            middle_leaf: 0,
+            id: train_id.clone(),
             carriages: HashMap::<Leaf,Carriage>::new(),
-            position_bp: None,
-            active: true
+            active: true,
+            position: position.clone()
         }
     }
-        
+    
     /* *****************************************************************
      * Methods for TRAINMANAGER to call when the user changes something.
      * *****************************************************************
      */
     
     pub fn get_train_id(&self) -> &TrainId { &self.id }
+    pub fn get_position(&self) -> &Position { &self.position }
+    pub fn get_position_mut(&mut self) -> &mut Position { &mut self.position }
+
+    fn middle_leaf(&self) -> i64 {
+        (self.position.get_middle().0 / self.id.get_scale().total_bp()).floor() as i64
+    }
 
     /* are we active (ie should we scan around as the user does?) */
     pub(in super) fn set_active(&mut self, yn: bool) {
         self.active = yn;
     }
         
-    /* called when position changes, to update carriages */
-    pub(in super) fn set_position(&mut self, position_bp: f64) {
-        self.middle_leaf = (position_bp / self.id.get_scale().total_bp()).floor() as i64;
-        self.position_bp = Some(position_bp);
-    }
-        
-    /* called when zoom changes, to update flank */
-    pub(in super) fn set_bp_per_screen(&mut self, bp_per_screen: f64) {
-        self.ideal_flank = (bp_per_screen / self.id.get_scale().total_bp()) as i32;
-        /* reset middle leaf after zoom */
-        if let Some(pos) = self.position_bp {
-            self.set_position(pos);
-        }
-    }
-    
     /* add component to leaf */
     pub fn add_component(&mut self, cm: &mut TravellerCreator, product: &mut Product) {
         for leaf in self.leafs() {
@@ -84,7 +73,8 @@ impl Train {
 
     /* flank to use taking into account train status */
     fn true_flank(&self) -> i32 {
-        self.ideal_flank.min(MAX_FLANK).max(1)
+        let ideal_flank = (self.position.get_screen_in_bp() / self.id.get_scale().total_bp()) as i32;
+        ideal_flank.min(MAX_FLANK).max(1)
     }
 
     fn get_carriage(&mut self, leaf: &Leaf) -> &mut Carriage {
@@ -102,7 +92,7 @@ impl Train {
         let mut out = Vec::<Leaf>::new();
         let flank = self.true_flank();
         for idx in -flank..flank+1 {
-            let hindex = self.middle_leaf + idx as i64;
+            let hindex = self.middle_leaf() + idx as i64;
             let leaf = Leaf::new(&self.id.get_stick(),hindex,&self.id.get_scale());
             if !self.carriages.contains_key(&leaf) {
                 out.push(leaf);
@@ -116,7 +106,7 @@ impl Train {
         let mut doomed = HashSet::new();
         let flank = self.true_flank();
         for leaf in self.carriages.keys() {
-            if (leaf.get_index()-self.middle_leaf).abs() > flank as i64 {
+            if (leaf.get_index()-self.middle_leaf()).abs() > flank as i64 {
                 doomed.insert(leaf.clone());
             }
         }

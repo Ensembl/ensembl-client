@@ -11,6 +11,8 @@
  * render.
  */
 
+use std::cell::Ref;
+use std::collections::HashSet;
 use std::sync::{ Arc, Mutex };
 
 use composit::{ Leaf, Stick, Scale, StateManager };
@@ -18,8 +20,11 @@ use controller::output::Report;
 use data::XferConsumer;
 use model::driver::PrinterManager;
 use model::item::{ DeliveredItem, ItemUnpacker };
+use model::stage::{ Desired, Intended, Position, Screen };
 use model::supply::Product;
+use model::zmenu::{ ZMenuIntersection, ZMenuRegistry };
 use super::{ Train, TrainId, TrainContext, TravellerCreator };
+use types::{ Dot, DOWN };
 
 const MS_FADE : f64 = 200.;
 
@@ -34,9 +39,7 @@ pub struct TrainManagerImpl {
     transition_start: Option<f64>,
     transition_prop: Option<f64>, 
     /* current position/scale */
-    desired_stick: Option<Stick>,
-    bp_per_screen: Option<f64>,
-    position_bp: Option<f64>,
+    desired: Desired,
     desired_context: TrainContext
 }
 
@@ -49,17 +52,16 @@ impl TrainManagerImpl {
             future_train: None,
             transition_train: None,
             transition_start: None,
-            transition_prop: None, 
-            bp_per_screen: None,
-            position_bp: None,
-            desired_stick: None,
+            transition_prop: None,
+            desired: Desired::new(),
             desired_context: TrainContext::new(&None)
         }
     }
     
     pub fn update_report(&self, report: &Report) {
         // XXX: TOO SOON!
-        if let Some(ref stick) = self.desired_stick {
+        if self.desired.is_ready() {
+            let stick = self.desired.get_stick();
             report.set_status("a-stick",&stick.get_name());
             report.set_status("i-stick",&stick.get_name());
         }
@@ -67,10 +69,9 @@ impl TrainManagerImpl {
         
     /* utility: makes new train at given scale */
     fn make_train(&mut self, scale: &Scale) -> Option<Train> {
-        if let (Some(stick),Some(bp),Some(pos)) = (self.desired_stick.as_ref(),self.bp_per_screen,self.position_bp) {
-            let mut f = Train::new(&self.printer,&stick,scale,&self.desired_context);
-            f.set_bp_per_screen(bp);
-            f.set_position(pos);
+        if self.desired.is_ready() {
+            let train_id = TrainId::new(&self.desired.get_stick(),scale,&self.desired_context);
+            let mut f = Train::new(&self.printer,&train_id,&self.desired.get_position());
             f.manage_carriages(&mut self.traveller_creator);
             Some(f)
         } else {
@@ -80,18 +81,29 @@ impl TrainManagerImpl {
 
     /* COMPOSITOR sets new stick. Existing trains useless */
     pub fn set_desired_stick(&mut self, st: &Stick) -> bool {
-        if let Some(ref old) = self.desired_stick {
-            if st == old { return false; }
+        if self.desired.is_ready() && st == self.desired.get_stick() {
+            return false
         }
-        self.desired_stick = Some(st.clone());
-        self.position_bp = None;
-        self.bp_per_screen = None;
+        self.desired.set_stick(st);
         self.maybe_change_trains();
         true
     }
 
-    pub fn get_desired_stick(&self) -> &Option<Stick> { &self.desired_stick }
+    pub fn get_desired_stick(&self) -> Option<&Stick> { 
+        match self.desired.is_ready() {
+            true => Some(self.desired.get_stick()),
+            false => None
+        }
+    }
     
+    pub fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>) {
+        self.desired.inform_screen_size(screen_size);
+        self.maybe_change_trains();
+        self.each_train(|t|
+            t.get_position_mut().inform_screen_size(screen_size)
+        );
+    }
+
     /* ********************************************************
      * Methods used by COMPOSITOR via ticks to run transitions.
      * ********************************************************
@@ -113,7 +125,7 @@ impl TrainManagerImpl {
         
     /* if there is a future train and it is done, move to transition */
     fn future_ready(&mut self, t: f64) {
-        if self.desired_stick.is_none() || self.bp_per_screen.is_none() || self.position_bp.is_none() { return; }
+        if !self.desired.is_ready() { return; }
         /* is it ready? */
         let mut ready = false;
         if let Some(ref mut future_train) = self.future_train {
@@ -153,8 +165,8 @@ impl TrainManagerImpl {
 
     fn each_relevant_train<F>(&mut self, mut cb: F)
                                   where F: FnMut(&mut Train) {
-        if self.desired_stick.is_none() { return; }
-        let desired_stick = self.desired_stick.as_ref().unwrap();
+        if !self.desired.is_ready() { return; }
+        let desired_stick = self.desired.get_stick();
         if let Some(ref mut current_train) = self.current_train {
             if desired_stick == current_train.get_train_id().get_stick() {
                 cb(current_train);
@@ -200,11 +212,11 @@ impl TrainManagerImpl {
      */
     
     /* current (or soon and inevitable) printing train. */
-    fn printing_train_id(&self) -> Option<&TrainId> {
+    fn printing_train(&self) -> Option<&Train> {
         if let Some(ref transition_train) = self.transition_train {
-            Some(transition_train.get_train_id())
+            Some(transition_train)
         } else if let Some(ref current_train) = self.current_train {
-            Some(current_train.get_train_id())
+            Some(current_train)
         } else {
             None
         }
@@ -240,22 +252,31 @@ impl TrainManagerImpl {
         self.future_train = None;
     }
 
+    fn future_matches_desired(&self) -> bool {
+        let best_scale = Scale::best_for_screen(self.desired.get_position().get_screen_in_bp());
+        if let Some(future_train_id) = self.future_train.as_ref().map(|x| x.get_train_id().clone()) {
+            return best_scale == *future_train_id.get_scale() &&
+                self.desired_context == *future_train_id.get_context() &&
+                self.desired.get_stick() == future_train_id.get_stick()
+        } else {
+            return false;
+        }
+    }
+
     /* scale may have changed significantly to change trains */
     fn maybe_change_trains(&mut self) {
-        if self.desired_stick.is_none() || self.bp_per_screen.is_none() || self.position_bp.is_none() { return; }
+        if !self.desired.is_ready() { return; }
         let mut end_future = false;
         let mut new_future = false;
-        let best_scale = Scale::best_for_screen(unwrap!(self.bp_per_screen));
-        if let Some(printing_train) = self.printing_train_id() {
+        let best_scale = Scale::best_for_screen(self.desired.get_position().get_screen_in_bp());
+        if let Some(printing_train) = self.printing_train().map(|t| t.get_train_id()) {
             if best_scale != *printing_train.get_scale() || 
-               unwrap!(self.desired_stick.as_ref()) != printing_train.get_stick() ||
+               self.desired.get_stick() != printing_train.get_stick() ||
                self.printing_context() != &self.desired_context {
                 /* we're not currently showing the optimal scale */
                 if let Some(ref mut future_train) = self.future_train {
                     /* there's a future train ... */
-                    if best_scale != *future_train.get_train_id().get_scale() ||
-                       self.desired_context != *future_train.get_train_id().get_context() ||
-                       unwrap!(self.desired_stick.as_ref()) != future_train.get_train_id().get_stick() {
+                    if !self.future_matches_desired() {
                         /* ... and that's not optimal either */
                         end_future = true;
                         new_future = true;
@@ -270,9 +291,11 @@ impl TrainManagerImpl {
             }
             /* do anything that needs to be done */
         } else {
-            /* we're not pringint anything yet: let's do it */
-            end_future = true;
-            new_future = true;
+            /* we're not printing anything yet */
+            if !self.future_matches_desired() {
+                end_future = true;
+                new_future = true;
+            }
         }
         if end_future { self.end_future(); }
         if new_future { self.new_future(&best_scale); }
@@ -280,15 +303,16 @@ impl TrainManagerImpl {
 
     /* compositor notifies of bp/screen update (change trains?) */
     pub fn set_bp_per_screen(&mut self, bp_per_screen: f64) {
-        self.bp_per_screen = Some(bp_per_screen);
+        self.desired.set_bp_per_screen(bp_per_screen);
         self.maybe_change_trains();
-        self.each_relevant_train(|t| t.set_bp_per_screen(bp_per_screen));
+        self.each_relevant_train(|t| t.get_position_mut().set_screen_in_bp(bp_per_screen));
     }
             
     /* compositor notifies of position update */
-    pub fn set_position(&mut self, position_bp: f64) {
-        self.position_bp = Some(position_bp);
-        self.each_relevant_train(|t| t.set_position(position_bp));
+    pub fn set_middle(&mut self, middle: Dot<f64,f64>) {
+        self.desired.set_middle(middle);
+        self.maybe_change_trains();
+        self.each_relevant_train(|t| t.get_position_mut().set_middle(&middle));
     }
     
     pub fn update_state(&mut self, oom: &StateManager) {
@@ -297,12 +321,27 @@ impl TrainManagerImpl {
 
     pub fn get_desired_context(&self) -> &TrainContext { &self.desired_context }
 
+    pub fn get_desired_position(&self) -> Option<Position> {
+        match self.desired.is_ready() {
+            true => Some(self.desired.get_position().clone()),
+            false => None
+        }
+    }
+
     pub fn set_desired_context(&mut self, context: &TrainContext) {
         console!("focus change to {:?}",context);
         self.desired_context = context.clone();
         self.maybe_change_trains();
     }
     
+    pub fn intersects(&self, screen: &Screen, pos: Dot<i32,i32>, zmr: &ZMenuRegistry) -> HashSet<ZMenuIntersection> {
+        if let Some(train) = self.printing_train() {
+            zmr.intersects(screen,train.get_position(),pos)
+        } else {
+            HashSet::new()
+        }
+    }
+
     /* ***************************************************************
      * Methods used by PRINTER to actually retrieve data for printing.
      * ***************************************************************
@@ -325,6 +364,16 @@ impl TrainManagerImpl {
         if let Some(ref mut train) = self.transition_train {
             cb(train)
         }
+    }
+
+    pub fn settle(&mut self) {
+        self.each_train(|t| t.get_position_mut().settle());
+    }
+
+    pub fn set_bottom(&mut self, max_y: f64) {
+        self.desired.set_bottom(max_y);
+        self.maybe_change_trains();
+        self.each_train(|t| t.get_position_mut().set_limit(&DOWN,max_y));
     }
 }
 
@@ -351,7 +400,7 @@ impl TrainManager {
     }
 
     pub fn get_desired_stick(&mut self) -> Option<Stick> {
-        self.0.lock().unwrap().get_desired_stick().clone()
+        self.0.lock().unwrap().get_desired_stick().cloned()
     }
 
     pub fn tick(&mut self, t: f64,) {
@@ -370,8 +419,8 @@ impl TrainManager {
         self.0.lock().unwrap().set_bp_per_screen(bp_per_screen);
     }
             
-    pub fn set_position(&mut self, position_bp: f64) {
-        self.0.lock().unwrap().set_position(position_bp);
+    pub fn set_middle(&mut self, middle: Dot<f64,f64>) {
+        self.0.lock().unwrap().set_middle(middle);
     }
     
     pub fn update_state(&mut self, oom: &StateManager) {
@@ -396,6 +445,26 @@ impl TrainManager {
 
     pub fn with_transition_train<F>(&mut self, mut cb: F) where F: FnMut(&mut Train) {
         self.0.lock().unwrap().with_transition_train(cb)
+    }
+
+    pub fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>) {
+        ok!(self.0.lock()).inform_screen_size(screen_size)
+    }
+
+    pub fn settle(&mut self) {
+        ok!(self.0.lock()).settle();
+    }
+
+    pub fn set_bottom(&mut self, max_y: f64) {
+        ok!(self.0.lock()).set_bottom(max_y);
+    }
+
+    pub fn get_desired_position(&self) -> Option<Position> {
+        ok!(self.0.lock()).get_desired_position()
+    }
+
+    pub fn intersects(&self, screen: &Screen, pos: Dot<i32,i32>, zmr: &ZMenuRegistry) -> HashSet<ZMenuIntersection> {
+        ok!(self.0.lock()).intersects(screen,pos,zmr)
     }
 }
 

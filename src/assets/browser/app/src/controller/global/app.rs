@@ -159,8 +159,7 @@ impl App {
         let oom = ok!(self.state.lock());
         let mut compo = ok!(self.compo.lock());
         compo.update_state(&oom);
-        let pos = self.get_position().clone();
-        ok!(self.printer.lock()).print(&self.screen,&pos,&mut compo);
+        ok!(self.printer.lock()).print(&self.screen,&mut compo);
     }
     
     pub fn update_position(&mut self) {
@@ -173,10 +172,12 @@ impl App {
         }
     }
 
-    pub fn intend_here(&mut self, pos: &Position) {
-        self.intended.intend_here(pos);
-        if let Some(ref report) = self.report {
-            self.intended.update_intent_report(report);
+    pub fn intend_here(&mut self) {
+        if let Some(desired) = self.window.get_train_manager().get_desired_position() {
+            self.intended.intend_here(&desired);
+            if let Some(ref report) = self.report {
+                self.intended.update_intent_report(report);
+            }
         }
     }
 
@@ -235,9 +236,9 @@ impl App {
         self.get_screen_mut().set_size(&sz);
         let size = self.get_screen().get_size();
         self.get_position_mut().inform_screen_size(&sz);
+        self.window.get_train_manager().inform_screen_size(&sz);
         self.update_position();
-        let pos = self.get_position().clone();
-        self.intend_here(&pos);
+        self.intend_here();
         self.printer.lock().unwrap().set_size(size);
     }
     
@@ -246,14 +247,16 @@ impl App {
     }
 
     pub fn settle(&mut self) {
+        console!("settle");
         if let Some(size) = self.stage_resize.take() {
             self.get_screen_mut().set_size(&size);
             self.get_position_mut().inform_screen_size(&size);
+            self.window.get_train_manager().inform_screen_size(&size);
         }
         self.get_position_mut().settle();
+        self.window.get_train_manager().settle();
         self.update_position();
-        let pos = self.get_position().clone();
-        self.intend_here(&pos);
+        self.intend_here();
         self.printer.lock().unwrap().settle();
     }
 }

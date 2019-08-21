@@ -10,7 +10,7 @@ pub trait Printer {
     /* Print one run of objects from compositor with given stage and
      * state.
      */
-    fn print(&mut self, screen: &Screen, position: &Position, compo: &mut Compositor);
+    fn print(&mut self, screen: &Screen, compo: &mut Compositor);
     
     /* Redraw one carriage */
     fn redraw_carriage(&mut self, leaf: &CarriageId);

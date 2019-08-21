@@ -133,7 +133,7 @@ impl Position {
         self.check_own_limits();
     }
     
-    pub fn set_bumper(&mut self, which: &Direction, val: f64) {
+    fn set_bumper(&mut self, which: &Direction, val: f64) {
         match *which {
             LEFT => self.min_x_bumper = val,
             RIGHT => self.max_x_bumper = val,
@@ -167,7 +167,7 @@ impl Position {
         start + self.get_screen_in_bp()/2.
     }
 
-    pub fn bumped(&self, direction: &Direction) -> bool {
+    fn bumped(&self, direction: &Direction) -> bool {
         let mul : f64 = direction.1.into();
         self.get_edge(direction,true).floor() * mul >= self.get_limit_of_edge(direction).floor() * mul
     }

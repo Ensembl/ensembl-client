@@ -108,9 +108,9 @@ impl Compositor {
         }
     }
 
-    pub fn set_position(&mut self, position_bp: f64) {
-        self.window.get_train_manager().set_position(position_bp);
-        self.psychic.set_middle(position_bp as i64);
+    pub fn set_position(&mut self, middle: Dot<f64,f64>) {
+        self.window.get_train_manager().set_middle(middle);
+        self.psychic.set_middle(middle.0 as i64);
         self.updated = true;
     }
     
@@ -150,8 +150,10 @@ impl Compositor {
         self.window.get_train_manager().update_state(oom);
     }
     
-    pub fn intersects(&self, screen: &Screen, position: &Position, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
-        self.zmr.intersects(screen,position,pos)
+    pub fn intersects(&mut self, screen: &Screen, position: &Position, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
+        //self.zmr.intersects(screen,position,pos)
+        let mut zmr = self.zmr.clone();
+        self.window.get_train_manager().intersects(screen,pos,&mut zmr)
     }
 }
 
@@ -160,9 +162,9 @@ pub fn register_compositor_ticks(ar: &mut AppRunner) {
         app.with_compo(|co| co.tick(t) );
         let max_y = app.get_window().get_all_landscapes().get_low_watermark();
         app.get_position_mut().set_limit(&DOWN,max_y as f64);
-        let pos = app.get_position().clone();
+        app.get_window().get_train_manager().set_bottom(max_y as f64);
         app.update_position();
-        app.intend_here(&pos);
+        app.intend_here();
         vec!{}
     },2);
 }

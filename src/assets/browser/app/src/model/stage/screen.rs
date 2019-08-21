@@ -4,7 +4,7 @@ use types::{
 };
 use super::Position;
 
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct Screen {
     dims: Dot<f64,f64>,
     mouse_pos: CPixel,

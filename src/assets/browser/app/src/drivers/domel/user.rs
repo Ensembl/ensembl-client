@@ -41,10 +41,12 @@ impl UserEventListener {
     fn wheel(&mut self, amt: f64) {
         let app = &mut self.app.lock().unwrap();
         let mouse_prop = app.get_screen().get_mouse_pos_prop();
-        let y = app.get_position().get_middle().1;
-        let pos_bp = app.get_position().get_pos_prop_bp(mouse_prop);
-        let pos = Dot(pos_bp,y);
-        self.zoom.lock().unwrap().move_by(amt,pos,mouse_prop);
+        if let Some(desired) = app.get_window().get_train_manager().get_desired_position() {
+            let y = desired.get_middle().1;
+            let pos_bp = desired.get_pos_prop_bp(mouse_prop);
+            let pos = Dot(pos_bp,y);
+            self.zoom.lock().unwrap().move_by(amt,pos,mouse_prop);
+        }
     }
     
     fn zmenu_click_check(&mut self, pos: &CPixel) {
@@ -59,7 +61,7 @@ impl UserEventListener {
         let screen = app.get_screen().clone();
         let position = app.get_position().clone();
         let zmenus = app.with_compo(|co|
-            co.intersects(screen,&position,*pos)
+            co.intersects(&screen,&position,*pos)
         );
         let pointer = zmenus.len() > 0;
         if pointer != self.showing_pointer {

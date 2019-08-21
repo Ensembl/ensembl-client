@@ -36,8 +36,8 @@ impl Printer for PrinterManager {
     /* Print one run of objects from compositor with given stage and
      * state.
      */
-    fn print(&mut self, screen: &Screen, position: &Position, compo: &mut Compositor) {
-        self.0.borrow_mut().printer.print(screen,position,compo);
+    fn print(&mut self, screen: &Screen, compo: &mut Compositor) {
+        self.0.borrow_mut().printer.print(screen,compo);
     }
     
     /* Finished with printer */
