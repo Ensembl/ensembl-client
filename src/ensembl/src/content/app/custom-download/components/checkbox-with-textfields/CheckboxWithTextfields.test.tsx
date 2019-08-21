@@ -5,7 +5,7 @@ import { act } from 'react-dom/test-utils';
 
 import CheckboxWithTextfields from './CheckboxWithTextfields';
 import PasteOrUpload from '../paste-or-upload/PasteOrUpload';
-import Checkbox from 'src/shared/checkbox/Checkbox';
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
 const onChange = jest.fn();
 let wrapper: any;

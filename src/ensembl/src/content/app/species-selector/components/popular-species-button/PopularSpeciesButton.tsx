@@ -15,8 +15,8 @@ import {
   getCommittedSpecies
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import Tooltip from 'src/shared/tooltip/Tooltip';
-import InlineSVG from 'src/shared/inline-svg/InlineSvg';
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
+import InlineSVG from 'src/shared/components/inline-svg/InlineSvg';
 
 import {
   CommittedItem,

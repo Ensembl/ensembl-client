@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 
-import { CircleLoader } from 'src/shared/loader/Loader';
+import { CircleLoader } from 'src/shared/components/loader/Loader';
 
 import styles from './Loader.stories.scss';
 

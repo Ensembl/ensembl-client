@@ -8,7 +8,7 @@ import {
   AccordionItemPanel,
   AccordionItemButton,
   AccordionItemPermanentBlock
-} from 'src/shared/accordion/';
+} from 'src/shared/components/accordion';
 import styles from './Accordion.stories.scss';
 
 storiesOf('Components|Shared Components/Accordion', module)

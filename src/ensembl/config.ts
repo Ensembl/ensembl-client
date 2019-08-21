@@ -1,6 +1,6 @@
 export default {
-  // version number
-  version: '0.2.0',
+  // Version numbers
+  app_version: '0.2.0',
 
   // Node environment
   isDevelopment: process.env.NODE_ENV === 'development',
@@ -12,7 +12,7 @@ export default {
 
   apiHost: process.env.API_HOST,
 
-  // keys for services
+  // Keys for services
   googleAnalyticsKey: process.env.GOOGLE_ANALYTICS_KEY,
 
   // Genesearch endpoint

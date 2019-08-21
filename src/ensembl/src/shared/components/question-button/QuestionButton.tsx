@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import Tooltip from 'src/shared/tooltip/Tooltip';
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import { ReactComponent as QuestionIcon } from './icon_question.svg';
 
 import styles from './QuestionButton.scss';

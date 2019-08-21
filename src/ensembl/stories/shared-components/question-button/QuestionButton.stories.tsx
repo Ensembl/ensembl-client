@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 
-import QuestionButton from 'src/shared/question-button/QuestionButton';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 storiesOf('Components|Shared Components/Question button', module).add(
   'default',

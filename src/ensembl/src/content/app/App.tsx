@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 import { changeCurrentApp } from 'src/header/headerActions';
 import { getCurrentApp } from 'src/header/headerSelectors';
 
-import ErrorBoundary from 'src/shared/error-boundary/ErrorBoundary';
-import { NewTechError } from 'src/shared/error-screen';
+import ErrorBoundary from 'src/shared/components/error-boundary/ErrorBoundary';
+import { NewTechError } from 'src/shared/components/error-screen';
 
 import { RootState } from 'src/store';
 

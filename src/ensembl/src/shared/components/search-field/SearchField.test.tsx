@@ -2,7 +2,7 @@ import React from 'react';
 import { mount } from 'enzyme';
 
 import SearchField from './SearchField';
-import Input from 'src/shared/input/Input';
+import Input from 'src/shared/components/input/Input';
 
 describe('<SearchField />', () => {
   const commonProps = {

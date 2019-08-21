@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import get from 'lodash/get';
 
 import TrackPanelListItem from './TrackPanelListItem';
-import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
+import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
 
 import {
   UpdateTrackStatesPayload,

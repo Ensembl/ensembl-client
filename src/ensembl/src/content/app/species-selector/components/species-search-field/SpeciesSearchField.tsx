@@ -16,9 +16,9 @@ import {
 
 import SpeciesSearchMatch from '../species-search-match/SpeciesSearchMatch';
 
-import AutosuggestSearchField from 'src/shared/autosuggest-search-field/AutosuggestSearchField';
-import ClearButton from 'src/shared/clear-button/ClearButton';
-import QuestionButton from 'src/shared/question-button/QuestionButton';
+import AutosuggestSearchField from 'src/shared/components/autosuggest-search-field/AutosuggestSearchField';
+import ClearButton from 'src/shared/components/clear-button/ClearButton';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import {
   SearchMatch,
