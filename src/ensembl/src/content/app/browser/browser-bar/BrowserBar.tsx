@@ -66,12 +66,6 @@ type BrowserInfoProps = {
   ensObject: EnsObject;
 };
 
-type BrowserNavigatorButtonProps = {
-  toggleNavigator: () => void;
-  navigator: BrowserInfoItem;
-  icon: string; // TODO: use inline SVG
-};
-
 export const BrowserBar = (props: BrowserBarProps) => {
   const { isDrawerOpened } = props;
 
@@ -211,14 +205,6 @@ export const BrowserInfo = ({ ensObject }: BrowserInfoProps) => {
     </>
   );
 };
-
-export const BrowserNavigatorButton = (props: BrowserNavigatorButtonProps) => (
-  <dd className={styles.navigator}>
-    <button title={props.navigator.description} onClick={props.toggleNavigator}>
-      <img src={props.icon} alt={props.navigator.description} />
-    </button>
-  </dd>
-);
 
 const mapStateToProps = (state: RootState) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),

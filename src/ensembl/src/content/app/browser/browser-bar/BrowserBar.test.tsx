@@ -1,12 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import faker from 'faker';
-import {
-  BrowserBar,
-  BrowserInfo,
-  BrowserNavigatorButton,
-  BrowserBarProps
-} from './BrowserBar';
+import { BrowserBar, BrowserInfo, BrowserBarProps } from './BrowserBar';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 
@@ -93,11 +88,6 @@ describe('<BrowserBar />', () => {
       expect(renderedBrowserBar.find(BrowserInfo).length).toBe(0);
     });
 
-    test('hides BrowserNavigatorButton if there is no focus object', () => {
-      const renderedBrowserBar = mount(renderBrowserBar({ ensObject: null }));
-      expect(renderedBrowserBar.find(BrowserNavigatorButton).length).toBe(0);
-    });
-
     test('shows TrackPanelTabs if TrackPanel is open', () => {
       const renderedBrowserBar = mount(
         renderBrowserBar({ isTrackPanelOpened: true })
@@ -110,7 +100,7 @@ describe('<BrowserBar />', () => {
       expect(renderedBrowserBar.find(TrackPanelTabs).length).toBe(1);
     });
 
-    test('hides TrackPanelTabs on small if TrackPanel is closed', () => {
+    test('hides TrackPanelTabs on a small display if TrackPanel is closed', () => {
       const renderedBrowserBar = mount(
         renderBrowserBar({ breakpointWidth: BreakpointWidth.MEDIUM })
       );
