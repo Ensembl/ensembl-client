@@ -2,8 +2,8 @@ import React, { useState, FormEvent, useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
-import Input from 'src/shared/input/Input';
-import Tooltip from 'src/shared/tooltip/Tooltip';
+import Input from 'src/shared/components/input/Input';
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import { ChrLocation, BrowserRegionValidationResponse } from '../browserState';
 import { RootState } from 'src/store';

@@ -2,9 +2,9 @@ import React, { useState, FormEvent, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
-import Select from 'src/shared/select/Select';
-import Input from 'src/shared/input/Input';
-import Tooltip, { Position } from 'src/shared/tooltip/Tooltip';
+import Select from 'src/shared/components/select/Select';
+import Input from 'src/shared/components/input/Input';
+import Tooltip, { Position } from 'src/shared/components/tooltip/Tooltip';
 
 import { ChrLocation } from '../browserState';
 import { RootState } from 'src/store';
