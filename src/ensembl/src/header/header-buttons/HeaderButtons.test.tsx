@@ -4,7 +4,7 @@ import { shallow, ShallowWrapper } from 'enzyme';
 import { HeaderButtons } from './HeaderButtons';
 import ImageButton, {
   ImageButtonStatus
-} from 'src/shared/image-button/ImageButton';
+} from 'src/shared/components/image-button/ImageButton';
 
 describe('<HeaderButtons />', () => {
   let toggleLaunchbarFn: () => void;

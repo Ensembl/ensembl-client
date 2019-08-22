@@ -7,7 +7,7 @@ import {
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { commitSelectedSpeciesAndSave } from 'src/content/app/species-selector/state/speciesSelectorActions';
 
-import { PrimaryButton } from 'src/shared/button/Button';
+import { PrimaryButton } from 'src/shared/components/button/Button';
 
 import styles from './SpeciesCommitButton.scss';
 

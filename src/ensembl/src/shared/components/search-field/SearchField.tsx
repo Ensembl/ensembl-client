@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import styles from './SearchField.scss';
 
-import Input from 'src/shared/input/Input';
+import Input from 'src/shared/components/input/Input';
 
 type Props = {
   search: string;

@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect } from 'react';
 import { connect } from 'react-redux';
 import RoundButton, {
   RoundButtonStatus
-} from 'src/shared/round-button/RoundButton';
+} from 'src/shared/components/round-button/RoundButton';
 
 import { getSelectedPreFilter } from '../../state/customDownloadSelectors';
 import customDownloadStorageService from '../../services/custom-download-storage-service';

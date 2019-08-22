@@ -27,7 +27,7 @@ import {
 
 import { ChrLocation } from '../browserState';
 
-import { CircleLoader } from 'src/shared/loader/Loader';
+import { CircleLoader } from 'src/shared/components/loader/Loader';
 
 import { RootState } from 'src/store';
 import { TrackStates } from '../track-panel/trackPanelConfig';

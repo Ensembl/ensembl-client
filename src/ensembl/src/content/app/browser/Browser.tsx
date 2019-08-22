@@ -12,7 +12,7 @@ import BrowserBar from './browser-bar/BrowserBar';
 import BrowserImage from './browser-image/BrowserImage';
 import BrowserNavBar from './browser-nav/BrowserNavBar';
 import TrackPanel from './track-panel/TrackPanel';
-import AppBar from 'src/shared/app-bar/AppBar';
+import AppBar from 'src/shared/components/app-bar/AppBar';
 
 import { RootState } from 'src/store';
 import { ChrLocation, ChrLocations } from './browserState';

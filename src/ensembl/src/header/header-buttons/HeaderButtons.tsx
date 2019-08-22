@@ -5,7 +5,7 @@ import { toggleAccount, toggleLaunchbar } from '../headerActions';
 
 import ImageButton, {
   ImageButtonStatus
-} from 'src/shared/image-button/ImageButton';
+} from 'src/shared/components/image-button/ImageButton';
 
 import { ReactComponent as LaunchbarIcon } from 'static/img/header/launchbar.svg';
 import { ReactComponent as UserIcon } from 'static/img/header/user-grey.svg';
