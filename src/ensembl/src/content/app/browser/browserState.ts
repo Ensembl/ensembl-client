@@ -41,21 +41,21 @@ export type BrowserRegionValidationRegionError = BrowserRegionValidationError & 
   region_id: string;
 };
 
-export type BrowserRegionValidationMessage = {
-  error?: string;
-  genome_id?: string;
-  region?: string;
-  region_code?: string;
-};
+export type BrowserRegionValidationMessage = Partial<{
+  error: string;
+  genome_id: string;
+  region: string;
+  region_code: string;
+}>;
 
-export type BrowserRegionValidationResponse = {
-  end?: BrowserRegionValidationValueError;
-  genome_id?: BrowserRegionValidationValueError;
-  is_parseable?: boolean;
-  region?: BrowserRegionValidationRegionError;
-  start?: BrowserRegionValidationValueError;
-  message?: BrowserRegionValidationMessage;
-};
+export type BrowserRegionValidationResponse = Partial<{
+  end: BrowserRegionValidationValueError;
+  genome_id: BrowserRegionValidationValueError;
+  is_parseable: boolean;
+  region: BrowserRegionValidationRegionError;
+  start: BrowserRegionValidationValueError;
+  message: BrowserRegionValidationMessage;
+}>;
 
 export type BrowserState = Readonly<{
   browserActivated: boolean;
