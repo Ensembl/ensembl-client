@@ -104,12 +104,12 @@ export const defaultBrowserLocationState: BrowserLocationState = {
 };
 
 export type BrowserRegionValidationState = Readonly<{
-  browserRegionValidationErrors: BrowserRegionValidationResponse | null;
+  browserRegionFieldErrors: BrowserRegionValidationResponse | null;
   loadingStatus: LoadingState;
 }>;
 
 export const defaultBrowserRegionValidationState: BrowserRegionValidationState = {
-  browserRegionValidationErrors: null,
+  browserRegionFieldErrors: null,
   loadingStatus: LoadingState.NOT_REQUESTED
 };
 

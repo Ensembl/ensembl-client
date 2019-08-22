@@ -4,6 +4,7 @@ import {
   BrowserRegionValidationRegionError
 } from './browserState';
 import { GenomeKaryotype } from 'src/genome/genomeTypes';
+import { getNumberWithoutCommas } from 'src/shared/helpers/numberFormatter';
 
 export function getChrLocationFromStr(chrLocationStr: string): ChrLocation {
   const [chrCode, chrRegion] = chrLocationStr.split(':');
@@ -20,7 +21,7 @@ export function getChrLocationStr(
   return `${chrCode}:${startBp}-${endBp}`;
 }
 
-export const getBrowserRegionValidationErrorMessages = (
+export const getBrowserRegionFieldErrorMessages = (
   validationErrors: BrowserRegionValidationResponse | null,
   genomeKaryotypes: GenomeKaryotype[] | null
 ) => {
@@ -33,7 +34,7 @@ export const getBrowserRegionValidationErrorMessages = (
     if (validationErrors) {
       // need to explicitly check for false as don't want this to pass on undefined
       if (validationErrors.is_parseable === false) {
-        return 'Region or location no recognised. Please use this format 00:1-10,000';
+        return 'Region or location not recognised. Please use this format 00:1-10,000';
       } else if (validationErrors.region && !validationErrors.region.is_valid) {
         return 'Please use a valid region';
       } else if (
@@ -55,4 +56,40 @@ export const getBrowserRegionValidationErrorMessages = (
   } catch {
     return 'A problem was encountered. Please try clicking on the green button again.';
   }
+};
+
+export const getBrowserRegionEditorErrorMessages = (
+  locationStart: string,
+  locationEnd: string,
+  karyotype: GenomeKaryotype
+) => {
+  const locationStartNum = locationStart
+    ? getNumberWithoutCommas(locationStart)
+    : 0;
+  const locationEndNum = locationEnd ? getNumberWithoutCommas(locationEnd) : 0;
+
+  let locationStartError: string | null = null;
+  let locationEndError: string | null = null;
+
+  if (
+    !locationStartNum ||
+    locationStartNum < 1 ||
+    locationStartNum > karyotype.length
+  ) {
+    locationStartError = 'The region start value should be 1 or higher';
+  } else if (!karyotype.is_circular && locationStartNum > locationEndNum) {
+    locationStartError =
+      'The region start value should be smaller than the region end value';
+  } else if (
+    !locationEndNum ||
+    locationEndNum < 1 ||
+    locationEndNum > karyotype.length
+  ) {
+    locationEndError = `The region end value should be between 1 and ${karyotype.length}`;
+  }
+
+  return {
+    locationStartError,
+    locationEndError
+  };
 };

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, FormEvent, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
 import Select from 'src/shared/select/Select';
 import Input from 'src/shared/input/Input';
+import Tooltip, { Position } from 'src/shared/tooltip/Tooltip';
 
 import { ChrLocation } from '../browserState';
 import { RootState } from 'src/store';
@@ -31,6 +32,7 @@ import clearIcon from 'static/img/shared/clear.svg';
 import styles from './BrowserRegionEditor.scss';
 import browserStyles from '../Browser.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
+import { getBrowserRegionEditorErrorMessages } from '../browserHelper';
 
 type BrowserRegionEditorProps = {
   activeGenomeId: string | null;
@@ -52,6 +54,12 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   const [locationEndInput, setLocationEndInput] = useState(
     getCommaSeparatedNumber(locationEnd)
   );
+  const [locationStartErrorMessage, setLocationStartErrorMessage] = useState<
+    string | null
+  >(null);
+  const [locationEndErrorMessage, setLocationEndErrorMessage] = useState<
+    string | null
+  >(null);
 
   const getKaryotypeOptions = () =>
     props.genomeKaryotypes.map(({ name }) => ({
@@ -93,35 +101,72 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     props.toggleBrowserRegionEditorActive(true);
 
   const closeForm = () => {
-    // reset all inputs
     updateRegionInput(region);
     updateLocationStartInput('');
     updateLocationEndInput('');
+    updateErrorMessages(null, null);
 
     props.toggleBrowserRegionEditorActive(false);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const updateErrorMessages = (
+    locationStartError: string | null,
+    locationEndError: string | null
+  ) => {
+    setLocationStartErrorMessage(locationStartError);
+    setLocationEndErrorMessage(locationEndError);
+  };
+
+  const validateRegionEditor = () => {
+    const karyotypeOfSelectedRegion = props.genomeKaryotypes.filter(
+      (karyotype) => regionInput === karyotype.name
+    )[0];
+
+    const {
+      locationStartError,
+      locationEndError
+    } = getBrowserRegionEditorErrorMessages(
+      locationStartInput,
+      locationEndInput,
+      karyotypeOfSelectedRegion
+    );
+
+    if (locationStartError || locationEndError) {
+      updateErrorMessages(locationStartError, locationEndError);
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (
-      props.activeGenomeId &&
-      regionInput &&
-      locationStartInput &&
-      locationEndInput
-    ) {
+    const isFormValid = validateRegionEditor();
+
+    if (isFormValid) {
       closeForm();
 
       const locationStartNum = getNumberWithoutCommas(locationStartInput);
       const locationEndNum = getNumberWithoutCommas(locationEndInput);
 
-      props.changeBrowserLocation(props.activeGenomeId, [
+      props.changeBrowserLocation(props.activeGenomeId as string, [
         regionInput,
         locationStartNum,
         locationEndNum
       ]);
     }
   };
+
+  useEffect(
+    () => () => {
+      closeForm();
+    },
+    []
+  );
+
+  const locationStartRef = useRef<HTMLDivElement>(null);
+  const locationEndRef = useRef<HTMLDivElement>(null);
 
   const regionEditorClassNames = classNames(styles.browserRegionEditor, {
     [browserStyles.semiOpaque]: props.browserRegionFieldActive
@@ -141,23 +186,47 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
         <div className={browserStyles.browserOverlay}></div>
       ) : null}
       <form onSubmit={handleSubmit} onFocus={handleRegionEditorFocus}>
-        <label className="show-for-large">Chr</label>
-        <Select
-          onSelect={updateRegionInput}
-          options={getKaryotypeOptions()}
-        ></Select>
-        <label className="show-for-large">Start</label>
-        <Input
-          type="text"
-          onChange={updateLocationStartInput}
-          value={locationStartInput}
-        ></Input>
-        <label className="show-for-large">End</label>
-        <Input
-          type="text"
-          onChange={updateLocationEndInput}
-          value={locationEndInput}
-        ></Input>
+        <div className={styles.inputGroup}>
+          <label className="show-for-large">Chr</label>
+          <Select
+            onSelect={updateRegionInput}
+            options={getKaryotypeOptions()}
+          ></Select>
+        </div>
+        <div className={styles.inputGroup} ref={locationStartRef}>
+          <label className="show-for-large">Start</label>
+          <Input
+            type="text"
+            onChange={updateLocationStartInput}
+            value={locationStartInput}
+          ></Input>
+          {locationStartErrorMessage ? (
+            <Tooltip
+              autoAdjust={true}
+              container={locationStartRef.current}
+              position={Position.BOTTOM_RIGHT}
+            >
+              {locationStartErrorMessage}
+            </Tooltip>
+          ) : null}
+        </div>
+        <div className={styles.inputGroup} ref={locationEndRef}>
+          <label className="show-for-large">End</label>
+          <Input
+            type="text"
+            onChange={updateLocationEndInput}
+            value={locationEndInput}
+          ></Input>
+          {locationEndErrorMessage ? (
+            <Tooltip
+              autoAdjust={true}
+              container={locationEndRef.current}
+              position={Position.BOTTOM_LEFT}
+            >
+              {locationEndErrorMessage}
+            </Tooltip>
+          ) : null}
+        </div>
         <span className={buttonsClassNames}>
           <button type="submit">
             <img src={applyIcon} alt="Apply changes" />

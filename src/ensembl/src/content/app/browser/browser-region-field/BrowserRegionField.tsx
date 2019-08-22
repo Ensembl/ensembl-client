@@ -17,7 +17,7 @@ import {
   getChrLocation,
   getBrowserRegionEditorActive,
   getBrowserRegionFieldActive,
-  getBrowserRegionValidationErrors
+  getBrowserRegionFieldErrors
 } from '../browserSelectors';
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 
@@ -28,14 +28,14 @@ import styles from './BrowserRegionField.scss';
 import browserStyles from '../Browser.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
 import { GenomeKaryotype } from 'src/genome/genomeTypes';
-import { getBrowserRegionValidationErrorMessages } from '../browserHelper';
+import { getBrowserRegionFieldErrorMessages } from '../browserHelper';
 import { getGenomeKaryotypes } from 'src/genome/genomeSelectors';
 
 type BrowserRegionFieldProps = {
   activeGenomeId: string | null;
   browserRegionEditorActive: boolean;
   browserRegionFieldActive: boolean;
-  browserRegionValidationErrors: BrowserRegionValidationResponse | null;
+  browserRegionFieldErrors: BrowserRegionValidationResponse | null;
   chrLocation: ChrLocation;
   genomeKaryotypes: GenomeKaryotype[] | null;
   isDrawerOpened: boolean;
@@ -81,13 +81,13 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   useEffect(() => () => props.resetBrowserRegionValidaion(), []);
 
   useEffect(() => {
-    const errorMessages = getBrowserRegionValidationErrorMessages(
-      props.browserRegionValidationErrors,
+    const errorMessages = getBrowserRegionFieldErrorMessages(
+      props.browserRegionFieldErrors,
       props.genomeKaryotypes
     );
 
     setRegionFieldErrorMessages(errorMessages);
-  }, [props.browserRegionValidationErrors]);
+  }, [props.browserRegionFieldErrors]);
 
   const regionFieldClassNames = classNames(styles.browserRegionField, {
     [browserStyles.semiOpaque]: props.browserRegionEditorActive
@@ -135,7 +135,7 @@ const mapStateToProps = (state: RootState) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
   browserRegionEditorActive: getBrowserRegionEditorActive(state),
   browserRegionFieldActive: getBrowserRegionFieldActive(state),
-  browserRegionValidationErrors: getBrowserRegionValidationErrors(state),
+  browserRegionFieldErrors: getBrowserRegionFieldErrors(state),
   chrLocation: getChrLocation(state) as ChrLocation,
   genomeKaryotypes: getGenomeKaryotypes(state),
   isDrawerOpened: getIsDrawerOpened(state)

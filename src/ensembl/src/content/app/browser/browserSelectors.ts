@@ -103,5 +103,5 @@ export const getTrackConfigLabel = (state: RootState): any =>
 export const getApplyToAll = (state: RootState): boolean =>
   state.browser.trackConfig.applyToAll;
 
-export const getBrowserRegionValidationErrors = (state: RootState) =>
-  state.browser.browserRegionValidation.browserRegionValidationErrors;
+export const getBrowserRegionFieldErrors = (state: RootState) =>
+  state.browser.browserRegionValidation.browserRegionFieldErrors;

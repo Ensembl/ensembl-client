@@ -138,25 +138,25 @@ export function browserRegionValidation(
       return {
         ...state,
         loadingStatus: LoadingState.LOADING,
-        browserRegionValidationErrors: null
+        browserRegionFieldErrors: null
       };
     case getType(browserActions.fetchBrowserRegionValidation.failure):
       return {
         ...state,
         loadingStatus: LoadingState.ERROR,
-        browserRegionValidationErrors: null
+        browserRegionFieldErrors: null
       };
     case getType(browserActions.fetchBrowserRegionValidation.success):
       return {
         ...state,
         loadingStatus: LoadingState.SUCCESS,
-        browserRegionValidationErrors: { ...action.payload }
+        browserRegionFieldErrors: { ...action.payload }
       };
     case getType(browserActions.resetBrowserRegionValidaion):
       return {
         ...state,
         loadingStatus: LoadingState.NOT_REQUESTED,
-        browserRegionValidationErrors: null
+        browserRegionFieldErrors: null
       };
     default:
       return state;
