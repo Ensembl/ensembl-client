@@ -154,3 +154,13 @@ export const chrOptions: string[] = [
   'Y',
   'MT'
 ];
+
+export enum BrowserRegionErrors {
+  PARSE_ERROR = 'Region or location not recognised. Please use this format 00:1-10,000',
+  INVALID_REGION = 'Please use a valid region',
+  INVALID_LOCATION = 'The location should be between 1 and',
+  REQUEST_ERROR = 'A problem was encountered. Please try clicking on the green button again.',
+  INVALID_LOCATION_START = 'The location start value should be 1 or higher',
+  LOCATION_START_IS_BIGGER = 'The region start value should be smaller than the region end value',
+  INVALID_LOCATION_END = 'The location end value should be between 1 and'
+}

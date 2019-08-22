@@ -4,6 +4,7 @@ import {
   BrowserRegionValidationRegionError
 } from './browserState';
 import { GenomeKaryotype } from 'src/genome/genomeTypes';
+import { BrowserRegionErrors } from './browserConfig';
 import { getNumberWithoutCommas } from 'src/shared/helpers/numberFormatter';
 
 export function getChrLocationFromStr(chrLocationStr: string): ChrLocation {
@@ -34,9 +35,9 @@ export const getBrowserRegionFieldErrorMessages = (
     if (validationErrors) {
       // need to explicitly check for false as don't want this to pass on undefined
       if (validationErrors.is_parseable === false) {
-        return 'Region or location not recognised. Please use this format 00:1-10,000';
+        return BrowserRegionErrors.PARSE_ERROR;
       } else if (validationErrors.region && !validationErrors.region.is_valid) {
-        return 'Please use a valid region';
+        return BrowserRegionErrors.INVALID_REGION;
       } else if (
         genomeKaryotypes &&
         ((validationErrors.start && !validationErrors.start.is_valid) ||
@@ -48,13 +49,13 @@ export const getBrowserRegionFieldErrorMessages = (
             karyotype.name
         )[0];
 
-        return `The region location should be between 1 and ${karyotypeInRegionField.length}`;
+        return `${BrowserRegionErrors.INVALID_LOCATION} ${karyotypeInRegionField.length}`;
       }
     }
 
     return null;
   } catch {
-    return 'A problem was encountered. Please try clicking on the green button again.';
+    return BrowserRegionErrors.REQUEST_ERROR;
   }
 };
 
@@ -76,16 +77,15 @@ export const getBrowserRegionEditorErrorMessages = (
     locationStartNum < 1 ||
     locationStartNum > karyotype.length
   ) {
-    locationStartError = 'The region start value should be 1 or higher';
+    locationStartError = BrowserRegionErrors.INVALID_LOCATION_START;
   } else if (!karyotype.is_circular && locationStartNum > locationEndNum) {
-    locationStartError =
-      'The region start value should be smaller than the region end value';
+    locationStartError = BrowserRegionErrors.LOCATION_START_IS_BIGGER;
   } else if (
     !locationEndNum ||
     locationEndNum < 1 ||
     locationEndNum > karyotype.length
   ) {
-    locationEndError = `The region end value should be between 1 and ${karyotype.length}`;
+    locationEndError = `${BrowserRegionErrors.INVALID_LOCATION_END} ${karyotype.length}`;
   }
 
   return {
