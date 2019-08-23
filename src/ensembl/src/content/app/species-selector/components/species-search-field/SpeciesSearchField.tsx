@@ -64,6 +64,8 @@ export const SpeciesSearchField = (props: Props) => {
 
     const speciesName = getSpeciesAnalyticsName(match);
 
+    analyticsTracking.setSpeciesDimension(match.genome_id);
+
     analyticsTracking.trackEvent({
       category: 'species_search',
       action: 'preselect',

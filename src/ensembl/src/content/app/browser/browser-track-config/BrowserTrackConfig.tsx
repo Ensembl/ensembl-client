@@ -14,6 +14,7 @@ import {
   getBrowserCogTrackList,
   getBrowserSelectedCog
 } from '../browserSelectors';
+import analyticsTracking from 'src/services/analytics-service';
 
 import styles from './BrowserTrackConfig.scss';
 
@@ -54,57 +55,76 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
   const {
     applyToAll,
     browserCogTrackList,
-    selectedCog,
     trackConfigNames,
     trackConfigLabel
   } = props;
 
+  const selectedCog = props.selectedCog || '';
+
+  const shouldShowTrackName = trackConfigNames[selectedCog] || false;
+  const shouldShowTrackLabels = trackConfigLabel[selectedCog] || false;
+
   const ref = useRef(null);
   useOutsideClick(ref, props.onClose);
 
-  const trackOurConfigName = selectedCog ? trackConfigNames[selectedCog] : '';
-  const trackOurConfigLabel = selectedCog ? trackConfigLabel[selectedCog] : '';
-
-  const nameIcon = trackOurConfigName
+  const nameIcon = shouldShowTrackName
     ? tracksSliderOnIcon
     : tracksSliderOffIcon;
   const labelIcon =
-    trackOurConfigLabel !== false ? tracksSliderOnIcon : tracksSliderOffIcon;
+    shouldShowTrackLabels !== false ? tracksSliderOnIcon : tracksSliderOffIcon;
 
   const toggleName = useCallback(() => {
     if (applyToAll) {
-      Object.keys(browserCogTrackList).map((name) => {
-        props.updateTrackConfigNames(name, !trackOurConfigName);
+      Object.keys(browserCogTrackList).forEach((name) => {
+        props.updateTrackConfigNames(name, !shouldShowTrackName);
       });
     } else {
-      props.updateTrackConfigNames(selectedCog, !trackOurConfigName);
+      props.updateTrackConfigNames(selectedCog, !shouldShowTrackName);
     }
+
+    analyticsTracking.trackEvent({
+      category: 'track_settings',
+      label: selectedCog,
+      action: 'track_name_' + (shouldShowTrackName ? 'off' : 'on')
+    });
   }, [
     selectedCog,
     props.updateTrackConfigNames,
-    trackOurConfigName,
+    shouldShowTrackName,
     applyToAll,
     browserCogTrackList
   ]);
 
   const toggleLabel = useCallback(() => {
     if (applyToAll) {
-      Object.keys(browserCogTrackList).map((name) => {
-        props.updateTrackConfigLabel(name, !trackOurConfigLabel);
+      Object.keys(browserCogTrackList).forEach((name) => {
+        props.updateTrackConfigLabel(name, !shouldShowTrackLabels);
       });
     } else {
-      props.updateTrackConfigLabel(selectedCog, !trackOurConfigLabel);
+      props.updateTrackConfigLabel(selectedCog, !shouldShowTrackLabels);
     }
+
+    analyticsTracking.trackEvent({
+      category: 'track_settings',
+      label: selectedCog,
+      action: 'feature_label_' + (shouldShowTrackLabels ? 'off' : 'on')
+    });
   }, [
     selectedCog,
     updateTrackConfigLabel,
-    trackOurConfigLabel,
+    shouldShowTrackLabels,
     applyToAll,
     browserCogTrackList
   ]);
 
   const applyToAllToggle = useCallback(() => {
     props.updateApplyToAll(!applyToAll);
+
+    analyticsTracking.trackEvent({
+      category: 'track_settings',
+      label: selectedCog,
+      action: 'apply_to_all - ' + (applyToAll ? 'unselected' : 'selected')
+    });
   }, [applyToAll, updateApplyToAll]);
 
   const checkboxStyles = {
