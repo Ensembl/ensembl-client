@@ -14,12 +14,14 @@ import {
 } from '../browserActions';
 import {
   getBrowserActiveGenomeId,
-  getChrLocation,
   getBrowserRegionEditorActive,
   getBrowserRegionFieldActive,
   getBrowserRegionFieldErrors
 } from '../browserSelectors';
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
+import { GenomeKaryotype } from 'src/genome/genomeTypes';
+import { getBrowserRegionFieldErrorMessages } from '../browserHelper';
+import { getGenomeKaryotypes } from 'src/genome/genomeSelectors';
 
 import applyIcon from 'static/img/shared/apply.svg';
 import clearIcon from 'static/img/shared/clear.svg';
@@ -27,16 +29,12 @@ import clearIcon from 'static/img/shared/clear.svg';
 import styles from './BrowserRegionField.scss';
 import browserStyles from '../Browser.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
-import { GenomeKaryotype } from 'src/genome/genomeTypes';
-import { getBrowserRegionFieldErrorMessages } from '../browserHelper';
-import { getGenomeKaryotypes } from 'src/genome/genomeSelectors';
 
 type BrowserRegionFieldProps = {
   activeGenomeId: string | null;
   browserRegionEditorActive: boolean;
   browserRegionFieldActive: boolean;
   browserRegionFieldErrors: BrowserRegionValidationResponse | null;
-  chrLocation: ChrLocation;
   genomeKaryotypes: GenomeKaryotype[] | null;
   isDrawerOpened: boolean;
   dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
@@ -47,7 +45,7 @@ type BrowserRegionFieldProps = {
 
 export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   const { activeGenomeId } = props;
-  const [chrLocationInput, setChrLocationInput] = useState('');
+  const [regionFieldInput, setRegionFieldInput] = useState('');
   const [regionFieldErrorMessages, setRegionFieldErrorMessages] = useState<
     string | null
   >(null);
@@ -60,10 +58,10 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
     props.toggleBrowserRegionFieldActive(true);
   };
 
-  const changeChrLocationInput = (value: string) => setChrLocationInput(value);
+  const changeRegionFieldInput = (value: string) => setRegionFieldInput(value);
 
   const closeForm = () => {
-    setChrLocationInput('');
+    setRegionFieldInput('');
     props.toggleBrowserRegionFieldActive(false);
     props.resetBrowserRegionValidaion();
   };
@@ -71,11 +69,11 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!activeGenomeId || !chrLocationInput) {
+    if (!activeGenomeId || !regionFieldInput) {
       return;
     }
 
-    props.validateBrowserRegion(chrLocationInput);
+    props.validateBrowserRegion(regionFieldInput);
   };
 
   useEffect(() => () => props.resetBrowserRegionValidaion(), []);
@@ -111,8 +109,8 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
         <Input
           type="text"
           placeholder="0:1-1,000,000"
-          value={chrLocationInput}
-          onChange={changeChrLocationInput}
+          value={regionFieldInput}
+          onChange={changeRegionFieldInput}
           onFocus={activateForm}
         />
         <span className={buttonsClassNames}>
@@ -136,7 +134,6 @@ const mapStateToProps = (state: RootState) => ({
   browserRegionEditorActive: getBrowserRegionEditorActive(state),
   browserRegionFieldActive: getBrowserRegionFieldActive(state),
   browserRegionFieldErrors: getBrowserRegionFieldErrors(state),
-  chrLocation: getChrLocation(state) as ChrLocation,
   genomeKaryotypes: getGenomeKaryotypes(state),
   isDrawerOpened: getIsDrawerOpened(state)
 });
