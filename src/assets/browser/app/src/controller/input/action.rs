@@ -23,6 +23,7 @@ pub enum Action {
     ZMenuClickCheck(CPixel),
     ShowZMenu(String,String,Dot<i32,i32>,JSONValue),
     SetFocus(String),
+    JumpFocus(String),
     Reset,
 }
 
@@ -49,6 +50,7 @@ impl Action {
             Action::ZMenuClickCheck(_) => 25,
             Action::ShowZMenu(_,_,_,_) => 25,
             Action::SetFocus(_) => 20,
+            Action::JumpFocus(_) => 20,
             Action::Reset => 25,
             Action::Settled => 30,
         }
@@ -152,7 +154,6 @@ fn exe_set_state(a: &mut App, name: &str, on: bool) {
 }
 
 fn exe_zmenu_click_check(app: &mut App, pos: &CPixel, currency: Option<f64>) {
-    console!("click {:?}",pos);
     let screen = app.get_screen().clone();
     let position = app.get_position().clone();
     let acts = app.with_compo(|co|
@@ -183,8 +184,12 @@ fn exe_set_focus(a: &mut App, id: &str) {
 fn exe_reset(a: &mut App) {
     let context = a.get_window().get_train_manager().get_desired_context();
     if let Some(id) = context.get_focus() {
-        a.with_jumper(|j| j.jump(&id));
+        a.with_jumper(|j| j.jump(&id,false));
     }
+}
+
+fn exe_jump_focus(a: &mut App, id: &str) {
+    a.with_jumper(|j| j.jump(&id,true));
 }
 
 pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
@@ -196,7 +201,7 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
         if ev.active() {
             exe_deactivate(cg);
         }
-        console!("action {:?}",ev);
+        //console!("action {:?}",ev);
         match ev {
             Action::Pos(v,prop) => exe_pos_event(cg,v,prop),
             Action::PosRange(x_start,x_end,y) => exe_pos_range_event(cg,x_start,x_end,y),
@@ -208,6 +213,7 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
             Action::SetStick(name) => exe_set_stick(cg,&name),
             Action::SetState(name,on) => exe_set_state(cg,&name,on),
             Action::SetFocus(id) => exe_set_focus(cg,&id),
+            Action::JumpFocus(id) => exe_jump_focus(cg,&id),
             Action::Settled => exe_settled(cg),
             Action::ZMenuClickCheck(pos) => exe_zmenu_click_check(cg,&pos,currency),
             Action::ShowZMenu(id,track_id,pos,payload) => exe_zmenu_show(cg,&id,&track_id,pos,payload),

@@ -87,10 +87,11 @@ fn custom_state_event(v: &JSONValue, sv: bool) -> Action {
 fn custom_focus_event(v: &JSONValue, jump: bool) -> Vec<Action> {
     let mut out = Vec::new();
     if let JSONValue::String(ref v) = v {
-        out.push(Action::SetFocus(v.to_string()));
-    }
-    if jump {
-        out.push(Action::Reset);
+        if jump {
+            out.push(Action::JumpFocus(v.to_string()));
+        } else {
+            out.push(Action::SetFocus(v.to_string()));
+        }
     }
     out
 }

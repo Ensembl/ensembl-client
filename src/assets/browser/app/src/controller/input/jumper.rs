@@ -22,18 +22,20 @@ pub struct JumpZhoosh {
     start: (Dot<f64,f64>,f64),
     dest: (Dot<f64,f64>,f64),
     backoff_zoom: f64,
-    phase: u32
+    phase: u32,
+    set_id: Option<String>
 }
 
 impl JumpZhoosh {
-    pub fn new(ar: &AppRunner, stick: &Option<String>, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64), backoff: f64) -> JumpZhoosh {
+    pub fn new(ar: &AppRunner, stick: &Option<String>, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64), backoff: f64, set_id: &Option<String>) -> JumpZhoosh {
         let out = JumpZhoosh {
             ar: ar.clone(),
             stick: stick.clone(),
             start, dest,
             phase_start_time: None,
             backoff_zoom: backoff,
-            phase: 0
+            phase: 0,
+            set_id: set_id.clone()
         };
         out
     }
@@ -68,6 +70,9 @@ impl JumpZhoosh {
     }
 
     fn stick(&mut self, t: f64, actions: &mut Vec::<Action>) -> bool {
+        if let Some(id) = self.set_id.as_ref() {
+            actions.push(Action::SetFocus(id.clone()));
+        }
         if let Some(ref stick) = self.stick {
             actions.push(Action::SetStick(stick.to_string()));
             actions.push(Action::Pos(self.start.0,None));
@@ -102,13 +107,15 @@ impl JumpZhoosh {
 }
 
 pub struct JumperConsumer {
-    ar: AppRunner
+    ar: AppRunner,
+    set_id: Option<String>
 }
 
 impl JumperConsumer {
-    pub fn new(ar: &AppRunner) -> JumperConsumer {
+    pub fn new(ar: &AppRunner, set_id: Option<String>) -> JumperConsumer {
         JumperConsumer {
-            ar: ar.clone()
+            ar: ar.clone(),
+            set_id
         }
     }
 
@@ -140,7 +147,7 @@ impl JumperConsumer {
             let leftmost = dest_start.min(start_left);
             let rightmost = dest_end.max(start_right);
             let backoff = app.get_position().best_zoom_screen_bp(rightmost-leftmost+1.);
-            app.with_jumper(|j| j.zhoosh_to(&stick,start,(dest_pos,dest_zoom),backoff));
+            app.with_jumper(|j| j.zhoosh_to(&stick,start,(dest_pos,dest_zoom),backoff,&self.set_id));
         }
         Ok(())
     }
@@ -175,8 +182,8 @@ impl JumperImpl {
         }
     }
 
-    pub fn zhoosh_to(&mut self, stick: &Option<String>, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64), backoff: f64) {
-        self.zhoosh = Some(JumpZhoosh::new(&self.ar,stick,start,dest,backoff));
+    pub fn zhoosh_to(&mut self, stick: &Option<String>, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64), backoff: f64, set_id: &Option<String>) {
+        self.zhoosh = Some(JumpZhoosh::new(&self.ar,stick,start,dest,backoff,set_id));
     }
 
     pub fn tick(&mut self, app: &mut App, t: f64) {
@@ -189,8 +196,9 @@ impl JumperImpl {
         }
     }
 
-    pub fn jump(&mut self, id: &str) -> Result<(),String> {
-        let consumer = Box::new(JumperConsumer::new(&self.ar));
+    pub fn jump(&mut self, id: &str, combined: bool) -> Result<(),String> {
+        let new_id = if combined { Some(id.to_string()) } else { None };
+        let consumer = Box::new(JumperConsumer::new(&self.ar,new_id));
         let xhr = XmlHttpRequest::new();
         if let Some(ref url) = self.url {
             let mut url = url.clone();
@@ -224,11 +232,11 @@ impl Jumper {
         self.0.lock().unwrap().tick(app,t);
     }
 
-    pub fn zhoosh_to(&mut self, stick: &Option<String>, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64), backoff: f64) {
-        self.0.lock().unwrap().zhoosh_to(stick,start,dest,backoff);
+    pub fn zhoosh_to(&mut self, stick: &Option<String>, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64), backoff: f64, set_id: &Option<String>) {
+        self.0.lock().unwrap().zhoosh_to(stick,start,dest,backoff,set_id);
     }
 
-    pub fn jump(&mut self, id: &str) -> Result<(),String> {
-        self.0.lock().unwrap().jump(id)
+    pub fn jump(&mut self, id: &str, combined: bool) -> Result<(),String> {
+        self.0.lock().unwrap().jump(id,combined)
     }
 }

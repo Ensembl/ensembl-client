@@ -18,9 +18,9 @@ impl UnpackedSubassembly {
         }
     }
 
-    pub fn expect(&mut self, amt: usize) {
-        self.shapes.reserve(amt);
-    }
+    //pub fn expect(&mut self, amt: usize) {
+        //self.shapes.reserve(amt);
+    //}
     
     pub fn add_shape(&mut self, item: ShapeSpec) {
         self.shapes.push(item);
