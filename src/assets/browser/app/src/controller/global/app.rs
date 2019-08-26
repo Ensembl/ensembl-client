@@ -247,7 +247,6 @@ impl App {
     }
 
     pub fn settle(&mut self) {
-        console!("settle");
         if let Some(size) = self.stage_resize.take() {
             self.get_screen_mut().set_size(&size);
             self.get_position_mut().inform_screen_size(&size);

@@ -21,34 +21,21 @@ pub struct JumpZhoosh {
     phase_start_time: Option<f64>,
     start: (Dot<f64,f64>,f64),
     dest: (Dot<f64,f64>,f64),
-    backoff_zoom: f64,
     phase: u32,
     set_id: Option<String>
 }
 
 impl JumpZhoosh {
-    pub fn new(ar: &AppRunner, stick: &Option<String>, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64), backoff: f64, set_id: &Option<String>) -> JumpZhoosh {
+    pub fn new(ar: &AppRunner, stick: &Option<String>, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64), set_id: &Option<String>) -> JumpZhoosh {
         let out = JumpZhoosh {
             ar: ar.clone(),
             stick: stick.clone(),
             start, dest,
             phase_start_time: None,
-            backoff_zoom: backoff,
             phase: 0,
             set_id: set_id.clone()
         };
         out
-    }
-
-    fn back_off(&self, t: f64, actions: &mut Vec::<Action>) -> bool {
-        let min_backoff = self.backoff_zoom;
-        if min_backoff < self.start.1 {
-            let zoom_prop = ((t-self.phase_start_time.unwrap())/ZHOOSH_TIME).max(0.).min(1.);
-            let here = self.start.1 + (min_backoff-self.start.1)*zoom_prop;
-            actions.push(Action::ZoomTo(here));
-            if zoom_prop < 1. { return true; }
-        }
-        false
     }
 
     fn centre(&self, t: f64, actions: &mut Vec::<Action>) -> bool {
@@ -60,9 +47,8 @@ impl JumpZhoosh {
     }
 
     fn zoom(&self, t: f64, actions: &mut Vec::<Action>) -> bool {
-        let min_backoff = self.backoff_zoom;
         let zoom_prop = ((t-self.phase_start_time.unwrap())/ZHOOSH_TIME).max(0.).min(1.);
-        let here = min_backoff + (self.dest.1-min_backoff)*zoom_prop;
+        let here = self.start.1 + (self.dest.1-self.start.1)*zoom_prop;
         actions.push(Action::ZoomTo(here));
         actions.push(Action::Pos(self.dest.0,None));
         if zoom_prop < 1. { return true; }
@@ -91,9 +77,8 @@ impl JumpZhoosh {
         let mut more = true;
         let phase_more = match self.phase {
             0 => self.stick(t,&mut actions),
-            1 => self.back_off(t,&mut actions),
-            2 => self.centre(t,&mut actions),
-            3 => self.zoom(t,&mut actions),
+            1 => self.centre(t,&mut actions),
+            2 => self.zoom(t,&mut actions),
             _ => { actions.push(Action::Settled); more = false; true }
         };
         if !phase_more {
@@ -130,11 +115,20 @@ impl JumperConsumer {
         if found {
             let mut app_ref = self.ar.state();
             let mut app = app_ref.lock().unwrap();
+            let mut offscreen = true;
+            if let Some(desired) = app.get_window().get_train_manager().get_desired_position() {
+                let screen_left = desired.get_edge(&LEFT,true);
+                let screen_right = desired.get_edge(&RIGHT,true);
+                offscreen = dest_end < screen_left || dest_start > screen_right;
+            }
             let current_stick = app.get_window().get_train_manager().get_desired_stick();
+            if current_stick.is_none() || stick != current_stick.unwrap().get_name() {
+                offscreen = true;
+            }
             let dest_pos = Dot((dest_start+dest_end)/2.,0.);
             let dest_size = dest_end-dest_start+1.;
             let dest_zoom = app.get_position().best_zoom_screen_bp(dest_size);
-            let (stick,start,start_left,start_right) = if current_stick.is_some() && stick == current_stick.unwrap().get_name() { 
+            let (stick,start,start_left,start_right) = if !offscreen { 
                 let (src,left,right) = {
                     let left = app.get_position().get_edge(&LEFT,false);
                     let right = app.get_position().get_edge(&RIGHT,false);
@@ -146,8 +140,7 @@ impl JumperConsumer {
             };
             let leftmost = dest_start.min(start_left);
             let rightmost = dest_end.max(start_right);
-            let backoff = app.get_position().best_zoom_screen_bp(rightmost-leftmost+1.);
-            app.with_jumper(|j| j.zhoosh_to(&stick,start,(dest_pos,dest_zoom),backoff,&self.set_id));
+            app.with_jumper(|j| j.zhoosh_to(&stick,start,(dest_pos,dest_zoom),&self.set_id));
         }
         Ok(())
     }
@@ -182,8 +175,8 @@ impl JumperImpl {
         }
     }
 
-    pub fn zhoosh_to(&mut self, stick: &Option<String>, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64), backoff: f64, set_id: &Option<String>) {
-        self.zhoosh = Some(JumpZhoosh::new(&self.ar,stick,start,dest,backoff,set_id));
+    pub fn zhoosh_to(&mut self, stick: &Option<String>, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64), set_id: &Option<String>) {
+        self.zhoosh = Some(JumpZhoosh::new(&self.ar,stick,start,dest,set_id));
     }
 
     pub fn tick(&mut self, app: &mut App, t: f64) {
@@ -232,8 +225,8 @@ impl Jumper {
         self.0.lock().unwrap().tick(app,t);
     }
 
-    pub fn zhoosh_to(&mut self, stick: &Option<String>, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64), backoff: f64, set_id: &Option<String>) {
-        self.0.lock().unwrap().zhoosh_to(stick,start,dest,backoff,set_id);
+    pub fn zhoosh_to(&mut self, stick: &Option<String>, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64), set_id: &Option<String>) {
+        self.0.lock().unwrap().zhoosh_to(stick,start,dest,set_id);
     }
 
     pub fn jump(&mut self, id: &str, combined: bool) -> Result<(),String> {
