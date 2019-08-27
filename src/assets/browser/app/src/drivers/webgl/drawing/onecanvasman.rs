@@ -22,7 +22,7 @@ impl DrawingMemory {
         self.cache.insert(key.get(),val);
     }
     
-    fn lookup(&self, a: &Rc<Artist>) -> (Option<DrawingHash>,Option<Drawing>) {
+    fn lookup(&self, a: &Rc<dyn Artist>) -> (Option<DrawingHash>,Option<Drawing>) {
         let tdrk = a.memoize_key();
         if let Some(tdrk) = tdrk {
             if let Some(obj) = self.cache.get(&tdrk.get()) {
@@ -67,7 +67,7 @@ impl OneCanvasManager {
         }
     }
 
-    pub fn add_request(&mut self, a: Rc<Artist>) -> Drawing {
+    pub fn add_request(&mut self, a: Rc<dyn Artist>) -> Drawing {
         let (tdrk,val) = self.cache.lookup(&a);
         if let Some(tdrh) = val {
             // already in cache

@@ -2,13 +2,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::collections::HashMap;
 
-use composit::AllLandscapes;
-use data::{ BackendConfig, HttpXferClerk };
-use model::zmenu::ZMenuRegistry;
-use tácode::Tácode;
-use super::productbuilder::build_product;
 use super::Product;
-use controller::global::WindowState;
 
 pub struct ProductListImpl {
     products:HashMap<String,Product>

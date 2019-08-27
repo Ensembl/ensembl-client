@@ -4,7 +4,7 @@ use std::hash::Hasher;
 use std::collections::hash_map::DefaultHasher;
 
 use drivers::webgl::{ StretchTextureSpec, Artist };
-use types::{ Colour, Rect, Placement };
+use types::{ Colour, Placement };
 use super::{
     PinPolySpec, StretchWiggle, RectSpec, BoxSpec, BitmapArtist,
     CollageArtist, TextArtist, TextureSpec, ZMenuRectSpec
@@ -65,7 +65,7 @@ pub enum DrawingSpec {
 }
 
 impl DrawingSpec {
-    pub fn to_artist(&self) -> Rc<Artist> {
+    pub fn to_artist(&self) -> Rc<dyn Artist> {
         match self {
             DrawingSpec::Text(t) => Rc::new(t.clone()),
             DrawingSpec::Bitmap(b) => Rc::new(b.clone()),
@@ -114,8 +114,8 @@ pub enum ShapeInstanceData {
 }
 
 pub trait TypeToShape {
-    fn new_short_shape(&self, sid: &ShapeShortInstanceData) -> Option<ShapeSpec> { None }
-    fn new_long_shape(&self, sid: &ShapeLongInstanceData) -> Option<ShapeSpec> { None }
+    fn new_short_shape(&self, _sid: &ShapeShortInstanceData) -> Option<ShapeSpec> { None }
+    fn new_long_shape(&self, _sid: &ShapeLongInstanceData) -> Option<ShapeSpec> { None }
     fn get_facade_type(&self) -> FacadeType;
     fn needs_scale(&self) -> (bool,bool);
     fn sid_type(&self) -> ShapeInstanceDataType;

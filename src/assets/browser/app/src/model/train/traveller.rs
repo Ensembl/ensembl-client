@@ -1,26 +1,21 @@
 use std::fmt;
-use std::cmp::{ Eq, PartialEq };
-use std::hash::{ Hash, Hasher };
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
 use composit::Leaf;
 use composit::{ StateManager };
-use controller::global::WindowState;
 use data::XferConsumer;
 use model::item::{ DeliveredItem, DeliveredItemId, FocusSpecificity, UnpackedSubassembly, UnpackedSubassemblyConsumer, ItemUnpacker };
 use model::supply::Subassembly;
 use model::driver::{ DriverTraveller, Printer, PrinterManager };
-use model::shape::{ ShapeSpec, GenericShape };
 use model::zmenu::ZMenuLeaf;
-use tácode::run_tánaiste_makeshapes;
 use super::{ CarriageId, TravellerId };
 
 pub struct TravellerImpl {
     done: bool,
     prev_value: bool,
     cur_value: bool,
-    visuals: Box<DriverTraveller>,
+    visuals: Box<dyn DriverTraveller>,
     zml: ZMenuLeaf,
     id: Rc<TravellerId>
 }
@@ -117,7 +112,6 @@ impl XferConsumer for Traveller {
     fn consume(&mut self, item: &DeliveredItem, unpacker: &mut ItemUnpacker) {
         if self.is_done() { return; }
         let trav_id = ok!(self.0.lock()).get_id().clone();
-        let item_id = item.get_id();
         if self.matches_delivered_item(item.get_id()) {
             unpacker.schedule(&trav_id,Box::new(self.clone()));
         }

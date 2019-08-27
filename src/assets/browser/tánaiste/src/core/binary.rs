@@ -6,12 +6,12 @@ use super::command::Command;
 
 pub struct BinaryCode {
     symbols: HashMap<String,usize>,
-    commands: Rc<Vec<Box<Command>>>
+    commands: Rc<Vec<Box<dyn Command>>>
 }
 
 impl BinaryCode {
     pub fn new(symbols: HashMap<String,usize>,
-               commands: Vec<Box<Command>>) -> BinaryCode {
+               commands: Vec<Box<dyn Command>>) -> BinaryCode {
         BinaryCode {
             symbols,
             commands: Rc::new(commands)

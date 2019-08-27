@@ -1,12 +1,10 @@
-use std::fmt::Debug;
-
 use types::{ 
-    CLeaf, AxisSense, Rect, Edge, RLeaf, area_size, cleaf, cpixel,
+    AxisSense, Rect, area_size, cpixel,
     Placement, XPosition, YPosition, Dot
 };
 use model::shape::{ 
     ColourSpec, ShapeSpec, Facade, FacadeType, ShapeInstanceDataType,
-    ShapeShortInstanceData, TypeToShape, GenericShape, PatinaSpec,
+    ShapeShortInstanceData, TypeToShape, PatinaSpec,
     ZPosition, RectSpec, RectPosition, ZMenuRectSpec
 };
 

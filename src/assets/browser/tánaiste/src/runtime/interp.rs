@@ -63,7 +63,7 @@ pub const DEFAULT_CONFIG : InterpConfig = InterpConfig {
 };
 
 pub struct Interp {
-    env: Box<Environment>,
+    env: Box<dyn Environment>,
     config: InterpConfig,
     procs: ValueStore<InterpProcess>,
     runq: HashSet<usize>,
@@ -72,7 +72,7 @@ pub struct Interp {
 }
 
 impl Interp {
-    pub fn new(env: Box<Environment>, config: InterpConfig) -> Interp {
+    pub fn new(env: Box<dyn Environment>, config: InterpConfig) -> Interp {
         Interp {
             env, config,
             procs: ValueStore::<InterpProcess>::new(),

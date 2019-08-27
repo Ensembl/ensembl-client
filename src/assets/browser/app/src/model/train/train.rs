@@ -1,14 +1,13 @@
 use std::collections::{ HashMap, HashSet };
 
-use composit::{ Leaf, StateManager, Scale, Stick };
+use composit::{ Leaf, StateManager };
 use data::XferConsumer;
 use model::item::{ DeliveredItem, ItemUnpacker };
 use model::stage::Position;
 use model::supply::Product;
 use model::driver::{ Printer, PrinterManager };
-use super::{ Carriage, CarriageId, TrainContext, TrainId, Traveller, TravellerCreator };
+use super::{ Carriage, CarriageId, TrainId, TravellerCreator };
 use model::zmenu::ZMenuLeafSet;
-use types::Dot;
 
 const MAX_FLANK : i32 = 3;
 
@@ -52,7 +51,6 @@ impl Train {
     /* add component to leaf */
     pub fn add_component(&mut self, cm: &mut TravellerCreator, product: &mut Product) {
         for leaf in self.leafs() {
-            let train_id = self.id.clone();
             let c = self.get_carriage(&leaf);
             for trav in cm.make_travellers_for_source(product,&leaf,&c.get_id()) {
                 c.add_traveller(trav.clone());
@@ -123,7 +121,6 @@ impl Train {
         if !self.active { return; }
         self.remove_unused_carriages();
         for leaf in self.get_missing_leafs() {
-            let train_id = self.id.clone();
             let c = self.get_carriage(&leaf);
             for trav in cm.make_travellers_for_leaf(&leaf,&c.get_id()) {
                 c.add_traveller(trav);
@@ -175,7 +172,7 @@ impl Train {
         }
     }
 
-    pub fn redraw_where_needed(&mut self, printer: &mut Printer, zmls: &mut ZMenuLeafSet) {
+    pub fn redraw_where_needed(&mut self, printer: &mut dyn Printer, zmls: &mut ZMenuLeafSet) {
         for carriage in self.carriages.values_mut() {
             carriage.redraw_where_needed(printer,zmls);
         }

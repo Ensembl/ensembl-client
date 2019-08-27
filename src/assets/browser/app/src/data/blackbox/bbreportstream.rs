@@ -1,7 +1,6 @@
 use serde_json::Value as SerdeValue;
 use serde_json::Map as SerdeMap;
 use serde_json::Number as SerdeNumber;
-use stdweb::unstable::TryInto;
 
 use dom::domutil::browser_time;
 
@@ -58,7 +57,6 @@ impl BlackBoxReportStream {
     }
     
     fn analyse_elapsed(&self) -> (usize,f64,f64,f64,f64) {
-        let tot = 0.;
         let mut sorted = self.elapsed.clone();
         let num = sorted.len();
         if num > 0 {

@@ -23,14 +23,14 @@ pub struct DPrintI();
 
 impl Instruction for CPrintI {
     fn signature(&self) -> Signature { Signature::new("cprint","r") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(ConsolePrint(args[0].reg(),true))
     }
 }
 
 impl Instruction for DPrintI {
     fn signature(&self) -> Signature { Signature::new("dprint","r") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(ConsolePrint(args[0].reg(),false))
     }
 }

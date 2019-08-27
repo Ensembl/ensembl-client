@@ -5,7 +5,6 @@ use serde_json::Value as SerdeValue;
 use serde_json::Map as SerdeMap;
 use stdweb::unstable::TryInto;
 
-use dom::domutil::browser_time;
 use util::get_instance_id;
 use super::bbreportstream::{ BlackBoxReport, BlackBoxReportStream };
 

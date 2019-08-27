@@ -1,5 +1,3 @@
-use std::sync::{ Arc, Mutex };
-
 use controller::global::Global;
 
 use dom::domutil;

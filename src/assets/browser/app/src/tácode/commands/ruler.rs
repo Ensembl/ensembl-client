@@ -64,7 +64,7 @@ pub struct RulerI(pub TáContext);
 
 impl Instruction for RulerI {
     fn signature(&self) -> Signature { Signature::new("ruler","rrrrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Ruler(self.0.clone(),args[0].reg(),args[1].reg(),
                         args[2].reg(),args[3].reg(),args[4].reg()))
     }

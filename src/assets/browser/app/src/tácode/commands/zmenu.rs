@@ -3,8 +3,7 @@ use std::sync::{ Arc, Mutex };
 use model::item::UnpackedProduct;
 use model::supply::Subassembly;
 use tánaiste::{
-    Argument, Command, DataState, Instruction, ProcState, Signature,
-    Value
+    Argument, Command, DataState, Instruction, ProcState, Signature
 };
 
 use tácode::core::{ TáContext, TáTask };
@@ -138,7 +137,7 @@ pub struct ZTmplSpecI(pub TáContext);
 
 impl Instruction for ZTmplSpecI {
     fn signature(&self) -> Signature { Signature::new("ztmplspec","rr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(ZTmplSpec(self.0.clone(),args[0].reg(),args[1].reg()))
     }
 }
@@ -147,7 +146,7 @@ pub struct ZTmplI(pub TáContext);
 
 impl Instruction for ZTmplI {
     fn signature(&self) -> Signature { Signature::new("ztmpl","rr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(ZTmpl(self.0.clone(),args[0].reg(),args[1].reg()))
     }
 }
@@ -156,7 +155,7 @@ pub struct ZMenuI(pub TáContext);
 
 impl Instruction for ZMenuI {
     fn signature(&self) -> Signature { Signature::new("zmenu","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(ZMenu(self.0.clone(),args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
@@ -165,7 +164,7 @@ pub struct ZAssocI(pub TáContext);
 
 impl Instruction for ZAssocI {
     fn signature(&self) -> Signature { Signature::new("zassoc","rr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(ZAssoc(self.0.clone(),args[0].reg(),args[1].reg()))
     }
 }

@@ -13,7 +13,7 @@ pub enum MarkSpec {
 }
 
 impl MarkSpec {
-    pub fn to_mark(&self) -> Box<Mark> {
+    pub fn to_mark(&self) -> Box<dyn Mark> {
         match self {
             MarkSpec::Rect(rm) => Box::new(rm.clone())
         }

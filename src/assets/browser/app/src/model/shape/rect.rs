@@ -1,13 +1,5 @@
-use std::fmt::Debug;
-
-use types::{ 
-    CLeaf, AxisSense, Rect, Edge, RLeaf, area_size, cleaf, cpixel,
-    Placement, XPosition, YPosition, Dot
-};
-use model::shape::{ 
-    ColourSpec, ShapeSpec, Facade, FacadeType, ShapeInstanceDataType,
-    ShapeShortInstanceData, TypeToShape, GenericShape
-};
+use types::Placement;
+use model::shape::{ ColourSpec, GenericShape };
 
 #[derive(Clone,Copy,Debug)]
 pub enum ZPosition {

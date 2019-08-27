@@ -12,14 +12,14 @@ use stdweb::web::event::{ IEvent, IUiEvent, IMouseEvent, IKeyboardEvent };
 use types::{ CPixel, cpixel };
 
 pub struct EventControl<T> {
-    handle: Arc<Mutex<Box<EventListener<T>>>>,
+    handle: Arc<Mutex<Box<dyn EventListener<T>>>>,
     mappings: Vec<EventType>,
     window: ElementEvents<T>,
     current: Vec<ElementEvents<T>>
 }
 
 impl<T: 'static> EventControl<T> {
-    pub fn new(handle: Box<EventListener<T>>, p: T) -> EventControl<T> {
+    pub fn new(handle: Box<dyn EventListener<T>>, p: T) -> EventControl<T> {
         EventControl {
             handle: Arc::new(Mutex::new(handle)),
             mappings: Vec::<EventType>::new(),
@@ -335,7 +335,7 @@ impl<T: 'static> ElementEvents<T> {
         }
     }
     
-    fn add_event(&mut self, typ: &EventType, evl: &Arc<Mutex<Box<EventListener<T>>>>) {
+    fn add_event(&mut self, typ: &EventType, evl: &Arc<Mutex<Box<dyn EventListener<T>>>>) {
         let name = typ.get_name().to_string();
         let el = &self.el;
         let p = self.payload.clone();

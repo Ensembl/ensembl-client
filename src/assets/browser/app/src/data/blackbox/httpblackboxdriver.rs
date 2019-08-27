@@ -104,7 +104,7 @@ impl HttpBlackBoxDriverImpl {
         }
     }
 
-    fn send(&mut self, data: &[u8], consumer: Box<HttpResponseConsumer>) -> Result<(),String> {
+    fn send(&mut self, data: &[u8], consumer: Box<dyn HttpResponseConsumer>) -> Result<(),String> {
         let xhr = XmlHttpRequest::new();
         xhr.open("POST",&self.url.as_str()).map_err(|e| e.to_string())?;
         xhr.set_request_header("Content-Type", "application/json").map_err(|e| e.to_string())?;
@@ -119,7 +119,6 @@ impl BlackBoxDriverImpl for HttpBlackBoxDriverImpl {
         let interval : f64 = self.report_interval.lock().unwrap().clone();
         if self.last_report == None || t-self.last_report.unwrap() > interval {
             let report = state.make_report().to_string();
-            let xhr = XmlHttpRequest::new();
             let data = report.as_bytes();
             let interval = self.report_interval.clone();
             let consumer = Box::new(BlackBoxResponseConsumer::new(state,interval));

@@ -25,12 +25,12 @@ impl ChromBuilder {
     }
 
     fn all_wires(&self) -> HashSet<String> {
-        self.input.iter().map(|(wire,leaf)| wire).cloned().collect()
+        self.input.iter().map(|(wire,_)| wire).cloned().collect()
     }
 
     fn all_leafs(&self, wire_wanted: &str) -> HashSet<String> {
-        self.input.iter().filter(|(wire,leaf)| wire == wire_wanted)
-            .map(|(wire,leaf)| leaf).cloned().collect()
+        self.input.iter().filter(|(wire,_)| wire == wire_wanted)
+            .map(|(_,leaf)| leaf).cloned().collect()
     }
 
     fn wire_wants_all(&self, wire: &str, leafs: &HashSet<String>) -> bool {

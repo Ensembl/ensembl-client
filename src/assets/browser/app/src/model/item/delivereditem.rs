@@ -1,8 +1,6 @@
 use std::rc::Rc;
 
-use composit::Leaf;
 use data::BackendBytecode;
-use model::supply::{ Product, PurchaseOrder };
 use tánaiste::Value;
 
 use super::DeliveredItemId;

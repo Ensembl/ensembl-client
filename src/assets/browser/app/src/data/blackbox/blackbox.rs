@@ -1,12 +1,7 @@
-use std::collections::{ HashMap, HashSet };
-use std::sync::{ Arc, Mutex };
-
-use serde_json::Value as SerdeValue;
-use serde_json::Map as SerdeMap;
-use stdweb::unstable::TryInto;
+use std::sync::Mutex;
 
 use dom::domutil::browser_time;
-use util::get_instance_id;
+
 use super::blackboxstate::BlackBoxState;
 use super::blackboxdriver::BlackBoxDriver;
 

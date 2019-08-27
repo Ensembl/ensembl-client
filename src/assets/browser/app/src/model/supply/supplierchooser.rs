@@ -1,24 +1,21 @@
 use std::collections::HashMap;
 
-use model::item::UnpackedProduct;
-use model::train::Traveller;
-
 use super::{ Supplier, PurchaseOrder };
 
 pub struct SupplierChooser {
-    backend_source: Box<Supplier>,
-    per_stick_sources: HashMap<String,Box<Supplier>>,
+    backend_source: Box<dyn Supplier>,
+    per_stick_sources: HashMap<String,Box<dyn Supplier>>,
 }
 
 impl SupplierChooser {
-    pub fn new(backend_source: Box<Supplier>) -> SupplierChooser {
+    pub fn new(backend_source: Box<dyn Supplier>) -> SupplierChooser {
         SupplierChooser {
             backend_source,
-            per_stick_sources: HashMap::<String,Box<Supplier>>::new()
+            per_stick_sources: HashMap::<String,Box<dyn Supplier>>::new()
         }
     }
     
-    pub fn add_per_stick(&mut self, name: &str, source: Box<Supplier>) {
+    pub fn add_per_stick(&mut self, name: &str, source: Box<dyn Supplier>) {
         let name = name.to_string();
         self.per_stick_sources.insert(name.clone(),source);
     }

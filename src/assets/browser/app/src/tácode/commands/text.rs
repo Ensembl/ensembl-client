@@ -81,7 +81,7 @@ pub struct TextI(pub TáContext);
 
 impl Instruction for TextI {
     fn signature(&self) -> Signature { Signature::new("text","rrrrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Text(self.0.clone(),args[0].reg(),args[1].reg(),
                       args[2].reg(),args[3].reg(),args[4].reg()))
     }
@@ -114,7 +114,7 @@ pub struct Text2I(pub TáContext);
 
 impl Instruction for Text2I {
     fn signature(&self) -> Signature { Signature::new("text2","rrrrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Text2(self.0.clone(),args[0].reg(),args[1].reg(),
                       args[2].reg(),args[3].reg()))
     }

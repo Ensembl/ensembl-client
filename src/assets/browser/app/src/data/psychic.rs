@@ -40,7 +40,6 @@ impl PsychicPosition {
         self.leafs.insert(leaf.clone());
         if scale.get_index() == MINSCALE { return; }
         let new_scale = scale.next_scale(-1);
-        let (old_start,old_end) = (leaf.get_start(),leaf.get_end());
         let min_new = Leaf::containing(&self.stick,leaf.get_start(),&new_scale);
         let max_new = Leaf::containing(&self.stick,leaf.get_end(),&new_scale);
         for leaf_index in min_new.get_index()..(max_new.get_index()+1) {

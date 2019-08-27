@@ -16,7 +16,7 @@ fn build_supplier(window: &mut WindowState) -> SupplierChooser {
 }
 
 fn make_subassembly(product: &mut Product, name: Option<String>, atom_name: String) {
-    let expr: Rc<StateExpr> = Rc::new(StateAtom::new(&atom_name));
+    let expr: Rc<dyn StateExpr> = Rc::new(StateAtom::new(&atom_name));
     let sa = Subassembly::new(product,&name);
     product.add_subassembly(&sa,&expr);
 }

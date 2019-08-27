@@ -1,10 +1,3 @@
-use std::cell::RefCell;
-use std::collections::HashMap;
-use std::rc::Rc;
-
-use tánaiste::Value;
-
-use composit::Leaf;
 use controller::global::WindowState;
 use data::UnpackedProductConsumer;
 use model::item::{ DeliveredItem, UnpackedProduct};
@@ -16,10 +9,10 @@ use tácode::TáTask;
 pub fn run_tánaiste_makeshapes(window: &mut WindowState, consumer: Box<dyn UnpackedProductConsumer>, unpacked_item: &mut UnpackedProduct, 
                                item: &DeliveredItem, context: &TrainContext) {
     let lid = item.get_id().get_product().get_lid();
-    let mut tc = window.get_tánaiste_interp().clone();
-    let mut all_landscapes = window.get_all_landscapes().clone();
-    let mut focus_object = context.get_focus().clone();
-    let mut backend_config = window.get_backend_config().clone();
+    let tc = window.get_tánaiste_interp().clone();
+    let all_landscapes = window.get_all_landscapes().clone();
+    let focus_object = context.get_focus().clone();
+    let backend_config = window.get_backend_config().clone();
     match tc.assemble(&item.get_bytecode().get_source()) {
         Ok(code) => {
             match tc.run(&code) {

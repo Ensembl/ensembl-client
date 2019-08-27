@@ -23,7 +23,7 @@ pub struct ConcatI();
 
 impl Instruction for ConcatI {
     fn signature(&self) -> Signature { Signature::new("concat","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Concat(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }

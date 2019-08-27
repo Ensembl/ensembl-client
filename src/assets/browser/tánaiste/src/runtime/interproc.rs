@@ -13,7 +13,7 @@ pub struct InterpProcess {
 }
 
 impl InterpProcess {
-    pub fn new(p: Process, config: &ProcessConfig, env: &mut Box<Environment>) -> InterpProcess {
+    pub fn new(p: Process, config: &ProcessConfig, env: &mut Box<dyn Environment>) -> InterpProcess {
         InterpProcess {
             start: env.get_time(),
             p, config: config.clone(),
@@ -28,13 +28,13 @@ impl InterpProcess {
         true
     }
     
-    fn send_finished(&mut self, env: &mut Box<Environment>) {
+    fn send_finished(&mut self, env: &mut Box<dyn Environment>) {
         let exit_float = self.p.get_reg_float(1);
         let exit_str = self.p.get_reg_str(2);
         env.finished(self.p.get_pid().unwrap(),self.status().state,exit_float,exit_str);
     }
     
-    fn oob(&mut self, env: &mut Box<Environment>) -> Option<String> {
+    fn oob(&mut self, env: &mut Box<dyn Environment>) -> Option<String> {
         if let Some(cpu_limit) = self.config.cpu_limit {
             if self.cycles > cpu_limit {
                 return Some(format!("Exceeded CPU limit {}",cpu_limit));
@@ -49,7 +49,7 @@ impl InterpProcess {
         None
     }
     
-    pub fn run_proc(&mut self, env: &mut Box<Environment>, cycles: i64) {
+    pub fn run_proc(&mut self, env: &mut Box<dyn Environment>, cycles: i64) {
         if let Some(remain) = self.config.time_limit.map(|limit|
             limit - env.get_time()
         ) {
@@ -72,7 +72,7 @@ impl InterpProcess {
         self.p.set_reg(idx,v);
     }
     
-    pub fn started(&mut self, env: &mut Box<Environment>, pid: usize) {
+    pub fn started(&mut self, env: &mut Box<dyn Environment>, pid: usize) {
         self.p.start(pid);
         env.started(pid);
     }

@@ -1,19 +1,17 @@
 use std::rc::Rc;
 use std::cell::RefCell;
 
-use tánaiste::Value;
-
 use composit::Leaf;
 use model::item::{ DeliveredItem, DeliveredItemId, FocusSpecificity, ItemUnpacker };
 use model::supply::{ PurchaseOrder, Product };
-use data::{ BackendConfig, BackendBytecode, XferClerk, XferConsumer };
+use data::{ BackendConfig, XferClerk, XferConsumer };
 
 use misc_algorithms::index::{ AndWalker, OrWalker, SimpleIndex, WalkerIter };
 use misc_algorithms::store::Cache;
 
 struct XferPrimeConsumer();
 impl XferConsumer for XferPrimeConsumer {
-    fn consume(&mut self, item: &DeliveredItem, _unpacker: &mut ItemUnpacker) {}
+    fn consume(&mut self, _item: &DeliveredItem, _unpacker: &mut ItemUnpacker) {}
 }
 
 pub struct XferCacheIndexes {

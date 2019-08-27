@@ -1,11 +1,8 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
-use std::collections::hash_map::Entry;
 use std::rc::{ Rc, Weak };
-use std::sync::{ Arc, Mutex };
 
-use stdweb::unstable::TryInto;
-use stdweb::web::{ HtmlElement, Element, IHtmlElement, window };
+use stdweb::web::{ HtmlElement, window };
 use url::Url;
 use util::{ set_instance_id, get_instance_id };
 
@@ -17,7 +14,6 @@ use controller::output::Counter;
 use controller::scheduler::{ Scheduler, SchedulerGroup };
 use data::{ BackendConfigBootstrap, HttpManager };
 use dom::domutil;
-use dom::domutil::browser_time;
 
 use super::activate::activate;
 
@@ -30,7 +26,7 @@ pub struct GlobalImpl {
     scheduler: Scheduler,
     sched_group: SchedulerGroup,
     counter: Counter,
-    ar_init: Vec<Box<FnMut(&AppRunner)>>
+    ar_init: Vec<Box<dyn FnMut(&AppRunner)>>
 }
 
 impl GlobalImpl {
@@ -85,14 +81,14 @@ impl GlobalImpl {
         }
     }
 
-    pub fn register_ar_init(&mut self, mut cb: Box<FnMut(&AppRunner)>) {
+    pub fn register_ar_init(&mut self, mut cb: Box<dyn FnMut(&AppRunner)>) {
         for ar in self.app_runners.values_mut() {
             cb(&ar.clone());
         }
         self.ar_init.push(cb);
     }
 
-    pub fn register_app(&mut self, key: &str, mut app_runner: AppRunner) {
+    pub fn register_app(&mut self, key: &str, app_runner: AppRunner) {
         for ari in &mut self.ar_init {
             ari(&app_runner.clone());
         }
@@ -177,7 +173,7 @@ impl Global {
         self.0.borrow_mut().register_app(key,ar);
     }
 
-    pub fn register_ar_init(&mut self, mut cb: Box<FnMut(&AppRunner)>) {
+    pub fn register_ar_init(&mut self, cb: Box<dyn FnMut(&AppRunner)>) {
         self.0.borrow_mut().register_ar_init(cb);
     }
 
@@ -208,7 +204,6 @@ pub fn setup_global() {
     domutil::add_attr(&body,"class","browser-app-ready");
     domutil::remove_attr(&body.into(),"class","browser-app-not-ready");
     let mut eqm = register_direct_events(&g);
-    let mut eqm2 = eqm.clone();
     g.register_ar_init(Box::new(move |ar| eqm.register_ar(&ar)));
     /* setup ping/pong */
     activate();

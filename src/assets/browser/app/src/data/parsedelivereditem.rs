@@ -3,9 +3,7 @@ use tánaiste::Value;
 
 use composit::{ Leaf, StickManager };
 use controller::global::WindowState;
-use data::BackendConfig;
 use model::item::{ DeliveredItemId, DeliveredItem, FocusSpecificity };
-use model::supply::{ ProductList, PurchaseOrder };
 
 use misc_algorithms::marshal::{ json_str, json_array };
 

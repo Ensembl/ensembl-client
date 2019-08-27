@@ -6,17 +6,12 @@ use dom::domutil;
 use composit::register_compositor_ticks;
 use controller::global::{ App, GlobalWeak };
 use controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup };
-use controller::input::{
-    register_direct_events, register_dom_events,
-    Jumper
-};
+use controller::input::{ register_dom_events, Jumper };
 use drivers::domel::{ register_user_events };
 use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter };
 
 #[cfg(any(not(deploy),console))]
-use data::blackbox::{
-    blackbox_report, blackbox_push, blackbox_pop, blackbox_tick
-};
+use data::blackbox::blackbox_tick;
 
 use data::{ HttpManager, BackendConfig };
 use data::blackbox::BlackBoxDriver;
@@ -29,7 +24,7 @@ struct AppRunnerImpl {
     g: GlobalWeak,
     counter: Counter,
     el: HtmlElement,
-    bling: Box<Bling>,
+    bling: Box<dyn Bling>,
     app: Arc<Mutex<App>>,
     controls: Vec<Box<EventControl<()>>>,
     sched_group: SchedulerGroup,
@@ -56,7 +51,7 @@ pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
 impl AppRunner {
-    pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<Bling>, config_url: &Url, config: &BackendConfig, debug_reporter: BlackBoxDriver, key: &str) -> AppRunner {
+    pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<dyn Bling>, config_url: &Url, config: &BackendConfig, debug_reporter: BlackBoxDriver, key: &str) -> AppRunner {
         let browser_el : HtmlElement = bling.apply_bling(&el);
         let tc = Tácode::new();
         let st = App::new(&tc,config,&http_manager,&browser_el,&config_url);
@@ -192,7 +187,7 @@ impl AppRunner {
                 }
             },0);
             /* cursor check (fallback) */
-            self.add_timer("cursor-check",move |app,_,_| {
+            self.add_timer("cursor-check",move |_,_,_| {
                 bb_log!("cursor","cursor-check");
                 vec![]
             },0);
@@ -229,7 +224,7 @@ impl AppRunner {
     }
 
     pub fn find_app(&mut self, el: &HtmlElement) -> bool {
-        let mut imp = self.0.lock().unwrap();
+        let imp = self.0.lock().unwrap();
         domutil::ancestor(el,&imp.el) || domutil::ancestor(&imp.el,el)
     }
 }

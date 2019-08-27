@@ -16,7 +16,7 @@ use tácode::core::{ TáContext, TáTask };
 use super::super::shapecmd::{ build_meta };
 use types::Colour;
 
-fn do_scale(spec: &Box<TypeToShape>, leaf: &Leaf, x_start: f64, x_aux: f64) -> Option<(f32,f32)> {
+fn do_scale(spec: &Box<dyn TypeToShape>, leaf: &Leaf, x_start: f64, x_aux: f64) -> Option<(f32,f32)> {
     let needs_scale = spec.needs_scale();
     let x_pos_v = if needs_scale.0 {
         let p = leaf.prop(x_start);
@@ -38,7 +38,7 @@ fn do_scale(spec: &Box<TypeToShape>, leaf: &Leaf, x_start: f64, x_aux: f64) -> O
     }
 }
 
-fn make_colour_facade(spec: &Box<TypeToShape>, colour: &Vec<f64>, tx: &Vec<DrawingSpec>, i: usize) -> Facade {
+fn make_colour_facade(spec: &Box<dyn TypeToShape>, colour: &Vec<f64>, tx: &Vec<DrawingSpec>, i: usize) -> Facade {
     let col_len = colour.len();
     match spec.get_facade_type() {
         FacadeType::Colour => {
@@ -55,7 +55,7 @@ fn make_colour_facade(spec: &Box<TypeToShape>, colour: &Vec<f64>, tx: &Vec<Drawi
     }
 }
 
-fn make_facade(spec: &Box<TypeToShape>, colour: &Value, tx: &Vec<DrawingSpec>, i: usize) -> Facade {
+fn make_facade(spec: &Box<dyn TypeToShape>, colour: &Value, tx: &Vec<DrawingSpec>, i: usize) -> Facade {
     match spec.get_facade_type() {
         FacadeType::Colour | FacadeType::Drawing => {
             colour.as_floats(|colour| {
@@ -66,7 +66,7 @@ fn make_facade(spec: &Box<TypeToShape>, colour: &Value, tx: &Vec<DrawingSpec>, i
     }    
 }
 
-fn make_colour_facades(spec: &Box<TypeToShape>, colour: &Vec<f64>, tx: &Vec<DrawingSpec>) -> Vec<Facade> {
+fn make_colour_facades(spec: &Box<dyn TypeToShape>, colour: &Vec<f64>, tx: &Vec<DrawingSpec>) -> Vec<Facade> {
     let mut out = Vec::<Facade>::new();
     let col_len = colour.len();
     let type_ = spec.get_facade_type();
@@ -93,7 +93,7 @@ fn make_colour_facades(spec: &Box<TypeToShape>, colour: &Vec<f64>, tx: &Vec<Draw
     out
 }
 
-fn make_facades(spec: &Box<TypeToShape>, colour: &Value, tx: &Vec<DrawingSpec>) -> Vec<Facade> {
+fn make_facades(spec: &Box<dyn TypeToShape>, colour: &Value, tx: &Vec<DrawingSpec>) -> Vec<Facade> {
     match spec.get_facade_type() {
         FacadeType::Colour | FacadeType::Drawing => {
             colour.as_floats(|colour| {
@@ -110,7 +110,7 @@ fn make_facades(spec: &Box<TypeToShape>, colour: &Value, tx: &Vec<DrawingSpec>) 
 }
 
 /* TODO switch long to use make_facades. Can do it, but no time */
-fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &Leaf, lc: &mut UnpackedProduct, 
+fn draw_long_shapes(spec: Box<dyn TypeToShape>, leaf: &Leaf, lc: &mut UnpackedProduct, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Value, part: &Subassembly) {
@@ -137,7 +137,7 @@ fn draw_long_shapes(spec: Box<TypeToShape>, leaf: &Leaf, lc: &mut UnpackedProduc
     }
 }
 
-fn draw_short_shapes(spec: Box<TypeToShape>, leaf: &Leaf, lc: &mut UnpackedProduct, 
+fn draw_short_shapes(spec: Box<dyn TypeToShape>, leaf: &Leaf, lc: &mut UnpackedProduct, 
                 tx: &Vec<DrawingSpec>,x_start: &Vec<f64>,
                 x_aux: &Vec<f64>, y_start: &Vec<f64>, y_aux: &Vec<f64>,
                 colour: &Value, part: &Subassembly) {
@@ -225,7 +225,7 @@ pub struct ShapeI(pub TáContext);
 
 impl Instruction for ShapeI {
     fn signature(&self) -> Signature { Signature::new("shape","rrrrrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Shape(self.0.clone(), args[0].reg(),
             args[1].reg(), args[2].reg(), args[3].reg(), args[4].reg(),
             args[5].reg()))

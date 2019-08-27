@@ -35,7 +35,7 @@ fn check_args(r: &Vec<Argument>, pat: &Vec<ArgumentType>) -> bool {
     true
 }
 
-pub fn inst_to_cmd(instr: &Box<Instruction>, r: &Vec<Argument>) -> Result<Box<Command>,String> {
+pub fn inst_to_cmd(instr: &Box<dyn Instruction>, r: &Vec<Argument>) -> Result<Box<dyn Command>,String> {
     let pat = instr.signature().1;
     if check_args(&r,&pat) {
         Ok(instr.build(r))
@@ -44,7 +44,7 @@ pub fn inst_to_cmd(instr: &Box<Instruction>, r: &Vec<Argument>) -> Result<Box<Co
     }
 }
 
-pub fn codegen_cmd(is: &InstructionSet, name: &str, r: &Vec<Argument>) -> Result<Box<Command>,String> {
+pub fn codegen_cmd(is: &InstructionSet, name: &str, r: &Vec<Argument>) -> Result<Box<dyn Command>,String> {
     if let Some(inst) = is.get_inst(name) {
         inst_to_cmd(inst,r)
     } else {
@@ -54,7 +54,7 @@ pub fn codegen_cmd(is: &InstructionSet, name: &str, r: &Vec<Argument>) -> Result
 
 pub fn codegen(is: &InstructionSet, source: &SourceCode) -> Result<BinaryCode,Vec<String>> {
     let mut syms = HashMap::<String,usize>::new();
-    let mut cmds = Vec::<Box<Command>>::new();
+    let mut cmds = Vec::<Box<dyn Command>>::new();
     let mut errors = Vec::<String>::new();
     for stmt in &source.statements {
         match stmt {

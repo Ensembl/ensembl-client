@@ -192,35 +192,35 @@ pub struct GetFocusI(pub TáContext);
 
 impl Instruction for AbuttI {
     fn signature(&self) -> Signature { Signature::new("abutt","rr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Abutt(args[0].reg(),args[1].reg()))
     }
 }
 
 impl Instruction for ExtentI {
     fn signature(&self) -> Signature { Signature::new("extent","r") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Extent(self.0.clone(),args[0].reg()))
     }
 }
 
 impl Instruction for ScaleI {
     fn signature(&self) -> Signature { Signature::new("scale","r") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Scale(self.0.clone(),args[0].reg()))
     }
 }
 
 impl Instruction for PlotI {
     fn signature(&self) -> Signature { Signature::new("plot","rr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Plot(self.0.clone(),args[0].reg(),args[1].reg()))
     }
 }
 
 impl Instruction for AllPlotsI {
     fn signature(&self) -> Signature { Signature::new("allplots","rrrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(AllPlots(self.0.clone(),args[0].reg(),args[1].reg(),
                           args[2].reg(),args[3].reg()))
     }
@@ -228,14 +228,14 @@ impl Instruction for AllPlotsI {
 
 impl Instruction for SetPartI {
     fn signature(&self) -> Signature { Signature::new("setpart","r") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(SetPart(self.0.clone(),args[0].reg()))
     }
 }
 
 impl Instruction for GetFocusI {
     fn signature(&self) -> Signature { Signature::new("getfocus","r") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(GetFocus(self.0.clone(),args[0].reg()))
     }
 }

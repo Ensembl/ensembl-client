@@ -1,11 +1,10 @@
 use std::sync::{ Arc, Mutex };
 use std::collections::{ HashMap, HashSet };
 use composit::Leaf;
-use controller::input::Action;
 use model::stage::{ Screen, Position };
 use types::Dot;
 
-use super::{ ZMenuLeaf, ZMenuLeafSet, ZMenuFeatureTmpl, ZMenuData, ZMenuIntersection };
+use super::{ ZMenuLeaf, ZMenuLeafSet, ZMenuData, ZMenuIntersection };
 
 pub struct ZMenuRegistryImpl {
     zml: HashMap<Leaf,ZMenuLeaf>,
@@ -58,7 +57,7 @@ impl ZMenuRegistry {
         ZMenuRegistry(Arc::new(Mutex::new(ZMenuRegistryImpl::new())))
     }
     
-    pub fn add_leafset(&mut self, mut zmls: ZMenuLeafSet) {
+    pub fn add_leafset(&mut self, zmls: ZMenuLeafSet) {
         self.0.lock().unwrap().add_leafset(zmls);
     }
     

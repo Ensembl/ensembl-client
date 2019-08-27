@@ -65,13 +65,11 @@ impl Object for ObjectMain {
                 self.buf.insert(batch.id(),buf);
             }
         }        
-        if let Some(buf) = self.buf.get(&batch.id()) {
-            if let Some(data) = self.data(batch) {
-                if let Some(buf) = self.buffer(batch) {
-                    ctx.bind_buffer(glctx::ELEMENT_ARRAY_BUFFER,Some(&buf));
-                    let data = TypedArray::<u16>::from(&(data[..])).buffer();
-                    ctx.buffer_data_1(glctx::ELEMENT_ARRAY_BUFFER,Some(&data),glctx::STATIC_DRAW);
-                }
+        if let Some(data) = self.data(batch) {
+            if let Some(buf) = self.buffer(batch) {
+                ctx.bind_buffer(glctx::ELEMENT_ARRAY_BUFFER,Some(&buf));
+                let data = TypedArray::<u16>::from(&(data[..])).buffer();
+                ctx.buffer_data_1(glctx::ELEMENT_ARRAY_BUFFER,Some(&data),glctx::STATIC_DRAW);
             }
         }
     }

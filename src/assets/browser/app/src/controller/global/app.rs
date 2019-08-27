@@ -5,12 +5,12 @@ use stdweb::unstable::TryInto;
 use url::Url;
 
 use composit::{
-    Compositor, StateManager, StickManager,
+    Compositor, StateManager,
     CombinedStickManager,
     AllLandscapes
 };
-use model::stage::{ Position, Screen };
-use model::supply::{ Product, ProductList };
+use model::stage::Screen;
+use model::supply::ProductList;
 use controller::input::{ Action, actions_run, startup_actions, Jumper };
 use controller::global::{ AppRunnerWeak, AppRunner };
 use controller::output::{ Report, ViewportReport, ZMenuReports, Counter };
@@ -23,7 +23,7 @@ use model::stage::Intended;
 use model::supply::build_product;
 use model::train::{ TrainManager, TravellerCreator };
 use tácode::Tácode;
-use types::{ Dot, UP };
+use types::Dot;
 
 use super::WindowState;
 
@@ -64,7 +64,7 @@ impl App {
         let landscapes = AllLandscapes::new();
         let traveller_creator = TravellerCreator::new(&printer);
         let train_manager = TrainManager::new(&printer,&traveller_creator);
-        let mut clerk = HttpXferClerk::new(http_manager,config_url,&cache,&train_manager);
+        let mut clerk = HttpXferClerk::new(http_manager,config_url,&cache);
         let window = WindowState::new(config,tc,&mut clerk,&mut product_list,&mut csm,&train_manager,&landscapes);
         let mut out = App {
             ar: AppRunnerWeak::none(),
@@ -91,7 +91,7 @@ impl App {
     }
 
     fn populate_products(&mut self) {    
-        let mut window = &mut self.window;
+        let window = &mut self.window;
         let track_names : Vec<String> = window.get_backend_config().list_tracks().map(|s| s.to_string()).collect();
         for name in &track_names {
             let product = build_product(window,name);
@@ -192,7 +192,7 @@ impl App {
     }
         
     pub fn run_actions(self: &mut App, evs: &Vec<Action>,currency: Option<f64>) {
-        if let Some(ref mut report) = self.report {
+        if self.report.is_some() {
             if currency.is_none() || self.with_counter(|c| c.is_current(currency.unwrap())) {
                 if self.action_backlog.len() > 0 {
                     console!("running backlog");

@@ -25,7 +25,7 @@ impl<T> ValueStore<T> {
 
     pub fn len(&self) -> usize { self.values.len() }
 
-    pub fn every<'a>(&'a self) -> Box<Iterator<Item=usize>+'a> {
+    pub fn every<'a>(&'a self) -> Box<dyn Iterator<Item=usize>+'a> {
         Box::new(self.values.iter().enumerate()
                                 .filter(|x| x.1.is_some())
                                 .map(|x| x.0))

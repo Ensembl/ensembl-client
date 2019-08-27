@@ -60,7 +60,7 @@ impl ZMenuReports {
     }
     
     pub fn new(ar: &mut AppRunner) -> ZMenuReports {
-        let mut out = ZMenuReports{
+        let out = ZMenuReports{
             queue: Arc::new(Mutex::new(ZMenuEventQueue::new())),
             activated: None
         };

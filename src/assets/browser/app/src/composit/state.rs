@@ -31,9 +31,9 @@ impl StateExpr for StateAtom {
 
 #[allow(unused)]
 pub enum StateOp {
-    And(Rc<StateExpr>,Rc<StateExpr>),
-    Or(Rc<StateExpr>,Rc<StateExpr>),
-    Not(Rc<StateExpr>)
+    And(Rc<dyn StateExpr>,Rc<dyn StateExpr>),
+    Or(Rc<dyn StateExpr>,Rc<dyn StateExpr>),
+    Not(Rc<dyn StateExpr>)
 }
 
 impl StateExpr for StateOp {
@@ -52,7 +52,7 @@ impl StateExpr for StateOp {
 #[allow(unused,dead_code)]
 pub struct StateManager {
     atoms: HashMap<String,bool>,
-    exprs: HashMap<String,Rc<StateExpr>>,
+    exprs: HashMap<String,Rc<dyn StateExpr>>,
     changed: bool
 }
 
@@ -61,7 +61,7 @@ impl StateManager {
     pub fn new() -> StateManager {
         StateManager {
             atoms: HashMap::<String,bool>::new(),
-            exprs: HashMap::<String,Rc<StateExpr>>::new(),
+            exprs: HashMap::<String,Rc<dyn StateExpr>>::new(),
             changed: false
         }
     }

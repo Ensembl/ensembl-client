@@ -1,7 +1,7 @@
 use std::sync::{ Arc, Mutex };
 use types::{ CPixel, CDFraction, cdfraction };
 use controller::global::{ App, AppRunner };
-use controller::input::{ Action, actions_run };
+use controller::input::Action;
 use types::{ Move, Distance, Units, ddiv };
 
 pub struct MousePhysicsImpl {

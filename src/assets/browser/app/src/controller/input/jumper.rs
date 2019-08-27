@@ -1,5 +1,5 @@
 use std::sync::{ Arc, Mutex };
-use stdweb::web::{ XmlHttpRequest, XhrResponseType };
+use stdweb::web::XmlHttpRequest;
 use url::Url;
 
 use serde_json::Value as JSONValue;
@@ -9,9 +9,8 @@ use controller::global::{ App, AppRunner };
 use controller::input::Action;
 use data::{ HttpManager, HttpResponseConsumer, BackendConfig };
 use dom::domutil::browser_time;
-use types::{ Dot, ddiv, LEFT, RIGHT };
+use types::{ Dot, LEFT, RIGHT };
 use model::stage::{ Position, bp_to_zoomfactor };
-use model::train::TrainManager;
 
 use misc_algorithms::marshal::{ json_str, json_obj_get, json_f64, json_bool };
 
@@ -61,7 +60,7 @@ impl JumpZhoosh {
         false
     }
 
-    fn stick(&mut self, t: f64, actions: &mut Vec::<Action>) -> bool {
+    fn stick(&mut self, _t: f64, actions: &mut Vec::<Action>) -> bool {
         if let Some(id) = self.set_id.as_ref() {
             actions.push(Action::SetFocus(id.clone()));
         }
@@ -143,9 +142,9 @@ impl JumperConsumer {
     }
 
     fn select_jump(&self, stick: &str, dest_start: f64, dest_end: f64) {
-        let mut app_ref = self.ar.state();
+        let app_ref = self.ar.state();
         let mut app = app_ref.lock().unwrap();
-        let mut train_manager = app.get_window().get_train_manager();
+        let train_manager = app.get_window().get_train_manager();
         let desired_stick = train_manager.get_desired_stick();
         let desired_position = train_manager.get_desired_position();
         let dest_size = dest_end-dest_start+1.;
@@ -166,7 +165,6 @@ impl JumperConsumer {
         let in_ = req.response_text().map_err(|_|())?;
         let data : JSONValue = serde_json::from_str(&unwrap!(in_)).map_err(|_|())?;
         let stick = json_str(json_obj_get(&data,"stick")?)?;
-        let f : Result<f64,_> = json_str(json_obj_get(&data,"start")?)?.parse();
         let dest_start = json_f64(json_obj_get(&data,"start")?)?;
         let dest_end = json_f64(json_obj_get(&data,"end")?)?;
         let found = json_bool(json_obj_get(&data,"found")?)?;
@@ -181,7 +179,7 @@ impl HttpResponseConsumer for JumperConsumer {
     fn consume(&mut self, req: XmlHttpRequest) {
         match self.jump(req) {
             Ok(()) => (),
-            Err(s) => {
+            Err(_) => {
                 console!("jump error");
             }
         }

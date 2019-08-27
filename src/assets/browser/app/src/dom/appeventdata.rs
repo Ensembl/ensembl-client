@@ -1,7 +1,5 @@
-use dom::event::CustomData;
 use serde_json::Value as JSONValue;
 use serde_json::Map as JSONMap;
-use dom::event::ICustomEvent;
 
 pub struct AppEventData {
     detail: Option<JSONValue>

@@ -18,7 +18,7 @@ pub struct ConstantI();
 
 impl Instruction for ConstantI {
     fn signature(&self) -> Signature { Signature::new("const","rc") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Constant(args[0].reg(),args[1].value()))
     }
 }
@@ -27,7 +27,7 @@ impl Instruction for ConstantI {
 pub struct Move(usize,usize);
 
 impl Move {
-    pub fn new(dest: usize, src: usize) -> Box<Command> {
+    pub fn new(dest: usize, src: usize) -> Box<dyn Command> {
         Box::new(Move(dest,src))
     }
 }
@@ -45,7 +45,7 @@ pub struct MoveI();
 
 impl Instruction for MoveI {
     fn signature(&self) -> Signature { Signature::new("move","rr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Move::new(args[0].reg(),args[1].reg())
     }
 }

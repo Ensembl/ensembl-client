@@ -1,5 +1,4 @@
 use super::BlackBoxDriverImpl;
-use url::Url;
 
 pub struct NullBlackBoxDriverImpl {}
 

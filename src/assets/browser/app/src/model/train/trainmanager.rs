@@ -11,16 +11,15 @@
  * render.
  */
 
-use std::cell::Ref;
 use std::collections::HashSet;
 use std::sync::{ Arc, Mutex };
 
-use composit::{ Leaf, Stick, Scale, StateManager };
+use composit::{ Stick, Scale, StateManager };
 use controller::output::{ Report, ViewportReport };
 use data::XferConsumer;
 use model::driver::PrinterManager;
 use model::item::{ DeliveredItem, ItemUnpacker };
-use model::stage::{ Desired, Intended, Position, Screen };
+use model::stage::{ Desired, Position, Screen };
 use model::supply::Product;
 use model::zmenu::{ ZMenuIntersection, ZMenuRegistry };
 use super::{ Train, TrainId, TrainContext, TravellerCreator };
@@ -274,7 +273,7 @@ impl TrainManagerImpl {
                self.desired.get_stick() != printing_train.get_stick() ||
                self.printing_context() != &self.desired_context {
                 /* we're not currently showing the optimal scale */
-                if let Some(ref mut future_train) = self.future_train {
+                if self.future_train.is_some() {
                     /* there's a future train ... */
                     if !self.future_matches_desired() {
                         /* ... and that's not optimal either */
@@ -451,11 +450,11 @@ impl TrainManager {
         self.0.lock().unwrap().get_prop_trans()
     }
     
-    pub fn with_current_train<F>(&mut self, mut cb: F) where F: FnMut(&mut Train) {
+    pub fn with_current_train<F>(&mut self, cb: F) where F: FnMut(&mut Train) {
         self.0.lock().unwrap().with_current_train(cb)
     }
 
-    pub fn with_transition_train<F>(&mut self, mut cb: F) where F: FnMut(&mut Train) {
+    pub fn with_transition_train<F>(&mut self, cb: F) where F: FnMut(&mut Train) {
         self.0.lock().unwrap().with_transition_train(cb)
     }
 

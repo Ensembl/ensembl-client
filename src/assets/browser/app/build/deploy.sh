@@ -11,7 +11,7 @@ DEST="$BASE/../../../../ensembl/static/browser"
 cd $SRC
 touch Cargo.lock # force build
 if [ "$1" == "check" ] ; then
-  export RUSTFLAGS="--cfg=deploy --cfg=console -A warnings"
+  export RUSTFLAGS="--cfg=deploy --cfg=console"
 else
   export RUSTFLAGS="--cfg=deploy"
 fi

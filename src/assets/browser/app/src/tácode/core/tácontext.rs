@@ -2,10 +2,9 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use controller::global::WindowState;
 use composit::{ AllLandscapes, Leaf };
 use data::{ BackendConfig, UnpackedProductConsumer };
-use model::item::{ DeliveredItem, UnpackedProduct};
+use model::item::UnpackedProduct;
 use model::shape::DrawingSpec;
 use model::supply::Subassembly;
 

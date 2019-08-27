@@ -23,8 +23,8 @@ fn program_type(spec: &RectSpec) -> PTGeom {
                 ZPosition::UnderAll => PTGeom::PageUnderAll,
                 _ => PTGeom::Page
             },
-        RectPosition(Placement::Placed(XPosition::Base(_,_,_),YPosition::Page(_,_)),z) => PTGeom::Pin,
-        RectPosition(Placement::Placed(XPosition::Base(_,_,_),YPosition::Pixel(_,_)),z) => PTGeom::Tape,
+        RectPosition(Placement::Placed(XPosition::Base(_,_,_),YPosition::Page(_,_)),_) => PTGeom::Pin,
+        RectPosition(Placement::Placed(XPosition::Base(_,_,_),YPosition::Pixel(_,_)),_) => PTGeom::Tape,
         RectPosition(Placement::Stretch(_),_) => PTGeom::Stretch
     }
 }
