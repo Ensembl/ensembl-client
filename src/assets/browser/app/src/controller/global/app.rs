@@ -169,7 +169,6 @@ impl App {
     }
 
     pub fn intend_here(&mut self) {
-        console!("intend_here");
         if let Some(desired) = self.window.get_train_manager().get_desired_position() {
             self.intended.intend_here(&desired);
             if let Some(ref report) = self.report {
