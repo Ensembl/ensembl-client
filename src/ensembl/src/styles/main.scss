@@ -3,6 +3,12 @@
 @import 'fonts';
 @import 'animation';
 
+html,
+body,
+.ens-app {
+  height: 100%;
+}
+
 a {
   color: $ens-dark-blue;
   text-decoration: none;
