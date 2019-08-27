@@ -119,6 +119,11 @@ export function browserLocation(
       };
     case getType(browserActions.toggleGenomeSelector):
       return { ...state, genomeSelectorActive: action.payload };
+    case getType(browserActions.validateBrowserUrlAsyncActions.success):
+      return {
+        ...state,
+        regionValidationData: action.payload
+      };
     default:
       return state;
   }

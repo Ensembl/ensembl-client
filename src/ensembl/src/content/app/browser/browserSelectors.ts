@@ -75,6 +75,9 @@ export const getDefaultChrLocation = (state: RootState) => {
   return [chromosome, start, end] as ChrLocation;
 };
 
+export const getRegionValidationInfo = (state: RootState) =>
+  state.browser.browserLocation.regionValidationInfo;
+
 export const getGenomeSelectorActive = (state: RootState) =>
   state.browser.browserLocation.genomeSelectorActive;
 

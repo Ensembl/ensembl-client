@@ -1,9 +1,13 @@
-import { createAction, createStandardAction } from 'typesafe-actions';
+import {
+  createAction,
+  createStandardAction,
+  createAsyncAction
+} from 'typesafe-actions';
 import { Dispatch, ActionCreator, Action } from 'redux';
 import { replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
 import isEqual from 'lodash/isEqual';
-
+import apiService from 'src/services/api-service';
 import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -263,3 +267,24 @@ export const updateApplyToAll = createStandardAction(
 export const toggleGenomeSelector = createStandardAction(
   'toggle-genome-selector'
 )<boolean>();
+
+export const validateBrowserUrlAsyncActions = createAsyncAction(
+  'browser/validate-browser-url-request',
+  'browser/validate-browser-url-success',
+  'browser/validate-browser-url-failure'
+)<void, any, Error>();
+
+export const validateBrowserUrl: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (urlParams: any) => async (dispatch) => {
+  try {
+    dispatch(validateBrowserUrlAsyncActions.request());
+
+    const url = `http://193.62.55.91:30667/api/genome/region/validate?genome_id=${urlParams.genomeId}&region=chromosome ${urlParams.region}`;
+    const response = await apiService.fetch(url, { preserveEndpoint: true });
+
+    dispatch(validateBrowserUrlAsyncActions.success(response));
+  } catch (error) {
+    dispatch(validateBrowserUrlAsyncActions.failure(error));
+  }
+};

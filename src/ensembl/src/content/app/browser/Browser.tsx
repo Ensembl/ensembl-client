@@ -3,14 +3,13 @@ import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { replace, Replace } from 'connected-react-router';
 import { useSpring, animated } from 'react-spring';
-import { Link } from 'react-router-dom';
 import find from 'lodash/find';
 import isEqual from 'lodash/isEqual';
-import upperFirst from 'lodash/upperFirst';
 
 import BrowserBar from './browser-bar/BrowserBar';
 import BrowserImage from './browser-image/BrowserImage';
 import BrowserNavBar from './browser-nav/BrowserNavBar';
+import BrowserHome from './browser-home/BrowserHome';
 import TrackPanel from './track-panel/TrackPanel';
 import AppBar from 'src/shared/components/app-bar/AppBar';
 
@@ -19,7 +18,8 @@ import { ChrLocation, ChrLocations } from './browserState';
 import {
   changeBrowserLocation,
   setDataFromUrlAndSave,
-  ParsedUrlPayload
+  ParsedUrlPayload,
+  validateBrowserUrl
 } from './browserActions';
 import {
   getBrowserNavOpened,
@@ -30,7 +30,8 @@ import {
   getBrowserQueryParams,
   getBrowserActiveEnsObjectId,
   getBrowserActiveEnsObjectIds,
-  getAllChrLocations
+  getAllChrLocations,
+  getRegionValidationInfo
 } from './browserSelectors';
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import { getIsTrackPanelOpened } from './track-panel/trackPanelSelectors';
@@ -74,6 +75,7 @@ type StateProps = {
   launchbarExpanded: boolean;
   exampleEnsObjects: EnsObject[];
   committedSpecies: CommittedItem[];
+  regionValidationInfo: any;
 };
 
 type DispatchProps = {
@@ -84,6 +86,7 @@ type DispatchProps = {
   replace: Replace;
   toggleDrawer: (isDrawerOpened: boolean) => void;
   setDataFromUrlAndSave: (payload: ParsedUrlPayload) => void;
+  validateBrowserUrl: (urlParams: any) => void;
 };
 
 type OwnProps = {};
@@ -170,6 +173,21 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
     props.replace(urlFor.browser(params));
   };
+
+  // Validate input URL
+  useEffect(() => {
+    const {
+      match: {
+        params: { genomeId }
+      },
+      browserQueryParams: { location }
+    } = props;
+
+    props.validateBrowserUrl({
+      genomeId: genomeId,
+      region: location
+    });
+  }, []);
 
   // handle url changes
   useEffect(() => {
@@ -261,6 +279,19 @@ export const Browser: FunctionComponent<BrowserProps> = (
     <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
   );
 
+  const isURLValid = () => {
+    const { regionValidationInfo } = props;
+    if (!regionValidationInfo.genome_id) {
+      return false;
+    }
+    return (
+      regionValidationInfo.genome_id.is_valid &&
+      regionValidationInfo.region.is_valid &&
+      regionValidationInfo.start.is_valid &&
+      regionValidationInfo.end.is_valid
+    );
+  };
+
   return props.activeGenomeId ? (
     <>
       <AppBar
@@ -268,14 +299,8 @@ export const Browser: FunctionComponent<BrowserProps> = (
         activeGenomeId={props.activeGenomeId}
         onTabSelect={changeSelectedSpecies}
       />
-
-      {!props.browserQueryParams.focus && (
-        <section className={styles.browser}>
-          {BrowserBarNode}
-          <ExampleObjectLinks {...props} />
-        </section>
-      )}
-      {props.browserQueryParams.focus && (
+      {(!props.browserQueryParams.focus || !isURLValid()) && <BrowserHome />}
+      {props.browserQueryParams.focus && isURLValid() && (
         <section className={styles.browser}>
           {BrowserBarNode}
           {props.genomeSelectorActive && (
@@ -307,34 +332,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
   ) : null;
 };
 
-const ExampleObjectLinks = (props: BrowserProps) => {
-  const { activeGenomeId } = props;
-  if (!activeGenomeId) {
-    return null;
-  }
-  const links = props.exampleEnsObjects.map((exampleObject: EnsObject) => {
-    const location = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
-    const path = urlFor.browser({
-      genomeId: activeGenomeId,
-      focus: exampleObject.object_id,
-      location
-    });
-
-    return (
-      <div key={exampleObject.object_id} className={styles.exampleLink}>
-        <Link to={path}>
-          <span className={styles.objectType}>
-            {upperFirst(exampleObject.object_type)}
-          </span>
-          <span className={styles.objectLabel}>{exampleObject.label}</span>
-        </Link>
-      </div>
-    );
-  });
-
-  return <div className={styles.exampleLinks}>{links}</div>;
-};
-
 const mapStateToProps = (state: RootState): StateProps => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
   activeEnsObjectId: getBrowserActiveEnsObjectId(state),
@@ -349,7 +346,8 @@ const mapStateToProps = (state: RootState): StateProps => ({
   isTrackPanelOpened: getIsTrackPanelOpened(state),
   launchbarExpanded: getLaunchbarExpanded(state),
   exampleEnsObjects: getExampleEnsObjects(state),
-  committedSpecies: getEnabledCommittedSpecies(state)
+  committedSpecies: getEnabledCommittedSpecies(state),
+  regionValidationInfo: getRegionValidationInfo(state)
 });
 
 const mapDispatchToProps: DispatchProps = {
@@ -359,7 +357,8 @@ const mapDispatchToProps: DispatchProps = {
   fetchGenomeData,
   replace,
   toggleDrawer,
-  setDataFromUrlAndSave
+  setDataFromUrlAndSave,
+  validateBrowserUrl
 };
 
 export default withRouter(

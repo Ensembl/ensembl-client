@@ -1,6 +1,7 @@
 import browserStorageService from './browser-storage-service';
 
 import { TrackStates } from './track-panel/trackPanelConfig';
+import JSONValue from 'src/shared/types/JSON';
 
 const activeGenomeId = browserStorageService.getActiveGenomeId();
 const activeEnsObjectIds = browserStorageService.getActiveEnsObjectIds();
@@ -61,12 +62,14 @@ export type BrowserLocationState = Readonly<{
   chrLocations: ChrLocations; // final location of the browser when user stopped dragging/zooming; used to update the url
   actualChrLocations: ChrLocations; // transient locations that change while user is dragging or zooming
   genomeSelectorActive: boolean;
+  regionValidationInfo: JSONValue;
 }>;
 
 export const defaultBrowserLocationState: BrowserLocationState = {
   chrLocations,
   actualChrLocations: {},
-  genomeSelectorActive: false
+  genomeSelectorActive: false,
+  regionValidationInfo: {}
 };
 
 export type TrackConfigState = Readonly<{
