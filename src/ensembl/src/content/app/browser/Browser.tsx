@@ -41,6 +41,7 @@ import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/sta
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import analyticsTracking from 'src/services/analytics-service';
 
 import { fetchGenomeData } from 'src/genome/genomeActions';
 import {
@@ -204,7 +205,11 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   useEffect(() => {
     const { activeGenomeId, fetchGenomeData } = props;
-    activeGenomeId && fetchGenomeData(activeGenomeId);
+    if (!activeGenomeId) {
+      return;
+    }
+    fetchGenomeData(activeGenomeId);
+    analyticsTracking.setSpeciesDimension(activeGenomeId);
   }, [props.activeGenomeId]);
 
   useEffect(() => {

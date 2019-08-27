@@ -753,9 +753,6 @@ Module.STDWEB_PRIVATE.acquire_tmp = function( dummy ) {
             "__cargo_web_snippet_848ea1c1240c42ae5105b8df122e9a2d6d288162": function($0, $1) {
                 return Module.STDWEB_PRIVATE.acquire_rust_reference( Module.HEAPU16.slice( $0, $1 ) );
             },
-            "__cargo_web_snippet_85b9ecbdb8513465b790546acfd0cd530441b8a4": function($0) {
-                $0 = Module.STDWEB_PRIVATE.to_js($0);($0).stopPropagation();
-            },
             "__cargo_web_snippet_8956c802ab8a6863a8347558d363df26d3d2b9ab": function($0, $1) {
                 $0 = Module.STDWEB_PRIVATE.to_js($0);$1 = Module.STDWEB_PRIVATE.to_js($1);($0).useProgram(($1));
             },
