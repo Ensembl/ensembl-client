@@ -16,6 +16,7 @@ use model::train::TrainManager;
 use misc_algorithms::marshal::{ json_str, json_obj_get, json_f64, json_bool };
 
 const ZHOOSH_TIME : f64 = 500.; /* ms */
+const ZHOOSH_PAUSE : f64 = 250.; /* ms */
 
 pub struct JumpZhoosh {
     ar: AppRunner,
@@ -40,8 +41,12 @@ impl JumpZhoosh {
         out
     }
 
+    fn prop_phase(&self, t: f64) -> f64 {
+        ((t - self.phase_start_time.unwrap() - ZHOOSH_PAUSE)/ZHOOSH_TIME).max(0.).min(1.)
+    }
+
     fn centre(&self, t: f64, actions: &mut Vec::<Action>) -> bool {
-        let pos_prop = ((t-self.phase_start_time.unwrap())/ZHOOSH_TIME).max(0.).min(1.);
+        let pos_prop = self.prop_phase(t);
         let here = self.start.0 + (self.dest.0-self.start.0)*Dot(pos_prop,pos_prop);
         actions.push(Action::Pos(here,None));
         if pos_prop < 1. { return true; }
@@ -49,10 +54,9 @@ impl JumpZhoosh {
     }
 
     fn zoom(&self, t: f64, actions: &mut Vec::<Action>) -> bool {
-        let zoom_prop = ((t-self.phase_start_time.unwrap())/ZHOOSH_TIME).max(0.).min(1.);
+        let zoom_prop = self.prop_phase(t);
         let here = self.start.1 + (self.dest.1-self.start.1)*zoom_prop;
         actions.push(Action::ZoomTo(here));
-        actions.push(Action::Pos(self.dest.0,None));
         if zoom_prop < 1. { return true; }
         false
     }
@@ -75,12 +79,14 @@ impl JumpZhoosh {
         if self.phase_start_time.is_none() {
             self.phase_start_time = Some(browser_time());
         }
+        if t - self.phase_start_time.unwrap() < ZHOOSH_PAUSE { return true; }
+        let zoom_first = self.dest.1 < self.start.1;
         let mut actions = Vec::new();
         let mut more = true;
         let phase_more = match self.phase {
             0 => self.stick(t,&mut actions),
-            1 => self.centre(t,&mut actions),
-            2 => self.zoom(t,&mut actions),
+            1 => if zoom_first { self.zoom(t,&mut actions) } else { self.centre(t,&mut actions) },
+            2 => if zoom_first { self.centre(t,&mut actions) } else { self.zoom(t,&mut actions) },
             _ => { actions.push(Action::Settled); more = false; true }
         };
         if !phase_more {
