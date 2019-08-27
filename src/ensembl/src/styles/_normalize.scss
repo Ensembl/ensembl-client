@@ -93,13 +93,17 @@ pre {
   font-size: 1em; // Correct the odd `em` font sizing in all browsers.
 }
 
-// Make reset inherit font-family instead of settings sans-serif
+// Change the font styles in all browsers.
+// Remove the margin in Firefox and Safari.
 button,
 input,
 optgroup,
 select,
 textarea {
   font-family: inherit;
+  font-size: 100%;
+  line-height: 1;
+  margin: 0;
 }
 
 b,
