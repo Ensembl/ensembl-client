@@ -4,12 +4,14 @@ use url::Url;
 
 use serde_json::Value as JSONValue;
 
+use composit::Stick;
 use controller::global::{ App, AppRunner };
 use controller::input::Action;
 use data::{ HttpManager, HttpResponseConsumer, BackendConfig };
 use dom::domutil::browser_time;
 use types::{ Dot, ddiv, LEFT, RIGHT };
-use model::stage::bp_to_zoomfactor;
+use model::stage::{ Position, bp_to_zoomfactor };
+use model::train::TrainManager;
 
 use misc_algorithms::marshal::{ json_str, json_obj_get, json_f64, json_bool };
 
@@ -104,6 +106,56 @@ impl JumperConsumer {
         }
     }
 
+    fn is_offscreen_jump(&self, current_stick: &Option<Stick>, current_position: &Option<Position>, stick: &str, dest_start: f64, dest_end: f64) -> bool {
+        if current_stick.is_none() || stick != current_stick.as_ref().unwrap().get_name() {
+            return true;
+        }
+        if let Some(desired) = current_position {
+            let screen_left = desired.get_edge(&LEFT,true);
+            let screen_right = desired.get_edge(&RIGHT,true);
+            return dest_end < screen_left || dest_start > screen_right;
+        } else {
+            return false;
+        }
+    }
+
+    fn do_offscreen_jump(&self, app: &mut App, stick: &str, dest_pos: Dot<f64,f64>, dest_zoom: f64) {
+        app.with_jumper(|j|
+            j.zhoosh_to(
+                &Some(stick.to_string()),
+                (dest_pos,dest_zoom),
+                (dest_pos,dest_zoom),
+                &self.set_id));
+    }
+
+    fn do_onscreen_jump(&self, app: &mut App, current_position: &Position, dest_pos: Dot<f64,f64>, dest_zoom: f64) {
+        app.with_jumper(|j| j.zhoosh_to(
+            &None,
+            (current_position.get_middle(),bp_to_zoomfactor(current_position.get_screen_in_bp())),
+            (dest_pos,dest_zoom),
+            &self.set_id));
+    }
+
+    fn select_jump(&self, stick: &str, dest_start: f64, dest_end: f64) {
+        let mut app_ref = self.ar.state();
+        let mut app = app_ref.lock().unwrap();
+        let mut train_manager = app.get_window().get_train_manager();
+        let desired_stick = train_manager.get_desired_stick();
+        let desired_position = train_manager.get_desired_position();
+        let dest_size = dest_end-dest_start+1.;
+        let dest_zoom = if let Some(ref position) = desired_position {
+            position.best_zoom_screen_bp(dest_size)
+        } else {
+            Position::unlimited_best_zoom_screen_bp(dest_size)
+        };
+        let dest_pos = Dot((dest_start+dest_end)/2.,0.);
+        if self.is_offscreen_jump(&desired_stick,&desired_position,stick,dest_start,dest_end) {
+            self.do_offscreen_jump(&mut app,stick,dest_pos,dest_zoom);
+        } else {
+            self.do_onscreen_jump(&mut app,desired_position.as_ref().unwrap(),dest_pos,dest_zoom);
+        }
+    }
+
     fn jump(&mut self, req: XmlHttpRequest) -> Result<(),()> {
         let in_ = req.response_text().map_err(|_|())?;
         let data : JSONValue = serde_json::from_str(&unwrap!(in_)).map_err(|_|())?;
@@ -113,34 +165,7 @@ impl JumperConsumer {
         let dest_end = json_f64(json_obj_get(&data,"end")?)?;
         let found = json_bool(json_obj_get(&data,"found")?)?;
         if found {
-            let mut app_ref = self.ar.state();
-            let mut app = app_ref.lock().unwrap();
-            let mut offscreen = true;
-            if let Some(desired) = app.get_window().get_train_manager().get_desired_position() {
-                let screen_left = desired.get_edge(&LEFT,true);
-                let screen_right = desired.get_edge(&RIGHT,true);
-                offscreen = dest_end < screen_left || dest_start > screen_right;
-            }
-            let current_stick = app.get_window().get_train_manager().get_desired_stick();
-            if current_stick.is_none() || stick != current_stick.unwrap().get_name() {
-                offscreen = true;
-            }
-            let dest_pos = Dot((dest_start+dest_end)/2.,0.);
-            let dest_size = dest_end-dest_start+1.;
-            let dest_zoom = app.get_position().best_zoom_screen_bp(dest_size);
-            let (stick,start,start_left,start_right) = if !offscreen { 
-                let (src,left,right) = {
-                    let left = app.get_position().get_edge(&LEFT,false);
-                    let right = app.get_position().get_edge(&RIGHT,false);
-                    ((app.get_position().get_middle(),bp_to_zoomfactor(app.get_position().get_screen_in_bp())),left,right)
-                };
-                (None,src,left,right)
-            } else { 
-                (Some(stick),(dest_pos,dest_zoom),dest_start,dest_end)
-            };
-            let leftmost = dest_start.min(start_left);
-            let rightmost = dest_end.max(start_right);
-            app.with_jumper(|j| j.zhoosh_to(&stick,start,(dest_pos,dest_zoom),&self.set_id));
+            self.select_jump(&stick,dest_start,dest_end);
         }
         Ok(())
     }

@@ -150,8 +150,7 @@ impl Compositor {
         self.window.get_train_manager().update_state(oom);
     }
     
-    pub fn intersects(&mut self, screen: &Screen, position: &Position, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
-        //self.zmr.intersects(screen,position,pos)
+    pub fn intersects(&mut self, screen: &Screen, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
         let mut zmr = self.zmr.clone();
         self.window.get_train_manager().intersects(screen,pos,&mut zmr)
     }
@@ -161,10 +160,8 @@ pub fn register_compositor_ticks(ar: &mut AppRunner) {
     ar.add_timer("compositor",|app,t,_| {
         app.with_compo(|co| co.tick(t) );
         let max_y = app.get_window().get_all_landscapes().get_low_watermark();
-        app.get_position_mut().set_limit(&DOWN,max_y as f64);
         app.get_window().get_train_manager().set_bottom(max_y as f64);
         app.update_position();
-        app.intend_here();
         vec!{}
     },2);
 }

@@ -2,7 +2,7 @@ use std::fmt;
 
 use super::zoom::{ Zoom, bp_to_zoomfactor };
 use composit::Wrapping;
-use controller::output::Report;
+use controller::output::{ Report, ViewportReport };
 use types::{ Dot, Direction, LEFT, RIGHT, UP, DOWN, IN, OUT, AxisSense };
 
 #[derive(Clone)]
@@ -62,6 +62,10 @@ impl Position {
 
     pub fn best_zoom_screen_bp(&self, bp: f64) -> f64 {
         self.zoom.best_zoom_screen_bp(bp)
+    }
+
+    pub fn unlimited_best_zoom_screen_bp(bp: f64) -> f64 {
+        Zoom::unlimited_best_zoom_screen_bp(bp)
     }
 
     pub fn middle_to_edge(&self, which: &Direction, bump: bool) -> f64 {
@@ -172,19 +176,20 @@ impl Position {
         self.get_edge(direction,true).floor() * mul >= self.get_limit_of_edge(direction).floor() * mul
     }
 
-    pub fn update_bumping_report(&self, report: &Report) {
+    pub fn update_reports(&self, report: &Report) {
         report.set_status_bool("bumper-left",self.bumped(&LEFT));
         report.set_status_bool("bumper-right",self.bumped(&RIGHT));
         report.set_status_bool("bumper-top",self.bumped(&UP));
         report.set_status_bool("bumper-bottom",self.bumped(&DOWN));
         report.set_status_bool("bumper-in",self.bumped(&IN));
         report.set_status_bool("bumper-out",self.bumped(&OUT));
-    }
-
-    pub fn update_position_report(&self, report: &Report) {
         let (aleft,aright) = (self.get_edge(&LEFT,false),self.get_edge(&RIGHT,false));
         report.set_status("a-start",&aleft.floor().to_string());
         report.set_status("a-end",&aright.ceil().to_string());
+    }
+
+    pub fn update_viewport_report(&self, report: &ViewportReport) {
+        report.set_delta_y(-self.get_edge(&UP,false) as i32);
     }
 
     pub fn set_wrapping(&mut self, w: &Wrapping) {

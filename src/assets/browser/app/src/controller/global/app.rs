@@ -47,7 +47,6 @@ pub struct App {
     jumper: Option<Jumper>,
     window: WindowState,
     intended: Intended,
-    position: Position,
     screen: Screen
 }
 
@@ -84,8 +83,7 @@ impl App {
             window: window.clone(),
             jumper: None,
             intended: Intended::new(),
-            screen: Screen::new(),
-            position: Position::new()
+            screen: Screen::new()
         };
         out.populate_products();
         out.run_actions(&startup_actions(),None);        
@@ -103,8 +101,6 @@ impl App {
 
     pub fn get_screen(&self) -> &Screen { &self.screen }
     pub fn get_screen_mut(&mut self) -> &mut Screen { &mut self.screen }
-    pub fn get_position(&self) -> &Position { &self.position }
-    pub fn get_position_mut(&mut self) -> &mut Position { &mut self.position }
     pub fn get_window(&mut self) -> &mut WindowState { &mut self.window }
     
     pub fn tick_xfer(&mut self) -> bool {
@@ -163,16 +159,17 @@ impl App {
     }
     
     pub fn update_position(&mut self) {
+        let train_manager = self.window.get_train_manager();
         if let Some(ref report) = self.report {
-            self.get_position().update_position_report(report);
-            self.get_position().update_bumping_report(report);
+            train_manager.update_reports(report);
         }
         if let Some(ref report) = self.viewport {
-            report.set_delta_y(-self.get_position().get_edge(&UP,false) as i32);
+            train_manager.update_viewport_report(report);
         }
     }
 
     pub fn intend_here(&mut self) {
+        console!("intend_here");
         if let Some(desired) = self.window.get_train_manager().get_desired_position() {
             self.intended.intend_here(&desired);
             if let Some(ref report) = self.report {
@@ -235,7 +232,6 @@ impl App {
         self.stage_resize = Some(sz);
         self.get_screen_mut().set_size(&sz);
         let size = self.get_screen().get_size();
-        self.get_position_mut().inform_screen_size(&sz);
         self.window.get_train_manager().inform_screen_size(&sz);
         self.update_position();
         self.intend_here();
@@ -249,10 +245,8 @@ impl App {
     pub fn settle(&mut self) {
         if let Some(size) = self.stage_resize.take() {
             self.get_screen_mut().set_size(&size);
-            self.get_position_mut().inform_screen_size(&size);
             self.window.get_train_manager().inform_screen_size(&size);
         }
-        self.get_position_mut().settle();
         self.window.get_train_manager().settle();
         self.update_position();
         self.intend_here();

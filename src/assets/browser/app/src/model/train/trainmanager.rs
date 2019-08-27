@@ -16,7 +16,7 @@ use std::collections::HashSet;
 use std::sync::{ Arc, Mutex };
 
 use composit::{ Leaf, Stick, Scale, StateManager };
-use controller::output::Report;
+use controller::output::{ Report, ViewportReport };
 use data::XferConsumer;
 use model::driver::PrinterManager;
 use model::item::{ DeliveredItem, ItemUnpacker };
@@ -375,6 +375,18 @@ impl TrainManagerImpl {
         self.maybe_change_trains();
         self.each_train(|t| t.get_position_mut().set_limit(&DOWN,max_y));
     }
+
+    pub fn update_reports(&self, report: &Report) {
+        if let Some(train) = self.printing_train() {
+            train.get_position().update_reports(report);
+        }
+    }
+
+    pub fn update_viewport_report(&self, report: &ViewportReport) {
+        if let Some(train) = self.printing_train() {
+            train.get_position().update_viewport_report(report);
+        }
+    }
 }
 
 impl XferConsumer for TrainManagerImpl {
@@ -465,6 +477,14 @@ impl TrainManager {
 
     pub fn intersects(&self, screen: &Screen, pos: Dot<i32,i32>, zmr: &ZMenuRegistry) -> HashSet<ZMenuIntersection> {
         ok!(self.0.lock()).intersects(screen,pos,zmr)
+    }
+
+    pub fn update_reports(&self, report: &Report) {
+        ok!(self.0.lock()).update_reports(report);
+    }
+
+    pub fn update_viewport_report(&self, report: &ViewportReport) {
+        ok!(self.0.lock()).update_viewport_report(report);
     }
 }
 

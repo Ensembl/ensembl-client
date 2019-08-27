@@ -54,6 +54,10 @@ impl Zoom {
         bp_to_zoomfactor(self.check_limits_bp(bp))
     }
 
+    pub fn unlimited_best_zoom_screen_bp(bp: f64) -> f64 {
+        bp_to_zoomfactor(bp)
+    }
+
     pub fn get_screen_in_bp(&self) -> f64 {
         self.linzoom
     }
