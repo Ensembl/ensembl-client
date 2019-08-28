@@ -1,5 +1,7 @@
 include!(concat!(env!("OUT_DIR"), "/thisbuild.rs"));
 
+pub const API_VERSION: u32 = 3;
+
 use util::get_instance_id;
 
 pub fn build_summary() -> String {
@@ -7,13 +9,14 @@ pub fn build_summary() -> String {
 Built by {} in {} on {} on {}
 Git version {}
 Local changes list: {}
-deploy={} console={} instance_id={}
+deploy={} console={} instance_id={} API_VERSION={}
 {}
 "##,
             VERSION_USER,VERSION_DIR,VERSION_HOSTNAME,VERSION_DATE,
             VERSION_GIT,VERSION_CHANGES,
             cfg!(deploy),cfg!(console),
             get_instance_id(),
+            API_VERSION,
             VERSION_POM
             )
 }

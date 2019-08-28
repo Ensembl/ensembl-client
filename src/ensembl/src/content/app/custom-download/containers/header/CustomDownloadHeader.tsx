@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { PrimaryButton } from 'src/shared/button/Button';
+import { PrimaryButton } from 'src/shared/components/button/Button';
 
-import RoundButton from 'src/shared/round-button/RoundButton';
+import RoundButton from 'src/shared/components/round-button/RoundButton';
 
 import { RootState } from 'src/store';
-import Select, { Option } from 'src/shared/select/Select';
+import Select, { Option } from 'src/shared/components/select/Select';
 
 import {
   getSelectedPreFilter,
@@ -23,7 +23,7 @@ import {
   setShowPreview,
   setDownloadType
 } from '../../state/customDownloadActions';
-import ImageButton from 'src/shared/image-button/ImageButton';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as BackIcon } from 'static/img/shared/chevron-left.svg';
 
 import { fetchCustomDownloadResults } from './customDownloadHeaderHelper';
@@ -63,7 +63,7 @@ const Header = (props: Props) => {
     props.setShowPreview(false);
   };
 
-  let resultCount: number = props.preview.resultCount
+  const resultCount: number = props.preview.resultCount
     ? (props.preview.resultCount as number)
     : 0;
 
@@ -79,9 +79,9 @@ const Header = (props: Props) => {
     return optionClone;
   });
 
-  let downloadButtonStatus = props.downloadType === '';
+  const downloadButtonStatus = props.downloadType === '';
 
-  let disablePreviewButton = resultCount === 0;
+  const disablePreviewButton = resultCount === 0;
 
   const getFormattedResult = () => {
     return (

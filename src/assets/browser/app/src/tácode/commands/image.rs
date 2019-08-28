@@ -12,7 +12,7 @@ use model::shape::{ DrawingSpec, DrawingHash, bitmap_texture };
 use tácode::{ TáContext, TáTask };
 use types::cpixel;
 
-fn load_asset(cfg: &Rc<BackendConfig>, asset: &str, index: usize) -> Value {
+fn load_asset(cfg: &BackendConfig, asset: &str, index: usize) -> Value {
     if let Some(asset) = cfg.get_asset(asset) {
         return asset.get_stream(index).clone();
     } else {
@@ -38,11 +38,11 @@ impl Command for Asset {
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,_,_,_,_,cfg) = task {
+            if let TáTask::MakeShapes(backend_config,_,_,_,_,_,_,_,_) = task {
                 let regs = rt.registers();
                 regs.get(self.2).as_string(|name| {
                     regs.get(self.3).as_floats(|index| {
-                        regs.set(self.1,load_asset(cfg,&name[0],index[0] as usize));
+                        regs.set(self.1,load_asset(backend_config,&name[0],index[0] as usize));
                     });
                 });
             }
@@ -56,7 +56,7 @@ impl Command for Image {
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,_,ref mut tx,_,_,_) = task {
+            if let TáTask::MakeShapes(_,_,_,ref mut tx,_,_,_,_,_) = task {
                 let regs = rt.registers();
                 regs.get(self.2).as_floats(|dims| {
                     regs.get(self.3).as_string(|data| {

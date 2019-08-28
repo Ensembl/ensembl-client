@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback } from 'react';
+import React, { FunctionComponent, useCallback, useRef } from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -14,6 +14,7 @@ import {
   getBrowserCogTrackList,
   getBrowserSelectedCog
 } from '../browserSelectors';
+import analyticsTracking from 'src/services/analytics-service';
 
 import styles from './BrowserTrackConfig.scss';
 
@@ -25,23 +26,28 @@ import trackHighlightBtn from 'static/img/browser/icon_tracks_highlight_grey.svg
 import trackMoveBtn from 'static/img/browser/icon_tracks_move_grey.svg';
 import { RootState } from 'src/store';
 import { CogList } from '../browserState';
-import Checkbox from 'src/shared/checkbox/Checkbox';
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 type StateProps = {
   applyToAll: boolean;
   browserCogTrackList: CogList;
-  selectedCog: any;
-  trackConfigLabel: any;
-  trackConfigNames: any;
+  selectedCog: string | null;
+  trackConfigLabel: { [key: string]: boolean };
+  trackConfigNames: { [key: string]: boolean };
 };
 
 type DispatchProps = {
   updateApplyToAll: (yn: boolean) => void;
-  updateTrackConfigLabel: (selectedCog: any, sense: boolean) => void;
-  updateTrackConfigNames: (selectedCog: any, sense: boolean) => void;
+  updateTrackConfigLabel: (selectedCog: string | null, sense: boolean) => void;
+  updateTrackConfigNames: (selectedCog: string | null, sense: boolean) => void;
 };
 
-type BrowserTrackConfigProps = StateProps & DispatchProps;
+type OwnProps = {
+  onClose: () => void;
+};
+
+type BrowserTrackConfigProps = StateProps & DispatchProps & OwnProps;
 
 const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
   props: BrowserTrackConfigProps
@@ -49,54 +55,76 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
   const {
     applyToAll,
     browserCogTrackList,
-    selectedCog,
     trackConfigNames,
     trackConfigLabel
   } = props;
 
-  const trackOurConfigName = trackConfigNames[selectedCog];
-  const trackOurConfigLabel = trackConfigLabel[selectedCog];
+  const selectedCog = props.selectedCog || '';
 
-  const nameIcon = trackOurConfigName
+  const shouldShowTrackName = trackConfigNames[selectedCog] || false;
+  const shouldShowTrackLabels = trackConfigLabel[selectedCog] || false;
+
+  const ref = useRef(null);
+  useOutsideClick(ref, props.onClose);
+
+  const nameIcon = shouldShowTrackName
     ? tracksSliderOnIcon
     : tracksSliderOffIcon;
   const labelIcon =
-    trackOurConfigLabel !== false ? tracksSliderOnIcon : tracksSliderOffIcon;
+    shouldShowTrackLabels !== false ? tracksSliderOnIcon : tracksSliderOffIcon;
 
   const toggleName = useCallback(() => {
     if (applyToAll) {
-      Object.keys(browserCogTrackList).map((name) => {
-        props.updateTrackConfigNames(name, !trackOurConfigName);
+      Object.keys(browserCogTrackList).forEach((name) => {
+        props.updateTrackConfigNames(name, !shouldShowTrackName);
       });
     } else {
-      props.updateTrackConfigNames(selectedCog, !trackOurConfigName);
+      props.updateTrackConfigNames(selectedCog, !shouldShowTrackName);
     }
+
+    analyticsTracking.trackEvent({
+      category: 'track_settings',
+      label: selectedCog,
+      action: 'track_name_' + (shouldShowTrackName ? 'off' : 'on')
+    });
   }, [
     selectedCog,
     props.updateTrackConfigNames,
-    trackOurConfigName,
+    shouldShowTrackName,
     applyToAll,
     browserCogTrackList
   ]);
 
   const toggleLabel = useCallback(() => {
     if (applyToAll) {
-      Object.keys(browserCogTrackList).map((name) => {
-        props.updateTrackConfigLabel(name, !trackOurConfigLabel);
+      Object.keys(browserCogTrackList).forEach((name) => {
+        props.updateTrackConfigLabel(name, !shouldShowTrackLabels);
       });
     } else {
-      props.updateTrackConfigLabel(selectedCog, !trackOurConfigLabel);
+      props.updateTrackConfigLabel(selectedCog, !shouldShowTrackLabels);
     }
+
+    analyticsTracking.trackEvent({
+      category: 'track_settings',
+      label: selectedCog,
+      action: 'feature_label_' + (shouldShowTrackLabels ? 'off' : 'on')
+    });
   }, [
     selectedCog,
     updateTrackConfigLabel,
-    trackOurConfigLabel,
+    shouldShowTrackLabels,
     applyToAll,
     browserCogTrackList
   ]);
 
   const applyToAllToggle = useCallback(() => {
     props.updateApplyToAll(!applyToAll);
+
+    analyticsTracking.trackEvent({
+      category: 'track_settings',
+      label: selectedCog,
+      action: 'apply_to_all - ' + (applyToAll ? 'unselected' : 'selected')
+    });
   }, [applyToAll, updateApplyToAll]);
 
   const checkboxStyles = {
@@ -104,7 +132,7 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
   };
 
   return (
-    <section className={styles.trackConfig}>
+    <section className={styles.trackConfig} ref={ref}>
       <dl>
         <dd>
           <Checkbox

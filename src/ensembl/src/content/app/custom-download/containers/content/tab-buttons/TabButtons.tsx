@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import RoundButton, {
   RoundButtonStatus
-} from 'src/shared/round-button/RoundButton';
-import BadgedButton from 'src/shared/badged-button/BadgedButton';
+} from 'src/shared/components/round-button/RoundButton';
+import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
 
 import { getSelectedTab } from '../../../state/customDownloadSelectors';
 
@@ -34,7 +34,7 @@ type SelectedFilters = {
 
 const getTotalSelectedAttributes = (
   attributes: SelectedAttributes,
-  totalSelectedAttributes: number = 0
+  totalSelectedAttributes = 0
 ) => {
   Object.keys(attributes).forEach((key) => {
     if (typeof attributes[key] === 'boolean' && attributes[key] === true) {
@@ -52,7 +52,7 @@ const getTotalSelectedAttributes = (
 
 const getTotalSelectedFilters = (
   filters: SelectedFilters,
-  totalSelectedFilters: number = 0
+  totalSelectedFilters = 0
 ) => {
   if (!filters) {
     return 0;

@@ -2,9 +2,10 @@ import React, { MouseEvent, ReactNode, useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
+import analyticsTracking from 'src/services/analytics-service';
 import ImageButton, {
   ImageButtonStatus
-} from 'src/shared/image-button/ImageButton';
+} from 'src/shared/components/image-button/ImageButton';
 
 import { TrackItemColour, TrackItemColourKey } from '../trackPanelConfig';
 import {
@@ -106,6 +107,14 @@ const TrackPanelListItem = (props: TrackPanelListItemProps) => {
 
   const drawerViewButtonHandler = () => {
     const viewName = track.track_id;
+
+    if (drawerView !== viewName) {
+      analyticsTracking.trackEvent({
+        category: 'track_drawer',
+        label: viewName,
+        action: 'opened'
+      });
+    }
 
     updateDrawerView(viewName);
   };

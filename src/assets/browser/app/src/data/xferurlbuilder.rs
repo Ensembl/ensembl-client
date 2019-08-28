@@ -1,6 +1,9 @@
 use std::collections::{ HashMap, HashSet };
 use itertools::Itertools;
 
+use controller::global::WindowState;
+use model::supply::{ PurchaseOrder };
+
 struct ChromBuilder {
     input: HashSet<(String,String)>,
     output: Vec<String>
@@ -51,22 +54,30 @@ impl ChromBuilder {
     }
 }
 
+#[derive(Debug)]
 pub struct XferUrlBuilder {
-    data: HashMap<String,Vec<(String,String)>>
+    data: HashMap<(String,Option<String>),Vec<(String,String)>>
 }
 
 impl XferUrlBuilder {
     pub fn new() -> XferUrlBuilder {
         XferUrlBuilder {
-            data: HashMap::<String,Vec<(String,String)>>::new()
+            data: HashMap::new()
         }
     }
     
-    pub fn add(&mut self, wire: &str, chrom: &str, leaf: &str) {
-        let set = self.data.entry(chrom.to_string()).or_insert_with(||
-            Vec::<(String,String)>::new()
-        );
-        set.push((wire.to_string(),leaf.to_string()));
+    pub fn add(&mut self, window: &mut WindowState, po: &PurchaseOrder) {
+        let (stick,pane) = po.get_leaf().get_short_spec();
+        let focus = po.get_focus().clone();
+        if let Some(wire) = window.get_backend_config()
+                .get_track(&po.get_product().get_product_name())
+                .and_then(|x| x.get_wire().as_ref()) {
+            let supersection = (stick.clone(),focus.clone());
+            let set = self.data.entry(supersection).or_insert_with(||
+                Vec::<(String,String)>::new()
+            );
+            set.push((wire.clone(),pane.clone()));
+        }
     }
     
     fn emit_chrom(&self, values: &Vec<(String,String)>) -> String {
@@ -77,8 +88,13 @@ impl XferUrlBuilder {
     
     pub fn emit(&self) -> String {
         let mut chroms = Vec::<(String,String)>::new();
-        for (chrom,v) in &self.data {
-            chroms.push((chrom.to_string(),self.emit_chrom(v)));
+        for ((stick,focus),v) in &self.data {
+            let supersection = if let Some(focus) = focus {
+                format!("{}~{}",focus,stick)
+            } else {
+                stick.to_string()
+            };
+            chroms.push((supersection,self.emit_chrom(v)));
         }
         chroms.sort();
         let chroms : Vec<String> = chroms

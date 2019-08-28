@@ -11,10 +11,7 @@ import {
   getBrowserActiveEnsObject,
   getBrowserTrackStates
 } from '../browserSelectors';
-import {
-  getActiveGenomeBookmarks,
-  getActiveGenomePreviouslyViewedObjects
-} from './trackPanelSelectors';
+import { getActiveGenomePreviouslyViewedObjects } from './trackPanelSelectors';
 
 import { Bookmark } from './trackPanelState';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
@@ -42,6 +39,7 @@ const buildBookmark = (
   };
 };
 
+import analyticsTracking from 'src/services/analytics-service';
 import { getActiveTrackPanel } from './trackPanelSelectors';
 import { TrackPanelStateForGenome } from './trackPanelState';
 
@@ -83,6 +81,12 @@ export const selectTrackPanelTabAndSave: ActionCreator<
 
   browserStorageService.updateSelectedTrackPanelTab({
     [activeGenomeId]: selectedTrackPanelTab
+  });
+
+  analyticsTracking.trackEvent({
+    category: 'track_panel_tab',
+    label: selectedTrackPanelTab,
+    action: 'selected'
   });
 
   dispatch(

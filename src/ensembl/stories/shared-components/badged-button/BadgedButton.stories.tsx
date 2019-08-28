@@ -2,14 +2,14 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
-import Roundbutton from 'src/shared/round-button/RoundButton';
-import BadgedButton from 'src/shared/badged-button/BadgedButton';
-import { SecondaryButton } from 'src/shared/button/Button';
+import Roundbutton from 'src/shared/components/round-button/RoundButton';
+import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
+import { SecondaryButton } from 'src/shared/components/button/Button';
 import { ReactComponent as DownloadIcon } from 'static/img/track-panel/download.svg';
 import styles from './BadgedButton.stories.scss';
 import ImageButton, {
   ImageButtonStatus
-} from 'src/shared/image-button/ImageButton';
+} from 'src/shared/components/image-button/ImageButton';
 
 const onClick = action('button-click');
 

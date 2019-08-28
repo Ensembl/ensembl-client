@@ -10,7 +10,7 @@ use drivers::webgl::{ Artist, Artwork };
 
 use model::shape::{ DrawingSpec, ShapeSpec };
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 pub struct StretchTextureSpec {
     pos: RLeaf,
     aspec: DrawingSpec

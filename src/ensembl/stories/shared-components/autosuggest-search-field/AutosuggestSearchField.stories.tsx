@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
-import AutosuggestSearchField from 'src/shared/autosuggest-search-field/AutosuggestSearchField';
-import QuestionButton from 'src/shared/question-button/QuestionButton';
+import AutosuggestSearchField from 'src/shared/components/autosuggest-search-field/AutosuggestSearchField';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import notes from './autosuggestSearchField.md';
 

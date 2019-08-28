@@ -4,8 +4,8 @@ import { action } from '@storybook/addon-actions';
 
 import Roundbutton, {
   RoundButtonStatus
-} from 'src/shared/round-button/RoundButton';
-import BadgedButton from 'src/shared/badged-button/BadgedButton';
+} from 'src/shared/components/round-button/RoundButton';
+import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
 
 import styles from './RoundButton.stories.scss';
 

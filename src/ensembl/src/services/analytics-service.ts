@@ -1,5 +1,5 @@
 import ReactGA from 'react-ga';
-import { AnalyticsOptions } from 'src/analyticsHelper';
+import { AnalyticsOptions, CustomDimensions } from 'src/analyticsHelper';
 
 import config from 'config';
 
@@ -30,6 +30,16 @@ class AnalyticsTracking {
       transport: 'xhr',
       value: ga.value
     });
+  }
+
+  // Set app custom dimension
+  public setAppDimension(page: string) {
+    this.reactGA.ga('set', CustomDimensions.APP, page);
+  }
+
+  // Set species custom dimension
+  public setSpeciesDimension(genomeId: string) {
+    this.reactGA.ga('set', CustomDimensions.SPECIES, genomeId);
   }
 }
 

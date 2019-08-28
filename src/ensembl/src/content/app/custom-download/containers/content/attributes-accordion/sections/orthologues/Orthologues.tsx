@@ -27,7 +27,7 @@ import {
   updateSelectedAttributes
 } from '../../../../../state/attributes/attributesActions';
 
-import Input from 'src/shared/input/Input';
+import Input from 'src/shared/components/input/Input';
 import set from 'lodash/set';
 import styles from './Orthologues.scss';
 

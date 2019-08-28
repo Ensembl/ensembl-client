@@ -8,6 +8,9 @@ import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+
+import { fetchEnsObject } from 'src/ens-object/ensObjectActions';
+
 import {
   BrowserNavStates,
   ChrLocation,
@@ -18,7 +21,9 @@ import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectId,
   getBrowserTrackStates,
-  getChrLocation
+  getChrLocation,
+  getBrowserMessageCount,
+  getBrowserActiveEnsObjectIds
 } from './browserSelectors';
 
 import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/browser/track-panel/trackPanelActions';
@@ -26,7 +31,7 @@ import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/browser/tr
 import { getChrLocationStr } from './browserHelper';
 import browserStorageService from './browser-storage-service';
 import { RootState } from 'src/store';
-import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
+import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
 import { TrackStates } from './track-panel/trackPanelConfig';
 import { BROWSER_CONTAINER_ID } from './browser-constants';
 
@@ -96,6 +101,32 @@ export const updateBrowserActiveGenomeIdAndSave: ActionCreator<
 > = (activeGenomeId: string) => (dispatch) => {
   dispatch(updateBrowserActiveGenomeId(activeGenomeId));
   browserStorageService.saveActiveGenomeId(activeGenomeId);
+};
+
+export const updateBrowserActiveEnsObjectIds = createStandardAction(
+  'browser/update-active-ens-object-ids'
+)<{ [objectId: string]: string }>();
+
+export const updateBrowserActiveEnsObjectIdsAndSave: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (activeEnsObjectId: string) => {
+  return (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getBrowserActiveGenomeId(state);
+    if (!activeGenomeId) {
+      return;
+    }
+    const currentActiveEnsObjectIds = getBrowserActiveEnsObjectIds(state);
+    const updatedActiveEnsObjectId = {
+      ...currentActiveEnsObjectIds,
+      [activeGenomeId]: activeEnsObjectId
+    };
+
+    dispatch(updateBrowserActiveEnsObjectIds(updatedActiveEnsObjectId));
+    dispatch(fetchEnsObject(activeEnsObjectId));
+
+    browserStorageService.updateActiveEnsObjectIds(updatedActiveEnsObjectId);
+  };
 };
 
 export const updateTrackStates = createStandardAction(
@@ -194,15 +225,32 @@ export const changeBrowserLocation: ActionCreator<
   return (dispatch, getState: () => RootState) => {
     const state = getState();
     const [chrCode, startBp, endBp] = chrLocation;
-    const messageCount = state.browser.browserEntity.messageCounter;
+    const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
+    const messageCount = getBrowserMessageCount(state);
+    const focusInstruction = activeEnsObjectId
+      ? {
+          focus: activeEnsObjectId
+        }
+      : {};
 
     browserMessagingService.send('bpane', {
       stick: `${genomeId}:${chrCode}`,
-      'message-counter': messageCount
+      goto: `${startBp}-${endBp}`,
+      'message-counter': messageCount,
+      ...focusInstruction
     });
+  };
+};
+
+export const changeFocusObject: ActionCreator<
+  ThunkAction<any, any, null, Action<string>>
+> = (objectId) => {
+  return (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const messageCount = getBrowserMessageCount(state);
 
     browserMessagingService.send('bpane', {
-      goto: `${startBp}-${endBp}`,
+      focus: objectId,
       'message-counter': messageCount
     });
   };
@@ -218,7 +266,7 @@ export const updateCogTrackList = createStandardAction(
 
 export const updateSelectedCog = createStandardAction(
   'browser/update-selected-cog'
-)<string>();
+)<string | null>();
 
 export const updateTrackConfigNames = createAction(
   'browser/update-track-config-names',
