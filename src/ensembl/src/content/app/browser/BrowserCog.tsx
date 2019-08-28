@@ -5,6 +5,7 @@ import React, {
   useState,
   useEffect
 } from 'react';
+import analyticsTracking from 'src/services/analytics-service';
 
 import cogOnIcon from 'static/img/shared/cog-on.svg';
 import cogOffIcon from 'static/img/shared/cog.svg';
@@ -14,7 +15,7 @@ import { useTransition, animated } from 'react-spring';
 type BrowserCogProps = {
   cogActivated: boolean;
   index: string;
-  updateSelectedCog: (index: string) => void;
+  updateSelectedCog: (index: string | null) => void;
 };
 
 const BrowserCog: FunctionComponent<BrowserCogProps> = (
@@ -25,8 +26,14 @@ const BrowserCog: FunctionComponent<BrowserCogProps> = (
   const toggleCog = useCallback(() => {
     if (cogActivated === false) {
       updateSelectedCog(index);
+
+      analyticsTracking.trackEvent({
+        category: 'track_settings',
+        label: index,
+        action: 'opened'
+      });
     } else {
-      updateSelectedCog('');
+      updateSelectedCog(null);
     }
   }, [cogActivated]);
 
@@ -65,7 +72,9 @@ const BrowserCog: FunctionComponent<BrowserCogProps> = (
         return (
           item && (
             <animated.div key={key} style={style}>
-              <BrowserTrackConfig />
+              <BrowserTrackConfig
+                onClose={() => props.updateSelectedCog(null)}
+              />
             </animated.div>
           )
         );

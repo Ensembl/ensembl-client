@@ -6,6 +6,15 @@ export type AnalyticsOptions = {
   value?: number;
 };
 
+/*
+  These dimensions are defined here:
+  Analytics -> 2020 -> Admin -> Custom Definitions -> Custom Dimensions
+*/
+export enum CustomDimensions {
+  SPECIES = 'dimension1',
+  APP = 'dimension2'
+}
+
 export type AnalyticsType = {
   ga: AnalyticsOptions;
 };
