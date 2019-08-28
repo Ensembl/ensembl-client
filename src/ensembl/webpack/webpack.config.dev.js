@@ -72,7 +72,7 @@ const devConfig = {
         secure: false
       },
       '/browser': {
-        target: 'http://193.62.55.91:30319', // FIXME: change back
+        target: 'https://staging-2020.ensembl.org',
         changeOrigin: true,
         secure: false
       }
