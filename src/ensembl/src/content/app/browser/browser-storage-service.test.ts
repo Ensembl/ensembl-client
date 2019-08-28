@@ -1,5 +1,5 @@
 import { BrowserStorageService, StorageKeys } from './browser-storage-service';
-import { ImageButtonStatus } from 'src/shared/image-button/ImageButton';
+import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
 import { TrackSet } from './track-panel/trackPanelConfig';
 
 const mockStorageService = {

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import Checkbox from 'src/shared/checkbox/Checkbox';
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import styles from './CheckboxWithTextfields.scss';
 
-import ImageButton from 'src/shared/image-button/ImageButton';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as AddIcon } from 'static/img/browser/zoom-in.svg';
 import PasteOrUpload from '../paste-or-upload/PasteOrUpload';
 

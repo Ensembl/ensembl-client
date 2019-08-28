@@ -12,12 +12,13 @@ import BrowserBar from './browser-bar/BrowserBar';
 import BrowserImage from './browser-image/BrowserImage';
 import BrowserNavBar from './browser-nav/BrowserNavBar';
 import TrackPanel from './track-panel/TrackPanel';
-import AppBar from 'src/shared/app-bar/AppBar';
+import AppBar from 'src/shared/components/app-bar/AppBar';
 
 import { RootState } from 'src/store';
 import { ChrLocation, ChrLocations } from './browserState';
 import {
   changeBrowserLocation,
+  changeFocusObject,
   setDataFromUrlAndSave,
   ParsedUrlPayload
 } from './browserActions';
@@ -40,6 +41,7 @@ import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/sta
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import analyticsTracking from 'src/services/analytics-service';
 
 import { fetchGenomeData } from 'src/genome/genomeActions';
 import {
@@ -77,6 +79,7 @@ type StateProps = {
 
 type DispatchProps = {
   changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
+  changeFocusObject: (objectId: string) => void;
   changeDrawerView: (drawerView: string) => void;
   closeDrawer: () => void;
   fetchGenomeData: (genomeId: string) => void;
@@ -145,7 +148,11 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
     props.setDataFromUrlAndSave(payload);
 
-    chrLocation && dispatchBrowserLocation(genomeId, chrLocation);
+    if (chrLocation) {
+      dispatchBrowserLocation(genomeId, chrLocation);
+    } else if (focus) {
+      props.changeFocusObject(focus);
+    }
     lastGenomeIdRef.current = genomeId;
   };
 
@@ -198,7 +205,11 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   useEffect(() => {
     const { activeGenomeId, fetchGenomeData } = props;
-    activeGenomeId && fetchGenomeData(activeGenomeId);
+    if (!activeGenomeId) {
+      return;
+    }
+    fetchGenomeData(activeGenomeId);
+    analyticsTracking.setSpeciesDimension(activeGenomeId);
   }, [props.activeGenomeId]);
 
   useEffect(() => {
@@ -308,11 +319,9 @@ const ExampleObjectLinks = (props: BrowserProps) => {
     return null;
   }
   const links = props.exampleEnsObjects.map((exampleObject: EnsObject) => {
-    const location = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
     const path = urlFor.browser({
       genomeId: activeGenomeId,
-      focus: exampleObject.object_id,
-      location
+      focus: exampleObject.object_id
     });
 
     return (
@@ -349,6 +358,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
 
 const mapDispatchToProps: DispatchProps = {
   changeBrowserLocation,
+  changeFocusObject,
   changeDrawerView,
   closeDrawer,
   fetchGenomeData,

@@ -5,11 +5,13 @@ use stdweb::unstable::TryInto;
 use url::Url;
 
 use composit::{
-    Compositor, StateManager, Stage, StickManager, SourceManager,
-    CombinedStickManager, SourceManagerList, ActiveSource,
-    CombinedSourceManager, AllLandscapes
+    Compositor, StateManager, StickManager,
+    CombinedStickManager,
+    AllLandscapes
 };
-use controller::input::{ Action, actions_run, startup_actions };
+use model::stage::{ Position, Screen };
+use model::supply::{ Product, ProductList };
+use controller::input::{ Action, actions_run, startup_actions, Jumper };
 use controller::global::{ AppRunnerWeak, AppRunner };
 use controller::output::{ Report, ViewportReport, ZMenuReports, Counter };
 use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, XferCache };
@@ -17,8 +19,13 @@ use debug::add_debug_sticks;
 use dom::domutil;
 use drivers::webgl::GLPrinter;
 use model::driver::{ Printer, PrinterManager };
+use model::stage::Intended;
+use model::supply::build_product;
+use model::train::{ TrainManager, TravellerCreator };
 use tácode::Tácode;
-use types::Dot;
+use types::{ Dot, UP };
+
+use super::WindowState;
 
 const SETTLE_TIME : f64 = 500.; // ms
 const CANVAS : &str = r##"<canvas id="canvas"></canvas>"##;
@@ -28,20 +35,19 @@ pub struct App {
     browser_el: HtmlElement,
     canv_el: HtmlElement,
     pub printer: Arc<Mutex<PrinterManager>>,
-    pub stage: Arc<Mutex<Stage>>,
     pub state: Arc<Mutex<StateManager>>,
     pub compo: Arc<Mutex<Compositor>>,
-    sticks: Box<StickManager>,
     report: Option<Report>,
     viewport: Option<ViewportReport>,
     zmenu_reports: Option<ZMenuReports>,
-    csl: SourceManagerList,
-    http_clerk: HttpXferClerk,
-    als: AllLandscapes,
     size: Option<Dot<f64,f64>>,
     last_resize_at: Option<f64>,
     stage_resize: Option<Dot<f64,f64>>,
-    action_backlog: Vec<Action>
+    action_backlog: Vec<Action>,
+    jumper: Option<Jumper>,
+    window: WindowState,
+    intended: Intended,
+    screen: Screen
 }
 
 impl App {
@@ -52,57 +58,53 @@ impl App {
         let bsm = BackendStickManager::new(config);
         let mut csm = CombinedStickManager::new(bsm);
         add_debug_sticks(&mut csm);
-        let cache = XferCache::new(5000,config);
-        let clerk = HttpXferClerk::new(http_manager,config,config_url,&cache);
+        let cache = XferCache::new(1024,config);
+        let mut product_list = ProductList::new();
         let printer = PrinterManager::new(Box::new(GLPrinter::new(&canv_el)));
+        let landscapes = AllLandscapes::new();
+        let traveller_creator = TravellerCreator::new(&printer);
+        let train_manager = TrainManager::new(&printer,&traveller_creator);
+        let mut clerk = HttpXferClerk::new(http_manager,config_url,&cache,&train_manager);
+        let window = WindowState::new(config,tc,&mut clerk,&mut product_list,&mut csm,&train_manager,&landscapes);
         let mut out = App {
             ar: AppRunnerWeak::none(),
             browser_el: browser_el.clone(),
             canv_el: canv_el.clone(),
             printer: Arc::new(Mutex::new(printer.clone())),
-            stage:  Arc::new(Mutex::new(Stage::new())),
-            compo: Arc::new(Mutex::new(Compositor::new(printer,&cache,Box::new(clerk.clone())))),
+            compo: Arc::new(Mutex::new(Compositor::new(&window,&traveller_creator,&cache))),
             state: Arc::new(Mutex::new(StateManager::new())),
-            sticks: Box::new(csm),
             report: None,
             viewport: None,
             zmenu_reports: None,
-            csl: SourceManagerList::new(),
-            http_clerk: clerk,
-            als: AllLandscapes::new(),
             size: None,
             stage_resize: None,
             last_resize_at: None,
-            action_backlog: Vec::new()
+            action_backlog: Vec::new(),
+            window: window.clone(),
+            jumper: None,
+            intended: Intended::new(),
+            screen: Screen::new()
         };
-        let dsm = {
-            let compo = &out.compo.lock().unwrap();
-            CombinedSourceManager::new(&tc,config,&compo.get_zmr(),&out.als,&out.http_clerk)
-        };
-        out.csl.add_compsource(Box::new(dsm));
+        out.populate_products();
         out.run_actions(&startup_actions(),None);        
         out
     }
-    
-    pub fn get_all_landscapes(&mut self) -> &mut AllLandscapes {
-        &mut self.als
+
+    fn populate_products(&mut self) {    
+        let mut window = &mut self.window;
+        let track_names : Vec<String> = window.get_backend_config().list_tracks().map(|s| s.to_string()).collect();
+        for name in &track_names {
+            let product = build_product(window,name);
+            window.get_product_list().add_product(&product);
+        }
     }
+
+    pub fn get_screen(&self) -> &Screen { &self.screen }
+    pub fn get_screen_mut(&mut self) -> &mut Screen { &mut self.screen }
+    pub fn get_window(&mut self) -> &mut WindowState { &mut self.window }
     
     pub fn tick_xfer(&mut self) -> bool {
-        self.http_clerk.tick()
-    }
-    
-    pub fn get_component(&mut self, name: &str) -> Option<ActiveSource> {
-        self.csl.get_component(name)
-    }
-    
-    pub fn add_compsource(&mut self, cs: Box<SourceManager>) {
-        self.csl.add_compsource(cs);
-    }
-    
-    pub fn with_stick_manager<F,G>(&mut self, cb: F) -> G
-            where F: FnOnce(&mut Box<StickManager>) -> G {
-        cb(&mut self.sticks)
+        self.window.get_http_clerk().tick()
     }
     
     pub fn set_runner(&mut self, ar: &AppRunnerWeak) {
@@ -118,6 +120,10 @@ impl App {
     pub fn set_viewport_report(&mut self, report: ViewportReport) {
         self.viewport = Some(report);
     }
+
+    pub fn set_jumper(&mut self, jumper: Jumper) {
+        self.jumper = Some(jumper);
+    }
     
     pub fn set_zmenu_reports(&mut self, report: ZMenuReports) {
         self.zmenu_reports = Some(report);
@@ -132,6 +138,11 @@ impl App {
         self.ar.upgrade().as_mut().map(cb)
     }
     
+    pub fn with_jumper<F,G>(&mut self, cb: F) -> Option<G>
+            where F: FnOnce(&mut Jumper) -> G {
+        self.jumper.as_mut().map(|j| cb(j))
+    }
+
     pub fn get_browser_element(&self) -> &HtmlElement { &self.browser_el }
     
     pub fn get_canvas_element(&self) -> &HtmlElement { &self.canv_el }
@@ -141,23 +152,29 @@ impl App {
     }
     
     pub fn draw(&mut self) {
-        let stage = self.stage.lock().unwrap();
-        let oom = self.state.lock().unwrap();
-        let mut compo = self.compo.lock().unwrap();
+        let oom = ok!(self.state.lock());
+        let mut compo = ok!(self.compo.lock());
         compo.update_state(&oom);
-        self.printer.lock().unwrap().print(&stage,&mut compo);
+        ok!(self.printer.lock()).print(&self.screen,&mut compo);
     }
     
-    pub fn with_stage<F,G>(&self, cb: F) -> G where F: FnOnce(&mut Stage) -> G {
-        let s = &mut self.stage.lock().unwrap();
-        let out = cb(s);
+    pub fn update_position(&mut self) {
+        let train_manager = self.window.get_train_manager();
         if let Some(ref report) = self.report {
-            s.update_report(report);
+            train_manager.update_reports(report);
         }
         if let Some(ref report) = self.viewport {
-            s.update_viewport_report(report);
+            train_manager.update_viewport_report(report);
         }
-        out
+    }
+
+    pub fn intend_here(&mut self) {
+        if let Some(desired) = self.window.get_train_manager().get_desired_position() {
+            self.intended.intend_here(&desired);
+            if let Some(ref report) = self.report {
+                self.intended.update_intent_report(report);
+            }
+        }
     }
 
     pub fn with_state<F,G>(&self, cb: F) -> G where F: FnOnce(&mut StateManager) -> G {
@@ -212,9 +229,12 @@ impl App {
 
     pub fn force_size(self: &mut App, sz: Dot<f64,f64>) {
         self.stage_resize = Some(sz);
-        let mut stage = self.stage.lock().unwrap();
-        stage.set_size(&sz);
-        self.printer.lock().unwrap().set_size(stage.get_size());
+        self.get_screen_mut().set_size(&sz);
+        let size = self.get_screen().get_size();
+        self.window.get_train_manager().inform_screen_size(&sz);
+        self.update_position();
+        self.intend_here();
+        self.printer.lock().unwrap().set_size(size);
     }
     
     pub fn with_counter<F,G>(&mut self, cb: F) -> G where F: FnOnce(&mut Counter) -> G {
@@ -223,12 +243,12 @@ impl App {
 
     pub fn settle(&mut self) {
         if let Some(size) = self.stage_resize.take() {
-            let mut stage = self.stage.lock().unwrap();
-            stage.set_size(&size);
+            self.get_screen_mut().set_size(&size);
+            self.window.get_train_manager().inform_screen_size(&size);
         }
-        let mut stage = self.stage.lock().unwrap();
-        stage.settle();
-        stage.intend_here();
+        self.window.get_train_manager().settle();
+        self.update_position();
+        self.intend_here();
         self.printer.lock().unwrap().settle();
     }
 }

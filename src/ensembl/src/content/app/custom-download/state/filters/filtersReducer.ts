@@ -2,10 +2,7 @@ import { ActionType, getType } from 'typesafe-actions';
 
 import { RootAction } from 'src/objects';
 import * as filterActions from './filtersActions';
-import {
-  FiltersState,
-  defaultFiltersState
-} from './filtersState';
+import { FiltersState, defaultFiltersState } from './filtersState';
 
 function filters(
   state: FiltersState = defaultFiltersState,

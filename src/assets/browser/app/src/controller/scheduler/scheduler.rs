@@ -33,7 +33,7 @@ impl Scheduler {
     }
     
     fn main(&self) -> Arc<Mutex<SchedulerMain>> {
-        unwrap!(self.0.lock()).main.clone()
+        ok!(self.0.lock()).main.clone()
     }
         
     pub fn set_timesig(&self, sig: u32) {
@@ -45,7 +45,7 @@ impl Scheduler {
     }
     
     fn next_id(&mut self) -> u32 {
-        let id = &mut unwrap!(self.0.lock()).next_id;
+        let id = &mut ok!(self.0.lock()).next_id;
         *id += 1;
         *id
     }
@@ -53,20 +53,20 @@ impl Scheduler {
     pub(in super) fn add(&mut self, mut task: SchedTask, prio: usize, on_beat: bool) -> u32 {
         let id = self.next_id();
         task.set_id(id);
-        let adds = &mut unwrap!(self.0.lock()).adds;
+        let adds = &mut ok!(self.0.lock()).adds;
         adds.push(SchedNewTask{task,prio,on_beat});
         id
     }
     
     pub(in super) fn delete(&mut self, id: u32) {
-        let dels = &mut unwrap!(self.0.lock()).dels;
+        let dels = &mut ok!(self.0.lock()).dels;
         dels.insert(id);
     }
     
     pub fn beat(&self, allotment: f64) {
         let main = self.main();
-        let adds = unwrap!(self.0.lock()).adds.drain(..).collect();
-        let dels = unwrap!(self.0.lock()).dels.drain().collect();
+        let adds = ok!(self.0.lock()).adds.drain(..).collect();
+        let dels = ok!(self.0.lock()).dels.drain().collect();
         main.lock().unwrap().beat(adds,dels,allotment);
     }
 }

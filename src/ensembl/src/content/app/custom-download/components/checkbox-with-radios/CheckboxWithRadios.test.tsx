@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import CheckboxWithRadios from './CheckboxWithRadios';
-import Checkbox from 'src/shared/checkbox/Checkbox';
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
 import faker from 'faker';
 import times from 'lodash/times';

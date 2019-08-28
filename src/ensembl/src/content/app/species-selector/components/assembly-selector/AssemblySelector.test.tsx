@@ -6,7 +6,7 @@ import random from 'lodash/random';
 import sample from 'lodash/sample';
 
 import { AssemblySelector } from './AssemblySelector';
-import Select from 'src/shared/select/Select';
+import Select from 'src/shared/components/select/Select';
 
 import { Assembly } from 'src/content/app/species-selector/types/species-search';
 

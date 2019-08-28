@@ -1,84 +1,82 @@
 use std::fmt;
 use std::cmp::{ Eq, PartialEq };
 use std::hash::{ Hash, Hasher };
+use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
-use composit::{ Leaf, ActiveSource };
+use composit::Leaf;
 use composit::{ StateManager };
-use model::driver::PrinterManager;
+use controller::global::WindowState;
+use data::XferConsumer;
+use model::item::{ DeliveredItem, DeliveredItemId, FocusSpecificity, UnpackedSubassembly, UnpackedSubassemblyConsumer, ItemUnpacker };
+use model::supply::Subassembly;
+use model::driver::{ DriverTraveller, Printer, PrinterManager };
 use model::shape::{ ShapeSpec, GenericShape };
-use drivers::zmenu::ZMenuLeaf;
-use super::{ TravellerResponse, TravellerResponseData };
+use model::zmenu::ZMenuLeaf;
+use tácode::run_tánaiste_makeshapes;
+use super::{ CarriageId, TravellerId };
 
 pub struct TravellerImpl {
-    comp: ActiveSource,
+    done: bool,
     prev_value: bool,
     cur_value: bool,
-    visuals: Option<Box<TravellerResponse>>,
-    part: Option<String>,
-    leaf: Leaf,
-    data: Option<TravellerResponseData>,
-    zml: ZMenuLeaf
+    visuals: Box<DriverTraveller>,
+    zml: ZMenuLeaf,
+    id: Rc<TravellerId>
 }
 
 impl TravellerImpl {
-    fn new(comp: ActiveSource, part: &Option<String>, leaf: &Leaf) -> TravellerImpl {
+    fn new(pm: &mut PrinterManager, sa: &Subassembly, leaf: &Leaf, carriage_id: &CarriageId) -> TravellerImpl {
+        let id = Rc::new(TravellerId::new(carriage_id,sa));
+        let visuals = pm.make_driver_traveller(&id);
         TravellerImpl {
+            done: false,
             prev_value: false,
             cur_value: false,
-            leaf: leaf.clone(),
-            part: part.clone(),
-            comp,
-            visuals: None,
-            data: Some(TravellerResponseData::new()),
+            visuals, id,
             zml: ZMenuLeaf::new(leaf)
         }
     }
-    
-    fn set_visuals(&mut self, visuals: Box<TravellerResponse>) {
-        self.visuals = Some(visuals);
-    }
-        
-    fn update_data<F>(&mut self, cb: F) where F: FnOnce(&mut TravellerResponseData) {
-        cb(&mut self.data.as_mut().unwrap())
-    }
-    
-    pub fn update_zml<F>(&mut self, cb: F) where F: FnOnce(&mut ZMenuLeaf) {
-        cb(&mut self.zml);
-    }
-    
+                
     fn update_state(&mut self, m: &StateManager) -> bool {
         self.prev_value = self.cur_value;
-        self.cur_value = self.comp.is_on(m,&self.part);
-        self.visuals.as_ref().unwrap().set_state(self.cur_value);
+        let sa = self.id.get_subassembly();
+        self.cur_value = sa.get_product().get_subassembly_state(&sa,m);
+        self.visuals.set_state(self.cur_value);
         self.prev_value != self.cur_value
-    }
-
-    fn get_part(&self) -> &Option<String> {
-        &self.part
     }
 
     fn build_zmenu(&mut self, zml: &mut ZMenuLeaf) {
         if self.cur_value {
-            zml.merge(&mut self.zml);
+            zml.merge(&self.zml);
         }
     }
 
-    fn is_done(&self) -> bool { 
-        return self.visuals.as_ref().unwrap().check();
-    }
+    fn is_done(&self) -> bool { self.done }
     
-    fn create_zmenu(&mut self) {
-        for shape in self.data.as_ref().unwrap().get_shapes() {
-            if let Some((id,zbox)) = shape.zmenu_box() {
-                self.zml.add_box(&id,&zbox);
-            }
+    fn set_contents(&mut self, mut data: UnpackedSubassembly) {
+        let product = self.id.get_subassembly().get_product().clone();
+        data.create_zmenu(&product);
+        self.zml = data.get_zmenu_leaf().clone();
+        self.visuals.set_contents(&data);
+        self.done = true;
+    }
+
+    fn get_id(&self) -> Rc<TravellerId> {
+        self.id.clone()
+    }
+
+    fn matches_delivered_item(&self, di: &DeliveredItemId) -> bool {
+        if di.get_leaf() != self.id.get_carriage_id().get_leaf() { return false; }
+        if di.get_product() != self.id.get_subassembly().get_product() { return false; }
+        match di.get_focus_specificity() {
+            FocusSpecificity::Agnostic => true,
+            FocusSpecificity::Specific(focus) => self.id.get_carriage_id().get_train_id().get_context().get_focus() == focus
         }
     }
-    
-    fn set_response(&mut self) {
-        self.create_zmenu();
-        self.visuals.as_mut().unwrap().set_response(self.data.take().unwrap());
+
+    fn destroy(&mut self) {
+        self.visuals.destroy();
     }
 }
 
@@ -86,53 +84,55 @@ impl TravellerImpl {
 pub struct Traveller(Arc<Mutex<TravellerImpl>>);
 
 impl Traveller {
-    pub fn new(comp: ActiveSource, part: &Option<String>, leaf: &Leaf) -> Traveller {
-        Traveller(Arc::new(Mutex::new(TravellerImpl::new(comp,part,leaf))))
+    pub fn new(pm: &mut PrinterManager, sa: &Subassembly, leaf: &Leaf, carriage_id: &CarriageId) -> Traveller {
+        Traveller(Arc::new(Mutex::new(TravellerImpl::new(pm,sa,leaf,carriage_id))))
     }
     
+    pub fn get_id(&self) -> Rc<TravellerId> {
+        ok!(self.0.lock()).get_id()
+    }
+
     pub(in super) fn update_state(&mut self, m: &StateManager) -> bool {
-        self.0.lock().unwrap().update_state(m)
+        ok!(self.0.lock()).update_state(m)
     }
     
     pub(in super) fn is_done(&self) -> bool {
-        self.0.lock().unwrap().is_done()
+        ok!(self.0.lock()).is_done()
     }
-    
-    pub fn set_visuals(&mut self, visuals: Box<TravellerResponse>) {
-        self.0.lock().unwrap().set_visuals(visuals);
-    }
-        
-    pub fn get_part(&self) -> Option<String> {
-        self.0.lock().unwrap().get_part().clone()
-    }
-    
+            
     pub fn build_zmenu(&self, zml: &mut ZMenuLeaf) {
-        self.0.lock().unwrap().build_zmenu(zml);
-    }
-    
-    pub fn update_data<F>(&mut self, cb: F) where F: FnOnce(&mut TravellerResponseData) {
-        self.0.lock().unwrap().update_data(cb);
+        ok!(self.0.lock()).build_zmenu(zml);
     }
 
-    pub fn update_zml<F>(&mut self, cb: F) where F: FnOnce(&mut ZMenuLeaf) {
-        self.0.lock().unwrap().update_zml(cb);
+    pub fn destroy(&mut self) {
+        ok!(self.0.lock()).destroy();
     }
-    
-    pub fn set_response(&mut self) {
-        self.0.lock().unwrap().set_response();
+
+    fn matches_delivered_item(&self, di: &DeliveredItemId) -> bool {
+        ok!(self.0.lock()).matches_delivered_item(di)
     }
 }
 
-impl Drop for TravellerImpl {
-    fn drop(&mut self) {
-        self.visuals.take().unwrap().destroy();
+impl XferConsumer for Traveller {
+    fn consume(&mut self, item: &DeliveredItem, unpacker: &mut ItemUnpacker) {
+        if self.is_done() { return; }
+        let trav_id = ok!(self.0.lock()).get_id().clone();
+        let item_id = item.get_id();
+        if self.matches_delivered_item(item.get_id()) {
+            unpacker.schedule(&trav_id,Box::new(self.clone()));
+        }
     }
 }
 
+impl UnpackedSubassemblyConsumer for Traveller {
+    fn consume(&mut self, data: UnpackedSubassembly) {
+        ok!(self.0.lock()).set_contents(data);
+    }
+}
 
 impl fmt::Debug for Traveller {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let t = self.0.lock().unwrap();
-        write!(f,"{:?}:{:?}({:?})",t.comp,t.leaf,t.part)
+        write!(f,"{:?}",t.get_id())
     }
 }

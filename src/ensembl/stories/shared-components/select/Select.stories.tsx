@@ -3,7 +3,10 @@ import { storiesOf } from '@storybook/react';
 import times from 'lodash/times';
 import { action } from '@storybook/addon-actions';
 
-import Select, { Option, OptionGroup } from 'src/shared/select/Select';
+import Select, {
+  Option,
+  OptionGroup
+} from 'src/shared/components/select/Select';
 
 import selectNotes from './select.md';
 

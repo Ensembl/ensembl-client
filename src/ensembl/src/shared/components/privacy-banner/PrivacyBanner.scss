@@ -1,0 +1,28 @@
+@import 'src/styles/common';
+
+.privacyBanner {
+  position: fixed;
+  bottom: 0;
+  background: $ens-black;
+  color: white;
+  font-size: 13px;
+  line-height: 2;
+  padding: 5px;
+  text-align: center;
+  width: 100%;
+  z-index: 10000;
+
+  button {
+    background: $ens-blue;
+    border-radius: 2px;
+    color: white;
+    font-weight: $bold;
+    margin-left: 30px;
+    padding: 6px 18px;
+  }
+
+  a {
+    color: $ens-blue;
+    font-weight: $bold;
+  }
+}

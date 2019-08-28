@@ -7,20 +7,32 @@ jest.mock('config', () => ({
   apiHost: 'http://foo.bar'
 }));
 
+const generateMockFetch = (response: any) =>
+  jest.fn(() => Promise.resolve(response));
+
 describe('api service', () => {
   let mockFetch: any;
   let mockResponse = { foo: 'foo' };
+  let mockError = { message: 'Oh no!' };
   let mockTextResponse = 'hello world';
 
+  const mockJsonResolver = () => Promise.resolve(mockResponse);
+  const mockTextResolver = () => Promise.resolve(mockTextResponse);
+  const mockErrorResolver = () => Promise.resolve(mockError);
+  const generateMockSuccessResponse = () => ({
+    ok: true,
+    json: jest.fn(mockJsonResolver),
+    text: jest.fn(mockTextResolver)
+  });
+  const generateMockErrorResponse = () => ({
+    ok: false,
+    status: 400,
+    json: jest.fn(mockErrorResolver)
+  });
+
   beforeEach(() => {
-    const mockJsonResolver = jest.fn(() => Promise.resolve(mockResponse));
-    const mockTextResolver = jest.fn(() => Promise.resolve(mockTextResponse));
-    mockFetch = jest.fn(() =>
-      Promise.resolve({
-        json: mockJsonResolver,
-        text: mockTextResolver
-      })
-    );
+    const mockSuccessResponse = generateMockSuccessResponse();
+    mockFetch = generateMockFetch(mockSuccessResponse);
     jest
       .spyOn(apiService, 'getFetch')
       .mockImplementation(() => mockFetch as any);
@@ -97,6 +109,27 @@ describe('api service', () => {
       const response = await apiService.fetch(endpoint);
 
       expect(response).toEqual(mockResponse);
+    });
+
+    describe('when request fails', () => {
+      let mockFetch: any;
+      let mockErrorResponse: any;
+
+      beforeEach(() => {
+        mockErrorResponse = generateMockErrorResponse();
+        mockFetch = generateMockFetch(mockErrorResponse);
+
+        jest.spyOn(apiService, 'getFetch').mockImplementation(() => mockFetch);
+      });
+
+      test('throws an error', async () => {
+        const expectedError = {
+          ...mockError,
+          status: mockErrorResponse.status
+        };
+
+        await expect(apiService.fetch(endpoint)).rejects.toEqual(expectedError);
+      });
     });
   });
 });

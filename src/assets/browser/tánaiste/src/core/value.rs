@@ -3,6 +3,7 @@ use std::fmt;
 use std::rc::Rc;
 use std::char;
 
+#[derive(Clone)]
 pub enum ValueImpl {
     Bytes(Vec<u8>),
     Float(Vec<f64>),
@@ -48,6 +49,14 @@ impl ValueImpl {
             }
         }
     }
+
+    pub fn full_copy(&self) -> ValueImpl {
+        match self {
+            ValueImpl::Bytes(b) => ValueImpl::Bytes(b.to_vec()),
+            ValueImpl::Float(f) => ValueImpl::Float(f.to_vec()),
+            ValueImpl::String(f) => ValueImpl::String(f.to_vec()),
+        }
+    }
 }
 
 fn float_to_string(data: &Vec<f64>) -> Vec<String> {
@@ -82,6 +91,10 @@ pub struct Value(Rc<RefCell<ValueImpl>>);
 impl Value {
     pub fn new_null() -> Value {
         Value::new_from_float(vec!{})
+    }
+
+    pub fn full_copy(&self) -> Value {
+        Value(Rc::new(RefCell::new(self.0.borrow().full_copy())))
     }
 
     pub fn new_from_bytes(data: Vec<u8>) -> Value {

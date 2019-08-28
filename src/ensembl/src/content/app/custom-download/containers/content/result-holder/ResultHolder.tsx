@@ -17,7 +17,7 @@ import {
 
 import styles from './ResultHolder.scss';
 
-import { CircleLoader } from 'src/shared/loader/Loader';
+import { CircleLoader } from 'src/shared/components/loader/Loader';
 import JSONValue from 'src/shared/types/JSON';
 
 import {
