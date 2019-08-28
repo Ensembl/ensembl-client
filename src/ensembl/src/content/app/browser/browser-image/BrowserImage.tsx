@@ -120,16 +120,12 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   }, []);
 
   useEffect(() => {
-    const currentEl: HTMLDivElement = props.browserRef
-      .current as HTMLDivElement;
     props.activateBrowser();
 
     return function cleanup() {
-      if (currentEl && currentEl.ownerDocument) {
-        props.updateBrowserActivated(false);
-      }
+      props.updateBrowserActivated(false);
     };
-  }, [props.browserRef]);
+  }, []);
 
   useEffect(() => {
     if (props.browserCogTrackList) {
@@ -137,35 +133,28 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
       const offs: string[] = [];
 
       /* what the frontend and backend call labels and names is flipped */
-      Object.keys(props.browserCogTrackList).map((name) => {
+      Object.keys(props.browserCogTrackList).forEach((name) => {
         /* undefined means not seen means on for names */
         if (props.trackConfigNames[name]) {
-          ons.push(name + ':label');
+          ons.push(`${name}:label`);
         } else {
-          offs.push(name + ':label');
+          offs.push(`${name}:label`);
         }
         /* undefined means not seen means off for labels */
         if (props.trackConfigLabel[name] !== false) {
-          ons.push(name + ':names');
+          ons.push(`${name}:names`);
         } else {
-          offs.push(name + ':names');
+          offs.push(`${name}:names`);
         }
       });
-      const stateEvent = new CustomEvent('bpane', {
-        bubbles: true,
-        detail: {
-          off: offs,
-          on: ons
-        }
+      browserMessagingService.send('bpane', {
+        off: offs,
+        on: ons
       });
-      if (props.browserRef.current) {
-        props.browserRef.current.dispatchEvent(stateEvent);
-      }
     }
   }, [
     props.trackConfigNames,
     props.trackConfigLabel,
-    props.browserRef,
     props.browserCogTrackList
   ]);
 
