@@ -12,7 +12,7 @@ type DrawerTranscriptProps = {
   ensObject: EnsObject;
 };
 
-const TRANSCRIPT_GENE_NAME = 'gene-feat-1';
+const TRANSCRIPT_GENE_NAME = 'track:gene-feat-1';
 
 const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
   props: DrawerTranscriptProps
