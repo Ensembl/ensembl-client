@@ -1,20 +1,24 @@
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
 
-use composit::{ Leaf, Stage, Compositor };
-use model::train::TravellerResponse;
+use composit::{ Leaf, Compositor };
+use model::stage::{ Screen, Position };
+use model::supply::PurchaseOrder;
+use model::train::{ CarriageId, TravellerId };
 use types::Dot;
-use super::Printer;
-use drivers::zmenu::ZMenuLeaf;
+use super::{ DriverTraveller, Printer };
 
 struct PrinterManagerImpl {
-    printer: Box<Printer>
+    printer: Box<Printer>,
+    leaf_count: HashMap<CarriageId,u32>
 }
 
 impl PrinterManagerImpl {
     fn new(printer: Box<Printer>) -> PrinterManagerImpl {
         PrinterManagerImpl {
-            printer
+            printer,
+            leaf_count: HashMap::new()
         }
     }
 }
@@ -26,15 +30,14 @@ impl PrinterManager {
     pub fn new(printer: Box<Printer>) -> PrinterManager {
         PrinterManager(Rc::new(RefCell::new(PrinterManagerImpl::new(printer))))
     }
-    
 }
 
 impl Printer for PrinterManager {
     /* Print one run of objects from compositor with given stage and
      * state.
      */
-    fn print(&mut self, stage: &Stage, compo: &mut Compositor) {
-        self.0.borrow_mut().printer.print(stage,compo);
+    fn print(&mut self, screen: &Screen, compo: &mut Compositor) {
+        self.0.borrow_mut().printer.print(screen,compo);
     }
     
     /* Finished with printer */
@@ -58,23 +61,25 @@ impl Printer for PrinterManager {
         self.0.borrow().printer.get_available_size()
     }
     
-    fn add_leaf(&mut self, leaf: &Leaf) {
-        self.0.borrow_mut().printer.add_leaf(leaf);
+    fn add_carriage(&mut self, carriage: &CarriageId) {
+        let mut imp = self.0.borrow_mut();
+        if *imp.leaf_count.entry(carriage.clone()).and_modify(|v| *v += 1).or_insert(1) == 1 {
+            imp.printer.add_carriage(carriage);
+        }
     }
     
-    fn remove_leaf(&mut self, leaf: &Leaf) {
-        self.0.borrow_mut().printer.remove_leaf(leaf);
+    fn remove_carriage(&mut self, carriage: &CarriageId) {
+        let mut imp = self.0.borrow_mut();
+        if *imp.leaf_count.entry(carriage.clone()).and_modify(|v| *v -= 1).or_insert(0) == 0 {
+            imp.printer.remove_carriage(carriage);
+        }
+    }
+        
+    fn make_driver_traveller(&mut self, traveller_id: &TravellerId) -> Box<DriverTraveller> {
+        self.0.borrow_mut().printer.make_driver_traveller(traveller_id)
     }
     
-    fn set_current(&mut self, leaf: &Leaf) {
-        self.0.borrow_mut().printer.set_current(leaf);
-    }
-    
-    fn make_traveller_response(&mut self, leaf: &Leaf) -> Box<TravellerResponse> {
-        self.0.borrow_mut().printer.make_traveller_response(leaf)
-    }
-    
-    fn redraw_carriage(&mut self, leaf: &Leaf) {
-        self.0.borrow_mut().printer.redraw_carriage(leaf);
+    fn redraw_carriage(&mut self, carriage_id: &CarriageId) {
+        self.0.borrow_mut().printer.redraw_carriage(carriage_id);
     }
 }

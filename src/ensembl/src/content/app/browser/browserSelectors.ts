@@ -64,15 +64,18 @@ export const getActualChrLocation = (state: RootState) => {
 
 export const getDefaultChrLocation = (state: RootState) => {
   const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
-  const activeEnsObject = activeEnsObjectId
-    ? state.ensObjects[activeEnsObjectId]
-    : null;
+  const activeEnsObject =
+    activeEnsObjectId && getEnsObjectById(state, activeEnsObjectId);
   if (!activeEnsObject) {
     return null;
   }
   const { chromosome, start, end } = activeEnsObject.location;
 
   return [chromosome, start, end] as ChrLocation;
+};
+
+export const getBrowserMessageCount = (state: RootState): number => {
+  return state.browser.browserEntity.messageCounter;
 };
 
 export const getGenomeSelectorActive = (state: RootState) =>

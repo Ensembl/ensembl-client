@@ -23,7 +23,7 @@ pub enum TexturePosition<T: Clone+Copy+Debug> {
     PageUnderAll(EPixel),
 }
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 pub struct TextureSpec {
     pub origin: TexturePosition<f32>,
     pub offset: CPixel,

@@ -84,6 +84,22 @@ fn custom_state_event(v: &JSONValue, sv: bool) -> Action {
     }
 }
 
+fn custom_focus_event(v: &JSONValue, jump: bool) -> Vec<Action> {
+    let mut out = Vec::new();
+    if let JSONValue::String(ref v) = v {
+        if jump {
+            out.push(Action::JumpFocus(v.to_string()));
+        } else {
+            out.push(Action::SetFocus(v.to_string()));
+        }
+    }
+    out
+}
+
+fn custom_reset_event() -> Vec<Action> {
+    vec![Action::Reset]
+}
+
 fn every<F>(v: &JSONValue, cb: F) -> Vec<Action> where F: Fn(&JSONValue) -> Action {
     if let JSONValue::Array(vv) = v {
         vv.iter().map(|x| cb(x)).collect()
@@ -92,7 +108,7 @@ fn every<F>(v: &JSONValue, cb: F) -> Vec<Action> where F: Fn(&JSONValue) -> Acti
     }
 }
 
-fn custom_make_one_event_key(k: &String, v: &JSONValue) -> Vec<Action> {
+fn custom_make_one_event_key(k: &String, v: &JSONValue, keys: &Vec<String>) -> Vec<Action> {
     let parts : Vec<&str> = k.split("_").collect();
     match parts.len() {
         1 => return match parts[0] {
@@ -100,6 +116,8 @@ fn custom_make_one_event_key(k: &String, v: &JSONValue) -> Vec<Action> {
             "off" => every(v,|v| custom_state_event(v,false)),
             "goto" => every(v,|v| custom_goto_event(v)),
             "stick" => every(v,|v| custom_stick_event(v)),
+            "focus" => custom_focus_event(v,!keys.contains(&"goto".to_string())),
+            "reset" => custom_reset_event(),
             _ => vec!{}
         },
         2 => return match parts[0] {
@@ -117,8 +135,9 @@ fn custom_make_one_event_key(k: &String, v: &JSONValue) -> Vec<Action> {
 fn custom_make_events(j: &JSONValue) -> Vec<Action> {
     let mut out = Vec::<Action>::new();
     if let JSONValue::Object(map) = j {
+        let keys : Vec<String> = map.keys().cloned().collect();
         for (k,v) in map {
-            out.append(&mut custom_make_one_event_key(k,v));
+            out.append(&mut custom_make_one_event_key(k,v,&keys));
         }
     }
     out.push(Action::Settled);

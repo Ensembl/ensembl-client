@@ -77,9 +77,11 @@ impl GlobalImpl {
         }
     }
 
-    pub fn unregister_app(&mut self, key: &str) {
-        if let Entry::Occupied(mut e) = self.app_runners.entry(key.to_string()) {
-            e.get_mut().destroy();
+    pub fn unregister_app(&mut self, key: &str, call_destroy: bool) {
+        if let Some(mut app) = self.app_runners.remove(key) {
+            if call_destroy {
+                app.destroy();
+            }
         }
     }
 
@@ -128,7 +130,7 @@ impl Global {
 
     /* scheduler-related */    
     pub fn tick(&mut self) {
-        let sched = self.0.borrow_mut().scheduler();
+        let sched = self.0.borrow_mut().scheduler().clone();
         sched.beat(SCHEDULER_ALLOC);
         let mut out = self.clone();
         window().request_animation_frame(
@@ -145,8 +147,8 @@ impl Global {
     }
 
     /* app registration */
-    fn unregister_app(&mut self, key: &str) {
-        self.0.borrow_mut().unregister_app(key);
+    pub fn unregister_app(&mut self, key: &str, call_destroy: bool) {
+        self.0.borrow_mut().unregister_app(key, call_destroy);
     }
 
     pub fn find_app(&mut self, el: &HtmlElement) -> Option<AppRunner> {
@@ -158,7 +160,7 @@ impl Global {
     }
 
     pub fn trigger_app(&mut self, key: &str, el: &HtmlElement, debug: bool, config_url: &Url) {
-        self.unregister_app(key);
+        self.unregister_app(key,true);
         let http_manager = &self.0.borrow().http_manager.clone();
         let mut bcb = BackendConfigBootstrap::new(&http_manager.clone(),config_url);
         let b : Rc<RefCell<Booting>> = Rc::new(

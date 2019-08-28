@@ -55,3 +55,8 @@ $zmenuBackgroundColor: $ens-black;
 .markupEmphasis {
   font-style: italic;
 }
+
+.markupFocus {
+  cursor: pointer;
+  color: $ens-blue;
+}
