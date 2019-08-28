@@ -2,8 +2,6 @@ import React from 'react';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
 
-import { isEnvironment, Environment } from 'src/shared/helpers/environment';
-
 import { changeFocusObject } from 'src/content/app/browser/browserActions';
 
 import styles from './Zmenu.scss';
@@ -85,16 +83,11 @@ const ZmenuContentBlock = (props: ZmenuContentBlockProps) => {
 const ZmenuContentItem = (props: ZmenuContentItemProps) => {
   const { text, markup, id } = props;
 
-  // FIXME: remove dependency on environment when ensObject api endpoint is ready
-  const shouldAddLink =
-    markup.includes(Markup.FOCUS) &&
-    isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]);
-
   const className = classNames({
     [styles.markupLight]: markup.includes(Markup.LIGHT),
     [styles.markupStrong]: markup.includes(Markup.STRONG),
     [styles.markupEmphasis]: markup.includes(Markup.EMPHASIS),
-    [styles.markupFocus]: shouldAddLink
+    [styles.markupFocus]: markup.includes(Markup.FOCUS)
   });
 
   const handleClick = () => {
@@ -103,7 +96,7 @@ const ZmenuContentItem = (props: ZmenuContentItemProps) => {
 
   const itemProps = {
     className,
-    onClick: shouldAddLink ? handleClick : undefined
+    onClick: handleClick
   };
 
   return <span {...itemProps}>{text}</span>;
