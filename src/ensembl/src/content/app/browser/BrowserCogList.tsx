@@ -14,6 +14,8 @@ import {
   getBrowserActivated,
   getBrowserCogList,
   getBrowserCogTrackList,
+  getTrackConfigNames,
+  getTrackConfigLabel,
   getBrowserSelectedCog
 } from './browserSelectors';
 
@@ -23,6 +25,8 @@ type BrowserCogListProps = {
   browserActivated: boolean;
   browserCogList: number;
   browserCogTrackList: CogList;
+  trackConfigNames: any; // FIXME
+  trackConfigLabel: any; // FIXME
   selectedCog: any;
   updateCogList: (cogList: number) => void;
   updateCogTrackList: (track_y: CogList) => void;
@@ -54,6 +58,37 @@ const BrowserCogList = (props: BrowserCogListProps) => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (props.browserCogTrackList) {
+      const ons: string[] = [];
+      const offs: string[] = [];
+
+      /* what the frontend and backend call labels and names is flipped */
+      Object.keys(props.browserCogTrackList).forEach((name) => {
+        /* undefined means not seen means on for names */
+        if (props.trackConfigNames[name]) {
+          ons.push(`${name}:label`);
+        } else {
+          offs.push(`${name}:label`);
+        }
+        /* undefined means not seen means off for labels */
+        if (props.trackConfigLabel[name] !== false) {
+          ons.push(`${name}:names`);
+        } else {
+          offs.push(`${name}:names`);
+        }
+      });
+      browserMessagingService.send('bpane', {
+        off: offs,
+        on: ons
+      });
+    }
+  }, [
+    props.trackConfigNames,
+    props.trackConfigLabel,
+    props.browserCogTrackList
+  ]);
 
   const cogs = Object.entries(browserCogTrackList).map(([name, pos]) => {
     const posStyle = { top: pos + 'px' };
@@ -88,6 +123,8 @@ const mapStateToProps = (state: RootState) => ({
   browserActivated: getBrowserActivated(state),
   browserCogList: getBrowserCogList(state),
   browserCogTrackList: getBrowserCogTrackList(state),
+  trackConfigLabel: getTrackConfigLabel(state),
+  trackConfigNames: getTrackConfigNames(state),
   selectedCog: getBrowserSelectedCog(state)
 });
 

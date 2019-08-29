@@ -13,8 +13,6 @@ import { ZmenuController } from 'src/content/app/browser/zmenu';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import {
-  getTrackConfigNames,
-  getTrackConfigLabel,
   getBrowserCogTrackList,
   getBrowserNavOpened,
   getBrowserActivated
@@ -40,8 +38,6 @@ import { BROWSER_CONTAINER_ID } from '../browser-constants';
 type StateProps = {
   browserCogTrackList: CogList;
   browserNavOpened: boolean;
-  trackConfigNames: any;
-  trackConfigLabel: any;
   browserActivated: boolean;
 };
 
@@ -127,37 +123,6 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
     };
   }, []);
 
-  useEffect(() => {
-    if (props.browserCogTrackList) {
-      const ons: string[] = [];
-      const offs: string[] = [];
-
-      /* what the frontend and backend call labels and names is flipped */
-      Object.keys(props.browserCogTrackList).forEach((name) => {
-        /* undefined means not seen means on for names */
-        if (props.trackConfigNames[name]) {
-          ons.push(`${name}:label`);
-        } else {
-          offs.push(`${name}:label`);
-        }
-        /* undefined means not seen means off for labels */
-        if (props.trackConfigLabel[name] !== false) {
-          ons.push(`${name}:names`);
-        } else {
-          offs.push(`${name}:names`);
-        }
-      });
-      browserMessagingService.send('bpane', {
-        off: offs,
-        on: ons
-      });
-    }
-  }, [
-    props.trackConfigNames,
-    props.trackConfigLabel,
-    props.browserCogTrackList
-  ]);
-
   return (
     <>
       {!props.browserActivated && (
@@ -191,8 +156,6 @@ function getBrowserImageClasses(browserNavOpened: boolean): string {
 const mapStateToProps = (state: RootState): StateProps => ({
   browserCogTrackList: getBrowserCogTrackList(state),
   browserNavOpened: getBrowserNavOpened(state),
-  trackConfigLabel: getTrackConfigLabel(state),
-  trackConfigNames: getTrackConfigNames(state),
   browserActivated: getBrowserActivated(state)
 });
 
