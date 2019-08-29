@@ -27,13 +27,19 @@ export type BrowserHomeProps = StateProps & OwnProps;
 export const BrowserHome: FunctionComponent<BrowserHomeProps> = (
   props: BrowserHomeProps
 ) => {
-  if(!focus){
+
+  if(!props.regionValidationInfo.genome_id || props.regionValidationInfo.status === 'loading'){
+    return null;
+  }
+
+  if(!props.regionValidationInfo.genome_id.is_valid){
+    return <h2>Genome ID is invalid.</h2>;
+  }
+
+  if(!props.regionValidationInfo.region.is_valid){
     return <ExampleObjectLinks {...props} />
   }
 
-  if(props.regionValidationInfo.status === 'loading'){
-    return null;
-  }
   if(props.regionValidationInfo.status === 'error'){
     return <h1>Oops! Something went wrong with the URL...</h1>;
   }
@@ -45,11 +51,9 @@ const ExampleObjectLinks = (props: BrowserHomeProps) => {
   const { exampleEnsObjects } = props;
 
   const links = exampleEnsObjects.map((exampleObject: EnsObject) => {
-    const location = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
     const path = urlFor.browser({
       genomeId: exampleObject.genome_id,
-      focus: exampleObject.object_id,
-      location
+      focus: exampleObject.object_id
     });
 
     return (

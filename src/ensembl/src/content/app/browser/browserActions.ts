@@ -10,7 +10,7 @@ import isEqual from 'lodash/isEqual';
 import apiService from 'src/services/api-service';
 import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { LoadingState } from 'src/content/app/species-selector/types/loading-state';
+import {LoadingState} from 'src/shared/types/loading-state';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 
 import { fetchEnsObject } from 'src/ens-object/ensObjectActions';
@@ -320,7 +320,7 @@ export const validateBrowserUrl: ActionCreator<
       "genome_id": {
         "error_code": null, 
         "error_message": null, 
-        "is_valid": true, 
+        "is_valid": false, 
         "value": "homo_sapiens_GCA_000001405_27"
       }, 
       "is_parseable": true, 
