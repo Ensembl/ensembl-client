@@ -131,11 +131,6 @@ export const TrackPanelBookmarks = (props: Props) => {
     closeTrackPanelModal
   } = props;
 
-  
-  useEffect(() => {
-    console.log( previouslyViewedObjects);
-  }, []);
-
   return (
     <section className="trackPanelBookmarks">
       <h3>Bookmarks</h3>

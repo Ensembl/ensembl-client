@@ -117,15 +117,15 @@ export const updateBrowserActiveEnsObjectIdsAndSave: ActionCreator<
       return;
     }
     const currentActiveEnsObjectIds = getBrowserActiveEnsObjectIds(state);
-    const updatedActiveEnsObjectId = {
+    const updatedActiveEnsObjectIds = {
       ...currentActiveEnsObjectIds,
       [activeGenomeId]: activeEnsObjectId
     };
 
-    dispatch(updateBrowserActiveEnsObjectIds(updatedActiveEnsObjectId));
+    dispatch(updateBrowserActiveEnsObjectIds(updatedActiveEnsObjectIds));
     dispatch(fetchEnsObject(activeEnsObjectId));
 
-    browserStorageService.updateActiveEnsObjectIds(updatedActiveEnsObjectId);
+    browserStorageService.updateActiveEnsObjectIds(updatedActiveEnsObjectIds);
   };
 };
 

@@ -154,7 +154,7 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
     activeGenomePreviouslyViewedObjects.splice(existingIndex, 1);
   }
 
-  trackPanelStorageService.updateActiveGenomeBookmarks({
+  trackPanelStorageService.updateActiveGenomePreviouslyViewedObjects({
     [activeGenomeId]: activeGenomePreviouslyViewedObjects
   });
 
