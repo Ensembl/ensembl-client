@@ -1,25 +1,12 @@
 @import 'common';
+@import 'normalize';
 @import 'fonts';
 @import 'animation';
 
-@include foundation-global-styles;
-@include foundation-prototype-classes;
-@include foundation-visibility-classes;
-
-// apply a natural box layout model
-html {
-  box-sizing: border-box;
-}
-
-// inherit the natural box layout from html; allow box-sizing to easily change if necessary
-*,
-*:before,
-*:after {
-  box-sizing: inherit;
-}
-
-*:focus {
-  outline: none;
+html,
+body,
+.ens-app {
+  height: 100%;
 }
 
 a {
