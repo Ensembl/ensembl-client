@@ -2,10 +2,10 @@
 
 .content {
   &.shorter {
-    min-height: calc(100vh - 73px);
+    height: calc(100% - 73px);
   }
 
   &.taller {
-    min-height: calc(100vh - 25px);
+    height: calc(100% - 25px);
   }
 }

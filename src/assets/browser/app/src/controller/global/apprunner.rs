@@ -7,8 +7,10 @@ use composit::register_compositor_ticks;
 use controller::global::{ App, GlobalWeak };
 use controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup };
 use controller::input::{
-    register_direct_events, register_user_events, register_dom_events
+    register_direct_events, register_dom_events,
+    Jumper
 };
+use drivers::domel::{ register_user_events };
 use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter };
 
 #[cfg(any(not(deploy),console))]
@@ -33,7 +35,8 @@ struct AppRunnerImpl {
     sched_group: SchedulerGroup,
     tc: Tácode,
     debug_reporter: BlackBoxDriver,
-    browser_el: HtmlElement
+    browser_el: HtmlElement,
+    key: String
 }
 
 impl AppRunnerImpl {
@@ -53,7 +56,7 @@ pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
 impl AppRunner {
-    pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<Bling>, config_url: &Url, config: &BackendConfig, debug_reporter: BlackBoxDriver) -> AppRunner {
+    pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<Bling>, config_url: &Url, config: &BackendConfig, debug_reporter: BlackBoxDriver, key: &str) -> AppRunner {
         let browser_el : HtmlElement = bling.apply_bling(&el);
         let tc = Tácode::new();
         let st = App::new(&tc,config,&http_manager,&browser_el,&config_url);
@@ -75,7 +78,8 @@ impl AppRunner {
             sched_group,
             tc: tc.clone(),
             debug_reporter,
-            browser_el: browser_el.clone()
+            browser_el: browser_el.clone(),
+            key: key.to_string()
         })));
         {
             let imp = out.0.lock().unwrap();
@@ -86,12 +90,14 @@ impl AppRunner {
         let report = Report::new(&mut out);
         let viewport_report = ViewportReport::new(&mut out);
         let zmenu_reports = ZMenuReports::new(&mut out);
+        let jumper = Jumper::new(&mut out,http_manager,config_url,config);
         {
             let mut imp = out.0.lock().unwrap();
             let app = imp.app.clone();
             app.lock().unwrap().set_report(report);
             app.lock().unwrap().set_viewport_report(viewport_report);
             app.lock().unwrap().set_zmenu_reports(zmenu_reports);
+            app.lock().unwrap().set_jumper(jumper);
             let el = imp.el.clone();
             imp.bling.activate(&app,&el);
         }
@@ -124,7 +130,7 @@ impl AppRunner {
     }
 
     pub fn scheduler(&self) -> Scheduler {
-        let g = unwrap!(unwrap!(self.0.lock()).g.upgrade()).clone();
+        let g = unwrap!(ok!(self.0.lock()).g.upgrade()).clone();
         g.scheduler()
     }
     
@@ -177,12 +183,18 @@ impl AppRunner {
                 app.check_size();
                 vec![]
             },0);
+            /* gone check */
             self.add_timer("gone-check",move |app,_,_| {
                 if app.check_gone() {
                     vec![OutputAction::Destroy]
                 } else {
                     vec![]
                 }
+            },0);
+            /* cursor check (fallback) */
+            self.add_timer("cursor-check",move |app,_,_| {
+                bb_log!("cursor","cursor-check");
+                vec![]
             },0);
         }
         bb_log!("main","debug reporter initialised");
@@ -193,13 +205,21 @@ impl AppRunner {
     }
     
     pub fn state(&self) -> Arc<Mutex<App>> {
-        unwrap!(self.0.lock()).app.clone()
+        ok!(self.0.lock()).app.clone()
     }
     
     pub fn destroy(&mut self) {
-        self.0.lock().unwrap().clear_controls();
-        let r = self.state();
-        r.lock().unwrap().destroy();
+        let (mut g,key) = {
+            let mut imp = self.0.lock().unwrap();
+            imp.clear_controls();
+            imp.sched_group.clear();
+            let r = &imp.app;
+            r.lock().unwrap().destroy();
+            let g = imp.g.upgrade().unwrap().clone();
+            let key = imp.key.clone();
+            (g,key)
+        };
+        g.unregister_app(&key,false);
     }
         
     pub fn bling_key(&mut self, key: &str) {

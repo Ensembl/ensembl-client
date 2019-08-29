@@ -18,6 +18,7 @@ url="*"
 base64="*"
 
 "t\u00E1naiste" = { version="0.1.1", path="../t\u00E1naiste" }
+"misc_algorithms" = { version="0.1.1", path="../misc_algorithms" }
 
 [build-dependencies]
 webgl_generator = "*"

@@ -17,7 +17,7 @@ impl Scale {
     }
     
     pub fn new_from_letter(letter: char) -> Scale {
-        Scale::new(ZOOMCODES.find(letter).unwrap() as i32-13)
+        Scale::new(unwrap!(ZOOMCODES.find(letter)) as i32-13)
     }
     
     pub fn letter(&self) -> char {

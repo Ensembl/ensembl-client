@@ -5,10 +5,12 @@ use std::rc::Rc;
 use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element, INode, IElement };
 
-use super::{ GLProgs, GLCarriagePrinter, GLTravellerResponse };
-use composit::{ Compositor, Leaf, Stage };
-use model::driver::Printer;
-use model::train::{ Train, TravellerResponse };
+use super::{ GLProgs, GLCarriage, GLTraveller };
+use model::driver::{ DriverTraveller, Printer };
+use model::stage::{ Screen, Position };
+use composit::Compositor;
+use model::supply::{ PurchaseOrder };
+use model::train::{ CarriageId, Train, TravellerId };
 use super::super::drawing::{ AllCanvasAllocator };
 use dom::domutil;
 use types::{ Dot };
@@ -18,8 +20,6 @@ use stdweb::web::html_element::{
     CanvasElement
 };
 
-use drivers::zmenu::{ ZMenuRegistry, ZMenuLeafSet, ZMenuLeaf };
-
 pub struct WebGLTrainPrinter{}
 
 impl WebGLTrainPrinter {
@@ -27,22 +27,21 @@ impl WebGLTrainPrinter {
         WebGLTrainPrinter {}
     }
     
-    fn execute(&mut self, printer: &mut GLPrinterBase, leafs: &Vec<Leaf>) {
+    fn execute(&mut self, printer: &mut GLPrinterBase, carriage_ids: &Vec<CarriageId>) {
         for pt in &printer.base_progs.order {
-            for leaf in leafs.iter() {
-                if let Some(ref mut lp) = printer.lp.get_mut(&leaf) {
-                    lp.execute(&pt);
+            for carriage_id in carriage_ids.iter() {
+                if let Some(ref mut carriage) = printer.carriages.get_mut(carriage_id) {
+                    carriage.execute(&pt);
                 }
             }
         }
     }
     
-    fn contextualize(&mut self, printer: &mut GLPrinterBase, stage: &Stage,
+    fn contextualize(&mut self, printer: &mut GLPrinterBase, screen: &Screen,
                      train: &mut Train, opacity: f32) {
-        for carriage in train.get_carriages() {
-            let leaf = carriage.get_leaf();
-            if let Some(carriage_printer) = &mut printer.lp.get_mut(&leaf) {
-                carriage_printer.set_context(stage,opacity);
+        for carriage_id in train.get_carriage_ids() {
+            if let Some(ref mut carriage) = printer.carriages.get_mut(carriage_id) {
+                carriage.set_context(screen,train.get_position(),opacity);
             }
         }
     }
@@ -54,8 +53,7 @@ pub struct GLPrinterBase {
     ctx: Rc<glctx>,
     base_progs: GLProgs,
     acm: AllCanvasAllocator,
-    lp: HashMap<Leaf,GLCarriagePrinter>,
-    current: HashSet<Leaf>,
+    carriages: HashMap<CarriageId,GLCarriage>,
     new_size: Option<Dot<f64,f64>>,
     settled_size: Option<Dot<f64,f64>>,
     round_size: bool,
@@ -75,35 +73,31 @@ impl GLPrinterBase {
             canv_el: canv_el.clone(),
             acm, ctx: ctx_rc,
             base_progs: progs,
-            lp: HashMap::<Leaf,GLCarriagePrinter>::new(),
-            current: HashSet::<Leaf>::new(),
+            carriages: HashMap::new(),
             new_size: None,
             settled_size: None,
             round_size: true,
         }
     }
 
-    pub fn redraw_carriage(&mut self, leaf: &Leaf) {
-        if let Some(carriage_printer) = &mut self.lp.get_mut(&leaf) {
-            carriage_printer.redraw(&mut self.acm);
+    pub fn redraw_carriage(&mut self, carriage_id: &CarriageId) {
+        if let Some(carriage) = &mut self.carriages.get_mut(&carriage_id) {
+            carriage.redraw(&mut self.acm);
         }
     }
 
-    pub fn add_leaf(&mut self, leaf: &Leaf) {
-        self.lp.insert(leaf.clone(),GLCarriagePrinter::new(&leaf,&self.base_progs,&self.ctx));
+    pub fn add_carriage(&mut self, carriage_id: &CarriageId) {
+        let leaf = carriage_id.get_leaf();
+        let gcp = GLCarriage::new(&leaf,&self.base_progs,&self.ctx);
+        self.carriages.insert(carriage_id.clone(),gcp);
     }
     
-    pub fn remove_leaf(&mut self, leaf: &Leaf) {
-        if let Some(mut lp) = self.lp.remove(&leaf) {
-            lp.destroy(&mut self.acm);
+    pub fn remove_carriage(&mut self, carriage_id: &CarriageId) {
+        if let Some(mut carriage) = self.carriages.remove(carriage_id) {
+            carriage.destroy(&mut self.acm);
         }
-        self.current.remove(leaf);
     }
     
-    fn set_current(&mut self, leaf: &Leaf) {
-        self.current.insert(leaf.clone());
-    }
-
     fn prepare_all(&mut self) {
         if let Some(new_size) = self.new_size.take() {
             self.set_size(new_size);
@@ -153,8 +147,8 @@ impl GLPrinterBase {
     }
 
     fn destroy(&mut self) {
-        for (_i,lp) in &mut self.lp {
-            lp.destroy(&mut self.acm);
+        for carriage in self.carriages.values_mut() {
+            carriage.destroy(&mut self.acm);
         }
         self.acm.finish();
         let gl : Option<glctx> = ok!(
@@ -168,22 +162,15 @@ impl GLPrinterBase {
         }
     }    
 
-    fn make_traveller_response(&mut self, pref: &GLPrinter, leaf: &Leaf) -> Box<TravellerResponse> {
+    fn make_driver_traveller(&mut self, pref: &GLPrinter, traveller_id: &TravellerId) -> Box<DriverTraveller> {
         let idx = self.sridx;
         self.sridx += 1;
-        let sr = GLTravellerResponse::new(pref,idx,leaf);
-        if let Some(cp) = self.lp.get_mut(leaf) {
-            cp.new_sr(&sr);
+        let sr = GLTraveller::new(pref,idx,traveller_id);
+        if let Some(carriage) = self.carriages.get_mut(&traveller_id.get_carriage_id()) {
+            carriage.new_sr(&sr);
         }
         Box::new(sr)
-    }
-    
-    fn destroy_partial(&mut self, sr: &mut GLTravellerResponse) {
-        let leaf = sr.get_leaf().clone();
-        if let Some(cp) = self.lp.get_mut(&leaf) {
-            cp.remove_sr(sr);
-        }        
-    }
+    }    
 }
 
 #[derive(Clone)]
@@ -196,42 +183,40 @@ impl GLPrinter {
         GLPrinter {
             base: Rc::new(RefCell::new(GLPrinterBase::new(canv_el)))
         }
-    }
-    
-    pub(in super) fn destroy_partial(&mut self, sr: &mut GLTravellerResponse) {
-        self.base.borrow_mut().destroy_partial(sr);
-    }
+    }    
 }
 
 impl Printer for GLPrinter {
-    fn print(&mut self, stage: &Stage, compo: &mut Compositor) {
+    fn print(&mut self, screen: &Screen, compo: &mut Compositor) {
         compo.redraw_where_needed(self);
         let prop = compo.get_prop_trans();
-        if let Some(train) = compo.get_current_train() {
+        compo.with_current_train(|train| {
+            let position = train.get_position().clone();
             let mut tp = WebGLTrainPrinter::new();
-            tp.contextualize(&mut self.base.borrow_mut(),stage,train,1.-prop);
-        }
-        if let Some(train) = compo.get_transition_train() {
+            tp.contextualize(&mut self.base.borrow_mut(),screen,train,1.-prop);
+        });
+        compo.with_transition_train(|train| {
+            let position = train.get_position().clone();
             let mut tp = WebGLTrainPrinter::new();
-            tp.contextualize(&mut self.base.borrow_mut(),stage,train,prop);
-        }
+            tp.contextualize(&mut self.base.borrow_mut(),screen,train,prop);
+        });
         self.base.borrow_mut().prepare_all();
-        if let Some(train) = compo.get_transition_train() {
+        compo.with_current_train(|train| {
             let mut tp = WebGLTrainPrinter::new();
-            tp.execute(&mut self.base.borrow_mut(),&train.leafs());
-        }
-        if let Some(train) = compo.get_current_train() {
+            tp.execute(&mut self.base.borrow_mut(),&train.get_carriage_ids().cloned().collect());
+        });
+        compo.with_transition_train(|train| {
             let mut tp = WebGLTrainPrinter::new();
-            tp.execute(&mut self.base.borrow_mut(),&train.leafs());
-        }
+            tp.execute(&mut self.base.borrow_mut(),&train.get_carriage_ids().cloned().collect());
+        });
     }
 
     fn destroy(&mut self) {
         self.base.borrow_mut().destroy();
     }
 
-    fn redraw_carriage(&mut self, leaf: &Leaf) {
-        self.base.borrow_mut().redraw_carriage(leaf);
+    fn redraw_carriage(&mut self, carriage_id: &CarriageId) {
+        self.base.borrow_mut().redraw_carriage(carriage_id);
     }
 
     fn set_size(&mut self, s: Dot<f64,f64>) {
@@ -247,20 +232,16 @@ impl Printer for GLPrinter {
         self.base.borrow().get_available_size()
     }
 
-    fn add_leaf(&mut self, leaf: &Leaf) {
-        self.base.borrow_mut().add_leaf(leaf);
+    fn add_carriage(&mut self, carriage_id: &CarriageId) {
+        self.base.borrow_mut().add_carriage(carriage_id);
     }
     
-    fn remove_leaf(&mut self, leaf: &Leaf) {
-        self.base.borrow_mut().remove_leaf(leaf);
+    fn remove_carriage(&mut self, carriage_id: &CarriageId) {
+        self.base.borrow_mut().remove_carriage(carriage_id);
     }
-    
-    fn set_current(&mut self, leaf: &Leaf) {
-        self.base.borrow_mut().set_current(leaf);
-    }
-    
-    fn make_traveller_response(&mut self, leaf: &Leaf) -> Box<TravellerResponse> {
+        
+    fn make_driver_traveller(&mut self, traveller_id: &TravellerId) -> Box<DriverTraveller> {
         let twin = self.clone();
-        self.base.borrow_mut().make_traveller_response(&twin,leaf)
+        self.base.borrow_mut().make_driver_traveller(&twin,traveller_id)
     }      
 }

@@ -6,7 +6,8 @@ use super::super::commands::{
     ExtentI, AllI, BinOpI, BinOpType, TextI, IndexI, RunsI, RunsOfI,
     GetI, ScaleI, MergeI, AccNI, MemberI, PlotI, RulerI, AllPlotsI,
     LengthI, SetPartI, ImageI, AssetI, Text2I, LengthsI, BurstI, ZTmplI,
-    ZMenuI, PicksI, ZAssocI
+    ZMenuI, PicksI, ZAssocI, GetFocusI, StrBoolBinOpI, StrBoolBinOpType,
+    ElideStrI
 };
 use super::super::shapecmd::ShapeI;
 
@@ -16,6 +17,7 @@ pub fn instruction_bundle_app(tc: &TáContext) -> InstructionBundle {
         Box::new(CPrintI()) as Box<Instruction>,
         Box::new(DPrintI()),
         Box::new(ElideI()),
+        Box::new(ElideStrI()),
         Box::new(AbuttI()),
         Box::new(NotI()),
         Box::new(AllI()),
@@ -38,6 +40,7 @@ pub fn instruction_bundle_app(tc: &TáContext) -> InstructionBundle {
         Box::new(BinOpI(BinOpType::Or)),
         Box::new(BinOpI(BinOpType::Max)),
         Box::new(BinOpI(BinOpType::Min)),
+        Box::new(StrBoolBinOpI(StrBoolBinOpType::Eq)),
         Box::new(ImageI(tc.clone())),
         Box::new(TextI(tc.clone())),
         Box::new(Text2I(tc.clone())),
@@ -54,6 +57,7 @@ pub fn instruction_bundle_app(tc: &TáContext) -> InstructionBundle {
         Box::new(ZTmplI(tc.clone())),
         Box::new(ZMenuI(tc.clone())),
         Box::new(ZAssocI(tc.clone())),
+        Box::new(GetFocusI(tc.clone())),
     });
     ib
 }

@@ -1,10 +1,11 @@
+use std::rc::Rc;
 use super::{ DrawingHash, DrawingSpec };
 
 use types::CPixel;
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 pub struct BitmapArtist {
-    pub data: Vec<u8>,
+    pub data: Rc<Vec<u8>>,
     pub size: CPixel,
     pub blur: bool,
     pub hash: Option<DrawingHash>
@@ -12,7 +13,7 @@ pub struct BitmapArtist {
 
 impl BitmapArtist {
     fn new(data: Vec<u8>, size: CPixel, blur: bool, hash: Option<DrawingHash>) -> BitmapArtist {
-        BitmapArtist { data, size, blur, hash }
+        BitmapArtist { data: Rc::new(data), size, blur, hash }
     }
 }
 

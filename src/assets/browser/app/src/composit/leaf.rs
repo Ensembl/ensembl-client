@@ -15,6 +15,13 @@ impl Leaf {
         Leaf { hindex, scale: scale.clone(), stick: stick.clone() }
     }
     
+    pub fn from_short_spec(stick: &Stick, pane: &str) -> Leaf {
+        let mut pane = pane.to_string();
+        let hindex : i64 = ok!(pane.split_off(1).parse());
+        let scale = Scale::new_from_letter(unwrap!(pane.chars().next()));
+        Leaf::new(stick,hindex,&scale)
+    }
+
     pub fn containing(stick: &Stick, pos: f64, scale: &Scale) -> Leaf {
         let hindex = (pos / scale.total_bp()).floor() as i64;
         Leaf::new(stick,hindex,scale)

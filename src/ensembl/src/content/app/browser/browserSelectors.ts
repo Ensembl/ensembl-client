@@ -64,9 +64,8 @@ export const getActualChrLocation = (state: RootState) => {
 
 export const getDefaultChrLocation = (state: RootState) => {
   const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
-  const activeEnsObject = activeEnsObjectId
-    ? state.ensObjects[activeEnsObjectId]
-    : null;
+  const activeEnsObject =
+    activeEnsObjectId && getEnsObjectById(state, activeEnsObjectId);
   if (!activeEnsObject) {
     return null;
   }
@@ -77,6 +76,10 @@ export const getDefaultChrLocation = (state: RootState) => {
 
 export const getRegionValidationInfo = (state: RootState) =>
   state.browser.browserLocation.regionValidationInfo;
+  
+export const getBrowserMessageCount = (state: RootState): number => {
+  return state.browser.browserEntity.messageCounter;
+};
 
 export const getGenomeSelectorActive = (state: RootState) =>
   state.browser.browserLocation.genomeSelectorActive;

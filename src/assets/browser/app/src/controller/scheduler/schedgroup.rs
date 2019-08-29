@@ -20,6 +20,12 @@ impl SchedulerGroup {
         let id = self.scheduler.add(task,prio,on_beat);
         self.managed.push(id);
     }
+
+    pub fn clear(&mut self) {
+        for id in self.managed.drain(..) {
+            self.scheduler.delete(id);
+        }
+    }
 }
 
 impl Drop for SchedulerGroup {

@@ -17,6 +17,7 @@ import { RootState } from 'src/store';
 import { ChrLocation, ChrLocations } from './browserState';
 import {
   changeBrowserLocation,
+  changeFocusObject,
   setDataFromUrlAndSave,
   ParsedUrlPayload,
   validateBrowserUrl
@@ -80,6 +81,7 @@ type StateProps = {
 
 type DispatchProps = {
   changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
+  changeFocusObject: (objectId: string) => void;
   changeDrawerView: (drawerView: string) => void;
   closeDrawer: () => void;
   fetchGenomeData: (genomeId: string) => void;
@@ -149,7 +151,11 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
     props.setDataFromUrlAndSave(payload);
 
-    chrLocation && dispatchBrowserLocation(genomeId, chrLocation);
+    if (chrLocation) {
+      dispatchBrowserLocation(genomeId, chrLocation);
+    } else if (focus) {
+      props.changeFocusObject(focus);
+    }
     lastGenomeIdRef.current = genomeId;
   };
 
@@ -354,6 +360,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
 
 const mapDispatchToProps: DispatchProps = {
   changeBrowserLocation,
+  changeFocusObject,
   changeDrawerView,
   closeDrawer,
   fetchGenomeData,

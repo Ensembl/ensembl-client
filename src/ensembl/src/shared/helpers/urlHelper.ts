@@ -1,3 +1,5 @@
+import queryString from 'query-string';
+
 export const speciesSelector = () => '/app/species-selector';
 export const customDownload = () => '/app/custom-download';
 
@@ -8,12 +10,18 @@ type BrowserUrlParams = {
 };
 
 export const browser = (params?: BrowserUrlParams) => {
-  if (params && params.genomeId) {
-    if (params.focus && params.location) {
-      return `/app/browser/${params.genomeId}?focus=${params.focus}&location=${params.location}`;
-    }
-
-    return `/app/browser/${params.genomeId}`;
+  if (params) {
+    const path = `/app/browser/${params.genomeId}`;
+    const query = queryString.stringify(
+      {
+        focus: params.focus,
+        location: params.location || undefined // have to use undefined, because if location is null it will still get in query
+      },
+      {
+        encode: false
+      }
+    );
+    return query ? `${path}?${query}` : path;
   } else {
     return `/app/browser/`;
   }

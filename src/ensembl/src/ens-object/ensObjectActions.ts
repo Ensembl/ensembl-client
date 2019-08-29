@@ -1,25 +1,37 @@
 import { createAsyncAction } from 'typesafe-actions';
 import { Action, ActionCreator } from 'redux';
 import { ThunkAction } from 'redux-thunk';
-import { RootState } from 'src/store';
 import apiService from 'src/services/api-service';
+
+import { shouldFetch } from 'src/shared/helpers/fetchHelper';
 
 import { GenomeInfoData } from 'src/genome/genomeTypes';
 import { getGenomeInfo } from 'src/genome/genomeSelectors';
-import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
+import {
+  getEnsObjectLoadingStatus,
+  getExampleEnsObjects
+} from 'src/ens-object/ensObjectSelectors';
+
 import { EnsObject, EnsObjectResponse } from './ensObjectTypes';
+import { RootState } from 'src/store';
 
 export const fetchEnsObjectAsyncActions = createAsyncAction(
   'ens-object/fetch_ens_object_request',
   'ens-object/fetch_ens_object_success',
   'ens-object/fetch_ens_object_failure'
-)<void, { [id: string]: EnsObject }, Error>();
+)<string, { id: string; data: EnsObject }, Error>();
 
 export const fetchEnsObject: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (ensObjectId: string) => async (dispatch) => {
+> = (ensObjectId: string) => async (dispatch, getState: () => RootState) => {
+  const state = getState();
+  const ensObjectLoadingStatus = getEnsObjectLoadingStatus(state, ensObjectId);
+  if (!shouldFetch(ensObjectLoadingStatus)) {
+    return;
+  }
+
   try {
-    dispatch(fetchEnsObjectAsyncActions.request());
+    dispatch(fetchEnsObjectAsyncActions.request(ensObjectId));
     let response: EnsObjectResponse;
 
     const url = `/api/object/info?object_id=${ensObjectId}`;
@@ -28,12 +40,18 @@ export const fetchEnsObject: ActionCreator<
     if (response.object_type !== 'region') {
       // region objects don't have associated track lists
       const trackUrl = `/api/object/track_list?object_id=${ensObjectId}`;
-      response.track = await apiService.fetch(trackUrl);
+      try {
+        response.track = await apiService.fetch(trackUrl);
+      } catch {
+        // FIXME: this is a temporary solution
+        response.track = builtTrackList(response);
+      }
     }
 
     dispatch(
       fetchEnsObjectAsyncActions.success({
-        [response.object_id]: response
+        id: response.object_id,
+        data: response
       })
     );
   } catch (error) {
@@ -54,4 +72,17 @@ export const fetchExampleEnsObjects: ActionCreator<
       dispatch(fetchEnsObject(exampleObjectId));
     });
   }
+};
+
+// FIXME: this is a temporary solution, until the backend
+// fixes the api/object/track_list endpoint
+const builtTrackList = (ensObject: EnsObjectResponse) => {
+  return {
+    additional_info: ensObject.bio_type || undefined,
+    description: ensObject.description,
+    ensembl_object_id: ensObject.object_id, // we don't use this field
+    label: ensObject.label,
+    track_id: 'gene-feat',
+    child_tracks: []
+  };
 };

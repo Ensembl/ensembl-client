@@ -11,7 +11,7 @@ DEST="$BASE/../../../../ensembl/static/browser"
 cd $SRC
 touch Cargo.lock # force build
 if [ "$1" == "check" ] ; then
-  export RUSTFLAGS="--cfg=deploy --cfg=console"
+  export RUSTFLAGS="--cfg=deploy --cfg=console -A warnings"
 else
   export RUSTFLAGS="--cfg=deploy"
 fi
@@ -26,7 +26,7 @@ echo "WASMHASH=$WASMHASH"
 
 WASMNAME="browser-$WASMHASH.wasm"
 JSNAME="browser.js"
-rm $DEST/*.js $DEST/*.wasm
+rm -f $DEST/*.js $DEST/*.wasm
 cp $SRC/target/deploy/hellostdweb.wasm $DEST/$WASMNAME
 cp $SRC/target/deploy/hellostdweb.js $DEST/$JSNAME
 sed -i -e "s~\"hellostdweb.wasm\"~\"/static/browser/$WASMNAME\"~g" $DEST/$JSNAME

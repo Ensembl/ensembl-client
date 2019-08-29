@@ -5,7 +5,7 @@ pub trait StateExpr {
     fn is_on(&self, _m: &StateManager) -> bool { false }
 }
 
-pub struct StateFixed(bool);
+pub struct StateFixed(pub bool);
 
 impl StateExpr for StateFixed {
     fn is_on(&self, _m: &StateManager) -> bool { self.0 }

@@ -2,22 +2,23 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use composit::{ ActiveSource, Leaf };
-use data::BackendConfig;
+use controller::global::WindowState;
+use composit::{ AllLandscapes, Leaf };
+use data::{ BackendConfig, UnpackedProductConsumer };
+use model::item::{ DeliveredItem, UnpackedProduct};
 use model::shape::DrawingSpec;
-use composit::source::SourceResponse;
+use model::supply::Subassembly;
 
 pub enum TáTask {
-    MakeShapes(ActiveSource,Leaf,SourceResponse,Vec<DrawingSpec>,usize,Option<String>,Rc<BackendConfig>)
+    MakeShapes(BackendConfig,Leaf,UnpackedProduct,Vec<DrawingSpec>,usize,Option<Subassembly>,AllLandscapes,Option<String>,Box<dyn UnpackedProductConsumer>)
 }
 
 impl TáTask {
     pub fn finished(&mut self) {
         #[allow(unreachable_patterns)]
         match self {
-            TáTask::MakeShapes(_,_leaf,sr,_,_,_,_) => {
-                //console!("{:?} for {} added {} shapes",leaf,sr.get_source_name(),sr.size());
-                sr.done();
+            TáTask::MakeShapes(_,_,sr,_,_,_,_,_,consumer) => {
+                consumer.consume(sr.clone());
             },
             _ => ()
         }

@@ -1,6 +1,6 @@
 import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
 
-import { LoadingState } from 'src/content/app/species-selector/types/loading-state';
+import { LoadingState } from 'src/shared/types/loading-state';
 import {
   SearchMatches,
   Strain,

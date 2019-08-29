@@ -1,17 +1,17 @@
-use model::train::TravellerResponseData;
+use model::item::UnpackedSubassembly;
 use super::super::drawing::{ Drawing, CarriageCanvases };
 use super::GLProgInstances;
 use super::super::shape::GLShape;
 
 pub struct GLDrawing {
     drawings: Vec<Option<Drawing>>,
-    sr: TravellerResponseData,
+    sr: UnpackedSubassembly,
 }
 
 impl GLDrawing {
-    pub fn new(sr: TravellerResponseData) -> GLDrawing {
+    pub fn new(sr: &UnpackedSubassembly) -> GLDrawing {
         GLDrawing { 
-            sr, 
+            sr: sr.clone(), 
             drawings: Vec::<Option<Drawing>>::new(),
         }
     }

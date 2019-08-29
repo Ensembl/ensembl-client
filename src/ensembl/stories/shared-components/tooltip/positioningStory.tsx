@@ -55,11 +55,11 @@ const Items = (props: ItemsProps) => {
 };
 
 const Positions = (props: PositionsProps) => {
-  const positions = [];
+  const positions: Array<keyof typeof Position> = [];
   for (const position in Position) {
-    positions.push(position);
+    positions.push(position as keyof typeof Position);
   }
-  const positionOptions = positions.map((position: any) => (
+  const positionOptions = positions.map((position) => (
     <option value={Position[position]} key={position}>
       {position}
     </option>

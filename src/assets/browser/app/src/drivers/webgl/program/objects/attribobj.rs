@@ -91,10 +91,7 @@ impl Object for ObjectAttrib {
     }
 
     fn get_f32_slice(&mut self, b: &DataBatch) -> Option<&mut Vec<f32>> {
-        let out = self.vec.entry(b.id()).or_insert_with(|| Vec::<f32>::new());
-        let len = out.len()/3;
-        out.reserve(len);
-        Some(out)
+        Some(self.vec.entry(b.id()).or_insert_with(|| Vec::<f32>::new()))
     }
     
     fn clear(&mut self, ctx: &glctx) {

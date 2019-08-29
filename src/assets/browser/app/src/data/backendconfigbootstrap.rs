@@ -3,6 +3,7 @@ use std::rc::Rc;
 
 use stdweb::web::{XmlHttpRequest, XhrResponseType };
 use url::Url;
+use util::API_VERSION;
 
 use super::{ BackendConfig, HttpManager, HttpResponseConsumer };
 
@@ -46,6 +47,8 @@ impl BackendConfigBootstrap {
         let out = BackendConfigBootstrap(Rc::new(RefCell::new(imp)),base.clone());
         let xhr = XmlHttpRequest::new();
         xhr.set_response_type(XhrResponseType::Text);
+        let mut base = base.clone();
+        ok!(base.path_segments_mut()).push(&API_VERSION.to_string());
         xhr.open("GET",&base.as_str());
         http_manager.add_request(xhr,None,Box::new(out.clone()));
         out

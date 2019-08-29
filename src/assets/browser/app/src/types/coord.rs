@@ -2,8 +2,8 @@ use std::cmp::{ Ordering, PartialEq, PartialOrd };
 use std::fmt::Debug;
 use std::ops::{ Add, Sub, Mul, Div, Neg };
 
-use composit::Stage;
 use drivers::webgl::program::Input;
+use model::stage::{ Screen, Position };
 use types::{
     Rect, Anchored, Axis, Edge, Corner, Anchor, Direction,
     RIGHT, LEFT, DOWN, UP, Placement, XPosition, YPosition
@@ -52,11 +52,11 @@ pub type EPixel = Dot<Edge<i32>,Edge<i32>>;
 pub struct Distance<T : Clone + Copy + Debug>(pub T,pub Units);
 
 impl<T: Clone + Copy + Mul<f64,Output=T> + Div<f64,Output=T> + Debug> Distance<T> {
-    pub fn convert(&self, target: Units, axis: Axis, stage: &Stage) -> Distance<T> {
+    pub fn convert(&self, target: Units, axis: Axis, screen: &Screen, position: &Position) -> Distance<T> {
         let Distance(quant,source) = self;
-        let dims = stage.get_size();
+        let dims = screen.get_size();
         let (size,zoom) = match axis {
-            Axis::Horiz => (dims.0 as f64,stage.get_screen_in_bp() as f64),
+            Axis::Horiz => (dims.0 as f64,position.get_screen_in_bp() as f64),
             Axis::Vert => (dims.1 as f64,1.0),
             Axis::Zoom => (1.,1.), // TODO
         };
@@ -95,12 +95,12 @@ impl<T: Neg<Output=T> + Clone+Copy+Debug + Mul<f64,Output=T> +
      U: Neg<Output=U> + Clone+Copy+Debug + Mul<f64,Output=U> + 
         Div<f64,Output=U> + PartialOrd<f64>> Move<T,U> {
          
-    pub fn convert(&self, target: Units, stage: &Stage) -> Move<T,U> {
+    pub fn convert(&self, target: Units, screen: &Screen, position: &Position) -> Move<T,U> {
         match self {
-            Move::Up(u) => Move::Up(u.convert(target,Axis::Vert, stage)),
-            Move::Down(u) => Move::Down(u.convert(target,Axis::Vert, stage)),
-            Move::Left(u) => Move::Left(u.convert(target,Axis::Horiz, stage)),
-            Move::Right(u) => Move::Right(u.convert(target,Axis::Horiz, stage)),
+            Move::Up(u) => Move::Up(u.convert(target,Axis::Vert,screen,position)),
+            Move::Down(u) => Move::Down(u.convert(target,Axis::Vert,screen,position)),
+            Move::Left(u) => Move::Left(u.convert(target,Axis::Horiz,screen,position)),
+            Move::Right(u) => Move::Right(u.convert(target,Axis::Horiz,screen,position)),
         }
     }
     

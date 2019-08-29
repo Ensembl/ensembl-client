@@ -3,8 +3,9 @@
 .account {
   border-bottom: 1px solid $ens-grey;
   height: 300px;
-  @include flex;
-  @include flex-align(center, middle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   h2 {
     color: $ens-grey;

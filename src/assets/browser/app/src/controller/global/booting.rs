@@ -57,12 +57,12 @@ impl Booting {
         };
         BlackBoxDriver::new(reporter_driver)
     }
-    
+
     #[cfg(all(deploy,not(console)))]
     fn make_blackbox(&self, _debug_url: &Option<String>) -> BlackBoxDriver {
         BlackBoxDriver::new()
     }
-    
+
     #[cfg(not(deploy))]
     fn bling(&self) -> Box<Bling> {
         if self.debug {
@@ -85,12 +85,13 @@ impl Booting {
         let ar = AppRunner::new(
             &GlobalWeak::new(&global),&self.http_manager,
             &self.el,bling,&self.config_url,config,
-            blackbox
+            blackbox,
+            &self.key
         );
         {
             global.register_app_now(&self.key,ar.clone());
         }
-        let app = ar.clone().state();
+        let app = ar.state();
         app.lock().unwrap().run_actions(&initial_actions(),None);
         console!("booted");
     }
