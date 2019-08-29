@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useRef, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { replace, Replace } from 'connected-react-router';
@@ -102,7 +102,6 @@ type BrowserProps = RouteComponentProps<MatchParams> &
 export const Browser: FunctionComponent<BrowserProps> = (
   props: BrowserProps
 ) => {
-  const browserRef: React.RefObject<HTMLDivElement> = useRef(null);
   const [trackStatesFromStorage, setTrackStatesFromStorage] = useState<
     TrackStates
   >({});
@@ -276,15 +275,12 @@ export const Browser: FunctionComponent<BrowserProps> = (
           >
             <animated.div style={trackAnimation}>
               <div className={styles.browserImageWrapper} onClick={closeTrack}>
-                {props.browserNavOpened &&
-                !isDrawerOpened &&
-                browserRef.current ? (
+                {props.browserActivated &&
+                props.browserNavOpened &&
+                !isDrawerOpened ? (
                   <BrowserNavBar />
                 ) : null}
-                <BrowserImage
-                  browserRef={browserRef}
-                  trackStates={trackStatesFromStorage}
-                />
+                <BrowserImage trackStates={trackStatesFromStorage} />
               </div>
             </animated.div>
             <TrackPanel />

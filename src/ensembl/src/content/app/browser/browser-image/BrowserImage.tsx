@@ -1,6 +1,6 @@
 import React, {
   FunctionComponent,
-  RefObject,
+  useRef,
   useEffect,
   useCallback
 } from 'react';
@@ -56,7 +56,6 @@ type DispatchProps = {
 };
 
 type OwnProps = {
-  browserRef: RefObject<HTMLDivElement>;
   trackStates: TrackStates;
 };
 
@@ -80,6 +79,7 @@ const parseLocation = (location: ChrLocation) => {
 export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   props: BrowserImageProps
 ) => {
+  const browserRef: React.RefObject<HTMLDivElement> = useRef(null);
   const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
     const ensObjectId = payload.focus;
     const navIconStates = payload.bumper as BrowserNavStates;
@@ -169,10 +169,10 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
         <div
           id={BROWSER_CONTAINER_ID}
           className={getBrowserImageClasses(props.browserNavOpened)}
-          ref={props.browserRef}
+          ref={browserRef}
         />
         <BrowserCogList />
-        <ZmenuController browserRef={props.browserRef} />
+        <ZmenuController browserRef={browserRef} />
       </div>
     </>
   );
