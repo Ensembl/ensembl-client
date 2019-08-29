@@ -36,9 +36,9 @@ import { getBrowserRegionEditorErrorMessages } from '../browserHelper';
 
 type BrowserRegionEditorProps = {
   activeGenomeId: string | null;
+  actualChrLocation: ChrLocation;
   browserRegionEditorActive: boolean;
   browserRegionFieldActive: boolean;
-  actualChrLocation: ChrLocation;
   genomeKaryotypes: GenomeKaryotype[];
   changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
   toggleBrowserRegionEditorActive: (browserRegionEditorActive: boolean) => void;
@@ -74,7 +74,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
 
     const karyotypeLength = props.genomeKaryotypes.filter(
       ({ name }) => name === value
-    )[0].length;
+    ).length;
 
     updateLocationEndInput(karyotypeLength.toString());
   };
@@ -183,7 +183,10 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   return (
     <div className={regionEditorClassNames}>
       {props.browserRegionFieldActive ? (
-        <div className={browserStyles.browserOverlay}></div>
+        <div
+          className={browserStyles.browserOverlay}
+          id="region-field-overlay"
+        ></div>
       ) : null}
       <form onSubmit={handleSubmit} onFocus={handleRegionEditorFocus}>
         <div className={styles.inputGroup}>
@@ -193,7 +196,11 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
             options={getKaryotypeOptions()}
           ></Select>
         </div>
-        <div className={styles.inputGroup} ref={locationStartRef}>
+        <div
+          className={styles.inputGroup}
+          ref={locationStartRef}
+          id="location-start-input"
+        >
           <label className="show-for-large">Start</label>
           <Input
             type="text"
@@ -231,7 +238,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
           <button type="submit">
             <img src={applyIcon} alt="Apply changes" />
           </button>
-          <button onClick={closeForm}>
+          <button onClick={closeForm} id="close-button">
             <img src={clearIcon} alt="Clear changes" />
           </button>
         </span>
