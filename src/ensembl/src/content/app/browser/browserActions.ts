@@ -10,7 +10,7 @@ import isEqual from 'lodash/isEqual';
 import apiService from 'src/services/api-service';
 import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
-
+import { LoadingState } from 'src/content/app/species-selector/types/loading-state';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import {
   BrowserNavStates,
@@ -281,8 +281,41 @@ export const validateBrowserUrl: ActionCreator<
     dispatch(validateBrowserUrlAsyncActions.request());
 
     const url = `http://193.62.55.91:30667/api/genome/region/validate?genome_id=${urlParams.genomeId}&region=chromosome ${urlParams.region}`;
-    const response = await apiService.fetch(url, { preserveEndpoint: true });
+    // const response = await apiService.fetch(url, { preserveEndpoint: true });
 
+    dispatch(validateBrowserUrlAsyncActions.success({
+      status: LoadingState.LOADING
+    }));
+
+    const response = {
+      status: LoadingState.SUCCESS,
+      "end": {
+        "error_code": null, 
+        "error_message": null, 
+        "is_valid": true, 
+        "value": 26365343
+      }, 
+      "genome_id": {
+        "error_code": null, 
+        "error_message": null, 
+        "is_valid": true, 
+        "value": "homo_sapiens_GCA_000001405_27"
+      }, 
+      "is_parseable": true, 
+      "region": {
+        "error_code": null, 
+        "error_message": null, 
+        "is_valid": true, 
+        "region_code": "chromosome", 
+        "region_id": "2"
+      }, 
+      "start": {
+        "error_code": null, 
+        "error_message": null, 
+        "is_valid": true, 
+        "value": 123
+      }
+    };
     dispatch(validateBrowserUrlAsyncActions.success(response));
   } catch (error) {
     dispatch(validateBrowserUrlAsyncActions.failure(error));

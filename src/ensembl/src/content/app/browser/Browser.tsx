@@ -281,10 +281,12 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   const isURLValid = () => {
     const { regionValidationInfo } = props;
+    console.log(props.browserQueryParams.focus, regionValidationInfo);
     if (!regionValidationInfo.genome_id) {
       return false;
     }
     return (
+      props.browserQueryParams.focus &&
       regionValidationInfo.genome_id.is_valid &&
       regionValidationInfo.region.is_valid &&
       regionValidationInfo.start.is_valid &&
@@ -299,8 +301,8 @@ export const Browser: FunctionComponent<BrowserProps> = (
         activeGenomeId={props.activeGenomeId}
         onTabSelect={changeSelectedSpecies}
       />
-      {(!props.browserQueryParams.focus || !isURLValid()) && <BrowserHome />}
-      {props.browserQueryParams.focus && isURLValid() && (
+      {!isURLValid() && <BrowserHome focus={props.browserQueryParams.focus}/>}
+      {isURLValid() && (
         <section className={styles.browser}>
           {BrowserBarNode}
           {props.genomeSelectorActive && (

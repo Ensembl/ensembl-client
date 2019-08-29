@@ -18,20 +18,27 @@ type StateProps = {
   exampleEnsObjects: EnsObject[];
 };
 
-// type OwnProps = {
-//   focus: string;
-// };
+type OwnProps = {
+  focus: string;
+};
 
-export type BrowserHomeProps = StateProps;
+export type BrowserHomeProps = StateProps & OwnProps;
 
 export const BrowserHome: FunctionComponent<BrowserHomeProps> = (
   props: BrowserHomeProps
 ) => {
-  // if(!focus){
-  //   return <ExampleObjectLinks {...props} />
-  // }
+  if(!focus){
+    return <ExampleObjectLinks {...props} />
+  }
 
-  return <h1>Oops! Something went wrong with the URL...</h1>;
+  if(props.regionValidationInfo.status === 'loading'){
+    return null;
+  }
+  if(props.regionValidationInfo.status === 'error'){
+    return <h1>Oops! Something went wrong with the URL...</h1>;
+  }
+  
+  return null;
 };
 
 const ExampleObjectLinks = (props: BrowserHomeProps) => {

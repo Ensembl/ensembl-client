@@ -122,7 +122,7 @@ export function browserLocation(
     case getType(browserActions.validateBrowserUrlAsyncActions.success):
       return {
         ...state,
-        regionValidationData: action.payload
+        regionValidationInfo: action.payload
       };
     default:
       return state;
