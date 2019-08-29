@@ -162,7 +162,7 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
     updateTrackPanelForGenome({
       activeGenomeId,
       data: {
-        ...getActiveTrackPanel(getState()),
+        ...getActiveTrackPanel(state),
         previouslyViewedObjects: activeGenomePreviouslyViewedObjects
       }
     })

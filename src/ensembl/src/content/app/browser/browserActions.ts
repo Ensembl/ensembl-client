@@ -249,6 +249,8 @@ export const changeFocusObject: ActionCreator<
     const state = getState();
     const messageCount = getBrowserMessageCount(state);
 
+    dispatch(updatePreviouslyViewedObjectsAndSave());
+    
     browserMessagingService.send('bpane', {
       focus: objectId,
       'message-counter': messageCount

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -10,7 +10,7 @@ import { getBrowserActiveGenomeId } from '../../../browserSelectors';
 import { updateTrackStates } from 'src/content/app/browser/browserActions';
 import { TrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { getGenomeInfo } from 'src/genome/genomeSelectors';
-import { getActiveGenomeBookmarks } from 'src/content/app/browser/track-panel/trackPanelSelectors';
+import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
 import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -52,11 +52,9 @@ const ExampleLinks = (props: ExampleLinksProps) => {
   return (
     <div>
       {props.exampleEnsObjects.map((exampleObject) => {
-        const locationStr = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
         const path = urlFor.browser({
           genomeId: props.activeGenomeId,
-          focus: exampleObject.object_id,
-          location: locationStr
+          focus: exampleObject.object_id
         });
 
         const onClickHandler = () => {
@@ -93,11 +91,9 @@ const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
       {[...props.previouslyViewedObjects]
         .reverse()
         .map((previouslyViewedObject, index) => {
-          const locationStr = `${previouslyViewedObject.location.chromosome}:${previouslyViewedObject.location.start}-${previouslyViewedObject.location.end}`;
           const path = urlFor.browser({
             genomeId: props.activeGenomeId,
-            focus: previouslyViewedObject.object_id,
-            location: locationStr
+            focus: previouslyViewedObject.object_id
           });
 
           const onClickHandler = () => {
@@ -135,6 +131,11 @@ export const TrackPanelBookmarks = (props: Props) => {
     closeTrackPanelModal
   } = props;
 
+  
+  useEffect(() => {
+    console.log( previouslyViewedObjects);
+  }, []);
+
   return (
     <section className="trackPanelBookmarks">
       <h3>Bookmarks</h3>
@@ -168,7 +169,7 @@ const mapStateToProps = (state: RootState) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
   genomeInfo: getGenomeInfo(state),
   exampleEnsObjects: getExampleEnsObjects(state),
-  previouslyViewedObjects: getActiveGenomeBookmarks(state)
+  previouslyViewedObjects: getActiveGenomePreviouslyViewedObjects(state)
 });
 
 const mapDispatchToProps = {

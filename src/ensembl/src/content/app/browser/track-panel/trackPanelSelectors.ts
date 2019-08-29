@@ -25,7 +25,6 @@ export const getIsTrackPanelOpened = (state: RootState) =>
 
 export const getActiveGenomeBookmarks = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
-
   return (activeGenomeId && getActiveTrackPanel(state).bookmarks) || [];
 };
 
