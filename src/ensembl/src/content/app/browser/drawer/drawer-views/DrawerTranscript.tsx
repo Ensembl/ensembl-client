@@ -12,7 +12,8 @@ type DrawerTranscriptProps = {
   ensObject: EnsObject;
 };
 
-const TRANSCRIPT_GENE_NAME = 'gene-feat-1';
+// TODO: Once we start supporting multiple transcripts, we need to either remove this constant or move it to trackConfig
+const TRANSCRIPT_GENE_NAME = 'track:gene-feat-1';
 
 const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
   props: DrawerTranscriptProps

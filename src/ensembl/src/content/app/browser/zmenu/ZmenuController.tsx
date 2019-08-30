@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import pickBy from 'lodash/pickBy';
-
 import Zmenu from './Zmenu';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
-
+import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 import {
   ZmenuData,
   ZmenuAction,
@@ -16,6 +16,7 @@ import {
 
 type Props = {
   browserRef: React.RefObject<HTMLDivElement>;
+  changeHighlightedTrackId: (trackId: string) => void;
 };
 
 // when a zmenu is created, it’s assigned an id,
@@ -56,6 +57,9 @@ const ZmenuController = (props: Props) => {
       anchor_coordinates: payload.anchor_coordinates,
       content: payload.content
     };
+
+    props.changeHighlightedTrackId(payload.content[0].track_id);
+
     setZmenus({
       ...zmenus,
       [payload.id]: newZmenu
@@ -63,6 +67,7 @@ const ZmenuController = (props: Props) => {
   };
 
   const handleZmenuDestroy = (payload: ZmenuDestroyPayload) => {
+    props.changeHighlightedTrackId('');
     setZmenus(pickBy(zmenus, (value, key) => key !== payload.id));
   };
 
@@ -104,5 +109,11 @@ const ZmenuController = (props: Props) => {
 
   return <>{zmenuElements}</>;
 };
+const mapDispatchToProps = {
+  changeHighlightedTrackId
+};
 
-export default React.memo(ZmenuController);
+export default connect(
+  undefined,
+  mapDispatchToProps
+)(ZmenuController);

@@ -22,3 +22,6 @@ export const getSelectedTrackPanelTab = (state: RootState) =>
 
 export const getIsTrackPanelOpened = (state: RootState) =>
   getActiveTrackPanel(state).isTrackPanelOpened;
+
+export const gethighlightedTrackId = (state: RootState) =>
+  getActiveTrackPanel(state).highlightedTrackId;
