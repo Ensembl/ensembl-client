@@ -157,6 +157,16 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
   trackPanelStorageService.updateActiveGenomePreviouslyViewedObjects({
     [activeGenomeId]: activeGenomePreviouslyViewedObjects
   });
+
+  dispatch(
+    updateTrackPanelForGenome({
+      activeGenomeId,
+      data: {
+        ...getActiveTrackPanel(state),
+        previouslyViewedObjects: activeGenomePreviouslyViewedObjects
+      }
+    })
+  );
 };
 
 export const changeHighlightedTrackId: ActionCreator<
