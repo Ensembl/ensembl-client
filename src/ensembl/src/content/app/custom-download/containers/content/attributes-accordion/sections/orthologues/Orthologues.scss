@@ -14,35 +14,35 @@
   }
 
   input::placeholder {
-    color: $ens-medium-light-grey;
+    color: $medium-light-grey;
   }
 
   label {
     margin-right: 15px;
-    color: $ens-dark-grey;
+    color: $dark-grey;
   }
 
   .resultCounter {
     margin-left: 20px;
     span:first-of-type {
       font-weight: $bold;
-      color: $ens-black;
+      color: $black;
     }
 
     span:nth-of-type(2) {
-      color: $ens-medium-dark-grey;
+      color: $medium-dark-grey;
     }
 
     span:last-of-type {
       font-size: 12px;
       padding-left: 2px;
-      color: $ens-medium-dark-grey;
+      color: $medium-dark-grey;
     }
   }
 
   .bestMatchesFilter,
   .showAllFilter {
-    color: $ens-blue;
+    color: $blue;
     cursor: pointer;
     margin-left: 20px;
   }
@@ -54,5 +54,5 @@
 
 .speciesAttributesSectionTitle {
   margin: 20px 0 15px 30px;
-  color: $ens-dark-grey;
+  color: $dark-grey;
 }

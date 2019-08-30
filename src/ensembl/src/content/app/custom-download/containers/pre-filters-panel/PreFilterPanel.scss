@@ -1,14 +1,14 @@
 @import 'src/styles/common';
 
 .preFilterPanel {
-  background-color: $ens-light-grey;
+  background-color: $light-grey;
   height: 300px;
   box-shadow: 0 3px 5px $global-box-shadow;
 }
 
 .panelTitle {
   margin-left: 45px;
-  color: $ens-dark-grey;
+  color: $dark-grey;
   padding-top: 10px;
 }
 
@@ -22,23 +22,23 @@
 /* RoundButton extended styles*/
 .filterButtons {
   .inactive {
-    background-color: $ens-blue;
-    border: 1px solid $ens-blue;
-    color: $ens-white;
+    background-color: $blue;
+    border: 1px solid $blue;
+    color: $white;
     margin-left: 30px;
   }
 
   .active {
-    background-color: $ens-medium-dark-grey;
-    border: 1px solid $ens-medium-dark-grey;
-    color: $ens-white;
+    background-color: $medium-dark-grey;
+    border: 1px solid $medium-dark-grey;
+    color: $white;
     margin-left: 30px;
   }
 
   .disabled {
     background-color: transparent;
-    color: $ens-grey;
-    border: 1px solid $ens-grey;
+    color: $grey;
+    border: 1px solid $grey;
     cursor: default;
     margin-left: 30px;
   }

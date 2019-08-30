@@ -7,7 +7,7 @@
   overflow: auto;
   padding: 15px;
   width: 320px;
-  background: $ens-white;
+  background: $white;
 
   &.shorter {
     height: calc(100vh - 177px);
@@ -18,8 +18,8 @@
   }
 
   h4 {
-    border-bottom: 1px solid $ens-grey;
-    color: $ens-grey;
+    border-bottom: 1px solid $grey;
+    color: $grey;
     font-size: 10px;
     padding-bottom: 2px;
   }

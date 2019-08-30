@@ -11,7 +11,7 @@
 
 .trackPanelTab {
   button {
-    color: $ens-dark-blue;
+    color: $dark-blue;
   }
 }
 
@@ -23,7 +23,7 @@
 
 .trackPanelTabDisabled {
   button {
-    color: $ens-dark-grey;
+    color: $dark-grey;
     cursor: default;
   }
 }
@@ -31,9 +31,9 @@
   position: relative;
 
   &::after {
-    border: 6px solid $ens-grey;
-    border-color: transparent transparent $ens-light-grey $ens-light-grey;
-    box-shadow: -2px 2px 2px 0 $ens-grey;
+    border: 6px solid $grey;
+    border-color: transparent transparent $light-grey $light-grey;
+    box-shadow: -2px 2px 2px 0 $grey;
     box-sizing: border-box;
     content: '';
     height: 0;

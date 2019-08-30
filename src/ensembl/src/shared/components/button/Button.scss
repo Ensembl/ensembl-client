@@ -1,22 +1,22 @@
 @import 'src/styles/common';
 
 .primaryButton {
-  background-color: $ens-green;
-  color: $ens-white;
+  background-color: $green;
+  color: $white;
   padding: 8px 18px;
   font-weight: $bold;
 }
 
 .primaryButtonDisabled {
   background-color: transparent;
-  color: $ens-grey;
-  border: 1px solid $ens-grey;
+  color: $grey;
+  border: 1px solid $grey;
   cursor: default;
 }
 
 .secondaryButton {
-  background-color: $ens-blue;
-  color: $ens-white;
+  background-color: $blue;
+  color: $white;
   font-weight: $bold;
 }
 

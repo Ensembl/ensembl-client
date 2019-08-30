@@ -6,7 +6,7 @@
   align-items: center;
   width: 18px;
   height: 18px;
-  border: 2px solid $ens-blue;
+  border: 2px solid $blue;
   border-radius: 50%;
   cursor: pointer;
 
@@ -18,17 +18,17 @@
   svg {
     width: 66%;
     height: 66%;
-    fill: $ens-blue;
+    fill: $blue;
   }
 }
 
 .clearButtonInverted {
-  background-color: $ens-blue;
+  background-color: $blue;
   border: none;
 
   svg {
     width: 56%;
     height: 56%;
-    fill: $ens-white;
+    fill: $white;
   }
 }
