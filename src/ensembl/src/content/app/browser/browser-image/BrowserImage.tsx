@@ -75,7 +75,7 @@ const parseLocation = (location: ChrLocation) => {
 export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   props: BrowserImageProps
 ) => {
-  const browserRef: React.RefObject<HTMLDivElement> = useRef(null);
+  const browserRef = useRef<HTMLDivElement>(null);
   const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
     const ensObjectId = payload.focus;
     const navIconStates = payload.bumper as BrowserNavStates;
