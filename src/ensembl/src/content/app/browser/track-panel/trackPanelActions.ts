@@ -157,13 +157,24 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
   trackPanelStorageService.updateActiveGenomePreviouslyViewedObjects({
     [activeGenomeId]: activeGenomePreviouslyViewedObjects
   });
+};
+
+export const changeHighlightedTrackId: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (highlightedTrackId: string) => (dispatch, getState: () => RootState) => {
+  const state = getState();
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+
+  if (!activeGenomeId) {
+    return;
+  }
 
   dispatch(
     updateTrackPanelForGenome({
       activeGenomeId,
       data: {
         ...getActiveTrackPanel(state),
-        previouslyViewedObjects: activeGenomePreviouslyViewedObjects
+        highlightedTrackId
       }
     })
   );
@@ -216,7 +227,9 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
 export const openTrackPanelModal: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (trackPanelModalView: string) => (dispatch, getState: () => RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(getState());
+  const state = getState();
+
+  const activeGenomeId = getBrowserActiveGenomeId(state);
 
   if (!activeGenomeId) {
     return;
@@ -226,7 +239,7 @@ export const openTrackPanelModal: ActionCreator<
     updateTrackPanelForGenome({
       activeGenomeId,
       data: {
-        ...getActiveTrackPanel(getState()),
+        ...getActiveTrackPanel(state),
         isTrackPanelModalOpened: true,
         trackPanelModalView
       }
@@ -237,7 +250,8 @@ export const openTrackPanelModal: ActionCreator<
 export const closeTrackPanelModal: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = () => (dispatch, getState: () => RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(getState());
+  const state = getState();
+  const activeGenomeId = getBrowserActiveGenomeId(state);
 
   if (!activeGenomeId) {
     return;
@@ -247,7 +261,7 @@ export const closeTrackPanelModal: ActionCreator<
     updateTrackPanelForGenome({
       activeGenomeId,
       data: {
-        ...getActiveTrackPanel(getState()),
+        ...getActiveTrackPanel(state),
         isTrackPanelModalOpened: false,
         trackPanelModalView: ''
       }

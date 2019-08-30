@@ -35,3 +35,5 @@ export const getActiveGenomePreviouslyViewedObjects = (state: RootState) => {
     (activeGenomeId && getActiveTrackPanel(state).previouslyViewedObjects) || []
   );
 };
+export const gethighlightedTrackId = (state: RootState) =>
+  getActiveTrackPanel(state).highlightedTrackId;

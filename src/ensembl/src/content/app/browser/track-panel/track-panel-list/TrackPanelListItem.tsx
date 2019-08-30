@@ -1,5 +1,6 @@
 import React, { MouseEvent, ReactNode, useState, useEffect } from 'react';
 import { connect } from 'react-redux';
+import { RootState } from 'src/store';
 import classNames from 'classnames';
 
 import analyticsTracking from 'src/services/analytics-service';
@@ -7,16 +8,20 @@ import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/components/image-button/ImageButton';
 
-import { TrackItemColour, TrackItemColourKey } from '../trackPanelConfig';
+import {
+  TrackItemColour,
+  TrackItemColourKey,
+  TrackId
+} from '../trackPanelConfig';
 import {
   updateTrackStatesAndSave,
   UpdateTrackStatesPayload
 } from 'src/content/app/browser/browserActions';
 import { changeDrawerView, toggleDrawer } from '../../drawer/drawerActions';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import { gethighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelSelectors';
 import browserStorageService from '../../browser-storage-service';
 import { EnsObjectTrack } from 'src/ens-object/ensObjectTypes';
-import { RootState } from 'src/store';
 import { getIsDrawerOpened, getDrawerView } from '../../drawer/drawerSelectors';
 import { getBrowserActiveGenomeId } from '../../browserSelectors';
 
@@ -27,10 +32,7 @@ import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg'
 
 import styles from './TrackPanelListItem.scss';
 
-type TrackPanelListItemProps = {
-  activeGenomeId: string | null;
-  isDrawerOpened: boolean;
-  drawerView: string;
+type Props = {
   changeDrawerView: (drawerView: string) => void;
   toggleDrawer: (isDrawerOpened: boolean) => void;
   updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
@@ -39,12 +41,13 @@ type TrackPanelListItemProps = {
   trackStatus: ImageButtonStatus;
   defaultTrackStatus: ImageButtonStatus;
   track: EnsObjectTrack;
+  highlightedTrackId: string;
+  activeGenomeId: string | null;
+  isDrawerOpened: boolean;
+  drawerView: string;
 };
 
-// delete this when there is a better place to put this
-const trackPrefix = 'track:';
-
-const TrackPanelListItem = (props: TrackPanelListItemProps) => {
+const TrackPanelListItem = (props: Props) => {
   const [expanded, setExpanded] = useState(true);
   const {
     activeGenomeId,
@@ -148,20 +151,22 @@ const TrackPanelListItem = (props: TrackPanelListItemProps) => {
       status === ImageButtonStatus.ACTIVE ? 'on' : 'off';
 
     const payload = {
-      [currentTrackStatus]: `${trackPrefix}${track.track_id}`
+      [currentTrackStatus]: `${track.track_id}`
     };
 
     browserMessagingService.send('bpane', payload);
   };
 
-  const listItemClassNames = classNames(styles.listItem, {
-    [styles.main]: track.track_id === 'gene',
-    [styles.currentDrawerView]: track.track_id === drawerView
+  const trackClassNames = classNames(styles.track, {
+    [styles.main]: track.track_id === TrackId.GENE,
+    [styles.trackHighlighted]:
+      track.track_id === drawerView ||
+      track.track_id === props.highlightedTrackId
   });
 
   return (
     <>
-      <dd className={listItemClassNames} onClick={drawerViewListHandler}>
+      <dd className={trackClassNames} onClick={drawerViewListHandler}>
         <label>
           {track.colour && (
             <span
@@ -211,7 +216,8 @@ const TrackPanelListItem = (props: TrackPanelListItemProps) => {
 const mapStateToProps = (state: RootState) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
   isDrawerOpened: getIsDrawerOpened(state),
-  drawerView: getDrawerView(state)
+  drawerView: getDrawerView(state),
+  highlightedTrackId: gethighlightedTrackId(state)
 });
 
 const mapDispatchToProps = {

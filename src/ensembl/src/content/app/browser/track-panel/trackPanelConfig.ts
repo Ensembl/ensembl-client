@@ -42,3 +42,7 @@ export type TrackStates = {
 export type TrackToggleStates = {
   [key: string]: boolean;
 };
+
+export enum TrackId {
+  GENE = 'track:gene-feat'
+}

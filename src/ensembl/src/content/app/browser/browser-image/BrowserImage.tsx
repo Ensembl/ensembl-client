@@ -29,6 +29,8 @@ import {
   updateBrowserActiveEnsObjectIdsAndSave
 } from '../browserActions';
 
+import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
+
 import { ChrLocation } from '../browserState';
 
 import { CircleLoader } from 'src/shared/components/loader/Loader';
@@ -53,6 +55,7 @@ type DispatchProps = {
   setChrLocation: (chrLocation: ChrLocation) => void;
   setActualChrLocation: (chrLocation: ChrLocation) => void;
   updateMessageCounter: (count: number) => void;
+  changeHighlightedTrackId: (trackId: string) => void;
 };
 
 type OwnProps = {
@@ -214,7 +217,8 @@ const mapDispatchToProps: DispatchProps = {
   updateBrowserActiveEnsObject: updateBrowserActiveEnsObjectIdsAndSave,
   setChrLocation,
   setActualChrLocation,
-  updateMessageCounter
+  updateMessageCounter,
+  changeHighlightedTrackId
 };
 
 export default connect(

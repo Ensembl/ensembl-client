@@ -29,6 +29,7 @@ export type TrackPanelStateForGenome = Readonly<{
   trackPanelModalView: string;
   bookmarks: Bookmark[];
   previouslyViewedObjects: Bookmark[];
+  highlightedTrackId: string;
 }>;
 
 export type TrackPanelState = Readonly<{
@@ -43,7 +44,8 @@ export const defaultTrackPanelStateForGenome: TrackPanelStateForGenome = {
   previouslyViewedObjects: [],
   isTrackPanelOpened: false,
   selectedTrackPanelTab: TrackSet.GENOMIC,
-  trackPanelModalView: ''
+  trackPanelModalView: '',
+  highlightedTrackId: ''
 };
 
 const availableGenomeIdsFromStorage = [
