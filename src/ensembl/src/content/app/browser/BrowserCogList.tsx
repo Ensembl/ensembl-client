@@ -25,8 +25,8 @@ type BrowserCogListProps = {
   browserActivated: boolean;
   browserCogList: number;
   browserCogTrackList: CogList;
-  trackConfigNames: any; // FIXME
-  trackConfigLabel: any; // FIXME
+  trackConfigNames: { [key: string]: boolean };
+  trackConfigLabel: { [key: string]: boolean };
   selectedCog: any;
   updateCogList: (cogList: number) => void;
   updateCogTrackList: (track_y: CogList) => void;
