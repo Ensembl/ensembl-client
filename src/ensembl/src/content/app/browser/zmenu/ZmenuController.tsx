@@ -116,4 +116,4 @@ const mapDispatchToProps = {
 export default connect(
   undefined,
   mapDispatchToProps
-)(React.memo(ZmenuController));
+)(ZmenuController);

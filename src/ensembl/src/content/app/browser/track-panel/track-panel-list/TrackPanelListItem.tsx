@@ -11,7 +11,7 @@ import ImageButton, {
 import {
   TrackItemColour,
   TrackItemColourKey,
-  TrackIDs
+  TrackId
 } from '../trackPanelConfig';
 import {
   updateTrackStatesAndSave,
@@ -158,7 +158,7 @@ const TrackPanelListItem = (props: Props) => {
   };
 
   const trackClassNames = classNames(styles.track, {
-    [styles.main]: track.track_id === TrackIDs.GENE,
+    [styles.main]: track.track_id === TrackId.GENE,
     [styles.trackHighlighted]:
       track.track_id === drawerView ||
       track.track_id === props.highlightedTrackId
