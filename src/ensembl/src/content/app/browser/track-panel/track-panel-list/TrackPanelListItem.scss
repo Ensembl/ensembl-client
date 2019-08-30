@@ -1,6 +1,6 @@
 @import 'src/styles/common';
 
-.listItem {
+.track {
   display: flex;
   font-size: 12px;
   margin-left: 0;
@@ -21,7 +21,7 @@
   }
 
   &:hover,
-  &.highlightTrack {
+  &.trackHighlighted {
     background: $ens-light-blue;
   }
 

@@ -29,7 +29,7 @@ import {
   updateBrowserActiveEnsObjectIdsAndSave
 } from '../browserActions';
 
-import { setHighlightedTrack } from 'src/content/app/browser/track-panel/trackPanelActions';
+import { changeHighlightedTrack } from 'src/content/app/browser/track-panel/trackPanelActions';
 
 import { ChrLocation } from '../browserState';
 
@@ -55,7 +55,7 @@ type DispatchProps = {
   setChrLocation: (chrLocation: ChrLocation) => void;
   setActualChrLocation: (chrLocation: ChrLocation) => void;
   updateMessageCounter: (count: number) => void;
-  setHighlightedTrack: (trackId: string) => void;
+  changeHighlightedTrack: (trackId: string) => void;
 };
 
 type OwnProps = {
@@ -188,7 +188,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
         <BrowserCogList />
         <ZmenuController
           browserRef={props.browserRef}
-          setHighlightedTrack={props.setHighlightedTrack}
+          changeHighlightedTrack={props.changeHighlightedTrack}
         />
       </div>
     </>
@@ -221,7 +221,7 @@ const mapDispatchToProps: DispatchProps = {
   setChrLocation,
   setActualChrLocation,
   updateMessageCounter,
-  setHighlightedTrack
+  changeHighlightedTrack
 };
 
 export default connect(

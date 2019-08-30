@@ -161,15 +161,15 @@ const TrackPanelListItem = (props: Props) => {
     browserMessagingService.send('bpane', payload);
   };
 
-  const listItemClassNames = classNames(styles.listItem, {
+  const trackClassNames = classNames(styles.track, {
     [styles.main]: track.track_id === 'track:gene-feat',
-    [styles.highlightTrack]:
+    [styles.trackHighlighted]:
       track.track_id === drawerView || track.track_id === props.highlightedTrack
   });
 
   return (
     <>
-      <dd className={listItemClassNames} onClick={drawerViewListHandler}>
+      <dd className={trackClassNames} onClick={drawerViewListHandler}>
         <label>
           {track.colour && (
             <span
