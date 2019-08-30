@@ -162,7 +162,7 @@ const TrackPanelListItem = (props: Props) => {
   };
 
   const listItemClassNames = classNames(styles.listItem, {
-    [styles.main]: track.track_id === 'track:gene',
+    [styles.main]: track.track_id === 'track:gene-feat',
     [styles.highlightTrack]:
       track.track_id === drawerView || track.track_id === props.highlightedTrack
   });
