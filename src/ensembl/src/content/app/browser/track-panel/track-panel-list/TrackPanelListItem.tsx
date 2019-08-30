@@ -19,7 +19,7 @@ import {
 } from 'src/content/app/browser/browserActions';
 import { changeDrawerView, toggleDrawer } from '../../drawer/drawerActions';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
-import { getHighlightedTrack } from 'src/content/app/browser/track-panel/trackPanelSelectors';
+import { gethighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelSelectors';
 import browserStorageService from '../../browser-storage-service';
 import { EnsObjectTrack } from 'src/ens-object/ensObjectTypes';
 import { getIsDrawerOpened, getDrawerView } from '../../drawer/drawerSelectors';
@@ -41,7 +41,7 @@ type Props = {
   trackStatus: ImageButtonStatus;
   defaultTrackStatus: ImageButtonStatus;
   track: EnsObjectTrack;
-  highlightedTrack: string;
+  highlightedTrackId: string;
   activeGenomeId: string | null;
   isDrawerOpened: boolean;
   drawerView: string;
@@ -160,7 +160,8 @@ const TrackPanelListItem = (props: Props) => {
   const trackClassNames = classNames(styles.track, {
     [styles.main]: track.track_id === TrackIDs.GENE,
     [styles.trackHighlighted]:
-      track.track_id === drawerView || track.track_id === props.highlightedTrack
+      track.track_id === drawerView ||
+      track.track_id === props.highlightedTrackId
   });
 
   return (
@@ -216,7 +217,7 @@ const mapStateToProps = (state: RootState) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
   isDrawerOpened: getIsDrawerOpened(state),
   drawerView: getDrawerView(state),
-  highlightedTrack: getHighlightedTrack(state)
+  highlightedTrackId: gethighlightedTrackId(state)
 });
 
 const mapDispatchToProps = {

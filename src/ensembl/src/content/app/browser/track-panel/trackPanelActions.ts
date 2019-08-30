@@ -88,9 +88,9 @@ export const changeTrackPanelModalViewForGenome: ActionCreator<
   );
 };
 
-export const changeHighlightedTrack: ActionCreator<
+export const changeHighlightedTrackId: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (highlightedTrack: string) => (dispatch, getState: () => RootState) => {
+> = (highlightedTrackId: string) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -102,7 +102,7 @@ export const changeHighlightedTrack: ActionCreator<
       activeGenomeId,
       data: {
         ...getActiveTrackPanel(getState()),
-        highlightedTrack
+        highlightedTrackId
       }
     })
   );
