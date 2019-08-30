@@ -41,6 +41,7 @@ type BpaneScrollPayload = {
 const BrowserCogList = (props: BrowserCogListProps) => {
   const { browserCogTrackList } = props;
   const listenBpaneScroll = (payload: BpaneScrollPayload) => {
+    console.log('payload', payload);
     const { delta_y, track_y } = payload;
     if (delta_y !== undefined) {
       props.updateCogList(delta_y);
@@ -64,19 +65,21 @@ const BrowserCogList = (props: BrowserCogListProps) => {
       const ons: string[] = [];
       const offs: string[] = [];
 
-      /* what the frontend and backend call labels and names is flipped */
       Object.keys(props.browserCogTrackList).forEach((name) => {
-        /* undefined means not seen means on for names */
+        // TODO: notice how we generate strings with suffix ":label" for track names,
+        // and strings with suffix ":names" for track label? That's because the frontend code
+        // and the backend code refer to these things by opposite terms. We will need to unify
+        // the terminology at some point.
         if (props.trackConfigNames[name]) {
           ons.push(`${name}:label`);
         } else {
-          offs.push(`${name}:label`);
+          offs.push(`${name}:label`); // by default, track names are not shown
         }
-        /* undefined means not seen means off for labels */
+
         if (props.trackConfigLabel[name] !== false) {
           ons.push(`${name}:names`);
         } else {
-          offs.push(`${name}:names`);
+          offs.push(`${name}:names`); // by default, track label is not shown
         }
       });
       browserMessagingService.send('bpane', {
