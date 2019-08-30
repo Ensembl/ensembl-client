@@ -244,9 +244,12 @@ export const Browser: FunctionComponent<BrowserProps> = (
     return launchbarExpanded ? styles.shorter : styles.taller;
   };
 
-  const BrowserBarNode = (
+  const browserBar = (
     <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
   );
+
+  const shouldShowNavBar =
+    props.browserActivated && props.browserNavOpened && !isDrawerOpened;
 
   return props.activeGenomeId ? (
     <>
@@ -258,13 +261,13 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
       {!props.browserQueryParams.focus && (
         <section className={styles.browser}>
-          {BrowserBarNode}
+          {browserBar}
           <ExampleObjectLinks {...props} />
         </section>
       )}
       {props.browserQueryParams.focus && (
         <section className={styles.browser}>
-          {BrowserBarNode}
+          {browserBar}
           {props.genomeSelectorActive && (
             <div className={styles.browserOverlay} />
           )}
@@ -275,11 +278,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
           >
             <animated.div style={trackAnimation}>
               <div className={styles.browserImageWrapper} onClick={closeTrack}>
-                {props.browserActivated &&
-                props.browserNavOpened &&
-                !isDrawerOpened ? (
-                  <BrowserNavBar />
-                ) : null}
+                {shouldShowNavBar && <BrowserNavBar />}
                 <BrowserImage trackStates={trackStatesFromStorage} />
               </div>
             </animated.div>
