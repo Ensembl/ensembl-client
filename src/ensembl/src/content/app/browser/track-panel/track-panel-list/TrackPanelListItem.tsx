@@ -8,7 +8,11 @@ import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/components/image-button/ImageButton';
 
-import { TrackItemColour, TrackItemColourKey } from '../trackPanelConfig';
+import {
+  TrackItemColour,
+  TrackItemColourKey,
+  TrackIDs
+} from '../trackPanelConfig';
 import {
   updateTrackStatesAndSave,
   UpdateTrackStatesPayload
@@ -28,7 +32,7 @@ import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg'
 
 import styles from './TrackPanelListItem.scss';
 
-type TrackPanelListItemProps = {
+type Props = {
   changeDrawerView: (drawerView: string) => void;
   toggleDrawer: (isDrawerOpened: boolean) => void;
   updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
@@ -37,19 +41,11 @@ type TrackPanelListItemProps = {
   trackStatus: ImageButtonStatus;
   defaultTrackStatus: ImageButtonStatus;
   track: EnsObjectTrack;
-};
-
-type StateProps = {
   highlightedTrack: string;
   activeGenomeId: string | null;
   isDrawerOpened: boolean;
   drawerView: string;
 };
-
-type Props = TrackPanelListItemProps & StateProps;
-
-// delete this when there is a better place to put this
-const trackPrefix = 'track:';
 
 const TrackPanelListItem = (props: Props) => {
   const [expanded, setExpanded] = useState(true);
@@ -155,14 +151,14 @@ const TrackPanelListItem = (props: Props) => {
       status === ImageButtonStatus.ACTIVE ? 'on' : 'off';
 
     const payload = {
-      [currentTrackStatus]: `${trackPrefix}${track.track_id}`
+      [currentTrackStatus]: `${track.track_id}`
     };
 
     browserMessagingService.send('bpane', payload);
   };
 
   const trackClassNames = classNames(styles.track, {
-    [styles.main]: track.track_id === 'track:gene-feat',
+    [styles.main]: track.track_id === TrackIDs.GENE,
     [styles.trackHighlighted]:
       track.track_id === drawerView || track.track_id === props.highlightedTrack
   });
@@ -216,7 +212,7 @@ const TrackPanelListItem = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
   isDrawerOpened: getIsDrawerOpened(state),
   drawerView: getDrawerView(state),

@@ -11,7 +11,7 @@ import {
   getEnsObjectLoadingStatus,
   getExampleEnsObjects
 } from 'src/ens-object/ensObjectSelectors';
-
+import { TrackIDs } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { EnsObject, EnsObjectResponse } from './ensObjectTypes';
 import { RootState } from 'src/store';
 
@@ -81,7 +81,7 @@ const builtTrackList = (ensObject: EnsObjectResponse) => {
     description: ensObject.description,
     ensembl_object_id: ensObject.object_id, // we don't use this field
     label: ensObject.label,
-    track_id: 'track:gene-feat',
+    track_id: TrackIDs.GENE,
     child_tracks: []
   };
 };
