@@ -41,7 +41,6 @@ type BpaneScrollPayload = {
 const BrowserCogList = (props: BrowserCogListProps) => {
   const { browserCogTrackList } = props;
   const listenBpaneScroll = (payload: BpaneScrollPayload) => {
-    console.log('payload', payload);
     const { delta_y, track_y } = payload;
     if (delta_y !== undefined) {
       props.updateCogList(delta_y);
