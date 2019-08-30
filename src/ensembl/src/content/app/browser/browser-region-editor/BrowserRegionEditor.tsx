@@ -25,6 +25,7 @@ import {
   getCommaSeparatedNumber,
   getNumberWithoutCommas
 } from 'src/shared/helpers/numberFormatter';
+import { getBrowserRegionEditorErrorMessages } from '../browserHelper';
 
 import applyIcon from 'static/img/shared/apply.svg';
 import clearIcon from 'static/img/shared/clear.svg';
@@ -32,7 +33,6 @@ import clearIcon from 'static/img/shared/clear.svg';
 import styles from './BrowserRegionEditor.scss';
 import browserStyles from '../Browser.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
-import { getBrowserRegionEditorErrorMessages } from '../browserHelper';
 
 type BrowserRegionEditorProps = {
   activeGenomeId: string | null;
@@ -79,31 +79,33 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     updateLocationEndInput(karyotypeLength.toString());
   };
 
-  const updateLocationStartInput = (value: string | undefined) => {
-    const unformattedValue = value
-      ? getNumberWithoutCommas(value)
-      : locationStart;
-    const formattedValue = getCommaSeparatedNumber(unformattedValue);
+  const getUnformattedValue = (value: string) =>
+    getNumberWithoutCommas(value) || value;
+
+  const getFormattedValue = (value: string | number) =>
+    typeof value === 'number' ? getCommaSeparatedNumber(value) : value;
+
+  const updateLocationStartInput = (value: string) => {
+    const unformattedValue = getUnformattedValue(value);
+    const formattedValue = getFormattedValue(unformattedValue);
 
     setLocationStartInput(formattedValue);
   };
 
-  const updateLocationEndInput = (value: string | undefined) => {
-    const unformattedValue = value
-      ? getNumberWithoutCommas(value)
-      : locationEnd;
-    const formattedValue = getCommaSeparatedNumber(unformattedValue);
+  const updateLocationEndInput = (value: string) => {
+    const unformattedValue = getUnformattedValue(value);
+    const formattedValue = getFormattedValue(unformattedValue);
 
     setLocationEndInput(formattedValue);
   };
 
-  const handleRegionEditorFocus = () =>
-    props.toggleBrowserRegionEditorActive(true);
-
   const closeForm = () => {
+    const locationStartStr = getCommaSeparatedNumber(locationStart);
+    const locationEndStr = getCommaSeparatedNumber(locationEnd);
+
     updateRegionInput(region);
-    updateLocationStartInput('');
-    updateLocationEndInput('');
+    updateLocationStartInput(locationStartStr);
+    updateLocationEndInput(locationEndStr);
     updateErrorMessages(null, null);
 
     props.toggleBrowserRegionEditorActive(false);
@@ -139,6 +141,8 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     return true;
   };
 
+  const handleFocus = () => props.toggleBrowserRegionEditorActive(true);
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -172,6 +176,14 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     [browserStyles.semiOpaque]: props.browserRegionFieldActive
   });
 
+  const locationStartClassNames = classNames({
+    [browserNavBarStyles.errorText]: locationStartErrorMessage
+  });
+
+  const locationEndClassNames = classNames({
+    [browserNavBarStyles.errorText]: locationEndErrorMessage
+  });
+
   const buttonsClassNames = classNames(
     browserNavBarStyles.browserNavBarButtons,
     {
@@ -188,7 +200,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
           id="region-field-overlay"
         ></div>
       ) : null}
-      <form onSubmit={handleSubmit} onFocus={handleRegionEditorFocus}>
+      <form onSubmit={handleSubmit} onFocus={handleFocus}>
         <div className={styles.inputGroup}>
           <label className="show-for-large">Chr</label>
           <Select
@@ -206,6 +218,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
             type="text"
             onChange={updateLocationStartInput}
             value={locationStartInput}
+            className={locationStartClassNames}
           ></Input>
           {locationStartErrorMessage ? (
             <Tooltip
@@ -223,6 +236,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
             type="text"
             onChange={updateLocationEndInput}
             value={locationEndInput}
+            className={locationEndClassNames}
           ></Input>
           {locationEndErrorMessage ? (
             <Tooltip

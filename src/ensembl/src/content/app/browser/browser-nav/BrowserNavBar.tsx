@@ -47,6 +47,19 @@ export const BrowserNavBar = (props: BrowserNavBarProps) => {
     []
   );
 
+  const shouldBeEnabled = (index: number) => {
+    const {
+      browserNavStates,
+      browserRegionEditorActive,
+      browserRegionFieldActive
+    } = props;
+    const maxState = browserNavStates[index];
+    const regionInputsActive =
+      browserRegionEditorActive || browserRegionFieldActive;
+
+    return !maxState && !regionInputsActive;
+  };
+
   const className = classNames(styles.browserNavBar, {
     [styles.browserNavBarExpanded]: !props.isTrackPanelOpened
   });
@@ -58,7 +71,7 @@ export const BrowserNavBar = (props: BrowserNavBarProps) => {
           <BrowserNavIcon
             key={item.name}
             browserNavItem={item}
-            maxState={props.browserNavStates[index]}
+            enabled={shouldBeEnabled(index)}
           />
         ))}
       </dd>

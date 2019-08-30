@@ -91,6 +91,10 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
     [browserStyles.semiOpaque]: props.browserRegionEditorActive
   });
 
+  const inputClassNames = classNames({
+    [browserNavBarStyles.errorText]: regionFieldErrorMessages
+  });
+
   const buttonsClassNames = classNames(
     browserNavBarStyles.browserNavBarButtons,
     {
@@ -115,6 +119,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
           value={regionFieldInput}
           onChange={changeRegionFieldInput}
           onFocus={activateForm}
+          className={inputClassNames}
         />
         <span className={buttonsClassNames}>
           <button type="submit">
