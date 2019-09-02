@@ -6,6 +6,7 @@ export type TrackPanelStateForGenome = Readonly<{
   isTrackPanelOpened: boolean;
   selectedTrackPanelTab: TrackSet;
   trackPanelModalView: string;
+  highlightedTrackId: string;
 }>;
 
 export type TrackPanelState = Readonly<{
@@ -16,9 +17,10 @@ const selectedTrackPanelTabFromStorage = browserStorageService.getSelectedTrackP
 
 export const defaultTrackPanelStateForGenome: TrackPanelStateForGenome = {
   isTrackPanelModalOpened: false,
-  isTrackPanelOpened: false,
   selectedTrackPanelTab: TrackSet.GENOMIC,
-  trackPanelModalView: ''
+  trackPanelModalView: '',
+  highlightedTrackId: '',
+  isTrackPanelOpened: false
 };
 
 export const defaultTrackPanelState: TrackPanelState = Object.keys(

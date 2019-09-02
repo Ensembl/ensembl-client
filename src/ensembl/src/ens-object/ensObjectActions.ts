@@ -11,7 +11,7 @@ import {
   getEnsObjectLoadingStatus,
   getExampleEnsObjects
 } from 'src/ens-object/ensObjectSelectors';
-
+import { TrackId } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { EnsObject, EnsObjectResponse } from './ensObjectTypes';
 import { RootState } from 'src/store';
 
@@ -32,10 +32,9 @@ export const fetchEnsObject: ActionCreator<
 
   try {
     dispatch(fetchEnsObjectAsyncActions.request(ensObjectId));
-    let response: EnsObjectResponse;
 
     const url = `/api/object/info?object_id=${ensObjectId}`;
-    response = await apiService.fetch(url);
+    const response: EnsObjectResponse = await apiService.fetch(url);
 
     if (response.object_type !== 'region') {
       // region objects don't have associated track lists
@@ -82,7 +81,7 @@ const builtTrackList = (ensObject: EnsObjectResponse) => {
     description: ensObject.description,
     ensembl_object_id: ensObject.object_id, // we don't use this field
     label: ensObject.label,
-    track_id: 'gene-feat',
+    track_id: TrackId.GENE,
     child_tracks: []
   };
 };

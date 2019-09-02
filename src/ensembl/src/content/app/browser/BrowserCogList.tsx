@@ -14,6 +14,8 @@ import {
   getBrowserActivated,
   getBrowserCogList,
   getBrowserCogTrackList,
+  getTrackConfigNames,
+  getTrackConfigLabel,
   getBrowserSelectedCog
 } from './browserSelectors';
 
@@ -23,6 +25,8 @@ type BrowserCogListProps = {
   browserActivated: boolean;
   browserCogList: number;
   browserCogTrackList: CogList;
+  trackConfigNames: { [key: string]: boolean };
+  trackConfigLabel: { [key: string]: boolean };
   selectedCog: any;
   updateCogList: (cogList: number) => void;
   updateCogTrackList: (track_y: CogList) => void;
@@ -54,6 +58,39 @@ const BrowserCogList = (props: BrowserCogListProps) => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (props.browserCogTrackList) {
+      const ons: string[] = [];
+      const offs: string[] = [];
+
+      Object.keys(props.browserCogTrackList).forEach((name) => {
+        // TODO: notice how we generate strings with suffix ":label" for track names,
+        // and strings with suffix ":names" for track label? That's because the frontend code
+        // and the backend code refer to these things by opposite terms. We will need to unify
+        // the terminology at some point.
+        if (props.trackConfigNames[name]) {
+          ons.push(`${name}:label`);
+        } else {
+          offs.push(`${name}:label`); // by default, track names are not shown
+        }
+
+        if (props.trackConfigLabel[name] !== false) {
+          ons.push(`${name}:names`);
+        } else {
+          offs.push(`${name}:names`); // by default, track label is not shown
+        }
+      });
+      browserMessagingService.send('bpane', {
+        off: offs,
+        on: ons
+      });
+    }
+  }, [
+    props.trackConfigNames,
+    props.trackConfigLabel,
+    props.browserCogTrackList
+  ]);
 
   const cogs = Object.entries(browserCogTrackList).map(([name, pos]) => {
     const posStyle = { top: pos + 'px' };
@@ -88,6 +125,8 @@ const mapStateToProps = (state: RootState) => ({
   browserActivated: getBrowserActivated(state),
   browserCogList: getBrowserCogList(state),
   browserCogTrackList: getBrowserCogTrackList(state),
+  trackConfigLabel: getTrackConfigLabel(state),
+  trackConfigNames: getTrackConfigNames(state),
   selectedCog: getBrowserSelectedCog(state)
 });
 

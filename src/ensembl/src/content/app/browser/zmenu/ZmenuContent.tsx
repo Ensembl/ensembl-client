@@ -82,12 +82,13 @@ const ZmenuContentBlock = (props: ZmenuContentBlockProps) => {
 
 const ZmenuContentItem = (props: ZmenuContentItemProps) => {
   const { text, markup, id } = props;
+  const isFocusable = markup.includes(Markup.FOCUS);
 
   const className = classNames({
     [styles.markupLight]: markup.includes(Markup.LIGHT),
     [styles.markupStrong]: markup.includes(Markup.STRONG),
     [styles.markupEmphasis]: markup.includes(Markup.EMPHASIS),
-    [styles.markupFocus]: markup.includes(Markup.FOCUS)
+    [styles.markupFocus]: isFocusable
   });
 
   const handleClick = () => {
@@ -96,7 +97,7 @@ const ZmenuContentItem = (props: ZmenuContentItemProps) => {
 
   const itemProps = {
     className,
-    onClick: handleClick
+    ...(isFocusable && { onClick: handleClick })
   };
 
   return <span {...itemProps}>{text}</span>;

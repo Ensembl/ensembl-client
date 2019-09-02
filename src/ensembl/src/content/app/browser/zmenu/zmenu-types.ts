@@ -41,6 +41,7 @@ export type ZmenuContentLine = ZmenuContentBlock[];
 
 export type ZmenuContentFeature = {
   id: string;
+  track_id: string;
   lines: ZmenuContentLine[];
 };
 
