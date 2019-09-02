@@ -17,6 +17,7 @@ import {
 import { getGenomeKaryotypes } from 'src/genome/genomeSelectors';
 import {
   changeBrowserLocation,
+  setChrLocation,
   toggleBrowserRegionEditorActive
 } from '../browserActions';
 import { GenomeKaryotype } from 'src/genome/genomeTypes';
@@ -41,6 +42,7 @@ type BrowserRegionEditorProps = {
   browserRegionFieldActive: boolean;
   genomeKaryotypes: GenomeKaryotype[];
   changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
+  setChrLocation: (chrLocation: ChrLocation) => void;
   toggleBrowserRegionEditorActive: (browserRegionEditorActive: boolean) => void;
 };
 
@@ -74,7 +76,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
 
     const karyotypeLength = props.genomeKaryotypes.filter(
       ({ name }) => name === value
-    ).length;
+    )[0].length;
 
     updateLocationEndInput(karyotypeLength.toString());
   };
@@ -99,13 +101,18 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     setLocationEndInput(formattedValue);
   };
 
-  const closeForm = () => {
+  const updateAllInputs = () => {
+    const [region, locationStart, locationEnd] = props.actualChrLocation;
     const locationStartStr = getCommaSeparatedNumber(locationStart);
     const locationEndStr = getCommaSeparatedNumber(locationEnd);
 
     updateRegionInput(region);
     updateLocationStartInput(locationStartStr);
     updateLocationEndInput(locationEndStr);
+  };
+
+  const closeForm = () => {
+    updateAllInputs();
     updateErrorMessages(null, null);
 
     props.toggleBrowserRegionEditorActive(false);
@@ -141,7 +148,11 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     return true;
   };
 
-  const handleFocus = () => props.toggleBrowserRegionEditorActive(true);
+  const handleFocus = () => {
+    if (!props.browserRegionEditorActive) {
+      props.toggleBrowserRegionEditorActive(true);
+    }
+  };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -149,16 +160,12 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     const isFormValid = validateRegionEditor();
 
     if (isFormValid) {
-      closeForm();
+      props.toggleBrowserRegionEditorActive(false);
 
       const locationStartNum = getNumberWithoutCommas(locationStartInput);
       const locationEndNum = getNumberWithoutCommas(locationEndInput);
 
-      props.changeBrowserLocation(props.activeGenomeId as string, [
-        regionInput,
-        locationStartNum,
-        locationEndNum
-      ]);
+      props.setChrLocation([regionInput, locationStartNum, locationEndNum]);
     }
   };
 
@@ -168,6 +175,8 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     },
     []
   );
+
+  useEffect(() => updateAllInputs(), [props.actualChrLocation]);
 
   const locationStartRef = useRef<HTMLDivElement>(null);
   const locationEndRef = useRef<HTMLDivElement>(null);
@@ -271,6 +280,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mpaDispatchToProps = {
   changeBrowserLocation,
+  setChrLocation,
   toggleBrowserRegionEditorActive
 };
 

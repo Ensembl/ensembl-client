@@ -51,11 +51,9 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   >(null);
 
   const activateForm = () => {
-    if (props.browserRegionFieldActive || props.isDrawerOpened) {
-      return;
+    if (!props.browserRegionFieldActive && !props.isDrawerOpened) {
+      props.toggleBrowserRegionFieldActive(true);
     }
-
-    props.toggleBrowserRegionFieldActive(true);
   };
 
   const changeRegionFieldInput = (value: string) => setRegionFieldInput(value);
