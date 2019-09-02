@@ -25,6 +25,7 @@ export enum Markup {
 export enum ZmenuAction {
   CREATE = 'create_zmenu',
   DESTROY = 'destroy_zmenu',
+  ACTIVITY_OUTSIDE = 'zmenu_activity_outside',
   REPOSITION = 'update_zmenu_position',
   ENTER = 'zmenu-enter',
   LEAVE = 'zmenu-leave'
@@ -71,6 +72,13 @@ export type ZmenuDestroyPayload = {
 export type ZmenuEnterPayload = {
   id: string;
   action: ZmenuAction.ENTER;
+};
+
+// Sent from React to Genome browser
+// (on mouseleave, or on click outside)
+export type ZmenuOutsideActivityPayload = {
+  id: string;
+  action: ZmenuAction.ACTIVITY_OUTSIDE;
 };
 
 // Sent from React to Genome browser
