@@ -1,6 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+
+import { changeFocusObject } from 'src/content/app/browser/browserActions';
 
 import styles from './Zmenu.scss';
 
@@ -32,6 +34,7 @@ type ZmenuContentBlockProps = {
 };
 
 type ZmenuContentItemProps = ZmenuContentItemType & {
+  changeFocusObject: (objectId: string) => void;
   id: string;
 };
 
@@ -71,27 +74,42 @@ const ZmenuContentBlock = (props: ZmenuContentBlockProps) => {
   return (
     <span className={styles.zmenuContentBlock}>
       {props.items.map((item, index) => (
-        <ZmenuContentItem key={index} id={props.id} {...item} />
+        <ConnectedZmenuContentItem key={index} id={props.id} {...item} />
       ))}
     </span>
   );
 };
 
 const ZmenuContentItem = (props: ZmenuContentItemProps) => {
-  const { text, markup } = props;
+  const { text, markup, id } = props;
+  const isFocusable = markup.includes(Markup.FOCUS);
 
   const className = classNames({
     [styles.markupLight]: markup.includes(Markup.LIGHT),
     [styles.markupStrong]: markup.includes(Markup.STRONG),
     [styles.markupEmphasis]: markup.includes(Markup.EMPHASIS),
-    [styles.markupFocus]: markup.includes(Markup.FOCUS)
+    [styles.markupFocus]: isFocusable
   });
 
-  const item = <span className={className}>{text}</span>;
+  const handleClick = () => {
+    props.changeFocusObject(id);
+  };
 
-  // TODO: build correct link to the ensembl object in genome browser
-  // after the browser chrome learns to support multiple genomes
-  return markup.includes(Markup.FOCUS) ? <Link to="/">{item}</Link> : item;
+  const itemProps = {
+    className,
+    ...(isFocusable && { onClick: handleClick })
+  };
+
+  return <span {...itemProps}>{text}</span>;
 };
+
+const mapDispatchToProps = {
+  changeFocusObject
+};
+
+const ConnectedZmenuContentItem = connect(
+  null,
+  mapDispatchToProps
+)(ZmenuContentItem);
 
 export default ZmenuContent;

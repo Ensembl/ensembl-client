@@ -11,8 +11,9 @@
   overflow-y: auto;
 
   h2 {
-    @include flex;
-    @include flex-align(center, middle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
   }
 

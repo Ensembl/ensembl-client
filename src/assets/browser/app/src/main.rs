@@ -19,6 +19,7 @@ extern crate url;
 extern crate base64;
 
 extern crate tánaiste;
+extern crate misc_algorithms;
 
 #[macro_use]
 mod util;

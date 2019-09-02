@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import find from 'lodash/find';
@@ -55,7 +55,11 @@ export const PopularSpeciesButton = (props: Props) => {
 
     if (!is_available) {
       return;
-    } else if (isSelected) {
+    }
+
+    analyticsTracking.setSpeciesDimension(genome_id);
+
+    if (isSelected) {
       props.clearSelectedSpecies();
       analyticsTracking.trackEvent({
         category: 'popular_species',

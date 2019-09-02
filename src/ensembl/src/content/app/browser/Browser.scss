@@ -7,10 +7,10 @@
 }
 
 .browserInnerWrapper {
+  display: flex;
   position: absolute;
   overflow: hidden;
   width: 100vw;
-  @include flex;
   transition: height 0.3s linear;
   &.shorter {
     height: calc(100vh - 194px);

@@ -10,7 +10,7 @@ pub struct ConsolePrint(usize,bool);
 impl Command for ConsolePrint {
     fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
         if self.1 {
-            console!("{:?}",rt.registers().get(self.0));
+            console!("{} = {:?}",self.0,rt.registers().get(self.0));
         } else {
             bb_log!("bytecode","{:?}",rt.registers().get(self.0));
         }

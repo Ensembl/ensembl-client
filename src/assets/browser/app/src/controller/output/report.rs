@@ -70,16 +70,14 @@ lazy_static! {
         ("message-counter",
             StatusJigsaw::Atom("message-counter".to_string(),StatusJigsawType::Number),
         None,false),
-        ("location",StatusJigsaw::Array(vec!{
-            StatusJigsaw::Atom("i-stick".to_string(),StatusJigsawType::String),
-            StatusJigsaw::Atom("i-start".to_string(),StatusJigsawType::Number),
-            StatusJigsaw::Atom("i-end".to_string(),StatusJigsawType::Number),
-        }),Some(100.),false),
+        ("focus",
+            StatusJigsaw::Atom("focus".to_string(),StatusJigsawType::String),
+        Some(100.),true),
         ("actual-location",StatusJigsaw::Array(vec!{
             StatusJigsaw::Atom("a-stick".to_string(),StatusJigsawType::String),
             StatusJigsaw::Atom("a-start".to_string(),StatusJigsawType::Number),
             StatusJigsaw::Atom("a-end".to_string(),StatusJigsawType::Number),
-        }),Some(100.),false),
+        }),Some(500.),false),
         ("intended-location",StatusJigsaw::Array(vec!{
             StatusJigsaw::Atom("i-stick".to_string(),StatusJigsawType::String),
             StatusJigsaw::Atom("i-start".to_string(),StatusJigsawType::Number),

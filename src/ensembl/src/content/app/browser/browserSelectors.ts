@@ -64,9 +64,8 @@ export const getActualChrLocation = (state: RootState) => {
 
 export const getDefaultChrLocation = (state: RootState) => {
   const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
-  const activeEnsObject = activeEnsObjectId
-    ? state.ensObjects[activeEnsObjectId]
-    : null;
+  const activeEnsObject =
+    activeEnsObjectId && getEnsObjectById(state, activeEnsObjectId);
   if (!activeEnsObject) {
     return null;
   }
@@ -75,11 +74,14 @@ export const getDefaultChrLocation = (state: RootState) => {
   return [chromosome, start, end] as ChrLocation;
 };
 
-export const getBrowserRegionEditorActive = (state: RootState): boolean =>
+export const getBrowserRegionEditorActive = (state: RootState) =>
   state.browser.browserLocation.browserRegionEditorActive;
 
-export const getBrowserRegionFieldActive = (state: RootState): boolean =>
+export const getBrowserRegionFieldActive = (state: RootState) =>
   state.browser.browserLocation.browserRegionFieldActive;
+
+export const getBrowserMessageCount = (state: RootState) =>
+  state.browser.browserEntity.messageCounter;
 
 export const getBrowserCogList = (state: RootState) =>
   state.browser.trackConfig.browserCogList;

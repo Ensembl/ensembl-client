@@ -67,9 +67,24 @@ class ApiService {
 
     try {
       const response = await fetch(url, fetchOptions);
+      if (!response.ok) {
+        throw await this.handleError(response);
+      }
       return await this.handleResponse(response, fetchOptions);
     } catch (error) {
       throw error;
+    }
+  }
+
+  private async handleError(response: Response) {
+    let errorJson;
+    try {
+      errorJson = await response.json();
+    } finally {
+      return {
+        status: response.status,
+        ...errorJson
+      };
     }
   }
 

@@ -22,8 +22,11 @@ import {
   updateBrowserNavStates,
   setChrLocation,
   setActualChrLocation,
-  updateMessageCounter
+  updateMessageCounter,
+  updateBrowserActiveEnsObjectIdsAndSave
 } from '../browserActions';
+
+import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
 import { ChrLocation } from '../browserState';
 
@@ -49,13 +52,16 @@ type BrowserImageProps = {
   activateBrowser: () => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
+  updateBrowserActiveEnsObject: (objectId: string) => void;
   setChrLocation: (chrLocation: ChrLocation) => void;
   setActualChrLocation: (chrLocation: ChrLocation) => void;
   updateMessageCounter: (count: number) => void;
+  changeHighlightedTrackId: (trackId: string) => void;
 };
 
 type BpaneOutPayload = {
   bumper?: BrowserNavStates;
+  focus?: string;
   'message-counter'?: number;
   'intended-location'?: ChrLocation;
   'actual-location'?: ChrLocation;
@@ -70,6 +76,7 @@ const parseLocation = (location: ChrLocation) => {
 
 export const BrowserImage = (props: BrowserImageProps) => {
   const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
+    const ensObjectId = payload.focus;
     const navIconStates = payload.bumper as BrowserNavStates;
     const intendedLocation = payload['intended-location'];
     const actualLocation = payload['actual-location'] || intendedLocation;
@@ -85,6 +92,10 @@ export const BrowserImage = (props: BrowserImageProps) => {
 
     if (actualLocation) {
       props.setActualChrLocation(parseLocation(actualLocation));
+    }
+
+    if (ensObjectId) {
+      props.updateBrowserActiveEnsObject(ensObjectId);
     }
 
     if (messageCount) {
@@ -205,9 +216,11 @@ const mapDispatchToProps = {
   activateBrowser,
   updateBrowserActivated,
   updateBrowserNavStates,
+  updateBrowserActiveEnsObject: updateBrowserActiveEnsObjectIdsAndSave,
   setChrLocation,
   setActualChrLocation,
-  updateMessageCounter
+  updateMessageCounter,
+  changeHighlightedTrackId
 };
 
 export default connect(

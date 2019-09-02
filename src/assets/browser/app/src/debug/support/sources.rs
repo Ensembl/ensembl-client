@@ -1,4 +1,4 @@
-use composit::CombinedSource;
+use model::supply::SupplierChooser;
 
 #[cfg(not(deploy))]
 use debug::testcards::{
@@ -34,10 +34,10 @@ pub const DEMO_SOURCES : [&str;10] = [
 ];
 
 #[cfg(deploy)]
-pub fn add_debug_sources(s: &mut CombinedSource, name: &str) {}
+pub fn add_debug_sources(s: &mut SupplierChooser, name: &str) {}
 
 #[cfg(not(deploy))]
-pub fn add_debug_sources(s: &mut CombinedSource, name: &str) {
+pub fn add_debug_sources(s: &mut SupplierChooser, name: &str) {
     let b = match name {
         "internal:debug:gene-pc-fwd" => Some(bs_source_sub(true)),
         "internal:debug:gene-pc-rev" => Some(bs_source_sub(false)),

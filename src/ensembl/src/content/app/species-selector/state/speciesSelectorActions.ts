@@ -237,6 +237,8 @@ export const commitSelectedSpeciesAndSave: ActionCreator<
 
   const speciesName = getSpeciesAnalyticsName(selectedItem);
 
+  analyticsTracking.setSpeciesDimension(selectedItem.genome_id);
+
   analyticsTracking.trackEvent({
     category: categories.ADD_SPECIES,
     label: speciesName,
@@ -291,6 +293,9 @@ export const deleteSpeciesAndSave: ActionCreator<
 
   if (deletedSpecies) {
     const deletedSpeciesName = getSpeciesAnalyticsName(deletedSpecies);
+
+    analyticsTracking.setSpeciesDimension(deletedSpecies.genome_id);
+
     analyticsTracking.trackEvent({
       category: categories.SELECTED_SPECIES,
       label: deletedSpeciesName,

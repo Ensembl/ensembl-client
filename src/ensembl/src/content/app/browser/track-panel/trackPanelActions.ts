@@ -6,6 +6,7 @@ import { RootState } from 'src/store';
 import { TrackSet } from './trackPanelConfig';
 import browserStorageService from '../browser-storage-service';
 import { getBrowserActiveGenomeId } from '../browserSelectors';
+import analyticsTracking from 'src/services/analytics-service';
 import { getActiveTrackPanel } from './trackPanelSelectors';
 import { TrackPanelStateForGenome } from './trackPanelState';
 
@@ -49,6 +50,12 @@ export const selectTrackPanelTabAndSave: ActionCreator<
     [activeGenomeId]: selectedTrackPanelTab
   });
 
+  analyticsTracking.trackEvent({
+    category: 'track_panel_tab',
+    label: selectedTrackPanelTab,
+    action: 'selected'
+  });
+
   dispatch(
     updateTrackPanelForGenome({
       activeGenomeId,
@@ -70,13 +77,32 @@ export const changeTrackPanelModalViewForGenome: ActionCreator<
   if (!activeGenomeId) {
     return;
   }
-
   dispatch(
     updateTrackPanelForGenome({
       activeGenomeId,
       data: {
         ...getActiveTrackPanel(getState()),
         trackPanelModalView
+      }
+    })
+  );
+};
+
+export const changeHighlightedTrackId: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (highlightedTrackId: string) => (dispatch, getState: () => RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(getState());
+
+  if (!activeGenomeId) {
+    return;
+  }
+
+  dispatch(
+    updateTrackPanelForGenome({
+      activeGenomeId,
+      data: {
+        ...getActiveTrackPanel(getState()),
+        highlightedTrackId
       }
     })
   );

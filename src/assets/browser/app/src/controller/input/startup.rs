@@ -71,7 +71,6 @@ pub fn initial_actions() -> Vec<Action> {
     
     /* Default tracks */
     for name in &DEMO_SOURCES {
-        console!("activating {}",name);
         out.push(Action::AddComponent(name.to_string()));
         out.push(Action::SetState(name.to_string(),true));
     }

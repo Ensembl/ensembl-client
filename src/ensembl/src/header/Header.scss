@@ -1,11 +1,13 @@
 @import 'src/styles/common';
 
 .topBar {
-  @include top-bar-container;
-  @include top-bar-unstack;
-
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
   color: $white;
   padding: 2px 20px;
+  background-color: $ens-black;
 }
 
 .homeLink {
@@ -32,7 +34,7 @@
   font-size: 11px;
   margin-left: 30px;
 
-  @include breakpoint(medium) {
+  @media #{$breakpoint-medium} {
     display: inline-block;
   }
 

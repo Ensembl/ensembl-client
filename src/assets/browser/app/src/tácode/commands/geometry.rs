@@ -1,11 +1,14 @@
 use std::sync::{ Arc, Mutex };
 
+use model::supply::Subassembly;
+
 use tánaiste::{
     Argument, Command, DataState, Instruction, ProcState, Signature,
     Value
 };
 
 use tácode::core::{ TáContext, TáTask };
+
 
 // TODO check ranges
 // TODO &mut-able registers
@@ -40,6 +43,8 @@ pub struct Plot(TáContext,usize,usize);
 // allplots #offsets, #heights, #letter-lens, #letters
 pub struct AllPlots(TáContext,usize,usize,usize,usize);
 pub struct SetPart(TáContext,usize);
+// getfocus #out
+pub struct GetFocus(TáContext,usize);
 
 impl Command for Abutt {
     fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
@@ -59,7 +64,7 @@ impl Command for Extent {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,leaf,lc,_,_,_,_) = task {
+            if let TáTask::MakeShapes(_,leaf,_,_,_,_,_,_,_) = task {
                 regs.set(self.1,Value::new_from_float(vec! {
                     leaf.get_start().floor(),
                     leaf.get_end().ceil()
@@ -76,7 +81,7 @@ impl Command for Scale {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,leaf,_,_,_,_,_) = task {
+            if let TáTask::MakeShapes(_,leaf,_,_,_,_,_,_,_) = task {
                 let scale = leaf.get_scale().get_index()+13;
                 regs.set(self.1,Value::new_from_float(vec![scale as f64]));
             }
@@ -91,8 +96,8 @@ impl Command for Plot {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(acs,_,_,_,lid,_,_) = task {
-                acs.with_landscape(*lid,|ls| {
+            if let TáTask::MakeShapes(_,_,_,_,lid,_,all_landscapes,_,_) = task {
+                all_landscapes.with(*lid, |ls| {
                     let plot = ls.get_plot();
                     regs.set(self.1,Value::new_from_float(vec!{
                         plot.get_base() as f64,
@@ -112,8 +117,8 @@ impl Command for AllPlots {
         let regs = rt.registers();
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(acs,_,_,_,_,_,_) = task {
-                let mut data : Vec<(i32,i32,String)> = acs.all_landscapes(|_,ls| {
+            if let TáTask::MakeShapes(_,_,_,_,_,_,all_landscapes,_,_) = task {
+                let mut data : Vec<(i32,i32,String)> = all_landscapes.every(|_,ls| {
                     let p = ls.get_plot();
                     (p.get_base(),p.get_height(),p.get_letter().to_string())
                 }).iter().filter(|x| x.is_some()).map(|x| x.clone().unwrap()).collect();
@@ -145,14 +150,33 @@ impl Command for SetPart {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
             regs.get(self.1).as_string(|new_part| {
-                if let TáTask::MakeShapes(_,_,_,_,_,part,_) = task {
-                    if new_part[0] == "" {
-                        part.take();
+                if let TáTask::MakeShapes(_,_,_,_,_,part,_,_,_) = task {
+                    let new_name = if new_part[0] == "" {
+                        None
                     } else {
-                        part.replace(new_part[0].clone());
-                    }
+                        Some(new_part[0].clone())
+                    };
+                    part.replace(Subassembly::new(part.as_ref().unwrap().get_product(),&new_name));
                 }
             });
+        });
+        return 1;
+    }
+}
+
+impl Command for GetFocus {
+    #[allow(irrefutable_let_patterns)]
+    fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        let pid = proc.lock().unwrap().get_pid().unwrap();
+        self.0.with_task(pid,|task| {
+            if let TáTask::MakeShapes(_,_,_,_,_,_,_,focus,_) = task {
+                if let Some(focus) = focus {
+                    regs.set(self.1,Value::new_from_string(vec![focus.clone()]));
+                } else {
+                    regs.set(self.1,Value::new_from_string(vec!["".to_string()]));
+                }
+            }
         });
         return 1;
     }
@@ -164,6 +188,7 @@ pub struct ScaleI(pub TáContext);
 pub struct PlotI(pub TáContext);
 pub struct AllPlotsI(pub TáContext);
 pub struct SetPartI(pub TáContext);
+pub struct GetFocusI(pub TáContext);
 
 impl Instruction for AbuttI {
     fn signature(&self) -> Signature { Signature::new("abutt","rr") }
@@ -205,5 +230,12 @@ impl Instruction for SetPartI {
     fn signature(&self) -> Signature { Signature::new("setpart","r") }
     fn build(&self, args: &Vec<Argument>) -> Box<Command> {
         Box::new(SetPart(self.0.clone(),args[0].reg()))
+    }
+}
+
+impl Instruction for GetFocusI {
+    fn signature(&self) -> Signature { Signature::new("getfocus","r") }
+    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+        Box::new(GetFocus(self.0.clone(),args[0].reg()))
     }
 }
