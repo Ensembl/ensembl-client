@@ -12,7 +12,7 @@ describe('<BrowserNavIcon />', () => {
     jest.spyOn(browserMessagingService, 'send');
 
     const renderedNavIcon = mount(
-      <BrowserNavIcon browserNavItem={browserNavItem} enabled={false} />
+      <BrowserNavIcon browserNavItem={browserNavItem} enabled={true} />
     );
 
     renderedNavIcon.find('button').simulate('click');

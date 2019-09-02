@@ -59,7 +59,7 @@ describe('<BrowserRegionEditor', () => {
 
       expect(
         wrapper.props().toggleBrowserRegionEditorActive
-      ).toHaveBeenCalled();
+      ).toHaveBeenCalledTimes(1);
     });
 
     test('applies correct value on change', () => {
@@ -99,7 +99,9 @@ describe('<BrowserRegionEditor', () => {
 
       wrapper.find('form').simulate('submit');
 
-      expect(wrapper.props().changeBrowserLocation).not.toHaveBeenCalled();
+      expect(wrapper.props().changeBrowserLocation).not.toHaveBeenCalledTimes(
+        1
+      );
       expect(wrapper.find('#location-start-input').find(Tooltip).length).toBe(
         1
       );
@@ -140,9 +142,11 @@ describe('<BrowserRegionEditor', () => {
           .props().value
       ).toBe(getCommaSeparatedNumber(locationEnd));
 
+      // first time toggleBrowserRegionEditorActive is called is when the input is focussed
+      // and the second time is when the form is closed
       expect(
         wrapper.props().toggleBrowserRegionEditorActive
-      ).toHaveBeenCalled();
+      ).toHaveBeenCalledTimes(2);
     });
   });
 });

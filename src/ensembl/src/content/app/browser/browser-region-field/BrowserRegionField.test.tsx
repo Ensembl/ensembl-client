@@ -49,7 +49,9 @@ describe('<BrowserRegionField', () => {
       wrapper.find(Input).simulate('focus');
 
       // the activateForm function which fires on focus should call toggleBrowserRegionFieldActive
-      expect(wrapper.props().toggleBrowserRegionFieldActive).toHaveBeenCalled();
+      expect(
+        wrapper.props().toggleBrowserRegionFieldActive
+      ).toHaveBeenCalledTimes(1);
     });
 
     test('applies correct value on change', () => {
@@ -77,8 +79,15 @@ describe('<BrowserRegionField', () => {
       wrapper.find('#close-button').simulate('click');
 
       expect(wrapper.find(Input).props().value).toBe('');
-      expect(wrapper.props().toggleBrowserRegionFieldActive).toHaveBeenCalled();
-      expect(wrapper.props().resetBrowserRegionValidaion).toHaveBeenCalled();
+
+      // first time toggleBrowserRegionFieldActive is called is when the input is focussed
+      // and the second time is when the form is closed
+      expect(
+        wrapper.props().toggleBrowserRegionFieldActive
+      ).toHaveBeenCalledTimes(2);
+      expect(wrapper.props().resetBrowserRegionValidaion).toHaveBeenCalledTimes(
+        1
+      );
     });
   });
 });
