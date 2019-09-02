@@ -39,7 +39,7 @@
 }
 
 .previouslyViewed {
-  margin-top: 60px;
+  margin-top: 30px;
 
   a {
     font-weight: $normal;
@@ -48,6 +48,7 @@
     max-width: 215px;
     white-space: nowrap;
     display: inline-block;
+    font-size: 13px;
   }
 
   dt {
@@ -63,7 +64,7 @@
 }
 
 .previouslyViewedType {
-  color: $ens-medium-dark-grey;
+  color: $ens-dark-grey;
   position: absolute;
   margin-left: 8px;
   font-size: 12px;

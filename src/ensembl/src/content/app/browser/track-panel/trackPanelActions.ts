@@ -154,8 +154,13 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
     activeGenomePreviouslyViewedObjects.splice(existingIndex, 1);
   }
 
+  // Limit the number of bookmark entries to 20
+  const limitedPreviouslyViewedObjects = activeGenomePreviouslyViewedObjects.slice(
+    -20
+  );
+
   trackPanelStorageService.updateActiveGenomePreviouslyViewedObjects({
-    [activeGenomeId]: activeGenomePreviouslyViewedObjects
+    [activeGenomeId]: limitedPreviouslyViewedObjects
   });
 
   dispatch(
@@ -163,7 +168,7 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
       activeGenomeId,
       data: {
         ...getActiveTrackPanel(state),
-        previouslyViewedObjects: activeGenomePreviouslyViewedObjects
+        previouslyViewedObjects: limitedPreviouslyViewedObjects
       }
     })
   );

@@ -134,7 +134,6 @@ export const TrackPanelBookmarks = (props: Props) => {
   return (
     <section className="trackPanelBookmarks">
       <h3>Bookmarks</h3>
-      <p>Save multiple browser configurations</p>
       {exampleEnsObjects.length ? (
         <dl className={styles.previouslyViewed}>
           <dt>Example links</dt>
