@@ -4,7 +4,7 @@ use url::Url;
 
 use serde_json::Value as JSONValue;
 
-use composit::Stick;
+use composit::{ Stick, StickManager };
 use controller::global::{ App, AppRunner };
 use controller::input::Action;
 use data::{ HttpManager, HttpResponseConsumer, BackendConfig };
@@ -142,11 +142,20 @@ impl JumperConsumer {
             &self.set_id));
     }
 
-    fn select_jump(&self, stick: &str, dest_start: f64, dest_end: f64) {
+    fn inform_focus_position(&mut self, app: &mut App, stick: &Stick, dest_pos: Dot<f64,f64>, screen_bp: f64) {
+        let mut position = app.get_intended().get_position().clone();
+        position.set_screen_in_bp(screen_bp);
+        position.set_middle(&dest_pos);
+        app.get_window().get_train_manager().set_focus_location(stick,&position);
+        app.check_detent();
+    }
+
+    fn select_jump(&mut self, stick: &str, dest_start: f64, dest_end: f64) {
         let mut app_ref = self.ar.state();
         let mut app = app_ref.lock().unwrap();
         let mut train_manager = app.get_window().get_train_manager();
         let desired_stick = train_manager.get_desired_stick();
+        if desired_stick.is_none() { return; }
         let desired_position = train_manager.get_desired_position();
         let dest_size = dest_end-dest_start+1.;
         let dest_zoom = if let Some(ref position) = desired_position {
@@ -155,10 +164,14 @@ impl JumperConsumer {
             Position::unlimited_best_zoom_screen_bp(dest_size)
         };
         let dest_pos = Dot((dest_start+dest_end)/2.,0.);
-        if self.is_offscreen_jump(&desired_stick,&desired_position,stick,dest_start,dest_end) {
-            self.do_offscreen_jump(&mut app,stick,dest_pos,dest_zoom);
-        } else {
-            self.do_onscreen_jump(&mut app,desired_position.as_ref().unwrap(),dest_pos,dest_zoom);
+        if let Some(new_stick) = app.get_window().get_stick_manager().get_stick(stick) {
+            if self.is_offscreen_jump(&desired_stick,&desired_position,stick,dest_start,dest_end) {
+                self.do_offscreen_jump(&mut app,stick,dest_pos,dest_zoom);
+                self.inform_focus_position(&mut app,&new_stick,dest_pos,dest_size);
+            } else {
+                self.do_onscreen_jump(&mut app,desired_position.as_ref().unwrap(),dest_pos,dest_zoom);
+                self.inform_focus_position(&mut app,&new_stick,dest_pos,dest_size);
+            }
         }
     }
 

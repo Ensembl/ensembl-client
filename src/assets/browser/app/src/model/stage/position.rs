@@ -5,7 +5,9 @@ use composit::Wrapping;
 use controller::output::{ Report, ViewportReport };
 use types::{ Dot, Direction, LEFT, RIGHT, UP, DOWN, IN, OUT, AxisSense };
 
-#[derive(Clone)]
+const DELTA : f64 = 0.25; /* equal to the nearest */
+
+#[derive(Clone,Debug)]
 pub struct Position {
     pos: Dot<f64,f64>,
     zoom: Zoom,
@@ -29,6 +31,11 @@ impl Position {
         }
     }
     
+    pub fn location_match(&self, other: &Position) -> bool {
+        (self.pos.0-other.pos.0).abs() < DELTA && 
+        (self.zoom.get_screen_in_bp()-other.zoom.get_screen_in_bp()).abs() < DELTA
+    }
+
     pub fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>) {
         self.screen_size = *screen_size;
         self.check_own_limits();
@@ -195,11 +202,5 @@ impl Position {
     pub fn set_wrapping(&mut self, w: &Wrapping) {
         self.set_bumper(&LEFT,w.get_bumper(&LEFT));
         self.set_bumper(&RIGHT,w.get_bumper(&RIGHT));
-    }
-}
-
-impl fmt::Debug for Position {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f,"p{:?}",self.pos)
     }
 }

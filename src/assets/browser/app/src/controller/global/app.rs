@@ -168,14 +168,33 @@ impl App {
         }
     }
 
+    pub fn check_detent(&mut self) {
+        let mut at_focus = false;
+        let intended_position = self.intended.get_position();
+        if let Some((focus_stick,focus_location)) = self.window.get_train_manager().get_focus_location() {
+            if let Some(intended_stick) = self.intended.get_stick() {
+                if &focus_stick == intended_stick && intended_position.location_match(&focus_location) {
+                    at_focus = true;
+                }
+            }
+        }
+        if let Some(report) = &self.report {
+            report.set_status_bool("is-focus-position",at_focus);
+        }
+    }
+
     pub fn intend_here(&mut self) {
-        if let Some(desired) = self.window.get_train_manager().get_desired_position() {
-            self.intended.intend_here(&desired);
+        let tm = self.window.get_train_manager();
+        if let (Some(stick),Some(desired)) = (tm.get_desired_stick(),tm.get_desired_position()) {
+            self.intended.intend_here(&stick,&desired);
             if let Some(ref report) = self.report {
                 self.intended.update_intent_report(report);
             }
         }
+        self.check_detent();
     }
+
+    pub fn get_intended(&self) -> &Intended { &self.intended }
 
     pub fn with_state<F,G>(&self, cb: F) -> G where F: FnOnce(&mut StateManager) -> G {
         let a = &mut self.state.lock().unwrap();

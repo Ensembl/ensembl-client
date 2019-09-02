@@ -40,7 +40,9 @@ pub struct TrainManagerImpl {
     transition_prop: Option<f64>, 
     /* current position/scale */
     desired: Desired,
-    desired_context: TrainContext
+    desired_context: TrainContext,
+    focus_stick: Option<Stick>,
+    focus_location: Option<Position>
 }
 
 impl TrainManagerImpl {
@@ -54,12 +56,28 @@ impl TrainManagerImpl {
             transition_start: None,
             transition_prop: None,
             desired: Desired::new(),
-            desired_context: TrainContext::new(&None)
+            desired_context: TrainContext::new(&None),
+            focus_stick: None,
+            focus_location: None
         }
     }
     
+    pub fn set_focus_location(&mut self, stick: &Stick, position: &Position) {
+        self.focus_stick = Some(stick.clone());
+        self.focus_location = Some(position.clone());
+    }
+
+    pub fn get_focus_location(&self) -> Option<(&Stick,&Position)> {
+        if self.focus_stick.is_some() && self.focus_location.is_some() {
+            Some((self.focus_stick.as_ref().unwrap(),self.focus_location.as_ref().unwrap()))
+        } else {
+            None
+        }
+    }
+
     pub fn update_report(&self, report: &Report) {
         // XXX: TOO SOON!
+        let mut at_focus = false;
         if self.desired.is_ready() {
             let stick = self.desired.get_stick();
             report.set_status("a-stick",&stick.get_name());
@@ -485,6 +503,14 @@ impl TrainManager {
 
     pub fn update_viewport_report(&self, report: &ViewportReport) {
         ok!(self.0.lock()).update_viewport_report(report);
+    }
+
+    pub fn set_focus_location(&mut self, stick: &Stick, position: &Position) {
+        ok!(self.0.lock()).set_focus_location(stick,position);
+    }
+
+    pub fn get_focus_location(&self) -> Option<(Stick,Position)> {
+        ok!(self.0.lock()).get_focus_location().map(|(s,p)| (s.clone(),p.clone()))
     }
 }
 
