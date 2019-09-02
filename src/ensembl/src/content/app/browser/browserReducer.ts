@@ -19,7 +19,7 @@ import {
   BrowserRegionValidationState,
   defaultBrowserRegionValidationState
 } from './browserState';
-import { LoadingState } from '../species-selector/types/loading-state';
+import { LoadingState } from 'src/shared/types/loading-state';
 
 export function browserInfo(
   state: BrowserState = defaultBrowserState,

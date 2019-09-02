@@ -1,7 +1,7 @@
 import browserStorageService from './browser-storage-service';
 
 import { TrackStates } from './track-panel/trackPanelConfig';
-import { LoadingState } from '../species-selector/types/loading-state';
+import { LoadingState } from 'src/shared/types/loading-state';
 
 const activeGenomeId = browserStorageService.getActiveGenomeId();
 const activeEnsObjectIds = browserStorageService.getActiveEnsObjectIds();
