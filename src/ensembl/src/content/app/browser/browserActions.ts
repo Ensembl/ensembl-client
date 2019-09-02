@@ -251,8 +251,6 @@ export const changeFocusObject: ActionCreator<
       focus: objectId,
       'message-counter': messageCount
     });
-
-    dispatch(setActualChrLocation(chrLocation));
   };
 };
 
@@ -291,7 +289,7 @@ export const updateApplyToAll = createStandardAction(
 )<boolean>();
 
 export const toggleBrowserRegionEditorActive = createStandardAction(
-  'brorwser/toggle-browser-region-editor-active'
+  'browser/toggle-browser-region-editor-active'
 )<boolean>();
 
 export const toggleBrowserRegionFieldActive = createStandardAction(
