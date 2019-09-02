@@ -11,10 +11,10 @@ use composit::{
 };
 use model::stage::{ Position, Screen };
 use model::supply::{ Product, ProductList };
-use controller::input::{ Action, actions_run, startup_actions, Jumper };
+use controller::input::{ Action, actions_run, startup_actions };
 use controller::global::{ AppRunnerWeak, AppRunner };
-use controller::output::{ Report, ViewportReport, ZMenuReports, Counter };
-use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, XferCache };
+use controller::output::{ Report, ViewportReport, ZMenuReports, Counter, Jumper };
+use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, Locator, XferCache };
 use debug::add_debug_sticks;
 use dom::domutil;
 use drivers::webgl::GLPrinter;
@@ -44,7 +44,6 @@ pub struct App {
     last_resize_at: Option<f64>,
     stage_resize: Option<Dot<f64,f64>>,
     action_backlog: Vec<Action>,
-    jumper: Option<Jumper>,
     window: WindowState,
     intended: Intended,
     screen: Screen
@@ -63,9 +62,10 @@ impl App {
         let printer = PrinterManager::new(Box::new(GLPrinter::new(&canv_el)));
         let landscapes = AllLandscapes::new();
         let traveller_creator = TravellerCreator::new(&printer);
-        let train_manager = TrainManager::new(&printer,&traveller_creator);
+        let locator = Locator::new(config,http_manager,&csm,config_url);
+        let train_manager = TrainManager::new(&printer,&traveller_creator,&locator);
         let mut clerk = HttpXferClerk::new(http_manager,config_url,&cache,&train_manager);
-        let window = WindowState::new(config,tc,&mut clerk,&mut product_list,&mut csm,&train_manager,&landscapes);
+        let window = WindowState::new(config,tc,&mut clerk,&mut product_list,&mut csm,&train_manager,&landscapes,&locator);
         let mut out = App {
             ar: AppRunnerWeak::none(),
             browser_el: browser_el.clone(),
@@ -81,7 +81,6 @@ impl App {
             last_resize_at: None,
             action_backlog: Vec::new(),
             window: window.clone(),
-            jumper: None,
             intended: Intended::new(),
             screen: Screen::new()
         };
@@ -120,10 +119,6 @@ impl App {
     pub fn set_viewport_report(&mut self, report: ViewportReport) {
         self.viewport = Some(report);
     }
-
-    pub fn set_jumper(&mut self, jumper: Jumper) {
-        self.jumper = Some(jumper);
-    }
     
     pub fn set_zmenu_reports(&mut self, report: ZMenuReports) {
         self.zmenu_reports = Some(report);
@@ -138,11 +133,6 @@ impl App {
         self.ar.upgrade().as_mut().map(cb)
     }
     
-    pub fn with_jumper<F,G>(&mut self, cb: F) -> Option<G>
-            where F: FnOnce(&mut Jumper) -> G {
-        self.jumper.as_mut().map(|j| cb(j))
-    }
-
     pub fn get_browser_element(&self) -> &HtmlElement { &self.browser_el }
     
     pub fn get_canvas_element(&self) -> &HtmlElement { &self.canv_el }
@@ -169,6 +159,7 @@ impl App {
     }
 
     pub fn check_detent(&mut self) {
+        /*
         let mut at_focus = false;
         let intended_position = self.intended.get_position();
         if let Some((focus_stick,focus_location)) = self.window.get_train_manager().get_focus_location() {
@@ -181,6 +172,7 @@ impl App {
         if let Some(report) = &self.report {
             report.set_status_bool("is-focus-position",at_focus);
         }
+        */
     }
 
     pub fn intend_here(&mut self) {

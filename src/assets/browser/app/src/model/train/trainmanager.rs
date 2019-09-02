@@ -17,20 +17,21 @@ use std::sync::{ Arc, Mutex };
 
 use composit::{ Leaf, Stick, Scale, StateManager };
 use controller::output::{ Report, ViewportReport };
-use data::XferConsumer;
+use data::{ Locator, XferConsumer };
 use model::driver::PrinterManager;
 use model::item::{ DeliveredItem, ItemUnpacker };
 use model::stage::{ Desired, Intended, Position, Screen };
 use model::supply::Product;
 use model::zmenu::{ ZMenuIntersection, ZMenuRegistry };
 use super::{ Train, TrainId, TrainContext, TravellerCreator };
-use types::{ Dot, DOWN };
+use types::{ Dot, DOWN, AdLib };
 
 const MS_FADE : f64 = 200.;
 
 pub struct TrainManagerImpl {
     printer: PrinterManager,
     traveller_creator: TravellerCreator,
+    locator: Locator,
     /* the trains themselves */
     current_train: Option<Train>,
     future_train: Option<Train>,
@@ -42,14 +43,15 @@ pub struct TrainManagerImpl {
     desired: Desired,
     desired_context: TrainContext,
     focus_stick: Option<Stick>,
-    focus_location: Option<Position>
+    focus_location: Option<(f64,f64)>
 }
 
 impl TrainManagerImpl {
-    pub fn new(printer: &PrinterManager, traveller_creator: &TravellerCreator) -> TrainManagerImpl {
+    pub fn new(printer: &PrinterManager, traveller_creator: &TravellerCreator, locator: &Locator) -> TrainManagerImpl {
         TrainManagerImpl {
             printer: printer.clone(),
             traveller_creator: traveller_creator.clone(),
+            locator: locator.clone(),
             current_train: None,
             future_train: None,
             transition_train: None,
@@ -62,19 +64,6 @@ impl TrainManagerImpl {
         }
     }
     
-    pub fn set_focus_location(&mut self, stick: &Stick, position: &Position) {
-        self.focus_stick = Some(stick.clone());
-        self.focus_location = Some(position.clone());
-    }
-
-    pub fn get_focus_location(&self) -> Option<(&Stick,&Position)> {
-        if self.focus_stick.is_some() && self.focus_location.is_some() {
-            Some((self.focus_stick.as_ref().unwrap(),self.focus_location.as_ref().unwrap()))
-        } else {
-            None
-        }
-    }
-
     pub fn update_report(&self, report: &Report) {
         // XXX: TOO SOON!
         let mut at_focus = false;
@@ -405,6 +394,11 @@ impl TrainManagerImpl {
             train.get_position().update_viewport_report(report);
         }
     }
+
+    pub fn set_focus_location(&mut self, stick: &Stick, middle: f64, zoom: f64) {
+        self.focus_stick = Some(stick.clone());
+        self.focus_location = Some((middle,zoom));
+    }
 }
 
 impl XferConsumer for TrainManagerImpl {
@@ -414,11 +408,11 @@ impl XferConsumer for TrainManagerImpl {
 }
 
 #[derive(Clone)]
-pub struct TrainManager(Arc<Mutex<TrainManagerImpl>>);
+pub struct TrainManager(Arc<Mutex<TrainManagerImpl>>,Locator);
 
 impl TrainManager {
-    pub fn new(printer: &PrinterManager, traveller_creator: &TravellerCreator) -> TrainManager {
-        TrainManager(Arc::new(Mutex::new(TrainManagerImpl::new(printer,traveller_creator))))
+    pub fn new(printer: &PrinterManager, traveller_creator: &TravellerCreator, locator: &Locator) -> TrainManager {
+        TrainManager(Arc::new(Mutex::new(TrainManagerImpl::new(printer,traveller_creator, locator))),locator.clone())
     }
     
     pub fn update_report(&self, report: &Report) {
@@ -461,8 +455,19 @@ impl TrainManager {
         self.0.lock().unwrap().get_desired_context().clone()
     }
 
-    pub fn set_desired_context(&mut self, context: &TrainContext) {
+    pub fn set_desired_context(&mut self, context: &TrainContext, jump: AdLib) {
+        let relocate = context.get_focus() != self.get_desired_context().get_focus();
         self.0.lock().unwrap().set_desired_context(context);
+        if jump.go(relocate) {
+            console!("relocating");
+            let other = self.clone();
+            if let Some(focus) = self.get_desired_context().get_focus() {
+                self.1.locate(focus,Box::new(move |id,stick,middle,zoom| {
+                    other.0.lock().unwrap().set_focus_location(stick,middle,zoom);
+                    console!("located {:?} at {:?} {:?}/{:?}",id,stick,middle,zoom);
+                }));
+            }
+        }
     }
         
     pub fn get_prop_trans(&self) -> f32 {
@@ -503,14 +508,6 @@ impl TrainManager {
 
     pub fn update_viewport_report(&self, report: &ViewportReport) {
         ok!(self.0.lock()).update_viewport_report(report);
-    }
-
-    pub fn set_focus_location(&mut self, stick: &Stick, position: &Position) {
-        ok!(self.0.lock()).set_focus_location(stick,position);
-    }
-
-    pub fn get_focus_location(&self) -> Option<(Stick,Position)> {
-        ok!(self.0.lock()).get_focus_location().map(|(s,p)| (s.clone(),p.clone()))
     }
 }
 

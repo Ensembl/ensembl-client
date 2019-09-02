@@ -1,4 +1,4 @@
-use types::{ Move, Units, Axis, Dot, cdfraction, LEFT, RIGHT, CPixel };
+use types::{ Move, Units, Axis, Dot, cdfraction, LEFT, RIGHT, CPixel, AdLib };
 use controller::global::App;
 use composit::StickManager;
 
@@ -171,19 +171,19 @@ fn exe_zmenu_show(a: &mut App, id: &str, track_id: &str, pos: Dot<i32,i32>, payl
 fn exe_set_focus(a: &mut App, id: &str) {
     console!("set focus object to id {}",id);
     let context = TrainContext::new(&Some(id.to_string()));
-    a.get_window().get_train_manager().set_desired_context(&context);
+    a.get_window().get_train_manager().set_desired_context(&context,AdLib::Never);
     a.get_report().set_status("focus",&id);
 }
 
 fn exe_reset(a: &mut App) {
-    let context = a.get_window().get_train_manager().get_desired_context();
-    if let Some(id) = context.get_focus() {
-        a.with_jumper(|j| j.jump(&id,false));
-    }
+    let mut tm = a.get_window().get_train_manager();
+    tm.set_desired_context(&tm.get_desired_context(),AdLib::Always);
 }
 
 fn exe_jump_focus(a: &mut App, id: &str) {
-    a.with_jumper(|j| j.jump(&id,true));
+    let mut tm = a.get_window().get_train_manager();
+    exe_set_focus(a,id);
+    tm.set_desired_context(&tm.get_desired_context(),AdLib::AsRequired);
 }
 
 pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {

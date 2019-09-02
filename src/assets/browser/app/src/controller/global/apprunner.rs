@@ -8,10 +8,9 @@ use controller::global::{ App, GlobalWeak };
 use controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup };
 use controller::input::{
     register_direct_events, register_dom_events,
-    Jumper
 };
 use drivers::domel::{ register_user_events };
-use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter };
+use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter, Jumper };
 
 #[cfg(any(not(deploy),console))]
 use data::blackbox::{
@@ -36,6 +35,7 @@ struct AppRunnerImpl {
     tc: Tácode,
     debug_reporter: BlackBoxDriver,
     browser_el: HtmlElement,
+    jumper: Jumper,
     key: String
 }
 
@@ -79,7 +79,8 @@ impl AppRunner {
             tc: tc.clone(),
             debug_reporter,
             browser_el: browser_el.clone(),
-            key: key.to_string()
+            key: key.to_string(),
+            jumper: Jumper::new()
         })));
         {
             let imp = out.0.lock().unwrap();
@@ -90,14 +91,12 @@ impl AppRunner {
         let report = Report::new(&mut out);
         let viewport_report = ViewportReport::new(&mut out);
         let zmenu_reports = ZMenuReports::new(&mut out);
-        let jumper = Jumper::new(&mut out,http_manager,config_url,config);
         {
             let mut imp = out.0.lock().unwrap();
             let app = imp.app.clone();
             app.lock().unwrap().set_report(report);
             app.lock().unwrap().set_viewport_report(viewport_report);
             app.lock().unwrap().set_zmenu_reports(zmenu_reports);
-            app.lock().unwrap().set_jumper(jumper);
             let el = imp.el.clone();
             imp.bling.activate(&app,&el);
         }
@@ -231,6 +230,11 @@ impl AppRunner {
     pub fn find_app(&mut self, el: &HtmlElement) -> bool {
         let mut imp = self.0.lock().unwrap();
         domutil::ancestor(el,&imp.el) || domutil::ancestor(&imp.el,el)
+    }
+
+    fn jump(&mut self, stick: &str, dest_pos: f64, dest_size: f64) {
+        let mut imp = self.0.lock().unwrap();
+        imp.jumper.jump(&self.clone(), stick, dest_pos, dest_size);
     }
 }
 

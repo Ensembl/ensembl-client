@@ -1,3 +1,4 @@
+use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 use stdweb::web::{ XmlHttpRequest, XhrResponseType };
 use url::Url;
@@ -18,8 +19,8 @@ use misc_algorithms::marshal::{ json_str, json_obj_get, json_f64, json_bool };
 const ZHOOSH_TIME : f64 = 500.; /* ms */
 const ZHOOSH_PAUSE : f64 = 250.; /* ms */
 
+#[derive(Clone)]
 pub struct JumpZhoosh {
-    ar: AppRunner,
     stick: Option<String>,
     phase_start_time: Option<f64>,
     start: (Dot<f64,f64>,f64),
@@ -28,9 +29,8 @@ pub struct JumpZhoosh {
 }
 
 impl JumpZhoosh {
-    pub fn new(ar: &AppRunner, stick: &Option<String>, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64)) -> JumpZhoosh {
+    pub fn new(stick: &Option<String>, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64)) -> JumpZhoosh {
         let out = JumpZhoosh {
-            ar: ar.clone(),
             stick: stick.clone(),
             start, dest,
             phase_start_time: None,
@@ -94,13 +94,14 @@ impl JumpZhoosh {
     }
 }
 
-pub struct JumperImpl {
-    zhoosh: Option<JumperZhoosh>
+#[derive(Clone)]
+pub struct Jumper {
+    zhoosh: Option<JumpZhoosh>
 }
 
-impl JumperImpl {
-    pub fn new() -> JumperConsumer {
-        JumperImpl {
+impl Jumper {
+    pub fn new() -> Jumper {
+        Jumper {
             zhoosh: None
         }
     }
@@ -131,7 +132,7 @@ impl JumperImpl {
     }
 
     fn do_offscreen_jump(&self, app: &mut App, stick: &str, dest_pos: Dot<f64,f64>, dest_size: f64) {
-        let dest_zoom = Position::unlimited_best_zoom_screep_bp(dest_size);
+        let dest_zoom = Position::unlimited_best_zoom_screen_bp(dest_size);
         self.zhoosh = JumpZhoosh::new(
             &Some(stick.to_string()),
             (dest_pos,dest_zoom),
@@ -146,7 +147,7 @@ impl JumperImpl {
             (dest_pos,dest_zoom));
     }
 
-    fn jump(&mut self, ar: &AppRunner, stick: &str, dest_pos: f64, dest_size: f64) {
+    pub fn jump(&mut self, ar: &AppRunner, stick: &str, dest_pos: f64, dest_size: f64) {
         let mut app_ref = ar.state();
         let mut app = app_ref.lock().unwrap();
         if self.zhoosh.is_some() {
@@ -157,10 +158,10 @@ impl JumperImpl {
         let desired_stick = train_manager.get_desired_stick();
         if let (Some(src_stick),Some(src_position)) = (train_manager.get_desired_stick(),train_manager.get_desired_position()) {
             if !self.is_offscreen_jump(&src_stick,&src_position,stick,dest_pos,dest_size) {
-                self.do_onscreen_jump(&mut app,stick,dest_pos,dest_size);
+                self.do_onscreen_jump(&mut app,&src_position,Dot(dest_pos,0.),dest_size);
                 return;
             }
         }
-        self.do_offscreen_jump(&mut app,stick,dest_pos,dest_size);
+        self.do_offscreen_jump(&mut app,stick,Dot(dest_pos,0.),dest_size);
     }
 }
