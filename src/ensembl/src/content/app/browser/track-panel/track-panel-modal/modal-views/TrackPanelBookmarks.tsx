@@ -84,9 +84,11 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
       {[...props.previouslyViewedObjects]
         .reverse()
         .map((previouslyViewedObject, index) => {
+          const locationStr = `${previouslyViewedObject.location.chromosome}:${previouslyViewedObject.location.start}-${previouslyViewedObject.location.end}`;
           const path = urlFor.browser({
             genomeId: props.activeGenomeId,
-            focus: previouslyViewedObject.object_id
+            focus: previouslyViewedObject.object_id,
+            location: locationStr
           });
 
           const onClickHandler = () => {
