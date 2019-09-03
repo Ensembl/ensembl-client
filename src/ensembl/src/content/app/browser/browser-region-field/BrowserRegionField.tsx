@@ -17,7 +17,8 @@ import {
   getBrowserActiveGenomeId,
   getBrowserRegionEditorActive,
   getBrowserRegionFieldActive,
-  getBrowserRegionFieldErrors
+  getBrowserRegionFieldErrors,
+  getChrLocation
 } from '../browserSelectors';
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 import { GenomeKaryotype } from 'src/genome/genomeTypes';
@@ -39,6 +40,7 @@ type BrowserRegionFieldProps = {
   browserRegionEditorActive: boolean;
   browserRegionFieldActive: boolean;
   browserRegionFieldErrors: BrowserRegionValidationResponse | null;
+  chrLocation: ChrLocation;
   genomeKaryotypes: GenomeKaryotype[] | null;
   isDrawerOpened: boolean;
   changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
@@ -63,6 +65,12 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
 
   const changeRegionFieldInput = (value: string) => setRegionFieldInput(value);
 
+  const getRegionInputWithRegion = (input: string) => {
+    const [region, ,] = props.chrLocation;
+
+    return input.includes(':') ? input : `${region}:${input}`;
+  };
+
   const closeForm = () => {
     setRegionFieldInput('');
     props.toggleBrowserRegionFieldActive(false);
@@ -72,8 +80,8 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (activeGenomeId && regionFieldInput) {
-      props.validateBrowserRegion(regionFieldInput);
+    if (activeGenomeId && regionFieldInput && props.chrLocation) {
+      props.validateBrowserRegion(getRegionInputWithRegion(regionFieldInput));
       setIsFormSubmitted(true);
     }
   };
@@ -82,7 +90,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
     if (!errorMessages && isFormSubmitted) {
       props.changeBrowserLocation(
         props.activeGenomeId as string,
-        getChrLocationFromStr(regionFieldInput)
+        getChrLocationFromStr(getRegionInputWithRegion(regionFieldInput))
       );
 
       setRegionFieldInput('');
@@ -158,6 +166,7 @@ const mapStateToProps = (state: RootState) => ({
   browserRegionEditorActive: getBrowserRegionEditorActive(state),
   browserRegionFieldActive: getBrowserRegionFieldActive(state),
   browserRegionFieldErrors: getBrowserRegionFieldErrors(state),
+  chrLocation: getChrLocation(state) as ChrLocation,
   genomeKaryotypes: getGenomeKaryotypes(state),
   isDrawerOpened: getIsDrawerOpened(state)
 });

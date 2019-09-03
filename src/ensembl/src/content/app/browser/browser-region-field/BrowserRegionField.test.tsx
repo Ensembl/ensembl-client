@@ -4,6 +4,7 @@ import faker from 'faker';
 
 import { BrowserRegionField } from './BrowserRegionField';
 import Input from 'src/shared/components/input/Input';
+import { ChrLocation } from '../browserState';
 
 import styles from '../browser-nav/BrowserNavBar.scss';
 
@@ -12,6 +13,7 @@ const defaultProps = {
   browserRegionEditorActive: false,
   browserRegionFieldActive: false,
   browserRegionFieldErrors: null,
+  chrLocation: ['13', 2315086, 32400266] as ChrLocation,
   genomeKaryotypes: [],
   isDrawerOpened: false,
   changeBrowserLocation: jest.fn(),
