@@ -16,7 +16,7 @@ import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 const defaultProps = {
   activeGenomeId: faker.lorem.words(),
-  actualChrLocation: ['13', 2315086, 32400266] as ChrLocation,
+  chrLocation: ['13', 2315086, 32400266] as ChrLocation,
   browserRegionEditorActive: false,
   browserRegionFieldActive: false,
   genomeKaryotypes,

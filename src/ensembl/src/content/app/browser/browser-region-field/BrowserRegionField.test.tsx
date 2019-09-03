@@ -6,7 +6,6 @@ import { BrowserRegionField } from './BrowserRegionField';
 import Input from 'src/shared/components/input/Input';
 
 import styles from '../browser-nav/BrowserNavBar.scss';
-import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 const defaultProps = {
   activeGenomeId: faker.lorem.words(),
@@ -15,7 +14,7 @@ const defaultProps = {
   browserRegionFieldErrors: null,
   genomeKaryotypes: [],
   isDrawerOpened: false,
-  dispatchBrowserLocation: jest.fn(),
+  changeBrowserLocation: jest.fn(),
   resetBrowserRegionValidaion: jest.fn(),
   toggleBrowserRegionFieldActive: jest.fn(),
   validateBrowserRegion: jest.fn()
