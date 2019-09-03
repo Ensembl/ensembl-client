@@ -11,7 +11,11 @@ export function getChrLocationFromStr(chrLocationStr: string): ChrLocation {
   const [chrCode, chrRegion] = chrLocationStr.split(':');
   const [startBp, endBp] = chrRegion.split('-');
 
-  return [chrCode, +startBp, +endBp];
+  return [
+    chrCode,
+    getNumberWithoutCommas(startBp),
+    getNumberWithoutCommas(endBp)
+  ] as ChrLocation;
 }
 
 export function getChrLocationStr(

@@ -9,15 +9,14 @@ import Tooltip, { Position } from 'src/shared/components/tooltip/Tooltip';
 import { ChrLocation } from '../browserState';
 import { RootState } from 'src/store';
 import {
-  getActualChrLocation,
   getBrowserRegionEditorActive,
   getBrowserRegionFieldActive,
-  getBrowserActiveGenomeId
+  getBrowserActiveGenomeId,
+  getChrLocation
 } from '../browserSelectors';
 import { getGenomeKaryotypes } from 'src/genome/genomeSelectors';
 import {
   changeBrowserLocation,
-  setChrLocation,
   toggleBrowserRegionEditorActive
 } from '../browserActions';
 import { GenomeKaryotype } from 'src/genome/genomeTypes';
@@ -37,17 +36,16 @@ import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
 
 type BrowserRegionEditorProps = {
   activeGenomeId: string | null;
-  actualChrLocation: ChrLocation;
   browserRegionEditorActive: boolean;
   browserRegionFieldActive: boolean;
+  chrLocation: ChrLocation;
   genomeKaryotypes: GenomeKaryotype[];
   changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
-  setChrLocation: (chrLocation: ChrLocation) => void;
   toggleBrowserRegionEditorActive: (browserRegionEditorActive: boolean) => void;
 };
 
 export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
-  const [region, locationStart, locationEnd] = props.actualChrLocation;
+  const [region, locationStart, locationEnd] = props.chrLocation;
 
   const [regionInput, setRegionInput] = useState(region);
   const [locationStartInput, setLocationStartInput] = useState(
@@ -102,7 +100,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   };
 
   const updateAllInputs = () => {
-    const [region, locationStart, locationEnd] = props.actualChrLocation;
+    const [region, locationStart, locationEnd] = props.chrLocation;
     const locationStartStr = getCommaSeparatedNumber(locationStart);
     const locationEndStr = getCommaSeparatedNumber(locationEnd);
 
@@ -165,7 +163,11 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
       const locationStartNum = getNumberWithoutCommas(locationStartInput);
       const locationEndNum = getNumberWithoutCommas(locationEndInput);
 
-      props.setChrLocation([regionInput, locationStartNum, locationEndNum]);
+      props.changeBrowserLocation(props.activeGenomeId as string, [
+        regionInput,
+        locationStartNum,
+        locationEndNum
+      ]);
     }
   };
 
@@ -176,7 +178,9 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     []
   );
 
-  useEffect(() => updateAllInputs(), [props.actualChrLocation]);
+  useEffect(() => {
+    updateAllInputs();
+  }, [props.chrLocation]);
 
   const locationStartRef = useRef<HTMLDivElement>(null);
   const locationEndRef = useRef<HTMLDivElement>(null);
@@ -274,13 +278,12 @@ const mapStateToProps = (state: RootState) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
   browserRegionEditorActive: getBrowserRegionEditorActive(state),
   browserRegionFieldActive: getBrowserRegionFieldActive(state),
-  actualChrLocation: getActualChrLocation(state) as ChrLocation,
+  chrLocation: getChrLocation(state) as ChrLocation,
   genomeKaryotypes: getGenomeKaryotypes(state) as GenomeKaryotype[]
 });
 
 const mpaDispatchToProps = {
   changeBrowserLocation,
-  setChrLocation,
   toggleBrowserRegionEditorActive
 };
 

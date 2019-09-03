@@ -75,13 +75,7 @@ export const BrowserNavBar = (props: BrowserNavBarProps) => {
           />
         ))}
       </dd>
-      <dd>
-        {props.chrLocation ? (
-          <BrowserRegionField
-            dispatchBrowserLocation={props.dispatchBrowserLocation}
-          />
-        ) : null}
-      </dd>
+      <dd>{props.chrLocation ? <BrowserRegionField /> : null}</dd>
       <dd>
         {props.chrLocation && props.genomeKaryotypes ? (
           <BrowserRegionEditor />

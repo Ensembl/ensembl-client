@@ -8,6 +8,7 @@ import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import { ChrLocation, BrowserRegionValidationResponse } from '../browserState';
 import { RootState } from 'src/store';
 import {
+  changeBrowserLocation,
   resetBrowserRegionValidaion,
   toggleBrowserRegionFieldActive,
   validateBrowserRegion
@@ -20,7 +21,10 @@ import {
 } from '../browserSelectors';
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 import { GenomeKaryotype } from 'src/genome/genomeTypes';
-import { getBrowserRegionFieldErrorMessages } from '../browserHelper';
+import {
+  getChrLocationFromStr,
+  getBrowserRegionFieldErrorMessages
+} from '../browserHelper';
 import { getGenomeKaryotypes } from 'src/genome/genomeSelectors';
 
 import applyIcon from 'static/img/shared/apply.svg';
@@ -37,7 +41,7 @@ type BrowserRegionFieldProps = {
   browserRegionFieldErrors: BrowserRegionValidationResponse | null;
   genomeKaryotypes: GenomeKaryotype[] | null;
   isDrawerOpened: boolean;
-  dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
+  changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
   resetBrowserRegionValidaion: () => void;
   toggleBrowserRegionFieldActive: (browserRegionFieldActive: boolean) => void;
   validateBrowserRegion: (region: string) => void;
@@ -49,6 +53,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   const [regionFieldErrorMessages, setRegionFieldErrorMessages] = useState<
     string | null
   >(null);
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const activateForm = () => {
     if (!props.browserRegionFieldActive && !props.isDrawerOpened) {
@@ -67,11 +72,23 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!activeGenomeId || !regionFieldInput) {
-      return;
+    if (activeGenomeId && regionFieldInput) {
+      props.validateBrowserRegion(regionFieldInput);
+      setIsFormSubmitted(true);
     }
+  };
 
-    props.validateBrowserRegion(regionFieldInput);
+  const updateLocation = (errorMessages: string | null) => {
+    if (!errorMessages && isFormSubmitted) {
+      props.changeBrowserLocation(
+        props.activeGenomeId as string,
+        getChrLocationFromStr(regionFieldInput)
+      );
+
+      setRegionFieldInput('');
+      setIsFormSubmitted(false);
+      props.toggleBrowserRegionFieldActive(false);
+    }
   };
 
   useEffect(() => () => props.resetBrowserRegionValidaion(), []);
@@ -83,6 +100,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
     );
 
     setRegionFieldErrorMessages(errorMessages);
+    updateLocation(errorMessages);
   }, [props.browserRegionFieldErrors]);
 
   const regionFieldClassNames = classNames(styles.browserRegionField, {
@@ -145,6 +163,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
+  changeBrowserLocation,
   resetBrowserRegionValidaion,
   toggleBrowserRegionFieldActive,
   validateBrowserRegion
