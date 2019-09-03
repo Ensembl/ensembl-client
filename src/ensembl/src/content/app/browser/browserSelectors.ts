@@ -50,19 +50,19 @@ export const getBrowserNavStates = (state: RootState) =>
 export const getAllChrLocations = (state: RootState) =>
   state.browser.browserLocation.chrLocations;
 
-export const getChrLocation = (state: RootState) => {
+export const getChrLocation = (state: RootState): ChrLocation | null => {
   const chrLocations = getAllChrLocations(state);
   const activeGenomeId = getBrowserActiveGenomeId(state);
   return activeGenomeId ? chrLocations[activeGenomeId] : null;
 };
 
-export const getActualChrLocation = (state: RootState) => {
+export const getActualChrLocation = (state: RootState): ChrLocation | null => {
   const locations = state.browser.browserLocation.actualChrLocations;
   const activeGenomeId = getBrowserActiveGenomeId(state);
   return activeGenomeId ? locations[activeGenomeId] : null;
 };
 
-export const getDefaultChrLocation = (state: RootState) => {
+export const getDefaultChrLocation = (state: RootState): ChrLocation | null => {
   const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
   const activeEnsObject =
     activeEnsObjectId && getEnsObjectById(state, activeEnsObjectId);
@@ -71,7 +71,7 @@ export const getDefaultChrLocation = (state: RootState) => {
   }
   const { chromosome, start, end } = activeEnsObject.location;
 
-  return [chromosome, start, end] as ChrLocation;
+  return [chromosome, start, end];
 };
 
 export const getBrowserRegionEditorActive = (state: RootState) =>

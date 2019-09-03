@@ -68,7 +68,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
       isSelected: regionInput === name
     }));
 
-  const updateRegionInput = (value: any) => {
+  const updateRegionInput = (value: string) => {
     setRegionInput(value);
     updateLocationStartInput('1');
 
