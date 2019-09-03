@@ -8,7 +8,6 @@ import styles from './BrowserNavBar.scss';
 
 const browserStates = [...Array(6)].map(() => false);
 const chrLocation: ChrLocation = ['13', 1, 114364328];
-const dispatchBrowserLocation: any = jest.fn();
 const toggleBrowserRegionEditorActive: any = jest.fn();
 const toggleBrowserRegionFieldActive: any = jest.fn();
 
@@ -23,7 +22,6 @@ describe('<BrowserNavBar />', () => {
           chrLocation={chrLocation}
           genomeKaryotypes={[]}
           isTrackPanelOpened={true}
-          dispatchBrowserLocation={dispatchBrowserLocation}
           toggleBrowserRegionEditorActive={toggleBrowserRegionEditorActive}
           toggleBrowserRegionFieldActive={toggleBrowserRegionFieldActive}
         />
@@ -39,7 +37,6 @@ describe('<BrowserNavBar />', () => {
           chrLocation={chrLocation}
           genomeKaryotypes={[]}
           isTrackPanelOpened={false}
-          dispatchBrowserLocation={dispatchBrowserLocation}
           toggleBrowserRegionEditorActive={toggleBrowserRegionEditorActive}
           toggleBrowserRegionFieldActive={toggleBrowserRegionFieldActive}
         />

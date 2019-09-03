@@ -32,7 +32,6 @@ type BrowserNavBarProps = {
   chrLocation: ChrLocation | null;
   genomeKaryotypes: GenomeKaryotype[] | null;
   isTrackPanelOpened: boolean;
-  dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
   toggleBrowserRegionEditorActive: (browserRegionEditorActive: boolean) => void;
   toggleBrowserRegionFieldActive: (browserRegionFieldActive: boolean) => void;
 };

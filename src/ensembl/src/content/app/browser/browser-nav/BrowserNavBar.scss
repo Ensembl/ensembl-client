@@ -2,8 +2,8 @@
 
 .browserNavBar {
   display: flex;
-  background: $ens-light-grey;
   font-size: 12px;
+  background: $light-grey;
   padding: 16px;
   position: relative;
 
@@ -34,7 +34,7 @@
 }
 
 .errorText {
-  color: $ens-red;
+  color: $red;
 }
 
 .browserNavBarButtons {

@@ -3,7 +3,7 @@
 .speciesTab {
   display: inline-block;
   padding: 6px 20px;
-  border: 1px solid $ens-blue;
+  border: 1px solid $blue;
   border-radius: 20px;
   cursor: pointer;
   overflow: hidden;
@@ -31,12 +31,12 @@
 }
 
 .speciesTabActive {
-  background-color: $ens-black;
+  background-color: $black;
   border: none;
 
   .name,
   .assembly {
-    color: $ens-white;
+    color: $white;
   }
 }
 
