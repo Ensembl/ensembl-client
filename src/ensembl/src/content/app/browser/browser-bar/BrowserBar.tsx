@@ -132,7 +132,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
   const shouldShowTrackPanelTabs =
     props.activeGenomeId &&
     (props.isTrackPanelOpened ||
-      props.breakpointWidth === BreakpointWidth.LARGE);
+      props.breakpointWidth === BreakpointWidth.DESKTOP);
 
   const className = classNames(styles.browserInfo, {
     [styles.browserInfoExpanded]: !props.isTrackPanelOpened,
