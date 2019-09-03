@@ -9,9 +9,6 @@ $zmenuBackgroundColor: $ens-black;
 
 .zmenu {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   padding: 12px 20px;
   color: $ens-white;
   background-color: $zmenuBackgroundColor;
@@ -36,6 +33,7 @@ $zmenuBackgroundColor: $ens-black;
 
 .zmenuContentLine {
   display: block;
+  white-space: nowrap;
 }
 
 .zmenuContentBlock {
