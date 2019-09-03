@@ -31,15 +31,15 @@ import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/browser/tr
 import { getChrLocationStr } from './browserHelper';
 import browserStorageService from './browser-storage-service';
 import { RootState } from 'src/store';
-import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
 import { TrackStates } from './track-panel/trackPanelConfig';
 import { BROWSER_CONTAINER_ID } from './browser-constants';
+import { ActivityStatus } from 'src/shared/types/activity-status';
 
 export type UpdateTrackStatesPayload = {
   genomeId: string;
   categoryName: string;
   trackId: string;
-  status: ImageButtonStatus; // TODO: update types so that actions do not depend on ImageButton types
+  status: ActivityStatus;
 };
 
 export type ParsedUrlPayload = {
@@ -250,7 +250,7 @@ export const changeFocusObject: ActionCreator<
     const messageCount = getBrowserMessageCount(state);
 
     dispatch(updatePreviouslyViewedObjectsAndSave());
-    
+
     browserMessagingService.send('bpane', {
       focus: objectId,
       'message-counter': messageCount

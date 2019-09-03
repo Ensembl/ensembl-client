@@ -22,7 +22,7 @@ import { Orthologues } from './sections';
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 
 import ImageButton, {
-  ImageButtonStatus
+  ImageButtonStatuses
 } from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
 import styles from './AttributesAccordion.scss';
@@ -80,7 +80,7 @@ const AttributesAccordion = (props: Props) => {
         will be displayed as columns in a table
         <span className={styles.resetIcon} onClick={onReset}>
           <ImageButton
-            buttonStatus={ImageButtonStatus.ACTIVE}
+            buttonStatus={ImageButtonStatuses.ACTIVE}
             description={'Reset attributes'}
             image={ResetIcon}
           />

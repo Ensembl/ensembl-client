@@ -3,6 +3,7 @@ import React, { FunctionComponent } from 'react';
 import { ChrLocation } from '../browserState';
 import { ReactComponent as resetIcon } from 'static/img/browser/track-reset.svg';
 import ImageButton, {
+  ImageButtonStatuses,
   ImageButtonStatus
 } from 'src/shared/components/image-button/ImageButton';
 
@@ -29,17 +30,17 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
 
   const getResetIconStatus = (): ImageButtonStatus => {
     if (!(activeGenomeId && chrLocation && defaultChrLocation)) {
-      return ImageButtonStatus.DISABLED;
+      return ImageButtonStatuses.DISABLED;
     }
 
     const chrLocationStr = getChrLocationStr(chrLocation);
     const defaultChrLocationStr = getChrLocationStr(defaultChrLocation);
 
     if (chrLocationStr === defaultChrLocationStr || isDrawerOpened) {
-      return ImageButtonStatus.DISABLED;
+      return ImageButtonStatuses.DISABLED;
     }
 
-    return ImageButtonStatus.ACTIVE;
+    return ImageButtonStatuses.ACTIVE;
   };
 
   const resetBrowser = () => {

@@ -2,19 +2,21 @@ import React from 'react';
 
 import useHover from 'src/shared/hooks/useHover';
 
-import defaultStyles from './ImageButton.scss';
 import ImageHolder from './ImageHolder';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
+import { ActivityStatuses } from 'src/shared/types/activity-status';
+
 import imageButtonStyles from './ImageButton.scss';
 
-export enum ImageButtonStatus {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
-  DISABLED = 'disabled',
-  DEFAULT = 'default',
-  HIGHLIGHTED = 'highlighted'
-}
+export const ImageButtonStatuses = {
+  ...ActivityStatuses,
+  DISABLED: 'disabled' as 'disabled',
+  DEFAULT: 'default' as 'default',
+  HIGHLIGHTED: 'highlighted' as 'highlighted'
+};
+
+export type ImageButtonStatus = (typeof ImageButtonStatuses)[keyof typeof ImageButtonStatuses];
 
 type Props = {
   buttonStatus: ImageButtonStatus;
@@ -32,15 +34,15 @@ const ImageButton = (props: Props) => {
   };
 
   const buttonProps =
-    props.buttonStatus === ImageButtonStatus.DISABLED
+    props.buttonStatus === ImageButtonStatuses.DISABLED
       ? {}
       : { onClick: handleClick };
 
   const { classNames, ...rest } = props;
 
   const styles = classNames
-    ? { ...defaultStyles, ...props.classNames }
-    : defaultStyles;
+    ? { ...imageButtonStyles, ...props.classNames }
+    : imageButtonStyles;
 
   const shouldShowTooltip = Boolean(props.description) && isHovered;
 
@@ -59,7 +61,7 @@ const ImageButton = (props: Props) => {
 };
 
 ImageButton.defaultProps = {
-  buttonStatus: ImageButtonStatus.DEFAULT,
+  buttonStatus: ImageButtonStatuses.DEFAULT,
   description: '',
   image: ''
 };

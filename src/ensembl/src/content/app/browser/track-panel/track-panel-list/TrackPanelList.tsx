@@ -3,7 +3,10 @@ import { connect } from 'react-redux';
 import get from 'lodash/get';
 
 import TrackPanelListItem from './TrackPanelListItem';
-import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
+import {
+  ActivityStatuses,
+  ActivityStatus
+} from 'src/shared/types/activity-status';
 
 import {
   UpdateTrackStatesPayload,
@@ -62,7 +65,7 @@ const TrackPanelList = (props: TrackPanelListProps) => {
 
   // TODO: get default track status properly if it can ever be inactive
   const getDefaultTrackStatus = () => {
-    return ImageButtonStatus.ACTIVE;
+    return ActivityStatuses.ACTIVE;
   };
 
   const getTrackListItem = (
@@ -85,8 +88,8 @@ const TrackPanelList = (props: TrackPanelListProps) => {
     return (
       <TrackPanelListItem
         categoryName={categoryName}
-        defaultTrackStatus={defaultTrackStatus as ImageButtonStatus}
-        trackStatus={trackStatus as ImageButtonStatus}
+        defaultTrackStatus={defaultTrackStatus as ActivityStatus}
+        trackStatus={trackStatus as ActivityStatus}
         key={track.track_id}
         track={track}
       >

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { toggleAccount, toggleLaunchbar } from '../headerActions';
 
 import ImageButton, {
-  ImageButtonStatus
+  ImageButtonStatuses
 } from 'src/shared/components/image-button/ImageButton';
 
 import { ReactComponent as LaunchbarIcon } from 'static/img/header/launchbar.svg';
@@ -36,9 +36,9 @@ export const HeaderButtons: FunctionComponent<HeaderButtonsProps> = (props) => (
       <ImageButton
         image={UserIcon}
         description="Ensembl account"
-        buttonStatus={ImageButtonStatus.DISABLED}
+        buttonStatus={ImageButtonStatuses.DISABLED}
         classNames={{
-          [ImageButtonStatus.DISABLED]: styles.headerButtonDisabled
+          [ImageButtonStatuses.DISABLED]: styles.headerButtonDisabled
         }}
       />
     </div>

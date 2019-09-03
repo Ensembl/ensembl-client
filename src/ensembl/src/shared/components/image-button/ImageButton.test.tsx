@@ -3,7 +3,7 @@ import { act } from 'react-dom/test-utils';
 import { mount } from 'enzyme';
 import faker from 'faker';
 
-import ImageButton, { ImageButtonStatus } from './ImageButton';
+import ImageButton, { ImageButtonStatuses } from './ImageButton';
 import ImageHolder from './ImageHolder';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
@@ -26,7 +26,7 @@ describe('<ImageButton />', () => {
     it('has a buttonStatus set by default', () => {
       const wrapper = mount(<ImageButton />);
 
-      expect(wrapper.prop('buttonStatus')).toEqual(ImageButtonStatus.DEFAULT);
+      expect(wrapper.prop('buttonStatus')).toEqual(ImageButtonStatuses.DEFAULT);
     });
   });
 
@@ -72,7 +72,7 @@ describe('<ImageButton />', () => {
   describe('prop classNames', () => {
     it('always has the default className applied', () => {
       const wrapper = mount(
-        <ImageButton buttonStatus={ImageButtonStatus.ACTIVE} />
+        <ImageButton buttonStatus={ImageButtonStatuses.ACTIVE} />
       );
 
       expect(wrapper.find(ImageHolder).find('div.default')).toHaveLength(1);
@@ -80,7 +80,7 @@ describe('<ImageButton />', () => {
 
     it('applies the respective className depending on the button status', () => {
       const wrapper = mount(
-        <ImageButton buttonStatus={ImageButtonStatus.ACTIVE} />
+        <ImageButton buttonStatus={ImageButtonStatuses.ACTIVE} />
       );
 
       expect(wrapper.find(ImageHolder).find('div.active')).toHaveLength(1);
@@ -104,7 +104,7 @@ describe('<ImageButton />', () => {
       const wrapper = mount(
         <ImageButton
           onClick={onClick}
-          buttonStatus={ImageButtonStatus.DISABLED}
+          buttonStatus={ImageButtonStatuses.DISABLED}
         />
       );
 

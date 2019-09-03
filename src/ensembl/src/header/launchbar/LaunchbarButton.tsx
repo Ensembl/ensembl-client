@@ -2,7 +2,8 @@ import React, { FunctionComponent } from 'react';
 import { NavLink } from 'react-router-dom';
 import { withRouter, RouteComponentProps } from 'react-router';
 import ImageButton, {
-  ImageButtonStatus
+  ImageButtonStatus,
+  ImageButtonStatuses
 } from 'src/shared/components/image-button/ImageButton';
 
 import styles from './Launchbar.scss';
@@ -27,9 +28,9 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
   const imageButton = (
     <ImageButton
       classNames={{
-        [ImageButtonStatus.DEFAULT]: styles.launchbarButtonImage,
-        [ImageButtonStatus.ACTIVE]: styles.launchbarButtonSelectedImage,
-        [ImageButtonStatus.DISABLED]: styles.launchbarButtonDisabledImage
+        [ImageButtonStatuses.DEFAULT]: styles.launchbarButtonImage,
+        [ImageButtonStatuses.ACTIVE]: styles.launchbarButtonSelectedImage,
+        [ImageButtonStatuses.DISABLED]: styles.launchbarButtonDisabledImage
       }}
       buttonStatus={imageButtonStatus}
       description={props.description}
@@ -62,11 +63,11 @@ const getImageButtonStatus = ({
   isActive: boolean;
 }): ImageButtonStatus => {
   if (isDisabled) {
-    return ImageButtonStatus.DISABLED;
+    return ImageButtonStatuses.DISABLED;
   } else if (isActive) {
-    return ImageButtonStatus.ACTIVE;
+    return ImageButtonStatuses.ACTIVE;
   } else {
-    return ImageButtonStatus.DEFAULT;
+    return ImageButtonStatuses.DEFAULT;
   }
 };
 

@@ -3,7 +3,7 @@ import { shallow, ShallowWrapper } from 'enzyme';
 
 import { HeaderButtons } from './HeaderButtons';
 import ImageButton, {
-  ImageButtonStatus
+  ImageButtonStatuses
 } from 'src/shared/components/image-button/ImageButton';
 
 describe('<HeaderButtons />', () => {
@@ -38,7 +38,7 @@ describe('<HeaderButtons />', () => {
         (wrapper) => wrapper.prop('description') === 'Ensembl account'
       );
     expect(launchbarButton.prop('buttonStatus')).toBe(
-      ImageButtonStatus.DISABLED
+      ImageButtonStatuses.DISABLED
     );
   });
 });

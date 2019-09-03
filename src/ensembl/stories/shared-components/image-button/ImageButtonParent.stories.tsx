@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ImageButton, {
-  ImageButtonStatus
+  ImageButtonStatus,
+  ImageButtonStatuses
 } from 'src/shared/components/image-button/ImageButton';
 
 import classNames from 'classnames';
@@ -14,18 +15,20 @@ type Props = {
 import styles from './ImageButton.stories.scss';
 
 const ImageButtonParent = (props: Props) => {
-  const [buttonStatus, setVisible] = useState(ImageButtonStatus.DEFAULT);
+  const [buttonStatus, setVisible] = useState<ImageButtonStatus>(
+    ImageButtonStatuses.DEFAULT
+  );
 
   const toggleImage = () => {
     switch (buttonStatus) {
-      case ImageButtonStatus.DEFAULT:
-        return setVisible(ImageButtonStatus.ACTIVE);
-      case ImageButtonStatus.ACTIVE:
-        return setVisible(ImageButtonStatus.INACTIVE);
-      case ImageButtonStatus.INACTIVE:
-        return setVisible(ImageButtonStatus.HIGHLIGHTED);
+      case ImageButtonStatuses.DEFAULT:
+        return setVisible(ImageButtonStatuses.ACTIVE);
+      case ImageButtonStatuses.ACTIVE:
+        return setVisible(ImageButtonStatuses.INACTIVE);
+      case ImageButtonStatuses.INACTIVE:
+        return setVisible(ImageButtonStatuses.HIGHLIGHTED);
       default:
-        return setVisible(ImageButtonStatus.DEFAULT);
+        return setVisible(ImageButtonStatuses.DEFAULT);
     }
   };
 
@@ -67,56 +70,56 @@ const ImageButtonParent = (props: Props) => {
         <div className={classNames(styles.imageCard)}>
           <div className={classNames(styles.imageHolder)}>
             <ImageButton
-              buttonStatus={ImageButtonStatus.ACTIVE}
+              buttonStatus={ImageButtonStatuses.ACTIVE}
               description={'enable/disable'}
               image={props.image}
               classNames={computedStyles}
             />
           </div>
           <div className={classNames(styles.imageDescription)}>
-            {ImageButtonStatus.ACTIVE}
+            {ImageButtonStatuses.ACTIVE}
           </div>
         </div>
 
         <div className={classNames(styles.imageCard)}>
           <div className={classNames(styles.imageHolder)}>
             <ImageButton
-              buttonStatus={ImageButtonStatus.INACTIVE}
+              buttonStatus={ImageButtonStatuses.INACTIVE}
               description={'enable/disable'}
               image={props.image}
               classNames={computedStyles}
             />
           </div>
           <div className={classNames(styles.imageDescription)}>
-            {ImageButtonStatus.INACTIVE}
+            {ImageButtonStatuses.INACTIVE}
           </div>
         </div>
 
         <div className={classNames(styles.imageCard)}>
           <div className={classNames(styles.imageHolder)}>
             <ImageButton
-              buttonStatus={ImageButtonStatus.HIGHLIGHTED}
+              buttonStatus={ImageButtonStatuses.HIGHLIGHTED}
               description={'enable/disable'}
               image={props.image}
               classNames={computedStyles}
             />
           </div>
           <div className={classNames(styles.imageDescription)}>
-            {ImageButtonStatus.HIGHLIGHTED}
+            {ImageButtonStatuses.HIGHLIGHTED}
           </div>
         </div>
 
         <div className={classNames(styles.imageCard)}>
           <div className={classNames(styles.imageHolder)}>
             <ImageButton
-              buttonStatus={ImageButtonStatus.DISABLED}
+              buttonStatus={ImageButtonStatuses.DISABLED}
               description={'enable/disable'}
               image={props.image}
               classNames={computedStyles}
             />
           </div>
           <div className={classNames(styles.imageDescription)}>
-            {ImageButtonStatus.DISABLED}
+            {ImageButtonStatuses.DISABLED}
           </div>
         </div>
       </div>

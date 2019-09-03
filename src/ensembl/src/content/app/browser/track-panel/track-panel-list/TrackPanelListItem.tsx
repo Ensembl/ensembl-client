@@ -4,9 +4,11 @@ import { RootState } from 'src/store';
 import classNames from 'classnames';
 
 import analyticsTracking from 'src/services/analytics-service';
-import ImageButton, {
-  ImageButtonStatus
-} from 'src/shared/components/image-button/ImageButton';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+import {
+  ActivityStatuses,
+  ActivityStatus
+} from 'src/shared/types/activity-status';
 
 import {
   TrackItemColour,
@@ -38,8 +40,8 @@ type Props = {
   updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
   categoryName: string;
   children?: ReactNode[];
-  trackStatus: ImageButtonStatus;
-  defaultTrackStatus: ImageButtonStatus;
+  trackStatus: ActivityStatus;
+  defaultTrackStatus: ActivityStatus;
   track: EnsObjectTrack;
   highlightedTrackId: string;
   activeGenomeId: string | null;
@@ -132,9 +134,9 @@ const TrackPanelListItem = (props: Props) => {
 
   const toggleTrack = () => {
     const newStatus =
-      trackStatus === ImageButtonStatus.ACTIVE
-        ? ImageButtonStatus.INACTIVE
-        : ImageButtonStatus.ACTIVE;
+      trackStatus === ActivityStatuses.ACTIVE
+        ? ActivityStatuses.INACTIVE
+        : ActivityStatuses.ACTIVE;
 
     updateGenomeBrowser(newStatus);
 
@@ -146,9 +148,9 @@ const TrackPanelListItem = (props: Props) => {
     });
   };
 
-  const updateGenomeBrowser = (status: ImageButtonStatus) => {
+  const updateGenomeBrowser = (status: ActivityStatus) => {
     const currentTrackStatus =
-      status === ImageButtonStatus.ACTIVE ? 'on' : 'off';
+      status === ActivityStatuses.ACTIVE ? 'on' : 'off';
 
     const payload = {
       [currentTrackStatus]: `${track.track_id}`
@@ -193,7 +195,7 @@ const TrackPanelListItem = (props: Props) => {
         </label>
         <div className={styles.ellipsisHolder}>
           <ImageButton
-            buttonStatus={ImageButtonStatus.ACTIVE}
+            buttonStatus={ActivityStatuses.ACTIVE}
             description={`Go to ${track.label}`}
             onClick={drawerViewButtonHandler}
             image={Ellipsis}

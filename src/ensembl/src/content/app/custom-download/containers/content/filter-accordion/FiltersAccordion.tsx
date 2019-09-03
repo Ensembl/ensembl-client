@@ -24,7 +24,7 @@ import JSONValue from 'src/shared/types/JSON';
 
 import { Genes } from './sections';
 import ImageButton, {
-  ImageButtonStatus
+  ImageButtonStatuses
 } from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
 
@@ -59,7 +59,7 @@ const FiltersAccordion = (props: Props) => {
         filtered content will appear as rows in a table
         <span className={styles.resetIcon} onClick={onReset}>
           <ImageButton
-            buttonStatus={ImageButtonStatus.ACTIVE}
+            buttonStatus={ImageButtonStatuses.ACTIVE}
             description={'Reset filters'}
             image={ResetIcon}
           />

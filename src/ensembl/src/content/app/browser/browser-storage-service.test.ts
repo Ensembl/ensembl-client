@@ -1,5 +1,5 @@
 import { BrowserStorageService, StorageKeys } from './browser-storage-service';
-import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
+import { ActivityStatuses } from 'src/shared/types/activity-status';
 import { TrackSet } from './track-panel/trackPanelConfig';
 
 const mockStorageService = {
@@ -73,7 +73,7 @@ describe('BrowserStorageService', () => {
       const toggledTrack = {
         homo_sapiens38: {
           'Genes & transcripts': {
-            'gene-pc-fwd': ImageButtonStatus.INACTIVE
+            'gene-pc-fwd': ActivityStatuses.INACTIVE
           }
         }
       };
