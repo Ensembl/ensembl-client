@@ -36,10 +36,14 @@ const updateTrackStatesMock = jest.fn();
 const fetchExampleEnsObjectsMock = jest.fn();
 
 describe('<TrackPanelBookmarks />', () => {
+  const randomNumber = faker.random.number({ min: 5, max: 10 });
+
   const props = {
     activeGenomeId: faker.random.word(),
-    exampleEnsObjects: times(2, () => createEnsObject()),
-    previouslyViewedObjects: times(2, () => createPreviouslyViewedLinks()),
+    exampleEnsObjects: times(randomNumber, () => createEnsObject()),
+    previouslyViewedObjects: times(randomNumber, () =>
+      createPreviouslyViewedLinks()
+    ),
     fetchExampleEnsObjects: fetchExampleEnsObjectsMock,
     updateTrackStates: updateTrackStatesMock,
     closeTrackPanelModal: closeTrackPanelModalMock
@@ -59,14 +63,16 @@ describe('<TrackPanelBookmarks />', () => {
   it('renders N number of previously viewed links based on the length of previously viewed objects', () => {
     const previouslyViewedLinksWrapper = wrapper.find(PreviouslyViewedLinks);
 
-    expect(previouslyViewedLinksWrapper.find('div.link').length).toBe(2);
+    expect(previouslyViewedLinksWrapper.find('.link').length).toBe(
+      randomNumber
+    );
   });
 
-  it('calls the closeTrackPanelModalMock when the link is clicked', () => {
+  it('calls the closeTrackPanelModalMock when the previously viewed object link is clicked', () => {
     const previouslyViewedLinksWrapper = wrapper.find(PreviouslyViewedLinks);
 
     previouslyViewedLinksWrapper
-      .find('div.link')
+      .find('.link')
       .first()
       .simulate('click');
 
@@ -76,13 +82,13 @@ describe('<TrackPanelBookmarks />', () => {
   it('renders N number of Links based on the length of example links', () => {
     const exampleLinksWrapper = wrapper.find(ExampleLinks);
 
-    expect(exampleLinksWrapper.find('div.link').length).toBe(2);
+    expect(exampleLinksWrapper.find('div.link').length).toBe(randomNumber);
   });
 
-  it('calls the closeTrackPanelModalMock when the link is clicked', () => {
+  it('calls the closeTrackPanelModalMock when the example object link is clicked', () => {
     const exampleLinksWrapper = wrapper.find(ExampleLinks);
     exampleLinksWrapper
-      .find('div.link')
+      .find('.link')
       .first()
       .simulate('click');
 
