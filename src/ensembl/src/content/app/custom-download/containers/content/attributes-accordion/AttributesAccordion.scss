@@ -4,11 +4,11 @@
   padding-right: 15px;
   max-height: calc(100vh - 135px);
   overflow-y: auto;
-  background-color: $ens-white;
+  background-color: $white;
 }
 .dataSelectorHint {
   padding: 10px 40px 10px 15px;
-  color: $ens-dark-grey;
+  color: $dark-grey;
   position: relative;
 }
 
@@ -17,14 +17,14 @@
 }
 
 .permanentBlock {
-  background: $ens-light-grey;
+  background: $light-grey;
 }
 
 .accordionExpandedTitle {
-  color: $ens-dark-grey;
+  color: $dark-grey;
 
   > span {
-    color: $ens-black;
+    color: $black;
     font-weight: 700;
   }
 }

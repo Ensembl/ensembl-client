@@ -10,19 +10,19 @@ $rightCornerWidth: 40px;
   width: 100%;
   max-width: 485px;
   height: 36px;
-  box-shadow: inset 2px 2px 4px -2px $ens-dark-grey;
+  box-shadow: inset 2px 2px 4px -2px $dark-grey;
   background: white;
 }
 
 .speciesSearchField {
   width: 100%;
-  background: $ens-white;
+  background: $white;
   padding-left: 18px;
   border: none;
 
   input {
     &::placeholder {
-      color: $ens-grey;
+      color: $grey;
     }
 
     &:focus {

@@ -2,7 +2,7 @@
 
 .home {
   h2 {
-    color: $ens-grey;
+    color: $grey;
     font-size: 14px;
     font-weight: $normal;
   }
@@ -11,8 +11,8 @@
 }
 
 .search {
-  background: $ens-light-grey;
-  box-shadow: 0 3px 5px $ens-medium-light-grey;
+  background: $light-grey;
+  box-shadow: 0 3px 5px $medium-light-grey;
   min-height: 235px;
   padding: 15px 60px;
 
@@ -22,8 +22,8 @@
 
   input[type='text'] {
     border: none;
-    box-shadow: inset 3px 3px 10px $ens-grey;
-    color: $ens-dark-grey;
+    box-shadow: inset 3px 3px 10px $grey;
+    color: $dark-grey;
     font-size: 14px;
     padding: 12px 20px;
     min-width: 300px;
@@ -31,7 +31,7 @@
   }
 
   button {
-    border: 1px solid $ens-grey;
+    border: 1px solid $grey;
     border-radius: 5px;
     margin-left: 15px;
     padding: 8px 24px;
@@ -53,7 +53,7 @@
   padding-top: 2%;
 
   h4 {
-    color: $ens-grey;
+    color: $grey;
     font-size: 13px;
     font-weight: $normal;
     margin-bottom: 30px;

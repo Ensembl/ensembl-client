@@ -1,15 +1,15 @@
 @import 'src/styles/common';
 
-$fill-color: $ens-dark-grey;
+$fill-color: $dark-grey;
 
 .tooltip {
   position: absolute;
   background: $fill-color;
   padding: 6px 18px 8px;
-  box-shadow: 2px 2px 5px $ens-shadow-color;
+  box-shadow: 2px 2px 5px $shadow-color;
   width: max-content; // not supported in IE or non-webkit Edge
   cursor: default;
-  color: $ens-white;
+  color: $white;
   border-radius: 4px;
   font-size: 14px;
   z-index: 1000;
@@ -20,7 +20,7 @@ $fill-color: $ens-dark-grey;
   &[class*='left_centre'],
   &[class*='left_top'] {
     svg {
-      filter: drop-shadow(0px -3px 2px $ens-shadow-color);
+      filter: drop-shadow(0px -3px 2px $shadow-color);
     }
   }
 
@@ -28,7 +28,7 @@ $fill-color: $ens-dark-grey;
   &[class*='top_centre'],
   &[class*='top_right'] {
     svg {
-      filter: drop-shadow(0px -3px 2px $ens-shadow-color);
+      filter: drop-shadow(0px -3px 2px $shadow-color);
     }
   }
 }

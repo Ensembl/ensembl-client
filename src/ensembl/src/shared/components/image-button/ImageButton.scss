@@ -18,7 +18,7 @@
 .disabled {
   cursor: not-allowed;
   svg {
-    fill: $ens-grey;
+    fill: $grey;
     opacity: 1;
   }
   &:before {
@@ -44,7 +44,7 @@
 
 .active {
   svg {
-    fill: $ens-dark-blue;
+    fill: $dark-blue;
   }
   &svg:hover {
     opacity: 0.8;
@@ -53,8 +53,8 @@
 
 .highlighted {
   svg {
-    fill: $ens-white;
-    background: $ens-dark-blue;
+    fill: $white;
+    background: $dark-blue;
   }
   &svg:hover {
     opacity: 0.8;
@@ -63,7 +63,7 @@
 
 .inactive {
   svg {
-    fill: $ens-grey;
+    fill: $grey;
   }
   &svg:hover {
     opacity: 0.8;

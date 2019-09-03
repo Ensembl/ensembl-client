@@ -22,7 +22,7 @@
 
   &:hover,
   &.trackHighlighted {
-    background: $ens-light-blue;
+    background: $light-blue;
   }
 
   &.main {
@@ -41,7 +41,7 @@
     }
 
     .selectedInfo {
-      color: $ens-black;
+      color: $black;
       display: inline-block;
       font-size: 10px;
       font-weight: $normal;
@@ -65,18 +65,18 @@
     width: 11px;
 
     &.blue {
-      background: $ens-dark-blue;
-      border-color: $ens-dark-blue;
+      background: $dark-blue;
+      border-color: $dark-blue;
     }
 
     &.darkGrey {
-      background: $ens-dark-grey;
-      border-color: $ens-dark-grey;
+      background: $dark-grey;
+      border-color: $dark-grey;
     }
 
     &.grey {
-      background: $ens-grey;
-      border-color: $ens-grey;
+      background: $grey;
+      border-color: $grey;
     }
 
     &.white {

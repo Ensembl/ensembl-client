@@ -1,10 +1,10 @@
 @import 'src/styles/common';
 
-$zmenuBackgroundColor: $ens-black;
+$zmenuBackgroundColor: $black;
 
 .zmenuWrapper {
   position: absolute;
-  filter: drop-shadow(2px 2px 3px $ens-shadow-color);
+  filter: drop-shadow(2px 2px 3px $shadow-color);
 }
 
 .zmenu {
@@ -13,7 +13,7 @@ $zmenuBackgroundColor: $ens-black;
   flex-direction: column;
   justify-content: center;
   padding: 12px 20px;
-  color: $ens-white;
+  color: $white;
   background-color: $zmenuBackgroundColor;
   min-height: 40px;
   font-size: 13px;
@@ -58,5 +58,5 @@ $zmenuBackgroundColor: $ens-black;
 
 .markupFocus {
   cursor: pointer;
-  color: $ens-blue;
+  color: $blue;
 }
