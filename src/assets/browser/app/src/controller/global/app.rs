@@ -31,7 +31,7 @@ const SETTLE_TIME : f64 = 500.; // ms
 const CANVAS : &str = r##"<canvas id="canvas"></canvas>"##;
 
 pub struct App {
-    ar: AppRunnerWeak,
+    counter: Counter,
     browser_el: HtmlElement,
     canv_el: HtmlElement,
     pub printer: Arc<Mutex<PrinterManager>>,
@@ -50,7 +50,7 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(tc: &Tácode, config: &BackendConfig, http_manager: &HttpManager, browser_el: &HtmlElement, config_url: &Url) -> App {
+    pub fn new(tc: &Tácode, config: &BackendConfig, http_manager: &HttpManager, browser_el: &HtmlElement, config_url: &Url, counter: &Counter) -> App {
         let browser_el = browser_el.clone();
         domutil::inner_html(&browser_el.clone().into(),CANVAS);
         let canv_el : HtmlElement = domutil::query_selector(&browser_el.clone().into(),"canvas").try_into().unwrap();
@@ -67,7 +67,6 @@ impl App {
         let mut clerk = HttpXferClerk::new(http_manager,config_url,&cache,&train_manager);
         let window = WindowState::new(config,tc,&mut clerk,&mut product_list,&mut csm,&train_manager,&landscapes,&locator);
         let mut out = App {
-            ar: AppRunnerWeak::none(),
             browser_el: browser_el.clone(),
             canv_el: canv_el.clone(),
             printer: Arc::new(Mutex::new(printer.clone())),
@@ -82,7 +81,8 @@ impl App {
             action_backlog: Vec::new(),
             window: window.clone(),
             intended: Intended::new(),
-            screen: Screen::new()
+            screen: Screen::new(),
+            counter: counter.clone()
         };
         out.populate_products();
         out.run_actions(&startup_actions(),None);        
@@ -105,11 +105,7 @@ impl App {
     pub fn tick_xfer(&mut self) -> bool {
         self.window.get_http_clerk().tick()
     }
-    
-    pub fn set_runner(&mut self, ar: &AppRunnerWeak) {
-        self.ar = ar.clone();
-    }
-            
+                
     pub fn get_report(&self) -> &Report { &self.report.as_ref().unwrap() }
         
     pub fn set_report(&mut self, report: Report) {
@@ -127,12 +123,7 @@ impl App {
     pub fn get_zmenu_reports(&mut self) -> Option<&mut ZMenuReports> {
         self.zmenu_reports.as_mut()
     }
-    
-    pub fn with_apprunner<F,G>(&mut self, cb:F) -> Option<G>
-            where F: FnOnce(&mut AppRunner) -> G {
-        self.ar.upgrade().as_mut().map(cb)
-    }
-    
+        
     pub fn get_browser_element(&self) -> &HtmlElement { &self.browser_el }
     
     pub fn get_canvas_element(&self) -> &HtmlElement { &self.canv_el }
@@ -158,23 +149,6 @@ impl App {
         }
     }
 
-    pub fn check_detent(&mut self) {
-        /*
-        let mut at_focus = false;
-        let intended_position = self.intended.get_position();
-        if let Some((focus_stick,focus_location)) = self.window.get_train_manager().get_focus_location() {
-            if let Some(intended_stick) = self.intended.get_stick() {
-                if &focus_stick == intended_stick && intended_position.location_match(&focus_location) {
-                    at_focus = true;
-                }
-            }
-        }
-        if let Some(report) = &self.report {
-            report.set_status_bool("is-focus-position",at_focus);
-        }
-        */
-    }
-
     pub fn intend_here(&mut self) {
         let tm = self.window.get_train_manager();
         if let (Some(stick),Some(desired)) = (tm.get_desired_stick(),tm.get_desired_position()) {
@@ -183,7 +157,6 @@ impl App {
                 self.intended.update_intent_report(report);
             }
         }
-        self.check_detent();
     }
 
     pub fn get_intended(&self) -> &Intended { &self.intended }
@@ -249,7 +222,7 @@ impl App {
     }
     
     pub fn with_counter<F,G>(&mut self, cb: F) -> G where F: FnOnce(&mut Counter) -> G {
-        unwrap!(self.ar.upgrade()).with_counter(cb)
+        cb(&mut self.counter)
     }
 
     pub fn settle(&mut self) {

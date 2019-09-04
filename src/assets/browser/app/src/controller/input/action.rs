@@ -171,19 +171,21 @@ fn exe_zmenu_show(a: &mut App, id: &str, track_id: &str, pos: Dot<i32,i32>, payl
 fn exe_set_focus(a: &mut App, id: &str) {
     console!("set focus object to id {}",id);
     let context = TrainContext::new(&Some(id.to_string()));
-    a.get_window().get_train_manager().set_desired_context(&context,AdLib::Never);
+    a.get_window().get_train_manager().set_desired_context(&context);
     a.get_report().set_status("focus",&id);
 }
 
 fn exe_reset(a: &mut App) {
     let mut tm = a.get_window().get_train_manager();
-    tm.set_desired_context(&tm.get_desired_context(),AdLib::Always);
+    tm.set_desired_context(&tm.get_desired_context());
+    tm.jump_to_focus_object();
 }
 
 fn exe_jump_focus(a: &mut App, id: &str) {
-    let mut tm = a.get_window().get_train_manager();
+    let mut tm = a.get_window().get_train_manager().clone();
     exe_set_focus(a,id);
-    tm.set_desired_context(&tm.get_desired_context(),AdLib::AsRequired);
+    tm.set_desired_context(&tm.get_desired_context());
+    tm.jump_to_focus_object();
 }
 
 pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {

@@ -72,7 +72,7 @@ const devConfig = {
         secure: false
       },
       '/browser': {
-        target: 'https://staging-2020.ensembl.org',
+        target: 'http://localhost:4000', // FIXME: change back
         changeOrigin: true,
         secure: false
       }

@@ -6,7 +6,7 @@ use url::Url;
 use serde_json::Value as JSONValue;
 
 use composit::{ Stick, StickManager };
-use controller::global::{ App, AppRunner };
+use controller::global::App;
 use controller::input::Action;
 use data::{ HttpManager, HttpResponseConsumer, BackendConfig };
 use dom::domutil::browser_time;
@@ -106,19 +106,15 @@ impl Jumper {
         }
     }
 
-    fn is_offscreen_jump(&self, current_stick: &Option<Stick>, current_position: &Option<Position>, stick: &str, dest_pos: f64, dest_size: f64) -> bool {
+    fn is_offscreen_jump(&self, current_stick: &Stick, current_position: &Position, stick: &str, dest_pos: f64, dest_size: f64) -> bool {
         let dest_start = dest_pos - dest_size/2.;
         let dest_end = dest_pos + dest_size/2.;
-        if current_stick.is_none() || stick != current_stick.as_ref().unwrap().get_name() {
+        if  stick != current_stick.get_name() {
             return true;
         }
-        if let Some(desired) = current_position {
-            let screen_left = desired.get_edge(&LEFT,true);
-            let screen_right = desired.get_edge(&RIGHT,true);
-            return dest_end < screen_left || dest_start > screen_right;
-        } else {
-            return false;
-        }
+        let screen_left = current_position.get_edge(&LEFT,true);
+        let screen_right = current_position.get_edge(&RIGHT,true);
+        return dest_end < screen_left || dest_start > screen_right;
     }
 
     pub fn tick(&mut self, app: &mut App, t: f64) {
@@ -131,25 +127,23 @@ impl Jumper {
         }
     }
 
-    fn do_offscreen_jump(&self, app: &mut App, stick: &str, dest_pos: Dot<f64,f64>, dest_size: f64) {
+    fn do_offscreen_jump(&mut self, app: &mut App, stick: &str, dest_pos: Dot<f64,f64>, dest_size: f64) {
         let dest_zoom = Position::unlimited_best_zoom_screen_bp(dest_size);
-        self.zhoosh = JumpZhoosh::new(
+        self.zhoosh = Some(JumpZhoosh::new(
             &Some(stick.to_string()),
             (dest_pos,dest_zoom),
-            (dest_pos,dest_zoom));
+            (dest_pos,dest_zoom)));
     }
 
-    fn do_onscreen_jump(&self, app: &mut App, current_position: &Position, dest_pos: Dot<f64,f64>, dest_size: f64) {
-        let dest_zoom = Position::unlimited_best_zoom_screep_bp(dest_size);
-        self.zhoosh = JumpZhoosh::new(
+    fn do_onscreen_jump(&mut self, app: &mut App, current_position: &Position, dest_pos: Dot<f64,f64>, dest_size: f64) {
+        let dest_zoom = Position::unlimited_best_zoom_screen_bp(dest_size);
+        self.zhoosh = Some(JumpZhoosh::new(
             &None,
             (current_position.get_middle(),bp_to_zoomfactor(current_position.get_screen_in_bp())),
-            (dest_pos,dest_zoom));
+            (dest_pos,dest_zoom)));
     }
 
-    pub fn jump(&mut self, ar: &AppRunner, stick: &str, dest_pos: f64, dest_size: f64) {
-        let mut app_ref = ar.state();
-        let mut app = app_ref.lock().unwrap();
+    pub fn jump(&mut self, mut app: &mut App, stick: &str, dest_pos: f64, dest_size: f64) {
         if self.zhoosh.is_some() {
             app.intend_here();
             self.zhoosh = None;
