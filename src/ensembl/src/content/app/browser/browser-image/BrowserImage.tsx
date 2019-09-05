@@ -26,7 +26,8 @@ import {
   setChrLocation,
   setActualChrLocation,
   updateMessageCounter,
-  updateBrowserActiveEnsObjectIdsAndSave
+  updateBrowserActiveEnsObjectIdsAndSave,
+  updateDefaultPositionFlag
 } from '../browserActions';
 
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
@@ -55,6 +56,7 @@ type DispatchProps = {
   setChrLocation: (chrLocation: ChrLocation) => void;
   setActualChrLocation: (chrLocation: ChrLocation) => void;
   updateMessageCounter: (count: number) => void;
+  updateDefaultPositionFlag: (isDefaultPosition: boolean) => void;
   changeHighlightedTrackId: (trackId: string) => void;
 };
 
@@ -71,6 +73,7 @@ type BpaneOutPayload = {
   'message-counter'?: number;
   'intended-location'?: ChrLocation;
   'actual-location'?: ChrLocation;
+  'is-focus-position'?: boolean;
 };
 
 const parseLocation = (location: ChrLocation) => {
@@ -89,6 +92,7 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
     const intendedLocation = payload['intended-location'];
     const actualLocation = payload['actual-location'] || intendedLocation;
     const messageCount = payload['message-counter'];
+    const isFocusObjectInDefaultPosition = payload['is-focus-position'];
 
     if (navIconStates) {
       props.updateBrowserNavStates(navIconStates);
@@ -108,6 +112,10 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
 
     if (messageCount) {
       props.updateMessageCounter(messageCount);
+    }
+
+    if (typeof isFocusObjectInDefaultPosition === 'boolean') {
+      props.updateDefaultPositionFlag(isFocusObjectInDefaultPosition);
     }
   }, []);
 
@@ -218,6 +226,7 @@ const mapDispatchToProps: DispatchProps = {
   setChrLocation,
   setActualChrLocation,
   updateMessageCounter,
+  updateDefaultPositionFlag,
   changeHighlightedTrackId
 };
 

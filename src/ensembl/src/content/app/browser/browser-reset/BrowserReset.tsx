@@ -1,57 +1,35 @@
 import React, { FunctionComponent } from 'react';
 
-import { ChrLocation } from '../browserState';
 import { ReactComponent as resetIcon } from 'static/img/browser/track-reset.svg';
 import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/components/image-button/ImageButton';
 
 import styles from './BrowserReset.scss';
-import { getChrLocationStr } from '../browserHelper';
+import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 type BrowserResetProps = {
-  activeGenomeId: string | null;
-  chrLocation: ChrLocation | null;
-  defaultChrLocation: ChrLocation | null;
-  dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
-  isDrawerOpened: boolean;
+  focusObject: EnsObject | null;
+  changeFocusObject: (objectId: string) => void;
+  isActive: boolean;
 };
 
 export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   props: BrowserResetProps
 ) => {
-  const {
-    activeGenomeId,
-    chrLocation,
-    defaultChrLocation,
-    isDrawerOpened
-  } = props;
+  const { focusObject } = props;
+  if (!focusObject) {
+    return null;
+  }
 
   const getResetIconStatus = (): ImageButtonStatus => {
-    if (!(activeGenomeId && chrLocation && defaultChrLocation)) {
-      return ImageButtonStatus.DISABLED;
-    }
-
-    const chrLocationStr = getChrLocationStr(chrLocation);
-    const defaultChrLocationStr = getChrLocationStr(defaultChrLocation);
-
-    if (chrLocationStr === defaultChrLocationStr || isDrawerOpened) {
-      return ImageButtonStatus.DISABLED;
-    }
-
-    return ImageButtonStatus.ACTIVE;
+    return props.isActive
+      ? ImageButtonStatus.ACTIVE
+      : ImageButtonStatus.DISABLED;
   };
 
-  const resetBrowser = () => {
-    if (isDrawerOpened) {
-      return;
-    }
-
-    defaultChrLocation &&
-      props.dispatchBrowserLocation(
-        activeGenomeId as string,
-        defaultChrLocation
-      );
+  const handleClick = () => {
+    props.changeFocusObject(focusObject.object_id);
   };
 
   return (
@@ -61,7 +39,7 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
           buttonStatus={getResetIconStatus()}
           description={'Reset browser image'}
           image={resetIcon}
-          onClick={resetBrowser}
+          onClick={handleClick}
           classNames={{ disabled: styles.imageButtonDisabled }}
         />
       </div>

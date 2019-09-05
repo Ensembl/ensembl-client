@@ -122,6 +122,10 @@ export const updateBrowserActiveEnsObjectIdsAndSave: ActionCreator<
   };
 };
 
+export const updateDefaultPositionFlag = createStandardAction(
+  'browser/update-default-position-flag'
+)<boolean>();
+
 export const updateTrackStates = createStandardAction(
   'browser/update-tracks-state'
 )<TrackStates>();
