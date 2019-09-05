@@ -4,13 +4,36 @@ use std::rc::Rc;
 /* TODO: 
  * delay, 
  * min_speed
- * shape
  * crate
  * unit test
  */
 
 pub enum ZhooshShape {
-    Linear
+    Linear,
+    Quadratic(f64,f64)
+}
+
+fn quadA(x: f64) -> f64 { x*x/2. }
+fn quadB(x: f64, a: f64) -> f64 { x-a }
+fn quadC(x: f64, b: f64) -> f64 { (x+b-1.)*(x+b-1.)/2. }
+
+impl ZhooshShape {
+    pub fn linearize(&self, x: f64) -> f64 {
+        match self {
+            ZhooshShape::Linear => x,
+            ZhooshShape::Quadratic(a,b) => {
+                (if x < *a {
+                    quadA(x) 
+                } else if x < 1.-*b {
+                    quadA(*a) + quadB(x,*a)
+                } else if *b > 0. {
+                    quadA(*a) + quadB(1.-*b,*a) + quadC(x,*b)
+                } else {
+                    1.
+                }) / (1. - (*a+*b)/2. )
+            }
+        }
+    }
 }
 
 pub struct ZhooshImpl<X,T> {
@@ -80,7 +103,8 @@ impl<X,T> ZhooshRunImpl<X,T> {
         }
         /* callback */
         if self.started.is_some() {
-            let pos = (self.zhoosh.0.derive)(self.prop.unwrap(),&self.start,&self.end);
+            let pos = self.zhoosh.0.shape.linearize(self.prop.unwrap());
+            let pos = (self.zhoosh.0.derive)(pos,&self.start,&self.end);
             (self.zhoosh.0.cb)(&mut self.target,pos);
         }
         /* finished? */
