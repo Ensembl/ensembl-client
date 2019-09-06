@@ -45,7 +45,6 @@ pub struct TrainManagerImpl {
     desired_context: TrainContext,
     focus_stick: AsyncValue<Option<Stick>>,
     focus_location: AsyncValue<Option<(f64,f64)>>,
-    at_focus_location: Option<bool>,
     pending_focus_jump: Awaiting<String,(Stick,f64,f64)>
 }
 
@@ -64,7 +63,6 @@ impl TrainManagerImpl {
             desired_context: TrainContext::new(&None),
             focus_stick: AsyncValue::new(Some(None)),
             focus_location: AsyncValue::new(Some(None)),
-            at_focus_location: None,
             pending_focus_jump: Awaiting::new()
         }
     }
@@ -358,11 +356,9 @@ impl TrainManagerImpl {
 
     pub fn set_desired_context(&mut self, context: &TrainContext) {
         if context.get_focus() != self.get_desired_context().get_focus() {
-            self.at_focus_location = None;
             if let Some(focus) = context.get_focus() {
                 self.focus_stick.invalidate();
                 self.focus_location.invalidate();
-                self.pending_focus_jump.await(focus.to_string());
             } else {
                 self.focus_stick = AsyncValue::new(Some(None));
                 self.focus_location = AsyncValue::new(Some(None));
@@ -376,6 +372,7 @@ impl TrainManagerImpl {
     pub fn jump_to_focus_object(&mut self) {
         if let Some(focus_object) = self.get_desired_context().get_focus() {
             self.pending_focus_jump.await(focus_object.to_string());
+            self.maybe_satisfy_pending_jump();
         }
     }
 
@@ -433,10 +430,19 @@ impl TrainManagerImpl {
         }
     }
 
+    fn maybe_satisfy_pending_jump(&mut self) {
+        if let (Some(Some(stick)),Some(Some((middle,zoom)))) = (self.focus_stick.get(),self.focus_location.get()) {
+            if let Some(focus_object) = self.get_desired_context().get_focus() {
+                self.pending_focus_jump.notify(focus_object.to_string(),(stick.clone(),*middle,*zoom));
+            }
+        }
+
+    }
+
     pub fn set_focus_location(&mut self, obj: &str, stick: &Stick, middle: f64, zoom: f64) {
         self.focus_stick.set(Some(stick.clone()));
         self.focus_location.set(Some((middle,zoom)));
-        self.pending_focus_jump.notify(obj.to_string(),(stick.clone(),middle,zoom));
+        self.maybe_satisfy_pending_jump();
     }
 
     fn pull_pending_focus_jump(&mut self) -> Option<(Stick,f64,f64)> {
