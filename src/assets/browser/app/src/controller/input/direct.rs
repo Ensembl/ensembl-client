@@ -100,6 +100,10 @@ fn custom_reset_event() -> Vec<Action> {
     vec![Action::Reset]
 }
 
+fn custom_activity_outside_event() -> Vec<Action> {
+    vec![Action::ActivityOutsideZMenu]
+}
+
 fn every<F>(v: &JSONValue, cb: F) -> Vec<Action> where F: Fn(&JSONValue) -> Action {
     if let JSONValue::Array(vv) = v {
         vv.iter().map(|x| cb(x)).collect()
@@ -135,9 +139,16 @@ fn custom_make_one_event_key(k: &String, v: &JSONValue, keys: &Vec<String>) -> V
 fn custom_make_events(j: &JSONValue) -> Vec<Action> {
     let mut out = Vec::<Action>::new();
     if let JSONValue::Object(map) = j {
-        let keys : Vec<String> = map.keys().cloned().collect();
-        for (k,v) in map {
-            out.append(&mut custom_make_one_event_key(k,v,&keys));
+        if let Some(action) = j.get("action") {
+            match unwrap!(action.as_str()) {
+                "zmenu-activity-outside" => out.append(&mut custom_activity_outside_event()),
+                _ => {}
+            }
+        } else {
+            let keys : Vec<String> = map.keys().cloned().collect();
+            for (k,v) in map {
+                out.append(&mut custom_make_one_event_key(k,v,&keys));
+            }
         }
     }
     out.push(Action::Settled);
