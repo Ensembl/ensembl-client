@@ -1,5 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
+import { MemoryRouter } from 'react-router-dom';
 import faker from 'faker';
 
 import { BrowserRegionEditor } from './BrowserRegionEditor';
@@ -17,10 +18,12 @@ import Tooltip from 'src/shared/components/tooltip/Tooltip';
 const defaultProps = {
   activeGenomeId: faker.lorem.words(),
   chrLocation: ['13', 2315086, 32400266] as ChrLocation,
-  browserRegionEditorActive: false,
-  browserRegionFieldActive: false,
   genomeKaryotypes,
+  regionEditorActive: false,
+  regionFieldActive: false,
+  regionValidationInfo: {},
   changeBrowserLocation: jest.fn(),
+  replace: jest.fn(),
   toggleBrowserRegionEditorActive: jest.fn()
 };
 
@@ -28,7 +31,11 @@ describe('<BrowserRegionEditor', () => {
   let wrapper: any;
 
   beforeEach(() => {
-    wrapper = mount(<BrowserRegionEditor {...defaultProps} />);
+    wrapper = mount(
+      <MemoryRouter>
+        <BrowserRegionEditor {...defaultProps} />
+      </MemoryRouter>
+    );
   });
 
   describe('rendering', () => {

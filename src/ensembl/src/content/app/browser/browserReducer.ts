@@ -15,9 +15,7 @@ import {
   TrackConfigState,
   defaultTrackConfigState,
   BrowserEntityState,
-  defaultBrowserEntityState,
-  BrowserRegionValidationState,
-  defaultBrowserRegionValidationState
+  defaultBrowserEntityState
 } from './browserState';
 import { LoadingState } from 'src/shared/types/loading-state';
 
@@ -120,43 +118,33 @@ export function browserLocation(
           ...action.payload
         }
       };
-    case getType(browserActions.toggleBrowserRegionEditorActive):
-      return { ...state, browserRegionEditorActive: action.payload };
-    case getType(browserActions.toggleBrowserRegionFieldActive):
-      return { ...state, browserRegionFieldActive: action.payload };
-    default:
-      return state;
-  }
-}
-
-export function browserRegionValidation(
-  state: BrowserRegionValidationState = defaultBrowserRegionValidationState,
-  action: ActionType<typeof browserActions>
-) {
-  switch (action.type) {
-    case getType(browserActions.fetchBrowserRegionValidation.request):
+    case getType(browserActions.toggleRegionEditorActive):
+      return { ...state, regionEditorActive: action.payload };
+    case getType(browserActions.toggleRegionFieldActive):
+      return { ...state, regionFieldActive: action.payload };
+    case getType(browserActions.fetchRegionValidationInfo.request):
       return {
         ...state,
-        loadingStatus: LoadingState.LOADING,
-        browserRegionFieldErrors: null
+        regionValidationLoadingStatus: LoadingState.LOADING,
+        regionValidationInfo: null
       };
-    case getType(browserActions.fetchBrowserRegionValidation.failure):
+    case getType(browserActions.fetchRegionValidationInfo.failure):
       return {
         ...state,
-        loadingStatus: LoadingState.ERROR,
-        browserRegionFieldErrors: null
+        regionValidationLoadingStatus: LoadingState.ERROR,
+        regionValidationInfo: null
       };
-    case getType(browserActions.fetchBrowserRegionValidation.success):
+    case getType(browserActions.fetchRegionValidationInfo.success):
       return {
         ...state,
-        loadingStatus: LoadingState.SUCCESS,
-        browserRegionFieldErrors: { ...action.payload }
+        regionValidationLoadingStatus: LoadingState.SUCCESS,
+        regionValidationInfo: { ...action.payload }
       };
-    case getType(browserActions.resetBrowserRegionValidaion):
+    case getType(browserActions.resetRegionValidation):
       return {
         ...state,
-        loadingStatus: LoadingState.NOT_REQUESTED,
-        browserRegionFieldErrors: null
+        regionValidationLoadingStatus: LoadingState.NOT_REQUESTED,
+        regionValidationInfo: null
       };
     default:
       return state;
@@ -202,6 +190,5 @@ export default combineReducers({
   browserEntity,
   browserLocation,
   browserNav,
-  browserRegionValidation,
   trackConfig
 });

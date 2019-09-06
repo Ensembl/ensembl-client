@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { replace, Replace } from 'connected-react-router';
@@ -59,7 +59,7 @@ import styles from './Browser.scss';
 
 import 'static/browser/browser.js';
 
-type StateProps = {
+type OwnProps = {
   activeGenomeId: string | null;
   activeEnsObjectId: string | null;
   allActiveEnsObjectIds: { [genomeId: string]: string };
@@ -73,9 +73,6 @@ type StateProps = {
   launchbarExpanded: boolean;
   exampleEnsObjects: EnsObject[];
   committedSpecies: CommittedItem[];
-};
-
-type DispatchProps = {
   changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
   changeFocusObject: (objectId: string) => void;
   changeDrawerView: (drawerView: string) => void;
@@ -86,20 +83,13 @@ type DispatchProps = {
   setDataFromUrlAndSave: (payload: ParsedUrlPayload) => void;
 };
 
-type OwnProps = {};
-
 type MatchParams = {
   genomeId: string;
 };
 
-type BrowserProps = RouteComponentProps<MatchParams> &
-  StateProps &
-  DispatchProps &
-  OwnProps;
+type BrowserProps = RouteComponentProps<MatchParams> & OwnProps;
 
-export const Browser: FunctionComponent<BrowserProps> = (
-  props: BrowserProps
-) => {
+export const Browser = (props: BrowserProps) => {
   const [trackStatesFromStorage, setTrackStatesFromStorage] = useState<
     TrackStates
   >({});
@@ -311,7 +301,7 @@ const ExampleObjectLinks = (props: BrowserProps) => {
   return <div className={styles.exampleLinks}>{links}</div>;
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
   activeEnsObjectId: getBrowserActiveEnsObjectId(state),
   allActiveEnsObjectIds: getBrowserActiveEnsObjectIds(state),
@@ -327,7 +317,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
   committedSpecies: getEnabledCommittedSpecies(state)
 });
 
-const mapDispatchToProps: DispatchProps = {
+const mapDispatchToProps = {
   changeBrowserLocation,
   changeFocusObject,
   changeDrawerView,

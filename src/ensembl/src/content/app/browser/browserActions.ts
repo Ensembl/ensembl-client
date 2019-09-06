@@ -20,7 +20,7 @@ import {
   ChrLocation,
   CogList,
   ChrLocations,
-  BrowserRegionValidationResponse
+  RegionValidationResponse
 } from './browserState';
 import {
   getBrowserActiveGenomeId,
@@ -288,44 +288,41 @@ export const updateApplyToAll = createStandardAction(
   'browser/update-apply-to-all'
 )<boolean>();
 
-export const toggleBrowserRegionEditorActive = createStandardAction(
-  'browser/toggle-browser-region-editor-active'
+export const toggleRegionEditorActive = createStandardAction(
+  'browser/toggle-region-editor-active'
 )<boolean>();
 
-export const toggleBrowserRegionFieldActive = createStandardAction(
-  'browser/toggle-browser-region-field-active'
+export const toggleRegionFieldActive = createStandardAction(
+  'browser/toggle-region-field-active'
 )<boolean>();
 
-export const fetchBrowserRegionValidation = createAsyncAction(
-  'browser/fetch_browser_region_validation_request',
-  'browser/fetch_browser_region_validation_success',
-  'browser/fetch_browser_region_validation_error'
-)<string, BrowserRegionValidationResponse, Error>();
+export const fetchRegionValidationInfo = createAsyncAction(
+  'browser/fetch_region_validation_request',
+  'browser/fetch_region_validation_success',
+  'browser/fetch_region_validation_error'
+)<string, RegionValidationResponse, Error>();
 
-export const validateBrowserRegion: ActionCreator<
+export const validateRegion: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (region: string) => async (dispatch, getState) => {
   const activeGenomeId = getBrowserActiveGenomeId(getState());
 
-  // TODO:
-  // region_code is hard coded for now since only chromosomes are supported
-  // need to change this once support for other features are added
   try {
     dispatch(
-      fetchBrowserRegionValidation.request(
-        `genome_id=${activeGenomeId}&region=${region}&region_code=chromosome`
+      fetchRegionValidationInfo.request(
+        `genome_id=${activeGenomeId}&region=${region}`
       )
     );
 
     const url = `/api/genome/region/validate?genome_id=${activeGenomeId}&region=${region}&region_code=chromosome`;
     const response = await apiService.fetch(url);
 
-    dispatch(fetchBrowserRegionValidation.success(response));
+    dispatch(fetchRegionValidationInfo.success(response));
   } catch (error) {
-    dispatch(fetchBrowserRegionValidation.failure(error));
+    dispatch(fetchRegionValidationInfo.failure(error));
   }
 };
 
-export const resetBrowserRegionValidaion = createStandardAction(
-  'browser/reset-browser-region-validation'
+export const resetRegionValidation = createStandardAction(
+  'browser/reset-region-validation'
 )();

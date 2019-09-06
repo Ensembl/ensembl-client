@@ -10,16 +10,16 @@ import styles from '../browser-nav/BrowserNavBar.scss';
 
 const defaultProps = {
   activeGenomeId: faker.lorem.words(),
-  browserRegionEditorActive: false,
-  browserRegionFieldActive: false,
-  browserRegionFieldErrors: null,
   chrLocation: ['13', 2315086, 32400266] as ChrLocation,
   genomeKaryotypes: [],
   isDrawerOpened: false,
+  regionEditorActive: false,
+  regionFieldActive: false,
+  regionValidationInfo: null,
   changeBrowserLocation: jest.fn(),
-  resetBrowserRegionValidaion: jest.fn(),
-  toggleBrowserRegionFieldActive: jest.fn(),
-  validateBrowserRegion: jest.fn()
+  resetRegionValidaion: jest.fn(),
+  toggleRegionFieldActive: jest.fn(),
+  validateRegion: jest.fn()
 };
 
 describe('<BrowserRegionField', () => {
@@ -40,7 +40,7 @@ describe('<BrowserRegionField', () => {
     });
 
     test('has an overlay on top when region editor is active', () => {
-      wrapper.setProps({ browserRegionEditorActive: true });
+      wrapper.setProps({ regionEditorActive: true });
       expect(wrapper.find('#region-field-overlay').length).toBe(1);
     });
   });
@@ -49,10 +49,8 @@ describe('<BrowserRegionField', () => {
     test('shows form buttons when focussed', () => {
       wrapper.find(Input).simulate('focus');
 
-      // the activateForm function which fires on focus should call toggleBrowserRegionFieldActive
-      expect(
-        wrapper.props().toggleBrowserRegionFieldActive
-      ).toHaveBeenCalledTimes(1);
+      // the activateForm function which fires on focus should call toggleRegionFieldActive
+      expect(wrapper.props().toggleRegionFieldActive).toHaveBeenCalledTimes(1);
     });
 
     test('applies correct value on change', () => {

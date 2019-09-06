@@ -74,11 +74,17 @@ export const getDefaultChrLocation = (state: RootState): ChrLocation | null => {
   return [chromosome, start, end];
 };
 
-export const getBrowserRegionEditorActive = (state: RootState) =>
-  state.browser.browserLocation.browserRegionEditorActive;
+export const getRegionEditorActive = (state: RootState) =>
+  state.browser.browserLocation.regionEditorActive;
 
-export const getBrowserRegionFieldActive = (state: RootState) =>
-  state.browser.browserLocation.browserRegionFieldActive;
+export const getRegionFieldActive = (state: RootState) =>
+  state.browser.browserLocation.regionFieldActive;
+
+export const getRegionValidationInfo = (state: RootState) =>
+  state.browser.browserLocation.regionValidationInfo;
+
+export const getRegionValidationLoadingStatus = (state: RootState) =>
+  state.browser.browserLocation.regionValidationLoadingStatus;
 
 export const getBrowserMessageCount = (state: RootState) =>
   state.browser.browserEntity.messageCounter;
@@ -100,6 +106,3 @@ export const getTrackConfigLabel = (state: RootState) =>
 
 export const getApplyToAll = (state: RootState) =>
   state.browser.trackConfig.applyToAll;
-
-export const getBrowserRegionFieldErrors = (state: RootState) =>
-  state.browser.browserRegionValidation.browserRegionFieldErrors;

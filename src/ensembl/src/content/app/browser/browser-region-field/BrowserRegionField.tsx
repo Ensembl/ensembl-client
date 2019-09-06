@@ -1,32 +1,38 @@
 import React, { useState, FormEvent, useEffect } from 'react';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { replace, Replace } from 'connected-react-router';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
 import Input from 'src/shared/components/input/Input';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
-import { ChrLocation, BrowserRegionValidationResponse } from '../browserState';
+import { ChrLocation, RegionValidationResponse } from '../browserState';
 import { RootState } from 'src/store';
 import {
   changeBrowserLocation,
-  resetBrowserRegionValidaion,
-  toggleBrowserRegionFieldActive,
-  validateBrowserRegion
+  resetRegionValidation,
+  toggleRegionFieldActive,
+  validateRegion
 } from '../browserActions';
 import {
   getBrowserActiveGenomeId,
-  getBrowserRegionEditorActive,
-  getBrowserRegionFieldActive,
-  getBrowserRegionFieldErrors,
+  getRegionEditorActive,
+  getRegionFieldActive,
+  getRegionValidationInfo,
+  getRegionValidationLoadingStatus,
   getChrLocation
 } from '../browserSelectors';
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 import { GenomeKaryotype } from 'src/genome/genomeTypes';
 import {
   getChrLocationFromStr,
-  getBrowserRegionFieldErrorMessages
+  getRegionFieldErrorMessages
 } from '../browserHelper';
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import { getGenomeKaryotypes } from 'src/genome/genomeSelectors';
+import { LoadingState } from 'src/shared/types/loading-state';
 
 import applyIcon from 'static/img/shared/apply.svg';
 import clearIcon from 'static/img/shared/clear.svg';
@@ -35,31 +41,37 @@ import styles from './BrowserRegionField.scss';
 import browserStyles from '../Browser.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
 
-type BrowserRegionFieldProps = {
+type OwnProps = {
   activeGenomeId: string | null;
-  browserRegionEditorActive: boolean;
-  browserRegionFieldActive: boolean;
-  browserRegionFieldErrors: BrowserRegionValidationResponse | null;
   chrLocation: ChrLocation;
   genomeKaryotypes: GenomeKaryotype[] | null;
   isDrawerOpened: boolean;
+  regionEditorActive: boolean;
+  regionFieldActive: boolean;
+  regionValidationInfo: RegionValidationResponse | null;
+  regionValidationLoadingStatus: LoadingState;
+  replace: Replace;
   changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
-  resetBrowserRegionValidaion: () => void;
-  toggleBrowserRegionFieldActive: (browserRegionFieldActive: boolean) => void;
-  validateBrowserRegion: (region: string) => void;
+  resetRegionValidation: () => void;
+  toggleRegionFieldActive: (regionFieldActive: boolean) => void;
+  validateRegion: (region: string) => void;
 };
+
+type MatchParams = {
+  genomeId: string;
+};
+
+type BrowserRegionFieldProps = RouteComponentProps<MatchParams> & OwnProps;
 
 export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   const { activeGenomeId } = props;
   const [regionFieldInput, setRegionFieldInput] = useState('');
-  const [regionFieldErrorMessages, setRegionFieldErrorMessages] = useState<
-    string | null
-  >(null);
+  const [errorMessages, setErrorMessages] = useState<string | null>(null);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const activateForm = () => {
-    if (!props.browserRegionFieldActive && !props.isDrawerOpened) {
-      props.toggleBrowserRegionFieldActive(true);
+    if (!props.regionFieldActive && !props.isDrawerOpened) {
+      props.toggleRegionFieldActive(true);
     }
   };
 
@@ -73,63 +85,112 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
 
   const closeForm = () => {
     setRegionFieldInput('');
-    props.toggleBrowserRegionFieldActive(false);
-    props.resetBrowserRegionValidaion();
+    setIsFormSubmitted(false);
+    setErrorMessages(null);
+
+    props.toggleRegionFieldActive(false);
+    props.resetRegionValidation();
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (activeGenomeId && regionFieldInput && props.chrLocation) {
-      props.validateBrowserRegion(getRegionInputWithRegion(regionFieldInput));
       setIsFormSubmitted(true);
+      props.validateRegion(getRegionInputWithRegion(regionFieldInput));
     }
   };
 
-  const updateLocation = (errorMessages: string | null) => {
-    if (!errorMessages && isFormSubmitted) {
-      props.changeBrowserLocation(
-        props.activeGenomeId as string,
-        getChrLocationFromStr(getRegionInputWithRegion(regionFieldInput))
-      );
+  const changeLocation = (inputValue: string) => {
+    if (!isFormSubmitted) {
+      return;
+    }
 
-      setRegionFieldInput('');
-      setIsFormSubmitted(false);
-      props.toggleBrowserRegionFieldActive(false);
+    props.changeBrowserLocation(
+      props.activeGenomeId as string,
+      getChrLocationFromStr(getRegionInputWithRegion(inputValue))
+    );
+  };
+
+  const changeFocusObject = (inputValue: string) => {
+    const activeEnsObjectId = `${
+      props.activeGenomeId
+    }:region:${getRegionInputWithRegion(inputValue)}`;
+
+    const params = {
+      genomeId: props.activeGenomeId,
+      focus: activeEnsObjectId,
+      location: getRegionInputWithRegion(inputValue)
+    };
+
+    props.replace(urlFor.browser(params));
+  };
+
+  const updateBrowser = () => {
+    if (!isFormSubmitted) {
+      return;
+    }
+
+    const [region, ,] = props.chrLocation;
+    const regionInput = regionFieldInput.includes(':')
+      ? regionFieldInput.split(':')[0]
+      : region;
+
+    if (regionInput === region) {
+      changeLocation(regionFieldInput);
+    } else {
+      changeFocusObject(regionFieldInput);
     }
   };
 
-  useEffect(() => () => props.resetBrowserRegionValidaion(), []);
+  useEffect(() => () => props.resetRegionValidation(), []);
 
   useEffect(() => {
-    const errorMessages = getBrowserRegionFieldErrorMessages(
-      props.browserRegionFieldErrors,
-      props.genomeKaryotypes
-    );
+    if (props.regionFieldActive) {
+      const {
+        regionValidationInfo,
+        regionValidationLoadingStatus,
+        genomeKaryotypes
+      } = props;
 
-    setRegionFieldErrorMessages(errorMessages);
-    updateLocation(errorMessages);
-  }, [props.browserRegionFieldErrors]);
+      if (regionValidationLoadingStatus !== LoadingState.LOADING) {
+        const errorMessages = getRegionFieldErrorMessages(
+          regionValidationInfo,
+          genomeKaryotypes
+        );
+
+        if (errorMessages) {
+          setErrorMessages(errorMessages);
+        } else {
+          setRegionFieldInput('');
+          setErrorMessages(null);
+          setIsFormSubmitted(false);
+          props.toggleRegionFieldActive(false);
+
+          updateBrowser();
+        }
+      }
+    }
+  }, [props.regionValidationInfo]);
 
   const regionFieldClassNames = classNames(styles.browserRegionField, {
-    [browserStyles.semiOpaque]: props.browserRegionEditorActive
+    [browserStyles.semiOpaque]: props.regionEditorActive
   });
 
   const inputClassNames = classNames({
-    [browserNavBarStyles.errorText]: regionFieldErrorMessages
+    [browserNavBarStyles.errorText]: errorMessages
   });
 
   const buttonsClassNames = classNames(
     browserNavBarStyles.browserNavBarButtons,
     {
-      [browserNavBarStyles.browserNavBarButtonsVisible]:
-        props.browserRegionFieldActive
+      [browserNavBarStyles.browserNavBarButtonsVisible]: props.regionFieldActive
     }
   );
 
   return (
     <div className={regionFieldClassNames}>
-      {props.browserRegionEditorActive ? (
+      {props.regionEditorActive ? (
         <div
           className={browserStyles.browserOverlay}
           id="region-field-overlay"
@@ -154,8 +215,8 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
           </button>
         </span>
       </form>
-      {regionFieldErrorMessages ? (
-        <Tooltip autoAdjust={true}>{regionFieldErrorMessages}</Tooltip>
+      {errorMessages ? (
+        <Tooltip autoAdjust={true}>{errorMessages}</Tooltip>
       ) : null}
     </div>
   );
@@ -163,9 +224,10 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
 
 const mapStateToProps = (state: RootState) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
-  browserRegionEditorActive: getBrowserRegionEditorActive(state),
-  browserRegionFieldActive: getBrowserRegionFieldActive(state),
-  browserRegionFieldErrors: getBrowserRegionFieldErrors(state),
+  regionEditorActive: getRegionEditorActive(state),
+  regionFieldActive: getRegionFieldActive(state),
+  regionValidationInfo: getRegionValidationInfo(state),
+  regionValidationLoadingStatus: getRegionValidationLoadingStatus(state),
   chrLocation: getChrLocation(state) as ChrLocation,
   genomeKaryotypes: getGenomeKaryotypes(state),
   isDrawerOpened: getIsDrawerOpened(state)
@@ -173,9 +235,10 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = {
   changeBrowserLocation,
-  resetBrowserRegionValidaion,
-  toggleBrowserRegionFieldActive,
-  validateBrowserRegion
+  replace,
+  resetRegionValidation,
+  toggleRegionFieldActive,
+  validateRegion
 };
 
 export default connect(

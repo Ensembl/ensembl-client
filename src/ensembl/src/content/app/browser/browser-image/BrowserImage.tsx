@@ -11,8 +11,8 @@ import {
   getBrowserCogTrackList,
   getBrowserNavOpened,
   getBrowserActivated,
-  getBrowserRegionEditorActive,
-  getBrowserRegionFieldActive
+  getRegionEditorActive,
+  getRegionFieldActive
 } from '../browserSelectors';
 import {
   activateBrowser,
@@ -41,8 +41,8 @@ type BrowserImageProps = {
   trackStates: TrackStates;
   browserCogTrackList: CogList;
   browserNavOpened: boolean;
-  browserRegionEditorActive: boolean;
-  browserRegionFieldActive: boolean;
+  regionEditorActive: boolean;
+  regionFieldActive: boolean;
   browserActivated: boolean;
   activateBrowser: () => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
@@ -120,7 +120,7 @@ export const BrowserImage = (props: BrowserImageProps) => {
 
   const browserImageClassNames = classNames(styles.browserImagePlus, {
     [browserStyles.semiOpaque]:
-      props.browserRegionEditorActive || props.browserRegionFieldActive
+      props.regionEditorActive || props.regionFieldActive
   });
 
   return (
@@ -131,7 +131,7 @@ export const BrowserImage = (props: BrowserImageProps) => {
         </div>
       )}
       <div className={browserImageClassNames}>
-        {props.browserRegionEditorActive || props.browserRegionFieldActive ? (
+        {props.regionEditorActive || props.regionFieldActive ? (
           <div className={browserStyles.browserOverlay}></div>
         ) : null}
         <div
@@ -159,9 +159,9 @@ function getBrowserImageClasses(browserNavOpened: boolean): string {
 const mapStateToProps = (state: RootState) => ({
   browserCogTrackList: getBrowserCogTrackList(state),
   browserNavOpened: getBrowserNavOpened(state),
-  browserRegionEditorActive: getBrowserRegionEditorActive(state),
-  browserRegionFieldActive: getBrowserRegionFieldActive(state),
-  browserActivated: getBrowserActivated(state)
+  browserActivated: getBrowserActivated(state),
+  regionEditorActive: getRegionEditorActive(state),
+  regionFieldActive: getRegionFieldActive(state)
 });
 
 const mapDispatchToProps = {

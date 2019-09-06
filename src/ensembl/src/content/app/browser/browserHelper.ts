@@ -1,10 +1,10 @@
 import {
   ChrLocation,
-  BrowserRegionValidationResponse,
-  BrowserRegionValidationRegionError
+  RegionValidationResponse,
+  RegionValidationRegionError
 } from './browserState';
-import { GenomeKaryotype } from 'src/genome/genomeTypes';
-import { BrowserRegionErrors } from './browserConfig';
+import { GenomeKaryotype, GenomeKaryotypeType } from 'src/genome/genomeTypes';
+import { RegionErrors } from './browserConfig';
 import { getNumberWithoutCommas } from 'src/shared/helpers/numberFormatter';
 
 export function getChrLocationFromStr(chrLocationStr: string): ChrLocation {
@@ -26,8 +26,8 @@ export function getChrLocationStr(
   return `${chrCode}:${startBp}-${endBp}`;
 }
 
-export const getBrowserRegionFieldErrorMessages = (
-  validationErrors: BrowserRegionValidationResponse | null,
+export const getRegionFieldErrorMessages = (
+  validationInfo: RegionValidationResponse | null,
   genomeKaryotypes: GenomeKaryotype[] | null
 ) => {
   // There is no validation to check if the response complains about region_code and genome_id not being valid.
@@ -36,64 +36,83 @@ export const getBrowserRegionFieldErrorMessages = (
   // The API will return the error messages in the future and most of this code might be deletable.
 
   try {
-    if (validationErrors) {
+    if (validationInfo) {
       // need to explicitly check for false as don't want this to pass on undefined
-      if (validationErrors.is_parseable === false) {
-        return BrowserRegionErrors.PARSE_ERROR;
-      } else if (validationErrors.region && !validationErrors.region.is_valid) {
-        return BrowserRegionErrors.INVALID_REGION;
+      if (validationInfo.is_parseable === false) {
+        return RegionErrors.PARSE_ERROR;
+      } else if (validationInfo.region && !validationInfo.region.is_valid) {
+        return RegionErrors.INVALID_REGION;
       } else if (
         genomeKaryotypes &&
-        ((validationErrors.start && !validationErrors.start.is_valid) ||
-          (validationErrors.end && !validationErrors.end.is_valid))
+        ((validationInfo.start && !validationInfo.start.is_valid) ||
+          (validationInfo.end && !validationInfo.end.is_valid))
       ) {
         const karyotypeInRegionField = genomeKaryotypes.filter(
           (karyotype) =>
-            (validationErrors.region as BrowserRegionValidationRegionError).region_id.toUpperCase() ===
+            (validationInfo.region as RegionValidationRegionError).region_id.toUpperCase() ===
             karyotype.name
         )[0];
 
-        return `${BrowserRegionErrors.INVALID_LOCATION} ${karyotypeInRegionField.length}`;
+        return `${RegionErrors.INVALID_LOCATION} ${karyotypeInRegionField.length}`;
       }
     }
 
     return null;
   } catch {
-    return BrowserRegionErrors.REQUEST_ERROR;
+    return RegionErrors.REQUEST_ERROR;
   }
 };
 
-export const getBrowserRegionEditorErrorMessages = (
+export const getRegionEditorErrorMessages = (
+  validationInfo: RegionValidationResponse | null,
+  karyotypeOfRegionInput: GenomeKaryotype,
   locationStart: string,
-  locationEnd: string,
-  karyotype: GenomeKaryotype
+  locationEnd: string
 ) => {
-  const locationStartNum = locationStart
-    ? getNumberWithoutCommas(locationStart)
-    : 0;
-  const locationEndNum = locationEnd ? getNumberWithoutCommas(locationEnd) : 0;
+  // The API will return the error messages in the future and most of this code might be deletable.
+  // However, the validation needs to be done through this function for the time being.
 
+  // try {
   let locationStartError: string | null = null;
   let locationEndError: string | null = null;
 
-  if (
-    !locationStartNum ||
-    locationStartNum < 1 ||
-    locationStartNum > karyotype.length
-  ) {
-    locationStartError = BrowserRegionErrors.INVALID_LOCATION_START;
-  } else if (!karyotype.is_circular && locationStartNum > locationEndNum) {
-    locationStartError = BrowserRegionErrors.LOCATION_START_IS_BIGGER;
-  } else if (
-    !locationEndNum ||
-    locationEndNum < 1 ||
-    locationEndNum > karyotype.length
-  ) {
-    locationEndError = `${BrowserRegionErrors.INVALID_LOCATION_END} ${karyotype.length}`;
-  }
+  if (validationInfo) {
+    if (validationInfo) {
+      const locationStartNum = locationStart
+        ? getNumberWithoutCommas(locationStart)
+        : 0;
+      const locationEndNum = locationEnd
+        ? getNumberWithoutCommas(locationEnd)
+        : 0;
 
-  return {
-    locationStartError,
-    locationEndError
-  };
+      if (
+        !locationStartNum ||
+        locationStartNum < 1 ||
+        locationStartNum > karyotypeOfRegionInput.length
+      ) {
+        locationStartError = RegionErrors.INVALID_LOCATION_START;
+      } else if (
+        !karyotypeOfRegionInput.is_circular &&
+        locationStartNum > locationEndNum
+      ) {
+        locationStartError = RegionErrors.LOCATION_START_IS_BIGGER;
+      } else if (
+        !locationEndNum ||
+        locationEndNum < 1 ||
+        locationEndNum > karyotypeOfRegionInput.length
+      ) {
+        locationEndError = `${RegionErrors.INVALID_LOCATION_END} ${karyotypeOfRegionInput.length}`;
+      }
+    }
+
+    return {
+      locationStartError,
+      locationEndError
+    };
+  }
+  // } catch {
+  //   return {
+  //     request: RegionErrors.REQUEST_ERROR
+  //   };
+  // }
 };

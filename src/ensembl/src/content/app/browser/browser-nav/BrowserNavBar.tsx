@@ -11,12 +11,12 @@ import { browserNavConfig, BrowserNavItem } from '../browserConfig';
 import {
   getBrowserNavStates,
   getChrLocation,
-  getBrowserRegionEditorActive,
-  getBrowserRegionFieldActive
+  getRegionEditorActive,
+  getRegionFieldActive
 } from '../browserSelectors';
 import {
-  toggleBrowserRegionEditorActive,
-  toggleBrowserRegionFieldActive
+  toggleRegionEditorActive,
+  toggleRegionFieldActive
 } from '../browserActions';
 import { getIsTrackPanelOpened } from '../track-panel/trackPanelSelectors';
 import { BrowserNavStates, ChrLocation } from '../browserState';
@@ -27,34 +27,29 @@ import styles from './BrowserNavBar.scss';
 
 type BrowserNavBarProps = {
   browserNavStates: BrowserNavStates;
-  browserRegionEditorActive: boolean;
-  browserRegionFieldActive: boolean;
   chrLocation: ChrLocation | null;
   genomeKaryotypes: GenomeKaryotype[] | null;
   isTrackPanelOpened: boolean;
-  toggleBrowserRegionEditorActive: (browserRegionEditorActive: boolean) => void;
-  toggleBrowserRegionFieldActive: (browserRegionFieldActive: boolean) => void;
+  regionEditorActive: boolean;
+  regionFieldActive: boolean;
+  toggleRegionEditorActive: (regionEditorActive: boolean) => void;
+  toggleRegionFieldActive: (regionFieldActive: boolean) => void;
 };
 
 export const BrowserNavBar = (props: BrowserNavBarProps) => {
   // the region editor and field style should be reset so that it won't be opaque when nav bar is opened again
   useEffect(
     () => () => {
-      props.toggleBrowserRegionEditorActive(false);
-      props.toggleBrowserRegionFieldActive(false);
+      props.toggleRegionEditorActive(false);
+      props.toggleRegionFieldActive(false);
     },
     []
   );
 
   const shouldBeEnabled = (index: number) => {
-    const {
-      browserNavStates,
-      browserRegionEditorActive,
-      browserRegionFieldActive
-    } = props;
+    const { browserNavStates, regionEditorActive, regionFieldActive } = props;
     const maxState = browserNavStates[index];
-    const regionInputsActive =
-      browserRegionEditorActive || browserRegionFieldActive;
+    const regionInputsActive = regionEditorActive || regionFieldActive;
 
     return !maxState && !regionInputsActive;
   };
@@ -86,16 +81,16 @@ export const BrowserNavBar = (props: BrowserNavBarProps) => {
 
 const mapStateToProps = (state: RootState) => ({
   browserNavStates: getBrowserNavStates(state),
-  browserRegionEditorActive: getBrowserRegionEditorActive(state),
-  browserRegionFieldActive: getBrowserRegionFieldActive(state),
   chrLocation: getChrLocation(state),
   genomeKaryotypes: getGenomeKaryotypes(state),
-  isTrackPanelOpened: getIsTrackPanelOpened(state)
+  isTrackPanelOpened: getIsTrackPanelOpened(state),
+  regionEditorActive: getRegionEditorActive(state),
+  regionFieldActive: getRegionFieldActive(state)
 });
 
 const mapDispatchToProps = {
-  toggleBrowserRegionEditorActive,
-  toggleBrowserRegionFieldActive
+  toggleRegionEditorActive,
+  toggleRegionFieldActive
 };
 
 export default connect(

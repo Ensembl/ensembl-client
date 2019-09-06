@@ -1,4 +1,6 @@
 import React, { useState, FormEvent, useRef, useEffect } from 'react';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { replace, Replace } from 'connected-react-router';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
@@ -6,26 +8,35 @@ import Select from 'src/shared/components/select/Select';
 import Input from 'src/shared/components/input/Input';
 import Tooltip, { Position } from 'src/shared/components/tooltip/Tooltip';
 
-import { ChrLocation } from '../browserState';
+import { ChrLocation, RegionValidationResponse } from '../browserState';
 import { RootState } from 'src/store';
 import {
-  getBrowserRegionEditorActive,
-  getBrowserRegionFieldActive,
+  getRegionEditorActive,
+  getRegionFieldActive,
   getBrowserActiveGenomeId,
-  getChrLocation
+  getChrLocation,
+  getRegionValidationInfo,
+  getRegionValidationLoadingStatus
 } from '../browserSelectors';
 import { getGenomeKaryotypes } from 'src/genome/genomeSelectors';
 import {
   changeBrowserLocation,
-  toggleBrowserRegionEditorActive
+  toggleRegionEditorActive,
+  resetRegionValidation,
+  validateRegion
 } from '../browserActions';
 import { GenomeKaryotype } from 'src/genome/genomeTypes';
+import { LoadingState } from 'src/shared/types/loading-state';
 
 import {
   getCommaSeparatedNumber,
   getNumberWithoutCommas
 } from 'src/shared/helpers/numberFormatter';
-import { getBrowserRegionEditorErrorMessages } from '../browserHelper';
+import {
+  getRegionEditorErrorMessages,
+  getChrLocationStr
+} from '../browserHelper';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import applyIcon from 'static/img/shared/apply.svg';
 import clearIcon from 'static/img/shared/clear.svg';
@@ -34,15 +45,26 @@ import styles from './BrowserRegionEditor.scss';
 import browserStyles from '../Browser.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
 
-type BrowserRegionEditorProps = {
+type OwnProps = {
   activeGenomeId: string | null;
-  browserRegionEditorActive: boolean;
-  browserRegionFieldActive: boolean;
   chrLocation: ChrLocation;
   genomeKaryotypes: GenomeKaryotype[];
+  regionEditorActive: boolean;
+  regionFieldActive: boolean;
+  regionValidationInfo: RegionValidationResponse | null;
+  regionValidationLoadingStatus: LoadingState;
+  replace: Replace;
   changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
-  toggleBrowserRegionEditorActive: (browserRegionEditorActive: boolean) => void;
+  resetRegionValidation: () => void;
+  toggleRegionEditorActive: (regionEditorActive: boolean) => void;
+  validateRegion: (region: string) => void;
 };
+
+type MatchParams = {
+  genomeId: string;
+};
+
+type BrowserRegionEditorProps = RouteComponentProps<MatchParams> & OwnProps;
 
 export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   const [region, locationStart, locationEnd] = props.chrLocation;
@@ -54,6 +76,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   const [locationEndInput, setLocationEndInput] = useState(
     getCommaSeparatedNumber(locationEnd)
   );
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [locationStartErrorMessage, setLocationStartErrorMessage] = useState<
     string | null
   >(null);
@@ -111,9 +134,11 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
 
   const closeForm = () => {
     updateAllInputs();
+    setIsFormSubmitted(false);
     updateErrorMessages(null, null);
 
-    props.toggleBrowserRegionEditorActive(false);
+    props.toggleRegionEditorActive(false);
+    props.resetRegionValidation();
   };
 
   const updateErrorMessages = (
@@ -124,69 +149,105 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     setLocationEndErrorMessage(locationEndError);
   };
 
-  const validateRegionEditor = () => {
-    const karyotypeOfSelectedRegion = props.genomeKaryotypes.filter(
-      (karyotype) => regionInput === karyotype.name
-    )[0];
-
-    const {
-      locationStartError,
-      locationEndError
-    } = getBrowserRegionEditorErrorMessages(
-      locationStartInput,
-      locationEndInput,
-      karyotypeOfSelectedRegion
-    );
-
-    if (locationStartError || locationEndError) {
-      updateErrorMessages(locationStartError, locationEndError);
-      return false;
+  const handleFocus = () => {
+    if (!props.regionEditorActive) {
+      props.toggleRegionEditorActive(true);
     }
-
-    return true;
   };
 
-  const handleFocus = () => {
-    if (!props.browserRegionEditorActive) {
-      props.toggleBrowserRegionEditorActive(true);
+  const changeLocation = (newChrLocation: ChrLocation) =>
+    props.changeBrowserLocation(props.activeGenomeId as string, newChrLocation);
+
+  const changeFocusObject = (newChrLocation: ChrLocation) => {
+    const chrLocationStr = getChrLocationStr(newChrLocation);
+    const activeEnsObjectId = `${props.activeGenomeId}:region:${chrLocationStr}`;
+    const params = {
+      genomeId: props.activeGenomeId,
+      focus: activeEnsObjectId,
+      location: chrLocationStr
+    };
+
+    props.replace(urlFor.browser(params));
+  };
+
+  const updateBrowser = () => {
+    if (!isFormSubmitted) {
+      return;
+    }
+
+    const newChrLocation: ChrLocation = [
+      regionInput,
+      getNumberWithoutCommas(locationStartInput),
+      getNumberWithoutCommas(locationEndInput)
+    ];
+
+    if (regionInput === region) {
+      changeLocation(newChrLocation);
+    } else {
+      changeFocusObject(newChrLocation);
     }
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const isFormValid = validateRegionEditor();
+    const region = `${regionInput}:${locationStartInput}:${locationEndInput}`;
 
-    if (isFormValid) {
-      props.toggleBrowserRegionEditorActive(false);
-
-      const locationStartNum = getNumberWithoutCommas(locationStartInput);
-      const locationEndNum = getNumberWithoutCommas(locationEndInput);
-
-      props.changeBrowserLocation(props.activeGenomeId as string, [
-        regionInput,
-        locationStartNum,
-        locationEndNum
-      ]);
-    }
+    setIsFormSubmitted(true);
+    props.validateRegion(region);
   };
-
-  useEffect(
-    () => () => {
-      closeForm();
-    },
-    []
-  );
 
   useEffect(() => {
     updateAllInputs();
   }, [props.chrLocation]);
 
+  useEffect(() => () => props.resetRegionValidation(), []);
+
+  useEffect(() => {
+    if (props.regionEditorActive) {
+      const {
+        regionValidationInfo,
+        regionValidationLoadingStatus,
+        genomeKaryotypes
+      } = props;
+
+      if (regionValidationLoadingStatus !== LoadingState.LOADING) {
+        const karyotypeOfRegionInput = genomeKaryotypes.filter(
+          (karyotype) => regionInput === karyotype.name
+        )[0];
+
+        const errorMessages = getRegionEditorErrorMessages(
+          regionValidationInfo,
+          karyotypeOfRegionInput,
+          locationStartInput,
+          locationEndInput
+        );
+
+        if (
+          errorMessages &&
+          (errorMessages.locationStartError || errorMessages.locationEndError)
+        ) {
+          updateErrorMessages(
+            errorMessages.locationStartError,
+            errorMessages.locationEndError
+          );
+        } else {
+          updateAllInputs();
+          setIsFormSubmitted(false);
+          updateErrorMessages(null, null);
+          props.toggleRegionEditorActive(false);
+
+          updateBrowser();
+        }
+      }
+    }
+  }, [props.regionValidationInfo]);
+
   const locationStartRef = useRef<HTMLDivElement>(null);
   const locationEndRef = useRef<HTMLDivElement>(null);
 
   const regionEditorClassNames = classNames(styles.browserRegionEditor, {
-    [browserStyles.semiOpaque]: props.browserRegionFieldActive
+    [browserStyles.semiOpaque]: props.regionFieldActive
   });
 
   const locationStartClassNames = classNames({
@@ -201,13 +262,13 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     browserNavBarStyles.browserNavBarButtons,
     {
       [browserNavBarStyles.browserNavBarButtonsVisible]:
-        props.browserRegionEditorActive
+        props.regionEditorActive
     }
   );
 
   return (
     <div className={regionEditorClassNames}>
-      {props.browserRegionFieldActive ? (
+      {props.regionFieldActive ? (
         <div
           className={browserStyles.browserOverlay}
           id="region-field-overlay"
@@ -276,18 +337,25 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
 
 const mapStateToProps = (state: RootState) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
-  browserRegionEditorActive: getBrowserRegionEditorActive(state),
-  browserRegionFieldActive: getBrowserRegionFieldActive(state),
   chrLocation: getChrLocation(state) as ChrLocation,
-  genomeKaryotypes: getGenomeKaryotypes(state) as GenomeKaryotype[]
+  genomeKaryotypes: getGenomeKaryotypes(state) as GenomeKaryotype[],
+  regionEditorActive: getRegionEditorActive(state),
+  regionFieldActive: getRegionFieldActive(state),
+  regionValidationInfo: getRegionValidationInfo(state),
+  regionValidationLoadingStatus: getRegionValidationLoadingStatus(state)
 });
 
 const mpaDispatchToProps = {
   changeBrowserLocation,
-  toggleBrowserRegionEditorActive
+  replace,
+  resetRegionValidation,
+  toggleRegionEditorActive,
+  validateRegion
 };
 
-export default connect(
-  mapStateToProps,
-  mpaDispatchToProps
-)(BrowserRegionEditor);
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mpaDispatchToProps
+  )(BrowserRegionEditor)
+);

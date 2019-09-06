@@ -26,35 +26,35 @@ export type CogList = {
   [key: string]: number;
 };
 
-export type BrowserRegionValidationError = {
+export type RegionValidationError = {
   error_code: string | null;
   error_message: string | null;
   is_valid: boolean;
 };
 
-export type BrowserRegionValidationValueError = BrowserRegionValidationError & {
+export type RegionValidationValueError = RegionValidationError & {
   value: string | number;
 };
 
-export type BrowserRegionValidationRegionError = BrowserRegionValidationError & {
+export type RegionValidationRegionError = RegionValidationError & {
   region_code: string;
   region_id: string;
 };
 
-export type BrowserRegionValidationMessage = Partial<{
+export type RegionValidationMessage = Partial<{
   error: string;
   genome_id: string;
   region: string;
   region_code: string;
 }>;
 
-export type BrowserRegionValidationResponse = Partial<{
-  end: BrowserRegionValidationValueError;
-  genome_id: BrowserRegionValidationValueError;
+export type RegionValidationResponse = Partial<{
+  end: RegionValidationValueError;
+  genome_id: RegionValidationValueError;
   is_parseable: boolean;
-  region: BrowserRegionValidationRegionError;
-  start: BrowserRegionValidationValueError;
-  message: BrowserRegionValidationMessage;
+  region: RegionValidationRegionError;
+  start: RegionValidationValueError;
+  message: RegionValidationMessage;
 }>;
 
 export type BrowserState = Readonly<{
@@ -92,25 +92,19 @@ export const defaultBrowserNavState: BrowserNavState = {
 export type BrowserLocationState = Readonly<{
   chrLocations: ChrLocations; // final location of the browser when user stopped dragging/zooming; used to update the url
   actualChrLocations: ChrLocations; // transient locations that change while user is dragging or zooming
-  browserRegionEditorActive: boolean;
-  browserRegionFieldActive: boolean;
+  regionEditorActive: boolean;
+  regionFieldActive: boolean;
+  regionValidationInfo: RegionValidationResponse | null;
+  regionValidationLoadingStatus: LoadingState;
 }>;
 
 export const defaultBrowserLocationState: BrowserLocationState = {
   chrLocations,
   actualChrLocations: {},
-  browserRegionEditorActive: false,
-  browserRegionFieldActive: false
-};
-
-export type BrowserRegionValidationState = Readonly<{
-  browserRegionFieldErrors: BrowserRegionValidationResponse | null;
-  loadingStatus: LoadingState;
-}>;
-
-export const defaultBrowserRegionValidationState: BrowserRegionValidationState = {
-  browserRegionFieldErrors: null,
-  loadingStatus: LoadingState.NOT_REQUESTED
+  regionEditorActive: false,
+  regionFieldActive: false,
+  regionValidationInfo: null,
+  regionValidationLoadingStatus: LoadingState.NOT_REQUESTED
 };
 
 export type TrackConfigState = Readonly<{

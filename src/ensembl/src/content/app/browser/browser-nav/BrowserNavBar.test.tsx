@@ -8,8 +8,8 @@ import styles from './BrowserNavBar.scss';
 
 const browserStates = [...Array(6)].map(() => false);
 const chrLocation: ChrLocation = ['13', 1, 114364328];
-const toggleBrowserRegionEditorActive: any = jest.fn();
-const toggleBrowserRegionFieldActive: any = jest.fn();
+const toggleRegionEditorActive: any = jest.fn();
+const toggleRegionFieldActive: any = jest.fn();
 
 describe('<BrowserNavBar />', () => {
   test('renders with appropriate classes', () => {
@@ -17,13 +17,13 @@ describe('<BrowserNavBar />', () => {
       shallow(
         <BrowserNavBar
           browserNavStates={browserStates as BrowserNavStates}
-          browserRegionEditorActive={true}
-          browserRegionFieldActive={false}
           chrLocation={chrLocation}
           genomeKaryotypes={[]}
           isTrackPanelOpened={true}
-          toggleBrowserRegionEditorActive={toggleBrowserRegionEditorActive}
-          toggleBrowserRegionFieldActive={toggleBrowserRegionFieldActive}
+          regionEditorActive={true}
+          regionFieldActive={false}
+          toggleRegionEditorActive={toggleRegionEditorActive}
+          toggleRegionFieldActive={toggleRegionFieldActive}
         />
       ).hasClass(styles.browserNavBarExpanded)
     ).toBe(false);
@@ -32,13 +32,13 @@ describe('<BrowserNavBar />', () => {
       shallow(
         <BrowserNavBar
           browserNavStates={browserStates as BrowserNavStates}
-          browserRegionEditorActive={true}
-          browserRegionFieldActive={false}
           chrLocation={chrLocation}
           genomeKaryotypes={[]}
           isTrackPanelOpened={false}
-          toggleBrowserRegionEditorActive={toggleBrowserRegionEditorActive}
-          toggleBrowserRegionFieldActive={toggleBrowserRegionFieldActive}
+          regionEditorActive={true}
+          regionFieldActive={false}
+          toggleRegionEditorActive={toggleRegionEditorActive}
+          toggleRegionFieldActive={toggleRegionFieldActive}
         />
       ).hasClass(styles.browserNavBarExpanded)
     ).toBe(true);
