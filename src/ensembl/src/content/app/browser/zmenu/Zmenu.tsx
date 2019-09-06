@@ -39,7 +39,7 @@ type GetInlineStylesParams = {
 
 const Zmenu = (props: Props) => {
   const onOutsideClick = () =>
-    browserMessagingService.send('bpane-zmenu', {
+    browserMessagingService.send('bpane', {
       id: props.id,
       action: ZmenuAction.ACTIVITY_OUTSIDE
     });

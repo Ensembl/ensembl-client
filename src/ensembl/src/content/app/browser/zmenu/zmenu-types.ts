@@ -25,7 +25,7 @@ export enum Markup {
 export enum ZmenuAction {
   CREATE = 'create_zmenu',
   DESTROY = 'destroy_zmenu',
-  ACTIVITY_OUTSIDE = 'zmenu_activity_outside',
+  ACTIVITY_OUTSIDE = 'zmenu-activity-outside', // TODO: sometime later, unify underscores vs hyphens (together with Genome Browser)
   REPOSITION = 'update_zmenu_position',
   ENTER = 'zmenu-enter',
   LEAVE = 'zmenu-leave'

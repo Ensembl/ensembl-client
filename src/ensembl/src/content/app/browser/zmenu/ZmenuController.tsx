@@ -86,7 +86,7 @@ const ZmenuController = (props: Props) => {
       id,
       action: ZmenuAction.ENTER
     };
-    browserMessagingService.send('bpane-zmenu', payload);
+    browserMessagingService.send('bpane', payload);
   };
 
   const handleZmenuLeave = (id: string) => {
@@ -94,7 +94,7 @@ const ZmenuController = (props: Props) => {
       id,
       action: ZmenuAction.LEAVE
     };
-    browserMessagingService.send('bpane-zmenu', payload);
+    browserMessagingService.send('bpane', payload);
   };
 
   const zmenuElements = Object.keys(zmenus).map((id) => (
