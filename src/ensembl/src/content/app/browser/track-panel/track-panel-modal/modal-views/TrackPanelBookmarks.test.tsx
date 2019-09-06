@@ -18,7 +18,7 @@ jest.mock('react-router-dom', () => ({
   )
 }));
 
-const createPreviouslyViewedLinks = () => ({
+const createPreviouslyViewedLink = () => ({
   genome_id: faker.random.word(),
   object_id: faker.random.word(),
   object_type: faker.random.word(),
@@ -46,7 +46,7 @@ describe('<TrackPanelBookmarks />', () => {
     activeGenomeId: faker.random.word(),
     exampleEnsObjects: times(numberOfExampleObjects, () => createEnsObject()),
     previouslyViewedObjects: times(numberOfPreviouslyViewedObjects, () =>
-      createPreviouslyViewedLinks()
+      createPreviouslyViewedLink()
     ),
     fetchExampleEnsObjects: fetchExampleEnsObjectsMock,
     updateTrackStates: updateTrackStatesMock,
