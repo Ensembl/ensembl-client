@@ -36,12 +36,16 @@ const updateTrackStatesMock = jest.fn();
 const fetchExampleEnsObjectsMock = jest.fn();
 
 describe('<TrackPanelBookmarks />', () => {
-  const randomNumber = faker.random.number({ min: 5, max: 10 });
+  const numberOfExampleObjects = faker.random.number({ min: 5, max: 10 });
+  const numberOfPreviouslyViewedObjects = faker.random.number({
+    min: 5,
+    max: 10
+  });
 
   const props = {
     activeGenomeId: faker.random.word(),
-    exampleEnsObjects: times(randomNumber, () => createEnsObject()),
-    previouslyViewedObjects: times(randomNumber, () =>
+    exampleEnsObjects: times(numberOfExampleObjects, () => createEnsObject()),
+    previouslyViewedObjects: times(numberOfPreviouslyViewedObjects, () =>
       createPreviouslyViewedLinks()
     ),
     fetchExampleEnsObjects: fetchExampleEnsObjectsMock,
@@ -60,15 +64,15 @@ describe('<TrackPanelBookmarks />', () => {
     expect(wrapper).toHaveLength(1);
   });
 
-  it('renders N number of previously viewed links based on the length of previously viewed objects', () => {
+  it('renders correct number of previously viewed links', () => {
     const previouslyViewedLinksWrapper = wrapper.find(PreviouslyViewedLinks);
 
     expect(previouslyViewedLinksWrapper.find('.link').length).toBe(
-      randomNumber
+      numberOfPreviouslyViewedObjects
     );
   });
 
-  it('calls the closeTrackPanelModalMock when the previously viewed object link is clicked', () => {
+  it('calls closeTrackPanelModal when a previously viewed object link is clicked', () => {
     const previouslyViewedLinksWrapper = wrapper.find(PreviouslyViewedLinks);
 
     previouslyViewedLinksWrapper
@@ -79,13 +83,15 @@ describe('<TrackPanelBookmarks />', () => {
     expect(closeTrackPanelModalMock).toBeCalled();
   });
 
-  it('renders N number of Links based on the length of example links', () => {
+  it('renders correct number of links to example objects', () => {
     const exampleLinksWrapper = wrapper.find(ExampleLinks);
 
-    expect(exampleLinksWrapper.find('div.link').length).toBe(randomNumber);
+    expect(exampleLinksWrapper.find('div.link').length).toBe(
+      numberOfExampleObjects
+    );
   });
 
-  it('calls the closeTrackPanelModalMock when the example object link is clicked', () => {
+  it('calls closeTrackPanelModal when an example object link is clicked', () => {
     const exampleLinksWrapper = wrapper.find(ExampleLinks);
     exampleLinksWrapper
       .find('.link')
