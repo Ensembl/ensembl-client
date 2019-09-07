@@ -33,14 +33,6 @@ type DispatchProps = {
 };
 export type TrackPanelBookmarksProps = StateProps & DispatchProps;
 
-const getExampleObjLabel = (exampleObject: EnsObject | Bookmark) => {
-  if (exampleObject.object_type === 'gene') {
-    return exampleObject.label;
-  } else {
-    return getFormattedLocation(exampleObject.location);
-  }
-};
-
 type ExampleLinksProps = Pick<
   TrackPanelBookmarksProps,
   'exampleEnsObjects' | 'activeGenomeId' | 'closeTrackPanelModal'
@@ -57,7 +49,7 @@ export const ExampleLinks = (props: ExampleLinksProps) => {
         return (
           <dd key={exampleObject.object_id}>
             <Link to={path} onClick={props.closeTrackPanelModal}>
-              {getExampleObjLabel(exampleObject)}
+              {exampleObject.label}
             </Link>
             <span className={styles.previouslyViewedType}>
               {' '}
@@ -79,6 +71,18 @@ type PreviouslyViewedLinksProps = Pick<
 >;
 
 export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
+  
+  const onClickHandler = (previouslyViewedObject: Bookmark) => {
+    props.updateTrackStates({
+      [previouslyViewedObject.genome_id]: {
+        ...previouslyViewedObject.trackStates
+      }
+    });
+
+    props.closeTrackPanelModal();
+  };
+
+
   return (
     <div>
       {[...props.previouslyViewedObjects]
@@ -90,20 +94,10 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
             focus: previouslyViewedObject.object_id,
             location: locationStr
           });
-
-          const onClickHandler = () => {
-            props.updateTrackStates({
-              [previouslyViewedObject.genome_id]: {
-                ...previouslyViewedObject.trackStates
-              }
-            });
-
-            props.closeTrackPanelModal();
-          };
-
+          
           return (
             <dd key={index}>
-              <Link to={path} onClick={onClickHandler}>
+              <Link to={path} onClick={() => onClickHandler(previouslyViewedObject)}>
                 {previouslyViewedObject.label}
               </Link>
               <span className={styles.previouslyViewedType}>
