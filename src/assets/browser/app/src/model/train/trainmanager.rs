@@ -27,7 +27,8 @@ use super::{ Train, TrainId, TrainContext, TravellerCreator };
 use types::{ Dot, DOWN, AdLib, AsyncValue, Awaiting };
 
 const MS_FADE : f64 = 200.;
-const AT_POSITION_NEAR_ENOUGH : f64 = 0.25;
+const AT_POSITION_NEAR_ENOUGH : f64 = 1.;
+const AT_ZOOM_NEAR_ENOUGH : f64 = 2.;
 
 pub struct TrainManagerImpl {
     printer: PrinterManager,
@@ -81,7 +82,7 @@ impl TrainManagerImpl {
                 let desired_position = self.desired.get_position();
                 let desired_position = (desired_position.get_middle().0,desired_position.get_screen_in_bp());
                 let delta = (desired_position.0-focus_location.0,desired_position.1-focus_location.1);
-                if self.desired.get_stick() == focus_stick && delta.0.abs() < AT_POSITION_NEAR_ENOUGH && delta.1.abs() < AT_POSITION_NEAR_ENOUGH {
+                if self.desired.get_stick() == focus_stick && delta.0.abs() < AT_POSITION_NEAR_ENOUGH && delta.1.abs() < AT_ZOOM_NEAR_ENOUGH {
                     at_focus = true;
                 }
             }
@@ -436,7 +437,6 @@ impl TrainManagerImpl {
                 self.pending_focus_jump.notify(focus_object.to_string(),(stick.clone(),*middle,*zoom));
             }
         }
-
     }
 
     pub fn set_focus_location(&mut self, obj: &str, stick: &Stick, middle: f64, zoom: f64) {

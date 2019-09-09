@@ -41,7 +41,7 @@ impl LocateConsumer {
         if found {
             if let Some(stick) = self.stick_manager.get_stick(&stick_name) {
                 let dest_pos = (dest_start+dest_end)/2.;
-                let dest_size = dest_end-dest_start+1.;
+                let dest_size = dest_end-dest_start;
                 (self.consumer.take().unwrap())(&self.id,&stick,dest_pos,dest_size);
             }
         }
