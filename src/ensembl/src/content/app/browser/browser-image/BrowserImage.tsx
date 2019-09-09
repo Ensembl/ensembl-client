@@ -1,6 +1,6 @@
 import React, {
   FunctionComponent,
-  RefObject,
+  useRef,
   useEffect,
   useCallback
 } from 'react';
@@ -13,8 +13,6 @@ import { ZmenuController } from 'src/content/app/browser/zmenu';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import {
-  getTrackConfigNames,
-  getTrackConfigLabel,
   getBrowserCogTrackList,
   getBrowserNavOpened,
   getBrowserActivated
@@ -43,8 +41,6 @@ import { BROWSER_CONTAINER_ID } from '../browser-constants';
 type StateProps = {
   browserCogTrackList: CogList;
   browserNavOpened: boolean;
-  trackConfigNames: any;
-  trackConfigLabel: any;
   browserActivated: boolean;
 };
 
@@ -61,7 +57,6 @@ type DispatchProps = {
 };
 
 type OwnProps = {
-  browserRef: RefObject<HTMLDivElement>;
   trackStates: TrackStates;
 };
 
@@ -86,6 +81,7 @@ const parseLocation = (location: ChrLocation) => {
 export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   props: BrowserImageProps
 ) => {
+  const browserRef = useRef<HTMLDivElement>(null);
   const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
     const ensObjectId = payload.focus;
     const navIconStates = payload.bumper as BrowserNavStates;
@@ -131,54 +127,12 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
   }, []);
 
   useEffect(() => {
-    const currentEl: HTMLDivElement = props.browserRef
-      .current as HTMLDivElement;
     props.activateBrowser();
 
     return function cleanup() {
-      if (currentEl && currentEl.ownerDocument) {
-        props.updateBrowserActivated(false);
-      }
+      props.updateBrowserActivated(false);
     };
-  }, [props.browserRef]);
-
-  useEffect(() => {
-    if (props.browserCogTrackList) {
-      const ons: string[] = [];
-      const offs: string[] = [];
-
-      /* what the frontend and backend call labels and names is flipped */
-      Object.keys(props.browserCogTrackList).map((name) => {
-        /* undefined means not seen means on for names */
-        if (props.trackConfigNames[name]) {
-          ons.push(name + ':label');
-        } else {
-          offs.push(name + ':label');
-        }
-        /* undefined means not seen means off for labels */
-        if (props.trackConfigLabel[name] !== false) {
-          ons.push(name + ':names');
-        } else {
-          offs.push(name + ':names');
-        }
-      });
-      const stateEvent = new CustomEvent('bpane', {
-        bubbles: true,
-        detail: {
-          off: offs,
-          on: ons
-        }
-      });
-      if (props.browserRef.current) {
-        props.browserRef.current.dispatchEvent(stateEvent);
-      }
-    }
-  }, [
-    props.trackConfigNames,
-    props.trackConfigLabel,
-    props.browserRef,
-    props.browserCogTrackList
-  ]);
+  }, []);
 
   return (
     <>
@@ -191,10 +145,10 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
         <div
           id={BROWSER_CONTAINER_ID}
           className={getBrowserImageClasses(props.browserNavOpened)}
-          ref={props.browserRef}
+          ref={browserRef}
         />
         <BrowserCogList />
-        <ZmenuController browserRef={props.browserRef} />
+        <ZmenuController browserRef={browserRef} />
       </div>
     </>
   );
@@ -213,8 +167,6 @@ function getBrowserImageClasses(browserNavOpened: boolean): string {
 const mapStateToProps = (state: RootState): StateProps => ({
   browserCogTrackList: getBrowserCogTrackList(state),
   browserNavOpened: getBrowserNavOpened(state),
-  trackConfigLabel: getTrackConfigLabel(state),
-  trackConfigNames: getTrackConfigNames(state),
   browserActivated: getBrowserActivated(state)
 });
 

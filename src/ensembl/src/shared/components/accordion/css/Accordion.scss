@@ -1,12 +1,12 @@
 @import 'src/styles/common';
 
 .accordionDefault {
-  border: 2px solid $ens-medium-light-grey;
+  border: 2px solid $medium-light-grey;
   border-radius: 2px;
 }
 
 .accordionItemDefault + .accordionItemDefault {
-  border-top: 2px solid $ens-medium-light-grey;
+  border-top: 2px solid $medium-light-grey;
 }
 
 .accordionButtonDefault {
@@ -29,7 +29,7 @@
   width: 10px;
   margin-right: 12px;
   transition: transform 0.2s linear, top 0.2s linear;
-  background-color: $ens-blue;
+  background-color: $blue;
 }
 
 .accordionButtonDefault:before {
@@ -57,7 +57,7 @@
 }
 
 .accordionPanelDefault {
-  background: $ens-light-grey;
+  background: $light-grey;
   animation: fadein 0.2s ease-in;
 }
 

@@ -20,6 +20,7 @@ pub enum Action {
     SetStick(String),
     SetState(String,bool),
     Settled,
+    ActivityOutsideZMenu,
     ZMenuClickCheck(CPixel),
     ShowZMenu(String,String,Dot<i32,i32>,JSONValue),
     SetFocus(String),
@@ -47,6 +48,7 @@ impl Action {
             Action::ZoomTo(_) => 10,
             Action::Move(_) => 10,
             Action::Zoom(_) => 10,
+            Action::ActivityOutsideZMenu => 20,
             Action::ZMenuClickCheck(_) => 25,
             Action::ShowZMenu(_,_,_,_) => 25,
             Action::SetFocus(_) => 20,
@@ -214,6 +216,7 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
             Action::ZMenuClickCheck(pos) => exe_zmenu_click_check(cg,&pos,currency),
             Action::ShowZMenu(id,track_id,pos,payload) => exe_zmenu_show(cg,&id,&track_id,pos,payload),
             Action::Reset => exe_reset(cg),
+            Action::ActivityOutsideZMenu => exe_deactivate(cg),
             Action::Noop => ()
         }
     }

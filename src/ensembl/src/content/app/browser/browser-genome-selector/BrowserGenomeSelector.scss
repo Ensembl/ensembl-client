@@ -30,10 +30,10 @@
 
 .chrCode {
   appearance: none;
-  background: $ens-dark-blue;
+  background: $dark-blue;
   border: none;
   border-radius: 0;
-  color: $ens-white;
+  color: $white;
   display: inline-block;
   font-weight: $bold;
   margin: 0 5px;
@@ -44,16 +44,16 @@
 }
 
 .chrRegion {
-  color: $ens-dark-blue;
+  color: $dark-blue;
   display: inline-block;
 }
 
 .browserGenomeSelectorDisabled {
   .chrCode {
-    background: $ens-dark-grey;
+    background: $dark-grey;
   }
 
   .chrRegion {
-    color: $ens-dark-grey;
+    color: $dark-grey;
   }
 }

@@ -14,8 +14,8 @@
   z-index: 1;
   padding: 18px 24px;
   background: white;
-  border: 1px solid $ens-grey;
-  box-shadow: 2px 2px 6px 0 $ens-grey;
+  border: 1px solid $grey;
+  box-shadow: 2px 2px 6px 0 $grey;
 }
 
 .autosuggestionPlateMatchGroup {
@@ -31,5 +31,5 @@
 }
 
 .autosuggestionPlateHighlightedItem {
-  background-color: $ens-light-blue;
+  background-color: $light-blue;
 }

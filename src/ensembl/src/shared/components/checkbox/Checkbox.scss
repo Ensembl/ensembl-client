@@ -9,8 +9,8 @@
   cursor: pointer;
   height: 15px;
   width: 15px;
-  border: 1px solid $ens-grey;
-  background-color: $ens-white;
+  border: 1px solid $grey;
+  background-color: $white;
   transition: background-color 0.1s ease-in-out;
   float: left;
   margin-top: 2px;
@@ -18,20 +18,20 @@
 
 .unchecked {
   cursor: pointer;
-  background-color: $ens-white;
+  background-color: $white;
 }
 
 .checked {
-  background-color: $ens-green;
+  background-color: $green;
 }
 
 .disabled {
-  background-color: $ens-light-grey;
+  background-color: $light-grey;
   cursor: default;
 }
 
 .defaultLabel {
-  color: $ens-black;
+  color: $black;
   line-height: 30px;
   font-size: 14px;
   padding-left: 8px;
@@ -46,6 +46,6 @@
   display: none;
 
   &:focus + div {
-    border: 1px solid $ens-dark-grey;
+    border: 1px solid $dark-grey;
   }
 }

@@ -1,7 +1,7 @@
 @import 'src/styles/common';
 
 .wrapper {
-  background-color: $ens-light-grey;
+  background-color: $light-grey;
   height: 60px;
   position: relative;
 }
@@ -10,7 +10,7 @@
   position: absolute;
   top: 50%;
   left: 50px;
-  color: $ens-black;
+  color: $black;
   margin-top: -10px;
 
   span {
@@ -45,11 +45,11 @@
 
 .resultsLabel {
   font-size: 11px;
-  color: $ens-dark-grey;
+  color: $dark-grey;
 }
 .saveConfiguration {
   font-size: 11px;
-  color: $ens-dark-grey;
+  color: $dark-grey;
 }
 
 .backButton {
@@ -67,19 +67,19 @@
 }
 
 .downloadTypeLabel {
-  color: $ens-dark-grey;
+  color: $dark-grey;
 }
 
 .downloadTypeSelect {
   margin-left: 10px;
-  color: $ens-blue;
+  color: $blue;
   li {
-    color: $ens-medium-dark-grey;
+    color: $medium-dark-grey;
   }
 }
 
 .roundButtonInactive {
-  background-color: $ens-medium-dark-grey;
-  border-color: $ens-medium-dark-grey;
-  color: $ens-white;
+  background-color: $medium-dark-grey;
+  border-color: $medium-dark-grey;
+  color: $white;
 }
