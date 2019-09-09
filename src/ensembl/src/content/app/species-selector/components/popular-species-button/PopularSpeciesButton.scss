@@ -9,6 +9,7 @@ $button-gap: 1.4rem;
   margin-right: $button-gap;
   margin-bottom: 1.2rem;
   font-size: 0;
+  user-select: none;
 
   *[class*='tooltip'] {
     user-select: none;

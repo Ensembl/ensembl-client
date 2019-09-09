@@ -79,14 +79,12 @@ impl EventListener<()> for UserEventListener {
         match e {
             EventData::MouseEvent(EventType::MouseWheelEvent,_,e) => {
                 self.wheel(-e.wheel_delta() as f64/1000.);
-                e.stop_propagation();
                 e.prevent_default();
             },
             EventData::MouseEvent(EventType::MouseDownEvent,_,e) => {
                 self.canv_el.focus();
                 domutil::clear_selection();
-                e.stop_propagation();
-                self.position.lock().unwrap().down(self.mouse_rel_box(&e.at()));
+                self.mouse.lock().unwrap().down(self.mouse_rel_box(&e.at()));
             },
             EventData::MouseEvent(EventType::MouseMoveEvent,_,e) => {
                 let box_mouse = self.mouse_rel_box(&e.at());
@@ -95,8 +93,7 @@ impl EventListener<()> for UserEventListener {
                 self.check_cursor(&box_mouse);
             },
             EventData::MouseEvent(EventType::MouseClickEvent,_,e) => {
-                self.zmenu_click_check(&self.mouse_rel_box(&e.at()));
-                e.stop_propagation();
+                self.zmenu(&self.mouse_rel_box(&e.at()));
             },
             EventData::MouseEvent(EventType::MouseDblClickEvent,_,e) => {
                 if e.shift_key() {
@@ -104,10 +101,8 @@ impl EventListener<()> for UserEventListener {
                 } else {
                     self.wheel(0.5);
                 }
-                e.stop_propagation();
             },
             EventData::GenericEvent(EventType::ContextMenuEvent,e) => {
-                e.stop_propagation();
                 e.prevent_default();
             }
             _ => ()

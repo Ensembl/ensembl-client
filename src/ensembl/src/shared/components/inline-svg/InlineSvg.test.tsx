@@ -1,4 +1,5 @@
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import { mount } from 'enzyme';
 import faker from 'faker';
 
@@ -27,17 +28,12 @@ describe('<InlineSVG />', () => {
     const src = faker.random.image();
     const wrapper = mount(<InlineSVG src={src} />);
 
-    // FIXME: currently, the line below produces a warning (because of React state update)
-    // it can be fixed by wrapping it into the asynchronous act function
-    // introduced in react v.16.9.0 alpha, like so:
-    // await act(async () => {
-    //   await new Promise((resolve) => setTimeout(resolve, 0));
-    // })
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    await act(async () => {
+      // here, the component should execute the useEffect hook requesting the svg,
+      // and update the state
+      wrapper.update();
+    });
 
-    wrapper.update();
-
-    // expect the component to request the svg from the provided src
     const mockedFetch: any = apiService.fetch;
     const [requestedUrl] = mockedFetch.mock.calls[0];
     expect(requestedUrl).toBe(src);

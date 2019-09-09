@@ -26,7 +26,7 @@ type BrowserCogListProps = {
   selectedCog: any;
   updateCogList: (cogList: number) => void;
   updateCogTrackList: (track_y: CogList) => void;
-  updateSelectedCog: (index: string) => void;
+  updateSelectedCog: (index: string | null) => void;
 };
 
 type BpaneScrollPayload = {

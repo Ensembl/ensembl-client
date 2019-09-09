@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback } from 'react';
+import React, { FunctionComponent, useCallback, useRef } from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -26,22 +26,27 @@ import trackMoveBtn from 'static/img/browser/icon_tracks_move_grey.svg';
 import { RootState } from 'src/store';
 import { CogList } from '../browserState';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 type StateProps = {
   applyToAll: boolean;
   browserCogTrackList: CogList;
-  selectedCog: any;
-  trackConfigLabel: any;
-  trackConfigNames: any;
+  selectedCog: string | null;
+  trackConfigLabel: { [key: string]: boolean };
+  trackConfigNames: { [key: string]: boolean };
 };
 
 type DispatchProps = {
   updateApplyToAll: (yn: boolean) => void;
-  updateTrackConfigLabel: (selectedCog: any, sense: boolean) => void;
-  updateTrackConfigNames: (selectedCog: any, sense: boolean) => void;
+  updateTrackConfigLabel: (selectedCog: string | null, sense: boolean) => void;
+  updateTrackConfigNames: (selectedCog: string | null, sense: boolean) => void;
 };
 
-type BrowserTrackConfigProps = StateProps & DispatchProps;
+type OwnProps = {
+  onClose: () => void;
+};
+
+type BrowserTrackConfigProps = StateProps & DispatchProps & OwnProps;
 
 const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
   props: BrowserTrackConfigProps
@@ -54,8 +59,11 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
     trackConfigLabel
   } = props;
 
-  const trackOurConfigName = trackConfigNames[selectedCog];
-  const trackOurConfigLabel = trackConfigLabel[selectedCog];
+  const ref = useRef(null);
+  useOutsideClick(ref, props.onClose);
+
+  const trackOurConfigName = selectedCog ? trackConfigNames[selectedCog] : '';
+  const trackOurConfigLabel = selectedCog ? trackConfigLabel[selectedCog] : '';
 
   const nameIcon = trackOurConfigName
     ? tracksSliderOnIcon
@@ -104,7 +112,7 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
   };
 
   return (
-    <section className={styles.trackConfig}>
+    <section className={styles.trackConfig} ref={ref}>
       <dl>
         <dd>
           <Checkbox
