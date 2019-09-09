@@ -6,7 +6,7 @@ use model::train::{ TrainContext, TravellerId };
 use tácode::run_tánaiste_makeshapes;
 
 pub struct ItemUnpackerContext {
-    scheduled: HashMap<TravellerId,Box<UnpackedSubassemblyConsumer>>,
+    scheduled: HashMap<TravellerId,Box<dyn UnpackedSubassemblyConsumer>>,
     unpacked_item: UnpackedProduct
 }
 
@@ -18,7 +18,7 @@ impl ItemUnpackerContext {
         }
     }
 
-    pub fn schedule(&mut self, t: &TravellerId, ic: Box<UnpackedSubassemblyConsumer>) {
+    pub fn schedule(&mut self, t: &TravellerId, ic: Box<dyn UnpackedSubassemblyConsumer>) {
         self.scheduled.insert(t.clone(),ic);
     }
 
@@ -61,7 +61,7 @@ impl ItemUnpacker {
         }
     }
 
-    pub fn schedule(&mut self, t: &TravellerId, ic: Box<UnpackedSubassemblyConsumer>) {
+    pub fn schedule(&mut self, t: &TravellerId, ic: Box<dyn UnpackedSubassemblyConsumer>) {
         let context = t.get_carriage_id().get_train_id().get_context();
         let context_up = self.contexts.entry(context.clone()).or_insert_with(|| ItemUnpackerContext::new());
         context_up.schedule(t,ic);

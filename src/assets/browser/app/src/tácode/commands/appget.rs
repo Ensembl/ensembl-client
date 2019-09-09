@@ -20,7 +20,7 @@ pub struct AppGetI(pub TáContext);
 
 impl Instruction for AppGetI {
     fn signature(&self) -> Signature { Signature::new("appget","") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(AppGet(self.0.clone()))
     }
 }

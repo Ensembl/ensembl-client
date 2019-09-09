@@ -83,7 +83,7 @@ impl Object for ObjectAttrib {
         self.get_f32_slice(batch).unwrap().extend(values);        
     }
 
-    fn add_data(&mut self, batch: &DataBatch, values: &[&Input]) {
+    fn add_data(&mut self, batch: &DataBatch, values: &[&dyn Input]) {
         let dest: &mut Vec<f32> = self.get_f32_slice(batch).unwrap();
         for v in values {
             v.to_f32(dest);

@@ -65,7 +65,7 @@ pub enum DrawingSpec {
 }
 
 impl DrawingSpec {
-    pub fn to_artist(&self) -> Rc<Artist> {
+    pub fn to_artist(&self) -> Rc<dyn Artist> {
         match self {
             DrawingSpec::Text(t) => Rc::new(t.clone()),
             DrawingSpec::Bitmap(b) => Rc::new(b.clone()),

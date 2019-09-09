@@ -133,7 +133,7 @@ impl Compositor {
         &mut self.wanted_componentset
     }
     
-    pub fn redraw_where_needed(&mut self, printer: &mut Printer) {
+    pub fn redraw_where_needed(&mut self, printer: &mut dyn Printer) {
         let mut zmls = ZMenuLeafSet::new();
         self.with_current_train(|train| train.redraw_where_needed(printer,&mut zmls));
         self.with_transition_train(|train| train.redraw_where_needed(printer,&mut zmls));

@@ -23,7 +23,7 @@ pub enum Phase {
 
 pub trait Source {
     fn declare(&self, _adata: &GPUSpec, _phase: &Phase) -> String { String::new() }
-    fn create(&self, _prog: Rc<glprog>) -> Option<(Option<&str>,Box<Object>)> {
+    fn create(&self, _prog: Rc<glprog>) -> Option<(Option<&str>,Box<dyn Object>)> {
         None
     }
     fn statement(&self, _phase: &Phase) -> String { String::new() }
@@ -70,7 +70,7 @@ impl Source for Uniform {
         }
     }
 
-    fn create(&self, prog: Rc<glprog>) -> Option<(Option<&str>,Box<Object>)> {
+    fn create(&self, prog: Rc<glprog>) -> Option<(Option<&str>,Box<dyn Object>)> {
         let gt = ObjectUniform::new(&prog,&self.name);
         Some((Some(&self.name),Box::new(gt)))
     }
@@ -99,7 +99,7 @@ impl Source for Attribute {
             self.name).to_string()
     }
 
-    fn create(&self, prog: Rc<glprog>) -> Option<(Option<&str>,Box<Object>)> {
+    fn create(&self, prog: Rc<glprog>) -> Option<(Option<&str>,Box<dyn Object>)> {
         let gt = ObjectAttrib::new(&prog,&self.name,self.size.to_num());
         Some((Some(&self.name),Box::new(gt)))
     }
@@ -173,7 +173,7 @@ impl Canvas {
 }
 
 impl Source for Canvas {
-    fn create(&self, _prog: Rc<glprog>) -> Option<(Option<&str>,Box<Object>)> {
+    fn create(&self, _prog: Rc<glprog>) -> Option<(Option<&str>,Box<dyn Object>)> {
         Some((None,Box::new(ObjectCanvasTexture::new())))
     }
 }
@@ -189,12 +189,12 @@ impl Main {
 }
 
 impl Source for Main {
-    fn create(&self, _prog: Rc<glprog>) -> Option<(Option<&str>,Box<Object>)> {
+    fn create(&self, _prog: Rc<glprog>) -> Option<(Option<&str>,Box<dyn Object>)> {
         Some((None,Box::new(ObjectMain::new(self.method))))
     }
 }
 
-fn declare(gpuspec: &GPUSpec, variables: &Vec<Rc<Source>>, phase: &Phase) -> String {
+fn declare(gpuspec: &GPUSpec, variables: &Vec<Rc<dyn Source>>, phase: &Phase) -> String {
     let mut out = String::new();
     for v in variables {
         out += &v.declare(gpuspec,phase)[..];
@@ -202,7 +202,7 @@ fn declare(gpuspec: &GPUSpec, variables: &Vec<Rc<Source>>, phase: &Phase) -> Str
     out
 }
 
-fn statements(variables: &Vec<Rc<Source>>, phase: &Phase) -> String {
+fn statements(variables: &Vec<Rc<dyn Source>>, phase: &Phase) -> String {
     let mut out = String::new();
     for v in variables {
         out += &v.statement(phase)[..];
@@ -211,7 +211,7 @@ fn statements(variables: &Vec<Rc<Source>>, phase: &Phase) -> String {
 }
 
 pub struct ProgramSource {
-    pub uniforms: Vec<Rc<Source>>
+    pub uniforms: Vec<Rc<dyn Source>>
 }
 
 fn make_shader(ctx: &glctx, program: &glprog, kind: u32, src: &str) {
@@ -222,14 +222,14 @@ fn make_shader(ctx: &glctx, program: &glprog, kind: u32, src: &str) {
 }
 
 
-fn make_source(gpuspec: &GPUSpec, uniforms: &Vec<Rc<Source>>, frag: &Phase) -> String {
+fn make_source(gpuspec: &GPUSpec, uniforms: &Vec<Rc<dyn Source>>, frag: &Phase) -> String {
     format!("{}\n\nvoid main() {{\n{}\n}}",
         declare(gpuspec,uniforms,&frag),
         statements(uniforms,&frag))
 }
 
 impl ProgramSource {
-    pub fn new(src: Vec<Rc<Source>>) -> ProgramSource {
+    pub fn new(src: Vec<Rc<dyn Source>>) -> ProgramSource {
         ProgramSource { uniforms: src }
     }
 

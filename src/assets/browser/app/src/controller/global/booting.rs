@@ -57,7 +57,7 @@ impl Booting {
     }
 
     #[cfg(not(deploy))]
-    fn bling(&self) -> Box<Bling> {
+    fn bling(&self) -> Box<dyn Bling> {
         if self.debug {
             Box::new(DebugBling::new(create_interactors()))
         } else { 
@@ -66,13 +66,13 @@ impl Booting {
     }
     
     #[cfg(deploy)]
-    fn bling(&self) -> Box<Bling> {
+    fn bling(&self) -> Box<dyn Bling> {
         Box::new(NoBling::new())
     }
     
     pub fn boot(&mut self, config: &BackendConfig) {
         let mut global = self.global.clone();
-        let bling : Box<Bling> = self.bling();
+        let bling : Box<dyn Bling> = self.bling();
         let debug_url = config.get_debug_url();
         let blackbox = self.make_blackbox(debug_url);
         let ar = AppRunner::new(

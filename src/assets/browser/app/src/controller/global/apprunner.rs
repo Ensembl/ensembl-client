@@ -28,7 +28,7 @@ pub struct AppRunnerImpl {
     g: GlobalWeak,
     counter: Counter,
     el: HtmlElement,
-    bling: Box<Bling>,
+    bling: Box<dyn Bling>,
     app: Arc<Mutex<App>>,
     controls: Vec<Box<EventControl<()>>>,
     sched_group: SchedulerGroup,
@@ -56,7 +56,7 @@ pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
 impl AppRunner {
-    pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<Bling>, config_url: &Url, config: &BackendConfig, debug_reporter: BlackBoxDriver, key: &str) -> AppRunner {
+    pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<dyn Bling>, config_url: &Url, config: &BackendConfig, debug_reporter: BlackBoxDriver, key: &str) -> AppRunner {
         let browser_el : HtmlElement = bling.apply_bling(&el);
         let tc = Tácode::new();
         let counter = {

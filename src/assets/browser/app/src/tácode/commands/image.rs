@@ -75,7 +75,7 @@ pub struct ImageI(pub TáContext);
 
 impl Instruction for AssetI {
     fn signature(&self) -> Signature { Signature::new("asset","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Asset(self.0.clone(),args[0].reg(),args[1].reg(),
                       args[2].reg()))
     }
@@ -83,7 +83,7 @@ impl Instruction for AssetI {
 
 impl Instruction for ImageI {
     fn signature(&self) -> Signature { Signature::new("image","rrrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Image(self.0.clone(),args[0].reg(),args[1].reg(),
                       args[2].reg(),args[3].reg()))
     }

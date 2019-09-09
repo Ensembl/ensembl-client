@@ -174,7 +174,7 @@ impl Train {
         }
     }
 
-    pub fn redraw_where_needed(&mut self, printer: &mut Printer, zmls: &mut ZMenuLeafSet) {
+    pub fn redraw_where_needed(&mut self, printer: &mut dyn Printer, zmls: &mut ZMenuLeafSet) {
         for carriage in self.carriages.values_mut() {
             carriage.redraw_where_needed(printer,zmls);
         }

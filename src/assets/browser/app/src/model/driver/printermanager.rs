@@ -9,12 +9,12 @@ use types::Dot;
 use super::{ DriverTraveller, Printer };
 
 struct PrinterManagerImpl {
-    printer: Box<Printer>,
+    printer: Box<dyn Printer>,
     leaf_count: HashMap<CarriageId,u32>
 }
 
 impl PrinterManagerImpl {
-    fn new(printer: Box<Printer>) -> PrinterManagerImpl {
+    fn new(printer: Box<dyn Printer>) -> PrinterManagerImpl {
         PrinterManagerImpl {
             printer,
             leaf_count: HashMap::new()
@@ -26,7 +26,7 @@ impl PrinterManagerImpl {
 pub struct PrinterManager(Rc<RefCell<PrinterManagerImpl>>);
 
 impl PrinterManager {
-    pub fn new(printer: Box<Printer>) -> PrinterManager {
+    pub fn new(printer: Box<dyn Printer>) -> PrinterManager {
         PrinterManager(Rc::new(RefCell::new(PrinterManagerImpl::new(printer))))
     }
 }
@@ -74,7 +74,7 @@ impl Printer for PrinterManager {
         }
     }
         
-    fn make_driver_traveller(&mut self, traveller_id: &TravellerId) -> Box<DriverTraveller> {
+    fn make_driver_traveller(&mut self, traveller_id: &TravellerId) -> Box<dyn DriverTraveller> {
         self.0.borrow_mut().printer.make_driver_traveller(traveller_id)
     }
     

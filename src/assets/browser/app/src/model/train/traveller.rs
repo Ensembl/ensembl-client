@@ -15,7 +15,7 @@ pub struct TravellerImpl {
     done: bool,
     prev_value: bool,
     cur_value: bool,
-    visuals: Box<DriverTraveller>,
+    visuals: Box<dyn DriverTraveller>,
     zml: ZMenuLeaf,
     id: Rc<TravellerId>
 }

@@ -68,7 +68,7 @@ impl Carriage {
         zml.redrawn();
     }
     
-    pub fn redraw_where_needed(&mut self, printer: &mut Printer, zmls: &mut ZMenuLeafSet) {
+    pub fn redraw_where_needed(&mut self, printer: &mut dyn Printer, zmls: &mut ZMenuLeafSet) {
         let mut zml = ZMenuLeaf::new(&self.id.get_leaf());
         if self.needs_rebuild {
             self.needs_rebuild = false;

@@ -101,7 +101,7 @@ fn cs_to_patina(val: f64) -> PatinaSpec {
     }
 }
 
-fn make_rectangle(meta: &Vec<f64>) -> Option<Box<TypeToShape>> {
+fn make_rectangle(meta: &Vec<f64>) -> Option<Box<dyn TypeToShape>> {
     Some(Box::new(PinRectTypeSpec {
         sea_x: sea(meta,2),
         sea_y: sea(meta,4),
@@ -112,14 +112,14 @@ fn make_rectangle(meta: &Vec<f64>) -> Option<Box<TypeToShape>> {
     }))
 }
 
-fn make_stretchtangle(meta: &Vec<f64>) -> Option<Box<TypeToShape>> {
+fn make_stretchtangle(meta: &Vec<f64>) -> Option<Box<dyn TypeToShape>> {
     Some(Box::new(StretchRectTypeSpec {
         hollow: meta[0] == 2.,
         spot: cs_to_patina(meta[1])
     }))
 }
 
-fn make_texture(meta: &Vec<f64>) -> Option<Box<TypeToShape>> {
+fn make_texture(meta: &Vec<f64>) -> Option<Box<dyn TypeToShape>> {
     Some(Box::new(TextureTypeSpec {
         sea_x: sea_option(meta,2),
         sea_y: sea_option(meta,4),
@@ -131,11 +131,11 @@ fn make_texture(meta: &Vec<f64>) -> Option<Box<TypeToShape>> {
     }))
 }
 
-fn make_wiggle(_meta: &Vec<f64>) -> Option<Box<TypeToShape>> {
+fn make_wiggle(_meta: &Vec<f64>) -> Option<Box<dyn TypeToShape>> {
     Some(Box::new(StretchWiggleTypeSpec{}))
 }
 
-fn make_meta(meta: &Vec<f64>) -> Option<Box<TypeToShape>> {
+fn make_meta(meta: &Vec<f64>) -> Option<Box<dyn TypeToShape>> {
     match meta[0] as i32 {
         0 => make_rectangle(meta),
         1|2 => make_stretchtangle(meta),
@@ -145,7 +145,7 @@ fn make_meta(meta: &Vec<f64>) -> Option<Box<TypeToShape>> {
     }
 }
 
-pub fn build_meta(meta_iter: &mut Iterator<Item=&f64>) -> Option<Box<TypeToShape>> {
+pub fn build_meta(meta_iter: &mut Iterator<Item=&f64>) -> Option<Box<dyn TypeToShape>> {
     let mut meta = Vec::<f64>::new();
     let first = *meta_iter.next().unwrap();
     meta.push(first);

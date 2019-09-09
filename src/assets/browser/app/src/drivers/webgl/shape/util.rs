@@ -36,7 +36,7 @@ pub fn rectangle_c(b: DataBatch, pdata: &mut ProgramAttribs,
     }
 }
 
-pub fn poly_p(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[&Input]) {
+pub fn poly_p(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[&dyn Input]) {
     if let Some(obj) = pdata.get_object(key) {
         obj.add_data(&b,p);
     }

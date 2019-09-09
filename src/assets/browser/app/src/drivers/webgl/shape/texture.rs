@@ -86,7 +86,7 @@ impl GLShape for TextureSpec {
         Some(ProgramType(gt,PTMethod::Triangle,PTSkin::Texture))
     }
 
-    fn get_artist(&self) -> Option<Rc<Artist>> { 
+    fn get_artist(&self) -> Option<Rc<dyn Artist>> { 
         Some(self.aspec.to_artist())
     }
 }

@@ -30,5 +30,5 @@ pub trait Printer {
     
     fn add_carriage(&mut self, id: &CarriageId);
     fn remove_carriage(&mut self, id: &CarriageId);
-    fn make_driver_traveller(&mut self, ti: &TravellerId) -> Box<DriverTraveller>;
+    fn make_driver_traveller(&mut self, ti: &TravellerId) -> Box<dyn DriverTraveller>;
 }
