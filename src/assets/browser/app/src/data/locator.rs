@@ -15,7 +15,7 @@ pub struct LocateConsumer {
 }
 
 impl LocateConsumer {
-    pub fn new(stick_manager: &CombinedStickManager, id: &str, mut consumer: Box<FnOnce(&str,&Stick,f64,f64)>) -> LocateConsumer {
+    pub fn new(stick_manager: &CombinedStickManager, id: &str, consumer: Box<FnOnce(&str,&Stick,f64,f64)>) -> LocateConsumer {
         LocateConsumer {
             stick_manager: stick_manager.clone(),
             id: id.to_string(),
@@ -65,7 +65,7 @@ impl Locator {
         }
     }
 
-    pub fn locate(&self, id: &str, mut consumer: Box<FnOnce(&str,&Stick,f64,f64)>) -> Result<(),String> {
+    pub fn locate(&self, id: &str, consumer: Box<FnOnce(&str,&Stick,f64,f64)>) -> Result<(),String> {
         let consumer = Box::new(LocateConsumer::new(&self.stick_manager,id,consumer));
         let xhr = XmlHttpRequest::new();
         if let Some(ref url) = self.url {

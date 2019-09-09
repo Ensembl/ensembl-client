@@ -69,7 +69,6 @@ impl TrainManagerImpl {
     
     pub fn update_report(&self, report: &Report) {
         // XXX: TOO SOON!
-        let mut at_focus = false;
         if self.desired.is_ready() {
             let stick = self.desired.get_stick();
             report.set_status("a-stick",&stick.get_name());
@@ -534,11 +533,11 @@ impl TrainManager {
         self.0.lock().unwrap().get_prop_trans()
     }
     
-    pub fn with_current_train<F>(&mut self, mut cb: F) where F: FnMut(&mut Train) {
+    pub fn with_current_train<F>(&mut self, cb: F) where F: FnMut(&mut Train) {
         self.0.lock().unwrap().with_current_train(cb)
     }
 
-    pub fn with_transition_train<F>(&mut self, mut cb: F) where F: FnMut(&mut Train) {
+    pub fn with_transition_train<F>(&mut self, cb: F) where F: FnMut(&mut Train) {
         self.0.lock().unwrap().with_transition_train(cb)
     }
 

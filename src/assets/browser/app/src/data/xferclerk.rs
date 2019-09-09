@@ -6,5 +6,5 @@ pub trait XferConsumer {
 }
 
 pub trait XferClerk {
-    fn satisfy(&mut self, po: &PurchaseOrder, prime: bool, consumer: Box<XferConsumer>);
+    fn satisfy(&mut self, po: &PurchaseOrder, prime: bool, consumer: Box<dyn XferConsumer>);
 }

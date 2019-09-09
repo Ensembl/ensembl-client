@@ -184,7 +184,7 @@ impl DirectEventListener {
             let el : Option<HtmlElement> = el.ok();
             if let Some(el) = el {
                 if let Some(ar) = g.find_app(&el) {
-                    let mut app = ar.state();
+                    let app = ar.state();
                     run_direct_events(&mut app.lock().unwrap(),name,j);
                 }                
             }

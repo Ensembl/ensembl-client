@@ -137,7 +137,7 @@ impl Jumper {
             app.intend_here();
             self.zhoosh = None;
         }
-        let mut train_manager = app.get_window().get_train_manager();
+        let train_manager = app.get_window().get_train_manager();
         let desired_stick = train_manager.get_desired_stick();
         if let (Some(src_stick),Some(src_position)) = (train_manager.get_desired_stick(),train_manager.get_desired_position()) {
             if !self.is_offscreen_jump(&src_stick,&src_position,stick,dest_pos,dest_size) {

@@ -127,7 +127,7 @@ fn setup_testcard_selector(a: &Arc<Mutex<App>>, el: &HtmlElement) {
     }});
 }
 
-fn event_button(dii: &mut Vec<Box<DebugInteractor>>, name: &str, egg: Option<&str>, json: JSONValue) {
+fn event_button(dii: &mut Vec<Box<dyn DebugInteractor>>, name: &str, egg: Option<&str>, json: JSONValue) {
     let bi = ButtonDebugInteractor::new(name,egg,move |a| {
         let canv: HtmlElement = {
             a.lock().unwrap().get_canvas_element().clone().into()
@@ -137,8 +137,8 @@ fn event_button(dii: &mut Vec<Box<DebugInteractor>>, name: &str, egg: Option<&st
     dii.push(bi);
 }
 
-pub fn create_interactors() -> Vec<Box<DebugInteractor>> {
-    let mut dii = Vec::<Box<DebugInteractor>>::new();
+pub fn create_interactors() -> Vec<Box<dyn DebugInteractor>> {
+    let mut dii = Vec::<Box<dyn DebugInteractor>>::new();
     event_button(&mut dii,"shimmy",None,json!({ "move_left_px": 120, "move_down_screen": 0.25, "zoom_by": 0.1 }));
     event_button(&mut dii,"left",Some("h"),json!({ "move_left_px": 50 }));
     event_button(&mut dii,"right",Some("l"),json!({ "move_right_px": 50 }));
@@ -249,11 +249,11 @@ impl DebugInteractor for ButtonDebugInteractor {
 
 pub struct DebugBling {
     mb: NoBling,
-    dii: Vec<Box<DebugInteractor>>
+    dii: Vec<Box<dyn DebugInteractor>>
 }
 
 impl DebugBling {
-    pub fn new(dii: Vec<Box<DebugInteractor>>) -> DebugBling {
+    pub fn new(dii: Vec<Box<dyn DebugInteractor>>) -> DebugBling {
         DebugBling { 
             mb: NoBling::new(),
             dii

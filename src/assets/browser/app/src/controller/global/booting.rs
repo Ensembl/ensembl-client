@@ -28,15 +28,14 @@ pub struct Booting {
 impl Booting {
     pub fn new(g: &mut Global, http_manager: &HttpManager, config_url: &Url,
             el: &HtmlElement, key: &str, debug: bool) -> Booting {
-        let mut out = Booting {
+         Booting {
             global: g.clone(),
             http_manager: http_manager.clone(),
             config_url: config_url.clone(),
             el: el.clone(),
             key: key.to_string(),
             debug,
-        };
-        out
+        }
     }
     
     #[cfg(any(not(deploy),console))]

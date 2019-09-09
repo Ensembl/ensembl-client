@@ -87,7 +87,7 @@ impl App {
     }
 
     fn populate_products(&mut self) {    
-        let mut window = &mut self.window;
+        let window = &mut self.window;
         let track_names : Vec<String> = window.get_backend_config().list_tracks().map(|s| s.to_string()).collect();
         for name in &track_names {
             let product = build_product(window,name);

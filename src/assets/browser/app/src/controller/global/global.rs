@@ -88,7 +88,7 @@ impl GlobalImpl {
         self.ar_init.push(cb);
     }
 
-    pub fn register_app(&mut self, key: &str, mut app_runner: AppRunner) {
+    pub fn register_app(&mut self, key: &str, app_runner: AppRunner) {
         for ari in &mut self.ar_init {
             ari(&app_runner.clone());
         }
@@ -173,7 +173,7 @@ impl Global {
         self.0.borrow_mut().register_app(key,ar);
     }
 
-    pub fn register_ar_init(&mut self, mut cb: Box<FnMut(&AppRunner)>) {
+    pub fn register_ar_init(&mut self, cb: Box<FnMut(&AppRunner)>) {
         self.0.borrow_mut().register_ar_init(cb);
     }
 
@@ -204,7 +204,7 @@ pub fn setup_global() {
     domutil::add_attr(&body,"class","browser-app-ready");
     domutil::remove_attr(&body.into(),"class","browser-app-not-ready");
     let mut eqm = register_direct_events(&g);
-    let mut eqm2 = eqm.clone();
+    let eqm2 = eqm.clone();
     g.register_ar_init(Box::new(move |ar| eqm.register_ar(&ar)));
     /* setup ping/pong */
     activate();

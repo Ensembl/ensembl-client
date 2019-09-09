@@ -121,11 +121,11 @@ impl Compositor {
         self.updated = true;
     }
 
-    pub fn with_current_train<F>(&mut self, mut cb: F) where F: FnMut(&mut Train) {
+    pub fn with_current_train<F>(&mut self, cb: F) where F: FnMut(&mut Train) {
         self.window.get_train_manager().with_current_train(cb)
     }
 
-    pub fn with_transition_train<F>(&mut self, mut cb: F) where F: FnMut(&mut Train) {
+    pub fn with_transition_train<F>(&mut self, cb: F) where F: FnMut(&mut Train) {
         self.window.get_train_manager().with_transition_train(cb)
     }
     

@@ -45,7 +45,7 @@ impl EventQueue {
         if let Some(ref mut ar) = self.ar {
             let el = ar.get_el();
             if domutil::in_page(&el) {
-                let mut app = ar.state();
+                let app = ar.state();
                 for aset in &mut self.queue {
                     aset.run(&mut app.lock().unwrap());
                 }
@@ -109,7 +109,7 @@ impl EventQueueManagerImpl {
     }
 
     fn merge(&mut self, new_eq: &mut EventQueue, id: &str) {
-        let mut queues = &mut self.queues;
+        let queues = &mut self.queues;
         let mut removed = HashSet::new();
         for (sel,eq) in queues.iter_mut() {
             if id_match(sel,&id) {

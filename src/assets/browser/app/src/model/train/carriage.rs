@@ -14,13 +14,12 @@ pub struct Carriage {
 
 impl Carriage {
     pub(in super) fn new(leaf: &Leaf, train_id: &TrainId) -> Carriage {
-        let mut out = Carriage {
+        Carriage {
             travellers: Vec::<Traveller>::new(),
             known_done: false,
             needs_rebuild: false,
             id: CarriageId::new(leaf,train_id)
-        };
-        out
+        }
     }
     
     pub fn get_id(&self) -> &CarriageId { &self.id }

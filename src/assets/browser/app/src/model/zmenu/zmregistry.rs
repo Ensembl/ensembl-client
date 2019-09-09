@@ -57,7 +57,7 @@ impl ZMenuRegistry {
         ZMenuRegistry(Arc::new(Mutex::new(ZMenuRegistryImpl::new())))
     }
     
-    pub fn add_leafset(&mut self, mut zmls: ZMenuLeafSet) {
+    pub fn add_leafset(&mut self, zmls: ZMenuLeafSet) {
         self.0.lock().unwrap().add_leafset(zmls);
     }
     

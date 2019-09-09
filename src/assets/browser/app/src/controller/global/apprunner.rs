@@ -115,7 +115,7 @@ impl AppRunner {
         let mut ar = self.clone();
         ok!(self.0.lock()).sched_group.add(name,Box::new(move |sr| {
             let oas = {
-                let mut imp = ok!(ar.0.lock());
+                let imp = ok!(ar.0.lock());
                 {
                     let app_ref = imp.app.clone();
                     let mut app = app_ref.lock().unwrap();
@@ -243,13 +243,13 @@ impl AppRunner {
     }
 
     pub fn find_app(&mut self, el: &HtmlElement) -> bool {
-        let mut imp = self.0.lock().unwrap();
+        let imp = self.0.lock().unwrap();
         domutil::ancestor(el,&imp.el) || domutil::ancestor(&imp.el,el)
     }
 
     pub fn jump(&mut self, stick: &str, dest_pos: f64, dest_size: f64) {
         let mut imp = self.0.lock().unwrap();
-        let mut jumper = imp.jumper.clone();
+        let jumper = imp.jumper.clone();
         jumper.borrow_mut().jump(&mut imp.app.lock().unwrap(), stick, dest_pos, dest_size);
     }
 }
