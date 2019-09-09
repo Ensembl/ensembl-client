@@ -20,8 +20,8 @@
 .previewDownloadHeader {
   border-collapse: collapse;
   min-width: 50%;
-  border-bottom: 2px solid $ens-grey;
-  color: $ens-grey;
+  border-bottom: 2px solid $grey;
+  color: $grey;
 
   td {
     padding: 8px 0 8px 8px;
@@ -37,7 +37,7 @@
 }
 
 .changeLink {
-  color: $ens-blue;
+  color: $blue;
   cursor: pointer;
   margin-top: 20px;
 }

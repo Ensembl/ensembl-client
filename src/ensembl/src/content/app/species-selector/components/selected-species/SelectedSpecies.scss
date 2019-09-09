@@ -8,7 +8,7 @@ $deleteButtonPadding: 8px 20px 8px 28px;
   position: relative;
   display: inline-block;
   padding: $selectedSpeciesPadding;
-  background-color: $ens-black;
+  background-color: $black;
   border-radius: $selectedSpeciesBorderRadius;
   line-height: 1;
   cursor: pointer;
@@ -36,7 +36,7 @@ $deleteButtonPadding: 8px 20px 8px 28px;
 }
 
 .selectedSpeciesDisabled {
-  background-color: $ens-grey;
+  background-color: $grey;
 }
 
 .selectedSpeciesOverlay {
@@ -48,7 +48,7 @@ $deleteButtonPadding: 8px 20px 8px 28px;
   height: 100%;
   line-height: 1;
   background: white;
-  border: 1px solid $ens-blue;
+  border: 1px solid $blue;
   border-radius: $selectedSpeciesBorderRadius;
   cursor: default;
 
@@ -64,7 +64,7 @@ $deleteButtonPadding: 8px 20px 8px 28px;
     padding: $selectedSpeciesPadding;
     padding-left: 15px;
     left: 0;
-    color: $ens-blue;
+    color: $blue;
   }
 
   .clearButtonContainer {

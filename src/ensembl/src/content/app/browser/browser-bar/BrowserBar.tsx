@@ -23,7 +23,7 @@ import {
   getGenomeSelectorActive,
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObject,
-  isFocusObjectInDefaultPosition
+  isFocusObjectPositionDefault
 } from '../browserSelectors';
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 import {
@@ -260,7 +260,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
   isTrackPanelModalOpened: getIsTrackPanelModalOpened(state),
   isTrackPanelOpened: getIsTrackPanelOpened(state),
   selectedTrackPanelTab: getSelectedTrackPanelTab(state),
-  isFocusObjectInDefaultPosition: isFocusObjectInDefaultPosition(state)
+  isFocusObjectInDefaultPosition: isFocusObjectPositionDefault(state)
 });
 
 const mapDispatchToProps: DispatchProps = {

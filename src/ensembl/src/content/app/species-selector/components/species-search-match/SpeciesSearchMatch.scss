@@ -1,13 +1,13 @@
 @import 'src/styles/common';
 
 .speciesSearchMatch {
-  color: $ens-black;
+  color: $black;
   padding: 2px 24px;
   margin: 0 -23px;
   cursor: pointer;
 
   &:hover {
-    background-color: $ens-light-blue;
+    background-color: $light-blue;
   }
 }
 

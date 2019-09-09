@@ -2,8 +2,8 @@
 
 .browserBar {
   display: flex;
-  background: $ens-light-grey;
-  box-shadow: 0 2px 3px $ens-grey;
+  background: $light-grey;
+  box-shadow: 0 2px 3px $grey;
   height: 32px;
   padding: 6px 0 3px 0;
   position: relative;
@@ -16,7 +16,7 @@
 
   button {
     &.selected {
-      background: $ens-white;
+      background: $white;
     }
   }
 }
@@ -29,7 +29,7 @@
   width: calc(100vw - 356px);
 
   label {
-    color: $ens-dark-grey;
+    color: $dark-grey;
     font-weight: $light;
   }
 
@@ -46,7 +46,7 @@
   }
 
   &.browserInfoGreyed {
-    color: $ens-dark-grey;
+    color: $dark-grey;
   }
 
   dd {
