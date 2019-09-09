@@ -61,12 +61,14 @@ export type BrowserLocationState = Readonly<{
   chrLocations: ChrLocations; // final location of the browser when user stopped dragging/zooming; used to update the url
   actualChrLocations: ChrLocations; // transient locations that change while user is dragging or zooming
   genomeSelectorActive: boolean;
+  isObjectInDefaultPosition: boolean;
 }>;
 
 export const defaultBrowserLocationState: BrowserLocationState = {
   chrLocations,
   actualChrLocations: {},
-  genomeSelectorActive: false
+  genomeSelectorActive: false,
+  isObjectInDefaultPosition: false
 };
 
 export type TrackConfigState = Readonly<{
