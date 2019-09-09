@@ -63,12 +63,12 @@ impl JumpZhoosh {
         if self.phase_start_time.is_none() {
             self.phase_start_time = Some(browser_time());
         }
-        if t - self.phase_start_time.unwrap() < ZHOOSH_PAUSE { return true; }
+        if self.phase != 0 && t - self.phase_start_time.unwrap() < ZHOOSH_PAUSE { return true; }
         let zoom_first = self.dest.1 < self.start.1;
         let mut actions = Vec::new();
         let mut more = true;
         let phase_more = match self.phase {
-            0 => self.stick(t,&mut actions),
+            0 => { if self.stick(t,&mut actions) { more = false; } false },
             1 => if zoom_first { self.zoom(t,&mut actions) } else { self.centre(t,&mut actions) },
             2 => if zoom_first { self.centre(t,&mut actions) } else { self.zoom(t,&mut actions) },
             _ => { actions.push(Action::Settled); more = false; true }
