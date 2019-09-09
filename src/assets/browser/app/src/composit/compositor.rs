@@ -1,17 +1,16 @@
 use std::collections::HashSet;
 
-use composit::{ Stick, Scale, ComponentSet, StateManager, AllLandscapes };
-use model::driver::{ PrinterManager, Printer };
-use model::stage::{ Screen, Position };
+use composit::{ Stick, Scale, ComponentSet, StateManager };
+use model::driver::{ Printer };
+use model::stage::{ Screen };
 use model::supply::{ Product };
-use model::train::{ Train, TrainContext, TrainManager, TravellerCreator };
+use model::train::{ Train, TravellerCreator };
 use model::zmenu::{ ZMenuRegistry, ZMenuLeafSet, ZMenuIntersection };
 
 use controller::global::{ AppRunner, WindowState };
-use controller::input::Action;
 use controller::output::Report;
-use data::{ Psychic, PsychicPacer, XferCache, XferClerk, XferConsumer };
-use types::{ DOWN, Dot };
+use data::{ Psychic, PsychicPacer, XferCache };
+use types::Dot;
 
 const MS_PER_UPDATE : f64 = 100.;
 const MS_PRIME_DELAY: f64 = 2000.;

@@ -1,7 +1,5 @@
-use std::sync::{ Arc, Mutex };
-
 use stdweb::unstable::TryInto;
-use stdweb::web::{ HtmlElement, Element, IHtmlElement, window };
+use stdweb::web::HtmlElement;
 use url::Url;
 
 use serde_json::Value as JSONValue;
@@ -10,7 +8,7 @@ use controller::input::Action;
 use debug::DEMO_SOURCES;
 
 use dom::domutil;
-use dom::event::{ EventListener, EventType, EventData, EventControl, Target, CustomData, ICustomEvent, IMessageEvent };
+use dom::event::{ EventListener, EventType, EventData, EventControl, Target, ICustomEvent, IMessageEvent };
 use dom::AppEventData;
 use super::eventutil::{ extract_element, parse_message };
 

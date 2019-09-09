@@ -1,8 +1,5 @@
 use std::fmt;
 use std::hash::{ Hash, Hasher };
-use std::rc::Rc;
-
-use composit::{ StateExpr, StateManager, StateFixed };
 
 use super::Product;
 

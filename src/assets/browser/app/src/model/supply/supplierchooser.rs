@@ -1,8 +1,5 @@
 use std::collections::HashMap;
 
-use model::item::UnpackedProduct;
-use model::train::Traveller;
-
 use super::{ Supplier, PurchaseOrder };
 
 pub struct SupplierChooser {

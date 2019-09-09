@@ -1,11 +1,10 @@
 use std::sync::{ Arc, Mutex };
 use std::collections::{ HashMap, HashSet };
 use composit::Leaf;
-use controller::input::Action;
 use model::stage::{ Screen, Position };
 use types::Dot;
 
-use super::{ ZMenuLeaf, ZMenuLeafSet, ZMenuFeatureTmpl, ZMenuData, ZMenuIntersection };
+use super::{ ZMenuLeaf, ZMenuLeafSet, ZMenuData, ZMenuIntersection };
 
 pub struct ZMenuRegistryImpl {
     zml: HashMap<Leaf,ZMenuLeaf>,

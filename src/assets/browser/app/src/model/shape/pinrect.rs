@@ -1,13 +1,10 @@
-use std::fmt::Debug;
-
 use types::{ 
-    CLeaf, AxisSense, Rect, Edge, RLeaf, area_size, cleaf, cpixel,
-    Placement, XPosition, YPosition, Dot
+    AxisSense, Rect, area_size, cpixel, Placement, XPosition, YPosition, Dot
 };
 use model::shape::{ 
     ColourSpec, ShapeSpec, Facade, FacadeType, ShapeInstanceDataType,
-    ShapeShortInstanceData, TypeToShape, GenericShape, PatinaSpec,
-    ZPosition, RectSpec, RectPosition, ZMenuRectSpec
+    ShapeShortInstanceData, TypeToShape, PatinaSpec, ZPosition, RectSpec,
+    RectPosition, ZMenuRectSpec
 };
 
 pub struct PinRectTypeSpec {

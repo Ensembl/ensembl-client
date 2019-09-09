@@ -2,9 +2,8 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use composit::{ Leaf, Compositor };
-use model::stage::{ Screen, Position };
-use model::supply::PurchaseOrder;
+use composit::Compositor;
+use model::stage::Screen;
 use model::train::{ CarriageId, TravellerId };
 use types::Dot;
 use super::{ DriverTraveller, Printer };

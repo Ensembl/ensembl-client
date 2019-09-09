@@ -4,7 +4,7 @@ use std::hash::Hasher;
 use std::collections::hash_map::DefaultHasher;
 
 use drivers::webgl::{ StretchTextureSpec, Artist };
-use types::{ Colour, Rect, Placement };
+use types::{ Colour,Placement };
 use super::{
     PinPolySpec, StretchWiggle, RectSpec, BoxSpec, BitmapArtist,
     CollageArtist, TextArtist, TextureSpec, ZMenuRectSpec

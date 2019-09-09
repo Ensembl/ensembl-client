@@ -1,11 +1,8 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
-use std::collections::hash_map::Entry;
 use std::rc::{ Rc, Weak };
-use std::sync::{ Arc, Mutex };
 
-use stdweb::unstable::TryInto;
-use stdweb::web::{ HtmlElement, Element, IHtmlElement, window };
+use stdweb::web::{ HtmlElement, window };
 use url::Url;
 use util::{ set_instance_id, get_instance_id };
 
@@ -17,7 +14,6 @@ use controller::output::Counter;
 use controller::scheduler::{ Scheduler, SchedulerGroup };
 use data::{ BackendConfigBootstrap, HttpManager };
 use dom::domutil;
-use dom::domutil::browser_time;
 
 use super::activate::activate;
 

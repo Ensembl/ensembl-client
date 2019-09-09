@@ -1,12 +1,9 @@
-use std::sync::{ Arc, Mutex };
-
 use composit::{ Leaf, StateManager };
 use data::XferConsumer;
-use model::driver::{ Printer, PrinterManager };
+use model::driver::Printer;
 use model::item::{ DeliveredItem, ItemUnpacker };
 use model::zmenu::{ ZMenuLeaf, ZMenuLeafSet };
 use super::{ CarriageId, TrainId, Traveller };
-use super::travellercreator::TravellerCreator;
 
 pub struct Carriage {
     travellers: Vec<Traveller>,

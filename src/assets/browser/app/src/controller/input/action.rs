@@ -1,4 +1,4 @@
-use types::{ Move, Units, Axis, Dot, cdfraction, LEFT, RIGHT, CPixel, AdLib };
+use types::{ Move, Units, Axis, Dot, CPixel };
 use controller::global::App;
 use composit::StickManager;
 

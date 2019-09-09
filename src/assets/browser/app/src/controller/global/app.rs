@@ -5,15 +5,12 @@ use stdweb::unstable::TryInto;
 use url::Url;
 
 use composit::{
-    Compositor, StateManager, StickManager,
-    CombinedStickManager,
-    AllLandscapes
+    Compositor, StateManager, CombinedStickManager, AllLandscapes
 };
-use model::stage::{ Position, Screen };
-use model::supply::{ Product, ProductList };
+use model::stage::Screen;
+use model::supply::ProductList;
 use controller::input::{ Action, actions_run, startup_actions };
-use controller::global::{ AppRunnerWeak, AppRunner };
-use controller::output::{ Report, ViewportReport, ZMenuReports, Counter, Jumper };
+use controller::output::{ Report, ViewportReport, ZMenuReports, Counter };
 use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, Locator, XferCache };
 use debug::add_debug_sticks;
 use dom::domutil;
@@ -23,7 +20,7 @@ use model::stage::Intended;
 use model::supply::build_product;
 use model::train::{ TrainManager, TravellerCreator };
 use tácode::Tácode;
-use types::{ Dot, UP };
+use types::Dot;
 
 use super::WindowState;
 

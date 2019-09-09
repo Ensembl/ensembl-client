@@ -3,8 +3,7 @@ use std::sync::{ Arc, Mutex };
 use model::item::UnpackedProduct;
 use model::supply::Subassembly;
 use tánaiste::{
-    Argument, Command, DataState, Instruction, ProcState, Signature,
-    Value
+    Argument, Command, DataState, Instruction, ProcState, Signature
 };
 
 use tácode::core::{ TáContext, TáTask };

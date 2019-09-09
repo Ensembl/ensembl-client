@@ -1,13 +1,10 @@
 use stdweb::unstable::TryInto;
-use std::sync::{ Arc, Mutex };
 
-use serde_json::from_str;
 use serde_json::Value as JSONValue;
-use serde_json::Number as JSONNumber;
 use stdweb::web::{ Element, HtmlElement };
 
-use controller::global::{ App, AppRunner, Global, GlobalWeak };
-use controller::input::{ actions_run, Action };
+use controller::global::{ App, Global, GlobalWeak };
+use controller::input::Action;
 use dom::event::{ 
     EventListener, EventControl, EventType, EventData, 
     ICustomEvent, Target, IMessageEvent

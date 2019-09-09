@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use std::collections::{ HashMap, HashSet };
+use std::collections::HashMap;
 use std::rc::Rc;
 
 use stdweb::unstable::TryInto;
@@ -7,9 +7,8 @@ use stdweb::web::{ HtmlElement, Element, INode, IElement };
 
 use super::{ GLProgs, GLCarriage, GLTraveller };
 use model::driver::{ DriverTraveller, Printer };
-use model::stage::{ Screen, Position };
+use model::stage::Screen;
 use composit::Compositor;
-use model::supply::{ PurchaseOrder };
 use model::train::{ CarriageId, Train, TravellerId };
 use super::super::drawing::{ AllCanvasAllocator };
 use dom::domutil;

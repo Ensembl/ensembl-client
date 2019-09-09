@@ -1,5 +1,5 @@
 use controller::global::App;
-use controller::input::{ Action, actions_run };
+use controller::input::Action;
 use types::Dot;
 use super::super::support::{ DEBUG_SOURCES, DEMO_SOURCES };
 

@@ -1,26 +1,21 @@
 use std::cell::RefCell;
-use std::collections::{ HashMap, HashSet };
+use std::collections::HashSet;
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
 use controller::global::WindowState;
-use itertools::Itertools;
-use serde_json::Value as SerdeValue;
 use stdweb::unstable::TryInto;
 use stdweb::web::{ ArrayBuffer, TypedArray, XmlHttpRequest, XhrResponseType };
-use tánaiste::Value;
 use url::Url;
 
 use super::{ 
     XferClerk, XferConsumer, XferCache, XferUrlBuilder,
-    HttpResponseConsumer, HttpManager, BackendConfig
+    HttpResponseConsumer, HttpManager
 };
 use super::parsedelivereditem::parse_delivereditem;
 use model::item::{ DeliveredItem, ItemUnpacker };
-use model::supply::{ PurchaseOrder, ProductList, Supplier };
+use model::supply::{ PurchaseOrder, Supplier };
 use model::train::TrainManager;
-
-use super::backendconfig::BackendBytecode;
 
 struct XferPaceManagerImpl {
     limit: i32,

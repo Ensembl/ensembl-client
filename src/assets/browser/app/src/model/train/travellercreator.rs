@@ -3,10 +3,8 @@ use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 use std::rc::Rc;
 
-use composit::AllLandscapes;
-use controller::global::WindowState;
 use model::driver::PrinterManager;
-use model::item::{ UnpackedSubassembly, UnpackedProduct};
+use model::item::UnpackedSubassembly;
 use model::supply::{ Product, PurchaseOrder };
 use super::{ CarriageId, Traveller };
 

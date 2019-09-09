@@ -1,17 +1,10 @@
-use std::sync::{ Arc, Mutex };
-use stdweb::web::{ XmlHttpRequest, XhrResponseType };
+use stdweb::web::XmlHttpRequest;
 use url::Url;
 
 use serde_json::Value as JSONValue;
 
 use composit::{ Stick, StickManager, CombinedStickManager };
-use controller::global::{ App, AppRunner };
-use controller::input::Action;
 use data::{ HttpManager, HttpResponseConsumer, BackendConfig };
-use dom::domutil::browser_time;
-use types::{ Dot, ddiv, LEFT, RIGHT };
-use model::stage::{ Position, bp_to_zoomfactor };
-use model::train::TrainManager;
 
 use misc_algorithms::marshal::{ json_str, json_obj_get, json_f64, json_bool };
 

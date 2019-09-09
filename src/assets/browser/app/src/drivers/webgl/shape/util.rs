@@ -4,7 +4,7 @@ use super::super::program::{
     PTGeom, PTSkin
 };
 use types::{ RFraction, CLeaf, RPixel, RLeaf, cleaf, Rect, Edge, Colour };
-use model::shape::{ ColourSpec, DrawingSpec, ShapeSpec };
+use model::shape::ColourSpec;
 use super::super::program::Input;
 
 use drivers::webgl::GLProgData;

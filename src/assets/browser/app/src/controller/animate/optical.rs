@@ -1,6 +1,6 @@
 use std::sync::{ Arc, Mutex };
 use controller::global::{ App, AppRunner };
-use controller::input::{ Action,actions_run };
+use controller::input::Action;
 use types::CDFraction;
 
 pub struct OpticalImpl {

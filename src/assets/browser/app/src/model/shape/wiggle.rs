@@ -2,8 +2,7 @@ use types::{ CLeaf, Colour, cleaf };
 
 use model::shape::{
     ShapeSpec, Facade, FacadeType, ShapeInstanceDataType,
-    ShapeShortInstanceData, TypeToShape, ShapeLongInstanceData,
-    GenericShape
+    TypeToShape, ShapeLongInstanceData, GenericShape
 };
 
 #[derive(Clone,Debug)]

@@ -1,10 +1,3 @@
-use std::cell::RefCell;
-use std::collections::HashMap;
-use std::rc::Rc;
-
-use tánaiste::Value;
-
-use composit::Leaf;
 use controller::global::WindowState;
 use data::UnpackedProductConsumer;
 use model::item::{ DeliveredItem, UnpackedProduct};

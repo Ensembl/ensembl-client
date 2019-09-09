@@ -1,14 +1,13 @@
 use std::collections::{ HashMap, HashSet };
 
-use composit::{ Leaf, StateManager, Scale, Stick };
+use composit::{ Leaf, StateManager };
 use data::XferConsumer;
 use model::item::{ DeliveredItem, ItemUnpacker };
 use model::stage::Position;
 use model::supply::Product;
 use model::driver::{ Printer, PrinterManager };
-use super::{ Carriage, CarriageId, TrainContext, TrainId, Traveller, TravellerCreator };
+use super::{ Carriage, CarriageId, TrainId, TravellerCreator };
 use model::zmenu::ZMenuLeafSet;
-use types::Dot;
 
 const MAX_FLANK : i32 = 3;
 

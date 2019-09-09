@@ -1,14 +1,8 @@
-use std::sync::{ Arc, Mutex };
-
-use serde_json::Value as JSONValue;
-use stdweb::web::event::IEvent;
 use stdweb::web::HtmlElement;
 use url::Url;
 
-use controller::input::{
-    initial_actions, actions_run, run_direct_events
-};
-use controller::global::{ AppRunner, App, GlobalWeak, Global };
+use controller::input::{ initial_actions };
+use controller::global::{ AppRunner, GlobalWeak, Global };
 
 use data::{ HttpManager, BackendConfig };
 use data::blackbox::BlackBoxDriver;
@@ -21,7 +15,6 @@ use data::blackbox::{
 #[cfg(not(deploy))]
 use debug::{ DebugBling, create_interactors };
 use dom::{ Bling, NoBling };
-use dom::event::{ EventListener, Target, EventData, EventType, EventControl, ICustomEvent };
 
 pub struct Booting {
     global: Global,

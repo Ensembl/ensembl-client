@@ -1,4 +1,4 @@
-use types::{ LEFT, RIGHT, Dot };
+use types::{ LEFT, RIGHT };
 use composit::Stick;
 use controller::output::Report;
 

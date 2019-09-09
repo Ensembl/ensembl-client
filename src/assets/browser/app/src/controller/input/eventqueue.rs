@@ -1,7 +1,6 @@
 use std::sync::{ Arc, Mutex };
 use std::collections::{ HashMap, HashSet };
-use stdweb::web::{ Element, HtmlElement, IElement };
-use serde_json::Value as JSONValue;
+use stdweb::web::{HtmlElement, IElement };
 use controller::input::Action;
 use controller::global::{ AppRunner, App };
 use dom::domutil;

@@ -6,7 +6,7 @@ use drivers::webgl::program::Input;
 use model::stage::{ Screen, Position };
 use types::{
     Rect, Anchored, Axis, Edge, Corner, Anchor, Direction,
-    RIGHT, LEFT, DOWN, UP, Placement, XPosition, YPosition
+    RIGHT, LEFT, DOWN, UP
 };
 
 /***** Direction types *****/

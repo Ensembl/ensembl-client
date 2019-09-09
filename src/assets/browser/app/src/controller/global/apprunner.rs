@@ -1,6 +1,5 @@
 use std::cell::RefCell;
 use std::rc::Rc;
-use std::ops::DerefMut;
 use std::sync::{ Arc, Mutex, Weak };
 
 use stdweb::web::HtmlElement;
@@ -9,9 +8,7 @@ use dom::domutil;
 use composit::register_compositor_ticks;
 use controller::global::{ App, GlobalWeak };
 use controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup };
-use controller::input::{
-    register_direct_events, register_dom_events,
-};
+use controller::input::register_dom_events;
 use drivers::domel::{ register_user_events };
 use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter, Jumper };
 

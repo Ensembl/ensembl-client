@@ -1,10 +1,9 @@
-use composit::{ Compositor, Leaf };
-use model::stage::{ Screen, Position };
-use model::supply::PurchaseOrder;
+use composit::Compositor;
+use model::stage::Screen;
 use types::Dot;
 
 use super::DriverTraveller;
-use model::train::{ CarriageId, Traveller, TravellerId };
+use model::train::{ CarriageId, TravellerId };
 
 pub trait Printer {
     /* Print one run of objects from compositor with given stage and

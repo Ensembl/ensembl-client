@@ -1,20 +1,9 @@
-use std::rc::Rc;
-use std::sync::{ Arc, Mutex };
-use stdweb::web::{ XmlHttpRequest, XhrResponseType };
-use url::Url;
-
-use serde_json::Value as JSONValue;
-
-use composit::{ Stick, StickManager };
+use composit::Stick;
 use controller::global::App;
 use controller::input::Action;
-use data::{ HttpManager, HttpResponseConsumer, BackendConfig };
 use dom::domutil::browser_time;
-use types::{ Dot, ddiv, LEFT, RIGHT };
+use types::{ Dot,LEFT, RIGHT };
 use model::stage::{ Position, bp_to_zoomfactor };
-use model::train::TrainManager;
-
-use misc_algorithms::marshal::{ json_str, json_obj_get, json_f64, json_bool };
 
 const ZHOOSH_TIME : f64 = 500.; /* ms */
 const ZHOOSH_PAUSE : f64 = 250.; /* ms */

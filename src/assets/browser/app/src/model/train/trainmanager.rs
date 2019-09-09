@@ -11,20 +11,19 @@
  * render.
  */
 
-use std::cell::Ref;
 use std::collections::HashSet;
 use std::sync::{ Arc, Mutex };
 
-use composit::{ Leaf, Stick, Scale, StateManager };
+use composit::{ Stick, Scale, StateManager };
 use controller::output::{ Report, ViewportReport };
 use data::{ Locator, XferConsumer };
 use model::driver::PrinterManager;
 use model::item::{ DeliveredItem, ItemUnpacker };
-use model::stage::{ Desired, Intended, Position, Screen };
+use model::stage::{ Desired, Position, Screen };
 use model::supply::Product;
 use model::zmenu::{ ZMenuIntersection, ZMenuRegistry };
 use super::{ Train, TrainId, TrainContext, TravellerCreator };
-use types::{ Dot, DOWN, AdLib, AsyncValue, Awaiting };
+use types::{ Dot, DOWN, AsyncValue, Awaiting };
 
 const MS_FADE : f64 = 200.;
 const AT_POSITION_NEAR_ENOUGH : f64 = 1.;

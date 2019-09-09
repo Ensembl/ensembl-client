@@ -5,7 +5,7 @@ use stdweb::web::{ Element, HtmlElement, IHtmlElement };
 use stdweb::traits::IEvent;
 
 use controller::global::{ App, AppRunner };
-use controller::input::{ actions_run, Action };
+use controller::input::Action;
 use controller::animate::{ MousePhysics, Optical };
 use types::{ Dot, CPixel };
 
