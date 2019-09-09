@@ -1,7 +1,7 @@
 /* window will eventually replace App, but be less mad. Migration will be incremental. */
 
 use composit::{ AllLandscapes, CombinedStickManager };
-use data::{ BackendConfig, HttpXferClerk };
+use data::{ BackendConfig, HttpXferClerk, Locator };
 use model::driver::PrinterManager;
 use model::supply::ProductList;
 use model::train::{ TrainManager, TravellerCreator };
@@ -17,13 +17,14 @@ pub struct WindowState {
     product_list: ProductList,
     stick_manager: CombinedStickManager,
     train_manager: TrainManager,
-    all_landscapes: AllLandscapes
+    all_landscapes: AllLandscapes,
+    locator: Locator
 }
 
 impl WindowState {
     pub fn new(backend_config: &BackendConfig, tánaiste: &Tácode, http_clerk: &mut HttpXferClerk, 
             product_list: &mut ProductList, stick_manager: &mut CombinedStickManager,
-            train_manager: &TrainManager, landscapes: &AllLandscapes) -> WindowState {
+            train_manager: &TrainManager, landscapes: &AllLandscapes, locator: &Locator) -> WindowState {
         let mut out = WindowState {
             tánaiste: tánaiste.clone(),
             backend_config: backend_config.clone(),
@@ -32,6 +33,7 @@ impl WindowState {
             stick_manager: stick_manager.clone(),
             train_manager: train_manager.clone(),
             all_landscapes: landscapes.clone(),
+            locator: locator.clone()
         };
         http_clerk.set_window_state(&mut out);
         out
@@ -44,4 +46,5 @@ impl WindowState {
     pub fn get_product_list(&mut self) -> &mut ProductList { &mut self.product_list }
     pub fn get_stick_manager(&mut self) -> &mut CombinedStickManager { &mut self.stick_manager }
     pub fn get_train_manager(&mut self) -> &mut TrainManager { &mut self.train_manager }
+    pub fn get_locator(&mut self) -> &mut Locator { &mut self.locator }
 }

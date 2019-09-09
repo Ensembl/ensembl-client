@@ -56,12 +56,10 @@ impl Desired {
 
     pub fn set_stick(&mut self, stick: &Stick) {
         self.clear();
-        console!("stick");
         self.stick = Some(stick.clone());
     }
 
     pub fn set_bp_per_screen(&mut self, bp_per_screen: f64) {
-        if self.bp_per_screen.is_none() { console!("bp_per_screen"); }
         self.bp_per_screen = Some(bp_per_screen);
         if let Some(position) = self.position.borrow_mut().as_mut() {
             position.set_screen_in_bp(bp_per_screen);
@@ -69,7 +67,6 @@ impl Desired {
     }
 
     pub fn set_middle(&mut self, middle: Dot<f64,f64>) {
-        if self.middle.is_none() { console!("middle"); }
         self.middle = Some(middle);
         if let Some(position) = self.position.borrow_mut().as_mut() {
             position.set_middle(self.middle.as_ref().unwrap());

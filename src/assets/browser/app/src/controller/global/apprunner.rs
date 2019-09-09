@@ -1,3 +1,6 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+use std::ops::DerefMut;
 use std::sync::{ Arc, Mutex, Weak };
 
 use stdweb::web::HtmlElement;
@@ -8,10 +11,9 @@ use controller::global::{ App, GlobalWeak };
 use controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup };
 use controller::input::{
     register_direct_events, register_dom_events,
-    Jumper
 };
 use drivers::domel::{ register_user_events };
-use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter };
+use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter, Jumper };
 
 #[cfg(any(not(deploy),console))]
 use data::blackbox::{
@@ -25,7 +27,7 @@ use dom::event::EventControl;
 use dom::domutil::browser_time;
 use tácode::Tácode;
 
-struct AppRunnerImpl {
+pub struct AppRunnerImpl {
     g: GlobalWeak,
     counter: Counter,
     el: HtmlElement,
@@ -36,6 +38,7 @@ struct AppRunnerImpl {
     tc: Tácode,
     debug_reporter: BlackBoxDriver,
     browser_el: HtmlElement,
+    jumper: Rc<RefCell<Jumper>>,
     key: String
 }
 
@@ -59,14 +62,14 @@ impl AppRunner {
     pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<Bling>, config_url: &Url, config: &BackendConfig, debug_reporter: BlackBoxDriver, key: &str) -> AppRunner {
         let browser_el : HtmlElement = bling.apply_bling(&el);
         let tc = Tácode::new();
-        let st = App::new(&tc,config,&http_manager,&browser_el,&config_url);
-        let sched_group = {
-            let g = unwrap!(g.clone().upgrade()).clone();
-            g.scheduler().make_group()
-        };
         let counter = {
             let g = unwrap!(g.clone().upgrade()).clone();
             g.counter()
+        };
+        let st = App::new(&tc,config,&http_manager,&browser_el,&config_url,&counter);
+        let sched_group = {
+            let g = unwrap!(g.clone().upgrade()).clone();
+            g.scheduler().make_group()
         };
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
             g: g.clone(),
@@ -79,25 +82,19 @@ impl AppRunner {
             tc: tc.clone(),
             debug_reporter,
             browser_el: browser_el.clone(),
-            key: key.to_string()
+            key: key.to_string(),
+            jumper: Rc::new(RefCell::new(Jumper::new()))
         })));
-        {
-            let imp = out.0.lock().unwrap();
-            let weak = AppRunnerWeak(Arc::downgrade(&out.0));
-            imp.app.lock().unwrap().set_runner(&weak);
-        }
         out.init();
         let report = Report::new(&mut out);
         let viewport_report = ViewportReport::new(&mut out);
         let zmenu_reports = ZMenuReports::new(&mut out);
-        let jumper = Jumper::new(&mut out,http_manager,config_url,config);
         {
             let mut imp = out.0.lock().unwrap();
             let app = imp.app.clone();
             app.lock().unwrap().set_report(report);
             app.lock().unwrap().set_viewport_report(viewport_report);
             app.lock().unwrap().set_zmenu_reports(zmenu_reports);
-            app.lock().unwrap().set_jumper(jumper);
             let el = imp.el.clone();
             imp.bling.activate(&app,&el);
         }
@@ -119,10 +116,16 @@ impl AppRunner {
     pub fn add_timer<F>(&mut self, name: &str, mut cb: F, prio: usize)
                             where F: FnMut(&mut App, f64, &mut SchedRun) -> Vec<OutputAction> + 'static {
         let mut ar = self.clone();
-        let mut imp = self.0.lock().unwrap();
-        let app = imp.app.clone();
-        imp.sched_group.add(name,Box::new(move |sr| {
-            let oas = cb(&mut app.lock().unwrap(),browser_time(),sr);
+        ok!(self.0.lock()).sched_group.add(name,Box::new(move |sr| {
+            let oas = {
+                let mut imp = ok!(ar.0.lock());
+                {
+                    let app_ref = imp.app.clone();
+                    let mut app = app_ref.lock().unwrap();
+                    let out = cb(&mut app,browser_time(),sr);
+                    out
+                }
+            };
             for oa in oas {
                 oa.run(&mut ar);
             }
@@ -178,6 +181,20 @@ impl AppRunner {
                 }
                 vec![]
             },2);
+            /* jumping */
+            self.add_timer("get-jump",move |app,_,sr| {
+                let tm = app.get_window().get_train_manager();
+                if let Some((stick,pos,scale)) = tm.pull_pending_focus_jump() {
+                    vec![OutputAction::Jump(stick,pos,scale)]
+                } else {
+                    vec![]
+                }
+            },0);
+            let jumper = self.0.lock().unwrap().jumper.clone();
+            self.add_timer("do-jump",move |app,t,_| {
+                jumper.borrow_mut().tick(app,t);
+                vec![]
+            },0);
             /* resize check */
             self.add_timer("resizer",move |app,_,_| {
                 app.check_size();
@@ -207,7 +224,7 @@ impl AppRunner {
     pub fn state(&self) -> Arc<Mutex<App>> {
         ok!(self.0.lock()).app.clone()
     }
-    
+
     pub fn destroy(&mut self) {
         let (mut g,key) = {
             let mut imp = self.0.lock().unwrap();
@@ -220,8 +237,8 @@ impl AppRunner {
             (g,key)
         };
         g.unregister_app(&key,false);
-    }
-        
+    }     
+
     pub fn bling_key(&mut self, key: &str) {
         let mut imp = self.0.lock().unwrap();
         let app = imp.app.clone();     
@@ -231,6 +248,12 @@ impl AppRunner {
     pub fn find_app(&mut self, el: &HtmlElement) -> bool {
         let mut imp = self.0.lock().unwrap();
         domutil::ancestor(el,&imp.el) || domutil::ancestor(&imp.el,el)
+    }
+
+    pub fn jump(&mut self, stick: &str, dest_pos: f64, dest_size: f64) {
+        let mut imp = self.0.lock().unwrap();
+        let mut jumper = imp.jumper.clone();
+        jumper.borrow_mut().jump(&mut imp.app.lock().unwrap(), stick, dest_pos, dest_size);
     }
 }
 
@@ -246,4 +269,3 @@ impl AppRunnerWeak {
     
     pub fn none() -> AppRunnerWeak { AppRunnerWeak(Weak::new()) }
 }
-

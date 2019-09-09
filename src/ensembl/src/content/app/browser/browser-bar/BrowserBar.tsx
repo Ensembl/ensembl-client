@@ -8,7 +8,11 @@ import { TrackSet } from '../track-panel/trackPanelConfig';
 import { getDisplayStableId } from 'src/ens-object/ensObjectHelpers';
 import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
 
-import { toggleBrowserNav, toggleGenomeSelector } from '../browserActions';
+import {
+  toggleBrowserNav,
+  toggleGenomeSelector,
+  changeFocusObject
+} from '../browserActions';
 import { ChrLocation } from '../browserState';
 import {
   getBrowserNavOpened,
@@ -18,7 +22,8 @@ import {
   getBrowserActivated,
   getGenomeSelectorActive,
   getBrowserActiveGenomeId,
-  getBrowserActiveEnsObject
+  getBrowserActiveEnsObject,
+  isFocusObjectInDefaultPosition
 } from '../browserSelectors';
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 import {
@@ -57,6 +62,7 @@ type StateProps = {
   genomeSelectorActive: boolean;
   ensObject: EnsObject | null;
   selectedTrackPanelTab: TrackSet;
+  isFocusObjectInDefaultPosition: boolean;
 };
 
 type DispatchProps = {
@@ -65,6 +71,7 @@ type DispatchProps = {
   toggleBrowserNav: () => void;
   toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
   toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
+  changeFocusObject: (objectId: string) => void;
 };
 
 type OwnProps = {
@@ -148,11 +155,11 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
       <div className={className}>
         <dl className={styles.browserInfoLeft}>
           <BrowserReset
-            activeGenomeId={props.activeGenomeId}
-            dispatchBrowserLocation={props.dispatchBrowserLocation}
-            chrLocation={props.chrLocation}
-            defaultChrLocation={props.defaultChrLocation}
-            isDrawerOpened={isDrawerOpened}
+            focusObject={props.ensObject}
+            changeFocusObject={props.changeFocusObject}
+            isActive={
+              !props.isFocusObjectInDefaultPosition && !props.isDrawerOpened
+            }
           />
           {showBrowserInfo && <BrowserInfo ensObject={props.ensObject} />}
         </dl>
@@ -252,7 +259,8 @@ const mapStateToProps = (state: RootState): StateProps => ({
   isDrawerOpened: getIsDrawerOpened(state),
   isTrackPanelModalOpened: getIsTrackPanelModalOpened(state),
   isTrackPanelOpened: getIsTrackPanelOpened(state),
-  selectedTrackPanelTab: getSelectedTrackPanelTab(state)
+  selectedTrackPanelTab: getSelectedTrackPanelTab(state),
+  isFocusObjectInDefaultPosition: isFocusObjectInDefaultPosition(state)
 });
 
 const mapDispatchToProps: DispatchProps = {
@@ -260,7 +268,8 @@ const mapDispatchToProps: DispatchProps = {
   selectTrackPanelTabAndSave,
   toggleBrowserNav,
   toggleGenomeSelector,
-  toggleTrackPanel
+  toggleTrackPanel,
+  changeFocusObject
 };
 
 export default connect(
