@@ -1,6 +1,7 @@
-import { createStandardAction } from 'typesafe-actions';
+import { createAction, createStandardAction } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
 import { Action, ActionCreator } from 'redux';
+import uniq from 'lodash/uniq';
 
 import { RootState } from 'src/store';
 import { TrackSet } from './trackPanelConfig';
@@ -8,11 +9,25 @@ import browserStorageService from '../browser-storage-service';
 import { getBrowserActiveGenomeId } from '../browserSelectors';
 import analyticsTracking from 'src/services/analytics-service';
 import { getActiveTrackPanel } from './trackPanelSelectors';
-import { TrackPanelStateForGenome } from './trackPanelState';
+import {
+  pickPersistentTrackPanelProperties,
+  TrackPanelStateForGenome
+} from './trackPanelState';
 
-export const updateTrackPanelForGenome = createStandardAction(
-  'track-panel/update-track-panel'
-)<{ activeGenomeId: string; data: TrackPanelStateForGenome }>();
+export const updateTrackPanelForGenome = createAction(
+  'track-panel/update-track-panel',
+  (action) => (payload: {
+    activeGenomeId: string;
+    data: Partial<TrackPanelStateForGenome>;
+  }) => {
+    const { activeGenomeId, data } = payload;
+    const persistentTrackProperties = pickPersistentTrackPanelProperties(data);
+    browserStorageService.updateTrackPanels({
+      [activeGenomeId]: persistentTrackProperties
+    });
+    return action({ activeGenomeId, data });
+  }
+);
 
 export const toggleTrackPanel: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
@@ -145,6 +160,39 @@ export const closeTrackPanelModal: ActionCreator<
         ...getActiveTrackPanel(getState()),
         isTrackPanelModalOpened: false,
         trackPanelModalView: ''
+      }
+    })
+  );
+};
+
+export const updateCollapsedTrackIds: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (payload: { trackId: string; isCollapsed: boolean }) => (
+  dispatch,
+  getState: () => RootState
+) => {
+  const state = getState();
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  const trackPanel = getActiveTrackPanel(state);
+  let { collapsedTrackIds } = trackPanel;
+
+  if (!activeGenomeId) {
+    return;
+  }
+
+  if (payload.isCollapsed) {
+    collapsedTrackIds = uniq([...collapsedTrackIds, payload.trackId]);
+  } else {
+    collapsedTrackIds = collapsedTrackIds.filter(
+      (id) => id !== payload.trackId
+    );
+  }
+
+  dispatch(
+    updateTrackPanelForGenome({
+      activeGenomeId,
+      data: {
+        collapsedTrackIds
       }
     })
   );

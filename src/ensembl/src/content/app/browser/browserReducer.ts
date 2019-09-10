@@ -17,6 +17,7 @@ import {
   BrowserEntityState,
   defaultBrowserEntityState
 } from './browserState';
+import trackPanelReducer from 'src/content/app/browser/track-panel/trackPanelReducer';
 
 export function browserInfo(
   state: BrowserState = defaultBrowserState,
@@ -165,5 +166,6 @@ export default combineReducers({
   browserEntity,
   browserLocation,
   browserNav,
-  trackConfig
+  trackConfig,
+  trackPanel: trackPanelReducer
 });

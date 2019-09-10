@@ -1,3 +1,5 @@
+import pick from 'lodash/pick';
+
 import { TrackSet } from './trackPanelConfig';
 import browserStorageService from '../browser-storage-service';
 
@@ -14,8 +16,6 @@ export type TrackPanelState = Readonly<{
   [genomeId: string]: TrackPanelStateForGenome;
 }>;
 
-const selectedTrackPanelTabFromStorage = browserStorageService.getSelectedTrackPanelTab();
-
 export const defaultTrackPanelStateForGenome: TrackPanelStateForGenome = {
   isTrackPanelModalOpened: false,
   selectedTrackPanelTab: TrackSet.GENOMIC,
@@ -25,15 +25,29 @@ export const defaultTrackPanelStateForGenome: TrackPanelStateForGenome = {
   collapsedTrackIds: []
 };
 
-export const defaultTrackPanelState: TrackPanelState = Object.keys(
-  selectedTrackPanelTabFromStorage
-).reduce(
-  (state: TrackPanelState, genomeId: string) => ({
-    ...state,
-    [genomeId]: {
-      ...defaultTrackPanelStateForGenome,
-      selectedTrackPanelTab: selectedTrackPanelTabFromStorage[genomeId]
-    }
-  }),
-  {}
-);
+export const getInitialTrackPanelState = (): TrackPanelState => {
+  const genomeId = browserStorageService.getActiveGenomeId();
+  return genomeId ? { [genomeId]: getTrackPanelStateForGenome(genomeId) } : {};
+};
+
+export const getTrackPanelStateForGenome = (
+  genomeId: string
+): TrackPanelStateForGenome => {
+  const storedTrackPanel =
+    browserStorageService.getTrackPanels()[genomeId] || {};
+  return {
+    ...defaultTrackPanelStateForGenome,
+    ...storedTrackPanel
+  };
+};
+
+export const pickPersistentTrackPanelProperties = (
+  trackPanel: Partial<TrackPanelStateForGenome>
+) => {
+  const persistentProperties = [
+    'selectedTrackPanelTab',
+    'isTrackPanelOpened',
+    'collapsedTrackIds'
+  ];
+  return pick(trackPanel, persistentProperties);
+};
