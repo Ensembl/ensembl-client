@@ -145,7 +145,7 @@ fn make_meta(meta: &Vec<f64>) -> Option<Box<dyn TypeToShape>> {
     }
 }
 
-pub fn build_meta(meta_iter: &mut Iterator<Item=&f64>) -> Option<Box<dyn TypeToShape>> {
+pub fn build_meta(meta_iter: &mut dyn Iterator<Item=&f64>) -> Option<Box<dyn TypeToShape>> {
     let mut meta = Vec::<f64>::new();
     let first = *meta_iter.next().unwrap();
     meta.push(first);

@@ -62,7 +62,7 @@ pub fn colour(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, c: &Colour) {
 }
 
 pub fn multi_gl(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, d: &Input, mul: u16) {
-    let mut v = Vec::<&Input>::new();
+    let mut v = Vec::new();
     v.extend(iter::repeat(d).take(mul as usize));
     if let Some(obj) = pdata.get_object(key) {
         obj.add_data(&b,&v.as_slice());

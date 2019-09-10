@@ -15,7 +15,7 @@ impl SchedulerGroup {
         }
     }
     
-    pub fn add(&mut self, name: &str, cb: Box<FnMut(&mut SchedRun) + 'static>, prio: usize, on_beat: bool) {
+    pub fn add(&mut self, name: &str, cb: Box<dyn FnMut(&mut SchedRun) + 'static>, prio: usize, on_beat: bool) {
         let task = SchedTask::new(name,cb);
         let id = self.scheduler.add(task,prio,on_beat);
         self.managed.push(id);

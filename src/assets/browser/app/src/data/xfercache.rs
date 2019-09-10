@@ -101,7 +101,7 @@ impl XferCache {
         self.0.borrow_mut().get(key)
     }
     
-    pub fn prime(&mut self, xferclerk: &mut XferClerk, product: &Product, leaf: &Leaf) {
+    pub fn prime(&mut self, xferclerk: &mut dyn XferClerk, product: &Product, leaf: &Leaf) {
         let po = PurchaseOrder::new(product,leaf,&None);
         if self.get(&po).is_none() {
             if !po.get_product().get_focus_dependent() {

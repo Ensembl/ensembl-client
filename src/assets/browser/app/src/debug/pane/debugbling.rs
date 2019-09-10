@@ -219,7 +219,7 @@ impl<F> EventListener<Option<Arc<Mutex<App>>>> for ButtonEventListener<F> where 
 pub struct ButtonDebugInteractor {
     name: String,
     ec: EventControl<Option<Arc<Mutex<App>>>>,
-    cb: Rc<Fn(&Arc<Mutex<App>>)>
+    cb: Rc<dyn Fn(&Arc<Mutex<App>>)>
 }
 
 impl ButtonDebugInteractor {

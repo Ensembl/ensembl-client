@@ -26,7 +26,7 @@ pub struct GlobalImpl {
     scheduler: Scheduler,
     sched_group: SchedulerGroup,
     counter: Counter,
-    ar_init: Vec<Box<FnMut(&AppRunner)>>
+    ar_init: Vec<Box<dyn FnMut(&AppRunner)>>
 }
 
 impl GlobalImpl {
@@ -81,7 +81,7 @@ impl GlobalImpl {
         }
     }
 
-    pub fn register_ar_init(&mut self, mut cb: Box<FnMut(&AppRunner)>) {
+    pub fn register_ar_init(&mut self, mut cb: Box<dyn FnMut(&AppRunner)>) {
         for ar in self.app_runners.values_mut() {
             cb(&ar.clone());
         }
@@ -173,7 +173,7 @@ impl Global {
         self.0.borrow_mut().register_app(key,ar);
     }
 
-    pub fn register_ar_init(&mut self, cb: Box<FnMut(&AppRunner)>) {
+    pub fn register_ar_init(&mut self, cb: Box<dyn FnMut(&AppRunner)>) {
         self.0.borrow_mut().register_ar_init(cb);
     }
 

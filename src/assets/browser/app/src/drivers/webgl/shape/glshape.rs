@@ -11,7 +11,7 @@ pub trait GLShape {
     fn get_geometry(&self) -> Option<ProgramType>;
 }
 
-fn as_gl_shape(spec: &ShapeSpec) -> Option<&GLShape> {
+fn as_gl_shape(spec: &ShapeSpec) -> Option<& dyn GLShape> {
     match spec {
         ShapeSpec::PinPoly(pp) => Some(pp),
         ShapeSpec::PinRect(pr) => Some(pr),
