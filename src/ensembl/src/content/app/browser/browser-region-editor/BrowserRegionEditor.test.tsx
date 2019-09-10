@@ -1,6 +1,5 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { MemoryRouter } from 'react-router-dom';
 import faker from 'faker';
 
 import { BrowserRegionEditor } from './BrowserRegionEditor';
@@ -11,9 +10,10 @@ import { ChrLocation } from '../browserState';
 import genomeKaryotypes from 'tests/data/browser/karyotypes';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
+import { LoadingState } from 'src/shared/types/loading-state';
 
 import styles from '../browser-nav/BrowserNavBar.scss';
-import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 const defaultProps = {
   activeGenomeId: faker.lorem.words(),
@@ -22,20 +22,19 @@ const defaultProps = {
   regionEditorActive: false,
   regionFieldActive: false,
   regionValidationInfo: {},
+  regionValidationLoadingStatus: LoadingState.NOT_REQUESTED,
   changeBrowserLocation: jest.fn(),
   replace: jest.fn(),
-  toggleBrowserRegionEditorActive: jest.fn()
+  resetRegionValidation: jest.fn(),
+  toggleRegionEditorActive: jest.fn(),
+  validateRegion: jest.fn()
 };
 
 describe('<BrowserRegionEditor', () => {
   let wrapper: any;
 
   beforeEach(() => {
-    wrapper = mount(
-      <MemoryRouter>
-        <BrowserRegionEditor {...defaultProps} />
-      </MemoryRouter>
-    );
+    wrapper = mount(<BrowserRegionEditor {...defaultProps} />);
   });
 
   describe('rendering', () => {

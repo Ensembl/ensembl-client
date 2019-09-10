@@ -1,5 +1,4 @@
 import React, { useState, FormEvent, useRef, useEffect } from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { replace, Replace } from 'connected-react-router';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
@@ -45,7 +44,7 @@ import styles from './BrowserRegionEditor.scss';
 import browserStyles from '../Browser.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
 
-type OwnProps = {
+type BrowserRegionEditorProps = {
   activeGenomeId: string | null;
   chrLocation: ChrLocation;
   genomeKaryotypes: GenomeKaryotype[];
@@ -53,18 +52,12 @@ type OwnProps = {
   regionFieldActive: boolean;
   regionValidationInfo: RegionValidationResponse | null;
   regionValidationLoadingStatus: LoadingState;
-  replace: Replace;
   changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
+  replace: Replace;
   resetRegionValidation: () => void;
   toggleRegionEditorActive: (regionEditorActive: boolean) => void;
   validateRegion: (region: string) => void;
 };
-
-type MatchParams = {
-  genomeId: string;
-};
-
-type BrowserRegionEditorProps = RouteComponentProps<MatchParams> & OwnProps;
 
 export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   const [region, locationStart, locationEnd] = props.chrLocation;
@@ -353,9 +346,7 @@ const mpaDispatchToProps = {
   validateRegion
 };
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mpaDispatchToProps
-  )(BrowserRegionEditor)
-);
+export default connect(
+  mapStateToProps,
+  mpaDispatchToProps
+)(BrowserRegionEditor);

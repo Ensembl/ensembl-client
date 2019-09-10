@@ -1,5 +1,4 @@
 import React, { useState, FormEvent, useEffect } from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { replace, Replace } from 'connected-react-router';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
@@ -41,7 +40,7 @@ import styles from './BrowserRegionField.scss';
 import browserStyles from '../Browser.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
 
-type OwnProps = {
+type BrowserRegionFieldProps = {
   activeGenomeId: string | null;
   chrLocation: ChrLocation;
   genomeKaryotypes: GenomeKaryotype[] | null;
@@ -50,18 +49,12 @@ type OwnProps = {
   regionFieldActive: boolean;
   regionValidationInfo: RegionValidationResponse | null;
   regionValidationLoadingStatus: LoadingState;
-  replace: Replace;
   changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
+  replace: Replace;
   resetRegionValidation: () => void;
   toggleRegionFieldActive: (regionFieldActive: boolean) => void;
   validateRegion: (region: string) => void;
 };
-
-type MatchParams = {
-  genomeId: string;
-};
-
-type BrowserRegionFieldProps = RouteComponentProps<MatchParams> & OwnProps;
 
 export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   const { activeGenomeId } = props;

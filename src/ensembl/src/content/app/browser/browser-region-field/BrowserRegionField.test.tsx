@@ -5,19 +5,23 @@ import faker from 'faker';
 import { BrowserRegionField } from './BrowserRegionField';
 import Input from 'src/shared/components/input/Input';
 import { ChrLocation } from '../browserState';
+import { LoadingState } from 'src/shared/types/loading-state';
+import genomeKaryotypes from 'tests/data/browser/karyotypes';
 
 import styles from '../browser-nav/BrowserNavBar.scss';
 
 const defaultProps = {
   activeGenomeId: faker.lorem.words(),
   chrLocation: ['13', 2315086, 32400266] as ChrLocation,
-  genomeKaryotypes: [],
+  genomeKaryotypes: genomeKaryotypes,
   isDrawerOpened: false,
   regionEditorActive: false,
   regionFieldActive: false,
   regionValidationInfo: null,
+  regionValidationLoadingStatus: LoadingState.NOT_REQUESTED,
   changeBrowserLocation: jest.fn(),
-  resetRegionValidaion: jest.fn(),
+  replace: jest.fn(),
+  resetRegionValidation: jest.fn(),
   toggleRegionFieldActive: jest.fn(),
   validateRegion: jest.fn()
 };
