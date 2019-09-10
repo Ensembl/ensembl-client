@@ -147,7 +147,6 @@ fn draw_short_shapes(spec: Box<dyn TypeToShape>, leaf: &Leaf, lc: &mut UnpackedP
     let y_start_len = y_start.len();
     let x_aux_len = x_aux.len();
     let y_aux_len = y_aux.len();
-    let mut drops = 0;
     for i in 0..x_start.len() {
         if let Some((x_pos_v,x_aux_v)) = 
                 do_scale(&spec,leaf,x_start[i],x_aux[i%x_aux_len]) {
@@ -161,8 +160,6 @@ fn draw_short_shapes(spec: Box<dyn TypeToShape>, leaf: &Leaf, lc: &mut UnpackedP
             };
             if let Some(shape) = spec.new_short_shape(&data) {
                 lc.update_data(part,|data| data.add_shape(shape));
-            } else {
-                drops += 1;
             }
         }
     }

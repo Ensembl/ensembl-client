@@ -61,7 +61,7 @@ impl App {
         let traveller_creator = TravellerCreator::new(&printer);
         let locator = Locator::new(config,http_manager,&csm,config_url);
         let train_manager = TrainManager::new(&printer,&traveller_creator,&locator);
-        let mut clerk = HttpXferClerk::new(http_manager,config_url,&cache,&train_manager);
+        let mut clerk = HttpXferClerk::new(http_manager,config_url,&cache);
         let window = WindowState::new(config,tc,&mut clerk,&mut product_list,&mut csm,&train_manager,&landscapes,&locator);
         let mut out = App {
             browser_el: browser_el.clone(),
@@ -173,7 +173,7 @@ impl App {
     }
         
     pub fn run_actions(self: &mut App, evs: &Vec<Action>,currency: Option<f64>) {
-        if let Some(ref mut report) = self.report {
+        if self.report.is_some() {
             if currency.is_none() || self.with_counter(|c| c.is_current(currency.unwrap())) {
                 if self.action_backlog.len() > 0 {
                     console!("running backlog");

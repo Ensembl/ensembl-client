@@ -15,7 +15,6 @@ use super::{
 use super::parsedelivereditem::parse_delivereditem;
 use model::item::{ DeliveredItem, ItemUnpacker };
 use model::supply::{ PurchaseOrder, Supplier };
-use model::train::TrainManager;
 
 struct XferPaceManagerImpl {
     limit: i32,
@@ -176,7 +175,7 @@ pub struct HttpXferClerkImpl {
 }
 
 impl HttpXferClerkImpl {
-    pub fn new(http_manager: &HttpManager, base: &Url, xfercache: &XferCache, train_manager: &TrainManager) -> HttpXferClerkImpl {
+    pub fn new(http_manager: &HttpManager, base: &Url, xfercache: &XferCache) -> HttpXferClerkImpl {
         HttpXferClerkImpl {
             window: None,
             http_manager: http_manager.clone(),
@@ -218,11 +217,11 @@ impl HttpXferClerkImpl {
         /* run requests accumulated during startup */
         let paused : Vec<(PurchaseOrder,Box<dyn XferConsumer>)> = self.paused.drain(..).collect();
         for (request,consumer) in paused {
-            self.run_request(&request,consumer,false);
+            self.run_request(&request,false);
         }
     }
     
-    fn run_request(&mut self, po: &PurchaseOrder, consumer: Box<dyn XferConsumer>, prime: bool) {
+    fn run_request(&mut self, po: &PurchaseOrder, prime: bool) {
         if let Some(item) = self.cache.get(po) {
             self.cache_finds.push(item.clone());
         } else {
@@ -244,7 +243,7 @@ impl HttpXferClerkImpl {
 impl XferClerk for HttpXferClerkImpl {
     fn satisfy(&mut self, po: &PurchaseOrder, prime: bool, consumer: Box<dyn XferConsumer>) {
         if self.batch.is_some() {
-            self.run_request(po,consumer,prime);
+            self.run_request(po,prime);
         } else {
             self.paused.push((po.clone(),consumer));
         }
@@ -255,9 +254,9 @@ impl XferClerk for HttpXferClerkImpl {
 pub struct HttpXferClerk(Rc<RefCell<HttpXferClerkImpl>>);
 
 impl HttpXferClerk {
-    pub fn new(http_manager: &HttpManager,base: &Url, xfercache: &XferCache, train_manager: &TrainManager) -> HttpXferClerk {
+    pub fn new(http_manager: &HttpManager,base: &Url, xfercache: &XferCache) -> HttpXferClerk {
         HttpXferClerk(Rc::new(RefCell::new(
-            HttpXferClerkImpl::new(http_manager,&base,xfercache,train_manager))))
+            HttpXferClerkImpl::new(http_manager,&base,xfercache))))
     }
 
     pub fn set_window_state(&mut self, window: &mut WindowState) {

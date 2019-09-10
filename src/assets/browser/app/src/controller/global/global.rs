@@ -204,7 +204,6 @@ pub fn setup_global() {
     domutil::add_attr(&body,"class","browser-app-ready");
     domutil::remove_attr(&body.into(),"class","browser-app-not-ready");
     let mut eqm = register_direct_events(&g);
-    let eqm2 = eqm.clone();
     g.register_ar_init(Box::new(move |ar| eqm.register_ar(&ar)));
     /* setup ping/pong */
     activate();

@@ -4,7 +4,6 @@ use std::collections::hash_map::Entry;
 use std::rc::Rc;
 
 use model::driver::PrinterManager;
-use model::item::UnpackedSubassembly;
 use model::supply::{ Product, PurchaseOrder };
 use super::{ CarriageId, Traveller };
 

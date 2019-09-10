@@ -114,8 +114,8 @@ pub enum ShapeInstanceData {
 }
 
 pub trait TypeToShape {
-    fn new_short_shape(&self, sid: &ShapeShortInstanceData) -> Option<ShapeSpec> { None }
-    fn new_long_shape(&self, sid: &ShapeLongInstanceData) -> Option<ShapeSpec> { None }
+    fn new_short_shape(&self, _sid: &ShapeShortInstanceData) -> Option<ShapeSpec> { None }
+    fn new_long_shape(&self, _sid: &ShapeLongInstanceData) -> Option<ShapeSpec> { None }
     fn get_facade_type(&self) -> FacadeType;
     fn needs_scale(&self) -> (bool,bool);
     fn sid_type(&self) -> ShapeInstanceDataType;

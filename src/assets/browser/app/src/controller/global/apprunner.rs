@@ -179,7 +179,7 @@ impl AppRunner {
                 vec![]
             },2);
             /* jumping */
-            self.add_timer("get-jump",move |app,_,sr| {
+            self.add_timer("get-jump",move |app,_,_| {
                 let tm = app.get_window().get_train_manager();
                 if let Some((stick,pos,scale)) = tm.pull_pending_focus_jump() {
                     vec![OutputAction::Jump(stick,pos,scale)]
@@ -204,11 +204,6 @@ impl AppRunner {
                 } else {
                     vec![]
                 }
-            },0);
-            /* cursor check (fallback) */
-            self.add_timer("cursor-check",move |app,_,_| {
-                bb_log!("cursor","cursor-check");
-                vec![]
             },0);
         }
         bb_log!("main","debug reporter initialised");

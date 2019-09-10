@@ -133,10 +133,10 @@ impl EventQueueManagerImpl {
         self.queues.insert(id,new_eq);
     }
 
-    fn add_by_element(&mut self, el: &HtmlElement, acts: &Vec<Action>, currency: Option<f64>) -> bool {
+    fn add_by_element(&mut self, _el: &HtmlElement, acts: &Vec<Action>, currency: Option<f64>) -> bool {
         for (sel,eq) in self.queues.iter_mut() {
             // TODO inter-call cache
-            if let Some(el) = domutil::query_selector_new(sel) {
+            if domutil::query_selector_new(sel).is_some() {
                 console!("adding {:?} to {:?}",acts,sel);
                 eq.queue(acts,currency);
                 return true;

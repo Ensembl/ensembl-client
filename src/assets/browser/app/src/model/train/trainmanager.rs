@@ -437,7 +437,7 @@ impl TrainManagerImpl {
         }
     }
 
-    pub fn set_focus_location(&mut self, obj: &str, stick: &Stick, middle: f64, zoom: f64) {
+    pub fn set_focus_location(&mut self, _obj: &str, stick: &Stick, middle: f64, zoom: f64) {
         self.focus_stick.set(Some(stick.clone()));
         self.focus_location.set(Some((middle,zoom)));
         self.maybe_satisfy_pending_jump();

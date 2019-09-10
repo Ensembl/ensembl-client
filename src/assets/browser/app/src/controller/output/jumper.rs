@@ -48,7 +48,7 @@ impl JumpZhoosh {
         false
     }
 
-    fn stick(&mut self, t: f64, actions: &mut Vec::<Action>) -> bool {
+    fn stick(&mut self, _t: f64, actions: &mut Vec::<Action>) -> bool {
         if let Some(ref stick) = self.stick {
             actions.push(Action::SetStick(stick.to_string()));
             actions.push(Action::Pos(self.start.0,None));
@@ -116,7 +116,7 @@ impl Jumper {
         }
     }
 
-    fn do_offscreen_jump(&mut self, app: &mut App, stick: &str, dest_pos: Dot<f64,f64>, dest_size: f64) {
+    fn do_offscreen_jump(&mut self, _app: &mut App, stick: &str, dest_pos: Dot<f64,f64>, dest_size: f64) {
         let dest_zoom = Position::unlimited_best_zoom_screen_bp(dest_size);
         self.zhoosh = Some(JumpZhoosh::new(
             &Some(stick.to_string()),
@@ -124,7 +124,7 @@ impl Jumper {
             (dest_pos,dest_zoom)));
     }
 
-    fn do_onscreen_jump(&mut self, app: &mut App, current_position: &Position, dest_pos: Dot<f64,f64>, dest_size: f64) {
+    fn do_onscreen_jump(&mut self, _app: &mut App, current_position: &Position, dest_pos: Dot<f64,f64>, dest_size: f64) {
         let dest_zoom = Position::unlimited_best_zoom_screen_bp(dest_size);
         self.zhoosh = Some(JumpZhoosh::new(
             &None,
@@ -138,7 +138,6 @@ impl Jumper {
             self.zhoosh = None;
         }
         let train_manager = app.get_window().get_train_manager();
-        let desired_stick = train_manager.get_desired_stick();
         if let (Some(src_stick),Some(src_position)) = (train_manager.get_desired_stick(),train_manager.get_desired_position()) {
             if !self.is_offscreen_jump(&src_stick,&src_position,stick,dest_pos,dest_size) {
                 self.do_onscreen_jump(&mut app,&src_position,Dot(dest_pos,0.),dest_size);

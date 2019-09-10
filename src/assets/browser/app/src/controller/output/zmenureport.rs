@@ -65,7 +65,7 @@ impl ZMenuReports {
             activated: None
         };
         let queue = out.queue.clone();
-        ar.add_timer("zmenu-report", move |_app,t,sr| {
+        ar.add_timer("zmenu-report", move |_,_,sr| {
             let mut reports = ok!(queue.lock()).get_reports();
             if reports.len() != 0 {
                 reports.drain(..).map(|report| {

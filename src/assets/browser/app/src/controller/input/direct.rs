@@ -204,7 +204,7 @@ impl EventListener<()> for DirectEventListener {
                     console!("bpane sent to unknown app (event)");
                 }
             },
-            EventData::MessageEvent(_,ec,c) => {
+            EventData::MessageEvent(_,_,c) => {
                 let data = c.data().unwrap();
                 if let Some(payload) = parse_message("bpane",&data) {
                     console!("receive/D {}",payload);

@@ -43,9 +43,9 @@ impl StartupEventListener {
 impl EventListener<()> for StartupEventListener {
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
         match e {
-            EventData::CustomEvent(_,cx,name,data) =>
+            EventData::CustomEvent(_,cx,_,data) =>
                 self.activate(data.details(),Some(cx.target().try_into().unwrap())),
-            EventData::MessageEvent(_,cx,data) => {
+            EventData::MessageEvent(_,_,data) => {
                 let data = unwrap!(data.data());
                 if let Some(payload) = parse_message("bpane-activate",&data) {
                     self.activate(Some(payload.clone()),None);
