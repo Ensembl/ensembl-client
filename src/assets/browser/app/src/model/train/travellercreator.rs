@@ -40,7 +40,6 @@ impl TravellerCreator {
         let po = PurchaseOrder::new(product,leaf,focus);
         let mut travellers = Vec::new();
         for sa in product.list_subassemblies() {
-            let trd = UnpackedSubassembly::new(leaf);
             let traveller = Traveller::new(&mut self.pm,sa,&leaf,carriage_id);
             travellers.push(traveller.clone());
         }

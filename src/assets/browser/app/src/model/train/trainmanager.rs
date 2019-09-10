@@ -295,7 +295,7 @@ impl TrainManagerImpl {
                self.desired.get_stick() != printing_train.get_stick() ||
                self.printing_context() != &self.desired_context {
                 /* we're not currently showing the optimal scale */
-                if let Some(ref mut future_train) = self.future_train {
+                if self.future_train.is_some() {
                     /* there's a future train ... */
                     if !self.future_matches_desired() {
                         /* ... and that's not optimal either */
@@ -355,7 +355,7 @@ impl TrainManagerImpl {
 
     pub fn set_desired_context(&mut self, context: &TrainContext) {
         if context.get_focus() != self.get_desired_context().get_focus() {
-            if let Some(focus) = context.get_focus() {
+            if context.get_focus().is_some() {
                 self.focus_stick.invalidate();
                 self.focus_location.invalidate();
             } else {
@@ -492,7 +492,7 @@ impl TrainManager {
             if let Some(focus_object) = imp.get_desired_context().get_focus() {
                 let other = self.clone();
                 let inner_focus_object = focus_object.clone();
-                self.1.locate(&focus_object,Box::new(move |id,stick,middle,zoom| {
+                self.1.locate(&focus_object,Box::new(move |_,stick,middle,zoom| {
                     let mut imp = other.0.lock().unwrap();
                     imp.set_focus_location(&inner_focus_object,stick,middle,zoom);
                 }));
@@ -525,7 +525,6 @@ impl TrainManager {
     }
 
     pub fn set_desired_context(&mut self, context: &TrainContext) {
-        let relocate = context.get_focus() != self.get_desired_context().get_focus();
         self.0.lock().unwrap().set_desired_context(context);
     }
         

@@ -112,7 +112,6 @@ impl XferConsumer for Traveller {
     fn consume(&mut self, item: &DeliveredItem, unpacker: &mut ItemUnpacker) {
         if self.is_done() { return; }
         let trav_id = ok!(self.0.lock()).get_id().clone();
-        let item_id = item.get_id();
         if self.matches_delivered_item(item.get_id()) {
             unpacker.schedule(&trav_id,Box::new(self.clone()));
         }

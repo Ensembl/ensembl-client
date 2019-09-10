@@ -51,7 +51,6 @@ impl Train {
     /* add component to leaf */
     pub fn add_component(&mut self, cm: &mut TravellerCreator, product: &mut Product) {
         for leaf in self.leafs() {
-            let train_id = self.id.clone();
             let c = self.get_carriage(&leaf);
             for trav in cm.make_travellers_for_source(product,&leaf,&c.get_id()) {
                 c.add_traveller(trav.clone());
@@ -122,7 +121,6 @@ impl Train {
         if !self.active { return; }
         self.remove_unused_carriages();
         for leaf in self.get_missing_leafs() {
-            let train_id = self.id.clone();
             let c = self.get_carriage(&leaf);
             for trav in cm.make_travellers_for_leaf(&leaf,&c.get_id()) {
                 c.add_traveller(trav);

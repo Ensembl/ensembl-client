@@ -190,12 +190,10 @@ impl Printer for GLPrinter {
         compo.redraw_where_needed(self);
         let prop = compo.get_prop_trans();
         compo.with_current_train(|train| {
-            let position = train.get_position().clone();
             let mut tp = WebGLTrainPrinter::new();
             tp.contextualize(&mut self.base.borrow_mut(),screen,train,1.-prop);
         });
         compo.with_transition_train(|train| {
-            let position = train.get_position().clone();
             let mut tp = WebGLTrainPrinter::new();
             tp.contextualize(&mut self.base.borrow_mut(),screen,train,prop);
         });
