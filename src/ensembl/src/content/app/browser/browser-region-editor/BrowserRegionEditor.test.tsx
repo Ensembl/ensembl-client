@@ -51,7 +51,7 @@ describe('<BrowserRegionEditor', () => {
     });
 
     test('has an overlay on top when region field is active', () => {
-      wrapper.setProps({ browserRegionFieldActive: true });
+      wrapper.setProps({ regionFieldActive: true });
       expect(wrapper.find('#region-field-overlay').length).toBe(1);
     });
   });
@@ -63,9 +63,7 @@ describe('<BrowserRegionEditor', () => {
     test('shows form buttons when focussed', () => {
       wrapper.find(Select).simulate('focus');
 
-      expect(
-        wrapper.props().toggleBrowserRegionEditorActive
-      ).toHaveBeenCalledTimes(1);
+      expect(wrapper.props().toggleRegionEditorActive).toHaveBeenCalledTimes(1);
     });
 
     test('applies correct value on change', () => {
@@ -105,20 +103,11 @@ describe('<BrowserRegionEditor', () => {
 
       wrapper.find('form').simulate('submit');
 
-      expect(wrapper.props().changeBrowserLocation).not.toHaveBeenCalledTimes(
-        1
-      );
-      expect(wrapper.find('#location-start-input').find(Tooltip).length).toBe(
-        1
-      );
+      expect(wrapper.props().validateRegion).toHaveBeenCalled();
     });
 
     test('resets region editor form when close button is clicked', () => {
-      const [
-        region,
-        locationStart,
-        locationEnd
-      ] = wrapper.props().actualChrLocation;
+      const [, locationStart, locationEnd] = wrapper.props().chrLocation;
 
       wrapper
         .find(Input)
@@ -148,11 +137,9 @@ describe('<BrowserRegionEditor', () => {
           .props().value
       ).toBe(getCommaSeparatedNumber(locationEnd));
 
-      // first time toggleBrowserRegionEditorActive is called is when the input is focussed
+      // first time toggleRegionEditorActive is called is when the input is focussed
       // and the second time is when the form is closed
-      expect(
-        wrapper.props().toggleBrowserRegionEditorActive
-      ).toHaveBeenCalledTimes(2);
+      expect(wrapper.props().toggleRegionEditorActive).toHaveBeenCalledTimes(2);
     });
   });
 });

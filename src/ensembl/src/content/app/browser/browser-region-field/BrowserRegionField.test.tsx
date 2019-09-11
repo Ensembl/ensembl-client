@@ -72,7 +72,7 @@ describe('<BrowserRegionField', () => {
 
       wrapper.find('form').simulate('submit');
 
-      expect(wrapper.props().validateBrowserRegion).toHaveBeenCalled();
+      expect(wrapper.props().validateRegion).toHaveBeenCalled();
     });
 
     test('resets region field after when close button is clicked', () => {
@@ -85,12 +85,8 @@ describe('<BrowserRegionField', () => {
 
       // first time toggleBrowserRegionFieldActive is called is when the input is focussed
       // and the second time is when the form is closed
-      expect(
-        wrapper.props().toggleBrowserRegionFieldActive
-      ).toHaveBeenCalledTimes(2);
-      expect(wrapper.props().resetBrowserRegionValidaion).toHaveBeenCalledTimes(
-        1
-      );
+      expect(wrapper.props().toggleRegionFieldActive).toHaveBeenCalledTimes(2);
+      expect(wrapper.props().resetRegionValidation).toHaveBeenCalledTimes(1);
     });
   });
 });
