@@ -1,7 +1,7 @@
 import storageService, {
   StorageServiceInterface
 } from 'src/services/storage-service';
-import { TrackStates, TrackSet } from './track-panel/trackPanelConfig';
+import { TrackStates } from './track-panel/trackPanelConfig';
 import { ChrLocations } from './browserState';
 import {
   TrackPanelState,
@@ -71,21 +71,6 @@ export class BrowserStorageService {
     [genomeId: string]: string[];
   }) {
     this.storageService.update(StorageKeys.COLLAPSED_TRACK_IDS, idsPerGenome);
-  }
-
-  // FIXME delete
-  public getSelectedTrackPanelTab(): { [genomeId: string]: TrackSet } {
-    return this.storageService.get(StorageKeys.SELECTED_TRACK_PANEL_TAB) || {};
-  }
-
-  // FIXME delete
-  public updateSelectedTrackPanelTab(selectedTrackPanelTabForGenome: {
-    [genomeId: string]: TrackSet;
-  }) {
-    this.storageService.update(
-      StorageKeys.SELECTED_TRACK_PANEL_TAB,
-      selectedTrackPanelTabForGenome
-    );
   }
 
   public getTrackPanels(): { [genomeId: string]: Partial<TrackPanelState> } {

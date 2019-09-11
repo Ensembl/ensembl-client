@@ -1,4 +1,4 @@
-import { createAction, createStandardAction } from 'typesafe-actions';
+import { createAction } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
 import { Action, ActionCreator } from 'redux';
 import uniq from 'lodash/uniq';
@@ -49,6 +49,7 @@ export const toggleTrackPanel: ActionCreator<
   );
 };
 
+// FIXME name
 export const selectTrackPanelTabAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (selectedTrackPanelTab: TrackSet) => (
@@ -60,10 +61,6 @@ export const selectTrackPanelTabAndSave: ActionCreator<
   if (!activeGenomeId) {
     return;
   }
-
-  browserStorageService.updateSelectedTrackPanelTab({
-    [activeGenomeId]: selectedTrackPanelTab
-  });
 
   analyticsTracking.trackEvent({
     category: 'track_panel_tab',
