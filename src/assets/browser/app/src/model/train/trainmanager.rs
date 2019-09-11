@@ -32,7 +32,6 @@ const AT_ZOOM_NEAR_ENOUGH : f64 = 2.;
 pub struct TrainManagerImpl {
     printer: PrinterManager,
     traveller_creator: TravellerCreator,
-    locator: Locator,
     /* the trains themselves */
     current_train: Option<Train>,
     future_train: Option<Train>,
@@ -49,11 +48,10 @@ pub struct TrainManagerImpl {
 }
 
 impl TrainManagerImpl {
-    pub fn new(printer: &PrinterManager, traveller_creator: &TravellerCreator, locator: &Locator) -> TrainManagerImpl {
+    pub fn new(printer: &PrinterManager, traveller_creator: &TravellerCreator) -> TrainManagerImpl {
         TrainManagerImpl {
             printer: printer.clone(),
             traveller_creator: traveller_creator.clone(),
-            locator: locator.clone(),
             current_train: None,
             future_train: None,
             transition_train: None,
@@ -465,7 +463,7 @@ pub struct TrainManager(Arc<Mutex<TrainManagerImpl>>,Locator);
 
 impl TrainManager {
     pub fn new(printer: &PrinterManager, traveller_creator: &TravellerCreator, locator: &Locator) -> TrainManager {
-        TrainManager(Arc::new(Mutex::new(TrainManagerImpl::new(printer,traveller_creator, locator))),locator.clone())
+        TrainManager(Arc::new(Mutex::new(TrainManagerImpl::new(printer,traveller_creator))),locator.clone())
     }
     
     pub fn update_report(&self, report: &Report) {

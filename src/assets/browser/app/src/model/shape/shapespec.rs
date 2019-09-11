@@ -50,13 +50,6 @@ pub enum MathsShape {
     Circle
 }
 
-pub enum ShapeUnder {
-    None,
-    Page,
-    Tape,
-    All
-}
-
 #[derive(Clone,Debug)]
 pub enum DrawingSpec {
     Text(TextArtist),
