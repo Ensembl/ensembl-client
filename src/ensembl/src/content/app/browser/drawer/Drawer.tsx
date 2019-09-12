@@ -33,23 +33,25 @@ const Drawer = (props: DrawerProps) => {
     return null;
   }
 
+  console.log('ensObject', ensObject);
+
   const getDrawerViewComponent = () => {
     switch (drawerView) {
-      case 'gene-feat':
+      case 'track:gene-feat':
         return <DrawerGene ensObject={ensObject} />;
-      case 'gene-feat-1':
+      case 'track:gene-feat-1':
         return <DrawerTranscript ensObject={ensObject} />;
-      case 'gene-pc-fwd':
+      case 'track:gene-pc-fwd':
         return <ProteinCodingGenes forwardStrand={true} />;
-      case 'gene-other-fwd':
+      case 'track:gene-other-fwd':
         return <OtherGenes forwardStrand={true} />;
-      case 'gene-pc-rev':
+      case 'track:gene-pc-rev':
         return <ProteinCodingGenes forwardStrand={false} />;
-      case 'gene-other-rev':
+      case 'track:gene-other-rev':
         return <OtherGenes forwardStrand={false} />;
-      case 'contig':
+      case 'track:contig':
         return <DrawerContigs />;
-      case 'gc':
+      case 'track:gc':
         return <DrawerGC />;
       case 'snps-and-indels':
         return <SnpIndels />;
