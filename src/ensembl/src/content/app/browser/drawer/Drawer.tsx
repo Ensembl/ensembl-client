@@ -33,8 +33,6 @@ const Drawer = (props: DrawerProps) => {
     return null;
   }
 
-  console.log('ensObject', ensObject);
-
   const getDrawerViewComponent = () => {
     switch (drawerView) {
       case 'track:gene-feat':
