@@ -3,10 +3,7 @@ use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 use std::rc::Rc;
 
-use composit::AllLandscapes;
-use controller::global::WindowState;
 use model::driver::PrinterManager;
-use model::item::{ UnpackedSubassembly, UnpackedProduct};
 use model::supply::{ Product, PurchaseOrder };
 use super::{ CarriageId, Traveller };
 
@@ -42,8 +39,7 @@ impl TravellerCreator {
         let po = PurchaseOrder::new(product,leaf,focus);
         let mut travellers = Vec::new();
         for sa in product.list_subassemblies() {
-            let trd = UnpackedSubassembly::new(leaf);
-            let mut traveller = Traveller::new(&mut self.pm,sa,&leaf,carriage_id);
+            let traveller = Traveller::new(&mut self.pm,sa,&leaf,carriage_id);
             travellers.push(traveller.clone());
         }
         product.get_supplier().supply(po);

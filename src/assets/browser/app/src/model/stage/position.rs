@@ -1,5 +1,3 @@
-use std::fmt;
-
 use super::zoom::{ Zoom, bp_to_zoomfactor };
 use composit::Wrapping;
 use controller::output::{ Report, ViewportReport };

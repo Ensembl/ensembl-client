@@ -1,7 +1,6 @@
 use std::sync::{ Arc, Mutex };
 use std::collections::{ HashMap, HashSet };
-use stdweb::web::{ Element, HtmlElement, IElement };
-use serde_json::Value as JSONValue;
+use stdweb::web::{HtmlElement, IElement };
 use controller::input::Action;
 use controller::global::{ AppRunner, App };
 use dom::domutil;
@@ -46,7 +45,7 @@ impl EventQueue {
         if let Some(ref mut ar) = self.ar {
             let el = ar.get_el();
             if domutil::in_page(&el) {
-                let mut app = ar.state();
+                let app = ar.state();
                 for aset in &mut self.queue {
                     aset.run(&mut app.lock().unwrap());
                 }
@@ -110,7 +109,7 @@ impl EventQueueManagerImpl {
     }
 
     fn merge(&mut self, new_eq: &mut EventQueue, id: &str) {
-        let mut queues = &mut self.queues;
+        let queues = &mut self.queues;
         let mut removed = HashSet::new();
         for (sel,eq) in queues.iter_mut() {
             if id_match(sel,&id) {
@@ -134,10 +133,10 @@ impl EventQueueManagerImpl {
         self.queues.insert(id,new_eq);
     }
 
-    fn add_by_element(&mut self, el: &HtmlElement, acts: &Vec<Action>, currency: Option<f64>) -> bool {
+    fn add_by_element(&mut self, _el: &HtmlElement, acts: &Vec<Action>, currency: Option<f64>) -> bool {
         for (sel,eq) in self.queues.iter_mut() {
             // TODO inter-call cache
-            if let Some(el) = domutil::query_selector_new(sel) {
+            if domutil::query_selector_new(sel).is_some() {
                 console!("adding {:?} to {:?}",acts,sel);
                 eq.queue(acts,currency);
                 return true;

@@ -1,7 +1,5 @@
-use std::sync::{ Arc, Mutex };
-
 use stdweb::unstable::TryInto;
-use stdweb::web::{ HtmlElement, Element, IHtmlElement, window };
+use stdweb::web::HtmlElement;
 use url::Url;
 
 use serde_json::Value as JSONValue;
@@ -10,7 +8,7 @@ use controller::input::Action;
 use debug::DEMO_SOURCES;
 
 use dom::domutil;
-use dom::event::{ EventListener, EventType, EventData, EventControl, Target, CustomData, ICustomEvent, IMessageEvent };
+use dom::event::{ EventListener, EventType, EventData, EventControl, Target, ICustomEvent, IMessageEvent };
 use dom::AppEventData;
 use super::eventutil::{ extract_element, parse_message };
 
@@ -45,9 +43,9 @@ impl StartupEventListener {
 impl EventListener<()> for StartupEventListener {
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
         match e {
-            EventData::CustomEvent(_,cx,name,data) =>
+            EventData::CustomEvent(_,cx,_,data) =>
                 self.activate(data.details(),Some(cx.target().try_into().unwrap())),
-            EventData::MessageEvent(_,cx,data) => {
+            EventData::MessageEvent(_,_,data) => {
                 let data = unwrap!(data.data());
                 if let Some(payload) = parse_message("bpane-activate",&data) {
                     self.activate(Some(payload.clone()),None);

@@ -69,7 +69,7 @@ impl DebugEnvironment {
         DebugEnvironment(Rc::new(RefCell::new(DebugEnvironmentExtern::new())))
     }
 
-    pub fn make(&self) -> Box<Environment> {
+    pub fn make(&self) -> Box<dyn Environment> {
         Box::new(DebugEnvironmentBox(self.0.clone()))
     }
 

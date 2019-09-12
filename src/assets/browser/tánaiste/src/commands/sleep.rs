@@ -29,7 +29,7 @@ pub struct SleepI();
 
 impl Instruction for SleepI {
     fn signature(&self) -> Signature { Signature::new("sleep","r") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Sleep(args[0].reg()))
     }
 }
@@ -63,7 +63,7 @@ pub struct PoSleepI();
 
 impl Instruction for PoSleepI {
     fn signature(&self) -> Signature { Signature::new("posleep","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(PoSleep(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
@@ -82,7 +82,7 @@ pub struct HaltI();
 
 impl Instruction for HaltI {
     fn signature(&self) -> Signature { Signature::new("halt","") }
-    fn build(&self, _args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, _args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Halt())
     }
 }

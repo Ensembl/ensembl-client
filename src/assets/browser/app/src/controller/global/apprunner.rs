@@ -1,6 +1,5 @@
 use std::cell::RefCell;
 use std::rc::Rc;
-use std::ops::DerefMut;
 use std::sync::{ Arc, Mutex, Weak };
 
 use stdweb::web::HtmlElement;
@@ -9,9 +8,7 @@ use dom::domutil;
 use composit::register_compositor_ticks;
 use controller::global::{ App, GlobalWeak };
 use controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup };
-use controller::input::{
-    register_direct_events, register_dom_events,
-};
+use controller::input::register_dom_events;
 use drivers::domel::{ register_user_events };
 use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter, Jumper };
 
@@ -31,7 +28,7 @@ pub struct AppRunnerImpl {
     g: GlobalWeak,
     counter: Counter,
     el: HtmlElement,
-    bling: Box<Bling>,
+    bling: Box<dyn Bling>,
     app: Arc<Mutex<App>>,
     controls: Vec<Box<EventControl<()>>>,
     sched_group: SchedulerGroup,
@@ -59,7 +56,7 @@ pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
 impl AppRunner {
-    pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<Bling>, config_url: &Url, config: &BackendConfig, debug_reporter: BlackBoxDriver, key: &str) -> AppRunner {
+    pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<dyn Bling>, config_url: &Url, config: &BackendConfig, debug_reporter: BlackBoxDriver, key: &str) -> AppRunner {
         let browser_el : HtmlElement = bling.apply_bling(&el);
         let tc = Tácode::new();
         let counter = {
@@ -118,7 +115,7 @@ impl AppRunner {
         let mut ar = self.clone();
         ok!(self.0.lock()).sched_group.add(name,Box::new(move |sr| {
             let oas = {
-                let mut imp = ok!(ar.0.lock());
+                let imp = ok!(ar.0.lock());
                 {
                     let app_ref = imp.app.clone();
                     let mut app = app_ref.lock().unwrap();
@@ -182,7 +179,7 @@ impl AppRunner {
                 vec![]
             },2);
             /* jumping */
-            self.add_timer("get-jump",move |app,_,sr| {
+            self.add_timer("get-jump",move |app,_,_| {
                 let tm = app.get_window().get_train_manager();
                 if let Some((stick,pos,scale)) = tm.pull_pending_focus_jump() {
                     vec![OutputAction::Jump(stick,pos,scale)]
@@ -207,11 +204,6 @@ impl AppRunner {
                 } else {
                     vec![]
                 }
-            },0);
-            /* cursor check (fallback) */
-            self.add_timer("cursor-check",move |app,_,_| {
-                bb_log!("cursor","cursor-check");
-                vec![]
             },0);
         }
         bb_log!("main","debug reporter initialised");
@@ -246,13 +238,13 @@ impl AppRunner {
     }
 
     pub fn find_app(&mut self, el: &HtmlElement) -> bool {
-        let mut imp = self.0.lock().unwrap();
+        let imp = self.0.lock().unwrap();
         domutil::ancestor(el,&imp.el) || domutil::ancestor(&imp.el,el)
     }
 
     pub fn jump(&mut self, stick: &str, dest_pos: f64, dest_size: f64) {
         let mut imp = self.0.lock().unwrap();
-        let mut jumper = imp.jumper.clone();
+        let jumper = imp.jumper.clone();
         jumper.borrow_mut().jump(&mut imp.app.lock().unwrap(), stick, dest_pos, dest_size);
     }
 }

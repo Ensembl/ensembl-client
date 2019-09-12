@@ -8,14 +8,14 @@ use super::procstate::ProcState;
 use super::interp::Signals;
 
 pub struct Process {
-    program: Rc<Vec<Box<Command>>>,
+    program: Rc<Vec<Box<dyn Command>>>,
     data: DataState,
     proc: Arc<Mutex<ProcState>>,
     killed: Option<String>
 }
 
 impl Process {
-    pub fn new(program: Rc<Vec<Box<Command>>>, pc: usize, 
+    pub fn new(program: Rc<Vec<Box<dyn Command>>>, pc: usize, 
                signals: Option<Signals>, config: &ProcessConfig) -> Process {
         Process {
             program,

@@ -2,12 +2,9 @@
 
 use composit::{ AllLandscapes, CombinedStickManager };
 use data::{ BackendConfig, HttpXferClerk, Locator };
-use model::driver::PrinterManager;
 use model::supply::ProductList;
-use model::train::{ TrainManager, TravellerCreator };
+use model::train::TrainManager;
 use tácode::Tácode;
-
-use model::supply::build_product;
 
 #[derive(Clone)]
 pub struct WindowState {

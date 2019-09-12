@@ -1,6 +1,5 @@
 use composit::Leaf;
 use super::Product;
-use model::item::{ DeliveredItemId, FocusSpecificity };
 
 #[derive(Clone,Debug,PartialEq,Eq,Hash)]
 pub struct PurchaseOrder {

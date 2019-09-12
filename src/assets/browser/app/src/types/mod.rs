@@ -34,4 +34,4 @@ pub use types::colour::{
     Colour
 };
 
-pub use types::misctypes::{ AdLib, AsyncValue, Awaiting };
+pub use types::misctypes::{ AsyncValue, Awaiting };

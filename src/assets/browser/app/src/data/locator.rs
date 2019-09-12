@@ -1,28 +1,21 @@
-use std::sync::{ Arc, Mutex };
-use stdweb::web::{ XmlHttpRequest, XhrResponseType };
+use stdweb::web::XmlHttpRequest;
 use url::Url;
 
 use serde_json::Value as JSONValue;
 
 use composit::{ Stick, StickManager, CombinedStickManager };
-use controller::global::{ App, AppRunner };
-use controller::input::Action;
 use data::{ HttpManager, HttpResponseConsumer, BackendConfig };
-use dom::domutil::browser_time;
-use types::{ Dot, ddiv, LEFT, RIGHT };
-use model::stage::{ Position, bp_to_zoomfactor };
-use model::train::TrainManager;
 
 use misc_algorithms::marshal::{ json_str, json_obj_get, json_f64, json_bool };
 
 pub struct LocateConsumer {
     stick_manager: CombinedStickManager,
     id: String,
-    consumer: Option<Box<FnOnce(&str,&Stick,f64,f64)>>
+    consumer: Option<Box<dyn FnOnce(&str,&Stick,f64,f64)>>
 }
 
 impl LocateConsumer {
-    pub fn new(stick_manager: &CombinedStickManager, id: &str, mut consumer: Box<FnOnce(&str,&Stick,f64,f64)>) -> LocateConsumer {
+    pub fn new(stick_manager: &CombinedStickManager, id: &str, consumer: Box<dyn FnOnce(&str,&Stick,f64,f64)>) -> LocateConsumer {
         LocateConsumer {
             stick_manager: stick_manager.clone(),
             id: id.to_string(),
@@ -72,7 +65,7 @@ impl Locator {
         }
     }
 
-    pub fn locate(&self, id: &str, mut consumer: Box<FnOnce(&str,&Stick,f64,f64)>) -> Result<(),String> {
+    pub fn locate(&self, id: &str, consumer: Box<dyn FnOnce(&str,&Stick,f64,f64)>) -> Result<(),String> {
         let consumer = Box::new(LocateConsumer::new(&self.stick_manager,id,consumer));
         let xhr = XmlHttpRequest::new();
         if let Some(ref url) = self.url {

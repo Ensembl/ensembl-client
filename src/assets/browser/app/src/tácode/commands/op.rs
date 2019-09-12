@@ -145,7 +145,7 @@ impl Command for Member {
 pub struct BinOpI(pub BinOpType);
 impl Instruction for BinOpI {
     fn signature(&self) -> Signature { Signature::new(self.0.name(),"rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(BinOp(self.0.clone(),args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
@@ -153,7 +153,7 @@ impl Instruction for BinOpI {
 pub struct StrBoolBinOpI(pub StrBoolBinOpType);
 impl Instruction for StrBoolBinOpI {
     fn signature(&self) -> Signature { Signature::new(self.0.name(),"rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(StrBoolBinOp(self.0.clone(),args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
@@ -161,7 +161,7 @@ impl Instruction for StrBoolBinOpI {
 pub struct MemberI();
 impl Instruction for MemberI {
     fn signature(&self) -> Signature { Signature::new("member","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Member(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }

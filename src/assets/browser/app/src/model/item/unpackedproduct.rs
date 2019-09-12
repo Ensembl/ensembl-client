@@ -2,12 +2,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use model::zmenu::ZMenuLeaf;
-use model::driver::{ DriverTraveller, Printer, PrinterManager };
-use model::supply::{ PurchaseOrder, Subassembly };
-use model::train::Traveller;
-use composit::Leaf;
-
+use model::supply::Subassembly;
 use super::UnpackedSubassembly;
 
 #[derive(Clone,Debug)]

@@ -8,19 +8,19 @@ pub trait HttpResponseConsumer {
 }
 
 pub struct HttpManagerImpl {
-    requests: Vec<(XmlHttpRequest,Box<HttpResponseConsumer>)>
+    requests: Vec<(XmlHttpRequest,Box<dyn HttpResponseConsumer>)>
 }
 
 impl HttpManagerImpl {
     pub fn new() -> HttpManagerImpl {
         HttpManagerImpl {
-            requests: Vec::<(XmlHttpRequest,Box<HttpResponseConsumer>)>::new()
+            requests: Vec::<(XmlHttpRequest,Box<dyn HttpResponseConsumer>)>::new()
         }
     }
 
     // TODO error handling
     pub fn add_request(&mut self, req: XmlHttpRequest, data: Option<&[u8]>,
-                       consumer: Box<HttpResponseConsumer>) {
+                       consumer: Box<dyn HttpResponseConsumer>) {
         if let Some(data) = data {
             req.send_with_bytes(data);
         } else {
@@ -29,7 +29,7 @@ impl HttpManagerImpl {
         self.requests.push((req,consumer));
     }
     
-    pub fn get_done(&mut self) -> Vec<(XmlHttpRequest,Box<HttpResponseConsumer>)> {
+    pub fn get_done(&mut self) -> Vec<(XmlHttpRequest,Box<dyn HttpResponseConsumer>)> {
         self.requests.drain_filter(|x|
             x.0.ready_state() == XhrReadyState::Done
         ).collect()
@@ -45,7 +45,7 @@ impl HttpManager {
     }
     
     pub fn add_request(&self, req: XmlHttpRequest, data: Option<&[u8]>,
-                       consumer: Box<HttpResponseConsumer>) {
+                       consumer: Box<dyn HttpResponseConsumer>) {
         self.0.borrow_mut().add_request(req,data,consumer);
     }
     

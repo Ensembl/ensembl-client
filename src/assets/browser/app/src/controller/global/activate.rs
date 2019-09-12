@@ -2,7 +2,7 @@ use dom::domutil;
 
 use dom::event::{ 
     EventListener, EventControl, EventType, EventData, 
-    ICustomEvent, Target, IMessageEvent
+    Target, IMessageEvent
 };
 
 pub struct ReadyPingPongListener {
