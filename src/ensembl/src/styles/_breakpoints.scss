@@ -3,6 +3,8 @@ Breakpoints based on the following article:
 
 https://www.freecodecamp.org/news/the-100-correct-way-to-do-css-breakpoints-88d6a5ba1862/
 
+Breakpoints are 600, 900, 1200 and 1800, based on common device types
+
 */
 
 @mixin for-phone-only {
@@ -22,22 +24,18 @@ https://www.freecodecamp.org/news/the-100-correct-way-to-do-css-breakpoints-88d6
   @media (min-width: 900px) { @content; }
 }
 @mixin for-laptop-only {
-  @media (min-width: 900px) and (max-width: 1399px) { @content; }
+  @media (min-width: 900px) and (max-width: 1199px) { @content; }
 }
 
 /* big laptops, standard monitors */
 @mixin for-desktop-up {
-  @media (min-width: 1400px) { @content; }
+  @media (min-width: 1200px) { @content; }
 }
 @mixin for-desktop-only {
-  @media (min-width: 1400px) and (max-width: 1799px) { @content; }
+  @media (min-width: 1200px) and (max-width: 1799px) { @content; }
 }
 
 /* big monitors */
 @mixin for-big-desktop-up {
   @media (min-width: 1800px) { @content; }
 }
-
-$breakpoint-small: 'screen and (min-width: 0)';
-$breakpoint-medium: 'screen and (min-width: 900px)';
-$breakpoint-large: 'screen and (min-width: 1400px)';
