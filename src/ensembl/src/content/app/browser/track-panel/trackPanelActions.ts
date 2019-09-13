@@ -49,8 +49,7 @@ export const toggleTrackPanel: ActionCreator<
   );
 };
 
-// FIXME name
-export const selectTrackPanelTabAndSave: ActionCreator<
+export const selectTrackPanelTab: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (selectedTrackPanelTab: TrackSet) => (
   dispatch,
