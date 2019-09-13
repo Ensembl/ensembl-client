@@ -20,7 +20,7 @@ pub struct PollMakeI();
 
 impl Instruction for PollMakeI {
     fn signature(&self) -> Signature { Signature::new("pollmake","r") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(PollMake(args[0].reg()))
     }
 }
@@ -41,7 +41,7 @@ pub struct PollDoneI();
 
 impl Instruction for PollDoneI {
     fn signature(&self) -> Signature { Signature::new("polldone","r") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(PollDone(args[0].reg()))
     }
 }
@@ -63,7 +63,7 @@ pub struct PollResetI();
 
 impl Instruction for PollResetI {
     fn signature(&self) -> Signature { Signature::new("pollreset","rr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(PollReset(args[0].reg(),args[1].reg()))
     }
 }
@@ -90,7 +90,7 @@ pub struct PollAnyI();
 
 impl Instruction for PollAnyI {
     fn signature(&self) -> Signature { Signature::new("pollany","rr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(PollAny(args[0].reg(),args[1].reg()))
     }
 }

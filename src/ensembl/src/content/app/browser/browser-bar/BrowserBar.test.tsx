@@ -59,9 +59,11 @@ describe('<BrowserBar />', () => {
     isDrawerOpened: false,
     isTrackPanelModalOpened: false,
     isTrackPanelOpened: false,
+    isFocusObjectInDefaultPosition: true,
     closeDrawer: jest.fn(),
     selectTrackPanelTabAndSave: jest.fn(),
-    toggleTrackPanel: jest.fn()
+    toggleTrackPanel: jest.fn(),
+    changeFocusObject: jest.fn()
   };
 
   const renderBrowserBar = (props?: Partial<BrowserBarProps>) => (

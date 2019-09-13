@@ -60,12 +60,12 @@ impl ZMenuReports {
     }
     
     pub fn new(ar: &mut AppRunner) -> ZMenuReports {
-        let mut out = ZMenuReports{
+        let out = ZMenuReports{
             queue: Arc::new(Mutex::new(ZMenuEventQueue::new())),
             activated: None
         };
         let queue = out.queue.clone();
-        ar.add_timer("zmenu-report", move |_app,t,sr| {
+        ar.add_timer("zmenu-report", move |_,_,sr| {
             let mut reports = ok!(queue.lock()).get_reports();
             if reports.len() != 0 {
                 reports.drain(..).map(|report| {

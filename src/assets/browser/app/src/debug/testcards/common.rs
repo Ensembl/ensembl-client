@@ -1,8 +1,4 @@
-use std::collections::hash_map::DefaultHasher;
-use std::hash::Hasher;
-
 use rand::Rng;
-use rand::RngCore;
 use rand::prelude::SliceRandom;
 use rand::rngs::SmallRng;
 use rand::SeedableRng;

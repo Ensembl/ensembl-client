@@ -384,77 +384,77 @@ pub struct BurstI();
 
 impl Instruction for ElideI {
     fn signature(&self) -> Signature { Signature::new("elide","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Elide(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
 
 impl Instruction for ElideStrI {
     fn signature(&self) -> Signature { Signature::new("elidestr","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(ElideStr(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
 
 impl Instruction for NotI {
     fn signature(&self) -> Signature { Signature::new("not","rr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Not(args[0].reg(),args[1].reg()))
     }
 }
 
 impl Instruction for PickI {
     fn signature(&self) -> Signature { Signature::new("pick","rrrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Pick(args[0].reg(),args[1].reg(),args[2].reg(),args[3].reg()))
     }
 }
 
 impl Instruction for PicksI {
     fn signature(&self) -> Signature { Signature::new("picks","rrrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Picks(args[0].reg(),args[1].reg(),args[2].reg(),args[3].reg()))
     }
 }
 
 impl Instruction for AllI {
     fn signature(&self) -> Signature { Signature::new("all","rr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(All(args[0].reg(),args[1].reg()))
     }
 }
 
 impl Instruction for IndexI {
     fn signature(&self) -> Signature { Signature::new("index","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Index(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
 
 impl Instruction for RunsI {
     fn signature(&self) -> Signature { Signature::new("runs","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Runs(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
 
 impl Instruction for RunsOfI {
     fn signature(&self) -> Signature { Signature::new("runsof","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(RunsOf(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
 
 impl Instruction for GetI {
     fn signature(&self) -> Signature { Signature::new("get","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Get(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
 
 impl Instruction for MergeI {
     fn signature(&self) -> Signature { Signature::new("merge","rrr+") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         let mut rest = args.clone();
         rest.remove(0);
         rest.remove(0);
@@ -465,28 +465,28 @@ impl Instruction for MergeI {
 
 impl Instruction for AccNI {
     fn signature(&self) -> Signature { Signature::new("accn","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(AccN(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
 
 impl Instruction for LengthI {
     fn signature(&self) -> Signature { Signature::new("length","rr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Length(args[0].reg(),args[1].reg()))
     }
 }
 
 impl Instruction for LengthsI {
     fn signature(&self) -> Signature { Signature::new("lengths","rr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Lengths(args[0].reg(),args[1].reg()))
     }
 }
 
 impl Instruction for BurstI {
     fn signature(&self) -> Signature { Signature::new("burst","rr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Burst(args[0].reg(),args[1].reg()))
     }
 }

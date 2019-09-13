@@ -1,14 +1,8 @@
-use std::sync::{ Arc, Mutex };
-
-use serde_json::Value as JSONValue;
-use stdweb::web::event::IEvent;
 use stdweb::web::HtmlElement;
 use url::Url;
 
-use controller::input::{
-    initial_actions, actions_run, run_direct_events
-};
-use controller::global::{ AppRunner, App, GlobalWeak, Global };
+use controller::input::{ initial_actions };
+use controller::global::{ AppRunner, GlobalWeak, Global };
 
 use data::{ HttpManager, BackendConfig };
 use data::blackbox::BlackBoxDriver;
@@ -21,7 +15,6 @@ use data::blackbox::{
 #[cfg(not(deploy))]
 use debug::{ DebugBling, create_interactors };
 use dom::{ Bling, NoBling };
-use dom::event::{ EventListener, Target, EventData, EventType, EventControl, ICustomEvent };
 
 pub struct Booting {
     global: Global,
@@ -35,15 +28,14 @@ pub struct Booting {
 impl Booting {
     pub fn new(g: &mut Global, http_manager: &HttpManager, config_url: &Url,
             el: &HtmlElement, key: &str, debug: bool) -> Booting {
-        let mut out = Booting {
+         Booting {
             global: g.clone(),
             http_manager: http_manager.clone(),
             config_url: config_url.clone(),
             el: el.clone(),
             key: key.to_string(),
             debug,
-        };
-        out
+        }
     }
     
     #[cfg(any(not(deploy),console))]
@@ -64,7 +56,7 @@ impl Booting {
     }
 
     #[cfg(not(deploy))]
-    fn bling(&self) -> Box<Bling> {
+    fn bling(&self) -> Box<dyn Bling> {
         if self.debug {
             Box::new(DebugBling::new(create_interactors()))
         } else { 
@@ -73,13 +65,13 @@ impl Booting {
     }
     
     #[cfg(deploy)]
-    fn bling(&self) -> Box<Bling> {
+    fn bling(&self) -> Box<dyn Bling> {
         Box::new(NoBling::new())
     }
     
     pub fn boot(&mut self, config: &BackendConfig) {
         let mut global = self.global.clone();
-        let bling : Box<Bling> = self.bling();
+        let bling : Box<dyn Bling> = self.bling();
         let debug_url = config.get_debug_url();
         let blackbox = self.make_blackbox(debug_url);
         let ar = AppRunner::new(

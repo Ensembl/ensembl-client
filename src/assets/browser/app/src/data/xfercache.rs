@@ -1,12 +1,10 @@
 use std::rc::Rc;
 use std::cell::RefCell;
 
-use tánaiste::Value;
-
 use composit::Leaf;
 use model::item::{ DeliveredItem, DeliveredItemId, FocusSpecificity, ItemUnpacker };
 use model::supply::{ PurchaseOrder, Product };
-use data::{ BackendConfig, BackendBytecode, XferClerk, XferConsumer };
+use data::{ BackendConfig, XferClerk, XferConsumer };
 
 use misc_algorithms::index::{ AndWalker, OrWalker, SimpleIndex, WalkerIter };
 use misc_algorithms::store::Cache;
@@ -103,7 +101,7 @@ impl XferCache {
         self.0.borrow_mut().get(key)
     }
     
-    pub fn prime(&mut self, xferclerk: &mut XferClerk, product: &Product, leaf: &Leaf) {
+    pub fn prime(&mut self, xferclerk: &mut dyn XferClerk, product: &Product, leaf: &Leaf) {
         let po = PurchaseOrder::new(product,leaf,&None);
         if self.get(&po).is_none() {
             if !po.get_product().get_focus_dependent() {

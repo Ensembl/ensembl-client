@@ -14,7 +14,7 @@ use super::super::shapecmd::ShapeI;
 pub fn instruction_bundle_app(tc: &TáContext) -> InstructionBundle {
     let mut ib = InstructionBundle::new();
     ib.add_all(vec! {
-        Box::new(CPrintI()) as Box<Instruction>,
+        Box::new(CPrintI()) as Box<dyn Instruction>,
         Box::new(DPrintI()),
         Box::new(ElideI()),
         Box::new(ElideStrI()),

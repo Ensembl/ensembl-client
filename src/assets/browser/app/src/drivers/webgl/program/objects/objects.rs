@@ -20,7 +20,7 @@ pub trait Object {
     }
 
     fn add_data_f32(&mut self, _batch: &DataBatch, _values: &[f32]) {}
-    fn add_data(&mut self, _batch: &DataBatch, _values: &[&Input]) {}
+    fn add_data(&mut self, _batch: &DataBatch, _values: &[&dyn Input]) {}
     fn set_uniform(&mut self, _group: Option<DataGroupIndex>, _value: UniformValue) {}
 
     fn is_main(&self) -> bool { false }
