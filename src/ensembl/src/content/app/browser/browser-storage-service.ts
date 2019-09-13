@@ -15,7 +15,6 @@ export enum StorageKeys {
   DEFAULT_CHR_LOCATION = 'browser.defaultChrLocation',
   TRACK_STATES = 'browser.trackStates',
   TRACK_PANELS = 'browser.trackPanels',
-  COLLAPSED_TRACK_IDS = 'browser.collapsedTrackIds',
   SELECTED_TRACK_PANEL_TAB = 'browser.selectedTrackPanelTab'
 }
 
@@ -61,16 +60,6 @@ export class BrowserStorageService {
 
   public saveTrackStates(trackStates: TrackStates) {
     this.storageService.save(StorageKeys.TRACK_STATES, trackStates);
-  }
-
-  public getCollapsedTrackIds() {
-    return this.storageService.get(StorageKeys.COLLAPSED_TRACK_IDS) || {};
-  }
-
-  public updateCollapsedTrackIds(idsPerGenome: {
-    [genomeId: string]: string[];
-  }) {
-    this.storageService.update(StorageKeys.COLLAPSED_TRACK_IDS, idsPerGenome);
   }
 
   public getTrackPanels(): { [genomeId: string]: Partial<TrackPanelState> } {
