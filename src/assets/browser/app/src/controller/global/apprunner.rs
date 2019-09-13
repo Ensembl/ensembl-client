@@ -178,6 +178,12 @@ impl AppRunner {
                 }
                 vec![]
             },2);
+            /* animations */
+            self.add_timer("animations",move |app,t,_| {
+                let actions = app.get_window().get_animator().tick(t);
+                app.run_actions(&actions,None);
+                vec![]
+            },0);
             /* jumping */
             self.add_timer("get-jump",move |app,_,_| {
                 let tm = app.get_window().get_train_manager();

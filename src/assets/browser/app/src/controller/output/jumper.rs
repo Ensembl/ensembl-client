@@ -17,6 +17,10 @@ pub struct JumpZhoosh {
     phase: u32
 }
 
+fn jumping_animation(app: &mut App) {
+
+}
+
 impl JumpZhoosh {
     pub fn new(stick: &Option<String>, start: (Dot<f64,f64>,f64), dest: (Dot<f64,f64>,f64)) -> JumpZhoosh {
         let out = JumpZhoosh {
@@ -85,13 +89,22 @@ impl JumpZhoosh {
 
 #[derive(Clone)]
 pub struct Jumper {
-    zhoosh: Option<JumpZhoosh>
+    zhoosh: Option<JumpZhoosh>,
+    location_zhoosh: Zhoosh<PendingActions,Dot<f64,f64>>,
+    zoom_zhoosh: Zhoosh<PendingActions,f64>
 }
 
 impl Jumper {
     pub fn new() -> Jumper {
+        let location_zhoosh = action_zhoosh_pos(100.,0.,&vec![],0.,|act,pos| {
+            act.add(Action::Pos(pos,None));
+        });
+        let zoom_zhoosh = action_zhoosh_zoom(100.,0.,&vec![],0.,|act,pos| {
+            act.add(Action::ZoomTo(pos));
+        });
         Jumper {
-            zhoosh: None
+            zhoosh: None,
+            location_zhoosh, zoom_zhoosh
         }
     }
 
