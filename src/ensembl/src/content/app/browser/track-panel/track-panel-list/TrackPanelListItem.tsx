@@ -39,7 +39,20 @@ import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg'
 
 import styles from './TrackPanelListItem.scss';
 
-type Props = {
+type OwnProps = {
+  categoryName: string;
+  children?: ReactNode[];
+  trackStatus: ImageButtonStatus;
+  defaultTrackStatus: ImageButtonStatus;
+  track: EnsObjectTrack;
+};
+
+type PropsFromRedux = {
+  activeGenomeId: string | null;
+  isDrawerOpened: boolean;
+  drawerView: string;
+  highlightedTrackId: string;
+  isCollapsed: boolean;
   changeDrawerView: (drawerView: string) => void;
   toggleDrawer: (isDrawerOpened: boolean) => void;
   updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
@@ -47,17 +60,9 @@ type Props = {
     trackId: string;
     isCollapsed: boolean;
   }) => void;
-  categoryName: string;
-  children?: ReactNode[];
-  trackStatus: ImageButtonStatus;
-  defaultTrackStatus: ImageButtonStatus;
-  track: EnsObjectTrack;
-  highlightedTrackId: string;
-  isCollapsed: boolean;
-  activeGenomeId: string | null;
-  isDrawerOpened: boolean;
-  drawerView: string;
 };
+
+type Props = OwnProps & PropsFromRedux;
 
 const TrackPanelListItem = (props: Props) => {
   const {
@@ -209,8 +214,7 @@ const TrackPanelListItem = (props: Props) => {
   );
 };
 
-// FIXME: ownProps
-const mapStateToProps = (state: RootState, ownProps: any) => ({
+const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
   isDrawerOpened: getIsDrawerOpened(state),
   drawerView: getDrawerView(state),
