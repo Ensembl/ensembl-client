@@ -6,16 +6,18 @@ import upperFirst from 'lodash/upperFirst';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { RootState } from 'src/store';
 
+import { getDataForLastVisitedObjects } from 'src/content/app/browser/browserActions';
 import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import { getGenomeInfo } from 'src/genome/genomeSelectors';
 import { getCommittedSpecies } from '../app/species-selector/state/speciesSelectorSelectors';
-import { CommittedItem } from '../app/species-selector/types/species-search';
-
 import { fetchGenomeInfo } from 'src/genome/genomeActions';
 import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
+import { getPreviouslyViewedGenomeBrowserObjects } from 'src/content/home/homePageSelectors';
+
+import { EnsObject } from 'src/ens-object/ensObjectTypes';
 import { GenomeInfoData } from 'src/genome/genomeTypes';
+import { CommittedItem } from '../app/species-selector/types/species-search';
 
 import styles from './Home.scss';
 
@@ -37,13 +39,15 @@ type HomeProps = StateProps & DispatchProps & OwnProps;
 
 const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
   const [showPreviouslyViewed, toggleShowPreviouslyViewed] = useState(false);
+  console.log('props', props);
 
   useEffect(() => {
     props.fetchGenomeInfo();
   }, [props.activeSpecies]);
 
   useEffect(() => {
-    props.fetchExampleEnsObjects();
+    props.getDataForLastVisitedObjects();
+    // props.fetchExampleEnsObjects();
   }, [props.genomeInfo]);
 
   useEffect(() => {
@@ -142,12 +146,16 @@ const mapStateToProps = (state: RootState) => ({
   activeSpecies: getCommittedSpecies(state),
   exampleEnsObjects: getExampleEnsObjects(state),
   totalSelectedSpecies: getCommittedSpecies(state).length,
-  genomeInfo: getGenomeInfo(state)
+  genomeInfo: getGenomeInfo(state),
+  previouslyViewedGenomeBrowserObjects: getPreviouslyViewedGenomeBrowserObjects(
+    state
+  )
 });
 
 const mapDispatchToProps = {
   fetchExampleEnsObjects,
-  fetchGenomeInfo
+  fetchGenomeInfo,
+  getDataForLastVisitedObjects
 };
 
 export default connect(
