@@ -28,6 +28,10 @@
     padding: 12px 20px;
     min-width: 300px;
     width: 30%;
+
+    &::placeholder {
+      color: $grey;
+    }
   }
 
   button {
@@ -37,15 +41,22 @@
     padding: 8px 24px;
     text-transform: uppercase;
   }
-
-  .filter {
-    padding-top: 2%;
-  }
 }
 
 .previouslyViewed {
-  line-height: 2.5;
+  line-height: 2;
   padding: 15px 80px;
+}
+
+.previouslyViewedItem {
+  margin-left: 40px;
+}
+
+.previouslyViewedItemAssemblyName {
+  color: $medium-dark-grey;
+  // font-weight: bold;
+  font-size: 11px;
+  margin-left: 0.2em;
 }
 
 .siteMessage {
@@ -56,15 +67,17 @@
     color: $grey;
     font-size: 13px;
     font-weight: $normal;
-    margin-bottom: 30px;
+    margin-bottom: 0.8em;
   }
 
   p {
     font-size: 13px;
+    margin: 0;
+    line-height: 1.5;
   }
 
   .convoMessage {
-    margin-top: 30px;
+    margin-top: 1em;
   }
 }
 

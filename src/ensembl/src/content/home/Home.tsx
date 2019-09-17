@@ -1,7 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import upperFirst from 'lodash/upperFirst';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { RootState } from 'src/store';
@@ -13,7 +12,10 @@ import { getGenomeInfo } from 'src/genome/genomeSelectors';
 import { getCommittedSpecies } from '../app/species-selector/state/speciesSelectorSelectors';
 import { fetchGenomeInfo } from 'src/genome/genomeActions';
 import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
-import { getPreviouslyViewedGenomeBrowserObjects } from 'src/content/home/homePageSelectors';
+import {
+  getPreviouslyViewedGenomeBrowserObjects,
+  PreviouslyViewedGenomeBrowserObjects
+} from 'src/content/home/homePageSelectors';
 
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 import { GenomeInfoData } from 'src/genome/genomeTypes';
@@ -26,6 +28,7 @@ type StateProps = {
   exampleEnsObjects: EnsObject[];
   genomeInfo: GenomeInfoData;
   totalSelectedSpecies: number;
+  previouslyViewedGenomeBrowserObjects: PreviouslyViewedGenomeBrowserObjects;
 };
 
 type DispatchProps = {
@@ -37,9 +40,12 @@ type OwnProps = {};
 
 type HomeProps = StateProps & DispatchProps & OwnProps;
 
+type PreviouslyViewedProps = {
+  previouslyViewedGenomeBrowserObjects: PreviouslyViewedGenomeBrowserObjects;
+};
+
 const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
   const [showPreviouslyViewed, toggleShowPreviouslyViewed] = useState(false);
-  console.log('props', props);
 
   useEffect(() => {
     props.fetchGenomeInfo();
@@ -55,39 +61,6 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
       toggleShowPreviouslyViewed(true);
     }
   }, [props.exampleEnsObjects]);
-
-  const getExampleObjLabel = (exampleObject: EnsObject) => {
-    if (exampleObject.object_type === 'gene') {
-      return exampleObject.label;
-    } else {
-      return getFormattedLocation(exampleObject.location);
-    }
-  };
-
-  const getPreviouslyViewed = () => {
-    return props.activeSpecies.map((species) => {
-      if (props.exampleEnsObjects.length) {
-        return props.exampleEnsObjects.map((exampleObject) => {
-          const location = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
-          const path = urlFor.browser({
-            genomeId: species.genome_id,
-            focus: exampleObject.object_id,
-            location
-          });
-
-          return (
-            <dd key={exampleObject.object_id}>
-              <Link to={path}>
-                {`${species.common_name} ${upperFirst(
-                  exampleObject.object_type
-                )}: ${getExampleObjLabel(exampleObject)}`}
-              </Link>
-            </dd>
-          );
-        });
-      }
-    });
-  };
 
   return (
     <div className={styles.home}>
@@ -108,18 +81,13 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
         <h2>Find</h2>
         <p>
           <input type="text" placeholder="Name, symbol or ID" disabled={true} />
-          {/* <button disabled={true}>Go</button> */}
         </p>
-        <div className={styles.filter}>
-          <h2>Refine results</h2>
-        </div>
       </section>
-      {showPreviouslyViewed && (
-        <section className={styles.previouslyViewed}>
-          <h2>Previously viewed</h2>
-          {getPreviouslyViewed()}
-        </section>
-      )}
+      <PreviouslyViewed
+        previouslyViewedGenomeBrowserObjects={
+          props.previouslyViewedGenomeBrowserObjects
+        }
+      />
       <section className={styles.siteMessage}>
         <h4>Using the site</h4>
         <p>
@@ -139,6 +107,31 @@ const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
         <p>helpdesk@ensembl.org</p>
       </section>
     </div>
+  );
+};
+
+const PreviouslyViewed = (props: PreviouslyViewedProps) => {
+  if (props.previouslyViewedGenomeBrowserObjects.areLoading) {
+    return null;
+  }
+
+  const previouslyViewedLinks = props.previouslyViewedGenomeBrowserObjects.objects.map(
+    (object, index) => (
+      <div key={index} className={styles.previouslyViewedItem}>
+        <Link to={object.link}>{object.speciesName}</Link>
+        <span className={styles.previouslyViewedItemAssemblyName}>
+          {' '}
+          {object.assemblyName}
+        </span>
+      </div>
+    )
+  );
+
+  return (
+    <section className={styles.previouslyViewed}>
+      <h2>Previously viewed</h2>
+      {previouslyViewedLinks}
+    </section>
   );
 };
 
