@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
+import { MemoryRouter } from 'react-router';
 
 import speciesData from './speciesData';
 import juneSpeciesData from './juneSpeciesData';
@@ -23,13 +24,15 @@ const Wrapper = (props: WrapperProps) => {
   };
 
   return (
-    <div className={styles.wrapper}>
-      <SpeciesTabBar
-        species={props.species}
-        activeGenomeId={activeGenomeId}
-        onTabSelect={onTabSelect}
-      />
-    </div>
+    <MemoryRouter>
+      <div className={styles.wrapper}>
+        <SpeciesTabBar
+          species={props.species}
+          activeGenomeId={activeGenomeId}
+          onTabSelect={onTabSelect}
+        />
+      </div>
+    </MemoryRouter>
   );
 };
 

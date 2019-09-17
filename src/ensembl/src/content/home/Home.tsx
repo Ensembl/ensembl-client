@@ -1,17 +1,15 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { RootState } from 'src/store';
 
-import { getDataForLastVisitedObjects } from 'src/content/app/browser/browserActions';
-import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
+import { fetchDataForLastVisitedObjects } from 'src/content/app/browser/browserActions';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import { getGenomeInfo } from 'src/genome/genomeSelectors';
 import { getCommittedSpecies } from '../app/species-selector/state/speciesSelectorSelectors';
 import { fetchGenomeInfo } from 'src/genome/genomeActions';
-import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
 import {
   getPreviouslyViewedGenomeBrowserObjects,
   PreviouslyViewedGenomeBrowserObjects
@@ -23,44 +21,28 @@ import { CommittedItem } from '../app/species-selector/types/species-search';
 
 import styles from './Home.scss';
 
-type StateProps = {
+type Props = {
   activeSpecies: CommittedItem[];
   exampleEnsObjects: EnsObject[];
   genomeInfo: GenomeInfoData;
   totalSelectedSpecies: number;
   previouslyViewedGenomeBrowserObjects: PreviouslyViewedGenomeBrowserObjects;
-};
-
-type DispatchProps = {
-  fetchExampleEnsObjects: () => void;
   fetchGenomeInfo: () => void;
+  fetchDataForLastVisitedObjects: () => void;
 };
-
-type OwnProps = {};
-
-type HomeProps = StateProps & DispatchProps & OwnProps;
 
 type PreviouslyViewedProps = {
   previouslyViewedGenomeBrowserObjects: PreviouslyViewedGenomeBrowserObjects;
 };
 
-const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
-  const [showPreviouslyViewed, toggleShowPreviouslyViewed] = useState(false);
-
+const Home = (props: Props) => {
   useEffect(() => {
     props.fetchGenomeInfo();
   }, [props.activeSpecies]);
 
   useEffect(() => {
-    props.getDataForLastVisitedObjects();
-    // props.fetchExampleEnsObjects();
+    props.fetchDataForLastVisitedObjects();
   }, [props.genomeInfo]);
-
-  useEffect(() => {
-    if (Object.keys(props.exampleEnsObjects).length > 0) {
-      toggleShowPreviouslyViewed(true);
-    }
-  }, [props.exampleEnsObjects]);
 
   return (
     <div className={styles.home}>
@@ -146,9 +128,8 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  fetchExampleEnsObjects,
   fetchGenomeInfo,
-  getDataForLastVisitedObjects
+  fetchDataForLastVisitedObjects
 };
 
 export default connect(

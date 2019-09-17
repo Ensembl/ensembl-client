@@ -13,7 +13,6 @@ import { getCommittedSpecies } from 'src/content/app/species-selector/state/spec
 import { LoadingState } from 'src/shared/types/loading-state';
 
 import { RootState } from 'src/store';
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 export type PreviouslyViewedGenomeBrowserObject = {
   speciesName: string;
@@ -32,8 +31,6 @@ export const getPreviouslyViewedGenomeBrowserObjects = (
   const ensObjectIdsMap = getBrowserActiveEnsObjectIds(state);
   const chrLocations = getAllChrLocations(state);
   const committedSpecies = getCommittedSpecies(state);
-
-  const genomeIds = Object.keys(ensObjectIdsMap);
 
   const ensObjectMap: {
     [genomeId: string]: {

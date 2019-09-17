@@ -85,7 +85,7 @@ export const setDataFromUrlAndSave: ActionCreator<
     });
 };
 
-export const getDataForLastVisitedObjects: ActionCreator<
+export const fetchDataForLastVisitedObjects: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = () => async (dispatch, getState: () => RootState) => {
   const state = getState();
