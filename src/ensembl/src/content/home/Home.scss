@@ -22,12 +22,11 @@
 
   input[type='text'] {
     border: none;
-    box-shadow: inset 3px 3px 10px $grey;
-    color: $dark-grey;
-    font-size: 14px;
+    width: 100%;
+    max-width: 485px;
+    height: 36px;
+    box-shadow: inset 2px 2px 4px -2px $dark-grey;
     padding: 12px 20px;
-    min-width: 300px;
-    width: 30%;
 
     &::placeholder {
       color: $grey;
@@ -54,7 +53,6 @@
 
 .previouslyViewedItemAssemblyName {
   color: $medium-dark-grey;
-  // font-weight: bold;
   font-size: 11px;
   margin-left: 0.2em;
 }
