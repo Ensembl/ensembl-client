@@ -62,17 +62,14 @@ export const getPreviouslyViewedGenomeBrowserObjects = (
     }
   }, {});
 
-  const areLoading: boolean = Object.keys(ensObjectIdsMap).reduce(
-    (result: boolean, genomeId) => {
-      const ensObjectId = ensObjectIdsMap[genomeId];
-      const ensObjectLoadingStatus = getEnsObjectLoadingStatus(
-        state,
-        ensObjectId
-      );
-      return result || ensObjectLoadingStatus === LoadingState.LOADING;
-    },
-    false
-  );
+  const areLoading: boolean = Object.keys(ensObjectIdsMap).some((genomeId) => {
+    const ensObjectId = ensObjectIdsMap[genomeId];
+    const ensObjectLoadingStatus = getEnsObjectLoadingStatus(
+      state,
+      ensObjectId
+    );
+    return ensObjectLoadingStatus === LoadingState.LOADING;
+  });
 
   const previouslyViewedObjects = Object.keys(ensObjectMap).map((id) => ({
     speciesName: ensObjectMap[id].speciesName,
