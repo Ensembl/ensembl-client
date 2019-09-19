@@ -85,6 +85,15 @@ export const setDataFromUrlAndSave: ActionCreator<
     });
 };
 
+export const fetchDataForLastVisitedObjects: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = () => async (dispatch, getState: () => RootState) => {
+  const state = getState();
+  const activeEnsObjectIdsMap = getBrowserActiveEnsObjectIds(state);
+  const activeEnsObjectIds = Object.values(activeEnsObjectIdsMap);
+  activeEnsObjectIds.forEach((id) => dispatch(fetchEnsObject(id)));
+};
+
 export const updateBrowserActiveGenomeId = createStandardAction(
   'browser/update-active-genome-id'
 )<string>();
