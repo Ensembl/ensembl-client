@@ -6,16 +6,13 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { RootState } from 'src/store';
 
 import { fetchDataForLastVisitedObjects } from 'src/content/app/browser/browserActions';
-import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import { getGenomeInfo } from 'src/genome/genomeSelectors';
 import { getCommittedSpecies } from '../app/species-selector/state/speciesSelectorSelectors';
-import { fetchGenomeInfo } from 'src/genome/genomeActions';
 import {
   getPreviouslyViewedGenomeBrowserObjects,
   PreviouslyViewedGenomeBrowserObjects
 } from 'src/content/home/homePageSelectors';
 
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
 import { GenomeInfoData } from 'src/genome/genomeTypes';
 import { CommittedItem } from '../app/species-selector/types/species-search';
 
@@ -23,11 +20,8 @@ import styles from './Home.scss';
 
 type Props = {
   activeSpecies: CommittedItem[];
-  exampleEnsObjects: EnsObject[];
   genomeInfo: GenomeInfoData;
-  totalSelectedSpecies: number;
   previouslyViewedGenomeBrowserObjects: PreviouslyViewedGenomeBrowserObjects;
-  fetchGenomeInfo: () => void;
   fetchDataForLastVisitedObjects: () => void;
 };
 
@@ -37,16 +31,14 @@ type PreviouslyViewedProps = {
 
 const Home = (props: Props) => {
   useEffect(() => {
-    props.fetchGenomeInfo();
-  }, [props.activeSpecies]);
-
-  useEffect(() => {
     props.fetchDataForLastVisitedObjects();
-  }, [props.genomeInfo]);
+  }, []);
+
+  const totalSelectedSpecies = props.activeSpecies.length;
 
   return (
     <div className={styles.home}>
-      {!props.totalSelectedSpecies && (
+      {!totalSelectedSpecies && (
         <>
           <span className={styles.speciesSelectorBannerText}>
             7 species now available
@@ -119,8 +111,6 @@ const PreviouslyViewed = (props: PreviouslyViewedProps) => {
 
 const mapStateToProps = (state: RootState) => ({
   activeSpecies: getCommittedSpecies(state),
-  exampleEnsObjects: getExampleEnsObjects(state),
-  totalSelectedSpecies: getCommittedSpecies(state).length,
   genomeInfo: getGenomeInfo(state),
   previouslyViewedGenomeBrowserObjects: getPreviouslyViewedGenomeBrowserObjects(
     state
@@ -128,7 +118,6 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  fetchGenomeInfo,
   fetchDataForLastVisitedObjects
 };
 
