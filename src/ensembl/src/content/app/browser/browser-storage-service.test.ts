@@ -87,33 +87,34 @@ describe('BrowserStorageService', () => {
     });
   });
 
-  describe('.getTrackListToggleStates()', () => {
-    it('gets saved track list toggle states from storage service', () => {
+  describe('.getTrackPanels()', () => {
+    it('gets saved track panels configuration from storage service', () => {
+      const mockTrackPanels = { foo: 'doesnt really matter' };
       jest
         .spyOn(mockStorageService, 'get')
-        .mockImplementation(() => trackListToggleStates);
+        .mockImplementation(() => mockTrackPanels);
 
       const browserStorageService = new BrowserStorageService(
         mockStorageService
       );
 
-      const result = browserStorageService.getTrackListToggleStates();
+      const result = browserStorageService.getTrackPanels();
 
       expect(mockStorageService.get).toHaveBeenCalledWith(
-        StorageKeys.TRACK_LIST_TOGGLE_STATES
+        StorageKeys.TRACK_PANELS
       );
-      expect(result).toEqual(trackListToggleStates);
+      expect(result).toEqual(mockTrackPanels);
 
       mockStorageService.get.mockRestore();
     });
 
-    it('returns an empty object if there are no saved track list toggle states', () => {
+    it('returns an empty object if there are no saved track panel configurations', () => {
       jest.spyOn(mockStorageService, 'get').mockImplementation(() => null);
 
       const browserStorageService = new BrowserStorageService(
         mockStorageService
       );
-      const result = browserStorageService.getTrackListToggleStates();
+      const result = browserStorageService.getTrackPanels();
 
       expect(result).toEqual({});
 
@@ -121,72 +122,18 @@ describe('BrowserStorageService', () => {
     });
   });
 
-  describe('.updateTrackListToggleStates()', () => {
-    it('updates track list toggle states via storage service', () => {
+  describe('.updateTrackPanels()', () => {
+    it('updates stored track panel configurations', () => {
+      const mockTrackPanels = { foo: {} };
       const browserStorageService = new BrowserStorageService(
         mockStorageService
       );
 
-      const toggledTrackState = { homo_sapiens38: { 'gene-feat': true } };
-
-      browserStorageService.updateTrackListToggleStates(toggledTrackState);
+      browserStorageService.updateTrackPanels(mockTrackPanels);
 
       expect(mockStorageService.update).toHaveBeenCalledWith(
-        StorageKeys.TRACK_LIST_TOGGLE_STATES,
-        toggledTrackState
-      );
-    });
-  });
-
-  describe('.getSelectedTrackPanelTab()', () => {
-    it('gets saved selected browser tab from storage service', () => {
-      jest
-        .spyOn(mockStorageService, 'get')
-        .mockImplementation(() => SELECTED_TRACK_PANEL_TAB);
-
-      const browserStorageService = new BrowserStorageService(
-        mockStorageService
-      );
-
-      const result = browserStorageService.getSelectedTrackPanelTab();
-
-      expect(mockStorageService.get).toHaveBeenCalledWith(
-        StorageKeys.SELECTED_TRACK_PANEL_TAB
-      );
-      expect(result).toEqual(SELECTED_TRACK_PANEL_TAB);
-
-      mockStorageService.get.mockRestore();
-    });
-
-    it('returns "GENOMIC" if there is no saved selected browser tab', () => {
-      jest.spyOn(mockStorageService, 'get').mockImplementation(() => null);
-
-      const browserStorageService = new BrowserStorageService(
-        mockStorageService
-      );
-      const result = browserStorageService.getSelectedTrackPanelTab();
-
-      expect(result).toEqual({});
-
-      mockStorageService.get.mockRestore();
-    });
-  });
-
-  describe('.updateSelectedTrackPanelTab()', () => {
-    it('updates selected browser tab via storage service', () => {
-      const browserStorageService = new BrowserStorageService(
-        mockStorageService
-      );
-
-      browserStorageService.updateSelectedTrackPanelTab({
-        homo_sapiens38: TrackSet.EXPRESSION
-      });
-
-      expect(mockStorageService.update).toHaveBeenCalledWith(
-        StorageKeys.SELECTED_TRACK_PANEL_TAB,
-        {
-          homo_sapiens38: TrackSet.EXPRESSION
-        }
+        StorageKeys.TRACK_PANELS,
+        mockTrackPanels
       );
     });
   });

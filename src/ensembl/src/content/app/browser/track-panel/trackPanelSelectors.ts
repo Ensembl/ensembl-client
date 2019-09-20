@@ -4,11 +4,10 @@ import { defaultTrackPanelStateForGenome } from './trackPanelState';
 
 export const getActiveTrackPanel = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
-  const activeTrackPanel = activeGenomeId && state.trackPanel[activeGenomeId];
+  const activeTrackPanel =
+    activeGenomeId && state.browser.trackPanel[activeGenomeId];
 
-  return activeGenomeId && activeTrackPanel
-    ? state.trackPanel[activeGenomeId]
-    : defaultTrackPanelStateForGenome;
+  return activeTrackPanel || defaultTrackPanelStateForGenome;
 };
 
 export const getIsTrackPanelModalOpened = (state: RootState) =>
@@ -35,5 +34,11 @@ export const getActiveGenomePreviouslyViewedObjects = (state: RootState) => {
     (activeGenomeId && getActiveTrackPanel(state).previouslyViewedObjects) || []
   );
 };
-export const gethighlightedTrackId = (state: RootState) =>
+
+export const getHighlightedTrackId = (state: RootState) =>
   getActiveTrackPanel(state).highlightedTrackId;
+
+export const isTrackCollapsed = (state: RootState, trackId: string) => {
+  const trackPanel = getActiveTrackPanel(state);
+  return trackPanel.collapsedTrackIds.includes(trackId);
+};

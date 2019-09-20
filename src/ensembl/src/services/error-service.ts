@@ -7,7 +7,7 @@ interface ErrorServiceInterface {
 }
 
 class ErrorService implements ErrorServiceInterface {
-  private isReportingServiceInitialized: boolean = false;
+  private isReportingServiceInitialized = false;
 
   public constructor() {
     this.initializeReportingService();
@@ -17,7 +17,7 @@ class ErrorService implements ErrorServiceInterface {
     if (this.isReportingServiceInitialized) {
       Sentry.captureException(error);
     } else {
-      console.log(error);
+      console.log(error); // eslint-disable-line no-console
     }
   }
 
