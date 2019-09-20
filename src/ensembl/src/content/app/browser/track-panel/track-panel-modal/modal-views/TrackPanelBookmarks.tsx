@@ -72,6 +72,16 @@ type PreviouslyViewedLinksProps = Pick<
 >;
 
 export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
+  const onClickHandler = (previouslyViewedObject: Bookmark) => {
+    props.updateTrackStates({
+      [previouslyViewedObject.genome_id]: {
+        ...previouslyViewedObject.trackStates
+      }
+    });
+
+    props.closeTrackPanelModal();
+  };
+
   return (
     <div>
       {[...props.previouslyViewedObjects]
@@ -82,19 +92,12 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
             focus: previouslyViewedObject.object_id
           });
 
-          const onClickHandler = () => {
-            props.updateTrackStates({
-              [previouslyViewedObject.genome_id]: {
-                ...previouslyViewedObject.trackStates
-              }
-            });
-
-            props.closeTrackPanelModal();
-          };
-
           return (
             <dd key={index}>
-              <Link to={path} onClick={onClickHandler}>
+              <Link
+                to={path}
+                onClick={() => onClickHandler(previouslyViewedObject)}
+              >
                 {previouslyViewedObject.label}
               </Link>
               <span className={styles.previouslyViewedObjectType}>

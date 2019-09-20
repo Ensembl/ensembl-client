@@ -13,31 +13,6 @@ import {
 } from '../browserSelectors';
 import { getActiveGenomePreviouslyViewedObjects } from './trackPanelSelectors';
 
-import { Bookmark } from './trackPanelState';
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
-import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
-
-const buildBookmark = (
-  ensObject: EnsObject,
-  trackStates: GenomeTrackStates
-): Bookmark => {
-  let bookmarkLabel = ensObject.object_type === 'gene' ? ensObject.label : '';
-
-  if (!bookmarkLabel && ensObject.stable_id) {
-    bookmarkLabel = ensObject.label;
-  } else if (!bookmarkLabel) {
-    bookmarkLabel = getFormattedLocation(ensObject.location);
-  }
-
-  return {
-    genome_id: ensObject.genome_id,
-    object_id: ensObject.object_id,
-    object_type: ensObject.object_type,
-    label: bookmarkLabel,
-    trackStates: { ...trackStates }
-  };
-};
-
 import analyticsTracking from 'src/services/analytics-service';
 import { getActiveTrackPanel } from './trackPanelSelectors';
 import { TrackPanelStateForGenome } from './trackPanelState';
@@ -131,30 +106,33 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
   }
   const trackStates = getBrowserTrackStates(state)[activeGenomeId];
 
-  const activeGenomePreviouslyViewedObjects = [
+  const previouslyViewedObjects = [
     ...getActiveGenomePreviouslyViewedObjects(state)
   ];
 
-  const existingIndex = activeGenomePreviouslyViewedObjects.findIndex(
+  const existingIndex = previouslyViewedObjects.findIndex(
     (previouslyViewedObject) =>
       previouslyViewedObject.object_id === activeEnsObject.object_id
   );
   if (existingIndex === -1) {
     // IF it is not present, add it to the end
-    activeGenomePreviouslyViewedObjects.push(
-      buildBookmark(activeEnsObject, trackStates)
-    );
-  } else if (existingIndex !== -1) {
-    // If it is already present, bump it to the end
-    activeGenomePreviouslyViewedObjects.push({
-      ...activeGenomePreviouslyViewedObjects[existingIndex],
-      trackStates
+    previouslyViewedObjects.push({
+      genome_id: activeEnsObject.genome_id,
+      object_id: activeEnsObject.object_id,
+      object_type: activeEnsObject.object_type,
+      label: activeEnsObject.label,
+      trackStates: { ...trackStates }
     });
-    activeGenomePreviouslyViewedObjects.splice(existingIndex, 1);
+  } else {
+    // If it is already present, bump it to the end
+    const [previouslyViewedObject] = previouslyViewedObjects.splice(
+      existingIndex,
+      1
+    );
+    previouslyViewedObjects.push(previouslyViewedObject);
   }
-
-  trackPanelStorageService.updateActiveGenomePreviouslyViewedObjects({
-    [activeGenomeId]: activeGenomePreviouslyViewedObjects
+  trackPanelStorageService.updatePreviouslyViewedObjects({
+    [activeGenomeId]: previouslyViewedObjects
   });
 
   dispatch(
@@ -162,7 +140,7 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
       activeGenomeId,
       data: {
         ...getActiveTrackPanel(state),
-        previouslyViewedObjects: activeGenomePreviouslyViewedObjects
+        previouslyViewedObjects: previouslyViewedObjects
       }
     })
   );

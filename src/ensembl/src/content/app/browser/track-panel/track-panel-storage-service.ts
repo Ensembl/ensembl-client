@@ -29,7 +29,7 @@ export class TrackPanelStorageService {
     return this.storageService.get(StorageKeys.PREVIOUSLY_VIEWED) || {};
   }
 
-  public updateActiveGenomePreviouslyViewedObjects(activeGenomePreviouslyViewedObjects: {
+  public updatePreviouslyViewedObjects(activeGenomePreviouslyViewedObjects: {
     [genomeId: string]: Bookmark[];
   }) {
     this.storageService.update(
