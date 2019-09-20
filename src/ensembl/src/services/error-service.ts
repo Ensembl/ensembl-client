@@ -7,7 +7,7 @@ interface ErrorServiceInterface {
 }
 
 class ErrorService implements ErrorServiceInterface {
-  private isReportingServiceInitialized: boolean = false;
+  private isReportingServiceInitialized = false;
 
   public constructor() {
     this.initializeReportingService();

@@ -63,7 +63,7 @@ const Header = (props: Props) => {
     props.setShowPreview(false);
   };
 
-  let resultCount: number = props.preview.resultCount
+  const resultCount: number = props.preview.resultCount
     ? (props.preview.resultCount as number)
     : 0;
 
@@ -79,9 +79,9 @@ const Header = (props: Props) => {
     return optionClone;
   });
 
-  let downloadButtonStatus = props.downloadType === '';
+  const downloadButtonStatus = props.downloadType === '';
 
-  let disablePreviewButton = resultCount === 0;
+  const disablePreviewButton = resultCount === 0;
 
   const getFormattedResult = () => {
     return (
