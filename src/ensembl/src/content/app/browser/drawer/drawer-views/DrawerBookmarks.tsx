@@ -10,6 +10,7 @@ import { TrackStates } from 'src/content/app/browser/track-panel/trackPanelConfi
 import { updateTrackStates } from 'src/content/app/browser/browserActions';
 import { closeTrackPanelModal } from 'src/content/app/browser/track-panel/trackPanelActions';
 import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
+import { closeDrawer } from 'src/content/app/browser/drawer/drawerActions';
 import upperFirst from 'lodash/upperFirst';
 import styles from './DrawerBookmarks.scss';
 
@@ -20,6 +21,7 @@ type StateProps = {
 type DispatchProps = {
   updateTrackStates: (trackStates: TrackStates) => void;
   closeTrackPanelModal: () => void;
+  closeDrawer: () => void;
 };
 export type DrawerBookmarksProps = StateProps & DispatchProps;
 
@@ -47,6 +49,7 @@ const DrawerBookmarks: FunctionComponent<DrawerBookmarksProps> = (
                 });
 
                 props.closeTrackPanelModal();
+                props.closeDrawer();
               };
 
               return (
@@ -73,7 +76,8 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = {
   updateTrackStates,
-  closeTrackPanelModal
+  closeTrackPanelModal,
+  closeDrawer
 };
 
 export default connect(
