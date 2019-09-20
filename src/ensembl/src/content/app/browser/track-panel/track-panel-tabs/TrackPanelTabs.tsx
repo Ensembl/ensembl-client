@@ -11,7 +11,7 @@ type TrackPanelTabsProps = {
   ensObject: EnsObject;
   isDrawerOpened: boolean;
   genomeSelectorActive: boolean;
-  selectTrackPanelTabAndSave: (selectedTrackPanelTab: TrackSet) => void;
+  selectTrackPanelTab: (selectedTrackPanelTab: TrackSet) => void;
   selectedTrackPanelTab: TrackSet;
   toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
   isTrackPanelModalOpened: boolean;
@@ -32,7 +32,7 @@ const TrackPanelTabs = (props: TrackPanelTabsProps) => {
       props.closeDrawer();
     }
 
-    props.selectTrackPanelTabAndSave(value);
+    props.selectTrackPanelTab(value);
   };
 
   const getTrackPanelTabClassNames = (trackSet: TrackSet) => {
