@@ -3,6 +3,7 @@ import { TrackPanelBarItem } from './trackPanelBarConfig';
 import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/components/image-button/ImageButton';
+
 import styles from './TrackPanelBarIcon.scss';
 
 type TrackPanelBarIconProps = {
@@ -12,6 +13,7 @@ type TrackPanelBarIconProps = {
   isTrackPanelOpened: boolean;
   openTrackPanelModal: (trackPanelModalView: string) => void;
   trackPanelModalView: string;
+  toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
 };
 
 const TrackPanelBarIcon = (props: TrackPanelBarIconProps) => {
@@ -24,11 +26,12 @@ const TrackPanelBarIcon = (props: TrackPanelBarIconProps) => {
   }, [props.isTrackPanelModalOpened]);
 
   const toggleModalView = () => {
-    if (!props.isTrackPanelOpened) {
-      return;
-    }
+    let newToggleState = !toggleState;
 
-    const newToggleState = !toggleState;
+    if (!props.isTrackPanelOpened) {
+      props.toggleTrackPanel(true);
+      newToggleState = true;
+    }
 
     if (newToggleState) {
       props.openTrackPanelModal(props.iconConfig.name);
@@ -42,7 +45,7 @@ const TrackPanelBarIcon = (props: TrackPanelBarIconProps) => {
   const getViewIconStatus = () => {
     const { iconConfig, trackPanelModalView } = props;
 
-    return iconConfig.name === trackPanelModalView
+    return iconConfig.name === trackPanelModalView && props.isTrackPanelOpened
       ? ImageButtonStatus.HIGHLIGHTED
       : ImageButtonStatus.ACTIVE;
   };
