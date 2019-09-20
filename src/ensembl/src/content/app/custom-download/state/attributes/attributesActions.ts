@@ -87,9 +87,9 @@ export const fetchOrthologueSpecies: ActionCreator<
   dispatch(setOrthologueSpecies.request({ searchTerm: searchTerm }));
   try {
     // This will be fetched from the API when we have one
-    let allSpecies = sampleOrthologueSpecies.species as Species[];
+    const allSpecies = sampleOrthologueSpecies.species as Species[];
 
-    let filteredSpecies: CheckboxGridOption[] = orthologueSpecies.filter(
+    const filteredSpecies: CheckboxGridOption[] = orthologueSpecies.filter(
       (species: CheckboxGridOption) => {
         return species.isChecked;
       }

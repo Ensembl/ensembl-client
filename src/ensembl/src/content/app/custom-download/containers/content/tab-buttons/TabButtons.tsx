@@ -34,7 +34,7 @@ type SelectedFilters = {
 
 const getTotalSelectedAttributes = (
   attributes: SelectedAttributes,
-  totalSelectedAttributes: number = 0
+  totalSelectedAttributes = 0
 ) => {
   Object.keys(attributes).forEach((key) => {
     if (typeof attributes[key] === 'boolean' && attributes[key] === true) {
@@ -52,7 +52,7 @@ const getTotalSelectedAttributes = (
 
 const getTotalSelectedFilters = (
   filters: SelectedFilters,
-  totalSelectedFilters: number = 0
+  totalSelectedFilters = 0
 ) => {
   if (!filters) {
     return 0;

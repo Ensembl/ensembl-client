@@ -39,7 +39,7 @@ export const getProcessedFilters = (filters: JSONValue) => {
 export const getEndpointUrl = (
   flatSelectedAttributes: JSONValue,
   selectedFilters: JSONValue,
-  method: string = 'query'
+  method = 'query'
 ) => {
   const processedAttributes = getProcessedAttributes(flatSelectedAttributes);
   const processedFilters = getProcessedFilters(selectedFilters);

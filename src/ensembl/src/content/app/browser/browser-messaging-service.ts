@@ -10,7 +10,7 @@ import JSONValue from 'src/shared/types/JSON';
 
 export class BrowserMessagingService {
   private window: Window;
-  private isRecepientReady: boolean = false;
+  private isRecepientReady = false;
   private subscribers: any = {};
   private outgoingMessageQueue: JSONValue[] = [];
 
