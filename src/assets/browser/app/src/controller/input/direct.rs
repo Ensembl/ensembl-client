@@ -1,13 +1,10 @@
 use stdweb::unstable::TryInto;
-use std::sync::{ Arc, Mutex };
 
-use serde_json::from_str;
 use serde_json::Value as JSONValue;
-use serde_json::Number as JSONNumber;
 use stdweb::web::{ Element, HtmlElement };
 
-use controller::global::{ App, AppRunner, Global, GlobalWeak };
-use controller::input::{ actions_run, Action };
+use controller::global::{ App, Global, GlobalWeak };
+use controller::input::Action;
 use dom::event::{ 
     EventListener, EventControl, EventType, EventData, 
     ICustomEvent, Target, IMessageEvent
@@ -100,6 +97,10 @@ fn custom_reset_event() -> Vec<Action> {
     vec![Action::Reset]
 }
 
+fn custom_activity_outside_event() -> Vec<Action> {
+    vec![Action::ActivityOutsideZMenu]
+}
+
 fn every<F>(v: &JSONValue, cb: F) -> Vec<Action> where F: Fn(&JSONValue) -> Action {
     if let JSONValue::Array(vv) = v {
         vv.iter().map(|x| cb(x)).collect()
@@ -135,9 +136,16 @@ fn custom_make_one_event_key(k: &String, v: &JSONValue, keys: &Vec<String>) -> V
 fn custom_make_events(j: &JSONValue) -> Vec<Action> {
     let mut out = Vec::<Action>::new();
     if let JSONValue::Object(map) = j {
-        let keys : Vec<String> = map.keys().cloned().collect();
-        for (k,v) in map {
-            out.append(&mut custom_make_one_event_key(k,v,&keys));
+        if let Some(action) = j.get("action") {
+            match unwrap!(action.as_str()) {
+                "zmenu-activity-outside" => out.append(&mut custom_activity_outside_event()),
+                _ => {}
+            }
+        } else {
+            let keys : Vec<String> = map.keys().cloned().collect();
+            for (k,v) in map {
+                out.append(&mut custom_make_one_event_key(k,v,&keys));
+            }
         }
     }
     out.push(Action::Settled);
@@ -176,7 +184,7 @@ impl DirectEventListener {
             let el : Option<HtmlElement> = el.ok();
             if let Some(el) = el {
                 if let Some(ar) = g.find_app(&el) {
-                    let mut app = ar.state();
+                    let app = ar.state();
                     run_direct_events(&mut app.lock().unwrap(),name,j);
                 }                
             }
@@ -196,7 +204,7 @@ impl EventListener<()> for DirectEventListener {
                     console!("bpane sent to unknown app (event)");
                 }
             },
-            EventData::MessageEvent(_,ec,c) => {
+            EventData::MessageEvent(_,_,c) => {
                 let data = c.data().unwrap();
                 if let Some(payload) = parse_message("bpane",&data) {
                     console!("receive/D {}",payload);

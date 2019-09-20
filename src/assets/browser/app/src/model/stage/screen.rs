@@ -1,6 +1,5 @@
 use types::{
-    CPixel, Move, Dot, Direction,
-    LEFT, RIGHT, UP, DOWN, IN, OUT, XPosition, YPosition, Placement
+    CPixel, Dot, LEFT, UP, XPosition, YPosition, Placement
 };
 use super::Position;
 

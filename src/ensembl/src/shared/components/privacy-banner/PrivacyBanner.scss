@@ -3,7 +3,7 @@
 .privacyBanner {
   position: fixed;
   bottom: 0;
-  background: $ens-black;
+  background: $black;
   color: white;
   font-size: 13px;
   line-height: 2;
@@ -13,7 +13,7 @@
   z-index: 10000;
 
   button {
-    background: $ens-blue;
+    background: $blue;
     border-radius: 2px;
     color: white;
     font-weight: $bold;
@@ -22,7 +22,7 @@
   }
 
   a {
-    color: $ens-blue;
+    color: $blue;
     font-weight: $bold;
   }
 }

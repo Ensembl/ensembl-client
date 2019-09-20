@@ -5,16 +5,13 @@ use stdweb::unstable::TryInto;
 use url::Url;
 
 use composit::{
-    Compositor, StateManager, StickManager,
-    CombinedStickManager,
-    AllLandscapes
+    Compositor, StateManager, CombinedStickManager, AllLandscapes
 };
-use model::stage::{ Position, Screen };
-use model::supply::{ Product, ProductList };
-use controller::input::{ Action, actions_run, startup_actions, Jumper };
-use controller::global::{ AppRunnerWeak, AppRunner };
+use model::stage::Screen;
+use model::supply::ProductList;
+use controller::input::{ Action, actions_run, startup_actions };
 use controller::output::{ Report, ViewportReport, ZMenuReports, Counter };
-use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, XferCache };
+use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, Locator, XferCache };
 use debug::add_debug_sticks;
 use dom::domutil;
 use drivers::webgl::GLPrinter;
@@ -23,7 +20,7 @@ use model::stage::Intended;
 use model::supply::build_product;
 use model::train::{ TrainManager, TravellerCreator };
 use tácode::Tácode;
-use types::{ Dot, UP };
+use types::Dot;
 
 use super::WindowState;
 
@@ -31,7 +28,7 @@ const SETTLE_TIME : f64 = 500.; // ms
 const CANVAS : &str = r##"<canvas id="canvas"></canvas>"##;
 
 pub struct App {
-    ar: AppRunnerWeak,
+    counter: Counter,
     browser_el: HtmlElement,
     canv_el: HtmlElement,
     pub printer: Arc<Mutex<PrinterManager>>,
@@ -44,14 +41,13 @@ pub struct App {
     last_resize_at: Option<f64>,
     stage_resize: Option<Dot<f64,f64>>,
     action_backlog: Vec<Action>,
-    jumper: Option<Jumper>,
     window: WindowState,
     intended: Intended,
     screen: Screen
 }
 
 impl App {
-    pub fn new(tc: &Tácode, config: &BackendConfig, http_manager: &HttpManager, browser_el: &HtmlElement, config_url: &Url) -> App {
+    pub fn new(tc: &Tácode, config: &BackendConfig, http_manager: &HttpManager, browser_el: &HtmlElement, config_url: &Url, counter: &Counter) -> App {
         let browser_el = browser_el.clone();
         domutil::inner_html(&browser_el.clone().into(),CANVAS);
         let canv_el : HtmlElement = domutil::query_selector(&browser_el.clone().into(),"canvas").try_into().unwrap();
@@ -63,11 +59,11 @@ impl App {
         let printer = PrinterManager::new(Box::new(GLPrinter::new(&canv_el)));
         let landscapes = AllLandscapes::new();
         let traveller_creator = TravellerCreator::new(&printer);
-        let train_manager = TrainManager::new(&printer,&traveller_creator);
-        let mut clerk = HttpXferClerk::new(http_manager,config_url,&cache,&train_manager);
-        let window = WindowState::new(config,tc,&mut clerk,&mut product_list,&mut csm,&train_manager,&landscapes);
+        let locator = Locator::new(config,http_manager,&csm,config_url);
+        let train_manager = TrainManager::new(&printer,&traveller_creator,&locator);
+        let mut clerk = HttpXferClerk::new(http_manager,config_url,&cache);
+        let window = WindowState::new(config,tc,&mut clerk,&mut product_list,&mut csm,&train_manager,&landscapes,&locator);
         let mut out = App {
-            ar: AppRunnerWeak::none(),
             browser_el: browser_el.clone(),
             canv_el: canv_el.clone(),
             printer: Arc::new(Mutex::new(printer.clone())),
@@ -81,9 +77,9 @@ impl App {
             last_resize_at: None,
             action_backlog: Vec::new(),
             window: window.clone(),
-            jumper: None,
             intended: Intended::new(),
-            screen: Screen::new()
+            screen: Screen::new(),
+            counter: counter.clone()
         };
         out.populate_products();
         out.run_actions(&startup_actions(),None);        
@@ -91,7 +87,7 @@ impl App {
     }
 
     fn populate_products(&mut self) {    
-        let mut window = &mut self.window;
+        let window = &mut self.window;
         let track_names : Vec<String> = window.get_backend_config().list_tracks().map(|s| s.to_string()).collect();
         for name in &track_names {
             let product = build_product(window,name);
@@ -106,11 +102,7 @@ impl App {
     pub fn tick_xfer(&mut self) -> bool {
         self.window.get_http_clerk().tick()
     }
-    
-    pub fn set_runner(&mut self, ar: &AppRunnerWeak) {
-        self.ar = ar.clone();
-    }
-            
+                
     pub fn get_report(&self) -> &Report { &self.report.as_ref().unwrap() }
         
     pub fn set_report(&mut self, report: Report) {
@@ -120,10 +112,6 @@ impl App {
     pub fn set_viewport_report(&mut self, report: ViewportReport) {
         self.viewport = Some(report);
     }
-
-    pub fn set_jumper(&mut self, jumper: Jumper) {
-        self.jumper = Some(jumper);
-    }
     
     pub fn set_zmenu_reports(&mut self, report: ZMenuReports) {
         self.zmenu_reports = Some(report);
@@ -132,17 +120,7 @@ impl App {
     pub fn get_zmenu_reports(&mut self) -> Option<&mut ZMenuReports> {
         self.zmenu_reports.as_mut()
     }
-    
-    pub fn with_apprunner<F,G>(&mut self, cb:F) -> Option<G>
-            where F: FnOnce(&mut AppRunner) -> G {
-        self.ar.upgrade().as_mut().map(cb)
-    }
-    
-    pub fn with_jumper<F,G>(&mut self, cb: F) -> Option<G>
-            where F: FnOnce(&mut Jumper) -> G {
-        self.jumper.as_mut().map(|j| cb(j))
-    }
-
+        
     pub fn get_browser_element(&self) -> &HtmlElement { &self.browser_el }
     
     pub fn get_canvas_element(&self) -> &HtmlElement { &self.canv_el }
@@ -169,13 +147,16 @@ impl App {
     }
 
     pub fn intend_here(&mut self) {
-        if let Some(desired) = self.window.get_train_manager().get_desired_position() {
-            self.intended.intend_here(&desired);
+        let tm = self.window.get_train_manager();
+        if let (Some(stick),Some(desired)) = (tm.get_desired_stick(),tm.get_desired_position()) {
+            self.intended.intend_here(&stick,&desired);
             if let Some(ref report) = self.report {
                 self.intended.update_intent_report(report);
             }
         }
     }
+
+    pub fn get_intended(&self) -> &Intended { &self.intended }
 
     pub fn with_state<F,G>(&self, cb: F) -> G where F: FnOnce(&mut StateManager) -> G {
         let a = &mut self.state.lock().unwrap();
@@ -192,7 +173,7 @@ impl App {
     }
         
     pub fn run_actions(self: &mut App, evs: &Vec<Action>,currency: Option<f64>) {
-        if let Some(ref mut report) = self.report {
+        if self.report.is_some() {
             if currency.is_none() || self.with_counter(|c| c.is_current(currency.unwrap())) {
                 if self.action_backlog.len() > 0 {
                     console!("running backlog");
@@ -238,7 +219,7 @@ impl App {
     }
     
     pub fn with_counter<F,G>(&mut self, cb: F) -> G where F: FnOnce(&mut Counter) -> G {
-        unwrap!(self.ar.upgrade()).with_counter(cb)
+        cb(&mut self.counter)
     }
 
     pub fn settle(&mut self) {

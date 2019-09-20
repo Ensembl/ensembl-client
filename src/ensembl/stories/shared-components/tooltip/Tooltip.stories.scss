@@ -15,7 +15,7 @@
   margin-left: calc(100vw - 200px);
   width: 100px;
   height: 100px;
-  background-color: $ens-grey;
+  background-color: $grey;
   user-select: 'none';
   cursor: 'pointer';
 }
@@ -101,13 +101,13 @@
   position: relative;
   height: 600px;
   width: 600px;
-  background: $ens-light-grey;
+  background: $light-grey;
 }
 
 .positioningStoryItem {
   position: absolute;
   padding: 1.5em;
-  background: $ens-grey;
+  background: $grey;
 }
 
 .positioningStoryItemTopLeft {

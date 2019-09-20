@@ -3,13 +3,14 @@
 .speciesTab {
   display: inline-block;
   padding: 6px 20px;
-  border: 1px solid $ens-blue;
+  border: 1px solid $blue;
   border-radius: 20px;
   cursor: pointer;
   overflow: hidden;
   line-height: 1;
   user-select: none;
   text-overflow: ellipsis;
+  white-space: nowrap;
   flex-grow: 0;
   flex-shrink: 1;
   flex-basis: auto;
@@ -31,12 +32,12 @@
 }
 
 .speciesTabActive {
-  background-color: $ens-black;
+  background-color: $black;
   border: none;
 
   .name,
   .assembly {
-    color: $ens-white;
+    color: $white;
   }
 }
 

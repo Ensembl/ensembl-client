@@ -5,7 +5,7 @@ use stdweb::web::{ Element, HtmlElement, IHtmlElement };
 use stdweb::traits::IEvent;
 
 use controller::global::{ App, AppRunner };
-use controller::input::{ actions_run, Action };
+use controller::input::Action;
 use controller::animate::{ MousePhysics, Optical };
 use types::{ Dot, CPixel };
 
@@ -50,14 +50,14 @@ impl UserEventListener {
     }
     
     fn zmenu_click_check(&mut self, pos: &CPixel) {
-        let mut app = &mut self.app.lock().unwrap();
+        let app = &mut self.app.lock().unwrap();
         app.run_actions(&vec![
             Action::ZMenuClickCheck(*pos)
         ],None); 
     }
 
     fn check_cursor(&mut self, pos: &CPixel) {
-        let mut app = &mut self.app.lock().unwrap();
+        let app = &mut self.app.lock().unwrap();
         let screen = app.get_screen().clone();
         let zmenus = app.with_compo(|co|
             co.intersects(&screen,*pos)

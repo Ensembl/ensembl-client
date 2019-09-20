@@ -3,10 +3,13 @@
 .launchbar {
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid $ens-grey;
-  border-top: 1px solid $ens-grey;
+  border-bottom: 1px solid $grey;
+  border-top: 1px solid $grey;
   padding: 11px 6px;
-  overflow-x: auto;
+
+  @media screen and (max-width: 700px) {
+    overflow-x: auto;
+  }
 }
 
 .categoriesWrapper {
@@ -32,7 +35,7 @@
   }
 
   &:not(:last-child) {
-    border-right: 1px solid $ens-grey;
+    border-right: 1px solid $grey;
   }
 }
 
@@ -40,7 +43,7 @@
   display: inline-block;
   height: 30px;
   width: 30px;
-  border: 1px solid $ens-blue;
+  border: 1px solid $blue;
   margin: 0 12px;
 
   img {
@@ -50,11 +53,11 @@
 }
 
 .launchbarButtonSelected {
-  border: 1px solid $ens-black;
+  border: 1px solid $black;
 }
 
 .launchbarButtonDisabled {
-  border: 1px solid $ens-grey;
+  border: 1px solid $grey;
 }
 
 .launchbarButtonImage {
@@ -62,22 +65,22 @@
     width: 30px;
     height: 30px;
     transform: scale(1.1);
-    fill: $ens-white;
-    background-color: $ens-blue;
+    fill: $white;
+    background-color: $blue;
   }
 }
 
 .launchbarButtonSelectedImage {
   svg {
-    fill: $ens-white;
-    background-color: $ens-black;
+    fill: $white;
+    background-color: $black;
   }
 }
 
 .launchbarButtonDisabledImage {
   svg {
-    fill: $ens-white;
-    background-color: $ens-grey;
+    fill: $white;
+    background-color: $grey;
   }
 }
 

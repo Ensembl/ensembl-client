@@ -4,8 +4,9 @@
 $global-font-size: 14px;
 $global-lineheight: 1.5;
 $black: #17354e;
-$white: #fefefe;
-$body-background: $white;
+$white: #fff;
+$off-white: #fefefe;
+$body-background: $off-white;
 $body-font-color: $black;
 $body-font-family: Lato, 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;
 $body-antialiased: true;
@@ -17,43 +18,39 @@ $global-button-cursor: auto;
 
 // Colour Palette
 // ---------
+$shadow-color: rgba(0, 0, 0, 0.4);
 
-$ens-black: #17354e;
-$ens-shadow-color: rgba(0, 0, 0, 0.4);
+$light-blue: #e5f5ff; // text highlight
+$blue: #33adff; // blue on black
+$dark-blue: #0099ff; // blue on white
 
-$ens-light-blue: #e5f5ff; // text highlight
-$ens-blue: #33adff; // blue on black
-$ens-dark-blue: #0099ff; // blue on white
+$light-grey: #f1f2f4;
+$medium-light-grey: #d4d9de;
+$grey: #b7c0c8;
+$medium-dark-grey: #9aa7b1;
+$dark-grey: #6f8190;
 
-$ens-light-grey: #f1f2f4;
-$ens-medium-light-grey: #d4d9de;
-$ens-grey: #b7c0c8;
-$ens-medium-dark-grey: #9aa7b1;
-$ens-dark-grey: #6f8190;
+$red: #d90000;
 
-$ens-red: #d90000;
+$green: #47d147;
 
-$ens-green: #47d147;
-
-$ens-white: #fff;
-
-$global-box-shadow: $ens-medium-light-grey;
+$global-box-shadow: $medium-light-grey;
 
 /* stylelint-disable */
 :export {
-  ens-black: $ens-black;
-  ens-blue: $ens-blue;
-  ens-light-blue: $ens-light-blue;
-  ens-dark-blue: $ens-dark-blue;
-  ens-red: $ens-red;
-  ens-dark-grey: $ens-dark-grey;
-  ens-medium-dark-grey: $ens-medium-dark-grey;
-  ens-grey: $ens-grey;
-  ens-medium-light-grey: $ens-medium-light-grey;
-  ens-light-grey: $ens-light-grey;
-  ens-green: $ens-green;
-  ens-white: $ens-white;
-  ens-shadow-color: $ens-shadow-color;
+  black: $black;
+  blue: $blue;
+  light-blue: $light-blue;
+  dark-blue: $dark-blue;
+  red: $red;
+  dark-grey: $dark-grey;
+  medium-dark-grey: $medium-dark-grey;
+  grey: $grey;
+  medium-light-grey: $medium-light-grey;
+  light-grey: $light-grey;
+  green: $green;
+  white: $white;
+  shadow-color: $shadow-color;
 }
 /* stylelint-enable */
 

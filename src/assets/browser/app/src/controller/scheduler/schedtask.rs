@@ -2,12 +2,12 @@ pub use super::schedrun::SchedRun;
 
 pub struct SchedTask {
     stream: String,
-    cb: Box<FnMut(&mut SchedRun) + 'static>,
+    cb: Box<dyn FnMut(&mut SchedRun) + 'static>,
     id: u32
 }
 
 impl SchedTask {
-    pub(in super) fn new(name: &str, cb: Box<FnMut(&mut SchedRun) + 'static>) -> SchedTask {
+    pub(in super) fn new(name: &str, cb: Box<dyn FnMut(&mut SchedRun) + 'static>) -> SchedTask {
         SchedTask { stream: format!("scheduler-task-{}",name), cb, id: 0 }
     }
     

@@ -1,10 +1,9 @@
-use composit::{ Compositor, Leaf };
-use model::stage::{ Screen, Position };
-use model::supply::PurchaseOrder;
+use composit::Compositor;
+use model::stage::Screen;
 use types::Dot;
 
 use super::DriverTraveller;
-use model::train::{ CarriageId, Traveller, TravellerId };
+use model::train::{ CarriageId, TravellerId };
 
 pub trait Printer {
     /* Print one run of objects from compositor with given stage and
@@ -31,5 +30,5 @@ pub trait Printer {
     
     fn add_carriage(&mut self, id: &CarriageId);
     fn remove_carriage(&mut self, id: &CarriageId);
-    fn make_driver_traveller(&mut self, ti: &TravellerId) -> Box<DriverTraveller>;
+    fn make_driver_traveller(&mut self, ti: &TravellerId) -> Box<dyn DriverTraveller>;
 }

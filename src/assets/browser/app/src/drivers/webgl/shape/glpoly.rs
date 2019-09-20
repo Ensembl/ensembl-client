@@ -116,7 +116,7 @@ impl PinPolyDraw {
         let v : Vec<CFraction> = v.iter().map(|s|
             bbox.flip_area(*s+middle,corner)+delta
         ).collect();
-        let w : Vec<&Input> = v.iter().map(|s| s as &Input).collect();
+        let w : Vec<&dyn Input> = v.iter().map(|s| s as &dyn Input).collect();
         match self.origin {
             PolyPosition::Pin(origin) => {
                 poly_p(b,geom,"aVertexPosition",&w);

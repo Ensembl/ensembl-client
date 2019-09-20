@@ -3,7 +3,6 @@
 .appBar {
   font-size: 12px;
   padding: 8px 20px;
-  width: 100%;
   min-height: 80px;
 
   .appBarTop {
@@ -11,8 +10,10 @@
   }
 
   .appBarBottom {
-    display: flex;
+    display: grid;
     margin-left: 2em;
+    max-width: 100%;
+    grid-template-columns: minmax(80%, 1fr) minmax(100px, auto);
   }
 }
 
@@ -20,9 +21,10 @@
   flex: 0 1 auto;
   position: relative;
   top: 5px;
+  margin-left: 2em;
 
   a {
-    color: $ens-black;
+    color: $black;
     font-size: 12px;
     font-weight: $light;
   }

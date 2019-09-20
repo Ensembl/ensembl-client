@@ -1,10 +1,11 @@
 .speciesTabBar {
-  flex: 1 1 auto;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
 }
 
 .addSpeciesLink {
   display: inline-block;
   font-size: 11px;
   position: relative;
-  bottom: 8px;
 }

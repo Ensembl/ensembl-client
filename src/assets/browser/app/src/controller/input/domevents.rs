@@ -4,7 +4,7 @@ use dom::domutil;
 use stdweb::web::{ Element, HtmlElement };
 
 use controller::global::{ App, AppRunner };
-use controller::input::{ actions_run, Action };
+use controller::input::Action;
 use dom::event::{ 
     EventListener, EventControl, EventType, EventData, Target
 };

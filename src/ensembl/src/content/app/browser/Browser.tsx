@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useRef, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { replace, Replace } from 'connected-react-router';
@@ -102,11 +102,9 @@ type BrowserProps = RouteComponentProps<MatchParams> &
 export const Browser: FunctionComponent<BrowserProps> = (
   props: BrowserProps
 ) => {
-  const browserRef: React.RefObject<HTMLDivElement> = useRef(null);
   const [trackStatesFromStorage, setTrackStatesFromStorage] = useState<
     TrackStates
   >({});
-  const lastGenomeIdRef = useRef(props.activeGenomeId);
 
   const { isDrawerOpened, closeDrawer } = props;
 
@@ -115,25 +113,9 @@ export const Browser: FunctionComponent<BrowserProps> = (
     const { focus = null, location = null } = props.browserQueryParams;
     const chrLocation = location ? getChrLocationFromStr(location) : null;
 
-    const lastGenomeId = lastGenomeIdRef.current;
-
-    /*
-      before committing url changes to redux:
-      - make sure we don't already have these same values in redux store;
-      - if we already have these values, it's possible that this is because
-        the user is switching back to a previously viewed species;
-        so check whether the genome id has changed from the previous render
-        (that's the reason for lastGenomeIdRef here)
-
-      TODO: after both genome browser and browser chrome are updated so that
-      we do not update url location while moving or zooming the image; we can
-      remove the genomeId === lastGenomeId check in the if-statement below
-      and move dispatchBrowserLocation(genomeId, chrLocation) above the if-statement
-    */
     if (
       !genomeId ||
-      (genomeId === lastGenomeId &&
-        genomeId === props.activeGenomeId &&
+      (genomeId === props.activeGenomeId &&
         focus === props.activeEnsObjectId &&
         isEqual(chrLocation, props.chrLocation))
     ) {
@@ -153,7 +135,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
     } else if (focus) {
       props.changeFocusObject(focus);
     }
-    lastGenomeIdRef.current = genomeId;
   };
 
   const dispatchBrowserLocation = (
@@ -263,9 +244,12 @@ export const Browser: FunctionComponent<BrowserProps> = (
     return launchbarExpanded ? styles.shorter : styles.taller;
   };
 
-  const BrowserBarNode = (
+  const browserBar = (
     <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
   );
+
+  const shouldShowNavBar =
+    props.browserActivated && props.browserNavOpened && !isDrawerOpened;
 
   return props.activeGenomeId ? (
     <>
@@ -277,13 +261,13 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
       {!props.browserQueryParams.focus && (
         <section className={styles.browser}>
-          {BrowserBarNode}
+          {browserBar}
           <ExampleObjectLinks {...props} />
         </section>
       )}
       {props.browserQueryParams.focus && (
         <section className={styles.browser}>
-          {BrowserBarNode}
+          {browserBar}
           {props.genomeSelectorActive && (
             <div className={styles.browserOverlay} />
           )}
@@ -294,15 +278,8 @@ export const Browser: FunctionComponent<BrowserProps> = (
           >
             <animated.div style={trackAnimation}>
               <div className={styles.browserImageWrapper} onClick={closeTrack}>
-                {props.browserNavOpened &&
-                !isDrawerOpened &&
-                browserRef.current ? (
-                  <BrowserNavBar />
-                ) : null}
-                <BrowserImage
-                  browserRef={browserRef}
-                  trackStates={trackStatesFromStorage}
-                />
+                {shouldShowNavBar && <BrowserNavBar />}
+                <BrowserImage trackStates={trackStatesFromStorage} />
               </div>
             </animated.div>
             <TrackPanel />

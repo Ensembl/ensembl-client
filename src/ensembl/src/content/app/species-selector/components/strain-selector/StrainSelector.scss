@@ -7,13 +7,13 @@
   transform: translateX(-60%);
   white-space: nowrap;
   display: inline-block;
-  color: $ens-white;
+  color: $white;
   font-size: 12px; // FIXME
   font-weight: 700;
   padding: 4px 6px;
-  background-color: $ens-blue;
+  background-color: $blue;
   border-radius: 4px;
-  box-shadow: 2px 2px 5px $ens-grey;
+  box-shadow: 2px 2px 5px $grey;
   cursor: pointer;
   user-select: none;
 }
@@ -27,11 +27,11 @@
 
 .strain {
   display: inline-block;
-  color: $ens-blue;
+  color: $blue;
   cursor: pointer;
 }
 
 .strainSelected {
-  color: $ens-grey;
+  color: $grey;
   cursor: default;
 }

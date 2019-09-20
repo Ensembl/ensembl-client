@@ -119,6 +119,8 @@ export function browserLocation(
       };
     case getType(browserActions.toggleGenomeSelector):
       return { ...state, genomeSelectorActive: action.payload };
+    case getType(browserActions.updateDefaultPositionFlag):
+      return { ...state, isObjectInDefaultPosition: action.payload };
     default:
       return state;
   }

@@ -4,7 +4,7 @@ use super::super::program::{
     PTGeom, PTSkin
 };
 use types::{ RFraction, CLeaf, RPixel, RLeaf, cleaf, Rect, Edge, Colour };
-use model::shape::{ ColourSpec, DrawingSpec, ShapeSpec };
+use model::shape::ColourSpec;
 use super::super::program::Input;
 
 use drivers::webgl::GLProgData;
@@ -36,7 +36,7 @@ pub fn rectangle_c(b: DataBatch, pdata: &mut ProgramAttribs,
     }
 }
 
-pub fn poly_p(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[&Input]) {
+pub fn poly_p(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[&dyn Input]) {
     if let Some(obj) = pdata.get_object(key) {
         obj.add_data(&b,p);
     }
@@ -61,8 +61,8 @@ pub fn colour(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, c: &Colour) {
     }
 }
 
-pub fn multi_gl(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, d: &Input, mul: u16) {
-    let mut v = Vec::<&Input>::new();
+pub fn multi_gl(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, d: &dyn Input, mul: u16) {
+    let mut v = Vec::new();
     v.extend(iter::repeat(d).take(mul as usize));
     if let Some(obj) = pdata.get_object(key) {
         obj.add_data(&b,&v.as_slice());

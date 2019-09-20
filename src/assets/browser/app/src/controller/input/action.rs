@@ -1,4 +1,4 @@
-use types::{ Move, Units, Axis, Dot, cdfraction, LEFT, RIGHT, CPixel };
+use types::{ Move, Units, Axis, Dot, CPixel };
 use controller::global::App;
 use composit::StickManager;
 
@@ -20,6 +20,7 @@ pub enum Action {
     SetStick(String),
     SetState(String,bool),
     Settled,
+    ActivityOutsideZMenu,
     ZMenuClickCheck(CPixel),
     ShowZMenu(String,String,Dot<i32,i32>,JSONValue),
     SetFocus(String),
@@ -47,6 +48,7 @@ impl Action {
             Action::ZoomTo(_) => 10,
             Action::Move(_) => 10,
             Action::Zoom(_) => 10,
+            Action::ActivityOutsideZMenu => 20,
             Action::ZMenuClickCheck(_) => 25,
             Action::ShowZMenu(_,_,_,_) => 25,
             Action::SetFocus(_) => 20,
@@ -176,14 +178,16 @@ fn exe_set_focus(a: &mut App, id: &str) {
 }
 
 fn exe_reset(a: &mut App) {
-    let context = a.get_window().get_train_manager().get_desired_context();
-    if let Some(id) = context.get_focus() {
-        a.with_jumper(|j| j.jump(&id,false));
-    }
+    let tm = a.get_window().get_train_manager();
+    tm.set_desired_context(&tm.get_desired_context());
+    tm.jump_to_focus_object();
 }
 
 fn exe_jump_focus(a: &mut App, id: &str) {
-    a.with_jumper(|j| j.jump(&id,true));
+    let mut tm = a.get_window().get_train_manager().clone();
+    exe_set_focus(a,id);
+    tm.set_desired_context(&tm.get_desired_context());
+    tm.jump_to_focus_object();
 }
 
 pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
@@ -212,6 +216,7 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
             Action::ZMenuClickCheck(pos) => exe_zmenu_click_check(cg,&pos,currency),
             Action::ShowZMenu(id,track_id,pos,payload) => exe_zmenu_show(cg,&id,&track_id,pos,payload),
             Action::Reset => exe_reset(cg),
+            Action::ActivityOutsideZMenu => exe_deactivate(cg),
             Action::Noop => ()
         }
     }

@@ -104,7 +104,7 @@ impl HttpBlackBoxDriverImpl {
         }
     }
 
-    fn send(&mut self, data: &[u8], consumer: Box<HttpResponseConsumer>) -> Result<(),String> {
+    fn send(&mut self, data: &[u8], consumer: Box<dyn HttpResponseConsumer>) -> Result<(),String> {
         let xhr = XmlHttpRequest::new();
         xhr.open("POST",&self.url.as_str()).map_err(|e| e.to_string())?;
         xhr.set_request_header("Content-Type", "application/json").map_err(|e| e.to_string())?;

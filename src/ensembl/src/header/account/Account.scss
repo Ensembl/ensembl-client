@@ -1,14 +1,14 @@
 @import 'src/styles/common';
 
 .account {
-  border-bottom: 1px solid $ens-grey;
+  border-bottom: 1px solid $grey;
   height: 300px;
   display: flex;
   align-items: center;
   justify-content: center;
 
   h2 {
-    color: $ens-grey;
+    color: $grey;
     text-align: center;
   }
 }
