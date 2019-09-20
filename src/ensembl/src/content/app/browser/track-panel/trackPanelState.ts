@@ -6,11 +6,6 @@ export type Bookmark = {
   genome_id: string;
   object_id: string;
   object_type: string;
-  location: {
-    chromosome: string;
-    start: number;
-    end: number;
-  };
   label: string;
   trackStates: GenomeTrackStates;
 };

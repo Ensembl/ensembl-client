@@ -34,7 +34,6 @@ const buildBookmark = (
     object_id: ensObject.object_id,
     object_type: ensObject.object_type,
     label: bookmarkLabel,
-    location: { ...ensObject.location },
     trackStates: { ...trackStates }
   };
 };
@@ -154,13 +153,8 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
     activeGenomePreviouslyViewedObjects.splice(existingIndex, 1);
   }
 
-  // Limit the number of bookmark entries to 20
-  const limitedPreviouslyViewedObjects = activeGenomePreviouslyViewedObjects.slice(
-    -20
-  );
-
   trackPanelStorageService.updateActiveGenomePreviouslyViewedObjects({
-    [activeGenomeId]: limitedPreviouslyViewedObjects
+    [activeGenomeId]: activeGenomePreviouslyViewedObjects
   });
 
   dispatch(
@@ -168,7 +162,7 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
       activeGenomeId,
       data: {
         ...getActiveTrackPanel(state),
-        previouslyViewedObjects: limitedPreviouslyViewedObjects
+        previouslyViewedObjects: activeGenomePreviouslyViewedObjects
       }
     })
   );
@@ -194,50 +188,6 @@ export const changeHighlightedTrackId: ActionCreator<
     })
   );
 };
-
-// FIXME: Wait until manual bookmarks functionality is added
-// export const updateBookmarksAndSave: ActionCreator<
-//   ThunkAction<void, any, null, Action<string>>
-// > = () => (dispatch, getState: () => RootState) => {
-//   const state = getState();
-//   const activeGenomeId = getBrowserActiveGenomeId(state);
-//   const activeEnsObject = getBrowserActiveEnsObject(state);
-//   if (!activeGenomeId || !activeEnsObject) {
-//     return;
-//   }
-//   const trackStates = getBrowserTrackStates(state)[activeGenomeId];
-
-//   const activeGenomeBookmarks = [...getActiveGenomeBookmarks(state)];
-
-//   const existingIndex = activeGenomeBookmarks.findIndex(
-//     (bookmark) => bookmark.object_id === activeEnsObject.object_id
-//   );
-//   if (existingIndex === -1) {
-//     // IF it is not present, add it to the end
-//     activeGenomeBookmarks.push(buildBookmark(activeEnsObject, trackStates));
-//   } else if (existingIndex !== -1) {
-//     // If it is already present, bump it to the end
-//     activeGenomeBookmarks.push({
-//       ...activeGenomeBookmarks[existingIndex],
-//       trackStates
-//     });
-//     activeGenomeBookmarks.splice(existingIndex, 1);
-//   }
-
-//   trackPanelStorageService.updateActiveGenomeBookmarks({
-//     [activeGenomeId]: activeGenomeBookmarks
-//   });
-
-//   dispatch(
-//     updateTrackPanelForGenome({
-//       activeGenomeId,
-//       data: {
-//         ...getActiveTrackPanel(getState()),
-//         bookmarks: activeGenomeBookmarks
-//       }
-//     })
-//   );
-// };
 
 export const openTrackPanelModal: ActionCreator<
   ThunkAction<void, any, null, Action<string>>

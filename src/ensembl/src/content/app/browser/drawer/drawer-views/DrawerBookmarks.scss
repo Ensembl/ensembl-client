@@ -1,0 +1,53 @@
+@import 'src/styles/common';
+
+.viewTitle {
+  margin: 20px 0 0 30px;
+}
+
+.contentWrapper {
+  height: 80%;
+}
+
+.previouslyViewedObjectType {
+  color: $dark-grey;
+  position: absolute;
+  margin-left: 8px;
+  font-size: 12px;
+  top: 1px;
+}
+
+.linksWrapper {
+  margin: 20px 0 0 40px;
+  height: 100%;
+  columns: 4;
+  position: relative;
+  width: calc(100% - 110px);
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  overflow-x: auto;
+
+  a {
+    font-weight: $normal;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 215px;
+    white-space: nowrap;
+    display: inline-block;
+    font-size: 13px;
+  }
+
+  dt {
+    color: $dark-grey;
+    font-size: 12px;
+    border-bottom: 1px solid $grey;
+    margin-bottom: 15px;
+    position: relative;
+  }
+
+  dd {
+    margin: 5px 0 0 15px;
+    position: relative;
+    width: 200px;
+  }
+}

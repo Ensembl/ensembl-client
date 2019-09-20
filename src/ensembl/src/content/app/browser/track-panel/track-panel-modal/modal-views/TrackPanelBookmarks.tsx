@@ -12,13 +12,16 @@ import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/
 import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
 import { closeTrackPanelModal } from '../../trackPanelActions';
-
+import ImageButton, {
+  ImageButtonStatus
+} from 'src/shared/components/image-button/ImageButton';
+import { ReactComponent as EllipsisIcon } from 'static/img/track-panel/ellipsis.svg';
+import { changeDrawerViewAndOpen } from 'src/content/app/browser/drawer/drawerActions';
 import upperFirst from 'lodash/upperFirst';
 
 import styles from '../TrackPanelModal.scss';
-import { Bookmark } from '../../trackPanelState';
+import { Bookmark } from 'src/content/app/browser/track-panel/trackPanelState';
 
 type StateProps = {
   activeGenomeId: string | null;
@@ -30,16 +33,9 @@ type DispatchProps = {
   fetchExampleEnsObjects: (objectId: string) => void;
   updateTrackStates: (trackStates: TrackStates) => void;
   closeTrackPanelModal: () => void;
+  changeDrawerViewAndOpen: (drawerView: string) => void;
 };
 export type TrackPanelBookmarksProps = StateProps & DispatchProps;
-
-const getExampleObjLabel = (exampleObject: EnsObject | Bookmark) => {
-  if (exampleObject.object_type === 'gene') {
-    return exampleObject.label;
-  } else {
-    return getFormattedLocation(exampleObject.location);
-  }
-};
 
 type ExampleLinksProps = Pick<
   TrackPanelBookmarksProps,
@@ -57,9 +53,9 @@ export const ExampleLinks = (props: ExampleLinksProps) => {
         return (
           <dd key={exampleObject.object_id}>
             <Link to={path} onClick={props.closeTrackPanelModal}>
-              {getExampleObjLabel(exampleObject)}
+              {exampleObject.label}
             </Link>
-            <span className={styles.previouslyViewedType}>
+            <span className={styles.previouslyViewedObjectType}>
               {' '}
               {upperFirst(exampleObject.object_type)}
             </span>
@@ -72,10 +68,7 @@ export const ExampleLinks = (props: ExampleLinksProps) => {
 
 type PreviouslyViewedLinksProps = Pick<
   TrackPanelBookmarksProps,
-  | 'previouslyViewedObjects'
-  | 'updateTrackStates'
-  | 'closeTrackPanelModal'
-  | 'activeGenomeId'
+  'previouslyViewedObjects' | 'updateTrackStates' | 'closeTrackPanelModal'
 >;
 
 export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
@@ -84,11 +77,9 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
       {[...props.previouslyViewedObjects]
         .reverse()
         .map((previouslyViewedObject, index) => {
-          const locationStr = `${previouslyViewedObject.location.chromosome}:${previouslyViewedObject.location.start}-${previouslyViewedObject.location.end}`;
           const path = urlFor.browser({
-            genomeId: props.activeGenomeId,
-            focus: previouslyViewedObject.object_id,
-            location: locationStr
+            genomeId: previouslyViewedObject.genome_id,
+            focus: previouslyViewedObject.object_id
           });
 
           const onClickHandler = () => {
@@ -106,7 +97,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
               <Link to={path} onClick={onClickHandler}>
                 {previouslyViewedObject.label}
               </Link>
-              <span className={styles.previouslyViewedType}>
+              <span className={styles.previouslyViewedObjectType}>
                 {' '}
                 {upperFirst(previouslyViewedObject.object_type)}
               </span>
@@ -126,11 +117,13 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
     closeTrackPanelModal
   } = props;
 
+  const limitedPreviouslyViewedObjects = previouslyViewedObjects.slice(-20);
+
   return (
     <section className="trackPanelBookmarks">
       <h3>Bookmarks</h3>
       {exampleEnsObjects.length ? (
-        <dl className={styles.previouslyViewed}>
+        <dl className={styles.previouslyViewedObject}>
           <dt>Example links</dt>
           <ExampleLinks
             exampleEnsObjects={exampleEnsObjects}
@@ -139,12 +132,22 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
           />
         </dl>
       ) : null}
-      {previouslyViewedObjects.length ? (
-        <dl className={styles.previouslyViewed}>
-          <dt>Previously viewed</dt>
+      {limitedPreviouslyViewedObjects.length ? (
+        <dl className={styles.previouslyViewedObject}>
+          <dt>
+            Previously viewed
+            <span className={styles.ellipsis}>
+              <ImageButton
+                buttonStatus={ImageButtonStatus.ACTIVE}
+                description={'View all'}
+                image={EllipsisIcon}
+                onClick={() => props.changeDrawerViewAndOpen('bookmarks')}
+              />
+            </span>
+            <span className={styles.allText}>All</span>
+          </dt>
           <PreviouslyViewedLinks
-            previouslyViewedObjects={previouslyViewedObjects}
-            activeGenomeId={activeGenomeId}
+            previouslyViewedObjects={limitedPreviouslyViewedObjects}
             updateTrackStates={updateTrackStates}
             closeTrackPanelModal={closeTrackPanelModal}
           />
@@ -163,7 +166,8 @@ const mapStateToProps = (state: RootState) => ({
 const mapDispatchToProps = {
   fetchExampleEnsObjects,
   updateTrackStates,
-  closeTrackPanelModal
+  closeTrackPanelModal,
+  changeDrawerViewAndOpen
 };
 
 export default connect(

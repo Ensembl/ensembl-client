@@ -38,7 +38,7 @@
   }
 }
 
-.previouslyViewed {
+.previouslyViewedObject {
   margin-top: 30px;
 
   a {
@@ -54,17 +54,32 @@
   dt {
     color: $dark-grey;
     font-size: 12px;
-    border-bottom: 1px solid $ens-grey;
+    border-bottom: 1px solid $grey;
+    margin-bottom: 15px;
+    position: relative;
+
+    .ellipsis {
+      position: absolute;
+      right: 30px;
+      top: -2px;
+      width: 25px;
+    }
+
+    .allText {
+      position: absolute;
+      right: 7px;
+      top: 2px;
+    }
   }
 
   dd {
-    margin: 15px 0 0 15px;
+    margin: 5px 0 0 15px;
     position: relative;
   }
 }
 
-.previouslyViewedType {
-  color: $ens-dark-grey;
+.previouslyViewedObjectType {
+  color: $dark-grey;
   position: absolute;
   margin-left: 8px;
   font-size: 12px;
