@@ -10,6 +10,8 @@ import {
   ExampleLinks
 } from './TrackPanelBookmarks';
 
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+
 jest.mock('react-router-dom', () => ({
   Link: (props: any) => (
     <div {...props} className={'link'}>
@@ -34,6 +36,7 @@ const createPreviouslyViewedLink = () => ({
 const closeTrackPanelModalMock = jest.fn();
 const updateTrackStatesMock = jest.fn();
 const fetchExampleEnsObjectsMock = jest.fn();
+const changeDrawerViewAndOpenMock = jest.fn();
 
 describe('<TrackPanelBookmarks />', () => {
   const numberOfExampleObjects = faker.random.number({ min: 5, max: 10 });
@@ -50,7 +53,8 @@ describe('<TrackPanelBookmarks />', () => {
     ),
     fetchExampleEnsObjects: fetchExampleEnsObjectsMock,
     updateTrackStates: updateTrackStatesMock,
-    closeTrackPanelModal: closeTrackPanelModalMock
+    closeTrackPanelModal: closeTrackPanelModalMock,
+    changeDrawerViewAndOpen: changeDrawerViewAndOpenMock
   };
 
   let wrapper: any;
@@ -81,6 +85,12 @@ describe('<TrackPanelBookmarks />', () => {
       .simulate('click');
 
     expect(closeTrackPanelModalMock).toBeCalled();
+  });
+
+  it('calls changeDrawerViewAndOpen when the ellipsis is clicked', () => {
+    wrapper.find(ImageButton).simulate('click');
+
+    expect(changeDrawerViewAndOpenMock).toBeCalled();
   });
 
   it('renders correct number of links to example objects', () => {
