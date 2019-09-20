@@ -30,7 +30,7 @@ const DrawerBookmarks: FunctionComponent<DrawerBookmarksProps> = (
 ) => {
   return (
     <>
-      <div className={styles.viewTitle}> All previously viewed</div>
+      <div className={styles.drawerTitle}> All previously viewed</div>
       <div className={styles.contentWrapper}>
         <dl className={styles.linksWrapper}>
           {[...props.previouslyViewedObjects]

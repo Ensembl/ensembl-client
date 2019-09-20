@@ -56,7 +56,6 @@ export const ExampleLinks = (props: ExampleLinksProps) => {
               {exampleObject.label}
             </Link>
             <span className={styles.previouslyViewedObjectType}>
-              {' '}
               {upperFirst(exampleObject.object_type)}
             </span>
           </dd>
@@ -101,7 +100,6 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
                 {previouslyViewedObject.label}
               </Link>
               <span className={styles.previouslyViewedObjectType}>
-                {' '}
                 {upperFirst(previouslyViewedObject.object_type)}
               </span>
             </dd>
