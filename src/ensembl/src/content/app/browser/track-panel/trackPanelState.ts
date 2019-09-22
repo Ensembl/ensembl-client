@@ -21,7 +21,7 @@ export const defaultTrackPanelStateForGenome: TrackPanelStateForGenome = {
   selectedTrackPanelTab: TrackSet.GENOMIC,
   trackPanelModalView: '',
   highlightedTrackId: '',
-  isTrackPanelOpened: false,
+  isTrackPanelOpened: true,
   collapsedTrackIds: []
 };
 
