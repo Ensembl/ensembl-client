@@ -47,8 +47,6 @@ export function browserEntity(
       }
       return newState;
     }
-    case getType(browserActions.updateBrowserActiveGenomeId):
-      return { ...state, activeGenomeId: action.payload };
     case getType(browserActions.updateBrowserActiveEnsObjectIds):
       return { ...state, activeEnsObjectIds: action.payload };
     case getType(browserActions.updateTrackStates):
