@@ -15,10 +15,11 @@ export default function trackPanel(
     | ActionType<typeof browserActions>
 ): TrackPanelState {
   switch (action.type) {
-    case getType(browserActions.updateBrowserActiveGenomeId):
+    case getType(browserActions.setDataFromUrl):
+      const { activeGenomeId } = action.payload;
       return {
         ...state,
-        [action.payload]: getTrackPanelStateForGenome(action.payload)
+        [activeGenomeId]: getTrackPanelStateForGenome(activeGenomeId)
       };
     case getType(trackPanelActions.updateTrackPanelForGenome):
       return {

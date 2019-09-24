@@ -99,17 +99,6 @@ export const fetchDataForLastVisitedObjects: ActionCreator<
   activeEnsObjectIds.forEach((id) => dispatch(fetchEnsObject(id)));
 };
 
-export const updateBrowserActiveGenomeId = createStandardAction(
-  'browser/update-active-genome-id'
-)<string>();
-
-export const updateBrowserActiveGenomeIdAndSave: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (activeGenomeId: string) => (dispatch) => {
-  dispatch(updateBrowserActiveGenomeId(activeGenomeId));
-  browserStorageService.saveActiveGenomeId(activeGenomeId);
-};
-
 export const updateBrowserActiveEnsObjectIds = createStandardAction(
   'browser/update-active-ens-object-ids'
 )<{ [objectId: string]: string }>();

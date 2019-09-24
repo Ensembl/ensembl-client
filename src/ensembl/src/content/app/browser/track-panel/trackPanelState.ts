@@ -33,10 +33,10 @@ export const defaultTrackPanelStateForGenome: TrackPanelStateForGenome = {
   isTrackPanelModalOpened: false,
   bookmarks: [],
   previouslyViewedObjects: [],
-  isTrackPanelOpened: false,
   selectedTrackPanelTab: TrackSet.GENOMIC,
   trackPanelModalView: '',
   highlightedTrackId: '',
+  isTrackPanelOpened: true,
   collapsedTrackIds: []
 };
 
