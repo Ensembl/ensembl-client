@@ -1,17 +1,19 @@
 import React, { FunctionComponent } from 'react';
-
-import * as urlFor from 'src/shared/helpers/urlHelper';
+import upperFirst from 'lodash/upperFirst';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
 import { RootState } from 'src/store';
 import { Bookmark } from 'src/content/app/browser/track-panel/trackPanelState';
 import { TrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { updateTrackStates } from 'src/content/app/browser/browserActions';
 import { closeTrackPanelModal } from 'src/content/app/browser/track-panel/trackPanelActions';
-import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
 import { closeDrawer } from 'src/content/app/browser/drawer/drawerActions';
-import upperFirst from 'lodash/upperFirst';
+import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
+import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
+
 import styles from './DrawerBookmarks.scss';
 
 type StateProps = {
@@ -32,7 +34,7 @@ const DrawerBookmarks: FunctionComponent<DrawerBookmarksProps> = (
     <>
       <div className={styles.drawerTitle}> All previously viewed</div>
       <div className={styles.contentWrapper}>
-        <dl className={styles.linksWrapper}>
+        <div className={styles.linksWrapper}>
           {[...props.previouslyViewedObjects]
             .reverse()
             .map((previouslyViewedObject, index) => {
@@ -41,30 +43,27 @@ const DrawerBookmarks: FunctionComponent<DrawerBookmarksProps> = (
                 focus: previouslyViewedObject.object_id
               });
 
-              const onClickHandler = () => {
-                props.updateTrackStates({
-                  [previouslyViewedObject.genome_id]: {
-                    ...previouslyViewedObject.trackStates
-                  }
-                });
+              // const onClickHandler = () => {
+              //   props.updateTrackStates({
+              //     [previouslyViewedObject.genome_id]: {
+              //       ...previouslyViewedObject.trackStates
+              //     }
+              //   });
 
-                props.closeTrackPanelModal();
-                props.closeDrawer();
-              };
+              props.closeTrackPanelModal();
+              props.closeDrawer();
 
               return (
-                <dd key={index}>
-                  <Link to={path} onClick={onClickHandler}>
-                    {previouslyViewedObject.label}
-                  </Link>
+                <span key={index} className={styles.linkHolder}>
+                  <Link to={path}>{previouslyViewedObject.label}</Link>
                   <span className={styles.previouslyViewedObjectType}>
                     {' '}
                     {upperFirst(previouslyViewedObject.object_type)}
                   </span>
-                </dd>
+                </span>
               );
             })}
-        </dl>
+        </div>
       </div>
     </>
   );

@@ -14,9 +14,6 @@ export type Bookmarks = {
   [genomeId: string]: Bookmark[];
 };
 
-// const bookmarksFromStorage: Bookmarks = trackPanelStorageService.getBookmarks();
-// const previouslyViewedObjectsFromStorage: Bookmarks = trackPanelStorageService.getPreviouslyViewedObjects();
-
 export type TrackPanelStateForGenome = Readonly<{
   isTrackPanelModalOpened: boolean;
   isTrackPanelOpened: boolean;

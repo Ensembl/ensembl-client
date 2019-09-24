@@ -87,8 +87,6 @@ export const setDataFromUrlAndSave: ActionCreator<
     browserStorageService.updateActiveEnsObjectIds({
       [activeGenomeId]: activeEnsObjectId
     });
-
-    dispatch(updatePreviouslyViewedObjectsAndSave());
   }
 };
 
@@ -161,7 +159,6 @@ export const updateTrackStatesAndSave: ActionCreator<
   };
 
   dispatch(updateTrackStates(stateFragment));
-  dispatch(updatePreviouslyViewedObjectsAndSave());
   const trackStates = getBrowserTrackStates(getState());
   browserStorageService.saveTrackStates(trackStates);
 };
@@ -261,9 +258,12 @@ export const changeFocusObject: ActionCreator<
   return (dispatch, getState: () => RootState) => {
     const state = getState();
     const messageCount = getBrowserMessageCount(state);
+    const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
+    console.log(activeEnsObjectId);
+    if (activeEnsObjectId) {
+      dispatch(updatePreviouslyViewedObjectsAndSave());
+    }
 
-    dispatch(updatePreviouslyViewedObjectsAndSave());
-    
     browserMessagingService.send('bpane', {
       focus: objectId,
       'message-counter': messageCount

@@ -132,7 +132,7 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
       object_id: activeEnsObject.object_id,
       object_type: activeEnsObject.object_type,
       label: activeEnsObject.label,
-      trackStates: { ...trackStates }
+      trackStates
     });
   } else {
     // If it is already present, bump it to the end
@@ -140,10 +140,14 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
       existingIndex,
       1
     );
-    previouslyViewedObjects.push(previouslyViewedObject);
+    previouslyViewedObjects.push({ ...previouslyViewedObject, trackStates });
   }
+
+  // Limit tot total number of previously viewed objects to 250
+  const limitedPreviouslyViewedObjects = previouslyViewedObjects.slice(-250);
+
   trackPanelStorageService.updatePreviouslyViewedObjects({
-    [activeGenomeId]: previouslyViewedObjects
+    [activeGenomeId]: limitedPreviouslyViewedObjects
   });
 
   dispatch(
@@ -151,7 +155,7 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
       activeGenomeId,
       data: {
         ...getActiveTrackPanel(state),
-        previouslyViewedObjects: previouslyViewedObjects
+        previouslyViewedObjects: limitedPreviouslyViewedObjects
       }
     })
   );
