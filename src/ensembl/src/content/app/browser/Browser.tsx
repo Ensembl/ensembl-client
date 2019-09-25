@@ -51,6 +51,8 @@ import {
 } from './drawer/drawerActions';
 
 import browserStorageService from './browser-storage-service';
+import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+
 import { TrackStates } from './track-panel/trackPanelConfig';
 import { AppName } from 'src/global/globalConfig';
 
@@ -200,6 +202,18 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   useEffect(() => {
     setTrackStatesFromStorage(browserStorageService.getTrackStates());
+    if (!props.activeGenomeId) {
+      return;
+    }
+    const activeGenomeTrackStates =
+      trackStatesFromStorage[props.activeGenomeId] || {};
+    Object.values(activeGenomeTrackStates).forEach((trackStates) => {
+      Object.keys(trackStates).forEach((trackId) => {
+        const trackStatus: string =
+          trackStates[trackId] === 'active' ? 'on' : 'off';
+        browserMessagingService.send('bpane', { [trackStatus]: trackId });
+      });
+    });
   }, [props.activeGenomeId, props.activeEnsObjectId]);
 
   useEffect(() => {
