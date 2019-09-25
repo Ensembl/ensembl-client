@@ -128,13 +128,18 @@ export const Browser: FunctionComponent<BrowserProps> = (
       chrLocation
     };
 
-    props.setDataFromUrlAndSave(payload);
-
-    if (chrLocation) {
-      dispatchBrowserLocation(genomeId, chrLocation);
-    } else if (focus) {
+    if (focus && !chrLocation) {
+      /*
+       changeFocusObject needs to be called before setDataFromUrlAndSave
+       in order to prevent creating an previouslyViewedObject entry
+       for the focus object that is viewed first.
+       */
       props.changeFocusObject(focus);
+    } else if (chrLocation) {
+      dispatchBrowserLocation(genomeId, chrLocation);
     }
+
+    props.setDataFromUrlAndSave(payload);
   };
 
   const dispatchBrowserLocation = (

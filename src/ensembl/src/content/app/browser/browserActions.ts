@@ -247,11 +247,8 @@ export const changeFocusObject: ActionCreator<
   return (dispatch, getState: () => RootState) => {
     const state = getState();
     const messageCount = getBrowserMessageCount(state);
-    const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
-    console.log(activeEnsObjectId);
-    if (activeEnsObjectId) {
-      dispatch(updatePreviouslyViewedObjectsAndSave());
-    }
+
+    dispatch(updatePreviouslyViewedObjectsAndSave());
 
     browserMessagingService.send('bpane', {
       focus: objectId,

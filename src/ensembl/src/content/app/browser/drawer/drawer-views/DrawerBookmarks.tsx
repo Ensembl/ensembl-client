@@ -11,8 +11,6 @@ import { updateTrackStates } from 'src/content/app/browser/browserActions';
 import { closeTrackPanelModal } from 'src/content/app/browser/track-panel/trackPanelActions';
 import { closeDrawer } from 'src/content/app/browser/drawer/drawerActions';
 import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
-import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
 
 import styles from './DrawerBookmarks.scss';
 
@@ -43,20 +41,23 @@ const DrawerBookmarks: FunctionComponent<DrawerBookmarksProps> = (
                 focus: previouslyViewedObject.object_id
               });
 
-              // const onClickHandler = () => {
-              //   props.updateTrackStates({
-              //     [previouslyViewedObject.genome_id]: {
-              //       ...previouslyViewedObject.trackStates
-              //     }
-              //   });
+              const onClickHandler = () => {
+                props.updateTrackStates({
+                  [previouslyViewedObject.genome_id]: {
+                    ...previouslyViewedObject.trackStates
+                  }
+                });
+              };
 
               props.closeTrackPanelModal();
               props.closeDrawer();
 
               return (
                 <span key={index} className={styles.linkHolder}>
-                  <Link to={path}>{previouslyViewedObject.label}</Link>
-                  <span className={styles.previouslyViewedObjectType}>
+                  <Link to={path} onClick={onClickHandler}>
+                    {previouslyViewedObject.label}
+                  </Link>
+                  <span className={styles.previouslyViewedType}>
                     {' '}
                     {upperFirst(previouslyViewedObject.object_type)}
                   </span>

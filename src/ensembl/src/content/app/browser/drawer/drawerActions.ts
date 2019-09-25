@@ -38,14 +38,15 @@ export const changeDrawerViewAndOpen: ActionCreator<
   if (!activeGenomeId) {
     return;
   }
+  batch(() => {
+    dispatch(
+      changeDrawerViewForGenome({
+        [activeGenomeId]: drawerView
+      })
+    );
 
-  dispatch(
-    changeDrawerViewForGenome({
-      [activeGenomeId]: drawerView
-    })
-  );
-
-  dispatch(toggleDrawer(true));
+    dispatch(toggleDrawer(true));
+  });
 };
 
 export const toggleDrawerForGenome = createAction(

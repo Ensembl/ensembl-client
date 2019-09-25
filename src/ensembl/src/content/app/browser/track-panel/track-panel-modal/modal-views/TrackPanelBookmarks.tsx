@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import upperFirst from 'lodash/upperFirst';
 
 import { RootState } from 'src/store';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
-
 import { getBrowserActiveGenomeId } from '../../../browserSelectors';
 import { updateTrackStates } from 'src/content/app/browser/browserActions';
 import { TrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
@@ -18,10 +18,9 @@ import ImageButton, {
 } from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as EllipsisIcon } from 'static/img/track-panel/ellipsis.svg';
 import { changeDrawerViewAndOpen } from 'src/content/app/browser/drawer/drawerActions';
-import upperFirst from 'lodash/upperFirst';
+import { Bookmark } from 'src/content/app/browser/track-panel/trackPanelState';
 
 import styles from '../TrackPanelModal.scss';
-import { Bookmark } from 'src/content/app/browser/track-panel/trackPanelState';
 
 type StateProps = {
   activeGenomeId: string | null;
@@ -55,7 +54,7 @@ export const ExampleLinks = (props: ExampleLinksProps) => {
             <Link to={path} onClick={props.closeTrackPanelModal}>
               {exampleObject.label}
             </Link>
-            <span className={styles.previouslyViewedObjectType}>
+            <span className={styles.previouslyViewedType}>
               {upperFirst(exampleObject.object_type)}
             </span>
           </dd>
@@ -99,7 +98,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
               >
                 {previouslyViewedObject.label}
               </Link>
-              <span className={styles.previouslyViewedObjectType}>
+              <span className={styles.previouslyViewedType}>
                 {upperFirst(previouslyViewedObject.object_type)}
               </span>
             </dd>
