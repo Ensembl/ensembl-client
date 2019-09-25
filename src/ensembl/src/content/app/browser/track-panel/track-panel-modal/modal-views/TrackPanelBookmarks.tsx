@@ -123,7 +123,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
     <section className="trackPanelBookmarks">
       <h3>Bookmarks</h3>
       {exampleEnsObjects.length ? (
-        <dl className={styles.previouslyViewedObject}>
+        <dl className={styles.previouslyViewed}>
           <dt>Example links</dt>
           <ExampleLinks
             exampleEnsObjects={exampleEnsObjects}
@@ -133,7 +133,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
         </dl>
       ) : null}
       {limitedPreviouslyViewedObjects.length ? (
-        <dl className={styles.previouslyViewedObject}>
+        <dl className={styles.previouslyViewed}>
           <dt>
             Previously viewed
             <span className={styles.ellipsis}>
@@ -144,7 +144,6 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
                 onClick={() => props.changeDrawerViewAndOpen('bookmarks')}
               />
             </span>
-            <span className={styles.allText}>All</span>
           </dt>
           <PreviouslyViewedLinks
             previouslyViewedObjects={limitedPreviouslyViewedObjects}

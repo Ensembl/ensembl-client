@@ -39,7 +39,7 @@
   }
 }
 
-.previouslyViewedObject {
+.previouslyViewed {
   margin-top: 30px;
 
   a {
@@ -61,15 +61,9 @@
 
     .ellipsis {
       position: absolute;
-      right: 30px;
+      right: 5px;
       top: -2px;
       width: 25px;
-    }
-
-    .allText {
-      position: absolute;
-      right: 7px;
-      top: 2px;
     }
   }
 
