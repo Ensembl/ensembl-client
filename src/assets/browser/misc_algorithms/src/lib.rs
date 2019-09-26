@@ -33,3 +33,21 @@ pub mod index {
     pub use self::walkeriter::WalkerIter;
     pub use self::simpleindex::SimpleIndex;
 }
+
+pub mod zhoosh {
+    mod ops;
+    mod shapes;
+    mod zhoosh;
+
+    #[cfg(test)]
+    mod test;
+
+    pub use self::ops::{
+        ZhooshOps,
+        ZHOOSH_LINEAR_F64_OPS, ZHOOSH_LINEAR_F32_OPS, ZHOOSH_LINEAR_I64_OPS, ZHOOSH_LINEAR_I32_OPS, ZHOOSH_LINEAR_U64_OPS, ZHOOSH_LINEAR_U32_OPS,
+        ZHOOSH_PROP_F64_OPS, ZHOOSH_PROP_F32_OPS, ZHOOSH_PROP_I64_OPS, ZHOOSH_PROP_I32_OPS, ZHOOSH_PROP_U64_OPS, ZHOOSH_PROP_U32_OPS,
+        ZHOOSH_EMPTY_OPS
+    };
+    pub use self::shapes::ZhooshShape;
+    pub use self::zhoosh::{ Zhoosh, ZhooshRun, ZhooshRunner, zhoosh_collect };
+}

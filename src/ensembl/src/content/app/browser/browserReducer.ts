@@ -17,6 +17,8 @@ import {
   BrowserEntityState,
   defaultBrowserEntityState
 } from './browserState';
+import trackPanelReducer from 'src/content/app/browser/track-panel/trackPanelReducer';
+
 import { LoadingState } from 'src/shared/types/loading-state';
 
 export function browserInfo(
@@ -47,8 +49,6 @@ export function browserEntity(
       }
       return newState;
     }
-    case getType(browserActions.updateBrowserActiveGenomeId):
-      return { ...state, activeGenomeId: action.payload };
     case getType(browserActions.updateBrowserActiveEnsObjectIds):
       return { ...state, activeEnsObjectIds: action.payload };
     case getType(browserActions.updateTrackStates):
@@ -146,6 +146,8 @@ export function browserLocation(
         regionValidationLoadingStatus: LoadingState.NOT_REQUESTED,
         regionValidationInfo: null
       };
+    case getType(browserActions.updateDefaultPositionFlag):
+      return { ...state, isObjectInDefaultPosition: action.payload };
     default:
       return state;
   }
@@ -190,5 +192,6 @@ export default combineReducers({
   browserEntity,
   browserLocation,
   browserNav,
-  trackConfig
+  trackConfig,
+  trackPanel: trackPanelReducer
 });

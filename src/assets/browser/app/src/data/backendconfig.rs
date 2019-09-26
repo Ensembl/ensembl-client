@@ -5,7 +5,7 @@ use std::string::ToString;
 use serde_json::Value as SerdeValue;
 use tánaiste::Value;
 
-use composit::{ Scale, Stick };
+use composit::Stick;
 
 #[derive(Debug,Clone)]
 pub struct BackendBytecode {

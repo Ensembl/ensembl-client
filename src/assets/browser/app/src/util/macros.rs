@@ -141,7 +141,7 @@ macro_rules! bb_log {
 
 #[cfg(all(deploy,not(console)))]
 macro_rules! bb_log {
-    ($stream:expr,$($arg:tt)*) => {{}}
+    ($stream:expr,$($arg:tt)*) => {}
 }
 
 #[cfg(any(not(deploy),console))]

@@ -17,10 +17,10 @@ pub struct ProgramAttribs {
     pt: ProgramType,
     pub bman: BatchManager,
     default_group: DataGroupIndex,
-    pub objects: Vec<Box<Object>>,
+    pub objects: Vec<Box<dyn Object>>,
     main_idx: Option<usize>,
     object_names: HashMap<String,usize>,
-    source: Vec<Rc<Source>>,
+    source: Vec<Rc<dyn Source>>,
 }
 
 pub struct Program {
@@ -28,11 +28,11 @@ pub struct Program {
     prog: Rc<glprog>,
 }
 
-fn make_objects(vars: &Vec<Rc<Source>>, prog: Rc<glprog>) 
-                        -> (Vec<Box<Object>>,Option<usize>,
+fn make_objects(vars: &Vec<Rc<dyn Source>>, prog: Rc<glprog>) 
+                        -> (Vec<Box<dyn Object>>,Option<usize>,
                             HashMap<String,usize>) {
     let mut main = None;
-    let mut objects = Vec::<Box<Object>>::new();
+    let mut objects = Vec::<Box<dyn Object>>::new();
     let mut object_names = HashMap::<String,usize>::new();
     for v in vars {
         if let Some((name,value)) = v.create(prog.clone()) {
@@ -48,7 +48,7 @@ fn make_objects(vars: &Vec<Rc<Source>>, prog: Rc<glprog>)
 }
 
 impl ProgramAttribs {
-    pub fn new(pt: ProgramType, src: &Vec<Rc<Source>>, prog: &Rc<glprog>) -> ProgramAttribs {
+    pub fn new(pt: ProgramType, src: &Vec<Rc<dyn Source>>, prog: &Rc<glprog>) -> ProgramAttribs {
         let mut bman = BatchManager::new();
         let default_group = bman.new_group();
         let (objects,main_idx,object_names) = make_objects(&src,prog.clone());
@@ -59,7 +59,7 @@ impl ProgramAttribs {
         }
     }
         
-    pub fn get_object(&mut self, name: &str) -> Option<&mut Box<Object>> {
+    pub fn get_object(&mut self, name: &str) -> Option<&mut Box<dyn Object>> {
         if let Some(idx) = self.object_names.get(name) {
             self.objects.get_mut(*idx)
         } else {
@@ -141,7 +141,7 @@ impl Program {
         ctx.use_program(Some(&self.prog));
     }
   
-    pub fn get_object(&mut self, name: &str) -> Option<&mut Box<Object>> {
+    pub fn get_object(&mut self, name: &str) -> Option<&mut Box<dyn Object>> {
         self.data.get_object(name)
     }
   

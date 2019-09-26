@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use std::collections::{ HashMap, HashSet };
+use std::collections::HashMap;
 use std::rc::Rc;
 
 use stdweb::unstable::TryInto;
@@ -7,9 +7,8 @@ use stdweb::web::{ HtmlElement, Element, INode, IElement };
 
 use super::{ GLProgs, GLCarriage, GLTraveller };
 use model::driver::{ DriverTraveller, Printer };
-use model::stage::{ Screen, Position };
+use model::stage::Screen;
 use composit::Compositor;
-use model::supply::{ PurchaseOrder };
 use model::train::{ CarriageId, Train, TravellerId };
 use super::super::drawing::{ AllCanvasAllocator };
 use dom::domutil;
@@ -162,7 +161,7 @@ impl GLPrinterBase {
         }
     }    
 
-    fn make_driver_traveller(&mut self, pref: &GLPrinter, traveller_id: &TravellerId) -> Box<DriverTraveller> {
+    fn make_driver_traveller(&mut self, pref: &GLPrinter, traveller_id: &TravellerId) -> Box<dyn DriverTraveller> {
         let idx = self.sridx;
         self.sridx += 1;
         let sr = GLTraveller::new(pref,idx,traveller_id);
@@ -191,12 +190,10 @@ impl Printer for GLPrinter {
         compo.redraw_where_needed(self);
         let prop = compo.get_prop_trans();
         compo.with_current_train(|train| {
-            let position = train.get_position().clone();
             let mut tp = WebGLTrainPrinter::new();
             tp.contextualize(&mut self.base.borrow_mut(),screen,train,1.-prop);
         });
         compo.with_transition_train(|train| {
-            let position = train.get_position().clone();
             let mut tp = WebGLTrainPrinter::new();
             tp.contextualize(&mut self.base.borrow_mut(),screen,train,prop);
         });
@@ -240,7 +237,7 @@ impl Printer for GLPrinter {
         self.base.borrow_mut().remove_carriage(carriage_id);
     }
         
-    fn make_driver_traveller(&mut self, traveller_id: &TravellerId) -> Box<DriverTraveller> {
+    fn make_driver_traveller(&mut self, traveller_id: &TravellerId) -> Box<dyn DriverTraveller> {
         let twin = self.clone();
         self.base.borrow_mut().make_driver_traveller(&twin,traveller_id)
     }      

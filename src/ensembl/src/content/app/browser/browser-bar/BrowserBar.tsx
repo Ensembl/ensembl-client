@@ -2,14 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
-import { BrowserInfoItem } from '../browserConfig';
 import { TrackSet } from '../track-panel/trackPanelConfig';
+import { BreakpointWidth } from 'src/global/globalConfig';
+import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 import { getDisplayStableId } from 'src/ens-object/ensObjectHelpers';
 import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 
-import { toggleBrowserNav } from '../browserActions';
+import { RootState } from 'src/store';
 import { ChrLocation } from '../browserState';
+
 import {
   getBrowserNavOpened,
   getChrLocation,
@@ -17,7 +20,8 @@ import {
   getDefaultChrLocation,
   getBrowserActivated,
   getBrowserActiveGenomeId,
-  getBrowserActiveEnsObject
+  getBrowserActiveEnsObject,
+  isFocusObjectPositionDefault
 } from '../browserSelectors';
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 import {
@@ -25,22 +29,19 @@ import {
   getIsTrackPanelModalOpened,
   getIsTrackPanelOpened
 } from '../track-panel/trackPanelSelectors';
+import { getBreakpointWidth } from 'src/global/globalSelectors';
+
+import { toggleBrowserNav, changeFocusObject } from '../browserActions';
 import {
-  selectTrackPanelTabAndSave,
+  selectTrackPanelTab,
   toggleTrackPanel
 } from '../track-panel/trackPanelActions';
 import { closeDrawer } from '../drawer/drawerActions';
-import { RootState } from 'src/store';
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 import BrowserReset from '../browser-reset/BrowserReset';
 import TrackPanelTabs from '../track-panel/track-panel-tabs/TrackPanelTabs';
 
-import { getBreakpointWidth } from 'src/global/globalSelectors';
-import { BreakpointWidth } from 'src/global/globalConfig';
-
 import styles from './BrowserBar.scss';
-import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 
 export type BrowserBarProps = {
   activeGenomeId: string | null;
@@ -55,10 +56,12 @@ export type BrowserBarProps = {
   isTrackPanelOpened: boolean;
   ensObject: EnsObject | null;
   selectedTrackPanelTab: TrackSet;
+  isFocusObjectInDefaultPosition: boolean;
   closeDrawer: () => void;
-  selectTrackPanelTabAndSave: (selectedTrackPanelTab: TrackSet) => void;
+  selectTrackPanelTab: (selectedTrackPanelTab: TrackSet) => void;
   toggleBrowserNav: () => void;
   toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
+  changeFocusObject: (objectId: string) => void;
   dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
 };
 
@@ -125,11 +128,11 @@ export const BrowserBar = (props: BrowserBarProps) => {
       <div className={browserInfoClassName}>
         <dl className={styles.browserInfoLeft}>
           <BrowserReset
-            activeGenomeId={props.activeGenomeId}
-            dispatchBrowserLocation={props.dispatchBrowserLocation}
-            chrLocation={props.chrLocation}
-            defaultChrLocation={props.defaultChrLocation}
-            isDrawerOpened={isDrawerOpened}
+            focusObject={props.ensObject}
+            changeFocusObject={props.changeFocusObject}
+            isActive={
+              !props.isFocusObjectInDefaultPosition && !props.isDrawerOpened
+            }
           />
           {showBrowserInfo && <BrowserInfo ensObject={props.ensObject} />}
         </dl>
@@ -156,7 +159,7 @@ export const BrowserBar = (props: BrowserBarProps) => {
           closeDrawer={props.closeDrawer}
           ensObject={props.ensObject}
           isDrawerOpened={props.isDrawerOpened}
-          selectTrackPanelTabAndSave={props.selectTrackPanelTabAndSave}
+          selectTrackPanelTab={props.selectTrackPanelTab}
           selectedTrackPanelTab={props.selectedTrackPanelTab}
           toggleTrackPanel={props.toggleTrackPanel}
           isTrackPanelModalOpened={props.isTrackPanelModalOpened}
@@ -218,14 +221,16 @@ const mapStateToProps = (state: RootState) => ({
   isDrawerOpened: getIsDrawerOpened(state),
   isTrackPanelModalOpened: getIsTrackPanelModalOpened(state),
   isTrackPanelOpened: getIsTrackPanelOpened(state),
-  selectedTrackPanelTab: getSelectedTrackPanelTab(state)
+  selectedTrackPanelTab: getSelectedTrackPanelTab(state),
+  isFocusObjectInDefaultPosition: isFocusObjectPositionDefault(state)
 });
 
 const mapDispatchToProps = {
   closeDrawer,
-  selectTrackPanelTabAndSave,
+  selectTrackPanelTab,
   toggleBrowserNav,
-  toggleTrackPanel
+  toggleTrackPanel,
+  changeFocusObject
 };
 
 export default connect(

@@ -1,12 +1,9 @@
-use std::sync::{ Arc, Mutex };
-
 use composit::{ Leaf, StateManager };
 use data::XferConsumer;
-use model::driver::{ Printer, PrinterManager };
+use model::driver::Printer;
 use model::item::{ DeliveredItem, ItemUnpacker };
 use model::zmenu::{ ZMenuLeaf, ZMenuLeafSet };
 use super::{ CarriageId, TrainId, Traveller };
-use super::travellercreator::TravellerCreator;
 
 pub struct Carriage {
     travellers: Vec<Traveller>,
@@ -17,13 +14,12 @@ pub struct Carriage {
 
 impl Carriage {
     pub(in super) fn new(leaf: &Leaf, train_id: &TrainId) -> Carriage {
-        let mut out = Carriage {
+        Carriage {
             travellers: Vec::<Traveller>::new(),
             known_done: false,
             needs_rebuild: false,
             id: CarriageId::new(leaf,train_id)
-        };
-        out
+        }
     }
     
     pub fn get_id(&self) -> &CarriageId { &self.id }
@@ -71,7 +67,7 @@ impl Carriage {
         zml.redrawn();
     }
     
-    pub fn redraw_where_needed(&mut self, printer: &mut Printer, zmls: &mut ZMenuLeafSet) {
+    pub fn redraw_where_needed(&mut self, printer: &mut dyn Printer, zmls: &mut ZMenuLeafSet) {
         let mut zml = ZMenuLeaf::new(&self.id.get_leaf());
         if self.needs_rebuild {
             self.needs_rebuild = false;

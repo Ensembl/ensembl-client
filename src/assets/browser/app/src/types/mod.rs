@@ -2,6 +2,7 @@ mod coord;
 mod colour;
 mod area;
 mod corners;
+mod misctypes;
 
 pub use types::corners::{
     Anchors, Axis, AxisSense, Anchored, Corner, Edge, Anchor,
@@ -33,3 +34,4 @@ pub use types::colour::{
     Colour
 };
 
+pub use types::misctypes::{ AsyncValue, Awaiting };

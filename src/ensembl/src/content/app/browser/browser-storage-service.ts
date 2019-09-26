@@ -1,12 +1,12 @@
 import storageService, {
   StorageServiceInterface
 } from 'src/services/storage-service';
-import {
-  TrackStates,
-  TrackSet,
-  TrackToggleStates
-} from './track-panel/trackPanelConfig';
+import { TrackStates } from './track-panel/trackPanelConfig';
 import { ChrLocations } from './browserState';
+import {
+  TrackPanelState,
+  TrackPanelStateForGenome
+} from 'src/content/app/browser/track-panel/trackPanelState';
 
 export enum StorageKeys {
   ACTIVE_GENOME_ID = 'browser.activeGenomeId',
@@ -14,7 +14,7 @@ export enum StorageKeys {
   CHR_LOCATION = 'browser.chrLocation',
   DEFAULT_CHR_LOCATION = 'browser.defaultChrLocation',
   TRACK_STATES = 'browser.trackStates',
-  TRACK_LIST_TOGGLE_STATES = 'browser.trackListToggleStates',
+  TRACK_PANELS = 'browser.trackPanels',
   SELECTED_TRACK_PANEL_TAB = 'browser.selectedTrackPanelTab'
 }
 
@@ -25,7 +25,7 @@ export class BrowserStorageService {
     this.storageService = storageService;
   }
 
-  public getActiveGenomeId(): string {
+  public getActiveGenomeId(): string | null {
     return this.storageService.get(StorageKeys.ACTIVE_GENOME_ID);
   }
 
@@ -62,30 +62,14 @@ export class BrowserStorageService {
     this.storageService.save(StorageKeys.TRACK_STATES, trackStates);
   }
 
-  public getTrackListToggleStates() {
-    return this.storageService.get(StorageKeys.TRACK_LIST_TOGGLE_STATES) || {};
+  public getTrackPanels(): { [genomeId: string]: Partial<TrackPanelState> } {
+    return this.storageService.get(StorageKeys.TRACK_PANELS) || {};
   }
 
-  public updateTrackListToggleStates(toggleState: {
-    [genomeId: string]: TrackToggleStates;
-  }) {
-    this.storageService.update(
-      StorageKeys.TRACK_LIST_TOGGLE_STATES,
-      toggleState
-    );
-  }
-
-  public getSelectedTrackPanelTab(): { [genomeId: string]: TrackSet } {
-    return this.storageService.get(StorageKeys.SELECTED_TRACK_PANEL_TAB) || {};
-  }
-
-  public updateSelectedTrackPanelTab(selectedTrackPanelTabForGenome: {
-    [genomeId: string]: TrackSet;
-  }) {
-    this.storageService.update(
-      StorageKeys.SELECTED_TRACK_PANEL_TAB,
-      selectedTrackPanelTabForGenome
-    );
+  public updateTrackPanels(trackPanels: {
+    [genomeId: string]: Partial<TrackPanelStateForGenome>;
+  }): void {
+    this.storageService.update(StorageKeys.TRACK_PANELS, trackPanels);
   }
 }
 

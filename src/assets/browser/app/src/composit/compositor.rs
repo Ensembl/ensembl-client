@@ -1,17 +1,16 @@
 use std::collections::HashSet;
 
-use composit::{ Stick, Scale, ComponentSet, StateManager, AllLandscapes };
-use model::driver::{ PrinterManager, Printer };
-use model::stage::{ Screen, Position };
+use composit::{ Stick, Scale, ComponentSet, StateManager };
+use model::driver::{ Printer };
+use model::stage::{ Screen };
 use model::supply::{ Product };
-use model::train::{ Train, TrainContext, TrainManager, TravellerCreator };
+use model::train::{ Train, TravellerCreator };
 use model::zmenu::{ ZMenuRegistry, ZMenuLeafSet, ZMenuIntersection };
 
 use controller::global::{ AppRunner, WindowState };
-use controller::input::Action;
 use controller::output::Report;
-use data::{ Psychic, PsychicPacer, XferCache, XferClerk, XferConsumer };
-use types::{ DOWN, Dot };
+use data::{ Psychic, PsychicPacer, XferCache };
+use types::Dot;
 
 const MS_PER_UPDATE : f64 = 100.;
 const MS_PRIME_DELAY: f64 = 2000.;
@@ -122,11 +121,11 @@ impl Compositor {
         self.updated = true;
     }
 
-    pub fn with_current_train<F>(&mut self, mut cb: F) where F: FnMut(&mut Train) {
+    pub fn with_current_train<F>(&mut self, cb: F) where F: FnMut(&mut Train) {
         self.window.get_train_manager().with_current_train(cb)
     }
 
-    pub fn with_transition_train<F>(&mut self, mut cb: F) where F: FnMut(&mut Train) {
+    pub fn with_transition_train<F>(&mut self, cb: F) where F: FnMut(&mut Train) {
         self.window.get_train_manager().with_transition_train(cb)
     }
     
@@ -134,7 +133,7 @@ impl Compositor {
         &mut self.wanted_componentset
     }
     
-    pub fn redraw_where_needed(&mut self, printer: &mut Printer) {
+    pub fn redraw_where_needed(&mut self, printer: &mut dyn Printer) {
         let mut zmls = ZMenuLeafSet::new();
         self.with_current_train(|train| train.redraw_where_needed(printer,&mut zmls));
         self.with_transition_train(|train| train.redraw_where_needed(printer,&mut zmls));

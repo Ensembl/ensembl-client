@@ -36,7 +36,7 @@ pub struct External {
 
 impl External {
     pub fn new(code_reg: usize, out_reg: usize,
-               command_reg: usize) -> Box<Command> {
+               command_reg: usize) -> Box<dyn Command> {
         Box::new(External {
             code_reg, out_reg, command_reg
         })
@@ -90,7 +90,7 @@ pub struct ExternalI();
 
 impl Instruction for ExternalI {
     fn signature(&self) -> Signature { Signature::new("extern","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         External::new(args[0].reg(),args[1].reg(),args[2].reg())
     }
 }
@@ -142,7 +142,7 @@ pub struct PoExternalI();
 
 impl Instruction for PoExternalI {
     fn signature(&self) -> Signature { Signature::new("poextern","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(PoExternal(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
@@ -174,7 +174,7 @@ pub struct PoExternalResI();
 
 impl Instruction for PoExternalResI {
     fn signature(&self) -> Signature { Signature::new("poexternres","rrrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(PoExternalRes(args[0].reg(),args[1].reg(),args[2].reg(),
                                args[3].reg()))
     }

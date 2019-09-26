@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useRef } from 'react';
+
+import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 import ZmenuContent from './ZmenuContent';
 
 import styles from './Zmenu.scss';
 
-import { ZmenuData, AnchorCoordinates } from './zmenu-types';
+import { ZmenuData, ZmenuAction, AnchorCoordinates } from './zmenu-types';
 
 const TIP_WIDTH = 18;
 const TIP_HEIGHT = 13;
@@ -35,6 +38,15 @@ type GetInlineStylesParams = {
 };
 
 const Zmenu = (props: Props) => {
+  const onOutsideClick = () =>
+    browserMessagingService.send('bpane', {
+      id: props.id,
+      action: ZmenuAction.ACTIVITY_OUTSIDE
+    });
+  const zmenuRef = useRef<HTMLDivElement>(null);
+
+  useOutsideClick(zmenuRef, onOutsideClick);
+
   const direction = chooseDirection(props);
   const inlineStyles = getInlineStyles({
     direction,
@@ -45,6 +57,7 @@ const Zmenu = (props: Props) => {
     <div
       className={styles.zmenuWrapper}
       style={inlineStyles.body}
+      ref={zmenuRef}
       onMouseEnter={() => props.onEnter(props.id)}
       onMouseLeave={() => props.onLeave(props.id)}
     >

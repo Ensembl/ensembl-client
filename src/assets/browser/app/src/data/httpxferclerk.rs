@@ -1,26 +1,20 @@
 use std::cell::RefCell;
-use std::collections::{ HashMap, HashSet };
+use std::collections::HashSet;
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
 use controller::global::WindowState;
-use itertools::Itertools;
-use serde_json::Value as SerdeValue;
 use stdweb::unstable::TryInto;
 use stdweb::web::{ ArrayBuffer, TypedArray, XmlHttpRequest, XhrResponseType };
-use tánaiste::Value;
 use url::Url;
 
 use super::{ 
     XferClerk, XferConsumer, XferCache, XferUrlBuilder,
-    HttpResponseConsumer, HttpManager, BackendConfig
+    HttpResponseConsumer, HttpManager
 };
 use super::parsedelivereditem::parse_delivereditem;
 use model::item::{ DeliveredItem, ItemUnpacker };
-use model::supply::{ PurchaseOrder, ProductList, Supplier };
-use model::train::TrainManager;
-
-use super::backendconfig::BackendBytecode;
+use model::supply::{ PurchaseOrder, Supplier };
 
 struct XferPaceManagerImpl {
     limit: i32,
@@ -173,7 +167,7 @@ pub struct HttpXferClerkImpl {
     window: Option<WindowState>,
     http_manager: HttpManager,
     base: Url,
-    paused: Vec<(PurchaseOrder,Box<XferConsumer>)>,
+    paused: Vec<(PurchaseOrder,Box<dyn XferConsumer>)>,
     batch: Option<XferBatchScheduler>,
     prime_batch: Option<XferBatchScheduler>,
     cache_finds: Vec<DeliveredItem>,
@@ -181,7 +175,7 @@ pub struct HttpXferClerkImpl {
 }
 
 impl HttpXferClerkImpl {
-    pub fn new(http_manager: &HttpManager, base: &Url, xfercache: &XferCache, train_manager: &TrainManager) -> HttpXferClerkImpl {
+    pub fn new(http_manager: &HttpManager, base: &Url, xfercache: &XferCache) -> HttpXferClerkImpl {
         HttpXferClerkImpl {
             window: None,
             http_manager: http_manager.clone(),
@@ -221,13 +215,13 @@ impl HttpXferClerkImpl {
         self.batch.as_mut().unwrap().set_batch();
         self.prime_batch.as_mut().unwrap().set_batch();
         /* run requests accumulated during startup */
-        let paused : Vec<(PurchaseOrder,Box<XferConsumer>)> = self.paused.drain(..).collect();
+        let paused : Vec<(PurchaseOrder,Box<dyn XferConsumer>)> = self.paused.drain(..).collect();
         for (request,consumer) in paused {
-            self.run_request(&request,consumer,false);
+            self.run_request(&request,false);
         }
     }
     
-    fn run_request(&mut self, po: &PurchaseOrder, mut consumer: Box<XferConsumer>, prime: bool) {
+    fn run_request(&mut self, po: &PurchaseOrder, prime: bool) {
         if let Some(item) = self.cache.get(po) {
             self.cache_finds.push(item.clone());
         } else {
@@ -247,9 +241,9 @@ impl HttpXferClerkImpl {
 }
 
 impl XferClerk for HttpXferClerkImpl {
-    fn satisfy(&mut self, po: &PurchaseOrder, prime: bool, consumer: Box<XferConsumer>) {
+    fn satisfy(&mut self, po: &PurchaseOrder, prime: bool, consumer: Box<dyn XferConsumer>) {
         if self.batch.is_some() {
-            self.run_request(po,consumer,prime);
+            self.run_request(po,prime);
         } else {
             self.paused.push((po.clone(),consumer));
         }
@@ -260,10 +254,9 @@ impl XferClerk for HttpXferClerkImpl {
 pub struct HttpXferClerk(Rc<RefCell<HttpXferClerkImpl>>);
 
 impl HttpXferClerk {
-    pub fn new(http_manager: &HttpManager,base: &Url, xfercache: &XferCache, train_manager: &TrainManager) -> HttpXferClerk {
-        let mut out = HttpXferClerk(Rc::new(RefCell::new(
-            HttpXferClerkImpl::new(http_manager,&base,xfercache,train_manager))));
-        out
+    pub fn new(http_manager: &HttpManager,base: &Url, xfercache: &XferCache) -> HttpXferClerk {
+        HttpXferClerk(Rc::new(RefCell::new(
+            HttpXferClerkImpl::new(http_manager,&base,xfercache))))
     }
 
     pub fn set_window_state(&mut self, window: &mut WindowState) {
@@ -276,7 +269,7 @@ impl HttpXferClerk {
 }
 
 impl XferClerk for HttpXferClerk {
-    fn satisfy(&mut self, po: &PurchaseOrder, prime: bool, consumer: Box<XferConsumer>) {
+    fn satisfy(&mut self, po: &PurchaseOrder, prime: bool, consumer: Box<dyn XferConsumer>) {
         self.0.borrow_mut().satisfy(po,prime,consumer);
     }
 }

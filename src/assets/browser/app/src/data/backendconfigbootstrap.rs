@@ -9,18 +9,18 @@ use super::{ BackendConfig, HttpManager, HttpResponseConsumer };
 
 pub struct BackendConfigBootstrapImpl {
     config: Option<BackendConfig>,
-    callbacks: Vec<Box<Fn(&BackendConfig)>>
+    callbacks: Vec<Box<dyn Fn(&BackendConfig)>>
 }
 
 impl BackendConfigBootstrapImpl {
     fn new() -> BackendConfigBootstrapImpl {
         BackendConfigBootstrapImpl {
             config: None,
-            callbacks: Vec::<Box<Fn(&BackendConfig)>>::new()
+            callbacks: Vec::<Box<dyn Fn(&BackendConfig)>>::new()
         }
     }
     
-    fn add_callback(&mut self, cb: Box<Fn(&BackendConfig)>) {
+    fn add_callback(&mut self, cb: Box<dyn Fn(&BackendConfig)>) {
         match self.config {
             Some(ref mut cfg) => cb(&cfg),
             None => self.callbacks.push(cb)
@@ -54,7 +54,7 @@ impl BackendConfigBootstrap {
         out
     }
     
-    pub fn add_callback(&mut self, cb: Box<Fn(&BackendConfig)>) {
+    pub fn add_callback(&mut self, cb: Box<dyn Fn(&BackendConfig)>) {
         self.0.borrow_mut().add_callback(cb);
     }
     

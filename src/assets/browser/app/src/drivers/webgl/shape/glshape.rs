@@ -6,12 +6,12 @@ use drivers::webgl::{ Artist, Artwork };
 use model::shape::ShapeSpec;
 
 pub trait GLShape {
-    fn get_artist(&self) -> Option<Rc<Artist>> { None }
+    fn get_artist(&self) -> Option<Rc<dyn Artist>> { None }
     fn into_objects(&self, geom: &mut ProgramAttribs, art: Option<Artwork>,e: &mut GLProgData);
     fn get_geometry(&self) -> Option<ProgramType>;
 }
 
-fn as_gl_shape(spec: &ShapeSpec) -> Option<&GLShape> {
+fn as_gl_shape(spec: &ShapeSpec) -> Option<& dyn GLShape> {
     match spec {
         ShapeSpec::PinPoly(pp) => Some(pp),
         ShapeSpec::PinRect(pr) => Some(pr),
@@ -24,7 +24,7 @@ fn as_gl_shape(spec: &ShapeSpec) -> Option<&GLShape> {
 }
 
 impl GLShape for ShapeSpec {
-    fn get_artist(&self) -> Option<Rc<Artist>> {
+    fn get_artist(&self) -> Option<Rc<dyn Artist>> {
         as_gl_shape(self).unwrap().get_artist()
     }
         

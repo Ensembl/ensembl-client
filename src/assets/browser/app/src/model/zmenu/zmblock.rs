@@ -2,7 +2,6 @@ use std::collections::{ HashMap, HashSet };
 use std::iter::Peekable;
 use std::str::Chars;
 
-use serde_json::Map as JSONMap;
 use serde_json::Value as JSONValue;
 
 #[derive(Clone,Debug)]

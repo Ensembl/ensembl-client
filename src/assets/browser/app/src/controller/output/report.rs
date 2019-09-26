@@ -72,7 +72,7 @@ lazy_static! {
         None,false),
         ("focus",
             StatusJigsaw::Atom("focus".to_string(),StatusJigsawType::String),
-        Some(100.),true),
+            Some(100.),true),
         ("actual-location",StatusJigsaw::Array(vec!{
             StatusJigsaw::Atom("a-stick".to_string(),StatusJigsawType::String),
             StatusJigsaw::Atom("a-start".to_string(),StatusJigsawType::Number),
@@ -90,7 +90,9 @@ lazy_static! {
             StatusJigsaw::Atom("bumper-in".to_string(),StatusJigsawType::Boolean),
             StatusJigsaw::Atom("bumper-left".to_string(),StatusJigsawType::Boolean),
             StatusJigsaw::Atom("bumper-right".to_string(),StatusJigsawType::Boolean),
-        }),Some(500.),true)
+        }),Some(500.),true),
+        ("is-focus-position",StatusJigsaw::Atom("is-focus-position".to_string(),StatusJigsawType::Boolean),
+            Some(100.),true)
     };
 }
 

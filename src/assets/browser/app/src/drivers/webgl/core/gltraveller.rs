@@ -5,7 +5,6 @@ use std::rc::Rc;
 
 use super::{ GLDrawing, GLProgInstances, GLPrinter };
 use super::super::drawing::CarriageCanvases;
-use composit::Leaf;
 use model::driver::DriverTraveller;
 use model::item::UnpackedSubassembly;
 use model::train::TravellerId;

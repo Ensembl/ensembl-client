@@ -1,11 +1,13 @@
 use serde_json::Value as JSONValue;
 
+use composit::Stick;
 use controller::global::AppRunner;
 use dom::domutil;
 
 #[derive(Clone)]
 pub enum OutputAction {
     SendCustomEvent(String,JSONValue),
+    Jump(Stick,f64,f64),
     Destroy
 }
 
@@ -18,6 +20,9 @@ impl OutputAction {
             },
             OutputAction::Destroy => {
                 ar.destroy()
+            },
+            OutputAction::Jump(stick,pos,zoom) => {
+                ar.jump(&stick.get_name(),*pos,*zoom);
             }
         }
     }

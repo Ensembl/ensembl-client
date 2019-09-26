@@ -14,14 +14,14 @@ use super::{ Subassembly, Supplier };
 pub struct Product {
     name: String,
     parts: HashMap<Option<String>,Subassembly>,
-    supplier: Rc<Supplier>,
-    sa_expr: Rc<RefCell<HashMap<Option<String>,Rc<StateExpr>>>>,
+    supplier: Rc<dyn Supplier>,
+    sa_expr: Rc<RefCell<HashMap<Option<String>,Rc<dyn StateExpr>>>>,
     lid: usize,
     focus_dep: bool
 }
 
 impl Product {
-    pub fn new(name: &str, supplier: Rc<Supplier>, lid: usize, focus_dep: bool) -> Product {
+    pub fn new(name: &str, supplier: Rc<dyn Supplier>, lid: usize, focus_dep: bool) -> Product {
         Product {
             supplier,
             name: name.to_string(),
@@ -32,9 +32,9 @@ impl Product {
         }
     }
     
-    pub fn get_supplier(&self) -> &Rc<Supplier> { &self.supplier }
+    pub fn get_supplier(&self) -> &Rc<dyn Supplier> { &self.supplier }
     
-    pub fn add_subassembly(&mut self, sa: &Subassembly, expr: &Rc<StateExpr>) {
+    pub fn add_subassembly(&mut self, sa: &Subassembly, expr: &Rc<dyn StateExpr>) {
         let sa_name = sa.get_subassembly_name().as_ref().map(|x| x.to_string());
         self.parts.insert(sa_name.clone(),sa.clone());
         self.sa_expr.borrow_mut().insert(sa_name,expr.clone());

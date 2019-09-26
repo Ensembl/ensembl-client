@@ -96,6 +96,7 @@ export type BrowserLocationState = Readonly<{
   regionFieldActive: boolean;
   regionValidationInfo: RegionValidationResponse | null;
   regionValidationLoadingStatus: LoadingState;
+  isObjectInDefaultPosition: boolean;
 }>;
 
 export const defaultBrowserLocationState: BrowserLocationState = {
@@ -104,7 +105,8 @@ export const defaultBrowserLocationState: BrowserLocationState = {
   regionEditorActive: false,
   regionFieldActive: false,
   regionValidationInfo: null,
-  regionValidationLoadingStatus: LoadingState.NOT_REQUESTED
+  regionValidationLoadingStatus: LoadingState.NOT_REQUESTED,
+  isObjectInDefaultPosition: false
 };
 
 export type TrackConfigState = Readonly<{

@@ -81,6 +81,7 @@ const TrackPanelBar = (props: TrackPanelBarProps) => {
             isTrackPanelModalOpened={props.isTrackPanelModalOpened}
             isTrackPanelOpened={props.isTrackPanelOpened}
             trackPanelModalView={props.trackPanelModalView}
+            toggleTrackPanel={props.toggleTrackPanel}
           />
         ))}
       </dl>

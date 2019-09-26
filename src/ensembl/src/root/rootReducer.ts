@@ -8,7 +8,6 @@ import customDownload from '../content/app/custom-download/state/customDownloadR
 import global from '../global/globalReducer';
 import header from '../header/headerReducer';
 import ensObjects from '../ens-object/ensObjectReducer';
-import trackPanel from '../content/app/browser/track-panel/trackPanelReducer';
 import speciesSelector from '../content/app/species-selector/state/speciesSelectorReducer';
 
 const rootReducer = (history: any) =>
@@ -21,7 +20,6 @@ const rootReducer = (history: any) =>
     global,
     header,
     router: connectRouter(history),
-    trackPanel,
     speciesSelector
   });
 

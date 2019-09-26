@@ -17,7 +17,7 @@ pub struct Artwork {
  * Artist and a ticket (to get a location, when ready)
  */
 pub struct DrawingImpl {
-    gen: Rc<Artist>,
+    gen: Rc<dyn Artist>,
     ticket: Ticket,
     mask_ticket: Ticket,
     margin: CPixel,
@@ -28,7 +28,7 @@ pub struct DrawingImpl {
 pub struct Drawing(Rc<DrawingImpl>);
 
 impl Drawing {
-    pub fn new(gen: Rc<Artist>, ticket: Ticket, mask_ticket: Ticket) -> Drawing {
+    pub fn new(gen: Rc<dyn Artist>, ticket: Ticket, mask_ticket: Ticket) -> Drawing {
         let margin = gen.margin();
         let padding = gen.padding();
         Drawing(
