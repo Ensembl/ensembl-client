@@ -1,0 +1,28 @@
+@import 'src/styles/common';
+
+.species {
+  border: 1px solid $blue;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  // flex-grow: 0;
+  // flex-shrink: 1;
+  // flex-basis: auto;
+  // transition: flex-shrink 200ms;
+}
+
+.name,
+.assembly {
+  color: $black;
+}
+
+.speciesActive {
+  background-color: $black;
+  border: none;
+}
+
+.nameActive,
+.assemblyActive {
+  color: $white;
+}
