@@ -142,7 +142,7 @@ export const BrowserBar = (props: BrowserBarProps) => {
                 {displayChrRegion ? (
                   <div className={styles.chrRegion}>
                     <span>{getCommaSeparatedNumber(chrStart as number)}</span>
-                    <span className={styles.chrSeparator}> - </span>
+                    <span className={styles.chrSeparator}>-</span>
                     <span>{getCommaSeparatedNumber(chrEnd as number)}</span>
                   </div>
                 ) : null}
