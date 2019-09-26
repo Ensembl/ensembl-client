@@ -37,6 +37,12 @@
   color: $red;
 }
 
+.inputText {
+  &::placeholder {
+    color: $grey;
+  }
+}
+
 .browserNavBarButtons {
   display: inline-block;
   visibility: hidden;

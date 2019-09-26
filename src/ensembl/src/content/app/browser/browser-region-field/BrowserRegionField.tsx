@@ -170,7 +170,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
     [browserStyles.semiOpaque]: props.regionEditorActive
   });
 
-  const inputClassNames = classNames({
+  const inputClassNames = classNames(browserNavBarStyles.inputText, {
     [browserNavBarStyles.errorText]: errorMessages
   });
 
