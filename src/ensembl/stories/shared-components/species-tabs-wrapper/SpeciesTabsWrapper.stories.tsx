@@ -4,7 +4,7 @@ import { storiesOf } from '@storybook/react';
 import speciesData from '../species-tab-bar/speciesData';
 import juneSpeciesData from '../species-tab-bar//juneSpeciesData';
 
-import SpeciesTab from 'src/shared/components/species-tab/SpeciesTab';
+import SimpleSelectedSpecies from 'src/shared/components/selected-species/SimpleSelectedSpecies';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
 import styles from './SpeciesTabsWrapper.stories.scss';
@@ -19,24 +19,24 @@ type StatelessStoryWrapperProps = {
   children: React.ReactNode;
 };
 
-const StatefulStoryWrapper = (props: StatefulStoryWrapperProps) => {
-  const [activeGenomeId, setActiveGenomeId] = useState(
-    speciesData[0].genome_id
-  );
-  const onTabSelect = (genomeId: string) => {
-    setActiveGenomeId(genomeId);
-  };
+// const StatefulStoryWrapper = (props: StatefulStoryWrapperProps) => {
+//   const [activeGenomeId, setActiveGenomeId] = useState(
+//     speciesData[0].genome_id
+//   );
+//   const onTabSelect = (genomeId: string) => {
+//     setActiveGenomeId(genomeId);
+//   };
 
-  return (
-    <div className={styles.wrapper}>
-      <SpeciesTabsWrapper
-        species={props.species}
-        activeGenomeId={activeGenomeId}
-        onTabSelect={onTabSelect}
-      />
-    </div>
-  );
-};
+//   return (
+//     <div className={styles.wrapper}>
+//       <SpeciesTabsWrapper
+//         species={props.species}
+//         activeGenomeId={activeGenomeId}
+//         onTabSelect={onTabSelect}
+//       />
+//     </div>
+//   );
+// };
 
 const StatelessStoryWrapper = (props: StatelessStoryWrapperProps) => {
   return <div className={styles.multilineWrapper}>{props.children}</div>;
@@ -47,12 +47,7 @@ storiesOf(
   module
 ).add('allow species to wrap', () => {
   const speciesTabs = speciesData.map((species, index) => (
-    <SpeciesTab
-      key={index}
-      species={species}
-      isActive={false}
-      onActivate={() => console.log('heya')}
-    />
+    <SimpleSelectedSpecies key={index} species={species} />
   ));
   return (
     <StatelessStoryWrapper>
@@ -66,12 +61,7 @@ storiesOf(
   module
 ).add('few species', () => {
   const speciesTabs = speciesData.map((species, index) => (
-    <SpeciesTab
-      key={index}
-      species={species}
-      isActive={false}
-      onActivate={() => console.log('heya')}
-    />
+    <SimpleSelectedSpecies key={index} species={species} />
   ));
   return (
     <StatelessStoryWrapper>
