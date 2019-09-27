@@ -1,6 +1,8 @@
 @import 'src/styles/common';
+@import './selected-species-common';
 
 .species {
+  @include selected-species-common;
   border: 1px solid $blue;
   cursor: pointer;
   overflow: hidden;
@@ -20,6 +22,7 @@
 .speciesActive {
   background-color: $black;
   border: none;
+  cursor: default;
 }
 
 .nameActive,

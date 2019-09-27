@@ -11,6 +11,10 @@ $deleteButtonPadding: 8px 20px 8px 28px;
   line-height: 1;
   user-select: none;
   margin-bottom: 4px;
+
+  &:not(:last-child) {
+    margin-right: 12px;
+  }
 }
 
 .name,

@@ -4,7 +4,10 @@ import { storiesOf } from '@storybook/react';
 import speciesData from '../species-tab-bar/speciesData';
 import juneSpeciesData from '../species-tab-bar//juneSpeciesData';
 
-import SimpleSelectedSpecies from 'src/shared/components/selected-species/SimpleSelectedSpecies';
+import {
+  SimpleSelectedSpecies,
+  FocusableSelectedSpecies
+} from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
 import styles from './SpeciesTabsWrapper.stories.scss';
@@ -60,8 +63,17 @@ storiesOf(
   'Components|Shared Components/SpeciesTabsWrapper/non-wrappable',
   module
 ).add('few species', () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+
   const speciesTabs = speciesData.map((species, index) => (
-    <SimpleSelectedSpecies key={index} species={species} />
+    <FocusableSelectedSpecies
+      key={index}
+      species={species}
+      isActive={index === activeIndex}
+      onClick={() => setActiveIndex(index)}
+      onMouseEnter={() => console.log('mouseenter')}
+      onMouseLeave={() => console.log('mouseleave')}
+    />
   ));
   return (
     <StatelessStoryWrapper>

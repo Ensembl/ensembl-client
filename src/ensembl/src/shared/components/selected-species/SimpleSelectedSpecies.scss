@@ -5,8 +5,4 @@
   @include selected-species-common;
   background-color: $black;
   color: white;
-
-  &:not(:last-child) {
-    margin-right: 12px;
-  }
 }
