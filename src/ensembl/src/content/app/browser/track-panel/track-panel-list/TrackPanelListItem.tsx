@@ -155,6 +155,7 @@ const TrackPanelListItem = (props: Props) => {
       [currentTrackStatus]: `${track.track_id}`
     };
 
+    console.log(payload);
     browserMessagingService.send('bpane', payload);
   };
 

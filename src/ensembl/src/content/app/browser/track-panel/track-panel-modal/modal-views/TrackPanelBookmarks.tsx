@@ -71,9 +71,12 @@ type PreviouslyViewedLinksProps = Pick<
 
 export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
   const onClickHandler = (previouslyViewedObject: Bookmark) => {
+    const { trackStates = {} } = previouslyViewedObject;
+
+    console.log(trackStates);
     props.updateTrackStates({
       [previouslyViewedObject.genome_id]: {
-        ...previouslyViewedObject.trackStates
+        ...trackStates
       }
     });
 
