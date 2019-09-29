@@ -7,7 +7,7 @@ import styles from './FocusableSelectedSpecies.scss';
 
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
-type Props = {
+export type Props = {
   species: CommittedItem;
   isActive: boolean;
   onClick: (genomeId: string) => void;

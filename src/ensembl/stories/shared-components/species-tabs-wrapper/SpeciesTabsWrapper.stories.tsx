@@ -71,8 +71,8 @@ storiesOf(
       species={species}
       isActive={index === activeIndex}
       onClick={() => setActiveIndex(index)}
-      onMouseEnter={() => console.log('mouseenter')}
-      onMouseLeave={() => console.log('mouseleave')}
+      onMouseEnter={() => {}}
+      onMouseLeave={() => {}}
     />
   ));
   return (
