@@ -5,8 +5,18 @@ import { Props as FocusableSelectedSpeciesProps } from 'src/shared/components/se
 
 const BETWEEN_SPECIES_SPACE = 7;
 
-export const getDisplayName = (species: CommittedItem) =>
-  species.common_name || species.scientific_name;
+type Modify<T, R> = Omit<T, keyof R> & R;
+
+type HoverableItem = CommittedItem & {
+  isHovered: boolean;
+};
+
+type SpeciesItem = Modify<
+  FocusableSelectedSpeciesProps,
+  {
+    species: HoverableItem;
+  }
+>;
 
 export const getSpeciesItemWidths = ({
   items,
