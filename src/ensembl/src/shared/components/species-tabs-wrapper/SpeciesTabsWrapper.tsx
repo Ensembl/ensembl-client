@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement, useEffect, useRef } from 'react';
 import useResizeObserver from 'use-resize-observer';
 import { useSprings, animated } from 'react-spring';
 
@@ -27,32 +27,37 @@ SpeciesTabsWrapper.defaultProps = {
 const animationCalculator = (
   paramsList: any,
   containerRef: any,
-  containerWidth: number
+  containerWidth: number,
+  immediate = false
 ) => {
   const springConfig = { tension: 280, friction: 45 };
   if (containerRef) {
     return getSpeciesItemWidths({ items: paramsList, containerWidth }).map(
       (width) => ({
         config: springConfig,
-        width: `${width}px`
+        width: `${width}px`,
+        immediate
       })
     );
   } else {
     return paramsList.map(() => ({
       config: springConfig,
-      width: '0px'
+      width: '0px',
+      immediate
     }));
   }
 };
 
 const SingleLineWrapper = (props: Props) => {
   const { speciesTabs } = props;
+  const shouldAnimateImmediately = useRef(true);
   const [containerRef, containerWidth] = useResizeObserver();
   const speciesTabsProps = React.Children.map(speciesTabs, (tab) => tab.props);
   const animations = animationCalculator(
     speciesTabsProps,
     containerRef,
-    containerWidth
+    containerWidth,
+    true
   );
   const [springs, setAnimationProps] = useSprings(
     speciesTabs.length,
@@ -65,9 +70,18 @@ const SingleLineWrapper = (props: Props) => {
     const animations = animationCalculator(
       speciesTabsProps,
       containerRef,
-      containerWidth
+      containerWidth,
+      shouldAnimateImmediately.current
     );
     setAnimationProps((index) => animations[index]);
+
+    // species tabs should initially appear without animation;
+    // but subsequent tabs changes should be animated
+    setTimeout(() => {
+      if (shouldAnimateImmediately.current) {
+        shouldAnimateImmediately.current = false;
+      }
+    }, 1000);
   });
 
   const handleMouseEnter = (fn: () => void) => () => {
