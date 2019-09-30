@@ -1,5 +1,14 @@
+.speciesWrapperInternal {
+  white-space: nowrap;
+  overflow-x: hidden;
+}
+
 .speciesContainer {
   display: inline-block;
+
+  &:not(:last-child) {
+    margin-right: 7px;
+  }
 }
 
 .species {

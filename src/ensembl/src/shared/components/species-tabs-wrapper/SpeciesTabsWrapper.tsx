@@ -2,7 +2,7 @@ import React, { ReactElement, useEffect } from 'react';
 import useResizeObserver from 'use-resize-observer';
 import { useSprings, animated } from 'react-spring';
 
-import { getSpeciesItemWidths } from 'src/shared/components/selected-species/selectedSpeciesHelpers';
+import { getSpeciesItemWidths } from './speciesTabsWrapperHelpers';
 
 import styles from './SpeciesTabsWrapper.scss';
 
@@ -104,7 +104,12 @@ const SingleLineWrapper = (props: Props) => {
     : null;
 
   return (
-    <div ref={containerRef as React.RefObject<HTMLDivElement>}>{children}</div>
+    <div
+      ref={containerRef as React.RefObject<HTMLDivElement>}
+      className={styles.speciesWrapperInternal}
+    >
+      {children}
+    </div>
   );
 };
 
