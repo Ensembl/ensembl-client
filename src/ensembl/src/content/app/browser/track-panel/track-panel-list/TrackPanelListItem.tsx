@@ -145,17 +145,29 @@ const TrackPanelListItem = (props: Props) => {
     if (!activeGenomeId || !activeEnsObjectId) {
       return;
     }
-    props.updateTrackStatesAndSave({
-      [activeGenomeId]: {
-        objectTracks: {
-          [activeEnsObjectId]: {
+    if (track.track_id.indexOf('track:gene') === 1) {
+      props.updateTrackStatesAndSave({
+        [activeGenomeId]: {
+          objectTracks: {
+            [activeEnsObjectId]: {
+              [categoryName]: {
+                [track.track_id]: newStatus
+              }
+            }
+          }
+        }
+      });
+    } else {
+      props.updateTrackStatesAndSave({
+        [activeGenomeId]: {
+          commonTracks: {
             [categoryName]: {
               [track.track_id]: newStatus
             }
           }
         }
-      }
-    });
+      });
+    }
   };
 
   const updateGenomeBrowser = (status: ImageButtonStatus) => {

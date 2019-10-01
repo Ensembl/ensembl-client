@@ -71,19 +71,28 @@ const TrackPanelList = (props: TrackPanelListProps) => {
     const { track_id } = track;
     let trackStatus = getDefaultTrackStatus();
 
-    if (activeGenomeId && activeEnsObject) {
-      trackStatus = get(
-        props.trackStates,
-        `${activeGenomeId}.objectTracks.${activeEnsObject.object_id}.${categoryName}.${track_id}`,
-        trackStatus
-      ) as ImageButtonStatus;
+    if (activeEnsObject) {
+      // FIXME: Temporary hack until we have a set of proper track names
+      if (track_id.indexOf('track:gene') === 1) {
+        trackStatus = get(
+          props.trackStates,
+          `${activeGenomeId}.objectTracks.${activeEnsObject.object_id}.${categoryName}.${track_id}`,
+          trackStatus
+        ) as ImageButtonStatus;
+      } else {
+        trackStatus = get(
+          props.trackStates,
+          `${activeGenomeId}.commonTracks.${categoryName}.${track_id}`,
+          trackStatus
+        ) as ImageButtonStatus;
+      }
     }
 
     return (
       <TrackPanelListItem
         categoryName={categoryName}
-        defaultTrackStatus={trackStatus as ImageButtonStatus}
-        trackStatus={trackStatus as ImageButtonStatus}
+        defaultTrackStatus={trackStatus}
+        trackStatus={trackStatus}
         key={track.track_id}
         track={track}
       >

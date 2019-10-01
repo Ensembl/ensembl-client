@@ -3,6 +3,7 @@ import { Dispatch, ActionCreator, Action } from 'redux';
 import { replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
 import isEqual from 'lodash/isEqual';
+import get from 'lodash/get';
 
 import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -35,7 +36,7 @@ import { RootState } from 'src/store';
 import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
 import {
   BrowserTrackStates,
-  GenomeTrackStates
+  TrackStates
 } from './track-panel/trackPanelConfig';
 import { BROWSER_CONTAINER_ID } from './browser-constants';
 
@@ -149,16 +150,14 @@ export const clearTrackStatesAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = () => (dispatch, getState: () => RootState) => {
   const state = getState();
-  const activeGenomeId = getBrowserActiveGenomeId(state);
   const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
   const activeGenomeTrackStates = getBrowserActiveGenomeTrackStates(state);
 
-  if (!activeGenomeId || !activeEnsObjectId || !activeGenomeTrackStates) {
-    return;
-  }
-
-  const activeEnsObjectTrackStates =
-    activeGenomeTrackStates['objectTracks'][activeEnsObjectId] || {};
+  const activeEnsObjectTrackStates: TrackStates = get(
+    activeGenomeTrackStates,
+    `objectTracks.${activeEnsObjectId}`,
+    {}
+  );
 
   Object.values(activeEnsObjectTrackStates).forEach((trackStates) => {
     Object.keys(trackStates).forEach((trackId) => {

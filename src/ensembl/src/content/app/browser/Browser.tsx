@@ -6,6 +6,7 @@ import { useSpring, animated } from 'react-spring';
 import { Link } from 'react-router-dom';
 import find from 'lodash/find';
 import get from 'lodash/get';
+import merge from 'lodash/merge';
 import isEqual from 'lodash/isEqual';
 import upperFirst from 'lodash/upperFirst';
 
@@ -216,7 +217,19 @@ export const Browser: FunctionComponent<BrowserProps> = (
       {}
     ) as TrackStates;
 
-    Object.values(activeEnsObjectTrackStates).forEach((trackStates) => {
+    const commonTrackStates = get(
+      trackStatesFromStorage,
+      `${props.activeGenomeId}.commonTracks.${props.activeEnsObjectId}`,
+      {}
+    ) as TrackStates;
+
+    const mergedTrackStates = merge(
+      {},
+      activeEnsObjectTrackStates,
+      commonTrackStates
+    );
+
+    Object.values(mergedTrackStates).forEach((trackStates) => {
       Object.keys(trackStates).forEach((trackId) => {
         const trackStatus: string =
           trackStates[trackId] === ImageButtonStatus.ACTIVE ? 'on' : 'off';
