@@ -4,7 +4,7 @@ import styles from './MultiLineSpeciesWrapper.scss';
 
 type Props = {
   isWrappable: boolean;
-  speciesTabs: ReactElement<any>[]; // FIXME any
+  speciesTabs: ReactElement<any>[];
   link?: React.ReactNode;
 };
 

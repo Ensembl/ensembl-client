@@ -95,8 +95,6 @@ const SingleLineWrapper = (props: Props) => {
   );
 
   useEffect(() => {
-    // FIXME: can we switch to react-spring v9? Because of types
-    // see https://github.com/react-spring/react-spring/pull/722
     const animations = animationCalculator({
       items: speciesTabsProps,
       hoveredItemIndex,
@@ -104,6 +102,10 @@ const SingleLineWrapper = (props: Props) => {
       containerWidth: itemsContainerWidth,
       immediate: shouldAnimateImmediately.current
     });
+    // FIXME: can we switch to react-spring v9 beta? Types for v8 are incorrect and not maintained
+    // see https://github.com/react-spring/react-spring/pull/722
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
     setAnimationProps((index) => animations[index]);
 
     // species tabs should initially appear without animation;
