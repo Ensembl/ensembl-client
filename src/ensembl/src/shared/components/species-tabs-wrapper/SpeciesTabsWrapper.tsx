@@ -8,7 +8,7 @@ import MultiLineSpeciesWrapper from './MultiLineSpeciesWrapper';
 type Props = {
   isWrappable: boolean;
   speciesTabs: ReactElement<any>[]; // FIXME any
-  link?: React.ReactNode;
+  link?: React.ReactNode | null;
 };
 
 const SpeciesTabsWrapper = (props: Props) => {

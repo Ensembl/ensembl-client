@@ -10,6 +10,7 @@ import {
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import SelectedSpecies from 'src/content/app/species-selector/components/selected-species/SelectedSpecies';
+import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
 import { RootState } from 'src/store';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
@@ -50,23 +51,21 @@ export const SpeciesSelectorAppBar = (props: Props) => {
 const SelectedSpeciesList = (props: Props) => {
   const shouldLinkToGenomeBrowser =
     props.selectedSpecies.filter(({ isEnabled }) => isEnabled).length > 0;
-  return (
-    <>
-      {props.selectedSpecies.map((species) => (
-        <SelectedSpecies
-          key={species.genome_id}
-          species={species}
-          onToggleUse={props.toggleSpeciesUse}
-          onRemove={props.onSpeciesDelete}
-        />
-      ))}
-      {shouldLinkToGenomeBrowser && (
-        <div className={styles.genomeBrowserLinkContainer}>
-          <Link to={urlFor.browser()}>View in Genome Browser</Link>
-        </div>
-      )}
-    </>
-  );
+
+  const selectedSpecies = props.selectedSpecies.map((species) => (
+    <SelectedSpecies
+      key={species.genome_id}
+      species={species}
+      onToggleUse={props.toggleSpeciesUse}
+      onRemove={props.onSpeciesDelete}
+    />
+  ));
+
+  const link = shouldLinkToGenomeBrowser ? (
+    <Link to={urlFor.browser()}>View in Genome Browser</Link>
+  ) : null;
+
+  return <SpeciesTabsWrapper speciesTabs={selectedSpecies} link={link} />;
 };
 
 const mapStateToProps = (state: RootState) => ({

@@ -1,17 +1,21 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { RootState } from 'src/store';
 
 import { fetchDataForLastVisitedObjects } from 'src/content/app/browser/browserActions';
 import { getGenomeInfo } from 'src/genome/genomeSelectors';
-import { getCommittedSpecies } from '../app/species-selector/state/speciesSelectorSelectors';
+import { getEnabledCommittedSpecies } from '../app/species-selector/state/speciesSelectorSelectors';
 import {
   getPreviouslyViewedGenomeBrowserObjects,
   PreviouslyViewedGenomeBrowserObjects
 } from 'src/content/home/homePageSelectors';
+
+import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
+import { SimpleSelectedSpecies } from 'src/shared/components/selected-species';
 
 import { GenomeInfoData } from 'src/genome/genomeTypes';
 import { CommittedItem } from '../app/species-selector/types/species-search';
@@ -38,19 +42,7 @@ const Home = (props: Props) => {
 
   return (
     <div className={styles.home}>
-      {!totalSelectedSpecies && (
-        <>
-          <span className={styles.speciesSelectorBannerText}>
-            7 species now available
-          </span>
-          <Link
-            className={styles.speciesSelectorBannerLink}
-            to={urlFor.speciesSelector()}
-          >
-            Select a species to begin
-          </Link>
-        </>
-      )}
+      <SpeciesBar species={props.activeSpecies} />
       <section className={styles.search}>
         <h2>Find</h2>
         <p>
@@ -84,6 +76,32 @@ const Home = (props: Props) => {
   );
 };
 
+const SpeciesBar = (props: { species: CommittedItem[] }) => {
+  let barContent;
+  if (!props.species.length) {
+    barContent = (
+      <div className={styles.emptySpeciesBar}>
+        <span className={styles.speciesSelectorBannerText}>
+          7 species now available
+        </span>
+        <Link
+          className={styles.speciesSelectorBannerLink}
+          to={urlFor.speciesSelector()}
+        >
+          Select a species to begin
+        </Link>
+      </div>
+    );
+  } else {
+    const speciesItems = props.species.map((species, index) => (
+      <SimpleSelectedSpecies key={index} species={species} />
+    ));
+    barContent = <SpeciesTabsWrapper speciesTabs={speciesItems} />;
+  }
+
+  return <div className={styles.speciesBar}>{barContent}</div>;
+};
+
 const PreviouslyViewed = (props: PreviouslyViewedProps) => {
   if (props.previouslyViewedGenomeBrowserObjects.areLoading) {
     return null;
@@ -110,7 +128,7 @@ const PreviouslyViewed = (props: PreviouslyViewedProps) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  activeSpecies: getCommittedSpecies(state),
+  activeSpecies: getEnabledCommittedSpecies(state),
   genomeInfo: getGenomeInfo(state),
   previouslyViewedGenomeBrowserObjects: getPreviouslyViewedGenomeBrowserObjects(
     state

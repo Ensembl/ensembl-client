@@ -11,7 +11,7 @@ import { Props as FocusableSelectedSpeciesProps } from 'src/shared/components/se
 export type Props = {
   isWrappable: false;
   speciesTabs: ReactElement<FocusableSelectedSpeciesProps>[];
-  link?: React.ReactNode;
+  link?: React.ReactNode | null;
 };
 
 const animationCalculator = ({
