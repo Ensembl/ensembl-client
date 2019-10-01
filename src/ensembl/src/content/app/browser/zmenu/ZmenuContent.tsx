@@ -2,7 +2,10 @@ import React from 'react';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
 
-import { changeFocusObject } from 'src/content/app/browser/browserActions';
+import {
+  changeFocusObject,
+  clearTrackStatesAndSave
+} from 'src/content/app/browser/browserActions';
 
 import styles from './Zmenu.scss';
 
@@ -35,6 +38,7 @@ type ZmenuContentBlockProps = {
 
 type ZmenuContentItemProps = ZmenuContentItemType & {
   changeFocusObject: (objectId: string) => void;
+  clearTrackStatesAndSave: () => void;
   id: string;
 };
 
@@ -92,6 +96,7 @@ const ZmenuContentItem = (props: ZmenuContentItemProps) => {
   });
 
   const handleClick = () => {
+    props.clearTrackStatesAndSave();
     props.changeFocusObject(id);
   };
 
@@ -104,7 +109,8 @@ const ZmenuContentItem = (props: ZmenuContentItemProps) => {
 };
 
 const mapDispatchToProps = {
-  changeFocusObject
+  changeFocusObject,
+  clearTrackStatesAndSave
 };
 
 const ConnectedZmenuContentItem = connect(

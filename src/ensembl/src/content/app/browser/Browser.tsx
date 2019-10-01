@@ -5,6 +5,7 @@ import { replace, Replace } from 'connected-react-router';
 import { useSpring, animated } from 'react-spring';
 import { Link } from 'react-router-dom';
 import find from 'lodash/find';
+import get from 'lodash/get';
 import isEqual from 'lodash/isEqual';
 import upperFirst from 'lodash/upperFirst';
 
@@ -53,7 +54,10 @@ import {
 import browserStorageService from './browser-storage-service';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 
-import { TrackStates } from './track-panel/trackPanelConfig';
+import {
+  BrowserTrackStates,
+  TrackStates
+} from './track-panel/trackPanelConfig';
 import { AppName } from 'src/global/globalConfig';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -61,6 +65,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import styles from './Browser.scss';
 
 import 'static/browser/browser.js';
+import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
 
 type StateProps = {
   activeGenomeId: string | null;
@@ -105,7 +110,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
   props: BrowserProps
 ) => {
   const [trackStatesFromStorage, setTrackStatesFromStorage] = useState<
-    TrackStates
+    BrowserTrackStates
   >({});
 
   const { isDrawerOpened, closeDrawer } = props;
@@ -202,15 +207,21 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   useEffect(() => {
     setTrackStatesFromStorage(browserStorageService.getTrackStates());
-    if (!props.activeGenomeId) {
+    if (!props.activeGenomeId || !props.activeEnsObjectId) {
       return;
     }
-    const activeGenomeTrackStates =
-      trackStatesFromStorage[props.activeGenomeId] || {};
-    Object.values(activeGenomeTrackStates).forEach((trackStates) => {
+    const activeEnsObjectTrackStates = get(
+      trackStatesFromStorage,
+      `${props.activeGenomeId}.objectTracks.${props.activeEnsObjectId}`,
+      {}
+    ) as TrackStates;
+
+    Object.values(activeEnsObjectTrackStates).forEach((trackStates) => {
       Object.keys(trackStates).forEach((trackId) => {
         const trackStatus: string =
-          trackStates[trackId] === 'active' ? 'on' : 'off';
+          trackStates[trackId] === ImageButtonStatus.ACTIVE ? 'on' : 'off';
+
+        // TODO: Combine these into one send event
         browserMessagingService.send('bpane', { [trackStatus]: trackId });
       });
     });

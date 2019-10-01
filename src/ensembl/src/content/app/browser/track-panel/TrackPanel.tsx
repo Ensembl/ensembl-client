@@ -17,12 +17,11 @@ import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 import {
   getBrowserActivated,
   getBrowserActiveGenomeId,
-  getBrowserActiveEnsObject,
-  getBrowserTrackStates
+  getBrowserActiveEnsObject
 } from '../browserSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 import { BreakpointWidth } from 'src/global/globalConfig';
-import { TrackSet, TrackStates } from './trackPanelConfig';
+import { TrackSet } from './trackPanelConfig';
 
 import { GenomeTrackCategory } from 'src/genome/genomeTypes';
 import { getGenomeTrackCategoriesById } from 'src/genome/genomeSelectors';
@@ -40,7 +39,6 @@ type TrackPanelProps = {
   isTrackPanelOpened: boolean;
   selectedTrackPanelTab: TrackSet;
   genomeTrackCategories: GenomeTrackCategory[];
-  trackStates: TrackStates;
 };
 
 const TrackPanel = (props: TrackPanelProps) => {
@@ -97,8 +95,7 @@ const mapStateToProps = (state: RootState) => {
     genomeTrackCategories: activeGenomeId
       ? getGenomeTrackCategoriesById(state, activeGenomeId)
       : [],
-    isTrackPanelOpened: getIsTrackPanelOpened(state),
-    trackStates: getBrowserTrackStates(state)
+    isTrackPanelOpened: getIsTrackPanelOpened(state)
   };
 };
 

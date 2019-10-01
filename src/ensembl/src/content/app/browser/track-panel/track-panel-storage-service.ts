@@ -1,7 +1,7 @@
 import storageService, {
   StorageServiceInterface
 } from 'src/services/storage-service';
-import { Bookmark } from './trackPanelState';
+import { PreviouslyViewedObject } from './trackPanelState';
 
 export enum StorageKeys {
   BOOKMARKS = 'trackPanel.bookmarks',
@@ -15,22 +15,24 @@ export class TrackPanelStorageService {
     this.storageService = storageService;
   }
 
-  public getBookmarks(): { [genomeId: string]: Bookmark[] } {
+  public getBookmarks(): { [genomeId: string]: PreviouslyViewedObject[] } {
     return this.storageService.get(StorageKeys.BOOKMARKS) || {};
   }
 
   public updateActiveGenomeBookmarks(activeGenomeBookmarks: {
-    [genomeId: string]: Bookmark[];
+    [genomeId: string]: PreviouslyViewedObject[];
   }) {
     this.storageService.update(StorageKeys.BOOKMARKS, activeGenomeBookmarks);
   }
 
-  public getPreviouslyViewedObjects(): { [genomeId: string]: Bookmark[] } {
+  public getPreviouslyViewedObjects(): {
+    [genomeId: string]: PreviouslyViewedObject[];
+  } {
     return this.storageService.get(StorageKeys.PREVIOUSLY_VIEWED) || {};
   }
 
   public updatePreviouslyViewedObjects(activeGenomePreviouslyViewedObjects: {
-    [genomeId: string]: Bookmark[];
+    [genomeId: string]: PreviouslyViewedObject[];
   }) {
     this.storageService.update(
       StorageKeys.PREVIOUSLY_VIEWED,

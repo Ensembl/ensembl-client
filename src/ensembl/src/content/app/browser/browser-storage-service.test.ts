@@ -72,8 +72,12 @@ describe('BrowserStorageService', () => {
 
       const toggledTrack = {
         homo_sapiens38: {
-          'Genes & transcripts': {
-            'gene-pc-fwd': ImageButtonStatus.INACTIVE
+          objectTracks: {
+            homo_sapiens38_brca2: {
+              'Genes & transcripts': {
+                'gene-pc-fwd': ImageButtonStatus.INACTIVE
+              }
+            }
           }
         }
       };

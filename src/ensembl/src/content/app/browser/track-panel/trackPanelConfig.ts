@@ -29,13 +29,18 @@ export type TrackPanelIcons = {
   [key: string]: TrackPanelIcon;
 };
 
-export type GenomeTrackStates = {
+export type TrackStates = {
   [categoryName: string]: {
     [trackName: string]: ImageButtonStatus;
   };
 };
 
-export type TrackStates = {
+export type GenomeTrackStates = {
+  commonTracks?: TrackStates;
+  objectTracks: { [objctId: string]: TrackStates };
+};
+
+export type BrowserTrackStates = {
   [genomeId: string]: GenomeTrackStates;
 };
 

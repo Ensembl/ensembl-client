@@ -2,7 +2,6 @@ import { createAction } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
 import { Action, ActionCreator } from 'redux';
 import uniq from 'lodash/uniq';
-import cloneDeep from 'lodash/cloneDeep';
 
 import { RootState } from 'src/store';
 import { TrackSet } from './trackPanelConfig';
@@ -10,8 +9,7 @@ import trackPanelStorageService from './track-panel-storage-service';
 import browserStorageService from '../browser-storage-service';
 import {
   getBrowserActiveGenomeId,
-  getBrowserActiveEnsObject,
-  getBrowserTrackStates
+  getBrowserActiveEnsObject
 } from '../browserSelectors';
 import { getActiveGenomePreviouslyViewedObjects } from './trackPanelSelectors';
 
@@ -116,7 +114,6 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
   if (!activeGenomeId || !activeEnsObject) {
     return;
   }
-  const trackStates = getBrowserTrackStates(state)[activeGenomeId] || {};
 
   const previouslyViewedObjects = [
     ...getActiveGenomePreviouslyViewedObjects(state)
@@ -132,8 +129,7 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
       genome_id: activeEnsObject.genome_id,
       object_id: activeEnsObject.object_id,
       object_type: activeEnsObject.object_type,
-      label: activeEnsObject.label,
-      trackStates: cloneDeep(trackStates) || {}
+      label: activeEnsObject.label
     });
   } else {
     // If it is already present, bump it to the end
@@ -141,10 +137,10 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
       existingIndex,
       1
     );
-    previouslyViewedObjects.push({ ...previouslyViewedObject, trackStates });
+    previouslyViewedObjects.push({ ...previouslyViewedObject });
   }
 
-  // Limit tot total number of previously viewed objects to 250
+  // Limit the total number of previously viewed objects to 250
   const limitedPreviouslyViewedObjects = previouslyViewedObjects.slice(-250);
 
   trackPanelStorageService.updatePreviouslyViewedObjects({

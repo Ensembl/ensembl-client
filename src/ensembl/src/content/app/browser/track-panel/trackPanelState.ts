@@ -1,17 +1,16 @@
-import { TrackSet, GenomeTrackStates } from './trackPanelConfig';
+import { TrackSet } from './trackPanelConfig';
 import browserStorageService from '../browser-storage-service';
 import pick from 'lodash/pick';
 
-export type Bookmark = {
+export type PreviouslyViewedObject = {
   genome_id: string;
   object_id: string;
   object_type: string;
   label: string;
-  trackStates: GenomeTrackStates;
 };
 
-export type Bookmarks = {
-  [genomeId: string]: Bookmark[];
+export type PreviouslyViewedObjects = {
+  [genomeId: string]: PreviouslyViewedObject[];
 };
 
 export type TrackPanelStateForGenome = Readonly<{
@@ -19,8 +18,8 @@ export type TrackPanelStateForGenome = Readonly<{
   isTrackPanelOpened: boolean;
   selectedTrackPanelTab: TrackSet;
   trackPanelModalView: string;
-  bookmarks: Bookmark[];
-  previouslyViewedObjects: Bookmark[];
+  bookmarks: PreviouslyViewedObject[];
+  previouslyViewedObjects: PreviouslyViewedObject[];
   highlightedTrackId: string;
   collapsedTrackIds: string[];
 }>;

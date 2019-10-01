@@ -23,7 +23,8 @@ import {
   getBrowserTrackStates,
   getChrLocation,
   getBrowserMessageCount,
-  getBrowserActiveEnsObjectIds
+  getBrowserActiveEnsObjectIds,
+  getBrowserActiveGenomeTrackStates
 } from './browserSelectors';
 
 import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/browser/track-panel/trackPanelActions';
@@ -32,7 +33,10 @@ import { getChrLocationStr } from './browserHelper';
 import browserStorageService from './browser-storage-service';
 import { RootState } from 'src/store';
 import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
-import { TrackStates } from './track-panel/trackPanelConfig';
+import {
+  BrowserTrackStates,
+  GenomeTrackStates
+} from './track-panel/trackPanelConfig';
 import { BROWSER_CONTAINER_ID } from './browser-constants';
 
 export type UpdateTrackStatesPayload = {
@@ -131,25 +135,40 @@ export const updateDefaultPositionFlag = createStandardAction(
 
 export const updateTrackStates = createStandardAction(
   'browser/update-tracks-state'
-)<TrackStates>();
+)<BrowserTrackStates>();
 
 export const updateTrackStatesAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (payload: UpdateTrackStatesPayload) => (
-  dispatch,
-  getState: () => RootState
-) => {
-  const stateFragment = {
-    [payload.genomeId]: {
-      [payload.categoryName]: {
-        [payload.trackId]: payload.status
-      }
-    }
-  };
-
-  dispatch(updateTrackStates(stateFragment));
+> = (payload: BrowserTrackStates) => (dispatch, getState: () => RootState) => {
+  dispatch(updateTrackStates(payload));
   const trackStates = getBrowserTrackStates(getState());
   browserStorageService.saveTrackStates(trackStates);
+};
+
+export const clearTrackStatesAndSave: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = () => (dispatch, getState: () => RootState) => {
+  const state = getState();
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
+  const activeGenomeTrackStates = getBrowserActiveGenomeTrackStates(state);
+
+  if (!activeGenomeId || !activeEnsObjectId || !activeGenomeTrackStates) {
+    return;
+  }
+
+  const activeEnsObjectTrackStates =
+    activeGenomeTrackStates['objectTracks'][activeEnsObjectId] || {};
+
+  Object.values(activeEnsObjectTrackStates).forEach((trackStates) => {
+    Object.keys(trackStates).forEach((trackId) => {
+      const trackStatus: string =
+        trackStates[trackId] === ImageButtonStatus.INACTIVE ? 'on' : 'off';
+
+      // TODO: Combine these into one send event
+      browserMessagingService.send('bpane', { [trackStatus]: trackId });
+    });
+  });
 };
 
 export const toggleBrowserNav = createStandardAction(

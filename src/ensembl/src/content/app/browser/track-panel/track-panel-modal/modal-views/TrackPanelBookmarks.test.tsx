@@ -34,7 +34,7 @@ const createPreviouslyViewedLink = () => ({
 });
 
 const closeTrackPanelModalMock = jest.fn();
-const updateTrackStatesMock = jest.fn();
+const updateTrackStatesAndSaveMock = jest.fn();
 const fetchExampleEnsObjectsMock = jest.fn();
 const changeDrawerViewAndOpenMock = jest.fn();
 
@@ -52,7 +52,7 @@ describe('<TrackPanelBookmarks />', () => {
       createPreviouslyViewedLink()
     ),
     fetchExampleEnsObjects: fetchExampleEnsObjectsMock,
-    updateTrackStates: updateTrackStatesMock,
+    updateTrackStatesAndSave: updateTrackStatesAndSaveMock,
     closeTrackPanelModal: closeTrackPanelModalMock,
     changeDrawerViewAndOpen: changeDrawerViewAndOpenMock
   };

@@ -6,8 +6,8 @@ import upperFirst from 'lodash/upperFirst';
 import { RootState } from 'src/store';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 import { getBrowserActiveGenomeId } from '../../../browserSelectors';
-import { updateTrackStates } from 'src/content/app/browser/browserActions';
-import { TrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
+import { updateTrackStatesAndSave } from 'src/content/app/browser/browserActions';
+import { BrowserTrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
 import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
@@ -18,19 +18,19 @@ import ImageButton, {
 } from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as EllipsisIcon } from 'static/img/track-panel/ellipsis.svg';
 import { changeDrawerViewAndOpen } from 'src/content/app/browser/drawer/drawerActions';
-import { Bookmark } from 'src/content/app/browser/track-panel/trackPanelState';
+import { PreviouslyViewedObject } from 'src/content/app/browser/track-panel/trackPanelState';
 
 import styles from '../TrackPanelModal.scss';
 
 type StateProps = {
   activeGenomeId: string | null;
   exampleEnsObjects: EnsObject[];
-  previouslyViewedObjects: Bookmark[];
+  previouslyViewedObjects: PreviouslyViewedObject[];
 };
 
 type DispatchProps = {
   fetchExampleEnsObjects: (objectId: string) => void;
-  updateTrackStates: (trackStates: TrackStates) => void;
+  updateTrackStatesAndSave: (trackStates: BrowserTrackStates) => void;
   closeTrackPanelModal: () => void;
   changeDrawerViewAndOpen: (drawerView: string) => void;
 };
@@ -66,23 +66,12 @@ export const ExampleLinks = (props: ExampleLinksProps) => {
 
 type PreviouslyViewedLinksProps = Pick<
   TrackPanelBookmarksProps,
-  'previouslyViewedObjects' | 'updateTrackStates' | 'closeTrackPanelModal'
+  | 'previouslyViewedObjects'
+  | 'updateTrackStatesAndSave'
+  | 'closeTrackPanelModal'
 >;
 
 export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
-  const onClickHandler = (previouslyViewedObject: Bookmark) => {
-    const { trackStates = {} } = previouslyViewedObject;
-
-    console.log(trackStates);
-    props.updateTrackStates({
-      [previouslyViewedObject.genome_id]: {
-        ...trackStates
-      }
-    });
-
-    props.closeTrackPanelModal();
-  };
-
   return (
     <div>
       {[...props.previouslyViewedObjects]
@@ -95,10 +84,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
 
           return (
             <dd key={index}>
-              <Link
-                to={path}
-                onClick={() => onClickHandler(previouslyViewedObject)}
-              >
+              <Link to={path} onClick={props.closeTrackPanelModal}>
                 {previouslyViewedObject.label}
               </Link>
               <span className={styles.previouslyViewedType}>
@@ -116,7 +102,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
     previouslyViewedObjects,
     exampleEnsObjects,
     activeGenomeId,
-    updateTrackStates,
+    updateTrackStatesAndSave,
     closeTrackPanelModal
   } = props;
 
@@ -150,7 +136,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
           </dt>
           <PreviouslyViewedLinks
             previouslyViewedObjects={limitedPreviouslyViewedObjects}
-            updateTrackStates={updateTrackStates}
+            updateTrackStatesAndSave={updateTrackStatesAndSave}
             closeTrackPanelModal={closeTrackPanelModal}
           />
         </dl>
@@ -167,7 +153,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = {
   fetchExampleEnsObjects,
-  updateTrackStates,
+  updateTrackStatesAndSave,
   closeTrackPanelModal,
   changeDrawerViewAndOpen
 };
