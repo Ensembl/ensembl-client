@@ -1,34 +1,21 @@
 import { getFullSpeciesItemWidth } from 'src/shared/components/selected-species/selectedSpeciesHelpers';
 
-import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 import { Props as FocusableSelectedSpeciesProps } from 'src/shared/components/selected-species/FocusableSelectedSpecies';
 
 const BETWEEN_SPECIES_SPACE = 7;
-
-type Modify<T, R> = Omit<T, keyof R> & R;
-
-type HoverableItem = CommittedItem & {
-  isHovered: boolean;
-};
-
-type SpeciesItem = Modify<
-  FocusableSelectedSpeciesProps,
-  {
-    species: HoverableItem;
-  }
->;
 
 export const getSpeciesItemWidths = ({
   items,
   containerWidth
 }: {
-  items: FocusableSelectedSpeciesProps[];
+  items: Array<FocusableSelectedSpeciesProps & { isHovered: boolean }>;
   containerWidth: number;
 }) => {
   const naturalItemWidths = items.map((item) =>
     getFullSpeciesItemWidth(item.species)
   );
   const activeItemIndex = items.findIndex((item) => item.isActive);
+  const hoveredItemIndex = items.findIndex((item) => item.isHovered);
 
   const totalWidth = naturalItemWidths.reduce(
     (result, width) => result + width,
@@ -38,7 +25,10 @@ export const getSpeciesItemWidths = ({
   if (totalWidth <= containerWidth) {
     return naturalItemWidths;
   } else {
-    const fixedWidthIndices = [activeItemIndex]; // FIXME to include hover?
+    const fixedWidthIndices =
+      hoveredItemIndex > -1
+        ? [activeItemIndex, hoveredItemIndex]
+        : [activeItemIndex];
     const largestNativeWidth = findLargestFittingNativeWidth({
       widths: naturalItemWidths,
       fixedWidthIndices,
@@ -149,7 +139,7 @@ const getTruncatedWidth = ({
   );
   const remainingWidth =
     containerWidth - totalUnchangedWidth - getTotalSpaceBetween(widths.length);
-  return remainingWidth / widthsForTruncation.length;
+  return Math.ceil(remainingWidth / widthsForTruncation.length);
 };
 
 const getTotalSpaceBetween = (itemsNumber: number) => {

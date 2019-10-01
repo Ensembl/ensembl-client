@@ -1,6 +1,16 @@
-.speciesWrapperInternal {
+.speciesWrapperExternal {
+  display: flex;
+  align-items: center;
   white-space: nowrap;
+}
+
+.speciesWrapperInternal {
+  flex: 1 0 auto;
   overflow-x: hidden;
+}
+
+.linkWrapper {
+  flex: 0 0 auto;
 }
 
 .speciesContainer {
