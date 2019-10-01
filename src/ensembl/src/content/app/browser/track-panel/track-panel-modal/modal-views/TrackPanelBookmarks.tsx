@@ -125,14 +125,16 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
         <dl className={styles.previouslyViewed}>
           <dt>
             Previously viewed
-            <span className={styles.ellipsis}>
-              <ImageButton
-                buttonStatus={ImageButtonStatus.ACTIVE}
-                description={'View all'}
-                image={EllipsisIcon}
-                onClick={() => props.changeDrawerViewAndOpen('bookmarks')}
-              />
-            </span>
+            {props.previouslyViewedObjects.length > 20 && (
+              <span className={styles.ellipsis}>
+                <ImageButton
+                  buttonStatus={ImageButtonStatus.ACTIVE}
+                  description={'View all'}
+                  image={EllipsisIcon}
+                  onClick={() => props.changeDrawerViewAndOpen('bookmarks')}
+                />
+              </span>
+            )}
           </dt>
           <PreviouslyViewedLinks
             previouslyViewedObjects={limitedPreviouslyViewedObjects}

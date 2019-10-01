@@ -28,12 +28,17 @@ export type DrawerBookmarksProps = StateProps & DispatchProps;
 const DrawerBookmarks: FunctionComponent<DrawerBookmarksProps> = (
   props: DrawerBookmarksProps
 ) => {
+  const limitedPreviouslyViewedObjects = props.previouslyViewedObjects.slice(
+    20,
+    props.previouslyViewedObjects.length
+  );
+
   return (
     <>
       <div className={styles.drawerTitle}> All previously viewed</div>
       <div className={styles.contentWrapper}>
         <div className={styles.linksWrapper}>
-          {[...props.previouslyViewedObjects]
+          {[...limitedPreviouslyViewedObjects]
             .reverse()
             .map((previouslyViewedObject, index) => {
               const path = urlFor.browser({
