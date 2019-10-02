@@ -30,8 +30,6 @@ const StatefulStoryWrapper = (props: { species: CommittedItem[] }) => {
       species={species}
       isActive={index === activeIndex}
       onClick={() => setActiveIndex(index)}
-      onMouseEnter={() => {}}
-      onMouseLeave={() => {}}
     />
   ));
   return (
