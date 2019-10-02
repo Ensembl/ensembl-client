@@ -87,7 +87,7 @@ const SingleLineWrapper = (props: Props) => {
     hoveredItemIndex,
     containerRef,
     containerWidth: itemsContainerWidth,
-    immediate: true
+    immediate: shouldAnimateImmediately.current
   });
   const [springs, setAnimationProps] = useSprings(
     speciesTabs.length,

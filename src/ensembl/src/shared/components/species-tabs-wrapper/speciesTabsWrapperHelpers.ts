@@ -17,10 +17,10 @@ export const getSpeciesItemWidths = ({
   const activeItemIndex = items.findIndex((item) => item.isActive);
   const hoveredItemIndex = items.findIndex((item) => item.isHovered);
 
-  const totalWidth = naturalItemWidths.reduce(
-    (result, width) => result + width,
-    0
-  );
+  const totalWidth = naturalItemWidths.reduce((result, width, index) => {
+    const margin = index < naturalItemWidths.length ? BETWEEN_SPECIES_SPACE : 0;
+    return result + width + margin;
+  }, 0);
 
   if (totalWidth <= containerWidth) {
     return naturalItemWidths;
