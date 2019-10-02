@@ -145,7 +145,7 @@ const TrackPanelListItem = (props: Props) => {
     if (!activeGenomeId || !activeEnsObjectId) {
       return;
     }
-    if (track.track_id.indexOf('track:gene') === 1) {
+    if (track.track_id.indexOf('track:gene') === 0) {
       props.updateTrackStatesAndSave({
         [activeGenomeId]: {
           objectTracks: {

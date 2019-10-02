@@ -211,30 +211,23 @@ export const Browser: FunctionComponent<BrowserProps> = (
     if (!props.activeGenomeId || !props.activeEnsObjectId) {
       return;
     }
-    const activeEnsObjectTrackStates = get(
-      trackStatesFromStorage,
-      `${props.activeGenomeId}.objectTracks.${props.activeEnsObjectId}`,
-      {}
-    ) as TrackStates;
-
-    const commonTrackStates = get(
-      trackStatesFromStorage,
-      `${props.activeGenomeId}.commonTracks.${props.activeEnsObjectId}`,
-      {}
-    ) as TrackStates;
 
     const mergedTrackStates = merge(
       {},
-      activeEnsObjectTrackStates,
-      commonTrackStates
-    );
+      get(
+        trackStatesFromStorage,
+        `${props.activeGenomeId}.objectTracks.${props.activeEnsObjectId}`
+      ),
+      get(
+        trackStatesFromStorage,
+        `${props.activeGenomeId}.commonTracks.${props.activeEnsObjectId}`
+      )
+    ) as TrackStates;
 
     Object.values(mergedTrackStates).forEach((trackStates) => {
       Object.keys(trackStates).forEach((trackId) => {
         const trackStatus: string =
           trackStates[trackId] === ImageButtonStatus.ACTIVE ? 'on' : 'off';
-
-        // TODO: Combine these into one send event
         browserMessagingService.send('bpane', { [trackStatus]: trackId });
       });
     });

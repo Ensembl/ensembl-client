@@ -19,26 +19,19 @@ import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObject
 } from '../browserSelectors';
-import { getBreakpointWidth } from 'src/global/globalSelectors';
-import { BreakpointWidth } from 'src/global/globalConfig';
 import { TrackSet } from './trackPanelConfig';
 
-import { GenomeTrackCategory } from 'src/genome/genomeTypes';
-import { getGenomeTrackCategoriesById } from 'src/genome/genomeSelectors';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 import styles from './TrackPanel.scss';
 
 type TrackPanelProps = {
   activeGenomeId: string | null;
-  breakpointWidth: BreakpointWidth;
   browserActivated: boolean;
   isDrawerOpened: boolean;
   activeEnsObject: EnsObject | null;
   isTrackPanelModalOpened: boolean;
   isTrackPanelOpened: boolean;
-  selectedTrackPanelTab: TrackSet;
-  genomeTrackCategories: GenomeTrackCategory[];
 };
 
 const TrackPanel = (props: TrackPanelProps) => {
@@ -86,15 +79,10 @@ const mapStateToProps = (state: RootState) => {
 
   return {
     activeGenomeId,
-    breakpointWidth: getBreakpointWidth(state),
     browserActivated: getBrowserActivated(state),
     isDrawerOpened: getIsDrawerOpened(state),
     activeEnsObject: getBrowserActiveEnsObject(state),
     isTrackPanelModalOpened: getIsTrackPanelModalOpened(state),
-    selectedTrackPanelTab: getSelectedTrackPanelTab(state),
-    genomeTrackCategories: activeGenomeId
-      ? getGenomeTrackCategoriesById(state, activeGenomeId)
-      : [],
     isTrackPanelOpened: getIsTrackPanelOpened(state)
   };
 };

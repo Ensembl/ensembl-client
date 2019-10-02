@@ -50,11 +50,6 @@ export function browserEntity(
     case getType(browserActions.updateBrowserActiveEnsObjectIds):
       return { ...state, activeEnsObjectIds: action.payload };
     case getType(browserActions.updateTrackStates):
-      console.log(
-        state.trackStates,
-        action.payload,
-        merge({}, state.trackStates, action.payload)
-      );
       return {
         ...state,
         trackStates: merge({}, state.trackStates, action.payload)

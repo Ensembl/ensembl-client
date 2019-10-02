@@ -163,8 +163,6 @@ export const clearTrackStatesAndSave: ActionCreator<
     Object.keys(trackStates).forEach((trackId) => {
       const trackStatus: string =
         trackStates[trackId] === ImageButtonStatus.INACTIVE ? 'on' : 'off';
-
-      // TODO: Combine these into one send event
       browserMessagingService.send('bpane', { [trackStatus]: trackId });
     });
   });

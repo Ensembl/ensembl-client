@@ -29,9 +29,14 @@ const DrawerBookmarks: FunctionComponent<DrawerBookmarksProps> = (
   props: DrawerBookmarksProps
 ) => {
   const limitedPreviouslyViewedObjects = props.previouslyViewedObjects.slice(
-    20,
-    props.previouslyViewedObjects.length
+    0,
+    props.previouslyViewedObjects.length - 20
   );
+
+  const onClickHandler = () => {
+    props.closeTrackPanelModal();
+    props.closeDrawer();
+  };
 
   return (
     <>
@@ -46,14 +51,12 @@ const DrawerBookmarks: FunctionComponent<DrawerBookmarksProps> = (
                 focus: previouslyViewedObject.object_id
               });
 
-              props.closeTrackPanelModal();
-              props.closeDrawer();
-
               return (
                 <span key={index} className={styles.linkHolder}>
-                  <Link to={path}>{previouslyViewedObject.label}</Link>
+                  <Link to={path} onClick={onClickHandler}>
+                    {previouslyViewedObject.label}
+                  </Link>
                   <span className={styles.previouslyViewedType}>
-                    {' '}
                     {upperFirst(previouslyViewedObject.object_type)}
                   </span>
                 </span>

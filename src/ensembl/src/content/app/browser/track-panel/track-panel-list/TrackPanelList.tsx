@@ -73,7 +73,7 @@ const TrackPanelList = (props: TrackPanelListProps) => {
 
     if (activeEnsObject) {
       // FIXME: Temporary hack until we have a set of proper track names
-      if (track_id.indexOf('track:gene') === 1) {
+      if (track_id.indexOf('track:gene') === 0) {
         trackStatus = get(
           props.trackStates,
           `${activeGenomeId}.objectTracks.${activeEnsObject.object_id}.${categoryName}.${track_id}`,

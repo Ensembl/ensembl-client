@@ -11,6 +11,7 @@ import {
 } from './TrackPanelBookmarks';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
+import { PreviouslyViewedObject } from '../../trackPanelState';
 
 jest.mock('react-router-dom', () => ({
   Link: (props: any) => (
@@ -20,17 +21,11 @@ jest.mock('react-router-dom', () => ({
   )
 }));
 
-const createPreviouslyViewedLink = () => ({
+const createPreviouslyViewedLink = (): PreviouslyViewedObject => ({
   genome_id: faker.random.word(),
   object_id: faker.random.word(),
   object_type: faker.random.word(),
-  label: faker.random.word(),
-  location: {
-    start: faker.random.number(),
-    end: faker.random.number(),
-    chromosome: faker.random.word()
-  },
-  trackStates: {}
+  label: faker.random.word()
 });
 
 const closeTrackPanelModalMock = jest.fn();
@@ -42,7 +37,7 @@ describe('<TrackPanelBookmarks />', () => {
   const numberOfExampleObjects = faker.random.number({ min: 5, max: 10 });
   const numberOfPreviouslyViewedObjects = faker.random.number({
     min: 5,
-    max: 10
+    max: 20
   });
 
   const props = {
@@ -85,6 +80,31 @@ describe('<TrackPanelBookmarks />', () => {
       .simulate('click');
 
     expect(closeTrackPanelModalMock).toBeCalled();
+  });
+
+  it('shows the ellipsis only when the total objects is more than 20', () => {
+    const previouslyViewedObjects = times(20, () =>
+      createPreviouslyViewedLink()
+    );
+    wrapper = mount(
+      <TrackPanelBookmarks
+        {...props}
+        previouslyViewedObjects={previouslyViewedObjects}
+      />
+    );
+
+    expect(wrapper.find(ImageButton)).toHaveLength(0);
+
+    // Add another link to make it 21 links
+    previouslyViewedObjects.push(createPreviouslyViewedLink());
+    wrapper = mount(
+      <TrackPanelBookmarks
+        {...props}
+        previouslyViewedObjects={previouslyViewedObjects}
+      />
+    );
+
+    expect(wrapper.find(ImageButton)).toHaveLength(1);
   });
 
   it('calls changeDrawerViewAndOpen when the ellipsis is clicked', () => {
