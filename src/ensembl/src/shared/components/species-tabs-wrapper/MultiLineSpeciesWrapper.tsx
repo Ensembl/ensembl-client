@@ -1,5 +1,7 @@
 import React, { ReactElement } from 'react';
 
+import { nonBreakingSpace } from 'src/shared/constants/strings';
+
 import styles from './MultiLineSpeciesWrapper.scss';
 
 type Props = {
@@ -12,6 +14,7 @@ const MultiLineWrapper = (props: Props) => {
   return (
     <div>
       {props.speciesTabs}
+      {nonBreakingSpace}
       {props.link && <span className={styles.linkWrapper}>{props.link}</span>}
     </div>
   );

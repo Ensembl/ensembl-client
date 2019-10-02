@@ -8,11 +8,11 @@ import { AppName } from 'src/global/globalConfig';
 import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
+import AppBar, {
+  HelpAndDocumentation
+} from 'src/shared/components/app-bar/AppBar';
 import { FocusableSelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
-
-import chevronRightIcon from 'static/img/shared/chevron-right-grey.svg';
-import styles from './BrowserAppBar.scss';
 
 import { RootState } from 'src/store';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
@@ -35,25 +35,20 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
     />
   ));
   const speciesSelectorLink = <Link to={urlFor.speciesSelector()}>Change</Link>;
+  const wrappedSpecies = (
+    <SpeciesTabsWrapper
+      isWrappable={false}
+      speciesTabs={speciesTabs}
+      link={speciesSelectorLink}
+    />
+  );
 
   return (
-    <section className={styles.browserAppBar}>
-      <div className={styles.appBarTop}>
-        <div>{AppName.GENOME_BROWSER}</div>
-      </div>
-      <div className={styles.appBarBottom}>
-        <SpeciesTabsWrapper
-          isWrappable={false}
-          speciesTabs={speciesTabs}
-          link={speciesSelectorLink}
-        />
-        <div className={styles.helpLink}>
-          <a className="inactive">
-            Help &amp; documentation <img src={chevronRightIcon} alt="" />
-          </a>
-        </div>
-      </div>
-    </section>
+    <AppBar
+      appName={AppName.GENOME_BROWSER}
+      mainContent={wrappedSpecies}
+      rightCornerContent={<HelpAndDocumentation />}
+    />
   );
 };
 
