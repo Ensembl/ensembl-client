@@ -52,7 +52,6 @@ import {
 
 import browserStorageService from './browser-storage-service';
 import { TrackStates } from './track-panel/trackPanelConfig';
-import { AppName } from 'src/global/globalConfig';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
