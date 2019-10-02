@@ -22,7 +22,8 @@ import {
   changeBrowserLocation,
   changeFocusObject,
   setDataFromUrlAndSave,
-  ParsedUrlPayload
+  ParsedUrlPayload,
+  clearTrackStatesAndSave
 } from './browserActions';
 import {
   getBrowserNavOpened,
@@ -90,6 +91,7 @@ type DispatchProps = {
   changeFocusObject: (objectId: string) => void;
   changeDrawerView: (drawerView: string) => void;
   closeDrawer: () => void;
+  clearTrackStatesAndSave: () => void;
   fetchGenomeData: (genomeId: string) => void;
   replace: Replace;
   toggleDrawer: (isDrawerOpened: boolean) => void;
@@ -168,6 +170,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
       location: chrLocation ? getChrLocationStr(chrLocation) : null
     };
 
+    props.clearTrackStatesAndSave();
     props.replace(urlFor.browser(params));
   };
 
@@ -218,10 +221,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
         trackStatesFromStorage,
         `${props.activeGenomeId}.objectTracks.${props.activeEnsObjectId}`
       ),
-      get(
-        trackStatesFromStorage,
-        `${props.activeGenomeId}.commonTracks.${props.activeEnsObjectId}`
-      )
+      get(trackStatesFromStorage, `${props.activeGenomeId}.commonTracks`)
     ) as TrackStates;
 
     Object.values(mergedTrackStates).forEach((trackStates) => {
@@ -377,7 +377,8 @@ const mapDispatchToProps: DispatchProps = {
   fetchGenomeData,
   replace,
   toggleDrawer,
-  setDataFromUrlAndSave
+  setDataFromUrlAndSave,
+  clearTrackStatesAndSave
 };
 
 export default withRouter(

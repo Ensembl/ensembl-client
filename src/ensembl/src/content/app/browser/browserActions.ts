@@ -4,6 +4,7 @@ import { replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
 import isEqual from 'lodash/isEqual';
 import get from 'lodash/get';
+import merge from 'lodash/merge';
 
 import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -153,13 +154,13 @@ export const clearTrackStatesAndSave: ActionCreator<
   const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
   const activeGenomeTrackStates = getBrowserActiveGenomeTrackStates(state);
 
-  const activeEnsObjectTrackStates: TrackStates = get(
-    activeGenomeTrackStates,
-    `objectTracks.${activeEnsObjectId}`,
-    {}
-  );
+  const mergedTrackStates = merge(
+    {},
+    get(activeGenomeTrackStates, `objectTracks.${activeEnsObjectId}`),
+    get(activeGenomeTrackStates, 'commonTracks')
+  ) as TrackStates;
 
-  Object.values(activeEnsObjectTrackStates).forEach((trackStates) => {
+  Object.values(mergedTrackStates).forEach((trackStates) => {
     Object.keys(trackStates).forEach((trackId) => {
       const trackStatus: string =
         trackStates[trackId] === ImageButtonStatus.INACTIVE ? 'on' : 'off';
