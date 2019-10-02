@@ -23,7 +23,7 @@ import {
   changeFocusObject,
   setDataFromUrlAndSave,
   ParsedUrlPayload,
-  clearTrackStatesAndSave
+  resetBrowserTrackStates
 } from './browserActions';
 import {
   getBrowserNavOpened,
@@ -91,7 +91,7 @@ type DispatchProps = {
   changeFocusObject: (objectId: string) => void;
   changeDrawerView: (drawerView: string) => void;
   closeDrawer: () => void;
-  clearTrackStatesAndSave: () => void;
+  resetBrowserTrackStates: () => void;
   fetchGenomeData: (genomeId: string) => void;
   replace: Replace;
   toggleDrawer: (isDrawerOpened: boolean) => void;
@@ -170,7 +170,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
       location: chrLocation ? getChrLocationStr(chrLocation) : null
     };
 
-    props.clearTrackStatesAndSave();
+    props.resetBrowserTrackStates();
     props.replace(urlFor.browser(params));
   };
 
@@ -378,7 +378,7 @@ const mapDispatchToProps: DispatchProps = {
   replace,
   toggleDrawer,
   setDataFromUrlAndSave,
-  clearTrackStatesAndSave
+  resetBrowserTrackStates
 };
 
 export default withRouter(

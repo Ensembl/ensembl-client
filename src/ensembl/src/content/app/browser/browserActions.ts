@@ -147,7 +147,7 @@ export const updateTrackStatesAndSave: ActionCreator<
   browserStorageService.saveTrackStates(trackStates);
 };
 
-export const clearTrackStatesAndSave: ActionCreator<
+export const resetBrowserTrackStates: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = () => (dispatch, getState: () => RootState) => {
   const state = getState();
