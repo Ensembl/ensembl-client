@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 
-import speciesData from '../species-tab-bar/speciesData';
+import speciesData from './speciesData';
 
 import {
   SimpleSelectedSpecies,
