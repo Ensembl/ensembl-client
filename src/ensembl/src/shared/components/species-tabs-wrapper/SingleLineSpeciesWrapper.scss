@@ -15,6 +15,7 @@
 .speciesContainer {
   display: inline-block;
   vertical-align: middle;
+  line-height: 1;
 
   &:not(:last-child) {
     margin-right: 7px;
@@ -23,5 +24,5 @@
 
 .species {
   width: 100%;
-  margin: 0;
+  margin-bottom: 0;
 }
