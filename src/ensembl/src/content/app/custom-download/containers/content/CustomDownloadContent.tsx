@@ -1,24 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import styles from './CustomDownloadContent.scss';
-import {
-  getSelectedTab,
-  getShowPreviewResult,
-  getPreviewResult
-} from '../../state/customDownloadSelectors';
+import { getShowPreviewResult } from '../../state/customDownloadSelectors';
 
 import AttributesAccordion from './attributes-accordion/AttributesAccordion';
 import FiltersAccordion from './filter-accordion/FiltersAccordion';
-import TabButtons from './tab-buttons/TabButtons';
-import ResultHolder from './result-holder/ResultHolder';
+import ResultLoader from './result-loader/ResultLoader';
 import { RootState } from 'src/store';
 import PreviewDownload from './preview-download/PreviewDownload';
-import JSONValue from 'src/shared/types/JSON';
 
 type Props = {
-  selectedTab: string;
   showSummary: boolean;
-  preview: JSONValue;
 };
 
 const Content = (props: Props) => {
@@ -26,15 +18,12 @@ const Content = (props: Props) => {
     <div>
       {!props.showSummary && (
         <div>
-          <div className={styles.resultList}>
-            <ResultHolder />
+          <div className={styles.attributesHolder}>
+            <AttributesAccordion />
+            {/* <ResultLoader /> */}
           </div>
-          <div className={styles.tabList}>
-            <TabButtons />
-          </div>
-          <div className={styles.dataSelector}>
-            {props.selectedTab === 'attributes' && <AttributesAccordion />}
-            {props.selectedTab === 'filter' && <FiltersAccordion />}
+          <div className={styles.filtersHolder}>
+            <FiltersAccordion />
           </div>
         </div>
       )}
@@ -48,9 +37,7 @@ const Content = (props: Props) => {
 };
 
 const mapStateToProps = (state: RootState): Props => ({
-  selectedTab: getSelectedTab(state),
-  showSummary: getShowPreviewResult(state),
-  preview: getPreviewResult(state)
+  showSummary: getShowPreviewResult(state)
 });
 
 export default connect(mapStateToProps)(Content);

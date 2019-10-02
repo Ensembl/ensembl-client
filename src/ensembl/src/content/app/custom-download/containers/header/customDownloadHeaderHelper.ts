@@ -2,7 +2,7 @@ import JSONValue from 'src/shared/types/JSON';
 import {
   getEndpointUrl,
   flattenObject
-} from 'src/content/app/custom-download/containers/content/result-holder/resultHolderHelper';
+} from 'src/content/app/custom-download/containers/content/result-loader/resultLoaderHelper';
 
 export const fetchCustomDownloadResults = (
   downloadType: string,

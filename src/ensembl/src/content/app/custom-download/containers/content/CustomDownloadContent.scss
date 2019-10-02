@@ -6,21 +6,22 @@
   position: relative;
 }
 
-.resultList {
-  position: absolute;
-  width: 40%;
-  min-width: 40%;
-}
-
 .tabList {
   position: absolute;
   left: 40%;
   width: 200px;
 }
 
-.dataSelector {
+.attributesHolder {
   position: absolute;
-  left: calc(40% + 200px);
-  width: calc(60% - 200px);
+  left: 20px;
+  width: calc(50% - 40px);
+  min-width: 45%;
+}
+
+.filtersHolder {
+  position: absolute;
+  left: calc(50% + 20px);
+  width: calc(50% - 40px);
   min-width: 45%;
 }

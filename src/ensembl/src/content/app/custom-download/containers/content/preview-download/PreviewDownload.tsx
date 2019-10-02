@@ -14,7 +14,7 @@ import {
   flattenObject,
   attributeDisplayNames,
   getProcessedFilters
-} from '../result-holder/resultHolderHelper';
+} from '../result-loader/resultLoaderHelper';
 
 import {
   setShowPreview,
