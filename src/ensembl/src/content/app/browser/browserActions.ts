@@ -162,9 +162,7 @@ export const resetBrowserTrackStates: ActionCreator<
 
   Object.values(mergedTrackStates).forEach((trackStates) => {
     Object.keys(trackStates).forEach((trackId) => {
-      const trackStatus: string =
-        trackStates[trackId] === ImageButtonStatus.INACTIVE ? 'on' : 'off';
-      browserMessagingService.send('bpane', { [trackStatus]: trackId });
+      browserMessagingService.send('bpane', { ['on']: trackId });
     });
   });
 };
