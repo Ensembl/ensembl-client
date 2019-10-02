@@ -117,14 +117,14 @@ const SingleLineWrapper = (props: Props) => {
     }, 1000);
   });
 
-  const handleMouseEnter = (fn: () => void, index: number) => {
+  const handleMouseEnter = (index: number, fn?: () => void) => {
     setHoveredItemIndex(index);
-    fn();
+    fn && fn();
   };
 
-  const handleMouseLeave = (fn: () => void) => {
+  const handleMouseLeave = (fn?: () => void) => {
     setHoveredItemIndex(null);
-    fn();
+    fn && fn();
   };
 
   const children = containerRef.current
@@ -134,7 +134,7 @@ const SingleLineWrapper = (props: Props) => {
           const newProps = {
             ...node.props,
             onMouseEnter: () =>
-              handleMouseEnter(node.props.onMouseEnter, index),
+              handleMouseEnter(index, node.props.onMouseEnter),
             onMouseLeave: () => handleMouseLeave(node.props.onMouseLeave),
             className: styles.species
           };

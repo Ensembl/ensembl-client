@@ -30,8 +30,6 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
       species={species}
       isActive={species.genome_id === props.activeGenomeId}
       onClick={() => props.onSpeciesSelect(species.genome_id)}
-      onMouseEnter={() => {}}
-      onMouseLeave={() => {}}
     />
   ));
   const speciesSelectorLink = <Link to={urlFor.speciesSelector()}>Change</Link>;

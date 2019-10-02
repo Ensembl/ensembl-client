@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 
 import SelectedSpeciesDisplayName from './SelectedSpeciesDisplayName';
@@ -11,20 +11,18 @@ export type Props = {
   species: CommittedItem;
   isActive: boolean;
   onClick: (genomeId: string) => void;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
   className?: string;
 };
 
 const SpeciesTab = (props: Props) => {
-  const [isHovering, setIsHovering] = useState(false);
-
   const handleMouseEnter = () => {
-    props.onMouseEnter();
+    props.onMouseEnter && props.onMouseEnter();
   };
 
   const handleMouseLeave = () => {
-    props.onMouseLeave();
+    props.onMouseLeave && props.onMouseLeave();
   };
 
   const handleClick = () => {
@@ -33,11 +31,8 @@ const SpeciesTab = (props: Props) => {
     }
   };
 
-  // const isFullSize = props.isActive || isHovering;
-
   const className = classNames(styles.species, props.className, {
     [styles.speciesActive]: props.isActive
-    // [styles.speciesTabFullSize]: isFullSize
   });
   const nameClass = props.isActive ? styles.nameActive : styles.name;
   const assemblyClass = props.isActive
