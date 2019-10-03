@@ -28,9 +28,9 @@ describe('<CheckboxWithTextfields />', () => {
     expect(wrapper).not.toThrow();
   });
 
-  it('does not display any PasteOrUpload component by default', () => {
+  it('displays one PasteOrUpload component by default', () => {
     wrapper = mount(<CheckboxWithTextfields {...defaultProps} />);
-    expect(wrapper.find(PasteOrUpload)).toHaveLength(0);
+    expect(wrapper.find(PasteOrUpload)).toHaveLength(1);
   });
 
   it('does not display the add button by default', () => {
