@@ -4,7 +4,7 @@ import faker from 'faker';
 import { act } from 'react-dom/test-utils';
 
 import CheckboxWithTextfields from './CheckboxWithTextfields';
-import PasteOrUpload from '../paste-or-upload/PasteOrUpload';
+import PasteOrUpload from 'src/shared/components/paste-or-upload/PasteOrUpload';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
 const onChange = jest.fn();

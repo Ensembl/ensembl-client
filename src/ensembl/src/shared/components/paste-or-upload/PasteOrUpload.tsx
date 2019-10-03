@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Input from 'src/shared/components/input/Input';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as RemoveIcon } from 'static/img/shared/clear.svg';
 import styles from './PasteOrUpload.scss';
@@ -22,8 +21,15 @@ const PasteOrUpload = (props: PasteOrUploadProps) => {
     showInput(true);
   };
 
+  const onTextareaChangeHandler = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    props.onChange(event.target.value);
+  };
+
   const onRemoveHandler = () => {
     showFileUpload(false);
+    showInput(false);
     props.onRemove();
   };
 
@@ -67,12 +73,12 @@ const PasteOrUpload = (props: PasteOrUploadProps) => {
       {shouldShowInput && (
         <div className={styles.fields}>
           <div className={styles.inputWrapper}>
-            <Input
+            <textarea
               value={props.value || ''}
-              onChange={onChangeHandler}
+              onChange={onTextareaChangeHandler}
               className={styles.textInput}
               placeholder={props.placeholder}
-            />
+            ></textarea>
           </div>
         </div>
       )}

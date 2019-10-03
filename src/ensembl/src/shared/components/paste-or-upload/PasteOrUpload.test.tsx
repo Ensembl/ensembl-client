@@ -2,7 +2,6 @@ import React from 'react';
 import { mount } from 'enzyme';
 import PasteOrUpload from './PasteOrUpload';
 import faker from 'faker';
-import Input from 'src/shared/components/input/Input';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 const onChange = jest.fn();
@@ -36,25 +35,25 @@ describe('<PasteOrUpload/>', () => {
   it('does not display the text "Paste data or Upload file" when a value is passed', () => {
     wrapper = mount(<PasteOrUpload {...defaultProps} value={'foo'} />);
 
-    expect(wrapper.text()).toBe('');
+    expect(wrapper.find('.textarea')).toHaveLength(0);
   });
 
-  it('does not display the text input by default ', () => {
+  it('does not display the textarea by default ', () => {
     wrapper = mount(<PasteOrUpload {...defaultProps} />);
-    expect(wrapper.find(Input)).toHaveLength(0);
+    expect(wrapper.find('textarea')).toHaveLength(0);
   });
 
-  it('displays the text input by default when a value is passed', () => {
+  it('displays the textarea by default when a value is passed', () => {
     wrapper = mount(
       <PasteOrUpload {...defaultProps} value={faker.random.words()} />
     );
-    expect(wrapper.find(Input)).toHaveLength(1);
+    expect(wrapper.find('textarea')).toHaveLength(1);
   });
 
-  it('shows the text input on clicking the text "Paste data"', () => {
+  it('shows the textarea on clicking the text "Paste data"', () => {
     wrapper = mount(<PasteOrUpload {...defaultProps} />);
     wrapper.find('.pasteText').simulate('click');
-    expect(wrapper.find(Input)).toHaveLength(1);
+    expect(wrapper.find('textarea')).toHaveLength(1);
   });
 
   it('does not display the remove icon by default', () => {
@@ -78,16 +77,16 @@ describe('<PasteOrUpload/>', () => {
         placeholder={placeholder}
       />
     );
-    expect(wrapper.find(Input).prop('placeholder')).toBe(placeholder);
+    expect(wrapper.find('textarea').prop('placeholder')).toBe(placeholder);
   });
 
-  it('calls the onChange function with the current value when the input is changed', () => {
+  it('calls the onChange function with the current value when the textarea is changed', () => {
+    wrapper = mount(<PasteOrUpload {...defaultProps} value={'foo'} />);
     const newValue = faker.random.words();
-
-    wrapper = mount(
-      <PasteOrUpload {...defaultProps} value={faker.random.words()} />
-    );
-    wrapper.find(Input).prop('onChange')(newValue);
+    const event = {
+      target: { value: newValue }
+    };
+    wrapper.find('textarea').prop('onChange')(event);
     expect(onChange).toBeCalledWith(newValue);
   });
 

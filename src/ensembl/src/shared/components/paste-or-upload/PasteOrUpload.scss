@@ -15,7 +15,6 @@
   width: 20px;
   float: right;
   margin-right: 2px;
-  margin-top: 8px;
 }
 
 .fields {
@@ -25,7 +24,9 @@
 }
 
 .textInput {
-  height: 36px;
-  padding-left: 15px;
+  height: 65px;
+  width: 100%;
+  padding: 5px 0 0 5px;
   border: none;
+  resize: none;
 }

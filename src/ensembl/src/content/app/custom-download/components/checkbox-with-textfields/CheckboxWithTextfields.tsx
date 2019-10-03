@@ -4,7 +4,7 @@ import styles from './CheckboxWithTextfields.scss';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as AddIcon } from 'static/img/browser/zoom-in.svg';
-import PasteOrUpload from '../paste-or-upload/PasteOrUpload';
+import PasteOrUpload from 'src/shared/components/paste-or-upload/PasteOrUpload';
 
 export type CheckboxWithTextfieldsProps = {
   values: string[];
@@ -77,19 +77,18 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
           </td>
           <td>
             <div className={styles.fieldsWrapper}>
-              {isChecked &&
-                values.map((value: string | null, key: number) => {
-                  return (
-                    <div key={key}>
-                      <PasteOrUpload
-                        value={value}
-                        onChange={(newValue) => handleOnChange(newValue, key)}
-                        onRemove={() => handleOnRemove(key)}
-                        placeholder={'Paste data'}
-                      />
-                    </div>
-                  );
-                })}
+              {values.map((value: string | null, key: number) => {
+                return (
+                  <div key={key}>
+                    <PasteOrUpload
+                      value={value}
+                      onChange={(newValue) => handleOnChange(newValue, key)}
+                      onRemove={() => handleOnRemove(key)}
+                      placeholder={'Paste data'}
+                    />
+                  </div>
+                );
+              })}
 
               {/* Show the Add button */}
               {shouldShowAddButton && props.allowMultiple && (
