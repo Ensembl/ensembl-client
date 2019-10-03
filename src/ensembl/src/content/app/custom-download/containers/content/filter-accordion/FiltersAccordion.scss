@@ -5,10 +5,44 @@
   max-height: calc(100vh - 135);
   overflow-y: auto;
 }
-.filterHint {
+.header {
   padding: 10px 40px 10px 15px;
   color: $dark-grey;
   position: relative;
+}
+
+.title {
+  width: 70px;
+  font-weight: $bold;
+}
+.titleBadge {
+  top: -2px;
+}
+
+.resultCounter {
+  position: absolute;
+  top: 14px;
+  right: 100px;
+  color: $black;
+  font-size: 13px;
+  span {
+    font-weight: 700;
+  }
+}
+.previewCounter {
+  margin-left: 20px;
+  padding-top: 12px;
+  display: inline-block;
+}
+
+.boldResultCounter {
+  font-weight: bold;
+  margin-right: 2px;
+}
+
+.resultsLabel {
+  font-size: 11px;
+  color: $dark-grey;
 }
 
 .accordionItemPanel {

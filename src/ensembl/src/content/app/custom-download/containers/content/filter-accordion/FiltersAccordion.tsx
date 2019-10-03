@@ -10,9 +10,11 @@ import {
   AccordionItemButton
 } from 'src/shared/components/accordion';
 
-import styles from './FiltersAccordion.scss';
-
-import { getFiltersAccordionExpandedPanel } from '../../../state/filters/filtersSelector';
+import { getPreviewResult } from '../../../state/customDownloadSelectors';
+import {
+  getFiltersAccordionExpandedPanel,
+  getSelectedFilters
+} from '../../../state/filters/filtersSelector';
 import {
   setFiltersAccordionExpandedPanel,
   resetSelectedFilters,
@@ -26,7 +28,61 @@ import { Genes } from './sections';
 import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/components/image-button/ImageButton';
+import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
+import styles from './FiltersAccordion.scss';
+
+type Filter = {
+  [key: string]: boolean;
+};
+type SelectedFilters = {
+  [key: string]: boolean | string | string[] | Filter;
+};
+
+type StateProps = {
+  expandedPanel: string;
+  selectedFilters: {};
+  preview: JSONValue;
+};
+
+type DispatchProps = {
+  setFiltersAccordionExpandedPanel: (
+    setFiltersAccordionExpandedPanel: string
+  ) => void;
+  resetSelectedFilters: () => void;
+  updateSelectedFilters: (filters: JSONValue) => void;
+};
+
+const getTotalSelectedFilters = (
+  filters: SelectedFilters,
+  totalSelectedFilters = 0
+) => {
+  if (!filters) {
+    return 0;
+  }
+  Object.keys(filters).forEach((key: string) => {
+    if (key === 'preExpanded') {
+      // Skip preExpanded keys
+    } else if (typeof filters[key] === 'boolean' && filters[key] === true) {
+      totalSelectedFilters++;
+    } else if (typeof filters[key] === 'string' && filters[key] !== '') {
+      totalSelectedFilters++;
+    } else if (
+      Array.isArray(filters[key]) &&
+      (filters[key] as string[]).length > 0
+    ) {
+      totalSelectedFilters++;
+    } else if (typeof filters[key] === 'object') {
+      totalSelectedFilters = getTotalSelectedFilters(
+        filters[key] as SelectedFilters,
+        totalSelectedFilters
+      );
+    }
+  });
+
+  return totalSelectedFilters;
+};
 
 type Props = StateProps & DispatchProps;
 
@@ -52,11 +108,24 @@ const FiltersAccordion = (props: Props) => {
     customDownloadStorageService.saveSelectedFilters({});
   };
 
+  const resultCount: number = props.preview.resultCount
+    ? (props.preview.resultCount as number)
+    : 0;
+
   return (
     <div className={styles.wrapper}>
-      <div className={styles.filterHint}>
-        Filter the results to download only the information you need - the
-        filtered content will appear as rows in a table
+      <div className={styles.header}>
+        <BadgedButton
+          badgeContent={String(getTotalSelectedFilters(props.selectedFilters))}
+          className={styles.titleBadge}
+        >
+          <div className={styles.title}>Filters</div>
+        </BadgedButton>
+
+        <div className={styles.resultCounter}>
+          <span>{getCommaSeparatedNumber(resultCount)}</span> results
+        </div>
+
         <span className={styles.resetIcon} onClick={onReset}>
           <ImageButton
             buttonStatus={ImageButtonStatus.ACTIVE}
@@ -142,26 +211,16 @@ const FiltersAccordion = (props: Props) => {
   );
 };
 
-type DispatchProps = {
-  setFiltersAccordionExpandedPanel: (
-    setFiltersAccordionExpandedPanel: string
-  ) => void;
-  resetSelectedFilters: () => void;
-  updateSelectedFilters: (filters: JSONValue) => void;
-};
-
 const mapDispatchToProps: DispatchProps = {
   setFiltersAccordionExpandedPanel,
   resetSelectedFilters,
   updateSelectedFilters
 };
 
-type StateProps = {
-  expandedPanel: string;
-};
-
 const mapStateToProps = (state: RootState): StateProps => ({
-  expandedPanel: getFiltersAccordionExpandedPanel(state)
+  expandedPanel: getFiltersAccordionExpandedPanel(state),
+  selectedFilters: getSelectedFilters(state),
+  preview: getPreviewResult(state)
 });
 
 export default connect(

@@ -11,7 +11,11 @@ import {
   AccordionItemPermanentBlock
 } from 'src/shared/components/accordion';
 
-import { getAttributesAccordionExpandedPanel } from '../../../state/attributes/attributesSelector';
+import {
+  getAttributesAccordionExpandedPanel,
+  getSelectedAttributes
+} from '../../../state/attributes/attributesSelector';
+import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
 import {
   setAttributesAccordionExpandedPanel,
   fetchAttributes,
@@ -29,7 +33,44 @@ import styles from './AttributesAccordion.scss';
 
 import AttributesAccordionSection from 'src/content/app/custom-download/containers/content/attributes-accordion/sections/AttributesAccordionSection';
 
+type Attribute = {
+  [key: string]: boolean;
+};
+type SelectedAttributes = {
+  [key: string]: boolean | Attribute;
+};
+
+type StateProps = {
+  expandedPanel: string;
+  selectedAttributes: {};
+};
+type DispatchProps = {
+  setAttributesAccordionExpandedPanel: (
+    setAttributesAccordionExpandedPanel: string
+  ) => void;
+  fetchAttributes: () => void;
+  resetSelectedAttributes: () => void;
+};
+
 type Props = StateProps & DispatchProps;
+
+const getTotalSelectedAttributes = (
+  attributes: SelectedAttributes,
+  totalSelectedAttributes = 0
+) => {
+  Object.keys(attributes).forEach((key) => {
+    if (typeof attributes[key] === 'boolean' && attributes[key] === true) {
+      totalSelectedAttributes++;
+    } else if (typeof attributes[key] === 'object') {
+      totalSelectedAttributes = getTotalSelectedAttributes(
+        attributes[key] as SelectedAttributes,
+        totalSelectedAttributes
+      );
+    }
+  });
+
+  return totalSelectedAttributes;
+};
 
 const AttributesAccordion = (props: Props) => {
   useEffect(() => {
@@ -75,9 +116,14 @@ const AttributesAccordion = (props: Props) => {
   };
   return (
     <div className={styles.wrapper}>
-      <div className={styles.dataSelectorHint}>
-        Select the information you would like to download - these attributes
-        will be displayed as columns in a table
+      <div className={styles.header}>
+        <BadgedButton
+          badgeContent={getTotalSelectedAttributes(props.selectedAttributes)}
+          className={styles.titleBadge}
+        >
+          <div className={styles.title}>Data to download</div>
+        </BadgedButton>
+        <span className={styles.viewExample}>View example data</span>
         <span className={styles.resetIcon} onClick={onReset}>
           <ImageButton
             buttonStatus={ImageButtonStatus.ACTIVE}
@@ -236,26 +282,15 @@ const AttributesAccordion = (props: Props) => {
   );
 };
 
-type DispatchProps = {
-  setAttributesAccordionExpandedPanel: (
-    setAttributesAccordionExpandedPanel: string
-  ) => void;
-  fetchAttributes: () => void;
-  resetSelectedAttributes: () => void;
-};
-
 const mapDispatchToProps: DispatchProps = {
   setAttributesAccordionExpandedPanel,
   fetchAttributes,
   resetSelectedAttributes
 };
 
-type StateProps = {
-  expandedPanel: string;
-};
-
 const mapStateToProps = (state: RootState): StateProps => ({
-  expandedPanel: getAttributesAccordionExpandedPanel(state)
+  expandedPanel: getAttributesAccordionExpandedPanel(state),
+  selectedAttributes: getSelectedAttributes(state)
 });
 
 export default connect(

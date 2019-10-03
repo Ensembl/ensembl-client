@@ -16,11 +16,11 @@ type Props = {
 const Content = (props: Props) => {
   return (
     <div>
+      <ResultLoader />
       {!props.showSummary && (
         <div>
           <div className={styles.attributesHolder}>
             <AttributesAccordion />
-            {/* <ResultLoader /> */}
           </div>
           <div className={styles.filtersHolder}>
             <FiltersAccordion />

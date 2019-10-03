@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { PrimaryButton } from 'src/shared/components/button/Button';
+import {
+  PrimaryButton,
+  SecondaryButton
+} from 'src/shared/components/button/Button';
 
 import RoundButton from 'src/shared/components/round-button/RoundButton';
 
@@ -27,8 +30,6 @@ import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as BackIcon } from 'static/img/shared/chevron-left.svg';
 
 import { fetchCustomDownloadResults } from './customDownloadHeaderHelper';
-
-import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 
 import styles from './CustomDownloadHeader.scss';
 
@@ -67,6 +68,8 @@ const Header = (props: Props) => {
     ? (props.preview.resultCount as number)
     : 0;
 
+  const disablePreviewButton = resultCount === 0;
+
   const handleDownloadTypeSelect = (option: string) => {
     props.setDownloadType(option);
   };
@@ -81,22 +84,8 @@ const Header = (props: Props) => {
 
   const downloadButtonStatus = props.downloadType === '';
 
-  const disablePreviewButton = resultCount === 0;
-
-  const getFormattedResult = () => {
-    return (
-      <>
-        <span>{getCommaSeparatedNumber(resultCount)}</span> results
-      </>
-    );
-  };
-
   return (
     <div className={styles.wrapper}>
-      {!props.showSummary && (
-        <div className={styles.resultCounter}>{getFormattedResult()}</div>
-      )}
-
       {props.showSummary && (
         <>
           <div className={styles.backButton}>
@@ -105,15 +94,6 @@ const Header = (props: Props) => {
               description={'Back'}
               image={BackIcon}
             />
-          </div>
-          <div className={styles.previewCounter}>
-            <div>
-              <span className={styles.boldResultCounter}>
-                {getCommaSeparatedNumber(resultCount)}
-              </span>
-              <span className={styles.resultsLabel}>results</span>
-            </div>
-            <div className={styles.saveConfiguration}>Save configuration</div>
           </div>
         </>
       )}
@@ -144,12 +124,12 @@ const Header = (props: Props) => {
 
       <div className={styles.previewButton}>
         {!props.showSummary && (
-          <PrimaryButton
+          <SecondaryButton
             onClick={previewButtonOnClick}
             isDisabled={disablePreviewButton}
           >
             Download summary
-          </PrimaryButton>
+          </SecondaryButton>
         )}
         {props.showSummary && (
           <PrimaryButton
