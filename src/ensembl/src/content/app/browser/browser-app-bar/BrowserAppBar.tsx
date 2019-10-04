@@ -45,7 +45,7 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
     <AppBar
       appName={AppName.GENOME_BROWSER}
       mainContent={wrappedSpecies}
-      rightCornerContent={<HelpAndDocumentation />}
+      aside={<HelpAndDocumentation />}
     />
   );
 };
