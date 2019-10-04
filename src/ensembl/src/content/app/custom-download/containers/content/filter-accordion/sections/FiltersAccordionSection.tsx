@@ -7,6 +7,10 @@ import {
   AttributeWithContent
 } from 'src/content/app/custom-download/types/Attributes';
 
+import CheckboxGrid, {
+  CheckboxGridOption
+} from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
+
 import {
   getFilters,
   getSelectedFilters,
@@ -44,14 +48,38 @@ const FiltersAccordionSection = (props: Props) => {
   console.log(props.selectedFilters);
   console.log('TCL: FiltersAccordionSection -> allFilters', allFilters);
 
+  const allSectionFilters = allFilters[props.section];
+
+  if (!props.showOverview) {
+    return (
+      <ContentBuilder
+        data={allSectionFilters as AttributeWithContent}
+        onChange={props.updateSelectedFilters}
+        uiState={{ ...props.ui }}
+        onUiChange={props.updateUi}
+        selectedData={props.selectedFilters}
+      />
+    );
+  }
+
+  const selectedFilters = props.selectedFilters[props.section] as JSONValue;
+  const gridOptions: any = [];
+  Object.keys(selectedFilters).forEach((filter) => {
+    if (
+      selectedFilters &&
+      selectedFilters[filter] &&
+      selectedFilters[filter].length
+    ) {
+      gridOptions.push({
+        isChecked: true,
+        id: filter,
+        label: 'test'
+      });
+    }
+  });
+
   return (
-    <ContentBuilder
-      data={allFilters[props.section] as AttributeWithContent}
-      onChange={props.updateSelectedFilters}
-      uiState={{ ...props.ui }}
-      onUiChange={props.updateUi}
-      selectedData={props.selectedFilters}
-    />
+    <CheckboxGrid onChange={console.log} options={gridOptions} label={''} />
   );
 };
 
