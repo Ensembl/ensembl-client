@@ -7,7 +7,8 @@ import {
   AccordionItem,
   AccordionItemHeading,
   AccordionItemPanel,
-  AccordionItemButton
+  AccordionItemButton,
+  AccordionItemPermanentBlock
 } from 'src/shared/components/accordion';
 
 import { getPreviewResult } from '../../../state/customDownloadSelectors';
@@ -31,6 +32,7 @@ import ImageButton, {
 import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
+import FiltersAccordionSection from 'src/content/app/custom-download/containers/content/filter-accordion/sections/FiltersAccordionSection';
 import styles from './FiltersAccordion.scss';
 
 type Filter = {
@@ -112,6 +114,18 @@ const FiltersAccordion = (props: Props) => {
     ? (props.preview.resultCount as number)
     : 0;
 
+  const buildSection = (options: {
+    section: string;
+    showOverview?: boolean;
+  }) => {
+    return (
+      <FiltersAccordionSection
+        section={options.section}
+        showOverview={options.showOverview}
+      />
+    );
+  };
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
@@ -146,8 +160,18 @@ const FiltersAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className={styles.accordionItemPanel}>
-            <Genes />
+            {buildSection({ section: 'genes' })}
           </AccordionItemPanel>
+          <AccordionItemPermanentBlock>
+            {props.expandedPanel !== 'genes' && (
+              <div className={styles.permanentBlock}>
+                {buildSection({
+                  section: 'genes',
+                  showOverview: true
+                })}
+              </div>
+            )}
+          </AccordionItemPermanentBlock>
         </AccordionItem>
 
         <AccordionItem uuid={'regions'}>
