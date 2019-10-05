@@ -6,7 +6,7 @@ import { CommittedItem } from 'src/content/app/species-selector/types/species-se
 
 import styles from './SimpleSelectedSpecies.scss';
 
-type Props = {
+export type Props = {
   species: CommittedItem;
 };
 

@@ -4,9 +4,16 @@ import { nonBreakingSpace } from 'src/shared/constants/strings';
 
 import styles from './MultiLineSpeciesWrapper.scss';
 
-type Props = {
-  isWrappable: boolean;
-  speciesTabs: ReactElement<any>[];
+import { Props as SimpleSelectedSpeciesProps } from 'src/shared/components/selected-species/SimpleSelectedSpecies';
+import { Props as SpeciesSelectorSelectedSpeciesProps } from 'src/content/app/species-selector/components/selected-species/SelectedSpecies';
+
+type MultiLineSelectedSpeciesProps =
+  | SimpleSelectedSpeciesProps
+  | SpeciesSelectorSelectedSpeciesProps;
+
+export type Props = {
+  isWrappable: true;
+  speciesTabs: ReactElement<MultiLineSelectedSpeciesProps>[];
   link?: React.ReactNode;
 };
 

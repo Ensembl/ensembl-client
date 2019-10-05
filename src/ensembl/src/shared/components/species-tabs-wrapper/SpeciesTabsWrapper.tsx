@@ -1,21 +1,19 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 
 import SingleLineSpeciesWrapper, {
   Props as SingleLineSpeciesWrapperProps
 } from './SingleLineSpeciesWrapper';
-import MultiLineSpeciesWrapper from './MultiLineSpeciesWrapper';
+import MultiLineSpeciesWrapper, {
+  Props as MultiLineSpeciesWrapperProps
+} from './MultiLineSpeciesWrapper';
 
-type Props = {
-  isWrappable: boolean;
-  speciesTabs: ReactElement<any>[]; // FIXME any
-  link?: React.ReactNode | null;
-};
+type Props = SingleLineSpeciesWrapperProps | MultiLineSpeciesWrapperProps;
 
 const SpeciesTabsWrapper = (props: Props) => {
   return props.isWrappable ? (
     <MultiLineSpeciesWrapper {...props} />
   ) : (
-    <SingleLineSpeciesWrapper {...(props as SingleLineSpeciesWrapperProps)} />
+    <SingleLineSpeciesWrapper {...props} />
   );
 };
 
