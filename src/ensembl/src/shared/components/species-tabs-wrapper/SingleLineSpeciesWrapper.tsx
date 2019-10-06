@@ -82,40 +82,63 @@ const SingleLineWrapper = (props: Props) => {
   const linkWidth = getLinkWidth(linkRef);
   const itemsContainerWidth = getItemsContainerWidth(containerWidth, linkWidth);
   const speciesTabsProps = React.Children.map(speciesTabs, (tab) => tab.props);
-  const animations = animationCalculator({
-    items: speciesTabsProps,
-    hoveredItemIndex,
-    containerRef,
-    containerWidth: itemsContainerWidth,
-    immediate: shouldAnimateImmediately.current
-  });
-  const [springs, setAnimationProps] = useSprings(
-    speciesTabs.length,
-    (index) => animations[index]
-  );
+  const activeItemIndex = speciesTabsProps.findIndex((item) => item.isActive);
+  // const animations = animationCalculator({
+  //   items: speciesTabsProps,
+  //   hoveredItemIndex,
+  //   containerRef,
+  //   containerWidth: itemsContainerWidth,
+  //   immediate: shouldAnimateImmediately.current
+  // });
+  // const [springs, setAnimationProps] = useSprings(
+  //   speciesTabs.length,
+  //   (index) => animations[index]
+  // );
 
-  useEffect(() => {
-    const animations = animationCalculator({
+  const [testAnimations, setTestAnimations] = useState(
+    animationCalculator({
       items: speciesTabsProps,
       hoveredItemIndex,
       containerRef,
       containerWidth: itemsContainerWidth,
       immediate: shouldAnimateImmediately.current
-    });
-    // FIXME: can we switch to react-spring v9 beta? Types for v8 are incorrect and not maintained
-    // see https://github.com/react-spring/react-spring/pull/722
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    setAnimationProps((index) => animations[index]);
+    })
+  );
 
-    // species tabs should initially appear without animation;
-    // but subsequent tabs changes should be animated
-    setTimeout(() => {
-      if (shouldAnimateImmediately.current) {
-        shouldAnimateImmediately.current = false;
-      }
-    }, 1000);
-  });
+  // useEffect(() => {
+  //   const animations = animationCalculator({
+  //     items: speciesTabsProps,
+  //     hoveredItemIndex,
+  //     containerRef,
+  //     containerWidth: itemsContainerWidth,
+  //     immediate: shouldAnimateImmediately.current
+  //   });
+  //   // FIXME: can we switch to react-spring v9 beta? Types for v8 are incorrect and not maintained
+  //   // see https://github.com/react-spring/react-spring/pull/722
+  //   // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  //   // @ts-ignore
+  //   setAnimationProps((index) => animations[index]);
+  //
+  //   // species tabs should initially appear without animation;
+  //   // but subsequent tabs changes should be animated
+  //   setTimeout(() => {
+  //     if (shouldAnimateImmediately.current) {
+  //       shouldAnimateImmediately.current = false;
+  //     }
+  //   }, 1000);
+  // });
+
+  useEffect(() => {
+    setTestAnimations(
+      animationCalculator({
+        items: speciesTabsProps,
+        hoveredItemIndex,
+        containerRef,
+        containerWidth: itemsContainerWidth,
+        immediate: shouldAnimateImmediately.current
+      })
+    );
+  }, [hoveredItemIndex, activeItemIndex, containerWidth]);
 
   const handleMouseEnter = (index: number, fn?: () => void) => {
     setHoveredItemIndex(index);
@@ -140,12 +163,12 @@ const SingleLineWrapper = (props: Props) => {
           };
           const child = React.cloneElement(node, newProps);
           return (
-            <animated.div
+            <div
               className={styles.speciesContainer}
-              style={springs[index]}
+              style={{ width: testAnimations[index].width }}
             >
               {child}
-            </animated.div>
+            </div>
           );
         }
       )
