@@ -1,6 +1,5 @@
 import React, { ReactElement, useState, useEffect, useRef } from 'react';
 import useResizeObserver from 'use-resize-observer';
-import { useSprings, animated } from 'react-spring';
 
 import { getSpeciesItemWidths } from './speciesTabsWrapperHelpers';
 
@@ -18,14 +17,12 @@ const animationCalculator = ({
   items,
   hoveredItemIndex,
   containerRef,
-  containerWidth,
-  immediate = false
+  containerWidth
 }: {
   items: FocusableSelectedSpeciesProps[];
   hoveredItemIndex: number | null;
   containerRef: React.RefObject<HTMLElement>;
   containerWidth: number;
-  immediate: boolean;
 }) => {
   const springConfig = { tension: 280, friction: 45 };
   const updatedParamsList = items.map((item, index) => ({
@@ -38,14 +35,12 @@ const animationCalculator = ({
       containerWidth
     }).map((width) => ({
       config: springConfig,
-      width: `${width}px`,
-      immediate
+      width: `${width}px`
     }));
   } else {
     return items.map(() => ({
       config: springConfig,
-      width: '0px',
-      immediate
+      width: '0px'
     }));
   }
 };
@@ -75,47 +70,33 @@ const getItemsContainerWidth = (
 
 const SingleLineWrapper = (props: Props) => {
   const { speciesTabs } = props;
-  const shouldAnimateImmediately = useRef(true);
   const linkRef = useRef<HTMLDivElement>(null);
   const [hoveredItemIndex, setHoveredItemIndex] = useState<number | null>(null);
   const [containerRef, containerWidth] = useResizeObserver();
   const linkWidth = getLinkWidth(linkRef);
   const itemsContainerWidth = getItemsContainerWidth(containerWidth, linkWidth);
   const speciesTabsProps = React.Children.map(speciesTabs, (tab) => tab.props);
-  const animations = animationCalculator({
-    items: speciesTabsProps,
-    hoveredItemIndex,
-    containerRef,
-    containerWidth: itemsContainerWidth,
-    immediate: shouldAnimateImmediately.current
-  });
-  const [springs, setAnimationProps] = useSprings(
-    speciesTabs.length,
-    (index) => animations[index]
-  );
+  const activeItemIndex = speciesTabsProps.findIndex((item) => item.isActive);
 
-  useEffect(() => {
-    const animations = animationCalculator({
+  const [speciesStyles, setSpeciesStyles] = useState(
+    animationCalculator({
       items: speciesTabsProps,
       hoveredItemIndex,
       containerRef,
-      containerWidth: itemsContainerWidth,
-      immediate: shouldAnimateImmediately.current
-    });
-    // FIXME: can we switch to react-spring v9 beta? Types for v8 are incorrect and not maintained
-    // see https://github.com/react-spring/react-spring/pull/722
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    setAnimationProps((index) => animations[index]);
+      containerWidth: itemsContainerWidth
+    })
+  );
 
-    // species tabs should initially appear without animation;
-    // but subsequent tabs changes should be animated
-    setTimeout(() => {
-      if (shouldAnimateImmediately.current) {
-        shouldAnimateImmediately.current = false;
-      }
-    }, 1000);
-  });
+  useEffect(() => {
+    setSpeciesStyles(
+      animationCalculator({
+        items: speciesTabsProps,
+        hoveredItemIndex,
+        containerRef,
+        containerWidth: itemsContainerWidth
+      })
+    );
+  }, [hoveredItemIndex, activeItemIndex, containerWidth]);
 
   const handleMouseEnter = (index: number, fn?: () => void) => {
     setHoveredItemIndex(index);
@@ -140,12 +121,12 @@ const SingleLineWrapper = (props: Props) => {
           };
           const child = React.cloneElement(node, newProps);
           return (
-            <animated.div
+            <div
               className={styles.speciesContainer}
-              style={springs[index]}
+              style={{ width: speciesStyles[index].width }}
             >
               {child}
-            </animated.div>
+            </div>
           );
         }
       )
