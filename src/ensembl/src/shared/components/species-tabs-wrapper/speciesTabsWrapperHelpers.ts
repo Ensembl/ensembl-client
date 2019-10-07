@@ -123,7 +123,7 @@ const getTruncatedWidth = ({
       let [unchangedWidths, widthsForTruncation] = result;
       if (
         fixedWidthIndices.includes(index) ||
-        (largestNativeWidth && width < largestNativeWidth)
+        (largestNativeWidth && width <= largestNativeWidth)
       ) {
         unchangedWidths = [...unchangedWidths, width];
       } else {
