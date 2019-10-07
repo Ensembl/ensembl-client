@@ -1,12 +1,28 @@
-use composit::Stick;
+use std::rc::Rc;
+use std::sync::{ Arc, Mutex };
+use stdweb::web::{ XmlHttpRequest, XhrResponseType };
+use url::Url;
+
+use serde_json::Value as JSONValue;
+
+use composit::{ Stick, StickManager };
+use controller::animate::{ action_zhoosh_pos, PendingActions, action_zhoosh_zoom, action_zhoosh_bang };
 use controller::global::App;
 use controller::input::Action;
 use dom::domutil::browser_time;
 use types::{ Dot,LEFT, RIGHT };
 use model::stage::{ Position, bp_to_zoomfactor };
+use model::train::TrainManager;
+
+use misc_algorithms::marshal::{ json_str, json_obj_get, json_f64, json_bool };
+use misc_algorithms::zhoosh::{ Zhoosh, ZhooshRun };
 
 const ZHOOSH_TIME : f64 = 500.; /* ms */
 const ZHOOSH_PAUSE : f64 = 250.; /* ms */
+
+/*
+
+THIS CODE IS OUT-OF-DATE AND WILL NOT WORK, BUT IT'S KEPT HERE BECAUSE IT INCLUDES LOGIC NOT YET MIGRATED TO THE ZHOOSH-LIBRARY 
 
 #[derive(Clone)]
 pub struct JumpZhoosh {
@@ -86,12 +102,14 @@ impl JumpZhoosh {
         more
     }
 }
+*/
 
 #[derive(Clone)]
 pub struct Jumper {
-    zhoosh: Option<JumpZhoosh>,
     location_zhoosh: Zhoosh<PendingActions,Dot<f64,f64>>,
-    zoom_zhoosh: Zhoosh<PendingActions,f64>
+    zoom_zhoosh: Zhoosh<PendingActions,f64>,
+    bang_zhoosh: Zhoosh<PendingActions,Option<(String,Dot<f64,f64>,f64)>>,
+    settled_zhoosh: Zhoosh<PendingActions,bool>
 }
 
 impl Jumper {
@@ -99,12 +117,24 @@ impl Jumper {
         let location_zhoosh = action_zhoosh_pos(100.,0.,&vec![],0.,|act,pos| {
             act.add(Action::Pos(pos,None));
         });
-        let zoom_zhoosh = action_zhoosh_zoom(100.,0.,&vec![],0.,|act,pos| {
+        let zoom_zhoosh = action_zhoosh_zoom(100.,0.,&vec![1.],0.,|act,pos| {
             act.add(Action::ZoomTo(pos));
         });
+        let bang_zhoosh = action_zhoosh_bang(&vec![],0.,|act,value| {
+            if let Some((stick,pos,zoom)) = value {
+                act.add(Action::SetStick(stick));
+                act.add(Action::Pos(pos,None));
+                act.add(Action::ZoomTo(zoom));
+                console!("bang");
+            }
+        });
+        let settled_zhoosh = action_zhoosh_bang(&vec![1.],0.,|act,value| {
+            if value {
+                act.add(Action::Settled);
+            }
+        });
         Jumper {
-            zhoosh: None,
-            location_zhoosh, zoom_zhoosh
+            location_zhoosh, zoom_zhoosh, bang_zhoosh, settled_zhoosh
         }
     }
 
@@ -119,37 +149,26 @@ impl Jumper {
         return dest_end < screen_left || dest_start > screen_right;
     }
 
-    pub fn tick(&mut self, app: &mut App, t: f64) {
-        let mut keep = false;
-        if let Some(ref mut zhoosh) = self.zhoosh {
-            keep = zhoosh.tick(app,t);
-        }
-        if !keep {
-            self.zhoosh = None;
-        }
+    fn do_offscreen_jump(&mut self, app: &mut App, stick: &str, dest_pos: Dot<f64,f64>, dest_size: f64) {
+        let animator = app.get_window().get_animator();
+        let dest_zoom = Position::unlimited_best_zoom_screen_bp(dest_size);
+        let bang_z = animator.add(&self.bang_zhoosh,None,Some((stick.to_string(),dest_pos,dest_zoom)),&vec![]);
+        let all_z = animator.add(&self.settled_zhoosh,false,true,&vec![bang_z]);
+        animator.run(all_z);
     }
 
-    fn do_offscreen_jump(&mut self, _app: &mut App, stick: &str, dest_pos: Dot<f64,f64>, dest_size: f64) {
+    fn do_onscreen_jump(&mut self, app: &mut App, current_position: &Position, dest_pos: Dot<f64,f64>, dest_size:f64) {
+        let animator = app.get_window().get_animator();
+        let current_middle = current_position.get_middle();
+        let current_zoom = bp_to_zoomfactor(current_position.get_screen_in_bp());
         let dest_zoom = Position::unlimited_best_zoom_screen_bp(dest_size);
-        self.zhoosh = Some(JumpZhoosh::new(
-            &Some(stick.to_string()),
-            (dest_pos,dest_zoom),
-            (dest_pos,dest_zoom)));
-    }
-
-    fn do_onscreen_jump(&mut self, _app: &mut App, current_position: &Position, dest_pos: Dot<f64,f64>, dest_size: f64) {
-        let dest_zoom = Position::unlimited_best_zoom_screen_bp(dest_size);
-        self.zhoosh = Some(JumpZhoosh::new(
-            &None,
-            (current_position.get_middle(),bp_to_zoomfactor(current_position.get_screen_in_bp())),
-            (dest_pos,dest_zoom)));
+        let pos_z = animator.add(&self.location_zhoosh,current_middle,dest_pos,&vec![]);
+        let zoom_z = animator.add(&self.zoom_zhoosh,current_zoom,dest_zoom,&vec![pos_z]);
+        let all_z = animator.add(&self.settled_zhoosh,false,true,&vec![zoom_z]);
+        animator.run(all_z);
     }
 
     pub fn jump(&mut self, mut app: &mut App, stick: &str, dest_pos: f64, dest_size: f64) {
-        if self.zhoosh.is_some() {
-            app.intend_here();
-            self.zhoosh = None;
-        }
         let train_manager = app.get_window().get_train_manager();
         if let (Some(src_stick),Some(src_position)) = (train_manager.get_desired_stick(),train_manager.get_desired_position()) {
             if !self.is_offscreen_jump(&src_stick,&src_position,stick,dest_pos,dest_size) {

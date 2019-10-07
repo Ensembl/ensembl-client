@@ -193,11 +193,6 @@ impl AppRunner {
                     vec![]
                 }
             },0);
-            let jumper = self.0.lock().unwrap().jumper.clone();
-            self.add_timer("do-jump",move |app,t,_| {
-                jumper.borrow_mut().tick(app,t);
-                vec![]
-            },0);
             /* resize check */
             self.add_timer("resizer",move |app,_,_| {
                 app.check_size();
