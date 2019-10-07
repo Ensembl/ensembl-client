@@ -47,6 +47,16 @@ impl ZhooshOps<()> for ZhooshEmptyOps {
     fn distance(&self, _: &(), _: &()) -> f64 { 0. }
 }
 
+pub struct ZhooshBangOps<T>(pub PhantomData<T>);
+
+impl<T> ZhooshOps<T> for ZhooshBangOps<T> where T: Clone+Sized {
+    fn interpolate(&self, prop: f64, from: &T, to: &T) -> T {
+        if prop < 0.5 { from.clone() } else { to.clone() }
+    }
+
+    fn distance(&self, from: &T, to: &T) -> f64 { 1. }
+}
+
 pub const ZHOOSH_LINEAR_F64_OPS : ZhooshLinearStdOps<f64,f64> = ZhooshLinearStdOps::<f64,f64>(PhantomData,PhantomData);
 pub const ZHOOSH_LINEAR_F32_OPS : ZhooshLinearStdOps<f32,f32> = ZhooshLinearStdOps::<f32,f32>(PhantomData,PhantomData);
 pub const ZHOOSH_LINEAR_I64_OPS : ZhooshLinearStdOps<i64,f64> = ZhooshLinearStdOps::<i64,f64>(PhantomData,PhantomData);
@@ -61,4 +71,4 @@ pub const ZHOOSH_PROP_I32_OPS : ZhooshPropStdOps<i32,f32> = ZhooshPropStdOps::<i
 pub const ZHOOSH_PROP_U64_OPS : ZhooshPropStdOps<u64,f64> = ZhooshPropStdOps::<u64,f64>(PhantomData,PhantomData);
 pub const ZHOOSH_PROP_U32_OPS : ZhooshPropStdOps<u32,f32> = ZhooshPropStdOps::<u32,f32>(PhantomData,PhantomData);
 
-pub const ZHOOSH_EMPTY_OPS : ZhooshEmptyOps = ZhooshEmptyOps(); 
+pub const ZHOOSH_EMPTY_OPS : ZhooshEmptyOps = ZhooshEmptyOps();
