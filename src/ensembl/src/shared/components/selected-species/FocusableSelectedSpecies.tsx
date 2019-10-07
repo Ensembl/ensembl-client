@@ -48,8 +48,10 @@ const SpeciesTab = (props: Props) => {
     >
       <SelectedSpeciesDisplayName
         species={props.species}
-        nameClassName={nameClass}
-        assemblyClassName={assemblyClass}
+        classNames={{
+          name: nameClass,
+          assembly: assemblyClass
+        }}
       />
     </div>
   );

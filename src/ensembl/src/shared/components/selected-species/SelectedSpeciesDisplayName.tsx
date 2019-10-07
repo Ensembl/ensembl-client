@@ -9,16 +9,24 @@ import styles from './selected-species-common.scss';
 
 type Props = {
   species: CommittedItem;
-  nameClassName?: string;
-  assemblyClassName?: string;
+  classNames?: {
+    name?: string;
+    assembly?: string;
+  };
 };
 
 const SelectedSpeciesDisplayName = (props: Props) => {
   const displayName = getDisplayName(props.species);
 
-  const nameClasses = classNames(styles.name, props.nameClassName);
+  const nameClasses = classNames(
+    styles.name,
+    props.classNames && props.classNames.name
+  );
 
-  const assemblyClasses = classNames(styles.assembly, props.assemblyClassName);
+  const assemblyClasses = classNames(
+    styles.assembly,
+    props.classNames && props.classNames.assembly
+  );
 
   return (
     <>
