@@ -4,4 +4,4 @@ mod optical;
 
 pub use self::physics::MousePhysics;
 pub use self::optical::Optical;
-pub use self::animate::{ action_zhoosh_pos, action_zhoosh_zoom, PendingActions, ActionAnimator };
+pub use self::animate::{ action_zhoosh_pos, action_zhoosh_zoom, action_zhoosh_bang, PendingActions, ActionAnimator };
