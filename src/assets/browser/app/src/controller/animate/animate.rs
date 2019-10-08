@@ -5,7 +5,7 @@ use std::ops::{ Add, Mul, Sub };
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
-use misc_algorithms::zhoosh::{ Zhoosh, ZhooshBangOps, ZhooshOps, ZhooshRun, ZhooshRunner, ZhooshShape, ZHOOSH_LINEAR_F64_OPS };
+use misc_algorithms::zhoosh::{ Zhoosh, ZhooshBangOps, ZhooshOps, ZhooshRunSpec, ZhooshRun, ZhooshRunner, ZhooshSequence, ZhooshShape, ZHOOSH_LINEAR_F64_OPS };
 
 use controller::input::Action;
 use types::Dot;
@@ -48,22 +48,22 @@ impl PendingActions {
 
 /* Zhoosh's that animators can create */
 
-pub fn action_zhoosh_bang<F,T>(after_prop: &[f64], delay: f64, cb: F) -> Zhoosh<PendingActions,T>
+pub fn action_zhoosh_bang<F,T>(delay: f64, cb: F) -> Zhoosh<PendingActions,T>
         where F: Fn(&mut PendingActions,T) + 'static + Send+Sync, T: Clone + 'static + Send+Sync {
     let ops : ZhooshBangOps<T> = ZhooshBangOps::<T>(PhantomData);
-    Zhoosh::new(0.,0.,after_prop,delay,ZhooshShape::Linear,ops,cb)
+    Zhoosh::new(0.,0.,delay,ZhooshShape::Linear,ops,cb)
 }
 
-pub fn action_zhoosh_pos<F,X,Y>(max_time: f64, min_speed: f64, after_prop: &[f64], delay: f64, cb: F) -> Zhoosh<PendingActions,Dot<X,Y>>
+pub fn action_zhoosh_pos<F,X,Y>(max_time: f64, min_speed: f64, delay: f64, cb: F) -> Zhoosh<PendingActions,Dot<X,Y>>
             where F: Fn(&mut PendingActions,Dot<X,Y>) + 'static +Send+Sync,
                   X: Clone+Copy+Debug + Add<X,Output=X> + Sub<X,Output=X> + Mul<X,Output=X> + Add<Y,Output=Y> + From<f64> + 'static + Send+Sync,
                   Y: Clone+Copy+Debug + Add<Y,Output=Y> + Sub<Y,Output=Y> + Mul<Y,Output=Y> + From<f64> + Into<f64> + 'static + Send+Sync {
-    Zhoosh::new(max_time,min_speed,after_prop,delay,ZhooshShape::Quadratic(1.),DotOps::<X,Y>(PhantomData,PhantomData),cb)
+    Zhoosh::new(max_time,min_speed,delay,ZhooshShape::Quadratic(1.),DotOps::<X,Y>(PhantomData,PhantomData),cb)
 }
 
-pub fn action_zhoosh_zoom<F>(max_time: f64, min_speed: f64, after_prop: &[f64], delay: f64, cb: F) -> Zhoosh<PendingActions,f64>
+pub fn action_zhoosh_zoom<F>(max_time: f64, min_speed: f64, delay: f64, cb: F) -> Zhoosh<PendingActions,f64>
             where F: Fn(&mut PendingActions,f64) + 'static +Send+Sync {
-    Zhoosh::new(max_time,min_speed,after_prop,delay,ZhooshShape::Quadratic(1.),ZHOOSH_LINEAR_F64_OPS,cb)
+    Zhoosh::new(max_time,min_speed,delay,ZhooshShape::Quadratic(1.),ZHOOSH_LINEAR_F64_OPS,cb)
 }
 
 /* Main access for animators */
@@ -82,12 +82,17 @@ impl ActionAnimator {
         }
     }
 
-    pub fn add<T>(&mut self, zhoosh: &Zhoosh<PendingActions,T>, start: T, end: T, after: &[ZhooshRun]) -> ZhooshRun where T: 'static+Debug {
-        ZhooshRun::new(zhoosh,self.actions.clone(),start,end,after)
+    pub fn new_sequence(&mut self) -> ZhooshSequence {
+        ZhooshSequence::new()
     }
 
-    pub fn run(&mut self, run: ZhooshRun) {
-        self.zhoosh_run.borrow_mut().add(run.clone());
+    pub fn new_step<T>(&mut self, zhoosh: &Zhoosh<PendingActions,T>, start: T, end: T) -> ZhooshRun where T: 'static+Debug {
+        let spec = ZhooshRunSpec::new(zhoosh,self.actions.clone(),start,end);
+        ZhooshRun::new(spec)
+    }
+
+    pub fn run(&mut self, seq: ZhooshSequence) {
+        seq.run(&mut self.zhoosh_run.borrow_mut());
     }
 
     pub fn tick(&mut self, t: f64) -> Vec<Action> {

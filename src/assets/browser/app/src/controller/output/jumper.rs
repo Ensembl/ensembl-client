@@ -15,7 +15,7 @@ use model::stage::{ Position, bp_to_zoomfactor };
 use model::train::TrainManager;
 
 use misc_algorithms::marshal::{ json_str, json_obj_get, json_f64, json_bool };
-use misc_algorithms::zhoosh::{ Zhoosh, ZhooshRun };
+use misc_algorithms::zhoosh::{ Zhoosh, ZhooshRunSpec };
 
 const ZHOOSH_TIME : f64 = 500.; /* ms */
 const ZHOOSH_PAUSE : f64 = 250.; /* ms */
@@ -118,20 +118,20 @@ lazy_static! {
 
 impl Jumper {
     fn new() -> Jumper {
-        let location_zhoosh = action_zhoosh_pos(100.,0.,&vec![],0.,|act,pos| {
+        let location_zhoosh = action_zhoosh_pos(1000.,0.,0.,|act,pos| {
             act.add(Action::Pos(pos,None));
         });
-        let zoom_zhoosh = action_zhoosh_zoom(100.,0.,&vec![1.],0.,|act,pos| {
+        let zoom_zhoosh = action_zhoosh_zoom(1000.,0.,0.,|act,pos| {
             act.add(Action::ZoomTo(pos));
         });
-        let bang_zhoosh = action_zhoosh_bang(&vec![],0.,|act,value| {
+        let bang_zhoosh = action_zhoosh_bang(0.,|act,value| {
             if let Some((stick,pos,zoom)) = value {
                 act.add(Action::SetStick(stick));
                 act.add(Action::Pos(pos,None));
                 act.add(Action::ZoomTo(zoom));
             }
         });
-        let settled_zhoosh = action_zhoosh_bang(&vec![1.],0.,|act,value| {
+        let settled_zhoosh = action_zhoosh_bang(0.,|act,value| {
             if value {
                 act.add(Action::Settled);
             }
@@ -155,9 +155,13 @@ impl Jumper {
     fn do_offscreen_jump(&mut self, app: &mut App, stick: &str, dest_pos: Dot<f64,f64>, dest_size: f64) {
         let animator = app.get_window().get_animator();
         let dest_zoom = Position::unlimited_best_zoom_screen_bp(dest_size);
-        let bang_z = animator.add(&self.bang_zhoosh,None,Some((stick.to_string(),dest_pos,dest_zoom)),&vec![]);
-        let all_z = animator.add(&self.settled_zhoosh,false,true,&vec![bang_z]);
-        animator.run(all_z);
+        let mut seq = animator.new_sequence();
+        let bang_z = animator.new_step(&self.bang_zhoosh,None,Some((stick.to_string(),dest_pos,dest_zoom)));
+        seq.add(bang_z.clone());
+        let mut all_z = animator.new_step(&self.settled_zhoosh,false,true);
+        all_z.add_trigger(bang_z,1.);
+        seq.add(all_z);
+        animator.run(seq);
     }
 
     fn do_onscreen_jump(&mut self, app: &mut App, current_position: &Position, dest_pos: Dot<f64,f64>, dest_size:f64) {
@@ -165,10 +169,16 @@ impl Jumper {
         let current_middle = current_position.get_middle();
         let current_zoom = bp_to_zoomfactor(current_position.get_screen_in_bp());
         let dest_zoom = Position::unlimited_best_zoom_screen_bp(dest_size);
-        let pos_z = animator.add(&self.location_zhoosh,current_middle,dest_pos,&vec![]);
-        let zoom_z = animator.add(&self.zoom_zhoosh,current_zoom,dest_zoom,&vec![pos_z]);
-        let all_z = animator.add(&self.settled_zhoosh,false,true,&vec![zoom_z]);
-        animator.run(all_z);
+        let mut seq = animator.new_sequence();
+        let pos_z = animator.new_step(&self.location_zhoosh,current_middle,dest_pos);
+        seq.add(pos_z.clone());
+        let mut zoom_z = animator.new_step(&self.zoom_zhoosh,current_zoom,dest_zoom);
+        zoom_z.add_trigger(pos_z,1.);
+        seq.add(zoom_z.clone());
+        let mut all_z = animator.new_step(&self.settled_zhoosh,false,true);
+        all_z.add_trigger(zoom_z,1.);
+        seq.add(all_z);
+        animator.run(seq);
     }
 
     fn jump(&mut self, mut app: &mut App, stick: &str, dest_pos: f64, dest_size: f64) {
