@@ -24,7 +24,6 @@ const animationCalculator = ({
   containerRef: React.RefObject<HTMLElement>;
   containerWidth: number;
 }) => {
-  const springConfig = { tension: 280, friction: 45 };
   const updatedParamsList = items.map((item, index) => ({
     ...item,
     isHovered: index === hoveredItemIndex
@@ -34,12 +33,10 @@ const animationCalculator = ({
       items: updatedParamsList,
       containerWidth
     }).map((width) => ({
-      config: springConfig,
       width: `${width}px`
     }));
   } else {
     return items.map(() => ({
-      config: springConfig,
       width: '0px'
     }));
   }
