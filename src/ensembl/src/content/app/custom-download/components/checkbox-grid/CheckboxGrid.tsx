@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
@@ -31,6 +31,8 @@ type CollapsableProps = AllProps & { hideLabel?: false };
 export type CheckboxGridProps = NonCollapsableProps | CollapsableProps;
 
 const CheckboxGrid = (props: CheckboxGridProps) => {
+  const [collapsed, setCollapsed] = useState(props.isCollapsed);
+
   let options = [...props.options];
 
   if (props.hideUnchecked) {
@@ -66,19 +68,22 @@ const CheckboxGrid = (props: CheckboxGridProps) => {
   };
 
   const checkboxGridContainerStyles = classNames(styles.checkboxGridContainer, {
-    [styles.collapsed]: props.isCollapsed
+    [styles.collapsed]: !collapsed
   });
 
   const collapseButtonStyles = classNames(styles.collapseButton, {
-    [styles.open]: !props.isCollapsed
+    [styles.open]: !collapsed
   });
   return (
     <>
-      {!props.hideLabel && (
+      {!props.hideLabel && props.label && (
         <div className={styles.checkboxGridHeader}>
           <span className={styles.label}>{props.label}</span>
           {props.isCollapsable && (
-            <span className={styles.collapseButtonWrapper}>
+            <span
+              className={styles.collapseButtonWrapper}
+              onClick={() => setCollapsed(!collapsed)}
+            >
               <span className={collapseButtonStyles}></span>
             </span>
           )}
