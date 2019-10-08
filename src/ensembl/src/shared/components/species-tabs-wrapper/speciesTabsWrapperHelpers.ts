@@ -2,7 +2,7 @@ import { getFullSpeciesItemWidth } from 'src/shared/components/selected-species/
 
 import { Props as FocusableSelectedSpeciesProps } from 'src/shared/components/selected-species/FocusableSelectedSpecies';
 
-const BETWEEN_SPECIES_SPACE = 7;
+const SPACE_BETWEEN_SPECIES = 7;
 
 export const getSpeciesItemWidths = ({
   items,
@@ -18,7 +18,7 @@ export const getSpeciesItemWidths = ({
   const hoveredItemIndex = items.findIndex((item) => item.isHovered);
 
   const totalWidth = naturalItemWidths.reduce((result, width, index) => {
-    const margin = index < naturalItemWidths.length ? BETWEEN_SPECIES_SPACE : 0;
+    const margin = index < naturalItemWidths.length ? SPACE_BETWEEN_SPECIES : 0;
     return result + width + margin;
   }, 0);
 
@@ -101,7 +101,7 @@ const canBeLargestWidth = ({
       fixedWidthIndices.includes(index) || width < largestWidth
         ? width
         : largestWidth;
-    const marginRight = index < widths.length - 1 ? BETWEEN_SPECIES_SPACE : 0;
+    const marginRight = index < widths.length - 1 ? SPACE_BETWEEN_SPECIES : 0;
     return total + addedWidth + marginRight;
   }, 0);
   return estimatedTotalWidth <= containerWidth;
@@ -146,6 +146,6 @@ const getTotalSpaceBetween = (itemsNumber: number) => {
   if (itemsNumber < 2) {
     return 0;
   } else {
-    return (itemsNumber - 1) * BETWEEN_SPECIES_SPACE;
+    return (itemsNumber - 1) * SPACE_BETWEEN_SPECIES;
   }
 };
