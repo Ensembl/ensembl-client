@@ -115,7 +115,7 @@ impl ZhooshSpec {
         self.0.lock().unwrap().set(prop);
     }
 
-    fn add_trigger(&mut self, after: ZhooshRunState, after_prop: f64) {
+    pub fn add_trigger(&mut self, after: ZhooshRunState, after_prop: f64) {
         self.0.lock().unwrap().add_trigger(after,after_prop);
     }
 
