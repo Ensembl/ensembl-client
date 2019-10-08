@@ -1,5 +1,6 @@
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::sync::{ Arc, Mutex };
 
 use super::ops::{ ZhooshOps, ZHOOSH_EMPTY_OPS };
 use super::shapes::ZhooshShape;
@@ -15,17 +16,17 @@ struct ZhooshImpl<X,T> {
     max_time: f64,
     min_speed: f64,
     shape: ZhooshShape,
-    ops: Box<dyn ZhooshOps<T>>,
-    cb: Box<dyn Fn(&mut X,T)>
+    ops: Box<dyn ZhooshOps<T> + Send+Sync>,
+    cb: Box<dyn Fn(&mut X,T) + Send+Sync>
 }
 
 #[derive(Clone)]
-pub struct Zhoosh<X,T>(Rc<ZhooshImpl<X,T>>);
+pub struct Zhoosh<X,T>(Arc<ZhooshImpl<X,T>>);
 
 impl<X,T> Zhoosh<X,T> {
     pub fn new<F,U>(max_time: f64, min_speed: f64, after_prop: &[f64], delay: f64, shape: ZhooshShape, ops: U, cb: F) -> Zhoosh<X,T>
-            where F: Fn(&mut X,T) + 'static, U: ZhooshOps<T> + 'static {
-        Zhoosh(Rc::new(ZhooshImpl {
+            where F: Fn(&mut X,T) + Send+Sync + 'static, U: ZhooshOps<T> + 'static + Send+Sync {
+        Zhoosh(Arc::new(ZhooshImpl {
             after_prop: after_prop.to_vec(),
             delay, max_time, min_speed, shape, cb: Box::new(cb),
             ops: Box::new(ops)
@@ -80,7 +81,7 @@ impl<X,T> ZhooshRunImpl<X,T> {
             let mut after_prop = self.zhoosh.0.after_prop.iter();
             for after in &self.after {
                 /* how far through is this dependency? */
-                let cond = after.0.borrow_mut();
+                let cond = after.0.lock().unwrap();
                 let prop = cond.get_prop();
                 /* is the dependency even started yet? */
                 if prop.is_none() { return false; }
@@ -132,7 +133,7 @@ impl<X,T> ZhooshRunTrait for ZhooshRunImpl<X,T> {
 
     fn update_all_props(&mut self, now: f64) {
         for after in &self.after {
-            after.0.borrow_mut().update_all_props(now);
+            after.0.lock().unwrap().update_all_props(now);
         }
         self.update_prop(now);
     }
@@ -145,15 +146,15 @@ impl<X,T> ZhooshRunTrait for ZhooshRunImpl<X,T> {
 }
 
 #[derive(Clone)]
-pub struct ZhooshRun(Rc<RefCell<dyn ZhooshRunTrait>>);
+pub struct ZhooshRun(Arc<Mutex<dyn ZhooshRunTrait>>);
 
 impl ZhooshRun {
     pub fn new<X,T>(zhoosh: &Zhoosh<X,T>, target: X, start: T, end: T, after: &[ZhooshRun]) -> ZhooshRun where T: 'static, X: 'static {
-        ZhooshRun(Rc::new(RefCell::new(ZhooshRunImpl::new(zhoosh,target,start,end,after))))
+        ZhooshRun(Arc::new(Mutex::new(ZhooshRunImpl::new(zhoosh,target,start,end,after))))
     }
 
     fn step(&mut self, now: f64) -> bool {
-        self.0.borrow_mut().step(now)
+        self.0.lock().unwrap().step(now)
     }
 }
 

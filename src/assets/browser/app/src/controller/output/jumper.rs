@@ -112,8 +112,12 @@ pub struct Jumper {
     settled_zhoosh: Zhoosh<PendingActions,bool>
 }
 
+lazy_static! {
+    static ref JUMPER : Arc<Mutex<Jumper>> = Arc::new(Mutex::new(Jumper::new()));
+}
+
 impl Jumper {
-    pub fn new() -> Jumper {
+    fn new() -> Jumper {
         let location_zhoosh = action_zhoosh_pos(100.,0.,&vec![],0.,|act,pos| {
             act.add(Action::Pos(pos,None));
         });
@@ -125,7 +129,6 @@ impl Jumper {
                 act.add(Action::SetStick(stick));
                 act.add(Action::Pos(pos,None));
                 act.add(Action::ZoomTo(zoom));
-                console!("bang");
             }
         });
         let settled_zhoosh = action_zhoosh_bang(&vec![1.],0.,|act,value| {
@@ -168,7 +171,7 @@ impl Jumper {
         animator.run(all_z);
     }
 
-    pub fn jump(&mut self, mut app: &mut App, stick: &str, dest_pos: f64, dest_size: f64) {
+    fn jump(&mut self, mut app: &mut App, stick: &str, dest_pos: f64, dest_size: f64) {
         let train_manager = app.get_window().get_train_manager();
         if let (Some(src_stick),Some(src_position)) = (train_manager.get_desired_stick(),train_manager.get_desired_position()) {
             if !self.is_offscreen_jump(&src_stick,&src_position,stick,dest_pos,dest_size) {
@@ -178,4 +181,8 @@ impl Jumper {
         }
         self.do_offscreen_jump(&mut app,stick,Dot(dest_pos,0.),dest_size);
     }
+}
+
+pub fn animate_jump_to(mut app: &mut App, stick: &str, dest_pos: f64, dest_size: f64) {
+    JUMPER.lock().unwrap().jump(app,stick,dest_pos,dest_size);
 }

@@ -10,7 +10,7 @@ use controller::global::{ App, GlobalWeak };
 use controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup };
 use controller::input::register_dom_events;
 use drivers::domel::{ register_user_events };
-use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter, Jumper };
+use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter, animate_jump_to };
 
 #[cfg(any(not(deploy),console))]
 use data::blackbox::{
@@ -35,7 +35,6 @@ pub struct AppRunnerImpl {
     tc: Tácode,
     debug_reporter: BlackBoxDriver,
     browser_el: HtmlElement,
-    jumper: Rc<RefCell<Jumper>>,
     key: String
 }
 
@@ -79,8 +78,7 @@ impl AppRunner {
             tc: tc.clone(),
             debug_reporter,
             browser_el: browser_el.clone(),
-            key: key.to_string(),
-            jumper: Rc::new(RefCell::new(Jumper::new()))
+            key: key.to_string()
         })));
         out.init();
         let report = Report::new(&mut out);
@@ -245,8 +243,7 @@ impl AppRunner {
 
     pub fn jump(&mut self, stick: &str, dest_pos: f64, dest_size: f64) {
         let mut imp = self.0.lock().unwrap();
-        let jumper = imp.jumper.clone();
-        jumper.borrow_mut().jump(&mut imp.app.lock().unwrap(), stick, dest_pos, dest_size);
+        animate_jump_to(&mut imp.app.lock().unwrap(), stick, dest_pos, dest_size);
     }
 }
 

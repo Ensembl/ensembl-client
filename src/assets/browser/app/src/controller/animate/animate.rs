@@ -3,6 +3,7 @@ use std::fmt::Debug;
 use std::marker::PhantomData;
 use std::ops::{ Add, Mul, Sub };
 use std::rc::Rc;
+use std::sync::{ Arc, Mutex };
 
 use misc_algorithms::zhoosh::{ Zhoosh, ZhooshBangOps, ZhooshOps, ZhooshRun, ZhooshRunner, ZhooshShape, ZHOOSH_LINEAR_F64_OPS };
 
@@ -29,39 +30,39 @@ impl<X,Y> ZhooshOps<Dot<X,Y>> for DotOps<X,Y>
 /* PendingActions allows callbacks to schedule an action after they are run */
 
 #[derive(Clone)]
-pub struct PendingActions(Rc<RefCell<Vec<Action>>>);
+pub struct PendingActions(Arc<Mutex<Option<Vec<Action>>>>);
 
 impl PendingActions {
     pub fn new() -> PendingActions {
-        PendingActions(Rc::new(RefCell::new(Vec::new())))
+        PendingActions(Arc::new(Mutex::new(Some(Vec::new()))))
     }
 
     pub fn add(&mut self, action: Action) {
-        self.0.borrow_mut().push(action);
+        self.0.lock().unwrap().as_mut().unwrap().push(action);
     }
 
     pub fn take(&mut self) -> Vec<Action> {
-        self.0.replace(Vec::new())
+        self.0.lock().unwrap().replace(Vec::new()).unwrap()
     }
 }
 
 /* Zhoosh's that animators can create */
 
 pub fn action_zhoosh_bang<F,T>(after_prop: &[f64], delay: f64, cb: F) -> Zhoosh<PendingActions,T>
-        where F: Fn(&mut PendingActions,T) + 'static, T: Clone + 'static {
+        where F: Fn(&mut PendingActions,T) + 'static + Send+Sync, T: Clone + 'static + Send+Sync {
     let ops : ZhooshBangOps<T> = ZhooshBangOps::<T>(PhantomData);
     Zhoosh::new(0.,0.,after_prop,delay,ZhooshShape::Linear,ops,cb)
 }
 
 pub fn action_zhoosh_pos<F,X,Y>(max_time: f64, min_speed: f64, after_prop: &[f64], delay: f64, cb: F) -> Zhoosh<PendingActions,Dot<X,Y>>
-            where F: Fn(&mut PendingActions,Dot<X,Y>) + 'static,
-                  X: Clone+Copy+Debug + Add<X,Output=X> + Sub<X,Output=X> + Mul<X,Output=X> + Add<Y,Output=Y> + From<f64> + 'static,
-                  Y: Clone+Copy+Debug + Add<Y,Output=Y> + Sub<Y,Output=Y> + Mul<Y,Output=Y> + From<f64> + Into<f64> + 'static {
+            where F: Fn(&mut PendingActions,Dot<X,Y>) + 'static +Send+Sync,
+                  X: Clone+Copy+Debug + Add<X,Output=X> + Sub<X,Output=X> + Mul<X,Output=X> + Add<Y,Output=Y> + From<f64> + 'static + Send+Sync,
+                  Y: Clone+Copy+Debug + Add<Y,Output=Y> + Sub<Y,Output=Y> + Mul<Y,Output=Y> + From<f64> + Into<f64> + 'static + Send+Sync {
     Zhoosh::new(max_time,min_speed,after_prop,delay,ZhooshShape::Quadratic(1.),DotOps::<X,Y>(PhantomData,PhantomData),cb)
 }
 
 pub fn action_zhoosh_zoom<F>(max_time: f64, min_speed: f64, after_prop: &[f64], delay: f64, cb: F) -> Zhoosh<PendingActions,f64>
-            where F: Fn(&mut PendingActions,f64) + 'static {
+            where F: Fn(&mut PendingActions,f64) + 'static +Send+Sync {
     Zhoosh::new(max_time,min_speed,after_prop,delay,ZhooshShape::Quadratic(1.),ZHOOSH_LINEAR_F64_OPS,cb)
 }
 
