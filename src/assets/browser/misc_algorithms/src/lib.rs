@@ -49,5 +49,5 @@ pub mod zhoosh {
         ZHOOSH_EMPTY_OPS
     };
     pub use self::shapes::ZhooshShape;
-    pub use self::zhoosh::{ Zhoosh, ZhooshRun, ZhooshRunSpec, ZhooshRunner,  ZhooshSequence, zhoosh_collect };
+    pub use self::zhoosh::{ Zhoosh, ZhooshSpec, ZhooshRunner, ZhooshRunState,  ZhooshSequence, zhoosh_collect };
 }

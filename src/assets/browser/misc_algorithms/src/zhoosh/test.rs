@@ -1,63 +1,64 @@
-use std::cell::RefCell;
-use std::rc::Rc;
-use crate::zhoosh::{ Zhoosh, ZhooshOps, ZhooshRun, ZhooshRunner, ZhooshShape, ZHOOSH_LINEAR_F64_OPS, ZHOOSH_PROP_F64_OPS, zhoosh_collect };
+use std::sync::{ Arc, Mutex };
+use crate::zhoosh::{ Zhoosh, ZhooshOps, ZhooshRunState, ZhooshRunner, ZhooshSequence, ZhooshShape, ZHOOSH_LINEAR_F64_OPS, ZHOOSH_PROP_F64_OPS, zhoosh_collect };
 
 #[derive(Clone)]
-struct TestProp(Rc<RefCell<Vec<(i32,f64)>>>);
+struct TestProp(Arc<Mutex<Vec<(i32,f64)>>>);
 
-fn build_zhoosh<U>(max_time: f64, min_speed: f64, after_prop: &[f64], delay: f64, shape: ZhooshShape, ops: U, now: &Rc<RefCell<i32>>) 
-        -> Zhoosh<TestProp,f64> where U: ZhooshOps<f64> + 'static {
+fn build_zhoosh<U>(max_time: f64, min_speed: f64, delay: f64, shape: ZhooshShape, ops: U, now: &Arc<Mutex<i32>>) 
+        -> Zhoosh<TestProp,f64> where U: ZhooshOps<f64> + 'static + Send+Sync {
     let now = now.clone();
     let cb = move |x : &mut TestProp, t: f64| {
-        x.0.borrow_mut().push((*now.borrow(),t.round()));
+        x.0.lock().unwrap().push((*now.borrow(),t.round()));
     };
-    Zhoosh::new(max_time,min_speed,after_prop,delay,shape,ops,cb)
+    Zhoosh::new(max_time,min_speed,delay,shape,ops,cb)
 }
 
-fn new_run(z: &Zhoosh<TestProp,f64>, from: f64, to: f64, reqs: &[ZhooshRun]) -> (TestProp,ZhooshRun) {
-    let t = TestProp(Rc::new(RefCell::new(vec![])));
-    let step = ZhooshRun::new(z,t.clone(),from,to,reqs);
+fn new_run(z: &Zhoosh<TestProp,f64>, from: f64, to: f64, reqs: &[ZhooshRunState]) -> (TestProp,ZhooshRunState) {
+    let t = TestProp(Arc::new(Mutex::new(vec![])));
+    let step = ZhooshRunState::new(z,t.clone(),from,to,reqs);
     (t,step)
 }
 
-fn run(start: ZhooshRun, steps: i32, now: &Rc<RefCell<i32>>) {
+fn run(start: ZhooshRunState, steps: i32, now: &Arc<Mutex<i32>>) {
+    let mut seq = ZhooshSequence::new();
     let mut runner = ZhooshRunner::new();
-    runner.add(start);
+    seq.add(start);
+    seq.run(&mut runner);
     for i in 0..steps {
-        *now.borrow_mut() = i;
+        *now.lock().unwrap() = i;
         runner.step(i as f64);
     }
 }
 
 #[test]
 fn zhoosh_smoke() {
-    let now = Rc::new(RefCell::new(0));
-    let z1 = build_zhoosh(10.,0.,&[],1.,ZhooshShape::Linear,ZHOOSH_LINEAR_F64_OPS,&now);
+    let now = Arc::new(Mutex::new(0));
+    let z1 = build_zhoosh(10.,0.,1.,ZhooshShape::Linear,ZHOOSH_LINEAR_F64_OPS,&now);
     let z2 = build_zhoosh(10.,0.,&[0.5],1.,ZhooshShape::Linear,ZHOOSH_PROP_F64_OPS,&now);
     let (t1,step1) = new_run(&z1,0.,10.,&[]);
     let (t2,step2) = new_run(&z2,1.,10.,&[step1]);
     run(step2,23,&now);
-    assert_eq!(vec![(1, 0.),(2,1.),(3,2.),( 4,3.),( 5,4.),( 6,5.),( 7,6.),( 8,7.),( 9,8.),(10,9.),(11,10.)],t1.0.borrow().clone());
-    assert_eq!(vec![(7,10.),(8,8.),(9,6.),(10,5.),(11,4.),(12,3.),(13,3.),(14,2.),(15,2.),(16,1.),(17,1. )],t2.0.borrow().clone());
+    assert_eq!(vec![(1, 0.),(2,1.),(3,2.),( 4,3.),( 5,4.),( 6,5.),( 7,6.),( 8,7.),( 9,8.),(10,9.),(11,10.)],t1.0.lock().unwrap().clone());
+    assert_eq!(vec![(7,10.),(8,8.),(9,6.),(10,5.),(11,4.),(12,3.),(13,3.),(14,2.),(15,2.),(16,1.),(17,1. )],t2.0.lock().unwrap().clone());
 }
 
 #[test]
 fn zhoosh_min_speed() {
-    let now = Rc::new(RefCell::new(0));
-    let z1 = build_zhoosh(10.,20.,&[],1.,ZhooshShape::Linear,ZHOOSH_LINEAR_F64_OPS,&now);
+    let now = Arc::new(Mutex::new(0));
+    let z1 = build_zhoosh(10.,20.,1.,ZhooshShape::Linear,ZHOOSH_LINEAR_F64_OPS,&now);
     let (t1,step1) = new_run(&z1,0.,10.,&[]);
     run(step1,23,&now);
-    assert_eq!(t1.0.borrow().len(),6);
+    assert_eq!(t1.0.lock().unwrap().len(),6);
 }
 
 fn delay_start(prop: f64, delay1: f64, delay2: f64) -> i32 {
-    let now = Rc::new(RefCell::new(0));
-    let z1 = build_zhoosh(10.,0.,&[],delay1,ZhooshShape::Linear,ZHOOSH_LINEAR_F64_OPS,&now);
+    let now = Arc::new(Mutex::new(0));
+    let z1 = build_zhoosh(10.,0.,delay1,ZhooshShape::Linear,ZHOOSH_LINEAR_F64_OPS,&now);
     let z2 = build_zhoosh(10.,0.,&[prop],delay2,ZhooshShape::Linear,ZHOOSH_LINEAR_F64_OPS,&now);
     let (_,step1) = new_run(&z1,0.,10.,&[]);
     let (t2,step2) = new_run(&z2,1.,10.,&[step1]);
     run(step2,23,&now);
-    let v = t2.0.borrow()[0].0;
+    let v = t2.0.lock().unwrap()[0].0;
     v
 }
 
@@ -79,14 +80,14 @@ fn zhoosh_after_prop() {
 
 #[test]
 fn zhoosh_multi_start() {
-    let now = Rc::new(RefCell::new(0));
-    let z1 = build_zhoosh(10.,0.,&[],1.,ZhooshShape::Linear,ZHOOSH_LINEAR_F64_OPS,&now);
-    let z2 = build_zhoosh(10.,0.,&[],10.,ZhooshShape::Linear,ZHOOSH_PROP_F64_OPS,&now);
+    let now = Arc::new(Mutex::new(0));
+    let z1 = build_zhoosh(10.,0.,1.,ZhooshShape::Linear,ZHOOSH_LINEAR_F64_OPS,&now);
+    let z2 = build_zhoosh(10.,0.,10.,ZhooshShape::Linear,ZHOOSH_PROP_F64_OPS,&now);
     let (_,step1) = new_run(&z1,0.,10.,&[]);
     let (t2,step2) = new_run(&z2,1.,10.,&[]);
     let step3 = zhoosh_collect(&[step1,step2],&[1.,0.5]);
     run(step3,23,&now);
-    assert_eq!(t2.0.borrow().len(),6);
+    assert_eq!(t2.0.lock().unwrap().len(),6);
 }
 
 #[derive(Debug,PartialEq)]
@@ -99,46 +100,46 @@ impl ZhooshOps<Special> for SpecialOps {
 }
 
 #[derive(Clone)]
-struct SpecialTestProp(Rc<RefCell<Vec<Special>>>);
+struct SpecialTestProp(Arc<Mutex<Vec<Special>>>);
 
 fn build_special_zhoosh<U>(max_time: f64, min_speed: f64, after_prop: &[f64], delay: f64, shape: ZhooshShape, ops: U) 
         -> Zhoosh<SpecialTestProp,Special> where U: ZhooshOps<Special> + 'static {
     let cb = move |x : &mut SpecialTestProp, t: Special| {
-        x.0.borrow_mut().push(t);
+        x.0.lock().unwrap().push(t);
     };
     Zhoosh::new(max_time,min_speed,after_prop,delay,shape,ops,cb)
 }
 
-fn new_special_run(z: &Zhoosh<SpecialTestProp,Special>, from: Special, to: Special, reqs: &[ZhooshRun]) -> (SpecialTestProp,ZhooshRun) {
-    let t = SpecialTestProp(Rc::new(RefCell::new(vec![])));
-    let step : ZhooshRun = ZhooshRun::new(z,t.clone(),from,to,reqs);
+fn new_special_run(z: &Zhoosh<SpecialTestProp,Special>, from: Special, to: Special, reqs: &[ZhooshRunState]) -> (SpecialTestProp,ZhooshRunState) {
+    let t = SpecialTestProp(Arc::new(Mutex::new(vec![])));
+    let step : ZhooshRunState = ZhooshRunState::new(z,t.clone(),from,to,reqs);
     (t,step)
 }
 
 #[test]
 fn zhoosh_special() {
-    let now = Rc::new(RefCell::new(0));
+    let now = Arc::new(Mutex::new(0));
     let z1 = build_special_zhoosh(10.,0.,&[],1.,ZhooshShape::Linear,SpecialOps());
     let (t1,step1) = new_special_run(&z1,Special(0.),Special(10.),&[]);
     run(step1,23,&now);
     print!("{:?}\n",t1.0);
-    assert_eq!(Special(6.),t1.0.borrow()[4]);
+    assert_eq!(Special(6.),t1.0.lock().unwrap()[4]);
 }
 
 #[test]
 #[should_panic]
 fn zhoosh_len_panic() {
-    let now = Rc::new(RefCell::new(0));
+    let now = Arc::new(Mutex::new(0));
     let z1 = build_zhoosh(10.,0.,&[1.],1.,ZhooshShape::Linear,ZHOOSH_LINEAR_F64_OPS,&now);
     new_run(&z1,0.,10.,&[]);
 }
 
 #[test]
 fn zhoosh_quadratic() {
-    let now = Rc::new(RefCell::new(0));
-    let z1 = build_zhoosh(10.,0.,&[],1.,ZhooshShape::Quadratic(0.5),ZHOOSH_LINEAR_F64_OPS,&now);
+    let now = Arc::new(Mutex::new(0));
+    let z1 = build_zhoosh(10.,0.,1.,ZhooshShape::Quadratic(0.5),ZHOOSH_LINEAR_F64_OPS,&now);
     let (t1,step1) = new_run(&z1,0.,1000.,&[]);
     run(step1,120,&now);
     print!("{:?}\n",t1.0);
-    assert_eq!(vec![(1,0.),(2,60.),(3,140.),(4,240.),(5,360.),(6,500.),(7,640.),(8,760.),(9,860.),(10, 940.),(11,1000.)],t1.0.borrow().clone());
+    assert_eq!(vec![(1,0.),(2,60.),(3,140.),(4,240.),(5,360.),(6,500.),(7,640.),(8,760.),(9,860.),(10, 940.),(11,1000.)],t1.0.lock().unwrap().clone());
 }

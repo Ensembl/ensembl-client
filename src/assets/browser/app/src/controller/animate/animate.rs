@@ -5,7 +5,7 @@ use std::ops::{ Add, Mul, Sub };
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
-use misc_algorithms::zhoosh::{ Zhoosh, ZhooshBangOps, ZhooshOps, ZhooshRunSpec, ZhooshRun, ZhooshRunner, ZhooshSequence, ZhooshShape, ZHOOSH_LINEAR_F64_OPS };
+use misc_algorithms::zhoosh::{ Zhoosh, ZhooshBangOps, ZhooshOps, ZhooshSpec, ZhooshRunState, ZhooshRunner, ZhooshSequence, ZhooshShape, ZHOOSH_LINEAR_F64_OPS };
 
 use controller::input::Action;
 use types::Dot;
@@ -86,9 +86,9 @@ impl ActionAnimator {
         ZhooshSequence::new()
     }
 
-    pub fn new_step<T>(&mut self, zhoosh: &Zhoosh<PendingActions,T>, start: T, end: T) -> ZhooshRun where T: 'static+Debug {
-        let spec = ZhooshRunSpec::new(zhoosh,self.actions.clone(),start,end);
-        ZhooshRun::new(spec)
+    pub fn new_step<T>(&mut self, zhoosh: &Zhoosh<PendingActions,T>, start: T, end: T) -> ZhooshRunState where T: 'static+Debug {
+        let spec = ZhooshSpec::new(zhoosh,self.actions.clone(),start,end);
+        ZhooshRunState::new(spec)
     }
 
     pub fn run(&mut self, seq: ZhooshSequence) {
