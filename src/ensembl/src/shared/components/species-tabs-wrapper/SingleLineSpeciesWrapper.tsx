@@ -35,10 +35,6 @@ const animationCalculator = ({
     }).map((width) => ({
       width: `${width}px`
     }));
-  } else {
-    return items.map(() => ({
-      width: '0px'
-    }));
   }
 };
 
@@ -120,7 +116,7 @@ const SingleLineWrapper = (props: Props) => {
           return (
             <div
               className={styles.speciesContainer}
-              style={{ width: speciesStyles[index].width }}
+              style={speciesStyles ? speciesStyles[index] : {}}
             >
               {child}
             </div>
