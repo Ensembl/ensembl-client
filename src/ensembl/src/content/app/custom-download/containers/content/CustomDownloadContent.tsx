@@ -1,21 +1,51 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import styles from './CustomDownloadContent.scss';
-import { getShowPreviewResult } from '../../state/customDownloadSelectors';
-
+import { RootState } from 'src/store';
+import {
+  getShowPreviewResult,
+  getShowExampleData
+} from '../../state/customDownloadSelectors';
 import AttributesAccordion from './attributes-accordion/AttributesAccordion';
 import FiltersAccordion from './filter-accordion/FiltersAccordion';
 import ResultLoader from './result-loader/ResultLoader';
-import { RootState } from 'src/store';
+import Overlay from '../../components/overlay/Overlay';
+import Panel from '../../components/panel/Panel';
 import PreviewDownload from './preview-download/PreviewDownload';
+import { getLaunchbarExpanded } from 'src/header/headerSelectors';
+import { setShowExampleData } from 'src/content/app/custom-download/state/customDownloadActions';
 
-type Props = {
+import styles from './CustomDownloadContent.scss';
+
+type StateProps = {
   showSummary: boolean;
+  showExampleData: boolean;
+  launchBarExpanded: boolean;
 };
 
+type DispatchProps = {
+  setShowExampleData: (showExampleData: boolean) => void;
+};
+
+type Props = StateProps & DispatchProps;
+
 const Content = (props: Props) => {
+  const wrapperHeightClassName = props.launchBarExpanded
+    ? styles.default
+    : styles.taller;
   return (
-    <div>
+    <div className={`${styles.wrapper} ${wrapperHeightClassName}`}>
+      {props.showExampleData && (
+        <>
+          <Overlay />
+          <Panel
+            title={'Example data to download'}
+            classNames={{ panelClassName: styles.exampleDataPanel }}
+            onClose={() => props.setShowExampleData(false)}
+          >
+            <div>Hello World!</div>
+          </Panel>
+        </>
+      )}
       <ResultLoader />
       {!props.showSummary && (
         <div>
@@ -36,8 +66,17 @@ const Content = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: RootState): Props => ({
-  showSummary: getShowPreviewResult(state)
+const mapDispatchToProps: DispatchProps = {
+  setShowExampleData
+};
+
+const mapStateToProps = (state: RootState): StateProps => ({
+  showSummary: getShowPreviewResult(state),
+  launchBarExpanded: getLaunchbarExpanded(state),
+  showExampleData: getShowExampleData(state)
 });
 
-export default connect(mapStateToProps)(Content);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Content);

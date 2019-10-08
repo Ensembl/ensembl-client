@@ -74,6 +74,11 @@ function previewDownload(
         ...state,
         showSummary: action.payload
       };
+    case getType(customDownloadActions.setShowExampleData):
+      return {
+        ...state,
+        showExampleData: action.payload
+      };
     case getType(customDownloadActions.setDownloadType):
       return {
         ...state,

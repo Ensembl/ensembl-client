@@ -6,12 +6,58 @@
   padding: 20px;
 }
 
-.checkboxGridTitle {
+.checkboxGridHeader {
   color: $grey;
-  margin-bottom: 10px;
+  padding-top: 10px;
   padding-left: 20px;
+  position: relative;
+}
+
+.label {
+  color: $grey;
+  float: left;
 }
 
 .checkboxContainer {
   margin-bottom: 5px;
+}
+
+.collapseButtonWrapper {
+  position: relative;
+  width: 20px;
+  margin-left: 10px;
+  float: left;
+  cursor: pointer;
+}
+.collapseButton:after,
+.collapseButton:before {
+  display: inline-block;
+  position: absolute;
+  content: '';
+  height: 2px;
+  width: 10px;
+  transition: transform 0.2s linear, top 0.2s linear;
+  background-color: $blue;
+}
+
+.collapseButton:before {
+  right: 0px;
+  top: 10px;
+  transform: rotate(45deg);
+}
+
+.collapseButton:after {
+  right: 6px;
+  top: 10px;
+  transform: rotate(-45deg);
+}
+
+.collapseButton.open::before {
+  top: 15px;
+  transform: rotate(-45deg);
+}
+
+.collapseButton.open::after {
+  top: 15px;
+  transform: rotate(45deg);
 }

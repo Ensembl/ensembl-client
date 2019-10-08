@@ -1,9 +1,13 @@
 @import 'src/styles/common';
 
 .wrapper {
-  width: calc(100vw - 50px);
-  margin: 10px 20px 0 30px;
   position: relative;
+  &.default {
+    height: calc(100vh - 130px);
+  }
+  &.taller {
+    height: calc(100vh - 75px);
+  }
 }
 
 .tabList {
@@ -24,4 +28,9 @@
   left: 50%;
   width: calc(50% - 40px);
   min-width: 45%;
+}
+
+.exampleDataPanel {
+  top: 10px;
+  left: 30%;
 }

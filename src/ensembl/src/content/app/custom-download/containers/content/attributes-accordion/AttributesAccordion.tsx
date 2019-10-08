@@ -24,6 +24,7 @@ import {
 
 import { Orthologues } from './sections';
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
+import { setShowExampleData } from 'src/content/app/custom-download/state/customDownloadActions';
 
 import ImageButton, {
   ImageButtonStatus
@@ -44,12 +45,14 @@ type StateProps = {
   expandedPanel: string;
   selectedAttributes: {};
 };
+
 type DispatchProps = {
   setAttributesAccordionExpandedPanel: (
     setAttributesAccordionExpandedPanel: string
   ) => void;
   fetchAttributes: () => void;
   resetSelectedAttributes: () => void;
+  setShowExampleData: (showExampleData: boolean) => void;
 };
 
 type Props = StateProps & DispatchProps;
@@ -123,7 +126,12 @@ const AttributesAccordion = (props: Props) => {
         >
           <div className={styles.title}>Data to download</div>
         </BadgedButton>
-        <span className={styles.viewExample}>View example data</span>
+        <span
+          className={styles.viewExample}
+          onClick={() => props.setShowExampleData(true)}
+        >
+          View example data
+        </span>
         <span className={styles.resetIcon} onClick={onReset}>
           <ImageButton
             buttonStatus={ImageButtonStatus.ACTIVE}
@@ -285,7 +293,8 @@ const AttributesAccordion = (props: Props) => {
 const mapDispatchToProps: DispatchProps = {
   setAttributesAccordionExpandedPanel,
   fetchAttributes,
-  resetSelectedAttributes
+  resetSelectedAttributes,
+  setShowExampleData
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({

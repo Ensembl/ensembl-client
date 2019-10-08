@@ -1,4 +1,8 @@
-import { createAction, createAsyncAction } from 'typesafe-actions';
+import {
+  createAction,
+  createAsyncAction,
+  createStandardAction
+} from 'typesafe-actions';
 
 import * as allFilterAccordionActions from './filters/filtersActions';
 import * as allAttributeAccordionActions from './attributes/attributesActions';
@@ -80,6 +84,10 @@ export const setShowPreview = createAction(
     };
   }
 );
+
+export const setShowExampleData = createStandardAction(
+  'custom-download/set-show-example-data'
+)<boolean>();
 
 export const setDownloadType = createAction(
   'custom-download/set-download-as',

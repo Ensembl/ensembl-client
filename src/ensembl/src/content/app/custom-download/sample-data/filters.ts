@@ -7,6 +7,83 @@ const filters: Attributes = {
     label: 'Genes & Transcripts',
     content: [
       {
+        type: 'checkbox_grid',
+        label: 'Gene biotype',
+        id: 'biotype',
+        options: [
+          {
+            label: 'protein_coding',
+            id: 'protein_coding',
+            isChecked: false
+          },
+          { label: 'lncRNA', id: 'lncRNA', isChecked: false },
+          {
+            label: 'processed_pseudogene',
+            id: 'processed_pseudogene',
+            isChecked: false
+          },
+          {
+            label: 'unprocessed_pseudogene',
+            id: 'unprocessed_pseudogene',
+            isChecked: false
+          },
+          { label: 'misc_RNA', id: 'misc_RNA', isChecked: false },
+          { label: 'snRNA', id: 'snRNA', isChecked: false },
+          { label: 'miRNA', id: 'miRNA', isChecked: false },
+          { label: 'TEC', id: 'TEC', isChecked: false },
+          {
+            label: 'transcribed_unprocessed_pseudogene',
+            id: 'transcribed_unprocessed_pseudogene',
+            isChecked: false
+          },
+          { label: 'snoRNA', id: 'snoRNA', isChecked: false },
+          { label: 'LRG_gene', id: 'LRG_gene', isChecked: false }
+        ]
+      },
+      {
+        type: 'checkbox_grid',
+        label: 'Transcripts biotype',
+        id: 'transcripts.biotype',
+        options: [
+          {
+            label: 'protein_coding',
+            id: 'protein_coding',
+            isChecked: false
+          },
+          { label: 'lncRNA', id: 'lncRNA', isChecked: false },
+          {
+            label: 'retained_intron',
+            id: 'retained_intron',
+            isChecked: false
+          },
+          {
+            label: 'nonsense_mediated_decay',
+            id: 'nonsense_mediated_decay',
+            isChecked: false
+          },
+          {
+            label: 'processed_pseudogene',
+            id: 'processed_pseudogene',
+            isChecked: false
+          },
+          {
+            label: 'unprocessed_pseudogene',
+            id: 'unprocessed_pseudogene',
+            isChecked: false
+          },
+          { label: 'misc_RNA', id: 'misc_RNA', isChecked: false },
+          { label: 'snRNA', id: 'snRNA', isChecked: false },
+          { label: 'miRNA', id: 'miRNA', isChecked: false },
+          { label: 'TEC', id: 'TEC', isChecked: false },
+          {
+            label: 'transcribed_unprocessed_pseudogene',
+            id: 'transcribed_unprocessed_pseudogene',
+            isChecked: false
+          },
+          { label: 'snoRNA', id: 'snoRNA', isChecked: false }
+        ]
+      },
+      {
         type: 'select_multiple',
         label: 'Gene source',
         id: 'gene_source',
@@ -43,7 +120,7 @@ const filters: Attributes = {
 
       {
         type: 'select_one',
-        label: 'GENCODE basic annotation',
+        label: 'Gencode basic annotation',
         id: 'gencode_basic_annotation',
         disabled: true,
         options: [
@@ -55,84 +132,6 @@ const filters: Attributes = {
             value: 'exclude',
             label: 'Exclude'
           }
-        ]
-      },
-      {
-        type: 'select_multiple',
-        label: 'Gene Biotype',
-        id: 'biotype',
-        options: [
-          {
-            label: 'protein_coding',
-            value: 'protein_coding',
-            isSelected: false
-          },
-          { label: 'lncRNA', value: 'lncRNA', isSelected: false },
-          {
-            label: 'processed_pseudogene',
-            value: 'processed_pseudogene',
-            isSelected: false
-          },
-          {
-            label: 'unprocessed_pseudogene',
-            value: 'unprocessed_pseudogene',
-            isSelected: false
-          },
-          { label: 'misc_RNA', value: 'misc_RNA', isSelected: false },
-          { label: 'snRNA', value: 'snRNA', isSelected: false },
-          { label: 'miRNA', value: 'miRNA', isSelected: false },
-          { label: 'TEC', value: 'TEC', isSelected: false },
-          {
-            label: 'transcribed_unprocessed_pseudogene',
-            value: 'transcribed_unprocessed_pseudogene',
-            isSelected: false
-          },
-          { label: 'snoRNA', value: 'snoRNA', isSelected: false },
-          { label: 'LRG_gene', value: 'LRG_gene', isSelected: false }
-        ]
-      },
-      {
-        type: 'select_multiple',
-        label: 'Transcript Biotype',
-        id: 'transcript.biotype',
-        disabled: true,
-        options: [
-          {
-            label: 'protein_coding',
-            value: 'protein_coding',
-            isSelected: false
-          },
-          { label: 'lncRNA', value: 'lncRNA', isSelected: false },
-          {
-            label: 'retained_intron',
-            value: 'retained_intron',
-            isSelected: false
-          },
-          {
-            label: 'nonsense_mediated_decay',
-            value: 'nonsense_mediated_decay',
-            isSelected: false
-          },
-          {
-            label: 'processed_pseudogene',
-            value: 'processed_pseudogene',
-            isSelected: false
-          },
-          {
-            label: 'unprocessed_pseudogene',
-            value: 'unprocessed_pseudogene',
-            isSelected: false
-          },
-          { label: 'misc_RNA', value: 'misc_RNA', isSelected: false },
-          { label: 'snRNA', value: 'snRNA', isSelected: false },
-          { label: 'miRNA', value: 'miRNA', isSelected: false },
-          { label: 'TEC', value: 'TEC', isSelected: false },
-          {
-            label: 'transcribed_unprocessed_pseudogene',
-            value: 'transcribed_unprocessed_pseudogene',
-            isSelected: false
-          },
-          { label: 'snoRNA', value: 'snoRNA', isSelected: false }
         ]
       },
       {

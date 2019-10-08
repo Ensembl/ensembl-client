@@ -32,10 +32,12 @@ export const defaultPreFilterState: PreFilterState = {
 
 export type PreviewDownloadState = Readonly<{
   showSummary: boolean;
+  showExampleData: boolean;
   downloadType: string;
 }>;
 
 export const defaultPreviewDownloadState: PreviewDownloadState = {
   showSummary: false,
+  showExampleData: false,
   downloadType: ''
 };

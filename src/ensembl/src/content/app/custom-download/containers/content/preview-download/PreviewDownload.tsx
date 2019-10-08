@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { getSelectedAttributes } from '../../../state/attributes/attributesSelector';
 import { getSelectedFilters } from '../../../state/filters/filtersSelector';
 
-import { ReactComponent as closeIcon } from 'static/img/track-panel/close.svg';
+import { ReactComponent as closeIcon } from 'static/img/shared/close.svg';
 import styles from './PreviewDownload.scss';
 import get from 'lodash/get';
 

@@ -40,6 +40,7 @@ type ContentBuilderProps = {
   uiState: JSONValue;
   onUiChange: (updatedUi: JSONValue) => void;
   path?: Path;
+  showOverview?: boolean;
 };
 
 const ContentBuilder = (props: ContentBuilderProps) => {
@@ -72,6 +73,10 @@ const ContentBuilder = (props: ContentBuilderProps) => {
 
     const selectedOptions = get(props.selectedData, currentPath, []);
 
+    if (props.showOverview && !selectedOptions.length) {
+      return null;
+    }
+
     return (
       <div className={styles.checkboxWithSelectWrapper}>
         <CheckboxWithSelects
@@ -92,6 +97,9 @@ const ContentBuilder = (props: ContentBuilderProps) => {
 
     const selectedOption: string = get(props.selectedData, currentPath, '');
 
+    if (props.showOverview && !selectedOption) {
+      return null;
+    }
     return (
       <div className={styles.checkboxWithRadiosWrapper}>
         <CheckboxWithRadios
@@ -110,7 +118,11 @@ const ContentBuilder = (props: ContentBuilderProps) => {
   const buildCheckboxGrid = (entry: AttributeWithOptions, path: Path) => {
     const currentPath = [...path, entry.id];
 
-    const selectedOptions = get(props.selectedData, currentPath, []);
+    const selectedOptions = get(props.selectedData, currentPath, {});
+
+    if (props.showOverview && !Object.keys(selectedOptions).length) {
+      return null;
+    }
 
     const newSelectedData = { ...props.selectedData };
     const gridOptions = [...entry.options] as CheckboxGridOption[];
@@ -205,6 +217,10 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     const currentPath = [...path, entry.id];
 
     const values: string[] = get(props.selectedData, currentPath, '');
+
+    if (props.showOverview) {
+      return null;
+    }
 
     return (
       <div className={styles.checkboxWithRadiosWrapper}>
