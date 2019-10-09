@@ -1,4 +1,4 @@
-import React, { MouseEvent, ReactNode, useState, useEffect } from 'react';
+import React, { MouseEvent, ReactNode, useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
