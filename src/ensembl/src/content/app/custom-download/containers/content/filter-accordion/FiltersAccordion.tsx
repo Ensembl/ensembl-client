@@ -25,7 +25,6 @@ import {
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 import JSONValue from 'src/shared/types/JSON';
 
-import { Genes } from './sections';
 import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/components/image-button/ImageButton';

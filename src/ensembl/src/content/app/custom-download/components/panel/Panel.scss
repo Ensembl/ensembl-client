@@ -5,7 +5,8 @@
   border-radius: 5px;
   z-index: 2;
   position: absolute;
-  width: 450px;
+  width: 600px;
+  max-width: 100%;
   background: $white;
   box-shadow: 1px 1px 4px $medium-dark-grey;
 }
@@ -13,12 +14,12 @@
 .panelHeaderDefault {
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
-  color: $white;
-  background-color: $dark-grey;
-  height: 30px;
-  padding-left: 10px;
+  color: #fff;
+  background-color: #6f8190;
+  height: 36px;
+  padding: 5px 0 5px 10px;
   width: 100%;
-  line-height: 27px;
+  line-height: 24px;
 }
 
 .panelBodyDefault {

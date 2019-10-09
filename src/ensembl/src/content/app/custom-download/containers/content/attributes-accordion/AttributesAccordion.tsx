@@ -107,13 +107,13 @@ const AttributesAccordion = (props: Props) => {
   const buildSection = (options: {
     section: string;
     hideTitles?: boolean;
-    hideUnchecked?: boolean;
+    showOverview?: boolean;
   }) => {
     return (
       <AttributesAccordionSection
         section={options.section}
         hideTitles={options.hideTitles}
-        hideUnchecked={options.hideUnchecked}
+        showOverview={options.showOverview}
       />
     );
   };
@@ -159,7 +159,7 @@ const AttributesAccordion = (props: Props) => {
                 {buildSection({
                   section: 'genes',
                   hideTitles: true,
-                  hideUnchecked: true
+                  showOverview: true
                 })}
               </div>
             )}
@@ -181,7 +181,7 @@ const AttributesAccordion = (props: Props) => {
                 {buildSection({
                   section: 'transcripts',
                   hideTitles: true,
-                  hideUnchecked: true
+                  showOverview: true
                 })}
               </div>
             )}
@@ -216,7 +216,7 @@ const AttributesAccordion = (props: Props) => {
                 {buildSection({
                   section: 'sequences',
                   hideTitles: true,
-                  hideUnchecked: true
+                  showOverview: true
                 })}
               </div>
             )}

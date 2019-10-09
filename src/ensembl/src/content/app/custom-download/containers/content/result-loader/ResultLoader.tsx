@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 import {
@@ -17,7 +17,9 @@ import {
 
 import JSONValue from 'src/shared/types/JSON';
 
-import { flattenObject, getEndpointUrl } from './resultLoaderHelper';
+import { getEndpointUrl } from './resultLoaderHelper';
+
+import { flattenObject } from 'src/content/app/custom-download/containers/content/customDownloadContentHelper';
 
 type StateProps = {
   selectedAttributes: JSONValue;

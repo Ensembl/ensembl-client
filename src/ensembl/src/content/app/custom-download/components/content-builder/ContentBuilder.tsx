@@ -54,6 +54,7 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     payload: PrimitiveOrArrayValue
   ) => {
     const newSelectedData = { ...props.selectedData };
+
     set(newSelectedData, path, payload);
 
     props.onChange(newSelectedData);
@@ -142,8 +143,10 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     const currentPath = [...path, entry.id];
 
     const selectedOptions = get(props.selectedData, currentPath, {});
+    const totalSelectedOptions = Object.values(selectedOptions).filter(Boolean)
+      .length;
 
-    if (props.showOverview && !Object.keys(selectedOptions).length) {
+    if (props.showOverview && !totalSelectedOptions) {
       return null;
     }
 
@@ -177,7 +180,7 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     const additionalProps = props.uiState ? props.uiState['checkbox_grid'] : {};
 
     return (
-      <div className={styles.contentSeparator} key={key}>
+      <div className={styles.checkboxGridWrapper} key={key}>
         <CheckboxGrid
           class
           onChange={(status: boolean, id: string) =>
@@ -189,6 +192,7 @@ const ContentBuilder = (props: ContentBuilderProps) => {
           options={gridClone}
           label={entry.label}
           isCollapsed={isCollapsed}
+          hideUnchecked={props.showOverview}
           {...additionalProps}
         />
       </div>

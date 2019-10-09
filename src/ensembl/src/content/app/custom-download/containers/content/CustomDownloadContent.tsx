@@ -10,6 +10,7 @@ import FiltersAccordion from './filter-accordion/FiltersAccordion';
 import ResultLoader from './result-loader/ResultLoader';
 import Overlay from '../../components/overlay/Overlay';
 import Panel from '../../components/panel/Panel';
+import PreviewCard from 'src/content/app/custom-download/containers/content/preview-card/PreviewCard';
 import PreviewDownload from './preview-download/PreviewDownload';
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import { setShowExampleData } from 'src/content/app/custom-download/state/customDownloadActions';
@@ -42,7 +43,7 @@ const Content = (props: Props) => {
             classNames={{ panelClassName: styles.exampleDataPanel }}
             onClose={() => props.setShowExampleData(false)}
           >
-            <div>Hello World!</div>
+            <PreviewCard />
           </Panel>
         </>
       )}

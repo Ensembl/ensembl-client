@@ -41,8 +41,6 @@ type DispatchProps = {
 type Props = ownProps & StateProps & DispatchProps;
 
 const FiltersAccordionSection = (props: Props) => {
-  console.log(props.selectedFilters);
-
   const allSectionFilters = allFilters[props.section];
 
   if (!props.showOverview) {

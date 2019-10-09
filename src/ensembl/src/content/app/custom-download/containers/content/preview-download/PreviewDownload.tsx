@@ -1,33 +1,30 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { RootState } from 'src/store';
-import { Link } from 'react-router-dom';
-import { getSelectedAttributes } from '../../../state/attributes/attributesSelector';
-import { getSelectedFilters } from '../../../state/filters/filtersSelector';
-
-import { ReactComponent as closeIcon } from 'static/img/shared/close.svg';
-import styles from './PreviewDownload.scss';
 import get from 'lodash/get';
 
-import {
-  getProcessedAttributes,
-  flattenObject,
-  attributeDisplayNames,
-  getProcessedFilters
-} from '../result-loader/resultLoaderHelper';
+import { connect } from 'react-redux';
+import { RootState } from 'src/store';
 
+import { ReactComponent as closeIcon } from 'static/img/shared/close.svg';
+import { getSelectedAttributes } from '../../../state/attributes/attributesSelector';
+import { getSelectedFilters } from '../../../state/filters/filtersSelector';
+import { getProcessedFilters } from '../result-loader/resultLoaderHelper';
+import { getPreviewResult } from '../../../state/customDownloadSelectors';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+import Panel from 'src/content/app/custom-download/components/panel/Panel';
+import PreviewCard from 'src/content/app/custom-download/containers/content/preview-card/PreviewCard';
 import {
   setShowPreview,
   toggleTab
 } from '../../../state/customDownloadActions';
-
 import ImageButton from 'src/shared/components/image-button/ImageButton';
-
 import JSONValue from 'src/shared/types/JSON';
+
+import styles from './PreviewDownload.scss';
 
 type StateProps = {
   selectedAttributes: JSONValue;
   selectedFilters: JSONValue;
+  preview: JSONValue;
 };
 
 type DispatchProps = {
@@ -43,16 +40,16 @@ const PreviewDownload = (props: Props) => {
     props.toggleTab(tab);
   };
 
-  const attributesList: string[] = getProcessedAttributes(
-    flattenObject(props.selectedAttributes)
-  );
+  const resultCount: number = props.preview.resultCount
+    ? (props.preview.resultCount as number)
+    : 0;
 
   const processedFilters = getProcessedFilters(props.selectedFilters);
   const gene_ids = get(
     processedFilters,
     'protein_and_domain_families.family_or_domain_ids.limit_to_genes'
   );
-  const gene_biotypes = get(processedFilters, 'genes.gene_type.biotype');
+  const gene_biotypes = get(processedFilters, 'genes.biotype');
   const gene_source = get(processedFilters, 'genes.gene_source');
 
   return (
@@ -69,51 +66,35 @@ const PreviewDownload = (props: Props) => {
       <table className={styles.previewDownloadTable}>
         <tbody>
           <tr className={styles.previewDownloadHeader}>
-            <td>Species</td>
-            <td>Attributes</td>
-            <td>Filters</td>
+            <td className={styles.species}>Species</td>
+            <td className={styles.example}>
+              <Panel
+                title={'Example data to download'}
+                classNames={{ panelClassName: styles.exampleDataPanel }}
+              >
+                <PreviewCard />
+              </Panel>
+            </td>
+            <td className={styles.filters}>
+              Filters
+              <div className={styles.resultCounter}>
+                <span>{getCommaSeparatedNumber(resultCount)}</span> results
+              </div>
+            </td>
           </tr>
           <tr>
             <td>
               <div>Human</div>
-              <div>
-                <Link to={'/app/species-selector'}>Change</Link>
-              </div>
             </td>
-            <td>
-              {attributesList.map((attribute, index) => {
-                return (
-                  <div key={index}>
-                    {attributeDisplayNames[attribute] || attribute}
-                  </div>
-                );
-              })}
-
-              <div
-                className={styles.changeLink}
-                onClick={() => {
-                  changeView('attributes');
-                }}
-              >
-                Change
-              </div>
-            </td>
+            <td></td>
             <td>
               {!!gene_ids && <div>Limit to genes: {gene_ids.join(', ')}</div>}
               {!!gene_biotypes && (
-                <div>Gene biotype: {gene_biotypes.join(', ')}</div>
+                <div>Gene biotype: {Object.keys(gene_biotypes).join(', ')}</div>
               )}
               {!!gene_source && (
-                <div>Gene source: {gene_source.join(', ')}</div>
+                <div>Gene source: {Object.keys(gene_source).join(', ')}</div>
               )}
-              <div
-                className={styles.changeLink}
-                onClick={() => {
-                  changeView('filter');
-                }}
-              >
-                Change
-              </div>
             </td>
           </tr>
         </tbody>
@@ -129,7 +110,8 @@ const mapDispatchToProps: DispatchProps = {
 
 const mapStateToProps = (state: RootState): StateProps => ({
   selectedAttributes: getSelectedAttributes(state),
-  selectedFilters: getSelectedFilters(state)
+  selectedFilters: getSelectedFilters(state),
+  preview: getPreviewResult(state)
 });
 
 export default connect(

@@ -26,8 +26,6 @@ import {
   setShowPreview,
   setDownloadType
 } from '../../state/customDownloadActions';
-import ImageButton from 'src/shared/components/image-button/ImageButton';
-import { ReactComponent as BackIcon } from 'static/img/shared/chevron-left.svg';
 
 import { fetchCustomDownloadResults } from './customDownloadHeaderHelper';
 
@@ -89,11 +87,7 @@ const Header = (props: Props) => {
       {props.showSummary && (
         <>
           <div className={styles.backButton}>
-            <ImageButton
-              onClick={showFilters}
-              description={'Back'}
-              image={BackIcon}
-            />
+            <SecondaryButton onClick={showFilters}>Back</SecondaryButton>
           </div>
         </>
       )}
@@ -105,6 +99,10 @@ const Header = (props: Props) => {
         >
           {props.selectedPreFilter}
         </RoundButton>
+
+        <span className={styles.changeLink} onClick={filterOnClick}>
+          Change
+        </span>
       </div>
 
       {props.showSummary && (
@@ -128,7 +126,7 @@ const Header = (props: Props) => {
             onClick={previewButtonOnClick}
             isDisabled={disablePreviewButton}
           >
-            Download summary
+            Preview download
           </SecondaryButton>
         )}
         {props.showSummary && (

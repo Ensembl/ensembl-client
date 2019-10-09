@@ -44,6 +44,9 @@
   }
 }
 
-.contentSeparator:not(:last-child) {
-  border-bottom: 2px solid $medium-light-grey;
+.checkboxGridWrapper {
+  border-top: 2px solid $medium-light-grey;
+}
+.checkboxGridWrapper + .contentSeparator {
+  border-top: 2px solid $medium-light-grey;
 }

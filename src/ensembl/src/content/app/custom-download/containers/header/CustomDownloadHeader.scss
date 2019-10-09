@@ -23,8 +23,11 @@
 .backButton {
   height: 30px;
   width: 30px;
-  margin-left: 20px;
+  margin-left: -33px;
   display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 14px;
 }
 
 .downloadTypeSelectHolder {
@@ -50,4 +53,10 @@
   background-color: $medium-dark-grey;
   border-color: $medium-dark-grey;
   color: $white;
+}
+
+.changeLink {
+  cursor: pointer;
+  color: $blue;
+  margin-left: 30px;
 }

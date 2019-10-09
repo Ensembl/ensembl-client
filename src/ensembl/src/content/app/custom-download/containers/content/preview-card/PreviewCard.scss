@@ -1,0 +1,31 @@
+@import 'src/styles/common';
+
+.resultCard {
+  min-height: 75px;
+  padding: 10px 5px;
+  background: $white;
+  margin-bottom: 5px;
+  position: relative;
+  display: block;
+
+  .resultLine {
+    width: 100%;
+    position: relative;
+    clear: both;
+    .lineHeader {
+      text-align: right;
+      color: $dark-grey;
+      width: 35%;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      float: left;
+    }
+
+    .lineValue {
+      color: $black;
+      width: 65%;
+      display: inline-block;
+      padding-left: 10px;
+    }
+  }
+}
