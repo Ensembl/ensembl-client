@@ -17,6 +17,10 @@
   height: 45px;
 }
 
+.checkboxGridHeader + .checkboxGridContainer {
+  padding-top: 5px;
+}
+
 .label {
   color: $grey;
   float: left;
@@ -46,24 +50,24 @@
   background-color: $blue;
 }
 
-.collapseButton:before {
+.collapseButton::before {
   right: 0px;
-  top: 10px;
-  transform: rotate(45deg);
+  top: 12px;
+  transform: rotate(-45deg);
 }
 
-.collapseButton:after {
+.collapseButton::after {
   right: 6px;
-  top: 10px;
-  transform: rotate(-45deg);
+  top: 12px;
+  transform: rotate(45deg);
 }
 
 .collapseButton.open::before {
-  top: 15px;
-  transform: rotate(-45deg);
+  top: 7px;
+  transform: rotate(45deg);
 }
 
-.collapseButton.open::after {
-  top: 15px;
-  transform: rotate(45deg);
+.collapseButton.open:after {
+  top: 7px;
+  transform: rotate(-45deg);
 }

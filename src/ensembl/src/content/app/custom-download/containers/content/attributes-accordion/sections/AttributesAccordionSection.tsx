@@ -41,6 +41,7 @@ const AttributesAccordionSection = (props: Props) => {
       }}
       onUiChange={props.updateUi}
       selectedData={props.selectedAttributes}
+      showOverview={true}
     />
   );
 };

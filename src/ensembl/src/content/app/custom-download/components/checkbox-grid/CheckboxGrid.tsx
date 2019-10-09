@@ -19,6 +19,7 @@ type AllProps = {
   isCollapsable?: boolean;
   isCollapsed?: boolean;
   onChange: (status: boolean, id: string) => void;
+  onCollapse?: (collapsed: boolean) => void;
 };
 
 type NonCollapsableProps = AllProps & {
@@ -63,12 +64,20 @@ const CheckboxGrid = (props: CheckboxGridProps) => {
     }
   }
 
+  const toggleCollapsedState = () => {
+    const newCollapsedState = !collapsed;
+    setCollapsed(newCollapsedState);
+    if (props.onCollapse) {
+      props.onCollapse(newCollapsedState);
+    }
+  };
+
   const singleGridStyle = {
     width: 100 / props.columns + '%'
   };
 
   const checkboxGridContainerStyles = classNames(styles.checkboxGridContainer, {
-    [styles.collapsed]: !collapsed
+    [styles.collapsed]: collapsed
   });
 
   const collapseButtonStyles = classNames(styles.collapseButton, {
@@ -82,7 +91,7 @@ const CheckboxGrid = (props: CheckboxGridProps) => {
           {props.isCollapsable && (
             <span
               className={styles.collapseButtonWrapper}
-              onClick={() => setCollapsed(!collapsed)}
+              onClick={toggleCollapsedState}
             >
               <span className={collapseButtonStyles}></span>
             </span>

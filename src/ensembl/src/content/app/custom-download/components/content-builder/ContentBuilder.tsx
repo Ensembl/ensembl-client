@@ -1,6 +1,7 @@
 import React from 'react';
 import set from 'lodash/set';
 import get from 'lodash/get';
+import classNames from 'classnames';
 
 import CheckboxWithSelects from 'src/content/app/custom-download/components/checkbox-with-selects/CheckboxWithSelects';
 import CheckboxWithRadios from 'src/content/app/custom-download/components/checkbox-with-radios/CheckboxWithRadios';
@@ -68,7 +69,11 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     props.onUiChange(updatedUi);
   };
 
-  const buildCheckboxWithSelect = (entry: AttributeWithOptions, path: Path) => {
+  const buildCheckboxWithSelect = (
+    entry: AttributeWithOptions,
+    path: Path,
+    key: number
+  ) => {
     const currentPath = [...path, entry.id];
 
     const selectedOptions = get(props.selectedData, currentPath, []);
@@ -77,8 +82,13 @@ const ContentBuilder = (props: ContentBuilderProps) => {
       return null;
     }
 
+    const mergedClassNames = classNames(
+      styles.contentSeparator,
+      styles.checkboxWithSelectWrapper
+    );
+
     return (
-      <div className={styles.checkboxWithSelectWrapper}>
+      <div className={mergedClassNames} key={key}>
         <CheckboxWithSelects
           label={entry.label}
           disabled={entry.disabled}
@@ -92,7 +102,11 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     );
   };
 
-  const buildCheckboxWithRadios = (entry: AttributeWithOptions, path: Path) => {
+  const buildCheckboxWithRadios = (
+    entry: AttributeWithOptions,
+    path: Path,
+    key: number
+  ) => {
     const currentPath = [...path, entry.id];
 
     const selectedOption: string = get(props.selectedData, currentPath, '');
@@ -100,8 +114,13 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     if (props.showOverview && !selectedOption) {
       return null;
     }
+
+    const mergedClassNames = classNames(
+      styles.contentSeparator,
+      styles.checkboxWithRadiosWrapper
+    );
     return (
-      <div className={styles.checkboxWithRadiosWrapper}>
+      <div className={mergedClassNames} key={key}>
         <CheckboxWithRadios
           label={entry.label}
           disabled={entry.disabled}
@@ -115,7 +134,11 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     );
   };
 
-  const buildCheckboxGrid = (entry: AttributeWithOptions, path: Path) => {
+  const buildCheckboxGrid = (
+    entry: AttributeWithOptions,
+    path: Path,
+    key: number
+  ) => {
     const currentPath = [...path, entry.id];
 
     const selectedOptions = get(props.selectedData, currentPath, {});
@@ -145,23 +168,40 @@ const ContentBuilder = (props: ContentBuilderProps) => {
       };
     });
 
+    const isCollapsed = get(
+      props.uiState,
+      [...currentPath, 'isCollapsed'],
+      false
+    );
+
     const additionalProps = props.uiState ? props.uiState['checkbox_grid'] : {};
 
     return (
-      <CheckboxGrid
-        onChange={(status: boolean, id: string) =>
-          onChangeHandler([...currentPath, id], status)
-        }
-        options={gridClone}
-        label={entry.label}
-        {...additionalProps}
-      />
+      <div className={styles.contentSeparator} key={key}>
+        <CheckboxGrid
+          class
+          onChange={(status: boolean, id: string) =>
+            onChangeHandler([...currentPath, id], status)
+          }
+          onCollapse={(collapsed) =>
+            onUiChangeHandler([...currentPath, 'isCollapsed'], collapsed)
+          }
+          options={gridClone}
+          label={entry.label}
+          isCollapsed={isCollapsed}
+          {...additionalProps}
+        />
+      </div>
     );
   };
 
-  const buildAccordionItem = (entry: AttributeWithContent, path: Path) => {
+  const buildAccordionItem = (
+    entry: AttributeWithContent,
+    path: Path,
+    key: number
+  ) => {
     return (
-      <AccordionItem uuid={entry.id}>
+      <AccordionItem uuid={entry.id} key={key}>
         <AccordionItemHeading>
           <AccordionItemButton className={styles.accordionButton}>
             {entry.label}
@@ -181,7 +221,11 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     );
   };
 
-  const buildAccordion = (entry: AttributeWithContent, path: Path) => {
+  const buildAccordion = (
+    entry: AttributeWithContent,
+    path: Path,
+    key: number
+  ) => {
     const currentPath = [...path, entry.id];
     const preExpandedPanels = get(
       props.uiState,
@@ -197,6 +241,7 @@ const ContentBuilder = (props: ContentBuilderProps) => {
         }
         className={styles.accordion}
         preExpanded={preExpandedPanels}
+        key={key}
       >
         {entry.content &&
           entry.content.map((accordionSection, key: number) => {
@@ -204,7 +249,8 @@ const ContentBuilder = (props: ContentBuilderProps) => {
               <div key={key}>
                 {buildAccordionItem(
                   accordionSection as AttributeWithContent,
-                  path
+                  path,
+                  key
                 )}
               </div>
             );
@@ -213,7 +259,11 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     );
   };
 
-  const buildCheckboxWithTextfields = (entry: Attribute, path: Path) => {
+  const buildCheckboxWithTextfields = (
+    entry: Attribute,
+    path: Path,
+    key: number
+  ) => {
     const currentPath = [...path, entry.id];
 
     const values: string[] = get(props.selectedData, currentPath, '');
@@ -222,8 +272,13 @@ const ContentBuilder = (props: ContentBuilderProps) => {
       return null;
     }
 
+    const mergedClassNames = classNames(
+      styles.contentSeparator,
+      styles.checkboxWithTextfieldsWrapper
+    );
+
     return (
-      <div className={styles.checkboxWithRadiosWrapper}>
+      <div className={mergedClassNames} key={key}>
         <CheckboxWithTextfields
           label={entry.label}
           disabled={entry.disabled}
@@ -248,39 +303,33 @@ const ContentBuilder = (props: ContentBuilderProps) => {
         ) => {
           switch (entry.type) {
             case AttributeType.SECTION_GROUP:
-              return (
-                <div key={key}>
-                  {buildAccordion(entry as AttributeWithContent, path)}
-                </div>
-              );
+              return buildAccordion(entry as AttributeWithContent, path, key);
             case AttributeType.SECTION:
-              return (
-                <div key={key}>
-                  {buildAccordionItem(entry as AttributeWithContent, path)}
-                </div>
+              return buildAccordionItem(
+                entry as AttributeWithContent,
+                path,
+                key
               );
             case AttributeType.CHECKBOX_GRID:
-              return (
-                <div key={key}>
-                  {buildCheckboxGrid(entry as AttributeWithOptions, path)}
-                </div>
+              return buildCheckboxGrid(
+                entry as AttributeWithOptions,
+                path,
+                key
               );
             case AttributeType.SELECT_MULTIPLE:
-              return (
-                <div key={key}>
-                  {buildCheckboxWithSelect(entry as AttributeWithOptions, path)}
-                </div>
+              return buildCheckboxWithSelect(
+                entry as AttributeWithOptions,
+                path,
+                key
               );
             case AttributeType.SELECT_ONE:
-              return (
-                <div key={key}>
-                  {buildCheckboxWithRadios(entry as AttributeWithOptions, path)}
-                </div>
+              return buildCheckboxWithRadios(
+                entry as AttributeWithOptions,
+                path,
+                key
               );
             case AttributeType.PASTE_OR_UPLOAD:
-              return (
-                <div key={key}>{buildCheckboxWithTextfields(entry, path)}</div>
-              );
+              return buildCheckboxWithTextfields(entry, path, key);
           }
         }
       )}

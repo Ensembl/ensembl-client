@@ -5,7 +5,8 @@
   padding-top: 10px;
 }
 
-.checkboxWithRadiosWrapper {
+.checkboxWithRadiosWrapper,
+.checkboxWithTextfieldsWrapper {
   padding-left: 20px;
   padding-top: 10px;
 }
@@ -41,4 +42,8 @@
   &[aria-selected='true']::after {
     top: 21px;
   }
+}
+
+.contentSeparator:not(:last-child) {
+  border-bottom: 2px solid $medium-light-grey;
 }
