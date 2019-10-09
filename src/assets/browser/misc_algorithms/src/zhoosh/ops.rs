@@ -54,7 +54,7 @@ impl<T> ZhooshOps<T> for ZhooshBangOps<T> where T: Clone+Sized {
         if prop < 0.5 { from.clone() } else { to.clone() }
     }
 
-    fn distance(&self, from: &T, to: &T) -> f64 { 1. }
+    fn distance(&self, _from: &T, _to: &T) -> f64 { 1. }
 }
 
 pub const ZHOOSH_LINEAR_F64_OPS : ZhooshLinearStdOps<f64,f64> = ZhooshLinearStdOps::<f64,f64>(PhantomData,PhantomData);

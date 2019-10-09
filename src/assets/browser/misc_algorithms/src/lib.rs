@@ -1,6 +1,7 @@
 #![feature(vec_remove_item)]
 
 extern crate serde_json;
+extern crate owning_ref;
 
 pub mod marshal {
     mod json;
@@ -49,5 +50,5 @@ pub mod zhoosh {
         ZHOOSH_EMPTY_OPS
     };
     pub use self::shapes::ZhooshShape;
-    pub use self::zhoosh::{ Zhoosh, ZhooshSpec, ZhooshRunner, ZhooshRunState,  ZhooshSequence, zhoosh_collect };
+    pub use self::zhoosh::{ Zhoosh, ZhooshHandle, ZhooshSpec, ZhooshRunner, ZhooshSequence, zhoosh_collect };
 }

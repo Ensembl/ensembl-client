@@ -1,6 +1,5 @@
-use std::cell::RefCell;
-use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
+use owning_ref::MutexGuardRef;
 
 use super::ops::{ ZhooshOps, ZHOOSH_EMPTY_OPS };
 use super::shapes::ZhooshShape;
@@ -27,7 +26,6 @@ impl<X,T> Zhoosh<X,T> {
     pub fn new<F,U>(max_time: f64, min_speed: f64, delay: f64, shape: ZhooshShape, ops: U, cb: F) -> Zhoosh<X,T>
             where F: Fn(&mut X,T) + Send+Sync + 'static, U: ZhooshOps<T> + 'static + Send+Sync {
         Zhoosh(Arc::new(ZhooshImpl {
-            //after_prop: after_prop.to_vec(),
             delay, max_time, min_speed, shape, cb: Box::new(cb),
             ops: Box::new(ops)
         }))
@@ -52,7 +50,7 @@ pub struct ZhooshRunSpec<X,T> {
     end: T,
     after_prop: Vec<f64>,
     distance: f64,
-    after: Vec<Arc<Mutex<ZhooshRunState>>>,
+    after: Vec<ZhooshHandle>,
 }
 
 impl<X,T> ZhooshRunSpec<X,T> {
@@ -68,15 +66,15 @@ impl<X,T> ZhooshRunSpec<X,T> {
 }
 
 trait ZhooshSpecTrait {
-    fn add_trigger(&mut self, after: Arc<Mutex<ZhooshRunState>>, after_prop: f64);
+    fn add_trigger(&mut self, after: ZhooshHandle, after_prop: f64);
     fn set(&mut self, prop: f64);
     fn get_delay(&mut self) -> f64;
     fn calc_prop(&self,t : f64) -> f64;
-    fn dependencies(&self) -> Vec<(Arc<Mutex<ZhooshRunState>>,f64)>;
+    fn dependencies(&self) -> Vec<(ZhooshHandle,f64)>;
 }
 
 impl<X,T> ZhooshSpecTrait for ZhooshRunSpec<X,T> {
-    fn add_trigger(&mut self, after: Arc<Mutex<ZhooshRunState>>, after_prop: f64) {
+    fn add_trigger(&mut self, after: ZhooshHandle, after_prop: f64) {
         self.after.push(after);
         self.after_prop.push(after_prop);
     }
@@ -93,7 +91,7 @@ impl<X,T> ZhooshSpecTrait for ZhooshRunSpec<X,T> {
         self.zhoosh.prop_of(t,self.distance).min(1.).max(0.)
     }
 
-    fn dependencies(&self) -> Vec<(Arc<Mutex<ZhooshRunState>>,f64)> {
+    fn dependencies(&self) -> Vec<(ZhooshHandle,f64)> {
         let mut out = Vec::new();
         let mut after_prop = self.after_prop.iter();
         for after in &self.after {
@@ -104,7 +102,7 @@ impl<X,T> ZhooshSpecTrait for ZhooshRunSpec<X,T> {
 }
 
 #[derive(Clone)]
-pub struct ZhooshSpec(Arc<Mutex<ZhooshSpecTrait>>);
+pub struct ZhooshSpec(Arc<Mutex<dyn ZhooshSpecTrait>>);
 
 impl ZhooshSpec {
     pub fn new<X,T>(zhoosh: &Zhoosh<X,T>, target: X, start: T, end: T) -> ZhooshSpec where T: 'static, X: 'static {
@@ -115,7 +113,7 @@ impl ZhooshSpec {
         self.0.lock().unwrap().set(prop);
     }
 
-    pub fn add_trigger(&mut self, after: Arc<Mutex<ZhooshRunState>>, after_prop: f64) {
+    fn add_trigger(&mut self, after: ZhooshHandle, after_prop: f64) {
         self.0.lock().unwrap().add_trigger(after,after_prop);
     }
 
@@ -127,13 +125,13 @@ impl ZhooshSpec {
         self.0.lock().unwrap().calc_prop(t)
     }
 
-    fn dependencies(&self) -> Vec<(Arc<Mutex<ZhooshRunState>>,f64)> {
+    fn dependencies(&self) -> Vec<(ZhooshHandle,f64)> {
         self.0.lock().unwrap().dependencies()
     }
 }
 
 #[derive(Clone)]
-pub struct ZhooshRunState {
+struct ZhooshRunState {
     spec: ZhooshSpec,
     started: Option<f64>,
     delay: Option<f64>,
@@ -152,14 +150,14 @@ impl ZhooshRunState {
 
     fn get_prop(&self) -> Option<f64> { self.prop }
 
-    fn startable(&mut self, now: f64) -> bool {
+    fn startable(&mut self, now: f64, handler: &ZhooshSequence) -> bool {
         if let Some(delay_start) = self.delay {
             /* dependency already triggered. awaiting a delay timeout? */
             return now-delay_start >= self.spec.get_delay();
         } else {
             for (after,after_prop) in &self.spec.dependencies() {
                 /* how far through is this dependency? */
-                let prop = after.lock().unwrap().get_prop();
+                let prop = handler.resolve_handle(after).get_prop();
                 /* is the dependency even started yet? */
                 if prop.is_none() { return false; }
                 /* dependency satisfied? */
@@ -176,9 +174,9 @@ impl ZhooshRunState {
         }
     }
 
-    fn update_prop(&mut self, now: f64) {
+    fn update_prop(&mut self, now: f64, handler: &ZhooshSequence) {
         /* new starter? */
-        if self.prop.is_none() && self.startable(now) {
+        if self.prop.is_none() && self.startable(now,handler) {
             self.prop = Some(0.);
             self.started = Some(now);
         }
@@ -196,8 +194,8 @@ impl ZhooshRunState {
         }
     }
 
-    fn step(&mut self, now: f64) -> bool {
-        self.update_prop(now);
+    fn step(&mut self, now: f64, handler: &ZhooshSequence) -> bool {
+        self.update_prop(now,handler);
         if self.prop.is_some() && self.started.is_none() { return false; }
         return true;
     }
@@ -209,52 +207,72 @@ pub fn zhoosh_collect() -> ZhooshSpec {
     ZhooshSpec::new(&z,(),(),())
 }
 
+#[derive(Clone)]
+pub struct ZhooshHandle(usize);
+
 pub struct ZhooshSequence {
-    roots: Vec<Arc<Mutex<ZhooshRunState>>>
+    runs: Vec<Arc<Mutex<ZhooshRunState>>>
 }
 
 impl ZhooshSequence {
     pub fn new() -> ZhooshSequence {
         ZhooshSequence {
-            roots: Vec::new()
+            runs: Vec::new()
         }
     }
 
-    pub fn add(&mut self, spec: ZhooshSpec) -> Arc<Mutex<ZhooshRunState>> {
+    fn resolve_handle<'ret>(&'ret self, h: &ZhooshHandle) -> MutexGuardRef<'ret,ZhooshRunState> {
+        MutexGuardRef::new(self.runs[h.0].lock().unwrap())
+    }
+
+    pub fn add(&mut self, spec: ZhooshSpec) -> ZhooshHandle {
         let run = Arc::new(Mutex::new(ZhooshRunState::new(spec)));
-        self.roots.push(run.clone());
-        run
+        self.runs.push(run.clone());
+        ZhooshHandle(self.runs.len()-1)
     }
 
-    pub fn run(mut self, runner: &mut ZhooshRunner) {
-        for root in self.roots.drain(..) {
-            runner.add(root)
+    pub fn add_trigger(&mut self, subject: &mut ZhooshSpec, after: ZhooshHandle, after_prop: f64) {
+        subject.add_trigger(after,after_prop);
+    }
+
+    pub fn run(self, runner: &mut ZhooshRunner) {
+        runner.add(self)
+    }
+
+    pub fn step(&mut self, now: f64) -> bool {
+        let mut valid = 0;
+        for run in self.runs.iter() {
+            if run.lock().unwrap().step(now,&self) {
+                valid += 1;
+            }
         }
+        valid > 0
     }
 }
 
 pub struct ZhooshRunner {
-    runs: Vec<Arc<Mutex<ZhooshRunState>>>
+    seqs: Vec<ZhooshSequence>
 }
 
 impl ZhooshRunner {
     pub fn new() -> ZhooshRunner {
         ZhooshRunner {
-            runs: Vec::new()
+            seqs: Vec::new()
         }
     }
 
-    fn add(&mut self, run: Arc<Mutex<ZhooshRunState>>) {
-        self.runs.push(run);
+    fn add(&mut self, run: ZhooshSequence) {
+        self.seqs.push(run);
     }
 
-    pub fn step(&mut self, now: f64) {
+    pub fn step(&mut self, now: f64) -> bool {
         let mut keep = Vec::new();
-        for mut run in self.runs.drain(..) {
-            if run.lock().unwrap().step(now) {
-                keep.push(run);
+        for mut seq in self.seqs.drain(..) {
+            if seq.step(now) {
+                keep.push(seq);
             }
         }
-        self.runs = keep;
+        self.seqs = keep;
+        self.seqs.len() > 0
     }
 }
