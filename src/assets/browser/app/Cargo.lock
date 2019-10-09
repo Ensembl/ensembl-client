@@ -1131,6 +1131,7 @@ dependencies = [
 name = "misc_algorithms"
 version = "0.1.1"
 dependencies = [
+ "owning_ref 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_json 1.0.39 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

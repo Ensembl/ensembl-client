@@ -1,5 +1,5 @@
 use std::sync::{ Arc, Mutex };
-use owning_ref::MutexGuardRef;
+use owning_ref::MutexGuardRefMut;
 
 use super::ops::{ ZhooshOps, ZHOOSH_EMPTY_OPS };
 use super::shapes::ZhooshShape;
@@ -66,7 +66,7 @@ impl<X,T> ZhooshRunSpec<X,T> {
 }
 
 trait ZhooshSpecTrait {
-    fn add_trigger(&mut self, after: ZhooshHandle, after_prop: f64);
+    fn add_trigger(&mut self, after: &ZhooshHandle, after_prop: f64);
     fn set(&mut self, prop: f64);
     fn get_delay(&mut self) -> f64;
     fn calc_prop(&self,t : f64) -> f64;
@@ -74,8 +74,8 @@ trait ZhooshSpecTrait {
 }
 
 impl<X,T> ZhooshSpecTrait for ZhooshRunSpec<X,T> {
-    fn add_trigger(&mut self, after: ZhooshHandle, after_prop: f64) {
-        self.after.push(after);
+    fn add_trigger(&mut self, after: &ZhooshHandle, after_prop: f64) {
+        self.after.push(*after);
         self.after_prop.push(after_prop);
     }
 
@@ -101,36 +101,34 @@ impl<X,T> ZhooshSpecTrait for ZhooshRunSpec<X,T> {
     }
 }
 
-#[derive(Clone)]
-pub struct ZhooshSpec(Arc<Mutex<dyn ZhooshSpecTrait>>);
+pub struct ZhooshSpec(Box<dyn ZhooshSpecTrait>);
 
 impl ZhooshSpec {
     pub fn new<X,T>(zhoosh: &Zhoosh<X,T>, target: X, start: T, end: T) -> ZhooshSpec where T: 'static, X: 'static {
-        ZhooshSpec(Arc::new(Mutex::new(ZhooshRunSpec::new(zhoosh,target,start,end))))
+        ZhooshSpec(Box::new(ZhooshRunSpec::new(zhoosh,target,start,end)))
     }
 
     fn set(&mut self, prop: f64) {
-        self.0.lock().unwrap().set(prop);
+        self.0.set(prop);
     }
 
-    fn add_trigger(&mut self, after: ZhooshHandle, after_prop: f64) {
-        self.0.lock().unwrap().add_trigger(after,after_prop);
+    fn add_trigger(&mut self, after: &ZhooshHandle, after_prop: f64) {
+        self.0.add_trigger(after,after_prop);
     }
 
     fn get_delay(&mut self) -> f64 {
-        self.0.lock().unwrap().get_delay()
+        self.0.get_delay()
     }
 
     fn calc_prop(&self,t : f64) -> f64 {
-        self.0.lock().unwrap().calc_prop(t)
+        self.0.calc_prop(t)
     }
 
     fn dependencies(&self) -> Vec<(ZhooshHandle,f64)> {
-        self.0.lock().unwrap().dependencies()
+        self.0.dependencies()
     }
 }
 
-#[derive(Clone)]
 struct ZhooshRunState {
     spec: ZhooshSpec,
     started: Option<f64>,
@@ -148,6 +146,7 @@ impl ZhooshRunState {
         }
     }
 
+    fn get_spec(&mut self) -> &mut ZhooshSpec { &mut self.spec }
     fn get_prop(&self) -> Option<f64> { self.prop }
 
     fn startable(&mut self, now: f64, handler: &ZhooshSequence) -> bool {
@@ -207,7 +206,7 @@ pub fn zhoosh_collect() -> ZhooshSpec {
     ZhooshSpec::new(&z,(),(),())
 }
 
-#[derive(Clone)]
+#[derive(Clone,Copy)]
 pub struct ZhooshHandle(usize);
 
 pub struct ZhooshSequence {
@@ -221,8 +220,8 @@ impl ZhooshSequence {
         }
     }
 
-    fn resolve_handle<'ret>(&'ret self, h: &ZhooshHandle) -> MutexGuardRef<'ret,ZhooshRunState> {
-        MutexGuardRef::new(self.runs[h.0].lock().unwrap())
+    fn resolve_handle<'ret>(&'ret self, h: &ZhooshHandle) -> MutexGuardRefMut<'ret,ZhooshRunState> {
+        MutexGuardRefMut::new(self.runs[h.0].lock().unwrap())
     }
 
     pub fn add(&mut self, spec: ZhooshSpec) -> ZhooshHandle {
@@ -231,8 +230,9 @@ impl ZhooshSequence {
         ZhooshHandle(self.runs.len()-1)
     }
 
-    pub fn add_trigger(&mut self, subject: &mut ZhooshSpec, after: ZhooshHandle, after_prop: f64) {
-        subject.add_trigger(after,after_prop);
+    pub fn add_trigger(&mut self, subject: &ZhooshHandle, after: &ZhooshHandle, after_prop: f64) {
+        let mut subject = self.resolve_handle(&subject);
+        subject.get_spec().add_trigger(after,after_prop);
     }
 
     pub fn run(self, runner: &mut ZhooshRunner) {

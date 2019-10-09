@@ -156,11 +156,9 @@ impl Jumper {
         let animator = app.get_window().get_animator();
         let dest_zoom = Position::unlimited_best_zoom_screen_bp(dest_size);
         let mut seq = animator.new_sequence();
-        let bang_z = animator.new_step(&self.bang_zhoosh,None,Some((stick.to_string(),dest_pos,dest_zoom)));
-        seq.add(bang_z.clone());
-        let mut all_z = animator.new_step(&self.settled_zhoosh,false,true);
-        all_z.add_trigger(bang_z,1.);
-        seq.add(all_z);
+        let bang_z = animator.new_step(&mut seq,&self.bang_zhoosh,None,Some((stick.to_string(),dest_pos,dest_zoom)));
+        let mut all_z = animator.new_step(&mut seq,&self.settled_zhoosh,false,true);
+        seq.add_trigger(&all_z,&bang_z,1.);
         animator.run(seq);
     }
 
@@ -170,14 +168,11 @@ impl Jumper {
         let current_zoom = bp_to_zoomfactor(current_position.get_screen_in_bp());
         let dest_zoom = Position::unlimited_best_zoom_screen_bp(dest_size);
         let mut seq = animator.new_sequence();
-        let pos_z = animator.new_step(&self.location_zhoosh,current_middle,dest_pos);
-        seq.add(pos_z.clone());
-        let mut zoom_z = animator.new_step(&self.zoom_zhoosh,current_zoom,dest_zoom);
-        zoom_z.add_trigger(pos_z,1.);
-        seq.add(zoom_z.clone());
-        let mut all_z = animator.new_step(&self.settled_zhoosh,false,true);
-        all_z.add_trigger(zoom_z,1.);
-        seq.add(all_z);
+        let pos_z = animator.new_step(&mut seq,&self.location_zhoosh,current_middle,dest_pos);
+        let mut zoom_z = animator.new_step(&mut seq,&self.zoom_zhoosh,current_zoom,dest_zoom);
+        seq.add_trigger(&zoom_z,&pos_z,1.);
+        let mut all_z = animator.new_step(&mut seq,&self.settled_zhoosh,false,true);
+        seq.add_trigger(&all_z,&zoom_z,1.);
         animator.run(seq);
     }
 

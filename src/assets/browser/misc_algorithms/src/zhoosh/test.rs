@@ -15,11 +15,11 @@ fn build_zhoosh<U>(max_time: f64, min_speed: f64, delay: f64, shape: ZhooshShape
 
 fn new_run(seq: &mut ZhooshSequence, z: &Zhoosh<TestProp,f64>, from: f64, to: f64, reqs: &[(ZhooshHandle,f64)]) -> (TestProp,ZhooshHandle) {
     let t = TestProp(Arc::new(Mutex::new(vec![])));
-    let mut spec = ZhooshSpec::new(z,t.clone(),from,to);
-    for (after,after_prop) in reqs {
-        seq.add_trigger(&mut spec,after.clone(),*after_prop);
-    }
+    let spec = ZhooshSpec::new(z,t.clone(),from,to);
     let run = seq.add(spec);
+    for (after,after_prop) in reqs {
+        seq.add_trigger(&run,&after,*after_prop);
+    }
     (t,run)
 }
 
@@ -95,10 +95,10 @@ fn zhoosh_multi_start() {
     let mut seq = ZhooshSequence::new();
     let (_,step1) = new_run(&mut seq,&z1,0.,10.,&[]);
     let (_,step2) = new_run(&mut seq,&z2,1.,10.,&[]);
-    let mut step3 = zhoosh_collect();
-    seq.add_trigger(&mut step3,step1,1.);
-    seq.add_trigger(&mut step3,step2,0.5);
+    let step3 = zhoosh_collect();
     let run3 = seq.add(step3);
+    seq.add_trigger(&run3,&step1,1.);
+    seq.add_trigger(&run3,&step2,0.5);
     let (t4,_) = new_run(&mut seq,&z1,0.,10.,&[(run3,1.)]);
     run(seq,&now);
     print!("{:?}\n",t4.0.lock().unwrap());
