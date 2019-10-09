@@ -42,8 +42,7 @@ impl<X,T> Zhoosh<X,T> {
     }
 }
 
-#[derive(Clone)]
-pub struct ZhooshRunSpec<X,T> {
+struct ZhooshRunSpec<X,T> {
     zhoosh: Zhoosh<X,T>,
     target: X,
     start: T,
