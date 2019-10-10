@@ -8,7 +8,7 @@ import styles from './SelectedSpecies.scss';
 
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
-type Props = {
+export type Props = {
   species: CommittedItem;
   onToggleUse: (genomeId: string) => void;
   onRemove: (genomeId: string) => void;
