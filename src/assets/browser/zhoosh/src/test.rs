@@ -1,5 +1,5 @@
 use std::sync::{ Arc, Mutex };
-use crate::zhoosh::{ Zhoosh, ZhooshStepHandle, ZhooshOps, ZhooshRunner, ZhooshSequence, ZhooshShape, ZhooshStep, ZHOOSH_LINEAR_F64_OPS, ZHOOSH_PROP_F64_OPS, zhoosh_empty_step };
+use crate::{ Zhoosh, ZhooshStepHandle, ZhooshOps, ZhooshRunner, ZhooshSequence, ZhooshShape, ZhooshStep, ZHOOSH_LINEAR_F64_OPS, ZHOOSH_PROP_F64_OPS, zhoosh_empty_step };
 
 #[derive(Clone)]
 struct TestProp(Arc<Mutex<Vec<(i32,f64)>>>);
@@ -23,9 +23,9 @@ fn new_run(seq: &mut ZhooshSequence, z: &Zhoosh<TestProp,f64>, from: f64, to: f6
     (t,run)
 }
 
-fn run(seq: ZhooshSequence, now: &Arc<Mutex<i32>>) {
+fn run(seq: ZhooshSequence, now: &Arc<Mutex<i32>>, limit: i32) {
     let mut runner = ZhooshRunner::new();
-    seq.run(&mut runner);
+    let mut ctrl = seq.run(&mut runner);
     let mut i = 0;
     loop {
         *now.lock().unwrap() = i;
@@ -33,6 +33,7 @@ fn run(seq: ZhooshSequence, now: &Arc<Mutex<i32>>) {
             break;
         }
         i += 1;
+        if limit > 0 && i > limit { ctrl.abandon(); }
     }
 }
 
@@ -44,9 +45,19 @@ fn zhoosh_smoke() {
     let mut seq = ZhooshSequence::new();
     let (t1,step1) = new_run(&mut seq,&z1,0.,10.,&[]);
     let (t2,_) = new_run(&mut seq,&z2,1.,10.,&[(step1,0.5)]);
-    run(seq,&now);
+    run(seq,&now,0);
     assert_eq!(vec![(1, 0.),(2,1.),(3,2.),( 4,3.),( 5,4.),( 6,5.),( 7,6.),( 8,7.),( 9,8.),(10,9.),(11,10.)],t1.0.lock().unwrap().clone());
     assert_eq!(vec![(7,10.),(8,8.),(9,6.),(10,5.),(11,4.),(12,3.),(13,3.),(14,2.),(15,2.),(16,1.),(17,1. )],t2.0.lock().unwrap().clone());
+}
+
+#[test]
+fn zhoosh_abandon() {
+    let now = Arc::new(Mutex::new(0));
+    let z1 = build_zhoosh(10.,0.,1.,ZhooshShape::Linear,ZHOOSH_LINEAR_F64_OPS,&now);
+    let mut seq = ZhooshSequence::new();
+    let (t1,_) = new_run(&mut seq,&z1,0.,10.,&[]);
+    run(seq,&now,5);
+    assert_eq!(t1.0.lock().unwrap().len(),5);
 }
 
 #[test]
@@ -55,7 +66,7 @@ fn zhoosh_min_speed() {
     let z1 = build_zhoosh(10.,20.,1.,ZhooshShape::Linear,ZHOOSH_LINEAR_F64_OPS,&now);
     let mut seq = ZhooshSequence::new();
     let (t1,_) = new_run(&mut seq,&z1,0.,10.,&[]);
-    run(seq,&now);
+    run(seq,&now,0);
     assert_eq!(t1.0.lock().unwrap().len(),6);
 }
 
@@ -66,7 +77,7 @@ fn delay_start(prop: f64, delay1: f64, delay2: f64) -> i32 {
     let mut seq = ZhooshSequence::new();
     let (_,step1) = new_run(&mut seq,&z1,0.,10.,&[]);
     let (t2,_) = new_run(&mut seq,&z2,1.,10.,&[(step1,prop)]);
-    run(seq,&now);
+    run(seq,&now,0);
     let v = t2.0.lock().unwrap()[0].0;
     v
 }
@@ -100,7 +111,7 @@ fn zhoosh_multi_start() {
     seq.add_trigger(&run3,&step1,1.);
     seq.add_trigger(&run3,&step2,0.5);
     let (t4,_) = new_run(&mut seq,&z1,0.,10.,&[(run3,1.)]);
-    run(seq,&now);
+    run(seq,&now,0);
     print!("{:?}\n",t4.0.lock().unwrap());
     assert_eq!(t4.0.lock().unwrap().len(),11);
     assert_eq!(t4.0.lock().unwrap()[6].0,22);
@@ -139,7 +150,7 @@ fn zhoosh_special() {
     let (t1,step1) = new_special_run(&z1,Special(0.),Special(10.));
     let mut seq = ZhooshSequence::new();
     seq.add(step1);
-    run(seq,&now);
+    run(seq,&now,0);
     print!("{:?}\n",t1.0);
     assert_eq!(Special(6.),t1.0.lock().unwrap()[4]);
 }
@@ -150,7 +161,7 @@ fn zhoosh_quadratic() {
     let z1 = build_zhoosh(10.,0.,1.,ZhooshShape::Quadratic(0.5),ZHOOSH_LINEAR_F64_OPS,&now);
     let mut seq = ZhooshSequence::new();
     let (t1,_) = new_run(&mut seq,&z1,0.,1000.,&[]);
-    run(seq,&now);
+    run(seq,&now,0);
     print!("{:?}\n",t1.0);
     assert_eq!(vec![(1,0.),(2,60.),(3,140.),(4,240.),(5,360.),(6,500.),(7,640.),(8,760.),(9,860.),(10, 940.),(11,1000.)],t1.0.lock().unwrap().clone());
 }
