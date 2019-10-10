@@ -1,26 +1,43 @@
 import { RootState } from 'src/store';
-import JSONValue from 'src/shared/types/JSON';
+import { defaultCustomDownloadStateForGenome } from './customDownloadState';
 
-export const getSelectedPreFilter = (state: RootState): string =>
-  state.customDownload.preFilter.selectedPreFilter;
+export const getCustomDownloadActiveGenomeId = (state: RootState) =>
+  state.customDownload.activeGenomeId || null;
 
-export const getShowPreFilterPanel = (state: RootState): boolean =>
-  state.customDownload.preFilter.showPreFiltersPanel;
+export const getCustomDownloadActiveGenomeConfiguration = (
+  state: RootState
+) => {
+  const activeGenomeId = getCustomDownloadActiveGenomeId(state);
 
-export const getSelectedTab = (state: RootState): string =>
-  state.customDownload.tab.selectedTab;
+  if (!activeGenomeId) {
+    return defaultCustomDownloadStateForGenome;
+  }
+  return (
+    state.customDownload.activeConfigurations[activeGenomeId] ||
+    defaultCustomDownloadStateForGenome
+  );
+};
 
-export const getPreviewResult = (state: RootState): JSONValue =>
-  state.customDownload.result.preview;
+export const getSelectedPreFilter = (state: RootState) =>
+  getCustomDownloadActiveGenomeConfiguration(state).preFilter.selectedPreFilter;
 
-export const getIsLoadingResult = (state: RootState): boolean =>
-  state.customDownload.result.isLoadingResult;
+export const getShowPreFilterPanel = (state: RootState) =>
+  getCustomDownloadActiveGenomeConfiguration(state).preFilter
+    .showPreFiltersPanel;
 
-export const getShowPreviewResult = (state: RootState): boolean =>
-  state.customDownload.previewDownload.showSummary;
+export const getPreviewResult = (state: RootState) =>
+  getCustomDownloadActiveGenomeConfiguration(state).result.preview;
 
-export const getShowExampleData = (state: RootState): boolean =>
-  state.customDownload.previewDownload.showExampleData;
+export const getIsLoadingResult = (state: RootState) =>
+  getCustomDownloadActiveGenomeConfiguration(state).result.isLoadingResult;
 
-export const getDownloadType = (state: RootState): string =>
-  state.customDownload.previewDownload.downloadType;
+export const getShowPreviewResult = (state: RootState) =>
+  getCustomDownloadActiveGenomeConfiguration(state).previewDownload.showSummary;
+
+export const getShowExampleData = (state: RootState) =>
+  getCustomDownloadActiveGenomeConfiguration(state).previewDownload
+    .showExampleData;
+
+export const getDownloadType = (state: RootState) =>
+  getCustomDownloadActiveGenomeConfiguration(state).previewDownload
+    .downloadType;

@@ -4,8 +4,11 @@ import storageService, {
 } from 'src/services/storage-service';
 
 import JSONValue from 'src/shared/types/JSON';
+import { CustomDownloadActiveConfigurations } from '../state/customDownloadState';
 
 export enum StorageKeys {
+  ACTIVE_GENOME_ID = 'customDownload.activeGenomeId',
+  ACTIVE_CONFIGURATIONS = 'customDownload.activeConfigurations',
   FILTERS = 'customDownload.filtersAccordion.filters',
   SELECTED_FILTERS = 'customDownload.filtersAccordion.selectedFilters',
   FILTERS_UI = 'customDownload.filtersAccordion.uiState',
@@ -16,7 +19,6 @@ export enum StorageKeys {
 
   SELECTED_PRE_FILTER = 'customDownload.preFilter.selectedPreFilter',
   SHOW_PRE_FILTER_PANEL = 'customDownload.preFilter.showPreFilterPanel',
-  SELECTED_TAB = 'customDownload.tab.selectedTab',
 
   SHOW_PREVIEW = 'customDownload.previewDownload.showSummary'
 }
@@ -30,6 +32,35 @@ export class CustomDownloadStorageService {
 
   public constructor(storageService: StorageServiceInterface) {
     this.storageService = storageService;
+  }
+
+  public getActiveGenomeId(): string | null {
+    return (
+      this.storageService.get(StorageKeys.ACTIVE_GENOME_ID, options) || null
+    );
+  }
+
+  public saveActiveGenomeId(activeGenomeId: string) {
+    this.storageService.save(
+      StorageKeys.ACTIVE_GENOME_ID,
+      activeGenomeId,
+      options
+    );
+  }
+
+  public getActiveConfigurations(): CustomDownloadActiveConfigurations {
+    return (
+      this.storageService.get(StorageKeys.ACTIVE_CONFIGURATIONS, options) ||
+      null
+    );
+  }
+
+  // TODO: Remove any
+  public updateActiveConfigurationsForGenome(activeConfigurations: any): void {
+    this.storageService.update(
+      StorageKeys.ACTIVE_CONFIGURATIONS,
+      activeConfigurations
+    );
   }
 
   public getFilters(): JSONValue {
@@ -112,14 +143,6 @@ export class CustomDownloadStorageService {
       shouldShowPreFilterPanel,
       options
     );
-  }
-
-  public getSelectedTab(): string {
-    return this.storageService.get(StorageKeys.SELECTED_TAB, options);
-  }
-
-  public saveSelectedTab(selectedTab: string) {
-    this.storageService.save(StorageKeys.SELECTED_TAB, selectedTab, options);
   }
 
   public getShowPreview(): boolean {

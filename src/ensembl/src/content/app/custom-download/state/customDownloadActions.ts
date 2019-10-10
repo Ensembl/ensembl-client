@@ -3,6 +3,7 @@ import {
   createAsyncAction,
   createStandardAction
 } from 'typesafe-actions';
+import set from 'lodash/set';
 
 import * as allFilterAccordionActions from './filters/filtersActions';
 import * as allAttributeAccordionActions from './attributes/attributesActions';
@@ -12,36 +13,80 @@ import apiService from 'src/services/api-service';
 
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 import JSONValue from 'src/shared/types/JSON';
+import { CustomDownloadStateForGenome } from './customDownloadState';
+import {
+  getCustomDownloadActiveGenomeId,
+  getCustomDownloadActiveGenomeConfiguration
+} from './customDownloadSelectors';
+import { RootState } from 'src/store';
 
 export const filterActions = allFilterAccordionActions;
 export const attributesActions = allAttributeAccordionActions;
 
-export const updateSelectedPreFilter = createAction(
-  'custom-download/update-selected-pre-filters',
-  (resolve) => {
-    return (selectedPreFilter: string) => resolve(selectedPreFilter);
+export const setActiveGenomeId = createStandardAction(
+  'custom-download/set-active-genome-id'
+)<string | null>();
+
+export const updateActiveConfigurationForGenome = createAction(
+  'custom-download/update-active-configuration-for-genome',
+  (action) => (payload: {
+    activeGenomeId: string;
+    data: Partial<CustomDownloadStateForGenome>;
+  }) => {
+    const { activeGenomeId, data } = payload;
+
+    customDownloadStorageService.updateActiveConfigurationsForGenome({
+      [activeGenomeId]: data
+    });
+    return action({ activeGenomeId, data });
   }
 );
 
-export const togglePreFiltersPanel = createAction(
-  'custom-download/toggle-pre-filters-panel',
-  (resolve) => {
-    return (showPreFiltersPanel: boolean) => {
-      customDownloadStorageService.saveShowPreFilterPanel(showPreFiltersPanel);
-      return resolve(showPreFiltersPanel);
-    };
-  }
-);
+export const updateSelectedPreFilter: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (selectedPreFilter: boolean) => (dispatch, getState: () => RootState) => {
+  const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
-export const toggleTab = createAction(
-  'custom-download/toggle-data-filter-tab-button',
-  (resolve) => {
-    return (selectedTab: string) => {
-      customDownloadStorageService.saveSelectedTab(selectedTab);
-      return resolve(selectedTab);
-    };
+  if (!activeGenomeId) {
+    return;
   }
-);
+
+  dispatch(
+    updateActiveConfigurationForGenome({
+      activeGenomeId,
+      data: {
+        ...set(
+          getCustomDownloadActiveGenomeConfiguration(getState()),
+          'preFilter.selectedPreFilter',
+          selectedPreFilter
+        )
+      }
+    })
+  );
+};
+
+export const togglePreFiltersPanel: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (showPreFiltersPanel: boolean) => (dispatch, getState: () => RootState) => {
+  const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
+
+  if (!activeGenomeId) {
+    return;
+  }
+
+  dispatch(
+    updateActiveConfigurationForGenome({
+      activeGenomeId,
+      data: {
+        ...set(
+          getCustomDownloadActiveGenomeConfiguration(getState()),
+          'preFilter.showPreFiltersPanel',
+          showPreFiltersPanel
+        )
+      }
+    })
+  );
+};
 
 export const setPreviewResult = createAsyncAction(
   'custom-download/preview-results-request',
@@ -50,8 +95,14 @@ export const setPreviewResult = createAsyncAction(
 )<{ endpointURL: string; headers: {} }, JSONValue, Error>();
 
 export const fetchPreviewResult: ActionCreator<
-  ThunkAction<void, string, null, Action<string>>
-> = (endpointURL: string) => async (dispatch) => {
+  ThunkAction<void, any, null, Action<string>>
+> = (endpointURL: string) => (dispatch, getState: () => RootState) => {
+  const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
+
+  if (!activeGenomeId) {
+    return;
+  }
+
   try {
     apiService
       .fetch(endpointURL, {
@@ -62,36 +113,112 @@ export const fetchPreviewResult: ActionCreator<
       })
       .then((response: JSONValue) => {
         dispatch(setPreviewResult.success(response));
+        dispatch(
+          updateActiveConfigurationForGenome({
+            activeGenomeId,
+            data: {
+              ...set(
+                getCustomDownloadActiveGenomeConfiguration(getState()),
+                'result.preview',
+                response
+              )
+            }
+          })
+        );
       });
   } catch (error) {
     dispatch(setPreviewResult.failure(error));
   }
 };
 
-export const setIsLoadingResult = createAction(
-  'custom-download/set-loading-result',
-  (resolve) => {
-    return (isLoading: boolean) => resolve(isLoading);
-  }
-);
+export const setIsLoadingResult: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (isLoading: boolean) => (dispatch, getState: () => RootState) => {
+  const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
-export const setShowPreview = createAction(
-  'custom-download/set-show-preview',
-  (resolve) => {
-    return (showSummary: boolean) => {
-      customDownloadStorageService.saveShowPreview(showSummary);
-      return resolve(showSummary);
-    };
+  if (!activeGenomeId) {
+    return;
   }
-);
 
-export const setShowExampleData = createStandardAction(
-  'custom-download/set-show-example-data'
-)<boolean>();
+  dispatch(
+    updateActiveConfigurationForGenome({
+      activeGenomeId,
+      data: {
+        ...set(
+          getCustomDownloadActiveGenomeConfiguration(getState()),
+          'result.isLoadingResult',
+          isLoading
+        )
+      }
+    })
+  );
+};
 
-export const setDownloadType = createAction(
-  'custom-download/set-download-as',
-  (resolve) => {
-    return (downloadType: string) => resolve(downloadType);
+export const setShowPreview: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (showSummary: boolean) => (dispatch, getState: () => RootState) => {
+  const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
+
+  if (!activeGenomeId) {
+    return;
   }
-);
+
+  dispatch(
+    updateActiveConfigurationForGenome({
+      activeGenomeId,
+      data: {
+        ...set(
+          getCustomDownloadActiveGenomeConfiguration(getState()),
+          'previewDownload.showSummary',
+          showSummary
+        )
+      }
+    })
+  );
+};
+
+export const setShowExampleData: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (showExampleData: boolean) => (dispatch, getState: () => RootState) => {
+  const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
+
+  if (!activeGenomeId) {
+    return;
+  }
+
+  dispatch(
+    updateActiveConfigurationForGenome({
+      activeGenomeId,
+      data: {
+        ...set(
+          getCustomDownloadActiveGenomeConfiguration(getState()),
+          'previewDownload.showExampleData',
+          showExampleData
+        )
+      }
+    })
+  );
+};
+
+export const setDownloadType: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (downloadType: string) => (dispatch, getState: () => RootState) => {
+  const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
+
+  if (!activeGenomeId) {
+    return;
+  }
+
+  dispatch(
+    updateActiveConfigurationForGenome({
+      activeGenomeId,
+      data: {
+        ...set(
+          getCustomDownloadActiveGenomeConfiguration(getState()),
+          'previewDownload.downloadType',
+          downloadType
+        )
+      }
+    })
+  );
+};
