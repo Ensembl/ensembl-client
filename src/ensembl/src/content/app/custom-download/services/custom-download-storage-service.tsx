@@ -59,7 +59,8 @@ export class CustomDownloadStorageService {
   public updateActiveConfigurationsForGenome(activeConfigurations: any): void {
     this.storageService.update(
       StorageKeys.ACTIVE_CONFIGURATIONS,
-      activeConfigurations
+      activeConfigurations,
+      options
     );
   }
 
