@@ -15,6 +15,8 @@ A ZhooshSequence is a particular set of animation steps to run. It accepts:
   * steps
   * triggers to connect steps together (via handles of type ZhooshHandle which are created when a step is added).
 
+When running a ZhooshSequence you get a ZhooshSequenceControl to control it (currently only abandon it prior to completion).
+
 ZhooshStep is a single step in any given run of a Zhoosh animation and takes:
   * a Zhoosh
   * start and end values;
