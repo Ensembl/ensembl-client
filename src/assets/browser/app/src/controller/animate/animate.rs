@@ -5,7 +5,7 @@ use std::ops::{ Add, Mul, Sub };
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
-use zhoosh::{ Zhoosh, ZhooshBangOps, ZhooshStepHandle, ZhooshOps, ZhooshStep, ZhooshRunner, ZhooshSequence, ZhooshShape, ZHOOSH_LINEAR_F64_OPS };
+use zhoosh::{ Zhoosh, ZhooshBangOps, ZhooshSequenceControl, ZhooshStepHandle, ZhooshOps, ZhooshStep, ZhooshRunner, ZhooshSequence, ZhooshShape, ZHOOSH_LINEAR_F64_OPS };
 
 use controller::input::Action;
 use types::Dot;
@@ -91,8 +91,8 @@ impl ActionAnimator {
         seq.add(spec)
     }
 
-    pub fn run(&mut self, seq: ZhooshSequence) {
-        seq.run(&mut self.zhoosh_run.borrow_mut());
+    pub fn run(&mut self, seq: ZhooshSequence) -> ZhooshSequenceControl {
+        seq.run(&mut self.zhoosh_run.borrow_mut())
     }
 
     pub fn tick(&mut self, t: f64) -> Vec<Action> {

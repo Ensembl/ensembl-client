@@ -15,12 +15,13 @@ use model::stage::{ Position, bp_to_zoomfactor };
 use model::train::TrainManager;
 
 use misc_algorithms::marshal::{ json_str, json_obj_get, json_f64, json_bool };
-use zhoosh::{ Zhoosh, ZhooshStep };
+use zhoosh::{ Zhoosh, ZhooshSequenceControl, ZhooshStep };
 
 const ZHOOSH_TIME : f64 = 500.; /* ms */
 const ZHOOSH_PAUSE : f64 = 200.; /* ms */
 
 struct Jumper {
+    control: Option<ZhooshSequenceControl>,
     location_zhoosh: Zhoosh<PendingActions,Dot<f64,f64>>,
     zoom_zhoosh: Zhoosh<PendingActions,f64>,
     bang_zhoosh: Zhoosh<PendingActions,Option<(String,Dot<f64,f64>,f64)>>,
@@ -52,7 +53,8 @@ impl Jumper {
             }
         });
         Jumper {
-            location_zhoosh, zoom_zhoosh, bang_zhoosh, settled_zhoosh
+            location_zhoosh, zoom_zhoosh, bang_zhoosh, settled_zhoosh,
+            control: None
         }
     }
 
@@ -93,10 +95,13 @@ impl Jumper {
             seq.add_trigger(&zoom_z,&pos_z,1.);
             seq.add_trigger(&all_z,&zoom_z,1.);
         }
-        animator.run(seq);
+        self.control = Some(animator.run(seq));
     }
 
     fn jump(&mut self, mut app: &mut App, stick: &str, dest_pos: f64, dest_size: f64) {
+        if let Some(ref mut control) = self.control {
+            control.abandon();
+        }
         let train_manager = app.get_window().get_train_manager();
         if let (Some(src_stick),Some(src_position)) = (train_manager.get_desired_stick(),train_manager.get_desired_position()) {
             if !self.is_offscreen_jump(&src_stick,&src_position,stick,dest_pos,dest_size) {
