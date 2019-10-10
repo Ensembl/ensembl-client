@@ -83,8 +83,6 @@ export const getInitialCustomDownloadState = (): CustomDownloadState => {
   const activeConfigurations =
     customDownloadStorageService.getActiveConfigurations() || {};
 
-  console.log(customDownloadStorageService.getActiveConfigurations());
-
   if (!activeConfigurations[genomeId]) {
     activeConfigurations[genomeId] = { ...defaultCustomDownloadStateForGenome };
   }

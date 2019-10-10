@@ -22,7 +22,6 @@ import {
   updateSelectedFilters
 } from '../../../state/filters/filtersActions';
 
-import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 import JSONValue from 'src/shared/types/JSON';
 
 import ImageButton, {
@@ -104,11 +103,6 @@ const FiltersAccordion = (props: Props) => {
     props.setFiltersAccordionExpandedPanel(newExpandedPanels[0]);
   };
 
-  const onReset = () => {
-    props.resetSelectedFilters();
-    customDownloadStorageService.saveSelectedFilters({});
-  };
-
   const resultCount: number = props.preview.resultCount
     ? (props.preview.resultCount as number)
     : 0;
@@ -139,7 +133,7 @@ const FiltersAccordion = (props: Props) => {
           <span>{getCommaSeparatedNumber(resultCount)}</span> results
         </div>
 
-        <span className={styles.resetIcon} onClick={onReset}>
+        <span className={styles.resetIcon} onClick={props.resetSelectedFilters}>
           <ImageButton
             buttonStatus={ImageButtonStatus.ACTIVE}
             description={'Reset filters'}

@@ -23,7 +23,6 @@ import {
 } from '../../../state/attributes/attributesActions';
 
 import { Orthologues } from './sections';
-import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 import { setShowExampleData } from 'src/content/app/custom-download/state/customDownloadActions';
 
 import ImageButton, {
@@ -101,7 +100,6 @@ const AttributesAccordion = (props: Props) => {
 
   const onReset = () => {
     props.resetSelectedAttributes();
-    customDownloadStorageService.saveSelectedAttributes({});
   };
 
   const buildSection = (options: {
