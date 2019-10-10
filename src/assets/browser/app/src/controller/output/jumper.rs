@@ -35,10 +35,10 @@ lazy_static! {
 impl Jumper {
     fn new() -> Jumper {
         let location_zhoosh = action_zhoosh_pos(ZHOOSH_TIME,0.,ZHOOSH_PAUSE,|act,pos| {
-            act.add(Action::Pos(pos,None));
+            act.add(Action::PosAnim(pos,None));
         });
         let zoom_zhoosh = action_zhoosh_zoom(ZHOOSH_TIME,0.,ZHOOSH_PAUSE,|act,pos| {
-            act.add(Action::ZoomTo(pos));
+            act.add(Action::ZoomToAnim(pos));
         });
         let bang_zhoosh = action_zhoosh_bang(0.,|act,value| {
             if let Some((stick,pos,zoom)) = value {

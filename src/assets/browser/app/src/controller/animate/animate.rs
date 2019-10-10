@@ -71,6 +71,7 @@ pub fn action_zhoosh_zoom<F>(max_time: f64, min_speed: f64, delay: f64, cb: F) -
 #[derive(Clone)]
 pub struct ActionAnimator {
     zhoosh_run: Rc<RefCell<ZhooshRunner>>,
+    controls: Vec<ZhooshSequenceControl>,
     actions: PendingActions
 }
 
@@ -78,11 +79,30 @@ impl ActionAnimator {
     pub fn new() -> ActionAnimator {
         ActionAnimator {
             zhoosh_run: Rc::new(RefCell::new(ZhooshRunner::new())),
+            controls: Vec::new(),
             actions: PendingActions::new()
         }
     }
 
+    fn remove_old_sequences(&mut self) {
+        let mut keep = Vec::new();
+        for ctrl in self.controls.drain(..) {
+            if !ctrl.is_finished() {
+                keep.push(ctrl);
+            }
+        }
+        self.controls = keep;
+    }
+
+    pub fn abandon_all(&mut self) {
+        for ctrl in &mut self.controls {
+            ctrl.abandon();
+        }
+        self.remove_old_sequences();
+    }
+
     pub fn new_sequence(&mut self) -> ZhooshSequence {
+        self.remove_old_sequences();
         ZhooshSequence::new()
     }
 
@@ -92,7 +112,9 @@ impl ActionAnimator {
     }
 
     pub fn run(&mut self, seq: ZhooshSequence) -> ZhooshSequenceControl {
-        seq.run(&mut self.zhoosh_run.borrow_mut())
+        let out = seq.run(&mut self.zhoosh_run.borrow_mut());
+        self.controls.push(out.clone());
+        out
     }
 
     pub fn tick(&mut self, t: f64) -> Vec<Action> {

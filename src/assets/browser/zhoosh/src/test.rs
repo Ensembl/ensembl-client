@@ -27,14 +27,17 @@ fn run(seq: ZhooshSequence, now: &Arc<Mutex<i32>>, limit: i32) {
     let mut runner = ZhooshRunner::new();
     let mut ctrl = seq.run(&mut runner);
     let mut i = 0;
+    assert_eq!(false,ctrl.is_finished());
     loop {
         *now.lock().unwrap() = i;
         if !runner.step(i as f64) {
             break;
         }
+        assert_eq!(false,ctrl.is_finished());
         i += 1;
         if limit > 0 && i > limit { ctrl.abandon(); }
     }
+    assert_eq!(true,ctrl.is_finished());
 }
 
 #[test]

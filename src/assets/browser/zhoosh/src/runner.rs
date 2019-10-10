@@ -8,7 +8,8 @@ use super::state::ZhooshStepState;
 pub struct ZhooshStepHandle(usize);
 
 pub struct ZhooshSequenceControlImpl {
-    abandoned: bool
+    abandoned: bool,
+    finished: bool
 }
 
 #[derive(Clone)]
@@ -17,7 +18,8 @@ pub struct ZhooshSequenceControl(Arc<Mutex<ZhooshSequenceControlImpl>>);
 impl ZhooshSequenceControl {
     fn new() -> ZhooshSequenceControl {
         ZhooshSequenceControl(Arc::new(Mutex::new(ZhooshSequenceControlImpl {
-            abandoned: false
+            abandoned: false,
+            finished: false
         })))
     }
 
@@ -27,6 +29,14 @@ impl ZhooshSequenceControl {
 
     fn is_abandoned(&self) -> bool {
         self.0.lock().unwrap().abandoned 
+    }
+
+    fn finished(&mut self) {
+        self.0.lock().unwrap().finished = true;
+    }
+
+    pub fn is_finished(&self) -> bool {
+        self.0.lock().unwrap().finished
     }
 }
 
@@ -66,7 +76,7 @@ impl ZhooshSequence {
         runner.add(self)
     }
 
-    fn step(&mut self, now: f64) -> bool {
+    fn real_step(&mut self, now: f64) -> bool {
         if self.control.is_abandoned() { return false; }
         let mut valid = 0;
         for run in self.runs.iter() {
@@ -75,6 +85,14 @@ impl ZhooshSequence {
             }
         }
         valid > 0
+    }
+
+    fn step(&mut self, now: f64) -> bool {
+        let out = self.real_step(now);
+        if !out {
+            self.control.finished();
+        }
+        out
     }
 }
 
