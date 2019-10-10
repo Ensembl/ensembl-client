@@ -5,7 +5,7 @@ use std::ops::{ Add, Mul, Sub };
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
-use misc_algorithms::zhoosh::{ Zhoosh, ZhooshBangOps, ZhooshStepHandle, ZhooshOps, ZhooshStep, ZhooshRunner, ZhooshSequence, ZhooshShape, ZHOOSH_LINEAR_F64_OPS };
+use zhoosh::{ Zhoosh, ZhooshBangOps, ZhooshStepHandle, ZhooshOps, ZhooshStep, ZhooshRunner, ZhooshSequence, ZhooshShape, ZHOOSH_LINEAR_F64_OPS };
 
 use controller::input::Action;
 use types::Dot;

@@ -4,10 +4,6 @@ use owning_ref::MutexGuardRef;
 use super::ops::ZhooshOps;
 use super::shapes::ZhooshShape;
 
-/* TODO: 
- * doc
- */
-
 pub(super) struct ZhooshImpl<X,T> {
     delay: f64, 
     max_time: f64,
@@ -59,5 +55,4 @@ impl<X,T> Zhoosh<X,T> {
     pub(super) fn imp<'ret>(&'ret self) -> MutexGuardRef<'ret,ZhooshImpl<X,T>> {
         MutexGuardRef::new(self.0.lock().unwrap())
     }
-
 }

@@ -1,8 +1,7 @@
 [package]
-name = "misc_algorithms"
+name = "zhoosh"
 version = "0.1.1"
 authors = ["Dan Sheppard <dan@ebi.ac.uk>"]
 
 [dependencies]
-serde_json = "*"
-
+owning_ref = "*"

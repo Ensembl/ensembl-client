@@ -15,7 +15,7 @@ use model::stage::{ Position, bp_to_zoomfactor };
 use model::train::TrainManager;
 
 use misc_algorithms::marshal::{ json_str, json_obj_get, json_f64, json_bool };
-use misc_algorithms::zhoosh::{ Zhoosh, ZhooshStep };
+use zhoosh::{ Zhoosh, ZhooshStep };
 
 const ZHOOSH_TIME : f64 = 500.; /* ms */
 const ZHOOSH_PAUSE : f64 = 250.; /* ms */
