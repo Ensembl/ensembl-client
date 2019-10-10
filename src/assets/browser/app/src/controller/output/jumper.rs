@@ -18,7 +18,7 @@ use misc_algorithms::marshal::{ json_str, json_obj_get, json_f64, json_bool };
 use zhoosh::{ Zhoosh, ZhooshStep };
 
 const ZHOOSH_TIME : f64 = 500.; /* ms */
-const ZHOOSH_PAUSE : f64 = 250.; /* ms */
+const ZHOOSH_PAUSE : f64 = 200.; /* ms */
 
 /*
 
@@ -118,10 +118,10 @@ lazy_static! {
 
 impl Jumper {
     fn new() -> Jumper {
-        let location_zhoosh = action_zhoosh_pos(1000.,0.,0.,|act,pos| {
+        let location_zhoosh = action_zhoosh_pos(ZHOOSH_TIME,0.,ZHOOSH_PAUSE,|act,pos| {
             act.add(Action::Pos(pos,None));
         });
-        let zoom_zhoosh = action_zhoosh_zoom(1000.,0.,0.,|act,pos| {
+        let zoom_zhoosh = action_zhoosh_zoom(ZHOOSH_TIME,0.,ZHOOSH_PAUSE,|act,pos| {
             act.add(Action::ZoomTo(pos));
         });
         let bang_zhoosh = action_zhoosh_bang(0.,|act,value| {
@@ -170,9 +170,14 @@ impl Jumper {
         let mut seq = animator.new_sequence();
         let pos_z = animator.new_step(&mut seq,&self.location_zhoosh,current_middle,dest_pos);
         let mut zoom_z = animator.new_step(&mut seq,&self.zoom_zhoosh,current_zoom,dest_zoom);
-        seq.add_trigger(&zoom_z,&pos_z,1.);
         let mut all_z = animator.new_step(&mut seq,&self.settled_zhoosh,false,true);
-        seq.add_trigger(&all_z,&zoom_z,1.);
+        if dest_zoom < current_zoom {
+            seq.add_trigger(&pos_z,&zoom_z,1.);
+            seq.add_trigger(&all_z,&pos_z,1.);
+        } else {
+            seq.add_trigger(&zoom_z,&pos_z,1.);
+            seq.add_trigger(&all_z,&zoom_z,1.);
+        }
         animator.run(seq);
     }
 
