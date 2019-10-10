@@ -16,8 +16,8 @@
       text-align: right;
       color: $dark-grey;
       width: 35%;
-      text-overflow: ellipsis;
       overflow: hidden;
+      text-overflow: ellipsis;
       float: left;
     }
 
@@ -26,6 +26,8 @@
       width: 65%;
       display: inline-block;
       padding-left: 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 }
