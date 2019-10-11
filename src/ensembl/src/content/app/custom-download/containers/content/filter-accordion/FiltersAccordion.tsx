@@ -87,7 +87,7 @@ const getTotalSelectedFilters = (
 type Props = StateProps & DispatchProps;
 
 const FiltersAccordion = (props: Props) => {
-  console.log(props.expandedPanel);
+  useEffect(() => {}, []);
   const formatAccordionTitle = (expandedPanel: string, title: string) => {
     if (expandedPanel !== props.expandedPanel) {
       return <span>{title}</span>;

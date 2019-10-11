@@ -6,7 +6,6 @@ import {
 } from './attributes/attributesState';
 
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
-import cloneDeep from 'lodash/cloneDeep';
 
 export type ResultState = Readonly<{
   preview: JSONValue;
@@ -70,20 +69,6 @@ export const getInitialCustomDownloadState = (): CustomDownloadState => {
   const genomeId = customDownloadStorageService.getActiveGenomeId();
   const activeConfigurations =
     customDownloadStorageService.getActiveConfigurations() || {};
-
-  if (!genomeId) {
-    return {
-      activeGenomeId: null,
-      activeConfigurations: activeConfigurations,
-      result: defaultResultState
-    };
-  }
-
-  if (!activeConfigurations[genomeId]) {
-    activeConfigurations[genomeId] = cloneDeep(
-      defaultCustomDownloadStateForGenome
-    );
-  }
 
   return {
     activeGenomeId: genomeId,

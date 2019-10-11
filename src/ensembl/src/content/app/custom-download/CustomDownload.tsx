@@ -50,11 +50,20 @@ const CustomDownload: FunctionComponent<CustomDownloadProps> = (
   );
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
-  showPreFiltersPanel: getShowPreFilterPanel(state),
-  activeGenomeId: getCustomDownloadActiveGenomeId(state),
-  committedItems: getCommittedSpecies(state)
-});
+const mapStateToProps = (state: RootState): StateProps => {
+  const activeGenomeId = getCustomDownloadActiveGenomeId(state);
+
+  let showPreFiltersPanel = false;
+  if (activeGenomeId) {
+    showPreFiltersPanel = getShowPreFilterPanel(state);
+  }
+
+  return {
+    showPreFiltersPanel: showPreFiltersPanel,
+    activeGenomeId: getCustomDownloadActiveGenomeId(state),
+    committedItems: getCommittedSpecies(state)
+  };
+};
 
 const mapDispatchToProps: DispatchProps = {
   setActiveGenomeId

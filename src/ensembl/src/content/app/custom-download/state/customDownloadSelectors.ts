@@ -1,6 +1,5 @@
 import { RootState } from 'src/store';
 import { defaultCustomDownloadStateForGenome } from './customDownloadState';
-import cloneDeep from 'lodash/cloneDeep';
 
 export const getCustomDownloadActiveGenomeId = (state: RootState) =>
   state.customDownload.activeGenomeId || null;
@@ -11,11 +10,11 @@ export const getCustomDownloadActiveGenomeConfiguration = (
   const activeGenomeId = getCustomDownloadActiveGenomeId(state);
 
   if (!activeGenomeId) {
-    return cloneDeep(defaultCustomDownloadStateForGenome);
+    return defaultCustomDownloadStateForGenome;
   }
   return (
     state.customDownload.activeConfigurations[activeGenomeId] ||
-    cloneDeep(defaultCustomDownloadStateForGenome)
+    defaultCustomDownloadStateForGenome
   );
 };
 
