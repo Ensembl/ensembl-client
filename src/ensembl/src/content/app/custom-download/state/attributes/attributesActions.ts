@@ -37,6 +37,7 @@ export const fetchAttributes: ActionCreator<
   try {
     dispatch(setAttributes.request());
 
+    // FIXME: Attributes are currently retrieved locally from a sample data file
     dispatch(setAttributes.success(attributes));
     dispatch(
       updateActiveConfigurationForGenome({

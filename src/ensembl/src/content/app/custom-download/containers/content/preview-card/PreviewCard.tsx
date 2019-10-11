@@ -29,28 +29,31 @@ const ResultLoader = (props: Props) => {
   );
   const headerRow = formattedResults.shift() || [];
   const dataRow = formattedResults.shift() || [];
-  return (
-    <>
-      {/* {props.isLoadingResult && (
-            <div className={styles.loaderWrapper}>
-              <CircleLoader />
-            </div>
-          )} */}
-      <div className={styles.resultCard}>
-        {headerRow.map((header: string, rowKey: number) => {
-          return (
-            <div key={rowKey} className={styles.resultLine}>
-              <div className={styles.lineHeader} title={header}>
-                {header}
-              </div>
-              <div className={styles.lineValue}>
-                {dataRow[rowKey] ? dataRow[rowKey] : '-'}
-              </div>
-            </div>
-          );
-        })}
+
+  if (!dataRow.length) {
+    return (
+      <div className={styles.loaderWrapper}>
+        There is no data to display. Please select different filters to try
+        again.
       </div>
-    </>
+    );
+  }
+
+  return (
+    <div className={styles.resultCard}>
+      {headerRow.map((header: string, rowKey: number) => {
+        return (
+          <div key={rowKey} className={styles.resultLine}>
+            <div className={styles.lineHeader} title={header}>
+              {header}
+            </div>
+            <div className={styles.lineValue}>
+              {dataRow[rowKey] ? dataRow[rowKey] : '-'}
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 };
 

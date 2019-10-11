@@ -3,7 +3,10 @@ import storageService, {
   StorageType
 } from 'src/services/storage-service';
 
-import { CustomDownloadActiveConfigurations } from '../state/customDownloadState';
+import {
+  CustomDownloadActiveConfigurations,
+  CustomDownloadStateForGenome
+} from '../state/customDownloadState';
 
 export enum StorageKeys {
   ACTIVE_GENOME_ID = 'customDownload.activeGenomeId',
@@ -42,7 +45,7 @@ export class CustomDownloadStorageService {
     );
   }
 
-  // TODO: Remove any
+  // FIXME: Not sure why TypeScript doesn't like it if I use {[key: string]: CustomDownloadStateForGenome} here
   public updateActiveConfigurationsForGenome(activeConfigurations: any): void {
     this.storageService.update(
       StorageKeys.ACTIVE_CONFIGURATIONS,

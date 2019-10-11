@@ -1,5 +1,6 @@
 import { RootState } from 'src/store';
 import { defaultCustomDownloadStateForGenome } from './customDownloadState';
+import cloneDeep from 'lodash/cloneDeep';
 
 export const getCustomDownloadActiveGenomeId = (state: RootState) =>
   state.customDownload.activeGenomeId || null;
@@ -10,14 +11,16 @@ export const getCustomDownloadActiveGenomeConfiguration = (
   const activeGenomeId = getCustomDownloadActiveGenomeId(state);
 
   if (!activeGenomeId) {
-    return defaultCustomDownloadStateForGenome;
+    return cloneDeep(defaultCustomDownloadStateForGenome);
   }
   return (
     state.customDownload.activeConfigurations[activeGenomeId] ||
-    defaultCustomDownloadStateForGenome
+    cloneDeep(defaultCustomDownloadStateForGenome)
   );
 };
 
+export const getActiveConfigurations = (state: RootState) =>
+  state.customDownload.activeConfigurations;
 export const getSelectedPreFilter = (state: RootState) =>
   getCustomDownloadActiveGenomeConfiguration(state).preFilter.selectedPreFilter;
 
@@ -26,10 +29,10 @@ export const getShowPreFilterPanel = (state: RootState) =>
     .showPreFiltersPanel;
 
 export const getPreviewResult = (state: RootState) =>
-  getCustomDownloadActiveGenomeConfiguration(state).result.preview;
+  state.customDownload.result.preview;
 
 export const getIsLoadingResult = (state: RootState) =>
-  getCustomDownloadActiveGenomeConfiguration(state).result.isLoadingResult;
+  state.customDownload.result.isLoadingResult;
 
 export const getShowPreviewResult = (state: RootState) =>
   getCustomDownloadActiveGenomeConfiguration(state).previewDownload.showSummary;

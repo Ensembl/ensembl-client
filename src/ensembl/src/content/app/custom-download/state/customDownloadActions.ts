@@ -4,6 +4,7 @@ import {
   createStandardAction
 } from 'typesafe-actions';
 import set from 'lodash/set';
+import cloneDeep from 'lodash/cloneDeep';
 
 import * as allFilterAccordionActions from './filters/filtersActions';
 import * as allAttributeAccordionActions from './attributes/attributesActions';
@@ -13,19 +14,38 @@ import apiService from 'src/services/api-service';
 
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 import JSONValue from 'src/shared/types/JSON';
-import { CustomDownloadStateForGenome } from './customDownloadState';
+import {
+  CustomDownloadStateForGenome,
+  defaultCustomDownloadStateForGenome
+} from './customDownloadState';
 import {
   getCustomDownloadActiveGenomeId,
-  getCustomDownloadActiveGenomeConfiguration
+  getCustomDownloadActiveGenomeConfiguration,
+  getActiveConfigurations
 } from './customDownloadSelectors';
 import { RootState } from 'src/store';
 
 export const filterActions = allFilterAccordionActions;
 export const attributesActions = allAttributeAccordionActions;
 
-export const setActiveGenomeId = createStandardAction(
+export const updateActiveGenomeId = createStandardAction(
   'custom-download/set-active-genome-id'
 )<string | null>();
+
+export const setActiveGenomeId: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (activeGenomeId: string) => (dispatch, getState: () => RootState) => {
+  dispatch(updateActiveGenomeId(activeGenomeId));
+
+  if (!getActiveConfigurations(getState())[activeGenomeId]) {
+    dispatch(
+      updateActiveConfigurationForGenome({
+        activeGenomeId,
+        data: cloneDeep(defaultCustomDownloadStateForGenome)
+      })
+    );
+  }
+};
 
 export const updateActiveConfigurationForGenome = createAction(
   'custom-download/update-active-configuration-for-genome',
@@ -38,7 +58,7 @@ export const updateActiveConfigurationForGenome = createAction(
     customDownloadStorageService.updateActiveConfigurationsForGenome({
       [activeGenomeId]: data
     });
-    return action({ activeGenomeId, data });
+    return action({ activeGenomeId, data: cloneDeep(data) });
   }
 );
 
@@ -96,13 +116,7 @@ export const setPreviewResult = createAsyncAction(
 
 export const fetchPreviewResult: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (endpointURL: string) => (dispatch, getState: () => RootState) => {
-  const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
-
-  if (!activeGenomeId) {
-    return;
-  }
-
+> = (endpointURL: string) => (dispatch) => {
   try {
     apiService
       .fetch(endpointURL, {
@@ -113,46 +127,15 @@ export const fetchPreviewResult: ActionCreator<
       })
       .then((response: JSONValue) => {
         dispatch(setPreviewResult.success(response));
-        dispatch(
-          updateActiveConfigurationForGenome({
-            activeGenomeId,
-            data: {
-              ...set(
-                getCustomDownloadActiveGenomeConfiguration(getState()),
-                'result.preview',
-                response
-              )
-            }
-          })
-        );
       });
   } catch (error) {
     dispatch(setPreviewResult.failure(error));
   }
 };
 
-export const setIsLoadingResult: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (isLoading: boolean) => (dispatch, getState: () => RootState) => {
-  const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
-
-  if (!activeGenomeId) {
-    return;
-  }
-
-  dispatch(
-    updateActiveConfigurationForGenome({
-      activeGenomeId,
-      data: {
-        ...set(
-          getCustomDownloadActiveGenomeConfiguration(getState()),
-          'result.isLoadingResult',
-          isLoading
-        )
-      }
-    })
-  );
-};
+export const setIsLoadingResult = createStandardAction(
+  'custom-download/set-is-loading-result'
+)<boolean>();
 
 export const setShowPreview: ActionCreator<
   ThunkAction<void, any, null, Action<string>>

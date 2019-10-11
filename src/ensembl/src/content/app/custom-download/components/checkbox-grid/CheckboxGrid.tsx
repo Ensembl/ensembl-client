@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import { Modify } from 'src/shared/types/utility-types/modify';
+
 import styles from './CheckboxGrid.scss';
 
 export type CheckboxGridOption = {
@@ -22,12 +24,15 @@ type AllProps = {
   onCollapse?: (collapsed: boolean) => void;
 };
 
-type NonCollapsableProps = AllProps & {
-  isCollapsed?: false;
-  isCollapsable?: false;
-};
+type NonCollapsableProps = Modify<
+  AllProps,
+  {
+    isCollapsed?: false;
+    isCollapsable?: false;
+  }
+>;
 
-type CollapsableProps = AllProps & { hideLabel?: false };
+type CollapsableProps = Modify<AllProps, { hideLabel?: false }>;
 
 export type CheckboxGridProps = NonCollapsableProps | CollapsableProps;
 

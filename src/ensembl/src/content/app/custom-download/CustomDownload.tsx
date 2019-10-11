@@ -20,7 +20,7 @@ type StateProps = {
 };
 
 type DispatchProps = {
-  setActiveGenomeId: (activeGenomeId: string | null) => void;
+  setActiveGenomeId: (activeGenomeId: string) => void;
 };
 
 type CustomDownloadProps = StateProps & DispatchProps;

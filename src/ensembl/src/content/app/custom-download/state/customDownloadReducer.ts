@@ -5,7 +5,9 @@ import * as customDownloadActions from './customDownloadActions';
 import {
   CustomDownloadState,
   getInitialCustomDownloadState,
-  CustomDownloadActiveConfigurations
+  CustomDownloadActiveConfigurations,
+  ResultState,
+  defaultResultState
 } from './customDownloadState';
 
 export function customDownload(
@@ -13,7 +15,7 @@ export function customDownload(
   action: ActionType<typeof customDownloadActions>
 ): CustomDownloadState {
   switch (action.type) {
-    case getType(customDownloadActions.setActiveGenomeId):
+    case getType(customDownloadActions.updateActiveGenomeId):
       return {
         ...state,
         activeGenomeId: action.payload
@@ -25,6 +27,36 @@ export function customDownload(
           state.activeConfigurations,
           action
         )
+      };
+    case getType(customDownloadActions.setIsLoadingResult):
+      return {
+        ...state,
+        result: result(state.result, action)
+      };
+    case getType(customDownloadActions.setPreviewResult.success):
+      return {
+        ...state,
+        result: result(state.result, action)
+      };
+    default:
+      return state;
+  }
+}
+
+function result(
+  state: ResultState = defaultResultState,
+  action: ActionType<RootAction>
+): ResultState {
+  switch (action.type) {
+    case getType(customDownloadActions.setIsLoadingResult):
+      return {
+        ...state,
+        isLoadingResult: action.payload
+      };
+    case getType(customDownloadActions.setPreviewResult.success):
+      return {
+        ...state,
+        preview: action.payload
       };
     default:
       return state;

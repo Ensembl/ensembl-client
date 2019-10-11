@@ -6,6 +6,7 @@ import {
 } from './attributes/attributesState';
 
 import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
+import cloneDeep from 'lodash/cloneDeep';
 
 export type ResultState = Readonly<{
   preview: JSONValue;
@@ -46,15 +47,13 @@ export type CustomDownloadStateForGenome = Readonly<{
   attributes: AttributesState;
   preFilter: PreFilterState;
   previewDownload: PreviewDownloadState;
-  result: ResultState;
 }>;
 
 export const defaultCustomDownloadStateForGenome: CustomDownloadStateForGenome = {
   filters: defaultFiltersState,
   attributes: defaultAttributesState,
   preFilter: defaultPreFilterState,
-  previewDownload: defaultPreviewDownloadState,
-  result: defaultResultState
+  previewDownload: defaultPreviewDownloadState
 };
 
 export type CustomDownloadActiveConfigurations = {
@@ -64,6 +63,7 @@ export type CustomDownloadActiveConfigurations = {
 export type CustomDownloadState = {
   activeGenomeId: string | null;
   activeConfigurations: CustomDownloadActiveConfigurations;
+  result: ResultState;
 };
 
 export const getInitialCustomDownloadState = (): CustomDownloadState => {
@@ -74,27 +74,20 @@ export const getInitialCustomDownloadState = (): CustomDownloadState => {
   if (!genomeId) {
     return {
       activeGenomeId: null,
-      activeConfigurations: activeConfigurations
+      activeConfigurations: activeConfigurations,
+      result: defaultResultState
     };
   }
 
   if (!activeConfigurations[genomeId]) {
-    activeConfigurations[genomeId] = { ...defaultCustomDownloadStateForGenome };
+    activeConfigurations[genomeId] = cloneDeep(
+      defaultCustomDownloadStateForGenome
+    );
   }
 
   return {
     activeGenomeId: genomeId,
-    activeConfigurations: activeConfigurations
-  };
-};
-
-export const getCustomDownloadConfigurationForGenome = (
-  genomeId: string
-): CustomDownloadStateForGenome => {
-  const storedConfiguration =
-    customDownloadStorageService.getActiveConfigurations()[genomeId] || {};
-  return {
-    ...defaultCustomDownloadStateForGenome,
-    ...storedConfiguration
+    activeConfigurations: activeConfigurations,
+    result: defaultResultState
   };
 };

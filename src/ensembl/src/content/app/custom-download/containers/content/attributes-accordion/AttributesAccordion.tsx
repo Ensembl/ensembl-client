@@ -21,28 +21,19 @@ import {
   fetchAttributes,
   resetSelectedAttributes
 } from '../../../state/attributes/attributesActions';
-
 import { Orthologues } from './sections';
 import { setShowExampleData } from 'src/content/app/custom-download/state/customDownloadActions';
-
 import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
-import styles from './AttributesAccordion.scss';
-
+import JSONValue from 'src/shared/types/JSON';
 import AttributesAccordionSection from 'src/content/app/custom-download/containers/content/attributes-accordion/sections/AttributesAccordionSection';
-
-type Attribute = {
-  [key: string]: boolean;
-};
-type SelectedAttributes = {
-  [key: string]: boolean | Attribute;
-};
+import styles from './AttributesAccordion.scss';
 
 type StateProps = {
   expandedPanel: string;
-  selectedAttributes: {};
+  selectedAttributes: JSONValue;
 };
 
 type DispatchProps = {
@@ -57,7 +48,7 @@ type DispatchProps = {
 type Props = StateProps & DispatchProps;
 
 const getTotalSelectedAttributes = (
-  attributes: SelectedAttributes,
+  attributes: JSONValue,
   totalSelectedAttributes = 0
 ) => {
   Object.keys(attributes).forEach((key) => {
@@ -65,7 +56,7 @@ const getTotalSelectedAttributes = (
       totalSelectedAttributes++;
     } else if (typeof attributes[key] === 'object') {
       totalSelectedAttributes = getTotalSelectedAttributes(
-        attributes[key] as SelectedAttributes,
+        attributes[key] as JSONValue,
         totalSelectedAttributes
       );
     }
