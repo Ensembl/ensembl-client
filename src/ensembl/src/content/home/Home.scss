@@ -7,7 +7,22 @@
     font-weight: $normal;
   }
   position: relative;
-  padding-top: 76px;
+}
+
+.speciesBar {
+  display: flex;
+  align-items: center;
+  padding: 8px 20px;
+  min-height: 80px;
+}
+
+.emptySpeciesBar {
+  display: flex;
+  flex-direction: column;
+
+  .speciesSelectorBannerLink {
+    font-weight: 700;
+  }
 }
 
 .search {
@@ -77,19 +92,4 @@
   .convoMessage {
     margin-top: 1em;
   }
-}
-
-.speciesSelectorBannerLink {
-  margin-left: 60px;
-  padding-bottom: 20px;
-  font-weight: 700;
-  position: absolute;
-  top: 40px;
-}
-
-.speciesSelectorBannerText {
-  margin-left: 60px;
-  position: absolute;
-  top: 15px;
-  font-size: 14px;
 }

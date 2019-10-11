@@ -69,7 +69,6 @@ impl TrainManagerImpl {
         // XXX: TOO SOON!
         if self.desired.is_ready() {
             let stick = self.desired.get_stick();
-            report.set_status("a-stick",&stick.get_name());
             report.set_status("i-stick",&stick.get_name());
         }
         let mut at_focus = false;
@@ -367,9 +366,14 @@ impl TrainManagerImpl {
     }
     
     pub fn jump_to_focus_object(&mut self) {
+        let mut clear = false;
         if let Some(focus_object) = self.get_desired_context().get_focus() {
+            clear = true;
             self.pending_focus_jump.await(focus_object.to_string());
             self.maybe_satisfy_pending_jump();
+        }
+        if clear {
+            self.desired.clear();
         }
     }
 
@@ -417,6 +421,8 @@ impl TrainManagerImpl {
 
     pub fn update_reports(&self, report: &Report) {
         if let Some(train) = self.printing_train() {
+            let stick = train.get_train_id().get_stick();
+            report.set_status("a-stick",&stick.get_name());
             train.get_position().update_reports(report);
         }
     }

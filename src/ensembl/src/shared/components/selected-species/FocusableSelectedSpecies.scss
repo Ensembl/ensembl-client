@@ -1,0 +1,27 @@
+@import 'src/styles/common';
+@import './selected-species-common';
+
+.species {
+  @include selected-species-common;
+  border: 1px solid $blue;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.name,
+.assembly {
+  color: $black;
+}
+
+.speciesActive {
+  background-color: $black;
+  border: none;
+  cursor: default;
+}
+
+.nameActive,
+.assemblyActive {
+  color: $white;
+}
