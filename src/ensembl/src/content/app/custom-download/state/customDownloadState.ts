@@ -67,21 +67,16 @@ export type CustomDownloadState = {
 };
 
 export const getInitialCustomDownloadState = (): CustomDownloadState => {
-  // FIXME: Remove this when species tab is implemented
-  customDownloadStorageService.saveActiveGenomeId(
-    'homo_sapiens_GCA_000001405_27'
-  );
-
   const genomeId = customDownloadStorageService.getActiveGenomeId();
-  if (!genomeId) {
-    return {
-      activeGenomeId: 'homo_sapiens_GCA_000001405_27',
-      activeConfigurations: {}
-    };
-  }
-
   const activeConfigurations =
     customDownloadStorageService.getActiveConfigurations() || {};
+
+  if (!genomeId) {
+    return {
+      activeGenomeId: null,
+      activeConfigurations: activeConfigurations
+    };
+  }
 
   if (!activeConfigurations[genomeId]) {
     activeConfigurations[genomeId] = { ...defaultCustomDownloadStateForGenome };

@@ -8,20 +8,27 @@ import { ReactComponent as closeIcon } from 'static/img/shared/close.svg';
 import { getSelectedAttributes } from '../../../state/attributes/attributesSelector';
 import { getSelectedFilters } from '../../../state/filters/filtersSelector';
 import { getProcessedFilters } from '../result-loader/resultLoaderHelper';
-import { getPreviewResult } from '../../../state/customDownloadSelectors';
+import {
+  getPreviewResult,
+  getCustomDownloadActiveGenomeId
+} from '../../../state/customDownloadSelectors';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 import Panel from 'src/content/app/custom-download/components/panel/Panel';
 import PreviewCard from 'src/content/app/custom-download/containers/content/preview-card/PreviewCard';
 import { setShowPreview } from '../../../state/customDownloadActions';
+import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import JSONValue from 'src/shared/types/JSON';
+import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
 import styles from './PreviewDownload.scss';
+import { getDisplayName } from 'src/shared/components/selected-species/selectedSpeciesHelpers';
 
 type StateProps = {
   selectedAttributes: JSONValue;
   selectedFilters: JSONValue;
   preview: JSONValue;
+  committedSpecies: CommittedItem | null;
 };
 
 type DispatchProps = {
@@ -38,10 +45,11 @@ const PreviewDownload = (props: Props) => {
   const processedFilters = getProcessedFilters(props.selectedFilters);
   const gene_ids = get(
     processedFilters,
-    'protein_and_domain_families.family_or_domain_ids.limit_to_genes'
+    'protein_and_domain_families.family_or_domain_ids.limit_to_genes',
+    null
   );
-  const gene_biotypes = get(processedFilters, 'genes.biotype');
-  const gene_source = get(processedFilters, 'genes.gene_source');
+  const gene_biotypes = get(processedFilters, 'genes.biotype', null);
+  const gene_source = get(processedFilters, 'genes.gene_source', null);
 
   return (
     <div className={styles.previewDownload}>
@@ -75,10 +83,18 @@ const PreviewDownload = (props: Props) => {
           </tr>
           <tr>
             <td>
-              <div>Human</div>
+              <div>
+                {props.committedSpecies &&
+                  `${getDisplayName(props.committedSpecies)} ${
+                    props.committedSpecies.assembly_name
+                  }`}
+              </div>
             </td>
             <td></td>
             <td>
+              {!(gene_ids || gene_biotypes || gene_source) && (
+                <div> No filters selected.</div>
+              )}
               {!!gene_ids && <div>Limit to genes: {gene_ids.join(', ')}</div>}
               {!!gene_biotypes && (
                 <div>Gene biotype: {Object.keys(gene_biotypes).join(', ')}</div>
@@ -98,11 +114,19 @@ const mapDispatchToProps: DispatchProps = {
   setShowPreview
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
-  selectedAttributes: getSelectedAttributes(state),
-  selectedFilters: getSelectedFilters(state),
-  preview: getPreviewResult(state)
-});
+const mapStateToProps = (state: RootState): StateProps => {
+  const activeGenomeId = getCustomDownloadActiveGenomeId(state);
+  const committedSpecies = activeGenomeId
+    ? getCommittedSpeciesById(state, activeGenomeId)
+    : null;
+
+  return {
+    selectedAttributes: getSelectedAttributes(state),
+    selectedFilters: getSelectedFilters(state),
+    preview: getPreviewResult(state),
+    committedSpecies: committedSpecies
+  };
+};
 
 export default connect(
   mapStateToProps,
