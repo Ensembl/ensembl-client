@@ -138,6 +138,9 @@ export const Browser: FunctionComponent<BrowserProps> = (
       chrLocation
     };
 
+    console.log('TCL: setDataFromUrl -> chrLocation', chrLocation);
+    console.log('TCL: setDataFromUrl -> focus', focus);
+
     if (focus && !chrLocation) {
       /*
        changeFocusObject needs to be called before setDataFromUrlAndSave
@@ -145,6 +148,9 @@ export const Browser: FunctionComponent<BrowserProps> = (
        for the focus object that is viewed first.
        */
       props.changeFocusObject(focus);
+    } else if (focus && chrLocation) {
+      props.changeFocusObject(focus);
+      dispatchBrowserLocation(genomeId, chrLocation);
     } else if (chrLocation) {
       dispatchBrowserLocation(genomeId, chrLocation);
     }

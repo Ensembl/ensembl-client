@@ -125,7 +125,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
         <dl className={styles.previouslyViewed}>
           <dt>
             Previously viewed
-            {props.previouslyViewedObjects.length > 20 && (
+            {props.previouslyViewedObjects.length > 0 && (
               <span className={styles.ellipsis}>
                 <ImageButton
                   buttonStatus={ImageButtonStatus.ACTIVE}

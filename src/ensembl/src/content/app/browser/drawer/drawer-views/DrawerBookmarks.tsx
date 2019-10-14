@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import upperFirst from 'lodash/upperFirst';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -25,12 +25,10 @@ type DispatchProps = {
 };
 export type DrawerBookmarksProps = StateProps & DispatchProps;
 
-const DrawerBookmarks: FunctionComponent<DrawerBookmarksProps> = (
-  props: DrawerBookmarksProps
-) => {
+const DrawerBookmarks = (props: DrawerBookmarksProps) => {
   const limitedPreviouslyViewedObjects = props.previouslyViewedObjects.slice(
     0,
-    props.previouslyViewedObjects.length - 20
+    props.previouslyViewedObjects.length - 0
   );
 
   const onClickHandler = () => {
