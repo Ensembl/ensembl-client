@@ -26,10 +26,9 @@ import { getGenomeTrackCategoriesById } from 'src/genome/genomeSelectors';
 
 import styles from './TrackPanelList.scss';
 
-type TrackPanelListProps = {
+export type TrackPanelListProps = {
   activeGenomeId: string | null;
   isDrawerOpened: boolean;
-  drawerView: string;
   launchbarExpanded: boolean;
   activeEnsObject: EnsObject | null;
   selectedTrackPanelTab: TrackSet;
@@ -40,7 +39,7 @@ type TrackPanelListProps = {
   updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
 };
 
-const TrackPanelList = (props: TrackPanelListProps) => {
+export const TrackPanelList = (props: TrackPanelListProps) => {
   const {
     activeGenomeId,
     activeEnsObject,
@@ -101,7 +100,7 @@ const TrackPanelList = (props: TrackPanelListProps) => {
   return (
     <div className={getTrackPanelListClasses()}>
       {activeEnsObject && activeEnsObject.object_type === 'region' ? null : (
-        <section>
+        <section className="mainTrackItem">
           <dl>
             {getTrackListItem('main', activeEnsObject && activeEnsObject.track)}
           </dl>
@@ -130,7 +129,6 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeGenomeId,
     isDrawerOpened: getIsDrawerOpened(state),
-    drawerView: getDrawerView(state),
     launchbarExpanded: getLaunchbarExpanded(state),
     activeEnsObject: getBrowserActiveEnsObject(state),
     selectedTrackPanelTab: getSelectedTrackPanelTab(state),

@@ -6,7 +6,7 @@ import ImageButton, {
 
 import styles from './TrackPanelBarIcon.scss';
 
-type TrackPanelBarIconProps = {
+export type TrackPanelBarIconProps = {
   closeTrackPanelModal: () => void;
   iconConfig: TrackPanelBarItem;
   isTrackPanelModalOpened: boolean;
@@ -17,29 +17,29 @@ type TrackPanelBarIconProps = {
 };
 
 const TrackPanelBarIcon = (props: TrackPanelBarIconProps) => {
-  const [toggleState, setToggleState] = useState(false);
+  const [isIconActive, setIconActive] = useState(false);
 
   useEffect(() => {
     if (!props.isTrackPanelModalOpened) {
-      setToggleState(false);
+      setIconActive(false);
     }
   }, [props.isTrackPanelModalOpened]);
 
   const toggleModalView = () => {
-    let newToggleState = !toggleState;
+    let newIconActiveState = !isIconActive;
 
     if (!props.isTrackPanelOpened) {
       props.toggleTrackPanel(true);
-      newToggleState = true;
+      newIconActiveState = true;
     }
 
-    if (newToggleState) {
+    if (newIconActiveState) {
       props.openTrackPanelModal(props.iconConfig.name);
     } else {
       props.closeTrackPanelModal();
     }
 
-    setToggleState(newToggleState);
+    setIconActive(newIconActiveState);
   };
 
   const getViewIconStatus = () => {

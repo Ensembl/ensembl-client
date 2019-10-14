@@ -1,4 +1,4 @@
-import React, { MouseEvent, ReactNode, useState, useEffect } from 'react';
+import React, { MouseEvent, ReactNode, useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
@@ -39,6 +39,7 @@ import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg'
 
 import styles from './TrackPanelListItem.scss';
 
+// the types have been separated since the component's own props is used in the mapStateToProps function (see at the bottom)
 type OwnProps = {
   categoryName: string;
   children?: ReactNode[];
@@ -62,9 +63,9 @@ type PropsFromRedux = {
   }) => void;
 };
 
-type Props = OwnProps & PropsFromRedux;
+export type TrackPanelListItemProps = OwnProps & PropsFromRedux;
 
-const TrackPanelListItem = (props: Props) => {
+export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   const {
     activeGenomeId,
     categoryName,

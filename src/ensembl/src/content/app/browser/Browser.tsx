@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { replace, Replace } from 'connected-react-router';
 import { useSpring, animated } from 'react-spring';
@@ -59,7 +59,7 @@ import styles from './Browser.scss';
 
 import 'static/browser/browser.js';
 
-type OwnProps = {
+export type BrowserProps = {
   activeGenomeId: string | null;
   activeEnsObjectId: string | null;
   allActiveEnsObjectIds: { [genomeId: string]: string };
@@ -83,21 +83,17 @@ type OwnProps = {
   setDataFromUrlAndSave: (payload: ParsedUrlPayload) => void;
 };
 
-type MatchParams = {
-  genomeId: string;
-};
-
-type BrowserProps = RouteComponentProps<MatchParams> & OwnProps;
-
 export const Browser = (props: BrowserProps) => {
   const [trackStatesFromStorage, setTrackStatesFromStorage] = useState<
     TrackStates
   >({});
 
   const { isDrawerOpened, closeDrawer } = props;
+  const params: { [key: string]: string } = useParams();
+  const location = useLocation();
 
   const setDataFromUrl = () => {
-    const { genomeId = null } = props.match.params;
+    const { genomeId } = params;
     const { focus = null, location = null } = props.browserQueryParams;
     const chrLocation = location ? getChrLocationFromStr(location) : null;
 
@@ -149,7 +145,7 @@ export const Browser = (props: BrowserProps) => {
   // handle url changes
   useEffect(() => {
     // handle navigation to /app/browser
-    if (!props.match.params.genomeId) {
+    if (!params.genomeId) {
       // select either the species that the user viewed during the previous visit,
       // of the first selected species
       const { activeGenomeId, committedSpecies } = props;
@@ -170,7 +166,7 @@ export const Browser = (props: BrowserProps) => {
       // handle navigation to /app/browser/:genomeId?focus=:focus&location=:location
       setDataFromUrl();
     }
-  }, [props.match.params.genomeId, props.location.search]);
+  }, [params.genomeId, location.search]);
 
   useEffect(() => {
     const { activeGenomeId, fetchGenomeData } = props;
@@ -187,11 +183,9 @@ export const Browser = (props: BrowserProps) => {
 
   useEffect(() => {
     const {
-      match: {
-        params: { genomeId }
-      },
       browserQueryParams: { location }
     } = props;
+    const { genomeId } = params;
     const chrLocation = location ? getChrLocationFromStr(location) : null;
 
     if (props.browserActivated && genomeId && chrLocation) {
@@ -275,11 +269,13 @@ export const Browser = (props: BrowserProps) => {
   ) : null;
 };
 
-const ExampleObjectLinks = (props: BrowserProps) => {
+export const ExampleObjectLinks = (props: BrowserProps) => {
   const { activeGenomeId } = props;
+
   if (!activeGenomeId) {
     return null;
   }
+
   const links = props.exampleEnsObjects.map((exampleObject: EnsObject) => {
     const path = urlFor.browser({
       genomeId: activeGenomeId,
@@ -328,9 +324,7 @@ const mapDispatchToProps = {
   setDataFromUrlAndSave
 };
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(Browser)
-);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Browser);

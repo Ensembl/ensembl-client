@@ -27,7 +27,7 @@ type BrowserCogListProps = {
   browserCogTrackList: CogList;
   trackConfigNames: { [key: string]: boolean };
   trackConfigLabel: { [key: string]: boolean };
-  selectedCog: any;
+  selectedCog: string | null;
   updateCogList: (cogList: number) => void;
   updateCogTrackList: (track_y: CogList) => void;
   updateSelectedCog: (index: string | null) => void;
@@ -38,7 +38,7 @@ type BpaneScrollPayload = {
   track_y?: CogList;
 };
 
-const BrowserCogList = (props: BrowserCogListProps) => {
+export const BrowserCogList = (props: BrowserCogListProps) => {
   const { browserCogTrackList } = props;
   const listenBpaneScroll = (payload: BpaneScrollPayload) => {
     const { delta_y, track_y } = payload;

@@ -30,7 +30,7 @@ import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 import styles from './TrackPanel.scss';
 
-type TrackPanelProps = {
+export type TrackPanelProps = {
   activeGenomeId: string | null;
   breakpointWidth: BreakpointWidth;
   browserActivated: boolean;
@@ -43,7 +43,7 @@ type TrackPanelProps = {
   trackStates: TrackStates;
 };
 
-const TrackPanel = (props: TrackPanelProps) => {
+export const TrackPanel = (props: TrackPanelProps) => {
   const { isDrawerOpened } = props;
 
   const [trackAnimation, setTrackAnimation] = useSpring(() => ({
@@ -76,7 +76,7 @@ const TrackPanel = (props: TrackPanelProps) => {
           <TrackPanelBar />
           <TrackPanelList />
           {props.isTrackPanelModalOpened ? <TrackPanelModal /> : null}
-          {isDrawerOpened && <Drawer />}
+          {isDrawerOpened ? <Drawer /> : null}
         </div>
       ) : null}
     </animated.div>

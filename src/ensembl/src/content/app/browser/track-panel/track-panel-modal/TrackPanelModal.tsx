@@ -17,13 +17,13 @@ import closeIcon from 'static/img/track-panel/close.svg';
 
 import styles from './TrackPanelModal.scss';
 
-type TrackPanelModalProps = {
+export type TrackPanelModalProps = {
   launchbarExpanded: boolean;
   trackPanelModalView: string;
   closeTrackPanelModal: () => void;
 };
 
-const TrackPanelModal = (props: TrackPanelModalProps) => {
+export const TrackPanelModal = (props: TrackPanelModalProps) => {
   const getTrackPanelModalClasses = () => {
     const heightClass: string = props.launchbarExpanded
       ? styles.shorter

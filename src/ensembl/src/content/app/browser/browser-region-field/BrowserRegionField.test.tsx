@@ -45,7 +45,7 @@ describe('<BrowserRegionField', () => {
 
     test('has an overlay on top when region editor is active', () => {
       wrapper.setProps({ regionEditorActive: true });
-      expect(wrapper.find('#region-field-overlay').length).toBe(1);
+      expect(wrapper.find('.browserOverlay').length).toBe(1);
     });
   });
 
@@ -79,7 +79,7 @@ describe('<BrowserRegionField', () => {
       wrapper
         .find(Input)
         .simulate('change', { target: { value: regionInput } });
-      wrapper.find('#close-button').simulate('click');
+      wrapper.find('.closeButton').simulate('click');
 
       expect(wrapper.find(Input).props().value).toBe('');
 

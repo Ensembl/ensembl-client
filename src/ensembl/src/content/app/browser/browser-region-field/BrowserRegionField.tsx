@@ -184,10 +184,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   return (
     <div className={regionFieldClassNames}>
       {props.regionEditorActive ? (
-        <div
-          className={browserStyles.browserOverlay}
-          id="region-field-overlay"
-        ></div>
+        <div className={browserStyles.browserOverlay}></div>
       ) : null}
       <form onSubmit={handleSubmit}>
         <label className="show-for-large">Region or location</label>
@@ -203,8 +200,8 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
           <button type="submit">
             <img src={applyIcon} alt="Apply changes" />
           </button>
-          <button onClick={closeForm}>
-            <img src={clearIcon} alt="Clear changes" id="close-button" />
+          <button onClick={closeForm} className="closeButton">
+            <img src={clearIcon} alt="Clear changes" />
           </button>
         </span>
       </form>

@@ -8,7 +8,6 @@ import { GenomeInfoData } from 'src/genome/genomeTypes';
 
 import { getBrowserActiveGenomeId } from '../../../browserSelectors';
 import { getGenomeInfo } from 'src/genome/genomeSelectors';
-import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
@@ -21,7 +20,6 @@ type TrackPanelBookmarksProps = {
   activeGenomeId: string | null;
   genomeInfo: GenomeInfoData;
   exampleEnsObjects: EnsObject[];
-  fetchExampleEnsObjects: (objectId: string) => void;
 };
 
 export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
@@ -71,11 +69,4 @@ const mapStateToProps = (state: RootState) => ({
   exampleEnsObjects: getExampleEnsObjects(state)
 });
 
-const mapDispatchToProps = {
-  fetchExampleEnsObjects
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TrackPanelBookmarks);
+export default connect(mapStateToProps)(TrackPanelBookmarks);

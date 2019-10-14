@@ -6,7 +6,7 @@ import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 import styles from './TrackPanelTabs.scss';
 
-type TrackPanelTabsProps = {
+export type TrackPanelTabsProps = {
   closeDrawer: () => void;
   ensObject: EnsObject;
   isDrawerOpened: boolean;

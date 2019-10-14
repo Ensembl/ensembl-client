@@ -38,7 +38,7 @@ import { BROWSER_CONTAINER_ID } from '../browser-constants';
 import styles from './BrowserImage.scss';
 import browserStyles from '../Browser.scss';
 
-type BrowserImageProps = {
+export type BrowserImageProps = {
   trackStates: TrackStates;
   browserCogTrackList: CogList;
   browserNavOpened: boolean;

@@ -8,7 +8,7 @@ import ImageButton, {
 import styles from './BrowserReset.scss';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
-type BrowserResetProps = {
+export type BrowserResetProps = {
   focusObject: EnsObject | null;
   changeFocusObject: (objectId: string) => void;
   isActive: boolean;

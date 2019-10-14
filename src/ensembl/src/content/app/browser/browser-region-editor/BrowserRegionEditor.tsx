@@ -184,7 +184,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const region = `${regionInput}:${locationStartInput}:${locationEndInput}`;
+    const region = `${regionInput}:${locationStartInput}-${locationEndInput}`;
 
     setIsFormSubmitted(true);
     props.validateRegion(region);
@@ -262,10 +262,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   return (
     <div className={regionEditorClassNames}>
       {props.regionFieldActive ? (
-        <div
-          className={browserStyles.browserOverlay}
-          id="region-field-overlay"
-        ></div>
+        <div className={browserStyles.browserOverlay}></div>
       ) : null}
       <form onSubmit={handleSubmit} onFocus={handleFocus}>
         <div className={styles.inputGroup}>
@@ -275,11 +272,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
             options={getKaryotypeOptions()}
           ></Select>
         </div>
-        <div
-          className={styles.inputGroup}
-          ref={locationStartRef}
-          id="location-start-input"
-        >
+        <div className={styles.inputGroup} ref={locationStartRef}>
           <label className="show-for-large">Start</label>
           <Input
             type="text"
@@ -319,7 +312,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
           <button type="submit">
             <img src={applyIcon} alt="Apply changes" />
           </button>
-          <button onClick={closeForm} id="close-button">
+          <button onClick={closeForm} className="closeButton">
             <img src={clearIcon} alt="Clear changes" />
           </button>
         </span>

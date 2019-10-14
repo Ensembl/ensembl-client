@@ -10,7 +10,6 @@ import { ChrLocation } from '../browserState';
 import genomeKaryotypes from 'tests/data/browser/karyotypes';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
-import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import { LoadingState } from 'src/shared/types/loading-state';
 
 import styles from '../browser-nav/BrowserNavBar.scss';
@@ -52,7 +51,7 @@ describe('<BrowserRegionEditor', () => {
 
     test('has an overlay on top when region field is active', () => {
       wrapper.setProps({ regionFieldActive: true });
-      expect(wrapper.find('#region-field-overlay').length).toBe(1);
+      expect(wrapper.find('.browserOverlay').length).toBe(1);
     });
   });
 
@@ -121,7 +120,7 @@ describe('<BrowserRegionEditor', () => {
           target: { value: locationEndInput }
         });
 
-      wrapper.find('#close-button').simulate('click');
+      wrapper.find('.closeButton').simulate('click');
 
       expect(
         wrapper
