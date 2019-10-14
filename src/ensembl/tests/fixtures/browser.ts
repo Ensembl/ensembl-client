@@ -1,4 +1,7 @@
 import { CogList } from 'src/content/app/browser/browserState';
+import faker from 'faker';
+
+import { Markup } from 'src/content/app/browser/zmenu/zmenu-types';
 
 export const createCogTrackList = (): CogList => ({
   'track:contig': 239,
@@ -32,3 +35,20 @@ export const createTrackConfigNames = () => ({
   'track:gene-pc-rev': true,
   'track:variant': true
 });
+
+export const createZmenuContent = () => [
+  {
+    id: faker.lorem.words(),
+    lines: [
+      [
+        [
+          { markup: [Markup.LIGHT], text: faker.lorem.words() },
+          { markup: [], text: ' ' },
+          { markup: [], text: faker.lorem.words() }
+        ],
+        [{ markup: [Markup.LIGHT, Markup.FOCUS], text: faker.lorem.words() }]
+      ]
+    ],
+    track_id: 'track:gene-feat'
+  }
+];

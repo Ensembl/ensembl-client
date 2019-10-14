@@ -14,7 +14,7 @@ import {
   Markup
 } from './zmenu-types';
 
-type ZmenuContentProps = {
+export type ZmenuContentProps = {
   content: ZmenuContentFeatureType[];
 };
 
@@ -33,12 +33,12 @@ type ZmenuContentBlockProps = {
   id: string;
 };
 
-type ZmenuContentItemProps = ZmenuContentItemType & {
+export type ZmenuContentItemProps = ZmenuContentItemType & {
   changeFocusObject: (objectId: string) => void;
   id: string;
 };
 
-const ZmenuContent = (props: ZmenuContentProps) => {
+export const ZmenuContent = (props: ZmenuContentProps) => {
   const features = props.content;
   const renderedContent = features.map((feature) => (
     <ZmenuContentFeature
@@ -80,7 +80,7 @@ const ZmenuContentBlock = (props: ZmenuContentBlockProps) => {
   );
 };
 
-const ZmenuContentItem = (props: ZmenuContentItemProps) => {
+export const ZmenuContentItem = (props: ZmenuContentItemProps) => {
   const { text, markup, id } = props;
   const isFocusable = markup.includes(Markup.FOCUS);
 
