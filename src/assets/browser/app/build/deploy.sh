@@ -27,6 +27,12 @@ echo "WASMHASH=$WASMHASH"
 WASMNAME="browser-$WASMHASH.wasm"
 JSNAME="browser.js"
 rm -f $DEST/*.js $DEST/*.wasm
-cp $SRC/target/deploy/hellostdweb.wasm $DEST/$WASMNAME
+
+if [ "$1" == "check" ] ; then
+  cp $SRC/target/deploy/hellostdweb.wasm $DEST/$WASMNAME
+else
+  wasm-opt -Os $SRC/target/deploy/hellostdweb.wasm -o $DEST/$WASMNAME
+fi
+ls -lh $DEST/$WASMNAME
 cp $SRC/target/deploy/hellostdweb.js $DEST/$JSNAME
 sed -i -e "s~\"hellostdweb.wasm\"~\"/static/browser/$WASMNAME\"~g" $DEST/$JSNAME

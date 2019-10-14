@@ -14,7 +14,7 @@ import BrowserBar from './browser-bar/BrowserBar';
 import BrowserImage from './browser-image/BrowserImage';
 import BrowserNavBar from './browser-nav/BrowserNavBar';
 import TrackPanel from './track-panel/TrackPanel';
-import AppBar from 'src/shared/components/app-bar/AppBar';
+import BrowserAppBar from './browser-app-bar/BrowserAppBar';
 
 import { RootState } from 'src/store';
 import { ChrLocation, ChrLocations } from './browserState';
@@ -56,12 +56,7 @@ import {
 import browserStorageService from './browser-storage-service';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 
-import {
-  BrowserTrackStates,
-  TrackStates
-} from './track-panel/trackPanelConfig';
-import { AppName } from 'src/global/globalConfig';
-
+import { BrowserTrackStates } from './track-panel/trackPanelConfig';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import styles from './Browser.scss';
@@ -219,26 +214,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   useEffect(() => {
     setTrackStatesFromStorage(browserStorageService.getTrackStates());
-    if (!props.activeGenomeId || !props.activeEnsObjectId) {
-      return;
-    }
-
-    const mergedTrackStates = merge(
-      {},
-      get(
-        trackStatesFromStorage,
-        `${props.activeGenomeId}.objectTracks.${props.activeEnsObjectId}`
-      ),
-      get(trackStatesFromStorage, `${props.activeGenomeId}.commonTracks`)
-    ) as TrackStates;
-
-    Object.values(mergedTrackStates).forEach((trackStates) => {
-      Object.keys(trackStates).forEach((trackId) => {
-        const trackStatus: string =
-          trackStates[trackId] === ImageButtonStatus.ACTIVE ? 'on' : 'off';
-        browserMessagingService.send('bpane', { [trackStatus]: trackId });
-      });
-    });
   }, [props.activeGenomeId, props.activeEnsObjectId]);
 
   useEffect(() => {
@@ -297,12 +272,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   return props.activeGenomeId ? (
     <>
-      <AppBar
-        currentAppName={AppName.GENOME_BROWSER}
-        activeGenomeId={props.activeGenomeId}
-        onTabSelect={changeSelectedSpecies}
-      />
-
+      <BrowserAppBar onSpeciesSelect={changeSelectedSpecies} />
       {!props.browserQueryParams.focus && (
         <section className={styles.browser}>
           {browserBar}

@@ -1,29 +1,20 @@
 @import 'src/styles/common';
 
-.appBar {
-  display: grid;
-  grid-template-columns: minmax(80%, 1fr) minmax(150px, auto);
-  grid-template-areas:
-    'top top'
-    'main right';
+.browserAppBar {
   font-size: 12px;
   padding: 8px 20px;
   min-height: 80px;
-}
 
-.appBarTop {
-  grid-area: top;
-  min-height: 30px;
-}
+  .appBarTop {
+    margin-bottom: 12px;
+  }
 
-.appBarMain {
-  grid-area: main;
-  margin-left: 2em;
-  max-width: 100%;
-}
-
-.appBarAside {
-  grid-area: right;
+  .appBarBottom {
+    display: grid;
+    margin-left: 2em;
+    max-width: 100%;
+    grid-template-columns: minmax(80%, 1fr) minmax(100px, auto);
+  }
 }
 
 .helpLink {
