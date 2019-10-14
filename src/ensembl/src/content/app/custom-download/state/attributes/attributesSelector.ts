@@ -51,5 +51,6 @@ export const getOrthologueSpecies = (state: RootState) =>
   getCustomDownloadActiveGenomeConfiguration(state).attributes.orthologue
     .species;
 
-export const getAttributesAccordionExpandedPanel = (state: RootState) =>
-  getCustomDownloadActiveGenomeConfiguration(state).attributes.expandedPanel;
+export const getAttributesAccordionExpandedPanels = (state: RootState) =>
+  getCustomDownloadActiveGenomeConfiguration(state).attributes.expandedPanels ||
+  [];

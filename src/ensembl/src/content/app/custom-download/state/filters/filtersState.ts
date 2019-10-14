@@ -2,14 +2,14 @@ import { Attributes } from 'src/content/app/custom-download/types/Attributes';
 import JSONValue from 'src/shared/types/JSON';
 
 export type FiltersState = Readonly<{
-  expandedPanel: string;
+  expandedPanels: string[];
   filters: Attributes;
   selectedFilters: JSONValue;
   ui: JSONValue;
 }>;
 
 export const defaultFiltersState: FiltersState = {
-  expandedPanel: '',
+  expandedPanels: [],
   filters: {},
   selectedFilters: {},
   ui: {}

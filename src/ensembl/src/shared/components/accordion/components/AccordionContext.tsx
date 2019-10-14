@@ -7,7 +7,7 @@ import AccordionStore, {
 import { UUID } from './ItemContext';
 
 export interface ProviderProps {
-  preExpanded?: UUID[];
+  preExpanded: UUID[];
   allowMultipleExpanded?: boolean;
   allowZeroExpanded?: boolean;
   children?: React.ReactNode;
@@ -40,7 +40,17 @@ export const Provider = (props: ProviderProps) => {
     if (props.onChange) {
       props.onChange(store.expanded);
     }
-  }, [store]);
+  }, [store.expanded]);
+
+  useEffect(() => {
+    const differences = store.expanded.filter(
+      (uuid) => !props.preExpanded.includes(uuid)
+    ).length;
+
+    if (store.expanded.length != props.preExpanded.length || differences) {
+      setStore(store.setExpanded(props.preExpanded));
+    }
+  }, [props.preExpanded]);
 
   const toggleExpanded = (key: UUID): void => {
     setStore(store.toggleExpanded(key));
@@ -88,7 +98,8 @@ export const Provider = (props: ProviderProps) => {
 
 Provider.defaultProps = {
   allowMultipleExpanded: false,
-  allowZeroExpanded: false
+  allowZeroExpanded: false,
+  preExpanded: []
 };
 export class Consumer extends React.PureComponent<{
   children(container: AccordionContext): React.ReactNode;

@@ -1,8 +1,9 @@
 import { RootState } from 'src/store';
 import { getCustomDownloadActiveGenomeConfiguration } from '../customDownloadSelectors';
 
-export const getFiltersAccordionExpandedPanel = (state: RootState) =>
-  getCustomDownloadActiveGenomeConfiguration(state).filters.expandedPanel;
+export const getFiltersAccordionExpandedPanels = (state: RootState) =>
+  getCustomDownloadActiveGenomeConfiguration(state).filters.expandedPanels ||
+  [];
 
 export const getFilters = (state: RootState) =>
   getCustomDownloadActiveGenomeConfiguration(state).filters.filters;

@@ -318,7 +318,7 @@ export const fetchOrthologueSpecies: ActionCreator<
 
 export const setAttributesAccordionExpandedPanel: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (expandedPanel: string) => (dispatch, getState: () => RootState) => {
+> = (expandedPanels: string[]) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -331,8 +331,8 @@ export const setAttributesAccordionExpandedPanel: ActionCreator<
       data: {
         ...set(
           getCustomDownloadActiveGenomeConfiguration(getState()),
-          'attributes.expandedPanel',
-          expandedPanel
+          'attributes.expandedPanels',
+          expandedPanels
         )
       }
     })

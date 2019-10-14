@@ -13,7 +13,7 @@ import {
 
 import { getPreviewResult } from '../../../state/customDownloadSelectors';
 import {
-  getFiltersAccordionExpandedPanel,
+  getFiltersAccordionExpandedPanels,
   getSelectedFilters
 } from '../../../state/filters/filtersSelector';
 import {
@@ -41,15 +41,13 @@ type SelectedFilters = {
 };
 
 type StateProps = {
-  expandedPanel: string;
+  expandedPanels: string[];
   selectedFilters: {};
   preview: JSONValue;
 };
 
 type DispatchProps = {
-  setFiltersAccordionExpandedPanel: (
-    setFiltersAccordionExpandedPanel: string
-  ) => void;
+  setFiltersAccordionExpandedPanel: (expandedPanels: string[]) => void;
   resetSelectedFilters: () => void;
   updateSelectedFilters: (filters: JSONValue) => void;
 };
@@ -89,7 +87,7 @@ type Props = StateProps & DispatchProps;
 const FiltersAccordion = (props: Props) => {
   useEffect(() => {}, []);
   const formatAccordionTitle = (expandedPanel: string, title: string) => {
-    if (expandedPanel !== props.expandedPanel) {
+    if (expandedPanel !== props.expandedPanels[0]) {
       return <span>{title}</span>;
     }
 
@@ -101,7 +99,7 @@ const FiltersAccordion = (props: Props) => {
   };
 
   const accordionOnChange = (newExpandedPanels: string[]) => {
-    props.setFiltersAccordionExpandedPanel(newExpandedPanels[0]);
+    props.setFiltersAccordionExpandedPanel(newExpandedPanels);
   };
 
   const resultCount: number = props.preview.resultCount
@@ -144,7 +142,7 @@ const FiltersAccordion = (props: Props) => {
       </div>
 
       <Accordion
-        preExpanded={Array(1).fill(props.expandedPanel)}
+        preExpanded={props.expandedPanels}
         onChange={accordionOnChange}
       >
         <AccordionItem uuid={'genes'}>
@@ -157,7 +155,7 @@ const FiltersAccordion = (props: Props) => {
             {buildSection({ section: 'genes' })}
           </AccordionItemPanel>
           <AccordionItemPermanentBlock>
-            {props.expandedPanel !== 'genes' && (
+            {props.expandedPanels[0] !== 'genes' && (
               <div className={styles.permanentBlock}>
                 {buildSection({
                   section: 'genes',
@@ -236,7 +234,7 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  expandedPanel: getFiltersAccordionExpandedPanel(state),
+  expandedPanels: getFiltersAccordionExpandedPanels(state),
   selectedFilters: getSelectedFilters(state),
   preview: getPreviewResult(state)
 });

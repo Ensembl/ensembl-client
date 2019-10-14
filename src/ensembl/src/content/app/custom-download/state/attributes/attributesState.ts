@@ -15,7 +15,7 @@ export type AttributeUi = {
 };
 
 export type AttributesState = Readonly<{
-  expandedPanel: string;
+  expandedPanels: string[];
   content: AttributeUi;
   selectedAttributes: JSONValue;
   ui: JSONValue;
@@ -23,7 +23,7 @@ export type AttributesState = Readonly<{
 }>;
 
 export const defaultAttributesState: AttributesState = {
-  expandedPanel: '',
+  expandedPanels: [],
   content: {},
   selectedAttributes: {},
   ui: {},

@@ -12,7 +12,7 @@ import {
 } from 'src/shared/components/accordion';
 
 import {
-  getAttributesAccordionExpandedPanel,
+  getAttributesAccordionExpandedPanels,
   getSelectedAttributes
 } from '../../../state/attributes/attributesSelector';
 import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
@@ -32,14 +32,12 @@ import AttributesAccordionSection from 'src/content/app/custom-download/containe
 import styles from './AttributesAccordion.scss';
 
 type StateProps = {
-  expandedPanel: string;
+  expandedPanels: string[];
   selectedAttributes: JSONValue;
 };
 
 type DispatchProps = {
-  setAttributesAccordionExpandedPanel: (
-    setAttributesAccordionExpandedPanel: string
-  ) => void;
+  setAttributesAccordionExpandedPanel: (expandedPanels: string[]) => void;
   fetchAttributes: () => void;
   resetSelectedAttributes: () => void;
   setShowExampleData: (showExampleData: boolean) => void;
@@ -74,7 +72,7 @@ const AttributesAccordion = (props: Props) => {
     const title =
       expandedPanel.charAt(0).toUpperCase() + expandedPanel.slice(1);
 
-    if (expandedPanel !== props.expandedPanel) {
+    if (expandedPanel !== props.expandedPanels[0]) {
       return <span>{title}</span>;
     }
 
@@ -86,7 +84,7 @@ const AttributesAccordion = (props: Props) => {
   };
 
   const accordionOnChange = (newExpandedPanels: string[]) => {
-    props.setAttributesAccordionExpandedPanel(newExpandedPanels[0]);
+    props.setAttributesAccordionExpandedPanel(newExpandedPanels);
   };
 
   const onReset = () => {
@@ -130,7 +128,7 @@ const AttributesAccordion = (props: Props) => {
         </span>
       </div>
       <Accordion
-        preExpanded={[props.expandedPanel]}
+        preExpanded={props.expandedPanels}
         onChange={accordionOnChange}
       >
         <AccordionItem uuid={'genes'}>
@@ -143,7 +141,7 @@ const AttributesAccordion = (props: Props) => {
             {buildSection({ section: 'genes' })}
           </AccordionItemPanel>
           <AccordionItemPermanentBlock>
-            {props.expandedPanel !== 'genes' && (
+            {props.expandedPanels[0] !== 'genes' && (
               <div className={styles.permanentBlock}>
                 {buildSection({
                   section: 'genes',
@@ -165,7 +163,7 @@ const AttributesAccordion = (props: Props) => {
             {buildSection({ section: 'transcripts' })}
           </AccordionItemPanel>
           <AccordionItemPermanentBlock>
-            {props.expandedPanel !== 'transcripts' && (
+            {props.expandedPanels[0] !== 'transcripts' && (
               <div className={styles.permanentBlock}>
                 {buildSection({
                   section: 'transcripts',
@@ -200,7 +198,7 @@ const AttributesAccordion = (props: Props) => {
             {buildSection({ section: 'sequences' })}
           </AccordionItemPanel>
           <AccordionItemPermanentBlock>
-            {props.expandedPanel !== 'sequences' && (
+            {props.expandedPanels[0] !== 'sequences' && (
               <div className={styles.permanentBlock}>
                 {buildSection({
                   section: 'sequences',
@@ -287,7 +285,7 @@ const mapDispatchToProps: DispatchProps = {
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  expandedPanel: getAttributesAccordionExpandedPanel(state),
+  expandedPanels: getAttributesAccordionExpandedPanels(state),
   selectedAttributes: getSelectedAttributes(state)
 });
 

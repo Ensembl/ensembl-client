@@ -12,7 +12,7 @@ import { RootState } from 'src/store';
 
 export const setFiltersAccordionExpandedPanel: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (expandedPanel: string) => (dispatch, getState: () => RootState) => {
+> = (expandedPanels: string[]) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -25,8 +25,8 @@ export const setFiltersAccordionExpandedPanel: ActionCreator<
       data: {
         ...set(
           getCustomDownloadActiveGenomeConfiguration(getState()),
-          'filters.expandedPanel',
-          expandedPanel
+          'filters.expandedPanels',
+          expandedPanels
         )
       }
     })
