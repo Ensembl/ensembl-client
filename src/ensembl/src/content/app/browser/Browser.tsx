@@ -87,7 +87,11 @@ type StateProps = {
 };
 
 type DispatchProps = {
-  changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
+  changeBrowserLocation: (
+    genomeId: string,
+    ensObjectId: string | null,
+    chrLocation: ChrLocation
+  ) => void;
   changeFocusObject: (objectId: string) => void;
   changeDrawerView: (drawerView: string) => void;
   closeDrawer: () => void;
@@ -150,9 +154,9 @@ export const Browser: FunctionComponent<BrowserProps> = (
       props.changeFocusObject(focus);
     } else if (focus && chrLocation) {
       props.changeFocusObject(focus);
-      dispatchBrowserLocation(genomeId, chrLocation);
+      dispatchBrowserLocation(genomeId, focus, chrLocation);
     } else if (chrLocation) {
-      dispatchBrowserLocation(genomeId, chrLocation);
+      dispatchBrowserLocation(genomeId, focus, chrLocation);
     }
 
     props.setDataFromUrlAndSave(payload);
@@ -160,9 +164,10 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   const dispatchBrowserLocation = (
     genomeId: string,
+    focus: string | null,
     chrLocation: ChrLocation
   ) => {
-    props.changeBrowserLocation(genomeId, chrLocation);
+    props.changeBrowserLocation(genomeId, focus, chrLocation);
   };
 
   const changeSelectedSpecies = (genomeId: string) => {
@@ -249,7 +254,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
     const chrLocation = location ? getChrLocationFromStr(location) : null;
 
     if (props.browserActivated && genomeId && chrLocation) {
-      dispatchBrowserLocation(genomeId, chrLocation);
+      dispatchBrowserLocation(genomeId, null, chrLocation);
     }
   }, [props.browserActivated]);
 

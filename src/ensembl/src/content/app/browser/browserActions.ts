@@ -235,11 +235,17 @@ export const updateMessageCounter = createStandardAction(
 
 export const changeBrowserLocation: ActionCreator<
   ThunkAction<any, any, null, Action<string>>
-> = (genomeId: string, chrLocation: ChrLocation) => {
+> = (
+  genomeId: string,
+  activeEnsObjectId: string | null,
+  chrLocation: ChrLocation
+) => {
   return (dispatch, getState: () => RootState) => {
     const state = getState();
     const [chrCode, startBp, endBp] = chrLocation;
-    const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
+    if (!activeEnsObjectId) {
+      activeEnsObjectId = getBrowserActiveEnsObjectId(state);
+    }
     const messageCount = getBrowserMessageCount(state);
     const focusInstruction = activeEnsObjectId
       ? {
