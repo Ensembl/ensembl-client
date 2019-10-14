@@ -75,7 +75,11 @@ type DispatchProps = {
 };
 
 type OwnProps = {
-  dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
+  dispatchBrowserLocation: (
+    genomeId: string,
+    focus: string | null,
+    chrLocation: ChrLocation
+  ) => void;
 };
 
 export type BrowserBarProps = StateProps & DispatchProps & OwnProps;

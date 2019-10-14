@@ -20,7 +20,11 @@ type BrowserGenomeSelectorProps = {
   activeGenomeId: string | null;
   browserActivated: boolean;
   chrLocation: ChrLocation;
-  dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
+  dispatchBrowserLocation: (
+    genomeId: string,
+    focus: string | null,
+    chrLocation: ChrLocation
+  ) => void;
   isDrawerOpened: boolean;
   genomeSelectorActive: boolean;
   toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
@@ -72,7 +76,11 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
     ) {
       closeForm();
 
-      props.dispatchBrowserLocation(activeGenomeId, [chrLocationInput, 0, 0]);
+      props.dispatchBrowserLocation(activeGenomeId, null, [
+        chrLocationInput,
+        0,
+        0
+      ]);
     } else {
       const [chrCodeInput, chrRegionInput] = chrLocationInput.split(':');
       const [chrStartInput, chrEndInput] = chrRegionInput.split('-');
@@ -86,7 +94,7 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
 
         closeForm();
 
-        props.dispatchBrowserLocation(activeGenomeId, currChrLocation);
+        props.dispatchBrowserLocation(activeGenomeId, null, currChrLocation);
       }
     }
   };
