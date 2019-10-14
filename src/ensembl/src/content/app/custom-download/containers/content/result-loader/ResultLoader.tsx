@@ -29,9 +29,9 @@ type StateProps = {
 };
 
 type DispatchProps = {
-  fetchPreviewResult: (fetchPreviewResult: string) => void;
+  fetchPreviewResult: (endpointURL: string) => void;
   clearPreviewResult: () => void;
-  setIsLoadingResult: (setIsLoadingResult: boolean) => void;
+  setIsLoadingResult: (isLoadingResult: boolean) => void;
 };
 
 type Props = StateProps & DispatchProps;
