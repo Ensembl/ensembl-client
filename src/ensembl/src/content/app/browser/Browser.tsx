@@ -5,8 +5,6 @@ import { replace, Replace } from 'connected-react-router';
 import { useSpring, animated } from 'react-spring';
 import { Link } from 'react-router-dom';
 import find from 'lodash/find';
-import get from 'lodash/get';
-import merge from 'lodash/merge';
 import isEqual from 'lodash/isEqual';
 import upperFirst from 'lodash/upperFirst';
 
@@ -23,7 +21,8 @@ import {
   changeFocusObject,
   setDataFromUrlAndSave,
   ParsedUrlPayload,
-  resetBrowserTrackStates
+  resetBrowserTrackStates,
+  restoreBrowserTrackStates
 } from './browserActions';
 import {
   getBrowserNavOpened,
@@ -54,15 +53,12 @@ import {
 } from './drawer/drawerActions';
 
 import browserStorageService from './browser-storage-service';
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
-
 import { BrowserTrackStates } from './track-panel/trackPanelConfig';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import styles from './Browser.scss';
 
 import 'static/browser/browser.js';
-import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
 
 type StateProps = {
   activeGenomeId: string | null;
@@ -91,6 +87,7 @@ type DispatchProps = {
   changeDrawerView: (drawerView: string) => void;
   closeDrawer: () => void;
   resetBrowserTrackStates: () => void;
+  restoreBrowserTrackStates: () => void;
   fetchGenomeData: (genomeId: string) => void;
   replace: Replace;
   toggleDrawer: (isDrawerOpened: boolean) => void;
@@ -214,6 +211,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   useEffect(() => {
     setTrackStatesFromStorage(browserStorageService.getTrackStates());
+    props.restoreBrowserTrackStates();
   }, [props.activeGenomeId, props.activeEnsObjectId]);
 
   useEffect(() => {
@@ -356,7 +354,8 @@ const mapDispatchToProps: DispatchProps = {
   replace,
   toggleDrawer,
   setDataFromUrlAndSave,
-  resetBrowserTrackStates
+  resetBrowserTrackStates,
+  restoreBrowserTrackStates
 };
 
 export default withRouter(

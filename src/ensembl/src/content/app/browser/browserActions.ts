@@ -154,15 +154,43 @@ export const resetBrowserTrackStates: ActionCreator<
   const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
   const activeGenomeTrackStates = getBrowserActiveGenomeTrackStates(state);
 
-  const mergedTrackStates = merge(
-    {},
-    get(activeGenomeTrackStates, `objectTracks.${activeEnsObjectId}`),
-    get(activeGenomeTrackStates, 'commonTracks')
-  ) as TrackStates;
+  const mergedTrackStates = {
+    ...get(activeGenomeTrackStates, `objectTracks.${activeEnsObjectId}`),
+    ...get(activeGenomeTrackStates, 'commonTracks')
+  } as TrackStates;
 
   Object.values(mergedTrackStates).forEach((trackStates) => {
     Object.keys(trackStates).forEach((trackId) => {
       browserMessagingService.send('bpane', { ['on']: trackId });
+    });
+  });
+};
+
+export const restoreBrowserTrackStates: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = () => (dispatch, getState: () => RootState) => {
+  const state = getState();
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
+
+  if (!activeGenomeId || !activeEnsObjectId) {
+    return;
+  }
+
+  const trackStatesFromStorage = browserStorageService.getTrackStates();
+  const mergedTrackStates = {
+    ...get(
+      trackStatesFromStorage,
+      `${activeGenomeId}.objectTracks.${activeEnsObjectId}`
+    ),
+    ...get(trackStatesFromStorage, `${activeGenomeId}.commonTracks`)
+  } as TrackStates;
+
+  Object.values(mergedTrackStates).forEach((trackStates) => {
+    Object.keys(trackStates).forEach((trackId) => {
+      const trackStatus: string =
+        trackStates[trackId] === ImageButtonStatus.ACTIVE ? 'on' : 'off';
+      browserMessagingService.send('bpane', { [trackStatus]: trackId });
     });
   });
 };
