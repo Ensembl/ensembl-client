@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { RootState } from 'src/store';
 import { PreviouslyViewedObject } from 'src/content/app/browser/track-panel/trackPanelState';
-import { BrowserTrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { closeTrackPanelModal } from 'src/content/app/browser/track-panel/trackPanelActions';
 import { closeDrawer } from 'src/content/app/browser/drawer/drawerActions';
 import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
@@ -26,7 +25,7 @@ export type DrawerBookmarksProps = StateProps & DispatchProps;
 const DrawerBookmarks = (props: DrawerBookmarksProps) => {
   const limitedPreviouslyViewedObjects = props.previouslyViewedObjects.slice(
     0,
-    props.previouslyViewedObjects.length - 0
+    props.previouslyViewedObjects.length - 20
   );
 
   const onClickHandler = () => {

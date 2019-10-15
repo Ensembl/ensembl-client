@@ -108,6 +108,16 @@ describe('<TrackPanelBookmarks />', () => {
   });
 
   it('calls changeDrawerViewAndOpen when the ellipsis is clicked', () => {
+    const previouslyViewedObjects = times(21, () =>
+      createPreviouslyViewedLink()
+    );
+    wrapper = mount(
+      <TrackPanelBookmarks
+        {...props}
+        previouslyViewedObjects={previouslyViewedObjects}
+      />
+    );
+
     wrapper.find(ImageButton).simulate('click');
 
     expect(changeDrawerViewAndOpenMock).toBeCalled();
