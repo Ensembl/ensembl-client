@@ -1,9 +1,4 @@
-import {
-  ChrLocation,
-  RegionValidationResponse,
-  RegionValidationRegionError
-} from './browserState';
-import { GenomeKaryotype, GenomeKaryotypeType } from 'src/genome/genomeTypes';
+import { ChrLocation, RegionValidationResponse } from './browserState';
 import { RegionErrors } from './browserConfig';
 import { getNumberWithoutCommas } from 'src/shared/helpers/numberFormatter';
 
@@ -62,10 +57,10 @@ export const getRegionEditorErrorMessages = (
     } else if (validationInfo.end && !validationInfo.end.is_valid) {
       locationEndError = validationInfo.end.error_message;
     }
-
-    return {
-      locationStartError,
-      locationEndError
-    };
   }
+
+  return {
+    locationStartError,
+    locationEndError
+  };
 };

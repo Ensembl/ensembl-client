@@ -206,8 +206,8 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
         );
 
         if (
-          errorMessages &&
-          (errorMessages.locationStartError || errorMessages.locationEndError)
+          errorMessages.locationStartError ||
+          errorMessages.locationEndError
         ) {
           updateErrorMessages(
             errorMessages.locationStartError,

@@ -1,7 +1,8 @@
-import { CogList } from 'src/content/app/browser/browserState';
 import faker from 'faker';
 
+import { CogList } from 'src/content/app/browser/browserState';
 import { Markup } from 'src/content/app/browser/zmenu/zmenu-types';
+import { RegionValidationResponse } from 'src/content/app/browser/browserState';
 
 export const createCogTrackList = (): CogList => ({
   'track:contig': 239,
@@ -52,3 +53,33 @@ export const createZmenuContent = () => [
     track_id: 'track:gene-feat'
   }
 ];
+
+export const createValidationInfo = (): RegionValidationResponse => ({
+  end: {
+    error_code: null,
+    error_message: null,
+    is_valid: true,
+    value: 32400266
+  },
+  genome_id: {
+    error_code: null,
+    error_message: null,
+    is_valid: true,
+    value: 'homo_sapiens_GCA_000001405_27'
+  },
+  is_parseable: true,
+  region: {
+    error_code: null,
+    error_message: null,
+    is_valid: true,
+    region_code: 'chromosome',
+    region_name: '13'
+  },
+  region_id: 'homo_sapiens_GCA_000001405_27:region:13:32315086-32400266',
+  start: {
+    error_code: null,
+    error_message: null,
+    is_valid: true,
+    value: 32315086
+  }
+});

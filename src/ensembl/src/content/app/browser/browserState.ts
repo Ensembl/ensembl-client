@@ -38,7 +38,7 @@ export type RegionValidationValueError = RegionValidationError & {
 
 export type RegionValidationRegionError = RegionValidationError & {
   region_code: string;
-  region_id: string;
+  region_name: string;
 };
 
 export type RegionValidationMessage = Partial<{
@@ -52,6 +52,7 @@ export type RegionValidationResponse = Partial<{
   end: RegionValidationValueError;
   genome_id: RegionValidationValueError;
   is_parseable: boolean;
+  region_id: string;
   region: RegionValidationRegionError;
   start: RegionValidationValueError;
   message: RegionValidationMessage;
