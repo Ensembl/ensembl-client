@@ -9,10 +9,10 @@ import analyticsTracking from 'src/services/analytics-service';
 
 import cogOnIcon from 'static/img/shared/cog-on.svg';
 import cogOffIcon from 'static/img/shared/cog.svg';
-import BrowserTrackConfig from './browser-track-config/BrowserTrackConfig';
+import BrowserTrackConfig from '../browser-track-config/BrowserTrackConfig';
 import { useTransition, animated } from 'react-spring';
 
-type BrowserCogProps = {
+export type BrowserCogProps = {
   cogActivated: boolean;
   index: string;
   updateSelectedCog: (index: string | null) => void;

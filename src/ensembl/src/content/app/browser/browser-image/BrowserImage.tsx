@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import classNames from 'classnames';
 
 import { BrowserNavStates, CogList } from '../browserState';
-import BrowserCogList from '../BrowserCogList';
+import BrowserCogList from '../browser-cog/BrowserCogList';
 import { ZmenuController } from 'src/content/app/browser/zmenu';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';

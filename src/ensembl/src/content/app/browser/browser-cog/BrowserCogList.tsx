@@ -7,9 +7,9 @@ import {
   updateCogList,
   updateCogTrackList,
   updateSelectedCog
-} from './browserActions';
+} from '../browserActions';
 import { RootState } from 'src/store';
-import { CogList } from './browserState';
+import { CogList } from '../browserState';
 import {
   getBrowserActivated,
   getBrowserCogList,
@@ -17,7 +17,7 @@ import {
   getTrackConfigNames,
   getTrackConfigLabel,
   getBrowserSelectedCog
-} from './browserSelectors';
+} from '../browserSelectors';
 
 import styles from './BrowserCogList.scss';
 
