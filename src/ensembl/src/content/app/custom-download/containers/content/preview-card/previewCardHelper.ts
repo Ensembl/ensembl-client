@@ -6,10 +6,10 @@ import {
 } from 'src/content/app/custom-download/containers/content/customDownloadContentHelper';
 
 const formatResponseToArray = (responseData: any): any => {
-  const preResult: any = [];
+  const result: any = [];
 
-  const responseArray = flattenObject(responseData);
-  Object.keys(responseArray)
+  const flatterenedResponse = flattenObject(responseData);
+  Object.keys(flatterenedResponse)
     .sort()
     .forEach((key) => {
       const keySplit: string[] = key.split('.');
@@ -23,15 +23,15 @@ const formatResponseToArray = (responseData: any): any => {
         id = `${keySplit[1]}.${keySplit[3]}`;
       }
 
-      if (!preResult[topID]) {
-        preResult[topID] = {
-          ...preResult[`${keySplit[0]}00`]
+      if (!result[topID]) {
+        result[topID] = {
+          ...result[`${keySplit[0]}00`]
         };
       }
-      preResult[topID][id] = responseArray[key];
+      result[topID][id] = flatterenedResponse[key];
     });
 
-  return preResult;
+  return result;
 };
 
 /*

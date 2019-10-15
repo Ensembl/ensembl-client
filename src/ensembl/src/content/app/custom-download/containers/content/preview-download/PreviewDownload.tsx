@@ -1,28 +1,28 @@
 import React from 'react';
 import get from 'lodash/get';
-
 import { connect } from 'react-redux';
+
 import { RootState } from 'src/store';
 
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as closeIcon } from 'static/img/shared/close.svg';
-import { getSelectedAttributes } from '../../../state/attributes/attributesSelector';
-import { getSelectedFilters } from '../../../state/filters/filtersSelector';
-import { getProcessedFilters } from '../result-loader/resultLoaderHelper';
-import {
-  getPreviewResult,
-  getCustomDownloadActiveGenomeId
-} from '../../../state/customDownloadSelectors';
-import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 import Panel from 'src/content/app/custom-download/components/panel/Panel';
 import PreviewCard from 'src/content/app/custom-download/containers/content/preview-card/PreviewCard';
-import { setShowPreview } from '../../../state/customDownloadActions';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import ImageButton from 'src/shared/components/image-button/ImageButton';
-import JSONValue from 'src/shared/types/JSON';
+import { setShowPreview } from 'src/content/app/custom-download/state/customDownloadActions';
+import { getDisplayName } from 'src/shared/components/selected-species/selectedSpeciesHelpers';
+import { getProcessedFilters } from 'src/content/app/custom-download/containers/content/result-loader/resultLoaderHelper';
+import {
+  getCustomDownloadActiveGenomeId,
+  getPreviewResult
+} from 'src/content/app/custom-download/state/customDownloadSelectors';
+import { getSelectedAttributes } from 'src/content/app/custom-download/state/attributes/attributesSelector';
+import { getSelectedFilters } from 'src/content/app/custom-download/state/filters/filtersSelector';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import JSONValue from 'src/shared/types/JSON';
 
 import styles from './PreviewDownload.scss';
-import { getDisplayName } from 'src/shared/components/selected-species/selectedSpeciesHelpers';
 
 type StateProps = {
   selectedAttributes: JSONValue;
@@ -32,7 +32,7 @@ type StateProps = {
 };
 
 type DispatchProps = {
-  setShowPreview: (setShowPreview: boolean) => void;
+  setShowPreview: (showPreview: boolean) => void;
 };
 
 type Props = StateProps & DispatchProps;

@@ -1,16 +1,14 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
+
+import { formatResults } from './previewCardHelper';
+import { getSelectedAttributes } from 'src/content/app/custom-download/state/attributes/attributesSelector';
+import { getSelectedFilters } from 'src/content/app/custom-download/state/filters/filtersSelector';
 import {
   getPreviewResult,
   getIsLoadingResult
-} from '../../../state/customDownloadSelectors';
-
-import { getSelectedAttributes } from '../../../state/attributes/attributesSelector';
-import { getSelectedFilters } from '../../../state/filters/filtersSelector';
-
-import { formatResults } from './previewCardHelper';
-
+} from 'src/content/app/custom-download/state/customDownloadSelectors';
 import JSONValue from 'src/shared/types/JSON';
 
 import styles from './PreviewCard.scss';
