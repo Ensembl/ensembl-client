@@ -50,7 +50,7 @@ const FiltersAccordionSection = (props: Props) => {
         onChange={props.updateSelectedFilters}
         uiState={{
           ...props.ui,
-          checkbox_grid: { isCollapsable: true }
+          checkbox_grid: { isCollapsible: true }
         }}
         onUiChange={props.updateUi}
         selectedData={props.selectedFilters}
@@ -63,7 +63,7 @@ const FiltersAccordionSection = (props: Props) => {
       onChange={props.updateSelectedFilters}
       uiState={{
         ...props.ui,
-        checkbox_grid: { isCollapsable: true, hideUnchecked: true }
+        checkbox_grid: { isCollapsible: true, hideUnchecked: true }
       }}
       onUiChange={props.updateUi}
       selectedData={props.selectedFilters}

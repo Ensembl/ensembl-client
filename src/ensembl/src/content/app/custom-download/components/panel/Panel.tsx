@@ -1,5 +1,5 @@
 import React from 'react';
-import { default as classNamesMerger } from 'classnames';
+import classNamesMerger from 'classnames';
 
 import closeIcon from 'static/img/shared/close.svg';
 
@@ -17,7 +17,7 @@ type Props = {
 };
 
 const Panel = (props: Props) => {
-  const { title, onClose, classNames, ...rest } = props;
+  const { title, onClose, classNames } = props;
 
   const panelClassNames = classNames
     ? classNamesMerger(styles.panelDefault, classNames.panelClassName)
@@ -33,7 +33,7 @@ const Panel = (props: Props) => {
     <div className={panelClassNames}>
       <div className={headerClassNames}>{title}</div>
       <div className={panelBodyClassNames}>
-        <div {...rest}></div>
+        <div>{props.children}</div>
         {onClose && (
           <span className={styles.closeButton} onClick={onClose}>
             <img src={closeIcon}></img>

@@ -18,23 +18,23 @@ type AllProps = {
   hideUnchecked?: boolean;
   label: string;
   hideLabel?: boolean;
-  isCollapsable?: boolean;
+  isCollapsible?: boolean;
   isCollapsed?: boolean;
   onChange: (status: boolean, id: string) => void;
   onCollapse?: (collapsed: boolean) => void;
 };
 
-type NonCollapsableProps = Modify<
+type NonCollapsibleProps = Modify<
   AllProps,
   {
     isCollapsed?: false;
-    isCollapsable?: false;
+    isCollapsible?: false;
   }
 >;
 
-type CollapsableProps = Modify<AllProps, { hideLabel?: false }>;
+type CollapsibleProps = Modify<AllProps, { hideLabel?: false }>;
 
-export type CheckboxGridProps = NonCollapsableProps | CollapsableProps;
+export type CheckboxGridProps = NonCollapsibleProps | CollapsibleProps;
 
 const CheckboxGrid = (props: CheckboxGridProps) => {
   const [collapsed, setCollapsed] = useState(props.isCollapsed);
@@ -93,7 +93,7 @@ const CheckboxGrid = (props: CheckboxGridProps) => {
       {!props.hideLabel && props.label && (
         <div className={styles.checkboxGridHeader}>
           <span className={styles.label}>{props.label}</span>
-          {props.isCollapsable && (
+          {props.isCollapsible && (
             <span
               className={styles.collapseButtonWrapper}
               onClick={toggleCollapsedState}

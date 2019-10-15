@@ -11,16 +11,12 @@ import {
   AccordionItemPermanentBlock
 } from 'src/shared/components/accordion';
 
-import {
-  getAttributesAccordionExpandedPanels,
-  getSelectedAttributes
-} from '../../../state/attributes/attributesSelector';
 import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
 import {
   setAttributesAccordionExpandedPanel,
   fetchAttributes,
   resetSelectedAttributes
-} from '../../../state/attributes/attributesActions';
+} from 'src/content/app/custom-download/state/attributes/attributesActions';
 import { Orthologues } from './sections';
 import { setShowExampleData } from 'src/content/app/custom-download/state/customDownloadActions';
 import ImageButton, {
@@ -29,6 +25,11 @@ import ImageButton, {
 import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
 import JSONValue from 'src/shared/types/JSON';
 import AttributesAccordionSection from 'src/content/app/custom-download/containers/content/attributes-accordion/sections/AttributesAccordionSection';
+import {
+  getAttributesAccordionExpandedPanels,
+  getSelectedAttributes
+} from 'src/content/app/custom-download/state/attributes/attributesSelector';
+
 import styles from './AttributesAccordion.scss';
 
 type StateProps = {
@@ -50,7 +51,7 @@ const getTotalSelectedAttributes = (
   totalSelectedAttributes = 0
 ) => {
   Object.keys(attributes).forEach((key) => {
-    if (typeof attributes[key] === 'boolean' && attributes[key] === true) {
+    if (attributes[key] === true) {
       totalSelectedAttributes++;
     } else if (typeof attributes[key] === 'object') {
       totalSelectedAttributes = getTotalSelectedAttributes(

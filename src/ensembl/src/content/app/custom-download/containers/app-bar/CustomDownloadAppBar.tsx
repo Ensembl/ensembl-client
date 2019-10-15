@@ -15,7 +15,7 @@ import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/Speci
 
 import { RootState } from 'src/store';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
-import { getCustomDownloadActiveGenomeId } from '../../state/customDownloadSelectors';
+import { getCustomDownloadActiveGenomeId } from 'src/content/app/custom-download/state/customDownloadSelectors';
 
 type CustomDownloadAppBarProps = {
   species: CommittedItem[];

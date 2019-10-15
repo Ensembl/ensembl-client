@@ -29,7 +29,7 @@ type DispatchProps = {
 
 type Props = StateProps & DispatchProps;
 
-const Content = (props: Props) => {
+const CustomDownloadContent = (props: Props) => {
   const wrapperHeightClassName = props.launchBarExpanded
     ? styles.default
     : styles.taller;
@@ -80,4 +80,4 @@ const mapStateToProps = (state: RootState): StateProps => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Content);
+)(CustomDownloadContent);

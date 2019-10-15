@@ -23,7 +23,6 @@
 
 .label {
   color: $grey;
-  float: left;
 }
 
 .checkboxContainer {
@@ -33,10 +32,10 @@
 .collapseButtonWrapper {
   position: relative;
   width: 20px;
-  height: 25px;
+  height: 14px;
   margin-left: 10px;
-  float: left;
   cursor: pointer;
+  display: inline-block;
 }
 
 .collapseButton:after,

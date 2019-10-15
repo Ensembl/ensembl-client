@@ -23,9 +23,14 @@ export const getActiveConfigurations = (state: RootState) =>
 export const getSelectedPreFilter = (state: RootState) =>
   getCustomDownloadActiveGenomeConfiguration(state).preFilter.selectedPreFilter;
 
-export const getShowPreFilterPanel = (state: RootState) =>
-  getCustomDownloadActiveGenomeConfiguration(state).preFilter
-    .showPreFiltersPanel;
+export const getShowPreFilterPanel = (state: RootState) => {
+  const activeGenomeId = getCustomDownloadActiveGenomeId(state);
+
+  return activeGenomeId
+    ? getCustomDownloadActiveGenomeConfiguration(state).preFilter
+        .showPreFiltersPanel
+    : false;
+};
 
 export const getPreviewResult = (state: RootState) =>
   state.customDownload.result.preview;
