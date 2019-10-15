@@ -185,7 +185,6 @@ export const restoreBrowserTrackStates: ActionCreator<
     ),
     ...get(trackStatesFromStorage, `${activeGenomeId}.commonTracks`)
   } as TrackStates;
-  console.log(mergedTrackStates);
   Object.values(mergedTrackStates).forEach((trackStates) => {
     Object.keys(trackStates).forEach((trackId) => {
       const trackStatus: string =
