@@ -1,14 +1,14 @@
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Action } from 'redux';
-
-import JSONValue from 'src/shared/types/JSON';
-import { updateActiveConfigurationForGenome } from '../customDownloadActions';
-import {
-  getCustomDownloadActiveGenomeConfiguration,
-  getCustomDownloadActiveGenomeId
-} from '../customDownloadSelectors';
 import set from 'lodash/set';
+
 import { RootState } from 'src/store';
+import JSONValue from 'src/shared/types/JSON';
+import { updateActiveConfigurationForGenome } from 'src/content/app/custom-download/state/customDownloadActions';
+import {
+  getCustomDownloadActiveGenomeId,
+  getCustomDownloadActiveGenomeConfiguration
+} from 'src/content/app/custom-download/state/customDownloadSelectors';
 
 export const setFiltersAccordionExpandedPanel: ActionCreator<
   ThunkAction<void, any, null, Action<string>>

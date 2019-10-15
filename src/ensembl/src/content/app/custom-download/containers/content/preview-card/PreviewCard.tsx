@@ -20,7 +20,7 @@ type Props = {
   isLoadingResult: boolean;
 };
 
-const ResultLoader = (props: Props) => {
+const PreviewCard = (props: Props) => {
   const formattedResults = formatResults(
     props.preview,
     props.selectedAttributes
@@ -38,20 +38,22 @@ const ResultLoader = (props: Props) => {
   }
 
   return (
-    <div className={styles.resultCard}>
-      {headerRow.map((header: string, rowKey: number) => {
-        return (
-          <div key={rowKey} className={styles.resultLine}>
-            <div className={styles.lineHeader} title={header}>
-              {header}
-            </div>
-            <div className={styles.lineValue}>
-              {dataRow[rowKey] ? dataRow[rowKey] : '-'}
-            </div>
-          </div>
-        );
-      })}
-    </div>
+    <table className={styles.resultCard}>
+      <tbody>
+        {headerRow.map((header: string, rowKey: number) => {
+          return (
+            <tr key={rowKey} className={styles.resultLine}>
+              <td className={styles.lineHeader} title={header}>
+                {header}
+              </td>
+              <td className={styles.lineValue}>
+                {dataRow[rowKey] ? dataRow[rowKey] : '-'}
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
   );
 };
 
@@ -62,4 +64,4 @@ const mapStateToProps = (state: RootState): Props => ({
   isLoadingResult: getIsLoadingResult(state)
 });
 
-export default connect(mapStateToProps)(ResultLoader);
+export default connect(mapStateToProps)(PreviewCard);

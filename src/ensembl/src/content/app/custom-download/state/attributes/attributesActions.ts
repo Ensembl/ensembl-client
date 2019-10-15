@@ -1,23 +1,23 @@
 import { createAsyncAction } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Action } from 'redux';
-import { orthologueSpecies as sampleOrthologueSpecies } from 'src/content/app/custom-download/sample-data/orthologue';
-
-import attributes from 'src/content/app/custom-download/sample-data/attributes';
-
 import findIndex from 'lodash/findIndex';
+import set from 'lodash/set';
 
+import { RootState } from 'src/store';
+import { orthologueSpecies as sampleOrthologueSpecies } from 'src/content/app/custom-download/sample-data/orthologue';
+import attributes from 'src/content/app/custom-download/sample-data/attributes';
 import { AttributeWithOptions } from 'src/content/app/custom-download/types/Attributes';
 import JSONValue from 'src/shared/types/JSON';
 import { CheckboxGridOption } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 import Species from 'src/content/app/custom-download/types/Species';
+
+import { updateActiveConfigurationForGenome } from 'src/content/app/custom-download/state/customDownloadActions';
+
 import {
   getCustomDownloadActiveGenomeId,
   getCustomDownloadActiveGenomeConfiguration
-} from '../customDownloadSelectors';
-import set from 'lodash/set';
-import { updateActiveConfigurationForGenome } from '../customDownloadActions';
-import { RootState } from 'src/store';
+} from 'src/content/app/custom-download/state/customDownloadSelectors';
 
 export const setAttributes = createAsyncAction(
   'custom-download/set-attributes-request',
@@ -250,7 +250,33 @@ export const setOrthologueSpecies = createAsyncAction(
   'custom-download/set-orthologue-species-request',
   'custom-download/set-orthologue-species-success',
   'custom-download/set-orthologue-species-failure'
-)<{ searchTerm: string }, undefined, Error>();
+)<{ searchTerm: string }, void, Error>();
+
+export const updateOrthologueSpecies: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (orthologueSpecies: CheckboxGridOption[]) => (
+  dispatch,
+  getState: () => RootState
+) => {
+  const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
+
+  if (!activeGenomeId) {
+    return;
+  }
+
+  dispatch(
+    updateActiveConfigurationForGenome({
+      activeGenomeId,
+      data: {
+        ...set(
+          getCustomDownloadActiveGenomeConfiguration(getState()),
+          'attributes.content.orthologue.species',
+          orthologueSpecies
+        )
+      }
+    })
+  );
+};
 
 export const fetchOrthologueSpecies: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
