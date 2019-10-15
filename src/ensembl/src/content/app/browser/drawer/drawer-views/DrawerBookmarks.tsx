@@ -7,7 +7,6 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { RootState } from 'src/store';
 import { PreviouslyViewedObject } from 'src/content/app/browser/track-panel/trackPanelState';
 import { BrowserTrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
-import { updateTrackStatesAndSave } from 'src/content/app/browser/browserActions';
 import { closeTrackPanelModal } from 'src/content/app/browser/track-panel/trackPanelActions';
 import { closeDrawer } from 'src/content/app/browser/drawer/drawerActions';
 import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
@@ -19,7 +18,6 @@ type StateProps = {
 };
 
 type DispatchProps = {
-  updateTrackStatesAndSave: (trackStates: BrowserTrackStates) => void;
   closeTrackPanelModal: () => void;
   closeDrawer: () => void;
 };
@@ -71,7 +69,6 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  updateTrackStatesAndSave,
   closeTrackPanelModal,
   closeDrawer
 };
