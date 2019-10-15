@@ -316,7 +316,7 @@ export const validateRegion: ActionCreator<
       )
     );
 
-    const url = `/api/genome/region/validate?genome_id=${activeGenomeId}&region=${region}&region_code=chromosome`;
+    const url = `/api/genome/region/validate?genome_id=${activeGenomeId}&region=${region}`;
     const response = await apiService.fetch(url);
 
     dispatch(fetchRegionValidationInfo.success(response));

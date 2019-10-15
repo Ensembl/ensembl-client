@@ -198,22 +198,11 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
 
   useEffect(() => {
     if (props.regionEditorActive) {
-      const {
-        regionValidationInfo,
-        regionValidationLoadingStatus,
-        genomeKaryotypes
-      } = props;
+      const { regionValidationInfo, regionValidationLoadingStatus } = props;
 
       if (regionValidationLoadingStatus !== LoadingState.LOADING) {
-        const karyotypeOfRegionInput = genomeKaryotypes.filter(
-          (karyotype) => regionInput === karyotype.name
-        )[0];
-
         const errorMessages = getRegionEditorErrorMessages(
-          regionValidationInfo,
-          karyotypeOfRegionInput,
-          locationStartInput,
-          locationEndInput
+          regionValidationInfo
         );
 
         if (

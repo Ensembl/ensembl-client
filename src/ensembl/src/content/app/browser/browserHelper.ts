@@ -27,33 +27,20 @@ export function getChrLocationStr(
 }
 
 export const getRegionFieldErrorMessages = (
-  validationInfo: RegionValidationResponse | null,
-  genomeKaryotypes: GenomeKaryotype[] | null
+  validationInfo: RegionValidationResponse | null
 ) => {
   // There is no validation to check if the response complains about region_code and genome_id not being valid.
   // As the chance of this happening through the frontend is almost zero unless there are some spelling errors :/
-  // Also strings will be used for now to return error messages.
-  // The API will return the error messages in the future and most of this code might be deletable.
-
   try {
     if (validationInfo) {
-      // need to explicitly check for false as don't want this to pass on undefined
       if (validationInfo.is_parseable === false) {
         return RegionErrors.PARSE_ERROR;
       } else if (validationInfo.region && !validationInfo.region.is_valid) {
-        return RegionErrors.INVALID_REGION;
-      } else if (
-        genomeKaryotypes &&
-        ((validationInfo.start && !validationInfo.start.is_valid) ||
-          (validationInfo.end && !validationInfo.end.is_valid))
-      ) {
-        const karyotypeInRegionField = genomeKaryotypes.filter(
-          (karyotype) =>
-            (validationInfo.region as RegionValidationRegionError).region_id.toUpperCase() ===
-            karyotype.name
-        )[0];
-
-        return `${RegionErrors.INVALID_LOCATION} ${karyotypeInRegionField.length}`;
+        return validationInfo.region.error_message;
+      } else if (validationInfo.start && !validationInfo.start.is_valid) {
+        return validationInfo.start.error_message;
+      } else if (validationInfo.end && !validationInfo.end.is_valid) {
+        return validationInfo.end.error_message;
       }
     }
 
@@ -64,45 +51,16 @@ export const getRegionFieldErrorMessages = (
 };
 
 export const getRegionEditorErrorMessages = (
-  validationInfo: RegionValidationResponse | null,
-  karyotypeOfRegionInput: GenomeKaryotype,
-  locationStart: string,
-  locationEnd: string
+  validationInfo: RegionValidationResponse | null
 ) => {
-  // The API will return the error messages in the future and most of this code might be deletable.
-  // However, the validation needs to be done through this function for the time being.
-
-  // try {
   let locationStartError: string | null = null;
   let locationEndError: string | null = null;
 
   if (validationInfo) {
-    if (validationInfo) {
-      const locationStartNum = locationStart
-        ? getNumberWithoutCommas(locationStart)
-        : 0;
-      const locationEndNum = locationEnd
-        ? getNumberWithoutCommas(locationEnd)
-        : 0;
-
-      if (
-        !locationStartNum ||
-        locationStartNum < 1 ||
-        locationStartNum > karyotypeOfRegionInput.length
-      ) {
-        locationStartError = RegionErrors.INVALID_LOCATION_START;
-      } else if (
-        !karyotypeOfRegionInput.is_circular &&
-        locationStartNum > locationEndNum
-      ) {
-        locationStartError = RegionErrors.LOCATION_START_IS_BIGGER;
-      } else if (
-        !locationEndNum ||
-        locationEndNum < 1 ||
-        locationEndNum > karyotypeOfRegionInput.length
-      ) {
-        locationEndError = `${RegionErrors.INVALID_LOCATION_END} ${karyotypeOfRegionInput.length}`;
-      }
+    if (validationInfo.start && !validationInfo.start.is_valid) {
+      locationStartError = validationInfo.start.error_message;
+    } else if (validationInfo.end && !validationInfo.end.is_valid) {
+      locationEndError = validationInfo.end.error_message;
     }
 
     return {
@@ -110,9 +68,4 @@ export const getRegionEditorErrorMessages = (
       locationEndError
     };
   }
-  // } catch {
-  //   return {
-  //     request: RegionErrors.REQUEST_ERROR
-  //   };
-  // }
 };

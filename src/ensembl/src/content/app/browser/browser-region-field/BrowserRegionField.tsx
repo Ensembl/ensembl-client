@@ -23,14 +23,12 @@ import {
   getChrLocation
 } from '../browserSelectors';
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
-import { GenomeKaryotype } from 'src/genome/genomeTypes';
 import {
   getChrLocationFromStr,
   getRegionFieldErrorMessages
 } from '../browserHelper';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import { getGenomeKaryotypes } from 'src/genome/genomeSelectors';
 import { LoadingState } from 'src/shared/types/loading-state';
 
 import applyIcon from 'static/img/shared/apply.svg';
@@ -43,7 +41,6 @@ import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
 type BrowserRegionFieldProps = {
   activeGenomeId: string | null;
   chrLocation: ChrLocation;
-  genomeKaryotypes: GenomeKaryotype[] | null;
   isDrawerOpened: boolean;
   regionEditorActive: boolean;
   regionFieldActive: boolean;
@@ -140,17 +137,11 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
 
   useEffect(() => {
     if (props.regionFieldActive) {
-      const {
-        regionValidationInfo,
-        regionValidationLoadingStatus,
-        genomeKaryotypes
-      } = props;
+      const { regionValidationInfo, regionValidationLoadingStatus } = props;
 
       if (regionValidationLoadingStatus !== LoadingState.LOADING) {
-        const errorMessages = getRegionFieldErrorMessages(
-          regionValidationInfo,
-          genomeKaryotypes
-        );
+        const errorMessages = getRegionFieldErrorMessages(regionValidationInfo);
+        console.log(errorMessages);
 
         if (errorMessages) {
           setErrorMessages(errorMessages);
@@ -219,7 +210,6 @@ const mapStateToProps = (state: RootState) => ({
   regionValidationInfo: getRegionValidationInfo(state),
   regionValidationLoadingStatus: getRegionValidationLoadingStatus(state),
   chrLocation: getChrLocation(state) as ChrLocation,
-  genomeKaryotypes: getGenomeKaryotypes(state),
   isDrawerOpened: getIsDrawerOpened(state)
 });
 
