@@ -4,11 +4,12 @@ import faker from 'faker';
 
 import { BrowserRegionField } from './BrowserRegionField';
 import Input from 'src/shared/components/input/Input';
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
+
 import { ChrLocation } from '../browserState';
 import { LoadingState } from 'src/shared/types/loading-state';
 import genomeKaryotypes from 'tests/data/browser/karyotypes';
-
-import styles from '../browser-nav/BrowserNavBar.scss';
+import { createValidationInfo } from 'tests/fixtures/browser';
 
 const defaultProps = {
   activeGenomeId: faker.lorem.words(),
@@ -27,6 +28,10 @@ const defaultProps = {
 };
 
 describe('<BrowserRegionField', () => {
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   let wrapper: any;
   const regionInput = '1:1-1000';
 
@@ -39,8 +44,9 @@ describe('<BrowserRegionField', () => {
       expect(wrapper.find(Input).length).toBe(1);
     });
 
-    test('does not show form buttons when not focussed', () => {
-      expect(wrapper.find(styles.browserNavBarButtons).length).toBe(0);
+    test('contains submit and close buttons', () => {
+      expect(wrapper.find('.submitButton')).toHaveLength(1);
+      expect(wrapper.find('.closeButton')).toHaveLength(1);
     });
 
     test('has an overlay on top when region editor is active', () => {
@@ -50,7 +56,7 @@ describe('<BrowserRegionField', () => {
   });
 
   describe('behaviour', () => {
-    test('shows form buttons when focussed', () => {
+    test('region field is set to active when focussed', () => {
       wrapper.find(Input).simulate('focus');
 
       // the activateForm function which fires on focus should call toggleRegionFieldActive
@@ -75,18 +81,33 @@ describe('<BrowserRegionField', () => {
       expect(wrapper.props().validateRegion).toHaveBeenCalled();
     });
 
-    test('resets region field after when close button is clicked', () => {
+    test('resets region field when close button is clicked', () => {
       wrapper
         .find(Input)
         .simulate('change', { target: { value: regionInput } });
+      jest.resetAllMocks();
+
       wrapper.find('.closeButton').simulate('click');
-
       expect(wrapper.find(Input).props().value).toBe('');
-
-      // first time toggleBrowserRegionFieldActive is called is when the input is focussed
-      // and the second time is when the form is closed
-      expect(wrapper.props().toggleRegionFieldActive).toHaveBeenCalledTimes(2);
+      expect(wrapper.props().toggleRegionFieldActive).toHaveBeenCalledTimes(1);
       expect(wrapper.props().resetRegionValidation).toHaveBeenCalledTimes(1);
+    });
+
+    test('displays error message when validation fails', () => {
+      wrapper.setProps({
+        regionFieldActive: true,
+        regionValidationInfo: Object.assign({}, createValidationInfo(), {
+          start: {
+            error_code: null,
+            error_message: 'Start should be between 1 and 248956422',
+            is_valid: false,
+            value: 0
+          }
+        })
+      });
+
+      wrapper.update();
+      expect(wrapper.find(Tooltip)).toHaveLength(1);
     });
   });
 });

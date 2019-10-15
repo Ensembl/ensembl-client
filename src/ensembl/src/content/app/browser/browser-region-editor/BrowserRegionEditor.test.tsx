@@ -5,14 +5,13 @@ import faker from 'faker';
 import { BrowserRegionEditor } from './BrowserRegionEditor';
 import Input from 'src/shared/components/input/Input';
 import Select from 'src/shared/components/select/Select';
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import { ChrLocation } from '../browserState';
 import genomeKaryotypes from 'tests/data/browser/karyotypes';
-
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 import { LoadingState } from 'src/shared/types/loading-state';
-
-import styles from '../browser-nav/BrowserNavBar.scss';
+import { createValidationInfo } from 'tests/fixtures/browser';
 
 const defaultProps = {
   activeGenomeId: faker.lorem.words(),
@@ -30,6 +29,10 @@ const defaultProps = {
 };
 
 describe('<BrowserRegionEditor', () => {
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   let wrapper: any;
 
   beforeEach(() => {
@@ -45,8 +48,9 @@ describe('<BrowserRegionEditor', () => {
       expect(wrapper.find(Input).length).toBe(2);
     });
 
-    test('does not show form buttons when not focussed', () => {
-      expect(wrapper.find(styles.browserNavBarButtons).length).toBe(0);
+    test('contains submit and close buttons', () => {
+      expect(wrapper.find('.submitButton')).toHaveLength(1);
+      expect(wrapper.find('.closeButton')).toHaveLength(1);
     });
 
     test('has an overlay on top when region field is active', () => {
@@ -61,7 +65,6 @@ describe('<BrowserRegionEditor', () => {
 
     test('shows form buttons when focussed', () => {
       wrapper.find(Select).simulate('focus');
-
       expect(wrapper.props().toggleRegionEditorActive).toHaveBeenCalledTimes(1);
     });
 
@@ -102,7 +105,7 @@ describe('<BrowserRegionEditor', () => {
 
       wrapper.find('form').simulate('submit');
 
-      expect(wrapper.props().validateRegion).toHaveBeenCalled();
+      expect(wrapper.props().validateRegion).toHaveBeenCalledTimes(1);
     });
 
     test('resets region editor form when close button is clicked', () => {
@@ -120,6 +123,8 @@ describe('<BrowserRegionEditor', () => {
           target: { value: locationEndInput }
         });
 
+      jest.resetAllMocks();
+
       wrapper.find('.closeButton').simulate('click');
 
       expect(
@@ -136,9 +141,41 @@ describe('<BrowserRegionEditor', () => {
           .props().value
       ).toBe(getCommaSeparatedNumber(locationEnd));
 
-      // first time toggleRegionEditorActive is called is when the input is focussed
-      // and the second time is when the form is closed
-      expect(wrapper.props().toggleRegionEditorActive).toHaveBeenCalledTimes(2);
+      expect(wrapper.props().toggleRegionEditorActive).toHaveBeenCalledTimes(1);
+    });
+
+    test('displays the start error message when validation fails', () => {
+      wrapper.setProps({
+        regionEditorActive: true,
+        regionValidationInfo: Object.assign({}, createValidationInfo(), {
+          start: {
+            error_code: null,
+            error_message: 'Start should be between 1 and 248956422',
+            is_valid: false,
+            value: 0
+          }
+        })
+      });
+
+      wrapper.update();
+      expect(wrapper.find('.startInputGroup').find(Tooltip)).toHaveLength(1);
+    });
+
+    test('displays the end error message when validation fails', () => {
+      wrapper.setProps({
+        regionEditorActive: true,
+        regionValidationInfo: Object.assign({}, createValidationInfo(), {
+          end: {
+            error_code: null,
+            error_message: 'End should be between 1 and 248956422',
+            is_valid: false,
+            value: 0
+          }
+        })
+      });
+
+      wrapper.update();
+      expect(wrapper.find('.endInputGroup').find(Tooltip)).toHaveLength(1);
     });
   });
 });

@@ -141,7 +141,6 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
 
       if (regionValidationLoadingStatus !== LoadingState.LOADING) {
         const errorMessages = getRegionFieldErrorMessages(regionValidationInfo);
-        console.log(errorMessages);
 
         if (errorMessages) {
           setErrorMessages(errorMessages);
@@ -188,7 +187,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
           className={inputClassNames}
         />
         <span className={buttonsClassNames}>
-          <button type="submit">
+          <button type="submit" className="submitButton">
             <img src={applyIcon} alt="Apply changes" />
           </button>
           <button onClick={closeForm} className="closeButton">

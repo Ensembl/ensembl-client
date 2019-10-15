@@ -261,7 +261,10 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
             options={getKaryotypeOptions()}
           ></Select>
         </div>
-        <div className={styles.inputGroup} ref={locationStartRef}>
+        <div
+          className={`startInputGroup ${styles.inputGroup}`}
+          ref={locationStartRef}
+        >
           <label className="show-for-large">Start</label>
           <Input
             type="text"
@@ -279,7 +282,10 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
             </Tooltip>
           ) : null}
         </div>
-        <div className={styles.inputGroup} ref={locationEndRef}>
+        <div
+          className={` endInputGroup ${styles.inputGroup}`}
+          ref={locationEndRef}
+        >
           <label className="show-for-large">End</label>
           <Input
             type="text"
@@ -298,7 +304,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
           ) : null}
         </div>
         <span className={buttonsClassNames}>
-          <button type="submit">
+          <button type="submit" className="submitButton">
             <img src={applyIcon} alt="Apply changes" />
           </button>
           <button onClick={closeForm} className="closeButton">
