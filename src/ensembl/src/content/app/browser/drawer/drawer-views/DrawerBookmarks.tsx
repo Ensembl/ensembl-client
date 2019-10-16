@@ -35,7 +35,7 @@ const DrawerBookmarks = (props: DrawerBookmarksProps) => {
 
   return (
     <>
-      <div className={styles.drawerTitle}> All previously viewed</div>
+      <div className={styles.drawerTitle}>Previously viewed</div>
       <div className={styles.contentWrapper}>
         <div className={styles.linksWrapper}>
           {[...limitedPreviouslyViewedObjects]
