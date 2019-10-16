@@ -2,6 +2,9 @@
 
 .wrapper {
   position: relative;
+  display: grid;
+  grid-template-columns: 40px calc(50% - 50px) 10px calc(50% - 40px) 40px;
+
   &.default {
     height: calc(100vh - 220px);
   }
@@ -17,17 +20,13 @@
 }
 
 .attributesHolder {
-  position: absolute;
-  left: 50px;
-  width: calc(50% - 55px);
-  min-width: 45%;
+  grid-column-start: 2;
+  grid-column-end: 3;
 }
 
 .filtersHolder {
-  position: absolute;
-  left: 50%;
-  width: calc(50% - 40px);
-  min-width: 45%;
+  grid-column-start: 3;
+  grid-column-end: 5;
 }
 
 .exampleDataPanel {

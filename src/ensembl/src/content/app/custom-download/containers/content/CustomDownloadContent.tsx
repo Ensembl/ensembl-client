@@ -47,14 +47,14 @@ const CustomDownloadContent = (props: Props) => {
         </>
       )}
       {!props.showSummary && (
-        <div>
+        <>
           <div className={styles.attributesHolder}>
             <AttributesAccordion />
           </div>
           <div className={styles.filtersHolder}>
             <FiltersAccordion />
           </div>
-        </div>
+        </>
       )}
       {props.showSummary && (
         <div>
