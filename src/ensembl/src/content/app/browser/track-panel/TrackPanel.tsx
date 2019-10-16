@@ -21,6 +21,7 @@ import {
   getBrowserTrackStates
 } from '../browserSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
+import { toggleTrackPanel } from './trackPanelActions';
 import { BreakpointWidth } from 'src/global/globalConfig';
 import { TrackSet, TrackStates } from './trackPanelConfig';
 
@@ -41,6 +42,7 @@ type TrackPanelProps = {
   selectedTrackPanelTab: TrackSet;
   genomeTrackCategories: GenomeTrackCategory[];
   trackStates: TrackStates;
+  toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
 };
 
 const TrackPanel = (props: TrackPanelProps) => {
@@ -110,4 +112,11 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-export default connect(mapStateToProps)(TrackPanel);
+const mapDispatchToProps = {
+  toggleTrackPanel
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TrackPanel);
