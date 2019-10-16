@@ -12,7 +12,7 @@ import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { setShowPreview } from 'src/content/app/custom-download/state/customDownloadActions';
 import { getDisplayName } from 'src/shared/components/selected-species/selectedSpeciesHelpers';
-import { getProcessedFilters } from 'src/content/app/custom-download/containers/content/result-loader/resultLoaderHelper';
+import { getProcessedFilters } from 'src/content/app/custom-download/containers/header/customDownloadHeaderHelper';
 import {
   getCustomDownloadActiveGenomeId,
   getPreviewResult

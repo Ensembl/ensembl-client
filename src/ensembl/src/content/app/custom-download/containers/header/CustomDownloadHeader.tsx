@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
   PrimaryButton,
@@ -12,10 +12,11 @@ import Select, { Option } from 'src/shared/components/select/Select';
 
 import {
   getSelectedPreFilter,
-  getPreviewResult,
   getShowPreviewResult,
-  getDownloadType
-} from '../../state/customDownloadSelectors';
+  getDownloadType,
+  getPreviewResult,
+  getIsLoadingResult
+} from 'src/content/app/custom-download/state/customDownloadSelectors';
 
 import { getSelectedFilters } from '../../state/filters/filtersSelector';
 import { getSelectedAttributes } from '../../state/attributes/attributesSelector';
@@ -27,8 +28,34 @@ import {
 } from '../../state/customDownloadActions';
 
 import { fetchCustomDownloadResults } from './customDownloadHeaderHelper';
+import { flattenObject } from 'src/content/app/custom-download/containers/content/customDownloadContentHelper';
+import { getEndpointUrl } from './customDownloadHeaderHelper';
+import {
+  setPreviewResult,
+  setIsLoadingResult,
+  fetchPreviewResult
+} from 'src/content/app/custom-download/state/customDownloadActions';
 
 import styles from './CustomDownloadHeader.scss';
+
+type StateProps = {
+  selectedPreFilter: string;
+  preview: JSONValue;
+  showSummary: boolean;
+  downloadType: string;
+  selectedFilters: JSONValue;
+  selectedAttributes: JSONValue;
+  isLoadingResult: boolean;
+};
+
+type DispatchProps = {
+  togglePreFiltersPanel: (togglePreFiltersPanel: boolean) => void;
+  setShowPreview: (setShowPreview: boolean) => void;
+  setDownloadType: (setDownloadType: string) => void;
+  fetchPreviewResult: (endpointURL: string) => void;
+  clearPreviewResult: () => void;
+  setIsLoadingResult: (isLoadingResult: boolean) => void;
+};
 
 type Props = StateProps & DispatchProps;
 
@@ -46,6 +73,34 @@ const downloadTypeoptions = [
 ];
 
 const Header = (props: Props) => {
+  useEffect(() => {
+    const flatSelectedAttributes: { [key: string]: boolean } = flattenObject(
+      props.selectedAttributes
+    );
+
+    const totalSelectedAttributes = Object.keys(flatSelectedAttributes).length;
+    if (!totalSelectedAttributes && props.preview.results) {
+      props.clearPreviewResult();
+      return;
+    } else if (!totalSelectedAttributes) {
+      return;
+    }
+
+    const endpointURL = getEndpointUrl(
+      flatSelectedAttributes,
+      props.selectedFilters
+    );
+
+    if (totalSelectedAttributes) {
+      props.setIsLoadingResult(true);
+      props.fetchPreviewResult(endpointURL);
+    }
+  }, [props.selectedAttributes, props.selectedFilters]);
+
+  useEffect(() => {
+    props.setIsLoadingResult(false);
+  }, [props.preview]);
+
   const filterOnClick = () => {
     props.togglePreFiltersPanel(true);
   };
@@ -132,7 +187,7 @@ const Header = (props: Props) => {
               fetchCustomDownloadResults(
                 props.downloadType,
                 props.selectedAttributes,
-                props.selectedfilters
+                props.selectedFilters
               );
             }}
           >
@@ -144,25 +199,13 @@ const Header = (props: Props) => {
   );
 };
 
-type DispatchProps = {
-  togglePreFiltersPanel: (togglePreFiltersPanel: boolean) => void;
-  setShowPreview: (setShowPreview: boolean) => void;
-  setDownloadType: (setDownloadType: string) => void;
-};
-
 const mapDispatchToProps: DispatchProps = {
   togglePreFiltersPanel,
   setShowPreview,
-  setDownloadType
-};
-
-type StateProps = {
-  selectedPreFilter: string;
-  preview: JSONValue;
-  showSummary: boolean;
-  downloadType: string;
-  selectedfilters: JSONValue;
-  selectedAttributes: JSONValue;
+  setDownloadType,
+  fetchPreviewResult,
+  clearPreviewResult: () => setPreviewResult.success({}),
+  setIsLoadingResult
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
@@ -170,8 +213,9 @@ const mapStateToProps = (state: RootState): StateProps => ({
   preview: getPreviewResult(state),
   showSummary: getShowPreviewResult(state),
   downloadType: getDownloadType(state),
-  selectedfilters: getSelectedFilters(state),
-  selectedAttributes: getSelectedAttributes(state)
+  selectedFilters: getSelectedFilters(state),
+  selectedAttributes: getSelectedAttributes(state),
+  isLoadingResult: getIsLoadingResult(state)
 });
 
 export default connect(

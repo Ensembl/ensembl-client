@@ -7,7 +7,6 @@ import {
 } from '../../state/customDownloadSelectors';
 import AttributesAccordion from './attributes-accordion/AttributesAccordion';
 import FiltersAccordion from './filter-accordion/FiltersAccordion';
-import ResultLoader from './result-loader/ResultLoader';
 import Overlay from '../../components/overlay/Overlay';
 import Panel from '../../components/panel/Panel';
 import PreviewCard from 'src/content/app/custom-download/containers/content/preview-card/PreviewCard';
@@ -47,7 +46,6 @@ const CustomDownloadContent = (props: Props) => {
           </Panel>
         </>
       )}
-      <ResultLoader />
       {!props.showSummary && (
         <div>
           <div className={styles.attributesHolder}>
