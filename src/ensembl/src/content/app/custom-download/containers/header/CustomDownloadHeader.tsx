@@ -15,7 +15,8 @@ import {
   getShowPreviewResult,
   getDownloadType,
   getPreviewResult,
-  getIsLoadingResult
+  getIsLoadingResult,
+  getCustomDownloadActiveGenomeId
 } from 'src/content/app/custom-download/state/customDownloadSelectors';
 
 import { getSelectedFilters } from '../../state/filters/filtersSelector';
@@ -46,6 +47,7 @@ type StateProps = {
   selectedFilters: JSONValue;
   selectedAttributes: JSONValue;
   isLoadingResult: boolean;
+  activeGenomeId: string | null;
 };
 
 type DispatchProps = {
@@ -87,6 +89,7 @@ const Header = (props: Props) => {
     }
 
     const endpointURL = getEndpointUrl(
+      props.activeGenomeId,
       flatSelectedAttributes,
       props.selectedFilters
     );
@@ -187,7 +190,8 @@ const Header = (props: Props) => {
               fetchCustomDownloadResults(
                 props.downloadType,
                 props.selectedAttributes,
-                props.selectedFilters
+                props.selectedFilters,
+                props.activeGenomeId
               );
             }}
           >
@@ -215,7 +219,8 @@ const mapStateToProps = (state: RootState): StateProps => ({
   downloadType: getDownloadType(state),
   selectedFilters: getSelectedFilters(state),
   selectedAttributes: getSelectedAttributes(state),
-  isLoadingResult: getIsLoadingResult(state)
+  isLoadingResult: getIsLoadingResult(state),
+  activeGenomeId: getCustomDownloadActiveGenomeId(state)
 });
 
 export default connect(

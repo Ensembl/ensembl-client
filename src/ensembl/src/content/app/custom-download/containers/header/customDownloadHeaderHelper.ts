@@ -14,13 +14,19 @@ import {
 export const fetchCustomDownloadResults = (
   downloadType: string,
   attributes: JSONValue,
-  filters: JSONValue
+  filters: JSONValue,
+  activeGenomeId: string | null
 ) => {
   const flatSelectedAttributes: { [key: string]: boolean } = flattenObject(
     attributes
   );
 
-  let endpoint = getEndpointUrl(flatSelectedAttributes, filters, 'fetch');
+  let endpoint = getEndpointUrl(
+    activeGenomeId,
+    flatSelectedAttributes,
+    filters,
+    'fetch'
+  );
 
   if (downloadType) {
     endpoint += '&accept=' + downloadType;
@@ -49,6 +55,7 @@ export const getProcessedFilters = (filters: JSONValue) => {
 };
 
 export const getEndpointUrl = (
+  activeGenomeId: string | null,
   flatSelectedAttributes: JSONValue,
   selectedFilters: JSONValue,
   method = 'query'
@@ -57,8 +64,14 @@ export const getEndpointUrl = (
   const processedFilters = getProcessedFilters(selectedFilters);
   let endpoint = config.genesearchAPIEndpoint + `/genes/${method}?query=`;
 
+  const genome = activeGenomeId
+    ? activeGenomeId
+        .split('_')
+        .slice(0, 2)
+        .join('_')
+    : 'homo_sapiens';
   const endpointFilters: JSONValue = {
-    genome: 'homo_sapiens'
+    genome
   };
 
   // FIXME: Temporarily apply the filters locally
