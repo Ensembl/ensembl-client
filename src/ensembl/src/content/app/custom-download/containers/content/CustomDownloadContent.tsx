@@ -8,7 +8,7 @@ import {
 import AttributesAccordion from './attributes-accordion/AttributesAccordion';
 import FiltersAccordion from './filter-accordion/FiltersAccordion';
 import Overlay from '../../components/overlay/Overlay';
-import Panel from '../../components/panel/Panel';
+import CustomDownloadInfoCard from '../../components/info-card/CustomDownloadInfoCard';
 import PreviewCard from 'src/content/app/custom-download/containers/content/preview-card/PreviewCard';
 import PreviewDownload from './preview-download/PreviewDownload';
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
@@ -37,13 +37,13 @@ const CustomDownloadContent = (props: Props) => {
       {props.showExampleData && (
         <>
           <Overlay />
-          <Panel
+          <CustomDownloadInfoCard
             title={'Example data to download'}
-            classNames={{ panelClassName: styles.exampleDataPanel }}
+            classNames={{ infoCardClassName: styles.exampleDataPanel }}
             onClose={() => props.setShowExampleData(false)}
           >
             <PreviewCard />
-          </Panel>
+          </CustomDownloadInfoCard>
         </>
       )}
       {!props.showSummary && (

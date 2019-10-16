@@ -3,36 +3,36 @@ import classNamesMerger from 'classnames';
 
 import closeIcon from 'static/img/shared/close.svg';
 
-import styles from './Panel.scss';
+import styles from './CustomDownloadInfoCard.scss';
 
 type Props = {
   title: string;
   children: JSX.Element;
   classNames?: {
-    panelClassName?: string;
+    infoCardClassName?: string;
     headerClassName?: string;
     bodyClassName?: string;
   };
   onClose?: () => void;
 };
 
-const Panel = (props: Props) => {
+const CustomDownloadInfoCard = (props: Props) => {
   const { title, onClose, classNames } = props;
 
-  const panelClassNames = classNames
-    ? classNamesMerger(styles.panelDefault, classNames.panelClassName)
-    : styles.panelDefault;
+  const inforCardClassNames = classNames
+    ? classNamesMerger(styles.infoCardDefault, classNames.infoCardClassName)
+    : styles.infoCardDefault;
   const headerClassNames = classNames
-    ? classNamesMerger(styles.panelHeaderDefault, classNames.headerClassName)
-    : styles.panelHeaderDefault;
-  const panelBodyClassNames = classNames
-    ? classNamesMerger(styles.panelBodyDefault, classNames.bodyClassName)
-    : styles.panelBodyDefault;
+    ? classNamesMerger(styles.headerDefault, classNames.headerClassName)
+    : styles.headerDefault;
+  const bodyClassNames = classNames
+    ? classNamesMerger(styles.bodyDefault, classNames.bodyClassName)
+    : styles.bodyDefault;
 
   return (
-    <div className={panelClassNames}>
+    <div className={inforCardClassNames}>
       <div className={headerClassNames}>{title}</div>
-      <div className={panelBodyClassNames}>
+      <div className={bodyClassNames}>
         <div>{props.children}</div>
         {onClose && (
           <span className={styles.closeButton} onClick={onClose}>
@@ -44,4 +44,4 @@ const Panel = (props: Props) => {
   );
 };
 
-export default Panel;
+export default CustomDownloadInfoCard;

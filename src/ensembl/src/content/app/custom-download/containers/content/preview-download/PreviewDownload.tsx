@@ -6,7 +6,7 @@ import { RootState } from 'src/store';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as closeIcon } from 'static/img/shared/close.svg';
-import Panel from 'src/content/app/custom-download/components/panel/Panel';
+import CustomDownloadInfoCard from 'src/content/app/custom-download/components/info-card/CustomDownloadInfoCard';
 import PreviewCard from 'src/content/app/custom-download/containers/content/preview-card/PreviewCard';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
@@ -67,12 +67,12 @@ const PreviewDownload = (props: Props) => {
           <tr className={styles.previewDownloadHeader}>
             <td className={styles.species}>Species</td>
             <td className={styles.example}>
-              <Panel
+              <CustomDownloadInfoCard
                 title={'Example data to download'}
-                classNames={{ panelClassName: styles.exampleDataPanel }}
+                classNames={{ infoCardClassName: styles.exampleDataPanel }}
               >
                 <PreviewCard />
-              </Panel>
+              </CustomDownloadInfoCard>
             </td>
             <td className={styles.filters}>
               Filters

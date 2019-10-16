@@ -1,6 +1,6 @@
 @import 'src/styles/common';
 
-.panelDefault {
+.infoCardDefault {
   min-height: 100px;
   border-radius: 5px;
   z-index: 2;
@@ -11,7 +11,7 @@
   box-shadow: 1px 1px 4px $shadow-color;
 }
 
-.panelHeaderDefault {
+.headerDefault {
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   color: #fff;
@@ -22,7 +22,7 @@
   line-height: 24px;
 }
 
-.panelBodyDefault {
+.bodyDefault {
   position: relative;
   padding: 10px;
   border-bottom-right-radius: 5px;
