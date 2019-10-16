@@ -1,9 +1,12 @@
-import React, { MouseEvent, ReactNode, useState, useEffect } from 'react';
+import React, { MouseEvent, ReactNode, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { RootState } from 'src/store';
 import classNames from 'classnames';
 
+import { RootState } from 'src/store';
+
 import analyticsTracking from 'src/services/analytics-service';
+import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+
 import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/components/image-button/ImageButton';
@@ -13,14 +16,18 @@ import {
   TrackItemColourKey,
   TrackId
 } from '../trackPanelConfig';
+
 import {
   updateTrackStatesAndSave,
   UpdateTrackStatesPayload
 } from 'src/content/app/browser/browserActions';
+import { updateCollapsedTrackIds } from 'src/content/app/browser/track-panel/trackPanelActions';
 import { changeDrawerView, toggleDrawer } from '../../drawer/drawerActions';
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
-import { gethighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelSelectors';
-import browserStorageService from '../../browser-storage-service';
+
+import {
+  getHighlightedTrackId,
+  isTrackCollapsed
+} from 'src/content/app/browser/track-panel/trackPanelSelectors';
 import { EnsObjectTrack } from 'src/ens-object/ensObjectTypes';
 import { getIsDrawerOpened, getDrawerView } from '../../drawer/drawerSelectors';
 import { getBrowserActiveGenomeId } from '../../browserSelectors';
@@ -32,23 +39,32 @@ import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg'
 
 import styles from './TrackPanelListItem.scss';
 
-type Props = {
-  changeDrawerView: (drawerView: string) => void;
-  toggleDrawer: (isDrawerOpened: boolean) => void;
-  updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
+type OwnProps = {
   categoryName: string;
   children?: ReactNode[];
   trackStatus: ImageButtonStatus;
   defaultTrackStatus: ImageButtonStatus;
   track: EnsObjectTrack;
-  highlightedTrackId: string;
+};
+
+type PropsFromRedux = {
   activeGenomeId: string | null;
   isDrawerOpened: boolean;
   drawerView: string;
+  highlightedTrackId: string;
+  isCollapsed: boolean;
+  changeDrawerView: (drawerView: string) => void;
+  toggleDrawer: (isDrawerOpened: boolean) => void;
+  updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
+  updateCollapsedTrackIds: (payload: {
+    trackId: string;
+    isCollapsed: boolean;
+  }) => void;
 };
 
+type Props = OwnProps & PropsFromRedux;
+
 const TrackPanelListItem = (props: Props) => {
-  const [expanded, setExpanded] = useState(true);
   const {
     activeGenomeId,
     categoryName,
@@ -62,19 +78,6 @@ const TrackPanelListItem = (props: Props) => {
     const { defaultTrackStatus } = props;
     if (trackStatus !== defaultTrackStatus) {
       updateGenomeBrowser(trackStatus);
-    }
-  }, []);
-
-  useEffect(() => {
-    const trackToggleStates = browserStorageService.getTrackListToggleStates();
-
-    if (
-      activeGenomeId &&
-      track.child_tracks &&
-      trackToggleStates[activeGenomeId] &&
-      trackToggleStates[activeGenomeId][track.track_id] !== undefined
-    ) {
-      setExpanded(trackToggleStates[activeGenomeId][track.track_id]);
     }
   }, []);
 
@@ -123,11 +126,9 @@ const TrackPanelListItem = (props: Props) => {
   };
 
   const toggleExpand = () => {
-    setExpanded(!expanded);
-
-    browserStorageService.updateTrackListToggleStates({
-      [activeGenomeId as string]: { [track.track_id]: !expanded }
-    });
+    const { track_id: trackId } = props.track;
+    const { isCollapsed } = props;
+    props.updateCollapsedTrackIds({ trackId, isCollapsed: !isCollapsed });
   };
 
   const toggleTrack = () => {
@@ -185,8 +186,8 @@ const TrackPanelListItem = (props: Props) => {
           {track.child_tracks && (
             <button onClick={toggleExpand} className={styles.expandBtn}>
               <img
-                src={expanded ? chevronUpIcon : chevronDownIcon}
-                alt={expanded ? 'collapse' : 'expand'}
+                src={props.isCollapsed ? chevronDownIcon : chevronUpIcon}
+                alt={props.isCollapsed ? 'expand' : 'collapse'}
               />
             </button>
           )}
@@ -208,19 +209,21 @@ const TrackPanelListItem = (props: Props) => {
           />
         </div>
       </dd>
-      {expanded && props.children}
+      {!props.isCollapsed && props.children}
     </>
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
+const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
   isDrawerOpened: getIsDrawerOpened(state),
   drawerView: getDrawerView(state),
-  highlightedTrackId: gethighlightedTrackId(state)
+  highlightedTrackId: getHighlightedTrackId(state),
+  isCollapsed: isTrackCollapsed(state, ownProps.track.track_id)
 });
 
 const mapDispatchToProps = {
+  updateCollapsedTrackIds,
   changeDrawerView,
   toggleDrawer,
   updateTrackStates: updateTrackStatesAndSave

@@ -5,7 +5,6 @@ import CheckboxGrid, { CheckboxGridOption } from './CheckboxGrid';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import faker from 'faker';
 import times from 'lodash/times';
-import orderBy from 'lodash/orderBy';
 
 const createCheckboxData = (options: CheckboxGridOption[]) => {
   const id = faker.lorem.word();

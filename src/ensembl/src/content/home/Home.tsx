@@ -1,153 +1,146 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import upperFirst from 'lodash/upperFirst';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { RootState } from 'src/store';
 
-import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
-import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
+import { fetchDataForLastVisitedObjects } from 'src/content/app/browser/browserActions';
 import { getGenomeInfo } from 'src/genome/genomeSelectors';
-import { getCommittedSpecies } from '../app/species-selector/state/speciesSelectorSelectors';
-import { CommittedItem } from '../app/species-selector/types/species-search';
+import { getEnabledCommittedSpecies } from '../app/species-selector/state/speciesSelectorSelectors';
+import {
+  getPreviouslyViewedGenomeBrowserObjects,
+  PreviouslyViewedGenomeBrowserObjects
+} from 'src/content/home/homePageSelectors';
 
-import { fetchGenomeInfo } from 'src/genome/genomeActions';
-import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
+import AppBar from 'src/shared/components/app-bar/AppBar';
+import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
+import { SimpleSelectedSpecies } from 'src/shared/components/selected-species';
+
 import { GenomeInfoData } from 'src/genome/genomeTypes';
+import { CommittedItem } from '../app/species-selector/types/species-search';
 
 import styles from './Home.scss';
 
-type StateProps = {
-  activeSpecies: CommittedItem[];
-  exampleEnsObjects: EnsObject[];
+type Props = {
+  species: CommittedItem[];
   genomeInfo: GenomeInfoData;
-  totalSelectedSpecies: number;
+  previouslyViewedGenomeBrowserObjects: PreviouslyViewedGenomeBrowserObjects;
+  fetchDataForLastVisitedObjects: () => void;
 };
 
-type DispatchProps = {
-  fetchExampleEnsObjects: () => void;
-  fetchGenomeInfo: () => void;
+type PreviouslyViewedProps = {
+  species: CommittedItem[];
+  previouslyViewedGenomeBrowserObjects: PreviouslyViewedGenomeBrowserObjects;
 };
 
-type OwnProps = {};
-
-type HomeProps = StateProps & DispatchProps & OwnProps;
-
-const Home: FunctionComponent<HomeProps> = (props: HomeProps) => {
-  const [showPreviouslyViewed, toggleShowPreviouslyViewed] = useState(false);
-
+const Home = (props: Props) => {
   useEffect(() => {
-    props.fetchGenomeInfo();
-  }, [props.activeSpecies]);
-
-  useEffect(() => {
-    props.fetchExampleEnsObjects();
-  }, [props.genomeInfo]);
-
-  useEffect(() => {
-    if (Object.keys(props.exampleEnsObjects).length > 0) {
-      toggleShowPreviouslyViewed(true);
-    }
-  }, [props.exampleEnsObjects]);
-
-  const getExampleObjLabel = (exampleObject: EnsObject) => {
-    if (exampleObject.object_type === 'gene') {
-      return exampleObject.label;
-    } else {
-      return getFormattedLocation(exampleObject.location);
-    }
-  };
-
-  const getPreviouslyViewed = () => {
-    return props.activeSpecies.map((species) => {
-      if (props.exampleEnsObjects.length) {
-        return props.exampleEnsObjects.map((exampleObject) => {
-          const location = `${exampleObject.location.chromosome}:${exampleObject.location.start}-${exampleObject.location.end}`;
-          const path = urlFor.browser({
-            genomeId: species.genome_id,
-            focus: exampleObject.object_id,
-            location
-          });
-
-          return (
-            <dd key={exampleObject.object_id}>
-              <Link to={path}>
-                {`${species.common_name} ${upperFirst(
-                  exampleObject.object_type
-                )}: ${getExampleObjLabel(exampleObject)}`}
-              </Link>
-            </dd>
-          );
-        });
-      }
-    });
-  };
+    props.fetchDataForLastVisitedObjects();
+  }, []);
 
   return (
     <div className={styles.home}>
-      {!props.totalSelectedSpecies && (
-        <>
-          <span className={styles.speciesSelectorBannerText}>
-            7 species now available
-          </span>
-          <Link
-            className={styles.speciesSelectorBannerLink}
-            to={urlFor.speciesSelector()}
-          >
-            Select a species to begin
-          </Link>
-        </>
-      )}
+      <SpeciesBar species={props.species} />
       <section className={styles.search}>
         <h2>Find</h2>
         <p>
           <input type="text" placeholder="Name, symbol or ID" disabled={true} />
-          {/* <button disabled={true}>Go</button> */}
         </p>
-        <div className={styles.filter}>
-          <h2>Refine results</h2>
-        </div>
       </section>
-      {showPreviouslyViewed && (
-        <section className={styles.previouslyViewed}>
-          <h2>Previously viewed</h2>
-          {getPreviouslyViewed()}
-        </section>
-      )}
-      <section className={styles.siteMessage}>
-        <h4>Using the site</h4>
-        <p>
-          A very limited data set has been made available for this first
-          release.
-        </p>
-        <p>
-          Blue icons and text are clickable and will usually 'do' something.
-        </p>
-        <p>
-          Grey icons indicate apps &amp; functionality that is planned, but not
-          available yet.
-        </p>
-        <p className={styles.convoMessage}>
-          It's very early days, but why not join the conversation:
-        </p>
-        <p>helpdesk@ensembl.org</p>
-      </section>
+      <PreviouslyViewed
+        species={props.species}
+        previouslyViewedGenomeBrowserObjects={
+          props.previouslyViewedGenomeBrowserObjects
+        }
+      />
+      <UsingTheSite />
     </div>
   );
 };
 
+const SpeciesBar = (props: { species: CommittedItem[] }) => {
+  let barContent;
+  if (!props.species.length) {
+    barContent = (
+      <div className={styles.emptySpeciesBar}>
+        <span className={styles.speciesSelectorBannerText}>
+          7 species now available
+        </span>
+        <Link
+          className={styles.speciesSelectorBannerLink}
+          to={urlFor.speciesSelector()}
+        >
+          Select a species to begin
+        </Link>
+      </div>
+    );
+  } else {
+    const speciesItems = props.species.map((species, index) => (
+      <SimpleSelectedSpecies key={index} species={species} />
+    ));
+    barContent = <SpeciesTabsWrapper speciesTabs={speciesItems} />;
+  }
+
+  return <AppBar mainContent={barContent} />;
+};
+
+const PreviouslyViewed = (props: PreviouslyViewedProps) => {
+  if (
+    !props.species.length ||
+    props.previouslyViewedGenomeBrowserObjects.areLoading
+  ) {
+    return null;
+  }
+
+  const previouslyViewedLinks = props.previouslyViewedGenomeBrowserObjects.objects.map(
+    (object, index) => (
+      <div key={index} className={styles.previouslyViewedItem}>
+        <Link to={object.link}>{object.speciesName}</Link>
+        <span className={styles.previouslyViewedItemAssemblyName}>
+          {' '}
+          {object.assemblyName}
+        </span>
+      </div>
+    )
+  );
+
+  return (
+    <section className={styles.previouslyViewed}>
+      <h2>Previously viewed</h2>
+      {previouslyViewedLinks}
+    </section>
+  );
+};
+
+const UsingTheSite = () => (
+  <section className={styles.siteMessage}>
+    <h4>Using the site</h4>
+    <p>
+      A very limited data set has been made available for this first release.
+    </p>
+    <p>Blue icons and text are clickable and will usually 'do' something.</p>
+    <p>
+      Grey icons indicate apps &amp; functionality that is planned, but not
+      available yet.
+    </p>
+    <p className={styles.convoMessage}>
+      It's very early days, but why not join the conversation:
+    </p>
+    <p>helpdesk@ensembl.org</p>
+  </section>
+);
+
 const mapStateToProps = (state: RootState) => ({
-  activeSpecies: getCommittedSpecies(state),
-  exampleEnsObjects: getExampleEnsObjects(state),
-  totalSelectedSpecies: getCommittedSpecies(state).length,
-  genomeInfo: getGenomeInfo(state)
+  species: getEnabledCommittedSpecies(state),
+  genomeInfo: getGenomeInfo(state),
+  previouslyViewedGenomeBrowserObjects: getPreviouslyViewedGenomeBrowserObjects(
+    state
+  )
 });
 
 const mapDispatchToProps = {
-  fetchExampleEnsObjects,
-  fetchGenomeInfo
+  fetchDataForLastVisitedObjects
 };
 
 export default connect(

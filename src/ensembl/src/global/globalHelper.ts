@@ -13,7 +13,7 @@ export const getBreakpoint = (width: number): BreakpointWidth => {
 export const getQueryParamsMap = (queryStr: string) => {
   const params = queryStr.replace('?', '').split('&'); // split all query param pairs
 
-  let paramMap: { [key: string]: string } = {};
+  const paramMap: { [key: string]: string } = {};
 
   params.forEach((param: string) => {
     const [key, value] = param.split('='); // split param pair into key value

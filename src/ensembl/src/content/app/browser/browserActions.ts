@@ -85,15 +85,13 @@ export const setDataFromUrlAndSave: ActionCreator<
     });
 };
 
-export const updateBrowserActiveGenomeId = createStandardAction(
-  'browser/update-active-genome-id'
-)<string>();
-
-export const updateBrowserActiveGenomeIdAndSave: ActionCreator<
+export const fetchDataForLastVisitedObjects: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (activeGenomeId: string) => (dispatch) => {
-  dispatch(updateBrowserActiveGenomeId(activeGenomeId));
-  browserStorageService.saveActiveGenomeId(activeGenomeId);
+> = () => async (dispatch, getState: () => RootState) => {
+  const state = getState();
+  const activeEnsObjectIdsMap = getBrowserActiveEnsObjectIds(state);
+  const activeEnsObjectIds = Object.values(activeEnsObjectIdsMap);
+  activeEnsObjectIds.forEach((id) => dispatch(fetchEnsObject(id)));
 };
 
 export const updateBrowserActiveEnsObjectIds = createStandardAction(

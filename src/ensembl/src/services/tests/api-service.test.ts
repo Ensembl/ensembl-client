@@ -12,9 +12,9 @@ const generateMockFetch = (response: any) =>
 
 describe('api service', () => {
   let mockFetch: any;
-  let mockResponse = { foo: 'foo' };
-  let mockError = { message: 'Oh no!' };
-  let mockTextResponse = 'hello world';
+  const mockResponse = { foo: 'foo' };
+  const mockError = { message: 'Oh no!' };
+  const mockTextResponse = 'hello world';
 
   const mockJsonResolver = () => Promise.resolve(mockResponse);
   const mockTextResolver = () => Promise.resolve(mockTextResponse);

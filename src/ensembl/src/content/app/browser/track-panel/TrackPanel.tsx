@@ -8,7 +8,6 @@ import TrackPanelModal from './track-panel-modal/TrackPanelModal';
 import Drawer from '../drawer/Drawer';
 import { RootState } from 'src/store';
 
-import { toggleTrackPanel } from './trackPanelActions';
 import {
   getIsTrackPanelOpened,
   getIsTrackPanelModalOpened,
@@ -42,7 +41,6 @@ type TrackPanelProps = {
   selectedTrackPanelTab: TrackSet;
   genomeTrackCategories: GenomeTrackCategory[];
   trackStates: TrackStates;
-  toggleTrackPanel: (isTrackPanelOpened?: boolean) => void;
 };
 
 const TrackPanel = (props: TrackPanelProps) => {
@@ -112,11 +110,4 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const mapDispatchToProps = {
-  toggleTrackPanel
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TrackPanel);
+export default connect(mapStateToProps)(TrackPanel);

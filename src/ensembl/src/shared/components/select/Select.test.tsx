@@ -9,13 +9,13 @@ import { mount } from 'enzyme';
 import Select from './Select';
 import SelectOptionsPanel from './SelectOptionsPanel';
 
-const createOption = (isSelected: boolean = false) => ({
+const createOption = (isSelected = false) => ({
   value: faker.random.uuid(),
   label: faker.random.words(5),
   isSelected
 });
 
-const createOptionGroup = (number: number = 5) => {
+const createOptionGroup = (number = 5) => {
   const options = times(number, () => createOption());
   return {
     options

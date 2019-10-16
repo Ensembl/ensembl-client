@@ -7,7 +7,7 @@ import ImageButton from 'src/shared/components/image-button/ImageButton';
 import faker from 'faker';
 import times from 'lodash/times';
 
-const createOption = (isSelected: boolean = false) => ({
+const createOption = (isSelected = false) => ({
   value: faker.random.uuid(),
   label: faker.random.words(5),
   isSelected
