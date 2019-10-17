@@ -2,6 +2,7 @@ import windowService, {
   WindowServiceInterface
 } from 'src/services/window-service';
 import merge from 'lodash/merge';
+import JSONValue from 'src/shared/types/JSON';
 
 export enum StorageType {
   LOCAL_STORAGE = 'localstorage',
@@ -9,12 +10,9 @@ export enum StorageType {
 }
 
 type PrimitiveValue = string | number | boolean | null | undefined;
-type ArrayValue = PrimitiveValue[] | ObjectValue[];
-type ObjectValue = {
-  [key: string]: PrimitiveValue | ArrayValue | ObjectValue;
-};
+type ArrayValue = PrimitiveValue[] | JSONValue[];
 
-type ValueForSaving = PrimitiveValue | ArrayValue | ArrayValue[] | ObjectValue;
+type ValueForSaving = PrimitiveValue | ArrayValue | ArrayValue[] | JSONValue;
 
 type options = {
   storage: StorageType;
@@ -23,7 +21,7 @@ type options = {
 export interface StorageServiceInterface {
   get: (key: string, options?: options) => any;
   save: (key: string, value: ValueForSaving, options?: options) => void;
-  update: (key: string, fragment: ObjectValue, options?: options) => void;
+  update: (key: string, fragment: JSONValue, options?: options) => void;
   remove: (key: string, options?: options) => void;
   clearAll: () => void;
 }
@@ -61,7 +59,7 @@ export class StorageService implements StorageServiceInterface {
   }
 
   // intended only for updating part of the saved object
-  public update(key: string, fragment: ObjectValue, options = defaultOptions) {
+  public update(key: string, fragment: JSONValue, options = defaultOptions) {
     const storedData = this.get(key, options);
     if (storedData) {
       this.save(key, merge(storedData, fragment), options);

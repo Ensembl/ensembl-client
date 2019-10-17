@@ -182,7 +182,6 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     return (
       <div className={styles.checkboxGridWrapper} key={key}>
         <CheckboxGrid
-          class
           onChange={(status: boolean, id: string) =>
             onChangeHandler([...currentPath, id], status)
           }
@@ -268,13 +267,13 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     path: Path,
     key: number
   ) => {
-    const currentPath = [...path, entry.id];
-
-    const values: string[] = get(props.selectedData, currentPath, '');
-
     if (props.showOverview) {
       return null;
     }
+
+    const currentPath = [...path, entry.id];
+
+    const values: string[] = get(props.selectedData, currentPath, '');
 
     const mergedClassNames = classNames(
       styles.contentSeparator,

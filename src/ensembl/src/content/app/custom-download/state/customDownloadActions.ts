@@ -51,7 +51,7 @@ export const updateActiveConfigurationForGenome = createAction(
   'custom-download/update-active-configuration-for-genome',
   (action) => (payload: {
     activeGenomeId: string;
-    data: Partial<CustomDownloadStateForGenome>;
+    data: CustomDownloadStateForGenome;
   }) => {
     const { activeGenomeId, data } = payload;
 
@@ -74,13 +74,11 @@ export const updateSelectedPreFilter: ActionCreator<
   dispatch(
     updateActiveConfigurationForGenome({
       activeGenomeId,
-      data: {
-        ...set(
-          getCustomDownloadActiveGenomeConfiguration(getState()),
-          'preFilter.selectedPreFilter',
-          selectedPreFilter
-        )
-      }
+      data: set(
+        getCustomDownloadActiveGenomeConfiguration(getState()),
+        'preFilter.selectedPreFilter',
+        selectedPreFilter
+      )
     })
   );
 };
@@ -97,13 +95,11 @@ export const togglePreFiltersPanel: ActionCreator<
   dispatch(
     updateActiveConfigurationForGenome({
       activeGenomeId,
-      data: {
-        ...set(
-          getCustomDownloadActiveGenomeConfiguration(getState()),
-          'preFilter.showPreFiltersPanel',
-          showPreFiltersPanel
-        )
-      }
+      data: set(
+        getCustomDownloadActiveGenomeConfiguration(getState()),
+        'preFilter.showPreFiltersPanel',
+        showPreFiltersPanel
+      )
     })
   );
 };
@@ -149,13 +145,11 @@ export const setShowPreview: ActionCreator<
   dispatch(
     updateActiveConfigurationForGenome({
       activeGenomeId,
-      data: {
-        ...set(
-          getCustomDownloadActiveGenomeConfiguration(getState()),
-          'previewDownload.showSummary',
-          showSummary
-        )
-      }
+      data: set(
+        getCustomDownloadActiveGenomeConfiguration(getState()),
+        'previewDownload.showSummary',
+        showSummary
+      )
     })
   );
 };
@@ -172,13 +166,11 @@ export const setShowExampleData: ActionCreator<
   dispatch(
     updateActiveConfigurationForGenome({
       activeGenomeId,
-      data: {
-        ...set(
-          getCustomDownloadActiveGenomeConfiguration(getState()),
-          'previewDownload.showExampleData',
-          showExampleData
-        )
-      }
+      data: set(
+        getCustomDownloadActiveGenomeConfiguration(getState()),
+        'previewDownload.showExampleData',
+        showExampleData
+      )
     })
   );
 };
@@ -195,13 +187,11 @@ export const setDownloadType: ActionCreator<
   dispatch(
     updateActiveConfigurationForGenome({
       activeGenomeId,
-      data: {
-        ...set(
-          getCustomDownloadActiveGenomeConfiguration(getState()),
-          'previewDownload.downloadType',
-          downloadType
-        )
-      }
+      data: set(
+        getCustomDownloadActiveGenomeConfiguration(getState()),
+        'previewDownload.downloadType',
+        downloadType
+      )
     })
   );
 };

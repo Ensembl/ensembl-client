@@ -24,20 +24,15 @@ import JSONValue from 'src/shared/types/JSON';
 
 import styles from './PreviewDownload.scss';
 
-type StateProps = {
+type PreviewDownloadProps = {
   selectedAttributes: JSONValue;
   selectedFilters: JSONValue;
   preview: JSONValue;
   committedSpecies: CommittedItem | null;
-};
-
-type DispatchProps = {
   setShowPreview: (showPreview: boolean) => void;
 };
 
-type Props = StateProps & DispatchProps;
-
-const PreviewDownload = (props: Props) => {
+const PreviewDownload = (props: PreviewDownloadProps) => {
   const resultCount: number = props.preview.resultCount
     ? (props.preview.resultCount as number)
     : 0;
@@ -110,11 +105,11 @@ const PreviewDownload = (props: Props) => {
   );
 };
 
-const mapDispatchToProps: DispatchProps = {
+const mapDispatchToProps = {
   setShowPreview
 };
 
-const mapStateToProps = (state: RootState): StateProps => {
+const mapStateToProps = (state: RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(state);
   const committedSpecies = activeGenomeId
     ? getCommittedSpeciesById(state, activeGenomeId)

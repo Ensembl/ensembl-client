@@ -6,7 +6,8 @@ import storageService, {
 import {
   CustomDownloadActiveConfigurations,
   CustomDownloadStateForGenome
-} from '../state/customDownloadState';
+} from 'src/content/app/custom-download/state/customDownloadState';
+import JSONValue from 'src/shared/types/JSON';
 
 export enum StorageKeys {
   ACTIVE_GENOME_ID = 'customDownload.activeGenomeId',
@@ -45,11 +46,12 @@ export class CustomDownloadStorageService {
     );
   }
 
-  // FIXME: Not sure why TypeScript doesn't like it if I use {[key: string]: CustomDownloadStateForGenome} here
-  public updateActiveConfigurationsForGenome(activeConfigurations: any): void {
+  public updateActiveConfigurationsForGenome(activeConfigurations: {
+    [key: string]: CustomDownloadStateForGenome;
+  }): void {
     this.storageService.update(
       StorageKeys.ACTIVE_CONFIGURATIONS,
-      activeConfigurations,
+      activeConfigurations as JSONValue,
       options
     );
   }

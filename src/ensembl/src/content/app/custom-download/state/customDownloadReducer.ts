@@ -64,9 +64,8 @@ function result(
 }
 
 function activeConfigurations(
-  state: CustomDownloadActiveConfigurations = getInitialCustomDownloadState()[
-    'activeConfigurations'
-  ],
+  state: CustomDownloadActiveConfigurations = getInitialCustomDownloadState()
+    .activeConfigurations,
   action: ActionType<RootAction>
 ): CustomDownloadActiveConfigurations {
   switch (action.type) {

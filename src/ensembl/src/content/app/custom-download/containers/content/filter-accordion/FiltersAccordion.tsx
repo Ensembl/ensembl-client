@@ -32,13 +32,10 @@ import { getPreviewResult } from 'src/content/app/custom-download/state/customDo
 
 import styles from './FiltersAccordion.scss';
 
-type StateProps = {
+type FiltersAccordionProps = {
   expandedPanels: string[];
   selectedFilters: JSONValue;
   preview: JSONValue;
-};
-
-type DispatchProps = {
   setFiltersAccordionExpandedPanel: (expandedPanels: string[]) => void;
   resetSelectedFilters: () => void;
   updateSelectedFilters: (filters: JSONValue) => void;
@@ -72,9 +69,7 @@ const getSelectedFiltersCount = (
   return selectedFiltersCount;
 };
 
-type Props = StateProps & DispatchProps;
-
-const FiltersAccordion = (props: Props) => {
+const FiltersAccordion = (props: FiltersAccordionProps) => {
   const formatAccordionTitle = (expandedPanel: string, title: string) => {
     if (expandedPanel !== props.expandedPanels[0]) {
       return <span>{title}</span>;
@@ -224,13 +219,13 @@ const FiltersAccordion = (props: Props) => {
   );
 };
 
-const mapDispatchToProps: DispatchProps = {
+const mapDispatchToProps = {
   setFiltersAccordionExpandedPanel,
   resetSelectedFilters,
   updateSelectedFilters
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState) => ({
   expandedPanels: getFiltersAccordionExpandedPanels(state),
   selectedFilters: getSelectedFilters(state),
   preview: getPreviewResult(state)

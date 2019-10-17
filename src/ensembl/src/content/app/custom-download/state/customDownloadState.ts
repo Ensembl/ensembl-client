@@ -66,13 +66,13 @@ export type CustomDownloadState = {
 };
 
 export const getInitialCustomDownloadState = (): CustomDownloadState => {
-  const genomeId = customDownloadStorageService.getActiveGenomeId();
+  const activeGenomeId = customDownloadStorageService.getActiveGenomeId();
   const activeConfigurations =
     customDownloadStorageService.getActiveConfigurations() || {};
 
   return {
-    activeGenomeId: genomeId,
-    activeConfigurations: activeConfigurations,
+    activeGenomeId,
+    activeConfigurations,
     result: defaultResultState
   };
 };

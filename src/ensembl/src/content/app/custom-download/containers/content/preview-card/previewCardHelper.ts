@@ -5,7 +5,7 @@ import {
   getProcessedAttributes
 } from 'src/content/app/custom-download/containers/content/customDownloadContentHelper';
 
-const formatResponseToArray = (responseData: any): any => {
+const formatResponseToArray = (responseData: any) => {
   const result: any = [];
 
   const flatterenedResponse = flattenObject(responseData);

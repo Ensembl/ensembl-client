@@ -39,7 +39,7 @@ import {
 
 import styles from './CustomDownloadHeader.scss';
 
-type StateProps = {
+type HeaderProps = {
   selectedPreFilter: string;
   preview: JSONValue;
   showSummary: boolean;
@@ -48,9 +48,6 @@ type StateProps = {
   selectedAttributes: JSONValue;
   isLoadingResult: boolean;
   activeGenomeId: string | null;
-};
-
-type DispatchProps = {
   togglePreFiltersPanel: (togglePreFiltersPanel: boolean) => void;
   setShowPreview: (setShowPreview: boolean) => void;
   setDownloadType: (setDownloadType: string) => void;
@@ -58,8 +55,6 @@ type DispatchProps = {
   clearPreviewResult: () => void;
   setIsLoadingResult: (isLoadingResult: boolean) => void;
 };
-
-type Props = StateProps & DispatchProps;
 
 const downloadTypeoptions = [
   {
@@ -74,7 +69,7 @@ const downloadTypeoptions = [
   }
 ];
 
-const Header = (props: Props) => {
+const Header = (props: HeaderProps) => {
   useEffect(() => {
     const flatSelectedAttributes: { [key: string]: boolean } = flattenObject(
       props.selectedAttributes
@@ -203,7 +198,7 @@ const Header = (props: Props) => {
   );
 };
 
-const mapDispatchToProps: DispatchProps = {
+const mapDispatchToProps = {
   togglePreFiltersPanel,
   setShowPreview,
   setDownloadType,
@@ -212,7 +207,7 @@ const mapDispatchToProps: DispatchProps = {
   setIsLoadingResult
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState) => ({
   selectedPreFilter: getSelectedPreFilter(state),
   preview: getPreviewResult(state),
   showSummary: getShowPreviewResult(state),
