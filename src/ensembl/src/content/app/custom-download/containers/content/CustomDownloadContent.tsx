@@ -1,17 +1,18 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
-import {
-  getShowPreviewResult,
-  getShowExampleData
-} from '../../state/customDownloadSelectors';
+
 import AttributesAccordion from './attributes-accordion/AttributesAccordion';
 import FiltersAccordion from './filter-accordion/FiltersAccordion';
-import Overlay from '../../components/overlay/Overlay';
+import Overlay from 'src/shared/components/overlay/Overlay';
 import CustomDownloadInfoCard from '../../components/info-card/CustomDownloadInfoCard';
 import PreviewCard from 'src/content/app/custom-download/containers/content/preview-card/PreviewCard';
 import PreviewDownload from './preview-download/PreviewDownload';
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
+import {
+  getShowPreviewResult,
+  getShowExampleData
+} from 'src/content/app/custom-download/state/customDownloadSelectors';
 import { setShowExampleData } from 'src/content/app/custom-download/state/customDownloadActions';
 
 import styles from './CustomDownloadContent.scss';
