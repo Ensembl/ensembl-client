@@ -41,7 +41,8 @@ const CustomDownload = (props: CustomDownloadProps) => {
       {props.shouldShowPreFilterPanel && <PreFilterPanel />}
       {!props.shouldShowPreFilterPanel && (
         <>
-          <CustomDownloadHeader /> <CustomDownloadContent />
+          <CustomDownloadHeader />
+          <CustomDownloadContent />
         </>
       )}
     </>
