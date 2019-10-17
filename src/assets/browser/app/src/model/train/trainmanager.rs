@@ -22,11 +22,9 @@ use model::item::{ DeliveredItem, ItemUnpacker };
 use model::stage::{ Desired, Position, Screen };
 use model::supply::Product;
 use model::zmenu::{ ZMenuIntersection, ZMenuRegistry };
-use super::{ Train, TrainId, TrainContext, TravellerCreator };
+use super::{ Train, TrainId, TrainContext, TrainManagerTransition, TravellerCreator };
 use types::{ Dot, DOWN, AsyncValue, Awaiting };
 
-const MS_FADE_FAST : f64 = 100.;
-const MS_FADE_SLOW : f64 = 750.;
 const AT_POSITION_NEAR_ENOUGH : f64 = 1.;
 const AT_ZOOM_NEAR_ENOUGH : f64 = 2.;
 
@@ -38,9 +36,7 @@ pub struct TrainManagerImpl {
     future_train: Option<Train>,
     transition_train: Option<Train>,
     /* progress of transition */
-    transition_start: Option<f64>,
-    transition_prop: Option<f64>,
-    transition_slow: bool,
+    transition: TrainManagerTransition,
     /* current position/scale */
     desired: Desired,
     desired_context: TrainContext,
@@ -57,9 +53,7 @@ impl TrainManagerImpl {
             current_train: None,
             future_train: None,
             transition_train: None,
-            transition_start: None,
-            transition_prop: None,
-            transition_slow: false,
+            transition: TrainManagerTransition::new(),
             desired: Desired::new(),
             desired_context: TrainContext::new(&None),
             focus_stick: AsyncValue::new(Some(None)),
@@ -132,16 +126,12 @@ impl TrainManagerImpl {
     
     /* if there's a transition and it's reached endstop it is current */
     fn transition_maybe_done(&mut self, t: f64) {
-        if let Some(start) = self.transition_start {
-            let speed = if self.transition_slow { MS_FADE_SLOW } else { MS_FADE_FAST };
-            if t-start < speed {
-                self.transition_prop = Some((t-start)/speed);
-            } else {
-                bb_log!("trainmanager","transition done {:?}",self.transition_train.as_ref().map(|x| x.get_train_id().clone()));
-                self.current_train = self.transition_train.take();
-                self.transition_start = None;
-                self.transition_prop = None;
-            }
+        self.transition.update(t);
+        if self.transition.get_prop() >= 1. {
+            console!("transition done");
+            bb_log!("trainmanager","transition done {:?}",self.transition_train.as_ref().map(|x| x.get_train_id().clone()));
+            self.current_train = self.transition_train.take();
+            self.transition.reset();
         }
     }
         
@@ -160,15 +150,14 @@ impl TrainManagerImpl {
         if ready && self.transition_train.is_none() {
             bb_log!("trainmanager","future train is transitioning {:?}",self.future_train.as_ref().map(|x| x.get_train_id().clone()));
             self.transition_train = self.future_train.take();
-            self.transition_start = Some(t);
-            self.transition_prop = Some(0.);
-            self.transition_slow = false;
+            let mut slow = false;
             if let (Some(transition_train),Some(current_train)) = (self.transition_train.as_ref(),self.current_train.as_ref()) {
                 if transition_train.get_train_id().get_stick() != current_train.get_train_id().get_stick() {
-                    console!("SLOW!");
-                    self.transition_slow = true;
+                    slow = true;
                 }
             }
+            console!("starting trnasition");
+            self.transition.start(t,slow);
         }
     }
     
@@ -398,7 +387,7 @@ impl TrainManagerImpl {
     
     /* used by printer to set opacity */
     pub fn get_prop_trans(&self) -> f32 {
-        self.transition_prop.unwrap_or(0.) as f32
+        self.transition.get_prop() as f32
     }
     
     /* used by printer for actual printing */
