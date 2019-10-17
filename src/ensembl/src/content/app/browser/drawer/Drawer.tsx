@@ -14,7 +14,7 @@ import DrawerContigs from './drawer-views/DrawerContigs';
 import DrawerGC from './drawer-views/DrawerGC';
 import DrawerBookmarks from './drawer-views/DrawerBookmarks';
 
-import closeIcon from 'static/img/track-panel/close.svg';
+import closeIcon from 'static/img/shared/close.svg';
 
 import styles from './Drawer.scss';
 import SnpIndels from './drawer-views/SnpIndels';

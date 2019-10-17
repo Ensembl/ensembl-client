@@ -13,7 +13,7 @@ import { getTrackPanelModalView } from '../trackPanelSelectors';
 import { closeTrackPanelModal } from '../trackPanelActions';
 import { RootState } from 'src/store';
 
-import closeIcon from 'static/img/track-panel/close.svg';
+import closeIcon from 'static/img/shared/close.svg';
 
 import styles from './TrackPanelModal.scss';
 import { closeDrawer } from '../../drawer/drawerActions';
