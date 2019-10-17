@@ -2,15 +2,12 @@ import windowService, {
   WindowServiceInterface
 } from 'src/services/window-service';
 import merge from 'lodash/merge';
-import JSONValue from 'src/shared/types/JSON';
+import JSONValue, { PrimitiveValue, ArrayValue } from 'src/shared/types/JSON';
 
 export enum StorageType {
   LOCAL_STORAGE = 'localstorage',
   SESSION_STORAGE = 'sessionstorage'
 }
-
-type PrimitiveValue = string | number | boolean | null | undefined;
-type ArrayValue = PrimitiveValue[] | JSONValue[];
 
 type ValueForSaving = PrimitiveValue | ArrayValue | ArrayValue[] | JSONValue;
 
