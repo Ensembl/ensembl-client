@@ -20,7 +20,9 @@ pub enum Action {
     Resize(Dot<f64,f64>),
     AddComponent(String),
     SetStick(String),
+    ResetState,
     SetState(String,bool),
+    SetDefaultState(String,bool),
     Settled,
     ActivityOutsideZMenu,
     ZMenuClickCheck(CPixel),
@@ -42,8 +44,10 @@ impl Action {
         match self {
             Action::Noop => 0,
             Action::AddComponent(_) => 1,
-            Action::SetState(_,_) => 2,
-            Action::SetStick(_) => 3,
+            Action::ResetState => 2,
+            Action::SetState(_,_) => 3,
+            Action::SetDefaultState(_,_) => 3,
+            Action::SetStick(_) => 4,
             Action::Resize(_) => 5,
             Action::Pos(_,_) => 10,
             Action::PosAnim(_,_) => 10,
@@ -70,7 +74,7 @@ fn cancel_animations(app: &mut App) {
 fn exe_pos_event(app: &mut App, v: Dot<f64,f64>, prop: Option<f64>, anim: bool) {
     if !anim {
         cancel_animations(app);
-    }
+    }    
     let train_manager = app.get_window().get_train_manager();
     let v = if let (Some(prop),Some(desired)) = (prop,train_manager.get_desired_position()) {
         Dot(desired.pos_prop_bp_to_origin(v.0,prop),v.1)
@@ -160,9 +164,15 @@ fn exe_set_stick(app: &mut App, name: &str) {
     }
 }
 
-fn exe_set_state(a: &mut App, name: &str, on: bool) {
+fn exe_reset_state(a: &mut App) {
     a.with_state(|s| {
-        s.set_atom_state(name,on);
+        s.reset_atom_state();
+    });
+}
+
+fn exe_set_state(a: &mut App, name: &str, on: bool, default: bool) {
+    a.with_state(|s| {
+        s.set_atom_state(name,on,default);
     });
 }
 
@@ -225,7 +235,9 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
             Action::Resize(sz) => exe_resize(cg,sz),
             Action::AddComponent(name) => exe_component_add(cg,&name),
             Action::SetStick(name) => exe_set_stick(cg,&name),
-            Action::SetState(name,on) => exe_set_state(cg,&name,on),
+            Action::ResetState => exe_reset_state(cg),
+            Action::SetDefaultState(name,on) => exe_set_state(cg,&name,on,true),
+            Action::SetState(name,on) => exe_set_state(cg,&name,on,false),
             Action::SetFocus(id) => exe_set_focus(cg,&id),
             Action::JumpFocus(id) => exe_jump_focus(cg,&id),
             Action::Settled => exe_settled(cg),

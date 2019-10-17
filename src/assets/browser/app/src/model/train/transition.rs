@@ -5,26 +5,6 @@ use zhoosh::{ Zhoosh, ZhooshRunner, ZhooshSequence, ZhooshSequenceControl, Zhoos
 const MS_FADE_FAST : f64 = 100.;
 const MS_FADE_SLOW : f64 = 750.;
 
-pub struct TrainManagerTransitionImpl {
-    transition_prop: f64,
-}
-
-impl TrainManagerTransitionImpl {
-    pub fn new() -> TrainManagerTransitionImpl {
-        TrainManagerTransitionImpl {
-            transition_prop: 1.
-        }
-    }
-
-    fn get_prop(&self) -> f64 {
-        self.transition_prop
-    }
-
-    fn set(&mut self, val: f64) {
-        self.transition_prop = val;
-    }
-}
-
 pub(super) struct TrainManagerTransition {
     imp: Arc<Mutex<f64>>,
     runner: ZhooshRunner,
@@ -34,17 +14,19 @@ pub(super) struct TrainManagerTransition {
 }
 
 impl TrainManagerTransition {
+    fn zhoosh_new(speed: f64) -> Zhoosh<Arc<Mutex<f64>>,f64> {
+        Zhoosh::new(speed,0.,0.,ZhooshShape::Quadratic(1.),ZHOOSH_LINEAR_F64_OPS,|imp: &mut Arc<Mutex<f64>>,val| {
+            *imp.lock().unwrap() = val;
+        })
+    }
+
     pub(super) fn new() -> TrainManagerTransition {
         TrainManagerTransition {
             imp: Arc::new(Mutex::new(1.)),
             control: None,
             runner: ZhooshRunner::new(),
-            zhoosh_fast: Zhoosh::new(MS_FADE_FAST,0.,0.,ZhooshShape::Quadratic(1.),ZHOOSH_LINEAR_F64_OPS,|imp: &mut Arc<Mutex<f64>>,val| {
-                *imp.lock().unwrap() = val;
-            }),
-            zhoosh_slow: Zhoosh::new(MS_FADE_SLOW,0.,0.,ZhooshShape::Quadratic(1.),ZHOOSH_LINEAR_F64_OPS,|imp: &mut Arc<Mutex<f64>>,val| {
-                *imp.lock().unwrap() = val;
-            }),
+            zhoosh_fast: TrainManagerTransition::zhoosh_new(MS_FADE_FAST),
+            zhoosh_slow: TrainManagerTransition::zhoosh_new(MS_FADE_SLOW)
         }
     }
 

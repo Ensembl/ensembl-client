@@ -51,6 +51,7 @@ impl StateExpr for StateOp {
 
 #[allow(unused,dead_code)]
 pub struct StateManager {
+    atoms_default: HashMap<String,bool>,
     atoms: HashMap<String,bool>,
     exprs: HashMap<String,Rc<dyn StateExpr>>,
     changed: bool
@@ -60,8 +61,9 @@ pub struct StateManager {
 impl StateManager {
     pub fn new() -> StateManager {
         StateManager {
-            atoms: HashMap::<String,bool>::new(),
-            exprs: HashMap::<String,Rc<dyn StateExpr>>::new(),
+            atoms: HashMap::new(),
+            atoms_default: HashMap::new(),
+            exprs: HashMap::new(),
             changed: false
         }
     }
@@ -74,8 +76,17 @@ impl StateManager {
         *self.atoms.get(name).unwrap_or(&false)
     }
     
-    pub fn set_atom_state(&mut self, name: &str, val: bool) {
+    pub fn reset_atom_state(&mut self) {
+        console!("RESET");
+        self.atoms =self.atoms_default.clone();
+        self.changed = true;
+    }
+
+    pub fn set_atom_state(&mut self, name: &str, val: bool, default: bool) {
        self.atoms.insert(name.to_string(),val); 
+       if default {
+           self.atoms_default.insert(name.to_string(),val); 
+       }
        self.changed = true;
     }
     
